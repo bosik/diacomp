@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/meal_editor"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="top"
+    android:layout_margin="@dimen/padding_small"
+    android:gravity="top"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textFoodName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_fooddishname" />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteTextView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:completionThreshold="1"
+        android:ems="10"
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:singleLine="true"
+        android:textColor="@android:color/black" >
+
+        <requestFocus />
+    </AutoCompleteTextView>
+
+    <TextView
+        android:id="@+id/textItemMass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_mass" />
+
+    <EditText
+        android:id="@+id/editItemMass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="numberDecimal|text"
+        android:singleLine="true" >
+
+    </EditText>
+
+    <Button
+        android:id="@+id/button_additem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/button_add" />
+
+    <ListView
+        android:id="@+id/ListView01"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFDD"
+        android:drawSelectorOnTop="false" >
+
+    </ListView>
+
+</LinearLayout>

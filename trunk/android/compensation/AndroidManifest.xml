@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.bosik.compensation.face"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="3"
+        android:targetSdkVersion="7" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Light.NoTitleBar" >
+        <provider
+            android:name="org.bosik.compensation.persistence.providers.DiaryProvider"
+            android:authorities="diacomp.provider"
+            android:exported="false" >
+            <grant-uri-permission android:pathPattern=".*" />
+        </provider>
+
+        <activity
+            android:name="org.bosik.compensation.face.activities.ActivityMain"
+            android:label="@string/title_menu"
+            android:theme="@android:style/Theme.Light" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="org.bosik.compensation.face.activities.ActivityDiary"
+            android:label="@string/title_diary"
+            android:theme="@android:style/Theme.Light" >
+        </activity>
+        <activity
+            android:name="org.bosik.compensation.face.activities.ActivityMeal"
+            android:label="@string/title_diary"
+            android:theme="@android:style/Theme.Light.NoTitleBar" >
+        </activity>
+        <activity
+            android:name="org.bosik.compensation.face.activities.ActivityEditorBlood"
+            android:label="@string/title_editor_blood" >
+        </activity>
+        <activity
+            android:name="org.bosik.compensation.face.activities.ActivityPreferences"
+            android:label="@string/title_preferences"
+            android:theme="@android:style/Theme.Light" >
+        </activity>
+        <activity
+            android:name="org.bosik.compensation.face.activities.ActivityEditorNote"
+            android:label="@string/title_activity_activity_editor_note" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ActivityEditor" />
+        </activity>
+    </application>
+
+</manifest>
