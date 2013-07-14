@@ -25,11 +25,8 @@ import android.util.Log;
 
 public class WebClient
 {
-	private static String TAG()
-	{
-		return WebClient.class.getName();
-	}
-	
+	private static String TAG = WebClient.class.getSimpleName();
+
 	/* ================ КОНСТАНТЫ ================ */
 
 	public static final String API_VERSION = "1.2";
@@ -45,7 +42,7 @@ public class WebClient
 	public static final String SERVER_CODEPAGE = "Cp1251";
 
 	private static final String CODE_SPACE = "%20";
-	
+
 	/* ================ ПОЛЯ ================ */
 
 	private HttpClient mHttpClient = null;
@@ -365,7 +362,7 @@ public class WebClient
 
 		if (kicked(resp))
 		{
-			Log.v(TAG(), "doGetSmart(): Session timeout; re-login");
+			Log.v(TAG, "doGetSmart(): Session timeout; re-login");
 			login();
 			return doGet(URL);
 		} else
@@ -380,7 +377,7 @@ public class WebClient
 
 		if (kicked(resp))
 		{
-			Log.v(TAG(), "doPostSmart(): Session timeout; re-login");
+			Log.v(TAG, "doPostSmart(): Session timeout; re-login");
 			login();
 			return doPost(URL, params);
 		} else
@@ -418,7 +415,7 @@ public class WebClient
 
 	public void login() throws ServerException
 	{
-		Log.i(TAG(), "login()");
+		Log.i(TAG, "login()");
 
 		// проверки
 
@@ -438,11 +435,11 @@ public class WebClient
 		if (undefServer || undefLogin || undefPassword)
 		{
 			if (undefLogin)
-				Log.e(TAG(), "Login is null or empty");
+				Log.e(TAG, "Login is null or empty");
 			if (undefPassword)
-				Log.e(TAG(), "Password is null or empty");
+				Log.e(TAG, "Password is null or empty");
 			if (undefServer)
-				Log.e(TAG(), "Server is null or empty");
+				Log.e(TAG, "Server is null or empty");
 
 			throw new UndefinedFieldException(undefServer, undefLogin, undefPassword);
 		}
@@ -462,14 +459,14 @@ public class WebClient
 
 		if (resp != null)
 		{
-			Log.d(TAG(), "login(): response is " + resp);
+			Log.d(TAG, "login(): response is " + resp);
 			String[] det = resp.split("\\|");
 
 			if (det.length == 2)
 			{
 				if (det[0].equals(RESPONSE_DONE))
 				{
-					Log.d(TAG(), "login(): response means DONE, parsing time...");
+					Log.d(TAG, "login(): response means DONE, parsing time...");
 					Date serverTime;
 					try
 					{
@@ -477,7 +474,7 @@ public class WebClient
 						timeShift = (sendedTime.getTime() + Utils.now().getTime()) / 2 - serverTime.getTime();
 						// WIN! Если дошли сюда, то всё прошло успешно.
 
-						Log.d(TAG(), "login(): logged OK");
+						Log.d(TAG, "login(): logged OK");
 					} catch (ParseException e)
 					{
 						throw new ResponseFormatException("Bad current time format '" + det[1] + "'", e);

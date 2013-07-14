@@ -4,5 +4,18 @@ import org.bosik.compensation.persistence.entity.CustomItem;
 
 public class Dish extends CustomItem
 {
+	
+	// ================================ GET / SET ================================
+	
+	// ================================ CLONE ================================
+	
+	@Override
+	public CustomItem clone() throws CloneNotSupportedException
+	{
+		Dish result = (Dish) super.clone();
+		
+		// TODO: implement
 
+		return result;
+	}
 }

@@ -8,6 +8,7 @@ public class FoodMassed extends FoodData
 {
 	private static final DecimalFormat df = new DecimalFormat("###.#");
 	private static final char FOOD_SEP = '|';
+	
 	private double mass;
 
 	// ================================ GET / SET ================================
@@ -20,11 +21,7 @@ public class FoodMassed extends FoodData
 	public void setMass(double mass)
 	{
 		checkNonNegativeThrowable(mass);
-		if (this.mass != mass)
-		{
-			this.mass = mass;
-			notifyModified();
-		}
+		this.mass = mass;
 	}
 
 	// TODO: подумать об индексном доступе к полям (в т.ч. в MealRecord)
@@ -48,8 +45,20 @@ public class FoodMassed extends FoodData
 		return getRelValue() / 100 * mass;
 	}
 
+	// ================================ CLONE ================================
+
+	@Override
+	public CustomItem clone() throws CloneNotSupportedException
+	{
+		FoodMassed result = (FoodMassed) super.clone();
+
+		result.setMass(getMass());
+
+		return result;
+	}
+
 	// ================================ I / O ================================
-	
+
 	/**
 	 * Читает из текстового представления FoodMassed
 	 * 
@@ -80,8 +89,8 @@ public class FoodMassed extends FoodData
 	 */
 	public String write()
 	{
-		return name + '[' + df.format(relProts) + FOOD_SEP + df.format(relFats) + FOOD_SEP + df.format(relCarbs) + FOOD_SEP + df.format(relValue)
-				+ "]:" + df.format(mass);
+		return getName() + '[' + df.format(getRelProts()) + FOOD_SEP + df.format(getRelFats()) + FOOD_SEP + df.format(getRelCarbs()) + FOOD_SEP
+				+ df.format(getRelValue()) + "]:" + df.format(mass);
 	}
 
 	/**

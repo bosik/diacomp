@@ -1,27 +1,64 @@
 package org.bosik.compensation.persistence.entity;
 
-public class CustomItem
+public class CustomItem implements Cloneable
 {
-	private ChangeListener changeListener;
-
-	public ChangeListener getChangeListener()
+	private int id;
+	
+	// ================================ GET / SET ================================
+	
+	public int getId()
 	{
-		return changeListener;
+		return id;
 	}
 
-	public void setChangeListener(ChangeListener changeListener)
+	public void setId(int id)
 	{
-		this.changeListener = changeListener;
+		this.id = id;
 	}
 
-	/**
-	 * Оповещает слушателя, если таковой имеется, о своём изменении
+	// ================================ CLONE ================================
+	
+	@Override
+	public CustomItem clone() throws CloneNotSupportedException
+	{
+		CustomItem result = (CustomItem) super.clone();
+
+		result.setId(getId());
+
+		return result;
+	}
+
+	/*
+	 * public CustomItem() {
+	 * 
+	 * }
+	 * 
+	 * public CustomItem(CustomItem copy) { setId(copy.getId()); }
 	 */
-	protected void notifyModified()
+
+	// ================================ OTHER ================================
+	
+	@Override
+	public int hashCode()
 	{
-		if (null != changeListener)
-		{
-			changeListener.changed();
-		}
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CustomItem other = (CustomItem) obj;
+		if (id != other.id)
+			return false;
+		return true;
 	}
 }
