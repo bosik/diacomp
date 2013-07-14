@@ -1,66 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
-
-    <Button
-        android:id="@+id/ButtonDiary"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_marginTop="@dimen/padding_small"
-        android:drawableLeft="@drawable/button_diary"
-        android:paddingLeft="80.5sp"
-        android:paddingRight="80.5sp"
-        android:text="@string/menu_diary" />
-
-    <Button
-        android:id="@+id/ButtonFoodBase"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:drawableLeft="@drawable/button_foodbase"
-        android:enabled="false"
-        android:paddingLeft="80.5sp"
-        android:paddingRight="80.5sp"
-        android:text="@string/menu_foodbase" />
-
-    <Button
-        android:id="@+id/ButtonDishBase"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:drawableLeft="@drawable/button_dishbase"
-        android:enabled="false"
-        android:paddingLeft="80.5sp"
-        android:paddingRight="80.5sp"
-        android:text="@string/menu_dishbase" />
-
-    <Button
-        android:id="@+id/ButtonPreferences"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_marginTop="@dimen/padding_small"
-        android:paddingLeft="80.5sp"
-        android:paddingRight="80.5sp"
-        android:text="@string/button_pref" />
-    
-    <Button
-        android:id="@+id/buttonAuth"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:paddingLeft="80.5sp"
-        android:paddingRight="80.5sp"
-        android:text="@string/button_sync" />
-
-    <Button
-        android:id="@+id/buttonTestMealEditor"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:text="@string/button_test" />
-
-</LinearLayout>
