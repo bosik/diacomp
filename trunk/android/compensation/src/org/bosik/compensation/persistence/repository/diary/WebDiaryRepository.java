@@ -14,10 +14,7 @@ import android.util.Log;
 
 public class WebDiaryRepository implements DiaryRepository
 {
-	private static String TAG()
-	{
-		return WebDiaryRepository.class.getName();
-	}
+	private static String TAG = WebDiaryRepository.class.getSimpleName();
 
 	private WebClient webClient;
 
@@ -121,14 +118,14 @@ public class WebDiaryRepository implements DiaryRepository
 					if (BuildConfig.DEBUG)
 						throw new WebClient.ResponseFormatException("Incorrect line: " + lines[i], e);
 					else
-						Log.e(TAG(), "getModList(): Incorrect line: " + lines[i]);
+						Log.e(TAG, "getModList(): Incorrect line: " + lines[i]);
 				}
 			} else
 			{
 				if (BuildConfig.DEBUG)
 					throw new WebClient.ResponseFormatException("Incorrect line: " + lines[i]);
 				else
-					Log.e(TAG(), "getModList(): Incorrect line: " + lines[i]);
+					Log.e(TAG, "getModList(): Incorrect line: " + lines[i]);
 			}
 		}
 		return result;

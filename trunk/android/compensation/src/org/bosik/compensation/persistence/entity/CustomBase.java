@@ -5,31 +5,70 @@ import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.utils.Utils;
 
-public class CustomBase<T extends CustomItem> implements ChangeListener
+public class CustomBase<T extends CustomItem>
 {
+	private static int idCounter = 0;
+
 	private final List<T> items = new ArrayList<T>();
 	private Date timeStamp = null;
 	private int version = 0;
 
+	private boolean silentMode = false;
+
 	// ================== РАБОТА СО СПИСКОМ ==================
 
-	public void add(T item)
+	public int add(T item)
 	{
 		if (null == item)
 			throw new NullPointerException("Item can't be null");
 
-		item.setChangeListener(this);
-		items.add(item);
+		try
+		{
+			item.setId(++idCounter);
+			items.add((T) item.clone());
+			changed();
+			return items.indexOf(item);
+		} catch (CloneNotSupportedException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	public T get(int index)
+	{
+		try
+		{
+			return (T) items.get(index).clone();
+		} catch (CloneNotSupportedException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void update(T item)
+	{
+		// comparison performed by id, because equals() method is overridden
+		try
+		{
+			int index = items.indexOf(item);
+			items.set(index, (T) item.clone());
+			changed();
+		} catch (CloneNotSupportedException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	public void remove(int index)
 	{
 		items.remove(index);
+		changed();
 	}
 
-	public T get(int index)
+	public void remove(T item)
 	{
-		return items.get(index);
+		items.remove(item);
+		changed();
 	}
 
 	public int count()
@@ -59,12 +98,24 @@ public class CustomBase<T extends CustomItem> implements ChangeListener
 		this.timeStamp = timeStamp;
 	}
 
-	// ================== ОБРАБОТКА СООБЩЕНИЙ ОТ ЭЛЕМЕНТОВ СПИСКА ==================
+	// ================== СЛУЖЕБНЫЕ ==================
 
-	@Override
-	public void changed()
+	public void beginUpdate()
 	{
-		timeStamp = Utils.now();
-		version++;
+		silentMode = true;
+	}
+
+	public void endUpdate()
+	{
+		silentMode = false;
+	}
+
+	private void changed()
+	{
+		if (!silentMode)
+		{
+			timeStamp = Utils.now();
+			version++;
+		}
 	}
 }

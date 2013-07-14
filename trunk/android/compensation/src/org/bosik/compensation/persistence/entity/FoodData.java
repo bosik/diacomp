@@ -73,50 +73,47 @@ public class FoodData extends CustomItem
 	public void setName(String name)
 	{
 		checkNameThrowable(name);
-		if (!this.name.equals(name))
-		{
-			this.name = name;
-			notifyModified();
-		}
+		this.name = name;
 	}
 
 	public void setRelProts(double relProts)
 	{
 		checkRelThrowable(relProts);
-		if (this.relProts != relProts)
-		{
-			this.relProts = relProts;
-			notifyModified();
-		}
+		this.relProts = relProts;
 	}
 
 	public void setRelFats(double relFats)
 	{
 		checkRelThrowable(relFats);
-		if (this.relFats != relFats)
-		{
-			this.relFats = relFats;
-			notifyModified();
-		}
+		this.relFats = relFats;
 	}
 
 	public void setRelCarbs(double relCarbs)
 	{
 		checkRelThrowable(relCarbs);
-		if (this.relCarbs != relCarbs)
-		{
-			this.relCarbs = relCarbs;
-			notifyModified();
-		}
+		this.relCarbs = relCarbs;
 	}
 
 	public void setRelValue(double relValue)
 	{
 		checkNonNegativeThrowable(relValue);
-		if (this.relValue != relValue)
-		{
-			this.relValue = relValue;
-			notifyModified();
-		}
+		this.relValue = relValue;
+	}
+
+	
+	// ================================ CLONE ================================
+	
+	@Override
+	public CustomItem clone() throws CloneNotSupportedException
+	{
+		FoodData result = (FoodData) super.clone();
+		
+		result.setName(getName());
+		result.setRelCarbs(getRelCarbs());
+		result.setRelFats(getRelFats());
+		result.setRelProts(getRelProts());
+		result.setRelValue(getRelValue());
+
+		return result;
 	}
 }

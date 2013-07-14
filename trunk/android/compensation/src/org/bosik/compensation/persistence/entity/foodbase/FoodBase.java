@@ -1,11 +1,10 @@
 package org.bosik.compensation.persistence.entity.foodbase;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.bosik.compensation.persistence.entity.CustomBase;
 
-public class FoodBase
+public class FoodBase extends CustomBase<Food>
 {
-	private int version = 0;
+	/*private int version = 0;
 	private final List<Food> items = new ArrayList<Food>();
 
 	public int getVersion()
@@ -38,5 +37,5 @@ public class FoodBase
 	public int count()
 	{
 		return items.size();
-	}
+	}*/
 }
