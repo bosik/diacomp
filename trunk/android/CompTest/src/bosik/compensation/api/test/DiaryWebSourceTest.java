@@ -1,10 +1,6 @@
 package bosik.compensation.api.test;
 
-import java.util.Calendar;
-import java.util.Date;
-import org.bosik.compensation.persistence.repository.diary.WebDiaryRepository;
 import junit.framework.TestCase;
-import android.util.Log;
 
 public class DiaryWebSourceTest extends TestCase 
 {

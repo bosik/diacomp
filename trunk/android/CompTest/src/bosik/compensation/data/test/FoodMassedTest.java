@@ -1,8 +1,8 @@
 package bosik.compensation.data.test;
 
 import java.text.ParseException;
-import org.bosik.compensation.persistence.entity.FoodMassed;
 import junit.framework.TestCase;
+import org.bosik.compensation.persistence.entity.FoodMassed;
 
 public class FoodMassedTest extends TestCase
 {

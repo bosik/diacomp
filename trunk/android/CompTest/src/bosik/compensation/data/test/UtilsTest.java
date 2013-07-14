@@ -2,10 +2,8 @@ package bosik.compensation.data.test;
 
 import java.util.Calendar;
 import java.util.Date;
-import org.bosik.compensation.utils.Utils;
-
-
 import junit.framework.TestCase;
+import org.bosik.compensation.utils.Utils;
 
 public class UtilsTest extends TestCase
 {
