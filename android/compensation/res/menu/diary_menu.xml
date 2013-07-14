@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/item_diary_add"
+        android:icon="@drawable/diary_add"
+        android:title="@string/button_diary_add">
+        <menu>
+            <item
+                android:id="@+id/item_diary_addblood"
+                android:icon="@drawable/diary_addblood"
+                android:title="@string/button_addblood"/>
+            <item
+                android:id="@+id/item_diary_addins"
+                android:title="@string/button_addins"/>
+            <item
+                android:id="@+id/item_diary_addmeal"
+                android:title="@string/button_addmeal"/>
+            <item
+                android:id="@+id/item_diary_addnote"
+                android:title="@string/button_addnote"/>
+        </menu>
+    </item>
+
+</menu>
