@@ -15,9 +15,9 @@ import org.bosik.compensation.persistence.providers.WebClient.ResponseFormatExce
 import org.bosik.compensation.persistence.providers.WebClient.UndefinedFieldException;
 import org.bosik.compensation.persistence.repository.Storage;
 import org.bosik.compensation.persistence.repository.diary.LocalDiaryRepository;
-import org.bosik.compensation.persistence.repository.diary.WebDiaryRepository;
 import org.bosik.compensation.persistence.repository.diary.SyncDiaryRepository;
 import org.bosik.compensation.persistence.repository.diary.SyncDiaryRepository.Callback;
+import org.bosik.compensation.persistence.repository.diary.WebDiaryRepository;
 import org.bosik.compensation.utils.Utils;
 import android.app.Activity;
 import android.app.ProgressDialog;
