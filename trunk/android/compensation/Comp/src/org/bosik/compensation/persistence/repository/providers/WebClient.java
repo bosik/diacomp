@@ -107,8 +107,8 @@ public class WebClient
 
 		public UndefinedFieldException(boolean undefServer, boolean undefLogin, boolean undefPassword)
 		{
-			super("These fields are undefined (empty or null): " + (undefServer ? " server;" : "") + (undefLogin ? " username;" : "")
-					+ (undefPassword ? " password;" : ""));
+			super("These fields are undefined (empty or null): " + (undefServer ? " server;" : "")
+					+ (undefLogin ? " username;" : "") + (undefPassword ? " password;" : ""));
 
 			this.undefServer = undefServer;
 			this.undefLogin = undefLogin;
@@ -386,7 +386,7 @@ public class WebClient
 		}
 	}
 
-	/* ================ ВНЕШНИЕ ================ */
+	/* ================ КОНСТРУКТОР ================ */
 
 	public WebClient(int timeout)
 	{
@@ -397,22 +397,8 @@ public class WebClient
 		ConnManagerParams.setTimeout(params, timeout);
 	}
 
-	public boolean isOnline(boolean forceUpdate)
-	{
-		if (forceUpdate)
-		{
-			try
-			{
-				online = doGet(server + URL_LOGINPAGE + "?status").equals(RESPONSE_ONLINE);
-			} catch (ServerException e)
-			{
-				online = false;
-			}
-		}
-
-		return online;
-	}
-
+	/* ================ API ================ */
+	
 	public void login() throws ServerException
 	{
 		Log.i(TAG, "login()");
@@ -502,6 +488,22 @@ public class WebClient
 			}
 		} else
 			throw new NoConnectionException("doPost(): response is null");
+	}
+
+	public boolean isOnline(boolean forceUpdate)
+	{
+		if (forceUpdate)
+		{
+			try
+			{
+				online = doGet(server + URL_LOGINPAGE + "?status").equals(RESPONSE_ONLINE);
+			} catch (ServerException e)
+			{
+				online = false;
+			}
+		}
+
+		return online;
 	}
 
 	// =========================== GET / SET ===========================

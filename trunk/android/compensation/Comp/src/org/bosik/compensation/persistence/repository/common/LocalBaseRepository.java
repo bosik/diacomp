@@ -5,15 +5,19 @@ import android.content.Context;
 
 /**
  * Локальный файловый репозиторий базы
+ * 
  * @author Bosik
- *
- * @param <BaseType> Тип базы
- * @param <Formatter> Класс, хранящий xml-formatter
+ * 
+ * @param <BaseType>
+ *            Тип базы
+ * @param <Formatter>
+ *            Класс, хранящий xml-formatter
  */
-public class LocalBaseRepository<BaseType, Formatter extends BaseFormatter<BaseType>> extends FileRepository implements BaseRepository<BaseType>
+public class LocalBaseRepository<BaseType, Formatter extends BaseFormatter<BaseType>> extends FileRepository implements
+		BaseRepository<BaseType>
 {
 	private Formatter formatter;
-	
+
 	public LocalBaseRepository(String fileName, Context context, Formatter formatter)
 	{
 		super(fileName, context);

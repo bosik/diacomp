@@ -4,5 +4,5 @@ import org.bosik.compensation.persistence.entity.common.CustomBase;
 
 public class FoodBase extends CustomBase<Food>
 {
-	// nothing here
+	// just a cozy synonym
 }
