@@ -1,11 +1,18 @@
 package org.bosik.compensation.persistence.entity.common;
 
+/**
+ * 1. Имеет ID (get, set).<br/>
+ * 2. Реализует Cloneable.
+ * 
+ * @author Bosik
+ * 
+ */
 public class CustomItem implements Cloneable
 {
 	private int id;
-	
+
 	// ================================ GET / SET ================================
-	
+
 	public int getId()
 	{
 		return id;
@@ -17,7 +24,7 @@ public class CustomItem implements Cloneable
 	}
 
 	// ================================ CLONE ================================
-	
+
 	@Override
 	public CustomItem clone() throws CloneNotSupportedException
 	{
@@ -37,7 +44,7 @@ public class CustomItem implements Cloneable
 	 */
 
 	// ================================ OTHER ================================
-	
+
 	@Override
 	public int hashCode()
 	{

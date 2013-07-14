@@ -9,13 +9,13 @@ import org.bosik.compensation.persistence.entity.common.CustomItem;
  * @author Bosik
  * 
  */
-public class Food extends FoodData
+public class Food extends FoodData implements Cloneable
 {
 	private boolean fromTable;
 	private int tag;
 
 	// ================================ GET / SET ================================
-	
+
 	public boolean getFromTable()
 	{
 		return fromTable;
@@ -35,14 +35,14 @@ public class Food extends FoodData
 	{
 		this.tag = tag;
 	}
-	
+
 	// ================================ CLONE ================================
-	
+
 	@Override
 	public CustomItem clone() throws CloneNotSupportedException
 	{
 		Food result = (Food) super.clone();
-		
+
 		result.setFromTable(getFromTable());
 		result.setTag(getTag());
 

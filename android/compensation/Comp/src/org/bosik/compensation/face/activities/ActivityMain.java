@@ -6,9 +6,13 @@ import java.util.TimerTask;
 import org.bosik.compensation.face.BuildConfig;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.face.UIUtils;
+import org.bosik.compensation.persistence.entity.foodbase.FoodBase;
 import org.bosik.compensation.persistence.repository.Storage;
 import org.bosik.compensation.persistence.repository.diary.LocalDiaryRepository;
 import org.bosik.compensation.persistence.repository.diary.WebDiaryRepository;
+import org.bosik.compensation.persistence.repository.foodbase.FoodBaseXMLFormatter;
+import org.bosik.compensation.persistence.repository.foodbase.LocalFoodBaseRepository;
+import org.bosik.compensation.persistence.repository.foodbase.WebFoodBaseRepository;
 import org.bosik.compensation.persistence.repository.providers.WebClient;
 import org.bosik.compensation.persistence.repository.providers.WebClient.AuthException;
 import org.bosik.compensation.persistence.repository.providers.WebClient.DeprecatedAPIException;
@@ -16,6 +20,7 @@ import org.bosik.compensation.persistence.repository.providers.WebClient.LoginRe
 import org.bosik.compensation.persistence.repository.providers.WebClient.NoConnectionException;
 import org.bosik.compensation.persistence.repository.providers.WebClient.ResponseFormatException;
 import org.bosik.compensation.persistence.repository.providers.WebClient.UndefinedFieldException;
+import org.bosik.compensation.persistence.sync.SyncBaseRepository;
 import org.bosik.compensation.persistence.sync.SyncDiaryRepository;
 import org.bosik.compensation.persistence.sync.SyncDiaryRepository.Callback;
 import org.bosik.compensation.utils.Utils;
@@ -158,6 +163,12 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 	    		// TODO: хранить время последней синхронизации
 	    		Date since = new Date(2013-1900, 01-1, 1, 0, 0, 0); // а затем мы получаем громадный синхролист, ага
 	    		syncPagesCount = SyncDiaryRepository.synchronize(Storage.local_diary, Storage.web_diary, since);
+	    		
+	    		// TODO: create once
+	    		SyncBaseRepository<FoodBase> foodSync = new SyncBaseRepository<FoodBase>();
+	    		
+	    		foodSync.synchronize(Storage.local_foodbase, Storage.web_foodbase);
+	    		
 	    		Log.d(TAG,  "Sync done OK...");
 	    		return LoginResult.DONE;
 	    	}
@@ -262,6 +273,16 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
  		{
  			//Log.d(TAG, "Storage.init(): web diary initialization...");	
  			Storage.web_diary = new WebDiaryRepository(Storage.web_client);			
+ 		}
+ 		if (null == Storage.local_foodbase) 
+ 		{
+ 			//Log.d(TAG, "Storage.init(): local foodbase initialization...");	
+ 			Storage.local_foodbase = new LocalFoodBaseRepository("foodbase.xml", getBaseContext(), new FoodBaseXMLFormatter());			
+ 		}
+ 		if (null == Storage.web_foodbase) 
+ 		{
+ 			//Log.d(TAG, "Storage.init(): web foodbase initialization...");	
+ 			Storage.web_foodbase = new WebFoodBaseRepository(Storage.web_client);			
  		}
 
  		// TODO: код, применяющий настройки, дублируется здесь и в OnPreferenceChangeListener. Что делать?

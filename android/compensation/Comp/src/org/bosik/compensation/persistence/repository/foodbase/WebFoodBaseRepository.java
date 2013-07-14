@@ -1,9 +1,5 @@
 package org.bosik.compensation.persistence.repository.foodbase;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.bosik.compensation.persistence.entity.foodbase.FoodBase;
 import org.bosik.compensation.persistence.repository.common.BaseRepository;
 import org.bosik.compensation.persistence.repository.providers.WebClient;
@@ -40,6 +36,10 @@ public class WebFoodBaseRepository implements BaseRepository<FoodBase>
 	@Override
 	public void postBase(FoodBase base)
 	{
+		// TODO: uncomment when tested
+		
+		/*
+		
 		// конструируем запрос
 		List<NameValuePair> p = new ArrayList<NameValuePair>();
 		p.add(new BasicNameValuePair("foodbase:upload", ""));
@@ -47,7 +47,8 @@ public class WebFoodBaseRepository implements BaseRepository<FoodBase>
 		p.add(new BasicNameValuePair("data", formatter.write(base)));
 
 		// отправляем на сервер
-		String resp = webClient.doPostSmart(webClient.getServer() + WebClient.URL_CONSOLE, p);
+		webClient.doPostSmart(webClient.getServer() + WebClient.URL_CONSOLE, p);
+		
+		*/
 	}
-
 }
