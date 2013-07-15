@@ -26,7 +26,6 @@ public class FileRepository
 	{
 		this.fileName = fileName;
 		this.context = context;
-		// getBaseContext()
 	}
 
 	// ============================== СЛУЖЕБНЫЕ ==============================
@@ -45,24 +44,16 @@ public class FileRepository
 
 	protected String readFromFile(String fileName) throws IOException
 	{
-		// fileName = context.getFileStreamPath(fileName).getAbsolutePath();
-
-		/*
-		 * FileInputStream stream = context.openFileInput(fileName); Reader r = new
-		 * InputStreamReader(stream, "UTF-8"); StringBuilder sb = new StringBuilder(); int ch =
-		 * r.read(); while (ch >= 0) { sb.append(ch); ch = r.read(); } r.close();
-		 */
-
 		FileInputStream stream = context.openFileInput(fileName);
-		InputStreamReader r = new InputStreamReader(stream, "UTF-8");
-		BufferedReader bufferedReader = new BufferedReader(r);
+		InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+		BufferedReader bufferedReader = new BufferedReader(reader);
 		StringBuilder sb = new StringBuilder();
 		String line;
 		while ((line = bufferedReader.readLine()) != null)
 		{
 			sb.append(line);
 		}
-		r.close();
+		reader.close();
 
 		Log.i(TAG, "Reading from file '" + fileName + "': " + sb.toString());
 		return sb.toString();
@@ -71,23 +62,10 @@ public class FileRepository
 
 	protected void writeToFile(String fileName, String data) throws IOException
 	{
-		// fileName = context.getFileStreamPath(fileName).getAbsolutePath();
-
 		Log.i(TAG, "Writing to file '" + fileName + "': " + data);
-
-		/*
-		 * OutputStreamWriter outputStreamWriter = new
-		 * OutputStreamWriter(context.openFileOutput(fileName, Context.MODE_PRIVATE));
-		 * outputStreamWriter.write(data); outputStreamWriter.close();
-		 */
 
 		FileOutputStream outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
 		outputStream.write(data.getBytes());
 		outputStream.close();
-
-		/*
-		 * FileInputStream inputStream = context.openFileInput(fileName); inputStream.r
-		 * inputStream.close();
-		 */
 	}
 }
