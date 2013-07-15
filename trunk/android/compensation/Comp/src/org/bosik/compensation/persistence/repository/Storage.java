@@ -16,7 +16,7 @@ public class Storage
 	// отладка
 
 	@SuppressWarnings("unused")
-	private static final String TAG = "Storage";
+	private static final String TAG = Storage.class.getSimpleName();
 
 	// компоненты (в качестве типа указана конкретная реализация - требуется для внешней настройки)
 
