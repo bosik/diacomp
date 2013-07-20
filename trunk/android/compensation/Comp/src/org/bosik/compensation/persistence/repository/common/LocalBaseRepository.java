@@ -1,6 +1,7 @@
 package org.bosik.compensation.persistence.repository.common;
 
 import java.io.IOException;
+import org.bosik.compensation.persistence.entity.common.CustomBase;
 import android.content.Context;
 
 /**
@@ -10,18 +11,18 @@ import android.content.Context;
  * 
  * @param <BaseType>
  *            Тип базы
- * @param <Formatter>
- *            Класс, хранящий xml-formatter
+ * @param <Serial>
+ *            Сериализатор
  */
-public class LocalBaseRepository<BaseType, Formatter extends BaseFormatter<BaseType>> extends FileRepository implements
-		BaseRepository<BaseType>
+public class LocalBaseRepository<BaseType extends CustomBase, Serial extends Serializer<BaseType>> extends
+		FileRepository implements BaseRepository<BaseType>
 {
-	private Formatter formatter;
+	private Serial serializer;
 
-	public LocalBaseRepository(String fileName, Context context, Formatter formatter)
+	public LocalBaseRepository(String fileName, Context context, Serial formatter)
 	{
 		super(fileName, context);
-		this.formatter = formatter;
+		this.serializer = formatter;
 	}
 
 	// ============================== API ==============================
@@ -33,7 +34,11 @@ public class LocalBaseRepository<BaseType, Formatter extends BaseFormatter<BaseT
 		{
 			try
 			{
-				return formatter.getVersion(readFromFile(fileName));
+				BaseType base = serializer.read(readFromFile(fileName));
+				return base.getVersion();
+				// return serializer.getVersion(readFromFile(fileName));
+
+				// TODO: cleanup; think about optimization if need
 			} catch (IOException e)
 			{
 				e.printStackTrace();
@@ -52,7 +57,7 @@ public class LocalBaseRepository<BaseType, Formatter extends BaseFormatter<BaseT
 		{
 			try
 			{
-				return formatter.read(readFromFile(fileName));
+				return serializer.read(readFromFile(fileName));
 			} catch (IOException e)
 			{
 				e.printStackTrace();
@@ -69,7 +74,7 @@ public class LocalBaseRepository<BaseType, Formatter extends BaseFormatter<BaseT
 	{
 		try
 		{
-			writeToFile(fileName, formatter.write(base));
+			writeToFile(fileName, serializer.write(base));
 		} catch (IOException e)
 		{
 			e.printStackTrace();

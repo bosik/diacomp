@@ -55,6 +55,7 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 	/* =========================== КЛАССЫ ================================ */
 
 	// TODO: вынести в отдельный модуль, отвязать
+	// TODO: refresh diary view on productive (non-trivial) sync
 
 	private class SyncParams
 	{

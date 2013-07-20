@@ -2,6 +2,12 @@ package org.bosik.compensation.persistence.entity;
 
 import org.bosik.compensation.persistence.entity.common.CustomItem;
 
+/**
+ * Хранит имя и относительные параметры (на 100 г)
+ * 
+ * @author Bosik
+ * 
+ */
 public class FoodData extends CustomItem
 {
 	private String name;
@@ -27,22 +33,28 @@ public class FoodData extends CustomItem
 		return (value >= 0);
 	}
 
-	private static void checkNameThrowable(String name)
+	// ================================ БРОСАТЕЛИ ================================
+
+	protected static void checkAndThrow(boolean check, String errorMessage)
 	{
-		if (!checkName(name))
-			throw new IllegalArgumentException("Name can't be null or empty (" + name + ")");
+		if (!check)
+			throw new IllegalArgumentException(errorMessage);
 	}
 
-	private static void checkRelThrowable(double value)
+	protected static void checkNameThrowable(String name)
 	{
-		if (!checkRelativeValue(value))
-			throw new IllegalArgumentException("Relative value is out of [0, 100] bounds (" + String.valueOf(value) + ")");
+		checkAndThrow(checkName(name), "Name can't be null or empty (" + name + ")");
+	}
+
+	protected static void checkRelThrowable(double value)
+	{
+		checkAndThrow(checkRelativeValue(value), "Relative value is out of [0, 100] bounds (" + String.valueOf(value)
+				+ ")");
 	}
 
 	protected static void checkNonNegativeThrowable(double value)
 	{
-		if (!checkNonNegativeValue(value))
-			throw new IllegalArgumentException("Value can't be negative (" + String.valueOf(value) + ")");
+		checkAndThrow(checkNonNegativeValue(value), "Value can't be negative (" + String.valueOf(value) + ")");
 	}
 
 	// ================================ GET / SET ================================
@@ -102,14 +114,13 @@ public class FoodData extends CustomItem
 		this.relValue = relValue;
 	}
 
-	
 	// ================================ CLONE ================================
-	
+
 	@Override
 	public CustomItem clone() throws CloneNotSupportedException
 	{
 		FoodData result = (FoodData) super.clone();
-		
+
 		result.setName(getName());
 		result.setRelCarbs(getRelCarbs());
 		result.setRelFats(getRelFats());

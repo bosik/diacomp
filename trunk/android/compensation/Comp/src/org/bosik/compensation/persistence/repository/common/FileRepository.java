@@ -9,11 +9,15 @@ import android.content.Context;
 import android.util.Log;
 
 /**
- * Предоставляет методы для работы с файлами (проверка существования, загрузка в строку, сохранение
- * из строки). Имя файла и контекст задаются при создании.
+ * Предоставляет методы для работы с файлами:
+ * <ul>
+ * <li>{@link #fileExists(fileName)}</li>
+ * <li>{@link #readFromFile(fileName)}</li>
+ * <li>{@link #writeToFile(fileName, data)}</li>
+ * </ul>
+ * Имя файла и контекст задаются при создании.
  * 
  * @author Bosik
- * 
  */
 public class FileRepository
 {
@@ -30,18 +34,33 @@ public class FileRepository
 
 	// ============================== СЛУЖЕБНЫЕ ==============================
 
+	/**
+	 * Проверяет, существует ли файл с указанным именем
+	 * 
+	 * @param fileName
+	 *            Имя файла
+	 * @return Существует ли файл
+	 */
 	protected boolean fileExists(String fileName)
 	{
 		boolean result = context.getFileStreamPath(fileName).exists();
 
-		if (result)
-			Log.i(TAG, "File '" + fileName + "' exists");
-		else
-			Log.i(TAG, "File '" + fileName + "' does not exist");
+		/*
+		 * if (result) Log.d(TAG, "File '" + fileName + "' exists"); else Log.d(TAG, "File '" +
+		 * fileName + "' does not exist");
+		 */
 
 		return result;
 	}
 
+	/**
+	 * Читает содержимое файла в строку
+	 * 
+	 * @param fileName
+	 *            Имя файла
+	 * @return Содержимое файла в виде строки
+	 * @throws IOException
+	 */
 	protected String readFromFile(String fileName) throws IOException
 	{
 		FileInputStream stream = context.openFileInput(fileName);
@@ -55,14 +74,23 @@ public class FileRepository
 		}
 		reader.close();
 
-		Log.i(TAG, "Reading from file '" + fileName + "': " + sb.toString());
+		// Log.d(TAG, "Reading from file '" + fileName + "': " + sb.toString());
 		return sb.toString();
 
 	}
 
+	/**
+	 * Записывает строку в файл (исходное содержимое файла уничтожается).
+	 * 
+	 * @param fileName
+	 *            Имя файла
+	 * @param data
+	 *            Строка
+	 * @throws IOException
+	 */
 	protected void writeToFile(String fileName, String data) throws IOException
 	{
-		Log.i(TAG, "Writing to file '" + fileName + "': " + data);
+		// Log.d(TAG, "Writing to file '" + fileName + "': " + data);
 
 		FileOutputStream outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
 		outputStream.write(data.getBytes());

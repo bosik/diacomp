@@ -24,7 +24,7 @@ public class CustomBase<T extends CustomItem>
 
 		try
 		{
-			item.setId(++idCounter);
+			item.setId(++idCounter);	
 			items.add((T) item.clone());
 			changed();
 			return items.indexOf(item);
