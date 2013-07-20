@@ -7,7 +7,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.bosik.compensation.persistence.entity.foodbase.Food;
 import org.bosik.compensation.persistence.entity.foodbase.FoodBase;
-import org.bosik.compensation.persistence.repository.common.BaseFormatter;
+import org.bosik.compensation.persistence.repository.common.Serializer;
 import org.bosik.compensation.persistence.repository.common.XmlFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,15 +24,16 @@ import org.w3c.dom.NodeList;
  * @author Bosik
  * 
  */
-public class FoodBaseXMLFormatter extends XmlFormatter implements BaseFormatter<FoodBase>
+public class FoodBaseXMLFormatter extends XmlFormatter implements Serializer<FoodBase>
 {
-	@Override
+	// TODO: cleanup
+	/*@Override
 	public int getVersion(String xmlData)
 	{
 		Document doc = getDocument(xmlData);
 		Element root = doc.getDocumentElement();
 		return Integer.parseInt(root.getAttribute("version"));
-	}
+	}*/
 
 	@Override
 	public FoodBase read(String xmlData)

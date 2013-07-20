@@ -1,8 +1,8 @@
 package org.bosik.compensation.persistence.entity.common;
 
 /**
- * 1. Имеет ID (get, set).<br/>
- * 2. Реализует Cloneable.
+ * 1. Имеет поле ID (потребуется в методах get() / set() контейнеров).<br/>
+ * 2. Реализует {@link Cloneable}.
  * 
  * @author Bosik
  * 
