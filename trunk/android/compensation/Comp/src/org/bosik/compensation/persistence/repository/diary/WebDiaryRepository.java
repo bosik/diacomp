@@ -183,4 +183,20 @@ public class WebDiaryRepository implements DiaryRepository
 
 		return true;
 	}
+
+	@Override
+	public DiaryPage getPage(Date date)
+	{
+		List<Date> dates = new ArrayList<Date>();
+		dates.add(date);
+		return getPagesNaive(dates).get(0);
+	}
+
+	@Override
+	public boolean postPage(DiaryPage page)
+	{
+		List<DiaryPage> pages = new ArrayList<DiaryPage>();
+		pages.add(page);
+		return postPages(pages);
+	}
 }

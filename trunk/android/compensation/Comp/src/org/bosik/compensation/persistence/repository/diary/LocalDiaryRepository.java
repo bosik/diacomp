@@ -6,9 +6,9 @@ import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.face.BuildConfig;
 import org.bosik.compensation.persistence.entity.diary.DiaryPage;
-import org.bosik.compensation.persistence.entity.diary.records.BloodRecord;
 import org.bosik.compensation.persistence.repository.providers.DiaryProvider;
 import org.bosik.compensation.utils.Utils;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -44,7 +44,8 @@ public class LocalDiaryRepository implements DiaryRepository
 		// Log.i(TAG,"getPage(): date is " + date.toString());
 
 		// формируем параметры
-		String[] mProj = { DiaryProvider.COLUMN_DATE, DiaryProvider.COLUMN_TIMESTAMP, DiaryProvider.COLUMN_VERSION, DiaryProvider.COLUMN_PAGE };
+		String[] mProj = { DiaryProvider.COLUMN_DATE, DiaryProvider.COLUMN_TIMESTAMP, DiaryProvider.COLUMN_VERSION,
+				DiaryProvider.COLUMN_PAGE };
 		String mSelectionClause = DiaryProvider.COLUMN_DATE + " = ?";
 		String[] mSelectionArgs = { Utils.formatDate(date) };
 		String mSortOrder = null;
@@ -93,43 +94,6 @@ public class LocalDiaryRepository implements DiaryRepository
 		}
 	}
 
-	/* ============================ ВНЕШНИЕ МЕТОДЫ ============================ */
-
-	/**
-	 * Конструктор
-	 * 
-	 * @param resolver
-	 *            Контент-приёмник. Можно получить с помощью метода getContentResolver()
-	 */
-	public LocalDiaryRepository(ContentResolver resolver)
-	{
-		if (null == resolver)
-			throw new NullPointerException("Content Resolver can't be null");
-		aResolver = resolver;
-	}
-
-	public DiaryPage getPage(Date date)
-	{
-		DiaryPage page = findPage(date);
-		if (page != null)
-			return page;
-		else
-			return new DiaryPage(date, Utils.now(), 1, "");
-	}
-
-	/**
-	 * Отправляет страницу дневника в базу. Аналог postPage(page, AUTO_CHECK). Предварительно
-	 * выполняется проверка и в зависимости от наличия записи в БД выполняется insert() или update()
-	 * 
-	 * @param page
-	 *            Отправляемая страница
-	 * @return Удалось ли отправить страницу
-	 */
-	public boolean postPage(DiaryPage diaryPage)
-	{
-		return postPageExt(diaryPage, AUTO_CHECK);
-	}
-
 	/**
 	 * Отправляет страницу дневника в базу (<i>небезопасная версия для оптимизации</i>)
 	 * 
@@ -141,7 +105,7 @@ public class LocalDiaryRepository implements DiaryRepository
 	 *            <i>SURE_INSERT</i> — Добавление без предварительной проверки <br/>
 	 *            <i>SURE_UPDATE</i> — Обновление без предварительной проверки
 	 */
-	public boolean postPageExt(DiaryPage diaryPage, int CheckMode)
+	private boolean postPageExt(DiaryPage diaryPage, int CheckMode)
 	{
 		// Log.i(TAG, "PostPage()");
 
@@ -175,7 +139,8 @@ public class LocalDiaryRepository implements DiaryRepository
 		if (exists)
 		{
 			// Log.d(TAG, "PostPage(): page exists, updating...");
-			aResolver.update(DiaryProvider.CONTENT_URI, mNewValues, "Date = ?", new String[] { Utils.formatDate(diaryPage.getDate()) });
+			aResolver.update(DiaryProvider.CONTENT_URI, mNewValues, "Date = ?",
+					new String[] { Utils.formatDate(diaryPage.getDate()) });
 		} else
 		{
 			// Log.d(TAG, "PostPage(): page doesn't exist, inserting...");
@@ -186,34 +151,20 @@ public class LocalDiaryRepository implements DiaryRepository
 		return true;
 	}
 
+	/* ============================ ВНЕШНИЕ МЕТОДЫ ============================ */
+
 	/**
-	 * Получает последний замер СК за последние scanDaysPeriod дней
+	 * Конструктор
 	 * 
-	 * @return Замер СК (или null, если таковой не найден)
+	 * @param resolver
+	 *            Контент-приёмник. Можно получить с помощью метода
+	 *            {@link Activity#getContentResolver()}
 	 */
-	public BloodRecord lastBlood(int scanDaysPeriod)
+	public LocalDiaryRepository(ContentResolver resolver)
 	{
-		// TODO: make use of getPages(), not getPage()
-
-		Date d = Utils.now();
-
-		for (int i = 1; i <= scanDaysPeriod; i++)
-		{
-			DiaryPage page = getPage(d);
-			if (page != null)
-			{
-				for (int j = page.count() - 1; j >= 0; j--)
-				{
-					if (page.get(j).getClass() == BloodRecord.class)
-					{
-						return (BloodRecord) page.get(j);
-					}
-				}
-			}
-			d = Utils.getPrevDay(d);
-		}
-
-		return null;
+		if (null == resolver)
+			throw new NullPointerException("Content Resolver can't be null");
+		aResolver = resolver;
 	}
 
 	// -------------------- API --------------------
@@ -231,7 +182,8 @@ public class LocalDiaryRepository implements DiaryRepository
 		String mSortOrder = null;
 
 		// выполняем запрос
-		Cursor mCursor = aResolver.query(DiaryProvider.CONTENT_URI, mProjection, mSelectionClause, mSelectionArgs, mSortOrder);
+		Cursor mCursor = aResolver.query(DiaryProvider.CONTENT_URI, mProjection, mSelectionClause, mSelectionArgs,
+				mSortOrder);
 
 		if (mCursor != null)
 		{
@@ -279,5 +231,25 @@ public class LocalDiaryRepository implements DiaryRepository
 				result = false;
 		}
 		return result;
+	}
+
+	@Override
+	public DiaryPage getPage(Date date)
+	{
+		DiaryPage page = findPage(date);
+		if (page != null)
+			return page;
+		else
+			return new DiaryPage(date, Utils.now(), 1, "");
+	}
+
+	@Override
+	public boolean postPage(DiaryPage diaryPage)
+	{
+		/**
+		 * Аналог postPageExt(page, AUTO_CHECK). Предварительно выполняется проверка и в зависимости
+		 * от наличия записи в БД выполняется insert() или update()
+		 */
+		return postPageExt(diaryPage, AUTO_CHECK);
 	}
 }

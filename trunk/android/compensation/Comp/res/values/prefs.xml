@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Настройки -->
+
+    <string name="prefServer">prefServer</string>
+    <string name="prefUsername">prefLogin</string>
+    <string name="prefPassword">prefPassword</string>
+
+    <!-- Значения по умолчанию -->
+
+    <string name="prefDefaultServer">http://diacomp.16mb.com/</string>
+    <string name="prefDefaultUsername"></string>
+    <string name="prefDefaultPassword"></string>
+
+    <!-- Подписи настроек -->
+
+    <string name="prefLabelServer">Сервер</string>
+    <string name="prefLabelUsername">Логин (e-mail)</string>
+    <string name="prefLabelPassword">Пароль</string>
+
+</resources>

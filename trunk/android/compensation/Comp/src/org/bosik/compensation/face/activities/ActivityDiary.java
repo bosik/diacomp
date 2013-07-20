@@ -341,7 +341,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			}
 	}
 
-	public void setCaptionDate(Date date)
+	private void setCaptionDate(Date date)
 	{
 		String s = CaptionFmt.format(date);
 		setTitle("Дневник (" + s + ")");
@@ -443,10 +443,10 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	private void postPage(DiaryPage page)
 	{
 		// page.timeStamp = Utils.now();
-		
+
 		Storage.local_diary.postPage(page);
-		
-		//page.post();
+
+		// page.post();
 		diaryViewLayout.setPage(page);
 
 		Log.i(TAG, "Posting");
@@ -455,12 +455,43 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		// Log.d(TAG, "  Page = " + page.writeFull());
 	}
 
+	/**
+	 * Получает последний замер СК за последние scanDaysPeriod дней
+	 * 
+	 * @param scanDaysPeriod
+	 * @return Замер СК (или null, если таковой не найден)
+	 */
+	private BloodRecord lastBlood(int scanDaysPeriod)
+	{
+		// TODO: make use of getPages(), not getPage()
+
+		Date d = Utils.now();
+
+		for (int i = 1; i <= scanDaysPeriod; i++)
+		{
+			DiaryPage page = Storage.local_diary.getPage(d);
+			if (page != null)
+			{
+				for (int j = page.count() - 1; j >= 0; j--)
+				{
+					if (page.get(j).getClass() == BloodRecord.class)
+					{
+						return (BloodRecord) page.get(j);
+					}
+				}
+			}
+			d = Utils.getPrevDay(d);
+		}
+
+		return null;
+	}
+
 	private void showBloodEditor(int time, double value, int finger, boolean create)
 	{
 		if (create)
 		{
 			// TODO: hardcoded scan period
-			BloodRecord b = Storage.local_diary.lastBlood(5);
+			BloodRecord b = lastBlood(5);
 			time = Utils.curMinutes();
 			value = ActivityEditorBlood.UNDEFINITE_VALUE;
 			finger = (b == null || b.getFinger() == -1) ? -1 : ((b.getFinger() + 1) % 10);

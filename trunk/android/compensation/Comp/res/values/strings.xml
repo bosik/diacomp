@@ -1,118 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Заголовки -->
-
-    <string name="app_name">Компенсация</string>
-    <string name="title_menu">Компенсация</string>
-    <string name="title_diary">Дневник (untitled error!)</string>
-    <string name="title_editor_blood">Замер СК</string>
-    <string name="title_preferences">Настройки</string>
-
-    <!-- Кнопки -->
-
-    <string name="button_diary_add">Новая запись</string>
-    <string name="button_addblood">Замер СК</string>
-    <string name="button_addins">Инъекция</string>
-    <string name="button_addmeal">Приём пищи</string>
-    <string name="button_addnote">Заметка</string>
-    <string name="button_prevday">&lt;</string>
-    <string name="button_nextday">></string>
-    <string name="button_sync">Синхронизировать</string>
-    <string name="button_login">Войти</string>
-    <string name="button_auth">Авторизация</string>
-    <string name="button_test">Тест</string>
-    <string name="button_editor_ok">Сохранить</string>
-    <string name="button_add">Добавить</string>
-    <string name="button_pref">Настройки</string>
-
-    <!-- Лейблы -->
-
-    <string name="label_time">Время</string>
-    <string name="label_value">Значение</string>
-    <string name="label_fooddishname">Продукт/блюдо</string>
-    <string name="label_mass">Масса, г</string>
-    <string name="label_BloodFinger">Палец</string>
-
     <!-- Цвета -->
 
     <string name="diary_foreground">0x0000FF00</string>
     <string name="diary_background">0xFF00FF00</string>
 
-    <!-- Меню -->
-
-    <string name="menu_diary">Дневник</string>
-    <string name="menu_foodbase">База продуктов</string>
-    <string name="menu_dishbase">База блюд</string>
-    <string name="menu_settings">Settings</string>
-
-    <!-- Настройки -->
-
-    <string name="prefServer">prefServer</string>
-    <string name="prefUsername">prefLogin</string>
-    <string name="prefPassword">prefPassword</string>
-
-    <!-- Значения по умолчанию -->
-
-    <string name="prefDefaultServer">http://diacomp.16mb.com/</string>
-    <string name="prefDefaultUsername"></string>
-    <string name="prefDefaultPassword"></string>
-
-    <!-- Подписи настроек -->
-
-    <string name="prefLabelServer">Сервер</string>
-    <string name="prefLabelUsername">Логин (e-mail)</string>
-    <string name="prefLabelPassword">Пароль</string>
-
     <!-- Разное -->
 
     <string name="connectionTimeout">6000</string>
-
-    <!-- Массивы -->
-
-    <string-array name="fingers">
-        <item>[Левая]: большой</item>
-        <item>[Левая]: указательный</item>
-        <item>[Левая]: средний</item>
-        <item>[Левая]: безымянный</item>
-        <item>[Левая]: мизинец</item>
-        <item>[Правая]: мизинец</item>
-        <item>[Правая]: безымянный</item>
-        <item>[Правая]: средний</item>
-        <item>[Правая]: указательный</item>
-        <item>[Правая]: большой</item>
-    </string-array>
-    <string-array name="fingers_middle">
-        <item>Лев.большой</item>
-        <item>Лев.указательный</item>
-        <item>Лев.средний</item>
-        <item>Лев.безымянный</item>
-        <item>Лев.мизинец</item>
-        <item>Пр.мизинец</item>
-        <item>Пр.безымянный</item>
-        <item>Пр.средний</item>
-        <item>Пр.указательный</item>
-        <item>Пр.большой</item>
-    </string-array>
-    <string-array name="fingers_short">
-        <item>БЛ</item>
-        <item>1Л</item>
-        <item>2Л</item>
-        <item>3Л</item>
-        <item>4Л</item>
-        <item>4П</item>
-        <item>3П</item>
-        <item>2П</item>
-        <item>1П</item>
-        <item>БП</item>
-    </string-array>
-    <string-array name="context_edit">
-        <item>Изменить</item>
-        <item>Удалить</item>
-    </string-array>
-
-    <string name="hello_world">Hello world!</string>
-    <string name="title_activity_activity_editor_note">ActivityEditorNote</string>
-    <string name="label_NoteText">Текст</string>
+    <string name="fileNameFoodBase">FoodBase.xml</string>
+    <string name="fileNameDishBase">DishBase.xml</string>
 
 </resources>
