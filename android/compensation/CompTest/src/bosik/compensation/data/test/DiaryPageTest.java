@@ -34,7 +34,8 @@ public class DiaryPageTest extends TestCase
 
 	public void testReadingShortMeal()
 	{
-		DiaryPage d = new DiaryPage(Calendar.getInstance().getTime(), Calendar.getInstance().getTime(), 1, " 02.48s\n#Сахар[10|10|99,8|379]:2,5");
+		DiaryPage d = new DiaryPage(Calendar.getInstance().getTime(), Calendar.getInstance().getTime(), 1,
+				" 02.48s\n#Сахар[10|10|99,8|379]:2,5");
 
 		assertEquals(1, d.count());
 		DiaryRecord r = d.get(0);
@@ -58,7 +59,8 @@ public class DiaryPageTest extends TestCase
 
 	public void testReadingMeal()
 	{
-		DiaryPage d = new DiaryPage(Calendar.getInstance().getTime(), Calendar.getInstance().getTime(), 1, " 02.48\n#Сахар[10|10|99,8|379]:2,5");
+		DiaryPage d = new DiaryPage(Calendar.getInstance().getTime(), Calendar.getInstance().getTime(), 1,
+				" 02.48\n#Сахар[10|10|99,8|379]:2,5");
 
 		assertEquals(1, d.count());
 		DiaryRecord r = d.get(0);

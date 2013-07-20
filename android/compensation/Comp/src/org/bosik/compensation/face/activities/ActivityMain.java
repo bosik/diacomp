@@ -6,8 +6,9 @@ import java.util.TimerTask;
 import org.bosik.compensation.face.BuildConfig;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.face.UIUtils;
-import org.bosik.compensation.persistence.entity.foodbase.FoodBase;
+import org.bosik.compensation.persistence.entity.foodbase.Food;
 import org.bosik.compensation.persistence.repository.Storage;
+import org.bosik.compensation.persistence.repository.common.Base;
 import org.bosik.compensation.persistence.repository.providers.WebClient.AuthException;
 import org.bosik.compensation.persistence.repository.providers.WebClient.DeprecatedAPIException;
 import org.bosik.compensation.persistence.repository.providers.WebClient.LoginResult;
@@ -157,7 +158,7 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 				syncPagesCount = SyncDiaryRepository.synchronize(Storage.local_diary, Storage.web_diary, since);
 
 				// TODO: create once
-				SyncBaseRepository<FoodBase> foodSync = new SyncBaseRepository<FoodBase>();
+				SyncBaseRepository<Base<Food>> foodSync = new SyncBaseRepository<Base<Food>>();
 
 				foodSync.synchronize(Storage.local_foodbase, Storage.web_foodbase);
 

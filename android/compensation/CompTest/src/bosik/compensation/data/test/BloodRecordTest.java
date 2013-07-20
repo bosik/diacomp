@@ -12,6 +12,7 @@ public class BloodRecordTest extends TestCase
 		assertFalse(BloodRecord.checkValue(-2));
 		assertFalse(BloodRecord.checkValue(0));
 	}
+
 	public void testCheckFinger()
 	{
 		for (int i = -1; i < 10; i++)

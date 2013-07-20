@@ -1,6 +1,6 @@
 package org.bosik.compensation.persistence.entity;
 
-import org.bosik.compensation.persistence.entity.common.CustomItem;
+import org.bosik.compensation.persistence.entity.common.Item;
 
 /**
  * Хранит имя и относительные параметры (на 100 г)
@@ -8,7 +8,7 @@ import org.bosik.compensation.persistence.entity.common.CustomItem;
  * @author Bosik
  * 
  */
-public class FoodData extends CustomItem
+public class FoodData extends Item
 {
 	private String name;
 	private double relProts;
@@ -117,7 +117,7 @@ public class FoodData extends CustomItem
 	// ================================ CLONE ================================
 
 	@Override
-	public CustomItem clone() throws CloneNotSupportedException
+	public Item clone() throws CloneNotSupportedException
 	{
 		FoodData result = (FoodData) super.clone();
 

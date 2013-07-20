@@ -1,29 +1,39 @@
 package org.bosik.compensation.persistence.repository.common;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
- * Предоставляет необходимые поля для работы с xml, а также статический protected-метод, проводящий парсинг
- * xml-строки.
+ * Предоставляет статические методы для работы с xml:
+ * <ul>
+ * <li>{@link #newDocument()}</li>
+ * <li>{@link #readDocument(String)}</li>
+ * <li>{@link #writeDocument(Document)}</li>
+ * </ul>
  * 
  * @author Bosik
  * 
  */
+@Deprecated
 public class XmlFormatter
 {
-	protected static DocumentBuilder builder;
-	protected static Transformer transformer;
+	private static DocumentBuilder builder;
+	private static Transformer transformer;
 
 	static
 	{
@@ -32,7 +42,7 @@ public class XmlFormatter
 			builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		} catch (ParserConfigurationException e)
 		{
-			e.printStackTrace();
+			throw new RuntimeException("Can not initialize " + XmlFormatter.class.getSimpleName() + "'s builder", e);
 		}
 
 		try
@@ -40,11 +50,16 @@ public class XmlFormatter
 			transformer = TransformerFactory.newInstance().newTransformer();
 		} catch (TransformerConfigurationException e)
 		{
-			e.printStackTrace();
+			throw new RuntimeException("Can not initialize " + XmlFormatter.class.getSimpleName() + "'s transformer", e);
 		}
 	}
 
-	protected static Document getDocument(String xmlData)
+	public static Document newDocument()
+	{
+		return builder.newDocument();
+	}
+
+	public static Document readDocument(String xmlData)
 	{
 		try
 		{
@@ -61,6 +76,22 @@ public class XmlFormatter
 			e.printStackTrace();
 		}
 
+		return null;
+	}
+
+	public static String writeDocument(Document doc)
+	{
+		try
+		{
+			DOMSource source = new DOMSource(doc);
+			OutputStream stream = new ByteArrayOutputStream();
+			StreamResult result = new StreamResult(stream);
+			transformer.transform(source, result);
+			return stream.toString();
+		} catch (TransformerException ex)
+		{
+			ex.printStackTrace();
+		}
 		return null;
 	}
 }

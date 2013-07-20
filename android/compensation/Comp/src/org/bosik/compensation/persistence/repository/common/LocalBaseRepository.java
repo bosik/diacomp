@@ -1,7 +1,7 @@
 package org.bosik.compensation.persistence.repository.common;
 
 import java.io.IOException;
-import org.bosik.compensation.persistence.entity.common.CustomBase;
+import org.bosik.compensation.persistence.entity.common.Item;
 import android.content.Context;
 
 /**
@@ -14,15 +14,17 @@ import android.content.Context;
  * @param <Serial>
  *            Сериализатор
  */
-public class LocalBaseRepository<BaseType extends CustomBase, Serial extends Serializer<BaseType>> extends
-		FileRepository implements BaseRepository<BaseType>
+public class LocalBaseRepository<ItemType extends Item> implements BaseRepository<Base<ItemType>>
 {
-	private Serial serializer;
+	private FileRepository fileRepository;
+	private Serializer<Base<ItemType>> serializer;
+	private String fileName;
 
-	public LocalBaseRepository(String fileName, Context context, Serial formatter)
+	public LocalBaseRepository(Context context, String fileName, Serializer<Base<ItemType>> serializer)
 	{
-		super(fileName, context);
-		this.serializer = formatter;
+		this.fileRepository = new FileRepository(context);
+		this.fileName = fileName;
+		this.serializer = serializer;
 	}
 
 	// ============================== API ==============================
@@ -30,19 +32,18 @@ public class LocalBaseRepository<BaseType extends CustomBase, Serial extends Ser
 	@Override
 	public int getVersion()
 	{
-		if (fileExists(fileName))
+		if (fileRepository.fileExists(fileName))
 		{
 			try
 			{
-				BaseType base = serializer.read(readFromFile(fileName));
+				Base<ItemType> base = serializer.read(fileRepository.readFromFile(fileName));
 				return base.getVersion();
-				// return serializer.getVersion(readFromFile(fileName));
-
-				// TODO: cleanup; think about optimization if need
+				// TODO: think about optimization if need
 			} catch (IOException e)
 			{
-				e.printStackTrace();
-				return 0;
+				// e.printStackTrace();
+				// return 0;
+				throw new RuntimeException("IOException during reading file", e);
 			}
 		} else
 		{
@@ -51,17 +52,18 @@ public class LocalBaseRepository<BaseType extends CustomBase, Serial extends Ser
 	}
 
 	@Override
-	public BaseType getBase()
+	public Base<ItemType> getBase()
 	{
-		if (fileExists(fileName))
+		if (fileRepository.fileExists(fileName))
 		{
 			try
 			{
-				return serializer.read(readFromFile(fileName));
+				return serializer.read(fileRepository.readFromFile(fileName));
 			} catch (IOException e)
 			{
-				e.printStackTrace();
-				return null;
+				// e.printStackTrace();
+				// return null;
+				throw new RuntimeException("IOException during reading file", e);
 			}
 		} else
 		{
@@ -70,14 +72,15 @@ public class LocalBaseRepository<BaseType extends CustomBase, Serial extends Ser
 	}
 
 	@Override
-	public void postBase(BaseType base)
+	public void postBase(Base<ItemType> base)
 	{
 		try
 		{
-			writeToFile(fileName, serializer.write(base));
+			fileRepository.writeToFile(fileName, serializer.write(base));
 		} catch (IOException e)
 		{
-			e.printStackTrace();
+			// e.printStackTrace();
+			throw new RuntimeException("IOException during writing to file", e);
 		}
 	}
 }

@@ -78,8 +78,9 @@ public class DiaryProvider extends ContentProvider
 		{
 			// Log.i(TAG, "MyDBHelper.onCreate()");
 			// db.execSQL("DROP TABLE " + TABLE_NAME_DIARY);
-			db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME_DIARY + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_DATE
-					+ " TEXT NOT NULL UNIQUE, " + COLUMN_TIMESTAMP + " TEXT, " + COLUMN_VERSION + " INTEGER, " + COLUMN_PAGE + " BLOB)");
+			db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME_DIARY + " (" + COLUMN_ID
+					+ " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_DATE + " TEXT NOT NULL UNIQUE, "
+					+ COLUMN_TIMESTAMP + " TEXT, " + COLUMN_VERSION + " INTEGER, " + COLUMN_PAGE + " BLOB)");
 			// Log.d(TAG, "MyDBHelper.onCreate(): table '" + TABLE_NAME_DIARY + "' created OK");
 		}
 

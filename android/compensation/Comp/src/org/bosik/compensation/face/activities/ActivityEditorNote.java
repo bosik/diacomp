@@ -11,10 +11,10 @@ public class ActivityEditorNote extends ActivityEditor
 	/* =========================== КОНСТАНТЫ ================================ */
 	@SuppressWarnings("unused")
 	private static final String TAG = "ActivityEditorNote";
-	
+
 	public static final String FIELD_TIME = "bosik.pack.time";
 	public static final String FIELD_TEXT = "bosik.pack.text";
-	
+
 	/* =========================== ПОЛЯ ================================ */
 
 	// редактируемая запись
@@ -23,17 +23,18 @@ public class ActivityEditorNote extends ActivityEditor
 
 	// компоненты
 	private TimePicker timePicker;
-	private EditText editText;	
+	private EditText editText;
 
 	/* =========================== МЕТОДЫ ================================ */
-	
+
 	@Override
 	protected void readValues(Intent intent)
 	{
 		time = intent.getIntExtra(FIELD_TIME, 0);
 		text = intent.getStringExtra(FIELD_TEXT);
-		
-		if (null == text) text = "";
+
+		if (null == text)
+			text = "";
 	}
 
 	@Override
@@ -56,10 +57,10 @@ public class ActivityEditorNote extends ActivityEditor
 	{
 		// читаем время
 		time = timePicker.getCurrentHour() * 60 + timePicker.getCurrentMinute();
-		
+
 		// читаем значение
 		text = editText.getText().toString();
-		
+
 		// всегда всё хорошо :)
 		return true;
 	}

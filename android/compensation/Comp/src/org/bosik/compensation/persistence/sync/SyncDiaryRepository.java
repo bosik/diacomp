@@ -153,7 +153,8 @@ public class SyncDiaryRepository
 	 *            Список дат, которые присутствуют только во втором списке либо в обоих, но во
 	 *            втором версия старше
 	 */
-	public static void getOverLists(List<PageVersion> modList1, List<PageVersion> modList2, List<Date> over1, List<Date> over2)
+	public static void getOverLists(List<PageVersion> modList1, List<PageVersion> modList2, List<Date> over1,
+			List<Date> over2)
 	{
 		// проверки
 		if (null == modList1)

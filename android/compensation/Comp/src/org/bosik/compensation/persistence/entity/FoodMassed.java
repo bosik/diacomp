@@ -2,14 +2,14 @@ package org.bosik.compensation.persistence.entity;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import org.bosik.compensation.persistence.entity.common.CustomItem;
+import org.bosik.compensation.persistence.entity.common.Item;
 import org.bosik.compensation.utils.Utils;
 
 public class FoodMassed extends FoodData
 {
 	private static final DecimalFormat df = new DecimalFormat("###.#");
 	private static final char FOOD_SEP = '|';
-	
+
 	private double mass;
 
 	// ================================ GET / SET ================================
@@ -49,7 +49,7 @@ public class FoodMassed extends FoodData
 	// ================================ CLONE ================================
 
 	@Override
-	public CustomItem clone() throws CloneNotSupportedException
+	public Item clone() throws CloneNotSupportedException
 	{
 		FoodMassed result = (FoodMassed) super.clone();
 
@@ -90,8 +90,8 @@ public class FoodMassed extends FoodData
 	 */
 	public String write()
 	{
-		return getName() + '[' + df.format(getRelProts()) + FOOD_SEP + df.format(getRelFats()) + FOOD_SEP + df.format(getRelCarbs()) + FOOD_SEP
-				+ df.format(getRelValue()) + "]:" + df.format(mass);
+		return getName() + '[' + df.format(getRelProts()) + FOOD_SEP + df.format(getRelFats()) + FOOD_SEP
+				+ df.format(getRelCarbs()) + FOOD_SEP + df.format(getRelValue()) + "]:" + df.format(mass);
 	}
 
 	/**

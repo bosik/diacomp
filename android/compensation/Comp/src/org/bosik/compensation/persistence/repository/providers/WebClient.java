@@ -398,7 +398,7 @@ public class WebClient
 	}
 
 	/* ================ API ================ */
-	
+
 	public void login() throws ServerException
 	{
 		Log.i(TAG, "login()");
@@ -507,7 +507,7 @@ public class WebClient
 
 		return logged;
 	}
-	
+
 	public boolean isOnline()
 	{
 		return isOnline(false);
@@ -554,7 +554,7 @@ public class WebClient
 		{
 			this.server = server;
 			logged = false;
-		}		
+		}
 	}
 
 	/**

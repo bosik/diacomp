@@ -9,35 +9,25 @@ package org.bosik.compensation.persistence.repository.common;
  * 
  * @author Bosik
  * 
- * @param <T>Тип базы
+ * @param <T>Тип объекта
  */
 public interface Serializer<T>
 {
-	/**
-	 * Получает номер версии объекта
-	 * 
-	 * @param data
-	 *            Cтрока, хранящая данные
-	 * @return Номер версии
-	 */
-	// public int getVersion(String data);
-	// TODO: cleanup
-
 	/**
 	 * Загружает объект из строки
 	 * 
 	 * @param data
 	 *            Cтрока, хранящая объект
-	 * @return База
+	 * @return Объект
 	 */
 	public T read(String data);
 
 	/**
-	 * Сохраняет базу в строку
+	 * Сохраняет объект в строку
 	 * 
-	 * @param base
-	 *            База
+	 * @param object
+	 *            Объект
 	 * @return Cтрока, хранящая объект
 	 */
-	public String write(T base);
+	public String write(T object);
 }
