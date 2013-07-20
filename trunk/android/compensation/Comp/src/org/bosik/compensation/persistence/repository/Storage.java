@@ -5,6 +5,7 @@ import org.bosik.compensation.persistence.repository.diary.WebDiaryRepository;
 import org.bosik.compensation.persistence.repository.foodbase.LocalFoodBaseRepository;
 import org.bosik.compensation.persistence.repository.foodbase.WebFoodBaseRepository;
 import org.bosik.compensation.persistence.repository.providers.WebClient;
+import android.content.ContentResolver;
 
 /**
  * Класс-singleton, хранит дневники (DiaryRepository) и базы данных
@@ -37,9 +38,10 @@ public class Storage
 	 * 
 	 * @param resolver
 	 */
-	/*
-	 * public static void init(ContentResolver resolver) {
-	 * 
-	 * }
-	 */
+
+	public static void init(ContentResolver resolver)
+	{
+
+	}
+
 }
