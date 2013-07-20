@@ -47,10 +47,10 @@ public class WebClient
 
 	private HttpClient mHttpClient = null;
 	private Long timeShift = null;
-	private boolean online = false;
-	private String username = null;
-	private String password = null;
-	private String server = null;
+	private boolean logged = false;
+	private String username = ""; // not null!
+	private String password = "";
+	private String server = "";
 
 	/* ================ ВСПОМОГАТЕЛЬНЫЕ КЛАССЫ ================ */
 
@@ -402,6 +402,7 @@ public class WebClient
 	public void login() throws ServerException
 	{
 		Log.i(TAG, "login()");
+		logged = false;
 
 		// проверки
 
@@ -459,6 +460,7 @@ public class WebClient
 						serverTime = Utils.parseTime(det[1]);
 						timeShift = (sendedTime.getTime() + Utils.now().getTime()) / 2 - serverTime.getTime();
 						// WIN! Если дошли сюда, то всё прошло успешно.
+						logged = true;
 
 						Log.d(TAG, "login(): logged OK");
 					} catch (ParseException e)
@@ -496,14 +498,19 @@ public class WebClient
 		{
 			try
 			{
-				online = doGet(server + URL_LOGINPAGE + "?status").equals(RESPONSE_ONLINE);
+				logged = doGet(server + URL_LOGINPAGE + "?status").equals(RESPONSE_ONLINE);
 			} catch (ServerException e)
 			{
-				online = false;
+				logged = false;
 			}
 		}
 
-		return online;
+		return logged;
+	}
+	
+	public boolean isOnline()
+	{
+		return isOnline(false);
 	}
 
 	// =========================== GET / SET ===========================
@@ -515,7 +522,11 @@ public class WebClient
 
 	public void setUsername(String username)
 	{
-		this.username = username;
+		if (!this.username.equals(username))
+		{
+			this.username = username;
+			logged = false;
+		}
 	}
 
 	public String getPassword()
@@ -525,7 +536,11 @@ public class WebClient
 
 	public void setPassword(String password)
 	{
-		this.password = password;
+		if (!this.password.equals(password))
+		{
+			this.password = password;
+			logged = false;
+		}
 	}
 
 	public String getServer()
@@ -535,7 +550,11 @@ public class WebClient
 
 	public void setServer(String server)
 	{
-		this.server = server;
+		if (!this.server.equals(server))
+		{
+			this.server = server;
+			logged = false;
+		}		
 	}
 
 	/**

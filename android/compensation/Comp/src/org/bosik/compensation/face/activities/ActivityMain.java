@@ -8,12 +8,6 @@ import org.bosik.compensation.face.R;
 import org.bosik.compensation.face.UIUtils;
 import org.bosik.compensation.persistence.entity.foodbase.FoodBase;
 import org.bosik.compensation.persistence.repository.Storage;
-import org.bosik.compensation.persistence.repository.diary.LocalDiaryRepository;
-import org.bosik.compensation.persistence.repository.diary.WebDiaryRepository;
-import org.bosik.compensation.persistence.repository.foodbase.FoodBaseXMLFormatter;
-import org.bosik.compensation.persistence.repository.foodbase.LocalFoodBaseRepository;
-import org.bosik.compensation.persistence.repository.foodbase.WebFoodBaseRepository;
-import org.bosik.compensation.persistence.repository.providers.WebClient;
 import org.bosik.compensation.persistence.repository.providers.WebClient.AuthException;
 import org.bosik.compensation.persistence.repository.providers.WebClient.DeprecatedAPIException;
 import org.bosik.compensation.persistence.repository.providers.WebClient.LoginResult;
@@ -48,17 +42,6 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 
 	/* =========================== ПОЛЯ ================================ */
 
-	// настройки
-	private SharedPreferences pref;
-
-	// константы настроек
-	private String PREF_SERVER;
-	private String PREF_USERNAME;
-	private String PREF_PASSWORD;
-	private String PREF_DEFAULT_SERVER;
-	private String PREF_DEFAULT_USERNAME;
-	private String PREF_DEFAULT_PASSWORD;
-
 	// компоненты
 	private Button buttonDiary;
 	private Button buttonFoodBase;
@@ -67,7 +50,6 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 	private Button buttonAuth;
 	private Button buttonTestMealEditor;
 
-	public static boolean logged = false;
 	private static boolean timerSettedUp = false;
 
 	/* =========================== КЛАССЫ ================================ */
@@ -134,7 +116,7 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 
 			/* АВТОРИЗАЦИЯ */
 
-			if (!logged)
+			if (!Storage.web_client.isOnline())
 			{
 				Log.d(TAG, "Not logged, trying to auth (username=" + Storage.web_client.getUsername() + ", password="
 						+ Storage.web_client.getPassword() + ")");
@@ -143,7 +125,6 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 				try
 				{
 					Storage.web_client.login();
-					logged = true;
 					Log.d(TAG, "Logged OK");
 				} catch (NoConnectionException e)
 				{
@@ -183,27 +164,27 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 				return LoginResult.DONE;
 			} catch (NoConnectionException e)
 			{
-				logged = false;
+				// Storage.logged = false;
 				Log.e(TAG, e.getLocalizedMessage());
 				return LoginResult.FAIL_CONNECTION;
 			} catch (ResponseFormatException e)
 			{
-				logged = false;
+				// Storage.logged = false;
 				Log.e(TAG, e.getLocalizedMessage());
 				return LoginResult.FAIL_FORMAT;
 			} catch (DeprecatedAPIException e)
 			{
-				logged = false;
+				// Storage.logged = false;
 				Log.e(TAG, e.getLocalizedMessage());
 				return LoginResult.FAIL_APIVERSION;
 			} catch (AuthException e)
 			{
-				logged = false;
+				// Storage.logged = false;
 				Log.e(TAG, e.getLocalizedMessage());
 				return LoginResult.FAIL_AUTH;
 			} catch (UndefinedFieldException e)
 			{
-				logged = false;
+				// Storage.logged = false;
 				Log.e(TAG, e.getLocalizedMessage());
 				return LoginResult.FAIL_UNDEFIELDS;
 			}
@@ -291,51 +272,8 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 			UIUtils.showTip(this, "Debug mode is on");
 		}
 
-		// ПОЛУЧЕНИЕ НАСТРОЕК
-
-		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-		pref = PreferenceManager.getDefaultSharedPreferences(this);
-		PREF_SERVER = getString(R.string.prefServer);
-		PREF_USERNAME = getString(R.string.prefUsername);
-		PREF_PASSWORD = getString(R.string.prefPassword);
-		PREF_DEFAULT_SERVER = getString(R.string.prefDefaultServer);
-		PREF_DEFAULT_USERNAME = getString(R.string.prefDefaultUsername);
-		PREF_DEFAULT_PASSWORD = getString(R.string.prefDefaultPassword);
-
-		// НАСТРОЙКА СИСТЕМЫ
-
-		if (null == Storage.web_client)
-		{
-			Log.d(TAG, "Storage.init(): web client initialization...");
-			Storage.web_client = new WebClient(Integer.parseInt(getString(R.string.connectionTimeout)));
-		}
-		if (null == Storage.local_diary)
-		{
-			Log.d(TAG, "Storage.init(): local diary initialization...");
-			Storage.local_diary = new LocalDiaryRepository(getContentResolver());
-		}		
-		if (null == Storage.web_diary)
-		{
-			Log.d(TAG, "Storage.init(): web diary initialization...");
-			Storage.web_diary = new WebDiaryRepository(Storage.web_client);
-		}
-		if (null == Storage.local_foodbase)
-		{
-			Log.d(TAG, "Storage.init(): local foodbase initialization...");
-			Storage.local_foodbase = new LocalFoodBaseRepository("foodbase.xml", getBaseContext(),
-					new FoodBaseXMLFormatter());
-		}
-		if (null == Storage.web_foodbase)
-		{
-			Log.d(TAG, "Storage.init(): web foodbase initialization...");
-			Storage.web_foodbase = new WebFoodBaseRepository(Storage.web_client);
-		}
-
-		// TODO: код, применяющий настройки, дублируется здесь и в OnPreferenceChangeListener. Что
-		// делать?
-		Storage.web_client.setServer(pref.getString(PREF_SERVER, PREF_DEFAULT_SERVER));
-		Storage.web_client.setUsername(pref.getString(PREF_USERNAME, PREF_DEFAULT_USERNAME));
-		Storage.web_client.setPassword(pref.getString(PREF_PASSWORD, PREF_DEFAULT_PASSWORD));
+		// инициализация хранилища
+		Storage.init(this, getContentResolver());
 
 		// НАСТРОЙКА ИНТЕРФЕЙСА
 
@@ -377,6 +315,12 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 	{
 		super.onPause();
 		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+	{
+		Storage.applyPreference(sharedPreferences, key);
 	}
 
 	public void onClick(View v)
@@ -435,51 +379,6 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(task, 0, interval);
-	}
-
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
-	{
-		applyPreference(key);
-	}
-
-	private static boolean check(String testKey, String baseKey)
-	{
-		return testKey.isEmpty() || testKey.equals(baseKey);
-	}
-
-	/**
-	 * Пустой ключ обновляет все возможные параметры
-	 * 
-	 * @param key
-	 */
-	private void applyPreference(String key)
-	{
-		Log.d(TAG, "applyPreferences(): key = " + key);
-
-		if (check(key, PREF_SERVER))
-		{
-			Storage.web_client.setServer(pref.getString(key, PREF_DEFAULT_SERVER));
-			ActivityMain.logged = false;
-		}
-
-		if (check(key, PREF_USERNAME))
-		{
-			Storage.web_client.setUsername(pref.getString(key, PREF_DEFAULT_USERNAME));
-			ActivityMain.logged = false;
-		}
-
-		if (check(key, PREF_PASSWORD))
-		{
-			Storage.web_client.setPassword(pref.getString(key, PREF_DEFAULT_PASSWORD));
-			ActivityMain.logged = false;
-		}
-
-		/*
-		 * if (!identified && BuildConfig.DEBUG) { throw new
-		 * RuntimeException("Unhandled preference modification: key=" + key); // TODO: как узнавать
-		 * об ошибках, произошедших у пользователя в release-mode? Email? Web? }
-		 */
 	}
 
 	// РАБОЧИЕ: ИНТЕРФЕЙС

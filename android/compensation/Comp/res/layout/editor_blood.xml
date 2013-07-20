@@ -67,7 +67,7 @@
                     android:id="@+id/labelBloodFinger"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_BloodFinger" />
+                    android:text="@string/label_bloodfinger" />
 
                 <Spinner
                     android:id="@+id/spinnerBloodFinger"
