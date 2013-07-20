@@ -7,10 +7,8 @@ public interface DiaryChangeListener
 {
 	public static enum EventType
 	{
-		ADD,
-		MODIFY,
-		REMOVE
+		ADD, MODIFY, REMOVE
 	}
-	
+
 	public void changed(EventType eventType, Class<? extends DiaryRecord> recClass, DiaryRecord recInstance);
 }

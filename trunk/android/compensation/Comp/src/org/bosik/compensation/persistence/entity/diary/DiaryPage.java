@@ -383,7 +383,8 @@ public class DiaryPage implements DiaryChangeListener
 								activeMeal.add(food);
 							} else
 							{
-								Log.e(TAG, "DiaryPage.readContent(): food without meal declaration ignored: " + Lines[i]);
+								Log.e(TAG, "DiaryPage.readContent(): food without meal declaration ignored: "
+										+ Lines[i]);
 								result = false;
 							}
 							break;
@@ -437,8 +438,8 @@ public class DiaryPage implements DiaryChangeListener
 			if (c == BloodRecord.class)
 			{
 				BloodRecord temp = (BloodRecord) items.get(i);
-				result += '*' + Utils.timeToStr(temp.getTime()) + ' ' + String.valueOf(temp.getValue()) + '|' + String.valueOf(temp.getFinger())
-						+ '\n';
+				result += '*' + Utils.timeToStr(temp.getTime()) + ' ' + String.valueOf(temp.getValue()) + '|'
+						+ String.valueOf(temp.getFinger()) + '\n';
 			} else
 				if (c == InsRecord.class)
 				{

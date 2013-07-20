@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import android.content.Context;
-import android.util.Log;
 
 /**
  * Предоставляет методы для работы с файлами:
@@ -15,24 +14,19 @@ import android.util.Log;
  * <li>{@link #readFromFile(fileName)}</li>
  * <li>{@link #writeToFile(fileName, data)}</li>
  * </ul>
- * Имя файла и контекст задаются при создании.
  * 
  * @author Bosik
  */
 public class FileRepository
 {
+	@SuppressWarnings("unused")
 	private static final String TAG = FileRepository.class.getSimpleName();
+	private Context context;
 
-	protected String fileName;
-	protected Context context;
-
-	public FileRepository(String fileName, Context context)
+	public FileRepository(Context context)
 	{
-		this.fileName = fileName;
 		this.context = context;
 	}
-
-	// ============================== СЛУЖЕБНЫЕ ==============================
 
 	/**
 	 * Проверяет, существует ли файл с указанным именем
@@ -41,7 +35,7 @@ public class FileRepository
 	 *            Имя файла
 	 * @return Существует ли файл
 	 */
-	protected boolean fileExists(String fileName)
+	public boolean fileExists(String fileName)
 	{
 		boolean result = context.getFileStreamPath(fileName).exists();
 
@@ -61,7 +55,7 @@ public class FileRepository
 	 * @return Содержимое файла в виде строки
 	 * @throws IOException
 	 */
-	protected String readFromFile(String fileName) throws IOException
+	public String readFromFile(String fileName) throws IOException
 	{
 		FileInputStream stream = context.openFileInput(fileName);
 		InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
@@ -88,7 +82,7 @@ public class FileRepository
 	 *            Строка
 	 * @throws IOException
 	 */
-	protected void writeToFile(String fileName, String data) throws IOException
+	public void writeToFile(String fileName, String data) throws IOException
 	{
 		// Log.d(TAG, "Writing to file '" + fileName + "': " + data);
 

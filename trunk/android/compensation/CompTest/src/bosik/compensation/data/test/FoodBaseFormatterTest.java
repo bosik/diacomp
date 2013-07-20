@@ -2,27 +2,21 @@ package bosik.compensation.data.test;
 
 import junit.framework.TestCase;
 import org.bosik.compensation.persistence.entity.foodbase.Food;
-import org.bosik.compensation.persistence.entity.foodbase.FoodBase;
-import org.bosik.compensation.persistence.repository.foodbase.FoodBaseXMLFormatter;
+import org.bosik.compensation.persistence.repository.common.Base;
+import org.bosik.compensation.persistence.repository.foodbase.FoodBaseXMLSerializer;
 
 public class FoodBaseFormatterTest extends TestCase
 {
 	private final String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" + "<foods version=\"167\">\n"
 			+ "	<food name=\"Àáðèêîñ\" prots=\"0.9\" fats=\"0.1\" carbs=\"9\" val=\"41\" table=\"True\"/>\n"
-			+ "	<food name=\"ßéöî\" prots=\"12.7\" fats=\"11.5\" carbs=\"0.7\" val=\"157\" table=\"False\"/>\n" + "</foods>";
+			+ "	<food name=\"ßéöî\" prots=\"12.7\" fats=\"11.5\" carbs=\"0.7\" val=\"157\" table=\"False\"/>\n"
+			+ "</foods>";
 
-	private final FoodBaseXMLFormatter f = new FoodBaseXMLFormatter();
-	
-	/*public void testGetVersion()
-	{
-		int version = f.getVersion(xml);
-		assertEquals(167, version);
-	}*/
-	// TODO: cleanup
+	private final FoodBaseXMLSerializer f = new FoodBaseXMLSerializer();
 
 	public void testRead()
 	{
-		FoodBase base = f.read(xml);
+		Base<Food> base = f.read(xml);
 
 		assertEquals(167, base.getVersion());
 		assertEquals(2, base.count());
@@ -44,7 +38,7 @@ public class FoodBaseFormatterTest extends TestCase
 
 	public void testWriteRead()
 	{
-		FoodBase base = new FoodBase();
+		Base<Food> base = new Base<Food>();
 		Food food;
 
 		food = new Food();
@@ -69,7 +63,7 @@ public class FoodBaseFormatterTest extends TestCase
 
 		// =======================================================
 
-		FoodBase anotherBase = f.read(xml);
+		Base<Food> anotherBase = f.read(xml);
 
 		assertEquals(base.getVersion(), anotherBase.getVersion());
 		assertEquals(base.getVersion(), 2);
@@ -80,7 +74,7 @@ public class FoodBaseFormatterTest extends TestCase
 		{
 			Food food1 = base.get(i);
 			Food food2 = anotherBase.get(i);
-			
+
 			assertEquals(food1.getName(), food2.getName());
 			assertEquals(food1.getRelProts(), food2.getRelProts());
 			assertEquals(food1.getRelFats(), food2.getRelFats());

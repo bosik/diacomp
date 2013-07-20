@@ -1,7 +1,7 @@
 package org.bosik.compensation.persistence.entity.foodbase;
 
 import org.bosik.compensation.persistence.entity.FoodData;
-import org.bosik.compensation.persistence.entity.common.CustomItem;
+import org.bosik.compensation.persistence.entity.common.Item;
 
 /**
  * Продукт в базе продуктов
@@ -39,7 +39,7 @@ public class Food extends FoodData implements Cloneable
 	// ================================ CLONE ================================
 
 	@Override
-	public CustomItem clone() throws CloneNotSupportedException
+	public Item clone() throws CloneNotSupportedException
 	{
 		Food result = (Food) super.clone();
 

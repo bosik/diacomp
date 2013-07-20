@@ -7,7 +7,7 @@ package org.bosik.compensation.persistence.entity.common;
  * @author Bosik
  * 
  */
-public class CustomItem implements Cloneable
+public class Item implements Cloneable
 {
 	private int id;
 
@@ -26,9 +26,9 @@ public class CustomItem implements Cloneable
 	// ================================ CLONE ================================
 
 	@Override
-	public CustomItem clone() throws CloneNotSupportedException
+	public Item clone() throws CloneNotSupportedException
 	{
-		CustomItem result = (CustomItem) super.clone();
+		Item result = (Item) super.clone();
 
 		result.setId(getId());
 
@@ -36,11 +36,11 @@ public class CustomItem implements Cloneable
 	}
 
 	/*
-	 * public CustomItem() {
+	 * public Item() {
 	 * 
 	 * }
 	 * 
-	 * public CustomItem(CustomItem copy) { setId(copy.getId()); }
+	 * public Item(Item copy) { setId(copy.getId()); }
 	 */
 
 	// ================================ OTHER ================================
@@ -63,7 +63,7 @@ public class CustomItem implements Cloneable
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CustomItem other = (CustomItem) obj;
+		Item other = (Item) obj;
 		if (id != other.id)
 			return false;
 		return true;

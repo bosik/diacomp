@@ -16,12 +16,12 @@ public class ActivityEditorBlood extends ActivityEditor
 	/* =========================== КОНСТАНТЫ ================================ */
 	@SuppressWarnings("unused")
 	private static final String TAG = "ActivityEditorBlood";
-	
+
 	public static final String FIELD_TIME = "bosik.pack.time";
 	public static final String FIELD_VALUE = "bosik.pack.value";
 	public static final String FIELD_FINGER = "bosik.pack.finger";
 	public static final int UNDEFINITE_VALUE = -1;
-	
+
 	/* =========================== ПОЛЯ ================================ */
 
 	// редактируемая запись
@@ -33,10 +33,11 @@ public class ActivityEditorBlood extends ActivityEditor
 	private EditText editValue;
 	private TimePicker timePicker;
 	private Spinner spinnerFinger;
-	//private TextView labelBloodFinger; // может использоваться для сокрытия компонента
-	
+
+	// private TextView labelBloodFinger; // может использоваться для сокрытия компонента
+
 	/* =========================== МЕТОДЫ ================================ */
-	
+
 	@Override
 	protected void setupInterface()
 	{
@@ -45,18 +46,19 @@ public class ActivityEditorBlood extends ActivityEditor
 		timePicker = (TimePicker) findViewById(R.id.pickerBloodTime);
 		spinnerFinger = (Spinner) findViewById(R.id.spinnerBloodFinger);
 		buttonOK = (Button) findViewById(R.id.buttonBloodOK);
-		//labelBloodFinger = (TextView) findViewById(R.id.labelBloodFinger);
-		
+		// labelBloodFinger = (TextView) findViewById(R.id.labelBloodFinger);
+
 		timePicker.setIs24HourView(true);
 	}
-	
+
 	@Override
 	protected void readValues(Intent intent)
 	{
 		time = intent.getIntExtra(FIELD_TIME, 0);
 		value = intent.getDoubleExtra(FIELD_VALUE, UNDEFINITE_VALUE);
 		finger = intent.getIntExtra(FIELD_FINGER, 0);
-	}	
+	}
+
 	@Override
 	protected void writeValues(Intent intent)
 	{
@@ -64,22 +66,24 @@ public class ActivityEditorBlood extends ActivityEditor
 		intent.putExtra(FIELD_VALUE, value);
 		intent.putExtra(FIELD_FINGER, finger);
 	}
+
 	@Override
 	protected void setValues()
 	{
 		timePicker.setCurrentHour(time / 60);
 		timePicker.setCurrentMinute(time % 60);
 		spinnerFinger.setSelection(finger);
-		
+
 		if (value != UNDEFINITE_VALUE)
 			editValue.setText(String.valueOf(value));
 		else
 			editValue.setText("");
-		
+
 		// TODO: сделать возможность не спрашивать палец
-		//spinnerFinger.setVisibility(View.GONE);
-		//labelBloodFinger.setVisibility(View.GONE);
+		// spinnerFinger.setVisibility(View.GONE);
+		// labelBloodFinger.setVisibility(View.GONE);
 	}
+
 	@Override
 	protected boolean getValues()
 	{
@@ -90,17 +94,16 @@ public class ActivityEditorBlood extends ActivityEditor
 		try
 		{
 			value = Double.parseDouble(editValue.getText().toString());
-		}
-		catch (NumberFormatException e)
+		} catch (NumberFormatException e)
 		{
 			UIUtils.showTip(ActivityEditorBlood.this, "Ошибка: неверное значение СК");
 			editValue.requestFocus();
 			return false;
 		}
-		
+
 		// читаем палец
 		finger = spinnerFinger.getSelectedItemPosition();
-		
+
 		// валидируем
 		if (!BloodRecord.checkTime(time))
 		{
@@ -120,7 +123,7 @@ public class ActivityEditorBlood extends ActivityEditor
 			spinnerFinger.requestFocus();
 			return false;
 		}
-		
+
 		return true;
 	}
 }

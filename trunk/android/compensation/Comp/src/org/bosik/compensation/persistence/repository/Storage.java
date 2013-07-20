@@ -1,10 +1,14 @@
 package org.bosik.compensation.persistence.repository;
 
 import org.bosik.compensation.face.R;
+import org.bosik.compensation.persistence.entity.foodbase.Food;
+import org.bosik.compensation.persistence.repository.common.Base;
+import org.bosik.compensation.persistence.repository.common.BaseRepository;
+import org.bosik.compensation.persistence.repository.common.LocalBaseRepository;
 import org.bosik.compensation.persistence.repository.diary.DiaryRepository;
 import org.bosik.compensation.persistence.repository.diary.LocalDiaryRepository;
 import org.bosik.compensation.persistence.repository.diary.WebDiaryRepository;
-import org.bosik.compensation.persistence.repository.foodbase.FoodBaseXMLFormatter;
+import org.bosik.compensation.persistence.repository.foodbase.FoodBaseXMLSerializer;
 import org.bosik.compensation.persistence.repository.foodbase.LocalFoodBaseRepository;
 import org.bosik.compensation.persistence.repository.foodbase.WebFoodBaseRepository;
 import org.bosik.compensation.persistence.repository.providers.WebClient;
@@ -39,8 +43,8 @@ public class Storage
 	public static WebClient web_client = null;
 	public static DiaryRepository local_diary = null;
 	public static DiaryRepository web_diary = null;
-	public static LocalFoodBaseRepository local_foodbase = null;
-	public static WebFoodBaseRepository web_foodbase = null;
+	public static BaseRepository<Base<Food>> local_foodbase = null;
+	public static BaseRepository<Base<Food>> web_foodbase = null;
 
 	/**
 	 * Инициализирует хранилище. Метод можно вызывать повторно.
@@ -84,7 +88,7 @@ public class Storage
 		{
 			Log.d(TAG, "init(): local foodbase initialization...");
 			String fileName = context.getString(R.string.fileNameFoodBase);
-			local_foodbase = new LocalFoodBaseRepository(fileName, context, new FoodBaseXMLFormatter());
+			local_foodbase = new LocalFoodBaseRepository(context, fileName);
 		}
 		if (null == Storage.web_foodbase)
 		{
