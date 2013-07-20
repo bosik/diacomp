@@ -98,7 +98,7 @@ public class DiaryProvider extends ContentProvider
 		{
 			case CODE_DIARY:
 				// от греха подальше...
-				if ((where != null) && (where != ""))
+				if ((where != null) && (!where.equals("")))
 				{
 					// Log.d(TAG,"delete(): URI is correct (whole diary, checking WHERE clause...)");
 					count = db.delete(TABLE_NAME_DIARY, where, whereArgs);
@@ -113,7 +113,7 @@ public class DiaryProvider extends ContentProvider
 				// Log.d(TAG,"delete(): URI is correct (item ID is specified I hope)");
 				String finalWhere = COLUMN_ID + " = " + uri.getLastPathSegment();
 
-				if ((where != null) && (where != ""))
+				if ((where != null) && (!where.equals("")))
 				{
 					finalWhere = finalWhere + " AND " + where;
 				}

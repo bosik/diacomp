@@ -34,7 +34,7 @@ public class ActivityMeal extends Activity
 								 * "Печенье \"Юбилейное\" молочное (25)",
 								 * "Сыр \"Король Артур\" (40)"
 								 */};
-	final String[] foodBase = new String[] { "Молоко Вкуснотеево, 3,2%", "Яблоко", "Сахар", "Макароны", "Сушки Малютка (Тобус)",
+	/*final String[] foodBase = new String[] { "Молоко Вкуснотеево, 3,2%", "Яблоко", "Сахар", "Макароны", "Сушки Малютка (Тобус)",
 			"Хлеб черный Премиум", "Суп сырный", "Соус томатный краснодарский", "Каша овсяная", "Каша пшеничная", "Печень говяжья тушеная",
 			"Каша гречневая", "Конфеты Элит в молочном шоколаде", "Банан", "Печенье овсяное Любятово классическое", "Мясо бефстроганов",
 			"Ветчина для завтрака (вормясзавод)", "Салат (кукуруза, грудка)", "Шоколадный батончик Snickers с лесным орехом",
@@ -162,6 +162,7 @@ public class ActivityMeal extends Activity
 			"Шоколад горький 85% Lindt", "Шоколад горький 85% ВК", "Шоколад горький 99% ВК", "Шоколадный батончик Snickers", "Щавель", "Щи зеленые",
 			"Яблоки печёные", "Язык говяжий", "Яичница", "Яичница с помидорами" };
 
+	*/
 	// компоненты
 	private AutoCompleteTextView editName;
 	private EditText editMass;
@@ -183,6 +184,10 @@ public class ActivityMeal extends Activity
 		list = (ListView) findViewById(R.id.ListView01);
 
 		// инициализация
+		
+		
+		String[] foodBase = new String[5];
+		
 
 		ArrayAdapter<String> baseAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, foodBase);
 		editName.setAdapter(baseAdapter);
