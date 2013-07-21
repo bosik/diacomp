@@ -1,7 +1,7 @@
 package bosik.compensation.data.test;
 
 import junit.framework.TestCase;
-import org.bosik.compensation.persistence.entity.FoodMassed;
+import org.bosik.compensation.persistence.entity.common.FoodMassed;
 import org.bosik.compensation.persistence.entity.diary.records.MealRecord;
 
 public class MealRecordTest extends TestCase
@@ -10,12 +10,29 @@ public class MealRecordTest extends TestCase
 
 	// TODO: рандомные тесты - добро или зло?
 
+	/**
+	 * Создаёт демо-экземпляр для тестирования
+	 * 
+	 * @return
+	 */
+	private static FoodMassed createDemoFood()
+	{
+		FoodMassed food = new FoodMassed();
+		food.setName("Колбаса");
+		food.setMass(78);
+		food.setRelProts(12.2);
+		food.setRelFats(18.9);
+		food.setRelCarbs(0);
+		food.setRelValue(272);
+		return food;
+	}
+	
 	public void testAddGet()
 	{
 		// нормальный тест
 		for (int k = 1; k <= 10; k++)
 		{
-			FoodMassed food = FoodMassed.demo();
+			FoodMassed food = createDemoFood();
 			int n = meal.add(food);
 			assertEquals(food, meal.get(n));
 		}
@@ -42,7 +59,7 @@ public class MealRecordTest extends TestCase
 
 	public void testPFCV()
 	{
-		FoodMassed food = FoodMassed.demo();
+		FoodMassed food = createDemoFood();
 		meal.clear();
 		meal.add(food);
 		meal.add(food);

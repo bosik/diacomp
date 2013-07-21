@@ -4,7 +4,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.bosik.compensation.persistence.entity.FoodMassed;
+import org.bosik.compensation.persistence.entity.common.FoodMassed;
 import org.bosik.compensation.persistence.entity.diary.records.BloodRecord;
 import org.bosik.compensation.persistence.entity.diary.records.DiaryRecord;
 import org.bosik.compensation.persistence.entity.diary.records.InsRecord;

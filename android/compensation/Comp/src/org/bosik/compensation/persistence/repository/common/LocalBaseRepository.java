@@ -1,30 +1,100 @@
 package org.bosik.compensation.persistence.repository.common;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import org.bosik.compensation.persistence.entity.common.Item;
 import android.content.Context;
+import android.util.Log;
 
 /**
  * Локальный файловый репозиторий базы
  * 
  * @author Bosik
  * 
- * @param <BaseType>
- *            Тип базы
- * @param <Serial>
- *            Сериализатор
+ * @param <ItemType>
+ *            Тип элемента базы
  */
 public class LocalBaseRepository<ItemType extends Item> implements BaseRepository<Base<ItemType>>
 {
-	private FileRepository fileRepository;
-	private Serializer<Base<ItemType>> serializer;
+	private static final String TAG = LocalBaseRepository.class.getSimpleName();
+
+	private Context context;
 	private String fileName;
+	private Serializer<Base<ItemType>> serializer;
 
 	public LocalBaseRepository(Context context, String fileName, Serializer<Base<ItemType>> serializer)
 	{
-		this.fileRepository = new FileRepository(context);
+		this.context = context;
 		this.fileName = fileName;
 		this.serializer = serializer;
+	}
+
+	// ============================== СЛУЖЕБНЫЕ ==============================
+
+	/**
+	 * Проверяет, существует ли файл с указанным именем
+	 * 
+	 * @param fileName
+	 *            Имя файла
+	 * @return Существует ли файл
+	 */
+	private boolean fileExists(String fileName)
+	{
+		boolean result = context.getFileStreamPath(fileName).exists();
+
+		/*
+		 * if (result) Log.d(TAG, "File '" + fileName + "' exists"); else Log.d(TAG, "File '" +
+		 * fileName + "' does not exist");
+		 */
+
+		return result;
+	}
+
+	/**
+	 * Читает содержимое файла в строку
+	 * 
+	 * @param fileName
+	 *            Имя файла
+	 * @return Содержимое файла в виде строки
+	 * @throws IOException
+	 */
+	private String readFromFile(String fileName) throws IOException
+	{
+		FileInputStream stream = context.openFileInput(fileName);
+		InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+		BufferedReader bufferedReader = new BufferedReader(reader);
+		StringBuilder sb = new StringBuilder();
+		String line;
+		while ((line = bufferedReader.readLine()) != null)
+		{
+			sb.append(line);
+		}
+		reader.close();
+
+		Log.v(TAG, "Reading from file '" + fileName + "': " + sb.toString());
+		return sb.toString();
+
+	}
+
+	/**
+	 * Записывает строку в файл (исходное содержимое файла уничтожается).
+	 * 
+	 * @param fileName
+	 *            Имя файла
+	 * @param data
+	 *            Строка
+	 * @throws IOException
+	 */
+	private void writeToFile(String fileName, String data) throws IOException
+	{
+		Log.v(TAG, "Writing to file '" + fileName + "': " + data);
+
+		FileOutputStream outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+		outputStream.write(data.getBytes());
+		outputStream.close();
 	}
 
 	// ============================== API ==============================
@@ -32,42 +102,25 @@ public class LocalBaseRepository<ItemType extends Item> implements BaseRepositor
 	@Override
 	public int getVersion()
 	{
-		if (fileRepository.fileExists(fileName))
-		{
-			try
-			{
-				Base<ItemType> base = serializer.read(fileRepository.readFromFile(fileName));
-				return base.getVersion();
-				// TODO: think about optimization if need
-			} catch (IOException e)
-			{
-				// e.printStackTrace();
-				// return 0;
-				throw new RuntimeException("IOException during reading file", e);
-			}
-		} else
-		{
-			return 0;
-		}
+		Base<ItemType> base = getBase();
+		return (base == null ? 0 : base.getVersion());
 	}
 
 	@Override
 	public Base<ItemType> getBase()
 	{
-		if (fileRepository.fileExists(fileName))
+		try
 		{
-			try
-			{
-				return serializer.read(fileRepository.readFromFile(fileName));
-			} catch (IOException e)
-			{
-				// e.printStackTrace();
-				// return null;
-				throw new RuntimeException("IOException during reading file", e);
-			}
-		} else
+			if (fileExists(fileName))
+				return serializer.read(readFromFile(fileName));
+			else
+				return null;
+
+		} catch (IOException e)
 		{
-			return null;
+			// e.printStackTrace();
+			// return null;
+			throw new RuntimeException("IOException during reading file", e);
 		}
 	}
 
@@ -76,7 +129,7 @@ public class LocalBaseRepository<ItemType extends Item> implements BaseRepositor
 	{
 		try
 		{
-			fileRepository.writeToFile(fileName, serializer.write(base));
+			writeToFile(fileName, serializer.write(base));
 		} catch (IOException e)
 		{
 			// e.printStackTrace();

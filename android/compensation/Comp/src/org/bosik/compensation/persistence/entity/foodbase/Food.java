@@ -1,10 +1,10 @@
 package org.bosik.compensation.persistence.entity.foodbase;
 
-import org.bosik.compensation.persistence.entity.FoodData;
+import org.bosik.compensation.persistence.entity.common.FoodData;
 import org.bosik.compensation.persistence.entity.common.Item;
 
 /**
- * Продукт в базе продуктов
+ * Продукт
  * 
  * @author Bosik
  * 

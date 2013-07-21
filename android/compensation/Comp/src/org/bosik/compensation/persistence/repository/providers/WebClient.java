@@ -39,7 +39,10 @@ public class WebClient
 	public static final String RESPONSE_FAIL_APIVER = "DEPAPI";
 	public static final String RESPONSE_ONLINE = "online";
 	public static final String RESULT_OFFLINE = "offline";
-	public static final String SERVER_CODEPAGE = "Cp1251";
+	//public static final String SERVER_CODEPAGE = "Cp1251";
+	public static final String SERVER_CODEPAGE = "UTF-8";
+	
+	// FIXME: how to use mixed Cp1251 and UTF-8 code pages???
 
 	private static final String CODE_SPACE = "%20";
 
@@ -282,6 +285,14 @@ public class WebClient
 	// TODO: методы doGet() / doPost() имеют модификатор public для тестирования, в релизе исправить
 	// на private (или пофиг?)
 
+	/**
+	 * Преобразует ответ сервера в строку
+	 * 
+	 * @param resp
+	 *            Ответ сервера
+	 * @return Строка
+	 * @throws ResponseFormatException
+	 */
 	private static String formatResponse(HttpResponse resp) throws ResponseFormatException
 	{
 		// TODO: add error code description
@@ -351,16 +362,11 @@ public class WebClient
 		}
 	}
 
-	private boolean kicked(String s)
-	{
-		return RESPONSE_UNAUTH.equals(s);
-	}
-
 	public String doGetSmart(String URL) throws ServerException
 	{
 		String resp = doGet(URL);
 
-		if (kicked(resp))
+		if (RESPONSE_UNAUTH.equals(resp))
 		{
 			Log.v(TAG, "doGetSmart(): Session timeout; re-login");
 			login();
@@ -375,7 +381,7 @@ public class WebClient
 	{
 		String resp = doPost(URL, params);
 
-		if (kicked(resp))
+		if (RESPONSE_UNAUTH.equals(resp))
 		{
 			Log.v(TAG, "doPostSmart(): Session timeout; re-login");
 			login();
@@ -388,13 +394,13 @@ public class WebClient
 
 	/* ================ КОНСТРУКТОР ================ */
 
-	public WebClient(int timeout)
+	public WebClient(int connectionTimeout)
 	{
 		mHttpClient = new DefaultHttpClient();
 		final HttpParams params = mHttpClient.getParams();
-		HttpConnectionParams.setConnectionTimeout(params, timeout);
-		HttpConnectionParams.setSoTimeout(params, timeout);
-		ConnManagerParams.setTimeout(params, timeout);
+		HttpConnectionParams.setConnectionTimeout(params, connectionTimeout);
+		HttpConnectionParams.setSoTimeout(params, connectionTimeout);
+		ConnManagerParams.setTimeout(params, connectionTimeout);
 	}
 
 	/* ================ API ================ */

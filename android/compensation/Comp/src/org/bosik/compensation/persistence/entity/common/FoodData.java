@@ -1,6 +1,5 @@
-package org.bosik.compensation.persistence.entity;
+package org.bosik.compensation.persistence.entity.common;
 
-import org.bosik.compensation.persistence.entity.common.Item;
 
 /**
  * Хранит имя и относительные параметры (на 100 г)

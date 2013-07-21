@@ -2,7 +2,7 @@ package org.bosik.compensation.persistence.entity.diary.records;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.compensation.persistence.entity.FoodMassed;
+import org.bosik.compensation.persistence.entity.common.FoodMassed;
 
 public class MealRecord extends DiaryRecord
 {
@@ -13,6 +13,10 @@ public class MealRecord extends DiaryRecord
 	{
 		setTime(time);
 		setShortMeal(shortMeal);
+	}
+	
+	public MealRecord()
+	{
 	}
 
 	// ================================ GET / SET ================================

@@ -16,6 +16,7 @@ import org.bosik.compensation.persistence.repository.providers.WebClient.NoConne
 import org.bosik.compensation.persistence.repository.providers.WebClient.ResponseFormatException;
 import org.bosik.compensation.persistence.repository.providers.WebClient.UndefinedFieldException;
 import org.bosik.compensation.persistence.sync.SyncBaseRepository;
+import org.bosik.compensation.persistence.sync.SyncBaseRepository.SyncResult;
 import org.bosik.compensation.persistence.sync.SyncDiaryRepository;
 import org.bosik.compensation.persistence.sync.SyncDiaryRepository.Callback;
 import org.bosik.compensation.utils.Utils;
@@ -160,7 +161,11 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 				// TODO: create once
 				SyncBaseRepository<Base<Food>> foodSync = new SyncBaseRepository<Base<Food>>();
 
-				foodSync.synchronize(Storage.local_foodbase, Storage.web_foodbase);
+				if (foodSync.synchronize(Storage.localFoodbaseRepository, Storage.webFoodbaseRepository) == SyncResult.FIRST_UPDATED)
+				{
+					// если хранилище базы изменилось, перезагружаем базу
+					Storage.loadFoodbase();
+				}
 
 				Log.d(TAG, "Sync done OK...");
 				return LoginResult.DONE;
