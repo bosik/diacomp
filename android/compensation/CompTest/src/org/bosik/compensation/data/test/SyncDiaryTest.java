@@ -1,4 +1,4 @@
-package bosik.compensation.data.test;
+package org.bosik.compensation.data.test;
 
 import java.util.ArrayList;
 import java.util.Date;

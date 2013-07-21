@@ -4,8 +4,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.bosik.compensation.face.BuildConfig;
 import org.bosik.compensation.persistence.entity.diary.DiaryPage;
 import org.bosik.compensation.persistence.repository.providers.WebClient;
@@ -15,7 +13,6 @@ import android.util.Log;
 public class WebDiaryRepository implements DiaryRepository
 {
 	private static String TAG = WebDiaryRepository.class.getSimpleName();
-
 	private WebClient webClient;
 
 	public WebDiaryRepository(WebClient webClient)
@@ -32,58 +29,53 @@ public class WebDiaryRepository implements DiaryRepository
 	 * Преобразует timeStamp всех переданных страниц в серверное время.
 	 * 
 	 * @param pages
-	 *            Страницы
+	 *            Исходные страницы
+	 * @return Страницы с изменённым timestamp
 	 */
-	private void localToServer(List<DiaryPage> pages)
+	private List<DiaryPage> localToServer(List<DiaryPage> pages)
 	{
+		List<DiaryPage> result = new ArrayList<DiaryPage>();
+
 		for (DiaryPage page : pages)
 		{
-			page.setTimeStamp(webClient.localToServer(page.getTimeStamp()));
+			// TODO: optimize if need
+			DiaryPage newPage = new DiaryPage(page.writeFull());
+			newPage.setTimeStamp(webClient.localToServer(page.getTimeStamp()));
+			result.add(newPage);
 		}
+		return result;
 	}
 
 	/**
 	 * Преобразует timeStamp всех переданных страниц в локальное время.
 	 * 
 	 * @param pages
-	 *            Страницы
+	 *            Исходные страницы
+	 * @return Страницы с изменённым timestamp
 	 */
-	private void serverToLocal(List<DiaryPage> pages)
+	private List<DiaryPage> serverToLocal(List<DiaryPage> pages)
 	{
+		List<DiaryPage> result = new ArrayList<DiaryPage>();
+
 		for (DiaryPage page : pages)
 		{
-			page.setTimeStamp(webClient.serverToLocal(page.getTimeStamp()));
+			// TODO: optimize if need
+			DiaryPage newPage = new DiaryPage(page.writeFull());
+			newPage.setTimeStamp(webClient.serverToLocal(page.getTimeStamp()));
+			result.add(newPage);
 		}
+		return result;
 	}
 
 	private List<DiaryPage> getPagesNaive(List<Date> dates)
 	{
-		List<DiaryPage> result = new ArrayList<DiaryPage>();
+		String resp = webClient.getPages(dates);
 
-		// проверки
-		// if (null == dates) throw new NullPointerException("Dates can't be null");
-		if (dates.isEmpty())
-			return result;
-
-		// конструируем запрос
-		String query = webClient.getServer() + WebClient.URL_CONSOLE + "?diary:download&dates=";
-		for (Date date : dates)
+		if (!resp.equals(""))
 		{
-			query += Utils.formatDate(date) + ",";
-		}
-
-		// отправляем на сервер
-		String resp = webClient.doGetSmart(query);
-
-		// обрабатываем результат
-		if (resp == null)
+			return serverToLocal(DiaryPage.multiRead(resp));
+		} else
 			return null;
-		else
-		{
-			result = DiaryPage.multiRead(resp);
-			serverToLocal(result);
-			return result;
-		}
 	}
 
 	/* ================ ВНЕШНИЕ ================ */
@@ -91,11 +83,9 @@ public class WebDiaryRepository implements DiaryRepository
 	@Override
 	public List<PageVersion> getModList(Date time)
 	{
-		List<PageVersion> result = new ArrayList<PageVersion>();
+		String resp = webClient.getModList(Utils.formatTime(webClient.localToServer(time)));
 
-		// обращаемся к серверу
-		String resp = webClient.doGetSmart(webClient.getServer() + WebClient.URL_CONSOLE + "?diary:getModList&time="
-				+ Utils.formatTime(webClient.localToServer(time)));
+		List<PageVersion> result = new ArrayList<PageVersion>();
 
 		// разбираем результат
 
@@ -150,38 +140,11 @@ public class WebDiaryRepository implements DiaryRepository
 	}
 
 	@Override
-	/**
-	 * <b>Modifies pages time to server's one</b>
-	 * 
-	 * @param pages
-	 *            Страницы
-	 * @return Успешность отправки
-	 */
 	public boolean postPages(List<DiaryPage> pages)
 	{
-		// проверки
-		if (null == pages)
-			throw new NullPointerException("Pages can't be null");
-		if (pages.isEmpty())
-			return true;
-
-		localToServer(pages);
-
-		// конструируем запрос
-		List<NameValuePair> p = new ArrayList<NameValuePair>();
-		p.add(new BasicNameValuePair("diary:upload", ""));
-		p.add(new BasicNameValuePair("pages", DiaryPage.multiWrite(pages)));
-
-		// отправляем на сервер
-		String resp = webClient.doPostSmart(webClient.getServer() + WebClient.URL_CONSOLE, p);
-
-		// обрабатываем результат
-		if (!WebClient.RESPONSE_DONE.equals(resp))
-		{
-			throw new WebClient.ServerException("Uploading pages to the server failed, response is \"" + resp + "\"");
-		}
-
-		return true;
+		pages = localToServer(pages);
+		String data = DiaryPage.multiWrite(pages);
+		return webClient.postPages(data);
 	}
 
 	@Override

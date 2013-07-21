@@ -1,4 +1,4 @@
-package bosik.compensation.data.test;
+package org.bosik.compensation.data.test;
 
 import junit.framework.TestCase;
 import org.bosik.compensation.persistence.entity.diary.records.BloodRecord;

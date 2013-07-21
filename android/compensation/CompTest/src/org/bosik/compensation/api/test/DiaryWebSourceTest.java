@@ -1,4 +1,4 @@
-package bosik.compensation.api.test;
+package org.bosik.compensation.api.test;
 
 import junit.framework.TestCase;
 

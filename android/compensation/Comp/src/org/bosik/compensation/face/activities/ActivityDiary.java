@@ -39,7 +39,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 	// --- отладочная печать ---
 	private static final String TAG = "ActivityDiary";
-	// TODO: что произойдёт на смене дат?
+	// THINK: что произойдёт на смене дат?
 	private static Date curDate = Calendar.getInstance().getTime();
 	private static DiaryPage curPage = null;
 	// private int indexOnEditing = -1;
@@ -497,7 +497,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			finger = (b == null || b.getFinger() == -1) ? -1 : ((b.getFinger() + 1) % 10);
 		}
 
-		// TODO: проверка корректности данных?
+		// THINK: проверка корректности данных?
 		Intent intent = new Intent(this, ActivityEditorBlood.class);
 		intent.putExtra(ActivityEditorBlood.FIELD_TIME, time);
 		intent.putExtra(ActivityEditorBlood.FIELD_VALUE, value);
@@ -513,7 +513,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			text = "";
 		}
 
-		// TODO: проверка корректности данных?
+		// THINK: проверка корректности данных?
 		Intent intent = new Intent(this, ActivityEditorNote.class);
 		intent.putExtra(ActivityEditorNote.FIELD_TIME, time);
 		intent.putExtra(ActivityEditorNote.FIELD_TEXT, text);

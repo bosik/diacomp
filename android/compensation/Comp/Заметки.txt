@@ -1,0 +1,19 @@
+	/**
+	 * Attempts to authenticate the user credentials on the server.
+	 * 
+	 * @param username
+	 *            The user's name
+	 * @param password
+	 *            The user's password to be authenticated
+	 * @param handler
+	 *            The main UI thread's handler instance.
+	 * @param context
+	 *            The caller Activity's context
+	 * @return Thread The thread on which the network mOperations are executed.
+	 */
+	/*
+	 * public Thread backgroundAuth(final String username, final String password, final Handler
+	 * handler, final Context context) { final Runnable runnable = new Runnable() { public void
+	 * run() { login(username, password, handler, context); } }; // run on background thread. return
+	 * performOnBackgroundThread(runnable); }
+	 */

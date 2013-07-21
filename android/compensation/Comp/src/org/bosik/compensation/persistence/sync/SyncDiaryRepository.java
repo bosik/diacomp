@@ -269,7 +269,7 @@ public class SyncDiaryRepository
 
 		// синхронизация
 
-		// TODO: разбивать на группы?
+		// THINK: разбивать на группы?
 		source1.postPages(source2.getPages(over2));
 		source2.postPages(source1.getPages(over1));
 

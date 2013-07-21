@@ -10,14 +10,14 @@ package org.bosik.compensation.persistence.entity.common;
 public class Item implements Cloneable
 {
 	private static int idCounter = 0;
-	
+
 	private int id;
 
 	public Item()
 	{
 		id = ++idCounter;
 	}
-	
+
 	// ================================ GET / SET ================================
 
 	public int getId()
@@ -25,10 +25,9 @@ public class Item implements Cloneable
 		return id;
 	}
 
-	/*public void setId(int id)
-	{
-		this.id = id;
-	}*/
+	/*
+	 * public void setId(int id) { this.id = id; }
+	 */
 
 	// ================================ CLONE ================================
 

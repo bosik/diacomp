@@ -31,7 +31,7 @@ public class FoodMassed extends FoodData
 		this.mass = mass;
 	}
 
-	// TODO: подумать об индексном доступе к полям (в т.ч. в MealRecord)
+	// THINK: подумать об индексном доступе к полям (в т.ч. в MealRecord)
 	public double getProts()
 	{
 		return getRelProts() / 100 * mass;
@@ -99,7 +99,7 @@ public class FoodMassed extends FoodData
 		return getName() + '[' + df.format(getRelProts()) + FOOD_SEP + df.format(getRelFats()) + FOOD_SEP
 				+ df.format(getRelCarbs()) + FOOD_SEP + df.format(getRelValue()) + "]:" + df.format(mass);
 	}
-	
+
 	@Override
 	public String toString()
 	{

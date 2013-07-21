@@ -2,10 +2,10 @@ package org.bosik.compensation.face.activities;
 
 import java.text.DecimalFormat;
 import org.bosik.compensation.face.R;
-import org.bosik.compensation.persistence.repository.Storage;
 import org.bosik.compensation.persistence.entity.common.FoodMassed;
 import org.bosik.compensation.persistence.entity.diary.records.MealRecord;
 import org.bosik.compensation.persistence.entity.foodbase.Food;
+import org.bosik.compensation.persistence.repository.Storage;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -126,7 +126,7 @@ public class ActivityMeal extends Activity
 		ArrayAdapter<String> baseAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, foodBase);
 		editName.setAdapter(baseAdapter);
 	}
-	
+
 	private void showMeal()
 	{
 		// lv_arr = mealList.toArray(new String[0]);

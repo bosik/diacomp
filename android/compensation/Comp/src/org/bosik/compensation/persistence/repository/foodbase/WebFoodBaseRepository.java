@@ -8,7 +8,7 @@ import android.util.Log;
 
 public class WebFoodBaseRepository implements BaseRepository<Base<Food>>
 {
-	//@SuppressWarnings("unused")
+	// @SuppressWarnings("unused")
 	private static String TAG = WebFoodBaseRepository.class.getSimpleName();
 	private static FoodBaseXMLSerializer formatter = new FoodBaseXMLSerializer();
 
@@ -25,14 +25,16 @@ public class WebFoodBaseRepository implements BaseRepository<Base<Food>>
 	@Override
 	public int getVersion()
 	{
-		String resp = webClient.doGetSmart(webClient.getServer() + WebClient.URL_CONSOLE + "?foodbase:getVersion");
+		String resp = webClient.getFoodBaseVersion();
 		return Integer.parseInt(resp);
 	}
 
 	@Override
 	public Base<Food> getBase()
 	{
-		String resp = webClient.doGetSmart(webClient.getServer() + WebClient.URL_CONSOLE + "?foodbase:download");
+		// String resp = webClient.doGetSmart(webClient.getServer() + WebClient.URL_CONSOLE +
+		// "?foodbase:download");
+		String resp = webClient.getFoodBase();
 		Log.d(TAG, "Web response: " + resp);
 		return formatter.read(resp);
 	}
@@ -40,17 +42,8 @@ public class WebFoodBaseRepository implements BaseRepository<Base<Food>>
 	@Override
 	public void postBase(Base<Food> base)
 	{
-		// TODO: uncomment when tested
-
-		/*
-		 * 
-		 * // конструируем запрос List<NameValuePair> p = new ArrayList<NameValuePair>(); p.add(new
-		 * BasicNameValuePair("foodbase:upload", "")); p.add(new BasicNameValuePair("version",
-		 * String.valueOf(base.getVersion()))); p.add(new BasicNameValuePair("data",
-		 * formatter.write(base)));
-		 * 
-		 * // отправляем на сервер webClient.doPostSmart(webClient.getServer() +
-		 * WebClient.URL_CONSOLE, p);
-		 */
+		String version = String.valueOf(base.getVersion());
+		String data = formatter.write(base);
+		webClient.postFoodBase(version, data);
 	}
 }
