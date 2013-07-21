@@ -29,19 +29,19 @@ public class WebClient
 
 	/* ================ КОНСТАНТЫ ================ */
 
-	public static final String API_VERSION = "1.2";
-	public static final String URL_LOGINPAGE = "login.php";
-	public static final String URL_CONSOLE = "console.php";
-	public static final String RESPONSE_UNAUTH = "Error: log in first";
-	public static final String RESPONSE_DONE = "DONE";
-	public static final String RESPONSE_FAIL = "FAIL";
-	public static final String RESPONSE_FAIL_AUTH = "BADNAME";
-	public static final String RESPONSE_FAIL_APIVER = "DEPAPI";
-	public static final String RESPONSE_ONLINE = "online";
-	public static final String RESULT_OFFLINE = "offline";
-	//public static final String SERVER_CODEPAGE = "Cp1251";
-	public static final String SERVER_CODEPAGE = "UTF-8";
-	
+	private static final String API_VERSION = "1.2";
+	private static final String URL_LOGINPAGE = "login.php";
+	private static final String URL_CONSOLE = "console.php";
+	private static final String RESPONSE_UNAUTH = "Error: log in first";
+	private static final String RESPONSE_DONE = "DONE";
+	private static final String RESPONSE_FAIL = "FAIL";
+	private static final String RESPONSE_FAIL_AUTH = "BADNAME";
+	private static final String RESPONSE_FAIL_APIVER = "DEPAPI";
+	private static final String RESPONSE_ONLINE = "online";
+	private static final String RESPONSE_OFFLINE = "offline";
+	// public static final String SERVER_CODEPAGE = "Cp1251";
+	private static final String SERVER_CODEPAGE = "UTF-8";
+
 	// FIXME: how to use mixed Cp1251 and UTF-8 code pages???
 
 	private static final String CODE_SPACE = "%20";
@@ -232,7 +232,7 @@ public class WebClient
 		}
 	}
 
-	/* ================ СЛУЖЕБНЫЕ МЕТОДЫ ================ */
+	/* ================================ СЛУЖЕБНЫЕ МЕТОДЫ ================================ */
 
 	/**
 	 * Преобразует локальное время в серверное. При необходимости пытается предварительно
@@ -280,7 +280,7 @@ public class WebClient
 		return new Date(time.getTime() + timeShift);
 	}
 
-	/* ================ ЗАПРОСЫ ================ */
+	/* ================================ ЗАПРОСЫ ================================ */
 
 	// TODO: методы doGet() / doPost() имеют модификатор public для тестирования, в релизе исправить
 	// на private (или пофиг?)
@@ -318,7 +318,7 @@ public class WebClient
 	 * @return Ответ сервера
 	 * @throws NoConnectionException
 	 */
-	public String doGet(String url) throws ServerException
+	private String doGet(String url) throws ServerException
 	{
 		// Log.i(TAG(), "doGet(), URL='" + URL + "'");
 		try
@@ -344,7 +344,7 @@ public class WebClient
 	 * @return Ответ сервера
 	 * @throws NoConnectionException
 	 */
-	public String doPost(String url, List<NameValuePair> params) throws ServerException
+	private String doPost(String url, List<NameValuePair> params) throws ServerException
 	{
 		// Log.i(TAG(), "doPost(), URL='" + URL + "'");
 		try
@@ -362,7 +362,7 @@ public class WebClient
 		}
 	}
 
-	public String doGetSmart(String URL) throws ServerException
+	private String doGetSmart(String URL) throws ServerException
 	{
 		String resp = doGet(URL);
 
@@ -377,7 +377,7 @@ public class WebClient
 		}
 	}
 
-	public String doPostSmart(String URL, List<NameValuePair> params) throws ServerException
+	private String doPostSmart(String URL, List<NameValuePair> params) throws ServerException
 	{
 		String resp = doPost(URL, params);
 
@@ -392,7 +392,7 @@ public class WebClient
 		}
 	}
 
-	/* ================ КОНСТРУКТОР ================ */
+	/* ================================ КОНСТРУКТОР ================================ */
 
 	public WebClient(int connectionTimeout)
 	{
@@ -403,7 +403,53 @@ public class WebClient
 		ConnManagerParams.setTimeout(params, connectionTimeout);
 	}
 
-	/* ================ API ================ */
+	// =========================== GET / SET ===========================
+
+	public String getUsername()
+	{
+		return username;
+	}
+
+	public void setUsername(String username)
+	{
+		if (!this.username.equals(username))
+		{
+			this.username = username;
+			logged = false;
+		}
+	}
+
+	public String getPassword()
+	{
+		return password;
+	}
+
+	public void setPassword(String password)
+	{
+		if (!this.password.equals(password))
+		{
+			this.password = password;
+			logged = false;
+		}
+	}
+
+	public String getServer()
+	{
+		return server;
+	}
+
+	public void setServer(String server)
+	{
+		if (!this.server.equals(server))
+		{
+			this.server = server;
+			logged = false;
+		}
+	}
+
+	/* ================================ API ================================ */
+
+	/* ---------------------------------- ОБЩЕЕ ---------------------------------- */
 
 	public void login() throws ServerException
 	{
@@ -502,12 +548,25 @@ public class WebClient
 	{
 		if (forceUpdate)
 		{
+			String resp;
 			try
 			{
-				logged = doGet(server + URL_LOGINPAGE + "?status").equals(RESPONSE_ONLINE);
+				resp = doGet(server + URL_LOGINPAGE + "?status");
 			} catch (ServerException e)
 			{
 				logged = false;
+				return false;
+			}
+
+			if (resp.equals(RESPONSE_ONLINE))
+				logged = true;
+			else
+			{
+				// THINK: do I really need exception throw?
+				logged = false;
+				if (!resp.equals(RESPONSE_OFFLINE))
+					throw new ResponseFormatException("Invalid respose: '" + RESPONSE_ONLINE + "' or '"
+							+ RESPONSE_OFFLINE + " expected but '" + resp + "' found");
 			}
 		}
 
@@ -519,67 +578,83 @@ public class WebClient
 		return isOnline(false);
 	}
 
-	// =========================== GET / SET ===========================
+	/* ------------------------------------- ДНЕВНИК ------------------------------------- */
 
-	public String getUsername()
+	public String getModList(String time)
 	{
-		return username;
+		return doGetSmart(server + WebClient.URL_CONSOLE + "?diary:getModList&time=" + time);
 	}
 
-	public void setUsername(String username)
+	public String getPages(List<Date> dates)
 	{
-		if (!this.username.equals(username))
+		if (dates.isEmpty())
+			return "";
+
+		// TODO: optimize if need (use StringBuilder)
+
+		// конструируем запрос
+		String query = server + URL_CONSOLE + "?diary:download&dates=";
+		for (Date date : dates)
 		{
-			this.username = username;
-			logged = false;
+			query += Utils.formatDate(date) + ",";
 		}
-	}
 
-	public String getPassword()
-	{
-		return password;
-	}
-
-	public void setPassword(String password)
-	{
-		if (!this.password.equals(password))
-		{
-			this.password = password;
-			logged = false;
-		}
-	}
-
-	public String getServer()
-	{
-		return server;
-	}
-
-	public void setServer(String server)
-	{
-		if (!this.server.equals(server))
-		{
-			this.server = server;
-			logged = false;
-		}
+		// обращаемся на сервер
+		return Utils.Utf8ToCp1251(doGetSmart(query));
 	}
 
 	/**
-	 * Attempts to authenticate the user credentials on the server.
+	 * Отправляет страницы на сервер.
 	 * 
-	 * @param username
-	 *            The user's name
-	 * @param password
-	 *            The user's password to be authenticated
-	 * @param handler
-	 *            The main UI thread's handler instance.
-	 * @param context
-	 *            The caller Activity's context
-	 * @return Thread The thread on which the network mOperations are executed.
+	 * @param pages
+	 *            Страницы
+	 * @return Успешность отправки
 	 */
-	/*
-	 * public Thread backgroundAuth(final String username, final String password, final Handler
-	 * handler, final Context context) { final Runnable runnable = new Runnable() { public void
-	 * run() { login(username, password, handler, context); } }; // run on background thread. return
-	 * performOnBackgroundThread(runnable); }
-	 */
+	public boolean postPages(String pages)
+	{
+		if (pages.isEmpty())
+			return true;
+
+		// конструируем запрос
+		List<NameValuePair> p = new ArrayList<NameValuePair>();
+		p.add(new BasicNameValuePair("diary:upload", ""));
+		p.add(new BasicNameValuePair("pages", Utils.Cp1251ToUtf8(pages)));
+
+		// отправляем на сервер
+		String resp = doPostSmart(server + URL_CONSOLE, p);
+
+		// обрабатываем результат
+		if (!WebClient.RESPONSE_DONE.equals(resp))
+		{
+			throw new WebClient.ServerException("Uploading pages to the server failed, response is \"" + resp + "\"");
+		}
+
+		return true;
+	}
+
+	/* ---------------------------------- БАЗА ПРОДУКТОВ ---------------------------------- */
+
+	public String getFoodBaseVersion()
+	{
+		return doGetSmart(server + URL_CONSOLE + "?foodbase:getVersion");
+	}
+
+	public String getFoodBase()
+	{
+		return doGetSmart(server + URL_CONSOLE + "?foodbase:download");
+	}
+
+	public void postFoodBase(String version, String data)
+	{
+		// TODO: uncomment when tested
+
+		// конструируем запрос
+		// List<NameValuePair> p = new ArrayList<NameValuePair>();
+		// p.add(new BasicNameValuePair("foodbase:upload", ""));
+		// p.add(new BasicNameValuePair("version", version));
+		// p.add(new BasicNameValuePair("data", data));
+
+		// отправляем на сервер
+		// doPostSmart(server + URL_CONSOLE, p);
+	}
 }

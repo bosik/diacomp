@@ -14,7 +14,7 @@ public class MealRecord extends DiaryRecord
 		setTime(time);
 		setShortMeal(shortMeal);
 	}
-	
+
 	public MealRecord()
 	{
 	}

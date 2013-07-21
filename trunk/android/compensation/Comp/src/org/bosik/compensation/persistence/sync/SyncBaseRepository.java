@@ -9,11 +9,9 @@ public class SyncBaseRepository<BaseType>
 
 	public static enum SyncResult
 	{
-		FIRST_UPDATED,
-		SECOND_UPDATED,
-		EQUAL
+		FIRST_UPDATED, SECOND_UPDATED, EQUAL
 	}
-	
+
 	public SyncResult synchronize(BaseRepository<BaseType> source1, BaseRepository<BaseType> source2)
 	{
 		int version1 = source1.getVersion();

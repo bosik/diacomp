@@ -200,7 +200,7 @@ public class LocalDiaryRepository implements DiaryRepository
 					res.add(new PageVersion(date, version));
 				} catch (Exception e)
 				{
-					// TODO: как правильно решать эту ситуацию?
+					// THINK: как правильно решать эту ситуацию?
 					throw new NullPointerException("Error date/time parsing");
 				}
 			}

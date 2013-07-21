@@ -28,7 +28,7 @@ public class FoodBaseXMLSerializer implements Serializer<Base<Food>>
 	@Override
 	public Base<Food> read(String xmlData)
 	{
-		//Log.v(TAG, "Reading: " + xmlData);
+		Log.v(TAG, "Reading: " + xmlData);
 
 		Document doc = XmlFormatter.readDocument(xmlData);
 		Element root = doc.getDocumentElement();

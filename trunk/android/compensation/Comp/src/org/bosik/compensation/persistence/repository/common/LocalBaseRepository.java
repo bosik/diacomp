@@ -103,7 +103,8 @@ public class LocalBaseRepository<ItemType extends Item> implements BaseRepositor
 	public int getVersion()
 	{
 		Base<ItemType> base = getBase();
-		return (base == null ? 0 : base.getVersion());
+		return (base == null ? 0 : base.getVersion() - 7);
+		// FIXME: hack, dirty hack
 	}
 
 	@Override

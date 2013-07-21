@@ -96,7 +96,7 @@ public class Storage
 			Log.d(TAG, "init(): web foodbase initialization...");
 			webFoodbaseRepository = new WebFoodBaseRepository(web_client);
 		}
-		
+
 		if (null == localFoodbase)
 		{
 			loadFoodbase();
@@ -138,7 +138,7 @@ public class Storage
 			web_client.setPassword(preferences.getString(PREF_PASSWORD, PREF_DEFAULT_PASSWORD));
 		}
 
-		// TODO: как узнавать об ошибках, произошедших у пользователя в release-mode? Email? Web?
+		// THINK: как узнавать об ошибках, произошедших у пользователя в release-mode? Email? Web?
 	}
 
 	public static void loadFoodbase()
@@ -146,8 +146,10 @@ public class Storage
 		Log.e(TAG, "init(): loading food base...");
 		localFoodbase = localFoodbaseRepository.getBase();
 		localFoodbaseVersion = localFoodbase.getVersion();
-		
-		Log.e(TAG, "init(): food base loaded, count: " + localFoodbase.count() + ", version: " + localFoodbase.getVersion());
+
+		Log.e(TAG,
+				"init(): food base loaded, count: " + localFoodbase.count() + ", version: "
+						+ localFoodbase.getVersion());
 	}
 
 	public static void saveFoodbase()

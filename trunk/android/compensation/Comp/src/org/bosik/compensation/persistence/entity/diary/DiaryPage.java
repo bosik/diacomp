@@ -84,6 +84,14 @@ public class DiaryPage implements DiaryChangeListener
 	// -------- КОНСТРУКТОРЫ --------
 
 	/**
+	 * Пустой конструктор
+	 */
+	public DiaryPage()
+	{
+
+	}
+
+	/**
 	 * Конструктор на случай, если ничего не распарсено
 	 * 
 	 * @param source

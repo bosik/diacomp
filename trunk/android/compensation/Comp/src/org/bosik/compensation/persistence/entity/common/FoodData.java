@@ -1,6 +1,5 @@
 package org.bosik.compensation.persistence.entity.common;
 
-
 /**
  * Хранит имя и относительные параметры (на 100 г)
  * 
