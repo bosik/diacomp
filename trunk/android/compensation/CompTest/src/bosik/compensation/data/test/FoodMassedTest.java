@@ -163,7 +163,6 @@ public class FoodMassedTest extends TestCase
 
 	public void testClone() throws CloneNotSupportedException
 	{
-		food.setId(123);
 		food.setName("Колбаса");
 		food.setRelProts(12.7);
 		food.setRelFats(19.1);

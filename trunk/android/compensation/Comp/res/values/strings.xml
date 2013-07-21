@@ -11,5 +11,6 @@
     <string name="connectionTimeout">6000</string>
     <string name="fileNameFoodBase">FoodBase.xml</string>
     <string name="fileNameDishBase">DishBase.xml</string>
+    <string name="styleInfo">bold</string>
 
 </resources>

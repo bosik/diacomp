@@ -50,16 +50,38 @@
         <Button
             android:id="@+id/button_additem"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:focusable="false"
             android:text="@string/button_add" />
+
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textMealCarbs"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/label_mealCarbs" />
+        android:layout_gravity="left"
+        android:layout_marginTop="@dimen/padding_small"
+        android:background="#F0F0F0" >
+
+        <TextView
+            android:id="@+id/textMealCarbs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="@string/label_mealCarbs"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textMealDose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:text="@string/label_mealDose"
+            android:textStyle="bold|normal" />
+    </RelativeLayout>
 
     <ListView
         android:id="@+id/ListView01"

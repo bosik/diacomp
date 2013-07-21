@@ -34,15 +34,18 @@
             android:name="org.bosik.compensation.face.activities.ActivityDiary"
             android:label="@string/title_diary"
             android:theme="@android:style/Theme.Light" >
-        </activity>
-        <activity
-            android:name="org.bosik.compensation.face.activities.ActivityMeal"
-            android:label="@string/title_diary"
-            android:theme="@android:style/Theme.Light.NoTitleBar" >
-        </activity>
+        </activity>        
         <activity
             android:name="org.bosik.compensation.face.activities.ActivityEditorBlood"
             android:label="@string/title_editor_blood" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.bosik.compensation.face.activities.ActivityDiary" />
+        </activity>
+        <activity
+            android:name="org.bosik.compensation.face.activities.ActivityMeal"
+            android:label="@string/title_editor_meal"
+            android:theme="@android:style/Theme.Light" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.bosik.compensation.face.activities.ActivityDiary" />
