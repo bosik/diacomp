@@ -1,10 +1,16 @@
-package org.bosik.compensation.persistence.entity;
+package org.bosik.compensation.persistence.entity.common;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import org.bosik.compensation.persistence.entity.common.Item;
 import org.bosik.compensation.utils.Utils;
 
+/**
+ * Хранит имя, относительные параметры (на 100 г) и массу. Имеет методы для собственной сериализации
+ * / десериализации.
+ * 
+ * @author Bosik
+ * 
+ */
 public class FoodMassed extends FoodData
 {
 	private static final DecimalFormat df = new DecimalFormat("###.#");
@@ -93,21 +99,10 @@ public class FoodMassed extends FoodData
 		return getName() + '[' + df.format(getRelProts()) + FOOD_SEP + df.format(getRelFats()) + FOOD_SEP
 				+ df.format(getRelCarbs()) + FOOD_SEP + df.format(getRelValue()) + "]:" + df.format(mass);
 	}
-
-	/**
-	 * Создаёт демо-экземпляр для тестирования
-	 * 
-	 * @return
-	 */
-	public static FoodMassed demo()
+	
+	@Override
+	public String toString()
 	{
-		FoodMassed food = new FoodMassed();
-		food.setName("Колбаса");
-		food.setMass(78);
-		food.setRelProts(12.2);
-		food.setRelFats(18.9);
-		food.setRelCarbs(0);
-		food.setRelValue(272);
-		return food;
+		return getName() + " (" + df.format(mass) + ")";
 	}
 }

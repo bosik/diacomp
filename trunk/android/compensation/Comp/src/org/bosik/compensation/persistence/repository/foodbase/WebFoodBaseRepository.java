@@ -4,10 +4,11 @@ import org.bosik.compensation.persistence.entity.foodbase.Food;
 import org.bosik.compensation.persistence.repository.common.Base;
 import org.bosik.compensation.persistence.repository.common.BaseRepository;
 import org.bosik.compensation.persistence.repository.providers.WebClient;
+import android.util.Log;
 
 public class WebFoodBaseRepository implements BaseRepository<Base<Food>>
 {
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
 	private static String TAG = WebFoodBaseRepository.class.getSimpleName();
 	private static FoodBaseXMLSerializer formatter = new FoodBaseXMLSerializer();
 
@@ -32,6 +33,7 @@ public class WebFoodBaseRepository implements BaseRepository<Base<Food>>
 	public Base<Food> getBase()
 	{
 		String resp = webClient.doGetSmart(webClient.getServer() + WebClient.URL_CONSOLE + "?foodbase:download");
+		Log.d(TAG, "Web response: " + resp);
 		return formatter.read(resp);
 	}
 

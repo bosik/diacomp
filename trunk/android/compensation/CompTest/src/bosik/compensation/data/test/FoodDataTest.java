@@ -1,7 +1,7 @@
 package bosik.compensation.data.test;
 
 import junit.framework.TestCase;
-import org.bosik.compensation.persistence.entity.FoodData;
+import org.bosik.compensation.persistence.entity.common.FoodData;
 
 public class FoodDataTest extends TestCase
 {

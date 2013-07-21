@@ -8,7 +8,7 @@ import org.bosik.compensation.utils.Utils;
 
 public class Base<T extends Item>
 {
-	private static int idCounter = 0;
+	//private static int idCounter = 0;
 
 	private final List<T> items = new ArrayList<T>();
 	private Date timeStamp = null;
@@ -25,7 +25,6 @@ public class Base<T extends Item>
 
 		try
 		{
-			item.setId(++idCounter);
 			items.add((T) item.clone());
 			changed();
 			return items.indexOf(item);

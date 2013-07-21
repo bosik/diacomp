@@ -18,6 +18,9 @@
     <string name="label_mass">Масса, г</string>
     <string name="label_bloodfinger">Палец</string>
     <string name="label_NoteText">Текст</string>
+    
+    <string name="label_mealDose">Доза (ед): </string>
+    <string name="label_mealCarbs">Углеводов (г): </string>
 
     <!-- Кнопки -->
 

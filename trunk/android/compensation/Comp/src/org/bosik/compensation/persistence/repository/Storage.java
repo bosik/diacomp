@@ -4,11 +4,9 @@ import org.bosik.compensation.face.R;
 import org.bosik.compensation.persistence.entity.foodbase.Food;
 import org.bosik.compensation.persistence.repository.common.Base;
 import org.bosik.compensation.persistence.repository.common.BaseRepository;
-import org.bosik.compensation.persistence.repository.common.LocalBaseRepository;
 import org.bosik.compensation.persistence.repository.diary.DiaryRepository;
 import org.bosik.compensation.persistence.repository.diary.LocalDiaryRepository;
 import org.bosik.compensation.persistence.repository.diary.WebDiaryRepository;
-import org.bosik.compensation.persistence.repository.foodbase.FoodBaseXMLSerializer;
 import org.bosik.compensation.persistence.repository.foodbase.LocalFoodBaseRepository;
 import org.bosik.compensation.persistence.repository.foodbase.WebFoodBaseRepository;
 import org.bosik.compensation.persistence.repository.providers.WebClient;
@@ -39,12 +37,15 @@ public class Storage
 	private static String PREF_DEFAULT_USERNAME;
 	private static String PREF_DEFAULT_PASSWORD;
 
-	// компоненты (в качестве типа указана конкретная реализация - требуется для внешней настройки)
+	// компоненты
 	public static WebClient web_client = null;
 	public static DiaryRepository local_diary = null;
 	public static DiaryRepository web_diary = null;
-	public static BaseRepository<Base<Food>> local_foodbase = null;
-	public static BaseRepository<Base<Food>> web_foodbase = null;
+	public static BaseRepository<Base<Food>> localFoodbaseRepository = null;
+	public static BaseRepository<Base<Food>> webFoodbaseRepository = null;
+
+	public static Base<Food> localFoodbase = null;
+	private static int localFoodbaseVersion;
 
 	/**
 	 * Инициализирует хранилище. Метод можно вызывать повторно.
@@ -84,16 +85,21 @@ public class Storage
 			Log.d(TAG, "init(): web diary initialization...");
 			web_diary = new WebDiaryRepository(web_client);
 		}
-		if (null == local_foodbase)
+		if (null == localFoodbaseRepository)
 		{
 			Log.d(TAG, "init(): local foodbase initialization...");
 			String fileName = context.getString(R.string.fileNameFoodBase);
-			local_foodbase = new LocalFoodBaseRepository(context, fileName);
+			localFoodbaseRepository = new LocalFoodBaseRepository(context, fileName);
 		}
-		if (null == Storage.web_foodbase)
+		if (null == Storage.webFoodbaseRepository)
 		{
 			Log.d(TAG, "init(): web foodbase initialization...");
-			web_foodbase = new WebFoodBaseRepository(web_client);
+			webFoodbaseRepository = new WebFoodBaseRepository(web_client);
+		}
+		
+		if (null == localFoodbase)
+		{
+			loadFoodbase();
 		}
 
 		// this applies all preferences
@@ -133,5 +139,23 @@ public class Storage
 		}
 
 		// TODO: как узнавать об ошибках, произошедших у пользователя в release-mode? Email? Web?
+	}
+
+	public static void loadFoodbase()
+	{
+		Log.e(TAG, "init(): loading food base...");
+		localFoodbase = localFoodbaseRepository.getBase();
+		localFoodbaseVersion = localFoodbase.getVersion();
+		
+		Log.e(TAG, "init(): food base loaded, count: " + localFoodbase.count() + ", version: " + localFoodbase.getVersion());
+	}
+
+	public static void saveFoodbase()
+	{
+		if (localFoodbase.getVersion() > localFoodbaseVersion)
+		{
+			Log.d(TAG, "init(): saving food base...");
+			localFoodbaseRepository.postBase(localFoodbase);
+		}
 	}
 }
