@@ -26,7 +26,7 @@ public class ActivityMeal extends Activity
 	private static final String TAG = ActivityMeal.class.getSimpleName();
 
 	private static final DecimalFormat df = new DecimalFormat("###.#");
-	
+
 	// переменные
 	private static MealRecord meal = new MealRecord();
 	private String lv_arr[] = {/*
@@ -47,6 +47,7 @@ public class ActivityMeal extends Activity
 	private Activity activityMeal;
 	private ListView list;
 	private TextView textMealCarbs;
+	private TextView textMealDose;
 
 	private String captionCarbs;
 	private String captionDose;
@@ -64,6 +65,7 @@ public class ActivityMeal extends Activity
 		buttonAdd = (Button) findViewById(R.id.button_additem);
 		list = (ListView) findViewById(R.id.ListView01);
 		textMealCarbs = (TextView) findViewById(R.id.textMealCarbs);
+		textMealDose = (TextView) findViewById(R.id.textMealDose);
 
 		// текст
 		captionCarbs = getString(R.string.label_mealCarbs);
@@ -71,31 +73,14 @@ public class ActivityMeal extends Activity
 
 		// инициализация
 
-		Log.e(TAG, "Food count: " + Storage.localFoodbase.count());
+		Log.d(TAG, "Caption carbs: " + captionCarbs);
+		Log.d(TAG, "Caption dose: " + captionDose);
+		Log.d(TAG, "Food count: " + Storage.localFoodbase.count());
 
-		String[] foodBase = new String[Storage.localFoodbase.count()];
-		for (int i = 0; i < Storage.localFoodbase.count(); i++)
-		{
-			// TODO: implement method returning names array sorted by tag
-			foodBase[i] = Storage.localFoodbase.get(i).getName();
-			// Log.v(TAG, foodBase[i]);
-		}
+		loadFoodList();
+		showMeal();
 
-		ArrayAdapter<String> baseAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, foodBase);
-		editName.setAdapter(baseAdapter);
 		editMass.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-
-		// lv_arr = mealList.toArray(new String[0]);
-		lv_arr = new String[meal.size()];
-		for (int i = 0; i < meal.size(); i++)
-		{
-			lv_arr[i] = meal.get(i).getName();
-		}
-
-		ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(activityMeal, android.R.layout.simple_list_item_1,
-				lv_arr);
-		list.setAdapter(itemsAdapter);
-
 		editMass.setOnEditorActionListener(new TextView.OnEditorActionListener()
 		{
 			// @Override
@@ -111,12 +96,94 @@ public class ActivityMeal extends Activity
 					Log.d("XXX", "It works!");
 					return true;
 				}
+
+				if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED)
+				{
+					Log.d("XXX", "Enter pressed");
+					addItem();
+					// editName.requestFocus();
+					return true;
+				}
+
 				return false;
 			}
 		});
 
 		// назначаем обработчики
 		buttonAdd.setOnClickListener(clickListener);
+	}
+
+	private void loadFoodList()
+	{
+		String[] foodBase = new String[Storage.localFoodbase.count()];
+		for (int i = 0; i < Storage.localFoodbase.count(); i++)
+		{
+			// TODO: implement method returning names array sorted by tag
+			foodBase[i] = Storage.localFoodbase.get(i).getName();
+			// Log.v(TAG, foodBase[i]);
+		}
+
+		ArrayAdapter<String> baseAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, foodBase);
+		editName.setAdapter(baseAdapter);
+	}
+	
+	private void showMeal()
+	{
+		// lv_arr = mealList.toArray(new String[0]);
+		lv_arr = new String[meal.size()];
+		for (int i = 0; i < meal.size(); i++)
+		{
+			lv_arr[i] = meal.get(i).toString();
+		}
+
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(activityMeal, android.R.layout.simple_list_item_1,
+				lv_arr);
+		list.setAdapter(adapter);
+
+		double dose = meal.getCarbs() * 0.155;
+		textMealCarbs.setText(df.format(meal.getCarbs()) + " " + captionCarbs);
+		textMealDose.setText(df.format(dose) + " " + captionDose);
+	}
+
+	private void addItem()
+	{
+		String name = editName.getText().toString();
+		double mass = Double.parseDouble(editMass.getText().toString());
+
+		Food food = null;
+		FoodMassed item = null;
+
+		// TODO: create generics-based search
+		for (int i = 0; i < Storage.localFoodbase.count(); i++)
+		{
+			if (Storage.localFoodbase.get(i).getName().equalsIgnoreCase(name))
+			{
+				food = Storage.localFoodbase.get(i);
+
+				item = new FoodMassed();
+				item.setName(food.getName());
+				item.setRelProts(food.getRelProts());
+				item.setRelFats(food.getRelFats());
+				item.setRelCarbs(food.getRelCarbs());
+				item.setRelValue(food.getRelValue());
+				item.setMass(mass);
+
+				meal.add(item);
+
+				break;
+			}
+		}
+
+		showMeal();
+
+		if (item != null)
+		{
+			Log.e("XXX", "ADDED: " + item);
+			editMass.setText("");
+			editName.setText("");
+			Log.d(TAG, "Moving focus to name field");
+			editName.requestFocus();
+		}
 	}
 
 	private OnClickListener clickListener = new OnClickListener()
@@ -126,63 +193,7 @@ public class ActivityMeal extends Activity
 			switch (v.getId())
 			{
 				case R.id.button_additem:
-					String name = editName.getText().toString();
-					double mass = Double.parseDouble(editMass.getText().toString());
-
-					Food food = null;
-					FoodMassed item = null;
-
-					// TODO: create generics-based search
-					for (int i = 0; i < Storage.localFoodbase.count(); i++)
-					{
-						if (Storage.localFoodbase.get(i).getName().equalsIgnoreCase(name))
-						{
-							food = Storage.localFoodbase.get(i);
-
-							item = new FoodMassed();
-							item.setName(food.getName());
-							item.setRelProts(food.getRelProts());
-							item.setRelFats(food.getRelFats());
-							item.setRelCarbs(food.getRelCarbs());
-							item.setRelValue(food.getRelValue());
-							item.setMass(mass);
-
-							meal.add(item);
-
-							break;
-						}
-					}
-
-					// lv_arr = (String[]) temp.toArray(new String[temp.size()]);
-
-					/*
-					 * for (String item : temp) { Log.w("XXX", "["+item+"]"); }
-					 */
-
-					/*
-					 * for (String item : lv_arr) { Log.w("XXX", "{"+item+"}"); }
-					 */
-
-					// lv_arr = mealList.toArray(new String[0]);
-					lv_arr = new String[meal.size()];
-					for (int i = 0; i < meal.size(); i++)
-					{
-						lv_arr[i] = meal.get(i).toString();
-					}
-
-					ArrayAdapter<String> adapter = new ArrayAdapter<String>(activityMeal,
-							android.R.layout.simple_list_item_1, lv_arr);
-					list.setAdapter(adapter);
-
-					if (item != null)
-					{
-						Log.e("XXX", "ADDED: " + item);
-						editMass.setText("");
-						editName.setText("");
-						editName.requestFocus();
-
-						textMealCarbs.setText("Итого: " + df.format(meal.getCarbs()) + " г угл. / " + df.format(meal.getCarbs() * 0.155) + " ед.");
-					}
+					addItem();
 					break;
 			}
 		}

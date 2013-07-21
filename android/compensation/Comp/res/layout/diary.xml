@@ -55,9 +55,11 @@
                 android:id="@+id/buttonNextDay"
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
+                android:background="@android:drawable/btn_default_small"
                 android:drawableTop="@drawable/diary_next"
                 android:text="@string/button_nextday"
                 android:textStyle="bold" />
+
         </LinearLayout>
     </LinearLayout>
 
@@ -79,33 +81,41 @@
         android:id="@+id/bottomLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FF000000"        
+        android:background="#FF000000"
         android:gravity="bottom|top"
         android:orientation="horizontal" >
 
         <Button
             android:id="@+id/buttonAddBlood"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/diary_addblood" />
+            android:layout_weight="1"
+            android:drawableTop="@drawable/diary_addblood"
+            android:paddingBottom="0dp" />
 
         <Button
             android:id="@+id/buttonAddIns"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:drawableLeft="@drawable/diary_addins" />
+            android:layout_weight="1"
+            android:drawableTop="@drawable/diary_addins"
+            android:paddingBottom="0dp" />
 
         <Button
             android:id="@+id/buttonAddMeal"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:drawableLeft="@drawable/diary_addmeal" />
-        
+            android:layout_weight="1"
+            android:drawableTop="@drawable/diary_addmeal"
+            android:paddingBottom="0dp" />
+
         <Button
             android:id="@+id/buttonAddNote"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:drawableLeft="@drawable/diary_addnote" />
+            android:layout_weight="1"
+            android:drawableTop="@drawable/diary_addnote"
+            android:paddingBottom="0dp" />
 
     </LinearLayout>
 
