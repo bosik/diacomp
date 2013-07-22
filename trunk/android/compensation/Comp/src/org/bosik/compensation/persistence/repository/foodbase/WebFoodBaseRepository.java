@@ -2,10 +2,10 @@ package org.bosik.compensation.persistence.repository.foodbase;
 
 import org.bosik.compensation.persistence.entity.foodbase.Food;
 import org.bosik.compensation.persistence.repository.common.Base;
-import org.bosik.compensation.persistence.repository.common.BaseRepository;
+import org.bosik.compensation.persistence.repository.common.Interchangeable;
 import org.bosik.compensation.persistence.repository.providers.WebClient;
 
-public class WebFoodBaseRepository implements BaseRepository<Base<Food>>
+public class WebFoodBaseRepository implements Interchangeable
 {
 	// private static String TAG = WebFoodBaseRepository.class.getSimpleName();
 	private static FoodBaseXMLSerializer formatter = new FoodBaseXMLSerializer();
@@ -20,6 +20,8 @@ public class WebFoodBaseRepository implements BaseRepository<Base<Food>>
 		this.webClient = webClient;
 	}
 
+	// ================================ API ================================
+
 	@Override
 	public int getVersion()
 	{
@@ -28,17 +30,23 @@ public class WebFoodBaseRepository implements BaseRepository<Base<Food>>
 	}
 
 	@Override
-	public Base<Food> getBase()
+	public String write()
 	{
-		String resp = webClient.getFoodBase();
-		return formatter.read(resp);
+		return webClient.getFoodBase();
+		// Base<Food> base = new Base<Food>();
+		// formatter.read(base, resp);
+		// return base;
 	}
 
 	@Override
-	public void postBase(Base<Food> base)
+	public void read(String data)
 	{
+		// TODO: optimize if need
+
+		Base<Food> base = new Base<Food>();
+		formatter.read(base, data);
 		String version = String.valueOf(base.getVersion());
-		String data = formatter.write(base);
+
 		webClient.postFoodBase(version, data);
 	}
 }

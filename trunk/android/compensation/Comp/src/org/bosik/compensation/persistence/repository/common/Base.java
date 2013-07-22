@@ -1,17 +1,20 @@
 package org.bosik.compensation.persistence.repository.common;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.persistence.entity.common.Item;
-import org.bosik.compensation.utils.Utils;
 
+/**
+ * Хранящаяся в памяти база
+ * 
+ * @author Bosik
+ * 
+ * @param <T>
+ *            Тип элемента базы
+ */
 public class Base<T extends Item>
 {
-	// private static int idCounter = 0;
-
 	private final List<T> items = new ArrayList<T>();
-	private Date timeStamp = null;
 	private int version = 0;
 
 	private boolean silentMode = false;
@@ -34,25 +37,22 @@ public class Base<T extends Item>
 		}
 	}
 
+	public void clear()
+	{
+		items.clear();
+		changed();
+	}
+
+	public int count()
+	{
+		return items.size();
+	}
+
 	public T get(int index)
 	{
 		try
 		{
 			return (T) items.get(index).clone();
-		} catch (CloneNotSupportedException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
-	public void update(T item)
-	{
-		// comparison performed by id, because equals() method is overridden
-		try
-		{
-			int index = items.indexOf(item);
-			items.set(index, (T) item.clone());
-			changed();
 		} catch (CloneNotSupportedException e)
 		{
 			throw new RuntimeException(e);
@@ -71,9 +71,18 @@ public class Base<T extends Item>
 		changed();
 	}
 
-	public int count()
+	public void update(T item)
 	{
-		return items.size();
+		// comparison performed by id, because equals() method is overridden
+		try
+		{
+			int index = items.indexOf(item);
+			items.set(index, (T) item.clone());
+			changed();
+		} catch (CloneNotSupportedException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	// ================== GET / SET ==================
@@ -88,17 +97,7 @@ public class Base<T extends Item>
 		this.version = version;
 	}
 
-	public Date getTimeStamp()
-	{
-		return timeStamp;
-	}
-
-	public void setTimeStamp(Date timeStamp)
-	{
-		this.timeStamp = timeStamp;
-	}
-
-	// ================== ТИХИЙ РЕЖИМ ==================
+	// ================== КОНТРОЛЬ НОМЕРА ВЕРСИИ ==================
 
 	public void beginUpdate()
 	{
@@ -110,13 +109,10 @@ public class Base<T extends Item>
 		silentMode = false;
 	}
 
-	// ================== СЛУЖЕБНЫЕ ==================
-
 	private void changed()
 	{
 		if (!silentMode)
 		{
-			timeStamp = Utils.now();
 			version++;
 		}
 	}

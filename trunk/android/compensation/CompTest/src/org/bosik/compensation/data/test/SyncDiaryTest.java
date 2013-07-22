@@ -10,14 +10,14 @@ import org.bosik.compensation.persistence.sync.SyncDiaryRepository;
 public class SyncDiaryTest extends TestCase
 {
 
-	public void testOrdered1()
+	public void testOrdered_0()
 	{
 		// пустой массив
 		List<PageVersion> modList = new ArrayList<PageVersion>();
 		assertTrue(SyncDiaryRepository.ordered(modList));
 	}
 
-	public void testOrdered2()
+	public void testOrdered_1()
 	{
 		// массив из одного элемента
 		List<PageVersion> modList = new ArrayList<PageVersion>();
@@ -25,7 +25,7 @@ public class SyncDiaryTest extends TestCase
 		assertTrue(SyncDiaryRepository.ordered(modList));
 	}
 
-	public void testOrdered3()
+	public void testOrdered_3_ordered()
 	{
 		// массив из трёх упорядоченных элементов
 		List<PageVersion> modList = new ArrayList<PageVersion>();
@@ -35,7 +35,7 @@ public class SyncDiaryTest extends TestCase
 		assertTrue(SyncDiaryRepository.ordered(modList));
 	}
 
-	public void testOrdered4()
+	public void testOrdered_3_unordered_1()
 	{
 		// массив из трёх неупорядоченных элементов
 		List<PageVersion> modList = new ArrayList<PageVersion>();
@@ -45,7 +45,7 @@ public class SyncDiaryTest extends TestCase
 		assertFalse(SyncDiaryRepository.ordered(modList));
 	}
 
-	public void testOrdered5()
+	public void testOrdered_3_unordered_2()
 	{
 		// массив из трёх неупорядоченных элементов
 		List<PageVersion> modList = new ArrayList<PageVersion>();
@@ -55,7 +55,7 @@ public class SyncDiaryTest extends TestCase
 		assertFalse(SyncDiaryRepository.ordered(modList));
 	}
 
-	public void testSort1()
+	public void testSort_0()
 	{
 		// пустой массив
 		List<PageVersion> modList = new ArrayList<PageVersion>();
@@ -63,7 +63,7 @@ public class SyncDiaryTest extends TestCase
 		assertTrue(SyncDiaryRepository.ordered(modList));
 	}
 
-	public void testSort2()
+	public void testSort_1()
 	{
 		// массив из одного элемента
 		List<PageVersion> modList = new ArrayList<PageVersion>();
@@ -72,7 +72,7 @@ public class SyncDiaryTest extends TestCase
 		assertTrue(SyncDiaryRepository.ordered(modList));
 	}
 
-	public void testSort3()
+	public void testSort_3_unordered()
 	{
 		// массив из трёх неупорядоченных элементов
 		List<PageVersion> modList = new ArrayList<PageVersion>();
@@ -83,7 +83,7 @@ public class SyncDiaryTest extends TestCase
 		assertTrue(SyncDiaryRepository.ordered(modList));
 	}
 
-	public void testSort4()
+	public void testSort_3_ordered()
 	{
 		// массив из трёх упорядоченных элементов
 		List<PageVersion> modList = new ArrayList<PageVersion>();

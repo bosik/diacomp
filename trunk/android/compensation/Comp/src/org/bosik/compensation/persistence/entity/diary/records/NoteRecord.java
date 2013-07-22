@@ -2,7 +2,7 @@ package org.bosik.compensation.persistence.entity.diary.records;
 
 public class NoteRecord extends DiaryRecord
 {
-	private String text;
+	private String text = "";
 
 	public NoteRecord(int time, String value)
 	{
@@ -14,7 +14,7 @@ public class NoteRecord extends DiaryRecord
 
 	public static boolean check(String value)
 	{
-		return true;
+		return (value != null);
 	}
 
 	public static boolean check(int time, String value)

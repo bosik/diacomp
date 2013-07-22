@@ -16,11 +16,12 @@ public interface Serializer<T>
 	/**
 	 * Загружает объект из строки
 	 * 
+	 * @param object
+	 *            Объект (должен быть предварительно создан)
 	 * @param data
 	 *            Cтрока, хранящая объект
-	 * @return Объект
 	 */
-	public T read(String data);
+	public void read(T object, String data);
 
 	/**
 	 * Сохраняет объект в строку

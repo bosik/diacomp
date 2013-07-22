@@ -14,6 +14,12 @@ public class FoodData extends Item
 	private double relCarbs;
 	private double relValue;
 
+	// public FoodData()
+	// {
+	// super();
+	// THINK: will super constructor be invoked without super(); ?
+	// }
+
 	// ================================ ВАЛИДАТОРЫ ================================
 
 	public static boolean checkName(String name)

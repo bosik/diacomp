@@ -55,9 +55,7 @@
                 android:id="@+id/buttonNextDay"
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
-                android:background="@android:drawable/btn_default_small"
                 android:drawableTop="@drawable/diary_next"
-                android:text="@string/button_nextday"
                 android:textStyle="bold" />
 
         </LinearLayout>

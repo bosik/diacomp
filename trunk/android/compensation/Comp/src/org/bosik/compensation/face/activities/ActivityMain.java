@@ -6,17 +6,15 @@ import java.util.TimerTask;
 import org.bosik.compensation.face.BuildConfig;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.face.UIUtils;
-import org.bosik.compensation.persistence.entity.foodbase.Food;
 import org.bosik.compensation.persistence.repository.Storage;
-import org.bosik.compensation.persistence.repository.common.Base;
 import org.bosik.compensation.persistence.repository.providers.WebClient.AuthException;
 import org.bosik.compensation.persistence.repository.providers.WebClient.DeprecatedAPIException;
 import org.bosik.compensation.persistence.repository.providers.WebClient.LoginResult;
 import org.bosik.compensation.persistence.repository.providers.WebClient.NoConnectionException;
 import org.bosik.compensation.persistence.repository.providers.WebClient.ResponseFormatException;
 import org.bosik.compensation.persistence.repository.providers.WebClient.UndefinedFieldException;
-import org.bosik.compensation.persistence.sync.SyncBaseRepository;
-import org.bosik.compensation.persistence.sync.SyncBaseRepository.SyncResult;
+import org.bosik.compensation.persistence.sync.SyncBase;
+import org.bosik.compensation.persistence.sync.SyncBase.SyncResult;
 import org.bosik.compensation.persistence.sync.SyncDiaryRepository;
 import org.bosik.compensation.persistence.sync.SyncDiaryRepository.Callback;
 import org.bosik.compensation.utils.Utils;
@@ -159,16 +157,12 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 																		// громадный синхролист, ага
 				syncPagesCount = SyncDiaryRepository.synchronize(Storage.local_diary, Storage.web_diary, since);
 
-				// TODO: create once
-				SyncBaseRepository<Base<Food>> foodSync = new SyncBaseRepository<Base<Food>>();
-
-				SyncResult r = foodSync.synchronize(Storage.localFoodbaseRepository, Storage.webFoodbaseRepository);
+				SyncResult r = SyncBase.synchronize(Storage.localFoodBase, Storage.webFoodbaseRepository);
 				syncFoodBase = (r != SyncResult.EQUAL);
 
-				if (r == SyncResult.FIRST_UPDATED)
+				if (Storage.localFoodBase.modified())
 				{
-					// если хранилище базы изменилось, перезагружаем базу
-					Storage.loadFoodbase();
+					Storage.localFoodBase.save();
 				}
 
 				Log.d(TAG, "Sync done OK...");

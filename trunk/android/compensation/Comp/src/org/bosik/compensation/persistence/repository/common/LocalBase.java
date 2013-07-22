@@ -10,26 +10,29 @@ import android.content.Context;
 import android.util.Log;
 
 /**
- * Локальный файловый репозиторий базы
+ * Локальная файловая база
  * 
  * @author Bosik
  * 
  * @param <ItemType>
  *            Тип элемента базы
  */
-public class LocalBaseRepository<ItemType extends Item> implements BaseRepository<Base<ItemType>>
+public class LocalBase<ItemType extends Item> extends Base<ItemType> implements Interchangeable
 {
-	private static final String TAG = LocalBaseRepository.class.getSimpleName();
+	private static final String TAG = LocalBase.class.getSimpleName();
 
 	private Context context;
 	private String fileName;
 	private Serializer<Base<ItemType>> serializer;
+	private int fileVersion;
 
-	public LocalBaseRepository(Context context, String fileName, Serializer<Base<ItemType>> serializer)
+	public LocalBase(Context context, String fileName, Serializer<Base<ItemType>> serializer)
 	{
 		this.context = context;
 		this.fileName = fileName;
 		this.serializer = serializer;
+		// base = new Base<ItemType>();
+		fileVersion = getVersion();
 	}
 
 	// ============================== СЛУЖЕБНЫЕ ==============================
@@ -97,43 +100,89 @@ public class LocalBaseRepository<ItemType extends Item> implements BaseRepositor
 		outputStream.close();
 	}
 
-	// ============================== API ==============================
+	// ============================== ОТКРЫТЫЕ ==============================
+
+	// ----------------------------------- API -----------------------------------
 
 	@Override
-	public int getVersion()
+	public void read(String data)
 	{
-		Base<ItemType> base = getBase();
-		return (base == null ? 0 : base.getVersion());
+		serializer.read(this, data);
 	}
 
 	@Override
-	public Base<ItemType> getBase()
+	public String write()
+	{
+		return serializer.write(this);
+	}
+
+	// public int getVersion()
+	// {
+	// Base<ItemType> base = getBase();
+	// return (base == null ? 0 : base.getVersion());
+	// }
+
+	// @Override
+	// public Base<ItemType> getBase()
+	// {
+	// try
+	// {
+	// if (fileExists(fileName))
+	// return serializer.read(readFromFile(fileName));
+	// else
+	// return null;
+	//
+	// } catch (IOException e)
+	// {
+	// throw new RuntimeException(e);
+	// }
+	// }
+
+	// ----------------------------------- ОСТАЛЬНОЕ -----------------------------------
+
+	public void load()
 	{
 		try
 		{
 			if (fileExists(fileName))
-				return serializer.read(readFromFile(fileName));
-			else
-				return null;
-
+			{
+				read(readFromFile(fileName));
+				fileVersion = getVersion();
+			} else
+				// THINK: else what? clear/ignore?
+				;
 		} catch (IOException e)
 		{
-			// e.printStackTrace();
-			// return null;
 			throw new RuntimeException(e);
 		}
 	}
 
-	@Override
-	public void postBase(Base<ItemType> base)
+	// @Override
+	// public void postBase(Base<ItemType> base)
+	// {
+	// try
+	// {
+	// writeToFile(fileName, serializer.write(base));
+	// } catch (IOException e)
+	// {
+	// throw new RuntimeException(e);
+	// }
+	// }
+
+	public void save()
 	{
 		try
 		{
-			writeToFile(fileName, serializer.write(base));
+			writeToFile(fileName, write());
+			fileVersion = getVersion();
 		} catch (IOException e)
 		{
-			// e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+	}
+
+	public boolean modified()
+	{
+		return getVersion() > fileVersion;
 	}
 }
