@@ -39,8 +39,9 @@ public class WebClient
 	private static final String RESPONSE_FAIL_APIVER = "DEPAPI";
 	private static final String RESPONSE_ONLINE = "online";
 	private static final String RESPONSE_OFFLINE = "offline";
-	// public static final String SERVER_CODEPAGE = "Cp1251";
-	private static final String SERVER_CODEPAGE = "UTF-8";
+	public static final String CODEPAGE_CP1251 = "Cp1251";
+	// private static final String SERVER_CODEPAGE = "UTF-8";
+	private static final String CODEPAGE_UTF8 = "UTF-8";
 
 	// FIXME: how to use mixed Cp1251 and UTF-8 code pages???
 
@@ -293,7 +294,7 @@ public class WebClient
 	 * @return Строка
 	 * @throws ResponseFormatException
 	 */
-	private static String formatResponse(HttpResponse resp) throws ResponseFormatException
+	private static String formatResponse(HttpResponse resp, String codePage) throws ResponseFormatException
 	{
 		// TODO: add error code description
 		if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
@@ -303,7 +304,7 @@ public class WebClient
 
 		try
 		{
-			return EntityUtils.toString(resp.getEntity(), SERVER_CODEPAGE);
+			return EntityUtils.toString(resp.getEntity(), codePage);
 		} catch (IOException e)
 		{
 			throw new ResponseFormatException(e);
@@ -318,13 +319,13 @@ public class WebClient
 	 * @return Ответ сервера
 	 * @throws NoConnectionException
 	 */
-	private String doGet(String url) throws ServerException
+	private String doGet(String url, String codePage) throws ServerException
 	{
 		// Log.i(TAG(), "doGet(), URL='" + URL + "'");
 		try
 		{
 			HttpResponse resp = mHttpClient.execute(new HttpGet(url.replace(" ", CODE_SPACE)));
-			return formatResponse(resp);
+			return formatResponse(resp, codePage);
 		} catch (ClientProtocolException e)
 		{
 			throw new NoConnectionException(e);
@@ -344,48 +345,48 @@ public class WebClient
 	 * @return Ответ сервера
 	 * @throws NoConnectionException
 	 */
-	private String doPost(String url, List<NameValuePair> params) throws ServerException
+	private String doPost(String url, List<NameValuePair> params, String codePage) throws ServerException
 	{
 		// Log.i(TAG(), "doPost(), URL='" + URL + "'");
 		try
 		{
-			HttpEntity entity = new UrlEncodedFormEntity(params, SERVER_CODEPAGE);
+			HttpEntity entity = new UrlEncodedFormEntity(params, codePage);
 			HttpPost post = new HttpPost(url.replace(" ", CODE_SPACE));
 			post.addHeader(entity.getContentType());
 			post.setEntity(entity);
 			HttpResponse resp = mHttpClient.execute(post);
 
-			return formatResponse(resp);
+			return formatResponse(resp, codePage);
 		} catch (IOException e)
 		{
 			throw new NoConnectionException(e);
 		}
 	}
 
-	private String doGetSmart(String URL) throws ServerException
+	private String doGetSmart(String URL, String codePage) throws ServerException
 	{
-		String resp = doGet(URL);
+		String resp = doGet(URL, codePage);
 
 		if (RESPONSE_UNAUTH.equals(resp))
 		{
 			Log.v(TAG, "doGetSmart(): Session timeout; re-login");
 			login();
-			return doGet(URL);
+			return doGet(URL, codePage);
 		} else
 		{
 			return resp;
 		}
 	}
 
-	private String doPostSmart(String URL, List<NameValuePair> params) throws ServerException
+	private String doPostSmart(String URL, List<NameValuePair> params, String codePage) throws ServerException
 	{
-		String resp = doPost(URL, params);
+		String resp = doPost(URL, params, codePage);
 
 		if (RESPONSE_UNAUTH.equals(resp))
 		{
 			Log.v(TAG, "doPostSmart(): Session timeout; re-login");
 			login();
-			return doPost(URL, params);
+			return doPost(URL, params, codePage);
 		} else
 		{
 			return resp;
@@ -494,7 +495,7 @@ public class WebClient
 		// отправляем
 
 		Date sendedTime = Utils.now();
-		String resp = doPost(server + URL_LOGINPAGE, p);
+		String resp = doPost(server + URL_LOGINPAGE, p, CODEPAGE_UTF8);
 
 		if (resp != null)
 		{
@@ -551,7 +552,7 @@ public class WebClient
 			String resp;
 			try
 			{
-				resp = doGet(server + URL_LOGINPAGE + "?status");
+				resp = doGet(server + URL_LOGINPAGE + "?status", CODEPAGE_CP1251);
 			} catch (ServerException e)
 			{
 				logged = false;
@@ -582,7 +583,7 @@ public class WebClient
 
 	public String getModList(String time)
 	{
-		return doGetSmart(server + WebClient.URL_CONSOLE + "?diary:getModList&time=" + time);
+		return doGetSmart(server + WebClient.URL_CONSOLE + "?diary:getModList&time=" + time, CODEPAGE_CP1251);
 	}
 
 	public String getPages(List<Date> dates)
@@ -599,8 +600,10 @@ public class WebClient
 			query += Utils.formatDate(date) + ",";
 		}
 
+		Log.d(TAG, "getPages: query=" + query);
+
 		// обращаемся на сервер
-		return Utils.Utf8ToCp1251(doGetSmart(query));
+		return doGetSmart(query, CODEPAGE_CP1251);
 	}
 
 	/**
@@ -618,10 +621,10 @@ public class WebClient
 		// конструируем запрос
 		List<NameValuePair> p = new ArrayList<NameValuePair>();
 		p.add(new BasicNameValuePair("diary:upload", ""));
-		p.add(new BasicNameValuePair("pages", Utils.Cp1251ToUtf8(pages)));
+		p.add(new BasicNameValuePair("pages", pages));
 
 		// отправляем на сервер
-		String resp = doPostSmart(server + URL_CONSOLE, p);
+		String resp = doPostSmart(server + URL_CONSOLE, p, CODEPAGE_CP1251);
 
 		// обрабатываем результат
 		if (!WebClient.RESPONSE_DONE.equals(resp))
@@ -636,12 +639,12 @@ public class WebClient
 
 	public String getFoodBaseVersion()
 	{
-		return doGetSmart(server + URL_CONSOLE + "?foodbase:getVersion");
+		return doGetSmart(server + URL_CONSOLE + "?foodbase:getVersion", CODEPAGE_CP1251);
 	}
 
 	public String getFoodBase()
 	{
-		return doGetSmart(server + URL_CONSOLE + "?foodbase:download");
+		return doGetSmart(server + URL_CONSOLE + "?foodbase:download", CODEPAGE_UTF8);
 	}
 
 	public void postFoodBase(String version, String data)
@@ -655,6 +658,6 @@ public class WebClient
 		// p.add(new BasicNameValuePair("data", data));
 
 		// отправляем на сервер
-		// doPostSmart(server + URL_CONSOLE, p);
+		// doPostSmart(server + URL_CONSOLE, p, CODEPAGE_UTF8);
 	}
 }

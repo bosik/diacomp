@@ -8,7 +8,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import android.util.Log;
 
 /**
  * Умеет загружать базу продуктов из строки в xml-формате.
@@ -23,12 +22,12 @@ import android.util.Log;
 @Deprecated
 public class FoodBaseXMLSerializer implements Serializer<Base<Food>>
 {
-	private static final String TAG = FoodBaseXMLSerializer.class.getSimpleName();
+	// private static final String TAG = FoodBaseXMLSerializer.class.getSimpleName();
 
 	@Override
 	public Base<Food> read(String xmlData)
 	{
-		Log.v(TAG, "Reading: " + xmlData);
+		// Log.v(TAG, "Reading: " + xmlData);
 
 		Document doc = XmlFormatter.readDocument(xmlData);
 		Element root = doc.getDocumentElement();

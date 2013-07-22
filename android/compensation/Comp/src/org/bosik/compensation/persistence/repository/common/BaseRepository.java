@@ -18,9 +18,9 @@ public interface BaseRepository<T>
 	public int getVersion();
 
 	/**
-	 * Получает базу из репозитория
+	 * Получает базу из репозитория.
 	 * 
-	 * @return
+	 * @return База или null, если она не существует.
 	 */
 	public T getBase();
 
