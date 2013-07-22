@@ -19,7 +19,6 @@ import org.w3c.dom.NodeList;
  * @author Bosik
  * 
  */
-@Deprecated
 public class FoodBaseXMLSerializer implements Serializer<Base<Food>>
 {
 	// private static final String TAG = FoodBaseXMLSerializer.class.getSimpleName();
