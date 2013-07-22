@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
+// Круто.
 public class ActivityEditorNote extends ActivityEditor
 {
 	/* =========================== КОНСТАНТЫ ================================ */

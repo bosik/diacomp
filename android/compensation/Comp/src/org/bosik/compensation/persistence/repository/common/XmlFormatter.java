@@ -29,7 +29,6 @@ import org.xml.sax.SAXException;
  * @author Bosik
  * 
  */
-@Deprecated
 public class XmlFormatter
 {
 	private static DocumentBuilder builder;

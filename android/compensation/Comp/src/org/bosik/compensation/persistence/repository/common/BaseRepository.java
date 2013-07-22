@@ -8,6 +8,7 @@ package org.bosik.compensation.persistence.repository.common;
  * @param <T>
  *            Тип базы
  */
+@Deprecated
 public interface BaseRepository<T>
 {
 	/**

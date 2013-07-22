@@ -24,7 +24,7 @@ public class FoodBaseXMLSerializer implements Serializer<Base<Food>>
 	// private static final String TAG = FoodBaseXMLSerializer.class.getSimpleName();
 
 	@Override
-	public Base<Food> read(String xmlData)
+	public void read(Base<Food> foodBase, String xmlData)
 	{
 		// Log.v(TAG, "Reading: " + xmlData);
 
@@ -32,8 +32,9 @@ public class FoodBaseXMLSerializer implements Serializer<Base<Food>>
 		Element root = doc.getDocumentElement();
 		NodeList nodes = root.getChildNodes();
 
-		Base<Food> foodBase = new Base<Food>();
+		// Base<Food> foodBase = new Base<Food>();
 		foodBase.beginUpdate();
+		foodBase.clear();
 		foodBase.setVersion(Integer.parseInt(root.getAttribute("version")));
 
 		for (int i = 0; i < nodes.getLength(); i++)
@@ -57,7 +58,7 @@ public class FoodBaseXMLSerializer implements Serializer<Base<Food>>
 		}
 
 		foodBase.endUpdate();
-		return foodBase;
+		// return foodBase;
 	}
 
 	@Override
