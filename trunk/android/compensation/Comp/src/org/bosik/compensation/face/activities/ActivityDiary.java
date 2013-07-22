@@ -14,6 +14,7 @@ import org.bosik.compensation.persistence.entity.diary.records.InsRecord;
 import org.bosik.compensation.persistence.entity.diary.records.MealRecord;
 import org.bosik.compensation.persistence.entity.diary.records.NoteRecord;
 import org.bosik.compensation.persistence.repository.Storage;
+import org.bosik.compensation.utils.ErrorHandler;
 import org.bosik.compensation.utils.Utils;
 import android.app.Activity;
 import android.content.Intent;
@@ -54,212 +55,219 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 	// СОБЫТИЯ
 
+	// handled
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		// Log.i(TAG, "DiaryView(): onCreate()");
-		setContentView(R.layout.diary);
 
-		// определяем компоненты
-		diaryViewLayout = (DiaryView) findViewById(R.id.diaryViewLayout);
-		buttonSelectDay = (Button) findViewById(R.id.buttonSelectDay);
-
-		// НАСТРОЙКА СИСТЕМЫ
-		registerForContextMenu(diaryViewLayout);
-
-		// назначаем обработчики
-		((Button) findViewById(R.id.buttonPrevDay)).setOnClickListener(this);
-		buttonSelectDay.setOnClickListener(this);
-		((Button) findViewById(R.id.buttonNextDay)).setOnClickListener(this);
-		((Button) findViewById(R.id.buttonAddBlood)).setOnClickListener(this);
-		((Button) findViewById(R.id.buttonAddIns)).setOnClickListener(this);
-		((Button) findViewById(R.id.buttonAddMeal)).setOnClickListener(this);
-		((Button) findViewById(R.id.buttonAddNote)).setOnClickListener(this);
-		findViewById(R.id.scrollView).setBackgroundColor(Color.WHITE);
-		diaryViewLayout.setOnRecordClickListener(this);
-
-		// определение параметров запроса
-		// Intent intent = getIntent();
-
-		/*
-		 * if (intent.hasExtra("date")) { // TODO: опасно... а вдруг в Intent мусор? // TODO:
-		 * константы Date date = (Date) intent.getSerializableExtra("date"); openPage(date);
-		 * Log.d(TAG, "DiaryView(): onCreate(), date is specified: " + date); } else
-		 */
+		try
 		{
-			openPage(curDate);
-			Log.d(TAG, "DiaryView(): onCreate(), date default: " + curDate);
+			// Log.i(TAG, "DiaryView(): onCreate()");
+			setContentView(R.layout.diary);
+
+			// определяем компоненты
+			diaryViewLayout = (DiaryView) findViewById(R.id.diaryViewLayout);
+			buttonSelectDay = (Button) findViewById(R.id.buttonSelectDay);
+
+			// НАСТРОЙКА СИСТЕМЫ
+			registerForContextMenu(diaryViewLayout);
+
+			// назначаем обработчики
+			((Button) findViewById(R.id.buttonPrevDay)).setOnClickListener(this);
+			buttonSelectDay.setOnClickListener(this);
+			((Button) findViewById(R.id.buttonNextDay)).setOnClickListener(this);
+			((Button) findViewById(R.id.buttonAddBlood)).setOnClickListener(this);
+			((Button) findViewById(R.id.buttonAddIns)).setOnClickListener(this);
+			((Button) findViewById(R.id.buttonAddMeal)).setOnClickListener(this);
+			((Button) findViewById(R.id.buttonAddNote)).setOnClickListener(this);
+			findViewById(R.id.scrollView).setBackgroundColor(Color.WHITE);
+			diaryViewLayout.setOnRecordClickListener(this);
+
+			// определение параметров запроса
+			// Intent intent = getIntent();
+
+			/*
+			 * if (intent.hasExtra("date")) { // TODO: опасно... а вдруг в Intent мусор? // TODO:
+			 * константы Date date = (Date) intent.getSerializableExtra("date"); openPage(date);
+			 * Log.d(TAG, "DiaryView(): onCreate(), date is specified: " + date); } else
+			 */
+			{
+				openPage(curDate);
+				Log.d(TAG, "DiaryView(): onCreate(), date default: " + curDate);
+			}
+		} catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
 		}
 	}
 
+	// handled
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.diary_menu, menu);
+		try
+		{
+			MenuInflater inflater = getMenuInflater();
+			inflater.inflate(R.menu.diary_menu, menu);
+		} catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
+		}
 		return true;
 	}
 
+	// handled
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo)
 	{
-		if (v.getId() == diaryViewLayout.getId())
+		try
 		{
-			// AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-
-			if ((diaryViewLayout.getDownedIndex() < 0) || (diaryViewLayout.getDownedIndex() >= curPage.count()))
-				return;
-
-			// TODO: вынести в ресурсы
-
-			String capt = "nothing";
-			DiaryRecord rec = curPage.get(diaryViewLayout.getDownedIndex());
-			Class<? extends DiaryRecord> c = rec.getClass();
-			if (c == BloodRecord.class)
+			if (v.getId() == diaryViewLayout.getId())
 			{
-				capt = "Замер СК";
-			} else
-				if (c == InsRecord.class)
+				// AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+
+				if ((diaryViewLayout.getDownedIndex() < 0) || (diaryViewLayout.getDownedIndex() >= curPage.count()))
+					return;
+
+				// TODO: вынести в ресурсы
+
+				String capt = "nothing";
+				DiaryRecord rec = curPage.get(diaryViewLayout.getDownedIndex());
+				Class<? extends DiaryRecord> c = rec.getClass();
+				if (c == BloodRecord.class)
 				{
-					capt = "Инъекция";
+					capt = "Замер СК";
 				} else
-					if (c == MealRecord.class)
+					if (c == InsRecord.class)
 					{
-						capt = "Приём пищи";
+						capt = "Инъекция";
 					} else
-						if (c == NoteRecord.class)
+						if (c == MealRecord.class)
 						{
-							capt = "Заметка";
-						}
+							capt = "Приём пищи";
+						} else
+							if (c == NoteRecord.class)
+							{
+								capt = "Заметка";
+							}
 
-			menu.setHeaderTitle(capt);
-			String[] menuItems = getResources().getStringArray(R.array.context_edit);
-			for (int i = 0; i < menuItems.length; i++)
-			{
-				menu.add(Menu.NONE, i, i, menuItems[i]);
+				menu.setHeaderTitle(capt);
+				String[] menuItems = getResources().getStringArray(R.array.context_edit);
+				for (int i = 0; i < menuItems.length; i++)
+				{
+					menu.add(Menu.NONE, i, i, menuItems[i]);
+				}
+
+				// menu.getItem(0).setCheckable(true);
+				// menu.getItem(0).setChecked(true);
 			}
-
-			// menu.getItem(0).setCheckable(true);
-			// menu.getItem(0).setChecked(true);
+		} catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
 		}
 	}
 
+	// handled
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		switch (item.getItemId())
+		try
 		{
-			case R.id.item_diary_addblood:
-			{
-				showBloodEditor(0, 0, 0, true);
-				return true;
-			}
-			case R.id.item_diary_addins:
-			{
-				// TODO: handler
-				UIUtils.showTip(this, "Creating ins is not implemented yet");
-				return true;
-			}
-			case R.id.item_diary_addmeal:
-			{
-				// TODO: handler
-				UIUtils.showTip(this, "Creating meal is not implemented yet");
 
-				/*
-				 * Date date = Calendar.getInstance().getTime(); Log.i(TAG,
-				 * "menuClick: downloading page..."); DiaryPage page =
-				 * Storage.web_diary.getPage(date); Date timestamp =
-				 * Storage.web_diary.diarySource.getTimeStamp(date);
-				 * 
-				 * if (null != page) { Log.d(TAG, "menuClick: page is ok");
-				 * Storage.local_diary.postPage(page, timestamp); } else Log.d(TAG,
-				 * "menuClick: page is null");
-				 * 
-				 * Log.d(TAG, "menuClick: invalidating...");
-				 * 
-				 * //DiaryView.curPage = page; //mDiaryView.invalidate(); mDiaryView.setPage(page);
-				 */
-
-				return true;
-			}
-			case R.id.item_diary_addnote:
+			switch (item.getItemId())
 			{
-				UIUtils.showTip(this, "Creating note is not implemented yet");
-				/*
-				 * Log.i(TAG, "menuClick: opening page..."); DiaryPage page =
-				 * Storage.local_diary.getPage(curDate);
-				 * 
-				 * if (null != page) Log.d(TAG, "menuClick: page is ok"); else Log.d(TAG,
-				 * "menuClick: page is null");
-				 * 
-				 * Log.d(TAG, "menuClick: invalidating...");
-				 * 
-				 * //DiaryView.curPage = page; //mDiaryView.invalidate(); mDiaryView.setPage(page);
-				 * 
-				 * 
-				 * DiaryPage page = getCurPage();
-				 * 
-				 * // добавляем int minTime = Utils.curMinutes(); NoteRecord note = new
-				 * NoteRecord(minTime, "текст"); page.add(note); // сохраняем postPage(page);
-				 */
+				case R.id.item_diary_addblood:
+				{
+					showBloodEditor(0, 0, 0, true);
+					return true;
+				}
+				case R.id.item_diary_addins:
+				{
+					// TODO: handler
+					UIUtils.showTip(this, "Creating ins is not implemented yet");
+					return true;
+				}
+				case R.id.item_diary_addmeal:
+				{
+					// TODO: handler
+					UIUtils.showTip(this, "Creating meal is not implemented yet");
 
-				return true;
+					/*
+					 * Date date = Calendar.getInstance().getTime(); Log.i(TAG,
+					 * "menuClick: downloading page..."); DiaryPage page =
+					 * Storage.web_diary.getPage(date); Date timestamp =
+					 * Storage.web_diary.diarySource.getTimeStamp(date);
+					 * 
+					 * if (null != page) { Log.d(TAG, "menuClick: page is ok");
+					 * Storage.local_diary.postPage(page, timestamp); } else Log.d(TAG,
+					 * "menuClick: page is null");
+					 * 
+					 * Log.d(TAG, "menuClick: invalidating...");
+					 * 
+					 * //DiaryView.curPage = page; //mDiaryView.invalidate();
+					 * mDiaryView.setPage(page);
+					 */
+
+					return true;
+				}
+				case R.id.item_diary_addnote:
+				{
+					UIUtils.showTip(this, "Creating note is not implemented yet");
+					/*
+					 * Log.i(TAG, "menuClick: opening page..."); DiaryPage page =
+					 * Storage.local_diary.getPage(curDate);
+					 * 
+					 * if (null != page) Log.d(TAG, "menuClick: page is ok"); else Log.d(TAG,
+					 * "menuClick: page is null");
+					 * 
+					 * Log.d(TAG, "menuClick: invalidating...");
+					 * 
+					 * //DiaryView.curPage = page; //mDiaryView.invalidate();
+					 * mDiaryView.setPage(page);
+					 * 
+					 * 
+					 * DiaryPage page = getCurPage();
+					 * 
+					 * // добавляем int minTime = Utils.curMinutes(); NoteRecord note = new
+					 * NoteRecord(minTime, "текст"); page.add(note); // сохраняем postPage(page);
+					 */
+
+					return true;
+				}
+				// TODO: other handlers
+
+				default:
+					return super.onOptionsItemSelected(item);
 			}
-			// TODO: other handlers
-
-			default:
-				return super.onOptionsItemSelected(item);
+		} catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
 		}
+
+		return true;
 	}
 
+	// handled
 	@Override
 	public boolean onContextItemSelected(MenuItem item)
 	{
-		/*
-		 * AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo(); int
-		 * menuItemIndex = item.getItemId(); String[] menuItems =
-		 * getResources().getStringArray(R.array.context_edit); String menuItemName =
-		 * menuItems[menuItemIndex];
-		 */
-
-		if ((diaryViewLayout.getDownedIndex() < 0) || (diaryViewLayout.getDownedIndex() >= curPage.count()))
-			return false;
-
-		DiaryRecord rec = curPage.get(diaryViewLayout.getDownedIndex());
-		Class<? extends DiaryRecord> c = rec.getClass();
-
-		if (c == BloodRecord.class)
+		try
 		{
-			switch (item.getItemId())
-			{
-			// TODO: rename, use constants
+			/*
+			 * AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo(); int
+			 * menuItemIndex = item.getItemId(); String[] menuItems =
+			 * getResources().getStringArray(R.array.context_edit); String menuItemName =
+			 * menuItems[menuItemIndex];
+			 */
 
-			// изменить
-				case 0:
-				{
-					BloodRecord temp = (BloodRecord) rec;
-					// TODO: не использовать indexOnEditing, а только diaryViewLayout.clickedIndex?
-					// indexOnEditing = diaryViewLayout.downedIndex;
-					showBloodEditor(temp.getTime(), temp.getValue(), temp.getFinger(), false);
-					break;
-				}
-				// удалить
-				case 1:
-				{
-					// TODO: implement removing
-					// UIUtils.showTip(this, "Removing blood is not implemented yet");
-					diaryViewLayout.getPage().remove(diaryViewLayout.getDownedIndex());
-					postPage(diaryViewLayout.getPage());
+			if ((diaryViewLayout.getDownedIndex() < 0) || (diaryViewLayout.getDownedIndex() >= curPage.count()))
+				return false;
 
-					break;
-				}
-			}
-		}
+			DiaryRecord rec = curPage.get(diaryViewLayout.getDownedIndex());
+			Class<? extends DiaryRecord> c = rec.getClass();
 
-		else
-
-			if (c == InsRecord.class)
+			if (c == BloodRecord.class)
 			{
 				switch (item.getItemId())
 				{
@@ -268,77 +276,133 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				// изменить
 					case 0:
 					{
-						InsRecord temp = (InsRecord) rec;
+						BloodRecord temp = (BloodRecord) rec;
 						// TODO: не использовать indexOnEditing, а только
 						// diaryViewLayout.clickedIndex?
 						// indexOnEditing = diaryViewLayout.downedIndex;
-						// showBloodEditor(temp.getTime(), temp.getValue(), temp.getFinger(),
-						// false);
-						UIUtils.showTip(this, "Editing ins is not implemented yet");
+						showBloodEditor(temp.getTime(), temp.getValue(), temp.getFinger(), false);
 						break;
 					}
 					// удалить
 					case 1:
 					{
 						// TODO: implement removing
-						UIUtils.showTip(this, "Removing ins is not implemented yet");
+						// UIUtils.showTip(this, "Removing blood is not implemented yet");
+						diaryViewLayout.getPage().remove(diaryViewLayout.getDownedIndex());
+						postPage(diaryViewLayout.getPage());
+
 						break;
 					}
 				}
 			}
 
-		// TODO: implement other record types
+			else
+
+				if (c == InsRecord.class)
+				{
+					switch (item.getItemId())
+					{
+					// TODO: rename, use constants
+
+					// изменить
+						case 0:
+						{
+							InsRecord temp = (InsRecord) rec;
+							// TODO: не использовать indexOnEditing, а только
+							// diaryViewLayout.clickedIndex?
+							// indexOnEditing = diaryViewLayout.downedIndex;
+							// showBloodEditor(temp.getTime(), temp.getValue(), temp.getFinger(),
+							// false);
+							UIUtils.showTip(this, "Editing ins is not implemented yet");
+							break;
+						}
+						// удалить
+						case 1:
+						{
+							// TODO: implement removing
+							UIUtils.showTip(this, "Removing ins is not implemented yet");
+							break;
+						}
+					}
+				}
+
+			// TODO: implement other record types
+		} catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
+		}
 
 		return true;
 	}
 
+	// handled
 	public void onClick(View v)
 	{
-		switch (v.getId())
+		try
 		{
-			case R.id.buttonPrevDay:
+			switch (v.getId())
 			{
-				openPage(Utils.getPrevDay(curDate));
-				break;
+				case R.id.buttonPrevDay:
+				{
+					openPage(Utils.getPrevDay(curDate));
+					break;
+				}
+				case R.id.buttonNextDay:
+				{
+					openPage(Utils.getNextDay(curDate));
+					break;
+				}
+				case R.id.buttonSelectDay:
+				{
+					// ...
+					// ((Button)v).setText("it's ok");
+					break;
+				}
+				case R.id.buttonAddBlood:
+				{
+					showBloodEditor(0, 0, 0, true);
+					break;
+				}
+				case R.id.buttonAddMeal:
+				{
+					// showNoteEditor(0, "", true);
+					showMealEditor();
+					break;
+				}
+
+				case R.id.buttonAddNote:
+				{
+					showNoteEditor(0, "", true);
+					break;
+				}
 			}
-			case R.id.buttonNextDay:
-			{
-				openPage(Utils.getNextDay(curDate));
-				break;
-			}
-			case R.id.buttonSelectDay:
-			{
-				// ...
-				// ((Button)v).setText("it's ok");
-				break;
-			}
-			case R.id.buttonAddBlood:
-			{
-				showBloodEditor(0, 0, 0, true);
-				break;
-			}
-			case R.id.buttonAddNote:
-			{
-				showNoteEditor(0, "", true);
-				break;
-			}
+		} catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
 		}
 	}
 
+	// handled
 	public void onRecordClick(int index)
 	{
-		DiaryRecord rec = curPage.get(index);
-
-		if (rec.getClass() == BloodRecord.class)
+		try
 		{
-			BloodRecord temp = (BloodRecord) rec;
-			showBloodEditor(temp.getTime(), temp.getValue(), temp.getFinger(), false);
-		} else
-			if (rec.getClass() == NoteRecord.class)
+			DiaryRecord rec = curPage.get(index);
+
+			if (rec.getClass() == BloodRecord.class)
 			{
-				NoteRecord temp = (NoteRecord) rec;
-				showNoteEditor(temp.getTime(), temp.getText(), false);
-			}
+				BloodRecord temp = (BloodRecord) rec;
+				showBloodEditor(temp.getTime(), temp.getValue(), temp.getFinger(), false);
+			} else
+				if (rec.getClass() == NoteRecord.class)
+				{
+					NoteRecord temp = (NoteRecord) rec;
+					showNoteEditor(temp.getTime(), temp.getText(), false);
+				}
+		} catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
+		}
 	}
 
 	private void setCaptionDate(Date date)
@@ -348,81 +412,88 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		buttonSelectDay.setText(s);
 	}
 
+	// handled
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent)
 	{
 		super.onActivityResult(requestCode, resultCode, intent);
 
-		switch (requestCode)
+		try
 		{
-			case DIALOG_BLOOD_EDITOR_NEW:
+			switch (requestCode)
 			{
-				if (resultCode == RESULT_OK)
+				case DIALOG_BLOOD_EDITOR_NEW:
 				{
-					int time = intent.getIntExtra(ActivityEditorBlood.FIELD_TIME, -1);
-					double value = intent.getDoubleExtra(ActivityEditorBlood.FIELD_VALUE, -1);
-					int finger = intent.getIntExtra(ActivityEditorBlood.FIELD_FINGER, -1);
+					if (resultCode == RESULT_OK)
+					{
+						int time = intent.getIntExtra(ActivityEditorBlood.FIELD_TIME, -1);
+						double value = intent.getDoubleExtra(ActivityEditorBlood.FIELD_VALUE, -1);
+						int finger = intent.getIntExtra(ActivityEditorBlood.FIELD_FINGER, -1);
 
-					BloodRecord rec = new BloodRecord(time, value, finger);
-					curPage.add(rec);
-					postPage(curPage);
+						BloodRecord rec = new BloodRecord(time, value, finger);
+						curPage.add(rec);
+						postPage(curPage);
+					}
+					break;
 				}
-				break;
-			}
 
-			case DIALOG_BLOOD_EDITOR_MOD:
-			{
-				if (resultCode == RESULT_OK)
+				case DIALOG_BLOOD_EDITOR_MOD:
 				{
-					int time = intent.getIntExtra(ActivityEditorBlood.FIELD_TIME, -1);
-					double value = intent.getDoubleExtra(ActivityEditorBlood.FIELD_VALUE, -1);
-					int finger = intent.getIntExtra(ActivityEditorBlood.FIELD_FINGER, -1);
+					if (resultCode == RESULT_OK)
+					{
+						int time = intent.getIntExtra(ActivityEditorBlood.FIELD_TIME, -1);
+						double value = intent.getDoubleExtra(ActivityEditorBlood.FIELD_VALUE, -1);
+						int finger = intent.getIntExtra(ActivityEditorBlood.FIELD_FINGER, -1);
 
-					BloodRecord rec = (BloodRecord) curPage.get(diaryViewLayout.getClickedIndex());
+						BloodRecord rec = (BloodRecord) curPage.get(diaryViewLayout.getClickedIndex());
 
-					rec.beginUpdate();
-					rec.setTime(time);
-					rec.setValue(value);
-					rec.setFinger(finger);
-					rec.endUpdate();
+						rec.beginUpdate();
+						rec.setTime(time);
+						rec.setValue(value);
+						rec.setFinger(finger);
+						rec.endUpdate();
 
-					postPage(curPage);
+						postPage(curPage);
+					}
+					break;
 				}
-				break;
-			}
 
-			case DIALOG_NOTE_EDITOR_NEW:
-			{
-				if (resultCode == RESULT_OK)
+				case DIALOG_NOTE_EDITOR_NEW:
 				{
-					int time = intent.getIntExtra(ActivityEditorNote.FIELD_TIME, -1);
-					String text = intent.getStringExtra(ActivityEditorNote.FIELD_TEXT);
+					if (resultCode == RESULT_OK)
+					{
+						int time = intent.getIntExtra(ActivityEditorNote.FIELD_TIME, -1);
+						String text = intent.getStringExtra(ActivityEditorNote.FIELD_TEXT);
 
-					NoteRecord rec = new NoteRecord(time, text);
-					curPage.add(rec);
-					postPage(curPage);
+						NoteRecord rec = new NoteRecord(time, text);
+						curPage.add(rec);
+						postPage(curPage);
+					}
+					break;
 				}
-				break;
-			}
 
-			case DIALOG_NOTE_EDITOR_MOD:
-			{
-				if (resultCode == RESULT_OK)
+				case DIALOG_NOTE_EDITOR_MOD:
 				{
-					int time = intent.getIntExtra(ActivityEditorNote.FIELD_TIME, -1);
-					String text = intent.getStringExtra(ActivityEditorNote.FIELD_TEXT);
+					if (resultCode == RESULT_OK)
+					{
+						int time = intent.getIntExtra(ActivityEditorNote.FIELD_TIME, -1);
+						String text = intent.getStringExtra(ActivityEditorNote.FIELD_TEXT);
 
-					NoteRecord rec = (NoteRecord) curPage.get(diaryViewLayout.getClickedIndex());
+						NoteRecord rec = (NoteRecord) curPage.get(diaryViewLayout.getClickedIndex());
 
-					rec.beginUpdate();
-					rec.setTime(time);
-					rec.setText(text);
-					rec.endUpdate();
+						rec.beginUpdate();
+						rec.setTime(time);
+						rec.setText(text);
+						rec.endUpdate();
 
-					postPage(curPage);
+						postPage(curPage);
+					}
+					break;
 				}
-				break;
 			}
+		} catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
 		}
 	}
 
@@ -503,6 +574,12 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		intent.putExtra(ActivityEditorBlood.FIELD_VALUE, value);
 		intent.putExtra(ActivityEditorBlood.FIELD_FINGER, finger);
 		startActivityForResult(intent, create ? DIALOG_BLOOD_EDITOR_NEW : DIALOG_BLOOD_EDITOR_MOD);
+	}
+
+	private void showMealEditor()
+	{
+		// TODO: make it actual editor intent
+		startActivity(new Intent(this, ActivityMeal.class));
 	}
 
 	private void showNoteEditor(int time, String text, boolean create)

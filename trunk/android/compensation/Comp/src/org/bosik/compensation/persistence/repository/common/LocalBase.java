@@ -31,7 +31,12 @@ public class LocalBase<ItemType extends Item> extends Base<ItemType> implements 
 		this.context = context;
 		this.fileName = fileName;
 		this.serializer = serializer;
-		// base = new Base<ItemType>();
+
+		if (fileExists(fileName))
+		{
+			load();
+		}
+
 		fileVersion = getVersion();
 	}
 
@@ -144,13 +149,16 @@ public class LocalBase<ItemType extends Item> extends Base<ItemType> implements 
 	{
 		try
 		{
-			if (fileExists(fileName))
-			{
-				read(readFromFile(fileName));
-				fileVersion = getVersion();
-			} else
-				// THINK: else what? clear/ignore?
-				;
+			// if (fileExists(fileName))
+			// {
+			read(readFromFile(fileName));
+			fileVersion = getVersion();
+			// } else
+			// {
+			// might be called from constructor, so appropriative file might not exists — it's
+			// ok
+			// THINK: else what? clear/ignore?
+			// }
 		} catch (IOException e)
 		{
 			throw new RuntimeException(e);

@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.repository.common;
+package org.bosik.compensation.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,8 +29,9 @@ import org.xml.sax.SAXException;
  * @author Bosik
  * 
  */
-public class XmlFormatter
+public class XmlUtils
 {
+	private static final String TAG = XmlUtils.class.getSimpleName();
 	private static DocumentBuilder builder;
 	private static Transformer transformer;
 
@@ -41,7 +42,7 @@ public class XmlFormatter
 			builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		} catch (ParserConfigurationException e)
 		{
-			throw new RuntimeException("Can not initialize " + XmlFormatter.class.getSimpleName() + "'s builder", e);
+			throw new RuntimeException("Can not initialize " + TAG + "'s builder", e);
 		}
 
 		try
@@ -49,7 +50,7 @@ public class XmlFormatter
 			transformer = TransformerFactory.newInstance().newTransformer();
 		} catch (TransformerConfigurationException e)
 		{
-			throw new RuntimeException("Can not initialize " + XmlFormatter.class.getSimpleName() + "'s transformer", e);
+			throw new RuntimeException("Can not initialize " + TAG + "'s transformer", e);
 		}
 	}
 
@@ -66,6 +67,7 @@ public class XmlFormatter
 			return builder.parse(stream);
 		} catch (UnsupportedEncodingException e)
 		{
+			// FIXME: blocked throws (here and further)
 			e.printStackTrace();
 		} catch (SAXException e)
 		{

@@ -39,11 +39,9 @@ public class WebClient
 	private static final String RESPONSE_FAIL_APIVER = "DEPAPI";
 	private static final String RESPONSE_ONLINE = "online";
 	private static final String RESPONSE_OFFLINE = "offline";
-	public static final String CODEPAGE_CP1251 = "Cp1251";
-	// private static final String SERVER_CODEPAGE = "UTF-8";
+	private static final String CODEPAGE_CP1251 = "Cp1251";
 	private static final String CODEPAGE_UTF8 = "UTF-8";
-
-	// FIXME: how to use mixed Cp1251 and UTF-8 code pages???
+	// private static final String SERVER_CODEPAGE = "UTF-8";
 
 	private static final String CODE_SPACE = "%20";
 
@@ -395,6 +393,28 @@ public class WebClient
 		}
 	}
 
+	private boolean processResponse(String resp, String trueMark, String falseMark)
+	{
+		if (trueMark.equals(resp))
+		{
+			return true;
+		}
+
+		if (falseMark.equals(resp))
+		{
+			return false;
+		}
+
+		// THINK: do I really need exception throw?
+		throw new ResponseFormatException("Invalid respose: '" + trueMark + "' or '" + falseMark + "' expected but '"
+				+ resp + "' found");
+	}
+
+	private boolean processResponseDoneFail(String resp)
+	{
+		return processResponse(resp, RESPONSE_DONE, RESPONSE_FAIL);
+	}
+
 	/* ================================ КОНСТРУКТОР ================================ */
 
 	public WebClient(int connectionTimeout)
@@ -551,25 +571,15 @@ public class WebClient
 	{
 		if (forceUpdate)
 		{
-			String resp;
+			logged = false;
+
 			try
 			{
-				resp = doGet(server + URL_LOGINPAGE + "?status", CODEPAGE_CP1251);
+				String resp = doGet(server + URL_LOGINPAGE + "?status", CODEPAGE_CP1251);
+				logged = processResponse(resp, RESPONSE_ONLINE, RESPONSE_OFFLINE);
 			} catch (ServerException e)
 			{
-				logged = false;
 				return false;
-			}
-
-			if (resp.equals(RESPONSE_ONLINE))
-				logged = true;
-			else
-			{
-				// THINK: do I really need exception throw?
-				logged = false;
-				if (!resp.equals(RESPONSE_OFFLINE))
-					throw new ResponseFormatException("Invalid respose: '" + RESPONSE_ONLINE + "' or '"
-							+ RESPONSE_OFFLINE + " expected but '" + resp + "' found");
 			}
 		}
 
@@ -579,6 +589,20 @@ public class WebClient
 	public boolean isOnline()
 	{
 		return isOnline(false);
+	}
+
+	public boolean sendMail(String string)
+	{
+		// конструируем запрос
+		List<NameValuePair> p = new ArrayList<NameValuePair>();
+		p.add(new BasicNameValuePair("report", ""));
+		p.add(new BasicNameValuePair("msg", string));
+
+		// отправляем на сервер
+		String resp = doPostSmart(server + URL_CONSOLE, p, CODEPAGE_CP1251);
+
+		// обрабатываем результат
+		return processResponseDoneFail(resp);
 	}
 
 	/* ------------------------------------- ДНЕВНИК ------------------------------------- */
@@ -629,12 +653,7 @@ public class WebClient
 		String resp = doPostSmart(server + URL_CONSOLE, p, CODEPAGE_CP1251);
 
 		// обрабатываем результат
-		if (!WebClient.RESPONSE_DONE.equals(resp))
-		{
-			throw new WebClient.ServerException("Uploading pages to the server failed, response is \"" + resp + "\"");
-		}
-
-		return true;
+		return processResponseDoneFail(resp);
 	}
 
 	/* ---------------------------------- БАЗА ПРОДУКТОВ ---------------------------------- */
@@ -649,7 +668,7 @@ public class WebClient
 		return doGetSmart(server + URL_CONSOLE + "?foodbase:download", CODEPAGE_UTF8);
 	}
 
-	public void postFoodBase(String version, String data)
+	public boolean postFoodBase(String version, String data)
 	{
 		// TODO: uncomment when tested
 
@@ -660,6 +679,11 @@ public class WebClient
 		// p.add(new BasicNameValuePair("data", data));
 
 		// отправляем на сервер
-		// doPostSmart(server + URL_CONSOLE, p, CODEPAGE_UTF8);
+		// String resp = doPostSmart(server + URL_CONSOLE, p, CODEPAGE_UTF8);
+
+		// обрабатываем результат
+		// return processResponseDoneFail(resp);
+
+		return false;
 	}
 }
