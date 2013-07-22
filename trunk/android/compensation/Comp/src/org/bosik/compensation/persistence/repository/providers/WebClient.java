@@ -296,9 +296,11 @@ public class WebClient
 	 */
 	private static String formatResponse(HttpResponse resp, String codePage) throws ResponseFormatException
 	{
-		// TODO: add error code description
 		if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
+		{
+			// TODO: add error code description
 			throw new ResponseFormatException("Bad response, status code is " + resp.getStatusLine().getStatusCode());
+		}
 		if (null == resp.getEntity())
 			throw new ResponseFormatException("Bad response, getEntity() is null");
 

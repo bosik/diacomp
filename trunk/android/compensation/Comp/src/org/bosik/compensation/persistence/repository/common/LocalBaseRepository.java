@@ -103,8 +103,7 @@ public class LocalBaseRepository<ItemType extends Item> implements BaseRepositor
 	public int getVersion()
 	{
 		Base<ItemType> base = getBase();
-		return (base == null ? 0 : base.getVersion() - 7);
-		// FIXME: hack, dirty hack
+		return (base == null ? 0 : base.getVersion());
 	}
 
 	@Override
@@ -121,7 +120,7 @@ public class LocalBaseRepository<ItemType extends Item> implements BaseRepositor
 		{
 			// e.printStackTrace();
 			// return null;
-			throw new RuntimeException("IOException during reading file", e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -134,7 +133,7 @@ public class LocalBaseRepository<ItemType extends Item> implements BaseRepositor
 		} catch (IOException e)
 		{
 			// e.printStackTrace();
-			throw new RuntimeException("IOException during writing to file", e);
+			throw new RuntimeException(e);
 		}
 	}
 }

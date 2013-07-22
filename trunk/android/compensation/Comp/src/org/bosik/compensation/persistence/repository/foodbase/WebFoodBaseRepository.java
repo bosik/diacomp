@@ -4,12 +4,10 @@ import org.bosik.compensation.persistence.entity.foodbase.Food;
 import org.bosik.compensation.persistence.repository.common.Base;
 import org.bosik.compensation.persistence.repository.common.BaseRepository;
 import org.bosik.compensation.persistence.repository.providers.WebClient;
-import android.util.Log;
 
 public class WebFoodBaseRepository implements BaseRepository<Base<Food>>
 {
-	// @SuppressWarnings("unused")
-	private static String TAG = WebFoodBaseRepository.class.getSimpleName();
+	// private static String TAG = WebFoodBaseRepository.class.getSimpleName();
 	private static FoodBaseXMLSerializer formatter = new FoodBaseXMLSerializer();
 
 	private WebClient webClient;
@@ -17,7 +15,7 @@ public class WebFoodBaseRepository implements BaseRepository<Base<Food>>
 	public WebFoodBaseRepository(WebClient webClient)
 	{
 		if (webClient == null)
-			throw new NullPointerException("WebClient can't be null");
+			throw new IllegalArgumentException("WebClient can't be null");
 
 		this.webClient = webClient;
 	}
@@ -32,10 +30,7 @@ public class WebFoodBaseRepository implements BaseRepository<Base<Food>>
 	@Override
 	public Base<Food> getBase()
 	{
-		// String resp = webClient.doGetSmart(webClient.getServer() + WebClient.URL_CONSOLE +
-		// "?foodbase:download");
 		String resp = webClient.getFoodBase();
-		Log.d(TAG, "Web response: " + resp);
 		return formatter.read(resp);
 	}
 
