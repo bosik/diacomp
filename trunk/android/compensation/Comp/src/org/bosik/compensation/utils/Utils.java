@@ -6,6 +6,7 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CodingErrorAction;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -285,6 +286,8 @@ public class Utils
 		CharsetDecoder decoder = charset.newDecoder();
 		CharsetEncoder encoder = charset.newEncoder();
 
+		decoder.onMalformedInput(CodingErrorAction.IGNORE);
+		encoder.onMalformedInput(CodingErrorAction.IGNORE);
 		try
 		{
 			ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(s));
@@ -294,6 +297,5 @@ public class Utils
 		{
 			throw new RuntimeException(e);
 		}
-
 	}
 }

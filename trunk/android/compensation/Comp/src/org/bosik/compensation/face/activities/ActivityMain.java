@@ -89,6 +89,7 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 		private ProgressDialog dialog_login;
 		private ProgressDialog dialog_sync;
 		private int syncPagesCount;
+		private boolean syncFoodBase;
 		private SyncParams syncParams;
 
 		// константы для управления progressbar
@@ -154,14 +155,17 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 			{
 				Log.d(TAG, "Sync...");
 				// TODO: хранить время последней синхронизации
-				Date since = new Date(2013 - 1900, 01 - 1, 1, 0, 0, 0); // а затем мы получаем
+				Date since = new Date(2013 - 1900, 04 - 1, 1, 0, 0, 0); // а затем мы получаем
 																		// громадный синхролист, ага
 				syncPagesCount = SyncDiaryRepository.synchronize(Storage.local_diary, Storage.web_diary, since);
 
 				// TODO: create once
 				SyncBaseRepository<Base<Food>> foodSync = new SyncBaseRepository<Base<Food>>();
 
-				if (foodSync.synchronize(Storage.localFoodbaseRepository, Storage.webFoodbaseRepository) == SyncResult.FIRST_UPDATED)
+				SyncResult r = foodSync.synchronize(Storage.localFoodbaseRepository, Storage.webFoodbaseRepository);
+				syncFoodBase = (r != SyncResult.EQUAL);
+
+				if (r == SyncResult.FIRST_UPDATED)
 				{
 					// если хранилище базы изменилось, перезагружаем базу
 					Storage.loadFoodbase();
@@ -220,35 +224,54 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 
 		protected void onPostExecute(LoginResult result)
 		{
-			if (!syncParams.getShowProgress())
-				return;
-
-			if (dialog_login.isShowing())
-				dialog_login.dismiss();
-			if (dialog_sync.isShowing())
-				dialog_sync.dismiss();
+			if (syncParams.getShowProgress())
+			{
+				if (dialog_login.isShowing())
+					dialog_login.dismiss();
+				if (dialog_sync.isShowing())
+					dialog_sync.dismiss();
+			}
 			switch (result)
 			{
 				case FAIL_UNDEFIELDS:
-					UIUtils.showTip(ActivityMain.this, "Ошибка авторизации: укажите адрес сервера, логин и пароль");
+					if (syncParams.getShowProgress())
+						UIUtils.showTip(ActivityMain.this, "Ошибка авторизации: укажите адрес сервера, логин и пароль");
 					break;
 				case FAIL_AUTH:
-					UIUtils.showTip(ActivityMain.this, "Ошибка авторизации: неверный логин/пароль");
+					if (syncParams.getShowProgress())
+						UIUtils.showTip(ActivityMain.this, "Ошибка авторизации: неверный логин/пароль");
 					break;
 				case FAIL_CONNECTION:
-					UIUtils.showTip(ActivityMain.this, "Ошибка: сервер не отвечает");
+					if (syncParams.getShowProgress())
+						UIUtils.showTip(ActivityMain.this, "Ошибка: сервер не отвечает");
 					break;
 				case FAIL_APIVERSION:
-					UIUtils.showTip(ActivityMain.this, "Ошибка: версия API устарела, обновите приложение");
+					if (syncParams.getShowProgress())
+						UIUtils.showTip(ActivityMain.this, "Ошибка: версия API устарела, обновите приложение");
 					break;
 				case FAIL_FORMAT:
-					UIUtils.showTip(ActivityMain.this, "Ошибка: неверный формат");
+					if (syncParams.getShowProgress())
+						UIUtils.showTip(ActivityMain.this, "Ошибка: неверный формат");
 					break;
 				case DONE:
 				{
-					String s = syncPagesCount > 0 ? "Синхронизация прошла успешно, передано страниц: "
-							+ String.valueOf(syncPagesCount) : "Данные уже синхронизированы";
-					UIUtils.showTip(ActivityMain.this, s);
+					String s;
+
+					if (syncPagesCount > 0)
+					{
+						s = "Синхронизация дневника прошла успешно, передано страниц: "
+								+ String.valueOf(syncPagesCount);
+						UIUtils.showTip(ActivityMain.this, s);
+					} else
+						if (syncParams.getShowProgress())
+						{
+							s = "Дневник уже синхронизирован";
+							UIUtils.showTip(ActivityMain.this, s);
+						}
+
+					if (syncFoodBase)
+						UIUtils.showTip(ActivityMain.this, "База продуктов синхронизирована");
+
 					break;
 				}
 			}
@@ -327,6 +350,7 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
 	{
+		Log.d(TAG, "Preferences changed, key=" + key);
 		Storage.applyPreference(sharedPreferences, key);
 	}
 
@@ -363,7 +387,6 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 		timerSettedUp = true;
 
 		final SyncParams par = new SyncParams();
-		// final Activity mainActivity = this;
 		par.setShowProgress(false);
 
 		TimerTask task = new TimerTask()

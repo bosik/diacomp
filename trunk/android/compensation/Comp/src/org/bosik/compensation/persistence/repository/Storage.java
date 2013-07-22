@@ -44,7 +44,7 @@ public class Storage
 	public static BaseRepository<Base<Food>> localFoodbaseRepository = null;
 	public static BaseRepository<Base<Food>> webFoodbaseRepository = null;
 
-	public static Base<Food> localFoodbase = null;
+	public static Base<Food> localFoodBase = null;
 	private static int localFoodbaseVersion;
 
 	/**
@@ -97,7 +97,7 @@ public class Storage
 			webFoodbaseRepository = new WebFoodBaseRepository(web_client);
 		}
 
-		if (null == localFoodbase)
+		if (null == localFoodBase)
 		{
 			loadFoodbase();
 		}
@@ -143,21 +143,26 @@ public class Storage
 
 	public static void loadFoodbase()
 	{
-		Log.e(TAG, "init(): loading food base...");
-		localFoodbase = localFoodbaseRepository.getBase();
-		localFoodbaseVersion = localFoodbase.getVersion();
+		Log.d(TAG, "Loading food base...");
 
-		Log.e(TAG,
-				"init(): food base loaded, count: " + localFoodbase.count() + ", version: "
-						+ localFoodbase.getVersion());
+		localFoodBase = localFoodbaseRepository.getBase();
+		if (null == localFoodBase)
+		{
+			Log.i(TAG, "Food base was not found; created");
+			localFoodBase = new Base<Food>();
+		}
+
+		localFoodbaseVersion = localFoodBase.getVersion();
+
+		Log.d(TAG, "Food base loaded, count: " + localFoodBase.count() + ", version: " + localFoodBase.getVersion());
 	}
 
 	public static void saveFoodbase()
 	{
-		if (localFoodbase.getVersion() > localFoodbaseVersion)
+		if (localFoodBase.getVersion() > localFoodbaseVersion)
 		{
 			Log.d(TAG, "init(): saving food base...");
-			localFoodbaseRepository.postBase(localFoodbase);
+			localFoodbaseRepository.postBase(localFoodBase);
 		}
 	}
 }
