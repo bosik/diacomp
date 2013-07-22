@@ -3,7 +3,7 @@ package org.bosik.compensation.persistence.repository.foodbase;
 import org.bosik.compensation.persistence.entity.foodbase.Food;
 import org.bosik.compensation.persistence.repository.common.Base;
 import org.bosik.compensation.persistence.repository.common.Serializer;
-import org.bosik.compensation.persistence.repository.common.XmlFormatter;
+import org.bosik.compensation.utils.XmlUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -28,7 +28,7 @@ public class FoodBaseXMLSerializer implements Serializer<Base<Food>>
 	{
 		// Log.v(TAG, "Reading: " + xmlData);
 
-		Document doc = XmlFormatter.readDocument(xmlData);
+		Document doc = XmlUtils.readDocument(xmlData);
 		Element root = doc.getDocumentElement();
 		NodeList nodes = root.getChildNodes();
 
@@ -64,7 +64,7 @@ public class FoodBaseXMLSerializer implements Serializer<Base<Food>>
 	@Override
 	public String write(Base<Food> foodBase)
 	{
-		Document doc = XmlFormatter.newDocument();
+		Document doc = XmlUtils.newDocument();
 
 		Element root = doc.createElement("foods");
 		root.setAttribute("version", String.valueOf(foodBase.getVersion()));
@@ -84,6 +84,6 @@ public class FoodBaseXMLSerializer implements Serializer<Base<Food>>
 			root.appendChild(childelement);
 		}
 
-		return XmlFormatter.writeDocument(doc);
+		return XmlUtils.writeDocument(doc);
 	}
 }

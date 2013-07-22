@@ -17,6 +17,7 @@ import org.bosik.compensation.persistence.sync.SyncBase;
 import org.bosik.compensation.persistence.sync.SyncBase.SyncResult;
 import org.bosik.compensation.persistence.sync.SyncDiaryRepository;
 import org.bosik.compensation.persistence.sync.SyncDiaryRepository.Callback;
+import org.bosik.compensation.utils.ErrorHandler;
 import org.bosik.compensation.utils.Utils;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -287,90 +288,125 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 
 	// СТАНДАРТНЫЕ
 
+	// handled
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		if (BuildConfig.DEBUG)
+		try
 		{
-			UIUtils.showTip(this, "Debug mode is on");
+			if (BuildConfig.DEBUG)
+			{
+				UIUtils.showTip(this, "Debug mode is on");
+			}
+
+			// инициализация хранилища
+			Storage.init(this, getContentResolver());
+
+			// НАСТРОЙКА ИНТЕРФЕЙСА
+
+			// устанавливаем макет
+			setContentView(R.layout.main_menu);
+
+			// определяем компоненты
+			buttonDiary = (Button) findViewById(R.id.ButtonDiary);
+			buttonFoodBase = (Button) findViewById(R.id.ButtonFoodBase);
+			buttonDishBase = (Button) findViewById(R.id.ButtonDishBase);
+			buttonTestMealEditor = (Button) findViewById(R.id.buttonTestMealEditor);
+			buttonPref = (Button) findViewById(R.id.ButtonPreferences);
+			buttonAuth = (Button) findViewById(R.id.buttonAuth);
+
+			// назначаем обработчики
+			buttonDiary.setOnClickListener(this);
+			buttonFoodBase.setOnClickListener(this);
+			buttonDishBase.setOnClickListener(this);
+			buttonTestMealEditor.setOnClickListener(this);
+			buttonPref.setOnClickListener(this);
+			buttonAuth.setOnClickListener(this);
+
+			// TODO: add force single sync on start
+
+			setupSyncTimer(10 * 60 * 1000);
+
+			showDiary();
+		} catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
 		}
-
-		// инициализация хранилища
-		Storage.init(this, getContentResolver());
-
-		// НАСТРОЙКА ИНТЕРФЕЙСА
-
-		// устанавливаем макет
-		setContentView(R.layout.main_menu);
-
-		// определяем компоненты
-		buttonDiary = (Button) findViewById(R.id.ButtonDiary);
-		buttonFoodBase = (Button) findViewById(R.id.ButtonFoodBase);
-		buttonDishBase = (Button) findViewById(R.id.ButtonDishBase);
-		buttonTestMealEditor = (Button) findViewById(R.id.buttonTestMealEditor);
-		buttonPref = (Button) findViewById(R.id.ButtonPreferences);
-		buttonAuth = (Button) findViewById(R.id.buttonAuth);
-
-		// назначаем обработчики
-		buttonDiary.setOnClickListener(this);
-		buttonFoodBase.setOnClickListener(this);
-		buttonDishBase.setOnClickListener(this);
-		buttonTestMealEditor.setOnClickListener(this);
-		buttonPref.setOnClickListener(this);
-		buttonAuth.setOnClickListener(this);
-
-		// TODO: add force single sync on start
-
-		setupSyncTimer(10 * 60 * 1000);
-
-		showDiary();
 	}
 
+	// handled
 	@Override
 	protected void onResume()
 	{
 		super.onResume();
-		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+		try
+		{
+			PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+		} catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
+		}
 	}
 
+	// handled
 	@Override
 	protected void onPause()
 	{
 		super.onPause();
-		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+		try
+		{
+			PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+		} catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
+		}
 	}
 
+	// handled
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
 	{
-		Log.d(TAG, "Preferences changed, key=" + key);
-		Storage.applyPreference(sharedPreferences, key);
+		try
+		{
+			Log.d(TAG, "Preferences changed, key=" + key);
+			Storage.applyPreference(sharedPreferences, key);
+		} catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
+		}
 	}
 
+	// handled
 	public void onClick(View v)
 	{
-		switch (v.getId())
+		try
 		{
-			case R.id.ButtonDiary:
-				showDiary();
-				break;
-			case R.id.ButtonFoodBase:
-				break;
-			case R.id.ButtonDishBase:
-				break;
-			case R.id.ButtonPreferences:
-				Intent settingsActivity = new Intent(getBaseContext(), ActivityPreferences.class);
-				startActivity(settingsActivity);
-				break;
-			case R.id.buttonAuth:
-				SyncParams par = new SyncParams();
-				par.setShowProgress(true);
-				new AsyncTaskAuthAndSync().execute(par);
-				break;
-			case R.id.buttonTestMealEditor:
-				showMealEditor();
-				break;
+			switch (v.getId())
+			{
+				case R.id.ButtonDiary:
+					showDiary();
+					break;
+				case R.id.ButtonFoodBase:
+					break;
+				case R.id.ButtonDishBase:
+					break;
+				case R.id.ButtonPreferences:
+					Intent settingsActivity = new Intent(getBaseContext(), ActivityPreferences.class);
+					startActivity(settingsActivity);
+					break;
+				case R.id.buttonAuth:
+					SyncParams par = new SyncParams();
+					par.setShowProgress(true);
+					new AsyncTaskAuthAndSync().execute(par);
+					break;
+				case R.id.buttonTestMealEditor:
+					throw new RuntimeException("Test exception");
+					// break;
+			}
+		} catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
 		}
 	}
 
@@ -424,11 +460,6 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 	 * 
 	 * Log.w(TAG, "Deleted records: " + count); }
 	 */
-
-	private void showMealEditor()
-	{
-		startActivity(new Intent(this, ActivityMeal.class));
-	}
 
 	// АЛЬФА-ТЕСТИРОВАНИЕ
 

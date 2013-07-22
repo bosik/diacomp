@@ -172,9 +172,6 @@ public class LocalDiaryRepository implements DiaryRepository
 	@Override
 	public List<PageVersion> getModList(Date time)
 	{
-		if (null == time)
-			throw new NullPointerException("Time can't be null");
-
 		// формируем параметры
 		String[] mProjection = { DiaryProvider.COLUMN_DATE, DiaryProvider.COLUMN_VERSION };
 		String mSelectionClause = DiaryProvider.COLUMN_TIMESTAMP + " > ?";
@@ -198,10 +195,10 @@ public class LocalDiaryRepository implements DiaryRepository
 					Date date = Utils.parseDate(mCursor.getString(indexDate));
 					int version = mCursor.getInt(indexVersion);
 					res.add(new PageVersion(date, version));
-				} catch (Exception e)
+				} catch (ParseException e)
 				{
 					// THINK: как правильно решать эту ситуацию?
-					throw new NullPointerException("Error date/time parsing");
+					throw new RuntimeException(e);
 				}
 			}
 
