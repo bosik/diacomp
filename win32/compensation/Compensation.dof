@@ -115,7 +115,7 @@ AutoIncBuild=1
 MajorVer=1
 MinorVer=8
 Release=0
-Build=695
+Build=696
 Debug=0
 PreRelease=0
 Special=0
@@ -126,7 +126,7 @@ CodePage=1251
 [Version Info Keys]
 CompanyName=Bosik
 FileDescription=Программа для компенсации СД
-FileVersion=1.8.0.695
+FileVersion=1.8.0.696
 InternalName=Компенсация
 LegalCopyright=Никита Кренёв
 LegalTrademarks=Компенсация
