@@ -13,7 +13,7 @@ uses
   DiaryInterface, BusinessObjects, DiaryRoutines,
   ShellApi, ActnPopupCtrl, ACCombo,
 
-  DiaryCore, UnitShadow, UnitDataInterface, DiaryView;
+  DiaryCore, Bases, UnitShadow, UnitDataInterface, DiaryView;
   
 type
   TFormDish = class(TAutosetupForm)

@@ -13,6 +13,7 @@ uses
   Math,
   AutoLog,
   DiaryDatabase,
+  DiaryRecords,
   BusinessObjects;
 
 type

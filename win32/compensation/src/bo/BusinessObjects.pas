@@ -20,7 +20,7 @@ type
 
   // хранит: название, БЖУ
   // #entity
-  TFoodData = class (TMutableItem)
+  TFoodRelative = class (TMutableItem)
   private
     FName: string;
     FRelProts: real;
@@ -30,7 +30,7 @@ type
     procedure SetName(const Value: string);
     procedure SetRel(Index: integer; const Value: real);
   public
-    procedure CopyFrom(Food: TFoodData); virtual;
+    procedure CopyFrom(Food: TFoodRelative);
     constructor Create;
     class function IsCorrectRel(const Value: real): boolean;
 
@@ -45,16 +45,17 @@ type
   // имеет методы для получения абсолютных БЖУ
   // используется для дневника и блюд
   // #entity
-  TFoodMassed = class (TFoodData)
+  TFoodMassed = class (TFoodRelative)
   private
     FMass: real;
     procedure SetMass(const Value: real);
   public
     constructor Create;
-    procedure CopyFrom(Food: TFoodData); override;
+    procedure CopyFrom(Food: TFoodMassed);
     class function IsCorrectMass(const Value: real): boolean;
-    procedure Read(const S: string);
-    function Write: string;
+
+    {*}procedure Read(const S: string);
+    {*}function Write: string;
 
     property Mass: real read FMass write SetMass;
     function Prots(): Real;
@@ -63,18 +64,16 @@ type
     function Value(): Real;
   end;
 
-  // TODO 1: сделать оповещение базы (Changed()) при изменении любого поля
-
-  // для базы продуктов (TFoodData + свойство FromTable)
+  // для базы продуктов (TFoodRelative + свойство FromTable)
   // #entity
-  TFood = class (TFoodData)
+  TFood = class (TFoodRelative)
   private
     FFromTable: boolean;
     FTag: integer;  { для хранения частоты использования (transient) }
     procedure SetFromTable(Value: boolean);
   public
     function AsFoodMassed(Mass: real): TFoodMassed;
-    procedure CopyFrom(Food: TFoodData); override;
+    procedure CopyFrom(Food: TFood);
     constructor Create;
 
     property FromTable: boolean read FFromTable write SetFromTable;
@@ -94,7 +93,6 @@ type
     function GetProp(Index: integer): real;
     function GetRel(Index: integer): real;
     {#}procedure SetName(Value: string);
-
   public
     {#}function Add(Food: TFoodMassed): integer;
     function AsFoodMassed(Mass: real): TFoodMassed;
@@ -127,110 +125,6 @@ type
     //property SilentMode: boolean read FSilentMode write FSilentMode;
   end;
 
-  TNotifiablePage = class;
-
-  //TRecType = (rtUnknown, rtBlood, rtIns, rtMeal, rtNote);
-
-  TCustomRecord = class;
-  TClassCustomRecord = class of TCustomRecord;
-
-  // #entity
-  TCustomRecord = class
-  private
-    FTime: integer; // в мин
-    FPage: TNotifiablePage;
-    FSilentMode: boolean;
-    FSilentlyModified: boolean;
-    procedure NotifyPage;
-    procedure SetTime(Value: integer);
-    class function CheckTime(TestTime: integer): boolean;
-  public
-    procedure BeginUpdate;
-    constructor Create;
-    procedure EndUpdate;
-    function RecType: TClassCustomRecord;
-
-    // через Page страница привязывает запись к себе при добавлении
-    property Page: TNotifiablePage read FPage write FPage;
-    property Time: integer read FTime write SetTime;
-  end;
-
-  TPageEventType = (etAdd, etModify, etRemove);
-
-  TNotifiablePage = class
-    procedure Changed(EventType: TPageEventType; RecClass: TClassCustomRecord; RecInstance: TCustomRecord = nil); virtual; abstract; 
-  end;
-
-  // #entity
-  TBloodRecord = class(TCustomRecord)
-  private
-    FValue: real;
-    FFinger: integer;
-    FPostPrand: boolean;  // просто маркер, НЕ данные (transient)
-  protected
-    procedure SetFinger(NewFinger: integer);
-    procedure SetValue(const NewValue: real);
-    class function CheckFinger(TestFinger: integer): boolean;
-    class function CheckValue(const TestValue: real): boolean;
-  public
-    constructor Create(ATime: integer = 0; AValue: real = -1; AFinger: integer = -1);
-    property Finger: integer read FFinger write SetFinger;
-    property Value: real read FValue write SetValue;
-    property PostPrand: boolean read FPostPrand write FPostPrand;
-  end;
-
-  // #entity
-  TInsRecord = class(TCustomRecord)
-  private
-    FValue: real;
-  protected
-    procedure SetValue(const NewValue: real);
-    class function CheckValue(const Value: real): boolean;
-  public
-    constructor Create(ATime: integer = 0; AValue: real = -1);
-    property Value: real read FValue write SetValue;
-  end;
-
-  // #entity
-  TMealRecord = class(TCustomRecord)
-  private
-    FFood: array of TFoodMassed;
-    FShortMeal: boolean;
-    procedure CheckIndex(Index: integer);
-    function GetFood(Index: integer): TFoodMassed;
-    function GetProp(Index: integer): real;
-    procedure SetShortMeal(Value: boolean);
-
-    procedure MealChangeHandler(Sender: TObject);
-  public
-    function Add(Food: TFoodMassed): integer;
-    constructor Create(ATime: integer = 0; AShortMeal: boolean = False);
-    procedure Clear;
-    destructor Destroy; override;
-    procedure Exchange(Index1, Index2: integer);
-    procedure Remove(Index: integer);
-    function Count: integer;
-
-    property Food[Index: integer]: TFoodMassed read GetFood; default;
-    property Mass:  real index 0 read GetProp;
-    property Prots: real index 1 read GetProp;
-    property Fats:  real index 2 read GetProp;
-    property Carbs: real index 3 read GetProp;
-    property Value: real index 4 read GetProp;
-    property ShortMeal: boolean read FShortMeal write SetShortMeal;
-  end;
-
-  // #entity
-  TNoteRecord = class(TCustomRecord)
-  private
-    FText: string;
-  protected
-    procedure SetText(const Value: string);
-  public
-    constructor Create(ATime: integer = 0; AText: string = '');
-    property Text: string read FText write SetText;
-  end;
-
 const
   FOOD_SEP          = '|';
   FOOD_RESERVED     = ['[', FOOD_SEP, ']', ':'];
@@ -250,13 +144,13 @@ begin
     FOnChange(Self);
 end;
 
-{ TFoodData }
+{ TFoodRelative }
 
 {==============================================================================}
-procedure TFoodData.CopyFrom(Food: TFoodData);
+procedure TFoodRelative.CopyFrom(Food: TFoodRelative);
 {==============================================================================}
 begin
-  if (Food = nil) then raise Exception.Create('TFoodData.CopyFrom(): Food is nil');
+  if (Food = nil) then raise Exception.Create('TFoodRelative.CopyFrom(): Food is nil');
 
   Name     := Food.FName;
   RelProts := Food.FRelProts;
@@ -266,7 +160,7 @@ begin
 end;
 
 {==============================================================================}
-constructor TFoodData.Create;
+constructor TFoodRelative.Create;
 {==============================================================================}
 begin
   FName := '';
@@ -277,14 +171,14 @@ begin
 end;
 
 {==============================================================================}
-class function TFoodData.IsCorrectRel(const Value: real): boolean;
+class function TFoodRelative.IsCorrectRel(const Value: real): boolean;
 {==============================================================================}
 begin
   Result := (Value >= 0) and (Value <= 100);
 end;
 
 {==============================================================================}
-procedure TFoodData.SetName(const Value: string);
+procedure TFoodRelative.SetName(const Value: string);
 {==============================================================================}
 begin
   if (FName <> Value) then
@@ -295,7 +189,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TFoodData.SetRel(Index: integer; const Value: real);
+procedure TFoodRelative.SetRel(Index: integer; const Value: real);
 {==============================================================================}
 
   procedure MicroSet(var ARelXXX: real);
@@ -309,24 +203,21 @@ procedure TFoodData.SetRel(Index: integer; const Value: real);
 
 begin
   case Index of
-    1: if IsCorrectRel(Value) then MicroSet(FRelProts) else raise Exception.CreateFmt('TFoodData.SetRel(): illegal RelProts value (%f)', [Value]);
-    2: if IsCorrectRel(Value) then MicroSet(FRelFats)  else raise Exception.CreateFmt('TFoodData.SetRel(): illegal RelFats value (%f)', [Value]);
-    3: if IsCorrectRel(Value) then MicroSet(FRelCarbs) else raise Exception.CreateFmt('TFoodData.SetRel(): illegal RelCarbs value (%f)', [Value]);
-    4: if (Value >= 0)        then MicroSet(FRelValue) else raise Exception.CreateFmt('TFoodData.SetRel(): illegal RelValue value (%f)', [Value]);
-    else raise ERangeError.CreateFmt('TFoodData.SetRel(): illegal index (%d)', [Index]);
+    1: if IsCorrectRel(Value) then MicroSet(FRelProts) else raise Exception.CreateFmt('TFoodRelative.SetRel(): illegal RelProts value (%f)', [Value]);
+    2: if IsCorrectRel(Value) then MicroSet(FRelFats)  else raise Exception.CreateFmt('TFoodRelative.SetRel(): illegal RelFats value (%f)', [Value]);
+    3: if IsCorrectRel(Value) then MicroSet(FRelCarbs) else raise Exception.CreateFmt('TFoodRelative.SetRel(): illegal RelCarbs value (%f)', [Value]);
+    4: if (Value >= 0)        then MicroSet(FRelValue) else raise Exception.CreateFmt('TFoodRelative.SetRel(): illegal RelValue value (%f)', [Value]);
+    else raise ERangeError.CreateFmt('TFoodRelative.SetRel(): illegal index (%d)', [Index]);
   end;
 end;
 
 { TFoodMassed }
 
 {==============================================================================}
-procedure TFoodMassed.CopyFrom(Food: TFoodData);
+procedure TFoodMassed.CopyFrom(Food: TFoodMassed);
 {==============================================================================}
 begin
-  if (Food = nil) then raise Exception.Create('TFoodMassed.CopyFrom(): Food is nil');
-  if (not(Food is TFoodMassed)) then raise Exception.Create('TFoodMassed.CopyFrom(): Food is not a TFoodMassed');
-
-  inherited;
+  inherited CopyFrom(Food);
   Mass := TFoodMassed(Food).Mass;
 end;
 
@@ -384,13 +275,19 @@ end;
 function TFoodMassed.Write(): string;
 {==============================================================================}
 begin
-  Result :=
+  Result := Format(
+    '%s[%s' + FOOD_SEP + '%s'  + FOOD_SEP + '%s' + FOOD_SEP + '%s' + ']:%s',
+    [Name, RealToStr(RelProts), RealToStr(RelFats), RealToStr(RelCarbs), RealToStr(RelValue), RealToStr(Mass)]
+  );
+
+
+  {Result :=
     Name + '[' +
     RealToStr(RelProts) + FOOD_SEP +
     RealToStr(RelFats)  + FOOD_SEP +
     RealToStr(RelCarbs) + FOOD_SEP +
     RealToStr(RelValue) + ']:'+
-    RealToStr(Mass);
+    RealToStr(Mass);}
 end;
 
 { TFood }
@@ -409,13 +306,11 @@ begin
 end;
 
 {==============================================================================}
-procedure TFood.CopyFrom(Food: TFoodData);
+procedure TFood.CopyFrom(Food: TFood);
 {==============================================================================}
 begin
-  if (Food = nil) then raise Exception.Create('TFood.CopyFrom(): Food is nil');
-  if (not(Food is TFood)) then raise Exception.Create('TFood.CopyFrom(): Food is not a TFood');
+  inherited CopyFrom(Food);
 
-  inherited;
   FFromTable := TFood(Food).FFromTable;
   FTag := TFood(Food).FTag;
 end;
@@ -425,12 +320,9 @@ constructor TFood.Create;
 {==============================================================================}
 begin
   inherited;
-  //FGI := 0;
   FFromTable := True;
-  FTag := 0;         
+  FTag := 0;
 end;
-
-
 
 {==============================================================================}
 procedure TFood.SetFromTable(Value: boolean);
@@ -552,7 +444,7 @@ end;
 destructor TDish.Destroy;
 {==============================================================================}
 begin
-  FOnChange := nil; // TODO: "до Clear(), чтобы не оповещать об очистке" - обновить
+  OnChange := nil; // TODO: "до Clear(), чтобы не оповещать об очистке" - обновить
   Clear;
   inherited;
 end;
@@ -649,305 +541,6 @@ begin
     FResultMass := Value;
     FFixedMass := True;
     Modified();
-  end;
-end;
-
-{ TCustomRecord }
-
-{==============================================================================}
-procedure TCustomRecord.BeginUpdate;
-{==============================================================================}
-begin
-  FSilentMode := True;
-end;
-
-{==============================================================================}
-class function TCustomRecord.CheckTime(TestTime: integer): boolean;
-{==============================================================================}
-begin
-  Result := (TestTime >= 0) and (TestTime < SecPerDay);
-end;
-
-{==============================================================================}
-constructor TCustomRecord.Create;
-{==============================================================================}
-begin
-  FPage := nil;
-  FSilentMode := False;
-  FSilentlyModified := False;
-end;
-
-{==============================================================================}
-procedure TCustomRecord.EndUpdate;
-{==============================================================================}
-begin
-  { Идея в том, чтобы множественные изменения записи оборачивать блоком }
-  { BeginUpdate...EndUpdate и оповещать страницу об изменениях только   }
-  { один раз при вызове EndUpdate. }
-  FSilentMode := False;
-  if FSilentlyModified then
-    NotifyPage;
-end;
-
-{==============================================================================}
-procedure TCustomRecord.NotifyPage;
-{==============================================================================}
-begin
-  if (FPage <> nil) then
-  begin
-    if (FSilentMode) then
-      FSilentlyModified := True
-    else
-    begin
-      FPage.Changed(etModify, TClassCustomRecord(Self.ClassType), Self);
-      FSilentlyModified := False;
-    end;
-  end;
-end;
-
-{==============================================================================}
-function TCustomRecord.RecType: TClassCustomRecord;
-{==============================================================================}
-begin
-  Result := TClassCustomRecord(Self.ClassType);
-end;
-
-{==============================================================================}
-procedure TCustomRecord.SetTime(Value: integer);
-{==============================================================================}
-begin
-  if (FTime <> Value) and (CheckTime(Value)) then
-  begin
-    FTime := Value;
-    NotifyPage;
-  end;
-end;
-
-{ TBloodRecord }
-
-{==============================================================================}
-class function TBloodRecord.CheckFinger(TestFinger: integer): boolean;
-{==============================================================================}
-begin
-  Result := (TestFinger >= -1) and (TestFinger <= 9);
-end;
-
-{==============================================================================}
-class function TBloodRecord.CheckValue(const TestValue: real): boolean;
-{==============================================================================}
-begin
-  Result := (TestValue > 0){and ? - единицы бывают разные};
-end;
-
-{==============================================================================}
-constructor TBloodRecord.Create(ATime: integer = 0; AValue: real = -1; AFinger: integer = -1);
-{==============================================================================}
-begin
-  inherited Create;
-
-  FPostPrand := False;
-  SetTime(ATime);
-  SetValue(AValue);
-  SetFinger(AFinger);
-end;
-
-{==============================================================================}
-procedure TBloodRecord.SetFinger(NewFinger: integer);
-{==============================================================================}
-begin
-  if (FFinger <> NewFinger) and (CheckFinger(NewFinger)) then
-  begin
-    FFinger := NewFinger;
-    NotifyPage;
-  end;
-end;
-
-{==============================================================================}
-procedure TBloodRecord.SetValue(const NewValue: real);
-{==============================================================================}
-begin
-  if (FValue <> NewValue) and (CheckValue(NewValue)) then
-  begin
-    FValue := NewValue;
-    NotifyPage;
-  end;
-end;
-
-{ TInsRecord }
-
-class function TInsRecord.CheckValue(const Value: real): boolean;
-begin
-  Result := (Value > 0);
-end;
-
-constructor TInsRecord.Create(ATime: integer; AValue: real);
-begin
-  inherited Create;
-  SetTime(ATime);
-  SetValue(AValue);
-end;
-
-procedure TInsRecord.SetValue(const NewValue: real);
-begin
-  if (FValue <> NewValue) and (CheckValue(NewValue)) then
-  begin
-    FValue := NewValue;
-    NotifyPage;
-  end;
-end;
-
-{ TMealRecord }
-
-function TMealRecord.Add(Food: TFoodMassed): integer;
-begin
-  if Food <> nil then
-  begin
-    Food.OnChange := MealChangeHandler;
-
-    Result := Length(FFood);
-    SetLength(FFood,Result+1);
-    FFood[Result] := Food;
-    NotifyPage;
-  end else
-    Result := -1;
-end;
-
-procedure TMealRecord.CheckIndex(Index: integer);
-begin
-  if (Index < Low(FFood)) or (Index > high(FFood)) then
-    raise ERangeError.CreateFmt('TMealRecord: недопустимый индекс (%d)', [Index]);
-end;
-
-procedure TMealRecord.Clear;
-var
-  i: integer;
-begin
-  if Length(FFood) > 0 then
-  begin
-    for i := 0 to high(FFood) do
-      FFood[i].Free;
-    SetLength(FFood,0);
-    NotifyPage;
-  end;
-end;
-
-constructor TMealRecord.Create(ATime: integer; AShortMeal: boolean);
-begin
-  inherited Create;
-  ShortMeal := AShortMeal;
-  SetTime(ATime);
-end;
-
-destructor TMealRecord.Destroy;
-begin
-  FPage := nil; { чтобы при очистке родительская страница ничего не увидела }
-  Clear;
-end;
-
-procedure TMealRecord.Exchange(Index1, Index2: integer);
-var
-  Temp: TFoodMassed;
-begin
-  if Index1 <> Index2 then
-  begin
-    CheckIndex(Index1);
-    CheckIndex(Index2);
-
-    Temp := FFood[Index1];
-    FFood[Index1] := FFood[Index2];
-    FFood[Index2] := Temp;
-
-    NotifyPage;
-  end;
-end;
-
-function TMealRecord.Count: integer;
-begin
-  Result := Length(FFood);
-end;
-
-function TMealRecord.GetFood(Index: integer): TFoodMassed;
-begin
-  CheckIndex(Index);
-  Result := FFood[Index];
-end;
-
-function TMealRecord.GetProp(Index: integer): real;
-var
-  i: integer;
-begin
-  Result := 0;
-  case Index of
-    0: for i := 0 to high(FFood) do Result := Result + FFood[i].Mass;
-    1: for i := 0 to high(FFood) do Result := Result + FFood[i].Prots;
-    2: for i := 0 to high(FFood) do Result := Result + FFood[i].Fats;
-    3: for i := 0 to high(FFood) do Result := Result + FFood[i].Carbs;
-    4: for i := 0 to high(FFood) do Result := Result + FFood[i].Value;
-  end;
-end;
-
-procedure TMealRecord.SetShortMeal(Value: boolean);
-begin
-  if FShortMeal <> Value then
-  begin
-    FShortMeal := Value;
-    NotifyPage;
-  end;
-end;
-
-procedure TMealRecord.Remove(Index: integer);
-var
-  i: integer;
-begin
-  CheckIndex(Index);
-  FFood[Index].Free;
-  for i := Index to high(FFood)-1 do
-    FFood[i] := FFood[i+1];
-  SetLength(FFood, Length(FFood)-1);
-
-  NotifyPage;
-end;
-
-procedure TMealRecord.MealChangeHandler(Sender: TObject);
-begin
-  NotifyPage();
-end;
-
-{ TNoteRecord }
-
-constructor TNoteRecord.Create(ATime: integer; AText: string);
-begin
-  inherited Create;
-  SetTime(ATime);
-  Text := AText;   
-end;
-
-function Check(const S: string): string;
-const
-  Reserved = [#10,#13];
-var
-  i,j: integer;
-begin
-  Result := S;
-  j := 0;
-  for i := 1 to length(S) do
-  if not (S[i] in Reserved) then
-  begin
-    inc(j);
-    Result[j] := S[i];
-  end;
-  SetLength(Result, j);
-end;
-
-procedure TNoteRecord.SetText(const Value: string);
-var
-  NewValue: string;
-begin
-  NewValue := Check(Value);
-  if NewValue <> FText then
-  begin
-    FText := NewValue;
-    NotifyPage;
   end;
 end;
 

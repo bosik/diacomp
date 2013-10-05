@@ -38,7 +38,10 @@ uses
   DiarySources in 'src\common\DiarySources.pas',
   DiaryLocalSource in 'src\common\DiaryLocalSource.pas',
   Statistics in '..\Компоненты\Bosik Math\Statistics.pas',
-  BusinessObjects in 'src\bo\BusinessObjects.pas';
+  BusinessObjects in 'src\bo\BusinessObjects.pas',
+  Bases in 'src\bo\Bases.pas',
+  DiaryRecords in 'src\bo\DiaryRecords.pas',
+  DiaryRoutines in 'src\common\DiaryRoutines.pas';
 
 {$R *.res}
 
@@ -149,7 +152,7 @@ begin
   end;
 
   if (Value['FirstStart'] = True) and
-     (MessageDlg(MESSAGE_CONF_FIRST_WARNING, mtWarning, [mbYes,mbNo], 0) = mrNo)
+     (MessageDlg(MESSAGE_CONF_FIRST_WARNING, mtWarning, [mbYes, mbNo], 0) = mrNo)
   then Exit;
 
   { общая инициализация } 
@@ -168,7 +171,6 @@ begin
   {#}Application.CreateForm(TFormSync, FormSync);
   {#}Application.CreateForm(TFormResources, FormResources);
   Application.CreateForm(TDataInterface, DataInterface);
-  //ShowMessage('Время инициализации: '+IntToStr(GetTickCount - tick));
 
   Log('Время инициализации: ' + IntToStr(GetTickCount - tick));
 
@@ -183,4 +185,6 @@ begin
   Form1.FullInit;
 
   Application.Run;
+
+  DiaryCore.Finalize;
 end.

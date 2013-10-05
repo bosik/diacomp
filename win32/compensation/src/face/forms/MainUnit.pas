@@ -48,8 +48,10 @@ uses
 
   // ˇ‰Ó
   BusinessObjects,
+  DiaryRecords,
   DiaryCore {#},
   DiaryDatabase,
+  Bases,
   DiaryLocalSource,
   DiaryWeb, //
   DiarySync, //
@@ -993,8 +995,12 @@ begin
     StartupInfo(STATUS_ACTION_PREPARING_KOOFS);
     UpdateKoofs;
 
-    StartupInfo(STATUS_ACTION_UPLOADING_KOOFS);
-    UploadKoofs;
+    if Value['AutoSync'] then
+    begin
+      StartupInfo(STATUS_ACTION_UPLOADING_KOOFS);
+      UploadKoofs;
+    end else
+      StartupInfo('');
 
     { =============== «¿√–”« ¿ √–¿‘» » =============== }
     StartupInfo(STATUS_ACTION_LOADING_GRAPHICS);

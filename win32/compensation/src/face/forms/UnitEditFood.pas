@@ -8,7 +8,7 @@ uses
   Windows, SysUtils, Classes, Controls, Forms,
   Dialogs, ExtCtrls, StdCtrls, Buttons, Grids, ValEdit, Menus,
   DiaryCore, UnitDataInterface,
-  BusinessObjects, DiaryInterface, DiaryRoutines;
+  BusinessObjects, Bases, DiaryInterface, DiaryRoutines;
 
 type
   TFormFood = class(TAutosetupForm)
