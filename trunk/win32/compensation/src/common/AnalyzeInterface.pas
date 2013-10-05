@@ -3,7 +3,7 @@ unit AnalyzeInterface;
 interface
 
 uses
-  DiaryDatabase, SysUtils, Windows, Classes, Math, DiaryRoutines;
+  DiaryDatabase, BusinessObjects, SysUtils, Windows, Classes, Math, DiaryRoutines;
 
 {
 
@@ -171,7 +171,7 @@ begin
     PageBaseTime := Date * MinPerDay;
     {=====================================================}
     for i := 0 to Base[Date].Count-1 do
-    if Base[Date][i].RecType = rtIns then
+    if (Base[Date][i].RecType = TInsRecord) then
     begin
       CurIns := TInsRecord(Base[Date][i]).Value;
       Ins := Ins + CurIns;
@@ -181,7 +181,7 @@ begin
         TimeI := PageBaseTime + Base[Date][i].Time;
       end;
     end else
-    if Base[Date][i].RecType = rtMeal then
+    if (Base[Date][i].RecType = TMealRecord) then
     begin
       Prots := Prots + TMealRecord(Base[Date][i]).Prots;
       Fats := Fats + TMealRecord(Base[Date][i]).Fats;
@@ -195,7 +195,7 @@ begin
       end;
     end else
 
-    if (Base[Date][i].RecType = rtBlood) and
+    if (Base[Date][i].RecType = TBloodRecord) and
        (not TBloodRecord(Base[Date][i]).PostPrand) then
     begin
       if PrevBloodValue = -1 then
@@ -245,7 +245,7 @@ begin
 
   { 2. Восстановление относительных времён }
 
-  for i := 0 to high(List) do
+  for i := 0 to High(List) do
   begin
     if (List[i].Prots > 0) or (List[i].Carbs > 0) then
     begin

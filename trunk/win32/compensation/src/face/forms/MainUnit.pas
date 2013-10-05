@@ -504,7 +504,7 @@ var
   IgnoreIdleOnce:       boolean = False;
   ON_IDLE_ShowBases:    boolean = False;
   ON_IDLE_UpdateCombos: boolean = False;
-  ON_IDLE_UpdateKoofs:  boolean = False;
+  //ON_IDLE_UpdateKoofs:  boolean = False;
   IN_IDLE_CheckUpdates: boolean = False;
 
 const
@@ -835,7 +835,7 @@ begin
   StartProc('FullInit');
 
   FormProcess.Show;
-  FormProcess.SetMax(15);
+  FormProcess.SetMax(17);
   Timer := TSmallTimer.Create;
   Prev := '';
 
@@ -987,7 +987,14 @@ begin
     {*}AnalyzeLoaded := LoadLib(
     {*}  WORK_FOLDER + ANALYZE_LIB_FileName,
     {*}  AnalyzeFunc,
-    {*}  InfoFunc);   
+    {*}  InfoFunc);
+
+    { =============== ÊÎÝÔÔÈÖÈÅÍÒÛ =============== }
+    StartupInfo(STATUS_ACTION_PREPARING_KOOFS);
+    UpdateKoofs;
+
+    StartupInfo(STATUS_ACTION_UPLOADING_KOOFS);
+    UploadKoofs;
 
     { =============== ÇÀÃÐÓÇÊÀ ÃÐÀÔÈÊÈ =============== }
     StartupInfo(STATUS_ACTION_LOADING_GRAPHICS);
@@ -1027,7 +1034,8 @@ begin
     { =============== ÂÊËÞ×ÅÍÈÅ IDLE-ÇÀÄÀ× =============== }
 
     {if AnalyzeLoaded then} // ïóñòü îáíîâèòñÿ è íàðèñóåò îøèáêó
-    ON_IDLE_UpdateKoofs := True;
+
+    //ON_IDLE_UpdateKoofs := True;
     ON_IDLE_UpdateCombos := True;
     ON_IDLE_ShowBases := True;
     if Value['CheckUpdates'] and
@@ -1509,7 +1517,7 @@ var
       //for i := FinishDate downto StartDate do
       for j := 0 to Diary[i].Count - 1 do
       begin
-        if (Diary[i][j].RecType = rtMeal) then
+        if (Diary[i][j].RecType = TMealRecord) then
         begin
           Meal := TMealRecord(Diary[i][j]);
           DeltaTag := GetTag(i + Meal.Time / MinPerDay);
@@ -2530,7 +2538,7 @@ begin
 
     StartBlood := TBloodRecord(
       Diary.FindRecord(
-        rtBlood,
+        TBloodRecord,
         DiaryView.CurrentDate,
         SelMeal.Time,
         BLOOD_ACTUALITY_TIME,
@@ -2540,7 +2548,7 @@ begin
 
     Ins := TInsRecord(
       Diary.FindRecord(
-        rtIns,
+        TInsRecord,
         DiaryView.CurrentDate,
         SelMeal.Time,
         INS_ACTUALITY_TIME,
@@ -3433,7 +3441,7 @@ begin
 
   { ============== Ôëàãîâûå ============== }
 
-  if ON_IDLE_UpdateKoofs then
+{  if ON_IDLE_UpdateKoofs then
   begin
     ON_IDLE_UpdateKoofs := False;
     UpdateKoofs;
@@ -3441,7 +3449,7 @@ begin
     Done := False;
     UploadKoofs;
     Exit;
-  end;
+  end;    }
 
   if ON_IDLE_UpdateCombos then
   begin
@@ -4471,7 +4479,7 @@ begin
   StatusBar.Panels[1].Text := 'Äíåâíèê èçìåí¸í';
   StatusBar.Panels[3].Text := '';
 
-  if RecClass = TBloodRecord then
+  if (RecClass = TBloodRecord) then
   begin
     UpdateDayInfo(); // äëÿ ïóñòîé ñòðàíèöû ýòî äà¸ò ñìåíó "Íåò äàííûõ" íà "Äàííûå: 0"
     //UpdateMealInfo();
@@ -4480,7 +4488,7 @@ begin
     UpdateNextFinger();
   end else
 
-  if RecClass = TInsRecord then
+  if (RecClass = TInsRecord) then
   begin
     UpdateDayInfo();
     //UpdateMealInfo();
@@ -4489,7 +4497,7 @@ begin
     UpdateTimeLeft();
   end else
 
-  if RecClass = TMealRecord then
+  if (RecClass = TMealRecord) then
   begin
     UpdateDayInfo;
     //UpdateMealInfo;
@@ -4608,7 +4616,7 @@ begin
     Page := Diary[i];
 
     for j := Page.Count - 1 downto 0 do
-    if (Page[j].RecType = rtMeal) then
+    if (Page[j].RecType = TMealRecord) then
     begin
       Meal := TMealRecord(Page[j]);
       if (Meal.Count > 0) and (not Meal.ShortMeal) then
@@ -4637,7 +4645,7 @@ begin
     Page := Diary[i];
 
     for j := Page.Count - 1 downto 0 do
-    if (Page[j].RecType = rtIns) then
+    if (Page[j].RecType = TInsRecord) then
     begin
       Ins := TInsRecord(Page[j]);
 
@@ -5262,7 +5270,7 @@ var
 begin
   for d := Trunc(Now - 30) to Trunc(now) do
   for i := 0 to Diary[d].Count - 1 do
-  if (Diary[d][i].RecType = rtMeal) then
+  if (Diary[d][i].RecType = TMealRecord) then
   begin
     Meal := TMealRecord(Diary[d][i]);
     for k := 0 to Meal.Count - 1 do
@@ -5437,7 +5445,7 @@ begin
   begin
     Page := Diary[i];
     for j := 0 to Page.Count - 1 do
-    if (Page[j].RecType = rtIns) then
+    if (Page[j].RecType = TInsRecord) then
     begin
       inc(Count);
       Summ := Summ + TInsRecord(Page[j]).Value;

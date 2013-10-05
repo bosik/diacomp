@@ -20,7 +20,7 @@ uses
   Menus; {PopupMenu}
 
 type
-  TClickPlace = (cpNoWhere,cpPanel,cpTime,cpRec);
+  TClickPlace = (cpNoWhere, cpPanel, cpTime, cpRec);
 
   TClickInfo = record
     Place: TClickPlace;
@@ -188,11 +188,11 @@ type
     function GetCurrentDate: TDate;
 
     function IsRecordSelected: boolean;
-    function IsBloodSelected: boolean;
-    function IsInsSelected: boolean;
-    function IsMealSelected: boolean;
+    function IsBloodSelected: boolean; deprecated;
+    function IsInsSelected: boolean; deprecated;
+    function IsMealSelected: boolean; deprecated;
     function IsFoodSelected: boolean;
-    function IsNoteSelected: boolean;
+    function IsNoteSelected: boolean; deprecated;
 
     function SelectedRecord: TCustomRecord;
     function SelectedBlood: TBloodRecord;
@@ -442,7 +442,7 @@ function PanelColor(ARec: TCustomRecord; Selected: boolean;
   Colors: TColorSettings): TColor;
 {==============================================================================}
 begin
-  if (ARec.RecType = rtBlood) and
+  if (ARec.RecType = TBloodRecord) and
      (TBloodRecord(ARec).PostPrand) then
   if Selected then
     Result := Colors.Panel_SelBloodPP
@@ -452,21 +452,20 @@ begin
   else
 
   if Selected then
-    case ARec.RecType of
-      rtBlood : result := Colors.Panel_SelBlood;
-      rtIns   : result := Colors.Panel_SelIns;
-      rtMeal  : result := Colors.Panel_SelMeal;
-      rtNote  : result := Colors.Panel_SelNote;
-      else      result := clRed; {!}
-    end
-  else
-    case ARec.RecType of
-      rtBlood : result := Colors.Panel_StdBlood;
-      rtIns   : result := Colors.Panel_StdIns;
-      rtMeal  : result := Colors.Panel_StdMeal;
-      rtNote  : result := Colors.Panel_StdNote;
-      else      result := clRed; {!}
-    end;
+  begin
+    if (ARec.RecType = TBloodRecord) then Result := Colors.Panel_SelBlood else
+    if (ARec.RecType = TInsRecord)   then Result := Colors.Panel_SelIns else
+    if (ARec.RecType = TMealRecord)  then Result := Colors.Panel_SelMeal else
+    if (ARec.RecType = TNoteRecord)  then Result := Colors.Panel_SelNote else
+      Result := clRed; {!}
+  end else
+  begin
+    if (ARec.RecType = TBloodRecord) then Result := Colors.Panel_StdBlood else
+    if (ARec.RecType = TInsRecord)   then Result := Colors.Panel_StdIns else
+    if (ARec.RecType = TMealRecord)  then Result := Colors.Panel_StdMeal else
+    if (ARec.RecType = TNoteRecord)  then Result := Colors.Panel_StdNote else
+      Result := clRed; {!}
+  end;
 end;
 
 {==============================================================================}
@@ -802,13 +801,13 @@ begin
     begin
       Font.Style := [fsBold];
       StandartTH := TextHeight('0123456789')+2;
-      Result := (FBorder*2)+2;
+      Result := (FBorder * 2) + 2;
       for i := 0 to CurrentPage.Count - 1 do
-      case CurrentPage[i].RecType of
-        rtBlood: Result := Result + 2 * FBorderTimeTop + StandartTH - 1;
-        rtIns:   Result := Result + 2 * FBorderTimeTop + StandartTH - 1;
-        rtMeal:  Result := Result + 2 * FBorderTimeTop + StandartTH * F(TMealRecord(CurrentPage[i]).Count) - 1;
-        rtNote:  Result := Result + 2 * FBorderTimeTop + StandartTH - 1;
+      begin
+        if (CurrentPage[i].RecType = TBloodRecord) then Result := Result + 2 * FBorderTimeTop + StandartTH - 1 else
+        if (CurrentPage[i].RecType = TInsRecord)   then Result := Result + 2 * FBorderTimeTop + StandartTH - 1 else
+        if (CurrentPage[i].RecType = TMealRecord)  then Result := Result + 2 * FBorderTimeTop + StandartTH * F(TMealRecord(CurrentPage[i]).Count) - 1 else
+        if (CurrentPage[i].RecType = TNoteRecord)  then Result := Result + 2 * FBorderTimeTop + StandartTH - 1;
       end;
     end;
   end;
@@ -1174,9 +1173,8 @@ begin
     { заполнение }
     for i := 0 to CurrentPage.Count - 1 do
     begin
-      case CurrentPage[i].RecType of
-        rtBlood:
-        begin
+      if (CurrentPage[i].RecType = TBloodRecord) then
+      begin
           if (TBloodRecord(CurrentPage[i]).Finger > -1) then
             AddPanel(
                    i,
@@ -1192,26 +1190,29 @@ begin
                    FmtArray(RealToStrZero(TBloodRecord(CurrentPage[i]).Value)),
                    [{fsBold}]
                  )
-        end;
-        rtIns: AddPanel(
+      end else
+
+      if (CurrentPage[i].RecType = TInsRecord) then
+        AddPanel(
                    i,
                    CurrentPage[i].Time,
                    FmtArray(RealToStr(TInsRecord(CurrentPage[i]).Value)+' ед'),
                    []
-                 );
-        rtMeal: AddPanel(
+                 ) else
+      if (CurrentPage[i].RecType = TMealRecord) then
+        AddPanel(
                     i,
                     CurrentPage[i].Time,
                     CreateRecsArray(i),
                     []
-                  );
-        rtNote: AddPanel(
+                  ) else
+      if (CurrentPage[i].RecType = TNoteRecord) then
+         AddPanel(
                    i,
                    CurrentPage[i].Time,
                    FmtArray(TNoteRecord(CurrentPage[i]).Text),
                    [{fsItalic}]
                  );
-      end;
     end;
 
     TextOut(0,0, IntToStr(CurrentPage.Version));
@@ -1438,7 +1439,7 @@ function TDiaryView.IsBloodSelected: boolean;
 begin
   Result := 
     (IsRecordSelected)and
-    (CurrentPage.Recs[FSelPanel].RecType = rtBlood);
+    (CurrentPage.Recs[FSelPanel].RecType = TBloodRecord);
 end;
 
 {==============================================================================}
@@ -1457,7 +1458,7 @@ function TDiaryView.IsInsSelected: boolean;
 begin
   Result := 
     (IsRecordSelected)and
-    (CurrentPage.Recs[FSelPanel].RecType = rtIns);
+    (CurrentPage.Recs[FSelPanel].RecType = TInsRecord);
 end;
 
 {==============================================================================}
@@ -1466,7 +1467,7 @@ function TDiaryView.IsMealSelected: boolean;
 begin
   Result := 
     (IsRecordSelected)and
-    (CurrentPage.Recs[FSelPanel].RecType = rtMeal);
+    (CurrentPage.Recs[FSelPanel].RecType = TMealRecord);
 end;
 
 {==============================================================================}
@@ -1475,7 +1476,7 @@ function TDiaryView.IsNoteSelected: boolean;
 begin
   Result := 
     (IsRecordSelected)and
-    (CurrentPage.Recs[FSelPanel].RecType = rtNote);
+    (CurrentPage.Recs[FSelPanel].RecType = TNoteRecord);
 end;
 
 {==============================================================================}
@@ -1637,12 +1638,12 @@ end;
 procedure TDiaryView.ProcessClick(X, Y: integer; Button: TMouseButton);
 {==============================================================================}
 type
-  TPopup = (pNothing,pBlood,pIns,pMeal,pFood,pNote);
+  TPopup = (pNothing, pBlood, pIns, pMeal, pFood, pNote);
 var
   DoubleClick: boolean;
   Cursor: TPoint;
   ClickInfo: TClickInfo;
-  TagType: TRecType;
+  TagType: TClassCustomRecord;
   Popup: TPopup;
 begin
   { определим, является ли клик двойным }
@@ -1659,165 +1660,216 @@ begin
 
   GetCursorPos(Cursor); // для popup'ов
   Popup := pNothing;
-  if ClickInfo.Index<>-1 then
+  if ClickInfo.Index <> -1 then
     TagType := CurrentPage[ClickInfo.Index].RecType
   else
-    TagType := rtUnknown;
+    TagType := nil;
 
   case ClickInfo.Place of
 
     cpPanel:  case Button of
     { предупреждение компилятора можно игнорировать }
-                mbLeft: case TagType of
-                          rtBlood:begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                  end;
-                          rtIns:  begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                  end;
-                          rtMeal: begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                  end;
-                          rtNote: begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                  end;
-                        end;
-                mbRight:case TagType of
-                          rtBlood:begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                    Popup := pBlood;
-                                  end;
-                          rtIns:  begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                    Popup := pIns;
-                                  end;
-                          rtMeal: begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                    Popup := pMeal;
-                                  end;
-                          rtNote: begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                    Popup := pNote;
-                                  end;
-                        end;
+                mbLeft:
+                begin
+                  if (TagType = TBloodRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                  end else
+
+                  if (TagType = TInsRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                  end else
+
+                  if (TagType = TMealRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                  end else
+
+                  if (TagType = TNoteRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                  end;
+                end;
+                mbRight:
+                begin
+                  if (TagType = TBloodRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                    Popup := pBlood;
+                  end else
+
+                  if (TagType = TInsRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                    Popup := pIns;
+                  end else
+
+                  if (TagType = TMealRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                    Popup := pMeal;
+                  end else
+
+                  if (TagType = TNoteRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                    Popup := pNote;
+                  end;
+                end;
               end;
               
     cpTime:   case Button of
-                mbLeft: case TagType of
-                          rtBlood:begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                  end;
-                          rtIns:  begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                  end;
-                          rtMeal: begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                  end;
-                          rtNote: begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                  end;
-                        end;
-                mbRight:case TagType of
-                          rtBlood:begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                    Popup := pBlood;
-                                  end;
-                          rtIns:  begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                    Popup := pIns;
-                                  end;
-                          rtMeal: begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                    Popup := pMeal;
-                                  end;
-                          rtNote: begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                    Popup := pNote;
-                                  end;
-                        end;
+                mbLeft:
+                begin
+                  if (TagType = TBloodRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                  end else
+
+                  if (TagType = TInsRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                  end else
+
+                  if (TagType = TMealRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                  end else
+
+                  if (TagType = TNoteRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                  end;
+                end;
+
+                mbRight:
+                begin
+                  if (TagType = TBloodRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                    Popup := pBlood;
+                  end else
+
+                  if (TagType = TInsRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                    Popup := pIns;
+                  end else
+
+                  if (TagType = TMealRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                    Popup := pMeal;
+                  end else
+
+                  if (TagType = TNoteRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                    Popup := pNote;
+                  end;
+                end;
               end;
 
     cpRec:  case Button of
-                mbLeft: case TagType of
-                          rtBlood:begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                  end;
-                          rtIns:  begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                  end;
-                          rtMeal: begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := ClickInfo.Line;
-                                    ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                  end;
-                          rtNote:  begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                  end;
-                        end;
-                mbRight:case TagType of
-                          rtBlood:begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                    Popup := pBlood;
-                                  end;
-                          rtIns:  begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                    Popup := pIns;
-                                  end;
-                          rtMeal: begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := ClickInfo.Line;
-                                    ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                    Popup := pFood;
-                                  end;
-                          rtNote: begin
-                                    FSelPanel := ClickInfo.Index;
-                                    FSelLine := -1;
-                                    ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
-                                    Popup := pNote;
-                                  end;
-                        end;
+                mbLeft:
+                begin
+                  if (TagType = TBloodRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                  end else
+
+                  if (TagType = TInsRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                  end else
+
+                  if (TagType = TMealRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := ClickInfo.Line;
+                    ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                  end else
+
+                  if (TagType = TNoteRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                  end;
+                end;
+
+
+                mbRight:
+                begin
+                  if (TagType = TBloodRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                    Popup := pBlood;
+                  end else
+
+                  if (TagType = TInsRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                    Popup := pIns;
+                  end else
+
+                  if (TagType = TMealRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := ClickInfo.Line;
+                    ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                    Popup := pFood;
+                  end else
+
+                  if (TagType = TNoteRecord) then
+                  begin
+                    FSelPanel := ClickInfo.Index;
+                    FSelLine := -1;
+                    ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
+                    Popup := pNote;
+                  end;
+                end;
               end;
 
     cpNoWhere:begin

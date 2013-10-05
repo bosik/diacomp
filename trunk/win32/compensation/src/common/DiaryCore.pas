@@ -14,6 +14,7 @@ uses
   DiaryLocalSource,
   {#}DiaryWeb,  
   AnalyzeInterface,
+  AutoLog,
 
   // службы
   ThreadExecutor,
@@ -377,6 +378,8 @@ var
   s: string;
   DC: char;
 begin
+  StartProc('ExportKoofs()');
+
   Data := '';
   if (Plain) then
   begin
@@ -404,6 +407,8 @@ begin
     end;  
     Data := Data + ']';
   end;
+
+  FinishProc;
 end;
 
 {==============================================================================}
@@ -412,8 +417,10 @@ function UploadKoofs(): boolean;
 var
   s: string;
 begin
+  StartProc('UploadKoofs()');
   ExportKoofs(False, S);
   Result := WebSource.UploadKoofs(S);
+  FinishProc;
 end;
 
 initialization

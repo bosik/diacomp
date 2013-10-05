@@ -70,6 +70,8 @@ const
   STATUS_ACTION_SYNC_FOODBASE        = 'Синхронизация базы продуктов';
   STATUS_ACTION_SYNC_DISHBASE        = 'Синхронизация базы блюд';
   STATUS_ACTION_LOADING_MATHAN       = 'Загрузка модуля анализа';
+  STATUS_ACTION_PREPARING_KOOFS      = 'Расчёт модели';
+  STATUS_ACTION_UPLOADING_KOOFS      = 'Выгрузка коэффициентов на сервер'; 
   STATUS_READY                       = 'Готово';
   STATUS_LOADING_TIME                = 'Время запуска: %d мсек';
   STATUS_SYNC_DONE                   = 'Дневник синхронизирован';
