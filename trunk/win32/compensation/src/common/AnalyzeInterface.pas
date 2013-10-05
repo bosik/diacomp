@@ -3,7 +3,9 @@ unit AnalyzeInterface;
 interface
 
 uses
-  DiaryDatabase, BusinessObjects, SysUtils, Windows, Classes, Math, DiaryRoutines;
+  DiaryDatabase,
+  DiaryRecords,
+  SysUtils, Windows, Classes, Math, DiaryRoutines;
 
 {
 

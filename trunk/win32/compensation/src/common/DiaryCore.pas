@@ -10,6 +10,7 @@ uses
 
   // данные
   DiaryDatabase,
+  Bases,
   DiaryRoutines,
   DiaryLocalSource,
   {#}DiaryWeb,  
@@ -423,8 +424,4 @@ begin
   FinishProc;
 end;
 
-initialization
-  //Initialize();
-finalization
-  Finalize();
 end.

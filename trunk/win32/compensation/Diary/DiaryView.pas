@@ -14,6 +14,7 @@ uses
   DiaryRoutines,
   TextInterface, {finger names}
   BusinessObjects,
+  DiaryRecords,
 
   StdCtrls,
   Math, { TStatProgress }

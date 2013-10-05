@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, ExtCtrls, DiaryInterface,
-  SyncBase, ComCtrls, ImgList, pngimage, ActiveX,
+  ComCtrls, ImgList, pngimage, ActiveX,
   shlobj, shellapi, DiaryCore, SettingsINI;
 
 type
