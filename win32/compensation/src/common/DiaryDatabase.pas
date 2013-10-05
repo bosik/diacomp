@@ -18,7 +18,7 @@ uses
   Variants;
 
 type
-  { 1.2 БАЗЫ }
+  { 1. БАЗЫ }
 
   TSortType = (stName, stTag);
 
@@ -99,120 +99,20 @@ type
     property Items[Index: integer]: TDish read GetDish; default;
   end;
 
-  { 2. КЛАССЫ ДНЕВНИКА }
-
-  TRecType = (rtUnknown, rtBlood, rtIns, rtMeal, rtNote);
-
-  TDiaryPage = class; // forward declaration
-  //TNo
-
-  TCustomRecord = class
-  private
-    FTime: integer; // в мин
-    FPage: TDiaryPage; // TODO: abstract it
-    FSilentMode: boolean;
-    FSilentlyModified: boolean;
-    procedure NotifyPage;
-    procedure SetTime(Value: integer);
-    class function CheckTime(TestTime: integer): boolean;
-  public
-    procedure BeginUpdate;
-    constructor Create;
-    procedure EndUpdate;
-    function RecType: TRecType;
-
-    // через Page страница привязывает запись к себе при добавлении
-    property Page: TDiaryPage read FPage write FPage;
-    property Time: integer read FTime write SetTime;
-  end;
-
-  TClassCustomRecord = class of TCustomRecord;
-
-  // #entity
-  TBloodRecord = class(TCustomRecord)
-  private
-    FValue: real;
-    FFinger: integer;
-    FPostPrand: boolean;  // просто маркер, НЕ данные
-  protected
-    procedure SetFinger(NewFinger: integer);
-    procedure SetValue(const NewValue: real);
-    class function CheckFinger(TestFinger: integer): boolean;
-    class function CheckValue(const TestValue: real): boolean;
-  public
-    constructor Create(ATime: integer = 0; AValue: real = -1; AFinger: integer = -1);
-    property Finger: integer read FFinger write SetFinger;
-    property Value: real read FValue write SetValue;
-    property PostPrand: boolean read FPostPrand write FPostPrand;
-  end;
-
-  // #entity
-  TInsRecord = class(TCustomRecord)
-  private
-    FValue: real;
-  protected
-    procedure SetValue(const NewValue: real);
-    class function CheckValue(const Value: real): boolean;
-  public
-    constructor Create(ATime: integer = 0; AValue: real = -1);
-    property Value: real read FValue write SetValue;
-  end;
-
-  // #entity
-  TMealRecord = class(TCustomRecord)
-  private
-    FFood: array of TFoodMassed;
-    FShortMeal: boolean;
-    procedure CheckIndex(Index: integer);
-    function GetFood(Index: integer): TFoodMassed;
-    function GetProp(Index: integer): real;
-    procedure SetShortMeal(Value: boolean);
-
-    procedure MealChangeHandler(Sender: TObject);
-  public
-    function Add(Food: TFoodMassed): integer;
-    constructor Create(ATime: integer = 0; AShortMeal: boolean = False);
-    procedure Clear;
-    destructor Destroy; override;
-    procedure Exchange(Index1, Index2: integer);
-    procedure Remove(Index: integer);
-    function Count: integer;
-
-    property Food[Index: integer]: TFoodMassed read GetFood; default;
-    property Mass:  real index 0 read GetProp;
-    property Prots: real index 1 read GetProp;
-    property Fats:  real index 2 read GetProp;
-    property Carbs: real index 3 read GetProp;
-    property Value: real index 4 read GetProp;
-    property ShortMeal: boolean read FShortMeal write SetShortMeal;
-  end;
-
-  // #entity
-  TNoteRecord = class(TCustomRecord)
-  private
-    FText: string;
-  protected
-    procedure SetText(const Value: string);
-  public
-    constructor Create(ATime: integer = 0; AText: string = '');
-    property Text: string read FText write SetText;
-  end; 
-
-  //=======================================================================
+  { 2. ДНЕВНИК }
 
   TRecordsList = array of TCustomRecord; // слава полиморфизму!
 
-  TPageEventType = (etAdd, etModify, etRemove);
-
-  TDiary = class;
+  TDiaryPage = class;
 
   TEventPageChanged = procedure(EventType: TPageEventType; Page: TDiaryPage; RecClass: TClassCustomRecord; RecInstance: TCustomRecord) of object;
 
-  TDiaryPage = class
+  TDiary = class;
+
+  TDiaryPage = class (TNotifiablePage)
   private
     FDate: TDate;
     {+}FRecs: TRecordsList;
-
     {+}FSilentChange: boolean;
     FTimeStamp: TDateTime;
     FVersion: integer;
@@ -225,9 +125,7 @@ type
     {+}procedure CheckIndex(Index: integer);
     {+}function GetRecord(Index: integer): TCustomRecord;
     {+}function GetStat(Index: integer): real;
-
-    {#}procedure Changed(EventType: TPageEventType; RecClass: TClassCustomRecord; RecInstance: TCustomRecord = nil);
-
+    {#}procedure Changed(EventType: TPageEventType; RecClass: TClassCustomRecord; RecInstance: TCustomRecord = nil); override;
     {+}function Trace(Index: integer): integer;
     {+}function TraceLast: integer;
   public
@@ -240,9 +138,8 @@ type
     {+}procedure Remove(Index: integer; AutoFree: boolean = True);
 
     // сахар
-
-    {+}function FirstRec(RecType: TRecType): TCustomRecord;
-    {+}function LastRec(RecType: TRecType): TCustomRecord;
+    {+}function FirstRec(RecType: TClassCustomRecord): TCustomRecord;
+    {+}function LastRec(RecType: TClassCustomRecord): TCustomRecord;
     {+}function FindRecord(Rec: TCustomRecord): integer; overload;
     {+}function FirstBloodRec: TBloodRecord;
     {+}function FirstInsRec: TInsRecord;
@@ -320,7 +217,7 @@ type
   public
     constructor Create(Source: IDiarySource);
     destructor Destroy; override;
-    function FindRecord(RecType: TRecType; ADate: TDate; ATime: integer;
+    function FindRecord(RecType: TClassCustomRecord; ADate: TDate; ATime: integer;
       DeltaTime: integer; Direction: TSearchDirection): TCustomRecord;
     function GetLastBloodRecord: TBloodRecord;
     function GetNextFinger: integer;
@@ -340,310 +237,6 @@ type
  end;
 
 implementation
-
-{ TCustomRecord }
-
-{==============================================================================}
-procedure TCustomRecord.BeginUpdate;
-{==============================================================================}
-begin
-  FSilentMode := True;
-end;
-
-{==============================================================================}
-class function TCustomRecord.CheckTime(TestTime: integer): boolean;
-{==============================================================================}
-begin
-  Result := (TestTime >= 0) and (TestTime < SecPerDay);
-end;
-
-{==============================================================================}
-constructor TCustomRecord.Create;
-{==============================================================================}
-begin
-  FPage := nil;
-  FSilentMode := False;
-  FSilentlyModified := False;
-end;
-
-{==============================================================================}
-procedure TCustomRecord.EndUpdate;
-{==============================================================================}
-begin
-  { Идея в том, чтобы множественные изменения записи оборачивать блоком }
-  { BeginUpdate...EndUpdate и оповещать страницу об изменениях только   }
-  { один раз при вызове EndUpdate. }
-  FSilentMode := False;
-  if FSilentlyModified then
-    NotifyPage;
-end;
-
-{==============================================================================}
-procedure TCustomRecord.NotifyPage;
-{==============================================================================}
-begin
-  if (FPage <> nil) then
-  begin
-    if (FSilentMode) then
-      FSilentlyModified := True
-    else
-    begin
-      FPage.Changed(etModify, TClassCustomRecord(Self.ClassType), Self);
-      FSilentlyModified := False;
-    end;
-  end;
-end;
-
-{==============================================================================}
-procedure TCustomRecord.SetTime(Value: integer);
-{==============================================================================}
-begin
-  if (FTime <> Value) and (CheckTime(Value)) then
-  begin
-    FTime := Value;
-    NotifyPage;
-  end;
-end;
-
-{==============================================================================}
-function TCustomRecord.RecType: TRecType;
-{==============================================================================}
-begin
-  // TODO: предок знает о потомках, плохо, да
-  if (Self is TBloodRecord) then Result := rtBlood else
-  if (Self is TInsRecord) then Result := rtIns else
-  if (Self is TMealRecord) then Result := rtMeal else
-  if (Self is TNoteRecord) then Result := rtNote else
-    Result := rtUnknown;
-end;
-
-{ TBloodRecord }
-
-{==============================================================================}
-class function TBloodRecord.CheckFinger(TestFinger: integer): boolean;
-{==============================================================================}
-begin
-  Result := (TestFinger >= -1) and (TestFinger <= 9);
-end;
-
-{==============================================================================}
-class function TBloodRecord.CheckValue(const TestValue: real): boolean;
-{==============================================================================}
-begin
-  Result := (TestValue > 0){and ? - единицы бывают разные};
-end;
-
-{==============================================================================}
-constructor TBloodRecord.Create(ATime: integer = 0; AValue: real = -1; AFinger: integer = -1);
-{==============================================================================}
-begin
-  inherited Create;
-
-  FPostPrand := False;
-  SetTime(ATime);
-  SetValue(AValue);
-  SetFinger(AFinger);
-end;
-
-{==============================================================================}
-procedure TBloodRecord.SetFinger(NewFinger: integer);
-{==============================================================================}
-begin
-  if (FFinger <> NewFinger) and (CheckFinger(NewFinger)) then
-  begin
-    FFinger := NewFinger;
-    NotifyPage;
-  end;
-end;
-
-{==============================================================================}
-procedure TBloodRecord.SetValue(const NewValue: real);
-{==============================================================================}
-begin
-  if (FValue <> NewValue) and (CheckValue(NewValue)) then
-  begin
-    FValue := NewValue;
-    NotifyPage;
-  end;
-end;
-
-{ TInsRecord }
-
-class function TInsRecord.CheckValue(const Value: real): boolean;
-begin
-  Result := (Value > 0);
-end;
-
-constructor TInsRecord.Create(ATime: integer; AValue: real);
-begin
-  inherited Create;
-  SetTime(ATime);
-  SetValue(AValue);
-end;
-
-procedure TInsRecord.SetValue(const NewValue: real);
-begin
-  if (FValue <> NewValue) and (CheckValue(NewValue)) then
-  begin
-    FValue := NewValue;
-    NotifyPage;
-  end;
-end;
-
-{ TMealRecord }
-
-function TMealRecord.Add(Food: TFoodMassed): integer;
-begin
-  if Food <> nil then
-  begin
-    Food.OnChange := MealChangeHandler;
-
-    Result := Length(FFood);
-    SetLength(FFood,Result+1);
-    FFood[Result] := Food;
-    NotifyPage;
-  end else
-    Result := -1;
-end;
-
-procedure TMealRecord.CheckIndex(Index: integer);
-begin
-  if (Index < Low(FFood)) or (Index > high(FFood)) then
-    raise ERangeError.CreateFmt('TMealRecord: недопустимый индекс (%d)', [Index]);
-end;
-
-procedure TMealRecord.Clear;
-var
-  i: integer;
-begin
-  if Length(FFood) > 0 then
-  begin
-    for i := 0 to high(FFood) do
-      FFood[i].Free;
-    SetLength(FFood,0);
-    NotifyPage;
-  end;
-end;
-
-constructor TMealRecord.Create(ATime: integer; AShortMeal: boolean);
-begin
-  inherited Create;
-  ShortMeal := AShortMeal;
-  SetTime(ATime);
-end;
-
-destructor TMealRecord.Destroy;
-begin
-  FPage := nil; { чтобы при очистке родительская страница ничего не увидела }
-  Clear;
-end;
-
-procedure TMealRecord.Exchange(Index1, Index2: integer);
-var
-  Temp: TFoodMassed;
-begin
-  if Index1 <> Index2 then
-  begin
-    CheckIndex(Index1);
-    CheckIndex(Index2);
-
-    Temp := FFood[Index1];
-    FFood[Index1] := FFood[Index2];
-    FFood[Index2] := Temp;
-
-    NotifyPage;
-  end;
-end;
-
-function TMealRecord.Count: integer;
-begin
-  Result := Length(FFood);
-end;
-
-function TMealRecord.GetFood(Index: integer): TFoodMassed;
-begin
-  CheckIndex(Index);
-  Result := FFood[Index];
-end;
-
-function TMealRecord.GetProp(Index: integer): real;
-var
-  i: integer;
-begin
-  Result := 0;
-  case Index of
-    0: for i := 0 to high(FFood) do Result := Result + FFood[i].Mass;
-    1: for i := 0 to high(FFood) do Result := Result + FFood[i].Prots;
-    2: for i := 0 to high(FFood) do Result := Result + FFood[i].Fats;
-    3: for i := 0 to high(FFood) do Result := Result + FFood[i].Carbs;
-    4: for i := 0 to high(FFood) do Result := Result + FFood[i].Value;
-  end;
-end;
-
-procedure TMealRecord.SetShortMeal(Value: boolean);
-begin
-  if FShortMeal <> Value then
-  begin
-    FShortMeal := Value;
-    NotifyPage;
-  end;
-end;
-
-procedure TMealRecord.Remove(Index: integer);
-var
-  i: integer;
-begin
-  CheckIndex(Index);
-  FFood[Index].Free;
-  for i := Index to high(FFood)-1 do
-    FFood[i] := FFood[i+1];
-  SetLength(FFood, Length(FFood)-1);
-
-  NotifyPage;
-end;
-
-procedure TMealRecord.MealChangeHandler(Sender: TObject);
-begin
-  NotifyPage();
-end;
-
-{ TNoteRecord }
-
-constructor TNoteRecord.Create(ATime: integer; AText: string);
-begin
-  inherited Create;
-  SetTime(ATime);
-  Text := AText;   
-end;
-
-function Check(const S: string): string;
-const
-  Reserved = [#10,#13];
-var
-  i,j: integer;
-begin
-  Result := S;
-  j := 0;
-  for i := 1 to length(S) do
-  if not (S[i] in Reserved) then
-  begin
-    inc(j);
-    Result[j] := S[i];
-  end;
-  SetLength(Result, j);
-end;
-
-procedure TNoteRecord.SetText(const Value: string);
-var
-  NewValue: string;
-begin
-  NewValue := Check(Value);
-  if NewValue <> FText then
-  begin
-    FText := NewValue;
-    NotifyPage;
-  end;
-end;
 
 { TDiaryPage }
 
@@ -745,7 +338,6 @@ begin
   //{#}Changed({FRecs[Result]}Rec);
   Changed(etAdd, TClassCustomRecord(Rec.ClassType), Rec);
 end;
-
 
 // TODO: эта процедура должна вызываться только мелкими изменениями пользователя
 // избегать вызова её при загрузке данных
@@ -892,13 +484,13 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryPage.FirstRec(RecType: TRecType): TCustomRecord;
+function TDiaryPage.FirstRec(RecType: TClassCustomRecord): TCustomRecord;
 {==============================================================================}
 var
   i: integer;
 begin
   Result := nil;
-  for i := 0 to high(FRecs) do
+  for i := 0 to High(FRecs) do
   if (FRecs[i].RecType = RecType) then
   begin
     Result := FRecs[i];
@@ -910,21 +502,21 @@ end;
 function TDiaryPage.FirstBloodRec: TBloodRecord;
 {==============================================================================}
 begin
-  Result := TBloodRecord(FirstRec(rtBlood));
+  Result := TBloodRecord(FirstRec(TBloodRecord));
 end;
 
 {==============================================================================}
 function TDiaryPage.FirstInsRec: TInsRecord;
 {==============================================================================}
 begin
-  Result := TInsRecord(FirstRec(rtIns));
+  Result := TInsRecord(FirstRec(TInsRecord));
 end;
 
 {==============================================================================}
 function TDiaryPage.FirstMealRec: TMealRecord;
 {==============================================================================}
 begin
-  Result := TMealRecord(FirstRec(rtMeal));
+  Result := TMealRecord(FirstRec(TMealRecord));
 end;
 
 {==============================================================================}
@@ -954,24 +546,23 @@ begin
   }
   Result := 0;
   case Index of
-    1: for i := 0 to high(FRecs) do if FRecs[i].RecType = rtMeal then Result := Result + TMealRecord(FRecs[i]).Prots;
-    2: for i := 0 to high(FRecs) do if FRecs[i].RecType = rtMeal then Result := Result + TMealRecord(FRecs[i]).Fats;
-    3: for i := 0 to high(FRecs) do if FRecs[i].RecType = rtMeal then Result := Result + TMealRecord(FRecs[i]).Carbs;
-    4: for i := 0 to high(FRecs) do if FRecs[i].RecType = rtMeal then Result := Result + TMealRecord(FRecs[i]).Value;
-    5: for i := 0 to high(FRecs) do if FRecs[i].RecType = rtMeal then
-         Result := Result + TMealRecord(FRecs[i]).Mass;
-    6: for i := 0 to high(FRecs) do if FRecs[i].RecType = rtIns  then Result := Result + TInsRecord(FRecs[i]).Value;
+    1: for i := 0 to High(FRecs) do if (FRecs[i].RecType = TMealRecord) then Result := Result + TMealRecord(FRecs[i]).Prots;
+    2: for i := 0 to High(FRecs) do if (FRecs[i].RecType = TMealRecord) then Result := Result + TMealRecord(FRecs[i]).Fats;
+    3: for i := 0 to High(FRecs) do if (FRecs[i].RecType = TMealRecord) then Result := Result + TMealRecord(FRecs[i]).Carbs;
+    4: for i := 0 to High(FRecs) do if (FRecs[i].RecType = TMealRecord) then Result := Result + TMealRecord(FRecs[i]).Value;
+    5: for i := 0 to High(FRecs) do if (FRecs[i].RecType = TMealRecord) then Result := Result + TMealRecord(FRecs[i]).Mass;
+    6: for i := 0 to High(FRecs) do if (FRecs[i].RecType = TInsRecord)  then Result := Result + TInsRecord(FRecs[i]).Value;
   end;
 end;
 
 {==============================================================================}
-function TDiaryPage.LastRec(RecType: TRecType): TCustomRecord;
+function TDiaryPage.LastRec(RecType: TClassCustomRecord): TCustomRecord;
 {==============================================================================}
 var
   i: integer;
 begin
   Result := nil;
-  for i := high(FRecs) downto 0 do
+  for i := High(FRecs) downto 0 do
   if (FRecs[i].RecType = RecType) then
   begin
     Result := FRecs[i];
@@ -983,21 +574,21 @@ end;
 function TDiaryPage.LastBloodRec: TBloodRecord;
 {==============================================================================}
 begin
-  Result := TBloodRecord(LastRec(rtBlood));
+  Result := TBloodRecord(LastRec(TBloodRecord));
 end;
 
 {==============================================================================}
 function TDiaryPage.LastInsRec: TInsRecord;
 {==============================================================================}
 begin
-  Result := TInsRecord(LastRec(rtIns));
+  Result := TInsRecord(LastRec(TInsRecord));
 end;
 
 {==============================================================================}
 function TDiaryPage.LastMealRec: TMealRecord;
 {==============================================================================}
 begin
-  Result := TMealRecord(LastRec(rtMeal));
+  Result := TMealRecord(LastRec(TMealRecord));
 end;
 
 {==============================================================================}
@@ -1013,9 +604,9 @@ begin
   if AutoFree then
     FRecs[Index].Free;
 
-  for i := Index to high(FRecs)-1 do
-    FRecs[i] := FRecs[i+1];
-  SetLength(FRecs,length(FRecs)-1);
+  for i := Index to high(FRecs) - 1 do
+    FRecs[i] := FRecs[i + 1];
+  SetLength(FRecs, Length(FRecs) - 1);
 
   {#}Changed(etRemove, T);
 end;
@@ -1145,7 +736,7 @@ begin
         begin
           TempTime := StrToTimeQuick(Copy(CurStr,2,5));
           TempShort := (CurStr[Length(CurStr)] = 's');
-          Meal := TMealRecord.Create(TempTime, TempShort);
+          Meal := TMealRecord.Create(TempTime, TempShort); // save it for further modifications
           Add(Meal);
         end;
         '#':
@@ -1165,7 +756,7 @@ begin
         end;
         {else
           // и что, из-за одного символа вся база полетит?
-          rai se ELoadingError.Create('TDiaryPage.ReadFrom: Некорректные данные'#13+
+          raise ELoadingError.Create('TDiaryPage.ReadFrom: Некорректные данные'#13+
             'Строка :'+#13+
             CurStr);   }
       end;
@@ -1239,31 +830,43 @@ begin
     raise Exception.Create('TDiaryPage.WriteTo(): поток для записи не может быть nil');
 
   for j := 0 to Count - 1 do
-  case FRecs[j].RecType of
-    rtBlood: s.Add(
-               '*' + TimeToStr(FRecs[j].Time) +
-               ' ' + FloatToStr(TBloodRecord(FRecs[j]).Value) +
-               '|' + IntToStr(TBloodRecord(FRecs[j]).Finger)
-             );
+  begin
+    if (FRecs[j].RecType = TBloodRecord) then
+    begin
+      // TODO: use Format() instead
+      s.Add(
+        '*' + TimeToStr(FRecs[j].Time) +
+        ' ' + FloatToStr(TBloodRecord(FRecs[j]).Value) +
+        '|' + IntToStr(TBloodRecord(FRecs[j]).Finger)
+      )
+    end else
 
-    rtIns:   s.Add(
-               '-' + TimeToStr(FRecs[j].Time)+
-               ' ' + FloatToStr(TInsRecord(FRecs[j]).Value)
-             );
+    if (FRecs[j].RecType = TInsRecord) then
+    begin
+      s.Add(
+        '-' + TimeToStr(FRecs[j].Time) +
+        ' ' + FloatToStr(TInsRecord(FRecs[j]).Value)
+      );
+    end else
 
-    rtMeal:  begin
-               if TMealRecord(FRecs[j]).ShortMeal then
-                 s.Add(' ' + TimeToStr(FRecs[j].Time)+'s')
-               else
-                 s.Add(' ' + TimeToStr(FRecs[j].Time));
+    if (FRecs[j].RecType = TMealRecord) then
+    begin
+      if TMealRecord(FRecs[j]).ShortMeal then
+        s.Add(' ' + TimeToStr(FRecs[j].Time) + 's')
+      else
+        s.Add(' ' + TimeToStr(FRecs[j].Time));
 
-               for n := 0 to TMealRecord(FRecs[j]).Count-1 do
-                 s.Add('#' + TMealRecord(FRecs[j])[n].Write);
-             end;
-    rtNote:  s.Add(
-               '%' + TimeToStr(FRecs[j].Time)+
-               ' ' + TNoteRecord(FRecs[j]).Text
-             );
+      for n := 0 to TMealRecord(FRecs[j]).Count - 1 do
+        s.Add('#' + TMealRecord(FRecs[j])[n].Write);
+    end else
+
+    if (FRecs[j].RecType = TNoteRecord) then
+    begin
+      s.Add(
+        '%' + TimeToStr(FRecs[j].Time) +
+        ' ' + TNoteRecord(FRecs[j]).Text
+      );
+    end;
   end;
 end;
 
@@ -1377,7 +980,7 @@ begin
   ResetCache;
 end;
 
-function TDiary.FindRecord(RecType: TRecType;
+function TDiary.FindRecord(RecType: TClassCustomRecord;
   ADate: TDate; ATime: integer; DeltaTime: integer;
   Direction: TSearchDirection): TCustomRecord;
 
@@ -1441,7 +1044,7 @@ begin
     for i := 0 to Page.Count - 1 do
     if ((Date > StartDate) or (Page[i].Time >= StartTime)) and
        ((Date < FinishDate) or (Page[i].Time <= FinishTime)) and
-       ((RecType = rtUnknown) or (Page[i].RecType = RecType))
+       ((RecType = nil) or (Page[i].RecType = RecType))
     then
     begin
       CurDist := abs((Date * MinPerDay + Page[i].Time) - (ADate * MinPerDay + ATime));
@@ -1908,7 +1511,7 @@ begin
   // TODO: [Trunc(Now) + 1] — не лучшее решение
   if Page <> nil then
     UpdateCached_Postprand; // TODO: optimize
-    //UpdatePostprand(Page.Date-1, Trunc(Now) + 1);
+    //UpdatePostprand(Page.Date - 1, Trunc(Now) + 1);
 
   if Assigned(FOnChange) then FOnChange(EventType, Page, RecClass, RecInstance);
 end;
@@ -2182,46 +1785,44 @@ begin
         RecNode := PageNode.AddChild('rec');
         RecNode.Attributes['time']  := TimeToStr(Page[j].Time/MinPerDay);
 
-        case (Page[j].RecType) of
-          rtBlood:
+        if (Page[j].RecType = TBloodRecord) then
+        begin
+          RecNode.Attributes['type']  := 'blood';
+          RecNode.Attributes['value']  := TBloodRecord(Page[j]).Value;
+          if (TBloodRecord(Page[j]).Finger > -1) then
+            RecNode.Attributes['finger']  := TBloodRecord(Page[j]).Finger;
+        end else
+
+        if (Page[j].RecType = TInsRecord) then
+        begin
+          RecNode.Attributes['type']  := 'insulin';
+          RecNode.Attributes['value']  := TInsRecord(Page[j]).Value;
+        end else
+
+        if (Page[j].RecType = TMealRecord) then
+        begin
+          Meal := TMealRecord(Page[j]);     
+
+          RecNode.Attributes['type']  := 'meal';
+          if (Meal.ShortMeal) then
+            RecNode.Attributes['short']  := Meal.ShortMeal;
+
+          for k := 0 to Meal.Count - 1 do
           begin
-            RecNode.Attributes['type']  := 'blood';
-            RecNode.Attributes['value']  := TBloodRecord(Page[j]).Value;
-            if (TBloodRecord(Page[j]).Finger > -1) then
-              RecNode.Attributes['finger']  := TBloodRecord(Page[j]).Finger;
+            ItemNode := RecNode.AddChild('item');
+            ItemNode.Attributes['name']  := Meal[k].Name;
+            ItemNode.Attributes['prots'] := Meal[k].RelProts;
+            ItemNode.Attributes['fats']  := Meal[k].RelFats;
+            ItemNode.Attributes['carbs'] := Meal[k].RelCarbs;
+            ItemNode.Attributes['val']   := Meal[k].RelValue;
+            ItemNode.Attributes['mass']  := Meal[k].Mass;
           end;
+        end else
 
-          rtIns:
-          begin
-            RecNode.Attributes['type']  := 'insulin';
-            RecNode.Attributes['value']  := TInsRecord(Page[j]).Value;
-          end;
-
-          rtNote:
-          begin
-            RecNode.Attributes['type']  := 'note';
-            RecNode.Attributes['text']  := TNoteRecord(Page[j]).Text;
-          end;
-
-          rtMeal:
-          begin
-            Meal := TMealRecord(Page[j]);     
-
-            RecNode.Attributes['type']  := 'meal';
-            if (Meal.ShortMeal) then
-              RecNode.Attributes['short']  := Meal.ShortMeal;
-
-            for k := 0 to Meal.Count - 1 do
-            begin
-              ItemNode := RecNode.AddChild('item');
-              ItemNode.Attributes['name']  := Meal[k].Name;
-              ItemNode.Attributes['prots'] := Meal[k].RelProts;
-              ItemNode.Attributes['fats']  := Meal[k].RelFats;
-              ItemNode.Attributes['carbs'] := Meal[k].RelCarbs;
-              ItemNode.Attributes['val']   := Meal[k].RelValue;
-              ItemNode.Attributes['mass']  := Meal[k].Mass;
-            end;
-          end;
+        if (Page[j].RecType = TMealRecord) then
+        begin
+          RecNode.Attributes['type']  := 'note';
+          RecNode.Attributes['text']  := TNoteRecord(Page[j]).Text;
         end;
       end;
     end;
@@ -2281,12 +1882,11 @@ procedure TDiary.SaveToJSON(const FileName: string);
       P.Version]);
     for i := 0 to P.Count - 1 do
     begin
-      case P[i].RecType of
-        rtBlood: Result := Result + BlockBlood(TBloodRecord(P[i]));
-        rtIns:   Result := Result + BlockIns(TInsRecord(P[i]));
-        rtMeal:  Result := Result + BlockMeal(TMealRecord(P[i]));
-        rtNote:  Result := Result + BlockNote(TNoteRecord(P[i]));
-      end;
+      if (P[i].RecType = TBloodRecord) then Result := Result + BlockBlood(TBloodRecord(P[i])) else
+      if (P[i].RecType = TInsRecord)   then Result := Result + BlockIns(TInsRecord(P[i])) else
+      if (P[i].RecType = TMealRecord)  then Result := Result + BlockMeal(TMealRecord(P[i])) else
+      if (P[i].RecType = TNoteRecord)  then Result := Result + BlockNote(TNoteRecord(P[i]));
+
       if (i < P.Count - 1) then
         Result := Result + ', ';
     end;
@@ -2567,6 +2167,39 @@ procedure TFoodBase.LoadFromFile_Old(const FileName: string);
 {==============================================================================}
 const
   FOODBASE_FORMAT = 'FBASEFMT';
+
+  procedure Read(Food: TFood; const S: string);
+  var
+    j: integer;
+  begin
+    j := 1;
+    with Food do
+    begin
+      Name := ReadStrTo(S, '[', j);
+      RelProts := ReadFloatTo(S, FOOD_SEP, j);
+      RelFats  := ReadFloatTo(S, FOOD_SEP, j);
+      RelCarbs := ReadFloatTo(S, FOOD_SEP, j);
+      RelValue := ReadFloatTo(S, FOOD_SEP, j);
+      FromTable := S[Length(S)] = '#';
+    end;
+
+    // TODO: log it outside
+  end;
+
+{
+  function TFoodItem.Write_(): string;
+  begin
+    Result :=
+      Name + '[' +
+      RealToStr(RelProts) + FOOD_SEP +
+      RealToStr(RelFats)  + FOOD_SEP +
+      RealToStr(RelCarbs) + FOOD_SEP +
+      RealToStr(RelValue) + ']';
+    if FromTable then
+      Result := Result + '#';
+  end;
+  }
+
 var
   s: TStringList;
   i: integer;
@@ -2592,7 +2225,7 @@ begin
     for i := 0 to s.Count - 1 do
     begin
       FBase[i] := TFood.Create();
-      FBase[i].Read(S[i]);
+      Read(FBase[i], S[i]);
       FBase[i].OnChange := FoodChangeHandler;
     end;
   finally
@@ -3271,18 +2904,18 @@ begin
   Result := 0;
 
   // TODO: дублирующийся код (UpdatePostprand)
-  for i := 0 to Count-1 do
+  for i := 0 to Count - 1 do
   begin
     CurTime := Recs[i].Time;
 
-    case Recs[i].RecType of
-      rtIns:   Result := Max(Result, CurTime + InsPeriod);
-      rtMeal:  if TMealRecord(Recs[i]).Carbs > 0 then
-               if TMealRecord(Recs[i]).ShortMeal then
-                 Result := Max(Result, CurTime + ShortMealPeriod)
-               else
-                 Result := Max(Result, CurTime + StdMealPeriod);
-    end;
+    if (Recs[i].RecType = TInsRecord) then
+      Result := Max(Result, CurTime + InsPeriod) else
+    if (Recs[i].RecType = TMealRecord) then
+      if TMealRecord(Recs[i]).Carbs > 0 then
+         if TMealRecord(Recs[i]).ShortMeal then
+           Result := Max(Result, CurTime + ShortMealPeriod)
+         else
+           Result := Max(Result, CurTime + StdMealPeriod);
   end;
 
   Result := Result - MinPerDay;
@@ -3302,14 +2935,23 @@ begin
   begin
     CurTime := Recs[i].Time;
 
-    case Recs[i].RecType of
-      rtIns:   FreeTime := Max(FreeTime, CurTime + InsPeriod);
-      rtMeal:  if TMealRecord(Recs[i]).Carbs > 0 then
-               if TMealRecord(Recs[i]).ShortMeal then
-                 FreeTime := Max(FreeTime, CurTime + ShortMealPeriod)
-               else
-                 FreeTime := Max(FreeTime, CurTime + StdMealPeriod);
-      rtBlood: TBloodRecord(Recs[i]).PostPrand := (CurTime < FreeTime);
+    if (Recs[i].RecType = TInsRecord) then
+    begin
+      FreeTime := Max(FreeTime, CurTime + InsPeriod);
+    end else
+
+    if (Recs[i].RecType = TMealRecord) then
+    begin
+      if TMealRecord(Recs[i]).Carbs > 0 then
+         if TMealRecord(Recs[i]).ShortMeal then
+           FreeTime := Max(FreeTime, CurTime + ShortMealPeriod)
+         else
+           FreeTime := Max(FreeTime, CurTime + StdMealPeriod);
+    end else
+
+    if (Recs[i].RecType = TBloodRecord) then
+    begin
+      TBloodRecord(Recs[i]).PostPrand := (CurTime < FreeTime);
     end;
   end;
   FCalculatedPostprand := True;

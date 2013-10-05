@@ -12,10 +12,11 @@ uses
   Graphics,
   Math,
   AutoLog,
-  DiaryDatabase;
+  DiaryDatabase,
+  BusinessObjects;
 
 type
-  TKoofType = (kfK,kfQ,kfP,kfX);
+  TKoofType = (kfK, kfQ, kfP, kfX);
 
   procedure PrepareBS(Image: TImage; Max: real; Mini: boolean;
     var kx,ky: real; var Border: integer);
@@ -164,7 +165,7 @@ procedure DrawBS(PagePrev, PageCur, PageNext: TDiaryPage; Image: TImage;
     result := InitMax;
 
     for i := 0 to PageCur.Count-1 do
-    if (PageCur[i].RecType = rtBlood)and
+    if (PageCur[i].RecType = TBloodRecord) and
        (TBloodRecord(PageCur[i]).Value > Result)then
       result := TBloodRecord(PageCur[i]).Value;
   end;
@@ -254,7 +255,7 @@ begin
 
     { основная линия }
     for i := 0 to PageCur.Count-1 do
-    if PageCur[i].RecType = rtBlood then
+    if (PageCur[i].RecType = TBloodRecord) then
     begin
       CalcXY(
         TBloodRecord(PageCur[i]).Time,
@@ -280,7 +281,7 @@ begin
       Pen.Color := clMaroon;
       Pen.Style := psSolid;
       for i := 0 to PageCur.Count - 1 do
-      if PageCur[i].RecType = rtBlood then
+      if (PageCur[i].RecType = TBloodRecord) then
       begin
         CalcXY(
           TBloodRecord(PageCur[i]).Time,

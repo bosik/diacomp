@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, ComCtrls, Buttons,
-  DiaryDatabase, DiaryRoutines, DiaryInterface, DiaryCore;
+  DiaryDatabase, BusinessObjects, DiaryRoutines, DiaryInterface, DiaryCore;
 
 type
   TFormExportText = class(TAutosetupForm)
@@ -98,12 +98,12 @@ var
     i: integer;
   begin
     Result := 0;
-    for i := 0 to Page.Count-1 do
-    case Page[i].RecType of
-      rtBlood: if IncBS   then inc(Result);
-      rtIns:   if IncIns  then inc(Result);
-      rtMeal:  if IncMeal then inc(Result);
-      rtNote:  if IncNote then inc(Result);
+    for i := 0 to Page.Count - 1 do
+    begin
+      if (Page[i].RecType = TBloodRecord) and IncBS   then inc(Result) else
+      if (Page[i].RecType = TInsRecord)   and IncIns  then inc(Result) else
+      if (Page[i].RecType = TMealRecord)  and IncMeal then inc(Result) else
+      if (Page[i].RecType = TNoteRecord)  and IncNote then inc(Result);
     end;
   end;
   
@@ -170,20 +170,20 @@ begin
 
       for j := 0 to Diary[Date].Count - 1 do
       begin
-        if (Diary[Date][j].RecType = rtBlood)and(IncBS) then
+        if (Diary[Date][j].RecType = TBloodRecord) and (IncBS) then
         begin
           CheckBreak(Diary[Date], j);
           Add(TimeToStr(Diary[Date][j].Time)+BREAK_SYMB+RealToStrZero(TBloodRecord(Diary[Date][j]).Value)
           +' ללמכü/כ');
         end  else
 
-        if (Diary[Date][j].RecType = rtIns)and(IncIns) then
+        if (Diary[Date][j].RecType = TInsRecord) and (IncIns) then
         begin
           CheckBreak(Diary[Date], j);
           Add(TimeToStr(Diary[Date][j].Time)+BREAK_SYMB+'['+RealToStr(TInsRecord(Diary[Date][j]).Value)+' ִֵ]');
         end else
 
-        if (Diary[Date][j].RecType = rtMeal)and(IncMeal) then
+        if (Diary[Date][j].RecType = TMealRecord) and (IncMeal) then
         begin
           CheckBreak(Diary[Date], j);
           case MealInfo of
@@ -201,7 +201,7 @@ begin
             RealToStr(TMealRecord(Diary[Date][j]).Food[k].Mass)+')');
         end else
 
-        if (Diary[Date][j].RecType = rtNote)and(IncNote) then
+        if (Diary[Date][j].RecType = TNoteRecord) and (IncNote) then
         begin
           CheckBreak(Diary[Date],j);
           Add(TimeToStr(Diary[Date][j].Time)+BREAK_SYMB+TNoteRecord(Diary[Date][j]).Text);
