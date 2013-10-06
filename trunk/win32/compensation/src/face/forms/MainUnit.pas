@@ -3038,6 +3038,7 @@ procedure TForm1.UpdateKoofs;
 var
   tick: cardinal;
   Par: TRealArray;
+  FromDate, ToDate: TDate;
 begin
   if not AnalyzeLoaded then
   begin
@@ -3060,10 +3061,13 @@ begin
 
   tick := GetTickCount;
 
+  ToDate := Trunc(Now);
+  FromDate := ToDate - Value['DaysProcess'] + 1;
+
   {===============================================================}
   {#}SetLength(Par, 1);
   {#}Par[PAR_ADAPTATION] := Value['Adaptation'];  { [0.5..1] }
-  {#}AnalyzeDiary(Diary, AnalyzeFunc, Value['DaysProcess'], Par, KoofList, AnList, AnalyzeCallBack);
+  {#}AnalyzeDiary(Diary, AnalyzeFunc, FromDate, ToDate, Par, KoofList, AnList, AnalyzeCallBack);
   {===============================================================}
 
   LabelDllInfo.Caption := InfoFunc;

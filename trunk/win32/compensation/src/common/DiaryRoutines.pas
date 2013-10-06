@@ -112,14 +112,15 @@ var
   LocalFmt: TFormatSettings;
 
 const
-  SecPerMin  = 60; // TODO: хочу капс-константы. Все.
-  MinPerHour = 60;
-  HourPerDay = 24;
-  MinPerDay  = MinPerHour * HourPerDay;
-  SecPerHour = SecPerMin * MinPerHour;
-  SecPerDay  = SecPerMin * MinPerHour * HourPerDay;
+  SecPerMin     = 60; // TODO: хочу капс-константы. Все.
+  MinPerHour    = 60;
+  HourPerDay    = 24;
+  MinPerDay     = MinPerHour * HourPerDay;
+  HalfMinPerDay = MinPerDay div 2;
+  SecPerHour    = SecPerMin * MinPerHour;
+  SecPerDay     = SecPerMin * MinPerHour * HourPerDay;
 
-
+  // TODO: move to localization
   ERROR_CANT_CREATE_DIARY = 'Невозможно создать файл дневника';
   ERROR_LOADINGDIARY      = 'Ошибка загрузки дневника';
   ERROR_LOADINGFOODBASE   = 'Ошибка загрузки базы продуктов';

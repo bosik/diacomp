@@ -16,11 +16,6 @@ uses
 
 }
 
-const
-  MinPerHour    = 60;       { *** }
-  MinPerDay     = 24 * MinPerHour;
-  HalfMinPerDay = MinPerDay div 2;
-
 type
   { ===== ВХОДНЫЕ ДАННЫЕ ===== }
   TPrimeRec = record
@@ -74,7 +69,7 @@ type
 
 {==============================================================================}
 
-  procedure ExtractRecords(Base: TDiary; DaysCount: integer;
+  procedure ExtractRecords(Base: TDiary; FromDate, ToDate: TDate;
     out List: TPrimeRecList);
 
   // Adaptation in [0..0.5]:
@@ -93,7 +88,7 @@ type
   function AnalyzeDiary(
     Base: TDiary;         // материал
     AnFunc: TAnalyzeFunction;     // ф-ция анализа
-    DaysProcess: integer;   // параметры местные
+    FromDate, ToDate: TDate;
     const Par: TRealArray;    // ...
     out KoofList: TKoofList;
     out AnList: TAnalyzeRecList;
@@ -121,7 +116,7 @@ implementation
   { ПОДГОТОВКА МАТЕРИАЛА }
 
 {==============================================================================}
-procedure ExtractRecords(Base: TDiary; DaysCount: integer;
+procedure ExtractRecords(Base: TDiary; FromDate, ToDate: TDate;
   out List: TPrimeRecList);
 {==============================================================================}
 var
@@ -137,8 +132,6 @@ var
   TimeF,TimeI: integer;
   TimeShift: integer;
   MealDate: TDate;
-
-  FromDate, ToDate: TDate;
 
   procedure InitCounters;
   begin
@@ -163,9 +156,6 @@ begin
   { обработка }
 
   { 1. Создаём RecList, считая время в минутах от 01/01/1899 }
-
-  ToDate := Trunc(Now);
-  FromDate := ToDate - DaysCount + 1;
   Base.PrepareCache(FromDate, ToDate);
 
   for Date := FromDate to ToDate do
@@ -428,7 +418,7 @@ end;
 function AnalyzeDiary(
   Base: TDiary;       // материал
   AnFunc: TAnalyzeFunction;   // ф-ция анализа
-    DaysProcess: integer;   // параметры местные
+    FromDate, ToDate: TDate;   // параметры местные
   //const Lim: TLimits;     // параметры для DLL
   const Par: TRealArray;
   out KoofList: TKoofList;
@@ -441,7 +431,7 @@ var
 begin
   if (@AnFunc <> nil) then
   begin
-    ExtractRecords(Base, DaysProcess, PrimeList);
+    ExtractRecords(Base, FromDate, ToDate, PrimeList);
     FormatRecords(PrimeList, AnList, Par[PAR_ADAPTATION]);
     Result := AnFunc(AnList, KoofList, CallBack);
   end else
