@@ -272,6 +272,7 @@ type
     ButtonUpdateKoof: TButton;
     Label2: TLabel;
     Label3: TLabel;
+    LabelDiaryMealExpectedBS: TLabel;
 
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ButtonCreateFoodClick(Sender: TObject);
@@ -2518,6 +2519,7 @@ var
   StartBlood: TBloodRecord;
   Ins: TInsRecord;
   Delta: real;
+  ExpectedBS: Real;
   i: integer;
   Dose: real;
   DCarbs: real;
@@ -2533,9 +2535,12 @@ begin
   begin
     LabelDiaryMealDose.Font.Color := clNoData;
     LabelDiaryMealDose.Font.Style := [];
-
     LabelDiaryMealDose.Caption := 'Не выбрано';
+
     LabelDiaryCorrection.Caption := '';
+
+    LabelDiaryMealExpectedBS.Caption := '';
+
     ListCorrectCarbs.Clear;
 
     LabelCorrectionEmpty.Caption := '  Не выбрано';
@@ -2577,6 +2582,7 @@ begin
       Delta := Value['TargetBS'] - StartBlood.Value
     else
       Delta := 0;
+
     SetCorrectionHint(Delta);
 
     LabelDiaryMealDose.Font.Color := clBlack;
@@ -2586,11 +2592,13 @@ begin
     if (Koof.q > 0) then
     begin
       { доза }
-      Dose := (Koof.k * SelMeal.Carbs + Koof.p * SelMeal.Prots - Delta)/Koof.q;
+      Dose := (Koof.k * SelMeal.Carbs + Koof.p * SelMeal.Prots - Delta) / Koof.q;
       if (Dose >= 0) then
         LabelDiaryMealDose.Caption := 'Расчётная доза: ' + RealToStr(Dose)
       else
         LabelDiaryMealDose.Caption := 'Расчётная доза:  --';
+
+
 
       { <вспомогательный список> }
 
@@ -2606,8 +2614,25 @@ begin
 
           if (Ins.Value > Value['MaxDose']) then
               Value['MaxDose'] := Ins.Value;
+
+          if (StartBlood <> nil) then
+            ExpectedBS := StartBlood.Value + Koof.k * SelMeal.Carbs + Koof.p * SelMeal.Prots - Koof.q * Ins.Value
+          else
+            ExpectedBS := -1;
         end else
+        begin
           CurrentDB := 0;
+          if (StartBlood <> nil) then
+            ExpectedBS := StartBlood.Value + Koof.k * SelMeal.Carbs + Koof.p * SelMeal.Prots
+          else
+            ExpectedBS := -1;
+        end;
+
+        if (ExpectedBS > -1) then
+          LabelDiaryMealExpectedBS.Caption := Format('Ожидаемый СК: %.1f', [ExpectedBS])
+        else
+          LabelDiaryMealExpectedBS.Caption := 'Ожидаемый СК: ?';
+
 
         ListCorrectCarbs.Clear;
         for i := 0 to Value['MaxDose'] do
@@ -3078,9 +3103,6 @@ begin
   {#}AnalyzeDiary(Diary, FromDate, ToDate, Par, AnalyzeCallBack);
   {===============================================================}
 
-//  LabelDllInfo.Caption := Analyzer.InfoFunc;
-  LabelAvgDeviation.Caption := Format('Ошибка: ±%.2f ммоль/л', [GetRecListError(AnList, GetAnalyzer(0).KoofList, vfLinearAbs)]);
-  LabelCalcTime.Caption := Format('Время расчёта: %d мсек', [GetTickCount - tick]);
   ButtonUpdateKoof.Caption := 'Пересчитать';
   ButtonUpdateKoof.Enabled := True;
 
@@ -3234,10 +3256,14 @@ begin
   if (KoofIndex >= 0) and (KoofIndex <= 3) then
   begin
     if (AnalyzerIndex > 0) then
-      KoofList := GetAnalyzer(ComboAnalyzers.ItemIndex - 1).KoofList
-    else
-      KoofList := AvgKoofList;
+    begin
+      Analyzer := GetAnalyzer(AnalyzerIndex - 1);
+    end else
+      Analyzer := AvgAnalyzer;
 
+    KoofList := Analyzer.KoofList;
+    LabelCalcTime.Caption := Format('Время расчёта: %d мсек', [Analyzer.Time]);
+    LabelAvgDeviation.Caption := Format('Ошибка: ±%.2f ммоль/л', [Analyzer.Error]);
 
     DrawKoof(ImageLarge, KoofList, AnList, GraphTypes[KoofIndex], ADVANCED_MODE or Value['ShowPoints']);
     LabelKoofDiscription.Caption := KoofDisc[KoofIndex];

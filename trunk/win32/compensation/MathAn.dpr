@@ -62,7 +62,7 @@ var
 begin
   for Time := 0 to High(TIME_WEIGHTS) do
   begin
-    TIME_WEIGHTS[Time] := Exp(-K*sqr(Time/HalfMinPerDay));
+    TIME_WEIGHTS[Time] := Exp(-K * sqr(Time / HalfMinPerDay));
   end;
 end;
 
@@ -417,6 +417,13 @@ begin
 end;
 
 {==============================================================================}
+function Info_BruteforceQP: PChar; StdCall;
+{==============================================================================}
+begin
+  Result := 'Brute Force QP 1.0';
+end;
+
+{==============================================================================}
 function Analyze_BruteforceQP(const RecList: TAnalyzeRecList;
   out KoofList: TKoofList; CallBack: TCallbackProgressProc = nil): boolean; StdCall;
 {==============================================================================}
@@ -764,6 +771,13 @@ begin
 end;
 
 {==============================================================================}
+function Info_HardMath: PChar; StdCall;
+{==============================================================================}
+begin
+  Result := 'HardMath 1.0';
+end;
+
+{==============================================================================}
 function Analyze_HardMath(const RecList: TAnalyzeRecList;
   out KoofList: TKoofList; CallBack: TCallbackProgressProc = nil): boolean; StdCall;
 {==============================================================================}
@@ -819,26 +833,21 @@ begin
   //ShowMessage(INtToStr(GetTIckCount - tick));
 end;
 
-function Info: PChar; StdCall;
-begin
-  //Result := 'GoldAverage 2.4 (k)';
-  //Result := 'Math 1.0';
-  //Result := 'FixedQ 2.0'
-  //Result := 'AutoQ 1.0';
-  //Result := 'BruteforceQP 1.0';
-  Result := 'HardMath 1.0';
-end;
-
 exports
-  Info name InfoFunctionName,
-  
+  Analyze_HardMath     name AnalyzeFunctionName + '0',
+  Info_HardMath        name InfoFunctionName    + '0',
+
+  Analyze_BruteforceQP name AnalyzeFunctionName + '1',
+  Info_BruteforceQP    name InfoFunctionName    + '1'
+
+  ;
+
   //Analyze_Math name AnalyzeFunctionName;
   //Analyze_AutoQ name AnalyzeFunctionName;
   //Analyze_BruteforceQP name AnalyzeFunctionName;
-  Analyze_HardMath name AnalyzeFunctionName;
 
 begin
-  PrepareTimeWeights(5);
+  PrepareTimeWeights(10);
 end.
 
 { »ƒ≈»

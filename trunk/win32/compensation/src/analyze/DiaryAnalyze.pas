@@ -5,6 +5,7 @@ interface
 uses
   SysUtils,
   Windows,
+  Classes,
   Math,
   AnalyzeInterface,
   DiaryRoutines,
@@ -19,6 +20,8 @@ type
   // public
     Name: string;
     KoofList: TKoofList;   // коэффициенты
+    Error: real;
+    Time: cardinal;
   end;
 
   TValFunction = (vfLinearAbs, vfLinearAvg, vfDistance, vfQuadric);
@@ -37,16 +40,17 @@ type
   { анализ результатов }
   function GetRecError(const Rec: TAnalyzeRec; const KoofList: TKoofList; ValFunct: TValFunction): real;
   function GetRecListError(const List: TAnalyzeRecList; const KoofList: TKoofList; ValFunc: TValFunction): real;
-
+                                                                             
+  procedure SaveRecords(const List: TAnalyzeRecList; const FileName: string);
 
 var
   AnList: TAnalyzeRecList;
-  AvgKoofList: TKoofList;
-  
-implementation
+  AvgAnalyzer: TAnalyzer;
 
+implementation
+  
 var
-  Analyzer: array of TAnalyzer; // TODO: hide it
+  Analyzer: array of TAnalyzer;
 
 type
   // #dao
@@ -118,12 +122,12 @@ begin
   begin
     PageBaseTime := Date * MinPerDay;
     {=====================================================}
-    for i := 0 to Base[Date].Count-1 do
+    for i := 0 to Base[Date].Count - 1 do
     if (Base[Date][i].RecType = TInsRecord) then
     begin
       CurIns := TInsRecord(Base[Date][i]).Value;
       Ins := Ins + CurIns;
-      if CurIns > MaxIns then
+      if (CurIns > MaxIns) then
       begin
         MaxIns := CurIns;
         TimeI := PageBaseTime + Base[Date][i].Time;
@@ -135,7 +139,7 @@ begin
       Fats := Fats + TMealRecord(Base[Date][i]).Fats;
         CurCarbs := TMealRecord(Base[Date][i]).Carbs;
       Carbs := Carbs + CurCarbs;
-      if CurCarbs > MaxCarbs then
+      if (CurCarbs > MaxCarbs) then
       begin
         MaxCarbs := CurCarbs;
         TimeF := PageBaseTime + Base[Date][i].Time;
@@ -146,7 +150,7 @@ begin
     if (Base[Date][i].RecType = TBloodRecord) and
        (not TBloodRecord(Base[Date][i]).PostPrand) then
     begin
-      if PrevBloodValue = -1 then
+      if (PrevBloodValue = -1) then
       begin
         PrevBloodTime := PageBaseTime + TBloodRecord(Base[Date][i]).Time;
         PrevBloodValue := TBloodRecord(Base[Date][i]).Value;
@@ -294,25 +298,36 @@ function AddAnalyzer(const FileName: string): boolean;
 var
   Lib: HModule;
   Temp: TAnalyzer;
+  Index: integer;
+  AnalFuncName: string;
+  InfoFuncName: string;
 begin
   if FileExists(FileName) then
   try
     Lib := LoadLibrary(PChar(FileName));
     if (Lib <> 0) then
-    begin    
-      @Temp.AnalyzeFunc := GetProcAddress(Lib, AnalyzeFunctionName);
-      @Temp.InfoFunc := GetProcAddress(Lib, InfoFunctionName);
-      Result :=
-        (@Temp.AnalyzeFunc <> nil) and
-        (@Temp.InfoFunc <> nil);
+    begin
+      Index := 0;
+      repeat
+        AnalFuncName := AnalyzeFunctionName + IntToStr(Index);
+        InfoFuncName:= InfoFunctionName + IntToStr(Index);
 
-      if Result then
-      begin
-        Temp.Name := Temp.InfoFunc;
+        @Temp.AnalyzeFunc := GetProcAddress(Lib, PAnsiChar(AnalFuncName));
+        @Temp.InfoFunc := GetProcAddress(Lib, PAnsiChar(InfoFuncName));
+        Result :=
+          (@Temp.AnalyzeFunc <> nil) and
+          (@Temp.InfoFunc <> nil);
 
-        SetLength(Analyzer, Length(Analyzer) + 1);
-        Analyzer[High(Analyzer)] := Temp;
-      end;
+        if Result then
+        begin
+          Temp.Name := Temp.InfoFunc;
+
+          SetLength(Analyzer, Length(Analyzer) + 1);
+          Analyzer[High(Analyzer)] := Temp;
+        end;
+
+        inc(Index);
+      until not Result;
     end else
       Result := False;
   except
@@ -326,6 +341,7 @@ procedure AnalyzeDiary(Base: TDiary; FromDate, ToDate: TDate; const Par: TRealAr
 {==============================================================================}
 var
   PrimeList: TPrimeRecList;
+  StartTime: cardinal;
   i, Time: integer;
 begin
   if (Length(Analyzer) = 0) then
@@ -338,28 +354,35 @@ begin
   // собственно анализ
   for i := 0 to High(Analyzer) do
   begin
+    StartTime := GetTickCount;
     // TODO: incapsulate as method "TAnalyzer.Analyze(AnList)"
     Analyzer[i].AnalyzeFunc(AnList, Analyzer[i].KoofList, CallBack);
+    Analyzer[i].Error := GetRecListError(AnList, Analyzer[i].KoofList, vfQuadric);
+    Analyzer[i].Time := GetTickCount - StartTime;
   end;
 
   // определение средних коэффицентов
   for Time := 0 to MinPerDay - 1 do
   begin
-    AvgKoofList[Time].k := 0;
-    AvgKoofList[Time].q := 0;
-    AvgKoofList[Time].p := 0;
+    AvgAnalyzer.KoofList[Time].k := 0;
+    AvgAnalyzer.KoofList[Time].q := 0;
+    AvgAnalyzer.KoofList[Time].p := 0;
+    AvgAnalyzer.Time := 0;
 
     for i := 0 to High(Analyzer) do
     begin
-      AvgKoofList[Time].k := AvgKoofList[Time].k + Analyzer[i].KoofList[Time].k;
-      AvgKoofList[Time].q := AvgKoofList[Time].q + Analyzer[i].KoofList[Time].q;
-      AvgKoofList[Time].p := AvgKoofList[Time].p + Analyzer[i].KoofList[Time].p;
+      AvgAnalyzer.KoofList[Time].k := AvgAnalyzer.KoofList[Time].k + Analyzer[i].KoofList[Time].k;
+      AvgAnalyzer.KoofList[Time].q := AvgAnalyzer.KoofList[Time].q + Analyzer[i].KoofList[Time].q;
+      AvgAnalyzer.KoofList[Time].p := AvgAnalyzer.KoofList[Time].p + Analyzer[i].KoofList[Time].p;
+      AvgAnalyzer.Time := AvgAnalyzer.Time + Analyzer[i].Time;
     end;
 
-    AvgKoofList[Time].k := AvgKoofList[Time].k / Length(Analyzer);
-    AvgKoofList[Time].q := AvgKoofList[Time].q / Length(Analyzer);
-    AvgKoofList[Time].p := AvgKoofList[Time].p / Length(Analyzer);
+    AvgAnalyzer.KoofList[Time].k := AvgAnalyzer.KoofList[Time].k / Length(Analyzer);
+    AvgAnalyzer.KoofList[Time].q := AvgAnalyzer.KoofList[Time].q / Length(Analyzer);
+    AvgAnalyzer.KoofList[Time].p := AvgAnalyzer.KoofList[Time].p / Length(Analyzer);
   end;
+
+  AvgAnalyzer.Error := GetRecListError(AnList, AvgAnalyzer.KoofList, vfQuadric);
 end;
 
 {==============================================================================}
@@ -371,16 +394,17 @@ var
 begin
   Koof := KoofList[Rec.Time];
   err :=
-    Rec.Carbs * Koof.k +
-    Rec.Prots * Koof.p -
-    Rec.Ins * Koof.q
-    - (Rec.BSOut - Rec.BSIn);
+    (Rec.BSIn
+    + Rec.Carbs * Koof.k
+    + Rec.Prots * Koof.p
+    - Rec.Ins   * Koof.q)
+    - Rec.BSOut;
 
   case ValFunct of
-    vfLinearAbs: result := abs(err);
-    vfLinearAvg: result := err;
-    vfDistance: result := abs(err) / Sqrt(Sqr(Rec.Carbs) + Sqr(Rec.Prots) + Sqr(Rec.Ins));
-    vfQuadric: Result := Sqr(err);
+    vfLinearAbs: Result := abs(err);
+    vfLinearAvg: Result := err;
+    vfDistance:  Result := abs(err) / Sqrt(Sqr(Rec.Carbs) + Sqr(Rec.Prots) + Sqr(Rec.Ins));
+    vfQuadric:   Result := Sqr(err);
     else raise Exception.Create('GetRecError: недопустимый аргумент ValFunct');
   end;
 end;
@@ -403,6 +427,51 @@ begin
 end;
 
 {==============================================================================}
+function GetKoofRandomation(const KoofList: TKoofList): real;
+{==============================================================================}
+
+  function Dist(n1,n2: integer): real;
+  begin
+    result := Sqrt(
+      Sqr(KoofList[n1].k - KoofList[n2].k)+
+      Sqr(KoofList[n1].q - KoofList[n2].q)+
+      Sqr(KoofList[n1].p - KoofList[n2].p));
+  end;
+
+{var
+  i: integer; }
+begin
+  result := 0;
+  {for i := 0 to High(KoofList) do
+    result := result + Dist(i,(i + 1) mod length(KoofList));  }
+
+  { *** }
+end;
+
+{==============================================================================}
+procedure SaveRecords(const List: TAnalyzeRecList; const FileName: string);
+{==============================================================================}
+var
+  s: TStringList;
+  i: integer;
+begin
+  s := TStringList.Create;
+  try
+    for i := 0 to High(List) do
+      s.Add(
+        TimeToStr(List[i].Time, ':') + #9 +
+        RealToStr(List[i].Carbs) + #9 +
+        RealToStr(List[i].Prots) + #9 +
+        RealToStr(List[i].Ins) + #9 +
+        RealToStr(List[i].BSOut - List[i].BSIn)
+      );
+    s.SaveToFile(FileName);
+  finally
+    s.Free;
+  end;
+end;
+
+{==============================================================================}
 function GetAnalyzersCount: integer;
 {==============================================================================}
 begin
@@ -420,7 +489,7 @@ end;
 function GetKoof(Time: integer): TKoof;
 {==============================================================================}
 begin
-  Result := AvgKoofList[Time];
+  Result := AvgAnalyzer.KoofList[Time];
 end;
 
 {==============================================================================}
