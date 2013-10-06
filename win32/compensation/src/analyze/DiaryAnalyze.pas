@@ -49,6 +49,10 @@ type
 var
   AnList: TAnalyzeRecList;
   AvgAnalyzer: TAnalyzer;
+  
+const
+  PAR_ADAPTATION  = 0;
+  //PAR_COMPRESSION = 1;
 
 implementation
   
