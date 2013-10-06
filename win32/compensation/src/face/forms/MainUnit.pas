@@ -55,6 +55,7 @@ uses
   DiaryLocalSource,
   DiaryWeb, //
   DiarySync, //
+  DiaryAnalyze,
   AnalyzeGraphic,
   AnalyzeInterface,
 
@@ -160,12 +161,7 @@ type
     ShapeAn1: TShape;
     TheKoofsGroupBox: TGroupBox;
     LabelAnCompValue: TLabel;
-    LabelKoofDiscription: TLabel;
-    ComboKoof: TComboBox;
     GroupBoxInfo: TGroupBox;
-    LabelCalcTime: TLabel;
-    LabelAvgDeviation: TLabel;
-    LabelDllInfo: TLabel;
     PanelImageLarge: TPanel;
     ImageLarge: TImage;
     TabStat: TTabSheet;
@@ -181,8 +177,6 @@ type
     ListBS: TListBox;
     ButtonAvgBSDynamic: TButton;
     ComboValue: TComboBox;
-    ButtonUpdateKoof: TButton;
-    ButtonConfigKoof: TButton;
     ListFood: TListView;
     ListDish: TListView;
     TrayIcon: TCoolTrayIcon;
@@ -268,6 +262,16 @@ type
     ButtonInsulinCalc: TButton;
     ButtonExportJson: TButton;
     ButtonCovariance: TButton;
+    Shape1: TShape;
+    ComboAnalyzers: TComboBox;
+    ComboKoof: TComboBox;
+    LabelKoofDiscription: TLabel;
+    LabelAvgDeviation: TLabel;
+    LabelCalcTime: TLabel;
+    ButtonConfigKoof: TButton;
+    ButtonUpdateKoof: TButton;
+    Label2: TLabel;
+    Label3: TLabel;
 
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ButtonCreateFoodClick(Sender: TObject);
@@ -822,6 +826,7 @@ var
   Timer: TSmallTimer;
   Prev: string;
   Temp: integer;
+  i: integer;
 
   procedure StartupInfo(const Text: string);
   begin
@@ -985,10 +990,13 @@ begin
 
     { =============== ЗАГРУЗКА МОДУЛЯ АНАЛИЗА =============== }
     StartupInfo(STATUS_ACTION_LOADING_MATHAN);
-    {*}AnalyzeLoaded := LoadLib(
-    {*}  WORK_FOLDER + ANALYZE_LIB_FileName,
-    {*}  AnalyzeFunc,
-    {*}  InfoFunc);
+    AddAnalyzer(WORK_FOLDER + ANALYZE_LIB_FileName);
+    // TODO: may be extended
+
+    for i := 0 to GetAnalyzersCount - 1 do
+      ComboAnalyzers.Items.Add(GetAnalyzer(i).Name);
+
+    ComboAnalyzers.ItemIndex := 0;
 
     { =============== КОЭФФИЦИЕНТЫ =============== }
     StartupInfo(STATUS_ACTION_PREPARING_KOOFS);
@@ -1108,7 +1116,7 @@ begin
   end else
 
   { поиск модуля анализа }
-  if not AnalyzeLoaded then
+  if (GetAnalyzersCount = 0) then
   begin
     ShowBalloon(BALOON_ERROR_ANALYZER_NOT_FOUNDED, bitError);
   end else
@@ -1809,7 +1817,7 @@ begin
 
   UpdateTimeLeft();
   
-  if AnalyzeLoaded and (PageControl1.ActivePage = TabAnalyze) then
+  if (GetAnalyzersCount > 0) and (PageControl1.ActivePage = TabAnalyze) then
     ComboKoofChange(nil);
 
   {StartProc('Updating TrayIcon.Hint');
@@ -2562,7 +2570,7 @@ begin
     );
 
     { Определяем коэффициенты }
-    Koof := KoofList[DiaryView.SelectedMeal.Time];
+    Koof := GetKoof(DiaryView.SelectedMeal.Time);
 
     { Коррекция СК }
     if (StartBlood <> nil) then
@@ -3040,10 +3048,10 @@ var
   Par: TRealArray;
   FromDate, ToDate: TDate;
 begin
-  if not AnalyzeLoaded then
+  if (GetAnalyzersCount = 0) then
   begin
-    LabelDllInfo.Font.Color := clRed;
-    LabelDllInfo.Caption := 'Модуль анализа не найден';
+    //LabelDllInfo.Font.Color := clRed;
+    //LabelDllInfo.Caption := 'Модуль анализа не найден';
     LabelCalcTime.Caption := '';
     LabelAvgDeviation.Caption := '';
     ButtonUpdateKoof.Enabled := False;
@@ -3054,9 +3062,9 @@ begin
   StartProc('TForm1.UpdateKoofs()');
   
   TimerTimeLeft.Enabled := False;
-  LabelDllInfo.Caption := 'Расчёт...';
   LabelCalcTime.Caption := '';
   LabelAvgDeviation.Caption := '';
+  ButtonUpdateKoof.Caption := 'Расчёт...';
   ButtonUpdateKoof.Enabled := False;
 
   tick := GetTickCount;
@@ -3067,12 +3075,13 @@ begin
   {===============================================================}
   {#}SetLength(Par, 1);
   {#}Par[PAR_ADAPTATION] := Value['Adaptation'];  { [0.5..1] }
-  {#}AnalyzeDiary(Diary, AnalyzeFunc, FromDate, ToDate, Par, KoofList, AnList, AnalyzeCallBack);
+  {#}AnalyzeDiary(Diary, FromDate, ToDate, Par, AnalyzeCallBack);
   {===============================================================}
 
-  LabelDllInfo.Caption := InfoFunc;
-  LabelAvgDeviation.Caption := Format('Ошибка: ±%.2f ммоль/л', [GetRecListError(AnList, KoofList, vfLinearAbs)]);
+//  LabelDllInfo.Caption := Analyzer.InfoFunc;
+  LabelAvgDeviation.Caption := Format('Ошибка: ±%.2f ммоль/л', [GetRecListError(AnList, GetAnalyzer(0).KoofList, vfLinearAbs)]);
   LabelCalcTime.Caption := Format('Время расчёта: %d мсек', [GetTickCount - tick]);
+  ButtonUpdateKoof.Caption := 'Пересчитать';
   ButtonUpdateKoof.Enabled := True;
 
   if ComboKoof.ItemIndex <> -1 then
@@ -3098,7 +3107,7 @@ begin
 
   if DiaryView.IsMealSelected then
   begin
-    Kf := KoofList[DiaryView.SelectedMeal.Time];
+    Kf := GetKoof(DiaryView.SelectedMeal.Time);
     RelBS := (RelCarbs*Kf.k + RelProts*Kf.p)/100;
     if (RelBS > 0) then
       Result := CurrentDB/RelBS
@@ -3118,7 +3127,7 @@ var
 begin
   if DiaryView.IsMealSelected then
   begin
-    Kf := KoofList[DiaryView.SelectedMeal.Time];
+    Kf := GetKoof(DiaryView.SelectedMeal.Time);
     RelBS := (RelCarbs*Kf.k + RelProts*Kf.p)/100;
     if (RelBS > 0) then
       Result := (CurrentDB+RelBS*CurMass)/RelBS
@@ -3190,7 +3199,7 @@ procedure TForm1.DiaryViewFoodShow(Sender: TObject; Index, Line: Integer;
 var
   R: TKoof;
 begin
-  R := KoofList[DiaryView.CurrentPage[Index].Time];
+  R := GetKoof(DiaryView.CurrentPage[Index].Time);
 
   if R.q > 0 then   
   Text := ' [+'+
@@ -3209,17 +3218,29 @@ procedure TForm1.ComboKoofChange(Sender: TObject);
 const
   GraphTypes: array[0..3] of TKoofType = (kfK, kfQ, kfP, kfX);
 var
-  n: integer;
+  Analyzer: TAnalyzer;
+  KoofIndex: integer;
+  AnalyzerIndex: integer;
+  KoofList: TKoofList;
 begin
-  n := ComboKoof.ItemIndex;
-  if n = -1 then Exit;
+  KoofIndex := ComboKoof.ItemIndex;
+  if (KoofIndex = -1) then Exit;
+
+  AnalyzerIndex := ComboAnalyzers.ItemIndex;
+  if (AnalyzerIndex = -1) then Exit;
 
   StartProc('ComboKoofChange');
 
-  if (n >= 0)and(n <= 3) then
+  if (KoofIndex >= 0) and (KoofIndex <= 3) then
   begin
-    DrawKoof(ImageLarge, KoofList, AnList, GraphTypes[n], ADVANCED_MODE or Value['ShowPoints']);
-    LabelKoofDiscription.Caption := KoofDisc[n];
+    if (AnalyzerIndex > 0) then
+      KoofList := GetAnalyzer(ComboAnalyzers.ItemIndex - 1).KoofList
+    else
+      KoofList := AvgKoofList;
+
+
+    DrawKoof(ImageLarge, KoofList, AnList, GraphTypes[KoofIndex], ADVANCED_MODE or Value['ShowPoints']);
+    LabelKoofDiscription.Caption := KoofDisc[KoofIndex];
   end;
 
   FinishProc;
@@ -4405,18 +4426,18 @@ var
   Cnt: array[0..6] of integer;
   i,j: integer;
 begin
-  for i := 0 to High(Cnt) do
+  {for i := 0 to High(Cnt) do
     Cnt[i] := 0;
 
-  for i := 0 to High(AnList) do
+  for i := 0 to MinPerDay - 1 do
   begin
-    j := GetType(AnList[i]);
+    j := GetType(Analyzer.AnList[i]);
     inc(Cnt[j]);
   end;
 
   ListBS.Items.Clear;
   for i := 0 to High(Cnt) do
-    ListBS.Items.Add(IntToStr(i) + '    ' + IntToStr(Cnt[i]));
+    ListBS.Items.Add(IntToStr(i) + '    ' + IntToStr(Cnt[i]));  }
 end;
 
 {==============================================================================}
@@ -5486,10 +5507,13 @@ type
     Data: array of Double;
   end;
 
- function ExpectedBS(i: integer): Double;
- begin
-   Result := AnList[i].BSIn + AnList[i].Carbs * KoofList[AnList[i].Time].k + AnList[i].Prots * KoofList[AnList[i].Time].p - AnList[i].Ins * KoofList[AnList[i].Time].q;
- end;
+  function ExpectedBS(i: integer): Double;
+  var
+    Koof: TKoof;
+  begin
+    Koof := GetKoof(AnList[i].Time);
+    Result := AnList[i].BSIn + AnList[i].Carbs * Koof.k + AnList[i].Prots * Koof.p - AnList[i].Ins * Koof.q;
+  end;
 
 var
   Rows: array of TRow;
@@ -5525,7 +5549,7 @@ begin
   Rows[High(Rows)].Name := 'Value';
   SetLength(Rows[High(Rows)].Data, Length(AnList));
   for i := 0 to High(AnList) do
-    Rows[High(Rows)].Data[i] := AnList[i].Prots * ENERGY_PROTS + AnList[i].Fats * ENERGY_FATS + ANList[i].Carbs * ENERGY_CARBS;
+    Rows[High(Rows)].Data[i] := AnList[i].Prots * ENERGY_PROTS + AnList[i].Fats * ENERGY_FATS + AnList[i].Carbs * ENERGY_CARBS;
 
   SetLength(Rows, Length(Rows) + 1);
   Rows[High(Rows)].Name := 'Ins';

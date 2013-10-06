@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 388
-  Top = 34
+  Left = 601
+  Top = 204
   Width = 1249
   Height = 959
   Caption = #1053#1072#1079#1074#1072#1085#1080#1077
@@ -87,7 +87,7 @@ object Form1: TForm1
       Top = 0
       Width = 1241
       Height = 871
-      ActivePage = TabDiary
+      ActivePage = TabAnalyze
       Align = alClient
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -616,7 +616,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.907620138890000000
+            Date = 40251.836764652780000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -1355,7 +1355,16 @@ object Form1: TForm1
           TabOrder = 0
           object ShapeAn1: TShape
             Left = 9
-            Top = 137
+            Top = 337
+            Width = 231
+            Height = 7
+            Align = alTop
+            Brush.Style = bsClear
+            Pen.Style = psClear
+          end
+          object Shape1: TShape
+            Left = 9
+            Top = 201
             Width = 231
             Height = 7
             Align = alTop
@@ -1364,11 +1373,11 @@ object Form1: TForm1
           end
           object TheKoofsGroupBox: TGroupBox
             Left = 9
-            Top = 9
+            Top = 208
             Width = 231
-            Height = 128
+            Height = 129
             Align = alTop
-            Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
+            Caption = #1048#1085#1092#1086#1088#1084#1072#1094#1080#1103
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlue
             Font.Height = -15
@@ -1378,7 +1387,7 @@ object Form1: TForm1
             TabOrder = 0
             DesignSize = (
               231
-              128)
+              129)
             object LabelAnCompValue: TLabel
               Left = 9
               Top = 41
@@ -1392,9 +1401,73 @@ object Form1: TForm1
               Font.Style = []
               ParentFont = False
             end
+            object LabelAvgDeviation: TLabel
+              Left = 8
+              Top = 104
+              Width = 115
+              Height = 16
+              Caption = 'LabelAvgDeviation'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clBlack
+              Font.Height = -15
+              Font.Name = 'MS Sans Serif'
+              Font.Style = []
+              ParentFont = False
+            end
+            object LabelCalcTime: TLabel
+              Left = 8
+              Top = 88
+              Width = 92
+              Height = 16
+              Caption = 'LabelCalcTime'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clBlack
+              Font.Height = -15
+              Font.Name = 'MS Sans Serif'
+              Font.Style = []
+              ParentFont = False
+            end
+            object ButtonConfigKoof: TButton
+              Left = 9
+              Top = 56
+              Width = 208
+              Height = 24
+              Action = ActionSettingsAnalyze
+              Anchors = [akLeft, akTop, akRight]
+              TabOrder = 0
+            end
+            object ButtonUpdateKoof: TButton
+              Left = 9
+              Top = 24
+              Width = 208
+              Height = 24
+              Anchors = [akLeft, akTop, akRight]
+              Caption = #1055#1077#1088#1077#1089#1095#1080#1090#1072#1090#1100
+              TabOrder = 1
+              OnClick = ButtonUpdateKoofClick
+            end
+          end
+          object GroupBoxInfo: TGroupBox
+            Left = 9
+            Top = 9
+            Width = 231
+            Height = 192
+            Align = alTop
+            Caption = #1055#1088#1086#1089#1084#1086#1090#1088
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clBlue
+            Font.Height = -15
+            Font.Name = 'MS Sans Serif'
+            Font.Style = []
+            ParentBackground = False
+            ParentFont = False
+            TabOrder = 1
+            DesignSize = (
+              231
+              192)
             object LabelKoofDiscription: TLabel
               Left = 9
-              Top = 57
+              Top = 121
               Width = 214
               Height = 64
               Anchors = [akLeft, akTop, akRight]
@@ -1408,9 +1481,39 @@ object Form1: TForm1
               ParentFont = False
               WordWrap = True
             end
-            object ComboKoof: TComboBox
+            object Label2: TLabel
+              Left = 8
+              Top = 24
+              Width = 101
+              Height = 16
+              Caption = #1052#1077#1090#1086#1076' '#1072#1085#1072#1083#1080#1079#1072
+              Color = clWindow
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -15
+              Font.Name = 'MS Sans Serif'
+              Font.Style = []
+              ParentColor = False
+              ParentFont = False
+            end
+            object Label3: TLabel
+              Left = 8
+              Top = 72
+              Width = 93
+              Height = 16
+              Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090
+              Color = clWindow
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -15
+              Font.Name = 'MS Sans Serif'
+              Font.Style = []
+              ParentColor = False
+              ParentFont = False
+            end
+            object ComboAnalyzers: TComboBox
               Left = 9
-              Top = 25
+              Top = 41
               Width = 206
               Height = 22
               Style = csOwnerDrawFixed
@@ -1419,96 +1522,35 @@ object Form1: TForm1
               Font.Color = clBlack
               Font.Height = -15
               Font.Name = 'MS Sans Serif'
-              Font.Style = []
+              Font.Style = [fsBold]
               ItemHeight = 16
               ParentFont = False
               TabOrder = 0
+              OnChange = ComboKoofChange
+              Items.Strings = (
+                #1050#1086#1084#1073#1080#1085#1080#1088#1086#1074#1072#1085#1085#1099#1081)
+            end
+            object ComboKoof: TComboBox
+              Left = 9
+              Top = 89
+              Width = 206
+              Height = 22
+              Style = csOwnerDrawFixed
+              Anchors = [akLeft, akTop, akRight]
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clBlack
+              Font.Height = -15
+              Font.Name = 'MS Sans Serif'
+              Font.Style = [fsBold]
+              ItemHeight = 16
+              ParentFont = False
+              TabOrder = 1
               OnChange = ComboKoofChange
               Items.Strings = (
                 #1059#1075#1083#1077#1074#1086#1076#1085#1099#1081' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090
                 #1062#1045#1048
                 #1041#1077#1083#1082#1086#1074#1099#1081' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090
                 #1054#1050#1050)
-            end
-          end
-          object GroupBoxInfo: TGroupBox
-            Left = 9
-            Top = 144
-            Width = 231
-            Height = 159
-            Align = alTop
-            Caption = #1057#1080#1089#1090#1077#1084#1072
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clBlue
-            Font.Height = -15
-            Font.Name = 'MS Sans Serif'
-            Font.Style = []
-            ParentBackground = False
-            ParentFont = False
-            TabOrder = 1
-            DesignSize = (
-              231
-              159)
-            object LabelCalcTime: TLabel
-              Left = 16
-              Top = 41
-              Width = 92
-              Height = 16
-              Caption = 'LabelCalcTime'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
-              Font.Height = -15
-              Font.Name = 'MS Sans Serif'
-              Font.Style = []
-              ParentFont = False
-            end
-            object LabelAvgDeviation: TLabel
-              Left = 16
-              Top = 57
-              Width = 115
-              Height = 16
-              Caption = 'LabelAvgDeviation'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
-              Font.Height = -15
-              Font.Name = 'MS Sans Serif'
-              Font.Style = []
-              ParentFont = False
-            end
-            object LabelDllInfo: TLabel
-              Left = 16
-              Top = 25
-              Width = 84
-              Height = 16
-              Caption = 'LabelDllInfo'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
-              Font.Height = -15
-              Font.Name = 'MS Sans Serif'
-              Font.Style = [fsBold]
-              ParentFont = False
-              ParentShowHint = False
-              ShowHint = False
-            end
-            object ButtonUpdateKoof: TButton
-              Left = 9
-              Top = 87
-              Width = 214
-              Height = 24
-              Anchors = [akLeft, akTop, akRight]
-              Caption = #1055#1077#1088#1077#1089#1095#1080#1090#1072#1090#1100
-              TabOrder = 0
-              OnClick = ButtonUpdateKoofClick
-            end
-            object ButtonConfigKoof: TButton
-              Left = 9
-              Top = 119
-              Width = 214
-              Height = 24
-              Action = ActionSettingsAnalyze
-              Anchors = [akLeft, akTop, akRight]
-              Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080'...'
-              TabOrder = 1
             end
           end
         end
@@ -1531,7 +1573,7 @@ object Form1: TForm1
             Left = 1
             Top = 1
             Width = 982
-            Height = 832
+            Height = 835
             Align = alClient
           end
         end
