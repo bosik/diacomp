@@ -266,13 +266,14 @@ type
     ComboAnalyzers: TComboBox;
     ComboKoof: TComboBox;
     LabelKoofDiscription: TLabel;
-    LabelAvgDeviation: TLabel;
-    LabelCalcTime: TLabel;
     ButtonConfigKoof: TButton;
     ButtonUpdateKoof: TButton;
     Label2: TLabel;
     Label3: TLabel;
     LabelDiaryMealExpectedBS: TLabel;
+    LabelCalcTime: TLabel;
+    LabelAvgDeviation: TLabel;
+    LabelWeight: TLabel;
 
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ButtonCreateFoodClick(Sender: TObject);
@@ -3087,10 +3088,11 @@ begin
   StartProc('TForm1.UpdateKoofs()');
   
   TimerTimeLeft.Enabled := False;
-  LabelCalcTime.Caption := '';
-  LabelAvgDeviation.Caption := '';
+  //LabelCalcTime.Caption := 'Время расчёта: ...';
+  //LabelAvgDeviation.Caption := 'Ошибка: ...';
+  //LabelWeight.Caption := 'Вес: ...';
   ButtonUpdateKoof.Caption := 'Расчёт...';
-  ButtonUpdateKoof.Enabled := False;
+  Application.ProcessMessages;
 
   tick := GetTickCount;
 
@@ -3104,7 +3106,6 @@ begin
   {===============================================================}
 
   ButtonUpdateKoof.Caption := 'Пересчитать';
-  ButtonUpdateKoof.Enabled := True;
 
   if ComboKoof.ItemIndex <> -1 then
     ComboKoofChange(nil);
@@ -3264,6 +3265,7 @@ begin
     KoofList := Analyzer.KoofList;
     LabelCalcTime.Caption := Format('Время расчёта: %d мсек', [Analyzer.Time]);
     LabelAvgDeviation.Caption := Format('Ошибка: ±%.2f ммоль/л', [Analyzer.Error]);
+    LabelWeight.Caption := Format('Вес: %.0f', [Analyzer.Weight * 100]) + '%';
 
     DrawKoof(ImageLarge, KoofList, AnList, GraphTypes[KoofIndex], ADVANCED_MODE or Value['ShowPoints']);
     LabelKoofDiscription.Caption := KoofDisc[KoofIndex];
@@ -3635,18 +3637,29 @@ begin
 end;
 
 procedure TForm1.ButtonAvgBSDynamicClick(Sender: TObject);
-{const
+const
   AVG_PERIOD  = 30;
-  LOOK_PERIOD = 300;
+  LOOK_PERIOD = 1370;
 var
   i,j,k: integer;
   Summ: real;
   CurWeight: real;
-  SummWeight: real; }
-begin
-  {ListBS.Clear;
+  SummWeight: real;
 
-  for i := Trunc(Now)-LOOK_PERIOD to Trunc(Now) do
+  ToDate: TDate;
+  Mean, StdDev, Targeted, Less, More: Extended;
+begin
+  ListBS.Clear;
+
+  for ToDate := Trunc(now) - LOOK_PERIOD to Trunc(Now) do
+  begin
+    AnalyzeBS(Diary, ToDate - AVG_PERIOD, ToDate, Mean, StdDev, Targeted, Less, More);
+    ListBS.Items.Add(Format('%s'#9'%.2f'#9'%.2f'#9'%.1f'#9'%.1f', [DateToStr(ToDate - (AVG_PERIOD div 2)), Mean, StdDev, Less * 100, Targeted * 100]));
+  end;
+
+  ListBS.Items.SaveToFile('temp\BS.txt');
+
+  {for i := Trunc(Now)-LOOK_PERIOD to Trunc(Now) do
   begin
     Summ := 0;
     SummWeight := 0;
