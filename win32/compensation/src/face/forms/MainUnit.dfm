@@ -87,7 +87,7 @@ object Form1: TForm1
       Top = 0
       Width = 1241
       Height = 871
-      ActivePage = TabAnalyze
+      ActivePage = TabDiary
       Align = alClient
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -616,7 +616,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.836764652780000000
+            Date = 40251.889990671300000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -775,7 +775,7 @@ object Form1: TForm1
           TabOrder = 2
           object ShapeRight3: TShape
             Left = 11
-            Top = 221
+            Top = 233
             Width = 226
             Height = 10
             Align = alTop
@@ -875,9 +875,9 @@ object Form1: TForm1
           end
           object CorrectCarbs: TGroupBox
             Left = 11
-            Top = 231
+            Top = 243
             Width = 226
-            Height = 595
+            Height = 583
             Align = alClient
             Caption = #1055#1086#1076#1073#1086#1088' '#1091#1075#1083#1077#1074#1086#1076#1086#1074
             Color = clWhite
@@ -893,7 +893,7 @@ object Form1: TForm1
               Left = 2
               Top = 18
               Width = 222
-              Height = 575
+              Height = 563
               Align = alClient
               BevelOuter = bvNone
               BorderWidth = 8
@@ -917,7 +917,7 @@ object Form1: TForm1
                 Left = 8
                 Top = 24
                 Width = 206
-                Height = 543
+                Height = 531
                 Align = alClient
                 BorderStyle = bsNone
                 Columns = <
@@ -955,7 +955,7 @@ object Form1: TForm1
             Left = 11
             Top = 150
             Width = 226
-            Height = 71
+            Height = 83
             Align = alTop
             Caption = #1048#1085#1089#1091#1083#1080#1085
             Color = clWhite
@@ -989,6 +989,19 @@ object Form1: TForm1
               Caption = 'LabelDiaryCorrection'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clGray
+              Font.Height = -15
+              Font.Name = 'MS Sans Serif'
+              Font.Style = []
+              ParentFont = False
+            end
+            object LabelDiaryMealExpectedBS: TLabel
+              Left = 16
+              Top = 57
+              Width = 171
+              Height = 16
+              Caption = 'LabelDiaryMealExpectedBS'
+              Font.Charset = RUSSIAN_CHARSET
+              Font.Color = clWindowText
               Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
