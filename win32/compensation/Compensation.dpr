@@ -41,7 +41,8 @@ uses
   BusinessObjects in 'src\bo\BusinessObjects.pas',
   Bases in 'src\bo\Bases.pas',
   DiaryRecords in 'src\bo\DiaryRecords.pas',
-  DiaryRoutines in 'src\common\DiaryRoutines.pas';
+  DiaryRoutines in 'src\common\DiaryRoutines.pas',
+  DiaryAnalyze in 'src\common\DiaryAnalyze.pas';
 
 {$R *.res}
 
