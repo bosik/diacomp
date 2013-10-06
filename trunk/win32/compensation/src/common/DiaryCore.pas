@@ -15,6 +15,7 @@ uses
   DiaryLocalSource,
   {#}DiaryWeb,  
   AnalyzeInterface,
+  DiaryAnalyze,
   AutoLog,
 
   // службы
@@ -66,14 +67,6 @@ var
   Inited: boolean = False;
   WORK_FOLDER: string = ''; // рабочая директория
   AnExpDate: string; { для хранения даты обновления, загруженной при старте }
-
-  { параметры анализа }
-  KoofList: TKoofList;   // коэффициенты
-  AnList: TAnalyzeRecList;
-
-  AnalyzeLoaded: boolean = False;
-  AnalyzeFunc: TAnalyzeFunction;
-  InfoFunc: TInfoFunction;
 
 const
   { СИСТЕМНОЕ }
@@ -378,17 +371,21 @@ var
   i: integer;
   s: string;
   DC: char;
+  Koof: TKoof;
 begin
   StartProc('ExportKoofs()');
 
   Data := '';
   if (Plain) then
   begin
-    for i := 0 to High(KoofList) do
+    for i := 0 to MinPerDay - 1 do
+    begin
+      Koof := GetKoof(i);
       Data := Data +
         //Format('%2.2d',[i]) + '.00 - '+Format('%2.2d',[i + 1]) + '.00' + #9+
-        Format('%.6f'#9'%.6f'#9'%.6f'#13#10,[KoofList[i].k, KoofList[i].q, KoofList[i].p])
+        Format('%.6f'#9'%.6f'#9'%.6f'#13#10, [Koof.k, Koof.q, Koof.p])
       ;
+    end;
   end else
   begin
     Data := '[';
@@ -396,10 +393,12 @@ begin
     try                    
       DecimalSeparator := '.';
 
-      for i := 0 to High(KoofList) do
+      for i := 0 to MinPerDay - 1 do
       begin
-        s := Format('{"time":%d,"k":%.4f,"q":%.2f,"p":%.2f}',[i, KoofList[i].k, KoofList[i].q, KoofList[i].p]);
-        if (i < High(KoofList)) then
+        Koof := GetKoof(i);
+
+        s := Format('{"time":%d,"k":%.4f,"q":%.2f,"p":%.2f}',[i, Koof.k, Koof.q, Koof.p]);
+        if (i < MinPerDay - 1) then
           s := s + ',';
         Data := Data + s;
       end;
