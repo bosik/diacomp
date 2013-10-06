@@ -9,54 +9,61 @@ uses
 type
   // TODO 1: сделать оповещение базы (Changed()) при изменении любого поля
 
-  { 1. БАЗЫ }
-
   TSortType = (stName, stTag);
 
   // Имеет методы для бинарного поиска
   // Имеет методы для сортировки
   // Имеет номер версии и метод для её инкремента
-  TCustomBase = class
+  TAbstractBase = class
   private
     TempIndexList: TIndexList;
     FVersion: integer;
-  protected
-    function GetName(Index: integer): string; virtual; abstract;
-    function GetTag(Index: integer): integer; virtual; abstract;
-    procedure SetTag(Index, Value: integer); virtual; abstract;
-    procedure Swap(Index1, Index2: integer); virtual; abstract;
-
-    procedure Changed;
+    procedure ItemChangeHandler(Sender: TObject);
     function MoreName(Index1, Index2: integer): boolean;
     function MoreTag(Index1, Index2: integer): boolean;
     function MoreIndName(Index1, Index2: integer): boolean;
     function MoreIndTag(Index1, Index2: integer): boolean;
-    procedure Sort();
+    procedure Swap(Index1, Index2: integer); virtual; abstract;
     procedure SwapInd(Index1, Index2: integer);
+    function TraceLast(): integer;
+  protected
+    function GetName(Index: integer): string; virtual; abstract;
+    function GetTag(Index: integer): integer; virtual; abstract;
+    procedure SetTag(Index, Value: integer); virtual; abstract;
+    procedure Sort(); // вызывается потомками после загрузки
+    procedure Changed;
   public
     function Count: integer; virtual; abstract;
     constructor Create;
+    procedure Delete(Index: integer); virtual; abstract; 
     function Find(const ItemName: string): integer;
     procedure SortIndexes(IndexList: TIndexList; SortType: TSortType);
 
     property Version: integer read FVersion;
   end;
 
-  TFoodBase = class(TCustomBase)
+  TArrayBase = class(TAbstractBase)
   private
-    FBase: array of TFood;
+    FBase: array of TMutableItem;
+  protected
+    function GetItem(Index: integer): TMutableItem;
+    procedure Swap(Index1, Index2: integer); override;
+  public
+    function Add(Item: TMutableItem): integer; virtual;
+    function Count: integer; override;
+    procedure Delete(Index: integer); override;
+    destructor Destroy; override;
+  end;
+
+  TFoodBase = class(TArrayBase)
+  private
     function GetFood(Index: integer): TFood;
-    procedure FoodChangeHandler(Sender: TObject);
-  protected // like in a base class
+  protected
     function GetName(Index: integer): string; override;
     function GetTag(Index: integer): integer; override;
     procedure SetTag(Index, Value: integer); override;
-    procedure Swap(Index1, Index2: integer); override;
   public
-    {#}function Add(Food: TFood): integer;
-    function Count: integer; override;
-    {#}procedure Delete(Index: integer);
-    destructor Destroy; override;
+    function Add(Food: TFood): integer; reintroduce;
     procedure LoadFromFile_Old(const FileName: string);
     procedure LoadFromFile_XML(const FileName: string);
     procedure SaveToFile(const FileName: string);
@@ -64,26 +71,20 @@ type
     property Items[Index: integer]: TFood read GetFood; default;
   end;
 
-  TDishBase = class(TCustomBase)
+  TDishBase = class(TArrayBase)
   private
-    FBase: array of TDish;
     function GetDish(Index: integer): TDish;
-    procedure DishChangeHandler(Sender: TObject);
-  protected // like in a base class
+  protected
     function GetName(Index: integer): string; override;
     function GetTag(Index: integer): integer; override;
     procedure SetTag(Index, Value: integer); override;
-    procedure Swap(Index1, Index2: integer); override;
   public
-    {#}function Add(Dish: TDish): integer;
-    function Count: integer; override;
-    {#}procedure Delete(Index: integer);
-    destructor Destroy; override;
+    function Add(Dish: TDish): integer; reintroduce;
     procedure LoadFromFile_Old(const FileName: string; FoodBase: TFoodBase = nil);
     procedure LoadFromFile_XML(const FileName: string);
     procedure SaveToFile(const FileName: string);
 
-    procedure AnalyzeUsing(Base: TCustomBase);
+    procedure AnalyzeUsing(Base: TAbstractBase);
     {#}function RenameFood(const OldName, NewName: string): boolean;
     function UsedFood(const FoodName: string): integer;
 
@@ -92,24 +93,24 @@ type
 
 implementation
 
-{ TCustomBase }
+{ TAbstractBase }
 
 {==============================================================================}
-procedure TCustomBase.Changed;
+procedure TAbstractBase.Changed;
 {==============================================================================}
 begin
   inc(FVersion);
 end;
 
 {==============================================================================}
-constructor TCustomBase.Create;
+constructor TAbstractBase.Create;
 {==============================================================================}
 begin
   FVersion := 0;
 end;
 
 {==============================================================================}
-function TCustomBase.Find(const ItemName: string): integer;
+function TAbstractBase.Find(const ItemName: string): integer;
 {==============================================================================}
 
 // поиск на полное соответствие (без учёта регистра)
@@ -153,7 +154,14 @@ begin
 end;
 
 {==============================================================================}
-function TCustomBase.MoreIndName(Index1, Index2: integer): boolean;
+procedure TAbstractBase.ItemChangeHandler(Sender: TObject);
+{==============================================================================}
+begin
+  Changed();
+end;
+
+{==============================================================================}
+function TAbstractBase.MoreIndName(Index1, Index2: integer): boolean;
 {==============================================================================}
 begin
   Index1 := TempIndexList[Index1];
@@ -162,7 +170,7 @@ begin
 end;
 
 {==============================================================================}
-function TCustomBase.MoreIndTag(Index1, Index2: integer): boolean;
+function TAbstractBase.MoreIndTag(Index1, Index2: integer): boolean;
 {==============================================================================}
 begin
   Index1 := TempIndexList[Index1];
@@ -171,7 +179,7 @@ begin
 end;
 
 {==============================================================================}
-function TCustomBase.MoreName(Index1, Index2: integer): boolean;
+function TAbstractBase.MoreName(Index1, Index2: integer): boolean;
 {==============================================================================}
 begin
   Result :=
@@ -180,7 +188,7 @@ begin
 end;
 
 {==============================================================================}
-function TCustomBase.MoreTag(Index1, Index2: integer): boolean;
+function TAbstractBase.MoreTag(Index1, Index2: integer): boolean;
 {==============================================================================}
 var
   Tag1, Tag2: integer;
@@ -194,14 +202,14 @@ begin
 end;
 
 {==============================================================================}
-procedure TCustomBase.Sort();
+procedure TAbstractBase.Sort();
 {==============================================================================}
 begin
   QuickSort(0, Count() - 1, Swap, MoreName);
 end;
 
 {==============================================================================}
-procedure TCustomBase.SortIndexes(IndexList: TIndexList; SortType: TSortType);
+procedure TAbstractBase.SortIndexes(IndexList: TIndexList; SortType: TSortType);
 {==============================================================================}
 begin
   IndexList.Init(Count());
@@ -216,10 +224,96 @@ begin
 end;
 
 {==============================================================================}
-procedure TCustomBase.SwapInd(Index1, Index2: integer);
+procedure TAbstractBase.SwapInd(Index1, Index2: integer);
 {==============================================================================}
 begin
   TempIndexList.Swap(Index1, Index2);
+end;
+
+{==============================================================================}
+function TAbstractBase.TraceLast: integer;
+{==============================================================================}
+begin
+  Result := Count - 1;
+  while (Result > 0) and (MoreName(Result - 1, Result)) do
+  begin
+    Swap(Result, Result - 1);
+    dec(Result);
+  end;
+end;
+
+{ TArrayBase }
+
+{==============================================================================}
+function TArrayBase.Add(Item: TMutableItem): integer;
+{==============================================================================}
+begin
+  if (Item = nil) then
+    raise EInvalidPointer.Create('Can''t add nil object into the list');
+
+  SetLength(FBase, Count + 1);
+  FBase[Count - 1] := Item;
+  Result := TraceLast;
+
+  Item.OnChange := ItemChangeHandler;
+
+  {#}Changed;
+end;
+
+{==============================================================================}
+function TArrayBase.Count: integer;
+{==============================================================================}
+begin
+  Result := Length(FBase);
+end;
+
+{==============================================================================}
+procedure TArrayBase.Delete(Index: integer);
+{==============================================================================}
+var
+  i: integer;
+begin
+  if (Index < Low(FBase)) and (Index > High(FBase)) then
+    raise ERangeError.Create(Format('TArrayBase.Delete(): Index out of bounds (%d)', [Index]));
+
+  FBase[Index].Free;
+  for i := Index to High(FBase) - 1 do
+    FBase[i] := FBase[i + 1];
+  SetLength(FBase, Length(FBase) - 1);
+
+  Changed;
+end;
+
+{==============================================================================}
+destructor TArrayBase.Destroy;
+{==============================================================================}
+var
+  i: integer;
+begin
+  for i := 0 to High(FBase) do
+    FBase[i].Free;
+  SetLength(FBase, 0);
+end;
+
+{==============================================================================}
+function TArrayBase.GetItem(Index: integer): TMutableItem;
+{==============================================================================}
+begin
+  if (Index < Low(FBase)) and (Index > High(FBase)) then
+    raise ERangeError.Create(Format('TArrayBase.GetItem(): Index out of bounds (%d)', [Index]));
+
+  Result := FBase[Index];
+end;
+
+{==============================================================================}
+procedure TArrayBase.Swap(Index1, Index2: integer);
+{==============================================================================}
+var
+  Temp: TMutableItem;
+begin
+  Temp := FBase[Index1];
+  FBase[Index1] := FBase[Index2];
+  FBase[Index2] := Temp;
 end;
 
 { TFoodBase }
@@ -228,73 +322,14 @@ end;
 function TFoodBase.Add(Food: TFood): integer;
 {==============================================================================}
 begin
-  if (Food = nil) then
-    raise Exception.Create('TFoodBase.Add(): Food is nil');
-
-  { добавление в отсортированный список }
-  Result := Length(FBase);
-  SetLength(FBase, Result + 1);
-  while (Result > 0) and (FBase[Result - 1].Name > Food.Name) do
-  begin
-    FBase[Result] := FBase[Result - 1];
-    dec(Result);
-  end;
-  FBase[Result] := Food;
-  Food.OnChange := FoodChangeHandler;
-
-  {#}Changed;
-end;
-
-{==============================================================================}
-function TFoodBase.Count(): integer;
-{==============================================================================}
-begin
-  Result := Length(FBase);
-end;
-
-{==============================================================================}
-procedure TFoodBase.Delete(Index: integer);
-{==============================================================================}
-var
-  i: integer;
-begin
-  if (Index < 0) and (Index > High(FBase)) then
-    raise ERangeError.Create(Format('TFoodBase.Delete(): Index out of bounds (%d)', [Index]));
-
-  FBase[Index].Free;
-  for i := Index to High(FBase) - 1 do
-    FBase[i] := FBase[i + 1];
-  SetLength(FBase, Length(FBase) - 1);
-
-  {#}Changed;
-end;
-
-{==============================================================================}
-destructor TFoodBase.Destroy;
-{==============================================================================}
-var
-  i: integer;
-begin
-  for i := 0 to high(FBase) do
-    FBase[i].Free;
-  SetLength(FBase, 0);
-end;
-
-{==============================================================================}
-procedure TFoodBase.FoodChangeHandler(Sender: TObject);
-{==============================================================================}
-begin
-  Changed();
+  Result := inherited Add(Food);
 end;
 
 {==============================================================================}
 function TFoodBase.GetFood(Index: integer): TFood;
 {==============================================================================}
 begin
-  if (Index < Low(FBase)) and (Index > High(FBase)) then
-    raise ERangeError.Create(Format('TFoodBase.GetFood(): Index out of bounds (%d)', [Index]));
-
-  Result := FBase[Index]
+  Result := TFood(GetItem(Index));
 end;
 
 {==============================================================================}
@@ -352,6 +387,7 @@ const
 var
   s: TStringList;
   i: integer;
+  Temp: TFood;
 begin
   s := TStringList.Create;
 
@@ -373,9 +409,10 @@ begin
 
     for i := 0 to s.Count - 1 do
     begin
-      FBase[i] := TFood.Create();
-      Read(FBase[i], S[i]);
-      FBase[i].OnChange := FoodChangeHandler;
+      Temp := TFood.Create();
+      Read(Temp, S[i]);
+      Temp.OnChange := ItemChangeHandler;
+      FBase[i] := Temp;
     end;
   finally
     s.Free;
@@ -460,19 +497,19 @@ begin
         //CheckNode(FoodNode, i);
 
         FBase[i]           := TFood.Create();
-        FBase[i].Name      := FoodNode.Attributes['name'];
+        Items[i].Name      := FoodNode.Attributes['name'];
 
-        {FBase[i].RelProts  := FoodNode.Attributes['prots'];
-        FBase[i].RelFats   := FoodNode.Attributes['fats'];
-        FBase[i].RelCarbs  := FoodNode.Attributes['carbs'];
-        FBase[i].RelValue  := FoodNode.Attributes['val'];  }
-        FBase[i].RelProts  := StrToFloat(VarAsType(FoodNode.Attributes['prots'], varOleStr));
-        FBase[i].RelFats   := StrToFloat(VarAsType(FoodNode.Attributes['fats'], varOleStr));
-        FBase[i].RelCarbs  := StrToFloat(VarAsType(FoodNode.Attributes['carbs'], varOleStr));
-        FBase[i].RelValue  := StrToFloat(VarAsType(FoodNode.Attributes['val'], varOleStr));
+        {Items[i].RelProts  := FoodNode.Attributes['prots'];
+        Items[i].RelFats   := FoodNode.Attributes['fats'];
+        Items[i].RelCarbs  := FoodNode.Attributes['carbs'];
+        Items[i].RelValue  := FoodNode.Attributes['val'];  }
+        Items[i].RelProts  := StrToFloat(VarAsType(FoodNode.Attributes['prots'], varOleStr));
+        Items[i].RelFats   := StrToFloat(VarAsType(FoodNode.Attributes['fats'], varOleStr));
+        Items[i].RelCarbs  := StrToFloat(VarAsType(FoodNode.Attributes['carbs'], varOleStr));
+        Items[i].RelValue  := StrToFloat(VarAsType(FoodNode.Attributes['val'], varOleStr));
 
-        FBase[i].FromTable := FoodNode.Attributes['table'];
-        FBase[i].OnChange  := FoodChangeHandler;
+        Items[i].FromTable := FoodNode.Attributes['table'];
+        Items[i].OnChange  := ItemChangeHandler;
       end;
       {=========================================================}
 
@@ -505,7 +542,7 @@ procedure TFoodBase.SaveToFile(const FileName: string);
       s.Add(DateTimeToStr(FTimeStamp));
 
       { Data }
-      for i := 0 to high(FBase) do
+      for i := 0 to High(FBase) do
         s.Add(FBase[i].Write);
 
       s.SaveToFile(FileName);
@@ -539,12 +576,12 @@ begin
     //if (FBase[i].FromTable) then
     begin
       FoodNode := Root.AddChild('food');
-      FoodNode.Attributes['name']  := FBase[i].Name;
-      FoodNode.Attributes['prots'] := FBase[i].RelProts;
-      FoodNode.Attributes['fats']  := FBase[i].RelFats;
-      FoodNode.Attributes['carbs'] := FBase[i].RelCarbs;
-      FoodNode.Attributes['val']   := FBase[i].RelValue;
-      FoodNode.Attributes['table'] := FBase[i].FromTable;
+      FoodNode.Attributes['name']  := Items[i].Name;
+      FoodNode.Attributes['prots'] := Items[i].RelProts;
+      FoodNode.Attributes['fats']  := Items[i].RelFats;
+      FoodNode.Attributes['carbs'] := Items[i].RelCarbs;
+      FoodNode.Attributes['val']   := Items[i].RelValue;
+      FoodNode.Attributes['table'] := Items[i].FromTable;
     end;
 
     XML.SaveToFile(FileName);
@@ -557,18 +594,7 @@ end;
 procedure TFoodBase.SetTag(Index, Value: integer);
 {==============================================================================}
 begin
-  FBase[Index].Tag := Value;
-end;
-
-{==============================================================================}
-procedure TFoodBase.Swap(Index1, Index2: integer);
-{==============================================================================}
-var
-  Temp: TFood;
-begin
-  Temp := FBase[Index1];
-  FBase[Index1] := FBase[Index2];
-  FBase[Index2] := Temp;
+  Items[Index].Tag := Value;
 end;
 
 { TDishBase }
@@ -577,25 +603,11 @@ end;
 function TDishBase.Add(Dish: TDish): integer;
 {==============================================================================}
 begin
-  if (Dish = nil) then
-    raise Exception.Create('TDishBase.Add(): Dish is nil');
-
-  { добавление в отсортированный список }
-  Result := Length(FBase);
-  SetLength(FBase, Result + 1);
-  while (Result > 0) and (FBase[Result - 1].Name > Dish.Name) do
-  begin
-    FBase[Result] := FBase[Result - 1];
-    dec(Result);
-  end;
-  FBase[Result] := Dish;
-  Dish.OnChange := DishChangeHandler;
-
-  {#}Changed;
+  Result := inherited Add(Dish);
 end;
 
 {==============================================================================}
-procedure TDishBase.AnalyzeUsing(Base: TCustomBase);
+procedure TDishBase.AnalyzeUsing(Base: TAbstractBase);
 {==============================================================================}
 var
   i,j,n: integer;
@@ -603,64 +615,23 @@ begin
   for i := 0 to Base.Count - 1 do
     Base.SetTag(i, 0);
 
-  for i := 0 to High(FBase) do
-  for j := 0 to FBase[i].Count - 1 do
+  for i := 0 to Count - 1 do
+  for j := 0 to Items[i].Count - 1 do
   begin
-    n := Base.Find(FBase[i].Content[j].Name);
+    n := Base.Find(Items[i].Content[j].Name);
     if (n <> -1) then
       Base.SetTag(n, Base.GetTag(n) + 1);
   end;
 end;
 
 {==============================================================================}
-function TDishBase.Count(): integer;
-{==============================================================================}
-begin
-  Result := Length(FBase);
-end;
-
-{==============================================================================}
-procedure TDishBase.Delete(Index: integer);
-{==============================================================================}
-var
-  i: integer;
-begin
-  if (Index < 0) or (Index > High(FBase)) then
-    raise ERangeError.CreateFmt('TDishBase.Delete(): index out of bounds (%d)', [Index]);
-
-  FBase[Index].Free;
-  for i := Index to High(FBase) - 1 do
-    FBase[i] := FBase[i + 1];
-  SetLength(FBase, Length(FBase) - 1);
-  {#}Changed;
-end;
-
-{==============================================================================}
-destructor TDishBase.Destroy;
-{==============================================================================}
-var
-  i: integer;
-begin
-  for i := 0 to high(FBase) do
-    FBase[i].Free;
-  SetLength(FBase, 0);
-end;
-
-{==============================================================================}
-procedure TDishBase.DishChangeHandler(Sender: TObject);
-{==============================================================================}
-begin
-  {#}Changed();
-end;
-
-{==============================================================================}
 function TDishBase.GetDish(Index: integer): TDish;
 {==============================================================================}
 begin
-  if (Index < 0) or (Index > high(FBase)) then
+  if (Index < 0) or (Index > High(FBase)) then
     raise ERangeError.CreateFmt('TDishBase.GetDish(): index out of bounds (%d)', [Index]);
 
-  Result := FBase[Index]
+  Result := TDish(FBase[Index]);
 end;
 
 {==============================================================================}
@@ -727,22 +698,22 @@ begin
       inc(n);
       SetLength(FBase, n + 1);
       FBase[n] := TDish.Create;
-      FBase[n].OnChange := DishChangeHandler;
+      Items[n].OnChange := ItemChangeHandler;
       ///FBase[n].SilentMode := True;
       w := pos(':', s[i]);
       if w = 0 then
       begin
-        FBase[n].Name := Copy(s[i], 2, length(s[i])-1);
+        Items[n].Name := Copy(s[i], 2, length(s[i])-1);
       end else              //  123456789
       begin                 //  #name:123
-        FBase[n].Name := Copy(s[i], 2, w - 2);
-        FBase[n].ResultMass := StrToFloat(CheckDot(Copy(s[i], w + 1, length(s[i]) - w)));
+        Items[n].Name := Copy(s[i], 2, w - 2);
+        Items[n].ResultMass := StrToFloat(CheckDot(Copy(s[i], w + 1, length(s[i]) - w)));
       end;
     end else
     if (s[i][1] = '%') then
     begin
       buf := Copy(s[i], 4, length(s[i]) - 3);
-      FBase[n].ModifiedTime := StrToDateTime(buf);
+      Items[n].ModifiedTime := StrToDateTime(buf);
     end else
     if (s[i][1] <> '=') then
     begin
@@ -773,8 +744,8 @@ begin
         TempFood.Read(s[i]);
       end;
 
-      //FBase[n].SilentMode := False;
-      FBase[n].Add(TempFood);
+      //Items[n].SilentMode := False;
+      Items[n].Add(TempFood);
     end;
   finally
     s.Free;
@@ -845,9 +816,9 @@ begin
         DishNode := Root.ChildNodes[i];
 
         FBase[i] := TDish.Create();
-        FBase[i].Name := DishNode.Attributes['name'];
+        Items[i].Name := DishNode.Attributes['name'];
         if DishNode.HasAttribute('mass') then
-          FBase[i].SetResultMass(DishNode.Attributes['mass']);
+          Items[i].SetResultMass(DishNode.Attributes['mass']);
 
         //SetLength(FBase[i].FContent, DishNode.ChildNodes.Count);
 
@@ -869,14 +840,14 @@ begin
           Food.RelValue := StrToFloat(VarAsType(ItemNode.Attributes['val'], varOleStr));
           Food.Mass     := StrToFloat(VarAsType(ItemNode.Attributes['mass'], varOleStr));
 
-          FBase[i].Add(Food);
+          Items[i].Add(Food);
         end;
 
-        FBase[i].OnChange := DishChangeHandler;
+        Items[i].OnChange := ItemChangeHandler;
         if DishNode.HasAttribute('time') then
-          FBase[i].ModifiedTime := StrToDateTime(DishNode.Attributes['time'])
+          Items[i].ModifiedTime := StrToDateTime(DishNode.Attributes['time'])
         else
-          FBase[i].ModifiedTime := 0;
+          Items[i].ModifiedTime := 0;
       end;
 
       Log('TDishBase.LoadFromFile_XML(): data fetched OK', DEBUG);
@@ -904,10 +875,10 @@ var
 begin
   Result := False;
   for i := 0 to Count - 1 do
-  for j := 0 to FBase[i].Count - 1 do
-  if (FBase[i].Content[j].Name = OldName) then
+  for j := 0 to Items[i].Count - 1 do
+  if (Items[i].Content[j].Name = OldName) then
   begin
-    FBase[i].Content[j].Name := NewName;
+    Items[i].Content[j].Name := NewName;
     Result := True;
   end;
 
@@ -926,7 +897,7 @@ procedure TDishBase.SaveToFile(const FileName: string);
       s.Add(DateTimeToStr(FTimeStamp));
 
       { Data }
-      for i := 0 to high(FBase) do
+      for i := 0 to High(FBase) do
       begin
         if FBase[i].FixedMass then
           s.Add('#'+FBase[i].Name+':'+RealToStr(FBase[i].RealMass))
@@ -936,7 +907,7 @@ procedure TDishBase.SaveToFile(const FileName: string);
         if FBase[i].ModifiedTime <> 0 then
           s.Add('%m '+DateTimeToStr(FBase[i].ModifiedTime));
 
-        for j := 0 to high(FBase[i].FContent) do
+        for j := 0 to High(FBase[i].FContent) do
           {s.Add(FFoodBase[FBase[i][j].FoodType].Name+
           ':'+RealToStr(FBase[i][j].AMass)); }
           s.Add(FBase[i][j].Write);
@@ -972,21 +943,21 @@ begin
     for i := 0 to High(FBase) do
     begin
       DishNode := Root.AddChild('dish');
-      DishNode.Attributes['name'] := FBase[i].Name;
-      DishNode.Attributes['time'] := FBase[i].ModifiedTime;
-      if (FBase[i].FixedMass) then
-        DishNode.Attributes['mass'] := FBase[i].ResultMass;
+      DishNode.Attributes['name'] := Items[i].Name;
+      DishNode.Attributes['time'] := Items[i].ModifiedTime;
+      if (Items[i].FixedMass) then
+        DishNode.Attributes['mass'] := Items[i].ResultMass;
 
-      for j := 0 to FBase[i].Count - 1 do
+      for j := 0 to Items[i].Count - 1 do
       begin
         ItemNode := DishNode.AddChild('item');
 
-        ItemNode.Attributes['name']  := FBase[i].Content[j].Name;
-        ItemNode.Attributes['prots'] := FBase[i].Content[j].RelProts;
-        ItemNode.Attributes['fats']  := FBase[i].Content[j].RelFats;
-        ItemNode.Attributes['carbs'] := FBase[i].Content[j].RelCarbs;
-        ItemNode.Attributes['val']   := FBase[i].Content[j].RelValue;
-        ItemNode.Attributes['mass']  := FBase[i].Content[j].Mass;
+        ItemNode.Attributes['name']  := Items[i].Content[j].Name;
+        ItemNode.Attributes['prots'] := Items[i].Content[j].RelProts;
+        ItemNode.Attributes['fats']  := Items[i].Content[j].RelFats;
+        ItemNode.Attributes['carbs'] := Items[i].Content[j].RelCarbs;
+        ItemNode.Attributes['val']   := Items[i].Content[j].RelValue;
+        ItemNode.Attributes['mass']  := Items[i].Content[j].Mass;
       end;
     end;
 
@@ -1000,30 +971,19 @@ end;
 procedure TDishBase.SetTag(Index, Value: integer);
 {==============================================================================}
 begin
-  FBase[Index].Tag := Value;
-end;
-
-{==============================================================================}
-procedure TDishBase.Swap(Index1, Index2: integer);
-{==============================================================================}
-var
-  Temp: TDish;
-begin
-  Temp := FBase[Index1];
-  FBase[Index1] := FBase[Index2];
-  FBase[Index2] := Temp;
+  Items[Index].Tag := Value;
 end;
 
 {==============================================================================}
 function TDishBase.UsedFood(const FoodName: string): integer;
 {==============================================================================}
 var
-  i,j: integer;
+  i, j: integer;
 begin
   Result := -1;
-  for i := 0 to high(FBase) do
-  for j := 0 to FBase[i].Count-1 do
-  if (FBase[i].Content[j].Name = FoodName) then
+  for i := 0 to High(FBase) do
+  for j := 0 to Items[i].Count - 1 do
+  if (Items[i].Content[j].Name = FoodName) then
   begin
     Result := i;
     Exit;

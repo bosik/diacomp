@@ -167,7 +167,7 @@ begin
      (TBloodRecord.CheckFinger(Finger)) then // TODO: fix it
   begin
     Result := length(FRecs);
-    SetLength(FRecs,Result+1);
+    SetLength(FRecs,Result + 1);
     FRecs[Result] := TBloodRecord.Create(Self);
     TBloodRecord(FRecs[Result]).Time := Time;
     TBloodRecord(FRecs[Result]).Value := Value;
@@ -198,7 +198,7 @@ begin
      (TInsRecord.CheckValue(Value)) then
   begin
     Result := length(FRecs);
-    SetLength(FRecs,Result+1);
+    SetLength(FRecs,Result + 1);
     FRecs[Result] := TInsRecord.Create(Self);
     TInsRecord(FRecs[Result]).Time := Time;
     TInsRecord(FRecs[Result]).Value := Value;
@@ -213,7 +213,7 @@ begin
   if (TCustomRecord.CheckTime(Time))then
   begin
     Result := length(FRecs);
-    SetLength(FRecs,Result+1);
+    SetLength(FRecs,Result + 1);
     FRecs[Result] := TNoteRecord.Create(Self);
     TNoteRecord(FRecs[Result]).Time := Time;
     TNoteRecord(FRecs[Result]).Text := Value;
@@ -231,7 +231,7 @@ begin
     if Result = -1 then
     begin
       Result := length(FRecs);
-      SetLength(FRecs,Result+1);
+      SetLength(FRecs,Result + 1);
       FRecs[Result] := TMealRecord.Create(Self);
       TMealRecord(FRecs[Result]).Time := Time;
       TMealRecord(FRecs[Result]).ShortMeal := ShortMeal;
@@ -297,7 +297,7 @@ end;
 procedure TDiaryPage.CheckIndex(Index: integer);
 {==============================================================================}
 begin
-  if (Index < Low(FRecs)) or (Index > high(FRecs)) then
+  if (Index < Low(FRecs)) or (Index > High(FRecs)) then
     raise ERangeError.CreateFmt('TDiaryPage: недопустимый индекс (%d)', [Index]);
 end;
 
@@ -308,7 +308,7 @@ procedure TDiaryPage.Clear;
 var
   i: integer;
 begin
-  for i := 0 to high(FRecs) do
+  for i := 0 to High(FRecs) do
     FRecs[i].Free;
   SetLength(FRecs, 0);
 
@@ -365,7 +365,7 @@ var
 begin
   { !!! поиск можно улучшить, т.к. массив отсортирован }
   Result := -1;
-  for i := 0 to high(FRecs) do
+  for i := 0 to High(FRecs) do
   if (FRecs[i].Time = Time)and
      (FRecs[i].TagType = AType) then
   begin
@@ -380,7 +380,7 @@ var
 begin
   { !!! поиск можно улучшить, т.к. массив отсортирован }
   Result := -1;
-  for i := 0 to high(FRecs) do
+  for i := 0 to High(FRecs) do
   if FRecs[i].Time = Time then
   begin
     Result := i;
@@ -394,7 +394,7 @@ function TDiaryPage.FindRecord(Rec: TCustomRecord): integer;
 var
   i: integer;
 begin
-  for i := 0 to high(FRecs) do
+  for i := 0 to High(FRecs) do
   if (FRecs[i] = Rec) then
   begin
     Result := i;
@@ -524,7 +524,7 @@ begin
   if AutoFree then
     FRecs[Index].Free;
 
-  for i := Index to high(FRecs) - 1 do
+  for i := Index to High(FRecs) - 1 do
     FRecs[i] := FRecs[i + 1];
   SetLength(FRecs, Length(FRecs) - 1);
 
@@ -844,7 +844,7 @@ function TDiary.GetPageIndex(Date: TDate; CalculatePostprand: boolean): integer;
     L, R: integer;
   begin
     L := 0;
-    R := high(FCache);
+    R := High(FCache);
     while (L <= R) do
     begin
       Result := (L + R) div 2;
@@ -980,7 +980,7 @@ begin
   PageIndex := GetPageIndex(Date);
 
   if (PageIndex < 0) or
-     (PageIndex > high(FPages))or // ???
+     (PageIndex > High(FPages))or // ???
      (not CorrectTime(AroundTime))or
      (DeltaTime <= 0) then
     Result := nil
@@ -1026,10 +1026,10 @@ begin
         r := 0
       else
         r := -1;
-      while (r=-1)and(p<high(FPages)) do
+      while (r = -1)and(p < High(FPages)) do
       begin
         inc(p);
-        if FPages[p].Count>0 then
+        if FPages[p].Count > 0 then
           r := 0
         else
           r := -1;
@@ -1040,10 +1040,10 @@ begin
       while (Changed)and(not founded) do
       begin
         Time := abs(
-          Trunc(FPages[p].Date-FPages[PageIndex].Date)*MinPerDay+
-          FPages[p][r].Time-AroundTime);
+          Trunc(FPages[p].Date - FPages[PageIndex].Date) * MinPerDay +
+          FPages[p][r].Time - AroundTime);
         if (FPages[p][r].TagType = RecType)and
-           ((FPages[p][r].Time>=AroundTime)or(p>PageIndex)) and
+           ((FPages[p][r].Time >= AroundTime)or(p>PageIndex)) and
            (Time <= DeltaTime) then
           founded := True
         else
@@ -1102,9 +1102,9 @@ var
 begin
   PageIndex := GetPageIndex(Date);
 
-  if (PageIndex<0)or(PageIndex>high(FPages))or
-     (StartRecord<0)or(StartRecord>FPages[PageIndex].Count-1)or
-     (DeltaTime<=0) then
+  if (PageIndex < 0)or(PageIndex > High(FPages))or
+     (StartRecord < 0)or(StartRecord > FPages[PageIndex].Count - 1)or
+     (DeltaTime <= 0) then
     Result := nil else
   begin
     { поиск }
@@ -1214,7 +1214,7 @@ function TDiary.GetFirstDate: TDate;
 var
   i: integer;
 begin
-  for i := 0 to high(FPages) do
+  for i := 0 to High(FPages) do
   if FPages[i].Count > 0 then
   begin
     Result := FPages[i].FDate;
@@ -1227,7 +1227,7 @@ function TDiary.GetLastDate: TDate;
 var
   i: integer;
 begin
-  for i := high(FPages) downto 0 do
+  for i := High(FPages) downto 0 do
   if FPages[i].Count > 0 then
   begin
     Result := FPages[i].FDate;
@@ -1240,7 +1240,7 @@ function TDiary.IsEmpty: boolean;
 var
   i: integer;
 begin
-  for i := 0 to high(FPages) do
+  for i := 0 to High(FPages) do
   if FPages[i].Count > 0 then
   begin
     Result := False;
@@ -1363,7 +1363,7 @@ end;
 function TDiary.Next(var APage, ARec: integer): boolean;
 begin
   inc(ARec);
-  while (ARec = FPages[APage].Count) and (APage < high(FPages)) do
+  while (ARec = FPages[APage].Count) and (APage < High(FPages)) do
   begin
     inc(APage);
     if FPages[APage].Count > 0 then
@@ -1399,7 +1399,7 @@ begin
       s.Add(DateTimeToStr(FTimeStamp));
 
       { Data }
-      for i := 0 to high(FPages) do
+      for i := 0 to High(FPages) do
       // пустые страницы могут появляться после интенсивного тыкания по календарю,
       // поэтому сохраняем только страницы с записями - МОЛОДЕЦ! :-)
       if FPages[i].Count > 0 then
@@ -1571,7 +1571,7 @@ begin
 
   Result := nil;
 
-  {for i := high(FPages) downto 0 do
+  {for i := High(FPages) downto 0 do
   for j := FPages[i].Count-1 downto 0 do
   if FPages[i][j] is TBloodRecord then
   begin
@@ -1596,7 +1596,7 @@ procedure TDiary.ResetCache;
 var
   i: integer;
 begin
-  for i := 0 to high(FCache) do
+  for i := 0 to High(FCache) do
     FCache[i].Free;
   SetLength(FCache, 0);
 end;
@@ -1610,7 +1610,7 @@ begin
 
   FreeTime := 0; // just to avoid compiler's warning
 
-  for i := 0 to high(FCache) do
+  for i := 0 to High(FCache) do
   begin
     // если убрать проверку, то кэш будет разрастаться при повторном вызове этой процедуры
     if FCache[i].CalculatedPostprand then
@@ -1653,7 +1653,7 @@ var
 begin
   PageData := TPageData.Create;
 
-  for i := 0 to high(FCache) do
+  for i := 0 to High(FCache) do
   begin
     FSource.GetPage(FCache[i].Date, PageData);
     FCache[i].ReadFrom(PageData);

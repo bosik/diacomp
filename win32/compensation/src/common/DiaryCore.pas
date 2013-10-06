@@ -384,9 +384,9 @@ begin
   Data := '';
   if (Plain) then
   begin
-    for i := 0 to high(KoofList) do
+    for i := 0 to High(KoofList) do
       Data := Data +
-        //Format('%2.2d',[i])+'.00 - '+Format('%2.2d',[i+1])+'.00'+#9+
+        //Format('%2.2d',[i]) + '.00 - '+Format('%2.2d',[i + 1]) + '.00' + #9+
         Format('%.6f'#9'%.6f'#9'%.6f'#13#10,[KoofList[i].k, KoofList[i].q, KoofList[i].p])
       ;
   end else
@@ -396,10 +396,10 @@ begin
     try                    
       DecimalSeparator := '.';
 
-      for i := 0 to high(KoofList) do
+      for i := 0 to High(KoofList) do
       begin
         s := Format('{"time":%d,"k":%.4f,"q":%.2f,"p":%.2f}',[i, KoofList[i].k, KoofList[i].q, KoofList[i].p]);
-        if (i < high(KoofList)) then
+        if (i < High(KoofList)) then
           s := s + ',';
         Data := Data + s;
       end;

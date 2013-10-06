@@ -268,7 +268,7 @@ begin
   begin
     if (FoodEditor.Row < FoodEditor.RowCount-1) then
     begin
-      FoodEditor.Row := FoodEditor.Row+1;
+      FoodEditor.Row := FoodEditor.Row + 1;
       FoodEditor.EditorMode := true;
     end else
     begin

@@ -182,7 +182,7 @@ procedure TFormSync.FormDestroy(Sender: TObject);
 var
   i: integer;
 begin
-  for i := 0 to high(States) do
+  for i := 0 to High(States) do
     States[i].Free;
   SetLength(States,0);
 end;

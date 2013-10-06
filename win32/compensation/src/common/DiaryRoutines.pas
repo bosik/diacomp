@@ -167,7 +167,7 @@ var
 begin
   { удаление (предполагаем многократное вхождение) }
   w := 0;
-  for i := 0 to high(FData) do
+  for i := 0 to High(FData) do
   if (FData[i] <> Value) then
   begin
     FData[w] := FData[i];
@@ -176,7 +176,7 @@ begin
   SetLength(FData, w);
 
   { корректировка }
-  for i := 0 to high(FData) do
+  for i := 0 to High(FData) do
   if (FData[i] > Value) then
     dec(FData[i]);
 end;
@@ -400,14 +400,14 @@ begin
     if pos(',',str)>0 then str[pos(',',str)] := '.';
     if pos(':',str)>0 then str[pos(':',str)] := '.';
 
-    Sh := Copy(str,1,pos('.',str)-1);
-    Sm := Copy(str,pos('.',str)+1,length(str)-pos('.',str));
+    Sh := Copy(str, 1, pos('.', str) - 1);
+    Sm := Copy(str, pos('.', str) + 1, Length(str) - pos('.', str));
     Result :=
-      TryStrToInt(Sh,h) and
-      TryStrToInt(Sm,m) and
-      (h>=0)and(h<24)and(m>=0)and(m<60);
+      TryStrToInt(Sh, h) and
+      TryStrToInt(Sm, m) and
+      (h >= 0)and(h < 24)and(m >= 0)and(m < 60);
     if Result then
-      T := h*60+m
+      T := h * 60 + m
     else
       T := -500;
   except
@@ -624,7 +624,7 @@ begin
   n := Caret;
   while (n<=length(S))and(S[n]<>Terminal) do inc(n);
   Result := Copy(S, Caret, n-Caret);
-  Caret := n+1;
+  Caret := n + 1;
 end;
 
 function ReadFloatTo(const S: string; Terminal: char; var Caret: integer): real;
@@ -660,7 +660,7 @@ var
   n: integer;
 begin
   n := pos(Terminal, S);
-  Result := Copy(S, n+1, Length(S)-n);
+  Result := Copy(S, n + 1, Length(S) - n);
 end;
 
 function MatchStr(const S1, S2: string; IgnoreCase: boolean): boolean;
@@ -682,8 +682,8 @@ begin
     After := '';
   end else
   begin
-    Before := Copy(S, 1, k-1);
-    After := Copy(S, k+1, Length(S) - k);
+    Before := Copy(S, 1, k - 1);
+    After := Copy(S, k + 1, Length(S) - k);
   end;
 end;
 
@@ -712,8 +712,8 @@ begin
     After := '';
   end else
   begin
-    Before := Copy(S, 1, k-1);
-    After := Copy(S, k+1, Length(S) - k);
+    Before := Copy(S, 1, k - 1);
+    After := Copy(S, k + 1, Length(S) - k);
   end;
 end;
 

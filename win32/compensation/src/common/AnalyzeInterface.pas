@@ -211,8 +211,8 @@ begin
       begin
         { запись }
 
-        {if (((TimeF+1440) mod 1440) > 780)and
-           (((TimeF+1440) mod 1440) < 840)
+        {if (((TimeF + 1440) mod 1440) > 780)and
+           (((TimeF + 1440) mod 1440) < 840)
         then  }
         begin
           j := length(List);
@@ -301,14 +301,14 @@ begin
   CurTime := now;
   Min := Trunc(CurTime);
 
-  for i := 0 to high(PrimeList) do
+  for i := 0 to High(PrimeList) do
   if PrimeList[i].Date < Min then
     Min := PrimeList[i].Date;
 
   Min := Min - 1; // muahahahaha  
 
   SetLength(List, Length(PrimeList));
-  for i := 0 to high(List) do
+  for i := 0 to High(List) do
   begin
     List[i].Prots  := PrimeList[i].Prots;
     List[i].Fats   := PrimeList[i].Fats;
@@ -325,17 +325,17 @@ begin
   begin
     MinW := List[0].Weight;
     MaxW := List[0].Weight;
-    for i := 1 to high(List) do
+    for i := 1 to High(List) do
     begin
       MinW := Math.Min(MinW, List[i].Weight);
       MaxW := Math.Max(MaxW, List[i].Weight);
     end;
 
     if abs(MinW - MaxW) > 0.0001 then
-      for i := 0 to high(List) do
+      for i := 0 to High(List) do
         List[i].Weight := (List[i].Weight - MinW) / (MaxW - MinW)
     else
-      for i := 0 to high(List) do
+      for i := 0 to High(List) do
         List[i].Weight := 1.0;
   end;
 end;
@@ -366,7 +366,7 @@ begin
   if (ZonesCount>0)and(ZonesCount<=MinPerDay) then
   begin
     TimeBand := MinPerDay div ZonesCount;
-    for i := 0 to high(List) do
+    for i := 0 to High(List) do
       GetRecZone(List[i]);
   end;
 end;
@@ -383,14 +383,14 @@ begin
   begin
     CalcZones(List,ZonesCount);
     SetLength(result,ZonesCount);
-    for i := high(List) downto 0 do
+    for i := High(List) downto 0 do
     begin
       if (length(result[List[i].Zone])<RecsPerZone) and
          ((not CheckIns) or (CheckIns and (List[i].InsValue>0)))and
          ((not CheckCarbs) or (CheckCarbs and (List[i].Carbs>0)))then
       begin
         SetLength(result[List[i].Zone],length(result[List[i].Zone])+1);
-        result[List[i].Zone][high(result[List[i].Zone])] := List[i];
+        result[List[i].Zone][High(result[List[i].Zone])] := List[i];
       end;
     end;
   end;
@@ -458,7 +458,7 @@ var
   DeltaK,DeltaQ,DeltaP: real;
 begin
   BasePot := -1;
-  for i := 0 to high(KoofList) do
+  for i := 0 to High(KoofList) do
   if KoofList[i].Proved then
   begin
     BasePot := i;
@@ -467,7 +467,7 @@ begin
 
   if BasePot = -1 then exit;
 
-  for i := BasePot+1 to high(KoofList)+BasePot+1 do
+  for i := BasePot + 1 to High(KoofList) + BasePot + 1 do
   begin
     Ni := i mod length(KoofList);
 
@@ -488,12 +488,12 @@ begin
           DeltaQ := 0;
           DeltaP := 0;
         end;
-        for j := BasePot+1 to i-1 do
+        for j := BasePot + 1 to i - 1 do
         begin
           Nj := j mod length(KoofList);
-          KoofList[Nj].K := KoofList[BasePotN].K + (j-BasePot)*DeltaK;
-          KoofList[Nj].Q := KoofList[BasePotN].Q + (j-BasePot)*DeltaQ;
-          KoofList[Nj].P := KoofList[BasePotN].P + (j-BasePot)*DeltaP;
+          KoofList[Nj].K := KoofList[BasePotN].K + (j - BasePot) * DeltaK;
+          KoofList[Nj].Q := KoofList[BasePotN].Q + (j - BasePot) * DeltaQ;
+          KoofList[Nj].P := KoofList[BasePotN].P + (j - BasePot) * DeltaP;
           KoofList[Nj].Pos := 0.5;
         end;
       end;
@@ -516,7 +516,7 @@ begin
   begin
     TimeBand := MinPerDay div length(K);
     z1 := Time div TimeBand;
-    if (z1 < 0) or (z1 > high(K)) then
+    if (z1 < 0) or (z1 > High(K)) then
     begin
       R.k := 0;
       R.q := 0;
@@ -527,13 +527,13 @@ begin
       pos := Time/TimeBand-z1;
       if pos>K[z1].Pos then
       begin
-        z2 := z1+1;
-        if z2 > high(K) then z2 := 0;
+        z2 := z1 + 1;
+        if z2 > High(K) then z2 := 0;
         w := (pos-K[z1].Pos)/(1-K[z1].Pos+K[z2].Pos);
       end else
       begin
         z2 := z1-1;
-        if z2 < 0 then z2 := high(K);
+        if z2 < 0 then z2 := High(K);
         w := (K[z1].Pos-pos)/(1-K[z2].Pos+K[z1].Pos);
       end;
       R.k := (1-w)*K[z1].k + w*K[z2].k;
@@ -602,8 +602,8 @@ function GetKoofRandomation(const KoofList: TKoofList): real;
   i: integer; }
 begin
   result := 0;
-  {for i := 0 to high(KoofList) do
-    result := result + Dist(i,(i+1) mod length(KoofList));  }
+  {for i := 0 to High(KoofList) do
+    result := result + Dist(i,(i + 1) mod length(KoofList));  }
 
   { *** }
 end;
@@ -617,7 +617,7 @@ var
 begin
   s := TStringList.Create;
   try
-    for i := 0 to high(List) do
+    for i := 0 to High(List) do
       s.Add(
         TimeToStr{Colon}(List[i].Time, ':')+#9+
         RealToStr(List[i].Carbs)+#9+

@@ -3,7 +3,8 @@ unit BusinessObjectsTest;
 interface
 
 uses
-  TestFrameWork, BusinessObjects;
+  TestFrameWork,
+  BusinessObjects;
 
 type
   TFoodDataTest = class(TTestCase)
@@ -27,7 +28,6 @@ type
     procedure TestCopy;
     procedure TestWrite;
   end;
-
 
 implementation
 
