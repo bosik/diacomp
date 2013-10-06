@@ -30,7 +30,7 @@ uses
   DiaryCore in 'src\common\DiaryCore.pas',
   ThreadTask in 'src\common\ThreadTask.pas',
   AutoLog in 'src\common\Autolog.pas',
-  AnalyzeInterface in 'src\common\AnalyzeInterface.pas',
+  AnalyzeInterface in 'src\analyze\AnalyzeInterface.pas',
   CompTest in 'src\common\CompTest.pas',
   DiaryDatabase in 'src\common\DiaryDatabase.pas',
   DiaryWeb in 'src\common\DiaryWeb.pas',
@@ -42,7 +42,7 @@ uses
   Bases in 'src\bo\Bases.pas',
   DiaryRecords in 'src\bo\DiaryRecords.pas',
   DiaryRoutines in 'src\common\DiaryRoutines.pas',
-  DiaryAnalyze in 'src\common\DiaryAnalyze.pas';
+  DiaryAnalyze in 'src\analyze\DiaryAnalyze.pas';
 
 {$R *.res}
 
