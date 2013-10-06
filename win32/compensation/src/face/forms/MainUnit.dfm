@@ -87,7 +87,7 @@ object Form1: TForm1
       Top = 0
       Width = 1241
       Height = 871
-      ActivePage = TabDiary
+      ActivePage = TabStat
       Align = alClient
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -1368,7 +1368,7 @@ object Form1: TForm1
           TabOrder = 0
           object ShapeAn1: TShape
             Left = 9
-            Top = 337
+            Top = 369
             Width = 231
             Height = 7
             Align = alTop
@@ -1377,7 +1377,7 @@ object Form1: TForm1
           end
           object Shape1: TShape
             Left = 9
-            Top = 201
+            Top = 265
             Width = 231
             Height = 7
             Align = alTop
@@ -1386,11 +1386,11 @@ object Form1: TForm1
           end
           object TheKoofsGroupBox: TGroupBox
             Left = 9
-            Top = 208
+            Top = 272
             Width = 231
-            Height = 129
+            Height = 97
             Align = alTop
-            Caption = #1048#1085#1092#1086#1088#1084#1072#1094#1080#1103
+            Caption = #1044#1077#1081#1089#1090#1074#1080#1103
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlue
             Font.Height = -15
@@ -1400,7 +1400,7 @@ object Form1: TForm1
             TabOrder = 0
             DesignSize = (
               231
-              129)
+              97)
             object LabelAnCompValue: TLabel
               Left = 9
               Top = 41
@@ -1409,32 +1409,6 @@ object Form1: TForm1
               Caption = '             '
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clGreen
-              Font.Height = -15
-              Font.Name = 'MS Sans Serif'
-              Font.Style = []
-              ParentFont = False
-            end
-            object LabelAvgDeviation: TLabel
-              Left = 8
-              Top = 104
-              Width = 115
-              Height = 16
-              Caption = 'LabelAvgDeviation'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
-              Font.Height = -15
-              Font.Name = 'MS Sans Serif'
-              Font.Style = []
-              ParentFont = False
-            end
-            object LabelCalcTime: TLabel
-              Left = 8
-              Top = 88
-              Width = 92
-              Height = 16
-              Caption = 'LabelCalcTime'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clBlack
               Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
@@ -1464,7 +1438,7 @@ object Form1: TForm1
             Left = 9
             Top = 9
             Width = 231
-            Height = 192
+            Height = 256
             Align = alTop
             Caption = #1055#1088#1086#1089#1084#1086#1090#1088
             Font.Charset = DEFAULT_CHARSET
@@ -1477,17 +1451,17 @@ object Form1: TForm1
             TabOrder = 1
             DesignSize = (
               231
-              192)
+              256)
             object LabelKoofDiscription: TLabel
               Left = 9
-              Top = 121
+              Top = 177
               Width = 214
               Height = 64
               Anchors = [akLeft, akTop, akRight]
               AutoSize = False
               Caption = #1042#1099#1073#1077#1088#1080#1090#1077' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090
               Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
+              Font.Color = clGrayText
               Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
@@ -1511,7 +1485,7 @@ object Form1: TForm1
             end
             object Label3: TLabel
               Left = 8
-              Top = 72
+              Top = 128
               Width = 93
               Height = 16
               Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090
@@ -1522,6 +1496,45 @@ object Form1: TForm1
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentColor = False
+              ParentFont = False
+            end
+            object LabelCalcTime: TLabel
+              Left = 8
+              Top = 72
+              Width = 92
+              Height = 16
+              Caption = 'LabelCalcTime'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clGrayText
+              Font.Height = -15
+              Font.Name = 'MS Sans Serif'
+              Font.Style = []
+              ParentFont = False
+            end
+            object LabelAvgDeviation: TLabel
+              Left = 8
+              Top = 88
+              Width = 115
+              Height = 16
+              Caption = 'LabelAvgDeviation'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clGrayText
+              Font.Height = -15
+              Font.Name = 'MS Sans Serif'
+              Font.Style = []
+              ParentFont = False
+            end
+            object LabelWeight: TLabel
+              Left = 8
+              Top = 104
+              Width = 76
+              Height = 16
+              Caption = 'LabelWeight'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clGrayText
+              Font.Height = -15
+              Font.Name = 'MS Sans Serif'
+              Font.Style = []
               ParentFont = False
             end
             object ComboAnalyzers: TComboBox
@@ -1545,7 +1558,7 @@ object Form1: TForm1
             end
             object ComboKoof: TComboBox
               Left = 9
-              Top = 89
+              Top = 145
               Width = 206
               Height = 22
               Style = csOwnerDrawFixed

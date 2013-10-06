@@ -21,6 +21,7 @@ type
     Name: string;
     KoofList: TKoofList;   // коэффициенты
     Error: real;
+    Weight: real;
     Time: cardinal;
   end;
 
@@ -40,7 +41,9 @@ type
   { анализ результатов }
   function GetRecError(const Rec: TAnalyzeRec; const KoofList: TKoofList; ValFunct: TValFunction): real;
   function GetRecListError(const List: TAnalyzeRecList; const KoofList: TKoofList; ValFunc: TValFunction): real;
-                                                                             
+
+  procedure AnalyzeBS(Base: TDiary; FromDate, ToDate: TDate; out Mean, StdDev, Targeted, Less, More: Extended);
+
   procedure SaveRecords(const List: TAnalyzeRecList; const FileName: string);
 
 var
@@ -342,6 +345,7 @@ procedure AnalyzeDiary(Base: TDiary; FromDate, ToDate: TDate; const Par: TRealAr
 var
   PrimeList: TPrimeRecList;
   StartTime: cardinal;
+  SummWeight: Real;
   i, Time: integer;
 begin
   if (Length(Analyzer) = 0) then
@@ -358,8 +362,19 @@ begin
     // TODO: incapsulate as method "TAnalyzer.Analyze(AnList)"
     Analyzer[i].AnalyzeFunc(AnList, Analyzer[i].KoofList, CallBack);
     Analyzer[i].Error := GetRecListError(AnList, Analyzer[i].KoofList, vfQuadric);
+    Analyzer[i].Weight := Exp(-0.1 * Sqr(Analyzer[i].Error));
     Analyzer[i].Time := GetTickCount - StartTime;
   end;
+
+  // нормализация весов
+  SummWeight := 0;
+  for i := 0 to High(Analyzer) do
+    SummWeight := SummWeight + Analyzer[i].Weight;
+
+  if (SummWeight > 0) then
+  for i := 0 to High(Analyzer) do
+    Analyzer[i].Weight := Analyzer[i].Weight / SummWeight;
+
 
   // определение средних коэффицентов
   for Time := 0 to MinPerDay - 1 do
@@ -383,6 +398,7 @@ begin
   end;
 
   AvgAnalyzer.Error := GetRecListError(AnList, AvgAnalyzer.KoofList, vfQuadric);
+  AvgAnalyzer.Weight := 1.0;
 end;
 
 {==============================================================================}
@@ -446,6 +462,40 @@ begin
     result := result + Dist(i,(i + 1) mod length(KoofList));  }
 
   { *** }
+end;
+
+{==============================================================================}
+procedure AnalyzeBS(Base: TDiary; FromDate, ToDate: TDate; out Mean, StdDev, Targeted, Less, More: Extended);
+{==============================================================================}
+var
+  Date: TDate;
+  i: integer;
+  List: array of double;
+begin
+  Targeted := 0;
+  Less := 0;
+  More := 0;
+
+  for Date := FromDate to ToDate do
+  for i := 0 to Base[Date].Count - 1 do
+  if (Base[Date][i].RecType = TBloodRecord) and
+     (not TBloodRecord(Base[Date][i]).PostPrand) then
+  begin
+    SetLength(List, Length(List) + 1);
+    List[High(List)] := TBloodRecord(Base[Date][i]).Value;
+
+    if (List[High(List)] < 3.8) then
+      Less := Less + 1 else
+    if (List[High(List)] <= 6.2) then
+      Targeted := Targeted + 1
+    else
+      More := More + 1;
+  end;
+
+  Math.MeanAndStdDev(List, Mean, StdDev);
+  Targeted := Targeted / Length(List);
+  Less := Less / Length(List);
+  More := More / Length(List);
 end;
 
 {==============================================================================}
