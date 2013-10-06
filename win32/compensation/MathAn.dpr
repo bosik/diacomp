@@ -6,7 +6,7 @@ uses
   ShareMem,
   Matrixes,
   Math,
-  AnalyzeInterface in 'src\common\AnalyzeInterface.pas',
+  AnalyzeInterface in 'src\analyze\AnalyzeInterface.pas',
   DiaryRecords in 'src\bo\DiaryRecords.pas',
   BusinessObjects in 'src\bo\BusinessObjects.pas',
   DiaryRoutines in 'src\common\DiaryRoutines.pas';
