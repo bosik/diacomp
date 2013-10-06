@@ -99,23 +99,32 @@ uses
     end;
   end;
 
+  function CheckRunningInstance: boolean;
+  var
+    h: HWND;
+    MainClass: string;
+  begin
+    MainClass := TForm1.ClassName;
+    h := FindWindow(PChar(MainClass), 'Êîìïåíñàöèÿ ' + PROGRAM_VERSION);
+    if (h <> 0) then
+    begin
+      SetForegroundWindow(h);
+      SendMessage(h, WM_SECOND_START, 0, 0);
+      Result := True;
+    end else
+      Result := False;
+  end;
+
 const
   BIT64VER: array[Boolean] of String = ('32 bit', '64 bit');
 var
   tick: cardinal;
-  //h: HWND;
   FlagRestart, FlagModificated: boolean;
 begin
   tick := GetTickCount;
 
   { ÏĞÎÂÅĞÊÀ ÍÀËÈ×Èß ÓÆÅ ÇÀÏÓÙÅÍÍÎÃÎ İÊÇÅÌÏËßĞÀ }
-  {h := FindWindow('TForm1', 'Êîìïåíñàöèÿ ' + PROGRAM_VERSION);
-  if (h <> 0) then
-  begin
-    SetForegroundWindow(h);
-    SendMessage(h, WM_SECOND_START, 0, 0);
-    Exit;
-  end; }
+  if CheckRunningInstance() then Exit;
 
   {#}Log('Application started');
   {#}Log('No other instances founded');

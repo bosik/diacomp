@@ -66,8 +66,7 @@ const
 
 type
   TBalloonAction = procedure of object;
-  
-  { ВАЖНО: название класса используется в Исходном Тексте при поиске второго экземпляра }
+
   TForm1 = class(TAutosetupForm)
     TimerTimeLeft: TTimer;
     MenuHidden: TMainMenu;
