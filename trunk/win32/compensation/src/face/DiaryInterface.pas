@@ -377,7 +377,7 @@ procedure MinMaxBox(Box: TGroupBox; Image: TImage; Icons: TImageList;
     if Time >= 1 then Result := 1 else
 
     //Result := Time;
-    Result := (sin(pi * ((Time)-0.5))+1) * 0.5;
+    Result := (sin(pi * ((Time) - 0.5)) + 1) * 0.5;
     //Result := Sqr(Time);
 
     //Log('F('+FloatToStr(Time)+') = ' + FloatToStr(Result));

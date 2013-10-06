@@ -356,9 +356,9 @@ begin
     if Base[n][i].TagType=rtBlood then
     begin
       Zone := (Base[n][i].Time div 60) mod 24;
-      SetLength(Points[Zone].R,length(Points[Zone].R)+1);
-      Points[Zone].R[high(Points[Zone].R)].Value := TBloodRecord(Base[n][i]).Value;
-      Points[Zone].R[high(Points[Zone].R)].Pos := Frac(Base[n][i].Time/60);
+      SetLength(Points[Zone].R,length(Points[Zone].R) + 1);
+      Points[Zone].R[High(Points[Zone].R)].Value := TBloodRecord(Base[n][i]).Value;
+      Points[Zone].R[High(Points[Zone].R)].Pos := Frac(Base[n][i].Time/60);
     end;
 
     { вычисление средних и максимума }
@@ -369,16 +369,16 @@ begin
       Points[i].AvqValue := 0;
       if length(Points[i].R)>0 then
       begin
-        for n := 0 to high(Points[i].R) do
+        for n := 0 to High(Points[i].R) do
         begin
-          Points[i].AvqPos := Points[i].AvqPos+Points[i].R[n].Pos;
-          Points[i].AvqValue := Points[i].AvqValue+Points[i].R[n].Value;
+          Points[i].AvqPos := Points[i].AvqPos + Points[i].R[n].Pos;
+          Points[i].AvqValue := Points[i].AvqValue + Points[i].R[n].Value;
         end;
-        Points[i].AvqPos := Points[i].AvqPos/length(Points[i].R);
-        Points[i].AvqValue := Points[i].AvqValue/length(Points[i].R);
+        Points[i].AvqPos := Points[i].AvqPos / length(Points[i].R);
+        Points[i].AvqValue := Points[i].AvqValue / length(Points[i].R);
       end;
 
-      if Points[i].AvqValue>Max then
+      if Points[i].AvqValue > Max then
         Max := Points[i].AvqValue;
     end;
 
@@ -545,7 +545,7 @@ begin
 
     if (Day<Base.Count-1)then
     begin
-      TempBlood := Base[Day+1].FirstBloodRec;
+      TempBlood := Base[Day + 1].FirstBloodRec;
       if TempBlood<>nil then
       begin
         CalcXY(
@@ -594,7 +594,7 @@ var
     LabelHeight := Image.Canvas.TextHeight('123');
     Acc := 1;
     Wd := 0;
-    for n := high(FAcc) downto 1 do
+    for n := High(FAcc) downto 1 do
     if Trunc(Max/FAcc[n])*LabelHeight <= Image.Height-2*TopBord then
     begin
       Acc := FAcc[n];
@@ -679,8 +679,8 @@ var
     begin
       MoveTo(PrevPoint.X,PrevPoint.Y);
       LineTo(NewPoint.X,NewPoint.Y);
-      MoveTo(PrevPoint.X,PrevPoint.Y+1);
-      LineTo(NewPoint.X,NewPoint.Y+1);
+      MoveTo(PrevPoint.X,PrevPoint.Y + 1);
+      LineTo(NewPoint.X,NewPoint.Y + 1);
     end;
   end;
 
@@ -809,16 +809,16 @@ begin
       kfX: Pen.Color := COLOR_X;
     end;
 
-    {if 1-KoofList[high(KoofList)].Pos+KoofList[0].Pos<>0 then
-      w := KoofList[0].Pos/(1-KoofList[high(KoofList)].Pos+KoofList[0].Pos)
+    {if 1-KoofList[High(KoofList)].Pos+KoofList[0].Pos<>0 then
+      w := KoofList[0].Pos/(1-KoofList[High(KoofList)].Pos+KoofList[0].Pos)
     else
       w := 0;
 
     case KoofType of
-      kfK: v := (1-w)*KoofList[0].K + w*KoofList[high(KoofList)].K;
-      kfQ: v := (1-w)*KoofList[0].Q + w*KoofList[high(KoofList)].Q;
-      kfP: v := (1-w)*KoofList[0].P + w*KoofList[high(KoofList)].P;
-      kfX: v := (1-w)*GetX(0)       + w*GetX(high(KoofList));
+      kfK: v := (1-w)*KoofList[0].K + w*KoofList[High(KoofList)].K;
+      kfQ: v := (1-w)*KoofList[0].Q + w*KoofList[High(KoofList)].Q;
+      kfP: v := (1-w)*KoofList[0].P + w*KoofList[High(KoofList)].P;
+      kfX: v := (1-w)*GetX(0)       + w*GetX(High(KoofList));
     end;
 
     PrevPoint := Point(
@@ -900,8 +900,8 @@ begin
     { Точки для ОКК }
    { if KoofType = kfX then
     begin
-      for i := 0 to high(KoofList) do
-      for j := high(KoofList[i].Points) downto 0 do
+      for i := 0 to High(KoofList) do
+      for j := High(KoofList[i].Points) downto 0 do
       begin
         NewPoint := Point(
           LeftBord+Round((i+KoofList[i].Points[j].Pos)*kx),
@@ -922,7 +922,7 @@ begin
     { Точки для К * }
     if KoofType = kfK then
     begin
-      for i := 0 to high(RecList) do
+      for i := 0 to High(RecList) do
       begin
         {v := (RecList[i].DeltaBS + KoofList[Reclist[i].Time].q*RecList[i].Ins)/
           RecList[i].Carbs;  }
@@ -936,16 +936,16 @@ begin
         Brush.Color := RGB(Round(RecList[i].Weight*255),0,0);
         Pen.Color := clWhite;//RGB(255-Round(RecList[i].Weight*255),255,255);
         Ellipse(
-          NewPoint.X-2-1,
-          NewPoint.Y-2-1,
-          NewPoint.X+3+1,
-          NewPoint.Y+3+1
+          NewPoint.X - 2 - 1,
+          NewPoint.Y - 2 - 1,
+          NewPoint.X + 3 + 1,
+          NewPoint.Y + 3 + 1
         );
       end;
     end else
     if KoofType = kfQ then
     begin
-      for i := 0 to high(RecList) do
+      for i := 0 to High(RecList) do
       begin
         v := GetQ(RecList[i]);
 
@@ -966,7 +966,7 @@ begin
     end else
     if KoofType = kfP then
     begin
-      for i := 0 to high(RecList) do
+      for i := 0 to High(RecList) do
       begin
         v := GetP(RecList[i]);
 
@@ -987,7 +987,7 @@ begin
     end else
     if KoofType = kfX then
     begin
-      for i := 0 to high(RecList) do
+      for i := 0 to High(RecList) do
       begin
         {v := (RecList[i].DeltaBS + KoofList[Reclist[i].Time].q*RecList[i].Ins)/
           RecList[i].Carbs;  }
@@ -1079,7 +1079,7 @@ begin
 
   MaxQ := 0;//10;
   MaxK := 0;//.8;
-  for i := 0 to high(Koofs) do
+  for i := 0 to High(Koofs) do
   begin
     if Koofs[i].k>MaxK then MaxK := Koofs[i].k;
     if Koofs[i].p>MaxK then MaxK := Koofs[i].p;
@@ -1101,7 +1101,7 @@ begin
     Pen.Width := 1;
     Pen.Style := psDot;
     Pen.Color := clSilver;
-    for i := 0 to high(Koofs) do
+    for i := 0 to High(Koofs) do
     begin
       MoveTo(LeftBord+Round(i*kx),TopBord);
       LineTo(LeftBord+Round(i*kx),Image.Height-TopBord);
@@ -1122,13 +1122,13 @@ begin
     Brush.Color := clWhite;
     Pen.Color := COLOR_K;
 
-    w := Koofs[0].Pos/(1-Koofs[high(Koofs)].Pos+Koofs[0].Pos);
-    v := (1-w)*Koofs[0].K + w*Koofs[high(Koofs)].K;
+    w := Koofs[0].Pos/(1-Koofs[High(Koofs)].Pos+Koofs[0].Pos);
+    v := (1-w)*Koofs[0].K + w*Koofs[High(Koofs)].K;
     MoveTo(
       LeftBord,
       TopBord+Image.Height-Round(v*kyk)
     );
-    for i := 0 to high(Koofs) do
+    for i := 0 to High(Koofs) do
     begin
       if Koofs[i].Proved then
         Pen.Style := psSolid else
@@ -1141,13 +1141,13 @@ begin
 
     { Q }
     Pen.Color := COLOR_Q;
-    w := Koofs[0].Pos/(1-Koofs[high(Koofs)].Pos+Koofs[0].Pos);
-    v := (1-w)*Koofs[0].Q + w*Koofs[high(Koofs)].Q;
+    w := Koofs[0].Pos/(1-Koofs[High(Koofs)].Pos+Koofs[0].Pos);
+    v := (1-w)*Koofs[0].Q + w*Koofs[High(Koofs)].Q;
     MoveTo(
       LeftBord,
       Image.Height-TopBord-Round(v*kyq)
     );
-    for i := 0 to high(Koofs) do
+    for i := 0 to High(Koofs) do
     begin
       if Koofs[i].Proved then
         Pen.Style := psSolid else
@@ -1160,13 +1160,13 @@ begin
 
     { P }
     Pen.Color := COLOR_P;
-    w := Koofs[0].Pos/(1-Koofs[high(Koofs)].Pos+Koofs[0].Pos);
-    v := (1-w)*Koofs[0].P + w*Koofs[high(Koofs)].P;
+    w := Koofs[0].Pos/(1-Koofs[High(Koofs)].Pos+Koofs[0].Pos);
+    v := (1-w)*Koofs[0].P + w*Koofs[High(Koofs)].P;
     MoveTo(
       LeftBord,
       Image.Height-TopBord-Round(v*kyk)
     );
-    for i := 0 to high(Koofs) do
+    for i := 0 to High(Koofs) do
     begin
       if Koofs[i].Proved then
         Pen.Style := psSolid else
@@ -1179,15 +1179,15 @@ begin
 
     { X }
     Pen.Color := COLOR_X;
-    if Koofs[high(Koofs)].q<>0 then
+    if Koofs[High(Koofs)].q<>0 then
       MoveTo(
-        LeftBord+Round((-1+Koofs[high(Koofs)].Pos)*kx),
-        Image.Height-TopBord-Round((Koofs[high(Koofs)].k+0.25*Koofs[high(Koofs)].p)/Koofs[high(Koofs)].q *kyk)
+        LeftBord+Round((-1+Koofs[High(Koofs)].Pos)*kx),
+        Image.Height-TopBord-Round((Koofs[High(Koofs)].k+0.25*Koofs[High(Koofs)].p)/Koofs[High(Koofs)].q *kyk)
       )
     else
-      MoveTo(LeftBord+Round((-1+Koofs[high(Koofs)].Pos)*kx),500);
+      MoveTo(LeftBord+Round((-1+Koofs[High(Koofs)].Pos)*kx),500);
 
-    for i := 0 to high(Koofs) do
+    for i := 0 to High(Koofs) do
     if (Koofs[i].q<>0)then
     begin
       if (Koofs[i].Proved)then
@@ -1212,7 +1212,7 @@ begin
         IntToStr(24*i div length(Koofs))
       );
 
-    for i := 0 to high(Koofs) do
+    for i := 0 to High(Koofs) do
     begin
       { K Value }
       if Koofs[i].Proved then
@@ -1262,8 +1262,8 @@ begin
 
       s := FloatToStr(Round(Koofs[i].K/Koofs[i].Q*1000)/1000);
       TextOut(
-        LeftBord+Round((i+0.5)*kx)-(TextWidth(s) div 2),
-        TopBord+130,
+        LeftBord + Round((i + 0.5) * kx) - (TextWidth(s) div 2),
+        TopBord + 130,
         s
       );
       }

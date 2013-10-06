@@ -163,9 +163,9 @@ end;
 constructor TFoodRelative.Create;
 {==============================================================================}
 begin
-  FName := '';
+  FName     := '';
   FRelProts := 0;
-  FRelFats := 0;
+  FRelFats  := 0;
   FRelCarbs := 0;
   FRelValue := 0;
 end;
@@ -341,10 +341,13 @@ end;
 function TDish.Add(Food: TFoodMassed): integer;
 {==============================================================================}
 begin
+  Food.OnChange := OnChange; 
+
   Result := Count;
   SetLength(FContent, Result + 1);
   FContent[Result] := Food;
-  //Modified();
+
+  Modified();
 end;
 
 {==============================================================================}
@@ -366,12 +369,14 @@ procedure TDish.Clear();
 var
   i: integer;
 begin
-  for i := 0 to high(FContent) do
-    FContent[i].Free;
-  SetLength(FContent, 0);
+  if (Length(FContent) > 0) then
+  begin
+    for i := 0 to High(FContent) do
+      FContent[i].Free;
+    SetLength(FContent, 0);
 
-  // TODO 1: разобраться
-  //Modified();
+    Modified();
+  end;
 end;
 
 {==============================================================================}
@@ -437,7 +442,7 @@ begin
     FContent[i] := FContent[i + 1];
   SetLength(FContent, Length(FContent) - 1);
 
-  //Modified();
+  Modified();
 end;
 
 {==============================================================================}
@@ -471,11 +476,11 @@ var
 begin
   Result := 0;
   case Index of
-    0: for i := 0 to high(FContent) do Result := Result + FContent[i].Mass;
-    1: for i := 0 to high(FContent) do Result := Result + FContent[i].Prots;
-    2: for i := 0 to high(FContent) do Result := Result + FContent[i].Fats;
-    3: for i := 0 to high(FContent) do Result := Result + FContent[i].Carbs;
-    4: for i := 0 to high(FContent) do Result := Result + FContent[i].Value;
+    0: for i := 0 to High(FContent) do Result := Result + FContent[i].Mass;
+    1: for i := 0 to High(FContent) do Result := Result + FContent[i].Prots;
+    2: for i := 0 to High(FContent) do Result := Result + FContent[i].Fats;
+    3: for i := 0 to High(FContent) do Result := Result + FContent[i].Carbs;
+    4: for i := 0 to High(FContent) do Result := Result + FContent[i].Value;
     else raise ERangeError.CreateFmt('TDish.GetProp(): illegal index (%d)', [Index]);
   end;
 end;

@@ -539,7 +539,7 @@ begin
 
   // пустые страницы отсекать нельзя, ведь они могли быть непустыми до этого
   Source := '';
-  for i := 0 to high(Pages) do
+  for i := 0 to High(Pages) do
   begin
     {#}OldStamp := Pages[i].TimeStamp;
     Pages[i].TimeStamp := LocalToServer(Pages[i].TimeStamp);

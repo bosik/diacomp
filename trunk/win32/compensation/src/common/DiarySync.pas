@@ -173,7 +173,7 @@ procedure UnionDateLists(const ServerList, LocalList: TModList; out Result: TDat
   var
     i: integer;
   begin
-    for i := 0 to high(ServerList) do
+    for i := 0 to High(ServerList) do
     if ServerList[i].Date = D then
     begin
       Result := i;
@@ -187,7 +187,7 @@ var
 begin
   // TODO: пока тупой вариант
   SetLength(Result, Length(ServerList) + Length(LocalList));
-  for i := 0 to high(ServerList) do
+  for i := 0 to High(ServerList) do
   begin
     Result[i].Date := ServerList[i].Date;
     Result[i].ServerVersion := ServerList[i].Version;
@@ -195,7 +195,7 @@ begin
   end;
 
   k := Length(ServerList);
-  for i := 0 to high(LocalList) do
+  for i := 0 to High(LocalList) do
   begin
     j := Find(LocalList[i].Date);
     if j = -1 then

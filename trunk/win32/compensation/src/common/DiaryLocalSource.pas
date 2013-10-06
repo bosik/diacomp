@@ -84,7 +84,7 @@ begin
   if (Length(FPages) > 0) then
     FModified := True;
 
-  for i := 0 to high(FPages) do
+  for i := 0 to High(FPages) do
     FPages[i].Free;
   SetLength(FPages, 0);
 end;
@@ -129,7 +129,7 @@ function TDiaryLocalSource._GetFirstDate(var Date: TDate): boolean;
 var
   i: integer;
 begin
-  for i := 0 to high(FPages) do
+  for i := 0 to High(FPages) do
   if (FPages[i].Page <> '') then
   begin
     Date := FPages[i].Date;
@@ -146,7 +146,7 @@ function TDiaryLocalSource._GetLastDate(var Date: TDate): boolean;
 var
   i: integer;
 begin
-  for i := high(FPages) downto 0 do
+  for i := High(FPages) downto 0 do
   if (FPages[i].Page <> '') then
   begin
     Date := FPages[i].Date;
@@ -165,7 +165,7 @@ var
 begin
   Count := 0;
   SetLength(ModList, 1);
-  for i := 0 to high(FPages) do
+  for i := 0 to High(FPages) do
   if (FPages[i].TimeStamp > Time) then
   begin
     if (Count = Length(ModList)) then
@@ -185,7 +185,7 @@ var
   L,R: integer;
 begin
   L := 0;
-  R := high(FPages);
+  R := High(FPages);
   while (L <= R) do
   begin
     Result := (L + R) div 2;
@@ -242,7 +242,7 @@ begin
     TPageData.MultiRead(S, False, Pages);   // и загружаешь -->
 
     // для проверки сортировки и дублей используем вспомогательный список
-    for i := 0 to high(Pages) do
+    for i := 0 to High(Pages) do
       Add(Pages[i]);
   finally
     s.Free;
@@ -317,7 +317,7 @@ function TDiaryLocalSource.PostPages(const Pages: TPageList): boolean;
 var
   i, Index: integer;
 begin
-  for i := 0 to high(Pages) do
+  for i := 0 to High(Pages) do
   begin
     Index := GetPageIndex(Pages[i].Date);
     if (Index = -1) then

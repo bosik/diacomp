@@ -1592,7 +1592,7 @@ var
     with Box.ACItems do
     begin
       Clear;
-      for i := 0 to high(Map) do
+      for i := 0 to High(Map) do
       case Map[i].ItemType of
         itFood: Add(FoodBase[Map[i].Index].Name);
         itDish: Add(DishBase[Map[i].Index].Name);
@@ -1940,10 +1940,10 @@ begin
     if i=DiaryBase.Count-1 then
       ExtractRecords(DiaryBase[i],DiaryBase[i],i,True,temp)
     else
-      ExtractRecords(DiaryBase[i],DiaryBase[i+1],i,False,temp);
+      ExtractRecords(DiaryBase[i],DiaryBase[i + 1], i, False, temp);
     CompareRecords(recs,temp);
   end;
-  for i := 0 to high(recs) do
+  for i := 0 to High(recs) do
   if (recs[i].Carbs>0){and
      (recs[i].Fats>0)} then
     AddPoint(
@@ -2225,18 +2225,18 @@ begin
   for j := 0 to DiaryBase[i].Count-1 do
   if DiaryBase[i][j].TagType=rtBlood then
   begin
-    SetLength(List,length(list)+1);
-    List[high(list)].Date := DiaryBase[i].Date;
-    List[high(list)].Value := TBloodRecord(DiaryBase[i][j]).Value;
+    SetLength(List, length(list) + 1);
+    List[High(list)].Date := DiaryBase[i].Date;
+    List[High(list)].Value := TBloodRecord(DiaryBase[i][j]).Value;
   end;
 
   if length(list)>0 then
-    qsort(0,high(list));
+    qsort(0,High(list));
 
   with ListBS do
   begin
     Clear;
-    for i := 0 to high(List) do
+    for i := 0 to High(List) do
       Items.Add(RealToStrZero(List[i].Value)+':    '+DateToStr(List[i].Date));
   end;    }
 end;
@@ -3530,7 +3530,7 @@ var
     i: integer;
   begin
     Result := -1;
-    for i:=0 to high(List) do
+    for i:=0 to High(List) do
     if List[i].Value = Value then
     begin
       Result := i;
@@ -3540,9 +3540,9 @@ var
 
   procedure Add(Value: real);
   begin
-    SetLength(List, length(List)+1);
-    List[high(List)].Value := Value;
-    List[high(List)].Count := 1;
+    SetLength(List, length(List) + 1);
+    List[High(List)].Value := Value;
+    List[High(List)].Count := 1;
   end;
 
   function More(n1,n2: integer): boolean;
@@ -3573,12 +3573,12 @@ begin
       List[k].Count := List[k].Count + 1;
   end;
 
-  //QuickSort(More, Exch, 0, high(List));
+  //QuickSort(More, Exch, 0, High(List));
 
   with ListBS do
   begin
     Clear;
-    for i := 0 to high(List) do
+    for i := 0 to High(List) do
       Items.Add(
         RealToStrZero(List[i].Value)+#9+IntToStr(List[i].Count));
   end; }
@@ -3600,12 +3600,12 @@ begin
   begin
     Summ := 0;
     SummWeight := 0;
-    for j := i-AVG_PERIOD+1 to i do
+    for j := i - AVG_PERIOD + 1 to i do
     for k := 0 to DiaryBase[j].Count-1 do
     if (DiaryBase[j][k].TagType = rtBlood)and
        (not TBloodRecord(DiaryBase[j][k]).PostPrand) then
-    begin  
-      CurWeight := (j - (i-AVG_PERIOD+1)) / (AVG_PERIOD-1);
+    begin
+      CurWeight := (j - (i - AVG_PERIOD + 1)) / (AVG_PERIOD - 1);
       Summ := Summ + CurWeight*TBloodRecord(DiaryBase[j][k]).Value;
       SummWeight := SummWeight + CurWeight;
     end;
@@ -3675,13 +3675,13 @@ begin
   for i := FirstDate to LastDate do
   begin
     SetLength(List, Length(list) + 1);
-    List[high(list)].Date := i;
+    List[High(list)].Date := i;
     case ComboValue.ItemIndex of
-      0: List[high(list)].Value := Diary[i].DayProts;
-      1: List[high(list)].Value := Diary[i].DayFats;
-      2: List[high(list)].Value := Diary[i].DayCarbs;
-      3: List[high(list)].Value := Diary[i].DayValue;
-      4: List[high(list)].Value := Diary[i].DayMass;
+      0: List[High(list)].Value := Diary[i].DayProts;
+      1: List[High(list)].Value := Diary[i].DayFats;
+      2: List[High(list)].Value := Diary[i].DayCarbs;
+      3: List[High(list)].Value := Diary[i].DayValue;
+      4: List[High(list)].Value := Diary[i].DayMass;
     end;
 
     //Summ := Summ + Diary[i].DayCarbs;
@@ -3689,7 +3689,7 @@ begin
 
   if length(list) > 0 then
   begin
-    qsort(0,high(list));
+    qsort(0,High(list));
     //Summ := Summ / (LastDate - FirstDate + 1);
   end;
 
@@ -3698,7 +3698,7 @@ begin
   with ListCB do
   begin
     Clear;
-    for i := 0 to high(List) do
+    for i := 0 to High(List) do
       Items.Add(RealToStrZero(List[i].Value)+':    '+DateToStr(List[i].Date));
   end;
 
@@ -4248,11 +4248,11 @@ begin
 
   {===============================================================}
 
- (* for i := Trunc(Now)-LOOK_PERIOD+1 to Trunc(Now) do
+ (* for i := Trunc(Now) - LOOK_PERIOD + 1 to Trunc(Now) do
   begin
     Summ := 0;
     Count := 0;
-    for j := i-AVG_PERIOD+1 to i do
+    for j := i - AVG_PERIOD + 1 to i do
     if DiaryBase[j].DayCarbs <> 0 then
     begin
       inc(Count);
@@ -4402,17 +4402,17 @@ var
   Cnt: array[0..6] of integer;
   i,j: integer;
 begin
-  for i := 0 to high(Cnt) do
+  for i := 0 to High(Cnt) do
     Cnt[i] := 0;
 
-  for i := 0 to high(AnList) do
+  for i := 0 to High(AnList) do
   begin
     j := GetType(AnList[i]);
     inc(Cnt[j]);
   end;
 
   ListBS.Items.Clear;
-  for i := 0 to high(Cnt) do
+  for i := 0 to High(Cnt) do
     ListBS.Items.Add(IntToStr(i) + '    ' + IntToStr(Cnt[i]));
 end;
 
@@ -5228,7 +5228,7 @@ begin  (*
       Q := Q - DQ * SpeedQ * (MAX_Q - MIN_Q);
       P := P - DP * SpeedP * (MAX_P - MIN_P);
 
-      StatusBar.Panels[1].Text := IntToStr((CurrentTime+1) * 100 div 1440) + '%';
+      StatusBar.Panels[1].Text := IntToStr((CurrentTime + 1) * 100 div 1440) + '%';
       Application.ProcessMessages;
     //until (L < 0.0001);
     until (Sqr(SpeedK) + Sqr(SpeedQ) + Sqr(SpeedP) < 0.000000001);

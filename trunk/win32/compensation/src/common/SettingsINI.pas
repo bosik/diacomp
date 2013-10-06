@@ -93,7 +93,7 @@ procedure TSettings.Clear;
 var
   i: integer;
 begin
-  for i := 0 to high(FData) do
+  for i := 0 to High(FData) do
     FData[i].Free;
   SetLength(FData, 0);
 end;
@@ -182,7 +182,7 @@ begin
 
     Ini := TIniFile.Create(FileName);
     try
-      for i := 0 to high(FData) do
+      for i := 0 to High(FData) do
       case FData[i].RecType of
         rtInteger:  FData[i].Value := Ini.ReadInteger(FData[i].INIPart, FData[i].Name, FData[i].Default);
         rtFloat:    FData[i].Value := Ini.ReadFloat  (FData[i].INIPart, FData[i].Name, FData[i].Default);
@@ -212,7 +212,7 @@ procedure TSettings.ResetToDefaults;
 var
   i: integer;
 begin
-  for i := 0 to high(FData) do
+  for i := 0 to High(FData) do
     FData[i].Value := FData[i].Default;
 
   // классно, правда?
@@ -228,7 +228,7 @@ begin
   try
     Ini := TIniFile.Create(FileName);
     try
-      for i := 0 to high(FData) do
+      for i := 0 to High(FData) do
       case FData[i].RecType of
         rtInteger:  Ini.WriteInteger(FData[i].INIPart, FData[i].Name, FData[i].Value);
         rtFloat:    Ini.WriteFloat  (FData[i].INIPart, FData[i].Name, FData[i].Value);

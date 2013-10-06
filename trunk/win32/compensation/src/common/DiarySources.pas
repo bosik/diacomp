@@ -145,7 +145,7 @@ begin
   // No. С таким подходом я не смогу перезаписать страницу на пустую. Пустое содержание - тоже содержание
 
   s.Clear;
-  for i := 0 to high(Pages) do
+  for i := 0 to High(Pages) do
   // (Trim(Pages[i].Page) <> '') then
       s.Add(Pages[i].Write(WebFormat));
 end;

@@ -47,7 +47,7 @@ type
   private
     FValue: real;
     FFinger: integer;
-    FPostPrand: boolean;  // просто маркер, НЕ данные (transient)
+    FPostPrand: boolean;  // transient
   protected
     procedure SetFinger(NewFinger: integer);
     procedure SetValue(const NewValue: real);
@@ -286,7 +286,7 @@ end;
 procedure TMealRecord.CheckIndex(Index: integer);
 {==============================================================================}
 begin
-  if (Index < Low(FFood)) or (Index > high(FFood)) then
+  if (Index < Low(FFood)) or (Index > High(FFood)) then
     raise ERangeError.CreateFmt('TMealRecord: недопустимый индекс (%d)', [Index]);
 end;
 
@@ -298,7 +298,7 @@ var
 begin
   if Length(FFood) > 0 then
   begin
-    for i := 0 to high(FFood) do
+    for i := 0 to High(FFood) do
       FFood[i].Free;
     SetLength(FFood,0);
     NotifyPage;
@@ -364,11 +364,11 @@ var
 begin
   Result := 0;
   case Index of
-    0: for i := 0 to high(FFood) do Result := Result + FFood[i].Mass;
-    1: for i := 0 to high(FFood) do Result := Result + FFood[i].Prots;
-    2: for i := 0 to high(FFood) do Result := Result + FFood[i].Fats;
-    3: for i := 0 to high(FFood) do Result := Result + FFood[i].Carbs;
-    4: for i := 0 to high(FFood) do Result := Result + FFood[i].Value;
+    0: for i := 0 to High(FFood) do Result := Result + FFood[i].Mass;
+    1: for i := 0 to High(FFood) do Result := Result + FFood[i].Prots;
+    2: for i := 0 to High(FFood) do Result := Result + FFood[i].Fats;
+    3: for i := 0 to High(FFood) do Result := Result + FFood[i].Carbs;
+    4: for i := 0 to High(FFood) do Result := Result + FFood[i].Value;
   end;
 end;
 
@@ -391,9 +391,9 @@ var
 begin
   CheckIndex(Index);
   FFood[Index].Free;
-  for i := Index to high(FFood)-1 do
-    FFood[i] := FFood[i+1];
-  SetLength(FFood, Length(FFood)-1);
+  for i := Index to High(FFood) - 1 do
+    FFood[i] := FFood[i + 1];
+  SetLength(FFood, Length(FFood) - 1);
 
   NotifyPage;
 end;
