@@ -11,7 +11,7 @@ uses
 type
   TPageData = class; // forward
 
-  TPageList = array of TPageData;
+  TPageDataList = array of TPageData;
 
   // нераспарсенная страница
   TPageData = class
@@ -30,8 +30,8 @@ type
     function Write(WebFormat: boolean): string;
     function WriteHeader(WebFormat: boolean): string;
 
-    class procedure MultiRead(S: TStringList; WebFormat: boolean; out Pages: TPageList);
-    class procedure MultiWrite(S: TStringList; WebFormat: boolean; const Pages: TPageList);
+    class procedure MultiRead(S: TStringList; WebFormat: boolean; out Pages: TPageDataList);
+    class procedure MultiWrite(S: TStringList; WebFormat: boolean; const Pages: TPageDataList);
   end;
 
   // информация для синхронизации
@@ -49,10 +49,10 @@ type
   public
     { методы }
     function GetModList(Time: TDateTime; out ModList: TModList): boolean; virtual; abstract;
-    function GetPages(const Dates: TDateList; out Pages: TPageList): boolean; virtual; abstract;
-    function PostPages(const Pages: TPageList): boolean; virtual; abstract;
+    function GetPages(const Dates: TDateList; out Pages: TPageDataList): boolean; virtual; abstract;
+    function PostPages(const Pages: TPageDataList): boolean; virtual; abstract;
 
-    { сахар } 
+    { сахар }
     function GetPage(Date: TDate): TPageData;
     function PostPage(Page: TPageData): boolean;
   end;
@@ -95,7 +95,7 @@ begin
 end;
 
 {==============================================================================}
-class procedure TPageData.MultiRead(S: TStringList; WebFormat: boolean; out Pages: TPageList);
+class procedure TPageData.MultiRead(S: TStringList; WebFormat: boolean; out Pages: TPageDataList);
 {==============================================================================}
 var
   buf: string;
@@ -134,7 +134,7 @@ begin
 end;
 
 {==============================================================================}
-class procedure TPageData.MultiWrite(S: TStringList; WebFormat: boolean; const Pages: TPageList);
+class procedure TPageData.MultiWrite(S: TStringList; WebFormat: boolean; const Pages: TPageDataList);
 {==============================================================================}
 var
   i: integer;
@@ -248,7 +248,7 @@ function IDiarySource.GetPage(Date: TDate): TPageData;
 {==============================================================================}
 var
   DateList: TDateList;
-  PageList: TPageList;
+  PageList: TPageDataList;
 begin
   SetLength(DateList, 1);
   DateList[0] := Date;
@@ -263,7 +263,7 @@ end;
 function IDiarySource.PostPage(Page: TPageData): boolean;
 {==============================================================================}
 var
-  PageList: TPageList;
+  PageList: TPageDataList;
 begin
   SetLength(PageList, 1);
   PageList[0] := Page;

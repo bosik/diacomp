@@ -146,7 +146,7 @@ function SyncSources(Source1, Source2: IDiarySource; Since: TDateTime): integer;
 var
   ModList1, ModList2: TModList;
   Over1, Over2: TDateList;
-  Pages: TPageList;
+  Pages: TPageDataList;
 begin
   Result := 0;
 

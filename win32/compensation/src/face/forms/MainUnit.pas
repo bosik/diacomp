@@ -4514,7 +4514,8 @@ begin
     Control,
     Rect,
     DiaryMultiMap[ComboDiaryNew.ShowedIndex[Index]],
-    odSelected in State
+    odSelected in State,
+    Value['CarbsInfo']
   );
 end;
 

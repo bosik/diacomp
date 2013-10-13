@@ -3,17 +3,19 @@ unit DiaryLocalSource;
 interface
 
 uses
-  DiaryRoutines, DiaryDatabase, DiarySources, SysUtils, Classes, Dialogs {update warnings},
-  XMLDoc, XMLIntf;
+  DiaryRoutines,
+  DiaryDatabase,
+  DiarySources,
+  SysUtils,
+  Classes,
+  Dialogs {update warnings},
+  XMLDoc,
+  XMLIntf;
 
 type
-  ELoadingError = class(EInOutError);
-  TSucceedEvent = procedure(Sender: TObject; OK: boolean) of object;
-  
-  // {#} - реализация интерфейса
   TDiaryLocalSource =  class (IDiarySource)
   private
-    FPages: TPageList;
+    FPages: TPageDataList;
     FModified: boolean;
     {!}FUpdateWarning: boolean;
     FFileName: string;
@@ -30,21 +32,13 @@ type
     constructor Create(const FileName: string);
     destructor Destroy; override;
 
-    // TODO: not used, remove it
-    function _GetFirstDate(var Date: TDate): boolean; deprecated;
-    function _GetLastDate(var Date: TDate): boolean; deprecated;
-
-    {#}function GetModList(Time: TDateTime; out ModList: TModList): boolean; override;
-    {#}function GetPages(const Dates: TDateList; out Pages: TPageList): boolean; override;
-    {#}function PostPages(const Pages: TPageList): boolean; override;
+    function GetModList(Time: TDateTime; out ModList: TModList): boolean; override;
+    function GetPages(const Dates: TDateList; out Pages: TPageDataList): boolean; override;
+    function PostPages(const Pages: TPageDataList): boolean; override;
 
     // свойства
     property Modified: boolean read FModified {write FModified};
     property ShowUpdateWarning: boolean read FUpdateWarning write FUpdateWarning;
-
-    // события
-    //property OnLoad: TSucceedEvent read FOnLoad write FOnLoad;
-    //property OnSave: TSucceedEvent read FOnSave write FOnSave;
  end;
 
 implementation
@@ -124,40 +118,6 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryLocalSource._GetFirstDate(var Date: TDate): boolean;
-{==============================================================================}
-var
-  i: integer;
-begin
-  for i := 0 to High(FPages) do
-  if (FPages[i].Page <> '') then
-  begin
-    Date := FPages[i].Date;
-    Result := True;
-    Exit;
-  end;
-
-  Result := False;
-end;
-
-{==============================================================================}
-function TDiaryLocalSource._GetLastDate(var Date: TDate): boolean;
-{==============================================================================}
-var
-  i: integer;
-begin
-  for i := High(FPages) downto 0 do
-  if (FPages[i].Page <> '') then
-  begin
-    Date := FPages[i].Date;
-    Result := True;
-    Exit;
-  end;
-
-  Result := False;
-end;
-
-{==============================================================================}
 function TDiaryLocalSource.GetModList(Time: TDateTime; out ModList: TModList): boolean;
 {==============================================================================}
 var
@@ -197,7 +157,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryLocalSource.GetPages(const Dates: TDateList; out Pages: TPageList): boolean;
+function TDiaryLocalSource.GetPages(const Dates: TDateList; out Pages: TPageDataList): boolean;
 {==============================================================================}
 const
   INITIAL_PAGE_VERSION = 0;
@@ -219,7 +179,7 @@ procedure TDiaryLocalSource.LoadFromFile(const FileName: string);
 var
   s: TStringList;
   i: integer;
-  Pages: TPageList;
+  Pages: TPageDataList;
 begin
   Clear;
 
@@ -250,30 +210,11 @@ begin
     s.Free;
   end;
 
-  FModified := false;  // да)
-  //NotifyLoad(Result);
-end;
-
-(*
-{==============================================================================}
-procedure TDiaryLocalSource.NotifyLoad(OK: boolean);
-{==============================================================================}
-begin
-  // TODO: never used
-  //if Assigned(FOnLoad) then FOnLoad(Self, OK);
+  FModified := False;  // да)
 end;
 
 {==============================================================================}
-procedure TDiaryLocalSource.NotifySave(OK: boolean);
-{==============================================================================}
-begin
-  // TODO: never used
-  //if Assigned(FOnSave) then FOnSave(Self, OK);
-end;
-*)
-
-{==============================================================================}
-function TDiaryLocalSource.PostPages(const Pages: TPageList): boolean;
+function TDiaryLocalSource.PostPages(const Pages: TPageDataList): boolean;
 {==============================================================================}
 
   function PureLength(const S: string): integer;
