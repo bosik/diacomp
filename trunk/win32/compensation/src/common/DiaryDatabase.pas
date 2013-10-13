@@ -36,7 +36,7 @@ type
     FVersion: integer;
 
     { событи€ }
-    FOnChange: TEventPageChanged;
+    FOnChange: array of TEventPageChanged;
 
     {+}procedure CheckIndex(Index: integer);
     {+}function GetRecord(Index: integer): TCustomRecord;
@@ -76,6 +76,10 @@ type
     procedure ReadFrom(S: TPageData); overload;
     procedure WriteTo(S: TPageData); overload;
 
+    // Listeners
+
+    procedure AddChangeListener(Listener: TEventPageChanged);
+
     // свойства
 
     property Date: TDate read FDate;
@@ -89,8 +93,6 @@ type
     {+}property DayValue: real index 4 read GetStat;
     {+}property DayMass:  real index 5 read GetStat;
     {+}property DayIns:   real index 6 read GetStat;
-
-    property OnChange: TEventPageChanged read FOnChange write FOnChange;
   end;
 
   TSearchDirection = (sdBack, sdForward, sdAround);
@@ -264,6 +266,7 @@ procedure TDiaryPage.ProcessRecordChanged(EventType: TPageEventType; RecType: TC
 {==============================================================================}
 var
   Index: integer;
+  i: integer;
 begin
   if FSilentChange then Exit;
 
@@ -282,9 +285,10 @@ begin
     end;
   end;
 
-  // пересылаем событие базе (ѕќ—Ћ≈ коррекций)
+  // информируем слушателей (ѕќ—Ћ≈ коррекций)
 
-  if Assigned(FOnChange) then FOnChange(EventType, Self, RecType, RecInstance);
+  for i := 0 to High(FOnChange) do
+   FOnChange[i](EventType, Self, RecType, RecInstance);
 end;
 
 {==============================================================================}
@@ -871,7 +875,7 @@ function TDiary.GetPageIndex(Date: TDate; CalculatePostprand: boolean): integer;
     Result := Length(FCache);
     SetLength(FCache, Result + 1);
     FCache[Result] := TPageCache.Create(PageData);
-    FCache[Result].OnChange := ProcessPageChanged;
+    FCache[Result].AddChangeListener(ProcessPageChanged);
     Result := TraceLastPage();
 
     PageData.Free;
@@ -880,7 +884,7 @@ function TDiary.GetPageIndex(Date: TDate; CalculatePostprand: boolean): integer;
   function MakeSureExists(Date: TDate): integer;
   begin
     Result := FindInCache(Date);
-    if Result = -1 then
+    if (Result = -1) then
       Result := LoadFromSource(Date);
   end;
 
@@ -1428,8 +1432,10 @@ begin
   end;
 end; *)
 
+{==============================================================================}
 procedure TDiary.ProcessPageChanged(EventType: TPageEventType; Page: TDiaryPage;
   RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
+{==============================================================================}
 var
   PageData: TPageData;
 begin
@@ -1439,24 +1445,20 @@ begin
 
   // TODO: проверить, что не вызываетс€ слишком часто (например, при загрузке)
   // TODO: [Trunc(Now) + 1] Ч не лучшее решение
-  if Page <> nil then
+  if (Page <> nil) then
     UpdateCached_Postprand; // TODO: optimize
     //UpdatePostprand(Page.Date - 1, Trunc(Now) + 1);
 
-
-
   PageData := TPageData.Create;
   Page.WriteTo(PageData);
-
-  FSource.PostPage(PageData);
-
-
-
+  //FSource.PostPage(PageData); // to save after every change
 
   if Assigned(FOnChange) then FOnChange(EventType, Page, RecClass, RecInstance);
 end;
 
+{==============================================================================}
 procedure TDiary.SetPostPrand(Index, Value: integer);
+{==============================================================================}
 begin
   case Index of
     1: // std
@@ -1479,7 +1481,9 @@ begin
   UpdateCached_Postprand;
 end;
 
+{==============================================================================}
 function TDiary.TraceLastPage: integer;
+{==============================================================================}
 var
   temp: TPageCache;
 begin
@@ -1568,7 +1572,9 @@ begin
   end;
 end;   *)
 
+{==============================================================================}
 function TDiary.GetLastBloodRecord: TBloodRecord;
+{==============================================================================}
 const
   INTERVAL = 7;
 var
@@ -1645,7 +1651,7 @@ end;
 procedure TDiary.Post;
 {==============================================================================}
 var
-  Pages: TPageList;
+  Pages: TPageDataList;
   i: integer;
 begin
   // выгружаем в список
@@ -1666,7 +1672,9 @@ begin
   FModified := False;
 end;
 
+{==============================================================================}
 procedure TDiary.ReloadCache;
+{==============================================================================}
 var
   i: integer;
   PageData: TPageData;
@@ -1954,6 +1962,32 @@ begin
     end;
   end;
   FCalculatedPostprand := True;
+end;
+
+procedure TDiaryPage.AddChangeListener(Listener: TEventPageChanged);
+
+  function GetListenerIndex(L: TEventPageChanged): integer;
+  var
+    i: integer;
+  begin
+    for i := 0 to High(FOnChange) do
+    if (@FOnChange[i] = @L) then
+    begin
+      Result := i;
+      Exit;
+    end;
+    Result := -1;
+  end;
+
+begin
+  if (Assigned(Listener)) then
+  begin
+    if (GetListenerIndex(Listener) = -1) then
+    begin
+      SetLength(FOnChange, Length(FOnChange) + 1);
+      FOnChange[High(FOnChange)] := Listener;
+    end;
+  end;
 end;
 
 initialization

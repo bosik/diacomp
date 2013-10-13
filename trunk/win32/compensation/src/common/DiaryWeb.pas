@@ -25,6 +25,8 @@ type
 
   TLoginEvent = procedure(Sender: TObject; State: TLoginResult) of object;
 
+  // TODO: separate Web client / Web source
+
   TDiaryWebSource = class (IDiarySource)
   private
     // поля
@@ -54,8 +56,8 @@ type
 
     { интерфейс }
     {#}function GetModList(Time: TDateTime; out ModList: TModList): boolean; override;
-    {#}function GetPages(const Dates: TDateList; out Pages: TPageList): boolean; override;
-    {#}function PostPages(const Pages: TPageList): boolean; override;
+    {#}function GetPages(const Dates: TDateList; out Pages: TPageDataList): boolean; override;
+    {#}function PostPages(const Pages: TPageDataList): boolean; override;
 
     { специализация }
 
@@ -370,7 +372,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryWebSource.GetPages(const Dates: TDateList; out Pages: TPageList): boolean;
+function TDiaryWebSource.GetPages(const Dates: TDateList; out Pages: TPageDataList): boolean;
 {==============================================================================}
 var
   Query, Resp: string;
@@ -521,7 +523,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryWebSource.PostPages(const Pages: TPageList): boolean;
+function TDiaryWebSource.PostPages(const Pages: TPageDataList): boolean;
 {==============================================================================}
 var
   Par: TParamList;

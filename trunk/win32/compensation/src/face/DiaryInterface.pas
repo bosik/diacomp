@@ -1,15 +1,13 @@
 unit DiaryInterface;
 
-{ Модуль для интерфейса дневника }
+{ Утилиты для frontend }
 
 interface
 
 uses
   Windows, //
-  //Messages,
   SysUtils,
   Math,
-  SettingsINI,
   Classes, //
   Controls, //
   Dialogs, //
@@ -22,7 +20,6 @@ uses
   ACCombo,
   DiaryRoutines,
   ActnMenus,
-  AutoLog,
   DiaryCore,
   UnitDataInterface;
 
@@ -79,7 +76,8 @@ type
   { работа с панельками главной формы }
   {@}procedure MinMaxBox(Box: TGroupBox; Image: TImage; Icons: TImageList;
     Animated: boolean; OpenHeight,CloseHeight,OpenTime,CloseTime: integer);
-   procedure DrawACItem(Control: TControl; Rect: TRect; const Item: TMultiItem; Selected: Boolean);
+   procedure DrawACItem(Control: TControl; Rect: TRect; const Item: TMultiItem;
+     Selected: Boolean; ShowHelpInfo: boolean);
 
   { технические }
   {@}function CodeToRus(Key: byte): char;
@@ -503,7 +501,8 @@ begin
 end;     }
 
 {==============================================================================}
-procedure DrawACItem(Control: TControl; Rect: TRect; const Item: TMultiItem; Selected: Boolean);
+procedure DrawACItem(Control: TControl; Rect: TRect; const Item: TMultiItem;
+  Selected: Boolean; ShowHelpInfo: boolean);
 {==============================================================================}
 
   function FormatDate(Stamp: TDateTime): string;
@@ -548,25 +547,27 @@ begin
       begin
         Caption := FoodBase[Item.Index].Name;
         IconIndex := Byte(FoodBase[Item.Index].FromTable);
-        Help1 := '';
-        if Boolean(Value['CarbsInfo']) then
-          Help2 := Format('  %.1f', [FoodBase[Item.Index].RelCarbs])
-        else
+
+        if (ShowHelpInfo) then
+        begin
+          Help1 := '';
+          Help2 := Format('  %.1f', [FoodBase[Item.Index].RelCarbs]);
+        end else
+        begin
+          Help1 := '';
           Help2 := '';
+        end;
       end;
 
     itDish:
       begin
         Caption := DishBase[Item.Index].Name;
         IconIndex := 2;
-        if Boolean(Value['CarbsInfo']) then
+        
+        if (ShowHelpInfo) then
         begin
           Help1 := FormatDate(DishBase[Item.Index].ModifiedTime);
-
-          if Boolean(Value['CarbsInfo']) then
-            Help2 := Format('  %.1f', [DishBase[Item.Index].RelCarbs])
-          else
-            Help2 := '';
+          Help2 := Format('  %.1f', [DishBase[Item.Index].RelCarbs]);
         end else
         begin
           Help1 := '';

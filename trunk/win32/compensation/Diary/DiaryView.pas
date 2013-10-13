@@ -1609,7 +1609,7 @@ begin
   if (FCurrentPage <> Page) then
   begin
     FCurrentPage := Page;
-    Page.OnChange := HandlePageChanged;
+    Page.AddChangeListener(HandlePageChanged);
     RedrawIt;
   end else
   if ForceRepaint then

@@ -8,6 +8,7 @@ uses
   Windows, SysUtils, Classes,
   Graphics,
   Controls, Forms,
+  SettingsINI,
   Dialogs, StdCtrls, Buttons, ExtCtrls,
   Grids, ValEdit, ComCtrls, Menus,
   DiaryInterface, BusinessObjects, DiaryRoutines,
@@ -846,42 +847,14 @@ end;
 procedure TFormDish.ComboFoodDrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
 {==============================================================================}
-{var
-  bitmap: TBitMap;}
 begin
- (* with (Control as TListBox).Canvas do
-  begin
-    if odSelected in State then
-    begin
-      Brush.Color := clMenuHighlight;
-      Font.Color := clHighlightText;
-    end else
-    begin
-      Brush.Color := clWindow;
-      Font.Color := clWindowText;
-    end;
-    Windows.FillRect(Handle, Rect, Brush.Handle);
-    TextOut(17 + Rect.Left,Rect.Top, (Control as TListBox).Items[Index]);
-    bitmap := TBitMap.Create;
-
-    {case Multimap[ComboDiaryNewFood.ShowedIndex[Index]].ItemType of
-      itFood: DataInterface.Images_BaseContent.GetBitmap(0, bitmap);
-      itDish: DataInterface.Images_BaseContent.GetBitmap(2, bitmap);
-    end;   }
-
-    if ComboFood.Focused then
-      DataInterface.Images_BaseContent.GetBitmap(0, bitmap)
-    else
-      DataInterface.Images_BaseContent.GetBitmap(2, bitmap);
-
-    Draw(Rect.Left, Rect.Top, bitmap);
-    bitmap.Free;
-  end;   *)
   DrawACItem(
     Control,
     Rect,
     DishMultiMap[ComboFood.ShowedIndex[Index]],
-    odSelected in State);
+    odSelected in State,
+    Value['CarbsInfo']
+    );
 end;
 
 {==============================================================================}
