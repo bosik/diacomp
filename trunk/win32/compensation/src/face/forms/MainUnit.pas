@@ -3641,10 +3641,10 @@ const
   AVG_PERIOD  = 30;
   LOOK_PERIOD = 1370;
 var
-  i,j,k: integer;
-  Summ: real;
-  CurWeight: real;
-  SummWeight: real;
+  //i,j,k: integer;
+  //Summ: real;
+  //CurWeight: real;
+  //SummWeight: real;
 
   ToDate: TDate;
   Mean, StdDev, Targeted, Less, More: Extended;

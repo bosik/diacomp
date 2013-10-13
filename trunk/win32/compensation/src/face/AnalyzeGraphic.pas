@@ -188,43 +188,43 @@ var
 
   procedure GetPrevBlood(var Rec: TBloodRecord; var Delta: integer);
   begin
-    if PagePrev.Count > 0 then
+    if (PagePrev.Count > 0) then
     begin
-      TempBlood := PagePrev.LastBloodRec;
+      TempBlood := TBloodRecord(PagePrev.FindRecordFirst(TBloodRecord));
       if TempBlood = nil then
       begin
-        TempBlood := PageCur.FirstBloodRec;
+        TempBlood := TBloodRecord(PageCur.FindRecordFirst(TBloodRecord));
         Delta := 0;
       end else
         Delta := -MinPerday;
     end else
     begin
-      TempBlood := PageCur.FirstBloodRec;
+      TempBlood := TBloodRecord(PageCur.FindRecordFirst(TBloodRecord));
       Delta := 0;
     end;
   end;
 
   procedure GetNextBlood(var Rec: TBloodRecord; var Delta: integer);
   begin
-    if PageNext.Count > 0 then
+    if (PageNext.Count > 0) then
     begin
-      TempBlood := PageNext.FirstBloodRec;
-      if TempBlood = nil then
+      TempBlood := TBloodRecord(PageNext.FindRecordFirst(TBloodRecord));
+      if (TempBlood = nil) then
       begin
-        TempBlood := PageCur.LastBloodRec;
+        TempBlood := TBloodRecord(PageCur.FindRecordFirst(TBloodRecord));
         Delta := 0;
       end else
-        Delta := +MinPerday;
+        Delta := + MinPerDay;
     end else
     begin
-      TempBlood := PageCur.LastBloodRec;
+      TempBlood := TBloodRecord(PageCur.FindRecordFirst(TBloodRecord));
       Delta := 0;
     end;
   end;
 
 begin
   max := FindMax;
-  PrepareBS(Image,Max,Mini,kx,ky,Border);
+  PrepareBS(Image, Max, Mini, kx, ky, Border);
   Image.Picture.Bitmap.Width := Image.Width;
   Image.Picture.Bitmap.Height := Image.Height;
 
