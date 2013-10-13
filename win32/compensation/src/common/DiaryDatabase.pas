@@ -55,15 +55,9 @@ type
     {+}procedure Remove(Index: integer; AutoFree: boolean = True);
 
     // сахар
-    {+}function FirstRec(RecType: TClassCustomRecord): TCustomRecord;
-    {+}function LastRec(RecType: TClassCustomRecord): TCustomRecord;
+    {+}function FindRecordFirst(RecType: TClassCustomRecord): TCustomRecord;
+    {+}function FindRecordLast(RecType: TClassCustomRecord): TCustomRecord;
     {+}function FindRecord(Rec: TCustomRecord): integer; overload;
-    {+}function FirstBloodRec: TBloodRecord; deprecated;
-    {+}function FirstInsRec: TInsRecord; deprecated;
-    {+}function FirstMealRec: TMealRecord; deprecated;
-    {+}function LastBloodRec: TBloodRecord; deprecated;
-    {+}function LastInsRec: TInsRecord; deprecated;
-    {+}function LastMealRec: TMealRecord; deprecated;
 
     // I/O
 
@@ -297,7 +291,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryPage.FirstRec(RecType: TClassCustomRecord): TCustomRecord;
+function TDiaryPage.FindRecordFirst(RecType: TClassCustomRecord): TCustomRecord;
 {==============================================================================}
 var
   i: integer;
@@ -309,27 +303,6 @@ begin
     Result := FRecs[i];
     Exit;
   end;
-end;
-
-{==============================================================================}
-function TDiaryPage.FirstBloodRec: TBloodRecord;
-{==============================================================================}
-begin
-  Result := TBloodRecord(FirstRec(TBloodRecord));
-end;
-
-{==============================================================================}
-function TDiaryPage.FirstInsRec: TInsRecord;
-{==============================================================================}
-begin
-  Result := TInsRecord(FirstRec(TInsRecord));
-end;
-
-{==============================================================================}
-function TDiaryPage.FirstMealRec: TMealRecord;
-{==============================================================================}
-begin
-  Result := TMealRecord(FirstRec(TMealRecord));
 end;
 
 {==============================================================================}
@@ -369,7 +342,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryPage.LastRec(RecType: TClassCustomRecord): TCustomRecord;
+function TDiaryPage.FindRecordLast(RecType: TClassCustomRecord): TCustomRecord;
 {==============================================================================}
 var
   i: integer;
@@ -381,27 +354,6 @@ begin
     Result := FRecs[i];
     Exit;
   end;
-end;
-
-{==============================================================================}
-function TDiaryPage.LastBloodRec: TBloodRecord;
-{==============================================================================}
-begin
-  Result := TBloodRecord(LastRec(TBloodRecord));
-end;
-
-{==============================================================================}
-function TDiaryPage.LastInsRec: TInsRecord;
-{==============================================================================}
-begin
-  Result := TInsRecord(LastRec(TInsRecord));
-end;
-
-{==============================================================================}
-function TDiaryPage.LastMealRec: TMealRecord;
-{==============================================================================}
-begin
-  Result := TMealRecord(LastRec(TMealRecord));
 end;
 
 {==============================================================================}
