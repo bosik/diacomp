@@ -53,7 +53,7 @@ type
     function PostPages(const Pages: TPageList): boolean; virtual; abstract;
 
     { сахар } 
-    function GetPage(Date: TDate; Page: TPageData): boolean;
+    function GetPage(Date: TDate): TPageData;
     function PostPage(Page: TPageData): boolean;
   end;
 
@@ -106,7 +106,7 @@ var
     if (Trim(buf) <> '') then
     begin
       if (Length(Pages) = Count) then
-        SetLength(Pages, Length(Pages) * 2);
+        SetLength(Pages, Length(Pages) * 2 + 1);
 
       Pages[Count] := TPageData.Create;
       Pages[Count].Read(buf, WebFormat);
@@ -143,10 +143,13 @@ begin
   // поэтому сохраняем только страницы с записями - МОЛОДЕЦ! :-)
   // ---
   // No. С таким подходом я не смогу перезаписать страницу на пустую. Пустое содержание - тоже содержание
+  // ---
+  /// Yes. Проверять нужно номер версии, а не содержание.
 
   s.Clear;
   for i := 0 to High(Pages) do
   // (Trim(Pages[i].Page) <> '') then
+  if (Pages[i].Version > 0) then
       s.Add(Pages[i].Write(WebFormat));
 end;
 
@@ -241,7 +244,7 @@ end;
 { IDiarySource }
 
 {==============================================================================}
-function IDiarySource.GetPage(Date: TDate; Page: TPageData): boolean;
+function IDiarySource.GetPage(Date: TDate): TPageData;
 {==============================================================================}
 var
   DateList: TDateList;
@@ -249,9 +252,9 @@ var
 begin
   SetLength(DateList, 1);
   DateList[0] := Date;
-  Result := GetPages(DateList, PageList);
+  GetPages(DateList, PageList);
   if (Length(PageList) = 1) then
-    Page.CopyFrom(PageList[0])
+    Result := PageList[0]
   else
     raise Exception.Create('Неверная реализация IDiarySource: GetPages() вернул ' + IntToStr(Length(PageList)) + ' страниц вместо одной');
 end;

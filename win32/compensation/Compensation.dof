@@ -138,8 +138,5 @@ Comments=
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlOutputDirectorry]
-Count=4
+Count=1
 Item0=D:\Мои программы\Compensation\target
-Item1=D:\Мои программы\Compensation
-Item2=H:\Мои программы\Compensation
-Item3=D:\

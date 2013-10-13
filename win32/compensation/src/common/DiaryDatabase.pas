@@ -27,9 +27,7 @@ type
 
   TEventPageChanged = procedure(EventType: TPageEventType; Page: TDiaryPage; RecClass: TClassCustomRecord; RecInstance: TCustomRecord) of object;
 
-  TDiary = class;
-
-  TDiaryPage = class (TNotifiablePage)
+  TDiaryPage = class
   private
     FDate: TDate;
     {+}FRecs: TRecordsList;
@@ -37,15 +35,14 @@ type
     FTimeStamp: TDateTime;
     FVersion: integer;
 
-    FDiaryBase: TDiary;
-
     { события }
     FOnChange: TEventPageChanged;
 
     {+}procedure CheckIndex(Index: integer);
     {+}function GetRecord(Index: integer): TCustomRecord;
     {+}function GetStat(Index: integer): real;
-    {#}procedure Changed(EventType: TPageEventType; RecClass: TClassCustomRecord; RecInstance: TCustomRecord = nil); override;
+    {#}procedure ProcessRecordChanged(RecInstance: TCustomRecord); overload;
+    {#}procedure ProcessRecordChanged(EventType: TPageEventType; RecType: TClassCustomRecord; RecInstance: TCustomRecord = nil); overload;
     {+}function Trace(Index: integer): integer;
     {+}function TraceLast: integer;
   public
@@ -109,7 +106,7 @@ type
     function GetNextDayFreeTime(StdMealPeriod, ShortMealPeriod, InsPeriod: integer): integer;
     procedure UpdatePostprand(FreeTime, StdMealPeriod, ShortMealPeriod, InsPeriod: integer);
 
-    property CalculatedPostprand: boolean read FCalculatedPostprand; 
+    property CalculatedPostprand: boolean read FCalculatedPostprand;
   end;
 
   TDiary = class
@@ -124,8 +121,8 @@ type
     { события }
     FOnChange: TEventPageChanged;
 
-    { оповещатели }
-    procedure NotifyChanged(EventType: TPageEventType; Page: TDiaryPage; RecClass: TClassCustomRecord;
+    { обработчики событий }
+    procedure ProcessPageChanged(EventType: TPageEventType; Page: TDiaryPage; RecClass: TClassCustomRecord;
       RecInstance: TCustomRecord);
 
     function GetPage(Date: TDate): TDiaryPage;
@@ -252,17 +249,17 @@ begin
   Result := Length(FRecs);
   SetLength(FRecs, Result + 1);
   FRecs[Result] := Rec;
-  Rec.Page := Self;
+  Rec.OnChange := ProcessRecordChanged;
   Result := TraceLast;
 
   //{#}Changed({FRecs[Result]}Rec);
-  Changed(etAdd, TClassCustomRecord(Rec.ClassType), Rec);
+  ProcessRecordChanged(etAdd, Rec.RecType, Rec);
 end;
 
 // TODO: эта процедура должна вызываться только мелкими изменениями пользователя
 // избегать вызова её при загрузке данных
 {==============================================================================}
-procedure TDiaryPage.Changed(EventType: TPageEventType; RecClass: TClassCustomRecord;
+procedure TDiaryPage.ProcessRecordChanged(EventType: TPageEventType; RecType: TClassCustomRecord;
   RecInstance: TCustomRecord = nil);
 {==============================================================================}
 var
@@ -287,10 +284,14 @@ begin
 
   // пересылаем событие базе (ПОСЛЕ коррекций)
 
-  if Assigned(FOnChange) then FOnChange(EventType, Self, RecClass, RecInstance);
+  if Assigned(FOnChange) then FOnChange(EventType, Self, RecType, RecInstance);
+end;
 
-  if (FDiaryBase <> nil) then
-    FDiaryBase.NotifyChanged(EventType, Self, RecClass, RecInstance);
+{==============================================================================}
+procedure TDiaryPage.ProcessRecordChanged(RecInstance: TCustomRecord);
+{==============================================================================}
+begin
+  ProcessRecordChanged(etModify, RecInstance.RecType, RecInstance);
 end;
 
 {==============================================================================}
@@ -328,7 +329,7 @@ end;
 constructor TDiaryPage.Create(ADate: TDate; ATimeStamp: TDateTime; AVersion: integer);
 {==============================================================================}
 begin
-  FDiaryBase := nil;
+  FOnChange := nil;
 
   FDate := ADate;
   FTimeStamp := ATimeStamp;
@@ -341,7 +342,7 @@ end;
 constructor TDiaryPage.Create(PageData: TPageData);
 {==============================================================================}
 begin
-  FDiaryBase := nil;
+  FOnChange := nil;
 
   //FSilentChange := True;
   ReadFrom(PageData);
@@ -353,7 +354,7 @@ end;
 destructor TDiaryPage.Destroy;
 {==============================================================================}
 begin
-  FDiaryBase := nil;
+  FOnChange := nil;
   FSilentChange := True;
   Clear;
 end;
@@ -528,7 +529,7 @@ begin
     FRecs[i] := FRecs[i + 1];
   SetLength(FRecs, Length(FRecs) - 1);
 
-  {#}Changed(etRemove, T);
+  {#}ProcessRecordChanged(etRemove, T);
 end;
 
 {==============================================================================}
@@ -820,7 +821,9 @@ end;
 
 { TDiary }
 
+{==============================================================================}
 constructor TDiary.Create(Source: IDiarySource);
+{==============================================================================}
 begin
   if (Source = nil) then
     raise Exception.Create('Source can''t be nil')
@@ -828,16 +831,20 @@ begin
     FSource := Source;
 
   FModified := False;
-  FPostPrandStd := 210;
+  FPostPrandStd := 210;    // TODO: fix hardcode
   FPostPrandShort := 30;
 end;
 
+{==============================================================================}
 function TDiary.GetPage(Date: TDate): TDiaryPage;
+{==============================================================================}
 begin
   Result := FCache[GetPageIndex(Date, True)];
 end;
 
+{==============================================================================}
 function TDiary.GetPageIndex(Date: TDate; CalculatePostprand: boolean): integer;
+{==============================================================================}
 
   function FindInCache(Date: TDate): integer;
   var
@@ -859,13 +866,12 @@ function TDiary.GetPageIndex(Date: TDate; CalculatePostprand: boolean): integer;
   var
     PageData: TPageData;
   begin
-    PageData := TPageData.Create;
-    FSource.GetPage(Date, PageData);
+    PageData := FSource.GetPage(Date);
 
     Result := Length(FCache);
     SetLength(FCache, Result + 1);
     FCache[Result] := TPageCache.Create(PageData);
-    FCache[Result].FDiaryBase := Self;
+    FCache[Result].OnChange := ProcessPageChanged;
     Result := TraceLastPage();
 
     PageData.Free;
@@ -895,7 +901,9 @@ begin
   end;
 end;
 
+{==============================================================================}
 destructor TDiary.Destroy;
+{==============================================================================}
 begin
   ResetCache;
 end;
@@ -1420,8 +1428,10 @@ begin
   end;
 end; *)
 
-procedure TDiary.NotifyChanged(EventType: TPageEventType; Page: TDiaryPage;
+procedure TDiary.ProcessPageChanged(EventType: TPageEventType; Page: TDiaryPage;
   RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
+var
+  PageData: TPageData;
 begin
   //Log('TDiary.Changed()');
 
@@ -1432,6 +1442,16 @@ begin
   if Page <> nil then
     UpdateCached_Postprand; // TODO: optimize
     //UpdatePostprand(Page.Date - 1, Trunc(Now) + 1);
+
+
+
+  PageData := TPageData.Create;
+  Page.WriteTo(PageData);
+
+  FSource.PostPage(PageData);
+
+
+
 
   if Assigned(FOnChange) then FOnChange(EventType, Page, RecClass, RecInstance);
 end;
@@ -1651,16 +1671,14 @@ var
   i: integer;
   PageData: TPageData;
 begin
-  PageData := TPageData.Create;
-
   for i := 0 to High(FCache) do
   begin
-    FSource.GetPage(FCache[i].Date, PageData);
+    PageData := FSource.GetPage(FCache[i].Date);
     FCache[i].ReadFrom(PageData);
+    PageData.Free;
+
     //FCache[i].FCalculatedPostprand := False; - нужно сохранить состояния для UpdateCached_Postprand
   end;
-
-  PageData.Free;
 
   UpdateCached_Postprand;
 end;

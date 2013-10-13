@@ -506,6 +506,18 @@ end;     }
 procedure DrawACItem(Control: TControl; Rect: TRect; const Item: TMultiItem; Selected: Boolean);
 {==============================================================================}
 
+  function FormatDate(Stamp: TDateTime): string;
+  var
+    Today, S: TDate;
+  begin
+    S := Trunc(Stamp);
+    Today := Trunc(now);
+
+    if (s = Today) then Result := 'сегодня' else
+    if (s = Today - 1) then Result := 'вчера' else
+    Result := DateToStr(Stamp);
+  end;
+
   procedure GetColors(Tag: Real; Selected: Boolean; out FontColor, BrushColor: TColor);
   var
     FC: integer;
@@ -533,29 +545,34 @@ begin
 
   case Item.ItemType of
     itFood:
-    begin
-      Caption := FoodBase[Item.Index].Name;
-      IconIndex := Byte(FoodBase[Item.Index].FromTable);
-      Help1 := '';
-      if Boolean(Value['CarbsInfo']) then
-        Help2 := Format('  %.1f', [FoodBase[Item.Index].RelCarbs])
-      else
-        Help2 := '';
-    end;
-    itDish:
-    begin
-      Caption := DishBase[Item.Index].Name;
-      IconIndex := 2;
-      if Boolean(Value['CarbsInfo']) then
       begin
-        Help1 := DateToStr(DishBase[Item.Index].ModifiedTime);
-        Help2 := Format('  %.1f', [DishBase[Item.Index].RelCarbs]);
-      end else
-      begin
+        Caption := FoodBase[Item.Index].Name;
+        IconIndex := Byte(FoodBase[Item.Index].FromTable);
         Help1 := '';
-        Help2 := '';
+        if Boolean(Value['CarbsInfo']) then
+          Help2 := Format('  %.1f', [FoodBase[Item.Index].RelCarbs])
+        else
+          Help2 := '';
       end;
-    end;
+
+    itDish:
+      begin
+        Caption := DishBase[Item.Index].Name;
+        IconIndex := 2;
+        if Boolean(Value['CarbsInfo']) then
+        begin
+          Help1 := FormatDate(DishBase[Item.Index].ModifiedTime);
+
+          if Boolean(Value['CarbsInfo']) then
+            Help2 := Format('  %.1f', [DishBase[Item.Index].RelCarbs])
+          else
+            Help2 := '';
+        end else
+        begin
+          Help1 := '';
+          Help2 := '';
+        end;
+      end;
   end;
 
   with TListBox(Control).Canvas do
@@ -565,8 +582,8 @@ begin
     Font.Charset := BEST_CHARSET;
     Windows.FillRect(Handle, Rect, Brush.Handle);
     TextOut(17 + Rect.Left, Rect.Top, Caption);
-    TextOut(Control.ClientWidth - TextWidth(Help2) - 5, Rect.Top, Help2);
-    TextOut(Control.ClientWidth - 2*TextWidth(Help1) - 5, Rect.Top, Help1);
+    TextOut(Control.ClientWidth - TextWidth(Help2) - 5,   Rect.Top, Help2);
+    TextOut(Control.ClientWidth - 160, Rect.Top, Help1);
     DataInterface.Images_BaseContent.Draw(TListBox(Control).Canvas, Rect.Left, Rect.Top, IconIndex);
   end;
 end;
