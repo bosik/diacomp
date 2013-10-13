@@ -488,6 +488,8 @@ begin
     SetLength(List, Length(List) + 1);
     List[High(List)] := TBloodRecord(Base[Date][i]).Value;
 
+    // TODO: брать данные из настроек и передавать как параметры
+    // TODO: учитывать постпрандиальные замеры - для них тоже есть ТЦП
     if (List[High(List)] < 3.8) then
       Less := Less + 1 else
     if (List[High(List)] <= 6.2) then

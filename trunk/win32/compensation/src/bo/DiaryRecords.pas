@@ -8,21 +8,26 @@ uses
   SysUtils;
 
 type
-  TNotifiablePage = class;
+ // TNotifiablePage = class;
 
   TCustomRecord = class;
+
   TClassCustomRecord = class of TCustomRecord;
+
+  TEventRecordChanged = procedure(Sender: TCustomRecord) of object;
 
   // #entity
   TCustomRecord = class
   private
     FTime: integer; // в мин
 
-    FPage: TNotifiablePage;     // transient
-    FSilentMode: boolean;       // transient
-    FSilentlyModified: boolean; // transient
-    procedure NotifyPage;
+    //FPage: TNotifiablePage;       // transient
+    FSilentMode: boolean;           // transient
+    FSilentlyModified: boolean;     // transient
 
+    FOnChange: TEventRecordChanged; // transient
+
+    procedure NotifyPage;
     procedure SetTime(Value: integer);
     class function CheckTime(TestTime: integer): boolean;
   public
@@ -32,15 +37,17 @@ type
     function RecType: TClassCustomRecord;
 
     // через Page страница привязывает запись к себе при добавлении
-    property Page: TNotifiablePage read FPage write FPage;
+    //property Page: TNotifiablePage read FPage write FPage;
     property Time: integer read FTime write SetTime;
+
+    property OnChange: TEventRecordChanged read FOnChange write FOnChange;
   end;
 
   TPageEventType = (etAdd, etModify, etRemove);
 
-  TNotifiablePage = class
+ { TNotifiablePage = class
     procedure Changed(EventType: TPageEventType; RecClass: TClassCustomRecord; RecInstance: TCustomRecord = nil); virtual; abstract; 
-  end;
+  end;   }
 
   // #entity
   TBloodRecord = class(TCustomRecord)
@@ -134,7 +141,7 @@ end;
 constructor TCustomRecord.Create;
 {==============================================================================}
 begin
-  FPage := nil;
+  FOnChange := nil;
   FSilentMode := False;
   FSilentlyModified := False;
 end;
@@ -155,13 +162,13 @@ end;
 procedure TCustomRecord.NotifyPage;
 {==============================================================================}
 begin
-  if (FPage <> nil) then
   begin
     if (FSilentMode) then
       FSilentlyModified := True
     else
+    if (Assigned(FOnChange)) then
     begin
-      FPage.Changed(etModify, TClassCustomRecord(Self.ClassType), Self);
+      FOnChange(Self);
       FSilentlyModified := False;
     end;
   end;
@@ -318,7 +325,7 @@ end;
 destructor TMealRecord.Destroy;
 {==============================================================================}
 begin
-  FPage := nil; { чтобы при очистке родительская страница ничего не увидела }
+  FOnChange := nil; { чтобы при очистке родительская страница ничего не увидела }
   Clear;
 end;
 

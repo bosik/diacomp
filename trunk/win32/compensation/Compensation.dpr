@@ -125,7 +125,7 @@ begin
   tick := GetTickCount;
 
   { опнбепйю мюкхвхъ сфе гюосыеммнцн щйгелокъпю }
-  if CheckRunningInstance() then Exit;
+  //if CheckRunningInstance() then Exit;
 
   {#}Log('Application started');
   {#}Log('No other instances founded');

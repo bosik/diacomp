@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 601
-  Top = 204
+  Left = 389
+  Top = 0
   Width = 1249
   Height = 959
   Caption = #1053#1072#1079#1074#1072#1085#1080#1077
@@ -87,7 +87,7 @@ object Form1: TForm1
       Top = 0
       Width = 1241
       Height = 871
-      ActivePage = TabStat
+      ActivePage = TabDiary
       Align = alClient
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -108,7 +108,7 @@ object Form1: TForm1
         ParentShowHint = False
         ShowHint = False
         object Splitter4: TSplitter
-          Left = 982
+          Left = 965
           Top = 0
           Height = 837
           Align = alRight
@@ -119,7 +119,7 @@ object Form1: TForm1
         object PanelDiaryTop: TPanel
           Left = 222
           Top = 0
-          Width = 760
+          Width = 743
           Height = 837
           Align = alClient
           BevelOuter = bvNone
@@ -128,7 +128,7 @@ object Form1: TForm1
           object ScrollBoxDiary: TScrollBox
             Left = 0
             Top = 0
-            Width = 760
+            Width = 743
             Height = 756
             VertScrollBar.Increment = 40
             VertScrollBar.Tracking = True
@@ -149,7 +149,7 @@ object Form1: TForm1
             object DiaryView: TDiaryView
               Left = 0
               Top = 0
-              Width = 756
+              Width = 739
               Height = 117
               Align = alTop
               Font.Charset = DEFAULT_CHARSET
@@ -175,7 +175,7 @@ object Form1: TForm1
           object PanelDiaryBottom: TPanel
             Left = 0
             Top = 756
-            Width = 760
+            Width = 743
             Height = 81
             Align = alBottom
             BevelOuter = bvNone
@@ -234,7 +234,7 @@ object Form1: TForm1
             object GroupBoxAdd: TGroupBox
               Left = 291
               Top = 0
-              Width = 469
+              Width = 452
               Height = 81
               Align = alClient
               Caption = #1055#1088#1086#1076#1091#1082#1090#1099' '#1080' '#1073#1083#1102#1076#1072
@@ -249,10 +249,10 @@ object Form1: TForm1
               ParentFont = False
               TabOrder = 1
               DesignSize = (
-                469
+                452
                 81)
               object ButtonDiaryNewAddFood: TSpeedButton
-                Left = 405
+                Left = 388
                 Top = 25
                 Width = 25
                 Height = 25
@@ -267,7 +267,7 @@ object Form1: TForm1
                 Tag = 1
                 Left = 56
                 Top = 24
-                Width = 268
+                Width = 251
                 Height = 24
                 UserHint = #1053#1072#1095#1085#1080#1090#1077' '#1074#1074#1086#1076#1080#1090#1100' '#1085#1072#1079#1074#1072#1085#1080#1077
                 ShowUserHint = True
@@ -290,7 +290,7 @@ object Form1: TForm1
               end
               object EditDiaryNewMass: TEditNumb
                 Tag = 1
-                Left = 344
+                Left = 327
                 Top = 25
                 Width = 56
                 Height = 25
@@ -616,7 +616,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.889990671300000000
+            Date = 40251.132227557870000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -763,9 +763,9 @@ object Form1: TForm1
           end
         end
         object PanelDiaryDish: TPanel
-          Left = 985
+          Left = 968
           Top = 0
-          Width = 248
+          Width = 265
           Height = 837
           Align = alRight
           BevelOuter = bvLowered
@@ -776,7 +776,7 @@ object Form1: TForm1
           object ShapeRight3: TShape
             Left = 11
             Top = 233
-            Width = 226
+            Width = 243
             Height = 10
             Align = alTop
             Brush.Style = bsClear
@@ -785,7 +785,7 @@ object Form1: TForm1
           object ShapeRight2: TShape
             Left = 11
             Top = 140
-            Width = 226
+            Width = 243
             Height = 10
             Align = alTop
             Brush.Style = bsClear
@@ -794,7 +794,7 @@ object Form1: TForm1
           object GroupBoxMeal: TGroupBox
             Left = 11
             Top = 11
-            Width = 226
+            Width = 243
             Height = 129
             Align = alTop
             Caption = #1055#1088#1080#1105#1084' '#1087#1080#1097#1080
@@ -876,7 +876,7 @@ object Form1: TForm1
           object CorrectCarbs: TGroupBox
             Left = 11
             Top = 243
-            Width = 226
+            Width = 243
             Height = 583
             Align = alClient
             Caption = #1055#1086#1076#1073#1086#1088' '#1091#1075#1083#1077#1074#1086#1076#1086#1074
@@ -892,7 +892,7 @@ object Form1: TForm1
             object PanelCorrect: TPanel
               Left = 2
               Top = 18
-              Width = 222
+              Width = 239
               Height = 563
               Align = alClient
               BevelOuter = bvNone
@@ -902,7 +902,7 @@ object Form1: TForm1
               object LabelCorrectionEmpty: TLabel
                 Left = 8
                 Top = 8
-                Width = 206
+                Width = 223
                 Height = 16
                 Align = alTop
                 Caption = 'LabelCorrectionEmpty'
@@ -916,7 +916,7 @@ object Form1: TForm1
               object ListCorrectCarbs: TListView
                 Left = 8
                 Top = 24
-                Width = 206
+                Width = 223
                 Height = 531
                 Align = alClient
                 BorderStyle = bsNone
@@ -954,7 +954,7 @@ object Form1: TForm1
           object GroupBoxDose: TGroupBox
             Left = 11
             Top = 150
-            Width = 226
+            Width = 243
             Height = 83
             Align = alTop
             Caption = #1048#1085#1089#1091#1083#1080#1085

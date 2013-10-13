@@ -25,7 +25,7 @@ type
     function TraceLastPage: integer;
 
     procedure LoadFromFile(const FileName: string);
-    procedure Flush();
+    procedure SaveToFile(const FileName: string);
   public
     constructor Create(const FileName: string);
     destructor Destroy; override;
@@ -166,7 +166,7 @@ begin
   Count := 0;
   SetLength(ModList, 1);
   for i := 0 to High(FPages) do
-  if (FPages[i].TimeStamp > Time) then
+  if (FPages[i].TimeStamp > Time) {and (FPages[i].Version > 0)} then
   begin
     if (Count = Length(ModList)) then
       SetLength(ModList, Length(ModList) * 2);
@@ -199,13 +199,15 @@ end;
 {==============================================================================}
 function TDiaryLocalSource.GetPages(const Dates: TDateList; out Pages: TPageList): boolean;
 {==============================================================================}
+const
+  INITIAL_PAGE_VERSION = 0;
 var
   i, Index: integer;
 begin
   SetLength(Pages, Length(Dates));
   for i := 0 to High(Dates) do
   begin
-    Index := CreatePage(Dates[i], Now, 1);
+    Index := CreatePage(Dates[i], Now, INITIAL_PAGE_VERSION);
     Pages[i] := TPageData.Create(FPages[Index]);
   end;
   Result := True;
@@ -334,13 +336,13 @@ begin
   if (Length(Pages) > 0) then
     FModified := True;
 
-  Flush();
+  SaveToFile(FFileName);
 
   Result := True;
 end;
 
 {==============================================================================}
-procedure TDiaryLocalSource.Flush();
+procedure TDiaryLocalSource.SaveToFile(const FileName: string);
 {==============================================================================}
 var
   s: TStringList;
@@ -348,7 +350,7 @@ begin
   s := TStringList.Create;
   try
     TPageData.MultiWrite(S, False, FPages);
-    s.SaveToFile(FFileName);
+    s.SaveToFile(FileName);
   finally
     s.Free;
   end;
