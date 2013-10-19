@@ -184,6 +184,7 @@ begin
     on ESE: Exception do
     begin
       Log(
+        ERROR, 
         'TPageData.ReadHeader(): EXCEPTION! ' +  ESE.Message + #13 +
         'TPageData.ReadHeader(): S = "' + S + '"' + #13 +
         'TPageData.ReadHeader(): Copy(S, 5, 10) = "' + Copy(S, 5, 10) + '"' + #13 +

@@ -127,9 +127,9 @@ begin
   { ПРОВЕРКА НАЛИЧИЯ УЖЕ ЗАПУЩЕННОГО ЭКЗЕМПЛЯРА }
   //if CheckRunningInstance() then Exit;
 
-  {#}Log('Application started');
-  {#}Log('No other instances founded');
-  {#}Log(Format('OS Version: %d.%d, %s', [Win32MajorVersion, Win32MinorVersion, BIT64VER[IsWin64()]]));
+  {#}Log(INFO, 'Application started');
+  {#}Log(INFO, 'No other instances founded');
+  {#}Log(INFO, Format('OS Version: %d.%d, %s', [Win32MajorVersion, Win32MinorVersion, BIT64VER[IsWin64()]]));
 
   { TODO: ПРОВЕРКА НАЛИЧИЯ ВСЕХ НЕОБХОДИМЫХ ФАЙЛОВ }
 
@@ -182,7 +182,7 @@ begin
   {#}Application.CreateForm(TFormResources, FormResources);
   Application.CreateForm(TDataInterface, DataInterface);
 
-  Log('Время инициализации: ' + IntToStr(GetTickCount - tick));
+  Log(INFO, 'Время инициализации: ' + IntToStr(GetTickCount - tick));
 
   if (Value['FirstStart'] = True) then
   begin
