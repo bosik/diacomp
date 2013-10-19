@@ -4,7 +4,7 @@ interface
 
 uses
   BusinessObjects, DiaryRoutines, SysUtils, Classes, XMLDoc,
-  XMLIntf, Autolog, Variants;
+  XMLIntf, Autolog, Variants, ActiveX;
 
 type
   // TODO 1: сделать оповещение базы (Changed()) при изменении любого поля
@@ -990,4 +990,8 @@ begin
   end;
 end;
 
+initialization
+  ActiveX.CoInitialize(nil)
+finalization
+  ActiveX.CoUninitialize;
 end.

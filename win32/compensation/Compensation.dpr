@@ -116,6 +116,11 @@ uses
       Result := False;
   end;
 
+  procedure SetApplicationTitle(App: TApplication);
+  begin
+    App.Title := PROGRAM_TITLE;
+  end;
+
 const
   BIT64VER: array[Boolean] of String = ('32 bit', '64 bit');
 var
@@ -170,6 +175,7 @@ begin
   Application.HintHidePause := 20000;
 
   { основное исполнение }
+  SetApplicationTitle(Application);
   Application.CreateForm(TForm1, Form1);
   Application.CreateForm(TFormShadow, FormShadow);
   Application.CreateForm(TFormProcess, FormProcess);

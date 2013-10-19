@@ -1022,7 +1022,6 @@ begin
 
     Caption := PROGRAM_TITLE + ' ' + PROGRAM_VERSION;
 
-    Application.Title := PROGRAM_TITLE;
     TabStat.TabVisible := ADVANCED_MODE;
     TabDebug.TabVisible := ADVANCED_MODE;
     MemoLog.Visible := ADVANCED_MODE;
@@ -2078,7 +2077,7 @@ var
 begin
   Log(DEBUG, 'TForm1.ButtonDiaryNewAddClick()');
 
-  if (DiaryView.IsMealSelected) then
+  if (DiaryView.SelectedRecord is TMealRecord) then
   begin
     Meal := TMealRecord(DiaryView.SelectedRecord);
 
@@ -2124,8 +2123,8 @@ begin
         ComboDiaryNew.SetFocus;
 
         // промотка
-        n := DiaryView.SelectedPanel;
-        if (n > -1) and (not DiaryView.CurrentIsNull)and
+        n := DiaryView.SelectedRecordIndex;
+        if (n > -1) and (DiaryView.CurrentPage <> nil)and
            (DiaryView.CurrentPage.Count>0) then
           ScrollBoxDiary.VertScrollBar.Position :=
             Round(n / DiaryView.CurrentPage.Count * ScrollBoxDiary.VertScrollBar.Range);
@@ -2335,7 +2334,7 @@ procedure TForm1.UpdateDayInfo;
     summ: real;
     proc1,proc2,proc3: integer;
   begin
-    if (DiaryView.CurrentIsNull) or
+    if (DiaryView.CurrentPage = nil) or
        (DiaryView.CurrentPage.Count = 0) then
     begin
       LabelDayProts_.Font.Color := clNoData;
@@ -2470,7 +2469,7 @@ var
 begin
   StartProc('TForm1.UpdateMealStatistic()');
 
-  if DiaryView.IsMealSelected then
+  if (DiaryView.SelectedRecord is TMealRecord) then
   begin
     SelMeal := TMealRecord(DiaryView.SelectedRecord);
 
@@ -2536,7 +2535,7 @@ begin
   StartProc('TForm1.UpdateMealDose()');
 
   // блюдо не выбрано, очищаем
-  if not DiaryView.IsMealSelected then
+  if not (DiaryView.SelectedRecord is TMealRecord) then
   begin
     LabelDiaryMealDose.Font.Color := clNoData;
     LabelDiaryMealDose.Font.Style := [];
@@ -2909,7 +2908,7 @@ begin
 
       EndUpdate;
     end;
-    Result := DiaryView.SelectedPanel;
+    Result := DiaryView.SelectedRecordIndex;
   end;
 end;
 
@@ -2945,7 +2944,7 @@ begin
       Value := AValue;
       EndUpdate;
     end;
-    Result := DiaryView.SelectedPanel;
+    Result := DiaryView.SelectedRecordIndex;
   end;
 end;
 
@@ -2979,7 +2978,7 @@ begin
       UpdateTimeLeft;
       ComboDiaryNew.SetFocus;
     end;
-    Result := DiaryView.SelectedPanel;
+    Result := DiaryView.SelectedRecordIndex;
   end;
 end;
 
@@ -2987,6 +2986,7 @@ end;
 function TForm1.ClickNote(New: boolean; Focus: TFocusMode): integer;
 {==============================================================================}
 var
+  Note: TNoteRecord;
   ATime: integer;
   AValue: string;
 begin
@@ -3001,17 +3001,22 @@ begin
       Result := -1;
   end else
   begin
-    ATime := DiaryView.SelectedNote.Time;
-    AValue := DiaryView.SelectedNote.Text;
+    // TODO: use TRec instead of scope of field-variables
+    Note := TNoteRecord(DiaryView.SelectedRecord);
+
+    ATime := Note.Time;
+    AValue := Note.Text;
     if ShowNoteEditor(ATime, AValue, New, Focus) then
-    with DiaryView.SelectedNote do
     begin
-      BeginUpdate;
-      Time := ATime;
-      Text := AValue;
-      EndUpdate;
+      with Note do
+      begin
+        BeginUpdate;
+        Time := ATime;
+        Text := AValue;
+        EndUpdate;
+      end;
     end;
-    Result := DiaryView.SelectedPanel;
+    Result := DiaryView.SelectedRecordIndex;
   end;
 end;
 
@@ -3129,7 +3134,7 @@ begin
   if ComboKoof.ItemIndex <> -1 then
     ComboKoofChange(nil);
 
-  if DiaryView.IsMealSelected then
+  if (DiaryView.SelectedRecord is TMealRecord) then
     UpdateMealDose;
 
   TimerTimeLeft.Enabled := True;
@@ -3147,7 +3152,7 @@ var
 begin
   Log(DEBUG, 'TForm1.GetCompensationMass()');
 
-  if DiaryView.IsMealSelected then
+  if (DiaryView.SelectedRecord is TMealRecord) then
   begin
     Kf := GetKoof(TMealRecord(DiaryView.SelectedRecord).Time);
     RelBS := (RelCarbs*Kf.k + RelProts*Kf.p)/100;
@@ -3167,7 +3172,7 @@ var
   Kf: TKoof;
   RelBS: real;
 begin
-  if DiaryView.IsMealSelected then
+  if (DiaryView.SelectedRecord is TMealRecord) then
   begin
     Kf := GetKoof(TMealRecord(DiaryView.SelectedRecord).Time);
     RelBS := (RelCarbs*Kf.k + RelProts*Kf.p)/100;
@@ -3335,9 +3340,9 @@ procedure TForm1.ScrollToSelected;
 var
   n: integer;
 begin
-  if not DiaryView.CurrentIsNull then
+  if (DiaryView.CurrentPage <> nil) then
   begin
-    n := DiaryView.SelectedPanel;
+    n := DiaryView.SelectedRecordIndex;
     { вторая проверка, наверно, излишняя }
     if (n > -1)and(DiaryView.CurrentPage.Count > 0) then
     ScrollBoxDiary.VertScrollBar.Position := Round(
@@ -3495,7 +3500,7 @@ begin
   case PageControl1.ActivePageIndex of
     0: { дневник }
     begin
-      ProcessMealSelected(DiaryView.IsMealSelected);
+      ProcessMealSelected(DiaryView.SelectedRecord is TMealRecord);
       Form1.StatusBar.Panels[2].Text := STATUS_ONLINE_STATE[WebSource.Online];
     end;
 
@@ -3918,7 +3923,7 @@ begin
       MsgType := mtConfirmation;
 
     if (MessageDlg(MESSAGE_CONF_REMOVE_RECORD[RecType], MsgType, [mbYes, mbNo], 0) = mrYes) then
-      DiaryView.CurrentPage.Remove(DiaryView.SelectedPanel);
+      DiaryView.CurrentPage.Remove(DiaryView.SelectedRecordIndex);
   end;
 end;
 
@@ -3930,7 +3935,7 @@ procedure TForm1.ActionBalanceMealExecute(Sender: TObject);
   SCarbs: string;
   FullCarbs,TCarbs,TProts,TFats: extended;   }
 begin
-  if DiaryView.IsMealSelected then
+  if (DiaryView.SelectedRecord is TMealRecord) then
   begin
     //SCarbs := InputBox(
     //  'Подбор',
@@ -4332,7 +4337,7 @@ begin
   //{ все проверки - внутри }
   //DiaryView.SetShortMeal(ActionShortMeal.Checked);
 
-  if DiaryView.IsMealSelected then
+  if (DiaryView.SelectedRecord is TMealRecord) then
     TMealRecord(DiaryView.SelectedRecord).ShortMeal := ActionShortMeal.Checked;
 end;
 
@@ -4398,20 +4403,20 @@ var
   Meal: TMealRecord;
 begin
   {!!!}
-  if not DiaryView.IsMealSelected then Exit;
+  if not (DiaryView.SelectedRecord is TMealRecord) then Exit;
 
   CurDate := DiaryView.CurrentDate;
   OldPage := DiaryView.CurrentPage;
   NewPage := Diary[CurDate + Delta];
 
-  n := DiaryView.SelectedPanel;
+  n := DiaryView.SelectedRecordIndex;
   Meal := TMealRecord(DiaryView.SelectedRecord);
   OldPage.Remove(n, False);
   n := NewPage.Add(Meal);
 
   DiaryView.OpenPage(Diary[Trunc(CurDate + Delta)], True);
   CalendarDiary.Date := CurDate + Delta;
-  DiaryView.SelectedPanel := n;
+  DiaryView.SelectedRecordIndex := n;
 
   {DiaryView.OpenPage(CurDate+Delta, True);
   //n2 := DiaryView.AddMealBlank(Rec.Time, Rec.ShortMeal);

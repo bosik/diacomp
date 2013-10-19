@@ -5,13 +5,12 @@ unit DiaryDatabase;
 interface
 
 uses
-  SysUtils,
-  Classes,
-  Math,
-  DiaryRoutines,
+  SysUtils, // Exception
+  Classes, // TStrings
+  Math, // Max
+  DiaryRoutines, // TDate
   DiarySources,
   DiaryRecords,
-  AutoLog, // debug only
   ActiveX,
   XMLDoc,
   XMLIntf,
@@ -61,8 +60,8 @@ type
 
     // I/O
 
-    procedure ReadFrom(S: TStringList); overload;
-    procedure WriteTo(S: TStringList); overload;
+    procedure ReadFrom(S: TStrings); overload;
+    procedure WriteTo(S: TStrings); overload;
 
     procedure ReadFrom(const S: string); overload;
     procedure WriteTo(out S: string); overload;
@@ -442,7 +441,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TDiaryPage.ReadFrom(S: TStringList);
+procedure TDiaryPage.ReadFrom(S: TStrings);
 {==============================================================================}
 var
   i,k: integer;
@@ -586,7 +585,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TDiaryPage.WriteTo(S: TStringList);
+procedure TDiaryPage.WriteTo(S: TStrings);
 {==============================================================================}
 var
   j, n: integer;

@@ -7,7 +7,7 @@ interface
 
 const
   { Заголовки окон }
-  PROGRAM_TITLE             = 'Компенсация';
+  PROGRAM_TITLE                     = 'Компенсация';
 
   { Сообщения \ Ошибки }
   MESSAGE_ERROR_NO_INTERNET         = 'Нет подключения к сети Интернет.';
@@ -57,7 +57,6 @@ const
   STATUS_ACTION_LOADING_GRAPHICS     = 'Загрузка графики';
   STATUS_ACTION_WEB_SETUP            = 'Настройка веб-клиента';
   STATUS_ACTION_APPLYING_SETTINGS    = 'Применение пользовательских настроек';
-  //STATUS_ACTION_PREPARING_INTERFACE  = 'Косметика';
   STATUS_ACTION_PREPARING_INFOPANELS = 'Настройка информационных панелей';
   STATUS_ACTION_DOWNLOADING_FOODBASE = 'Получение базы продуктов';
   STATUS_ACTION_DOWNLOADING_DISHBASE = 'Получение базы блюд';

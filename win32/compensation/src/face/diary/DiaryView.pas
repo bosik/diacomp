@@ -175,34 +175,22 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
-    //procedure OpenPage(Date: TDate; ForceRepaint: boolean = False);
     procedure OpenPage(Page: TDiaryPage; ForceRepaint: boolean = False);
-
     procedure Paint; override;
-
     procedure DrawCurrentPage;
     procedure DeselectAll;
 
     { текущая страница }
-    function CurrentIsNull: boolean;
+
     function GetCurrentDate: TDate;
 
-    function IsRecordSelected: boolean; deprecated;
-
-    function IsMealSelected: boolean; deprecated;
     function IsFoodSelected: boolean;
-    function _IsNoteSelected: boolean; deprecated;
 
     function SelectedRecord: TCustomRecord;
-    function _SelectedMeal: TMealRecord; deprecated;
     function SelectedFood: TFoodMassed;
-    function SelectedNote: TNoteRecord; deprecated;
 
-    property SelectedPanel: integer read FSelPanel write FSelPanel;
+    property SelectedRecordIndex: integer read FSelPanel write FSelPanel;
     property SelectedLine: integer read FSelLine;
-
-    //{###}property Base: TDiary read FBase write SetBase;
     property CurrentPage: TDiaryPage read FCurrentPage;
     property CurrentDate: TDate read GetCurrentDate; // TODO: дописать write, использующий OpenPage?
   published
@@ -788,7 +776,8 @@ var
 begin
   with FBitMap.Canvas do
   begin
-    if (CurrentIsNull) or (CurrentPage.Count = 0) then
+    if (CurrentPage = nil) or
+       (CurrentPage.Count = 0) then
     begin
       SavedFontSize := Font.Size;
       Font.Style := [];
@@ -849,13 +838,6 @@ begin
     FOnClickNote(Self,Index,Place) else
   if (IsDouble) and Assigned(FOnDoubleClickNote) then
     FOnDoubleClickNote(Self,Index,Place);
-end;
-
-{==============================================================================}
-function TDiaryView.CurrentIsNull: boolean;
-{==============================================================================}
-begin
-  Result := (CurrentPage = nil);
 end;
 
 {==============================================================================}
@@ -939,7 +921,7 @@ begin
   { определение необходимого места }
   if  (((not (akTop in Anchors))or
       (not (akBottom in Anchors))))and
-      (not CurrentIsNull)
+      (CurrentPage <> nil)
   then
   begin
     NewHeight := CalcHeight;
@@ -1116,7 +1098,7 @@ const
 var
   Msg: string;
 begin
-  if (CurrentIsNull) or (CurrentPage.Count = 0) then
+  if (CurrentPage = nil) or (CurrentPage.Count = 0) then
   with FBitMap.Canvas do
   begin
     {if (csDesigning in ComponentState) then
@@ -1436,30 +1418,9 @@ function TDiaryView.IsFoodSelected: boolean;
 {==============================================================================}
 begin
   Result :=
-    (IsMealSelected)and
-    (FSelLine>=0)and
-    (FSelLine<TMealRecord(CurrentPage.Recs[FSelPanel]).Count);
-end;
-
-{==============================================================================}
-function TDiaryView.IsMealSelected: boolean;
-{==============================================================================}
-begin
-  Result := (SelectedRecord is TMealRecord);
-end;
-
-{==============================================================================}
-function TDiaryView._IsNoteSelected: boolean;
-{==============================================================================}
-begin
-  Result := (SelectedRecord is TNoteRecord);
-end;
-
-{==============================================================================}
-function TDiaryView.IsRecordSelected: boolean;
-{==============================================================================}
-begin
-  Result := (SelectedRecord <> nil);
+    (SelectedRecord is TMealRecord)and
+    (FSelLine >= 0)and
+    (FSelLine < TMealRecord(CurrentPage.Recs[FSelPanel]).Count);
 end;
 
 {==============================================================================}
@@ -1482,7 +1443,7 @@ begin
 
   if (FMouseDowned)and
      (FSelLine > -1)and
-     (IsRecordSelected) and
+     (SelectedRecord <> nil) and
      (SelectedRecord is TMealRecord) then
   begin
     GetMousePlace(90, y, ClickInfo);
@@ -1881,32 +1842,6 @@ begin
   else
     //Result := nil;
     raise Exception.Create('SelectedFood: not such record selected');
-end;
-
-{==============================================================================}
-function TDiaryView._SelectedMeal: TMealRecord;
-{==============================================================================}
-begin
-  //Log('SelectedMeal()');
-
-  if IsMealSelected then
-    Result := TMealRecord(CurrentPage.Recs[FSelPanel])
-  else
-    //Result := nil;
-    raise Exception.Create('SelectedMeal: no such record selected');
-end;
-
-{==============================================================================}
-function TDiaryView.SelectedNote: TNoteRecord;
-{==============================================================================}
-begin
-  //Log('SelectedNote()');
-
-  if _IsNoteSelected then
-    Result := TNoteRecord(CurrentPage.Recs[FSelPanel])
-  else
-    //Result := nil;
-    raise Exception.Create('SelectedNote: no such record selected');
 end;
 
 {==============================================================================}
