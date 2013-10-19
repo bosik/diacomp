@@ -8,8 +8,6 @@ uses
   SysUtils;
 
 type
- // TNotifiablePage = class;
-
   TCustomRecord = class;
 
   TClassCustomRecord = class of TCustomRecord;
@@ -21,7 +19,6 @@ type
   private
     FTime: integer; // в мин
 
-    //FPage: TNotifiablePage;       // transient
     FSilentMode: boolean;           // transient
     FSilentlyModified: boolean;     // transient
 

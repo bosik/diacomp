@@ -76,7 +76,7 @@ uses MainUnit;
 procedure TDataInterface.PopupDiaryMealPopup(Sender: TObject);
 {==============================================================================}
 begin
-  if Form1.DiaryView.IsMealSelected then
+  if (Form1.DiaryView.SelectedRecord is TMealRecord) then
     Form1.ActionShortMeal.Checked := TMealRecord(Form1.DiaryView.SelectedRecord).ShortMeal;
 end;
 
