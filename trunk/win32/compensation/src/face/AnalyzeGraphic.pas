@@ -12,6 +12,7 @@ uses
   Graphics,
   Math,
   AutoLog,
+  DiaryPage,
   DiaryDatabase,
   DiaryRecords,
   BusinessObjects;

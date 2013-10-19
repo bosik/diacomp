@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, ComCtrls, Buttons,
-  DiaryDatabase, DiaryRecords, DiaryRoutines, DiaryInterface, DiaryCore;
+  DiaryPage, DiaryRecords, DiaryRoutines, DiaryInterface, DiaryCore;
 
 type
   TFormExportText = class(TAutosetupForm)

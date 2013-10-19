@@ -3,9 +3,7 @@ unit DiarySources;
 interface
 
 uses
-  SysUtils, Classes,
-  AutoLog,
-  Dialogs, // debug
+  SysUtils,
   DiaryRoutines,
   DiaryPageSerializer {TODO: remove it};
 

@@ -10,11 +10,11 @@ uses
   Windows, {TRect}
   SysUtils, {IntToStr}
   Controls, {TMouseButton, Date, TColorSettings}
-  DiaryDatabase,
   DiaryRoutines,
   TextInterface, {finger names}
   BusinessObjects,
   DiaryRecords,
+  DiaryPage,
 
   StdCtrls,
   Math, { TStatProgress }

@@ -43,7 +43,8 @@ uses
   DiaryRoutines in 'src\common\DiaryRoutines.pas',
   DiaryAnalyze in 'src\analyze\DiaryAnalyze.pas',
   DiaryWebSource in 'src\common\DiaryWebSource.pas',
-  DiaryPageSerializer in 'src\common\DiaryPageSerializer.pas';
+  DiaryPageSerializer in 'src\common\DiaryPageSerializer.pas',
+  DiaryPage in 'src\bo\DiaryPage.pas';
 
 {$R *.res}
 
