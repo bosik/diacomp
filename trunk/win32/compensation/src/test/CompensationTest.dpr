@@ -10,7 +10,12 @@ uses
   BasesTest in 'BasesTest.pas',
   Bases in '..\bo\Bases.pas',
   AutoLog in '..\common\AutoLog.pas',
-  DiaryRoutinesTest in 'DiaryRoutinesTest.pas';
+  DiaryRoutinesTest in 'DiaryRoutinesTest.pas',
+  DiaryWeb in '..\common\DiaryWeb.pas',
+  DiarySources in '..\common\DiarySources.pas',
+  DiaryPage in '..\bo\DiaryPage.pas',
+  DiaryRecords in '..\bo\DiaryRecords.pas',
+  DiaryPageSerializer in '..\common\DiaryPageSerializer.pas';
 
 {$R *.res}
 

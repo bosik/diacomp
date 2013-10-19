@@ -5,14 +5,13 @@ unit DiaryWeb;
 interface
 
 uses
-  SysUtils,
-  Classes,
+  SysUtils, // IntToStr
+  Classes, // TStrings
   Windows, // debug: GetTickCount
   Dialogs, // debug
   IdHTTP,
-  DiaryRoutines,
-  DiarySources,
-  DiaryPageSerializer {TODO: remove},
+  DiaryRoutines, // Separate()
+  DiarySources, // TModList
   AutoLog;
 
 type
@@ -48,16 +47,15 @@ type
     function DoGetSmart(const URL: string; out Resp: string): boolean;
     function DoPostSmart(const URL: string; const Par: TParamList; out Resp: string): boolean;
     function Kicked(const Answer: string): boolean;
-
-    function LocalToServer(Time: TDateTime): TDateTime;
-    function ServerToLocal(Time: TDateTime): TDateTime;
   public
+    // TODO: sort
+
     constructor Create;
     destructor Destroy; override;
 
     function GetModList(Time: TDateTime; out ModList: TModList): boolean;
-    function GetPages(const Dates: TDateList; out Pages: TPageDataList): boolean;
-    function PostPages(const Pages: TPageDataList): boolean;
+    function GetPages(const Dates: TDateList; out Resp: string): boolean;
+    function PostPages(const Pages: string): boolean;
 
     function Login(): TLoginResult;
     procedure Logout;
@@ -75,6 +73,9 @@ type
     function DownloadKoofs(out Data: string): boolean;
     function UploadKoofs(const Data: string): boolean;
 
+    function LocalToServer(Time: TDateTime): TDateTime;
+    function ServerToLocal(Time: TDateTime): TDateTime;
+
     // демо
     function Report(const Msg: string): boolean;
     function Search(const Key: string): string;
@@ -89,11 +90,14 @@ type
     { события }
     property OnLogin: TLoginEvent read FOnLogin write FOnLogin;
   end;
-  
+
+var
+  WebFmt: TFormatSettings;
+
 implementation
 
 { TDiacompClient }
-
+  
 const
   CURRENT_API_VERSION  = '1.2';
 
@@ -168,7 +172,7 @@ function TDiacompClient.DoPost(const URL: string; const Par: TParamList; out Res
   end;
 
 var
-  Data: TStringList;
+  Data: TStrings;
   i: integer;
 {#}  Tick: cardinal;
 begin
@@ -342,17 +346,16 @@ begin
 end;
 
 {==============================================================================}
-function TDiacompClient.GetPages(const Dates: TDateList; out Pages: TPageDataList): boolean;
+function TDiacompClient.GetPages(const Dates: TDateList; out Resp: string): boolean;
 {==============================================================================}
 var
-  Query, Resp: string;
-  S: TStringList;
+  Query: string;
   i: integer;
 begin
   // заглушка
   if (Length(Dates) = 0) then
   begin
-    SetLength(Pages, 0);
+    Resp := '';
     Result := True;
     Exit;
   end;
@@ -364,25 +367,12 @@ begin
   for i := 0 to High(Dates) do
     Query := Query + DateToStr(Dates[i], WebFmt) + ',';
 
-  Log(VERBOUS, 'TDiacompClient.GetPages: quering ' + Query);
+  Log(VERBOUS, 'TDiacompClient.GetPages: quering "' + Query + '"');
 
   // отправляем
   if DoGetSmart(Query, Resp) then
   begin
-    Log(VERBOUS, 'TDiacompClient.GetPages: quered OK');
-    Log(VERBOUS, 'TDiacompClient.GetPages: resp = "' + Resp + '"');
-
-    // обрабатываем
-    S := TStringList.Create;
-    S.Text := Resp;
-    try
-      TPageSerializer.MultiRead(S, True, Pages);
-      for i := 0 to High(Pages) do
-        Pages[i].TimeStamp := ServerToLocal(Pages[i].TimeStamp);
-    finally
-      S.Free;
-    end;
-    Log(VERBOUS, 'TDiacompClient.GetPages: done OK');
+    Log(VERBOUS, 'TDiacompClient.GetPages: quered OK, resp = "' + Resp + '"');
     Result := True;
   end else
   begin
@@ -492,7 +482,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiacompClient.PostPages(const Pages: TPageDataList): boolean;
+function TDiacompClient.PostPages(const Pages: string): boolean;
 {==============================================================================}
 var
   Par: TParamList;
@@ -509,18 +499,18 @@ begin
   end;
 
   // пустые страницы отсекать нельзя, ведь они могли быть непустыми до этого
-  Source := '';
+  (*Source := '';
   for i := 0 to High(Pages) do
   begin
     {#}OldStamp := Pages[i].TimeStamp;
     Pages[i].TimeStamp := LocalToServer(Pages[i].TimeStamp);
     Source := Source + Pages[i].Write(True) + #13;
     {#}Pages[i].TimeStamp := OldStamp;
-  end;
+  end;    *)
 
   SetLength(Par, 2);
   par[0] := 'diary:upload=';
-  par[1] := 'pages=' + Source;
+  par[1] := 'pages=' + Pages;
 
   if DoPostSmart(FServer + PAGE_CONSOLE, Par, Msg) then
     Result := (Msg = MESSAGE_DONE)
@@ -718,4 +708,11 @@ begin
     Result := 'FAILED';
 end;
 
+initialization
+  // 1992-04-02 09:45:00
+  GetLocaleFormatSettings(GetThreadLocale, WebFmt);
+  WebFmt.DateSeparator := '-';
+  WebFmt.TimeSeparator := ':';
+  WebFmt.ShortDateFormat := 'yyyy-mm-dd';
+  WebFmt.LongTimeFormat := 'hh:nn:ss';
 end.

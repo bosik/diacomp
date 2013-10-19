@@ -61,7 +61,6 @@ type
 
   { форматирование строк : общее }
   function CheckDot(const S: string): string;
-  function GetDateTimeFormat(Web: boolean): TFormatSettings;
 
   { форматирование строк : числа }
   function RealToStr(const X: real): string;
@@ -108,7 +107,6 @@ type
 
 var
   Decimal: char;
-  WebFmt: TFormatSettings;
   LocalFmt: TFormatSettings;
 
 const
@@ -469,16 +467,6 @@ begin
 end;
 
 {==============================================================================}
-function GetDateTimeFormat(Web: boolean): TFormatSettings;
-{==============================================================================}
-begin
-  if Web then
-    Result := WebFmt
-  else
-    Result := LocalFmt;
-end;
-
-{==============================================================================}
 function GetCurrentTime: string;
 {==============================================================================}
 var
@@ -793,13 +781,6 @@ initialization
   LocalFmt.TimeSeparator := ':';
   LocalFmt.ShortDateFormat := 'dd.mm.yyyy';
   LocalFmt.LongTimeFormat := 'hh:nn:ss';
-
-  // 1992-04-02 09:45:00
-  GetLocaleFormatSettings(GetThreadLocale, WebFmt);
-  WebFmt.DateSeparator := '-';
-  WebFmt.TimeSeparator := ':';
-  WebFmt.ShortDateFormat := 'yyyy-mm-dd';
-  WebFmt.LongTimeFormat := 'hh:nn:ss';
 
   Decimal := LocalFmt.DecimalSeparator;
 end.

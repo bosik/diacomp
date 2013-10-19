@@ -7,7 +7,7 @@ interface
 uses
   DiaryRoutines,
   DiarySources,
-  DiaryPageSerializer {TODO: remove};
+  DiaryPage;
 
   { возвращается количество синхронизированных страниц }
   function SyncSources(Source1, Source2: IDiarySource; Since: TDateTime): integer;
@@ -148,7 +148,7 @@ function SyncSources(Source1, Source2: IDiarySource; Since: TDateTime): integer;
 var
   ModList1, ModList2: TModList;
   Over1, Over2: TDateList;
-  Pages: TPageDataList;
+  Pages: TDiaryPageList;
 begin
   Result := 0;
 

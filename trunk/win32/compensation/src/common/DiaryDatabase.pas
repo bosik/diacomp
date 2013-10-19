@@ -24,15 +24,17 @@ type
   // {*} - устаревшее
   // {!} - трудности
 
-  TPageCache = class (TDiaryPage)
+  TPageCache = class
   private
+    FPage: TDiaryPage;
     FCalculatedPostprand: boolean;
   public
-    constructor Create(PageData: TPageData);
+    constructor Create(Page: TDiaryPage);
     function GetNextDayFreeTime(StdMealPeriod, ShortMealPeriod, InsPeriod: integer): integer;
     procedure UpdatePostprand(FreeTime, StdMealPeriod, ShortMealPeriod, InsPeriod: integer);
 
     property CalculatedPostprand: boolean read FCalculatedPostprand;
+    property Page: TDiaryPage read FPage write FPage;
   end;
 
   TDiary = class
@@ -101,7 +103,7 @@ end;
 function TDiary.GetPage(Date: TDate): TDiaryPage;
 {==============================================================================}
 begin
-  Result := FCache[GetPageIndex(Date, True)];
+  Result := FCache[GetPageIndex(Date, True)].Page;
 end;
 
 {==============================================================================}
@@ -117,8 +119,8 @@ function TDiary.GetPageIndex(Date: TDate; CalculatePostprand: boolean): integer;
     while (L <= R) do
     begin
       Result := (L + R) div 2;
-      if (FCache[Result].Date < Date) then L := Result + 1 else
-      if (FCache[Result].Date > Date) then R := Result - 1 else
+      if (FCache[Result].Page.Date < Date) then L := Result + 1 else
+      if (FCache[Result].Page.Date > Date) then R := Result - 1 else
         Exit;
     end;
     Result := -1;
@@ -126,17 +128,14 @@ function TDiary.GetPageIndex(Date: TDate; CalculatePostprand: boolean): integer;
 
   function LoadFromSource(Date: TDate): integer;
   var
-    PageData: TPageData;
+    Page: TDiaryPage;
   begin
-    PageData := FSource.GetPage(Date);
-
     Result := Length(FCache);
     SetLength(FCache, Result + 1);
-    FCache[Result] := TPageCache.Create(PageData);
-    FCache[Result].AddChangeListener(ProcessPageChanged);
+    Page := FSource.GetPage(Date);
+    Page.AddChangeListener(ProcessPageChanged);
+    FCache[Result] := TPageCache.Create(Page);
     Result := TraceLastPage();
-
-    PageData.Free;
   end;
 
   function MakeSureExists(Date: TDate): integer;
@@ -267,7 +266,7 @@ begin
 
   // to save after every change
   PageData := TPageData.Create;
-  TPageSerializer.WriteTo(PageData, Page);
+  TPageSerializer.Write(Page, PageData);
   //FSource.PostPage(PageData);
 
 
@@ -309,7 +308,7 @@ begin
   if (Result > -1) then
   begin
     Temp := FCache[Result];
-    while (Result > 0) and (FCache[Result - 1].Date > Temp.Date) do
+    while (Result > 0) and (FCache[Result - 1].Page.Date > Temp.Page.Date) do
     begin
       FCache[Result] := FCache[Result-1];
       dec(Result);
@@ -333,10 +332,10 @@ begin
     Index := GetPageIndex(Date, False);
 
     if (Index > -1) then
-    for i := FCache[Index].Count - 1 downto 0 do
-    if (FCache[Index][i] is TBloodRecord) then
+    for i := FCache[Index].Page.Count - 1 downto 0 do
+    if (FCache[Index].Page[i] is TBloodRecord) then
     begin
-      Result := TBloodRecord(FCache[Index][i]);
+      Result := TBloodRecord(FCache[Index].Page[i]);
       Exit;
     end;
   end;
@@ -377,52 +376,62 @@ begin
   begin
     // если убрать проверку, то кэш будет разрастаться при повторном вызове этой процедуры
     if FCache[i].CalculatedPostprand then
-      FCache[i].UpdatePostprand(FreeTime - FCache[i].Date * MinPerDay, PostPrandStd, PostPrandShort, PostPrandStd);
+      FCache[i].UpdatePostprand(FreeTime - FCache[i].Page.Date * MinPerDay, PostPrandStd, PostPrandShort, PostPrandStd);
 
     FreeTime := FCache[i].GetNextDayFreeTime(PostPrandStd, PostPrandShort, PostPrandStd);
-    FreeTime := FreeTime + (FCache[i].Date + 1) * MinPerDay
+    FreeTime := FreeTime + (FCache[i].Page.Date + 1) * MinPerDay
   end;
 end;
 
 {==============================================================================}
 procedure TDiary.Post;
 {==============================================================================}
-var
-  Pages: TPageDataList;
-  i: integer;
-begin
-  // выгружаем в список
-  SetLength(Pages, Length(FCache));
-  for i := 0 to High(Pages) do
+
+  function GetCachePages(): TDiaryPageList;
+  var
+    i: integer;
   begin
-    Pages[i] := TPageData.Create();
-    TPageSerializer.WriteTo(Pages[i], FCache[i]);
+    SetLength(Result, Length(FCache));
+    for i := 0 to High(FCache) do
+      Result[i] := FCache[i].Page;
   end;
 
-  // отправляем источнику
+var
+  Pages: TDiaryPageList;
+begin
+  Pages := GetCachePages();
   FSource.PostPages(Pages);
-
-  // освобождаем память
-  for i := 0 to High(Pages) do
-    Pages[i].Free;
-
   FModified := False;
 end;
 
 {==============================================================================}
 procedure TDiary.ReloadCache;
 {==============================================================================}
-var
-  i: integer;
-  PageData: TPageData;
-begin
-  for i := 0 to High(FCache) do
-  begin
-    PageData := FSource.GetPage(FCache[i].Date);
-    TPageSerializer.ReadFrom(PageData, FCache[i]);
-    PageData.Free;
 
+  function GetCacheDates(): TDateList;
+  var
+    i: integer;
+  begin
+    SetLength(Result, Length(FCache));
+    for i := 0 to High(FCache) do
+      Result[i] := FCache[i].Page.Date;
+  end;
+
+var
+  Dates: TDateList;
+  Pages: TDiaryPageList;
+  i: integer;
+begin
+  Dates := GetCacheDates();
+  FSource.GetPages(Dates, Pages);
+
+
+  for i := 0 to High(Pages) do
+  begin
+    FCache[i].Page.Free;
+    FCache[i].Page := Pages[i];
     //FCache[i].FCalculatedPostprand := False; - нужно сохранить состояния для UpdateCached_Postprand
+    // TODO: правда?
   end;
 
   UpdateCached_Postprand;
@@ -629,11 +638,10 @@ end;
 { TPageCache }
 
 {==============================================================================}
-constructor TPageCache.Create(PageData: TPageData);
+constructor TPageCache.Create(Page: TDiaryPage);
 {==============================================================================}
 begin
-  inherited Create();
-  TPageSerializer.ReadFrom(PageData, Self);
+  FPage := Page;
   FCalculatedPostprand := False;
 end;
 
@@ -649,15 +657,15 @@ begin
   Result := 0;
 
   // TODO: дублирующийся код (UpdatePostprand)
-  for i := 0 to Count - 1 do
+  for i := 0 to Page.Count - 1 do
   begin
-    CurTime := Recs[i].Time;
+    CurTime := Page.Recs[i].Time;
 
-    if (Recs[i].RecType = TInsRecord) then
+    if (Page.Recs[i].RecType = TInsRecord) then
       Result := Max(Result, CurTime + InsPeriod) else
-    if (Recs[i].RecType = TMealRecord) then
-      if TMealRecord(Recs[i]).Carbs > 0 then
-         if TMealRecord(Recs[i]).ShortMeal then
+    if (Page.Recs[i].RecType = TMealRecord) then
+      if TMealRecord(Page.Recs[i]).Carbs > 0 then
+         if TMealRecord(Page.Recs[i]).ShortMeal then
            Result := Max(Result, CurTime + ShortMealPeriod)
          else
            Result := Max(Result, CurTime + StdMealPeriod);
@@ -676,27 +684,27 @@ begin
   //Log('TPageCache.UpdatePostPrand()');
 
   // TODO: дублирующийся код (GetNextDayFreeTime)
-  for i := 0 to Count-1 do
+  for i := 0 to Page.Count - 1 do
   begin
-    CurTime := Recs[i].Time;
+    CurTime := Page.Recs[i].Time;
 
-    if (Recs[i].RecType = TInsRecord) then
+    if (Page.Recs[i].RecType = TInsRecord) then
     begin
       FreeTime := Max(FreeTime, CurTime + InsPeriod);
     end else
 
-    if (Recs[i].RecType = TMealRecord) then
+    if (Page.Recs[i].RecType = TMealRecord) then
     begin
-      if TMealRecord(Recs[i]).Carbs > 0 then
-         if TMealRecord(Recs[i]).ShortMeal then
+      if TMealRecord(Page.Recs[i]).Carbs > 0 then
+         if TMealRecord(Page.Recs[i]).ShortMeal then
            FreeTime := Max(FreeTime, CurTime + ShortMealPeriod)
          else
            FreeTime := Max(FreeTime, CurTime + StdMealPeriod);
     end else
 
-    if (Recs[i].RecType = TBloodRecord) then
+    if (Page.Recs[i].RecType = TBloodRecord) then
     begin
-      TBloodRecord(Recs[i]).PostPrand := (CurTime < FreeTime);
+      TBloodRecord(Page.Recs[i]).PostPrand := (CurTime < FreeTime);
     end;
   end;
   FCalculatedPostprand := True;

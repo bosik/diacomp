@@ -5,7 +5,8 @@ interface
 uses
   TestFramework,
   SysUtils,
-  DiaryRoutines;
+  DiaryRoutines,
+  DiaryWeb;
 
 type
   TDiaryRoutinesTest = class(TTestCase)
