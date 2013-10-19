@@ -18,7 +18,6 @@ type
   private
     FPages: TPageDataList;
     FModified: boolean;
-    {!}FUpdateWarning: boolean;
     FFileName: string;
 
     function Add(Page: TPageData): integer;
@@ -38,11 +37,14 @@ type
     function PostPages(const Pages: TPageDataList): boolean; override;
 
     // свойства
-    property Modified: boolean read FModified {write FModified};
-    property ShowUpdateWarning: boolean read FUpdateWarning write FUpdateWarning;
+    // TODO: think about it
+    //property Modified: boolean read FModified {write FModified};
  end;
 
 implementation
+
+const
+  ShowUpdateWarning = True;
 
 { TDiaryLocalSource }
 

@@ -12,6 +12,7 @@ uses
   DiaryDatabase,
   Bases,
   DiaryRoutines,
+  DiarySources,
   DiaryLocalSource,
   DiaryWebSource,
   {#}DiaryWeb,  
@@ -56,10 +57,12 @@ type
 
 var
   { данные }
+  LocalSource: IDiarySource;
+  WebSource: IDiarySource;
+
   Diary: TDiary;
-  LocalSource: TDiaryLocalSource;
+
   WebClient: TDiacompClient;
-  WebSource: TDiaryWebSource;
   Expander: TStringMap;
 
   FoodBase: TFoodBase;

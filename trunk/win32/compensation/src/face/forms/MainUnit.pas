@@ -616,10 +616,7 @@ begin
   try
     { дневник }
     T := StrToDateTime(Value['LastSync']);
-
-    LocalSource.ShowUpdateWarning := True;
     Result := SyncSources(LocalSource, WebSource, T - 1);
-    LocalSource.ShowUpdateWarning := False;
 
     Value['LastSync'] := DateTimeToStr(Now);
 
