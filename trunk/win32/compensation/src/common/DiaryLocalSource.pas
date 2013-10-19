@@ -204,7 +204,7 @@ begin
       s.Delete(0);
     end;
 
-    TPageData.MultiRead(S, False, Pages);   // и загружаешь -->
+    TPageSerializer.MultiRead(S, False, Pages);   // и загружаешь -->
 
     // для проверки сортировки и дублей используем вспомогательный список
     for i := 0 to High(Pages) do
@@ -293,7 +293,7 @@ var
 begin
   s := TStringList.Create;
   try
-    TPageData.MultiWrite(S, False, FPages);
+    TPageSerializer.MultiWrite(S, False, FPages);
     s.SaveToFile(FileName);
   finally
     s.Free;

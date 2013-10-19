@@ -376,7 +376,7 @@ begin
     S := TStringList.Create;
     S.Text := Resp;
     try
-      TPageData.MultiRead(S, True, Pages);
+      TPageSerializer.MultiRead(S, True, Pages);
       for i := 0 to High(Pages) do
         Pages[i].TimeStamp := ServerToLocal(Pages[i].TimeStamp);
     finally

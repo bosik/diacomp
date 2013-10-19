@@ -7,7 +7,7 @@ uses
   AutoLog,
   Dialogs, // debug
   DiaryRoutines,
-  DiaryPageSerializer {remove it};
+  DiaryPageSerializer {TODO: remove it};
 
 type
   // информация для синхронизации
