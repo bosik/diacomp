@@ -15,7 +15,12 @@ uses
   DiarySources in '..\common\DiarySources.pas',
   DiaryPage in '..\bo\DiaryPage.pas',
   DiaryRecords in '..\bo\DiaryRecords.pas',
-  DiaryPageSerializer in '..\common\DiaryPageSerializer.pas';
+  DiaryPageSerializer in '..\common\DiaryPageSerializer.pas',
+  DiaryLocalSourceTest in 'DiaryLocalSourceTest.pas',
+  DiaryLocalSource in '..\common\DiaryLocalSource.pas',
+  DiarySourceTest in 'DiarySourceTest.pas',
+  DiaryWebSourceTest in 'DiaryWebSourceTest.pas',
+  DiaryWebSource in '..\common\DiaryWebSource.pas';
 
 {$R *.res}
 

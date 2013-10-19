@@ -787,6 +787,12 @@ var
 
   //tick: cardinal;
 begin
+  if Length(RecList) = 0 then
+  begin
+    Result := False;
+    Exit;
+  end;
+
   { prots(p), /fats(f)/, carbs(k), ins(q) }
 
   A := TMatrix.Create(Length(RecList), 3);

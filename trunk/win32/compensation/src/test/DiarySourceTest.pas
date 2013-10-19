@@ -1,0 +1,203 @@
+unit DiarySourceTest;
+
+interface
+
+uses
+  Windows,
+  SysUtils,
+  TestFrameWork,
+  DiarySources,
+  DiaryPage,
+  DiaryRecords,
+  DiaryRoutines,
+  BusinessObjects;
+
+type
+  TDiarySourceTest = class(TTestCase)
+  protected
+    Source: IDiarySource;
+    procedure SetUp; override;
+    procedure TearDown; override;
+    procedure ComparePages(ExpPage, ActPage: TDiaryPage); overload;
+    procedure ComparePages(const ExpPages, ActPages: TDiaryPageList); overload;
+
+    procedure SetupSource; virtual; abstract;
+    procedure TeardownSource; virtual; abstract;
+  published
+    procedure TestGetModList;
+    procedure TestGetPages;
+  end;
+
+implementation
+
+uses Math;
+
+var
+  DemoPages: TDiaryPageList;
+  Dates: TDateList;
+
+{==============================================================================}
+procedure CreateDemoPages;
+{==============================================================================}
+var
+  Meal: TMealRecord;
+  i: integer;
+begin
+  SetLength(DemoPages, 2);
+  SetLength(Dates, 2);
+
+  DemoPages[0] := TDiaryPage.Create;
+  DemoPages[0].Date := Trunc(EncodeDate(2012, 03, 15));
+  DemoPages[0].Add(TBloodRecord.Create(127, 4.9, 3));
+  DemoPages[0].Add(TInsRecord.Create(135, 12));
+    Meal := TMealRecord.Create(201, True);
+    Meal.Add(TFoodMassed.Create('Карбонат "Восточный" (Черн)', 9.9, 26.3, 0, 276, 90));
+    Meal.Add(TFoodMassed.Create('Хлеб', 5.5, 0.9, 44.1, 206.3, 42));
+  DemoPages[0].Add(Meal);
+  DemoPages[0].Add(TNoteRecord.Create(230, 'Demo'));
+
+  DemoPages[1] := TDiaryPage.Create;
+  DemoPages[1].Date := Trunc(EncodeDate(2012, 03, 16));
+  DemoPages[1].Add(TBloodRecord.Create(820, 6.8, 7));
+  DemoPages[1].Add(TInsRecord.Create(829, 16));
+  DemoPages[1].Add(TMealRecord.Create(850, False));
+  DemoPages[1].Add(TNoteRecord.Create(1439, 'DTest'));
+
+  // to remove accuracy errors
+  for i := 0 to High(DemoPages) do
+  begin
+    DemoPages[i].TimeStamp := StrToDateTime(DateTimeToStr(DemoPages[i].TimeStamp));
+    Dates[i] := DemoPages[i].Date;
+  end;
+end;
+
+{ TDiarySourceTest }
+
+{==============================================================================}
+procedure TDiarySourceTest.SetUp;
+{==============================================================================}
+begin
+  inherited;
+  CreateDemoPages;
+
+  if (Source <> nil) then
+    FreeAndNil(Source);
+  SetupSource;
+
+  Check(Source.PostPages(DemoPages), 'PostPages() failed');
+
+  if (Source <> nil) then
+    FreeAndNil(Source);
+  SetupSource;
+end;
+
+{==============================================================================}
+procedure TDiarySourceTest.TearDown;
+{==============================================================================}
+begin
+  inherited;
+  TeardownSource;
+end;
+
+{==============================================================================}
+procedure TDiarySourceTest.ComparePages(ExpPage, ActPage: TDiaryPage);
+{==============================================================================}
+var
+  ExpMeal, ActMeal: TMealRecord;
+  j, k: integer;
+begin
+  CheckEquals(Trunc(ExpPage.Date), Trunc(ActPage.Date));
+  //CheckEquals(DateTimeToStr(ExpPage.TimeStamp), DateTimeToStr(ActPage.TimeStamp));
+
+  Check(
+    SameValue(
+      ExpPage.TimeStamp,
+      ActPage.TimeStamp,
+      2/SecPerDay),
+    //'Exp: ' + DateTimeToStr(ExpPage.TimeStamp) + ', Act: ' + DateTimeToStr(ActPage.TimeStamp)
+    'Timestamp error, sec: ' + FloatToStr(abs(ExpPage.TimeStamp - ActPage.TimeStamp) * SecPerDay)
+  );                                                                                         
+
+  CheckEquals(ExpPage.Version, ActPage.Version);
+  CheckEquals(ExpPage.Count, ActPage.Count);
+
+  for j := 0 to ExpPage.Count - 1 do
+  begin
+    CheckEquals(ExpPage[j].Time, ActPage[j].Time);
+    if (ExpPage[j].RecType = TBloodRecord) then
+    begin
+      CheckEquals(TBloodRecord(ExpPage[j]).Value, TBloodRecord(ActPage[j]).Value);
+      CheckEquals(TBloodRecord(ExpPage[j]).Finger, TBloodRecord(ActPage[j]).Finger);
+    end else
+    if (ExpPage[j].RecType = TInsRecord) then
+    begin
+      CheckEquals(TInsRecord(ExpPage[j]).Value, TInsRecord(ActPage[j]).Value);
+    end else
+    if (ExpPage[j].RecType = TMealRecord) then
+    begin
+      ExpMeal := TMealRecord(ExpPage[j]);
+      ActMeal := TMealRecord(ExpPage[j]);
+
+      CheckEquals(ExpMeal.ShortMeal, ActMeal.ShortMeal);
+      CheckEquals(ExpMeal.Count, ActMeal.Count);
+
+      for k := 0 to ExpMeal.Count - 1 do
+      begin
+        CheckEquals(ExpMeal[k].Write, ActMeal[k].Write);
+
+        CheckEquals(ExpMeal[k].Name, ActMeal[k].Name);
+        CheckEquals(ExpMeal[k].RelProts, ActMeal[k].RelProts);
+        CheckEquals(ExpMeal[k].RelFats, ActMeal[k].RelFats);
+        CheckEquals(ExpMeal[k].RelCarbs, ActMeal[k].RelCarbs);
+        CheckEquals(ExpMeal[k].RelValue, ActMeal[k].RelValue);
+        CheckEquals(ExpMeal[k].Mass, ActMeal[k].Mass);
+      end;
+    end else
+    if (ExpPage[j].RecType = TNoteRecord) then
+    begin
+      CheckEquals(TNoteRecord(ExpPage[j]).Text, TNoteRecord(ActPage[j]).Text);
+    end else
+  end;
+end;
+
+{==============================================================================}
+procedure TDiarySourceTest.ComparePages(const ExpPages, ActPages: TDiaryPageList);
+{==============================================================================}
+var
+  i: integer;
+begin
+  CheckEquals(Length(ExpPages), Length(ActPages));
+  for i := 0 to High(ExpPages) do
+  begin
+    ComparePages(ExpPages[i], ActPages[i]);
+  end;
+end;
+
+{==============================================================================}
+procedure TDiarySourceTest.TestGetModList;
+{==============================================================================}
+var
+  ModList: TModList;
+  i: integer;
+begin
+  Source.GetModList(Now() - 5/SecPerDay, ModList); // what changed in last 5 secs?
+  CheckEquals(Length(DemoPages), Length(ModList));
+
+  for i := 0 to High(DemoPages) do
+  begin
+    CheckEquals(DemoPages[i].Date, ModList[i].Date);
+    CheckEquals(DemoPages[i].Version, ModList[i].Version);
+  end;
+end;
+
+{==============================================================================}
+procedure TDiarySourceTest.TestGetPages;
+{==============================================================================}
+var
+  Pages: TDiaryPageList;
+begin
+  Check(Source.GetPages(Dates, Pages), 'GetPages() failed');
+  ComparePages(DemoPages, Pages);
+end;
+
+end.
