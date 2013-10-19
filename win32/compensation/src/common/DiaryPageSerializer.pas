@@ -7,6 +7,7 @@ uses
   Classes,
   Dialogs, // TODO: debug only
   AutoLog, // TODO: debug obly
+  //DiaryDatabase,
   DiaryRoutines;
 
 type
@@ -30,6 +31,10 @@ type
     procedure ReadHeader(const S: string; WebFormat: boolean = False);
     function Write(WebFormat: boolean): string;
     function WriteHeader(WebFormat: boolean): string;
+  end;
+
+  TPageSerializer = class
+    //class procedure ReadBody(S: TStrings; {out} Page: TDiaryPage);
 
     class procedure MultiRead(S: TStrings; WebFormat: boolean; out Pages: TPageDataList);
     class procedure MultiWrite(S: TStrings; WebFormat: boolean; const Pages: TPageDataList);
@@ -70,65 +75,6 @@ constructor TPageData.Create(APage: TPageData);
 {==============================================================================}
 begin
   CopyFrom(APage);
-end;
-
-{==============================================================================}
-class procedure TPageData.MultiRead(S: TStrings; WebFormat: boolean; out Pages: TPageDataList);
-{==============================================================================}
-var
-  buf: string;
-  i, Count: integer;
-
-  procedure FlushBuffer;
-  begin
-    if (Trim(buf) <> '') then
-    begin
-      if (Length(Pages) = Count) then
-        SetLength(Pages, Length(Pages) * 2 + 1);
-
-      Pages[Count] := TPageData.Create;
-      Pages[Count].Read(buf, WebFormat);
-      inc(Count);
-
-      buf := '';
-    end;
-  end;
-
-begin
-  buf := '';
-  Count := 0;
-  SetLength(Pages, 1);
-  try
-    for i := 0 to s.Count - 1 do
-    if (s[i] <> '') then
-    begin
-      if (s[i][1] = '=') then FlushBuffer;
-      buf := buf + s[i] + #13;
-    end;
-    FlushBuffer;
-  finally
-    SetLength(Pages, Count);
-  end;
-end;
-
-{==============================================================================}
-class procedure TPageData.MultiWrite(S: TStrings; WebFormat: boolean; const Pages: TPageDataList);
-{==============================================================================}
-var
-  i: integer;
-begin
-  // пустые страницы могут появляться после интенсивного тыкания по календарю,
-  // поэтому сохраняем только страницы с записями - МОЛОДЕЦ! :-)
-  // ---
-  // No. С таким подходом я не смогу перезаписать страницу на пустую. Пустое содержание - тоже содержание
-  // ---
-  /// Yes. Проверять нужно номер версии, а не содержание.
-
-  s.Clear;
-  for i := 0 to High(Pages) do
-  // (Trim(Pages[i].Page) <> '') then
-  if (Pages[i].Version > 0) then
-      s.Add(Pages[i].Write(WebFormat));
 end;
 
 {==============================================================================}
@@ -219,5 +165,162 @@ begin
     DateTimeToStr(TimeStamp, F) + '|' +
     IntToStr(Version);    }
 end;
+
+{ TPageSerializer }
+
+{==============================================================================}
+class procedure TPageSerializer.MultiRead(S: TStrings; WebFormat: boolean; out Pages: TPageDataList);
+{==============================================================================}
+var
+  buf: string;
+  i, Count: integer;
+
+  procedure FlushBuffer;
+  begin
+    if (Trim(buf) <> '') then
+    begin
+      if (Length(Pages) = Count) then
+        SetLength(Pages, Length(Pages) * 2 + 1);
+
+      Pages[Count] := TPageData.Create;
+      Pages[Count].Read(buf, WebFormat);
+      inc(Count);
+
+      buf := '';
+    end;
+  end;
+
+begin
+  buf := '';
+  Count := 0;
+  SetLength(Pages, 1);
+  try
+    for i := 0 to s.Count - 1 do
+    if (s[i] <> '') then
+    begin
+      if (s[i][1] = '=') then FlushBuffer;
+      buf := buf + s[i] + #13;
+    end;
+    FlushBuffer;
+  finally
+    SetLength(Pages, Count);
+  end;
+end;
+
+{==============================================================================}
+class procedure TPageSerializer.MultiWrite(S: TStrings; WebFormat: boolean; const Pages: TPageDataList);
+{==============================================================================}
+var
+  i: integer;
+begin
+  // пустые страницы могут появляться после интенсивного тыкания по календарю,
+  // поэтому сохраняем только страницы с записями - МОЛОДЕЦ! :-)
+  // ---
+  // No. С таким подходом я не смогу перезаписать страницу на пустую. Пустое содержание - тоже содержание
+  // ---
+  /// Yes. Проверять нужно номер версии, а не содержание.
+
+  s.Clear;
+  for i := 0 to High(Pages) do
+  // (Trim(Pages[i].Page) <> '') then
+  if (Pages[i].Version > 0) then
+      s.Add(Pages[i].Write(WebFormat));
+end;
+
+(*
+class procedure TPageSerializer.ReadBody(S: TStrings; Page: TDiaryPage);
+var
+  i,k: integer;
+  CurStr: string;
+  TempStr: string;
+  TempTime: integer;
+  TempValue: real;
+  TempFinger: integer;
+  TempShort: boolean;
+  Meal: TMealRecord;
+  TempFood: TFoodMassed;
+begin
+  with Page do
+  begin
+    // TODO: протестировать скорость загрузки дневника из XML
+    //Log('TDiaryPage.ReadFrom() started');
+
+    if S = nil then
+    begin
+      //Log('TDiaryPage.ReadFrom() error: S=nil');
+      raise Exception.Create('TDiaryPage.ReadFrom(): поток для чтения не может быть nil');
+    end;
+
+    FSilentChange := True;
+
+    try
+      Clear;
+      Meal := nil;
+
+      for i := 0 to S.Count - 1 do
+      if (S[i] <> '') then
+      begin
+        CurStr := S[i];
+        case CurStr[1] of
+          '*':
+          begin
+            TempTime := StrToTimeQuick(Copy(CurStr,2,5));
+
+            k := pos('|', curStr);
+            if k > 0 then
+            begin
+              TempValue := StrToFloat(CheckDot( Copy(CurStr, 8, k-8) ));
+              TempFinger := StrToInt( Copy(CurStr, k+1, Length(CurStr)-k) );
+            end else
+            begin
+              TempValue := StrToFloat(CheckDot(Copy(CurStr,8,Length(CurStr)-7)));
+              TempFinger := -1;
+            end;                                                            
+            Add(TBloodRecord.Create(TempTime, TempValue, TempFinger));
+          end;
+          '-':
+          begin
+            TempTime := StrToTimeQuick(Copy(CurStr,2,5));
+            TempValue := StrToFloat(CheckDot(Copy(CurStr,8,Length(CurStr)-7)));
+            Add(TInsRecord.Create(TempTime, TempValue));
+          end;
+          ' ':
+          begin
+            TempTime := StrToTimeQuick(Copy(CurStr,2,5));
+            TempShort := (CurStr[Length(CurStr)] = 's');
+            Meal := TMealRecord.Create(TempTime, TempShort); // save it for further modifications
+            Add(Meal);
+          end;
+          '#':
+          begin
+            if (Meal <> nil) then
+            begin
+              TempFood := TFoodMassed.Create();
+              TempFood.Read(Copy(CurStr, 2, Length(CurStr) - 1));
+              Meal.Add(TempFood);
+            end;
+          end;
+          '%':
+          begin
+            TempTime := StrToTimeQuick(Copy(CurStr, 2, 5));
+            TempStr := Copy(CurStr, 8, Length(CurStr) - 7);
+            Add(TNoteRecord.Create(TempTime, TempStr));
+          end;
+          {else
+            // и что, из-за одного символа вся база полетит?
+            raise ELoadingError.Create('TDiaryPage.ReadFrom: Некорректные данные'#13+
+              'Строка :'+#13+
+              CurStr);   }
+        end;
+      end;
+    finally
+      //Log('TDiaryPage.ReadFrom() finished');
+      //FUpdateStampOnChange := True;
+    end;
+    //Log('TDiaryPage.ReadFrom() done ok');
+
+    FSilentChange := False;
+  end;
+end;    *)
 
 end.

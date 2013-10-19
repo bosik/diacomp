@@ -441,9 +441,7 @@ begin
   Result := Trace(High(FRecs));
 end;
 
-{==============================================================================}
 procedure TDiaryPage.ReadFrom(S: TStrings);
-{==============================================================================}
 var
   i,k: integer;
   CurStr: string;
@@ -455,84 +453,87 @@ var
   Meal: TMealRecord;
   TempFood: TFoodMassed;
 begin
-  // TODO: протестировать скорость загрузки дневника из XML
-  //Log('TDiaryPage.ReadFrom() started');
-
-  if S = nil then
+  with Self do
   begin
-    //Log('TDiaryPage.ReadFrom() error: S=nil');
-    raise Exception.Create('TDiaryPage.ReadFrom(): поток дл€ чтени€ не может быть nil');
-  end;
+    // TODO: протестировать скорость загрузки дневника из XML
+    //Log('TDiaryPage.ReadFrom() started');
 
-  FSilentChange := True;
-
-  try
-    Clear;
-    Meal := nil;
-
-    for i := 0 to S.Count - 1 do
-    if (S[i] <> '') then
+    if S = nil then
     begin
-      CurStr := S[i];
-      case CurStr[1] of
-        '*':
-        begin
-          TempTime := StrToTimeQuick(Copy(CurStr,2,5));
-
-          k := pos('|', curStr);
-          if k > 0 then
-          begin
-            TempValue := StrToFloat(CheckDot( Copy(CurStr, 8, k-8) ));
-            TempFinger := StrToInt( Copy(CurStr, k+1, Length(CurStr)-k) );
-          end else
-          begin
-            TempValue := StrToFloat(CheckDot(Copy(CurStr,8,Length(CurStr)-7)));
-            TempFinger := -1;
-          end;                                                            
-          Add(TBloodRecord.Create(TempTime, TempValue, TempFinger));
-        end;
-        '-':
-        begin
-          TempTime := StrToTimeQuick(Copy(CurStr,2,5));
-          TempValue := StrToFloat(CheckDot(Copy(CurStr,8,Length(CurStr)-7)));
-          Add(TInsRecord.Create(TempTime, TempValue));
-        end;
-        ' ':
-        begin
-          TempTime := StrToTimeQuick(Copy(CurStr,2,5));
-          TempShort := (CurStr[Length(CurStr)] = 's');
-          Meal := TMealRecord.Create(TempTime, TempShort); // save it for further modifications
-          Add(Meal);
-        end;
-        '#':
-        begin
-          if (Meal <> nil) then
-          begin
-            TempFood := TFoodMassed.Create();
-            TempFood.Read(Copy(CurStr, 2, Length(CurStr) - 1));
-            Meal.Add(TempFood);
-          end;
-        end;
-        '%':
-        begin
-          TempTime := StrToTimeQuick(Copy(CurStr, 2, 5));
-          TempStr := Copy(CurStr, 8, Length(CurStr) - 7);
-          Add(TNoteRecord.Create(TempTime, TempStr));
-        end;
-        {else
-          // и что, из-за одного символа вс€ база полетит?
-          raise ELoadingError.Create('TDiaryPage.ReadFrom: Ќекорректные данные'#13+
-            '—трока :'+#13+
-            CurStr);   }
-      end;
+      //Log('TDiaryPage.ReadFrom() error: S=nil');
+      raise Exception.Create('TDiaryPage.ReadFrom(): поток дл€ чтени€ не может быть nil');
     end;
-  finally
-    //Log('TDiaryPage.ReadFrom() finished');
-    //FUpdateStampOnChange := True;
-  end;
-  //Log('TDiaryPage.ReadFrom() done ok');
 
-  FSilentChange := False;
+    FSilentChange := True;
+
+    try
+      Clear;
+      Meal := nil;
+
+      for i := 0 to S.Count - 1 do
+      if (S[i] <> '') then
+      begin
+        CurStr := S[i];
+        case CurStr[1] of
+          '*':
+          begin
+            TempTime := StrToTimeQuick(Copy(CurStr,2,5));
+
+            k := pos('|', curStr);
+            if k > 0 then
+            begin
+              TempValue := StrToFloat(CheckDot( Copy(CurStr, 8, k-8) ));
+              TempFinger := StrToInt( Copy(CurStr, k+1, Length(CurStr)-k) );
+            end else
+            begin
+              TempValue := StrToFloat(CheckDot(Copy(CurStr,8,Length(CurStr)-7)));
+              TempFinger := -1;
+            end;                                                            
+            Add(TBloodRecord.Create(TempTime, TempValue, TempFinger));
+          end;
+          '-':
+          begin
+            TempTime := StrToTimeQuick(Copy(CurStr,2,5));
+            TempValue := StrToFloat(CheckDot(Copy(CurStr,8,Length(CurStr)-7)));
+            Add(TInsRecord.Create(TempTime, TempValue));
+          end;
+          ' ':
+          begin
+            TempTime := StrToTimeQuick(Copy(CurStr,2,5));
+            TempShort := (CurStr[Length(CurStr)] = 's');
+            Meal := TMealRecord.Create(TempTime, TempShort); // save it for further modifications
+            Add(Meal);
+          end;
+          '#':
+          begin
+            if (Meal <> nil) then
+            begin
+              TempFood := TFoodMassed.Create();
+              TempFood.Read(Copy(CurStr, 2, Length(CurStr) - 1));
+              Meal.Add(TempFood);
+            end;
+          end;
+          '%':
+          begin
+            TempTime := StrToTimeQuick(Copy(CurStr, 2, 5));
+            TempStr := Copy(CurStr, 8, Length(CurStr) - 7);
+            Add(TNoteRecord.Create(TempTime, TempStr));
+          end;
+          {else
+            // и что, из-за одного символа вс€ база полетит?
+            raise ELoadingError.Create('TDiaryPage.ReadFrom: Ќекорректные данные'#13+
+              '—трока :'+#13+
+              CurStr);   }
+        end;
+      end;
+    finally
+      //Log('TDiaryPage.ReadFrom() finished');
+      //FUpdateStampOnChange := True;
+    end;
+    //Log('TDiaryPage.ReadFrom() done ok');
+
+    FSilentChange := False;
+  end;
 end;
 
 {==============================================================================}
