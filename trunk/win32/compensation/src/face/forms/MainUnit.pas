@@ -3090,7 +3090,6 @@ end;
 procedure TForm1.UpdateKoofs;
 {==============================================================================}
 var
-  tick: cardinal;
   Par: TRealArray;
   FromDate, ToDate: TDate;
 begin
@@ -3114,8 +3113,6 @@ begin
   ButtonUpdateKoof.Caption := 'Расчёт...';
   Application.ProcessMessages;
 
-  tick := GetTickCount;
-
   ToDate := Trunc(Now);
   FromDate := ToDate - Value['DaysProcess'] + 1;
 
@@ -3127,7 +3124,7 @@ begin
 
   ButtonUpdateKoof.Caption := 'Пересчитать';
 
-  if ComboKoof.ItemIndex <> -1 then
+  if (ComboKoof.ItemIndex <> -1) then
     ComboKoofChange(nil);
 
   if (DiaryView.SelectedRecord is TMealRecord) then
@@ -4511,9 +4508,9 @@ procedure TForm1.ButtonAnListClick(Sender: TObject);
     end;
   end;
 
-var
-  Cnt: array[0..6] of integer;
-  i,j: integer;
+//var
+//  Cnt: array[0..6] of integer;
+// i,j: integer;
 begin
   {for i := 0 to High(Cnt) do
     Cnt[i] := 0;
