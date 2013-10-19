@@ -7,7 +7,10 @@ interface
 uses
   Windows, Classes, SysUtils;
 
-  procedure Log(const Msg: string; Save: boolean = False);
+type
+  TLogType = (ERROR, WARNING, INFO, DEBUG, VERBOUS);
+
+  procedure Log(MsgType: TLogType; const Msg: string; Save: boolean = False);
   procedure SaveLog;
 
   procedure StartProc(const Name: string);
@@ -35,21 +38,30 @@ var
 {$ENDIF}
 
 {==============================================================================}
-procedure Log(const Msg: string; Save: boolean = False);
+procedure Log(MsgType: TLogType; const Msg: string; Save: boolean = False);
 {==============================================================================}
 {$IFDEF LOGGING}
 var
-  TempTime: string;
+  Temp: string;
 {$ENDIF}
 begin
   {$IFDEF LOGGING}
 
-  DateTimeToString(TempTime, 'hh:mm:ss.zzz', Now);
+  DateTimeToString(Temp, 'hh:mm:ss.zzz', Now);
 
-  if not Save then
-    LogFile.Add(TempTime + #9 + Msg)
-  else
-    LogFile.Add(TempTime + #9 + '! ' + Msg);
+  case MsgType of
+    ERROR:   Temp := Temp + #9'ERROR'#9;
+    WARNING: Temp := Temp + #9'WARNING'#9;
+    INFO:    Temp := Temp + #9'INFO'#9;
+    DEBUG:   Temp := Temp + #9'DEBUG'#9;
+    VERBOUS: Temp := Temp + #9'VERBOUS'#9;
+  end;
+
+  if Save then
+    Temp := Temp + '! ';
+  Temp := Temp + Msg;
+
+  LogFile.Add(Temp);
 
   if Save then
     LogFile.SaveToFile(FileName);
@@ -78,7 +90,7 @@ begin
   Stack[StackSize - 1].Name := Name;
   Stack[StackSize - 1].Time := GetTickCount;
 
-  Log(Tabs(StackSize) + '<' + Name + '>');
+  Log(VERBOUS, Tabs(StackSize) + '<' + Name + '>');
 end;
 
 {==============================================================================}
@@ -87,7 +99,7 @@ procedure FinishProc;
 begin
   if (StackSize > 0) then
   begin
-    Log(Tabs(StackSize) + '</' + Stack[StackSize - 1].Name + '> (' + IntToStr(GetTickCount - Stack[StackSize - 1].Time) + ')');
+    Log(VERBOUS, Tabs(StackSize) + '</' + Stack[StackSize - 1].Name + '> (' + IntToStr(GetTickCount - Stack[StackSize - 1].Time) + ')');
     dec(StackSize);
   end;
 end;

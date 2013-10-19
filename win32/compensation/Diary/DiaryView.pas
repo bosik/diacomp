@@ -188,19 +188,16 @@ type
     function CurrentIsNull: boolean;
     function GetCurrentDate: TDate;
 
-    function IsRecordSelected: boolean;
-    function IsBloodSelected: boolean; deprecated;
-    function IsInsSelected: boolean; deprecated;
+    function IsRecordSelected: boolean; deprecated;
+
     function IsMealSelected: boolean; deprecated;
     function IsFoodSelected: boolean;
-    function IsNoteSelected: boolean; deprecated;
+    function _IsNoteSelected: boolean; deprecated;
 
     function SelectedRecord: TCustomRecord;
-    function SelectedBlood: TBloodRecord;
-    function SelectedIns: TInsRecord;
-    function SelectedMeal: TMealRecord;
+    function _SelectedMeal: TMealRecord; deprecated;
     function SelectedFood: TFoodMassed;
-    function SelectedNote: TNoteRecord;
+    function SelectedNote: TNoteRecord; deprecated;
 
     property SelectedPanel: integer read FSelPanel write FSelPanel;
     property SelectedLine: integer read FSelLine;
@@ -1435,15 +1432,6 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryView.IsBloodSelected: boolean;
-{==============================================================================}
-begin
-  Result := 
-    (IsRecordSelected)and
-    (CurrentPage.Recs[FSelPanel].RecType = TBloodRecord);
-end;
-
-{==============================================================================}
 function TDiaryView.IsFoodSelected: boolean;
 {==============================================================================}
 begin
@@ -1454,40 +1442,24 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryView.IsInsSelected: boolean;
-{==============================================================================}
-begin
-  Result := 
-    (IsRecordSelected)and
-    (CurrentPage.Recs[FSelPanel].RecType = TInsRecord);
-end;
-
-{==============================================================================}
 function TDiaryView.IsMealSelected: boolean;
 {==============================================================================}
 begin
-  Result := 
-    (IsRecordSelected)and
-    (CurrentPage.Recs[FSelPanel].RecType = TMealRecord);
+  Result := (SelectedRecord is TMealRecord);
 end;
 
 {==============================================================================}
-function TDiaryView.IsNoteSelected: boolean;
+function TDiaryView._IsNoteSelected: boolean;
 {==============================================================================}
 begin
-  Result := 
-    (IsRecordSelected)and
-    (CurrentPage.Recs[FSelPanel].RecType = TNoteRecord);
+  Result := (SelectedRecord is TNoteRecord);
 end;
 
 {==============================================================================}
 function TDiaryView.IsRecordSelected: boolean;
 {==============================================================================}
 begin
-  Result :=
-    (not CurrentIsNull)and
-    (FSelPanel >= 0)and
-    (FSelPanel < CurrentPage.Count);
+  Result := (SelectedRecord <> nil);
 end;
 
 {==============================================================================}
@@ -1504,7 +1476,7 @@ procedure TDiaryView.MouseMove(Shift: TShiftState; X, Y: Integer);
 {==============================================================================}
 var
   ClickInfo: TClickInfo;
-  
+  Meal: TMealRecord;
 begin
   inherited;
 
@@ -1513,27 +1485,30 @@ begin
      (IsRecordSelected) and
      (SelectedRecord is TMealRecord) then
   begin
-    GetMousePlace(90,y,ClickInfo);
+    GetMousePlace(90, y, ClickInfo);
+
+    Meal := TMealRecord(SelectedRecord);
+
     if (ClickInfo.Place = cpRec)and
        //(ClickInfo.Index = FSelPanel)and
        (ClickInfo.Line <> FSelLine)and
        (ClickInfo.Line > -1)and
-       (ClickInfo.Line < SelectedMeal.Count) then
+       (ClickInfo.Line < Meal.Count) then
     begin
       // чтобы края не блокировались
       if (ClickInfo.Index < FSelPanel) then ClickInfo.Line := 0 else
-      if (ClickInfo.Index > FSelPanel) then ClickInfo.Line := SelectedMeal.Count-1;
+      if (ClickInfo.Index > FSelPanel) then ClickInfo.Line := Meal.Count - 1;
 
       // поехали
       while (FSelLine < ClickInfo.Line) do
       begin
-        SelectedMeal.Exchange(FSelLine, FSelLine + 1);
+        Meal.Exchange(FSelLine, FSelLine + 1);
         inc(FSelLine);
       end;
 
       while (FSelLine > ClickInfo.Line) do
       begin
-        SelectedMeal.Exchange(FSelLine, FSelLine - 1);
+        Meal.Exchange(FSelLine, FSelLine - 1);
         dec(FSelLine);
       end;
 
@@ -1895,99 +1870,6 @@ begin
   end;
 end;
 
-(*
-{==============================================================================}
-procedure TDiaryView.RecBloodChange(Index: integer);
-{==============================================================================}
-begin
-  if Assigned(FOnBloodChange) then FOnBloodChange(Self,Index);
-end;
-
-{==============================================================================}
-procedure TDiaryView.RecInsChange(Index: integer);
-{==============================================================================}
-begin
-  if Assigned(FOnInsChange) then FOnInsChange(Self,Index);
-end;
-
-{==============================================================================}
-procedure TDiaryView.RecMealChange(Index: integer);
-{==============================================================================}
-begin
-  if Assigned(FOnMealChange) then FOnMealChange(Self,Index);
-end;
-
-{==============================================================================}
-function TDiaryView.RemoveFood(Index, Line: integer): boolean;
-{==============================================================================}
-begin
-  if (not CurrentIsEmpty) then
-    Result := CurrentPage.RemoveFood(Index,Line)
-  else
-    Result := false;
-  if Result then
-  begin
-    FSelLine := -1;
-    RecMealChange(Index);
-    Change;
-  end;
-end;
-
-{==============================================================================}
-function TDiaryView.RemoveFood: boolean;
-{==============================================================================}
-begin
-  Result := RemoveFood(FSelPanel,FSelLine);
-end;
-
-{==============================================================================}
-function TDiaryView.RemoveRec(Index: integer): boolean;
-{==============================================================================}
-var
-  TagType: TRecType;
-begin
-  if (not CurrentIsEmpty)and
-     (Index >= 0)and
-     (Index < CurrentPage.Count) then
-  begin
-    TagType := CurrentPage[Index].TagType;
-    Result := CurrentPage.Remove(Index);
-
-    if Result then
-    begin
-      if (FSelPanel = Index) then FSelPanel := -1;
-      case TagType of
-        rtBlood: RecBloodChange(-1);
-        rtIns: RecInsChange(-1);
-        rtMeal: RecMealChange(-1);
-      end;
-      Change;
-    end;
-  end else
-    Result := false;
-end;
-
-{==============================================================================}
-function TDiaryView.RemoveRecSelected: boolean;
-{==============================================================================}
-begin
-  Result := RemoveRec(FSelPanel);
-end;
-*)
-
-{==============================================================================}
-function TDiaryView.SelectedBlood: TBloodRecord;
-{==============================================================================}
-begin
-  //Log('SelectedBlood()');
-
-  if IsBloodSelected then
-    Result := TBloodRecord(CurrentPage.Recs[FSelPanel])
-  else
-    //Result := nil;
-    raise Exception.Create('SelectedBlood: not such record selected');
-end;
-
 {==============================================================================}
 function TDiaryView.SelectedFood: TFoodMassed;
 {==============================================================================}
@@ -2002,20 +1884,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryView.SelectedIns: TInsRecord;
-{==============================================================================}
-begin
- // Log('SelectedIns()');
-
-  if IsInsSelected then
-    Result := TInsRecord(CurrentPage.Recs[FSelPanel])
-  else
-    //Result := nil;
-    raise Exception.Create('SelectedIns: no such record selected');
-end;
-
-{==============================================================================}
-function TDiaryView.SelectedMeal: TMealRecord;
+function TDiaryView._SelectedMeal: TMealRecord;
 {==============================================================================}
 begin
   //Log('SelectedMeal()');
@@ -2033,7 +1902,7 @@ function TDiaryView.SelectedNote: TNoteRecord;
 begin
   //Log('SelectedNote()');
 
-  if IsNoteSelected then
+  if _IsNoteSelected then
     Result := TNoteRecord(CurrentPage.Recs[FSelPanel])
   else
     //Result := nil;
@@ -2046,11 +1915,10 @@ function TDiaryView.SelectedRecord: TCustomRecord;
 begin
   //Log('SelectedRecord()');
 
-  if IsRecordSelected then
+  if ((CurrentPage <> nil) and (FSelPanel >= 0) and (FSelPanel < CurrentPage.Count)) then
     Result := CurrentPage.Recs[FSelPanel]
   else
-    //Result := nil;
-    raise Exception.Create('SelectedRecord: no record selected');
+    Result := nil;
 end;
 
 {==============================================================================}
@@ -2560,8 +2428,10 @@ begin
   end;
 end;}
 
+{==============================================================================}
 procedure TDiaryView.HandlePageChanged(EventType: TPageEventType;
   Page: TDiaryPage; RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
+{==============================================================================}
 begin
   if (EventType = etRemove) then
   begin

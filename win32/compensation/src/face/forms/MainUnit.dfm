@@ -616,7 +616,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.756356597220000000
+            Date = 40251.586551979170000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -760,6 +760,21 @@ object Form1: TForm1
               Transparent = True
               OnMouseDown = ImageMinMaxTimesMouseDown
             end
+          end
+          object PanelDevelopment: TPanel
+            Left = 16
+            Top = 640
+            Width = 193
+            Height = 73
+            Caption = 'DEV'
+            Color = clBlack
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clRed
+            Font.Height = -27
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            TabOrder = 4
           end
         end
         object PanelDiaryDish: TPanel

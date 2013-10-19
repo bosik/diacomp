@@ -120,7 +120,7 @@ begin
   else
   begin
     // TODO: either throw or log (antipattern #1)
-    Log('ERROR: TSettings.FindRecord(): настройка"' + Name + '" отсутствует', True);
+    Log(ERROR, 'TSettings.FindRecord(): настройка"' + Name + '" отсутствует', True);
     raise EIncorrectRecordName.Create('Настройка "' + Name + '" отсутствует');
   end;
 end;

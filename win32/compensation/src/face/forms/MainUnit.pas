@@ -274,6 +274,7 @@ type
     LabelCalcTime: TLabel;
     LabelAvgDeviation: TLabel;
     LabelWeight: TLabel;
+    PanelDevelopment: TPanel;
 
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ButtonCreateFoodClick(Sender: TObject);
@@ -653,7 +654,7 @@ begin
     begin
       Form1.StatusBar.Panels[3].Text := 'Ошибка синхронизации';
       Application.ProcessMessages;
-      Log('Exception in MySyncDiary(): ' + E.Message, True);
+      Log(ERROR, 'Exception in MySyncDiary(): ' + E.Message, True);
       raise E;
     end;
   end;
@@ -834,7 +835,7 @@ var
   begin
     if (Prev <> '') then
       // TODO: make log's "Save" parameter False in release version
-      Log(Prev + #9 + IntToStr(Timer.Time), False);
+      Log(DEBUG, Prev + #9 + IntToStr(Timer.Time), False);
     ShowProcess(Text);
     Prev := Text;
   end;
@@ -876,7 +877,7 @@ begin
       StartupInfo(STATUS_ACTION_CONVERT_FOODBASE);
       FoodBase.LoadFromFile_Old(WORK_FOLDER + FOLDER_BASES + '\' + FoodBase_Name_Old);
       FoodBase.SaveToFile(WORK_FOLDER + FoodBase_FileName);
-      Log('Foodbase converted ok', True);
+      Log(INFO, 'Foodbase converted ok', True);
     end else
 
     // TODO: загружается дважды :(
@@ -885,7 +886,7 @@ begin
     begin
       StartupInfo(STATUS_ACTION_LOADING_FOODBASE);
       FoodBase.LoadFromFile_XML(WORK_FOLDER + FoodBase_FileName);
-      Log('Foodbase loaded ok', True);
+      Log(INFO, 'Foodbase loaded ok', True);
     end;
 
     { =============== ЗАГРУЗКА БАЗЫ БЛЮД =============== }
@@ -898,7 +899,7 @@ begin
       StartupInfo(STATUS_ACTION_CONVERT_DISHBASE);
       DishBase.LoadFromFile_Old(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name_Old, FoodBase);
       DishBase.SaveToFile(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name);
-      Log('DishBase converted ok', True);
+      Log(INFO, 'DishBase converted ok', True);
     end else
 
     // TODO: загружается дважды :(
@@ -907,7 +908,7 @@ begin
     begin
       StartupInfo(STATUS_ACTION_LOADING_DISHBASE);
       DishBase.LoadFromFile_XML(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name);
-      Log('Dishbase loaded ok', True);
+      Log(INFO, 'Dishbase loaded ok', True);
     end;
 
     LoadExpander;
@@ -1066,7 +1067,7 @@ begin
     on E: Exception do
     begin
       // TODO 1: повысить устойчивость (fail-soft), выделить независимые блоки
-      Log(Format(MESSAGE_ERROR_INITIALIZATION, [Prev, E.Message]), True);
+      Log(ERROR, Format(MESSAGE_ERROR_INITIALIZATION, [Prev, E.Message]), True);
       ErrorMessage(Format(MESSAGE_ERROR_INITIALIZATION, [Prev, E.Message]));
     end;
   end;
@@ -1557,7 +1558,7 @@ var
     except
       on E: Exception do
       begin
-        Log('EXCEPTION in AnalyzeUsingDiary(): ' + E.Message, True);
+        Log(ERROR, 'EXCEPTION in AnalyzeUsingDiary(): ' + E.Message, True);
         ErrorMessage('Ошибка анализа использования дневника');
       end;
     end;
@@ -1586,7 +1587,7 @@ var
     except
       on E: Exception do
       begin
-        Log('EXCEPTION in AnalyzeUsingDish(): ' + E.Message, True);
+        Log(ERROR, 'EXCEPTION in AnalyzeUsingDish(): ' + E.Message, True);
         ErrorMessage('Ошибка анализа использования базы продуктов');
       end;
     end;
@@ -2073,11 +2074,14 @@ var
   ItemType: TItemType;
   n: integer;
   Mass: Extended;
+  Meal: TMealRecord;
 begin
-  Log('TForm1.ButtonDiaryNewAddClick()');
+  Log(DEBUG, 'TForm1.ButtonDiaryNewAddClick()');
 
   if (DiaryView.IsMealSelected) then
   begin
+    Meal := TMealRecord(DiaryView.SelectedRecord);
+
     ComboDiaryNew.Text := Trim(ComboDiaryNew.Text);
     EditDiaryNewMass.Text := Trim(EditDiaryNewMass.Text);
     ItemType := IdentifyItem(ComboDiaryNew.Text, n);
@@ -2111,8 +2115,8 @@ begin
       end else
       begin
         case ItemType of
-          itFood: DiaryView.SelectedMeal.Add(FoodBase[n].AsFoodMassed(Mass));
-          itDish: DiaryView.SelectedMeal.Add(DishBase[n].AsFoodMassed(Mass));
+          itFood: Meal.Add(FoodBase[n].AsFoodMassed(Mass));
+          itDish: Meal.Add(DishBase[n].AsFoodMassed(Mass));
         end;
 
         ComboDiaryNew.Text := '';
@@ -2135,7 +2139,7 @@ procedure TForm1.ScrollBoxDiaryMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 {==============================================================================}
 begin
-  Log('TForm1.ScrollBoxDiaryMouseDown()');
+  Log(DEBUG, 'TForm1.ScrollBoxDiaryMouseDown()');
   DiaryView.DeselectAll;
   UpdateMealStatistics;
   UpdateMealDose;
@@ -2276,7 +2280,7 @@ procedure TForm1.DiaryViewMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 {==============================================================================}
 begin
-  Log('TForm1.DiaryViewMouseDown()');
+  Log(DEBUG, 'TForm1.DiaryViewMouseDown()');
   //ProcessMealSelected(DiaryView.IsMealSelected); -- on Idle
 
   FocusMealInput;
@@ -2468,7 +2472,7 @@ begin
 
   if DiaryView.IsMealSelected then
   begin
-    SelMeal := DiaryView.SelectedMeal;
+    SelMeal := TMealRecord(DiaryView.SelectedRecord);
 
     LabelDiaryMealProts.Font.Color := clWindowText;
     LabelDiaryMealProts.Caption := 'Белки: '+IntToStr(Round(SelMeal.Prots))+' (г)';
@@ -2553,7 +2557,7 @@ begin
   // блюдо выбрано, информируем 
   begin
     { ищем приём пищи, замер и инъекцию }
-    SelMeal := DiaryView.SelectedMeal;
+    SelMeal := TMEalRecord(DiaryView.SelectedRecord);
 
     StartBlood := TBloodRecord(
       Diary.FindRecord(
@@ -2576,7 +2580,7 @@ begin
     );
 
     { Определяем коэффициенты }
-    Koof := GetKoof(DiaryView.SelectedMeal.Time);
+    Koof := GetKoof(SelMeal.Time);
 
     { Коррекция СК }
     if (StartBlood <> nil) then
@@ -2702,7 +2706,7 @@ var
   P: TDialogParams;
   StrValue: string;
 begin
-  Log('ShowBloodEditor()');
+  Log(DEBUG, 'ShowBloodEditor()');
 
   P.Image := Form1.ButtonAddBlood.Glyph;
 
@@ -2744,7 +2748,7 @@ var
   P: TDialogParams;
   StrValue: string;
 begin
-  Log('TForm1.ShowInsEditor()');
+  Log(DEBUG, 'TForm1.ShowInsEditor()');
 
   P.Image := Form1.ButtonAddIns.Glyph;
 
@@ -2788,7 +2792,7 @@ var
   P: TDialogParams;
   StrValue: string;
 begin
-  Log('TForm1.ShowMealEditor()');
+  Log(DEBUG, 'TForm1.ShowMealEditor()');
   P.Image := Form1.ButtonAddMeal.Glyph;
 
   if Value['ColoredEditors'] then
@@ -2828,7 +2832,7 @@ var
   P: TDialogParams;
   StrValue: string;
 begin
-  Log('TForm1.ShowNoteEditor()');
+  Log(DEBUG, 'TForm1.ShowNoteEditor()');
   P.Image := Form1.ImageNote.Picture.Bitmap;
 
   if Value['ColoredEditors'] then
@@ -2867,8 +2871,10 @@ var
   ATime: integer;
   AValue: real;
   AFinger: integer;
+
+  BloodRec: TBloodRecord;
 begin
-  Log('TForm1.ClickBlood');
+  Log(DEBUG, 'TForm1.ClickBlood');
 
   if New then
   begin
@@ -2884,16 +2890,23 @@ begin
       Result := -1;
   end else
   begin
-    ATime := DiaryView.SelectedBlood.Time;
-    AValue := DiaryView.SelectedBlood.Value;
-    AFinger := DiaryView.SelectedBlood.Finger;
+    BloodRec := TBloodRecord(DiaryView.SelectedRecord);
+
+    ATime := BloodRec.Time;
+    AValue := BloodRec.Value;
+    AFinger := BloodRec.Finger;
+
+    // TODO: refactor, pass whole TBloodRecord
+
     if ShowBloodEditor(ATime, AValue, AFinger, New, Focus) then
-    with DiaryView.SelectedBlood do
+    with BloodRec do
     begin
       BeginUpdate;
+
       Time   := ATime;
       Value  := AValue;
       Finger := AFinger;
+
       EndUpdate;
     end;
     Result := DiaryView.SelectedPanel;
@@ -2906,8 +2919,9 @@ function TForm1.ClickIns(New: boolean; Focus: TFocusMode): integer;
 var
   ATime: integer;
   AValue: real;
+  InsRecord: TInsRecord;
 begin
-  Log('TForm1.ClickIns');
+  Log(DEBUG, 'TForm1.ClickIns');
   if New then
   begin
     if ShowInsEditor(ATime, AValue, New, Focus) then
@@ -2919,10 +2933,12 @@ begin
       Result := -1;
   end else
   begin
-    ATime := DiaryView.SelectedIns.Time;
-    AValue := DiaryView.SelectedIns.Value;
+    InsRecord := TInsRecord(DiaryView.SelectedRecord);
+
+    ATime := InsRecord.Time;
+    AValue := InsRecord.Value;
     if ShowInsEditor(ATime, AValue, New, Focus) then
-    with DiaryView.SelectedIns do
+    with InsRecord do
     begin
       BeginUpdate;
       Time  := ATime;
@@ -2938,8 +2954,9 @@ function TForm1.ClickMeal(New: boolean): integer;
 {==============================================================================}
 var
   ATime: integer;
+  Meal: TMealRecord;
 begin
-  Log('TForm1.ClickMeal');
+  Log(DEBUG, 'TForm1.ClickMeal');
   if New then
   begin
     if ShowMealEditor(ATime, New) then
@@ -2950,9 +2967,11 @@ begin
       Result := -1;
   end else
   begin
-    ATime := DiaryView.SelectedMeal.Time;
+    Meal := TMealRecord(DiaryView.SelectedRecord);
+
+    ATime := Meal.Time;
     if ShowMealEditor(ATime, New) then
-    with DiaryView.SelectedMeal do
+    with Meal do
     begin
       //BeginUpdate;
       Time := ATime;
@@ -2971,7 +2990,7 @@ var
   ATime: integer;
   AValue: string;
 begin
-  Log('TForm1.ClickNote');
+  Log(DEBUG, 'TForm1.ClickNote');
   if New then
   begin
     if ShowNoteEditor(ATime, AValue, New, Focus) then
@@ -3126,11 +3145,11 @@ var
   Kf: TKoof;
   RelBS: real;
 begin
-  Log('TForm1.GetCompensationMass()');
+  Log(DEBUG, 'TForm1.GetCompensationMass()');
 
   if DiaryView.IsMealSelected then
   begin
-    Kf := GetKoof(DiaryView.SelectedMeal.Time);
+    Kf := GetKoof(TMealRecord(DiaryView.SelectedRecord).Time);
     RelBS := (RelCarbs*Kf.k + RelProts*Kf.p)/100;
     if (RelBS > 0) then
       Result := CurrentDB/RelBS
@@ -3150,7 +3169,7 @@ var
 begin
   if DiaryView.IsMealSelected then
   begin
-    Kf := GetKoof(DiaryView.SelectedMeal.Time);
+    Kf := GetKoof(TMealRecord(DiaryView.SelectedRecord).Time);
     RelBS := (RelCarbs*Kf.k + RelProts*Kf.p)/100;
     if (RelBS > 0) then
       Result := (CurrentDB+RelBS*CurMass)/RelBS
@@ -3563,7 +3582,7 @@ end;
 procedure TForm1.MyDeactivate(Sender: TObject);
 {==============================================================================}
 begin
-  Log('TForm1.MyDeactivate');
+  Log(DEBUG, 'TForm1.MyDeactivate');
   TimerTimeLeft.Interval := 60000;
 end;
 
@@ -3680,7 +3699,9 @@ begin
   end;  }
 end;
 
+{==============================================================================}
 procedure TForm1.ComboValueChange(Sender: TObject);
+{==============================================================================}
 type
   TRecItem = record
     Date: TDate;
@@ -3768,28 +3789,38 @@ begin
   FinishProc;
 end;
 
+{==============================================================================}
 procedure TForm1.ProcMessage(var M: TMessage);
+{==============================================================================}
 begin
   TrayIcon.ShowMainForm;
 end;
 
+{==============================================================================}
 procedure TForm1.BalloonAction_ShowForm;
+{==============================================================================}
 begin
   TrayIcon.ShowMainForm;
 end;
 
+{==============================================================================}
 procedure TForm1.BalloonAction_ShowInternetSettings;
+{==============================================================================}
 begin
   TrayIcon.ShowMainForm;
   FormSettings.OpenSettings(spInternet);
 end;
 
+{==============================================================================}
 procedure TForm1.BalloonAction_StartUpdate;
+{==============================================================================}
 begin
   SetupUpdate(True, AnExpDate);
 end;
 
+{==============================================================================}
 procedure TForm1.TrayIconBalloonHintClick(Sender: TObject);
+{==============================================================================}
 begin
   {case BalloonAction of
     baJustShow:
@@ -3807,22 +3838,26 @@ begin
     BalloonAction();
 end;
 
+{==============================================================================}
 procedure TForm1.ShowBalloon(const Msg: string; MsgType: TBalloonHintIcon;
   AfterAction: TBalloonAction);
+{==============================================================================}
 var
   Time: integer;
 begin
   case MsgType of
-    bitInfo: Time := 30;
+    bitInfo:              Time := 30;
     bitWarning, bitError: Time := 30; // max
-    else Time := 30;
+    else                  Time := 30;
   end; // cute
 
   BalloonAction := AfterAction;
   TrayIcon.ShowBalloonHint(PROGRAM_TITLE, Msg, MsgType, Time);
 end;
 
+{==============================================================================}
 procedure TForm1.ActionBalanceOnOffExecute(Sender: TObject);
+{==============================================================================}
 begin
   { изменяется после клика }
   Value['Balance'] := not Value['Balance'];
@@ -3834,48 +3869,62 @@ begin
   UpdateDayInfo;
 end;
 
+{==============================================================================}
 procedure TForm1.ActionEditBloodExecute(Sender: TObject);
+{==============================================================================}
 begin
   ClickBlood(False, fmTime);
 end;
 
+{==============================================================================}
 procedure TForm1.ActionEditInsExecute(Sender: TObject);
+{==============================================================================}
 begin
-  ClickIns(False,fmValue);
+  ClickIns(False, fmValue);
 end;
 
+{==============================================================================}
 procedure TForm1.ActionEditMealExecute(Sender: TObject);
+{==============================================================================}
 begin
   ClickMeal(False);
 end;  
 
+{==============================================================================}
 procedure TForm1.ActionEditNoteExecute(Sender: TObject);
+{==============================================================================}
 begin
-  ClickNote(False,fmValue);
+  ClickNote(False, fmValue);
 end;
 
+{==============================================================================}
 procedure TForm1.ActionRemovePanelExecute(Sender: TObject);
+{==============================================================================}
 var
   RecType: integer;
   MsgType: TMsgDlgType;
 begin
-  if DiaryView.IsBloodSelected then RecType := 1 else
-  if DiaryView.IsInsSelected   then RecType := 2 else
-  if DiaryView.IsMealSelected  then RecType := 3 else
-  if DiaryView.IsNoteSelected  then RecType := 4 else
-                                    RecType := -1;
+  if (DiaryView.SelectedRecord is TBloodRecord) then RecType := 1 else
+  if (DiaryView.SelectedRecord is TInsRecord)   then RecType := 2 else
+  if (DiaryView.SelectedRecord is TMealRecord)  then RecType := 3 else
+  if (DiaryView.SelectedRecord is TNoteRecord)  then RecType := 4 else
+                                                     RecType := -1;
 
-  if RecType = 3 then
-    MsgType := mtWarning
-  else
-    MsgType := mtConfirmation;
+  if (RecType > -1) then
+  begin
+    if (RecType = 3) then
+      MsgType := mtWarning
+    else
+      MsgType := mtConfirmation;
 
-  if (RecType > -1) and
-     (MessageDlg(MESSAGE_CONF_REMOVE_RECORD[RecType], MsgType, [mbYes,mbNo],0) = mrYes) then
-    DiaryView.CurrentPage.Remove(DiaryView.SelectedPanel);
+    if (MessageDlg(MESSAGE_CONF_REMOVE_RECORD[RecType], MsgType, [mbYes, mbNo], 0) = mrYes) then
+      DiaryView.CurrentPage.Remove(DiaryView.SelectedPanel);
+  end;
 end;
 
+{==============================================================================}
 procedure TForm1.ActionBalanceMealExecute(Sender: TObject);
+{==============================================================================}
 {var
   i,n: integer;
   SCarbs: string;
@@ -3984,7 +4033,7 @@ var
 begin
   if (DiaryView.IsFoodSelected) then
   begin
-    Meal := DiaryView.SelectedMeal;
+    Meal := TMealRecord(DiaryView.SelectedRecord);
     Food := DiaryView.SelectedFood;
 
     if MessageDlg(Format(MESSAGE_CONF_REMOVE_DIARY_FOOD, [Food.Name]), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
@@ -4284,7 +4333,7 @@ begin
   //DiaryView.SetShortMeal(ActionShortMeal.Checked);
 
   if DiaryView.IsMealSelected then
-    DiaryView.SelectedMeal.ShortMeal := ActionShortMeal.Checked;
+    TMealRecord(DiaryView.SelectedRecord).ShortMeal := ActionShortMeal.Checked;
 end;
 
 {==============================================================================}
@@ -4346,7 +4395,7 @@ var
   CurDate: TDate;
   OldPage: TDiaryPage;
   NewPage: TDiaryPage;
-  Rec: TMealRecord;
+  Meal: TMealRecord;
 begin
   {!!!}
   if not DiaryView.IsMealSelected then Exit;
@@ -4356,9 +4405,9 @@ begin
   NewPage := Diary[CurDate + Delta];
 
   n := DiaryView.SelectedPanel;
-  Rec := DiaryView.SelectedMeal;
+  Meal := TMealRecord(DiaryView.SelectedRecord);
   OldPage.Remove(n, False);
-  n := NewPage.Add(Rec);
+  n := NewPage.Add(Meal);
 
   DiaryView.OpenPage(Diary[Trunc(CurDate + Delta)], True);
   CalendarDiary.Date := CurDate + Delta;
@@ -4576,7 +4625,7 @@ begin
     UpdateTimeLeft;
   end;
 
-  Log('#MOD');
+  Log(VERBOUS, '#MOD');
 end;
 
 procedure TForm1.ButtonTestClick(Sender: TObject);

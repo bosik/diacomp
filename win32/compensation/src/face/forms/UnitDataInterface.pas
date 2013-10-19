@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes, ExtCtrls, ImgList, Controls, Menus,
-  ActnPopupCtrl,  ThreadExecutor, XPMan;
+  ActnPopupCtrl,  ThreadExecutor, XPMan, DiaryRecords;
 
 type
   TDataInterface = class(TDataModule)
@@ -77,7 +77,7 @@ procedure TDataInterface.PopupDiaryMealPopup(Sender: TObject);
 {==============================================================================}
 begin
   if Form1.DiaryView.IsMealSelected then
-    Form1.ActionShortMeal.Checked := Form1.DiaryView.SelectedMeal.ShortMeal;
+    Form1.ActionShortMeal.Checked := TMealRecord(Form1.DiaryView.SelectedRecord).ShortMeal;
 end;
 
 end.

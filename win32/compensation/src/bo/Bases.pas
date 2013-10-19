@@ -425,7 +425,7 @@ end;
 procedure TFoodBase.LoadFromFile_XML(const FileName: string);
 {==============================================================================}
 const
-  DEBUG = False;
+  LOGGING = False;
 
   procedure CheckNode(Node: IXMLNODE; Index: integer);
   const
@@ -457,37 +457,37 @@ begin
   end;
   *)
 
-  Log('TFoodBase.LoadFromFile_XML(): filename is "' + FileName + '"', DEBUG);
+  Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): filename is "' + FileName + '"', LOGGING);
 
   DS := SysUtils.DecimalSeparator;
 
   try
-    Log('TFoodBase.LoadFromFile_XML(): loading XML...', DEBUG);
+    Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): loading XML...', LOGGING);
 
     XML := LoadXMLDocument(FileName);
 
     SysUtils.DecimalSeparator := '.';
-    Log('TFoodBase.LoadFromFile_XML(): decimal separator is setted to "' + SysUtils.DecimalSeparator + '"', DEBUG);
-    Log('TFoodBase.LoadFromFile_XML(): XML.AsyncLoadState = ' + IntToStr(XML.AsyncLoadState), DEBUG);
+    Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): decimal separator is setted to "' + SysUtils.DecimalSeparator + '"', LOGGING);
+    Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): XML.AsyncLoadState = ' + IntToStr(XML.AsyncLoadState), LOGGING);
 
     if (XML.Active) then
-      Log('TFoodBase.LoadFromFile_XML(): XML.Active = True', DEBUG)
+      Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): XML.Active = True', LOGGING)
     else
-      Log('TFoodBase.LoadFromFile_XML(): XML.Active = False', DEBUG);
+      Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): XML.Active = False', LOGGING);
 
-    Log('TFoodBase.LoadFromFile_XML(): XML version is ' + XML.Version, DEBUG);
-    Log('TFoodBase.LoadFromFile_XML(): DecimalSeparator is "' + SysUtils.DecimalSeparator + '"', DEBUG);
+    Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): XML version is ' + XML.Version, LOGGING);
+    Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): DecimalSeparator is "' + SysUtils.DecimalSeparator + '"', LOGGING);
 
     if (XML.Version = '1.0') then
     begin
-      Log('TFoodBase.LoadFromFile_XML(): XML version is supported', DEBUG);
+      Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): XML version is supported', LOGGING);
 
       Root := XML.DocumentElement;
       FVersion := Root.Attributes['version'];
       SetLength(FBase, Root.ChildNodes.Count);
 
-      Log('TFoodBase.LoadFromFile_XML(): DecimalSeparator is "' + SysUtils.DecimalSeparator + '"', DEBUG);
-      Log('TFoodBase.LoadFromFile_XML(): count = ' + IntToStr(Root.ChildNodes.Count), DEBUG);
+      Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): DecimalSeparator is "' + SysUtils.DecimalSeparator + '"', LOGGING);
+      Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): count = ' + IntToStr(Root.ChildNodes.Count), LOGGING);
 
       {=========================================================}
       for i := 0 to Root.ChildNodes.Count - 1 do
@@ -513,21 +513,21 @@ begin
       end;
       {=========================================================}
 
-      Log('TFoodBase.LoadFromFile_XML(): data fetched OK', DEBUG);
+      Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): data fetched OK', LOGGING);
     end else
     begin
-      Log('TFoodBase.LoadFromFile_XML(): XML version is not supported, raising exception...', True);
+      Log(ERROR, 'TFoodBase.LoadFromFile_XML(): XML version ' + XML.Version + ' is not supported', LOGGING);
       raise Exception.Create('FoodBase version ' + XML.Version + ' is not supported');
     end;
 
-    Log('TFoodBase.LoadFromFile_XML(): Sorting data...', DEBUG);
+    Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): Sorting data...', LOGGING);
     Sort();
   finally
-    Log('TFoodBase.LoadFromFile_XML(): decimal separator "' + SysUtils.DecimalSeparator + '" is returned back to "' + DS + '"', DEBUG);
+    Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): decimal separator "' + SysUtils.DecimalSeparator + '" is returned back to "' + DS + '"', LOGGING);
     SysUtils.DecimalSeparator := DS;
   end;
 
-  Log('TFoodBase.LoadFromFile_XML(): DONE', DEBUG);
+  Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): DONE', LOGGING);
 end;
 
 {==============================================================================}
@@ -757,7 +757,7 @@ end;
 procedure TDishBase.LoadFromFile_XML(const FileName: string);
 {==============================================================================}
 const
-  DEBUG = False;
+  LOGGING = False;
 
 var
   XML: IXMLDocument;
@@ -779,37 +779,37 @@ begin
   end;
   *)
 
-  Log('TDishBase.LoadFromFile_XML(): filename is "' + FileName + '"', DEBUG);
+  Log(DEBUG, 'TDishBase.LoadFromFile_XML(): filename is "' + FileName + '"', LOGGING);
 
   DS := SysUtils.DecimalSeparator;
 
   try
-    Log('TDishBase.LoadFromFile_XML(): loading XML...', DEBUG);
+    Log(DEBUG, 'TDishBase.LoadFromFile_XML(): loading XML...', LOGGING);
 
     XML := LoadXMLDocument(FileName);
 
     SysUtils.DecimalSeparator := '.';
-    Log('TDishBase.LoadFromFile_XML(): decimal separator is setted to "' + SysUtils.DecimalSeparator + '"', DEBUG);
-    Log('TDishBase.LoadFromFile_XML(): XML.AsyncLoadState = ' + IntToStr(XML.AsyncLoadState), DEBUG);
+    Log(DEBUG, 'TDishBase.LoadFromFile_XML(): decimal separator is setted to "' + SysUtils.DecimalSeparator + '"', LOGGING);
+    Log(DEBUG, 'TDishBase.LoadFromFile_XML(): XML.AsyncLoadState = ' + IntToStr(XML.AsyncLoadState), LOGGING);
 
     if (XML.Active) then
-      Log('TDishBase.LoadFromFile_XML(): XML.Active = True', DEBUG)
+      Log(DEBUG, 'TDishBase.LoadFromFile_XML(): XML.Active = True', LOGGING)
     else
-      Log('TDishBase.LoadFromFile_XML(): XML.Active = False', DEBUG);
+      Log(DEBUG, 'TDishBase.LoadFromFile_XML(): XML.Active = False', LOGGING);
 
-    Log('TDishBase.LoadFromFile_XML(): XML version is ' + XML.Version, DEBUG);
-    Log('TDishBase.LoadFromFile_XML(): DecimalSeparator is "' + SysUtils.DecimalSeparator + '"', DEBUG);
+    Log(DEBUG, 'TDishBase.LoadFromFile_XML(): XML version is ' + XML.Version, LOGGING);
+    Log(DEBUG, 'TDishBase.LoadFromFile_XML(): DecimalSeparator is "' + SysUtils.DecimalSeparator + '"', LOGGING);
 
     if (XML.Version = '1.0') then
     begin
-      Log('TDishBase.LoadFromFile_XML(): XML version is supported', DEBUG);
+      Log(DEBUG, 'TDishBase.LoadFromFile_XML(): XML version is supported', LOGGING);
 
       Root := XML.DocumentElement;
       FVersion := Root.Attributes['version'];
       SetLength(FBase, Root.ChildNodes.Count);
 
-      Log('TDishBase.LoadFromFile_XML(): DecimalSeparator is "' + SysUtils.DecimalSeparator + '"', DEBUG);
-      Log('TDishBase.LoadFromFile_XML(): count = ' + IntToStr(Root.ChildNodes.Count), DEBUG);
+      Log(DEBUG, 'TDishBase.LoadFromFile_XML(): DecimalSeparator is "' + SysUtils.DecimalSeparator + '"', LOGGING);
+      Log(DEBUG, 'TDishBase.LoadFromFile_XML(): count = ' + IntToStr(Root.ChildNodes.Count), LOGGING);
 
       for i := 0 to Root.ChildNodes.Count - 1 do
       begin
@@ -850,21 +850,21 @@ begin
           Items[i].ModifiedTime := 0;
       end;
 
-      Log('TDishBase.LoadFromFile_XML(): data fetched OK', DEBUG);
+      Log(DEBUG, 'TDishBase.LoadFromFile_XML(): data fetched OK', LOGGING);
     end else
     begin
-      Log('TDishBase.LoadFromFile_XML(): XML version is not supported, raising exception...', True);
+      Log(ERROR, 'TDishBase.LoadFromFile_XML(): XML version ' + XML.Version + ' is not supported', True);
       raise Exception.Create('DishBase version ' + XML.Version + ' is not supported');
     end;
 
-    Log('TDishBase.LoadFromFile_XML(): Sorting data...', DEBUG);
+    Log(DEBUG, 'TDishBase.LoadFromFile_XML(): Sorting data...', LOGGING);
     Sort();
   finally
-    Log('TDishBase.LoadFromFile_XML(): decimal separator "' + SysUtils.DecimalSeparator + '" is returned back to "' + DS + '"', DEBUG);
+    Log(DEBUG, 'TDishBase.LoadFromFile_XML(): decimal separator "' + SysUtils.DecimalSeparator + '" is returned back to "' + DS + '"', LOGGING);
     SysUtils.DecimalSeparator := DS;
   end;
 
-  Log('TDishBase.LoadFromFile_XML(): DONE', DEBUG);
+  Log(DEBUG, 'TDishBase.LoadFromFile_XML(): DONE', LOGGING);
 end;
 
 {==============================================================================}

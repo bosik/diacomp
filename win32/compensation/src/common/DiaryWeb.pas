@@ -157,15 +157,15 @@ function TDiaryWebSource.DoGet(const URL: string; out Resp: string): boolean;
 {#}var
 {#}  Tick: cardinal;
 begin
-  {#} Log('TDiaryWebSource.DoGet("' + URL + '")');
+  {#} Log(VERBOUS, 'TDiaryWebSource.DoGet("' + URL + '")');
 
   Resp := '';
   try
     try
       {#} Tick := GetTickCount();
       Resp := FHTTP.Get(URL);
-      {#} Log('TDiaryWebSource.DoGet(): time is ' + IntToStr(GetTickCount - Tick) + ' msec');
-      {#} Log('TDiaryWebSource.DoGet(): Resp = "' + Resp + '"');
+      {#} Log(VERBOUS, 'TDiaryWebSource.DoGet(): time is ' + IntToStr(GetTickCount - Tick) + ' msec');
+      {#} Log(VERBOUS, 'TDiaryWebSource.DoGet(): Resp = "' + Resp + '"');
       Result := True;
     finally
       FHTTP.Disconnect;
@@ -173,7 +173,7 @@ begin
   except
     on ESE: Exception do
     begin
-      {#} Log('TDiaryWebSource.DoGet(): EXCEPTION! ' +  ESE.Message);
+      {#} Log(ERROR, 'TDiaryWebSource.DoGet(): EXCEPTION! ' +  ESE.Message);
       Result := False;
     end;
   end;
@@ -197,7 +197,7 @@ var
   i: integer;
 {#}  Tick: cardinal;
 begin
-  {#} Log('TDiaryWebSource.DoPost("' + URL + '"), ' + PrintParams());
+  {#} Log(VERBOUS, 'TDiaryWebSource.DoPost("' + URL + '"), ' + PrintParams());
 
   Resp := ''; 
   try
@@ -209,8 +209,8 @@ begin
 
       {#} Tick := GetTickCount();
       Resp := FHTTP.Post(URL, Data);
-      {#} Log('TDiaryWebSource.DoPost(): time is ' + IntToStr(GetTickCount - Tick) + ' msec');
-      {#} Log('TDiaryWebSource.DoPost(): Resp = "' + Resp + '"');
+      {#} Log(VERBOUS, 'TDiaryWebSource.DoPost(): time is ' + IntToStr(GetTickCount - Tick) + ' msec');
+      {#} Log(VERBOUS, 'TDiaryWebSource.DoPost(): Resp = "' + Resp + '"');
       Result := True;
     finally
       FHTTP.Disconnect;
@@ -219,7 +219,7 @@ begin
   except
     on ESE: Exception do
     begin
-      {#} Log('TDiaryWebSource.DoPost(): EXCEPTION! ' +  ESE.Message);
+      {#} Log(ERROR, 'TDiaryWebSource.DoPost(): EXCEPTION! ' +  ESE.Message);
       Result := False;
     end;
   end;
@@ -288,8 +288,8 @@ var
   S: TStringList;
   i,count: integer;
 begin
-  Log('TDiaryWebSource.GetModList(): started');
-  Log('TDiaryWebSource.GetModList(): Time = "' + DateTimeToStr(Time) + '"');
+  Log(VERBOUS, 'TDiaryWebSource.GetModList(): started');
+  Log(VERBOUS, 'TDiaryWebSource.GetModList(): Time = "' + DateTimeToStr(Time) + '"');
 
   try
 
@@ -298,12 +298,12 @@ begin
   else
     Query := FServer + PAGE_CONSOLE + '?diary:getModList&time=0';
 
-  Log('TDiaryWebSource.GetModList(): quering ' + Query);
+  Log(VERBOUS, 'TDiaryWebSource.GetModList(): quering ' + Query);
 
   if DoGetSmart(Query, Resp) then
   begin
-    Log('TDiaryWebSource.GetModList(): quered OK');
-    Log('TDiaryWebSource.GetModList(): Resp = "' + Resp + '"');
+    Log(VERBOUS, 'TDiaryWebSource.GetModList(): quered OK');
+    Log(VERBOUS, 'TDiaryWebSource.GetModList(): Resp = "' + Resp + '"');
 
     S := TStringList.Create;
     S.Text := Trim(Resp);
@@ -311,23 +311,18 @@ begin
     SetLength(ModList, S.Count);
     count := 0;
 
-    Log('TDiaryWebSource.GetModList(): lines count = ' + IntToStr(S.Count));
+    Log(VERBOUS, 'TDiaryWebSource.GetModList(): lines count = ' + IntToStr(S.Count));
 
     for i := 0 to S.Count - 1 do
     begin
       Line := S[i];
       if (Line <> '') then
       begin
-        Log('TDiaryWebSource.GetModList(): parsing line "' + Line + '"');
-
-        // TODO: не пригодится :)
-        //if Length(ModList) = Count then
-        //  SetLength(ModList, Length(ModList) * 2);
-
+        Log(VERBOUS, 'TDiaryWebSource.GetModList(): parsing line "' + Line + '"');
         Separate(Line, Date, '|', Version);
 
-        Log('TDiaryWebSource.GetModList(): date = "' + Date + '"');
-        Log('TDiaryWebSource.GetModList(): version = "' + Version + '"');
+        Log(VERBOUS, 'TDiaryWebSource.GetModList(): date = "' + Date + '"');
+        Log(VERBOUS, 'TDiaryWebSource.GetModList(): version = "' + Version + '"');
 
         ModList[Count].Date := Trunc(StrToDate(Date, WebFmt));
         ModList[Count].Version := StrToInt(Version);
@@ -354,17 +349,17 @@ begin
     SetLength(ModList, Count);
     Result := True;
 
-    Log('TDiaryWebSource.GetModList(): done OK');
+    Log(VERBOUS, 'TDiaryWebSource.GetModList(): done OK');
   end else
   begin
-    Log('TDiaryWebSource.GetModList(): quering failed');
+    Log(ERROR, 'TDiaryWebSource.GetModList(): quering failed');
     Result := False;
   end;
 
   except
     on ESE: Exception do
     begin
-      {#} Log('TDiaryWebSource.GetModList(): EXCEPTION! ' +  ESE.Message, True);
+      {#} Log(ERROR, 'TDiaryWebSource.GetModList(): EXCEPTION! ' +  ESE.Message, True);
       Result := False;
       ShowMessage('Error in GetModList(), see log file for details');
     end;    
@@ -387,20 +382,20 @@ begin
     Exit;
   end;
 
-  Log('TDiaryWebSource.GetPages: started');
+  Log(VERBOUS, 'TDiaryWebSource.GetPages: started');
 
   // конструируем запрос
   Query := FServer + PAGE_CONSOLE + '?diary:download&dates=';
   for i := 0 to High(Dates) do
     Query := Query + DateToStr(Dates[i], WebFmt) + ',';
 
-  Log('TDiaryWebSource.GetPages: quering ' + Query);
+  Log(VERBOUS, 'TDiaryWebSource.GetPages: quering ' + Query);
 
   // отправляем
   if DoGetSmart(Query, Resp) then
   begin
-    Log('TDiaryWebSource.GetPages: quered OK');
-    Log('TDiaryWebSource.GetPages: resp = "' + Resp + '"');
+    Log(VERBOUS, 'TDiaryWebSource.GetPages: quered OK');
+    Log(VERBOUS, 'TDiaryWebSource.GetPages: resp = "' + Resp + '"');
 
     // обрабатываем
     S := TStringList.Create;
@@ -412,11 +407,11 @@ begin
     finally
       S.Free;
     end;
-    Log('TDiaryWebSource.GetPages: done OK');
+    Log(VERBOUS, 'TDiaryWebSource.GetPages: done OK');
     Result := True;
   end else
   begin
-    Log('TDiaryWebSource.GetPages: quering failed');
+    Log(ERROR, 'TDiaryWebSource.GetPages: quering failed');
     Result := False;
   end;
 end;
@@ -454,57 +449,56 @@ begin
   Result := lrFailConnection;  // TODO: change to common fail
 
   try
+    SetLength(Par, 4);
+    par[0] := 'login=' + FUsername;
+    par[1] := 'password=' + FPassword;
+    par[2] := 'api=' + CURRENT_API_VERSION;
+    par[3] := 'noredir=';
 
-  SetLength(Par, 4);
-  par[0] := 'login=' + FUsername;
-  par[1] := 'password=' + FPassword;
-  par[2] := 'api=' + CURRENT_API_VERSION;
-  par[3] := 'noredir=';
+    //Log('TDiaryWebSource.Login(): started');
+    Log(VERBOUS, 'TDiaryWebSource.Login(): quering ' + FServer + PAGE_LOGIN);
 
-  //Log('TDiaryWebSource.Login(): started');
-  Log('TDiaryWebSource.Login(): quering ' + FServer + PAGE_LOGIN);
-
-  SendedTime := Now;
-  if DoPost(FServer + PAGE_LOGIN, par, Msg) then // Not smart, it's o.k. - Hi, C.O.! :D
-  begin
-    Log('TDiaryWebSource.Login(): quered OK, resp = "' + Msg + '"');
-    //{#}Log('Login()\posting: ' + IntToStr(GetTickCount() - Tick)); Tick := GetTickCount;
-
-    Separate(Msg, Res, '|', Desc);
-
-    Log('TDiaryWebSource.Login(): Res = "' + Res + '"');
-    Log('TDiaryWebSource.Login(): Desc = "' + Desc + '"');
-
-    //{#}Log('Login()\separating: ' + IntToStr(GetTickCount() - Tick)); Tick := GetTickCount;
-
-    if (Res = MESSAGE_DONE) then
+    SendedTime := Now;
+    if DoPost(FServer + PAGE_LOGIN, par, Msg) then // Not smart, it's o.k. - Hi, C.O.! :D
     begin
-      Log('TDiaryWebSource.Login(): it means "DONE", parsing desc...');
-      ServerTime := StrToDateTime(Desc, WebFmt);
-      FTimeShift := (SendedTime + Now)/2 - ServerTime;  // pretty cool :)
-      Result := lrDone;
+      Log(VERBOUS, 'TDiaryWebSource.Login(): quered OK, resp = "' + Msg + '"');
+      //{#}Log('Login()\posting: ' + IntToStr(GetTickCount() - Tick)); Tick := GetTickCount;
 
-      //{#}Log('Login()\calculating FShiftTime: ' + IntToStr(GetTickCount() - Tick)); Tick := GetTickCount;
+      Separate(Msg, Res, '|', Desc);
+
+      Log(VERBOUS, 'TDiaryWebSource.Login(): Res = "' + Res + '"');
+      Log(VERBOUS, 'TDiaryWebSource.Login(): Desc = "' + Desc + '"');
+
+      //{#}Log('Login()\separating: ' + IntToStr(GetTickCount() - Tick)); Tick := GetTickCount;
+
+      if (Res = MESSAGE_DONE) then
+      begin
+        Log(VERBOUS, 'TDiaryWebSource.Login(): it means "DONE", parsing desc...');
+        ServerTime := StrToDateTime(Desc, WebFmt);
+        FTimeShift := (SendedTime + Now)/2 - ServerTime;  // pretty cool :)
+        Result := lrDone;
+
+        //{#}Log('Login()\calculating FShiftTime: ' + IntToStr(GetTickCount() - Tick)); Tick := GetTickCount;
+      end else
+      // TODO: update format (w/o concatenation)
+      if (Msg = MESSAGE_FAIL_AUTH) then
+        Result := lrFailAuth else
+      if (Msg = MESSAGE_FAIL_APIVERSION) then
+        Result := lrFailAPIVersion
+      else
+        Result := lrFailFormat;
     end else
-    // TODO: update format (w/o concatenation)
-    if (Msg = MESSAGE_FAIL_AUTH) then
-      Result := lrFailAuth else
-    if (Msg = MESSAGE_FAIL_APIVERSION) then
-      Result := lrFailAPIVersion
-    else
-      Result := lrFailFormat;
-  end else
-    Result := lrFailConnection;
+      Result := lrFailConnection;
 
-  FOnline := (Result = lrDone);
-  FLoginResult := Result;
-  if Assigned(FOnLogin) then FOnLogin(Self, Result);
-  Log('TDiaryWebSource.Login(): done, FOnline = ' + BoolToStr(FOnline, True));
+    FOnline := (Result = lrDone);
+    FLoginResult := Result;
+    if Assigned(FOnLogin) then FOnLogin(Self, Result);
+    Log(VERBOUS, 'TDiaryWebSource.Login(): done, FOnline = ' + BoolToStr(FOnline, True));
 
   except
     on ESE: Exception do
     begin
-      {#} Log('TDiaryWebSource.Login(): EXCEPTION! ' +  ESE.Message);
+      {#} Log(ERROR, 'TDiaryWebSource.Login(): EXCEPTION! ' +  ESE.Message);
       ShowMessage('Exception in Login() procedure, see log file for details');
     end;
   end;
@@ -586,35 +580,39 @@ begin
     FOnline := False;
 end;
 
+{==============================================================================}
 function TDiaryWebSource.DownloadFoodBase(out Data: string): boolean;
+{==============================================================================}
 var
   Query: string;
 begin
   // конструируем запрос
   Query := FServer + PAGE_CONSOLE + '?foodbase:download';
-  Log('TDiaryWebSource.DownloadFoodBase: quering ' + Query);
+  Log(VERBOUS, 'TDiaryWebSource.DownloadFoodBase: quering ' + Query);
 
   // отправляем
   Result := DoGetSmart(Query, Data);
 
   if (not Result) then
-    Log('TDiaryWebSource.DownloadFoodBase: quering failed');
+    Log(ERROR, 'TDiaryWebSource.DownloadFoodBase: quering failed');
 end;
 
+{==============================================================================}
 function TDiaryWebSource.GetFoodBaseVersion(out Version: integer): boolean;
+{==============================================================================}
 var
   Query, Resp: string;
 begin
   // конструируем запрос
   Query := FServer + PAGE_CONSOLE + '?foodbase:getVersion';
-  Log('TDiaryWebSource.GetFoodBaseVersion: quering ' + Query);
+  Log(VERBOUS, 'TDiaryWebSource.GetFoodBaseVersion: quering ' + Query);
 
   // отправляем
   Result := DoGetSmart(Query, Resp);
   Result := Result and TryStrToInt(Resp, Version);
 
   if (not Result) then
-    Log('TDiaryWebSource.GetFoodBaseVersion: quering failed');
+    Log(ERROR, 'TDiaryWebSource.GetFoodBaseVersion: quering failed');
 end;
 
 function TDiaryWebSource.UploadFoodBase(const Data: string;
@@ -642,13 +640,13 @@ var
 begin
   // конструируем запрос
   Query := FServer + PAGE_CONSOLE + '?dishbase:download';
-  Log('TDiaryWebSource.DownloadDishBase: quering ' + Query);
+  Log(VERBOUS, 'TDiaryWebSource.DownloadDishBase: quering ' + Query);
 
   // отправляем
   Result := DoGetSmart(Query, Data);
 
   if (not Result) then
-    Log('TDiaryWebSource.DownloadDishBase: quering failed');
+    Log(ERROR, 'TDiaryWebSource.DownloadDishBase: quering failed');
 end;
 
 function TDiaryWebSource.GetDishBaseVersion(out Version: integer): boolean;
@@ -657,14 +655,14 @@ var
 begin
   // конструируем запрос
   Query := FServer + PAGE_CONSOLE + '?dishbase:getVersion';
-  Log('TDiaryWebSource.GetDishBaseVersion: quering ' + Query);
+  Log(VERBOUS, 'TDiaryWebSource.GetDishBaseVersion: quering ' + Query);
 
   // отправляем
   Result := DoGetSmart(Query, Resp);
   Result := Result and TryStrToInt(Resp, Version);
 
   if (not Result) then
-    Log('TDiaryWebSource.GetDishBaseVersion: quering failed');
+    Log(ERROR, 'TDiaryWebSource.GetDishBaseVersion: quering failed');
 end;
 
 function TDiaryWebSource.UploadDishBase(const Data: string;
