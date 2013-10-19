@@ -50,7 +50,8 @@ type
     FMass: real;
     procedure SetMass(const Value: real);
   public
-    constructor Create;
+    constructor Create; overload;
+    constructor Create(const Name: string; const RelProts, RelFats, RelCarbs, RelValue, Mass: real); overload;
     procedure CopyFrom(Food: TFoodMassed);
     class function IsCorrectMass(const Value: real): boolean;
 
@@ -227,6 +228,19 @@ constructor TFoodMassed.Create;
 begin
   inherited;
   FMass := 0;
+end;
+
+{==============================================================================}
+constructor TFoodMassed.Create(const Name: string; const RelProts, RelFats,
+  RelCarbs, RelValue, Mass: real);
+{==============================================================================}
+begin
+  Self.Name     := Name;
+  Self.RelProts := RelProts;
+  Self.RelFats  := RelFats;
+  Self.RelCarbs := RelCarbs;
+  Self.RelValue := RelValue;
+  Self.Mass     := Mass;
 end;
 
 {==============================================================================}

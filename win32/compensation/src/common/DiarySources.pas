@@ -3,10 +3,9 @@ unit DiarySources;
 interface
 
 uses
-  SysUtils,
-  DiaryRoutines,
-  DiaryPage,
-  DiaryPageSerializer {TODO: remove it};
+  SysUtils, // Exception
+  DiaryRoutines, // TDate
+  DiaryPage;
 
 type
   // информация для синхронизации
@@ -31,8 +30,6 @@ type
     function GetPage(Date: TDate): TDiaryPage;
     function PostPage(Page: TDiaryPage): boolean;
   end;
-
-  // TODO: create tests for DAO implementations (f.e., check if returning pages' dates always equal to requested dates)
 
 implementation
 

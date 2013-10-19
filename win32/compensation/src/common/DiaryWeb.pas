@@ -487,9 +487,6 @@ function TDiacompClient.PostPages(const Pages: string): boolean;
 var
   Par: TParamList;
   Msg: string;
-  OldStamp: TDateTime;
-  i: integer;
-  Source: string;
 begin
   // заглушка
   if (Length(Pages) = 0) then
@@ -497,16 +494,6 @@ begin
     Result := True;
     Exit;
   end;
-
-  // пустые страницы отсекать нельзя, ведь они могли быть непустыми до этого
-  (*Source := '';
-  for i := 0 to High(Pages) do
-  begin
-    {#}OldStamp := Pages[i].TimeStamp;
-    Pages[i].TimeStamp := LocalToServer(Pages[i].TimeStamp);
-    Source := Source + Pages[i].Write(True) + #13;
-    {#}Pages[i].TimeStamp := OldStamp;
-  end;    *)
 
   SetLength(Par, 2);
   par[0] := 'diary:upload=';
