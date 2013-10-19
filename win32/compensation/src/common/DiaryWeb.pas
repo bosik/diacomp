@@ -9,7 +9,10 @@ uses
   Classes,
   Windows, // debug: GetTickCount
   Dialogs, // debug
-  IdHTTP, DiaryRoutines, DiarySources,
+  IdHTTP,
+  DiaryRoutines,
+  DiarySources,
+  DiaryPageSerializer {TODO: remove},
   AutoLog;
 
 type
@@ -25,9 +28,7 @@ type
 
   TLoginEvent = procedure(Sender: TObject; State: TLoginResult) of object;
 
-  // TODO: separate Web client / Web source
-
-  TDiaryWebSource = class (IDiarySource)
+  TDiacompClient = class
   private
     // поля
     FHTTP: TIdHTTP;
@@ -54,12 +55,9 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    { интерфейс }
-    {#}function GetModList(Time: TDateTime; out ModList: TModList): boolean; override;
-    {#}function GetPages(const Dates: TDateList; out Pages: TPageDataList): boolean; override;
-    {#}function PostPages(const Pages: TPageDataList): boolean; override;
-
-    { специализация }
+    function GetModList(Time: TDateTime; out ModList: TModList): boolean;
+    function GetPages(const Dates: TDateList; out Pages: TPageDataList): boolean;
+    function PostPages(const Pages: TPageDataList): boolean;
 
     function Login(): TLoginResult;
     procedure Logout;
@@ -82,7 +80,6 @@ type
     function Search(const Key: string): string;
 
     { свойства }
-    //property Autologin: boolean read FAutologin write FAutologin;
     property LoginResult: TLoginResult read FLoginResult;
     property Online: boolean read FOnline;
     property Username: string read FUsername write FUsername;
@@ -92,32 +89,10 @@ type
     { события }
     property OnLogin: TLoginEvent read FOnLogin write FOnLogin;
   end;
-
- (* TWebDiary = class
-  private
-    FCache: array of TWebDiaryPage;
-    FCapacity: integer;
-    FRealSize: integer;
-    FCursor: integer;
-    {web}FLogged: boolean;
-  protected
-    procedure Add(Page: TWebDiaryPage);
-    function FindInCache(Date: TDateTime): TWebDiaryPage; // или TDiaryPage ?
-  public
-    constructor Create(Capacity: integer = 16);
-    destructor Destroy; override;
-    function GetPage(Date: TDateTime; ForceReload: boolean = False): TWebDiaryPage;
-    {web}function Login(const Name, Password: string): boolean;
-    {web}procedure Logout;
-    function PostModified(Limit: integer = 0): integer;
-    procedure ReloadCash;
-
-    {web}property Logged: boolean read FLogged;
-   end;   *)
   
 implementation
 
-{ TDiaryWebSource }
+{ TDiacompClient }
 
 const
   CURRENT_API_VERSION  = '1.2';
@@ -136,7 +111,7 @@ const
   EXCEPTION_OFFLINE = 'Для выполнения операции необходимо авторизоваться';
 
 {==============================================================================}
-constructor TDiaryWebSource.Create;
+constructor TDiacompClient.Create;
 {==============================================================================}
 begin
   FOnline := False;
@@ -145,27 +120,27 @@ begin
 end;
 
 {==============================================================================}
-destructor TDiaryWebSource.Destroy;
+destructor TDiacompClient.Destroy;
 {==============================================================================}
 begin
   FHTTP.Free;
 end;
 
 {==============================================================================}
-function TDiaryWebSource.DoGet(const URL: string; out Resp: string): boolean;
+function TDiacompClient.DoGet(const URL: string; out Resp: string): boolean;
 {==============================================================================}
 {#}var
 {#}  Tick: cardinal;
 begin
-  {#} Log(VERBOUS, 'TDiaryWebSource.DoGet("' + URL + '")');
+  {#} Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '")');
 
   Resp := '';
   try
     try
       {#} Tick := GetTickCount();
       Resp := FHTTP.Get(URL);
-      {#} Log(VERBOUS, 'TDiaryWebSource.DoGet(): time is ' + IntToStr(GetTickCount - Tick) + ' msec');
-      {#} Log(VERBOUS, 'TDiaryWebSource.DoGet(): Resp = "' + Resp + '"');
+      {#} Log(VERBOUS, 'TDiacompClient.DoGet(): time is ' + IntToStr(GetTickCount - Tick) + ' msec');
+      {#} Log(VERBOUS, 'TDiacompClient.DoGet(): Resp = "' + Resp + '"');
       Result := True;
     finally
       FHTTP.Disconnect;
@@ -173,14 +148,14 @@ begin
   except
     on ESE: Exception do
     begin
-      {#} Log(ERROR, 'TDiaryWebSource.DoGet(): EXCEPTION! ' +  ESE.Message);
+      {#} Log(ERROR, 'TDiacompClient.DoGet(): EXCEPTION! ' +  ESE.Message);
       Result := False;
     end;
   end;
 end;
 
 {==============================================================================}
-function TDiaryWebSource.DoPost(const URL: string; const Par: TParamList; out Resp: string): boolean;
+function TDiacompClient.DoPost(const URL: string; const Par: TParamList; out Resp: string): boolean;
 {==============================================================================}
 
   function PrintParams: string;
@@ -197,7 +172,7 @@ var
   i: integer;
 {#}  Tick: cardinal;
 begin
-  {#} Log(VERBOUS, 'TDiaryWebSource.DoPost("' + URL + '"), ' + PrintParams());
+  {#} Log(VERBOUS, 'TDiacompClient.DoPost("' + URL + '"), ' + PrintParams());
 
   Resp := ''; 
   try
@@ -209,8 +184,8 @@ begin
 
       {#} Tick := GetTickCount();
       Resp := FHTTP.Post(URL, Data);
-      {#} Log(VERBOUS, 'TDiaryWebSource.DoPost(): time is ' + IntToStr(GetTickCount - Tick) + ' msec');
-      {#} Log(VERBOUS, 'TDiaryWebSource.DoPost(): Resp = "' + Resp + '"');
+      {#} Log(VERBOUS, 'TDiacompClient.DoPost(): time is ' + IntToStr(GetTickCount - Tick) + ' msec');
+      {#} Log(VERBOUS, 'TDiacompClient.DoPost(): Resp = "' + Resp + '"');
       Result := True;
     finally
       FHTTP.Disconnect;
@@ -219,14 +194,14 @@ begin
   except
     on ESE: Exception do
     begin
-      {#} Log(ERROR, 'TDiaryWebSource.DoPost(): EXCEPTION! ' +  ESE.Message);
+      {#} Log(ERROR, 'TDiacompClient.DoPost(): EXCEPTION! ' +  ESE.Message);
       Result := False;
     end;
   end;
 end;
 
 {==============================================================================}
-function TDiaryWebSource.DoGetSmart(const URL: string; out Resp: string): boolean;
+function TDiacompClient.DoGetSmart(const URL: string; out Resp: string): boolean;
 {==============================================================================}
 begin
   if DoGet(URL, Resp) then
@@ -245,7 +220,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryWebSource.DoPostSmart(const URL: string; const Par: TParamList; out Resp: string): boolean;
+function TDiacompClient.DoPostSmart(const URL: string; const Par: TParamList; out Resp: string): boolean;
 {==============================================================================}
 begin
   if DoPost(URL, Par, Resp) then
@@ -264,7 +239,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryWebSource.GetModList(Time: TDateTime; out ModList: TModList): boolean;
+function TDiacompClient.GetModList(Time: TDateTime; out ModList: TModList): boolean;
 {==============================================================================}
 
   function ChkSpace(const S: string): string;
@@ -288,8 +263,8 @@ var
   S: TStringList;
   i,count: integer;
 begin
-  Log(VERBOUS, 'TDiaryWebSource.GetModList(): started');
-  Log(VERBOUS, 'TDiaryWebSource.GetModList(): Time = "' + DateTimeToStr(Time) + '"');
+  Log(VERBOUS, 'TDiacompClient.GetModList(): started');
+  Log(VERBOUS, 'TDiacompClient.GetModList(): Time = "' + DateTimeToStr(Time) + '"');
 
   try
 
@@ -298,12 +273,12 @@ begin
   else
     Query := FServer + PAGE_CONSOLE + '?diary:getModList&time=0';
 
-  Log(VERBOUS, 'TDiaryWebSource.GetModList(): quering ' + Query);
+  Log(VERBOUS, 'TDiacompClient.GetModList(): quering ' + Query);
 
   if DoGetSmart(Query, Resp) then
   begin
-    Log(VERBOUS, 'TDiaryWebSource.GetModList(): quered OK');
-    Log(VERBOUS, 'TDiaryWebSource.GetModList(): Resp = "' + Resp + '"');
+    Log(VERBOUS, 'TDiacompClient.GetModList(): quered OK');
+    Log(VERBOUS, 'TDiacompClient.GetModList(): Resp = "' + Resp + '"');
 
     S := TStringList.Create;
     S.Text := Trim(Resp);
@@ -311,18 +286,18 @@ begin
     SetLength(ModList, S.Count);
     count := 0;
 
-    Log(VERBOUS, 'TDiaryWebSource.GetModList(): lines count = ' + IntToStr(S.Count));
+    Log(VERBOUS, 'TDiacompClient.GetModList(): lines count = ' + IntToStr(S.Count));
 
     for i := 0 to S.Count - 1 do
     begin
       Line := S[i];
       if (Line <> '') then
       begin
-        Log(VERBOUS, 'TDiaryWebSource.GetModList(): parsing line "' + Line + '"');
+        Log(VERBOUS, 'TDiacompClient.GetModList(): parsing line "' + Line + '"');
         Separate(Line, Date, '|', Version);
 
-        Log(VERBOUS, 'TDiaryWebSource.GetModList(): date = "' + Date + '"');
-        Log(VERBOUS, 'TDiaryWebSource.GetModList(): version = "' + Version + '"');
+        Log(VERBOUS, 'TDiacompClient.GetModList(): date = "' + Date + '"');
+        Log(VERBOUS, 'TDiacompClient.GetModList(): version = "' + Version + '"');
 
         ModList[Count].Date := Trunc(StrToDate(Date, WebFmt));
         ModList[Count].Version := StrToInt(Version);
@@ -349,17 +324,17 @@ begin
     SetLength(ModList, Count);
     Result := True;
 
-    Log(VERBOUS, 'TDiaryWebSource.GetModList(): done OK');
+    Log(VERBOUS, 'TDiacompClient.GetModList(): done OK');
   end else
   begin
-    Log(ERROR, 'TDiaryWebSource.GetModList(): quering failed');
+    Log(ERROR, 'TDiacompClient.GetModList(): quering failed');
     Result := False;
   end;
 
   except
     on ESE: Exception do
     begin
-      {#} Log(ERROR, 'TDiaryWebSource.GetModList(): EXCEPTION! ' +  ESE.Message, True);
+      {#} Log(ERROR, 'TDiacompClient.GetModList(): EXCEPTION! ' +  ESE.Message, True);
       Result := False;
       ShowMessage('Error in GetModList(), see log file for details');
     end;    
@@ -367,7 +342,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryWebSource.GetPages(const Dates: TDateList; out Pages: TPageDataList): boolean;
+function TDiacompClient.GetPages(const Dates: TDateList; out Pages: TPageDataList): boolean;
 {==============================================================================}
 var
   Query, Resp: string;
@@ -382,20 +357,20 @@ begin
     Exit;
   end;
 
-  Log(VERBOUS, 'TDiaryWebSource.GetPages: started');
+  Log(VERBOUS, 'TDiacompClient.GetPages: started');
 
   // конструируем запрос
   Query := FServer + PAGE_CONSOLE + '?diary:download&dates=';
   for i := 0 to High(Dates) do
     Query := Query + DateToStr(Dates[i], WebFmt) + ',';
 
-  Log(VERBOUS, 'TDiaryWebSource.GetPages: quering ' + Query);
+  Log(VERBOUS, 'TDiacompClient.GetPages: quering ' + Query);
 
   // отправляем
   if DoGetSmart(Query, Resp) then
   begin
-    Log(VERBOUS, 'TDiaryWebSource.GetPages: quered OK');
-    Log(VERBOUS, 'TDiaryWebSource.GetPages: resp = "' + Resp + '"');
+    Log(VERBOUS, 'TDiacompClient.GetPages: quered OK');
+    Log(VERBOUS, 'TDiacompClient.GetPages: resp = "' + Resp + '"');
 
     // обрабатываем
     S := TStringList.Create;
@@ -407,24 +382,24 @@ begin
     finally
       S.Free;
     end;
-    Log(VERBOUS, 'TDiaryWebSource.GetPages: done OK');
+    Log(VERBOUS, 'TDiacompClient.GetPages: done OK');
     Result := True;
   end else
   begin
-    Log(ERROR, 'TDiaryWebSource.GetPages: quering failed');
+    Log(ERROR, 'TDiacompClient.GetPages: quering failed');
     Result := False;
   end;
 end;
 
 {==============================================================================}
-function TDiaryWebSource.Kicked(const Answer: string): boolean;
+function TDiacompClient.Kicked(const Answer: string): boolean;
 {==============================================================================}
 begin
   Result := (Answer = MESSAGE_UNAUTH);
 end;
 
 {==============================================================================}
-function TDiaryWebSource.LocalToServer(Time: TDateTime): TDateTime;
+function TDiacompClient.LocalToServer(Time: TDateTime): TDateTime;
 {==============================================================================}
 begin
   if (not FOnline) then Login();
@@ -432,7 +407,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryWebSource.Login(): TLoginResult;
+function TDiacompClient.Login(): TLoginResult;
 {==============================================================================}
 var
   Par: TParamList;
@@ -455,25 +430,25 @@ begin
     par[2] := 'api=' + CURRENT_API_VERSION;
     par[3] := 'noredir=';
 
-    //Log('TDiaryWebSource.Login(): started');
-    Log(VERBOUS, 'TDiaryWebSource.Login(): quering ' + FServer + PAGE_LOGIN);
+    //Log('TDiacompClient.Login(): started');
+    Log(VERBOUS, 'TDiacompClient.Login(): quering ' + FServer + PAGE_LOGIN);
 
     SendedTime := Now;
     if DoPost(FServer + PAGE_LOGIN, par, Msg) then // Not smart, it's o.k. - Hi, C.O.! :D
     begin
-      Log(VERBOUS, 'TDiaryWebSource.Login(): quered OK, resp = "' + Msg + '"');
+      Log(VERBOUS, 'TDiacompClient.Login(): quered OK, resp = "' + Msg + '"');
       //{#}Log('Login()\posting: ' + IntToStr(GetTickCount() - Tick)); Tick := GetTickCount;
 
       Separate(Msg, Res, '|', Desc);
 
-      Log(VERBOUS, 'TDiaryWebSource.Login(): Res = "' + Res + '"');
-      Log(VERBOUS, 'TDiaryWebSource.Login(): Desc = "' + Desc + '"');
+      Log(VERBOUS, 'TDiacompClient.Login(): Res = "' + Res + '"');
+      Log(VERBOUS, 'TDiacompClient.Login(): Desc = "' + Desc + '"');
 
       //{#}Log('Login()\separating: ' + IntToStr(GetTickCount() - Tick)); Tick := GetTickCount;
 
       if (Res = MESSAGE_DONE) then
       begin
-        Log(VERBOUS, 'TDiaryWebSource.Login(): it means "DONE", parsing desc...');
+        Log(VERBOUS, 'TDiacompClient.Login(): it means "DONE", parsing desc...');
         ServerTime := StrToDateTime(Desc, WebFmt);
         FTimeShift := (SendedTime + Now)/2 - ServerTime;  // pretty cool :)
         Result := lrDone;
@@ -493,12 +468,12 @@ begin
     FOnline := (Result = lrDone);
     FLoginResult := Result;
     if Assigned(FOnLogin) then FOnLogin(Self, Result);
-    Log(VERBOUS, 'TDiaryWebSource.Login(): done, FOnline = ' + BoolToStr(FOnline, True));
+    Log(VERBOUS, 'TDiacompClient.Login(): done, FOnline = ' + BoolToStr(FOnline, True));
 
   except
     on ESE: Exception do
     begin
-      {#} Log(ERROR, 'TDiaryWebSource.Login(): EXCEPTION! ' +  ESE.Message);
+      {#} Log(ERROR, 'TDiacompClient.Login(): EXCEPTION! ' +  ESE.Message);
       ShowMessage('Exception in Login() procedure, see log file for details');
     end;
   end;
@@ -507,7 +482,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TDiaryWebSource.Logout;
+procedure TDiacompClient.Logout;
 {==============================================================================}
 var
   Resp: string;
@@ -517,7 +492,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryWebSource.PostPages(const Pages: TPageDataList): boolean;
+function TDiacompClient.PostPages(const Pages: TPageDataList): boolean;
 {==============================================================================}
 var
   Par: TParamList;
@@ -554,7 +529,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryWebSource.ServerToLocal(Time: TDateTime): TDateTime;
+function TDiacompClient.ServerToLocal(Time: TDateTime): TDateTime;
 {==============================================================================}
 begin
   if (not FOnline) then Login();
@@ -562,14 +537,14 @@ begin
 end;
 
 {==============================================================================}
-procedure TDiaryWebSource.SetTimeout(Timeout: integer);
+procedure TDiacompClient.SetTimeout(Timeout: integer);
 {==============================================================================}
 begin
   FHTTP.ReadTimeout := TimeOut;
 end;
 
 {==============================================================================}
-procedure TDiaryWebSource.UpdateStatus;
+procedure TDiacompClient.UpdateStatus;
 {==============================================================================}
 var
   Resp: string;
@@ -581,41 +556,41 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryWebSource.DownloadFoodBase(out Data: string): boolean;
+function TDiacompClient.DownloadFoodBase(out Data: string): boolean;
 {==============================================================================}
 var
   Query: string;
 begin
   // конструируем запрос
   Query := FServer + PAGE_CONSOLE + '?foodbase:download';
-  Log(VERBOUS, 'TDiaryWebSource.DownloadFoodBase: quering ' + Query);
+  Log(VERBOUS, 'TDiacompClient.DownloadFoodBase: quering ' + Query);
 
   // отправляем
   Result := DoGetSmart(Query, Data);
 
   if (not Result) then
-    Log(ERROR, 'TDiaryWebSource.DownloadFoodBase: quering failed');
+    Log(ERROR, 'TDiacompClient.DownloadFoodBase: quering failed');
 end;
 
 {==============================================================================}
-function TDiaryWebSource.GetFoodBaseVersion(out Version: integer): boolean;
+function TDiacompClient.GetFoodBaseVersion(out Version: integer): boolean;
 {==============================================================================}
 var
   Query, Resp: string;
 begin
   // конструируем запрос
   Query := FServer + PAGE_CONSOLE + '?foodbase:getVersion';
-  Log(VERBOUS, 'TDiaryWebSource.GetFoodBaseVersion: quering ' + Query);
+  Log(VERBOUS, 'TDiacompClient.GetFoodBaseVersion: quering ' + Query);
 
   // отправляем
   Result := DoGetSmart(Query, Resp);
   Result := Result and TryStrToInt(Resp, Version);
 
   if (not Result) then
-    Log(ERROR, 'TDiaryWebSource.GetFoodBaseVersion: quering failed');
+    Log(ERROR, 'TDiacompClient.GetFoodBaseVersion: quering failed');
 end;
 
-function TDiaryWebSource.UploadFoodBase(const Data: string;
+function TDiacompClient.UploadFoodBase(const Data: string;
   Version: integer): boolean;
 var
   Par: TParamList;
@@ -634,39 +609,42 @@ end;
 
 // ================================================
 
-function TDiaryWebSource.DownloadDishBase(out Data: string): boolean;
+function TDiacompClient.DownloadDishBase(out Data: string): boolean;
 var
   Query: string;
 begin
   // конструируем запрос
   Query := FServer + PAGE_CONSOLE + '?dishbase:download';
-  Log(VERBOUS, 'TDiaryWebSource.DownloadDishBase: quering ' + Query);
+  Log(VERBOUS, 'TDiacompClient.DownloadDishBase: quering ' + Query);
 
   // отправляем
   Result := DoGetSmart(Query, Data);
 
   if (not Result) then
-    Log(ERROR, 'TDiaryWebSource.DownloadDishBase: quering failed');
+    Log(ERROR, 'TDiacompClient.DownloadDishBase: quering failed');
 end;
 
-function TDiaryWebSource.GetDishBaseVersion(out Version: integer): boolean;
+{==============================================================================}
+function TDiacompClient.GetDishBaseVersion(out Version: integer): boolean;
+{==============================================================================}
 var
   Query, Resp: string;
 begin
   // конструируем запрос
   Query := FServer + PAGE_CONSOLE + '?dishbase:getVersion';
-  Log(VERBOUS, 'TDiaryWebSource.GetDishBaseVersion: quering ' + Query);
+  Log(VERBOUS, 'TDiacompClient.GetDishBaseVersion: quering ' + Query);
 
   // отправляем
   Result := DoGetSmart(Query, Resp);
   Result := Result and TryStrToInt(Resp, Version);
 
   if (not Result) then
-    Log(ERROR, 'TDiaryWebSource.GetDishBaseVersion: quering failed');
+    Log(ERROR, 'TDiacompClient.GetDishBaseVersion: quering failed');
 end;
 
-function TDiaryWebSource.UploadDishBase(const Data: string;
-  Version: integer): boolean;
+{==============================================================================}
+function TDiacompClient.UploadDishBase(const Data: string; Version: integer): boolean;
+{==============================================================================}
 var
   Par: TParamList;
   Resp: string;
@@ -684,7 +662,9 @@ end;
 
 // =================================================
 
-function TDiaryWebSource.DownloadKoofs(out Data: string): boolean;
+{==============================================================================}
+function TDiacompClient.DownloadKoofs(out Data: string): boolean;
+{==============================================================================}
 var
   Query: string;
 begin
@@ -692,7 +672,9 @@ begin
   Result := DoGetSmart(Query, Data);
 end;
 
-function TDiaryWebSource.UploadKoofs(const Data: string): boolean;
+{==============================================================================}
+function TDiacompClient.UploadKoofs(const Data: string): boolean;
+{==============================================================================}
 var
   Par: TParamList;
   Resp: string;
@@ -707,8 +689,9 @@ begin
     Result := False;
 end;
 
-
-function TDiaryWebSource.Report(const Msg: string): boolean;
+{==============================================================================}
+function TDiacompClient.Report(const Msg: string): boolean;
+{==============================================================================}
 var
   Par: TParamList;
   Resp: string;
@@ -723,7 +706,9 @@ begin
     Result := False;
 end;
 
-function TDiaryWebSource.Search(const Key: string): string;
+{==============================================================================}
+function TDiacompClient.Search(const Key: string): string;
+{==============================================================================}
 var
   Resp: string;
 begin
@@ -734,209 +719,3 @@ begin
 end;
 
 end.
-
-{ TWebDiaryPage }
- (*
-{==============================================================================}
-procedure TWebDiaryPage.Download;
-{==============================================================================}
-var
-  Source, Stamp: string;
-begin
-  {RequestPage(Date, Source);
-  RequestStamp(Date, Stamp);
-  Read(Source);
-  TimeLoaded := Now;
-  TimeStamp := StrToDateTime(Stamp);  }
-  //Modified := False; - присутствует в Read'е
-end;
-
-{==============================================================================}
-procedure TWebDiaryPage.Read(const S: string);
-{==============================================================================}
-var
-  temp: TStringList;
-begin
-  temp := TStringList.Create;
-  try
-    temp.Text := S;
-    Read(Temp);
-  finally
-    temp.Free;
-  end;
-end;
-
-{==============================================================================}
-procedure TWebDiaryPage.Upload;
-{==============================================================================}
-var
-  Source: string;
-begin
-  {Write(Source);
-  PostPage(Date, Source);
-  Modified := False; }
-end;
-
-{==============================================================================}
-procedure TWebDiaryPage.Write(out S: string);
-{==============================================================================}
-var
-  temp: TStringList;
-begin
-  temp := TStringList.Create;
-  try
-    Write(Temp);
-    S := Temp.Text;
-  finally
-    temp.Free;
-  end;
-end;
-
-{ TWebDiary }
-
-{==============================================================================}
-procedure TWebDiary.Add(Page: TWebDiaryPage);
-{==============================================================================}
-begin
-  FCursor := (FCursor + 1) mod FCapacity;
-  if FRealSize < FCapacity then
-    inc(FRealSize) else
-  // перед перезаписью надо проверить, не была ли изменена страница
-  if FCache[FCursor].Modified then
-    FCache[FCursor].Upload;
-
-  FCache[FCursor] := Page;     
-end;
-
-{==============================================================================}
-constructor TWebDiary.Create(Capacity: integer);
-{==============================================================================}
-begin
-  if Capacity <= 0 then
-    raise Exception.Create('Capacity must be positive')
-  else    
-  begin
-    FCapacity := Capacity;
-    FRealSize := 0;
-    FCursor := -1;
-    SetLength(FCache, Capacity);
-  end;
-end;
-
-{==============================================================================}
-destructor TWebDiary.Destroy;
-{==============================================================================}
-var
-  i: integer;
-begin
-  for i := 0 to FRealSize-1 do
-    FCache[i].Free; // Page удаляются внутри
-  FRealSize := 0;
-end;
-
-{==============================================================================}
-function TWebDiary.FindInCache(Date: TDateTime): TWebDiaryPage;
-{==============================================================================}
-var
-  i: integer;
-begin
-  for i := 0 to FRealSize-1 do
-  if FCache[i].Date = Date then
-  begin
-    Result := FCache[i];
-    Exit;
-  end;
-  Result := nil;
-end;
-
-{==============================================================================}
-function TWebDiary.GetPage(Date: TDateTime; ForceReload: boolean): TWebDiaryPage;
-{==============================================================================}
-begin
-  if not FLogged then raise Exception.Create('Not logged in');
-
-  Result := FindInCache(Date);
-
-  if Result = nil then
-  begin
-    Result := TWebDiaryPage.Create(Date);
-    Result.Download;
-    Add(Result);
-  end else
-  if ForceReload then
-    Result.Download;
-end;
-
-{==============================================================================}
-function TWebDiary.Login(const Name, Password: string): boolean;
-{==============================================================================}
-var
-  Data: TStrings;
-  Res: string;
-  HasErrors: boolean;
-begin
- { Data := TStringList.Create;
-  HasErrors := False;
-  try
-    try
-      Data.Add('login=' + Name);
-      Data.Add('password=' + Password);
-      Data.Add('noredir=');
-      Res := Form1.IdHttp1.Post(URL_LOGIN, Data);
-    except
-      HasErrors := True;
-    end;
-  finally
-    Data.Free;
-  end;
-
-  if HasErrors then
-    raise Exception.Create('Нет связи с сервером')
-  else
-  begin
-    Result := (Res = 'DONE');
-    FLogged := (Res = 'DONE');
-    if not Logged then
-    if Res = 'BADNAME' then
-    begin
-      raise Exception.Create('Неверное имя пользователя или пароль');
-    end else
-      raise Exception.Create('Неизвестная ошибка подключения');
-  end; }
-end;
-
-{==============================================================================}
-procedure TWebDiary.Logout;
-{==============================================================================}
-begin
- { Form1.IdHttp1.Get(URL_LOGIN + '?logout');
-  FLogged := False;    }
-end;
-
-{==============================================================================}
-function TWebDiary.PostModified(Limit: integer): integer;
-{==============================================================================}
-var
-  i: integer;
-begin
-  Result := 0;
-  if not FLogged then raise Exception.Create('Not logged in');
-
-  for i := 0 to FRealSize-1 do
-  if FCache[i].Modified then
-  begin
-    FCache[i].Upload;
-    inc(Result);
-    if (Limit > 0)and(Result = Limit) then Exit;
-  end;
-end;
-
-{==============================================================================}
-procedure TWebDiary.ReloadCash;
-{==============================================================================}
-var
-  i: integer;
-begin
-  for i := 0 to FRealSize-1 do
-    FCache[i].Download;
-end;   *)

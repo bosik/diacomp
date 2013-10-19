@@ -15,6 +15,7 @@ uses
   XMLDoc,
   XMLIntf,
   BusinessObjects,
+  DiaryPageSerializer,
   Variants;
 
 type

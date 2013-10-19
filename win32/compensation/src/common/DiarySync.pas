@@ -5,7 +5,9 @@ unit DiarySync;
 interface
 
 uses
-  DiaryRoutines, DiarySources;
+  DiaryRoutines,
+  DiarySources,
+  DiaryPageSerializer {TODO: remove};
 
   { возвращается количество синхронизированных страниц }
   function SyncSources(Source1, Source2: IDiarySource; Since: TDateTime): integer;

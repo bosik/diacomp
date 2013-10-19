@@ -13,6 +13,7 @@ uses
   Bases,
   DiaryRoutines,
   DiaryLocalSource,
+  DiaryWebSource,
   {#}DiaryWeb,  
   AnalyzeInterface,
   DiaryAnalyze,
@@ -57,6 +58,7 @@ var
   { данные }
   Diary: TDiary;
   LocalSource: TDiaryLocalSource;
+  WebClient: TDiacompClient;
   WebSource: TDiaryWebSource;
   Expander: TStringMap;
 
@@ -130,7 +132,9 @@ procedure Initialize();
 {==============================================================================}
 begin
   LocalSource := TDiaryLocalSource.Create(WORK_FOLDER + Diary_FileName);
-  WebSource := TDiaryWebSource.Create;
+  WebClient := TDiacompClient.Create;
+  WebSource := TDiaryWebSource.Create(WebClient);
+
   Diary := TDiary.Create(LocalSource);
 
   FoodBase := TFoodBase.Create;
@@ -145,7 +149,8 @@ procedure Finalize();
 begin
   Diary.Free; // before sources finalization
   LocalSource.Free;
-  WebSource.Free;
+  WebSource.Free; // before WebClient
+  WebClient.Free;
 
   FoodBase.Free;
   Dishbase.Free;
@@ -285,14 +290,14 @@ var
   Data: string;
   Version: integer;
 begin
-  if (WebSource.GetFoodBaseVersion(Version)) then
+  if (WebClient.GetFoodBaseVersion(Version)) then
   begin
     //Version := -1;
 
     // download
     if (FoodBase.Version < Version) then
     begin
-      if (WebSource.DownloadFoodBase(Data)) then
+      if (WebClient.DownloadFoodBase(Data)) then
       begin
         WriteFile(WORK_FOLDER + FoodBase_FileName, Data);
         FoodBase.LoadFromFile_XML(WORK_FOLDER + FoodBase_FileName);
@@ -305,7 +310,7 @@ begin
     if (FoodBase.Version > Version) then
     begin
       Data := ReadFile(WORK_FOLDER + FoodBase_FileName);
-      if WebSource.UploadFoodBase(Data, FoodBase.Version) then
+      if WebClient.UploadFoodBase(Data, FoodBase.Version) then
         Result := srUploaded
       else
         raise ECommonServerException.Create('Failed to upload foodbase');
@@ -329,12 +334,12 @@ var
   Data: string;
   Version: integer;
 begin
-  if (WebSource.GetDishBaseVersion(Version)) then
+  if (WebClient.GetDishBaseVersion(Version)) then
   begin
     // download
     if (DishBase.Version < Version) then
     begin
-      if (WebSource.DownloadDishBase(Data)) then
+      if (WebClient.DownloadDishBase(Data)) then
       begin
         WriteFile(WORK_FOLDER + DishBase_FileName, Data);
         DishBase.LoadFromFile_XML(WORK_FOLDER + DishBase_FileName);
@@ -347,7 +352,7 @@ begin
     if (DishBase.Version > Version) then
     begin
       Data := ReadFile(WORK_FOLDER + DishBase_FileName);
-      if WebSource.UploadDishBase(Data, DishBase.Version) then
+      if WebClient.UploadDishBase(Data, DishBase.Version) then
         Result := srUploaded
       else
         raise ECommonServerException.Create('Failed to upload dishbase');
@@ -419,7 +424,7 @@ var
 begin
   StartProc('UploadKoofs()');
   ExportKoofs(False, S);
-  Result := WebSource.UploadKoofs(S);
+  Result := WebClient.UploadKoofs(S);
   FinishProc;
 end;
 
