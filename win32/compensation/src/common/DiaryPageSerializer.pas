@@ -30,25 +30,25 @@ type
     constructor Create(ADate: TDate; ATimeStamp: TDateTime; AVersion: integer; const APage: string); overload;
     constructor Create(APage: TPageData); overload;
 
-    procedure Read(const S: string; WebFormat: boolean);
-    procedure ReadHeader(const S: string; WebFormat: boolean = False);
-    function Write(WebFormat: boolean): string;
-    function WriteHeader(WebFormat: boolean): string;
+    procedure Read(const S: string; F: TFormatSettings);
+
+    function Write(F: TFormatSettings): string;
+    function WriteHeader(F: TFormatSettings): string;
   end;
 
   TPageSerializer = class
-    //procedure ReadHeader(const S: string; WebFormat: boolean; Page: TDiaryPage);
+    class procedure ReadHeader(const S: string; PageData: TPageData; F: TFormatSettings);
 
-    class procedure ReadBody(S: TStrings; {out} Page: TDiaryPage); overload;
-    class procedure ReadBody(const S: string; {out} Page: TDiaryPage); overload;
-    class procedure ReadFrom(S: TPageData; Page: TDiaryPage); overload;
+    class procedure ReadBody(S: TStrings; Page: TDiaryPage); overload;
+    class procedure ReadBody(const S: string; Page: TDiaryPage); overload;
+    class procedure Read(PageData: TPageData; Page: TDiaryPage); overload;
+    class procedure Read(S: TStrings; F: TFormatSettings; out Pages: TPageDataList); overload;
+    class procedure Read(S: TStrings; F: TFormatSettings; out Pages: TDiaryPageList); overload;
 
-    class procedure WriteTo(S: TStrings; Page: TDiaryPage); overload;
-    class procedure WriteTo(S: TPageData; Page: TDiaryPage); overload;
-    class procedure WriteTo(out S: string; Page: TDiaryPage); overload;
-
-    class procedure MultiRead(S: TStrings; WebFormat: boolean; out Pages: TPageDataList);
-    class procedure MultiWrite(S: TStrings; WebFormat: boolean; const Pages: TPageDataList);
+    class procedure WriteBody(Page: TDiaryPage; S: TStrings); overload;
+    class procedure WriteBody(Page: TDiaryPage; out S: string); overload;
+    class procedure Write(Page: TDiaryPage; PageData: TPageData); overload;
+    class procedure Write(const Pages: TPageDataList; S: TStrings; F: TFormatSettings); overload;
   end;
 
 implementation
@@ -89,25 +89,44 @@ begin
 end;
 
 {==============================================================================}
-procedure TPageData.Read(const S: string; WebFormat: boolean);
+procedure TPageData.Read(const S: string; F: TFormatSettings);
 {==============================================================================}
 var
   header, body: string;
 begin
   Separate(S, header, #13, body);
-  ReadHeader(header, WebFormat);
+  TPageSerializer.ReadHeader(header, Self, F);
   Page := body;
 end;
 
 {==============================================================================}
-procedure TPageData.ReadHeader(const S: string; WebFormat: boolean);
+function TPageData.Write(F: TFormatSettings): string;
+{==============================================================================}
+begin
+  Result := WriteHeader(F) + #13 + Page;
+end;
+
+{==============================================================================}
+function TPageData.WriteHeader(F: TFormatSettings): string;
+{==============================================================================}
+begin
+  Result := Format('=== %s ===|%s|%d', [DateToStr(Date, F), DateTimeToStr(TimeStamp, F), Version]);
+
+   { '=== ' + DateToStr(Date, F) + ' ===|' +
+    DateTimeToStr(TimeStamp, F) + '|' +
+    IntToStr(Version);    }
+end;
+
+{ TPageSerializer }
+
+{==============================================================================}
+class procedure TPageSerializer.ReadHeader(const S: string; PageData: TPageData; F: TFormatSettings);
 {==============================================================================}
 var
-  F: TFormatSettings;
   s1, s2, tmp: string;
 begin
+  with PageData do
   try
-    F := GetDateTimeFormat(WebFormat);
     Date := Trunc(StrToDate(Copy(S, 5, 10), F)); // ***
     Separate(S, s1, '|', s2);
     tmp := s2;
@@ -157,30 +176,7 @@ begin
 end;
 
 {==============================================================================}
-function TPageData.Write(WebFormat: boolean): string;
-{==============================================================================}
-begin
-  Result := WriteHeader(WebFormat) + #13 + Page;
-end;
-
-{==============================================================================}
-function TPageData.WriteHeader(WebFormat: boolean): string;
-{==============================================================================}
-var
-  F: TFormatSettings;
-begin
-  F := GetDateTimeFormat(WebFormat);
-  Result := Format('=== %s ===|%s|%d', [DateToStr(Date, F), DateTimeToStr(TimeStamp, F), Version]);
-
-   { '=== ' + DateToStr(Date, F) + ' ===|' +
-    DateTimeToStr(TimeStamp, F) + '|' +
-    IntToStr(Version);    }
-end;
-
-{ TPageSerializer }
-
-{==============================================================================}
-class procedure TPageSerializer.MultiRead(S: TStrings; WebFormat: boolean; out Pages: TPageDataList);
+class procedure TPageSerializer.Read(S: TStrings; F: TFormatSettings; out Pages: TPageDataList);
 {==============================================================================}
 var
   buf: string;
@@ -194,7 +190,7 @@ var
         SetLength(Pages, Length(Pages) * 2 + 1);
 
       Pages[Count] := TPageData.Create;
-      Pages[Count].Read(buf, WebFormat);
+      Pages[Count].Read(buf, F);
       inc(Count);
 
       buf := '';
@@ -219,7 +215,25 @@ begin
 end;
 
 {==============================================================================}
-class procedure TPageSerializer.MultiWrite(S: TStrings; WebFormat: boolean; const Pages: TPageDataList);
+class procedure TPageSerializer.Read(S: TStrings; F: TFormatSettings; out Pages: TDiaryPageList);
+{==============================================================================}
+var
+  PageDataList: TPageDataList;
+  i: integer;
+begin
+  // TODO: optimize
+  Read(S, F, PageDataList);
+
+  SetLength(Pages, Length(PageDataList));
+  for i := 0 to High(Pages) do
+  begin
+    Pages[i] := TDiaryPage.Create;
+    Read(PageDataList[i], Pages[i]);
+  end;
+end;
+
+{==============================================================================}
+class procedure TPageSerializer.Write(const Pages: TPageDataList; S: TStrings; F: TFormatSettings);
 {==============================================================================}
 var
   i: integer;
@@ -235,7 +249,7 @@ begin
   for i := 0 to High(Pages) do
   // (Trim(Pages[i].Page) <> '') then
   if (Pages[i].Version > 0) then
-      s.Add(Pages[i].Write(WebFormat));
+      s.Add(Pages[i].Write(F));
 end;
 
 {==============================================================================}
@@ -351,15 +365,15 @@ begin
 end;
 
 {==============================================================================}
-class procedure TPageSerializer.ReadFrom(S: TPageData; Page: TDiaryPage);
+class procedure TPageSerializer.Read(PageData: TPageData; Page: TDiaryPage);
 {==============================================================================}
 begin
   with Page do
   begin
-    Date := S.Date;
-    TimeStamp := S.TimeStamp;
-    Version := S.Version;
-    ReadBody(S.Page, Page);
+    Date := PageData.Date;
+    TimeStamp := PageData.TimeStamp;
+    Version := PageData.Version;
+    ReadBody(PageData.Page, Page);
   end;
 
 
@@ -389,20 +403,20 @@ begin
 end;
 
 {==============================================================================}
-class procedure TPageSerializer.WriteTo(S: TPageData; Page: TDiaryPage);
+class procedure TPageSerializer.Write(Page: TDiaryPage; PageData: TPageData);
 {==============================================================================}
 begin
   with Page do
   begin
-    S.Date := Date;
-    S.TimeStamp := TimeStamp;
-    S.Version := Version;
-    WriteTo(S.Page, Page);
+    PageData.Date := Date;
+    PageData.TimeStamp := TimeStamp;
+    PageData.Version := Version;
+    WriteBody(Page, PageData.Page);
   end;
 end;
 
 {==============================================================================}
-class procedure TPageSerializer.WriteTo(S: TStrings; Page: TDiaryPage);
+class procedure TPageSerializer.WriteBody(Page: TDiaryPage; S: TStrings);
 {==============================================================================}
 var
   j, n: integer;
@@ -455,14 +469,14 @@ begin
 end;
 
 {==============================================================================}
-class procedure TPageSerializer.WriteTo(out S: string; Page: TDiaryPage);
+class procedure TPageSerializer.WriteBody(Page: TDiaryPage; out S: string);
 {==============================================================================}
 var
   Temp: TStringList;
 begin
   Temp := TStringList.Create;
   try
-    WriteTo(Temp, Page);
+    WriteBody(Page, Temp);
     S := Temp.Text;
 
    { if (S <> '') and (S[Length(S)] = #13) then

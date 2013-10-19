@@ -64,6 +64,8 @@ type
     property SilentChange: boolean read FSilentChange write FSilentChange;
   end;
 
+  TDiaryPageList = array of TDiaryPage;
+
 implementation
 
 { TDiaryPage }

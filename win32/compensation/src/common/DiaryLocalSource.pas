@@ -4,14 +4,12 @@ interface
 
 uses
   DiaryRoutines,
-  DiaryDatabase,
   DiarySources,
-  SysUtils,
+  DiaryPage,
+  SysUtils, // FileExists(), Now()
   Classes,
   Dialogs {update warnings},
-  DiaryPageSerializer,
-  XMLDoc,
-  XMLIntf;
+  DiaryPageSerializer;
 
 type
   TDiaryLocalSource =  class (IDiarySource)
@@ -33,8 +31,8 @@ type
     destructor Destroy; override;
 
     function GetModList(Time: TDateTime; out ModList: TModList): boolean; override;
-    function GetPages(const Dates: TDateList; out Pages: TPageDataList): boolean; override;
-    function PostPages(const Pages: TPageDataList): boolean; override;
+    function GetPages(const Dates: TDateList; out Pages: TDiaryPageList): boolean; override;
+    function PostPages(const Pages: TDiaryPageList): boolean; override;
 
     // свойства
     // TODO: think about it
@@ -160,7 +158,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryLocalSource.GetPages(const Dates: TDateList; out Pages: TPageDataList): boolean;
+function TDiaryLocalSource.GetPages(const Dates: TDateList; out Pages: TDiaryPageList): boolean;
 {==============================================================================}
 const
   INITIAL_PAGE_VERSION = 0;
@@ -170,8 +168,11 @@ begin
   SetLength(Pages, Length(Dates));
   for i := 0 to High(Dates) do
   begin
+    // TODO: try to move Now() and initial version number to CreatePage() method
     Index := CreatePage(Dates[i], Now, INITIAL_PAGE_VERSION);
-    Pages[i] := TPageData.Create(FPages[Index]);
+
+    Pages[i] := TDiaryPage.Create;
+    TPageSerializer.Read(FPages[Index], Pages[i]);
   end;
   Result := True;
 end;
@@ -180,18 +181,11 @@ end;
 procedure TDiaryLocalSource.LoadFromFile(const FileName: string);
 {==============================================================================}
 var
-  s: TStringList;
+  s: TStrings;
   i: integer;
   Pages: TPageDataList;
 begin
   Clear;
-
- { if not FileExists(FileName) then
-  begin
-    Result := CanCreate and CreateFile(FileName);
-    NotifyLoad(Result);
-    Exit;
-  end;      }
 
   s := TStringList.Create;
 
@@ -204,7 +198,7 @@ begin
       s.Delete(0);
     end;
 
-    TPageSerializer.MultiRead(S, False, Pages);   // и загружаешь -->
+    TPageSerializer.Read(S, DiaryRoutines.LocalFmt, Pages);   // и загружаешь -->
 
     // для проверки сортировки и дублей используем вспомогательный список
     for i := 0 to High(Pages) do
@@ -217,7 +211,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryLocalSource.PostPages(const Pages: TPageDataList): boolean;
+function TDiaryLocalSource.PostPages(const Pages: TDiaryPageList): boolean;
 {==============================================================================}
 
   function PureLength(const S: string): integer;
@@ -262,19 +256,28 @@ function TDiaryLocalSource.PostPages(const Pages: TPageDataList): boolean;
 
 var
   i, Index: integer;
+  PageData: TPageData;
 begin
   for i := 0 to High(Pages) do
   begin
+    // сериализуем
+    PageData := TPageData.Create();
+    TPageSerializer.Write(Pages[i], PageData);
+
+    // ищем
     Index := GetPageIndex(Pages[i].Date);
     if (Index = -1) then
     begin
       SetLength(FPages, Length(FPages) + 1);
-      FPages[High(FPages)] := TPageData.Create(Pages[i]);
+      FPages[High(FPages)] := PageData;
       TraceLastPage();
     end else
     begin   
-      if (not ShowUpdateWarning) or (not Worry(FPages[Index], Pages[i])) then
-        FPages[Index].CopyFrom(Pages[i]);
+      if (not ShowUpdateWarning) or (not Worry(FPages[Index], PageData)) then
+      begin
+        FPages[Index].Free;
+        FPages[Index] := PageData;
+      end;
     end;
   end;
   if (Length(Pages) > 0) then
@@ -293,7 +296,7 @@ var
 begin
   s := TStringList.Create;
   try
-    TPageSerializer.MultiWrite(S, False, FPages);
+    TPageSerializer.Write(FPages, S, DiaryRoutines.LocalFmt);
     s.SaveToFile(FileName);
   finally
     s.Free;

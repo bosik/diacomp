@@ -5,6 +5,7 @@ interface
 uses
   SysUtils,
   DiaryRoutines,
+  DiaryPage,
   DiaryPageSerializer {TODO: remove it};
 
 type
@@ -23,24 +24,26 @@ type
   public
     { методы }
     function GetModList(Time: TDateTime; out ModList: TModList): boolean; virtual; abstract;
-    function GetPages(const Dates: TDateList; out Pages: TPageDataList): boolean; virtual; abstract;
-    function PostPages(const Pages: TPageDataList): boolean; virtual; abstract;
+    function GetPages(const Dates: TDateList; out Pages: TDiaryPageList): boolean; virtual; abstract;
+    function PostPages(const Pages: TDiaryPageList): boolean; virtual; abstract;
 
     { сахар }
-    function GetPage(Date: TDate): TPageData;
-    function PostPage(Page: TPageData): boolean;
+    function GetPage(Date: TDate): TDiaryPage;
+    function PostPage(Page: TDiaryPage): boolean;
   end;
+
+  // TODO: create tests for DAO implementations (f.e., check if returning pages' dates always equal to requested dates)
 
 implementation
 
 { IDiarySource }
 
 {==============================================================================}
-function IDiarySource.GetPage(Date: TDate): TPageData;
+function IDiarySource.GetPage(Date: TDate): TDiaryPage;
 {==============================================================================}
 var
   DateList: TDateList;
-  PageList: TPageDataList;
+  PageList: TDiaryPageList;
 begin
   SetLength(DateList, 1);
   DateList[0] := Date;
@@ -52,10 +55,10 @@ begin
 end;
 
 {==============================================================================}
-function IDiarySource.PostPage(Page: TPageData): boolean;
+function IDiarySource.PostPage(Page: TDiaryPage): boolean;
 {==============================================================================}
 var
-  PageList: TPageDataList;
+  PageList: TDiaryPageList;
 begin
   SetLength(PageList, 1);
   PageList[0] := Page;
