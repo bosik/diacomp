@@ -265,7 +265,8 @@ begin
     //UpdatePostprand(Page.Date - 1, Trunc(Now) + 1);
 
   PageData := TPageData.Create;
-  Page.WriteTo(PageData);
+  TDiaryPage.WriteTo(PageData, Page);
+
   //FSource.PostPage(PageData); // to save after every change
 
   if Assigned(FOnChange) then FOnChange(EventType, Page, RecClass, RecInstance);
@@ -393,7 +394,7 @@ begin
   for i := 0 to High(Pages) do
   begin
     Pages[i] := TPageData.Create();
-    FCache[i].WriteTo(Pages[i]);
+    TDiaryPage.WriteTo(Pages[i], FCache[i]);
   end;
 
   // отправляем источнику
@@ -416,7 +417,7 @@ begin
   for i := 0 to High(FCache) do
   begin
     PageData := FSource.GetPage(FCache[i].Date);
-    FCache[i].ReadFrom(PageData);
+    TDiaryPage.ReadFrom(PageData, FCache[i]);
     PageData.Free;
 
     //FCache[i].FCalculatedPostprand := False; - нужно сохранить состояния для UpdateCached_Postprand
@@ -629,7 +630,8 @@ end;
 constructor TPageCache.Create(PageData: TPageData);
 {==============================================================================}
 begin
-  inherited Create(PageData);
+  inherited Create();
+  TDiaryPage.ReadFrom(PageData, Self);
   FCalculatedPostprand := False;
 end;
 

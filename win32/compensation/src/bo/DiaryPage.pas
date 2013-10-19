@@ -41,8 +41,8 @@ type
     {+}function Add(Rec: TCustomRecord): integer;
     {+}procedure Clear;
     {+}function Count: integer;
+    constructor Create(); overload;
     constructor Create(ADate: TDate; ATimeStamp: TDateTime; AVersion: integer); overload;
-    constructor Create(PageData: TPageData); overload;
     destructor Destroy; override;
     {+}procedure Remove(Index: integer; AutoFree: boolean = True);
 
@@ -53,14 +53,14 @@ type
 
     // I/O
 
-    procedure ReadFrom(S: TStrings); overload;
-    procedure WriteTo(S: TStrings); overload;
+    class procedure ReadFrom(S: TStrings; Page: TDiaryPage); overload;
+    class procedure WriteTo(S: TStrings; Page: TDiaryPage); overload;
 
-    procedure ReadFrom(const S: string); overload;
-    procedure WriteTo(out S: string); overload;
+    class procedure ReadFrom(const S: string; Page: TDiaryPage); overload;
+    class procedure WriteTo(out S: string; Page: TDiaryPage); overload;
 
-    procedure ReadFrom(S: TPageData); overload;
-    procedure WriteTo(S: TPageData); overload;
+    class procedure ReadFrom(S: TPageData; Page: TDiaryPage); overload;
+    class procedure WriteTo(S: TPageData; Page: TDiaryPage); overload;
 
     // Listeners
 
@@ -162,28 +162,23 @@ begin
 end;
 
 {==============================================================================}
-constructor TDiaryPage.Create(ADate: TDate; ATimeStamp: TDateTime; AVersion: integer);
+constructor TDiaryPage.Create();
 {==============================================================================}
 begin
   FOnChange := nil;
-
-  FDate := ADate;
-  FTimeStamp := ATimeStamp;
-  FVersion := AVersion;
-
   FSilentChange := False;
 end;
 
 {==============================================================================}
-constructor TDiaryPage.Create(PageData: TPageData);
+constructor TDiaryPage.Create(ADate: TDate; ATimeStamp: TDateTime; AVersion: integer);
 {==============================================================================}
 begin
   FOnChange := nil;
-
-  //FSilentChange := True;
-  ReadFrom(PageData);
-
   FSilentChange := False;
+
+  FDate := ADate;
+  FTimeStamp := ATimeStamp;
+  FVersion := AVersion;
 end;
 
 {==============================================================================}
@@ -317,7 +312,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TDiaryPage.ReadFrom(S: TStrings);
+class procedure TDiaryPage.ReadFrom(S: TStrings; Page: TDiaryPage);
 {==============================================================================}
 var
   i,k: integer;
@@ -330,7 +325,7 @@ var
   Meal: TMealRecord;
   TempFood: TFoodMassed;
 begin
-  with Self do
+  with Page do
   begin
     // TODO: протестировать скорость загрузки дневника из XML
     //Log('TDiaryPage.ReadFrom() started');
@@ -414,7 +409,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TDiaryPage.ReadFrom(const S: string);
+class procedure TDiaryPage.ReadFrom(const S: string; Page: TDiaryPage);
 {==============================================================================}
 var
   Temp: TStringList;
@@ -422,20 +417,23 @@ begin
   Temp := TStringList.Create;
   try
     Temp.Text := S;
-    ReadFrom(Temp);
+    TDiaryPage.ReadFrom(Temp, Page);
   finally
     Temp.Free;
   end;
 end;
 
 {==============================================================================}
-procedure TDiaryPage.ReadFrom(S: TPageData);
+class procedure TDiaryPage.ReadFrom(S: TPageData; Page: TDiaryPage);
 {==============================================================================}
 begin
-  FDate := S.Date;
-  FTimeStamp := S.TimeStamp;
-  FVersion := S.Version;
-  ReadFrom(S.Page);
+  with Page do
+  begin
+    FDate := S.Date;
+    FTimeStamp := S.TimeStamp;
+    FVersion := S.Version;
+    TDiaryPage.ReadFrom(S.Page, Page);
+  end;
 
 
   {
@@ -549,7 +547,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TDiaryPage.WriteTo(S: TStrings);
+class procedure TDiaryPage.WriteTo(S: TStrings; Page: TDiaryPage);
 {==============================================================================}
 var
   j, n: integer;
@@ -557,56 +555,59 @@ begin
   if (S = nil) then
     raise Exception.Create('TDiaryPage.WriteTo(): поток для записи не может быть nil');
 
-  for j := 0 to Count - 1 do
+  with Page do
   begin
-    if (FRecs[j].RecType = TBloodRecord) then
+    for j := 0 to Count - 1 do
     begin
-      // TODO: use Format() instead
-      s.Add(
-        '*' + TimeToStr(FRecs[j].Time) +
-        ' ' + FloatToStr(TBloodRecord(FRecs[j]).Value) +
-        '|' + IntToStr(TBloodRecord(FRecs[j]).Finger)
-      )
-    end else
+      if (FRecs[j].RecType = TBloodRecord) then
+      begin
+        // TODO: use Format() instead
+        s.Add(
+          '*' + TimeToStr(FRecs[j].Time) +
+          ' ' + FloatToStr(TBloodRecord(FRecs[j]).Value) +
+          '|' + IntToStr(TBloodRecord(FRecs[j]).Finger)
+        )
+      end else
 
-    if (FRecs[j].RecType = TInsRecord) then
-    begin
-      s.Add(
-        '-' + TimeToStr(FRecs[j].Time) +
-        ' ' + FloatToStr(TInsRecord(FRecs[j]).Value)
-      );
-    end else
+      if (FRecs[j].RecType = TInsRecord) then
+      begin
+        s.Add(
+          '-' + TimeToStr(FRecs[j].Time) +
+          ' ' + FloatToStr(TInsRecord(FRecs[j]).Value)
+        );
+      end else
 
-    if (FRecs[j].RecType = TMealRecord) then
-    begin
-      if TMealRecord(FRecs[j]).ShortMeal then
-        s.Add(' ' + TimeToStr(FRecs[j].Time) + 's')
-      else
-        s.Add(' ' + TimeToStr(FRecs[j].Time));
+      if (FRecs[j].RecType = TMealRecord) then
+      begin
+        if TMealRecord(FRecs[j]).ShortMeal then
+          s.Add(' ' + TimeToStr(FRecs[j].Time) + 's')
+        else
+          s.Add(' ' + TimeToStr(FRecs[j].Time));
 
-      for n := 0 to TMealRecord(FRecs[j]).Count - 1 do
-        s.Add('#' + TMealRecord(FRecs[j])[n].Write);
-    end else
+        for n := 0 to TMealRecord(FRecs[j]).Count - 1 do
+          s.Add('#' + TMealRecord(FRecs[j])[n].Write);
+      end else
 
-    if (FRecs[j].RecType = TNoteRecord) then
-    begin
-      s.Add(
-        '%' + TimeToStr(FRecs[j].Time) +
-        ' ' + TNoteRecord(FRecs[j]).Text
-      );
+      if (FRecs[j].RecType = TNoteRecord) then
+      begin
+        s.Add(
+          '%' + TimeToStr(FRecs[j].Time) +
+          ' ' + TNoteRecord(FRecs[j]).Text
+        );
+      end;
     end;
   end;
 end;
 
 {==============================================================================}
-procedure TDiaryPage.WriteTo(out S: string);
+class procedure TDiaryPage.WriteTo(out S: string; Page: TDiaryPage);
 {==============================================================================}
 var
   Temp: TStringList;
 begin
   Temp := TStringList.Create;
   try
-    WriteTo(Temp);
+    TDiaryPage.WriteTo(Temp, Page);
     S := Temp.Text;
 
    { if (S <> '') and (S[Length(S)] = #13) then
@@ -617,13 +618,16 @@ begin
 end;
 
 {==============================================================================}
-procedure TDiaryPage.WriteTo(S: TPageData);
+class procedure TDiaryPage.WriteTo(S: TPageData; Page: TDiaryPage);
 {==============================================================================}
 begin
-  S.Date := FDate;
-  S.TimeStamp := FTimeStamp;
-  S.Version := FVersion;
-  WriteTo(S.Page);
+  with Page do
+  begin
+    S.Date := FDate;
+    S.TimeStamp := FTimeStamp;
+    S.Version := FVersion;
+    TDiaryPage.WriteTo(S.Page, Page);
+  end;
 end;
 
 end.
