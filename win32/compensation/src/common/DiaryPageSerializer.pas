@@ -3,12 +3,15 @@ unit DiaryPageSerializer;
 interface
 
 uses
-  SysUtils,
-  Classes,
+  SysUtils, // StrToDate, etc.
+  Classes, // TStrings
   Dialogs, // TODO: debug only
   AutoLog, // TODO: debug obly
-  //DiaryPage,
-  DiaryRoutines;
+  DiaryPage,
+  DiaryRecords,
+  BusinessObjects,
+  DiaryRoutines // TDate
+  ;
 
 type
   TPageData = class; // forward
@@ -36,7 +39,13 @@ type
   TPageSerializer = class
     //procedure ReadHeader(const S: string; WebFormat: boolean; Page: TDiaryPage);
 
-    //class procedure ReadBody(S: TStrings; {out} Page: TDiaryPage);
+    class procedure ReadBody(S: TStrings; {out} Page: TDiaryPage); overload;
+    class procedure ReadBody(const S: string; {out} Page: TDiaryPage); overload;
+    class procedure ReadFrom(S: TPageData; Page: TDiaryPage); overload;
+
+    class procedure WriteTo(S: TStrings; Page: TDiaryPage); overload;
+    class procedure WriteTo(S: TPageData; Page: TDiaryPage); overload;
+    class procedure WriteTo(out S: string; Page: TDiaryPage); overload;
 
     class procedure MultiRead(S: TStrings; WebFormat: boolean; out Pages: TPageDataList);
     class procedure MultiWrite(S: TStrings; WebFormat: boolean; const Pages: TPageDataList);
@@ -229,8 +238,9 @@ begin
       s.Add(Pages[i].Write(WebFormat));
 end;
 
-(*
+{==============================================================================}
 class procedure TPageSerializer.ReadBody(S: TStrings; Page: TDiaryPage);
+{==============================================================================}
 var
   i,k: integer;
   CurStr: string;
@@ -253,7 +263,7 @@ begin
       raise Exception.Create('TDiaryPage.ReadFrom(): поток для чтения не может быть nil');
     end;
 
-    FSilentChange := True;
+    SilentChange := True;
 
     try
       Clear;
@@ -321,8 +331,145 @@ begin
     end;
     //Log('TDiaryPage.ReadFrom() done ok');
 
-    FSilentChange := False;
+    SilentChange := False;
   end;
-end;    *)
+end;
+
+{==============================================================================}
+class procedure TPageSerializer.ReadBody(const S: string; Page: TDiaryPage);
+{==============================================================================}
+var
+  Temp: TStringList;
+begin
+  Temp := TStringList.Create;
+  try
+    Temp.Text := S;
+    ReadBody(Temp, Page);
+  finally
+    Temp.Free;
+  end;
+end;
+
+{==============================================================================}
+class procedure TPageSerializer.ReadFrom(S: TPageData; Page: TDiaryPage);
+{==============================================================================}
+begin
+  with Page do
+  begin
+    Date := S.Date;
+    TimeStamp := S.TimeStamp;
+    Version := S.Version;
+    ReadBody(S.Page, Page);
+  end;
+
+
+  {
+
+  Switch: boolean;
+
+  ------
+
+  Switch := Switch and (not SilentMode);
+  SilentMode := SilentMode or Switch;
+
+  ...
+
+  SilentMode := SilentMode and (not Switch);
+
+  ------
+
+  OldMode := SilentMode;
+  if Switch then SilentMode := True;
+
+  ...
+
+  SilentMode := OldMode;
+
+  }
+end;
+
+{==============================================================================}
+class procedure TPageSerializer.WriteTo(S: TPageData; Page: TDiaryPage);
+{==============================================================================}
+begin
+  with Page do
+  begin
+    S.Date := Date;
+    S.TimeStamp := TimeStamp;
+    S.Version := Version;
+    WriteTo(S.Page, Page);
+  end;
+end;
+
+{==============================================================================}
+class procedure TPageSerializer.WriteTo(S: TStrings; Page: TDiaryPage);
+{==============================================================================}
+var
+  j, n: integer;
+begin
+  if (S = nil) then
+    raise Exception.Create('TDiaryPage.WriteTo(): поток для записи не может быть nil');
+
+  with Page do
+  begin
+    for j := 0 to Count - 1 do
+    begin
+      if (Recs[j].RecType = TBloodRecord) then
+      begin
+        // TODO: use Format() instead
+        s.Add(
+          '*' + TimeToStr(Recs[j].Time) +
+          ' ' + FloatToStr(TBloodRecord(Recs[j]).Value) +
+          '|' + IntToStr(TBloodRecord(Recs[j]).Finger)
+        )
+      end else
+
+      if (Recs[j].RecType = TInsRecord) then
+      begin
+        s.Add(
+          '-' + TimeToStr(Recs[j].Time) +
+          ' ' + FloatToStr(TInsRecord(Recs[j]).Value)
+        );
+      end else
+
+      if (Recs[j].RecType = TMealRecord) then
+      begin
+        if TMealRecord(Recs[j]).ShortMeal then
+          s.Add(' ' + TimeToStr(Recs[j].Time) + 's')
+        else
+          s.Add(' ' + TimeToStr(Recs[j].Time));
+
+        for n := 0 to TMealRecord(Recs[j]).Count - 1 do
+          s.Add('#' + TMealRecord(Recs[j])[n].Write);
+      end else
+
+      if (Recs[j].RecType = TNoteRecord) then
+      begin
+        s.Add(
+          '%' + TimeToStr(Recs[j].Time) +
+          ' ' + TNoteRecord(Recs[j]).Text
+        );
+      end;
+    end;
+  end;
+end;
+
+{==============================================================================}
+class procedure TPageSerializer.WriteTo(out S: string; Page: TDiaryPage);
+{==============================================================================}
+var
+  Temp: TStringList;
+begin
+  Temp := TStringList.Create;
+  try
+    WriteTo(Temp, Page);
+    S := Temp.Text;
+
+   { if (S <> '') and (S[Length(S)] = #13) then
+      Delete(S, Length(S), 1);}
+  finally
+    Temp.Free;
+  end;
+end;
 
 end.

@@ -264,10 +264,12 @@ begin
     UpdateCached_Postprand; // TODO: optimize
     //UpdatePostprand(Page.Date - 1, Trunc(Now) + 1);
 
-  PageData := TPageData.Create;
-  TDiaryPage.WriteTo(PageData, Page);
 
-  //FSource.PostPage(PageData); // to save after every change
+  // to save after every change
+  PageData := TPageData.Create;
+  TPageSerializer.WriteTo(PageData, Page);
+  //FSource.PostPage(PageData);
+
 
   if Assigned(FOnChange) then FOnChange(EventType, Page, RecClass, RecInstance);
 end;
@@ -394,7 +396,7 @@ begin
   for i := 0 to High(Pages) do
   begin
     Pages[i] := TPageData.Create();
-    TDiaryPage.WriteTo(Pages[i], FCache[i]);
+    TPageSerializer.WriteTo(Pages[i], FCache[i]);
   end;
 
   // отправляем источнику
@@ -417,7 +419,7 @@ begin
   for i := 0 to High(FCache) do
   begin
     PageData := FSource.GetPage(FCache[i].Date);
-    TDiaryPage.ReadFrom(PageData, FCache[i]);
+    TPageSerializer.ReadFrom(PageData, FCache[i]);
     PageData.Free;
 
     //FCache[i].FCalculatedPostprand := False; - нужно сохранить состояния для UpdateCached_Postprand
@@ -631,7 +633,7 @@ constructor TPageCache.Create(PageData: TPageData);
 {==============================================================================}
 begin
   inherited Create();
-  TDiaryPage.ReadFrom(PageData, Self);
+  TPageSerializer.ReadFrom(PageData, Self);
   FCalculatedPostprand := False;
 end;
 
