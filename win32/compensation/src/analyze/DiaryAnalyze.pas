@@ -452,7 +452,7 @@ function GetKoofRandomation(const KoofList: TKoofList): real;
 
   function Dist(n1,n2: integer): real;
   begin
-    result := Sqrt(
+    Result := Sqrt(
       Sqr(KoofList[n1].k - KoofList[n2].k)+
       Sqr(KoofList[n1].q - KoofList[n2].q)+
       Sqr(KoofList[n1].p - KoofList[n2].p));
@@ -461,9 +461,9 @@ function GetKoofRandomation(const KoofList: TKoofList): real;
 {var
   i: integer; }
 begin
-  result := 0;
+  Result := 0;
   {for i := 0 to High(KoofList) do
-    result := result + Dist(i,(i + 1) mod length(KoofList));  }
+    Result := Result + Dist(i,(i + 1) mod length(KoofList));  }
 
   { *** }
 end;

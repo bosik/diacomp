@@ -60,7 +60,7 @@ uses
   AnalyzeInterface,
 
   // прочее
-  CompTest, ThreadExecutor;
+  ThreadExecutor;
 
 const
   WM_SECOND_START = WM_USER + 790;
@@ -246,7 +246,6 @@ type
     ActionExportRaw: TAction;
     TabDebug: TTabSheet;
     ButtonExportXml: TButton;
-    ButtonTest: TButton;
     Button2: TButton;
     Button5: TButton;
     Button8: TButton;
@@ -393,7 +392,6 @@ type
       RecInstance: TCustomRecord);
     procedure FormResize(Sender: TObject);
     procedure SplitterBaseMoved(Sender: TObject);
-    procedure ButtonTestClick(Sender: TObject);
     procedure ImageMinMaxTimesMouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ActionExportRawExecute(Sender: TObject);
@@ -4631,12 +4629,6 @@ begin
   end;
 
   Log(VERBOUS, '#MOD');
-end;
-
-procedure TForm1.ButtonTestClick(Sender: TObject);
-begin
-  if Test() then
-    InfoMessage('Тесты успешно пройдены');
 end;
 
 {==============================================================================}
