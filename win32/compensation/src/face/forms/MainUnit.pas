@@ -51,6 +51,7 @@ uses
   DiaryRecords,
   DiaryCore {#},
   DiaryDatabase,
+  DiaryPage,
   Bases,
   DiaryLocalSource,
   DiaryWeb, //

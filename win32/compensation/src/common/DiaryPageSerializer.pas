@@ -7,7 +7,7 @@ uses
   Classes,
   Dialogs, // TODO: debug only
   AutoLog, // TODO: debug obly
-  //DiaryDatabase,
+  //DiaryPage,
   DiaryRoutines;
 
 type
@@ -34,6 +34,8 @@ type
   end;
 
   TPageSerializer = class
+    //procedure ReadHeader(const S: string; WebFormat: boolean; Page: TDiaryPage);
+
     //class procedure ReadBody(S: TStrings; {out} Page: TDiaryPage);
 
     class procedure MultiRead(S: TStrings; WebFormat: boolean; out Pages: TPageDataList);
