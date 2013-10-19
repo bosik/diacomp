@@ -163,63 +163,27 @@ procedure DrawBS(PagePrev, PageCur, PageNext: TDiaryPage; Image: TImage;
   var
     i: integer;
   begin
-    result := InitMax;
+    Result := InitMax;
 
     for i := 0 to PageCur.Count-1 do
     if (PageCur[i].RecType = TBloodRecord) and
-       (TBloodRecord(PageCur[i]).Value > Result)then
-      result := TBloodRecord(PageCur[i]).Value;
+       (TBloodRecord(PageCur[i]).Value > Result) then
+      Result := TBloodRecord(PageCur[i]).Value;
   end;
 
 var
   h: integer;
-  kx,ky: real;
+  kx, ky: real;
   max: real;
   i: integer;
-  cx,cy: integer;
+  cx, cy: integer;
   TempBlood: TBloodRecord;
   Border: integer;
 
   procedure CalcXY(Time: integer; Value: real; var x,y: integer);
   begin
-    x := Round(Border + kx/60*Time);
-    y := Round(h-Border - ky*Value);
-  end;
-
-  procedure GetPrevBlood(var Rec: TBloodRecord; var Delta: integer);
-  begin
-    if (PagePrev.Count > 0) then
-    begin
-      TempBlood := TBloodRecord(PagePrev.FindRecordFirst(TBloodRecord));
-      if TempBlood = nil then
-      begin
-        TempBlood := TBloodRecord(PageCur.FindRecordFirst(TBloodRecord));
-        Delta := 0;
-      end else
-        Delta := -MinPerday;
-    end else
-    begin
-      TempBlood := TBloodRecord(PageCur.FindRecordFirst(TBloodRecord));
-      Delta := 0;
-    end;
-  end;
-
-  procedure GetNextBlood(var Rec: TBloodRecord; var Delta: integer);
-  begin
-    if (PageNext.Count > 0) then
-    begin
-      TempBlood := TBloodRecord(PageNext.FindRecordFirst(TBloodRecord));
-      if (TempBlood = nil) then
-      begin
-        TempBlood := TBloodRecord(PageCur.FindRecordFirst(TBloodRecord));
-        Delta := 0;
-      end else
-        Delta := + MinPerDay;
-    end else
-    begin
-      TempBlood := TBloodRecord(PageCur.FindRecordFirst(TBloodRecord));
-      Delta := 0;
-    end;
+    x := Round(Border + kx / 60 * Time);
+    y := Round(h - Border - ky * Value);
   end;
 
 begin
@@ -228,7 +192,7 @@ begin
   Image.Picture.Bitmap.Width := Image.Width;
   Image.Picture.Bitmap.Height := Image.Height;
 
-  if (PageCur = nil) or (PageCur.Count = 0) then exit;
+  if (PageCur = nil) or (PageCur.FindRecordFirst(TBloodRecord) = nil) then Exit;
 
   h := Image.Height;
 
@@ -244,36 +208,51 @@ begin
     Pen.Color := clMaroon;
 
     { последняя точка предыдущего дня }
-    GetPrevBlood(TempBlood, i);
-    if TempBlood <> nil then
+
+    if (PagePrev <> nil) then
     begin
-      CalcXY(
-        TempBlood.Time+i,
-        TempBlood.Value,
-        cx,cy);
-      MoveTo(cx,cy);
+      TempBlood := TBloodRecord(PagePrev.FindRecordLast(TBloodRecord));
+      if (TempBlood <> nil) then
+      begin
+        CalcXY(TempBlood.Time - MinPerDay, TempBlood.Value, cx, cy);
+        MoveTo(cx, cy);
+      end else
+      begin
+        TempBlood := TBloodRecord(PageCur.FindRecordFirst(TBloodRecord));
+        if (TempBlood <> nil) then
+        begin
+          CalcXY(TempBlood.Time, TempBlood.Value, cx, cy);
+          MoveTo(cx, cy);
+        end;
+      end;
+    end else
+    begin
+      TempBlood := TBloodRecord(PageCur.FindRecordFirst(TBloodRecord));
+      if (TempBlood <> nil) then
+      begin
+        CalcXY(TempBlood.Time, TempBlood.Value, cx, cy);
+        MoveTo(cx, cy);
+      end;
     end;
 
     { основная линия }
-    for i := 0 to PageCur.Count-1 do
+    for i := 0 to PageCur.Count - 1 do
     if (PageCur[i].RecType = TBloodRecord) then
     begin
-      CalcXY(
-        TBloodRecord(PageCur[i]).Time,
-        TBloodRecord(PageCur[i]).Value,
-        cx,cy);
-      LineTo(cx,cy);
+      TempBlood := TBloodRecord(PageCur[i]);
+      CalcXY(TempBlood.Time, TempBlood.Value, cx, cy);
+      LineTo(cx, cy);
     end;
 
     { продолжение на следующий день }
-    GetNextBlood(TempBlood, i);
-    if TempBlood <> nil then
+    if (PageNext <> nil) then
     begin
-      CalcXY(
-        TempBlood.Time+i,
-        TempBlood.Value,
-       cx,cy);
-      LineTo(cx,cy);
+      TempBlood := TBloodRecord(PageNext.FindRecordFirst(TBloodRecord));
+      if (TempBlood <> nil) then
+      begin
+        CalcXY(TempBlood.Time + MinPerDay, TempBlood.Value, cx, cy);
+        LineTo(cx, cy);
+      end;
     end;
 
     { точки }
@@ -284,17 +263,15 @@ begin
       for i := 0 to PageCur.Count - 1 do
       if (PageCur[i].RecType = TBloodRecord) then
       begin
-        CalcXY(
-          TBloodRecord(PageCur[i]).Time,
-          TBloodRecord(PageCur[i]).Value,
-          cx,cy);
+        TempBlood := TBloodRecord(PageCur[i]);
+        CalcXY(TempBlood.Time, TempBlood.Value, cx, cy);
 
-        if TBloodRecord(PageCur[i]).PostPrand then
+        if (TempBlood.PostPrand) then
           Brush.Color := COLOR_BACK
         else
           Brush.Color := clMaroon;
 
-        Ellipse(cx-eSize,cy-eSize,cx+eSize,cy+eSize);
+        Ellipse(cx - eSize, cy - eSize, cx + eSize, cy + eSize);
       end;
     end;
   end;
@@ -620,13 +597,13 @@ var
   function GetK(const Rec: TAnalyzeRec): real;
   begin
     if Rec.Carbs > 0 then
-      result := (
+      Result := (
         -KoofList[Rec.Time].p * Rec.Prots
         +KoofList[Rec.Time].q * Rec.Ins
         +(Rec.BSOut-Rec.BSIn)
       ) / Rec.Carbs
     else
-      result := -10;
+      Result := -10;
   end;
 
   function GetX(k,q,p: real): real; overload;
@@ -634,19 +611,19 @@ var
     PROTS = 0.25;
   begin
     if q <> 0 then
-      result := (k+PROTS*p)/q
+      Result := (k+PROTS*p)/q
     else
-      result := 0;
+      Result := 0;
   end;
 
   function GetX(n: integer): real; overload;
   begin
-    result := GetX (KoofList[n].k, KoofList[n].q, KoofList[n].p);
+    Result := GetX (KoofList[n].k, KoofList[n].q, KoofList[n].p);
   end;
 
   function GetX(const Rec: TAnalyzeRec): real; overload;
   begin
-    result := GetX(Rec.Time);
+    Result := GetX(Rec.Time);
   end;
 
   function GetQ(const Rec: TAnalyzeRec): real;
@@ -687,17 +664,17 @@ var
  { function GetMax(a,b: real): real; overload;
   begin
     if a > b then
-      result := a
+      Result := a
     else
-      result := b;
+      Result := b;
   end;
 
   function GetMax(a,b: integer): integer; overload;
   begin
     if a > b then
-      result := a
+      Result := a
     else
-      result := b;
+      Result := b;
   end;   }
 
 begin

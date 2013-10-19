@@ -31,7 +31,6 @@ uses
   ThreadTask in 'src\common\ThreadTask.pas',
   AutoLog in 'src\common\Autolog.pas',
   AnalyzeInterface in 'src\analyze\AnalyzeInterface.pas',
-  CompTest in 'src\common\CompTest.pas',
   DiaryDatabase in 'src\common\DiaryDatabase.pas',
   DiaryWeb in 'src\common\DiaryWeb.pas',
   DiarySync in 'src\common\DiarySync.pas',

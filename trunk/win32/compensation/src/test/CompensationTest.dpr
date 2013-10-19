@@ -9,7 +9,8 @@ uses
   DiaryRoutines in '..\common\DiaryRoutines.pas',
   BasesTest in 'BasesTest.pas',
   Bases in '..\bo\Bases.pas',
-  AutoLog in '..\common\AutoLog.pas';
+  AutoLog in '..\common\AutoLog.pas',
+  DiaryRoutinesTest in 'DiaryRoutinesTest.pas';
 
 {$R *.res}
 

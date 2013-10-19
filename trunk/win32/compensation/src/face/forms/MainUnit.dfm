@@ -87,7 +87,7 @@ object Form1: TForm1
       Top = 0
       Width = 1241
       Height = 871
-      ActivePage = TabDiary
+      ActivePage = TabDebug
       Align = alClient
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -616,7 +616,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.586551979170000000
+            Date = 40251.674787164350000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -1836,16 +1836,6 @@ object Form1: TForm1
           TabOrder = 0
           OnClick = ButtonExportXmlClick
         end
-        object ButtonTest: TButton
-          Left = 8
-          Top = 80
-          Width = 201
-          Height = 25
-          Caption = #1058#1077#1089#1090#1080#1088#1086#1074#1072#1090#1100
-          Enabled = False
-          TabOrder = 1
-          OnClick = ButtonTestClick
-        end
         object Button2: TButton
           Left = 8
           Top = 112
@@ -1853,7 +1843,7 @@ object Form1: TForm1
           Height = 25
           Caption = #1041#1088#1091#1090#1092#1086#1088#1089
           Enabled = False
-          TabOrder = 2
+          TabOrder = 1
           OnClick = Button2Click
         end
         object Button5: TButton
@@ -1862,7 +1852,7 @@ object Form1: TForm1
           Width = 201
           Height = 25
           Caption = #1043#1088#1072#1076#1080#1077#1085#1090
-          TabOrder = 3
+          TabOrder = 2
           Visible = False
           OnClick = Button5Click
         end
@@ -1872,7 +1862,7 @@ object Form1: TForm1
           Width = 201
           Height = 25
           Caption = 'Test Smth'
-          TabOrder = 4
+          TabOrder = 3
           Visible = False
           OnClick = Button8Click
         end
@@ -1889,7 +1879,7 @@ object Form1: TForm1
           Font.Name = 'MS Sans Serif'
           Font.Style = []
           ParentFont = False
-          TabOrder = 5
+          TabOrder = 4
           OnClick = Button4Click
         end
         object Button3: TButton
@@ -1898,7 +1888,7 @@ object Form1: TForm1
           Width = 201
           Height = 25
           Caption = #1057#1073#1072#1083#1072#1085#1089#1080#1088#1086#1074#1072#1085#1085#1086#1089#1090#1100' '#1041#1046#1059
-          TabOrder = 6
+          TabOrder = 5
           OnClick = Button3Click
         end
         object Button6: TButton
@@ -1907,7 +1897,7 @@ object Form1: TForm1
           Width = 201
           Height = 25
           Caption = #1055#1088#1086#1076#1091#1082#1090#1099
-          TabOrder = 7
+          TabOrder = 6
           OnClick = Button6Click
         end
         object Memo1: TMemo
@@ -1917,14 +1907,14 @@ object Form1: TForm1
           Height = 177
           Lines.Strings = (
             'Memo1')
-          TabOrder = 8
+          TabOrder = 7
         end
         object Edit1: TEdit
           Left = 400
           Top = 216
           Width = 377
           Height = 24
-          TabOrder = 9
+          TabOrder = 8
           Text = 'Edit1'
           OnChange = Edit1Change
         end
@@ -1934,7 +1924,7 @@ object Form1: TForm1
           Width = 201
           Height = 25
           Caption = 'Export diary into JSON'
-          TabOrder = 10
+          TabOrder = 9
           OnClick = ButtonExportJsonClick
         end
       end
