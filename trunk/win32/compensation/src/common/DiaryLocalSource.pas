@@ -9,6 +9,7 @@ uses
   SysUtils,
   Classes,
   Dialogs {update warnings},
+  DiaryPageSerializer,
   XMLDoc,
   XMLIntf;
 

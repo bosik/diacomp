@@ -41,7 +41,9 @@ uses
   Bases in 'src\bo\Bases.pas',
   DiaryRecords in 'src\bo\DiaryRecords.pas',
   DiaryRoutines in 'src\common\DiaryRoutines.pas',
-  DiaryAnalyze in 'src\analyze\DiaryAnalyze.pas';
+  DiaryAnalyze in 'src\analyze\DiaryAnalyze.pas',
+  DiaryWebSource in 'src\common\DiaryWebSource.pas',
+  DiaryPageSerializer in 'src\common\DiaryPageSerializer.pas';
 
 {$R *.res}
 

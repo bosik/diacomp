@@ -592,9 +592,9 @@ begin
   Value['Password'] := EditPassword.Text;
   Value['ServerURL'] := EditServerURL.Text;
 
-  {*}WebSource.Username := Value['Login'];
-  {*}WebSource.Password := Value['Password'];
-  {*}WebSource.Server := Value['ServerURL'];
+  {*}WebClient.Username := Value['Login'];
+  {*}WebClient.Password := Value['Password'];
+  {*}WebClient.Server := Value['ServerURL'];
 end;
 
 

@@ -851,11 +851,11 @@ begin
   try
     { =============== ВЕБ-КОНСОЛЬ =============== }
     {*}StartupInfo(STATUS_ACTION_WEB_SETUP);
-    {*}WebSource.Username := Value['Login'];
-    {*}WebSource.Password := Value['Password'];
-    {*}WebSource.Server := Value['ServerURL'];
-    {*}WebSource.SetTimeout(5000);
-    {*}WebSource.OnLogin := MyLogin;
+    {*}WebClient.Username := Value['Login'];
+    {*}WebClient.Password := Value['Password'];
+    {*}WebClient.Server := Value['ServerURL'];
+    {*}WebClient.SetTimeout(5000);
+    {*}WebClient.OnLogin := MyLogin;
 
     { =============== ЗАГРУЗКА ДНЕВНИКА =============== }
     {*}StartupInfo(STATUS_ACTION_LOADING_DIARY);
@@ -916,7 +916,7 @@ begin
     begin
       //--------------------------------------
       StartupInfo(STATUS_ACTION_AUTH);
-      {*}if (WebSource.Login() = lrDone) then
+      {*}if (WebClient.Login() = lrDone) then
       begin
         //--------------------------------------
         try
@@ -3196,7 +3196,7 @@ begin
     {*}ShowProcess('Сохранение дневника');
     SaveDiary;
 
-    if Value['AutoSync'] and WebSource.Online then
+    if Value['AutoSync'] and WebClient.Online then
     begin
       {*}ShowProcess('Синхронизация');
       MySyncDiary;
@@ -3499,7 +3499,7 @@ begin
     0: { дневник }
     begin
       ProcessMealSelected(DiaryView.SelectedRecord is TMealRecord);
-      Form1.StatusBar.Panels[2].Text := STATUS_ONLINE_STATE[WebSource.Online];
+      Form1.StatusBar.Panels[2].Text := STATUS_ONLINE_STATE[WebClient.Online];
     end;
 
     1: { базы }
@@ -5430,7 +5430,7 @@ procedure TForm1.Button8Click(Sender: TObject);
   var
     Version: integer;
   begin
-    if WebSource.GetFoodBaseVersion(Version) then
+    if WebClient.GetFoodBaseVersion(Version) then
       ShowMessage(Format('Food base verson: %d', [Version]))
     else
       ShowMessage('Can''t get foodbase version');
@@ -5440,7 +5440,7 @@ procedure TForm1.Button8Click(Sender: TObject);
   var
     Data: string;
   begin
-    if WebSource.DownloadFoodBase(Data) then
+    if WebClient.DownloadFoodBase(Data) then
       ShowMessage(Data)
     else
       ShowMessage('Can''t download foodbase');
@@ -5454,7 +5454,7 @@ procedure TForm1.Button8Click(Sender: TObject);
     try
       S.LoadFromFile(WORK_FOLDER + FoodBase_FileName);
 
-      if WebSource.UploadFoodBase(S.Text, FoodBase.Version) then
+      if WebClient.UploadFoodBase(S.Text, FoodBase.Version) then
         ShowMessage('Done')
       else
         ShowMessage('Can''t upload foodbase');
@@ -5465,7 +5465,7 @@ procedure TForm1.Button8Click(Sender: TObject);
 
   procedure TestReport(const S: string);
   begin
-    if WebSource.Report(S) then
+    if WebClient.Report(S) then
       ShowMessage('Reported OK')
     else
       ShowMessage('Can''t report');
