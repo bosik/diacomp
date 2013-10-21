@@ -123,8 +123,6 @@ begin
   { обработка }
 
   { 1. Создаём RecList, считая время в минутах от 01/01/1899 }
-  Base.PrepareCache(FromDate, ToDate);
-
   for Date := FromDate to ToDate do
   begin
     PageBaseTime := Date * MinPerDay;

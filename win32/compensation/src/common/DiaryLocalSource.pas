@@ -241,13 +241,13 @@ function TDiaryLocalSource.PostPages(const Pages: TDiaryPageList): boolean;
     if (PageOld.TimeStamp > PageNew.TimeStamp) then
       Msg := Msg + '* Время: ' + DateTimeToStr(PageOld.TimeStamp) + ' --> ' + DateTimeToStr(PageNew.TimeStamp) + #13;
 
-    if (PureLength(PageOld.Page) > PureLength(PageNew.Page)) then
+    if (PureLength(PageNew.Page) - PureLength(PageOld.Page) < -20) then
       Msg := Msg + '* Размер: ' + IntToStr(Length(PageOld.Page)) + ' --> ' + IntToStr(Length(PageNew.Page)) + #13;
 
     Result :=
       (Msg <> '') and
       (MessageDlg(
-        'Страница ' + DateToStr(PageOld.Date)+' будет загружена с сервера.'+#13+
+        'Страница ' + DateToStr(PageOld.Date)+' будет перезаписана.'+#13+
         'Обнаружены подозрения:' + #13 +
         Msg + #13+
         'Продолжить?',
@@ -281,9 +281,10 @@ begin
     end;
   end;
   if (Length(Pages) > 0) then
+  begin
     FModified := True;
-
-  SaveToFile(FFileName);
+    SaveToFile(FFileName);
+  end;
 
   Result := True;
 end;

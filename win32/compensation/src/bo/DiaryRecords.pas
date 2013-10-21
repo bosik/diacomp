@@ -29,7 +29,9 @@ type
     class function CheckTime(TestTime: integer): boolean;
   public
     procedure BeginUpdate;
-    constructor Create;
+    procedure CopyFrom(Org: TCustomRecord); virtual; deprecated;
+    constructor Create; overload;
+    constructor Create(Org: TCustomRecord); overload; deprecated;
     procedure EndUpdate;
     function RecType: TClassCustomRecord;
 
@@ -59,6 +61,7 @@ type
     class function CheckValue(const TestValue: real): boolean;
   public
     constructor Create(ATime: integer = 0; AValue: real = -1; AFinger: integer = -1);
+    procedure CopyFrom(Org: TCustomRecord); override; deprecated;
     property Finger: integer read FFinger write SetFinger;
     property Value: real read FValue write SetValue;
     property PostPrand: boolean read FPostPrand write FPostPrand;
@@ -72,6 +75,7 @@ type
     procedure SetValue(const NewValue: real);
     class function CheckValue(const Value: real): boolean;
   public
+    //procedure CopyFrom(Org: TCustomRecord); override; deprecated;
     constructor Create(ATime: integer = 0; AValue: real = -1);
     property Value: real read FValue write SetValue;
   end;
@@ -89,6 +93,7 @@ type
     procedure MealChangeHandler(Sender: TObject);
   public
     function Add(Food: TFoodMassed): integer;
+    // procedure CopyFrom(Org: TCustomRecord); override; deprecated;
     constructor Create(ATime: integer = 0; AShortMeal: boolean = False);
     procedure Clear;
     destructor Destroy; override;
@@ -112,6 +117,7 @@ type
   protected
     procedure SetText(const Value: string);
   public
+    // procedure CopyFrom(Org: TCustomRecord); override; deprecated;
     constructor Create(ATime: integer = 0; AText: string = '');
     property Text: string read FText write SetText;
   end;
@@ -135,12 +141,37 @@ begin
 end;
 
 {==============================================================================}
+procedure TCustomRecord.CopyFrom(Org: TCustomRecord);
+{==============================================================================}
+begin
+  if (Org = nil) then
+    raise Exception.Create('Org record can''t be nil');
+  if (not (Org is Self.ClassType)) then
+    raise Exception.Create('Unsupported org type');
+
+  Self.SetTime(Org.Time);
+
+  // NO EVENT COPY HERE, DON'T KNOW IF IT'S OK...
+end;
+
+{==============================================================================}
 constructor TCustomRecord.Create;
 {==============================================================================}
 begin
   FOnChange := nil;
   FSilentMode := False;
   FSilentlyModified := False;
+end;
+
+{==============================================================================}
+constructor TCustomRecord.Create(Org: TCustomRecord);
+{==============================================================================}
+begin
+  FOnChange := nil;
+  FSilentMode := False;
+  FSilentlyModified := False;
+  
+  CopyFrom(Org);
 end;
 
 {==============================================================================}
@@ -203,6 +234,18 @@ class function TBloodRecord.CheckValue(const TestValue: real): boolean;
 {==============================================================================}
 begin
   Result := (TestValue > 0){and ? - единицы бывают разные};
+end;
+
+{==============================================================================}
+procedure TBloodRecord.CopyFrom(Org: TCustomRecord);
+{==============================================================================}
+var
+  Temp: TBloodRecord;
+begin
+  inherited;
+  Temp := TBloodRecord(Org);
+  Self.SetFinger(Temp.Finger);
+  Self.SetValue(Temp.Value);
 end;
 
 {==============================================================================}

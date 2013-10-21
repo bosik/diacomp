@@ -105,11 +105,13 @@ begin
   begin
     if (ModList1[i].Date < ModList2[j].Date) then
     begin
+      // TODO 1: logic error! can't decide this without versions' comparation
       Add(ModList1[i].Date, Over1, c1);
       inc(i);
     end else
     if (ModList1[i].Date > ModList2[j].Date) then
     begin
+      // TODO 1: logic error! can't decide this without versions' comparation
       Add(ModList2[j].Date, Over2, c2);
       inc(j);
     end else
@@ -126,6 +128,7 @@ begin
   // добиваем первый
   while (i <= High(ModList1)) do
   begin
+    // TODO 1: logic error! can't decide this without versions' comparation
     Add(ModList1[i].Date, Over1, c1);
     inc(i);
   end;
@@ -133,6 +136,7 @@ begin
   // добиваем второй
   while (j <= High(ModList2)) do
   begin
+    // TODO 1: logic error! can't decide this without versions' comparation
     Add(ModList2[j].Date, Over2, c2);
     inc(j);
   end;

@@ -567,6 +567,7 @@ begin
       case ItemType of
         itFood: Temp := FoodBase[N].AsFoodMassed(Mass);
         itDish: Temp := DishBase[N].AsFoodMassed(Mass);
+        else raise Exception.Create('Invalid ItemType');
       end;
 
       ADish.Add(Temp);
