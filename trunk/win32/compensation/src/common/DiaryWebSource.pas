@@ -49,7 +49,6 @@ function TDiaryWebSource.GetPages(const Dates: TDateList; out Pages: TDiaryPageL
 var
   Resp: string;
   S: TStrings;
-  PageDataList: TPageDataList;
   i: integer;
 begin
   Result := FClient.GetPages(Dates, Resp);
@@ -72,20 +71,23 @@ end;
 function TDiaryWebSource.PostPages(const Pages: TDiaryPageList): boolean;
 {==============================================================================}
 var
-  P: TPageDataList;
   S: TStrings;
   i: integer;
+  OldTimestamp: TDateTime;
 begin
-  SetLength(P, Length(Pages));
-  for i := 0 to High(P) do
+  S := TStringList.Create;
+
+  for i := 0 to High(Pages) do
   begin
-    P[i] := TPageData.Create;
-    TPageSerializer.Write(Pages[i], P[i]);
-    P[i].TimeStamp := FClient.LocalToServer(P[i].TimeStamp);
+    OldTimestamp := Pages[i].TimeStamp;
+    try
+      Pages[i].TimeStamp := FClient.LocalToServer(Pages[i].TimeStamp);
+      TPageSerializer.Write(Pages[i], S, WebFmt);
+    finally
+      Pages[i].TimeStamp := OldTimestamp;
+    end;
   end;
 
-  S := TStringList.Create;
-  TPageSerializer.Write(P, S, WebFmt);
   Result := FClient.PostPages(S.Text);
 end;
 

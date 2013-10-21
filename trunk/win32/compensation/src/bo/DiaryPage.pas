@@ -4,6 +4,7 @@ interface
 
 uses 
   SysUtils, // Exception
+  Math, // Max
   DiaryRoutines, // TDate
   DiaryRecords;
 
@@ -24,6 +25,12 @@ type
     {+}FRecs: TRecordsList;
     {+}FSilentChange: boolean;
 
+    FFreeTime: integer;
+
+    FStdMealPeriod: integer;
+    FShortMealPeriod: integer;
+    FInsPeriod: integer;
+
     { события }
     FOnChange: array of TEventPageChanged;
 
@@ -38,7 +45,8 @@ type
     {+}function Add(Rec: TCustomRecord): integer;
     {+}procedure Clear;
     {+}function Count: integer;
-    constructor Create;
+    constructor Create; overload;
+    constructor Create(Copy: TDiaryPage); overload; deprecated;
     destructor Destroy; override;
     {+}procedure Remove(Index: integer; AutoFree: boolean = True);
 
@@ -49,6 +57,8 @@ type
     
     // Listeners
     procedure AddChangeListener(Listener: TEventPageChanged);
+
+    procedure UpdatePostprand();
 
     // свойства
     property Date: TDate read FDate write FDate;
@@ -62,6 +72,11 @@ type
     property DayMass:  real index 5 read GetStat;
     property DayIns:   real index 6 read GetStat;
     property SilentChange: boolean read FSilentChange write FSilentChange;
+
+    property FreeTime: integer read FFreeTime write FFreeTime; // время, когда замеры перестают быть постпрандиальными
+    property PostPrandMealStd: integer   read FStdMealPeriod   write FStdMealPeriod;
+    property PostPrandMealShort: integer read FShortMealPeriod write FShortMealPeriod;
+    property PostPrandIns: integer       read FInsPeriod       write FInsPeriod;
   end;
 
   TDiaryPageList = array of TDiaryPage;
@@ -152,6 +167,32 @@ constructor TDiaryPage.Create();
 begin
   FOnChange := nil;
   FSilentChange := False;
+end;
+
+{==============================================================================}
+constructor TDiaryPage.Create(Copy: TDiaryPage);
+{==============================================================================}
+//var
+//  i: integer;
+begin
+  raise Exception.Create('Method TDiaryPage.Create(Copy) is deprecated');
+
+  {FOnChange := nil;
+  FSilentChange := False;
+
+  if (Copy = nil) then
+    raise Exception.Create('Base diary page can''t be nil');
+
+  // TODO: deep copy content here
+
+  for i := 0 to Copy.Count - 1 do
+  begin
+    TBloodRecord
+  end;
+
+  Date := Copy.Date;
+  TimeStamp := Copy.TimeStamp;
+  Version := Copy.Version;  }
 end;
 
 {==============================================================================}
@@ -271,6 +312,8 @@ begin
     end;
   end;
 
+  UpdatePostprand;
+
   // информируем слушателей (ПОСЛЕ коррекций)
 
   for i := 0 to High(FOnChange) do
@@ -367,6 +410,40 @@ begin
   end;   *)
 
   Result := Trace(High(FRecs));
+end;
+
+{==============================================================================}
+procedure TDiaryPage.UpdatePostprand();
+{==============================================================================}
+var
+  CurFreeTime, i: integer;
+begin
+  //Log('TDiaryPage.UpdatePostPrand()');
+  // TODO: дублирующийся код (GetNextDayFreeTime)
+
+  CurFreeTime := FreeTime;
+
+  for i := 0 to Count - 1 do
+  begin
+    if (Recs[i].RecType = TInsRecord) then
+    begin
+      CurFreeTime := Max(CurFreeTime, Recs[i].Time + FInsPeriod);
+    end else
+
+    if (Recs[i].RecType = TMealRecord) then
+    begin
+      if TMealRecord(Recs[i]).Carbs > 0 then
+         if TMealRecord(Recs[i]).ShortMeal then
+           CurFreeTime := Max(CurFreeTime, Recs[i].Time + FShortMealPeriod)
+         else
+           CurFreeTime := Max(CurFreeTime, Recs[i].Time + FStdMealPeriod);
+    end else
+
+    if (Recs[i].RecType = TBloodRecord) then
+    begin
+      TBloodRecord(Recs[i]).PostPrand := (Recs[i].Time < CurFreeTime);
+    end;
+  end;
 end;
 
 end.

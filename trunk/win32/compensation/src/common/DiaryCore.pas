@@ -35,8 +35,6 @@ type
   procedure Finalize();
 
   { load/save }
-  procedure SaveDiary; deprecated;
-
   procedure LoadExpander; deprecated;
   procedure SaveExpander; deprecated;
 
@@ -262,13 +260,6 @@ procedure SaveDishBase;
 {==============================================================================}
 begin
   DishBase.SaveToFile(WORK_FOLDER + DishBase_FileName);
-end;
-
-{==============================================================================}
-procedure SaveDiary;
-{==============================================================================}
-begin
-  Diary.Post;
 end;
 
 {==============================================================================}

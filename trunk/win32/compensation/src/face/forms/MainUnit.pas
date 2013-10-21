@@ -18,7 +18,7 @@ uses
   ComCtrls, StdCtrls, Grids, ValEdit, Graphics, Buttons,
   Forms, Classes, Dialogs, Calendar, Mask, Spin,
   XPMan, ActnPopupCtrl, CoolTrayIcon, ActnList, XPStyleActnCtrls,
-  ActnMan, ToolWin, ActnCtrls, ActnMenus, ShellAPI, ACCombo, DiaryView,
+  ActnMan, ToolWin, ActnCtrls, ActnMenus, ShellAPI,
 
   // формы
 
@@ -37,6 +37,8 @@ uses
   // интерфейс
   DiaryInterface,
   TextInterface,
+  DiaryView,
+  ACCombo,
 
   // утилиты
   DiaryRoutines,
@@ -623,7 +625,6 @@ begin
 
     if (Result > 0) then
     begin
-      Diary.ReloadCache;
       Form1.DiaryView.DrawCurrentPage;
       //Diary.Modified := True; // флаг и так поднимается в процессе синхронизации
       Form1.UpdateNextFinger;
@@ -663,11 +664,7 @@ procedure TaskSaveAndSync(Terminated: TBooleanFunction);
 {==============================================================================}
 begin
   StartProc('TaskSaveAndSync');
-
-  if Diary.Modified then
-    SaveDiary; // при этом страницы сериализуются; должно быть до синхронизации
   MySyncDiary(Terminated);
-
   FinishProc;
 end;
 
@@ -3184,12 +3181,13 @@ begin
   StartProc('TForm1.FormClose');
 
   FormProcess.Show;
-  FormProcess.SetMax(4);
+  FormProcess.SetMax(3);
 
-  if Diary.Modified then
+  //if Diary.Modified then
+  // TODO: never modified right now
   begin
-    {*}ShowProcess('Сохранение дневника');
-    SaveDiary;
+    //{*}ShowProcess('Сохранение дневника');
+    //SaveDiary;
 
     if Value['AutoSync'] and WebClient.Online then
     begin
@@ -3215,7 +3213,8 @@ procedure TForm1.TimerAutosaveTimer(Sender: TObject);
 begin
   TimerAutosave.Enabled := False;
   try
-    if (Diary.Modified) then
+    //if (Diary.Modified) then
+    // TODO: never modified right now
     begin
       if (Value['UpdateKMode'] = 1) then { UpdateKOnChange }
         UpdateKoofs();
