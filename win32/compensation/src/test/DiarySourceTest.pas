@@ -24,7 +24,8 @@ type
     procedure SetupSource; virtual; abstract;
     procedure TeardownSource; virtual; abstract;
   published
-    procedure TestGetModList;
+    procedure TestGetModified;
+    procedure TestGetVersions;
     procedure TestGetPages;
   end;
 
@@ -47,7 +48,7 @@ begin
   SetLength(Dates, 2);
 
   DemoPages[0] := TDiaryPage.Create;
-  DemoPages[0].Date := Trunc(EncodeDate(2012, 03, 15));
+  DemoPages[0].Date := Trunc(EncodeDate(2002, 03, 15));
   DemoPages[0].Add(TBloodRecord.Create(127, 4.9, 3));
   DemoPages[0].Add(TInsRecord.Create(135, 12));
     Meal := TMealRecord.Create(201, True);
@@ -57,7 +58,7 @@ begin
   DemoPages[0].Add(TNoteRecord.Create(230, 'Demo'));
 
   DemoPages[1] := TDiaryPage.Create;
-  DemoPages[1].Date := Trunc(EncodeDate(2012, 03, 16));
+  DemoPages[1].Date := Trunc(EncodeDate(2002, 03, 16));
   DemoPages[1].Add(TBloodRecord.Create(820, 6.8, 7));
   DemoPages[1].Add(TInsRecord.Create(829, 16));
   DemoPages[1].Add(TMealRecord.Create(850, False));
@@ -86,8 +87,7 @@ begin
 
   Check(Source.PostPages(DemoPages), 'PostPages() failed');
 
-  if (Source <> nil) then
-    FreeAndNil(Source);
+  FreeAndNil(Source);
   SetupSource;
 end;
 
@@ -156,7 +156,7 @@ begin
     if (ExpPage[j].RecType = TNoteRecord) then
     begin
       CheckEquals(TNoteRecord(ExpPage[j]).Text, TNoteRecord(ActPage[j]).Text);
-    end else
+    end else;
   end;
 end;
 
@@ -174,13 +174,13 @@ begin
 end;
 
 {==============================================================================}
-procedure TDiarySourceTest.TestGetModList;
+procedure TDiarySourceTest.TestGetModified;
 {==============================================================================}
 var
   ModList: TModList;
   i: integer;
 begin
-  Source.GetModList(Now() - 5/SecPerDay, ModList); // what changed in last 5 secs?
+  Source.GetModified(Now() - 5/SecPerDay, ModList); // what changed in last 5 secs?
   CheckEquals(Length(DemoPages), Length(ModList));
 
   for i := 0 to High(DemoPages) do
@@ -198,6 +198,23 @@ var
 begin
   Check(Source.GetPages(Dates, Pages), 'GetPages() failed');
   ComparePages(DemoPages, Pages);
+end;
+
+{==============================================================================}
+procedure TDiarySourceTest.TestGetVersions;
+{==============================================================================}
+var
+  ModList: TModList;
+  i: integer;
+begin
+  Source.GetVersions(Dates, ModList);
+  CheckEquals(Length(DemoPages), Length(ModList));
+
+  for i := 0 to High(DemoPages) do
+  begin
+    CheckEquals(DemoPages[i].Date, ModList[i].Date);
+    CheckEquals(DemoPages[i].Version, ModList[i].Version);
+  end;
 end;
 
 end.

@@ -3493,7 +3493,10 @@ begin
     0: { дневник }
     begin
       ProcessMealSelected(DiaryView.SelectedRecord is TMealRecord);
-      Form1.StatusBar.Panels[2].Text := STATUS_ONLINE_STATE[WebClient.Online];
+      if WebClient.Online then
+        Form1.StatusBar.Panels[2].Text := STATUS_STATE_ONLINE
+      else
+        Form1.StatusBar.Panels[2].Text := STATUS_STATE_OFFLINE;
     end;
 
     1: { базы }

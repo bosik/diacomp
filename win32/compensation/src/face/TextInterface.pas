@@ -5,7 +5,7 @@ interface
 // TODO: отрефакторить названия
 // TODO: найти дубли
 
-const
+resourcestring
   { Заголовки окон }
   PROGRAM_TITLE                     = 'Компенсация';
 
@@ -29,6 +29,7 @@ const
     'смысле. За Ваше здоровье ответственны только Вы сами.'#13#13+
     'Если Вы принимаете эти условия, нажмите "Да" (Yes)'#13+
     'Если не принимаете - нажмите "Нет" (No).';
+const
   MESSAGE_CONF_REMOVE_RECORD: array[1..4] of string = (
     'Удалить замер СК?',
     'Удалить инъекцию?',
@@ -39,6 +40,8 @@ const
     'Доступна новая версия программы. Установить сейчас?',
     'Установить обновление сейчас?'
   );
+
+resourcestring
   MESSAGE_CONF_REMOVE_DIARY_FOOD = 'Удалить <%s> ?';
   MESSAGE_CONF_REMOVE_FOOD       = 'Удалить продукт <%s>?';
   MESSAGE_CONF_REMOVE_FOOD_USED  = 'Продукт <%s> используется в блюде <%s>.'#13'Всё равно удалить?';
@@ -49,9 +52,11 @@ const
   BALLOON_INFO_NEW_VERSION_AVAILABLE  = 'Доступна новая версия программы. Для просмотра более подробной информации нажмите на это сообщение.';
   BALOON_ERROR_ANALYZER_NOT_FOUNDED   = 'Ошибка: модуль анализа не загружен';     
 
+const
   { Кнопки }
   SAVE_CAPTION: array[Boolean] of string = ('Сохранить','Создать');
 
+resourcestring
   { Строка состояния }
   STATUS_ACTION_LOADING_DIARY        = 'Загрузка дневника';
   STATUS_ACTION_LOADING_GRAPHICS     = 'Загрузка графики';
@@ -74,7 +79,9 @@ const
   STATUS_READY                       = 'Готово';
   STATUS_LOADING_TIME                = 'Время запуска: %d мсек';
   STATUS_SYNC_DONE                   = 'Дневник синхронизирован';
-  STATUS_ONLINE_STATE: array[False..True] of string = ('Оффлайн', 'Онлайн');
+
+  STATUS_STATE_ONLINE                = 'Онлайн';
+  STATUS_STATE_OFFLINE               = 'Оффлайн';
 
   { Хинты }
   HINT_FINGER_NOT_FOUND = 'Предыдущий замер СК не найден';
@@ -84,6 +91,7 @@ const
   LABEL_AFTER_MEAL       = 'После еды:';
   LABEL_AFTER_INS        = 'После укола:';
   MESSAGE_SELECT_MEAL    = 'Выберите приём пищи или создайте новый';
+const
   KoofDisc: array[0..3] of string = (
     'Показывает, насколько увеличивается СК при съедении 1г углеводов',
     'Показывает, насколько уменьшается СК при введении 1 ЕД пищевого инсулина',

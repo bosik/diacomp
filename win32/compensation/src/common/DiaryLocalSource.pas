@@ -30,7 +30,8 @@ type
     constructor Create(const FileName: string);
     destructor Destroy; override;
 
-    function GetModList(Time: TDateTime; out ModList: TModList): boolean; override;
+    procedure GetModified(Time: TDateTime; out ModList: TModList); override;
+    procedure GetVersions(const Dates: TDateList; out ModList: TModList); override;
     function GetPages(const Dates: TDateList; out Pages: TDiaryPageList): boolean; override;
     function PostPages(const Pages: TDiaryPageList): boolean; override;
 
@@ -119,7 +120,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryLocalSource.GetModList(Time: TDateTime; out ModList: TModList): boolean;
+procedure TDiaryLocalSource.GetModified(Time: TDateTime; out ModList: TModList);
 {==============================================================================}
 var
   i, Count: integer;
@@ -136,7 +137,25 @@ begin
     inc(Count);
   end;
   SetLength(ModList, Count);
-  Result := True;
+end;
+
+{==============================================================================}
+procedure TDiaryLocalSource.GetVersions(const Dates: TDateList; out ModList: TModList);
+{==============================================================================}
+var
+  i, k, Count: integer;
+begin
+  SetLength(ModList, Length(Dates));
+  for i := 0 to High(Dates) do
+  begin
+    ModList[i].Date := Dates[i];
+
+    k := GetPageIndex(Dates[i]);
+    if (k > -1) then
+      ModList[i].Version := FPages[k].Version
+    else
+      ModList[i].Version := 0;
+  end;
 end;
 
 {==============================================================================}
