@@ -17,7 +17,8 @@ type
   public
     constructor Create(Client: TDiacompClient);
 
-    function GetModList(Time: TDateTime; out ModList: TModList): boolean; override;
+    procedure GetModified(Time: TDateTime; out ModList: TModList); override;
+    procedure GetVersions(const Dates: TDateList; out ModList: TModList); override;
     function GetPages(const Dates: TDateList; out Pages: TDiaryPageList): boolean; override;
     function PostPages(const Pages: TDiaryPageList): boolean; override;
   end;
@@ -37,10 +38,10 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryWebSource.GetModList(Time: TDateTime; out ModList: TModList): boolean;
+procedure TDiaryWebSource.GetModified(Time: TDateTime; out ModList: TModList);
 {==============================================================================}
 begin
-  Result := FClient.GetModList(Time, ModList);
+  FClient.GetModList(Time, ModList);
 end;
 
 {==============================================================================}
@@ -65,6 +66,13 @@ begin
   finally
     S.Free;
   end;
+end;
+
+{==============================================================================}
+procedure TDiaryWebSource.GetVersions(const Dates: TDateList; out ModList: TModList);
+{==============================================================================}
+begin
+  FClient.GetVersions(Dates, ModList);
 end;
 
 {==============================================================================}

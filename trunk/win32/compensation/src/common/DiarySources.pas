@@ -22,7 +22,11 @@ type
   IDiarySource = class
   public
     { методы }
-    function GetModList(Time: TDateTime; out ModList: TModList): boolean; virtual; abstract;
+    // TODO: make it function
+    procedure GetModified(Time: TDateTime; out ModList: TModList); virtual; abstract;
+    // TODO: make it function
+    procedure GetVersions(const Dates: TDateList; out ModList: TModList); virtual; abstract;
+    // TODO: make it function
     function GetPages(const Dates: TDateList; out Pages: TDiaryPageList): boolean; virtual; abstract;
     function PostPages(const Pages: TDiaryPageList): boolean; virtual; abstract;
 
