@@ -143,7 +143,7 @@ end;
 procedure TDiaryLocalSource.GetVersions(const Dates: TDateList; out ModList: TModList);
 {==============================================================================}
 var
-  i, k, Count: integer;
+  i, k: integer;
 begin
   SetLength(ModList, Length(Dates));
   for i := 0 to High(Dates) do

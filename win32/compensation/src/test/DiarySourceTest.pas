@@ -27,6 +27,7 @@ type
     procedure TestGetModified;
     procedure TestGetVersions;
     procedure TestGetPages;
+    procedure TestModifying;
   end;
 
 implementation
@@ -215,6 +216,46 @@ begin
     CheckEquals(DemoPages[i].Date, ModList[i].Date);
     CheckEquals(DemoPages[i].Version, ModList[i].Version);
   end;
+end;
+
+{==============================================================================}
+procedure TDiarySourceTest.TestModifying;
+{==============================================================================}
+var
+  Page: TDiaryPage;
+  OldRecCount: integer;
+  OldVersion: integer;
+begin
+  Page := Source.GetPage(Trunc(EncodeDate(2013, 10, 23)));
+  Check(Page <> nil, 'Failed to get page (1)');
+  OldRecCount := Page.Count;
+  OldVersion := Page.Version;
+
+  Page.Add(TNoteRecord.Create(1439, 'Temp note'));
+  Check(Source.PostPage(Page), 'Failed to post page (1)');
+  Page.Free;
+
+  // -------------------------
+
+  Page := Source.GetPage(Trunc(EncodeDate(2013, 10, 23)));
+  Check(Page <> nil, 'Failed to get page (2)');
+  CheckEquals(OldRecCount + 1, Page.Count, 'Count check failed (1)');
+  CheckEquals(OldVersion + 1, Page.Version, 'Version check failed (1)');
+  CheckEquals(TNoteRecord, Page[Page.Count - 1].RecType, 'RecType check failed');
+  CheckEquals(1439, TNoteRecord(Page[Page.Count - 1]).Time, 'Time check failed');
+  CheckEquals('Temp note', TNoteRecord(Page[Page.Count - 1]).Text, 'Text check failed');
+
+  Page.Remove(Page.Count - 1);
+  Check(Source.PostPage(Page), 'Failed to post page (2)');
+  Page.Free;
+
+  // -------------------------
+
+  Page := Source.GetPage(Trunc(EncodeDate(2013, 10, 23)));
+  Check(Page <> nil, 'Failed to get page (3)');
+  CheckEquals(OldRecCount, Page.Count, 'Count check failed (2)');
+  CheckEquals(OldVersion + 2, Page.Version, 'Version check failed (2)');
+  Page.Free;
 end;
 
 end.
