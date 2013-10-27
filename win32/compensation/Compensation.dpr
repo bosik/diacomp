@@ -44,7 +44,8 @@ uses
   DiaryAnalyze in 'src\analyze\DiaryAnalyze.pas',
   DiaryWebSource in 'src\common\DiaryWebSource.pas',
   DiaryPageSerializer in 'src\common\DiaryPageSerializer.pas',
-  DiaryPage in 'src\bo\DiaryPage.pas';
+  DiaryPage in 'src\bo\DiaryPage.pas',
+  DiaryPageSerializerTest in 'src\test\DiaryPageSerializerTest.pas';
 
 {$R *.res}
 

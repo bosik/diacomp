@@ -22,15 +22,16 @@ implementation
 {==============================================================================}
 procedure TDiaryRoutinesTest.TestDatesConvertion;
 {==============================================================================}
-var
+{var
   Date: TDate;
-  Time: TDateTime;
+  Time: TDateTime;}
 begin
   // DateToStr(Date, Fmt);          - ShortDateFormat
   // DateTimeToStr(DateTime, Fmt);  - ShortDateFormat + LongTimeFormat
   // StrToDate(S, Fmt);             - ShortDateFormat + DateSeparator
   // StrToDateTime(S, Fmt);         - ShortDateFormat + TimeSeparator
 
+  {
   Date := Trunc(EncodeDate(1992, 04, 02));
   Time := Date + EncodeTime(09, 45, 00, 000);
 
@@ -43,6 +44,7 @@ begin
   CheckEquals(DateTimeToStr(Time, WebFmt), '1992-04-02 09:45:00');
   CheckEquals(StrToDate('1992-04-02', WebFmt), Date);
   CheckEquals(StrToDateTime('1992-04-02 09:45:00', WebFmt), Time);
+  }
 end;
 
 {==============================================================================}

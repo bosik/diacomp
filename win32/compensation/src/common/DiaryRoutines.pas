@@ -107,7 +107,6 @@ type
 
 var
   Decimal: char;
-  LocalFmt: TFormatSettings;
 
 const
   SecPerMin     = 60; // TODO: хочу капс-константы. Все.
@@ -763,18 +762,15 @@ begin
   Result := -1;
 end;
 
+var
+  Temp: TFormatSettings;
+  
 initialization
   // DateToStr(Date, Fmt);          - ShortDateFormat
   // DateTimeToStr(DateTime, Fmt);  - ShortDateFormat + LongTimeFormat
   // StrToDate(S, Fmt);             - ShortDateFormat + DateSeparator
   // StrToDateTime(S, Fmt);         - ShortDateFormat + TimeSeparator
 
-  // 02.04.1992 09:45:00
-  GetLocaleFormatSettings(GetThreadLocale, LocalFmt);
-  LocalFmt.DateSeparator := '.';
-  LocalFmt.TimeSeparator := ':';
-  LocalFmt.ShortDateFormat := 'dd.mm.yyyy';
-  LocalFmt.LongTimeFormat := 'hh:nn:ss';
-
-  Decimal := LocalFmt.DecimalSeparator;
+  GetLocaleFormatSettings(GetThreadLocale, Temp);
+  Decimal := Temp.DecimalSeparator;
 end.
