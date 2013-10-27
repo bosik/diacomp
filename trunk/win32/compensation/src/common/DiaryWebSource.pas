@@ -58,7 +58,7 @@ begin
   S := TStringList.Create;
   S.Text := Resp;
   try
-    TPageSerializer.Read(S, DiaryWeb.WebFmt, Pages);
+    TPageSerializer.ReadPages(S, DiaryWeb.WebFmt, Pages);
 
     // переводим время в локальное
     for i := 0 to High(Pages) do

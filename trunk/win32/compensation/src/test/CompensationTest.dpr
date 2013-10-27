@@ -20,7 +20,8 @@ uses
   DiaryLocalSource in '..\common\DiaryLocalSource.pas',
   DiarySourceTest in 'DiarySourceTest.pas',
   DiaryWebSourceTest in 'DiaryWebSourceTest.pas',
-  DiaryWebSource in '..\common\DiaryWebSource.pas';
+  DiaryWebSource in '..\common\DiaryWebSource.pas',
+  DiaryPageSerializerTest in 'DiaryPageSerializerTest.pas';
 
 {$R *.res}
 
