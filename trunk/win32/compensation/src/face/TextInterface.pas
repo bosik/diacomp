@@ -15,6 +15,10 @@ resourcestring
   //MESSAGE_ERROR_INPUT_INT           = 'Неверное значение. Введите целое число.';
   MESSAGE_ERROR_INPUT_INT_POSITIVE  = 'Неверное значение. Введите целое положительное число.';
   MESSAGE_ERROR_INPUT_REAL          = 'Неверное значение. Введите вещественное число.';
+  //MESSAGE_ERROR_CANT_CREATE_DIARY = 'Невозможно создать файл дневника';
+  //MESSAGE_ERROR_LOADINGDIARY      = 'Ошибка загрузки дневника';
+  //MESSAGE_ERROR_LOADINGFOODBASE   = 'Ошибка загрузки базы продуктов';
+  //MESSAGE_ERROR_LOADINGDISHBASE   = 'Ошибка загрузки базы блюд';
 
   { Сообщения \ Информация }
   MESSAGE_INFO_NO_UPDATES           = 'Вы используете самую последнюю версию программы.';

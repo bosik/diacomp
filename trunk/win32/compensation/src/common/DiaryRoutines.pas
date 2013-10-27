@@ -118,12 +118,6 @@ const
   SecPerHour    = SecPerMin * MinPerHour;
   SecPerDay     = SecPerMin * MinPerHour * HourPerDay;
 
-  // TODO: move to localization
-  ERROR_CANT_CREATE_DIARY = 'Невозможно создать файл дневника';
-  ERROR_LOADINGDIARY      = 'Ошибка загрузки дневника';
-  ERROR_LOADINGFOODBASE   = 'Ошибка загрузки базы продуктов';
-  ERROR_LOADINGDISHBASE   = 'Ошибка загрузки базы блюд';
-
 implementation
 
 { TIndexList }
@@ -273,7 +267,7 @@ var
 begin
   with TStringList.Create do
   begin
-    for i := 0 to Count - 1 do
+    for i := 0 to Self.Count - 1 do
       Add(Items[i].Key + '=' + Items[i].Value);
     SaveToFile(FileName);
     Free;

@@ -27,7 +27,7 @@ type
 
   TWeightedTimePointArray = array of TWeightedTimePoint;
 
-  TDayArray = array[0..MinPerDay-1] of real;
+  TDayArray = array[0..MinPerDay - 1] of real;
 
 var
   TIME_WEIGHTS: array[0..HalfMinPerDay + 1] of Real;
@@ -784,7 +784,6 @@ function Analyze_HardMath(const RecList: TAnalyzeRecList;
 var
   A, F, At, X, W, WA, WF: TMatrix;
   i,n: integer;
-
   //tick: cardinal;
 begin
   if Length(RecList) = 0 then
@@ -795,48 +794,65 @@ begin
 
   { prots(p), /fats(f)/, carbs(k), ins(q) }
 
+  //tick := GetTickCount;
+
   A := TMatrix.Create(Length(RecList), 3);
   F := TMatrix.Create(Length(RecList), 1);
   W := TMatrix.Create(Length(RecList), Length(RecList));
 
-  //tick := GetTickCount;
-
-  for i := 0 to A.Rows - 1 do
-  begin
-    A[i, 0] := RecList[i].Prots;
-    //A[i, 1] := RecList[i].Fats;
-    A[i, 1] := RecList[i].Carbs;
-    A[i, 2] := -RecList[i].Ins;
-    F[i, 0] := RecList[i].BSOut - RecList[i].BSIn;
-  end;
-
-  for n := 0 to MinPerDay - 1 do
-  begin
+  try
+    // init matrixes
     for i := 0 to A.Rows - 1 do
     begin
-      W[i, i] := Sqr(RecList[i].BSOut - RecList[i].BSIn) * TimeWeight(RecList[i].Time, n, 0) * Sqrt(RecList[i].Carbs) * 10;
+      A[i, 0] := RecList[i].Prots;
+      //A[i, 1] := RecList[i].Fats;
+      A[i, 1] := RecList[i].Carbs;
+      A[i, 2] := -RecList[i].Ins;
+      F[i, 0] := RecList[i].BSOut - RecList[i].BSIn;
     end;
 
-    WA := W.Mul(A);
-    WF := W.Mul(F);
-    At := WA.Transpose();
+    // solve fow every 1440 point
+    for n := 0 to MinPerDay - 1 do
+    begin
+      for i := 0 to A.Rows - 1 do
+      begin
+        W[i, i] := Sqr(RecList[i].BSOut - RecList[i].BSIn) * TimeWeight(RecList[i].Time, n, 0) * Sqrt(RecList[i].Carbs) * 10;
+      end;
 
-    X := TMatrix.SolveCramer(At.Mul(WA), At.Mul(WF));
-    KoofList[n].p := X[0, 0];
-    KoofList[n].k := X[1, 0];
-    KoofList[n].q := X[2, 0];
+      try
+        WA := W.Mul(A);
+        WF := W.Mul(F);
+        At := WA.Transpose();
+        try
+          X := TMatrix.SolveCramer(At.Mul(WA), At.Mul(WF));
+          KoofList[n].p := X[0, 0];
+          KoofList[n].k := X[1, 0];
+          KoofList[n].q := X[2, 0];
+          X.Free;
+        finally
+          WA.Free;
+          WF.Free;
+          At.Free;
+        end;
+      except
+        on E: EMatrixException do
+        begin
+          Result := False;
 
-    At.Free;
-    WA.Free;
-    WF.Free;
-    X.Free;
+          KoofList[n].p := 0;
+          KoofList[n].k := 0;
+          KoofList[n].q := 0;
+        end;
+      end;
+    end;
+
+    Result := True;
+  finally
+    A.Free;
+    F.Free;
+    W.Free;
   end;
-
-  A.Free;
-  F.Free;
-  W.Free;
-
-  //ShowMessage(INtToStr(GetTIckCount - tick));
+  //ShowMessage(IntToStr(GetTIckCount - tick));
 end;
 
 exports

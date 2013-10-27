@@ -12,6 +12,7 @@ uses
   IdHTTP,
   DiaryRoutines, // Separate()
   DiarySources, // TModList
+  uLkJSON,
   AutoLog;
 
 type
@@ -96,6 +97,28 @@ var
   WebFmt: TFormatSettings;
 
 implementation
+
+type
+  TResponse = record
+    Status: integer;
+    Message: string;
+  end;
+
+  function DecodeResponse(const S: string): TResponse;
+  var
+    json: TlkJSONobject;
+  begin
+    json := TlkJSON.ParseText(S) as TlkJSONobject;
+
+    if not assigned(json) then
+    begin
+      Log(ERROR, 'JSON is not assigned');
+      Exit;
+    end;
+
+    Result.Status := (json.Field['status'] as TlkJSONnumber).Value;
+    Result.Message := (json.Field['message'] as TlkJSONstring).Value
+  end;
 
 { TDiacompClient }
   
@@ -524,6 +547,7 @@ function TDiacompClient.PostPages(const Pages: string): boolean;
 var
   Par: TParamList;
   Msg: string;
+  Response: TResponse;
 begin
   // заглушка
   if (Length(Pages) = 0) then
@@ -536,9 +560,18 @@ begin
   par[0] := 'diary:upload=';
   par[1] := 'pages=' + Pages;
 
+  // TODO
+  // Response := DoPostSmart(FServer + PAGE_CONSOLE, Par)
+  // Response.Status = 0     it's ok
+  // Response.Status = 500   Internal server error
+  // Response.Status = xxx   Connection error
+  // etc.
+
   if DoPostSmart(FServer + PAGE_CONSOLE, Par, Msg) then
-    Result := (Msg = MESSAGE_DONE)
-  else
+  begin
+    Response := DecodeResponse(Msg);
+    Result := (Response.Status = 0);
+  end else
     Result := False;
 end;
 

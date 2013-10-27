@@ -3904,6 +3904,7 @@ var
   RecType: integer;
   MsgType: TMsgDlgType;
 begin
+  // TODO: refactor numbers
   if (DiaryView.SelectedRecord is TBloodRecord) then RecType := 1 else
   if (DiaryView.SelectedRecord is TInsRecord)   then RecType := 2 else
   if (DiaryView.SelectedRecord is TMealRecord)  then RecType := 3 else

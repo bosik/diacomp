@@ -205,8 +205,6 @@ var
 
   i, j: integer;
 begin
-  Result := 0;
-
   Source1.GetModified(Since, ModList1);
   Source2.GetModified(Since, ModList2);
   SyncList := Merge(ModList1, ModList2, Miss1, Miss2);
