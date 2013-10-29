@@ -34,13 +34,22 @@
 		}
 		else
 
+		if (isset($_GET['diary:getModList']) && isset($_GET['dates']))
+		{
+			$dates = mysqli_real_escape_string(sqlLink(), $_GET['dates']);
+			$datelist = GetListColons($dates);
+			
+			echo GetModListForDates($cur_id, $datelist);
+		}
+		else
+
 		// 2. Âûãğóçêà ñòğàíèö íà ñåğâåğ
 		// diary:upload
 		// pages=<page><page>...<page>
 		if (isset($_POST['diary:upload']) && isset($_POST['pages']))
 		{
 			$pages = $_POST['pages'];
-			
+
 			if (isset($_POST['format']) && ($_POST['format'] == 'json'))
 			{
 				echo Answer(PostPageJSON($cur_id, $pages));
@@ -49,7 +58,9 @@
 			else
 			{
 				//echo "<Console.php pages=" . $pages . "</Console.php>\n";
-				echo Answer(UploadPages($cur_id, $pages));
+				$response = UploadPages($cur_id, $pages);
+				//echo Answer($response->status == 0);
+				echo $response->SaveToJSON();
 			}
 		}
 		else
@@ -105,9 +116,9 @@
 			echo Answer(UploadFoodbase($cur_id, $data, $version));
 		}
 		else
-			
+
 		// ========================= ÁÀÇÀ ÁËŞÄ =================================
-			
+
 		if (isset($_GET['dishbase:getVersion']))
 		{
 			echo GetDishbaseVersion($cur_id);
@@ -127,7 +138,7 @@
 			echo Answer(UploadDishbase($cur_id, $data, $version));
 		}
 		else
-			
+
 		// ========================= ÊÎİÔÔÈÖÈÅÍÒÛ =================================
 
 		if (isset($_GET['koofs:download']))
@@ -142,7 +153,7 @@
 			echo Answer(UploadKoofs($cur_id, $data));
 		}
 		else
-			
+
 		// ========================= ÎÒ×¨ÒÛ ÎÁ ÎØÈÁÊÀÕ (ÄÅÌÎ) =================================
 
 		if (isset($_POST['report']) && isset($_POST['msg']))
