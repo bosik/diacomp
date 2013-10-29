@@ -159,9 +159,10 @@ public class LocalBase<ItemType extends Item> extends Base<ItemType> implements 
 			// ok
 			// THINK: else what? clear/ignore?
 			// }
-		} catch (IOException e)
+		} catch (Exception e)
 		{
-			throw new RuntimeException(e);
+			// throw new RuntimeException(e);
+			// TODO: ignore throw
 		}
 	}
 
