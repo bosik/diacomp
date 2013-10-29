@@ -36,7 +36,6 @@ uses
   DiarySync in 'src\common\DiarySync.pas',
   DiarySources in 'src\common\DiarySources.pas',
   DiaryLocalSource in 'src\common\DiaryLocalSource.pas',
-  Statistics in '..\Компоненты\Bosik Math\Statistics.pas',
   BusinessObjects in 'src\bo\BusinessObjects.pas',
   Bases in 'src\bo\Bases.pas',
   DiaryRecords in 'src\bo\DiaryRecords.pas',

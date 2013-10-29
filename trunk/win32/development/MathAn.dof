@@ -90,7 +90,7 @@ MaxStackSize=1048576
 ImageBase=4194304
 ExeDescription=
 [Directories]
-OutputDir=D:\Мои программы\Compensation\target
+OutputDir=D:\Мои программы\Compensation\win32\development\target
 UnitOutputDir=
 PackageDLLOutputDir=
 PackageDCPOutputDir=
@@ -101,7 +101,7 @@ DebugSourceDirs=
 UsePackages=0
 [Parameters]
 RunParams=
-HostApplication=D:\Мои программы\Compensation\target\Compensation.exe
+HostApplication=D:\Мои программы\Compensation\win32\development\target\Compensation.exe
 Launcher=
 UseLauncher=0
 DebugCWD=
@@ -138,5 +138,7 @@ Comments=
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlOutputDirectorry]
-Count=1
-Item0=D:\Мои программы\Compensation\target
+Count=3
+Item0=D:\Мои программы\Compensation\win32\development\target
+Item1=D:\??? ?????????\Compensation\win32\development\target
+Item2=D:\Мои программы\Compensation\target
