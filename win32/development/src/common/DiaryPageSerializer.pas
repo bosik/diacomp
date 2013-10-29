@@ -18,23 +18,23 @@ type
 
   TPageSerializer = class
   private
-    // basics
-    class procedure ReadBody(S: TStrings; Page: TDiaryPage); overload;
-    class procedure WriteBody(Page: TDiaryPage; S: TStrings); overload;
-    class procedure WriteHeader(Page: TDiaryPage; F: TFormatSettings; out S: string);
-    
-    // derivatives
+
   public
-    class procedure SeparatePages(S: TStrings; out Pages: TStringsArray);
+    {routine} class procedure SeparatePages(S: TStrings; out Pages: TStringsArray);
 
-    class procedure ReadHeader(const S: string; F: TFormatSettings; out Date: TDate; out TimeStamp: TDateTime; out Version: integer); overload;
+    {basic} class procedure ReadHeader(const S: string; F: TFormatSettings; out Date: TDate; out TimeStamp: TDateTime; out Version: integer); overload;
+    {basic} class procedure WriteHeader(const Date: TDate; const TimeStamp: TDateTime; const Version: integer; F: TFormatSettings; out S: string); overload;
+    {basic} class procedure ReadBody(S: TStrings; Page: TDiaryPage); overload;
+    {basic} class procedure WriteBody(Page: TDiaryPage; S: TStrings); overload;
 
+    {sugar} class procedure WriteHeader(Page: TDiaryPage; F: TFormatSettings; out S: string); overload;
     {sugar} class procedure WriteBody(Page: TDiaryPage; out S: string); overload;
     {sugar} class procedure ReadBody(const S: string; Page: TDiaryPage); overload;
 
-{W} class procedure ReadPages(S: TStrings; F: TFormatSettings; out Pages: TDiaryPageList); overload;
-    class procedure ReadPage(S: TStrings; F: TFormatSettings; Page: TDiaryPage);
-{W} class procedure Write(Page: TDiaryPage; S: TStrings; F: TFormatSettings); overload;
+    {sugar} class procedure ReadPage(S: TStrings; F: TFormatSettings; Page: TDiaryPage);
+    {sugar} {W} class procedure WritePage(Page: TDiaryPage; S: TStrings; F: TFormatSettings); overload;
+
+    {sugar} {W} class procedure ReadPages(S: TStrings; F: TFormatSettings; out Pages: TDiaryPageList); overload;
   end;
 
   {
@@ -264,10 +264,13 @@ begin
 end;
 
 {==============================================================================}
-class procedure TPageSerializer.Write(Page: TDiaryPage; S: TStrings; F: TFormatSettings);
+class procedure TPageSerializer.WritePage(Page: TDiaryPage; S: TStrings; F: TFormatSettings);
 {==============================================================================}
+var
+  Header: string;
 begin
-  S.Add(Format('=== %s ===|%s|%d', [DateToStr(Page.Date, F), DateTimeToStr(Page.TimeStamp, F), Page.Version]));
+  TPageSerializer.WriteHeader(Page, F, Header);
+  S.Add(Header);
   WriteBody(Page, S);
 end;
 
@@ -290,11 +293,20 @@ begin
 end;
 
 {==============================================================================}
+class procedure TPageSerializer.WriteHeader(const Date: TDate;
+  const TimeStamp: TDateTime; const Version: integer; F: TFormatSettings;
+  out S: string);
+{==============================================================================}
+begin
+  S := Format('=== %s ===|%s|%d', [DateToStr(Date, F), DateTimeToStr(TimeStamp, F), Version]);
+end;
+
+{==============================================================================}
 class procedure TPageSerializer.WriteHeader(Page: TDiaryPage;
   F: TFormatSettings; out S: string);
 {==============================================================================}
 begin
-  S := Format('=== %s ===|%s|%d', [DateToStr(Page.Date, F), DateTimeToStr(Page.TimeStamp, F), Page.Version]);
+  WriteHeader(Page.Date, Page.TimeStamp, Page.Version, F, S);
 end;
 
 {==============================================================================}

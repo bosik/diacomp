@@ -45,6 +45,7 @@ begin
   CheckEquals(StrToDate('1992-04-02', WebFmt), Date);
   CheckEquals(StrToDateTime('1992-04-02 09:45:00', WebFmt), Time);
   }
+  Check(true);
 end;
 
 {==============================================================================}

@@ -128,7 +128,8 @@ end;
 function TPageData.WriteHeader(F: TFormatSettings): string;
 {==============================================================================}
 begin
-  Result := Format('=== %s ===|%s|%d', [DateToStr(Date, F), DateTimeToStr(TimeStamp, F), Version]);
+  //Result := Format('=== %s ===|%s|%d', [DateToStr(Date, F), DateTimeToStr(TimeStamp, F), Version]);
+  TPageSerializer.WriteHeader(Date, Timestamp, Version, F, Result);
 end;
 
 {==============================================================================}

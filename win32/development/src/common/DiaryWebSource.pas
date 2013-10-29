@@ -90,7 +90,7 @@ begin
     OldTimestamp := Pages[i].TimeStamp;
     try
       Pages[i].TimeStamp := FClient.LocalToServer(Pages[i].TimeStamp);
-      TPageSerializer.Write(Pages[i], S, WebFmt);
+      TPageSerializer.WritePage(Pages[i], S, WebFmt);
     finally
       Pages[i].TimeStamp := OldTimestamp;
     end;
