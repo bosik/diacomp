@@ -4,6 +4,27 @@
 	include_once 'DiaryPage.php';
 	include_once 'common.php';
 
+	class Response
+	{
+		public $status;
+		public $message;
+
+		function __construct($status, $message)
+		{
+			$this->status = $status;
+			$this->message = $message;
+		}
+
+		public function SaveToJSON()
+		{
+			//$this->Encode('windows-1251', 'utf-8');
+			$result = json_encode($this);
+			//$this->Encode('utf-8', 'windows-1251');
+
+			return $result;
+		}
+	}
+
 	/**
 	 * Получает страницу с сервера
 	 * @param type $user_id Идентификатор пользователя
@@ -91,8 +112,7 @@
 		$sql = mysqli_query(sqlLink(), $query);
 		if ($sql == false)
 		{
-			echo "Can't upload page: date='" . $date . "' timestamp='" . $timestamp . "' version='" . $version . "': " . mysqli_error(sqlLink()) . "\n";
-			return false;
+			return new Response(1, "Can't upload page: date='" . $date . "' timestamp='" . $timestamp . "' version='" . $version . "': " . mysqli_error(sqlLink()));
 		}
 
 		$page_source = mysqli_real_escape_string(sqlLink(), $page_source); // можно ли?
@@ -106,12 +126,11 @@
 			$sql = mysqli_query(sqlLink(), $query); //true if succeed, false otherwise
 			if ($sql == false)
 			{
-				echo "Can't upload page: date='" . $date . "' timestamp='" . $timestamp . "' version='" . $version . "': " . mysqli_error(sqlLink()) . "\n";
-				return false;
+				return new Response(1, "Can't upload page: date='" . $date . "' timestamp='" . $timestamp . "' version='" . $version . "': " . mysqli_error(sqlLink()));
 			}
 			else
 			{
-				return true;
+				return new Response(0, "Page posted OK");
 			}
 		}
 		else
@@ -127,12 +146,11 @@
 
 				if ($sql == false)
 				{
-					echo "Can't upload page: date='" . $date . "' timestamp='" . $timestamp . "' version='" . $version . "': " . mysqli_error(sqlLink()) . "\n";
-					return false;
+					return new Response(1, "Can't upload page: date='" . $date . "' timestamp='" . $timestamp . "' version='" . $version . "': " . mysqli_error(sqlLink()));
 				}
 				else
 				{
-					return true;
+					return new Response(0, "Page posted OK");
 				}
 			}
 //			else
@@ -140,27 +158,27 @@
 //				// тихо игнорируем пустые страницы
 //				return true;
 
-				/* Почему нельзя игнорировать добавление пустых страниц:
-				 * 
-				 * CLIENT_1: {page("xxx", v5)}
-				 * CLIENT_2: {page("xxx", v5)}
-				 * SERVER:   {}
-				 * 
-				 * ...CLIENT_1 empties page...
-				 * 
-				 * CLIENT_1: {page("", v6)}
-				 * CLIENT_2: {page("xxx", v5)}
-				 * SERVER:   {}
-				 * 
-				 * ...Sync(CLIENT_1, SERVER)...
-				 * 
-				 * CLIENT_1: {page("", v6)}
-				 * CLIENT_2: {page("xxx", v5)}
-				 * SERVER:   {}
-				 * 
-				 * - В этой ситуации два клиента синхронизированы без посредства сервера - так не бывает
-				 * - БЫВАЕТ! Например, просто скопировали программу на флешке.
-				 */
+			/* Почему нельзя игнорировать добавление пустых страниц:
+			 * 
+			 * CLIENT_1: {page("xxx", v5)}
+			 * CLIENT_2: {page("xxx", v5)}
+			 * SERVER:   {}
+			 * 
+			 * ...CLIENT_1 empties page...
+			 * 
+			 * CLIENT_1: {page("", v6)}
+			 * CLIENT_2: {page("xxx", v5)}
+			 * SERVER:   {}
+			 * 
+			 * ...Sync(CLIENT_1, SERVER)...
+			 * 
+			 * CLIENT_1: {page("", v6)}
+			 * CLIENT_2: {page("xxx", v5)}
+			 * SERVER:   {}
+			 * 
+			 * - В этой ситуации два клиента синхронизированы без посредства сервера - так не бывает
+			 * - БЫВАЕТ! Например, просто скопировали программу на флешке.
+			 */
 //			}
 		}
 	}
@@ -230,10 +248,7 @@
 	function GetModList($user_id, $time)
 	{
 		require_once 'mysql.php';
-		$query = "SELECT Date, Version
-                  FROM `Diary`
-                  WHERE `UserID`='{$user_id}' AND
-                  `TimeStamp` > '{$time}'";
+		$query = "SELECT `Date`, `Version` FROM `Diary` WHERE `UserID`='{$user_id}' AND `TimeStamp` > '{$time}'";
 		$sql = mysqli_query(sqlLink(), $query);
 		if ($sql == false)
 			return ''; // !!! или false?
@@ -244,6 +259,39 @@
 		{
 			$result .= $row['Date'] . "|" . $row['Version'] . "\n";
 		}
+
+		return $result;
+	}
+
+	function GetModListForDates($user_id, $dates)
+	{
+		require_once 'mysql.php';
+
+		//$dates_set = "";
+
+		$result = "";
+
+		for ($i = 0; $i < count($dates); $i++)
+		{
+			//$dates_set .= "'" . $dates{$i} . "'";
+			//if ($i < count($dates) - 1)
+			//	$dates_set .= ", ";
+			$query = "SELECT `Date`, `Version` FROM `Diary` WHERE `UserID`='{$user_id}' AND `Date`='{$dates{$i}}'";
+			$sql = mysqli_query(sqlLink(), $query);
+			if ($sql == false)
+				return mysqli_error(sqlLink()); // !!! или false?
+			if (mysqli_num_rows($sql) == 1)
+			{
+				$row = mysqli_fetch_assoc($sql);
+				$result .= $row['Date'] . "|" . $row['Version'] . "\n";
+			}
+			else
+			{
+				$result .= $dates{$i} . "|" . "0" . "\n";
+			}
+		}
+
+		//$query = "SELECT `Date`, `Version` FROM `Diary` WHERE `UserID`='{$user_id}' AND `Date` in ({$dates_set})";
 
 		return $result;
 	}
@@ -318,10 +366,10 @@
 				if ($date != false)
 				{
 					//echo "<PostPage (inner) date=" . $date . "; stamp=" . $timestamp . "; version=" . $version . "; page: " . $page . "</PostPage (inner)>\n";
-					$ok = PostPage($user_id, $date, $page, $timestamp, $version);
-					if (!$ok)
+					$response = PostPage($user_id, $date, $page, $timestamp, $version);
+					if ($response->status != 0)
 					{
-						return false;
+						return $response;
 					}
 				}
 				ParseHeader($lines{$i}, $date, $timestamp, $version);
@@ -335,13 +383,13 @@
 		}
 
 		//echo "<PostPage (2) (inner) date=" . $date . "; stamp=" . $timestamp . "; version=" . $version . "; page: " . $page . "</PostPage (inner)>\n";
-		PostPage($user_id, $date, $page, $timestamp, $version);
-		if (!$ok)
+		$response = PostPage($user_id, $date, $page, $timestamp, $version);
+		if ($response->status != 0)
 		{
-			return false;
+			return $response;
 		}
 
-		return true;
+		return new Response(0, "Pages uploaded OK");
 	}
 
 	//=======================================================

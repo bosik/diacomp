@@ -149,7 +149,7 @@
 		$result =
 				"			<div class=\"login_panel\">\n" .
 				"				<form action=\"login.php\" method=\"post\">\n" .
-				"					Email:<br/><input type=\"text\" name=\"login\" class=\"full_width\"/><br/>\n" .
+				"					Email:<br/><input type=\"text\" name=\"login\" class=\"full_width\" autofocus/><br/>\n" .
 				"					ѕароль:<br/><input type=\"password\" name=\"password\" class=\"full_width\"/><br/>\n" .
 				"					<input type=\"submit\" class=\"full_width\" name=\"log\" value=\"¬ход\" />\n" .
 				"					<input type=\"hidden\" name=\"redir\" value=\"" . $redir . "\" />\n" .
