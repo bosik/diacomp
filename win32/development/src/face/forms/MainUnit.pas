@@ -421,9 +421,6 @@ type
     procedure MyDeactivate(Sender: TObject);
     procedure MyLogin(Sender: TObject; State: TLoginResult);
 
-    procedure MyDiaryLoad(Sender: TObject; OK: boolean);
-    procedure MyDiarySave(Sender: TObject; OK: boolean);
-
     procedure ProcMessage(var M: TMessage); message WM_SECOND_START;
 
     procedure BalloonAction_ShowForm;
@@ -4644,28 +4641,6 @@ begin
 end;
 
 {==============================================================================}
-procedure TForm1.MyDiaryLoad(Sender: TObject; OK: boolean);
-{==============================================================================}
-begin
-  // TODO: never used
-  if OK then
-    StatusBar.Panels[1].Text := 'ƒневник загружен'
-  else
-    StatusBar.Panels[1].Text := 'ќшибка загрузки дневника';
-end;
-
-{==============================================================================}
-procedure TForm1.MyDiarySave(Sender: TObject; OK: boolean);
-{==============================================================================}
-begin
-  // TODO: never used
-  if OK then
-    StatusBar.Panels[1].Text := 'ƒневник сохранЄн'
-  else
-    StatusBar.Panels[1].Text := 'ќшибка сохранени€ дневника';
-end;
-
-{==============================================================================}
 procedure TForm1.UpdateNextFinger;
 {==============================================================================}
 
@@ -5493,7 +5468,7 @@ begin
     UpdateDishTable(CountChanged);
     UpdateCombos;
   end;
-  SaveDishBase; // TODO: надо ли?
+  SaveDishBase; // TODO: remove it
 
   FinishProc;
 end;
@@ -5504,7 +5479,7 @@ begin
 
   UpdateFoodTable(True);
   UpdateCombos;
-  SaveFoodBase; // TODO: надо ли?
+  SaveFoodBase; // TODO: remove it
 
   FinishProc;
 end;

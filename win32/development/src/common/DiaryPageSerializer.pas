@@ -17,8 +17,6 @@ type
   TStringsArray = array of TStrings;
 
   TPageSerializer = class
-  private
-
   public
     {routine} class procedure SeparatePages(S: TStrings; out Pages: TStringsArray);
 
