@@ -409,6 +409,9 @@ function codeBlood(blood, id)
 	var finger = fingers[blood.finger];
 	var finger_hint = finger_hints[blood.finger];
 	
+	if (null == finger) finger = "";
+	if (null == finger_hint) finger_hint = "";
+	
 	return '' +
 	'				<div id="diaryRec_'+id+'" class="rec blood" onclick="onRecordClick(this.id)">\n'+
 	'					<div class="time hoverable" id="time_' + id + '" onclick="onTimeClick(this.id)">' + formatTime(blood.time) + "</div>\n" +
