@@ -1012,6 +1012,7 @@ begin
 
     Caption := PROGRAM_TITLE + ' ' + PROGRAM_VERSION;
 
+    PanelDevelopment.Visible := DEVELOPMENT_MODE;
     TabStat.TabVisible := ADVANCED_MODE;
     TabDebug.TabVisible := ADVANCED_MODE;
     MemoLog.Visible := ADVANCED_MODE;
