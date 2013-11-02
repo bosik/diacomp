@@ -50,7 +50,7 @@ function TDiaryWebSource.GetPages(const Dates: TDateList; out Pages: TDiaryPageL
 var
   Resp: string;
   S: TStrings;
-  i: integer;
+  //i: integer;
 begin
   Result := FClient.GetPages(Dates, Resp);
 
@@ -61,8 +61,8 @@ begin
     TPageSerializer.ReadPages(S, DiaryWeb.WebFmt, Pages);
 
     // переводим время в локальное
-    for i := 0 to High(Pages) do
-      Pages[i].TimeStamp := FClient.ServerToLocal(Pages[i].TimeStamp);
+    //for i := 0 to High(Pages) do
+    //  Pages[i].TimeStamp := FClient.ServerToLocal(Pages[i].TimeStamp);
   finally
     S.Free;
   end;
@@ -81,19 +81,19 @@ function TDiaryWebSource.PostPages(const Pages: TDiaryPageList): boolean;
 var
   S: TStrings;
   i: integer;
-  OldTimestamp: TDateTime;
+  //OldTimestamp: TDateTime;
 begin
   S := TStringList.Create;
 
   for i := 0 to High(Pages) do
   begin
-    OldTimestamp := Pages[i].TimeStamp;
-    try
-      Pages[i].TimeStamp := FClient.LocalToServer(Pages[i].TimeStamp);
+    //OldTimestamp := Pages[i].TimeStamp;
+    //try
+      //Pages[i].TimeStamp := FClient.LocalToServer(Pages[i].TimeStamp);
       TPageSerializer.WritePage(Pages[i], S, WebFmt);
-    finally
-      Pages[i].TimeStamp := OldTimestamp;
-    end;
+    //finally
+    //  Pages[i].TimeStamp := OldTimestamp;
+    //end;
   end;
 
   Result := FClient.PostPages(S.Text);

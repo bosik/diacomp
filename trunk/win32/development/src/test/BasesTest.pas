@@ -89,11 +89,9 @@ end;
 
 procedure TFoodBaseTest.TestAddNil;
 begin
-  //ExpectedException := EAccessViolation;
-  //FoodBase.Add(nil);
-  //ExpectedException := nil;
-
-  Check(true);
+  ExpectedException := EInvalidPointer;
+  FoodBase.Add(nil);
+  ExpectedException := nil;
 end;
 
 procedure TFoodBaseTest.TestDelete;
@@ -186,11 +184,9 @@ end;
 
 procedure TDishBaseTest.TestAddNil;
 begin
-  //ExpectedException := EAccessViolation;
-  //DishBase.Add(nil);
-  //ExpectedException := nil;
-
-  Check(true);
+  ExpectedException := EInvalidPointer;
+  DishBase.Add(nil);
+  ExpectedException := nil;
 end;
 
 procedure TDishBaseTest.TestDelete;

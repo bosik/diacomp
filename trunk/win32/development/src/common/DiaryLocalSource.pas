@@ -31,7 +31,7 @@ type
     constructor Create(APage: TPageData); overload;
 
     function Write(F: TFormatSettings): string; overload;
-    function WriteHeader(F: TFormatSettings): string; deprecated;
+    function WriteHeader(F: TFormatSettings): string;
 
     class procedure Read(const S: string; Page: TPageData; F: TFormatSettings); overload;
     {L} class procedure Read(S: TStrings; F: TFormatSettings; out Pages: TPageDataList); overload;
@@ -49,7 +49,6 @@ type
 
     function Add(Page: TPageData): integer;
     procedure Clear;
-    function CreatePage(ADate: TDate; ATimeStamp: TDateTime; AVersion: integer): integer;
     function GetPageIndex(Date: TDate): integer;
     function TraceLastPage: integer;
 
@@ -128,7 +127,6 @@ end;
 function TPageData.WriteHeader(F: TFormatSettings): string;
 {==============================================================================}
 begin
-  //Result := Format('=== %s ===|%s|%d', [DateToStr(Date, F), DateTimeToStr(TimeStamp, F), Version]);
   TPageSerializer.WriteHeader(Date, Timestamp, Version, F, Result);
 end;
 
@@ -289,21 +287,6 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryLocalSource.CreatePage(ADate: TDate; ATimeStamp: TDateTime;
-  AVersion: integer): integer;
-{==============================================================================}
-begin
-  Result := GetPageIndex(ADate);
-  if (Result = -1) then
-  begin
-    Result := Length(FPages);
-    SetLength(FPages, Result + 1);
-    FPages[Result] := TPageData.Create(ADate, ATimeStamp, AVersion, '');
-    Result := TraceLastPage();
-  end;
-end;
-
-{==============================================================================}
 destructor TDiaryLocalSource.Destroy;
 {==============================================================================}
 begin
@@ -371,19 +354,23 @@ end;
 {==============================================================================}
 function TDiaryLocalSource.GetPages(const Dates: TDateList; out Pages: TDiaryPageList): boolean;
 {==============================================================================}
-const
-  INITIAL_PAGE_VERSION = 0;
 var
   i, Index: integer;
 begin
   SetLength(Pages, Length(Dates));
   for i := 0 to High(Dates) do
   begin
-    // TODO: try to move Now() and initial version number to CreatePage() method
-    Index := CreatePage(Dates[i], Now, INITIAL_PAGE_VERSION);
-
-    Pages[i] := TDiaryPage.Create;
-    TPageData.Read(FPages[Index], Pages[i]);
+    Index := GetPageIndex(Dates[i]);
+    if (Index > -1) then
+    begin
+      Pages[i] := TDiaryPage.Create;
+      TPageData.Read(FPages[Index], Pages[i]);
+    end else
+    begin
+      Pages[i] := TDiaryPage.Create;
+      Pages[i].Date := Dates[i];
+      Pages[i].TimeStamp := 0; //GetTimeUTC();
+    end;
   end;
   Result := True;
 end;
@@ -395,21 +382,41 @@ var
   s: TStrings;
   i: integer;
   Pages: TPageDataList;
+  BaseVersion: integer;
 begin
   Clear;
 
   s := TStringList.Create;
 
   try
-    s.LoadFromFile(FileName);               // <-- берёшь
+    s.LoadFromFile(FileName);
 
+    // самый старый формат
     if (s.Count >= 2) and (s[0] = 'DIARYFMT') then
     begin
       s.Delete(0);
       s.Delete(0);
-    end;
+      TPageData.Read(S, LocalFmt, Pages);
+    end else
 
-    TPageData.Read(S, LocalFmt, Pages);   // и загружаешь -->
+    // формат с указанием версии
+    if (s.Count >= 1) and (pos('VERSION=', s[0]) = 1) then
+    begin
+      BaseVersion := StrToInt(TextAfter(s[0], '='));
+      if (BaseVersion = 3) then
+      begin
+        s.Delete(0);
+        TPageData.Read(S, LocalFmt, Pages);
+      end else
+        raise Exception.Create('Unsupported database format');
+    end else
+
+    // формат без версии - форматируем
+    begin
+      TPageData.Read(S, LocalFmt, Pages);
+      for i := 0 to High(Pages) do
+        Pages[i].TimeStamp := LocalToUTC(Pages[i].TimeStamp);
+    end;
 
     // для проверки сортировки и дублей используем вспомогательный список
     for i := 0 to High(Pages) do
@@ -508,6 +515,7 @@ var
 begin
   s := TStringList.Create;
   try
+    S.Add('VERSION=3');
     TPageData.Write(FPages, S, LocalFmt);
     s.SaveToFile(FileName);
   finally

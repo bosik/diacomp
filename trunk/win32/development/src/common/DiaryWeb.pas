@@ -75,8 +75,8 @@ type
     function DownloadKoofs(out Data: string): boolean;
     function UploadKoofs(const Data: string): boolean;
 
-    function LocalToServer(Time: TDateTime): TDateTime;
-    function ServerToLocal(Time: TDateTime): TDateTime;
+    function ConvertUTCToLocal(Time: TDateTime): TDateTime;
+    function ConvertLocalToUTC(Time: TDateTime): TDateTime;
 
     // демо
     function Report(const Msg: string): boolean;
@@ -110,7 +110,7 @@ type
   begin
     json := TlkJSON.ParseText(S) as TlkJSONobject;
 
-    if not assigned(json) then
+    if not Assigned(json) then
     begin
       Log(ERROR, 'JSON is not assigned');
       Exit;
@@ -153,6 +153,22 @@ begin
     Result := Copy(Result, 1, k - 1) + SPACE_CODE + Copy(Result, k + 1, Length(Result) - k);
     k := Pos(' ', Result);
   end;
+end;
+
+{==============================================================================}
+function TDiacompClient.ConvertUTCToLocal(Time: TDateTime): TDateTime;
+{==============================================================================}
+begin
+  if (not FOnline) then Login();
+  Result := Time + FTimeShift;
+end;
+
+{==============================================================================}
+function TDiacompClient.ConvertLocalToUTC(Time: TDateTime): TDateTime;
+{==============================================================================}
+begin
+  if (not FOnline) then Login();
+  Result := Time - FTimeShift;
 end;
 
 {==============================================================================}
@@ -296,7 +312,7 @@ begin
   Log(VERBOUS, 'TDiacompClient.GetModList(): Time = "' + DateTimeToStr(Time) + '"');
 
   if Time > 0 then
-    Query := FServer + PAGE_CONSOLE + '?diary:getModList&time=' + ChkSpace(DateTimeToStr(LocalToServer(Time), WebFmt))
+    Query := FServer + PAGE_CONSOLE + '?diary:getModList&time=' + ChkSpace(DateTimeToStr(Time, WebFmt))
   else
     Query := FServer + PAGE_CONSOLE + '?diary:getModList&time=0';
 
@@ -449,14 +465,6 @@ begin
 end;
 
 {==============================================================================}
-function TDiacompClient.LocalToServer(Time: TDateTime): TDateTime;
-{==============================================================================}
-begin
-  if (not FOnline) then Login();
-  Result := Time - FTimeShift;
-end;
-
-{==============================================================================}
 function TDiacompClient.Login(): TLoginResult;
 {==============================================================================}
 var
@@ -483,7 +491,7 @@ begin
     //Log('TDiacompClient.Login(): started');
     Log(VERBOUS, 'TDiacompClient.Login(): quering ' + FServer + PAGE_LOGIN);
 
-    SendedTime := Now;
+    SendedTime := GetTimeUTC();
     if DoPost(FServer + PAGE_LOGIN, par, Msg) then // Not smart, it's o.k. - Hi, C.O.! :D
     begin
       Log(VERBOUS, 'TDiacompClient.Login(): quered OK, resp = "' + Msg + '"');
@@ -500,7 +508,7 @@ begin
       begin
         Log(VERBOUS, 'TDiacompClient.Login(): it means "DONE", parsing desc...');
         ServerTime := StrToDateTime(Desc, WebFmt);
-        FTimeShift := (SendedTime + Now)/2 - ServerTime;  // pretty cool :)
+        FTimeShift := (SendedTime + GetTimeUTC())/2 - ServerTime;  // pretty cool :)
         Result := lrDone;
 
         //{#}Log('Login()\calculating FShiftTime: ' + IntToStr(GetTickCount() - Tick)); Tick := GetTickCount;
@@ -573,14 +581,6 @@ begin
     Result := (Response.Status = 0);
   end else
     Result := False;
-end;
-
-{==============================================================================}
-function TDiacompClient.ServerToLocal(Time: TDateTime): TDateTime;
-{==============================================================================}
-begin
-  if (not FOnline) then Login();
-  Result := Time + FTimeShift;
 end;
 
 {==============================================================================}

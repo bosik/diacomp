@@ -5,48 +5,22 @@ interface
 uses
   TestFramework,
   SysUtils,
+  DateUtils,
   DiaryRoutines,
   DiaryWeb;
 
 type
   TDiaryRoutinesTest = class(TTestCase)
   published
-    procedure TestDatesConvertion;
+    procedure TestUTCDateTime;
+    procedure TestUTC2LocalConvertion;
+    procedure TestLocal2UTCConvertion;
     procedure TestStringMap;
   end;
 
 implementation
 
 { TDiaryRoutinesTest }
-
-{==============================================================================}
-procedure TDiaryRoutinesTest.TestDatesConvertion;
-{==============================================================================}
-{var
-  Date: TDate;
-  Time: TDateTime;}
-begin
-  // DateToStr(Date, Fmt);          - ShortDateFormat
-  // DateTimeToStr(DateTime, Fmt);  - ShortDateFormat + LongTimeFormat
-  // StrToDate(S, Fmt);             - ShortDateFormat + DateSeparator
-  // StrToDateTime(S, Fmt);         - ShortDateFormat + TimeSeparator
-
-  {
-  Date := Trunc(EncodeDate(1992, 04, 02));
-  Time := Date + EncodeTime(09, 45, 00, 000);
-
-  CheckEquals(DateToStr(Date, LocalFmt), '02.04.1992');
-  CheckEquals(DateTimeToStr(Time, LocalFmt), '02.04.1992 09:45:00');
-  CheckEquals(StrToDate('02.04.1992', LocalFmt), Date);
-  CheckEquals(StrToDateTime('02.04.1992 09:45:00', LocalFmt), Time);
-
-  CheckEquals(DateToStr(Date, WebFmt), '1992-04-02');
-  CheckEquals(DateTimeToStr(Time, WebFmt), '1992-04-02 09:45:00');
-  CheckEquals(StrToDate('1992-04-02', WebFmt), Date);
-  CheckEquals(StrToDateTime('1992-04-02 09:45:00', WebFmt), Time);
-  }
-  Check(true);
-end;
 
 {==============================================================================}
 procedure TDiaryRoutinesTest.TestStringMap;
@@ -78,8 +52,10 @@ begin
 
     Map.SaveToFile(FILENAME_TEMP);
     Check(FileExists(FILENAME_TEMP), 'Restoring failed: file not created');
-    MapRestored.LoadFromFile(FILENAME_TEMP);
 
+    // --------------------------------------------------------------
+
+    MapRestored.LoadFromFile(FILENAME_TEMP);
     CheckEquals(3, MapRestored.Count, 'Restoring failed: count');
     for i := 0 to 2 do
     begin
@@ -87,10 +63,55 @@ begin
       CheckEquals(Map[i].Value, MapRestored[i].Value, 'Restoring failed: data (value)');
     end;
   finally
-    Map.Free;
-    MapRestored.Free;
     DeleteFile(FILENAME_TEMP);
+    Map.Free;
+    MapRestored.Free;         
   end;
+end;
+
+{==============================================================================}
+procedure TDiaryRoutinesTest.TestUTCDateTime;
+{==============================================================================}
+var
+  LocalTime: TDateTime;
+  UTCTime: TDateTime;
+begin
+  LocalTime := Now();
+  UTCTime := GetTimeUTC();
+  CheckEquals(
+    DateTimeToStr(LocalTime - 4/HourPerDay),
+    DateTimeToStr(UTCTime)
+  );
+end;
+
+{==============================================================================}
+procedure TDiaryRoutinesTest.TestUTC2LocalConvertion;
+{==============================================================================}
+var
+  LocalTime: TDateTime;
+  UTCTime: TDateTime;
+begin
+  UTCTime := EncodeDateTime(2006, 05, 28, 14, 40, 32, 5);
+  LocalTime := UTCToLocal(UTCTime);
+  CheckEquals(
+    DateTimeToStr(UTCTime + 4/HourPerDay),
+    DateTimeToStr(LocalTime)
+  );
+end;
+
+{==============================================================================}
+procedure TDiaryRoutinesTest.TestLocal2UTCConvertion;
+{==============================================================================}
+var
+  LocalTime: TDateTime;
+  UTCTime: TDateTime;
+begin
+  LocalTime := EncodeDateTime(2006, 05, 28, 18, 40, 32, 5);
+  UTCTime := LocalToUTC(LocalTime);
+  CheckEquals(
+    DateTimeToStr(LocalTime - 4/HourPerDay),
+    DateTimeToStr(UTCTime)
+  );
 end;
 
 initialization
