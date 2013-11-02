@@ -112,7 +112,7 @@
 		$sql = mysqli_query(sqlLink(), $query);
 		if ($sql == false)
 		{
-			return new Response(1, "Can't upload page: date='" . $date . "' timestamp='" . $timestamp . "' version='" . $version . "': " . mysqli_error(sqlLink()));
+			return new Response(1, "Can't upload page: date='" . $date . "' timestamp='" . $stamp . "' version='" . $version . "': " . mysqli_error(sqlLink()));
 		}
 
 		$page_source = mysqli_real_escape_string(sqlLink(), $page_source); // можно ли?
@@ -126,7 +126,7 @@
 			$sql = mysqli_query(sqlLink(), $query); //true if succeed, false otherwise
 			if ($sql == false)
 			{
-				return new Response(1, "Can't upload page: date='" . $date . "' timestamp='" . $timestamp . "' version='" . $version . "': " . mysqli_error(sqlLink()));
+				return new Response(1, "Can't upload page: date='" . $date . "' timestamp='" . $stamp . "' version='" . $version . "': " . mysqli_error(sqlLink()));
 			}
 			else
 			{
@@ -146,7 +146,7 @@
 
 				if ($sql == false)
 				{
-					return new Response(1, "Can't upload page: date='" . $date . "' timestamp='" . $timestamp . "' version='" . $version . "': " . mysqli_error(sqlLink()));
+					return new Response(1, "Can't upload page: date='" . $date . "' timestamp='" . $stamp . "' version='" . $version . "': " . mysqli_error(sqlLink()));
 				}
 				else
 				{
@@ -353,8 +353,8 @@
 
 		$lines = GetLines($pages);
 		$date = false;
-		$timestamp;
-		$version;
+		$timestamp = "";
+		$version = "";
 		$page = "";
 
 		for ($i = 0; $i < count($lines); $i++)

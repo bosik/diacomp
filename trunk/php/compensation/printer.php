@@ -221,7 +221,7 @@
 	 * @param type $text
 	 * @return string
 	 */
-	function BlockPageHTML($text)
+	function BlockPageHTML()
 	{
 
 		function GetTime($s)

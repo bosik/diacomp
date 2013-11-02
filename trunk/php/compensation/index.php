@@ -12,7 +12,7 @@
 
 	if (IsLogged())
 	{
-		$cur_id = GetUserId();
+		//$cur_id = GetUserId();
 		$cur_name = GetUserName();
 		$userinfo = BlockUserLogged($cur_name);
 
@@ -40,10 +40,10 @@
 			$date = $_SESSION[S_CURDATE];
 		}
 
-		$page = GetPage($cur_id, $date, false);
+		//$page = GetPage($cur_id, $date, false);
 		// $json = GetPageJSON($cur_id, $date);
 		$menu = BlockMenu(SCREEN_USER, 1);
-		$content = BlockDateForm($date, BlockPageHTML($page));
+		$content = BlockDateForm($date, BlockPageHTML());
 		$javascript = "		<script type=\"text/javascript\" src=\"js/diary.js\"></script>";
 
 		/* $javascript .= "\n		<script type=\"text/javascript\">\n" .
