@@ -92,7 +92,7 @@
 		{
 			// создаём новую
 			if ($headed)
-				return "=== " . $date . " ===|" . gmdate(STD_TIME_FMT) . "|0" . "\n"; // не найдена
+				return "=== " . $date . " ===|" . date(STD_TIME_FMT, strtotime('1970-01-01')) . "|0" . "\n"; // не найдена
 			else
 				return "";
 		}

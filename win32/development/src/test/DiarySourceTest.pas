@@ -181,7 +181,7 @@ var
   ModList: TModList;
   i: integer;
 begin
-  Source.GetModified(Now() - 5/SecPerDay, ModList); // what changed in last 5 secs?
+  Source.GetModified(GetTimeUTC() - 5/SecPerDay, ModList); // what changed in last 5 secs?
   CheckEquals(Length(DemoPages), Length(ModList));
 
   for i := 0 to High(DemoPages) do

@@ -68,6 +68,9 @@ type
   function FloatToStrP(const X: real): string;
 
   { форматирование строк : дата, время }
+  function GetTimeUTC: TDateTime;
+  function LocalToUTC(Time: TDateTime): TDateTime;
+  function UTCToLocal(Time: TDateTime): TDateTime;
   function GetCurrentTime: string;
   function GetCurrentMinutes: integer;
   function TimeToStr(Time: integer; Sign: char): string; overload;
@@ -457,6 +460,33 @@ begin
       Result := False;
   end else
     Result := False;
+end;
+
+{==============================================================================}
+function GetTimeUTC(): TDateTime;
+{==============================================================================}
+begin
+  Result := LocalToUTC(Now());
+end;
+
+{==============================================================================}
+function LocalToUTC(Time: TDateTime): TDateTime;
+{==============================================================================}
+var
+  TimeZone: TTimeZoneInformation;
+begin
+  GetTimeZoneInformation(TimeZone);
+  Result := Time + TimeZone.Bias / MinPerDay;
+end;
+
+{==============================================================================}
+function UTCToLocal(Time: TDateTime): TDateTime;
+{==============================================================================}
+var
+  TimeZone: TTimeZoneInformation;
+begin
+  GetTimeZoneInformation(TimeZone);
+  Result := Time - TimeZone.Bias / MinPerDay;
 end;
 
 {==============================================================================}

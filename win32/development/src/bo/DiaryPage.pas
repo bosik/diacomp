@@ -85,6 +85,9 @@ implementation
 
 { TDiaryPage }
 
+const
+  INITIAL_PAGE_VERSION = 0;
+
 {==============================================================================}
 function TDiaryPage.Add(Rec: TCustomRecord): integer;
 {==============================================================================}
@@ -167,6 +170,7 @@ constructor TDiaryPage.Create();
 begin
   FOnChange := nil;
   FSilentChange := False;
+  FVersion := INITIAL_PAGE_VERSION;
 end;
 
 {==============================================================================}
@@ -298,7 +302,7 @@ begin
   if FSilentChange then Exit;
 
   // обновляем печатьку
-  FTimeStamp := Now;
+  FTimeStamp := GetTimeUTC();  
   inc(FVersion);
 
   // принимаем коррекционные меры, если нужно
