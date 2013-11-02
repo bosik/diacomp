@@ -561,7 +561,7 @@ begin
   BestDev := High(Integer);
 
   // to avoid compiler's warning
- //BestQ := 0;
+  BestQ := 0;
   BestP := 0;
 
   for i := 0 to CountQ - 1 do
