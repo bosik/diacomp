@@ -52,8 +52,8 @@
 
 			if (isset($_POST['format']) && ($_POST['format'] == 'json'))
 			{
+				//echo "JSON Upload; ID=<", $cur_id, ">\n", "Pages=<", $pages, ">";
 				echo Answer(PostPageJSON($cur_id, $pages));
-				//echo "JSON Upload; ID: ", $cur_id, "\n", "Pages: ", $pages;
 			}
 			else
 			{

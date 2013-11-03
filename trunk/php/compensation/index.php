@@ -44,7 +44,12 @@
 		// $json = GetPageJSON($cur_id, $date);
 		$menu = BlockMenu(SCREEN_USER, 1);
 		$content = BlockDateForm($date, BlockPageHTML());
-		$javascript = "		<script type=\"text/javascript\" src=\"js/diary.js\"></script>";
+		$javascript =
+		"		<script type=\"text/javascript\" src=\"js/utils.js\"></script>\n" .
+		"		<script type=\"text/javascript\" src=\"js/xml2json.js\"></script>\n" .
+		"		<script type=\"text/javascript\" src=\"http://code.jquery.com/jquery-1.9.1.js\"></script>\n" .
+		"		<script type=\"text/javascript\" src=\"http://code.jquery.com/ui/1.10.3/jquery-ui.js\"></script>\n" .
+		"		<script type=\"text/javascript\" src=\"js/diary.js\"></script>";
 
 		/* $javascript .= "\n		<script type=\"text/javascript\">\n" .
 		  "			var page = " . $json . ";\n".
