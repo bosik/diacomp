@@ -123,6 +123,9 @@ th {
 
 .menu_item {
 	padding: 10px;
+	margin: 0px -2px 0px;
+	text-align: center;
+	width: 90px;
 	display: inline-block;
 }
 
@@ -302,10 +305,10 @@ th {
 }
 
 .col_info {
-	min-width: 35px;
+	min-width: 70px;
 	/*cursor: default;*/
 	/*cursor: pointer;*/
-	padding-right: 20px;
+	padding-right: 12px;
 	text-align: right;
 }
 

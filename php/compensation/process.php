@@ -197,7 +197,7 @@
 		//$raw = new DiaryPage();
 		//$raw = json_decode($json);
 		//$json = str_replace('"', '\\"', $json);
-		//echo "PostPageJSON; ID: ", $user_id, "\nJSON: ", $json, "\n\n";
+		//echo "PostPageJSON; ID='", $user_id, "'\nJSON=<", $json, ">\n\n";
 
 		$page = new DiaryPage();
 

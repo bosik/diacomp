@@ -16,6 +16,7 @@
 				"		<title>Компенсация Онлайн</title>\n" .
 				"		<link type=\"text/css\" rel=\"stylesheet\" href=\"http://www.dreamtemplate.com/dreamcodes/flat_buttons/css/tsc_flat_buttons.css\" />\n" .
 				"		<link type=\"text/css\" rel=\"stylesheet\" href=\"css/style.css\" />\n" .
+				"		<link rel=\"stylesheet\" href=\"http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css\" />\n" .
 				"	</head>\n" .
 				"	<body>\n" .
 				"		<div class=\"main\">\n" .
@@ -27,7 +28,7 @@
 				"			</div>\n" .
 				$menu . "\n" .
 				$content . "\n" .
-				"			<span id=\"debug\" class=\"hint\">"."</span>\n" . 
+				"			<span id=\"debug\" class=\"hint\">"."</span>\n" .
 				"		</div>\n" .
 				$javascript . "\n" .
 				"	</body>\n" .
@@ -119,11 +120,11 @@
 				"				<!--button onclick=\"openPage()\" class=\"tsc_awb_small tsc_awb_white tsc_flat\">Перейти</button-->\n" .
 				"				<button onclick=\"prevDay()\" class=\"tsc_awb_small tsc_awb_white tsc_flat\" title=\"Предыдущий день\">&lt;</button>\n" .
 				"				<button onclick=\"nextDay()\" class=\"tsc_awb_small tsc_awb_white tsc_flat\" title=\"Следующий день\">&gt;</button>\n" .
-				"				<div class=\"hint\" style=\"float: right; text-align: right;\">\n" . 
+				"				<div class=\"hint\" style=\"float: right; text-align: right;\">\n" .
 				"					<div id=\"modspan\" title=\"Последнее изменение\"></div>\n" .
 				"					<div id=\"versionspan\" title=\"Версия\"></div>\n" .
 				"				</div>\n" .
-				
+
 				"			</div>\n" .
 				$page;
 	}
