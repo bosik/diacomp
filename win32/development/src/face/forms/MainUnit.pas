@@ -638,7 +638,6 @@ begin
     begin
       Form1.EventDishbaseChanged(True, True);
     end;
-
     
     { готово }
     Form1.StatusBar.Panels[3].Text := STATUS_SYNC_DONE;
@@ -646,10 +645,10 @@ begin
   except
     on E: Exception do
     begin
+      Log(ERROR, 'Exception in MySyncDiary(): ' + E.Message, True);
       Form1.StatusBar.Panels[3].Text := 'Ошибка синхронизации';
       Application.ProcessMessages;
-      Log(ERROR, 'Exception in MySyncDiary(): ' + E.Message, True);
-      raise E;
+      ErrorMessage('Во время синхронизации произошла ошибка');
     end;
   end;
 
@@ -1163,46 +1162,46 @@ begin
   StartProc('LoadPictures()');
 
   { Главное меню }
-  LoadImageList(WORK_FOLDER+IMAGE_MENU, DataInterface.Images_Menu);
+  LoadImageList(WORK_FOLDER + IMAGE_MENU, DataInterface.Images_Menu);
 
   { Закладки }
-  LoadImageList(WORK_FOLDER+IMAGE_MAIN_TABS, DataInterface.Images_Main_Tabs);
+  LoadImageList(WORK_FOLDER + IMAGE_MAIN_TABS, DataInterface.Images_Main_Tabs);
 
   { Контекстные меню }
-  LoadImageList(WORK_FOLDER+IMAGE_BASE_CONTENT, DataInterface.Images_BaseContent);
+  LoadImageList(WORK_FOLDER + IMAGE_BASE_CONTENT, DataInterface.Images_BaseContent);
 
   { Кнопки }
-  LoadImage(WORK_FOLDER+IMAGE_DIARY_NEW_BLOOD, ButtonAddBlood.Glyph);
-  LoadImage(WORK_FOLDER+IMAGE_DIARY_NEW_INS, ButtonAddIns.Glyph);
-  LoadImage(WORK_FOLDER+IMAGE_DIARY_NEW_MEAL, ButtonAddMeal.Glyph);
-  LoadImage(WORK_FOLDER+IMAGE_DIARY_NEW_NOTE, ImageNote.Picture);
+  LoadImage(WORK_FOLDER + IMAGE_DIARY_NEW_BLOOD, ButtonAddBlood.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_DIARY_NEW_INS, ButtonAddIns.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_DIARY_NEW_MEAL, ButtonAddMeal.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_DIARY_NEW_NOTE, ImageNote.Picture);
 
-  LoadImage(WORK_FOLDER+IMAGE_EDITOR_ADD, ButtonDiaryNewAddFood.Glyph);
-  LoadImage(WORK_FOLDER+IMAGE_EDITOR_ADD, FormDish.ButtonAddFood.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_EDITOR_ADD, ButtonDiaryNewAddFood.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_EDITOR_ADD, FormDish.ButtonAddFood.Glyph);
 
-  LoadImage(WORK_FOLDER+IMAGE_EDITOR_CALC, FormDish.ButtonRunCalc.Glyph);
-  LoadImage(WORK_FOLDER+IMAGE_EDITOR_REMOVE, FormDish.ButtonSimpleMass.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_EDITOR_CALC, FormDish.ButtonRunCalc.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_EDITOR_REMOVE, FormDish.ButtonSimpleMass.Glyph);
 
-  LoadImage(WORK_FOLDER+IMAGE_BASE_NEW_FOOD, ButtonCreateFood.Glyph);
-  LoadImage(WORK_FOLDER+IMAGE_BASE_NEW_DISH, ButtonCreateDish.Glyph);
-  LoadImage(WORK_FOLDER+IMAGE_BASE_REMOVE, ButtonDeleteFood.Glyph);
-  LoadImage(WORK_FOLDER+IMAGE_BASE_REMOVE, ButtonDeleteDish.Glyph);
-  LoadImage(WORK_FOLDER+IMAGE_EXPORT_SAVE, FormExportText.ButtonSave.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_BASE_NEW_FOOD, ButtonCreateFood.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_BASE_NEW_DISH, ButtonCreateDish.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_BASE_REMOVE, ButtonDeleteFood.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_BASE_REMOVE, ButtonDeleteDish.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_EXPORT_SAVE, FormExportText.ButtonSave.Glyph);
 
   // кнопки закладок в настройках
-  LoadImage(WORK_FOLDER+IMAGE_SETTINGS_PRIVATE, FormSettings.ButtonTabPrivate.Glyph);
-  LoadImage(WORK_FOLDER+IMAGE_SETTINGS_ANALYZE, FormSettings.ButtonTabAnalyze.Glyph);
-  LoadImage(WORK_FOLDER+IMAGE_SETTINGS_INTERFACE, FormSettings.ButtonTabInterface.Glyph);
-  LoadImage(WORK_FOLDER+IMAGE_SETTINGS_IMAGE, FormSettings.ButtonTabView.Glyph);
-  LoadImage(WORK_FOLDER+IMAGE_SETTINGS_NORMS, FormSettings.ButtonTabNorms.Glyph);
-  LoadImage(WORK_FOLDER+IMAGE_SETTINGS_INTERNET, FormSettings.ButtonTabInternet.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_SETTINGS_PRIVATE, FormSettings.ButtonTabPrivate.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_SETTINGS_ANALYZE, FormSettings.ButtonTabAnalyze.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_SETTINGS_INTERFACE, FormSettings.ButtonTabInterface.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_SETTINGS_IMAGE, FormSettings.ButtonTabView.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_SETTINGS_NORMS, FormSettings.ButtonTabNorms.Glyph);
+  LoadImage(WORK_FOLDER + IMAGE_SETTINGS_INTERNET, FormSettings.ButtonTabInternet.Glyph);
 
   // minmax
-  LoadImageList(WORK_FOLDER+IMAGE_PANEL_MIN, DataInterface.Image_MinMax);
-  LoadImageList(WORK_FOLDER+IMAGE_PANEL_MAX, DataInterface.Image_MinMax);
-  LoadImage(WORK_FOLDER+IMAGE_PANEL_MIN, ImageMinMaxStat.Picture);
-  LoadImage(WORK_FOLDER+IMAGE_PANEL_MIN, ImageMinMaxGraph.Picture);
-  LoadImage(WORK_FOLDER+IMAGE_PANEL_MIN, ImageMinMaxTimes.Picture);
+  LoadImageList(WORK_FOLDER + IMAGE_PANEL_MIN, DataInterface.Image_MinMax);
+  LoadImageList(WORK_FOLDER + IMAGE_PANEL_MAX, DataInterface.Image_MinMax);
+  LoadImage(WORK_FOLDER + IMAGE_PANEL_MIN, ImageMinMaxStat.Picture);
+  LoadImage(WORK_FOLDER + IMAGE_PANEL_MIN, ImageMinMaxGraph.Picture);
+  LoadImage(WORK_FOLDER + IMAGE_PANEL_MIN, ImageMinMaxTimes.Picture);
 
   FinishProc;
 end;
@@ -1303,8 +1302,12 @@ procedure TForm1.EditDish(Index: integer);
 var
   Temp: TDish;
 begin
-  // TODO: raise or ignore?
-  if (Index < 0) or (Index >= DishBase.Count) then Exit;
+  // TODO: process everywhere in the same manner
+  if (Index < 0) or (Index >= DishBase.Count) then
+  begin
+    Log(WARNING, 'EditDish(): incorrect index ignored (' + IntToStr(Index) + ')', True);
+    Exit;
+  end;
 
   Temp := TDish.Create;
   Temp.CopyFrom(DishBase[Index]);
@@ -1345,6 +1348,7 @@ procedure TForm1.RemoveFood(Index: integer);
 var
   DishNumber: integer;
 begin
+  // TODO: here
   if (Index < 0) or (Index >= FoodBase.Count) then Exit;
 
   DishNumber := DishBase.UsedFood(FoodBase[Index].Name);
@@ -1620,8 +1624,6 @@ begin
   // ДНЕВНИК: комбинированный список
   FillACBox(ComboDiaryNew, DiaryMultiMap);
 
-  // DONE: сделать единый список
-
   // РЕДАКТОР БЛЮД: продукты
  (* {*}with FormDish.ComboFood.ACItems do
   begin
@@ -1783,12 +1785,16 @@ begin
   Accept := (NewSize>Min)and(Width-NewSize>Min);
 end;
 
+{==============================================================================}
 procedure TForm1.SplitterBaseMoved(Sender: TObject);
+{==============================================================================}
 begin
   Value['PanelBaseFood.Width'] := PanelBaseFood.Width / Width;
 end;
 
+{==============================================================================}
 procedure TForm1.FormResize(Sender: TObject);
+{==============================================================================}
 begin
   PanelBaseFood.Width := Round(Width * Value['PanelBaseFood.Width']);
 end;
@@ -2066,60 +2072,71 @@ var
   Mass: Extended;
   Meal: TMealRecord;
 begin
-  Log(DEBUG, 'TForm1.ButtonDiaryNewAddClick()');
+  StartProc('TForm1.ButtonDiaryNewAddClick()');
+  try
+    try
+      if (DiaryView.SelectedRecord is TMealRecord) then
+      begin
+        Meal := TMealRecord(DiaryView.SelectedRecord);
 
-  if (DiaryView.SelectedRecord is TMealRecord) then
-  begin
-    Meal := TMealRecord(DiaryView.SelectedRecord);
+        ComboDiaryNew.Text := Trim(ComboDiaryNew.Text);
+        EditDiaryNewMass.Text := Trim(EditDiaryNewMass.Text);
+        ItemType := IdentifyItem(ComboDiaryNew.Text, n);
 
-    ComboDiaryNew.Text := Trim(ComboDiaryNew.Text);
-    EditDiaryNewMass.Text := Trim(EditDiaryNewMass.Text);
-    ItemType := IdentifyItem(ComboDiaryNew.Text, n);
+        if (ItemType = itUnknown) then
+        begin
+          if (ComboDiaryNew.Text = '') then
+            ErrorMessage('Введите название продукта или блюда')
+          else
+            ErrorMessage('Наименование "' +  ComboDiaryNew.Text + '" не найдено в базах');
+          ComboDiaryNew.SetFocus;
+          ComboDiaryNew.SelStart := Length(ComboDiaryNew.Text);
+          ComboDiaryNew.ShowAC;
+        end else
+        begin
+          EditDiaryNewMass.Text := CheckDot(EditDiaryNewMass.Text);
+          if (EditDiaryNewMass.Text = '') then
+          begin
+            ErrorMessage('Введите массу');
+            FocusEdit(EditDiaryNewMass);
+          end else
+          if (not TryToCalculate(EditDiaryNewMass.Text, Mass)) then
+          begin
+            ErrorMessage('Неверная масса');
+            FocusEdit(EditDiaryNewMass);
+          end else
+          if (Mass < 0) then
+          begin
+            ErrorMessage('Масса должна быть неотрицательной');
+            FocusEdit(EditDiaryNewMass);
+          end else
+          begin
+            case ItemType of
+              itFood: Meal.Add(FoodBase[n].AsFoodMassed(Mass));
+              itDish: Meal.Add(DishBase[n].AsFoodMassed(Mass));
+            end;
 
-    if (ItemType = itUnknown) then
-    begin
-      if (ComboDiaryNew.Text = '') then
-        ErrorMessage('Введите название продукта или блюда')
-      else
-        ErrorMessage('Наименование "' +  ComboDiaryNew.Text + '" не найдено в базах');
-      ComboDiaryNew.SetFocus;
-      ComboDiaryNew.SelStart := Length(ComboDiaryNew.Text);
-      ComboDiaryNew.ShowAC;
-    end else
-    begin
-      EditDiaryNewMass.Text := CheckDot(EditDiaryNewMass.Text);
-      if (EditDiaryNewMass.Text = '') then
-      begin
-        ErrorMessage('Введите массу');
-        FocusEdit(EditDiaryNewMass);
-      end else
-      if (not TryToCalculate(EditDiaryNewMass.Text, Mass)) then
-      begin
-        ErrorMessage('Неверная масса');
-        FocusEdit(EditDiaryNewMass);
-      end else
-      if (Mass < 0) then
-      begin
-        ErrorMessage('Масса должна быть неотрицательной');
-        FocusEdit(EditDiaryNewMass);
-      end else
-      begin
-        case ItemType of
-          itFood: Meal.Add(FoodBase[n].AsFoodMassed(Mass));
-          itDish: Meal.Add(DishBase[n].AsFoodMassed(Mass));
+            ComboDiaryNew.Text := '';
+            EditDiaryNewMass.Text := '';
+            ComboDiaryNew.SetFocus;
+
+            // промотка
+            n := DiaryView.SelectedRecordIndex;
+            if (n > -1) and (DiaryView.CurrentPage <> nil)and
+               (DiaryView.CurrentPage.Count>0) then
+              ScrollBoxDiary.VertScrollBar.Position :=
+                Round(n / DiaryView.CurrentPage.Count * ScrollBoxDiary.VertScrollBar.Range);
+          end;
         end;
-
-        ComboDiaryNew.Text := '';
-        EditDiaryNewMass.Text := '';
-        ComboDiaryNew.SetFocus;
-
-        // промотка
-        n := DiaryView.SelectedRecordIndex;
-        if (n > -1) and (DiaryView.CurrentPage <> nil)and
-           (DiaryView.CurrentPage.Count>0) then
-          ScrollBoxDiary.VertScrollBar.Position :=
-            Round(n / DiaryView.CurrentPage.Count * ScrollBoxDiary.VertScrollBar.Range);
       end;
+    finally
+      FinishProc;
+    end;
+  except
+    on E: Exception do
+    begin
+      Log(ERROR, 'Exception in ButtonDiaryNewAddClick(): ' + E.Message, True);
+      ErrorMessage('Ошибка при добавлении продукта/блюда'#13 + E.Message);
     end;
   end;
 end;
@@ -2129,10 +2146,11 @@ procedure TForm1.ScrollBoxDiaryMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 {==============================================================================}
 begin
-  Log(DEBUG, 'TForm1.ScrollBoxDiaryMouseDown()');
+  StartProc('TForm1.ScrollBoxDiaryMouseDown()');
   DiaryView.DeselectAll;
   UpdateMealStatistics;
   UpdateMealDose;
+  FinishProc;
 end;
 
 {==============================================================================}
@@ -2270,7 +2288,7 @@ procedure TForm1.DiaryViewMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 {==============================================================================}
 begin
-  Log(DEBUG, 'TForm1.DiaryViewMouseDown()');
+  StartProc('TForm1.DiaryViewMouseDown()');
   //ProcessMealSelected(DiaryView.IsMealSelected); -- on Idle
 
   FocusMealInput;
@@ -2278,6 +2296,7 @@ begin
   UpdateMealStatistics;
   UpdateMealDose;
   //ScrollToSelected;
+  FinishProc;
 end;
 
 {==============================================================================}
@@ -3211,21 +3230,29 @@ procedure TForm1.TimerAutosaveTimer(Sender: TObject);
 begin
   TimerAutosave.Enabled := False;
   try
-    //if (Diary.Modified) then
-    // TODO: never modified right now
-    begin
-      if (Value['UpdateKMode'] = 1) then { UpdateKOnChange }
-        UpdateKoofs();
+    try
+      //if (Diary.Modified) then
+      // TODO: never modified right now
+      begin
+        if (Value['UpdateKMode'] = 1) then { UpdateKOnChange }
+          UpdateKoofs();
+      end;
+
+      if (Value['AutoSync']) then
+        // StatusBar.Panels[3].Text := 'Загрузка на сервер...';
+        TaskSaveAndSync(nil);
+      //ThreadExec.Execute(TaskSaveAndSync, tpIdle, 80000, TASK_SAVE_N_SYNC);
+
+      SaveLog;
+    finally
+      TimerAutosave.Enabled := True;
     end;
-
-    if (Value['AutoSync']) then
-      // StatusBar.Panels[3].Text := 'Загрузка на сервер...';
-      TaskSaveAndSync(nil);
-    //ThreadExec.Execute(TaskSaveAndSync, tpIdle, 80000, TASK_SAVE_N_SYNC);
-
-    SaveLog;   
-  finally
-    TimerAutosave.Enabled := True;
+  except
+    on E: Exception do
+    begin
+      Log(ERROR, 'Caught exception in TimerAutosaveTimer(): ' + E.Message, True);
+      ErrorMessage('При синхронизации произошла ошибка'#13 + E.Message);
+    end;
   end;
 end;
 
