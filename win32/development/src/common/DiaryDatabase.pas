@@ -398,11 +398,11 @@ var
   JSON: string;
   Page: TDiaryPage;
   i: integer;
-  //DS: char;
+  DS: char;
   S: TStrings;
 begin
-  //DS := SysUtils.DecimalSeparator;
-  //SysUtils.DecimalSeparator := '.';
+  DS := SysUtils.DecimalSeparator;
+  SysUtils.DecimalSeparator := '.';
   JSON := '[';
 
   S := TStringList.Create;
@@ -426,8 +426,8 @@ begin
 
     S.SaveToFile(FileName);
   finally
+    SysUtils.DecimalSeparator := DS;
     S.Free;
-    //SysUtils.DecimalSeparator := DS;
   end;
 end;
 

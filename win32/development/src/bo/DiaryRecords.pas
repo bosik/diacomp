@@ -21,7 +21,6 @@ type
 
     FSilentMode: boolean;           // transient
     FSilentlyModified: boolean;     // transient
-
     FOnChange: TEventRecordChanged; // transient
 
     procedure NotifyPage;
@@ -35,18 +34,11 @@ type
     procedure EndUpdate;
     function RecType: TClassCustomRecord;
 
-    // через Page страница привязывает запись к себе при добавлении
-    //property Page: TNotifiablePage read FPage write FPage;
     property Time: integer read FTime write SetTime;
-
     property OnChange: TEventRecordChanged read FOnChange write FOnChange;
   end;
 
   TPageEventType = (etAdd, etModify, etRemove);
-
- { TNotifiablePage = class
-    procedure Changed(EventType: TPageEventType; RecClass: TClassCustomRecord; RecInstance: TCustomRecord = nil); virtual; abstract; 
-  end;   }
 
   // #entity
   TBloodRecord = class(TCustomRecord)

@@ -87,7 +87,7 @@ object Form1: TForm1
       Top = 0
       Width = 1241
       Height = 871
-      ActivePage = TabDiary
+      ActivePage = TabStat
       Align = alClient
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -282,11 +282,9 @@ object Form1: TForm1
                 ItemHeight = 16
                 ParentFont = False
                 TabOrder = 1
-                OnChange = ComboDiaryNewChange
                 OnCloseUp = ComboDiaryNewCloseUp
                 OnDrawItem = ComboDiaryNewDrawItem
                 OnKeyDown = ComboDiaryNewKeyDown
-                OnKeyPress = ComboDiaryNewKeyPress
               end
               object EditDiaryNewMass: TEditNumb
                 Tag = 1
@@ -616,7 +614,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.133151307870000000
+            Date = 40251.846847858800000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -775,6 +773,7 @@ object Form1: TForm1
             Font.Style = [fsBold]
             ParentFont = False
             TabOrder = 4
+            OnClick = PanelDevelopmentClick
           end
         end
         object PanelDiaryDish: TPanel
@@ -1728,15 +1727,6 @@ object Form1: TForm1
             TabOrder = 7
             OnClick = ButtonInsulinCalcClick
           end
-          object ButtonCovariance: TButton
-            Left = 8
-            Top = 264
-            Width = 209
-            Height = 25
-            Caption = #1050#1086#1088#1088#1077#1083#1103#1094#1080#1103
-            TabOrder = 8
-            OnClick = ButtonCovarianceClick
-          end
         end
         object GroupBoxCarbsHistory: TGroupBox
           Left = 225
@@ -1751,9 +1741,9 @@ object Form1: TForm1
             837)
           object ListCB: TListBox
             Left = 2
-            Top = 47
+            Top = 56
             Width = 221
-            Height = 788
+            Height = 779
             Hint = #1050#1083#1080#1082#1085#1080#1090#1077' '#1076#1074#1072' '#1088#1072#1079#1072' '#1076#1083#1103' '#1087#1077#1088#1077#1093#1086#1076#1072
             Style = lbOwnerDrawFixed
             Align = alBottom
@@ -1787,145 +1777,6 @@ object Form1: TForm1
               #1050#1072#1083#1086#1088#1080#1081#1085#1086#1089#1090#1100
               #1052#1072#1089#1089#1072)
           end
-        end
-        object GroupTechInfo: TGroupBox
-          Left = 450
-          Top = 0
-          Width = 391
-          Height = 837
-          Align = alLeft
-          Caption = #1058#1077#1093#1085#1080#1095#1077#1089#1082#1080#1077' '#1076#1072#1085#1085#1099#1077
-          TabOrder = 2
-          object MemoLog: TMemo
-            Left = 2
-            Top = 210
-            Width = 387
-            Height = 625
-            TabStop = False
-            Align = alBottom
-            Anchors = [akLeft, akTop, akRight, akBottom]
-            Font.Charset = RUSSIAN_CHARSET
-            Font.Color = clBlack
-            Font.Height = -12
-            Font.Name = 'Courier New'
-            Font.Style = []
-            ParentFont = False
-            ReadOnly = True
-            TabOrder = 0
-            OnExit = ResetTabStop
-          end
-        end
-      end
-      object TabDebug: TTabSheet
-        Caption = #1054#1090#1083#1072#1076#1082#1072
-        ImageIndex = 4
-        object Label1: TLabel
-          Left = 400
-          Top = 248
-          Width = 41
-          Height = 16
-          Caption = 'Label1'
-        end
-        object ButtonExportXml: TButton
-          Left = 8
-          Top = 8
-          Width = 201
-          Height = 25
-          Caption = 'Export diary into XML'
-          Enabled = False
-          TabOrder = 0
-          OnClick = ButtonExportXmlClick
-        end
-        object Button2: TButton
-          Left = 8
-          Top = 112
-          Width = 201
-          Height = 25
-          Caption = #1041#1088#1091#1090#1092#1086#1088#1089
-          Enabled = False
-          TabOrder = 1
-          OnClick = Button2Click
-        end
-        object Button5: TButton
-          Left = 8
-          Top = 144
-          Width = 201
-          Height = 25
-          Caption = #1043#1088#1072#1076#1080#1077#1085#1090
-          TabOrder = 2
-          Visible = False
-          OnClick = Button5Click
-        end
-        object Button8: TButton
-          Left = 8
-          Top = 328
-          Width = 201
-          Height = 25
-          Caption = 'Test Smth'
-          TabOrder = 3
-          Visible = False
-          OnClick = Button8Click
-        end
-        object Button4: TButton
-          Left = 8
-          Top = 214
-          Width = 201
-          Height = 25
-          Caption = 'Cloud'
-          Enabled = False
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -15
-          Font.Name = 'MS Sans Serif'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 4
-          OnClick = Button4Click
-        end
-        object Button3: TButton
-          Left = 8
-          Top = 248
-          Width = 201
-          Height = 25
-          Caption = #1057#1073#1072#1083#1072#1085#1089#1080#1088#1086#1074#1072#1085#1085#1086#1089#1090#1100' '#1041#1046#1059
-          TabOrder = 5
-          OnClick = Button3Click
-        end
-        object Button6: TButton
-          Left = 8
-          Top = 281
-          Width = 201
-          Height = 25
-          Caption = #1055#1088#1086#1076#1091#1082#1090#1099
-          TabOrder = 6
-          OnClick = Button6Click
-        end
-        object Memo1: TMemo
-          Left = 400
-          Top = 40
-          Width = 377
-          Height = 177
-          Lines.Strings = (
-            'Memo1')
-          TabOrder = 7
-        end
-        object Edit1: TEdit
-          Left = 400
-          Top = 216
-          Width = 377
-          Height = 24
-          TabOrder = 8
-          Text = 'Edit1'
-          OnChange = Edit1Change
-        end
-        object ButtonExportJson: TButton
-          Left = 8
-          Top = 40
-          Width = 201
-          Height = 25
-          Caption = 'Export diary into JSON'
-          TabOrder = 9
-          OnClick = ButtonExportJsonClick
         end
       end
     end
@@ -2635,12 +2486,5 @@ object Form1: TForm1
     OnTimeOut = ThreadExec_TimeOut
     Left = 280
     Top = 80
-  end
-  object Timer1: TTimer
-    Enabled = False
-    Interval = 500
-    OnTimer = Timer1Timer
-    Left = 404
-    Top = 334
   end
 end

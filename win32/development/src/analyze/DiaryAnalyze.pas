@@ -47,6 +47,7 @@ type
   procedure SaveRecords(const List: TAnalyzeRecList; const FileName: string);
 
 var
+  // TODO: move to DiaryCore
   AnList: TAnalyzeRecList;
   AvgAnalyzer: TAnalyzer;
   
