@@ -44,7 +44,8 @@ uses
   DiaryWebSource in 'src\common\DiaryWebSource.pas',
   DiaryPageSerializer in 'src\common\DiaryPageSerializer.pas',
   DiaryPage in 'src\bo\DiaryPage.pas',
-  DiaryPageSerializerTest in 'src\test\DiaryPageSerializerTest.pas';
+  DiaryPageSerializerTest in 'src\test\DiaryPageSerializerTest.pas',
+  UnitMisc in 'src\face\forms\UnitMisc.pas' {FormMisc};
 
 {$R *.res}
 
@@ -186,6 +187,7 @@ begin
   Application.CreateForm(TFormSettings, FormSettings);
   Application.CreateForm(TFormAbout, FormAbout);
   Application.CreateForm(TFormExportText, FormExportText);
+  Application.CreateForm(TFormMisc, FormMisc);
   {#}Application.CreateForm(TFormSync, FormSync);
   {#}Application.CreateForm(TFormResources, FormResources);
   Application.CreateForm(TDataInterface, DataInterface);
