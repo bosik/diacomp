@@ -1316,7 +1316,7 @@ begin
     { порядок в базе и таблице совпадают }
     FoodBase.Delete(Index);
 
-    ListFood.Items.Delete(Index);
+    UpdateFoodTable(True);
     {*}UpdateCombos;
     {*}SaveFoodBase;
   end;
@@ -1350,7 +1350,7 @@ begin
      ((UsedDishNumber = -1)and(AskConfirm(Index))) then
   begin
     DishBase.Delete(Index);
-    ListDish.Items.Delete(Index);
+    UpdateDishTable(True);
     UpdateCombos;
     SaveDishBase;
   end;

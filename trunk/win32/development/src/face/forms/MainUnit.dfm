@@ -87,7 +87,7 @@ object Form1: TForm1
       Top = 0
       Width = 1241
       Height = 871
-      ActivePage = TabStat
+      ActivePage = TabDiary
       Align = alClient
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
