@@ -98,6 +98,10 @@ var
 
 implementation
 
+const
+  STATUS_OK                 = 0;
+  STATUS_ERROR_JSON_PARSING = 1;
+
 type
   TResponse = record
     Status: integer;
@@ -110,14 +114,17 @@ type
   begin
     json := TlkJSON.ParseText(S) as TlkJSONobject;
 
-    if not Assigned(json) then
+    if Assigned(json) then
     begin
+      Result.Status := (json.Field['status'] as TlkJSONnumber).Value;
+      Result.Message := (json.Field['message'] as TlkJSONstring).Value
+    end else
+    begin
+      Result.Status := STATUS_ERROR_JSON_PARSING;
+      Result.Message := 'JSON is not assigned';
       Log(ERROR, 'JSON is not assigned');
       Exit;
-    end;
-
-    Result.Status := (json.Field['status'] as TlkJSONnumber).Value;
-    Result.Message := (json.Field['message'] as TlkJSONstring).Value
+    end;    
   end;
 
 { TDiacompClient }
@@ -634,11 +641,13 @@ begin
   Result := Result and TryStrToInt(Resp, Version);
 
   if (not Result) then
-    Log(ERROR, 'TDiacompClient.GetFoodBaseVersion: quering failed');
+    Log(ERROR, 'TDiacompClient.GetFoodBaseVersion: quering failed, response="' + Resp + '"');
 end;
 
+{==============================================================================}
 function TDiacompClient.UploadFoodBase(const Data: string;
   Version: integer): boolean;
+{==============================================================================}
 var
   Par: TParamList;
   Resp: string;
@@ -656,7 +665,9 @@ end;
 
 // ================================================
 
+{==============================================================================}
 function TDiacompClient.DownloadDishBase(out Data: string): boolean;
+{==============================================================================}
 var
   Query: string;
 begin
