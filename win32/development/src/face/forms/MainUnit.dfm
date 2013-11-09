@@ -614,7 +614,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.846847858800000000
+            Date = 40251.070432800920000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -623,7 +623,6 @@ object Form1: TForm1
             ParentFont = False
             TabOrder = 2
             OnClick = CalendarDiaryChange
-            OnGetMonthInfo = CalendarDiaryGetMonthInfo
           end
           object GroupBoxTimeLeft: TGroupBox
             Left = 9
@@ -1867,9 +1866,6 @@ object Form1: TForm1
                     Action = ActionExportFood
                   end
                   item
-                    Action = ActionExportRaw
-                  end
-                  item
                     Action = ActionExportKoofs
                   end>
                 Caption = #1069#1082#1089#1087#1086#1088#1090
@@ -2174,11 +2170,6 @@ object Form1: TForm1
       Category = 'Popup: '#1087#1088#1080#1105#1084' '#1087#1080#1097#1080
       Caption = #1053#1072' '#1076#1077#1085#1100' '#1074#1087#1077#1088#1105#1076' >>'
       OnExecute = ActionMoveMealForwardExecute
-    end
-    object ActionExportRaw: TAction
-      Category = #1069#1082#1089#1087#1086#1088#1090
-      Caption = #1057#1080#1089#1090#1077#1084#1072' '#1091#1088#1072#1074#1085#1077#1085#1080#1081
-      OnExecute = ActionExportRawExecute
     end
   end
   object TrayIcon: TCoolTrayIcon
