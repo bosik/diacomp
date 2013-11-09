@@ -12,6 +12,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -23,20 +24,21 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class Compensation implements EntryPoint
 {
 	/**
-	 * The message displayed to the user when the server cannot be reached or
-	 * returns an error.
+	 * The message displayed to the user when the server cannot be reached or returns an error.
 	 */
-	private static final String SERVER_ERROR = "An error occurred while "
-			+ "attempting to contact the server. Please check your network " + "connection and try again.";
+	private static final String			SERVER_ERROR	= "An error occurred while "
+																+ "attempting to contact the server. Please check your network "
+																+ "connection and try again.";
 
 	/**
 	 * Create a remote service proxy to talk to the server-side Greeting service.
 	 */
-	private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
+	private final GreetingServiceAsync	greetingService	= GWT.create(GreetingService.class);
 
 	/**
 	 * This is the entry point method.
 	 */
+	@Override
 	public void onModuleLoad()
 	{
 		final Button sendButton = new Button("Send");
@@ -72,13 +74,14 @@ public class Compensation implements EntryPoint
 		dialogVPanel.add(textToServerLabel);
 		dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
 		dialogVPanel.add(serverResponseLabel);
-		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
+		dialogVPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 		dialogVPanel.add(closeButton);
 		dialogBox.setWidget(dialogVPanel);
 
 		// Add a handler to close the DialogBox
 		closeButton.addClickHandler(new ClickHandler()
 		{
+			@Override
 			public void onClick(ClickEvent event)
 			{
 				dialogBox.hide();
@@ -93,6 +96,7 @@ public class Compensation implements EntryPoint
 			/**
 			 * Fired when the user clicks on the sendButton.
 			 */
+			@Override
 			public void onClick(ClickEvent event)
 			{
 				sendNameToServer();
@@ -101,6 +105,7 @@ public class Compensation implements EntryPoint
 			/**
 			 * Fired when the user types in the nameField.
 			 */
+			@Override
 			public void onKeyUp(KeyUpEvent event)
 			{
 				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER)
@@ -129,6 +134,7 @@ public class Compensation implements EntryPoint
 				serverResponseLabel.setText("");
 				greetingService.greetServer(textToServer, new AsyncCallback<String>()
 				{
+					@Override
 					public void onFailure(Throwable caught)
 					{
 						// Show the RPC error message to the user
@@ -139,6 +145,7 @@ public class Compensation implements EntryPoint
 						closeButton.setFocus(true);
 					}
 
+					@Override
 					public void onSuccess(String result)
 					{
 						dialogBox.setText("Remote Procedure Call");
