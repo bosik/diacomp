@@ -23,6 +23,7 @@ type
     Memo1: TMemo;
     Timer1: TTimer;
     ButtonCovariance: TButton;
+    ButtonExportRaw: TButton;
     procedure ButtonExportXmlClick(Sender: TObject);
     procedure ButtonExportJsonClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -34,6 +35,7 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure ButtonCovarianceClick(Sender: TObject);
+    procedure ButtonExportRawClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -669,6 +671,41 @@ begin
     S.SaveToFile('temp\covariance.txt');
   finally
     S.Free;
+  end;
+end;
+
+procedure TFormMisc.ButtonExportRawClick(Sender: TObject);
+var
+  s: TStrings;
+  i: integer;
+begin
+  s := TStringList.Create;
+  try
+    s := TStringList.Create;
+
+    S.Add(Format('%s'#9'%s'#9'%s'#9'%s'#9'%s'#9'%s'#9'%s', [
+      'Time',
+      'Weight',
+      'Prots',
+      'Fats',
+      'Carbs',
+      'Ins',
+      'DBS']));
+
+    for i := 0 to High(AnList) do
+    begin
+      S.Add(Format('%d'#9'%f'#9'%f'#9'%f'#9'%f'#9'%f'#9'%f', [
+        AnList[i].Time,
+        AnList[i].Weight,
+        AnList[i].Prots,
+        AnList[i].Fats,
+        AnList[i].Carbs,
+        AnList[i].Ins,
+        AnList[i].BSOut - AnList[i].BSIn]));
+    end;
+    S.SaveToFile('temp\raw.txt');
+  finally
+    s.Free;
   end;
 end;
 

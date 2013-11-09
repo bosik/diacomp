@@ -130,6 +130,15 @@ object FormMisc: TFormMisc
     TabOrder = 10
     OnClick = ButtonCovarianceClick
   end
+  object ButtonExportRaw: TButton
+    Left = 8
+    Top = 72
+    Width = 201
+    Height = 25
+    Caption = 'ButtonExportRaw'
+    TabOrder = 11
+    OnClick = ButtonExportRawClick
+  end
   object Timer1: TTimer
     Enabled = False
     Interval = 500

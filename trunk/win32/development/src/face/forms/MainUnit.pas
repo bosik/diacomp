@@ -244,7 +244,6 @@ type
     LabelDayProtsVal: TLabel;
     LabelDayFatsVal: TLabel;
     LabelDayCarbsVal: TLabel;
-    ActionExportRaw: TAction;
     ImageNote: TImage;
     ButtonAvgBS: TBitBtn;
     ButtonInsulinCalc: TButton;
@@ -368,8 +367,6 @@ type
     procedure ThreadExec_TimeOut(Sender: TObject; TaskID: Cardinal);
     procedure ComboDiaryNewDrawItem(Control: TWinControl;
       Index: Integer; Rect: TRect; State: TOwnerDrawState);
-    procedure CalendarDiaryGetMonthInfo(Sender: TObject; Month: Cardinal;
-      var MonthBoldInfo: Cardinal);
     procedure ListBaseMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
     procedure DiaryViewChange(Sender: TObject; EventType: TPageEventType;
@@ -379,7 +376,6 @@ type
     procedure SplitterBaseMoved(Sender: TObject);
     procedure ImageMinMaxTimesMouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure ActionExportRawExecute(Sender: TObject);
     procedure ButtonInsulinCalcClick(Sender: TObject);
     procedure PanelDevelopmentClick(Sender: TObject);
   protected
@@ -974,7 +970,6 @@ begin
 
     PanelDevelopment.Visible := DEVELOPMENT_MODE;
     TabStat.TabVisible := ADVANCED_MODE;
-    ActionExportRaw.Visible := ADVANCED_MODE;
     StatusBar.Panels[3].Text := '';
     CalendarDiary.Date := now;  
     ImagePreview.Align := alNone;
@@ -1687,19 +1682,6 @@ begin
   UpdateMealDose;
 
   FinishProc;
-end;
-
-{==============================================================================}
-procedure TForm1.CalendarDiaryGetMonthInfo(Sender: TObject; Month: Cardinal;
-  var MonthBoldInfo: Cardinal);
-{==============================================================================}
-begin
-  {ShowMessage('Info');
-  //CalendarDiaryChange(nil);
-  DiaryView.OpenPage(Trunc(CalendarDiary.Date), False);
-  UpdateMealStatistic;
-  if not DiaryView.IsMealSelected then
-    HideMealDose;  }
 end;
 
 {==============================================================================}
@@ -3297,6 +3279,7 @@ begin
     ExportKoofs(False, S);
     Add(S);
     SaveToFile('Koofs.json');
+    Free;
   end;
 end;
 
@@ -4888,41 +4871,6 @@ begin
   end;
 
   FinishProc;
-end;
-
-procedure TForm1.ActionExportRawExecute(Sender: TObject);
-var
-  s: TStringList;
-  i: integer;
-begin
-  s := TStringList.Create;
-  try
-    s := TStringList.Create;
-
-    S.Add(Format('%s'#9'%s'#9'%s'#9'%s'#9'%s'#9'%s'#9'%s', [
-      'Time',
-      'Weight',
-      'Prots',
-      'Fats',
-      'Carbs',
-      'Ins',
-      'DBS']));
-
-    for i := 0 to High(AnList) do
-    begin
-      S.Add(Format('%d'#9'%f'#9'%f'#9'%f'#9'%f'#9'%f'#9'%f', [
-        AnList[i].Time,
-        AnList[i].Weight,
-        AnList[i].Prots,
-        AnList[i].Fats,
-        AnList[i].Carbs,
-        AnList[i].Ins,
-        AnList[i].BSOut - AnList[i].BSIn]));
-    end;
-    S.SaveToFile('raw.txt');
-  finally
-    s.Free;
-  end;
 end;
 
 procedure TForm1.EventDiaryChanged;
