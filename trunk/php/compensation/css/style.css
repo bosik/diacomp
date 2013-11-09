@@ -125,7 +125,7 @@ th {
 	padding: 10px;
 	margin: 0px -2px 0px;
 	text-align: center;
-	width: 90px;
+	width: 100px;
 	display: inline-block;
 }
 
@@ -269,6 +269,10 @@ th {
 	/*font-weight: bold;*/
 }
 
+.bold {
+	font-weight: bold;
+}
+
 #diary_info_column {
 	float: right;
 	width: 33%;
@@ -346,6 +350,9 @@ th {
 }
 .button_new_ins {
 	background-image: url("../img/Diary_New_Ins.png");
+}
+.button_new_meal {
+	background-image: url("../img/Diary_New_Meal.png");
 }
 .button_new_note {
 	background-image: url("../img/Diary_New_Note.png");
