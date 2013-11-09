@@ -57,7 +57,7 @@
 				{
 					return
 							"			<div class=\"menu\">\n" .
-							"				<a href=\"login.php\"><span class=\"menu_item " . c(1, $selected) . "\">Авторизация</span></a>\n" .
+							"				<a href=\"login.php\"><span class=\"menu_item " . c(1, $selected) . "\">Вход</span></a>\n" .
 							"				<a href=\"reg.php\"><span class=\"menu_item " . c(2, $selected) . "\">Регистрация</span></a>\n" .
 							"			</div>";
 					break;

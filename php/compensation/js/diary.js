@@ -365,14 +365,14 @@ function codeMeal(meal, id)
 	"								<td class=\"col_item\">\n"+
 	"									<div class=\"wrapper_table\">\n"+
 	"										<span class=\"wrapper_cell\">\n"+
-	'											<input id="mealcombo_' + id + '" class="meal_input full_width ' + t + '" placeholder="Введите название..."/>\n'+
+	'											<input id="mealcombo_' + id + '" class="meal_input full_width bold ' + t + '" placeholder="Введите название..."/>\n'+
 	"										</span>\n"+
 	"									</div>\n"+
 	'								</td>\n' +
 	'								<td class="col_info">\n'+
 	'									<div class="wrapper_table">\n'+
 	'										<span class="wrapper_cell">\n'+
-	'											<input id="mealmass_' + id + '" class="meal_input full_width ' + t + '" type="number" placeholder="..." title="Масса" onkeypress="runScript(event,'+id+')"/>\n'+
+	'											<input id="mealmass_' + id + '" class="meal_input full_width bold ' + t + '" type="number" placeholder="..." title="Масса" onkeypress="runScript(event,'+id+')"/>\n'+
 	'										</span>\n'+
 	'									</div>\n'+
 	'								</td>\n' +
@@ -520,6 +520,7 @@ function codeInfoDefault()
 	"						<div>\n" +
 	"							<div onclick=\"newBloodEditor()\" class=\"button_new_rec button_new_blood full_width\" title=\"Добавить замер СК\">Замер СК</div>\n" +
 	"							<div onclick=\"newInsEditor()\" class=\"button_new_rec button_new_ins full_width\" title=\"Добавить инъекцию\">Инъекция</div>\n" +
+	"							<div onclick=\"newMealEditor()\" class=\"button_new_rec button_new_meal full_width\" title=\"Добавить приём пищи\">Приём пищи</div>\n" +
 	"							<div onclick=\"newNoteEditor()\" class=\"button_new_rec button_new_note full_width\" title=\"Добавить заметку\">Заметка</div>\n" +
 	"						</div><hr>\n" +
 	"						Для получения более подробной информации выберите запись на странице.\n";
@@ -734,6 +735,11 @@ function DiaryPage_changeFoodMass(mealIndex, foodIndex, newMass)
 function DiaryPage_removeFood(mealIndex, foodIndex)
 {
 	page.content[mealIndex].content.splice(foodIndex, 1);
+	if (page.content[mealIndex].content.length == 0)
+	{
+		// удаляем также пустой приём пищи
+		page.content.splice(mealIndex, 1);
+	}
 	modified(false);
 }
 
@@ -830,6 +836,22 @@ function newInsEditor()
 		ins_rec.time = getCurrentTime();
 		ins_rec.value = String(val);
 		DiaryPage_addRecord(ins_rec);
+	}
+}
+
+function newMealEditor()
+{
+	var meal = {
+		"type": "meal",
+		"time": "",
+		"content": [],
+		"short": false
+	};
+	var newTime = inputTime("Введите время:", getCurrentTime());
+	if ((newTime >= 0) && (newTime < 1440))
+	{
+		meal.time = newTime;
+		DiaryPage_addRecord(meal);
 	}
 }
 
