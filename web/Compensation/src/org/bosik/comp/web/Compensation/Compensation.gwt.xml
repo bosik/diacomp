@@ -23,7 +23,7 @@
   <entry-point class='org.bosik.comp.web.Compensation.frontend.Compensation'/>
 
   <!-- Specify the paths for translatable code                    -->
-  <source path='client'/>
+  <source path='frontend'/>
   <source path='shared'/>
 
 </module>

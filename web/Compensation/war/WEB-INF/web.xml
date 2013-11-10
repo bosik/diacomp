@@ -4,27 +4,25 @@
               http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	version="2.5" xmlns="http://java.sun.com/xml/ns/javaee">
 
-	<!-- Servlets -->
-	<servlet>
-		<servlet-name>greetServlet</servlet-name>
-		<servlet-class>org.bosik.comp.web.Compensation.server.GreetingServiceImpl</servlet-class>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>greetServlet</servlet-name>
-		<url-pattern>/compensation/greet</url-pattern>
-	</servlet-mapping>
-
 	<!-- Default page to serve -->
 	<welcome-file-list>
 		<welcome-file>Compensation.html</welcome-file>
 	</welcome-file-list>
 
+	<!-- Servlets -->
+	<servlet>
+		<servlet-name>greetServlet</servlet-name>
+		<servlet-class>org.bosik.comp.web.Compensation.server.GreetingServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>greetServlet</servlet-name>
+		<url-pattern>/compensation/greet</url-pattern>
+	</servlet-mapping>
+
 	<servlet>
 		<servlet-name>loginService</servlet-name>
 		<servlet-class>org.bosik.comp.web.Compensation.server.LoginServiceImpl</servlet-class>
 	</servlet>
-
 	<servlet-mapping>
 		<servlet-name>loginService</servlet-name>
 		<url-pattern>/compensation/login</url-pattern>

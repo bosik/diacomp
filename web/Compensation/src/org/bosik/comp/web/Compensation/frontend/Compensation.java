@@ -13,35 +13,30 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HeaderPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-/**
- * Entry point classes define <code>onModuleLoad()</code>.
- */
 public class Compensation implements EntryPoint
 {
-	// String resources
-	// private static final String MESSAGE_ERROR_CONNECTION =
-	// "При подключении возникла ошибка. Повторите попытку.";
-	private static final String			MESSAGE_ERROR_JS_DISABLED	= "Для корректной работы приложения ваш браузер должен выполнять Java Script";
-	private static final String			LABEL_LOGIN_OFFER			= "Войдите с помощью учётной записи Google";
-	private static final String			LABEL_SIGN_IN				= "Вход";
-	private static final String			LABEL_SIGN_OUT				= "Выход";
-
 	// Services
-	private final GreetingServiceAsync	greetingService				= GWT.create(GreetingService.class);
-	private final Localization			localization				= GWT.create(Localization.class);
+	private final GreetingServiceAsync	greetingService	= GWT.create(GreetingService.class);
+	private final Localization			localization	= GWT.create(Localization.class);
 
 	// Components
-	private LoginInfo					loginInfo					= null;
-	private VerticalPanel				loginPanel					= new VerticalPanel();
-	private VerticalPanel				mainPanel					= new VerticalPanel();
-	private Label						loginLabel					= new Label(LABEL_LOGIN_OFFER);
-	private Anchor						signInLink					= new Anchor(LABEL_SIGN_IN);
-	private Anchor						signOutLink					= new Anchor(LABEL_SIGN_OUT);
+	private LoginInfo					loginInfo		= null;
+	private VerticalPanel				loginPanel		= new VerticalPanel();
+
+	private Label						loginLabel;
+	private Anchor						signInLink;
+	private Anchor						signOutLink;
+
+	private HeaderPanel					mainPanel		= new HeaderPanel();
+	private MyHeader					headerPanel		= new MyHeader("Компенсация");
+	private VerticalPanel				contentPanel	= new VerticalPanel();
 
 	/**
 	 * This is the entry point method.
@@ -61,8 +56,12 @@ public class Compensation implements EntryPoint
 			@Override
 			public void onSuccess(LoginInfo result)
 			{
+				System.out.println("Auth info successfully received");
+
 				loginInfo = result;
-				if (loginInfo.isLoggedIn())
+
+				// if (loginInfo.isLoggedIn())
+				if (true)
 				{
 					loadCompensation();
 				}
@@ -77,44 +76,74 @@ public class Compensation implements EntryPoint
 	private void loadLogin()
 	{
 		// Assemble login panel.
+		signInLink = new Anchor(localization.labelLogin());
 		signInLink.setHref(loginInfo.getLoginUrl());
-		loginPanel.add(loginLabel);
+
+		// loginPanel.add(new Label(localization.messageInfoLoginOffer()));
 		loginPanel.add(signInLink);
 		RootPanel.get("stockList").add(loginPanel);
 
+		// RootPanel.get("stockList").setHeaderWidget(new MyHeader("Компенсация"));
+
+		RootPanel.get("labelErrorNoJS").add(new Label(localization.messageErrorJsDisabled()));
 	}
 
 	private void loadCompensation()
 	{
-		RootPanel.get("labelErrorNoJS").add(new Label(MESSAGE_ERROR_JS_DISABLED));
+		// RootPanel.get("header").add(headerPanel);
+		RootLayoutPanel.get().add(mainPanel);
+		mainPanel.setWidth("500px");
+		mainPanel.setStyleName("main");
+
+		// RootPanel labelNoJS = RootPanel.get("labelErrorNoJS");
+		// if (labelNoJS != null)
+		// {
+		// System.out.println("JS disabled!");
+		// labelNoJS.add(new Label(localization.messageErrorJsDisabled()));
+		// }
+		// else
+		// {
+		// System.out.println("No NoJS label found");
+		// }
+
+		// ================================================
+		// headerPanel.add(new MyHeader("The Title"));
+		mainPanel.setHeaderWidget(headerPanel);
+		mainPanel.setContentWidget(contentPanel);
+		// RootPanel.get().add(new MyHeader("The Title"));
+		// mainPanel.setHeaderWidget(headerPanel);
+
+		// works
+		// mainPanel.add(headerPanel);
+		// mainPanel.add(contentPanel);
+		// ================================================
 
 		// Set up sign out hyperlink.
+		signOutLink = new Anchor(localization.labelLogout());
 		signOutLink.setHref(loginInfo.getLogoutUrl());
-
-		System.out.println("Logout URL: " + loginInfo.getLogoutUrl());
+		// mainPanel.add(signOutLink);
 
 		final Button sendButton = new Button("Send");
+		sendButton.addStyleName("sendButton");
 		final TextBox nameField = new TextBox();
 		nameField.setText(loginInfo.getNickname());
+		nameField.setFocus(true);
+		nameField.selectAll();
 		final Label welcomeLabel = new Label();
+		welcomeLabel.setText("Hello!");
+		welcomeLabel.setTitle("Tooltip");
 		final Label errorLabel = new Label();
-
-		// We can add style names to widgets
-		sendButton.addStyleName("sendButton");
 
 		// Add the nameField and sendButton to the RootPanel
 		// Use RootPanel.get() to get the entire body element
-		RootPanel.get("labelWelcome").add(welcomeLabel);
-		RootPanel.get("nameFieldContainer").add(nameField);
-		RootPanel.get("sendButtonContainer").add(sendButton);
-		RootPanel.get("errorLabelContainer").add(errorLabel);
+		// RootPanel.get("labelWelcome").add(welcomeLabel);
 
-		welcomeLabel.setText("Hello!");
-		welcomeLabel.setTitle("Tooltip");
-
-		// Focus the cursor on the name field when the app loads
-		nameField.setFocus(true);
-		nameField.selectAll();
+		// RootPanel.get("nameFieldContainer").add(nameField);
+		// RootPanel.get("sendButtonContainer").add(sendButton);
+		// RootPanel.get("errorLabelContainer").add(errorLabel);
+		contentPanel.add(nameField);
+		contentPanel.add(sendButton);
+		contentPanel.add(errorLabel);
 
 		// Create the popup dialog box
 		final DialogBox dialogBox = new DialogBox();
@@ -220,20 +249,5 @@ public class Compensation implements EntryPoint
 		sendButton.addClickHandler(handler);
 		nameField.addKeyUpHandler(handler);
 
-		mainPanel.add(signOutLink);
-		RootPanel.get("stockList").add(mainPanel);
 	}
-
-	// public String getUserNickname()
-	// {
-	// User user = UserServiceFactory.getUserService().getCurrentUser();
-	// if (user == null)
-	// {
-	// return "null";
-	// }
-	// else
-	// {
-	// return user.getNickname();
-	// }
-	// }
 }
