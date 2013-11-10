@@ -20,7 +20,7 @@
   <!-- Other module inherits                                      -->
 
   <!-- Specify the app entry point class.                         -->
-  <entry-point class='org.bosik.comp.web.Compensation.client.Compensation'/>
+  <entry-point class='org.bosik.comp.web.Compensation.frontend.Compensation'/>
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
