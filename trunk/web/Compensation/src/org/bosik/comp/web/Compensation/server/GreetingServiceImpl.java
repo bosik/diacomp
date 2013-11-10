@@ -1,6 +1,6 @@
 package org.bosik.comp.web.Compensation.server;
 
-import org.bosik.comp.web.Compensation.client.GreetingService;
+import org.bosik.comp.web.Compensation.frontend.GreetingService;
 import org.bosik.comp.web.Compensation.shared.FieldVerifier;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
