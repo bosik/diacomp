@@ -111,7 +111,7 @@ function downloadPage()
 	//diary.innerHTML = "Не удалось загрузить страницу";
 	}
 
-	download(url, onSuccess, onFailure);
+	download(url, false, onSuccess, onFailure);
 }
 
 function downloadKoofs()
@@ -137,7 +137,7 @@ function downloadKoofs()
 		koofs = [];
 	}
 
-	download(url, onSuccess, onFailure);
+	download(url, true, onSuccess, onFailure);
 }
 
 function downloadFoodbase()
@@ -215,7 +215,7 @@ function downloadFoodbase()
 		foodbase = [];
 	}
 
-	download(url, onSuccess, onFailure);
+	download(url, true, onSuccess, onFailure);
 }
 
 function uploadPage()
@@ -241,7 +241,7 @@ function uploadPage()
 		alert("Failed to save page");
 	}
 
-	upload(url, request, onSuccess, onFailure);
+	upload(url, request, true, onSuccess, onFailure);
 }
 
 /* ================== UTILS ================== */
