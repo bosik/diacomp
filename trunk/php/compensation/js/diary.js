@@ -840,26 +840,18 @@ function DiaryPage_findIns(time, maxDist)
 	return DiaryPage_findRec("ins", time, maxDist);
 }
 
-/* ================== FOODBASE METHODS ================== */
-
-
-
 /* ================== EVENT HANDLERS ================== */
 
 function newBloodEditor()
 {
-	var blood_rec = {
-		"type": "blood",
-		"time": "",
-		"value" : "",
-		"finger" : ""
-	};
-
-	blood_rec.finger = (DiaryPage_getLastFinger() + 1) % 10;
-	var val = inputFloat("Введите значение СК ("+finger_hints[blood_rec.finger]+"):", "");
+	var finger = (DiaryPage_getLastFinger() + 1) % 10;
+	var val = inputFloat("Введите значение СК (" + finger_hints[finger] + "):", "");
 
 	if (val > -1)
 	{
+		var blood_rec = {};
+		blood_rec.type = "blood";
+		blood_rec.finger = finger;
 		blood_rec.time = getCurrentTime();
 		blood_rec.value = String(val);
 		DiaryPage_addRecord(blood_rec);
@@ -868,18 +860,12 @@ function newBloodEditor()
 
 function newInsEditor()
 {
-	var ins_rec = {
-		"type": "ins",
-		"time": "",
-		"value" : ""
-	};
-
 	var val = inputFloat("Введите значение инъекции", "");
-
-	//alert("newInsEditor(): val = " + val);
 
 	if (val > -1)
 	{
+		var ins_rec = {};
+		ins_rec.type = "ins";
 		ins_rec.time = getCurrentTime();
 		ins_rec.value = String(val);
 		DiaryPage_addRecord(ins_rec);
@@ -888,34 +874,30 @@ function newInsEditor()
 
 function newMealEditor()
 {
-	var meal = {
-		"type": "meal",
-		"time": "",
-		"content": [],
-		"short": false
-	};
 	var newTime = inputTime("Введите время:", getCurrentTime());
 	if ((newTime >= 0) && (newTime < 1440))
 	{
-		meal.time = newTime;
-		DiaryPage_addRecord(meal);
+		var meal_rec = {};
+		meal_rec.type = "meal";
+		meal_rec.time = newTime;
+		meal_rec.content = [];
+		meal_rec.short = false;
+
+		DiaryPage_addRecord(meal_rec);
 	}
 }
 
 function newNoteEditor()
 {
-	var note = {
-		"type": "note",
-		"time": "",
-		"text" : ""
-	};
 	var val = inputText("Введите заметку:");
 
 	if (val != null)
 	{
-		note.text = val;
-		note.time = getCurrentTime();
-		DiaryPage_addRecord(note);
+		var note_rec = {};
+		note_rec.type = "note";
+		note_rec.text = val;
+		note_rec.time = getCurrentTime();
+		DiaryPage_addRecord(note_rec);
 	}
 }
 
