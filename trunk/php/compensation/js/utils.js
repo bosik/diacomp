@@ -315,3 +315,15 @@ function parseXml(xml)
 	}
 	return dom;
 }
+
+function timeSortFunction(a, b)
+{
+	return a.time - b.time;
+}
+
+function nameSortFunction(a, b)
+{
+	if (a.name < b.name) return -1; // Или любое число, меньшее нуля
+	if (a.name > b.name) return +1; // Или любое число, большее нуля
+	return 0;
+}

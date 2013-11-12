@@ -29,20 +29,21 @@ var cur_date = new Date(Date.parse(document.getElementById("origin_date").value)
 var page = [];
 var koofs = [];
 var foodbase = [];
+var dishbase = [];
 
 var fdBase = [];
 var selectedItem;
 var currentID;
 
 var foodbaseLoaded = false;
+var dishbaseLoaded = false;
 
 /* ================== STARTUP ACTIONS ================== */
 
-// TODO: download dish base
+refreshCurrentPage();
 downloadKoofs();
 downloadFoodbase();
-
-refreshCurrentPage();
+downloadDishbase();
 
 /* ================== DIARY NAVIGATION ================== */
 
@@ -97,7 +98,7 @@ function downloadPage()
 		// debug only
 		diary.innerHTML = "Parsed ok, sorting...";
 
-		page.content.sort(sortFunction);
+		page.content.sort(timeSortFunction);
 
 		// debug only
 		diary.innerHTML = "Sorted ok, rendering...";
@@ -160,6 +161,7 @@ function downloadFoodbase()
 
 			foodbase = JSON.parse(json).foods;
 
+			// TODO: убрать?
 			// простановка индексов
 			for (var i = 0; i < foodbase.food.length; i++)
 			{
@@ -167,18 +169,16 @@ function downloadFoodbase()
 			}
 
 			// сортировка - в будущем будет заменена на сортировку по релевантности
-			var sortFunction = function (a, b)
-			{
-				if (a.name < b.name) return -1; // Или любое число, меньшее нуля
-				if (a.name > b.name) return +1; // Или любое число, большее нуля
-				return 0;
-			}
-			foodbase.food.sort(sortFunction);
+			foodbase.food.sort(nameSortFunction);
 
 			foodbaseLoaded = true;
-			if (foodbaseLoaded)
+			if (foodbaseLoaded && dishbaseLoaded)
 			{
 				prepareComboList();
+			}
+			else
+			{
+				console.log("Foodbase downloaded, wait for dishbase...");
 			}
 		}
 		else
@@ -195,14 +195,84 @@ function downloadFoodbase()
 	download(url, true, onSuccess, onFailure);
 }
 
+function downloadDishbase()
+{
+	dishbaseLoaded = false;
+
+	var url = "console.php?dishbase:download";
+
+	var onSuccess = function(data)
+	{
+		console.log("Dishbase loaded OK");
+		console.log("Dishbase response data: '" + data + "'");
+
+		if (data != "")
+		{
+			data = getAfter(data, "\n");
+
+			//data = data.replace(/&quot;/g, '\\"');
+			data = data.replace(/&quot;/g, '');
+
+			//console.log("Dishbase XML (before parsing): " + data);
+
+			var dom = parseXml(data);
+			var json = xml2json(dom, "");
+
+			json = json.replace(/undefined/g, "").replace(/@/g, "");
+
+			//console.log("Dishbase JSON data: " + json);
+
+			dishbase = JSON.parse(json).dishes;
+
+			//console.log("Dishbase itself: " + ObjToSource(dishbase));
+
+			// TODO: убрать?
+			// простановка индексов
+			for (var i = 0; i < dishbase.dish.length; i++)
+			{
+				dishbase.dish[i].id = i;
+			}
+
+			// сортировка - в будущем будет заменена на сортировку по релевантности
+			dishbase.dish.sort(nameSortFunction);
+
+			dishbaseLoaded = true;
+			if (foodbaseLoaded && dishbaseLoaded)
+			{
+				prepareComboList();
+			}
+			else
+			{
+				console.log("Dishbase downloaded, wait for foodbase...");
+			}
+		}
+		else
+		{
+			console.log("Dishbase data is empty");
+			dishbase = [];
+		}
+	};
+
+	var onFailure = function ()
+	{
+		console.log("Failed to load dishbase");
+		dishbase = [];
+	}
+
+	download(url, true, onSuccess, onFailure);
+}
+
 function prepareComboList()
 {
+	console.log("Preparing comboList...");
+
 	fdBase = [];
+	var item;
 
 	// adding foods
 	for (i = 0; i < foodbase.food.length; i++)
 	{
-		var item = [];
+		item = {}
 		item.value = foodbase.food[i].name;
 		item.prots = foodbase.food[i].prots;
 		item.fats = foodbase.food[i].fats;
@@ -211,6 +281,23 @@ function prepareComboList()
 		item.type = "food";
 		fdBase.push(item);
 	}
+
+	// adding dishes
+	for (i = 0; i < dishbase.dish.length; i++)
+	{
+		item = {};
+		item.value = dishbase.dish[i].name;
+		item.prots = 150; //dishbase.dish[i].prots;
+		item.fats = 150; //dishbase.dish[i].fats;
+		item.carbs = 150; //dishbase.dish[i].carbs;
+		item.val = 150; //dishbase.dish[i].val;
+		item.type = "dish";
+		fdBase.push(item);
+	}
+
+	//console.log("ComboList is ready: " + ObjToSource(fdBase));
+
+	createHandlers();
 }
 
 function uploadPage()
@@ -237,13 +324,6 @@ function uploadPage()
 	}
 
 	upload(url, request, true, onSuccess, onFailure);
-}
-
-/* ================== UTILS ================== */
-
-function sortFunction(a, b)
-{
-	return a.time - b.time;
 }
 
 /* ================== KOOF UTILS ================== */
@@ -680,7 +760,7 @@ function modified(needResort)
 {
 	page.version++;
 	page.timestamp = getCurrentTimestamp();
-	if (needResort) page.content.sort(sortFunction);
+	if (needResort) page.content.sort(timeSortFunction);
 
 	showPage();
 	uploadPage();
