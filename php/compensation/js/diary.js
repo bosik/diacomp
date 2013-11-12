@@ -165,6 +165,7 @@ function downloadFoodbase()
 			// простановка индексов
 			for (var i = 0; i < foodbase.food.length; i++)
 			{
+				// TODO: floatize
 				foodbase.food[i].id = i;
 			}
 
@@ -230,6 +231,7 @@ function downloadDishbase()
 			// простановка индексов
 			for (var i = 0; i < dishbase.dish.length; i++)
 			{
+				dishbase.dish[i] = floatizeDish(dishbase.dish[i]);
 				dishbase.dish[i].id = i;
 			}
 
@@ -262,43 +264,66 @@ function downloadDishbase()
 	download(url, true, onSuccess, onFailure);
 }
 
+function floatizeDish(dish)
+{
+	for (i = 0; i < dish.item.length; i++)
+	{
+		dish.item[i].prots = strToFloat(dish.item[i].prots);
+		dish.item[i].fats = strToFloat(dish.item[i].fats);
+		dish.item[i].carbs = strToFloat(dish.item[i].carbs);
+		dish.item[i].val = strToFloat(dish.item[i].val);
+		dish.item[i].mass = strToFloat(dish.item[i].mass);
+	}
+
+	if ('mass' in dish)
+	{
+		dish.mass = strToFloat(dish.mass);
+	}
+
+	return dish;
+}
+
 function dishAsFood(dish)
 {
-	console.log("Converting dish '" + dish.name + "'...");alert
-
 	var summProts = 0.0;
 	var summFats = 0.0;
 	var summCarbs = 0.0;
 	var summVal = 0.0;
 	var summMass = 0.0;
 
-	for (i = 0; i < dish.item.length; i++)
+	for (k = 0; k < dish.item.length; k++)
 	{
-		console.log("adding item " + dish.item[i].name);
-		summProts += dish.item.prots;
-		summFats += dish.item.fats;
-		summCarbs += dish.item.carbs;
-		summVal += dish.item.val;
-		summMass += dish.item.mass;
+		//alert("Adding item " + dish.item[k].name);
+		summProts += dish.item[k].mass * dish.item[k].prots / 100;
+		summFats += dish.item[k].mass * dish.item[k].fats / 100;
+		summCarbs += dish.item[k].mass * dish.item[k].carbs / 100;
+		summVal += dish.item[k].mass * dish.item[k].val / 100;
+		summMass += dish.item[k].mass;
 	}
+
+	//alert("Well, summs are ready: sp=" + summProts + "; sf=" + summFats + "; sc=" + summCarbs + "; sv=" + summVal + "; sm=" + summMass);
 
 	var dishMass;
 	if ('mass' in dish)
 	{
+		//alert("Mass is specified");
 		dishMass = dish.mass;
 	}
 	else
 	{
+		//alert("Use summ mass");
 		dishMass = summMass;
 	}
 
+	//alert("Constructing food... Dishmass = " + dishMass);
 	var food = {};
 	food.name = dish.name;
-	food.prots = summProts / dishMass;
-	food.fats = summFats / dishMass;
-	food.carbs = summCarbs / dishMass;
-	food.val = summVal / dishMass;
+	food.prots = summProts / dishMass * 100;
+	food.fats = summFats / dishMass * 100;
+	food.carbs = summCarbs / dishMass * 100;
+	food.val = summVal / dishMass * 100;
 
+	//alert("Done; return " + ObjToSource(food));
 	return food;
 }
 
@@ -324,7 +349,7 @@ function prepareComboList()
 	// adding dishes
 	for (i = 0; i < dishbase.dish.length; i++)
 	{
-		//alert("Processing dish " + i + " out of " + dishbase.dish.length);
+		//alert("Processing dish " + i + " out of " + dishbase.dish.length + ": " + ObjToSource(dishbase.dish[i]));
 
 		var cnv = dishAsFood(dishbase.dish[i]);
 
