@@ -318,10 +318,10 @@ function dishAsFood(dish)
 	//alert("Constructing food... Dishmass = " + dishMass);
 	var food = {};
 	food.name = dish.name;
-	food.prots = summProts / dishMass * 100;
-	food.fats = summFats / dishMass * 100;
-	food.carbs = summCarbs / dishMass * 100;
-	food.val = summVal / dishMass * 100;
+	food.prots = (summProts / dishMass * 100).toFixed(2);
+	food.fats = (summFats / dishMass * 100).toFixed(2);
+	food.carbs = (summCarbs / dishMass * 100).toFixed(2);
+	food.val = (summVal / dishMass * 100).toFixed(2);
 
 	//alert("Done; return " + ObjToSource(food));
 	return food;
