@@ -33,10 +33,10 @@ function getXmlHttp()
 	}
 }
 
-function download(url, onSuccess, onFailure)
+function download(url, async, onSuccess, onFailure)
 {
 	var xmlhttp = getXmlHttp();
-	xmlhttp.open("GET", url, false);
+	xmlhttp.open("GET", url, async);
 	xmlhttp.onreadystatechange = function()
 	{
 		if (xmlhttp.readyState == 4)
@@ -54,10 +54,10 @@ function download(url, onSuccess, onFailure)
 	xmlhttp.send();
 }
 
-function upload(url, request, onSuccess, onFailure)
+function upload(url, request, async, onSuccess, onFailure)
 {
 	var xmlhttp = getXmlHttp();
-	xmlhttp.open('POST', url, true);
+	xmlhttp.open('POST', url, async);
 	xmlhttp.onreadystatechange = function()
 	{
 		if (xmlhttp.readyState == 4)
