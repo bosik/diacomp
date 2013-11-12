@@ -262,16 +262,55 @@ function downloadDishbase()
 	download(url, true, onSuccess, onFailure);
 }
 
+function dishAsFood(dish)
+{
+	console.log("Converting dish '" + dish.name + "'...");alert
+
+	var summProts = 0.0;
+	var summFats = 0.0;
+	var summCarbs = 0.0;
+	var summVal = 0.0;
+	var summMass = 0.0;
+
+	for (i = 0; i < dish.item.length; i++)
+	{
+		console.log("adding item " + dish.item[i].name);
+		summProts += dish.item.prots;
+		summFats += dish.item.fats;
+		summCarbs += dish.item.carbs;
+		summVal += dish.item.val;
+		summMass += dish.item.mass;
+	}
+
+	var dishMass;
+	if ('mass' in dish)
+	{
+		dishMass = dish.mass;
+	}
+	else
+	{
+		dishMass = summMass;
+	}
+
+	var food = {};
+	food.name = dish.name;
+	food.prots = summProts / dishMass;
+	food.fats = summFats / dishMass;
+	food.carbs = summCarbs / dishMass;
+	food.val = summVal / dishMass;
+
+	return food;
+}
+
 function prepareComboList()
 {
-	console.log("Preparing comboList...");
-
 	fdBase = [];
 	var item;
 
 	// adding foods
 	for (i = 0; i < foodbase.food.length; i++)
 	{
+		//console.log("Processing food " + i + " out of " + foodbase.food.length);
 		item = {}
 		item.value = foodbase.food[i].name;
 		item.prots = foodbase.food[i].prots;
@@ -285,12 +324,16 @@ function prepareComboList()
 	// adding dishes
 	for (i = 0; i < dishbase.dish.length; i++)
 	{
+		//alert("Processing dish " + i + " out of " + dishbase.dish.length);
+
+		var cnv = dishAsFood(dishbase.dish[i]);
+
 		item = {};
-		item.value = dishbase.dish[i].name;
-		item.prots = 150; //dishbase.dish[i].prots;
-		item.fats = 150; //dishbase.dish[i].fats;
-		item.carbs = 150; //dishbase.dish[i].carbs;
-		item.val = 150; //dishbase.dish[i].val;
+		item.value = cnv.name;
+		item.prots = cnv.prots;
+		item.fats = cnv.fats;
+		item.carbs = cnv.carbs;
+		item.val = cnv.val;
 		item.type = "dish";
 		fdBase.push(item);
 	}
