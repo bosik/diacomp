@@ -31,12 +31,12 @@ var koofs = [];
 var foodbase = [];
 
 var fdBase = [];
-var selID;
+var selectedItem;
 var currentID;
 
+var foodbaseLoaded = false;
+
 /* ================== STARTUP ACTIONS ================== */
-
-
 
 // TODO: download dish base
 downloadKoofs();
@@ -122,9 +122,7 @@ function downloadKoofs()
 	{
 		if (data != "")
 		{
-			//alert("'" + data + "'");
 			koofs = JSON.parse(data);
-		//alert(ObjToSource(koofs));
 		}
 		else
 		{
@@ -142,6 +140,8 @@ function downloadKoofs()
 
 function downloadFoodbase()
 {
+	foodbaseLoaded = false;
+
 	var url = "console.php?foodbase:download";
 
 	var onSuccess = function(data)
@@ -169,22 +169,16 @@ function downloadFoodbase()
 			// сортировка - в будущем будет заменена на сортировку по релевантности
 			var sortFunction = function (a, b)
 			{
-
 				if (a.name < b.name) return -1; // Или любое число, меньшее нуля
 				if (a.name > b.name) return +1; // Или любое число, большее нуля
 				return 0;
 			}
 			foodbase.food.sort(sortFunction);
 
-			// preparing autocomplete
-
-			for (i = 0; i < foodbase.food.length; i++)
+			foodbaseLoaded = true;
+			if (foodbaseLoaded)
 			{
-				var item = [];
-				item.value = foodbase.food[i].name;
-				item.type = "food";
-				item.id = foodbase.food[i].id;
-				fdBase.push(item);
+				prepareComboList();
 			}
 		}
 		else
@@ -199,6 +193,24 @@ function downloadFoodbase()
 	}
 
 	download(url, true, onSuccess, onFailure);
+}
+
+function prepareComboList()
+{
+	fdBase = [];
+
+	// adding foods
+	for (i = 0; i < foodbase.food.length; i++)
+	{
+		var item = [];
+		item.value = foodbase.food[i].name;
+		item.prots = foodbase.food[i].prots;
+		item.fats = foodbase.food[i].fats;
+		item.carbs = foodbase.food[i].carbs;
+		item.val = foodbase.food[i].val;
+		item.type = "food";
+		fdBase.push(item);
+	}
 }
 
 function uploadPage()
@@ -359,7 +371,7 @@ function codeMeal(meal, id)
 	'										</span>\n'+
 	'									</div>\n'+
 	'								</td>\n' +
-	"								<td class=\"col_delete\"><button onclick=\"runScript(event)\" title=\"Добавить\">+</button></td>\n" +
+	"								<td class=\"col_delete\"><button onclick=\"runScript(event,"+id+")\" title=\"Добавить\">+</button></td>\n" +
 	"							</tr>\n";
 
 	code +=
@@ -386,20 +398,6 @@ function codeNote(note, id)
 	'					</div>' +
 	'				</div>';
 }
-
-/*function updateMeal()
-			{
-				var carbs = 0;
-				var id = 0;
-				for (var i = 0; i < meal.content.length; i++)
-				{
-					code += codeFood(meal.content[i], id++) + "<br>";
-					carbs += meal.content[i].carbs * meal.content[i].mass / 100;
-				}
-				document.getElementById("meal").innerHTML = code;
-				document.getElementById("meal_carbs").innerHTML = carbs.toFixed(1);
-				document.getElementById("meal_dose").innerHTML = (carbs * 0.15).toFixed(1);
-			}*/
 
 function codePage(page)
 {
@@ -456,15 +454,12 @@ function createHandlers()
 			});
 			$("#mealcombo_" + id).on("autocompleteselect", function(event, ui)
 			{
-				selID = ui.item.id;
-				//alert(fdBase[ui.item.id].value);
-				//console.log("selected: event.id=" + event + ", selID=" + selID);
-				console.log(ObjToSource(ui));
-
+				selectedItem = ui.item;
+				//console.log("Selected item: " + ObjToSource(ui));
 
 				var t = 'mealmass_' + currentID;
 				var mc = document.getElementById(t);
-				console.log("searching for component '" + t + "': " + mc);
+				console.log("Searching for component '" + t + "': " + mc);
 
 				mc.focus();
 			} );
@@ -666,15 +661,15 @@ function showInfoBox(index)
 	currentID = index;
 	moveInfoBox(index);
 
-	if (index < 0)								infoblock.innerHTML = codeInfoDefault();
+	if ((index < 0)||(index >= page.content.length))	infoblock.innerHTML = codeInfoDefault();
 	else
-	if (page.content[index].type == "blood")	infoblock.innerHTML = codeInfoBlood(page.content[index]);
+	if (page.content[index].type == "blood")			infoblock.innerHTML = codeInfoBlood(page.content[index]);
 	else
-	if (page.content[index].type == "ins")		infoblock.innerHTML = codeInfoIns(page.content[index]);
+	if (page.content[index].type == "ins")				infoblock.innerHTML = codeInfoIns(page.content[index]);
 	else
-	if (page.content[index].type == "meal")		infoblock.innerHTML = codeInfoMeal(page.content[index]);
+	if (page.content[index].type == "meal")				infoblock.innerHTML = codeInfoMeal(page.content[index]);
 	else
-	if (page.content[index].type == "note")		infoblock.innerHTML = codeInfoNote(page.content[index]); else
+	if (page.content[index].type == "note")				infoblock.innerHTML = codeInfoNote(page.content[index]); else
 		infoblock.innerHTML = codeInfoDefault();
 
 }
@@ -767,18 +762,7 @@ function DiaryPage_findIns(time, maxDist)
 
 /* ================== FOODBASE METHODS ================== */
 
-function findFoodByID(id)
-{
-	for (var i = 0; i < foodbase.food.length; i++)
-	{
-		if (foodbase.food[i].id == id)
-		{
-			//alert("findFoodByID(): founded, i=" + i);
-			return foodbase.food[i];
-		}
-	}
-//alert("findFoodByID(): NOT founded");
-}
+
 
 /* ================== EVENT HANDLERS ================== */
 
@@ -933,7 +917,6 @@ function onFoodMassClick(id)
 	id = getAfter(id, "_");
 	var mealIndex = getBefore(id, "_");
 	var foodIndex = getAfter(id, "_");
-	//alert("FoodClick, id = " + mealIndex + " / " + foodIndex);
 
 	var oldMass = page.content[mealIndex].content[foodIndex].mass;
 	var newMass = inputFloat("Введите массу:", oldMass);
@@ -971,21 +954,21 @@ function runScript(e, id)
 {
 	if (e.keyCode == 13)
 	{
-		console.log("runScript(): selID=" + selID + ", id=" + id);
+		//console.log("runScript(): selectedItem=" + selectedItem + ", id=" + id);
+		//console.log("selectedItem.value = " + selectedItem.value);
+		//console.log("selectedItem.carbs = " + selectedItem.carbs);
 
-		var food = findFoodByID(selID);
 		var item = {};
-		item.name = food.name;
-		item.prots = food.prots;
-		item.fats = food.fats;
-		item.carbs = food.carbs;
-		item.value = food.val;
+		item.name = selectedItem.value;
+		item.prots = selectedItem.prots;
+		item.fats = selectedItem.fats;
+		item.carbs = selectedItem.carbs;
+		item.value = selectedItem.val;
 		item.mass = e.target.value;
 
 		if (item.mass >= 0)
 		{
-			//alert("Add " + ObjToSource(food) + " to meal #" + id);
-
+			console.log("Add " + ObjToSource(item) + " to meal #" + id);
 			page.content[id].content.push(item);
 			modified(false);
 
