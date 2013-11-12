@@ -256,9 +256,9 @@ function getAfter(str, separator)
 function strToFloat(s)
 {
 	if (typeof s == 'string')
-		return parseFloat(s.replace(',', '.'));
-	else
-		return s;
+		s = parseFloat(s.replace(',', '.'));
+
+	return s;
 }
 
 function ObjToSource(o)
