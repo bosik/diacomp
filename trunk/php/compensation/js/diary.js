@@ -142,8 +142,6 @@ function downloadKoofs()
 
 function downloadFoodbase()
 {
-	// загрузка
-
 	var url = "console.php?foodbase:download";
 
 	var onSuccess = function(data)
@@ -152,45 +150,31 @@ function downloadFoodbase()
 		{
 			data = getAfter(data, "\n");
 
-			//	data = '<foods version="8">'+
-			//		'<food name="Абрикос" prots="0.9" fats="0.1" carbs="9" val="41" table="True"/>'+
-			//		'<food name="Банан" prots="1.9" fats="2.1" carbs="30" val="60" table="True"/>'+
-			//		'</foods>';
-
-
 			//data = data.replace(/&quot;/g, '\\"');
 			data = data.replace(/&quot;/g, '');
-			//alert("data='" + data + "'");
 
 			var dom = parseXml(data);
 			var json = xml2json(dom, "");
 
 			json = json.replace(/undefined/g, "").replace(/@/g, "");
-			//alert("json='" + json + "'");
 
 			foodbase = JSON.parse(json).foods;
 
-			//alert("json[2]='" + ObjToSource(foodbase) + "'");
-			//alert("version = " + foodbase.version);
-
-			//========================================
-
-			// подготовка
-
+			// простановка индексов
 			for (var i = 0; i < foodbase.food.length; i++)
 			{
 				foodbase.food[i].id = i;
 			}
 
+			// сортировка - в будущем будет заменена на сортировку по релевантности
 			var sortFunction = function (a, b)
 			{
+
 				if (a.name < b.name) return -1; // Или любое число, меньшее нуля
 				if (a.name > b.name) return +1; // Или любое число, большее нуля
 				return 0;
 			}
-
 			foodbase.food.sort(sortFunction);
-			//alert("foodbase loaded: " + ObjToSource(foodbase));
 
 			// preparing autocomplete
 
@@ -206,7 +190,6 @@ function downloadFoodbase()
 		else
 		{
 			foodbase = [];
-			fdBase = [];
 		}
 	};
 
