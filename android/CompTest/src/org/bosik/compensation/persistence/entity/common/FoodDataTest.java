@@ -1,11 +1,10 @@
-package org.bosik.compensation.data.test;
+package org.bosik.compensation.persistence.entity.common;
 
 import junit.framework.TestCase;
-import org.bosik.compensation.persistence.entity.common.FoodData;
 
 public class FoodDataTest extends TestCase
 {
-	private FoodData food = new FoodData();
+	private FoodData	food	= new FoodData();
 
 	public void testName()
 	{
@@ -18,21 +17,24 @@ public class FoodDataTest extends TestCase
 		{
 			food.setName(null);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			food.setName("  ");
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			food.setName("");
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 	}
@@ -52,14 +54,16 @@ public class FoodDataTest extends TestCase
 		{
 			food.setRelProts(-0.01);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			food.setRelProts(100.01);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 	}
@@ -79,14 +83,16 @@ public class FoodDataTest extends TestCase
 		{
 			food.setRelFats(-0.01);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			food.setRelFats(100.01);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 	}
@@ -106,14 +112,16 @@ public class FoodDataTest extends TestCase
 		{
 			food.setRelCarbs(-0.01);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			food.setRelCarbs(100.01);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 	}
@@ -133,7 +141,8 @@ public class FoodDataTest extends TestCase
 		{
 			food.setRelValue(-0.01);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 	}

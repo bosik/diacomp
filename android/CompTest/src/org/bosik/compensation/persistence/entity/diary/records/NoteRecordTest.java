@@ -1,7 +1,6 @@
-package org.bosik.compensation.data.test;
+package org.bosik.compensation.persistence.entity.diary.records;
 
 import junit.framework.TestCase;
-import org.bosik.compensation.persistence.entity.diary.records.NoteRecord;
 
 public class NoteRecordTest extends TestCase
 {

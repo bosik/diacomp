@@ -1,11 +1,10 @@
-package org.bosik.compensation.data.test;
+package org.bosik.compensation.persistence.sync;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import junit.framework.TestCase;
 import org.bosik.compensation.persistence.repository.diary.DiaryRepository.PageVersion;
-import org.bosik.compensation.persistence.sync.SyncDiaryRepository;
 
 public class SyncDiaryTest extends TestCase
 {

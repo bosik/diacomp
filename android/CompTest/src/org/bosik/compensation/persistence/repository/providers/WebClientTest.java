@@ -1,4 +1,4 @@
-package org.bosik.compensation.api.test;
+package org.bosik.compensation.persistence.repository.providers;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -6,20 +6,20 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import junit.framework.TestCase;
-import org.bosik.compensation.persistence.repository.providers.WebClient;
 import android.util.Log;
 
 public class WebClientTest extends TestCase
 {
-	private static final String TAG = WebClientTest.class.getSimpleName();
+	private static final String	TAG			= WebClientTest.class.getSimpleName();
 
-	private static final String SERVER = "http://diacomp.16mb.com/";
-	private static final String USERNAME = "bosiknk@rambler.ru";
-	private static final String PASSWORD = "diacomp1440";
-	private static final int TIMEOUT = 3000;
+	private static final String	SERVER		= "http://diacomp.16mb.com/";
+	private static final String	USERNAME	= "bosik-007@narod.ru";
+	private static final String	PASSWORD	= "devel0pment";
+	private static final int	TIMEOUT		= 3000;
 
-	private WebClient webClient;
+	private WebClient			webClient;
 
+	@Override
 	protected void setUp() throws Exception
 	{
 		super.setUp();
@@ -32,6 +32,7 @@ public class WebClientTest extends TestCase
 		webClient.login();
 	}
 
+	@Override
 	protected void tearDown() throws Exception
 	{
 		super.tearDown();

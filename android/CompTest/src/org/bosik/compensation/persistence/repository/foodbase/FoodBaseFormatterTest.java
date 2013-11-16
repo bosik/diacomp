@@ -1,18 +1,18 @@
-package org.bosik.compensation.data.test;
+package org.bosik.compensation.persistence.repository.foodbase;
 
 import junit.framework.TestCase;
 import org.bosik.compensation.persistence.entity.foodbase.Food;
 import org.bosik.compensation.persistence.repository.common.Base;
-import org.bosik.compensation.persistence.repository.foodbase.FoodBaseXMLSerializer;
 
 public class FoodBaseFormatterTest extends TestCase
 {
-	private final String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" + "<foods version=\"167\">\n"
-			+ "	<food name=\"јбрикос\" prots=\"0.9\" fats=\"0.1\" carbs=\"9\" val=\"41\" table=\"True\"/>\n"
-			+ "	<food name=\"яйцо\" prots=\"12.7\" fats=\"11.5\" carbs=\"0.7\" val=\"157\" table=\"False\"/>\n"
-			+ "</foods>";
+	private final String				xml	= "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+													+ "<foods version=\"167\">\n"
+													+ "	<food name=\"јбрикос\" prots=\"0.9\" fats=\"0.1\" carbs=\"9\" val=\"41\" table=\"True\"/>\n"
+													+ "	<food name=\"яйцо\" prots=\"12.7\" fats=\"11.5\" carbs=\"0.7\" val=\"157\" table=\"False\"/>\n"
+													+ "</foods>";
 
-	private final FoodBaseXMLSerializer f = new FoodBaseXMLSerializer();
+	private final FoodBaseXMLSerializer	f	= new FoodBaseXMLSerializer();
 
 	public void testRead()
 	{

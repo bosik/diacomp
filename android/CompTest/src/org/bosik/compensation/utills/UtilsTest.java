@@ -1,4 +1,4 @@
-package org.bosik.compensation.data.test;
+package org.bosik.compensation.utills;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
@@ -9,7 +9,7 @@ import android.util.Log;
 
 public class UtilsTest extends TestCase
 {
-	private static final String TAG = UtilsTest.class.getSimpleName();
+	private static final String	TAG	= UtilsTest.class.getSimpleName();
 
 	private Date date(int year, int month, int day)
 	{
@@ -34,8 +34,10 @@ public class UtilsTest extends TestCase
 		for (int i = 0; i < array.length; i++)
 		{
 			sb.append(array[i]);
-			if (i < array.length - 1)
+			if (i < (array.length - 1))
+			{
 				sb.append(", ");
+			}
 		}
 
 		sb.append("}");
@@ -84,63 +86,72 @@ public class UtilsTest extends TestCase
 		{
 			Utils.strToTime(null);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			Utils.strToTime("");
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			Utils.strToTime("gArBAgE");
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			Utils.strToTime(":");
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			Utils.strToTime("xx:yy");
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			Utils.strToTime("10:60");
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			Utils.strToTime("24:00");
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			Utils.strToTime("00:-1");
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			Utils.strToTime("-1:00");
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 	}
@@ -160,14 +171,16 @@ public class UtilsTest extends TestCase
 		{
 			Utils.timeToStr(1440);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			Utils.timeToStr(-1);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 	}
@@ -202,7 +215,8 @@ public class UtilsTest extends TestCase
 			assertEquals(time(2012, 04, 02, 00, 00, 00), Utils.parseTime("2012-04-02 00:00:00"));
 			assertEquals(time(2012, 05, 01, 9, 45, 17), Utils.parseTime("2012-05-01 09:45:17"));
 			assertEquals(time(2012, 05, 01, 22, 30, 17), Utils.parseTime("2012-05-01 22:30:17"));
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			fail();
 		}
@@ -214,7 +228,8 @@ public class UtilsTest extends TestCase
 		{
 			assertEquals(date(2012, 04, 02), Utils.parseDate("2012-04-02"));
 			assertEquals(date(2012, 05, 01), Utils.parseDate("2012-05-01"));
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			fail();
 		}
@@ -265,7 +280,9 @@ public class UtilsTest extends TestCase
 		for (int i = 0; i < expected_bytes.length; i++)
 		{
 			if (expected_bytes[i] > 127)
+			{
 				expected_bytes[i] -= 256;
+			}
 		}
 
 		// assert
@@ -299,7 +316,8 @@ public class UtilsTest extends TestCase
 			Log.d(TAG, "1251->8 test: utf8 = " + utf8);
 			Log.d(TAG, "1251->8 test: utf8 = " + formatArray(utf8.getBytes("UTF-8")));
 
-		} catch (UnsupportedEncodingException e)
+		}
+		catch (UnsupportedEncodingException e)
 		{
 			e.printStackTrace();
 		}
