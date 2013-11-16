@@ -5,7 +5,7 @@ import android.util.Log;
 
 public class SyncBase
 {
-	private static final String TAG = SyncBase.class.getSimpleName();
+	private static final String	TAG	= SyncBase.class.getSimpleName();
 
 	public static enum SyncResult
 	{

@@ -8,14 +8,16 @@ import org.bosik.compensation.persistence.repository.providers.WebClient;
 public class WebFoodBaseRepository implements Interchangeable
 {
 	// private static String TAG = WebFoodBaseRepository.class.getSimpleName();
-	private static FoodBaseXMLSerializer formatter = new FoodBaseXMLSerializer();
+	private static FoodBaseXMLSerializer	formatter	= new FoodBaseXMLSerializer();
 
-	private WebClient webClient;
+	private WebClient						webClient;
 
 	public WebFoodBaseRepository(WebClient webClient)
 	{
 		if (webClient == null)
+		{
 			throw new IllegalArgumentException("WebClient can't be null");
+		}
 
 		this.webClient = webClient;
 	}

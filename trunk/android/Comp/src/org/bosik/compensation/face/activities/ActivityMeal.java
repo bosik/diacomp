@@ -23,34 +23,38 @@ import android.widget.TextView;
 public class ActivityMeal extends Activity
 {
 	// отладочная печать
-	private static final String TAG = ActivityMeal.class.getSimpleName();
+	private static final String			TAG			= ActivityMeal.class.getSimpleName();
 
-	private static final DecimalFormat df = new DecimalFormat("###.#");
+	private static final DecimalFormat	df			= new DecimalFormat("###.#");
 
 	// переменные
-	private static MealRecord meal = new MealRecord();
-	private String lv_arr[] = {/*
-								 * "Суп сырный (310)", "Хлеб черный \"Премиум\" (47)",
-								 * "Фасоль тушеная (249)", "Молоко \"Вкуснотеево\", 3,2% (41)",
-								 * "Печенье \"Юбилейное\" молочное (25)",
-								 * "Сыр \"Король Артур\" (40)", "Суп сырный (310)",
-								 * "Хлеб черный \"Премиум\" (47)", "Фасоль тушеная (249)",
-								 * "Молоко \"Вкуснотеево\", 3,2% (41)",
-								 * "Печенье \"Юбилейное\" молочное (25)",
-								 * "Сыр \"Король Артур\" (40)"
-								 */};
+	private static MealRecord			meal		= new MealRecord();
+	private String						lv_arr[]	= {/*
+														 * "Суп сырный (310)",
+														 * "Хлеб черный \"Премиум\" (47)",
+														 * "Фасоль тушеная (249)",
+														 * "Молоко \"Вкуснотеево\", 3,2% (41)",
+														 * "Печенье \"Юбилейное\" молочное (25)",
+														 * "Сыр \"Король Артур\" (40)",
+														 * "Суп сырный (310)",
+														 * "Хлеб черный \"Премиум\" (47)",
+														 * "Фасоль тушеная (249)",
+														 * "Молоко \"Вкуснотеево\", 3,2% (41)",
+														 * "Печенье \"Юбилейное\" молочное (25)",
+														 * "Сыр \"Король Артур\" (40)"
+														 */};
 
 	// компоненты
-	private AutoCompleteTextView editName;
-	private EditText editMass;
-	private Button buttonAdd;
-	private Activity activityMeal;
-	private ListView list;
-	private TextView textMealCarbs;
-	private TextView textMealDose;
+	private AutoCompleteTextView		editName;
+	private EditText					editMass;
+	private Button						buttonAdd;
+	private Activity					activityMeal;
+	private ListView					list;
+	private TextView					textMealCarbs;
+	private TextView					textMealDose;
 
-	private String captionCarbs;
-	private String captionDose;
+	private String						captionCarbs;
+	private String						captionDose;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -84,6 +88,7 @@ public class ActivityMeal extends Activity
 		editMass.setOnEditorActionListener(new TextView.OnEditorActionListener()
 		{
 			// @Override
+			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
 			{
 				// super onEditorAction(v, actionId, event);
@@ -186,16 +191,17 @@ public class ActivityMeal extends Activity
 		}
 	}
 
-	private OnClickListener clickListener = new OnClickListener()
-	{
-		public void onClick(View v)
-		{
-			switch (v.getId())
-			{
-				case R.id.button_additem:
-					addItem();
-					break;
-			}
-		}
-	};
+	private OnClickListener	clickListener	= new OnClickListener()
+											{
+												@Override
+												public void onClick(View v)
+												{
+													switch (v.getId())
+													{
+														case R.id.button_additem:
+															addItem();
+															break;
+													}
+												}
+											};
 }

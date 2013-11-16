@@ -11,7 +11,7 @@ public class SyncDiaryRepository
 	/* ============================ КОНСТАНТЫ ============================ */
 
 	@SuppressWarnings("unused")
-	private static final String TAG = "SyncDiaryRepository";
+	private static final String	TAG	= "SyncDiaryRepository";
 
 	/* ============================ КЛАССЫ ============================ */
 
@@ -73,7 +73,7 @@ public class SyncDiaryRepository
 	 */
 	public static boolean ordered(List<PageVersion> modList)
 	{
-		for (int i = 0; i < modList.size() - 1; i++)
+		for (int i = 0; i < (modList.size() - 1); i++)
 		{
 			if (modList.get(i).date.compareTo(modList.get(i + 1).date) > 0)
 			{
@@ -103,9 +103,13 @@ public class SyncDiaryRepository
 		do
 		{
 			while (modList.get(i).date.compareTo(x) < 0)
+			{
 				i++;
+			}
 			while (modList.get(j).date.compareTo(x) > 0)
+			{
 				j--;
+			}
 			if (i <= j)
 			{
 				if (modList.get(i).date != modList.get(j).date)
@@ -117,12 +121,17 @@ public class SyncDiaryRepository
 				i++;
 				j--;
 			}
-		} while (i <= j);
+		}
+		while (i <= j);
 
 		if (left < j)
+		{
 			sort(modList, left, j);
+		}
 		if (i < right)
+		{
 			sort(modList, i, right);
+		}
 	}
 
 	/**
@@ -158,13 +167,21 @@ public class SyncDiaryRepository
 	{
 		// проверки
 		if (null == modList1)
+		{
 			throw new IllegalArgumentException("modList1 can't be null");
+		}
 		if (null == modList2)
+		{
 			throw new IllegalArgumentException("modList2 can't be null");
+		}
 		if (null == over1)
+		{
 			throw new IllegalArgumentException("over1 can't be null");
+		}
 		if (null == over2)
+		{
 			throw new IllegalArgumentException("over2 can't be null");
+		}
 
 		// подготовка
 		sort(modList1);
@@ -175,7 +192,7 @@ public class SyncDiaryRepository
 		int j = 0;
 
 		// параллельная обработка
-		while (i < modList1.size() && j < modList2.size())
+		while ((i < modList1.size()) && (j < modList2.size()))
 		{
 			PageVersion p1 = modList1.get(i);
 			PageVersion p2 = modList2.get(j);
@@ -184,17 +201,20 @@ public class SyncDiaryRepository
 			{
 				over1.add(p1.date);
 				i++;
-			} else
+			}
+			else
 				if (c > 0)
 				{
 					over2.add(p2.date);
 					j++;
-				} else
+				}
+				else
 				{
 					if (p1.version > p2.version)
 					{
 						over1.add(p1.date);
-					} else
+					}
+					else
 						if (p1.version < p2.version)
 						{
 							over2.add(p2.date);
@@ -234,11 +254,17 @@ public class SyncDiaryRepository
 	{
 		// проверки
 		if (null == source1)
+		{
 			throw new IllegalArgumentException("source1 can't be null");
+		}
 		if (null == source2)
+		{
 			throw new IllegalArgumentException("source2 can't be null");
+		}
 		if (null == since)
+		{
 			throw new IllegalArgumentException("since date can't be null");
+		}
 
 		// запрашиваем modlist
 		List<PageVersion> modList1 = source1.getModList(since);
@@ -247,9 +273,13 @@ public class SyncDiaryRepository
 		// проверяем (TODO: fail-fast)
 
 		if (null == modList1)
+		{
 			throw new NullPointerException("modList1 is null");
+		}
 		if (null == modList2)
+		{
 			throw new NullPointerException("modList2 is null");
+		}
 
 		// получаем списки для передачи
 

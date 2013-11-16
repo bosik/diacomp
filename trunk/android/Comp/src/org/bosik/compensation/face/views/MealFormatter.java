@@ -43,16 +43,24 @@ public class MealFormatter
 			case FIRST:
 			{
 				if (meal.size() == 0)
+				{
 					return "";
+				}
 				else
+				{
 					return meal.get(0).getName();
+				}
 			}
 			case LAST:
 			{
 				if (meal.size() == 0)
+				{
 					return "";
+				}
 				else
+				{
 					return meal.get(meal.size() - 1).getName();
+				}
 			}
 			case MOST_CARBS:
 			{

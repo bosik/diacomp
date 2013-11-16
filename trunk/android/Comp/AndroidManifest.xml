@@ -27,14 +27,15 @@
             android:theme="@android:style/Theme.Light" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name="org.bosik.compensation.face.activities.ActivityDiary"
             android:label="@string/title_diary"
             android:theme="@android:style/Theme.Light" >
-        </activity>        
+        </activity>
         <activity
             android:name="org.bosik.compensation.face.activities.ActivityEditorBlood"
             android:label="@string/title_editor_blood" >

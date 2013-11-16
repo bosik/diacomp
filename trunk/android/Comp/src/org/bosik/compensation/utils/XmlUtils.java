@@ -31,16 +31,17 @@ import org.xml.sax.SAXException;
  */
 public class XmlUtils
 {
-	private static final String TAG = XmlUtils.class.getSimpleName();
-	private static DocumentBuilder builder;
-	private static Transformer transformer;
+	private static final String		TAG	= XmlUtils.class.getSimpleName();
+	private static DocumentBuilder	builder;
+	private static Transformer		transformer;
 
 	static
 	{
 		try
 		{
 			builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		} catch (ParserConfigurationException e)
+		}
+		catch (ParserConfigurationException e)
 		{
 			throw new RuntimeException("Can not initialize " + TAG + "'s builder", e);
 		}
@@ -48,7 +49,8 @@ public class XmlUtils
 		try
 		{
 			transformer = TransformerFactory.newInstance().newTransformer();
-		} catch (TransformerConfigurationException e)
+		}
+		catch (TransformerConfigurationException e)
 		{
 			throw new RuntimeException("Can not initialize " + TAG + "'s transformer", e);
 		}
@@ -65,14 +67,17 @@ public class XmlUtils
 		{
 			InputStream stream = new ByteArrayInputStream(xmlData.getBytes("UTF-8"));
 			return builder.parse(stream);
-		} catch (UnsupportedEncodingException e)
+		}
+		catch (UnsupportedEncodingException e)
 		{
 			// FIXME: blocked throws (here and further)
 			e.printStackTrace();
-		} catch (SAXException e)
+		}
+		catch (SAXException e)
 		{
 			e.printStackTrace();
-		} catch (IOException e)
+		}
+		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -89,7 +94,8 @@ public class XmlUtils
 			StreamResult result = new StreamResult(stream);
 			transformer.transform(source, result);
 			return stream.toString();
-		} catch (TransformerException ex)
+		}
+		catch (TransformerException ex)
 		{
 			ex.printStackTrace();
 		}

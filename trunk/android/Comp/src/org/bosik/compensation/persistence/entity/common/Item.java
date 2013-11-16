@@ -9,9 +9,9 @@ package org.bosik.compensation.persistence.entity.common;
  */
 public class Item implements Cloneable
 {
-	private static int idCounter = 0;
+	private static int	idCounter	= 0;
 
-	private int id;
+	private int			id;
 
 	public Item()
 	{
@@ -24,10 +24,6 @@ public class Item implements Cloneable
 	{
 		return id;
 	}
-
-	/*
-	 * public void setId(int id) { this.id = id; }
-	 */
 
 	// ================================ CLONE ================================
 
@@ -56,7 +52,7 @@ public class Item implements Cloneable
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
+		result = (prime * result) + id;
 		return result;
 	}
 
@@ -64,14 +60,22 @@ public class Item implements Cloneable
 	public boolean equals(Object obj)
 	{
 		if (this == obj)
+		{
 			return true;
+		}
 		if (obj == null)
+		{
 			return false;
+		}
 		if (getClass() != obj.getClass())
+		{
 			return false;
+		}
 		Item other = (Item) obj;
 		if (id != other.id)
+		{
 			return false;
+		}
 		return true;
 	}
 }

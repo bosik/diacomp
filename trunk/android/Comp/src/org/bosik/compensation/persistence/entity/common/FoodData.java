@@ -8,11 +8,11 @@ package org.bosik.compensation.persistence.entity.common;
  */
 public class FoodData extends Item
 {
-	private String name;
-	private double relProts;
-	private double relFats;
-	private double relCarbs;
-	private double relValue;
+	private String	name;
+	private double	relProts;
+	private double	relFats;
+	private double	relCarbs;
+	private double	relValue;
 
 	// ================================ ВАЛИДАТОРЫ ================================
 
@@ -36,23 +36,24 @@ public class FoodData extends Item
 	protected static void checkAndThrow(boolean check, String errorMessage)
 	{
 		if (!check)
+		{
 			throw new IllegalArgumentException(errorMessage);
+		}
 	}
 
 	protected static void checkNameThrowable(String name)
 	{
-		checkAndThrow(checkName(name), "Name can't be null or empty (" + name + ")");
+		checkAndThrow(checkName(name), String.format("Name can't be null or empty (%s)", name));
 	}
 
 	protected static void checkRelThrowable(double value)
 	{
-		checkAndThrow(checkRelativeValue(value), "Relative value is out of [0, 100] bounds (" + String.valueOf(value)
-				+ ")");
+		checkAndThrow(checkRelativeValue(value), String.format("Relative value (%s) is out of [0, 100] bounds", value));
 	}
 
 	protected static void checkNonNegativeThrowable(double value)
 	{
-		checkAndThrow(checkNonNegativeValue(value), "Value can't be negative (" + String.valueOf(value) + ")");
+		checkAndThrow(checkNonNegativeValue(value), String.format("Value can't be negative (%s)", value));
 	}
 
 	// ================================ GET / SET ================================

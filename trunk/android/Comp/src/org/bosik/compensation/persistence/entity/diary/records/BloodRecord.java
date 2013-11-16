@@ -2,8 +2,8 @@ package org.bosik.compensation.persistence.entity.diary.records;
 
 public class BloodRecord extends DiaryRecord
 {
-	private double value;
-	private int finger;
+	private double	value;
+	private int		finger;
 
 	// private boolean postPrand;
 
@@ -41,7 +41,9 @@ public class BloodRecord extends DiaryRecord
 	public void setValue(double value)
 	{
 		if (!checkValue(value))
+		{
 			throw new IllegalArgumentException("BloodRecord: неверное значение поля Value (" + value + ")");
+		}
 
 		if (value != this.value)
 		{
@@ -58,11 +60,13 @@ public class BloodRecord extends DiaryRecord
 	public void setFinger(int value)
 	{
 		if (!checkFinger(value))
-			throw new IllegalArgumentException("BloodRecord: неверное значение поля Finger (" + value + ")");
-
-		if (value != this.finger)
 		{
-			this.finger = value;
+			throw new IllegalArgumentException("BloodRecord: неверное значение поля Finger (" + value + ")");
+		}
+
+		if (value != finger)
+		{
+			finger = value;
 			notifyModified();
 		}
 	}

@@ -57,7 +57,6 @@
                 android:layout_height="match_parent"
                 android:drawableTop="@drawable/diary_next"
                 android:textStyle="bold" />
-
         </LinearLayout>
     </LinearLayout>
 
@@ -114,7 +113,6 @@
             android:layout_weight="1"
             android:drawableTop="@drawable/diary_addnote"
             android:paddingBottom="0dp" />
-
     </LinearLayout>
 
 </LinearLayout>

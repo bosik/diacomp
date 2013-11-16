@@ -2,7 +2,7 @@ package org.bosik.compensation.persistence.entity.diary.records;
 
 public class NoteRecord extends DiaryRecord
 {
-	private String text = "";
+	private String	text	= "";
 
 	public NoteRecord(int time, String value)
 	{
@@ -32,11 +32,13 @@ public class NoteRecord extends DiaryRecord
 	public void setText(String value)
 	{
 		if (!check(value))
-			throw new IllegalArgumentException("NoteRecord: неверное значение поля Text (" + value + ")");
-
-		if (!this.text.equals(value))
 		{
-			this.text = value;
+			throw new IllegalArgumentException("NoteRecord: неверное значение поля Text (" + value + ")");
+		}
+
+		if (!text.equals(value))
+		{
+			text = value;
 			notifyModified();
 		}
 	}

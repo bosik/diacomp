@@ -18,23 +18,23 @@ import org.bosik.compensation.utils.Utils;
  * 		6. Создать конструктор, принимающий сразу все поля и устанавливающий их с помощью set-методов.
  * 
  * Порядок использования:
- * 		1. Провести валидацию check-методом (да, при этом валидация будет проведена дважды, ну и что?)
- * 		2. Изменить значение с помощью set-метода.
+ * 		1. Изменить значение с помощью set-метода.
+ * 		2. Быть готовым поймать исключение и обработать его на frontend'е.
  */
 
 public abstract class DiaryRecord
 {
 	@SuppressWarnings("unused")
-	private static final String TAG = "DiaryRecord";
+	private static final String	TAG				= "DiaryRecord";
 
 	// данные
-	private int time;
-	private DiaryChangeListener changeListener = null;
+	private int					time;
+	private DiaryChangeListener	changeListener	= null;
 
 	// служебные
 	// TODO: remove silent mode here, leave this feature just at DiaryPage level
-	private boolean silentMode = true;
-	private boolean modified = false;
+	private boolean				silentMode		= true;
+	private boolean				modified		= false;
 
 	// ============================== СЛУЖЕБНЫЕ МЕТОДЫ ==============================
 
@@ -46,7 +46,8 @@ public abstract class DiaryRecord
 			// Log.i(TAG, "notifyModified(): notifying the changeListener");
 			changeListener.changed(EventType.MODIFY, this.getClass(), this);
 			modified = false;
-		} else
+		}
+		else
 		{
 			// запоминаем непереданное изменение и поднимаем флаг модифицированности
 			modified = true;
@@ -89,7 +90,9 @@ public abstract class DiaryRecord
 	public void setTime(int time)
 	{
 		if (!checkTime(time))
+		{
 			throw new IllegalArgumentException("DiaryRecord: неверное значение поля Time (" + time + ")");
+		}
 
 		if (time != this.time)
 		{

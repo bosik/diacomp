@@ -6,8 +6,8 @@ import org.bosik.compensation.persistence.entity.common.FoodMassed;
 
 public class MealRecord extends DiaryRecord
 {
-	private final List<FoodMassed> items = new ArrayList<FoodMassed>();
-	private boolean shortMeal;
+	private final List<FoodMassed>	items	= new ArrayList<FoodMassed>();
+	private boolean					shortMeal;
 
 	public MealRecord(int time, boolean shortMeal)
 	{
@@ -30,7 +30,7 @@ public class MealRecord extends DiaryRecord
 	{
 		if (value != shortMeal)
 		{
-			this.shortMeal = value;
+			shortMeal = value;
 			notifyModified();
 		}
 	}
@@ -41,7 +41,9 @@ public class MealRecord extends DiaryRecord
 	{
 		double res = 0;
 		for (int i = 0; i < items.size(); i++)
+		{
 			res += items.get(i).getProts();
+		}
 		return res;
 	}
 
@@ -49,7 +51,9 @@ public class MealRecord extends DiaryRecord
 	{
 		double res = 0;
 		for (int i = 0; i < items.size(); i++)
+		{
 			res += items.get(i).getFats();
+		}
 		return res;
 	}
 
@@ -57,7 +61,9 @@ public class MealRecord extends DiaryRecord
 	{
 		double res = 0;
 		for (int i = 0; i < items.size(); i++)
+		{
 			res += items.get(i).getCarbs();
+		}
 		return res;
 	}
 
@@ -65,7 +71,9 @@ public class MealRecord extends DiaryRecord
 	{
 		double res = 0;
 		for (int i = 0; i < items.size(); i++)
+		{
 			res += items.get(i).getValue();
+		}
 		return res;
 	}
 
@@ -73,7 +81,9 @@ public class MealRecord extends DiaryRecord
 	{
 		double res = 0;
 		for (int i = 0; i < items.size(); i++)
+		{
 			res += items.get(i).getMass();
+		}
 		return res;
 	}
 
@@ -84,7 +94,9 @@ public class MealRecord extends DiaryRecord
 	public int add(FoodMassed item)
 	{
 		if (item == null)
+		{
 			throw new NullPointerException("Food item can't be null");
+		}
 		items.add(item);
 		return items.size() - 1;
 	}
