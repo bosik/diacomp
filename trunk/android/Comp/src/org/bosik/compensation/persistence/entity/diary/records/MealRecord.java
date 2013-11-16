@@ -111,7 +111,7 @@ public class MealRecord extends DiaryRecord
 		return items.get(index);
 	}
 
-	public int size()
+	public int count()
 	{
 		return items.size();
 	}

@@ -18,6 +18,17 @@ public class FoodMassed extends FoodData
 
 	private double						mass;
 
+	public FoodMassed()
+	{
+
+	}
+
+	public FoodMassed(String name, double relProts, double relFats, double relCarbs, double relValue, double mass)
+	{
+		super(name, relProts, relFats, relCarbs, relValue);
+		this.mass = mass;
+	}
+
 	// ================================ GET / SET ================================
 
 	public double getMass()

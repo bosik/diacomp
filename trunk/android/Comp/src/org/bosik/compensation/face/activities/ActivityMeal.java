@@ -135,8 +135,8 @@ public class ActivityMeal extends Activity
 	private void showMeal()
 	{
 		// lv_arr = mealList.toArray(new String[0]);
-		lv_arr = new String[meal.size()];
-		for (int i = 0; i < meal.size(); i++)
+		lv_arr = new String[meal.count()];
+		for (int i = 0; i < meal.count(); i++)
 		{
 			lv_arr[i] = meal.get(i).toString();
 		}

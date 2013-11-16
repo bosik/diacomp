@@ -116,7 +116,7 @@ public class LocalDiaryRepository implements DiaryRepository
 	{
 		// Log.i(TAG, "PostPage()");
 
-		String code = diaryPage.writeContent();
+		String code = DiaryPage.writeContent(diaryPage);
 		// Log.v(TAG, "PostPage(): date is " + diaryPage.getDate().toString());
 		// Log.v(TAG,"PostPage(): page is " + code);
 

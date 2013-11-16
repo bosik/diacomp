@@ -421,31 +421,31 @@ public class DiaryPage implements DiaryChangeListener
 	 * 
 	 * @return Текстовое представление содержимого страницы
 	 */
-	public String writeContent()
+	public static String writeContent(DiaryPage page)
 	{
 		String result = "";
 		Class<? extends DiaryRecord> c;
 
-		for (int i = 0; i < items.size(); i++)
+		for (int i = 0; i < page.count(); i++)
 		{
-			c = items.get(i).getClass();
+			c = page.get(i).getClass();
 
 			if (c == BloodRecord.class)
 			{
-				BloodRecord temp = (BloodRecord) items.get(i);
+				BloodRecord temp = (BloodRecord) page.get(i);
 				result += '*' + Utils.timeToStr(temp.getTime()) + ' ' + String.valueOf(temp.getValue()) + '|'
 						+ String.valueOf(temp.getFinger()) + '\n';
 			}
 			else
 				if (c == InsRecord.class)
 				{
-					InsRecord temp = (InsRecord) items.get(i);
+					InsRecord temp = (InsRecord) page.get(i);
 					result += '-' + Utils.timeToStr(temp.getTime()) + ' ' + String.valueOf(temp.getValue()) + '\n';
 				}
 				else
 					if (c == MealRecord.class)
 					{
-						MealRecord temp = (MealRecord) items.get(i);
+						MealRecord temp = (MealRecord) page.get(i);
 
 						result += ' ' + Utils.timeToStr(temp.getTime());
 						if (temp.getShortMeal())
@@ -454,7 +454,7 @@ public class DiaryPage implements DiaryChangeListener
 						}
 						result += "\n";
 
-						for (int k = 0; k < temp.size(); k++)
+						for (int k = 0; k < temp.count(); k++)
 						{
 							result += '#' + temp.get(k).write() + '\n';
 						}
@@ -462,7 +462,7 @@ public class DiaryPage implements DiaryChangeListener
 					else
 						if (c == NoteRecord.class)
 						{
-							NoteRecord temp = (NoteRecord) items.get(i);
+							NoteRecord temp = (NoteRecord) page.get(i);
 							result += '%' + Utils.timeToStr(temp.getTime()) + ' ' + temp.getText() + '\n';
 						}
 		}
@@ -485,7 +485,7 @@ public class DiaryPage implements DiaryChangeListener
 
 	public String writeFull()
 	{
-		return writeHeader() + "\n" + writeContent();
+		return writeHeader() + "\n" + writeContent(this);
 	}
 
 	/**
