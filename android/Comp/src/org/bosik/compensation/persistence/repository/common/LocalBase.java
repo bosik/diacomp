@@ -19,12 +19,12 @@ import android.util.Log;
  */
 public class LocalBase<ItemType extends Item> extends Base<ItemType> implements Interchangeable
 {
-	private static final String TAG = LocalBase.class.getSimpleName();
+	private static final String			TAG	= LocalBase.class.getSimpleName();
 
-	private Context context;
-	private String fileName;
-	private Serializer<Base<ItemType>> serializer;
-	private int fileVersion;
+	private Context						context;
+	private String						fileName;
+	private Serializer<Base<ItemType>>	serializer;
+	private int							fileVersion;
 
 	public LocalBase(Context context, String fileName, Serializer<Base<ItemType>> serializer)
 	{
@@ -159,7 +159,8 @@ public class LocalBase<ItemType extends Item> extends Base<ItemType> implements 
 			// ok
 			// THINK: else what? clear/ignore?
 			// }
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			// throw new RuntimeException(e);
 			// TODO: ignore throw
@@ -184,7 +185,8 @@ public class LocalBase<ItemType extends Item> extends Base<ItemType> implements 
 		{
 			writeToFile(fileName, write());
 			fileVersion = getVersion();
-		} catch (IOException e)
+		}
+		catch (IOException e)
 		{
 			throw new RuntimeException(e);
 		}

@@ -27,50 +27,50 @@ import android.view.WindowManager;
 public class DiaryView extends View implements OnClickListener, View.OnTouchListener
 {
 	// отладочная печать
-	private static final String TAG = "DiaryView";
+	private static final String	TAG						= "DiaryView";
 
 	// стили рисования
-	private static final Paint paintNoPage = new Paint();
-	private static final Paint paintCaption = new Paint();
-	private static final Paint paintTime = new Paint();
-	private static final Paint paintRec = new Paint();
-	private static final Paint paintDefault = new Paint();
+	private static final Paint	paintNoPage				= new Paint();
+	private static final Paint	paintCaption			= new Paint();
+	private static final Paint	paintTime				= new Paint();
+	private static final Paint	paintRec				= new Paint();
+	private static final Paint	paintDefault			= new Paint();
 
 	// отступы
-	private static final int BORD = 12;
-	private static final int TEXT_SIZE = 24;
-	private static final int TEXT_NOPAGE_SIZE = 32;
-	private static final int TEXT_BORD = 10;
-	private static int LEFT_TIME;
-	private static int LEFT_RECS;
-	private static final int REC_HEIGHT;
+	private static final int	BORD					= 12;
+	private static final int	TEXT_SIZE				= 24;
+	private static final int	TEXT_NOPAGE_SIZE		= 32;
+	private static final int	TEXT_BORD				= 10;
+	private static int			LEFT_TIME;
+	private static int			LEFT_RECS;
+	private static final int	REC_HEIGHT;
 
 	// цвета
-	private static final int COLOR_PANEL_LIGHT_BORD = Color.WHITE;
-	private static final int COLOR_PANEL_DARK_BORD = Color.GRAY;
-	private static final int COLOR_PANEL_BLOOD_STD = Color.rgb(230, 238, 255);
-	private static final int COLOR_PANEL_BLOOD_SEL = Color.rgb(204, 221, 247);
-	private static final int COLOR_PANEL_INS_STD = Color.WHITE;
-	private static final int COLOR_PANEL_INS_SEL = Color.rgb(240, 240, 240);
-	private static final int COLOR_PANEL_NOTE_STD = Color.rgb(216, 255, 228);
-	private static final int COLOR_PANEL_NOTE_SEL = Color.rgb(179, 255, 202);
-	private static final int COLOR_PANEL_MEAL_STD = Color.rgb(255, 255, 221);
-	private static final int COLOR_PANEL_MEAL_SEL = Color.rgb(255, 255, 153);
-	private static final int COLOR_BACKGROUND = Color.WHITE;
+	private static final int	COLOR_PANEL_LIGHT_BORD	= Color.WHITE;
+	private static final int	COLOR_PANEL_DARK_BORD	= Color.GRAY;
+	private static final int	COLOR_PANEL_BLOOD_STD	= Color.rgb(230, 238, 255);
+	private static final int	COLOR_PANEL_BLOOD_SEL	= Color.rgb(204, 221, 247);
+	private static final int	COLOR_PANEL_INS_STD		= Color.WHITE;
+	private static final int	COLOR_PANEL_INS_SEL		= Color.rgb(240, 240, 240);
+	private static final int	COLOR_PANEL_NOTE_STD	= Color.rgb(216, 255, 228);
+	private static final int	COLOR_PANEL_NOTE_SEL	= Color.rgb(179, 255, 202);
+	private static final int	COLOR_PANEL_MEAL_STD	= Color.rgb(255, 255, 221);
+	private static final int	COLOR_PANEL_MEAL_SEL	= Color.rgb(255, 255, 153);
+	private static final int	COLOR_BACKGROUND		= Color.WHITE;
 
 	// поля
 
 	// private static final String TEXT_NOPAGE = "Страница пуста";
-	private String[] fingers;
-	private int screenWidth = getScreenWidth();
-	private DiaryPage page = null;
-	private Bitmap bufferBitmap;
-	private Canvas bufferCanvas;
-	private int clickedX = -1;
-	private int clickedY = -1;
-	private static int downedIndex = -1;
-	private static int clickedIndex = -1;
-	private RecordClickListener recordClickListener;
+	private String[]			fingers;
+	private int					screenWidth				= getScreenWidth();
+	private DiaryPage			page					= null;
+	private Bitmap				bufferBitmap;
+	private Canvas				bufferCanvas;
+	private int					clickedX				= -1;
+	private int					clickedY				= -1;
+	private static int			downedIndex				= -1;
+	private static int			clickedIndex			= -1;
+	private RecordClickListener	recordClickListener;
 
 	// инициализация
 	static
@@ -80,7 +80,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 		paintNoPage.setAntiAlias(true);
 
 		paintCaption.setColor(Color.GRAY);
-		paintCaption.setTextSize(TEXT_SIZE * 3 / 4);
+		paintCaption.setTextSize((TEXT_SIZE * 3) / 4);
 		paintCaption.setAntiAlias(true);
 
 		paintTime.setColor(Color.BLACK);
@@ -93,8 +93,8 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 		paintRec.setAntiAlias(true);
 
 		LEFT_TIME = BORD + TEXT_BORD;
-		LEFT_RECS = BORD + 2 * TEXT_BORD + getTextWidth("12:34", paintTime);
-		REC_HEIGHT = TEXT_SIZE + 2 * TEXT_BORD;
+		LEFT_RECS = BORD + (2 * TEXT_BORD) + getTextWidth("12:34", paintTime);
+		REC_HEIGHT = TEXT_SIZE + (2 * TEXT_BORD);
 	}
 
 	/* ================================================================================== */
@@ -125,7 +125,9 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	{
 		// Log.i(TAG, "setPage()");
 		if (null == page)
+		{
 			throw new NullPointerException("Page can't be null");
+		}
 
 		if ((this.page == null) || (page.getDate() != this.page.getDate()))
 		{
@@ -214,11 +216,13 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	private static int getPageHeight(DiaryPage page)
 	{
 		if (null == page)
+		{
 			throw new NullPointerException("Page can't be null");
+		}
 		/*
 		 * if (null == page) return 2 * BORD; else
 		 */
-		return 2 * BORD + page.count() * REC_HEIGHT;
+		return (2 * BORD) + (page.count() * REC_HEIGHT);
 	}
 
 	/**
@@ -234,10 +238,14 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	private static String trimToFit(String str, float space)
 	{
 		if (space <= 0)
+		{
 			throw new IllegalArgumentException("Space must be positive! ;)");
+		}
 
 		if (getTextWidth(str, paintRec) <= space)
+		{
 			return str;
+		}
 		else
 		{
 			// Log.i(TAG, "trimToFit(" + str + ", "+String.valueOf(space)+")");
@@ -255,7 +263,9 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	{
 		// сказочный грязный хак!
 		if (isInEditMode())
+		{
 			return 380;
+		}
 		Context ctx = getContext();
 		WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
 		return wm.getDefaultDisplay().getWidth();
@@ -306,7 +316,9 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 		// Log.d(TAG, "drawPage(): page is rendering into buffer...");
 
 		if (null == page)
+		{
 			throw new IllegalArgumentException("Page can't be null");
+		}
 
 		// TODO: сделать тестирование скорости вывода
 
@@ -332,7 +344,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 			DiaryRecord rec = page.get(i);
 
 			r.top = top;
-			r.bottom = r.top + TEXT_SIZE + 2 * TEXT_BORD;
+			r.bottom = r.top + TEXT_SIZE + (2 * TEXT_BORD);
 
 			if (rec.getClass() == BloodRecord.class)
 			{
@@ -346,8 +358,9 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 				canvas.drawText(String.valueOf(temp.getValue()) + finger, LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE,
 						paintRec);
 
-				top += (TEXT_SIZE + 2 * TEXT_BORD);
-			} else
+				top += (TEXT_SIZE + (2 * TEXT_BORD));
+			}
+			else
 				if (rec.getClass() == InsRecord.class)
 				{
 					InsRecord temp = (InsRecord) rec;
@@ -357,8 +370,9 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 							paintTime);
 					canvas.drawText(String.valueOf(temp.getValue()) + " ед", LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE,
 							paintRec);
-					top += (TEXT_SIZE + 2 * TEXT_BORD);
-				} else
+					top += (TEXT_SIZE + (2 * TEXT_BORD));
+				}
+				else
 					if (rec.getClass() == MealRecord.class)
 					{
 						MealRecord temp = (MealRecord) rec;
@@ -378,8 +392,9 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 								paintTime);
 						canvas.drawText(text, LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE, paintRec);
 
-						top += (TEXT_SIZE + 2 * TEXT_BORD);
-					} else
+						top += (TEXT_SIZE + (2 * TEXT_BORD));
+					}
+					else
 						if (rec.getClass() == NoteRecord.class)
 						{
 							NoteRecord temp = (NoteRecord) rec;
@@ -392,8 +407,9 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 									paintTime);
 							canvas.drawText(text, LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE, paintRec);
 
-							top += (TEXT_SIZE + 2 * TEXT_BORD);
-						} else
+							top += (TEXT_SIZE + (2 * TEXT_BORD));
+						}
+						else
 						{
 							throw new UnsupportedOperationException("Unsupported record type: "
 									+ rec.getClass().getName());
@@ -475,6 +491,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	 * "BloodRec: " + temp.getTime() + ": " + temp.getValue()); } } } return false; }
 	 */
 
+	@Override
 	public void onClick(View v)
 	{
 		Log.e(TAG, "onClick()");
@@ -492,6 +509,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 		}
 	}
 
+	@Override
 	public boolean onTouch(View v, MotionEvent E)
 	{
 		if (E.getAction() == MotionEvent.ACTION_DOWN)

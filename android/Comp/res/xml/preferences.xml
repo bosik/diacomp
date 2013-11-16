@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<PreferenceCategory android:title="Синхронизация">
-		<EditTextPreference
-			android:name="prefServer"
-			android:title="@string/prefLabelServer"
-			android:summary=""
-			android:defaultValue="@string/prefDefaultServer"			
-			android:key="@string/prefServer" />
-		<EditTextPreference
-			android:name="prefUsername"
-			android:title="@string/prefLabelUsername"
-			android:summary=""
-			android:defaultValue="@string/prefDefaultUsername"			
-			android:key="@string/prefUsername" />
-		<EditTextPreference
-			android:name="prefPassword"
-			android:title="@string/prefLabelPassword"
-			android:summary=""
-			android:defaultValue="@string/prefDefaultPassword"			
-			android:key="@string/prefPassword" />
-	</PreferenceCategory>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Синхронизация" >
+        <EditTextPreference
+            android:name="prefServer"
+            android:defaultValue="@string/prefDefaultServer"
+            android:key="@string/prefServer"
+            android:summary=""
+            android:title="@string/prefLabelServer" />
+        <EditTextPreference
+            android:name="prefUsername"
+            android:defaultValue="@string/prefDefaultUsername"
+            android:key="@string/prefUsername"
+            android:summary=""
+            android:title="@string/prefLabelUsername" />
+        <EditTextPreference
+            android:name="prefPassword"
+            android:defaultValue="@string/prefDefaultPassword"
+            android:key="@string/prefPassword"
+            android:summary=""
+            android:title="@string/prefLabelPassword" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

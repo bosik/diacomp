@@ -14,24 +14,27 @@ import org.bosik.compensation.persistence.entity.common.Item;
  */
 public class Base<T extends Item>
 {
-	private final List<T> items = new ArrayList<T>();
-	private int version = 0;
+	private final List<T>	items		= new ArrayList<T>();
+	private int				version		= 0;
 
-	private boolean silentMode = false;
+	private boolean			silentMode	= false;
 
 	// ================== РАБОТА СО СПИСКОМ ==================
 
 	public int add(T item)
 	{
 		if (null == item)
+		{
 			throw new NullPointerException("Item can't be null");
+		}
 
 		try
 		{
 			items.add((T) item.clone());
 			changed();
 			return items.indexOf(item);
-		} catch (CloneNotSupportedException e)
+		}
+		catch (CloneNotSupportedException e)
 		{
 			throw new RuntimeException(e);
 		}
@@ -53,7 +56,8 @@ public class Base<T extends Item>
 		try
 		{
 			return (T) items.get(index).clone();
-		} catch (CloneNotSupportedException e)
+		}
+		catch (CloneNotSupportedException e)
 		{
 			throw new RuntimeException(e);
 		}
@@ -79,7 +83,8 @@ public class Base<T extends Item>
 			int index = items.indexOf(item);
 			items.set(index, (T) item.clone());
 			changed();
-		} catch (CloneNotSupportedException e)
+		}
+		catch (CloneNotSupportedException e)
 		{
 			throw new RuntimeException(e);
 		}

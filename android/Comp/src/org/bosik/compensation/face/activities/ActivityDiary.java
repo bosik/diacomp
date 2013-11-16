@@ -33,25 +33,25 @@ import android.widget.Button;
 public class ActivityDiary extends Activity implements RecordClickListener, OnClickListener
 {
 	// КОНСТАНТЫ
-	private static final int DIALOG_BLOOD_EDITOR_NEW = 1;
-	private static final int DIALOG_BLOOD_EDITOR_MOD = 2;
-	private static final int DIALOG_NOTE_EDITOR_NEW = 3;
-	private static final int DIALOG_NOTE_EDITOR_MOD = 4;
+	private static final int				DIALOG_BLOOD_EDITOR_NEW	= 1;
+	private static final int				DIALOG_BLOOD_EDITOR_MOD	= 2;
+	private static final int				DIALOG_NOTE_EDITOR_NEW	= 3;
+	private static final int				DIALOG_NOTE_EDITOR_MOD	= 4;
 
 	// --- отладочная печать ---
-	private static final String TAG = "ActivityDiary";
+	private static final String				TAG						= "ActivityDiary";
 	// THINK: что произойдёт на смене дат?
-	private static Date curDate = Calendar.getInstance().getTime();
-	private static DiaryPage curPage = null;
+	private static Date						curDate					= Calendar.getInstance().getTime();
+	private static DiaryPage				curPage					= null;
 	// private int indexOnEditing = -1;
 
 	// --- форматы ---
 	// private static final SimpleDateFormat CaptionFmt = new SimpleDateFormat("d MMMM");
-	private static final SimpleDateFormat CaptionFmt = new SimpleDateFormat("dd.MM.yyyy");
+	private static final SimpleDateFormat	CaptionFmt				= new SimpleDateFormat("dd.MM.yyyy");
 
 	// КОМПОНЕНТЫ
-	private DiaryView diaryViewLayout;
-	private Button buttonSelectDay;
+	private DiaryView						diaryViewLayout;
+	private Button							buttonSelectDay;
 
 	// СОБЫТИЯ
 
@@ -96,7 +96,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				openPage(curDate);
 				Log.d(TAG, "DiaryView(): onCreate(), date default: " + curDate);
 			}
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			ErrorHandler.handle(e, this);
 		}
@@ -110,7 +111,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		{
 			MenuInflater inflater = getMenuInflater();
 			inflater.inflate(R.menu.diary_menu, menu);
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			ErrorHandler.handle(e, this);
 		}
@@ -127,26 +129,31 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			{
 				// AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 
-				if ((diaryViewLayout.getDownedIndex() < 0) || (diaryViewLayout.getDownedIndex() >= curPage.count()))
+				if ((DiaryView.getDownedIndex() < 0) || (DiaryView.getDownedIndex() >= curPage.count()))
+				{
 					return;
+				}
 
 				// TODO: вынести в ресурсы
 
 				String capt = "nothing";
-				DiaryRecord rec = curPage.get(diaryViewLayout.getDownedIndex());
+				DiaryRecord rec = curPage.get(DiaryView.getDownedIndex());
 				Class<? extends DiaryRecord> c = rec.getClass();
 				if (c == BloodRecord.class)
 				{
 					capt = "Замер СК";
-				} else
+				}
+				else
 					if (c == InsRecord.class)
 					{
 						capt = "Инъекция";
-					} else
+					}
+					else
 						if (c == MealRecord.class)
 						{
 							capt = "Приём пищи";
-						} else
+						}
+						else
 							if (c == NoteRecord.class)
 							{
 								capt = "Заметка";
@@ -162,7 +169,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				// menu.getItem(0).setCheckable(true);
 				// menu.getItem(0).setChecked(true);
 			}
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			ErrorHandler.handle(e, this);
 		}
@@ -240,7 +248,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				default:
 					return super.onOptionsItemSelected(item);
 			}
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			ErrorHandler.handle(e, this);
 		}
@@ -261,10 +270,12 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			 * menuItems[menuItemIndex];
 			 */
 
-			if ((diaryViewLayout.getDownedIndex() < 0) || (diaryViewLayout.getDownedIndex() >= curPage.count()))
+			if ((DiaryView.getDownedIndex() < 0) || (DiaryView.getDownedIndex() >= curPage.count()))
+			{
 				return false;
+			}
 
-			DiaryRecord rec = curPage.get(diaryViewLayout.getDownedIndex());
+			DiaryRecord rec = curPage.get(DiaryView.getDownedIndex());
 			Class<? extends DiaryRecord> c = rec.getClass();
 
 			if (c == BloodRecord.class)
@@ -288,7 +299,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					{
 						// TODO: implement removing
 						// UIUtils.showTip(this, "Removing blood is not implemented yet");
-						diaryViewLayout.getPage().remove(diaryViewLayout.getDownedIndex());
+						diaryViewLayout.getPage().remove(DiaryView.getDownedIndex());
 						postPage(diaryViewLayout.getPage());
 
 						break;
@@ -327,7 +338,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				}
 
 			// TODO: implement other record types
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			ErrorHandler.handle(e, this);
 		}
@@ -336,6 +348,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	}
 
 	// handled
+	@Override
 	public void onClick(View v)
 	{
 		try
@@ -376,13 +389,15 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					break;
 				}
 			}
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			ErrorHandler.handle(e, this);
 		}
 	}
 
 	// handled
+	@Override
 	public void onRecordClick(int index)
 	{
 		try
@@ -393,13 +408,15 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			{
 				BloodRecord temp = (BloodRecord) rec;
 				showBloodEditor(temp.getTime(), temp.getValue(), temp.getFinger(), false);
-			} else
+			}
+			else
 				if (rec.getClass() == NoteRecord.class)
 				{
 					NoteRecord temp = (NoteRecord) rec;
 					showNoteEditor(temp.getTime(), temp.getText(), false);
 				}
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			ErrorHandler.handle(e, this);
 		}
@@ -445,7 +462,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 						double value = intent.getDoubleExtra(ActivityEditorBlood.FIELD_VALUE, -1);
 						int finger = intent.getIntExtra(ActivityEditorBlood.FIELD_FINGER, -1);
 
-						BloodRecord rec = (BloodRecord) curPage.get(diaryViewLayout.getClickedIndex());
+						BloodRecord rec = (BloodRecord) curPage.get(DiaryView.getClickedIndex());
 
 						rec.beginUpdate();
 						rec.setTime(time);
@@ -479,7 +496,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 						int time = intent.getIntExtra(ActivityEditorNote.FIELD_TIME, -1);
 						String text = intent.getStringExtra(ActivityEditorNote.FIELD_TEXT);
 
-						NoteRecord rec = (NoteRecord) curPage.get(diaryViewLayout.getClickedIndex());
+						NoteRecord rec = (NoteRecord) curPage.get(DiaryView.getClickedIndex());
 
 						rec.beginUpdate();
 						rec.setTime(time);
@@ -491,7 +508,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					break;
 				}
 			}
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			ErrorHandler.handle(e, this);
 		}
@@ -565,7 +583,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			BloodRecord b = lastBlood(5);
 			time = Utils.curMinutes();
 			value = ActivityEditorBlood.UNDEFINITE_VALUE;
-			finger = (b == null || b.getFinger() == -1) ? -1 : ((b.getFinger() + 1) % 10);
+			finger = ((b == null) || (b.getFinger() == -1)) ? -1 : ((b.getFinger() + 1) % 10);
 		}
 
 		// THINK: проверка корректности данных?

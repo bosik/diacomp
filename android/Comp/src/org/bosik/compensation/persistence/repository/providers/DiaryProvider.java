@@ -16,39 +16,39 @@ public class DiaryProvider extends ContentProvider
 {
 	// отладочная печать
 	@SuppressWarnings("unused")
-	private static final String TAG = "DiaryProvider";
+	private static final String		TAG							= "DiaryProvider";
 
 	// база SQL
-	private static final String TABLE_NAME_DIARY = "diary";
-	private static final String COLUMN_ID = "_ID";
-	public static final String COLUMN_DATE = "Date";
-	public static final String COLUMN_TIMESTAMP = "TimeStamp";
-	public static final String COLUMN_VERSION = "Version";
-	public static final String COLUMN_PAGE = "Page";
+	private static final String		TABLE_NAME_DIARY			= "diary";
+	private static final String		COLUMN_ID					= "_ID";
+	public static final String		COLUMN_DATE					= "Date";
+	public static final String		COLUMN_TIMESTAMP			= "TimeStamp";
+	public static final String		COLUMN_VERSION				= "Version";
+	public static final String		COLUMN_PAGE					= "Page";
 
 	// константы провайдера (для доступа извне)
-	public static final String SCHEME = "content://";
-	public static final String AUTH = "diacomp.provider";
-	public static final Uri SHORT_URI = Uri.parse(AUTH + "/" + TABLE_NAME_DIARY + "/");
-	public static final String CONTENT_STRING = SCHEME + AUTH + "/" + TABLE_NAME_DIARY + "/";
-	public static final Uri CONTENT_URI = Uri.parse(CONTENT_STRING);
+	public static final String		SCHEME						= "content://";
+	public static final String		AUTH						= "diacomp.provider";
+	public static final Uri			SHORT_URI					= Uri.parse(AUTH + "/" + TABLE_NAME_DIARY + "/");
+	public static final String		CONTENT_STRING				= SCHEME + AUTH + "/" + TABLE_NAME_DIARY + "/";
+	public static final Uri			CONTENT_URI					= Uri.parse(CONTENT_STRING);
 
 	// внутренние параметры
-	private static final String DATABASE_NAME = "Diary.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final String		DATABASE_NAME				= "Diary.db";
+	private static final int		DATABASE_VERSION			= 1;
 
 	// константы для распознавателя URI
-	private static final int CODE_DIARY = 1;
-	private static final int CODE_DIARY_ITEM = 2;
-	private static final int CODE_DIARY_ITEM_DATE = 21;
-	private static final int CODE_DIARY_ITEM_TIMESTAMP = 22;
-	private static final int CODE_DIARY_ITEM_VERSION = 23;
-	private static final int CODE_DIARY_ITEM_PAGE = 24;
+	private static final int		CODE_DIARY					= 1;
+	private static final int		CODE_DIARY_ITEM				= 2;
+	private static final int		CODE_DIARY_ITEM_DATE		= 21;
+	private static final int		CODE_DIARY_ITEM_TIMESTAMP	= 22;
+	private static final int		CODE_DIARY_ITEM_VERSION		= 23;
+	private static final int		CODE_DIARY_ITEM_PAGE		= 24;
 
 	// вспомогательные объекты
-	private static final UriMatcher sURIMatcher;
-	private MyDBHelper openHelper;
-	private SQLiteDatabase db;
+	private static final UriMatcher	sURIMatcher;
+	private MyDBHelper				openHelper;
+	private SQLiteDatabase			db;
 
 	static
 	{
@@ -84,6 +84,7 @@ public class DiaryProvider extends ContentProvider
 			// Log.d(TAG, "MyDBHelper.onCreate(): table '" + TABLE_NAME_DIARY + "' created OK");
 		}
 
+		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
 		{
 		}
@@ -104,7 +105,8 @@ public class DiaryProvider extends ContentProvider
 					// Log.d(TAG,"delete(): URI is correct (whole diary, checking WHERE clause...)");
 					count = db.delete(TABLE_NAME_DIARY, where, whereArgs);
 					// Log.d(TAG,"delete(): done");
-				} else
+				}
+				else
 				{
 					throw new IllegalArgumentException("Empty WHERE clause, this will destroy all database; denied");
 				}
@@ -152,27 +154,41 @@ public class DiaryProvider extends ContentProvider
 	public Uri insert(final Uri uri, final ContentValues initialValues)
 	{
 		if (null == uri)
+		{
 			throw new NullPointerException("URI can't be null");
+		}
 
 		if (null == initialValues)
+		{
 			throw new NullPointerException("Values are null");
+		}
 
 		if (sURIMatcher.match(uri) != CODE_DIARY)
+		{
 			throw new IllegalArgumentException("URI must be " + AUTH + "/" + TABLE_NAME_DIARY);
+		}
 
 		final ContentValues values = new ContentValues(initialValues);
 
 		if (!values.containsKey(COLUMN_DATE))
+		{
 			throw new IllegalArgumentException("No date specified");
+		}
 
 		if (!values.containsKey(COLUMN_TIMESTAMP))
+		{
 			throw new IllegalArgumentException("No timestamp specified");
+		}
 
 		if (!values.containsKey(COLUMN_VERSION))
+		{
 			throw new IllegalArgumentException("No version specified");
+		}
 
 		if (!values.containsKey(COLUMN_PAGE))
+		{
 			throw new IllegalArgumentException("No page specified");
+		}
 
 		db = openHelper.getWritableDatabase();
 
@@ -189,7 +205,8 @@ public class DiaryProvider extends ContentProvider
 			// Notifies observers registered against this provider that the data changed.
 			getContext().getContentResolver().notifyChange(resultUri, null);
 			return resultUri;
-		} else
+		}
+		else
 		{
 			throw new SQLException("Failed to insert row into " + uri);
 		}

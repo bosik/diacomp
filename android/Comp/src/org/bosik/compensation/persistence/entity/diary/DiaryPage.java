@@ -16,18 +16,18 @@ import android.util.Log;
 public class DiaryPage implements DiaryChangeListener
 {
 	// отладочная печать
-	private static final String TAG = "DiaryPage";
+	private static final String		TAG			= "DiaryPage";
 
 	// TODO: тестировать
 
 	// ===================================== ПОЛЯ =====================================
 
-	private Date date = null;
-	private Date timeStamp = null;
-	private int version = 0;
-	private final List<DiaryRecord> items = new ArrayList<DiaryRecord>();
+	private Date					date		= null;
+	private Date					timeStamp	= null;
+	private int						version		= 0;
+	private final List<DiaryRecord>	items		= new ArrayList<DiaryRecord>();
 
-	private boolean silentMode = false;
+	private boolean					silentMode	= false;
 
 	// ============================== ВНУТРЕННИЕ МЕТОДЫ ==============================
 
@@ -56,7 +56,7 @@ public class DiaryPage implements DiaryChangeListener
 			}
 
 			// прогон вниз
-			while ((result < items.size() - 1) && (items.get(result + 1).getTime() < temp.getTime()))
+			while ((result < (items.size() - 1)) && (items.get(result + 1).getTime() < temp.getTime()))
 			{
 				items.set(result, items.get(result + 1));
 				result++;
@@ -64,7 +64,9 @@ public class DiaryPage implements DiaryChangeListener
 			}
 
 			if (changed)
+			{
 				items.set(result, temp);
+			}
 		}
 		return result;
 	}
@@ -120,13 +122,21 @@ public class DiaryPage implements DiaryChangeListener
 	{
 		// проверки
 		if (date == null)
+		{
 			throw new NullPointerException("Date can't be null");
+		}
 		if (timeStamp == null)
+		{
 			throw new NullPointerException("TimeStamp can't be null");
+		}
 		if (version < 0)
+		{
 			throw new IllegalArgumentException("Version can't be negative");
+		}
 		if (contentCode == null)
+		{
 			throw new NullPointerException("ContentCode can't be null");
+		}
 
 		// чтение
 		this.date = date;
@@ -179,7 +189,9 @@ public class DiaryPage implements DiaryChangeListener
 	public int add(DiaryRecord rec)
 	{
 		if (rec == null)
+		{
 			throw new IllegalArgumentException("Record can't be null");
+		}
 
 		rec.setChangeListener(this);
 		items.add(rec);
@@ -258,7 +270,9 @@ public class DiaryPage implements DiaryChangeListener
 		{
 			int index = items.indexOf(recInstance);
 			if (index != -1)
+			{
 				trace(index);
+			}
 		}
 	}
 
@@ -282,7 +296,8 @@ public class DiaryPage implements DiaryChangeListener
 			timeStamp = Utils.parseTime(p[1]);
 			version = Integer.parseInt(p[2]);
 			return true;
-		} catch (ParseException e)
+		}
+		catch (ParseException e)
 		{
 			Log.e(TAG, "readHeader(): headerCode = '" + headerCode + "'");
 			Log.e(TAG, "readHeader(): p.length = " + p.length);
@@ -319,9 +334,13 @@ public class DiaryPage implements DiaryChangeListener
 		items.clear();
 
 		if (null == contentCode)
+		{
 			throw new NullPointerException("Source can't be null");
+		}
 		if (contentCode.trim().equals(""))
+		{
 			return true;
+		}
 
 		boolean result = true;
 		String[] Lines = contentCode.split("\n");
@@ -351,7 +370,8 @@ public class DiaryPage implements DiaryChangeListener
 								TempTime = Utils.strToTime(Lines[i].substring(1, 6));
 								TempValue = Utils.parseDouble(Lines[i].substring(7));
 								TempFinger = -1;
-							} else
+							}
+							else
 							// с указанием пальца
 							{
 								TempTime = Utils.strToTime(Lines[i].substring(1, 6));
@@ -389,7 +409,8 @@ public class DiaryPage implements DiaryChangeListener
 								FoodMassed food = new FoodMassed();
 								food.read(Lines[i].substring(1));
 								activeMeal.add(food);
-							} else
+							}
+							else
 							{
 								Log.e(TAG, "DiaryPage.readContent(): food without meal declaration ignored: "
 										+ Lines[i]);
@@ -448,26 +469,31 @@ public class DiaryPage implements DiaryChangeListener
 				BloodRecord temp = (BloodRecord) items.get(i);
 				result += '*' + Utils.timeToStr(temp.getTime()) + ' ' + String.valueOf(temp.getValue()) + '|'
 						+ String.valueOf(temp.getFinger()) + '\n';
-			} else
+			}
+			else
 				if (c == InsRecord.class)
 				{
 					InsRecord temp = (InsRecord) items.get(i);
 					result += '-' + Utils.timeToStr(temp.getTime()) + ' ' + String.valueOf(temp.getValue()) + '\n';
-				} else
+				}
+				else
 					if (c == MealRecord.class)
 					{
 						MealRecord temp = (MealRecord) items.get(i);
 
 						result += ' ' + Utils.timeToStr(temp.getTime());
 						if (temp.getShortMeal())
+						{
 							result += "s";
+						}
 						result += "\n";
 
 						for (int k = 0; k < temp.size(); k++)
 						{
 							result += '#' + temp.get(k).write() + '\n';
 						}
-					} else
+					}
+					else
 						if (c == NoteRecord.class)
 						{
 							NoteRecord temp = (NoteRecord) items.get(i);
@@ -484,7 +510,8 @@ public class DiaryPage implements DiaryChangeListener
 		{
 			readHeader(fullCode.substring(0, n));
 			readContent(fullCode.substring(n + 1));
-		} else
+		}
+		else
 		{
 			readHeader(fullCode);
 		}

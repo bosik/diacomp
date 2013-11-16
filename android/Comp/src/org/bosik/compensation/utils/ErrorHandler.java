@@ -8,8 +8,8 @@ import android.util.Log;
 
 public class ErrorHandler
 {
-	private static final String TAG = ErrorHandler.class.getSimpleName();
-	private static WebClient webClient;
+	private static final String	TAG	= ErrorHandler.class.getSimpleName();
+	private static WebClient	webClient;
 
 	// private static ErrorHandler handler;
 
@@ -32,19 +32,25 @@ public class ErrorHandler
 			{
 				Log.e(TAG, "Error handler [mode: debug]: " + e.getLocalizedMessage());
 				throw new RuntimeException(e);
-			} else
+			}
+			else
 			{
 				Log.e(TAG, "Error handler [mode: debug]: (e == null)");
 				throw new RuntimeException();
 			}
-		} else
+		}
+		else
 		{
 			try
 			{
 				if (e != null)
+				{
 					Log.e(TAG, "Error handler [mode: release]: " + e.getLocalizedMessage());
+				}
 				else
+				{
 					Log.e(TAG, "Error handler [mode: release]: (e == null)");
+				}
 
 				if (activity != null)
 				{
@@ -74,18 +80,24 @@ public class ErrorHandler
 					if (activity != null)
 					{
 						if (sent)
+						{
 							UIUtils.showTip(activity, "Отчёт с технической информацией отправлен разработчику");
+						}
 						else
+						{
 							UIUtils.showTip(activity, "Отправить отчёт не удалось");
+						}
 					}
-				} else
+				}
+				else
 				{
 					if (activity != null)
 					{
 						UIUtils.showTip(activity, "Отправить отчёт не удалось (webClient == null)");
 					}
 				}
-			} catch (Exception ex)
+			}
+			catch (Exception ex)
 			{
 				UIUtils.showTip(activity, "Во время обработки ошибки произошла ещё одна ошибка :(");
 				// well, something bad has occurred and we have no way to talk about it :(

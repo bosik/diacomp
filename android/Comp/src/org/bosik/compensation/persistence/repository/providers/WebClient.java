@@ -25,34 +25,35 @@ import android.util.Log;
 
 public class WebClient
 {
-	private static String TAG = WebClient.class.getSimpleName();
+	private static String		TAG						= WebClient.class.getSimpleName();
 
 	/* ================ КОНСТАНТЫ ================ */
 
-	private static final String API_VERSION = "1.2";
-	private static final String URL_LOGINPAGE = "login.php";
-	private static final String URL_CONSOLE = "console.php";
-	private static final String RESPONSE_UNAUTH = "Error: log in first";
-	private static final String RESPONSE_DONE = "DONE";
-	private static final String RESPONSE_FAIL = "FAIL";
-	private static final String RESPONSE_FAIL_AUTH = "BADNAME";
-	private static final String RESPONSE_FAIL_APIVER = "DEPAPI";
-	private static final String RESPONSE_ONLINE = "online";
-	private static final String RESPONSE_OFFLINE = "offline";
-	private static final String CODEPAGE_CP1251 = "Cp1251";
-	private static final String CODEPAGE_UTF8 = "UTF-8";
+	private static final String	API_VERSION				= "1.2";
+	private static final String	URL_LOGINPAGE			= "login.php";
+	private static final String	URL_CONSOLE				= "console.php";
+	private static final String	RESPONSE_UNAUTH			= "Error: log in first";
+	private static final String	RESPONSE_DONE			= "DONE";
+	private static final String	RESPONSE_FAIL			= "FAIL";
+	private static final String	RESPONSE_FAIL_AUTH		= "BADNAME";
+	private static final String	RESPONSE_FAIL_APIVER	= "DEPAPI";
+	private static final String	RESPONSE_ONLINE			= "online";
+	private static final String	RESPONSE_OFFLINE		= "offline";
+	private static final String	CODEPAGE_CP1251			= "Cp1251";
+	private static final String	CODEPAGE_UTF8			= "UTF-8";
 	// private static final String SERVER_CODEPAGE = "UTF-8";
 
-	private static final String CODE_SPACE = "%20";
+	private static final String	CODE_SPACE				= "%20";
 
 	/* ================ ПОЛЯ ================ */
 
-	private HttpClient mHttpClient = null;
-	private Long timeShift = null;
-	private boolean logged = false;
-	private String username = ""; // not null!
-	private String password = "";
-	private String server = "";
+	private HttpClient			mHttpClient				= null;
+	private Long				timeShift				= null;
+	private boolean				logged					= false;
+	private String				username				= "";								// not
+																							// null!
+	private String				password				= "";
+	private String				server					= "";
 
 	/* ================ ВСПОМОГАТЕЛЬНЫЕ КЛАССЫ ================ */
 
@@ -102,10 +103,10 @@ public class WebClient
 	 */
 	public static class UndefinedFieldException extends IllegalArgumentException
 	{
-		private static final long serialVersionUID = 3716509470386883692L;
-		public boolean undefServer = false;
-		public boolean undefLogin = false;
-		public boolean undefPassword = false;
+		private static final long	serialVersionUID	= 3716509470386883692L;
+		public boolean				undefServer			= false;
+		public boolean				undefLogin			= false;
+		public boolean				undefPassword		= false;
 
 		public UndefinedFieldException(boolean undefServer, boolean undefLogin, boolean undefPassword)
 		{
@@ -128,7 +129,7 @@ public class WebClient
 	 */
 	public static class ServerException extends RuntimeException
 	{
-		private static final long serialVersionUID = -4422450897857678241L;
+		private static final long	serialVersionUID	= -4422450897857678241L;
 
 		public ServerException(String detailMessage)
 		{
@@ -153,7 +154,7 @@ public class WebClient
 	 */
 	public static class NoConnectionException extends ServerException
 	{
-		private static final long serialVersionUID = 5396386468370646791L;
+		private static final long	serialVersionUID	= 5396386468370646791L;
 
 		public NoConnectionException(String detailMessage)
 		{
@@ -178,7 +179,7 @@ public class WebClient
 	 */
 	public static class ResponseFormatException extends ServerException
 	{
-		private static final long serialVersionUID = 6342429630144198560L;
+		private static final long	serialVersionUID	= 6342429630144198560L;
 
 		public ResponseFormatException(String detailMessage)
 		{
@@ -203,7 +204,7 @@ public class WebClient
 	 */
 	public static class DeprecatedAPIException extends ServerException
 	{
-		private static final long serialVersionUID = -4897188574347397921L;
+		private static final long	serialVersionUID	= -4897188574347397921L;
 
 		/*
 		 * public DeprecatedAPIException(String clientApiVersion, String serverApiVersion) {
@@ -223,7 +224,7 @@ public class WebClient
 	 */
 	public static class AuthException extends ServerException
 	{
-		private static final long serialVersionUID = 7885618396446513997L;
+		private static final long	serialVersionUID	= 7885618396446513997L;
 
 		public AuthException(String detailMessage)
 		{
@@ -244,9 +245,13 @@ public class WebClient
 	public Date localToServer(Date time)
 	{
 		if (null == time)
+		{
 			throw new NullPointerException("Specified argument is null");
+		}
 		if (null == timeShift)
+		{
 			login();
+		}
 
 		/*
 		 * if ((timeShift == null) && (login() != LoginResult.DONE)) { throw new
@@ -268,9 +273,13 @@ public class WebClient
 	public Date serverToLocal(Date time)
 	{
 		if (time == null)
+		{
 			throw new NullPointerException("Specified argument is null");
+		}
 		if (null == timeShift)
+		{
 			login();
+		}
 		/*
 		 * if ((timeShift == null) && (login() != LoginResult.DONE)) { throw new
 		 * NullPointerException
@@ -300,12 +309,15 @@ public class WebClient
 			throw new ResponseFormatException("Bad response, status code is " + resp.getStatusLine().getStatusCode());
 		}
 		if (null == resp.getEntity())
+		{
 			throw new ResponseFormatException("Bad response, getEntity() is null");
+		}
 
 		try
 		{
 			return EntityUtils.toString(resp.getEntity(), codePage);
-		} catch (IOException e)
+		}
+		catch (IOException e)
 		{
 			throw new ResponseFormatException(e);
 		}
@@ -326,10 +338,12 @@ public class WebClient
 		{
 			HttpResponse resp = mHttpClient.execute(new HttpGet(url.replace(" ", CODE_SPACE)));
 			return formatResponse(resp, codePage);
-		} catch (ClientProtocolException e)
+		}
+		catch (ClientProtocolException e)
 		{
 			throw new NoConnectionException(e);
-		} catch (IOException e)
+		}
+		catch (IOException e)
 		{
 			throw new NoConnectionException(e);
 		}
@@ -357,7 +371,8 @@ public class WebClient
 			HttpResponse resp = mHttpClient.execute(post);
 
 			return formatResponse(resp, codePage);
-		} catch (IOException e)
+		}
+		catch (IOException e)
 		{
 			throw new NoConnectionException(e);
 		}
@@ -372,7 +387,8 @@ public class WebClient
 			Log.v(TAG, "doGetSmart(): Session timeout; re-login");
 			login();
 			return doGet(URL, codePage);
-		} else
+		}
+		else
 		{
 			return resp;
 		}
@@ -387,7 +403,8 @@ public class WebClient
 			Log.v(TAG, "doPostSmart(): Session timeout; re-login");
 			login();
 			return doPost(URL, params, codePage);
-		} else
+		}
+		else
 		{
 			return resp;
 		}
@@ -497,11 +514,17 @@ public class WebClient
 		if (undefServer || undefLogin || undefPassword)
 		{
 			if (undefLogin)
+			{
 				Log.e(TAG, "Login is null or empty");
+			}
 			if (undefPassword)
+			{
 				Log.e(TAG, "Password is null or empty");
+			}
 			if (undefServer)
+			{
 				Log.e(TAG, "Server is null or empty");
+			}
 
 			throw new UndefinedFieldException(undefServer, undefLogin, undefPassword);
 		}
@@ -533,28 +556,40 @@ public class WebClient
 					try
 					{
 						serverTime = Utils.parseTime(det[1]);
-						timeShift = (sendedTime.getTime() + Utils.now().getTime()) / 2 - serverTime.getTime();
+						timeShift = ((sendedTime.getTime() + Utils.now().getTime()) / 2) - serverTime.getTime();
 						// WIN! Если дошли сюда, то всё прошло успешно.
 						logged = true;
 
 						Log.d(TAG, "login(): logged OK");
-					} catch (ParseException e)
+					}
+					catch (ParseException e)
 					{
 						throw new ResponseFormatException("Bad current time format '" + det[1] + "'", e);
 					}
-				} else
+				}
+				else
 					if (det[0].equals(RESPONSE_FAIL))
 					{
 						if (det[1].equals(RESPONSE_FAIL_AUTH))
+						{
 							throw new AuthException("Bad username/password");
+						}
 						else
 							if (det[1].equals(RESPONSE_FAIL_APIVER))
+							{
 								throw new DeprecatedAPIException("API " + API_VERSION + " is deprecated");
+							}
 							else
+							{
 								throw new ResponseFormatException("Bad format: failed with comment '" + det[1] + "'");
-					} else
+							}
+					}
+					else
+					{
 						throw new ResponseFormatException("Bad format: Unknown identificator '" + det[0] + "'");
-			} else
+					}
+			}
+			else
 			{
 				String msg = "Bad format: split count != 2; Content:";
 				for (int i = 0; i < det.length; i++)
@@ -563,8 +598,11 @@ public class WebClient
 				}
 				throw new ResponseFormatException(msg);
 			}
-		} else
+		}
+		else
+		{
 			throw new NoConnectionException("doPost(): response is null");
+		}
 	}
 
 	public boolean isOnline(boolean forceUpdate)
@@ -577,7 +615,8 @@ public class WebClient
 			{
 				String resp = doGet(server + URL_LOGINPAGE + "?status", CODEPAGE_CP1251);
 				logged = processResponse(resp, RESPONSE_ONLINE, RESPONSE_OFFLINE);
-			} catch (ServerException e)
+			}
+			catch (ServerException e)
 			{
 				return false;
 			}
@@ -615,7 +654,9 @@ public class WebClient
 	public String getPages(List<Date> dates)
 	{
 		if (dates.isEmpty())
+		{
 			return "";
+		}
 
 		// TODO: optimize if need (use StringBuilder)
 
@@ -642,7 +683,9 @@ public class WebClient
 	public boolean postPages(String pages)
 	{
 		if (pages.isEmpty())
+		{
 			return true;
+		}
 
 		// конструируем запрос
 		List<NameValuePair> p = new ArrayList<NameValuePair>();

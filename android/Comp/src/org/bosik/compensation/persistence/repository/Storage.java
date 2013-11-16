@@ -24,25 +24,25 @@ import android.util.Log;
  */
 public class Storage
 {
-	private static final String TAG = Storage.class.getSimpleName();
+	private static final String			TAG	= Storage.class.getSimpleName();
 
 	// настройки
-	private static SharedPreferences pref;
+	private static SharedPreferences	pref;
 
 	// настройки
-	private static String PREF_SERVER;
-	private static String PREF_USERNAME;
-	private static String PREF_PASSWORD;
-	private static String PREF_DEFAULT_SERVER;
-	private static String PREF_DEFAULT_USERNAME;
-	private static String PREF_DEFAULT_PASSWORD;
+	private static String				PREF_SERVER;
+	private static String				PREF_USERNAME;
+	private static String				PREF_PASSWORD;
+	private static String				PREF_DEFAULT_SERVER;
+	private static String				PREF_DEFAULT_USERNAME;
+	private static String				PREF_DEFAULT_PASSWORD;
 
 	// данные
-	public static WebClient web_client;
-	public static DiaryRepository local_diary;
-	public static DiaryRepository web_diary;
-	public static LocalBase<Food> localFoodBase;
-	public static Interchangeable webFoodbaseRepository;
+	public static WebClient				web_client;
+	public static DiaryRepository		local_diary;
+	public static DiaryRepository		web_diary;
+	public static LocalBase<Food>		localFoodBase;
+	public static Interchangeable		webFoodbaseRepository;
 
 	/**
 	 * Инициализирует хранилище. Метод можно вызывать повторно.

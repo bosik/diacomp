@@ -9,7 +9,7 @@ public class ActivityPreferences extends PreferenceActivity
 	/* =========================== КОНСТАНТЫ ================================ */
 
 	@SuppressWarnings("unused")
-	private static final String TAG = "ActivityPreferences";
+	private static final String	TAG	= "ActivityPreferences";
 
 	// public static SharedPreferences pref = null;
 

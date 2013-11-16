@@ -10,10 +10,10 @@ import android.widget.Button;
 public abstract class ActivityEditor extends Activity implements OnClickListener
 {
 	@SuppressWarnings("unused")
-	private static final String TAG = "ActivityEditor";
+	private static final String	TAG			= "ActivityEditor";
 
 	/* =========================== ПОЛЯ ================================ */
-	protected Button buttonOK = null;
+	protected Button			buttonOK	= null;
 
 	/* =========================== АБСТРАКТНЫЕ МЕТОДЫ ================================ */
 
@@ -72,6 +72,7 @@ public abstract class ActivityEditor extends Activity implements OnClickListener
 		// Utils.logTimer(TAG, "setValues");
 	}
 
+	@Override
 	public void onClick(View v)
 	{
 		if (v.getId() == buttonOK.getId())

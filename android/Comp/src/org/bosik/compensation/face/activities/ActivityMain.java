@@ -38,20 +38,20 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 {
 	/* =========================== КОНСТАНТЫ ================================ */
 
-	private static final String TAG = ActivityMain.class.getSimpleName();
+	private static final String	TAG				= ActivityMain.class.getSimpleName();
 	// private static final int RESULT_SPEECH_TO_TEXT = 620;
 
 	/* =========================== ПОЛЯ ================================ */
 
 	// компоненты
-	private Button buttonDiary;
-	private Button buttonFoodBase;
-	private Button buttonDishBase;
-	private Button buttonPref;
-	private Button buttonAuth;
-	private Button buttonTestMealEditor;
+	private Button				buttonDiary;
+	private Button				buttonFoodBase;
+	private Button				buttonDishBase;
+	private Button				buttonPref;
+	private Button				buttonAuth;
+	private Button				buttonTestMealEditor;
 
-	private static boolean timerSettedUp = false;
+	private static boolean		timerSettedUp	= false;
 
 	/* =========================== КЛАССЫ ================================ */
 
@@ -60,7 +60,7 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 
 	private class SyncParams
 	{
-		private boolean showProgress;
+		private boolean	showProgress;
 
 		public SyncParams()
 		{
@@ -85,18 +85,19 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 	private class AsyncTaskAuthAndSync extends AsyncTask<SyncParams, Integer, LoginResult> implements Callback
 	{
 		// <Params, Progress, Result>
-		private ProgressDialog dialog_login;
-		private ProgressDialog dialog_sync;
-		private int syncPagesCount;
-		private boolean syncFoodBase;
-		private SyncParams syncParams;
+		private ProgressDialog		dialog_login;
+		private ProgressDialog		dialog_sync;
+		private int					syncPagesCount;
+		private boolean				syncFoodBase;
+		private SyncParams			syncParams;
 
 		// константы для управления progressbar
-		private static final int COM_SHOW_AUTH = 11;
-		private static final int COM_SHOW_SYNC = 12;
-		private static final int COM_PROGRESS_MAX = 21;
-		private static final int COM_PROGRESS_CUR = 22;
+		private static final int	COM_SHOW_AUTH		= 11;
+		private static final int	COM_SHOW_SYNC		= 12;
+		private static final int	COM_PROGRESS_MAX	= 21;
+		private static final int	COM_PROGRESS_CUR	= 22;
 
+		@Override
 		protected void onPreExecute()
 		{
 			dialog_login = new ProgressDialog(ActivityMain.this);
@@ -110,6 +111,7 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 			dialog_sync.setMessage("Синхронизация...");
 		}
 
+		@Override
 		protected LoginResult doInBackground(SyncParams... par)
 		{
 			Log.i(TAG, "Sync()");
@@ -129,19 +131,24 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 				{
 					Storage.web_client.login();
 					Log.d(TAG, "Logged OK");
-				} catch (NoConnectionException e)
+				}
+				catch (NoConnectionException e)
 				{
 					return LoginResult.FAIL_CONNECTION;
-				} catch (ResponseFormatException e)
+				}
+				catch (ResponseFormatException e)
 				{
 					return LoginResult.FAIL_FORMAT;
-				} catch (DeprecatedAPIException e)
+				}
+				catch (DeprecatedAPIException e)
 				{
 					return LoginResult.FAIL_APIVERSION;
-				} catch (AuthException e)
+				}
+				catch (AuthException e)
 				{
 					return LoginResult.FAIL_AUTH;
-				} catch (UndefinedFieldException e)
+				}
+				catch (UndefinedFieldException e)
 				{
 					return LoginResult.FAIL_UNDEFIELDS;
 				}
@@ -168,27 +175,32 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 
 				Log.d(TAG, "Sync done OK...");
 				return LoginResult.DONE;
-			} catch (NoConnectionException e)
+			}
+			catch (NoConnectionException e)
 			{
 				// Storage.logged = false;
 				Log.e(TAG, e.getLocalizedMessage());
 				return LoginResult.FAIL_CONNECTION;
-			} catch (ResponseFormatException e)
+			}
+			catch (ResponseFormatException e)
 			{
 				// Storage.logged = false;
 				Log.e(TAG, e.getLocalizedMessage());
 				return LoginResult.FAIL_FORMAT;
-			} catch (DeprecatedAPIException e)
+			}
+			catch (DeprecatedAPIException e)
 			{
 				// Storage.logged = false;
 				Log.e(TAG, e.getLocalizedMessage());
 				return LoginResult.FAIL_APIVERSION;
-			} catch (AuthException e)
+			}
+			catch (AuthException e)
 			{
 				// Storage.logged = false;
 				Log.e(TAG, e.getLocalizedMessage());
 				return LoginResult.FAIL_AUTH;
-			} catch (UndefinedFieldException e)
+			}
+			catch (UndefinedFieldException e)
 			{
 				// Storage.logged = false;
 				Log.e(TAG, e.getLocalizedMessage());
@@ -196,10 +208,13 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 			}
 		}
 
+		@Override
 		protected void onProgressUpdate(Integer... msg)
 		{
 			if (!syncParams.getShowProgress())
+			{
 				return;
+			}
 
 			switch (msg[0])
 			{
@@ -217,36 +232,51 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 			}
 		}
 
+		@Override
 		protected void onPostExecute(LoginResult result)
 		{
 			if (syncParams.getShowProgress())
 			{
 				if (dialog_login.isShowing())
+				{
 					dialog_login.dismiss();
+				}
 				if (dialog_sync.isShowing())
+				{
 					dialog_sync.dismiss();
+				}
 			}
 			switch (result)
 			{
 				case FAIL_UNDEFIELDS:
 					if (syncParams.getShowProgress())
+					{
 						UIUtils.showTip(ActivityMain.this, "Ошибка авторизации: укажите адрес сервера, логин и пароль");
+					}
 					break;
 				case FAIL_AUTH:
 					if (syncParams.getShowProgress())
+					{
 						UIUtils.showTip(ActivityMain.this, "Ошибка авторизации: неверный логин/пароль");
+					}
 					break;
 				case FAIL_CONNECTION:
 					if (syncParams.getShowProgress())
+					{
 						UIUtils.showTip(ActivityMain.this, "Ошибка: сервер не отвечает");
+					}
 					break;
 				case FAIL_APIVERSION:
 					if (syncParams.getShowProgress())
+					{
 						UIUtils.showTip(ActivityMain.this, "Ошибка: версия API устарела, обновите приложение");
+					}
 					break;
 				case FAIL_FORMAT:
 					if (syncParams.getShowProgress())
+					{
 						UIUtils.showTip(ActivityMain.this, "Ошибка: неверный формат");
+					}
 					break;
 				case DONE:
 				{
@@ -257,7 +287,8 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 						s = "Синхронизация дневника прошла успешно, передано страниц: "
 								+ String.valueOf(syncPagesCount);
 						UIUtils.showTip(ActivityMain.this, s);
-					} else
+					}
+					else
 						if (syncParams.getShowProgress())
 						{
 							s = "Дневник уже синхронизирован";
@@ -265,7 +296,9 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 						}
 
 					if (syncFoodBase)
+					{
 						UIUtils.showTip(ActivityMain.this, "База продуктов синхронизирована");
+					}
 
 					break;
 				}
@@ -273,11 +306,13 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 		}
 
 		// implemented
+		@Override
 		public void update_max(int max)
 		{
 			publishProgress(COM_PROGRESS_MAX, max);
 		}
 
+		@Override
 		public void update_progress(int progress)
 		{
 			publishProgress(COM_PROGRESS_CUR, progress);
@@ -329,7 +364,8 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 			setupSyncTimer(10 * 60 * 1000);
 
 			showDiary();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			ErrorHandler.handle(e, this);
 		}
@@ -343,7 +379,8 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 		try
 		{
 			PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			ErrorHandler.handle(e, this);
 		}
@@ -357,7 +394,8 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 		try
 		{
 			PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			ErrorHandler.handle(e, this);
 		}
@@ -371,13 +409,15 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 		{
 			Log.d(TAG, "Preferences changed, key=" + key);
 			Storage.applyPreference(sharedPreferences, key);
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			ErrorHandler.handle(e, this);
 		}
 	}
 
 	// handled
+	@Override
 	public void onClick(View v)
 	{
 		try
@@ -404,7 +444,8 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 					throw new RuntimeException("Test exception");
 					// break;
 			}
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			ErrorHandler.handle(e, this);
 		}
@@ -413,7 +454,9 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 	private void setupSyncTimer(long interval)
 	{
 		if (timerSettedUp)
+		{
 			return;
+		}
 		timerSettedUp = true;
 
 		final SyncParams par = new SyncParams();
@@ -421,13 +464,14 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 
 		TimerTask task = new TimerTask()
 		{
-			private Handler mHandler = new Handler(Looper.getMainLooper());
+			private Handler	mHandler	= new Handler(Looper.getMainLooper());
 
 			@Override
 			public void run()
 			{
 				mHandler.post(new Runnable()
 				{
+					@Override
 					public void run()
 					{
 						new AsyncTaskAuthAndSync().execute(par);

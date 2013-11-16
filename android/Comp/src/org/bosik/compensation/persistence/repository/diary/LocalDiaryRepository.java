@@ -18,15 +18,15 @@ public class LocalDiaryRepository implements DiaryRepository
 	/* ============================ КОНСТАНТЫ ============================ */
 
 	@SuppressWarnings("unused")
-	private static final String TAG = "LocalDiaryRepository";
+	private static final String	TAG			= "LocalDiaryRepository";
 
-	public static final int AUTO_CHECK = 0;
-	public static final int SURE_INSERT = 1;
-	public static final int SURE_UPDATE = 2;
+	public static final int		AUTO_CHECK	= 0;
+	public static final int		SURE_INSERT	= 1;
+	public static final int		SURE_UPDATE	= 2;
 
 	/* ============================ ПОЛЯ ============================ */
 
-	private ContentResolver aResolver;
+	private ContentResolver		aResolver;
 
 	/* ======================= ВНУТРЕННИЕ МЕТОДЫ ========================= */
 
@@ -40,8 +40,10 @@ public class LocalDiaryRepository implements DiaryRepository
 	private DiaryPage findPage(Date date)
 	{
 		if (null == date)
+		{
 			throw new NullPointerException("Date can't be null");
-		// Log.i(TAG,"getPage(): date is " + date.toString());
+			// Log.i(TAG,"getPage(): date is " + date.toString());
+		}
 
 		// формируем параметры
 		String[] mProj = { DiaryProvider.COLUMN_DATE, DiaryProvider.COLUMN_TIMESTAMP, DiaryProvider.COLUMN_VERSION,
@@ -57,9 +59,13 @@ public class LocalDiaryRepository implements DiaryRepository
 		if (cursor == null)
 		{
 			if (BuildConfig.DEBUG)
+			{
 				throw new RuntimeException("Cursor is null");
+			}
 			else
+			{
 				return null;
+			}
 		}
 
 		if (cursor.getCount() < 1)
@@ -88,7 +94,8 @@ public class LocalDiaryRepository implements DiaryRepository
 			String source = cursor.getString(indexPage);
 
 			return new DiaryPage(date, timeStamp, version, source);
-		} catch (ParseException e)
+		}
+		catch (ParseException e)
 		{
 			throw new RuntimeException("Can't parse timestamp", e);
 		}
@@ -141,7 +148,8 @@ public class LocalDiaryRepository implements DiaryRepository
 			// Log.d(TAG, "PostPage(): page exists, updating...");
 			aResolver.update(DiaryProvider.CONTENT_URI, mNewValues, "Date = ?",
 					new String[] { Utils.formatDate(diaryPage.getDate()) });
-		} else
+		}
+		else
 		{
 			// Log.d(TAG, "PostPage(): page doesn't exist, inserting...");
 			mNewValues.put(DiaryProvider.COLUMN_DATE, Utils.formatDate(diaryPage.getDate()));
@@ -163,7 +171,9 @@ public class LocalDiaryRepository implements DiaryRepository
 	public LocalDiaryRepository(ContentResolver resolver)
 	{
 		if (null == resolver)
+		{
 			throw new NullPointerException("Content Resolver can't be null");
+		}
 		aResolver = resolver;
 	}
 
@@ -195,7 +205,8 @@ public class LocalDiaryRepository implements DiaryRepository
 					Date date = Utils.parseDate(mCursor.getString(indexDate));
 					int version = mCursor.getInt(indexVersion);
 					res.add(new PageVersion(date, version));
-				} catch (ParseException e)
+				}
+				catch (ParseException e)
 				{
 					// THINK: как правильно решать эту ситуацию?
 					throw new RuntimeException(e);
@@ -203,8 +214,11 @@ public class LocalDiaryRepository implements DiaryRepository
 			}
 
 			return res;
-		} else
+		}
+		else
+		{
 			throw new NullPointerException("Cursor is null");
+		}
 	}
 
 	@Override
@@ -225,7 +239,9 @@ public class LocalDiaryRepository implements DiaryRepository
 		for (DiaryPage page : pages)
 		{
 			if (!postPage(page))
+			{
 				result = false;
+			}
 		}
 		return result;
 	}
@@ -235,9 +251,13 @@ public class LocalDiaryRepository implements DiaryRepository
 	{
 		DiaryPage page = findPage(date);
 		if (page != null)
+		{
 			return page;
+		}
 		else
+		{
 			return new DiaryPage(date, Utils.now(), 1, "");
+		}
 	}
 
 	@Override

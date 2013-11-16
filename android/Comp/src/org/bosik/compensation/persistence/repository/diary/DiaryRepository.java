@@ -18,8 +18,8 @@ public interface DiaryRepository
 	 */
 	public static class PageVersion
 	{
-		public Date date;
-		public int version;
+		public Date	date;
+		public int	version;
 
 		public PageVersion(Date date, int version)
 		{

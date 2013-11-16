@@ -12,13 +12,15 @@ import android.util.Log;
 
 public class WebDiaryRepository implements DiaryRepository
 {
-	private static String TAG = WebDiaryRepository.class.getSimpleName();
-	private WebClient webClient;
+	private static String	TAG	= WebDiaryRepository.class.getSimpleName();
+	private WebClient		webClient;
 
 	public WebDiaryRepository(WebClient webClient)
 	{
 		if (webClient == null)
+		{
 			throw new NullPointerException("WebClient can't be null");
+		}
 
 		this.webClient = webClient;
 	}
@@ -74,8 +76,11 @@ public class WebDiaryRepository implements DiaryRepository
 		if (!resp.equals(""))
 		{
 			return serverToLocal(DiaryPage.multiRead(resp));
-		} else
+		}
+		else
+		{
 			return null;
+		}
 	}
 
 	/* ================ ВНЕШНИЕ ================ */
@@ -103,19 +108,29 @@ public class WebDiaryRepository implements DiaryRepository
 					int version = Integer.parseInt(item[1]);
 					PageVersion info = new PageVersion(date, version);
 					result.add(info);
-				} catch (ParseException e)
+				}
+				catch (ParseException e)
 				{
 					if (BuildConfig.DEBUG)
+					{
 						throw new WebClient.ResponseFormatException("Incorrect line: " + lines[i], e);
+					}
 					else
+					{
 						Log.e(TAG, "getModList(): Incorrect line: " + lines[i]);
+					}
 				}
-			} else
+			}
+			else
 			{
 				if (BuildConfig.DEBUG)
+				{
 					throw new WebClient.ResponseFormatException("Incorrect line: " + lines[i]);
+				}
 				else
+				{
 					Log.e(TAG, "getModList(): Incorrect line: " + lines[i]);
+				}
 			}
 		}
 		return result;
@@ -130,9 +145,11 @@ public class WebDiaryRepository implements DiaryRepository
 		int start = 0;
 		while (start < dates.size())
 		{
-			if (start + block >= dates.size())
+			if ((start + block) >= dates.size())
+			{
 				block = dates.size() - start;
-			result.addAll(getPagesNaive((List<Date>) dates.subList(start, start + block)));
+			}
+			result.addAll(getPagesNaive(dates.subList(start, start + block)));
 			start += block;
 		}
 

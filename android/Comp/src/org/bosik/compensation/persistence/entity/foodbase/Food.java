@@ -11,8 +11,8 @@ import org.bosik.compensation.persistence.entity.common.Item;
  */
 public class Food extends FoodData implements Cloneable
 {
-	private boolean fromTable;
-	private int tag;
+	private boolean	fromTable;
+	private int		tag;
 
 	// ================================ GET / SET ================================
 

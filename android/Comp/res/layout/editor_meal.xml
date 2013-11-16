@@ -54,7 +54,6 @@
             android:layout_weight="1"
             android:focusable="false"
             android:text="@string/button_add" />
-
     </LinearLayout>
 
     <RelativeLayout

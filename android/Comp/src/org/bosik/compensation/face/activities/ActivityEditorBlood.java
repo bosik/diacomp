@@ -3,6 +3,7 @@ package org.bosik.compensation.face.activities;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.face.UIUtils;
 import org.bosik.compensation.persistence.entity.diary.records.BloodRecord;
+import org.bosik.compensation.persistence.entity.diary.records.DiaryRecord;
 import android.content.Intent;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,24 +16,24 @@ public class ActivityEditorBlood extends ActivityEditor
 {
 	/* =========================== КОНСТАНТЫ ================================ */
 	@SuppressWarnings("unused")
-	private static final String TAG = "ActivityEditorBlood";
+	private static final String	TAG					= "ActivityEditorBlood";
 
-	public static final String FIELD_TIME = "bosik.pack.time";
-	public static final String FIELD_VALUE = "bosik.pack.value";
-	public static final String FIELD_FINGER = "bosik.pack.finger";
-	public static final int UNDEFINITE_VALUE = -1;
+	public static final String	FIELD_TIME			= "bosik.pack.time";
+	public static final String	FIELD_VALUE			= "bosik.pack.value";
+	public static final String	FIELD_FINGER		= "bosik.pack.finger";
+	public static final int		UNDEFINITE_VALUE	= -1;
 
 	/* =========================== ПОЛЯ ================================ */
 
 	// редактируемая запись
-	private int time;
-	private double value;
-	private int finger;
+	private int					time;
+	private double				value;
+	private int					finger;
 
 	// компоненты
-	private EditText editValue;
-	private TimePicker timePicker;
-	private Spinner spinnerFinger;
+	private EditText			editValue;
+	private TimePicker			timePicker;
+	private Spinner				spinnerFinger;
 
 	// private TextView labelBloodFinger; // может использоваться для сокрытия компонента
 
@@ -75,9 +76,13 @@ public class ActivityEditorBlood extends ActivityEditor
 		spinnerFinger.setSelection(finger);
 
 		if (value != UNDEFINITE_VALUE)
+		{
 			editValue.setText(String.valueOf(value));
+		}
 		else
+		{
 			editValue.setText("");
+		}
 
 		// TODO: сделать возможность не спрашивать палец
 		// spinnerFinger.setVisibility(View.GONE);
@@ -88,13 +93,14 @@ public class ActivityEditorBlood extends ActivityEditor
 	protected boolean getValues()
 	{
 		// читаем время
-		time = timePicker.getCurrentHour() * 60 + timePicker.getCurrentMinute();
+		time = (timePicker.getCurrentHour() * 60) + timePicker.getCurrentMinute();
 
 		// читаем значение
 		try
 		{
 			value = Double.parseDouble(editValue.getText().toString());
-		} catch (NumberFormatException e)
+		}
+		catch (NumberFormatException e)
 		{
 			UIUtils.showTip(ActivityEditorBlood.this, "Ошибка: неверное значение СК");
 			editValue.requestFocus();
@@ -105,7 +111,7 @@ public class ActivityEditorBlood extends ActivityEditor
 		finger = spinnerFinger.getSelectedItemPosition();
 
 		// валидируем
-		if (!BloodRecord.checkTime(time))
+		if (!DiaryRecord.checkTime(time))
 		{
 			UIUtils.showTip(ActivityEditorBlood.this, "Ошибка: неверное время");
 			timePicker.requestFocus();

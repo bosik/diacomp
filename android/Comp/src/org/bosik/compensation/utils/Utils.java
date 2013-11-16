@@ -20,19 +20,19 @@ public class Utils
 {
 	// отладочная печать
 	@SuppressWarnings("unused")
-	private static final String TAG = "Utils";
+	private static final String				TAG				= "Utils";
 
 	// константы
-	public static final int MsecPerSec = 1000;
-	public static final int SecPerMin = 60;
-	public static final int MinPerHour = 60;
-	public static final int HourPerDay = 24;
-	public static final int SecPerDay = SecPerMin * MinPerHour * HourPerDay;
-	public static final int MinPerDay = MinPerHour * HourPerDay;
-	public static final long MsecPerDay = MsecPerSec * SecPerMin * MinPerHour * HourPerDay;
+	public static final int					MsecPerSec		= 1000;
+	public static final int					SecPerMin		= 60;
+	public static final int					MinPerHour		= 60;
+	public static final int					HourPerDay		= 24;
+	public static final int					SecPerDay		= SecPerMin * MinPerHour * HourPerDay;
+	public static final int					MinPerDay		= MinPerHour * HourPerDay;
+	public static final long				MsecPerDay		= MsecPerSec * SecPerMin * MinPerHour * HourPerDay;
 
-	private static char DECIMAL_DOT;
-	private static DecimalFormat DF;
+	private static char						DECIMAL_DOT;
+	private static DecimalFormat			DF;
 
 	/*
 	 * public static final String[] MONTH_NAMES = new String[] { "Январь", "Февраль", "Март",
@@ -40,8 +40,8 @@ public class Utils
 	 */
 
 	// форматы
-	public static final SimpleDateFormat STD_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	public static final SimpleDateFormat STD_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	public static final SimpleDateFormat	STD_TIME_FORMAT	= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public static final SimpleDateFormat	STD_DATE_FORMAT	= new SimpleDateFormat("yyyy-MM-dd");
 
 	// статическая инициализация
 	static
@@ -52,7 +52,8 @@ public class Utils
 		{
 			DF = (DecimalFormat) f;
 			DECIMAL_DOT = DF.getDecimalFormatSymbols().getDecimalSeparator();
-		} else
+		}
+		else
 		{
 			throw new RuntimeException("Number format is not a decimal format");
 		}
@@ -99,9 +100,13 @@ public class Utils
 		int min = Integer.parseInt(S.substring(3, 5));
 
 		if (checkTime(hour, min))
-			return hour * MinPerHour + min;
+		{
+			return (hour * MinPerHour) + min;
+		}
 		else
+		{
 			throw new IllegalArgumentException("Incorrect time (" + S + ")");
+		}
 	}
 
 	/**
@@ -116,9 +121,13 @@ public class Utils
 		int hour = Time / MinPerHour;
 		int min = Time % MinPerHour;
 		if (checkTime(hour, min))
+		{
 			return intTo00(hour) + ":" + intTo00(min);
+		}
 		else
+		{
 			throw new IllegalArgumentException("Incorrect time (" + Time + ")");
+		}
 	}
 
 	/**
@@ -130,7 +139,7 @@ public class Utils
 	 */
 	public static int timeToMin(Date time)
 	{
-		return time.getHours() * MinPerHour + time.getMinutes();
+		return (time.getHours() * MinPerHour) + time.getMinutes();
 	}
 
 	/**
@@ -244,7 +253,7 @@ public class Utils
 		Calendar c = Calendar.getInstance();
 		int h = c.get(Calendar.HOUR) + (c.get(Calendar.AM_PM) == Calendar.AM ? 0 : 12);
 		int m = c.get(Calendar.MINUTE);
-		return h * 60 + m;
+		return (h * 60) + m;
 	}
 
 	/*
@@ -293,7 +302,8 @@ public class Utils
 			ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(s));
 			CharBuffer cbuf = decoder.decode(bbuf);
 			return cbuf.toString();
-		} catch (CharacterCodingException e)
+		}
+		catch (CharacterCodingException e)
 		{
 			throw new RuntimeException(e);
 		}

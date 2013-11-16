@@ -15,7 +15,8 @@ public class UIUtils
 		try
 		{
 			Thread.sleep(time);
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 	}

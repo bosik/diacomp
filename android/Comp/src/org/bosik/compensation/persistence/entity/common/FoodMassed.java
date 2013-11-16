@@ -13,10 +13,10 @@ import org.bosik.compensation.utils.Utils;
  */
 public class FoodMassed extends FoodData
 {
-	private static final DecimalFormat df = new DecimalFormat("###.#");
-	private static final char FOOD_SEP = '|';
+	private static final DecimalFormat	df			= new DecimalFormat("###.#");
+	private static final char			FOOD_SEP	= '|';
 
-	private double mass;
+	private double						mass;
 
 	// ================================ GET / SET ================================
 
@@ -31,25 +31,24 @@ public class FoodMassed extends FoodData
 		this.mass = mass;
 	}
 
-	// THINK: подумать об индексном доступе к полям (в т.ч. в MealRecord)
 	public double getProts()
 	{
-		return getRelProts() / 100 * mass;
+		return (getRelProts() / 100) * mass;
 	}
 
 	public double getFats()
 	{
-		return getRelFats() / 100 * mass;
+		return (getRelFats() / 100) * mass;
 	}
 
 	public double getCarbs()
 	{
-		return getRelCarbs() / 100 * mass;
+		return (getRelCarbs() / 100) * mass;
 	}
 
 	public double getValue()
 	{
-		return getRelValue() / 100 * mass;
+		return (getRelValue() / 100) * mass;
 	}
 
 	// ================================ CLONE ================================
@@ -78,7 +77,9 @@ public class FoodMassed extends FoodData
 		String[] t = s.split("[\\[" + FOOD_SEP + "\\]:]+"); // БОЯН :D
 
 		if (t.length != 6)
+		{
 			throw new IllegalArgumentException("Incorrect FoodMassed format: " + s);
+		}
 
 		// внутри сеттеров - дополнительные проверки
 		setName(t[0]);

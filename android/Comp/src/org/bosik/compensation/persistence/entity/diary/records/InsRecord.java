@@ -2,7 +2,7 @@ package org.bosik.compensation.persistence.entity.diary.records;
 
 public class InsRecord extends DiaryRecord
 {
-	private double value;
+	private double	value;
 
 	public InsRecord(int time, double value)
 	{
@@ -32,7 +32,9 @@ public class InsRecord extends DiaryRecord
 	public void setValue(double value)
 	{
 		if (!check(value))
+		{
 			throw new IllegalArgumentException("InsRecord: неверное значение поля Value (" + value + ")");
+		}
 
 		if (value != this.value)
 		{
