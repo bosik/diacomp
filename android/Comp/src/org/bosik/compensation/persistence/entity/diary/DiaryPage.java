@@ -2,6 +2,8 @@ package org.bosik.compensation.persistence.entity.diary;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.persistence.entity.common.FoodMassed;
@@ -31,55 +33,19 @@ public class DiaryPage implements DiaryChangeListener
 
 	// ============================== ВНУТРЕННИЕ МЕТОДЫ ==============================
 
-	/**
-	 * Трассировка указанной записи по времени
-	 * 
-	 * @param index
-	 *            Индекс записи
-	 * @return Новый индекс
-	 */
-	private int trace(int index)
+	private class RecordComparator implements Comparator<DiaryRecord>
 	{
-		int result = index;
-
-		if ((result > -1) && (result < items.size()))
+		@Override
+		public int compare(DiaryRecord lhs, DiaryRecord rhs)
 		{
-			DiaryRecord temp = items.get(result);
-			boolean changed = false;
-
-			// прогон вверх
-			while ((result > 0) && (items.get(result - 1).getTime() > temp.getTime()))
-			{
-				items.set(result, items.get(result - 1));
-				result--;
-				changed = true;
-			}
-
-			// прогон вниз
-			while ((result < (items.size() - 1)) && (items.get(result + 1).getTime() < temp.getTime()))
-			{
-				items.set(result, items.get(result + 1));
-				result++;
-				changed = true;
-			}
-
-			if (changed)
-			{
-				items.set(result, temp);
-			}
+			return lhs.getTime() - rhs.getTime();
 		}
-		return result;
 	}
 
-	/*
-	 * private int traceLast() { int result = items.size() - 1;
-	 * 
-	 * if (result > -1) { DiaryRecord temp = items.get(result); boolean changed = false;
-	 * 
-	 * // прогон вверх while ((result > 0) && (items.get(result - 1).getTime() > temp.getTime())) {
-	 * items.set(result, items.get(result - 1)); result--; changed = true; } if (changed)
-	 * items.set(result, temp); } return result; }
-	 */
+	private void resort()
+	{
+		Collections.sort(items, new RecordComparator());
+	}
 
 	// ================================ ВНЕШНИЕ МЕТОДЫ ================================
 
@@ -271,7 +237,7 @@ public class DiaryPage implements DiaryChangeListener
 			int index = items.indexOf(recInstance);
 			if (index != -1)
 			{
-				trace(index);
+				resort();
 			}
 		}
 	}
