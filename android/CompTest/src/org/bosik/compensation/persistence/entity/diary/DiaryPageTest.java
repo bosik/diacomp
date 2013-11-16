@@ -46,7 +46,7 @@ public class DiaryPageTest extends TestCase
 		assertEquals(2.495, ((MealRecord) r).getCarbs());
 		assertEquals(9.475, ((MealRecord) r).getValue());
 
-		assertEquals(1, ((MealRecord) r).size());
+		assertEquals(1, ((MealRecord) r).count());
 		assertEquals("Сахар", ((MealRecord) r).get(0).getName());
 		assertEquals(10.0, ((MealRecord) r).get(0).getRelProts());
 		assertEquals(10.0, ((MealRecord) r).get(0).getRelFats());
@@ -71,7 +71,7 @@ public class DiaryPageTest extends TestCase
 		assertEquals(2.495, ((MealRecord) r).getCarbs());
 		assertEquals(9.475, ((MealRecord) r).getValue());
 
-		assertEquals(1, ((MealRecord) r).size());
+		assertEquals(1, ((MealRecord) r).count());
 		assertEquals("Сахар", ((MealRecord) r).get(0).getName());
 		assertEquals(10.0, ((MealRecord) r).get(0).getRelProts());
 		assertEquals(10.0, ((MealRecord) r).get(0).getRelFats());
