@@ -14,6 +14,20 @@ public class FoodData extends Item
 	private double	relCarbs;
 	private double	relValue;
 
+	public FoodData()
+	{
+
+	}
+
+	public FoodData(String name, double relProts, double relFats, double relCarbs, double relValue)
+	{
+		this.name = name;
+		this.relProts = relProts;
+		this.relFats = relFats;
+		this.relCarbs = relCarbs;
+		this.relValue = relValue;
+	}
+
 	// ================================ ВАЛИДАТОРЫ ================================
 
 	public static boolean checkName(String name)

@@ -42,7 +42,7 @@ public class MealFormatter
 		{
 			case FIRST:
 			{
-				if (meal.size() == 0)
+				if (meal.count() == 0)
 				{
 					return "";
 				}
@@ -53,20 +53,20 @@ public class MealFormatter
 			}
 			case LAST:
 			{
-				if (meal.size() == 0)
+				if (meal.count() == 0)
 				{
 					return "";
 				}
 				else
 				{
-					return meal.get(meal.size() - 1).getName();
+					return meal.get(meal.count() - 1).getName();
 				}
 			}
 			case MOST_CARBS:
 			{
 				double max = -1;
 				String name = "";
-				for (int i = 0; i < meal.size(); i++)
+				for (int i = 0; i < meal.count(); i++)
 				{
 					if (meal.get(i).getCarbs() > max)
 					{
