@@ -1,11 +1,10 @@
-package org.bosik.compensation.data.test;
+package org.bosik.compensation.persistence.entity.foodbase;
 
 import junit.framework.TestCase;
-import org.bosik.compensation.persistence.entity.foodbase.Food;
 
 public class FoodTest extends TestCase
 {
-	private Food food = new Food();
+	private Food	food	= new Food();
 
 	public void testClone() throws CloneNotSupportedException
 	{

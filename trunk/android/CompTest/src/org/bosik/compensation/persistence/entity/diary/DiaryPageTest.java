@@ -1,8 +1,7 @@
-package org.bosik.compensation.data.test;
+package org.bosik.compensation.persistence.entity.diary;
 
 import java.util.Calendar;
 import junit.framework.TestCase;
-import org.bosik.compensation.persistence.entity.diary.DiaryPage;
 import org.bosik.compensation.persistence.entity.diary.records.BloodRecord;
 import org.bosik.compensation.persistence.entity.diary.records.DiaryRecord;
 import org.bosik.compensation.persistence.entity.diary.records.InsRecord;
@@ -17,7 +16,7 @@ public class DiaryPageTest extends TestCase
 		assertEquals(1, d.count());
 		DiaryRecord r = d.get(0);
 		assertTrue(r.getClass() == BloodRecord.class);
-		assertEquals(9 * 60 + 5, ((BloodRecord) r).getTime());
+		assertEquals((9 * 60) + 5, ((BloodRecord) r).getTime());
 		assertEquals(4.8, ((BloodRecord) r).getValue());
 	}
 
@@ -28,7 +27,7 @@ public class DiaryPageTest extends TestCase
 		assertEquals(1, d.count());
 		DiaryRecord r = d.get(0);
 		assertTrue(r.getClass() == InsRecord.class);
-		assertEquals(9 * 60 + 5, ((InsRecord) r).getTime());
+		assertEquals((9 * 60) + 5, ((InsRecord) r).getTime());
 		assertEquals(7.9, ((InsRecord) r).getValue());
 	}
 
@@ -41,7 +40,7 @@ public class DiaryPageTest extends TestCase
 		DiaryRecord r = d.get(0);
 		assertTrue(r.getClass() == MealRecord.class);
 		assertEquals(true, ((MealRecord) r).getShortMeal());
-		assertEquals(2 * 60 + 48, ((MealRecord) r).getTime());
+		assertEquals((2 * 60) + 48, ((MealRecord) r).getTime());
 		assertEquals(0.25, ((MealRecord) r).getProts());
 		assertEquals(0.25, ((MealRecord) r).getFats());
 		assertEquals(2.495, ((MealRecord) r).getCarbs());
@@ -66,7 +65,7 @@ public class DiaryPageTest extends TestCase
 		DiaryRecord r = d.get(0);
 		assertTrue(r.getClass() == MealRecord.class);
 		assertEquals(false, ((MealRecord) r).getShortMeal());
-		assertEquals(2 * 60 + 48, ((MealRecord) r).getTime());
+		assertEquals((2 * 60) + 48, ((MealRecord) r).getTime());
 		assertEquals(0.25, ((MealRecord) r).getProts());
 		assertEquals(0.25, ((MealRecord) r).getFats());
 		assertEquals(2.495, ((MealRecord) r).getCarbs());

@@ -1,12 +1,11 @@
-package org.bosik.compensation.data.test;
+package org.bosik.compensation.persistence.entity.diary.records;
 
 import junit.framework.TestCase;
 import org.bosik.compensation.persistence.entity.common.FoodMassed;
-import org.bosik.compensation.persistence.entity.diary.records.MealRecord;
 
 public class MealRecordTest extends TestCase
 {
-	private MealRecord meal = new MealRecord(620, false);
+	private MealRecord	meal	= new MealRecord(620, false);
 
 	// THINK: рандомные тесты - добро или зло?
 
@@ -42,7 +41,8 @@ public class MealRecordTest extends TestCase
 		{
 			meal.add(null);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 	}

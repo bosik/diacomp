@@ -1,12 +1,11 @@
-package org.bosik.compensation.data.test;
+package org.bosik.compensation.persistence.entity.common;
 
 import java.text.ParseException;
 import junit.framework.TestCase;
-import org.bosik.compensation.persistence.entity.common.FoodMassed;
 
 public class FoodMassedTest extends TestCase
 {
-	private FoodMassed food = new FoodMassed();
+	private FoodMassed	food	= new FoodMassed();
 
 	public void testMass()
 	{
@@ -25,14 +24,16 @@ public class FoodMassedTest extends TestCase
 		{
 			food.setMass(-0.01);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			food.setMass(-100);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 	}
@@ -74,49 +75,56 @@ public class FoodMassedTest extends TestCase
 		{
 			food.setRelProts(-0.01);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			food.setRelProts(100.01);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			food.setRelFats(-0.01);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			food.setRelFats(100.01);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			food.setRelCarbs(-0.01);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			food.setRelCarbs(100.01);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 		try
 		{
 			food.setRelValue(-0.01);
 			fail();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 		}
 	}
@@ -143,7 +151,8 @@ public class FoodMassedTest extends TestCase
 			assertEquals(270.0, food.getRelValue());
 			assertEquals(40.0, food.getMass());
 
-		} catch (ParseException e)
+		}
+		catch (ParseException e)
 		{
 			fail("Parse exception");
 		}
