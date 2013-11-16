@@ -50,11 +50,11 @@ public class MealRecordTest extends TestCase
 	public void testClearAddSize()
 	{
 		meal.clear();
-		assertEquals(0, meal.size());
+		assertEquals(0, meal.count());
 		meal.add(new FoodMassed());
-		assertEquals(1, meal.size());
+		assertEquals(1, meal.count());
 		meal.add(new FoodMassed());
-		assertEquals(2, meal.size());
+		assertEquals(2, meal.count());
 	}
 
 	public void testPFCV()
