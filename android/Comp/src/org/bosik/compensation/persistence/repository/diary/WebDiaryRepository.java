@@ -6,14 +6,16 @@ import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.face.BuildConfig;
 import org.bosik.compensation.persistence.entity.diary.DiaryPage;
+import org.bosik.compensation.persistence.repository.common.Serializer;
 import org.bosik.compensation.persistence.repository.providers.WebClient;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
 
 public class WebDiaryRepository implements DiaryRepository
 {
-	private static String	TAG	= WebDiaryRepository.class.getSimpleName();
-	private WebClient		webClient;
+	private static String				TAG			= WebDiaryRepository.class.getSimpleName();
+	private WebClient					webClient;
+	private final Serializer<DiaryPage>	serializer	= new DiaryPageSerializer();
 
 	public WebDiaryRepository(WebClient webClient)
 	{
@@ -41,7 +43,7 @@ public class WebDiaryRepository implements DiaryRepository
 		for (DiaryPage page : pages)
 		{
 			// TODO: optimize if need
-			DiaryPage newPage = new DiaryPage(page.writeFull());
+			DiaryPage newPage = serializer.read(serializer.write(page));
 			newPage.setTimeStamp(webClient.localToServer(page.getTimeStamp()));
 			result.add(newPage);
 		}
@@ -62,7 +64,7 @@ public class WebDiaryRepository implements DiaryRepository
 		for (DiaryPage page : pages)
 		{
 			// TODO: optimize if need
-			DiaryPage newPage = new DiaryPage(page.writeFull());
+			DiaryPage newPage = serializer.read(serializer.write(page));
 			newPage.setTimeStamp(webClient.serverToLocal(page.getTimeStamp()));
 			result.add(newPage);
 		}
@@ -75,7 +77,7 @@ public class WebDiaryRepository implements DiaryRepository
 
 		if (!resp.equals(""))
 		{
-			return serverToLocal(DiaryPage.multiRead(resp));
+			return serverToLocal(serializer.readAll(resp));
 		}
 		else
 		{
@@ -160,7 +162,7 @@ public class WebDiaryRepository implements DiaryRepository
 	public boolean postPages(List<DiaryPage> pages)
 	{
 		pages = localToServer(pages);
-		String data = DiaryPage.multiWrite(pages);
+		String data = serializer.writeAll(pages);
 		return webClient.postPages(data);
 	}
 

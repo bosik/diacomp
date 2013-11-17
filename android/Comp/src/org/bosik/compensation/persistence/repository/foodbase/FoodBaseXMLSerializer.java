@@ -1,5 +1,6 @@
 package org.bosik.compensation.persistence.repository.foodbase;
 
+import java.util.List;
 import org.bosik.compensation.persistence.entity.foodbase.Food;
 import org.bosik.compensation.persistence.repository.common.Base;
 import org.bosik.compensation.persistence.repository.common.Serializer;
@@ -85,5 +86,26 @@ public class FoodBaseXMLSerializer implements Serializer<Base<Food>>
 		}
 
 		return XmlUtils.writeDocument(doc);
+	}
+
+	@Override
+	public List<Base<Food>> readAll(String data)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String writeAll(List<Base<Food>> object)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Base<Food> read(String data)
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

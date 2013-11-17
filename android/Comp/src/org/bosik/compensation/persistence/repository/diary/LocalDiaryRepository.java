@@ -93,7 +93,9 @@ public class LocalDiaryRepository implements DiaryRepository
 			int version = cursor.getInt(indexVersion);
 			String source = cursor.getString(indexPage);
 
-			return new DiaryPage(date, timeStamp, version, source);
+			DiaryPage diaryPage = new DiaryPage(date, timeStamp, version);
+			DiaryPageSerializer.readContent(source, diaryPage);
+			return diaryPage;
 		}
 		catch (ParseException e)
 		{
@@ -116,7 +118,7 @@ public class LocalDiaryRepository implements DiaryRepository
 	{
 		// Log.i(TAG, "PostPage()");
 
-		String code = DiaryPage.writeContent(diaryPage);
+		String code = DiaryPageSerializer.writeContent(diaryPage);
 		// Log.v(TAG, "PostPage(): date is " + diaryPage.getDate().toString());
 		// Log.v(TAG,"PostPage(): page is " + code);
 
@@ -256,7 +258,7 @@ public class LocalDiaryRepository implements DiaryRepository
 		}
 		else
 		{
-			return new DiaryPage(date, Utils.now(), 1, "");
+			return new DiaryPage(date, Utils.now(), 0);
 		}
 	}
 

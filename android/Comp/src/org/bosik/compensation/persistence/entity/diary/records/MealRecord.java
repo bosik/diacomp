@@ -36,6 +36,7 @@ public class MealRecord extends DiaryRecord
 	}
 
 	// работа с характеристиками
+	// TODO: написать тесты
 
 	public double getProts()
 	{
