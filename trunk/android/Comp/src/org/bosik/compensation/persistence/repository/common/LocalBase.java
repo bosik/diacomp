@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import org.bosik.compensation.persistence.entity.common.Item;
+import org.bosik.compensation.bo.common.Item;
 import android.content.Context;
 import android.util.Log;
 

@@ -1,7 +1,7 @@
 package org.bosik.compensation.persistence.repository.foodbase;
 
 import java.util.List;
-import org.bosik.compensation.persistence.entity.foodbase.FoodItem;
+import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.persistence.repository.common.Base;
 import org.bosik.compensation.persistence.repository.common.Serializer;
 import org.bosik.compensation.utils.XmlUtils;

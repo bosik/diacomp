@@ -1,12 +1,12 @@
 package org.bosik.compensation.face.views;
 
+import org.bosik.compensation.bo.diary.DiaryPage;
+import org.bosik.compensation.bo.diary.records.BloodRecord;
+import org.bosik.compensation.bo.diary.records.DiaryRecord;
+import org.bosik.compensation.bo.diary.records.InsRecord;
+import org.bosik.compensation.bo.diary.records.MealRecord;
+import org.bosik.compensation.bo.diary.records.NoteRecord;
 import org.bosik.compensation.face.R;
-import org.bosik.compensation.persistence.entity.diary.DiaryPage;
-import org.bosik.compensation.persistence.entity.diary.records.BloodRecord;
-import org.bosik.compensation.persistence.entity.diary.records.DiaryRecord;
-import org.bosik.compensation.persistence.entity.diary.records.InsRecord;
-import org.bosik.compensation.persistence.entity.diary.records.MealRecord;
-import org.bosik.compensation.persistence.entity.diary.records.NoteRecord;
 import org.bosik.compensation.utils.Utils;
 import android.content.Context;
 import android.graphics.Bitmap;

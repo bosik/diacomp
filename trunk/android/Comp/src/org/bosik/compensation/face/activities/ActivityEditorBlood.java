@@ -1,9 +1,9 @@
 package org.bosik.compensation.face.activities;
 
+import org.bosik.compensation.bo.diary.records.BloodRecord;
+import org.bosik.compensation.bo.diary.records.DiaryRecord;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.face.UIUtils;
-import org.bosik.compensation.persistence.entity.diary.records.BloodRecord;
-import org.bosik.compensation.persistence.entity.diary.records.DiaryRecord;
 import android.content.Intent;
 import android.widget.Button;
 import android.widget.EditText;

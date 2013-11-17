@@ -4,8 +4,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.face.BuildConfig;
-import org.bosik.compensation.persistence.entity.diary.DiaryPage;
 import org.bosik.compensation.persistence.repository.providers.DiaryProvider;
 import org.bosik.compensation.utils.Utils;
 import android.app.Activity;
@@ -18,7 +18,7 @@ public class LocalDiaryRepository implements DiaryRepository
 	/* ============================ КОНСТАНТЫ ============================ */
 
 	@SuppressWarnings("unused")
-	private static final String	TAG			= "LocalDiaryRepository";
+	private static final String	TAG			= LocalDiaryRepository.class.getSimpleName();
 
 	public static final int		AUTO_CHECK	= 0;
 	public static final int		SURE_INSERT	= 1;

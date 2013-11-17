@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.entity.diary.records;
+package org.bosik.compensation.bo.diary.records;
 
 public class BloodRecord extends DiaryRecord
 {

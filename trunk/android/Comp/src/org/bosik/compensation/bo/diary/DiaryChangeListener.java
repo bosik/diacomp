@@ -1,6 +1,6 @@
-package org.bosik.compensation.persistence.entity.diary;
+package org.bosik.compensation.bo.diary;
 
-import org.bosik.compensation.persistence.entity.diary.records.DiaryRecord;
+import org.bosik.compensation.bo.diary.records.DiaryRecord;
 
 @Deprecated
 public interface DiaryChangeListener

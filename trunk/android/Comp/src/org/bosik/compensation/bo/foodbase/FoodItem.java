@@ -1,7 +1,7 @@
-package org.bosik.compensation.persistence.entity.foodbase;
+package org.bosik.compensation.bo.foodbase;
 
-import org.bosik.compensation.persistence.entity.common.Food;
-import org.bosik.compensation.persistence.entity.common.Item;
+import org.bosik.compensation.bo.common.Food;
+import org.bosik.compensation.bo.common.Item;
 
 /**
  * Продукт

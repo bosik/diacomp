@@ -1,6 +1,6 @@
 package org.bosik.compensation.face.views;
 
-import org.bosik.compensation.persistence.entity.diary.records.MealRecord;
+import org.bosik.compensation.bo.diary.records.MealRecord;
 
 public class MealFormatter
 {

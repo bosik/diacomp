@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.entity;
+package org.bosik.compensation.bo.common;
 
 @Deprecated
 public interface ChangeListener

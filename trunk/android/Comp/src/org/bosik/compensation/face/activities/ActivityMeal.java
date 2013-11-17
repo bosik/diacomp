@@ -1,10 +1,10 @@
 package org.bosik.compensation.face.activities;
 
 import java.text.DecimalFormat;
+import org.bosik.compensation.bo.common.FoodMassed;
+import org.bosik.compensation.bo.diary.records.MealRecord;
+import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.R;
-import org.bosik.compensation.persistence.entity.common.FoodMassed;
-import org.bosik.compensation.persistence.entity.diary.records.MealRecord;
-import org.bosik.compensation.persistence.entity.foodbase.FoodItem;
 import org.bosik.compensation.persistence.repository.Storage;
 import android.app.Activity;
 import android.os.Bundle;

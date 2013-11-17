@@ -1,7 +1,7 @@
 package org.bosik.compensation.persistence.repository;
 
+import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.R;
-import org.bosik.compensation.persistence.entity.foodbase.FoodItem;
 import org.bosik.compensation.persistence.repository.common.Base;
 import org.bosik.compensation.persistence.repository.common.Interchangeable;
 import org.bosik.compensation.persistence.repository.diary.DiaryRepository;
