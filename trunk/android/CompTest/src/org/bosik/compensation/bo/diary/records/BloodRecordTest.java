@@ -1,5 +1,6 @@
-package org.bosik.compensation.persistence.entity.diary.records;
+package org.bosik.compensation.bo.diary.records;
 
+import org.bosik.compensation.bo.diary.records.BloodRecord;
 import junit.framework.TestCase;
 
 public class BloodRecordTest extends TestCase

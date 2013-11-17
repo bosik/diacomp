@@ -1,7 +1,8 @@
-package org.bosik.compensation.persistence.entity.diary.records;
+package org.bosik.compensation.bo.diary.records;
 
 import junit.framework.TestCase;
-import org.bosik.compensation.persistence.entity.common.FoodMassed;
+import org.bosik.compensation.bo.common.FoodMassed;
+import org.bosik.compensation.bo.diary.records.MealRecord;
 
 public class MealRecordTest extends TestCase
 {

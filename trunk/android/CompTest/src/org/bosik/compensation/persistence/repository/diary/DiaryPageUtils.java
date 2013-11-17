@@ -2,12 +2,12 @@ package org.bosik.compensation.persistence.repository.diary;
 
 import java.util.Date;
 import junit.framework.TestCase;
-import org.bosik.compensation.persistence.entity.common.FoodMassed;
-import org.bosik.compensation.persistence.entity.diary.DiaryPage;
-import org.bosik.compensation.persistence.entity.diary.records.BloodRecord;
-import org.bosik.compensation.persistence.entity.diary.records.InsRecord;
-import org.bosik.compensation.persistence.entity.diary.records.MealRecord;
-import org.bosik.compensation.persistence.entity.diary.records.NoteRecord;
+import org.bosik.compensation.bo.common.FoodMassed;
+import org.bosik.compensation.bo.diary.DiaryPage;
+import org.bosik.compensation.bo.diary.records.BloodRecord;
+import org.bosik.compensation.bo.diary.records.InsRecord;
+import org.bosik.compensation.bo.diary.records.MealRecord;
+import org.bosik.compensation.bo.diary.records.NoteRecord;
 
 public class DiaryPageUtils extends TestCase
 {
