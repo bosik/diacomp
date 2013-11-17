@@ -16,8 +16,7 @@ public class FoodBaseFormatterTest extends TestCase
 
 	public void testRead()
 	{
-		Base<FoodItem> base = new Base<FoodItem>();
-		f.read(base, xml);
+		Base<FoodItem> base = f.read(xml);
 
 		assertEquals(167, base.getVersion());
 		assertEquals(2, base.count());
@@ -64,8 +63,7 @@ public class FoodBaseFormatterTest extends TestCase
 
 		// =======================================================
 
-		Base<FoodItem> anotherBase = new Base<FoodItem>();
-		f.read(anotherBase, xml);
+		Base<FoodItem> anotherBase = f.read(xml);
 
 		assertEquals(base.getVersion(), anotherBase.getVersion());
 		assertEquals(base.getVersion(), 2);
