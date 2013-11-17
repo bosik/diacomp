@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.entity.diary;
+package org.bosik.compensation.bo.diary;
 
 import junit.framework.TestCase;
 

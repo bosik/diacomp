@@ -1,7 +1,7 @@
 package org.bosik.compensation.persistence.repository.foodbase;
 
 import junit.framework.TestCase;
-import org.bosik.compensation.persistence.entity.foodbase.FoodItem;
+import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.persistence.repository.common.Base;
 
 public class FoodBaseFormatterTest extends TestCase

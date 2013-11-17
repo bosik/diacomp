@@ -1,7 +1,7 @@
 package org.bosik.compensation.persistence.repository.diary;
 
 import junit.framework.TestCase;
-import org.bosik.compensation.persistence.entity.diary.DiaryPage;
+import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.persistence.repository.common.Serializer;
 
 public class DiaryPageSerializerTest extends TestCase
