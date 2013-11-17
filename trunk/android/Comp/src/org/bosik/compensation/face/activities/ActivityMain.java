@@ -165,13 +165,13 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 																		// громадный синхролист, ага
 				syncPagesCount = SyncDiaryRepository.synchronize(Storage.local_diary, Storage.web_diary, since);
 
-				SyncResult r = SyncBase.synchronize(Storage.localFoodBase, Storage.webFoodbaseRepository);
+				SyncResult r = SyncBase.synchronize(Storage.localFoodBaseRepository, Storage.webFoodbaseRepository);
 				syncFoodBase = (r != SyncResult.EQUAL);
 
-				if (Storage.localFoodBase.modified())
-				{
-					Storage.localFoodBase.save();
-				}
+				// if (Storage.localFoodBaseRepository.modified())
+				// {
+				// Storage.localFoodBaseRepository.save();
+				// }
 
 				Log.d(TAG, "Sync done OK...");
 				return LoginResult.DONE;

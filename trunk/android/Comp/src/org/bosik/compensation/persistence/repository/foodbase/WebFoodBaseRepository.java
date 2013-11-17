@@ -5,10 +5,10 @@ import org.bosik.compensation.persistence.repository.common.Base;
 import org.bosik.compensation.persistence.repository.common.Interchangeable;
 import org.bosik.compensation.persistence.repository.providers.WebClient;
 
-public class WebFoodBaseRepository implements Interchangeable
+public class WebFoodBaseRepository implements Interchangeable<Base<FoodItem>>
 {
 	// private static String TAG = WebFoodBaseRepository.class.getSimpleName();
-	private static FoodBaseXMLSerializer	formatter	= new FoodBaseXMLSerializer();
+	private static FoodBaseXMLSerializer	serializer	= new FoodBaseXMLSerializer();
 
 	private WebClient						webClient;
 
@@ -32,23 +32,17 @@ public class WebFoodBaseRepository implements Interchangeable
 	}
 
 	@Override
-	public String write()
+	public Base<FoodItem> getData()
 	{
-		return webClient.getFoodBase();
-		// Base<FoodItem> base = new Base<FoodItem>();
-		// formatter.read(base, resp);
-		// return base;
+		String source = webClient.getFoodBase();
+		return serializer.read(source);
 	}
 
 	@Override
-	public void read(String data)
+	public void postData(Base<FoodItem> base)
 	{
-		// TODO: optimize if need
-
-		Base<FoodItem> base = new Base<FoodItem>();
-		formatter.read(base, data);
+		String source = serializer.write(base);
 		String version = String.valueOf(base.getVersion());
-
-		webClient.postFoodBase(version, data);
+		webClient.postFoodBase(version, source);
 	}
 }

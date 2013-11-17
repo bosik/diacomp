@@ -209,7 +209,7 @@ public class DiaryPage implements DiaryChangeListener
 		}
 
 		// обновляем данные о версии и timeStamp
-		timeStamp = Utils.now();
+		timeStamp = Utils.now(); // TODO: use UTC time, not local one
 		version++;
 
 		// принимаем коррекционные меры

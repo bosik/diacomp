@@ -244,8 +244,7 @@ public class DiaryPageSerializer implements Serializer<DiaryPage>
 				Utils.formatTime(page.getTimeStamp()), page.getVersion());
 	}
 
-	@Override
-	public void read(DiaryPage page, String data)
+	private void read(DiaryPage page, String data)
 	{
 		int n = data.indexOf("\n");
 		if (n > -1)

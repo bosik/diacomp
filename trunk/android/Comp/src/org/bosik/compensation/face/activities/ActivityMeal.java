@@ -79,7 +79,7 @@ public class ActivityMeal extends Activity
 
 		Log.d(TAG, "Caption carbs: " + captionCarbs);
 		Log.d(TAG, "Caption dose: " + captionDose);
-		Log.d(TAG, "FoodItem count: " + Storage.localFoodBase.count());
+		Log.d(TAG, "FoodItem count: " + Storage.foodBase.count());
 
 		loadFoodList();
 		showMeal();
@@ -120,11 +120,11 @@ public class ActivityMeal extends Activity
 
 	private void loadFoodList()
 	{
-		String[] foodBase = new String[Storage.localFoodBase.count()];
-		for (int i = 0; i < Storage.localFoodBase.count(); i++)
+		String[] foodBase = new String[Storage.foodBase.count()];
+		for (int i = 0; i < Storage.foodBase.count(); i++)
 		{
 			// TODO: implement method returning names array sorted by tag
-			foodBase[i] = Storage.localFoodBase.get(i).getName();
+			foodBase[i] = Storage.foodBase.get(i).getName();
 			// Log.v(TAG, foodBase[i]);
 		}
 
@@ -159,11 +159,11 @@ public class ActivityMeal extends Activity
 		FoodMassed item = null;
 
 		// TODO: create generics-based search
-		for (int i = 0; i < Storage.localFoodBase.count(); i++)
+		for (int i = 0; i < Storage.foodBase.count(); i++)
 		{
-			if (Storage.localFoodBase.get(i).getName().equalsIgnoreCase(name))
+			if (Storage.foodBase.get(i).getName().equalsIgnoreCase(name))
 			{
-				food = Storage.localFoodBase.get(i);
+				food = Storage.foodBase.get(i);
 
 				item = new FoodMassed();
 				item.setName(food.getName());

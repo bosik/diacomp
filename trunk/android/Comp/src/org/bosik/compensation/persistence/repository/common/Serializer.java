@@ -16,15 +16,12 @@ import java.util.List;
 public interface Serializer<T>
 {
 	/**
-	 * Загружает объект из строки
+	 * Создаёт объект из строки
 	 * 
-	 * @param object
-	 *            Объект (должен быть предварительно создан)
 	 * @param data
-	 *            Cтрока, хранящая объект
+	 *            Строка, хранящая объект
+	 * @return Объект
 	 */
-	public void read(T object, String data); // TODO: remove it
-
 	public T read(String data);
 
 	public List<T> readAll(String data);
