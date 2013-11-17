@@ -2,9 +2,9 @@ package org.bosik.compensation.persistence.entity.common;
 
 import junit.framework.TestCase;
 
-public class FoodDataTest extends TestCase
+public class FoodTest extends TestCase
 {
-	private FoodData	food	= new FoodData();
+	private Food	food	= new Food();
 
 	public void testName()
 	{
@@ -155,7 +155,7 @@ public class FoodDataTest extends TestCase
 		food.setRelCarbs(0.1);
 		food.setRelValue(270);
 
-		FoodData copy = (FoodData) food.clone();
+		Food copy = (Food) food.clone();
 		assertEquals(copy, food);
 		assertEquals(copy.getId(), food.getId());
 		assertEquals(copy.getName(), food.getName());

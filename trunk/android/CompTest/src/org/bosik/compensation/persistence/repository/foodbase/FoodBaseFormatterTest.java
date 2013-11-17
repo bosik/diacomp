@@ -1,7 +1,7 @@
 package org.bosik.compensation.persistence.repository.foodbase;
 
 import junit.framework.TestCase;
-import org.bosik.compensation.persistence.entity.foodbase.Food;
+import org.bosik.compensation.persistence.entity.foodbase.FoodItem;
 import org.bosik.compensation.persistence.repository.common.Base;
 
 public class FoodBaseFormatterTest extends TestCase
@@ -16,7 +16,7 @@ public class FoodBaseFormatterTest extends TestCase
 
 	public void testRead()
 	{
-		Base<Food> base = new Base<Food>();
+		Base<FoodItem> base = new Base<FoodItem>();
 		f.read(base, xml);
 
 		assertEquals(167, base.getVersion());
@@ -39,10 +39,10 @@ public class FoodBaseFormatterTest extends TestCase
 
 	public void testWriteRead()
 	{
-		Base<Food> base = new Base<Food>();
-		Food food;
+		Base<FoodItem> base = new Base<FoodItem>();
+		FoodItem food;
 
-		food = new Food();
+		food = new FoodItem();
 		food.setName("јбрикос");
 		food.setRelProts(0.9);
 		food.setRelFats(0.1);
@@ -51,7 +51,7 @@ public class FoodBaseFormatterTest extends TestCase
 		food.setFromTable(true);
 		base.add(food);
 
-		food = new Food();
+		food = new FoodItem();
 		food.setName("яйцо");
 		food.setRelProts(12.7);
 		food.setRelFats(11.5);
@@ -64,7 +64,7 @@ public class FoodBaseFormatterTest extends TestCase
 
 		// =======================================================
 
-		Base<Food> anotherBase = new Base<Food>();
+		Base<FoodItem> anotherBase = new Base<FoodItem>();
 		f.read(anotherBase, xml);
 
 		assertEquals(base.getVersion(), anotherBase.getVersion());
@@ -74,8 +74,8 @@ public class FoodBaseFormatterTest extends TestCase
 
 		for (int i = 0; i < base.count(); i++)
 		{
-			Food food1 = base.get(i);
-			Food food2 = anotherBase.get(i);
+			FoodItem food1 = base.get(i);
+			FoodItem food2 = anotherBase.get(i);
 
 			assertEquals(food1.getName(), food2.getName());
 			assertEquals(food1.getRelProts(), food2.getRelProts());

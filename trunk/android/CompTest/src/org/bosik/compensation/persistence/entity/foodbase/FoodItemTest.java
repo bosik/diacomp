@@ -2,9 +2,9 @@ package org.bosik.compensation.persistence.entity.foodbase;
 
 import junit.framework.TestCase;
 
-public class FoodTest extends TestCase
+public class FoodItemTest extends TestCase
 {
-	private Food	food	= new Food();
+	private FoodItem	food	= new FoodItem();
 
 	public void testClone() throws CloneNotSupportedException
 	{
@@ -16,7 +16,7 @@ public class FoodTest extends TestCase
 		food.setFromTable(true);
 		food.setTag(42);
 
-		Food copy = (Food) food.clone();
+		FoodItem copy = (FoodItem) food.clone();
 		assertEquals(copy, food);
 		assertEquals(copy.getId(), food.getId());
 		assertEquals(copy.getName(), food.getName());
