@@ -17,10 +17,11 @@ import android.util.Log;
  * @param <ItemType>
  *            Тип элемента базы
  */
-public class LocalBase<ItemType extends Item> extends Base<ItemType> implements Interchangeable
+public class LocalBase<ItemType extends Item> implements Interchangeable<Base<ItemType>>
 {
 	private static final String			TAG	= LocalBase.class.getSimpleName();
 
+	private Base<ItemType>				base;
 	private Context						context;
 	private String						fileName;
 	private Serializer<Base<ItemType>>	serializer;
@@ -92,7 +93,7 @@ public class LocalBase<ItemType extends Item> extends Base<ItemType> implements 
 	 * 
 	 * @param fileName
 	 *            Имя файла
-	 * @param data
+	 * @param base
 	 *            Строка
 	 * @throws IOException
 	 */
@@ -110,15 +111,15 @@ public class LocalBase<ItemType extends Item> extends Base<ItemType> implements 
 	// ----------------------------------- API -----------------------------------
 
 	@Override
-	public void read(String data)
+	public void postData(Base<ItemType> s)
 	{
-		serializer.read(this, data);
+		base = serializer.read(serializer.write(s));
 	}
 
 	@Override
-	public String write()
+	public Base<ItemType> getData()
 	{
-		return serializer.write(this);
+		return serializer.read(serializer.write(base));
 	}
 
 	// public int getVersion()
@@ -145,13 +146,14 @@ public class LocalBase<ItemType extends Item> extends Base<ItemType> implements 
 
 	// ----------------------------------- ОСТАЛЬНОЕ -----------------------------------
 
-	public void load()
+	private void load()
 	{
 		try
 		{
 			// if (fileExists(fileName))
 			// {
-			read(readFromFile(fileName));
+			String source = readFromFile(fileName);
+			base = serializer.read(source);
 			fileVersion = getVersion();
 			// } else
 			// {
@@ -183,7 +185,7 @@ public class LocalBase<ItemType extends Item> extends Base<ItemType> implements 
 	{
 		try
 		{
-			writeToFile(fileName, write());
+			writeToFile(fileName, serializer.write(base));
 			fileVersion = getVersion();
 		}
 		catch (IOException e)
@@ -195,5 +197,11 @@ public class LocalBase<ItemType extends Item> extends Base<ItemType> implements 
 	public boolean modified()
 	{
 		return getVersion() > fileVersion;
+	}
+
+	@Override
+	public int getVersion()
+	{
+		return base.getVersion();
 	}
 }

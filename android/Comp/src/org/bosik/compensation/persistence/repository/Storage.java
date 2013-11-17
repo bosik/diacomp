@@ -2,8 +2,8 @@ package org.bosik.compensation.persistence.repository;
 
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.persistence.entity.foodbase.FoodItem;
+import org.bosik.compensation.persistence.repository.common.Base;
 import org.bosik.compensation.persistence.repository.common.Interchangeable;
-import org.bosik.compensation.persistence.repository.common.LocalBase;
 import org.bosik.compensation.persistence.repository.diary.DiaryRepository;
 import org.bosik.compensation.persistence.repository.diary.LocalDiaryRepository;
 import org.bosik.compensation.persistence.repository.diary.WebDiaryRepository;
@@ -24,25 +24,26 @@ import android.util.Log;
  */
 public class Storage
 {
-	private static final String			TAG	= Storage.class.getSimpleName();
+	private static final String						TAG	= Storage.class.getSimpleName();
 
 	// настройки
-	private static SharedPreferences	pref;
+	private static SharedPreferences				pref;
 
 	// настройки
-	private static String				PREF_SERVER;
-	private static String				PREF_USERNAME;
-	private static String				PREF_PASSWORD;
-	private static String				PREF_DEFAULT_SERVER;
-	private static String				PREF_DEFAULT_USERNAME;
-	private static String				PREF_DEFAULT_PASSWORD;
+	private static String							PREF_SERVER;
+	private static String							PREF_USERNAME;
+	private static String							PREF_PASSWORD;
+	private static String							PREF_DEFAULT_SERVER;
+	private static String							PREF_DEFAULT_USERNAME;
+	private static String							PREF_DEFAULT_PASSWORD;
 
 	// данные
-	public static WebClient				web_client;
-	public static DiaryRepository		local_diary;
-	public static DiaryRepository		web_diary;
-	public static LocalBase<FoodItem>		localFoodBase;
-	public static Interchangeable		webFoodbaseRepository;
+	public static WebClient							web_client;
+	public static DiaryRepository					local_diary;
+	public static DiaryRepository					web_diary;
+	public static Interchangeable<Base<FoodItem>>	localFoodBaseRepository;
+	public static Interchangeable<Base<FoodItem>>	webFoodbaseRepository;
+	public static Base<FoodItem>					foodBase;
 
 	/**
 	 * Инициализирует хранилище. Метод можно вызывать повторно.
@@ -82,15 +83,17 @@ public class Storage
 			Log.d(TAG, "init(): web diary initialization...");
 			web_diary = new WebDiaryRepository(web_client);
 		}
-		if (null == localFoodBase)
+		if (null == localFoodBaseRepository)
 		{
 			Log.d(TAG, "init(): local foodbase initialization...");
 			String fileName = context.getString(R.string.fileNameFoodBase);
-			localFoodBase = new LocalFoodBase(context, fileName);
+			localFoodBaseRepository = new LocalFoodBase(context, fileName);
 
-			// localFoodBase.load();
-			// Log.d(TAG, "FoodItem base loaded, count: " + localFoodBase.count() + ", version: " +
-			// localFoodBase.getVersion());
+			foodBase = localFoodBaseRepository.getData();
+			// localFoodBaseRepository.load();
+			// Log.d(TAG, "FoodItem base loaded, count: " + localFoodBaseRepository.count() +
+			// ", version: " +
+			// localFoodBaseRepository.getVersion());
 		}
 		if (null == Storage.webFoodbaseRepository)
 		{
@@ -139,12 +142,12 @@ public class Storage
 		// THINK: как узнавать об ошибках, произошедших у пользователя в release-mode? Email? Web?
 	}
 
-	public static void saveFoodbase()
-	{
-		if (localFoodBase.modified())
-		{
-			Log.d(TAG, "init(): saving food base...");
-			localFoodBase.save();
-		}
-	}
+	// public static void saveFoodbase()
+	// {
+	// if (localFoodBaseRepository.modified())
+	// {
+	// Log.d(TAG, "init(): saving food base...");
+	// localFoodBaseRepository.save();
+	// }
+	// }
 }

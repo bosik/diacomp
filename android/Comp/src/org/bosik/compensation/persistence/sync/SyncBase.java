@@ -22,13 +22,13 @@ public class SyncBase
 
 		if (version1 > version2)
 		{
-			source2.read(source1.write());
+			source2.postData(source1.getData());
 			return SyncResult.SECOND_UPDATED;
 		}
 
 		if (version1 < version2)
 		{
-			source1.read(source2.write());
+			source1.postData(source2.getData());
 			return SyncResult.FIRST_UPDATED;
 		}
 

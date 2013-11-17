@@ -1,27 +1,27 @@
 package org.bosik.compensation.persistence.repository.common;
 
 /**
- * Интерфейс обмена текстовыми данными
+ * Интерфейс обмена объектами
  * 
  * @author Bosik
  * 
  */
-public interface Interchangeable
+public interface Interchangeable<T>
 {
 	/**
-	 * Читает объект из текстового представления
+	 * Отправляет объект
 	 * 
-	 * @param data
-	 *            Текстовое представление
+	 * @param object
+	 *            Объект
 	 */
-	public void read(String data);
+	public void postData(T object);
 
 	/**
-	 * Получает текстовое представление объекта
+	 * Запрашивает объект
 	 * 
-	 * @return Текстовое представление
+	 * @return Объект
 	 */
-	public String write();
+	public T getData();
 
 	/**
 	 * Получает номер версии объекта

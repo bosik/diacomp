@@ -114,7 +114,7 @@ public class LocalDiaryRepository implements DiaryRepository
 	 *            <i>SURE_INSERT</i> — Добавление без предварительной проверки <br/>
 	 *            <i>SURE_UPDATE</i> — Обновление без предварительной проверки
 	 */
-	private boolean postPageExt(DiaryPage diaryPage, int CheckMode)
+	private void postPageExt(DiaryPage diaryPage, int CheckMode)
 	{
 		// Log.i(TAG, "PostPage()");
 
@@ -157,8 +157,6 @@ public class LocalDiaryRepository implements DiaryRepository
 			mNewValues.put(DiaryProvider.COLUMN_DATE, Utils.formatDate(diaryPage.getDate()));
 			aResolver.insert(DiaryProvider.CONTENT_URI, mNewValues);
 		}
-
-		return true;
 	}
 
 	/* ============================ ВНЕШНИЕ МЕТОДЫ ============================ */
@@ -269,6 +267,7 @@ public class LocalDiaryRepository implements DiaryRepository
 		 * Аналог postPageExt(page, AUTO_CHECK). Предварительно выполняется проверка и в зависимости
 		 * от наличия записи в БД выполняется insert() или update()
 		 */
-		return postPageExt(diaryPage, AUTO_CHECK);
+		postPageExt(diaryPage, AUTO_CHECK);
+		return true;
 	}
 }
