@@ -1,7 +1,7 @@
 package org.bosik.compensation.persistence.repository.foodbase;
 
 import java.util.List;
-import org.bosik.compensation.persistence.entity.foodbase.Food;
+import org.bosik.compensation.persistence.entity.foodbase.FoodItem;
 import org.bosik.compensation.persistence.repository.common.Base;
 import org.bosik.compensation.persistence.repository.common.Serializer;
 import org.bosik.compensation.utils.XmlUtils;
@@ -20,12 +20,12 @@ import org.w3c.dom.NodeList;
  * @author Bosik
  * 
  */
-public class FoodBaseXMLSerializer implements Serializer<Base<Food>>
+public class FoodBaseXMLSerializer implements Serializer<Base<FoodItem>>
 {
 	// private static final String TAG = FoodBaseXMLSerializer.class.getSimpleName();
 
 	@Override
-	public void read(Base<Food> foodBase, String xmlData)
+	public void read(Base<FoodItem> foodBase, String xmlData)
 	{
 		// Log.v(TAG, "Reading: " + xmlData);
 
@@ -33,7 +33,7 @@ public class FoodBaseXMLSerializer implements Serializer<Base<Food>>
 		Element root = doc.getDocumentElement();
 		NodeList nodes = root.getChildNodes();
 
-		// Base<Food> foodBase = new Base<Food>();
+		// Base<FoodItem> foodBase = new Base<FoodItem>();
 		foodBase.beginUpdate();
 		foodBase.clear();
 		foodBase.setVersion(Integer.parseInt(root.getAttribute("version")));
@@ -46,7 +46,7 @@ public class FoodBaseXMLSerializer implements Serializer<Base<Food>>
 			{
 				Element x = (Element) node;
 
-				Food food = new Food();
+				FoodItem food = new FoodItem();
 				food.setName(x.getAttribute("name"));
 				food.setRelProts(Double.parseDouble(x.getAttribute("prots")));
 				food.setRelFats(Double.parseDouble(x.getAttribute("fats")));
@@ -63,7 +63,7 @@ public class FoodBaseXMLSerializer implements Serializer<Base<Food>>
 	}
 
 	@Override
-	public String write(Base<Food> foodBase)
+	public String write(Base<FoodItem> foodBase)
 	{
 		Document doc = XmlUtils.newDocument();
 
@@ -73,7 +73,7 @@ public class FoodBaseXMLSerializer implements Serializer<Base<Food>>
 
 		for (int i = 0; i < foodBase.count(); i++)
 		{
-			Food food = foodBase.get(i);
+			FoodItem food = foodBase.get(i);
 
 			Element childelement = doc.createElement("food");
 			childelement.setAttribute("name", String.valueOf(food.getName()));
@@ -89,21 +89,21 @@ public class FoodBaseXMLSerializer implements Serializer<Base<Food>>
 	}
 
 	@Override
-	public List<Base<Food>> readAll(String data)
+	public List<Base<FoodItem>> readAll(String data)
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String writeAll(List<Base<Food>> object)
+	public String writeAll(List<Base<FoodItem>> object)
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Base<Food> read(String data)
+	public Base<FoodItem> read(String data)
 	{
 		// TODO Auto-generated method stub
 		return null;

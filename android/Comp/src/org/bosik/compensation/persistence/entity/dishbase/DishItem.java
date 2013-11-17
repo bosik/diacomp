@@ -2,7 +2,7 @@ package org.bosik.compensation.persistence.entity.dishbase;
 
 import org.bosik.compensation.persistence.entity.common.Item;
 
-public class Dish extends Item
+public class DishItem extends Item
 {
 
 	// ================================ GET / SET ================================
@@ -12,7 +12,7 @@ public class Dish extends Item
 	@Override
 	public Item clone() throws CloneNotSupportedException
 	{
-		Dish result = (Dish) super.clone();
+		DishItem result = (DishItem) super.clone();
 
 		// TODO: implement
 

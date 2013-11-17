@@ -6,7 +6,7 @@ package org.bosik.compensation.persistence.entity.common;
  * @author Bosik
  * 
  */
-public class FoodData extends Item
+public class Food extends Item
 {
 	private String	name;
 	private double	relProts;
@@ -14,12 +14,12 @@ public class FoodData extends Item
 	private double	relCarbs;
 	private double	relValue;
 
-	public FoodData()
+	public Food()
 	{
 
 	}
 
-	public FoodData(String name, double relProts, double relFats, double relCarbs, double relValue)
+	public Food(String name, double relProts, double relFats, double relCarbs, double relValue)
 	{
 		this.name = name;
 		this.relProts = relProts;
@@ -132,7 +132,7 @@ public class FoodData extends Item
 	@Override
 	public Item clone() throws CloneNotSupportedException
 	{
-		FoodData result = (FoodData) super.clone();
+		Food result = (Food) super.clone();
 
 		result.setName(getName());
 		result.setRelCarbs(getRelCarbs());
