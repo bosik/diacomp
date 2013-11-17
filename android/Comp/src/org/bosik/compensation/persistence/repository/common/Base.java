@@ -2,7 +2,7 @@ package org.bosik.compensation.persistence.repository.common;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.compensation.persistence.entity.common.Item;
+import org.bosik.compensation.bo.common.Item;
 
 /**
  * Хранящаяся в памяти база

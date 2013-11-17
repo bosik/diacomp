@@ -1,7 +1,7 @@
-package org.bosik.compensation.persistence.entity.common;
+package org.bosik.compensation.bo.common;
 
 /**
- * Хранит имя и относительные параметры (на 100 г)
+ * Хранит имя и относительные параметры БЖУК (на 100 г)
  * 
  * @author Bosik
  * 

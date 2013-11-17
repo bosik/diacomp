@@ -2,7 +2,7 @@ package org.bosik.compensation.persistence.repository.diary;
 
 import java.util.Date;
 import java.util.List;
-import org.bosik.compensation.persistence.entity.diary.DiaryPage;
+import org.bosik.compensation.bo.diary.DiaryPage;
 
 /**
  * Источник данных для дневника

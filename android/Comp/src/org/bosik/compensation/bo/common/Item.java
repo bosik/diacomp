@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.entity.common;
+package org.bosik.compensation.bo.common;
 
 /**
  * 1. Имеет поле ID (потребуется в методах get() / set() контейнеров).<br/>

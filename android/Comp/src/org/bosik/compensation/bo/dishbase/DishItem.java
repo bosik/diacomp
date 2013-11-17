@@ -1,6 +1,6 @@
-package org.bosik.compensation.persistence.entity.dishbase;
+package org.bosik.compensation.bo.dishbase;
 
-import org.bosik.compensation.persistence.entity.common.Item;
+import org.bosik.compensation.bo.common.Item;
 
 public class DishItem extends Item
 {

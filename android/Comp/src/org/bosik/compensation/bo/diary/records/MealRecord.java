@@ -1,8 +1,8 @@
-package org.bosik.compensation.persistence.entity.diary.records;
+package org.bosik.compensation.bo.diary.records;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.compensation.persistence.entity.common.FoodMassed;
+import org.bosik.compensation.bo.common.FoodMassed;
 
 public class MealRecord extends DiaryRecord
 {

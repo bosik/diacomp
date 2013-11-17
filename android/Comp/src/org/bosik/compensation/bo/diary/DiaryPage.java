@@ -1,11 +1,11 @@
-package org.bosik.compensation.persistence.entity.diary;
+package org.bosik.compensation.bo.diary;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import org.bosik.compensation.persistence.entity.diary.records.DiaryRecord;
+import org.bosik.compensation.bo.diary.records.DiaryRecord;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
 

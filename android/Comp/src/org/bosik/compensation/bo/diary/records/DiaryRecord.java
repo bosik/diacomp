@@ -1,7 +1,7 @@
-package org.bosik.compensation.persistence.entity.diary.records;
+package org.bosik.compensation.bo.diary.records;
 
-import org.bosik.compensation.persistence.entity.diary.DiaryChangeListener;
-import org.bosik.compensation.persistence.entity.diary.DiaryChangeListener.EventType;
+import org.bosik.compensation.bo.diary.DiaryChangeListener;
+import org.bosik.compensation.bo.diary.DiaryChangeListener.EventType;
 import org.bosik.compensation.utils.Utils;
 
 /* ЗАМЕТКИ 
