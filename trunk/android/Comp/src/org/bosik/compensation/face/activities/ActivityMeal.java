@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.persistence.entity.common.FoodMassed;
 import org.bosik.compensation.persistence.entity.diary.records.MealRecord;
-import org.bosik.compensation.persistence.entity.foodbase.Food;
+import org.bosik.compensation.persistence.entity.foodbase.FoodItem;
 import org.bosik.compensation.persistence.repository.Storage;
 import android.app.Activity;
 import android.os.Bundle;
@@ -79,7 +79,7 @@ public class ActivityMeal extends Activity
 
 		Log.d(TAG, "Caption carbs: " + captionCarbs);
 		Log.d(TAG, "Caption dose: " + captionDose);
-		Log.d(TAG, "Food count: " + Storage.localFoodBase.count());
+		Log.d(TAG, "FoodItem count: " + Storage.localFoodBase.count());
 
 		loadFoodList();
 		showMeal();
@@ -155,7 +155,7 @@ public class ActivityMeal extends Activity
 		String name = editName.getText().toString();
 		double mass = Double.parseDouble(editMass.getText().toString());
 
-		Food food = null;
+		FoodItem food = null;
 		FoodMassed item = null;
 
 		// TODO: create generics-based search

@@ -1,7 +1,7 @@
 package org.bosik.compensation.persistence.repository;
 
 import org.bosik.compensation.face.R;
-import org.bosik.compensation.persistence.entity.foodbase.Food;
+import org.bosik.compensation.persistence.entity.foodbase.FoodItem;
 import org.bosik.compensation.persistence.repository.common.Interchangeable;
 import org.bosik.compensation.persistence.repository.common.LocalBase;
 import org.bosik.compensation.persistence.repository.diary.DiaryRepository;
@@ -41,7 +41,7 @@ public class Storage
 	public static WebClient				web_client;
 	public static DiaryRepository		local_diary;
 	public static DiaryRepository		web_diary;
-	public static LocalBase<Food>		localFoodBase;
+	public static LocalBase<FoodItem>		localFoodBase;
 	public static Interchangeable		webFoodbaseRepository;
 
 	/**
@@ -89,7 +89,7 @@ public class Storage
 			localFoodBase = new LocalFoodBase(context, fileName);
 
 			// localFoodBase.load();
-			// Log.d(TAG, "Food base loaded, count: " + localFoodBase.count() + ", version: " +
+			// Log.d(TAG, "FoodItem base loaded, count: " + localFoodBase.count() + ", version: " +
 			// localFoodBase.getVersion());
 		}
 		if (null == Storage.webFoodbaseRepository)

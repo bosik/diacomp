@@ -1,6 +1,6 @@
 package org.bosik.compensation.persistence.entity.foodbase;
 
-import org.bosik.compensation.persistence.entity.common.FoodData;
+import org.bosik.compensation.persistence.entity.common.Food;
 import org.bosik.compensation.persistence.entity.common.Item;
 
 /**
@@ -9,7 +9,7 @@ import org.bosik.compensation.persistence.entity.common.Item;
  * @author Bosik
  * 
  */
-public class Food extends FoodData implements Cloneable
+public class FoodItem extends Food implements Cloneable
 {
 	private boolean	fromTable;
 	private int		tag;
@@ -41,7 +41,7 @@ public class Food extends FoodData implements Cloneable
 	@Override
 	public Item clone() throws CloneNotSupportedException
 	{
-		Food result = (Food) super.clone();
+		FoodItem result = (FoodItem) super.clone();
 
 		result.setFromTable(getFromTable());
 		result.setTag(getTag());

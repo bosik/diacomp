@@ -1,6 +1,6 @@
 package org.bosik.compensation.persistence.repository.foodbase;
 
-import org.bosik.compensation.persistence.entity.foodbase.Food;
+import org.bosik.compensation.persistence.entity.foodbase.FoodItem;
 import org.bosik.compensation.persistence.repository.common.Base;
 import org.bosik.compensation.persistence.repository.common.Interchangeable;
 import org.bosik.compensation.persistence.repository.providers.WebClient;
@@ -35,7 +35,7 @@ public class WebFoodBaseRepository implements Interchangeable
 	public String write()
 	{
 		return webClient.getFoodBase();
-		// Base<Food> base = new Base<Food>();
+		// Base<FoodItem> base = new Base<FoodItem>();
 		// formatter.read(base, resp);
 		// return base;
 	}
@@ -45,7 +45,7 @@ public class WebFoodBaseRepository implements Interchangeable
 	{
 		// TODO: optimize if need
 
-		Base<Food> base = new Base<Food>();
+		Base<FoodItem> base = new Base<FoodItem>();
 		formatter.read(base, data);
 		String version = String.valueOf(base.getVersion());
 

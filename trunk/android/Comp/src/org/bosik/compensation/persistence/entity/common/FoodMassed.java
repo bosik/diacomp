@@ -11,7 +11,7 @@ import org.bosik.compensation.utils.Utils;
  * @author Bosik
  * 
  */
-public class FoodMassed extends FoodData
+public class FoodMassed extends Food
 {
 	private static final DecimalFormat	df			= new DecimalFormat("###.#");
 	private static final char			FOOD_SEP	= '|';
