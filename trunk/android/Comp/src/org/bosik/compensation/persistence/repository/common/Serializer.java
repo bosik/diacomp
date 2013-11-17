@@ -1,5 +1,7 @@
 package org.bosik.compensation.persistence.repository.common;
 
+import java.util.List;
+
 /**
  * Интерфейс, включающий в себя методы:
  * <ul>
@@ -21,7 +23,11 @@ public interface Serializer<T>
 	 * @param data
 	 *            Cтрока, хранящая объект
 	 */
-	public void read(T object, String data);
+	public void read(T object, String data); // TODO: remove it
+
+	public T read(String data);
+
+	public List<T> readAll(String data);
 
 	/**
 	 * Сохраняет объект в строку
@@ -31,4 +37,6 @@ public interface Serializer<T>
 	 * @return Cтрока, хранящая объект
 	 */
 	public String write(T object);
+
+	public String writeAll(List<T> object);
 }
