@@ -1,0 +1,502 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/css" href="style.css"?>
+<spec>
+	<version>1.2</version>
+	<methods>
+		<legend>
+			<legend-item>Категория</legend-item>
+			<legend-item>Задача</legend-item>
+			<legend-item>Метод</legend-item>
+			<legend-item>Параметры</legend-item>
+			<legend-item>Тип</legend-item>
+			<legend-item>Результат</legend-item>
+		</legend>
+		<method>
+			<cat>Авторизация</cat>
+			<name>Вход</name>
+			<url>login.php</url>
+			<params>
+				<param>
+					<par-name>login</par-name>
+					<par-desc>Логин пользователя</par-desc>
+				</param>
+				<param>
+					<par-name>password</par-name>
+					<par-desc>Пароль пользователя</par-desc>
+				</param>
+				<param-optional>
+					<par-name>api</par-name>
+					<par-desc>Версия API клиента</par-desc>
+				</param-optional>
+				<param-optional>
+					<par-name>noredir</par-name>
+					<par-desc>Флаг запрета перенаправления</par-desc>
+				</param-optional>
+			</params>
+			<type>POST</type>
+			<returns>
+				<note>Количество и частота попыток не ограничены.</note>
+				<return>
+					<return-value>DONE:(время_сервера)</return-value>
+					<return-condition>Перенаправление запрещено, авторизация прошла успешно</return-condition>
+				</return>
+				<return>
+					<return-value>FAIL:DEPAPI</return-value>
+					<return-condition>Перенаправление запрещено (?), указанная версия API отличается от версии API сервера</return-condition>
+				</return>
+				<return>
+					<return-value>FAIL:BADNAME</return-value>
+					<return-condition>Перенаправление запрещено, авторизация провалилась</return-condition>
+				</return>
+				<return>
+					<return-value>(HTML: страница для повторной авторизации)</return-value>
+					<return-condition>Перенаправление разрешено, авторизация провалилась</return-condition>
+				</return>
+				<return>
+					<return-value>(HTML: главная страница)</return-value>
+					<return-condition>Перенаправление разрешено, авторизация прошла успешно</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>Авторизация</cat>
+			<name>Выход</name>
+			<url>login.php</url>
+			<params>
+				<param>
+					<par-name>logout</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+				<param-optional>
+					<par-name>noredir</par-name>
+					<par-desc>Флаг запрета перенаправления</par-desc>
+				</param-optional>
+			</params>
+			<type>GET</type>
+			<returns>
+				<return>
+					<return-value>(HTML: страница авторизации)</return-value>
+					<return-condition>Перенаправление разрешено (по умолчанию)</return-condition>
+				</return>
+				<return>
+					<return-value></return-value>
+					<return-condition>Перенаправление запрещено</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>Авторизация</cat>
+			<name>Запрос статуса авторизации</name>
+			<url>login.php</url>
+			<params>
+				<param>
+					<par-name>status</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+			</params>
+			<type>GET</type>
+			<returns>
+				<return>
+					<return-value>online</return-value>
+					<return-condition>Клиент авторизован</return-condition>
+				</return>
+				<return>
+					<return-value>offline</return-value>
+					<return-condition>Клиент не авторизован</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>Система</cat>
+			<name>Получение версии API сервера</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>getAPIVersion</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+			</params>
+			<type>GET</type>
+			<returns>
+				<return>
+					<return-value>(версия API сервера)</return-value>
+					<return-condition>Всегда</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>Система</cat>
+			<name>Отправка сообщения на e-mail разработчика</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>report</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+				<param>
+					<par-name>msg</par-name>
+					<par-desc>Текст сообщения</par-desc>
+				</param>
+			</params>
+			<type>POST</type>
+			<returns>
+				<return>
+					<return-value>DONE</return-value>
+					<return-condition>Отправка прошла успешно</return-condition>
+				</return>
+				<return>
+					<return-value>FAIL</return-value>
+					<return-condition>Произошла ошибка отправки данных</return-condition>
+				</return>
+				<return>
+					<return-value>Error: log in first</return-value>
+					<return-condition>Клиент не авторизован</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>Дневник</cat>
+			<name>Получение версий страниц</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>diary:getModList</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+				<param-optional>
+					<par-name>time</par-name>
+					<par-desc>Время в формате гггг-мм-дд чч:мм:сс</par-desc>
+				</param-optional>
+				<param-optional>
+					<par-name>dates</par-name>
+					<par-desc>Список дат в формате гггг-мм-дд, разделённых запятыми</par-desc>
+				</param-optional>
+			</params>
+			<type>GET</type>
+			<returns>
+				<return>
+					<return-value>(список пар (дата страницы, версия страницы) для всех страниц, изменённых после указанного времени; формат записи гггг-мм-дд|версия, пары разделены символом #10)</return-value>
+					<return-condition>Указан параметр time</return-condition>
+				</return>
+				<return>
+					<return-value>(список пар (дата страницы, версия страницы) для всех страниц с указанными датами; формат записи гггг-мм-дд|версия, пары разделены символом #10)</return-value>
+					<return-condition>Указан параметр dates. Для отсутствующих страниц возвращает версию 0.</return-condition>
+				</return>
+				<return>
+					<return-value>Error: log in first</return-value>
+					<return-condition>Клиент не авторизован</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>Дневник</cat>
+			<name>Выгрузка страниц дневника на сервер</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>diary:upload</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+				<param>
+					<par-name>pages</par-name>
+					<par-desc>Набор последовательно записанных страниц</par-desc>
+				</param>
+				<param-optional>
+					<par-name>format</par-name>
+					<par-desc>Формат данных. Поддерживается только значение json, формат по умолчанию — plain</par-desc>
+				</param-optional>
+			</params>
+			<type>POST</type>
+			<returns>
+				<note>TODO: Сделать ограничение на максимальный размер заметки / максимальное количество записей / максимальное количество блюд в приёме пищи.</note>
+				<return>
+					<return-value>DONE</return-value>
+					<return-condition>Отправка прошла успешно</return-condition>
+				</return>
+				<return>
+					<return-value>FAIL</return-value>
+					<return-condition>Произошла ошибка отправки данных</return-condition>
+				</return>
+				<return>
+					<return-value>Error: log in first</return-value>
+					<return-condition>Клиент не авторизован</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>Дневник</cat>
+			<name>Получение страниц с сервера</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>diary:download</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+				<param>
+					<par-name>dates</par-name>
+					<par-desc>Список дат в формате гггг-мм-дд, разделённых запятыми</par-desc>
+				</param>
+				<param-optional>
+					<par-name>format</par-name>
+					<par-desc>Формат данных. Поддерживается только значение json, формат по умолчанию — plain</par-desc>
+				</param-optional>
+			</params>
+			<type>GET</type>
+			<returns>
+				<note>TODO: сделать ограничение на максимальное количество страниц (отчасти действует ограничение на максимальную длину URL-запроса).</note>
+				<return>
+					<return-value>(список страниц)</return-value>
+					<return-condition>Всё хорошо</return-condition>
+				</return>
+				<return>
+					<return-value>FAIL</return-value>
+					<return-condition>Произошла ошибка</return-condition>
+				</return>
+				<return>
+					<return-value>Error: log in first</return-value>
+					<return-condition>Клиент не авторизован</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>База продуктов</cat>
+			<name>Получение версии базы продуктов</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>foodbase:getVersion</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+			</params>
+			<type>GET</type>
+			<returns>
+				<return>
+					<return-value>(номер версии — целое неотрицательное число)</return-value>
+					<return-condition>Всё хорошо</return-condition>
+				</return>
+				<return>
+					<return-value>0</return-value>
+					<return-condition>База не существует</return-condition>
+				</return>
+				<return>
+					<return-value>FAIL</return-value>
+					<return-condition>Произошла ошибка</return-condition>
+				</return>
+				<return>
+					<return-value>Error: log in first</return-value>
+					<return-condition>Клиент не авторизован</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>База продуктов</cat>
+			<name>Получение базы продуктов с сервера</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>foodbase:download</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+			</params>
+			<type>GET</type>
+			<returns>
+				<return>
+					<return-value>(База продуктов в формате XML)</return-value>
+					<return-condition>База существует</return-condition>
+				</return>
+				<return>
+					<return-value></return-value>
+					<return-condition>База не существует</return-condition>
+				</return>
+				<return>
+					<return-value>FAIL</return-value>
+					<return-condition>Произошла ошибка</return-condition>
+				</return>
+				<return>
+					<return-value>Error: log in first</return-value>
+					<return-condition>Клиент не авторизован</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>База продуктов</cat>
+			<name>Загрузка базы продуктов на сервер</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>foodbase:upload</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+				<param>
+					<par-name>version</par-name>
+					<par-desc>Номер версии загружаемой базы</par-desc>
+				</param>
+				<param>
+					<par-name>data</par-name>
+					<par-desc>База продуктов в формате XML</par-desc>
+				</param>
+			</params>
+			<type>POST</type>
+			<returns>
+				<return>
+					<return-value>DONE</return-value>
+					<return-condition>Загрузка прошла успешно</return-condition>
+				</return>
+				<return>
+					<return-value>FAIL</return-value>
+					<return-condition>Произошла ошибка</return-condition>
+				</return>
+				<return>
+					<return-value>Error: log in first</return-value>
+					<return-condition>Клиент не авторизован</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>База блюд</cat>
+			<name>Получение версии базы блюд</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>dishbase:getVersion</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+			</params>
+			<type>GET</type>
+			<returns>
+				<return>
+					<return-value>(номер версии — целое неотрицательное число)</return-value>
+					<return-condition>Всё хорошо</return-condition>
+				</return>
+				<return>
+					<return-value>0</return-value>
+					<return-condition>База не существует</return-condition>
+				</return>
+				<return>
+					<return-value>FAIL</return-value>
+					<return-condition>Произошла ошибка</return-condition>
+				</return>
+				<return>
+					<return-value>Error: log in first</return-value>
+					<return-condition>Клиент не авторизован</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>База блюд</cat>
+			<name>Получение базы блюд с сервера</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>dishbase:download</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+			</params>
+			<type>GET</type>
+			<returns>
+				<return>
+					<return-value>(База блюд в формате XML)</return-value>
+					<return-condition>Всё хорошо</return-condition>
+				</return>
+				<return>
+					<return-value>FAIL</return-value>
+					<return-condition>Произошла ошибка</return-condition>
+				</return>
+				<return>
+					<return-value>Error: log in first</return-value>
+					<return-condition>Клиент не авторизован</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>База блюд</cat>
+			<name>Загрузка базы блюд на сервер</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>dishbase:upload</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+				<param>
+					<par-name>version</par-name>
+					<par-desc>Номер версии загружаемой базы</par-desc>
+				</param>
+				<param>
+					<par-name>data</par-name>
+					<par-desc>База блюд в формате XML</par-desc>
+				</param>
+			</params>
+			<type>POST</type>
+			<returns>
+				<return>
+					<return-value>DONE</return-value>
+					<return-condition>Загрузка прошла успешно</return-condition>
+				</return>
+				<return>
+					<return-value>FAIL</return-value>
+					<return-condition>Произошла ошибка</return-condition>
+				</return>
+				<return>
+					<return-value>Error: log in first</return-value>
+					<return-condition>Клиент не авторизован</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>Коэффициенты</cat>
+			<name>Выгрузка коэффициентов на сервер</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>koofs:upload</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+				<param>
+					<par-name>data</par-name>
+					<par-desc>Коэффициенты в формате JSON</par-desc>
+				</param>
+			</params>
+			<type>POST</type>
+			<returns>
+				<return>
+					<return-value>DONE</return-value>
+					<return-condition>Загрузка прошла успешно</return-condition>
+				</return>
+				<return>
+					<return-value>FAIL</return-value>
+					<return-condition>Произошла ошибка</return-condition>
+				</return>
+				<return>
+					<return-value>Error: log in first</return-value>
+					<return-condition>Клиент не авторизован</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>Коэффициенты</cat>
+			<name>Получение коэффициентов</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>koofs:download</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+			</params>
+			<type>GET</type>
+			<returns>
+				<return>
+					<return-value>(коэффициенты в формате JSON)</return-value>
+					<return-condition>Коэффициенты существуют</return-condition>
+				</return>
+				<return>
+					<return-value></return-value>
+					<return-condition>Коэффициенты не существуют</return-condition>
+				</return>
+				<return>
+					<return-value>Error: log in first</return-value>
+					<return-condition>Клиент не авторизован</return-condition>
+				</return>
+			</returns>
+		</method>
+	</methods>
+</spec>
