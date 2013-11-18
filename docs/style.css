@@ -1,0 +1,86 @@
+spec
+{
+	padding: 10px;
+	font-family: "Consolas";
+}
+
+version:before
+{
+	content: "API ";
+}
+
+version
+{
+	display: block;
+	font-weight: bold;
+	font-size: 200%;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+legend-item
+{
+	background-color: #eeeeff;
+	font-weight: bold;
+	text-align: center;
+}
+
+methods
+{
+	display: table;
+	border-collapse: collapse;
+}
+
+legend, method, param, param-optional, return
+{
+	display: table-row;
+}
+
+method:hover
+{
+	background-color: #f0f0f8;
+}
+
+param:hover, param-optional:hover, return:hover
+{
+	background-color: #e0e0f9;
+}
+
+/* column headers */
+cat, name, url, params, type, returns, legend-item
+{
+	border: 1px solid #808080;
+	padding: 10px;
+}
+
+/* everything looks like a cell */
+legend-item, cat, name, url, params, type, returns, return-value, return-condition, par-name, par-desc, return-value, return-condition
+{
+	display: table-cell;
+	vertical-align: middle;
+}
+
+param-optional
+{
+	font-style: italic;
+}
+
+par-name, par-desc, return-value, return-condition
+{
+	padding: 5px;
+	border-bottom: 1px solid #dddddd;
+	width: 400px;
+}
+
+url, par-name, return-value
+{
+	color: #0000aa;
+	font-family: "Courier New";
+}
+
+note
+{
+	color: #00aa00;
+	display: block;
+	padding-bottom: 10px;
+}
