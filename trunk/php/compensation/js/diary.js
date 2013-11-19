@@ -604,7 +604,6 @@ function showPage()
 function codeInfoDefault()
 {
 	return '' +
-	"						Добавить новую запись:<br/><br/>\n" +
 	"						<div>\n" +
 	"							<div onclick=\"newBloodEditor()\" class=\"button_new_rec button_new_blood full_width\" title=\"Добавить замер СК\">Замер СК</div>\n" +
 	"							<div onclick=\"newInsEditor()\" class=\"button_new_rec button_new_ins full_width\" title=\"Добавить инъекцию\">Инъекция</div>\n" +
