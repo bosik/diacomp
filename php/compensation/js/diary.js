@@ -1070,7 +1070,6 @@ function runScript(e, id)
 		{
 			alert("Масса должна быть неотрицательной");
 		}
-
-		return false;
 	}
+	return false;
 }
