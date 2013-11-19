@@ -700,8 +700,7 @@ function codeInfoMeal(meal)
 	var ins = DiaryPage_findIns(meal.time, INS_ACTUAL_PERIOD);
 	var injectedDose = (ins == null ? null : strToFloat(ins.value).toFixed(1));
 	var dk = null;
-
-	//alert("injectedDose:" + injectedDose);
+	var correctionClass = "";
 
 	if (w != null)
 	{
@@ -709,6 +708,9 @@ function codeInfoMeal(meal)
 		if (injectedDose != null)
 		{
 			dk = ((BsTarget - BsInput - w.p*prots + w.q * injectedDose) / w.k - carbs).toFixed(0);
+			if (Math.abs(dk) <= 0.5) dk = 0;
+			if (dk > 0.5) correctionClass = "positive";	else
+			if (dk < -0.5) correctionClass = "negative";
 			if (dk > 0) dk = "+" + dk;
 		}
 	}
@@ -748,7 +750,7 @@ function codeInfoMeal(meal)
 	'							</tr>\n'+
 	'							<tr>\n'+
 	'								<th class="full_width">Коррекция, г</th>\n'+
-	'								<td class="right">'+dk+'</td>\n'+
+	'								<td class="right '+correctionClass+'">'+dk+'</td>\n'+
 	'							</tr>\n'+
 	'						</table>\n'+
 	'						<br>\n'+
