@@ -278,7 +278,7 @@ function ObjToSource(o)
 
 //==============================================================================
 
-function parseXml(xml)
+function xml2Dom(xml)
 {
 	var dom = null;
 	if (window.DOMParser)
@@ -314,6 +314,26 @@ function parseXml(xml)
 		alert("cannot parse xml string!");
 	}
 	return dom;
+}
+
+function parseXml(data)
+{
+	data = getAfter(data, "\n");
+	var dom = xml2Dom(data);
+
+	// escape double quotes
+	var all = dom.getElementsByTagName("*");
+	for (var i=0; i < all.length; i++)
+	{
+		for (var j = 0; j < all[i].attributes.length; j++)
+		{
+			all[i].attributes[j].value = all[i].attributes[j].value.replace(/\"/g, '\\"');
+		}
+	}
+
+	var json = xml2json(dom, "");
+	json = json.replace(/undefined/g, "").replace(/@/g, "");
+	return JSON.parse(json);
 }
 
 function timeSortFunction(a, b)
