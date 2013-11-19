@@ -346,13 +346,12 @@ th {
 }
 
 .button_new_rec {
-	/*background-position: center;*/
+	background-position: left;
 	background-repeat: no-repeat;
-	background-color:#fff;
+	background-color: #fff;
 	border: 1px solid #c0c0c0;
-	/*padding: 5px;*/
-	/*width: 60px;*/
-	height: 32px;
+	padding: 10px 0px 10px 55px;
+	margin-bottom: 5px;
 	cursor: pointer;
 }
 .button_new_blood {
