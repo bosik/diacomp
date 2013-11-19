@@ -301,6 +301,16 @@ th {
 	border: solid 1px #cccccc;
 }
 
+.positive
+{
+	color: limegreen;
+}
+
+.negative
+{
+	color: crimson;
+}
+
 /* =========================== TABLE =========================== */
 
 .col_item {
