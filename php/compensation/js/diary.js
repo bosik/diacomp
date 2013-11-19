@@ -93,6 +93,11 @@ function downloadPage()
 		//diary.innerHTML = xmlhttp.responseText;
 		diary.innerHTML = "Loaded ok, parsing...";
 
+		if (data == "Error: log in first")
+		{
+			document.location = "login.php?redir=index.php?date=" + formatDate(cur_date);
+		}
+
 		page = JSON.parse(data);
 
 		// debug only
