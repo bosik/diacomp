@@ -141,31 +141,20 @@ function downloadKoofs()
 
 function downloadFoodbase()
 {
-	foodbaseLoaded = false;
-
 	var url = "console.php?foodbase:download";
+	foodbaseLoaded = false;
 
 	var onSuccess = function(data)
 	{
 		if (data != "")
 		{
-			data = getAfter(data, "\n");
-
-			//data = data.replace(/&quot;/g, '\\"');
-			data = data.replace(/&quot;/g, '');
-
-			var dom = parseXml(data);
-			var json = xml2json(dom, "");
-
-			json = json.replace(/undefined/g, "").replace(/@/g, "");
-
-			foodbase = JSON.parse(json).foods;
+			foodbase = parseXml(data).foods;
 
 			// TODO: убрать?
 			// простановка индексов
 			for (var i = 0; i < foodbase.food.length; i++)
 			{
-				// TODO: floatize
+				foodbase.food[i] = floatizeFood(foodbase.food[i]);
 				foodbase.food[i].id = i;
 			}
 
@@ -179,17 +168,19 @@ function downloadFoodbase()
 			}
 			else
 			{
-				console.log("Foodbase downloaded, wait for dishbase...");
+				//console.log("Foodbase downloaded, wait for dishbase...");
 			}
 		}
 		else
 		{
+			console.log("Foodbase data is empty");
 			foodbase = [];
 		}
 	};
 
 	var onFailure = function ()
 	{
+		console.log("Failed to load foodbase");
 		foodbase = [];
 	}
 
@@ -198,34 +189,14 @@ function downloadFoodbase()
 
 function downloadDishbase()
 {
-	dishbaseLoaded = false;
-
 	var url = "console.php?dishbase:download";
+	dishbaseLoaded = false;
 
 	var onSuccess = function(data)
 	{
-		console.log("Dishbase loaded OK");
-		console.log("Dishbase response data: '" + data + "'");
-
 		if (data != "")
 		{
-			data = getAfter(data, "\n");
-
-			//data = data.replace(/&quot;/g, '\\"');
-			data = data.replace(/&quot;/g, '');
-
-			//console.log("Dishbase XML (before parsing): " + data);
-
-			var dom = parseXml(data);
-			var json = xml2json(dom, "");
-
-			json = json.replace(/undefined/g, "").replace(/@/g, "");
-
-			//console.log("Dishbase JSON data: " + json);
-
-			dishbase = JSON.parse(json).dishes;
-
-			//console.log("Dishbase itself: " + ObjToSource(dishbase));
+			dishbase = parseXml(data).dishes;
 
 			// TODO: убрать?
 			// простановка индексов
@@ -245,7 +216,7 @@ function downloadDishbase()
 			}
 			else
 			{
-				console.log("Dishbase downloaded, wait for foodbase...");
+				//console.log("Dishbase downloaded, wait for foodbase...");
 			}
 		}
 		else
@@ -262,6 +233,15 @@ function downloadDishbase()
 	}
 
 	download(url, true, onSuccess, onFailure);
+}
+
+function floatizeFood(food)
+{
+	food.prots = strToFloat(food.prots);
+	food.fats = strToFloat(food.fats);
+	food.carbs = strToFloat(food.carbs);
+	food.val = strToFloat(food.val);
+	return food;
 }
 
 function floatizeDish(dish)
@@ -293,7 +273,6 @@ function dishAsFood(dish)
 
 	for (k = 0; k < dish.item.length; k++)
 	{
-		//alert("Adding item " + dish.item[k].name);
 		summProts += dish.item[k].mass * dish.item[k].prots / 100;
 		summFats += dish.item[k].mass * dish.item[k].fats / 100;
 		summCarbs += dish.item[k].mass * dish.item[k].carbs / 100;
@@ -301,21 +280,16 @@ function dishAsFood(dish)
 		summMass += dish.item[k].mass;
 	}
 
-	//alert("Well, summs are ready: sp=" + summProts + "; sf=" + summFats + "; sc=" + summCarbs + "; sv=" + summVal + "; sm=" + summMass);
-
 	var dishMass;
 	if ('mass' in dish)
 	{
-		//alert("Mass is specified");
 		dishMass = dish.mass;
 	}
 	else
 	{
-		//alert("Use summ mass");
 		dishMass = summMass;
 	}
 
-	//alert("Constructing food... Dishmass = " + dishMass);
 	var food = {};
 	food.name = dish.name;
 	food.prots = (summProts / dishMass * 100).toFixed(2);
@@ -323,7 +297,6 @@ function dishAsFood(dish)
 	food.carbs = (summCarbs / dishMass * 100).toFixed(2);
 	food.val = (summVal / dishMass * 100).toFixed(2);
 
-	//alert("Done; return " + ObjToSource(food));
 	return food;
 }
 
@@ -335,7 +308,6 @@ function prepareComboList()
 	// adding foods
 	for (i = 0; i < foodbase.food.length; i++)
 	{
-		//console.log("Processing food " + i + " out of " + foodbase.food.length);
 		item = {}
 		item.value = foodbase.food[i].name;
 		item.prots = foodbase.food[i].prots;
@@ -349,8 +321,6 @@ function prepareComboList()
 	// adding dishes
 	for (i = 0; i < dishbase.dish.length; i++)
 	{
-		//alert("Processing dish " + i + " out of " + dishbase.dish.length + ": " + ObjToSource(dishbase.dish[i]));
-
 		var cnv = dishAsFood(dishbase.dish[i]);
 
 		item = {};
@@ -362,9 +332,6 @@ function prepareComboList()
 		item.type = "dish";
 		fdBase.push(item);
 	}
-
-	//console.log("ComboList is ready: " + ObjToSource(fdBase));
-
 	createHandlers();
 }
 
@@ -378,7 +345,7 @@ function uploadPage()
 		//document.getElementById("summa").innerHTML = xmlhttp.responseText; // ¬ыводим ответ сервера
 		if (resp == "DONE")
 		{
-		//alert("Saved OK");
+
 		}
 		else
 		{
@@ -423,8 +390,6 @@ function interpolateBi(v1, v2, time)
 function interpolate(koofList, time)
 {
 	if ((koofList == null) || (koofList.length == 0)) return null;
-
-	//alert(ObjToSource(koofList));
 
 	if ((time < koofList[0].time) || (time >= koofList[koofList.length-1].time))
 		return interpolateBi(koofList[koofList.length-1], koofList[0], time);
@@ -584,13 +549,10 @@ function codePage(page)
 
 function createHandlers()
 {
-	console.log("createHandlers()");
 	for (var i = 0; i < page.content.length; i++)
 	{
 		if (page.content[i].type == "meal")
 		{
-			console.log("createHandlers(): id=" + i);
-
 			var id = i;
 			// вешаем обработчики
 			$(function() {
@@ -603,12 +565,9 @@ function createHandlers()
 			$("#mealcombo_" + id).on("autocompleteselect", function(event, ui)
 			{
 				selectedItem = ui.item;
-				//console.log("Selected item: " + ObjToSource(ui));
-
 				var t = 'mealmass_' + currentID;
 				var mc = document.getElementById(t);
-				console.log("Searching for component '" + t + "': " + mc);
-
+				//console.log("Searching for component '" + t + "': " + mc);
 				mc.focus();
 			} );
 		}
@@ -617,8 +576,6 @@ function createHandlers()
 
 function showPage()
 {
-	//alert("showPage(): page.length=" + page.content.length);
-
 	if (page.content.length > 0)
 	{
 		diary.className = "diary_page_full";
@@ -684,12 +641,10 @@ function codeInfoMeal(meal)
 	var val = 0;
 	for (var i = 0; i < meal.content.length; i++)
 	{
-
 		prots += strToFloat(meal.content[i].prots) * strToFloat(meal.content[i].mass) / 100;
 		fats += strToFloat(meal.content[i].fats) * strToFloat(meal.content[i].mass) / 100;
 		carbs += strToFloat(meal.content[i].carbs) * strToFloat(meal.content[i].mass) / 100;
 		val += strToFloat(meal.content[i].value) * strToFloat(meal.content[i].mass) / 100;
-	//alert("New item: " + meal.content[i].carbs + " * " + meal.content[i].mass + "; summ is " + carbs);
 	}
 
 	var w = interpolate(koofs, meal.time);
@@ -708,8 +663,9 @@ function codeInfoMeal(meal)
 		if (injectedDose != null)
 		{
 			dk = ((BsTarget - BsInput - w.p*prots + w.q * injectedDose) / w.k - carbs).toFixed(0);
-			if (Math.abs(dk) <= 0.5) dk = 0;
-			if (dk > 0.5) correctionClass = "positive";	else
+			if (Math.abs(dk) < 0.51) dk = 0;
+			if (dk > 0.5) correctionClass = "positive";
+			else
 			if (dk < -0.5) correctionClass = "negative";
 			if (dk > 0) dk = "+" + dk;
 		}
@@ -802,7 +758,6 @@ function moveInfoBox(index)
 	//document.getElementById('filler').setAttribute("style","height:" + targetHeight + "px");
 	//document.getElementById('filler').style.height = targetHeight + "px";
 	var startHeight = getBefore(document.getElementById('filler').style.height, "px");
-	//alert(" --> " + result);
 	doMove(startHeight, targetHeight, new Date().getTime(), 200);
 }
 
@@ -1051,7 +1006,8 @@ function onFoodMassClick(id)
 	var foodIndex = getAfter(id, "_");
 
 	var oldMass = page.content[mealIndex].content[foodIndex].mass;
-	var newMass = inputFloat("¬ведите массу:", oldMass);
+	var name = page.content[mealIndex].content[foodIndex].name;
+	var newMass = inputFloat(name + " (г):", oldMass);
 	if (newMass != -1)
 	{
 		DiaryPage_changeFoodMass(mealIndex, foodIndex, newMass);
@@ -1086,10 +1042,6 @@ function runScript(e, id)
 {
 	if (e.keyCode == 13)
 	{
-		//console.log("runScript(): selectedItem=" + selectedItem + ", id=" + id);
-		//console.log("selectedItem.value = " + selectedItem.value);
-		//console.log("selectedItem.carbs = " + selectedItem.carbs);
-
 		var item = {};
 		item.name = selectedItem.value;
 		item.prots = selectedItem.prots;
@@ -1100,7 +1052,7 @@ function runScript(e, id)
 
 		if (item.mass >= 0)
 		{
-			console.log("Add " + ObjToSource(item) + " to meal #" + id);
+			//console.log("Add " + ObjToSource(item) + " to meal #" + id);
 			page.content[id].content.push(item);
 			modified(false);
 
