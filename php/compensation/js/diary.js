@@ -1073,6 +1073,9 @@ function addItemToMeal(id)
 		// пост-настройка интерфейса
 		showInfoBox(id);
 
+		// после рендеринга страницы компоненты нужно найти заново
+		component_combo = document.getElementById('mealcombo_' + id);
+		component_mass = document.getElementById("mealmass_" + id);
 		component_mass.value = "";
 		component_combo.value = "";
 		component_combo.focus();
