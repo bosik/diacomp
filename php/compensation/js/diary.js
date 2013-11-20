@@ -32,7 +32,7 @@ var foodbase = [];
 var dishbase = [];
 
 var fdBase = [];
-var selectedItem;
+var selectedItem; // TODO: remove it
 var currentID;
 
 var foodbaseLoaded = false;
@@ -1053,13 +1053,16 @@ function onMassKeyDown(e, id)
 
 function addItemToMeal(id)
 {
+	var component_combo = document.getElementById('mealcombo_' + id);
+	var component_mass = document.getElementById("mealmass_" + id);
+
 	var item = {};
 	item.name = selectedItem.value;
 	item.prots = selectedItem.prots;
 	item.fats = selectedItem.fats;
 	item.carbs = selectedItem.carbs;
 	item.value = selectedItem.val;
-	item.mass = strToFloat(document.getElementById("mealmass_" + id).value);
+	item.mass = strToFloat(component_mass.value);
 
 	if (item.mass >= 0)
 	{
@@ -1070,9 +1073,6 @@ function addItemToMeal(id)
 		// пост-настройка интерфейса
 		showInfoBox(id);
 
-		var component_combo = document.getElementById('mealcombo_' + id);
-		var component_mass = e.target;
-
 		component_mass.value = "";
 		component_combo.value = "";
 		component_combo.focus();
@@ -1080,7 +1080,7 @@ function addItemToMeal(id)
 	else
 	{
 		alert("¬ведите корректную неотрицательную массу");
-		document.getElementById("mealmass_" + id).focus();
-		document.getElementById("mealmass_" + id).select();
+		component_mass.focus();
+		component_mass.select();
 	}
 }
