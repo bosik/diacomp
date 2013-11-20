@@ -173,7 +173,7 @@ function downloadFoodbase()
 			}
 			else
 			{
-				//console.log("Foodbase downloaded, wait for dishbase...");
+			//console.log("Foodbase downloaded, wait for dishbase...");
 			}
 		}
 		else
@@ -221,7 +221,7 @@ function downloadDishbase()
 			}
 			else
 			{
-				//console.log("Dishbase downloaded, wait for foodbase...");
+			//console.log("Dishbase downloaded, wait for foodbase...");
 			}
 		}
 		else
@@ -485,11 +485,11 @@ function codeMeal(meal, id)
 	'								<td class="col_info">\n'+
 	'									<div class="wrapper_table">\n'+
 	'										<span class="wrapper_cell">\n'+
-	'											<input id="mealmass_' + id + '" class="meal_input full_width bold ' + t + '" type="number" placeholder="..." title="Масса" onkeypress="runScript(event,'+id+')"/>\n'+
+	'											<input id="mealmass_' + id + '" class="meal_input full_width bold ' + t + '" type="number" placeholder="..." title="Масса" onkeypress="onMassKeyDown(event,'+id+')"/>\n'+
 	'										</span>\n'+
 	'									</div>\n'+
 	'								</td>\n' +
-	"								<td class=\"col_delete\"><button onclick=\"runScript(event,"+id+")\" title=\"Добавить\">+</button></td>\n" +
+	"								<td class=\"col_delete\"><button onclick=\"addItemToMeal("+id+")\" title=\"Добавить\">+</button></td>\n" +
 	"							</tr>\n";
 
 	code +=
@@ -542,7 +542,7 @@ function codePage(page)
 '			</div>\n' +
 '			<div id="block_mass">\n' +
 '				<input class="myinput" id="mass"\n' +
-'					onkeypress="return runScript(event)" type="number"/>\n' +
+'					onkeypress="return onMassKeyDown(event)" type="number"/>\n' +
 '			</div>\n' +
 '			<div id="block_fd">\n' +
 '				<input class="myinput" id="fdAutocomplete"/>\n' +
@@ -1042,38 +1042,45 @@ function pushHistory(url)
 	history.pushState(stateObj, "Компенсация", url);
 }
 
-function runScript(e, id)
+function onMassKeyDown(e, id)
 {
 	if (e.keyCode == 13)
 	{
-		var item = {};
-		item.name = selectedItem.value;
-		item.prots = selectedItem.prots;
-		item.fats = selectedItem.fats;
-		item.carbs = selectedItem.carbs;
-		item.value = selectedItem.val;
-		item.mass = e.target.value;
-
-		if (item.mass >= 0)
-		{
-			//console.log("Add " + ObjToSource(item) + " to meal #" + id);
-			page.content[id].content.push(item);
-			modified(false);
-
-			// пост-настройка интерфейса
-			showInfoBox(id);
-
-			var component_combo = document.getElementById('mealcombo_' + id);
-			var component_mass = e.target;
-
-			component_mass.value = "";
-			component_combo.value = "";
-			component_combo.focus();
-		}
-		else
-		{
-			alert("Масса должна быть неотрицательной");
-		}
+		addItemToMeal(id);
 	}
 	return false;
+}
+
+function addItemToMeal(id)
+{
+	var item = {};
+	item.name = selectedItem.value;
+	item.prots = selectedItem.prots;
+	item.fats = selectedItem.fats;
+	item.carbs = selectedItem.carbs;
+	item.value = selectedItem.val;
+	item.mass = strToFloat(document.getElementById("mealmass_" + id).value);
+
+	if (item.mass >= 0)
+	{
+		//console.log("Add " + ObjToSource(item) + " to meal #" + id);
+		page.content[id].content.push(item);
+		modified(false);
+
+		// пост-настройка интерфейса
+		showInfoBox(id);
+
+		var component_combo = document.getElementById('mealcombo_' + id);
+		var component_mass = e.target;
+
+		component_mass.value = "";
+		component_combo.value = "";
+		component_combo.focus();
+	}
+	else
+	{
+		alert("Введите корректную неотрицательную массу");
+		document.getElementById("mealmass_" + id).focus();
+		document.getElementById("mealmass_" + id).select();
+	}
 }
