@@ -63,6 +63,20 @@ th {
 	text-align: left;
 }
 
+#error_nojs
+{
+	width: 22em;
+	position: absolute;
+	left: 50%;
+	margin-left: -11em;
+	color: red;
+	background-color: white;
+	border: 1px solid red;
+	padding: 4px;
+	font-family: sans-serif;
+	text-align: center;
+}
+
 /* =========================== COMMON STYLES =========================== */
 
 .hint {
@@ -186,7 +200,7 @@ th {
 
 .diary_page_empty {
 	/*padding: 10px;*/
-	font-size: 110%;
+	font-size: 120%;
 	text-align: center;
 	color: #cccccc;
 	/*border-right: solid 1px #cccccc;*/
@@ -354,12 +368,19 @@ th {
 	margin-bottom: 5px;
 	cursor: pointer;
 }
+
+.button_new_rec:hover{
+	background-color: #f0f0f0;
+}
+
 .button_new_blood {
 	background-image: url("../img/Diary_New_Blood.png");
 }
+
 .button_new_ins {
 	background-image: url("../img/Diary_New_Ins.png");
 }
+
 .button_new_meal {
 	background-image: url("../img/Diary_New_Meal.png");
 }

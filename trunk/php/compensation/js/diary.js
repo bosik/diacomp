@@ -1,7 +1,15 @@
+var root = document.getElementById("diary_block");
+root.innerHTML =
+	"				<div id=\"diary_info_column\">\n" +
+	"					<div id=\"filler\" style=\"height: 0px\" onclick=\"showInfoBox(-1)\" ></div>\n" +
+	"					<div id=\"diary_info\"></div>\n" +
+	"				</div>\n" +
+	"				<div id=\"diary_page\" class=\"diary_page_empty\"></div>\n";
+
 // компоненты
 var calendar = document.getElementById("calendar");
 var modspan = document.getElementById("modspan");
-var versionspan = document.getElementById("versionspan");
+var versionspan = document.getElementById("versionspan"); // TODO: unused
 var diary = document.getElementById("diary_page");
 var infoblock = document.getElementById("diary_info");
 
@@ -601,40 +609,45 @@ function showPage()
 
 /* ================== PRINTERS (INFO PANEL) ================== */
 
-function codeInfoDefault()
+function codeNewRecord()
 {
 	return '' +
 	"						<div>\n" +
-	"							<div onclick=\"newBloodEditor()\" class=\"button_new_rec button_new_blood full_width\" title=\"Добавить замер СК\">Замер СК</div>\n" +
-	"							<div onclick=\"newInsEditor()\" class=\"button_new_rec button_new_ins full_width\" title=\"Добавить инъекцию\">Инъекция</div>\n" +
-	"							<div onclick=\"newMealEditor()\" class=\"button_new_rec button_new_meal full_width\" title=\"Добавить приём пищи\">Приём пищи</div>\n" +
-	"							<div onclick=\"newNoteEditor()\" class=\"button_new_rec button_new_note full_width\" title=\"Добавить заметку\">Заметка</div>\n" +
-	"						</div><hr>\n" +
+	"							<div onclick=\"newBloodEditor()\" class=\"button_new_rec button_new_blood full_width\">Замер СК</div>\n" +
+	"							<div onclick=\"newInsEditor()\" class=\"button_new_rec button_new_ins full_width\">Инъекция</div>\n" +
+	"							<div onclick=\"newMealEditor()\" class=\"button_new_rec button_new_meal full_width\">Приём пищи</div>\n" +
+	"							<div onclick=\"newNoteEditor()\" class=\"button_new_rec button_new_note full_width\">Заметка</div>\n" +
+	"						</div>\n";
+}
+
+function codeInfoDefault()
+{
+	/*return '' +
+	"						<div>\n" +
+	"							<div onclick=\"newBloodEditor()\" class=\"button_new_rec button_new_blood full_width\">Замер СК</div>\n" +
+	"							<div onclick=\"newInsEditor()\" class=\"button_new_rec button_new_ins full_width\">Инъекция</div>\n" +
+	"							<div onclick=\"newMealEditor()\" class=\"button_new_rec button_new_meal full_width\">Приём пищи</div>\n" +
+	"							<div onclick=\"newNoteEditor()\" class=\"button_new_rec button_new_note full_width\">Заметка</div>\n" +
+	"						</div><hr>\n" +*/
+
+	return codeNewRecord() + "<hr>\n" +
 	"						Для получения более подробной информации выберите запись на странице.\n";
 }
 
 function codeInfoBlood(rec)
 {
 	return '' +
-	"						Вы выбрали замер СК.<br/><br/>\n<hr>" +
+	"						Вы выбрали замер СК.<br/><br/><hr>\n" +
 	"						Добавить новую запись:<br/><br/>\n" +
-	"						<div>\n" +
-	"							<button onclick=\"newBloodEditor()\" class=\"button_new_rec button_new_blood\" title=\"Добавить замер СК\"></button>\n" +
-	"							<button onclick=\"newInsEditor()\" class=\"button_new_rec button_new_ins\" title=\"Добавить инъекцию\"></button>\n" +
-	"							<button onclick=\"newNoteEditor()\" class=\"button_new_rec button_new_note\" title=\"Добавить заметку\"></button>\n" +
-	"						</div>\n";
+	codeNewRecord();
 }
 
 function codeInfoIns(rec)
 {
 	return '' +
-	"						Вы выбрали инъекцию.<br/><br/>\n<hr>" +
+	"						Вы выбрали инъекцию.<br/><br/><hr>\n" +
 	"						Добавить новую запись:<br/><br/>\n" +
-	"						<div>\n" +
-	"							<button onclick=\"newBloodEditor()\" class=\"button_new_rec button_new_blood\" title=\"Добавить замер СК\"></button>\n" +
-	"							<button onclick=\"newInsEditor()\" class=\"button_new_rec button_new_ins\" title=\"Добавить инъекцию\"></button>\n" +
-	"							<button onclick=\"newNoteEditor()\" class=\"button_new_rec button_new_note\" title=\"Добавить заметку\"></button>\n" +
-	"						</div>\n";
+	codeNewRecord();
 }
 
 function codeInfoMeal(meal)
@@ -722,13 +735,9 @@ function codeInfoMeal(meal)
 function codeInfoNote(rec)
 {
 	return '' +
-	"						Вы выбрали заметку.<br/><br/>\n<hr>" +
+	"						Вы выбрали заметку.<br/><br/><hr>\n" +
 	"						Добавить новую запись:<br/><br/>\n" +
-	"						<div>\n" +
-	"							<button onclick=\"newBloodEditor()\" class=\"button_new_rec button_new_blood\" title=\"Добавить замер СК\"></button>\n" +
-	"							<button onclick=\"newInsEditor()\" class=\"button_new_rec button_new_ins\" title=\"Добавить инъекцию\"></button>\n" +
-	"							<button onclick=\"newNoteEditor()\" class=\"button_new_rec button_new_note\" title=\"Добавить заметку\"></button>\n" +
-	"						</div>\n";
+	codeNewRecord();
 }
 
 /* ================================ INFO PANEL UTILS ================================ */
@@ -1076,9 +1085,10 @@ function addItemToMeal(id)
 		// после рендеринга страницы компоненты нужно найти заново
 		component_combo = document.getElementById('mealcombo_' + id);
 		component_mass = document.getElementById("mealmass_" + id);
-		component_mass.value = "";
+
 		component_combo.value = "";
 		component_combo.focus();
+		component_mass.value = "";
 	}
 	else
 	{
