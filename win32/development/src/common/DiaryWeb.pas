@@ -180,20 +180,13 @@ end;
 {==============================================================================}
 function TDiacompClient.DoGet(const URL: string): string;
 {==============================================================================}
-{#}var
-{#}  Tick: cardinal;
+var
+  Tick: cardinal;
 begin
   {#}Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '")');
-  try
-    {#} Tick := GetTickCount();
-    Result := FHTTP.Get(URL);
-    {#}Log(VERBOUS, Format('TDiacompClient.DoGet(): responsed in %d msec: "%s"', [GetTickCount - Tick, Result]));
-  except
-    on E: EIdException do
-    begin
-      raise EConnectionException.CreateFmt('Ошибка связи с сервером, причина: %s', [E.Message]);
-    end;
-  end;
+  {#} Tick := GetTickCount();
+  Result := FHTTP.Get(URL);
+  {#}Log(VERBOUS, Format('TDiacompClient.DoGet(): responsed in %d msec: "%s"', [GetTickCount - Tick, Result]));
 
   if (Kicked(Result)) then
     raise EAuthException.Create('Необходима авторизация');
@@ -219,29 +212,22 @@ function TDiacompClient.DoPost(const URL: string; const Par: TParamList): string
 var
   Data: TStrings;
   i: integer;
-{#} Tick: cardinal;
+  Tick: cardinal;
 begin
   {#}Log(VERBOUS, 'TDiacompClient.DoPost("' + URL + '"), ' + PrintParams());
 
+  Data := TStringList.Create;
   try
-    Data := TStringList.Create;
-    try
-      // формируем тело запроса
-      for i := Low(Par) to High(Par) do
-        Data.Add(Par[i]);
+    // формируем тело запроса
+    for i := Low(Par) to High(Par) do
+      Data.Add(Par[i]);
 
-      {#} Tick := GetTickCount();
-      Result := FHTTP.Post(URL, Data);
-      {#}Log(VERBOUS, Format('TDiacompClient.DoPost(): responsed in %d msec: "%s"', [GetTickCount - Tick, Result]));
-    finally
-      //FHTTP.Disconnect;
-      Data.Free;
-    end;
-  except
-    on E: EIdException do
-    begin
-      raise EConnectionException.CreateFmt('Ошибка связи с сервером, причина: %s', [E.Message]);
-    end;
+    {#} Tick := GetTickCount();
+    Result := FHTTP.Post(URL, Data);
+    {#}Log(VERBOUS, Format('TDiacompClient.DoPost(): responsed in %d msec: "%s"', [GetTickCount - Tick, Result]));
+  finally
+    //FHTTP.Disconnect;
+    Data.Free;
   end;
 
   if (Kicked(Result)) then
@@ -260,6 +246,12 @@ begin
       Login();
       Result := DoGet(URL); // здесь не ловим возможное исключение отсутствия авторизации
     end;
+
+    on SocketError: EIdSocketError do
+    begin
+      FHTTP.Disconnect;
+      Result := DoGet(URL);
+    end;
   end;
 end;
 
@@ -274,6 +266,12 @@ begin
     begin
       Login();
       Result := DoPost(URL, Par); // здесь не ловим возможное исключение отсутствия авторизации
+    end;
+
+    on SocketError: EIdSocketError do
+    begin
+      FHTTP.Disconnect;
+      Result := DoPost(URL, Par);
     end;
   end;
 end;
