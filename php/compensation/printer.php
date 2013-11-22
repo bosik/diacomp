@@ -124,7 +124,9 @@
 				"					<div id=\"modspan\" title=\"Последнее изменение\"></div>\n" .
 				"					<div id=\"versionspan\" title=\"Версия\"></div>\n" .
 				"				</div>\n" .
-
+				"				<div style=\"float: right; text-align: right;overflow: hidden;\" >\n".
+				"					<img id=\"job_img\" src=\"\" title=\"\" style=\"float: right;padding-right: 12px;\">\n" .
+				"				</div>\n" .
 				"			</div>\n" .
 				$page;
 	}

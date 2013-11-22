@@ -1,10 +1,10 @@
 var root = document.getElementById("diary_block");
 root.innerHTML =
 	"				<div id=\"diary_info_column\">\n" +
-	"					<div id=\"filler\" style=\"height: 0px\" onclick=\"showInfoBox(-1)\" ></div>\n" +
-	"					<div id=\"diary_info\"></div>\n" +
-	"				</div>\n" +
-	"				<div id=\"diary_page\" class=\"diary_page_empty\"></div>\n";
+"					<div id=\"filler\" style=\"height: 0px\" onclick=\"showInfoBox(-1)\" ></div>\n" +
+"					<div id=\"diary_info\"></div>\n" +
+"				</div>\n" +
+"				<div id=\"diary_page\" class=\"diary_page_empty\"></div>\n";
 
 // компоненты
 var calendar = document.getElementById("calendar");
@@ -12,6 +12,7 @@ var modspan = document.getElementById("modspan");
 var versionspan = document.getElementById("versionspan"); // TODO: unused
 var diary = document.getElementById("diary_page");
 var infoblock = document.getElementById("diary_info");
+var statusImg = document.getElementById("job_img");
 
 // константы
 var fingers = ["БЛ", "1Л", "2Л", "3Л", "4Л", "4П", "3П", "2П", "1П", "БП"];
@@ -52,6 +53,7 @@ refreshCurrentPage();
 downloadKoofs();
 downloadFoodbase();
 downloadDishbase();
+setProgress("ready", "Дневник сохранён");
 
 /* ================== DIARY NAVIGATION ================== */
 
@@ -259,6 +261,11 @@ function floatizeFood(food)
 
 function floatizeDish(dish)
 {
+	if (!('item' in dish))
+	{
+		dish.item = [];
+	}
+
 	for (i = 0; i < dish.item.length; i++)
 	{
 		dish.item[i].prots = strToFloat(dish.item[i].prots);
@@ -358,19 +365,22 @@ function uploadPage()
 		//document.getElementById("summa").innerHTML = xmlhttp.responseText; // Выводим ответ сервера
 		if (resp == "DONE")
 		{
-
+			setProgress("ready", "Дневник сохранён");
 		}
 		else
 		{
+			setProgress("error", "Не удалось сохранить дневник");
 			alert("Failed to save with message '" + resp + "'");
 		}
 	}
 
 	var onFailure = function ()
 	{
+		setProgress("error", "Не удалось сохранить дневник");
 		alert("Failed to save page");
 	}
 
+	setProgress("progress", "Идёт сохранение...");
 	upload(url, request, true, onSuccess, onFailure);
 }
 
@@ -790,6 +800,35 @@ function showInfoBox(index)
 	if (page.content[index].type == "note")				infoblock.innerHTML = codeInfoNote(page.content[index]); else
 		infoblock.innerHTML = codeInfoDefault();
 
+}
+
+function setProgress(status, hint)
+{
+	if (status == "progress")
+	{
+		statusImg.setAttribute("display", "block");
+		statusImg.setAttribute("src", "img/status-progress.gif");
+	}
+	else
+	if (status == "ready")
+	{
+		statusImg.setAttribute("display", "block");
+		statusImg.setAttribute("src", "img/status-ready.png");
+	}
+	else
+	if (status == "error")
+	{
+		statusImg.setAttribute("display", "block");
+		statusImg.setAttribute("src", "img/status-error.png");
+	}
+	else
+	if (status == "none")
+	{
+		statusImg.setAttribute("display", "none");
+		statusImg.setAttribute("src", "");
+	}
+
+	statusImg.setAttribute("title", hint);
 }
 
 /* ================== DIARY PAGE METHODS ================== */
