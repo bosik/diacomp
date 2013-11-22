@@ -131,6 +131,7 @@ var
   FlagRestart, FlagModificated: boolean;
 begin
   tick := GetTickCount;
+  AutoLog.StartLogger;
 
   { опнбепйю мюкхвхъ сфе гюосыеммнцн щйгелокъпю }
   //if CheckRunningInstance() then Exit;
@@ -207,4 +208,5 @@ begin
   Application.Run;
 
   DiaryCore.Finalize;
+  AutoLog.StopLogger;
 end.
