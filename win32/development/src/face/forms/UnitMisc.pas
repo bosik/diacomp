@@ -459,25 +459,21 @@ procedure TFormMisc.Button8Click(Sender: TObject);
   var
     Version: integer;
   begin
-    if WebClient.GetFoodBaseVersion(Version) then
-      ShowMessage(Format('Food base verson: %d', [Version]))
-    else
-      ShowMessage('Can''t get foodbase version');
+    Version := WebClient.GetFoodBaseVersion();
+    ShowMessage(Format('Food base verson: %d', [Version]))
   end;
 
   procedure TestDownload;
   var
     Data: string;
   begin
-    if WebClient.DownloadFoodBase(Data) then
-      ShowMessage(Data)
-    else
-      ShowMessage('Can''t download foodbase');
+    Data := WebClient.DownloadFoodBase();
+    ShowMessage(Data);
   end;
 
   procedure TestUpload;
   var
-    S: TStringList;
+    S: TStrings;
   begin
     S := TStringList.Create;
     try

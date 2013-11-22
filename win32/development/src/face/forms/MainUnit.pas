@@ -387,8 +387,6 @@ type
     procedure MyIdle(Sender: TObject; var Done: Boolean);
     procedure MyActivate(Sender: TObject);
     procedure MyDeactivate(Sender: TObject);
-    procedure MyLogin(Sender: TObject; State: TLoginResult);
-
     procedure ProcMessage(var M: TMessage); message WM_SECOND_START;
 
     procedure BalloonAction_ShowForm;
@@ -621,7 +619,7 @@ begin
       Log(ERROR, 'Exception in MySyncDiary(): ' + E.Message, True);
       Form1.StatusBar.Panels[3].Text := 'Ошибка синхронизации';
       Application.ProcessMessages;
-      ErrorMessage('Во время синхронизации произошла ошибка');
+      Form1.ShowBalloon('Во время синхронизации произошла ошибка', bitError);
     end;
   end;
 
@@ -819,7 +817,6 @@ begin
     {*}WebClient.Password := Value['Password'];
     {*}WebClient.Server := Value['ServerURL'];
     {*}WebClient.SetTimeout(5000);
-    {*}WebClient.OnLogin := MyLogin;
 
     { =============== НАСТРОЙКА ДНЕВНИКА =============== }
     {*}StartupInfo(STATUS_ACTION_LOADING_DIARY);
@@ -877,19 +874,49 @@ begin
     begin
       //--------------------------------------
       StartupInfo(STATUS_ACTION_AUTH);
-      {*}if (WebClient.Login() = lrDone) then
-      begin
+      try
+        WebClient.Login();
+
         //--------------------------------------
-        try
-          StartupInfo(STATUS_ACTION_SYNC_DIARY);
-          Temp := MySyncDiary();
-          {*}if (Temp <> 0) then
-            ShowBalloon('Синхронизация дневника прошла успешно, передано страниц: ' + IntToStr(Temp), bitInfo);
-        except
-          on E: ECommonServerException do
-          begin
-            ErrorMessage('Не удалось синхронизировать дневник');
-          end;
+        StartupInfo(STATUS_ACTION_SYNC_DIARY);
+        Temp := MySyncDiary();
+        {*}if (Temp <> 0) then
+           ShowBalloon('Синхронизация дневника прошла успешно, передано страниц: ' + IntToStr(Temp), bitInfo);
+      except
+        on ConnectionError: EConnectionException do
+        begin
+          Log(ERROR, 'Form1.FullInit(): ошибка при синхронизации дневника: ' + ConnectionError.Message);
+          ShowBalloon('Авторизация не удалась [сервер не отвечает]', bitError);
+        end;
+
+        on AuthError: EAuthException do
+        begin
+          Log(ERROR, 'Form1.FullInit(): ошибка при синхронизации дневника: ' + AuthError.Message);
+          ShowBalloon('Авторизация не удалась [неверный логин/пароль]. Щёлкните это сообщение, чтобы открыть настройки.', bitError, BalloonAction_ShowInternetSettings);
+        end;
+
+        on APIError: EAPIException do
+        begin
+          Log(ERROR, 'Form1.FullInit(): ошибка при синхронизации дневника: ' + APIError.Message);
+          ShowBalloon('Авторизация не удалась [API устарел, обновите версию программы]', bitError);
+        end;
+
+        on FormatError: EFormatException do
+        begin
+          Log(ERROR, 'Form1.FullInit(): ошибка при синхронизации дневника: ' + FormatError.Message);
+          ShowBalloon('Авторизация не удалась [ошибка формата сервера, рекомендуется обновить версию программы]', bitError);
+        end;
+
+        on CommonError: ECommonException do
+        begin
+          Log(ERROR, 'Form1.FullInit(): ошибка при синхронизации дневника: ' + CommonError.Message);
+          ShowBalloon('Авторизация не удалась [общая ошибка клиента]', bitError);
+        end;
+
+        on E: Exception do
+        begin
+          Log(ERROR, 'Form1.FullInit(): ошибка при синхронизации дневника: ' + E.Message);
+          ErrorMessage('Не удалось синхронизировать дневник');                            
         end;
       end;
     end;
@@ -4403,20 +4430,6 @@ begin
   end;
 
   Log(VERBOUS, '#MOD');
-end;
-
-{==============================================================================}
-procedure TForm1.MyLogin(Sender: TObject; State: TLoginResult);
-{==============================================================================}
-begin
-  case State of
-    lrFailConnection: ShowBalloon('Авторизация не удалась [сервер не отвечает]', bitError);
-    lrFailAuth: ShowBalloon('Авторизация не удалась [неверный логин/пароль]. Щёлкните это сообщение, чтобы открыть настройки.', bitError, BalloonAction_ShowInternetSettings);
-    lrFailFormat: ShowBalloon('Авторизация не удалась [ошибка формата сервера, рекомендуется обновить версию программы]', bitError);
-    lrFailAPIVersion: ShowBalloon('Авторизация не удалась [API устарел, обновите версию программы]', bitError);
-
-    lrDone: ;//ShowBalloon('Авторизация прошла успешно', bitInfo);
-  end;
 end;
 
 {==============================================================================}
