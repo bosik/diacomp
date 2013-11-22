@@ -592,8 +592,7 @@ begin
 
     if (Result > 0) then
     begin
-      Form1.DiaryView.DrawCurrentPage;
-      //Diary.Modified := True; // флаг и так поднимается в процессе синхронизации
+      Form1.DiaryView.OpenPage(Diary[Trunc(Form1.CalendarDiary.Date)], True);
       Form1.UpdateNextFinger;
     end;
 
