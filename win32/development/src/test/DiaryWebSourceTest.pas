@@ -26,9 +26,9 @@ implementation
 procedure TDiaryWebSourceTest.SetupSource;
 {==============================================================================}
 begin
-  //Client := TDiacompClient.Create;
+  Client := TDiacompClient.Create;
   Client.Server := 'http://localhost/';
-  Client.Server := 'http://diacomp.16mb.com/';
+  //Client.Server := 'http://diacomp.16mb.com/';
   Client.Username := 'bosik-007@narod.ru';
   Client.Password := 'devel0pment';
   Client.Login();
