@@ -26,12 +26,12 @@ implementation
 procedure TDiaryWebSourceTest.SetupSource;
 {==============================================================================}
 begin
-  Client := TDiacompClient.Create;
-  //Client.Server := 'http://127.0.0.1/';
+  //Client := TDiacompClient.Create;
+  Client.Server := 'http://localhost/';
   Client.Server := 'http://diacomp.16mb.com/';
   Client.Username := 'bosik-007@narod.ru';
   Client.Password := 'devel0pment';
-  Check(Client.Login = lrDone, 'Failed to login');
+  Client.Login();
   Source := TDiaryWebSource.Create(Client);
 end;
 
