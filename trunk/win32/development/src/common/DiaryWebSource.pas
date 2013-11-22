@@ -4,11 +4,12 @@ interface
 
 uses
   SysUtils,
+  Classes,
   DiarySources,
   DiaryWeb,
   DiaryPage,
   DiaryPageSerializer,
-  Classes;
+  AutoLog;
 
 type
   TDiaryWebSource = class (IDiarySource)
@@ -50,21 +51,23 @@ function TDiaryWebSource.GetPages(const Dates: TDateList; out Pages: TDiaryPageL
 var
   Resp: string;
   S: TStrings;
-  //i: integer;
 begin
-  Result := FClient.GetPages(Dates, Resp);
-
-  // обрабатываем
-  S := TStringList.Create;
-  S.Text := Resp;
   try
-    TPageSerializer.ReadPages(S, DiaryWeb.WebFmt, Pages);
-
-    // переводим время в локальное
-    //for i := 0 to High(Pages) do
-    //  Pages[i].TimeStamp := FClient.ServerToLocal(Pages[i].TimeStamp);
-  finally
-    S.Free;
+    Resp := FClient.GetPages(Dates);
+    S := TStringList.Create;
+    try
+      S.Text := Resp;
+      TPageSerializer.ReadPages(S, DiaryWeb.WebFmt, Pages);
+    finally
+      S.Free;
+    end;
+    Result := True;
+  except
+    on E: Exception do
+    begin
+      Log(Error, 'TDiaryWebSource.GetPages(): ' + E.Message);
+      Result := False;                                       
+    end;
   end;
 end;
 

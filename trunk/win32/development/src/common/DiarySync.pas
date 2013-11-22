@@ -212,7 +212,6 @@ begin
   Source1.GetVersions(ConvertToDateList(Miss1), Add1);
   Source2.GetVersions(ConvertToDateList(Miss2), Add2);
 
-
   for i := 0 to High(Add1) do
   for j := 0 to SyncList.Count - 1 do
   begin
@@ -246,28 +245,31 @@ begin
 
   Newer1 := TList.Create;
   Newer2 := TList.Create;
-  ExtractDiffs(SyncList, Newer1, Newer2);
+  try
+    ExtractDiffs(SyncList, Newer1, Newer2);
 
-  for i := 0 to Newer1.Count - 1 do
-  begin
-    Log(DEBUG, Format('SyncList'#9'1->2'#9'%s', [
-      DateToStr(TSyncInfo(Newer1[i]).Date)
-      ] ));
+    for i := 0 to Newer1.Count - 1 do
+    begin
+      Log(DEBUG, Format('SyncList'#9'1->2'#9'%s', [
+        DateToStr(TSyncInfo(Newer1[i]).Date)
+        ] ));
+    end;
+    for i := 0 to Newer2.Count - 1 do
+    begin
+      Log(DEBUG, Format('SyncList'#9'2->1'#9'%s', [
+        DateToStr(TSyncInfo(Newer2[i]).Date)
+        ] ));
+    end;
+
+    if Source1.GetPages(ConvertToDateList(Newer1), Pages) then Source2.PostPages(Pages);
+    if Source2.GetPages(ConvertToDateList(Newer2), Pages) then Source1.PostPages(Pages);
+
+    Result := Newer1.Count + Newer2.Count;
+
+  finally
+    Newer1.Free;
+    Newer2.Free;
   end;
-  for i := 0 to Newer2.Count - 1 do
-  begin
-    Log(DEBUG, Format('SyncList'#9'2->1'#9'%s', [
-      DateToStr(TSyncInfo(Newer2[i]).Date)
-      ] ));
-  end;
-
-  if Source1.GetPages(ConvertToDateList(Newer1), Pages) then Source2.PostPages(Pages);
-  if Source2.GetPages(ConvertToDateList(Newer2), Pages) then Source1.PostPages(Pages);
-
-  Result := Newer1.Count + Newer2.Count;
-
-  Newer1.Free;
-  Newer2.Free;
 
   // TODO: раньше здесь стояло определение минимальной даты загруженной
   // страницы и последующее UpdatePostPrand от неё

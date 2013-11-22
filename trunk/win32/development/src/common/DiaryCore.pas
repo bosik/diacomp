@@ -29,8 +29,6 @@ type
   TItemType = (itUnknown, itFood, itDish);
   TSyncResult = (srEqual, srDownloaded, srUploaded);
 
-  ECommonServerException = class (Exception);
-
   procedure Initialize();
   procedure Finalize();
 
@@ -285,40 +283,30 @@ var
   Data: string;
   Version: integer;
 begin
-  if (WebClient.GetFoodBaseVersion(Version)) then
+  Version := WebClient.GetFoodBaseVersion();
+
+  // download
+  if (FoodBase.Version < Version) then
   begin
-    //Version := -1;
-
-    // download
-    if (FoodBase.Version < Version) then
-    begin
-      if (WebClient.DownloadFoodBase(Data)) then
-      begin
-        WriteFile(WORK_FOLDER + FoodBase_FileName, Data);
-        FoodBase.LoadFromFile_XML(WORK_FOLDER + FoodBase_FileName);
-        Result := srDownloaded;
-      end else
-        raise ECommonServerException.Create('Failed to download foodbase');
-    end else
-
-    // upload
-    if (FoodBase.Version > Version) then
-    begin
-      Data := ReadFile(WORK_FOLDER + FoodBase_FileName);
-      if WebClient.UploadFoodBase(Data, FoodBase.Version) then
-        Result := srUploaded
-      else
-        raise ECommonServerException.Create('Failed to upload foodbase');
-    end else
-
-    // equal
-    begin
-      Result := srEqual;
-    end;
+    Data := WebClient.DownloadFoodBase();
+    WriteFile(WORK_FOLDER + FoodBase_FileName, Data);
+    FoodBase.LoadFromFile_XML(WORK_FOLDER + FoodBase_FileName);
+    Result := srDownloaded;
   end else
+
+  // upload
+  if (FoodBase.Version > Version) then
   begin
-    // Nothing to do here: we can't sync without connection
-    raise ECommonServerException.Create('Failed to get foodbase version');
+    Data := ReadFile(WORK_FOLDER + FoodBase_FileName);
+    if WebClient.UploadFoodBase(Data, FoodBase.Version) then
+      Result := srUploaded
+    else
+      raise ECommonException.Create('Failed to upload foodbase');
+  end else
+
+  // equal
+  begin
+    Result := srEqual;
   end;
 end;
 
@@ -329,38 +317,30 @@ var
   Data: string;
   Version: integer;
 begin
-  if (WebClient.GetDishBaseVersion(Version)) then
+  Version := WebClient.GetDishBaseVersion();
+
+  // download
+  if (DishBase.Version < Version) then
   begin
-    // download
-    if (DishBase.Version < Version) then
-    begin
-      if (WebClient.DownloadDishBase(Data)) then
-      begin
-        WriteFile(WORK_FOLDER + DishBase_FileName, Data);
-        DishBase.LoadFromFile_XML(WORK_FOLDER + DishBase_FileName);
-        Result := srDownloaded;
-      end else
-        raise ECommonServerException.Create('Failed to download dishbase');
-    end else
-
-    // upload
-    if (DishBase.Version > Version) then
-    begin
-      Data := ReadFile(WORK_FOLDER + DishBase_FileName);
-      if WebClient.UploadDishBase(Data, DishBase.Version) then
-        Result := srUploaded
-      else
-        raise ECommonServerException.Create('Failed to upload dishbase');
-    end else
-
-    // equal
-    begin
-      Result := srEqual;
-    end;
+    Data := WebClient.DownloadDishBase();
+    WriteFile(WORK_FOLDER + DishBase_FileName, Data);
+    DishBase.LoadFromFile_XML(WORK_FOLDER + DishBase_FileName);
+    Result := srDownloaded;
   end else
+
+  // upload
+  if (DishBase.Version > Version) then
   begin
-    // Nothing to do here: we can't sync without connection
-    raise ECommonServerException.Create('Failed to get dishbase version');
+    Data := ReadFile(WORK_FOLDER + DishBase_FileName);
+    if WebClient.UploadDishBase(Data, DishBase.Version) then
+      Result := srUploaded
+    else
+      raise ECommonException.Create('Failed to upload dishbase');
+  end else
+
+  // equal
+  begin
+    Result := srEqual;
   end;
 end;
 
