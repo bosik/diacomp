@@ -10,23 +10,20 @@ uses
   Windows, // debug: GetTickCount
   Dialogs, // debug
   IdHTTP,
+  IdException,
   DiaryRoutines, // Separate()
   DiarySources, // TModList
   uLkJSON,
   AutoLog;
 
 type
-  TLoginResult = (
-    lrFailConnection,  // сервер не отвечает
-    lrFailFormat,      // сервер отвечает некорректно
-    lrFailAuth,        // сервер сообщает о неправильной паре "логин-пароль"
-    lrFailAPIVersion,  // сервер сообщает об изменившейся версии API
-    lrDone             // сервер сообщает об успешной авторизации
-  );
+  ECommonException     = class (Exception);
+  EConnectionException = class(ECommonException);   // Ошибка подключения
+  EFormatException     = class(ECommonException);   // Ошибка формата данных
+  EAPIException        = class(EFormatException);   // Ошибка версии API
+  EAuthException       = class(ECommonException);   // Ошибка авторизации
 
   TParamList = array of string;
-
-  TLoginEvent = procedure(Sender: TObject; State: TLoginResult) of object;
 
   TDiacompClient = class
   private
@@ -37,42 +34,37 @@ type
     FPassword: string;
     FOnline: boolean;
     FTimeShift: double;
-    FLoginResult: TLoginResult;
 
-    // события
-    FOnLogin: TLoginEvent;
+    function DoGet(const URL: string): string;
+    function DoPost(const URL: string; const Par: TParamList): string;
 
-    function DoGet(const URL: string; out Resp: string): boolean;
-    function DoPost(const URL: string; const Par: TParamList; out Resp: string): boolean;
-
-    function DoGetSmart(const URL: string; out Resp: string): boolean;
-    function DoPostSmart(const URL: string; const Par: TParamList; out Resp: string): boolean;
+    function DoGetSmart(const URL: string): string;
+    function DoPostSmart(const URL: string; const Par: TParamList): string;
     function Kicked(const Answer: string): boolean;
   public
     // TODO: sort
-
     constructor Create;
     destructor Destroy; override;
 
     procedure GetModList(Time: TDateTime; out ModList: TModList);
     procedure GetVersions(const Dates: TDateList; out ModList: TModList);
-    function GetPages(const Dates: TDateList; out Resp: string): boolean;
+    function GetPages(const Dates: TDateList): string;
     function PostPages(const Pages: string): boolean;
 
-    function Login(): TLoginResult;
+    procedure Login();
     procedure Logout;
     procedure SetTimeout(Timeout: integer);
     procedure UpdateStatus;
 
-    function GetFoodBaseVersion(out Version: integer): boolean;
-    function DownloadFoodBase(out Data: string): boolean;
+    function GetFoodBaseVersion(): integer;
+    function DownloadFoodBase(): string;
     function UploadFoodBase(const Data: string; Version: integer): boolean;
 
-    function GetDishBaseVersion(out Version: integer): boolean;
-    function DownloadDishBase(out Data: string): boolean;
+    function GetDishBaseVersion(): integer;
+    function DownloadDishBase(): string;
     function UploadDishBase(const Data: string; Version: integer): boolean;
 
-    function DownloadKoofs(out Data: string): boolean;
+    function DownloadKoofs(): string;
     function UploadKoofs(const Data: string): boolean;
 
     function ConvertUTCToLocal(Time: TDateTime): TDateTime;
@@ -83,14 +75,11 @@ type
     function Search(const Key: string): string;
 
     { свойства }
-    property LoginResult: TLoginResult read FLoginResult;
+//    property LoginResult: TLoginResult read FLoginResult;
     property Online: boolean read FOnline;
     property Username: string read FUsername write FUsername;
     property Password: string read FPassword write FPassword;
     property Server: string read FServer write FServer;
-
-    { события }
-    property OnLogin: TLoginEvent read FOnLogin write FOnLogin;
   end;
 
 var
@@ -100,7 +89,6 @@ implementation
 
 const
   STATUS_OK                 = 0;
-  STATUS_ERROR_JSON_PARSING = 1;
 
 type
   TResponse = record
@@ -120,10 +108,7 @@ type
       Result.Message := (json.Field['message'] as TlkJSONstring).Value
     end else
     begin
-      Result.Status := STATUS_ERROR_JSON_PARSING;
-      Result.Message := 'JSON is not assigned';
-      Log(ERROR, 'JSON is not assigned');
-      Exit;
+      raise EFormatException.Create('Invalid JSON: ' + S);
     end;    
   end;
 
@@ -142,8 +127,6 @@ const
   MESSAGE_ONLINE          = 'online';
   MESSAGE_OFFLINE         = 'offline';
   MESSAGE_UNAUTH          = 'Error: log in first';
-
-  EXCEPTION_OFFLINE = 'Для выполнения операции необходимо авторизоваться';
 
 {==============================================================================}
 function ChkSpace(const S: string): string;
@@ -195,35 +178,29 @@ begin
 end;
 
 {==============================================================================}
-function TDiacompClient.DoGet(const URL: string; out Resp: string): boolean;
+function TDiacompClient.DoGet(const URL: string): string;
 {==============================================================================}
 {#}var
 {#}  Tick: cardinal;
 begin
-  {#} Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '")');
-
-  Resp := '';
+  {#}Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '")');
   try
-    try
-      {#} Tick := GetTickCount();
-      Resp := FHTTP.Get(URL);
-      {#} Log(VERBOUS, 'TDiacompClient.DoGet(): time is ' + IntToStr(GetTickCount - Tick) + ' msec');
-      {#} Log(VERBOUS, 'TDiacompClient.DoGet(): Resp = "' + Resp + '"');
-      Result := True;
-    finally
-      FHTTP.Disconnect;
-    end;
+    {#} Tick := GetTickCount();
+    Result := FHTTP.Get(URL);
+    {#}Log(VERBOUS, Format('TDiacompClient.DoGet(): responsed in %d msec: "%s"', [GetTickCount - Tick, Result]));
   except
-    on ESE: Exception do
+    on E: EIdException do
     begin
-      {#} Log(ERROR, 'TDiacompClient.DoGet(): EXCEPTION! ' +  ESE.Message);
-      Result := False;
+      raise EConnectionException.CreateFmt('Ошибка связи с сервером, причина: %s', [E.Message]);
     end;
   end;
+
+  if (Kicked(Result)) then
+    raise EAuthException.Create('Необходима авторизация');
 end;
 
 {==============================================================================}
-function TDiacompClient.DoPost(const URL: string; const Par: TParamList; out Resp: string): boolean;
+function TDiacompClient.DoPost(const URL: string; const Par: TParamList): string;
 {==============================================================================}
 
   function PrintParams: string;
@@ -232,17 +209,20 @@ function TDiacompClient.DoPost(const URL: string; const Par: TParamList; out Res
   begin
     Result := '';
     for i := Low(Par) to High(Par) do
-      Result := Result + Par[i] + '&';
+    begin
+      Result := Result + Par[i];
+      if (i < High(Par)) then
+        Result := Result + '&';
+    end;
   end;
 
 var
   Data: TStrings;
   i: integer;
-{#}  Tick: cardinal;
+{#} Tick: cardinal;
 begin
-  {#} Log(VERBOUS, 'TDiacompClient.DoPost("' + URL + '"), ' + PrintParams());
+  {#}Log(VERBOUS, 'TDiacompClient.DoPost("' + URL + '"), ' + PrintParams());
 
-  Resp := ''; 
   try
     Data := TStringList.Create;
     try
@@ -251,133 +231,123 @@ begin
         Data.Add(Par[i]);
 
       {#} Tick := GetTickCount();
-      Resp := FHTTP.Post(URL, Data);
-      {#} Log(VERBOUS, 'TDiacompClient.DoPost(): time is ' + IntToStr(GetTickCount - Tick) + ' msec');
-      {#} Log(VERBOUS, 'TDiacompClient.DoPost(): Resp = "' + Resp + '"');
-      Result := True;
+      Result := FHTTP.Post(URL, Data);
+      {#}Log(VERBOUS, Format('TDiacompClient.DoPost(): responsed in %d msec: "%s"', [GetTickCount - Tick, Result]));
     finally
-      FHTTP.Disconnect;
+      //FHTTP.Disconnect;
       Data.Free;
     end;
   except
-    on ESE: Exception do
+    on E: EIdException do
     begin
-      {#} Log(ERROR, 'TDiacompClient.DoPost(): EXCEPTION! ' +  ESE.Message);
-      Result := False;
+      raise EConnectionException.CreateFmt('Ошибка связи с сервером, причина: %s', [E.Message]);
+    end;
+  end;
+
+  if (Kicked(Result)) then
+    raise EAuthException.Create('Необходима авторизация');
+end;
+
+{==============================================================================}
+function TDiacompClient.DoGetSmart(const URL: string): string;
+{==============================================================================}
+begin
+  try
+    Result := DoGet(URL);
+  except
+    on E: EAuthException do
+    begin
+      Login();
+      Result := DoGet(URL); // здесь не ловим возможное исключение отсутствия авторизации
     end;
   end;
 end;
 
 {==============================================================================}
-function TDiacompClient.DoGetSmart(const URL: string; out Resp: string): boolean;
+function TDiacompClient.DoPostSmart(const URL: string; const Par: TParamList): string;
 {==============================================================================}
 begin
-  if DoGet(URL, Resp) then
-  begin
-    if Kicked(Resp) then
+  try
+    Result := DoPost(URL, Par);
+  except
+    on E: EAuthException do
     begin
-      // вторая попытка
-      if {(Autologin) and} (Login() = lrDone) then
-        Result := DoGet(URL, Resp)
-      else
-        Result := False;
-    end else
-      Result := True;
-  end else
-    Result := False;
-end;
-
-{==============================================================================}
-function TDiacompClient.DoPostSmart(const URL: string; const Par: TParamList; out Resp: string): boolean;
-{==============================================================================}
-begin
-  if DoPost(URL, Par, Resp) then
-  begin
-    if Kicked(Resp) then
-    begin
-      // вторая попытка
-      if {(Autologin) and} (Login() = lrDone) then
-        Result := DoPost(URL, Par, Resp)
-      else
-        Result := False;
-    end else
-      Result := True;
-  end else
-    Result := False;
+      Login();
+      Result := DoPost(URL, Par); // здесь не ловим возможное исключение отсутствия авторизации
+    end;
+  end;
 end;
 
 {==============================================================================}
 procedure TDiacompClient.GetModList(Time: TDateTime; out ModList: TModList);
 {==============================================================================}
-var
-  Query, Resp, Line: string;
-  Date, Version: string;
-  S: TStringList;
-  i,count: integer;
-begin
-  Log(VERBOUS, 'TDiacompClient.GetModList(): started');
-  Log(VERBOUS, 'TDiacompClient.GetModList(): Time = "' + DateTimeToStr(Time) + '"');
 
-  if Time > 0 then
+  function ParseModList(const Text: string): TModList;
+  var
+    S: TStrings;
+    i, count: integer;
+    Date, Version: string;  
+  begin
+    S := TStringList.Create;
+    try
+      S.Text := Trim(Text);
+      SetLength(Result, S.Count);
+      count := 0;
+      {#}Log(VERBOUS, 'TDiacompClient.GetModList(): lines count = ' + IntToStr(S.Count));
+
+      for i := 0 to S.Count - 1 do
+      if (S[i] <> '') then
+      begin
+        {#}Log(VERBOUS, 'TDiacompClient.GetModList(): parsing line "' + S[i] + '"');
+        Separate(S[i], Date, '|', Version);
+        {#}Log(VERBOUS, 'TDiacompClient.GetModList(): date = "' + Date + '"');
+        {#}Log(VERBOUS, 'TDiacompClient.GetModList(): version = "' + Version + '"');
+
+        Result[Count].Date := Trunc(StrToDate(Date, WebFmt));
+        Result[Count].Version := StrToInt(Version);
+        inc(Count);
+      end;
+
+      SetLength(ModList, Count);
+    finally
+      S.Free;
+    end;
+  end;
+
+var
+  Query, Resp: string;
+
+begin
+  {#}Log(VERBOUS, 'TDiacompClient.GetModList(): started, Time = "' + DateTimeToStr(Time) + '"');
+
+  if (Time > 0) then
     Query := FServer + PAGE_CONSOLE + '?diary:getModList&time=' + ChkSpace(DateTimeToStr(Time, WebFmt))
   else
     Query := FServer + PAGE_CONSOLE + '?diary:getModList&time=0';
 
-  Log(VERBOUS, 'TDiacompClient.GetModList(): quering ' + Query);
+  {#}Log(VERBOUS, 'TDiacompClient.GetModList(): quering ' + Query);
+  Resp := DoGetSmart(Query);
+  {#}Log(VERBOUS, 'TDiacompClient.GetModList(): quered OK, Resp = "' + Resp + '"');
 
-  if DoGetSmart(Query, Resp) then
-  begin
-    Log(VERBOUS, 'TDiacompClient.GetModList(): quered OK, Resp = "' + Resp + '"');
+  ModList := ParseModList(Resp);
 
-    S := TStringList.Create;
-    S.Text := Trim(Resp);
-
-    SetLength(ModList, S.Count);
-    count := 0;
-
-    Log(VERBOUS, 'TDiacompClient.GetModList(): lines count = ' + IntToStr(S.Count));
-
-    for i := 0 to S.Count - 1 do
-    begin
-      Line := S[i];
-      if (Line <> '') then
-      begin
-        Log(VERBOUS, 'TDiacompClient.GetModList(): parsing line "' + Line + '"');
-        Separate(Line, Date, '|', Version);
-
-        Log(VERBOUS, 'TDiacompClient.GetModList(): date = "' + Date + '"');
-        Log(VERBOUS, 'TDiacompClient.GetModList(): version = "' + Version + '"');
-
-        ModList[Count].Date := Trunc(StrToDate(Date, WebFmt));
-        ModList[Count].Version := StrToInt(Version);
-        inc(Count);
-      end;
-    end;
-
-    SetLength(ModList, Count);
-
-    Log(VERBOUS, 'TDiacompClient.GetModList(): done OK');
-  end else
-  begin
-    Log(ERROR, 'TDiacompClient.GetModList(): quering failed');
-  end;
+  {#}Log(VERBOUS, 'TDiacompClient.GetModList(): done OK');
 end;
 
 {==============================================================================}
 procedure TDiacompClient.GetVersions(const Dates: TDateList; out ModList: TModList);
 {==============================================================================}
 var
-  Query, Resp, Line: string;
+  Query, Resp: string;
   Date, Version: string;
-  S: TStringList;
+  S: TStrings;
   i,count: integer;
 begin
-  Log(VERBOUS, 'TDiacompClient.GetVersions(): started');
+  {#}Log(VERBOUS, 'TDiacompClient.GetVersions(): started');
 
   // заглушка
   if (Length(Dates) = 0) then
   begin
-    Resp := '';
     SetLength(ModList, 0);
     Exit;
   end;
@@ -387,49 +357,39 @@ begin
   for i := 0 to High(Dates) do
     Query := Query + DateToStr(Dates[i], WebFmt) + ',';
 
+  {#}Log(VERBOUS, 'TDiacompClient.GetVersions(): quering ' + Query);
+  Resp := DoGetSmart(Query);
+  {#}Log(VERBOUS, 'TDiacompClient.GetVersions(): quered OK, Resp = "' + Resp + '"');
 
-  Log(VERBOUS, 'TDiacompClient.GetVersions(): quering ' + Query);
-
-  if DoGetSmart(Query, Resp) then
-  begin
-    Log(VERBOUS, 'TDiacompClient.GetVersions(): quered OK, Resp = "' + Resp + '"');
-
-    S := TStringList.Create;
+  S := TStringList.Create;
+  try
     S.Text := Trim(Resp);
-
     SetLength(ModList, S.Count);
     count := 0;
-
-    Log(VERBOUS, 'TDiacompClient.GetVersions(): lines count = ' + IntToStr(S.Count));
+    {#}Log(VERBOUS, 'TDiacompClient.GetVersions(): lines count = ' + IntToStr(S.Count));
 
     for i := 0 to S.Count - 1 do
+    if (S[i] <> '') then
     begin
-      Line := S[i];
-      if (Line <> '') then
-      begin
-        Log(VERBOUS, 'TDiacompClient.GetVersions(): parsing line "' + Line + '"');
-        Separate(Line, Date, '|', Version);
+      {#}Log(VERBOUS, 'TDiacompClient.GetVersions(): parsing line "' + S[i] + '"');
+      Separate(S[i], Date, '|', Version);
+      {#}Log(VERBOUS, 'TDiacompClient.GetVersions(): date = "' + Date + '"');
+      {#}Log(VERBOUS, 'TDiacompClient.GetVersions(): version = "' + Version + '"');
 
-        Log(VERBOUS, 'TDiacompClient.GetVersions(): date = "' + Date + '"');
-        Log(VERBOUS, 'TDiacompClient.GetVersions(): version = "' + Version + '"');
-
-        ModList[Count].Date := Trunc(StrToDate(Date, WebFmt));
-        ModList[Count].Version := StrToInt(Version);
-        inc(Count);
-      end;
+      ModList[Count].Date := Trunc(StrToDate(Date, WebFmt));
+      ModList[Count].Version := StrToInt(Version);
+      inc(Count);
     end;
 
     SetLength(ModList, Count);
-
-    Log(VERBOUS, 'TDiacompClient.GetVersions(): done OK');
-  end else
-  begin
-    Log(ERROR, 'TDiacompClient.GetVersions(): quering failed');
+    {#}Log(VERBOUS, 'TDiacompClient.GetVersions(): done OK');
+  finally
+    S.Free;
   end;
 end;
 
 {==============================================================================}
-function TDiacompClient.GetPages(const Dates: TDateList; out Resp: string): boolean;
+function TDiacompClient.GetPages(const Dates: TDateList): string;
 {==============================================================================}
 var
   Query: string;
@@ -438,30 +398,22 @@ begin
   // заглушка
   if (Length(Dates) = 0) then
   begin
-    Resp := '';
-    Result := True;
+    Result := '';
     Exit;
   end;
 
-  Log(VERBOUS, 'TDiacompClient.GetPages: started');
+  {#}Log(VERBOUS, 'TDiacompClient.GetPages: started');
 
   // конструируем запрос
   Query := FServer + PAGE_CONSOLE + '?diary:download&dates=';
   for i := 0 to High(Dates) do
     Query := Query + DateToStr(Dates[i], WebFmt) + ',';
 
-  Log(VERBOUS, 'TDiacompClient.GetPages: quering "' + Query + '"');
+  {#}Log(VERBOUS, 'TDiacompClient.GetPages: quering "' + Query + '"');
 
   // отправляем
-  if DoGetSmart(Query, Resp) then
-  begin
-    Log(VERBOUS, 'TDiacompClient.GetPages: quered OK, resp = "' + Resp + '"');
-    Result := True;
-  end else
-  begin
-    Log(ERROR, 'TDiacompClient.GetPages: quering failed');
-    Result := False;
-  end;
+  Result := DoGetSmart(Query);
+  {#}Log(VERBOUS, 'TDiacompClient.GetPages: quered OK, resp = "' + Result + '"');
 end;
 
 {==============================================================================}
@@ -472,87 +424,55 @@ begin
 end;
 
 {==============================================================================}
-function TDiacompClient.Login(): TLoginResult;
+procedure TDiacompClient.Login();
 {==============================================================================}
 var
   Par: TParamList;
   ServerTime: TDateTime;
   Msg: string;
   Res, Desc: string;
-
   SendedTime: TDateTime;
-
-  //{#} Tick: cardinal;
 begin
-  //{#} Tick := GetTickCount();
+  FOnline := False;
 
-  Result := lrFailConnection;  // TODO: change to common fail
+  SetLength(Par, 4);
+  par[0] := 'login=' + FUsername;
+  par[1] := 'password=' + FPassword;
+  par[2] := 'api=' + CURRENT_API_VERSION;
+  par[3] := 'noredir=';
+  {#}Log(VERBOUS, 'TDiacompClient.Login(): quering ' + FServer + PAGE_LOGIN);
 
-  try
-    SetLength(Par, 4);
-    par[0] := 'login=' + FUsername;
-    par[1] := 'password=' + FPassword;
-    par[2] := 'api=' + CURRENT_API_VERSION;
-    par[3] := 'noredir=';
+  SendedTime := GetTimeUTC();
+  Msg := DoPost(FServer + PAGE_LOGIN, par);
+  {#}Log(VERBOUS, 'TDiacompClient.Login(): quered OK, resp = "' + Msg + '"');
 
-    //Log('TDiacompClient.Login(): started');
-    Log(VERBOUS, 'TDiacompClient.Login(): quering ' + FServer + PAGE_LOGIN);
+  Separate(Msg, Res, '|', Desc);
+  {#}Log(VERBOUS, 'TDiacompClient.Login(): Res = "' + Res + '"');
+  {#}Log(VERBOUS, 'TDiacompClient.Login(): Desc = "' + Desc + '"');
 
-    SendedTime := GetTimeUTC();
-    if DoPost(FServer + PAGE_LOGIN, par, Msg) then // Not smart, it's o.k. - Hi, C.O.! :D
-    begin
-      Log(VERBOUS, 'TDiacompClient.Login(): quered OK, resp = "' + Msg + '"');
-      //{#}Log('Login()\posting: ' + IntToStr(GetTickCount() - Tick)); Tick := GetTickCount;
+  if (Res = MESSAGE_DONE) then
+  begin
+    {#}Log(VERBOUS, 'TDiacompClient.Login(): it means "DONE", parsing desc...');
+    ServerTime := StrToDateTime(Desc, WebFmt);
+    FTimeShift := (SendedTime + GetTimeUTC())/2 - ServerTime;  // pretty cool :)
+  end else
+  // TODO: update format (w/o concatenation)
+  if (Msg = MESSAGE_FAIL_AUTH) then
+    raise EAuthException.Create('Ошибка авторизации') else
+  if (Msg = MESSAGE_FAIL_APIVERSION) then
+    raise EAPIException.Create('Версия API не поддерживается')
+  else
+    raise EFormatException.CreateFmt('Неверный формат данных: %s', [Msg]);
 
-      Separate(Msg, Res, '|', Desc);
-
-      Log(VERBOUS, 'TDiacompClient.Login(): Res = "' + Res + '"');
-      Log(VERBOUS, 'TDiacompClient.Login(): Desc = "' + Desc + '"');
-
-      //{#}Log('Login()\separating: ' + IntToStr(GetTickCount() - Tick)); Tick := GetTickCount;
-
-      if (Res = MESSAGE_DONE) then
-      begin
-        Log(VERBOUS, 'TDiacompClient.Login(): it means "DONE", parsing desc...');
-        ServerTime := StrToDateTime(Desc, WebFmt);
-        FTimeShift := (SendedTime + GetTimeUTC())/2 - ServerTime;  // pretty cool :)
-        Result := lrDone;
-
-        //{#}Log('Login()\calculating FShiftTime: ' + IntToStr(GetTickCount() - Tick)); Tick := GetTickCount;
-      end else
-      // TODO: update format (w/o concatenation)
-      if (Msg = MESSAGE_FAIL_AUTH) then
-        Result := lrFailAuth else
-      if (Msg = MESSAGE_FAIL_APIVERSION) then
-        Result := lrFailAPIVersion
-      else
-        Result := lrFailFormat;
-    end else
-      Result := lrFailConnection;
-
-    FOnline := (Result = lrDone);
-    FLoginResult := Result;
-    if Assigned(FOnLogin) then FOnLogin(Self, Result);
-    Log(VERBOUS, 'TDiacompClient.Login(): done, FOnline = ' + BoolToStr(FOnline, True));
-
-  except
-    on ESE: Exception do
-    begin
-      {#} Log(ERROR, 'TDiacompClient.Login(): EXCEPTION! ' +  ESE.Message);
-      ShowMessage('Exception in Login() procedure, see log file for details');
-    end;
-  end;
-
-  //{#}Log('Login()\rest: ' + IntToStr(GetTickCount() - Tick)); Tick := GetTickCount;
+  FOnline := True;
+  {#}Log(VERBOUS, 'TDiacompClient.Login(): done');
 end;
 
 {==============================================================================}
 procedure TDiacompClient.Logout;
 {==============================================================================}
-var
-  Resp: string;
 begin
-  DoGet(FServer + PAGE_LOGIN + '?logout&noredir', Resp);  // Put Smart here :D
+  DoGet(FServer + PAGE_LOGIN + '?logout&noredir');  // Put Smart here :D
   FOnline := False;
 end;
 
@@ -582,12 +502,9 @@ begin
   // Response.Status = xxx   Connection error
   // etc.
 
-  if DoPostSmart(FServer + PAGE_CONSOLE, Par, Msg) then
-  begin
-    Response := DecodeResponse(Msg);
-    Result := (Response.Status = 0);
-  end else
-    Result := False;
+  Msg := DoPostSmart(FServer + PAGE_CONSOLE, Par);
+  Response := DecodeResponse(Msg);
+  Result := (Response.Status = 0);  // TODO: create constants
 end;
 
 {==============================================================================}
@@ -603,50 +520,48 @@ procedure TDiacompClient.UpdateStatus;
 var
   Resp: string;
 begin
-  if DoGet(FServer + PAGE_LOGIN + '?status', Resp) then
-    FOnline := (Resp = MESSAGE_ONLINE)
-  else
-    FOnline := False;
+  Resp := DoGet(FServer + PAGE_LOGIN + '?status');
+  FOnline := (Resp = MESSAGE_ONLINE);
 end;
 
 {==============================================================================}
-function TDiacompClient.DownloadFoodBase(out Data: string): boolean;
+function TDiacompClient.DownloadFoodBase(): string;
+{==============================================================================}
+begin
+  Result := DoGetSmart(FServer + PAGE_CONSOLE + '?foodbase:download');
+end;
+
+{==============================================================================}
+function TDiacompClient.DownloadDishBase(): string;
+{==============================================================================}
+begin
+  Result := DoGetSmart(FServer + PAGE_CONSOLE + '?dishbase:download');
+end;
+
+{==============================================================================}
+function TDiacompClient.GetFoodBaseVersion(): integer;
 {==============================================================================}
 var
-  Query: string;
+  Resp: string;
 begin
-  // конструируем запрос
-  Query := FServer + PAGE_CONSOLE + '?foodbase:download';
-  Log(VERBOUS, 'TDiacompClient.DownloadFoodBase: quering ' + Query);
-
-  // отправляем
-  Result := DoGetSmart(Query, Data);
-
-  if (not Result) then
-    Log(ERROR, 'TDiacompClient.DownloadFoodBase: quering failed');
+  Resp := DoGetSmart(FServer + PAGE_CONSOLE + '?foodbase:getVersion');
+  if (not TryStrToInt(Resp, Result)) then
+    raise EFormatException.CreateFmt('Неверный формат версии базы: %s', [Resp]);
 end;
 
 {==============================================================================}
-function TDiacompClient.GetFoodBaseVersion(out Version: integer): boolean;
+function TDiacompClient.GetDishBaseVersion(): integer;
 {==============================================================================}
 var
-  Query, Resp: string;
+  Resp: string;
 begin
-  // конструируем запрос
-  Query := FServer + PAGE_CONSOLE + '?foodbase:getVersion';
-  Log(VERBOUS, 'TDiacompClient.GetFoodBaseVersion: quering ' + Query);
-
-  // отправляем
-  Result := DoGetSmart(Query, Resp);
-  Result := Result and TryStrToInt(Resp, Version);
-
-  if (not Result) then
-    Log(ERROR, 'TDiacompClient.GetFoodBaseVersion: quering failed, response="' + Resp + '"');
+  Resp := DoGetSmart(FServer + PAGE_CONSOLE + '?dishbase:getVersion');
+  if (not TryStrToInt(Resp, Result)) then
+    raise EFormatException.CreateFmt('Неверный формат версии базы: %s', [Resp]);
 end;
 
 {==============================================================================}
-function TDiacompClient.UploadFoodBase(const Data: string;
-  Version: integer): boolean;
+function TDiacompClient.UploadFoodBase(const Data: string; Version: integer): boolean;
 {==============================================================================}
 var
   Par: TParamList;
@@ -657,47 +572,8 @@ begin
   par[1] := 'version=' + IntToStr(Version);
   par[2] := 'data=' + Data;
 
-  if DoPostSmart(FServer + PAGE_CONSOLE, Par, Resp) then
-    Result := (Resp = MESSAGE_DONE)
-  else
-    Result := False;
-end;
-
-// ================================================
-
-{==============================================================================}
-function TDiacompClient.DownloadDishBase(out Data: string): boolean;
-{==============================================================================}
-var
-  Query: string;
-begin
-  // конструируем запрос
-  Query := FServer + PAGE_CONSOLE + '?dishbase:download';
-  Log(VERBOUS, 'TDiacompClient.DownloadDishBase: quering ' + Query);
-
-  // отправляем
-  Result := DoGetSmart(Query, Data);
-
-  if (not Result) then
-    Log(ERROR, 'TDiacompClient.DownloadDishBase: quering failed');
-end;
-
-{==============================================================================}
-function TDiacompClient.GetDishBaseVersion(out Version: integer): boolean;
-{==============================================================================}
-var
-  Query, Resp: string;
-begin
-  // конструируем запрос
-  Query := FServer + PAGE_CONSOLE + '?dishbase:getVersion';
-  Log(VERBOUS, 'TDiacompClient.GetDishBaseVersion: quering ' + Query);
-
-  // отправляем
-  Result := DoGetSmart(Query, Resp);
-  Result := Result and TryStrToInt(Resp, Version);
-
-  if (not Result) then
-    Log(ERROR, 'TDiacompClient.GetDishBaseVersion: quering failed');
+  Resp := DoPostSmart(FServer + PAGE_CONSOLE, Par);
+  Result := (Resp = MESSAGE_DONE);
 end;
 
 {==============================================================================}
@@ -712,22 +588,15 @@ begin
   par[1] := 'version=' + IntToStr(Version);
   par[2] := 'data=' + Data;
 
-  if DoPostSmart(FServer + PAGE_CONSOLE, Par, Resp) then
-    Result := (Resp = MESSAGE_DONE)
-  else
-    Result := False;
+  Resp := DoPostSmart(FServer + PAGE_CONSOLE, Par);
+  Result := (Resp = MESSAGE_DONE);
 end;
 
-// =================================================
-
 {==============================================================================}
-function TDiacompClient.DownloadKoofs(out Data: string): boolean;
+function TDiacompClient.DownloadKoofs(): string;
 {==============================================================================}
-var
-  Query: string;
 begin
-  Query := FServer + PAGE_CONSOLE + '?koofs:download';
-  Result := DoGetSmart(Query, Data);
+  Result := DoGetSmart(FServer + PAGE_CONSOLE + '?koofs:download');
 end;
 
 {==============================================================================}
@@ -741,10 +610,8 @@ begin
   par[0] := 'koofs:upload=';
   par[1] := 'data=' + Data;
 
-  if DoPostSmart(FServer + PAGE_CONSOLE, Par, Resp) then
-    Result := (Resp = MESSAGE_DONE)
-  else
-    Result := False;
+  Resp := DoPostSmart(FServer + PAGE_CONSOLE, Par);
+  Result := (Resp = MESSAGE_DONE)
 end;
 
 {==============================================================================}
@@ -758,22 +625,15 @@ begin
   par[0] := 'report=';
   par[1] := 'msg=' + Msg;
 
-  if DoPostSmart(FServer + PAGE_CONSOLE, Par, Resp) then
-    Result := (Resp = MESSAGE_DONE)
-  else
-    Result := False;
+  Resp := DoPostSmart(FServer + PAGE_CONSOLE, Par);
+  Result := (Resp = MESSAGE_DONE);
 end;
 
 {==============================================================================}
 function TDiacompClient.Search(const Key: string): string;
 {==============================================================================}
-var
-  Resp: string;
 begin
-  if DoGetSmart(FServer + PAGE_CONSOLE + '?foodbase:search&q=' + Key, Resp) then
-    Result := Resp
-  else
-    Result := 'FAILED';
+  Result := DoGetSmart(FServer + PAGE_CONSOLE + '?foodbase:search&q=' + Key);
 end;
 
 initialization

@@ -33,7 +33,7 @@ const
   FOLDER_LOGS = 'Logs';
 
 var
-  LogFile: TStrings;
+  LogFile: TStrings = nil;
   Stack: array of TStackNode;
   StackSize: integer = 0;
   FileName: string;  
@@ -44,29 +44,23 @@ var
 procedure Log(MsgType: TLogType; const Msg: string; Save: boolean = False);
 {==============================================================================}
 {$IFDEF LOGGING}
+const
+  TYPES: array[TLogType] of string = ('ERROR', 'WARNING', 'INFO', 'DEBUG', 'VERBOUS');
 var
   Temp: string;
 {$ENDIF}
 begin
   {$IFDEF LOGGING}
 
+  if (LogFile = nil) then
+    StartLogger;
+
   DateTimeToString(Temp, 'hh:mm:ss.zzz', Now);
-
-  case MsgType of
-    ERROR:   Temp := Temp + #9'ERROR'#9;
-    WARNING: Temp := Temp + #9'WARNING'#9;
-    INFO:    Temp := Temp + #9'INFO'#9;
-    DEBUG:   Temp := Temp + #9'DEBUG'#9;
-    VERBOUS: Temp := Temp + #9'VERBOUS'#9;
-  end;
-
-  if Save then
-    Temp := Temp + '! ';
-  Temp := Temp + Msg;
+  Temp := Temp + #9 + TYPES[MsgType] + #9 + Msg;
 
   LogFile.Add(Temp);
 
-  if Save then
+  if (Save or (MsgType = ERROR)) then
     LogFile.SaveToFile(FileName);
 
   {$ENDIF}
@@ -138,8 +132,11 @@ procedure StopLogger;
 {==============================================================================}
 begin
   {$IFDEF LOGGING}
-  LogFile.Free;
+  FreeAndNil(LogFile);
   {$ENDIF}
 end;
 
+initialization
+finalization
+  StopLogger;
 end.
