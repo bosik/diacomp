@@ -35,7 +35,10 @@ contains
   ACCombo in 'ACCombo.pas',
   DiaryView in 'DiaryView.pas',
   AutoLog in '..\src\common\AutoLog.pas',
-  TextInterface in '..\src\face\TextInterface.pas',
-  DiaryRoutines in '..\src\common\DiaryRoutines.pas';
+  DiaryRoutines in '..\..\common\DiaryRoutines.pas',
+  TextInterface in '..\TextInterface.pas',
+  BusinessObjects in '..\..\bo\BusinessObjects.pas',
+  DiaryPage in '..\..\bo\DiaryPage.pas',
+  DiaryRecords in '..\..\bo\DiaryRecords.pas';
 
 end.

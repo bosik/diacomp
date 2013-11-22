@@ -10,6 +10,9 @@ uses
 type
   TLogType = (ERROR, WARNING, INFO, DEBUG, VERBOUS);
 
+  procedure StartLogger;
+  procedure StopLogger;
+
   procedure Log(MsgType: TLogType; const Msg: string; Save: boolean = False);
   procedure SaveLog;
 
@@ -30,7 +33,7 @@ const
   FOLDER_LOGS = 'Logs';
 
 var
-  LogFile: TStringList;
+  LogFile: TStrings;
   Stack: array of TStackNode;
   StackSize: integer = 0;
   FileName: string;  
@@ -139,8 +142,4 @@ begin
   {$ENDIF}
 end;
 
-initialization
-  StartLogger;
-finalization
-  StopLogger;
 end.
