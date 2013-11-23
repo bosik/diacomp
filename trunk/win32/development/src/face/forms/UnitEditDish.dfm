@@ -1,7 +1,7 @@
 object FormDish: TFormDish
   Left = 401
   Top = 158
-  Width = 485
+  Width = 662
   Height = 695
   BorderIcons = [biSystemMenu]
   BorderWidth = 8
@@ -33,7 +33,7 @@ object FormDish: TFormDish
   object Shape1: TShape
     Left = 0
     Top = 65
-    Width = 461
+    Width = 638
     Height = 8
     Align = alTop
     Brush.Style = bsClear
@@ -42,7 +42,7 @@ object FormDish: TFormDish
   object Shape4: TShape
     Left = 0
     Top = 137
-    Width = 461
+    Width = 638
     Height = 8
     Align = alTop
     Brush.Style = bsClear
@@ -51,16 +51,16 @@ object FormDish: TFormDish
   object Panel1: TPanel
     Left = 0
     Top = 600
-    Width = 461
+    Width = 638
     Height = 47
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 2
     DesignSize = (
-      461
+      638
       47)
     object ButtonCancel: TBitBtn
-      Left = 316
+      Left = 493
       Top = 12
       Width = 138
       Height = 34
@@ -131,7 +131,7 @@ object FormDish: TFormDish
   object GroupContent: TGroupBox
     Left = 0
     Top = 145
-    Width = 461
+    Width = 638
     Height = 455
     Align = alClient
     Caption = #1057#1086#1089#1090#1072#1074
@@ -139,7 +139,7 @@ object FormDish: TFormDish
     object PanelTable: TPanel
       Left = 2
       Top = 18
-      Width = 457
+      Width = 634
       Height = 435
       Align = alClient
       BevelOuter = bvNone
@@ -148,7 +148,7 @@ object FormDish: TFormDish
       object Shape2: TShape
         Left = 8
         Top = 357
-        Width = 441
+        Width = 618
         Height = 8
         Align = alBottom
         Brush.Style = bsClear
@@ -157,7 +157,7 @@ object FormDish: TFormDish
       object Shape3: TShape
         Left = 8
         Top = 419
-        Width = 441
+        Width = 618
         Height = 8
         Align = alBottom
         Brush.Style = bsClear
@@ -167,7 +167,7 @@ object FormDish: TFormDish
       object TableDishContent: TListView
         Left = 8
         Top = 8
-        Width = 441
+        Width = 618
         Height = 349
         Align = alClient
         Columns = <
@@ -175,6 +175,12 @@ object FormDish: TFormDish
             AutoSize = True
             Caption = #1050#1086#1084#1087#1086#1085#1077#1085#1090
             MinWidth = 70
+          end
+          item
+            Caption = #1041
+            MaxWidth = 60
+            MinWidth = 40
+            Width = 40
           end
           item
             Caption = #1052#1072#1089#1089#1072
@@ -199,16 +205,16 @@ object FormDish: TFormDish
       object GroupFood: TGroupBox
         Left = 8
         Top = 365
-        Width = 441
+        Width = 618
         Height = 54
         Align = alBottom
         Caption = #1055#1088#1086#1076#1091#1082#1090#1099' '#1080' '#1073#1083#1102#1076#1072
         TabOrder = 1
         DesignSize = (
-          441
+          618
           54)
         object ButtonAddFood: TSpeedButton
-          Left = 384
+          Left = 561
           Top = 33
           Width = 25
           Height = 25
@@ -222,7 +228,7 @@ object FormDish: TFormDish
         end
         object EditFoodMass: TEditNumb
           Tag = 1
-          Left = 274
+          Left = 451
           Top = 16
           Width = 57
           Height = 24
@@ -247,7 +253,7 @@ object FormDish: TFormDish
           Tag = 1
           Left = 49
           Top = 26
-          Width = 186
+          Width = 363
           Height = 24
           UserHint = #1053#1072#1095#1085#1080#1090#1077' '#1074#1074#1086#1076#1080#1090#1100' '#1085#1072#1079#1074#1072#1085#1080#1077
           ShowUserHint = True
@@ -266,18 +272,18 @@ object FormDish: TFormDish
   object GroupBoxName: TGroupBox
     Left = 0
     Top = 0
-    Width = 461
+    Width = 638
     Height = 65
     Align = alTop
     Caption = #1053#1072#1079#1074#1072#1085#1080#1077
     TabOrder = 1
     DesignSize = (
-      461
+      638
       65)
     object EditName: TEdit
       Left = 16
       Top = 24
-      Width = 428
+      Width = 605
       Height = 24
       TabStop = False
       Anchors = [akLeft, akTop, akRight]
@@ -291,7 +297,7 @@ object FormDish: TFormDish
     object CheckFixedMass_: TCheckBox
       Left = 19
       Top = 65
-      Width = 426
+      Width = 603
       Height = 16
       Cursor = crHelp
       TabStop = False
@@ -321,18 +327,18 @@ object FormDish: TFormDish
   object GroupBoxMass: TGroupBox
     Left = 0
     Top = 73
-    Width = 461
+    Width = 638
     Height = 64
     Align = alTop
     Caption = #1052#1072#1089#1089#1072
     TabOrder = 3
     DesignSize = (
-      461
+      638
       64)
     object ButtonRealMass: TSpeedButton
       Left = 16
       Top = 24
-      Width = 402
+      Width = 579
       Height = 25
       AllowAllUp = True
       Anchors = [akLeft, akTop, akRight]
@@ -343,7 +349,7 @@ object FormDish: TFormDish
       OnClick = ButtonRealMassClick
     end
     object ButtonRunCalc: TSpeedButton
-      Left = 35
+      Left = 212
       Top = 32
       Width = 25
       Height = 25
@@ -357,7 +363,7 @@ object FormDish: TFormDish
       OnClick = ButtonRunCalcClick
     end
     object ButtonSimpleMass: TSpeedButton
-      Left = 424
+      Left = 601
       Top = 24
       Width = 26
       Height = 25
