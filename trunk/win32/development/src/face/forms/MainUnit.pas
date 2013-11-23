@@ -384,6 +384,9 @@ type
   private
     DiaryFoodDishInput: string;
 
+    { события }
+    BalloonAction: TBalloonAction;
+
     procedure MyIdle(Sender: TObject; var Done: Boolean);
     procedure MyActivate(Sender: TObject);
     procedure MyDeactivate(Sender: TObject);
@@ -392,14 +395,7 @@ type
     procedure BalloonAction_ShowForm;
     procedure BalloonAction_StartUpdate;
     procedure BalloonAction_ShowInternetSettings;
-  public
-    { карты индексов }
-    DishIndFood: TIndexList;
-    DishIndDish: TIndexList;
-
-    { события }
-    BalloonAction: TBalloonAction;
-
+  public                          
     procedure FullInit;
     procedure FullFree;
     procedure ShowMessages;
@@ -824,7 +820,6 @@ begin
     {*}Diary.PostPrandShort := Value['ShortPostPrandTime'];
 
     { =============== ЗАГРУЗКА БАЗЫ ПРОДУКТОВ =============== }
-    DishIndFood := TIndexList.Create;
 
     // форматирование
     if (not FileExists(WORK_FOLDER + FoodBase_FileName)) and
@@ -846,7 +841,6 @@ begin
     end;
 
     { =============== ЗАГРУЗКА БАЗЫ БЛЮД =============== }
-    DishIndDish := TIndexList.Create;
 
     // форматирование
     if (not FileExists(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name)) and
@@ -1053,8 +1047,7 @@ end;
 procedure TForm1.FullFree;
 {==============================================================================}
 begin
-  DishIndFood.Free;
-  DishIndDish.Free;
+
 end;
 
 {==============================================================================}
