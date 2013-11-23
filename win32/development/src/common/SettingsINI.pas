@@ -261,6 +261,7 @@ const
   Part_BaseCols          = 'СТОЛБЦЫ';
   Part_Export            = 'ЭКСПОРТ';
   Part_Internet          = 'ИНТЕРНЕТ';
+  Part_System            = 'SYSTEM';
 begin
   // TODO: сделать загрузку из XML
   // TODO: там же хранить дефолты?
@@ -343,6 +344,8 @@ begin
     Add(Part_Internet, 'Password',         rtString,  '');
     Add(Part_Internet, 'ServerURL',        rtString,  'http://diacomp.16mb.com/');
     Add(Part_Internet, 'LastSync',         rtString,  '0');
+
+    Add(Part_System, 'Debug', rtBoolean, False);
 
     //Add(Part_, '', rt, );
   end;

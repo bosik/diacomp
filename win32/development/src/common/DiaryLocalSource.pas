@@ -117,7 +117,6 @@ var
   Header: string;
   Body: string;
 begin
-  //TPageSerializer.WriteHeader(Self, F, Header);
   Header := WriteHeader(F);
   Body := Page;
   Result := Header + #13 + Body;
