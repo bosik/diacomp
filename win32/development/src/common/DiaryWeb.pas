@@ -250,6 +250,7 @@ begin
     on SocketError: EIdSocketError do
     begin
       FHTTP.Disconnect;
+      Wait(500);
       Result := DoGet(URL);
     end;
   end;
@@ -271,6 +272,7 @@ begin
     on SocketError: EIdSocketError do
     begin
       FHTTP.Disconnect;
+      Wait(500);
       Result := DoPost(URL, Par);
     end;
   end;
