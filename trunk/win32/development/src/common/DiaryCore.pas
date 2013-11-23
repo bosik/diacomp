@@ -72,7 +72,6 @@ var
 const
   { яхярелмне }
   ADVANCED_MODE           = True;
-  DEVELOPMENT_MODE        = True;
   PROGRAM_VERSION         = '1.09';
   PROGRAM_DATE            = '2013.09.21';
   UPDATES_CHECKING_PERIOD = 7; { ДМЕИ }

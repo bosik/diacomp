@@ -614,7 +614,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.070432800920000000
+            Date = 40251.085481226850000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -760,7 +760,7 @@ object Form1: TForm1
           end
           object PanelDevelopment: TPanel
             Left = 16
-            Top = 640
+            Top = 656
             Width = 193
             Height = 73
             Caption = 'DEV'
@@ -770,6 +770,7 @@ object Form1: TForm1
             Font.Height = -27
             Font.Name = 'Tahoma'
             Font.Style = [fsBold]
+            ParentBackground = False
             ParentFont = False
             TabOrder = 4
             OnClick = PanelDevelopmentClick

@@ -994,7 +994,7 @@ begin
 
     Caption := PROGRAM_TITLE + ' ' + PROGRAM_VERSION;
 
-    PanelDevelopment.Visible := DEVELOPMENT_MODE;
+    PanelDevelopment.Visible := Value['Debug'];
     TabStat.TabVisible := ADVANCED_MODE;
     StatusBar.Panels[3].Text := '';
     CalendarDiary.Date := now;  
