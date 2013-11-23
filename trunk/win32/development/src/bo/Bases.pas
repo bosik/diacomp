@@ -311,6 +311,11 @@ procedure TArrayBase.Swap(Index1, Index2: integer);
 var
   Temp: TMutableItem;
 begin
+  if (Index1 < Low(FBase)) and (Index1 > High(FBase)) then
+    raise ERangeError.Create(Format('TArrayBase.GetItem(): Index out of bounds (%d)', [Index1]));
+  if (Index2 < Low(FBase)) and (Index2 > High(FBase)) then
+    raise ERangeError.Create(Format('TArrayBase.GetItem(): Index out of bounds (%d)', [Index2]));
+
   Temp := FBase[Index1];
   FBase[Index1] := FBase[Index2];
   FBase[Index2] := Temp;

@@ -9,6 +9,7 @@ interface
 uses
   SysUtils,
   Classes,
+  Forms {ProcessMessages},
   Windows {GetThreadLocale};
 
 type
@@ -107,6 +108,8 @@ type
   procedure QuickSort(Left, Right: integer; Swap: TSwapProcedure; More: TMoreFunction);
   { быстрый поиск }
   function BinarySearch(Value: Variant; Left, Right: integer; Getter: TGetterFunction): integer;
+
+  procedure Wait(Time: cardinal);
 
 var
   Decimal: char;
@@ -792,9 +795,19 @@ begin
   Result := -1;
 end;
 
+procedure Wait(Time: cardinal);
+begin
+  Time := GetTickCount() + Time;
+  while (GetTickCount() < Time) do
+  begin
+    sleep(20);
+    Application.ProcessMessages;
+  end;
+end;
+
 var
   Temp: TFormatSettings;
-  
+
 initialization
   // DateToStr(Date, Fmt);          - ShortDateFormat
   // DateTimeToStr(DateTime, Fmt);  - ShortDateFormat + LongTimeFormat
