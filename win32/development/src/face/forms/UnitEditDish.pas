@@ -124,6 +124,12 @@ const
   
 implementation
 
+var
+  DishP: boolean;
+  DishF: boolean;
+  DishC: boolean;
+  DishV: boolean;
+
 {$R *.dfm}
 
 { TFormEditDish }
@@ -134,14 +140,14 @@ function TFormDish.OpenDishEditor(var Dish: TDish; New: boolean; ShowInRect: TRe
 begin
   { установка размеров окна }
   SetupInterface;
-  Left := (ShowInRect.Right+ShowInRect.Left-Width) div 2;
-  Top := (ShowInRect.Bottom+ShowInRect.Top-Height) div 2;
+  Left := (ShowInRect.Right+ShowInRect.Left - Width) div 2;
+  Top := (ShowInRect.Bottom+ShowInRect.Top - Height) div 2;
 
   { корректировка положения }
-  if Left+Width>Screen.Width then
-    Left := Screen.Width-Width;
-  if Top+Height>Screen.Height then
-    Top := Screen.Height-Height;
+  if Left + Width > Screen.Width then
+    Left := Screen.Width - Width;
+  if Top + Height > Screen.Height then
+    Top := Screen.Height - Height;
 
   { вывод }
   ADish := TDish.Create;
@@ -150,7 +156,12 @@ begin
   else
     ADish.CopyFrom(Dish);
 
-  ShowDishInEditor;
+  DishP := True; //Value['DishP'];
+  DishF := True; //Value['DishF'];
+  DishC := True; //Value['DishC'];
+  DishV := True; //Value['DishV'];
+
+  ShowDishInEditor();
   OK := false;
   ModeNew := New;
   ButtonSave.Caption := SAVE_CAPTION[New];
@@ -183,6 +194,15 @@ end;
 {==============================================================================}
 procedure TFormDish.ShowDishInEditor;
 {==============================================================================}
+const
+  COL_CAPTIONS: array[0..5] of string = (
+    'Наименование',
+    'Б',
+    'Ж',
+    'У',
+    'ккал',
+    'Масса'
+  );
 var
   i: integer;
 begin
@@ -217,9 +237,37 @@ begin
 
   ShowKoof;
 
-  TableDishContent.Items.Clear;
-  for i := 0 to ADish.Count-1 do
-    ShowFood(ADish.Content[i], TableDishContent.Items.Add);
+  with TableDishContent do
+  begin
+    { ЗАГОЛОВКИ }
+    Columns.Clear;
+
+    with Columns.Add do
+    begin
+      Caption := COL_CAPTIONS[0];
+      AutoSize := True;
+      MinWidth := 150;
+    end;
+
+    if DishP then with Columns.Add do begin Caption := COL_CAPTIONS[1]; Width := 50; Alignment := taRightJustify; end;
+    if DishF then with Columns.Add do begin Caption := COL_CAPTIONS[2]; Width := 50; Alignment := taRightJustify; end;
+    if DishC then with Columns.Add do begin Caption := COL_CAPTIONS[3]; Width := 50; Alignment := taRightJustify; end;
+    if DishV then with Columns.Add do begin Caption := COL_CAPTIONS[4]; Width := 50; Alignment := taRightJustify; end;
+
+    with Columns.Add do
+    begin
+      Caption := COL_CAPTIONS[5];
+      //AutoSize := True;
+      Alignment := taCenter;
+      Width := 75;
+    end;
+
+    Items.Clear;
+    for i := 0 to ADish.Count - 1 do
+      ShowFood(ADish.Content[i], Items.Add);
+
+    Width := Width + 1;
+  end;
 end;
 
 {==============================================================================}
@@ -605,7 +653,12 @@ var
   s: string;
 begin
   Item.Caption := Food.Name;
+  
   Item.SubItems.Clear;
+  if DishP then Item.SubItems.Add(RealToStr(Food.RelProts));
+  if DishF then Item.SubItems.Add(RealToStr(Food.RelFats));
+  if DishC then Item.SubItems.Add(RealToStr(Food.RelCarbs));
+  if DishV then Item.SubItems.Add(RealToStr(Food.RelValue));
   Item.SubItems.Add(RealToStr(Food.Mass));
 
   // небольшой хак
