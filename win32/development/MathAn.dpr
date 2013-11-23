@@ -856,11 +856,11 @@ begin
 end;
 
 exports
-  Analyze_HardMath     name AnalyzeFunctionName + '0',
-  Info_HardMath        name InfoFunctionName    + '0',
+  Analyze_BruteforceQP name AnalyzeFunctionName + '0',
+  Info_BruteforceQP    name InfoFunctionName    + '0'
 
-  Analyze_BruteforceQP name AnalyzeFunctionName + '1',
-  Info_BruteforceQP    name InfoFunctionName    + '1'
+  //Analyze_HardMath     name AnalyzeFunctionName + '1',
+  //Info_HardMath        name InfoFunctionName    + '1',
 
   ;
 
