@@ -4633,13 +4633,12 @@ end;
 procedure TForm1.UpdateFoodTable(FullUpdate: boolean; SaveItemIndex: boolean = False);
 {==============================================================================}
 const
-  COL_CAPTIONS: array[0..5] of string = (
+  COL_CAPTIONS: array[0..4] of string = (
     'Наименование',
     'Б',
     'Ж',
     'У',
-    'ккал',
-    'ГИ'
+    'ккал'
   );
 
 var
@@ -4650,7 +4649,6 @@ var
   FoodF: boolean;
   FoodC: boolean;
   FoodV: boolean;
-  //FoodGI: boolean;
 begin
   StartProc('UpdateFoodTable()');
 
@@ -4660,7 +4658,6 @@ begin
   FoodF := Value['FoodF'];
   FoodC := Value['FoodC'];
   FoodV := Value['FoodV'];
-  //FoodGI := Value['FoodGI'];
 
   with ListFood do
   begin
@@ -4685,7 +4682,6 @@ begin
       if FoodF  then Columns.Add.Caption := COL_CAPTIONS[2];
       if FoodC  then Columns.Add.Caption := COL_CAPTIONS[3];
       if FoodV  then Columns.Add.Caption := COL_CAPTIONS[4];
-      //if FoodGI then Columns.Add.Caption := COL_CAPTIONS[5];
 
       { СТРОКИ }
       Items.BeginUpdate;
@@ -4702,7 +4698,6 @@ begin
           if FoodF  then SubItems.Add(RealToStr(FoodBase[i].RelFats));
           if FoodC  then SubItems.Add(RealToStr(FoodBase[i].RelCarbs));
           if FoodV  then SubItems.Add(IntToStr(Round(FoodBase[i].RelValue)));
-          //if FoodGI then SubItems.Add(IntToStr(FoodBase[i].GI));
         end;
       end;
       Items.EndUpdate;
@@ -4723,18 +4718,11 @@ begin
         Caption := FoodBase[i].Name;
         ImageIndex := Byte(FoodBase[i].FromTable);
 
-        {SubItems[0] := RealToStr(FoodBase[i].RelProts);
-        SubItems[1] := RealToStr(FoodBase[i].RelFats);
-        SubItems[2] := RealToStr(FoodBase[i].RelCarbs);
-        SubItems[3] := IntToStr(Round(FoodBase[i].RelValue));
-        SubItems[4] := IntToStr(FoodBase[i].GI);}
-        SubItems.Clear;
-
+        SubItems.Clear; 
         if FoodP  then SubItems.Add(RealToStr(FoodBase[i].RelProts));
         if FoodF  then SubItems.Add(RealToStr(FoodBase[i].RelFats));
         if FoodC  then SubItems.Add(RealToStr(FoodBase[i].RelCarbs));
         if FoodV  then SubItems.Add(IntToStr(Round(FoodBase[i].RelValue)));
-        //if FoodGI then SubItems.Add(IntToStr(FoodBase[i].GI));
       end;
     end;
 
