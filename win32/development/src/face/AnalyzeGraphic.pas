@@ -28,32 +28,29 @@ type
     Weight: Real;
   end;
 
-
   procedure PrepareBS(Image: TImage; Max: real; Mini: boolean;
     var kx,ky: real; var Border: integer);
   procedure DrawBS(PagePrev, PageCur, PageNext: TDiaryPage; Image: TImage; Mini: boolean);
-  procedure DrawBS_Int(const Base: TDiary; FromDay,ToDay: integer; Image: TImage);
+  procedure DrawBS_Int(const Base: TDiary; FromDay, ToDay: integer; Image: TImage);
 
   procedure DrawKoof(Image: TImage; const KoofList: TKoofList;
     const RecList: TAnalyzeRecList; KoofType: TKoofType; DrawPoints: boolean);
   procedure DrawDayCurve(Image: TImage; const Curve: TDayCurve;
     const Points: array of TWeightedDayPoint; ColorCurve, ColorPointWeight0,
     ColorPointWeight1: TColor);
-  procedure CheckTimePos(Image: TImage); deprecated;
 
 var
   LeftBord: integer;
-  TimePos: integer = -1;
   
 const
   Brd      = 20; { BS    }
   eSize    = 3;  { ...   }
   TopBord  = 20; { Koofs }
 
-  COLOR_K       = clRed;
-  COLOR_Q       = clBlue;
-  COLOR_P       = clOlive;
-  COLOR_X       = clBlack;
+  COLOR_K       = $EEEEFF;
+  COLOR_Q       = $FFEEEE;
+  COLOR_P       = $80FFFF;
+  COLOR_X       = $EEEEEE;
   COLOR_BACK    = clWhite;
   COLOR_TIMEPOS = clSilver;
 
@@ -569,11 +566,6 @@ end;
 procedure DrawKoof(Image: TImage; const KoofList: TKoofList;
   const RecList: TAnalyzeRecList; KoofType: TKoofType; DrawPoints: boolean);
 {==============================================================================}
-const
-  COLOR_K = $EEEEFF;
-  COLOR_Q = $FFEEEE;
-  COLOR_P = $80FFFF;
-  COLOR_X = $EEEEEE;
 
   function GetK(const Rec: TAnalyzeRec): real;
   begin
@@ -764,9 +756,10 @@ var
 
 var
   i: integer;
-  kx,ky: real;
+  kx, ky: real;
   NewPoint: TPoint;
   Hour, Min, Sec, MSec: word;
+  TimePos: integer;
 const
   EPS = 0.000001;
 begin
@@ -802,7 +795,7 @@ begin
   with Image.Canvas do
   begin
     { очистка }
-    Brush.Color := clWhite;
+    Brush.Color := COLOR_BACK;
     FillRect(Rect(0, 0, Image.Width, Image.Height));
 
     Pen.Width := 1;
@@ -884,7 +877,7 @@ begin
     Min := Hour * MinPerHour + Min;
     TimePos := Round((Min / MinPerDay) * (Image.Width - 2 * LeftBord));
 
-    Pen.Color := COLOR_TIMEPOS; // TODO: hardcoded!
+    Pen.Color := COLOR_TIMEPOS;
     Pen.Style := psSolid;
     MoveTo(LeftBord + TimePos, Image.Height - TopBord);
     LineTo(LeftBord + TimePos, TopBord);
@@ -892,31 +885,6 @@ begin
   end;
 
   FinishProc;
-end;
-
-procedure CheckTimePos(Image: TImage);
-var
-  NewTimePos: integer;
-  Hour, Min, Sec, MSec: word;
-begin
-  DecodeTime(now, Hour, Min, Sec, MSec);
-  Min := Hour*MinPerHour + Min;
-  NewTimePos := Round(Min/MinPerDay*(Image.Width-2*LeftBord));
-  if NewTimePos<>TimePos then
-  begin    
-    with Image.Canvas do
-    begin
-      Pen.Color := COLOR_TIMEPOS;
-      Pen.Mode := pmNotXor;
-      Pen.Style := psSolid;
-      MoveTo(LeftBord+TimePos,Image.Height-TopBord);
-      LineTo(LeftBord+TimePos,TopBord);
-      MoveTo(LeftBord+NewTimePos,Image.Height-TopBord);
-      LineTo(LeftBord+NewTimePos,TopBord);
-      Pen.Mode := pmCopy;
-    end;
-    TimePos := NewTimePos;
-  end;
 end;
 
 (*
