@@ -605,7 +605,7 @@ begin
     { база продуктов }
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_FOODBASE;
     Application.ProcessMessages;
-    if (SyncFoodbase() = srDownloaded) then
+    if (SyncFoodbase(FoodBaseLocal, FoodBaseWeb) = srFirstUpdated) then
     begin
       Form1.EventFoodbaseChanged(True);
     end;
@@ -613,7 +613,7 @@ begin
     { база блюд }
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_DISHBASE;
     Application.ProcessMessages;
-    if (SyncDishbase() = srDownloaded) then
+    if (SyncDishbase() = srFirstUpdated) then
     begin
       Form1.EventDishbaseChanged(True, True);
     end;
@@ -1226,7 +1226,7 @@ begin
   Food := TFood.Create;
   if FormFood.OpenFoodEditor(Food, True, FoodEditorRect) then
   begin
-    FoodBase.Save(Food);
+    FoodBaseLocal.Add(Food);
     UpdateFoodbaseFilter();
     {#}EventFoodbaseChanged(True);                
 
@@ -1275,7 +1275,7 @@ begin
     if DishBase.RenameFood(FoodList[Index].Name, Temp.Name) then
       SaveDishBase;
 
-    FoodBase.Save(Temp);
+    FoodBaseLocal.Update(Temp);
     UpdateFoodbaseFilter();
     EventFoodbaseChanged(False);
 
@@ -1349,7 +1349,7 @@ begin
      ((DishNumber = -1)and(AskConfirm(FoodList[Index]))) then
   begin
     { порядок в базе и таблице совпадают }
-    FoodBase.Delete(FoodList[Index]);
+    FoodBaseLocal.Delete(FoodList[Index]);
 
     UpdateFoodbaseFilter();
     UpdateFoodTable(False, True, False);
@@ -1416,7 +1416,7 @@ var
     FoodList: TFoodList;
     i: integer;
   begin
-    FoodList := FoodBase.FindAll();
+    FoodList := FoodBaseLocal.FindAll();
     Offset := Length(FoodList);
     SetLength(Map, Length(FoodList) + DishBase.Count);
 
@@ -4097,12 +4097,12 @@ begin
     repeat
       inc(i);
       NewName := Format('%s (%d)', [OldName, i]);
-    until FoodBase.FindOne(NewName) = nil;
+    until FoodBaseLocal.FindOne(NewName) = nil;
 
     Temp := TFood.Create;
     Temp.CopyFrom(FoodList[n]);
     Temp.Name := NewName;
-    FoodBase.Save(Temp);
+    FoodBaseLocal.Add(Temp);
 
     EventFoodbaseChanged(True);
 
@@ -4650,7 +4650,7 @@ const
   );
 
 var
-  i: integer;
+  //i: integer;
   SavedIndex: integer;
 
   FoodP: boolean;
@@ -4660,7 +4660,7 @@ var
 begin
   StartProc('UpdateFoodTable()');
 
-  LabelFoodBase.Caption := Format('База продуктов (%d), v%d', [Length(FoodList), FoodBase.Version]);
+  LabelFoodBase.Caption := Format('База продуктов (%d), v%d', [Length(FoodList), FoodBaseLocal.Version]);
   //Application.ProcessMessages;
 
   FoodP := Value['FoodP'];
@@ -5004,12 +5004,12 @@ begin
   Filter := EditBaseFoodSearch.Text;
   if (Trim(Filter) = '') then
   begin
-    FoodList := FoodBase.FindAll();
+    FoodList := FoodBaseLocal.FindAll();
     ButtonResetFilterFoodBase.Hint := 'Показаны все записи';
     ButtonResetFilterFoodBase.Enabled := False;
   end else
   begin
-    FoodList := FoodBase.FindAny(Filter);
+    FoodList := FoodBaseLocal.FindAny(Filter);
     ButtonResetFilterFoodBase.Hint := 'Убрать фильтр (Escape)';
     ButtonResetFilterFoodBase.Enabled := True;
   end;
@@ -5103,7 +5103,7 @@ begin
     Caption := FoodList[i].Name;//+' ['+IntToStr(FoodBase[i].Tag)+']';;
     ImageIndex := Byte(FoodList[i].FromTable);
 
-    // TODO: COLUMNS CHECKING DISABLED
+    // TODO 1: COLUMNS CHECKING DISABLED
     if True  then SubItems.Add(RealToStr(FoodList[i].RelProts));
     if True  then SubItems.Add(RealToStr(FoodList[i].RelFats));
     if True  then SubItems.Add(RealToStr(FoodList[i].RelCarbs));

@@ -9,9 +9,18 @@ uses
 type
   TFoodList = array of TFood;
 
-  EItemNotFoundException = class(Exception);
+  EItemNotFoundException = class(Exception)
+    constructor Create(Food: TFood);
+  end;
+
+  EDuplicateException = class(Exception)
+    constructor Create(Food: TFood);
+  end;
 
   TFoodbaseDAO = class
+    // ƒобавл€ет продукт в базу; в случае существовани€ выбрасывает исключение EDuplicateException
+    procedure Add(Food: TFood); virtual; abstract;
+
     // ”дал€ет указанный продукт из базы; в случае отсутстви€ выбрасывает исключение EItemNotFoundException
     procedure Delete(Food: TFood); virtual; abstract;
 
@@ -27,13 +36,27 @@ type
     // «амен€ет всю базу указанным списком, номер версии мен€етс€ на указанный
     {*}procedure ReplaceAll(const NewList: TFoodList; NewVersion: integer); virtual; abstract;
 
-    // ƒобавл€ет (create) или обновл€ет (update) продукт в базе
-    procedure Save(Food: TFood); virtual; abstract;
+    // ќбновл€ет продукт в базе; в случае отсутстви€ выбрасывает исключение EItemNotFoundException
+    procedure Update(Food: TFood); virtual; abstract;
 
     // ѕолучает номер версии базы
     {*}function Version(): integer; virtual; abstract;
   end;
 
 implementation
+
+{ EItemNotFoundException }
+
+constructor EItemNotFoundException.Create(Food: TFood);
+begin
+  inherited CreateFmt('ѕродукт #%d (%s) не найден', [Food.ID, Food.Name]);
+end;
+
+{ EDuplicateException }
+
+constructor EDuplicateException.Create(Food: TFood);
+begin
+  inherited CreateFmt('ѕродукт #%d (%s) уже существует', [Food.ID, Food.Name]);
+end;
 
 end.

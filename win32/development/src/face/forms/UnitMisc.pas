@@ -387,7 +387,7 @@ begin
 
   s := TStringList.Create;
   try
-    FoodList := FoodBase.FindAll();
+    FoodList := FoodBaseLocal.FindAll();
     for i := 0 to High(FoodList) do
       s.Add(FoodList[i].Name + #9 + FloatToStr(F(FoodList[i])));
     s.SaveToFile('FoodList.txt');
@@ -481,7 +481,7 @@ procedure TFormMisc.Button8Click(Sender: TObject);
     try
       S.LoadFromFile(WORK_FOLDER + FoodBase_FileName);
 
-      if WebClient.UploadFoodBase(S.Text, FoodBase.Version) then
+      if WebClient.UploadFoodBase(S.Text, FoodBaseLocal.Version) then
         ShowMessage('Done')
       else
         ShowMessage('Can''t upload foodbase');

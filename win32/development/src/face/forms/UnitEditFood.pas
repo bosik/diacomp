@@ -181,7 +181,7 @@ begin
     EditName.SetFocus;
   end else
   if (ModeNew or (EditName.Text <> AFood.Name)) and
-     (FoodBase.FindOne(EditName.Text) <> nil) then
+     (FoodBaseLocal.FindOne(EditName.Text) <> nil) then
   begin
     ErrorMessage('ѕродукт с таким названием уже существует');
     EditName.SetFocus;

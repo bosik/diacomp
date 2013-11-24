@@ -10,10 +10,13 @@ uses
   DiaryRoutines,
   DiaryDAO,
   DiaryPage,
+  FoodBaseDAO,
+  DiaryCore, // TODO: remove
   Autolog;
 
   { возвращается количество синхронизированных страниц }
   function SyncSources(Source1, Source2: TDiaryDAO; Since: TDateTime): integer;
+  function SyncFoodbase(Source1, Source2: TFoodbaseDAO): TSyncResult;
 
 implementation
 
@@ -273,6 +276,36 @@ begin
 
   // TODO: раньше здесь стояло определение минимальной даты загруженной
   // страницы и последующее UpdatePostPrand от неё
+end;
+
+{==============================================================================}
+function SyncFoodbase(Source1, Source2: TFoodbaseDAO): TSyncResult;
+{==============================================================================}
+var
+  Version1: integer;
+  Version2: integer;
+  List: TFoodList;
+begin
+  Version1 := Source1.Version;
+  Version2 := Source2.Version;
+
+  if (Version1 < Version2) then
+  begin
+    List := Source2.FindAll();
+    Source1.ReplaceAll(List, Version2);
+    Result := srFirstUpdated;
+  end else
+
+  if (Version1 > Version2) then
+  begin
+    List := Source1.FindAll();
+    Source2.ReplaceAll(List, Version1);
+    Result := srSecondUpdated;
+  end else
+
+  begin
+    Result := srEqual;
+  end;
 end;
 
 (*

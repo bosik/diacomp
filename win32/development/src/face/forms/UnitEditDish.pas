@@ -669,7 +669,7 @@ begin
   if (n > 0) then
     s := Copy(s, 1, n - 1);
 
-  Temp := FoodBase.FindOne(s);
+  Temp := FoodBaseLocal.FindOne(s);
   if (Temp <> nil) then
     Item.ImageIndex := Byte(Temp.FromTable) else
   if DishBase.Find(s) > -1 then
@@ -679,7 +679,7 @@ begin
   begin
     { если пользователь создаст продукт/блюдо с символами <> в названии }
     s := Food.Name;
-    Temp := FoodBase.FindOne(s);
+    Temp := FoodBaseLocal.FindOne(s);
     if (Temp <> nil) then
       Item.ImageIndex := Byte(Temp.FromTable) else
     if DishBase.Find(s) > -1 then
@@ -704,7 +704,7 @@ begin
 
   EditName.Text := UppercaseFirst(EditName.Text);
 
-  if (FoodBase.FindOne(EditName.Text) <> nil) then
+  if (FoodBaseLocal.FindOne(EditName.Text) <> nil) then
   begin
     ErrorMessage('Продукт с таким названием уже существует');
     EditName.SetFocus;
