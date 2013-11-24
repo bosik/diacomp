@@ -5,8 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, DiaryCore, BusinessObjects, DiaryRecords,
-  DiaryAnalyze {TODO: remove}, AnalyzeInterface, DiaryRoutines, SettingsINI,
-  Math, Statistics, ExtCtrls;
+  DiaryAnalyze {TODO: remove}, AnalyzeInterface, DiaryRoutines, FoodBaseDAO,
+  SettingsINI, Math, Statistics, ExtCtrls;
 
 type
   TFormMisc = class(TForm)
@@ -378,6 +378,7 @@ var
 var
   i: integer;
   s: TStrings;
+  FoodList: TFoodList;
 begin
   DaySumm := Value['NormProts'] + Value['NormFats'] + Value['NormCarbs'];
   PercentProts := Value['NormProts'] / DaySumm ;
@@ -386,8 +387,9 @@ begin
 
   s := TStringList.Create;
   try
-    for i := 0 to FoodBase.Count-1 do
-      s.Add(FoodBase[i].Name + #9 + FloatToStr(F(FoodBase[i])));
+    FoodList := FoodBase.FindAll();
+    for i := 0 to High(FoodList) do
+      s.Add(FoodList[i].Name + #9 + FloatToStr(F(FoodList[i])));
     s.SaveToFile('FoodList.txt');
   finally
     s.Free;
@@ -395,7 +397,7 @@ begin
 
   s := TStringList.Create;
   try
-    for i := 0 to DishBase.Count-1 do
+    for i := 0 to DishBase.Count - 1 do
       s.Add(DishBase[i].Name + #9 + FloatToStr(F(DishBase[i])));
     s.SaveToFile('temp\DishList.txt');
   finally

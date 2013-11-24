@@ -175,13 +175,13 @@ begin
 
   EditName.Text := UppercaseFirst(EditName.Text);
 
-  if (DishBase.Find(EditName.Text{, True})>-1) then
+  if (DishBase.Find(EditName.Text{, True}) > -1) then
   begin
     ErrorMessage('Ѕлюдо с таким названием уже существует');
     EditName.SetFocus;
   end else
   if (ModeNew or (EditName.Text <> AFood.Name)) and
-     (FoodBase.Find(EditName.Text{, True})>-1) then
+     (FoodBase.FindOne(EditName.Text) <> nil) then
   begin
     ErrorMessage('ѕродукт с таким названием уже существует');
     EditName.SetFocus;

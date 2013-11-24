@@ -769,8 +769,6 @@ var
   NewPoint: TPoint;
   Hour, Min, Sec, MSec: word;
   TimePos: integer;
-const
-  EPS = 0.000001;
 begin
   StartProc('DrawDayCurve');
 

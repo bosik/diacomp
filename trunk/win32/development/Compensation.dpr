@@ -45,7 +45,9 @@ uses
   DiaryPageSerializer in 'src\persistence\DiaryPageSerializer.pas',
   DiaryPage in 'src\bo\DiaryPage.pas',
   DiaryPageSerializerTest in 'src\test\DiaryPageSerializerTest.pas',
-  UnitMisc in 'src\face\forms\UnitMisc.pas' {FormMisc};
+  UnitMisc in 'src\face\forms\UnitMisc.pas' {FormMisc},
+  FoodbaseDAO in 'src\persistence\FoodbaseDAO.pas',
+  FoodbaseLocalDAO in 'src\persistence\local\FoodbaseLocalDAO.pas';
 
 {$R *.res}
 

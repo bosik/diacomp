@@ -13,8 +13,11 @@ type
   private
     FOnChange: TNotifyEvent;
   protected
+    FID: integer;
     procedure Modified; virtual;
   public
+    constructor Create;
+    property ID: integer read FID;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
@@ -97,6 +100,7 @@ type
   public
     {#}function Add(Food: TFoodMassed): integer;
     function AsFoodMassed(Mass: real): TFoodMassed;
+    function AsFoodRelative(): TFoodRelative;
     {#}procedure Clear();
     procedure CopyFrom(Dish: TDish);
     function Count(): integer;
@@ -135,7 +139,25 @@ const
 
 implementation
 
+var
+  StaticIDCounter: Cardinal = 0;
+
+{==============================================================================}
+function GetNextID(): Cardinal;
+{==============================================================================}
+begin
+  inc(StaticIDCounter);
+  Result := StaticIDCounter;
+end;
+
 { TMutableItem }
+
+{==============================================================================}
+constructor TMutableItem.Create;
+{==============================================================================}
+begin
+  FID := GetNextID();
+end;
 
 {==============================================================================}
 procedure TMutableItem.Modified;
@@ -325,8 +347,9 @@ procedure TFood.CopyFrom(Food: TFood);
 begin
   inherited CopyFrom(Food);
 
-  FFromTable := TFood(Food).FFromTable;
-  FTag := TFood(Food).FTag;
+  FFromTable := Food.FFromTable;
+  FTag := Food.FTag;
+  FID := Food.ID;
 end;
 
 {==============================================================================}
@@ -336,6 +359,7 @@ begin
   inherited;
   FFromTable := True;
   FTag := 0;
+  FID := GetNextID();
 end;
 
 {==============================================================================}
@@ -378,6 +402,18 @@ begin
 end;
 
 {==============================================================================}
+function TDish.AsFoodRelative: TFoodRelative;
+{==============================================================================}
+begin
+  Result := TFoodRelative.Create;
+  Result.Name := Name;
+  Result.RelProts := RelProts;
+  Result.RelFats := RelFats;
+  Result.RelCarbs := RelCarbs;
+  Result.RelValue := RelValue;
+end;
+
+{==============================================================================}
 procedure TDish.Clear();
 {==============================================================================}
 var
@@ -416,6 +452,7 @@ begin
 
   Name := Dish.Name;
   Tag := Dish.Tag;
+  FID := Dish.ID; 
 
   if Dish.FixedMass then
     SetResultMass(Dish.RealMass)
@@ -506,7 +543,7 @@ var
   RM: Real;
 begin
   RM := RealMass();
-  if (RM <> 0) then
+  if (abs(RM) > EPS) then
     Result := GetProp(Index) / RM * 100
   else
     Result := 0;

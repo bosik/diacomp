@@ -9,12 +9,17 @@ uses
   SysUtils,
 
   // данные
+  BusinessObjects,
   DiaryDatabase,
   Bases,
   DiaryRoutines,
   DiaryDAO,
   DiaryLocalSource,
   DiaryWebSource,
+
+  FoodBaseDAO,
+  FoodBaseLocalDAO,
+
   {#}DiaryWeb,  
   AnalyzeInterface,
   DiaryAnalyze,
@@ -36,9 +41,8 @@ type
   procedure LoadExpander; deprecated;
   procedure SaveExpander; deprecated;
 
-  function IdentifyItem(const ItemName: string; out Index: integer): TItemType;
+  function IdentifyItem(const ItemName: string; out Item: TMutableItem): TItemType;
 
-  procedure SaveFoodBase; deprecated;
   procedure SaveDishBase; deprecated;
 
   { web }
@@ -61,7 +65,7 @@ var
   WebClient: TDiacompClient;
   Expander: TStringMap;
 
-  FoodBase: TFoodBase;
+  FoodBase: TFoodBaseDAO;
   DishBase: TDishBase;
 
   { системное }
@@ -111,14 +115,14 @@ const
 
   FOLDER_BASES        = 'Bases';
 
-    FoodBase_Name_    = 'FoodBase.xml';
+    FoodBase_Name     = 'FoodBase.xml';
     FoodBase_Name_old = 'FoodBase.txt';
     DishBase_Name     = 'DishBase.xml';
     DishBase_Name_old = 'DishBase.txt';
     Diary_Name        = 'Diary.txt';
     Expander_Name     = 'Expander.txt';
 
-    FoodBase_FileName = FOLDER_BASES + '\' + FoodBase_Name_;
+    FoodBase_FileName = FOLDER_BASES + '\' + FoodBase_Name;
     DishBase_FileName = FOLDER_BASES + '\' + DishBase_Name;
     Diary_FileName    = FOLDER_BASES + '\' + Diary_Name;
     Expander_FileName = FOLDER_BASES + '\' + Expander_Name;
@@ -135,7 +139,7 @@ begin
 
   Diary := TDiary.Create(LocalSource);
 
-  FoodBase := TFoodBase.Create;
+  FoodBase := TFoodBaseLocalDAO.Create(WORK_FOLDER + FoodBase_FileName);
   DishBase := TDishBase.Create;
 
   Expander := TStringMap.Create;
@@ -222,13 +226,13 @@ begin
 end;  *)
 
 {==============================================================================}
-function IdentifyItem(const ItemName: string; out Index: integer): TItemType;
+function IdentifyItem(const ItemName: string; out Item: TMutableItem): TItemType;
 {==============================================================================}
+var
+  Index: integer;
 begin
-  //Log('IdentifyItem()');
-
-  Index := FoodBase.Find(ItemName);
-  if (Index <> -1) then
+  Item := FoodBase.FindOne(ItemName);
+  if (Item <> nil) then
   begin
     Result := itFood;
     Exit;
@@ -237,19 +241,13 @@ begin
   Index := DishBase.Find(ItemName);
   if (Index <> -1) then
   begin
+    Item := DishBase[Index];
     Result := itDish;
     Exit;
   end;
 
   Result := itUnknown;
   Index := -1;
-end;
-
-{==============================================================================}
-procedure SaveFoodBase;
-{==============================================================================}
-begin
-  FoodBase.SaveToFile(WORK_FOLDER + FoodBase_FileName);
 end;
 
 {==============================================================================}
@@ -282,7 +280,7 @@ var
   Version: integer;
 begin
   Version := WebClient.GetFoodBaseVersion();
-
+   (*
   // download
   if (FoodBase.Version < Version) then
   begin
@@ -306,6 +304,9 @@ begin
   begin
     Result := srEqual;
   end;
+  *)
+
+  // TODO 1: FOODBASE SYNC DISABLED
 end;
 
 {==============================================================================}
