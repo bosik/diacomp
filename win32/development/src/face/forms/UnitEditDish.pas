@@ -545,6 +545,7 @@ var
   Temp: TFoodMassed;
 
   ItemType: TItemType;
+  Item: TMutableItem;
 begin
   { Food должен быть создан }
 
@@ -585,7 +586,7 @@ begin
 
   ComboFood.Text := Trim(ComboFood.Text);
   EditFoodMass.Text := Trim(EditFoodMass.Text);
-  ItemType := IdentifyItem(ComboFood.Text, n);
+  ItemType := IdentifyItem(ComboFood.Text, Item);
 
   if (ItemType = itUnknown) then
   begin
@@ -613,8 +614,8 @@ begin
     end else
     begin
       case ItemType of
-        itFood: Temp := FoodBase[N].AsFoodMassed(Mass);
-        itDish: Temp := DishBase[N].AsFoodMassed(Mass);
+        itFood: Temp := TFood(Item).AsFoodMassed(Mass);
+        itDish: Temp := TDish(Item).AsFoodMassed(Mass);
         else raise Exception.Create('Invalid ItemType');
       end;
 
@@ -651,6 +652,7 @@ procedure TFormDish.ShowFood(Food: TFoodMassed; Item: TListItem);
 var
   n: integer;
   s: string;
+  Temp: TFood;
 begin
   Item.Caption := Food.Name;
   
@@ -667,9 +669,9 @@ begin
   if (n > 0) then
     s := Copy(s, 1, n - 1);
 
-  n := FoodBase.Find(s);
-  if n <> -1 then
-    Item.ImageIndex := Byte(FoodBase[n].FromTable) else
+  Temp := FoodBase.FindOne(s);
+  if (Temp <> nil) then
+    Item.ImageIndex := Byte(Temp.FromTable) else
   if DishBase.Find(s) > -1 then
     Item.ImageIndex := 2
   else
@@ -677,9 +679,9 @@ begin
   begin
     { если пользователь создаст продукт/блюдо с символами <> в названии }
     s := Food.Name;
-    n := FoodBase.Find(s);
-    if n <> -1 then
-      Item.ImageIndex := Byte(FoodBase[n].FromTable) else
+    Temp := FoodBase.FindOne(s);
+    if (Temp <> nil) then
+      Item.ImageIndex := Byte(Temp.FromTable) else
     if DishBase.Find(s) > -1 then
       Item.ImageIndex := 2
     else
@@ -690,7 +692,7 @@ end;
 
 function TFormDish.ReadAttributes(): boolean;
 begin
-  Result := false;
+  Result := False;
   EditName.Text := Trim(EditName.Text);
 
   if EditName.Text = '' then
@@ -702,7 +704,7 @@ begin
 
   EditName.Text := UppercaseFirst(EditName.Text);
 
-  if (FoodBase.Find(EditName.Text{, True})>-1) then
+  if (FoodBase.FindOne(EditName.Text) <> nil) then
   begin
     ErrorMessage('Продукт с таким названием уже существует');
     EditName.SetFocus;

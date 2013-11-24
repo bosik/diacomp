@@ -18,18 +18,37 @@ uses
   Graphics,
   Forms,
   ACCombo,
+  BusinessObjects,
   DiaryRoutines,
   ActnMenus,
   DiaryCore,
   UnitDataInterface;
 
 type
-  TMultiItem = record
-    ItemType: TItemType;
-    Index: integer;
-    Tag: real;
+  // продуктоблюдо
+  TMealItem = class (TFoodRelative)
+  private
+    FIcon: integer;
+    FHelp1: string;
+    FHelp2: string;
+    FTag: Real;
+  public
+    property Help1: string read FHelp1 write FHelp1;
+    property Help2: string read FHelp2 write FHelp2;
+    property Icon: integer read FIcon write FIcon;
+    property Tag: Real read FTag write FTag;
   end;
-  TMultimap = array of TMultiItem;
+
+ { TMultiItem = record
+    Icon: integer;
+    ItemType: TItemType;
+    //Index: integer;
+    Name: string;
+    Help1: string;
+    Help2: string;
+    Tag: real;
+  end; }
+  TMultimap = array of TMealItem;
 
   {@}TSmallTimer = class
   private
@@ -76,7 +95,7 @@ type
   { работа с панельками главной формы }
   {@}procedure MinMaxBox(Box: TGroupBox; Image: TImage; Icons: TImageList;
     Animated: boolean; OpenHeight,CloseHeight,OpenTime,CloseTime: integer);
-   procedure DrawACItem(Control: TControl; Rect: TRect; const Item: TMultiItem;
+   procedure DrawACItem(Control: TControl; Rect: TRect; const Item: TMealItem;
      Selected: Boolean; ShowHelpInfo: boolean);
 
   { технические }
@@ -501,21 +520,9 @@ begin
 end;     }
 
 {==============================================================================}
-procedure DrawACItem(Control: TControl; Rect: TRect; const Item: TMultiItem;
+procedure DrawACItem(Control: TControl; Rect: TRect; const Item: TMealItem;
   Selected: Boolean; ShowHelpInfo: boolean);
 {==============================================================================}
-
-  function FormatDate(Stamp: TDateTime): string;
-  var
-    Today, S: TDate;
-  begin
-    S := Trunc(Stamp);
-    Today := Trunc(now);
-
-    if (s = Today) then Result := 'сегодня' else
-    if (s = Today - 1) then Result := 'вчера' else
-    Result := DateToStr(Stamp);
-  end;
 
   procedure GetColors(Tag: Real; Selected: Boolean; out FontColor, BrushColor: TColor);
   var
@@ -540,41 +547,27 @@ var
   FontColor, BrushColor: TColor;
 begin
   GetColors(Item.Tag, Selected, FontColor, BrushColor);
-  IconIndex := 3;
 
-  case Item.ItemType of
-    itFood:
-      begin
-        Caption := FoodBase[Item.Index].Name;
-        IconIndex := Byte(FoodBase[Item.Index].FromTable);
-
-        if (ShowHelpInfo) then
-        begin
-          Help1 := '';
-          Help2 := Format('  %.1f', [FoodBase[Item.Index].RelCarbs]);
-        end else
-        begin
-          Help1 := '';
-          Help2 := '';
-        end;
-      end;
-
-    itDish:
-      begin
-        Caption := DishBase[Item.Index].Name;
-        IconIndex := 2;
-        
-        if (ShowHelpInfo) then
-        begin
-          Help1 := FormatDate(DishBase[Item.Index].ModifiedTime);
-          Help2 := Format('  %.1f', [DishBase[Item.Index].RelCarbs]);
-        end else
-        begin
-          Help1 := '';
-          Help2 := '';
-        end;
-      end;
+  Caption := Item.Name;
+  IconIndex := Item.Icon;
+  if (ShowHelpInfo) then
+  begin
+    Help1 := Item.Help1;
+    Help2 := Item.Help2;
+  end else
+  begin
+    Help1 := '';
+    Help2 := '';
   end;
+
+  // Food:
+  //   Icon = Byte(FoodBase[Item.Index].FromTable);
+  //   Help1 = ''
+  //   Help2 = Format('  %.1f', [FoodBase[Item.Index].RelCarbs]);
+  // Dish:
+  //   Icon = 2;
+  //   Help1 = FormatDate(DishBase[Item.Index].ModifiedTime);
+  //   Help2 = Format('  %.1f', [DishBase[Item.Index].RelCarbs]);
 
   with TListBox(Control).Canvas do
   begin

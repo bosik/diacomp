@@ -126,6 +126,7 @@ const
   HalfMinPerDay = MinPerDay div 2;
   SecPerHour    = SecPerMin * MinPerHour;
   SecPerDay     = SecPerMin * MinPerHour * HourPerDay;
+  EPS           = 0.0000001;
 
 implementation
 

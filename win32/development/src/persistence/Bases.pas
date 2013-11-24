@@ -30,16 +30,16 @@ type
     function GetName(Index: integer): string; virtual; abstract;
     function GetTag(Index: integer): integer; virtual; abstract;
     procedure SetTag(Index, Value: integer); virtual; abstract;
-    procedure Sort(); // вызывается потомками после загрузки
     procedure Changed;
   public
     function Count: integer; virtual; abstract;
     constructor Create;
-    procedure Delete(Index: integer); virtual; abstract; 
+    procedure Delete(Index: integer); virtual; abstract;
     function Find(const ItemName: string): integer;
+    procedure Sort(); // вызывается потомками после загрузки
     procedure SortIndexes(IndexList: TIndexList; SortType: TSortType);
 
-    property Version: integer read FVersion;
+    property Version: integer read FVersion write FVersion;
   end;
 
   TArrayBase = class(TAbstractBase)
@@ -50,6 +50,7 @@ type
     procedure Swap(Index1, Index2: integer); override;
   public
     function Add(Item: TMutableItem): integer; virtual;
+    procedure Clear;
     function Count: integer; override;
     procedure Delete(Index: integer); override;
     destructor Destroy; override;
@@ -80,7 +81,7 @@ type
     procedure SetTag(Index, Value: integer); override;
   public
     function Add(Dish: TDish): integer; reintroduce;
-    procedure LoadFromFile_Old(const FileName: string; FoodBase: TFoodBase = nil);
+    procedure LoadFromFile_Old(const FileName: string);
     procedure LoadFromFile_XML(const FileName: string);
     procedure SaveToFile(const FileName: string);
 
@@ -261,6 +262,19 @@ begin
 end;
 
 {==============================================================================}
+procedure TArrayBase.Clear;
+{==============================================================================}
+var
+  i: integer;
+begin
+  for i := 0 to High(FBase) do
+    FBase[i].Free;
+  SetLength(FBase, 0);
+
+  Changed;
+end;
+
+{==============================================================================}
 function TArrayBase.Count: integer;
 {==============================================================================}
 begin
@@ -287,12 +301,8 @@ end;
 {==============================================================================}
 destructor TArrayBase.Destroy;
 {==============================================================================}
-var
-  i: integer;
 begin
-  for i := 0 to High(FBase) do
-    FBase[i].Free;
-  SetLength(FBase, 0);
+  Clear;
 end;
 
 {==============================================================================}
@@ -654,7 +664,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TDishBase.LoadFromFile_Old(const FileName: string; FoodBase: TFoodBase = nil);
+procedure TDishBase.LoadFromFile_Old(const FileName: string);
 {==============================================================================}
 const
   DISHBASE_FORMAT = 'DBASEFMT';
@@ -733,14 +743,14 @@ begin
         buf := TextBefore(s[i], ':');
         mass := TextAfter(s[i], ':');
 
-        if (FoodBase <> nil) then
+        {if (FoodBase <> nil) then
         begin
           j := FoodBase.Find(buf);
           if (j <> -1) then
             TempFood.CopyFrom(FoodBase[j].AsFoodMassed(StrToFloat(CheckDot(mass))))
           else
             TempFood.Name := buf + ' (не найдено)';
-        end else
+        end else }
           TempFood.Name := buf + ' (не найдено)';
       end else
 

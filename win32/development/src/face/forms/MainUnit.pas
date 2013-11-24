@@ -55,6 +55,7 @@ uses
   DiaryDatabase,
   DiaryPage,
   Bases,
+  FoodBaseDAO,
   DiaryLocalSource,
   DiaryWeb, //
   DiarySync, //
@@ -382,6 +383,7 @@ type
       Shift: TShiftState);
     procedure ButtonResetFilterFoodBaseClick(Sender: TObject);
     procedure EditBaseFoodSearchKeyPress(Sender: TObject; var Key: Char);
+    procedure ListFoodData(Sender: TObject; Item: TListItem);
   protected
     // определяет расположение компонентов интерфейса
     procedure Designer; override;
@@ -470,7 +472,10 @@ var
   CurrentDB: real;       // текущая коррекция СК
   CurrentNextFinger: integer;
   DiaryMultiMap: TMultimap;
-  FoodBaseMap: TIndexList;
+  //FoodBaseMap: TIndexList;
+
+  FoodList: TFoodList;
+  //DishList: TDishList;
 
   { ============================ П Р О Ч Е Е ================================= }
 
@@ -831,23 +836,25 @@ begin
     if (not FileExists(WORK_FOLDER + FoodBase_FileName)) and
        (FileExists(WORK_FOLDER + FOLDER_BASES + '\' + FoodBase_Name_Old)) then
     begin
-      StartupInfo(STATUS_ACTION_CONVERT_FOODBASE);
+      {StartupInfo(STATUS_ACTION_CONVERT_FOODBASE);
       FoodBase.LoadFromFile_Old(WORK_FOLDER + FOLDER_BASES + '\' + FoodBase_Name_Old);
       FoodBase.SaveToFile(WORK_FOLDER + FoodBase_FileName);
-      Log(INFO, 'Foodbase converted ok', True);
+      Log(INFO, 'Foodbase converted ok', True); }
+
+      // TODO 1: CONVERTATION DISABLED
+      ErrorMessage('Конвертирование базы отключено');
     end else
 
     // TODO: загружается дважды :(
     // существует файл в XML-формате
-    if FileExists(WORK_FOLDER + FoodBase_FileName) then
+    {if FileExists(WORK_FOLDER + FoodBase_FileName) then
     begin
       StartupInfo(STATUS_ACTION_LOADING_FOODBASE);
       FoodBase.LoadFromFile_XML(WORK_FOLDER + FoodBase_FileName);
       Log(INFO, 'Foodbase loaded ok', True);
-    end;
+    end;}
 
-    FoodBaseMap := TIndexList.Create;
-    FoodBaseMap.Init(FoodBase.Count);
+    //FoodBaseMap := TIndexList.Create;
 
     { =============== ЗАГРУЗКА БАЗЫ БЛЮД =============== }
 
@@ -856,7 +863,7 @@ begin
        (FileExists(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name_Old)) then
     begin
       StartupInfo(STATUS_ACTION_CONVERT_DISHBASE);
-      DishBase.LoadFromFile_Old(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name_Old, FoodBase);
+      DishBase.LoadFromFile_Old(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name_Old);
       DishBase.SaveToFile(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name);
       Log(INFO, 'DishBase converted ok', True);
     end else
@@ -933,13 +940,15 @@ begin
       // TODO: реализовать на сервере API foodbase:sample
       // TODO: сейчас образец базы на сервере - в старом формате
 
-      StartupInfo(STATUS_ACTION_DOWNLOADING_FOODBASE);
+      {StartupInfo(STATUS_ACTION_DOWNLOADING_FOODBASE);
       if DownloadFoodBaseSample() and
          FileExists(WORK_FOLDER + FoodBase_FileName) then
       begin
         StartupInfo(STATUS_ACTION_LOADING_FOODBASE);
         FoodBase.LoadFromFile_XML(WORK_FOLDER + FoodBase_FileName);
-      end;
+      end;}
+
+      // TODO 1: FOODBASE SAMPLES DISABLED
     end;
 
     // не существует файл в XML-формате
@@ -1213,12 +1222,11 @@ procedure TForm1.CreateFood;
 {==============================================================================}
 var
   Food: TFood;
-  n: integer;
 begin
   Food := TFood.Create;
   if FormFood.OpenFoodEditor(Food, True, FoodEditorRect) then
   begin
-    n := FoodBase.Add(Food);
+    FoodBase.Save(Food);
     UpdateFoodbaseFilter();
     {#}EventFoodbaseChanged(True);                
 
@@ -1252,28 +1260,23 @@ procedure TForm1.EditFood(Index: integer);
 {==============================================================================}
 var
   Temp: TFood;
-  k: integer;
 begin
-  if (Index < 0) or (Index >= FoodBaseMap.Count) then
+  if (Index < 0) or (Index > High(FoodList)) then
   begin
     Log(WARNING, 'EditFood(): incorrect index ignored (' + IntToStr(Index) + ')', True);
     Exit;
   end;
 
-  k := FoodBaseMap[Index];
-
   Temp := TFood.Create;
-  Temp.CopyFrom(FoodBase[k]);
+  Temp.CopyFrom(FoodList[Index]);
 
   if FormFood.OpenFoodEditor(Temp, False, FoodEditorRect) then
   begin
-    if DishBase.RenameFood(FoodBase[k].Name, Temp.Name) then
+    if DishBase.RenameFood(FoodList[Index].Name, Temp.Name) then
       SaveDishBase;
 
-    FoodBase.Delete(k);
-    Index := FoodBase.Add(Temp);
+    FoodBase.Save(Temp);
     UpdateFoodbaseFilter();
-
     EventFoodbaseChanged(False);
 
     //ShowTableItem(ListFood, Index);
@@ -1317,42 +1320,41 @@ end;
 procedure TForm1.RemoveFood(Index: integer);
 {==============================================================================}
 
-  function AskWarning(FoodIndex, DishIndex: integer): boolean;
+  function AskWarning(Food: TFood; Dish: TDish): boolean;
   begin
     Result := MessageDlg(
-      Format(MESSAGE_CONF_REMOVE_FOOD_USED, [FoodBase[FoodIndex].Name, DishBase[DishIndex].Name]),
+      Format(MESSAGE_CONF_REMOVE_FOOD_USED, [Food.Name, Dish.Name]),
       mtWarning, [mbYes, mbNo], 0) = mrYes;
   end;
 
-  function AskConfirm(FoodIndex: integer): boolean;
+  function AskConfirm(Food: TFood): boolean;
   begin
     Result := MessageDlg(
-      Format(MESSAGE_CONF_REMOVE_FOOD, [FoodBase[FoodIndex].Name]),
+      Format(MESSAGE_CONF_REMOVE_FOOD, [Food.Name]),
       mtConfirmation, [mbYes, mbNo], 0) = mrYes;
   end;
 
 var
-  k, DishNumber: integer;
+  DishNumber: integer;
 begin
-  if (Index < 0) or (Index >= FoodBaseMap.Count) then
+  if (Index < 0) or (Index > High(FoodList)) then
   begin
     Log(WARNING, 'EditFood(): incorrect index ignored (' + IntToStr(Index) + ')', True);
     Exit;
   end;
 
-  k := FoodBaseMap[Index];
+  DishNumber := DishBase.UsedFood(FoodList[Index].Name);
 
-  DishNumber := DishBase.UsedFood(FoodBase[k].Name);
-  if ((DishNumber > -1)and(AskWarning(k, DishNumber)))or
-     ((DishNumber = -1)and(AskConfirm(k))) then
+  if ((DishNumber > -1)and(AskWarning(FoodList[Index], DishBase[DishNumber])))or
+     ((DishNumber = -1)and(AskConfirm(FoodList[Index]))) then
   begin
     { порядок в базе и таблице совпадают }
-    FoodBase.Delete(k);
+    FoodBase.Delete(FoodList[Index]);
 
     UpdateFoodbaseFilter();
     UpdateFoodTable(False, True, False);
     {*}UpdateCombos;
-    {*}SaveFoodBase;
+    //{*}SaveFoodBase;
   end;
 end;
 
@@ -1377,6 +1379,7 @@ procedure TForm1.RemoveDish(Index: integer);
 var
   UsedDishNumber: integer;
 begin
+  // TODO: update
   if (Index < 0) or (Index >= DishBase.Count) then Exit;
 
   UsedDishNumber := DishBase.UsedFood(DishBase[Index].Name);
@@ -1396,55 +1399,62 @@ procedure TForm1.UpdateCombos;
 var
   Offset: integer;
 
+  function FormatDate(Stamp: TDateTime): string;
+  var
+    Today, S: TDate;
+  begin
+    S := Trunc(Stamp);
+    Today := Trunc(now);
+
+    if (s = Today) then Result := 'сегодня' else
+    if (s = Today - 1) then Result := 'вчера' else
+    Result := DateToStr(Stamp);
+  end;
+
   procedure InitMap(var Map: TMultiMap);
   var
+    FoodList: TFoodList;
     i: integer;
   begin
-    Offset := FoodBase.Count;
-    SetLength(Map, FoodBase.Count + DishBase.Count);
+    FoodList := FoodBase.FindAll();
+    Offset := Length(FoodList);
+    SetLength(Map, Length(FoodList) + DishBase.Count);
 
-    for i := 0 to FoodBase.Count - 1 do
-    with Map[i] do
+    for i := 0 to High(FoodList) do
     begin
-      ItemType := itFood;
-      Index := i;
-      Tag := 0;
+      Map[i] := TMealItem.Create;
+      Map[i].CopyFrom(FoodList[i]);
+      Map[i].Help1 := '';
+      Map[i].Help2 := Format('  %.1f', [FoodList[i].RelCarbs]);
+      Map[i].Icon := Byte(FoodList[i].FromTable);
+      Map[i].Tag := 0;
     end;
 
     for i := 0 to DishBase.Count - 1 do
-    with Map[Offset + i] do
     begin
-      ItemType := itDish;
-      Index := i;
+      Map[Offset + i] := TMealItem.Create;
+      Map[Offset + i].CopyFrom(DishBase[i].AsFoodRelative());
+      Map[Offset + i].Help1 := FormatDate(DishBase[i].ModifiedTime);
+      Map[Offset + i].Help2 := Format('  %.1f', [DishBase[i].RelCarbs]);
+      Map[Offset + i].Icon := 2;
+      Map[Offset + i].Tag := 0;
       Tag := 0;
     end;
   end;
 
-  function More(const Item1, Item2: TMultiItem): boolean;
-  var
-    Name1, Name2: string;
+  function More(const Item1, Item2: TMealItem): boolean;
   begin
-    if (Item1.Tag <> Item2.Tag) then
+    if (abs(Item1.Tag - Item2.Tag) > EPS) then
       Result := (Item1.Tag < Item2.Tag)
-    else 
-    begin
-      case Item1.ItemType of
-        itFood: Name1 := FoodBase[Item1.Index].Name;
-        itDish: Name1 := DishBase[Item1.Index].Name;
-      end;
-      case Item2.ItemType of
-        itFood: Name2 := FoodBase[Item2.Index].Name;
-        itDish: Name2 := DishBase[Item2.Index].Name;
-      end;
-      Result := (Name1 > Name2);
-    end;
+    else
+      Result := (Item1.Name > Item2.Name);
   end;
 
   procedure qsort(var Map: TMultiMap; l,r: integer);
   var
     i,j: integer;
-    x: TMultiItem;
-    y: TMultiItem;
+    x: TMealItem;
+    y: TMealItem;
   begin
     i := l;
     j := r;
@@ -1470,18 +1480,20 @@ var
     if i < r then qsort(Map, i, r);
   end;
 
-  procedure IncReal(var X: Real; const Value: Real);
+ { procedure IncReal(var X: Real; const Value: Real);
   begin
     X := X + Value;
-  end;
+  end;   }
 
   procedure Process(const ItemName: string; Tag: real; var Map: TMultimap);
   var
-    Index: integer;
+    i: integer;
   begin
-    case IdentifyItem(ItemName, Index) of
-      itFood: IncReal(Map[Index].Tag, Tag);
-      itDish: IncReal(Map[Offset + Index].Tag, Tag);
+    for i := 0 to High(Map) do
+    if (Map[i].Name = ItemName) then
+    begin
+      Map[i].Tag := Map[i].Tag + Tag;
+      Exit;
     end;
   end;
 
@@ -1536,7 +1548,8 @@ var
 
       for i := 0 to DishBase.Count - 1 do
       if (DishBase[i].ModifiedTime > 0) then
-        IncReal(DiaryMultiMap[Offset + i].Tag, DishModFactor * GetTag(DishBase[i].ModifiedTime));
+        DiaryMultiMap[Offset + i].Tag := DiaryMultiMap[Offset + i].Tag +
+        DishModFactor * GetTag(DishBase[i].ModifiedTime);
 
       { сортируем }
       if Length(DiaryMultiMap) > 0 then
@@ -1589,10 +1602,7 @@ var
     begin
       Clear;
       for i := 0 to High(Map) do
-      case Map[i].ItemType of
-        itFood: Add(FoodBase[Map[i].Index].Name);
-        itDish: Add(DishBase[Map[i].Index].Name);
-      end;
+        Add(Map[i].Name);
     end;
   end;
 
@@ -1637,14 +1647,15 @@ begin
   if Key = vk_Delete then
     RemoveFood(ListFood.ItemIndex) else
  begin
-    c := CodeToRus(Key);
+    {c := CodeToRus(Key);
     if c <> #0 then
     for j := 0 to FoodBaseMap.Count - 1 do
     if StartsWith(FoodBase[FoodBaseMap[j]].Name, C) then
     begin
       ShowTableItem(ListFood, j, True);
       break;
-    end;
+    end; }
+    // TODO 1: HOT CHAR SEARCH DISABLED
   end;
 end;
 
@@ -1897,36 +1908,23 @@ end;
 procedure TForm1.ComboDiaryNewCloseUp(Sender: TObject);
 {==============================================================================}
 var
-  n: integer;
   Mass: real;
+  Item: TMutableItem;
+  Temp: TFoodRelative;
 begin
-  case IdentifyItem(Trim(ComboDiaryNew.Text), n) of
-    itFood:
-    begin
-      Expander.Add(DiaryFoodDishInput, FoodBase[n].Name);
-
-      ComboDiaryNew.Text := FoodBase[n].Name;
-      Mass := GetCompensationMass(
-        FoodBase[n].RelCarbs,
-        FoodBase[n].RelProts);
-      if Mass > 0 then
-        EditDiaryNewMass.Text := IntToStr(Round(Mass));
-      FocusEdit(EditDiaryNewMass);
-    end;
-
-    itDish:
-    begin
-      Expander.Add(DiaryFoodDishInput, DishBase[n].Name);
-
-      ComboDiaryNew.Text := DishBase[n].Name;
-      Mass := GetCompensationMass(
-        DishBase[n].RelCarbs,
-        DishBase[n].RelProts);
-      if Mass > 0 then
-        EditDiaryNewMass.Text := IntToStr(Round(Mass));
-      FocusEdit(EditDiaryNewMass);
-    end;
+  case IdentifyItem(Trim(ComboDiaryNew.Text), Item) of
+    itFood: Temp := TFood(Item);
+    itDish: Temp := TDish(Item).AsFoodRelative();
   end;
+
+  Expander.Add(DiaryFoodDishInput, Temp.Name);
+  ComboDiaryNew.Text := Temp.Name;
+  Mass := GetCompensationMass(Temp.RelCarbs, Temp.RelProts);
+  if (Mass > 0) then
+    EditDiaryNewMass.Text := IntToStr(Round(Mass));
+  FocusEdit(EditDiaryNewMass);
+
+  Temp.Free;
 end;
 
 {==============================================================================}
@@ -1937,6 +1935,7 @@ var
   n: integer;
   Mass: Extended;
   Meal: TMealRecord;
+  Item: TMutableItem;
 begin
   StartProc('TForm1.ButtonDiaryNewAddClick()');
   try
@@ -1947,7 +1946,8 @@ begin
 
         ComboDiaryNew.Text := Trim(ComboDiaryNew.Text);
         EditDiaryNewMass.Text := Trim(EditDiaryNewMass.Text);
-        ItemType := IdentifyItem(ComboDiaryNew.Text, n);
+
+        ItemType := IdentifyItem(ComboDiaryNew.Text, Item);
 
         if (ItemType = itUnknown) then
         begin
@@ -1978,8 +1978,8 @@ begin
           end else
           begin
             case ItemType of
-              itFood: Meal.Add(FoodBase[n].AsFoodMassed(Mass));
-              itDish: Meal.Add(DishBase[n].AsFoodMassed(Mass));
+              itFood: Meal.Add(TFood(Item).AsFoodMassed(Mass));
+              itDish: Meal.Add(TDish(Item).AsFoodMassed(Mass));
             end;
 
             ComboDiaryNew.Text := '';
@@ -3420,7 +3420,9 @@ begin
   begin
     ON_IDLE_ShowBases := False;
 
+    UpdateFoodbaseFilter();
     UpdateFoodTable(True, True, False);
+
     UpdateDishTable(True);
 
     { после Maximize }
@@ -4084,29 +4086,29 @@ procedure TForm1.ItemCopyFoodClick(Sender: TObject);
 var
   Temp: TFood;
   n,i: integer;
+  OldName: string;
   NewName: string;
 begin
   n := ListFood.ItemIndex;
+  OldName := FoodList[n].Name;
   if n <> -1 then
   begin
     i := 1;
     repeat
       inc(i);
-      NewName := FoodBase[n].Name+' ('+IntToStr(i)+')';
-    until FoodBase.Find(NewName{, True}) = -1;
+      NewName := Format('%s (%d)', [OldName, i]);
+    until FoodBase.FindOne(NewName) = nil;
 
     Temp := TFood.Create;
-    Temp.CopyFrom(FoodBase[n]);
+    Temp.CopyFrom(FoodList[n]);
     Temp.Name := NewName;
-    n := FoodBase.Add(Temp);
+    FoodBase.Save(Temp);
 
-    (*ShowFoodBase(True);
-    {*}UpdateCombos;
-    {*}SaveFoodBase; *)  
     EventFoodbaseChanged(True);
 
-    ShowTableItem(ListFood, n);
+    //ShowTableItem(ListFood, n);
     ListFood.SetFocus;
+    // TODO 1: SELECTING COPIED FOOD DISABLED
   end;
 end;
 
@@ -4648,7 +4650,7 @@ const
   );
 
 var
-  i, k: integer;
+  i: integer;
   SavedIndex: integer;
 
   FoodP: boolean;
@@ -4658,8 +4660,8 @@ var
 begin
   StartProc('UpdateFoodTable()');
 
-  LabelFoodBase.Caption := Format('База продуктов (%d), v%d', [FoodBaseMap.Count, FoodBase.Version]);
-  Application.ProcessMessages;
+  LabelFoodBase.Caption := Format('База продуктов (%d), v%d', [Length(FoodList), FoodBase.Version]);
+  //Application.ProcessMessages;
 
   FoodP := Value['FoodP'];
   FoodF := Value['FoodF'];
@@ -4672,6 +4674,8 @@ begin
       SavedIndex := ItemIndex
     else
       SavedIndex := -1; // для компилятора
+
+    ListFood.Items.Count := Length(FoodList);
 
     if FullUpdate then
     begin
@@ -4695,24 +4699,23 @@ begin
       end;
 
       { СТРОКИ }
-      Items.BeginUpdate;
+      {Items.BeginUpdate;
       Clear;
-      ListFood.AllocBy := FoodBase.Count;
-      for i := 0 to FoodBaseMap.Count - 1 do
+      ListFood.AllocBy := Length(FoodList);
+      for i := 0 to High(FoodList) do
       begin
-        k := FoodBaseMap[i];
         with Items.Add do
         begin
-          Caption := FoodBase[k].Name;//+' ['+IntToStr(FoodBase[i].Tag)+']';;
-          ImageIndex := Byte(FoodBase[k].FromTable);
+          Caption := FoodList[i].Name;//+' ['+IntToStr(FoodBase[i].Tag)+']';;
+          ImageIndex := Byte(FoodList[i].FromTable);
 
-          if FoodP  then SubItems.Add(RealToStr(FoodBase[k].RelProts));
-          if FoodF  then SubItems.Add(RealToStr(FoodBase[k].RelFats));
-          if FoodC  then SubItems.Add(RealToStr(FoodBase[k].RelCarbs));
-          if FoodV  then SubItems.Add(IntToStr(Round(FoodBase[k].RelValue)));
+          if FoodP  then SubItems.Add(RealToStr(FoodList[i].RelProts));
+          if FoodF  then SubItems.Add(RealToStr(FoodList[i].RelFats));
+          if FoodC  then SubItems.Add(RealToStr(FoodList[i].RelCarbs));
+          if FoodV  then SubItems.Add(IntToStr(Round(FoodList[i].RelValue)));
         end;
       end;
-      Items.EndUpdate;
+      Items.EndUpdate;  }
 
       Height := Height + 1;
       Height := Height - 1;
@@ -4720,24 +4723,22 @@ begin
     end else
     { not FullUpdate }
     begin
-      if (FoodBase.Count <> Items.Count) then
+      if (Length(FoodList) <> Items.Count) then
         UpdateFoodTable(UpdateHeaders, True, SaveItemIndex)
       else
 
-      for i := 0 to FoodBaseMap.Count - 1 do
+      {for i := 0 to High(FoodList) do
       with Items[i] do
       begin
-        k := FoodBaseMap[i];
+        Caption := FoodList[i].Name;
+        ImageIndex := Byte(FoodList[i].FromTable);
 
-        Caption := FoodBase[k].Name;
-        ImageIndex := Byte(FoodBase[k].FromTable);
-
-        SubItems.Clear; 
-        if FoodP  then SubItems.Add(RealToStr(FoodBase[k].RelProts));
-        if FoodF  then SubItems.Add(RealToStr(FoodBase[k].RelFats));
-        if FoodC  then SubItems.Add(RealToStr(FoodBase[k].RelCarbs));
-        if FoodV  then SubItems.Add(IntToStr(Round(FoodBase[k].RelValue)));
-      end;
+        SubItems.Clear;
+        if FoodP  then SubItems.Add(RealToStr(FoodList[i].RelProts));
+        if FoodF  then SubItems.Add(RealToStr(FoodList[i].RelFats));
+        if FoodC  then SubItems.Add(RealToStr(FoodList[i].RelCarbs));
+        if FoodV  then SubItems.Add(IntToStr(Round(FoodList[i].RelValue)));
+      end;  }
     end;
 
     if SaveItemIndex or (not FullUpdate) then
@@ -4914,7 +4915,6 @@ begin
 
   UpdateFoodTable(False, True, False);
   UpdateCombos;
-  SaveFoodBase; // TODO: remove it
 
   FinishProc;
 end;
@@ -4929,7 +4929,9 @@ begin
 
 end;
 
+{==============================================================================}
 procedure TForm1.ButtonInsulinCalcClick(Sender: TObject);
+{==============================================================================}
 const
   PERIOD    = 30;
   CARTRIDGE = 300;
@@ -4974,7 +4976,9 @@ begin
   ));
 end;
 
+{==============================================================================}
 procedure TForm1.PanelDevelopmentClick(Sender: TObject);
+{==============================================================================}
 begin
   FormMisc.ShowModal;
 end;
@@ -4982,34 +4986,39 @@ end;
 {==============================================================================}
 procedure TForm1.UpdateFoodbaseFilter();
 {==============================================================================}
+
+  procedure ClearFoodList;
+  var
+    i: integer;
+  begin
+    for i := 0 to High(FoodList) do
+      FoodList[i].Free;
+    SetLength(FoodList, 0);
+  end;
+
 var
-  i: integer;
   Filter: string;
 begin
+  ClearFoodList;
+  
   Filter := EditBaseFoodSearch.Text;
   if (Trim(Filter) = '') then
   begin
-    FoodBaseMap.Init(FoodBase.Count);
+    FoodList := FoodBase.FindAll();
     ButtonResetFilterFoodBase.Hint := 'Показаны все записи';
     ButtonResetFilterFoodBase.Enabled := False;
   end else
   begin
+    FoodList := FoodBase.FindAny(Filter);
     ButtonResetFilterFoodBase.Hint := 'Убрать фильтр (Escape)';
     ButtonResetFilterFoodBase.Enabled := True;
-
-    FoodBaseMap.Clear;
-    for i := 0 to FoodBase.Count - 1 do
-    if (pos(AnsiUpperCase(Filter), AnsiUpperCase(FoodBase[i].Name)) > 0) then
-    begin
-      FoodBaseMap.Add(i);
-    end;
   end;
 end;
 
+{==============================================================================}
 procedure TForm1.EditBaseFoodSearchChange(Sender: TObject);
+{==============================================================================}
 begin
-  ButtonResetFilterFoodBase.Enabled := Trim(EditBaseFoodSearch.Text) <> '';
-
   UpdateFoodbaseFilter();
   UpdateFoodTable(False, True, False);
   if (ListFood.Items.Count > 0) then
@@ -5019,7 +5028,9 @@ begin
   end;
 end;
 
+{==============================================================================}
 procedure TForm1.ButtonResetFilterFoodBaseClick(Sender: TObject);
+{==============================================================================}
 begin
   if (not TSpeedButton(Sender).Down) then
     EditBaseFoodSearch.Text := '';
@@ -5033,8 +5044,10 @@ begin
   end;
 end;
 
+{==============================================================================}
 procedure TForm1.EditBaseFoodSearchKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
+{==============================================================================}
 begin
   case Key of
     vk_Up:
@@ -5069,12 +5082,33 @@ begin
   end;
 end;
 
+{==============================================================================}
 procedure TForm1.EditBaseFoodSearchKeyPress(Sender: TObject;
   var Key: Char);
+{==============================================================================}
 begin
   // to prevent windows ding
   if ((Key = Char(vk_Return)) or (Key = Char(vk_Escape))) then
     Key := #0;
+end;
+
+procedure TForm1.ListFoodData(Sender: TObject; Item: TListItem);
+var
+  i: integer;
+begin
+  i := Item.Index;
+  if (i >= 0) and (i <= High(FoodList)) then
+  with Item do
+  begin
+    Caption := FoodList[i].Name;//+' ['+IntToStr(FoodBase[i].Tag)+']';;
+    ImageIndex := Byte(FoodList[i].FromTable);
+
+    // TODO: COLUMNS CHECKING DISABLED
+    if True  then SubItems.Add(RealToStr(FoodList[i].RelProts));
+    if True  then SubItems.Add(RealToStr(FoodList[i].RelFats));
+    if True  then SubItems.Add(RealToStr(FoodList[i].RelCarbs));
+    if True  then SubItems.Add(IntToStr(Round(FoodList[i].RelValue)));
+  end;
 end;
 
 end.

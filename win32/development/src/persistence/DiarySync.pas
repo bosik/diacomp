@@ -329,9 +329,9 @@ function SyncPage(Date: TDate; ServerStamp, LocalStamp: TDateTime): TSyncResult;
 
   function More(Stamp1, Stamp2: TDateTime): boolean;
   const
-    EPS = 1 / 1440; // одна минута !!!
+    E_PS = 1 / 1440; // одна минута !!!
   begin
-    Result := ((Stamp1 - Stamp2) > EPS);
+    Result := ((Stamp1 - Stamp2) > E_PS);
   end;
 
 var
