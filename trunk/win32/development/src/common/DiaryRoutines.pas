@@ -128,6 +128,11 @@ const
   SecPerDay     = SecPerMin * MinPerHour * HourPerDay;
   EPS           = 0.0000001;
 
+  {  ¿ÀŒ–»» }
+  ENERGY_PROTS = 4.1;
+  ENERGY_FATS  = 9.3;
+  ENERGY_CARBS = 4.1;
+
 implementation
 
 { TIndexList }
