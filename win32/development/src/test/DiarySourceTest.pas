@@ -6,7 +6,7 @@ uses
   Windows,
   SysUtils,
   TestFrameWork,
-  DiarySources,
+  DiaryDAO,
   DiaryPage,
   DiaryRecords,
   DiaryRoutines,
@@ -15,7 +15,7 @@ uses
 type
   TDiarySourceTest = class(TTestCase)
   protected
-    Source: IDiarySource;
+    Source: TDiaryDAO;
     procedure SetUp; override;
     procedure TearDown; override;
     procedure ComparePages(ExpPage, ActPage: TDiaryPage); overload;

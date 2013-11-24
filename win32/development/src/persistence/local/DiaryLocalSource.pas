@@ -8,7 +8,7 @@ uses
   Classes,
   Dialogs {update warnings},
   DiaryRoutines,
-  DiarySources,
+  DiaryDAO,
   DiaryPage,
   DiaryPageSerializer;
 
@@ -41,7 +41,7 @@ type
     {L} class procedure Write(const Pages: TPageDataList; S: TStrings; F: TFormatSettings); overload;
   end;
 
-  TDiaryLocalSource =  class (IDiarySource)
+  TDiaryLocalSource =  class (TDiaryDAO)
   private
     FPages: TPageDataList;
     FModified: boolean;

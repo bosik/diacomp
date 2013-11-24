@@ -12,7 +12,7 @@ uses
   AutoLog in '..\common\AutoLog.pas',
   DiaryRoutinesTest in 'DiaryRoutinesTest.pas',
   DiaryWeb in '..\persistence\web\DiaryWeb.pas',
-  DiarySources in '..\persistence\DiarySources.pas',
+  DiaryDAO in '..\persistence\DiaryDAO.pas',
   DiaryPage in '..\bo\DiaryPage.pas',
   DiaryRecords in '..\bo\DiaryRecords.pas',
   DiaryPageSerializer in '..\persistence\DiaryPageSerializer.pas',
