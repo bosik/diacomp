@@ -1,4 +1,4 @@
-unit FoodbaseLocalDAO;
+unit FoodbaseWebDAO;
 
 interface
 
@@ -6,17 +6,21 @@ uses
   SysUtils,
   BusinessObjects,
   FoodbaseDAO,
-  Bases;
+  DiaryWeb,
+  Bases,
+  DiaryRoutines;
 
 type
-  TFoodbaseLocalDAO = class (TFoodbaseDAO)
+  TFoodbaseWebDAO = class (TFoodbaseDAO)
   private
-    FFileName: string;
     FBase: TFoodBase;
+    FClient: TDiacompClient;
   private
+    procedure Download;
     function GetIndex(Food: TFood): integer;
+    procedure Upload;
   public
-    constructor Create(const FileName: string);
+    constructor Create(Client: TDiacompClient);
     destructor Destroy; override;
 
     procedure Add(Food: TFood); override;
@@ -31,10 +35,13 @@ type
 
 implementation
 
-{ TFoodbaseLocalDAO }
+{ TFoodbaseWebDAO }
+
+const
+  FILENAME_TEMP = 'TFoodbaseWebDAO_temp.txt';
 
 {==============================================================================}
-procedure TFoodbaseLocalDAO.Add(Food: TFood);
+procedure TFoodbaseWebDAO.Add(Food: TFood);
 {==============================================================================}
 var
   Index: integer;
@@ -46,23 +53,24 @@ begin
     Temp := TFood.Create;
     Temp.CopyFrom(Food);
     FBase.Add(Temp);
-    FBase.SaveToFile(FFileName);
+    Upload();
   end else
     raise EDuplicateException.Create(Food);
 end;
 
 {==============================================================================}
-constructor TFoodbaseLocalDAO.Create(const FileName: string);
+constructor TFoodbaseWebDAO.Create(Client: TDiacompClient);
 {==============================================================================}
 begin
+  if (Client = nil) then
+    raise Exception.Create('Client can''t be nil');
+    
+  FClient := Client;
   FBase := TFoodBase.Create;
-  if FileExists(FileName) then
-    FBase.LoadFromFile_XML(FileName);
-  FFileName := FileName;
 end;
 
 {==============================================================================}
-procedure TFoodbaseLocalDAO.Delete(Food: TFood);
+procedure TFoodbaseWebDAO.Delete(Food: TFood);
 {==============================================================================}
 var
   Index: integer;
@@ -71,13 +79,13 @@ begin
   if (Index > -1) then
   begin
     FBase.Delete(Index);
-    FBase.SaveToFile(FFileName);
+    Upload();
   end else
     raise EItemNotFoundException.Create(Food);
 end;
 
 {==============================================================================}
-destructor TFoodbaseLocalDAO.Destroy;
+destructor TFoodbaseWebDAO.Destroy;
 {==============================================================================}
 begin
   FBase.Free;
@@ -85,11 +93,28 @@ begin
 end;
 
 {==============================================================================}
-function TFoodbaseLocalDAO.FindAll(): TFoodList;
+procedure TFoodbaseWebDAO.Download;
+{==============================================================================}
+var
+  Data: string;
+begin
+  try
+    Data := FClient.DownloadFoodBase();
+    DiaryRoutines.WriteFile(FILENAME_TEMP, Data);
+    FBase.LoadFromFile_XML(FILENAME_TEMP);
+  finally
+    DeleteFile(FILENAME_TEMP);
+  end;
+end;
+
+{==============================================================================}
+function TFoodbaseWebDAO.FindAll: TFoodList;
 {==============================================================================}
 var
   i: integer;
 begin
+  Download();
+  
   SetLength(Result, FBase.Count);
   for i := 0 to FBase.Count - 1 do
   begin
@@ -99,11 +124,13 @@ begin
 end;
 
 {==============================================================================}
-function TFoodbaseLocalDAO.FindAny(const Filter: string): TFoodList;
+function TFoodbaseWebDAO.FindAny(const Filter: string): TFoodList;
 {==============================================================================}
 var
   i, k: integer;
 begin
+  //Download; // LOL.
+
   SetLength(Result, FBase.Count);
   k := 0;
   for i := 0 to FBase.Count - 1 do
@@ -119,11 +146,13 @@ begin
 end;
 
 {==============================================================================}
-function TFoodbaseLocalDAO.FindOne(const Name: string): TFood;
+function TFoodbaseWebDAO.FindOne(const Name: string): TFood;
 {==============================================================================}
 var
   Index: integer;
 begin
+  Download;
+
   Index := FBase.Find(Name);
   if (Index <> -1) then
   begin
@@ -134,14 +163,14 @@ begin
 end;
 
 {==============================================================================}
-function TFoodbaseLocalDAO.GetIndex(Food: TFood): integer;
+function TFoodbaseWebDAO.GetIndex(Food: TFood): integer;
 {==============================================================================}
 begin
   Result := FBase.GetIndex(Food.ID);
 end;
 
 {==============================================================================}
-procedure TFoodbaseLocalDAO.ReplaceAll(const NewList: TFoodList;
+procedure TFoodbaseWebDAO.ReplaceAll(const NewList: TFoodList;
   NewVersion: integer);
 {==============================================================================}
 var
@@ -156,11 +185,11 @@ begin
     FBase.Add(Food);
   end;
   FBase.Version := NewVersion;
-  FBase.SaveToFile(FFileName);
+  Upload;
 end;
 
 {==============================================================================}
-procedure TFoodbaseLocalDAO.Update(Food: TFood);
+procedure TFoodbaseWebDAO.Update(Food: TFood);
 {==============================================================================}
 var
   Index: integer;
@@ -170,15 +199,31 @@ begin
   begin
     FBase[Index].CopyFrom(Food);
     FBase.Sort;
-    FBase.SaveToFile(FFileName);
+    Upload();
   end else
     raise EItemNotFoundException.Create(Food);
 end;
 
 {==============================================================================}
-function TFoodbaseLocalDAO.Version: integer;
+procedure TFoodbaseWebDAO.Upload;
+{==============================================================================}
+var
+  Data: string;
+begin
+  try
+    FBase.SaveToFile(FILENAME_TEMP);
+    Data := ReadFile(FILENAME_TEMP);
+    FCLient.UploadFoodBase(Data, FBase.Version);
+  finally
+    DeleteFile(FILENAME_TEMP);
+  end;
+end;
+
+{==============================================================================}
+function TFoodbaseWebDAO.Version: integer;
 {==============================================================================}
 begin
+  Download();
   Result := FBase.Version;
 end;
 

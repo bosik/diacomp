@@ -54,6 +54,7 @@ type
     function Count: integer; override;
     procedure Delete(Index: integer); override;
     destructor Destroy; override;
+    function GetIndex(ID: integer): integer; 
   end;
 
   TFoodBase = class(TArrayBase)
@@ -303,6 +304,21 @@ destructor TArrayBase.Destroy;
 {==============================================================================}
 begin
   Clear;
+end;
+
+{==============================================================================}
+function TArrayBase.GetIndex(ID: integer): integer;
+{==============================================================================}
+var
+  i: integer;
+begin
+  for i := 0 to High(FBase) do
+  if (FBase[i].ID = ID) then
+  begin
+    Result := i;
+    Exit;
+  end;
+  Result := -1;
 end;
 
 {==============================================================================}

@@ -140,14 +140,14 @@ const
 implementation
 
 var
-  StaticIDCounter: Cardinal = 0;
+  StaticIDCounter: Integer = 0;
 
 {==============================================================================}
 function GetNextID(): Cardinal;
 {==============================================================================}
 begin
-  inc(StaticIDCounter);
-  Result := StaticIDCounter;
+  //inc(StaticIDCounter);
+  Result := Random(2147483647); //StaticIDCounter;
 end;
 
 { TMutableItem }
@@ -600,4 +600,6 @@ begin
   end;
 end;
 
+initialization
+  Randomize;
 end.

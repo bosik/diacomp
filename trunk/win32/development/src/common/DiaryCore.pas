@@ -19,6 +19,7 @@ uses
 
   FoodBaseDAO,
   FoodBaseLocalDAO,
+  FoodBaseWebDAO,
 
   {#}DiaryWeb,  
   AnalyzeInterface,
@@ -32,7 +33,7 @@ uses
 type
   TUpdateCheckResult = (urNoConnection, urNoUpdates, urCanUpdate);
   TItemType = (itUnknown, itFood, itDish);
-  TSyncResult = (srEqual, srDownloaded, srUploaded);
+  TSyncResult = (srEqual, srFirstUpdated, srSecondUpdated);
 
   procedure Initialize();
   procedure Finalize();
@@ -46,7 +47,6 @@ type
   procedure SaveDishBase; deprecated;
 
   { web }
-  function SyncFoodbase(): TSyncResult;
   function SyncDishbase(): TSyncResult;
   function DownloadFoodBaseSample: boolean;
   function DownloadDishBaseSample: boolean;
@@ -65,7 +65,8 @@ var
   WebClient: TDiacompClient;
   Expander: TStringMap;
 
-  FoodBase: TFoodBaseDAO;
+  FoodBaseLocal: TFoodBaseDAO;
+  FoodBaseWeb: TFoodBaseDAO;
   DishBase: TDishBase;
 
   { системное }
@@ -139,7 +140,9 @@ begin
 
   Diary := TDiary.Create(LocalSource);
 
-  FoodBase := TFoodBaseLocalDAO.Create(WORK_FOLDER + FoodBase_FileName);
+  FoodBaseLocal := TFoodBaseLocalDAO.Create(WORK_FOLDER + FoodBase_FileName);
+  FoodBaseWeb := TFoodbaseWebDAO.Create(WebClient);
+
   DishBase := TDishBase.Create;
 
   Expander := TStringMap.Create;
@@ -154,7 +157,8 @@ begin
   WebSource.Free; // before WebClient
   WebClient.Free;
 
-  FoodBase.Free;
+  FoodBaseLocal.Free;
+  FoodBaseWeb.Free;
   Dishbase.Free;
 
   Expander.Free;
@@ -231,7 +235,7 @@ function IdentifyItem(const ItemName: string; out Item: TMutableItem): TItemType
 var
   Index: integer;
 begin
-  Item := FoodBase.FindOne(ItemName);
+  Item := FoodBaseLocal.FindOne(ItemName);
   if (Item <> nil) then
   begin
     Result := itFood;
@@ -247,7 +251,6 @@ begin
   end;
 
   Result := itUnknown;
-  Index := -1;
 end;
 
 {==============================================================================}
@@ -273,43 +276,6 @@ begin
 end;
 
 {==============================================================================}
-function SyncFoodbase(): TSyncResult;
-{==============================================================================}
-var
-  Data: string;
-  Version: integer;
-begin
-  Version := WebClient.GetFoodBaseVersion();
-   (*
-  // download
-  if (FoodBase.Version < Version) then
-  begin
-    Data := WebClient.DownloadFoodBase();
-    WriteFile(WORK_FOLDER + FoodBase_FileName, Data);
-    FoodBase.LoadFromFile_XML(WORK_FOLDER + FoodBase_FileName);
-    Result := srDownloaded;
-  end else
-
-  // upload
-  if (FoodBase.Version > Version) then
-  begin
-    Data := ReadFile(WORK_FOLDER + FoodBase_FileName);
-    if WebClient.UploadFoodBase(Data, FoodBase.Version) then
-      Result := srUploaded
-    else
-      raise ECommonException.Create('Failed to upload foodbase');
-  end else
-
-  // equal
-  begin
-    Result := srEqual;
-  end;
-  *)
-
-  // TODO 1: FOODBASE SYNC DISABLED
-end;
-
-{==============================================================================}
 function SyncDishbase(): TSyncResult;
 {==============================================================================}
 var
@@ -324,7 +290,7 @@ begin
     Data := WebClient.DownloadDishBase();
     WriteFile(WORK_FOLDER + DishBase_FileName, Data);
     DishBase.LoadFromFile_XML(WORK_FOLDER + DishBase_FileName);
-    Result := srDownloaded;
+    Result := srFirstUpdated;
   end else
 
   // upload
@@ -332,7 +298,7 @@ begin
   begin
     Data := ReadFile(WORK_FOLDER + DishBase_FileName);
     if WebClient.UploadDishBase(Data, DishBase.Version) then
-      Result := srUploaded
+      Result := srSecondUpdated
     else
       raise ECommonException.Create('Failed to upload dishbase');
   end else

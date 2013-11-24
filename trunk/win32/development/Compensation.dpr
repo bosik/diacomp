@@ -47,7 +47,8 @@ uses
   DiaryPageSerializerTest in 'src\test\DiaryPageSerializerTest.pas',
   UnitMisc in 'src\face\forms\UnitMisc.pas' {FormMisc},
   FoodbaseDAO in 'src\persistence\FoodbaseDAO.pas',
-  FoodbaseLocalDAO in 'src\persistence\local\FoodbaseLocalDAO.pas';
+  FoodbaseLocalDAO in 'src\persistence\local\FoodbaseLocalDAO.pas',
+  FoodbaseWebDAO in 'src\persistence\web\FoodbaseWebDAO.pas';
 
 {$R *.res}
 
