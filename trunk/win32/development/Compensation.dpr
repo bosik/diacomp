@@ -37,7 +37,7 @@ uses
   DiaryDAO in 'src\persistence\DiaryDAO.pas',
   DiaryLocalSource in 'src\persistence\local\DiaryLocalSource.pas',
   BusinessObjects in 'src\bo\BusinessObjects.pas',
-  Bases in 'src\bo\Bases.pas',
+  Bases in 'src\persistence\Bases.pas',
   DiaryRecords in 'src\bo\DiaryRecords.pas',
   DiaryRoutines in 'src\common\DiaryRoutines.pas',
   DiaryAnalyze in 'src\analyze\DiaryAnalyze.pas',
