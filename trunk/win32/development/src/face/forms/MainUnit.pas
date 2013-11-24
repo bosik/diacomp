@@ -579,6 +579,7 @@ var
   T: TDateTime;
 begin
   StartProc('MySyncDiary');
+  Result := 0;
 
   try
     { дневник }

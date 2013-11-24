@@ -18,7 +18,16 @@ uses
   BusinessObjects;
 
 type
+  // TODO: remove
   TKoofType = (kfK, kfQ, kfP, kfX);
+
+  TDayCurve = array[0..MinPerDay - 1] of Real;
+  TWeightedDayPoint = record
+    Time: 0..MinPerDay - 1;
+    Value: Real;
+    Weight: Real;
+  end;
+
 
   procedure PrepareBS(Image: TImage; Max: real; Mini: boolean;
     var kx,ky: real; var Border: integer);
@@ -27,6 +36,9 @@ type
 
   procedure DrawKoof(Image: TImage; const KoofList: TKoofList;
     const RecList: TAnalyzeRecList; KoofType: TKoofType; DrawPoints: boolean);
+  procedure DrawDayCurve(Image: TImage; const Curve: TDayCurve;
+    const Points: array of TWeightedDayPoint; ColorCurve, ColorPointWeight0,
+    ColorPointWeight1: TColor);
   procedure CheckTimePos(Image: TImage); deprecated;
 
 var
@@ -557,43 +569,11 @@ end;
 procedure DrawKoof(Image: TImage; const KoofList: TKoofList;
   const RecList: TAnalyzeRecList; KoofType: TKoofType; DrawPoints: boolean);
 {==============================================================================}
-var
-  Acc: real;
-  Max: real;
-  Wd: integer;
-
-  procedure CalcAcc;
-  const
-    FAcc: array[1..13] of real = (1000, 100, 10, 5, 1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001);
-    FWd: array[1..13] of integer =  (0,   0,  0, 0, 0,   1,   1,    2,    2,     3,     3,      4,      4);
-  var
-    n,LabelHeight: integer;
-  begin
-    LabelHeight := Image.Canvas.TextHeight('123');
-    Acc := 1;
-    Wd := 0;
-    for n := High(FAcc) downto 1 do
-    if Trunc(Max/FAcc[n])*LabelHeight <= Image.Height-2*TopBord then
-    begin
-      Acc := FAcc[n];
-      Wd := FWd[n];
-      Exit;
-    end;
-  end;
-
 const
   COLOR_K = $EEEEFF;
   COLOR_Q = $FFEEEE;
   COLOR_P = $80FFFF;
   COLOR_X = $EEEEEE;
-  TEXT_NO_DATA = 'Нет данных';
-
-var
-  i: integer;
-  kx,ky: real;
-  v: real;
-  PrevPoint,NewPoint: TPoint;
-  Hour, Min, Sec, MSec: word;
 
   function GetK(const Rec: TAnalyzeRec): real;
   begin
@@ -611,10 +591,10 @@ var
   const
     PROTS = 0.25;
   begin
-    if q <> 0 then
-      Result := (k+PROTS*p)/q
+    if abs(q) > 0.0001 then
+      Result := (k + PROTS * p) / q
     else
-      Result := 0;
+      Result := 0.0;
   end;
 
   function GetX(n: integer): real; overload;
@@ -651,116 +631,193 @@ var
       Result := -10;
   end;
 
-  procedure Line;
+var
+  Curve: TDayCurve;
+  Points: array of TWeightedDayPoint;
+  ColorCurve: TColor;
+  ColorPointWeight0: TColor;
+  ColorPointWeight1: TColor;
+  i: integer;
+begin
+  StartProc('DrawKoof');
+
+  // Создаём набор данных
+  case KoofType of
+    kfK:
+      begin
+        for i := 0 to MinPerDay - 1 do Curve[i] := KoofList[i].k;
+
+        SetLength(Points, Length(RecList));
+        for i := 0 to High(Points) do
+        begin
+          Points[i].Time := RecList[i].Time;
+          Points[i].Value := GetK(RecList[i]);
+          Points[i].Weight := RecList[i].Weight;
+        end;
+
+        ColorCurve := COLOR_K;
+        ColorPointWeight0 := clWhite;
+        ColorPointWeight1 := clRed;
+      end;
+
+    kfQ:
+      begin
+        for i := 0 to MinPerDay - 1 do Curve[i] := KoofList[i].q;
+
+        SetLength(Points, Length(RecList));
+        for i := 0 to High(Points) do
+        begin
+          Points[i].Time := RecList[i].Time;
+          Points[i].Value := GetQ(RecList[i]);
+          Points[i].Weight := RecList[i].Weight;
+        end;
+
+        ColorCurve := COLOR_Q;
+        ColorPointWeight0 := clWhite;
+        ColorPointWeight1 := clBlue;
+      end;
+
+    kfP:
+      begin
+        for i := 0 to MinPerDay - 1 do Curve[i] := KoofList[i].p;
+
+        SetLength(Points, Length(RecList));
+        for i := 0 to High(Points) do
+        begin
+          Points[i].Time := RecList[i].Time;
+          Points[i].Value := GetP(RecList[i]);
+          Points[i].Weight := RecList[i].Weight;
+        end;
+
+        ColorCurve := COLOR_P;
+        ColorPointWeight0 := clWhite;
+        ColorPointWeight1 := clOlive;
+      end;
+
+    kfX:
+      begin
+        for i := 0 to MinPerDay - 1 do Curve[i] := GetX(i);
+
+        SetLength(Points, Length(RecList));
+        for i := 0 to High(Points) do
+        begin
+          Points[i].Time := RecList[i].Time;
+          Points[i].Value := GetX(RecList[i]);
+          Points[i].Weight := RecList[i].Weight;
+        end;
+
+        ColorCurve := COLOR_X;
+        ColorPointWeight0 := clWhite;
+        ColorPointWeight1 := clBlack;
+      end;
+
+    else
+      raise Exception.Create('Неизвестный тип коэффициента');
+  end;
+
+  // Рисуем
+  DrawDayCurve(Image, Curve, Points, ColorCurve, ColorPointWeight0, ColorPointWeight1);
+
+  FinishProc;
+end;
+
+{==============================================================================}
+procedure DrawDayCurve(Image: TImage; const Curve: TDayCurve;
+  const Points: array of TWeightedDayPoint; ColorCurve, ColorPointWeight0,
+  ColorPointWeight1: TColor);
+{==============================================================================}
+var
+  Acc: real;
+  Max: real;
+  Wd: integer;
+
+  procedure CalcAcc;
+  const
+    FAcc: array[1..13] of real = (1000, 100, 10, 5, 1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001);
+    FWd: array[1..13] of integer =  (0,   0,  0, 0, 0,   1,   1,    2,    2,     3,     3,      4,      4);
+  var
+    n, LabelHeight: integer;
   begin
-    with Image.Canvas do
+    LabelHeight := Image.Canvas.TextHeight('123');
+    Acc := 1;
+    Wd := 0;
+    for n := High(FAcc) downto 1 do
+    if Trunc(Max / FAcc[n]) * LabelHeight <= Image.Height - 2 * TopBord then
     begin
-      MoveTo(PrevPoint.X,PrevPoint.Y);
-      LineTo(NewPoint.X,NewPoint.Y);
-      MoveTo(PrevPoint.X,PrevPoint.Y + 1);
-      LineTo(NewPoint.X,NewPoint.Y + 1);
+      Acc := FAcc[n];
+      Wd := FWd[n];
+      Exit;
     end;
   end;
 
- { function GetMax(a,b: real): real; overload;
-  begin
-    if a > b then
-      Result := a
-    else
-      Result := b;
-  end;
-
-  function GetMax(a,b: integer): integer; overload;
-  begin
-    if a > b then
-      Result := a
-    else
-      Result := b;
-  end;   }
-
+var
+  i: integer;
+  kx,ky: real;
+  NewPoint: TPoint;
+  Hour, Min, Sec, MSec: word;
+const
+  EPS = 0.000001;
 begin
-  StartProc('DrawKoof');
+  StartProc('DrawDayCurve');
 
   Image.Picture.Bitmap.Width := Image.Width;
   Image.Picture.Bitmap.Height := Image.Height;
 
-  { 1. Если нет данных }
-  {if length(KoofList) = 0 then
-  with Image.Canvas do
-  begin
-    Brush.Color := clWhite;
-    FillRect(Rect(0,0,Image.Width,Image.Height));
-    Font.Color := clSilver;
-    Font.Size := 20;
-    TextOut(
-      (Image.Width-TextWidth(TEXT_NO_DATA)) div 2,
-      50,
-      TEXT_NO_DATA
-    );
-    exit;
-  end;  }
-
-  { 2.Находим максимум }
+  { 1. Находим максимум }
   Max := 0;
-  case KoofType of
-    kfK: for i := 0 to MinPerDay-1 do Max := Math.Max(Max, KoofList[i].k);
-    kfQ: for i := 0 to MinPerDay-1 do Max := Math.Max(Max, KoofList[i].q);
-    kfP: for i := 0 to MinPerDay-1 do Max := Math.Max(Max, KoofList[i].p);
-    kfX: for i := 0 to MinPerDay-1 do Max := Math.Max(Max, GetX(i));
-  end;
+  for i := 0 to MinPerDay - 1 do
+    Max := Math.Max(Max, Curve[i]);
+  for i := 0 to High(Points) do
+    Max := Math.Max(Max, Points[i].Value);
 
   if (Max > 1000) then
-      Max := 1000;
+    Max := 1000 else
+  if Max < EPS then
+    Max := 1;
 
-  if Max <= 0 then
-    Max := 1
-  else
-    Max := Max * 1.2;
+  Max := Max * 1.2;
 
   CalcAcc;
-  {*}Max := Round(Max / Acc) * Acc;
+  Max := Round(Max / Acc) * Acc;
   LeftBord :=
     Math.Max(
       Image.Canvas.TextWidth(FloatToStr(Max)),
       Image.Canvas.TextWidth(FloatToStr(Max + Acc))
-    )+8;
-  kx := (Image.Width-2*LeftBord)/MinPerDay;
-  ky := (Image.Height-2*TopBord)/Max;
+    ) + 8;
+  kx := (Image.Width - 2 * LeftBord) / MinPerDay;
+  ky := (Image.Height - 2 * TopBord) / Max;
 
   with Image.Canvas do
   begin
     { очистка }
     Brush.Color := clWhite;
-    FillRect(Rect(0,0,Image.Width,Image.Height));
+    FillRect(Rect(0, 0, Image.Width, Image.Height));
 
-    { риски X }
     Pen.Width := 1;
     Pen.Style := psDot;
     Pen.Color := clSilver;
     Font.Color := clBlack;
     Font.Size := 9;
+
+    { Шкала X }
     for i := 0 to HourPerDay do
     begin
-      MoveTo(LeftBord+Round(i*60*kx),TopBord);
-      LineTo(LeftBord+Round(i*60*kx),Image.Height-TopBord);
+      // TODO: optimize
+      MoveTo(LeftBord + Round(i * 60 * kx), TopBord);
+      LineTo(LeftBord + Round(i * 60 * kx), Image.Height - TopBord);
       TextOut(
-        LeftBord + Round(i*60*kx) - (TextWidth(IntToStr(i)) div 2),
-        Image.Height-TopBord+4,
+        LeftBord + Round(i * MinPerHour * kx) - (TextWidth(IntToStr(i)) div 2),
+        Image.Height - TopBord + 4,
         IntToStr(i)
       );
     end;
 
-    { риски Y }
-
-    for i := 1 to Round(Max/Acc) do
+    { Шкала Y }
+    for i := 1 to Round(Max / Acc) do
     begin
-      MoveTo(
-        LeftBord,
-        Image.Height-TopBord-Round(i*Acc*ky));
-      LineTo(
-        Image.Width-LeftBord,
-        Image.Height-TopBord-Round(i*Acc*ky));
-
+      // TODO: optimize
+      MoveTo(LeftBord, Image.Height - TopBord - Round(i * Acc * ky));
+      LineTo(Image.Width - LeftBord, Image.Height - TopBord - Round(i * Acc * ky));
       TextOut(
         4,
         Image.Height-TopBord-Round(i*Acc*ky)-
@@ -769,238 +826,56 @@ begin
       );
     end;
 
-    { ОСИ }
+    { Оси }
     Pen.Style := psSolid;
     Pen.Color := clBlack;
-    MoveTo(LeftBord,TopBord);
-    LineTo(LeftBord,Image.Height-TopBord);
-    LineTo(Image.Width-LeftBord,Image.Height-TopBord);
+    MoveTo(LeftBord, TopBord);
+    LineTo(LeftBord, Image.Height - TopBord);
+    LineTo(Image.Width - LeftBord, Image.Height - TopBord);
 
-    { КОЭФФИЦИЕНТ }
-    Pen.Width := 1;
-    Pen.Style := psSolid;
-
-    case KoofType of
-      kfK: Pen.Color := COLOR_K;
-      kfQ: Pen.Color := COLOR_Q;
-      kfP: Pen.Color := COLOR_P;
-      kfX: Pen.Color := COLOR_X;
-    end;
-
-    {if 1-KoofList[High(KoofList)].Pos+KoofList[0].Pos<>0 then
-      w := KoofList[0].Pos/(1-KoofList[High(KoofList)].Pos+KoofList[0].Pos)
-    else
-      w := 0;
-
-    case KoofType of
-      kfK: v := (1-w)*KoofList[0].K + w*KoofList[High(KoofList)].K;
-      kfQ: v := (1-w)*KoofList[0].Q + w*KoofList[High(KoofList)].Q;
-      kfP: v := (1-w)*KoofList[0].P + w*KoofList[High(KoofList)].P;
-      kfX: v := (1-w)*GetX(0)       + w*GetX(High(KoofList));
-    end;
-
-    PrevPoint := Point(
-      LeftBord,
-      Image.Height-TopBord-Round(v*ky)
-    );   }
-
-    case KoofType of
-      kfK: MoveTo(LeftBord, Image.Height-TopBord-Round(KoofList[0].k*ky));
-      kfQ: MoveTo(LeftBord, Image.Height-TopBord-Round(KoofList[0].q*ky));
-      kfP: MoveTo(LeftBord, Image.Height-TopBord-Round(KoofList[0].p*ky));
-      kfX: MoveTo(LeftBord, Image.Height-TopBord-Round(GetX(0)*ky));
-    end;
-
+    { Кривая }
     Pen.Width := 4;
+    Pen.Style := psSolid;
+    Pen.Color := ColorCurve;
 
+    MoveTo(LeftBord, Image.Height - TopBord - Round(Curve[0] * ky));
     for i := 0 to MinPerDay - 1 do
     begin
-      {if (KoofList[i].Proved)and
-         (KoofList[(i-1+length(KoofList)) mod length(KoofList)].Proved)then
-      Pen.Style := psSolid else
-        Pen.Style := psDot; }
-      case KoofType of
-        kfK: LineTo(LeftBord+Round(i*kx), Image.Height-TopBord-Round(KoofList[i].k*ky));
-        kfQ: LineTo(LeftBord+Round(i*kx), Image.Height-TopBord-Round(KoofList[i].q*ky));
-        kfP: LineTo(LeftBord+Round(i*kx), Image.Height-TopBord-Round(KoofList[i].p*ky));
-        kfX: LineTo(LeftBord+Round(i*kx), Image.Height-TopBord-Round(GetX(i)*ky));
-      end;
-
-     (* case KoofType of
-        kfK: NewPoint := Point(
-               LeftBord+Round((i+KoofList[i].Pos)*kx),
-               Image.Height-TopBord-Round(KoofList[i].k*ky)
-             );
-        kfQ: NewPoint := Point(
-               LeftBord+Round((i+KoofList[i].Pos)*kx),
-               Image.Height-TopBord-Round(KoofList[i].q*ky)
-             );
-        kfP: NewPoint := Point(
-               LeftBord+Round((i+KoofList[i].Pos)*kx),
-               Image.Height-TopBord-Round(KoofList[i].p*ky)
-             );
-        kfX: NewPoint := Point(
-               LeftBord+Round((i+KoofList[i].Pos)*kx),
-               Image.Height-TopBord-Round(GetX(i)*ky)
-             );
-      end;
-
-      Line;
-
-      if (KoofList[i].Proved) then
-      begin
-        Pen.Style := psSolid;
-        Brush.Color := Pen.Color;
-        {Rectangle(
-          NewPoint.X-2,
-          NewPoint.Y-2,
-          NewPoint.X+4,
-          NewPoint.Y+4
-        );}
-      end;
-      Brush.Color := clWhite;
-      PrevPoint := NewPoint;  *)
-
-
+      LineTo(LeftBord + Round(i * kx), Image.Height - TopBord - Round(Curve[i] * ky));
     end;
 
+    { Точки }
     Pen.Width := 1;
-
-   { NewPoint := Point(
-      Image.Width-LeftBord,
-      Image.Height-TopBord-Round(v*ky)
-    );
-
-    Line;   }
-
-    if DrawPoints then
-
-    { Точки для ОКК }
-   { if KoofType = kfX then
+    for i := 0 to High(Points) do
     begin
-      for i := 0 to High(KoofList) do
-      for j := High(KoofList[i].Points) downto 0 do
-      begin
-        NewPoint := Point(
-          LeftBord+Round((i+KoofList[i].Points[j].Pos)*kx),
-          Image.Height-TopBord-Round(KoofList[i].Points[j].Value/KoofList[i].Q*ky)
-        );
-        Brush.Color := RGB(
-          Round(KoofList[i].Points[j].Tag*255),
-          0,0);
-        Pen.Color := Brush.Color;
-        Rectangle(
-          NewPoint.X-1,
-          NewPoint.Y-1,
-          NewPoint.X+2,
-          NewPoint.Y+2
-        );
-      end;
-    end else   }
-    { Точки для К * }
-    if KoofType = kfK then
-    begin
-      for i := 0 to High(RecList) do
-      begin
-        {v := (RecList[i].DeltaBS + KoofList[Reclist[i].Time].q*RecList[i].Ins)/
-          RecList[i].Carbs;  }
-        v := GetK(RecList[i]);
+      NewPoint := Point(
+        LeftBord + Round(Points[i].Time * kx),
+        Image.Height - TopBord - Round(Points[i].Value  * ky)
+      );
 
-        NewPoint := Point(
-          LeftBord+Round(RecList[i].Time*kx),
-          Image.Height-TopBord-Round(v  * ky)
-        );
-
-        Brush.Color := RGB(Round(RecList[i].Weight*255),0,0);
-        Pen.Color := clWhite;//RGB(255-Round(RecList[i].Weight*255),255,255);
-        Ellipse(
-          NewPoint.X - 2 - 1,
-          NewPoint.Y - 2 - 1,
-          NewPoint.X + 3 + 1,
-          NewPoint.Y + 3 + 1
-        );
-      end;
-    end else
-    if KoofType = kfQ then
-    begin
-      for i := 0 to High(RecList) do
-      begin
-        v := GetQ(RecList[i]);
-
-        NewPoint := Point(
-          LeftBord+Round(RecList[i].Time*kx),
-          Image.Height-TopBord-Round(v  * ky)
-        );
-
-        Brush.Color := RGB(0, 0, Round(RecList[i].Weight*255));
-        Pen.Color := RGB(255, 255, 255-Round(RecList[i].Weight*255));
-        Ellipse(
-          NewPoint.X-2,
-          NewPoint.Y-2,
-          NewPoint.X+3,
-          NewPoint.Y+3
-        );
-      end;
-    end else
-    if KoofType = kfP then
-    begin
-      for i := 0 to High(RecList) do
-      begin
-        v := GetP(RecList[i]);
-
-        NewPoint := Point(
-          LeftBord+Round(RecList[i].Time*kx),
-          Image.Height-TopBord-Round(v  * ky)
-        );
-
-        Brush.Color := RGB(Round(RecList[i].Weight*255), Round(RecList[i].Weight*255), 0);
-        Pen.Color := Brush.Color;
-        Rectangle(
-          NewPoint.X-1,
-          NewPoint.Y-1,
-          NewPoint.X+2,
-          NewPoint.Y+2
-        );
-      end;
-    end else
-    if KoofType = kfX then
-    begin
-      for i := 0 to High(RecList) do
-      begin
-        {v := (RecList[i].DeltaBS + KoofList[Reclist[i].Time].q*RecList[i].Ins)/
-          RecList[i].Carbs;  }
-        v := GetX(RecList[i]);
-
-        NewPoint := Point(
-          LeftBord+Round(RecList[i].Time*kx),
-          Image.Height-TopBord-Round(v  * ky)
-        ); 
-
-        Brush.Color :=
-        RGB(
-          Round(RecList[i].Weight*255),
-          0,0);
-        Pen.Color := Brush.Color;
-        Rectangle(
-          NewPoint.X-1,
-          NewPoint.Y-1,
-          NewPoint.X+2,
-          NewPoint.Y+2
-        );
-      end;
+      Brush.Color := RGB(
+        Round(GetRValue(ColorPointWeight0) * (1 - Points[i].Weight) + GetRValue(ColorPointWeight1) * Points[i].Weight),
+        Round(GetGValue(ColorPointWeight0) * (1 - Points[i].Weight) + GetGValue(ColorPointWeight1) * Points[i].Weight),
+        Round(GetBValue(ColorPointWeight0) * (1 - Points[i].Weight) + GetBValue(ColorPointWeight1) * Points[i].Weight)
+      );
+      Pen.Color := clWhite;
+      Ellipse(
+        NewPoint.X - 2 - 1,
+        NewPoint.Y - 2 - 1,
+        NewPoint.X + 3 + 1,
+        NewPoint.Y + 3 + 1
+      );
     end;
 
     {========================================}
     DecodeTime(now, Hour, Min, Sec, MSec);
-    Min := Hour*MinPerHour + Min;
-    TimePos := Round({(Sec+MSec/1000)/60}  (Min/MinPerDay)*(Image.Width-2*LeftBord));
+    Min := Hour * MinPerHour + Min;
+    TimePos := Round((Min / MinPerDay) * (Image.Width - 2 * LeftBord));
 
-    Pen.Color := COLOR_TIMEPOS;
+    Pen.Color := COLOR_TIMEPOS; // TODO: hardcoded!
     Pen.Style := psSolid;
-    //Pen.Mode := pmNotXor;
-    MoveTo(LeftBord+TimePos,Image.Height-TopBord);
-    LineTo(LeftBord+TimePos,TopBord);
-    //Pen.Mode := pmCopy;
+    MoveTo(LeftBord + TimePos, Image.Height - TopBord);
+    LineTo(LeftBord + TimePos, TopBord);
     {========================================}
   end;
 

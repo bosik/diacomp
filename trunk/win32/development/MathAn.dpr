@@ -521,6 +521,12 @@ begin
 
   if (Length(RecList) = 0) then
   begin
+    for i := 0 to MinPerDay - 1 do
+    begin
+      KoofList[i].k := 0;
+      KoofList[i].q := 0;
+      KoofList[i].p := 0;
+    end;
     Result := False;
     Exit;
   end;
