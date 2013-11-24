@@ -77,7 +77,7 @@ var
   BS_PREPRAND_HIGH: Real;
   BS_POSTPRAND_HIGH: Real;
 
-  procedure CalcXY(Time: integer; Value: real; var x, y: integer); overload;
+  procedure CalcXY(Time: integer; Value: real; var x, y: integer);
   begin
     x := Round(Border + kx / MinPerHour * Time);
     y := Round(h - Border - ky * Value);
@@ -184,7 +184,7 @@ procedure DrawBS(PagePrev, PageCur, PageNext: TDiaryPage; Image: TImage;
   begin
     Result := InitMax;
 
-    for i := 0 to PageCur.Count-1 do
+    for i := 0 to PageCur.Count - 1 do
     if (PageCur[i].RecType = TBloodRecord) and
        (TBloodRecord(PageCur[i]).Value > Result) then
       Result := TBloodRecord(PageCur[i]).Value;
@@ -199,9 +199,9 @@ var
   TempBlood: TBloodRecord;
   Border: integer;
 
-  procedure CalcXY(Time: integer; Value: real; var x,y: integer);
+  procedure CalcXY(Time: integer; Value: real; var x, y: integer);
   begin
-    x := Round(Border + kx / 60 * Time);
+    x := Round(Border + kx / MinPerHour * Time);
     y := Round(h - Border - ky * Value);
   end;
 
@@ -297,7 +297,7 @@ begin
 end;
 
 {==============================================================================}
-procedure DrawBS_Int(const Base: TDiary; FromDay,ToDay: integer; Image: TImage);
+procedure DrawBS_Int(const Base: TDiary; FromDay, ToDay: integer; Image: TImage);
 {==============================================================================}
 (*const
   BRD   = 20;
@@ -580,15 +580,15 @@ procedure DrawKoof(Image: TImage; const KoofList: TKoofList;
   begin
     if Rec.Carbs > 0 then
       Result := (
-        -KoofList[Rec.Time].p * Rec.Prots
-        +KoofList[Rec.Time].q * Rec.Ins
-        +(Rec.BSOut-Rec.BSIn)
+        - KoofList[Rec.Time].p * Rec.Prots
+        + KoofList[Rec.Time].q * Rec.Ins
+        + (Rec.BSOut - Rec.BSIn)
       ) / Rec.Carbs
     else
       Result := -10;
   end;
 
-  function GetX(k,q,p: real): real; overload;
+  function GetX(k, q, p: real): real; overload;
   const
     PROTS = 0.25;
   begin
@@ -612,9 +612,9 @@ procedure DrawKoof(Image: TImage; const KoofList: TKoofList;
   begin
     if Rec.Ins > 0 then
       Result := (
-        +KoofList[Rec.Time].p * Rec.Prots
-        +KoofList[Rec.Time].k * Rec.Carbs
-        -(Rec.BSOut-Rec.BSIn)
+        + KoofList[Rec.Time].p * Rec.Prots
+        + KoofList[Rec.Time].k * Rec.Carbs
+        - (Rec.BSOut-Rec.BSIn)
       ) / (Rec.Ins)
     else
       Result := -10;
@@ -624,9 +624,9 @@ procedure DrawKoof(Image: TImage; const KoofList: TKoofList;
   begin
     if Rec.Prots > 0 then
       Result := (
-        -KoofList[Rec.Time].k * Rec.Carbs
-        +KoofList[Rec.Time].q * Rec.Ins
-        +(Rec.BSOut-Rec.BSIn)
+        - KoofList[Rec.Time].k * Rec.Carbs
+        + KoofList[Rec.Time].q * Rec.Ins
+        + (Rec.BSOut-Rec.BSIn)
       ) / (Rec.Prots)
     else
       Result := -10;
@@ -817,8 +817,8 @@ begin
     for i := 0 to HourPerDay do
     begin
       // TODO: optimize
-      MoveTo(LeftBord + Round(i * 60 * kx), TopBord);
-      LineTo(LeftBord + Round(i * 60 * kx), Image.Height - TopBord);
+      MoveTo(LeftBord + Round(i * MinPerHour * kx), TopBord);
+      LineTo(LeftBord + Round(i * MinPerHour * kx), Image.Height - TopBord);
       TextOut(
         LeftBord + Round(i * MinPerHour * kx) - (TextWidth(IntToStr(i)) div 2),
         Image.Height - TopBord + 4,
@@ -834,7 +834,7 @@ begin
       LineTo(Image.Width - LeftBord, Image.Height - TopBord - Round(i * Acc * ky));
       TextOut(
         4,
-        Image.Height-TopBord-Round(i*Acc*ky)-
+        Image.Height - TopBord - Round(i * Acc * ky)-
         (TextHeight('123') div 2),
         Format('%.' + IntToStr(Wd) + 'f', [i * Acc])
       );
