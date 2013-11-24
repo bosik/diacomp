@@ -269,7 +269,7 @@ begin
     { точки }
     if not mini then
     begin   
-      Pen.Color := clMaroon;
+      Pen.Color := COLOR_BS_CURVE;
       Pen.Style := psSolid;
       for i := 0 to PageCur.Count - 1 do
       if (PageCur[i].RecType = TBloodRecord) then
@@ -280,7 +280,7 @@ begin
         if (TempBlood.PostPrand) then
           Brush.Color := COLOR_BACK
         else
-          Brush.Color := clMaroon;
+          Brush.Color := COLOR_BS_CURVE;
 
         Ellipse(cx - eSize, cy - eSize, cx + eSize, cy + eSize);
       end;
@@ -864,7 +864,7 @@ begin
         Round(GetGValue(ColorPointWeight0) * (1 - Points[i].Weight) + GetGValue(ColorPointWeight1) * Points[i].Weight),
         Round(GetBValue(ColorPointWeight0) * (1 - Points[i].Weight) + GetBValue(ColorPointWeight1) * Points[i].Weight)
       );
-      Pen.Color := clWhite;
+      Pen.Color := COLOR_BACK;
       Ellipse(
         NewPoint.X - 2 - 1,
         NewPoint.Y - 2 - 1,
