@@ -1,4 +1,4 @@
-unit DiarySources;
+unit DiaryDAO;
 
 interface
 
@@ -19,7 +19,7 @@ type
   TDateList = array of TDate;
 
   // DAO
-  IDiarySource = class
+  TDiaryDAO = class
   public
     { методы }
     // TODO: make it function
@@ -38,10 +38,10 @@ type
 
 implementation
 
-{ IDiarySource }
+{ TDiaryDAO }
 
 {==============================================================================}
-function IDiarySource.GetPage(Date: TDate): TDiaryPage;
+function TDiaryDAO.GetPage(Date: TDate): TDiaryPage;
 {==============================================================================}
 var
   DateList: TDateList;
@@ -53,11 +53,11 @@ begin
   if (Length(PageList) = 1) then
     Result := PageList[0]
   else
-    raise Exception.Create('Неверная реализация IDiarySource: GetPages() вернул ' + IntToStr(Length(PageList)) + ' страниц вместо одной');
+    raise Exception.Create('Неверная реализация TDiaryDAO: GetPages() вернул ' + IntToStr(Length(PageList)) + ' страниц вместо одной');
 end;
 
 {==============================================================================}
-function IDiarySource.PostPage(Page: TDiaryPage): boolean;
+function TDiaryDAO.PostPage(Page: TDiaryPage): boolean;
 {==============================================================================}
 var
   PageList: TDiaryPageList;

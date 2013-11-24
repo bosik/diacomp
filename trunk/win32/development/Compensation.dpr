@@ -34,7 +34,7 @@ uses
   DiaryDatabase in 'src\persistence\DiaryDatabase.pas',
   DiaryWeb in 'src\persistence\web\DiaryWeb.pas',
   DiarySync in 'src\persistence\DiarySync.pas',
-  DiarySources in 'src\persistence\DiarySources.pas',
+  DiaryDAO in 'src\persistence\DiaryDAO.pas',
   DiaryLocalSource in 'src\persistence\local\DiaryLocalSource.pas',
   BusinessObjects in 'src\bo\BusinessObjects.pas',
   Bases in 'src\bo\Bases.pas',

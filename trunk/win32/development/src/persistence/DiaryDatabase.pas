@@ -9,7 +9,7 @@ uses
   Classes, // TStrings
   Math, // Max
   DiaryRoutines, // TDate
-  DiarySources,
+  DiaryDAO,
   DiaryRecords,
   ActiveX,
   XMLDoc,
@@ -23,7 +23,7 @@ type
 
   TDiary = class
   private
-    FSource: IDiarySource;
+    FSource: TDiaryDAO;
 
     FPostPrandIns: integer;
     FPostPrandStd: integer;
@@ -33,7 +33,7 @@ type
     procedure SetPostPrand(Index, Value: integer);
     procedure PageChangeListener(EventType: TPageEventType; Page: TDiaryPage; RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
   public
-    constructor Create(Source: IDiarySource);
+    constructor Create(Source: TDiaryDAO);
     function FindRecord(RecType: TClassCustomRecord; ADate: TDate; ATime: integer;
       DeltaTime: integer; Direction: TSearchDirection): TCustomRecord;
     function GetLastBloodRecord: TBloodRecord;
@@ -81,7 +81,7 @@ end;
 { TDiary }
 
 {==============================================================================}
-constructor TDiary.Create(Source: IDiarySource);
+constructor TDiary.Create(Source: TDiaryDAO);
 {==============================================================================}
 begin
   if (Source = nil) then

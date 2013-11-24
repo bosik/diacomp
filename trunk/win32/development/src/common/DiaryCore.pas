@@ -12,7 +12,7 @@ uses
   DiaryDatabase,
   Bases,
   DiaryRoutines,
-  DiarySources,
+  DiaryDAO,
   DiaryLocalSource,
   DiaryWebSource,
   {#}DiaryWeb,  
@@ -53,8 +53,8 @@ type
 
 var
   { данные }
-  LocalSource: IDiarySource;
-  WebSource: IDiarySource;
+  LocalSource: TDiaryDAO;
+  WebSource: TDiaryDAO;
 
   Diary: TDiary;
 

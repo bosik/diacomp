@@ -12,7 +12,7 @@ uses
   IdHTTP,
   IdException,
   DiaryRoutines, // Separate()
-  DiarySources, // TModList
+  DiaryDAO, // TModList // TODO: remove
   uLkJSON,
   AutoLog;
 

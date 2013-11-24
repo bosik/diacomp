@@ -5,14 +5,14 @@ interface
 uses
   SysUtils,
   Classes,
-  DiarySources,
+  DiaryDAO,
   DiaryWeb,
   DiaryPage,
   DiaryPageSerializer,
   AutoLog;
 
 type
-  TDiaryWebSource = class (IDiarySource)
+  TDiaryWebSource = class (TDiaryDAO)
   private
     FClient: TDiacompClient;
   public
