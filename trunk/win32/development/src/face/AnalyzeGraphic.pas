@@ -647,12 +647,15 @@ begin
       begin
         for i := 0 to MinPerDay - 1 do Curve[i] := KoofList[i].k;
 
-        SetLength(Points, Length(RecList));
-        for i := 0 to High(Points) do
+        if (DrawPoints) then
         begin
-          Points[i].Time := RecList[i].Time;
-          Points[i].Value := GetK(RecList[i]);
-          Points[i].Weight := RecList[i].Weight;
+          SetLength(Points, Length(RecList));
+          for i := 0 to High(Points) do
+          begin
+            Points[i].Time := RecList[i].Time;
+            Points[i].Value := GetK(RecList[i]);
+            Points[i].Weight := RecList[i].Weight;
+          end;
         end;
 
         ColorCurve := COLOR_K;
@@ -664,12 +667,15 @@ begin
       begin
         for i := 0 to MinPerDay - 1 do Curve[i] := KoofList[i].q;
 
-        SetLength(Points, Length(RecList));
-        for i := 0 to High(Points) do
+        if (DrawPoints) then
         begin
-          Points[i].Time := RecList[i].Time;
-          Points[i].Value := GetQ(RecList[i]);
-          Points[i].Weight := RecList[i].Weight;
+          SetLength(Points, Length(RecList));
+          for i := 0 to High(Points) do
+          begin
+            Points[i].Time := RecList[i].Time;
+            Points[i].Value := GetQ(RecList[i]);
+            Points[i].Weight := RecList[i].Weight;
+          end;
         end;
 
         ColorCurve := COLOR_Q;
@@ -681,12 +687,15 @@ begin
       begin
         for i := 0 to MinPerDay - 1 do Curve[i] := KoofList[i].p;
 
-        SetLength(Points, Length(RecList));
-        for i := 0 to High(Points) do
+        if (DrawPoints) then
         begin
-          Points[i].Time := RecList[i].Time;
-          Points[i].Value := GetP(RecList[i]);
-          Points[i].Weight := RecList[i].Weight;
+          SetLength(Points, Length(RecList));
+          for i := 0 to High(Points) do
+          begin
+            Points[i].Time := RecList[i].Time;
+            Points[i].Value := GetP(RecList[i]);
+            Points[i].Weight := RecList[i].Weight;
+          end;
         end;
 
         ColorCurve := COLOR_P;
@@ -698,12 +707,15 @@ begin
       begin
         for i := 0 to MinPerDay - 1 do Curve[i] := GetX(i);
 
-        SetLength(Points, Length(RecList));
-        for i := 0 to High(Points) do
+        if (DrawPoints) then
         begin
-          Points[i].Time := RecList[i].Time;
-          Points[i].Value := GetX(RecList[i]);
-          Points[i].Weight := RecList[i].Weight;
+          SetLength(Points, Length(RecList));
+          for i := 0 to High(Points) do
+          begin
+            Points[i].Time := RecList[i].Time;
+            Points[i].Value := GetX(RecList[i]);
+            Points[i].Weight := RecList[i].Weight;
+          end;
         end;
 
         ColorCurve := COLOR_X;
