@@ -66,20 +66,28 @@ uses SettingsINI;
 
 {==============================================================================}
 procedure PrepareBS(Image: TImage; Max: real; Mini: boolean;
-  var kx,ky: real; var Border: integer);
+  var kx, ky: real; var Border: integer);
 {==============================================================================}
 var
-  w,h: integer;
+  w, h: integer;
   i: integer;
-  x1,y1,x2,y2: integer;
+  x1, y1, x2, y2: integer;
 
-  procedure CalcXY(Time: integer; Value: real; var x,y: integer); overload;
+  BS_PREPRAND_LOW: Real;
+  BS_PREPRAND_HIGH: Real;
+  BS_POSTPRAND_HIGH: Real;
+
+  procedure CalcXY(Time: integer; Value: real; var x, y: integer); overload;
   begin
-    x := Round(Border + kx/60*Time);
-    y := Round(h-Border - ky*Value);
+    x := Round(Border + kx / MinPerHour * Time);
+    y := Round(h - Border - ky * Value);
   end;
 
 begin
+  BS_PREPRAND_LOW   := Value['BS1'];
+  BS_PREPRAND_HIGH  := Value['BS2'];
+  BS_POSTPRAND_HIGH := Value['BS3'];
+
   with Image.Canvas do
   begin
     w := Image.Width;
@@ -95,20 +103,20 @@ begin
       Border := Round(1.00*BRD)
     else
       Border := BRD; }
-    Border := 3 * TextHeight('24') div 2;
+    Border := 3 * TextHeight('123') div 2;
     ky := (h - 2 * Border) / Max;
     kx := (w - 2 * Border) / HourPerDay;
 
     { зелёная зона }
     Brush.Color := COLOR_BS_NORMAL;
-    CalcXY(0, Value['BS1'], x1, y1);
-    CalcXY(MinPerDay, Value['BS2'], x2, y2);
+    CalcXY(0, BS_PREPRAND_LOW, x1, y1);
+    CalcXY(MinPerDay, BS_PREPRAND_HIGH, x2, y2);
     FillRect(Rect(x1, y1, x2, y2));
 
     { красная зона }
     Brush.Color := COLOR_BS_HIGH;
-    CalcXY(0,Value['BS2'], x1, y1);
-    CalcXY(MinPerDay, Value['BS3'], x2, y2);
+    CalcXY(0, BS_PREPRAND_HIGH, x1, y1);
+    CalcXY(MinPerDay, BS_POSTPRAND_HIGH, x2, y2);
     FillRect(Rect(x1, y1, x2, y2));
 
     { Шкала }
