@@ -76,7 +76,6 @@ const
   PROGRAM_DATE            = '2013.09.21';
   UPDATES_CHECKING_PERIOD = 7; { дней }
 
-
   { КАЛОРИИ }
   ENERGY_PROTS = 4.1;
   ENERGY_FATS  = 9.3;

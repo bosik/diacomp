@@ -147,7 +147,6 @@ type
     TabBase: TTabSheet;
     SplitterBase: TSplitter;
     PanelBaseFood: TPanel;
-    Shape10: TShape;
     LabelFoodBase: TLabel;
     PanelFoodButtons: TPanel;
     ButtonCreateFood: TSpeedButton;
@@ -229,7 +228,6 @@ type
     Item_SepFood: TMenuItem;
     TimerAutosave: TTimer;
     ThreadExec_: TThreadExecutor;
-    EditBaseFoodSearch: TEdit;
     ButtonAnList: TButton;
     GroupBoxAdd: TGroupBox;
     ButtonDiaryNewAddFood: TSpeedButton;
@@ -260,6 +258,9 @@ type
     LabelAvgDeviation: TLabel;
     LabelWeight: TLabel;
     PanelDevelopment: TPanel;
+    PanelSearchFoodBase: TPanel;
+    EditBaseFoodSearch: TEdit;
+    ButtonResetFilterFoodBase: TSpeedButton;
 
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ButtonCreateFoodClick(Sender: TObject);
@@ -367,8 +368,6 @@ type
     procedure ThreadExec_TimeOut(Sender: TObject; TaskID: Cardinal);
     procedure ComboDiaryNewDrawItem(Control: TWinControl;
       Index: Integer; Rect: TRect; State: TOwnerDrawState);
-    procedure ListBaseMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
     procedure DiaryViewChange(Sender: TObject; EventType: TPageEventType;
       Page: TDiaryPage; RecClass: TClassCustomRecord;
       RecInstance: TCustomRecord);
@@ -378,6 +377,11 @@ type
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ButtonInsulinCalcClick(Sender: TObject);
     procedure PanelDevelopmentClick(Sender: TObject);
+    procedure EditBaseFoodSearchChange(Sender: TObject);
+    procedure EditBaseFoodSearchKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure ButtonResetFilterFoodBaseClick(Sender: TObject);
+    procedure EditBaseFoodSearchKeyPress(Sender: TObject; var Key: Char);
   protected
     // определяет расположение компонентов интерфейса
     procedure Designer; override;
@@ -433,8 +437,9 @@ type
     procedure UpdateMealStatistics;
     procedure UpdateMealDose;
     procedure UpdateCombos;
-    procedure UpdateFoodTable(FullUpdate: boolean; SaveItemIndex: boolean = False);
+    procedure UpdateFoodTable(UpdateHeaders, FullUpdate, SaveItemIndex: boolean);
     procedure UpdateDishTable(FullUpdate: boolean; SaveItemIndex: boolean = False);
+    procedure UpdateFoodbaseFilter();
 
     { Информационные события }
     procedure EventFoodbaseChanged(CountChanged: boolean);
@@ -465,6 +470,7 @@ var
   CurrentDB: real;       // текущая коррекция СК
   CurrentNextFinger: integer;
   DiaryMultiMap: TMultimap;
+  FoodBaseMap: TIndexList;
 
   { ============================ П Р О Ч Е Е ================================= }
 
@@ -653,7 +659,6 @@ begin
   ShapeRight2.Height := BORD;
   ShapeRight3.Height := BORD;
   ShapeAn1.Height := BORD;
-  Shape10.Height := BORD;
   Shape11.Height := BORD;
 
   // Бордеры панелей
@@ -839,6 +844,9 @@ begin
       FoodBase.LoadFromFile_XML(WORK_FOLDER + FoodBase_FileName);
       Log(INFO, 'Foodbase loaded ok', True);
     end;
+
+    FoodBaseMap := TIndexList.Create;
+    FoodBaseMap.Init(FoodBase.Count);
 
     { =============== ЗАГРУЗКА БАЗЫ БЛЮД =============== }
 
@@ -1210,9 +1218,10 @@ begin
   if FormFood.OpenFoodEditor(Food, True, FoodEditorRect) then
   begin
     n := FoodBase.Add(Food);
-    {#}EventFoodbaseChanged(True);
+    UpdateFoodbaseFilter();
+    {#}EventFoodbaseChanged(True);                
 
-    ShowTableItem(ListFood, n);
+    //ShowTableItem(ListFood, n);
     ListFood.SetFocus;
   end else
     Food.Free;
@@ -1242,27 +1251,31 @@ procedure TForm1.EditFood(Index: integer);
 {==============================================================================}
 var
   Temp: TFood;
+  k: integer;
 begin
-  if (Index < 0) or (Index >= FoodBase.Count) then
+  if (Index < 0) or (Index >= FoodBaseMap.Count) then
   begin
     Log(WARNING, 'EditFood(): incorrect index ignored (' + IntToStr(Index) + ')', True);
     Exit;
   end;
 
+  k := FoodBaseMap[Index];
+
   Temp := TFood.Create;
-  Temp.CopyFrom(FoodBase[Index]);
+  Temp.CopyFrom(FoodBase[k]);
 
   if FormFood.OpenFoodEditor(Temp, False, FoodEditorRect) then
   begin
-    if DishBase.RenameFood(FoodBase[Index].Name, Temp.Name) then
+    if DishBase.RenameFood(FoodBase[k].Name, Temp.Name) then
       SaveDishBase;
 
-    FoodBase.Delete(Index);
+    FoodBase.Delete(k);
     Index := FoodBase.Add(Temp);
+    UpdateFoodbaseFilter();
 
     EventFoodbaseChanged(False);
 
-    ShowTableItem(ListFood, Index);
+    //ShowTableItem(ListFood, Index);
     ListFood.SetFocus;
   end else
     Temp.Free;
@@ -1318,19 +1331,25 @@ procedure TForm1.RemoveFood(Index: integer);
   end;
 
 var
-  DishNumber: integer;
+  k, DishNumber: integer;
 begin
-  // TODO: here
-  if (Index < 0) or (Index >= FoodBase.Count) then Exit;
+  if (Index < 0) or (Index >= FoodBaseMap.Count) then
+  begin
+    Log(WARNING, 'EditFood(): incorrect index ignored (' + IntToStr(Index) + ')', True);
+    Exit;
+  end;
 
-  DishNumber := DishBase.UsedFood(FoodBase[Index].Name);
-  if ((DishNumber > -1)and(AskWarning(Index, DishNumber)))or
-     ((DishNumber = -1)and(AskConfirm(Index))) then
+  k := FoodBaseMap[Index];
+
+  DishNumber := DishBase.UsedFood(FoodBase[k].Name);
+  if ((DishNumber > -1)and(AskWarning(k, DishNumber)))or
+     ((DishNumber = -1)and(AskConfirm(k))) then
   begin
     { порядок в базе и таблице совпадают }
-    FoodBase.Delete(Index);
+    FoodBase.Delete(k);
 
-    UpdateFoodTable(True);
+    UpdateFoodbaseFilter();
+    UpdateFoodTable(False, True, False);
     {*}UpdateCombos;
     {*}SaveFoodBase;
   end;
@@ -1619,8 +1638,8 @@ begin
  begin
     c := CodeToRus(Key);
     if c <> #0 then
-    for j := 0 to FoodBase.Count-1 do
-    if StartsWith(FoodBase[j].Name, C) then
+    for j := 0 to FoodBaseMap.Count - 1 do
+    if StartsWith(FoodBase[FoodBaseMap[j]].Name, C) then
     begin
       ShowTableItem(ListFood, j, True);
       break;
@@ -3400,7 +3419,7 @@ begin
   begin
     ON_IDLE_ShowBases := False;
 
-    UpdateFoodTable(True);
+    UpdateFoodTable(True, True, False);
     UpdateDishTable(True);
 
     { после Maximize }
@@ -4180,7 +4199,7 @@ begin
   end;
 
   if TMenuItem(Sender).Tag in [1..5] then
-    UpdateFoodTable(True, True) else
+    UpdateFoodTable(True, True, True) else
   if -TMenuItem(Sender).Tag in [1..6] then
     UpdateDishTable(True, True);
 end;
@@ -4363,13 +4382,6 @@ begin
     odSelected in State,
     Value['CarbsInfo']
   );
-end;
-
-procedure TForm1.ListBaseMouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
-begin
-  if (TListView(Sender).Enabled) and (not TListView(Sender).Focused) then
-    TListView(Sender).SetFocus;
 end;
 
 procedure TForm1.DiaryViewChange(Sender: TObject; EventType: TPageEventType;
@@ -4623,7 +4635,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TForm1.UpdateFoodTable(FullUpdate: boolean; SaveItemIndex: boolean = False);
+procedure TForm1.UpdateFoodTable(UpdateHeaders, FullUpdate, SaveItemIndex: boolean);
 {==============================================================================}
 const
   COL_CAPTIONS: array[0..4] of string = (
@@ -4635,7 +4647,7 @@ const
   );
 
 var
-  i: integer;
+  i, k: integer;
   SavedIndex: integer;
 
   FoodP: boolean;
@@ -4645,7 +4657,8 @@ var
 begin
   StartProc('UpdateFoodTable()');
 
-  LabelFoodBase.Caption := Format('База продуктов (%d), v%d', [FoodBase.Count, FoodBase.Version]);
+  LabelFoodBase.Caption := Format('База продуктов (%d), v%d', [FoodBaseMap.Count, FoodBase.Version]);
+  Application.ProcessMessages;
 
   FoodP := Value['FoodP'];
   FoodF := Value['FoodF'];
@@ -4661,36 +4674,41 @@ begin
 
     if FullUpdate then
     begin
+
       { ЗАГОЛОВКИ }
-      Columns.Clear;
-
-      with Columns.Add do
+      if (UpdateHeaders) then
       begin
-        Caption := COL_CAPTIONS[0];
-        AutoSize := True;
-        MinWidth := 150;
-      end;
+        Columns.Clear;
 
-      if FoodP  then Columns.Add.Caption := COL_CAPTIONS[1];
-      if FoodF  then Columns.Add.Caption := COL_CAPTIONS[2];
-      if FoodC  then Columns.Add.Caption := COL_CAPTIONS[3];
-      if FoodV  then Columns.Add.Caption := COL_CAPTIONS[4];
+        with Columns.Add do
+        begin
+          Caption := COL_CAPTIONS[0];
+          AutoSize := True;
+          MinWidth := 150;
+        end;
+
+        if FoodP  then Columns.Add.Caption := COL_CAPTIONS[1];
+        if FoodF  then Columns.Add.Caption := COL_CAPTIONS[2];
+        if FoodC  then Columns.Add.Caption := COL_CAPTIONS[3];
+        if FoodV  then Columns.Add.Caption := COL_CAPTIONS[4];
+      end;
 
       { СТРОКИ }
       Items.BeginUpdate;
       Clear;
       ListFood.AllocBy := FoodBase.Count;
-      for i := 0 to FoodBase.Count - 1 do
+      for i := 0 to FoodBaseMap.Count - 1 do
       begin
+        k := FoodBaseMap[i];
         with Items.Add do
         begin
-          Caption := FoodBase[i].Name;//+' ['+IntToStr(FoodBase[i].Tag)+']';;
-          ImageIndex := Byte(FoodBase[i].FromTable);
+          Caption := FoodBase[k].Name;//+' ['+IntToStr(FoodBase[i].Tag)+']';;
+          ImageIndex := Byte(FoodBase[k].FromTable);
 
-          if FoodP  then SubItems.Add(RealToStr(FoodBase[i].RelProts));
-          if FoodF  then SubItems.Add(RealToStr(FoodBase[i].RelFats));
-          if FoodC  then SubItems.Add(RealToStr(FoodBase[i].RelCarbs));
-          if FoodV  then SubItems.Add(IntToStr(Round(FoodBase[i].RelValue)));
+          if FoodP  then SubItems.Add(RealToStr(FoodBase[k].RelProts));
+          if FoodF  then SubItems.Add(RealToStr(FoodBase[k].RelFats));
+          if FoodC  then SubItems.Add(RealToStr(FoodBase[k].RelCarbs));
+          if FoodV  then SubItems.Add(IntToStr(Round(FoodBase[k].RelValue)));
         end;
       end;
       Items.EndUpdate;
@@ -4702,20 +4720,22 @@ begin
     { not FullUpdate }
     begin
       if (FoodBase.Count <> Items.Count) then
-        UpdateFoodTable(True)
+        UpdateFoodTable(UpdateHeaders, True, SaveItemIndex)
       else
 
-      for i := 0 to FoodBase.Count - 1 do
+      for i := 0 to FoodBaseMap.Count - 1 do
       with Items[i] do
       begin
-        Caption := FoodBase[i].Name;
-        ImageIndex := Byte(FoodBase[i].FromTable);
+        k := FoodBaseMap[i];
+
+        Caption := FoodBase[k].Name;
+        ImageIndex := Byte(FoodBase[k].FromTable);
 
         SubItems.Clear; 
-        if FoodP  then SubItems.Add(RealToStr(FoodBase[i].RelProts));
-        if FoodF  then SubItems.Add(RealToStr(FoodBase[i].RelFats));
-        if FoodC  then SubItems.Add(RealToStr(FoodBase[i].RelCarbs));
-        if FoodV  then SubItems.Add(IntToStr(Round(FoodBase[i].RelValue)));
+        if FoodP  then SubItems.Add(RealToStr(FoodBase[k].RelProts));
+        if FoodF  then SubItems.Add(RealToStr(FoodBase[k].RelFats));
+        if FoodC  then SubItems.Add(RealToStr(FoodBase[k].RelCarbs));
+        if FoodV  then SubItems.Add(IntToStr(Round(FoodBase[k].RelValue)));
       end;
     end;
 
@@ -4891,7 +4911,7 @@ procedure TForm1.EventFoodbaseChanged(CountChanged: boolean);
 begin
   StartProc('EventFoodbaseChenged');
 
-  UpdateFoodTable(True);
+  UpdateFoodTable(False, True, False);
   UpdateCombos;
   SaveFoodBase; // TODO: remove it
 
@@ -4956,6 +4976,104 @@ end;
 procedure TForm1.PanelDevelopmentClick(Sender: TObject);
 begin
   FormMisc.ShowModal;
+end;
+
+{==============================================================================}
+procedure TForm1.UpdateFoodbaseFilter();
+{==============================================================================}
+var
+  i: integer;
+  Filter: string;
+begin
+  Filter := EditBaseFoodSearch.Text;
+  if (Trim(Filter) = '') then
+  begin
+    FoodBaseMap.Init(FoodBase.Count);
+    ButtonResetFilterFoodBase.Hint := 'Показаны все записи';
+    ButtonResetFilterFoodBase.Enabled := False;
+  end else
+  begin
+    ButtonResetFilterFoodBase.Hint := 'Убрать фильтр (Escape)';
+    ButtonResetFilterFoodBase.Enabled := True;
+
+    FoodBaseMap.Clear;
+    for i := 0 to FoodBase.Count - 1 do
+    if (pos(AnsiUpperCase(Filter), AnsiUpperCase(FoodBase[i].Name)) > 0) then
+    begin
+      FoodBaseMap.Add(i);
+    end;
+  end;
+end;
+
+procedure TForm1.EditBaseFoodSearchChange(Sender: TObject);
+begin
+  ButtonResetFilterFoodBase.Enabled := Trim(EditBaseFoodSearch.Text) <> '';
+
+  UpdateFoodbaseFilter();
+  UpdateFoodTable(False, True, False);
+  if (ListFood.Items.Count > 0) then
+  begin
+    ListFood.Items[0].Selected := True;
+    ListFood.Items[0].Focused := True;
+  end;
+end;
+
+procedure TForm1.ButtonResetFilterFoodBaseClick(Sender: TObject);
+begin
+  if (not TSpeedButton(Sender).Down) then
+    EditBaseFoodSearch.Text := '';
+
+  UpdateFoodbaseFilter();
+  UpdateFoodTable(False, True, False);
+  if (ListFood.Items.Count > 0) then
+  begin
+    ListFood.Items[0].Selected := True;
+    ListFood.Items[0].Focused := True;
+  end;
+end;
+
+procedure TForm1.EditBaseFoodSearchKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  case Key of
+    vk_Up:
+      begin
+        if (ListFood.ItemIndex > 0) then
+          ListFood.ItemIndex := ListFood.ItemIndex - 1;
+        Key := 0;
+      end;
+    vk_Down:
+      begin
+        if (ListFood.ItemIndex < ListFood.Items.Count - 1) then
+          ListFood.ItemIndex := ListFood.ItemIndex + 1;
+        Key := 0;
+      end;
+    vk_Return:
+      begin
+        ListFood.OnKeyDown(Sender, Key, Shift);
+        Key := 0;
+      end;
+    vk_Escape:
+      begin
+        EditBaseFoodSearch.Text := '';
+        {UpdateFoodbaseFilter();
+        UpdateFoodTable(False, True, False);
+        if (ListFood.Items.Count > 0) then
+        begin
+          ListFood.Items[0].Selected := True;
+          ListFood.Items[0].Focused := True;
+        end; }
+        Key := 0;
+      end;
+  end;
+end;
+
+procedure TForm1.EditBaseFoodSearchKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+  // to prevent windows ding
+  if ((Key = Char(vk_Return)) or (Key = Char(vk_Escape))) then
+    Key := #0;
 end;
 
 end.

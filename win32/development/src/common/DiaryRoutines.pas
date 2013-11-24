@@ -20,6 +20,8 @@ type
     function GetItem(Index: integer): integer;
     procedure SetItem(Index, Value: integer);
   public
+    procedure Add(Value: integer);
+    procedure Clear;
     function Count: integer;
     procedure Init(Count: integer);
     procedure RemoveValue(Value: integer);
@@ -44,6 +46,8 @@ type
     function Count: integer;
     procedure LoadFromFile(const FileName: string);
     procedure SaveToFile(const FileName: string);
+
+    // TODO: make Index string, not integer
     property Items[Index: integer]: TStringPair read GetItem; default;
   end;
 
@@ -126,6 +130,21 @@ const
 implementation
 
 { TIndexList }
+
+{==============================================================================}
+procedure TIndexList.Add(Value: integer);
+{==============================================================================}
+begin
+  SetLength(FData, Length(FData) + 1);
+  FData[High(FData)] := Value;
+end;
+
+{==============================================================================}
+procedure TIndexList.Clear;
+{==============================================================================}
+begin
+  SetLength(FData, 0);
+end;
 
 {==============================================================================}
 function TIndexList.Count: integer;
@@ -211,6 +230,7 @@ procedure TStringMap.Add(const Key, Value: string; Overwrite: boolean);
 var
   i: integer;
 begin
+  // TODO: move search to a separate method
   if (Overwrite) then
   for i := 0 to High(FData) do
   if (FData[i].Key = Key) then
@@ -272,8 +292,8 @@ var
 begin
   with TStringList.Create do
   begin
-    for i := 0 to Self.Count - 1 do
-      Add(Items[i].Key + '=' + Items[i].Value);
+    for i := 0 to High(FData) do
+      Add(FData[i].Key + '=' + FData[i].Value);
     SaveToFile(FileName);
     Free;
   end;
