@@ -47,12 +47,18 @@ const
   eSize    = 3;  { ...   }
   TopBord  = 20; { Koofs }
 
-  COLOR_K       = $EEEEFF;
-  COLOR_Q       = $FFEEEE;
-  COLOR_P       = $80FFFF;
-  COLOR_X       = $EEEEEE;
-  COLOR_BACK    = clWhite;
-  COLOR_TIMEPOS = clSilver;
+  COLOR_BS_HIGH   = $E6E6FF; // $000060;
+  COLOR_BS_NORMAL = $E6FFE6; // $006000;
+  COLOR_BS_CURVE  = clMaroon; // $FFFFFF;
+  COLOR_K         = $EEEEFF;
+  COLOR_Q         = $FFEEEE;
+  COLOR_P         = $80FFFF;
+  COLOR_X         = $EEEEEE;
+  COLOR_BACK      = clWhite; // clBlack
+  COLOR_TIMEPOS   = clSilver;
+  COLOR_AXIS_MAIN = clBlack; // clYellow;
+  COLOR_AXIS_SUB  = clSilver;
+  COLOR_TITLES    = clBlack; // clLime
 
 implementation
 
@@ -85,80 +91,75 @@ begin
     Brush.Color := COLOR_BACK;
     FillRect(Image.ClientRect);
 
-    Pen.Color := clBlack;
-    Pen.Width := 1;
-    Font.Style := [];
-    Font.Color := clBlack;
-
-    if Mini then
-    begin
-      Font.Size := 5;
-      Pen.Style := psSolid;
-    end else
-    begin
-      Font.Size := 8;
-      Pen.Style := psDot;
-    end;
-
     {if Mini then
       Border := Round(1.00*BRD)
     else
       Border := BRD; }
-    Border := 3*TextHeight('24') div 2;
+    Border := 3 * TextHeight('24') div 2;
+    ky := (h - 2 * Border) / Max;
+    kx := (w - 2 * Border) / HourPerDay;
 
-    ky := (h-2*Border)/max;
-    kx := (w-2*Border)/24;
-
-    { зелена€ зона }
-    Brush.Color := RGB(230,255,230);
-    CalcXY(0,Value['BS1'], x1, y1);
-    CalcXY(MinPerDay,Value['BS2'], x2, y2);
-    FillRect(Rect(x1,y1,x2,y2));
-
-    { красна€ зона }
-    Brush.Color := $E6E6FF;
-    //RGB(255,230,230);
-    CalcXY(0,Value['BS2'], x1, y1);
-    CalcXY(MinPerDay,Value['BS3'], x2, y2);
+    { зелЄна€ зона }
+    Brush.Color := COLOR_BS_NORMAL;
+    CalcXY(0, Value['BS1'], x1, y1);
+    CalcXY(MinPerDay, Value['BS2'], x2, y2);
     FillRect(Rect(x1, y1, x2, y2));
 
-    Brush.Color := clWhite;
+    { красна€ зона }
+    Brush.Color := COLOR_BS_HIGH;
+    CalcXY(0,Value['BS2'], x1, y1);
+    CalcXY(MinPerDay, Value['BS3'], x2, y2);
+    FillRect(Rect(x1, y1, x2, y2));
 
-    { риски Y }
-    Pen.Color := RGB(220,220,220);
-    for i := 1 to Round(max) do
+    { Ўкала }
+    Brush.Color := COLOR_BACK;
+    Pen.Color := COLOR_AXIS_SUB;
+    Pen.Width := 1;
+    Font.Style := [];
+    Font.Color := COLOR_TITLES;
+
+    if Mini then
     begin
-      MoveTo(Border-3,Round(h-Border-ky*i));
-      LineTo(w-Border,Round(h-Border-ky*i));
-      if (not mini)or
-         ((i mod 2)=0) then
-      TextOut(
-        Border-15,
-        h-Border-Round(ky*i)-(TextHeight('0') div 2),
-        IntToStr(i)
-      );
+      Pen.Style := psSolid;
+      Font.Size := 5;
+    end else
+    begin
+      Pen.Style := psDot;
+      Font.Size := 8;
     end;
 
-    { риски X }
-    for i := 0 to 24 do
-    if (not mini)or
-       ((i mod 3)=0) then
+    { Ўкала Y }
+    for i := 1 to Round(Max) do
     begin
-      MoveTo(Border+Round(i*kx),Border);
-      LineTo(Border+Round(i*kx),h-Border+2);
+      MoveTo(Border - 3, Round(h - Border - ky * i));
+      LineTo(w - Border, Round(h - Border - ky * i));
+      if (not mini) or ((i mod 2) = 0) then
+        TextOut(
+          Border - 15,
+          h - Border - Round(ky * i) - (TextHeight('0') div 2),
+          IntToStr(i)
+        );
+    end;
+
+    { Ўкала X }
+    for i := 0 to HourPerDay do
+    if (not mini) or ((i mod 3) = 0) then
+    begin
+      MoveTo(Border + Round(i * kx), Border);
+      LineTo(Border + Round(i * kx), h - Border + 2);
       TextOut(
-        Border+Round(i*kx)-(TextWidth(IntToStr(i)) div 2),
-        h-Border+4,
+        Border + Round(i * kx) - (TextWidth(IntToStr(i)) div 2),
+        h - Border + 4,
         IntToStr(i)
       );
     end;
 
     { оси }
     Pen.Style := psSolid;
-    Pen.Color := clBlack;
+    Pen.Color := COLOR_AXIS_MAIN;
     MoveTo(Border,Border);
-    LineTo(Border,h-Border);
-    LineTo(w-Border,h-Border);
+    LineTo(Border, h - Border);
+    LineTo(w - Border, h - Border);
   end;
 end;
 
@@ -215,7 +216,7 @@ begin
     else
       Pen.Style := psDot;
 
-    Pen.Color := clMaroon;
+    Pen.Color := COLOR_BS_CURVE;
 
     { последн€€ точка предыдущего дн€ }
 
@@ -651,7 +652,7 @@ begin
         end;
 
         ColorCurve := COLOR_K;
-        ColorPointWeight0 := clWhite;
+        ColorPointWeight0 := COLOR_BACK;
         ColorPointWeight1 := clRed;
       end;
 
@@ -671,7 +672,7 @@ begin
         end;
 
         ColorCurve := COLOR_Q;
-        ColorPointWeight0 := clWhite;
+        ColorPointWeight0 := COLOR_BACK;
         ColorPointWeight1 := clBlue;
       end;
 
@@ -691,7 +692,7 @@ begin
         end;
 
         ColorCurve := COLOR_P;
-        ColorPointWeight0 := clWhite;
+        ColorPointWeight0 := COLOR_BACK;
         ColorPointWeight1 := clOlive;
       end;
 
@@ -711,7 +712,7 @@ begin
         end;
 
         ColorCurve := COLOR_X;
-        ColorPointWeight0 := clWhite;
+        ColorPointWeight0 := COLOR_BACK;
         ColorPointWeight1 := clBlack;
       end;
 
@@ -800,8 +801,8 @@ begin
 
     Pen.Width := 1;
     Pen.Style := psDot;
-    Pen.Color := clSilver;
-    Font.Color := clBlack;
+    Pen.Color := COLOR_AXIS_SUB;
+    Font.Color := COLOR_TITLES;
     Font.Size := 9;
 
     { Ўкала X }
@@ -833,7 +834,7 @@ begin
 
     { ќси }
     Pen.Style := psSolid;
-    Pen.Color := clBlack;
+    Pen.Color := COLOR_AXIS_MAIN;
     MoveTo(LeftBord, TopBord);
     LineTo(LeftBord, Image.Height - TopBord);
     LineTo(Image.Width - LeftBord, Image.Height - TopBord);
