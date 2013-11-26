@@ -325,6 +325,13 @@ th {
 	color: crimson;
 }
 
+.ui-autocomplete
+{
+	max-height: 260px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
 /* =========================== TABLE =========================== */
 
 .col_item {
