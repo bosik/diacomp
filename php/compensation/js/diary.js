@@ -265,6 +265,13 @@ function floatizeDish(dish)
 	{
 		dish.item = [];
 	}
+	else
+	if (!dish.item.length)
+	{
+		var temp = [];
+		temp.push(dish.item);
+		dish.item = temp;
+	}
 
 	for (i = 0; i < dish.item.length; i++)
 	{
