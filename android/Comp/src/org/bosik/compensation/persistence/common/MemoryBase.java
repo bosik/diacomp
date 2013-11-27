@@ -3,7 +3,6 @@ package org.bosik.compensation.persistence.common;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.bosik.compensation.bo.common.Item;
 
 /**
  * Хранящаяся в памяти база
@@ -13,7 +12,7 @@ import org.bosik.compensation.bo.common.Item;
  * @param <T>
  *            Тип элемента базы
  */
-public class MemoryBase<T extends Item>
+public class MemoryBase<T extends Unique>
 {
 	private final List<T>	items		= new ArrayList<T>();
 	private int				version		= 0;
@@ -25,7 +24,7 @@ public class MemoryBase<T extends Item>
 	{
 		if (null == item)
 		{
-			throw new NullPointerException("Item can't be null");
+			throw new NullPointerException("Unique can't be null");
 		}
 
 		try

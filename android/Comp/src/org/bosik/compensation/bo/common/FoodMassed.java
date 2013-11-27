@@ -2,6 +2,7 @@ package org.bosik.compensation.bo.common;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import org.bosik.compensation.persistence.common.Unique;
 import org.bosik.compensation.utils.Utils;
 
 /**
@@ -65,7 +66,7 @@ public class FoodMassed extends Food
 	// ================================ CLONE ================================
 
 	@Override
-	public Item clone() throws CloneNotSupportedException
+	public Unique clone() throws CloneNotSupportedException
 	{
 		FoodMassed result = (FoodMassed) super.clone();
 
@@ -75,6 +76,8 @@ public class FoodMassed extends Food
 	}
 
 	// ================================ I / O ================================
+
+	// TODO: move these methods to serializers package
 
 	/**
 	 * Читает из текстового представления FoodMassed
