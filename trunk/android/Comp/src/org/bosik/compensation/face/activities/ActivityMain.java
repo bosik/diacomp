@@ -6,17 +6,17 @@ import java.util.TimerTask;
 import org.bosik.compensation.face.BuildConfig;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.face.UIUtils;
-import org.bosik.compensation.persistence.repository.Storage;
-import org.bosik.compensation.persistence.repository.providers.web.WebClient.LoginResult;
-import org.bosik.compensation.persistence.repository.providers.web.exceptions.AuthException;
-import org.bosik.compensation.persistence.repository.providers.web.exceptions.ConnectionException;
-import org.bosik.compensation.persistence.repository.providers.web.exceptions.DeprecatedAPIException;
-import org.bosik.compensation.persistence.repository.providers.web.exceptions.ResponseFormatException;
-import org.bosik.compensation.persistence.repository.providers.web.exceptions.UndefinedFieldException;
-import org.bosik.compensation.persistence.sync.SyncBase;
-import org.bosik.compensation.persistence.sync.SyncBase.SyncResult;
-import org.bosik.compensation.persistence.sync.SyncDiaryRepository;
-import org.bosik.compensation.persistence.sync.SyncDiaryRepository.Callback;
+import org.bosik.compensation.persistence.Storage;
+import org.bosik.compensation.persistence.dao.web.utils.client.WebClient.LoginResult;
+import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.AuthException;
+import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.ConnectionException;
+import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.DeprecatedAPIException;
+import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.ResponseFormatException;
+import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.UndefinedFieldException;
+import org.bosik.compensation.persistence.sync.SyncBaseDAO;
+import org.bosik.compensation.persistence.sync.SyncBaseDAO.SyncResult;
+import org.bosik.compensation.persistence.sync.SyncDiaryDAO;
+import org.bosik.compensation.persistence.sync.SyncDiaryDAO.Callback;
 import org.bosik.compensation.utils.ErrorHandler;
 import org.bosik.compensation.utils.Utils;
 import android.app.Activity;
@@ -121,15 +121,15 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 
 			/* АВТОРИЗАЦИЯ */
 
-			if (!Storage.web_client.isOnline())
+			if (!Storage.webClient.isOnline())
 			{
-				Log.d(TAG, "Not logged, trying to auth (username=" + Storage.web_client.getUsername() + ", password="
-						+ Storage.web_client.getPassword() + ")");
+				Log.d(TAG, "Not logged, trying to auth (username=" + Storage.webClient.getUsername() + ", password="
+						+ Storage.webClient.getPassword() + ")");
 
 				publishProgress(COM_SHOW_AUTH);
 				try
 				{
-					Storage.web_client.login();
+					Storage.webClient.login();
 					Log.d(TAG, "Logged OK");
 				}
 				catch (ConnectionException e)
@@ -163,14 +163,14 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 				// TODO: хранить время последней синхронизации
 				Date since = new Date(2013 - 1900, 04 - 1, 1, 0, 0, 0); // а затем мы получаем
 																		// громадный синхролист, ага
-				syncPagesCount = SyncDiaryRepository.synchronize(Storage.local_diary, Storage.web_diary, since);
+				syncPagesCount = SyncDiaryDAO.synchronize(Storage.localDiary, Storage.webDiary, since);
 
-				SyncResult r = SyncBase.synchronize(Storage.localFoodBaseRepository, Storage.webFoodbaseRepository);
+				SyncResult r = SyncBaseDAO.synchronize(Storage.localFoodBase, Storage.webFoodBase);
 				syncFoodBase = (r != SyncResult.EQUAL);
 
-				// if (Storage.localFoodBaseRepository.modified())
+				// if (Storage.localFoodBase.modified())
 				// {
-				// Storage.localFoodBaseRepository.save();
+				// Storage.localFoodBase.save();
 				// }
 
 				Log.d(TAG, "Sync done OK...");
@@ -497,9 +497,9 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 
 	/*
 	 * private void clearLocalDiary() { // формируем параметры String mSelectionClause =
-	 * DiaryProvider.COLUMN_DATE + " > ?"; String[] mSelectionArgs = {"2014-01-01"};
+	 * DiaryContentProvider.COLUMN_DATE + " > ?"; String[] mSelectionArgs = {"2014-01-01"};
 	 * 
-	 * // выполняем запрос int count = getContentResolver().delete( DiaryProvider.CONTENT_URI,
+	 * // выполняем запрос int count = getContentResolver().delete( DiaryContentProvider.CONTENT_URI,
 	 * mSelectionClause, mSelectionArgs);
 	 * 
 	 * Log.w(TAG, "Deleted records: " + count); }

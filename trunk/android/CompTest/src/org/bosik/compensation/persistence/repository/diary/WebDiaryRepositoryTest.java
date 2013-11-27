@@ -1,22 +1,24 @@
 package org.bosik.compensation.persistence.repository.diary;
 
+import org.bosik.compensation.persistence.dao.DiaryDAO;
+import org.bosik.compensation.persistence.dao.web.WebDiaryDAO;
+import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
 import org.bosik.compensation.persistence.repository.providers.WebClientTest;
-import org.bosik.compensation.persistence.repository.providers.web.WebClient;
 
 public class WebDiaryRepositoryTest extends DiaryRepositoryTest
 {
 	private static final WebClient			webClient;
-	private static final DiaryRepository	repository;
+	private static final DiaryDAO	repository;
 
 	static
 	{
 		webClient = WebClientTest.getWebClient();
 		webClient.login();
-		repository = new WebDiaryRepository(webClient);
+		repository = new WebDiaryDAO(webClient);
 	}
 
 	@Override
-	protected DiaryRepository getRepository()
+	protected DiaryDAO getRepository()
 	{
 		return repository;
 	}

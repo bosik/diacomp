@@ -1,6 +1,6 @@
 package org.bosik.compensation.persistence.repository.providers;
 
-import org.bosik.compensation.persistence.repository.providers.web.WebClient;
+import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
 import junit.framework.TestCase;
 
 public class WebClientTest extends TestCase

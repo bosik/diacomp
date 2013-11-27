@@ -2,7 +2,8 @@ package org.bosik.compensation.persistence.repository.foodbase;
 
 import junit.framework.TestCase;
 import org.bosik.compensation.bo.foodbase.FoodItem;
-import org.bosik.compensation.persistence.repository.common.Base;
+import org.bosik.compensation.persistence.common.MemoryBase;
+import org.bosik.compensation.persistence.serializers.foodbase.FoodBaseXMLSerializer;
 
 public class FoodBaseFormatterTest extends TestCase
 {
@@ -16,7 +17,7 @@ public class FoodBaseFormatterTest extends TestCase
 
 	public void testRead()
 	{
-		Base<FoodItem> base = f.read(xml);
+		MemoryBase<FoodItem> base = f.read(xml);
 
 		assertEquals(167, base.getVersion());
 		assertEquals(2, base.count());
@@ -38,7 +39,7 @@ public class FoodBaseFormatterTest extends TestCase
 
 	public void testWriteRead()
 	{
-		Base<FoodItem> base = new Base<FoodItem>();
+		MemoryBase<FoodItem> base = new MemoryBase<FoodItem>();
 		FoodItem food;
 
 		food = new FoodItem();
@@ -63,7 +64,7 @@ public class FoodBaseFormatterTest extends TestCase
 
 		// =======================================================
 
-		Base<FoodItem> anotherBase = f.read(xml);
+		MemoryBase<FoodItem> anotherBase = f.read(xml);
 
 		assertEquals(base.getVersion(), anotherBase.getVersion());
 		assertEquals(base.getVersion(), 2);
