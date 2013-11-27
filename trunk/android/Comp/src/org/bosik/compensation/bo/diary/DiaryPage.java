@@ -9,11 +9,16 @@ import org.bosik.compensation.bo.diary.records.DiaryRecord;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
 
-public class DiaryPage implements DiaryChangeListener
+public class DiaryPage implements RecordChangeListener
 {
-	private static final String		TAG			= DiaryPage.class.getSimpleName();
+	private static final String	TAG	= DiaryPage.class.getSimpleName();
 
 	// TODO: тестировать
+
+	public static enum EventType
+	{
+		ADD, MODIFY, REMOVE
+	}
 
 	// ===================================== ПОЛЯ =====================================
 
@@ -134,12 +139,13 @@ public class DiaryPage implements DiaryChangeListener
 	{
 		if (rec == null)
 		{
-			throw new IllegalArgumentException("Record can't be null");
+			// TODO: change all IllegalArgumentExceptions to NullPointerExceptions where need
+			throw new NullPointerException("Record can't be null");
 		}
 
 		rec.setChangeListener(this);
 		items.add(rec);
-		changed(EventType.ADD, rec.getClass(), rec);
+		handleModification(EventType.ADD, rec.getClass(), rec);
 
 		return items.indexOf(rec);
 	}
@@ -174,7 +180,7 @@ public class DiaryPage implements DiaryChangeListener
 	 */
 	public void remove(int index)
 	{
-		changed(EventType.REMOVE, items.get(index).getClass(), items.get(index));
+		handleModification(EventType.REMOVE, items.get(index).getClass(), items.get(index));
 		items.remove(index);
 	}
 
@@ -185,6 +191,12 @@ public class DiaryPage implements DiaryChangeListener
 
 	// -------- СОБЫТИЕ МОДИФИКАЦИИ --------
 
+	@Override
+	public void changed(Class<? extends DiaryRecord> recClass, DiaryRecord recInstance)
+	{
+		handleModification(EventType.MODIFY, recClass, recInstance);
+	}
+
 	/**
 	 * Событие изменения страницы, вызывается записями страницы
 	 * 
@@ -192,12 +204,11 @@ public class DiaryPage implements DiaryChangeListener
 	 *            Тип события
 	 * @param recClass
 	 *            Класс изменившейся записи. Полезен в случае, если запись оповещает о своём
-	 *            удалении
+	 *            удалении (WAT?)
 	 * @param recInstance
 	 *            Экземпляр оповещающей записи (а-ля sender)
 	 */
-	@Override
-	public void changed(EventType eventType, Class<? extends DiaryRecord> recClass, DiaryRecord recInstance)
+	private void handleModification(EventType eventType, Class<? extends DiaryRecord> recClass, DiaryRecord recInstance)
 	{
 		// Log.d(TAG, "changed()");
 
@@ -223,5 +234,4 @@ public class DiaryPage implements DiaryChangeListener
 
 		updatePostprand();
 	}
-
 }
