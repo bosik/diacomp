@@ -1,7 +1,7 @@
 package org.bosik.compensation.persistence.repository.diary;
 
-import org.bosik.compensation.persistence.repository.providers.WebClient;
 import org.bosik.compensation.persistence.repository.providers.WebClientTest;
+import org.bosik.compensation.persistence.repository.providers.web.WebClient;
 
 public class WebDiaryRepositoryTest extends DiaryRepositoryTest
 {
