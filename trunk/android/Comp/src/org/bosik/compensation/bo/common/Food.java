@@ -1,7 +1,7 @@
 package org.bosik.compensation.bo.common;
 
 /**
- * Хранит имя и относительные параметры БЖУК (на 100 г)
+ * Stores food's name and relative parameters (PFCV on 100g)
  * 
  * @author Bosik
  * 
@@ -28,7 +28,7 @@ public class Food extends Item
 		this.relValue = relValue;
 	}
 
-	// ================================ ВАЛИДАТОРЫ ================================
+	// ================================ VALIDATORS ================================
 
 	public static boolean checkName(String name)
 	{
@@ -45,7 +45,7 @@ public class Food extends Item
 		return (value >= 0);
 	}
 
-	// ================================ БРОСАТЕЛИ ================================
+	// ================================ THROWERS ================================
 
 	protected static void checkAndThrow(boolean check, String errorMessage)
 	{
