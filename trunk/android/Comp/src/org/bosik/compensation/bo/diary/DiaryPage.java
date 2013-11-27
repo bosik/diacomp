@@ -139,7 +139,6 @@ public class DiaryPage implements RecordChangeListener
 	{
 		if (rec == null)
 		{
-			// TODO: change all IllegalArgumentExceptions to NullPointerExceptions where need
 			throw new NullPointerException("Record can't be null");
 		}
 
