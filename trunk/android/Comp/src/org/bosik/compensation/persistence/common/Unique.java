@@ -1,4 +1,4 @@
-package org.bosik.compensation.bo.common;
+package org.bosik.compensation.persistence.common;
 
 import java.util.UUID;
 
@@ -9,12 +9,12 @@ import java.util.UUID;
  * @author Bosik
  * 
  */
-public class Item implements Cloneable
+public class Unique implements Cloneable
 {
 	private String	id;
 	private String	name;
 
-	public Item()
+	public Unique()
 	{
 		id = UUID.randomUUID().toString();
 	}
@@ -44,9 +44,9 @@ public class Item implements Cloneable
 	// ================================ CLONE ================================
 
 	@Override
-	public Item clone() throws CloneNotSupportedException
+	public Unique clone() throws CloneNotSupportedException
 	{
-		Item result = (Item) super.clone();
+		Unique result = (Unique) super.clone();
 
 		result.id = getId();
 
@@ -73,7 +73,7 @@ public class Item implements Cloneable
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Item other = (Item) obj;
+		Unique other = (Unique) obj;
 		if (id == null)
 		{
 			if (other.id != null)

@@ -1,7 +1,7 @@
 package org.bosik.compensation.bo.foodbase;
 
 import org.bosik.compensation.bo.common.Food;
-import org.bosik.compensation.bo.common.Item;
+import org.bosik.compensation.persistence.common.Unique;
 
 /**
  * Продукт
@@ -39,7 +39,7 @@ public class FoodItem extends Food implements Cloneable
 	// ================================ CLONE ================================
 
 	@Override
-	public Item clone() throws CloneNotSupportedException
+	public Unique clone() throws CloneNotSupportedException
 	{
 		FoodItem result = (FoodItem) super.clone();
 

@@ -1,12 +1,14 @@
 package org.bosik.compensation.bo.common;
 
+import org.bosik.compensation.persistence.common.Unique;
+
 /**
  * Stores food's name and relative parameters (PFCV on 100g)
  * 
  * @author Bosik
  * 
  */
-public class Food extends Item
+public class Food extends Unique
 {
 	// private String name;
 	private double	relProts;
@@ -119,7 +121,7 @@ public class Food extends Item
 	// ================================ CLONE ================================
 
 	@Override
-	public Item clone() throws CloneNotSupportedException
+	public Unique clone() throws CloneNotSupportedException
 	{
 		Food result = (Food) super.clone();
 
