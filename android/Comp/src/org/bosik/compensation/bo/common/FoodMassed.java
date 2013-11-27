@@ -5,8 +5,8 @@ import java.text.ParseException;
 import org.bosik.compensation.utils.Utils;
 
 /**
- * Хранит имя, относительные параметры (на 100 г) и массу. Имеет методы для собственной сериализации
- * / десериализации.
+ * Stores food's name, relative parameters (PFCV on 100g) and mass. Has methods for serialization /
+ * deserialization.
  * 
  * @author Bosik
  * 
@@ -92,7 +92,7 @@ public class FoodMassed extends Food
 			throw new IllegalArgumentException("Incorrect FoodMassed format: " + s);
 		}
 
-		// внутри сеттеров - дополнительные проверки
+		// setters are used for additional validating
 		setName(t[0]);
 		setRelProts(Utils.parseDouble(t[1]));
 		setRelFats(Utils.parseDouble(t[2]));
@@ -102,12 +102,13 @@ public class FoodMassed extends Food
 	}
 
 	/**
-	 * Создаёт текстовое представление
+	 * Creates text representation
 	 * 
 	 * @return Строка
 	 */
 	public String write()
 	{
+		// TODO: use String.format()
 		return getName() + '[' + df.format(getRelProts()) + FOOD_SEP + df.format(getRelFats()) + FOOD_SEP
 				+ df.format(getRelCarbs()) + FOOD_SEP + df.format(getRelValue()) + "]:" + df.format(mass);
 	}
