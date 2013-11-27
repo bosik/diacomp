@@ -8,6 +8,7 @@ import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.face.BuildConfig;
 import org.bosik.compensation.persistence.repository.common.Serializer;
 import org.bosik.compensation.persistence.repository.providers.web.WebClient;
+import org.bosik.compensation.persistence.repository.providers.web.exceptions.ResponseFormatException;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
 
@@ -115,7 +116,7 @@ public class WebDiaryRepository implements DiaryRepository
 				{
 					if (BuildConfig.DEBUG)
 					{
-						throw new WebClient.ResponseFormatException("Incorrect line: " + lines[i], e);
+						throw new ResponseFormatException("Incorrect line: " + lines[i], e);
 					}
 					else
 					{
@@ -127,7 +128,7 @@ public class WebDiaryRepository implements DiaryRepository
 			{
 				if (BuildConfig.DEBUG)
 				{
-					throw new WebClient.ResponseFormatException("Incorrect line: " + lines[i]);
+					throw new ResponseFormatException("Incorrect line: " + lines[i]);
 				}
 				else
 				{
