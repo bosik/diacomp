@@ -9,7 +9,7 @@ import org.bosik.compensation.persistence.repository.diary.LocalDiaryRepository;
 import org.bosik.compensation.persistence.repository.diary.WebDiaryRepository;
 import org.bosik.compensation.persistence.repository.foodbase.LocalFoodBase;
 import org.bosik.compensation.persistence.repository.foodbase.WebFoodBaseRepository;
-import org.bosik.compensation.persistence.repository.providers.WebClient;
+import org.bosik.compensation.persistence.repository.providers.web.WebClient;
 import org.bosik.compensation.utils.ErrorHandler;
 import android.content.ContentResolver;
 import android.content.Context;

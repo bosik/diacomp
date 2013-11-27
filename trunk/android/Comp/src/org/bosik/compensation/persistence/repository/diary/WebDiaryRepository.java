@@ -7,7 +7,7 @@ import java.util.List;
 import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.face.BuildConfig;
 import org.bosik.compensation.persistence.repository.common.Serializer;
-import org.bosik.compensation.persistence.repository.providers.WebClient;
+import org.bosik.compensation.persistence.repository.providers.web.WebClient;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
 

@@ -7,12 +7,12 @@ import org.bosik.compensation.face.BuildConfig;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.face.UIUtils;
 import org.bosik.compensation.persistence.repository.Storage;
-import org.bosik.compensation.persistence.repository.providers.WebClient.AuthException;
-import org.bosik.compensation.persistence.repository.providers.WebClient.DeprecatedAPIException;
-import org.bosik.compensation.persistence.repository.providers.WebClient.LoginResult;
-import org.bosik.compensation.persistence.repository.providers.WebClient.NoConnectionException;
-import org.bosik.compensation.persistence.repository.providers.WebClient.ResponseFormatException;
-import org.bosik.compensation.persistence.repository.providers.WebClient.UndefinedFieldException;
+import org.bosik.compensation.persistence.repository.providers.web.WebClient.AuthException;
+import org.bosik.compensation.persistence.repository.providers.web.WebClient.DeprecatedAPIException;
+import org.bosik.compensation.persistence.repository.providers.web.WebClient.LoginResult;
+import org.bosik.compensation.persistence.repository.providers.web.WebClient.ConnectionException;
+import org.bosik.compensation.persistence.repository.providers.web.WebClient.ResponseFormatException;
+import org.bosik.compensation.persistence.repository.providers.web.WebClient.UndefinedFieldException;
 import org.bosik.compensation.persistence.sync.SyncBase;
 import org.bosik.compensation.persistence.sync.SyncBase.SyncResult;
 import org.bosik.compensation.persistence.sync.SyncDiaryRepository;
@@ -132,7 +132,7 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 					Storage.web_client.login();
 					Log.d(TAG, "Logged OK");
 				}
-				catch (NoConnectionException e)
+				catch (ConnectionException e)
 				{
 					return LoginResult.FAIL_CONNECTION;
 				}
@@ -176,7 +176,7 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 				Log.d(TAG, "Sync done OK...");
 				return LoginResult.DONE;
 			}
-			catch (NoConnectionException e)
+			catch (ConnectionException e)
 			{
 				// Storage.logged = false;
 				Log.e(TAG, e.getLocalizedMessage());
