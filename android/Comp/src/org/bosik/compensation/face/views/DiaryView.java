@@ -317,7 +317,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 
 		if (null == page)
 		{
-			throw new IllegalArgumentException("Page can't be null");
+			throw new NullPointerException("Page can't be null");
 		}
 
 		// TODO: сделать тестирование скорости вывода

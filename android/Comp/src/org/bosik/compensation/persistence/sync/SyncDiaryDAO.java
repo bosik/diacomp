@@ -168,19 +168,19 @@ public class SyncDiaryDAO
 		// проверки
 		if (null == modList1)
 		{
-			throw new IllegalArgumentException("modList1 can't be null");
+			throw new NullPointerException("modList1 can't be null");
 		}
 		if (null == modList2)
 		{
-			throw new IllegalArgumentException("modList2 can't be null");
+			throw new NullPointerException("modList2 can't be null");
 		}
 		if (null == over1)
 		{
-			throw new IllegalArgumentException("over1 can't be null");
+			throw new NullPointerException("over1 can't be null");
 		}
 		if (null == over2)
 		{
-			throw new IllegalArgumentException("over2 can't be null");
+			throw new NullPointerException("over2 can't be null");
 		}
 
 		// подготовка
