@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import junit.framework.TestCase;
-import org.bosik.compensation.persistence.repository.diary.DiaryRepository.PageVersion;
+import org.bosik.compensation.persistence.dao.DiaryDAO.PageVersion;
 
 public class SyncDiaryTest extends TestCase
 {
@@ -13,7 +13,7 @@ public class SyncDiaryTest extends TestCase
 	{
 		// пустой массив
 		List<PageVersion> modList = new ArrayList<PageVersion>();
-		assertTrue(SyncDiaryRepository.ordered(modList));
+		assertTrue(SyncDiaryDAO.ordered(modList));
 	}
 
 	public void testOrdered_1()
@@ -21,7 +21,7 @@ public class SyncDiaryTest extends TestCase
 		// массив из одного элемента
 		List<PageVersion> modList = new ArrayList<PageVersion>();
 		modList.add(new PageVersion(new Date(2013, 01, 01), 23));
-		assertTrue(SyncDiaryRepository.ordered(modList));
+		assertTrue(SyncDiaryDAO.ordered(modList));
 	}
 
 	public void testOrdered_3_ordered()
@@ -31,7 +31,7 @@ public class SyncDiaryTest extends TestCase
 		modList.add(new PageVersion(new Date(2013, 01, 01), 23));
 		modList.add(new PageVersion(new Date(2013, 01, 02), 11));
 		modList.add(new PageVersion(new Date(2013, 01, 03), 48));
-		assertTrue(SyncDiaryRepository.ordered(modList));
+		assertTrue(SyncDiaryDAO.ordered(modList));
 	}
 
 	public void testOrdered_3_unordered_1()
@@ -41,7 +41,7 @@ public class SyncDiaryTest extends TestCase
 		modList.add(new PageVersion(new Date(2013, 01, 03), 23));
 		modList.add(new PageVersion(new Date(2013, 01, 02), 11));
 		modList.add(new PageVersion(new Date(2013, 01, 01), 48));
-		assertFalse(SyncDiaryRepository.ordered(modList));
+		assertFalse(SyncDiaryDAO.ordered(modList));
 	}
 
 	public void testOrdered_3_unordered_2()
@@ -51,15 +51,15 @@ public class SyncDiaryTest extends TestCase
 		modList.add(new PageVersion(new Date(2013, 01, 03), 23));
 		modList.add(new PageVersion(new Date(2013, 01, 04), 11));
 		modList.add(new PageVersion(new Date(2013, 01, 01), 48));
-		assertFalse(SyncDiaryRepository.ordered(modList));
+		assertFalse(SyncDiaryDAO.ordered(modList));
 	}
 
 	public void testSort_0()
 	{
 		// пустой массив
 		List<PageVersion> modList = new ArrayList<PageVersion>();
-		SyncDiaryRepository.sort(modList);
-		assertTrue(SyncDiaryRepository.ordered(modList));
+		SyncDiaryDAO.sort(modList);
+		assertTrue(SyncDiaryDAO.ordered(modList));
 	}
 
 	public void testSort_1()
@@ -67,8 +67,8 @@ public class SyncDiaryTest extends TestCase
 		// массив из одного элемента
 		List<PageVersion> modList = new ArrayList<PageVersion>();
 		modList.add(new PageVersion(new Date(2013, 01, 03), 23));
-		SyncDiaryRepository.sort(modList);
-		assertTrue(SyncDiaryRepository.ordered(modList));
+		SyncDiaryDAO.sort(modList);
+		assertTrue(SyncDiaryDAO.ordered(modList));
 	}
 
 	public void testSort_3_unordered()
@@ -78,8 +78,8 @@ public class SyncDiaryTest extends TestCase
 		modList.add(new PageVersion(new Date(2013, 01, 03), 23));
 		modList.add(new PageVersion(new Date(2013, 01, 02), 11));
 		modList.add(new PageVersion(new Date(2013, 01, 01), 48));
-		SyncDiaryRepository.sort(modList);
-		assertTrue(SyncDiaryRepository.ordered(modList));
+		SyncDiaryDAO.sort(modList);
+		assertTrue(SyncDiaryDAO.ordered(modList));
 	}
 
 	public void testSort_3_ordered()
@@ -89,8 +89,8 @@ public class SyncDiaryTest extends TestCase
 		modList.add(new PageVersion(new Date(2013, 01, 01), 23));
 		modList.add(new PageVersion(new Date(2013, 01, 02), 11));
 		modList.add(new PageVersion(new Date(2013, 01, 06), 48));
-		SyncDiaryRepository.sort(modList);
-		assertTrue(SyncDiaryRepository.ordered(modList));
+		SyncDiaryDAO.sort(modList);
+		assertTrue(SyncDiaryDAO.ordered(modList));
 	}
 
 	public void testGetOverLists1()
@@ -108,7 +108,7 @@ public class SyncDiaryTest extends TestCase
 		List<Date> over1 = new ArrayList<Date>();
 		List<Date> over2 = new ArrayList<Date>();
 
-		SyncDiaryRepository.getOverLists(modList1, modList2, over1, over2);
+		SyncDiaryDAO.getOverLists(modList1, modList2, over1, over2);
 
 		assertTrue(over1.isEmpty());
 		assertTrue(over2.isEmpty());

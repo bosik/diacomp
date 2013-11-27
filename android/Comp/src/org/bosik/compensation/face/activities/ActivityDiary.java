@@ -13,7 +13,7 @@ import org.bosik.compensation.face.R;
 import org.bosik.compensation.face.UIUtils;
 import org.bosik.compensation.face.views.DiaryView;
 import org.bosik.compensation.face.views.RecordClickListener;
-import org.bosik.compensation.persistence.repository.Storage;
+import org.bosik.compensation.persistence.Storage;
 import org.bosik.compensation.utils.ErrorHandler;
 import org.bosik.compensation.utils.Utils;
 import android.app.Activity;
@@ -204,11 +204,11 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					/*
 					 * Date date = Calendar.getInstance().getTime(); Log.i(TAG,
 					 * "menuClick: downloading page..."); DiaryPage page =
-					 * Storage.web_diary.getPage(date); Date timestamp =
-					 * Storage.web_diary.diarySource.getTimeStamp(date);
+					 * Storage.webDiary.getPage(date); Date timestamp =
+					 * Storage.webDiary.diarySource.getTimeStamp(date);
 					 * 
 					 * if (null != page) { Log.d(TAG, "menuClick: page is ok");
-					 * Storage.local_diary.postPage(page, timestamp); } else Log.d(TAG,
+					 * Storage.localDiary.postPage(page, timestamp); } else Log.d(TAG,
 					 * "menuClick: page is null");
 					 * 
 					 * Log.d(TAG, "menuClick: invalidating...");
@@ -224,7 +224,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					UIUtils.showTip(this, "Creating note is not implemented yet");
 					/*
 					 * Log.i(TAG, "menuClick: opening page..."); DiaryPage page =
-					 * Storage.local_diary.getPage(curDate);
+					 * Storage.localDiary.getPage(curDate);
 					 * 
 					 * if (null != page) Log.d(TAG, "menuClick: page is ok"); else Log.d(TAG,
 					 * "menuClick: page is null");
@@ -520,20 +520,20 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	private void openPage(Date date)
 	{
 		curDate = date;
-		curPage = Storage.local_diary.getPage(curDate);
+		curPage = Storage.localDiary.getPage(curDate);
 		diaryViewLayout.setPage(curPage);
 		setCaptionDate(curDate);
 	}
 
 	/*
-	 * private DiaryPage getCurPage() { return Storage.local_diary.getPage(curDate); }
+	 * private DiaryPage getCurPage() { return Storage.localDiary.getPage(curDate); }
 	 */
 
 	private void postPage(DiaryPage page)
 	{
 		// page.timeStamp = Utils.now();
 
-		Storage.local_diary.postPage(page);
+		Storage.localDiary.postPage(page);
 
 		// page.post();
 		diaryViewLayout.setPage(page);
@@ -558,7 +558,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 		for (int i = 1; i <= scanDaysPeriod; i++)
 		{
-			DiaryPage page = Storage.local_diary.getPage(d);
+			DiaryPage page = Storage.localDiary.getPage(d);
 			if (page != null)
 			{
 				for (int j = page.count() - 1; j >= 0; j--)

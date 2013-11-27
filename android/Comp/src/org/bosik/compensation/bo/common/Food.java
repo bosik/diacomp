@@ -8,7 +8,7 @@ package org.bosik.compensation.bo.common;
  */
 public class Food extends Item
 {
-	private String	name;
+	// private String name;
 	private double	relProts;
 	private double	relFats;
 	private double	relCarbs;
@@ -21,11 +21,11 @@ public class Food extends Item
 
 	public Food(String name, double relProts, double relFats, double relCarbs, double relValue)
 	{
-		this.name = name;
-		this.relProts = relProts;
-		this.relFats = relFats;
-		this.relCarbs = relCarbs;
-		this.relValue = relValue;
+		setName(name);
+		setRelProts(relProts);
+		setRelFats(relFats);
+		setRelCarbs(relCarbs);
+		setRelValue(relValue);
 	}
 
 	// ================================ VALIDATORS ================================
@@ -72,11 +72,6 @@ public class Food extends Item
 
 	// ================================ GET / SET ================================
 
-	public String getName()
-	{
-		return name;
-	}
-
 	public double getRelProts()
 	{
 		return relProts;
@@ -95,12 +90,6 @@ public class Food extends Item
 	public double getRelValue()
 	{
 		return relValue;
-	}
-
-	public void setName(String name)
-	{
-		checkNameThrowable(name);
-		this.name = name;
 	}
 
 	public void setRelProts(double relProts)

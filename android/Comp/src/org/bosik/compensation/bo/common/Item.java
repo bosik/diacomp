@@ -12,6 +12,7 @@ import java.util.UUID;
 public class Item implements Cloneable
 {
 	private String	id;
+	private String	name;
 
 	public Item()
 	{
@@ -25,6 +26,21 @@ public class Item implements Cloneable
 		return id;
 	}
 
+	public void setId(String id)
+	{
+		this.id = id;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
 	// ================================ CLONE ================================
 
 	@Override
@@ -36,14 +52,6 @@ public class Item implements Cloneable
 
 		return result;
 	}
-
-	/*
-	 * public Item() {
-	 * 
-	 * }
-	 * 
-	 * public Item(Item copy) { setId(copy.getId()); }
-	 */
 
 	// ================================ OTHER ================================
 

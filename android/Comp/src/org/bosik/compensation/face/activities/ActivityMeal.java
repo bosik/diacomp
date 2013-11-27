@@ -5,7 +5,7 @@ import org.bosik.compensation.bo.common.FoodMassed;
 import org.bosik.compensation.bo.diary.records.MealRecord;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.R;
-import org.bosik.compensation.persistence.repository.Storage;
+import org.bosik.compensation.persistence.Storage;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -79,7 +79,7 @@ public class ActivityMeal extends Activity
 
 		Log.d(TAG, "Caption carbs: " + captionCarbs);
 		Log.d(TAG, "Caption dose: " + captionDose);
-		Log.d(TAG, "FoodItem count: " + Storage.foodBase.count());
+		Log.d(TAG, "FoodItem count: " + Storage.foodBase.size());
 
 		loadFoodList();
 		showMeal();
@@ -120,8 +120,8 @@ public class ActivityMeal extends Activity
 
 	private void loadFoodList()
 	{
-		String[] foodBase = new String[Storage.foodBase.count()];
-		for (int i = 0; i < Storage.foodBase.count(); i++)
+		String[] foodBase = new String[Storage.foodBase.size()];
+		for (int i = 0; i < Storage.foodBase.size(); i++)
 		{
 			// TODO: implement method returning names array sorted by tag
 			foodBase[i] = Storage.foodBase.get(i).getName();
@@ -159,7 +159,7 @@ public class ActivityMeal extends Activity
 		FoodMassed item = null;
 
 		// TODO: create generics-based search
-		for (int i = 0; i < Storage.foodBase.count(); i++)
+		for (int i = 0; i < Storage.foodBase.size(); i++)
 		{
 			if (Storage.foodBase.get(i).getName().equalsIgnoreCase(name))
 			{

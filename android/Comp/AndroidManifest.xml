@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Light.NoTitleBar" >
         <provider
-            android:name="org.bosik.compensation.persistence.repository.providers.DiaryProvider"
+            android:name="org.bosik.compensation.persistence.dao.local.utils.DiaryContentProvider"
             android:authorities="diacomp.provider"
             android:exported="false" >
             <grant-uri-permission android:pathPattern=".*" />

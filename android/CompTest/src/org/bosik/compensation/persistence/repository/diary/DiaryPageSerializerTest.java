@@ -2,11 +2,12 @@ package org.bosik.compensation.persistence.repository.diary;
 
 import junit.framework.TestCase;
 import org.bosik.compensation.bo.diary.DiaryPage;
-import org.bosik.compensation.persistence.repository.common.Serializer;
+import org.bosik.compensation.persistence.serializers.Serializer;
+import org.bosik.compensation.persistence.serializers.diary.DiaryPagePlainSerializer;
 
 public class DiaryPageSerializerTest extends TestCase
 {
-	private final Serializer<DiaryPage>	serializer	= new DiaryPageSerializer();
+	private final Serializer<DiaryPage>	serializer	= new DiaryPagePlainSerializer();
 
 	public void testPersistence()
 	{

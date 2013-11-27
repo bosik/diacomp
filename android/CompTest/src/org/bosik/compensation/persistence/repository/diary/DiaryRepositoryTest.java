@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.bo.diary.DiaryPage;
+import org.bosik.compensation.persistence.dao.DiaryDAO;
 import android.test.AndroidTestCase;
 
 public abstract class DiaryRepositoryTest extends AndroidTestCase
 {
-	private DiaryRepository	repository;
+	private DiaryDAO	repository;
 
-	protected abstract DiaryRepository getRepository();
+	protected abstract DiaryDAO getRepository();
 
 	@Override
 	protected void setUp() throws Exception
