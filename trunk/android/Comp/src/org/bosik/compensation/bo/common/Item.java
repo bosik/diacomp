@@ -1,5 +1,7 @@
 package org.bosik.compensation.bo.common;
 
+import java.util.UUID;
+
 /**
  * 1. Имеет поле ID (потребуется в методах get() / set() контейнеров).<br/>
  * 2. Реализует {@link Cloneable}.
@@ -9,18 +11,16 @@ package org.bosik.compensation.bo.common;
  */
 public class Item implements Cloneable
 {
-	private static int	idCounter	= 0;
-
-	private int			id;
+	private String	id;
 
 	public Item()
 	{
-		id = ++idCounter;
+		id = UUID.randomUUID().toString();
 	}
 
 	// ================================ GET / SET ================================
 
-	public int getId()
+	public String getId()
 	{
 		return id;
 	}
@@ -52,7 +52,7 @@ public class Item implements Cloneable
 	{
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + id;
+		result = (prime * result) + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
 
@@ -60,22 +60,20 @@ public class Item implements Cloneable
 	public boolean equals(Object obj)
 	{
 		if (this == obj)
-		{
 			return true;
-		}
 		if (obj == null)
-		{
 			return false;
-		}
 		if (getClass() != obj.getClass())
-		{
 			return false;
-		}
 		Item other = (Item) obj;
-		if (id != other.id)
+		if (id == null)
 		{
-			return false;
+			if (other.id != null)
+				return false;
 		}
+		else
+			if (!id.equals(other.id))
+				return false;
 		return true;
 	}
 }
