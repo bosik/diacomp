@@ -21,6 +21,8 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.bosik.compensation.utils.Utils;
+import org.json.JSONException;
+import org.json.JSONObject;
 import android.util.Log;
 
 public class WebClient
@@ -290,9 +292,6 @@ public class WebClient
 
 	/* ================================ ЗАПРОСЫ ================================ */
 
-	// TODO: методы doGet() / doPost() имеют модификатор public для тестирования, в релизе исправить
-	// на private (или пофиг?)
-
 	/**
 	 * Преобразует ответ сервера в строку
 	 * 
@@ -410,26 +409,20 @@ public class WebClient
 		}
 	}
 
-	private boolean processResponse(String resp, String trueMark, String falseMark)
+	private boolean processResponse(String resp)
 	{
-		if (trueMark.equals(resp))
+		// TODO: response message is lost here
+		try
 		{
-			return true;
+			JSONObject json = new JSONObject(resp);
+			int status = json.getInt("status");
+			// String msg = json.getString("");
+			return (status == 0);
 		}
-
-		if (falseMark.equals(resp))
+		catch (JSONException e)
 		{
-			return false;
+			throw new ResponseFormatException("Invalid JSON respose: " + resp);
 		}
-
-		// THINK: do I really need exception throw?
-		throw new ResponseFormatException("Invalid respose: '" + trueMark + "' or '" + falseMark + "' expected but '"
-				+ resp + "' found");
-	}
-
-	private boolean processResponseDoneFail(String resp)
-	{
-		return processResponse(resp, RESPONSE_DONE, RESPONSE_FAIL);
 	}
 
 	/* ================================ КОНСТРУКТОР ================================ */
@@ -614,7 +607,7 @@ public class WebClient
 			try
 			{
 				String resp = doGet(server + URL_LOGINPAGE + "?status", CODEPAGE_CP1251);
-				logged = processResponse(resp, RESPONSE_ONLINE, RESPONSE_OFFLINE);
+				logged = "online".equals(resp);
 			}
 			catch (ServerException e)
 			{
@@ -641,7 +634,7 @@ public class WebClient
 		String resp = doPostSmart(server + URL_CONSOLE, p, CODEPAGE_CP1251);
 
 		// обрабатываем результат
-		return processResponseDoneFail(resp);
+		return processResponse(resp);
 	}
 
 	/* ------------------------------------- ДНЕВНИК ------------------------------------- */
@@ -682,7 +675,7 @@ public class WebClient
 	 */
 	public boolean postPages(String pages)
 	{
-		if (pages.isEmpty())
+		if (pages.equals(""))
 		{
 			return true;
 		}
@@ -696,7 +689,7 @@ public class WebClient
 		String resp = doPostSmart(server + URL_CONSOLE, p, CODEPAGE_CP1251);
 
 		// обрабатываем результат
-		return processResponseDoneFail(resp);
+		return processResponse(resp);
 	}
 
 	/* ---------------------------------- БАЗА ПРОДУКТОВ ---------------------------------- */
