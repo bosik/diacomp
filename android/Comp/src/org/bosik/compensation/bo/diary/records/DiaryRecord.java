@@ -1,7 +1,6 @@
 package org.bosik.compensation.bo.diary.records;
 
-import org.bosik.compensation.bo.diary.DiaryChangeListener;
-import org.bosik.compensation.bo.diary.DiaryChangeListener.EventType;
+import org.bosik.compensation.bo.diary.RecordChangeListener;
 import org.bosik.compensation.utils.Utils;
 
 /* ЗАМЕТКИ 
@@ -29,7 +28,7 @@ public abstract class DiaryRecord
 
 	// данные
 	private int					time;
-	private DiaryChangeListener	changeListener	= null;
+	private RecordChangeListener	changeListener	= null;
 
 	// служебные
 	// TODO: remove silent mode here, leave this feature just at DiaryPage level
@@ -44,7 +43,7 @@ public abstract class DiaryRecord
 		if ((changeListener != null) && (!silentMode))
 		{
 			// Log.i(TAG, "notifyModified(): notifying the changeListener");
-			changeListener.changed(EventType.MODIFY, this.getClass(), this);
+			changeListener.changed(this.getClass(), this);
 			modified = false;
 		}
 		else
@@ -101,12 +100,12 @@ public abstract class DiaryRecord
 		}
 	}
 
-	public DiaryChangeListener getChangeListener()
+	public RecordChangeListener getChangeListener()
 	{
 		return changeListener;
 	}
 
-	public void setChangeListener(DiaryChangeListener changeListener)
+	public void setChangeListener(RecordChangeListener changeListener)
 	{
 		this.changeListener = changeListener;
 	}
