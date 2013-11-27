@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.repository.providers;
+package org.bosik.compensation.persistence.repository.providers.web;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -20,6 +20,12 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
+import org.bosik.compensation.persistence.repository.providers.web.exceptions.AuthException;
+import org.bosik.compensation.persistence.repository.providers.web.exceptions.ConnectionException;
+import org.bosik.compensation.persistence.repository.providers.web.exceptions.DeprecatedAPIException;
+import org.bosik.compensation.persistence.repository.providers.web.exceptions.ResponseFormatException;
+import org.bosik.compensation.persistence.repository.providers.web.exceptions.UndefinedFieldException;
+import org.bosik.compensation.persistence.repository.providers.web.exceptions.WebClientException;
 import org.bosik.compensation.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -96,142 +102,6 @@ public class WebClient
 		 * Сервер сообщает об успешной авторизации
 		 */
 		DONE
-	}
-
-	/**
-	 * Ошибка неопределённости одного из полей
-	 * 
-	 * @author Bosik
-	 */
-	public static class UndefinedFieldException extends IllegalArgumentException
-	{
-		private static final long	serialVersionUID	= 3716509470386883692L;
-		public boolean				undefServer			= false;
-		public boolean				undefLogin			= false;
-		public boolean				undefPassword		= false;
-
-		public UndefinedFieldException(boolean undefServer, boolean undefLogin, boolean undefPassword)
-		{
-			super("These fields are undefined (empty or null): " + (undefServer ? " server;" : "")
-					+ (undefLogin ? " username;" : "") + (undefPassword ? " password;" : ""));
-
-			this.undefServer = undefServer;
-			this.undefLogin = undefLogin;
-			this.undefPassword = undefPassword;
-		}
-		// public UndefinedFieldException(Throwable throwable) { super(throwable); }
-		// public UndefinedFieldException(String detailMessage, Throwable throwable) {
-		// super(detailMessage, throwable); }
-	}
-
-	/**
-	 * Общая ошибка при работе с сервером
-	 * 
-	 * @author Bosik
-	 */
-	public static class ServerException extends RuntimeException
-	{
-		private static final long	serialVersionUID	= -4422450897857678241L;
-
-		public ServerException(String detailMessage)
-		{
-			super(detailMessage);
-		}
-
-		public ServerException(Throwable throwable)
-		{
-			super(throwable);
-		}
-
-		public ServerException(String detailMessage, Throwable throwable)
-		{
-			super(detailMessage, throwable);
-		}
-	}
-
-	/**
-	 * Ошибка установления связи с сервером
-	 * 
-	 * @author Bosik
-	 */
-	public static class NoConnectionException extends ServerException
-	{
-		private static final long	serialVersionUID	= 5396386468370646791L;
-
-		public NoConnectionException(String detailMessage)
-		{
-			super(detailMessage);
-		}
-
-		public NoConnectionException(Throwable throwable)
-		{
-			super(throwable);
-		}
-
-		public NoConnectionException(String detailMessage, Throwable throwable)
-		{
-			super(detailMessage, throwable);
-		}
-	}
-
-	/**
-	 * Ошибка формата данных, возвращаемых сервером
-	 * 
-	 * @author Bosik
-	 */
-	public static class ResponseFormatException extends ServerException
-	{
-		private static final long	serialVersionUID	= 6342429630144198560L;
-
-		public ResponseFormatException(String detailMessage)
-		{
-			super(detailMessage);
-		}
-
-		public ResponseFormatException(Throwable throwable)
-		{
-			super(throwable);
-		}
-
-		public ResponseFormatException(String detailMessage, Throwable throwable)
-		{
-			super(detailMessage, throwable);
-		}
-	}
-
-	/**
-	 * Ошибка устаревшей версии API клиента
-	 * 
-	 * @author Bosik
-	 */
-	public static class DeprecatedAPIException extends ServerException
-	{
-		private static final long	serialVersionUID	= -4897188574347397921L;
-
-		/*
-		 * public DeprecatedAPIException(String clientApiVersion, String serverApiVersion) {
-		 * super("Client API version (" + clientApiVersion +
-		 * ") is deprecated, server required version " + serverApiVersion); }
-		 */
-		public DeprecatedAPIException(String detailMessage)
-		{
-			super(detailMessage);
-		}
-	}
-
-	/**
-	 * Ошибка авторизации (неверная пара "логин-пароль")
-	 * 
-	 * @author Bosik
-	 */
-	public static class AuthException extends ServerException
-	{
-		private static final long	serialVersionUID	= 7885618396446513997L;
-
-		public AuthException(String detailMessage)
-		{
-			super(detailMessage);
-		}
 	}
 
 	/* ================================ СЛУЖЕБНЫЕ МЕТОДЫ ================================ */
@@ -328,9 +198,9 @@ public class WebClient
 	 * @param url
 	 *            Запрашиваемый адрес
 	 * @return Ответ сервера
-	 * @throws NoConnectionException
+	 * @throws ConnectionException
 	 */
-	private String doGet(String url, String codePage) throws ServerException
+	private String doGet(String url, String codePage) throws WebClientException
 	{
 		// Log.i(TAG(), "doGet(), URL='" + URL + "'");
 		try
@@ -340,11 +210,11 @@ public class WebClient
 		}
 		catch (ClientProtocolException e)
 		{
-			throw new NoConnectionException(e);
+			throw new ConnectionException(e);
 		}
 		catch (IOException e)
 		{
-			throw new NoConnectionException(e);
+			throw new ConnectionException(e);
 		}
 	}
 
@@ -356,9 +226,9 @@ public class WebClient
 	 * @param params
 	 *            Параметры
 	 * @return Ответ сервера
-	 * @throws NoConnectionException
+	 * @throws ConnectionException
 	 */
-	private String doPost(String url, List<NameValuePair> params, String codePage) throws ServerException
+	private String doPost(String url, List<NameValuePair> params, String codePage) throws WebClientException
 	{
 		// Log.i(TAG(), "doPost(), URL='" + URL + "'");
 		try
@@ -373,11 +243,11 @@ public class WebClient
 		}
 		catch (IOException e)
 		{
-			throw new NoConnectionException(e);
+			throw new ConnectionException(e);
 		}
 	}
 
-	private String doGetSmart(String URL, String codePage) throws ServerException
+	private String doGetSmart(String URL, String codePage) throws WebClientException
 	{
 		String resp = doGet(URL, codePage);
 
@@ -393,7 +263,7 @@ public class WebClient
 		}
 	}
 
-	private String doPostSmart(String URL, List<NameValuePair> params, String codePage) throws ServerException
+	private String doPostSmart(String URL, List<NameValuePair> params, String codePage) throws WebClientException
 	{
 		String resp = doPost(URL, params, codePage);
 
@@ -484,7 +354,7 @@ public class WebClient
 
 	/* ---------------------------------- ОБЩЕЕ ---------------------------------- */
 
-	public void login() throws ServerException
+	public void login() throws WebClientException
 	{
 		Log.i(TAG, "login()");
 		logged = false;
@@ -594,7 +464,7 @@ public class WebClient
 		}
 		else
 		{
-			throw new NoConnectionException("doPost(): response is null");
+			throw new ConnectionException("doPost(): response is null");
 		}
 	}
 
@@ -607,9 +477,9 @@ public class WebClient
 			try
 			{
 				String resp = doGet(server + URL_LOGINPAGE + "?status", CODEPAGE_CP1251);
-				logged = "online".equals(resp);
+				logged = RESPONSE_ONLINE.equals(resp);
 			}
-			catch (ServerException e)
+			catch (WebClientException e)
 			{
 				return false;
 			}

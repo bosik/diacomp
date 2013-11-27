@@ -2,7 +2,7 @@ package org.bosik.compensation.utils;
 
 import org.bosik.compensation.face.BuildConfig;
 import org.bosik.compensation.face.UIUtils;
-import org.bosik.compensation.persistence.repository.providers.WebClient;
+import org.bosik.compensation.persistence.repository.providers.web.WebClient;
 import android.app.Activity;
 import android.util.Log;
 
