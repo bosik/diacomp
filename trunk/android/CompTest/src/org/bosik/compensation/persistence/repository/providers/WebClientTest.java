@@ -6,7 +6,7 @@ public class WebClientTest extends TestCase
 {
 	private static final String	TAG	= WebClientTest.class.getSimpleName();
 
-	private WebClient			webClient;
+	// private WebClient webClient;
 
 	public static WebClient getWebClient()
 	{

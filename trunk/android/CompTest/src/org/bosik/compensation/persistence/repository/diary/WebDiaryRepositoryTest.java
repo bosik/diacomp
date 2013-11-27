@@ -5,7 +5,6 @@ import org.bosik.compensation.persistence.repository.providers.WebClientTest;
 
 public class WebDiaryRepositoryTest extends DiaryRepositoryTest
 {
-	// private static final String TAG = WebDiaryRepositoryTest.class.getSimpleName();
 	private static final WebClient			webClient;
 	private static final DiaryRepository	repository;
 
