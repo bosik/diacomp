@@ -41,40 +41,40 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 		}
 
 		boolean result = true;
-		String[] Lines = contentCode.split("\n");
+		String[] lines = contentCode.split("\n");
 		MealRecord activeMeal = null;
 		boolean oldSilentMode = page.silentMode;
 		page.silentMode = true;
 
-		// Важно: в конце каждого элемента Lines[i] есть символ '\n' (код 13)
-		for (int i = 0; i < Lines.length; i++)
+		// Note: every lines[i] ends with \n symbol
+		for (int i = 0; i < lines.length; i++)
 		{
-			if (!Lines[i].trim().equals(""))
+			if (!lines[i].trim().equals(""))
 			{
 				try
 				{
-					switch (Lines[i].charAt(0))
+					switch (lines[i].charAt(0))
 					{
 						case '*':
 						{
 							int TempTime;
 							double TempValue;
 							int TempFinger;
-							int v = Lines[i].indexOf('|');
+							int v = lines[i].indexOf('|');
 
-							// без указания пальца
+							// without finger specification (old format)
 							if (v == -1)
 							{
-								TempTime = Utils.strToTime(Lines[i].substring(1, 6));
-								TempValue = Utils.parseDouble(Lines[i].substring(7));
+								TempTime = Utils.strToTime(lines[i].substring(1, 6));
+								TempValue = Utils.parseDouble(lines[i].substring(7));
 								TempFinger = -1;
 							}
 							else
-							// с указанием пальца
+							// with finger specification
 							{
-								TempTime = Utils.strToTime(Lines[i].substring(1, 6));
-								TempValue = Utils.parseDouble(Lines[i].substring(7, v));
-								TempFinger = Integer.parseInt(Lines[i].substring(v + 1).trim());
+								TempTime = Utils.strToTime(lines[i].substring(1, 6));
+								TempValue = Utils.parseDouble(lines[i].substring(7, v));
+								TempFinger = Integer.parseInt(lines[i].substring(v + 1).trim());
 							}
 
 							page.add(new BloodRecord(TempTime, TempValue, TempFinger));
@@ -84,8 +84,8 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 						}
 						case '-':
 						{
-							int TempTime = Utils.strToTime(Lines[i].substring(1, 6));
-							double TempValue = Utils.parseDouble(Lines[i].substring(7).trim());
+							int TempTime = Utils.strToTime(lines[i].substring(1, 6));
+							double TempValue = Utils.parseDouble(lines[i].substring(7).trim());
 							page.add(new InsRecord(TempTime, TempValue));
 
 							activeMeal = null;
@@ -93,8 +93,8 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 						}
 						case ' ':
 						{
-							int TempTime = Utils.strToTime(Lines[i].substring(1, 6));
-							boolean TempShort = Lines[i].endsWith("s");
+							int TempTime = Utils.strToTime(lines[i].substring(1, 6));
+							boolean TempShort = lines[i].endsWith("s");
 
 							activeMeal = new MealRecord(TempTime, TempShort);
 							page.add(activeMeal);
@@ -104,38 +104,37 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 						{
 							if (activeMeal != null)
 							{
-								FoodMassed food = new FoodMassed();
-								food.read(Lines[i].substring(1));
+								FoodMassed food = FoodMassed.read(lines[i].substring(1));
 								activeMeal.add(food);
 							}
 							else
 							{
 								Log.e(TAG, "DiaryPage.readContent(): food without meal declaration ignored: "
-										+ Lines[i]);
+										+ lines[i]);
 								result = false;
 							}
 							break;
 						}
 						case '%':
 						{
-							// TODO: откуда в конце строки лишний символ?
-							int TempTime = Utils.strToTime(Lines[i].substring(1, 6));
-							String TempValue = Lines[i].substring(7);
+							// TODO: check the trailing garbage issue
+							int TempTime = Utils.strToTime(lines[i].substring(1, 6));
+							String TempValue = lines[i].substring(7);
 							page.add(new NoteRecord(TempTime, TempValue));
 							activeMeal = null;
 							break;
 						}
 						default:
 						{
-							Log.e(TAG, "DiaryPage.readContent(): Unknown formatted line ignored: " + Lines[i]);
+							Log.e(TAG, "DiaryPage.readContent(): Unknown formatted line ignored: " + lines[i]);
 							result = false;
 						}
 					}
 				}
-				// защищаем внутри каждой итерации для повышения устойчивости
+				// catch every iteration for more fail-soft behavior
 				catch (Exception e)
 				{
-					Log.e(TAG, "DiaryPage.readContent(): Error parsing line #" + i + ": '" + Lines[i] + "'");
+					Log.e(TAG, "DiaryPage.readContent(): Error parsing line #" + i + ": '" + lines[i] + "'");
 					Log.e(TAG, "DiaryPage.readContent(): with message " + e.getLocalizedMessage());
 					Log.e(TAG, "DiaryPage.readContent(): contentCode = '" + contentCode + "'");
 					result = false;
@@ -149,11 +148,11 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 	}
 
 	/**
-	 * Разбирает заголовок страницы из строк
+	 * Deserializes diary header
 	 * 
 	 * @param headerCode
-	 *            Строка
-	 * @return Удалось ли прочитать заголовок
+	 *            The string
+	 * @return True if succeed, false otherwise
 	 */
 	private static boolean readHeader(final String headerCode, DiaryPage page)
 	{
@@ -181,9 +180,9 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 	}
 
 	/**
-	 * Создаёт текстовое представление содержимого страницы
+	 * Serializes page's content
 	 * 
-	 * @return Текстовое представление содержимого страницы
+	 * @return
 	 */
 	public static String writeContent(DiaryPage page)
 	{
@@ -234,9 +233,9 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 	}
 
 	/**
-	 * Создаёт текстовое представление заголовка страницы
+	 * Serializes page's header
 	 * 
-	 * @return Текстовое представление заголовка страницы
+	 * @return
 	 */
 	private static String writeHeader(DiaryPage page)
 	{
@@ -267,13 +266,11 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 	}
 
 	/**
-	 * Читает произвольное число страниц из текстового потока
+	 * Deserializes arbitrary amount of pages
 	 * 
 	 * @param s
 	 *            Строка с данными
-	 * @param source
-	 *            Источник
-	 * @return Прочитанный массив страниц
+	 * @return List of deserialized pages
 	 */
 	@Override
 	public List<DiaryPage> readAll(String s)
