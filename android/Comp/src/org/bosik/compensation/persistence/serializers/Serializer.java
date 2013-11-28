@@ -3,37 +3,47 @@ package org.bosik.compensation.persistence.serializers;
 import java.util.List;
 
 /**
- * Интерфейс, включающий в себя методы:
- * <ul>
- * <li>сериализация объекта в строку</li>
- * <li>десериализация объекта из строки</li>
- * </ul>
+ * General serialization / deserialization interface
  * 
  * @author Bosik
  * 
- * @param <T>Тип объекта
+ * @param <T>Object type to be serialized / deserialized
  */
 public interface Serializer<T>
 {
 	/**
-	 * Создаёт объект из строки
+	 * Deserializes object from string
 	 * 
 	 * @param data
-	 *            Строка, хранящая объект
-	 * @return Объект
+	 *            String with serialized object
+	 * @return Deserialized object
 	 */
 	public T read(String data);
 
+	/**
+	 * Deserializes arbitrary amount of objects from string
+	 * 
+	 * @param data
+	 *            String with serialized objects
+	 * @return List of deserialized objects
+	 */
 	public List<T> readAll(String data);
 
 	/**
-	 * Сохраняет объект в строку
+	 * Serializes object into string
 	 * 
 	 * @param object
-	 *            Объект
-	 * @return Cтрока, хранящая объект
+	 *            The object to be serialized
+	 * @return String containing serialized object
 	 */
 	public String write(T object);
 
-	public String writeAll(List<T> object);
+	/**
+	 * Serializes arbitrary amount of objects into string
+	 * 
+	 * @param objects
+	 *            List of objects to be serialized
+	 * @return String containing serialized objects
+	 */
+	public String writeAll(List<T> objects);
 }
