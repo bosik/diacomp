@@ -288,12 +288,11 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 								+ String.valueOf(syncPagesCount);
 						UIUtils.showTip(ActivityMain.this, s);
 					}
-					else
-						if (syncParams.getShowProgress())
-						{
-							s = "Дневник уже синхронизирован";
-							UIUtils.showTip(ActivityMain.this, s);
-						}
+					else if (syncParams.getShowProgress())
+					{
+						s = "Дневник уже синхронизирован";
+						UIUtils.showTip(ActivityMain.this, s);
+					}
 
 					if (syncFoodBase)
 					{
@@ -499,8 +498,8 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 	 * private void clearLocalDiary() { // формируем параметры String mSelectionClause =
 	 * DiaryContentProvider.COLUMN_DATE + " > ?"; String[] mSelectionArgs = {"2014-01-01"};
 	 * 
-	 * // выполняем запрос int count = getContentResolver().delete( DiaryContentProvider.CONTENT_URI,
-	 * mSelectionClause, mSelectionArgs);
+	 * // выполняем запрос int count = getContentResolver().delete(
+	 * DiaryContentProvider.CONTENT_URI, mSelectionClause, mSelectionArgs);
 	 * 
 	 * Log.w(TAG, "Deleted records: " + count); }
 	 */

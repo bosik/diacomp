@@ -24,16 +24,16 @@ import org.bosik.compensation.utils.Utils;
 public abstract class DiaryRecord
 {
 	@SuppressWarnings("unused")
-	private static final String	TAG				= "DiaryRecord";
+	private static final String		TAG				= "DiaryRecord";
 
 	// данные
-	private int					time;
+	private int						time;
 	private RecordChangeListener	changeListener	= null;
 
 	// служебные
 	// TODO: remove silent mode here, leave this feature just at DiaryPage level
-	private boolean				silentMode		= true;
-	private boolean				modified		= false;
+	private boolean					silentMode		= true;
+	private boolean					modified		= false;
 
 	// ============================== СЛУЖЕБНЫЕ МЕТОДЫ ==============================
 
