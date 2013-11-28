@@ -1,6 +1,8 @@
 package org.bosik.compensation.persistence.sync;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.persistence.dao.DiaryDAO;
@@ -65,87 +67,20 @@ public class SyncDiaryDAO
 	// TODO: public только для тестирования
 
 	/**
-	 * Определяет, отсортирован ли массив по возрастанию дат
+	 * Sorts list by date (ascending)
 	 * 
 	 * @param modList
-	 *            Массив
-	 * @return Отсортированность
-	 */
-	public static boolean ordered(List<PageVersion> modList)
-	{
-		for (int i = 0; i < (modList.size() - 1); i++)
-		{
-			if (modList.get(i).date.compareTo(modList.get(i + 1).date) > 0)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Сортирует указанный отрезок массива по возрастанию дат
-	 * 
-	 * @param modList
-	 *            Массив
-	 * @param left
-	 *            Начало отрезка
-	 * @param right
-	 *            Конец отрезка
-	 */
-	public static void sort(List<PageVersion> modList, int left, int right)
-	{
-		int i = left;
-		int j = right;
-		Date x = modList.get((left + right) / 2).date;
-		PageVersion y;
-
-		do
-		{
-			while (modList.get(i).date.compareTo(x) < 0)
-			{
-				i++;
-			}
-			while (modList.get(j).date.compareTo(x) > 0)
-			{
-				j--;
-			}
-			if (i <= j)
-			{
-				if (modList.get(i).date != modList.get(j).date)
-				{
-					y = modList.get(i);
-					modList.set(i, modList.get(j));
-					modList.set(j, y);
-				}
-				i++;
-				j--;
-			}
-		}
-		while (i <= j);
-
-		if (left < j)
-		{
-			sort(modList, left, j);
-		}
-		if (i < right)
-		{
-			sort(modList, i, right);
-		}
-	}
-
-	/**
-	 * Сортирует указанный массив по возрастанию дат
-	 * 
-	 * @param modList
-	 *            Массив
 	 */
 	public static void sort(List<PageVersion> modList)
 	{
-		if (!modList.isEmpty() && !ordered(modList))
+		Collections.sort(modList, new Comparator<PageVersion>()
 		{
-			sort(modList, 0, modList.size() - 1);
-		}
+			@Override
+			public int compare(PageVersion lhs, PageVersion rhs)
+			{
+				return lhs.date.compareTo(rhs.date);
+			}
+		});
 	}
 
 	/**
@@ -202,26 +137,24 @@ public class SyncDiaryDAO
 				over1.add(p1.date);
 				i++;
 			}
+			else if (c > 0)
+			{
+				over2.add(p2.date);
+				j++;
+			}
 			else
-				if (c > 0)
+			{
+				if (p1.version > p2.version)
+				{
+					over1.add(p1.date);
+				}
+				else if (p1.version < p2.version)
 				{
 					over2.add(p2.date);
-					j++;
 				}
-				else
-				{
-					if (p1.version > p2.version)
-					{
-						over1.add(p1.date);
-					}
-					else
-						if (p1.version < p2.version)
-						{
-							over2.add(p2.date);
-						}
-					i++;
-					j++;
-				}
+				i++;
+				j++;
+			}
 		}
 
 		// добиваем первый
