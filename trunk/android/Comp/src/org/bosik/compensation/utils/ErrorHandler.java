@@ -8,15 +8,23 @@ import android.util.Log;
 
 public class ErrorHandler
 {
-	private static final String	TAG	= ErrorHandler.class.getSimpleName();
+	private static final String	TAG						= ErrorHandler.class.getSimpleName();
 	private static WebClient	webClient;
 
-	// private static ErrorHandler handler;
+	// Messages
+	private static final String	TIP_ERROR_OCCURED		= "Произошла ошибка";
+	private static final String	TIP_REPORT_SENDED		= "Отчёт с технической информацией отправлен разработчику";
+	private static final String	TIP_REPORT_FAILED		= "Отправить отчёт не удалось";
+	private static final String	TIP_REPORT_FAILED_NULL	= "Отправить отчёт не удалось (webClient == null)";
+	private static final String	TIP_HANDLING_FAILED		= "Во время обработки ошибки произошла ещё одна ошибка :(";
 
 	public static void init(WebClient webClient)
 	{
+		if (webClient == null)
+		{
+			throw new NullPointerException("Client can't be null");
+		}
 		ErrorHandler.webClient = webClient;
-		// ErrorHandler.handler = new ErrorHandler();
 	}
 
 	private static String safe(String s)
@@ -54,7 +62,7 @@ public class ErrorHandler
 
 				if (activity != null)
 				{
-					UIUtils.showTip(activity, "Произошла ошибка");
+					UIUtils.showTip(activity, TIP_ERROR_OCCURED);
 				}
 
 				String trace = (e != null ? Log.getStackTraceString(e) : "(e == null)");
@@ -81,11 +89,11 @@ public class ErrorHandler
 					{
 						if (sent)
 						{
-							UIUtils.showTip(activity, "Отчёт с технической информацией отправлен разработчику");
+							UIUtils.showTip(activity, TIP_REPORT_SENDED);
 						}
 						else
 						{
-							UIUtils.showTip(activity, "Отправить отчёт не удалось");
+							UIUtils.showTip(activity, TIP_REPORT_FAILED);
 						}
 					}
 				}
@@ -93,13 +101,13 @@ public class ErrorHandler
 				{
 					if (activity != null)
 					{
-						UIUtils.showTip(activity, "Отправить отчёт не удалось (webClient == null)");
+						UIUtils.showTip(activity, TIP_REPORT_FAILED_NULL);
 					}
 				}
 			}
 			catch (Exception ex)
 			{
-				UIUtils.showTip(activity, "Во время обработки ошибки произошла ещё одна ошибка :(");
+				UIUtils.showTip(activity, TIP_HANDLING_FAILED);
 				// well, something bad has occurred and we have no way to talk about it :(
 				// ok, let's print it for some kind of smart user
 				ex.printStackTrace();
