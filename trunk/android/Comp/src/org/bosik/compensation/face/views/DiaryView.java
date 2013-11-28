@@ -27,7 +27,7 @@ import android.view.WindowManager;
 public class DiaryView extends View implements OnClickListener, View.OnTouchListener
 {
 	// отладочная печать
-	private static final String	TAG						= "DiaryView";
+	private static final String	TAG						= DiaryView.class.getSimpleName();
 
 	// стили рисования
 	private static final Paint	paintNoPage				= new Paint();
@@ -37,10 +37,10 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	private static final Paint	paintDefault			= new Paint();
 
 	// отступы
-	private static final int	BORD					= 12;
-	private static final int	TEXT_SIZE				= 24;
-	private static final int	TEXT_NOPAGE_SIZE		= 32;
-	private static final int	TEXT_BORD				= 10;
+	private static final int	BORD					= 24;
+	private static final int	TEXT_SIZE				= 48;
+	private static final int	TEXT_NOPAGE_SIZE		= 64;
+	private static final int	TEXT_BORD				= 20;
 	private static int			LEFT_TIME;
 	private static int			LEFT_RECS;
 	private static final int	REC_HEIGHT;
