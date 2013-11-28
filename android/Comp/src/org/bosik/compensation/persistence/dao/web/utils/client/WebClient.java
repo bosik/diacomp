@@ -430,27 +430,25 @@ public class WebClient
 						throw new ResponseFormatException("Bad current time format '" + det[1] + "'", e);
 					}
 				}
-				else
-					if (det[0].equals(RESPONSE_FAIL))
+				else if (det[0].equals(RESPONSE_FAIL))
+				{
+					if (det[1].equals(RESPONSE_FAIL_AUTH))
 					{
-						if (det[1].equals(RESPONSE_FAIL_AUTH))
-						{
-							throw new AuthException("Bad username/password");
-						}
-						else
-							if (det[1].equals(RESPONSE_FAIL_APIVER))
-							{
-								throw new DeprecatedAPIException("API " + API_VERSION + " is deprecated");
-							}
-							else
-							{
-								throw new ResponseFormatException("Bad format: failed with comment '" + det[1] + "'");
-							}
+						throw new AuthException("Bad username/password");
+					}
+					else if (det[1].equals(RESPONSE_FAIL_APIVER))
+					{
+						throw new DeprecatedAPIException("API " + API_VERSION + " is deprecated");
 					}
 					else
 					{
-						throw new ResponseFormatException("Bad format: Unknown identificator '" + det[0] + "'");
+						throw new ResponseFormatException("Bad format: failed with comment '" + det[1] + "'");
 					}
+				}
+				else
+				{
+					throw new ResponseFormatException("Bad format: Unknown identificator '" + det[0] + "'");
+				}
 			}
 			else
 			{

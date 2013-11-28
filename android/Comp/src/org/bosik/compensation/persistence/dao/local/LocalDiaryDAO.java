@@ -48,14 +48,15 @@ public class LocalDiaryDAO implements DiaryDAO
 		}
 
 		// формируем параметры
-		String[] mProj = { DiaryContentProvider.COLUMN_DATE, DiaryContentProvider.COLUMN_TIMESTAMP, DiaryContentProvider.COLUMN_VERSION,
-				DiaryContentProvider.COLUMN_PAGE };
+		String[] mProj = { DiaryContentProvider.COLUMN_DATE, DiaryContentProvider.COLUMN_TIMESTAMP,
+				DiaryContentProvider.COLUMN_VERSION, DiaryContentProvider.COLUMN_PAGE };
 		String mSelectionClause = DiaryContentProvider.COLUMN_DATE + " = ?";
 		String[] mSelectionArgs = { Utils.formatDate(date) };
 		String mSortOrder = null;
 
 		// выполняем запрос
-		Cursor cursor = aResolver.query(DiaryContentProvider.CONTENT_URI, mProj, mSelectionClause, mSelectionArgs, mSortOrder);
+		Cursor cursor = aResolver.query(DiaryContentProvider.CONTENT_URI, mProj, mSelectionClause, mSelectionArgs,
+				mSortOrder);
 
 		// анализируем ответ
 		if (cursor == null)
@@ -191,8 +192,8 @@ public class LocalDiaryDAO implements DiaryDAO
 		String mSortOrder = null;
 
 		// выполняем запрос
-		Cursor mCursor = aResolver.query(DiaryContentProvider.CONTENT_URI, mProjection, mSelectionClause, mSelectionArgs,
-				mSortOrder);
+		Cursor mCursor = aResolver.query(DiaryContentProvider.CONTENT_URI, mProjection, mSelectionClause,
+				mSelectionArgs, mSortOrder);
 
 		if (mCursor != null)
 		{

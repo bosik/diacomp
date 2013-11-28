@@ -360,60 +360,52 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 
 				top += (TEXT_SIZE + (2 * TEXT_BORD));
 			}
+			else if (rec.getClass() == InsRecord.class)
+			{
+				InsRecord temp = (InsRecord) rec;
+
+				drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_INS_SEL : COLOR_PANEL_INS_STD));
+				canvas.drawText(Utils.timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE, paintTime);
+				canvas.drawText(String.valueOf(temp.getValue()) + " ед", LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE,
+						paintRec);
+				top += (TEXT_SIZE + (2 * TEXT_BORD));
+			}
+			else if (rec.getClass() == MealRecord.class)
+			{
+				MealRecord temp = (MealRecord) rec;
+
+				/*
+				 * if (temp.getShortMeal()) drawPanelBack(canvas, r, Color.YELLOW); else
+				 * drawPanelBack(canvas, r, COLOR_PANEL_MEAL_STD);
+				 */
+				drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_MEAL_SEL : COLOR_PANEL_MEAL_STD));
+
+				Log.v(TAG, "drawPage(): r.right = " + r.right);
+				Log.v(TAG, "drawPage(): LEFT_RECS = " + LEFT_RECS);
+
+				String text = trimToFit(MealFormatter.format(temp, MealFormatter.FormatStyle.MOST_CARBS), r.right
+						- LEFT_RECS);
+				canvas.drawText(Utils.timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE, paintTime);
+				canvas.drawText(text, LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE, paintRec);
+
+				top += (TEXT_SIZE + (2 * TEXT_BORD));
+			}
+			else if (rec.getClass() == NoteRecord.class)
+			{
+				NoteRecord temp = (NoteRecord) rec;
+
+				drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_NOTE_SEL : COLOR_PANEL_NOTE_STD));
+
+				String text = trimToFit(temp.getText(), r.right - LEFT_RECS);
+				canvas.drawText(Utils.timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE, paintTime);
+				canvas.drawText(text, LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE, paintRec);
+
+				top += (TEXT_SIZE + (2 * TEXT_BORD));
+			}
 			else
-				if (rec.getClass() == InsRecord.class)
-				{
-					InsRecord temp = (InsRecord) rec;
-
-					drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_INS_SEL : COLOR_PANEL_INS_STD));
-					canvas.drawText(Utils.timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE,
-							paintTime);
-					canvas.drawText(String.valueOf(temp.getValue()) + " ед", LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE,
-							paintRec);
-					top += (TEXT_SIZE + (2 * TEXT_BORD));
-				}
-				else
-					if (rec.getClass() == MealRecord.class)
-					{
-						MealRecord temp = (MealRecord) rec;
-
-						/*
-						 * if (temp.getShortMeal()) drawPanelBack(canvas, r, Color.YELLOW); else
-						 * drawPanelBack(canvas, r, COLOR_PANEL_MEAL_STD);
-						 */
-						drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_MEAL_SEL : COLOR_PANEL_MEAL_STD));
-
-						Log.v(TAG, "drawPage(): r.right = " + r.right);
-						Log.v(TAG, "drawPage(): LEFT_RECS = " + LEFT_RECS);
-
-						String text = trimToFit(MealFormatter.format(temp, MealFormatter.FormatStyle.MOST_CARBS),
-								r.right - LEFT_RECS);
-						canvas.drawText(Utils.timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE,
-								paintTime);
-						canvas.drawText(text, LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE, paintRec);
-
-						top += (TEXT_SIZE + (2 * TEXT_BORD));
-					}
-					else
-						if (rec.getClass() == NoteRecord.class)
-						{
-							NoteRecord temp = (NoteRecord) rec;
-
-							drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_NOTE_SEL
-									: COLOR_PANEL_NOTE_STD));
-
-							String text = trimToFit(temp.getText(), r.right - LEFT_RECS);
-							canvas.drawText(Utils.timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE,
-									paintTime);
-							canvas.drawText(text, LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE, paintRec);
-
-							top += (TEXT_SIZE + (2 * TEXT_BORD));
-						}
-						else
-						{
-							throw new UnsupportedOperationException("Unsupported record type: "
-									+ rec.getClass().getName());
-						}
+			{
+				throw new UnsupportedOperationException("Unsupported record type: " + rec.getClass().getName());
+			}
 		}
 		canvas.drawText("[" + String.valueOf(page.getVersion()) + "]", r.right - 50, BORD + TEXT_BORD + TEXT_SIZE,
 				paintTime);

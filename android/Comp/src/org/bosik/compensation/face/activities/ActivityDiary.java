@@ -143,21 +143,18 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					capt = "Замер СК";
 				}
-				else
-					if (c == InsRecord.class)
-					{
-						capt = "Инъекция";
-					}
-					else
-						if (c == MealRecord.class)
-						{
-							capt = "Приём пищи";
-						}
-						else
-							if (c == NoteRecord.class)
-							{
-								capt = "Заметка";
-							}
+				else if (c == InsRecord.class)
+				{
+					capt = "Инъекция";
+				}
+				else if (c == MealRecord.class)
+				{
+					capt = "Приём пищи";
+				}
+				else if (c == NoteRecord.class)
+				{
+					capt = "Заметка";
+				}
 
 				menu.setHeaderTitle(capt);
 				String[] menuItems = getResources().getStringArray(R.array.context_edit);
@@ -309,33 +306,33 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 			else
 
-				if (c == InsRecord.class)
+			if (c == InsRecord.class)
+			{
+				switch (item.getItemId())
 				{
-					switch (item.getItemId())
-					{
-					// TODO: rename, use constants
+				// TODO: rename, use constants
 
-					// изменить
-						case 0:
-						{
-							InsRecord temp = (InsRecord) rec;
-							// TODO: не использовать indexOnEditing, а только
-							// diaryViewLayout.clickedIndex?
-							// indexOnEditing = diaryViewLayout.downedIndex;
-							// showBloodEditor(temp.getTime(), temp.getValue(), temp.getFinger(),
-							// false);
-							UIUtils.showTip(this, "Editing ins is not implemented yet");
-							break;
-						}
-						// удалить
-						case 1:
-						{
-							// TODO: implement removing
-							UIUtils.showTip(this, "Removing ins is not implemented yet");
-							break;
-						}
+				// изменить
+					case 0:
+					{
+						InsRecord temp = (InsRecord) rec;
+						// TODO: не использовать indexOnEditing, а только
+						// diaryViewLayout.clickedIndex?
+						// indexOnEditing = diaryViewLayout.downedIndex;
+						// showBloodEditor(temp.getTime(), temp.getValue(), temp.getFinger(),
+						// false);
+						UIUtils.showTip(this, "Editing ins is not implemented yet");
+						break;
+					}
+					// удалить
+					case 1:
+					{
+						// TODO: implement removing
+						UIUtils.showTip(this, "Removing ins is not implemented yet");
+						break;
 					}
 				}
+			}
 
 			// TODO: implement other record types
 		}
@@ -409,12 +406,11 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				BloodRecord temp = (BloodRecord) rec;
 				showBloodEditor(temp.getTime(), temp.getValue(), temp.getFinger(), false);
 			}
-			else
-				if (rec.getClass() == NoteRecord.class)
-				{
-					NoteRecord temp = (NoteRecord) rec;
-					showNoteEditor(temp.getTime(), temp.getText(), false);
-				}
+			else if (rec.getClass() == NoteRecord.class)
+			{
+				NoteRecord temp = (NoteRecord) rec;
+				showNoteEditor(temp.getTime(), temp.getText(), false);
+			}
 		}
 		catch (Exception e)
 		{

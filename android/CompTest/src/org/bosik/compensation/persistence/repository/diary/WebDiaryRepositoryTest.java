@@ -7,7 +7,7 @@ import org.bosik.compensation.persistence.repository.providers.WebClientTest;
 
 public class WebDiaryRepositoryTest extends DiaryRepositoryTest
 {
-	private static final WebClient			webClient;
+	private static final WebClient	webClient;
 	private static final DiaryDAO	repository;
 
 	static
