@@ -3,8 +3,8 @@ package org.bosik.compensation.persistence.common;
 import java.util.UUID;
 
 /**
- * 1. Имеет поле ID (потребуется в методах get() / set() контейнеров).<br/>
- * 2. Реализует {@link Cloneable}.
+ * 1. Has ID field (useful for comparing).<br/>
+ * 2. Implements {@link Cloneable}.
  * 
  * @author Bosik
  * 
@@ -28,6 +28,11 @@ public class Unique implements Cloneable
 
 	public void setId(String id)
 	{
+		if (id == null)
+		{
+			throw new NullPointerException("ID can't be null");
+		}
+
 		this.id = id;
 	}
 
@@ -38,6 +43,15 @@ public class Unique implements Cloneable
 
 	public void setName(String name)
 	{
+		if (name == null)
+		{
+			throw new NullPointerException("Name can't be null");
+		}
+		if (name.trim().equals(""))
+		{
+			throw new IllegalArgumentException("Name must contain non-whitespace characters");
+		}
+
 		this.name = name;
 	}
 
