@@ -1,7 +1,5 @@
 package org.bosik.compensation.bo.common;
 
-import java.text.ParseException;
-import org.bosik.compensation.bo.common.FoodMassed;
 import junit.framework.TestCase;
 
 public class FoodMassedTest extends TestCase
@@ -10,7 +8,7 @@ public class FoodMassedTest extends TestCase
 
 	public void testMass()
 	{
-		// нормальный тест
+		// normal test
 		food.setMass(0.0);
 		assertEquals(0.0, food.getMass());
 		food.setMass(0.01);
@@ -20,7 +18,7 @@ public class FoodMassedTest extends TestCase
 		food.setMass(999.5);
 		assertEquals(999.5, food.getMass());
 
-		// краш-тест
+		// crash-test
 		try
 		{
 			food.setMass(-0.01);
@@ -41,7 +39,7 @@ public class FoodMassedTest extends TestCase
 
 	public void testGetAbs()
 	{
-		// нормальный тест
+		// normal test
 		food.setMass(10);
 
 		food.setRelProts(1);
@@ -71,7 +69,7 @@ public class FoodMassedTest extends TestCase
 		assertEquals(0.0, food.getCarbs());
 		assertEquals(0.0, food.getValue());
 
-		// краш-тест
+		// crash-test
 		try
 		{
 			food.setRelProts(-0.01);
@@ -130,47 +128,6 @@ public class FoodMassedTest extends TestCase
 		}
 	}
 
-	public void testRead()
-	{
-		try
-		{
-			// с точками
-			food.read("Колбаса[12.7|19.1|0|270]:40");
-			assertEquals("Колбаса", food.getName());
-			assertEquals(12.7, food.getRelProts());
-			assertEquals(19.1, food.getRelFats());
-			assertEquals(0.0, food.getRelCarbs());
-			assertEquals(270.0, food.getRelValue());
-			assertEquals(40.0, food.getMass());
-
-			// с запятыми и точками
-			food.read("Колбаса[12,7|19.1|0|270]:40");
-			assertEquals("Колбаса", food.getName());
-			assertEquals(12.7, food.getRelProts());
-			assertEquals(19.1, food.getRelFats());
-			assertEquals(0.0, food.getRelCarbs());
-			assertEquals(270.0, food.getRelValue());
-			assertEquals(40.0, food.getMass());
-
-		}
-		catch (ParseException e)
-		{
-			fail("Parse exception");
-		}
-	}
-
-	public void testWrite()
-	{
-		food.setName("Колбаса");
-		food.setRelProts(12.7);
-		food.setRelFats(19.1);
-		food.setRelCarbs(0);
-		food.setRelValue(270);
-		food.setMass(40);
-
-		assertEquals("Колбаса[12,7|19,1|0|270]:40", food.write());
-	}
-
 	public void testClone() throws CloneNotSupportedException
 	{
 		food.setName("Колбаса");
@@ -183,6 +140,10 @@ public class FoodMassedTest extends TestCase
 		FoodMassed copy = (FoodMassed) food.clone();
 		assertEquals(copy, food);
 		assertEquals(copy.getId(), food.getId());
-		assertEquals(copy.write(), food.write());
+		assertEquals(copy.getRelProts(), food.getRelProts());
+		assertEquals(copy.getRelFats(), food.getRelFats());
+		assertEquals(copy.getRelCarbs(), food.getRelCarbs());
+		assertEquals(copy.getRelValue(), food.getRelValue());
+		assertEquals(copy.getMass(), food.getMass());
 	}
 }

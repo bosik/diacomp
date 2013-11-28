@@ -11,12 +11,14 @@ import org.bosik.compensation.bo.diary.records.InsRecord;
 import org.bosik.compensation.bo.diary.records.MealRecord;
 import org.bosik.compensation.bo.diary.records.NoteRecord;
 import org.bosik.compensation.persistence.serializers.Serializer;
+import org.bosik.compensation.persistence.serializers.foodmassed.FoodMassedPlainSerializer;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
 
 public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 {
-	private static final String	TAG	= DiaryPagePlainSerializer.class.getSimpleName();
+	private static final String						TAG				= DiaryPagePlainSerializer.class.getSimpleName();
+	private static final FoodMassedPlainSerializer	foodSerializer	= new FoodMassedPlainSerializer();
 
 	/**
 	 * Загружает страницу из её текстового представления. При возникновении ошибок информирует через
@@ -104,7 +106,7 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 						{
 							if (activeMeal != null)
 							{
-								FoodMassed food = FoodMassed.read(lines[i].substring(1));
+								FoodMassed food = foodSerializer.read(lines[i].substring(1));
 								activeMeal.add(food);
 							}
 							else
@@ -199,35 +201,32 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 				result += '*' + Utils.timeToStr(temp.getTime()) + ' ' + String.valueOf(temp.getValue()) + '|'
 						+ String.valueOf(temp.getFinger()) + '\n';
 			}
-			else
-				if (c == InsRecord.class)
+			else if (c == InsRecord.class)
+			{
+				InsRecord temp = (InsRecord) page.get(i);
+				result += '-' + Utils.timeToStr(temp.getTime()) + ' ' + String.valueOf(temp.getValue()) + '\n';
+			}
+			else if (c == MealRecord.class)
+			{
+				MealRecord temp = (MealRecord) page.get(i);
+
+				result += ' ' + Utils.timeToStr(temp.getTime());
+				if (temp.getShortMeal())
 				{
-					InsRecord temp = (InsRecord) page.get(i);
-					result += '-' + Utils.timeToStr(temp.getTime()) + ' ' + String.valueOf(temp.getValue()) + '\n';
+					result += "s";
 				}
-				else
-					if (c == MealRecord.class)
-					{
-						MealRecord temp = (MealRecord) page.get(i);
+				result += "\n";
 
-						result += ' ' + Utils.timeToStr(temp.getTime());
-						if (temp.getShortMeal())
-						{
-							result += "s";
-						}
-						result += "\n";
-
-						for (int k = 0; k < temp.count(); k++)
-						{
-							result += '#' + temp.get(k).write() + '\n';
-						}
-					}
-					else
-						if (c == NoteRecord.class)
-						{
-							NoteRecord temp = (NoteRecord) page.get(i);
-							result += '%' + Utils.timeToStr(temp.getTime()) + ' ' + temp.getText() + '\n';
-						}
+				for (int k = 0; k < temp.count(); k++)
+				{
+					result += '#' + foodSerializer.write(temp.get(k)) + '\n';
+				}
+			}
+			else if (c == NoteRecord.class)
+			{
+				NoteRecord temp = (NoteRecord) page.get(i);
+				result += '%' + Utils.timeToStr(temp.getTime()) + ' ' + temp.getText() + '\n';
+			}
 		}
 		return result;
 	}

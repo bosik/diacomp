@@ -132,13 +132,18 @@ public class ActivityMeal extends Activity
 		editName.setAdapter(baseAdapter);
 	}
 
+	public static String printFoodMassed(FoodMassed food)
+	{
+		return food.getName() + " (" + df.format(food.getMass()) + ")";
+	}
+
 	private void showMeal()
 	{
 		// lv_arr = mealList.toArray(new String[0]);
 		lv_arr = new String[meal.count()];
 		for (int i = 0; i < meal.count(); i++)
 		{
-			lv_arr[i] = meal.get(i).toString();
+			lv_arr[i] = printFoodMassed(meal.get(i));
 		}
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(activityMeal, android.R.layout.simple_list_item_1,
