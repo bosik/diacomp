@@ -8,89 +8,63 @@ import org.bosik.compensation.persistence.dao.DiaryDAO.PageVersion;
 
 public class SyncDiaryTest extends TestCase
 {
-
-	public void testOrdered_0()
+	private static boolean ordered(List<PageVersion> modList)
 	{
-		// пустой массив
-		List<PageVersion> modList = new ArrayList<PageVersion>();
-		assertTrue(SyncDiaryDAO.ordered(modList));
+		for (int i = 0; i < (modList.size() - 1); i++)
+		{
+			if (modList.get(i).date.compareTo(modList.get(i + 1).date) > 0)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
-	public void testOrdered_1()
-	{
-		// массив из одного элемента
-		List<PageVersion> modList = new ArrayList<PageVersion>();
-		modList.add(new PageVersion(new Date(2013, 01, 01), 23));
-		assertTrue(SyncDiaryDAO.ordered(modList));
-	}
-
-	public void testOrdered_3_ordered()
-	{
-		// массив из трёх упорядоченных элементов
-		List<PageVersion> modList = new ArrayList<PageVersion>();
-		modList.add(new PageVersion(new Date(2013, 01, 01), 23));
-		modList.add(new PageVersion(new Date(2013, 01, 02), 11));
-		modList.add(new PageVersion(new Date(2013, 01, 03), 48));
-		assertTrue(SyncDiaryDAO.ordered(modList));
-	}
-
-	public void testOrdered_3_unordered_1()
-	{
-		// массив из трёх неупорядоченных элементов
-		List<PageVersion> modList = new ArrayList<PageVersion>();
-		modList.add(new PageVersion(new Date(2013, 01, 03), 23));
-		modList.add(new PageVersion(new Date(2013, 01, 02), 11));
-		modList.add(new PageVersion(new Date(2013, 01, 01), 48));
-		assertFalse(SyncDiaryDAO.ordered(modList));
-	}
-
-	public void testOrdered_3_unordered_2()
-	{
-		// массив из трёх неупорядоченных элементов
-		List<PageVersion> modList = new ArrayList<PageVersion>();
-		modList.add(new PageVersion(new Date(2013, 01, 03), 23));
-		modList.add(new PageVersion(new Date(2013, 01, 04), 11));
-		modList.add(new PageVersion(new Date(2013, 01, 01), 48));
-		assertFalse(SyncDiaryDAO.ordered(modList));
-	}
-
+	/**
+	 * Empty array
+	 */
 	public void testSort_0()
 	{
-		// пустой массив
 		List<PageVersion> modList = new ArrayList<PageVersion>();
 		SyncDiaryDAO.sort(modList);
-		assertTrue(SyncDiaryDAO.ordered(modList));
+		assertTrue(ordered(modList));
 	}
 
+	/**
+	 * Single element array
+	 */
 	public void testSort_1()
 	{
-		// массив из одного элемента
 		List<PageVersion> modList = new ArrayList<PageVersion>();
 		modList.add(new PageVersion(new Date(2013, 01, 03), 23));
 		SyncDiaryDAO.sort(modList);
-		assertTrue(SyncDiaryDAO.ordered(modList));
+		assertTrue(ordered(modList));
 	}
 
+	/**
+	 * Three unsorted elements array
+	 */
 	public void testSort_3_unordered()
 	{
-		// массив из трёх неупорядоченных элементов
 		List<PageVersion> modList = new ArrayList<PageVersion>();
 		modList.add(new PageVersion(new Date(2013, 01, 03), 23));
 		modList.add(new PageVersion(new Date(2013, 01, 02), 11));
 		modList.add(new PageVersion(new Date(2013, 01, 01), 48));
 		SyncDiaryDAO.sort(modList);
-		assertTrue(SyncDiaryDAO.ordered(modList));
+		assertTrue(ordered(modList));
 	}
 
+	/**
+	 * Three sorted elements array
+	 */
 	public void testSort_3_ordered()
 	{
-		// массив из трёх упорядоченных элементов
 		List<PageVersion> modList = new ArrayList<PageVersion>();
 		modList.add(new PageVersion(new Date(2013, 01, 01), 23));
 		modList.add(new PageVersion(new Date(2013, 01, 02), 11));
 		modList.add(new PageVersion(new Date(2013, 01, 06), 48));
 		SyncDiaryDAO.sort(modList);
-		assertTrue(SyncDiaryDAO.ordered(modList));
+		assertTrue(ordered(modList));
 	}
 
 	public void testGetOverLists1()
