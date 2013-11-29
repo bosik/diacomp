@@ -35,11 +35,6 @@ public class DiaryPage
 		}
 	}
 
-	private void resort()
-	{
-		Collections.sort(items, new RecordComparator());
-	}
-
 	private void updatePostprand()
 	{
 		// TODO
@@ -55,6 +50,20 @@ public class DiaryPage
 			}
 		}
 		return -1;
+	}
+
+	private void changed()
+	{
+		if (silentMode)
+		{
+			Log.v(TAG, "changed(): silent mode is on");
+			return;
+		}
+
+		Collections.sort(items, new RecordComparator());
+		updatePostprand();
+		timeStamp = Utils.now(); // TODO: use UTC time, not local one
+		version++;
 	}
 
 	// private DiaryRecord safeClone(DiaryRecord rec)
@@ -290,20 +299,6 @@ public class DiaryPage
 	//
 	// updatePostprand();
 	// }
-
-	private void changed()
-	{
-		if (silentMode)
-		{
-			Log.v(TAG, "changed(): silent mode is on");
-			return;
-		}
-
-		resort();
-		updatePostprand();
-		timeStamp = Utils.now(); // TODO: use UTC time, not local one
-		version++;
-	}
 
 	public void update(DiaryRecord rec)
 	{
