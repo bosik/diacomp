@@ -9,10 +9,7 @@ import org.bosik.compensation.utils.Utils;
  * 		1. Создать все необходимые private-поля.
  * 		2. Создать public static-методы вида checkField(value), реализующие валидацию.
  * 		3. Создать get-методы.
- * 		4. Создать set-методы, проводящие валидацию check-методом.
- * 				4.0. Провести валидацию. Если провалилась, выбросить исключение IllegalArgumentException
- * 				4.1. Если нет — проверить, что новое значение отличается от старого 
- * 				4.2. Если отличается — вызвать notifyModified();
+ * 		4. Создать set-методы, проводящие валидацию check-методом. Если провалилась, выбросить исключение IllegalArgumentException
  * 		5. Создать валидатор, проверяющий сразу все поля (????????)
  * 		6. Создать конструктор, принимающий сразу все поля и устанавливающий их с помощью set-методов.
  * 
@@ -31,52 +28,12 @@ public abstract class DiaryRecord extends Unique
 	// данные
 	private int					time;
 
-	// служебные
-	// TODO: remove silent mode here, leave this feature just at DiaryPage level
-	// private transient boolean silentMode = true;
-	// private transient boolean modified = false;
-
 	public DiaryRecord()
 	{
-		// id = Utils.
+
 	}
 
-	// ============================== СЛУЖЕБНЫЕ МЕТОДЫ ==============================
-
-	// protected void notifyModified()
-	// {
-	// // пытаемся оповестить страницу и опустить флаг
-	// if ((changeListener != null) && (!silentMode))
-	// {
-	// // Log.i(TAG, "notifyModified(): notifying the changeListener");
-	// changeListener.changed(this.getClass(), this);
-	// modified = false;
-	// }
-	// else
-	// {
-	// // запоминаем непереданное изменение и поднимаем флаг модифицированности
-	// modified = true;
-	//
-	// /*
-	// * if (silentMode) Log.v(TAG, "notifyModified(): silentMode is on"); else Log.v(TAG,
-	// * "notifyModified(): parent changeListener == null");
-	// */
-	// }
-	// }
-
-	// public void beginUpdate()
-	// {
-	// silentMode = true;
-	// }
-	//
-	// public void endUpdate()
-	// {
-	// silentMode = false;
-	// if (modified)
-	// {
-	// notifyModified();
-	// }
-	// }
+	// ============================== CLONE ==============================
 
 	@Override
 	public DiaryRecord clone()
