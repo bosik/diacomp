@@ -39,8 +39,9 @@ public class Utils
 	 */
 
 	// форматы
-	public static final SimpleDateFormat	STD_TIME_FORMAT	= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	public static final SimpleDateFormat	STD_DATE_FORMAT	= new SimpleDateFormat("yyyy-MM-dd");
+	public static final SimpleDateFormat	STD_TIME_FORMAT	= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+																	Locale.getDefault());
+	public static final SimpleDateFormat	STD_DATE_FORMAT	= new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
 	// статическая инициализация
 	static
@@ -282,7 +283,6 @@ public class Utils
 
 	public static String Utf8ToCp1251(String s)
 	{
-
 		/*
 		 * try { return new String(s.getBytes(), "Cp1251"); } catch (UnsupportedEncodingException e)
 		 * { e.printStackTrace(); throw new RuntimeException("Unsupported code page", e); }
