@@ -1,25 +1,23 @@
 package org.bosik.compensation.persistence.common;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
- * 1. Has ID field (useful for comparing).<br/>
- * 2. Implements {@link Cloneable}.
+ * Has ID field (random; useful for comparing)
  * 
  * @author Bosik
- * 
  */
-public class Unique implements Cloneable
+public class Unique implements Cloneable, Serializable
 {
-	private String	id;
-	private String	name;
+	private static final long	serialVersionUID	= 6063993499772711799L;
+
+	private String				id;
 
 	public Unique()
 	{
 		id = UUID.randomUUID().toString();
 	}
-
-	// ================================ GET / SET ================================
 
 	public String getId()
 	{
@@ -36,34 +34,13 @@ public class Unique implements Cloneable
 		this.id = id;
 	}
 
-	public String getName()
-	{
-		return name;
-	}
-
-	public void setName(String name)
-	{
-		if (name == null)
-		{
-			throw new NullPointerException("Name can't be null");
-		}
-		if (name.trim().equals(""))
-		{
-			throw new IllegalArgumentException("Name must contain non-whitespace characters");
-		}
-
-		this.name = name;
-	}
-
 	// ================================ CLONE ================================
 
 	@Override
 	public Unique clone() throws CloneNotSupportedException
 	{
 		Unique result = (Unique) super.clone();
-
-		result.id = getId();
-
+		result.id = id;
 		return result;
 	}
 

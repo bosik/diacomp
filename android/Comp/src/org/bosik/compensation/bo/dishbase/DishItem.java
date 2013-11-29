@@ -1,8 +1,8 @@
 package org.bosik.compensation.bo.dishbase;
 
-import org.bosik.compensation.persistence.common.Unique;
+import org.bosik.compensation.persistence.common.UniqueNamed;
 
-public class DishItem extends Unique
+public class DishItem extends UniqueNamed
 {
 
 	// ================================ GET / SET ================================
@@ -10,7 +10,7 @@ public class DishItem extends Unique
 	// ================================ CLONE ================================
 
 	@Override
-	public Unique clone() throws CloneNotSupportedException
+	public UniqueNamed clone() throws CloneNotSupportedException
 	{
 		DishItem result = (DishItem) super.clone();
 

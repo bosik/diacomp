@@ -38,11 +38,6 @@ public class InsRecord extends DiaryRecord
 			throw new IllegalArgumentException("InsRecord: неверное значение поля Value (" + value + ")");
 		}
 
-		if (value != this.value)
-		{
-			this.value = value;
-			notifyModified();
-		}
+		this.value = value;
 	}
-
 }

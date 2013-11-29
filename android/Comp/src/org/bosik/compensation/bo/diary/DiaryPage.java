@@ -9,16 +9,11 @@ import org.bosik.compensation.bo.diary.records.DiaryRecord;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
 
-public class DiaryPage implements RecordChangeListener
+public class DiaryPage
 {
-	private static final String	TAG	= DiaryPage.class.getSimpleName();
+	private static final String		TAG			= DiaryPage.class.getSimpleName();
 
 	// TODO: тестировать
-
-	public static enum EventType
-	{
-		ADD, MODIFY, REMOVE
-	}
 
 	// ===================================== ПОЛЯ =====================================
 
@@ -49,6 +44,30 @@ public class DiaryPage implements RecordChangeListener
 	{
 		// TODO
 	}
+
+	private int getIndexById(String id)
+	{
+		for (int i = 0; i < items.size(); i++)
+		{
+			if (id.equals(items.get(i).getId()))
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	// private DiaryRecord safeClone(DiaryRecord rec)
+	// {
+	// try
+	// {
+	// return (DiaryRecord) rec.clone();
+	// }
+	// catch (CloneNotSupportedException e)
+	// {
+	// throw new RuntimeException(e);
+	// }
+	// }
 
 	// ================================ ВНЕШНИЕ МЕТОДЫ ================================
 
@@ -142,9 +161,8 @@ public class DiaryPage implements RecordChangeListener
 			throw new NullPointerException("Record can't be null");
 		}
 
-		rec.setChangeListener(this);
 		items.add(rec);
-		handleModification(EventType.ADD, rec.getClass(), rec);
+		changed();
 
 		return items.indexOf(rec);
 	}
@@ -160,27 +178,71 @@ public class DiaryPage implements RecordChangeListener
 	}
 
 	/**
-	 * Получает указанную запись
+	 * Returns record by index
 	 * 
 	 * @param index
-	 *            Индекс записи
-	 * @return Запись
+	 * @return
 	 */
 	public DiaryRecord get(int index)
 	{
-		return items.get(index);
+		// TODO: get by ID, not index
+		return items.get(index).clone();
 	}
 
 	/**
-	 * Удаляет запись с указанным индексом
+	 * Returns record by id
+	 * 
+	 * @param id
+	 * @return Diary record if found, null otherwise
+	 */
+	public DiaryRecord get(String id)
+	{
+		int index = getIndexById(id);
+		if (index > -1)
+		{
+			// try
+			// {
+			return items.get(index).clone();
+			// }
+			// catch (CloneNotSupportedException e)
+			// {
+			// throw new RuntimeException(e);
+			// }
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Removes record by index
 	 * 
 	 * @param index
-	 *            Индекс
 	 */
 	public void remove(int index)
 	{
-		handleModification(EventType.REMOVE, items.get(index).getClass(), items.get(index));
 		items.remove(index);
+		changed();
+	}
+
+	/**
+	 * Removes record by ID
+	 * 
+	 * @param id
+	 */
+	public void remove(String id)
+	{
+		int index = getIndexById(id);
+		if (index > -1)
+		{
+			remove(index);
+		}
+		else
+		{
+			// TODO; change to NotFoundException()
+			throw new RuntimeException();
+		}
 	}
 
 	public void clear()
@@ -189,12 +251,6 @@ public class DiaryPage implements RecordChangeListener
 	}
 
 	// -------- СОБЫТИЕ МОДИФИКАЦИИ --------
-
-	@Override
-	public void changed(Class<? extends DiaryRecord> recClass, DiaryRecord recInstance)
-	{
-		handleModification(EventType.MODIFY, recClass, recInstance);
-	}
 
 	/**
 	 * Событие изменения страницы, вызывается записями страницы
@@ -207,30 +263,66 @@ public class DiaryPage implements RecordChangeListener
 	 * @param recInstance
 	 *            Экземпляр оповещающей записи (а-ля sender)
 	 */
-	private void handleModification(EventType eventType, Class<? extends DiaryRecord> recClass, DiaryRecord recInstance)
-	{
-		// Log.d(TAG, "changed()");
+	// private void handleModification(EventType eventType, Class<? extends DiaryRecord> recClass,
+	// DiaryRecord recInstance)
+	// {
+	// // Log.d(TAG, "changed()");
+	//
+	// // бесшумный режим
+	// if (silentMode)
+	// {
+	// Log.v(TAG, "changed(): silent mode is on");
+	// return;
+	// }
+	//
+	// // обновляем данные о версии и timeStamp
+	// timeStamp = Utils.now(); // TODO: use UTC time, not local one
+	// version++;
+	//
+	// // принимаем коррекционные меры
+	// if (recInstance != null)
+	// {
+	// if (items.indexOf(recInstance) != -1)
+	// {
+	// resort();
+	// }
+	// }
+	//
+	// updatePostprand();
+	// }
 
-		// бесшумный режим
+	private void changed()
+	{
 		if (silentMode)
 		{
 			Log.v(TAG, "changed(): silent mode is on");
 			return;
 		}
 
-		// обновляем данные о версии и timeStamp
+		resort();
+		updatePostprand();
 		timeStamp = Utils.now(); // TODO: use UTC time, not local one
 		version++;
+	}
 
-		// принимаем коррекционные меры
-		if (recInstance != null)
+	public void update(DiaryRecord rec)
+	{
+		int index = getIndexById(rec.getId());
+		if (index > -1)
 		{
-			if (items.indexOf(recInstance) != -1)
-			{
-				resort();
-			}
+			// try
+			// {
+			items.set(index, rec.clone());
+			// }
+			// catch (CloneNotSupportedException e)
+			// {
+			// throw new RuntimeException(e);
+			// }
 		}
-
-		updatePostprand();
+		else
+		{
+			// TODO; change to NotFoundException()
+			throw new RuntimeException();
+		}
 	}
 }

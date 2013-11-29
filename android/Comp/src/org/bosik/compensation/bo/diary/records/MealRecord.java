@@ -30,11 +30,7 @@ public class MealRecord extends DiaryRecord
 
 	public void setShortMeal(boolean value)
 	{
-		if (value != shortMeal)
-		{
-			shortMeal = value;
-			notifyModified();
-		}
+		shortMeal = value;
 	}
 
 	// работа с характеристиками

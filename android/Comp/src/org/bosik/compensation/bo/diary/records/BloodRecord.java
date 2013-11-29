@@ -7,7 +7,7 @@ public class BloodRecord extends DiaryRecord
 	private double				value;
 	private int					finger;
 
-	// private boolean postPrand;
+	// private transient boolean postPrand;
 
 	public BloodRecord()
 	{
@@ -52,11 +52,7 @@ public class BloodRecord extends DiaryRecord
 			throw new IllegalArgumentException("BloodRecord: неверное значение поля Value (" + value + ")");
 		}
 
-		if (value != this.value)
-		{
-			this.value = value;
-			notifyModified();
-		}
+		this.value = value;
 	}
 
 	public int getFinger()
@@ -71,11 +67,7 @@ public class BloodRecord extends DiaryRecord
 			throw new IllegalArgumentException("BloodRecord: неверное значение поля Finger (" + value + ")");
 		}
 
-		if (value != finger)
-		{
-			finger = value;
-			notifyModified();
-		}
+		finger = value;
 	}
 
 }

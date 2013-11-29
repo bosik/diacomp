@@ -452,14 +452,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					if (resultCode == RESULT_OK)
 					{
-						BloodRecord original = (BloodRecord) curPage.get(DiaryView.getClickedIndex());
 						BloodRecord rec = (BloodRecord) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
-
-						original.beginUpdate();
-						original.setTime(rec.getTime());
-						original.setValue(rec.getValue());
-						original.setFinger(rec.getFinger());
-						original.endUpdate();
+						curPage.update(rec);
 
 						postPage(curPage);
 					}
@@ -489,10 +483,12 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 						NoteRecord rec = (NoteRecord) curPage.get(DiaryView.getClickedIndex());
 
-						rec.beginUpdate();
-						rec.setTime(time);
-						rec.setText(text);
-						rec.endUpdate();
+						// TODO: restore when BloodRecord tested
+
+						// rec.beginUpdate();
+						// rec.setTime(time);
+						// rec.setText(text);
+						// rec.endUpdate();
 
 						postPage(curPage);
 					}
@@ -515,10 +511,6 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		diaryViewLayout.setPage(curPage);
 		setCaptionDate(curDate);
 	}
-
-	/*
-	 * private DiaryPage getCurPage() { return Storage.localDiary.getPage(curDate); }
-	 */
 
 	private void postPage(DiaryPage page)
 	{

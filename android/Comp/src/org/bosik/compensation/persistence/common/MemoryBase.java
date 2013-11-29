@@ -12,7 +12,7 @@ import java.util.List;
  * @param <T>
  *            Тип элемента базы
  */
-public class MemoryBase<T extends Unique>
+public class MemoryBase<T extends UniqueNamed>
 {
 	private final List<T>	items		= new ArrayList<T>();
 	private int				version		= 0;
@@ -24,7 +24,7 @@ public class MemoryBase<T extends Unique>
 	{
 		if (null == item)
 		{
-			throw new NullPointerException("Unique can't be null");
+			throw new NullPointerException("Item can't be null");
 		}
 
 		try

@@ -1,6 +1,5 @@
 package org.bosik.compensation.bo.diary.records;
 
-import org.bosik.compensation.bo.diary.records.BloodRecord;
 import junit.framework.TestCase;
 
 public class BloodRecordTest extends TestCase
@@ -22,5 +21,21 @@ public class BloodRecordTest extends TestCase
 		assertFalse(BloodRecord.checkFinger(-2));
 		assertFalse(BloodRecord.checkFinger(10));
 		assertFalse(BloodRecord.checkFinger(10500));
+	}
+
+	public void testClone()
+	{
+		BloodRecord a = new BloodRecord(890, 5.1, 2);
+		BloodRecord b = (BloodRecord) a.clone();
+
+		assertEquals(a, b);
+		assertNotSame(a, b);
+		assertEquals(a.getId(), b.getId());
+		assertEquals(a.getTime(), b.getTime());
+		assertEquals(a.getValue(), b.getValue(), 0.01);
+		assertEquals(a.getFinger(), b.getFinger());
+
+		a.setTime(1003);
+		assertEquals(890, b.getTime());
 	}
 }
