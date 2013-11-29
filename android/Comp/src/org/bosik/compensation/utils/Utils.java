@@ -19,7 +19,6 @@ import android.util.Log;
 public class Utils
 {
 	// отладочная печать
-	@SuppressWarnings("unused")
 	private static final String				TAG				= "Utils";
 
 	// константы
