@@ -6,7 +6,9 @@ import org.bosik.compensation.bo.common.FoodMassed;
 
 public class MealRecord extends DiaryRecord
 {
-	private final List<FoodMassed>	items	= new ArrayList<FoodMassed>();
+	private static final long		serialVersionUID	= -4920269773372985893L;
+
+	private final List<FoodMassed>	items				= new ArrayList<FoodMassed>();
 	private boolean					shortMeal;
 
 	public MealRecord(int time, boolean shortMeal)
@@ -116,5 +118,4 @@ public class MealRecord extends DiaryRecord
 	{
 		return items.size();
 	}
-
 }

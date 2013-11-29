@@ -1,5 +1,6 @@
 package org.bosik.compensation.bo.diary.records;
 
+import java.io.Serializable;
 import org.bosik.compensation.bo.diary.RecordChangeListener;
 import org.bosik.compensation.utils.Utils;
 
@@ -21,19 +22,21 @@ import org.bosik.compensation.utils.Utils;
  * 		2. Быть готовым поймать исключение и обработать его на frontend'е.
  */
 
-public abstract class DiaryRecord
+public abstract class DiaryRecord implements Serializable
 {
+	private static final long				serialVersionUID	= 7786362550114440661L;
+
 	@SuppressWarnings("unused")
-	private static final String		TAG				= "DiaryRecord";
+	private static final String				TAG					= "DiaryRecord";
 
 	// данные
-	private int						time;
-	private RecordChangeListener	changeListener	= null;
+	private int								time;
+	private transient RecordChangeListener	changeListener		= null;
 
 	// служебные
 	// TODO: remove silent mode here, leave this feature just at DiaryPage level
-	private boolean					silentMode		= true;
-	private boolean					modified		= false;
+	private transient boolean				silentMode			= true;
+	private transient boolean				modified			= false;
 
 	// ============================== СЛУЖЕБНЫЕ МЕТОДЫ ==============================
 

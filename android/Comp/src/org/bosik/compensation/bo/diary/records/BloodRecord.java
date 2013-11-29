@@ -2,10 +2,17 @@ package org.bosik.compensation.bo.diary.records;
 
 public class BloodRecord extends DiaryRecord
 {
-	private double	value;
-	private int		finger;
+	private static final long	serialVersionUID	= -1621097859834950338L;
+
+	private double				value;
+	private int					finger;
 
 	// private boolean postPrand;
+
+	public BloodRecord()
+	{
+
+	}
 
 	public BloodRecord(int time, double value, int finger)
 	{

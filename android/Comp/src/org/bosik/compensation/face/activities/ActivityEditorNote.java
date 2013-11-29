@@ -1,13 +1,15 @@
 package org.bosik.compensation.face.activities;
 
+import org.bosik.compensation.bo.diary.records.NoteRecord;
 import org.bosik.compensation.face.R;
-import android.content.Intent;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
 // Круто.
-public class ActivityEditorNote extends ActivityEditor
+public class ActivityEditorNote extends ActivityEditor<NoteRecord>
 {
 	/* =========================== КОНСТАНТЫ ================================ */
 	@SuppressWarnings("unused")
@@ -25,38 +27,46 @@ public class ActivityEditorNote extends ActivityEditor
 	// компоненты
 	private TimePicker			timePicker;
 	private EditText			editText;
+	private Button				buttonOK;
 
 	/* =========================== МЕТОДЫ ================================ */
 
-	@Override
-	protected void readValues(Intent intent)
-	{
-		time = intent.getIntExtra(FIELD_TIME, 0);
-		text = intent.getStringExtra(FIELD_TEXT);
+	// @Override
+	// protected void readValues(Intent intent)
+	// {
+	// time = intent.getIntExtra(FIELD_TIME, 0);
+	// text = intent.getStringExtra(FIELD_TEXT);
+	//
+	// if (null == text)
+	// {
+	// text = "";
+	// }
+	// }
+	//
+	// @Override
+	// protected void writeValues(Intent intent)
+	// {
+	// intent.putExtra(FIELD_TIME, time);
+	// intent.putExtra(FIELD_TEXT, text);
+	// }
 
-		if (null == text)
+	@Override
+	protected void showValuesInGUI(boolean createMode)
+	{
+		timePicker.setCurrentHour(time / 60);
+		timePicker.setCurrentMinute(time % 60);
+		if (!createMode)
 		{
-			text = "";
+			editText.setText(text);
+		}
+		else
+		{
+			editText.setText("");
 		}
 	}
 
 	@Override
-	protected void writeValues(Intent intent)
-	{
-		intent.putExtra(FIELD_TIME, time);
-		intent.putExtra(FIELD_TEXT, text);
-	}
-
-	@Override
-	protected void setValues()
-	{
-		timePicker.setCurrentHour(time / 60);
-		timePicker.setCurrentMinute(time % 60);
-		editText.setText(text);
-	}
-
-	@Override
-	protected boolean getValues()
+	protected boolean getValuesFromGUI()
 	{
 		// читаем время
 		time = (timePicker.getCurrentHour() * 60) + timePicker.getCurrentMinute();
@@ -75,6 +85,14 @@ public class ActivityEditorNote extends ActivityEditor
 		editText = (EditText) findViewById(R.id.editNoteText);
 		timePicker = (TimePicker) findViewById(R.id.pickerNoteTime);
 		buttonOK = (Button) findViewById(R.id.buttonNoteOK);
+		buttonOK.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				ActivityEditorNote.this.submit();
+			}
+		});
 		timePicker.setIs24HourView(true);
 	}
 }

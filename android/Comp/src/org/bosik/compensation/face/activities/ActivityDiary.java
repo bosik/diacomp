@@ -3,6 +3,7 @@ package org.bosik.compensation.face.activities;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.bo.diary.records.BloodRecord;
 import org.bosik.compensation.bo.diary.records.DiaryRecord;
@@ -33,25 +34,25 @@ import android.widget.Button;
 public class ActivityDiary extends Activity implements RecordClickListener, OnClickListener
 {
 	// КОНСТАНТЫ
-	private static final int				DIALOG_BLOOD_EDITOR_NEW	= 1;
-	private static final int				DIALOG_BLOOD_EDITOR_MOD	= 2;
-	private static final int				DIALOG_NOTE_EDITOR_NEW	= 3;
-	private static final int				DIALOG_NOTE_EDITOR_MOD	= 4;
+	private static final int		DIALOG_BLOOD_EDITOR_NEW	= 1;
+	private static final int		DIALOG_BLOOD_EDITOR_MOD	= 2;
+	private static final int		DIALOG_NOTE_EDITOR_NEW	= 3;
+	private static final int		DIALOG_NOTE_EDITOR_MOD	= 4;
 
 	// --- отладочная печать ---
-	private static final String				TAG						= "ActivityDiary";
+	private static final String		TAG						= ActivityDiary.class.getSimpleName();
 	// THINK: что произойдёт на смене дат?
-	private static Date						curDate					= Calendar.getInstance().getTime();
-	private static DiaryPage				curPage					= null;
+	private static Date				curDate					= Calendar.getInstance().getTime();
+	private static DiaryPage		curPage					= null;
 	// private int indexOnEditing = -1;
 
 	// --- форматы ---
 	// private static final SimpleDateFormat CaptionFmt = new SimpleDateFormat("d MMMM");
-	private static final SimpleDateFormat	CaptionFmt				= new SimpleDateFormat("dd.MM.yyyy");
+	private final SimpleDateFormat	CaptionFmt				= new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
 
 	// КОМПОНЕНТЫ
-	private DiaryView						diaryViewLayout;
-	private Button							buttonSelectDay;
+	private DiaryView				diaryViewLayout;
+	private Button					buttonSelectDay;
 
 	// СОБЫТИЯ
 
@@ -179,12 +180,11 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	{
 		try
 		{
-
 			switch (item.getItemId())
 			{
 				case R.id.item_diary_addblood:
 				{
-					showBloodEditor(0, 0, 0, true);
+					showBloodEditor(new BloodRecord(), true);
 					return true;
 				}
 				case R.id.item_diary_addins:
@@ -288,7 +288,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 						// TODO: не использовать indexOnEditing, а только
 						// diaryViewLayout.clickedIndex?
 						// indexOnEditing = diaryViewLayout.downedIndex;
-						showBloodEditor(temp.getTime(), temp.getValue(), temp.getFinger(), false);
+						showBloodEditor(temp, false);
 						break;
 					}
 					// удалить
@@ -370,7 +370,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				}
 				case R.id.buttonAddBlood:
 				{
-					showBloodEditor(0, 0, 0, true);
+					showBloodEditor(new BloodRecord(), true);
 					break;
 				}
 				case R.id.buttonAddMeal:
@@ -404,7 +404,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			if (rec.getClass() == BloodRecord.class)
 			{
 				BloodRecord temp = (BloodRecord) rec;
-				showBloodEditor(temp.getTime(), temp.getValue(), temp.getFinger(), false);
+				showBloodEditor(temp, false);
 			}
 			else if (rec.getClass() == NoteRecord.class)
 			{
@@ -437,13 +437,11 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			{
 				case DIALOG_BLOOD_EDITOR_NEW:
 				{
+					// FIXME: use anonymous inlined classes instead
+
 					if (resultCode == RESULT_OK)
 					{
-						int time = intent.getIntExtra(ActivityEditorBlood.FIELD_TIME, -1);
-						double value = intent.getDoubleExtra(ActivityEditorBlood.FIELD_VALUE, -1);
-						int finger = intent.getIntExtra(ActivityEditorBlood.FIELD_FINGER, -1);
-
-						BloodRecord rec = new BloodRecord(time, value, finger);
+						BloodRecord rec = (BloodRecord) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
 						curPage.add(rec);
 						postPage(curPage);
 					}
@@ -454,17 +452,14 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					if (resultCode == RESULT_OK)
 					{
-						int time = intent.getIntExtra(ActivityEditorBlood.FIELD_TIME, -1);
-						double value = intent.getDoubleExtra(ActivityEditorBlood.FIELD_VALUE, -1);
-						int finger = intent.getIntExtra(ActivityEditorBlood.FIELD_FINGER, -1);
+						BloodRecord original = (BloodRecord) curPage.get(DiaryView.getClickedIndex());
+						BloodRecord rec = (BloodRecord) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
 
-						BloodRecord rec = (BloodRecord) curPage.get(DiaryView.getClickedIndex());
-
-						rec.beginUpdate();
-						rec.setTime(time);
-						rec.setValue(value);
-						rec.setFinger(finger);
-						rec.endUpdate();
+						original.beginUpdate();
+						original.setTime(rec.getTime());
+						original.setValue(rec.getValue());
+						original.setFinger(rec.getFinger());
+						original.endUpdate();
 
 						postPage(curPage);
 					}
@@ -571,22 +566,24 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		return null;
 	}
 
-	private void showBloodEditor(int time, double value, int finger, boolean create)
+	private void showBloodEditor(BloodRecord entity, boolean create)
 	{
+		// TODO: hardcoded scan period
+		final int SCAN_DAYS = 5;
+
 		if (create)
 		{
-			// TODO: hardcoded scan period
-			BloodRecord b = lastBlood(5);
-			time = Utils.curMinutes();
-			value = ActivityEditorBlood.UNDEFINITE_VALUE;
-			finger = ((b == null) || (b.getFinger() == -1)) ? -1 : ((b.getFinger() + 1) % 10);
+			BloodRecord prev = lastBlood(SCAN_DAYS);
+			entity.setTime(Utils.curMinutes());
+			// entity.setValue(value);
+			entity.setFinger(((prev == null) || (prev.getFinger() == -1)) ? -1 : ((prev.getFinger() + 1) % 10));
 		}
 
 		// THINK: проверка корректности данных?
 		Intent intent = new Intent(this, ActivityEditorBlood.class);
-		intent.putExtra(ActivityEditorBlood.FIELD_TIME, time);
-		intent.putExtra(ActivityEditorBlood.FIELD_VALUE, value);
-		intent.putExtra(ActivityEditorBlood.FIELD_FINGER, finger);
+		intent.putExtra(ActivityEditor.FIELD_CREATEMODE, create);
+		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
+
 		startActivityForResult(intent, create ? DIALOG_BLOOD_EDITOR_NEW : DIALOG_BLOOD_EDITOR_MOD);
 	}
 
