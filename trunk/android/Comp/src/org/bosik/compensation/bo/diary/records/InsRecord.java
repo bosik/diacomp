@@ -2,7 +2,9 @@ package org.bosik.compensation.bo.diary.records;
 
 public class InsRecord extends DiaryRecord
 {
-	private double	value;
+	private static final long	serialVersionUID	= 7357437083772571438L;
+
+	private double				value;
 
 	public InsRecord(int time, double value)
 	{

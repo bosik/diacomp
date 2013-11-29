@@ -2,7 +2,10 @@ package org.bosik.compensation.bo.diary.records;
 
 public class NoteRecord extends DiaryRecord
 {
-	private String	text	= "";
+	private static final long	serialVersionUID	= 7394847492375407284L;
+
+	// TODO: remove this initialization
+	private String				text				= "";
 
 	public NoteRecord(int time, String value)
 	{
@@ -42,5 +45,4 @@ public class NoteRecord extends DiaryRecord
 			notifyModified();
 		}
 	}
-
 }

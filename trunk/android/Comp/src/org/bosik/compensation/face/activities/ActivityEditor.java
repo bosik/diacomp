@@ -1,53 +1,58 @@
 package org.bosik.compensation.face.activities;
 
+import java.io.Serializable;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 
-public abstract class ActivityEditor extends Activity implements OnClickListener
+public abstract class ActivityEditor<T extends Serializable> extends Activity
 {
 	@SuppressWarnings("unused")
-	private static final String	TAG			= "ActivityEditor";
+	private static final String	TAG					= ActivityEditor.class.getSimpleName();
 
-	/* =========================== ПОЛЯ ================================ */
-	protected Button			buttonOK	= null;
+	public static final String	FIELD_CREATEMODE	= "bosik.pack.createMode";
+	public static final String	FIELD_ENTITY		= "bosik.pack.entity";
+
+	protected T					entity;
 
 	/* =========================== АБСТРАКТНЫЕ МЕТОДЫ ================================ */
 
 	/**
-	 * Получение данных из Intent
+	 * Get data from Intent
 	 * 
 	 * @param intent
 	 */
-	protected abstract void readValues(Intent intent);
+	private void readValues(Intent intent)
+	{
+		entity = (T) intent.getExtras().getSerializable(FIELD_ENTITY);
+	}
 
 	/**
-	 * Запись данных в Intent
+	 * Write data to Intent
 	 * 
 	 * @param intent
 	 */
-	protected abstract void writeValues(Intent intent);
+	private void writeValues(Intent intent)
+	{
+		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
+	}
 
 	/**
-	 * Вывод данных в GUI
+	 * Show data in GUI
 	 */
-	protected abstract void setValues();
+	protected abstract void showValuesInGUI(boolean createMode);
 
 	/**
-	 * Получение данных из GUI с валидацией
+	 * Read and validate data from GUI
 	 * 
 	 * @return
 	 */
-	protected abstract boolean getValues();
+	protected abstract boolean getValuesFromGUI();
 
 	/**
 	 * Поиск всех необходимых компонентов. В нём необходимо реализовать:<br/>
 	 * * установку макета (setContentView())<br/>
 	 * * определение всех необходимых компонентов<br/>
-	 * * определение кнопки buttonOK
 	 */
 	protected abstract void setupInterface();
 
@@ -62,28 +67,25 @@ public abstract class ActivityEditor extends Activity implements OnClickListener
 		// настраиваем интерфейс
 		setupInterface();
 		// Utils.logTimer(TAG, "setupInterface()");
-		buttonOK.setOnClickListener(this);
 		// Utils.logTimer(TAG, "setClickListener");
 
 		// получаем данные и выводим их в компоненты
 		readValues(getIntent());
 		// Utils.logTimer(TAG, "readValues");
-		setValues();
+
+		boolean createMode = getIntent().getBooleanExtra(FIELD_CREATEMODE, true);
+		showValuesInGUI(createMode);
 		// Utils.logTimer(TAG, "setValues");
 	}
 
-	@Override
-	public void onClick(View v)
+	protected void submit()
 	{
-		if (v.getId() == buttonOK.getId())
+		if (getValuesFromGUI())
 		{
-			if (getValues())
-			{
-				Intent intent = getIntent();
-				writeValues(intent);
-				setResult(RESULT_OK, intent);
-				finish();
-			}
+			Intent intent = getIntent();
+			writeValues(intent);
+			setResult(RESULT_OK, intent);
+			finish();
 		}
 	}
 }

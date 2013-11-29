@@ -1,10 +1,10 @@
 package org.bosik.compensation.face.activities;
 
 import org.bosik.compensation.bo.diary.records.BloodRecord;
-import org.bosik.compensation.bo.diary.records.DiaryRecord;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.face.UIUtils;
-import android.content.Intent;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -12,28 +12,24 @@ import android.widget.TimePicker;
 
 //TODO: сделать ночной режим (тёмные макеты)
 
-public class ActivityEditorBlood extends ActivityEditor
+public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 {
 	/* =========================== КОНСТАНТЫ ================================ */
 	@SuppressWarnings("unused")
-	private static final String	TAG					= "ActivityEditorBlood";
+	private static final String	TAG				= "ActivityEditorBlood";
 
-	public static final String	FIELD_TIME			= "bosik.pack.time";
-	public static final String	FIELD_VALUE			= "bosik.pack.value";
-	public static final String	FIELD_FINGER		= "bosik.pack.finger";
-	public static final int		UNDEFINITE_VALUE	= -1;
+	public static final String	FIELD_TIME		= "bosik.pack.time";
+	public static final String	FIELD_VALUE		= "bosik.pack.value";
+	public static final String	FIELD_FINGER	= "bosik.pack.finger";
+	// public static final int UNDEFINITE_VALUE = -1;
 
 	/* =========================== ПОЛЯ ================================ */
-
-	// редактируемая запись
-	private int					time;
-	private double				value;
-	private int					finger;
 
 	// компоненты
 	private EditText			editValue;
 	private TimePicker			timePicker;
 	private Spinner				spinnerFinger;
+	private Button				buttonOK;
 
 	// private TextView labelBloodFinger; // может использоваться для сокрытия компонента
 
@@ -46,38 +42,47 @@ public class ActivityEditorBlood extends ActivityEditor
 		editValue = (EditText) findViewById(R.id.editBloodValue);
 		timePicker = (TimePicker) findViewById(R.id.pickerBloodTime);
 		spinnerFinger = (Spinner) findViewById(R.id.spinnerBloodFinger);
-		buttonOK = (Button) findViewById(R.id.buttonBloodOK);
 		// labelBloodFinger = (TextView) findViewById(R.id.labelBloodFinger);
-
+		buttonOK = (Button) findViewById(R.id.buttonBloodOK);
+		buttonOK.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				ActivityEditorBlood.this.submit();
+			}
+		});
 		timePicker.setIs24HourView(true);
 	}
 
-	@Override
-	protected void readValues(Intent intent)
-	{
-		time = intent.getIntExtra(FIELD_TIME, 0);
-		value = intent.getDoubleExtra(FIELD_VALUE, UNDEFINITE_VALUE);
-		finger = intent.getIntExtra(FIELD_FINGER, 0);
-	}
+	// @Override
+	// protected void readValues(Intent intent)
+	// {
+	// entity.setTime(intent.getIntExtra(FIELD_TIME, 0));
+	// entity.setValue(intent.getDoubleExtra(FIELD_VALUE, 5.0));
+	// entity.setFinger(intent.getIntExtra(FIELD_FINGER, 0));
+	// }
+	//
+	// @Override
+	// protected void writeValues(Intent intent)
+	// {
+	// intent.putExtra(FIELD_TIME, entity.getTime());
+	// intent.putExtra(FIELD_VALUE, entity.getValue());
+	// intent.putExtra(FIELD_FINGER, entity.getFinger());
+	//
+	// // intent.putExtra(
+	// }
 
 	@Override
-	protected void writeValues(Intent intent)
+	protected void showValuesInGUI(boolean createMode)
 	{
-		intent.putExtra(FIELD_TIME, time);
-		intent.putExtra(FIELD_VALUE, value);
-		intent.putExtra(FIELD_FINGER, finger);
-	}
+		timePicker.setCurrentHour(entity.getTime() / 60);
+		timePicker.setCurrentMinute(entity.getTime() % 60);
+		spinnerFinger.setSelection(entity.getFinger());
 
-	@Override
-	protected void setValues()
-	{
-		timePicker.setCurrentHour(time / 60);
-		timePicker.setCurrentMinute(time % 60);
-		spinnerFinger.setSelection(finger);
-
-		if (value != UNDEFINITE_VALUE)
+		if (!createMode)
 		{
-			editValue.setText(String.valueOf(value));
+			editValue.setText(String.valueOf(entity.getValue()));
 		}
 		else
 		{
@@ -90,15 +95,24 @@ public class ActivityEditorBlood extends ActivityEditor
 	}
 
 	@Override
-	protected boolean getValues()
+	protected boolean getValuesFromGUI()
 	{
 		// читаем время
-		time = (timePicker.getCurrentHour() * 60) + timePicker.getCurrentMinute();
+		try
+		{
+			entity.setTime((timePicker.getCurrentHour() * 60) + timePicker.getCurrentMinute());
+		}
+		catch (IllegalArgumentException e)
+		{
+			UIUtils.showTip(ActivityEditorBlood.this, "Ошибка: неверное время");
+			timePicker.requestFocus();
+			return false;
+		}
 
 		// читаем значение
 		try
 		{
-			value = Double.parseDouble(editValue.getText().toString());
+			entity.setValue(Double.parseDouble(editValue.getText().toString()));
 		}
 		catch (NumberFormatException e)
 		{
@@ -106,24 +120,19 @@ public class ActivityEditorBlood extends ActivityEditor
 			editValue.requestFocus();
 			return false;
 		}
-
-		// читаем палец
-		finger = spinnerFinger.getSelectedItemPosition();
-
-		// валидируем
-		if (!DiaryRecord.checkTime(time))
-		{
-			UIUtils.showTip(ActivityEditorBlood.this, "Ошибка: неверное время");
-			timePicker.requestFocus();
-			return false;
-		}
-		if (!BloodRecord.checkValue(value))
+		catch (IllegalArgumentException e)
 		{
 			UIUtils.showTip(ActivityEditorBlood.this, "Ошибка: неверное значение СК");
 			editValue.requestFocus();
 			return false;
 		}
-		if (!BloodRecord.checkFinger(finger))
+
+		// читаем палец
+		try
+		{
+			entity.setFinger(spinnerFinger.getSelectedItemPosition());
+		}
+		catch (IllegalArgumentException e)
 		{
 			UIUtils.showTip(ActivityEditorBlood.this, "Ошибка: неверный индекс пальца");
 			spinnerFinger.requestFocus();
