@@ -360,7 +360,7 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 
 			// TODO: add force single sync on start
 
-			setupSyncTimer(10 * 60 * 1000);
+			// setupSyncTimer(10 * 60 * 1000);
 
 			showDiary();
 		}

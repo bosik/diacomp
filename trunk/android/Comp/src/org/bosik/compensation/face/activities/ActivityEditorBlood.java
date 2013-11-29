@@ -15,13 +15,7 @@ import android.widget.TimePicker;
 public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 {
 	/* =========================== КОНСТАНТЫ ================================ */
-	@SuppressWarnings("unused")
-	private static final String	TAG				= "ActivityEditorBlood";
-
-	public static final String	FIELD_TIME		= "bosik.pack.time";
-	public static final String	FIELD_VALUE		= "bosik.pack.value";
-	public static final String	FIELD_FINGER	= "bosik.pack.finger";
-	// public static final int UNDEFINITE_VALUE = -1;
+	//private static final String	TAG	= ActivityEditorBlood.class.getSimpleName();
 
 	/* =========================== ПОЛЯ ================================ */
 

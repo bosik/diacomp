@@ -1,13 +1,14 @@
 package org.bosik.compensation.face.activities;
 
 import java.io.Serializable;
+import org.bosik.compensation.bo.diary.records.DiaryRecord;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 public abstract class ActivityEditor<T extends Serializable> extends Activity
 {
-	@SuppressWarnings("unused")
 	private static final String	TAG					= ActivityEditor.class.getSimpleName();
 
 	public static final String	FIELD_CREATEMODE	= "bosik.pack.createMode";
@@ -22,6 +23,7 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 	 * 
 	 * @param intent
 	 */
+	@SuppressWarnings("unchecked")
 	private void readValues(Intent intent)
 	{
 		entity = (T) intent.getExtras().getSerializable(FIELD_ENTITY);

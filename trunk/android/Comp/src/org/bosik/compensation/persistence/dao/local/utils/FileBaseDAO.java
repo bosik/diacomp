@@ -3,7 +3,7 @@ package org.bosik.compensation.persistence.dao.local.utils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.compensation.persistence.common.Unique;
+import org.bosik.compensation.persistence.common.UniqueNamed;
 import org.bosik.compensation.persistence.common.MemoryBase;
 import org.bosik.compensation.persistence.dao.BaseDAO;
 import org.bosik.compensation.persistence.serializers.Serializer;
@@ -18,7 +18,7 @@ import android.content.Context;
  * @param <T>
  *            Type of base's item
  */
-public class FileBaseDAO<T extends Unique> implements BaseDAO<T>
+public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 {
 	private MemoryBase<T>				base;
 	private String						fileName;

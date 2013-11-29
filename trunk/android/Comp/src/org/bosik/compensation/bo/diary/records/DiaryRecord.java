@@ -1,7 +1,6 @@
 package org.bosik.compensation.bo.diary.records;
 
-import java.io.Serializable;
-import org.bosik.compensation.bo.diary.RecordChangeListener;
+import org.bosik.compensation.persistence.common.Unique;
 import org.bosik.compensation.utils.Utils;
 
 /* ЗАМЕТКИ 
@@ -22,56 +21,73 @@ import org.bosik.compensation.utils.Utils;
  * 		2. Быть готовым поймать исключение и обработать его на frontend'е.
  */
 
-public abstract class DiaryRecord implements Serializable
+public abstract class DiaryRecord extends Unique
 {
-	private static final long				serialVersionUID	= 7786362550114440661L;
+	private static final long	serialVersionUID	= 3497929855437219102L;
 
 	@SuppressWarnings("unused")
-	private static final String				TAG					= "DiaryRecord";
+	private static final String	TAG					= "DiaryRecord";
 
 	// данные
-	private int								time;
-	private transient RecordChangeListener	changeListener		= null;
+	private int					time;
 
 	// служебные
 	// TODO: remove silent mode here, leave this feature just at DiaryPage level
-	private transient boolean				silentMode			= true;
-	private transient boolean				modified			= false;
+	// private transient boolean silentMode = true;
+	// private transient boolean modified = false;
+
+	public DiaryRecord()
+	{
+		// id = Utils.
+	}
 
 	// ============================== СЛУЖЕБНЫЕ МЕТОДЫ ==============================
 
-	protected void notifyModified()
+	// protected void notifyModified()
+	// {
+	// // пытаемся оповестить страницу и опустить флаг
+	// if ((changeListener != null) && (!silentMode))
+	// {
+	// // Log.i(TAG, "notifyModified(): notifying the changeListener");
+	// changeListener.changed(this.getClass(), this);
+	// modified = false;
+	// }
+	// else
+	// {
+	// // запоминаем непереданное изменение и поднимаем флаг модифицированности
+	// modified = true;
+	//
+	// /*
+	// * if (silentMode) Log.v(TAG, "notifyModified(): silentMode is on"); else Log.v(TAG,
+	// * "notifyModified(): parent changeListener == null");
+	// */
+	// }
+	// }
+
+	// public void beginUpdate()
+	// {
+	// silentMode = true;
+	// }
+	//
+	// public void endUpdate()
+	// {
+	// silentMode = false;
+	// if (modified)
+	// {
+	// notifyModified();
+	// }
+	// }
+
+	@Override
+	public DiaryRecord clone()
 	{
-		// пытаемся оповестить страницу и опустить флаг
-		if ((changeListener != null) && (!silentMode))
+		try
 		{
-			// Log.i(TAG, "notifyModified(): notifying the changeListener");
-			changeListener.changed(this.getClass(), this);
-			modified = false;
+			return (DiaryRecord) super.clone();
 		}
-		else
+		catch (CloneNotSupportedException e)
 		{
-			// запоминаем непереданное изменение и поднимаем флаг модифицированности
-			modified = true;
-
-			/*
-			 * if (silentMode) Log.v(TAG, "notifyModified(): silentMode is on"); else Log.v(TAG,
-			 * "notifyModified(): parent changeListener == null");
-			 */
-		}
-	}
-
-	public void beginUpdate()
-	{
-		silentMode = true;
-	}
-
-	public void endUpdate()
-	{
-		silentMode = false;
-		if (modified)
-		{
-			notifyModified();
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -96,20 +112,6 @@ public abstract class DiaryRecord implements Serializable
 			throw new IllegalArgumentException("DiaryRecord: неверное значение поля Time (" + time + ")");
 		}
 
-		if (time != this.time)
-		{
-			this.time = time;
-			notifyModified();
-		}
-	}
-
-	public RecordChangeListener getChangeListener()
-	{
-		return changeListener;
-	}
-
-	public void setChangeListener(RecordChangeListener changeListener)
-	{
-		this.changeListener = changeListener;
+		this.time = time;
 	}
 }

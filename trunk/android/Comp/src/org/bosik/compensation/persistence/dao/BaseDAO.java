@@ -10,7 +10,7 @@ public interface BaseDAO<Item>
 
 		public ItemNotFoundException(String id)
 		{
-			super(String.format("Unique %s not found", id));
+			super(String.format("Item %s not found", id));
 		}
 	}
 
@@ -20,7 +20,7 @@ public interface BaseDAO<Item>
 
 		public DuplicateException(String id)
 		{
-			super(String.format("Unique %s already exists", id));
+			super(String.format("Item %s already exists", id));
 		}
 	}
 

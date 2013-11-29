@@ -39,10 +39,6 @@ public class NoteRecord extends DiaryRecord
 			throw new IllegalArgumentException("NoteRecord: неверное значение поля Text (" + value + ")");
 		}
 
-		if (!text.equals(value))
-		{
-			text = value;
-			notifyModified();
-		}
+		text = value;
 	}
 }
