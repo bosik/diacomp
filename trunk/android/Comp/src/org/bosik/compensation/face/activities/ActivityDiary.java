@@ -44,7 +44,6 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	// THINK: что произойдёт на смене дат?
 	private static Date				curDate					= Calendar.getInstance().getTime();
 	private static DiaryPage		curPage					= null;
-	// private int indexOnEditing = -1;
 
 	// --- форматы ---
 	// private static final SimpleDateFormat CaptionFmt = new SimpleDateFormat("d MMMM");
@@ -437,8 +436,6 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			{
 				case DIALOG_BLOOD_EDITOR_NEW:
 				{
-					// FIXME: use anonymous inlined classes instead
-
 					if (resultCode == RESULT_OK)
 					{
 						BloodRecord rec = (BloodRecord) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
@@ -528,10 +525,10 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	}
 
 	/**
-	 * Получает последний замер СК за последние scanDaysPeriod дней
+	 * Searches for the last BS record in last scanDaysPeriod days
 	 * 
 	 * @param scanDaysPeriod
-	 * @return Замер СК (или null, если таковой не найден)
+	 * @return BS record if found, null otherwise
 	 */
 	private BloodRecord lastBlood(int scanDaysPeriod)
 	{
@@ -558,25 +555,23 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		return null;
 	}
 
-	private void showBloodEditor(BloodRecord entity, boolean create)
+	private void showBloodEditor(BloodRecord entity, boolean createMode)
 	{
-		// TODO: hardcoded scan period
-		final int SCAN_DAYS = 5;
-
-		if (create)
+		if (createMode)
 		{
+			// FIXME: hardcoded scan period
+			final int SCAN_DAYS = 5;
 			BloodRecord prev = lastBlood(SCAN_DAYS);
+			entity = new BloodRecord();
 			entity.setTime(Utils.curMinutes());
-			// entity.setValue(value);
 			entity.setFinger(((prev == null) || (prev.getFinger() == -1)) ? -1 : ((prev.getFinger() + 1) % 10));
 		}
 
-		// THINK: проверка корректности данных?
 		Intent intent = new Intent(this, ActivityEditorBlood.class);
-		intent.putExtra(ActivityEditor.FIELD_CREATEMODE, create);
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
+		intent.putExtra(ActivityEditor.FIELD_CREATEMODE, createMode);
 
-		startActivityForResult(intent, create ? DIALOG_BLOOD_EDITOR_NEW : DIALOG_BLOOD_EDITOR_MOD);
+		startActivityForResult(intent, createMode ? DIALOG_BLOOD_EDITOR_NEW : DIALOG_BLOOD_EDITOR_MOD);
 	}
 
 	private void showMealEditor()

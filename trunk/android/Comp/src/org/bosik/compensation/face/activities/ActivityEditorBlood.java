@@ -15,15 +15,15 @@ import android.widget.TimePicker;
 public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 {
 	/* =========================== КОНСТАНТЫ ================================ */
-	//private static final String	TAG	= ActivityEditorBlood.class.getSimpleName();
+	// private static final String TAG = ActivityEditorBlood.class.getSimpleName();
 
 	/* =========================== ПОЛЯ ================================ */
 
 	// компоненты
-	private EditText			editValue;
-	private TimePicker			timePicker;
-	private Spinner				spinnerFinger;
-	private Button				buttonOK;
+	private EditText	editValue;
+	private TimePicker	timePicker;
+	private Spinner		spinnerFinger;
+	private Button		buttonOK;
 
 	// private TextView labelBloodFinger; // может использоваться для сокрытия компонента
 
@@ -48,24 +48,6 @@ public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 		});
 		timePicker.setIs24HourView(true);
 	}
-
-	// @Override
-	// protected void readValues(Intent intent)
-	// {
-	// entity.setTime(intent.getIntExtra(FIELD_TIME, 0));
-	// entity.setValue(intent.getDoubleExtra(FIELD_VALUE, 5.0));
-	// entity.setFinger(intent.getIntExtra(FIELD_FINGER, 0));
-	// }
-	//
-	// @Override
-	// protected void writeValues(Intent intent)
-	// {
-	// intent.putExtra(FIELD_TIME, entity.getTime());
-	// intent.putExtra(FIELD_VALUE, entity.getValue());
-	// intent.putExtra(FIELD_FINGER, entity.getFinger());
-	//
-	// // intent.putExtra(
-	// }
 
 	@Override
 	protected void showValuesInGUI(boolean createMode)
