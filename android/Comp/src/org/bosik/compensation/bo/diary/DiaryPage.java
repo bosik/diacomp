@@ -259,47 +259,6 @@ public class DiaryPage
 		items.clear();
 	}
 
-	// -------- СОБЫТИЕ МОДИФИКАЦИИ --------
-
-	/**
-	 * Событие изменения страницы, вызывается записями страницы
-	 * 
-	 * @param eventType
-	 *            Тип события
-	 * @param recClass
-	 *            Класс изменившейся записи. Полезен в случае, если запись оповещает о своём
-	 *            удалении (WAT?)
-	 * @param recInstance
-	 *            Экземпляр оповещающей записи (а-ля sender)
-	 */
-	// private void handleModification(EventType eventType, Class<? extends DiaryRecord> recClass,
-	// DiaryRecord recInstance)
-	// {
-	// // Log.d(TAG, "changed()");
-	//
-	// // бесшумный режим
-	// if (silentMode)
-	// {
-	// Log.v(TAG, "changed(): silent mode is on");
-	// return;
-	// }
-	//
-	// // обновляем данные о версии и timeStamp
-	// timeStamp = Utils.now(); // TODO: use UTC time, not local one
-	// version++;
-	//
-	// // принимаем коррекционные меры
-	// if (recInstance != null)
-	// {
-	// if (items.indexOf(recInstance) != -1)
-	// {
-	// resort();
-	// }
-	// }
-	//
-	// updatePostprand();
-	// }
-
 	public void update(DiaryRecord rec)
 	{
 		int index = getIndexById(rec.getId());
