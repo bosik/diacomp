@@ -19,18 +19,21 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
- * Хранит все данные приложения
+ * Stores application DAOs as singletons
  * 
  * @author Bosik
  */
 public class Storage
 {
-	private static final String			TAG	= Storage.class.getSimpleName();
+	private static final String			TAG					= Storage.class.getSimpleName();
 
-	// настройки
+	private static final String			FILENAME_FOODBASE	= "FoodBase.xml";
+	private static final String			FILENAME_DISHBASE	= "DishBase.xml";
+
+	// preferences unit
 	private static SharedPreferences	pref;
 
-	// настройки
+	// pref.keys and defaults
 	private static String				PREF_SERVER;
 	private static String				PREF_USERNAME;
 	private static String				PREF_PASSWORD;
@@ -38,16 +41,18 @@ public class Storage
 	private static String				PREF_DEFAULT_USERNAME;
 	private static String				PREF_DEFAULT_PASSWORD;
 
-	// данные
+	// DAO
 	public static WebClient				webClient;
 	public static DiaryDAO				localDiary;
 	public static DiaryDAO				webDiary;
 	public static BaseDAO<FoodItem>		localFoodBase;
 	public static BaseDAO<FoodItem>		webFoodBase;
+
+	// temp data
 	public static List<FoodItem>		foodBase;
 
 	/**
-	 * Инициализирует хранилище. Метод можно вызывать повторно.
+	 * Initializes the storage. Might be called sequentially
 	 * 
 	 * @param context
 	 * @param resolver
@@ -87,10 +92,9 @@ public class Storage
 		if (null == localFoodBase)
 		{
 			Log.d(TAG, "init(): local foodbase initialization...");
-			String fileName = context.getString(R.string.fileNameFoodBase);
 			try
 			{
-				localFoodBase = new LocalFoodBaseDAO(context, fileName);
+				localFoodBase = new LocalFoodBaseDAO(context, FILENAME_FOODBASE);
 				foodBase = localFoodBase.findAll();
 			}
 			catch (IOException e)
@@ -117,12 +121,12 @@ public class Storage
 	}
 
 	/**
-	 * Применяет изменённое значение. Если ключ равен null, то пересчитываются все настройки.
+	 * Applies changed preference for specified key (if null, applies all settings)
 	 * 
 	 * @param preferences
-	 *            Настройки
+	 *            Preference unit
 	 * @param key
-	 *            Имя изменившейся настройки
+	 *            Change prefernce's key
 	 */
 	public static void applyPreference(SharedPreferences preferences, String key)
 	{

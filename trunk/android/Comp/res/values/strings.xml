@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Цвета -->
+    <!-- Colors -->
 
     <string name="diary_foreground">0x0000FF00</string>
     <string name="diary_background">0xFF00FF00</string>
 
-    <!-- Разное -->
+    <!-- Misc -->
 
     <string name="connectionTimeout">6000</string>
-    <string name="fileNameFoodBase">FoodBase.xml</string>
-    <string name="fileNameDishBase">DishBase.xml</string>
     <string name="styleInfo">bold</string>
 
 </resources>

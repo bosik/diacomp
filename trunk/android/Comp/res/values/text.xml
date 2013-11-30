@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Заголовки -->
+    <!-- Activity captions -->
 
     <string name="app_name">Компенсация</string>
     <string name="title_menu">Компенсация</string>
@@ -11,7 +11,7 @@
     <string name="title_editor_note">Заметка</string>
     <string name="title_preferences">Настройки</string>
 
-    <!-- Лейблы -->
+    <!-- Labels -->
 
     <string name="label_time">Время</string>
     <string name="label_value">Значение</string>
@@ -22,7 +22,7 @@
     <string name="label_mealCarbs">г угл.</string>
     <string name="label_mealDose">ед.</string>
 
-    <!-- Кнопки -->
+    <!-- Buttons -->
 
     <string name="button_diary_add">Новая запись</string>
     <string name="button_addblood">Замер СК</string>
@@ -39,14 +39,14 @@
     <string name="button_add">Добавить</string>
     <string name="button_pref">Настройки</string>
 
-    <!-- Меню -->
+    <!-- Menus -->
 
     <string name="menu_diary">Дневник</string>
     <string name="menu_foodbase">База продуктов</string>
     <string name="menu_dishbase">База блюд</string>
     <string name="menu_settings">Settings</string>
 
-    <!-- Массивы -->
+    <!-- Arrays -->
 
     <string-array name="fingers">
         <item>[Левая]: большой</item>
