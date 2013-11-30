@@ -3,8 +3,9 @@ package org.bosik.compensation.persistence.dao.local.utils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.compensation.persistence.common.UniqueNamed;
+import java.util.Locale;
 import org.bosik.compensation.persistence.common.MemoryBase;
+import org.bosik.compensation.persistence.common.UniqueNamed;
 import org.bosik.compensation.persistence.dao.BaseDAO;
 import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.utils.FileWorker;
@@ -31,10 +32,7 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 		this.serializer = serializer;
 		fileWorker = new FileWorker(context);
 
-		if (fileWorker.fileExists(fileName))
-		{
-			load();
-		}
+		load();
 	}
 
 	@Override
@@ -75,12 +73,12 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 	public List<T> findAny(String filter)
 	{
 		List<T> result = new ArrayList<T>();
-		filter = filter.toUpperCase();
+		filter = filter.toUpperCase(Locale.US);
 
 		for (int i = 0; i < base.count(); i++)
 		{
 			T item = base.get(i);
-			if (item.getName().toUpperCase().contains(filter))
+			if (item.getName().toUpperCase(Locale.US).contains(filter))
 			{
 				result.add(item);
 			}
@@ -139,8 +137,15 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 
 	private void load() throws IOException
 	{
-		String source = fileWorker.readFromFile(fileName);
-		base = serializer.read(source);
+		if (fileWorker.fileExists(fileName))
+		{
+			String source = fileWorker.readFromFile(fileName);
+			base = serializer.read(source);
+		}
+		else
+		{
+			base = new MemoryBase<T>();
+		}
 	}
 
 	public void save()
