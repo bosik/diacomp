@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.repository.foodbase;
+package org.bosik.compensation.persistence.dao.foodbase;
 
 import junit.framework.TestCase;
 import org.bosik.compensation.bo.foodbase.FoodItem;

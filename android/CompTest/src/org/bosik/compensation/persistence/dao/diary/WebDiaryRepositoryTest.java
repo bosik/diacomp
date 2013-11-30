@@ -1,9 +1,9 @@
-package org.bosik.compensation.persistence.repository.diary;
+package org.bosik.compensation.persistence.dao.diary;
 
 import org.bosik.compensation.persistence.dao.DiaryDAO;
+import org.bosik.compensation.persistence.dao.providers.WebClientTest;
 import org.bosik.compensation.persistence.dao.web.WebDiaryDAO;
 import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
-import org.bosik.compensation.persistence.repository.providers.WebClientTest;
 
 public class WebDiaryRepositoryTest extends DiaryRepositoryTest
 {
