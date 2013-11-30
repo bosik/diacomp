@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.repository.diary;
+package org.bosik.compensation.persistence.dao.diary;
 
 import junit.framework.TestCase;
 import org.bosik.compensation.bo.diary.DiaryPage;

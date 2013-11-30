@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.repository.diary;
+package org.bosik.compensation.persistence.dao.diary;
 
 import org.bosik.compensation.persistence.dao.DiaryDAO;
 import org.bosik.compensation.persistence.dao.local.LocalDiaryDAO;

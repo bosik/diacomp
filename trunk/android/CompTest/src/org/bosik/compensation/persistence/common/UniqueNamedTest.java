@@ -11,6 +11,7 @@ public class UniqueNamedTest extends TestCase
 		a.setName("Test object");
 
 		UniqueNamed b = a.clone();
+		assertNotSame(a, b);
 		assertEquals(a, b);
 		assertEquals(a.getId(), b.getId());
 		assertEquals(a.getName(), b.getName());

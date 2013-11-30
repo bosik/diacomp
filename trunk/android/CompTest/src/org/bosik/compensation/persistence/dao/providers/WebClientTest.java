@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.repository.providers;
+package org.bosik.compensation.persistence.dao.providers;
 
 import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
 import junit.framework.TestCase;
