@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Preference keys (placed here to be accessable from preferences.xml) -->
+    <!-- Preference keys & defaults (placed here to be accessable from preferences.xml) -->
 
-    <string name="prefServer">prefServer</string>
-    <string name="prefUsername">prefLogin</string>
-    <string name="prefPassword">prefPassword</string>
+    <string name="pref_Account_Server_Key">pref_Account_Server_Key</string>
+    <string name="pref_Account_Server_Default">http://diacomp.16mb.com/</string>
+    <string name="pref_Account_Username_Key">pref_Account_Username_Key</string>
+    <string name="pref_Account_Username_Default"></string>
+    <string name="pref_Account_Password_Key">pref_Account_Password_Key</string>
+    <string name="pref_Account_Password_Default"></string>
 
-    <!-- Default values -->
-
-    <string name="prefDefaultServer">http://diacomp.16mb.com/</string>
-    <string name="prefDefaultUsername"></string>
-    <string name="prefDefaultPassword"></string>
-</resources>
+</resources>
