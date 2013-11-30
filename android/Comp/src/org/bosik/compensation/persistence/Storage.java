@@ -29,6 +29,7 @@ public class Storage
 
 	private static final String			FILENAME_FOODBASE	= "FoodBase.xml";
 	private static final String			FILENAME_DISHBASE	= "DishBase.xml";
+	private static final int			CONNECTION_TIMEOUT	= 6000;
 
 	// preferences unit
 	private static SharedPreferences	pref;
@@ -77,7 +78,7 @@ public class Storage
 		if (null == webClient)
 		{
 			Log.d(TAG, "init(): web client initialization...");
-			webClient = new WebClient(Integer.parseInt(context.getString(R.string.connectionTimeout)));
+			webClient = new WebClient(CONNECTION_TIMEOUT);
 		}
 		if (null == localDiary)
 		{
