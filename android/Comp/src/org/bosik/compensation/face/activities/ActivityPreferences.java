@@ -64,24 +64,8 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 		Map<String, ?> map = preferences.getAll();
 		for (String key : map.keySet())
 		{
-			onSharedPreferenceChanged(preferences, key);
+			updateDescription(preferences, key);
 		}
-
-		/*
-		 * Preference customPref = (Preference) findPreference("customPref");
-		 * customPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-		 * 
-		 * public boolean onPreferenceClick(Preference preference) {
-		 * Toast.makeText(getBaseContext(), "The custom preference has been clicked",
-		 * Toast.LENGTH_LONG).show(); SharedPreferences customSharedPreference =
-		 * getSharedPreferences( "myCustomSharedPrefs", Activity.MODE_PRIVATE);
-		 * SharedPreferences.Editor editor = customSharedPreference.edit();
-		 * editor.putString("myCustomPref", "The preference has been clicked"); editor.commit();
-		 * return true; }
-		 * 
-		 * });
-		 */
-
 	}
 
 	@Override
@@ -95,21 +79,22 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 	protected void onPause()
 	{
 		super.onPause();
-		Log.v(TAG, "Preferences listener unregistered");
 		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
 	{
-		Preference p = findPreference(key);
-
-		if (p != null)
-		{
-			Log.d(TAG, "Preferences changed, key=" + key + ", editor=" + p.getClass().getSimpleName());
-		}
+		Log.v(TAG, String.format("Preference '%s' changed", key));
+		updateDescription(sharedPreferences, key);
 		Storage.applyPreference(sharedPreferences, key);
+	}
 
+	private void updateDescription(SharedPreferences sharedPreferences, String key)
+	{
+		Log.v(TAG, String.format("Updating description for preference '%s'", key));
+
+		Preference p = findPreference(key);
 		if (p instanceof EditTextPreference)
 		{
 			if (!PREF_ACCOUNT_PASSWORD_KEY.equals(key))
