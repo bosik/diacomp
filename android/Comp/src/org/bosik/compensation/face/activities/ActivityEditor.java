@@ -9,8 +9,8 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 {
 	// private static final String TAG = ActivityEditor.class.getSimpleName();
 
-	public static final String	FIELD_CREATEMODE	= "bosik.pack.createMode";
-	public static final String	FIELD_ENTITY		= "bosik.pack.entity";
+	public static final String	FIELD_MODE		= "bosik.pack.createMode";
+	public static final String	FIELD_ENTITY	= "bosik.pack.entity";
 
 	protected T					entity;
 
@@ -73,7 +73,7 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 		readValues(getIntent());
 		// Utils.logTimer(TAG, "readValues");
 
-		boolean createMode = getIntent().getBooleanExtra(FIELD_CREATEMODE, true);
+		boolean createMode = getIntent().getBooleanExtra(FIELD_MODE, true);
 		showValuesInGUI(createMode);
 		// Utils.logTimer(TAG, "setValues");
 	}

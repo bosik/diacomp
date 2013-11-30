@@ -34,20 +34,20 @@ import android.widget.Button;
 public class ActivityDiary extends Activity implements RecordClickListener, OnClickListener
 {
 	// КОНСТАНТЫ
-	private static final int		DIALOG_BLOOD_EDITOR_NEW	= 1;
-	private static final int		DIALOG_BLOOD_EDITOR_MOD	= 2;
-	private static final int		DIALOG_NOTE_EDITOR_NEW	= 3;
-	private static final int		DIALOG_NOTE_EDITOR_MOD	= 4;
+	private static final int		DIALOG_BLOOD_CREATE	= 1;
+	private static final int		DIALOG_BLOOD_MODIFY	= 2;
+	private static final int		DIALOG_NOTE_CREATE	= 3;
+	private static final int		DIALOG_NOTE_MODIFY	= 4;
 
 	// --- отладочная печать ---
-	private static final String		TAG						= ActivityDiary.class.getSimpleName();
+	private static final String		TAG					= ActivityDiary.class.getSimpleName();
 	// THINK: что произойдёт на смене дат?
-	private static Date				curDate					= Calendar.getInstance().getTime();
-	private static DiaryPage		curPage					= null;
+	private static Date				curDate				= Calendar.getInstance().getTime();
+	private static DiaryPage		curPage				= null;
 
 	// --- форматы ---
 	// private static final SimpleDateFormat CaptionFmt = new SimpleDateFormat("d MMMM");
-	private final SimpleDateFormat	CaptionFmt				= new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+	private final SimpleDateFormat	CaptionFmt			= new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
 
 	// КОМПОНЕНТЫ
 	private DiaryView				diaryViewLayout;
@@ -183,7 +183,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			{
 				case R.id.item_diary_addblood:
 				{
-					showBloodEditor(new BloodRecord(), true);
+					showBloodEditor(null, true);
 					return true;
 				}
 				case R.id.item_diary_addins:
@@ -369,7 +369,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				}
 				case R.id.buttonAddBlood:
 				{
-					showBloodEditor(new BloodRecord(), true);
+					showBloodEditor(null, true);
 					break;
 				}
 				case R.id.buttonAddMeal:
@@ -381,7 +381,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 				case R.id.buttonAddNote:
 				{
-					showNoteEditor(0, "", true);
+					showNoteEditor(null, true);
 					break;
 				}
 			}
@@ -402,13 +402,11 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 			if (rec.getClass() == BloodRecord.class)
 			{
-				BloodRecord temp = (BloodRecord) rec;
-				showBloodEditor(temp, false);
+				showBloodEditor((BloodRecord) rec, false);
 			}
 			else if (rec.getClass() == NoteRecord.class)
 			{
-				NoteRecord temp = (NoteRecord) rec;
-				showNoteEditor(temp.getTime(), temp.getText(), false);
+				showNoteEditor((NoteRecord) rec, false);
 			}
 		}
 		catch (Exception e)
@@ -434,7 +432,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		{
 			switch (requestCode)
 			{
-				case DIALOG_BLOOD_EDITOR_NEW:
+				case DIALOG_BLOOD_CREATE:
 				{
 					if (resultCode == RESULT_OK)
 					{
@@ -445,48 +443,34 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					break;
 				}
 
-				case DIALOG_BLOOD_EDITOR_MOD:
+				case DIALOG_BLOOD_MODIFY:
 				{
 					if (resultCode == RESULT_OK)
 					{
 						BloodRecord rec = (BloodRecord) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
 						curPage.update(rec);
-
 						postPage(curPage);
 					}
 					break;
 				}
 
-				case DIALOG_NOTE_EDITOR_NEW:
+				case DIALOG_NOTE_CREATE:
 				{
 					if (resultCode == RESULT_OK)
 					{
-						int time = intent.getIntExtra(ActivityEditorNote.FIELD_TIME, -1);
-						String text = intent.getStringExtra(ActivityEditorNote.FIELD_TEXT);
-
-						NoteRecord rec = new NoteRecord(time, text);
+						NoteRecord rec = (NoteRecord) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
 						curPage.add(rec);
 						postPage(curPage);
 					}
 					break;
 				}
 
-				case DIALOG_NOTE_EDITOR_MOD:
+				case DIALOG_NOTE_MODIFY:
 				{
 					if (resultCode == RESULT_OK)
 					{
-						int time = intent.getIntExtra(ActivityEditorNote.FIELD_TIME, -1);
-						String text = intent.getStringExtra(ActivityEditorNote.FIELD_TEXT);
-
-						NoteRecord rec = (NoteRecord) curPage.get(DiaryView.getClickedIndex());
-
-						// TODO: restore when BloodRecord tested
-
-						// rec.beginUpdate();
-						// rec.setTime(time);
-						// rec.setText(text);
-						// rec.endUpdate();
-
+						NoteRecord rec = (NoteRecord) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
+						curPage.update(rec);
 						postPage(curPage);
 					}
 					break;
@@ -511,16 +495,12 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 	private void postPage(DiaryPage page)
 	{
-		// page.timeStamp = Utils.now();
-
 		Storage.localDiary.postPage(page);
-
-		// page.post();
 		diaryViewLayout.setPage(page);
 
-		Log.i(TAG, "Posting");
-		Log.v(TAG, "  Date = " + String.valueOf(page.getDate()));
-		Log.v(TAG, "  Stamp = " + String.valueOf(page.getTimeStamp()));
+		// Log.i(TAG, "Posting");
+		// Log.v(TAG, "  Date = " + String.valueOf(page.getDate()));
+		// Log.v(TAG, "  Stamp = " + String.valueOf(page.getTimeStamp()));
 		// Log.d(TAG, "  Page = " + page.writeFull());
 	}
 
@@ -533,6 +513,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	private BloodRecord lastBlood(int scanDaysPeriod)
 	{
 		// TODO: make use of getPages(), not getPage()
+		// TODO: move this away from UI
 
 		Date d = Utils.now();
 
@@ -569,9 +550,9 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 		Intent intent = new Intent(this, ActivityEditorBlood.class);
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
-		intent.putExtra(ActivityEditor.FIELD_CREATEMODE, createMode);
+		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
 
-		startActivityForResult(intent, createMode ? DIALOG_BLOOD_EDITOR_NEW : DIALOG_BLOOD_EDITOR_MOD);
+		startActivityForResult(intent, createMode ? DIALOG_BLOOD_CREATE : DIALOG_BLOOD_MODIFY);
 	}
 
 	private void showMealEditor()
@@ -580,18 +561,17 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		startActivity(new Intent(this, ActivityMeal.class));
 	}
 
-	private void showNoteEditor(int time, String text, boolean create)
+	private void showNoteEditor(NoteRecord entity, boolean createMode)
 	{
-		if (create)
+		if (createMode)
 		{
-			time = Utils.curMinutes();
-			text = "";
+			entity = new NoteRecord();
+			entity.setTime(Utils.curMinutes());
 		}
 
-		// THINK: проверка корректности данных?
 		Intent intent = new Intent(this, ActivityEditorNote.class);
-		intent.putExtra(ActivityEditorNote.FIELD_TIME, time);
-		intent.putExtra(ActivityEditorNote.FIELD_TEXT, text);
-		startActivityForResult(intent, create ? DIALOG_NOTE_EDITOR_NEW : DIALOG_NOTE_EDITOR_MOD);
+		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
+		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
+		startActivityForResult(intent, createMode ? DIALOG_NOTE_CREATE : DIALOG_NOTE_MODIFY);
 	}
 }
