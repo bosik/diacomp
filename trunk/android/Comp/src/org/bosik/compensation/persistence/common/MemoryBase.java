@@ -12,6 +12,7 @@ import java.util.List;
  * @param <T>
  *            Тип элемента базы
  */
+@SuppressWarnings("unchecked")
 public class MemoryBase<T extends UniqueNamed>
 {
 	private final List<T>	items		= new ArrayList<T>();
