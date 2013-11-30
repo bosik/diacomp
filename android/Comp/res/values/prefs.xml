@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Настройки -->
+    <!-- Preference keys (placed here to be accessable from preferences.xml) -->
 
     <string name="prefServer">prefServer</string>
     <string name="prefUsername">prefLogin</string>
     <string name="prefPassword">prefPassword</string>
 
-    <!-- Значения по умолчанию -->
+    <!-- Default values -->
 
     <string name="prefDefaultServer">http://diacomp.16mb.com/</string>
     <string name="prefDefaultUsername"></string>
     <string name="prefDefaultPassword"></string>
 
-    <!-- Подписи настроек -->
+    <!-- Preference UI label -->
 
     <string name="prefLabelServer">Сервер</string>
     <string name="prefLabelUsername">Логин (e-mail)</string>
