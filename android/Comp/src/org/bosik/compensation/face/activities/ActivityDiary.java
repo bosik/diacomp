@@ -47,7 +47,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 	// --- форматы ---
 	// private static final SimpleDateFormat CaptionFmt = new SimpleDateFormat("d MMMM");
-	private final SimpleDateFormat	CaptionFmt			= new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+	private final SimpleDateFormat	CaptionFmt			= new SimpleDateFormat("dd.MM.yyyy", Locale.US);
 
 	// КОМПОНЕНТЫ
 	private DiaryView				diaryViewLayout;
