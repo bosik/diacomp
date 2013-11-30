@@ -51,26 +51,26 @@ public class Storage
 	{
 		Log.v(TAG, "Storage unit initialization...");
 
-		// НАСТРОЙКА СИСТЕМЫ
+		// DAO's setup
 
 		if (null == webClient)
 		{
-			Log.v(TAG, "init(): web client initialization...");
+			Log.v(TAG, "Web client initialization...");
 			webClient = new WebClient(CONNECTION_TIMEOUT);
 		}
 		if (null == localDiary)
 		{
-			Log.v(TAG, "init(): local diary initialization...");
+			Log.v(TAG, "Local diary initialization...");
 			localDiary = new LocalDiaryDAO(resolver);
 		}
 		if (null == webDiary)
 		{
-			Log.v(TAG, "init(): web diary initialization...");
+			Log.v(TAG, "Web diary initialization...");
 			webDiary = new WebDiaryDAO(webClient);
 		}
 		if (null == localFoodBase)
 		{
-			Log.v(TAG, "init(): local foodbase initialization...");
+			Log.v(TAG, "Local foodbase initialization...");
 			try
 			{
 				localFoodBase = new LocalFoodBaseDAO(context, FILENAME_FOODBASE);
@@ -84,7 +84,7 @@ public class Storage
 		}
 		if (null == Storage.webFoodBase)
 		{
-			Log.v(TAG, "init(): web foodbase initialization...");
+			Log.v(TAG, "Web foodbase initialization...");
 			webFoodBase = new WebFoodBaseDAO(webClient);
 		}
 
@@ -102,33 +102,31 @@ public class Storage
 	/**
 	 * Applies changed preference for specified key (if null, applies all settings)
 	 * 
-	 * @param preferences
+	 * @param pref
 	 *            Preference unit
 	 * @param key
 	 *            Change prefernce's key
 	 */
-	public static void applyPreference(SharedPreferences preferences, String key)
+	public static void applyPreference(SharedPreferences pref, String key)
 	{
 		Log.v(TAG, "applyPreferences(): key = '" + key + "'");
 
 		if (check(key, ActivityPreferences.PREF_ACCOUNT_SERVER_KEY))
 		{
-			webClient.setServer(preferences.getString(ActivityPreferences.PREF_ACCOUNT_SERVER_KEY,
+			webClient.setServer(pref.getString(ActivityPreferences.PREF_ACCOUNT_SERVER_KEY,
 					ActivityPreferences.PREF_ACCOUNT_SERVER_DEFAULT));
 		}
 
 		if (check(key, ActivityPreferences.PREF_ACCOUNT_USERNAME_KEY))
 		{
-			webClient.setUsername(preferences.getString(ActivityPreferences.PREF_ACCOUNT_USERNAME_KEY,
+			webClient.setUsername(pref.getString(ActivityPreferences.PREF_ACCOUNT_USERNAME_KEY,
 					ActivityPreferences.PREF_ACCOUNT_USERNAME_DEFAULT));
 		}
 
 		if (check(key, ActivityPreferences.PREF_ACCOUNT_PASSWORD_KEY))
 		{
-			webClient.setPassword(preferences.getString(ActivityPreferences.PREF_ACCOUNT_PASSWORD_KEY,
+			webClient.setPassword(pref.getString(ActivityPreferences.PREF_ACCOUNT_PASSWORD_KEY,
 					ActivityPreferences.PREF_ACCOUNT_PASSWORD_DEFAULT));
 		}
-
-		// THINK: как узнавать об ошибках, произошедших у пользователя в release-mode? Email? Web?
 	}
 }

@@ -10,6 +10,7 @@ import org.bosik.compensation.persistence.dao.BaseDAO;
 import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.utils.FileWorker;
 import android.content.Context;
+import android.util.Log;
 
 /**
  * Local file base
@@ -21,6 +22,8 @@ import android.content.Context;
  */
 public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 {
+	private static final String			TAG	= FileBaseDAO.class.getSimpleName();
+
 	private MemoryBase<T>				base;
 	private String						fileName;
 	private Serializer<MemoryBase<T>>	serializer;
@@ -141,10 +144,12 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 		{
 			String source = fileWorker.readFromFile(fileName);
 			base = serializer.read(source);
+			Log.v(TAG, String.format("Memory base \"%s\" loaded, total items: %d", fileName, base.count()));
 		}
 		else
 		{
 			base = new MemoryBase<T>();
+			Log.w(TAG, String.format("Failed to load memory base \"%s\": file not found", fileName));
 		}
 	}
 
@@ -153,6 +158,7 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 		try
 		{
 			fileWorker.writeToFile(fileName, serializer.write(base));
+			Log.v(TAG, String.format("Memory base \"%s\" saved", fileName));
 		}
 		catch (IOException e)
 		{
