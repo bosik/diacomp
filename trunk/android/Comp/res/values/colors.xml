@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="diary_foreground">0x0000FF00</string>
+    <string name="diary_background">0xFF00FF00</string>
+
+</resources>

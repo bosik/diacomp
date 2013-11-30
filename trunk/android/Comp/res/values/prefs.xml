@@ -12,11 +12,4 @@
     <string name="prefDefaultServer">http://diacomp.16mb.com/</string>
     <string name="prefDefaultUsername"></string>
     <string name="prefDefaultPassword"></string>
-
-    <!-- Preference UI label -->
-
-    <string name="prefLabelServer">Сервер</string>
-    <string name="prefLabelUsername">Логин (e-mail)</string>
-    <string name="prefLabelPassword">Пароль</string>
-
-</resources>
+</resources>

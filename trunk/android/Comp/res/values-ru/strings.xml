@@ -21,6 +21,13 @@
     <string name="label_NoteText">Текст</string>
     <string name="label_mealCarbs">г угл.</string>
     <string name="label_mealDose">ед.</string>
+    
+    <!-- Preference UI label -->
+
+    <string name="prefCategorySync">Синхронизация</string>
+    <string name="prefLabelServer">Сервер</string>
+    <string name="prefLabelUsername">Логин (e-mail)</string>
+    <string name="prefLabelPassword">Пароль</string>
 
     <!-- Buttons -->
 
@@ -29,8 +36,6 @@
     <string name="button_addins">Инъекция</string>
     <string name="button_addmeal">Приём пищи</string>
     <string name="button_addnote">Заметка</string>
-    <string name="button_prevday">&lt;</string>
-    <string name="button_nextday">></string>
     <string name="button_sync">Синхронизировать</string>
     <string name="button_login">Войти</string>
     <string name="button_auth">Авторизация</string>
@@ -44,7 +49,7 @@
     <string name="menu_diary">Дневник</string>
     <string name="menu_foodbase">База продуктов</string>
     <string name="menu_dishbase">База блюд</string>
-    <string name="menu_settings">Settings</string>
+    <string name="menu_settings">Настройки</string>
 
     <!-- Arrays -->
 
