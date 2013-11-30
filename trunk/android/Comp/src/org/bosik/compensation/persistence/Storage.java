@@ -111,22 +111,22 @@ public class Storage
 	{
 		Log.v(TAG, "applyPreferences(): key = '" + key + "'");
 
-		if (check(key, ActivityPreferences.PREF_SYNC_SERVER_KEY))
+		if (check(key, ActivityPreferences.PREF_ACCOUNT_SERVER_KEY))
 		{
-			webClient.setServer(preferences.getString(ActivityPreferences.PREF_SYNC_SERVER_KEY,
-					ActivityPreferences.PREF_SYNC_SERVER_DEFAULT));
+			webClient.setServer(preferences.getString(ActivityPreferences.PREF_ACCOUNT_SERVER_KEY,
+					ActivityPreferences.PREF_ACCOUNT_SERVER_DEFAULT));
 		}
 
-		if (check(key, ActivityPreferences.PREF_SYNC_USERNAME_KEY))
+		if (check(key, ActivityPreferences.PREF_ACCOUNT_USERNAME_KEY))
 		{
-			webClient.setUsername(preferences.getString(ActivityPreferences.PREF_SYNC_USERNAME_KEY,
-					ActivityPreferences.PREF_SYNC_USERNAME_DEFAULT));
+			webClient.setUsername(preferences.getString(ActivityPreferences.PREF_ACCOUNT_USERNAME_KEY,
+					ActivityPreferences.PREF_ACCOUNT_USERNAME_DEFAULT));
 		}
 
-		if (check(key, ActivityPreferences.PREF_SYNC_PASSWORD_KEY))
+		if (check(key, ActivityPreferences.PREF_ACCOUNT_PASSWORD_KEY))
 		{
-			webClient.setPassword(preferences.getString(ActivityPreferences.PREF_SYNC_PASSWORD_KEY,
-					ActivityPreferences.PREF_SYNC_PASSWORD_DEFAULT));
+			webClient.setPassword(preferences.getString(ActivityPreferences.PREF_ACCOUNT_PASSWORD_KEY,
+					ActivityPreferences.PREF_ACCOUNT_PASSWORD_DEFAULT));
 		}
 
 		// THINK: как узнавать об ошибках, произошедших у пользователя в release-mode? Email? Web?

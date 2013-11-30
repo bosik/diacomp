@@ -21,12 +21,12 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 
 	public static SharedPreferences	preferences;
 
-	public static String			PREF_SYNC_PASSWORD_KEY;
-	public static String			PREF_SYNC_PASSWORD_DEFAULT;
-	public static String			PREF_SYNC_SERVER_KEY;
-	public static String			PREF_SYNC_SERVER_DEFAULT;
-	public static String			PREF_SYNC_USERNAME_KEY;
-	public static String			PREF_SYNC_USERNAME_DEFAULT;
+	public static String			PREF_ACCOUNT_PASSWORD_KEY;
+	public static String			PREF_ACCOUNT_PASSWORD_DEFAULT;
+	public static String			PREF_ACCOUNT_SERVER_KEY;
+	public static String			PREF_ACCOUNT_SERVER_DEFAULT;
+	public static String			PREF_ACCOUNT_USERNAME_KEY;
+	public static String			PREF_ACCOUNT_USERNAME_DEFAULT;
 
 	/**
 	 * Initializes the preference trunk
@@ -42,12 +42,12 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 		PreferenceManager.setDefaultValues(context, R.xml.preferences, false);
 
 		// Setup constants
-		PREF_SYNC_SERVER_KEY = context.getString(R.string.prefServer);
-		PREF_SYNC_SERVER_DEFAULT = context.getString(R.string.prefDefaultServer);
-		PREF_SYNC_USERNAME_KEY = context.getString(R.string.prefUsername);
-		PREF_SYNC_USERNAME_DEFAULT = context.getString(R.string.prefDefaultUsername);
-		PREF_SYNC_PASSWORD_KEY = context.getString(R.string.prefPassword);
-		PREF_SYNC_PASSWORD_DEFAULT = context.getString(R.string.prefDefaultPassword);
+		PREF_ACCOUNT_SERVER_KEY = context.getString(R.string.pref_Account_Server_Key);
+		PREF_ACCOUNT_SERVER_DEFAULT = context.getString(R.string.pref_Account_Server_Default);
+		PREF_ACCOUNT_USERNAME_KEY = context.getString(R.string.pref_Account_Username_Key);
+		PREF_ACCOUNT_USERNAME_DEFAULT = context.getString(R.string.pref_Account_Username_Default);
+		PREF_ACCOUNT_PASSWORD_KEY = context.getString(R.string.pref_Account_Password_Key);
+		PREF_ACCOUNT_PASSWORD_DEFAULT = context.getString(R.string.pref_Account_Password_Default);
 
 		// Make singleton
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -104,12 +104,15 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 	{
 		Preference p = findPreference(key);
 
-		Log.d(TAG, "Preferences changed, key=" + key + ", editor=" + p.getClass().getSimpleName());
+		if (p != null)
+		{
+			Log.d(TAG, "Preferences changed, key=" + key + ", editor=" + p.getClass().getSimpleName());
+		}
 		Storage.applyPreference(sharedPreferences, key);
 
 		if (p instanceof EditTextPreference)
 		{
-			if (!PREF_SYNC_PASSWORD_KEY.equals(key))
+			if (!PREF_ACCOUNT_PASSWORD_KEY.equals(key))
 			{
 				findPreference(key).setSummary(sharedPreferences.getString(key, ""));
 			}

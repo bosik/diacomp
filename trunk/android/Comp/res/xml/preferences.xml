@@ -4,20 +4,20 @@
     <PreferenceCategory android:title="@string/prefCategorySync" >
         <EditTextPreference
             android:name="prefServer"
-            android:defaultValue="@string/prefDefaultServer"
-            android:key="@string/prefServer"
+            android:defaultValue="@string/pref_Account_Server_Default"
+            android:key="@string/pref_Account_Server_Key"
             android:summary=""
             android:title="@string/prefLabelServer" />
         <EditTextPreference
             android:name="prefUsername"
-            android:defaultValue="@string/prefDefaultUsername"
-            android:key="@string/prefUsername"
+            android:defaultValue="@string/pref_Account_Username_Default"
+            android:key="@string/pref_Account_Username_Key"
             android:summary=""
             android:title="@string/prefLabelUsername" />
         <EditTextPreference
             android:name="prefPassword"
-            android:defaultValue="@string/prefDefaultPassword"
-            android:key="@string/prefPassword"
+            android:defaultValue="@string/pref_Account_Password_Default"
+            android:key="@string/pref_Account_Password_Key"
             android:summary=""
             android:title="@string/prefLabelPassword" />
     </PreferenceCategory>
