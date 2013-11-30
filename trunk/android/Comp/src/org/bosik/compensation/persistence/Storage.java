@@ -3,7 +3,7 @@ package org.bosik.compensation.persistence;
 import java.io.IOException;
 import java.util.List;
 import org.bosik.compensation.bo.foodbase.FoodItem;
-import org.bosik.compensation.face.R;
+import org.bosik.compensation.face.activities.ActivityPreferences;
 import org.bosik.compensation.persistence.dao.BaseDAO;
 import org.bosik.compensation.persistence.dao.DiaryDAO;
 import org.bosik.compensation.persistence.dao.local.LocalDiaryDAO;
@@ -15,7 +15,6 @@ import org.bosik.compensation.utils.ErrorHandler;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
@@ -25,74 +24,53 @@ import android.util.Log;
  */
 public class Storage
 {
-	private static final String			TAG					= Storage.class.getSimpleName();
+	private static final String		TAG					= Storage.class.getSimpleName();
 
-	private static final String			FILENAME_FOODBASE	= "FoodBase.xml";
-	private static final String			FILENAME_DISHBASE	= "DishBase.xml";
-	private static final int			CONNECTION_TIMEOUT	= 6000;
-
-	// preferences unit
-	private static SharedPreferences	pref;
-
-	// pref.keys and defaults
-	private static String				PREF_SERVER;
-	private static String				PREF_USERNAME;
-	private static String				PREF_PASSWORD;
-	private static String				PREF_DEFAULT_SERVER;
-	private static String				PREF_DEFAULT_USERNAME;
-	private static String				PREF_DEFAULT_PASSWORD;
+	private static final String		FILENAME_FOODBASE	= "FoodBase.xml";
+	private static final String		FILENAME_DISHBASE	= "DishBase.xml";
+	private static final int		CONNECTION_TIMEOUT	= 6000;
 
 	// DAO
-	public static WebClient				webClient;
-	public static DiaryDAO				localDiary;
-	public static DiaryDAO				webDiary;
-	public static BaseDAO<FoodItem>		localFoodBase;
-	public static BaseDAO<FoodItem>		webFoodBase;
+	public static WebClient			webClient;
+	public static DiaryDAO			localDiary;
+	public static DiaryDAO			webDiary;
+	public static BaseDAO<FoodItem>	localFoodBase;
+	public static BaseDAO<FoodItem>	webFoodBase;
 
 	// temp data
-	public static List<FoodItem>		foodBase;
+	public static List<FoodItem>	foodBase;
 
 	/**
 	 * Initializes the storage. Might be called sequentially
 	 * 
 	 * @param context
 	 * @param resolver
+	 * @param preferences
 	 */
-	public static void init(Context context, ContentResolver resolver)
+	public static void init(Context context, ContentResolver resolver, SharedPreferences preferences)
 	{
-		Log.d(TAG, "init()");
-
-		// ПОЛУЧЕНИЕ НАСТРОЕК
-
-		PreferenceManager.setDefaultValues(context, R.xml.preferences, false);
-		pref = PreferenceManager.getDefaultSharedPreferences(context);
-		PREF_SERVER = context.getString(R.string.prefServer);
-		PREF_USERNAME = context.getString(R.string.prefUsername);
-		PREF_PASSWORD = context.getString(R.string.prefPassword);
-		PREF_DEFAULT_SERVER = context.getString(R.string.prefDefaultServer);
-		PREF_DEFAULT_USERNAME = context.getString(R.string.prefDefaultUsername);
-		PREF_DEFAULT_PASSWORD = context.getString(R.string.prefDefaultPassword);
+		Log.v(TAG, "Storage unit initialization...");
 
 		// НАСТРОЙКА СИСТЕМЫ
 
 		if (null == webClient)
 		{
-			Log.d(TAG, "init(): web client initialization...");
+			Log.v(TAG, "init(): web client initialization...");
 			webClient = new WebClient(CONNECTION_TIMEOUT);
 		}
 		if (null == localDiary)
 		{
-			Log.d(TAG, "init(): local diary initialization...");
+			Log.v(TAG, "init(): local diary initialization...");
 			localDiary = new LocalDiaryDAO(resolver);
 		}
 		if (null == webDiary)
 		{
-			Log.d(TAG, "init(): web diary initialization...");
+			Log.v(TAG, "init(): web diary initialization...");
 			webDiary = new WebDiaryDAO(webClient);
 		}
 		if (null == localFoodBase)
 		{
-			Log.d(TAG, "init(): local foodbase initialization...");
+			Log.v(TAG, "init(): local foodbase initialization...");
 			try
 			{
 				localFoodBase = new LocalFoodBaseDAO(context, FILENAME_FOODBASE);
@@ -106,14 +84,14 @@ public class Storage
 		}
 		if (null == Storage.webFoodBase)
 		{
-			Log.d(TAG, "init(): web foodbase initialization...");
+			Log.v(TAG, "init(): web foodbase initialization...");
 			webFoodBase = new WebFoodBaseDAO(webClient);
 		}
 
 		ErrorHandler.init(webClient);
 
 		// this applies all preferences
-		applyPreference(pref, null);
+		applyPreference(preferences, null);
 	}
 
 	private static boolean check(String testKey, String baseKey)
@@ -131,32 +109,26 @@ public class Storage
 	 */
 	public static void applyPreference(SharedPreferences preferences, String key)
 	{
-		Log.d(TAG, "applyPreferences(): key = '" + key + "'");
+		Log.v(TAG, "applyPreferences(): key = '" + key + "'");
 
-		if (check(key, PREF_SERVER))
+		if (check(key, ActivityPreferences.PREF_SYNC_SERVER_KEY))
 		{
-			webClient.setServer(preferences.getString(PREF_SERVER, PREF_DEFAULT_SERVER));
+			webClient.setServer(preferences.getString(ActivityPreferences.PREF_SYNC_SERVER_KEY,
+					ActivityPreferences.PREF_SYNC_SERVER_DEFAULT));
 		}
 
-		if (check(key, PREF_USERNAME))
+		if (check(key, ActivityPreferences.PREF_SYNC_USERNAME_KEY))
 		{
-			webClient.setUsername(preferences.getString(PREF_USERNAME, PREF_DEFAULT_USERNAME));
+			webClient.setUsername(preferences.getString(ActivityPreferences.PREF_SYNC_USERNAME_KEY,
+					ActivityPreferences.PREF_SYNC_USERNAME_DEFAULT));
 		}
 
-		if (check(key, PREF_PASSWORD))
+		if (check(key, ActivityPreferences.PREF_SYNC_PASSWORD_KEY))
 		{
-			webClient.setPassword(preferences.getString(PREF_PASSWORD, PREF_DEFAULT_PASSWORD));
+			webClient.setPassword(preferences.getString(ActivityPreferences.PREF_SYNC_PASSWORD_KEY,
+					ActivityPreferences.PREF_SYNC_PASSWORD_DEFAULT));
 		}
 
 		// THINK: как узнавать об ошибках, произошедших у пользователя в release-mode? Email? Web?
 	}
-
-	// public static void saveFoodbase()
-	// {
-	// if (localFoodBase.modified())
-	// {
-	// Log.d(TAG, "init(): saving food base...");
-	// localFoodBase.save();
-	// }
-	// }
 }
