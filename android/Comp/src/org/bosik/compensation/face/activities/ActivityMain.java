@@ -22,28 +22,25 @@ import org.bosik.compensation.utils.Utils;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-public class ActivityMain extends Activity implements OnSharedPreferenceChangeListener, OnClickListener
+public class ActivityMain extends Activity implements OnClickListener
 {
-	/* =========================== КОНСТАНТЫ ================================ */
+	/* =========================== CONSTANTS ================================ */
 
 	private static final String	TAG				= ActivityMain.class.getSimpleName();
 	// private static final int RESULT_SPEECH_TO_TEXT = 620;
 
-	/* =========================== ПОЛЯ ================================ */
+	/* =========================== FIELDS ================================ */
 
-	// компоненты
+	// Components
 	private Button				buttonDiary;
 	private Button				buttonFoodBase;
 	private Button				buttonDishBase;
@@ -53,7 +50,7 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 
 	private static boolean		timerSettedUp	= false;
 
-	/* =========================== КЛАССЫ ================================ */
+	/* =========================== CLASSES ================================ */
 
 	// TODO: вынести в отдельный модуль, отвязать
 	// TODO: refresh diary view on productive (non-trivial) sync
@@ -334,8 +331,9 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 				UIUtils.showTip(this, "Debug mode is on");
 			}
 
-			// инициализация хранилища
-			Storage.init(this, getContentResolver());
+			// Core initialization
+			ActivityPreferences.init(this);
+			Storage.init(this, getContentResolver(), ActivityPreferences.preferences);
 
 			// НАСТРОЙКА ИНТЕРФЕЙСА
 
@@ -363,51 +361,6 @@ public class ActivityMain extends Activity implements OnSharedPreferenceChangeLi
 			// setupSyncTimer(10 * 60 * 1000);
 
 			showDiary();
-		}
-		catch (Exception e)
-		{
-			ErrorHandler.handle(e, this);
-		}
-	}
-
-	// handled
-	@Override
-	protected void onResume()
-	{
-		super.onResume();
-		try
-		{
-			PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
-		}
-		catch (Exception e)
-		{
-			ErrorHandler.handle(e, this);
-		}
-	}
-
-	// handled
-	@Override
-	protected void onPause()
-	{
-		super.onPause();
-		try
-		{
-			PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
-		}
-		catch (Exception e)
-		{
-			ErrorHandler.handle(e, this);
-		}
-	}
-
-	// handled
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
-	{
-		try
-		{
-			Log.d(TAG, "Preferences changed, key=" + key);
-			Storage.applyPreference(sharedPreferences, key);
 		}
 		catch (Exception e)
 		{
