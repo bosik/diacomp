@@ -39,9 +39,8 @@ public class Utils
 	 */
 
 	// форматы
-	public static final SimpleDateFormat	STD_TIME_FORMAT	= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
-																	Locale.getDefault());
-	public static final SimpleDateFormat	STD_DATE_FORMAT	= new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+	public static final SimpleDateFormat	STD_TIME_FORMAT	= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+	public static final SimpleDateFormat	STD_DATE_FORMAT	= new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
 	// статическая инициализация
 	static
