@@ -7,6 +7,11 @@ public class NoteRecord extends DiaryRecord
 	// TODO: remove this initialization
 	private String				text				= "";
 
+	public NoteRecord()
+	{
+
+	}
+
 	public NoteRecord(int time, String value)
 	{
 		setTime(time);
