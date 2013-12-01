@@ -27,13 +27,12 @@ public class FoodItemUtils extends TestCase
 
 	public static void compareItems(FoodItem exp, FoodItem act)
 	{
-		Log.i(TAG, "Comparison:");
-		Log.d(TAG, exp.toString());
-		Log.d(TAG, act.toString());
+		assertNotNull(exp);
+		assertNotNull(act);
 
 		try
 		{
-			// assertEquals(exp, act);
+			assertEquals(exp, act);
 			assertEquals(exp.getName(), act.getName());
 			assertEquals(exp.getId(), act.getId());
 			assertEquals(exp.getRelProts(), act.getRelProts(), EPS);

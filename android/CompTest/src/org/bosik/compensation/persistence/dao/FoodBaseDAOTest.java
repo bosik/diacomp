@@ -17,29 +17,23 @@ public abstract class FoodBaseDAOTest extends AndroidTestCase
 
 	public void testPersistanceSingle()
 	{
-		FoodItem org = new FoodItem();
+		FoodItem org = FoodItemUtils.demoFoodItemA();
 		int version;
-
-		org.setName("Хлеб \"Бородино\" нарезка (JUnit test)");
-		org.setId("280C3EC853464B3DB314067AD005A727");
-		org.setRelProts(5.5);
-		org.setRelFats(0.9);
-		org.setRelCarbs(44.1);
-		org.setRelValue(206.3);
-		org.setFromTable(false);
 
 		if (foodBaseDAO.findById(org.getId()) != null)
 		{
 			version = foodBaseDAO.getVersion();
 			foodBaseDAO.delete(org.getId());
-			// assertEquals(version + 1, foodBaseDAO.getVersion());
+			assertEquals(version + 1, foodBaseDAO.getVersion());
 			assertNull(foodBaseDAO.findById(org.getId()));
 		}
 
 		version = foodBaseDAO.getVersion();
 		foodBaseDAO.add(org);
-		// assertEquals(version + 1, foodBaseDAO.getVersion());
+		assertEquals(version + 1, foodBaseDAO.getVersion());
 
+		// ------------------------------
+		setUp();
 		// ------------------------------
 
 		FoodItem restored = foodBaseDAO.findById(org.getId());
@@ -47,11 +41,9 @@ public abstract class FoodBaseDAOTest extends AndroidTestCase
 		assertNotSame(org, restored);
 		FoodItemUtils.compareItems(org, restored);
 
-		// ------------------------------
-
 		version = foodBaseDAO.getVersion();
 		foodBaseDAO.delete(org.getId());
-		// assertEquals(version + 1, foodBaseDAO.getVersion());
+		assertEquals(version + 1, foodBaseDAO.getVersion());
 		assertNull(foodBaseDAO.findById(org.getId()));
 	}
 }
