@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.dao.diary;
+package org.bosik.compensation.persistence.dao;
 
 import java.util.Date;
 import junit.framework.TestCase;
@@ -11,6 +11,8 @@ import org.bosik.compensation.bo.diary.records.NoteRecord;
 
 public class DiaryPageUtils extends TestCase
 {
+	private static final double	EPS	= 0.00001;
+
 	public static DiaryPage demoPageA()
 	{
 		DiaryPage page = new DiaryPage();
@@ -55,12 +57,12 @@ public class DiaryPageUtils extends TestCase
 
 			if (expPage.get(i).getClass() == BloodRecord.class)
 			{
-				assertEquals(((BloodRecord) expPage.get(i)).getValue(), ((BloodRecord) actPage.get(i)).getValue());
+				assertEquals(((BloodRecord) expPage.get(i)).getValue(), ((BloodRecord) actPage.get(i)).getValue(), EPS);
 				assertEquals(((BloodRecord) expPage.get(i)).getFinger(), ((BloodRecord) actPage.get(i)).getFinger());
 			}
 			else if (expPage.get(i).getClass() == InsRecord.class)
 			{
-				assertEquals(((InsRecord) expPage.get(i)).getValue(), ((InsRecord) actPage.get(i)).getValue());
+				assertEquals(((InsRecord) expPage.get(i)).getValue(), ((InsRecord) actPage.get(i)).getValue(), EPS);
 			}
 			else if (expPage.get(i).getClass() == MealRecord.class)
 			{
@@ -73,11 +75,11 @@ public class DiaryPageUtils extends TestCase
 				for (int j = 0; j < expMeal.count(); j++)
 				{
 					assertEquals(expMeal.get(j).getName(), actMeal.get(j).getName());
-					assertEquals(expMeal.get(j).getRelProts(), actMeal.get(j).getRelProts());
-					assertEquals(expMeal.get(j).getRelFats(), actMeal.get(j).getRelFats());
-					assertEquals(expMeal.get(j).getRelCarbs(), actMeal.get(j).getRelCarbs());
-					assertEquals(expMeal.get(j).getRelValue(), actMeal.get(j).getRelValue());
-					assertEquals(expMeal.get(j).getMass(), actMeal.get(j).getMass());
+					assertEquals(expMeal.get(j).getRelProts(), actMeal.get(j).getRelProts(), EPS);
+					assertEquals(expMeal.get(j).getRelFats(), actMeal.get(j).getRelFats(), EPS);
+					assertEquals(expMeal.get(j).getRelCarbs(), actMeal.get(j).getRelCarbs(), EPS);
+					assertEquals(expMeal.get(j).getRelValue(), actMeal.get(j).getRelValue(), EPS);
+					assertEquals(expMeal.get(j).getMass(), actMeal.get(j).getMass(), EPS);
 				}
 			}
 
