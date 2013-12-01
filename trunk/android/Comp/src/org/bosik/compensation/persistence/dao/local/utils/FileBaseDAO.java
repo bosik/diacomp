@@ -91,6 +91,20 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 	}
 
 	@Override
+	public T findById(String id)
+	{
+		for (int i = 0; i < base.count(); i++)
+		{
+			T item = base.get(i);
+			if (item.getId().equals(id))
+			{
+				return item;
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public T findOne(String exactName)
 	{
 		for (int i = 0; i < base.count(); i++)
