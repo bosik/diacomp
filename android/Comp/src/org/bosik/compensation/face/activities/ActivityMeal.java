@@ -72,7 +72,6 @@ public class ActivityMeal extends Activity
 		editMass.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 		editMass.setOnEditorActionListener(new TextView.OnEditorActionListener()
 		{
-			// @Override
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
 			{
