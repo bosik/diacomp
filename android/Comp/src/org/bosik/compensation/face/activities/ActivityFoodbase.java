@@ -9,7 +9,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +24,9 @@ public class ActivityFoodbase extends Activity
 	// Widgets
 	private EditText			editFoodSearch;
 	private ListView			list;
+
+	// Data
+	private List<FoodItem>		base;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -49,16 +51,13 @@ public class ActivityFoodbase extends Activity
 			@Override
 			public void afterTextChanged(Editable s)
 			{
-				String filter = s.toString();
-				List<FoodItem> base = Storage.localFoodBase.findAny(filter);
-				showBase(base);
+				filterBase(s.toString());
 			}
 		});
 		list = (ListView) findViewById(R.id.listFood);
 
 		// Show data
-		List<FoodItem> base = Storage.localFoodBase.findAll();
-		showBase(base);
+		filterBase("");
 	}
 
 	@Override
@@ -69,17 +68,28 @@ public class ActivityFoodbase extends Activity
 		return true;
 	}
 
-	private void showBase(final List<FoodItem> base)
+	private void filterBase(String filter)
 	{
-		String[] str = new String[base.size()];
-		for (int i = 0; i < base.size(); i++)
+		if (filter.trim().isEmpty())
 		{
-			str[i] = base.get(i).getName();
+			base = Storage.localFoodBase.findAll();
+		}
+		else
+		{
+			base = Storage.localFoodBase.findAny(filter);
+		}
+		showBase(base);
+	}
+
+	private void showBase(final List<FoodItem> foodBase)
+	{
+		String[] str = new String[foodBase.size()];
+		for (int i = 0; i < foodBase.size(); i++)
+		{
+			str[i] = foodBase.get(i).getName();
 		}
 
-		Log.e(TAG, "Food base total items: " + base.size());
-
-		setTitle(String.format("%s (%d)", getString(R.string.title_activity_foodbase), base.size()));
+		setTitle(String.format("%s (%d)", getString(R.string.title_activity_foodbase), foodBase.size()));
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_2,
 				android.R.id.text1, str)
@@ -91,8 +101,8 @@ public class ActivityFoodbase extends Activity
 				TextView text1 = (TextView) view.findViewById(android.R.id.text1);
 				TextView text2 = (TextView) view.findViewById(android.R.id.text2);
 
-				text1.setText(base.get(position).getName());
-				text2.setText(getInfo(base.get(position)));
+				text1.setText(foodBase.get(position).getName());
+				text2.setText(getInfo(foodBase.get(position)));
 				return view;
 			}
 		};
@@ -100,7 +110,7 @@ public class ActivityFoodbase extends Activity
 		list.setAdapter(adapter);
 	}
 
-	private String getInfo(FoodItem foodItem)
+	private static String getInfo(FoodItem foodItem)
 	{
 		final String p = "Б";
 		final String f = "Ж";
