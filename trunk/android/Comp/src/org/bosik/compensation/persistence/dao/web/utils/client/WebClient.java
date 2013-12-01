@@ -63,6 +63,9 @@ public class WebClient
 	private String				password				= "";
 	private String				server					= "";
 
+	private long				lastRequestTime			= 0;
+	private static final long	TIME_LIMIT				= 200;
+
 	/* ================ ВСПОМОГАТЕЛЬНЫЕ КЛАССЫ ================ */
 
 	/**
@@ -202,6 +205,12 @@ public class WebClient
 	 */
 	private String doGet(String url, String codePage) throws WebClientException
 	{
+		long now = System.currentTimeMillis();
+		if ((now - lastRequestTime) < TIME_LIMIT)
+		{
+			Utils.sleep(TIME_LIMIT - (now - lastRequestTime));
+		}
+
 		// Log.i(TAG(), "doGet(), URL='" + URL + "'");
 		try
 		{
@@ -230,6 +239,12 @@ public class WebClient
 	 */
 	private String doPost(String url, List<NameValuePair> params, String codePage) throws WebClientException
 	{
+		long now = System.currentTimeMillis();
+		if ((now - lastRequestTime) < TIME_LIMIT)
+		{
+			Utils.sleep(TIME_LIMIT - (now - lastRequestTime));
+		}
+
 		// Log.i(TAG(), "doPost(), URL='" + URL + "'");
 		try
 		{
@@ -543,6 +558,7 @@ public class WebClient
 	 */
 	public boolean postPages(String pages)
 	{
+		// TODO: remove return type, use exceptions to inform
 		if (pages.equals(""))
 		{
 			return true;
@@ -581,20 +597,17 @@ public class WebClient
 
 	public boolean postFoodBase(int version, String data)
 	{
-		// TODO: uncomment when tested
-
 		// конструируем запрос
-		// List<NameValuePair> p = new ArrayList<NameValuePair>();
-		// p.add(new BasicNameValuePair("foodbase:upload", ""));
-		// p.add(new BasicNameValuePair("version", version));
-		// p.add(new BasicNameValuePair("data", data));
+		List<NameValuePair> p = new ArrayList<NameValuePair>();
+		p.add(new BasicNameValuePair("foodbase:upload", ""));
+		p.add(new BasicNameValuePair("version", String.valueOf(version)));
+		p.add(new BasicNameValuePair("data", data));
 
 		// отправляем на сервер
-		// String resp = doPostSmart(server + URL_CONSOLE, p, CODEPAGE_UTF8);
+		String resp = doPostSmart(server + URL_CONSOLE, p, CODEPAGE_UTF8);
 
 		// обрабатываем результат
-		// return processResponseDoneFail(resp);
-
-		return false;
+		// FIXME: Handle the response
+		return true; // processResponse(resp);
 	}
 }

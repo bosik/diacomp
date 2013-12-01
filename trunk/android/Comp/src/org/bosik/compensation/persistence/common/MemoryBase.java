@@ -36,6 +36,7 @@ public class MemoryBase<T extends UniqueNamed>
 			if (findById(item.getId()) == null)
 			{
 				items.add((T) item.clone());
+				changed();
 				return items.size() - 1;
 			}
 			else

@@ -10,7 +10,7 @@ public class WebClientTest extends TestCase
 
 	static
 	{
-		final String SERVER = "http://diacomp.16mb.com/";
+		final String SERVER = "http://diacomp.16mb.com/"; // "http://127.0.0.1";
 		final String USERNAME = "bosik-007@narod.ru";
 		final String PASSWORD = "devel0pment";
 		final int TIMEOUT = 3000;
