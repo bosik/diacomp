@@ -282,21 +282,29 @@ public class ActivityMain extends Activity implements OnClickListener
 				{
 					String s;
 
+					boolean transferred = false;
+
+					// check diary
 					if (syncPagesCount > 0)
 					{
+						transferred = true;
 						s = "Синхронизация дневника прошла успешно, передано страниц: "
 								+ String.valueOf(syncPagesCount);
 						UIUtils.showTip(ActivityMain.this, s);
 					}
-					else if (syncParams.getShowProgress())
-					{
-						s = "Дневник уже синхронизирован";
-						UIUtils.showTip(ActivityMain.this, s);
-					}
 
+					// check foodbase
 					if (syncFoodBase)
 					{
+						transferred = true;
 						UIUtils.showTip(ActivityMain.this, "База продуктов синхронизирована");
+					}
+
+					// check nothing happen
+					if (!transferred && syncParams.getShowProgress())
+					{
+						s = "Обновлений нет";
+						UIUtils.showTip(ActivityMain.this, s);
 					}
 
 					break;
