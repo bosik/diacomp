@@ -18,6 +18,7 @@ public abstract class FoodBaseDAOTest extends AndroidTestCase
 	public void testPersistanceSingle()
 	{
 		FoodItem org = new FoodItem();
+		int version;
 
 		org.setName("Хлеб \"Бородино\" нарезка (JUnit test)");
 		org.setId("270C3EC853464B3DB314067AD005A727");
@@ -29,11 +30,15 @@ public abstract class FoodBaseDAOTest extends AndroidTestCase
 
 		if (foodBaseDAO.findById(org.getId()) != null)
 		{
+			version = foodBaseDAO.getVersion();
 			foodBaseDAO.delete(org.getId());
+			// assertEquals(version + 1, foodBaseDAO.getVersion());
 			assertNull(foodBaseDAO.findById(org.getId()));
 		}
 
+		version = foodBaseDAO.getVersion();
 		foodBaseDAO.add(org);
+		// assertEquals(version + 1, foodBaseDAO.getVersion());
 
 		setUp();
 
@@ -46,7 +51,9 @@ public abstract class FoodBaseDAOTest extends AndroidTestCase
 
 		// ------------------------------
 
+		version = foodBaseDAO.getVersion();
 		foodBaseDAO.delete(org.getId());
+		// assertEquals(version + 1, foodBaseDAO.getVersion());
 		assertNull(foodBaseDAO.findById(org.getId()));
 	}
 }

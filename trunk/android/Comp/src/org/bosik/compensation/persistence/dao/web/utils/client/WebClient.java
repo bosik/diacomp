@@ -562,9 +562,16 @@ public class WebClient
 
 	/* ---------------------------------- БАЗА ПРОДУКТОВ ---------------------------------- */
 
-	public String getFoodBaseVersion()
+	public int getFoodBaseVersion()
 	{
-		return doGetSmart(server + URL_CONSOLE + "?foodbase:getVersion", CODEPAGE_CP1251);
+		try
+		{
+			return Integer.parseInt(doGetSmart(server + URL_CONSOLE + "?foodbase:getVersion", CODEPAGE_CP1251));
+		}
+		catch (NumberFormatException e)
+		{
+			throw new ResponseFormatException(e);
+		}
 	}
 
 	public String getFoodBase()
@@ -572,7 +579,7 @@ public class WebClient
 		return doGetSmart(server + URL_CONSOLE + "?foodbase:download", CODEPAGE_UTF8);
 	}
 
-	public boolean postFoodBase(String version, String data)
+	public boolean postFoodBase(int version, String data)
 	{
 		// TODO: uncomment when tested
 

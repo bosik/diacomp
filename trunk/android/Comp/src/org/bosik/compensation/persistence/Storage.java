@@ -11,6 +11,7 @@ import org.bosik.compensation.persistence.dao.local.LocalFoodBaseDAO;
 import org.bosik.compensation.persistence.dao.web.WebDiaryDAO;
 import org.bosik.compensation.persistence.dao.web.WebFoodBaseDAO;
 import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
+import org.bosik.compensation.persistence.serializers.foodbase.FoodBaseXMLSerializer;
 import org.bosik.compensation.utils.ErrorHandler;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -85,7 +86,7 @@ public class Storage
 		if (null == Storage.webFoodBase)
 		{
 			Log.v(TAG, "Web foodbase initialization...");
-			webFoodBase = new WebFoodBaseDAO(webClient);
+			webFoodBase = new WebFoodBaseDAO(webClient, new FoodBaseXMLSerializer());
 		}
 
 		ErrorHandler.init(webClient);

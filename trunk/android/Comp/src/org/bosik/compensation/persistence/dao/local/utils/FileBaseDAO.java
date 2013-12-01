@@ -1,9 +1,7 @@
 package org.bosik.compensation.persistence.dao.local.utils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import org.bosik.compensation.persistence.common.MemoryBase;
 import org.bosik.compensation.persistence.common.UniqueNamed;
 import org.bosik.compensation.persistence.dao.BaseDAO;
@@ -39,109 +37,55 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 	}
 
 	@Override
-	public String add(T item) throws BaseDAO.DuplicateException
+	public String add(T item) throws DuplicateException
 	{
-		if (base.get(item.getId()) == null)
-		{
-			base.add(item);
-			save();
-			return item.getId();
-		}
-		else
-		{
-			throw new DuplicateException(item.getId());
-		}
+		base.add(item);
+		save();
+		return item.getId();
 	}
 
 	@Override
-	public void delete(String id) throws BaseDAO.ItemNotFoundException
+	public void delete(String id) throws ItemNotFoundException
 	{
-		if (base.remove(id))
-		{
-			save();
-		}
-		else
-		{
-			throw new ItemNotFoundException(id);
-		}
+		base.remove(id);
 	}
 
 	@Override
 	public List<T> findAll()
 	{
-		return base.getAll();
+		return base.findAll();
 	}
 
 	@Override
 	public List<T> findAny(String filter)
 	{
-		List<T> result = new ArrayList<T>();
-		filter = filter.toUpperCase(Locale.US);
-
-		for (int i = 0; i < base.count(); i++)
-		{
-			T item = base.get(i);
-			if (item.getName().toUpperCase(Locale.US).contains(filter))
-			{
-				result.add(item);
-			}
-		}
-
-		return result;
+		return base.findAny(filter);
 	}
 
 	@Override
 	public T findById(String id)
 	{
-		for (int i = 0; i < base.count(); i++)
-		{
-			T item = base.get(i);
-			if (item.getId().equals(id))
-			{
-				return item;
-			}
-		}
-		return null;
+		return base.findById(id);
 	}
 
 	@Override
 	public T findOne(String exactName)
 	{
-		for (int i = 0; i < base.count(); i++)
-		{
-			T item = base.get(i);
-			if (item.getName().equals(exactName))
-			{
-				return item;
-			}
-		}
-		return null;
+		return base.findOne(exactName);
 	}
 
 	@Override
 	public void replaceAll(List<T> newList, int newVersion)
 	{
-		base.clear();
-		for (T item : newList)
-		{
-			base.add(item);
-		}
-		base.setVersion(newVersion);
+		base.replaceAll(newList, newVersion);
 		save();
 	}
 
 	@Override
-	public void update(T item) throws BaseDAO.ItemNotFoundException
+	public void update(T item) throws ItemNotFoundException
 	{
-		try
-		{
-			base.update(item);
-			save();
-		}
-		catch (IndexOutOfBoundsException e)
-		{
-			throw new ItemNotFoundException(item.getId());
-		}
+		base.update(item);
+		save();
 	}
 
 	@Override
@@ -150,7 +94,7 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 		return base.getVersion();
 	}
 
-	// ----------------------------------- ОСТАЛЬНОЕ -----------------------------------
+	// ----------------------------------- File I/O -----------------------------------
 
 	private void load() throws IOException
 	{
@@ -167,7 +111,7 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 		}
 	}
 
-	public void save()
+	private void save()
 	{
 		try
 		{

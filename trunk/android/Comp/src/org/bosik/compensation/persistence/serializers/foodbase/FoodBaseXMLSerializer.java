@@ -36,7 +36,6 @@ public class FoodBaseXMLSerializer implements Serializer<MemoryBase<FoodItem>>
 		MemoryBase<FoodItem> foodBase = new MemoryBase<FoodItem>();
 		foodBase.beginUpdate();
 		foodBase.clear();
-		foodBase.setVersion(Integer.parseInt(root.getAttribute("version")));
 
 		for (int i = 0; i < nodes.getLength(); i++)
 		{
@@ -58,6 +57,8 @@ public class FoodBaseXMLSerializer implements Serializer<MemoryBase<FoodItem>>
 				foodBase.add(food);
 			}
 		}
+
+		foodBase.setVersion(Integer.parseInt(root.getAttribute("version")));
 
 		foodBase.endUpdate();
 		return foodBase;
@@ -93,14 +94,12 @@ public class FoodBaseXMLSerializer implements Serializer<MemoryBase<FoodItem>>
 	@Override
 	public List<MemoryBase<FoodItem>> readAll(String data)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Not implemented");
 	}
 
 	@Override
 	public String writeAll(List<MemoryBase<FoodItem>> object)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Not implemented");
 	}
 }
