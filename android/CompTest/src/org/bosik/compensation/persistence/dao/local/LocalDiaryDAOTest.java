@@ -1,14 +1,15 @@
-package org.bosik.compensation.persistence.dao.diary;
+package org.bosik.compensation.persistence.dao.local;
 
 import org.bosik.compensation.persistence.dao.DiaryDAO;
-import org.bosik.compensation.persistence.dao.local.LocalDiaryDAO;
+import org.bosik.compensation.persistence.dao.DiaryDAOTest;
 import android.content.ContentResolver;
 
-public class LocalDiaryRepositoryTest extends DiaryRepositoryTest
+public class LocalDiaryDAOTest extends DiaryDAOTest
 {
 	@Override
-	protected DiaryDAO getRepository()
+	protected DiaryDAO getDAO()
 	{
+		assertNotNull(getContext());
 		ContentResolver resolver = getContext().getContentResolver();
 		return new LocalDiaryDAO(resolver);
 	}

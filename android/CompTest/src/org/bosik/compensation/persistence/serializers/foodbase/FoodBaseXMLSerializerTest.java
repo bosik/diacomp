@@ -1,11 +1,11 @@
-package org.bosik.compensation.persistence.dao.foodbase;
+package org.bosik.compensation.persistence.serializers.foodbase;
 
 import junit.framework.TestCase;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.persistence.common.MemoryBase;
 import org.bosik.compensation.persistence.serializers.foodbase.FoodBaseXMLSerializer;
 
-public class FoodBaseFormatterTest extends TestCase
+public class FoodBaseXMLSerializerTest extends TestCase
 {
 	private final String				xml	= "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
 													+ "<foods version=\"167\">\n"

@@ -1,30 +1,28 @@
-package org.bosik.compensation.persistence.dao.providers;
+package org.bosik.compensation.persistence.dao.web.utils.client;
 
-import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
 import junit.framework.TestCase;
 
 public class WebClientTest extends TestCase
 {
-	private static final String	TAG	= WebClientTest.class.getSimpleName();
+	// private static final String TAG = WebClientTest.class.getSimpleName();
 
-	// private WebClient webClient;
+	public static final WebClient	webClient;
 
-	public static WebClient getWebClient()
+	static
 	{
 		final String SERVER = "http://diacomp.16mb.com/";
 		final String USERNAME = "bosik-007@narod.ru";
 		final String PASSWORD = "devel0pment";
 		final int TIMEOUT = 3000;
 
-		WebClient client = new WebClient(TIMEOUT);
-		client.setUsername(USERNAME);
-		client.setPassword(PASSWORD);
-		client.setServer(SERVER);
-
-		return client;
+		webClient = new WebClient(TIMEOUT);
+		webClient.setUsername(USERNAME);
+		webClient.setPassword(PASSWORD);
+		webClient.setServer(SERVER);
+		webClient.login();
 	}
 
-	// TODO: implements
+	// TODO: implement
 
 	// @Override
 	// protected void setUp() throws Exception

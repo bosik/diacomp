@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.serializers;
+package org.bosik.compensation.persistence.serializers.foodmassed;
 
 import junit.framework.TestCase;
 import org.bosik.compensation.bo.common.FoodMassed;
