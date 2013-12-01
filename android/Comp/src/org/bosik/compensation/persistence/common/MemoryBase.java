@@ -3,14 +3,17 @@ package org.bosik.compensation.persistence.common;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import org.bosik.compensation.persistence.dao.BaseDAO.DuplicateException;
+import org.bosik.compensation.persistence.dao.BaseDAO.ItemNotFoundException;
 
 /**
- * Хранящаяся в памяти база
+ * In-memory base
  * 
  * @author Bosik
  * 
  * @param <T>
- *            Тип элемента базы
+ *            Base item's type
  */
 @SuppressWarnings("unchecked")
 public class MemoryBase<T extends UniqueNamed>
@@ -21,7 +24,7 @@ public class MemoryBase<T extends UniqueNamed>
 
 	// ================== РАБОТА СО СПИСКОМ ==================
 
-	public int add(T item)
+	public int add(T item) throws DuplicateException
 	{
 		if (null == item)
 		{
@@ -30,9 +33,15 @@ public class MemoryBase<T extends UniqueNamed>
 
 		try
 		{
-			items.add((T) item.clone());
-			changed();
-			return items.indexOf(item);
+			if (findById(item.getId()) == null)
+			{
+				items.add((T) item.clone());
+				return items.size() - 1;
+			}
+			else
+			{
+				throw new DuplicateException(item.getId());
+			}
 		}
 		catch (CloneNotSupportedException e)
 		{
@@ -63,7 +72,7 @@ public class MemoryBase<T extends UniqueNamed>
 		}
 	}
 
-	public T get(String id)
+	public T findById(String id)
 	{
 		try
 		{
@@ -82,7 +91,7 @@ public class MemoryBase<T extends UniqueNamed>
 		}
 	}
 
-	public List<T> getAll()
+	public List<T> findAll()
 	{
 		try
 		{
@@ -92,6 +101,47 @@ public class MemoryBase<T extends UniqueNamed>
 				result.add((T) item.clone());
 			}
 			return result;
+		}
+		catch (CloneNotSupportedException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<T> findAny(String filter)
+	{
+		try
+		{
+			List<T> result = new ArrayList<T>();
+			filter = filter.toUpperCase(Locale.US);
+
+			for (T item : items)
+			{
+				if (item.getName().toUpperCase(Locale.US).contains(filter))
+				{
+					result.add((T) item.clone());
+				}
+			}
+			return result;
+		}
+		catch (CloneNotSupportedException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	public T findOne(String exactName)
+	{
+		try
+		{
+			for (T item : items)
+			{
+				if (item.getName().equals(exactName))
+				{
+					return (T) item.clone();
+				}
+			}
+			return null;
 		}
 		catch (CloneNotSupportedException e)
 		{
@@ -111,7 +161,7 @@ public class MemoryBase<T extends UniqueNamed>
 		changed();
 	}
 
-	public boolean remove(String id)
+	public void remove(String id)
 	{
 		for (Iterator<T> iterator = items.iterator(); iterator.hasNext();)
 		{
@@ -120,10 +170,27 @@ public class MemoryBase<T extends UniqueNamed>
 			{
 				iterator.remove();
 				changed();
-				return true;
+				return;
 			}
 		}
-		return false;
+		throw new ItemNotFoundException(id);
+	}
+
+	public void replaceAll(List<T> newList, int newVersion)
+	{
+		try
+		{
+			items.clear();
+			for (T item : newList)
+			{
+				items.add((T) item.clone());
+			}
+			setVersion(newVersion);
+		}
+		catch (CloneNotSupportedException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	public void update(T item)
@@ -132,8 +199,15 @@ public class MemoryBase<T extends UniqueNamed>
 		try
 		{
 			int index = items.indexOf(item);
-			items.set(index, (T) item.clone());
-			changed();
+			if (index > -1)
+			{
+				items.set(index, (T) item.clone());
+				changed();
+			}
+			else
+			{
+				throw new ItemNotFoundException(item.getId());
+			}
 		}
 		catch (CloneNotSupportedException e)
 		{
