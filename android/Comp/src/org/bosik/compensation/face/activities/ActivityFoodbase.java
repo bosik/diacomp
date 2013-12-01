@@ -7,11 +7,14 @@ import org.bosik.compensation.face.R;
 import org.bosik.compensation.persistence.Storage;
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -20,6 +23,7 @@ public class ActivityFoodbase extends Activity
 	private static final String	TAG	= ActivityFoodbase.class.getSimpleName();
 
 	// Widgets
+	private EditText			editFoodSearch;
 	private ListView			list;
 
 	@Override
@@ -29,6 +33,27 @@ public class ActivityFoodbase extends Activity
 		setContentView(R.layout.activity_foodbase);
 
 		// Widgets binding
+		editFoodSearch = (EditText) findViewById(R.id.editFoodSearch);
+		editFoodSearch.addTextChangedListener(new TextWatcher()
+		{
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count)
+			{
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after)
+			{
+			}
+
+			@Override
+			public void afterTextChanged(Editable s)
+			{
+				String filter = s.toString();
+				List<FoodItem> base = Storage.localFoodBase.findAny(filter);
+				showBase(base);
+			}
+		});
 		list = (ListView) findViewById(R.id.listFood);
 
 		// Show data
@@ -55,9 +80,6 @@ public class ActivityFoodbase extends Activity
 		Log.e(TAG, "Food base total items: " + base.size());
 
 		setTitle(String.format("%s (%d)", getString(R.string.title_activity_foodbase), base.size()));
-
-		// ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-		// android.R.layout.simple_list_item_1, str);
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_2,
 				android.R.id.text1, str)
