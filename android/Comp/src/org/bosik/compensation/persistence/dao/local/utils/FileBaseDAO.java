@@ -33,6 +33,8 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 		this.serializer = serializer;
 		fileWorker = new FileWorker(context);
 
+		// fileWorker.writeToFile(fileName, "");
+
 		load();
 	}
 

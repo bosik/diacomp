@@ -11,17 +11,19 @@ public class WebFoodBaseDAO implements BaseDAO<FoodItem>
 {
 	private WebClient							webClient;
 	private Serializer<MemoryBase<FoodItem>>	serializer;
+	private MemoryBase<FoodItem>				base;
 
 	public WebFoodBaseDAO(WebClient webClient, Serializer<MemoryBase<FoodItem>> serializer)
 	{
 		this.webClient = webClient;
 		this.serializer = serializer;
+		base = load();
 	}
 
 	@Override
 	public String add(FoodItem item) throws DuplicateException
 	{
-		MemoryBase<FoodItem> base = load();
+		// MemoryBase<FoodItem> base = load();
 		base.add(item);
 		save(base);
 		return item.getId();
@@ -30,7 +32,7 @@ public class WebFoodBaseDAO implements BaseDAO<FoodItem>
 	@Override
 	public void delete(String id) throws ItemNotFoundException
 	{
-		MemoryBase<FoodItem> base = load();
+		// MemoryBase<FoodItem> base = load();
 		base.remove(id);
 		save(base);
 	}
@@ -66,7 +68,7 @@ public class WebFoodBaseDAO implements BaseDAO<FoodItem>
 	@Override
 	public void replaceAll(List<FoodItem> newList, int newVersion)
 	{
-		MemoryBase<FoodItem> base = new MemoryBase<FoodItem>();
+		// MemoryBase<FoodItem> base = new MemoryBase<FoodItem>();
 		base.replaceAll(newList, newVersion);
 		save(base);
 	}
@@ -74,7 +76,7 @@ public class WebFoodBaseDAO implements BaseDAO<FoodItem>
 	@Override
 	public void update(FoodItem item) throws ItemNotFoundException
 	{
-		MemoryBase<FoodItem> base = load();
+		// MemoryBase<FoodItem> base = load();
 		base.update(item);
 		save(base);
 	}

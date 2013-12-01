@@ -21,7 +21,7 @@ public abstract class FoodBaseDAOTest extends AndroidTestCase
 		int version;
 
 		org.setName("Хлеб \"Бородино\" нарезка (JUnit test)");
-		org.setId("270C3EC853464B3DB314067AD005A727");
+		org.setId("280C3EC853464B3DB314067AD005A727");
 		org.setRelProts(5.5);
 		org.setRelFats(0.9);
 		org.setRelCarbs(44.1);
@@ -39,8 +39,6 @@ public abstract class FoodBaseDAOTest extends AndroidTestCase
 		version = foodBaseDAO.getVersion();
 		foodBaseDAO.add(org);
 		// assertEquals(version + 1, foodBaseDAO.getVersion());
-
-		setUp();
 
 		// ------------------------------
 

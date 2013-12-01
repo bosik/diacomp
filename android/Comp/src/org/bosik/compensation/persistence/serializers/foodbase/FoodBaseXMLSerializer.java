@@ -28,6 +28,10 @@ public class FoodBaseXMLSerializer implements Serializer<MemoryBase<FoodItem>>
 	public MemoryBase<FoodItem> read(String xmlData)
 	{
 		// Log.v(TAG, "Reading: " + xmlData);
+		if ("".equals(xmlData))
+		{
+			return new MemoryBase<FoodItem>();
+		}
 
 		Document doc = XmlUtils.readDocument(xmlData);
 		Element root = doc.getDocumentElement();

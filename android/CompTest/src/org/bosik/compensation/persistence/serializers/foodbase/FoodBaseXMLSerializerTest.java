@@ -3,14 +3,13 @@ package org.bosik.compensation.persistence.serializers.foodbase;
 import junit.framework.TestCase;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.persistence.common.MemoryBase;
-import org.bosik.compensation.persistence.serializers.foodbase.FoodBaseXMLSerializer;
 
 public class FoodBaseXMLSerializerTest extends TestCase
 {
 	private final String				xml	= "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
 													+ "<foods version=\"167\">\n"
-													+ "	<food name=\"јбрикос\" prots=\"0.9\" fats=\"0.1\" carbs=\"9\" val=\"41\" table=\"True\"/>\n"
-													+ "	<food name=\"яйцо\" prots=\"12.7\" fats=\"11.5\" carbs=\"0.7\" val=\"157\" table=\"False\"/>\n"
+													+ "	<food id=\"24785D5E44E14BF2917F3E3AAAA5C18E\" name=\"јбрикос\" prots=\"0.9\" fats=\"0.1\" carbs=\"9\" val=\"41\" table=\"True\"/>\n"
+													+ "	<food id=\"5FB7320EF98C43E290F9DED3B8EBFC3A\" name=\"яйцо\" prots=\"12.7\" fats=\"11.5\" carbs=\"0.7\" val=\"157\" table=\"False\"/>\n"
 													+ "</foods>";
 
 	private final FoodBaseXMLSerializer	f	= new FoodBaseXMLSerializer();
@@ -60,16 +59,16 @@ public class FoodBaseXMLSerializerTest extends TestCase
 		food.setFromTable(false);
 		base.add(food);
 
+		assertEquals(2, base.count());
+		assertEquals(2, base.getVersion());
+
 		String xml = f.write(base);
 
 		// =======================================================
 
 		MemoryBase<FoodItem> anotherBase = f.read(xml);
-
-		assertEquals(base.getVersion(), anotherBase.getVersion());
-		assertEquals(base.getVersion(), 2);
-		assertEquals(base.count(), anotherBase.count());
-		assertEquals(base.count(), 2);
+		assertEquals(2, anotherBase.count());
+		assertEquals(2, anotherBase.getVersion());
 
 		for (int i = 0; i < base.count(); i++)
 		{

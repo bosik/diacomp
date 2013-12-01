@@ -10,12 +10,6 @@ public class FoodItemUtils extends TestCase
 	private static final String	TAG	= FoodItemUtils.class.getSimpleName();
 	private static final double	EPS	= 0.00001;
 
-	public static String print(FoodItem item)
-	{
-		return String.format("%s: %s[%.1f|%.1f|%.1f|%.1f]:%s", item.getId(), item.getName(), item.getRelProts(),
-				item.getRelFats(), item.getRelCarbs(), item.getRelValue(), item.getFromTable());
-	}
-
 	public static FoodItem demoFoodItemA()
 	{
 		FoodItem demo = new FoodItem();
@@ -34,8 +28,8 @@ public class FoodItemUtils extends TestCase
 	public static void compareItems(FoodItem exp, FoodItem act)
 	{
 		Log.i(TAG, "Comparison:");
-		Log.d(TAG, print(exp));
-		Log.d(TAG, print(act));
+		Log.d(TAG, exp.toString());
+		Log.d(TAG, act.toString());
 
 		try
 		{
@@ -51,8 +45,8 @@ public class FoodItemUtils extends TestCase
 		catch (ComparisonFailure e)
 		{
 			Log.e(TAG, "Comparison error:");
-			Log.e(TAG, print(exp));
-			Log.e(TAG, print(act));
+			Log.e(TAG, exp.toString());
+			Log.e(TAG, act.toString());
 			throw e;
 		}
 	}

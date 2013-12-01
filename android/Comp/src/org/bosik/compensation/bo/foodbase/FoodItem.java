@@ -1,5 +1,6 @@
 package org.bosik.compensation.bo.foodbase;
 
+import java.util.Locale;
 import org.bosik.compensation.bo.common.Food;
 import org.bosik.compensation.persistence.common.UniqueNamed;
 
@@ -49,5 +50,12 @@ public class FoodItem extends Food implements Cloneable
 		result.setTag(getTag());
 
 		return result;
+	}
+
+	@Override
+	public String toString()
+	{
+		return String.format("%s: %s[%.1f|%.1f|%.1f|%.1f]:%s", getId(), getName(), getRelProts(), getRelFats(),
+				getRelCarbs(), getRelValue(), getFromTable(), Locale.US);
 	}
 }
