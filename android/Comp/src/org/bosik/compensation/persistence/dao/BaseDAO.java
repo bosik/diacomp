@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface BaseDAO<Item>
 {
-	public static class ItemNotFoundException extends Exception
+	public static class ItemNotFoundException extends RuntimeException
 	{
 		private static final long	serialVersionUID	= 1L;
 
@@ -14,7 +14,7 @@ public interface BaseDAO<Item>
 		}
 	}
 
-	public static class DuplicateException extends Exception
+	public static class DuplicateException extends RuntimeException
 	{
 		private static final long	serialVersionUID	= 1L;
 
@@ -65,6 +65,14 @@ public interface BaseDAO<Item>
 	 * @return
 	 */
 	Item findOne(String exactName);
+
+	/**
+	 * Searches for item with specified ID, returns null if not found
+	 * 
+	 * @param id
+	 * @return
+	 */
+	Item findById(String id);
 
 	/**
 	 * Replaces all items by specified one and sets specified list version; this is useful in sync

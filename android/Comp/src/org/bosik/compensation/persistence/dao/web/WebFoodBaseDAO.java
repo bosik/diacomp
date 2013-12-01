@@ -41,6 +41,13 @@ public class WebFoodBaseDAO implements BaseDAO<FoodItem>
 	}
 
 	@Override
+	public FoodItem findById(String id)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public FoodItem findOne(String exactName)
 	{
 		// TODO Auto-generated method stub
@@ -67,5 +74,4 @@ public class WebFoodBaseDAO implements BaseDAO<FoodItem>
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
 }
