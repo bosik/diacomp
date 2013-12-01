@@ -47,6 +47,7 @@ public class FoodBaseXMLSerializer implements Serializer<MemoryBase<FoodItem>>
 				Element x = (Element) node;
 
 				FoodItem food = new FoodItem();
+				food.setId(x.getAttribute("id"));
 				food.setName(x.getAttribute("name"));
 				food.setRelProts(Double.parseDouble(x.getAttribute("prots")));
 				food.setRelFats(Double.parseDouble(x.getAttribute("fats")));
@@ -76,6 +77,7 @@ public class FoodBaseXMLSerializer implements Serializer<MemoryBase<FoodItem>>
 			FoodItem food = foodBase.get(i);
 
 			Element childelement = doc.createElement("food");
+			childelement.setAttribute("id", String.valueOf(food.getId()));
 			childelement.setAttribute("name", String.valueOf(food.getName()));
 			childelement.setAttribute("prots", String.valueOf(food.getRelProts()));
 			childelement.setAttribute("fats", String.valueOf(food.getRelFats()));
