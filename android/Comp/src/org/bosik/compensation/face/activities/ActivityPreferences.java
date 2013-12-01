@@ -99,7 +99,11 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 		{
 			if (!PREF_ACCOUNT_PASSWORD_KEY.equals(key))
 			{
-				findPreference(key).setSummary(sharedPreferences.getString(key, ""));
+				p.setSummary(sharedPreferences.getString(key, ""));
+			}
+			else
+			{
+				p.setSummary("*******");
 			}
 		}
 	}
