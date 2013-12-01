@@ -6,6 +6,7 @@
     <string name="app_name">Компенсация</string>
     <string name="title_menu">Компенсация</string>
     <string name="title_diary">Дневник</string>
+    <string name="title_activity_foodbase">Food base</string>
     <string name="title_editor_blood">Замер СК</string>
     <string name="title_editor_meal">Приём пищи</string>
     <string name="title_editor_note">Заметка</string>
@@ -21,7 +22,7 @@
     <string name="label_NoteText">Текст</string>
     <string name="label_mealCarbs">г угл.</string>
     <string name="label_mealDose">ед.</string>
-    
+
     <!-- Preference UI label -->
 
     <string name="prefCategorySync">Синхронизация</string>
