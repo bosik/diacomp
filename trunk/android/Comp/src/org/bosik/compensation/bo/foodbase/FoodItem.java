@@ -11,8 +11,10 @@ import org.bosik.compensation.persistence.common.UniqueNamed;
  */
 public class FoodItem extends Food implements Cloneable
 {
-	private boolean	fromTable;
-	private int		tag;
+	private static final long	serialVersionUID	= -1062568910858912955L;
+
+	private boolean				fromTable;
+	private int					tag;
 
 	// ================================ GET / SET ================================
 

@@ -2,7 +2,9 @@ package org.bosik.compensation.persistence.common;
 
 public class UniqueNamed extends Unique
 {
-	private String	name;
+	private static final long	serialVersionUID	= -7519935950545758515L;
+
+	private String				name;
 
 	// ================================ GET / SET ================================
 
