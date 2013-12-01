@@ -21,7 +21,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:drawableLeft="@drawable/button_foodbase"
-        android:enabled="false"
         android:paddingLeft="80.5sp"
         android:paddingRight="80.5sp"
         android:text="@string/menu_foodbase" />

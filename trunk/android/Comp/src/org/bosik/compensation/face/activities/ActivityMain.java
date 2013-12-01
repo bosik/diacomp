@@ -383,6 +383,8 @@ public class ActivityMain extends Activity implements OnClickListener
 					showDiary();
 					break;
 				case R.id.ButtonFoodBase:
+					Intent intent = new Intent(this, ActivityFoodbase.class);
+					startActivity(intent);
 					break;
 				case R.id.ButtonDishBase:
 					break;
