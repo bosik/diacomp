@@ -358,6 +358,16 @@ public class WebClient
 
 	public void setServer(String server)
 	{
+		if (!server.startsWith("http://"))
+		{
+			server = "http://" + server;
+		}
+
+		if (!server.endsWith("/"))
+		{
+			server = server + "/";
+		}
+
 		if (!this.server.equals(server))
 		{
 			this.server = server;
