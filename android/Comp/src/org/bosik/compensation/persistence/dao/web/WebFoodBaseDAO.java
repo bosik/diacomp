@@ -9,23 +9,21 @@ import org.bosik.compensation.persistence.serializers.Serializer;
 
 public class WebFoodBaseDAO implements BaseDAO<FoodItem>
 {
-	// private static final String					TAG	= WebFoodBaseDAO.class.getSimpleName();
+	// private static final String TAG = WebFoodBaseDAO.class.getSimpleName();
 
 	private WebClient							webClient;
 	private Serializer<MemoryBase<FoodItem>>	serializer;
-	private MemoryBase<FoodItem>				base;
 
 	public WebFoodBaseDAO(WebClient webClient, Serializer<MemoryBase<FoodItem>> serializer)
 	{
 		this.webClient = webClient;
 		this.serializer = serializer;
-		base = load();
 	}
 
 	@Override
 	public String add(FoodItem item) throws DuplicateException
 	{
-		// base = load();
+		MemoryBase<FoodItem> base = load();
 		base.add(item);
 		save(base);
 		return item.getId();
@@ -34,7 +32,7 @@ public class WebFoodBaseDAO implements BaseDAO<FoodItem>
 	@Override
 	public void delete(String id) throws ItemNotFoundException
 	{
-		// base = load();
+		MemoryBase<FoodItem> base = load();
 		base.remove(id);
 		save(base);
 	}
@@ -42,35 +40,35 @@ public class WebFoodBaseDAO implements BaseDAO<FoodItem>
 	@Override
 	public List<FoodItem> findAll()
 	{
-		base = load();
+		MemoryBase<FoodItem> base = load();
 		return base.findAll();
 	}
 
 	@Override
 	public List<FoodItem> findAny(String filter)
 	{
-		base = load();
+		MemoryBase<FoodItem> base = load();
 		return base.findAny(filter);
 	}
 
 	@Override
 	public FoodItem findById(String id)
 	{
-		base = load();
+		MemoryBase<FoodItem> base = load();
 		return base.findById(id);
 	}
 
 	@Override
 	public FoodItem findOne(String exactName)
 	{
-		base = load();
+		MemoryBase<FoodItem> base = load();
 		return base.findOne(exactName);
 	}
 
 	@Override
 	public void replaceAll(List<FoodItem> newList, int newVersion)
 	{
-		// base = new MemoryBase<FoodItem>();
+		MemoryBase<FoodItem> base = load();
 		base.replaceAll(newList, newVersion);
 		save(base);
 	}
@@ -78,7 +76,7 @@ public class WebFoodBaseDAO implements BaseDAO<FoodItem>
 	@Override
 	public void update(FoodItem item) throws ItemNotFoundException
 	{
-		// base = load();
+		MemoryBase<FoodItem> base = load();
 		base.update(item);
 		save(base);
 	}
