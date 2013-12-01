@@ -592,7 +592,13 @@ public class WebClient
 
 	public String getFoodBase()
 	{
-		return doGetSmart(server + URL_CONSOLE + "?foodbase:download", CODEPAGE_UTF8);
+		/**/long time = System.currentTimeMillis();
+
+		String source = doGetSmart(server + URL_CONSOLE + "?foodbase:download", CODEPAGE_UTF8);
+
+		/**/Log.v(TAG, String.format("FoodBase downloaded in %d msec", System.currentTimeMillis() - time));
+
+		return source;
 	}
 
 	public boolean postFoodBase(int version, String data)

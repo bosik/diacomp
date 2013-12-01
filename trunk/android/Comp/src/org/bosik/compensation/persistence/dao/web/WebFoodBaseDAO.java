@@ -9,6 +9,8 @@ import org.bosik.compensation.persistence.serializers.Serializer;
 
 public class WebFoodBaseDAO implements BaseDAO<FoodItem>
 {
+	// private static final String					TAG	= WebFoodBaseDAO.class.getSimpleName();
+
 	private WebClient							webClient;
 	private Serializer<MemoryBase<FoodItem>>	serializer;
 	private MemoryBase<FoodItem>				base;
@@ -23,7 +25,7 @@ public class WebFoodBaseDAO implements BaseDAO<FoodItem>
 	@Override
 	public String add(FoodItem item) throws DuplicateException
 	{
-		// MemoryBase<FoodItem> base = load();
+		// base = load();
 		base.add(item);
 		save(base);
 		return item.getId();
@@ -32,7 +34,7 @@ public class WebFoodBaseDAO implements BaseDAO<FoodItem>
 	@Override
 	public void delete(String id) throws ItemNotFoundException
 	{
-		// MemoryBase<FoodItem> base = load();
+		// base = load();
 		base.remove(id);
 		save(base);
 	}
@@ -40,35 +42,35 @@ public class WebFoodBaseDAO implements BaseDAO<FoodItem>
 	@Override
 	public List<FoodItem> findAll()
 	{
-		MemoryBase<FoodItem> base = load();
+		base = load();
 		return base.findAll();
 	}
 
 	@Override
 	public List<FoodItem> findAny(String filter)
 	{
-		MemoryBase<FoodItem> base = load();
+		base = load();
 		return base.findAny(filter);
 	}
 
 	@Override
 	public FoodItem findById(String id)
 	{
-		MemoryBase<FoodItem> base = load();
+		base = load();
 		return base.findById(id);
 	}
 
 	@Override
 	public FoodItem findOne(String exactName)
 	{
-		MemoryBase<FoodItem> base = load();
+		base = load();
 		return base.findOne(exactName);
 	}
 
 	@Override
 	public void replaceAll(List<FoodItem> newList, int newVersion)
 	{
-		// MemoryBase<FoodItem> base = new MemoryBase<FoodItem>();
+		// base = new MemoryBase<FoodItem>();
 		base.replaceAll(newList, newVersion);
 		save(base);
 	}
@@ -76,7 +78,7 @@ public class WebFoodBaseDAO implements BaseDAO<FoodItem>
 	@Override
 	public void update(FoodItem item) throws ItemNotFoundException
 	{
-		// MemoryBase<FoodItem> base = load();
+		// base = load();
 		base.update(item);
 		save(base);
 	}

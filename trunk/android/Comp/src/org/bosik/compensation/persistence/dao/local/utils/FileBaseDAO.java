@@ -50,6 +50,7 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 	public void delete(String id) throws ItemNotFoundException
 	{
 		base.remove(id);
+		save();
 	}
 
 	@Override
@@ -104,12 +105,12 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 		{
 			String source = fileWorker.readFromFile(fileName);
 			base = serializer.read(source);
-			Log.v(TAG, String.format("Memory base \"%s\" loaded, total items: %d", fileName, base.count()));
+			Log.v(TAG, String.format("File base \"%s\" loaded, total items: %d", fileName, base.count()));
 		}
 		else
 		{
 			base = new MemoryBase<T>();
-			Log.w(TAG, String.format("Failed to load memory base \"%s\": file not found", fileName));
+			Log.w(TAG, String.format("Failed to load file base \"%s\": file not found", fileName));
 		}
 	}
 
@@ -118,7 +119,7 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 		try
 		{
 			fileWorker.writeToFile(fileName, serializer.write(base));
-			Log.v(TAG, String.format("Memory base \"%s\" saved", fileName));
+			Log.v(TAG, String.format("File base \"%s\" saved", fileName));
 		}
 		catch (IOException e)
 		{

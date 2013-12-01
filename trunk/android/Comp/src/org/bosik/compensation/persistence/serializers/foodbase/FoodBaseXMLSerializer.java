@@ -9,6 +9,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import android.util.Log;
 
 /**
  * Умеет загружать базу продуктов из строки в xml-формате.
@@ -22,7 +23,7 @@ import org.w3c.dom.NodeList;
  */
 public class FoodBaseXMLSerializer implements Serializer<MemoryBase<FoodItem>>
 {
-	// private static final String TAG = DishBaseXMLSerializer.class.getSimpleName();
+	private static final String	TAG	= FoodBaseXMLSerializer.class.getSimpleName();
 
 	@Override
 	public MemoryBase<FoodItem> read(String xmlData)
@@ -32,6 +33,8 @@ public class FoodBaseXMLSerializer implements Serializer<MemoryBase<FoodItem>>
 		{
 			return new MemoryBase<FoodItem>();
 		}
+
+		/**/long time = System.currentTimeMillis();
 
 		Document doc = XmlUtils.readDocument(xmlData);
 		Element root = doc.getDocumentElement();
@@ -65,12 +68,18 @@ public class FoodBaseXMLSerializer implements Serializer<MemoryBase<FoodItem>>
 		foodBase.setVersion(Integer.parseInt(root.getAttribute("version")));
 
 		foodBase.endUpdate();
+
+		/**/Log.v(TAG, String.format("FoodBase deserialized in %d msec, total items: %d", System.currentTimeMillis()
+				- time, foodBase.count()));
+
 		return foodBase;
 	}
 
 	@Override
 	public String write(MemoryBase<FoodItem> foodBase)
 	{
+		/**/long time = System.currentTimeMillis();
+
 		Document doc = XmlUtils.newDocument();
 
 		Element root = doc.createElement("foods");
@@ -91,6 +100,9 @@ public class FoodBaseXMLSerializer implements Serializer<MemoryBase<FoodItem>>
 			childelement.setAttribute("table", String.valueOf(food.getFromTable()));
 			root.appendChild(childelement);
 		}
+
+		/**/Log.v(TAG, String.format("FoodBase serialized in %d msec, total items: %d", System.currentTimeMillis()
+				- time, foodBase.count()));
 
 		return XmlUtils.writeDocument(doc);
 	}

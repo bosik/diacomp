@@ -27,14 +27,7 @@ public class FileWorker
 	 */
 	public boolean fileExists(String fileName)
 	{
-		boolean result = context.getFileStreamPath(fileName).exists();
-
-		/*
-		 * if (result) Log.d(TAG, "File '" + fileName + "' exists"); else Log.d(TAG, "File '" +
-		 * fileName + "' does not exist");
-		 */
-
-		return result;
+		return context.getFileStreamPath(fileName).exists();
 	}
 
 	/**
@@ -47,20 +40,32 @@ public class FileWorker
 	 */
 	public String readFromFile(String fileName) throws IOException
 	{
+		/**/long time = System.currentTimeMillis();
+
 		FileInputStream stream = context.openFileInput(fileName);
 		InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
-		BufferedReader bufferedReader = new BufferedReader(reader);
 		StringBuilder sb = new StringBuilder();
-		String line;
-		while ((line = bufferedReader.readLine()) != null)
+		try
 		{
-			sb.append(line);
+			BufferedReader bufferedReader = new BufferedReader(reader);
+
+			String line;
+			while ((line = bufferedReader.readLine()) != null)
+			{
+				sb.append(line);
+			}
 		}
-		reader.close();
+		finally
+		{
+			reader.close();
+			stream.close();
+		}
 
-		Log.v(TAG, "Reading from file '" + fileName + "': " + sb.toString());
+		/**/Log.v(
+				TAG,
+				String.format("File '%s' read in %d msec (%d bytes)", fileName, System.currentTimeMillis() - time,
+						sb.length()));
 		return sb.toString();
-
 	}
 
 	/**
@@ -74,10 +79,19 @@ public class FileWorker
 	 */
 	public void writeToFile(String fileName, String data) throws IOException
 	{
-		Log.v(TAG, "Writing to file '" + fileName + "': " + data);
+		/**/long time = System.currentTimeMillis();
 
 		FileOutputStream outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-		outputStream.write(data.getBytes());
-		outputStream.close();
+		try
+		{
+			outputStream.write(data.getBytes());
+		}
+		finally
+		{
+			outputStream.close();
+		}
+
+		/**/Log.v(TAG, String.format("File '%s' written in %d msec (%d bytes)", fileName, System.currentTimeMillis()
+				- time, data.length()));
 	}
 }
