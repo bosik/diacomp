@@ -13,7 +13,7 @@
     
     <uses-sdk android:minSdkVersion="10" />
     
-	<application>
+	<application android:allowBackup="true">
 	    <uses-library android:name="android.test.runner"/>
 	</application>
 	

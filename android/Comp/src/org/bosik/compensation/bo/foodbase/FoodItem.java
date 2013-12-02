@@ -55,7 +55,7 @@ public class FoodItem extends Food implements Cloneable
 	@Override
 	public String toString()
 	{
-		return String.format("%s: %s[%.1f|%.1f|%.1f|%.1f]:%s", getId(), getName(), getRelProts(), getRelFats(),
-				getRelCarbs(), getRelValue(), getFromTable(), Locale.US);
+		return String.format(Locale.US, "%s: %s[%.1f|%.1f|%.1f|%.1f]:%s", getId(), getName(), getRelProts(),
+				getRelFats(), getRelCarbs(), getRelValue(), getFromTable());
 	}
 }

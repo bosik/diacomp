@@ -418,7 +418,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	private void setCaptionDate(Date date)
 	{
 		String s = CaptionFmt.format(date);
-		setTitle("Дневник (" + s + ")");
+		setTitle(String.format("%s (%s)", getString(R.string.diary_title), s));
 		buttonSelectDay.setText(s);
 	}
 

@@ -24,7 +24,7 @@
 
         <activity
             android:name="org.bosik.compensation.face.activities.ActivityMain"
-            android:label="@string/title_menu"
+            android:label="@string/main_title"
             android:theme="@android:style/Theme.Light" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,19 +34,19 @@
         </activity>
         <activity
             android:name="org.bosik.compensation.face.activities.ActivityDiary"
-            android:label="@string/title_diary"
+            android:label="@string/diary_title"
             android:theme="@android:style/Theme.Light" >
         </activity>
         <activity
             android:name="org.bosik.compensation.face.activities.ActivityEditorBlood"
-            android:label="@string/title_editor_blood" >
+            android:label="@string/editor_blood_title" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.bosik.compensation.face.activities.ActivityDiary" />
         </activity>
         <activity
             android:name="org.bosik.compensation.face.activities.ActivityMeal"
-            android:label="@string/title_editor_meal"
+            android:label="@string/editor_meal_title"
             android:theme="@android:style/Theme.Light" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -54,14 +54,14 @@
         </activity>
         <activity
             android:name="org.bosik.compensation.face.activities.ActivityEditorNote"
-            android:label="@string/title_editor_note" >
+            android:label="@string/editor_note_title" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.bosik.compensation.face.activities.ActivityDiary" />
         </activity>
         <activity
             android:name="org.bosik.compensation.face.activities.ActivityPreferences"
-            android:label="@string/title_preferences"
+            android:label="@string/preferences_title"
             android:theme="@android:style/Theme.Light" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -69,7 +69,7 @@
         </activity>
         <activity
             android:name="org.bosik.compensation.face.activities.ActivityFoodbase"
-            android:label="@string/title_activity_foodbase"
+            android:label="@string/foodbase_title"
             android:theme="@android:style/Theme.Light">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

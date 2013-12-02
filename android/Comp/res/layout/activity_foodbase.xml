@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:hint="Type food name"
+            android:hint="@string/foodbase_search_hint"
             android:inputType="text" >
 
             <requestFocus />

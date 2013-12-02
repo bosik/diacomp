@@ -80,7 +80,8 @@
         android:layout_height="wrap_content"
         android:background="#FF000000"
         android:gravity="bottom|top"
-        android:orientation="horizontal" >
+        android:orientation="horizontal" 
+        style="?android:attr/buttonBarStyle">
 
         <Button
             android:id="@+id/buttonAddBlood"
@@ -88,7 +89,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawableTop="@drawable/diary_addblood"
-            android:paddingBottom="0dp" />
+            android:paddingBottom="0dp"
+            style="?android:attr/buttonBarButtonStyle" />
 
         <Button
             android:id="@+id/buttonAddIns"
@@ -96,7 +98,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:drawableTop="@drawable/diary_addins"
-            android:paddingBottom="0dp" />
+            android:paddingBottom="0dp"
+            style="?android:attr/buttonBarButtonStyle"/>
 
         <Button
             android:id="@+id/buttonAddMeal"
@@ -104,7 +107,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:drawableTop="@drawable/diary_addmeal"
-            android:paddingBottom="0dp" />
+            android:paddingBottom="0dp"
+            style="?android:attr/buttonBarButtonStyle"/>
 
         <Button
             android:id="@+id/buttonAddNote"
@@ -112,7 +116,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:drawableTop="@drawable/diary_addnote"
-            android:paddingBottom="0dp" />
+            android:paddingBottom="0dp"
+            style="?android:attr/buttonBarButtonStyle"/>
     </LinearLayout>
 
 </LinearLayout>

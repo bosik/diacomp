@@ -13,7 +13,7 @@
         android:drawableLeft="@drawable/button_diary"
         android:paddingLeft="80.5sp"
         android:paddingRight="80.5sp"
-        android:text="@string/menu_diary" />
+        android:text="@string/main_option_diary" />
 
     <Button
         android:id="@+id/ButtonFoodBase"
@@ -23,7 +23,7 @@
         android:drawableLeft="@drawable/button_foodbase"
         android:paddingLeft="80.5sp"
         android:paddingRight="80.5sp"
-        android:text="@string/menu_foodbase" />
+        android:text="@string/main_option_foodbase" />
 
     <Button
         android:id="@+id/ButtonDishBase"
@@ -34,7 +34,7 @@
         android:enabled="false"
         android:paddingLeft="80.5sp"
         android:paddingRight="80.5sp"
-        android:text="@string/menu_dishbase" />
+        android:text="@string/main_option_dishbase" />
 
     <Button
         android:id="@+id/ButtonPreferences"
@@ -44,7 +44,7 @@
         android:layout_marginTop="@dimen/padding_small"
         android:paddingLeft="80.5sp"
         android:paddingRight="80.5sp"
-        android:text="@string/button_pref" />
+        android:text="@string/main_option_preferences" />
 
     <Button
         android:id="@+id/buttonAuth"
@@ -53,13 +53,13 @@
         android:layout_gravity="top"
         android:paddingLeft="80.5sp"
         android:paddingRight="80.5sp"
-        android:text="@string/button_sync" />
+        android:text="@string/main_option_sync" />
 
     <Button
         android:id="@+id/buttonTestMealEditor"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:text="@string/button_test" />
+        android:text="@string/main_option_test" />
 
 </LinearLayout>

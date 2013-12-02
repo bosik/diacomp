@@ -1,7 +1,6 @@
 package org.bosik.compensation.face.activities;
 
 import java.util.List;
-import java.util.Locale;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.persistence.Storage;
@@ -19,14 +18,14 @@ import android.widget.TextView;
 
 public class ActivityFoodbase extends Activity
 {
-	private static final String	TAG	= ActivityFoodbase.class.getSimpleName();
+	// private static final String TAG = ActivityFoodbase.class.getSimpleName();
 
 	// Widgets
-	private EditText			editFoodSearch;
-	private ListView			list;
+	private EditText		editFoodSearch;
+	private ListView		list;
 
 	// Data
-	private List<FoodItem>		base;
+	private List<FoodItem>	base;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -89,7 +88,7 @@ public class ActivityFoodbase extends Activity
 			str[i] = foodBase.get(i).getName();
 		}
 
-		setTitle(String.format("%s (%d)", getString(R.string.title_activity_foodbase), foodBase.size()));
+		setTitle(String.format("%s (%d)", getString(R.string.foodbase_title), foodBase.size()));
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_2,
 				android.R.id.text1, str)
@@ -110,14 +109,16 @@ public class ActivityFoodbase extends Activity
 		list.setAdapter(adapter);
 	}
 
-	private static String getInfo(FoodItem foodItem)
+	private String getInfo(FoodItem foodItem)
 	{
 		final String p = "Б";
 		final String f = "Ж";
 		final String c = "У";
 		final String v = "К";
+		String fmt = getString(R.string.foodbase_subinfo, foodItem.getRelProts(), foodItem.getRelFats(),
+				foodItem.getRelCarbs(), foodItem.getRelValue());
+		// fmt = "%s %.1f   %s %.1f   %s %.1f   %s %.1f";
 
-		return String.format(Locale.US, "%s %.1f   %s %.1f   %s %.1f   %s %.1f", p, foodItem.getRelProts(), f,
-				foodItem.getRelFats(), c, foodItem.getRelCarbs(), v, foodItem.getRelValue());
+		return fmt;
 	}
 }

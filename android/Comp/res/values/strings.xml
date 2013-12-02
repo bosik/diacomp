@@ -1,56 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Compensation</string>
+    <string name="diary_button_add">Add</string>
+    <string name="diary_button_addblood">BS</string>
+    <string name="diary_button_addins">Injection</string>
+    <string name="diary_button_addmeal">Meal</string>
+    <string name="diary_button_addnote">Note</string>
+    <string name="diary_title">Diary</string>
+    <string name="editor_blood_field_finger">Finger</string>
+    <string name="editor_blood_title">BS</string>
+    <string name="editor_common_field_time">Time</string>
+    <string name="editor_common_field_value">Value</string>
+    <string name="editor_common_save">Save</string>
+    <string name="editor_meal_button_add">Add</string>
+    <string name="editor_meal_field_fooddish">Food/dish</string>
+    <string name="editor_meal_field_mass">Mass, g</string>
+    <string name="editor_meal_label_carbs">g carbs.</string>
+    <string name="editor_meal_label_dose">U</string>
+    <string name="editor_meal_title">Meal</string>
+    <string name="editor_note_field_text">Text</string>
+    <string name="editor_note_title">Note</string>
+    <string name="foodbase_search_hint">Search&#8230;</string>
+    <string name="foodbase_subinfo" formatted="false">P %.1f / F %.1f /  C %.1f / V %.1f</string>
+    <string name="foodbase_title">Food base</string>
+    <string name="main_option_diary">Diary</string>
+    <string name="main_option_dishbase">Dish base</string>
+    <string name="main_option_foodbase">Food base</string>
+    <string name="main_option_preferences">Preferences</string>
+    <string name="main_option_sync">Sync</string>
+    <string name="main_option_test">Test</string>
+    <string name="main_title">Compensation</string>
+    <string name="preferences_sync">Account</string>
+    <string name="preferences_sync_password">Password</string>
+    <string name="preferences_sync_server">Server</string>
+    <string name="preferences_sync_username">Login (e-mail)</string>
+    <string name="preferences_title">Preferences</string>
 
-    <!-- Activity captions -->
+    <!-- ========================================================================= -->
 
-    <string name="app_name">Компенсация</string>
-    <string name="title_menu">Компенсация</string>
-    <string name="title_diary">Дневник</string>
-    <string name="title_activity_foodbase">Food base</string>
-    <string name="title_editor_blood">Замер СК</string>
-    <string name="title_editor_meal">Приём пищи</string>
-    <string name="title_editor_note">Заметка</string>
-    <string name="title_preferences">Настройки</string>
-
-    <!-- Labels -->
-
-    <string name="label_time">Время</string>
-    <string name="label_value">Значение</string>
-    <string name="label_fooddishname">Продукт/блюдо</string>
-    <string name="label_mass">Масса, г</string>
-    <string name="label_bloodfinger">Палец</string>
-    <string name="label_NoteText">Текст</string>
-    <string name="label_mealCarbs">г угл.</string>
-    <string name="label_mealDose">ед.</string>
-
-    <!-- Preference UI label -->
-
-    <string name="prefCategorySync">Синхронизация</string>
-    <string name="prefLabelServer">Сервер</string>
-    <string name="prefLabelUsername">Логин (e-mail)</string>
-    <string name="prefLabelPassword">Пароль</string>
-
-    <!-- Buttons -->
-
-    <string name="button_diary_add">Новая запись</string>
-    <string name="button_addblood">Замер СК</string>
-    <string name="button_addins">Инъекция</string>
-    <string name="button_addmeal">Приём пищи</string>
-    <string name="button_addnote">Заметка</string>
-    <string name="button_sync">Синхронизировать</string>
-    <string name="button_login">Войти</string>
-    <string name="button_auth">Авторизация</string>
-    <string name="button_test">Тест</string>
-    <string name="button_editor_ok">Сохранить</string>
-    <string name="button_add">Добавить</string>
-    <string name="button_pref">Настройки</string>
-
-    <!-- Menus -->
-
-    <string name="menu_diary">Diary</string>
-    <string name="menu_foodbase">Food base</string>
-    <string name="menu_dishbase">Dish base</string>
-    <string name="menu_settings">Settings</string>
 
     <!-- Arrays -->
 

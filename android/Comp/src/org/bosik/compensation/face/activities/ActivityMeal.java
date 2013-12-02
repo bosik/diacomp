@@ -57,8 +57,8 @@ public class ActivityMeal extends Activity
 		textMealDose = (TextView) findViewById(R.id.textMealDose);
 
 		// текст
-		captionCarbs = getString(R.string.label_mealCarbs);
-		captionDose = getString(R.string.label_mealDose);
+		captionCarbs = getString(R.string.editor_meal_label_carbs);
+		captionDose = getString(R.string.editor_meal_label_dose);
 
 		// инициализация
 

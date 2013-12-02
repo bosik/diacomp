@@ -1,55 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Activity captions -->
-
     <string name="app_name">Компенсация</string>
-    <string name="title_menu">Компенсация</string>
-    <string name="title_diary">Дневник</string>
-    <string name="title_editor_blood">Замер СК</string>
-    <string name="title_editor_meal">Приём пищи</string>
-    <string name="title_editor_note">Заметка</string>
-    <string name="title_preferences">Настройки</string>
-
-    <!-- Labels -->
-
-    <string name="label_time">Время</string>
-    <string name="label_value">Значение</string>
-    <string name="label_fooddishname">Продукт/блюдо</string>
-    <string name="label_mass">Масса, г</string>
-    <string name="label_bloodfinger">Палец</string>
-    <string name="label_NoteText">Текст</string>
-    <string name="label_mealCarbs">г угл.</string>
-    <string name="label_mealDose">ед.</string>
-    
-    <!-- Preference UI label -->
-
-    <string name="prefCategorySync">Синхронизация</string>
-    <string name="prefLabelServer">Сервер</string>
-    <string name="prefLabelUsername">Логин (e-mail)</string>
-    <string name="prefLabelPassword">Пароль</string>
-
-    <!-- Buttons -->
-
-    <string name="button_diary_add">Новая запись</string>
-    <string name="button_addblood">Замер СК</string>
-    <string name="button_addins">Инъекция</string>
-    <string name="button_addmeal">Приём пищи</string>
-    <string name="button_addnote">Заметка</string>
-    <string name="button_sync">Синхронизировать</string>
-    <string name="button_login">Войти</string>
-    <string name="button_auth">Авторизация</string>
-    <string name="button_test">Тест</string>
-    <string name="button_editor_ok">Сохранить</string>
-    <string name="button_add">Добавить</string>
-    <string name="button_pref">Настройки</string>
-
-    <!-- Menus -->
-
-    <string name="menu_diary">Дневник</string>
-    <string name="menu_foodbase">База продуктов</string>
-    <string name="menu_dishbase">База блюд</string>
-    <string name="menu_settings">Настройки</string>
+    <string name="diary_button_add">Новая запись</string>
+    <string name="diary_button_addblood">Замер СК</string>
+    <string name="diary_button_addins">Инъекция</string>
+    <string name="diary_button_addmeal">Приём пищи</string>
+    <string name="diary_button_addnote">Заметка</string>
+    <string name="diary_title">Дневник</string>
+    <string name="editor_blood_field_finger">Палец</string>
+    <string name="editor_blood_title">Замер СК</string>
+    <string name="editor_common_field_time">Время</string>
+    <string name="editor_common_field_value">Значение</string>
+    <string name="editor_common_save">Сохранить</string>
+    <string name="editor_meal_button_add">Добавить</string>
+    <string name="editor_meal_field_fooddish">Продукт/блюдо</string>
+    <string name="editor_meal_field_mass">Масса, г</string>
+    <string name="editor_meal_label_carbs">г угл.</string>
+    <string name="editor_meal_label_dose">ед.</string>
+    <string name="editor_meal_title">Приём пищи</string>
+    <string name="editor_note_field_text">Текст</string>
+    <string name="editor_note_title">Заметка</string>
+    <string name="foodbase_search_hint">Поиск&#8230;</string>
+    <string name="foodbase_subinfo" formatted="false">Б %.1f / Ж %.1f / У %.1f / К %.1f</string>
+    <string name="foodbase_title">База продуктов</string>
+    <string name="main_option_diary">Дневник</string>
+    <string name="main_option_dishbase">База блюд</string>
+    <string name="main_option_foodbase">База продуктов</string>
+    <string name="main_option_preferences">Настройки</string>
+    <string name="main_option_sync">Синхронизировать</string>
+    <string name="main_option_test">Тест</string>
+    <string name="main_title">Компенсация</string>
+    <string name="preferences_sync">Учётная запись</string>
+    <string name="preferences_sync_password">Пароль</string>
+    <string name="preferences_sync_server">Сервер</string>
+    <string name="preferences_sync_username">Логин (e-mail)</string>
+    <string name="preferences_title">Настройки</string>
 
     <!-- Arrays -->
 
