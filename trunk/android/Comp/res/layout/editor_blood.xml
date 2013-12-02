@@ -31,7 +31,7 @@
                     android:id="@+id/labelBloodTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_time" />
+                    android:text="@string/editor_common_field_time" />
 
                 <TimePicker
                     android:id="@+id/pickerBloodTime"
@@ -51,7 +51,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/padding_small"
-                    android:text="@string/label_value" />
+                    android:text="@string/editor_common_field_value" />
 
                 <EditText
                     android:id="@+id/editBloodValue"
@@ -67,7 +67,7 @@
                     android:id="@+id/labelBloodFinger"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_bloodfinger" />
+                    android:text="@string/editor_blood_field_finger" />
 
                 <Spinner
                     android:id="@+id/spinnerBloodFinger"
@@ -82,7 +82,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/padding_medium"
-            android:text="@string/button_editor_ok" />
+            android:text="@string/editor_common_save" />
     </LinearLayout>
 
 </ScrollView>

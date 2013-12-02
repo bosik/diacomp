@@ -20,7 +20,7 @@
             android:id="@+id/labelNoteTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/label_time" />
+            android:text="@string/editor_common_field_time" />
 
         <TimePicker
             android:id="@+id/pickerNoteTime"
@@ -32,7 +32,7 @@
             android:id="@+id/labelNoteText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/label_NoteText" />
+            android:text="@string/editor_note_field_text" />
 
         <EditText
             android:id="@+id/editNoteText"
@@ -49,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/padding_medium"
-            android:text="@string/button_editor_ok" />
+            android:text="@string/editor_common_save" />
     </LinearLayout>
 
 </ScrollView>
