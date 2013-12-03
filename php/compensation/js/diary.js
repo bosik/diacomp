@@ -484,7 +484,7 @@ function codeMeal(meal, id)
 	code +=
 	'					<div class="time hoverable" id="time_' + id + '" onclick="onTimeClick(this.id)">' + formatTime(meal.time) + "</div>\n" +
 	'					<div class="item">\n' +
-	"						<table cellpadding=\"0\">\n";
+	"						<table class=\"meal_table\">\n";
 	for (var i = 0; i < meal.content.length; i++)
 	{
 		code +=
@@ -499,7 +499,7 @@ function codeMeal(meal, id)
 	}
 
 	code +=
-	"							<tr class=\"food\">\n" +
+	"							<tr class=\"food meal_adder\">\n" +
 	"								<td class=\"col_item\">\n"+
 	"									<div class=\"wrapper_table\">\n"+
 	"										<span class=\"wrapper_cell\">\n"+
@@ -514,7 +514,7 @@ function codeMeal(meal, id)
 	'										</span>\n'+
 	'									</div>\n'+
 	'								</td>\n' +
-	"								<td class=\"col_delete\"><button onclick=\"addItemToMeal("+id+")\" title=\"Добавить\">+</button></td>\n" +
+	"								<td class=\"col_delete\"><button class=\"meal_add\" onclick=\"addItemToMeal("+id+")\" title=\"Добавить\"></button></td>\n" +
 	"							</tr>\n";
 
 	code +=
@@ -589,7 +589,8 @@ function createHandlers()
 				$("#mealcombo_" + id).autocomplete({
 					autoFocus: true,
 					source: fdBase,
-					delay: 0
+					delay: 0,
+					minLength: 2
 				});
 			});
 			$("#mealcombo_" + id).on("autocompleteselect", function(event, ui)

@@ -244,7 +244,9 @@ th {
 }
 
 .short_meal {
-	background: #FFEADD;
+	background: #FFFFDD;
+	/*background: #FFF4DD;*/
+	color: #B00000;
 }
 
 .meal_input {
@@ -262,7 +264,7 @@ th {
 }
 
 .food:hover {
-	background: #ffff80;
+	background: #fcfca0;
 	/*cursor: pointer;*/
 	/*width: auto;*/
 }
@@ -325,12 +327,65 @@ th {
 	color: crimson;
 }
 
+.meal_add
+{
+	background: #fcfcfc;
+	background-position: center;
+	background-image: url("../img/meal-add.png");
+	background-repeat: no-repeat;
+	width: 24px;
+	height: 24px;
+	border-radius: 4px;
+}
+
+.meal_add:hover
+{
+	background: #f0f0f0;
+	background-position: center;
+	background-image: url("../img/meal-add.png");
+	background-repeat: no-repeat;
+}
+
+.meal_table
+{
+	cellpadding: 0;
+	border-collapse: collapse;
+}
+
+.meal_adder
+{
+	border-top: thin dotted #e8e8e8;
+}
+
 .ui-autocomplete
 {
 	max-height: 260px;
+	max-width: 317px;
 	overflow-y: scroll;
 	overflow-x: hidden;
 }
+
+.ui-autocomplete {
+   /*background: #4a4a4a;
+    border-radius: 10px;*/
+}
+
+.ui-menu .ui-menu-item a{
+    /*background: white;
+    /*height:10px;
+	font-size:8px;*/
+	font-family: "Arial";
+	font-size: 16px;
+	line-height: 1.3;
+}
+
+.ui-menu:hover .ui-menu-item:hover{
+    /*background:red;*/
+}
+
+  .ui-autocomplete a.ui-state-hover {
+      background:red;
+  }
 
 /* =========================== TABLE =========================== */
 
