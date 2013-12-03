@@ -57,7 +57,7 @@ const
   COLOR_BACK      = clWhite; // clBlack
   COLOR_TIMEPOS   = clSilver;
   COLOR_AXIS_MAIN = clBlack; // clYellow;
-  COLOR_AXIS_SUB  = clSilver;
+  COLOR_AXIS_SUB  = $DCDCDC;
   COLOR_TITLES    = clBlack; // clLime
 
 implementation
