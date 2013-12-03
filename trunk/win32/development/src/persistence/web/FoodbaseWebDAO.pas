@@ -17,14 +17,15 @@ type
     FClient: TDiacompClient;
   private
     procedure Download;
-    function GetIndex(Food: TFood): integer;
+    function GetIndex(Food: TFood): integer; overload;
+    function GetIndex(ID: TCompactGUID): integer; overload;
     procedure Upload;
   public
     constructor Create(Client: TDiacompClient);
     destructor Destroy; override;
 
-    procedure Add(Food: TFood); override;
-    procedure Delete(Food: TFood); override;
+    function Add(Food: TFood): TCompactGUID; override;
+    procedure Delete(ID: TCompactGUID); override;
     function FindAll(): TFoodList; override;
     function FindAny(const Filter: string): TFoodList; override;
     function FindOne(const Name: string): TFood; override;
@@ -41,7 +42,7 @@ const
   FILENAME_TEMP = 'TFoodbaseWebDAO_temp.txt';
 
 {==============================================================================}
-procedure TFoodbaseWebDAO.Add(Food: TFood);
+function TFoodbaseWebDAO.Add(Food: TFood): TCompactGUID;
 {==============================================================================}
 var
   Index: integer;
@@ -54,6 +55,7 @@ begin
     Temp.CopyFrom(Food);
     FBase.Add(Temp);
     Upload();
+    Result := Food.ID;
   end else
     raise EDuplicateException.Create(Food);
 end;
@@ -70,18 +72,18 @@ begin
 end;
 
 {==============================================================================}
-procedure TFoodbaseWebDAO.Delete(Food: TFood);
+procedure TFoodbaseWebDAO.Delete(ID: TCompactGUID);
 {==============================================================================}
 var
   Index: integer;
 begin
-  Index := GetIndex(Food);
+  Index := GetIndex(ID);
   if (Index > -1) then
   begin
     FBase.Delete(Index);
     Upload();
   end else
-    raise EItemNotFoundException.Create(Food);
+    raise EItemNotFoundException.Create(ID);
 end;
 
 {==============================================================================}
@@ -170,6 +172,13 @@ begin
 end;
 
 {==============================================================================}
+function TFoodbaseWebDAO.GetIndex(ID: TCompactGUID): integer;
+{==============================================================================}
+begin
+  Result := FBase.GetIndex(ID);
+end;
+
+{==============================================================================}
 procedure TFoodbaseWebDAO.ReplaceAll(const NewList: TFoodList;
   NewVersion: integer);
 {==============================================================================}
@@ -201,7 +210,7 @@ begin
     FBase.Sort;
     Upload();
   end else
-    raise EItemNotFoundException.Create(Food);
+    raise EItemNotFoundException.Create(Food.ID);
 end;
 
 {==============================================================================}

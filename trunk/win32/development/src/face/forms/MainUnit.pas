@@ -262,6 +262,7 @@ type
     PanelSearchFoodBase: TPanel;
     EditBaseFoodSearch: TEdit;
     ButtonResetFilterFoodBase: TSpeedButton;
+    Button1: TButton;
 
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ButtonCreateFoodClick(Sender: TObject);
@@ -384,6 +385,7 @@ type
     procedure ButtonResetFilterFoodBaseClick(Sender: TObject);
     procedure EditBaseFoodSearchKeyPress(Sender: TObject; var Key: Char);
     procedure ListFoodData(Sender: TObject; Item: TListItem);
+    procedure Button1Click(Sender: TObject);
   protected
     // определяет расположение компонентов интерфейса
     procedure Designer; override;
@@ -1349,7 +1351,7 @@ begin
      ((DishNumber = -1)and(AskConfirm(FoodList[Index]))) then
   begin
     { порядок в базе и таблице совпадают }
-    FoodBaseLocal.Delete(FoodList[Index]);
+    FoodBaseLocal.Delete(FoodList[Index].ID);
 
     UpdateFoodbaseFilter();
     UpdateFoodTable(False, True, False);
@@ -4745,6 +4747,8 @@ begin
       ShowTableItem(ListFood, SavedIndex);
   end;
 
+  ListFood.Repaint;
+
   FinishProc;
 end;
 
@@ -5109,6 +5113,14 @@ begin
     if True  then SubItems.Add(RealToStr(FoodList[i].RelCarbs));
     if True  then SubItems.Add(IntToStr(Round(FoodList[i].RelValue)));
   end;
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+var
+  MyGUID: TGUID;
+begin
+  CreateGUID(MyGUID);
+  ShowMessage(GUIDToString(MyGUID));
 end;
 
 end.

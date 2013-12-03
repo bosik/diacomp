@@ -13,11 +13,11 @@ type
   private
     FOnChange: TNotifyEvent;
   protected
-    FID: integer;
+    FID: TCompactGUID;
     procedure Modified; virtual;
   public
     constructor Create;
-    property ID: integer read FID;
+    property ID: TCompactGUID read FID write FID;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
@@ -139,24 +139,13 @@ const
 
 implementation
 
-var
-  StaticIDCounter: Integer = 0;
-
-{==============================================================================}
-function GetNextID(): Cardinal;
-{==============================================================================}
-begin
-  //inc(StaticIDCounter);
-  Result := Random(2147483647); //StaticIDCounter;
-end;
-
 { TMutableItem }
 
 {==============================================================================}
 constructor TMutableItem.Create;
 {==============================================================================}
 begin
-  FID := GetNextID();
+  FID := CreateCompactGUID();
 end;
 
 {==============================================================================}
@@ -359,7 +348,6 @@ begin
   inherited;
   FFromTable := True;
   FTag := 0;
-  FID := GetNextID();
 end;
 
 {==============================================================================}
