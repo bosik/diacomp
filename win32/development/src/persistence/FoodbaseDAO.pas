@@ -4,13 +4,14 @@ interface
 
 uses
   SysUtils,
-  BusinessObjects;
+  BusinessObjects,
+  DiaryRoutines;
 
 type
   TFoodList = array of TFood;
 
   EItemNotFoundException = class(Exception)
-    constructor Create(Food: TFood);
+    constructor Create(ID: TCompactGUID);
   end;
 
   EDuplicateException = class(Exception)
@@ -18,11 +19,12 @@ type
   end;
 
   TFoodbaseDAO = class
-    // Добавляет продукт в базу; в случае существования выбрасывает исключение EDuplicateException
-    procedure Add(Food: TFood); virtual; abstract;
+    // Добавляет продукт в базу и возвращает его идентификатор (без изменений);
+    // в случае существования продукта с тем же ID выбрасывает исключение EDuplicateException
+    function Add(Food: TFood): TCompactGUID; virtual; abstract;
 
     // Удаляет указанный продукт из базы; в случае отсутствия выбрасывает исключение EItemNotFoundException
-    procedure Delete(Food: TFood); virtual; abstract;
+    procedure Delete(ID: TCompactGUID); virtual; abstract;
 
     // Возвращает все имеющиеся в базе продукты
     function FindAll(): TFoodList; virtual; abstract;
@@ -47,9 +49,9 @@ implementation
 
 { EItemNotFoundException }
 
-constructor EItemNotFoundException.Create(Food: TFood);
+constructor EItemNotFoundException.Create(ID: TCompactGUID);
 begin
-  inherited CreateFmt('Продукт #%d (%s) не найден', [Food.ID, Food.Name]);
+  inherited CreateFmt('Продукт {%s} не найден', [ID]);
 end;
 
 { EDuplicateException }

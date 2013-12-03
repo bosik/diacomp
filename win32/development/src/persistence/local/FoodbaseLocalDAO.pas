@@ -6,6 +6,7 @@ uses
   SysUtils,
   BusinessObjects,
   FoodbaseDAO,
+  DiaryRoutines,
   Bases;
 
 type
@@ -14,13 +15,14 @@ type
     FFileName: string;
     FBase: TFoodBase;
   private
-    function GetIndex(Food: TFood): integer;
+    function GetIndex(Food: TFood): integer; overload;
+    function GetIndex(ID: TCompactGUID): integer; overload;
   public
     constructor Create(const FileName: string);
     destructor Destroy; override;
 
-    procedure Add(Food: TFood); override;
-    procedure Delete(Food: TFood); override;
+    function Add(Food: TFood): TCompactGUID; override;
+    procedure Delete(ID: TCompactGUID); override;
     function FindAll(): TFoodList; override;
     function FindAny(const Filter: string): TFoodList; override;
     function FindOne(const Name: string): TFood; override;
@@ -34,7 +36,7 @@ implementation
 { TFoodbaseLocalDAO }
 
 {==============================================================================}
-procedure TFoodbaseLocalDAO.Add(Food: TFood);
+function TFoodbaseLocalDAO.Add(Food: TFood): TCompactGUID;
 {==============================================================================}
 var
   Index: integer;
@@ -47,6 +49,7 @@ begin
     Temp.CopyFrom(Food);
     FBase.Add(Temp);
     FBase.SaveToFile(FFileName);
+    Result := Food.ID;
   end else
     raise EDuplicateException.Create(Food);
 end;
@@ -62,18 +65,18 @@ begin
 end;
 
 {==============================================================================}
-procedure TFoodbaseLocalDAO.Delete(Food: TFood);
+procedure TFoodbaseLocalDAO.Delete(ID: TCompactGUID);
 {==============================================================================}
 var
   Index: integer;
 begin
-  Index := GetIndex(Food);
+  Index := GetIndex(ID);
   if (Index > -1) then
   begin
     FBase.Delete(Index);
     FBase.SaveToFile(FFileName);
   end else
-    raise EItemNotFoundException.Create(Food);
+    raise EItemNotFoundException.Create(ID);
 end;
 
 {==============================================================================}
@@ -141,6 +144,13 @@ begin
 end;
 
 {==============================================================================}
+function TFoodbaseLocalDAO.GetIndex(ID: TCompactGUID): integer;
+{==============================================================================}
+begin
+  Result := FBase.GetIndex(ID);
+end;
+
+{==============================================================================}
 procedure TFoodbaseLocalDAO.ReplaceAll(const NewList: TFoodList;
   NewVersion: integer);
 {==============================================================================}
@@ -165,14 +175,14 @@ procedure TFoodbaseLocalDAO.Update(Food: TFood);
 var
   Index: integer;
 begin
-  Index := GetIndex(Food);
+  Index := GetIndex(Food.ID);
   if (Index <> -1) then
   begin
     FBase[Index].CopyFrom(Food);
     FBase.Sort;
     FBase.SaveToFile(FFileName);
   end else
-    raise EItemNotFoundException.Create(Food);
+    raise EItemNotFoundException.Create(Food.ID);
 end;
 
 {==============================================================================}

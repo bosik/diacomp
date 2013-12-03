@@ -54,7 +54,7 @@ type
     function Count: integer; override;
     procedure Delete(Index: integer); override;
     destructor Destroy; override;
-    function GetIndex(ID: integer): integer; 
+    function GetIndex(ID: TCompactGUID): integer; 
   end;
 
   TFoodBase = class(TArrayBase)
@@ -307,7 +307,7 @@ begin
 end;
 
 {==============================================================================}
-function TArrayBase.GetIndex(ID: integer): integer;
+function TArrayBase.GetIndex(ID: TCompactGUID): integer;
 {==============================================================================}
 var
   i: integer;
@@ -528,9 +528,12 @@ begin
         //CheckNode(FoodNode, i);
 
         FBase[i]           := TFood.Create();
+        if (FoodNode.HasAttribute('id')) then
+          Items[i].ID := FoodNode.Attributes['id']
+        else
+          Items[i].ID := CreateCompactGUID();
         Items[i].Name      := FoodNode.Attributes['name'];
-
-        {Items[i].RelProts  := FoodNode.Attributes['prots'];
+        {Items[i].RelProts := FoodNode.Attributes['prots'];
         Items[i].RelFats   := FoodNode.Attributes['fats'];
         Items[i].RelCarbs  := FoodNode.Attributes['carbs'];
         Items[i].RelValue  := FoodNode.Attributes['val'];  }
@@ -607,6 +610,7 @@ begin
     //if (FBase[i].FromTable) then
     begin
       FoodNode := Root.AddChild('food');
+      FoodNode.Attributes['id']    := Items[i].ID;
       FoodNode.Attributes['name']  := Items[i].Name;
       FoodNode.Attributes['prots'] := Items[i].RelProts;
       FoodNode.Attributes['fats']  := Items[i].RelFats;
