@@ -139,6 +139,15 @@ object FormMisc: TFormMisc
     TabOrder = 11
     OnClick = ButtonExportRawClick
   end
+  object Button1: TButton
+    Left = 8
+    Top = 408
+    Width = 217
+    Height = 25
+    Caption = 'Button1'
+    TabOrder = 12
+    OnClick = Button1Click
+  end
   object Timer1: TTimer
     Enabled = False
     Interval = 500
