@@ -631,23 +631,15 @@ function codeNewRecord()
 {
 	return '' +
 	"						<div>\n" +
-	"							<div onclick=\"newBloodEditor()\" class=\"button_new_rec button_new_blood full_width\">Замер СК</div>\n" +
-	"							<div onclick=\"newInsEditor()\" class=\"button_new_rec button_new_ins full_width\">Инъекция</div>\n" +
-	"							<div onclick=\"newMealEditor()\" class=\"button_new_rec button_new_meal full_width\">Приём пищи</div>\n" +
-	"							<div onclick=\"newNoteEditor()\" class=\"button_new_rec button_new_note full_width\">Заметка</div>\n" +
+	"							<div onclick=\"newBloodEditor()\" class=\"button_new_rec button_new_blood\">Замер СК</div>\n" +
+	"							<div onclick=\"newInsEditor()\" class=\"button_new_rec button_new_ins\">Инъекция</div>\n" +
+	"							<div onclick=\"newMealEditor()\" class=\"button_new_rec button_new_meal\">Приём пищи</div>\n" +
+	"							<div onclick=\"newNoteEditor()\" class=\"button_new_rec button_new_note\">Заметка</div>\n" +
 	"						</div>\n";
 }
 
 function codeInfoDefault()
 {
-	/*return '' +
-	"						<div>\n" +
-	"							<div onclick=\"newBloodEditor()\" class=\"button_new_rec button_new_blood full_width\">Замер СК</div>\n" +
-	"							<div onclick=\"newInsEditor()\" class=\"button_new_rec button_new_ins full_width\">Инъекция</div>\n" +
-	"							<div onclick=\"newMealEditor()\" class=\"button_new_rec button_new_meal full_width\">Приём пищи</div>\n" +
-	"							<div onclick=\"newNoteEditor()\" class=\"button_new_rec button_new_note full_width\">Заметка</div>\n" +
-	"						</div><hr>\n" +*/
-
 	return codeNewRecord() + "<hr>\n" +
 	"						Для получения более подробной информации выберите запись на странице.\n";
 }
