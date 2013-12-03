@@ -24,6 +24,7 @@ type
     Timer1: TTimer;
     ButtonCovariance: TButton;
     ButtonExportRaw: TButton;
+    Button1: TButton;
     procedure ButtonExportXmlClick(Sender: TObject);
     procedure ButtonExportJsonClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -36,6 +37,7 @@ type
     procedure Edit1Change(Sender: TObject);
     procedure ButtonCovarianceClick(Sender: TObject);
     procedure ButtonExportRawClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -705,6 +707,70 @@ begin
   finally
     s.Free;
   end;
+end;
+
+procedure TFormMisc.Button1Click(Sender: TObject);
+var
+  W: array[0..MinPerDay - 1] of
+  record
+    Value: Real;
+    Count: integer;
+  end;
+
+  procedure Process(PrevDate: TDate; PrevBlood: TBloodRecord; CurDate: TDate; CurBlood: TBloodRecord);
+  var
+    i, k: integer;
+    pt: integer;
+    v: real;
+  begin
+    if (PrevDate < CurDate) then
+      pt := PrevBlood.Time - MinPerDay
+    else
+      pt := PrevBlood.Time;
+
+    for i := pt to CurBlood.Time - 1 do
+    begin
+      k := (i + MinPerDay) mod MinPerDay;
+      v := PrevBlood.Value + (CurBlood.Value - PrevBlood.Value) * (i - pt) / (CurBlood.Time - pt);
+      W[k].Value := W[k].Value + v;
+      W[k].Count := W[k].Count + 1;
+    end;
+  end;
+
+var
+  Meal: TMealRecord;
+  s: TStringList;
+  d, i, k: integer;
+
+  PrevBlood: TBloodRecord;
+  PrevDate: TDate;
+begin
+  for i := 0 to MinPerDay - 1 do
+  begin
+    W[i].Value := 0.0;
+    W[i].Count := 0;
+  end;
+
+  PrevDate := Trunc(Now - 30 - 1);
+  PrevBlood := Diary[PrevDate].FindRecordLast(TBloodRecord) as TBloodRecord;
+
+  for d := Trunc(Now - 30) to Trunc(now) - 1 do
+  for i := 0 to Diary[d].Count - 1 do
+  if (Diary[d][i].RecType = TBloodRecord) then
+  begin
+    Process(PrevDate, PrevBlood, d, TBloodRecord(Diary[d][i]));
+
+    PrevDate := d;
+    PrevBlood := TBloodRecord(Diary[d][i]);
+  end;
+
+  Memo1.Clear;
+  for i := 0 to MinPerDay - 1 do
+  if W[i].Count > 0 then
+    Memo1.Lines.Add(FloatToStr(W[i].Value / W[i].Count))
+  else
+    Memo1.Lines.Add('');
+
 end;
 
 end.
