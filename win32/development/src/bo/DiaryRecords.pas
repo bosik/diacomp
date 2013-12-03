@@ -210,6 +210,7 @@ begin
     FTime := Value;
     NotifyPage;
   end;
+  // TODO: throw exception!
 end;
 
 { TBloodRecord }
