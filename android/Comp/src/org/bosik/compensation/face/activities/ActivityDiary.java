@@ -127,33 +127,29 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		{
 			if (v.getId() == diaryViewLayout.getId())
 			{
-				// AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-
 				if ((DiaryView.getDownedIndex() < 0) || (DiaryView.getDownedIndex() >= curPage.count()))
 				{
 					return;
 				}
 
-				// TODO: вынести в ресурсы
-
-				String capt = "nothing";
+				String capt = "Unsupported type";
 				DiaryRecord rec = curPage.get(DiaryView.getDownedIndex());
 				Class<? extends DiaryRecord> c = rec.getClass();
 				if (c == BloodRecord.class)
 				{
-					capt = "Замер СК";
+					capt = getString(R.string.common_rectype_blood);
 				}
 				else if (c == InsRecord.class)
 				{
-					capt = "Инъекция";
+					capt = getString(R.string.common_rectype_ins);
 				}
 				else if (c == MealRecord.class)
 				{
-					capt = "Приём пищи";
+					capt = getString(R.string.common_rectype_meal);
 				}
 				else if (c == NoteRecord.class)
 				{
-					capt = "Заметка";
+					capt = getString(R.string.common_rectype_note);
 				}
 
 				menu.setHeaderTitle(capt);

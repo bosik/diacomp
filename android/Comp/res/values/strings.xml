@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">Compensation</string>
-    <string name="diary_button_add">Add</string>
-    <string name="diary_button_addblood">BS</string>
-    <string name="diary_button_addins">Injection</string>
-    <string name="diary_button_addmeal">Meal</string>
-    <string name="diary_button_addnote">Note</string>
+    <string name="common_rectype_blood">Blood sugar</string>
+    <string name="common_rectype_ins">Injection</string>
+    <string name="common_rectype_meal">Meal</string>
+    <string name="common_rectype_note">Note</string>
+    <string name="diary_button_add">Add</string>     
     <string name="diary_title">Diary</string>
     <string name="editor_blood_field_finger">Finger</string>
     <string name="editor_blood_title">BS</string>
@@ -78,8 +79,8 @@
         <item>БП</item>
     </string-array>
     <string-array name="context_edit">
-        <item>Изменить</item>
-        <item>Удалить</item>
+        <item>Edit</item>
+        <item>Remove</item>
     </string-array>
 
 </resources>

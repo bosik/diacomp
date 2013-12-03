@@ -2,11 +2,11 @@
 <resources>
 
     <string name="app_name">Компенсация</string>
+    <string name="common_rectype_blood">Замер СК</string>
+    <string name="common_rectype_ins">Инъекция</string>
+    <string name="common_rectype_meal">Приём пищи</string>
+    <string name="common_rectype_note">Заметка</string>
     <string name="diary_button_add">Новая запись</string>
-    <string name="diary_button_addblood">Замер СК</string>
-    <string name="diary_button_addins">Инъекция</string>
-    <string name="diary_button_addmeal">Приём пищи</string>
-    <string name="diary_button_addnote">Заметка</string>
     <string name="diary_title">Дневник</string>
     <string name="editor_blood_field_finger">Палец</string>
     <string name="editor_blood_title">Замер СК</string>
