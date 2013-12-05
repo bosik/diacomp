@@ -124,7 +124,7 @@ uses
 
   procedure SetApplicationTitle(App: TApplication);
   begin
-    App.Title := PROGRAM_TITLE;
+    App.Title := APPLICATION_TITLE;
   end;
 
 const
