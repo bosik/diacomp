@@ -37,23 +37,26 @@ type
     constructor Create(const Key, Value: string);
   end;
 
+  EKeyNotFoundException = class (Exception);
+
   TStringMap = class
   private
     FData: array of TStringPair;
   protected
     function GetItem(Index: integer): TStringPair;
+    function GetValue(Key: string): string;
+    function IndexOf(const Key: string): integer;
   public
     procedure Add(const Key, Value: string; Overwrite: boolean = False);
     procedure Clear;
     function Count: integer;
+    destructor Destroy; override;
     procedure LoadFromFile(const FileName: string);
     procedure SaveToFile(const FileName: string);
 
-    // TODO: make Index string, not integer
-    property Items[Index: integer]: TStringPair read GetItem; default;
+    property Items[Key: string]: string read GetValue; default;
   end;
 
-  //TDate = type Double;
   TDate = type integer; // yao ming ;D
 
   TStringArray = array of string;
@@ -249,15 +252,16 @@ end;
 procedure TStringMap.Add(const Key, Value: string; Overwrite: boolean);
 {==============================================================================}
 var
-  i: integer;
+  k: integer;
 begin
-  // TODO: move search to a separate method
   if (Overwrite) then
-  for i := 0 to High(FData) do
-  if (FData[i].Key = Key) then
   begin
-    FData[i].Value := Value;
-    Exit;
+    k := IndexOf(Key);
+    if (k > -1) then
+    begin
+      FData[k].Value := Value;
+      Exit;
+    end;
   end;
 
   SetLength(FData, Length(FData) + 1);
@@ -267,7 +271,12 @@ end;
 {==============================================================================}
 procedure TStringMap.Clear;
 {==============================================================================}
+var
+  i: integer;
 begin
+  for i := 0 to High(FData) do
+    FData[i].Free;
+    
   SetLength(FData, 0);
 end;
 
@@ -279,10 +288,47 @@ begin
 end;
 
 {==============================================================================}
+destructor TStringMap.Destroy;
+{==============================================================================}
+begin
+  Clear;
+  inherited;
+end;
+
+{==============================================================================}
 function TStringMap.GetItem(Index: integer): TStringPair;
 {==============================================================================}
 begin
   Result := FData[Index];
+end;
+
+{==============================================================================}
+function TStringMap.GetValue(Key: string): string;
+{==============================================================================}
+var
+  k: integer;
+begin
+  k := IndexOf(Key);
+  if (k > -1) then
+    Result := FData[k].Value
+  else
+    raise EKeyNotFoundException.CreateFmt('Key %s not found', [Key]);
+end;
+
+{==============================================================================}
+function TStringMap.IndexOf(const Key: string): integer;
+{==============================================================================}
+var
+  i: integer;
+begin
+  // TODO: make it binary
+  for i := 0 to High(FData) do
+  if (FData[i].Key = Key) then
+  begin
+    Result := i;
+    Exit;
+  end;
+  Result := -1;
 end;
 
 {==============================================================================}
@@ -297,8 +343,8 @@ begin
     LoadFromFile(FileName);
     for i := 0 to Count - 1 do
     begin
-      Key := TextBefore(Strings[i], '=');
-      Value := TextAfter(Strings[i], '=');
+      Key := TrimRight(TextBefore(Strings[i], '='));
+      Value := TrimLeft(TextAfter(Strings[i], '='));
       Self.Add(Key, Value, False);
     end;
     Free;
