@@ -98,6 +98,7 @@ type
     FLastX: integer;
     FLastY: integer;
     FMouseDowned: boolean;
+    FTextEmptyPage: string;
 
     { оформление }
     FFont: TFont;
@@ -208,6 +209,8 @@ type
     property PopupFood: TPopupMenu read FPopupFood write SetPopupFood;
     property PopupNote: TPopupMenu read FPopupNote write SetPopupNote;
     property Visible;
+
+    property TextEmptyPage: string read FTextEmptyPage write FTextEmptyPage;
 
     { события }
     property OnClickBlood:  TClickEvent read FOnClickBlood  write FOnClickBlood;
@@ -348,8 +351,6 @@ const
   DoubleClickTime  = 350;
   DoubleClickShift = 10;
 
-  TEXT_EMPTYPAGE  = 'Страница пуста';
-  TEXT_NODATABASE = 'Нет источника';
   EmptyTextBorder = 30;
 
   FONTSIZE_EMPTYPAGE = 30;
@@ -782,7 +783,7 @@ begin
       SavedFontSize := Font.Size;
       Font.Style := [];
       Font.Size := FONTSIZE_EMPTYPAGE;
-      Result := TextHeight(TEXT_EMPTYPAGE) + 2 * EmptyTextBorder;
+      Result := TextHeight(FTextEmptyPage) + 2 * EmptyTextBorder;
       Font.Size := SavedFontSize;
     end else
     begin
@@ -1110,7 +1111,7 @@ begin
       {if (FBase = nil) then
         Msg := TEXT_NODATABASE
       else }
-        Msg := TEXT_EMPTYPAGE;
+        Msg := FTextEmptyPage;
 
       Font.Assign(FFont);
       Font.Color := clSilver;
