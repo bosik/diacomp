@@ -4679,7 +4679,8 @@ var
 begin
   StartProc('UpdateFoodTable()');
 
-  LabelFoodBase.Caption := Format('База продуктов (%d), v%d', [Length(FoodList), FoodBaseLocal.Version]);
+  LabelFoodBase.Caption := Format(MAIN_BASES_FOOD_TITLE, [Length(FoodList)])
+    + Format(', v%d', [FoodBaseLocal.Version]);
   //Application.ProcessMessages;
 
   FoodP := Value['FoodP'];
