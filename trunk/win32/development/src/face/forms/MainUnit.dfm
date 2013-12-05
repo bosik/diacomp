@@ -614,7 +614,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.087765497690000000
+            Date = 40251.888968368050000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -774,15 +774,6 @@ object Form1: TForm1
             ParentFont = False
             TabOrder = 4
             OnClick = PanelDevelopmentClick
-          end
-          object Button1: TButton
-            Left = 16
-            Top = 752
-            Width = 75
-            Height = 25
-            Caption = 'Button1'
-            TabOrder = 5
-            OnClick = Button1Click
           end
         end
         object PanelDiaryDish: TPanel
