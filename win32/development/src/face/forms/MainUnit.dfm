@@ -162,6 +162,7 @@ object Form1: TForm1
               PopupMeal = DataInterface.PopupDiaryMeal
               PopupFood = DataInterface.PopupDiaryDish
               PopupNote = DataInterface.PopupDiaryNote
+              TextEmptyPage = #1057#1090#1088#1072#1085#1080#1094#1072' '#1087#1091#1089#1090#1072
               OnChange = DiaryViewChange
               OnDoubleClickBlood = DiaryViewDoubleClickBlood
               OnDoubleClickIns = DiaryViewDoubleClickIns
@@ -614,7 +615,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.888968368050000000
+            Date = 40251.046235127320000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -1054,7 +1055,7 @@ object Form1: TForm1
           object LabelFoodBase: TLabel
             Left = 9
             Top = 9
-            Width = 535
+            Width = 121
             Height = 16
             Align = alTop
             Caption = #1041#1072#1079#1072' '#1087#1088#1086#1076#1091#1082#1090#1086#1074
