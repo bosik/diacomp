@@ -2,29 +2,25 @@ unit TextInterface;
 
 interface
 
-// TODO: отрефакторить названия
-// TODO: найти дубли
-
 resourcestring
-  { Заголовки окон }
-  PROGRAM_TITLE                     = 'Компенсация';
+  APPLICATION_TITLE                   = 'Компенсация';
 
-  { Сообщения \ Ошибки }
-  MESSAGE_ERROR_NO_INTERNET         = 'Нет подключения к сети Интернет.';
-  MESSAGE_ERROR_INITIALIZATION      = 'Возникла критическая ошибка (этап "%s": %s). Загрузка прервана.';
-  //MESSAGE_ERROR_INPUT_INT           = 'Неверное значение. Введите целое число.';
-  MESSAGE_ERROR_INPUT_INT_POSITIVE  = 'Неверное значение. Введите целое положительное число.';
-  MESSAGE_ERROR_INPUT_REAL          = 'Неверное значение. Введите вещественное число.';
-  //MESSAGE_ERROR_CANT_CREATE_DIARY = 'Невозможно создать файл дневника';
-  //MESSAGE_ERROR_LOADINGDIARY      = 'Ошибка загрузки дневника';
-  //MESSAGE_ERROR_LOADINGFOODBASE   = 'Ошибка загрузки базы продуктов';
-  //MESSAGE_ERROR_LOADINGDISHBASE   = 'Ошибка загрузки базы блюд';
+  { Всплывающее сообщение }
+  BALLOON_INFO_NEW_VERSION_AVAILABLE  = 'Доступна новая версия программы. Для просмотра более подробной информации нажмите на это сообщение.';
+  BALLOON_ERROR_ANALYZER_NOT_FOUNDED  = 'Ошибка: модуль анализа не загружен';
 
-  { Сообщения \ Информация }
-  MESSAGE_INFO_NO_UPDATES           = 'Вы используете самую последнюю версию программы.';
-  MESSAGE_INFO_CANT_BALANCE         = 'Масса уменьшена до 0, но для соответствия дозы пище надо ещё что-то убрать.';
+  { Базы }
+  BASES_FILTER_ALL                    = 'Показаны все записи';
+  BASES_FILTER_FILTERED               = 'Убрать фильтр (Escape)';
 
-  { Сообщения \ Вопросы }
+  { Дневник }
+  DIARY_PANEL_TIME_FINGER_NOT_FOUND   = 'Предыдущий замер СК не найден';
+  DIARY_PANEL_TIME_FINGER             = 'Палец:';
+  DIARY_PANEL_TIME_AFTER_MEAL         = 'После еды:';
+  DIARY_PANEL_TIME_AFTER_INS          = 'После укола:';
+  DIARY_PANEL_ADD_SELECT_MEAL         = 'Выберите приём пищи или создайте новый';
+
+  { Сообщения }
   MESSAGE_CONF_FIRST_WARNING  = 'ВНИМАНИЕ! Автор программы '+
     'не несет ответственности за любой ущерб, прямо или '+
     'косвенно связанный с использованием данной программы. '+
@@ -33,69 +29,56 @@ resourcestring
     'смысле. За Ваше здоровье ответственны только Вы сами.'#13#13+
     'Если Вы принимаете эти условия, нажмите "Да" (Yes)'#13+
     'Если не принимаете - нажмите "Нет" (No).';
+  MESSAGE_CONF_REMOVE_DIARY_UNKNOWN   = 'Удалить запись?';
+  MESSAGE_CONF_REMOVE_DIARY_BLOOD     = 'Удалить замер СК?';
+  MESSAGE_CONF_REMOVE_DIARY_INS       = 'Удалить инъекцию?';
+  MESSAGE_CONF_REMOVE_DIARY_MEAL      = 'Удалить приём пищи?';
+  MESSAGE_CONF_REMOVE_DIARY_NOTE      = 'Удалить заметку?';
+  MESSAGE_CONF_REMOVE_DIARY_FOOD      = 'Удалить <%s> ?';
+  MESSAGE_CONF_REMOVE_FOOD            = 'Удалить продукт <%s>?';
+  MESSAGE_CONF_REMOVE_FOOD_USED       = 'Продукт <%s> используется в блюде <%s>.'#13'Всё равно удалить?';
+  MESSAGE_CONF_REMOVE_DISH            = 'Удалить блюдо <%s>?';
+  MESSAGE_CONF_REMOVE_DISH_USED       = 'Блюдо <%s> используется в блюде <%s>.'#13'Всё равно удалить?';
+  MESSAGE_ERROR_NO_INTERNET           = 'Нет подключения к сети Интернет.';
+  MESSAGE_ERROR_INITIALIZATION        = 'Возникла критическая ошибка (этап "%s": %s). Загрузка прервана.';
+  MESSAGE_ERROR_INPUT_INT_POSITIVE    = 'Неверное значение. Введите целое положительное число.';
+  MESSAGE_ERROR_INPUT_REAL            = 'Неверное значение. Введите вещественное число.';
+  MESSAGE_INFO_NO_UPDATES             = 'Вы используете самую последнюю версию программы.';
+  MESSAGE_INFO_CANT_BALANCE           = 'Масса уменьшена до 0, но для соответствия дозы пище надо ещё что-то убрать.';
+  
+  { Строка состояния }
+  STATUS_ACTION_LOADING_DIARY         = 'Загрузка дневника';
+  STATUS_ACTION_LOADING_GRAPHICS      = 'Загрузка графики';
+  STATUS_ACTION_WEB_SETUP             = 'Настройка веб-клиента';
+  STATUS_ACTION_APPLYING_SETTINGS     = 'Применение пользовательских настроек';
+  STATUS_ACTION_PREPARING_INFOPANELS  = 'Настройка информационных панелей';
+  STATUS_ACTION_DOWNLOADING_FOODBASE  = 'Получение базы продуктов';
+  STATUS_ACTION_DOWNLOADING_DISHBASE  = 'Получение базы блюд';
+  STATUS_ACTION_CONVERT_FOODBASE      = 'Конвертирование базы продуктов';
+  STATUS_ACTION_CONVERT_DISHBASE      = 'Конвертирование базы блюд';
+  STATUS_ACTION_LOADING_FOODBASE      = 'Загрузка базы продуктов';
+  STATUS_ACTION_LOADING_DISHBASE      = 'Загрузка базы блюд';
+  STATUS_ACTION_AUTH                  = 'Авторизация';
+  STATUS_ACTION_SYNC_DIARY            = 'Синхронизация дневника';
+  STATUS_ACTION_SYNC_FOODBASE         = 'Синхронизация базы продуктов';
+  STATUS_ACTION_SYNC_DISHBASE         = 'Синхронизация базы блюд';
+  STATUS_ACTION_LOADING_MATHAN        = 'Загрузка модуля анализа';
+  STATUS_ACTION_PREPARING_KOOFS       = 'Расчёт модели';
+  STATUS_ACTION_UPLOADING_KOOFS       = 'Выгрузка коэффициентов на сервер';
+  STATUS_RESULT_READY                 = 'Готово';
+  STATUS_RESULT_LOADING_TIME          = 'Время запуска: %d мсек';
+  STATUS_RESULT_SYNC_DONE             = 'Дневник синхронизирован';
+  STATUS_RESULT_STATE_ONLINE          = 'Онлайн';
+  STATUS_RESULT_STATE_OFFLINE         = 'Оффлайн';
+
 const
-  MESSAGE_CONF_REMOVE_RECORD: array[1..4] of string = (
-    'Удалить замер СК?',
-    'Удалить инъекцию?',
-    'Удалить приём пищи?',
-    'Удалить заметку?'
-  );
   MESSAGE_CONF_UPDATE: array[Boolean] of string = (
     'Доступна новая версия программы. Установить сейчас?',
     'Установить обновление сейчас?'
   );
-
-resourcestring
-  MESSAGE_CONF_REMOVE_DIARY_FOOD = 'Удалить <%s> ?';
-  MESSAGE_CONF_REMOVE_FOOD       = 'Удалить продукт <%s>?';
-  MESSAGE_CONF_REMOVE_FOOD_USED  = 'Продукт <%s> используется в блюде <%s>.'#13'Всё равно удалить?';
-  MESSAGE_CONF_REMOVE_DISH       = 'Удалить блюдо <%s>?';
-  MESSAGE_CONF_REMOVE_DISH_USED  = 'Блюдо <%s> используется в блюде <%s>.'#13'Всё равно удалить?';
-
-  { Всплывающие \ Информация }
-  BALLOON_INFO_NEW_VERSION_AVAILABLE  = 'Доступна новая версия программы. Для просмотра более подробной информации нажмите на это сообщение.';
-  BALOON_ERROR_ANALYZER_NOT_FOUNDED   = 'Ошибка: модуль анализа не загружен';     
-
-const
   { Кнопки }
   SAVE_CAPTION: array[Boolean] of string = ('Сохранить','Создать');
 
-resourcestring
-  { Строка состояния }
-  STATUS_ACTION_LOADING_DIARY        = 'Загрузка дневника';
-  STATUS_ACTION_LOADING_GRAPHICS     = 'Загрузка графики';
-  STATUS_ACTION_WEB_SETUP            = 'Настройка веб-клиента';
-  STATUS_ACTION_APPLYING_SETTINGS    = 'Применение пользовательских настроек';
-  STATUS_ACTION_PREPARING_INFOPANELS = 'Настройка информационных панелей';
-  STATUS_ACTION_DOWNLOADING_FOODBASE = 'Получение базы продуктов';
-  STATUS_ACTION_DOWNLOADING_DISHBASE = 'Получение базы блюд';
-  STATUS_ACTION_CONVERT_FOODBASE     = 'Конвертирование базы продуктов';
-  STATUS_ACTION_CONVERT_DISHBASE     = 'Конвертирование базы блюд';
-  STATUS_ACTION_LOADING_FOODBASE     = 'Загрузка базы продуктов';
-  STATUS_ACTION_LOADING_DISHBASE     = 'Загрузка базы блюд';
-  STATUS_ACTION_AUTH                 = 'Авторизация';
-  STATUS_ACTION_SYNC_DIARY           = 'Синхронизация дневника';
-  STATUS_ACTION_SYNC_FOODBASE        = 'Синхронизация базы продуктов';
-  STATUS_ACTION_SYNC_DISHBASE        = 'Синхронизация базы блюд';
-  STATUS_ACTION_LOADING_MATHAN       = 'Загрузка модуля анализа';
-  STATUS_ACTION_PREPARING_KOOFS      = 'Расчёт модели';
-  STATUS_ACTION_UPLOADING_KOOFS      = 'Выгрузка коэффициентов на сервер'; 
-  STATUS_READY                       = 'Готово';
-  STATUS_LOADING_TIME                = 'Время запуска: %d мсек';
-  STATUS_SYNC_DONE                   = 'Дневник синхронизирован';
-
-  STATUS_STATE_ONLINE                = 'Онлайн';
-  STATUS_STATE_OFFLINE               = 'Оффлайн';
-
-  { Хинты }
-  HINT_FINGER_NOT_FOUND = 'Предыдущий замер СК не найден';
-
-  { Надписи на компонентах }
-  LABEL_FINGER           = 'Палец:';
-  LABEL_AFTER_MEAL       = 'После еды:';
-  LABEL_AFTER_INS        = 'После укола:';
-  MESSAGE_SELECT_MEAL    = 'Выберите приём пищи или создайте новый';
-const
   KoofDisc: array[0..3] of string = (
     'Показывает, насколько увеличивается СК при съедении 1г углеводов',
     'Показывает, насколько уменьшается СК при введении 1 ЕД пищевого инсулина',

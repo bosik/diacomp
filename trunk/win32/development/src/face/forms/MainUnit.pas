@@ -621,7 +621,7 @@ begin
     end;
     
     { готово }
-    Form1.StatusBar.Panels[3].Text := STATUS_SYNC_DONE;
+    Form1.StatusBar.Panels[3].Text := STATUS_RESULT_SYNC_DONE;
     Application.ProcessMessages;
   except
     on E: Exception do
@@ -1006,7 +1006,7 @@ begin
     StartupInfo(STATUS_ACTION_APPLYING_SETTINGS);
     ApplyInterfaceSettings; // до Maximize
 
-    Caption := PROGRAM_TITLE + ' ' + PROGRAM_VERSION;
+    Caption := APPLICATION_TITLE + ' ' + PROGRAM_VERSION;
 
     PanelDevelopment.Visible := Value['Debug'];
     TabStat.TabVisible := ADVANCED_MODE;
@@ -1039,8 +1039,8 @@ begin
 
     {=============================================}
 
-    StartupInfo(STATUS_READY);
-    StatusBar.Panels[0].Text := Format(STATUS_LOADING_TIME, [Timer.FullTime]);
+    StartupInfo(STATUS_RESULT_READY);
+    StatusBar.Panels[0].Text := Format(STATUS_RESULT_LOADING_TIME, [Timer.FullTime]);
     Timer.Free;
   except
     on E: Exception do
@@ -1099,7 +1099,7 @@ begin
   { поиск модуля анализа }
   if (GetAnalyzersCount = 0) then
   begin
-    ShowBalloon(BALOON_ERROR_ANALYZER_NOT_FOUNDED, bitError);
+    ShowBalloon(BALLOON_ERROR_ANALYZER_NOT_FOUNDED, bitError);
   end else
 
   {  }
@@ -2188,7 +2188,7 @@ begin
     FocusMealInput;
   end else
   begin
-    ComboDiaryNew.Text := MESSAGE_SELECT_MEAL;
+    ComboDiaryNew.Text := DIARY_PANEL_ADD_SELECT_MEAL;
     EditDiaryNewMass.Text := '';
   end
 end;
@@ -3375,9 +3375,9 @@ begin
     begin
       ProcessMealSelected(DiaryView.SelectedRecord is TMealRecord);
       if WebClient.Online then
-        Form1.StatusBar.Panels[2].Text := STATUS_STATE_ONLINE
+        Form1.StatusBar.Panels[2].Text := STATUS_RESULT_STATE_ONLINE
       else
-        Form1.StatusBar.Panels[2].Text := STATUS_STATE_OFFLINE;
+        Form1.StatusBar.Panels[2].Text := STATUS_RESULT_STATE_OFFLINE;
     end;
 
     1: { базы }
@@ -3735,7 +3735,7 @@ begin
   end; // cute
 
   BalloonAction := AfterAction;
-  TrayIcon.ShowBalloonHint(PROGRAM_TITLE, Msg, MsgType, Time);
+  TrayIcon.ShowBalloonHint(APPLICATION_TITLE, Msg, MsgType, Time);
 end;
 
 {==============================================================================}
@@ -3784,26 +3784,40 @@ end;
 procedure TForm1.ActionRemovePanelExecute(Sender: TObject);
 {==============================================================================}
 var
-  RecType: integer;
   MsgType: TMsgDlgType;
+  Msg: string;
 begin
-  // TODO: refactor numbers
-  if (DiaryView.SelectedRecord is TBloodRecord) then RecType := 1 else
-  if (DiaryView.SelectedRecord is TInsRecord)   then RecType := 2 else
-  if (DiaryView.SelectedRecord is TMealRecord)  then RecType := 3 else
-  if (DiaryView.SelectedRecord is TNoteRecord)  then RecType := 4 else
-                                                     RecType := -1;
-
-  if (RecType > -1) then
+  if (DiaryView.SelectedRecord is TBloodRecord) then
   begin
-    if (RecType = 3) then
-      MsgType := mtWarning
-    else
-      MsgType := mtConfirmation;
+    MsgType := mtConfirmation;
+    Msg := MESSAGE_CONF_REMOVE_DIARY_BLOOD;
+  end else
+  if (DiaryView.SelectedRecord is TInsRecord) then
+  begin
+    MsgType := mtConfirmation;
+    Msg := MESSAGE_CONF_REMOVE_DIARY_INS;
+  end else
+  if (DiaryView.SelectedRecord is TMealRecord) then
+  begin
+    MsgType := mtWarning;
+    Msg := MESSAGE_CONF_REMOVE_DIARY_MEAL;
+  end else
+  if (DiaryView.SelectedRecord is TNoteRecord) then
+  begin
+    MsgType := mtConfirmation;
+    Msg := MESSAGE_CONF_REMOVE_DIARY_NOTE;
+  end else
+  begin
+    // error
+    MsgType := mtConfirmation;
+    Msg := MESSAGE_CONF_REMOVE_DIARY_UNKNOWN;
 
-    if (MessageDlg(MESSAGE_CONF_REMOVE_RECORD[RecType], MsgType, [mbYes, mbNo], 0) = mrYes) then
-      DiaryView.CurrentPage.Remove(DiaryView.SelectedRecordIndex);
+    AutoLog.Log(ERROR, Format('Unsupported record type to delete (date: %s, index: %d)',
+      [DateToStr(DiaryView.CurrentPage.Date), DiaryView.SelectedRecordIndex]));
   end;
+
+  if (MessageDlg(Msg, MsgType, [mbYes, mbNo], 0) = mrYes) then
+    DiaryView.CurrentPage.Remove(DiaryView.SelectedRecordIndex);
 end;
 
 {==============================================================================}
@@ -4458,7 +4472,7 @@ procedure TForm1.UpdateNextFinger;
 begin
   StartProc('UpdateNextFinger()');
 
-  LabelDiaryFinger.Caption := LABEL_FINGER;
+  LabelDiaryFinger.Caption := DIARY_PANEL_TIME_FINGER;
 
   CurrentNextFinger := Diary.GetNextFinger();
   if (CurrentNextFinger > -1) then
@@ -4470,7 +4484,7 @@ begin
   end else
   begin
     LabelDiaryFingerVal.Caption := '?';
-    LabelDiaryFingerVal.Hint := HINT_FINGER_NOT_FOUND;
+    LabelDiaryFingerVal.Hint := DIARY_PANEL_TIME_FINGER_NOT_FOUND;
   end;
 
   FinishProc;
@@ -4493,8 +4507,8 @@ var
 begin
   //StartProc('UpdateTimeLeft(): search for meal');
 
-  LabelDiaryTimeLeftIns.Caption := LABEL_AFTER_INS;
-  LabelDiaryTimeLeftMeal.Caption := LABEL_AFTER_MEAL;
+  LabelDiaryTimeLeftIns.Caption := DIARY_PANEL_TIME_AFTER_INS;
+  LabelDiaryTimeLeftMeal.Caption := DIARY_PANEL_TIME_AFTER_MEAL;
 
   DecodeTime(SysUtils.Time, Hour, Min, Sec, msec);
   Today := Trunc(Now);
@@ -5009,12 +5023,12 @@ begin
   if (Trim(Filter) = '') then
   begin
     FoodList := FoodBaseLocal.FindAll();
-    ButtonResetFilterFoodBase.Hint := 'Показаны все записи';
+    ButtonResetFilterFoodBase.Hint := BASES_FILTER_ALL;
     ButtonResetFilterFoodBase.Enabled := False;
   end else
   begin
     FoodList := FoodBaseLocal.FindAny(Filter);
-    ButtonResetFilterFoodBase.Hint := 'Убрать фильтр (Escape)';
+    ButtonResetFilterFoodBase.Hint := BASES_FILTER_FILTERED;
     ButtonResetFilterFoodBase.Enabled := True;
   end;
 end;

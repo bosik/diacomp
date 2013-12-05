@@ -144,7 +144,7 @@ object FormMisc: TFormMisc
     Top = 408
     Width = 217
     Height = 25
-    Caption = 'Button1'
+    Caption = 'Average Daily BS'
     TabOrder = 12
     OnClick = Button1Click
   end
