@@ -2186,7 +2186,7 @@ begin
     FocusMealInput;
   end else
   begin
-    ComboDiaryNew.Text := DIARY_PANEL_ADD_SELECT_MEAL;
+    ComboDiaryNew.Text := MAIN_DIARY_PANEL_ADD_SELECT_MEAL;
     EditDiaryNewMass.Text := '';
   end
 end;
@@ -4470,7 +4470,7 @@ procedure TForm1.UpdateNextFinger;
 begin
   StartProc('UpdateNextFinger()');
 
-  LabelDiaryFinger.Caption := DIARY_PANEL_TIME_FINGER;
+  LabelDiaryFinger.Caption := MAIN_DIARY_PANEL_TIME_FINGER;
 
   CurrentNextFinger := Diary.GetNextFinger();
   if (CurrentNextFinger > -1) then
@@ -4482,7 +4482,7 @@ begin
   end else
   begin
     LabelDiaryFingerVal.Caption := '?';
-    LabelDiaryFingerVal.Hint := DIARY_PANEL_TIME_FINGER_NOT_FOUND;
+    LabelDiaryFingerVal.Hint := MAIN_DIARY_PANEL_TIME_FINGER_NOT_FOUND;
   end;
 
   FinishProc;
@@ -4505,8 +4505,8 @@ var
 begin
   //StartProc('UpdateTimeLeft(): search for meal');
 
-  LabelDiaryTimeLeftIns.Caption := DIARY_PANEL_TIME_AFTER_INS;
-  LabelDiaryTimeLeftMeal.Caption := DIARY_PANEL_TIME_AFTER_MEAL;
+  LabelDiaryTimeLeftIns.Caption := MAIN_DIARY_PANEL_TIME_AFTER_INS;
+  LabelDiaryTimeLeftMeal.Caption := MAIN_DIARY_PANEL_TIME_AFTER_MEAL;
 
   DecodeTime(SysUtils.Time, Hour, Min, Sec, msec);
   Today := Trunc(Now);
@@ -4631,7 +4631,7 @@ begin
     PanelBaseFood,
     PanelBaseDish
   ]);
-    
+
   TrayIcon.MinimizeToTray := Value['MinToTray'];
   ActionIsMinToTray.Checked := Value['MinToTray'];
 
@@ -4647,6 +4647,11 @@ begin
   Item_DishC.Checked := Value['DishC'];
   Item_DishV.Checked := Value['DishV'];
   Item_DishD.Checked := Value['DishD'];
+
+  { Localization }
+
+  TabDiary.Caption := MAIN_DIARY;
+  TabBase.Caption := MAIN_BASES;
 
   FinishProc;
 end;
@@ -5021,12 +5026,12 @@ begin
   if (Trim(Filter) = '') then
   begin
     FoodList := FoodBaseLocal.FindAll();
-    ButtonResetFilterFoodBase.Hint := BASES_FILTER_ALL;
+    ButtonResetFilterFoodBase.Hint := MAIN_BASES_FILTER_ALL;
     ButtonResetFilterFoodBase.Enabled := False;
   end else
   begin
     FoodList := FoodBaseLocal.FindAny(Filter);
-    ButtonResetFilterFoodBase.Hint := BASES_FILTER_FILTERED;
+    ButtonResetFilterFoodBase.Hint := MAIN_BASES_FILTER_FILTERED;
     ButtonResetFilterFoodBase.Enabled := True;
   end;
 end;
