@@ -13,6 +13,7 @@ var
   MAIN_BASES                               : string; 
   MAIN_BASES_FILTER_ALL                    : string = 'Показаны все записи';
   MAIN_BASES_FILTER_FILTERED               : string = 'Убрать фильтр (Escape)';
+  MAIN_BASES_FOOD_TITLE                    : string;
   MAIN_DIARY                               : string;
   MAIN_DIARY_PANEL_TIME_FINGER_NOT_FOUND   : string = 'Предыдущий замер СК не найден';
   MAIN_DIARY_PANEL_TIME_FINGER             : string = 'Палец:';
@@ -158,6 +159,7 @@ begin
     MAIN_BASES                               := Extract('MAIN_BASES');
     MAIN_BASES_FILTER_ALL                    := Extract('MAIN_BASES_FILTER_ALL');
     MAIN_BASES_FILTER_FILTERED               := Extract('MAIN_BASES_FILTER_FILTERED');
+    MAIN_BASES_FOOD_TITLE                    := Extract('MAIN_BASES_FOOD_TITLE');
     MAIN_DIARY                               := Extract('MAIN_DIARY'); 
     MAIN_DIARY_PANEL_TIME_FINGER_NOT_FOUND   := Extract('MAIN_DIARY_PANEL_TIME_FINGER_NOT_FOUND');
     MAIN_DIARY_PANEL_TIME_FINGER             := Extract('MAIN_DIARY_PANEL_TIME_FINGER');
