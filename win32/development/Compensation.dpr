@@ -145,11 +145,20 @@ begin
 
   { TODO: ПРОВЕРКА НАЛИЧИЯ ВСЕХ НЕОБХОДИМЫХ ФАЙЛОВ }
 
-  CheckFolders; // before check file!               
+  CheckFolders; // before check file!
   DiaryCore.Initialize();
 
   { пре-исполнение (LoadSettings не использует WORK_FOLDER)}
   LoadSettings;
+  try
+    LoadStringResources('strings_en.txt');
+  except
+    on E: Exception do
+    begin
+      Log(ERROR, E.Message);
+      ErrorMessage('Некоторые строковые ресурсы отсутствуют');
+    end;
+  end;
 
   if not CheckFile(WORK_FOLDER + 'MathAn.dll',   URL_MATHAN,   True, False, FlagRestart, FlagModificated) then Exit;
   if not CheckFile(WORK_FOLDER + 'borlndmm.dll', URL_BORLNDMM, True, True,  FlagRestart, FlagModificated) then Exit;
