@@ -1,6 +1,8 @@
 package org.bosik.compensation.face.activities;
 
+import java.util.ArrayList;
 import java.util.List;
+import org.bosik.compensation.bo.Food;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.persistence.Storage;
@@ -21,11 +23,11 @@ public class ActivityFoodbase extends Activity
 	// private static final String TAG = ActivityFoodbase.class.getSimpleName();
 
 	// Widgets
-	private EditText		editFoodSearch;
-	private ListView		list;
+	private EditText	editFoodSearch;
+	private ListView	list;
 
 	// Data
-	private List<FoodItem>	base;
+	private List<Food>	base;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -69,18 +71,23 @@ public class ActivityFoodbase extends Activity
 
 	private void filterBase(String filter)
 	{
+		List<FoodItem> temp;
 		if (filter.trim().isEmpty())
 		{
-			base = Storage.localFoodBase.findAll();
+			temp = Storage.localFoodBase.findAll();
 		}
 		else
 		{
-			base = Storage.localFoodBase.findAny(filter);
+			temp = Storage.localFoodBase.findAny(filter);
 		}
+
+		base = new ArrayList<Food>();
+		base.addAll(temp);
+
 		showBase(base);
 	}
 
-	private void showBase(final List<FoodItem> foodBase)
+	private void showBase(final List<Food> foodBase)
 	{
 		String[] str = new String[foodBase.size()];
 		for (int i = 0; i < foodBase.size(); i++)
@@ -109,7 +116,7 @@ public class ActivityFoodbase extends Activity
 		list.setAdapter(adapter);
 	}
 
-	private String getInfo(FoodItem foodItem)
+	private String getInfo(Food foodItem)
 	{
 		String fmt = getString(R.string.foodbase_subinfo, foodItem.getRelProts(), foodItem.getRelFats(),
 				foodItem.getRelCarbs(), foodItem.getRelValue());
