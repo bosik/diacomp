@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 public class FoodMassedTest extends TestCase
 {
-	private FoodMassed	food	= new FoodMassed();
+	private FoodMassed	food	= new FoodMassed("TestFoodMassed");
 
 	public void testMass()
 	{

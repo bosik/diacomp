@@ -6,9 +6,8 @@ public class UniqueNamedTest extends TestCase
 {
 	public void testClone() throws CloneNotSupportedException
 	{
-		UniqueNamed a = new UniqueNamed();
+		UniqueNamed a = new UniqueNamed("Test object");
 		a.setId("ABSDEF12345969651");
-		a.setName("Test object");
 
 		UniqueNamed b = a.clone();
 		assertNotSame(a, b);

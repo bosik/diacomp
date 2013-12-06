@@ -1,11 +1,10 @@
 package org.bosik.compensation.bo.common;
 
-import org.bosik.compensation.bo.common.Food;
 import junit.framework.TestCase;
 
 public class FoodTest extends TestCase
 {
-	private Food	food	= new Food();
+	private Food	food	= new Food("TestFood");
 
 	public void testName()
 	{

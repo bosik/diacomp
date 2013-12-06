@@ -6,6 +6,11 @@ public class UniqueNamed extends Unique
 
 	private String				name;
 
+	public UniqueNamed(String name)
+	{
+		setName(name);
+	}
+
 	// ================================ GET / SET ================================
 
 	public String getName()

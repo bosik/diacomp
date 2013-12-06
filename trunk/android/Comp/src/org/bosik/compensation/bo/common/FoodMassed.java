@@ -13,11 +13,11 @@ public class FoodMassed extends Food
 {
 	private static final long	serialVersionUID	= -204761623726950977L;
 
-	private double	mass;
+	private double				mass;
 
-	public FoodMassed()
+	public FoodMassed(String name)
 	{
-
+		super(name);
 	}
 
 	public FoodMassed(String name, double relProts, double relFats, double relCarbs, double relValue, double mass)

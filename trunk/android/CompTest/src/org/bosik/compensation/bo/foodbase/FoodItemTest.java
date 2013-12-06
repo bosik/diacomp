@@ -1,11 +1,10 @@
 package org.bosik.compensation.bo.foodbase;
 
-import org.bosik.compensation.bo.foodbase.FoodItem;
 import junit.framework.TestCase;
 
 public class FoodItemTest extends TestCase
 {
-	private FoodItem	food	= new FoodItem();
+	private FoodItem	food	= new FoodItem("TestFood");
 
 	public void testClone() throws CloneNotSupportedException
 	{

@@ -12,9 +12,8 @@ public class FoodItemUtils extends TestCase
 
 	public static FoodItem demoFoodItemA()
 	{
-		FoodItem demo = new FoodItem();
+		FoodItem demo = new FoodItem("Хлеб \"Бородино\" нарезка (JUnit test)");
 
-		demo.setName("Хлеб \"Бородино\" нарезка (JUnit test)");
 		demo.setId("270C3EC853464B3DB314067AD005A727");
 		demo.setRelProts(5.5);
 		demo.setRelFats(0.9);
