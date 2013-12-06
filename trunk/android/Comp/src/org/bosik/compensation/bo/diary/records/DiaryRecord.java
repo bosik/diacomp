@@ -1,6 +1,6 @@
 package org.bosik.compensation.bo.diary.records;
 
-import org.bosik.compensation.persistence.common.Unique;
+import org.bosik.compensation.bo.basic.Unique;
 import org.bosik.compensation.utils.Utils;
 
 /* ЗАМЕТКИ 

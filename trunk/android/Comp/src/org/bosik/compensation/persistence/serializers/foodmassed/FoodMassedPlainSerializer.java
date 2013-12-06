@@ -3,7 +3,7 @@ package org.bosik.compensation.persistence.serializers.foodmassed;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.List;
-import org.bosik.compensation.bo.common.FoodMassed;
+import org.bosik.compensation.bo.FoodMassed;
 import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.utils.Utils;
 

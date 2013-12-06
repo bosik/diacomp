@@ -1,5 +1,6 @@
 package org.bosik.compensation.bo.common;
 
+import org.bosik.compensation.bo.Food;
 import junit.framework.TestCase;
 
 public class FoodTest extends TestCase

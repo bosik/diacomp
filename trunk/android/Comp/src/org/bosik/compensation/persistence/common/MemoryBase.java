@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import org.bosik.compensation.bo.basic.UniqueNamed;
 import org.bosik.compensation.persistence.dao.BaseDAO.DuplicateException;
 import org.bosik.compensation.persistence.dao.BaseDAO.ItemNotFoundException;
 

@@ -2,7 +2,7 @@ package org.bosik.compensation.bo.diary.records;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.compensation.bo.common.FoodMassed;
+import org.bosik.compensation.bo.FoodMassed;
 
 public class MealRecord extends DiaryRecord
 {

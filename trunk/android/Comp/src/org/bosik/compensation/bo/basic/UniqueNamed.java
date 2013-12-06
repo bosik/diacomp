@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.common;
+package org.bosik.compensation.bo.basic;
 
 public class UniqueNamed extends Unique
 {

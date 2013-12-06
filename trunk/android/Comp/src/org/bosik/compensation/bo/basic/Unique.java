@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.common;
+package org.bosik.compensation.bo.basic;
 
 import java.io.Serializable;
 import java.util.UUID;

@@ -1,8 +1,8 @@
 package org.bosik.compensation.bo.foodbase;
 
 import java.util.Locale;
-import org.bosik.compensation.bo.common.Food;
-import org.bosik.compensation.persistence.common.UniqueNamed;
+import org.bosik.compensation.bo.Food;
+import org.bosik.compensation.bo.basic.UniqueNamed;
 
 /**
  * Food item for food base

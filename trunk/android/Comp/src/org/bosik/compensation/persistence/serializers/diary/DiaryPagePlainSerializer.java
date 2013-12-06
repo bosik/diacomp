@@ -3,7 +3,7 @@ package org.bosik.compensation.persistence.serializers.diary;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.compensation.bo.common.FoodMassed;
+import org.bosik.compensation.bo.FoodMassed;
 import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.bo.diary.records.BloodRecord;
 import org.bosik.compensation.bo.diary.records.DiaryRecord;

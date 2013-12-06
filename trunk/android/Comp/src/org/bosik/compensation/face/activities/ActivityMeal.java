@@ -2,7 +2,7 @@ package org.bosik.compensation.face.activities;
 
 import java.text.DecimalFormat;
 import java.util.List;
-import org.bosik.compensation.bo.common.FoodMassed;
+import org.bosik.compensation.bo.FoodMassed;
 import org.bosik.compensation.bo.diary.records.MealRecord;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.R;
