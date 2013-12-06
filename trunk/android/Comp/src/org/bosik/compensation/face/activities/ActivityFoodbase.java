@@ -2,7 +2,7 @@ package org.bosik.compensation.face.activities;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.compensation.bo.Food;
+import org.bosik.compensation.bo.IRelative;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.persistence.Storage;
@@ -27,7 +27,7 @@ public class ActivityFoodbase extends Activity
 	private ListView	list;
 
 	// Data
-	private List<Food>	base;
+	private List<IRelative>	base;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -81,13 +81,13 @@ public class ActivityFoodbase extends Activity
 			temp = Storage.localFoodBase.findAny(filter);
 		}
 
-		base = new ArrayList<Food>();
+		base = new ArrayList<IRelative>();
 		base.addAll(temp);
 
 		showBase(base);
 	}
 
-	private void showBase(final List<Food> foodBase)
+	private void showBase(final List<IRelative> foodBase)
 	{
 		String[] str = new String[foodBase.size()];
 		for (int i = 0; i < foodBase.size(); i++)
@@ -116,7 +116,7 @@ public class ActivityFoodbase extends Activity
 		list.setAdapter(adapter);
 	}
 
-	private String getInfo(Food foodItem)
+	private String getInfo(IRelative foodItem)
 	{
 		String fmt = getString(R.string.foodbase_subinfo, foodItem.getRelProts(), foodItem.getRelFats(),
 				foodItem.getRelCarbs(), foodItem.getRelValue());
