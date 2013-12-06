@@ -36,8 +36,7 @@ public class DishBaseXMLSerializer implements Serializer<MemoryBase<DishItem>>
 			{
 				Element x = (Element) node;
 
-				DishItem food = new DishItem();
-				food.setName(x.getAttribute("name"));
+				DishItem food = new DishItem(x.getAttribute("name"));
 				// food.setRelProts(Double.parseDouble(x.getAttribute("prots")));
 				// food.setRelFats(Double.parseDouble(x.getAttribute("fats")));
 				// food.setRelCarbs(Double.parseDouble(x.getAttribute("carbs")));

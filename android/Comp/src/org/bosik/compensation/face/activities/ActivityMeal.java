@@ -160,8 +160,7 @@ public class ActivityMeal extends Activity
 		{
 			FoodItem food = list.get(0);
 
-			FoodMassed item = new FoodMassed();
-			item.setName(food.getName());
+			FoodMassed item = new FoodMassed(food.getName());
 			item.setRelProts(food.getRelProts());
 			item.setRelFats(food.getRelFats());
 			item.setRelCarbs(food.getRelCarbs());

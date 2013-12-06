@@ -52,9 +52,8 @@ public class FoodBaseXMLSerializer implements Serializer<MemoryBase<FoodItem>>
 			{
 				Element x = (Element) node;
 
-				FoodItem food = new FoodItem();
+				FoodItem food = new FoodItem(x.getAttribute("name"));
 				food.setId(x.getAttribute("id"));
-				food.setName(x.getAttribute("name"));
 				food.setRelProts(Double.parseDouble(x.getAttribute("prots")));
 				food.setRelFats(Double.parseDouble(x.getAttribute("fats")));
 				food.setRelCarbs(Double.parseDouble(x.getAttribute("carbs")));

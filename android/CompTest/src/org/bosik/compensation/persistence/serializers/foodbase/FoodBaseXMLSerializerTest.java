@@ -41,8 +41,7 @@ public class FoodBaseXMLSerializerTest extends TestCase
 		MemoryBase<FoodItem> base = new MemoryBase<FoodItem>();
 		FoodItem food;
 
-		food = new FoodItem();
-		food.setName("јбрикос");
+		food = new FoodItem("јбрикос");
 		food.setRelProts(0.9);
 		food.setRelFats(0.1);
 		food.setRelCarbs(9.0);
@@ -50,8 +49,7 @@ public class FoodBaseXMLSerializerTest extends TestCase
 		food.setFromTable(true);
 		base.add(food);
 
-		food = new FoodItem();
-		food.setName("яйцо");
+		food = new FoodItem("яйцо");
 		food.setRelProts(12.7);
 		food.setRelFats(11.5);
 		food.setRelCarbs(0.7);

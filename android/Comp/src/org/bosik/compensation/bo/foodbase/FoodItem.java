@@ -17,6 +17,11 @@ public class FoodItem extends Food implements Cloneable
 	private boolean				fromTable;
 	private int					tag;
 
+	public FoodItem(String name)
+	{
+		super(name);
+	}
+
 	// ================================ GET / SET ================================
 
 	public boolean getFromTable()

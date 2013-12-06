@@ -4,6 +4,12 @@ import org.bosik.compensation.persistence.common.UniqueNamed;
 
 public class DishItem extends UniqueNamed
 {
+	private static final long	serialVersionUID	= 1L;
+
+	public DishItem(String name)
+	{
+		super(name);
+	}
 
 	// ================================ GET / SET ================================
 

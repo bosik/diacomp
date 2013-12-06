@@ -2,7 +2,6 @@ package org.bosik.compensation.bo.diary.records;
 
 import junit.framework.TestCase;
 import org.bosik.compensation.bo.common.FoodMassed;
-import org.bosik.compensation.bo.diary.records.MealRecord;
 
 public class MealRecordTest extends TestCase
 {
@@ -17,8 +16,7 @@ public class MealRecordTest extends TestCase
 	 */
 	private static FoodMassed createDemoFood()
 	{
-		FoodMassed food = new FoodMassed();
-		food.setName("Колбаса");
+		FoodMassed food = new FoodMassed("Колбаса");
 		food.setMass(78);
 		food.setRelProts(12.2);
 		food.setRelFats(18.9);
@@ -52,9 +50,9 @@ public class MealRecordTest extends TestCase
 	{
 		meal.clear();
 		assertEquals(0, meal.count());
-		meal.add(new FoodMassed());
+		meal.add(new FoodMassed("Item1"));
 		assertEquals(1, meal.count());
-		meal.add(new FoodMassed());
+		meal.add(new FoodMassed("Item2"));
 		assertEquals(2, meal.count());
 	}
 

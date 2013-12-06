@@ -10,19 +10,21 @@ import org.bosik.compensation.persistence.common.UniqueNamed;
  */
 public class Food extends UniqueNamed
 {
-	// private String name;
-	private double	relProts;
-	private double	relFats;
-	private double	relCarbs;
-	private double	relValue;
+	private static final long	serialVersionUID	= 1L;
 
-	public Food()
+	private double				relProts;
+	private double				relFats;
+	private double				relCarbs;
+	private double				relValue;
+
+	public Food(String name)
 	{
-
+		super(name);
 	}
 
 	public Food(String name, double relProts, double relFats, double relCarbs, double relValue)
 	{
+		super(name);
 		setName(name);
 		setRelProts(relProts);
 		setRelFats(relFats);
