@@ -7,6 +7,7 @@ import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.persistence.Storage;
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,11 +24,13 @@ public class ActivityFoodbase extends Activity
 	// private static final String TAG = ActivityFoodbase.class.getSimpleName();
 
 	// Widgets
-	private EditText	editFoodSearch;
-	private ListView	list;
+	private EditText		editFoodSearch;
+	private ListView		listFood;
 
 	// Data
-	private List<IRelative>	base;
+	private List<IRelative>	data;
+
+	// ===========================================================================
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -52,13 +55,44 @@ public class ActivityFoodbase extends Activity
 			@Override
 			public void afterTextChanged(Editable s)
 			{
-				filterBase(s.toString());
+				runSearch(s.toString());
 			}
 		});
-		list = (ListView) findViewById(R.id.listFood);
+		listFood = (ListView) findViewById(R.id.listFood);
 
 		// Show data
-		filterBase("");
+		runSearch("");
+	}
+
+	private void runSearch(String key)
+	{
+		new AsyncTask<String, Void, List<IRelative>>()
+		{
+			@Override
+			protected List<IRelative> doInBackground(String... params)
+			{
+				String filter = params[0];
+				List<FoodItem> temp;
+				if (filter.trim().isEmpty())
+				{
+					temp = Storage.localFoodBase.findAll();
+				}
+				else
+				{
+					temp = Storage.localFoodBase.findAny(filter);
+				}
+
+				List<IRelative> result = new ArrayList<IRelative>();
+				result.addAll(temp);
+				return result;
+			}
+
+			@Override
+			protected void onPostExecute(List<IRelative> result)
+			{
+				showBase(result);
+			}
+		}.execute(key);
 	}
 
 	@Override
@@ -69,26 +103,10 @@ public class ActivityFoodbase extends Activity
 		return true;
 	}
 
-	private void filterBase(String filter)
-	{
-		List<FoodItem> temp;
-		if (filter.trim().isEmpty())
-		{
-			temp = Storage.localFoodBase.findAll();
-		}
-		else
-		{
-			temp = Storage.localFoodBase.findAny(filter);
-		}
-
-		base = new ArrayList<IRelative>();
-		base.addAll(temp);
-
-		showBase(base);
-	}
-
 	private void showBase(final List<IRelative> foodBase)
 	{
+		data = foodBase;
+
 		String[] str = new String[foodBase.size()];
 		for (int i = 0; i < foodBase.size(); i++)
 		{
@@ -113,7 +131,7 @@ public class ActivityFoodbase extends Activity
 			}
 		};
 
-		list.setAdapter(adapter);
+		listFood.setAdapter(adapter);
 	}
 
 	private String getInfo(IRelative foodItem)
