@@ -6,32 +6,36 @@ import android.util.Log;
 
 public class WebClientTest extends TestCase
 {
-	private static final String		TAG	= WebClientTest.class.getSimpleName();
+	private static final String	TAG	= WebClientTest.class.getSimpleName();
 
-	public static final WebClient	webClient;
+	private static WebClient	webClient;
 
-	static
+	public static WebClient getWebClient()
 	{
-		// final String SERVER = "http://diacomp.16mb.com/";
-		final String SERVER = "http://192.168.0.104/";
-		final String USERNAME = "bosik-007@narod.ru";
-		final String PASSWORD = "devel0pment";
-		final int TIMEOUT = 3000;
-
-		webClient = new WebClient(TIMEOUT);
-		try
+		if (webClient == null)
 		{
-			webClient.setUsername(USERNAME);
-			webClient.setPassword(PASSWORD);
-			webClient.setServer(SERVER);
-			webClient.login();
-		}
-		catch (WebClientException e)
-		{
-			Log.e(TAG, "Failed to initialize WebClient: " + e.getLocalizedMessage() + "\n" + "Server: " + SERVER + "\n"
-					+ "Username: " + USERNAME + "\n" + "Password: " + PASSWORD);
+			// final String SERVER = "http://diacomp.16mb.com/";
+			final String SERVER = "http://192.168.0.104/";
+			final String USERNAME = "bosik-007@narod.ru";
+			final String PASSWORD = "devel0pment";
+			final int TIMEOUT = 3000;
 
+			webClient = new WebClient(TIMEOUT);
+			try
+			{
+				webClient.setUsername(USERNAME);
+				webClient.setPassword(PASSWORD);
+				webClient.setServer(SERVER);
+				webClient.login();
+			}
+			catch (WebClientException e)
+			{
+				Log.e(TAG, "Failed to initialize WebClient: " + e.getLocalizedMessage() + "\n" + "Server: " + SERVER
+						+ "\n" + "Username: " + USERNAME + "\n" + "Password: " + PASSWORD);
+
+			}
 		}
+		return webClient;
 	}
 
 	// TODO: implement

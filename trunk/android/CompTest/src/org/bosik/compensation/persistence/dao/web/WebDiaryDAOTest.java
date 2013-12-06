@@ -6,11 +6,10 @@ import org.bosik.compensation.persistence.dao.web.utils.client.WebClientTest;
 
 public class WebDiaryDAOTest extends DiaryDAOTest
 {
-	private static final DiaryDAO	diaryDAO	= new WebDiaryDAO(WebClientTest.webClient);
-
 	@Override
 	protected DiaryDAO getDAO()
 	{
-		return diaryDAO;
+		// DO NOT MAKE IT STATIC - IT CAUSES android.os.NetworkOnMainThreadException
+		return new WebDiaryDAO(WebClientTest.getWebClient());
 	}
 }
