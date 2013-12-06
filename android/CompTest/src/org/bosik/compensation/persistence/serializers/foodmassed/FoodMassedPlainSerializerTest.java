@@ -1,7 +1,7 @@
 package org.bosik.compensation.persistence.serializers.foodmassed;
 
 import junit.framework.TestCase;
-import org.bosik.compensation.bo.common.FoodMassed;
+import org.bosik.compensation.bo.FoodMassed;
 
 public class FoodMassedPlainSerializerTest extends TestCase
 {

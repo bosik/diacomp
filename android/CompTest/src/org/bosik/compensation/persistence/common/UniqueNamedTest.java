@@ -1,5 +1,6 @@
 package org.bosik.compensation.persistence.common;
 
+import org.bosik.compensation.bo.basic.UniqueNamed;
 import junit.framework.TestCase;
 
 public class UniqueNamedTest extends TestCase

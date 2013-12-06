@@ -2,7 +2,7 @@ package org.bosik.compensation.persistence.dao;
 
 import java.util.Date;
 import junit.framework.TestCase;
-import org.bosik.compensation.bo.common.FoodMassed;
+import org.bosik.compensation.bo.FoodMassed;
 import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.bo.diary.records.BloodRecord;
 import org.bosik.compensation.bo.diary.records.InsRecord;

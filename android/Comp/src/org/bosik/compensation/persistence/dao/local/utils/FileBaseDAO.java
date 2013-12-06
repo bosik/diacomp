@@ -2,8 +2,8 @@ package org.bosik.compensation.persistence.dao.local.utils;
 
 import java.io.IOException;
 import java.util.List;
+import org.bosik.compensation.bo.basic.UniqueNamed;
 import org.bosik.compensation.persistence.common.MemoryBase;
-import org.bosik.compensation.persistence.common.UniqueNamed;
 import org.bosik.compensation.persistence.dao.BaseDAO;
 import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.utils.FileWorker;

@@ -1,6 +1,6 @@
 package org.bosik.compensation.bo.dishbase;
 
-import org.bosik.compensation.persistence.common.UniqueNamed;
+import org.bosik.compensation.bo.basic.UniqueNamed;
 
 public class DishItem extends UniqueNamed
 {

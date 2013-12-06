@@ -1,6 +1,6 @@
-package org.bosik.compensation.bo.common;
+package org.bosik.compensation.bo;
 
-import org.bosik.compensation.persistence.common.UniqueNamed;
+import org.bosik.compensation.bo.basic.UniqueNamed;
 
 /**
  * Stores food's name and relative parameters (PFCV on 100g)
