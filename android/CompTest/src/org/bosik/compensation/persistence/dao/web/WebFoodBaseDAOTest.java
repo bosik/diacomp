@@ -8,12 +8,10 @@ import org.bosik.compensation.persistence.serializers.foodbase.FoodBaseXMLSerial
 
 public class WebFoodBaseDAOTest extends FoodBaseDAOTest
 {
-	private static final BaseDAO<FoodItem>	foodBaseDAO	= new WebFoodBaseDAO(WebClientTest.webClient,
-																new FoodBaseXMLSerializer());
-
 	@Override
 	protected BaseDAO<FoodItem> getDAO()
 	{
-		return foodBaseDAO;
+		// DO NOT MAKE IT STATIC - IT CAUSES android.os.NetworkOnMainThreadException
+		return new WebFoodBaseDAO(WebClientTest.getWebClient(), new FoodBaseXMLSerializer());
 	}
 }
