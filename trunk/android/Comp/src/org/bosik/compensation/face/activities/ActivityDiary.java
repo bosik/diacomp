@@ -310,7 +310,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				// изменить
 					case 0:
 					{
-						InsRecord temp = (InsRecord) rec;
+						// InsRecord temp = (InsRecord) rec;
 						// TODO: не использовать indexOnEditing, а только
 						// diaryViewLayout.clickedIndex?
 						// indexOnEditing = diaryViewLayout.downedIndex;

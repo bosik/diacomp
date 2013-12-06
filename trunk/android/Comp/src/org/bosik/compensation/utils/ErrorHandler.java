@@ -1,5 +1,7 @@
 package org.bosik.compensation.utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import org.bosik.compensation.face.BuildConfig;
 import org.bosik.compensation.face.UIUtils;
 import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
@@ -8,15 +10,19 @@ import android.util.Log;
 
 public class ErrorHandler
 {
-	private static final String	TAG						= ErrorHandler.class.getSimpleName();
-	private static WebClient	webClient;
+	private static final String				TAG						= ErrorHandler.class.getSimpleName();
+	private static WebClient				webClient;
 
 	// Messages
-	private static final String	TIP_ERROR_OCCURED		= "Произошла ошибка";
-	private static final String	TIP_REPORT_SENDED		= "Отчёт с технической информацией отправлен разработчику";
-	private static final String	TIP_REPORT_FAILED		= "Отправить отчёт не удалось";
-	private static final String	TIP_REPORT_FAILED_NULL	= "Отправить отчёт не удалось (webClient == null)";
-	private static final String	TIP_HANDLING_FAILED		= "Во время обработки ошибки произошла ещё одна ошибка :(";
+	private static final String				TIP_ERROR_OCCURED		= "Произошла ошибка";
+	private static final String				TIP_REPORT_SENDED		= "Отчёт с технической информацией отправлен разработчику";
+	private static final String				TIP_REPORT_FAILED		= "Отправить отчёт не удалось";
+	private static final String				TIP_REPORT_FAILED_NULL	= "Отправить отчёт не удалось (webClient == null)";
+	private static final String				TIP_HANDLING_FAILED		= "Во время обработки ошибки произошла ещё одна ошибка :(";
+
+	// Formats
+	private static final SimpleDateFormat	DATE_FORMAT				= new SimpleDateFormat("dd.MM.yyyy HH:mm:ss",
+																			Locale.US);
 
 	public static void init(WebClient webClient)
 	{
@@ -70,7 +76,7 @@ public class ErrorHandler
 
 				StringBuilder msg = new StringBuilder();
 				msg.append("<b>" + TAG + " has detected exception during user runtime</b>\n\n");
-				msg.append("<b>Date:</b> " + Utils.now().toGMTString() + "\n");
+				msg.append("<b>Date:</b> " + DATE_FORMAT.format(Utils.now()) + "\n");
 				msg.append("<b>User:</b> "
 						+ (webClient != null ? safe(webClient.getUsername()) : "(webClient == null)") + "\n");
 				msg.append("<b>Exception:</b>" + exc + "\n\n");
