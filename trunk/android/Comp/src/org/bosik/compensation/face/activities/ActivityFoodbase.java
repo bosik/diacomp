@@ -113,8 +113,6 @@ public class ActivityFoodbase extends Activity
 	{
 		String fmt = getString(R.string.foodbase_subinfo, foodItem.getRelProts(), foodItem.getRelFats(),
 				foodItem.getRelCarbs(), foodItem.getRelValue());
-		// fmt = "%s %.1f   %s %.1f   %s %.1f   %s %.1f";
-
 		return fmt;
 	}
 }
