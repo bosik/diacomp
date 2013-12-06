@@ -28,7 +28,7 @@ public class Storage
 	private static final String		TAG					= Storage.class.getSimpleName();
 
 	private static final String		FILENAME_FOODBASE	= "FoodBase.xml";
-	private static final String		FILENAME_DISHBASE	= "DishBase.xml";
+	// private static final String FILENAME_DISHBASE = "DishBase.xml";
 	private static final int		CONNECTION_TIMEOUT	= 6000;
 
 	// DAO

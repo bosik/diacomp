@@ -14,6 +14,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
@@ -268,7 +269,10 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 		}
 		Context ctx = getContext();
 		WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
-		return wm.getDefaultDisplay().getWidth();
+
+		Point outSize = new Point();
+		wm.getDefaultDisplay().getSize(outSize);
+		return outSize.x;
 	}
 
 	// вспомогательные методы рисования

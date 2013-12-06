@@ -624,6 +624,6 @@ public class WebClient
 
 		// обрабатываем результат
 		// FIXME: Handle the response
-		return true; // processResponse(resp);
+		return (resp.equals(RESPONSE_DONE)); // processResponse(resp);
 	}
 }

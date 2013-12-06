@@ -138,7 +138,9 @@ public class Utils
 	 */
 	public static int timeToMin(Date time)
 	{
-		return (time.getHours() * MinPerHour) + time.getMinutes();
+		Calendar c = Calendar.getInstance();
+		c.setTime(time);
+		return (c.get(Calendar.HOUR_OF_DAY) * MinPerHour) + c.get(Calendar.MINUTE);
 	}
 
 	/**
