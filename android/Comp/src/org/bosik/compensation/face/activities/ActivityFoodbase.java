@@ -2,7 +2,7 @@ package org.bosik.compensation.face.activities;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.compensation.bo.IRelative;
+import org.bosik.compensation.bo.RelativeTagged;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.persistence.Storage;
@@ -30,7 +30,7 @@ public class ActivityFoodbase extends Activity
 	private ListView		listFood;
 
 	// Data
-	private List<IRelative>	data;
+	private List<RelativeTagged>	data;
 
 	// ===========================================================================
 
@@ -68,16 +68,16 @@ public class ActivityFoodbase extends Activity
 
 	private void runSearch(String key)
 	{
-		new AsyncTask<String, Void, List<IRelative>>()
+		new AsyncTask<String, Void, List<RelativeTagged>>()
 		{
 			@Override
-			protected List<IRelative> doInBackground(String... params)
+			protected List<RelativeTagged> doInBackground(String... params)
 			{
 				return request(params[0]);
 			}
 
 			@Override
-			protected void onPostExecute(List<IRelative> result)
+			protected void onPostExecute(List<RelativeTagged> result)
 			{
 				showBase(result);
 			}
@@ -92,7 +92,7 @@ public class ActivityFoodbase extends Activity
 		return true;
 	}
 
-	private List<IRelative> request(String filter)
+	private List<RelativeTagged> request(String filter)
 	{
 		List<FoodItem> temp;
 		if (filter.trim().isEmpty())
@@ -104,12 +104,12 @@ public class ActivityFoodbase extends Activity
 			temp = Storage.localFoodBase.findAny(filter);
 		}
 
-		List<IRelative> result = new ArrayList<IRelative>();
+		List<RelativeTagged> result = new ArrayList<RelativeTagged>();
 		result.addAll(temp);
 		return result;
 	}
 
-	private void showBase(final List<IRelative> foodBase)
+	private void showBase(final List<RelativeTagged> foodBase)
 	{
 		data = foodBase;
 
@@ -138,9 +138,18 @@ public class ActivityFoodbase extends Activity
 		};
 
 		listFood.setAdapter(adapter);
+		listFood.setOnItemClickListener(new OnItemClickListener()
+		{
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3)
+			{
+				// TODO: handle
+			}
+		});
+
 	}
 
-	private String getInfo(IRelative foodItem)
+	private String getInfo(RelativeTagged foodItem)
 	{
 		String fmt = getString(R.string.foodbase_subinfo, foodItem.getRelProts(), foodItem.getRelFats(),
 				foodItem.getRelCarbs(), foodItem.getRelValue());
