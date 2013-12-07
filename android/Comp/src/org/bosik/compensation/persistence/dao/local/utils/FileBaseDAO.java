@@ -5,6 +5,8 @@ import java.util.List;
 import org.bosik.compensation.bo.basic.UniqueNamed;
 import org.bosik.compensation.persistence.common.MemoryBase;
 import org.bosik.compensation.persistence.dao.BaseDAO;
+import org.bosik.compensation.persistence.exceptions.DuplicateException;
+import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.utils.FileWorker;
 import android.content.Context;

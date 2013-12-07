@@ -3,17 +3,19 @@ package org.bosik.compensation.persistence.dao.web;
 import java.util.List;
 import org.bosik.compensation.bo.dishbase.DishItem;
 import org.bosik.compensation.persistence.dao.DishBaseDAO;
+import org.bosik.compensation.persistence.exceptions.DuplicateException;
+import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 
 public class WebDishBaseDAO implements DishBaseDAO
 {
 	@Override
-	public String add(DishItem item) throws org.bosik.compensation.persistence.dao.BaseDAO.DuplicateException
+	public String add(DishItem item) throws DuplicateException
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	@Override
-	public void delete(String id) throws org.bosik.compensation.persistence.dao.BaseDAO.ItemNotFoundException
+	public void delete(String id) throws ItemNotFoundException
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}
@@ -49,7 +51,7 @@ public class WebDishBaseDAO implements DishBaseDAO
 	}
 
 	@Override
-	public void update(DishItem item) throws org.bosik.compensation.persistence.dao.BaseDAO.ItemNotFoundException
+	public void update(DishItem item) throws ItemNotFoundException
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}

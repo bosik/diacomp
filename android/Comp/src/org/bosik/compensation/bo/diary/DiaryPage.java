@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.bo.diary.records.DiaryRecord;
+import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
 
@@ -202,7 +203,7 @@ public class DiaryPage
 	 * Returns record by id
 	 * 
 	 * @param id
-	 * @return Diary record if found, null otherwise
+	 * @return Diary record
 	 */
 	public DiaryRecord get(String id)
 	{
@@ -220,7 +221,7 @@ public class DiaryPage
 		}
 		else
 		{
-			return null;
+			throw new ItemNotFoundException(id);
 		}
 	}
 
@@ -249,8 +250,7 @@ public class DiaryPage
 		}
 		else
 		{
-			// TODO; change to NotFoundException()
-			throw new RuntimeException();
+			throw new ItemNotFoundException(id);
 		}
 	}
 
@@ -275,8 +275,7 @@ public class DiaryPage
 		}
 		else
 		{
-			// TODO; change to NotFoundException()
-			throw new RuntimeException();
+			throw new ItemNotFoundException(rec.getId());
 		}
 	}
 }
