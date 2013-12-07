@@ -6,9 +6,11 @@ import org.bosik.compensation.persistence.dao.DiaryDAOTest;
 
 public class FakeDiaryDAOTest extends DiaryDAOTest
 {
+	private static DiaryDAO	dao	= new FakeDiaryDAO();
+
 	@Override
 	protected DiaryDAO getDAO()
 	{
-		return new FakeDiaryDAO();
+		return dao;
 	}
 }

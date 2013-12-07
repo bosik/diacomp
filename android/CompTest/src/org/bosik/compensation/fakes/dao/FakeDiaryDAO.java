@@ -1,5 +1,6 @@
 package org.bosik.compensation.fakes.dao;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.bo.diary.DiaryPage;
@@ -7,6 +8,7 @@ import org.bosik.compensation.persistence.dao.DiaryDAO;
 
 public class FakeDiaryDAO implements DiaryDAO
 {
+	private List<DiaryPage>	data	= new ArrayList<DiaryPage>();
 
 	public List<PageVersion> getModList(Date time)
 	{
