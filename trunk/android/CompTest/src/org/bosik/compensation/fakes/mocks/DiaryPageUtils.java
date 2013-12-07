@@ -12,7 +12,8 @@ import org.bosik.compensation.bo.diary.records.NoteRecord;
 
 public class DiaryPageUtils extends TestCase
 {
-	private static final double	EPS	= 0.00001;
+	private static final double	EPS_FLOAT	= 0.00001;
+	private static final int	EPS_TIME	= 5 * 1000; // msec
 
 	public static DiaryPage demoPageA()
 	{
@@ -52,7 +53,7 @@ public class DiaryPageUtils extends TestCase
 	{
 		compareRecords(expRecord, actRecord);
 
-		assertEquals(expRecord.getValue(), actRecord.getValue(), EPS);
+		assertEquals(expRecord.getValue(), actRecord.getValue(), EPS_FLOAT);
 		assertEquals(expRecord.getFinger(), actRecord.getFinger());
 	}
 
@@ -60,7 +61,7 @@ public class DiaryPageUtils extends TestCase
 	{
 		compareRecords(expRecord, actRecord);
 
-		assertEquals(expRecord.getValue(), actRecord.getValue(), EPS);
+		assertEquals(expRecord.getValue(), actRecord.getValue(), EPS_FLOAT);
 	}
 
 	private static void compareMealRecords(MealRecord expRecord, MealRecord actRecord)
@@ -80,11 +81,11 @@ public class DiaryPageUtils extends TestCase
 	private static void compareFoodMassed(FoodMassed expItem, FoodMassed actItem)
 	{
 		assertEquals(expItem.getName(), actItem.getName());
-		assertEquals(expItem.getRelProts(), actItem.getRelProts(), EPS);
-		assertEquals(expItem.getRelFats(), actItem.getRelFats(), EPS);
-		assertEquals(expItem.getRelCarbs(), actItem.getRelCarbs(), EPS);
-		assertEquals(expItem.getRelValue(), actItem.getRelValue(), EPS);
-		assertEquals(expItem.getMass(), actItem.getMass(), EPS);
+		assertEquals(expItem.getRelProts(), actItem.getRelProts(), EPS_FLOAT);
+		assertEquals(expItem.getRelFats(), actItem.getRelFats(), EPS_FLOAT);
+		assertEquals(expItem.getRelCarbs(), actItem.getRelCarbs(), EPS_FLOAT);
+		assertEquals(expItem.getRelValue(), actItem.getRelValue(), EPS_FLOAT);
+		assertEquals(expItem.getMass(), actItem.getMass(), EPS_FLOAT);
 	}
 
 	private static void compareNoteRecords(NoteRecord expRecord, NoteRecord actRecord)
@@ -97,7 +98,6 @@ public class DiaryPageUtils extends TestCase
 	public static void comparePages(DiaryPage expPage, DiaryPage actPage)
 	{
 		// check the header
-		final int EPS_TIME = 5 * 1000;
 		assertEquals(expPage.getDate().getTime(), actPage.getDate().getTime(), EPS_TIME);
 		assertEquals(expPage.getTimeStamp().getTime(), actPage.getTimeStamp().getTime(), EPS_TIME);
 		assertEquals(expPage.getVersion(), actPage.getVersion());
@@ -116,5 +116,7 @@ public class DiaryPageUtils extends TestCase
 			if (expRecord.getClass() == NoteRecord.class)	compareNoteRecords((NoteRecord) expRecord, (NoteRecord) actRecord);
 			// @formatter:on
 		}
+
+		// TODO: move comparing logic to entities' equals() methods
 	}
 }
