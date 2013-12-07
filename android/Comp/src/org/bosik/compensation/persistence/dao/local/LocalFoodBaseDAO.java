@@ -10,7 +10,7 @@ public class LocalFoodBaseDAO extends FileBaseDAO<FoodItem>
 {
 	public LocalFoodBaseDAO(Context context, String fileName) throws IOException
 	{
-		// hide last parameter with create serializer
+		// hide last parameter with created serializer
 		super(context, fileName, new FoodBaseXMLSerializer());
 	}
 }

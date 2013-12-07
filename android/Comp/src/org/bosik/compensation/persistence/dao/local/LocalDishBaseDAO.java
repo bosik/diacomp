@@ -10,7 +10,7 @@ public class LocalDishBaseDAO extends FileBaseDAO<DishItem>
 {
 	public LocalDishBaseDAO(Context context, String fileName) throws IOException
 	{
-		// hide last parameter with create serializer
+		// hide last parameter with created serializer
 		super(context, fileName, new DishBaseXMLSerializer());
 	}
 }
