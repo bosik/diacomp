@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.sync;
+package org.bosik.compensation.services.sync;
 
 import java.util.ArrayList;
 import java.util.Collections;
