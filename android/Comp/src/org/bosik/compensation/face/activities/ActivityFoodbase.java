@@ -14,6 +14,8 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -71,20 +73,7 @@ public class ActivityFoodbase extends Activity
 			@Override
 			protected List<IRelative> doInBackground(String... params)
 			{
-				String filter = params[0];
-				List<FoodItem> temp;
-				if (filter.trim().isEmpty())
-				{
-					temp = Storage.localFoodBase.findAll();
-				}
-				else
-				{
-					temp = Storage.localFoodBase.findAny(filter);
-				}
-
-				List<IRelative> result = new ArrayList<IRelative>();
-				result.addAll(temp);
-				return result;
+				return request(params[0]);
 			}
 
 			@Override
@@ -101,6 +90,23 @@ public class ActivityFoodbase extends Activity
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.diary_menu, menu);
 		return true;
+	}
+
+	private List<IRelative> request(String filter)
+	{
+		List<FoodItem> temp;
+		if (filter.trim().isEmpty())
+		{
+			temp = Storage.localFoodBase.findAll();
+		}
+		else
+		{
+			temp = Storage.localFoodBase.findAny(filter);
+		}
+
+		List<IRelative> result = new ArrayList<IRelative>();
+		result.addAll(temp);
+		return result;
 	}
 
 	private void showBase(final List<IRelative> foodBase)
