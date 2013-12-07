@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.bo.diary.DiaryPage;
+import org.bosik.compensation.fakes.mocks.DiaryPageUtils;
 import android.test.AndroidTestCase;
 
 public abstract class DiaryDAOTest extends AndroidTestCase

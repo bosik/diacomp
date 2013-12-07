@@ -1,6 +1,7 @@
 package org.bosik.compensation.persistence.dao;
 
 import org.bosik.compensation.bo.foodbase.FoodItem;
+import org.bosik.compensation.fakes.mocks.FoodItemUtils;
 import android.test.AndroidTestCase;
 
 public abstract class FoodBaseDAOTest extends AndroidTestCase

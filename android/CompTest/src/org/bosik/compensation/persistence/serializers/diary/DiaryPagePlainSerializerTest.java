@@ -2,7 +2,7 @@ package org.bosik.compensation.persistence.serializers.diary;
 
 import junit.framework.TestCase;
 import org.bosik.compensation.bo.diary.DiaryPage;
-import org.bosik.compensation.persistence.dao.DiaryPageUtils;
+import org.bosik.compensation.fakes.mocks.DiaryPageUtils;
 import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.persistence.serializers.diary.DiaryPagePlainSerializer;
 
