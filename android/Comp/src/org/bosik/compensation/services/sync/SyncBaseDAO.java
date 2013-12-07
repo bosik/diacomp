@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.sync;
+package org.bosik.compensation.services.sync;
 
 import org.bosik.compensation.persistence.dao.BaseDAO;
 import android.util.Log;

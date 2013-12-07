@@ -13,10 +13,10 @@ import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.Connec
 import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.DeprecatedAPIException;
 import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.ResponseFormatException;
 import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.UndefinedFieldException;
-import org.bosik.compensation.persistence.sync.SyncBaseDAO;
-import org.bosik.compensation.persistence.sync.SyncBaseDAO.SyncResult;
-import org.bosik.compensation.persistence.sync.SyncDiaryDAO;
-import org.bosik.compensation.persistence.sync.SyncDiaryDAO.Callback;
+import org.bosik.compensation.services.sync.SyncBaseDAO;
+import org.bosik.compensation.services.sync.SyncDiaryDAO;
+import org.bosik.compensation.services.sync.SyncBaseDAO.SyncResult;
+import org.bosik.compensation.services.sync.SyncDiaryDAO.Callback;
 import org.bosik.compensation.utils.ErrorHandler;
 import org.bosik.compensation.utils.Utils;
 import android.app.Activity;
