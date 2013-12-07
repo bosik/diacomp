@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import org.bosik.compensation.bo.FoodMassed;
 import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.bo.diary.records.BloodRecord;
+import org.bosik.compensation.bo.diary.records.DiaryRecord;
 import org.bosik.compensation.bo.diary.records.InsRecord;
 import org.bosik.compensation.bo.diary.records.MealRecord;
 import org.bosik.compensation.bo.diary.records.NoteRecord;
@@ -42,52 +43,78 @@ public class DiaryPageUtils extends TestCase
 		return page;
 	}
 
+	public static void compareRecords(DiaryRecord expRecord, DiaryRecord actRecord)
+	{
+		assertEquals(expRecord.getTime(), actRecord.getTime());
+	}
+
+	private static void compareBloodRecords(BloodRecord expRecord, BloodRecord actRecord)
+	{
+		compareRecords(expRecord, actRecord);
+
+		assertEquals(expRecord.getValue(), actRecord.getValue(), EPS);
+		assertEquals(expRecord.getFinger(), actRecord.getFinger());
+	}
+
+	private static void compareInsRecords(InsRecord expRecord, InsRecord actRecord)
+	{
+		compareRecords(expRecord, actRecord);
+
+		assertEquals(expRecord.getValue(), actRecord.getValue(), EPS);
+	}
+
+	private static void compareMealRecords(MealRecord expRecord, MealRecord actRecord)
+	{
+		compareRecords(expRecord, actRecord);
+
+		assertEquals(expRecord.getTime(), actRecord.getTime());
+		assertEquals(expRecord.getShortMeal(), actRecord.getShortMeal());
+		assertEquals(expRecord.count(), actRecord.count());
+
+		for (int j = 0; j < expRecord.count(); j++)
+		{
+			compareFoodMassed(expRecord.get(j), actRecord.get(j));
+		}
+	}
+
+	private static void compareFoodMassed(FoodMassed expItem, FoodMassed actItem)
+	{
+		assertEquals(expItem.getName(), actItem.getName());
+		assertEquals(expItem.getRelProts(), actItem.getRelProts(), EPS);
+		assertEquals(expItem.getRelFats(), actItem.getRelFats(), EPS);
+		assertEquals(expItem.getRelCarbs(), actItem.getRelCarbs(), EPS);
+		assertEquals(expItem.getRelValue(), actItem.getRelValue(), EPS);
+		assertEquals(expItem.getMass(), actItem.getMass(), EPS);
+	}
+
+	private static void compareNoteRecords(NoteRecord expRecord, NoteRecord actRecord)
+	{
+		compareRecords(expRecord, actRecord);
+
+		assertEquals(expRecord.getText(), actRecord.getText());
+	}
+
 	public static void comparePages(DiaryPage expPage, DiaryPage actPage)
 	{
 		// check the header
-		assertEquals(expPage.getDate().getTime(), actPage.getDate().getTime(), 5 * 1000);
-		assertEquals(expPage.getTimeStamp().getTime(), actPage.getTimeStamp().getTime(), 5 * 1000);
+		final int EPS_TIME = 5 * 1000;
+		assertEquals(expPage.getDate().getTime(), actPage.getDate().getTime(), EPS_TIME);
+		assertEquals(expPage.getTimeStamp().getTime(), actPage.getTimeStamp().getTime(), EPS_TIME);
 		assertEquals(expPage.getVersion(), actPage.getVersion());
 
 		// check body
 		assertEquals(expPage.count(), actPage.count());
 		for (int i = 0; i < expPage.count(); i++)
 		{
-			assertEquals(expPage.get(i).getTime(), actPage.get(i).getTime());
+			DiaryRecord expRecord = expPage.get(i);
+			DiaryRecord actRecord = actPage.get(i);
 
-			if (expPage.get(i).getClass() == BloodRecord.class)
-			{
-				assertEquals(((BloodRecord) expPage.get(i)).getValue(), ((BloodRecord) actPage.get(i)).getValue(), EPS);
-				assertEquals(((BloodRecord) expPage.get(i)).getFinger(), ((BloodRecord) actPage.get(i)).getFinger());
-			}
-			else if (expPage.get(i).getClass() == InsRecord.class)
-			{
-				assertEquals(((InsRecord) expPage.get(i)).getValue(), ((InsRecord) actPage.get(i)).getValue(), EPS);
-			}
-			else if (expPage.get(i).getClass() == MealRecord.class)
-			{
-				MealRecord expMeal = (MealRecord) expPage.get(i);
-				MealRecord actMeal = (MealRecord) actPage.get(i);
-
-				assertEquals(expMeal.getShortMeal(), actMeal.getShortMeal());
-				assertEquals(expMeal.count(), actMeal.count());
-
-				for (int j = 0; j < expMeal.count(); j++)
-				{
-					assertEquals(expMeal.get(j).getName(), actMeal.get(j).getName());
-					assertEquals(expMeal.get(j).getRelProts(), actMeal.get(j).getRelProts(), EPS);
-					assertEquals(expMeal.get(j).getRelFats(), actMeal.get(j).getRelFats(), EPS);
-					assertEquals(expMeal.get(j).getRelCarbs(), actMeal.get(j).getRelCarbs(), EPS);
-					assertEquals(expMeal.get(j).getRelValue(), actMeal.get(j).getRelValue(), EPS);
-					assertEquals(expMeal.get(j).getMass(), actMeal.get(j).getMass(), EPS);
-				}
-			}
-
-			if (expPage.get(i).getClass() == NoteRecord.class)
-			{
-				assertEquals(((NoteRecord) expPage.get(i)).getText(), ((NoteRecord) actPage.get(i)).getText());
-			}
+			// @formatter:off
+			if (expRecord.getClass() == BloodRecord.class)	compareBloodRecords((BloodRecord) expRecord, (BloodRecord) actRecord); else
+			if (expRecord.getClass() == InsRecord.class)	compareInsRecords((InsRecord) expRecord, (InsRecord) actRecord); else
+			if (expRecord.getClass() == MealRecord.class)	compareMealRecords((MealRecord) expRecord, (MealRecord) actRecord); else
+			if (expRecord.getClass() == NoteRecord.class)	compareNoteRecords((NoteRecord) expRecord, (NoteRecord) actRecord);
+			// @formatter:on
 		}
 	}
-
 }
