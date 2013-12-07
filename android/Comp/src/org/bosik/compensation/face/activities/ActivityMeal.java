@@ -64,7 +64,6 @@ public class ActivityMeal extends Activity
 
 		Log.d(TAG, "Caption carbs: " + captionCarbs);
 		Log.d(TAG, "Caption dose: " + captionDose);
-		Log.d(TAG, "FoodItem count: " + Storage.foodBase.size());
 
 		loadFoodList();
 		showMeal();
@@ -116,12 +115,14 @@ public class ActivityMeal extends Activity
 
 	private void loadFoodList()
 	{
-		String[] foodBase = new String[Storage.foodBase.size()];
-		for (int i = 0; i < Storage.foodBase.size(); i++)
+		List<FoodItem> base = Storage.localFoodBase.findAll();
+		String[] foodBase = new String[base.size()];
+
+		int i = 0;
+		for (FoodItem food : base)
 		{
 			// TODO: implement method returning names array sorted by tag
-			foodBase[i] = Storage.foodBase.get(i).getName();
-			// Log.v(TAG, foodBase[i]);
+			foodBase[i++] = food.getName();
 		}
 
 		ArrayAdapter<String> baseAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, foodBase);
