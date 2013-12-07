@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.bo.diary.records.DiaryRecord;
+import org.bosik.compensation.persistence.exceptions.DuplicateException;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
@@ -164,12 +165,14 @@ public class DiaryPage
 	 *            Запись
 	 * @return Индекс созданной записи на странице
 	 */
-	public int add(DiaryRecord rec)
+	public int add(DiaryRecord rec) throws DuplicateException
 	{
 		if (rec == null)
 		{
 			throw new NullPointerException("Record can't be null");
 		}
+
+		// TODO: add duplication check
 
 		items.add(rec);
 		changed();
@@ -205,7 +208,7 @@ public class DiaryPage
 	 * @param id
 	 * @return Diary record
 	 */
-	public DiaryRecord get(String id)
+	public DiaryRecord get(String id) throws ItemNotFoundException
 	{
 		int index = getIndexById(id);
 		if (index > -1)
@@ -241,7 +244,7 @@ public class DiaryPage
 	 * 
 	 * @param id
 	 */
-	public void remove(String id)
+	public void remove(String id) throws ItemNotFoundException
 	{
 		int index = getIndexById(id);
 		if (index > -1)
@@ -259,7 +262,7 @@ public class DiaryPage
 		items.clear();
 	}
 
-	public void update(DiaryRecord rec)
+	public void update(DiaryRecord rec) throws ItemNotFoundException
 	{
 		int index = getIndexById(rec.getId());
 		if (index > -1)
