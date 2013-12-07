@@ -5,6 +5,8 @@ import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.persistence.common.MemoryBase;
 import org.bosik.compensation.persistence.dao.FoodBaseDAO;
 import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
+import org.bosik.compensation.persistence.exceptions.DuplicateException;
+import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 import org.bosik.compensation.persistence.serializers.Serializer;
 
 public class WebFoodBaseDAO implements FoodBaseDAO

@@ -1,29 +1,11 @@
 package org.bosik.compensation.persistence.dao;
 
 import java.util.List;
+import org.bosik.compensation.persistence.exceptions.DuplicateException;
+import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 
 public interface BaseDAO<Item>
 {
-	public static class ItemNotFoundException extends RuntimeException
-	{
-		private static final long	serialVersionUID	= 1L;
-
-		public ItemNotFoundException(String id)
-		{
-			super(String.format("Item '%s' not found", id));
-		}
-	}
-
-	public static class DuplicateException extends RuntimeException
-	{
-		private static final long	serialVersionUID	= 1L;
-
-		public DuplicateException(String id)
-		{
-			super(String.format("Item '%s' already exists", id));
-		}
-	}
-
 	/**
 	 * Adds item to the list
 	 * 
