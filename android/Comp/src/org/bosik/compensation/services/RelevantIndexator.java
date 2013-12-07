@@ -12,11 +12,16 @@ import org.bosik.compensation.persistence.dao.DiaryDAO;
 import org.bosik.compensation.persistence.dao.DishBaseDAO;
 import org.bosik.compensation.persistence.dao.FoodBaseDAO;
 import org.bosik.compensation.utils.Utils;
+import android.util.Log;
 
 public class RelevantIndexator
 {
+	private static final String	TAG	= RelevantIndexator.class.getSimpleName();
+
 	public static void indexate(DiaryDAO diary, FoodBaseDAO foodBase, DishBaseDAO dishBase)
 	{
+		/**/long time = System.currentTimeMillis();
+
 		// constructing dates list
 		final Date now = Utils.now();
 		final int PERIOD = 30; // days
@@ -44,6 +49,8 @@ public class RelevantIndexator
 				}
 			}
 		}
+
+		/**/Log.v(TAG, String.format("Indexated in %d msec", System.currentTimeMillis() - time));
 	}
 
 	private static <T extends RelativeTagged> void clearTags(BaseDAO<T> base)

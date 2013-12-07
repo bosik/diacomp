@@ -6,6 +6,7 @@ import org.bosik.compensation.bo.RelativeTagged;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.persistence.Storage;
+import org.bosik.compensation.services.Sorter;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -26,8 +27,8 @@ public class ActivityFoodbase extends Activity
 	// private static final String TAG = ActivityFoodbase.class.getSimpleName();
 
 	// Widgets
-	private EditText		editFoodSearch;
-	private ListView		listFood;
+	private EditText				editFoodSearch;
+	private ListView				listFood;
 
 	// Data
 	private List<RelativeTagged>	data;
@@ -102,6 +103,7 @@ public class ActivityFoodbase extends Activity
 		else
 		{
 			temp = Storage.localFoodBase.findAny(filter);
+			Sorter.sort(temp, Sorter.Sort.RELEVANT);
 		}
 
 		List<RelativeTagged> result = new ArrayList<RelativeTagged>();
@@ -146,13 +148,12 @@ public class ActivityFoodbase extends Activity
 				// TODO: handle
 			}
 		});
-
 	}
 
-	private String getInfo(RelativeTagged foodItem)
+	private String getInfo(RelativeTagged item)
 	{
-		String fmt = getString(R.string.foodbase_subinfo, foodItem.getRelProts(), foodItem.getRelFats(),
-				foodItem.getRelCarbs(), foodItem.getRelValue());
-		return fmt;
+		String fmt = getString(R.string.foodbase_subinfo, item.getRelProts(), item.getRelFats(), item.getRelCarbs(),
+				item.getRelValue());
+		return fmt + " TAG=" + item.getTag();
 	}
 }
