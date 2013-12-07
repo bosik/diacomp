@@ -124,6 +124,7 @@ public class MemoryBase<T extends UniqueNamed>
 					result.add((T) item.clone());
 				}
 			}
+
 			return result;
 		}
 		catch (CloneNotSupportedException e)
