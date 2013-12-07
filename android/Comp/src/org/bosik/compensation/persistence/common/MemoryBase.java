@@ -23,7 +23,7 @@ public class MemoryBase<T extends UniqueNamed>
 	private int				version		= 0;
 	private boolean			silentMode	= false;
 
-	// ================== РАБОТА СО СПИСКОМ ==================
+	// ================== LIST ROUTINES ==================
 
 	public int add(T item) throws DuplicateException
 	{
@@ -229,7 +229,7 @@ public class MemoryBase<T extends UniqueNamed>
 		this.version = version;
 	}
 
-	// ================== КОНТРОЛЬ НОМЕРА ВЕРСИИ ==================
+	// ================== VERSION CONTROL ==================
 
 	public void beginUpdate()
 	{
