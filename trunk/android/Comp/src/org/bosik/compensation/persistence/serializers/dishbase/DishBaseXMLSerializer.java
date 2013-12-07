@@ -80,14 +80,12 @@ public class DishBaseXMLSerializer implements Serializer<MemoryBase<DishItem>>
 	@Override
 	public List<MemoryBase<DishItem>> readAll(String data)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	@Override
 	public String writeAll(List<MemoryBase<DishItem>> object)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not implemented");
 	}
 }

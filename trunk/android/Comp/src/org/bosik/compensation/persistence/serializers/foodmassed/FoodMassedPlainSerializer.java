@@ -45,7 +45,7 @@ public class FoodMassedPlainSerializer implements Serializer<FoodMassed>
 	@Override
 	public List<FoodMassed> readAll(String data)
 	{
-		throw new UnsupportedOperationException(TAG + ".readAll() method is not supported");
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	@Override
@@ -59,6 +59,6 @@ public class FoodMassedPlainSerializer implements Serializer<FoodMassed>
 	@Override
 	public String writeAll(List<FoodMassed> objects)
 	{
-		throw new UnsupportedOperationException(TAG + ".writeAll() method is not supported");
+		throw new UnsupportedOperationException("Not implemented");
 	}
 }
