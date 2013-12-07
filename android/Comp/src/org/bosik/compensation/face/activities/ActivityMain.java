@@ -158,7 +158,7 @@ public class ActivityMain extends Activity implements OnClickListener
 			{
 				Log.v(TAG, "Sync diary...");
 				// TODO: хранить время последней синхронизации
-				Date since = new Date(2013 - 1900, 04 - 1, 1, 0, 0, 0); // а затем мы получаем
+				Date since = new Date(2013 - 1900, 11 - 1, 1, 0, 0, 0); // а затем мы получаем
 																		// громадный синхролист, ага
 				syncPagesCount = SyncDiaryDAO.synchronize(Storage.localDiary, Storage.webDiary, since);
 				Log.v(TAG, "Diary synced, total tranferred: " + syncPagesCount);
@@ -167,11 +167,6 @@ public class ActivityMain extends Activity implements OnClickListener
 				SyncResult r = SyncBaseDAO.synchronize(Storage.localFoodBase, Storage.webFoodBase);
 				syncFoodBase = (r != SyncResult.EQUAL);
 				Log.v(TAG, "Foodbase synced, result: " + r);
-
-				// if (Storage.localFoodBase.modified())
-				// {
-				// Storage.localFoodBase.save();
-				// }
 
 				Log.v(TAG, "Sync done OK");
 				return LoginResult.DONE;
