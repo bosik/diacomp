@@ -8,7 +8,7 @@ import org.bosik.compensation.bo.basic.UniqueNamed;
  * @author Bosik
  * 
  */
-public class Food extends UniqueNamed implements IRelative
+public class Food extends UniqueNamed
 {
 	private static final long	serialVersionUID	= 1L;
 
@@ -76,25 +76,21 @@ public class Food extends UniqueNamed implements IRelative
 
 	// ================================ GET / SET ================================
 
-	@Override
 	public double getRelProts()
 	{
 		return relProts;
 	}
 
-	@Override
 	public double getRelFats()
 	{
 		return relFats;
 	}
 
-	@Override
 	public double getRelCarbs()
 	{
 		return relCarbs;
 	}
 
-	@Override
 	public double getRelValue()
 	{
 		return relValue;

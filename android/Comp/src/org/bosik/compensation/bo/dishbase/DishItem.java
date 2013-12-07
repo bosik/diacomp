@@ -1,9 +1,9 @@
 package org.bosik.compensation.bo.dishbase;
 
-import org.bosik.compensation.bo.IRelative;
+import org.bosik.compensation.bo.RelativeTagged;
 import org.bosik.compensation.bo.basic.UniqueNamed;
 
-public class DishItem extends UniqueNamed implements IRelative
+public class DishItem extends UniqueNamed implements RelativeTagged
 {
 	private static final long	serialVersionUID	= 1L;
 
@@ -40,6 +40,19 @@ public class DishItem extends UniqueNamed implements IRelative
 	{
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public int getTag()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setTag(int tag)
+	{
+		// TODO Auto-generated method stub
 	}
 
 	// ================================ CLONE ================================
