@@ -88,9 +88,9 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			// Intent intent = getIntent();
 
 			/*
-			 * if (intent.hasExtra("date")) { // TODO: опасно... а вдруг в Intent мусор? // TODO:
-			 * константы Date date = (Date) intent.getSerializableExtra("date"); openPage(date);
-			 * Log.d(TAG, "DiaryView(): onCreate(), date is specified: " + date); } else
+			 * if (intent.hasExtra("date")) { Date date = (Date)
+			 * intent.getSerializableExtra("date"); openPage(date); Log.d(TAG,
+			 * "DiaryView(): onCreate(), date is specified: " + date); } else
 			 */
 			{
 				openPage(curDate);
