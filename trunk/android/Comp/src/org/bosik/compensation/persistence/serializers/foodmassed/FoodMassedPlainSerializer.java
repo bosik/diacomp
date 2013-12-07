@@ -9,6 +9,7 @@ import org.bosik.compensation.utils.Utils;
 
 public class FoodMassedPlainSerializer implements Serializer<FoodMassed>
 {
+	private static final String			TAG			= FoodMassedPlainSerializer.class.getSimpleName();
 	private static final DecimalFormat	df			= new DecimalFormat("###.#");
 	private static final char			FOOD_SEP	= '|';
 
@@ -44,8 +45,7 @@ public class FoodMassedPlainSerializer implements Serializer<FoodMassed>
 	@Override
 	public List<FoodMassed> readAll(String data)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException(TAG + ".readAll() method is not supported");
 	}
 
 	@Override
@@ -59,7 +59,6 @@ public class FoodMassedPlainSerializer implements Serializer<FoodMassed>
 	@Override
 	public String writeAll(List<FoodMassed> objects)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException(TAG + ".writeAll() method is not supported");
 	}
 }
