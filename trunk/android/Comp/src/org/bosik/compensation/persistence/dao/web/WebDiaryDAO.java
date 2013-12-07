@@ -144,6 +144,8 @@ public class WebDiaryDAO implements DiaryDAO
 	@Override
 	public List<DiaryPage> getPages(List<Date> dates)
 	{
+		// TODO: check the behavior for not existed pages
+
 		List<DiaryPage> result = new ArrayList<DiaryPage>();
 
 		int block = 10;
