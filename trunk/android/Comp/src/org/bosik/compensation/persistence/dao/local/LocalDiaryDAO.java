@@ -19,16 +19,15 @@ public class LocalDiaryDAO implements DiaryDAO
 {
 	/* ============================ КОНСТАНТЫ ============================ */
 
-	@SuppressWarnings("unused")
-	private static final String	TAG			= LocalDiaryDAO.class.getSimpleName();
+	// private static final String TAG = LocalDiaryDAO.class.getSimpleName();
 
-	public static final int		AUTO_CHECK	= 0;
-	public static final int		SURE_INSERT	= 1;
-	public static final int		SURE_UPDATE	= 2;
+	public static final int	AUTO_CHECK	= 0;
+	public static final int	SURE_INSERT	= 1;
+	public static final int	SURE_UPDATE	= 2;
 
 	/* ============================ ПОЛЯ ============================ */
 
-	private ContentResolver		aResolver;
+	private ContentResolver	aResolver;
 
 	/* ======================= ВНУТРЕННИЕ МЕТОДЫ ========================= */
 
