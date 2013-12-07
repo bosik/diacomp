@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -61,28 +60,10 @@ public class XmlUtils
 		return builder.newDocument();
 	}
 
-	public static Document readDocument(String xmlData)
+	public static Document readDocument(String xmlData) throws SAXException, IOException
 	{
-		try
-		{
-			InputStream stream = new ByteArrayInputStream(xmlData.getBytes("UTF-8"));
-			return builder.parse(stream);
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			// FIXME: blocked throws (here and further)
-			e.printStackTrace();
-		}
-		catch (SAXException e)
-		{
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-
-		return null;
+		InputStream stream = new ByteArrayInputStream(xmlData.getBytes("UTF-8"));
+		return builder.parse(stream);
 	}
 
 	public static String writeDocument(Document doc)
