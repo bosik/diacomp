@@ -1,6 +1,7 @@
 package org.bosik.compensation.persistence.serializers.foodbase;
 
 import java.util.List;
+import javax.xml.transform.TransformerException;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.persistence.common.MemoryBase;
 import org.bosik.compensation.persistence.serializers.Serializer;
@@ -106,7 +107,14 @@ public class FoodBaseXMLSerializer implements Serializer<MemoryBase<FoodItem>>
 		/**/Log.v(TAG, String.format("FoodBase serialized in %d msec, total items: %d", System.currentTimeMillis()
 				- time, foodBase.count()));
 
-		return XmlUtils.writeDocument(doc);
+		try
+		{
+			return XmlUtils.writeDocument(doc);
+		}
+		catch (TransformerException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

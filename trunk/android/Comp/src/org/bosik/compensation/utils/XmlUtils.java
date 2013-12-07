@@ -66,20 +66,12 @@ public class XmlUtils
 		return builder.parse(stream);
 	}
 
-	public static String writeDocument(Document doc)
+	public static String writeDocument(Document doc) throws TransformerException
 	{
-		try
-		{
-			DOMSource source = new DOMSource(doc);
-			OutputStream stream = new ByteArrayOutputStream();
-			StreamResult result = new StreamResult(stream);
-			transformer.transform(source, result);
-			return stream.toString();
-		}
-		catch (TransformerException ex)
-		{
-			ex.printStackTrace();
-		}
-		return null;
+		DOMSource source = new DOMSource(doc);
+		OutputStream stream = new ByteArrayOutputStream();
+		StreamResult result = new StreamResult(stream);
+		transformer.transform(source, result);
+		return stream.toString();
 	}
 }
