@@ -2,11 +2,12 @@ package org.bosik.compensation.persistence.dao.local;
 
 import java.io.IOException;
 import org.bosik.compensation.bo.foodbase.FoodItem;
+import org.bosik.compensation.persistence.dao.FoodBaseDAO;
 import org.bosik.compensation.persistence.dao.local.utils.FileBaseDAO;
 import org.bosik.compensation.persistence.serializers.foodbase.FoodBaseXMLSerializer;
 import android.content.Context;
 
-public class LocalFoodBaseDAO extends FileBaseDAO<FoodItem>
+public class LocalFoodBaseDAO extends FileBaseDAO<FoodItem> implements FoodBaseDAO
 {
 	public LocalFoodBaseDAO(Context context, String fileName) throws IOException
 	{
