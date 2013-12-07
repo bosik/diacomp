@@ -1,6 +1,6 @@
 package org.bosik.compensation.bo;
 
-public interface IRelative
+public interface RelativeTagged
 {
 	String getName();
 
@@ -11,4 +11,8 @@ public interface IRelative
 	double getRelCarbs();
 
 	double getRelValue();
+
+	int getTag();
+
+	void setTag(int tag);
 }
