@@ -7,6 +7,9 @@ public class FoodMassedTest extends TestCase
 {
 	private FoodMassed	food	= new FoodMassed("TestFoodMassed");
 
+	// TODO: use EPS while comparing doubles
+	// TODO: change Exception to IllegalArgumentException
+
 	public void testMass()
 	{
 		// normal test
