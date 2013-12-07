@@ -5,9 +5,9 @@ import android.test.AndroidTestCase;
 
 public abstract class FoodBaseDAOTest extends AndroidTestCase
 {
-	private BaseDAO<FoodItem>	foodBaseDAO;
+	private FoodBaseDAO	foodBaseDAO;
 
-	protected abstract BaseDAO<FoodItem> getDAO();
+	protected abstract FoodBaseDAO getDAO();
 
 	@Override
 	protected void setUp()

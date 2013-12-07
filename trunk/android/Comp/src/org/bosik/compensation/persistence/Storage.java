@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.activities.ActivityPreferences;
-import org.bosik.compensation.persistence.dao.BaseDAO;
 import org.bosik.compensation.persistence.dao.DiaryDAO;
+import org.bosik.compensation.persistence.dao.FoodBaseDAO;
 import org.bosik.compensation.persistence.dao.local.LocalDiaryDAO;
 import org.bosik.compensation.persistence.dao.local.LocalFoodBaseDAO;
 import org.bosik.compensation.persistence.dao.web.WebDiaryDAO;
@@ -35,8 +35,8 @@ public class Storage
 	public static WebClient			webClient;
 	public static DiaryDAO			localDiary;
 	public static DiaryDAO			webDiary;
-	public static BaseDAO<FoodItem>	localFoodBase;
-	public static BaseDAO<FoodItem>	webFoodBase;
+	public static FoodBaseDAO		localFoodBase;
+	public static FoodBaseDAO		webFoodBase;
 
 	// temp data
 	public static List<FoodItem>	foodBase;

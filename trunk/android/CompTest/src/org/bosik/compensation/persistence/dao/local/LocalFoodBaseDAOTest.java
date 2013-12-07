@@ -1,14 +1,13 @@
 package org.bosik.compensation.persistence.dao.local;
 
 import java.io.IOException;
-import org.bosik.compensation.bo.foodbase.FoodItem;
-import org.bosik.compensation.persistence.dao.BaseDAO;
+import org.bosik.compensation.persistence.dao.FoodBaseDAO;
 import org.bosik.compensation.persistence.dao.FoodBaseDAOTest;
 
 public class LocalFoodBaseDAOTest extends FoodBaseDAOTest
 {
 	@Override
-	protected BaseDAO<FoodItem> getDAO()
+	protected FoodBaseDAO getDAO()
 	{
 		assertNotNull(getContext());
 		try
