@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.dao;
+package org.bosik.compensation.fakes.mocks;
 
 import junit.framework.ComparisonFailure;
 import junit.framework.TestCase;
