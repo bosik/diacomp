@@ -8,7 +8,7 @@ import org.bosik.compensation.bo.basic.UniqueNamed;
  * @author Bosik
  * 
  */
-public class Food extends UniqueNamed
+public class Food extends RelativeTagged
 {
 	private static final long	serialVersionUID	= 1L;
 
@@ -76,21 +76,25 @@ public class Food extends UniqueNamed
 
 	// ================================ GET / SET ================================
 
+	@Override
 	public double getRelProts()
 	{
 		return relProts;
 	}
 
+	@Override
 	public double getRelFats()
 	{
 		return relFats;
 	}
 
+	@Override
 	public double getRelCarbs()
 	{
 		return relCarbs;
 	}
 
+	@Override
 	public double getRelValue()
 	{
 		return relValue;

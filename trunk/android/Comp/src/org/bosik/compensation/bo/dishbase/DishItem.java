@@ -3,7 +3,7 @@ package org.bosik.compensation.bo.dishbase;
 import org.bosik.compensation.bo.RelativeTagged;
 import org.bosik.compensation.bo.basic.UniqueNamed;
 
-public class DishItem extends UniqueNamed implements RelativeTagged
+public class DishItem extends RelativeTagged
 {
 	private static final long	serialVersionUID	= 1L;
 

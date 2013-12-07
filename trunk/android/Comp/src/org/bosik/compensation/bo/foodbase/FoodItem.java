@@ -2,7 +2,6 @@ package org.bosik.compensation.bo.foodbase;
 
 import java.util.Locale;
 import org.bosik.compensation.bo.Food;
-import org.bosik.compensation.bo.RelativeTagged;
 import org.bosik.compensation.bo.basic.UniqueNamed;
 
 /**
@@ -11,12 +10,11 @@ import org.bosik.compensation.bo.basic.UniqueNamed;
  * @author Bosik
  * 
  */
-public class FoodItem extends Food implements RelativeTagged, Cloneable
+public class FoodItem extends Food implements Cloneable
 {
 	private static final long	serialVersionUID	= -1062568910858912955L;
 
 	private boolean				fromTable;
-	private int					tag;
 
 	public FoodItem(String name)
 	{
@@ -33,18 +31,6 @@ public class FoodItem extends Food implements RelativeTagged, Cloneable
 	public void setFromTable(boolean fromTable)
 	{
 		this.fromTable = fromTable;
-	}
-
-	@Override
-	public int getTag()
-	{
-		return tag;
-	}
-
-	@Override
-	public void setTag(int tag)
-	{
-		this.tag = tag;
 	}
 
 	// ================================ CLONE ================================
