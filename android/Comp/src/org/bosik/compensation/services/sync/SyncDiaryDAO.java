@@ -10,12 +10,9 @@ import org.bosik.compensation.persistence.dao.DiaryDAO.PageVersion;
 
 public class SyncDiaryDAO
 {
-	/* ============================ КОНСТАНТЫ ============================ */
+	// private static final String TAG = "SyncDiaryDAO";
 
-	@SuppressWarnings("unused")
-	private static final String	TAG	= "SyncDiaryDAO";
-
-	/* ============================ КЛАССЫ ============================ */
+	/* ============================ HELPER CLASSES ============================ */
 
 	public static interface Callback
 	{
@@ -62,9 +59,9 @@ public class SyncDiaryDAO
 	// }*/
 	// }
 
-	/* ============================ МЕТОДЫ ============================ */
+	/* ============================ METHODS ============================ */
 
-	// TODO: public только для тестирования
+	// TODO: made public for test purposes only
 
 	/**
 	 * Sorts list by date (ascending)
@@ -84,23 +81,23 @@ public class SyncDiaryDAO
 	}
 
 	/**
-	 * Получает списки дат, для которых необходимо произвести синхронизацию
+	 * Calculates date lists for synchronization
 	 * 
 	 * @param modList1
-	 *            Первый массив
+	 *            First date-version list
 	 * @param modList2
-	 *            Второй массив
+	 *            Second date-version list
 	 * @param over1
-	 *            Список дат, которые присутствуют только в первом списке либо в обоих, но в первом
-	 *            версия старше
+	 *            Dates which either (a) has greater version in the first list or (b) presented only
+	 *            in the first list
 	 * @param over2
-	 *            Список дат, которые присутствуют только во втором списке либо в обоих, но во
-	 *            втором версия старше
+	 *            Dates which either (a) has greater version in the second list or (b) presented
+	 *            only in the second list
 	 */
 	public static void getOverLists(List<PageVersion> modList1, List<PageVersion> modList2, List<Date> over1,
 			List<Date> over2)
 	{
-		// проверки
+		// null checks
 		if (null == modList1)
 		{
 			throw new NullPointerException("modList1 can't be null");
@@ -118,7 +115,7 @@ public class SyncDiaryDAO
 			throw new NullPointerException("over2 can't be null");
 		}
 
-		// подготовка
+		// preparation
 		sort(modList1);
 		sort(modList2);
 		over1.clear();
@@ -126,7 +123,7 @@ public class SyncDiaryDAO
 		int i = 0;
 		int j = 0;
 
-		// параллельная обработка
+		// parallel processing
 		while ((i < modList1.size()) && (j < modList2.size()))
 		{
 			PageVersion p1 = modList1.get(i);
@@ -157,14 +154,14 @@ public class SyncDiaryDAO
 			}
 		}
 
-		// добиваем первый
+		// finish first list
 		while (i < modList1.size())
 		{
 			over1.add(modList1.get(i).date);
 			i++;
 		}
 
-		// добиваем второй
+		// finish second list
 		while (j < modList2.size())
 		{
 			over2.add(modList2.get(j).date);
@@ -173,19 +170,22 @@ public class SyncDiaryDAO
 	}
 
 	/**
-	 * Синхронизирует источники. Учитываются только страницы, изменённые после указанного времени
+	 * Synchronizes two diary DAOs
 	 * 
 	 * @param source1
-	 *            Первый источник
+	 *            First DAO
 	 * @param source2
-	 *            Второй источник
+	 *            Second DAO
 	 * @param since
-	 *            Время последней синхронизации
-	 * @return Суммарное количество переданных страниц
+	 *            Modification time limiter: pages modified after this time is taking in account
+	 *            only
+	 * @return Total number of transferred pages
 	 */
 	public static int synchronize(DiaryDAO source1, DiaryDAO source2, Date since)
 	{
-		// проверки
+		// FIXME: see algorithm update for desktop app
+
+		// null checks
 		if (null == source1)
 		{
 			throw new NullPointerException("source1 can't be null");
@@ -199,12 +199,11 @@ public class SyncDiaryDAO
 			throw new NullPointerException("since date can't be null");
 		}
 
-		// запрашиваем modlist
+		// requesting modlists
 		List<PageVersion> modList1 = source1.getModList(since);
 		List<PageVersion> modList2 = source2.getModList(since);
 
-		// проверяем (TODO: fail-fast)
-
+		// null checks again
 		if (null == modList1)
 		{
 			throw new NullPointerException("modList1 is null");
@@ -214,8 +213,7 @@ public class SyncDiaryDAO
 			throw new NullPointerException("modList2 is null");
 		}
 
-		// получаем списки для передачи
-
+		// calculating transferring lists
 		List<Date> over1 = new ArrayList<Date>();
 		List<Date> over2 = new ArrayList<Date>();
 		getOverLists(modList1, modList2, over1, over2);
@@ -230,13 +228,13 @@ public class SyncDiaryDAO
 		 * "2 --> 1 : " + String.valueOf(over2.get(i))); } }
 		 */
 
-		// синхронизация
+		// transfer
 
-		// THINK: разбивать на группы?
+		// THINK: divide into small groups?
 		source1.postPages(source2.getPages(over2));
 		source2.postPages(source1.getPages(over1));
 
-		// результат
+		// Result is number of transferred pages
 		return over1.size() + over2.size();
 	}
 }
