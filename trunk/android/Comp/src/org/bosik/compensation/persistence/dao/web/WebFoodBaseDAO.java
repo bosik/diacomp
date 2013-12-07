@@ -3,11 +3,11 @@ package org.bosik.compensation.persistence.dao.web;
 import java.util.List;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.persistence.common.MemoryBase;
-import org.bosik.compensation.persistence.dao.BaseDAO;
+import org.bosik.compensation.persistence.dao.FoodBaseDAO;
 import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
 import org.bosik.compensation.persistence.serializers.Serializer;
 
-public class WebFoodBaseDAO implements BaseDAO<FoodItem>
+public class WebFoodBaseDAO implements FoodBaseDAO
 {
 	// private static final String TAG = WebFoodBaseDAO.class.getSimpleName();
 
