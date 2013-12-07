@@ -24,50 +24,57 @@ public class FoodBaseXMLSerializer implements Serializer<MemoryBase<FoodItem>>
 	@Override
 	public MemoryBase<FoodItem> read(String xmlData)
 	{
-		// Log.v(TAG, "Reading: " + xmlData);
 		if ("".equals(xmlData))
 		{
 			return new MemoryBase<FoodItem>();
 		}
 
-		/**/long time = System.currentTimeMillis();
-
-		Document doc = XmlUtils.readDocument(xmlData);
-		Element root = doc.getDocumentElement();
-		NodeList nodes = root.getChildNodes();
-
-		MemoryBase<FoodItem> foodBase = new MemoryBase<FoodItem>();
-		foodBase.beginUpdate();
-		foodBase.clear();
-
-		for (int i = 0; i < nodes.getLength(); i++)
+		try
 		{
-			Node node = nodes.item(i);
+			/**/long time = System.currentTimeMillis();
 
-			if (node instanceof Element)
+			Document doc = XmlUtils.readDocument(xmlData);
+			Element root = doc.getDocumentElement();
+			NodeList nodes = root.getChildNodes();
+
+			MemoryBase<FoodItem> foodBase = new MemoryBase<FoodItem>();
+			foodBase.beginUpdate();
+			foodBase.clear();
+
+			for (int i = 0; i < nodes.getLength(); i++)
 			{
-				Element x = (Element) node;
+				Node node = nodes.item(i);
 
-				FoodItem food = new FoodItem(x.getAttribute("name"));
-				food.setId(x.getAttribute("id"));
-				food.setRelProts(Double.parseDouble(x.getAttribute("prots")));
-				food.setRelFats(Double.parseDouble(x.getAttribute("fats")));
-				food.setRelCarbs(Double.parseDouble(x.getAttribute("carbs")));
-				food.setRelValue(Double.parseDouble(x.getAttribute("val")));
-				food.setFromTable(x.getAttribute("table").equalsIgnoreCase("true"));
+				if (node instanceof Element)
+				{
+					Element x = (Element) node;
 
-				foodBase.add(food);
+					FoodItem food = new FoodItem(x.getAttribute("name"));
+					food.setId(x.getAttribute("id"));
+					food.setRelProts(Double.parseDouble(x.getAttribute("prots")));
+					food.setRelFats(Double.parseDouble(x.getAttribute("fats")));
+					food.setRelCarbs(Double.parseDouble(x.getAttribute("carbs")));
+					food.setRelValue(Double.parseDouble(x.getAttribute("val")));
+					food.setFromTable(x.getAttribute("table").equalsIgnoreCase("true"));
+
+					foodBase.add(food);
+				}
 			}
+
+			foodBase.setVersion(Integer.parseInt(root.getAttribute("version")));
+			foodBase.endUpdate();
+
+			/**/Log.v(
+					TAG,
+					String.format("FoodBase deserialized in %d msec, total items: %d", System.currentTimeMillis()
+							- time, foodBase.count()));
+
+			return foodBase;
 		}
-
-		foodBase.setVersion(Integer.parseInt(root.getAttribute("version")));
-
-		foodBase.endUpdate();
-
-		/**/Log.v(TAG, String.format("FoodBase deserialized in %d msec, total items: %d", System.currentTimeMillis()
-				- time, foodBase.count()));
-
-		return foodBase;
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
