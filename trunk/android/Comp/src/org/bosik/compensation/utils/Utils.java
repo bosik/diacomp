@@ -13,6 +13,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import android.util.Log;
 
@@ -242,6 +244,37 @@ public class Utils
 	public static Date now()
 	{
 		return Calendar.getInstance().getTime();
+	}
+
+	/**
+	 * [tested] Returns sorted dates list (lastDate-period+1 ... lastDate)
+	 * 
+	 * @param lastDate
+	 *            Current date
+	 * @param period
+	 *            Days
+	 * @return
+	 */
+	public static List<Date> getPeriodDates(Date lastDate, int period)
+	{
+		List<Date> dates = new LinkedList<Date>();
+
+		Calendar c = Calendar.getInstance();
+		c.setTime(lastDate);
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+
+		c.add(Calendar.DATE, -period);
+
+		for (int i = 0; i < period; i++)
+		{
+			c.add(Calendar.DATE, +1);
+			dates.add(c.getTime());
+		}
+
+		return dates;
 	}
 
 	/**

@@ -3,6 +3,7 @@ package org.bosik.compensation.utills;
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import junit.framework.TestCase;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
@@ -245,6 +246,33 @@ public class UtilsTest extends TestCase
 	{
 		assertEquals(date(2012, 01, 01), Utils.getNextDay(date(2011, 12, 31)));
 		assertEquals(date(2012, 04, 02), Utils.getNextDay(date(2012, 04, 01)));
+		// TODO: add leap year test
+	}
+
+	public void testGetPeriodDates_empty()
+	{
+		List<Date> dates = Utils.getPeriodDates(date(2013, 8, 4), 0);
+
+		assertEquals(0, dates.size());
+	}
+
+	public void testGetPeriodDates_one()
+	{
+		List<Date> dates = Utils.getPeriodDates(date(2013, 8, 4), 1);
+
+		assertEquals(1, dates.size());
+		assertEquals(date(2013, 8, 4), dates.get(0));
+	}
+
+	public void testGetPeriodDates_many()
+	{
+		List<Date> dates = Utils.getPeriodDates(date(2013, 8, 4), 4);
+
+		assertEquals(4, dates.size());
+		assertEquals(date(2013, 8, 1), dates.get(0));
+		assertEquals(date(2013, 8, 2), dates.get(1));
+		assertEquals(date(2013, 8, 3), dates.get(2));
+		assertEquals(date(2013, 8, 4), dates.get(3));
 	}
 
 	public void testEncodingUtf8Cp1251Utf8Persistance() throws UnsupportedEncodingException
