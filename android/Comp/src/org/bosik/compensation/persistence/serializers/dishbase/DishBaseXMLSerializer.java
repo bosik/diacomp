@@ -1,6 +1,7 @@
 package org.bosik.compensation.persistence.serializers.dishbase;
 
 import java.util.List;
+import javax.xml.transform.TransformerException;
 import org.bosik.compensation.bo.dishbase.DishItem;
 import org.bosik.compensation.persistence.common.MemoryBase;
 import org.bosik.compensation.persistence.serializers.Serializer;
@@ -93,7 +94,14 @@ public class DishBaseXMLSerializer implements Serializer<MemoryBase<DishItem>>
 			root.appendChild(childelement);
 		}
 
-		return XmlUtils.writeDocument(doc);
+		try
+		{
+			return XmlUtils.writeDocument(doc);
+		}
+		catch (TransformerException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
