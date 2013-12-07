@@ -12,11 +12,7 @@ import org.w3c.dom.NodeList;
 import android.util.Log;
 
 /**
- * Умеет загружать базу продуктов из строки в xml-формате.
- * 
- * Умеет сохранять базу продуктов в строку в xml-формате.
- * 
- * Будет использоваться и в локальном, и в веб-репозитории.
+ * Provides methods for foodbase (de)serialization in XML format
  * 
  * @author Bosik
  * 
@@ -109,12 +105,12 @@ public class FoodBaseXMLSerializer implements Serializer<MemoryBase<FoodItem>>
 	@Override
 	public List<MemoryBase<FoodItem>> readAll(String data)
 	{
-		throw new RuntimeException("Not implemented");
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	@Override
 	public String writeAll(List<MemoryBase<FoodItem>> object)
 	{
-		throw new RuntimeException("Not implemented");
+		throw new UnsupportedOperationException("Not implemented");
 	}
 }
