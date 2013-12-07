@@ -2,12 +2,24 @@ package org.bosik.compensation.persistence.dao.web;
 
 import java.util.List;
 import org.bosik.compensation.bo.dishbase.DishItem;
+import org.bosik.compensation.persistence.common.MemoryBase;
 import org.bosik.compensation.persistence.dao.DishBaseDAO;
+import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
 import org.bosik.compensation.persistence.exceptions.DuplicateException;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
+import org.bosik.compensation.persistence.serializers.Serializer;
 
 public class WebDishBaseDAO implements DishBaseDAO
 {
+	private WebClient							webClient;
+	private Serializer<MemoryBase<DishItem>>	serializer;
+
+	public WebDishBaseDAO(WebClient webClient, Serializer<MemoryBase<DishItem>> serializer)
+	{
+		this.webClient = webClient;
+		this.serializer = serializer;
+	}
+
 	@Override
 	public String add(DishItem item) throws DuplicateException
 	{
