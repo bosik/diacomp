@@ -46,7 +46,7 @@ public class WebClient
 	private static final String	RESPONSE_FAIL_AUTH		= "BADNAME";
 	private static final String	RESPONSE_FAIL_APIVER	= "DEPAPI";
 	private static final String	RESPONSE_ONLINE			= "online";
-	private static final String	RESPONSE_OFFLINE		= "offline";
+	// private static final String RESPONSE_OFFLINE = "offline";
 	private static final String	CODEPAGE_CP1251			= "Cp1251";
 	private static final String	CODEPAGE_UTF8			= "UTF-8";
 	// private static final String SERVER_CODEPAGE = "UTF-8";

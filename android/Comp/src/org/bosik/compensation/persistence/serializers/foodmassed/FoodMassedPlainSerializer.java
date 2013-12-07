@@ -9,7 +9,7 @@ import org.bosik.compensation.utils.Utils;
 
 public class FoodMassedPlainSerializer implements Serializer<FoodMassed>
 {
-	private static final String			TAG			= FoodMassedPlainSerializer.class.getSimpleName();
+	// private static final String TAG = FoodMassedPlainSerializer.class.getSimpleName();
 	private static final DecimalFormat	df			= new DecimalFormat("###.#");
 	private static final char			FOOD_SEP	= '|';
 
