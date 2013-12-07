@@ -1,18 +1,32 @@
 package org.bosik.compensation.bo;
 
-public interface RelativeTagged
+import org.bosik.compensation.bo.basic.UniqueNamed;
+
+public abstract class RelativeTagged extends UniqueNamed
 {
-	String getName();
+	private static final long	serialVersionUID	= 1L;
+	private int					tag;
 
-	double getRelProts();
+	public RelativeTagged(String name)
+	{
+		super(name);
+	}
+	
+	public int getTag()
+	{
+		return tag;
+	}
 
-	double getRelFats();
+	public void setTag(int tag)
+	{
+		this.tag = tag;
+	}
 
-	double getRelCarbs();
+	abstract public double getRelProts();
 
-	double getRelValue();
+	abstract public double getRelFats();
 
-	int getTag();
+	abstract public double getRelCarbs();
 
-	void setTag(int tag);
+	abstract public double getRelValue();
 }
