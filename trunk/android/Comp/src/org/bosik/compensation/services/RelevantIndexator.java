@@ -23,9 +23,11 @@ public class RelevantIndexator
 		/**/long time = System.currentTimeMillis();
 
 		// constructing dates list
-		final Date now = Utils.now();
 		final int PERIOD = 30; // days
-		final List<Date> dates = Utils.getPeriodDates(now, PERIOD);
+		final Date max = Utils.now();
+		final Date min = new Date(max.getTime() - (PERIOD * 86400000));
+
+		final List<Date> dates = Utils.getPeriodDates(max, PERIOD);
 
 		// clear tags
 		clearTags(foodBase);
@@ -44,13 +46,20 @@ public class RelevantIndexator
 					for (int j = 0; j < meal.count(); j++)
 					{
 						FoodMassed food = meal.get(j);
-						process(food.getName(), foodBase, dishBase);
+						int delta = f(page.getDate(), min, max);
+						process(food.getName(), delta, foodBase, dishBase);
 					}
 				}
 			}
 		}
 
 		/**/Log.v(TAG, String.format("Indexated in %d msec", System.currentTimeMillis() - time));
+	}
+
+	private static int f(Date curDate, Date minDate, Date maxDate)
+	{
+		int delta = (int) ((100 * (curDate.getTime() - minDate.getTime())) / (maxDate.getTime() - minDate.getTime()));
+		return delta * delta;
 	}
 
 	private static <T extends RelativeTagged> void clearTags(BaseDAO<T> base)
@@ -63,21 +72,21 @@ public class RelevantIndexator
 		base.replaceAll(list, base.getVersion());
 	}
 
-	private static void process(String name, FoodBaseDAO foodBase, DishBaseDAO dishBase)
+	private static void process(String name, int delta, FoodBaseDAO foodBase, DishBaseDAO dishBase)
 	{
-		if (process(name, foodBase))
+		if (process(name, delta, foodBase))
 			return;
-		if (process(name, dishBase))
+		if (process(name, delta, dishBase))
 			return;
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T extends RelativeTagged> boolean process(String name, BaseDAO<T> base)
+	private static <T extends RelativeTagged> boolean process(String name, int delta, BaseDAO<T> base)
 	{
 		RelativeTagged item = base.findOne(name);
 		if (null != item)
 		{
-			item.setTag(item.getTag() + 1);
+			item.setTag(item.getTag() + delta);
 			base.update((T) item);
 			return true;
 		}
