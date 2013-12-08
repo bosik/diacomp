@@ -347,3 +347,11 @@ function nameSortFunction(a, b)
 	if (a.name > b.name) return +1; // Или любое число, большее нуля
 	return 0;
 }
+
+function tagSortFunction(a, b)
+{
+	if (a.tag == b.tag) return nameSortFunction(a, b);
+	if (a.tag > b.tag) return -1; // Или любое число, меньшее нуля
+	if (a.tag < b.tag) return +1; // Или любое число, большее нуля
+	return 0;
+}

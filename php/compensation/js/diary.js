@@ -173,9 +173,6 @@ function downloadFoodbase()
 				foodbase.food[i].id = i;
 			}
 
-			// сортировка - в будущем будет заменена на сортировку по релевантности
-			foodbase.food.sort(nameSortFunction);
-
 			foodbaseLoaded = true;
 			if (foodbaseLoaded && dishbaseLoaded)
 			{
@@ -220,9 +217,6 @@ function downloadDishbase()
 				dishbase.dish[i] = floatizeDish(dishbase.dish[i]);
 				dishbase.dish[i].id = i;
 			}
-
-			// сортировка - в будущем будет заменена на сортировку по релевантности
-			dishbase.dish.sort(nameSortFunction);
 
 			dishbaseLoaded = true;
 			if (foodbaseLoaded && dishbaseLoaded)
@@ -319,6 +313,7 @@ function dishAsFood(dish)
 
 	var food = {};
 	food.name = dish.name;
+	food.tag = dish.tag;
 	food.prots = (summProts / dishMass * 100).toFixed(2);
 	food.fats = (summFats / dishMass * 100).toFixed(2);
 	food.carbs = (summCarbs / dishMass * 100).toFixed(2);
@@ -341,6 +336,7 @@ function prepareComboList()
 		item.fats = foodbase.food[i].fats;
 		item.carbs = foodbase.food[i].carbs;
 		item.val = foodbase.food[i].val;
+		item.tag = foodbase.food[i].tag;
 		item.type = "food";
 		fdBase.push(item);
 	}
@@ -356,9 +352,12 @@ function prepareComboList()
 		item.fats = cnv.fats;
 		item.carbs = cnv.carbs;
 		item.val = cnv.val;
+		item.tag = cnv.tag;
 		item.type = "dish";
 		fdBase.push(item);
 	}
+
+	fdBase.sort(tagSortFunction);
 	createHandlers();
 }
 
@@ -647,7 +646,7 @@ function codeInfoDefault()
 function codeInfoBlood(rec)
 {
 	return '' +
-	"						Вы выбрали замер СК.<br/><br/><hr>\n" +
+	"						Вы выбрали замер СК<br/><br/><hr>\n" +
 	"						Добавить новую запись:<br/><br/>\n" +
 	codeNewRecord();
 }
@@ -655,7 +654,7 @@ function codeInfoBlood(rec)
 function codeInfoIns(rec)
 {
 	return '' +
-	"						Вы выбрали инъекцию.<br/><br/><hr>\n" +
+	"						Вы выбрали инъекцию<br/><br/><hr>\n" +
 	"						Добавить новую запись:<br/><br/>\n" +
 	codeNewRecord();
 }
@@ -937,7 +936,7 @@ function newBloodEditor()
 
 function newInsEditor()
 {
-	var val = inputFloat("Введите значение инъекции", "");
+	var val = inputFloat("Введите дозу инсулина", "");
 
 	if (val > -1)
 	{
