@@ -1502,16 +1502,18 @@ var
     StartDate, FinishDate: integer;
 
     function GetTag(Time: TDateTime): real;
+    const
+      FACTOR = 10000;
     begin
       if (Time <= StartDate) then
         Result := 0 else
       if (Time >= FinishDate) then
-        Result := 1
+        Result := FACTOR
       else
       begin
         //Result := IntPower((Time - StartDate) / (FinishDate - StartDate), 7);
-        Result := 100 * (Time - StartDate) / (FinishDate - StartDate);
-        Result := Round(Result * Result);
+        Result := (Time - StartDate) / (FinishDate - StartDate);
+        Result := Round(FACTOR * Result * Result);
       end;
     end;
 
@@ -1550,12 +1552,12 @@ var
 
       { дополнительные теги для блюд }
 
-      DishModFactor := Value['DishModFactor'];
+      {DishModFactor := Value['DishModFactor'];
 
       for i := 0 to DishBase.Count - 1 do
       if (DishBase[i].ModifiedTime > 0) then
         DiaryMultiMap[Offset + i].Tag := DiaryMultiMap[Offset + i].Tag +
-        DishModFactor * GetTag(DishBase[i].ModifiedTime);
+        DishModFactor * GetTag(DishBase[i].ModifiedTime);   }
 
       { Temp: копируем теги в базы }
       for i := 0 to High(DiaryMultiMap) do
@@ -1574,6 +1576,7 @@ var
           DishBase[k].Tag := Round(DIaryMultiMap[i].Tag);
         end;
       end;
+      SaveDishBase;
 
       { сортируем }
       if Length(DiaryMultiMap) > 0 then
