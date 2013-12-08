@@ -443,7 +443,7 @@ public class WebClient
 					Date serverTime;
 					try
 					{
-						serverTime = Utils.parseTime(det[1]);
+						serverTime = Utils.parseTimeUTC(det[1]);
 						timeShift = ((sendedTime.getTime() + Utils.now().getTime()) / 2) - serverTime.getTime();
 						// WIN! Если дошли сюда, то всё прошло успешно.
 						logged = true;

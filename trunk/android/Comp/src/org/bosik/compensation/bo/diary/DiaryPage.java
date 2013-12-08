@@ -64,7 +64,7 @@ public class DiaryPage
 
 		Collections.sort(items, new RecordComparator());
 		updatePostprand();
-		timeStamp = Utils.now(); // TODO: use UTC time, not local one
+		timeStamp = Utils.now();
 		version++;
 	}
 
