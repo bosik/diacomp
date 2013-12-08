@@ -16,21 +16,22 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import android.util.Log;
 
 public class Utils
 {
 	// отладочная печать
-	private static final String				TAG				= "Utils";
+	private static final String				TAG					= "Utils";
 
 	// константы
-	public static final int					MsecPerSec		= 1000;
-	public static final int					SecPerMin		= 60;
-	public static final int					MinPerHour		= 60;
-	public static final int					HourPerDay		= 24;
-	public static final int					SecPerDay		= SecPerMin * MinPerHour * HourPerDay;
-	public static final int					MinPerDay		= MinPerHour * HourPerDay;
-	public static final long				MsecPerDay		= MsecPerSec * SecPerMin * MinPerHour * HourPerDay;
+	public static final int					MsecPerSec			= 1000;
+	public static final int					SecPerMin			= 60;
+	public static final int					MinPerHour			= 60;
+	public static final int					HourPerDay			= 24;
+	public static final int					SecPerDay			= SecPerMin * MinPerHour * HourPerDay;
+	public static final int					MinPerDay			= MinPerHour * HourPerDay;
+	public static final long				MsecPerDay			= MsecPerSec * SecPerMin * MinPerHour * HourPerDay;
 
 	private static char						DECIMAL_DOT;
 	private static DecimalFormat			DF;
@@ -41,14 +42,16 @@ public class Utils
 	 */
 
 	// форматы
-	public static final SimpleDateFormat	STD_TIME_FORMAT	= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-	public static final SimpleDateFormat	STD_DATE_FORMAT	= new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+	public static final SimpleDateFormat	STD_FORMAT_TIME_UTC	= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+	public static final SimpleDateFormat	STD_FORMAT_TIME_LOC	= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+	public static final SimpleDateFormat	STD_DATE_FORMAT		= new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
 	// статическая инициализация
 	static
 	{
-		NumberFormat f = NumberFormat.getInstance(Locale.US);
+		STD_FORMAT_TIME_UTC.setTimeZone(TimeZone.getTimeZone("UTC"));
 
+		NumberFormat f = NumberFormat.getInstance(Locale.US);
 		if (f instanceof DecimalFormat)
 		{
 			DF = (DecimalFormat) f;
@@ -141,6 +144,7 @@ public class Utils
 	public static int timeToMin(Date time)
 	{
 		Calendar c = Calendar.getInstance();
+		c.setTimeZone(TimeZone.getTimeZone("UTC"));
 		c.setTime(time);
 		return (c.get(Calendar.HOUR_OF_DAY) * MinPerHour) + c.get(Calendar.MINUTE);
 	}
@@ -158,28 +162,33 @@ public class Utils
 	}
 
 	/**
-	 * [tested] Преобразует время в формат сервера STD_TIME_FORMAT
+	 * [tested] Преобразует время в формат сервера STD_FORMAT_TIME_UTC
 	 * 
 	 * @param time
 	 *            Время
 	 * @return Строка
 	 */
-	public static String formatTime(Date time)
+	public static String formatTimeUTC(Date time)
 	{
-		return STD_TIME_FORMAT.format(time);
+		return STD_FORMAT_TIME_UTC.format(time);
+	}
+
+	public static String formatTimeLocal(Date time)
+	{
+		return STD_FORMAT_TIME_LOC.format(time);
 	}
 
 	/**
-	 * [tested] Читает время из строки формата STD_TIME_FORMAT
+	 * [tested] Читает время из строки формата STD_FORMAT_TIME_UTC
 	 * 
 	 * @param time
 	 *            Строка, хранящая время
 	 * @return Время
 	 * @throws ParseException
 	 */
-	public static Date parseTime(String time) throws ParseException
+	public static Date parseTimeUTC(String time) throws ParseException
 	{
-		return STD_TIME_FORMAT.parse(time);
+		return STD_FORMAT_TIME_UTC.parse(time);
 	}
 
 	/**
@@ -237,14 +246,34 @@ public class Utils
 	}
 
 	/**
-	 * Получает текущую дату и время
+	 * Returns current date-time
 	 * 
-	 * @return Текущие дата и время
+	 * @return
 	 */
 	public static Date now()
 	{
-		return Calendar.getInstance().getTime();
+		// return Calendar.getInstance().getTime();
+		return new Date();
 	}
+
+	// /**
+	// * Returns current date-time in UTC
+	// *
+	// * @return
+	// */
+	// public static Date utc()
+	// {
+	// Calendar c = Calendar.getInstance();
+	// int utcOffset = c.get(Calendar.ZONE_OFFSET) + c.get(Calendar.DST_OFFSET);
+	// long utcMilliseconds = c.getTimeInMillis() - utcOffset;
+	// return new Date(utcMilliseconds);
+
+	// return new Date();
+
+	// Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+	// cal.set(year + 1900, month, day, hour, minute, second);
+	// cal.getTime().getTime();
+	// }
 
 	/**
 	 * [tested] Returns sorted dates list (lastDate-period+1 ... lastDate)

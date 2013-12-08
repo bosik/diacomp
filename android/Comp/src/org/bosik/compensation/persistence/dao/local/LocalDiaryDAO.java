@@ -91,7 +91,7 @@ public class LocalDiaryDAO implements DiaryDAO
 
 		try
 		{
-			Date timeStamp = Utils.parseTime(cursor.getString(indexTimeStamp));
+			Date timeStamp = Utils.parseTimeUTC(cursor.getString(indexTimeStamp));
 			int version = cursor.getInt(indexVersion);
 			String source = cursor.getString(indexPage);
 
@@ -143,7 +143,7 @@ public class LocalDiaryDAO implements DiaryDAO
 
 		ContentValues mNewValues = new ContentValues();
 
-		mNewValues.put(DiaryContentProvider.COLUMN_TIMESTAMP, Utils.formatTime(diaryPage.getTimeStamp()));
+		mNewValues.put(DiaryContentProvider.COLUMN_TIMESTAMP, Utils.formatTimeUTC(diaryPage.getTimeStamp()));
 		mNewValues.put(DiaryContentProvider.COLUMN_VERSION, diaryPage.getVersion());
 		mNewValues.put(DiaryContentProvider.COLUMN_PAGE, code);
 
@@ -187,7 +187,7 @@ public class LocalDiaryDAO implements DiaryDAO
 		// формируем параметры
 		String[] mProjection = { DiaryContentProvider.COLUMN_DATE, DiaryContentProvider.COLUMN_VERSION };
 		String mSelectionClause = DiaryContentProvider.COLUMN_TIMESTAMP + " > ?";
-		String[] mSelectionArgs = { Utils.formatTime(time) };
+		String[] mSelectionArgs = { Utils.formatTimeUTC(time) };
 		String mSortOrder = null;
 
 		// выполняем запрос

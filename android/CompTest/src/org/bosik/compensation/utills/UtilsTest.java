@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import junit.framework.TestCase;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
@@ -24,6 +25,7 @@ public class UtilsTest extends TestCase
 	{
 		Calendar c = Calendar.getInstance();
 		c.clear();
+		c.setTimeZone(TimeZone.getTimeZone("UTC"));
 		c.set(year, month - 1, day, hour, min, sec);
 		return c.getTime();
 	}
@@ -204,18 +206,18 @@ public class UtilsTest extends TestCase
 
 	public void testFormatTime()
 	{
-		assertEquals("2012-05-01 09:45:17", Utils.formatTime(time(2012, 05, 01, 9, 45, 17)));
-		assertEquals("2012-05-01 21:45:17", Utils.formatTime(time(2012, 05, 01, 21, 45, 17)));
-		assertEquals("2012-04-02 00:00:00", Utils.formatTime(time(2012, 04, 02, 00, 00, 00)));
+		assertEquals("2012-05-01 09:45:17", Utils.formatTimeUTC(time(2012, 05, 01, 9, 45, 17)));
+		assertEquals("2012-05-01 21:45:17", Utils.formatTimeUTC(time(2012, 05, 01, 21, 45, 17)));
+		assertEquals("2012-04-02 00:00:00", Utils.formatTimeUTC(time(2012, 04, 02, 00, 00, 00)));
 	}
 
 	public void testParseTime()
 	{
 		try
 		{
-			assertEquals(time(2012, 04, 02, 00, 00, 00), Utils.parseTime("2012-04-02 00:00:00"));
-			assertEquals(time(2012, 05, 01, 9, 45, 17), Utils.parseTime("2012-05-01 09:45:17"));
-			assertEquals(time(2012, 05, 01, 22, 30, 17), Utils.parseTime("2012-05-01 22:30:17"));
+			assertEquals(time(2012, 04, 02, 00, 00, 00), Utils.parseTimeUTC("2012-04-02 00:00:00"));
+			assertEquals(time(2012, 05, 01, 9, 45, 17), Utils.parseTimeUTC("2012-05-01 09:45:17"));
+			assertEquals(time(2012, 05, 01, 22, 30, 17), Utils.parseTimeUTC("2012-05-01 22:30:17"));
 		}
 		catch (Exception e)
 		{
@@ -240,13 +242,14 @@ public class UtilsTest extends TestCase
 	{
 		assertEquals(date(2011, 12, 31), Utils.getPrevDay(date(2012, 01, 01)));
 		assertEquals(date(2012, 04, 01), Utils.getPrevDay(date(2012, 04, 02)));
+		assertEquals(date(2012, 02, 29), Utils.getPrevDay(date(2012, 03, 01))); // leap
 	}
 
 	public void testGetNextDay()
 	{
 		assertEquals(date(2012, 01, 01), Utils.getNextDay(date(2011, 12, 31)));
 		assertEquals(date(2012, 04, 02), Utils.getNextDay(date(2012, 04, 01)));
-		// TODO: add leap year test
+		assertEquals(date(2012, 02, 29), Utils.getNextDay(date(2012, 02, 28))); // leap
 	}
 
 	public void testGetPeriodDates_empty()

@@ -93,7 +93,7 @@ public class WebDiaryDAO implements DiaryDAO
 	@Override
 	public List<PageVersion> getModList(Date time)
 	{
-		String resp = webClient.getModList(Utils.formatTime(webClient.localToServer(time)));
+		String resp = webClient.getModList(Utils.formatTimeUTC(webClient.localToServer(time)));
 
 		List<PageVersion> result = new ArrayList<PageVersion>();
 

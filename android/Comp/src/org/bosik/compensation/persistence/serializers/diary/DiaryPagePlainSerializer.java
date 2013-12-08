@@ -164,7 +164,7 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 		{
 			p = headerCode.split("\\|");
 			page.setDate(Utils.parseDate(p[0].substring(4, 14)));
-			page.setTimeStamp(Utils.parseTime(p[1]));
+			page.setTimeStamp(Utils.parseTimeUTC(p[1]));
 			page.setVersion(Integer.parseInt(p[2]));
 			return true;
 		}
@@ -239,7 +239,7 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 	private static String writeHeader(DiaryPage page)
 	{
 		return String.format("=== %s ===|%s|%s", Utils.formatDate(page.getDate()),
-				Utils.formatTime(page.getTimeStamp()), page.getVersion());
+				Utils.formatTimeUTC(page.getTimeStamp()), page.getVersion());
 	}
 
 	private void read(DiaryPage page, String data)
