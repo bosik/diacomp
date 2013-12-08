@@ -222,7 +222,7 @@ begin
   try
     FBase.SaveToFile(FILENAME_TEMP);
     Data := ReadFile(FILENAME_TEMP);
-    FCLient.UploadFoodBase(Data, FBase.Version);
+    FClient.UploadFoodBase(Data, FBase.Version);
   finally
     DeleteFile(FILENAME_TEMP);
   end;
