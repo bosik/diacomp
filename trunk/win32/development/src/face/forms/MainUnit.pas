@@ -1508,7 +1508,11 @@ var
       if (Time >= FinishDate) then
         Result := 1
       else
-        Result := IntPower((Time - StartDate) / (FinishDate - StartDate), 7);
+      begin
+        //Result := IntPower((Time - StartDate) / (FinishDate - StartDate), 7);
+        Result := 100 * (Time - StartDate) / (FinishDate - StartDate);
+        Result := Round(Result * Result);
+      end;
     end;
 
   var
@@ -4652,6 +4656,7 @@ begin
 
   TabDiary.Caption := MAIN_DIARY;
   TabBase.Caption := MAIN_BASES;
+  DiaryView.TextEmptyPage := MAIN_DIARY_VIEW_EMPTYPAGE;
 
   FinishProc;
 end;
