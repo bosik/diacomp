@@ -20,6 +20,7 @@ var
   MAIN_DIARY_PANEL_TIME_AFTER_MEAL         : string = 'После еды:';
   MAIN_DIARY_PANEL_TIME_AFTER_INS          : string = 'После укола:';
   MAIN_DIARY_PANEL_ADD_SELECT_MEAL         : string = 'Выберите приём пищи или создайте новый';
+  MAIN_DIARY_VIEW_EMPTYPAGE: string;
   MESSAGE_CONF_FIRST_WARNING  : string = 'ВНИМАНИЕ! Автор программы '+
     'не несет ответственности за любой ущерб, прямо или '+
     'косвенно связанный с использованием данной программы. '+
@@ -206,6 +207,7 @@ begin
     STATUS_RESULT_SYNC_DONE             := Extract('STATUS_RESULT_SYNC_DONE');
     STATUS_RESULT_STATE_ONLINE          := Extract('STATUS_RESULT_STATE_ONLINE');
     STATUS_RESULT_STATE_OFFLINE         := Extract('STATUS_RESULT_STATE_OFFLINE');
+    MAIN_DIARY_VIEW_EMPTYPAGE := Extract('MAIN_DIARY_VIEW_EMPTYPAGE');
   finally
     Map.Free;
   end;
