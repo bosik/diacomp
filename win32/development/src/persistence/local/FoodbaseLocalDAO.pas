@@ -4,19 +4,29 @@ interface
 
 uses
   SysUtils,
+  Windows,
   BusinessObjects,
   FoodbaseDAO,
   DiaryRoutines,
-  Bases;
+  Bases,
+
+  ExtCtrls;
 
 type
   TFoodbaseLocalDAO = class (TFoodbaseDAO)
   private
     FFileName: string;
     FBase: TFoodBase;
+
+    Timer: TTimer;
+    FModified: boolean;
+    FFirstMod: cardinal;
+    FLastMod: cardinal;
   private
     function GetIndex(Food: TFood): integer; overload;
     function GetIndex(ID: TCompactGUID): integer; overload;
+    procedure OnTimer(Sender: TObject);
+    procedure Modified();
   public
     constructor Create(const FileName: string);
     destructor Destroy; override;
@@ -48,8 +58,8 @@ begin
     Temp := TFood.Create;
     Temp.CopyFrom(Food);
     FBase.Add(Temp);
-    FBase.SaveToFile(FFileName);
     Result := Food.ID;
+    Modified();
   end else
     raise EDuplicateException.Create(Food);
 end;
@@ -62,6 +72,15 @@ begin
   if FileExists(FileName) then
     FBase.LoadFromFile_XML(FileName);
   FFileName := FileName;
+
+  FModified := False;
+  FFirstMod := 0;
+  FLastMod := 0;
+
+  Timer := TTimer.Create(nil);
+  Timer.Interval := 1000;
+  Timer.OnTimer := OnTimer;
+  Timer.Enabled := True;
 end;
 
 {==============================================================================}
@@ -74,7 +93,7 @@ begin
   if (Index > -1) then
   begin
     FBase.Delete(Index);
-    FBase.SaveToFile(FFileName);
+    Modified();
   end else
     raise EItemNotFoundException.Create(ID);
 end;
@@ -83,7 +102,14 @@ end;
 destructor TFoodbaseLocalDAO.Destroy;
 {==============================================================================}
 begin
+  if (FModified) then
+  begin
+    FBase.SaveToFile(FFileName);
+    FModified := False;
+  end;
+
   FBase.Free;
+  Timer.Free;
   inherited;
 end;
 
@@ -151,6 +177,40 @@ begin
 end;
 
 {==============================================================================}
+procedure TFoodbaseLocalDAO.Modified;
+{==============================================================================}
+begin
+  FModified := True;
+  if (FFirstMod = 0) then
+    FFirstMod := GetTickCount;
+  FLastMod := GetTickCount();
+end;
+
+{==============================================================================}
+procedure TFoodbaseLocalDAO.OnTimer(Sender: TObject);
+{==============================================================================}
+const
+  MAX_UNSAVED = 60000;
+  MAX_IDLE    = 20000;
+begin
+  if (FModified) then
+  begin
+    if (GetTickCount() - FFirstMod > MAX_UNSAVED) or
+       (GetTickCount() - FLastMod > MAX_IDLE) then
+    begin
+      Timer.Enabled := False;
+      try
+        FBase.SaveToFile(FFileName);
+        FModified := False;
+        FFirstMod := 0;
+      finally
+        Timer.Enabled := True;
+      end;
+    end;
+  end;
+end;
+
+{==============================================================================}
 procedure TFoodbaseLocalDAO.ReplaceAll(const NewList: TFoodList;
   NewVersion: integer);
 {==============================================================================}
@@ -166,7 +226,7 @@ begin
     FBase.Add(Food);
   end;
   FBase.Version := NewVersion;
-  FBase.SaveToFile(FFileName);
+  Modified();
 end;
 
 {==============================================================================}
@@ -180,7 +240,7 @@ begin
   begin
     FBase[Index].CopyFrom(Food);
     FBase.Sort;
-    FBase.SaveToFile(FFileName);
+    Modified();
   end else
     raise EItemNotFoundException.Create(Food.ID);
 end;
