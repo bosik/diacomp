@@ -58,6 +58,15 @@ public class FoodBaseXMLSerializer implements Serializer<MemoryBase<FoodItem>>
 					food.setRelValue(Double.parseDouble(x.getAttribute("val")));
 					food.setFromTable(x.getAttribute("table").equalsIgnoreCase("true"));
 
+					if (x.hasAttribute("tag"))
+					{
+						food.setTag(Integer.parseInt(x.getAttribute("tag")));
+					}
+					else
+					{
+						food.setTag(0);
+					}
+
 					foodBase.add(food);
 				}
 			}
@@ -101,6 +110,7 @@ public class FoodBaseXMLSerializer implements Serializer<MemoryBase<FoodItem>>
 			childelement.setAttribute("carbs", String.valueOf(food.getRelCarbs()));
 			childelement.setAttribute("val", String.valueOf(food.getRelValue()));
 			childelement.setAttribute("table", String.valueOf(food.getFromTable()));
+			childelement.setAttribute("tag", String.valueOf(food.getTag()));
 			root.appendChild(childelement);
 		}
 
