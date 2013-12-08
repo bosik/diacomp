@@ -612,7 +612,6 @@ begin
     Root.Attributes['version'] := FVersion;
 
     for i := 0 to High(FBase) do
-    //if (FBase[i].FromTable) then
     begin
       FoodNode := Root.AddChild('food');
       FoodNode.Attributes['id']    := Items[i].ID;
@@ -697,7 +696,7 @@ const
 var
   s: TStrings;
   buf, mass: string;
-  i,j,n,w: integer;
+  i,n,w: integer;
   StartLine: integer;
 
   TempFood: TFoodMassed;
@@ -860,6 +859,10 @@ begin
         Items[i].Name := DishNode.Attributes['name'];
         if DishNode.HasAttribute('mass') then
           Items[i].SetResultMass(DishNode.Attributes['mass']);
+        if DishNode.HasAttribute('tag') then
+          Items[i].Tag := DishNode.Attributes['tag']
+        else
+          Items[i].Tag := 0;
 
         //SetLength(FBase[i].FContent, DishNode.ChildNodes.Count);
 
@@ -986,6 +989,7 @@ begin
       DishNode := Root.AddChild('dish');
       DishNode.Attributes['name'] := Items[i].Name;
       DishNode.Attributes['time'] := Items[i].ModifiedTime;
+      DishNode.Attributes['tag'] := Items[i].Tag;
       if (Items[i].FixedMass) then
         DishNode.Attributes['mass'] := Items[i].ResultMass;
 
