@@ -252,7 +252,8 @@ th {
 .meal_input {
 	/*background: #FFFFDD;*/
 	border: 0px;
-	font-size: 100%;
+	/*font-size: 100%;*/
+	margin-top: 8px;
 }
 
 .note {
@@ -260,7 +261,7 @@ th {
 }
 
 .food {
-	/*display: inline-block;*/
+	border-bottom: thin dotted #e8e8e8;
 }
 
 .food:hover {
@@ -354,7 +355,7 @@ th {
 
 .meal_adder
 {
-	border-top: thin dotted #e8e8e8;
+	/*border-top: thin dotted #e8e8e8;*/
 }
 
 .ui-autocomplete
@@ -366,8 +367,8 @@ th {
 }
 
 .ui-autocomplete {
-   /*background: #4a4a4a;
-    border-radius: 10px;*/
+	/*background: #4a4a4a;
+	 border-radius: 10px;*/
 }
 
 .ui-menu .ui-menu-item a{
@@ -383,9 +384,9 @@ th {
     /*background:red;*/
 }
 
-  .ui-autocomplete a.ui-state-hover {
-      background:red;
-  }
+.ui-autocomplete a.ui-state-hover {
+	background:red;
+}
 
 /* =========================== TABLE =========================== */
 
