@@ -1520,6 +1520,8 @@ var
     Meal: TMealRecord;
     DeltaTag: real;
     DishModFactor: integer;
+
+    Food: TFood;
   begin
     StartProc('TForm1.AnalyzeUsingDiary()');
 
@@ -1554,6 +1556,24 @@ var
       if (DishBase[i].ModifiedTime > 0) then
         DiaryMultiMap[Offset + i].Tag := DiaryMultiMap[Offset + i].Tag +
         DishModFactor * GetTag(DishBase[i].ModifiedTime);
+
+      { Temp: копируем теги в базы }
+      for i := 0 to High(DiaryMultiMap) do
+      begin
+        Food := FoodBaseLocal.FindOne(DiaryMultiMap[i].Name);
+        if (Food <> nil) then
+        begin
+          Food.Tag := Round(DiaryMultiMap[i].Tag);
+          FoodBaseLocal.Update(Food);
+          Continue;
+        end;
+
+        k := DishBase.Find(DiaryMultiMap[i].Name);
+        if (k > -1) then
+        begin
+          DishBase[k].Tag := Round(DIaryMultiMap[i].Tag);
+        end;
+      end;
 
       { сортируем }
       if Length(DiaryMultiMap) > 0 then
