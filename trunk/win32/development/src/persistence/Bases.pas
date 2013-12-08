@@ -543,6 +543,11 @@ begin
         Items[i].RelValue  := StrToFloat(VarAsType(FoodNode.Attributes['val'], varOleStr));
 
         Items[i].FromTable := FoodNode.Attributes['table'];
+        if (FoodNode.HasAttribute('tag')) then
+          Items[i].Tag := FoodNode.Attributes['tag']
+        else
+          Items[i].Tag := 0;
+
         Items[i].OnChange  := ItemChangeHandler;
       end;
       {=========================================================}
@@ -617,6 +622,7 @@ begin
       FoodNode.Attributes['carbs'] := Items[i].RelCarbs;
       FoodNode.Attributes['val']   := Items[i].RelValue;
       FoodNode.Attributes['table'] := Items[i].FromTable;
+      FoodNode.Attributes['tag']   := Items[i].Tag;
     end;
 
     XML.SaveToFile(FileName);
