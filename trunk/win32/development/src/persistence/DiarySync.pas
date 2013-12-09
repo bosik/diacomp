@@ -17,6 +17,7 @@ uses
   { возвращается количество синхронизированных страниц }
   function SyncSources(Source1, Source2: TDiaryDAO; Since: TDateTime): integer;
   function SyncFoodbase(Source1, Source2: TFoodbaseDAO): TSyncResult;
+  function SyncDishbase(): TSyncResult;
 
 implementation
 
@@ -289,6 +290,10 @@ begin
   Version1 := Source1.Version;
   Version2 := Source2.Version;
 
+  Log(DEBUG, 'Foodbase sync:');
+  Log(DEBUG, #9'Version A: ' + IntToStr(Version1));
+  Log(DEBUG, #9'Version B: ' + IntToStr(Version2));
+
   if (Version1 < Version2) then
   begin
     List := Source2.FindAll();
@@ -303,6 +308,42 @@ begin
     Result := srSecondUpdated;
   end else
 
+  begin
+    Result := srEqual;
+  end;
+end;
+
+{==============================================================================}
+function SyncDishbase(): TSyncResult;
+{==============================================================================}
+var
+  Data: string;
+  Version: integer;
+begin
+  Version := WebClient.GetDishBaseVersion();
+
+  Log(DEBUG, 'Dishbase sync:');
+  Log(DEBUG, #9'Version A (web): ' + IntToStr(Version));
+  Log(DEBUG, #9'Version B (loc): ' + IntToStr(DishBase.Version));
+
+  // download
+  if (DishBase.Version < Version) then
+  begin
+    Data := WebClient.DownloadDishBase();
+    WriteFile(WORK_FOLDER + DishBase_FileName, Data);
+    DishBase.LoadFromFile_XML(WORK_FOLDER + DishBase_FileName);
+    Result := srFirstUpdated;
+  end else
+
+  // upload
+  if (DishBase.Version > Version) then
+  begin
+    Data := ReadFile(WORK_FOLDER + DishBase_FileName);
+    WebClient.UploadDishBase(Data, DishBase.Version);
+    Result := srSecondUpdated
+  end else
+
+  // equal
   begin
     Result := srEqual;
   end;

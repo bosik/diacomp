@@ -232,8 +232,7 @@ end;
 function TFoodbaseWebDAO.Version: integer;
 {==============================================================================}
 begin
-  Download();
-  Result := FBase.Version;
+  Result := FClient.GetFoodBaseVersion();
 end;
 
 end.

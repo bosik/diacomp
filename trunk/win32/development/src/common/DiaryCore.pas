@@ -47,7 +47,6 @@ type
   procedure SaveDishBase; deprecated;
 
   { web }
-  function SyncDishbase(): TSyncResult;
   function DownloadFoodBaseSample: boolean;
   function DownloadDishBaseSample: boolean;
   function CheckUpdates(var Date: string): TUpdateCheckResult;
@@ -268,40 +267,6 @@ procedure SaveExpander;
 {==============================================================================}
 begin
   Expander.SaveToFile(WORK_FOLDER + Expander_FileName);
-end;
-
-{==============================================================================}
-function SyncDishbase(): TSyncResult;
-{==============================================================================}
-var
-  Data: string;
-  Version: integer;
-begin
-  Version := WebClient.GetDishBaseVersion();
-
-  // download
-  if (DishBase.Version < Version) then
-  begin
-    Data := WebClient.DownloadDishBase();
-    WriteFile(WORK_FOLDER + DishBase_FileName, Data);
-    DishBase.LoadFromFile_XML(WORK_FOLDER + DishBase_FileName);
-    Result := srFirstUpdated;
-  end else
-
-  // upload
-  if (DishBase.Version > Version) then
-  begin
-    Data := ReadFile(WORK_FOLDER + DishBase_FileName);
-    if WebClient.UploadDishBase(Data, DishBase.Version) then
-      Result := srSecondUpdated
-    else
-      raise ECommonException.Create('Failed to upload dishbase');
-  end else
-
-  // equal
-  begin
-    Result := srEqual;
-  end;
 end;
 
 {==============================================================================}
