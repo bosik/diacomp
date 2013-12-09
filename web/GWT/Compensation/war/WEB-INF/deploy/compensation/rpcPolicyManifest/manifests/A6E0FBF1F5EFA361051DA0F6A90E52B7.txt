@@ -1,0 +1,2 @@
+serviceClass: org.bosik.comp.web.Compensation.frontend.LoginService
+path: B353F2FC37F8AD89B5CD4E95E494A488.gwt.rpc

@@ -1,0 +1,413 @@
+.main {
+	max-width: 750px;
+	background: #ffffff;
+	margin: 0px auto;
+	font-size: 16px;
+	font-family: "Arial";
+}
+
+.title {
+	font-size: 16px;
+	font-weight: bold;
+	float: left;
+	padding-top: 5px;
+	text-align: middle;
+	line-height: 32px;
+}
+
+.header {
+	overflow: hidden;
+	padding-top: 5px;
+	padding-bottom: 10px;
+	font-size: 18px;
+	font-weight: bold;
+}
+
+
+.icon {
+	vertical-align: top;
+	padding-left: 10px;
+	padding-right: 10px;
+	width: 32px;
+	float: left;
+	border: none;
+}
+
+/** Example rules used by the template application (remove for your app) */
+h1 {
+	font-size: 2em;
+	font-weight: bold;
+	color: #777777;
+	margin: 40px 0px 70px;
+	text-align: center;
+}
+
+.sendButton {
+	display: block;
+	font-size: 16pt;
+}
+
+/** Most GWT widgets already have a style name defined */
+.gwt-DialogBox {
+	width: 400px;
+}
+
+.dialogVPanel {
+	margin: 5px;
+}
+
+.serverResponseLabelError {
+	color: red;
+}
+
+/** Set ids using widget.getElement().setId("idOfElement") */
+#closeButton {
+	margin: 15px 6px 6px;
+}
+
+/* =========================== MAIN STYLES =========================== */
+
+body {
+	/*background: #f0f0f0;*/
+	font-family: "Arial";
+	font-size: 16px;
+}
+
+hr {
+	background-color: #cccccc;
+	height: 1px;
+	border: 0;
+}
+
+.header a {
+	text-decoration: none;
+}
+
+.header a:visited {
+	color: #000000;
+}
+
+.icon {
+	vertical-align:top;
+	padding-left: 10px;
+	padding-right: 10px;
+	width: 32px;
+	float: left;
+	border: none;
+}
+
+.title {
+	font-size: 120%;
+	font-weight: bold;
+	float: left;
+	/*padding-top: 5px;*/
+	/*text-align: middle;*/
+	line-height: 32px;
+}
+
+.login, .login a:link, .login a:visited {
+	float: right;
+	text-align: right;
+	/*vertical-align: middle;*/
+	/*background: #ff00ff;*/
+	/*margin-top: 5px;*/
+}
+
+th {
+	text-align: left;
+}
+
+/* =========================== COMMON STYLES =========================== */
+
+.hint {
+	font-size: 90%;
+}
+
+.hint, .hint a:link, .hint a:visited {
+	color: #cccccc;
+}
+
+.hint a:hover{
+	color: #000000;
+}
+
+.hint a:link, .hint a:visited, .hint a:hover {
+	text-decoration: underline;
+}
+
+.full_width {
+	width: 100%;
+	font-size: 100%;
+}
+
+.right {
+	text-align: right;
+}
+
+.wrapper_table {
+	display: table;
+	width: 100%;
+}
+.wrapper_cell {
+	display: table-cell;
+	width: 100%;
+	/*padding: 0px 1px;*/
+}
+
+.hoverable:hover {
+	/*border: solid 1px #000;*/
+	/*color: #0000CC;*/
+	/*background: #FFFF00;*/
+	text-decoration: underline;
+	cursor: pointer;
+}
+/* =========================== MENU STYLES =========================== */
+
+.menu {
+	margin-top: 5px;
+	margin-bottom: 15px;
+	border-top: solid 1px #e0e0e0;
+	border-bottom: solid 1px #e0e0e0;
+}
+
+.menu a:link, .menu a:visited, .menu a:active {
+	text-decoration: none;
+	color: #000000;
+}
+
+.menu_item {
+	padding: 10px;
+	margin: 0px -2px 0px;
+	text-align: center;
+	width: 100px;
+	display: inline-block;
+}
+
+.menu_selected {
+	font-weight: bold;
+	background: #e0e0e0;
+}
+
+.menu_option:hover {
+	background: #f0f0f0;
+}
+
+/* =========================== AUTH / REG =========================== */
+
+.login_panel {
+	max-width: 200px;
+	/*background: #f0f0f0;*/
+	padding: 0px 0px 0px 0px;
+	margin: 0 auto;
+	/*float: left;*/
+	font-size: 100%;
+}
+
+.error_login {
+	font-weight: bold;
+	padding: 5px;
+	margin: 10px 0 10px;
+	background: #ffcfcf;
+	text-align: center;
+}
+
+.reg_success {
+	font-weight: bold;
+	padding: 5px;
+	margin: 10px 0 10px;
+	background: #cfffcf;
+	text-align: center;
+}
+
+/* =========================== DIARY STYLES =========================== */
+
+.date_panel {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	overflow: hidden;
+}
+
+#diary_block {
+	padding-top: 10px;
+	overflow:hidden;
+}
+
+.diary_page_full {
+	border-bottom: solid 1px #cccccc;
+	overflow: hidden;
+	/*min-height: 160px;*/
+}
+
+.diary_page_empty {
+	/*padding: 10px;*/
+	font-size: 110%;
+	text-align: center;
+	color: #cccccc;
+	/*border-right: solid 1px #cccccc;*/
+	/*min-height: 160px;*/
+}
+
+.rec {
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 5px;
+	border-top: solid 1px #d8d8d8;
+	border-left: solid 1px #d8d8d8;
+	border-right: solid 1px #d8d8d8;
+	overflow:hidden;
+}
+
+.time {
+	display: inline-block;
+	float: left;
+	font-weight: bold;
+	width: 45px;
+	/*background: #ff00ff;*/
+	cursor: pointer;
+	padding: 2px 2px 0px;
+}
+
+.item {
+	/*display: inline-block;*/
+	/*float: left;*/
+	padding-left: 5px;
+	overflow: hidden;
+	cursor: default;
+}
+
+.blood {
+	background: #E6EEFF;
+}
+
+.meal {
+	background: #FFFFDD;
+}
+
+.short_meal {
+	background: #FFEADD;
+}
+
+.meal_input {
+	/*background: #FFFFDD;*/
+	border: 0px;
+	font-size: 100%;
+}
+
+.note {
+	background: #D8FFD4;
+}
+
+.food {
+	/*display: inline-block;*/
+}
+
+.food:hover {
+	background: #ffff80;
+	/*cursor: pointer;*/
+	/*width: auto;*/
+}
+
+.delete {
+	color: #ffcccc;
+	width: 10px;
+	height: 10px;
+	display: inline;
+	cursor: pointer;
+	margin-left: 10px;
+	/*float: right;*/
+}
+
+.delete:hover {
+	color: #ff0000;
+	/*background: ff0000;*/
+	/*font-weight: bold;*/
+}
+
+.bold {
+	font-weight: bold;
+}
+
+#diary_info_column {
+	float: right;
+	width: 33%;
+	/*height: 100%;*/
+	background: #ffffff;
+	overflow: hidden;
+}
+
+#diary_info {
+	background: #fcfcfc;
+	/*max-width: 220px;*/
+	margin-left: 10px;
+	margin-bottom: 10px;
+	padding: 10px;
+	border: solid 1px #cccccc;
+	overflow: hidden;
+	cursor: default;
+}
+
+#info_block_correct_table {
+	display: none;
+}
+
+#diary_main {
+	overflow: hidden;
+	border: solid 1px #cccccc;
+}
+
+/* =========================== TABLE =========================== */
+
+.col_item {
+	width: 99%;
+	/*cursor: pointer;*/
+}
+
+.col_info {
+	min-width: 70px;
+	/*cursor: default;*/
+	/*cursor: pointer;*/
+	padding-right: 12px;
+	text-align: right;
+}
+
+.col_delete {
+	min-width: 30px;
+	cursor: pointer;
+	color: #808080;
+	font-weight: bold;
+	text-align: center;
+}
+
+.col_delete:hover {
+	color: #ff0000;
+}
+
+/* =========================== ETC =========================== */
+
+.welcome_info {
+	/*width: 70%;*/
+	/*padding-top: 10px;*/
+}
+
+.button_new_rec {
+	/*background-position: center;*/
+	background-repeat: no-repeat;
+	background-color:#fff;
+	border: 1px solid #c0c0c0;
+	/*padding: 5px;*/
+	/*width: 60px;*/
+	height: 32px;
+	cursor: pointer;
+}
+.button_new_blood {
+	background-image: url("../img/Diary_New_Blood.png");
+}
+.button_new_ins {
+	background-image: url("../img/Diary_New_Ins.png");
+}
+.button_new_meal {
+	background-image: url("../img/Diary_New_Meal.png");
+}
+.button_new_note {
+	background-image: url("../img/Diary_New_Note.png");
+}
