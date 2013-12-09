@@ -18,10 +18,10 @@ uses
 
 type
   ECommonException     = class (Exception);
-  EConnectionException = class(ECommonException);   // Ошибка подключения
-  EFormatException     = class(ECommonException);   // Ошибка формата данных
-  EAPIException        = class(EFormatException);   // Ошибка версии API
-  EAuthException       = class(ECommonException);   // Ошибка авторизации
+  EConnectionException = class (ECommonException);   // Ошибка подключения
+  EFormatException     = class (ECommonException);   // Ошибка формата данных
+  EAPIException        = class (EFormatException);   // Ошибка версии API
+  EAuthException       = class (ECommonException);   // Ошибка авторизации
 
   TParamList = array of string;
 
@@ -62,6 +62,8 @@ type
 
     function GetDishBaseVersion(): integer;
     function DownloadDishBase(): string;
+
+    // TODO: make it procedure; notify with exceptions if some error occurred
     function UploadDishBase(const Data: string; Version: integer): boolean;
 
     function DownloadKoofs(): string;
@@ -590,6 +592,8 @@ begin
 
   Resp := DoPostSmart(FServer + PAGE_CONSOLE, Par);
   Result := (Resp = MESSAGE_DONE);
+  if (not Result) then
+    raise ECommonException.Create('Failed to upload dishbase');
 end;
 
 {==============================================================================}
