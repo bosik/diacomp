@@ -73,8 +73,8 @@ function TFormFood.OpenFoodEditor(Food: TFood; New: boolean; ShowInRect: TRect):
 begin
   { установка размеров окна }
   SetupInterface;
-  Left := (ShowInRect.Right+ShowInRect.Left-Width) div 2;
-  Top := (ShowInRect.Bottom+ShowInRect.Top-Height) div 2;
+  Left := (ShowInRect.Right+ShowInRect.Left - Width) div 2;
+  Top := (ShowInRect.Bottom+ShowInRect.Top - Height) div 2;
 
   { корректировка положения }
   if (Left < 0) then Left := 0;
@@ -83,7 +83,7 @@ begin
 
   { вывод }
   AFood := TFood.Create;
-  AFood.CopyFrom(Food);
+  AFood.CopyFrom(Food, True);
 
   ModeNew := New;   
   ShowFoodInEditor;
@@ -93,12 +93,12 @@ begin
   { запускаем пользователя }
   Shadow(true, $FFFFFF);
   ShowModal;
-  Shadow(false);
+  Shadow(False);
 
   { возвращаем результат }
   Result := OK;
   if OK then
-    Food.CopyFrom(AFood);
+    Food.CopyFrom(AFood, True);
 end;
 
 {==============================================================================}

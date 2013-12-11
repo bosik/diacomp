@@ -33,7 +33,7 @@ type
     procedure SetName(const Value: string);
     procedure SetRel(Index: integer; const Value: real);
   public
-    procedure CopyFrom(Food: TFoodRelative);
+    procedure CopyFrom(Food: TFoodRelative; CopyID: boolean);
     constructor Create;
     class function IsCorrectRel(const Value: real): boolean;
 
@@ -55,7 +55,7 @@ type
   public
     constructor Create; overload;
     constructor Create(const Name: string; const RelProts, RelFats, RelCarbs, RelValue, Mass: real); overload;
-    procedure CopyFrom(Food: TFoodMassed);
+    procedure CopyFrom(Food: TFoodMassed; CopyID: boolean);
     class function IsCorrectMass(const Value: real): boolean;
 
     {*}procedure Read(const S: string);
@@ -77,7 +77,7 @@ type
     procedure SetFromTable(Value: boolean);
   public
     function AsFoodMassed(Mass: real): TFoodMassed;
-    procedure CopyFrom(Food: TFood);
+    procedure CopyFrom(Food: TFood; CopyID: boolean);
     constructor Create;
 
     property FromTable: boolean read FFromTable write SetFromTable;
@@ -159,22 +159,28 @@ end;
 { TFoodRelative }
 
 {==============================================================================}
-procedure TFoodRelative.CopyFrom(Food: TFoodRelative);
+procedure TFoodRelative.CopyFrom(Food: TFoodRelative; CopyID: boolean);
 {==============================================================================}
 begin
   if (Food = nil) then raise Exception.Create('TFoodRelative.CopyFrom(): Food is nil');
 
-  Name     := Food.FName;
-  RelProts := Food.FRelProts;
-  RelFats  := Food.FRelFats;
-  RelCarbs := Food.FRelCarbs;
-  RelValue := Food.FRelValue;
+  Name     := Food.Name;
+  RelProts := Food.RelProts;
+  RelFats  := Food.RelFats;
+  RelCarbs := Food.RelCarbs;
+  RelValue := Food.RelValue;
+
+  if (CopyID) then
+  begin
+    ID := Food.ID;
+  end;
 end;
 
 {==============================================================================}
 constructor TFoodRelative.Create;
 {==============================================================================}
 begin
+  inherited Create();
   FName     := '';
   FRelProts := 0;
   FRelFats  := 0;
@@ -226,10 +232,10 @@ end;
 { TFoodMassed }
 
 {==============================================================================}
-procedure TFoodMassed.CopyFrom(Food: TFoodMassed);
+procedure TFoodMassed.CopyFrom(Food: TFoodMassed; CopyID: boolean);
 {==============================================================================}
 begin
-  inherited CopyFrom(Food);
+  inherited CopyFrom(Food, CopyID);
   Mass := TFoodMassed(Food).Mass;
 end;
 
@@ -331,21 +337,20 @@ begin
 end;
 
 {==============================================================================}
-procedure TFood.CopyFrom(Food: TFood);
+procedure TFood.CopyFrom(Food: TFood; CopyID: boolean);
 {==============================================================================}
 begin
-  inherited CopyFrom(Food);
+  inherited CopyFrom(Food, CopyID);
 
   FFromTable := Food.FFromTable;
   FTag := Food.FTag;
-  FID := Food.ID;
 end;
 
 {==============================================================================}
 constructor TFood.Create;
 {==============================================================================}
 begin
-  inherited;
+  inherited Create();
   FFromTable := True;
   FTag := 0;
 end;
@@ -452,7 +457,7 @@ begin
   begin
     { разрываем связку (копируем) }
     Temp := TFoodMassed.Create;
-    Temp.CopyFrom(Dish.Content[i]);
+    Temp.CopyFrom(Dish.Content[i], True);
     Add(Temp);
   end;
 

@@ -1268,7 +1268,7 @@ begin
   end;
 
   Temp := TFood.Create;
-  Temp.CopyFrom(FoodList[Index]);
+  Temp.CopyFrom(FoodList[Index], True);
 
   if FormFood.OpenFoodEditor(Temp, False, FoodEditorRect) then
   begin
@@ -1423,7 +1423,7 @@ var
     for i := 0 to High(FoodList) do
     begin
       Map[i] := TMealItem.Create;
-      Map[i].CopyFrom(FoodList[i]);
+      Map[i].CopyFrom(FoodList[i], True);
       Map[i].Help1 := '';
       Map[i].Help2 := Format('  %.1f', [FoodList[i].RelCarbs]);
       Map[i].Icon := Byte(FoodList[i].FromTable);
@@ -1433,7 +1433,7 @@ var
     for i := 0 to DishBase.Count - 1 do
     begin
       Map[Offset + i] := TMealItem.Create;
-      Map[Offset + i].CopyFrom(DishBase[i].AsFoodRelative());
+      Map[Offset + i].CopyFrom(DishBase[i].AsFoodRelative(), False);
       Map[Offset + i].Help1 := FormatDate(DishBase[i].ModifiedTime);
       Map[Offset + i].Help2 := Format('  %.1f', [DishBase[i].RelCarbs]);
       Map[Offset + i].Icon := 2;
@@ -4131,9 +4131,9 @@ var
   NewName: string;
 begin
   n := ListFood.ItemIndex;
-  OldName := FoodList[n].Name;
-  if n <> -1 then
+  if (n <> -1) then
   begin
+    OldName := FoodList[n].Name;
     i := 1;
     repeat
       inc(i);
@@ -4141,10 +4141,11 @@ begin
     until FoodBaseLocal.FindOne(NewName) = nil;
 
     Temp := TFood.Create;
-    Temp.CopyFrom(FoodList[n]);
+    Temp.CopyFrom(FoodList[n], False);
     Temp.Name := NewName;
     FoodBaseLocal.Add(Temp);
 
+    UpdateFoodbaseFilter();
     EventFoodbaseChanged(True);
 
     //ShowTableItem(ListFood, n);

@@ -58,7 +58,7 @@ end;
 
 constructor EDuplicateException.Create(Food: TFood);
 begin
-  inherited CreateFmt('Продукт #%d (%s) уже существует', [Food.ID, Food.Name]);
+  inherited CreateFmt('Продукт "%s" (#%s) уже существует', [Food.Name, Food.ID]);
 end;
 
 end.
