@@ -1227,8 +1227,7 @@ begin
   if FormFood.OpenFoodEditor(Food, True, FoodEditorRect) then
   begin
     FoodBaseLocal.Add(Food);
-    UpdateFoodbaseFilter();
-    {#}EventFoodbaseChanged(True);                
+    {#}EventFoodbaseChanged(True);
 
     //ShowTableItem(ListFood, n);
     ListFood.SetFocus;
@@ -1260,6 +1259,7 @@ procedure TForm1.EditFood(Index: integer);
 {==============================================================================}
 var
   Temp: TFood;
+  OldName: string;
 begin
   if (Index < 0) or (Index > High(FoodList)) then
   begin
@@ -1267,22 +1267,20 @@ begin
     Exit;
   end;
 
-  Temp := TFood.Create;
-  Temp.CopyFrom(FoodList[Index], True);
+  Temp := FoodList[Index];
+  OldName := FoodList[Index].Name;
 
   if FormFood.OpenFoodEditor(Temp, False, FoodEditorRect) then
   begin
-    if DishBase.RenameFood(FoodList[Index].Name, Temp.Name) then
+    if DishBase.RenameFood(OldName, Temp.Name) then
       SaveDishBase;
 
     FoodBaseLocal.Update(Temp);
-    UpdateFoodbaseFilter();
     EventFoodbaseChanged(False);
 
     //ShowTableItem(ListFood, Index);
     ListFood.SetFocus;
-  end else
-    Temp.Free;
+  end;
 end;
 
 {==============================================================================}
@@ -4145,7 +4143,6 @@ begin
     Temp.Name := NewName;
     FoodBaseLocal.Add(Temp);
 
-    UpdateFoodbaseFilter();
     EventFoodbaseChanged(True);
 
     //ShowTableItem(ListFood, n);
@@ -4964,6 +4961,9 @@ procedure TForm1.EventFoodbaseChanged(CountChanged: boolean);
 begin
   StartProc('EventFoodbaseChenged');
 
+  // TODO: make it handler for DAO-generated event; don't call it manually
+
+  UpdateFoodbaseFilter();
   UpdateFoodTable(False, True, False);
   UpdateCombos;
 
