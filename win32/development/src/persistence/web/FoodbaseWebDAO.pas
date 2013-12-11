@@ -52,7 +52,7 @@ begin
   if (Index = -1) then
   begin
     Temp := TFood.Create;
-    Temp.CopyFrom(Food);
+    Temp.CopyFrom(Food, True);
     FBase.Add(Temp);
     Upload();
     Result := Food.ID;
@@ -121,7 +121,7 @@ begin
   for i := 0 to FBase.Count - 1 do
   begin
     Result[i] := TFood.Create;
-    Result[i].CopyFrom(FBase[i]);
+    Result[i].CopyFrom(FBase[i], True);
   end;
 end;
 
@@ -142,7 +142,7 @@ begin
     inc(k);
     SetLength(Result, k);
     Result[k - 1] := TFood.Create;
-    Result[k - 1].CopyFrom(FBase[i]);
+    Result[k - 1].CopyFrom(FBase[i], True);
   end;
   SetLength(Result, k);
 end;
@@ -159,7 +159,7 @@ begin
   if (Index <> -1) then
   begin
     Result := TFood.Create;
-    Result.CopyFrom(FBase[Index]);
+    Result.CopyFrom(FBase[Index], True);
   end else
     Result := nil;
 end;
@@ -190,7 +190,7 @@ begin
   for i := 0 to High(NewList) do
   begin
     Food := TFood.Create;
-    Food.CopyFrom(NewList[i]);
+    Food.CopyFrom(NewList[i], True);
     FBase.Add(Food);
   end;
   FBase.Version := NewVersion;
@@ -206,7 +206,7 @@ begin
   Index := GetIndex(Food);
   if (Index <> -1) then
   begin
-    FBase[Index].CopyFrom(Food);
+    FBase[Index].CopyFrom(Food, True);
     FBase.Sort;
     Upload();
   end else
