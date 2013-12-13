@@ -22,7 +22,7 @@
     <string name="editor_note_field_text">Text</string>
     <string name="editor_note_title">Note</string>
     <string name="foodbase_search_hint">Search&#8230;</string>
-    <string name="foodbase_subinfo" formatted="false">P %.1f / F %.1f /  C %.1f / V %.1f</string>
+    <string name="foodbase_subinfo" formatted="false">P %.1f\t\tF %.1f\t\tC %.1f\t\tV %.1f</string>
     <string name="foodbase_title">Food base</string>
     <string name="main_option_diary">Diary</string>
     <string name="main_option_dishbase">Dish base</string>
