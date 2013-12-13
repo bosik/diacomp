@@ -1,8 +1,8 @@
 package org.bosik.compensation.persistence.dao;
 
 import java.util.List;
-import org.bosik.compensation.persistence.exceptions.DuplicateException;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
+import org.bosik.compensation.persistence.exceptions.StoreException;
 
 public interface BaseDAO<Item>
 {
@@ -11,10 +11,10 @@ public interface BaseDAO<Item>
 	 * 
 	 * @param item
 	 * @return ID of created item
-	 * @throws DuplicateException
-	 *             If item with such ID already presented
+	 * @throws StoreException
+	 *             If storing failed
 	 */
-	String add(Item item) throws DuplicateException;
+	String add(Item item) throws StoreException;
 
 	/**
 	 * Removes item with specified ID
@@ -62,8 +62,10 @@ public interface BaseDAO<Item>
 	 * 
 	 * @param newList
 	 * @param newVersion
+	 * @throws StoreException
+	 *             If storing failed
 	 */
-	void replaceAll(List<Item> newList, int newVersion);
+	void replaceAll(List<Item> newList, int newVersion) throws StoreException;
 
 	/**
 	 * Updates single item
@@ -71,8 +73,10 @@ public interface BaseDAO<Item>
 	 * @param item
 	 * @throws ItemNotFoundException
 	 *             If no item with such ID found
+	 * @throws StoreException
+	 *             If storing failed
 	 */
-	void update(Item item) throws ItemNotFoundException;
+	void update(Item item) throws ItemNotFoundException, StoreException;
 
 	/**
 	 * Returns DAO's list version

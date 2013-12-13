@@ -5,8 +5,8 @@ import java.util.List;
 import org.bosik.compensation.bo.basic.UniqueNamed;
 import org.bosik.compensation.persistence.common.MemoryBase;
 import org.bosik.compensation.persistence.dao.BaseDAO;
-import org.bosik.compensation.persistence.exceptions.DuplicateException;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
+import org.bosik.compensation.persistence.exceptions.StoreException;
 import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.utils.FileWorker;
 import android.content.Context;
@@ -41,7 +41,7 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 	}
 
 	@Override
-	public String add(T item) throws DuplicateException
+	public String add(T item)
 	{
 		base.add(item);
 		save();
@@ -49,7 +49,7 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 	}
 
 	@Override
-	public void delete(String id) throws ItemNotFoundException
+	public void delete(String id)
 	{
 		base.remove(id);
 		save();
@@ -90,7 +90,7 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 	public void update(T item) throws ItemNotFoundException
 	{
 		base.update(item);
-		save();
+		// save(); // FIXME: DEBUG ONLY
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 		}
 	}
 
-	private void save()
+	private void save() throws StoreException
 	{
 		try
 		{
@@ -125,7 +125,7 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 		}
 		catch (IOException e)
 		{
-			throw new RuntimeException(e);
+			throw new StoreException(e);
 		}
 	}
 }
