@@ -9,6 +9,7 @@ import org.bosik.compensation.face.BuildConfig;
 import org.bosik.compensation.persistence.dao.DiaryDAO;
 import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
 import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.ResponseFormatException;
+import org.bosik.compensation.persistence.exceptions.CommonDAOException;
 import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.persistence.serializers.diary.DiaryPagePlainSerializer;
 import org.bosik.compensation.utils.Utils;
@@ -93,97 +94,125 @@ public class WebDiaryDAO implements DiaryDAO
 	@Override
 	public List<PageVersion> getModList(Date time)
 	{
-		String resp = webClient.getModList(Utils.formatTimeUTC(webClient.localToServer(time)));
-
-		List<PageVersion> result = new ArrayList<PageVersion>();
-
-		// разбираем результат
-
-		String[] lines = resp.split("\n");
-
-		for (int i = 0; i < lines.length; i++)
+		try
 		{
-			String[] item = lines[i].split("\\|");
+			String resp = webClient.getModList(Utils.formatTimeUTC(webClient.localToServer(time)));
 
-			if (item.length == 2)
+			List<PageVersion> result = new ArrayList<PageVersion>();
+
+			// разбираем результат
+
+			String[] lines = resp.split("\n");
+
+			for (int i = 0; i < lines.length; i++)
 			{
-				try
+				String[] item = lines[i].split("\\|");
+
+				if (item.length == 2)
 				{
-					Date date = Utils.parseDate(item[0]);
-					int version = Integer.parseInt(item[1]);
-					PageVersion info = new PageVersion(date, version);
-					result.add(info);
-				}
-				catch (ParseException e)
-				{
-					if (BuildConfig.DEBUG)
+					try
 					{
-						throw new ResponseFormatException("Incorrect line: " + lines[i], e);
+						Date date = Utils.parseDate(item[0]);
+						int version = Integer.parseInt(item[1]);
+						PageVersion info = new PageVersion(date, version);
+						result.add(info);
 					}
-					else
+					catch (ParseException e)
 					{
-						Log.e(TAG, "getModList(): Incorrect line: " + lines[i]);
+						if (BuildConfig.DEBUG)
+						{
+							throw new ResponseFormatException("Incorrect line: " + lines[i], e);
+						}
+						else
+						{
+							Log.e(TAG, "getModList(): Incorrect line: " + lines[i]);
+						}
 					}
-				}
-			}
-			else
-			{
-				if (BuildConfig.DEBUG)
-				{
-					throw new ResponseFormatException("Incorrect line: " + lines[i]);
 				}
 				else
 				{
-					Log.e(TAG, "getModList(): Incorrect line: " + lines[i]);
+					throw new ResponseFormatException("Incorrect line: " + lines[i]);
 				}
 			}
+			return result;
 		}
-		return result;
+		catch (Exception e)
+		{
+			throw new CommonDAOException(e);
+		}
 	}
 
 	@Override
 	public List<DiaryPage> getPages(List<Date> dates)
 	{
-		// TODO: check the behavior for not existed pages
-
-		List<DiaryPage> result = new ArrayList<DiaryPage>();
-
-		int block = 10;
-		int start = 0;
-		while (start < dates.size())
+		try
 		{
-			if ((start + block) >= dates.size())
-			{
-				block = dates.size() - start;
-			}
-			result.addAll(getPagesNaive(dates.subList(start, start + block)));
-			start += block;
-		}
+			// TODO: check the behavior for not existed pages
 
-		return result;
+			List<DiaryPage> result = new ArrayList<DiaryPage>();
+
+			int block = 10;
+			int start = 0;
+			while (start < dates.size())
+			{
+				if ((start + block) >= dates.size())
+				{
+					block = dates.size() - start;
+				}
+				result.addAll(getPagesNaive(dates.subList(start, start + block)));
+				start += block;
+			}
+
+			return result;
+		}
+		catch (Exception e)
+		{
+			throw new CommonDAOException(e);
+		}
 	}
 
 	@Override
-	public boolean postPages(List<DiaryPage> pages)
+	public void postPages(List<DiaryPage> pages)
 	{
-		pages = localToServer(pages);
-		String data = serializer.writeAll(pages);
-		return webClient.postPages(data);
+		try
+		{
+			pages = localToServer(pages);
+			String data = serializer.writeAll(pages);
+			webClient.postPages(data);
+		}
+		catch (Exception e)
+		{
+			throw new CommonDAOException(e);
+		}
 	}
 
 	@Override
 	public DiaryPage getPage(Date date)
 	{
-		List<Date> dates = new ArrayList<Date>();
-		dates.add(date);
-		return getPagesNaive(dates).get(0);
+		try
+		{
+			List<Date> dates = new ArrayList<Date>();
+			dates.add(date);
+			return getPagesNaive(dates).get(0);
+		}
+		catch (Exception e)
+		{
+			throw new CommonDAOException(e);
+		}
 	}
 
 	@Override
-	public boolean postPage(DiaryPage page)
+	public void postPage(DiaryPage page)
 	{
-		List<DiaryPage> pages = new ArrayList<DiaryPage>();
-		pages.add(page);
-		return postPages(pages);
+		try
+		{
+			List<DiaryPage> pages = new ArrayList<DiaryPage>();
+			pages.add(page);
+			postPages(pages);
+		}
+		catch (Exception e)
+		{
+			throw new CommonDAOException(e);
+		}
 	}
 }

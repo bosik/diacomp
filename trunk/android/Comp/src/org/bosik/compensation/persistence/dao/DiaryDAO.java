@@ -3,6 +3,7 @@ package org.bosik.compensation.persistence.dao;
 import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.bo.diary.DiaryPage;
+import org.bosik.compensation.persistence.exceptions.CommonDAOException;
 
 /**
  * Источник данных для дневника
@@ -35,7 +36,7 @@ public interface DiaryDAO
 	 *            Время
 	 * @return Массив пар "date:version" (см. {@link PageVersion})
 	 */
-	public List<PageVersion> getModList(Date time);
+	public List<PageVersion> getModList(Date time) throws CommonDAOException;
 
 	/**
 	 * Получает несколько страниц дневника из БД. Если страница не существует, она будет создана.
@@ -45,7 +46,7 @@ public interface DiaryDAO
 	 * @return Страницы
 	 * @see #getPage(Date)
 	 */
-	public List<DiaryPage> getPages(List<Date> dates);
+	public List<DiaryPage> getPages(List<Date> dates) throws CommonDAOException;
 
 	/**
 	 * Отправляет несколько страниц дневника в БД.
@@ -55,7 +56,7 @@ public interface DiaryDAO
 	 * @return Успешность отправки
 	 * @see #postPage(DiaryPage)
 	 */
-	public boolean postPages(List<DiaryPage> pages);
+	public void postPages(List<DiaryPage> pages) throws CommonDAOException;
 
 	/**
 	 * Получает одну страницу из БД. Для получения большего количества данных используйте
@@ -65,7 +66,7 @@ public interface DiaryDAO
 	 *            Дата
 	 * @return Страница
 	 */
-	public DiaryPage getPage(Date date);
+	public DiaryPage getPage(Date date) throws CommonDAOException;
 
 	/**
 	 * Отправляет одну страницу в БД. Для отправки большего количества данных используйте
@@ -75,5 +76,5 @@ public interface DiaryDAO
 	 *            Дата
 	 * @return Страница
 	 */
-	public boolean postPage(DiaryPage page);
+	public void postPage(DiaryPage page) throws CommonDAOException;
 }
