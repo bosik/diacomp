@@ -22,30 +22,30 @@ public class DiaryContentProvider extends ContentProvider
 	private static final UriMatcher	sURIMatcher;
 
 	// Database
-	private static final String		DATABASE_NAME				= "Diary.db";
-	private static final int		DATABASE_VERSION			= 1;
+	private static final String		DATABASE_NAME			= "Diary.db";
+	private static final int		DATABASE_VERSION		= 1;
 
 	// Tables & fields
-	private static final String		TABLE_DIARY					= "diary";
-	private static final String		COLUMN_DIARY_ID				= "_ID";
-	public static final String		COLUMN_DIARY_DATE			= "Date";
-	public static final String		COLUMN_DIARY_TIMESTAMP		= "TimeStamp";
-	public static final String		COLUMN_DIARY_VERSION		= "Version";
-	public static final String		COLUMN_DIARY_PAGE			= "Page";
+	private static final String		TABLE_DIARY				= "diary";
+	private static final String		COLUMN_DIARY_ID			= "_ID";
+	public static final String		COLUMN_DIARY_DATE		= "Date";
+	public static final String		COLUMN_DIARY_TIMESTAMP	= "TimeStamp";
+	public static final String		COLUMN_DIARY_VERSION	= "Version";
+	public static final String		COLUMN_DIARY_PAGE		= "Page";
 
 	// URIs
-	private static final String		SCHEME						= "content://";
-	private static final String		AUTH						= "diacomp.provider";
-	public static final String		CONTENT_DIARY_STRING		= SCHEME + AUTH + "/" + TABLE_DIARY + "/";
-	public static final Uri			CONTENT_DIARY_URI			= Uri.parse(CONTENT_DIARY_STRING);
+	private static final String		SCHEME					= "content://";
+	private static final String		AUTH					= "diacomp.provider";
+	public static final String		CONTENT_DIARY_STRING	= SCHEME + AUTH + "/" + TABLE_DIARY + "/";
+	public static final Uri			CONTENT_DIARY_URI		= Uri.parse(CONTENT_DIARY_STRING);
 
 	// help URI constants
-	private static final int		CODE_DIARY					= 1;
+	private static final int		CODE_DIARY				= 1;
 	// private static final int CODE_DIARY_ITEM = 2;
-	private static final int		CODE_DIARY_ITEM_DATE		= 21;
-	private static final int		CODE_DIARY_ITEM_TIMESTAMP	= 22;
-	private static final int		CODE_DIARY_ITEM_VERSION		= 23;
-	private static final int		CODE_DIARY_ITEM_PAGE		= 24;
+	// private static final int CODE_DIARY_ITEM_DATE = 21;
+	// private static final int CODE_DIARY_ITEM_TIMESTAMP = 22;
+	// private static final int CODE_DIARY_ITEM_VERSION = 23;
+	// private static final int CODE_DIARY_ITEM_PAGE = 24;
 
 	static
 	{
@@ -53,10 +53,10 @@ public class DiaryContentProvider extends ContentProvider
 		sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		sURIMatcher.addURI(AUTH, TABLE_DIARY, CODE_DIARY);
 		// sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/", CODE_DIARY_ITEM);
-		sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/date", CODE_DIARY_ITEM_DATE);
-		sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/stamp", CODE_DIARY_ITEM_TIMESTAMP);
-		sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/version", CODE_DIARY_ITEM_VERSION);
-		sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/page", CODE_DIARY_ITEM_PAGE);
+		// sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/date", CODE_DIARY_ITEM_DATE);
+		// sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/stamp", CODE_DIARY_ITEM_TIMESTAMP);
+		// sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/version", CODE_DIARY_ITEM_VERSION);
+		// sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/page", CODE_DIARY_ITEM_PAGE);
 	}
 
 	private static final class MyDBHelper extends SQLiteOpenHelper
@@ -92,6 +92,16 @@ public class DiaryContentProvider extends ContentProvider
 		}
 	}
 
+	private static final class UnknownUriException extends IllegalArgumentException
+	{
+		private static final long	serialVersionUID	= 1L;
+
+		public UnknownUriException(Uri uri)
+		{
+			super("Unknown URI: " + uri);
+		}
+	}
+
 	@Override
 	public String getType(Uri uri)
 	{
@@ -109,65 +119,67 @@ public class DiaryContentProvider extends ContentProvider
 	// =================================== CRUD ===================================
 
 	@Override
-	public Uri insert(final Uri uri, final ContentValues initialValues)
+	public Uri insert(final Uri uri, final ContentValues values)
 	{
 		if (null == uri)
 		{
-			throw new NullPointerException("URI can't be null");
+			throw new NullPointerException("URI is null");
 		}
 
-		if (null == initialValues)
+		if (null == values)
 		{
 			throw new NullPointerException("Values are null");
 		}
 
-		if (sURIMatcher.match(uri) != CODE_DIARY)
+		switch (sURIMatcher.match(uri))
 		{
-			throw new IllegalArgumentException("URI must be " + AUTH + "/" + TABLE_DIARY);
-		}
+			case CODE_DIARY:
+			{
+				if (!values.containsKey(COLUMN_DIARY_DATE))
+				{
+					throw new IllegalArgumentException("No date specified");
+				}
 
-		final ContentValues values = new ContentValues(initialValues);
+				if (!values.containsKey(COLUMN_DIARY_TIMESTAMP))
+				{
+					throw new IllegalArgumentException("No timestamp specified");
+				}
 
-		if (!values.containsKey(COLUMN_DIARY_DATE))
-		{
-			throw new IllegalArgumentException("No date specified");
-		}
+				if (!values.containsKey(COLUMN_DIARY_VERSION))
+				{
+					throw new IllegalArgumentException("No version specified");
+				}
 
-		if (!values.containsKey(COLUMN_DIARY_TIMESTAMP))
-		{
-			throw new IllegalArgumentException("No timestamp specified");
-		}
+				if (!values.containsKey(COLUMN_DIARY_PAGE))
+				{
+					throw new IllegalArgumentException("No page specified");
+				}
 
-		if (!values.containsKey(COLUMN_DIARY_VERSION))
-		{
-			throw new IllegalArgumentException("No version specified");
-		}
+				db = openHelper.getWritableDatabase();
 
-		if (!values.containsKey(COLUMN_DIARY_PAGE))
-		{
-			throw new IllegalArgumentException("No page specified");
-		}
+				long rowId = db.insert(TABLE_DIARY, // The table to insert into.
+						COLUMN_DIARY_PAGE, // A hack, SQLite sets this column value to null if
+											// values are empty.
+						values // A map of column names, and the values to insert into the columns.
+						);
 
-		db = openHelper.getWritableDatabase();
+				if (rowId > 0)
+				{
+					// Creates a URI with the note ID pattern and the new row ID appended to it.
+					Uri resultUri = ContentUris.withAppendedId(CONTENT_DIARY_URI, rowId);
 
-		long rowId = db.insert(TABLE_DIARY, // The table to insert into.
-				COLUMN_DIARY_PAGE, // A hack, SQLite sets this column value to null if values is
-									// empty.
-				values // A map of column names, and the values to insert into the columns.
-				);
+					// Notifies observers registered against this provider that the data changed.
+					getContext().getContentResolver().notifyChange(resultUri, null);
+					return resultUri;
+				}
+				else
+				{
+					throw new SQLException("Failed to insert row into " + uri);
+				}
+			}
 
-		if (rowId > 0)
-		{
-			// Creates a URI with the note ID pattern and the new row ID appended to it.
-			Uri resultUri = ContentUris.withAppendedId(CONTENT_DIARY_URI, rowId);
-
-			// Notifies observers registered against this provider that the data changed.
-			getContext().getContentResolver().notifyChange(resultUri, null);
-			return resultUri;
-		}
-		else
-		{
-			throw new SQLException("Failed to insert row into " + uri);
+			default:
+				throw new UnknownUriException(uri);
 		}
 	}
 
@@ -195,10 +207,9 @@ public class DiaryContentProvider extends ContentProvider
 				// Tells the Cursor what URI to watch, so it knows when its source data changes
 				cursor.setNotificationUri(getContext().getContentResolver(), uri);
 				return cursor;
+
 			default:
-				// If the CONTENT_DIARY_URI is not recognized, you should do some error handling
-				// here.
-				throw new IllegalArgumentException("Unknown URI " + uri);
+				throw new UnknownUriException(uri);
 		}
 	}
 
@@ -219,7 +230,7 @@ public class DiaryContentProvider extends ContentProvider
 				break;
 
 			default:
-				throw new IllegalArgumentException("Unknown URI " + uri);
+				throw new UnknownUriException(uri);
 		}
 
 		/*
@@ -270,7 +281,7 @@ public class DiaryContentProvider extends ContentProvider
 			// break;
 
 			default:
-				throw new IllegalArgumentException("URI is incorrect: " + uri);
+				throw new UnknownUriException(uri);
 		}
 
 		/*
