@@ -37,5 +37,4 @@ public class FakeDiaryDAO implements DiaryDAO
 	{
 		// TODO Auto-generated method stub
 	}
-
 }
