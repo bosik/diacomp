@@ -47,14 +47,14 @@ public class LocalDiaryDAO implements DiaryDAO
 		}
 
 		// формируем параметры
-		String[] mProj = { DiaryContentProvider.COLUMN_DATE, DiaryContentProvider.COLUMN_TIMESTAMP,
-				DiaryContentProvider.COLUMN_VERSION, DiaryContentProvider.COLUMN_PAGE };
-		String mSelectionClause = DiaryContentProvider.COLUMN_DATE + " = ?";
+		String[] mProj = { DiaryContentProvider.COLUMN_DIARY_DATE, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
+				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_PAGE };
+		String mSelectionClause = DiaryContentProvider.COLUMN_DIARY_DATE + " = ?";
 		String[] mSelectionArgs = { Utils.formatDate(date) };
 		String mSortOrder = null;
 
 		// выполняем запрос
-		Cursor cursor = aResolver.query(DiaryContentProvider.CONTENT_URI, mProj, mSelectionClause, mSelectionArgs,
+		Cursor cursor = aResolver.query(DiaryContentProvider.CONTENT_DIARY_URI, mProj, mSelectionClause, mSelectionArgs,
 				mSortOrder);
 
 		// анализируем ответ
@@ -84,9 +84,9 @@ public class LocalDiaryDAO implements DiaryDAO
 			throw new RuntimeException("Several pages are founded");
 		}
 
-		int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_TIMESTAMP);
-		int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_VERSION);
-		int indexPage = cursor.getColumnIndex(DiaryContentProvider.COLUMN_PAGE);
+		int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
+		int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_VERSION);
+		int indexPage = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_PAGE);
 		cursor.moveToNext();
 
 		try
@@ -143,21 +143,21 @@ public class LocalDiaryDAO implements DiaryDAO
 
 		ContentValues mNewValues = new ContentValues();
 
-		mNewValues.put(DiaryContentProvider.COLUMN_TIMESTAMP, Utils.formatTimeUTC(diaryPage.getTimeStamp()));
-		mNewValues.put(DiaryContentProvider.COLUMN_VERSION, diaryPage.getVersion());
-		mNewValues.put(DiaryContentProvider.COLUMN_PAGE, code);
+		mNewValues.put(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(diaryPage.getTimeStamp()));
+		mNewValues.put(DiaryContentProvider.COLUMN_DIARY_VERSION, diaryPage.getVersion());
+		mNewValues.put(DiaryContentProvider.COLUMN_DIARY_PAGE, code);
 
 		if (exists)
 		{
 			// Log.d(TAG, "PostPage(): page exists, updating...");
-			aResolver.update(DiaryContentProvider.CONTENT_URI, mNewValues, "Date = ?",
+			aResolver.update(DiaryContentProvider.CONTENT_DIARY_URI, mNewValues, "Date = ?",
 					new String[] { Utils.formatDate(diaryPage.getDate()) });
 		}
 		else
 		{
 			// Log.d(TAG, "PostPage(): page doesn't exist, inserting...");
-			mNewValues.put(DiaryContentProvider.COLUMN_DATE, Utils.formatDate(diaryPage.getDate()));
-			aResolver.insert(DiaryContentProvider.CONTENT_URI, mNewValues);
+			mNewValues.put(DiaryContentProvider.COLUMN_DIARY_DATE, Utils.formatDate(diaryPage.getDate()));
+			aResolver.insert(DiaryContentProvider.CONTENT_DIARY_URI, mNewValues);
 		}
 	}
 
@@ -185,19 +185,19 @@ public class LocalDiaryDAO implements DiaryDAO
 	public List<PageVersion> getModList(Date time)
 	{
 		// формируем параметры
-		String[] mProjection = { DiaryContentProvider.COLUMN_DATE, DiaryContentProvider.COLUMN_VERSION };
-		String mSelectionClause = DiaryContentProvider.COLUMN_TIMESTAMP + " > ?";
+		String[] mProjection = { DiaryContentProvider.COLUMN_DIARY_DATE, DiaryContentProvider.COLUMN_DIARY_VERSION };
+		String mSelectionClause = DiaryContentProvider.COLUMN_DIARY_TIMESTAMP + " > ?";
 		String[] mSelectionArgs = { Utils.formatTimeUTC(time) };
 		String mSortOrder = null;
 
 		// выполняем запрос
-		Cursor mCursor = aResolver.query(DiaryContentProvider.CONTENT_URI, mProjection, mSelectionClause,
+		Cursor mCursor = aResolver.query(DiaryContentProvider.CONTENT_DIARY_URI, mProjection, mSelectionClause,
 				mSelectionArgs, mSortOrder);
 
 		if (mCursor != null)
 		{
-			int indexDate = mCursor.getColumnIndex(DiaryContentProvider.COLUMN_DATE);
-			int indexVersion = mCursor.getColumnIndex(DiaryContentProvider.COLUMN_VERSION);
+			int indexDate = mCursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_DATE);
+			int indexVersion = mCursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_VERSION);
 			List<PageVersion> res = new ArrayList<PageVersion>();
 
 			while (mCursor.moveToNext())
