@@ -154,6 +154,7 @@ public class ActivityFoodbase extends Activity
 	{
 		String fmt = getString(R.string.foodbase_subinfo, item.getRelProts(), item.getRelFats(), item.getRelCarbs(),
 				item.getRelValue());
-		return fmt + " TAG=" + item.getTag();
+		// fmt = fmt.replaceAll(" / ", "\t\t");
+		return fmt + "\t\tTAG=" + item.getTag();
 	}
 }
