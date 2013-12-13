@@ -22,10 +22,9 @@ public class FakeDiaryDAO implements DiaryDAO
 		return null;
 	}
 
-	public boolean postPages(List<DiaryPage> pages)
+	public void postPages(List<DiaryPage> pages)
 	{
 		// TODO Auto-generated method stub
-		return false;
 	}
 
 	public DiaryPage getPage(Date date)
@@ -34,10 +33,9 @@ public class FakeDiaryDAO implements DiaryDAO
 		return null;
 	}
 
-	public boolean postPage(DiaryPage page)
+	public void postPage(DiaryPage page)
 	{
 		// TODO Auto-generated method stub
-		return false;
 	}
 
 }
