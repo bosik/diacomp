@@ -16,7 +16,16 @@ public class DiaryContentProvider extends ContentProvider
 {
 	// private static final String TAG = DiaryContentProvider.class.getSimpleName();
 
-	// база SQL
+	// Core
+	private SQLiteDatabase			db;
+	private MyDBHelper				openHelper;
+	private static final UriMatcher	sURIMatcher;
+
+	// Database
+	private static final String		DATABASE_NAME				= "Diary.db";
+	private static final int		DATABASE_VERSION			= 1;
+
+	// Tables & fields
 	private static final String		TABLE_DIARY					= "diary";
 	private static final String		COLUMN_DIARY_ID				= "_ID";
 	public static final String		COLUMN_DIARY_DATE			= "Date";
@@ -24,29 +33,19 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		COLUMN_DIARY_VERSION		= "Version";
 	public static final String		COLUMN_DIARY_PAGE			= "Page";
 
-	// константы провайдера (для доступа извне)
+	// URIs
 	private static final String		SCHEME						= "content://";
 	private static final String		AUTH						= "diacomp.provider";
-	// public static final Uri SHORT_URI = Uri.parse(AUTH + "/" + TABLE_DIARY + "/");
 	public static final String		CONTENT_DIARY_STRING		= SCHEME + AUTH + "/" + TABLE_DIARY + "/";
 	public static final Uri			CONTENT_DIARY_URI			= Uri.parse(CONTENT_DIARY_STRING);
 
-	// Database params
-	private static final String		DATABASE_NAME				= "Diary.db";
-	private static final int		DATABASE_VERSION			= 1;
-
-	// константы для распознавателя URI
+	// help URI constants
 	private static final int		CODE_DIARY					= 1;
 	// private static final int CODE_DIARY_ITEM = 2;
 	private static final int		CODE_DIARY_ITEM_DATE		= 21;
 	private static final int		CODE_DIARY_ITEM_TIMESTAMP	= 22;
 	private static final int		CODE_DIARY_ITEM_VERSION		= 23;
 	private static final int		CODE_DIARY_ITEM_PAGE		= 24;
-
-	// вспомогательные объекты
-	private SQLiteDatabase			db;
-	private MyDBHelper				openHelper;
-	private static final UriMatcher	sURIMatcher;
 
 	static
 	{
