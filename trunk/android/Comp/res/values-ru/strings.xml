@@ -22,7 +22,7 @@
     <string name="editor_note_field_text">Текст</string>
     <string name="editor_note_title">Заметка</string>
     <string name="foodbase_search_hint">Поиск&#8230;</string>
-    <string name="foodbase_subinfo" formatted="false">Б %.1f / Ж %.1f / У %.1f / К %.1f</string>
+    <string name="foodbase_subinfo" formatted="false">Б %.1f\t\tЖ %.1f\t\tУ %.1f\t\tК %.1f</string>
     <string name="foodbase_title">База продуктов</string>
     <string name="main_option_diary">Дневник</string>
     <string name="main_option_dishbase">База блюд</string>
