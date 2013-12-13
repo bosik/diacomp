@@ -17,19 +17,19 @@ public class DiaryContentProvider extends ContentProvider
 	// private static final String TAG = DiaryContentProvider.class.getSimpleName();
 
 	// база SQL
-	private static final String		TABLE_NAME_DIARY			= "diary";
-	private static final String		COLUMN_ID					= "_ID";
-	public static final String		COLUMN_DATE					= "Date";
-	public static final String		COLUMN_TIMESTAMP			= "TimeStamp";
-	public static final String		COLUMN_VERSION				= "Version";
-	public static final String		COLUMN_PAGE					= "Page";
+	private static final String		TABLE_DIARY					= "diary";
+	private static final String		COLUMN_DIARY_ID				= "_ID";
+	public static final String		COLUMN_DIARY_DATE			= "Date";
+	public static final String		COLUMN_DIARY_TIMESTAMP		= "TimeStamp";
+	public static final String		COLUMN_DIARY_VERSION		= "Version";
+	public static final String		COLUMN_DIARY_PAGE			= "Page";
 
 	// константы провайдера (для доступа извне)
-	private static final String		AUTH						= "diacomp.provider";
 	private static final String		SCHEME						= "content://";
-	// public static final Uri SHORT_URI = Uri.parse(AUTH + "/" + TABLE_NAME_DIARY + "/");
-	public static final String		CONTENT_STRING				= SCHEME + AUTH + "/" + TABLE_NAME_DIARY + "/";
-	public static final Uri			CONTENT_URI					= Uri.parse(CONTENT_STRING);
+	private static final String		AUTH						= "diacomp.provider";
+	// public static final Uri SHORT_URI = Uri.parse(AUTH + "/" + TABLE_DIARY + "/");
+	public static final String		CONTENT_DIARY_STRING		= SCHEME + AUTH + "/" + TABLE_DIARY + "/";
+	public static final Uri			CONTENT_DIARY_URI			= Uri.parse(CONTENT_DIARY_STRING);
 
 	// Database params
 	private static final String		DATABASE_NAME				= "Diary.db";
@@ -44,20 +44,20 @@ public class DiaryContentProvider extends ContentProvider
 	private static final int		CODE_DIARY_ITEM_PAGE		= 24;
 
 	// вспомогательные объекты
-	private static final UriMatcher	sURIMatcher;
-	private MyDBHelper				openHelper;
 	private SQLiteDatabase			db;
+	private MyDBHelper				openHelper;
+	private static final UriMatcher	sURIMatcher;
 
 	static
 	{
 		// TODO: подставить константы
 		sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		sURIMatcher.addURI(AUTH, TABLE_NAME_DIARY, CODE_DIARY);
-		sURIMatcher.addURI(AUTH, TABLE_NAME_DIARY + "/#/", CODE_DIARY_ITEM);
-		sURIMatcher.addURI(AUTH, TABLE_NAME_DIARY + "/#/date", CODE_DIARY_ITEM_DATE);
-		sURIMatcher.addURI(AUTH, TABLE_NAME_DIARY + "/#/stamp", CODE_DIARY_ITEM_TIMESTAMP);
-		sURIMatcher.addURI(AUTH, TABLE_NAME_DIARY + "/#/version", CODE_DIARY_ITEM_VERSION);
-		sURIMatcher.addURI(AUTH, TABLE_NAME_DIARY + "/#/page", CODE_DIARY_ITEM_PAGE);
+		sURIMatcher.addURI(AUTH, TABLE_DIARY, CODE_DIARY);
+		sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/", CODE_DIARY_ITEM);
+		sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/date", CODE_DIARY_ITEM_DATE);
+		sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/stamp", CODE_DIARY_ITEM_TIMESTAMP);
+		sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/version", CODE_DIARY_ITEM_VERSION);
+		sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/page", CODE_DIARY_ITEM_PAGE);
 	}
 
 	private static final class MyDBHelper extends SQLiteOpenHelper
@@ -75,14 +75,14 @@ public class DiaryContentProvider extends ContentProvider
 		public void onCreate(SQLiteDatabase db)
 		{
 			// @formatter:off
-			// db.execSQL("DROP TABLE " + TABLE_NAME_DIARY);
+			// db.execSQL("DROP TABLE " + TABLE_DIARY);
 			final String SQL_CREATE_DIARY = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s)",
-					TABLE_NAME_DIARY,
-					COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT",
-					COLUMN_DATE + " TEXT NOT NULL UNIQUE",
-					COLUMN_TIMESTAMP + " TEXT",
-					COLUMN_VERSION + " INTEGER",
-					COLUMN_PAGE + " BLOB");
+					TABLE_DIARY,
+					COLUMN_DIARY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT",
+					COLUMN_DIARY_DATE + " TEXT NOT NULL UNIQUE",
+					COLUMN_DIARY_TIMESTAMP + " TEXT",
+					COLUMN_DIARY_VERSION + " INTEGER",
+					COLUMN_DIARY_PAGE + " BLOB");
 			db.execSQL(SQL_CREATE_DIARY);
 			// @formatter:on
 		}
@@ -106,7 +106,7 @@ public class DiaryContentProvider extends ContentProvider
 				if ((where != null) && (!where.equals("")))
 				{
 					// Log.d(TAG,"delete(): URI is correct (whole diary, checking WHERE clause...)");
-					count = db.delete(TABLE_NAME_DIARY, where, whereArgs);
+					count = db.delete(TABLE_DIARY, where, whereArgs);
 					// Log.d(TAG,"delete(): done");
 				}
 				else
@@ -117,14 +117,14 @@ public class DiaryContentProvider extends ContentProvider
 
 			case CODE_DIARY_ITEM:
 				// Log.d(TAG,"delete(): URI is correct (item ID is specified I hope)");
-				String finalWhere = COLUMN_ID + " = " + uri.getLastPathSegment();
+				String finalWhere = COLUMN_DIARY_ID + " = " + uri.getLastPathSegment();
 
 				if ((where != null) && (!where.equals("")))
 				{
 					finalWhere = finalWhere + " AND " + where;
 				}
 
-				count = db.delete(TABLE_NAME_DIARY, // The database table name.
+				count = db.delete(TABLE_DIARY, // The database table name.
 						finalWhere, // The final WHERE clause
 						whereArgs // The incoming where clause values.
 						);
@@ -168,42 +168,43 @@ public class DiaryContentProvider extends ContentProvider
 
 		if (sURIMatcher.match(uri) != CODE_DIARY)
 		{
-			throw new IllegalArgumentException("URI must be " + AUTH + "/" + TABLE_NAME_DIARY);
+			throw new IllegalArgumentException("URI must be " + AUTH + "/" + TABLE_DIARY);
 		}
 
 		final ContentValues values = new ContentValues(initialValues);
 
-		if (!values.containsKey(COLUMN_DATE))
+		if (!values.containsKey(COLUMN_DIARY_DATE))
 		{
 			throw new IllegalArgumentException("No date specified");
 		}
 
-		if (!values.containsKey(COLUMN_TIMESTAMP))
+		if (!values.containsKey(COLUMN_DIARY_TIMESTAMP))
 		{
 			throw new IllegalArgumentException("No timestamp specified");
 		}
 
-		if (!values.containsKey(COLUMN_VERSION))
+		if (!values.containsKey(COLUMN_DIARY_VERSION))
 		{
 			throw new IllegalArgumentException("No version specified");
 		}
 
-		if (!values.containsKey(COLUMN_PAGE))
+		if (!values.containsKey(COLUMN_DIARY_PAGE))
 		{
 			throw new IllegalArgumentException("No page specified");
 		}
 
 		db = openHelper.getWritableDatabase();
 
-		long rowId = db.insert(TABLE_NAME_DIARY, // The table to insert into.
-				COLUMN_PAGE, // A hack, SQLite sets this column value to null if values is empty.
+		long rowId = db.insert(TABLE_DIARY, // The table to insert into.
+				COLUMN_DIARY_PAGE, // A hack, SQLite sets this column value to null if values is
+									// empty.
 				values // A map of column names, and the values to insert into the columns.
 				);
 
 		if (rowId > 0)
 		{
 			// Creates a URI with the note ID pattern and the new row ID appended to it.
-			Uri resultUri = ContentUris.withAppendedId(CONTENT_URI, rowId);
+			Uri resultUri = ContentUris.withAppendedId(CONTENT_DIARY_URI, rowId);
 
 			// Notifies observers registered against this provider that the data changed.
 			getContext().getContentResolver().notifyChange(resultUri, null);
@@ -226,7 +227,7 @@ public class DiaryContentProvider extends ContentProvider
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
 	{
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-		qb.setTables(TABLE_NAME_DIARY);
+		qb.setTables(TABLE_DIARY);
 
 		// TODO: определить допустимые URI, отрефакторить логику
 		switch (sURIMatcher.match(uri))
@@ -234,11 +235,12 @@ public class DiaryContentProvider extends ContentProvider
 			case CODE_DIARY:
 				break;
 			default:
-				// If the CONTENT_URI is not recognized, you should do some error handling here.
+				// If the CONTENT_DIARY_URI is not recognized, you should do some error handling
+				// here.
 				throw new IllegalArgumentException("Unknown URI " + uri);
 		}
 
-		// String orderBy = COLUMN_ID + " ASC";
+		// String orderBy = COLUMN_DIARY_ID + " ASC";
 		db = openHelper.getReadableDatabase();
 
 		Cursor cursor = qb.query(db, // The database to query
@@ -264,7 +266,7 @@ public class DiaryContentProvider extends ContentProvider
 		switch (sURIMatcher.match(uri))
 		{
 			case CODE_DIARY:
-				count = db.update(TABLE_NAME_DIARY, // The database table name.
+				count = db.update(TABLE_DIARY, // The database table name.
 						values, // A map of column names and new values to use.
 						where, // The where clause column names.
 						whereArgs // The where clause column values to select on.
