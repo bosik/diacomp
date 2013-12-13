@@ -457,10 +457,10 @@ public class ActivityMain extends Activity implements OnClickListener
 
 	/*
 	 * private void clearLocalDiary() { // формируем параметры String mSelectionClause =
-	 * DiaryContentProvider.COLUMN_DATE + " > ?"; String[] mSelectionArgs = {"2014-01-01"};
+	 * DiaryContentProvider.COLUMN_DIARY_DATE + " > ?"; String[] mSelectionArgs = {"2014-01-01"};
 	 * 
 	 * // выполняем запрос int count = getContentResolver().delete(
-	 * DiaryContentProvider.CONTENT_URI, mSelectionClause, mSelectionArgs);
+	 * DiaryContentProvider.CONTENT_DIARY_URI, mSelectionClause, mSelectionArgs);
 	 * 
 	 * Log.w(TAG, "Deleted records: " + count); }
 	 */
