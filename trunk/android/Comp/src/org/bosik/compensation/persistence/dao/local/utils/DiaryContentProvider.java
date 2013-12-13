@@ -37,7 +37,7 @@ public class DiaryContentProvider extends ContentProvider
 
 	// константы для распознавателя URI
 	private static final int		CODE_DIARY					= 1;
-	private static final int		CODE_DIARY_ITEM				= 2;
+	// private static final int CODE_DIARY_ITEM = 2;
 	private static final int		CODE_DIARY_ITEM_DATE		= 21;
 	private static final int		CODE_DIARY_ITEM_TIMESTAMP	= 22;
 	private static final int		CODE_DIARY_ITEM_VERSION		= 23;
@@ -53,7 +53,7 @@ public class DiaryContentProvider extends ContentProvider
 		// TODO: подставить константы
 		sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		sURIMatcher.addURI(AUTH, TABLE_DIARY, CODE_DIARY);
-		sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/", CODE_DIARY_ITEM);
+		// sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/", CODE_DIARY_ITEM);
 		sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/date", CODE_DIARY_ITEM_DATE);
 		sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/stamp", CODE_DIARY_ITEM_TIMESTAMP);
 		sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/version", CODE_DIARY_ITEM_VERSION);
@@ -94,64 +94,20 @@ public class DiaryContentProvider extends ContentProvider
 	}
 
 	@Override
-	public int delete(final Uri uri, String where, String[] whereArgs)
-	{
-		SQLiteDatabase db = openHelper.getWritableDatabase();
-		int count;
-
-		switch (sURIMatcher.match(uri))
-		{
-			case CODE_DIARY:
-				// от греха подальше...
-				if ((where != null) && (!where.equals("")))
-				{
-					// Log.d(TAG,"delete(): URI is correct (whole diary, checking WHERE clause...)");
-					count = db.delete(TABLE_DIARY, where, whereArgs);
-					// Log.d(TAG,"delete(): done");
-				}
-				else
-				{
-					throw new IllegalArgumentException("Empty WHERE clause, this will destroy all database; denied");
-				}
-				break;
-
-			case CODE_DIARY_ITEM:
-				// Log.d(TAG,"delete(): URI is correct (item ID is specified I hope)");
-				String finalWhere = COLUMN_DIARY_ID + " = " + uri.getLastPathSegment();
-
-				if ((where != null) && (!where.equals("")))
-				{
-					finalWhere = finalWhere + " AND " + where;
-				}
-
-				count = db.delete(TABLE_DIARY, // The database table name.
-						finalWhere, // The final WHERE clause
-						whereArgs // The incoming where clause values.
-						);
-				// Log.d(TAG,"delete(): done");
-
-				break;
-
-			default:
-				throw new IllegalArgumentException("URI is incorrect: " + uri);
-		}
-
-		/*
-		 * Gets a handle to the content resolver object for the current context, and notifies it
-		 * that the incoming URI changed. The object passes this along to the resolver framework,
-		 * and observers that have registered themselves for the provider are notified.
-		 */
-		getContext().getContentResolver().notifyChange(uri, null);
-
-		return count;
-	}
-
-	@Override
 	public String getType(Uri uri)
 	{
 		// TODO: заглушка
 		return "DiaryDataType";
 	}
+
+	@Override
+	public boolean onCreate()
+	{
+		openHelper = new MyDBHelper(getContext());
+		return true;
+	}
+
+	// =================================== CRUD ===================================
 
 	@Override
 	public Uri insert(final Uri uri, final ContentValues initialValues)
@@ -217,44 +173,34 @@ public class DiaryContentProvider extends ContentProvider
 	}
 
 	@Override
-	public boolean onCreate()
-	{
-		openHelper = new MyDBHelper(getContext());
-		return true;
-	}
-
-	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
 	{
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-		qb.setTables(TABLE_DIARY);
 
-		// TODO: определить допустимые URI, отрефакторить логику
 		switch (sURIMatcher.match(uri))
 		{
 			case CODE_DIARY:
-				break;
+				qb.setTables(TABLE_DIARY);
+				// String orderBy = COLUMN_DIARY_ID + " ASC";
+				db = openHelper.getReadableDatabase();
+
+				Cursor cursor = qb.query(db, // The database to query
+						projection, // The columns to return from the query
+						selection, // The columns for the where clause
+						selectionArgs, // The values for the where clause
+						null, // don't group the rows
+						null, // don't filter by row groups
+						sortOrder // The sort order
+						);
+
+				// Tells the Cursor what URI to watch, so it knows when its source data changes
+				cursor.setNotificationUri(getContext().getContentResolver(), uri);
+				return cursor;
 			default:
 				// If the CONTENT_DIARY_URI is not recognized, you should do some error handling
 				// here.
 				throw new IllegalArgumentException("Unknown URI " + uri);
 		}
-
-		// String orderBy = COLUMN_DIARY_ID + " ASC";
-		db = openHelper.getReadableDatabase();
-
-		Cursor cursor = qb.query(db, // The database to query
-				projection, // The columns to return from the query
-				selection, // The columns for the where clause
-				selectionArgs, // The values for the where clause
-				null, // don't group the rows
-				null, // don't filter by row groups
-				sortOrder // The sort order
-				);
-
-		// Tells the Cursor what URI to watch, so it knows when its source data changes
-		cursor.setNotificationUri(getContext().getContentResolver(), uri);
-		return cursor;
 	}
 
 	@Override
@@ -285,6 +231,56 @@ public class DiaryContentProvider extends ContentProvider
 		getContext().getContentResolver().notifyChange(uri, null);
 
 		// Returns the number of rows updated.
+		return count;
+	}
+
+	@Override
+	public int delete(final Uri uri, String where, String[] whereArgs)
+	{
+		SQLiteDatabase db = openHelper.getWritableDatabase();
+		int count;
+
+		switch (sURIMatcher.match(uri))
+		{
+			case CODE_DIARY:
+				// от греха подальше...
+				if ((where != null) && (!where.equals("")))
+				{
+					// Log.d(TAG,"delete(): URI is correct (whole diary, checking WHERE clause...)");
+					count = db.delete(TABLE_DIARY, where, whereArgs);
+					// Log.d(TAG,"delete(): done");
+				}
+				else
+				{
+					throw new IllegalArgumentException("Empty WHERE clause, this will destroy all database; denied");
+				}
+				break;
+
+			// case CODE_DIARY_ITEM:
+			// String finalWhere = COLUMN_DIARY_ID + " = " + uri.getLastPathSegment();
+			//
+			// if ((where != null) && (!where.equals("")))
+			// {
+			// finalWhere = finalWhere + " AND " + where;
+			// }
+			//
+			// count = db.delete(TABLE_DIARY, // The database table name.
+			// finalWhere, // The final WHERE clause
+			// whereArgs // The incoming where clause values.
+			// );
+			// break;
+
+			default:
+				throw new IllegalArgumentException("URI is incorrect: " + uri);
+		}
+
+		/*
+		 * Gets a handle to the content resolver object for the current context, and notifies it
+		 * that the incoming URI changed. The object passes this along to the resolver framework,
+		 * and observers that have registered themselves for the provider are notified.
+		 */
+		getContext().getContentResolver().notifyChange(uri, null);
+
 		return count;
 	}
 }
