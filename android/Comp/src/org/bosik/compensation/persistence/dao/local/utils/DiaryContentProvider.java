@@ -17,30 +17,55 @@ public class DiaryContentProvider extends ContentProvider
 	// private static final String TAG = DiaryContentProvider.class.getSimpleName();
 
 	// Core
-	private SQLiteDatabase			db;
 	private MyDBHelper				openHelper;
 	private static final UriMatcher	sURIMatcher;
 
 	// Database
-	private static final String		DATABASE_NAME			= "Diary.db";
-	private static final int		DATABASE_VERSION		= 1;
+	private static final String		DATABASE_NAME				= "Diary.db";
+	private static final int		DATABASE_VERSION			= 1;
+	private static final String		SCHEME						= "content://";
+	private static final String		AUTH						= "diacomp.provider";
 
-	// Tables & fields
-	private static final String		TABLE_DIARY				= "diary";
-	private static final String		COLUMN_DIARY_ID			= "_ID";
-	public static final String		COLUMN_DIARY_DATE		= "Date";
-	public static final String		COLUMN_DIARY_TIMESTAMP	= "TimeStamp";
-	public static final String		COLUMN_DIARY_VERSION	= "Version";
-	public static final String		COLUMN_DIARY_PAGE		= "Page";
+	// Diary table
 
-	// URIs
-	private static final String		SCHEME					= "content://";
-	private static final String		AUTH					= "diacomp.provider";
-	public static final String		CONTENT_DIARY_STRING	= SCHEME + AUTH + "/" + TABLE_DIARY + "/";
-	public static final Uri			CONTENT_DIARY_URI		= Uri.parse(CONTENT_DIARY_STRING);
+	private static final String		TABLE_DIARY					= "diary";
+	private static final String		COLUMN_DIARY_ID				= "_ID";
+	public static final String		COLUMN_DIARY_DATE			= "Date";
+	public static final String		COLUMN_DIARY_TIMESTAMP		= "TimeStamp";
+	public static final String		COLUMN_DIARY_VERSION		= "Version";
+	public static final String		COLUMN_DIARY_PAGE			= "Page";
 
-	// help URI constants
-	private static final int		CODE_DIARY				= 1;
+	public static final String		CONTENT_DIARY_STRING		= SCHEME + AUTH + "/" + TABLE_DIARY + "/";
+	public static final Uri			CONTENT_DIARY_URI			= Uri.parse(CONTENT_DIARY_STRING);
+
+	private static final int		CODE_DIARY					= 1;
+
+	// Foodbase table
+
+	private static final String		TABLE_FOODBASE				= "foodbase";
+	private static final String		COLUMN_FOODBASE_ID			= "GUID";
+	public static final String		COLUMN_FOODBASE_TIMESTAMP	= "TimeStamp";
+	public static final String		COLUMN_FOODBASE_VERSION		= "Version";
+	public static final String		COLUMN_FOODBASE_DATA		= "Data";
+
+	public static final String		CONTENT_FOODBASE_STRING		= SCHEME + AUTH + "/" + TABLE_FOODBASE + "/";
+	public static final Uri			CONTENT_FOODBASE_URI		= Uri.parse(CONTENT_FOODBASE_STRING);
+
+	private static final int		CODE_FOODBASE				= 2;
+
+	// Dishbase table
+
+	private static final String		TABLE_DISHBASE				= "dishbase";
+	private static final String		COLUMN_DISHBASE_ID			= "GUID";
+	public static final String		COLUMN_DISHBASE_TIMESTAMP	= "TimeStamp";
+	public static final String		COLUMN_DISHBASE_VERSION		= "Version";
+	public static final String		COLUMN_DISHBASE_DATA		= "Data";
+
+	public static final String		CONTENT_DISHBASE_STRING		= SCHEME + AUTH + "/" + TABLE_DISHBASE + "/";
+	public static final Uri			CONTENT_DISHBASE_URI		= Uri.parse(CONTENT_DISHBASE_STRING);
+
+	private static final int		CODE_DISHBASE				= 3;
+
 	// private static final int CODE_DIARY_ITEM = 2;
 	// private static final int CODE_DIARY_ITEM_DATE = 21;
 	// private static final int CODE_DIARY_ITEM_TIMESTAMP = 22;
@@ -49,9 +74,10 @@ public class DiaryContentProvider extends ContentProvider
 
 	static
 	{
-		// TODO: подставить константы
 		sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		sURIMatcher.addURI(AUTH, TABLE_DIARY, CODE_DIARY);
+		sURIMatcher.addURI(AUTH, TABLE_FOODBASE, CODE_FOODBASE);
+		sURIMatcher.addURI(AUTH, TABLE_DISHBASE, CODE_DISHBASE);
 		// sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/", CODE_DIARY_ITEM);
 		// sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/date", CODE_DIARY_ITEM_DATE);
 		// sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/stamp", CODE_DIARY_ITEM_TIMESTAMP);
@@ -73,8 +99,11 @@ public class DiaryContentProvider extends ContentProvider
 		@Override
 		public void onCreate(SQLiteDatabase db)
 		{
-			// @formatter:off
 			// db.execSQL("DROP TABLE " + TABLE_DIARY);
+
+			// @formatter:off
+			
+			// diary table			
 			final String SQL_CREATE_DIARY = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s)",
 					TABLE_DIARY,
 					COLUMN_DIARY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT",
@@ -83,6 +112,25 @@ public class DiaryContentProvider extends ContentProvider
 					COLUMN_DIARY_VERSION + " INTEGER",
 					COLUMN_DIARY_PAGE + " BLOB");
 			db.execSQL(SQL_CREATE_DIARY);
+			
+			// foodbase table			
+			final String SQL_CREATE_FOODBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s)",
+					TABLE_FOODBASE,
+					COLUMN_FOODBASE_ID + " TEXT PRIMARY KEY",
+					COLUMN_FOODBASE_TIMESTAMP + " TEXT",
+					COLUMN_FOODBASE_VERSION + " INTEGER",
+					COLUMN_FOODBASE_DATA + " TEXT");
+			db.execSQL(SQL_CREATE_FOODBASE);
+			
+			// dishbase table
+			final String SQL_CREATE_DISHBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s)",
+					TABLE_DISHBASE,
+					COLUMN_DISHBASE_ID + " TEXT PRIMARY KEY",
+					COLUMN_DISHBASE_TIMESTAMP + " TEXT",
+					COLUMN_DISHBASE_VERSION + " INTEGER",
+					COLUMN_DISHBASE_DATA + " TEXT");
+			db.execSQL(SQL_CREATE_DISHBASE);
+			
 			// @formatter:on
 		}
 
@@ -155,20 +203,12 @@ public class DiaryContentProvider extends ContentProvider
 					throw new IllegalArgumentException("No page specified");
 				}
 
-				db = openHelper.getWritableDatabase();
-
-				long rowId = db.insert(TABLE_DIARY, // The table to insert into.
-						COLUMN_DIARY_PAGE, // A hack, SQLite sets this column value to null if
-											// values are empty.
-						values // A map of column names, and the values to insert into the columns.
-						);
+				SQLiteDatabase db = openHelper.getWritableDatabase();
+				long rowId = db.insert(TABLE_DIARY, COLUMN_DIARY_PAGE, values);
 
 				if (rowId > 0)
 				{
-					// Creates a URI with the note ID pattern and the new row ID appended to it.
 					Uri resultUri = ContentUris.withAppendedId(CONTENT_DIARY_URI, rowId);
-
-					// Notifies observers registered against this provider that the data changed.
 					getContext().getContentResolver().notifyChange(resultUri, null);
 					return resultUri;
 				}
@@ -191,20 +231,9 @@ public class DiaryContentProvider extends ContentProvider
 		switch (sURIMatcher.match(uri))
 		{
 			case CODE_DIARY:
+				SQLiteDatabase db = openHelper.getReadableDatabase();
 				qb.setTables(TABLE_DIARY);
-				// String orderBy = COLUMN_DIARY_ID + " ASC";
-				db = openHelper.getReadableDatabase();
-
-				Cursor cursor = qb.query(db, // The database to query
-						projection, // The columns to return from the query
-						selection, // The columns for the where clause
-						selectionArgs, // The values for the where clause
-						null, // don't group the rows
-						null, // don't filter by row groups
-						sortOrder // The sort order
-						);
-
-				// Tells the Cursor what URI to watch, so it knows when its source data changes
+				Cursor cursor = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
 				cursor.setNotificationUri(getContext().getContentResolver(), uri);
 				return cursor;
 
@@ -217,80 +246,67 @@ public class DiaryContentProvider extends ContentProvider
 	public int update(Uri uri, ContentValues values, String where, String[] whereArgs)
 	{
 		SQLiteDatabase db = openHelper.getWritableDatabase();
-		int count;
+		int affectedCount;
 
 		switch (sURIMatcher.match(uri))
 		{
 			case CODE_DIARY:
-				count = db.update(TABLE_DIARY, // The database table name.
-						values, // A map of column names and new values to use.
-						where, // The where clause column names.
-						whereArgs // The where clause column values to select on.
-						);
-				break;
+				affectedCount = db.update(TABLE_DIARY, values, where, whereArgs);
+				getContext().getContentResolver().notifyChange(uri, null);
+				return affectedCount;
 
 			default:
 				throw new UnknownUriException(uri);
 		}
-
-		/*
-		 * Gets a handle to the content resolver object for the current context, and notifies it
-		 * that the incoming URI changed. The object passes this along to the resolver framework,
-		 * and observers that have registered themselves for the provider are notified.
-		 */
-		getContext().getContentResolver().notifyChange(uri, null);
-
-		// Returns the number of rows updated.
-		return count;
 	}
 
 	@Override
 	public int delete(final Uri uri, String where, String[] whereArgs)
 	{
-		SQLiteDatabase db = openHelper.getWritableDatabase();
-		int count;
+		// Deleting is disabled right now
+		// TODO: mark as removed instead
+		return 0;
 
-		switch (sURIMatcher.match(uri))
-		{
-			case CODE_DIARY:
-				// от греха подальше...
-				if ((where != null) && (!where.equals("")))
-				{
-					// Log.d(TAG,"delete(): URI is correct (whole diary, checking WHERE clause...)");
-					count = db.delete(TABLE_DIARY, where, whereArgs);
-					// Log.d(TAG,"delete(): done");
-				}
-				else
-				{
-					throw new IllegalArgumentException("Empty WHERE clause, this will destroy all database; denied");
-				}
-				break;
-
-			// case CODE_DIARY_ITEM:
-			// String finalWhere = COLUMN_DIARY_ID + " = " + uri.getLastPathSegment();
-			//
-			// if ((where != null) && (!where.equals("")))
-			// {
-			// finalWhere = finalWhere + " AND " + where;
-			// }
-			//
-			// count = db.delete(TABLE_DIARY, // The database table name.
-			// finalWhere, // The final WHERE clause
-			// whereArgs // The incoming where clause values.
-			// );
-			// break;
-
-			default:
-				throw new UnknownUriException(uri);
-		}
-
-		/*
-		 * Gets a handle to the content resolver object for the current context, and notifies it
-		 * that the incoming URI changed. The object passes this along to the resolver framework,
-		 * and observers that have registered themselves for the provider are notified.
-		 */
-		getContext().getContentResolver().notifyChange(uri, null);
-
-		return count;
+		// SQLiteDatabase db = openHelper.getWritableDatabase();
+		// int count;
+		//
+		// switch (sURIMatcher.match(uri))
+		// {
+		// case CODE_DIARY:
+		// // от греха подальше...
+		// if ((where != null) && (!where.equals("")))
+		// {
+		// // Log.d(TAG,"delete(): URI is correct (whole diary, checking WHERE clause...)");
+		// count = db.delete(TABLE_DIARY, where, whereArgs);
+		// // Log.d(TAG,"delete(): done");
+		// }
+		// else
+		// {
+		// throw new
+		// IllegalArgumentException("Empty WHERE clause, this will destroy all database; denied");
+		// }
+		// break;
+		//
+		// // case CODE_DIARY_ITEM:
+		// // String finalWhere = COLUMN_DIARY_ID + " = " + uri.getLastPathSegment();
+		// //
+		// // if ((where != null) && (!where.equals("")))
+		// // {
+		// // finalWhere = finalWhere + " AND " + where;
+		// // }
+		// //
+		// // count = db.delete(TABLE_DIARY, // The database table name.
+		// // finalWhere, // The final WHERE clause
+		// // whereArgs // The incoming where clause values.
+		// // );
+		// // break;
+		//
+		// default:
+		// throw new UnknownUriException(uri);
+		// }
+		//
+		// getContext().getContentResolver().notifyChange(uri, null);
+		//
+		// return count;
 	}
 }

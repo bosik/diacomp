@@ -19,8 +19,6 @@ import android.database.Cursor;
 
 public class LocalDiaryDAO implements DiaryDAO
 {
-	/* ============================ КОНСТАНТЫ ============================ */
-
 	// private static final String TAG = LocalDiaryDAO.class.getSimpleName();
 
 	/* ============================ ПОЛЯ ============================ */
