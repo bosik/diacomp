@@ -152,19 +152,7 @@ public class MemoryBase<T extends UniqueNamed>
 		}
 	}
 
-	public void remove(int index)
-	{
-		items.remove(index);
-		changed();
-	}
-
-	public void remove(T item)
-	{
-		items.remove(item);
-		changed();
-	}
-
-	public void remove(String id)
+	public void remove(String id) throws ItemNotFoundException
 	{
 		for (Iterator<T> iterator = items.iterator(); iterator.hasNext();)
 		{
@@ -196,7 +184,7 @@ public class MemoryBase<T extends UniqueNamed>
 		}
 	}
 
-	public void update(T item)
+	public void update(T item) throws ItemNotFoundException
 	{
 		// comparison performed by id, because equals() method is overridden
 		try
