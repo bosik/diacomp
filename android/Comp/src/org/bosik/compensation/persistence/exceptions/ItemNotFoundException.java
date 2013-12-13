@@ -1,6 +1,6 @@
 package org.bosik.compensation.persistence.exceptions;
 
-public class ItemNotFoundException extends RuntimeException
+public class ItemNotFoundException extends CommonDAOException
 {
 	private static final long	serialVersionUID	= 1L;
 
