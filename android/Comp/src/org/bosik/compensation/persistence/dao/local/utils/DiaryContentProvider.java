@@ -14,9 +14,7 @@ import android.net.Uri;
 
 public class DiaryContentProvider extends ContentProvider
 {
-	// отладочная печать
-	@SuppressWarnings("unused")
-	private static final String		TAG							= DiaryContentProvider.class.getSimpleName();
+	// private static final String TAG = DiaryContentProvider.class.getSimpleName();
 
 	// база SQL
 	private static final String		TABLE_NAME_DIARY			= "diary";
@@ -27,13 +25,13 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		COLUMN_PAGE					= "Page";
 
 	// константы провайдера (для доступа извне)
-	public static final String		SCHEME						= "content://";
-	public static final String		AUTH						= "diacomp.provider";
-	public static final Uri			SHORT_URI					= Uri.parse(AUTH + "/" + TABLE_NAME_DIARY + "/");
+	private static final String		AUTH						= "diacomp.provider";
+	private static final String		SCHEME						= "content://";
+	// public static final Uri SHORT_URI = Uri.parse(AUTH + "/" + TABLE_NAME_DIARY + "/");
 	public static final String		CONTENT_STRING				= SCHEME + AUTH + "/" + TABLE_NAME_DIARY + "/";
 	public static final Uri			CONTENT_URI					= Uri.parse(CONTENT_STRING);
 
-	// внутренние параметры
+	// Database params
 	private static final String		DATABASE_NAME				= "Diary.db";
 	private static final int		DATABASE_VERSION			= 1;
 
@@ -76,12 +74,17 @@ public class DiaryContentProvider extends ContentProvider
 		@Override
 		public void onCreate(SQLiteDatabase db)
 		{
-			// Log.i(TAG, "MyDBHelper.onCreate()");
+			// @formatter:off
 			// db.execSQL("DROP TABLE " + TABLE_NAME_DIARY);
-			db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME_DIARY + " (" + COLUMN_ID
-					+ " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_DATE + " TEXT NOT NULL UNIQUE, "
-					+ COLUMN_TIMESTAMP + " TEXT, " + COLUMN_VERSION + " INTEGER, " + COLUMN_PAGE + " BLOB)");
-			// Log.d(TAG, "MyDBHelper.onCreate(): table '" + TABLE_NAME_DIARY + "' created OK");
+			final String SQL_CREATE_DIARY = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s)",
+					TABLE_NAME_DIARY,
+					COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT",
+					COLUMN_DATE + " TEXT NOT NULL UNIQUE",
+					COLUMN_TIMESTAMP + " TEXT",
+					COLUMN_VERSION + " INTEGER",
+					COLUMN_PAGE + " BLOB");
+			db.execSQL(SQL_CREATE_DIARY);
+			// @formatter:on
 		}
 
 		@Override
