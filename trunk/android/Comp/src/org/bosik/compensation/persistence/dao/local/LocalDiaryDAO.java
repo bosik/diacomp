@@ -21,13 +21,9 @@ public class LocalDiaryDAO implements DiaryDAO
 
 	// private static final String TAG = LocalDiaryDAO.class.getSimpleName();
 
-	public static final int	AUTO_CHECK	= 0;
-	public static final int	SURE_INSERT	= 1;
-	public static final int	SURE_UPDATE	= 2;
-
 	/* ============================ ПОЛЯ ============================ */
 
-	private ContentResolver	aResolver;
+	private ContentResolver	resolver;
 
 	/* ======================= ВНУТРЕННИЕ МЕТОДЫ ========================= */
 
@@ -54,7 +50,7 @@ public class LocalDiaryDAO implements DiaryDAO
 		String mSortOrder = null;
 
 		// выполняем запрос
-		Cursor cursor = aResolver.query(DiaryContentProvider.CONTENT_DIARY_URI, mProj, mSelectionClause, mSelectionArgs,
+		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, mProj, mSelectionClause, mSelectionArgs,
 				mSortOrder);
 
 		// анализируем ответ
@@ -105,62 +101,6 @@ public class LocalDiaryDAO implements DiaryDAO
 		}
 	}
 
-	/**
-	 * Отправляет страницу дневника в базу (<i>небезопасная версия для оптимизации</i>)
-	 * 
-	 * @param diaryPage
-	 *            Отправляемая страница
-	 * @param CheckMode
-	 *            Режим проверки: <br/>
-	 *            <i>AUTO_CHECK</i> — Автоматический выбор insert() или update()<br/>
-	 *            <i>SURE_INSERT</i> — Добавление без предварительной проверки <br/>
-	 *            <i>SURE_UPDATE</i> — Обновление без предварительной проверки
-	 */
-	private void postPageExt(DiaryPage diaryPage, int CheckMode)
-	{
-		// Log.i(TAG, "PostPage()");
-
-		String code = DiaryPagePlainSerializer.writeContent(diaryPage);
-		// Log.v(TAG, "PostPage(): date is " + diaryPage.getDate().toString());
-		// Log.v(TAG,"PostPage(): page is " + code);
-
-		boolean exists;
-
-		switch (CheckMode)
-		{
-			case SURE_UPDATE:
-				exists = true;
-				break;
-			case SURE_INSERT:
-				exists = false;
-				break;
-			case AUTO_CHECK:
-				exists = (findPage(diaryPage.getDate()) != null);
-				break;
-			default:
-				throw new IllegalArgumentException("Incorrect CheckMode value (" + CheckMode + ")");
-		}
-
-		ContentValues mNewValues = new ContentValues();
-
-		mNewValues.put(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(diaryPage.getTimeStamp()));
-		mNewValues.put(DiaryContentProvider.COLUMN_DIARY_VERSION, diaryPage.getVersion());
-		mNewValues.put(DiaryContentProvider.COLUMN_DIARY_PAGE, code);
-
-		if (exists)
-		{
-			// Log.d(TAG, "PostPage(): page exists, updating...");
-			aResolver.update(DiaryContentProvider.CONTENT_DIARY_URI, mNewValues, "Date = ?",
-					new String[] { Utils.formatDate(diaryPage.getDate()) });
-		}
-		else
-		{
-			// Log.d(TAG, "PostPage(): page doesn't exist, inserting...");
-			mNewValues.put(DiaryContentProvider.COLUMN_DIARY_DATE, Utils.formatDate(diaryPage.getDate()));
-			aResolver.insert(DiaryContentProvider.CONTENT_DIARY_URI, mNewValues);
-		}
-	}
-
 	/* ============================ ВНЕШНИЕ МЕТОДЫ ============================ */
 
 	/**
@@ -176,7 +116,7 @@ public class LocalDiaryDAO implements DiaryDAO
 		{
 			throw new NullPointerException("Content Resolver can't be null");
 		}
-		aResolver = resolver;
+		this.resolver = resolver;
 	}
 
 	// -------------------- API --------------------
@@ -191,7 +131,7 @@ public class LocalDiaryDAO implements DiaryDAO
 		String mSortOrder = null;
 
 		// выполняем запрос
-		Cursor mCursor = aResolver.query(DiaryContentProvider.CONTENT_DIARY_URI, mProjection, mSelectionClause,
+		Cursor mCursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, mProjection, mSelectionClause,
 				mSelectionArgs, mSortOrder);
 
 		if (mCursor != null)
@@ -265,11 +205,24 @@ public class LocalDiaryDAO implements DiaryDAO
 	@Override
 	public boolean postPage(DiaryPage diaryPage)
 	{
-		/**
-		 * Аналог postPageExt(page, AUTO_CHECK). Предварительно выполняется проверка и в зависимости
-		 * от наличия записи в БД выполняется insert() или update()
-		 */
-		postPageExt(diaryPage, AUTO_CHECK);
+		String code = DiaryPagePlainSerializer.writeContent(diaryPage);
+		boolean exists = (findPage(diaryPage.getDate()) != null);
+
+		ContentValues newValues = new ContentValues();
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_DATE, Utils.formatDate(diaryPage.getDate()));
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(diaryPage.getTimeStamp()));
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_VERSION, diaryPage.getVersion());
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_PAGE, code);
+
+		if (exists)
+		{
+			String[] args = new String[] { Utils.formatDate(diaryPage.getDate()) };
+			resolver.update(DiaryContentProvider.CONTENT_DIARY_URI, newValues, "Date = ?", args);
+		}
+		else
+		{
+			resolver.insert(DiaryContentProvider.CONTENT_DIARY_URI, newValues);
+		}
 		return true;
 	}
 }
