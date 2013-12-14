@@ -15,7 +15,7 @@ public class DiaryPage
 {
 	private static final String		TAG			= DiaryPage.class.getSimpleName();
 
-	// TODO: тестировать
+	// TODO: test
 
 	// ===================================== ПОЛЯ =====================================
 
@@ -24,7 +24,7 @@ public class DiaryPage
 	private int						version		= 0;
 	private final List<DiaryRecord>	items		= new ArrayList<DiaryRecord>();
 
-	public boolean					silentMode	= false;
+	private transient boolean		silentMode	= false;
 
 	// ============================== ВНУТРЕННИЕ МЕТОДЫ ==============================
 
@@ -156,6 +156,16 @@ public class DiaryPage
 		this.version = version;
 	}
 
+	public boolean getSilentMode()
+	{
+		return silentMode;
+	}
+
+	public void setSilentMode(boolean silentMode)
+	{
+		this.silentMode = silentMode;
+	}
+
 	// -------- РАБОТА С ЗАПИСЯМИ --------
 
 	/**
@@ -267,14 +277,8 @@ public class DiaryPage
 		int index = getIndexById(rec.getId());
 		if (index > -1)
 		{
-			// try
-			// {
 			items.set(index, rec.clone());
-			// }
-			// catch (CloneNotSupportedException e)
-			// {
-			// throw new RuntimeException(e);
-			// }
+			changed();
 		}
 		else
 		{
