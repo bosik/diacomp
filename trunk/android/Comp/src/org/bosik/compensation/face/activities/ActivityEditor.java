@@ -14,28 +14,35 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 
 	protected T					entity;
 
-	/* =========================== АБСТРАКТНЫЕ МЕТОДЫ ================================ */
+	/* =========================== UTIL METHODS ================================ */
 
 	/**
-	 * Get data from Intent
+	 * Read entity from Intent
 	 * 
 	 * @param intent
 	 */
 	@SuppressWarnings("unchecked")
-	private void readValues(Intent intent)
+	private void readEntity(Intent intent)
 	{
 		entity = (T) intent.getExtras().getSerializable(FIELD_ENTITY);
 	}
 
 	/**
-	 * Write data to Intent
+	 * Write entity to Intent
 	 * 
 	 * @param intent
 	 */
-	private void writeValues(Intent intent)
+	private void writeEntity(Intent intent)
 	{
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
 	}
+
+	/* =========================== ABSTRACT METHODS ================================ */
+
+	/**
+	 * The subject
+	 */
+	protected abstract void setupInterface();
 
 	/**
 	 * Show data in GUI
@@ -45,37 +52,20 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 	/**
 	 * Read and validate data from GUI
 	 * 
-	 * @return
+	 * @return True if validation succeed, false otherwise
 	 */
 	protected abstract boolean getValuesFromGUI();
 
-	/**
-	 * Поиск всех необходимых компонентов. В нём необходимо реализовать:<br/>
-	 * * установку макета (setContentView())<br/>
-	 * * определение всех необходимых компонентов<br/>
-	 */
-	protected abstract void setupInterface();
-
-	/* =========================== РЕАЛИЗОВАННЫЕ МЕТОДЫ ================================ */
+	/* =========================== MAIN METHODS ================================ */
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		// Utils.logTimer(TAG, "Editor started");
-
-		// настраиваем интерфейс
 		setupInterface();
-		// Utils.logTimer(TAG, "setupInterface()");
-		// Utils.logTimer(TAG, "setClickListener");
-
-		// получаем данные и выводим их в компоненты
-		readValues(getIntent());
-		// Utils.logTimer(TAG, "readValues");
-
+		readEntity(getIntent());
 		boolean createMode = getIntent().getBooleanExtra(FIELD_MODE, true);
 		showValuesInGUI(createMode);
-		// Utils.logTimer(TAG, "setValues");
 	}
 
 	protected void submit()
@@ -83,7 +73,7 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 		if (getValuesFromGUI())
 		{
 			Intent intent = getIntent();
-			writeValues(intent);
+			writeEntity(intent);
 			setResult(RESULT_OK, intent);
 			finish();
 		}
