@@ -42,7 +42,7 @@ public class ActivityFoodbase extends Activity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_foodbase);
+		setContentView(R.layout.picker_foodbase);
 
 		// Widgets binding
 		editFoodSearch = (EditText) findViewById(R.id.editFoodSearch);
