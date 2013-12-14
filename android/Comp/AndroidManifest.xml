@@ -39,7 +39,8 @@
         </activity>
         <activity
             android:name="org.bosik.compensation.face.activities.ActivityEditorBlood"
-            android:label="@string/editor_blood_title" >
+            android:label="@string/editor_blood_title"
+            android:theme="@android:style/Theme.Light" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.bosik.compensation.face.activities.ActivityDiary" />
@@ -47,7 +48,8 @@
         <activity
             android:name="org.bosik.compensation.face.activities.ActivityEditorIns"
             android:label="@string/title_activity_activity_editor_ins"
-            android:parentActivityName="org.bosik.compensation.face.activities.ActivityDiary" >
+            android:parentActivityName="org.bosik.compensation.face.activities.ActivityDiary"
+            android:theme="@android:style/Theme.Light" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.bosik.compensation.face.activities.ActivityDiary" />
@@ -62,7 +64,8 @@
         </activity>
         <activity
             android:name="org.bosik.compensation.face.activities.ActivityEditorNote"
-            android:label="@string/editor_note_title" >
+            android:label="@string/editor_note_title"
+            android:theme="@android:style/Theme.Light" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.bosik.compensation.face.activities.ActivityDiary" />
