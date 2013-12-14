@@ -30,7 +30,7 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 	 */
 	public static boolean readContent(final String contentCode, DiaryPage page)
 	{
-		Log.i(TAG, "readContent(), silentMode before IS " + page.silentMode);
+		Log.i(TAG, "readContent(), silentMode before IS " + page.getSilentMode());
 		page.clear();
 
 		if (null == contentCode)
@@ -45,8 +45,8 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 		boolean result = true;
 		String[] lines = contentCode.split("\n");
 		MealRecord activeMeal = null;
-		boolean oldSilentMode = page.silentMode;
-		page.silentMode = true;
+		// boolean oldSilentMode = page.silentMode;
+		page.setSilentMode(true);
 
 		// Note: every lines[i] ends with \n symbol
 		for (int i = 0; i < lines.length; i++)
@@ -144,8 +144,8 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 			}
 		}
 
-		page.silentMode = oldSilentMode;
-		Log.i(TAG, "readContent(), silentMode after IS " + page.silentMode);
+		page.setSilentMode(false);// oldSilentMode;
+		Log.i(TAG, "readContent(), silentMode after IS " + page.getSilentMode());
 		return result;
 	}
 
