@@ -90,7 +90,7 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 	public void update(T item) throws ItemNotFoundException
 	{
 		base.update(item);
-		// save(); // FIXME: DEBUG ONLY
+		save();
 	}
 
 	@Override
