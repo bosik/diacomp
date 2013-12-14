@@ -158,11 +158,11 @@ public class DiaryContentProvider extends ContentProvider
 		return true;
 	}
 
-	private void checkValues(ContentValues values, String key, String errorMsg)
+	private void checkValues(ContentValues values, String key)
 	{
 		if (!values.containsKey(key))
 		{
-			throw new IllegalArgumentException(errorMsg);
+			throw new IllegalArgumentException(String.format("Field '%s' must be specified", key));
 		}
 	}
 
@@ -186,17 +186,39 @@ public class DiaryContentProvider extends ContentProvider
 		{
 			case CODE_DIARY:
 			{
-				checkValues(values, COLUMN_DIARY_DATE, "No date specified");
-				checkValues(values, COLUMN_DIARY_TIMESTAMP, "No timestamp specified");
-				checkValues(values, COLUMN_DIARY_VERSION, "No version specified");
-				checkValues(values, COLUMN_DIARY_PAGE, "No page specified");
+				checkValues(values, COLUMN_DIARY_DATE);
+				checkValues(values, COLUMN_DIARY_TIMESTAMP);
+				checkValues(values, COLUMN_DIARY_VERSION);
+				checkValues(values, COLUMN_DIARY_PAGE);
 
 				SQLiteDatabase db = openHelper.getWritableDatabase();
-				long rowId = db.insert(TABLE_DIARY, COLUMN_DIARY_PAGE, values);
+				long rowId = db.insert(TABLE_DIARY, null, values);
 
 				if (rowId > 0)
 				{
 					Uri resultUri = ContentUris.withAppendedId(CONTENT_DIARY_URI, rowId);
+					getContext().getContentResolver().notifyChange(resultUri, null);
+					return resultUri;
+				}
+				else
+				{
+					throw new SQLException("Failed to insert row into " + uri);
+				}
+			}
+
+			case CODE_FOODBASE:
+			{
+				checkValues(values, COLUMN_FOODBASE_GUID);
+				checkValues(values, COLUMN_FOODBASE_TIMESTAMP);
+				checkValues(values, COLUMN_FOODBASE_VERSION);
+				checkValues(values, COLUMN_FOODBASE_DATA);
+
+				SQLiteDatabase db = openHelper.getWritableDatabase();
+				long rowId = db.insert(TABLE_FOODBASE, null, values);
+
+				if (rowId > 0)
+				{
+					Uri resultUri = ContentUris.withAppendedId(CONTENT_FOODBASE_URI, rowId);
 					getContext().getContentResolver().notifyChange(resultUri, null);
 					return resultUri;
 				}
