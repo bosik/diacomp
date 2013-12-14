@@ -8,6 +8,7 @@ import org.bosik.compensation.face.R;
 import org.bosik.compensation.persistence.Storage;
 import org.bosik.compensation.services.Sorter;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -25,6 +26,8 @@ import android.widget.TextView;
 public class ActivityFoodbase extends Activity
 {
 	// private static final String TAG = ActivityFoodbase.class.getSimpleName();
+
+	public static final String		FIELD_GUID	= "bosik.pack.guid";
 
 	// Widgets
 	private EditText				editFoodSearch;
@@ -143,9 +146,10 @@ public class ActivityFoodbase extends Activity
 		listFood.setOnItemClickListener(new OnItemClickListener()
 		{
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3)
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				// TODO: handle
+				RelativeTagged item = data.get(position);
+				returnResult(item.getId());
 			}
 		});
 	}
@@ -157,5 +161,13 @@ public class ActivityFoodbase extends Activity
 		// fmt = fmt.replaceAll(" / ", "\t\t");
 		// fmt = fmt + "\t\tTAG=" + item.getTag();
 		return fmt;
+	}
+
+	private void returnResult(String guid)
+	{
+		Intent intent = getIntent();
+		intent.putExtra(FIELD_GUID, guid);
+		setResult(RESULT_OK, intent);
+		finish();
 	}
 }
