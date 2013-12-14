@@ -6,6 +6,11 @@ public class InsRecord extends DiaryRecord
 
 	private double				value;
 
+	public InsRecord()
+	{
+
+	}
+
 	public InsRecord(int time, double value)
 	{
 		setTime(time);

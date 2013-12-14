@@ -81,4 +81,7 @@
         <item>БП</item>
     </string-array>
 
+    <string name="title_activity_activity_editor_ins">ActivityEditorIns</string>
+    <string name="hello_world">Hello world!</string>
+
 </resources>

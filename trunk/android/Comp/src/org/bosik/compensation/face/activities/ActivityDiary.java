@@ -34,10 +34,12 @@ import android.widget.Button;
 public class ActivityDiary extends Activity implements RecordClickListener, OnClickListener
 {
 	// КОНСТАНТЫ
-	private static final int		DIALOG_BLOOD_CREATE	= 1;
-	private static final int		DIALOG_BLOOD_MODIFY	= 2;
-	private static final int		DIALOG_NOTE_CREATE	= 3;
-	private static final int		DIALOG_NOTE_MODIFY	= 4;
+	private static final int		DIALOG_BLOOD_CREATE	= 11;
+	private static final int		DIALOG_BLOOD_MODIFY	= 12;
+	private static final int		DIALOG_INS_CREATE	= 21;
+	private static final int		DIALOG_INS_MODIFY	= 22;
+	private static final int		DIALOG_NOTE_CREATE	= 41;
+	private static final int		DIALOG_NOTE_MODIFY	= 42;
 
 	private static final int		CONTEXT_ITEM_EDIT	= 0;
 	private static final int		CONTEXT_ITEM_REMOVE	= 1;
@@ -179,6 +181,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
+		// FIXME: ########################### UNUSED ##############################
+
 		try
 		{
 			switch (item.getItemId())
@@ -190,8 +194,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				}
 				case R.id.item_diary_addins:
 				{
-					// TODO: handler
-					UIUtils.showTip(this, "Creating ins is not implemented yet");
+					showInsEditor(null, true);
 					return true;
 				}
 				case R.id.item_diary_addmeal:
@@ -389,9 +392,15 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					showBloodEditor(null, true);
 					break;
 				}
+
+				case R.id.buttonAddIns:
+				{
+					showInsEditor(null, true);
+					break;
+				}
+
 				case R.id.buttonAddMeal:
 				{
-					// showNoteEditor(0, "", true);
 					showMealEditor();
 					break;
 				}
@@ -570,6 +579,21 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
 
 		startActivityForResult(intent, createMode ? DIALOG_BLOOD_CREATE : DIALOG_BLOOD_MODIFY);
+	}
+
+	private void showInsEditor(InsRecord entity, boolean createMode)
+	{
+		if (createMode)
+		{
+			entity = new InsRecord();
+			entity.setTime(Utils.curMinutes());
+		}
+
+		Intent intent = new Intent(this, ActivityEditorIns.class);
+		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
+		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
+
+		startActivityForResult(intent, createMode ? DIALOG_INS_CREATE : DIALOG_INS_MODIFY);
 	}
 
 	private void showMealEditor()
