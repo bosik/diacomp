@@ -21,12 +21,12 @@ public class DiaryContentProvider extends ContentProvider
 	private static final UriMatcher	sURIMatcher;
 
 	// Database
-	private static final String		DATABASE_NAME				= "Diary.db";
+	private static final String		DATABASE_NAME				= "Comp.db";
 	private static final int		DATABASE_VERSION			= 1;
 	private static final String		SCHEME						= "content://";
 	private static final String		AUTH						= "diacomp.provider";
 
-	// Diary table
+	// ======================================= Diary table =======================================
 
 	private static final String		TABLE_DIARY					= "diary";
 	private static final String		COLUMN_DIARY_ID				= "_ID";
@@ -40,10 +40,10 @@ public class DiaryContentProvider extends ContentProvider
 
 	private static final int		CODE_DIARY					= 1;
 
-	// Foodbase table
+	// ===================================== Foodbase table =====================================
 
 	private static final String		TABLE_FOODBASE				= "foodbase";
-	private static final String		COLUMN_FOODBASE_ID			= "GUID";
+	public static final String		COLUMN_FOODBASE_GUID		= "GUID";
 	public static final String		COLUMN_FOODBASE_TIMESTAMP	= "TimeStamp";
 	public static final String		COLUMN_FOODBASE_VERSION		= "Version";
 	public static final String		COLUMN_FOODBASE_DATA		= "Data";
@@ -53,10 +53,10 @@ public class DiaryContentProvider extends ContentProvider
 
 	private static final int		CODE_FOODBASE				= 2;
 
-	// Dishbase table
+	// ===================================== Dishbase table =====================================
 
 	private static final String		TABLE_DISHBASE				= "dishbase";
-	private static final String		COLUMN_DISHBASE_ID			= "GUID";
+	public static final String		COLUMN_DISHBASE_GUID		= "GUID";
 	public static final String		COLUMN_DISHBASE_TIMESTAMP	= "TimeStamp";
 	public static final String		COLUMN_DISHBASE_VERSION		= "Version";
 	public static final String		COLUMN_DISHBASE_DATA		= "Data";
@@ -65,12 +65,6 @@ public class DiaryContentProvider extends ContentProvider
 	public static final Uri			CONTENT_DISHBASE_URI		= Uri.parse(CONTENT_DISHBASE_STRING);
 
 	private static final int		CODE_DISHBASE				= 3;
-
-	// private static final int CODE_DIARY_ITEM = 2;
-	// private static final int CODE_DIARY_ITEM_DATE = 21;
-	// private static final int CODE_DIARY_ITEM_TIMESTAMP = 22;
-	// private static final int CODE_DIARY_ITEM_VERSION = 23;
-	// private static final int CODE_DIARY_ITEM_PAGE = 24;
 
 	static
 	{
@@ -116,7 +110,7 @@ public class DiaryContentProvider extends ContentProvider
 			// foodbase table			
 			final String SQL_CREATE_FOODBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s)",
 					TABLE_FOODBASE,
-					COLUMN_FOODBASE_ID + " TEXT PRIMARY KEY",
+					COLUMN_FOODBASE_GUID + " TEXT PRIMARY KEY",
 					COLUMN_FOODBASE_TIMESTAMP + " TEXT",
 					COLUMN_FOODBASE_VERSION + " INTEGER",
 					COLUMN_FOODBASE_DATA + " TEXT");
@@ -125,7 +119,7 @@ public class DiaryContentProvider extends ContentProvider
 			// dishbase table
 			final String SQL_CREATE_DISHBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s)",
 					TABLE_DISHBASE,
-					COLUMN_DISHBASE_ID + " TEXT PRIMARY KEY",
+					COLUMN_DISHBASE_GUID + " TEXT PRIMARY KEY",
 					COLUMN_DISHBASE_TIMESTAMP + " TEXT",
 					COLUMN_DISHBASE_VERSION + " INTEGER",
 					COLUMN_DISHBASE_DATA + " TEXT");
@@ -154,7 +148,7 @@ public class DiaryContentProvider extends ContentProvider
 	public String getType(Uri uri)
 	{
 		// TODO: заглушка
-		return "DiaryDataType";
+		return "vnd.android.cursor.item.place_type_here";
 	}
 
 	@Override
@@ -164,44 +158,38 @@ public class DiaryContentProvider extends ContentProvider
 		return true;
 	}
 
+	private void checkValues(ContentValues values, String key, String errorMsg)
+	{
+		if (!values.containsKey(key))
+		{
+			throw new IllegalArgumentException(errorMsg);
+		}
+	}
+
+	private void checkNull(Object x, String errorMsg)
+	{
+		if (null == x)
+		{
+			throw new NullPointerException(errorMsg);
+		}
+	}
+
 	// =================================== CRUD ===================================
 
 	@Override
 	public Uri insert(final Uri uri, final ContentValues values)
 	{
-		if (null == uri)
-		{
-			throw new NullPointerException("URI is null");
-		}
-
-		if (null == values)
-		{
-			throw new NullPointerException("Values are null");
-		}
+		checkNull(uri, "URI is null");
+		checkNull(values, "Values are null");
 
 		switch (sURIMatcher.match(uri))
 		{
 			case CODE_DIARY:
 			{
-				if (!values.containsKey(COLUMN_DIARY_DATE))
-				{
-					throw new IllegalArgumentException("No date specified");
-				}
-
-				if (!values.containsKey(COLUMN_DIARY_TIMESTAMP))
-				{
-					throw new IllegalArgumentException("No timestamp specified");
-				}
-
-				if (!values.containsKey(COLUMN_DIARY_VERSION))
-				{
-					throw new IllegalArgumentException("No version specified");
-				}
-
-				if (!values.containsKey(COLUMN_DIARY_PAGE))
-				{
-					throw new IllegalArgumentException("No page specified");
-				}
+				checkValues(values, COLUMN_DIARY_DATE, "No date specified");
+				checkValues(values, COLUMN_DIARY_TIMESTAMP, "No timestamp specified");
+				checkValues(values, COLUMN_DIARY_VERSION, "No version specified");
+				checkValues(values, COLUMN_DIARY_PAGE, "No page specified");
 
 				SQLiteDatabase db = openHelper.getWritableDatabase();
 				long rowId = db.insert(TABLE_DIARY, COLUMN_DIARY_PAGE, values);
