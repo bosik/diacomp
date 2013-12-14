@@ -223,7 +223,7 @@ public class WebClient
 		}
 		catch (IOException e)
 		{
-			throw new ConnectionException(e);
+			throw new ConnectionException("Failed to request " + url, e);
 		}
 	}
 
@@ -258,7 +258,7 @@ public class WebClient
 		}
 		catch (IOException e)
 		{
-			throw new ConnectionException(e);
+			throw new ConnectionException("Failed to request " + url, e);
 		}
 	}
 
