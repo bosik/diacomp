@@ -314,8 +314,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					case CONTEXT_ITEM_EDIT:
 					{
-						// TODO: implement
-						UIUtils.showTip(this, "Editing ins is not implemented yet");
+						InsRecord temp = (InsRecord) rec;
+						showInsEditor(temp, false);
 						return true;
 					}
 					default:
@@ -430,6 +430,10 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			{
 				showBloodEditor((BloodRecord) rec, false);
 			}
+			else if (rec.getClass() == InsRecord.class)
+			{
+				showInsEditor((InsRecord) rec, false);
+			}
 			else if (rec.getClass() == NoteRecord.class)
 			{
 				showNoteEditor((NoteRecord) rec, false);
@@ -474,6 +478,28 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					if (resultCode == RESULT_OK)
 					{
 						BloodRecord rec = (BloodRecord) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
+						curPage.update(rec);
+						postPage(curPage);
+					}
+					break;
+				}
+
+				case DIALOG_INS_CREATE:
+				{
+					if (resultCode == RESULT_OK)
+					{
+						InsRecord rec = (InsRecord) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
+						curPage.add(rec);
+						postPage(curPage);
+					}
+					break;
+				}
+
+				case DIALOG_INS_MODIFY:
+				{
+					if (resultCode == RESULT_OK)
+					{
+						InsRecord rec = (InsRecord) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
 						curPage.update(rec);
 						postPage(curPage);
 					}
