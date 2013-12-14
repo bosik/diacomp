@@ -39,6 +39,9 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	private static final int		DIALOG_NOTE_CREATE	= 3;
 	private static final int		DIALOG_NOTE_MODIFY	= 4;
 
+	private static final int		CONTEXT_ITEM_EDIT	= 0;
+	private static final int		CONTEXT_ITEM_REMOVE	= 1;
+
 	// --- отладочная печать ---
 	private static final String		TAG					= ActivityDiary.class.getSimpleName();
 	// THINK: что произойдёт на смене дат?
@@ -132,35 +135,38 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					return;
 				}
 
-				String capt = "Unsupported type";
 				DiaryRecord rec = curPage.get(DiaryView.getDownedIndex());
 				Class<? extends DiaryRecord> c = rec.getClass();
+
 				if (c == BloodRecord.class)
 				{
-					capt = getString(R.string.common_rectype_blood);
+					menu.setHeaderTitle(getString(R.string.common_rectype_blood));
+					menu.add(Menu.NONE, CONTEXT_ITEM_EDIT, 0, getString(R.string.diary_context_common_edit));
+					menu.add(Menu.NONE, CONTEXT_ITEM_REMOVE, 1, getString(R.string.diary_context_common_remove));
 				}
 				else if (c == InsRecord.class)
 				{
-					capt = getString(R.string.common_rectype_ins);
+					menu.setHeaderTitle(getString(R.string.common_rectype_ins));
+					menu.add(Menu.NONE, CONTEXT_ITEM_EDIT, 0, getString(R.string.diary_context_common_edit));
+					menu.add(Menu.NONE, CONTEXT_ITEM_REMOVE, 1, getString(R.string.diary_context_common_remove));
 				}
 				else if (c == MealRecord.class)
 				{
-					capt = getString(R.string.common_rectype_meal);
+					menu.setHeaderTitle(getString(R.string.common_rectype_meal));
+					menu.add(Menu.NONE, CONTEXT_ITEM_EDIT, 0, getString(R.string.diary_context_common_edit));
+					menu.add(Menu.NONE, CONTEXT_ITEM_REMOVE, 1, getString(R.string.diary_context_common_remove));
 				}
 				else if (c == NoteRecord.class)
 				{
-					capt = getString(R.string.common_rectype_note);
+					menu.setHeaderTitle(getString(R.string.common_rectype_note));
+					menu.add(Menu.NONE, CONTEXT_ITEM_EDIT, 0, getString(R.string.diary_context_common_edit));
+					menu.add(Menu.NONE, CONTEXT_ITEM_REMOVE, 1, getString(R.string.diary_context_common_remove));
 				}
-
-				menu.setHeaderTitle(capt);
-				String[] menuItems = getResources().getStringArray(R.array.context_edit);
-				for (int i = 0; i < menuItems.length; i++)
+				else
 				{
-					menu.add(Menu.NONE, i, i, menuItems[i]);
+					// TODO: localize
+					UIUtils.showTip(this, "Unsupported record type");
 				}
-
-				// menu.getItem(0).setCheckable(true);
-				// menu.getItem(0).setChecked(true);
 			}
 		}
 		catch (Exception e)
@@ -255,46 +261,44 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	{
 		try
 		{
-			/*
-			 * AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo(); int
-			 * menuItemIndex = item.getItemId(); String[] menuItems =
-			 * getResources().getStringArray(R.array.context_edit); String menuItemName =
-			 * menuItems[menuItemIndex];
-			 */
+			final int ind = DiaryView.getDownedIndex();
 
-			if ((DiaryView.getDownedIndex() < 0) || (DiaryView.getDownedIndex() >= curPage.count()))
+			if ((ind < 0) || (ind >= curPage.count()))
 			{
 				return false;
 			}
 
-			DiaryRecord rec = curPage.get(DiaryView.getDownedIndex());
+			// Common options
+
+			switch (item.getItemId())
+			{
+				case CONTEXT_ITEM_REMOVE:
+				{
+					diaryViewLayout.getPage().remove(ind);
+					postPage(diaryViewLayout.getPage());
+					return true;
+				}
+			}
+
+			// Type-specific options
+
+			DiaryRecord rec = curPage.get(ind);
 			Class<? extends DiaryRecord> c = rec.getClass();
 
 			if (c == BloodRecord.class)
 			{
 				switch (item.getItemId())
 				{
-				// TODO: rename, use constants
-
-				// изменить
-					case 0:
+					case CONTEXT_ITEM_EDIT:
 					{
 						BloodRecord temp = (BloodRecord) rec;
-						// TODO: не использовать indexOnEditing, а только
-						// diaryViewLayout.clickedIndex?
-						// indexOnEditing = diaryViewLayout.downedIndex;
 						showBloodEditor(temp, false);
-						break;
+						return true;
 					}
-					// удалить
-					case 1:
+					default:
 					{
-						// TODO: implement removing
-						// UIUtils.showTip(this, "Removing blood is not implemented yet");
-						diaryViewLayout.getPage().remove(DiaryView.getDownedIndex());
-						postPage(diaryViewLayout.getPage());
-
-						break;
+						UIUtils.showTip(this, "Unsupported option");
+						return true;
 					}
 				}
 			}
@@ -305,31 +309,48 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			{
 				switch (item.getItemId())
 				{
-				// TODO: rename, use constants
-
-				// изменить
-					case 0:
+					case CONTEXT_ITEM_EDIT:
 					{
-						// InsRecord temp = (InsRecord) rec;
-						// TODO: не использовать indexOnEditing, а только
-						// diaryViewLayout.clickedIndex?
-						// indexOnEditing = diaryViewLayout.downedIndex;
-						// showBloodEditor(temp.getTime(), temp.getValue(), temp.getFinger(),
-						// false);
+						// TODO: implement
 						UIUtils.showTip(this, "Editing ins is not implemented yet");
-						break;
+						return true;
 					}
-					// удалить
-					case 1:
+					default:
 					{
-						// TODO: implement removing
-						UIUtils.showTip(this, "Removing ins is not implemented yet");
-						break;
+						UIUtils.showTip(this, "Unsupported option");
+						return true;
+					}
+				}
+			}
+
+			else
+
+			if (c == NoteRecord.class)
+			{
+				switch (item.getItemId())
+				{
+					case CONTEXT_ITEM_EDIT:
+					{
+						NoteRecord temp = (NoteRecord) rec;
+						showNoteEditor(temp, false);
+						return true;
+					}
+					default:
+					{
+						UIUtils.showTip(this, "Unsupported option");
+						return true;
 					}
 				}
 			}
 
 			// TODO: implement other record types
+
+			else
+
+			{
+				UIUtils.showTip(this, "Unsupported record type");
+				return true;
+			}
 		}
 		catch (Exception e)
 		{
