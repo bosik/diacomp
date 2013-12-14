@@ -1,83 +1,87 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/LinearLayout1"
+    android:id="@+id/layoutBloodScroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/padding_small"
-    android:gravity="top"
-    android:orientation="vertical"
-    android:scrollbarAlwaysDrawVerticalTrack="false"
-    android:scrollbarStyle="insideOverlay"
-    android:scrollbars="vertical"
-    tools:context=".ActivityBlood" >
+    android:scrollbars="vertical" >
 
     <LinearLayout
+        android:id="@+id/LayoutBloodParent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_small"
+        tools:context=".ActivityBlood" >
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/labelBloodTime"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="top"
-            android:orientation="vertical" >
+            android:text="@string/editor_common_field_time" />
 
-            <TextView
-                android:id="@+id/labelBloodTime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:labelFor="@+id/pickerBloodTime"
-                android:text="@string/editor_common_field_time" />
+        <RelativeLayout
+            android:id="@+id/LayoutBloodDateTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
             <TimePicker
                 android:id="@+id/pickerBloodTime"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/padding_small" />
-        </LinearLayout>
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true" />
 
-        <LinearLayout
+            <DatePicker
+                android:id="@+id/pickerBloodDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/pickerBloodTime"
+                android:paddingLeft="@dimen/padding_small" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/labelBloodValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="top"
-            android:orientation="vertical" >
+            android:labelFor="@+id/editBloodValue"
+            android:paddingTop="@dimen/padding_small"
+            android:text="@string/editor_common_field_value" />
 
-            <TextView
-                android:id="@+id/labelBloodValue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:labelFor="@+id/editBloodValue"
-                android:text="@string/editor_common_field_value" />
+        <EditText
+            android:id="@+id/editBloodValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text|numberDecimal"
+            android:singleLine="true" >
 
-            <EditText
-                android:id="@+id/editBloodValue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text|numberDecimal"
-                android:singleLine="true" >
+            <requestFocus />
+        </EditText>
 
-                <requestFocus />
-            </EditText>
+        <TextView
+            android:id="@+id/labelBloodFinger"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/spinnerBloodFinger"
+            android:paddingTop="@dimen/padding_small"
+            android:text="@string/editor_blood_field_finger" />
 
-            <TextView
-                android:id="@+id/labelBloodFinger"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:labelFor="@+id/spinnerBloodFinger"
-                android:text="@string/editor_blood_field_finger" />
+        <Spinner
+            android:id="@+id/spinnerBloodFinger"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/fingers_middle" />
 
-            <Spinner
-                android:id="@+id/spinnerBloodFinger"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:entries="@array/fingers_middle" />
-        </LinearLayout>
+        <Button
+            android:id="@+id/buttonBloodOK"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_medium"
+            android:text="@string/editor_common_save" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/buttonBloodOK"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/padding_medium"
-        android:text="@string/editor_common_save" />
-
-</LinearLayout>
+</ScrollView>

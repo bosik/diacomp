@@ -6,6 +6,7 @@ import org.bosik.compensation.face.UIUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -16,16 +17,15 @@ public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 	// private static final String TAG = ActivityEditorBlood.class.getSimpleName();
 
 	// components
-	private EditText	editValue;
 	private TimePicker	timePicker;
+	private DatePicker	datePicker;
+	private EditText	editValue;
+	private TextView	labelBloodFinger;
 	private Spinner		spinnerFinger;
 	private Button		buttonOK;
-	private TextView	labelBloodFinger;
 
 	// parameters
 	private boolean		askFinger	= true;
-
-	// TODO: сделать возможность не спрашивать палец
 
 	/* =========================== OVERRIDEN METHODS ================================ */
 
@@ -35,9 +35,10 @@ public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 		setContentView(R.layout.editor_blood);
 		timePicker = (TimePicker) findViewById(R.id.pickerBloodTime);
 		timePicker.setIs24HourView(true);
+		datePicker = (DatePicker) findViewById(R.id.pickerBloodDate);
 		editValue = (EditText) findViewById(R.id.editBloodValue);
-		spinnerFinger = (Spinner) findViewById(R.id.spinnerBloodFinger);
 		labelBloodFinger = (TextView) findViewById(R.id.labelBloodFinger);
+		spinnerFinger = (Spinner) findViewById(R.id.spinnerBloodFinger);
 		buttonOK = (Button) findViewById(R.id.buttonBloodOK);
 		buttonOK.setOnClickListener(new OnClickListener()
 		{
@@ -77,37 +78,37 @@ public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 	{
 		// TODO: localize error messages
 
-		// читаем время
+		// time
 		try
 		{
 			entity.setTime((timePicker.getCurrentHour() * 60) + timePicker.getCurrentMinute());
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(ActivityEditorBlood.this, "Ошибка: неверное время");
+			UIUtils.showTip(this, "Введите корректное время");
 			timePicker.requestFocus();
 			return false;
 		}
 
-		// читаем значение
+		// value
 		try
 		{
 			entity.setValue(Double.parseDouble(editValue.getText().toString()));
 		}
 		catch (NumberFormatException e)
 		{
-			UIUtils.showTip(ActivityEditorBlood.this, "Ошибка: неверное значение СК");
+			UIUtils.showTip(this, "Введите корректное значение СК");
 			editValue.requestFocus();
 			return false;
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(ActivityEditorBlood.this, "Ошибка: неверное значение СК");
+			UIUtils.showTip(this, "Введите корректное значение СК");
 			editValue.requestFocus();
 			return false;
 		}
 
-		// читаем палец
+		// finger
 		try
 		{
 			if (askFinger)
@@ -121,7 +122,7 @@ public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(ActivityEditorBlood.this, "Ошибка: неверный индекс пальца");
+			UIUtils.showTip(this, "Укажите палец, из которого бралась кровь");
 			spinnerFinger.requestFocus();
 			return false;
 		}
