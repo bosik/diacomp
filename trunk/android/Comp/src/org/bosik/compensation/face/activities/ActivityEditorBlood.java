@@ -8,35 +8,36 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
-
-//TODO: сделать ночной режим (тёмные макеты)
 
 public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 {
-	/* =========================== КОНСТАНТЫ ================================ */
 	// private static final String TAG = ActivityEditorBlood.class.getSimpleName();
 
-	/* =========================== ПОЛЯ ================================ */
-
-	// компоненты
+	// components
 	private EditText	editValue;
 	private TimePicker	timePicker;
 	private Spinner		spinnerFinger;
 	private Button		buttonOK;
+	private TextView	labelBloodFinger;
 
-	// private TextView labelBloodFinger; // может использоваться для сокрытия компонента
+	// parameters
+	private boolean		askFinger	= true;
 
-	/* =========================== МЕТОДЫ ================================ */
+	// TODO: сделать возможность не спрашивать палец
+
+	/* =========================== OVERRIDEN METHODS ================================ */
 
 	@Override
 	protected void setupInterface()
 	{
 		setContentView(R.layout.editor_blood);
-		editValue = (EditText) findViewById(R.id.editBloodValue);
 		timePicker = (TimePicker) findViewById(R.id.pickerBloodTime);
+		timePicker.setIs24HourView(true);
+		editValue = (EditText) findViewById(R.id.editBloodValue);
 		spinnerFinger = (Spinner) findViewById(R.id.spinnerBloodFinger);
-		// labelBloodFinger = (TextView) findViewById(R.id.labelBloodFinger);
+		labelBloodFinger = (TextView) findViewById(R.id.labelBloodFinger);
 		buttonOK = (Button) findViewById(R.id.buttonBloodOK);
 		buttonOK.setOnClickListener(new OnClickListener()
 		{
@@ -46,7 +47,6 @@ public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 				ActivityEditorBlood.this.submit();
 			}
 		});
-		timePicker.setIs24HourView(true);
 	}
 
 	@Override
@@ -65,14 +65,18 @@ public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 			editValue.setText("");
 		}
 
-		// TODO: сделать возможность не спрашивать палец
-		// spinnerFinger.setVisibility(View.GONE);
-		// labelBloodFinger.setVisibility(View.GONE);
+		if (!askFinger)
+		{
+			spinnerFinger.setVisibility(View.GONE);
+			labelBloodFinger.setVisibility(View.GONE);
+		}
 	}
 
 	@Override
 	protected boolean getValuesFromGUI()
 	{
+		// TODO: localize error messages
+
 		// читаем время
 		try
 		{
@@ -106,7 +110,14 @@ public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 		// читаем палец
 		try
 		{
-			entity.setFinger(spinnerFinger.getSelectedItemPosition());
+			if (askFinger)
+			{
+				entity.setFinger(spinnerFinger.getSelectedItemPosition());
+			}
+			else
+			{
+				entity.setFinger(-1);
+			}
 		}
 		catch (IllegalArgumentException e)
 		{
