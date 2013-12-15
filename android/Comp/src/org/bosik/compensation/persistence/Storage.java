@@ -15,7 +15,7 @@ import org.bosik.compensation.persistence.serializers.JSONConverter;
 import org.bosik.compensation.persistence.serializers.JSONSerializer;
 import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.persistence.serializers.VersionedJSONSerializer;
-import org.bosik.compensation.persistence.serializers.foodbase.FoodItemJSONSerializer;
+import org.bosik.compensation.persistence.serializers.foodbase.SerializerFoodItemJSON;
 import org.bosik.compensation.utils.ErrorHandler;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -106,7 +106,7 @@ public class Storage
 		{
 			Log.v(TAG, "Web food base initialization...");
 
-			JSONSerializer<FoodItem> sJsonItem = new FoodItemJSONSerializer();
+			JSONSerializer<FoodItem> sJsonItem = new SerializerFoodItemJSON();
 			VersionedJSONSerializer<FoodItem> sJsonVersioned = new VersionedJSONSerializer<FoodItem>(sJsonItem);
 			Serializer<Versioned<FoodItem>> serializer = new JSONConverter<Versioned<FoodItem>>(sJsonVersioned);
 
@@ -115,7 +115,7 @@ public class Storage
 		if (null == webDishBase)
 		{
 			Log.v(TAG, "Web dish base initialization...");
-			// webDishBase = new WebDishBaseDAO(webClient, new DishBaseXMLSerializer());
+			// webDishBase = new WebDishBaseDAO(webClient, new SerializerDishBaseXML());
 		}
 
 		ErrorHandler.init(webClient);

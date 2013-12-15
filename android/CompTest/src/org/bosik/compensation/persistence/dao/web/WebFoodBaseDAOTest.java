@@ -9,7 +9,7 @@ public class WebFoodBaseDAOTest extends FoodBaseDAOTest
 	protected FoodBaseDAO getDAO()
 	{
 		// DO NOT MAKE IT STATIC - IT CAUSES android.os.NetworkOnMainThreadException
-		// , new FoodBaseXMLSerializer()
+		// , new SerializerFoodBaseXML()
 		//
 		// return new WebFoodBaseDAO(WebClientTest.getWebClient(), new Food);
 		return null;

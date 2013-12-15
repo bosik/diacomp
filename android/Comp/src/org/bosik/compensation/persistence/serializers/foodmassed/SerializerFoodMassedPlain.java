@@ -7,9 +7,9 @@ import org.bosik.compensation.bo.FoodMassed;
 import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.utils.Utils;
 
-public class FoodMassedPlainSerializer implements Serializer<FoodMassed>
+public class SerializerFoodMassedPlain implements Serializer<FoodMassed>
 {
-	// private static final String TAG = FoodMassedPlainSerializer.class.getSimpleName();
+	// private static final String TAG = SerializerFoodMassedPlain.class.getSimpleName();
 	private static final DecimalFormat	df			= new DecimalFormat("###.#");
 	private static final char			FOOD_SEP	= '|';
 

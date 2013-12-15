@@ -10,7 +10,7 @@ import org.bosik.compensation.persistence.dao.DiaryDAO;
 import org.bosik.compensation.persistence.dao.local.utils.DiaryContentProvider;
 import org.bosik.compensation.persistence.exceptions.CommonDAOException;
 import org.bosik.compensation.persistence.exceptions.StoreException;
-import org.bosik.compensation.persistence.serializers.diary.DiaryPagePlainSerializer;
+import org.bosik.compensation.persistence.serializers.diary.SerializerDiaryPagePlain;
 import org.bosik.compensation.utils.Utils;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -84,7 +84,7 @@ public class LocalDiaryDAO implements DiaryDAO
 			String source = cursor.getString(indexPage);
 
 			DiaryPage diaryPage = new DiaryPage(date, timeStamp, version);
-			DiaryPagePlainSerializer.readContent(source, diaryPage);
+			SerializerDiaryPagePlain.readContent(source, diaryPage);
 			return diaryPage;
 		}
 		catch (Exception e)
@@ -193,7 +193,7 @@ public class LocalDiaryDAO implements DiaryDAO
 	{
 		try
 		{
-			String code = DiaryPagePlainSerializer.writeContent(diaryPage);
+			String code = SerializerDiaryPagePlain.writeContent(diaryPage);
 			boolean exists = (findPage(diaryPage.getDate()) != null);
 
 			ContentValues newValues = new ContentValues();
