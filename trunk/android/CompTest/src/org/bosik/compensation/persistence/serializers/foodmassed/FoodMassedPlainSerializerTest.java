@@ -35,7 +35,8 @@ public class FoodMassedPlainSerializerTest extends TestCase
 
 	public void testWrite()
 	{
-		FoodMassed food = new FoodMassed("Колбаса");
+		FoodMassed food = new FoodMassed();
+		food.setName("Колбаса");
 		food.setRelProts(12.7);
 		food.setRelFats(19.1);
 		food.setRelCarbs(0);

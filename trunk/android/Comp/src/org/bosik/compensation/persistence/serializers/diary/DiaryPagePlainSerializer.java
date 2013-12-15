@@ -3,13 +3,7 @@ package org.bosik.compensation.persistence.serializers.diary;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.compensation.bo.FoodMassed;
 import org.bosik.compensation.bo.diary.DiaryPage;
-import org.bosik.compensation.bo.diary.records.BloodRecord;
-import org.bosik.compensation.bo.diary.records.DiaryRecord;
-import org.bosik.compensation.bo.diary.records.InsRecord;
-import org.bosik.compensation.bo.diary.records.MealRecord;
-import org.bosik.compensation.bo.diary.records.NoteRecord;
 import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.persistence.serializers.foodmassed.FoodMassedPlainSerializer;
 import org.bosik.compensation.utils.Utils;
@@ -30,123 +24,124 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 	 */
 	public static boolean readContent(final String contentCode, DiaryPage page)
 	{
-		Log.i(TAG, "readContent(), silentMode before IS " + page.getSilentMode());
-		page.clear();
-
-		if (null == contentCode)
-		{
-			throw new NullPointerException("Source can't be null");
-		}
-		if (contentCode.trim().equals(""))
-		{
-			return true;
-		}
-
-		boolean result = true;
-		String[] lines = contentCode.split("\n");
-		MealRecord activeMeal = null;
-		// boolean oldSilentMode = page.silentMode;
-		page.setSilentMode(true);
-
-		// Note: every lines[i] ends with \n symbol
-		for (int i = 0; i < lines.length; i++)
-		{
-			if (!lines[i].trim().equals(""))
-			{
-				try
-				{
-					switch (lines[i].charAt(0))
-					{
-						case '*':
-						{
-							int TempTime;
-							double TempValue;
-							int TempFinger;
-							int v = lines[i].indexOf('|');
-
-							// without finger specification (old format)
-							if (v == -1)
-							{
-								TempTime = Utils.strToTime(lines[i].substring(1, 6));
-								TempValue = Utils.parseDouble(lines[i].substring(7));
-								TempFinger = -1;
-							}
-							else
-							// with finger specification
-							{
-								TempTime = Utils.strToTime(lines[i].substring(1, 6));
-								TempValue = Utils.parseDouble(lines[i].substring(7, v));
-								TempFinger = Integer.parseInt(lines[i].substring(v + 1).trim());
-							}
-
-							page.add(new BloodRecord(TempTime, TempValue, TempFinger));
-
-							activeMeal = null;
-							break;
-						}
-						case '-':
-						{
-							int TempTime = Utils.strToTime(lines[i].substring(1, 6));
-							double TempValue = Utils.parseDouble(lines[i].substring(7).trim());
-							page.add(new InsRecord(TempTime, TempValue));
-
-							activeMeal = null;
-							break;
-						}
-						case ' ':
-						{
-							int TempTime = Utils.strToTime(lines[i].substring(1, 6));
-							boolean TempShort = lines[i].endsWith("s");
-
-							activeMeal = new MealRecord(TempTime, TempShort);
-							page.add(activeMeal);
-							break;
-						}
-						case '#':
-						{
-							if (activeMeal != null)
-							{
-								FoodMassed food = foodSerializer.read(lines[i].substring(1));
-								activeMeal.add(food);
-							}
-							else
-							{
-								Log.e(TAG, "DiaryPage.readContent(): food without meal declaration ignored: "
-										+ lines[i]);
-								result = false;
-							}
-							break;
-						}
-						case '%':
-						{
-							// TODO: check the trailing garbage issue
-							int TempTime = Utils.strToTime(lines[i].substring(1, 6));
-							String TempValue = lines[i].substring(7);
-							page.add(new NoteRecord(TempTime, TempValue));
-							activeMeal = null;
-							break;
-						}
-						default:
-						{
-							Log.e(TAG, "DiaryPage.readContent(): Unknown formatted line ignored: " + lines[i]);
-							result = false;
-						}
-					}
-				}
-				// catch every iteration for more fail-soft behavior
-				catch (Exception e)
-				{
-					Log.e(TAG, "DiaryPage.readContent(): Error parsing line #" + i + ": '" + lines[i] + "'");
-					Log.e(TAG, "DiaryPage.readContent(): with message " + e.getLocalizedMessage());
-					Log.e(TAG, "DiaryPage.readContent(): contentCode = '" + contentCode + "'");
-					result = false;
-				}
-			}
-		}
-
-		page.setSilentMode(false);// oldSilentMode;
-		Log.i(TAG, "readContent(), silentMode after IS " + page.getSilentMode());
-		return result;
+		throw new UnsupportedOperationException();
+		// Log.i(TAG, "readContent(), silentMode before IS " + page.getSilentMode());
+		// page.clear();
+		//
+		// if (null == contentCode)
+		// {
+		// throw new NullPointerException("Source can't be null");
+		// }
+		// if (contentCode.trim().equals(""))
+		// {
+		// return true;
+		// }
+		//
+		// boolean result = true;
+		// String[] lines = contentCode.split("\n");
+		// MealRecord activeMeal = null;
+		// // boolean oldSilentMode = page.silentMode;
+		// page.setSilentMode(true);
+		//
+		// // Note: every lines[i] ends with \n symbol
+		// for (int i = 0; i < lines.length; i++)
+		// {
+		// if (!lines[i].trim().equals(""))
+		// {
+		// try
+		// {
+		// switch (lines[i].charAt(0))
+		// {
+		// case '*':
+		// {
+		// int TempTime;
+		// double TempValue;
+		// int TempFinger;
+		// int v = lines[i].indexOf('|');
+		//
+		// // without finger specification (old format)
+		// if (v == -1)
+		// {
+		// TempTime = Utils.strToTime(lines[i].substring(1, 6));
+		// TempValue = Utils.parseDouble(lines[i].substring(7));
+		// TempFinger = -1;
+		// }
+		// else
+		// // with finger specification
+		// {
+		// TempTime = Utils.strToTime(lines[i].substring(1, 6));
+		// TempValue = Utils.parseDouble(lines[i].substring(7, v));
+		// TempFinger = Integer.parseInt(lines[i].substring(v + 1).trim());
+		// }
+		//
+		// page.add(new BloodRecord(TempTime, TempValue, TempFinger));
+		//
+		// activeMeal = null;
+		// break;
+		// }
+		// case '-':
+		// {
+		// int TempTime = Utils.strToTime(lines[i].substring(1, 6));
+		// double TempValue = Utils.parseDouble(lines[i].substring(7).trim());
+		// page.add(new InsRecord(TempTime, TempValue));
+		//
+		// activeMeal = null;
+		// break;
+		// }
+		// case ' ':
+		// {
+		// int TempTime = Utils.strToTime(lines[i].substring(1, 6));
+		// boolean TempShort = lines[i].endsWith("s");
+		//
+		// activeMeal = new MealRecord(TempTime, TempShort);
+		// page.add(activeMeal);
+		// break;
+		// }
+		// case '#':
+		// {
+		// if (activeMeal != null)
+		// {
+		// FoodMassed food = foodSerializer.read(lines[i].substring(1));
+		// activeMeal.add(food);
+		// }
+		// else
+		// {
+		// Log.e(TAG, "DiaryPage.readContent(): food without meal declaration ignored: "
+		// + lines[i]);
+		// result = false;
+		// }
+		// break;
+		// }
+		// case '%':
+		// {
+		// // TODO: check the trailing garbage issue
+		// int TempTime = Utils.strToTime(lines[i].substring(1, 6));
+		// String TempValue = lines[i].substring(7);
+		// page.add(new NoteRecord(TempTime, TempValue));
+		// activeMeal = null;
+		// break;
+		// }
+		// default:
+		// {
+		// Log.e(TAG, "DiaryPage.readContent(): Unknown formatted line ignored: " + lines[i]);
+		// result = false;
+		// }
+		// }
+		// }
+		// // catch every iteration for more fail-soft behavior
+		// catch (Exception e)
+		// {
+		// Log.e(TAG, "DiaryPage.readContent(): Error parsing line #" + i + ": '" + lines[i] + "'");
+		// Log.e(TAG, "DiaryPage.readContent(): with message " + e.getLocalizedMessage());
+		// Log.e(TAG, "DiaryPage.readContent(): contentCode = '" + contentCode + "'");
+		// result = false;
+		// }
+		// }
+		// }
+		//
+		// page.setSilentMode(false);// oldSilentMode;
+		// Log.i(TAG, "readContent(), silentMode after IS " + page.getSilentMode());
+		// return result;
 	}
 
 	/**
@@ -188,47 +183,50 @@ public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
 	 */
 	public static String writeContent(DiaryPage page)
 	{
-		String result = "";
-		Class<? extends DiaryRecord> c;
-
-		for (int i = 0; i < page.count(); i++)
-		{
-			c = page.get(i).getClass();
-
-			if (c == BloodRecord.class)
-			{
-				BloodRecord temp = (BloodRecord) page.get(i);
-				result += '*' + Utils.timeToStr(temp.getTime()) + ' ' + String.valueOf(temp.getValue()) + '|'
-						+ String.valueOf(temp.getFinger()) + '\n';
-			}
-			else if (c == InsRecord.class)
-			{
-				InsRecord temp = (InsRecord) page.get(i);
-				result += '-' + Utils.timeToStr(temp.getTime()) + ' ' + String.valueOf(temp.getValue()) + '\n';
-			}
-			else if (c == MealRecord.class)
-			{
-				MealRecord temp = (MealRecord) page.get(i);
-
-				result += ' ' + Utils.timeToStr(temp.getTime());
-				if (temp.getShortMeal())
-				{
-					result += "s";
-				}
-				result += "\n";
-
-				for (int k = 0; k < temp.count(); k++)
-				{
-					result += '#' + foodSerializer.write(temp.get(k)) + '\n';
-				}
-			}
-			else if (c == NoteRecord.class)
-			{
-				NoteRecord temp = (NoteRecord) page.get(i);
-				result += '%' + Utils.timeToStr(temp.getTime()) + ' ' + temp.getText() + '\n';
-			}
-		}
-		return result;
+		throw new UnsupportedOperationException();
+		// String result = "";
+		// Class<? extends DiaryRecord> c;
+		//
+		// for (int i = 0; i < page.count(); i++)
+		// {
+		// c = page.get(i).getClass();
+		//
+		// if (c == BloodRecord.class)
+		// {
+		// BloodRecord temp = (BloodRecord) page.get(i);
+		// result += '*' + Utils.timeToStr(temp.getTime()) + ' ' + String.valueOf(temp.getValue()) +
+		// '|'
+		// + String.valueOf(temp.getFinger()) + '\n';
+		// }
+		// else if (c == InsRecord.class)
+		// {
+		// InsRecord temp = (InsRecord) page.get(i);
+		// result += '-' + Utils.timeToStr(temp.getTime()) + ' ' + String.valueOf(temp.getValue()) +
+		// '\n';
+		// }
+		// else if (c == MealRecord.class)
+		// {
+		// MealRecord temp = (MealRecord) page.get(i);
+		//
+		// result += ' ' + Utils.timeToStr(temp.getTime());
+		// if (temp.getShortMeal())
+		// {
+		// result += "s";
+		// }
+		// result += "\n";
+		//
+		// for (int k = 0; k < temp.count(); k++)
+		// {
+		// result += '#' + foodSerializer.write(temp.get(k)) + '\n';
+		// }
+		// }
+		// else if (c == NoteRecord.class)
+		// {
+		// NoteRecord temp = (NoteRecord) page.get(i);
+		// result += '%' + Utils.timeToStr(temp.getTime()) + ' ' + temp.getText() + '\n';
+		// }
+		// }
+		// return result;
 	}
 
 	/**

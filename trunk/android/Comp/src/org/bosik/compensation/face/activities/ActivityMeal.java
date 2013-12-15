@@ -1,12 +1,9 @@
 package org.bosik.compensation.face.activities;
 
 import java.text.DecimalFormat;
-import java.util.List;
 import org.bosik.compensation.bo.FoodMassed;
 import org.bosik.compensation.bo.diary.records.MealRecord;
-import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.R;
-import org.bosik.compensation.persistence.Storage;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -115,18 +112,19 @@ public class ActivityMeal extends Activity
 
 	private void loadFoodList()
 	{
-		List<FoodItem> base = Storage.localFoodBase.findAll();
-		String[] foodBase = new String[base.size()];
-
-		int i = 0;
-		for (FoodItem food : base)
-		{
-			// TODO: implement method returning names array sorted by tag
-			foodBase[i++] = food.getName();
-		}
-
-		ArrayAdapter<String> baseAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, foodBase);
-		editName.setAdapter(baseAdapter);
+		// List<FoodItem> base = Storage.localFoodBase.findAll();
+		// String[] foodBase = new String[base.size()];
+		//
+		// int i = 0;
+		// for (FoodItem food : base)
+		// {
+		// // TODO: implement method returning names array sorted by tag
+		// foodBase[i++] = food.getName();
+		// }
+		//
+		// ArrayAdapter<String> baseAdapter = new ArrayAdapter<String>(this,
+		// android.R.layout.simple_list_item_1, foodBase);
+		// editName.setAdapter(baseAdapter);
 	}
 
 	public static String printFoodMassed(FoodMassed food)
@@ -152,31 +150,32 @@ public class ActivityMeal extends Activity
 
 	private void addItem()
 	{
-		String name = editName.getText().toString();
-		double mass = Double.parseDouble(editMass.getText().toString());
-
-		List<FoodItem> list = Storage.localFoodBase.findAny(name);
-
-		if (!list.isEmpty())
-		{
-			FoodItem food = list.get(0);
-
-			FoodMassed item = new FoodMassed(food.getName());
-			item.setRelProts(food.getRelProts());
-			item.setRelFats(food.getRelFats());
-			item.setRelCarbs(food.getRelCarbs());
-			item.setRelValue(food.getRelValue());
-			item.setMass(mass);
-
-			meal.add(item);
-
-			showMeal();
-
-			Log.v("XXX", "ADDED: " + item);
-			editMass.setText("");
-			editName.setText("");
-			Log.v(TAG, "Moving focus to name field");
-			editName.requestFocus();
-		}
+		// String name = editName.getText().toString();
+		// double mass = Double.parseDouble(editMass.getText().toString());
+		//
+		// List<FoodItem> list = Storage.localFoodBase.findAny(name);
+		//
+		// if (!list.isEmpty())
+		// {
+		// FoodItem food = list.get(0);
+		//
+		// FoodMassed item = new FoodMassed();
+		// item.setName(food.getName());
+		// item.setRelProts(food.getRelProts());
+		// item.setRelFats(food.getRelFats());
+		// item.setRelCarbs(food.getRelCarbs());
+		// item.setRelValue(food.getRelValue());
+		// item.setMass(mass);
+		//
+		// meal.add(item);
+		//
+		// showMeal();
+		//
+		// Log.v("XXX", "ADDED: " + item);
+		// editMass.setText("");
+		// editName.setText("");
+		// Log.v(TAG, "Moving focus to name field");
+		// editName.requestFocus();
+		// }
 	}
 }

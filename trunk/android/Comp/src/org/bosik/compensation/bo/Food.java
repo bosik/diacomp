@@ -1,6 +1,7 @@
 package org.bosik.compensation.bo;
 
-import org.bosik.compensation.bo.basic.UniqueNamed;
+import java.io.Serializable;
+import org.bosik.compensation.bo.basic.TrueCloneable;
 
 /**
  * Stores food's name and relative parameters (PFCV on 100g)
@@ -8,23 +9,22 @@ import org.bosik.compensation.bo.basic.UniqueNamed;
  * @author Bosik
  * 
  */
-public class Food extends RelativeTagged
+public class Food implements TrueCloneable, Serializable
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long	serialVersionUID	= -659635365362405228L;
 
+	private String				name;
 	private double				relProts;
 	private double				relFats;
 	private double				relCarbs;
 	private double				relValue;
 
-	public Food(String name)
+	public Food()
 	{
-		super(name);
 	}
 
 	public Food(String name, double relProts, double relFats, double relCarbs, double relValue)
 	{
-		super(name);
 		setName(name);
 		setRelProts(relProts);
 		setRelFats(relFats);
@@ -76,25 +76,40 @@ public class Food extends RelativeTagged
 
 	// ================================ GET / SET ================================
 
-	@Override
+	public String getName()
+	{
+		return name;
+	}
+
+	public void setName(String name)
+	{
+		if (name == null)
+		{
+			throw new NullPointerException("Name can't be null");
+		}
+		if (name.trim().equals(""))
+		{
+			throw new IllegalArgumentException("Name must contain non-whitespace characters");
+		}
+
+		this.name = name;
+	}
+
 	public double getRelProts()
 	{
 		return relProts;
 	}
 
-	@Override
 	public double getRelFats()
 	{
 		return relFats;
 	}
 
-	@Override
 	public double getRelCarbs()
 	{
 		return relCarbs;
 	}
 
-	@Override
 	public double getRelValue()
 	{
 		return relValue;
@@ -127,7 +142,7 @@ public class Food extends RelativeTagged
 	// ================================ CLONE ================================
 
 	@Override
-	public UniqueNamed clone() throws CloneNotSupportedException
+	public Object clone() throws CloneNotSupportedException
 	{
 		Food result = (Food) super.clone();
 

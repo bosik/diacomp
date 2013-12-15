@@ -3,6 +3,7 @@ package org.bosik.compensation.fakes.mocks;
 import java.util.Date;
 import junit.framework.TestCase;
 import org.bosik.compensation.bo.FoodMassed;
+import org.bosik.compensation.bo.basic.Unique;
 import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.bo.diary.records.BloodRecord;
 import org.bosik.compensation.bo.diary.records.DiaryRecord;
@@ -106,14 +107,18 @@ public class DiaryPageUtils extends TestCase
 		assertEquals(expPage.count(), actPage.count());
 		for (int i = 0; i < expPage.count(); i++)
 		{
-			DiaryRecord expRecord = expPage.get(i);
-			DiaryRecord actRecord = actPage.get(i);
+			Unique<? extends DiaryRecord> expRecord = expPage.get(i);
+			Unique<? extends DiaryRecord> actRecord = actPage.get(i);
+
+			assertEquals(expRecord.getId(), actRecord.getId());
+			assertEquals(expRecord.getTimeStamp(), actRecord.getTimeStamp());
+			assertEquals(expRecord.getVersion(), actRecord.getVersion());
 
 			// @formatter:off
-			if (expRecord.getClass() == BloodRecord.class)	compareBloodRecords((BloodRecord) expRecord, (BloodRecord) actRecord); else
-			if (expRecord.getClass() == InsRecord.class)	compareInsRecords((InsRecord) expRecord, (InsRecord) actRecord); else
-			if (expRecord.getClass() == MealRecord.class)	compareMealRecords((MealRecord) expRecord, (MealRecord) actRecord); else
-			if (expRecord.getClass() == NoteRecord.class)	compareNoteRecords((NoteRecord) expRecord, (NoteRecord) actRecord);
+			if (expRecord.getData().getClass() == BloodRecord.class)	compareBloodRecords((BloodRecord) expRecord.getData(), (BloodRecord) actRecord.getData()); else
+			if (expRecord.getData().getClass() == InsRecord.class)	compareInsRecords((InsRecord) expRecord.getData(), (InsRecord) actRecord.getData()); else
+			if (expRecord.getData().getClass() == MealRecord.class)	compareMealRecords((MealRecord) expRecord.getData(), (MealRecord) actRecord.getData()); else
+			if (expRecord.getData().getClass() == NoteRecord.class)	compareNoteRecords((NoteRecord) expRecord.getData(), (NoteRecord) actRecord.getData());
 			// @formatter:on
 		}
 

@@ -10,21 +10,35 @@ import org.bosik.compensation.utils.Utils;
  * 
  * @author Bosik
  */
-public class Unique implements Cloneable, Serializable, Versioned
+// TODO: rename to Versioned
+// FIXME: remove Cloneable
+public class Unique<T extends TrueCloneable> implements TrueCloneable, Serializable
 {
 	private static final long	serialVersionUID	= 6063993499772711799L;
 
 	private String				id;
 	private Date				timeStamp;
 	private int					version;
+	private T					data;
 
-	public Unique()
+	// ================================ MAIN ================================
+
+	public Unique(T data)
 	{
 		id = UUID.randomUUID().toString();
-		version = 1;
+		version = 0;
+		updateTimeStamp();
+		this.data = data;
 	}
 
-	@Override
+	public void updateTimeStamp()
+	{
+		version++;
+		timeStamp = Utils.now();
+	}
+
+	// ================================ GET / SET ================================
+
 	public String getId()
 	{
 		return id;
@@ -40,7 +54,6 @@ public class Unique implements Cloneable, Serializable, Versioned
 		this.id = id;
 	}
 
-	@Override
 	public Date getTimeStamp()
 	{
 		return timeStamp;
@@ -51,7 +64,6 @@ public class Unique implements Cloneable, Serializable, Versioned
 		this.timeStamp = timeStamp;
 	}
 
-	@Override
 	public int getVersion()
 	{
 		return version;
@@ -62,19 +74,29 @@ public class Unique implements Cloneable, Serializable, Versioned
 		this.version = version;
 	}
 
-	public void updateTimeStamp()
+	public T getData()
 	{
-		version++;
-		timeStamp = Utils.now();
+		return data;
+	}
+
+	public void setData(T data)
+	{
+		this.data = data;
 	}
 
 	// ================================ CLONE ================================
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Unique clone() throws CloneNotSupportedException
+	public Unique<T> clone() throws CloneNotSupportedException
 	{
-		Unique result = (Unique) super.clone();
+		// throw new RuntimeException("Do not use clone method");
+
+		Unique<T> result = (Unique<T>) super.clone();
 		result.id = id;
+		result.timeStamp = timeStamp;
+		result.version = version;
+		result.data = (T) data.clone();
 		return result;
 	}
 
@@ -90,6 +112,7 @@ public class Unique implements Cloneable, Serializable, Versioned
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean equals(Object obj)
 	{
 		if (this == obj)
@@ -98,7 +121,7 @@ public class Unique implements Cloneable, Serializable, Versioned
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Unique other = (Unique) obj;
+		Unique<T> other = (Unique<T>) obj;
 		if (id == null)
 		{
 			if (other.id != null)

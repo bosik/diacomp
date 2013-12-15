@@ -1,8 +1,8 @@
 package org.bosik.compensation.persistence.dao.web;
 
 import java.util.List;
+import org.bosik.compensation.bo.basic.Unique;
 import org.bosik.compensation.bo.foodbase.FoodItem;
-import org.bosik.compensation.persistence.common.MemoryBase;
 import org.bosik.compensation.persistence.dao.FoodBaseDAO;
 import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
 import org.bosik.compensation.persistence.exceptions.DuplicateException;
@@ -13,81 +13,88 @@ public class WebFoodBaseDAO implements FoodBaseDAO
 {
 	// private static final String TAG = WebFoodBaseDAO.class.getSimpleName();
 
-	private WebClient							webClient;
-	private Serializer<MemoryBase<FoodItem>>	serializer;
+	private WebClient						webClient;
+	private Serializer<Unique<FoodItem>>	serializer;
 
-	public WebFoodBaseDAO(WebClient webClient, Serializer<MemoryBase<FoodItem>> serializer)
+	public WebFoodBaseDAO(WebClient webClient, Serializer<Unique<FoodItem>> serializer)
 	{
 		this.webClient = webClient;
 		this.serializer = serializer;
 	}
 
 	@Override
-	public String add(FoodItem item) throws DuplicateException
+	public String add(Unique<FoodItem> item) throws DuplicateException
 	{
-		item.updateTimeStamp();
-
-		MemoryBase<FoodItem> base = load();
-		base.add(item);
-		save(base);
-		return item.getId();
+		throw new UnsupportedOperationException();
+		// item.updateTimeStamp();
+		//
+		// MemoryBase<Unique<FoodItem>> base = load();
+		// base.add(item);
+		// save(base);
+		// return item.getId();
 	}
 
 	@Override
 	public void delete(String id) throws ItemNotFoundException
 	{
-		MemoryBase<FoodItem> base = load();
-		base.remove(id);
-		save(base);
+		throw new UnsupportedOperationException();
+		// MemoryBase<FoodItem> base = load();
+		// base.remove(id);
+		// save(base);
 	}
 
 	@Override
-	public List<FoodItem> findAll()
+	public List<Unique<FoodItem>> findAll()
 	{
-		MemoryBase<FoodItem> base = load();
-		return base.findAll();
+		throw new UnsupportedOperationException();
+		// MemoryBase<FoodItem> base = load();
+		// return base.findAll();
 	}
 
 	@Override
-	public List<FoodItem> findAny(String filter)
+	public List<Unique<FoodItem>> findAny(String filter)
 	{
-		MemoryBase<FoodItem> base = load();
-		return base.findAny(filter);
+		throw new UnsupportedOperationException();
+		// MemoryBase<FoodItem> base = load();
+		// return base.findAny(filter);
 	}
 
 	@Override
-	public FoodItem findById(String id)
+	public Unique<FoodItem> findById(String id)
 	{
-		MemoryBase<FoodItem> base = load();
-		return base.findById(id);
+		throw new UnsupportedOperationException();
+		// MemoryBase<FoodItem> base = load();
+		// return base.findById(id);
 	}
 
 	@Override
-	public FoodItem findOne(String exactName)
+	public Unique<FoodItem> findOne(String exactName)
 	{
-		MemoryBase<FoodItem> base = load();
-		return base.findOne(exactName);
+		throw new UnsupportedOperationException();
+		// MemoryBase<FoodItem> base = load();
+		// return base.findOne(exactName);
 	}
 
 	@Override
-	public void update(FoodItem item) throws ItemNotFoundException
+	public void update(Unique<FoodItem> item) throws ItemNotFoundException
 	{
-		MemoryBase<FoodItem> base = load();
-		base.update(item);
-		save(base);
+		throw new UnsupportedOperationException();
+		// MemoryBase<FoodItem> base = load();
+		// base.update(item);
+		// save(base);
 	}
 
 	// ----------------------------------- Web I/O -----------------------------------
 
-	private MemoryBase<FoodItem> load()
-	{
-		String source = webClient.getFoodBase();
-		return serializer.read(source);
-	}
+	// private MemoryBase<FoodItem> load()
+	// {
+	// String source = webClient.getFoodBase();
+	// return serializer.read(source);
+	// }
 
-	private void save(MemoryBase<FoodItem> base)
-	{
-		String source = serializer.write(base);
-		webClient.postFoodBase(base.getVersion(), source);
-	}
+	// private void save(MemoryBase<FoodItem> base)
+	// {
+	// String source = serializer.write(base);
+	// webClient.postFoodBase(base.getVersion(), source);
+	// }
 }

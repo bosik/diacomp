@@ -1,11 +1,11 @@
 package org.bosik.compensation.bo.common;
 
-import org.bosik.compensation.bo.FoodMassed;
 import junit.framework.TestCase;
+import org.bosik.compensation.bo.FoodMassed;
 
 public class FoodMassedTest extends TestCase
 {
-	private FoodMassed	food	= new FoodMassed("TestFoodMassed");
+	private FoodMassed	food	= new FoodMassed();
 
 	// TODO: use EPS while comparing doubles
 	// TODO: change Exception to IllegalArgumentException
@@ -142,8 +142,6 @@ public class FoodMassedTest extends TestCase
 		food.setMass(40);
 
 		FoodMassed copy = (FoodMassed) food.clone();
-		assertEquals(copy, food);
-		assertEquals(copy.getId(), food.getId());
 		assertEquals(copy.getRelProts(), food.getRelProts());
 		assertEquals(copy.getRelFats(), food.getRelFats());
 		assertEquals(copy.getRelCarbs(), food.getRelCarbs());

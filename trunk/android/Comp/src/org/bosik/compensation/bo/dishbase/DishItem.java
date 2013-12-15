@@ -1,16 +1,13 @@
 package org.bosik.compensation.bo.dishbase;
 
-import org.bosik.compensation.bo.RelativeTagged;
-import org.bosik.compensation.bo.basic.UniqueNamed;
+import java.io.Serializable;
+import org.bosik.compensation.bo.basic.Named;
+import org.bosik.compensation.bo.basic.TrueCloneable;
+import org.bosik.compensation.persistence.dao.BaseItem;
 
-public class DishItem extends RelativeTagged
+public class DishItem implements BaseItem, TrueCloneable, Serializable
 {
 	private static final long	serialVersionUID	= 1L;
-
-	public DishItem(String name)
-	{
-		super(name);
-	}
 
 	// ================================ GET / SET ================================
 
@@ -49,7 +46,6 @@ public class DishItem extends RelativeTagged
 		return 0;
 	}
 
-	@Override
 	public void setTag(int tag)
 	{
 		// TODO Auto-generated method stub
@@ -58,12 +54,26 @@ public class DishItem extends RelativeTagged
 	// ================================ CLONE ================================
 
 	@Override
-	public UniqueNamed clone() throws CloneNotSupportedException
+	public Named clone() throws CloneNotSupportedException
 	{
 		DishItem result = (DishItem) super.clone();
 
 		// TODO: implement
 
 		return result;
+	}
+
+	@Override
+	public String getName()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getId()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

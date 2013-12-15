@@ -345,7 +345,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 		for (int i = 0; i < page.count(); i++)
 		{
 			// Log.d(TAG, "drawPage():извлечение записи №" + i);
-			DiaryRecord rec = page.get(i);
+			DiaryRecord rec = page.get(i).getData();
 
 			r.top = top;
 			r.bottom = r.top + TEXT_SIZE + (2 * TEXT_BORD);

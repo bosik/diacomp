@@ -16,7 +16,8 @@ public class MealRecordTest extends TestCase
 	 */
 	private static FoodMassed createDemoFood()
 	{
-		FoodMassed food = new FoodMassed("Колбаса");
+		FoodMassed food = new FoodMassed();
+		food.setName("Колбаса");
 		food.setMass(78);
 		food.setRelProts(12.2);
 		food.setRelFats(18.9);
@@ -50,9 +51,9 @@ public class MealRecordTest extends TestCase
 	{
 		meal.clear();
 		assertEquals(0, meal.count());
-		meal.add(new FoodMassed("Item1"));
+		meal.add(new FoodMassed());
 		assertEquals(1, meal.count());
-		meal.add(new FoodMassed("Item2"));
+		meal.add(new FoodMassed());
 		assertEquals(2, meal.count());
 	}
 

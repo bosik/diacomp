@@ -1,11 +1,11 @@
 package org.bosik.compensation.bo.common;
 
-import org.bosik.compensation.bo.Food;
 import junit.framework.TestCase;
+import org.bosik.compensation.bo.Food;
 
 public class FoodTest extends TestCase
 {
-	private Food	food	= new Food("TestFood");
+	private Food	food	= new Food();
 
 	public void testName()
 	{
@@ -157,8 +157,6 @@ public class FoodTest extends TestCase
 		food.setRelValue(270);
 
 		Food copy = (Food) food.clone();
-		assertEquals(copy, food);
-		assertEquals(copy.getId(), food.getId());
 		assertEquals(copy.getName(), food.getName());
 		assertEquals(copy.getRelProts(), food.getRelProts());
 		assertEquals(copy.getRelFats(), food.getRelFats());

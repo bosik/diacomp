@@ -1,20 +1,21 @@
 package org.bosik.compensation.persistence;
 
-import java.io.IOException;
+import org.bosik.compensation.bo.basic.Unique;
+import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.activities.ActivityPreferences;
 import org.bosik.compensation.persistence.dao.DiaryDAO;
 import org.bosik.compensation.persistence.dao.DishBaseDAO;
 import org.bosik.compensation.persistence.dao.FoodBaseDAO;
 import org.bosik.compensation.persistence.dao.local.LocalDiaryDAO;
-import org.bosik.compensation.persistence.dao.local.LocalDishBaseDAO;
-import org.bosik.compensation.persistence.dao.local.LocalFoodBaseDAO;
+import org.bosik.compensation.persistence.dao.local.NewLocalFoodBaseDAO;
 import org.bosik.compensation.persistence.dao.web.WebDiaryDAO;
-import org.bosik.compensation.persistence.dao.web.WebDishBaseDAO;
 import org.bosik.compensation.persistence.dao.web.WebFoodBaseDAO;
 import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
-import org.bosik.compensation.persistence.serializers.dishbase.DishBaseXMLSerializer;
-import org.bosik.compensation.persistence.serializers.foodbase.FoodBaseXMLSerializer;
-import org.bosik.compensation.services.RelevantIndexator;
+import org.bosik.compensation.persistence.serializers.JSONConverter;
+import org.bosik.compensation.persistence.serializers.JSONSerializer;
+import org.bosik.compensation.persistence.serializers.Serializer;
+import org.bosik.compensation.persistence.serializers.VersionedJSONSerializer;
+import org.bosik.compensation.persistence.serializers.foodbase.FoodItemJSONSerializer;
 import org.bosik.compensation.utils.ErrorHandler;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -78,38 +79,43 @@ public class Storage
 		if (null == localFoodBase)
 		{
 			Log.v(TAG, "Local food base initialization...");
-			try
-			{
-				localFoodBase = new LocalFoodBaseDAO(context, FILENAME_FOODBASE);
-			}
-			catch (IOException e)
-			{
-				localFoodBase = null;
-				throw new RuntimeException("Failed to create local food base DAO", e);
-			}
+			// try
+			// {
+			localFoodBase = new NewLocalFoodBaseDAO(resolver);
+			// }
+			// catch (IOException e)
+			// {
+			// localFoodBase = null;
+			// throw new RuntimeException("Failed to create local food base DAO", e);
+			// }
 		}
 		if (null == localDishBase)
 		{
 			Log.v(TAG, "Local dish base initialization...");
-			try
-			{
-				localDishBase = new LocalDishBaseDAO(context, FILENAME_DISHBASE);
-			}
-			catch (IOException e)
-			{
-				localDishBase = null;
-				throw new RuntimeException("Failed to create local dish base DAO", e);
-			}
+			// try
+			// {
+			// localDishBase = new LocalDishBaseDAO(resolver);
+			// }
+			// catch (IOException e)
+			// {
+			// localDishBase = null;
+			// throw new RuntimeException("Failed to create local dish base DAO", e);
+			// }
 		}
 		if (null == webFoodBase)
 		{
 			Log.v(TAG, "Web food base initialization...");
-			webFoodBase = new WebFoodBaseDAO(webClient, new FoodBaseXMLSerializer());
+
+			JSONSerializer<FoodItem> sJsonItem = new FoodItemJSONSerializer();
+			VersionedJSONSerializer<FoodItem> sJsonVersioned = new VersionedJSONSerializer<FoodItem>(sJsonItem);
+			Serializer<Unique<FoodItem>> serializer = new JSONConverter<Unique<FoodItem>>(sJsonVersioned);
+
+			webFoodBase = new WebFoodBaseDAO(webClient, serializer);
 		}
 		if (null == webDishBase)
 		{
 			Log.v(TAG, "Web dish base initialization...");
-			webDishBase = new WebDishBaseDAO(webClient, new DishBaseXMLSerializer());
+			// webDishBase = new WebDishBaseDAO(webClient, new DishBaseXMLSerializer());
 		}
 
 		ErrorHandler.init(webClient);
@@ -118,7 +124,7 @@ public class Storage
 		applyPreference(preferences, null);
 
 		// analyze using
-		RelevantIndexator.indexate(localDiary, localFoodBase, localDishBase);
+		// RelevantIndexator.indexate(localDiary, localFoodBase, localDishBase);
 	}
 
 	private static boolean check(String testKey, String baseKey)

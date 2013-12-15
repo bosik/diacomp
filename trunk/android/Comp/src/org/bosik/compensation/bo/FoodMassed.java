@@ -1,6 +1,5 @@
 package org.bosik.compensation.bo;
 
-import org.bosik.compensation.bo.basic.UniqueNamed;
 
 /**
  * Stores food's name, relative parameters (PFCV on 100g) and mass. Has methods for serialization /
@@ -15,9 +14,8 @@ public class FoodMassed extends Food
 
 	private double				mass;
 
-	public FoodMassed(String name)
+	public FoodMassed()
 	{
-		super(name);
 	}
 
 	public FoodMassed(String name, double relProts, double relFats, double relCarbs, double relValue, double mass)
@@ -62,7 +60,7 @@ public class FoodMassed extends Food
 	// ================================ CLONE ================================
 
 	@Override
-	public UniqueNamed clone() throws CloneNotSupportedException
+	public Object clone() throws CloneNotSupportedException
 	{
 		FoodMassed result = (FoodMassed) super.clone();
 		result.setMass(getMass());

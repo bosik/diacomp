@@ -1,5 +1,6 @@
 package org.bosik.compensation.persistence.dao;
 
+import org.bosik.compensation.bo.basic.Unique;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.fakes.mocks.FoodItemUtils;
 import android.test.AndroidTestCase;
@@ -18,7 +19,7 @@ public abstract class FoodBaseDAOTest extends AndroidTestCase
 
 	public void testPersistanceSingle()
 	{
-		FoodItem org = FoodItemUtils.demoFoodItemA();
+		Unique<FoodItem> org = new Unique<FoodItem>(FoodItemUtils.demoFoodItemA());
 		// int version;
 
 		if (foodBaseDAO.findById(org.getId()) != null)
@@ -37,7 +38,7 @@ public abstract class FoodBaseDAOTest extends AndroidTestCase
 		setUp();
 		// ------------------------------
 
-		FoodItem restored = foodBaseDAO.findById(org.getId());
+		Unique<FoodItem> restored = foodBaseDAO.findById(org.getId());
 		assertNotNull(restored);
 		assertNotSame(org, restored);
 		FoodItemUtils.compareItems(org, restored);

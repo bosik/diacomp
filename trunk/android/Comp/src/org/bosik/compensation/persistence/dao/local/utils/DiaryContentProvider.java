@@ -247,6 +247,10 @@ public class DiaryContentProvider extends ContentProvider
 				cursor.setNotificationUri(getContext().getContentResolver(), uri);
 				return cursor;
 
+				// TODO: foodbase: require GUID and data only
+				// TODO: foodbase: retrieve version and increment it here
+				// TODO: foodbase: set timestamp to current time
+
 			default:
 				throw new UnknownUriException(uri);
 		}
