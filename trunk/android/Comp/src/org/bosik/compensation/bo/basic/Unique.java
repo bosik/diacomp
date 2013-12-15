@@ -1,24 +1,30 @@
 package org.bosik.compensation.bo.basic;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.UUID;
+import org.bosik.compensation.utils.Utils;
 
 /**
  * Has ID field (random; useful for comparing)
  * 
  * @author Bosik
  */
-public class Unique implements Cloneable, Serializable
+public class Unique implements Cloneable, Serializable, Versioned
 {
 	private static final long	serialVersionUID	= 6063993499772711799L;
 
 	private String				id;
+	private Date				timeStamp;
+	private int					version;
 
 	public Unique()
 	{
 		id = UUID.randomUUID().toString();
+		version = 1;
 	}
 
+	@Override
 	public String getId()
 	{
 		return id;
@@ -32,6 +38,34 @@ public class Unique implements Cloneable, Serializable
 		}
 
 		this.id = id;
+	}
+
+	@Override
+	public Date getTimeStamp()
+	{
+		return timeStamp;
+	}
+
+	public void setTimeStamp(Date timeStamp)
+	{
+		this.timeStamp = timeStamp;
+	}
+
+	@Override
+	public int getVersion()
+	{
+		return version;
+	}
+
+	public void setVersion(int version)
+	{
+		this.version = version;
+	}
+
+	public void updateTimeStamp()
+	{
+		version++;
+		timeStamp = Utils.now();
 	}
 
 	// ================================ CLONE ================================

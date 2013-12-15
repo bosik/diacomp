@@ -25,6 +25,8 @@ public class WebFoodBaseDAO implements FoodBaseDAO
 	@Override
 	public String add(FoodItem item) throws DuplicateException
 	{
+		item.updateTimeStamp();
+
 		MemoryBase<FoodItem> base = load();
 		base.add(item);
 		save(base);
