@@ -3,7 +3,6 @@ package org.bosik.compensation.persistence.common;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
-import org.bosik.compensation.bo.basic.TrueCloneable;
 import org.bosik.compensation.utils.Utils;
 
 /**
@@ -12,8 +11,7 @@ import org.bosik.compensation.utils.Utils;
  * @author Bosik
  */
 
-// FIXME: remove Cloneable
-public class Versioned<T /* extends TrueCloneable */> implements Serializable, TrueCloneable
+public class Versioned<T> implements Serializable
 {
 	private static final long	serialVersionUID	= 6063993499772711799L;
 
@@ -83,22 +81,6 @@ public class Versioned<T /* extends TrueCloneable */> implements Serializable, T
 	public void setData(T data)
 	{
 		this.data = data;
-	}
-
-	// ================================ CLONE ================================
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Versioned<T> clone() throws CloneNotSupportedException
-	{
-		throw new RuntimeException("Do not use clone method");
-
-		// Versioned<T> result = (Versioned<T>) super.clone();
-		// result.id = id;
-		// result.timeStamp = timeStamp;
-		// result.version = version;
-		// result.data = (T) data.clone();
-		// return result;
 	}
 
 	// ================================ OTHER ================================

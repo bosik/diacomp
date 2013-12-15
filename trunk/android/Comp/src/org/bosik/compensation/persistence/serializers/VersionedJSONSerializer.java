@@ -3,14 +3,13 @@ package org.bosik.compensation.persistence.serializers;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.compensation.bo.basic.TrueCloneable;
 import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.utils.Utils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class VersionedJSONSerializer<T extends TrueCloneable> implements JSONSerializer<Versioned<T>>
+public class VersionedJSONSerializer<T> implements JSONSerializer<Versioned<T>>
 {
 	private JSONSerializer<T>	serializer;
 

@@ -15,21 +15,22 @@ public class FoodItem extends Food implements Serializable, RelativeTagged
 {
 	private static final long	serialVersionUID	= 1789285539891342521L;
 
-	// private String id;
+	private int					tag;
 	private boolean				fromTable;
 
 	// ================================ GET / SET ================================
 
-	// @Override
-	// public String getId()
-	// {
-	// return id;
-	// }
-	//
-	// public void setId(String id)
-	// {
-	// this.id = id;
-	// }
+	@Override
+	public int getTag()
+	{
+		return tag;
+	}
+
+	@Override
+	public void setTag(int tag)
+	{
+		this.tag = tag;
+	}
 
 	public boolean getFromTable()
 	{
@@ -41,36 +42,12 @@ public class FoodItem extends Food implements Serializable, RelativeTagged
 		this.fromTable = fromTable;
 	}
 
-	// ================================ CLONE ================================
-
-	// @Override
-	// public Object clone() throws CloneNotSupportedException
-	// {
-	// FoodItem result = (FoodItem) super.clone();
-	//
-	// result.setFromTable(getFromTable());
-	// result.setTag(getTag());
-	//
-	// return result;
-	// }
+	// ================================ MISC ================================
 
 	@Override
 	public String toString()
 	{
 		return String.format(Locale.US, "%s[%.1f|%.1f|%.1f|%.1f]:%s", getName(), getRelProts(), getRelFats(),
 				getRelCarbs(), getRelValue(), getFromTable());
-	}
-
-	@Override
-	public int getTag()
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void setTag(int tag)
-	{
-		// TODO Auto-generated method stub
 	}
 }

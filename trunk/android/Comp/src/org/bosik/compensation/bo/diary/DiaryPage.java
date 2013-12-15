@@ -68,17 +68,24 @@ public class DiaryPage
 		version++;
 	}
 
-	// private DiaryRecord safeClone(DiaryRecord rec)
-	// {
-	// try
-	// {
-	// return (DiaryRecord) rec.clone();
-	// }
-	// catch (CloneNotSupportedException e)
-	// {
-	// throw new RuntimeException(e);
-	// }
-	// }
+	private Versioned<? extends DiaryRecord> clone(Versioned<? extends DiaryRecord> rec)
+	{
+		try
+		{
+			DiaryRecord data = (DiaryRecord) rec.getData().clone();
+
+			Versioned<? extends DiaryRecord> result = new Versioned<DiaryRecord>(data);
+			result.setId(rec.getId());
+			result.setTimeStamp(rec.getTimeStamp());
+			result.setVersion(rec.getVersion());
+
+			return result;
+		}
+		catch (CloneNotSupportedException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
 
 	// ================================ ВНЕШНИЕ МЕТОДЫ ================================
 
@@ -219,14 +226,7 @@ public class DiaryPage
 	public Versioned<? extends DiaryRecord> get(int index)
 	{
 		// TODO: get by ID, not index
-		try
-		{
-			return items.get(index).clone();
-		}
-		catch (CloneNotSupportedException e)
-		{
-			throw new RuntimeException(e);
-		}
+		return clone(items.get(index));
 	}
 
 	/**
@@ -240,14 +240,7 @@ public class DiaryPage
 		int index = getIndexById(id);
 		if (index > -1)
 		{
-			try
-			{
-				return items.get(index).clone();
-			}
-			catch (CloneNotSupportedException e)
-			{
-				throw new RuntimeException(e);
-			}
+			return clone(items.get(index));
 		}
 		else
 		{
@@ -294,15 +287,8 @@ public class DiaryPage
 		int index = getIndexById(rec.getId());
 		if (index > -1)
 		{
-			try
-			{
-				items.set(index, rec.clone());
-				changed();
-			}
-			catch (CloneNotSupportedException e)
-			{
-				throw new RuntimeException(e);
-			}
+			items.set(index, clone(rec));
+			changed();
 		}
 		else
 		{
