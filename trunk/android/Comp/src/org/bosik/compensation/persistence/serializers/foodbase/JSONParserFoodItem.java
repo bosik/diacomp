@@ -9,7 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SerializerFoodItemJSON implements JSONParser<FoodItem>
+public class JSONParserFoodItem implements JSONParser<FoodItem>
 {
 	protected FoodItem decodeJson(JSONObject json) throws JSONException, ParseException
 	{
