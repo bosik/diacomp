@@ -13,7 +13,7 @@ import org.bosik.compensation.utils.Utils;
  */
 
 // FIXME: remove Cloneable
-public class Versioned<T extends TrueCloneable> implements TrueCloneable, Serializable
+public class Versioned<T /* extends TrueCloneable */> implements Serializable, TrueCloneable
 {
 	private static final long	serialVersionUID	= 6063993499772711799L;
 
@@ -91,14 +91,14 @@ public class Versioned<T extends TrueCloneable> implements TrueCloneable, Serial
 	@Override
 	public Versioned<T> clone() throws CloneNotSupportedException
 	{
-		// throw new RuntimeException("Do not use clone method");
+		throw new RuntimeException("Do not use clone method");
 
-		Versioned<T> result = (Versioned<T>) super.clone();
-		result.id = id;
-		result.timeStamp = timeStamp;
-		result.version = version;
-		result.data = (T) data.clone();
-		return result;
+		// Versioned<T> result = (Versioned<T>) super.clone();
+		// result.id = id;
+		// result.timeStamp = timeStamp;
+		// result.version = version;
+		// result.data = (T) data.clone();
+		// return result;
 	}
 
 	// ================================ OTHER ================================

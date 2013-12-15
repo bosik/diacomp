@@ -3,7 +3,7 @@ package org.bosik.compensation.face.activities;
 import java.util.List;
 import org.bosik.compensation.bo.RelativeTagged;
 import org.bosik.compensation.face.R;
-import org.bosik.compensation.persistence.dao.BaseItem;
+import org.bosik.compensation.persistence.common.Versioned;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -24,14 +24,14 @@ public class ActivityFoodbase extends Activity
 {
 	// private static final String TAG = ActivityFoodbase.class.getSimpleName();
 
-	public static final String	FIELD_GUID	= "bosik.pack.guid";
+	public static final String				FIELD_GUID	= "bosik.pack.guid";
 
 	// Widgets
-	private EditText			editFoodSearch;
-	private ListView			listFood;
+	private EditText						editFoodSearch;
+	private ListView						listFood;
 
 	// Data
-	private List<BaseItem>		data;
+	private List<Versioned<RelativeTagged>>	data;
 
 	// ===========================================================================
 
@@ -69,16 +69,16 @@ public class ActivityFoodbase extends Activity
 
 	private void runSearch(String key)
 	{
-		new AsyncTask<String, Void, List<BaseItem>>()
+		new AsyncTask<String, Void, List<Versioned<RelativeTagged>>>()
 		{
 			@Override
-			protected List<BaseItem> doInBackground(String... params)
+			protected List<Versioned<RelativeTagged>> doInBackground(String... params)
 			{
 				return request(params[0]);
 			}
 
 			@Override
-			protected void onPostExecute(List<BaseItem> result)
+			protected void onPostExecute(List<Versioned<RelativeTagged>> result)
 			{
 				showBase(result);
 			}
@@ -93,7 +93,7 @@ public class ActivityFoodbase extends Activity
 		return true;
 	}
 
-	private List<BaseItem> request(String filter)
+	private List<Versioned<RelativeTagged>> request(String filter)
 	{
 		// List<Versioned<FoodItem>> temp;
 		// if (filter.trim().isEmpty())
@@ -113,14 +113,14 @@ public class ActivityFoodbase extends Activity
 		return null;
 	}
 
-	private void showBase(final List<BaseItem> foodBase)
+	private void showBase(final List<Versioned<RelativeTagged>> foodBase)
 	{
 		data = foodBase;
 
 		String[] str = new String[foodBase.size()];
 		for (int i = 0; i < foodBase.size(); i++)
 		{
-			str[i] = foodBase.get(i).getName();
+			str[i] = foodBase.get(i).getData().getName();
 		}
 
 		setTitle(String.format("%s (%d)", getString(R.string.foodbase_title), foodBase.size()));
@@ -135,8 +135,8 @@ public class ActivityFoodbase extends Activity
 				TextView text1 = (TextView) view.findViewById(android.R.id.text1);
 				TextView text2 = (TextView) view.findViewById(android.R.id.text2);
 
-				text1.setText(foodBase.get(position).getName());
-				text2.setText(getInfo(foodBase.get(position)));
+				text1.setText(foodBase.get(position).getData().getName());
+				text2.setText(getInfo(foodBase.get(position).getData()));
 				return view;
 			}
 		};
@@ -147,8 +147,7 @@ public class ActivityFoodbase extends Activity
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				BaseItem item = data.get(position);
-				returnResult(item.getId());
+				returnResult(data.get(position).getId());
 			}
 		});
 	}

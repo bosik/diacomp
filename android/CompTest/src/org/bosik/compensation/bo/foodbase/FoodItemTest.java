@@ -17,7 +17,6 @@ public class FoodItemTest extends TestCase
 		food.setTag(42);
 
 		FoodItem copy = (FoodItem) food.clone();
-		assertEquals(copy.getId(), food.getId());
 		assertEquals(copy.getName(), food.getName());
 		assertEquals(copy.getRelProts(), food.getRelProts());
 		assertEquals(copy.getRelFats(), food.getRelFats());

@@ -5,7 +5,7 @@ import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 import org.bosik.compensation.persistence.exceptions.StoreException;
 
-public interface BaseDAO<Item extends BaseItem>
+public interface BaseDAO<Item>
 {
 	/**
 	 * Adds item to the list

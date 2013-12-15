@@ -1,7 +1,6 @@
 package org.bosik.compensation.services.sync;
 
 import org.bosik.compensation.persistence.dao.BaseDAO;
-import org.bosik.compensation.persistence.dao.BaseItem;
 
 public class SyncBaseDAO
 {
@@ -12,7 +11,7 @@ public class SyncBaseDAO
 		FIRST_UPDATED, SECOND_UPDATED, EQUAL
 	}
 
-	public static <T extends BaseItem> SyncResult synchronize(BaseDAO<T> source1, BaseDAO<T> source2)
+	public static <T> SyncResult synchronize(BaseDAO<T> source1, BaseDAO<T> source2)
 	{
 		throw new RuntimeException("Not implemented yet");
 

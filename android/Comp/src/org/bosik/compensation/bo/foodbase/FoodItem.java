@@ -1,10 +1,9 @@
 package org.bosik.compensation.bo.foodbase;
 
+import java.io.Serializable;
 import java.util.Locale;
 import org.bosik.compensation.bo.Food;
-import org.bosik.compensation.bo.basic.Named;
-import org.bosik.compensation.bo.basic.TrueCloneable;
-import org.bosik.compensation.persistence.dao.BaseItem;
+import org.bosik.compensation.bo.RelativeTagged;
 
 /**
  * Food item for food base
@@ -12,25 +11,25 @@ import org.bosik.compensation.persistence.dao.BaseItem;
  * @author Bosik
  * 
  */
-public class FoodItem extends Food implements TrueCloneable, BaseItem
+public class FoodItem extends Food implements Serializable, RelativeTagged
 {
 	private static final long	serialVersionUID	= 1789285539891342521L;
 
-	private String				id;
+	// private String id;
 	private boolean				fromTable;
 
 	// ================================ GET / SET ================================
 
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-
-	public void setId(String id)
-	{
-		this.id = id;
-	}
+	// @Override
+	// public String getId()
+	// {
+	// return id;
+	// }
+	//
+	// public void setId(String id)
+	// {
+	// this.id = id;
+	// }
 
 	public boolean getFromTable()
 	{
@@ -44,16 +43,16 @@ public class FoodItem extends Food implements TrueCloneable, BaseItem
 
 	// ================================ CLONE ================================
 
-	@Override
-	public Named clone() throws CloneNotSupportedException
-	{
-		FoodItem result = (FoodItem) super.clone();
-
-		result.setFromTable(getFromTable());
-		result.setTag(getTag());
-
-		return result;
-	}
+	// @Override
+	// public Object clone() throws CloneNotSupportedException
+	// {
+	// FoodItem result = (FoodItem) super.clone();
+	//
+	// result.setFromTable(getFromTable());
+	// result.setTag(getTag());
+	//
+	// return result;
+	// }
 
 	@Override
 	public String toString()
@@ -73,6 +72,5 @@ public class FoodItem extends Food implements TrueCloneable, BaseItem
 	public void setTag(int tag)
 	{
 		// TODO Auto-generated method stub
-
 	}
 }

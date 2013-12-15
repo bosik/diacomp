@@ -3,12 +3,12 @@ package org.bosik.compensation.services;
 import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.bo.FoodMassed;
+import org.bosik.compensation.bo.RelativeTagged;
 import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.bo.diary.DiaryRecord;
 import org.bosik.compensation.bo.diary.records.MealRecord;
 import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.persistence.dao.BaseDAO;
-import org.bosik.compensation.persistence.dao.BaseItem;
 import org.bosik.compensation.persistence.dao.DiaryDAO;
 import org.bosik.compensation.persistence.dao.DishBaseDAO;
 import org.bosik.compensation.persistence.dao.FoodBaseDAO;
@@ -63,7 +63,7 @@ public class RelevantIndexator
 		return delta * delta;
 	}
 
-	private static <T extends BaseItem> void clearTags(BaseDAO<T> base)
+	private static <T extends RelativeTagged> void clearTags(BaseDAO<T> base)
 	{
 		List<Versioned<T>> list = base.findAll();
 		for (Versioned<T> item : list)
@@ -81,7 +81,7 @@ public class RelevantIndexator
 			return;
 	}
 
-	private static <T extends BaseItem> boolean process(String name, int delta, BaseDAO<T> base)
+	private static <T extends RelativeTagged> boolean process(String name, int delta, BaseDAO<T> base)
 	{
 		Versioned<T> item = base.findOne(name);
 		if (null != item)
