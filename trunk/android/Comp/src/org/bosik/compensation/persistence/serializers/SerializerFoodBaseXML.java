@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.serializers.foodbase;
+package org.bosik.compensation.persistence.serializers;
 
 /**
  * Provides methods for foodbase (de)serialization in XML format

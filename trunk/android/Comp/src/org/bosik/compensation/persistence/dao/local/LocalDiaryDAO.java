@@ -10,7 +10,7 @@ import org.bosik.compensation.persistence.dao.DiaryDAO;
 import org.bosik.compensation.persistence.dao.local.utils.DiaryContentProvider;
 import org.bosik.compensation.persistence.exceptions.CommonDAOException;
 import org.bosik.compensation.persistence.exceptions.StoreException;
-import org.bosik.compensation.persistence.serializers.diary.SerializerDiaryPagePlain;
+import org.bosik.compensation.persistence.serializers.SerializerDiaryPagePlain;
 import org.bosik.compensation.utils.Utils;
 import android.app.Activity;
 import android.content.ContentResolver;

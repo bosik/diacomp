@@ -1,10 +1,9 @@
-package org.bosik.compensation.persistence.serializers.foodmassed;
+package org.bosik.compensation.persistence.serializers;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.List;
 import org.bosik.compensation.bo.FoodMassed;
-import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.utils.Utils;
 
 public class SerializerFoodMassedPlain implements Serializer<FoodMassed>
