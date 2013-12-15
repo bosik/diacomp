@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.serializers.foodbase;
+package org.bosik.compensation.persistence.serializers.fooditem;
 
 import java.util.ArrayList;
 import java.util.List;
