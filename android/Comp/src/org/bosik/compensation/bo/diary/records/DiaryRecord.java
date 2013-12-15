@@ -48,7 +48,7 @@ public abstract class DiaryRecord extends Unique
 		}
 	}
 
-	// ================================ ВАЛИДАТОРЫ ================================
+	// ================================ VALIDATORS ================================
 
 	public static boolean checkTime(int time)
 	{
