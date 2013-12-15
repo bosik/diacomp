@@ -1,5 +1,7 @@
 package org.bosik.compensation.bo.diary.records;
 
+import org.bosik.compensation.bo.diary.DiaryRecord;
+
 public class InsRecord extends DiaryRecord
 {
 	private static final long	serialVersionUID	= 7357437083772571438L;
