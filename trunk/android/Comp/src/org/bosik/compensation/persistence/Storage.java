@@ -1,6 +1,6 @@
 package org.bosik.compensation.persistence;
 
-import org.bosik.compensation.bo.basic.Unique;
+import org.bosik.compensation.bo.basic.Versioned;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.activities.ActivityPreferences;
 import org.bosik.compensation.persistence.dao.DiaryDAO;
@@ -108,7 +108,7 @@ public class Storage
 
 			JSONSerializer<FoodItem> sJsonItem = new FoodItemJSONSerializer();
 			VersionedJSONSerializer<FoodItem> sJsonVersioned = new VersionedJSONSerializer<FoodItem>(sJsonItem);
-			Serializer<Unique<FoodItem>> serializer = new JSONConverter<Unique<FoodItem>>(sJsonVersioned);
+			Serializer<Versioned<FoodItem>> serializer = new JSONConverter<Versioned<FoodItem>>(sJsonVersioned);
 
 			webFoodBase = new WebFoodBaseDAO(webClient, serializer);
 		}

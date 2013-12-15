@@ -1,7 +1,7 @@
 package org.bosik.compensation.bo.diary.records;
 
 import junit.framework.TestCase;
-import org.bosik.compensation.bo.basic.Unique;
+import org.bosik.compensation.bo.basic.Versioned;
 
 public class BloodRecordTest extends TestCase
 {
@@ -26,8 +26,8 @@ public class BloodRecordTest extends TestCase
 
 	public void testClone() throws CloneNotSupportedException
 	{
-		Unique<BloodRecord> a = new Unique<BloodRecord>(new BloodRecord(890, 5.1, 2));
-		Unique<BloodRecord> b = a.clone();
+		Versioned<BloodRecord> a = new Versioned<BloodRecord>(new BloodRecord(890, 5.1, 2));
+		Versioned<BloodRecord> b = a.clone();
 
 		assertEquals(a, b);
 		assertNotSame(a, b);

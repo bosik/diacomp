@@ -3,7 +3,7 @@ package org.bosik.compensation.services;
 import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.bo.FoodMassed;
-import org.bosik.compensation.bo.basic.Unique;
+import org.bosik.compensation.bo.basic.Versioned;
 import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.bo.diary.records.DiaryRecord;
 import org.bosik.compensation.bo.diary.records.MealRecord;
@@ -65,8 +65,8 @@ public class RelevantIndexator
 
 	private static <T extends BaseItem> void clearTags(BaseDAO<T> base)
 	{
-		List<Unique<T>> list = base.findAll();
-		for (Unique<T> item : list)
+		List<Versioned<T>> list = base.findAll();
+		for (Versioned<T> item : list)
 		{
 			item.getData().setTag(0);
 			base.update(item);
@@ -83,7 +83,7 @@ public class RelevantIndexator
 
 	private static <T extends BaseItem> boolean process(String name, int delta, BaseDAO<T> base)
 	{
-		Unique<T> item = base.findOne(name);
+		Versioned<T> item = base.findOne(name);
 		if (null != item)
 		{
 			item.getData().setTag(item.getData().getTag() + delta);

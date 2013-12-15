@@ -10,9 +10,9 @@ import org.bosik.compensation.utils.Utils;
  * 
  * @author Bosik
  */
-// TODO: rename to Versioned
+
 // FIXME: remove Cloneable
-public class Unique<T extends TrueCloneable> implements TrueCloneable, Serializable
+public class Versioned<T extends TrueCloneable> implements TrueCloneable, Serializable
 {
 	private static final long	serialVersionUID	= 6063993499772711799L;
 
@@ -23,7 +23,7 @@ public class Unique<T extends TrueCloneable> implements TrueCloneable, Serializa
 
 	// ================================ MAIN ================================
 
-	public Unique(T data)
+	public Versioned(T data)
 	{
 		id = UUID.randomUUID().toString();
 		version = 0;
@@ -88,11 +88,11 @@ public class Unique<T extends TrueCloneable> implements TrueCloneable, Serializa
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Unique<T> clone() throws CloneNotSupportedException
+	public Versioned<T> clone() throws CloneNotSupportedException
 	{
 		// throw new RuntimeException("Do not use clone method");
 
-		Unique<T> result = (Unique<T>) super.clone();
+		Versioned<T> result = (Versioned<T>) super.clone();
 		result.id = id;
 		result.timeStamp = timeStamp;
 		result.version = version;
@@ -121,7 +121,7 @@ public class Unique<T extends TrueCloneable> implements TrueCloneable, Serializa
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Unique<T> other = (Unique<T>) obj;
+		Versioned<T> other = (Versioned<T>) obj;
 		if (id == null)
 		{
 			if (other.id != null)

@@ -1,7 +1,7 @@
 package org.bosik.compensation.persistence.serializers.dishbase;
 
 @Deprecated
-public class DishBaseXMLSerializer // implements Serializer<List<Unique<DishItem>>>
+public class DishBaseXMLSerializer // implements Serializer<List<Versioned<DishItem>>>
 {
 	// private static final String TAG = DishBaseXMLSerializer.class.getSimpleName();
 	//
