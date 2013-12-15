@@ -5,14 +5,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-// TODO: rename to JSONParser
-public class JSONConverter<T> implements Serializer<T>
+public class SerializerJSONAdapter<T> implements Serializer<T>
 {
-	private JSONParser<T>	serializer;
+	private JSONParser<T>	parser;
 
-	public JSONConverter(JSONParser<T> serializer)
+	public SerializerJSONAdapter(JSONParser<T> parser)
 	{
-		this.serializer = serializer;
+		this.parser = parser;
 	}
 
 	@Override
@@ -21,7 +20,7 @@ public class JSONConverter<T> implements Serializer<T>
 		try
 		{
 			JSONObject json = new JSONObject(s);
-			return serializer.read(json);
+			return parser.read(json);
 		}
 		catch (JSONException e)
 		{
@@ -35,7 +34,7 @@ public class JSONConverter<T> implements Serializer<T>
 		try
 		{
 			JSONArray json = new JSONArray(s);
-			return serializer.readAll(json);
+			return parser.readAll(json);
 		}
 		catch (JSONException e)
 		{
@@ -48,7 +47,7 @@ public class JSONConverter<T> implements Serializer<T>
 	{
 		try
 		{
-			return serializer.write(object).toString();
+			return parser.write(object).toString();
 		}
 		catch (JSONException e)
 		{
@@ -61,7 +60,7 @@ public class JSONConverter<T> implements Serializer<T>
 	{
 		try
 		{
-			return serializer.writeAll(objects).toString();
+			return parser.writeAll(objects).toString();
 		}
 		catch (JSONException e)
 		{

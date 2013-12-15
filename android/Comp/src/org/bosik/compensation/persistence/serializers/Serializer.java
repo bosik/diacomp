@@ -3,7 +3,7 @@ package org.bosik.compensation.persistence.serializers;
 import java.util.List;
 
 /**
- * General serialization / deserialization interface
+ * Converts <b>object(s) <—> string</b>
  * 
  * @author Bosik
  * 

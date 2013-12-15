@@ -9,13 +9,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class VersionedJSONSerializer<T> implements JSONParser<Versioned<T>>
+public class JSONParserVersioned<T> implements JSONParser<Versioned<T>>
 {
-	private JSONParser<T>	serializer;
+	private JSONParser<T>	parser;
 
-	public VersionedJSONSerializer(JSONParser<T> serializer)
+	public JSONParserVersioned(JSONParser<T> parser)
 	{
-		this.serializer = serializer;
+		this.parser = parser;
 	}
 
 	@Override
@@ -23,7 +23,7 @@ public class VersionedJSONSerializer<T> implements JSONParser<Versioned<T>>
 	{
 		try
 		{
-			Versioned<T> item = new Versioned<T>(serializer.read(json.getJSONObject("data")));
+			Versioned<T> item = new Versioned<T>(parser.read(json.getJSONObject("data")));
 
 			item.setId(json.getString("id"));
 			item.setTimeStamp(Utils.parseTimeUTC(json.getString("stamp")));
@@ -59,7 +59,7 @@ public class VersionedJSONSerializer<T> implements JSONParser<Versioned<T>>
 		json.put("id", object.getId());
 		json.put("stamp", Utils.formatTimeUTC(object.getTimeStamp()));
 		json.put("version", object.getVersion());
-		json.put("data", serializer.write(object.getData()));
+		json.put("data", parser.write(object.getData()));
 
 		return json;
 	}
