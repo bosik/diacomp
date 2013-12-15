@@ -19,7 +19,7 @@ public abstract class FoodBaseDAOTest extends AndroidTestCase
 	public void testPersistanceSingle()
 	{
 		FoodItem org = FoodItemUtils.demoFoodItemA();
-		int version;
+		// int version;
 
 		if (foodBaseDAO.findById(org.getId()) != null)
 		{
