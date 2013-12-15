@@ -10,10 +10,10 @@ import org.bosik.compensation.persistence.dao.local.utils.DiaryContentProvider;
 import org.bosik.compensation.persistence.exceptions.CommonDAOException;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 import org.bosik.compensation.persistence.exceptions.StoreException;
-import org.bosik.compensation.persistence.serializers.SerializerJSONAdapter;
-import org.bosik.compensation.persistence.serializers.JSONParser;
+import org.bosik.compensation.persistence.serializers.SerializerAdapter;
+import org.bosik.compensation.persistence.serializers.Parser;
 import org.bosik.compensation.persistence.serializers.Serializer;
-import org.bosik.compensation.persistence.serializers.foodbase.JSONParserFoodItem;
+import org.bosik.compensation.persistence.serializers.foodbase.ParserFoodItem;
 import org.bosik.compensation.utils.Utils;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -32,8 +32,8 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 		}
 		this.resolver = resolver;
 
-		JSONParser<FoodItem> s = new JSONParserFoodItem();
-		serializer = new SerializerJSONAdapter<FoodItem>(s);
+		Parser<FoodItem> s = new ParserFoodItem();
+		serializer = new SerializerAdapter<FoodItem>(s);
 
 	}
 
