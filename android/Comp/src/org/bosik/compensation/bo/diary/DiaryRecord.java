@@ -1,6 +1,5 @@
 package org.bosik.compensation.bo.diary;
 
-import java.io.Serializable;
 import org.bosik.compensation.bo.basic.TrueCloneable;
 import org.bosik.compensation.utils.Utils;
 
@@ -11,41 +10,17 @@ import org.bosik.compensation.utils.Utils;
  * 		2. Создать public static-методы вида checkField(value), реализующие валидацию.
  * 		3. Создать get-методы.
  * 		4. Создать set-методы, проводящие валидацию check-методом. Если провалилась, выбросить исключение IllegalArgumentException
- * 		5. Создать валидатор, проверяющий сразу все поля (????????)
- * 		6. Создать конструктор, принимающий сразу все поля и устанавливающий их с помощью set-методов.
  * 
  * Порядок использования:
  * 		1. Изменить значение с помощью set-метода.
  * 		2. Быть готовым поймать исключение и обработать его на frontend'е.
  */
 
-public abstract class DiaryRecord implements TrueCloneable, Serializable
+public abstract class DiaryRecord implements TrueCloneable// , Serializable
 {
-	private static final long	serialVersionUID	= 1L;
-	// private static final String TAG = "DiaryRecord";
+	// private static final long serialVersionUID = 1L;
 
-	// данные
-	private int					time;
-
-	public DiaryRecord()
-	{
-
-	}
-
-	// ============================== CLONE ==============================
-
-	@Override
-	public DiaryRecord clone()
-	{
-		try
-		{
-			return (DiaryRecord) super.clone();
-		}
-		catch (CloneNotSupportedException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
+	private int	time;
 
 	// ================================ VALIDATORS ================================
 
@@ -69,5 +44,17 @@ public abstract class DiaryRecord implements TrueCloneable, Serializable
 		}
 
 		this.time = time;
+	}
+
+	// ============================== CLONE ==============================
+
+	@Override
+	public Object clone() throws CloneNotSupportedException
+	{
+		DiaryRecord result = (DiaryRecord) super.clone();
+
+		result.setTime(getTime());
+
+		return result;
 	}
 }

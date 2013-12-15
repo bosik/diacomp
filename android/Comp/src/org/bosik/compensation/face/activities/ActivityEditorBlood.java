@@ -3,6 +3,7 @@ package org.bosik.compensation.face.activities;
 import org.bosik.compensation.bo.diary.records.BloodRecord;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.face.UIUtils;
+import org.bosik.compensation.persistence.common.Versioned;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -12,7 +13,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
+public class ActivityEditorBlood extends ActivityEditor<Versioned<BloodRecord>>
 {
 	// private static final String TAG = ActivityEditorBlood.class.getSimpleName();
 
@@ -53,13 +54,13 @@ public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
-		timePicker.setCurrentHour(entity.getTime() / 60);
-		timePicker.setCurrentMinute(entity.getTime() % 60);
-		spinnerFinger.setSelection(entity.getFinger());
+		timePicker.setCurrentHour(entity.getData().getTime() / 60);
+		timePicker.setCurrentMinute(entity.getData().getTime() % 60);
+		spinnerFinger.setSelection(entity.getData().getFinger());
 
 		if (!createMode)
 		{
-			editValue.setText(String.valueOf(entity.getValue()));
+			editValue.setText(String.valueOf(entity.getData().getValue()));
 		}
 		else
 		{
@@ -81,7 +82,7 @@ public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 		// time
 		try
 		{
-			entity.setTime((timePicker.getCurrentHour() * 60) + timePicker.getCurrentMinute());
+			entity.getData().setTime((timePicker.getCurrentHour() * 60) + timePicker.getCurrentMinute());
 		}
 		catch (IllegalArgumentException e)
 		{
@@ -93,7 +94,7 @@ public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 		// value
 		try
 		{
-			entity.setValue(Double.parseDouble(editValue.getText().toString()));
+			entity.getData().setValue(Double.parseDouble(editValue.getText().toString()));
 		}
 		catch (NumberFormatException e)
 		{
@@ -113,11 +114,11 @@ public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 		{
 			if (askFinger)
 			{
-				entity.setFinger(spinnerFinger.getSelectedItemPosition());
+				entity.getData().setFinger(spinnerFinger.getSelectedItemPosition());
 			}
 			else
 			{
-				entity.setFinger(-1);
+				entity.getData().setFinger(-1);
 			}
 		}
 		catch (IllegalArgumentException e)
