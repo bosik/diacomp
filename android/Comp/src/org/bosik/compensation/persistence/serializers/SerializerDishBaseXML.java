@@ -1,4 +1,4 @@
-package org.bosik.compensation.persistence.serializers.dishbase;
+package org.bosik.compensation.persistence.serializers;
 
 @Deprecated
 public class SerializerDishBaseXML

@@ -1,11 +1,9 @@
-package org.bosik.compensation.persistence.serializers.diary;
+package org.bosik.compensation.persistence.serializers;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import org.bosik.compensation.bo.diary.DiaryPage;
-import org.bosik.compensation.persistence.serializers.Serializer;
-import org.bosik.compensation.persistence.serializers.foodmassed.SerializerFoodMassedPlain;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
 
