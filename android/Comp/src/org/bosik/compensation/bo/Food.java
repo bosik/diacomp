@@ -1,7 +1,7 @@
 package org.bosik.compensation.bo;
 
 import java.io.Serializable;
-import org.bosik.compensation.bo.basic.TrueCloneable;
+import org.bosik.compensation.bo.basic.Named;
 
 /**
  * Stores food's name and relative parameters (PFCV on 100g)
@@ -9,7 +9,7 @@ import org.bosik.compensation.bo.basic.TrueCloneable;
  * @author Bosik
  * 
  */
-public class Food implements TrueCloneable, Serializable
+public class Food implements Serializable, Named
 {
 	private static final long	serialVersionUID	= -659635365362405228L;
 
@@ -21,6 +21,7 @@ public class Food implements TrueCloneable, Serializable
 
 	public Food()
 	{
+
 	}
 
 	public Food(String name, double relProts, double relFats, double relCarbs, double relValue)
@@ -76,6 +77,7 @@ public class Food implements TrueCloneable, Serializable
 
 	// ================================ GET / SET ================================
 
+	@Override
 	public String getName()
 	{
 		return name;
@@ -137,21 +139,5 @@ public class Food implements TrueCloneable, Serializable
 	{
 		checkNonNegativeThrowable(relValue);
 		this.relValue = relValue;
-	}
-
-	// ================================ CLONE ================================
-
-	@Override
-	public Object clone() throws CloneNotSupportedException
-	{
-		Food result = (Food) super.clone();
-
-		result.setName(getName());
-		result.setRelCarbs(getRelCarbs());
-		result.setRelFats(getRelFats());
-		result.setRelProts(getRelProts());
-		result.setRelValue(getRelValue());
-
-		return result;
 	}
 }
