@@ -6,8 +6,7 @@ public class NoteRecord extends DiaryRecord
 {
 	private static final long	serialVersionUID	= 7394847492375407284L;
 
-	// TODO: remove this initialization
-	private String				text				= "";
+	private String				text;
 
 	public NoteRecord()
 	{

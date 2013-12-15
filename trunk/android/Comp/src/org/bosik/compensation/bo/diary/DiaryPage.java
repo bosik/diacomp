@@ -13,18 +13,18 @@ import android.util.Log;
 
 public class DiaryPage
 {
-	private static final String							TAG			= DiaryPage.class.getSimpleName();
+	private static final String								TAG			= DiaryPage.class.getSimpleName();
 
 	// TODO: test
 
 	// ===================================== ПОЛЯ =====================================
 
-	private Date										date		= null;
-	private Date										timeStamp	= null;
-	private int											version		= 0;
+	private Date											date;
+	private Date											timeStamp;
+	private int												version;
 	private final List<Versioned<? extends DiaryRecord>>	items		= new ArrayList<Versioned<? extends DiaryRecord>>();
 
-	private transient boolean							silentMode	= false;
+	private transient boolean								silentMode	= false;
 
 	// ============================== ВНУТРЕННИЕ МЕТОДЫ ==============================
 
