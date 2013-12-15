@@ -65,11 +65,11 @@ public class RelevantIndexator
 	private static <T extends RelativeTagged> void clearTags(BaseDAO<T> base)
 	{
 		List<T> list = base.findAll();
-		for (RelativeTagged item : list)
+		for (T item : list)
 		{
 			item.setTag(0);
+			base.update(item);
 		}
-		base.replaceAll(list, base.getVersion());
 	}
 
 	private static void process(String name, int delta, FoodBaseDAO foodBase, DishBaseDAO dishBase)
