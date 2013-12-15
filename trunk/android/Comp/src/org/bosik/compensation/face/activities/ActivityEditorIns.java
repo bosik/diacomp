@@ -3,6 +3,7 @@ package org.bosik.compensation.face.activities;
 import org.bosik.compensation.bo.diary.records.InsRecord;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.face.UIUtils;
+import org.bosik.compensation.persistence.common.Versioned;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -10,7 +11,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-public class ActivityEditorIns extends ActivityEditor<InsRecord>
+public class ActivityEditorIns extends ActivityEditor<Versioned<InsRecord>>
 {
 	// components
 	private TimePicker	timePicker;
@@ -40,12 +41,12 @@ public class ActivityEditorIns extends ActivityEditor<InsRecord>
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
-		timePicker.setCurrentHour(entity.getTime() / 60);
-		timePicker.setCurrentMinute(entity.getTime() % 60);
+		timePicker.setCurrentHour(entity.getData().getTime() / 60);
+		timePicker.setCurrentMinute(entity.getData().getTime() % 60);
 
 		if (!createMode)
 		{
-			editValue.setText(String.valueOf(entity.getValue()));
+			editValue.setText(String.valueOf(entity.getData().getValue()));
 		}
 		else
 		{
@@ -61,7 +62,7 @@ public class ActivityEditorIns extends ActivityEditor<InsRecord>
 		// time
 		try
 		{
-			entity.setTime((timePicker.getCurrentHour() * 60) + timePicker.getCurrentMinute());
+			entity.getData().setTime((timePicker.getCurrentHour() * 60) + timePicker.getCurrentMinute());
 		}
 		catch (IllegalArgumentException e)
 		{
@@ -73,7 +74,7 @@ public class ActivityEditorIns extends ActivityEditor<InsRecord>
 		// value
 		try
 		{
-			entity.setValue(Double.parseDouble(editValue.getText().toString()));
+			entity.getData().setValue(Double.parseDouble(editValue.getText().toString()));
 		}
 		catch (NumberFormatException e)
 		{

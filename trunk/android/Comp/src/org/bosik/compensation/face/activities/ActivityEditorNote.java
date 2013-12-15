@@ -3,13 +3,14 @@ package org.bosik.compensation.face.activities;
 import org.bosik.compensation.bo.diary.records.NoteRecord;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.face.UIUtils;
+import org.bosik.compensation.persistence.common.Versioned;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-public class ActivityEditorNote extends ActivityEditor<NoteRecord>
+public class ActivityEditorNote extends ActivityEditor<Versioned<NoteRecord>>
 {
 	/* =========================== КОНСТАНТЫ ================================ */
 	// private static final String TAG = "ActivityEditorNote";
@@ -44,11 +45,11 @@ public class ActivityEditorNote extends ActivityEditor<NoteRecord>
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
-		timePicker.setCurrentHour(entity.getTime() / 60);
-		timePicker.setCurrentMinute(entity.getTime() % 60);
+		timePicker.setCurrentHour(entity.getData().getTime() / 60);
+		timePicker.setCurrentMinute(entity.getData().getTime() % 60);
 		if (!createMode)
 		{
-			editText.setText(entity.getText());
+			editText.setText(entity.getData().getText());
 		}
 		else
 		{
@@ -62,7 +63,7 @@ public class ActivityEditorNote extends ActivityEditor<NoteRecord>
 		// читаем время
 		try
 		{
-			entity.setTime((timePicker.getCurrentHour() * 60) + timePicker.getCurrentMinute());
+			entity.getData().setTime((timePicker.getCurrentHour() * 60) + timePicker.getCurrentMinute());
 		}
 		catch (IllegalArgumentException e)
 		{
@@ -74,7 +75,7 @@ public class ActivityEditorNote extends ActivityEditor<NoteRecord>
 		// читаем значение
 		try
 		{
-			entity.setText(editText.getText().toString());
+			entity.getData().setText(editText.getText().toString());
 		}
 		catch (IllegalArgumentException e)
 		{
