@@ -5,12 +5,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-// TODO: rename to JSONSerializer
+// TODO: rename to JSONParser
 public class JSONConverter<T> implements Serializer<T>
 {
-	private JSONSerializer<T>	serializer;
+	private JSONParser<T>	serializer;
 
-	public JSONConverter(JSONSerializer<T> serializer)
+	public JSONConverter(JSONParser<T> serializer)
 	{
 		this.serializer = serializer;
 	}

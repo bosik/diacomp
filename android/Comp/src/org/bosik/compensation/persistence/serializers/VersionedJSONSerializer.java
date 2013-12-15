@@ -9,11 +9,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class VersionedJSONSerializer<T> implements JSONSerializer<Versioned<T>>
+public class VersionedJSONSerializer<T> implements JSONParser<Versioned<T>>
 {
-	private JSONSerializer<T>	serializer;
+	private JSONParser<T>	serializer;
 
-	public VersionedJSONSerializer(JSONSerializer<T> serializer)
+	public VersionedJSONSerializer(JSONParser<T> serializer)
 	{
 		this.serializer = serializer;
 	}

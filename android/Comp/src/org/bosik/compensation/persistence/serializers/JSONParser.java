@@ -5,8 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-// TODO: rename to JSONParser
-public interface JSONSerializer<T>
+public interface JSONParser<T>
 {
 	/**
 	 * Deserializes object from JSON

@@ -12,7 +12,7 @@ import org.bosik.compensation.persistence.dao.web.WebDiaryDAO;
 import org.bosik.compensation.persistence.dao.web.WebFoodBaseDAO;
 import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
 import org.bosik.compensation.persistence.serializers.JSONConverter;
-import org.bosik.compensation.persistence.serializers.JSONSerializer;
+import org.bosik.compensation.persistence.serializers.JSONParser;
 import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.persistence.serializers.VersionedJSONSerializer;
 import org.bosik.compensation.persistence.serializers.foodbase.SerializerFoodItemJSON;
@@ -106,7 +106,7 @@ public class Storage
 		{
 			Log.v(TAG, "Web food base initialization...");
 
-			JSONSerializer<FoodItem> sJsonItem = new SerializerFoodItemJSON();
+			JSONParser<FoodItem> sJsonItem = new SerializerFoodItemJSON();
 			VersionedJSONSerializer<FoodItem> sJsonVersioned = new VersionedJSONSerializer<FoodItem>(sJsonItem);
 			Serializer<Versioned<FoodItem>> serializer = new JSONConverter<Versioned<FoodItem>>(sJsonVersioned);
 
