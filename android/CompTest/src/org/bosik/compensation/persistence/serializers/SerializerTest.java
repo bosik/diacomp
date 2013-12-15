@@ -1,17 +1,36 @@
 package org.bosik.compensation.persistence.serializers;
 
 import java.util.List;
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
+import android.util.Log;
 
 public abstract class SerializerTest<T> extends TestCase
 {
+	private static final String	TAG	= SerializerTest.class.getSimpleName();
+
 	protected abstract Serializer<T> getSerializer();
 
 	protected abstract List<T> getSamples();
 
-	protected abstract void compare(T a, T b);
+	protected abstract void compare(T exp, T act);
 
 	// ==========================================================================
+
+	private void compareInformative(T exp, T act)
+	{
+		try
+		{
+			compare(exp, act);
+		}
+		catch (AssertionFailedError e)
+		{
+			Log.e(TAG, "Comparison error:");
+			Log.e(TAG, exp.toString());
+			Log.e(TAG, act.toString());
+			throw e;
+		}
+	}
 
 	public void testPersistenceSingle()
 	{
@@ -21,7 +40,7 @@ public abstract class SerializerTest<T> extends TestCase
 
 		for (T sample : samples)
 		{
-			compare(sample, serializer.read(serializer.write(sample)));
+			compareInformative(sample, serializer.read(serializer.write(sample)));
 		}
 	}
 
@@ -35,7 +54,7 @@ public abstract class SerializerTest<T> extends TestCase
 		assertEquals(samples.size(), restored.size());
 		for (int i = 0; i < samples.size(); i++)
 		{
-			compare(samples.get(i), restored.get(i));
+			compareInformative(samples.get(i), restored.get(i));
 		}
 	}
 }
