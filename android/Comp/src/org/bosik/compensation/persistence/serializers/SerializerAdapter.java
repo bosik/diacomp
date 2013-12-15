@@ -5,11 +5,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SerializerJSONAdapter<T> implements Serializer<T>
+public class SerializerAdapter<T> implements Serializer<T>
 {
-	private JSONParser<T>	parser;
+	private Parser<T>	parser;
 
-	public SerializerJSONAdapter(JSONParser<T> parser)
+	public SerializerAdapter(Parser<T> parser)
 	{
 		this.parser = parser;
 	}

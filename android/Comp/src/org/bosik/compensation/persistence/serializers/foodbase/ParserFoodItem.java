@@ -4,12 +4,12 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import org.bosik.compensation.bo.foodbase.FoodItem;
-import org.bosik.compensation.persistence.serializers.JSONParser;
+import org.bosik.compensation.persistence.serializers.Parser;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class JSONParserFoodItem implements JSONParser<FoodItem>
+public class ParserFoodItem implements Parser<FoodItem>
 {
 	protected FoodItem decodeJson(JSONObject json) throws JSONException, ParseException
 	{

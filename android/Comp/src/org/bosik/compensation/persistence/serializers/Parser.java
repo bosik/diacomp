@@ -12,7 +12,7 @@ import org.json.JSONObject;
  * 
  * @param <T>
  */
-public interface JSONParser<T>
+public interface Parser<T>
 {
 	/**
 	 * Deserializes object from JSON
