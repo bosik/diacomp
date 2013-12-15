@@ -5,7 +5,7 @@ import org.bosik.compensation.bo.FoodMassed;
 
 public class FoodMassedPlainSerializerTest extends TestCase
 {
-	private FoodMassedPlainSerializer	serializer	= new FoodMassedPlainSerializer();
+	private SerializerFoodMassedPlain	serializer	= new SerializerFoodMassedPlain();
 
 	public void testRead()
 	{

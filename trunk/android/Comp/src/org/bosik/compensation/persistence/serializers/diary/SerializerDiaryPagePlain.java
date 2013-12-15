@@ -5,14 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.persistence.serializers.Serializer;
-import org.bosik.compensation.persistence.serializers.foodmassed.FoodMassedPlainSerializer;
+import org.bosik.compensation.persistence.serializers.foodmassed.SerializerFoodMassedPlain;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
 
-public class DiaryPagePlainSerializer implements Serializer<DiaryPage>
+@Deprecated
+public class SerializerDiaryPagePlain implements Serializer<DiaryPage>
 {
-	private static final String						TAG				= DiaryPagePlainSerializer.class.getSimpleName();
-	private static final FoodMassedPlainSerializer	foodSerializer	= new FoodMassedPlainSerializer();
+	private static final String						TAG				= SerializerDiaryPagePlain.class.getSimpleName();
+	private static final SerializerFoodMassedPlain	foodSerializer	= new SerializerFoodMassedPlain();
 
 	/**
 	 * Загружает страницу из её текстового представления. При возникновении ошибок информирует через

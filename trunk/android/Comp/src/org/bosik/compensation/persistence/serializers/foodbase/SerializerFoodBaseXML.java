@@ -7,9 +7,9 @@ package org.bosik.compensation.persistence.serializers.foodbase;
  * 
  */
 @Deprecated
-public class FoodBaseXMLSerializer // implements Serializer<MemoryBase<FoodItem>>
+public class SerializerFoodBaseXML
 {
-	// private static final String TAG = FoodBaseXMLSerializer.class.getSimpleName();
+	// private static final String TAG = SerializerFoodBaseXML.class.getSimpleName();
 
 	// @Override
 	// public MemoryBase<FoodItem> read(String xmlData)

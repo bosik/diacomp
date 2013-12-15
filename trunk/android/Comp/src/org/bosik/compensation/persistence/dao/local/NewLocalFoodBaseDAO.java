@@ -13,7 +13,7 @@ import org.bosik.compensation.persistence.exceptions.StoreException;
 import org.bosik.compensation.persistence.serializers.JSONConverter;
 import org.bosik.compensation.persistence.serializers.JSONSerializer;
 import org.bosik.compensation.persistence.serializers.Serializer;
-import org.bosik.compensation.persistence.serializers.foodbase.FoodItemJSONSerializer;
+import org.bosik.compensation.persistence.serializers.foodbase.SerializerFoodItemJSON;
 import org.bosik.compensation.utils.Utils;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -32,7 +32,7 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 		}
 		this.resolver = resolver;
 
-		JSONSerializer<FoodItem> s = new FoodItemJSONSerializer();
+		JSONSerializer<FoodItem> s = new SerializerFoodItemJSON();
 		serializer = new JSONConverter<FoodItem>(s);
 
 	}
