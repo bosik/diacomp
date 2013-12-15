@@ -1,9 +1,11 @@
 package org.bosik.compensation.persistence.dao;
 
-import org.bosik.compensation.bo.RelativeTagged;
-import org.bosik.compensation.bo.basic.TrueCloneable;
-
-public interface BaseItem extends RelativeTagged, TrueCloneable
+public class BaseItem// extends Versioned<RelativeTagged>
 {
-	String getId();
+	// private static final long serialVersionUID = 9043012193215701943L;
+	//
+	// public BaseItem(RelativeTagged data)
+	// {
+	// super(data);
+	// }
 }

@@ -16,7 +16,6 @@ public class FoodItemUtils extends TestCase
 		FoodItem demo = new FoodItem();
 
 		demo.setName("Хлеб \"Бородино\" нарезка (JUnit test)");
-		demo.setId("270C3EC853464B3DB314067AD005A727");
 		demo.setRelProts(5.5);
 		demo.setRelFats(0.9);
 		demo.setRelCarbs(44.1);
@@ -36,7 +35,6 @@ public class FoodItemUtils extends TestCase
 			assertEquals(exp, act);
 			assertEquals(exp.getName(), act.getName());
 			assertEquals(exp.getTag(), act.getTag());
-			assertEquals(exp.getId(), act.getId());
 			assertEquals(exp.getRelProts(), act.getRelProts(), EPS);
 			assertEquals(exp.getRelFats(), act.getRelFats(), EPS);
 			assertEquals(exp.getRelCarbs(), act.getRelCarbs(), EPS);

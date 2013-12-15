@@ -13,7 +13,6 @@ public abstract class FoodItemSerializerTest extends SerializerTest<FoodItem>
 		List<FoodItem> result = new ArrayList<FoodItem>();
 
 		FoodItem food1 = new FoodItem();
-		food1.setId("24785D5E44E14BF2917F3E3AAAA5C18E");
 		food1.setName("Абрикос");
 		food1.setRelProts(0.9);
 		food1.setRelFats(0.1);
@@ -24,7 +23,6 @@ public abstract class FoodItemSerializerTest extends SerializerTest<FoodItem>
 		result.add(food1);
 
 		FoodItem food2 = new FoodItem();
-		food2.setId("55C77C6BFD6047EF9B5385FDD82503EE");
 		food2.setName("Аджика \"Кавказская\"");
 		food2.setRelProts(0.0);
 		food2.setRelFats(0.0);
@@ -35,7 +33,6 @@ public abstract class FoodItemSerializerTest extends SerializerTest<FoodItem>
 		result.add(food2);
 
 		FoodItem food3 = new FoodItem();
-		food3.setId("5FB7320EF98C43E290F9DED3B8EBFC3A");
 		food3.setName("Яйцо");
 		food3.setRelProts(12.7);
 		food3.setRelFats(11.5);
@@ -51,7 +48,6 @@ public abstract class FoodItemSerializerTest extends SerializerTest<FoodItem>
 	@Override
 	protected void compare(FoodItem food1, FoodItem food2)
 	{
-		assertEquals(food1.getId(), food2.getId());
 		assertEquals(food1.getName(), food2.getName());
 		assertEquals(food1.getRelProts(), food2.getRelProts());
 		assertEquals(food1.getRelFats(), food2.getRelFats());
