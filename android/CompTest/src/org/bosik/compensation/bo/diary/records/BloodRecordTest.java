@@ -1,6 +1,7 @@
 package org.bosik.compensation.bo.diary.records;
 
 import junit.framework.TestCase;
+import org.bosik.compensation.bo.basic.Unique;
 
 public class BloodRecordTest extends TestCase
 {
@@ -23,19 +24,18 @@ public class BloodRecordTest extends TestCase
 		assertFalse(BloodRecord.checkFinger(10500));
 	}
 
-	public void testClone()
+	public void testClone() throws CloneNotSupportedException
 	{
-		BloodRecord a = new BloodRecord(890, 5.1, 2);
-		BloodRecord b = (BloodRecord) a.clone();
+		Unique<BloodRecord> a = new Unique<BloodRecord>(new BloodRecord(890, 5.1, 2));
+		Unique<BloodRecord> b = a.clone();
 
 		assertEquals(a, b);
 		assertNotSame(a, b);
-		assertEquals(a.getId(), b.getId());
-		assertEquals(a.getTime(), b.getTime());
-		assertEquals(a.getValue(), b.getValue(), 0.01);
-		assertEquals(a.getFinger(), b.getFinger());
+		assertEquals(a.getData().getTime(), b.getData().getTime());
+		assertEquals(a.getData().getValue(), b.getData().getValue(), 0.01);
+		assertEquals(a.getData().getFinger(), b.getData().getFinger());
 
-		a.setTime(1003);
-		assertEquals(890, b.getTime());
+		a.getData().setTime(1003);
+		assertEquals(890, b.getData().getTime());
 	}
 }

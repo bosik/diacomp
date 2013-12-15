@@ -1,12 +1,9 @@
 package org.bosik.compensation.face.activities;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.bosik.compensation.bo.RelativeTagged;
-import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.R;
-import org.bosik.compensation.persistence.Storage;
-import org.bosik.compensation.services.Sorter;
+import org.bosik.compensation.persistence.dao.BaseItem;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -27,14 +24,14 @@ public class ActivityFoodbase extends Activity
 {
 	// private static final String TAG = ActivityFoodbase.class.getSimpleName();
 
-	public static final String		FIELD_GUID	= "bosik.pack.guid";
+	public static final String	FIELD_GUID	= "bosik.pack.guid";
 
 	// Widgets
-	private EditText				editFoodSearch;
-	private ListView				listFood;
+	private EditText			editFoodSearch;
+	private ListView			listFood;
 
 	// Data
-	private List<RelativeTagged>	data;
+	private List<BaseItem>		data;
 
 	// ===========================================================================
 
@@ -72,16 +69,16 @@ public class ActivityFoodbase extends Activity
 
 	private void runSearch(String key)
 	{
-		new AsyncTask<String, Void, List<RelativeTagged>>()
+		new AsyncTask<String, Void, List<BaseItem>>()
 		{
 			@Override
-			protected List<RelativeTagged> doInBackground(String... params)
+			protected List<BaseItem> doInBackground(String... params)
 			{
 				return request(params[0]);
 			}
 
 			@Override
-			protected void onPostExecute(List<RelativeTagged> result)
+			protected void onPostExecute(List<BaseItem> result)
 			{
 				showBase(result);
 			}
@@ -96,25 +93,27 @@ public class ActivityFoodbase extends Activity
 		return true;
 	}
 
-	private List<RelativeTagged> request(String filter)
+	private List<BaseItem> request(String filter)
 	{
-		List<FoodItem> temp;
-		if (filter.trim().isEmpty())
-		{
-			temp = Storage.localFoodBase.findAll();
-		}
-		else
-		{
-			temp = Storage.localFoodBase.findAny(filter);
-			Sorter.sort(temp, Sorter.Sort.RELEVANT);
-		}
-
-		List<RelativeTagged> result = new ArrayList<RelativeTagged>();
-		result.addAll(temp);
-		return result;
+		// List<Unique<FoodItem>> temp;
+		// if (filter.trim().isEmpty())
+		// {
+		// temp = Storage.localFoodBase.findAll();
+		// }
+		// else
+		// {
+		// temp = Storage.localFoodBase.findAny(filter);
+		// Sorter.sort(temp, Sorter.Sort.RELEVANT);
+		// }
+		//
+		// List<BaseItem> result = new ArrayList<BaseItem>();
+		// result.addAll(temp);
+		// return result;
+		// FIXME: implement again
+		return null;
 	}
 
-	private void showBase(final List<RelativeTagged> foodBase)
+	private void showBase(final List<BaseItem> foodBase)
 	{
 		data = foodBase;
 
@@ -148,7 +147,7 @@ public class ActivityFoodbase extends Activity
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				RelativeTagged item = data.get(position);
+				BaseItem item = data.get(position);
 				returnResult(item.getId());
 			}
 		});

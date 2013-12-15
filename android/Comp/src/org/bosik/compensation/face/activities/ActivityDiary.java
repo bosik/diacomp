@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import org.bosik.compensation.bo.basic.Unique;
 import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.bo.diary.records.BloodRecord;
 import org.bosik.compensation.bo.diary.records.DiaryRecord;
@@ -137,8 +138,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					return;
 				}
 
-				DiaryRecord rec = curPage.get(DiaryView.getDownedIndex());
-				Class<? extends DiaryRecord> c = rec.getClass();
+				DiaryRecord rec = curPage.get(DiaryView.getDownedIndex()).getData();
+				Class<?> c = rec.getClass();
 
 				if (c == BloodRecord.class)
 				{
@@ -285,8 +286,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 			// Type-specific options
 
-			DiaryRecord rec = curPage.get(ind);
-			Class<? extends DiaryRecord> c = rec.getClass();
+			Unique<? extends DiaryRecord> rec = curPage.get(ind);
+			Class<?> c = rec.getClass();
 
 			if (c == BloodRecord.class)
 			{
@@ -294,7 +295,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					case CONTEXT_ITEM_EDIT:
 					{
-						BloodRecord temp = (BloodRecord) rec;
+						Unique<BloodRecord> temp = (Unique<BloodRecord>) rec;
 						showBloodEditor(temp, false);
 						return true;
 					}
@@ -314,7 +315,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					case CONTEXT_ITEM_EDIT:
 					{
-						InsRecord temp = (InsRecord) rec;
+						Unique<InsRecord> temp = (Unique<InsRecord>) rec;
 						showInsEditor(temp, false);
 						return true;
 					}
@@ -334,7 +335,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					case CONTEXT_ITEM_EDIT:
 					{
-						NoteRecord temp = (NoteRecord) rec;
+						Unique<NoteRecord> temp = (Unique<NoteRecord>) rec;
 						showNoteEditor(temp, false);
 						return true;
 					}
@@ -424,19 +425,19 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	{
 		try
 		{
-			DiaryRecord rec = curPage.get(index);
+			Unique<? extends DiaryRecord> rec = curPage.get(index);
 
-			if (rec.getClass() == BloodRecord.class)
+			if (rec.getData().getClass() == BloodRecord.class)
 			{
-				showBloodEditor((BloodRecord) rec, false);
+				showBloodEditor((Unique<BloodRecord>) rec, false);
 			}
-			else if (rec.getClass() == InsRecord.class)
+			else if (rec.getData().getClass() == InsRecord.class)
 			{
-				showInsEditor((InsRecord) rec, false);
+				showInsEditor((Unique<InsRecord>) rec, false);
 			}
-			else if (rec.getClass() == NoteRecord.class)
+			else if (rec.getData().getClass() == NoteRecord.class)
 			{
-				showNoteEditor((NoteRecord) rec, false);
+				showNoteEditor((Unique<NoteRecord>) rec, false);
 			}
 		}
 		catch (Exception e)
@@ -466,7 +467,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					if (resultCode == RESULT_OK)
 					{
-						BloodRecord rec = (BloodRecord) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
+						Unique<BloodRecord> rec = (Unique<BloodRecord>) intent.getExtras().getSerializable(
+								ActivityEditor.FIELD_ENTITY);
 						curPage.add(rec);
 						postPage(curPage);
 					}
@@ -477,7 +479,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					if (resultCode == RESULT_OK)
 					{
-						BloodRecord rec = (BloodRecord) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
+						Unique<BloodRecord> rec = (Unique<BloodRecord>) intent.getExtras().getSerializable(
+								ActivityEditor.FIELD_ENTITY);
 						curPage.update(rec);
 						postPage(curPage);
 					}
@@ -488,7 +491,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					if (resultCode == RESULT_OK)
 					{
-						InsRecord rec = (InsRecord) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
+						Unique<InsRecord> rec = (Unique<InsRecord>) intent.getExtras().getSerializable(
+								ActivityEditor.FIELD_ENTITY);
 						curPage.add(rec);
 						postPage(curPage);
 					}
@@ -499,7 +503,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					if (resultCode == RESULT_OK)
 					{
-						InsRecord rec = (InsRecord) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
+						Unique<InsRecord> rec = (Unique<InsRecord>) intent.getExtras().getSerializable(
+								ActivityEditor.FIELD_ENTITY);
 						curPage.update(rec);
 						postPage(curPage);
 					}
@@ -510,7 +515,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					if (resultCode == RESULT_OK)
 					{
-						NoteRecord rec = (NoteRecord) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
+						Unique<NoteRecord> rec = (Unique<NoteRecord>) intent.getExtras().getSerializable(
+								ActivityEditor.FIELD_ENTITY);
 						curPage.add(rec);
 						postPage(curPage);
 					}
@@ -521,7 +527,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					if (resultCode == RESULT_OK)
 					{
-						NoteRecord rec = (NoteRecord) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
+						Unique<NoteRecord> rec = (Unique<NoteRecord>) intent.getExtras().getSerializable(
+								ActivityEditor.FIELD_ENTITY);
 						curPage.update(rec);
 						postPage(curPage);
 					}
@@ -576,9 +583,9 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			{
 				for (int j = page.count() - 1; j >= 0; j--)
 				{
-					if (page.get(j).getClass() == BloodRecord.class)
+					if (page.get(j).getData().getClass() == BloodRecord.class)
 					{
-						return (BloodRecord) page.get(j);
+						return (BloodRecord) page.get(j).getData();
 					}
 				}
 			}
@@ -588,16 +595,17 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		return null;
 	}
 
-	private void showBloodEditor(BloodRecord entity, boolean createMode)
+	private void showBloodEditor(Unique<BloodRecord> entity, boolean createMode)
 	{
 		if (createMode)
 		{
 			// FIXME: hardcoded scan period
 			final int SCAN_DAYS = 5;
 			BloodRecord prev = lastBlood(SCAN_DAYS);
-			entity = new BloodRecord();
-			entity.setTime(Utils.curMinutes());
-			entity.setFinger(((prev == null) || (prev.getFinger() == -1)) ? -1 : ((prev.getFinger() + 1) % 10));
+			BloodRecord rec = new BloodRecord();
+			rec.setTime(Utils.curMinutes());
+			rec.setFinger(((prev == null) || (prev.getFinger() == -1)) ? -1 : ((prev.getFinger() + 1) % 10));
+			entity = new Unique<BloodRecord>(rec);
 		}
 
 		Intent intent = new Intent(this, ActivityEditorBlood.class);
@@ -607,12 +615,13 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		startActivityForResult(intent, createMode ? DIALOG_BLOOD_CREATE : DIALOG_BLOOD_MODIFY);
 	}
 
-	private void showInsEditor(InsRecord entity, boolean createMode)
+	private void showInsEditor(Unique<InsRecord> entity, boolean createMode)
 	{
 		if (createMode)
 		{
-			entity = new InsRecord();
-			entity.setTime(Utils.curMinutes());
+			InsRecord rec = new InsRecord();
+			rec.setTime(Utils.curMinutes());
+			entity = new Unique<InsRecord>(rec);
 		}
 
 		Intent intent = new Intent(this, ActivityEditorIns.class);
@@ -628,12 +637,13 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		startActivity(new Intent(this, ActivityMeal.class));
 	}
 
-	private void showNoteEditor(NoteRecord entity, boolean createMode)
+	private void showNoteEditor(Unique<NoteRecord> entity, boolean createMode)
 	{
 		if (createMode)
 		{
-			entity = new NoteRecord();
-			entity.setTime(Utils.curMinutes());
+			NoteRecord rec = new NoteRecord();
+			rec.setTime(Utils.curMinutes());
+			entity = new Unique<NoteRecord>(rec);
 		}
 
 		Intent intent = new Intent(this, ActivityEditorNote.class);

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import org.bosik.compensation.bo.basic.Unique;
 import org.bosik.compensation.bo.diary.records.DiaryRecord;
 import org.bosik.compensation.persistence.exceptions.DuplicateException;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
@@ -13,27 +14,27 @@ import android.util.Log;
 
 public class DiaryPage
 {
-	private static final String		TAG			= DiaryPage.class.getSimpleName();
+	private static final String							TAG			= DiaryPage.class.getSimpleName();
 
 	// TODO: test
 
 	// ===================================== ПОЛЯ =====================================
 
-	private Date					date		= null;
-	private Date					timeStamp	= null;
-	private int						version		= 0;
-	private final List<DiaryRecord>	items		= new ArrayList<DiaryRecord>();
+	private Date										date		= null;
+	private Date										timeStamp	= null;
+	private int											version		= 0;
+	private final List<Unique<? extends DiaryRecord>>	items		= new ArrayList<Unique<? extends DiaryRecord>>();
 
-	private transient boolean		silentMode	= false;
+	private transient boolean							silentMode	= false;
 
 	// ============================== ВНУТРЕННИЕ МЕТОДЫ ==============================
 
-	private class RecordComparator implements Comparator<DiaryRecord>
+	private class RecordComparator implements Comparator<Unique<? extends DiaryRecord>>
 	{
 		@Override
-		public int compare(DiaryRecord lhs, DiaryRecord rhs)
+		public int compare(Unique<? extends DiaryRecord> lhs, Unique<? extends DiaryRecord> rhs)
 		{
-			return lhs.getTime() - rhs.getTime();
+			return lhs.getData().getTime() - rhs.getData().getTime();
 		}
 	}
 
@@ -175,7 +176,7 @@ public class DiaryPage
 	 *            Запись
 	 * @return Индекс созданной записи на странице
 	 */
-	public int add(DiaryRecord rec) throws DuplicateException
+	public int add(Unique<? extends DiaryRecord> rec) throws DuplicateException
 	{
 		if (rec == null)
 		{
@@ -188,6 +189,16 @@ public class DiaryPage
 		changed();
 
 		return items.indexOf(rec);
+	}
+
+	public int add(DiaryRecord rec) throws DuplicateException
+	{
+		if (rec == null)
+		{
+			throw new NullPointerException("Record can't be null");
+		}
+
+		return add(new Unique<DiaryRecord>(rec));
 	}
 
 	/**
@@ -206,10 +217,17 @@ public class DiaryPage
 	 * @param index
 	 * @return
 	 */
-	public DiaryRecord get(int index)
+	public Unique<? extends DiaryRecord> get(int index)
 	{
 		// TODO: get by ID, not index
-		return items.get(index).clone();
+		try
+		{
+			return items.get(index).clone();
+		}
+		catch (CloneNotSupportedException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -218,19 +236,19 @@ public class DiaryPage
 	 * @param id
 	 * @return Diary record
 	 */
-	public DiaryRecord get(String id) throws ItemNotFoundException
+	public Unique<? extends DiaryRecord> get(String id) throws ItemNotFoundException
 	{
 		int index = getIndexById(id);
 		if (index > -1)
 		{
-			// try
-			// {
-			return items.get(index).clone();
-			// }
-			// catch (CloneNotSupportedException e)
-			// {
-			// throw new RuntimeException(e);
-			// }
+			try
+			{
+				return items.get(index).clone();
+			}
+			catch (CloneNotSupportedException e)
+			{
+				throw new RuntimeException(e);
+			}
 		}
 		else
 		{
@@ -272,13 +290,20 @@ public class DiaryPage
 		items.clear();
 	}
 
-	public void update(DiaryRecord rec) throws ItemNotFoundException
+	public void update(Unique<? extends DiaryRecord> rec) throws ItemNotFoundException
 	{
 		int index = getIndexById(rec.getId());
 		if (index > -1)
 		{
-			items.set(index, rec.clone());
-			changed();
+			try
+			{
+				items.set(index, rec.clone());
+				changed();
+			}
+			catch (CloneNotSupportedException e)
+			{
+				throw new RuntimeException(e);
+			}
 		}
 		else
 		{

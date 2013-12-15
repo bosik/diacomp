@@ -25,9 +25,10 @@ public class FoodMassedPlainSerializer implements Serializer<FoodMassed>
 
 		try
 		{
-			FoodMassed food = new FoodMassed(t[0]);
+			FoodMassed food = new FoodMassed();
 
 			// setters are used for additional validating
+			food.setName(t[0]);
 			food.setRelProts(Utils.parseDouble(t[1]));
 			food.setRelFats(Utils.parseDouble(t[2]));
 			food.setRelCarbs(Utils.parseDouble(t[3]));

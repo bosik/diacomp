@@ -14,20 +14,20 @@ public interface Serializer<T>
 	/**
 	 * Deserializes object from string
 	 * 
-	 * @param data
+	 * @param s
 	 *            String with serialized object
 	 * @return Deserialized object
 	 */
-	public T read(String data);
+	public T read(String s);
 
 	/**
 	 * Deserializes arbitrary amount of objects from string
 	 * 
-	 * @param data
+	 * @param s
 	 *            String with serialized objects
 	 * @return List of deserialized objects
 	 */
-	public List<T> readAll(String data);
+	public List<T> readAll(String s);
 
 	/**
 	 * Serializes object into string

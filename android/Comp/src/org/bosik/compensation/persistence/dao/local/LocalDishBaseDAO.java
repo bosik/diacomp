@@ -1,17 +1,60 @@
 package org.bosik.compensation.persistence.dao.local;
 
-import java.io.IOException;
+import java.util.List;
+import org.bosik.compensation.bo.basic.Unique;
 import org.bosik.compensation.bo.dishbase.DishItem;
 import org.bosik.compensation.persistence.dao.DishBaseDAO;
-import org.bosik.compensation.persistence.dao.local.utils.FileBaseDAO;
-import org.bosik.compensation.persistence.serializers.dishbase.DishBaseXMLSerializer;
-import android.content.Context;
+import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
+import org.bosik.compensation.persistence.exceptions.StoreException;
 
-public class LocalDishBaseDAO extends FileBaseDAO<DishItem> implements DishBaseDAO
+public class LocalDishBaseDAO implements DishBaseDAO
 {
-	public LocalDishBaseDAO(Context context, String fileName) throws IOException
+	@Override
+	public String add(Unique<DishItem> item) throws StoreException
 	{
-		// hide last parameter with created serializer
-		super(context, fileName, new DishBaseXMLSerializer());
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void delete(String id) throws ItemNotFoundException
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public List<Unique<DishItem>> findAll()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Unique<DishItem>> findAny(String filter)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Unique<DishItem> findOne(String exactName)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Unique<DishItem> findById(String id)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void update(Unique<DishItem> item) throws ItemNotFoundException, StoreException
+	{
+		// TODO Auto-generated method stub
+
 	}
 }

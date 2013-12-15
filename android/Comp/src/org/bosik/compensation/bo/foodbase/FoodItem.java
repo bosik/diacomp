@@ -2,7 +2,9 @@ package org.bosik.compensation.bo.foodbase;
 
 import java.util.Locale;
 import org.bosik.compensation.bo.Food;
-import org.bosik.compensation.bo.basic.UniqueNamed;
+import org.bosik.compensation.bo.basic.Named;
+import org.bosik.compensation.bo.basic.TrueCloneable;
+import org.bosik.compensation.persistence.dao.BaseItem;
 
 /**
  * Food item for food base
@@ -10,18 +12,25 @@ import org.bosik.compensation.bo.basic.UniqueNamed;
  * @author Bosik
  * 
  */
-public class FoodItem extends Food implements Cloneable
+public class FoodItem extends Food implements TrueCloneable, BaseItem
 {
-	private static final long	serialVersionUID	= -1062568910858912955L;
+	private static final long	serialVersionUID	= 1789285539891342521L;
 
+	private String				id;
 	private boolean				fromTable;
 
-	public FoodItem(String name)
+	// ================================ GET / SET ================================
+
+	@Override
+	public String getId()
 	{
-		super(name);
+		return id;
 	}
 
-	// ================================ GET / SET ================================
+	public void setId(String id)
+	{
+		this.id = id;
+	}
 
 	public boolean getFromTable()
 	{
@@ -36,7 +45,7 @@ public class FoodItem extends Food implements Cloneable
 	// ================================ CLONE ================================
 
 	@Override
-	public UniqueNamed clone() throws CloneNotSupportedException
+	public Named clone() throws CloneNotSupportedException
 	{
 		FoodItem result = (FoodItem) super.clone();
 
@@ -49,7 +58,21 @@ public class FoodItem extends Food implements Cloneable
 	@Override
 	public String toString()
 	{
-		return String.format(Locale.US, "%s: %s[%.1f|%.1f|%.1f|%.1f]:%s", getId(), getName(), getRelProts(),
-				getRelFats(), getRelCarbs(), getRelValue(), getFromTable());
+		return String.format(Locale.US, "%s[%.1f|%.1f|%.1f|%.1f]:%s", getName(), getRelProts(), getRelFats(),
+				getRelCarbs(), getRelValue(), getFromTable());
+	}
+
+	@Override
+	public int getTag()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setTag(int tag)
+	{
+		// TODO Auto-generated method stub
+
 	}
 }
