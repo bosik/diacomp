@@ -1,8 +1,8 @@
 package org.bosik.compensation.persistence;
 
-import org.bosik.compensation.bo.basic.Versioned;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.activities.ActivityPreferences;
+import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.persistence.dao.DiaryDAO;
 import org.bosik.compensation.persistence.dao.DishBaseDAO;
 import org.bosik.compensation.persistence.dao.FoodBaseDAO;

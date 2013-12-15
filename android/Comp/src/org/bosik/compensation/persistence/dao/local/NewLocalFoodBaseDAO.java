@@ -2,9 +2,9 @@ package org.bosik.compensation.persistence.dao.local;
 
 import java.util.Date;
 import java.util.List;
-import org.bosik.compensation.bo.basic.Versioned;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.BuildConfig;
+import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.persistence.dao.FoodBaseDAO;
 import org.bosik.compensation.persistence.dao.local.utils.DiaryContentProvider;
 import org.bosik.compensation.persistence.exceptions.CommonDAOException;

@@ -1,8 +1,8 @@
 package org.bosik.compensation.persistence.dao.local;
 
 import java.util.List;
-import org.bosik.compensation.bo.basic.Versioned;
 import org.bosik.compensation.bo.foodbase.FoodItem;
+import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.persistence.dao.FoodBaseDAO;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 import org.bosik.compensation.persistence.exceptions.StoreException;

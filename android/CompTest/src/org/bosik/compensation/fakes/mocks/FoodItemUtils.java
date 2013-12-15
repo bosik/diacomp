@@ -2,8 +2,8 @@ package org.bosik.compensation.fakes.mocks;
 
 import junit.framework.ComparisonFailure;
 import junit.framework.TestCase;
-import org.bosik.compensation.bo.basic.Versioned;
 import org.bosik.compensation.bo.foodbase.FoodItem;
+import org.bosik.compensation.persistence.common.Versioned;
 import android.util.Log;
 
 public class FoodItemUtils extends TestCase

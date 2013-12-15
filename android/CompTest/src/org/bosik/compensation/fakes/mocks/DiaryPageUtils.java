@@ -3,13 +3,13 @@ package org.bosik.compensation.fakes.mocks;
 import java.util.Date;
 import junit.framework.TestCase;
 import org.bosik.compensation.bo.FoodMassed;
-import org.bosik.compensation.bo.basic.Versioned;
 import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.bo.diary.records.BloodRecord;
 import org.bosik.compensation.bo.diary.records.DiaryRecord;
 import org.bosik.compensation.bo.diary.records.InsRecord;
 import org.bosik.compensation.bo.diary.records.MealRecord;
 import org.bosik.compensation.bo.diary.records.NoteRecord;
+import org.bosik.compensation.persistence.common.Versioned;
 
 public class DiaryPageUtils extends TestCase
 {
