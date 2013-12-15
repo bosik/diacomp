@@ -80,23 +80,10 @@ public class FileBaseDAO<T extends UniqueNamed> implements BaseDAO<T>
 	}
 
 	@Override
-	public void replaceAll(List<T> newList, int newVersion)
-	{
-		base.replaceAll(newList, newVersion);
-		save();
-	}
-
-	@Override
 	public void update(T item) throws ItemNotFoundException
 	{
 		base.update(item);
 		save();
-	}
-
-	@Override
-	public int getVersion()
-	{
-		return base.getVersion();
 	}
 
 	// ----------------------------------- File I/O -----------------------------------

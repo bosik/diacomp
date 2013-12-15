@@ -57,19 +57,7 @@ public class WebDishBaseDAO implements DishBaseDAO
 	}
 
 	@Override
-	public void replaceAll(List<DishItem> newList, int newVersion)
-	{
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
 	public void update(DishItem item) throws ItemNotFoundException
-	{
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
-	public int getVersion()
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}

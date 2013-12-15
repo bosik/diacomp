@@ -57,24 +57,9 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 	}
 
 	@Override
-	public void replaceAll(List<FoodItem> newList, int newVersion) throws StoreException
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void update(FoodItem item) throws ItemNotFoundException, StoreException
 	{
 		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	public int getVersion()
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

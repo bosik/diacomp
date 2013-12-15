@@ -70,25 +70,11 @@ public class WebFoodBaseDAO implements FoodBaseDAO
 	}
 
 	@Override
-	public void replaceAll(List<FoodItem> newList, int newVersion)
-	{
-		MemoryBase<FoodItem> base = load();
-		base.replaceAll(newList, newVersion);
-		save(base);
-	}
-
-	@Override
 	public void update(FoodItem item) throws ItemNotFoundException
 	{
 		MemoryBase<FoodItem> base = load();
 		base.update(item);
 		save(base);
-	}
-
-	@Override
-	public int getVersion()
-	{
-		return webClient.getFoodBaseVersion();
 	}
 
 	// ----------------------------------- Web I/O -----------------------------------

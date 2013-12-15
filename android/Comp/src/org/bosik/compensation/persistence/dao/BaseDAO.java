@@ -65,8 +65,8 @@ public interface BaseDAO<Item>
 	 * @throws StoreException
 	 *             If storing failed
 	 */
-	@Deprecated
-	void replaceAll(List<Item> newList, int newVersion) throws StoreException;
+	// @Deprecated
+	// void replaceAll(List<Item> newList, int newVersion) throws StoreException;
 
 	/**
 	 * Updates single item
@@ -84,6 +84,6 @@ public interface BaseDAO<Item>
 	 * 
 	 * @return
 	 */
-	@Deprecated
-	int getVersion();
+	// @Deprecated
+	// int getVersion();
 }
