@@ -5,6 +5,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Converts <b>object(s) <—> JSON(s)<b/>
+ * 
+ * @author Bosik
+ * 
+ * @param <T>
+ */
 public interface JSONParser<T>
 {
 	/**
