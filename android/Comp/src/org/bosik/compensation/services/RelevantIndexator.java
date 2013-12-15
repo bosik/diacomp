@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.bo.FoodMassed;
 import org.bosik.compensation.bo.diary.DiaryPage;
-import org.bosik.compensation.bo.diary.records.DiaryRecord;
+import org.bosik.compensation.bo.diary.DiaryRecord;
 import org.bosik.compensation.bo.diary.records.MealRecord;
 import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.persistence.dao.BaseDAO;

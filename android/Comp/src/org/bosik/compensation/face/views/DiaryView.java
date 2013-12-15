@@ -1,8 +1,8 @@
 package org.bosik.compensation.face.views;
 
 import org.bosik.compensation.bo.diary.DiaryPage;
+import org.bosik.compensation.bo.diary.DiaryRecord;
 import org.bosik.compensation.bo.diary.records.BloodRecord;
-import org.bosik.compensation.bo.diary.records.DiaryRecord;
 import org.bosik.compensation.bo.diary.records.InsRecord;
 import org.bosik.compensation.bo.diary.records.MealRecord;
 import org.bosik.compensation.bo.diary.records.NoteRecord;

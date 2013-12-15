@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import org.bosik.compensation.bo.diary.records.DiaryRecord;
 import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.persistence.exceptions.DuplicateException;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;

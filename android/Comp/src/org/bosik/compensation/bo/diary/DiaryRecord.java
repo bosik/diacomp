@@ -1,4 +1,4 @@
-package org.bosik.compensation.bo.diary.records;
+package org.bosik.compensation.bo.diary;
 
 import java.io.Serializable;
 import org.bosik.compensation.bo.basic.TrueCloneable;

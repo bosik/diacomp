@@ -1,5 +1,7 @@
 package org.bosik.compensation.bo.diary.records;
 
+import org.bosik.compensation.bo.diary.DiaryRecord;
+
 public class BloodRecord extends DiaryRecord
 {
 	private static final long	serialVersionUID	= -1621097859834950338L;
