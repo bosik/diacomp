@@ -1,7 +1,7 @@
 package org.bosik.compensation.persistence.dao;
 
 import java.util.List;
-import org.bosik.compensation.bo.basic.Versioned;
+import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 import org.bosik.compensation.persistence.exceptions.StoreException;
 

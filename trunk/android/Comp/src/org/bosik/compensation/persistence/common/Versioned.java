@@ -1,8 +1,9 @@
-package org.bosik.compensation.bo.basic;
+package org.bosik.compensation.persistence.common;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
+import org.bosik.compensation.bo.basic.TrueCloneable;
 import org.bosik.compensation.utils.Utils;
 
 /**
