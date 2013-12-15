@@ -11,7 +11,7 @@ import org.bosik.compensation.persistence.exceptions.CommonDAOException;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 import org.bosik.compensation.persistence.exceptions.StoreException;
 import org.bosik.compensation.persistence.serializers.JSONConverter;
-import org.bosik.compensation.persistence.serializers.JSONSerializer;
+import org.bosik.compensation.persistence.serializers.JSONParser;
 import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.persistence.serializers.foodbase.SerializerFoodItemJSON;
 import org.bosik.compensation.utils.Utils;
@@ -32,7 +32,7 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 		}
 		this.resolver = resolver;
 
-		JSONSerializer<FoodItem> s = new SerializerFoodItemJSON();
+		JSONParser<FoodItem> s = new SerializerFoodItemJSON();
 		serializer = new JSONConverter<FoodItem>(s);
 
 	}
