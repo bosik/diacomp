@@ -15,7 +15,7 @@ import org.bosik.compensation.persistence.serializers.SerializerJSONAdapter;
 import org.bosik.compensation.persistence.serializers.JSONParser;
 import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.persistence.serializers.JSONParserVersioned;
-import org.bosik.compensation.persistence.serializers.foodbase.SerializerFoodItemJSON;
+import org.bosik.compensation.persistence.serializers.foodbase.JSONParserFoodItem;
 import org.bosik.compensation.utils.ErrorHandler;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -106,7 +106,7 @@ public class Storage
 		{
 			Log.v(TAG, "Web food base initialization...");
 
-			JSONParser<FoodItem> sJsonItem = new SerializerFoodItemJSON();
+			JSONParser<FoodItem> sJsonItem = new JSONParserFoodItem();
 			JSONParserVersioned<FoodItem> sJsonVersioned = new JSONParserVersioned<FoodItem>(sJsonItem);
 			Serializer<Versioned<FoodItem>> serializer = new SerializerJSONAdapter<Versioned<FoodItem>>(sJsonVersioned);
 
