@@ -21,6 +21,7 @@ public class FoodItemJSONSerializer implements JSONSerializer<FoodItem>
 		item.setRelCarbs(json.getDouble("carbs"));
 		item.setRelValue(json.getDouble("value"));
 		item.setFromTable(json.getBoolean("table"));
+		item.setTag(json.getInt("tag"));
 
 		return item;
 	}
@@ -35,6 +36,7 @@ public class FoodItemJSONSerializer implements JSONSerializer<FoodItem>
 		json.put("carbs", item.getRelCarbs());
 		json.put("value", item.getRelValue());
 		json.put("table", item.getFromTable());
+		json.put("tag", item.getTag());
 
 		return json;
 	}
