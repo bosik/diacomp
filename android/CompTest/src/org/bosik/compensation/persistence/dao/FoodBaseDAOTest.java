@@ -23,15 +23,15 @@ public abstract class FoodBaseDAOTest extends AndroidTestCase
 
 		if (foodBaseDAO.findById(org.getId()) != null)
 		{
-			version = foodBaseDAO.getVersion();
+			// version = foodBaseDAO.getVersion();
 			foodBaseDAO.delete(org.getId());
-			assertEquals(version + 1, foodBaseDAO.getVersion());
+			// assertEquals(version + 1, foodBaseDAO.getVersion());
 			assertNull(foodBaseDAO.findById(org.getId()));
 		}
 
-		version = foodBaseDAO.getVersion();
+		// version = foodBaseDAO.getVersion();
 		foodBaseDAO.add(org);
-		assertEquals(version + 1, foodBaseDAO.getVersion());
+		// assertEquals(version + 1, foodBaseDAO.getVersion());
 
 		// ------------------------------
 		setUp();
@@ -42,9 +42,9 @@ public abstract class FoodBaseDAOTest extends AndroidTestCase
 		assertNotSame(org, restored);
 		FoodItemUtils.compareItems(org, restored);
 
-		version = foodBaseDAO.getVersion();
+		// version = foodBaseDAO.getVersion();
 		foodBaseDAO.delete(org.getId());
-		assertEquals(version + 1, foodBaseDAO.getVersion());
+		// assertEquals(version + 1, foodBaseDAO.getVersion());
 		assertNull(foodBaseDAO.findById(org.getId()));
 	}
 }
