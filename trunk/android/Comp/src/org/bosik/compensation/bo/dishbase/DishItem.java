@@ -57,17 +57,4 @@ public class DishItem implements RelativeTagged, Serializable
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
-	// ================================ CLONE ================================
-
-	// @Override
-	// public Named clone() throws CloneNotSupportedException
-	// {
-	// DishItem result = (DishItem) super.clone();
-	//
-	// // TODO: implement
-	//
-	// return result;
-	// }
-
 }

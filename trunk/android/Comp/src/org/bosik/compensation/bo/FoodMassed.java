@@ -1,6 +1,5 @@
 package org.bosik.compensation.bo;
 
-
 /**
  * Stores food's name, relative parameters (PFCV on 100g) and mass. Has methods for serialization /
  * deserialization.
@@ -55,15 +54,5 @@ public class FoodMassed extends Food
 	public double getValue()
 	{
 		return (getRelValue() / 100) * mass;
-	}
-
-	// ================================ CLONE ================================
-
-	@Override
-	public Object clone() throws CloneNotSupportedException
-	{
-		FoodMassed result = (FoodMassed) super.clone();
-		result.setMass(getMass());
-		return result;
 	}
 }
