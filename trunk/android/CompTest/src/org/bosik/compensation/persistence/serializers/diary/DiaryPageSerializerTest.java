@@ -4,14 +4,15 @@ import junit.framework.TestCase;
 import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.fakes.mocks.DiaryPageUtils;
 import org.bosik.compensation.persistence.serializers.Serializer;
-import org.bosik.compensation.persistence.serializers.diary.DiaryPagePlainSerializer;
 
-public class DiaryPagePlainSerializerTest extends TestCase
+public abstract class DiaryPageSerializerTest extends TestCase
 {
-	private final Serializer<DiaryPage>	serializer	= new DiaryPagePlainSerializer();
+	protected abstract Serializer<DiaryPage> getSerializer();
 
-	public void testPersistence()
+	public void testPersistenceSingle()
 	{
+		Serializer<DiaryPage> serializer = getSerializer();
+
 		DiaryPage org = DiaryPageUtils.demoPageA();
 		String source = serializer.write(org);
 
