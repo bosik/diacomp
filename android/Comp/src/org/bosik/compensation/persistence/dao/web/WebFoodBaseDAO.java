@@ -1,7 +1,7 @@
 package org.bosik.compensation.persistence.dao.web;
 
 import java.util.List;
-import org.bosik.compensation.bo.basic.Unique;
+import org.bosik.compensation.bo.basic.Versioned;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.persistence.dao.FoodBaseDAO;
 import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
@@ -14,21 +14,21 @@ public class WebFoodBaseDAO implements FoodBaseDAO
 	// private static final String TAG = WebFoodBaseDAO.class.getSimpleName();
 
 	private WebClient						webClient;
-	private Serializer<Unique<FoodItem>>	serializer;
+	private Serializer<Versioned<FoodItem>>	serializer;
 
-	public WebFoodBaseDAO(WebClient webClient, Serializer<Unique<FoodItem>> serializer)
+	public WebFoodBaseDAO(WebClient webClient, Serializer<Versioned<FoodItem>> serializer)
 	{
 		this.webClient = webClient;
 		this.serializer = serializer;
 	}
 
 	@Override
-	public String add(Unique<FoodItem> item) throws DuplicateException
+	public String add(Versioned<FoodItem> item) throws DuplicateException
 	{
 		throw new UnsupportedOperationException();
 		// item.updateTimeStamp();
 		//
-		// MemoryBase<Unique<FoodItem>> base = load();
+		// MemoryBase<Versioned<FoodItem>> base = load();
 		// base.add(item);
 		// save(base);
 		// return item.getId();
@@ -44,7 +44,7 @@ public class WebFoodBaseDAO implements FoodBaseDAO
 	}
 
 	@Override
-	public List<Unique<FoodItem>> findAll()
+	public List<Versioned<FoodItem>> findAll()
 	{
 		throw new UnsupportedOperationException();
 		// MemoryBase<FoodItem> base = load();
@@ -52,7 +52,7 @@ public class WebFoodBaseDAO implements FoodBaseDAO
 	}
 
 	@Override
-	public List<Unique<FoodItem>> findAny(String filter)
+	public List<Versioned<FoodItem>> findAny(String filter)
 	{
 		throw new UnsupportedOperationException();
 		// MemoryBase<FoodItem> base = load();
@@ -60,7 +60,7 @@ public class WebFoodBaseDAO implements FoodBaseDAO
 	}
 
 	@Override
-	public Unique<FoodItem> findById(String id)
+	public Versioned<FoodItem> findById(String id)
 	{
 		throw new UnsupportedOperationException();
 		// MemoryBase<FoodItem> base = load();
@@ -68,7 +68,7 @@ public class WebFoodBaseDAO implements FoodBaseDAO
 	}
 
 	@Override
-	public Unique<FoodItem> findOne(String exactName)
+	public Versioned<FoodItem> findOne(String exactName)
 	{
 		throw new UnsupportedOperationException();
 		// MemoryBase<FoodItem> base = load();
@@ -76,7 +76,7 @@ public class WebFoodBaseDAO implements FoodBaseDAO
 	}
 
 	@Override
-	public void update(Unique<FoodItem> item) throws ItemNotFoundException
+	public void update(Versioned<FoodItem> item) throws ItemNotFoundException
 	{
 		throw new UnsupportedOperationException();
 		// MemoryBase<FoodItem> base = load();

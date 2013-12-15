@@ -4,13 +4,13 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import org.bosik.compensation.bo.basic.TrueCloneable;
-import org.bosik.compensation.bo.basic.Unique;
+import org.bosik.compensation.bo.basic.Versioned;
 import org.bosik.compensation.utils.Utils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class VersionedJSONSerializer<T extends TrueCloneable> implements JSONSerializer<Unique<T>>
+public class VersionedJSONSerializer<T extends TrueCloneable> implements JSONSerializer<Versioned<T>>
 {
 	private JSONSerializer<T>	serializer;
 
@@ -20,11 +20,11 @@ public class VersionedJSONSerializer<T extends TrueCloneable> implements JSONSer
 	}
 
 	@Override
-	public Unique<T> read(JSONObject json) throws JSONException
+	public Versioned<T> read(JSONObject json) throws JSONException
 	{
 		try
 		{
-			Unique<T> item = new Unique<T>(serializer.read(json.getJSONObject("data")));
+			Versioned<T> item = new Versioned<T>(serializer.read(json.getJSONObject("data")));
 
 			item.setId(json.getString("id"));
 			item.setTimeStamp(Utils.parseTimeUTC(json.getString("stamp")));
@@ -39,9 +39,9 @@ public class VersionedJSONSerializer<T extends TrueCloneable> implements JSONSer
 	}
 
 	@Override
-	public List<Unique<T>> readAll(JSONArray jsonArray) throws JSONException
+	public List<Versioned<T>> readAll(JSONArray jsonArray) throws JSONException
 	{
-		List<Unique<T>> list = new ArrayList<Unique<T>>();
+		List<Versioned<T>> list = new ArrayList<Versioned<T>>();
 
 		for (int i = 0; i < jsonArray.length(); i++)
 		{
@@ -53,7 +53,7 @@ public class VersionedJSONSerializer<T extends TrueCloneable> implements JSONSer
 	}
 
 	@Override
-	public JSONObject write(Unique<T> object) throws JSONException
+	public JSONObject write(Versioned<T> object) throws JSONException
 	{
 		JSONObject json = new JSONObject();
 
@@ -66,10 +66,10 @@ public class VersionedJSONSerializer<T extends TrueCloneable> implements JSONSer
 	}
 
 	@Override
-	public JSONArray writeAll(List<Unique<T>> objects) throws JSONException
+	public JSONArray writeAll(List<Versioned<T>> objects) throws JSONException
 	{
 		JSONArray jsonArray = new JSONArray();
-		for (Unique<T> item : objects)
+		for (Versioned<T> item : objects)
 		{
 			jsonArray.put(write(item));
 		}

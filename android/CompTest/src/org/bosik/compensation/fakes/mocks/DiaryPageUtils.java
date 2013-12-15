@@ -3,7 +3,7 @@ package org.bosik.compensation.fakes.mocks;
 import java.util.Date;
 import junit.framework.TestCase;
 import org.bosik.compensation.bo.FoodMassed;
-import org.bosik.compensation.bo.basic.Unique;
+import org.bosik.compensation.bo.basic.Versioned;
 import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.bo.diary.records.BloodRecord;
 import org.bosik.compensation.bo.diary.records.DiaryRecord;
@@ -107,8 +107,8 @@ public class DiaryPageUtils extends TestCase
 		assertEquals(expPage.count(), actPage.count());
 		for (int i = 0; i < expPage.count(); i++)
 		{
-			Unique<? extends DiaryRecord> expRecord = expPage.get(i);
-			Unique<? extends DiaryRecord> actRecord = actPage.get(i);
+			Versioned<? extends DiaryRecord> expRecord = expPage.get(i);
+			Versioned<? extends DiaryRecord> actRecord = actPage.get(i);
 
 			assertEquals(expRecord.getId(), actRecord.getId());
 			assertEquals(expRecord.getTimeStamp(), actRecord.getTimeStamp());

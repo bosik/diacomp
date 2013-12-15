@@ -2,7 +2,7 @@ package org.bosik.compensation.persistence.dao.local;
 
 import java.util.Date;
 import java.util.List;
-import org.bosik.compensation.bo.basic.Unique;
+import org.bosik.compensation.bo.basic.Versioned;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.BuildConfig;
 import org.bosik.compensation.persistence.dao.FoodBaseDAO;
@@ -38,7 +38,7 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 	}
 
 	@Override
-	public String add(Unique<FoodItem> item) throws StoreException
+	public String add(Versioned<FoodItem> item) throws StoreException
 	{
 		try
 		{
@@ -68,28 +68,28 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 	}
 
 	@Override
-	public List<Unique<FoodItem>> findAll()
+	public List<Versioned<FoodItem>> findAll()
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<Unique<FoodItem>> findAny(String filter)
+	public List<Versioned<FoodItem>> findAny(String filter)
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Unique<FoodItem> findOne(String exactName)
+	public Versioned<FoodItem> findOne(String exactName)
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Unique<FoodItem> findById(String id)
+	public Versioned<FoodItem> findById(String id)
 	{
 		try
 		{
@@ -139,7 +139,7 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 			String source = cursor.getString(indexData);
 
 			FoodItem item = serializer.read(source);
-			Unique<FoodItem> result = new Unique<FoodItem>(item);
+			Versioned<FoodItem> result = new Versioned<FoodItem>(item);
 			result.setId(id);
 			result.setTimeStamp(timeStamp);
 			result.setVersion(version);
@@ -153,7 +153,7 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 	}
 
 	@Override
-	public void update(Unique<FoodItem> item) throws ItemNotFoundException, StoreException
+	public void update(Versioned<FoodItem> item) throws ItemNotFoundException, StoreException
 	{
 		// TODO Auto-generated method stub
 

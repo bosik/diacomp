@@ -2,7 +2,7 @@ package org.bosik.compensation.fakes.mocks;
 
 import junit.framework.ComparisonFailure;
 import junit.framework.TestCase;
-import org.bosik.compensation.bo.basic.Unique;
+import org.bosik.compensation.bo.basic.Versioned;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import android.util.Log;
 
@@ -52,7 +52,7 @@ public class FoodItemUtils extends TestCase
 		}
 	}
 
-	public static void compareItems(Unique<FoodItem> exp, Unique<FoodItem> act)
+	public static void compareItems(Versioned<FoodItem> exp, Versioned<FoodItem> act)
 	{
 		assertNotNull(exp);
 		assertNotNull(act);

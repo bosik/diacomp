@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import org.bosik.compensation.bo.basic.Unique;
+import org.bosik.compensation.bo.basic.Versioned;
 import org.bosik.compensation.bo.diary.records.DiaryRecord;
 import org.bosik.compensation.persistence.exceptions.DuplicateException;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
@@ -23,16 +23,16 @@ public class DiaryPage
 	private Date										date		= null;
 	private Date										timeStamp	= null;
 	private int											version		= 0;
-	private final List<Unique<? extends DiaryRecord>>	items		= new ArrayList<Unique<? extends DiaryRecord>>();
+	private final List<Versioned<? extends DiaryRecord>>	items		= new ArrayList<Versioned<? extends DiaryRecord>>();
 
 	private transient boolean							silentMode	= false;
 
 	// ============================== ВНУТРЕННИЕ МЕТОДЫ ==============================
 
-	private class RecordComparator implements Comparator<Unique<? extends DiaryRecord>>
+	private class RecordComparator implements Comparator<Versioned<? extends DiaryRecord>>
 	{
 		@Override
-		public int compare(Unique<? extends DiaryRecord> lhs, Unique<? extends DiaryRecord> rhs)
+		public int compare(Versioned<? extends DiaryRecord> lhs, Versioned<? extends DiaryRecord> rhs)
 		{
 			return lhs.getData().getTime() - rhs.getData().getTime();
 		}
@@ -176,7 +176,7 @@ public class DiaryPage
 	 *            Запись
 	 * @return Индекс созданной записи на странице
 	 */
-	public int add(Unique<? extends DiaryRecord> rec) throws DuplicateException
+	public int add(Versioned<? extends DiaryRecord> rec) throws DuplicateException
 	{
 		if (rec == null)
 		{
@@ -198,7 +198,7 @@ public class DiaryPage
 			throw new NullPointerException("Record can't be null");
 		}
 
-		return add(new Unique<DiaryRecord>(rec));
+		return add(new Versioned<DiaryRecord>(rec));
 	}
 
 	/**
@@ -217,7 +217,7 @@ public class DiaryPage
 	 * @param index
 	 * @return
 	 */
-	public Unique<? extends DiaryRecord> get(int index)
+	public Versioned<? extends DiaryRecord> get(int index)
 	{
 		// TODO: get by ID, not index
 		try
@@ -236,7 +236,7 @@ public class DiaryPage
 	 * @param id
 	 * @return Diary record
 	 */
-	public Unique<? extends DiaryRecord> get(String id) throws ItemNotFoundException
+	public Versioned<? extends DiaryRecord> get(String id) throws ItemNotFoundException
 	{
 		int index = getIndexById(id);
 		if (index > -1)
@@ -290,7 +290,7 @@ public class DiaryPage
 		items.clear();
 	}
 
-	public void update(Unique<? extends DiaryRecord> rec) throws ItemNotFoundException
+	public void update(Versioned<? extends DiaryRecord> rec) throws ItemNotFoundException
 	{
 		int index = getIndexById(rec.getId());
 		if (index > -1)

@@ -1,7 +1,7 @@
 package org.bosik.compensation.persistence.dao;
 
 import java.util.List;
-import org.bosik.compensation.bo.basic.Unique;
+import org.bosik.compensation.bo.basic.Versioned;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 import org.bosik.compensation.persistence.exceptions.StoreException;
 
@@ -15,7 +15,7 @@ public interface BaseDAO<Item extends BaseItem>
 	 * @throws StoreException
 	 *             If storing failed
 	 */
-	String add(Unique<Item> item) throws StoreException;
+	String add(Versioned<Item> item) throws StoreException;
 
 	/**
 	 * Removes item with specified ID
@@ -31,7 +31,7 @@ public interface BaseDAO<Item extends BaseItem>
 	 * 
 	 * @return
 	 */
-	List<Unique<Item>> findAll();
+	List<Versioned<Item>> findAll();
 
 	/**
 	 * Searched for any item which has filter as substring in it's name (case insensitive)
@@ -39,7 +39,7 @@ public interface BaseDAO<Item extends BaseItem>
 	 * @param filter
 	 * @return
 	 */
-	List<Unique<Item>> findAny(String filter);
+	List<Versioned<Item>> findAny(String filter);
 
 	/**
 	 * Searches for item with specified name, returns null if not found
@@ -47,7 +47,7 @@ public interface BaseDAO<Item extends BaseItem>
 	 * @param exactName
 	 * @return
 	 */
-	Unique<Item> findOne(String exactName);
+	Versioned<Item> findOne(String exactName);
 
 	/**
 	 * Searches for item with specified ID, returns null if not found
@@ -55,7 +55,7 @@ public interface BaseDAO<Item extends BaseItem>
 	 * @param id
 	 * @return
 	 */
-	Unique<Item> findById(String id);
+	Versioned<Item> findById(String id);
 
 	/**
 	 * Replaces all items by specified one and sets specified list version; this is useful in sync
@@ -78,7 +78,7 @@ public interface BaseDAO<Item extends BaseItem>
 	 * @throws StoreException
 	 *             If storing failed
 	 */
-	void update(Unique<Item> item) throws ItemNotFoundException, StoreException;
+	void update(Versioned<Item> item) throws ItemNotFoundException, StoreException;
 
 	/**
 	 * Returns DAO's list version

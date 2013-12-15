@@ -95,7 +95,7 @@ public class ActivityFoodbase extends Activity
 
 	private List<BaseItem> request(String filter)
 	{
-		// List<Unique<FoodItem>> temp;
+		// List<Versioned<FoodItem>> temp;
 		// if (filter.trim().isEmpty())
 		// {
 		// temp = Storage.localFoodBase.findAll();

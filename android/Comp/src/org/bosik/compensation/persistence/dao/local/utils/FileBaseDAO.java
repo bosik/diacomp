@@ -14,7 +14,7 @@ public class FileBaseDAO
 {
 	// private static final String TAG = FileBaseDAO.class.getSimpleName();
 	//
-	// private MemoryBase<Unique<T>> base;
+	// private MemoryBase<Versioned<T>> base;
 	// private String fileName;
 	// private Serializer<MemoryBase<T>> serializer;
 	// private FileWorker fileWorker;
@@ -29,7 +29,7 @@ public class FileBaseDAO
 	// }
 
 	// @Override
-	// public String add(Unique<T> item)
+	// public String add(Versioned<T> item)
 	// {
 	// base.add(item);
 	// save();
@@ -44,31 +44,31 @@ public class FileBaseDAO
 	// }
 
 	// @Override
-	// public List<Unique<T>> findAll()
+	// public List<Versioned<T>> findAll()
 	// {
 	// return base.findAll();
 	// }
 
 	// @Override
-	// public List<Unique<T>> findAny(String filter)
+	// public List<Versioned<T>> findAny(String filter)
 	// {
 	// return base.findAny(filter);
 	// }
 
 	// @Override
-	// public Unique<T> findById(String id)
+	// public Versioned<T> findById(String id)
 	// {
 	// return base.findById(id);
 	// }
 	//
 	// @Override
-	// public Unique<T> findOne(String exactName)
+	// public Versioned<T> findOne(String exactName)
 	// {
 	// return base.findOne(exactName);
 	// }
 
 	// @Override
-	// public void update(Unique<T> item) throws ItemNotFoundException
+	// public void update(Versioned<T> item) throws ItemNotFoundException
 	// {
 	// base.update(item);
 	// save();
@@ -87,7 +87,7 @@ public class FileBaseDAO
 	// }
 	// else
 	// {
-	// base = new MemoryBase<Unique<T>>();
+	// base = new MemoryBase<Versioned<T>>();
 	// Log.w(TAG, String.format("Failed to load file base \"%s\": file not found", fileName));
 	// }
 	// }
