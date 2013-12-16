@@ -6,7 +6,7 @@ import java.util.List;
 import junit.framework.TestCase;
 import org.bosik.compensation.persistence.dao.DiaryDAO.PageVersion;
 
-public class SyncDiaryTest extends TestCase
+public class TestSyncDiary extends TestCase
 {
 	private static boolean ordered(List<PageVersion> modList)
 	{

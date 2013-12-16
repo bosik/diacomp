@@ -3,7 +3,7 @@ package org.bosik.compensation.bo.common;
 import junit.framework.TestCase;
 import org.bosik.compensation.bo.FoodMassed;
 
-public class FoodMassedTest extends TestCase
+public class TestFoodMassed extends TestCase
 {
 	private FoodMassed	food	= new FoodMassed();
 

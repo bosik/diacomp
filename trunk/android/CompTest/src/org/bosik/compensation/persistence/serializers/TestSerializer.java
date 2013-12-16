@@ -5,9 +5,9 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import android.util.Log;
 
-public abstract class SerializerTest<T> extends TestCase
+public abstract class TestSerializer<T> extends TestCase
 {
-	private static final String	TAG	= SerializerTest.class.getSimpleName();
+	private static final String	TAG	= TestSerializer.class.getSimpleName();
 
 	protected abstract Serializer<T> getSerializer();
 

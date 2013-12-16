@@ -3,9 +3,9 @@ package org.bosik.compensation.persistence.serializers.fooditem;
 import java.util.ArrayList;
 import java.util.List;
 import org.bosik.compensation.bo.foodbase.FoodItem;
-import org.bosik.compensation.persistence.serializers.SerializerTest;
+import org.bosik.compensation.persistence.serializers.TestSerializer;
 
-public abstract class FoodItemSerializerTest extends SerializerTest<FoodItem>
+public abstract class TestSerializerFoodItem extends TestSerializer<FoodItem>
 {
 	@Override
 	protected List<FoodItem> getSamples()

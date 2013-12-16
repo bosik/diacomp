@@ -9,9 +9,9 @@ import junit.framework.TestCase;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
 
-public class UtilsTest extends TestCase
+public class TestUtils extends TestCase
 {
-	private static final String	TAG	= UtilsTest.class.getSimpleName();
+	private static final String	TAG	= TestUtils.class.getSimpleName();
 
 	private Date date(int year, int month, int day)
 	{

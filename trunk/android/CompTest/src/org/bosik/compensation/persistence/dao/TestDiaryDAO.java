@@ -7,7 +7,7 @@ import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.fakes.mocks.DiaryPageUtils;
 import android.test.AndroidTestCase;
 
-public abstract class DiaryDAOTest extends AndroidTestCase
+public abstract class TestDiaryDAO extends AndroidTestCase
 {
 	private DiaryDAO	diaryDAO;
 
