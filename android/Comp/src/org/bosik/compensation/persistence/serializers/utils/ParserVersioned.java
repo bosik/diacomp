@@ -1,15 +1,13 @@
-package org.bosik.compensation.persistence.serializers;
+package org.bosik.compensation.persistence.serializers.utils;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 import org.bosik.compensation.persistence.common.Versioned;
+import org.bosik.compensation.persistence.serializers.Parser;
 import org.bosik.compensation.utils.Utils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ParserVersioned<T> implements Parser<Versioned<T>>
+public class ParserVersioned<T> extends Parser<Versioned<T>>
 {
 	private Parser<T>	parser;
 
@@ -23,11 +21,12 @@ public class ParserVersioned<T> implements Parser<Versioned<T>>
 	{
 		try
 		{
-			Versioned<T> item = new Versioned<T>(parser.read(json.getJSONObject("data")));
+			Versioned<T> item = new Versioned<T>();
 
 			item.setId(json.getString("id"));
 			item.setTimeStamp(Utils.parseTimeUTC(json.getString("stamp")));
 			item.setVersion(json.getInt("version"));
+			item.setData(parser.read(json.getJSONObject("data")));
 
 			return item;
 		}
@@ -35,20 +34,6 @@ public class ParserVersioned<T> implements Parser<Versioned<T>>
 		{
 			throw new JSONException(e.getLocalizedMessage());
 		}
-	}
-
-	@Override
-	public List<Versioned<T>> readAll(JSONArray jsonArray) throws JSONException
-	{
-		List<Versioned<T>> list = new ArrayList<Versioned<T>>();
-
-		for (int i = 0; i < jsonArray.length(); i++)
-		{
-			JSONObject json = jsonArray.getJSONObject(i);
-			list.add(read(json));
-		}
-
-		return list;
 	}
 
 	@Override
@@ -62,16 +47,5 @@ public class ParserVersioned<T> implements Parser<Versioned<T>>
 		json.put("data", parser.write(object.getData()));
 
 		return json;
-	}
-
-	@Override
-	public JSONArray writeAll(List<Versioned<T>> objects) throws JSONException
-	{
-		JSONArray jsonArray = new JSONArray();
-		for (Versioned<T> item : objects)
-		{
-			jsonArray.put(write(item));
-		}
-		return jsonArray;
 	}
 }

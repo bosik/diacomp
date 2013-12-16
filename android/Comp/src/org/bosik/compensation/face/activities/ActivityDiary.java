@@ -454,6 +454,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	}
 
 	// handled
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent)
 	{
@@ -469,7 +470,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					{
 						Versioned<BloodRecord> rec = (Versioned<BloodRecord>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
-						curPage.add(rec);
+						curPage.add(new Versioned<DiaryRecord>(rec));
 						postPage(curPage);
 					}
 					break;
@@ -481,7 +482,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					{
 						Versioned<BloodRecord> rec = (Versioned<BloodRecord>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
-						curPage.update(rec);
+						curPage.update(new Versioned<DiaryRecord>(rec));
 						postPage(curPage);
 					}
 					break;
@@ -493,7 +494,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					{
 						Versioned<InsRecord> rec = (Versioned<InsRecord>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
-						curPage.add(rec);
+						curPage.add(new Versioned<DiaryRecord>(rec));
 						postPage(curPage);
 					}
 					break;
@@ -505,7 +506,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					{
 						Versioned<InsRecord> rec = (Versioned<InsRecord>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
-						curPage.update(rec);
+						curPage.update(new Versioned<DiaryRecord>(rec));
 						postPage(curPage);
 					}
 					break;
@@ -517,7 +518,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					{
 						Versioned<NoteRecord> rec = (Versioned<NoteRecord>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
-						curPage.add(rec);
+						curPage.add(new Versioned<DiaryRecord>(rec));
 						postPage(curPage);
 					}
 					break;
@@ -529,7 +530,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					{
 						Versioned<NoteRecord> rec = (Versioned<NoteRecord>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
-						curPage.update(rec);
+						curPage.update(new Versioned<DiaryRecord>(rec));
 						postPage(curPage);
 					}
 					break;

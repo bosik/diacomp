@@ -13,18 +13,18 @@ import android.util.Log;
 
 public class DiaryPage
 {
-	private static final String								TAG			= DiaryPage.class.getSimpleName();
+	private static final String					TAG			= DiaryPage.class.getSimpleName();
 
 	// TODO: test
 
 	// ===================================== ПОЛЯ =====================================
 
-	private Date											date;
-	private Date											timeStamp;
-	private int												version;
-	private final List<Versioned<? extends DiaryRecord>>	items		= new ArrayList<Versioned<? extends DiaryRecord>>();
+	private Date								date;
+	private Date								timeStamp;
+	private int									version;
+	private final List<Versioned<DiaryRecord>>	items		= new ArrayList<Versioned<DiaryRecord>>();
 
-	private transient boolean								silentMode	= false;
+	private transient boolean					silentMode	= false;
 
 	// ============================== ВНУТРЕННИЕ МЕТОДЫ ==============================
 
@@ -68,13 +68,13 @@ public class DiaryPage
 		version++;
 	}
 
-	private Versioned<? extends DiaryRecord> clone(Versioned<? extends DiaryRecord> rec)
+	private Versioned<DiaryRecord> clone(Versioned<DiaryRecord> rec)
 	{
 		try
 		{
 			DiaryRecord data = (DiaryRecord) rec.getData().clone();
 
-			Versioned<? extends DiaryRecord> result = new Versioned<DiaryRecord>(data);
+			Versioned<DiaryRecord> result = new Versioned<DiaryRecord>(data);
 			result.setId(rec.getId());
 			result.setTimeStamp(rec.getTimeStamp());
 			result.setVersion(rec.getVersion());
@@ -182,7 +182,7 @@ public class DiaryPage
 	 *            Запись
 	 * @return Индекс созданной записи на странице
 	 */
-	public int add(Versioned<? extends DiaryRecord> rec) throws DuplicateException
+	public int add(Versioned<DiaryRecord> rec) throws DuplicateException
 	{
 		if (rec == null)
 		{
@@ -223,7 +223,7 @@ public class DiaryPage
 	 * @param index
 	 * @return
 	 */
-	public Versioned<? extends DiaryRecord> get(int index)
+	public Versioned<DiaryRecord> get(int index)
 	{
 		// TODO: get by ID, not index
 		return clone(items.get(index));
@@ -235,7 +235,7 @@ public class DiaryPage
 	 * @param id
 	 * @return Diary record
 	 */
-	public Versioned<? extends DiaryRecord> get(String id) throws ItemNotFoundException
+	public Versioned<DiaryRecord> get(String id) throws ItemNotFoundException
 	{
 		int index = getIndexById(id);
 		if (index > -1)
@@ -282,7 +282,7 @@ public class DiaryPage
 		items.clear();
 	}
 
-	public void update(Versioned<? extends DiaryRecord> rec) throws ItemNotFoundException
+	public void update(Versioned<DiaryRecord> rec) throws ItemNotFoundException
 	{
 		int index = getIndexById(rec.getId());
 		if (index > -1)
