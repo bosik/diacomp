@@ -5,7 +5,7 @@ import org.bosik.compensation.fakes.mocks.FoodItemUtils;
 import org.bosik.compensation.persistence.common.Versioned;
 import android.test.AndroidTestCase;
 
-public abstract class FoodBaseDAOTest extends AndroidTestCase
+public abstract class TestFoodBaseDAO extends AndroidTestCase
 {
 	private FoodBaseDAO	foodBaseDAO;
 

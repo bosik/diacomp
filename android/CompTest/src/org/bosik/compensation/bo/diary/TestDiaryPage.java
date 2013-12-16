@@ -2,7 +2,7 @@ package org.bosik.compensation.bo.diary;
 
 import junit.framework.TestCase;
 
-public class DiaryPageTest extends TestCase
+public class TestDiaryPage extends TestCase
 {
 	// public void testReadingBlood()
 	// {

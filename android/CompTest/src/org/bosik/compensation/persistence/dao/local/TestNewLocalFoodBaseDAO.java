@@ -1,10 +1,10 @@
 package org.bosik.compensation.persistence.dao.local;
 
 import org.bosik.compensation.persistence.dao.FoodBaseDAO;
-import org.bosik.compensation.persistence.dao.FoodBaseDAOTest;
+import org.bosik.compensation.persistence.dao.TestFoodBaseDAO;
 import android.content.ContentResolver;
 
-public class NewLocalFoodBaseDAOTest extends FoodBaseDAOTest
+public class TestNewLocalFoodBaseDAO extends TestFoodBaseDAO
 {
 	@Override
 	protected FoodBaseDAO getDAO()

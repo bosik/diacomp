@@ -4,9 +4,9 @@ import junit.framework.TestCase;
 import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.WebClientException;
 import android.util.Log;
 
-public class WebClientTest extends TestCase
+public class TestWebClient extends TestCase
 {
-	private static final String	TAG	= WebClientTest.class.getSimpleName();
+	private static final String	TAG	= TestWebClient.class.getSimpleName();
 
 	private static WebClient	webClient;
 

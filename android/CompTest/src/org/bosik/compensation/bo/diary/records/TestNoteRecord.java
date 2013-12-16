@@ -3,7 +3,7 @@ package org.bosik.compensation.bo.diary.records;
 import org.bosik.compensation.bo.diary.records.NoteRecord;
 import junit.framework.TestCase;
 
-public class NoteRecordTest extends TestCase
+public class TestNoteRecord extends TestCase
 {
 	public void testNoteRecord()
 	{

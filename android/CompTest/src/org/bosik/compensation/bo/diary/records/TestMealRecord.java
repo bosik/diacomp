@@ -3,7 +3,7 @@ package org.bosik.compensation.bo.diary.records;
 import junit.framework.TestCase;
 import org.bosik.compensation.bo.FoodMassed;
 
-public class MealRecordTest extends TestCase
+public class TestMealRecord extends TestCase
 {
 	private MealRecord	meal	= new MealRecord(620, false);
 

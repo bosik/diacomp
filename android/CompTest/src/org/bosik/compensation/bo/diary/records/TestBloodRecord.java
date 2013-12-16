@@ -2,7 +2,7 @@ package org.bosik.compensation.bo.diary.records;
 
 import junit.framework.TestCase;
 
-public class BloodRecordTest extends TestCase
+public class TestBloodRecord extends TestCase
 {
 	public void testCheckValue()
 	{
