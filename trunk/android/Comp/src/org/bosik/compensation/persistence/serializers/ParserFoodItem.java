@@ -1,16 +1,13 @@
 package org.bosik.compensation.persistence.serializers;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 import org.bosik.compensation.bo.foodbase.FoodItem;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ParserFoodItem implements Parser<FoodItem>
+public class ParserFoodItem extends Parser<FoodItem>
 {
-	protected FoodItem decodeJson(JSONObject json) throws JSONException, ParseException
+	@Override
+	public FoodItem read(JSONObject json) throws JSONException
 	{
 		FoodItem item = new FoodItem();
 
@@ -25,7 +22,8 @@ public class ParserFoodItem implements Parser<FoodItem>
 		return item;
 	}
 
-	protected JSONObject encodeJson(FoodItem item) throws JSONException
+	@Override
+	public JSONObject write(FoodItem item) throws JSONException
 	{
 		JSONObject json = new JSONObject();
 
@@ -38,78 +36,5 @@ public class ParserFoodItem implements Parser<FoodItem>
 		json.put("tag", item.getTag());
 
 		return json;
-	}
-
-	@Override
-	public FoodItem read(JSONObject json)
-	{
-		try
-		{
-			return decodeJson(json);
-		}
-		catch (JSONException e)
-		{
-			throw new IllegalArgumentException("Invalid JSON data: " + json, e);
-		}
-		catch (ParseException e)
-		{
-			throw new IllegalArgumentException("Invalid JSON data: " + json, e);
-		}
-	}
-
-	@Override
-	public List<FoodItem> readAll(JSONArray json)
-	{
-		try
-		{
-			List<FoodItem> list = new ArrayList<FoodItem>();
-
-			for (int i = 0; i < json.length(); i++)
-			{
-				FoodItem item = decodeJson(json.getJSONObject(i));
-				list.add(item);
-			}
-
-			return list;
-		}
-		catch (JSONException e)
-		{
-			throw new RuntimeException("Invalid JSON data: " + json, e);
-		}
-		catch (ParseException e)
-		{
-			throw new IllegalArgumentException("Invalid JSON data: " + json, e);
-		}
-	}
-
-	@Override
-	public JSONObject write(FoodItem item)
-	{
-		try
-		{
-			return encodeJson(item);
-		}
-		catch (JSONException e)
-		{
-			throw new RuntimeException("Failed to encode JSON", e);
-		}
-	}
-
-	@Override
-	public JSONArray writeAll(List<FoodItem> objects)
-	{
-		try
-		{
-			JSONArray json = new JSONArray();
-			for (FoodItem item : objects)
-			{
-				json.put(encodeJson(item));
-			}
-			return json;
-		}
-		catch (JSONException e)
-		{
-			throw new RuntimeException("Failed to encode JSON", e);
-		}
 	}
 }

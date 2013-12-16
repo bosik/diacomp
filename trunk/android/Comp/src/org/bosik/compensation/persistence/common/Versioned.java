@@ -22,12 +22,25 @@ public class Versioned<T> implements Serializable
 
 	// ================================ MAIN ================================
 
+	public Versioned()
+	{
+		this((T) null);
+	}
+
 	public Versioned(T data)
 	{
 		id = UUID.randomUUID().toString();
 		version = 0;
 		updateTimeStamp();
 		this.data = data;
+	}
+
+	public Versioned(Versioned<? extends T> object)
+	{
+		setId(object.getId());
+		setTimeStamp(object.getTimeStamp());
+		setVersion(object.getVersion());
+		setData(object.getData());
 	}
 
 	public void updateTimeStamp()

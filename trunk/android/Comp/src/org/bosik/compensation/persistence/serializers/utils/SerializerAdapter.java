@@ -1,6 +1,8 @@
-package org.bosik.compensation.persistence.serializers;
+package org.bosik.compensation.persistence.serializers.utils;
 
 import java.util.List;
+import org.bosik.compensation.persistence.serializers.Parser;
+import org.bosik.compensation.persistence.serializers.Serializer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
