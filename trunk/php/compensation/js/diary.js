@@ -250,6 +250,7 @@ function floatizeFood(food)
 	food.fats = strToFloat(food.fats);
 	food.carbs = strToFloat(food.carbs);
 	food.val = strToFloat(food.val);
+	food.tag = strToInt(food.tag);
 	return food;
 }
 
@@ -280,6 +281,7 @@ function floatizeDish(dish)
 	{
 		dish.mass = strToFloat(dish.mass);
 	}
+	dish.tag = strToInt(dish.tag);
 
 	return dish;
 }

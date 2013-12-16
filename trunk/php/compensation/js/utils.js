@@ -261,6 +261,14 @@ function strToFloat(s)
 	return s;
 }
 
+function strToInt(s)
+{
+	if (typeof s == 'string')
+		s = parseInt(s);
+
+	return s;
+}
+
 function ObjToSource(o)
 {
 	if (!o) return 'null';
