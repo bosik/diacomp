@@ -12,6 +12,7 @@ import android.util.Log;
 public class TestUtils extends TestCase
 {
 	private static final String	TAG	= TestUtils.class.getSimpleName();
+	public static final double	EPS	= 0.00001;
 
 	private Date date(int year, int month, int day)
 	{
