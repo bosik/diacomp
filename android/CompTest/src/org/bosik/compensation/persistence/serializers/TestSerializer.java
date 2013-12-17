@@ -3,17 +3,18 @@ package org.bosik.compensation.persistence.serializers;
 import java.util.List;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
+import org.bosik.compensation.fakes.mocks.Mock;
 import android.util.Log;
 
 public abstract class TestSerializer<T> extends TestCase
 {
 	private static final String	TAG	= TestSerializer.class.getSimpleName();
 
+	// ==========================================================================
+
 	protected abstract Serializer<T> getSerializer();
 
-	protected abstract List<T> getSamples();
-
-	protected abstract void compare(T exp, T act);
+	protected abstract Mock<T> getMock();
 
 	// ==========================================================================
 
@@ -21,7 +22,7 @@ public abstract class TestSerializer<T> extends TestCase
 	{
 		try
 		{
-			compare(exp, act);
+			getMock().compare(exp, act);
 		}
 		catch (AssertionFailedError e)
 		{
@@ -35,7 +36,7 @@ public abstract class TestSerializer<T> extends TestCase
 	public void testPersistenceSingle()
 	{
 		Serializer<T> serializer = getSerializer();
-		List<T> samples = getSamples();
+		List<T> samples = getMock().getSamples();
 		assertTrue(samples.size() > 0);
 
 		for (T sample : samples)
@@ -47,7 +48,7 @@ public abstract class TestSerializer<T> extends TestCase
 	public void testPersistenceMultiple()
 	{
 		Serializer<T> serializer = getSerializer();
-		List<T> samples = getSamples();
+		List<T> samples = getMock().getSamples();
 		assertTrue(samples.size() > 1);
 
 		List<T> restored = serializer.readAll(serializer.writeAll(samples));

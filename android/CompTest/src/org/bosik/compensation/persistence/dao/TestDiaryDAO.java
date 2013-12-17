@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.bo.diary.DiaryPage;
-import org.bosik.compensation.fakes.mocks.DiaryPageUtils;
+import org.bosik.compensation.fakes.mocks.MockDiaryPage;
+import org.bosik.compensation.fakes.mocks.Mock;
 import android.test.AndroidTestCase;
 
 public abstract class TestDiaryDAO extends AndroidTestCase
 {
-	private DiaryDAO	diaryDAO;
+	private DiaryDAO						diaryDAO;
+	private static final Mock<DiaryPage>	mockDiaryPage	= new MockDiaryPage();
 
 	protected abstract DiaryDAO getDAO();
 
@@ -21,23 +23,19 @@ public abstract class TestDiaryDAO extends AndroidTestCase
 
 	public void testPersistanceSingle()
 	{
-		DiaryPage org = DiaryPageUtils.demoPageA();
+		DiaryPage org = mockDiaryPage.getSamples().get(0);
 		diaryDAO.postPage(org);
 
 		// ------------------
 		setUp();
 
 		DiaryPage restored = diaryDAO.getPage(org.getDate());
-		DiaryPageUtils.comparePages(org, restored);
+		mockDiaryPage.compare(org, restored);
 	}
 
 	public void testPersistanceMultiple()
 	{
-		DiaryPage orgA = DiaryPageUtils.demoPageA();
-		DiaryPage orgB = DiaryPageUtils.demoPageB();
-		List<DiaryPage> orgPages = new ArrayList<DiaryPage>();
-		orgPages.add(orgA);
-		orgPages.add(orgB);
+		List<DiaryPage> orgPages = mockDiaryPage.getSamples();
 		diaryDAO.postPages(orgPages);
 
 		List<Date> dates = new ArrayList<Date>();
@@ -53,7 +51,7 @@ public abstract class TestDiaryDAO extends AndroidTestCase
 		assertEquals(orgPages.size(), restoredPages.size());
 		for (int i = 0; i < orgPages.size(); i++)
 		{
-			DiaryPageUtils.comparePages(orgPages.get(i), restoredPages.get(i));
+			mockDiaryPage.compare(orgPages.get(i), restoredPages.get(i));
 		}
 	}
 
