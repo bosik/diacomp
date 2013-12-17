@@ -59,7 +59,7 @@ setProgress("ready", "Дневник сохранён");
 
 function refreshCurrentPage()
 {
-	downloadPage();
+	downloadPage(cur_date);
 	showInfoBox(-1);
 	calendar.value = formatDate(cur_date);
 }
@@ -92,10 +92,10 @@ function openPage()
 
 /* ================== INTERNET ================== */
 
-function downloadPage()
+function downloadPage(pageDate)
 {
 	//diary.innerHTML = "Загрузка..." ;
-	var url = "console.php?diary:download&format=json&dates=" + formatDate(cur_date);
+	var url = "console.php?diary:download&format=json&dates=" + formatDate(pageDate);
 
 	var onSuccess = function(data)
 	{
@@ -105,7 +105,7 @@ function downloadPage()
 
 		if (data == "Error: log in first")
 		{
-			document.location = "login.php?redir=index.php?date=" + formatDate(cur_date);
+			document.location = "login.php?redir=index.php?date=" + formatDate(pageDate);
 		}
 
 		page = JSON.parse(data);
@@ -363,10 +363,10 @@ function prepareComboList()
 	createHandlers();
 }
 
-function uploadPage()
+function uploadPage(uploadedPage)
 {
 	var url = "console.php";
-	var request = 'diary:upload=&format=json&pages=' + encodeURIComponent(ObjToSource(page));
+	var request = 'diary:upload=&format=json&pages=' + encodeURIComponent(ObjToSource(uploadedPage));
 
 	var onSuccess = function (resp)
 	{
@@ -841,7 +841,7 @@ function modified(needResort)
 	if (needResort) page.content.sort(timeSortFunction);
 
 	showPage();
-	uploadPage();
+	uploadPage(page);
 }
 
 function DiaryPage_addRecord(rec)
