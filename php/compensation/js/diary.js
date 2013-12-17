@@ -35,6 +35,7 @@ var TARGET_BS = 5.0; // TODO: load from user properties
 
 // данные
 var cur_date = new Date(Date.parse(document.getElementById("origin_date").value));
+var prev_page = [];
 var page = [];
 var koofs = [];
 var foodbase = [];
@@ -59,28 +60,37 @@ setProgress("ready", "Дневник сохранён");
 
 function refreshCurrentPage()
 {
-	downloadPage(cur_date);
+	downloadPage(shiftDate(cur_date, -1), false);
+	prev_page = page;
+
+	downloadPage(cur_date, true);
+
+	//if (DiaryPage_getLastFinger(page) == -1)
+	//{
+
+	//}
+
 	showInfoBox(-1);
 	calendar.value = formatDate(cur_date);
 }
 
-function shiftDate(days)
+function shiftDate(date, days)
 {
 	var newDate = new Date();
-	newDate.setTime(cur_date.getTime() + 86400000 * days);
-	cur_date = newDate;
+	newDate.setTime(date.getTime() + 86400000 * days);
+	return newDate;
 }
 
 function prevDay()
 {
-	shiftDate(-1);
+	cur_date = shiftDate(cur_date, -1);
 	pushHistory("index.php?date=" + formatDate(cur_date));
 	refreshCurrentPage();
 }
 
 function nextDay()
 {
-	shiftDate(+1);
+	cur_date = shiftDate(cur_date, +1);
 	pushHistory("index.php?date=" + formatDate(cur_date));
 	refreshCurrentPage();
 }
@@ -92,39 +102,28 @@ function openPage()
 
 /* ================== INTERNET ================== */
 
-function downloadPage(pageDate)
+function downloadPage(pageDate, show)
 {
-	//diary.innerHTML = "Загрузка..." ;
 	var url = "console.php?diary:download&format=json&dates=" + formatDate(pageDate);
 
 	var onSuccess = function(data)
 	{
-		// debug only
-		//diary.innerHTML = xmlhttp.responseText;
-		diary.innerHTML = "Loaded ok, parsing...";
-
 		if (data == "Error: log in first")
 		{
 			document.location = "login.php?redir=index.php?date=" + formatDate(pageDate);
 		}
 
 		page = JSON.parse(data);
-
-		// debug only
-		diary.innerHTML = "Parsed ok, sorting...";
-
 		page.content.sort(timeSortFunction);
 
-		// debug only
-		diary.innerHTML = "Sorted ok, rendering...";
-
-		//document.getElementById("debug").innerHTML = ObjToSource(page);
-		showPage();
+		if (show)
+		{
+			showPage();
+		}
 	};
 
 	var onFailure = function ()
 	{
-	//diary.innerHTML = "Не удалось загрузить страницу";
 	}
 
 	download(url, false, onSuccess, onFailure);
@@ -879,7 +878,7 @@ function DiaryPage_removeFood(mealIndex, foodIndex)
 	modified(false);
 }
 
-function DiaryPage_getLastFinger()
+function DiaryPage_getLastFinger(page)
 {
 	for (i = page.content.length - 1; i >= 0; i--)
 	{
@@ -922,7 +921,10 @@ function DiaryPage_findIns(time, maxDist)
 
 function newBloodEditor()
 {
-	var finger = (DiaryPage_getLastFinger() + 1) % 10;
+	var finger = DiaryPage_getLastFinger(page);
+	if (finger == -1) finger = DiaryPage_getLastFinger(prev_page);
+	finger = (finger + 1) % 10;
+
 	var val = inputFloat("Введите значение СК (" + finger_hints[finger] + "):", "");
 
 	if (val > -1)
