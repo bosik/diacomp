@@ -14,8 +14,10 @@ import org.json.JSONObject;
 
 public class ParserDiaryPage extends Parser<DiaryPage>
 {
-	Parser<DiaryRecord>				p					= new ParserDiaryRecord();
-	Parser<Versioned<DiaryRecord>>	parserDiaryRecord	= new ParserVersioned<DiaryRecord>(p);
+	//private static final String						TAG					= ParserDiaryPage.class.getSimpleName();
+
+	private static Parser<DiaryRecord>				p					= new ParserDiaryRecord();
+	private static Parser<Versioned<DiaryRecord>>	parserDiaryRecord	= new ParserVersioned<DiaryRecord>(p);
 
 	@Override
 	public DiaryPage read(JSONObject json) throws JSONException
@@ -23,11 +25,6 @@ public class ParserDiaryPage extends Parser<DiaryPage>
 		try
 		{
 			DiaryPage page = new DiaryPage();
-
-			// header
-			page.setDate(Utils.parseDate(json.getString("date")));
-			page.setTimeStamp(Utils.parseTimeUTC(json.getString("stamp")));
-			page.setVersion(json.getInt("version"));
 
 			// data
 			JSONArray content = json.getJSONArray("content");
@@ -37,6 +34,11 @@ public class ParserDiaryPage extends Parser<DiaryPage>
 				Versioned<DiaryRecord> item = parserDiaryRecord.read(jsonItem);
 				page.add(item);
 			}
+
+			// header
+			page.setDate(Utils.parseDate(json.getString("date")));
+			page.setTimeStamp(Utils.parseTimeUTC(json.getString("stamp")));
+			page.setVersion(json.getInt("version")); // after reading
 
 			return page;
 		}
