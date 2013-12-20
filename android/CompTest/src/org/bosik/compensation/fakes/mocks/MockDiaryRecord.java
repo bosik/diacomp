@@ -19,7 +19,9 @@ public class MockDiaryRecord extends TestCase implements Mock<DiaryRecord>
 	{
 		List<DiaryRecord> samples = new ArrayList<DiaryRecord>();
 
-		samples.add(new BloodRecord(0, 5.4, 0));
+		samples.add(new BloodRecord(16, 7.1, 0));
+		samples.add(new BloodRecord(17, 7.0, 1));
+		samples.add(new BloodRecord(160, 5.2, 2));
 
 		samples.add(new InsRecord(1439, 16.0));
 
