@@ -7,6 +7,7 @@ import org.bosik.compensation.bo.diary.records.BloodRecord;
 import org.bosik.compensation.bo.diary.records.InsRecord;
 import org.bosik.compensation.bo.diary.records.MealRecord;
 import org.bosik.compensation.bo.diary.records.NoteRecord;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -57,15 +58,57 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 		}
 		else
 		{
-			throw new UnsupportedOperationException("Record type '" + type + "' is not supported");
+			throw new UnsupportedOperationException("Unknown record type: '" + type + "'");
 		}
 	}
 
 	@Override
 	public JSONObject write(DiaryRecord object) throws JSONException
 	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+		// Gson g = new Gson();
+		// String jsonStr = g.toJson(object);
 
+		JSONObject json = new JSONObject();
+
+		json.put("time", object.getTime());
+
+		if (object.getClass() == BloodRecord.class)
+		{
+			BloodRecord item = (BloodRecord) object;
+			json.put("type", "blood");
+			json.put("value", item.getValue());
+			json.put("finger", item.getFinger());
+		}
+		else if (object.getClass() == InsRecord.class)
+		{
+			InsRecord item = (InsRecord) object;
+			json.put("type", "ins");
+			json.put("value", item.getValue());
+		}
+		else if (object.getClass() == MealRecord.class)
+		{
+			MealRecord item = (MealRecord) object;
+			json.put("type", "meal");
+			json.put("short", item.getShortMeal());
+
+			JSONArray foods = new JSONArray();
+			for (int i = 0; i < item.count(); i++)
+			{
+				foods.put(parserFoodMassed.write(item.get(i)));
+			}
+			json.put("content", foods);
+		}
+		else if (object.getClass() == NoteRecord.class)
+		{
+			NoteRecord item = (NoteRecord) object;
+			json.put("type", "note");
+			json.put("text", item.getText());
+		}
+		else
+		{
+			throw new UnsupportedOperationException("Unknown record type: " + object.getClass().getCanonicalName());
+		}
+
+		return json;
+	}
 }
