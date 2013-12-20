@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Locale;
 import org.bosik.compensation.bo.Food;
 import org.bosik.compensation.bo.RelativeTagged;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Food item for food base
@@ -15,7 +16,9 @@ public class FoodItem extends Food implements Serializable, RelativeTagged
 {
 	private static final long	serialVersionUID	= 1789285539891342521L;
 
+	@SerializedName("tag")
 	private int					tag;
+	@SerializedName("table")
 	private boolean				fromTable;
 
 	// ================================ GET / SET ================================

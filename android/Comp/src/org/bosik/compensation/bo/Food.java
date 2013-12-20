@@ -2,6 +2,7 @@ package org.bosik.compensation.bo;
 
 import java.io.Serializable;
 import org.bosik.compensation.bo.basic.Named;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Stores food's name and relative parameters (PFCV on 100g)
@@ -13,10 +14,15 @@ public class Food implements Serializable, Named
 {
 	private static final long	serialVersionUID	= -659635365362405228L;
 
+	@SerializedName("name")
 	private String				name;
+	@SerializedName("prots")
 	private double				relProts;
+	@SerializedName("fats")
 	private double				relFats;
+	@SerializedName("carbs")
 	private double				relCarbs;
+	@SerializedName("value")
 	private double				relValue;
 
 	public Food()
