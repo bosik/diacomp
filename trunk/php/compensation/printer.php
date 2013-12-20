@@ -8,8 +8,8 @@
 	function BlockMain($userinfo, $menu, $content, $javascript = "")
 	{
 		return
-				"<!DOCTYPE html>\n" .
-//				"<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\" \"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">\n" .
+//				"<!DOCTYPE html>\n" .
+				"<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\" \"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">\n" .
 				"<html>\n" .
 				"	<head>\n" .
 				"		<meta http-equiv=\"Content-Type\" content=\"text/html; charset=windows-1251\">\n" .
