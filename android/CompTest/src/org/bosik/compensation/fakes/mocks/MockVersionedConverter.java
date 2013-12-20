@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 import junit.framework.TestCase;
 import org.bosik.compensation.persistence.common.Versioned;
+import org.bosik.compensation.utills.TestUtils;
 
 public class MockVersionedConverter<T> extends TestCase implements Mock<Versioned<T>>
 {
@@ -41,7 +42,7 @@ public class MockVersionedConverter<T> extends TestCase implements Mock<Versione
 
 		assertEquals(exp, act);
 		assertEquals(exp.getId(), act.getId());
-		assertEquals(exp.getTimeStamp(), act.getTimeStamp());
+		assertEquals(exp.getTimeStamp().getTime(), act.getTimeStamp().getTime(), TestUtils.EPS_TIME);
 		assertEquals(exp.getVersion(), act.getVersion());
 
 		generator.compare(exp.getData(), act.getData());

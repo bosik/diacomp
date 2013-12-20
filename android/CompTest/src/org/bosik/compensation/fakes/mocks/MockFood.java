@@ -39,7 +39,6 @@ public class MockFood extends TestCase implements Mock<Food>
 		assertNotNull(exp);
 		assertNotNull(act);
 
-		assertEquals(exp, act);
 		assertEquals(exp.getName(), act.getName());
 		assertEquals(exp.getRelProts(), act.getRelProts(), TestUtils.EPS);
 		assertEquals(exp.getRelFats(), act.getRelFats(), TestUtils.EPS);
