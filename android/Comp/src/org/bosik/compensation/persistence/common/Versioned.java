@@ -29,7 +29,7 @@ public class Versioned<T> implements Serializable
 
 	public Versioned(T data)
 	{
-		id = UUID.randomUUID().toString();
+		id = UUID.randomUUID().toString().replace("-", "");
 		version = 0;
 		updateTimeStamp();
 		this.data = data;
