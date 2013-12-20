@@ -9,7 +9,9 @@ import org.json.JSONObject;
 
 public class ParserVersioned<T> extends Parser<Versioned<T>>
 {
-	private Parser<T>	parser;
+	//private static final String	TAG	= ParserVersioned.class.getSimpleName();
+
+	private Parser<T>			parser;
 
 	public ParserVersioned(Parser<T> parser)
 	{
@@ -44,8 +46,8 @@ public class ParserVersioned<T> extends Parser<Versioned<T>>
 		json.put("id", object.getId());
 		json.put("stamp", Utils.formatTimeUTC(object.getTimeStamp()));
 		json.put("version", object.getVersion());
-		json.put("data", parser.write(object.getData()));
-
+		final JSONObject obj = parser.write(object.getData());
+		json.put("data", obj); // do not inline
 		return json;
 	}
 }
