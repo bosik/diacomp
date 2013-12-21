@@ -10,7 +10,10 @@ import org.bosik.compensation.persistence.dao.DiaryDAO;
 import org.bosik.compensation.persistence.dao.local.utils.DiaryContentProvider;
 import org.bosik.compensation.persistence.exceptions.CommonDAOException;
 import org.bosik.compensation.persistence.exceptions.StoreException;
-import org.bosik.compensation.persistence.serializers.SerializerDiaryPagePlain;
+import org.bosik.compensation.persistence.serializers.Parser;
+import org.bosik.compensation.persistence.serializers.ParserDiaryPage;
+import org.bosik.compensation.persistence.serializers.Serializer;
+import org.bosik.compensation.persistence.serializers.utils.SerializerAdapter;
 import org.bosik.compensation.utils.Utils;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -20,10 +23,12 @@ import android.database.Cursor;
 public class LocalDiaryDAO implements DiaryDAO
 {
 	// private static final String TAG = LocalDiaryDAO.class.getSimpleName();
+	private Parser<DiaryPage>		parser		= new ParserDiaryPage();
+	private Serializer<DiaryPage>	serializer	= new SerializerAdapter<DiaryPage>(parser);
 
 	/* ============================ ПОЛЯ ============================ */
 
-	private ContentResolver	resolver;
+	private ContentResolver			resolver;
 
 	/* ======================= ВНУТРЕННИЕ МЕТОДЫ ========================= */
 
@@ -74,17 +79,18 @@ public class LocalDiaryDAO implements DiaryDAO
 				throw new IllegalStateException("Several pages found");
 			}
 
-			int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
-			int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_VERSION);
+			// int indexTimeStamp =
+			// cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
+			// int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_VERSION);
 			int indexPage = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_PAGE);
 			cursor.moveToNext();
 
-			Date timeStamp = Utils.parseTimeUTC(cursor.getString(indexTimeStamp));
-			int version = cursor.getInt(indexVersion);
+			// Date timeStamp = Utils.parseTimeUTC(cursor.getString(indexTimeStamp));
+			// int version = cursor.getInt(indexVersion);
 			String source = cursor.getString(indexPage);
 
-			DiaryPage diaryPage = new DiaryPage(date, timeStamp, version);
-			SerializerDiaryPagePlain.readContent(source, diaryPage);
+			DiaryPage diaryPage = serializer.read(source);
+
 			return diaryPage;
 		}
 		catch (Exception e)
@@ -193,7 +199,7 @@ public class LocalDiaryDAO implements DiaryDAO
 	{
 		try
 		{
-			String code = SerializerDiaryPagePlain.writeContent(diaryPage);
+			String code = serializer.write(diaryPage);
 			boolean exists = (findPage(diaryPage.getDate()) != null);
 
 			ContentValues newValues = new ContentValues();
