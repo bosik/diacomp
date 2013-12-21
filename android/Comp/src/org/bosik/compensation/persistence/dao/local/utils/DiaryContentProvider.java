@@ -237,19 +237,27 @@ public class DiaryContentProvider extends ContentProvider
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
 	{
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+		SQLiteDatabase db = openHelper.getReadableDatabase();
 
 		switch (sURIMatcher.match(uri))
 		{
 			case CODE_DIARY:
-				SQLiteDatabase db = openHelper.getReadableDatabase();
+			{
 				qb.setTables(TABLE_DIARY);
 				Cursor cursor = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
 				cursor.setNotificationUri(getContext().getContentResolver(), uri);
 				return cursor;
-
+			}
+			case CODE_FOODBASE:
+			{
+				qb.setTables(TABLE_FOODBASE);
+				Cursor cursor = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+				cursor.setNotificationUri(getContext().getContentResolver(), uri);
+				return cursor;
 				// TODO: foodbase: require GUID and data only
 				// TODO: foodbase: retrieve version and increment it here
 				// TODO: foodbase: set timestamp to current time
+			}
 
 			default:
 				throw new UnknownUriException(uri);
