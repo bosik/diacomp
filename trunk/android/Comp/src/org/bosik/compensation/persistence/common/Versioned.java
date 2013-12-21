@@ -18,6 +18,8 @@ public class Versioned<T> implements Serializable
 	private String				id;
 	private Date				timeStamp;
 	private int					version;
+	private boolean				deleted;
+
 	private T					data;
 
 	// ================================ MAIN ================================
@@ -84,6 +86,16 @@ public class Versioned<T> implements Serializable
 	public void setVersion(int version)
 	{
 		this.version = version;
+	}
+
+	public boolean isDeleted()
+	{
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted)
+	{
+		this.deleted = deleted;
 	}
 
 	public T getData()
