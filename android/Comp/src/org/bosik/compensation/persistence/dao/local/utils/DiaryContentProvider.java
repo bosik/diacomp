@@ -68,6 +68,8 @@ public class DiaryContentProvider extends ContentProvider
 
 	private static final int		CODE_DISHBASE				= 3;
 
+	// ==================================================================================================
+
 	static
 	{
 		sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
