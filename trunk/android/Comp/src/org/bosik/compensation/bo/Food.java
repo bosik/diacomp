@@ -91,15 +91,7 @@ public class Food implements Serializable, Named
 
 	public void setName(String name)
 	{
-		if (name == null)
-		{
-			throw new NullPointerException("Name can't be null");
-		}
-		if (name.trim().equals(""))
-		{
-			throw new IllegalArgumentException("Name must contain non-whitespace characters");
-		}
-
+		checkNameThrowable(name);
 		this.name = name;
 	}
 
