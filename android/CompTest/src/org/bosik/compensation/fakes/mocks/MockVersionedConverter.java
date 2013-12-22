@@ -44,7 +44,7 @@ public class MockVersionedConverter<T> extends TestCase implements Mock<Versione
 		assertEquals(exp.getId(), act.getId());
 		assertEquals(exp.getTimeStamp().getTime(), act.getTimeStamp().getTime(), TestUtils.EPS_TIME);
 		assertEquals(exp.getVersion(), act.getVersion());
-
+		assertEquals(exp.isDeleted(), act.isDeleted());
 		generator.compare(exp.getData(), act.getData());
 	}
 }
