@@ -289,50 +289,31 @@ public class DiaryContentProvider extends ContentProvider
 	@Override
 	public int delete(final Uri uri, String where, String[] whereArgs)
 	{
-		// Deleting is disabled right now
-		// TODO: mark as removed instead
-		return 0;
+		/**
+		 * This actually removes data from DB. Service should just mark rows deleted instead (using
+		 * update method)
+		 */
 
-		// SQLiteDatabase db = openHelper.getWritableDatabase();
-		// int count;
-		//
-		// switch (sURIMatcher.match(uri))
-		// {
-		// case CODE_DIARY:
-		// // от греха подальше...
-		// if ((where != null) && (!where.equals("")))
-		// {
-		// // Log.d(TAG,"delete(): URI is correct (whole diary, checking WHERE clause...)");
-		// count = db.delete(TABLE_DIARY, where, whereArgs);
-		// // Log.d(TAG,"delete(): done");
-		// }
-		// else
-		// {
-		// throw new
-		// IllegalArgumentException("Empty WHERE clause, this will destroy all database; denied");
-		// }
-		// break;
-		//
-		// // case CODE_DIARY_ITEM:
-		// // String finalWhere = COLUMN_DIARY_ID + " = " + uri.getLastPathSegment();
-		// //
-		// // if ((where != null) && (!where.equals("")))
-		// // {
-		// // finalWhere = finalWhere + " AND " + where;
-		// // }
-		// //
-		// // count = db.delete(TABLE_DIARY, // The database table name.
-		// // finalWhere, // The final WHERE clause
-		// // whereArgs // The incoming where clause values.
-		// // );
-		// // break;
-		//
-		// default:
-		// throw new UnknownUriException(uri);
-		// }
-		//
-		// getContext().getContentResolver().notifyChange(uri, null);
-		//
-		// return count;
+		SQLiteDatabase db = openHelper.getWritableDatabase();
+		int count;
+
+		switch (sURIMatcher.match(uri))
+		{
+			case CODE_DIARY:
+				count = db.delete(TABLE_DIARY, where, whereArgs);
+				break;
+			case CODE_FOODBASE:
+				count = db.delete(TABLE_FOODBASE, where, whereArgs);
+				break;
+			case CODE_DISHBASE:
+				count = db.delete(TABLE_FOODBASE, where, whereArgs);
+				break;
+
+			default:
+				throw new UnknownUriException(uri);
+		}
+
+		getContext().getContentResolver().notifyChange(uri, null);
+		return count;
 	}
 }
