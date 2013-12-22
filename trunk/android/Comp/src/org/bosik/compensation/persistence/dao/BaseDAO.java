@@ -18,7 +18,7 @@ public interface BaseDAO<Item>
 	String add(Versioned<Item> item) throws StoreException;
 
 	/**
-	 * Removes item with specified ID
+	 * Marks item with specified ID as deleted
 	 * 
 	 * @param id
 	 * @throws ItemNotFoundException
@@ -29,62 +29,67 @@ public interface BaseDAO<Item>
 	/**
 	 * Returns all items
 	 * 
+	 * @param includeDeleted
 	 * @return
 	 */
-	List<Versioned<Item>> findAll();
+	List<Versioned<Item>> findAll(boolean includeDeleted);
 
 	/**
-	 * Searched for any item which has filter as substring in it's name (case insensitive)
+	 * Searches for non-deleted item with name containing specified string (case insensitive).
 	 * 
 	 * @param filter
-	 * @return
+	 * @return Item if found, null otherwise
 	 */
 	List<Versioned<Item>> findAny(String filter);
 
 	/**
-	 * Searches for item with specified name, returns null if not found
+	 * Searches for non-deleted item with exact name
 	 * 
 	 * @param exactName
-	 * @return
+	 * @return Item if found, null otherwise
 	 */
 	Versioned<Item> findOne(String exactName);
 
 	/**
-	 * Searches for item with specified ID, returns null if not found
+	 * Searches for item (both deleted or not) with specified ID
 	 * 
 	 * @param id
 	 * @return
+	 * @throws ItemNotFoundException
 	 */
-	Versioned<Item> findById(String id);
+	Versioned<Item> findById(String id) throws ItemNotFoundException;
 
-	/**
-	 * Replaces all items by specified one and sets specified list version; this is useful in sync
-	 * procedures
-	 * 
-	 * @param newList
-	 * @param newVersion
-	 * @throws StoreException
-	 *             If storing failed
-	 */
+	// /**
+	// * Replaces all items by specified one and sets specified list version; this is useful in sync
+	// * procedures
+	// *
+	// * @param newList
+	// * @param newVersion
+	// * @throws StoreException
+	// * If storing failed
+	// */
 	// @Deprecated
 	// void replaceAll(List<Item> newList, int newVersion) throws StoreException;
 
 	/**
-	 * Updates single item
+	 * Updates single non-deleted item. Note: updating deleted item result in exception.
 	 * 
 	 * @param item
 	 * @throws ItemNotFoundException
-	 *             If no item with such ID found
+	 *             If no non-deleted item with such ID found
 	 * @throws StoreException
 	 *             If storing failed
 	 */
+
+	// TODO: retrieve version and increment it here
+	// TODO: set timestamp to current time
 	void update(Versioned<Item> item) throws ItemNotFoundException, StoreException;
 
-	/**
-	 * Returns DAO's list version
-	 * 
-	 * @return
-	 */
+	// /**
+	// * Returns DAO's list version
+	// *
+	// * @return
+	// */
 	// @Deprecated
 	// int getVersion();
 }

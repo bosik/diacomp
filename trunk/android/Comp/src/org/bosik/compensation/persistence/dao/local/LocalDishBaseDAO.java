@@ -24,7 +24,7 @@ public class LocalDishBaseDAO implements DishBaseDAO
 	}
 
 	@Override
-	public List<Versioned<DishItem>> findAll()
+	public List<Versioned<DishItem>> findAll(boolean includeDeleted)
 	{
 		// TODO Auto-generated method stub
 		return null;

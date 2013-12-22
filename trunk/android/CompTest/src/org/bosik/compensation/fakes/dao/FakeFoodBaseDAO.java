@@ -22,7 +22,7 @@ public class FakeFoodBaseDAO implements FoodBaseDAO
 
 	}
 
-	public List<Versioned<FoodItem>> findAll()
+	public List<Versioned<FoodItem>> findAll(boolean includeDeleted)
 	{
 		// TODO Auto-generated method stub
 		return null;
