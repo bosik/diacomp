@@ -1,5 +1,6 @@
 package org.bosik.compensation.bo.diary;
 
+import java.io.Serializable;
 import org.bosik.compensation.utils.Utils;
 
 /* ЗАМЕТКИ 
@@ -15,9 +16,11 @@ import org.bosik.compensation.utils.Utils;
  * 		2. Быть готовым поймать исключение и обработать его на frontend'е.
  */
 
-public abstract class DiaryRecord
+public abstract class DiaryRecord implements Serializable
 {
-	private int	time;
+	private static final long	serialVersionUID	= 1L;
+
+	private int					time;
 
 	// ================================ VALIDATORS ================================
 
