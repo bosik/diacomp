@@ -4,43 +4,46 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import org.bosik.compensation.bo.RelativeTagged;
+import org.bosik.compensation.persistence.common.Versioned;
 
-public class Sorter
+public class Sorter<T extends RelativeTagged>
 {
 	public enum Sort
 	{
 		ALPHABET, RELEVANT
 	}
 
-	private static final Comparator<RelativeTagged>	COMPARATOR_ALPHABET	= new Comparator<RelativeTagged>()
+	private final Comparator<Versioned<T>>	COMPARATOR_ALPHABET	= new Comparator<Versioned<T>>()
+																{
+																	@Override
+																	public int compare(Versioned<T> lhs,
+																			Versioned<T> rhs)
+																	{
+																		return lhs.getData().getName()
+																				.compareTo(rhs.getData().getName());
+																	}
+																};
+	private final Comparator<Versioned<T>>	COMPARATOR_RELEVANT	= new Comparator<Versioned<T>>()
+																{
+																	@Override
+																	public int compare(Versioned<T> lhs,
+																			Versioned<T> rhs)
+																	{
+																		if (lhs.getData().getTag() == rhs.getData()
+																				.getTag())
 																		{
-																			@Override
-																			public int compare(RelativeTagged lhs,
-																					RelativeTagged rhs)
-																			{
-																				return lhs.getName().compareTo(
-																						rhs.getName());
-																			}
-																		};
-	private static final Comparator<RelativeTagged>	COMPARATOR_RELEVANT	= new Comparator<RelativeTagged>()
+																			return COMPARATOR_ALPHABET
+																					.compare(lhs, rhs);
+																		}
+																		else
 																		{
-																			@Override
-																			public int compare(RelativeTagged lhs,
-																					RelativeTagged rhs)
-																			{
-																				if (lhs.getTag() == rhs.getTag())
-																				{
-																					return COMPARATOR_ALPHABET.compare(
-																							lhs, rhs);
-																				}
-																				else
-																				{
-																					return rhs.getTag() - lhs.getTag();
-																				}
-																			}
-																		};
+																			return rhs.getData().getTag()
+																					- lhs.getData().getTag();
+																		}
+																	}
+																};
 
-	public static <T extends RelativeTagged> void sort(List<T> list, Sort order)
+	public void sort(List<Versioned<T>> list, Sort order)
 	{
 		switch (order)
 		{

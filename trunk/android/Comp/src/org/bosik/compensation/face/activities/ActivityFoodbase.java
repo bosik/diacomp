@@ -1,9 +1,13 @@
 package org.bosik.compensation.face.activities;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.bosik.compensation.bo.RelativeTagged;
+import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.face.R;
+import org.bosik.compensation.persistence.Storage;
 import org.bosik.compensation.persistence.common.Versioned;
+import org.bosik.compensation.services.Sorter;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -32,6 +36,7 @@ public class ActivityFoodbase extends Activity
 
 	// Data
 	private List<Versioned<RelativeTagged>>	data;
+	private static final Sorter<FoodItem>	sorter		= new Sorter<FoodItem>();
 
 	// ===========================================================================
 
@@ -95,22 +100,25 @@ public class ActivityFoodbase extends Activity
 
 	private List<Versioned<RelativeTagged>> request(String filter)
 	{
-		// List<Versioned<FoodItem>> temp;
-		// if (filter.trim().isEmpty())
-		// {
-		// temp = Storage.localFoodBase.findAll();
-		// }
-		// else
-		// {
-		// temp = Storage.localFoodBase.findAny(filter);
-		// Sorter.sort(temp, Sorter.Sort.RELEVANT);
-		// }
-		//
-		// List<BaseItem> result = new ArrayList<BaseItem>();
-		// result.addAll(temp);
-		// return result;
-		// FIXME: implement again
-		return null;
+		List<Versioned<FoodItem>> temp;
+		if (filter.trim().isEmpty())
+		{
+			temp = Storage.localFoodBase.findAll();
+		}
+		else
+		{
+			temp = Storage.localFoodBase.findAny(filter);
+			sorter.sort(temp, Sorter.Sort.RELEVANT);
+		}
+
+		// TODO: check the performance
+		List<Versioned<RelativeTagged>> result = new ArrayList<Versioned<RelativeTagged>>();
+		for (Versioned<FoodItem> item : temp)
+		{
+			result.add(new Versioned<RelativeTagged>(item.getData()));
+		}
+
+		return result;
 	}
 
 	private void showBase(final List<Versioned<RelativeTagged>> foodBase)
