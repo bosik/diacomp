@@ -21,7 +21,7 @@ public class FakeDishBaseDAO implements DishBaseDAO
 
 	}
 
-	public List<Versioned<DishItem>> findAll(boolean includeDeleted)
+	public List<Versioned<DishItem>> findAll()
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -49,6 +49,18 @@ public class FakeDishBaseDAO implements DishBaseDAO
 	{
 		// TODO Auto-generated method stub
 
+	}
+
+	public List<Versioned<DishItem>> findSysAll()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Versioned<DishItem> findSysById(String id)
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

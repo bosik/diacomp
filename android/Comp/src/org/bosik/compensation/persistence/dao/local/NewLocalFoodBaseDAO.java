@@ -1,9 +1,9 @@
 package org.bosik.compensation.persistence.dao.local;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import org.bosik.compensation.bo.foodbase.FoodItem;
-import org.bosik.compensation.face.BuildConfig;
 import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.persistence.dao.FoodBaseDAO;
 import org.bosik.compensation.persistence.dao.local.utils.DiaryContentProvider;
@@ -24,6 +24,8 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 	private ContentResolver			resolver;
 	private Serializer<FoodItem>	serializer;
 
+	// ====================================================================================
+
 	public NewLocalFoodBaseDAO(ContentResolver resolver)
 	{
 		if (null == resolver)
@@ -35,6 +37,139 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 		Parser<FoodItem> s = new ParserFoodItem();
 		serializer = new SerializerAdapter<FoodItem>(s);
 	}
+
+	private List<Versioned<FoodItem>> find(String id, boolean includeDeleted)
+	{
+		try
+		{
+			// constructing parameters
+			String[] mProj = { DiaryContentProvider.COLUMN_FOODBASE_GUID,
+					DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, DiaryContentProvider.COLUMN_FOODBASE_VERSION,
+					DiaryContentProvider.COLUMN_FOODBASE_DELETED, DiaryContentProvider.COLUMN_FOODBASE_DATA };
+
+			String mSelectionClause = "";
+			List<String> args = new LinkedList<String>();
+
+			if (id != null)
+			{
+				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
+				mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
+				args.add(id);
+			}
+
+			if (!includeDeleted)
+			{
+				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
+				mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_DELETED + " = 0";
+			}
+
+			String[] mSelectionArgs = (String[]) args.toArray();
+			String mSortOrder = null;
+
+			// execute query
+			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, mProj, mSelectionClause,
+					mSelectionArgs, mSortOrder);
+
+			List<Versioned<FoodItem>> result = new LinkedList<Versioned<FoodItem>>();
+
+			// analyze response
+			if (cursor != null)
+			{
+				int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_GUID);
+				int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP);
+				int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_VERSION);
+				int indexData = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DATA);
+				int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DELETED);
+
+				while (cursor.moveToNext())
+				{
+					String valueId = cursor.getString(indexId);
+					Date valueTimeStamp = Utils.parseTimeUTC(cursor.getString(indexTimeStamp));
+					int valueVersion = cursor.getInt(indexVersion);
+					boolean valueDeleted = cursor.getInt(indexDeleted) == 1;
+					String valueData = cursor.getString(indexData);
+
+					FoodItem item = serializer.read(valueData);
+					Versioned<FoodItem> versioned = new Versioned<FoodItem>(item);
+					versioned.setId(valueId);
+					versioned.setTimeStamp(valueTimeStamp);
+					versioned.setVersion(valueVersion);
+					versioned.setDeleted(valueDeleted);
+
+					result.add(versioned);
+				}
+			}
+			else
+			{
+				throw new NullPointerException("Cursor is null");
+			}
+
+			return result;
+		}
+		catch (Exception e)
+		{
+			throw new CommonDAOException(e);
+		}
+	}
+
+	// private Versioned<FoodItem> findById(String id, boolean includeDeleted)
+	// {
+	// try
+	// {
+	// if (null == id)
+	// {
+	// throw new NullPointerException("ID can't be null");
+	// }
+	//
+	// // constructing parameters
+	// String[] mProj = { DiaryContentProvider.COLUMN_FOODBASE_GUID,
+	// DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, DiaryContentProvider.COLUMN_FOODBASE_VERSION,
+	// DiaryContentProvider.COLUMN_FOODBASE_DELETED, DiaryContentProvider.COLUMN_FOODBASE_DATA };
+	// String mSelectionClause = DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
+	//
+	// if (!includeDeleted)
+	// {
+	// mSelectionClause += " AND " + DiaryContentProvider.COLUMN_FOODBASE_DELETED + " = 0";
+	// }
+	// String[] mSelectionArgs = { id };
+	// String mSortOrder = null;
+	//
+	// // execute query
+	// Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, mProj,
+	// mSelectionClause,
+	// mSelectionArgs, mSortOrder);
+	//
+	// // analyze response
+	// if (cursor.getCount() < 1)
+	// {
+	// return null;
+	// }
+	//
+	// int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP);
+	// int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_VERSION);
+	// int indexData = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DATA);
+	// int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DELETED);
+	// cursor.moveToNext();
+	//
+	// Date timeStamp = Utils.parseTimeUTC(cursor.getString(indexTimeStamp));
+	// int version = cursor.getInt(indexVersion);
+	// boolean deleted = cursor.getInt(indexDeleted) == 1;
+	// String data = cursor.getString(indexData);
+	//
+	// FoodItem item = serializer.read(data);
+	// Versioned<FoodItem> result = new Versioned<FoodItem>(item);
+	// result.setId(id);
+	// result.setTimeStamp(timeStamp);
+	// result.setVersion(version);
+	// result.setDeleted(deleted);
+	//
+	// return result;
+	// }
+	// catch (Exception e)
+	// {
+	// throw new CommonDAOException(e);
+	// }
+	// }
 
 	@Override
 	public String add(Versioned<FoodItem> item) throws StoreException
@@ -65,90 +200,54 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findAll(boolean includeDeleted)
+	public List<Versioned<FoodItem>> findAll()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return find(null, false);
 	}
 
 	@Override
 	public List<Versioned<FoodItem>> findAny(String filter)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Versioned<FoodItem> findOne(String exactName)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Versioned<FoodItem> findById(String id)
 	{
-		try
+		List<Versioned<FoodItem>> list = find(id, false);
+		if (list.isEmpty())
 		{
-			if (null == id)
-			{
-				throw new NullPointerException("ID can't be null");
-			}
-
-			// constructing parameters
-			String[] mProj = { DiaryContentProvider.COLUMN_FOODBASE_GUID,
-					DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, DiaryContentProvider.COLUMN_FOODBASE_VERSION,
-					DiaryContentProvider.COLUMN_FOODBASE_DELETED, DiaryContentProvider.COLUMN_FOODBASE_DATA };
-			String mSelectionClause = DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
-			String[] mSelectionArgs = { id };
-			String mSortOrder = null;
-
-			// execute query
-			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, mProj, mSelectionClause,
-					mSelectionArgs, mSortOrder);
-
-			// analyze response
-			if (cursor == null)
-			{
-				throw new NullPointerException("Cursor is null");
-			}
-
-			if (cursor.getCount() < 1)
-			{
-				return null;
-			}
-
-			if ((cursor.getCount() > 1) && (BuildConfig.DEBUG))
-			{
-				// на самом деле мы производим выборку по полю GUID, которое при создании
-				// таблицы имеет атрибут UNIQUE, так что такого в принципе быть не должно
-
-				throw new IllegalStateException("Several items found");
-			}
-
-			int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP);
-			int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_VERSION);
-			int indexData = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DATA);
-			int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DELETED);
-			cursor.moveToNext();
-
-			Date timeStamp = Utils.parseTimeUTC(cursor.getString(indexTimeStamp));
-			int version = cursor.getInt(indexVersion);
-			boolean deleted = cursor.getInt(indexDeleted) == 1;
-			String data = cursor.getString(indexData);
-
-			FoodItem item = serializer.read(data);
-			Versioned<FoodItem> result = new Versioned<FoodItem>(item);
-			result.setId(id);
-			result.setTimeStamp(timeStamp);
-			result.setVersion(version);
-			result.setDeleted(deleted);
-
-			return result;
+			return null;
 		}
-		catch (Exception e)
+		else
 		{
-			throw new CommonDAOException(e);
+			return list.get(0);
+		}
+	}
+
+	@Override
+	public List<Versioned<FoodItem>> findSysAll()
+	{
+		return find(null, true);
+	}
+
+	@Override
+	public Versioned<FoodItem> findSysById(String id)
+	{
+		List<Versioned<FoodItem>> list = find(id, true);
+		if (list.isEmpty())
+		{
+			return null;
+		}
+		else
+		{
+			return list.get(0);
 		}
 	}
 

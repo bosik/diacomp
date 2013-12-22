@@ -33,7 +33,7 @@ public class WebDishBaseDAO implements DishBaseDAO
 	}
 
 	@Override
-	public List<Versioned<DishItem>> findAll(boolean includeDeleted)
+	public List<Versioned<DishItem>> findAll()
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}
@@ -60,5 +60,19 @@ public class WebDishBaseDAO implements DishBaseDAO
 	public void update(Versioned<DishItem> item) throws ItemNotFoundException
 	{
 		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	public List<Versioned<DishItem>> findSysAll()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Versioned<DishItem> findSysById(String id)
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

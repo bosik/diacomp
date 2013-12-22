@@ -22,7 +22,7 @@ public class FakeFoodBaseDAO implements FoodBaseDAO
 
 	}
 
-	public List<Versioned<FoodItem>> findAll(boolean includeDeleted)
+	public List<Versioned<FoodItem>> findAll()
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -50,5 +50,17 @@ public class FakeFoodBaseDAO implements FoodBaseDAO
 	{
 		// TODO Auto-generated method stub
 
+	}
+
+	public List<Versioned<FoodItem>> findSysAll()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Versioned<FoodItem> findSysById(String id)
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

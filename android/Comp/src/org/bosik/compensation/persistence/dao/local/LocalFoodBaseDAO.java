@@ -4,6 +4,7 @@ import java.util.List;
 import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.persistence.dao.FoodBaseDAO;
+import org.bosik.compensation.persistence.exceptions.AlreadyDeletedException;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 import org.bosik.compensation.persistence.exceptions.StoreException;
 
@@ -17,13 +18,14 @@ public class LocalFoodBaseDAO implements FoodBaseDAO
 	}
 
 	@Override
-	public void delete(String id) throws ItemNotFoundException
+	public void delete(String id) throws ItemNotFoundException, AlreadyDeletedException
 	{
 		// TODO Auto-generated method stub
+
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findAll(boolean includeDeleted)
+	public List<Versioned<FoodItem>> findAll()
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -51,8 +53,23 @@ public class LocalFoodBaseDAO implements FoodBaseDAO
 	}
 
 	@Override
+	public List<Versioned<FoodItem>> findSysAll()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Versioned<FoodItem> findSysById(String id)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public void update(Versioned<FoodItem> item) throws ItemNotFoundException, StoreException
 	{
 		// TODO Auto-generated method stub
+
 	}
 }
