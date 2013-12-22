@@ -7,6 +7,7 @@ import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.persistence.dao.FoodBaseDAO;
 import org.bosik.compensation.persistence.dao.local.utils.DiaryContentProvider;
+import org.bosik.compensation.persistence.exceptions.AlreadyDeletedException;
 import org.bosik.compensation.persistence.exceptions.CommonDAOException;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 import org.bosik.compensation.persistence.exceptions.StoreException;
@@ -112,65 +113,6 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 		}
 	}
 
-	// private Versioned<FoodItem> findById(String id, boolean includeDeleted)
-	// {
-	// try
-	// {
-	// if (null == id)
-	// {
-	// throw new NullPointerException("ID can't be null");
-	// }
-	//
-	// // constructing parameters
-	// String[] mProj = { DiaryContentProvider.COLUMN_FOODBASE_GUID,
-	// DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, DiaryContentProvider.COLUMN_FOODBASE_VERSION,
-	// DiaryContentProvider.COLUMN_FOODBASE_DELETED, DiaryContentProvider.COLUMN_FOODBASE_DATA };
-	// String mSelectionClause = DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
-	//
-	// if (!includeDeleted)
-	// {
-	// mSelectionClause += " AND " + DiaryContentProvider.COLUMN_FOODBASE_DELETED + " = 0";
-	// }
-	// String[] mSelectionArgs = { id };
-	// String mSortOrder = null;
-	//
-	// // execute query
-	// Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, mProj,
-	// mSelectionClause,
-	// mSelectionArgs, mSortOrder);
-	//
-	// // analyze response
-	// if (cursor.getCount() < 1)
-	// {
-	// return null;
-	// }
-	//
-	// int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP);
-	// int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_VERSION);
-	// int indexData = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DATA);
-	// int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DELETED);
-	// cursor.moveToNext();
-	//
-	// Date timeStamp = Utils.parseTimeUTC(cursor.getString(indexTimeStamp));
-	// int version = cursor.getInt(indexVersion);
-	// boolean deleted = cursor.getInt(indexDeleted) == 1;
-	// String data = cursor.getString(indexData);
-	//
-	// FoodItem item = serializer.read(data);
-	// Versioned<FoodItem> result = new Versioned<FoodItem>(item);
-	// result.setId(id);
-	// result.setTimeStamp(timeStamp);
-	// result.setVersion(version);
-	// result.setDeleted(deleted);
-	//
-	// return result;
-	// }
-	// catch (Exception e)
-	// {
-	// throw new CommonDAOException(e);
-	// }
-	// }
-
 	@Override
 	public String add(Versioned<FoodItem> item) throws StoreException
 	{
@@ -194,9 +136,31 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 	}
 
 	@Override
-	public void delete(String id) throws ItemNotFoundException
+	public void delete(String id) throws ItemNotFoundException, AlreadyDeletedException
 	{
-		// TODO Auto-generated method stub
+		try
+		{
+			Versioned<FoodItem> founded = findById(id);
+
+			if (founded == null)
+			{
+				throw new ItemNotFoundException(id);
+			}
+
+			if (founded.isDeleted())
+			{
+				throw new AlreadyDeletedException(id);
+			}
+
+			ContentValues newValues = new ContentValues();
+			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, 1);
+			String[] args = new String[] { id };
+			resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, "GUID = ?", args);
+		}
+		catch (Exception e)
+		{
+			throw new StoreException(e);
+		}
 	}
 
 	@Override
