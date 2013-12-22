@@ -46,6 +46,7 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		COLUMN_FOODBASE_GUID		= "GUID";
 	public static final String		COLUMN_FOODBASE_TIMESTAMP	= "TimeStamp";
 	public static final String		COLUMN_FOODBASE_VERSION		= "Version";
+	public static final String		COLUMN_FOODBASE_DELETED		= "Deleted";
 	public static final String		COLUMN_FOODBASE_DATA		= "Data";
 
 	public static final String		CONTENT_FOODBASE_STRING		= SCHEME + AUTH + "/" + TABLE_FOODBASE + "/";
@@ -59,6 +60,7 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		COLUMN_DISHBASE_GUID		= "GUID";
 	public static final String		COLUMN_DISHBASE_TIMESTAMP	= "TimeStamp";
 	public static final String		COLUMN_DISHBASE_VERSION		= "Version";
+	public static final String		COLUMN_DISHBASE_DELETED		= "Deleted";
 	public static final String		COLUMN_DISHBASE_DATA		= "Data";
 
 	public static final String		CONTENT_DISHBASE_STRING		= SCHEME + AUTH + "/" + TABLE_DISHBASE + "/";
@@ -113,6 +115,7 @@ public class DiaryContentProvider extends ContentProvider
 					COLUMN_FOODBASE_GUID + " TEXT PRIMARY KEY",
 					COLUMN_FOODBASE_TIMESTAMP + " TEXT",
 					COLUMN_FOODBASE_VERSION + " INTEGER",
+					COLUMN_FOODBASE_DELETED + " INTEGER", // 0 or 1
 					COLUMN_FOODBASE_DATA + " TEXT");
 			db.execSQL(SQL_CREATE_FOODBASE);
 			
@@ -122,6 +125,7 @@ public class DiaryContentProvider extends ContentProvider
 					COLUMN_DISHBASE_GUID + " TEXT PRIMARY KEY",
 					COLUMN_DISHBASE_TIMESTAMP + " TEXT",
 					COLUMN_DISHBASE_VERSION + " INTEGER",
+					COLUMN_DISHBASE_DELETED + " INTEGER", // 0 or 1
 					COLUMN_DISHBASE_DATA + " TEXT");
 			db.execSQL(SQL_CREATE_DISHBASE);
 			
