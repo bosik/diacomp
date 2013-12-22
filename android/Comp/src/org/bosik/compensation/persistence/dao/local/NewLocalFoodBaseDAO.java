@@ -10,8 +10,8 @@ import org.bosik.compensation.persistence.dao.local.utils.DiaryContentProvider;
 import org.bosik.compensation.persistence.exceptions.CommonDAOException;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 import org.bosik.compensation.persistence.exceptions.StoreException;
-import org.bosik.compensation.persistence.serializers.ParserFoodItem;
 import org.bosik.compensation.persistence.serializers.Parser;
+import org.bosik.compensation.persistence.serializers.ParserFoodItem;
 import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.persistence.serializers.utils.SerializerAdapter;
 import org.bosik.compensation.utils.Utils;
@@ -34,7 +34,6 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 
 		Parser<FoodItem> s = new ParserFoodItem();
 		serializer = new SerializerAdapter<FoodItem>(s);
-
 	}
 
 	@Override
@@ -42,13 +41,12 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 	{
 		try
 		{
-			String code = serializer.write(item.getData());
-
 			ContentValues newValues = new ContentValues();
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_GUID, item.getId());
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, code);
+			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, false);
+			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
 
 			resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues);
 
@@ -64,11 +62,10 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 	public void delete(String id) throws ItemNotFoundException
 	{
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findAll()
+	public List<Versioned<FoodItem>> findAll(boolean includeDeleted)
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -101,7 +98,7 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 			// constructing parameters
 			String[] mProj = { DiaryContentProvider.COLUMN_FOODBASE_GUID,
 					DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, DiaryContentProvider.COLUMN_FOODBASE_VERSION,
-					DiaryContentProvider.COLUMN_FOODBASE_DATA };
+					DiaryContentProvider.COLUMN_FOODBASE_DELETED, DiaryContentProvider.COLUMN_FOODBASE_DATA };
 			String mSelectionClause = DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
 			String[] mSelectionArgs = { id };
 			String mSortOrder = null;
@@ -132,17 +129,20 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 			int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP);
 			int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_VERSION);
 			int indexData = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DATA);
+			int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DELETED);
 			cursor.moveToNext();
 
 			Date timeStamp = Utils.parseTimeUTC(cursor.getString(indexTimeStamp));
 			int version = cursor.getInt(indexVersion);
-			String source = cursor.getString(indexData);
+			boolean deleted = cursor.getInt(indexDeleted) == 1;
+			String data = cursor.getString(indexData);
 
-			FoodItem item = serializer.read(source);
+			FoodItem item = serializer.read(data);
 			Versioned<FoodItem> result = new Versioned<FoodItem>(item);
 			result.setId(id);
 			result.setTimeStamp(timeStamp);
 			result.setVersion(version);
+			result.setDeleted(deleted);
 
 			return result;
 		}
@@ -155,7 +155,26 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 	@Override
 	public void update(Versioned<FoodItem> item) throws ItemNotFoundException, StoreException
 	{
-		// TODO Auto-generated method stub
+		try
+		{
+			Versioned<FoodItem> founded = findById(item.getId());
 
+			if ((founded == null) || founded.isDeleted())
+			{
+				throw new ItemNotFoundException(item.getId());
+			}
+
+			ContentValues newValues = new ContentValues();
+			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
+			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
+
+			String[] args = new String[] { item.getId() };
+			resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, "GUID = ?", args);
+		}
+		catch (Exception e)
+		{
+			throw new StoreException(e);
+		}
 	}
 }

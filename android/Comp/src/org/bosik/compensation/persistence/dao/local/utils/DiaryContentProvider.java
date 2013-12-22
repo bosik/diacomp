@@ -260,10 +260,6 @@ public class DiaryContentProvider extends ContentProvider
 			{
 				qb.setTables(TABLE_FOODBASE);
 				break;
-
-				// TODO: foodbase: require GUID and data only - in service
-				// TODO: foodbase: retrieve version and increment it here - in service
-				// TODO: foodbase: set timestamp to current time - in service
 			}
 			case CODE_DISHBASE:
 			{

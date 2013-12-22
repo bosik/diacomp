@@ -44,7 +44,7 @@ public class WebFoodBaseDAO implements FoodBaseDAO
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findAll()
+	public List<Versioned<FoodItem>> findAll(boolean includeDeleted)
 	{
 		throw new UnsupportedOperationException();
 		// MemoryBase<FoodItem> base = load();

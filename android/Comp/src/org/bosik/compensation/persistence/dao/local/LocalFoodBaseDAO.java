@@ -9,7 +9,6 @@ import org.bosik.compensation.persistence.exceptions.StoreException;
 
 public class LocalFoodBaseDAO implements FoodBaseDAO
 {
-
 	@Override
 	public String add(Versioned<FoodItem> item) throws StoreException
 	{
@@ -21,11 +20,10 @@ public class LocalFoodBaseDAO implements FoodBaseDAO
 	public void delete(String id) throws ItemNotFoundException
 	{
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findAll()
+	public List<Versioned<FoodItem>> findAll(boolean includeDeleted)
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -56,7 +54,5 @@ public class LocalFoodBaseDAO implements FoodBaseDAO
 	public void update(Versioned<FoodItem> item) throws ItemNotFoundException, StoreException
 	{
 		// TODO Auto-generated method stub
-
 	}
-
 }

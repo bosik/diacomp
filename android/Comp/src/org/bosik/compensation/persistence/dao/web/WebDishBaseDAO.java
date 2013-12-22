@@ -33,7 +33,7 @@ public class WebDishBaseDAO implements DishBaseDAO
 	}
 
 	@Override
-	public List<Versioned<DishItem>> findAll()
+	public List<Versioned<DishItem>> findAll(boolean includeDeleted)
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}

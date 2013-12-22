@@ -9,7 +9,6 @@ import org.bosik.compensation.persistence.exceptions.StoreException;
 
 public class FakeDishBaseDAO implements DishBaseDAO
 {
-
 	public String add(Versioned<DishItem> item) throws StoreException
 	{
 		// TODO Auto-generated method stub
@@ -22,7 +21,7 @@ public class FakeDishBaseDAO implements DishBaseDAO
 
 	}
 
-	public List<Versioned<DishItem>> findAll()
+	public List<Versioned<DishItem>> findAll(boolean includeDeleted)
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -40,7 +39,7 @@ public class FakeDishBaseDAO implements DishBaseDAO
 		return null;
 	}
 
-	public Versioned<DishItem> findById(String id)
+	public Versioned<DishItem> findById(String id) throws ItemNotFoundException
 	{
 		// TODO Auto-generated method stub
 		return null;
