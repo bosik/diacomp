@@ -1,6 +1,5 @@
 package org.bosik.compensation.bo.diary;
 
-import org.bosik.compensation.bo.basic.TrueCloneable;
 import org.bosik.compensation.utils.Utils;
 
 /* ЗАМЕТКИ 
@@ -16,10 +15,8 @@ import org.bosik.compensation.utils.Utils;
  * 		2. Быть готовым поймать исключение и обработать его на frontend'е.
  */
 
-public abstract class DiaryRecord implements TrueCloneable// , Serializable
+public abstract class DiaryRecord
 {
-	// private static final long serialVersionUID = 1L;
-
 	private int	time;
 
 	// ================================ VALIDATORS ================================
@@ -44,17 +41,5 @@ public abstract class DiaryRecord implements TrueCloneable// , Serializable
 		}
 
 		this.time = time;
-	}
-
-	// ============================== CLONE ==============================
-
-	@Override
-	public Object clone() throws CloneNotSupportedException
-	{
-		DiaryRecord result = (DiaryRecord) super.clone();
-
-		result.setTime(getTime());
-
-		return result;
 	}
 }

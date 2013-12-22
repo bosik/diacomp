@@ -11,6 +11,7 @@ import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
 
+@Deprecated
 public class DiaryPage
 {
 	private static final String					TAG			= DiaryPage.class.getSimpleName();
@@ -68,23 +69,25 @@ public class DiaryPage
 		version++;
 	}
 
+	@Deprecated
 	private Versioned<DiaryRecord> clone(Versioned<DiaryRecord> rec)
 	{
-		try
-		{
-			DiaryRecord data = (DiaryRecord) rec.getData().clone();
-
-			Versioned<DiaryRecord> result = new Versioned<DiaryRecord>(data);
-			result.setId(rec.getId());
-			result.setTimeStamp(rec.getTimeStamp());
-			result.setVersion(rec.getVersion());
-
-			return result;
-		}
-		catch (CloneNotSupportedException e)
-		{
-			throw new RuntimeException(e);
-		}
+		// try
+		// {
+		// DiaryRecord data = (DiaryRecord) rec.getData().clone();
+		//
+		// Versioned<DiaryRecord> result = new Versioned<DiaryRecord>(data);
+		// result.setId(rec.getId());
+		// result.setTimeStamp(rec.getTimeStamp());
+		// result.setVersion(rec.getVersion());
+		//
+		// return result;
+		// }
+		// catch (CloneNotSupportedException e)
+		// {
+		// throw new RuntimeException(e);
+		// }
+		return rec;
 	}
 
 	// ================================ ВНЕШНИЕ МЕТОДЫ ================================
