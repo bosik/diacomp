@@ -50,7 +50,7 @@ public abstract class TestFoodBaseDAO extends AndroidTestCase
 		// version = foodBaseDAO.getVersion();
 		foodBaseDAO.delete(org.getId());
 		// assertEquals(version + 1, foodBaseDAO.getVersion());
-		assertTrue(foodBaseDAO.findById(org.getId()).isDeleted());
+		assertNull(foodBaseDAO.findById(org.getId()));
 	}
 
 	// TODO: create testPersistenceMultiple()
