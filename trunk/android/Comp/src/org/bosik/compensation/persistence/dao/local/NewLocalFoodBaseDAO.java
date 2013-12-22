@@ -63,7 +63,7 @@ public class NewLocalFoodBaseDAO implements FoodBaseDAO
 				mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_DELETED + " = 0";
 			}
 
-			String[] mSelectionArgs = (String[]) args.toArray();
+			String[] mSelectionArgs = args.toArray(new String[] {});
 			String mSortOrder = null;
 
 			// execute query
