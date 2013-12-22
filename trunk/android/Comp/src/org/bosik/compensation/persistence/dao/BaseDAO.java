@@ -2,6 +2,7 @@ package org.bosik.compensation.persistence.dao;
 
 import java.util.List;
 import org.bosik.compensation.persistence.common.Versioned;
+import org.bosik.compensation.persistence.exceptions.AlreadyDeletedException;
 import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
 import org.bosik.compensation.persistence.exceptions.StoreException;
 
@@ -23,16 +24,17 @@ public interface BaseDAO<Item>
 	 * @param id
 	 * @throws ItemNotFoundException
 	 *             If no item with such ID found
+	 * @throws AlreadyDeletedException
+	 *             If item is already deleted
 	 */
-	void delete(String id) throws ItemNotFoundException;
+	void delete(String id) throws ItemNotFoundException, AlreadyDeletedException;
 
 	/**
-	 * Returns all items
+	 * Returns all non-deleted items
 	 * 
-	 * @param includeDeleted
 	 * @return
 	 */
-	List<Versioned<Item>> findAll(boolean includeDeleted);
+	List<Versioned<Item>> findAll();
 
 	/**
 	 * Searches for non-deleted item with name containing specified string (case insensitive).
@@ -51,13 +53,27 @@ public interface BaseDAO<Item>
 	Versioned<Item> findOne(String exactName);
 
 	/**
+	 * Searches for non-deleted item with specified ID
+	 * 
+	 * @param id
+	 * @return
+	 */
+	Versioned<Item> findById(String id);
+
+	/**
+	 * Searches for all items (both deleted or not)
+	 * 
+	 * @return
+	 */
+	List<Versioned<Item>> findSysAll();
+
+	/**
 	 * Searches for item (both deleted or not) with specified ID
 	 * 
 	 * @param id
 	 * @return
-	 * @throws ItemNotFoundException
 	 */
-	Versioned<Item> findById(String id) throws ItemNotFoundException;
+	Versioned<Item> findSysById(String id);
 
 	// /**
 	// * Replaces all items by specified one and sets specified list version; this is useful in sync

@@ -97,7 +97,9 @@ public class DiaryContentProvider extends ContentProvider
 		@Override
 		public void onCreate(SQLiteDatabase db)
 		{
-			// db.execSQL("DROP TABLE " + TABLE_DIARY);
+			db.execSQL("DROP TABLE IF EXISTS " + TABLE_DIARY);
+			db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOODBASE);
+			db.execSQL("DROP TABLE IF EXISTS " + TABLE_DISHBASE);
 
 			// @formatter:off
 			
@@ -112,7 +114,7 @@ public class DiaryContentProvider extends ContentProvider
 			db.execSQL(SQL_CREATE_DIARY);
 			
 			// foodbase table			
-			final String SQL_CREATE_FOODBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s)",
+			final String SQL_CREATE_FOODBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s)",
 					TABLE_FOODBASE,
 					COLUMN_FOODBASE_GUID + " TEXT PRIMARY KEY",
 					COLUMN_FOODBASE_TIMESTAMP + " TEXT",
@@ -122,7 +124,7 @@ public class DiaryContentProvider extends ContentProvider
 			db.execSQL(SQL_CREATE_FOODBASE);
 			
 			// dishbase table
-			final String SQL_CREATE_DISHBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s)",
+			final String SQL_CREATE_DISHBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s)",
 					TABLE_DISHBASE,
 					COLUMN_DISHBASE_GUID + " TEXT PRIMARY KEY",
 					COLUMN_DISHBASE_TIMESTAMP + " TEXT",

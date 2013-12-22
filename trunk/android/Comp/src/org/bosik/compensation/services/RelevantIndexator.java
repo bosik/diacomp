@@ -65,7 +65,7 @@ public class RelevantIndexator
 
 	private static <T extends RelativeTagged> void clearTags(BaseDAO<T> base)
 	{
-		List<Versioned<T>> list = base.findAll(false);
+		List<Versioned<T>> list = base.findAll();
 		for (Versioned<T> item : list)
 		{
 			item.getData().setTag(0);

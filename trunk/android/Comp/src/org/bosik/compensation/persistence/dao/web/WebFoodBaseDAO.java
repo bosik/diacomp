@@ -44,7 +44,7 @@ public class WebFoodBaseDAO implements FoodBaseDAO
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findAll(boolean includeDeleted)
+	public List<Versioned<FoodItem>> findAll()
 	{
 		throw new UnsupportedOperationException();
 		// MemoryBase<FoodItem> base = load();
@@ -82,6 +82,20 @@ public class WebFoodBaseDAO implements FoodBaseDAO
 		// MemoryBase<FoodItem> base = load();
 		// base.update(item);
 		// save(base);
+	}
+
+	@Override
+	public List<Versioned<FoodItem>> findSysAll()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Versioned<FoodItem> findSysById(String id)
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	// ----------------------------------- Web I/O -----------------------------------
