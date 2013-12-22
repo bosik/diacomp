@@ -188,6 +188,9 @@ public class DiaryContentProvider extends ContentProvider
 		checkNull(uri, "URI is null");
 		checkNull(values, "Values are null");
 
+		SQLiteDatabase db = openHelper.getWritableDatabase();
+		Uri resultUri;
+
 		switch (sURIMatcher.match(uri))
 		{
 			case CODE_DIARY:
@@ -197,19 +200,17 @@ public class DiaryContentProvider extends ContentProvider
 				checkValues(values, COLUMN_DIARY_VERSION);
 				checkValues(values, COLUMN_DIARY_PAGE);
 
-				SQLiteDatabase db = openHelper.getWritableDatabase();
 				long rowId = db.insert(TABLE_DIARY, null, values);
 
 				if (rowId > 0)
 				{
-					Uri resultUri = ContentUris.withAppendedId(CONTENT_DIARY_URI, rowId);
-					getContext().getContentResolver().notifyChange(resultUri, null);
-					return resultUri;
+					resultUri = ContentUris.withAppendedId(CONTENT_DIARY_URI, rowId);
 				}
 				else
 				{
 					throw new SQLException("Failed to insert row into " + uri);
 				}
+				break;
 			}
 
 			case CODE_FOODBASE:
@@ -219,55 +220,66 @@ public class DiaryContentProvider extends ContentProvider
 				checkValues(values, COLUMN_FOODBASE_VERSION);
 				checkValues(values, COLUMN_FOODBASE_DATA);
 
-				SQLiteDatabase db = openHelper.getWritableDatabase();
 				long rowId = db.insert(TABLE_FOODBASE, null, values);
 
 				if (rowId > 0)
 				{
-					Uri resultUri = ContentUris.withAppendedId(CONTENT_FOODBASE_URI, rowId);
-					getContext().getContentResolver().notifyChange(resultUri, null);
-					return resultUri;
+					resultUri = ContentUris.withAppendedId(CONTENT_FOODBASE_URI, rowId);
 				}
 				else
 				{
 					throw new SQLException("Failed to insert row into " + uri);
 				}
+				break;
 			}
 
 			default:
+			{
 				throw new UnknownUriException(uri);
+			}
 		}
+
+		getContext().getContentResolver().notifyChange(resultUri, null);
+		return resultUri;
 	}
 
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
 	{
-		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 		SQLiteDatabase db = openHelper.getReadableDatabase();
+		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
 		switch (sURIMatcher.match(uri))
 		{
 			case CODE_DIARY:
 			{
 				qb.setTables(TABLE_DIARY);
-				Cursor cursor = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
-				cursor.setNotificationUri(getContext().getContentResolver(), uri);
-				return cursor;
+				break;
 			}
 			case CODE_FOODBASE:
 			{
 				qb.setTables(TABLE_FOODBASE);
-				Cursor cursor = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
-				cursor.setNotificationUri(getContext().getContentResolver(), uri);
-				return cursor;
-				// TODO: foodbase: require GUID and data only
-				// TODO: foodbase: retrieve version and increment it here
-				// TODO: foodbase: set timestamp to current time
+				break;
+
+				// TODO: foodbase: require GUID and data only - in service
+				// TODO: foodbase: retrieve version and increment it here - in service
+				// TODO: foodbase: set timestamp to current time - in service
+			}
+			case CODE_DISHBASE:
+			{
+				qb.setTables(TABLE_DISHBASE);
+				break;
 			}
 
 			default:
+			{
 				throw new UnknownUriException(uri);
+			}
 		}
+
+		Cursor cursor = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+		cursor.setNotificationUri(getContext().getContentResolver(), uri);
+		return cursor;
 	}
 
 	@Override
@@ -279,13 +291,28 @@ public class DiaryContentProvider extends ContentProvider
 		switch (sURIMatcher.match(uri))
 		{
 			case CODE_DIARY:
+			{
 				affectedCount = db.update(TABLE_DIARY, values, where, whereArgs);
-				getContext().getContentResolver().notifyChange(uri, null);
-				return affectedCount;
-
+				break;
+			}
+			case CODE_FOODBASE:
+			{
+				affectedCount = db.update(TABLE_FOODBASE, values, where, whereArgs);
+				break;
+			}
+			case CODE_DISHBASE:
+			{
+				affectedCount = db.update(TABLE_DISHBASE, values, where, whereArgs);
+				break;
+			}
 			default:
+			{
 				throw new UnknownUriException(uri);
+			}
 		}
+
+		getContext().getContentResolver().notifyChange(uri, null);
+		return affectedCount;
 	}
 
 	@Override
@@ -302,17 +329,24 @@ public class DiaryContentProvider extends ContentProvider
 		switch (sURIMatcher.match(uri))
 		{
 			case CODE_DIARY:
+			{
 				count = db.delete(TABLE_DIARY, where, whereArgs);
 				break;
+			}
 			case CODE_FOODBASE:
+			{
 				count = db.delete(TABLE_FOODBASE, where, whereArgs);
 				break;
+			}
 			case CODE_DISHBASE:
+			{
 				count = db.delete(TABLE_FOODBASE, where, whereArgs);
 				break;
-
+			}
 			default:
+			{
 				throw new UnknownUriException(uri);
+			}
 		}
 
 		getContext().getContentResolver().notifyChange(uri, null);
