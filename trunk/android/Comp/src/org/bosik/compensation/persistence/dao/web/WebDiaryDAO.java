@@ -10,16 +10,19 @@ import org.bosik.compensation.persistence.dao.DiaryDAO;
 import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
 import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.ResponseFormatException;
 import org.bosik.compensation.persistence.exceptions.CommonDAOException;
+import org.bosik.compensation.persistence.serializers.Parser;
+import org.bosik.compensation.persistence.serializers.ParserDiaryPage;
 import org.bosik.compensation.persistence.serializers.Serializer;
-import org.bosik.compensation.persistence.serializers.SerializerDiaryPagePlain;
+import org.bosik.compensation.persistence.serializers.utils.SerializerAdapter;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
 
 public class WebDiaryDAO implements DiaryDAO
 {
-	private static String				TAG			= WebDiaryDAO.class.getSimpleName();
-	private WebClient					webClient;
-	private final Serializer<DiaryPage>	serializer	= new SerializerDiaryPagePlain();
+	private static String			TAG			= WebDiaryDAO.class.getSimpleName();
+	private WebClient				webClient;
+	private Parser<DiaryPage>		parser		= new ParserDiaryPage();
+	private Serializer<DiaryPage>	serializer	= new SerializerAdapter<DiaryPage>(parser);
 
 	public WebDiaryDAO(WebClient webClient)
 	{
