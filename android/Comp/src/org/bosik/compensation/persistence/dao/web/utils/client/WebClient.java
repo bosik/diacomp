@@ -547,7 +547,7 @@ public class WebClient
 		// TODO: optimize if need (use StringBuilder)
 
 		// конструируем запрос
-		String query = server + URL_CONSOLE + "?diary:download&dates=";
+		String query = server + URL_CONSOLE + "?diary:download&format=json&dates=";
 		for (Date date : dates)
 		{
 			query += Utils.formatDate(date) + ",";
