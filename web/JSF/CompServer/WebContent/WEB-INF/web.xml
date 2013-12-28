@@ -14,11 +14,20 @@
 	</welcome-file-list>
 
 	<servlet>
-		<servlet-name>Hello</servlet-name>
-		<servlet-class>org.bosik.diacomp.HelloServlet</servlet-class>
+		<servlet-name>ServletAuth</servlet-name>
+		<servlet-class>org.bosik.diacomp.servlets.ServletAuth</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Hello</servlet-name>
-		<url-pattern>/hello/*</url-pattern>
+		<servlet-name>ServletAuth</servlet-name>
+		<url-pattern>/api/login/</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ServletDiary</servlet-name>
+		<servlet-class>org.bosik.diacomp.servlets.ServletDiary</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ServletDiary</servlet-name>
+		<url-pattern>/api/diary/</url-pattern>
 	</servlet-mapping>
 </web-app>
