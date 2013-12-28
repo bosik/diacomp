@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.bosik.diacomp.utils.ResponseBuilder;
 
 @WebServlet
 public class ServletDiary extends HttpServlet
@@ -31,11 +32,14 @@ public class ServletDiary extends HttpServlet
 		if (ServletAuth.checkAuth(request))
 		{
 			int id = ServletAuth.getCurrentUserId(request);
-			out.println("<h1>Hello, " + id + "</h1>");
+
+			// int a = Integer.parseInt(request.getParameter("a"));
+			// int b = Integer.parseInt(request.getParameter("b"));
+			// out.print("<h1>Hello, " + id + "! a + b = " + (a + b) + "</h1>");
 		}
 		else
 		{
-			out.println("<h1>Not authorized</h1>");
+			out.print(ResponseBuilder.buildNotAuthorized());
 		}
 
 		// response.getWriter().println("session=" + request.getSession(true).getId());

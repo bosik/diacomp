@@ -12,7 +12,6 @@
 		<welcome-file>default.htm</welcome-file>
 		<welcome-file>default.jsp</welcome-file>
 	</welcome-file-list>
-
 	<servlet>
 		<servlet-name>ServletAuth</servlet-name>
 		<servlet-class>org.bosik.diacomp.servlets.ServletAuth</servlet-class>
@@ -21,7 +20,6 @@
 		<servlet-name>ServletAuth</servlet-name>
 		<url-pattern>/api/login/</url-pattern>
 	</servlet-mapping>
-	
 	<servlet>
 		<servlet-name>ServletDiary</servlet-name>
 		<servlet-class>org.bosik.diacomp.servlets.ServletDiary</servlet-class>
@@ -30,4 +28,13 @@
 		<servlet-name>ServletDiary</servlet-name>
 		<url-pattern>/api/diary/</url-pattern>
 	</servlet-mapping>
+
+	<error-page>
+		<error-code>404</error-code>
+		<location>/WEB-INF/error-404.jsp</location>
+	</error-page>
+	<error-page>
+		<exception-type>java.lang.Throwable</exception-type>
+		<location>/WEB-INF/error-500.jsp</location>
+	</error-page>
 </web-app>
