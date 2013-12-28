@@ -258,6 +258,99 @@
 				</return>
 			</returns>
 		</method>
+		<method-todo>
+			<cat>Дневник</cat>
+			<name>[new] Создание/обновление одной или нескольких записей дневника</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>diary-write</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+				<param>
+					<par-name>data</par-name>
+					<par-desc>Массив записей в формате JSON</par-desc>
+				</param>
+			</params>
+			<type>POST</type>
+			<returns>
+				<note>TODO: Сделать ограничение на максимальный размер записи</note>
+				<return>
+					<return-value>Стандартный JSON-ответ со статусом выполнения операции</return-value>
+					<return-condition>Всегда</return-condition>
+				</return>
+			</returns>
+		</method-todo>
+		<method-todo>
+			<cat>Дневник</cat>
+			<name>[new] Получение всех записей для указанного интервала времени</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>diary-read-range</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+				<param>
+					<par-name>from</par-name>
+					<par-desc>Время начала интервала (UTC)</par-desc>
+				</param>
+				<param>
+					<par-name>to</par-name>
+					<par-desc>Время конца интервала (UTC)</par-desc>
+				</param>
+			</params>
+			<type>GET</type>
+			<returns>
+				<return>
+					<return-value>JSON-ответ с массивом отсортированных по времени записей в формате JSON / кодом ошибки</return-value>
+					<return-condition>Всегда</return-condition>
+				</return>
+			</returns>
+		</method-todo>
+		<method-todo>
+			<cat>Дневник</cat>
+			<name>[new] Получение всех записей, изменённых после указанного времени</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>diary-read-changes</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+				<param>
+					<par-name>from</par-name>
+					<par-desc>Время (UTC)</par-desc>
+				</param>
+			</params>
+			<type>GET</type>
+			<returns>
+				<return>
+					<return-value>JSON-ответ с массивом отсортированных по времени записей в формате JSON / кодом ошибки</return-value>
+					<return-condition>Всегда</return-condition>
+				</return>
+			</returns>
+		</method-todo>
+		<method-todo>
+			<cat>Дневник</cat>
+			<name>[new] Получение записей с указанными GUID</name>
+			<url>console.php</url>
+			<params>
+				<param>
+					<par-name>diary-read-guid</par-name>
+					<par-desc>Обязательный, пустой</par-desc>
+				</param>
+				<param>
+					<par-name>guids</par-name>
+					<par-desc>Массив GUID  в формате JSON</par-desc>
+				</param>
+			</params>
+			<type>GET</type>
+			<returns>
+				<return>
+					<return-value>JSON-ответ с массивом отсортированных по времени записей в формате JSON / кодом ошибки</return-value>
+					<return-condition>Всегда</return-condition>
+				</return>
+			</returns>
+		</method-todo>
 		<method>
 			<cat>База продуктов</cat>
 			<name>Получение версии базы продуктов</name>

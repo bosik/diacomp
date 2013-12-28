@@ -31,12 +31,18 @@ methods
 	border-collapse: collapse;
 }
 
-legend, method, param, param-optional, return
+method-todo
+{	
+	background-image: -webkit-gradient(linear, left top, right bottom, color-stop(0, #FFFFFF), color-stop(0.25, #FFFFFF), color-stop(0.25, #F0F0F0), color-stop(0.5, #F0F0F0), color-stop(0.5, #FFFFFF), color-stop(0.75, #FFFFFF), color-stop(0.75, #F0F0F0));
+	background-size: 50px 50px;
+}
+
+legend, method, method-todo, param, param-optional, return
 {
 	display: table-row;
 }
 
-method:hover
+method:hover, method-todo:hover
 {
 	background-color: #f0f0f8;
 }
