@@ -13,6 +13,7 @@ hr {
 }
 
 .main {
+	min-width: 550px;
 	max-width: 750px;
 	background: #ffffff;
 	margin: 0 auto;
