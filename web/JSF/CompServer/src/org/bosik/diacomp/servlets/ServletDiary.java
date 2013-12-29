@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.bosik.diacomp.MySQLAccess;
 import org.bosik.diacomp.utils.ResponseBuilder;
 
 @WebServlet
@@ -36,6 +37,9 @@ public class ServletDiary extends HttpServlet
 			// int a = Integer.parseInt(request.getParameter("a"));
 			// int b = Integer.parseInt(request.getParameter("b"));
 			// out.print("<h1>Hello, " + id + "! a + b = " + (a + b) + "</h1>");
+
+			MySQLAccess dao = new MySQLAccess();
+			dao.readDataBase();
 		}
 		else
 		{
