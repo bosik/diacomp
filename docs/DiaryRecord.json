@@ -1,0 +1,20 @@
+JSON:
+	{
+		id:"",
+		timestamp:"2013-12-28 03:14:26",
+		version:4,
+		deleted:0,
+		content:
+		{
+			time:"2013-12-27 22:14:00",
+			...
+		}
+	}
+
+BASE:
+	id
+	timestamp
+	version
+	deleted
+	time // duplicates for caching purposes
+	content
