@@ -268,7 +268,7 @@
 					<par-desc>Обязательный, пустой</par-desc>
 				</param>
 				<param>
-					<par-name>data</par-name>
+					<par-name>content</par-name>
 					<par-desc>Массив записей в формате JSON</par-desc>
 				</param>
 			</params>
