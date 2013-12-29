@@ -1,40 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://java.sun.com/xml/ns/javaee"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-	id="WebApp_ID" version="3.0">
-	<display-name>cmpsrv</display-name>
-	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
-		<welcome-file>index.htm</welcome-file>
-		<welcome-file>index.jsp</welcome-file>
-		<welcome-file>default.html</welcome-file>
-		<welcome-file>default.htm</welcome-file>
-		<welcome-file>default.jsp</welcome-file>
-	</welcome-file-list>
-	<servlet>
-		<servlet-name>ServletAuth</servlet-name>
-		<servlet-class>org.bosik.diacomp.servlets.ServletAuth</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ServletAuth</servlet-name>
-		<url-pattern>/api/login/</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>ServletDiary</servlet-name>
-		<servlet-class>org.bosik.diacomp.servlets.ServletDiary</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ServletDiary</servlet-name>
-		<url-pattern>/api/diary/</url-pattern>
-	</servlet-mapping>
-
-	<error-page>
-		<error-code>404</error-code>
-		<location>/WEB-INF/error-404.jsp</location>
-	</error-page>
-	<error-page>
-		<exception-type>java.lang.Throwable</exception-type>
-		<location>/WEB-INF/error-500.jsp</location>
-	</error-page>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+  <display-name>CompServer</display-name>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+  <servlet>
+    <servlet-name>ServletAuth</servlet-name>
+    <servlet-class>org.bosik.diacomp.servlets.ServletAuth</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ServletAuth</servlet-name>
+    <url-pattern>/api/login/</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>ServletDiary</servlet-name>
+    <servlet-class>org.bosik.diacomp.servlets.ServletDiary</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ServletDiary</servlet-name>
+    <url-pattern>/api/diary/</url-pattern>
+  </servlet-mapping>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/WEB-INF/error-404.jsp</location>
+  </error-page>
+  <error-page>
+    <exception-type>java.lang.Throwable</exception-type>
+    <location>/WEB-INF/error-500.jsp</location>
+  </error-page>
 </web-app>
