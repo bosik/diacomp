@@ -116,21 +116,21 @@ public class Utils
 	/**
 	 * [tested] Преобразует время дневника в текстовое время
 	 * 
-	 * @param Time
-	 *            Время дневника (измеряется как число минут после полуночи)
+	 * @param time
+	 *            Время дневника
 	 * @return Текстовое время
 	 */
-	public static String timeToStr(int Time)
+	public static String timeToStr(Date time)
 	{
-		int hour = Time / MinPerHour;
-		int min = Time % MinPerHour;
+		int hour = time.getHours();
+		int min = time.getMinutes();
 		if (checkTime(hour, min))
 		{
 			return intTo00(hour) + ":" + intTo00(min);
 		}
 		else
 		{
-			throw new IllegalArgumentException("Incorrect time (" + Time + ")");
+			throw new IllegalArgumentException("Incorrect time (" + time + ")");
 		}
 	}
 
@@ -313,6 +313,7 @@ public class Utils
 	 */
 	public static int curMinutes()
 	{
+		// TODO: check if it is used anywhere
 		Calendar c = Calendar.getInstance();
 		int h = c.get(Calendar.HOUR) + (c.get(Calendar.AM_PM) == Calendar.AM ? 0 : 12);
 		int m = c.get(Calendar.MINUTE);

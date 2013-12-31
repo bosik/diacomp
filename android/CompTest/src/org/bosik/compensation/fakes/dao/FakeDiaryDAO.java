@@ -1,40 +1,35 @@
 package org.bosik.compensation.fakes.dao;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.bosik.compensation.bo.diary.DiaryPage;
+import org.bosik.compensation.bo.diary.DiaryRecord;
+import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.persistence.dao.DiaryDAO;
+import org.bosik.compensation.persistence.exceptions.CommonDAOException;
 
 public class FakeDiaryDAO implements DiaryDAO
 {
-	private List<DiaryPage>	data	= new ArrayList<DiaryPage>();
-
-	public List<PageVersion> getModList(Date time)
+	public List<Versioned<DiaryRecord>> getRecords(List<String> guids) throws CommonDAOException
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public List<DiaryPage> getPages(List<Date> dates)
+	public List<Versioned<DiaryRecord>> getRecords(Date time) throws CommonDAOException
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public void postPages(List<DiaryPage> pages)
-	{
-		// TODO Auto-generated method stub
-	}
-
-	public DiaryPage getPage(Date date)
+	public List<Versioned<DiaryRecord>> getRecords(Date fromDate, Date toDate) throws CommonDAOException
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public void postPage(DiaryPage page)
+	public void postRecords(List<Versioned<DiaryRecord>> records) throws CommonDAOException
 	{
 		// TODO Auto-generated method stub
+
 	}
 }

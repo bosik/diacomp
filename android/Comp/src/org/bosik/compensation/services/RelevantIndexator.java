@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import org.bosik.compensation.bo.FoodMassed;
 import org.bosik.compensation.bo.RelativeTagged;
-import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.bo.diary.DiaryRecord;
 import org.bosik.compensation.bo.diary.records.MealRecord;
 import org.bosik.compensation.persistence.common.Versioned;
@@ -28,28 +27,25 @@ public class RelevantIndexator
 		final Date max = Utils.now();
 		final Date min = new Date(max.getTime() - (PERIOD * 86400000));
 
-		final List<Date> dates = Utils.getPeriodDates(max, PERIOD);
+		// final List<Date> dates = Utils.getPeriodDates(max, PERIOD);
 
 		// clear tags
 		clearTags(foodBase);
 		clearTags(dishBase);
 
 		// process
-		List<DiaryPage> pages = diary.getPages(dates);
-		for (DiaryPage page : pages)
+		List<Versioned<DiaryRecord>> items = diary.getRecords(min, max);
+		for (Versioned<DiaryRecord> item : items)
 		{
-			for (int i = 0; i < page.count(); i++)
+			DiaryRecord rec = item.getData();
+			if (rec.getClass().equals(MealRecord.class))
 			{
-				DiaryRecord rec = page.get(i).getData();
-				if (rec.getClass().equals(MealRecord.class))
+				MealRecord meal = (MealRecord) rec;
+				for (int j = 0; j < meal.count(); j++)
 				{
-					MealRecord meal = (MealRecord) rec;
-					for (int j = 0; j < meal.count(); j++)
-					{
-						FoodMassed food = meal.get(j);
-						int delta = f(page.getDate(), min, max);
-						process(food.getName(), delta, foodBase, dishBase);
-					}
+					FoodMassed food = meal.get(j);
+					int delta = f(rec.getTime(), min, max);
+					process(food.getName(), delta, foodBase, dishBase);
 				}
 			}
 		}

@@ -1,5 +1,6 @@
 package org.bosik.compensation.face.activities;
 
+import java.util.Date;
 import org.bosik.compensation.bo.diary.records.InsRecord;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.face.UIUtils;
@@ -41,8 +42,10 @@ public class ActivityEditorIns extends ActivityEditor<Versioned<InsRecord>>
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
-		timePicker.setCurrentHour(entity.getData().getTime() / 60);
-		timePicker.setCurrentMinute(entity.getData().getTime() % 60);
+		final Date time = entity.getData().getTime();
+		datePicker.updateDate(time.getYear(), time.getMonth(), time.getDate());
+		timePicker.setCurrentHour(time.getHours());
+		timePicker.setCurrentMinute(time.getMinutes());
 
 		if (!createMode)
 		{
@@ -62,7 +65,13 @@ public class ActivityEditorIns extends ActivityEditor<Versioned<InsRecord>>
 		// time
 		try
 		{
-			entity.getData().setTime((timePicker.getCurrentHour() * 60) + timePicker.getCurrentMinute());
+			final int year = datePicker.getYear();
+			final int month = datePicker.getMonth();
+			final int day = datePicker.getDayOfMonth();
+			final Integer hour = timePicker.getCurrentHour();
+			final Integer minute = timePicker.getCurrentMinute();
+			Date time = new Date(year, month, day, hour, minute);
+			entity.getData().setTime(time);
 		}
 		catch (IllegalArgumentException e)
 		{

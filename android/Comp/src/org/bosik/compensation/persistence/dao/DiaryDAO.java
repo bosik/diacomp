@@ -2,79 +2,53 @@ package org.bosik.compensation.persistence.dao;
 
 import java.util.Date;
 import java.util.List;
-import org.bosik.compensation.bo.diary.DiaryPage;
+import org.bosik.compensation.bo.diary.DiaryRecord;
+import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.persistence.exceptions.CommonDAOException;
 
 /**
- * Источник данных для дневника
+ * Diary records DAO
  * 
  * @author Bosik
  */
 public interface DiaryDAO
 {
 	/**
-	 * Хранит пары "дата : версия"
+	 * Returns list of records with the specified GUIDs
 	 * 
-	 * @author Bosik
+	 * @param guids
+	 * @return
+	 * @throws CommonDAOException
+	 *             If any GUID doesn't found
 	 */
-	public static class PageVersion
-	{
-		public Date	date;
-		public int	version;
-
-		public PageVersion(Date date, int version)
-		{
-			this.date = date;
-			this.version = version;
-		}
-	}
+	public List<Versioned<DiaryRecord>> getRecords(List<String> guids) throws CommonDAOException;
 
 	/**
-	 * Получает информацию о страницах, изменённых после указанного времени.
+	 * Returns list of records which were modified after the specified time
 	 * 
 	 * @param time
-	 *            Время
-	 * @return Массив пар "date:version" (см. {@link PageVersion})
+	 * 
+	 * @return
 	 */
-	public List<PageVersion> getModList(Date time) throws CommonDAOException;
+	public List<Versioned<DiaryRecord>> getRecords(Date time) throws CommonDAOException;
+
+	// FIXME: no DELETED handling implemented
 
 	/**
-	 * Получает несколько страниц дневника из БД. Если страница не существует, она будет создана.
+	 * Returns list of records for the specified time interval
 	 * 
-	 * @param dates
-	 *            Даты, для которых необходимо получить страницы
-	 * @return Страницы
-	 * @see #getPage(Date)
+	 * @param fromDate
+	 * @param toDate
+	 * @return
+	 * @throws CommonDAOException
 	 */
-	public List<DiaryPage> getPages(List<Date> dates) throws CommonDAOException;
+	public List<Versioned<DiaryRecord>> getRecords(Date fromDate, Date toDate) throws CommonDAOException;
 
 	/**
-	 * Отправляет несколько страниц дневника в БД.
+	 * Persists records (create if not exist, update otherwise)
 	 * 
-	 * @param pages
-	 *            Страницы
-	 * @return Успешность отправки
-	 * @see #postPage(DiaryPage)
+	 * @param records
+	 * @throws CommonDAOException
 	 */
-	public void postPages(List<DiaryPage> pages) throws CommonDAOException;
-
-	/**
-	 * Получает одну страницу из БД. Для получения большего количества данных используйте
-	 * {@link #getPages(List)}.
-	 * 
-	 * @param date
-	 *            Дата
-	 * @return Страница
-	 */
-	public DiaryPage getPage(Date date) throws CommonDAOException;
-
-	/**
-	 * Отправляет одну страницу в БД. Для отправки большего количества данных используйте
-	 * {@link #postPages(List)}.
-	 * 
-	 * @param date
-	 *            Дата
-	 * @return Страница
-	 */
-	public void postPage(DiaryPage page) throws CommonDAOException;
+	public void postRecords(List<Versioned<DiaryRecord>> records) throws CommonDAOException;
 }

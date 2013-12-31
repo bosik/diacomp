@@ -29,11 +29,12 @@ public class DiaryContentProvider extends ContentProvider
 	// ======================================= Diary table =======================================
 
 	private static final String		TABLE_DIARY					= "diary";
-	private static final String		COLUMN_DIARY_ID				= "_ID";
-	public static final String		COLUMN_DIARY_DATE			= "Date";
-	public static final String		COLUMN_DIARY_TIMESTAMP		= "TimeStamp";
-	public static final String		COLUMN_DIARY_VERSION		= "Version";
-	public static final String		COLUMN_DIARY_PAGE			= "Page";
+	public static final String		COLUMN_DIARY_GUID			= "_GUID";
+	public static final String		COLUMN_DIARY_TIMESTAMP		= "_TimeStamp";
+	public static final String		COLUMN_DIARY_VERSION		= "_Version";
+	public static final String		COLUMN_DIARY_DELETED		= "_Deleted";
+	public static final String		COLUMN_DIARY_CONTENT		= "_Content";
+	public static final String		COLUMN_DIARY_TIMECACHE		= "_TimeCache";
 
 	public static final String		CONTENT_DIARY_STRING		= SCHEME + AUTH + "/" + TABLE_DIARY + "/";
 	public static final Uri			CONTENT_DIARY_URI			= Uri.parse(CONTENT_DIARY_STRING);
@@ -104,13 +105,15 @@ public class DiaryContentProvider extends ContentProvider
 			// @formatter:off
 			
 			// diary table			
-			final String SQL_CREATE_DIARY = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s)",
+			final String SQL_CREATE_DIARY = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s, %s)",
 					TABLE_DIARY,
-					COLUMN_DIARY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT",
-					COLUMN_DIARY_DATE + " TEXT NOT NULL UNIQUE",
-					COLUMN_DIARY_TIMESTAMP + " TEXT",
+					COLUMN_DIARY_GUID + " CHAR(32) NOT NULL",
+					COLUMN_DIARY_TIMESTAMP + " TEXT NOT NULL",
 					COLUMN_DIARY_VERSION + " INTEGER",
-					COLUMN_DIARY_PAGE + " BLOB");
+					COLUMN_DIARY_DELETED + " INTEGER",
+					COLUMN_DIARY_CONTENT + " BLOB",
+					COLUMN_DIARY_TIMECACHE + " TEXT NOT NULL"
+					);
 			db.execSQL(SQL_CREATE_DIARY);
 			
 			// foodbase table			
@@ -197,10 +200,12 @@ public class DiaryContentProvider extends ContentProvider
 		{
 			case CODE_DIARY:
 			{
-				checkValues(values, COLUMN_DIARY_DATE);
+				checkValues(values, COLUMN_DIARY_GUID);
 				checkValues(values, COLUMN_DIARY_TIMESTAMP);
 				checkValues(values, COLUMN_DIARY_VERSION);
-				checkValues(values, COLUMN_DIARY_PAGE);
+				checkValues(values, COLUMN_DIARY_DELETED);
+				checkValues(values, COLUMN_DIARY_CONTENT);
+				checkValues(values, COLUMN_DIARY_TIMECACHE);
 
 				long rowId = db.insert(TABLE_DIARY, null, values);
 
@@ -317,8 +322,8 @@ public class DiaryContentProvider extends ContentProvider
 	public int delete(final Uri uri, String where, String[] whereArgs)
 	{
 		/**
-		 * This actually removes data from DB. Service should just mark rows deleted instead (using
-		 * update method)
+		 * TODO: This actually removes data from DB. Service should just mark rows deleted instead
+		 * (using update method)
 		 */
 
 		SQLiteDatabase db = openHelper.getWritableDatabase();

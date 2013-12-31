@@ -1,12 +1,13 @@
 package org.bosik.compensation.face.views;
 
-import org.bosik.compensation.bo.diary.DiaryPage;
+import java.util.List;
 import org.bosik.compensation.bo.diary.DiaryRecord;
 import org.bosik.compensation.bo.diary.records.BloodRecord;
 import org.bosik.compensation.bo.diary.records.InsRecord;
 import org.bosik.compensation.bo.diary.records.MealRecord;
 import org.bosik.compensation.bo.diary.records.NoteRecord;
 import org.bosik.compensation.face.R;
+import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.utils.Utils;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -28,50 +29,50 @@ import android.view.WindowManager;
 public class DiaryView extends View implements OnClickListener, View.OnTouchListener
 {
 	// отладочная печать
-	private static final String	TAG						= DiaryView.class.getSimpleName();
+	private static final String				TAG						= DiaryView.class.getSimpleName();
 
 	// стили рисования
-	private static final Paint	paintNoPage				= new Paint();
-	private static final Paint	paintCaption			= new Paint();
-	private static final Paint	paintTime				= new Paint();
-	private static final Paint	paintRec				= new Paint();
-	private static final Paint	paintDefault			= new Paint();
+	private static final Paint				paintNoPage				= new Paint();
+	private static final Paint				paintCaption			= new Paint();
+	private static final Paint				paintTime				= new Paint();
+	private static final Paint				paintRec				= new Paint();
+	private static final Paint				paintDefault			= new Paint();
 
 	// отступы
-	private static final int	BORD					= 24;
-	private static final int	TEXT_SIZE				= 48;
-	private static final int	TEXT_NOPAGE_SIZE		= 64;
-	private static final int	TEXT_BORD				= 20;
-	private static int			LEFT_TIME;
-	private static int			LEFT_RECS;
-	private static final int	REC_HEIGHT;
+	private static final int				BORD					= 24;
+	private static final int				TEXT_SIZE				= 48;
+	private static final int				TEXT_NOPAGE_SIZE		= 64;
+	private static final int				TEXT_BORD				= 20;
+	private static int						LEFT_TIME;
+	private static int						LEFT_RECS;
+	private static final int				REC_HEIGHT;
 
 	// цвета
-	private static final int	COLOR_PANEL_LIGHT_BORD	= Color.WHITE;
-	private static final int	COLOR_PANEL_DARK_BORD	= Color.GRAY;
-	private static final int	COLOR_PANEL_BLOOD_STD	= Color.rgb(230, 238, 255);
-	private static final int	COLOR_PANEL_BLOOD_SEL	= Color.rgb(204, 221, 247);
-	private static final int	COLOR_PANEL_INS_STD		= Color.WHITE;
-	private static final int	COLOR_PANEL_INS_SEL		= Color.rgb(240, 240, 240);
-	private static final int	COLOR_PANEL_NOTE_STD	= Color.rgb(216, 255, 228);
-	private static final int	COLOR_PANEL_NOTE_SEL	= Color.rgb(179, 255, 202);
-	private static final int	COLOR_PANEL_MEAL_STD	= Color.rgb(255, 255, 221);
-	private static final int	COLOR_PANEL_MEAL_SEL	= Color.rgb(255, 255, 153);
-	private static final int	COLOR_BACKGROUND		= Color.WHITE;
+	private static final int				COLOR_PANEL_LIGHT_BORD	= Color.WHITE;
+	private static final int				COLOR_PANEL_DARK_BORD	= Color.GRAY;
+	private static final int				COLOR_PANEL_BLOOD_STD	= Color.rgb(230, 238, 255);
+	private static final int				COLOR_PANEL_BLOOD_SEL	= Color.rgb(204, 221, 247);
+	private static final int				COLOR_PANEL_INS_STD		= Color.WHITE;
+	private static final int				COLOR_PANEL_INS_SEL		= Color.rgb(240, 240, 240);
+	private static final int				COLOR_PANEL_NOTE_STD	= Color.rgb(216, 255, 228);
+	private static final int				COLOR_PANEL_NOTE_SEL	= Color.rgb(179, 255, 202);
+	private static final int				COLOR_PANEL_MEAL_STD	= Color.rgb(255, 255, 221);
+	private static final int				COLOR_PANEL_MEAL_SEL	= Color.rgb(255, 255, 153);
+	private static final int				COLOR_BACKGROUND		= Color.WHITE;
 
 	// поля
 
 	// private static final String TEXT_NOPAGE = "Страница пуста";
-	private String[]			fingers;
-	private int					screenWidth				= getScreenWidth();
-	private DiaryPage			page					= null;
-	private Bitmap				bufferBitmap;
-	private Canvas				bufferCanvas;
-	private int					clickedX				= -1;
-	private int					clickedY				= -1;
-	private static int			downedIndex				= -1;
-	private static int			clickedIndex			= -1;
-	private RecordClickListener	recordClickListener;
+	private String[]						fingers;
+	private int								screenWidth				= getScreenWidth();
+	private List<Versioned<DiaryRecord>>	records					= null;
+	private Bitmap							bufferBitmap;
+	private Canvas							bufferCanvas;
+	private int								clickedX				= -1;
+	private int								clickedY				= -1;
+	private static int						downedIndex				= -1;
+	private static int						clickedIndex			= -1;
+	private RecordClickListener				recordClickListener;
 
 	// инициализация
 	static
@@ -122,28 +123,24 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	 * @param page
 	 *            Страница
 	 */
-	public void setPage(DiaryPage page)
+	public void setRecords(List<Versioned<DiaryRecord>> records)
 	{
 		// Log.i(TAG, "setPage()");
-		if (null == page)
+		if (null == records)
 		{
-			throw new NullPointerException("Page can't be null");
+			throw new NullPointerException("Records list can't be null");
 		}
 
-		if ((this.page == null) || (page.getDate() != this.page.getDate()))
-		{
-			setDownedIndex(-1);
-			setClickedIndex(-1);
-		}
+		setDownedIndex(-1);
+		setClickedIndex(-1);
 
 		/**
-		 * Нам необходимо сохранить страницу, чтобы иметь возможность перерисовать её при смене
-		 * ориентации экрана
+		 * Save list to persist it through the view recreations (f.e. when screen is re-oriented)
 		 */
-		this.page = page;
+		this.records = records;
 
 		Log.d(TAG, "setPage(): dimensions are setted");
-		setMeasuredDimension(getScreenWidth(), getPageHeight(this.page));
+		setMeasuredDimension(getScreenWidth(), getPageHeight(records));
 
 		updateBuffer();
 
@@ -151,7 +148,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 		invalidate();
 
 		Log.d(TAG, "setPage(): setMinimumHeight()");
-		setMinimumHeight(getPageHeight(this.page));
+		setMinimumHeight(getPageHeight(records));
 		// Log.d(TAG, "setPage(): dimensions are setted");
 		// setMeasuredDimension(screenWidth(), getPageHeight(page));
 	}
@@ -188,11 +185,6 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 		DiaryView.clickedIndex = clickedIndex;
 	}
 
-	public DiaryPage getPage()
-	{
-		return page;
-	}
-
 	// утилиты
 
 	private static int getTextWidth(String text, Paint paint)
@@ -214,7 +206,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	 *            Страница
 	 * @return Высота
 	 */
-	private static int getPageHeight(DiaryPage page)
+	private static int getPageHeight(List<?> page)
 	{
 		if (null == page)
 		{
@@ -223,7 +215,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 		/*
 		 * if (null == page) return 2 * BORD; else
 		 */
-		return (2 * BORD) + (page.count() * REC_HEIGHT);
+		return (2 * BORD) + (page.size() * REC_HEIGHT);
 	}
 
 	/**
@@ -233,7 +225,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	 */
 	private int getPageHeight()
 	{
-		return getPageHeight(page);
+		return getPageHeight(records);
 	}
 
 	private static String trimToFit(String str, float space)
@@ -315,11 +307,11 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	 * @param canvas
 	 *            Канва
 	 */
-	private void drawPage(DiaryPage page, Canvas canvas)
+	private void drawPage(List<Versioned<DiaryRecord>> records, Canvas canvas)
 	{
 		// Log.d(TAG, "drawPage(): page is rendering into buffer...");
 
-		if (null == page)
+		if (null == records)
 		{
 			throw new NullPointerException("Page can't be null");
 		}
@@ -327,7 +319,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 		// TODO: сделать тестирование скорости вывода
 
 		// очистка
-		canvas.clipRect(0, 0, screenWidth, getPageHeight(page));
+		canvas.clipRect(0, 0, screenWidth, getPageHeight(records));
 		canvas.drawColor(COLOR_BACKGROUND);
 
 		// заполнение
@@ -342,10 +334,10 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 		// paintCaption)) / 2, top + TEXT_BORD + TEXT_SIZE, paintCaption);
 		// top += (TEXT_SIZE + 2*TEXT_BORD);
 
-		for (int i = 0; i < page.count(); i++)
+		for (int i = 0; i < records.size(); i++)
 		{
 			// Log.d(TAG, "drawPage():извлечение записи №" + i);
-			DiaryRecord rec = page.get(i).getData();
+			DiaryRecord rec = records.get(i).getData();
 
 			r.top = top;
 			r.bottom = r.top + TEXT_SIZE + (2 * TEXT_BORD);
@@ -411,8 +403,9 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 				throw new UnsupportedOperationException("Unsupported record type: " + rec.getClass().getName());
 			}
 		}
-		canvas.drawText("[" + String.valueOf(page.getVersion()) + "]", r.right - 50, BORD + TEXT_BORD + TEXT_SIZE,
-				paintTime);
+		// canvas.drawText("[" + String.valueOf(page.getVersion()) + "]", r.right - 50, BORD +
+		// TEXT_BORD + TEXT_SIZE,
+		// paintTime);
 	}
 
 	/**
@@ -420,11 +413,11 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	 */
 	private void updateBuffer()
 	{
-		if (null != page)
+		if (null != records)
 		{
 			// Log.d(TAG, "updateBuffer(): setLayoutParams()");
 
-			int height = getPageHeight(page);
+			int height = getPageHeight(records);
 
 			LayoutParams params = getLayoutParams();
 			params.height = height;
@@ -434,7 +427,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 			// Log.d(TAG, "updateBuffer(): buffers are re-created");
 			bufferBitmap = Bitmap.createBitmap(getScreenWidth(), height, Bitmap.Config.ARGB_8888);
 			bufferCanvas = new Canvas(bufferBitmap);
-			drawPage(page, bufferCanvas);
+			drawPage(records, bufferCanvas);
 		}
 	}
 
@@ -496,7 +489,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 		updateBuffer();
 		invalidate();
 
-		if ((page != null) && (getDownedIndex() >= 0) && (getDownedIndex() < page.count()))
+		if ((records != null) && (getDownedIndex() >= 0) && (getDownedIndex() < records.size()))
 		{
 			if (recordClickListener != null)
 			{

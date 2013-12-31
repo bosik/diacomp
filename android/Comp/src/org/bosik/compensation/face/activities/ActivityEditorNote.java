@@ -1,5 +1,6 @@
 package org.bosik.compensation.face.activities;
 
+import java.util.Date;
 import org.bosik.compensation.bo.diary.records.NoteRecord;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.face.UIUtils;
@@ -45,8 +46,12 @@ public class ActivityEditorNote extends ActivityEditor<Versioned<NoteRecord>>
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
-		timePicker.setCurrentHour(entity.getData().getTime() / 60);
-		timePicker.setCurrentMinute(entity.getData().getTime() % 60);
+		// FIXME: add date picker
+		final Date time = entity.getData().getTime();
+		// datePicker.updateDate(time.getYear(), time.getMonth(), time.getDate());
+		timePicker.setCurrentHour(time.getHours());
+		timePicker.setCurrentMinute(time.getMinutes());
+
 		if (!createMode)
 		{
 			editText.setText(entity.getData().getText());
@@ -63,7 +68,13 @@ public class ActivityEditorNote extends ActivityEditor<Versioned<NoteRecord>>
 		// читаем время
 		try
 		{
-			entity.getData().setTime((timePicker.getCurrentHour() * 60) + timePicker.getCurrentMinute());
+			final int year = 2013;// datePicker.getYear();
+			final int month = 12;// datePicker.getMonth();
+			final int day = 29;// datePicker.getDayOfMonth();
+			final Integer hour = timePicker.getCurrentHour();
+			final Integer minute = timePicker.getCurrentMinute();
+			Date time = new Date(year, month, day, hour, minute);
+			entity.getData().setTime(time);
 		}
 		catch (IllegalArgumentException e)
 		{

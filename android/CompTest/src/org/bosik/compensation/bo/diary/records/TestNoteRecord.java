@@ -1,13 +1,13 @@
 package org.bosik.compensation.bo.diary.records;
 
-import org.bosik.compensation.bo.diary.records.NoteRecord;
+import java.util.Date;
 import junit.framework.TestCase;
 
 public class TestNoteRecord extends TestCase
 {
 	public void testNoteRecord()
 	{
-		int time = 600;
+		Date time = new Date();
 		String text = "This is note";
 
 		NoteRecord note = new NoteRecord(time, text);
