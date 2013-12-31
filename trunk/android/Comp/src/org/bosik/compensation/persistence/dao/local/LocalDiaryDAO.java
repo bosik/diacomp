@@ -102,7 +102,11 @@ public class LocalDiaryDAO implements DiaryDAO
 		String clause = String.format("(%s >= ?) AND (%s <= ?)", DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
 				DiaryContentProvider.COLUMN_DIARY_TIMECACHE);
 		String[] clauseArgs = { Utils.formatTimeUTC(fromDate), Utils.formatTimeUTC(toDate) };
-		String sortOrder = null;// "ASC " + DiaryContentProvider.COLUMN_DIARY_TIMECACHE; // FIXME
+		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
+
+		// FIXME
+		clause = null;
+		clauseArgs = new String[] {};
 
 		// execute
 		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
@@ -183,7 +187,7 @@ public class LocalDiaryDAO implements DiaryDAO
 				try
 				{
 					String guid = cursor.getString(indexGUID);
-					Date timestamp = Utils.parseDate(cursor.getString(indexTimestamp));
+					Date timestamp = Utils.parseTimeUTC(cursor.getString(indexTimestamp));
 					int version = cursor.getInt(indexVersion);
 					boolean deleted = (cursor.getInt(indexDeleted) == 1);
 					String content = cursor.getString(indexContent);
