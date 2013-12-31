@@ -47,17 +47,23 @@ public class ActivityEditorNote extends ActivityEditor<Versioned<NoteRecord>>
 	protected void showValuesInGUI(boolean createMode)
 	{
 		// FIXME: add date picker
-		final Date time = entity.getData().getTime();
-		// datePicker.updateDate(time.getYear(), time.getMonth(), time.getDate());
-		timePicker.setCurrentHour(time.getHours());
-		timePicker.setCurrentMinute(time.getMinutes());
 
 		if (!createMode)
 		{
+			Date time = entity.getData().getTime();
+			// datePicker.updateDate(time.getYear(), time.getMonth(), time.getDate());
+			timePicker.setCurrentHour(time.getHours());
+			timePicker.setCurrentMinute(time.getMinutes());
+
 			editText.setText(entity.getData().getText());
 		}
 		else
 		{
+			Date time = new Date();
+			// datePicker.updateDate(time.getYear(), time.getMonth(), time.getDate());
+			timePicker.setCurrentHour(time.getHours());
+			timePicker.setCurrentMinute(time.getMinutes());
+
 			editText.setText("");
 		}
 	}

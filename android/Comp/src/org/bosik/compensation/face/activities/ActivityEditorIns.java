@@ -42,17 +42,22 @@ public class ActivityEditorIns extends ActivityEditor<Versioned<InsRecord>>
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
-		final Date time = entity.getData().getTime();
-		datePicker.updateDate(time.getYear(), time.getMonth(), time.getDate());
-		timePicker.setCurrentHour(time.getHours());
-		timePicker.setCurrentMinute(time.getMinutes());
-
 		if (!createMode)
 		{
+			Date time = entity.getData().getTime();
+			datePicker.updateDate(time.getYear(), time.getMonth(), time.getDate());
+			timePicker.setCurrentHour(time.getHours());
+			timePicker.setCurrentMinute(time.getMinutes());
+
 			editValue.setText(String.valueOf(entity.getData().getValue()));
 		}
 		else
 		{
+			Date time = new Date();
+			datePicker.updateDate(time.getYear(), time.getMonth(), time.getDate());
+			timePicker.setCurrentHour(time.getHours());
+			timePicker.setCurrentMinute(time.getMinutes());
+
 			editValue.setText("");
 		}
 	}
