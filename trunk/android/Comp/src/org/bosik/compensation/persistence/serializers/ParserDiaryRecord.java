@@ -79,7 +79,7 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 
 		JSONObject json = new JSONObject();
 
-		json.put("time", object.getTime());
+		json.put("time", Utils.formatTimeUTC(object.getTime()));
 
 		if (object.getClass() == BloodRecord.class)
 		{
