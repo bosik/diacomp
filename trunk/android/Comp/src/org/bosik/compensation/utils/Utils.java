@@ -43,7 +43,8 @@ public class Utils
 
 	// форматы
 	public static final SimpleDateFormat	STD_FORMAT_TIME_UTC	= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-	public static final SimpleDateFormat	STD_FORMAT_TIME_LOC	= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+	public static final SimpleDateFormat	STD_FORMAT_TIME_LOC	= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+																		Locale.getDefault());
 	public static final SimpleDateFormat	STD_DATE_FORMAT		= new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
 	// статическая инициализация
@@ -122,16 +123,17 @@ public class Utils
 	 */
 	public static String timeToStr(Date time)
 	{
-		int hour = time.getHours();
-		int min = time.getMinutes();
-		if (checkTime(hour, min))
-		{
-			return intTo00(hour) + ":" + intTo00(min);
-		}
-		else
-		{
-			throw new IllegalArgumentException("Incorrect time (" + time + ")");
-		}
+		// int hour = time.getHours();
+		// int min = time.getMinutes();
+		// if (checkTime(hour, min))
+		// {
+		// return intTo00(hour) + ":" + intTo00(min);
+		// }
+		// else
+		// {
+		// throw new IllegalArgumentException("Incorrect time (" + time + ")");
+		// }
+		return STD_FORMAT_TIME_UTC.format(time);
 	}
 
 	/**
