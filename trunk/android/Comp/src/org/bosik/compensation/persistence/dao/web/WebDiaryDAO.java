@@ -1,28 +1,27 @@
 package org.bosik.compensation.persistence.dao.web;
 
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.bosik.compensation.bo.diary.DiaryPage;
-import org.bosik.compensation.face.BuildConfig;
+import org.bosik.compensation.bo.diary.DiaryRecord;
+import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.persistence.dao.DiaryDAO;
 import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
-import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.ResponseFormatException;
 import org.bosik.compensation.persistence.exceptions.CommonDAOException;
 import org.bosik.compensation.persistence.serializers.Parser;
-import org.bosik.compensation.persistence.serializers.ParserDiaryPage;
+import org.bosik.compensation.persistence.serializers.ParserDiaryRecord;
 import org.bosik.compensation.persistence.serializers.Serializer;
+import org.bosik.compensation.persistence.serializers.utils.ParserVersioned;
 import org.bosik.compensation.persistence.serializers.utils.SerializerAdapter;
-import org.bosik.compensation.utils.Utils;
-import android.util.Log;
 
 public class WebDiaryDAO implements DiaryDAO
 {
-	private static String			TAG			= WebDiaryDAO.class.getSimpleName();
-	private WebClient				webClient;
-	private Parser<DiaryPage>		parser		= new ParserDiaryPage();
-	private Serializer<DiaryPage>	serializer	= new SerializerAdapter<DiaryPage>(parser);
+	// private static String TAG = WebDiaryDAO.class.getSimpleName();
+	private WebClient							webClient;
+	private Parser<DiaryRecord>					parser		= new ParserDiaryRecord();
+	private Parser<Versioned<DiaryRecord>>		parserV		= new ParserVersioned<DiaryRecord>(parser);
+	private Serializer<Versioned<DiaryRecord>>	serializerV	= new SerializerAdapter<Versioned<DiaryRecord>>(parserV);
+
+	/* ============================ CONSTRUCTOR ============================ */
 
 	public WebDiaryDAO(WebClient webClient)
 	{
@@ -34,188 +33,35 @@ public class WebDiaryDAO implements DiaryDAO
 		this.webClient = webClient;
 	}
 
-	/* ================ ВНУТРЕННИЕ ================ */
-
-	/**
-	 * Преобразует timeStamp всех переданных страниц в серверное время.
-	 * 
-	 * @param pages
-	 *            Исходные страницы
-	 * @return Страницы с изменённым timestamp
-	 */
-	private List<DiaryPage> localToServer(List<DiaryPage> pages)
-	{
-		List<DiaryPage> result = new ArrayList<DiaryPage>();
-
-		for (DiaryPage page : pages)
-		{
-			// TODO: optimize if need
-			DiaryPage newPage = serializer.read(serializer.write(page));
-			newPage.setTimeStamp(webClient.localToServer(page.getTimeStamp()));
-			result.add(newPage);
-		}
-		return result;
-	}
-
-	/**
-	 * Преобразует timeStamp всех переданных страниц в локальное время.
-	 * 
-	 * @param pages
-	 *            Исходные страницы
-	 * @return Страницы с изменённым timestamp
-	 */
-	private List<DiaryPage> serverToLocal(List<DiaryPage> pages)
-	{
-		List<DiaryPage> result = new ArrayList<DiaryPage>();
-
-		for (DiaryPage page : pages)
-		{
-			// TODO: optimize if need
-			DiaryPage newPage = serializer.read(serializer.write(page));
-			newPage.setTimeStamp(webClient.serverToLocal(page.getTimeStamp()));
-			result.add(newPage);
-		}
-		return result;
-	}
-
-	private List<DiaryPage> getPagesNaive(List<Date> dates)
-	{
-		String resp = webClient.getPages(dates);
-
-		if (!resp.equals(""))
-		{
-			return serverToLocal(serializer.readAll(resp));
-		}
-		else
-		{
-			return null;
-		}
-	}
-
-	/* ================ ВНЕШНИЕ ================ */
+	/* ============================ API ============================ */
 
 	@Override
-	public List<PageVersion> getModList(Date time)
+	public List<Versioned<DiaryRecord>> getRecords(List<String> guids) throws CommonDAOException
 	{
-		try
-		{
-			String resp = webClient.getModList(Utils.formatTimeUTC(webClient.localToServer(time)));
-
-			List<PageVersion> result = new ArrayList<PageVersion>();
-
-			// разбираем результат
-
-			String[] lines = resp.split("\n");
-
-			for (int i = 0; i < lines.length; i++)
-			{
-				String[] item = lines[i].split("\\|");
-
-				if (item.length == 2)
-				{
-					try
-					{
-						Date date = Utils.parseDate(item[0]);
-						int version = Integer.parseInt(item[1]);
-						PageVersion info = new PageVersion(date, version);
-						result.add(info);
-					}
-					catch (ParseException e)
-					{
-						if (BuildConfig.DEBUG)
-						{
-							throw new ResponseFormatException("Incorrect line: " + lines[i], e);
-						}
-						else
-						{
-							Log.e(TAG, "getModList(): Incorrect line: " + lines[i]);
-						}
-					}
-				}
-				else
-				{
-					throw new ResponseFormatException("Incorrect line: " + lines[i]);
-				}
-			}
-			return result;
-		}
-		catch (Exception e)
-		{
-			throw new CommonDAOException(e);
-		}
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public List<DiaryPage> getPages(List<Date> dates)
+	public List<Versioned<DiaryRecord>> getRecords(Date time) throws CommonDAOException
 	{
-		try
-		{
-			// TODO: check the behavior for not existed pages
-
-			List<DiaryPage> result = new ArrayList<DiaryPage>();
-
-			int block = 10;
-			int start = 0;
-			while (start < dates.size())
-			{
-				if ((start + block) >= dates.size())
-				{
-					block = dates.size() - start;
-				}
-				result.addAll(getPagesNaive(dates.subList(start, start + block)));
-				start += block;
-			}
-
-			return result;
-		}
-		catch (Exception e)
-		{
-			throw new CommonDAOException(e);
-		}
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public void postPages(List<DiaryPage> pages)
+	public List<Versioned<DiaryRecord>> getRecords(Date fromDate, Date toDate) throws CommonDAOException
 	{
-		try
-		{
-			pages = localToServer(pages);
-			String data = serializer.writeAll(pages);
-			webClient.postPages(data);
-		}
-		catch (Exception e)
-		{
-			throw new CommonDAOException(e);
-		}
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public DiaryPage getPage(Date date)
+	public void postRecords(List<Versioned<DiaryRecord>> records) throws CommonDAOException
 	{
-		try
-		{
-			List<Date> dates = new ArrayList<Date>();
-			dates.add(date);
-			return getPagesNaive(dates).get(0);
-		}
-		catch (Exception e)
-		{
-			throw new CommonDAOException(e);
-		}
+		// TODO Auto-generated method stub
 	}
 
-	@Override
-	public void postPage(DiaryPage page)
-	{
-		try
-		{
-			List<DiaryPage> pages = new ArrayList<DiaryPage>();
-			pages.add(page);
-			postPages(pages);
-		}
-		catch (Exception e)
-		{
-			throw new CommonDAOException(e);
-		}
-	}
+	/* ======================= ROUTINES ========================= */
+
 }

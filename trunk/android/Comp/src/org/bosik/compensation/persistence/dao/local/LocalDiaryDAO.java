@@ -4,14 +4,14 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.bosik.compensation.bo.diary.DiaryPage;
-import org.bosik.compensation.face.BuildConfig;
+import org.bosik.compensation.bo.diary.DiaryRecord;
+import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.persistence.dao.DiaryDAO;
 import org.bosik.compensation.persistence.dao.local.utils.DiaryContentProvider;
 import org.bosik.compensation.persistence.exceptions.CommonDAOException;
 import org.bosik.compensation.persistence.exceptions.StoreException;
 import org.bosik.compensation.persistence.serializers.Parser;
-import org.bosik.compensation.persistence.serializers.ParserDiaryPage;
+import org.bosik.compensation.persistence.serializers.ParserDiaryRecord;
 import org.bosik.compensation.persistence.serializers.Serializer;
 import org.bosik.compensation.persistence.serializers.utils.SerializerAdapter;
 import org.bosik.compensation.utils.Utils;
@@ -23,90 +23,25 @@ import android.database.Cursor;
 public class LocalDiaryDAO implements DiaryDAO
 {
 	// private static final String TAG = LocalDiaryDAO.class.getSimpleName();
-	private Parser<DiaryPage>		parser		= new ParserDiaryPage();
-	private Serializer<DiaryPage>	serializer	= new SerializerAdapter<DiaryPage>(parser);
 
-	/* ============================ ПОЛЯ ============================ */
+	/* ============================ FIELDS ============================ */
+
+	// private Parser<DiaryRecord> parser = new ParserDiaryRecord();
+	// private Parser<Versioned<DiaryRecord>> parserV = new ParserVersioned<DiaryRecord>(parser);
+	// private Serializer<Versioned<DiaryRecord>> serializer = new
+	// SerializerAdapter<Versioned<DiaryRecord>>(parserV);
 
 	private ContentResolver			resolver;
+	private Parser<DiaryRecord>		parser		= new ParserDiaryRecord();
+	private Serializer<DiaryRecord>	serializer	= new SerializerAdapter<DiaryRecord>(parser);
 
-	/* ======================= ВНУТРЕННИЕ МЕТОДЫ ========================= */
-
-	/**
-	 * Ищет страницу в базе
-	 * 
-	 * @param date
-	 *            Дата
-	 * @return Страница (если не найдена, возвращается null)
-	 */
-	private DiaryPage findPage(Date date)
-	{
-		try
-		{
-			if (null == date)
-			{
-				throw new NullPointerException("Date can't be null");
-			}
-
-			// формируем параметры
-			String[] mProj = { DiaryContentProvider.COLUMN_DIARY_DATE, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
-					DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_PAGE };
-			String mSelectionClause = DiaryContentProvider.COLUMN_DIARY_DATE + " = ?";
-			String[] mSelectionArgs = { Utils.formatDate(date) };
-			String mSortOrder = null;
-
-			// выполняем запрос
-			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, mProj, mSelectionClause,
-					mSelectionArgs, mSortOrder);
-
-			// анализируем ответ
-			if (cursor == null)
-			{
-				throw new NullPointerException("Cursor is null");
-			}
-
-			if (cursor.getCount() < 1)
-			{
-				// ничего не нашли
-				return null;
-			}
-
-			if ((cursor.getCount() > 1) && (BuildConfig.DEBUG))
-			{
-				// на самом деле мы производим выборку по полю Date, которое при создании
-				// таблицы имеет атрибут UNIQUE, так что такого в принципе быть не должно
-
-				throw new IllegalStateException("Several pages found");
-			}
-
-			// int indexTimeStamp =
-			// cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
-			// int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_VERSION);
-			int indexPage = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_PAGE);
-			cursor.moveToNext();
-
-			// Date timeStamp = Utils.parseTimeUTC(cursor.getString(indexTimeStamp));
-			// int version = cursor.getInt(indexVersion);
-			String source = cursor.getString(indexPage);
-
-			DiaryPage diaryPage = serializer.read(source);
-
-			return diaryPage;
-		}
-		catch (Exception e)
-		{
-			throw new CommonDAOException(e);
-		}
-	}
-
-	/* ============================ ВНЕШНИЕ МЕТОДЫ ============================ */
+	/* ============================ CONSTRUCTOR ============================ */
 
 	/**
-	 * Конструктор
+	 * Constructor
 	 * 
 	 * @param resolver
-	 *            Контент-приёмник. Можно получить с помощью метода
-	 *            {@link Activity#getContentResolver()}
+	 *            Content resolver; might be accessed by {@link Activity#getContentResolver()}
 	 */
 	public LocalDiaryDAO(ContentResolver resolver)
 	{
@@ -117,34 +52,150 @@ public class LocalDiaryDAO implements DiaryDAO
 		this.resolver = resolver;
 	}
 
-	// -------------------- API --------------------
+	/* ============================ API ============================ */
 
 	@Override
-	public List<PageVersion> getModList(Date time)
+	public List<Versioned<DiaryRecord>> getRecords(List<String> guids) throws CommonDAOException
 	{
-		// формируем параметры
-		String[] mProjection = { DiaryContentProvider.COLUMN_DIARY_DATE, DiaryContentProvider.COLUMN_DIARY_VERSION };
-		String mSelectionClause = DiaryContentProvider.COLUMN_DIARY_TIMESTAMP + " > ?";
-		String[] mSelectionArgs = { Utils.formatTimeUTC(time) };
-		String mSortOrder = null;
+		// construct parameters
+		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
+				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
+				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
 
-		// выполняем запрос
-		Cursor mCursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, mProjection, mSelectionClause,
-				mSelectionArgs, mSortOrder);
+		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " in " + formatList(guids);
+		String[] clauseArgs = {};
 
-		if (mCursor != null)
+		String sortOrder = "ASC " + DiaryContentProvider.COLUMN_DIARY_TIMECACHE;
+
+		// execute
+		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
+				sortOrder);
+
+		return extractRecords(cursor);
+	}
+
+	@Override
+	public List<Versioned<DiaryRecord>> getRecords(Date time) throws CommonDAOException
+	{
+		// construct parameters
+		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
+				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
+				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
+		String clause = DiaryContentProvider.COLUMN_DIARY_TIMESTAMP + " > ?";
+		String[] clauseArgs = { Utils.formatTimeUTC(time) };
+		String sortOrder = "ASC " + DiaryContentProvider.COLUMN_DIARY_TIMECACHE;
+
+		// execute
+		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
+				sortOrder);
+
+		return extractRecords(cursor);
+	}
+
+	@Override
+	public List<Versioned<DiaryRecord>> getRecords(Date fromDate, Date toDate) throws CommonDAOException
+	{
+		// construct parameters
+		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
+				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
+				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
+		String clause = String.format("(%s >= ?) AND (%s <= ?)", DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
+				DiaryContentProvider.COLUMN_DIARY_TIMECACHE);
+		String[] clauseArgs = { Utils.formatTimeUTC(fromDate), Utils.formatTimeUTC(toDate) };
+		String sortOrder = null;// "ASC " + DiaryContentProvider.COLUMN_DIARY_TIMECACHE; // FIXME
+
+		// execute
+		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
+				sortOrder);
+
+		return extractRecords(cursor);
+	}
+
+	private boolean recordExists(String guid)
+	{
+		// construct parameters
+		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID };
+		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
+		String[] clauseArgs = { guid };
+		String sortOrder = null;
+
+		// execute
+		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
+				sortOrder);
+
+		return cursor.moveToFirst();
+	}
+
+	@Override
+	public void postRecords(List<Versioned<DiaryRecord>> records) throws CommonDAOException
+	{
+		try
 		{
-			int indexDate = mCursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_DATE);
-			int indexVersion = mCursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_VERSION);
-			List<PageVersion> res = new ArrayList<PageVersion>();
+			for (Versioned<DiaryRecord> record : records)
+			{
+				String content = serializer.write(record.getData());
+				boolean exists = recordExists(record.getId());
 
-			while (mCursor.moveToNext())
+				ContentValues newValues = new ContentValues();
+
+				newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(record.getTimeStamp()));
+				newValues.put(DiaryContentProvider.COLUMN_DIARY_VERSION, record.getVersion());
+				newValues.put(DiaryContentProvider.COLUMN_DIARY_DELETED, record.isDeleted());
+				newValues.put(DiaryContentProvider.COLUMN_DIARY_CONTENT, content);
+				newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
+						Utils.formatTimeUTC(record.getData().getTime()));
+
+				if (exists)
+				{
+					String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
+					String[] args = new String[] { record.getId() };
+					resolver.update(DiaryContentProvider.CONTENT_DIARY_URI, newValues, clause, args);
+				}
+				else
+				{
+					newValues.put(DiaryContentProvider.COLUMN_DIARY_GUID, record.getId());
+					resolver.insert(DiaryContentProvider.CONTENT_DIARY_URI, newValues);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			throw new StoreException(e);
+		}
+	}
+
+	/* ======================= ROUTINES ========================= */
+
+	private List<Versioned<DiaryRecord>> extractRecords(Cursor cursor)
+	{
+		if (cursor != null)
+		{
+			int indexGUID = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_GUID);
+			int indexTimestamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
+			int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_VERSION);
+			int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_DELETED);
+			int indexContent = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_CONTENT);
+
+			List<Versioned<DiaryRecord>> res = new ArrayList<Versioned<DiaryRecord>>();
+
+			while (cursor.moveToNext())
 			{
 				try
 				{
-					Date date = Utils.parseDate(mCursor.getString(indexDate));
-					int version = mCursor.getInt(indexVersion);
-					res.add(new PageVersion(date, version));
+					String guid = cursor.getString(indexGUID);
+					Date timestamp = Utils.parseDate(cursor.getString(indexTimestamp));
+					int version = cursor.getInt(indexVersion);
+					boolean deleted = (cursor.getInt(indexDeleted) == 1);
+					String content = cursor.getString(indexContent);
+					DiaryRecord record = serializer.read(content);
+
+					Versioned<DiaryRecord> item = new Versioned<DiaryRecord>(record);
+					item.setId(guid);
+					item.setTimeStamp(timestamp);
+					item.setVersion(version);
+					item.setDeleted(deleted);
+
+					res.add(item);
 				}
 				catch (ParseException e)
 				{
@@ -160,67 +211,23 @@ public class LocalDiaryDAO implements DiaryDAO
 		}
 	}
 
-	@Override
-	public List<DiaryPage> getPages(List<Date> dates)
+	private static String formatList(List<?> list)
 	{
-		List<DiaryPage> result = new ArrayList<DiaryPage>();
-		for (Date date : dates)
-		{
-			result.add(getPage(date));
-		}
-		return result;
-	}
+		StringBuilder sb = new StringBuilder();
 
-	@Override
-	public void postPages(List<DiaryPage> pages)
-	{
-		for (DiaryPage page : pages)
+		sb.append("(");
+		for (int i = 0; i < list.size(); i++)
 		{
-			postPage(page);
-		}
-	}
-
-	@Override
-	public DiaryPage getPage(Date date)
-	{
-		DiaryPage page = findPage(date);
-		if (page != null)
-		{
-			return page;
-		}
-		else
-		{
-			return new DiaryPage(date, Utils.now(), 0);
-		}
-	}
-
-	@Override
-	public void postPage(DiaryPage diaryPage)
-	{
-		try
-		{
-			String code = serializer.write(diaryPage);
-			boolean exists = (findPage(diaryPage.getDate()) != null);
-
-			ContentValues newValues = new ContentValues();
-			newValues.put(DiaryContentProvider.COLUMN_DIARY_DATE, Utils.formatDate(diaryPage.getDate()));
-			newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(diaryPage.getTimeStamp()));
-			newValues.put(DiaryContentProvider.COLUMN_DIARY_VERSION, diaryPage.getVersion());
-			newValues.put(DiaryContentProvider.COLUMN_DIARY_PAGE, code);
-
-			if (exists)
+			sb.append("\"");
+			sb.append(list.get(i));
+			sb.append("\"");
+			if (i < (list.size() - 1))
 			{
-				String[] args = new String[] { Utils.formatDate(diaryPage.getDate()) };
-				resolver.update(DiaryContentProvider.CONTENT_DIARY_URI, newValues, "Date = ?", args);
-			}
-			else
-			{
-				resolver.insert(DiaryContentProvider.CONTENT_DIARY_URI, newValues);
+				sb.append(", ");
 			}
 		}
-		catch (Exception e)
-		{
-			throw new StoreException(e);
-		}
+		sb.append(")");
+
+		return sb.toString();
 	}
 }

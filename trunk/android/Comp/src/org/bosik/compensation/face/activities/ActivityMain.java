@@ -14,7 +14,6 @@ import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.Deprec
 import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.ResponseFormatException;
 import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.UndefinedFieldException;
 import org.bosik.compensation.services.sync.SyncBaseDAO;
-import org.bosik.compensation.services.sync.SyncDiaryDAO;
 import org.bosik.compensation.services.sync.SyncBaseDAO.SyncResult;
 import org.bosik.compensation.services.sync.SyncDiaryDAO.Callback;
 import org.bosik.compensation.utils.ErrorHandler;
@@ -160,7 +159,9 @@ public class ActivityMain extends Activity implements OnClickListener
 				// TODO: хранить время последней синхронизации
 				Date since = new Date(2013 - 1900, 11 - 1, 1, 0, 0, 0); // а затем мы получаем
 																		// громадный синхролист, ага
-				syncPagesCount = SyncDiaryDAO.synchronize(Storage.localDiary, Storage.webDiary, since);
+				// TODO: restore when compiled OK
+				// syncPagesCount = SyncDiaryDAO.synchronize(Storage.localDiary, Storage.webDiary,
+				// since);
 				Log.v(TAG, "Diary synced, total tranferred: " + syncPagesCount);
 
 				Log.v(TAG, "Sync foodbase...");

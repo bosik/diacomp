@@ -2,9 +2,11 @@ package org.bosik.compensation.face.activities;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
-import org.bosik.compensation.bo.diary.DiaryPage;
 import org.bosik.compensation.bo.diary.DiaryRecord;
 import org.bosik.compensation.bo.diary.records.BloodRecord;
 import org.bosik.compensation.bo.diary.records.InsRecord;
@@ -35,29 +37,29 @@ import android.widget.Button;
 public class ActivityDiary extends Activity implements RecordClickListener, OnClickListener
 {
 	// КОНСТАНТЫ
-	private static final int		DIALOG_BLOOD_CREATE	= 11;
-	private static final int		DIALOG_BLOOD_MODIFY	= 12;
-	private static final int		DIALOG_INS_CREATE	= 21;
-	private static final int		DIALOG_INS_MODIFY	= 22;
-	private static final int		DIALOG_NOTE_CREATE	= 41;
-	private static final int		DIALOG_NOTE_MODIFY	= 42;
+	private static final int					DIALOG_BLOOD_CREATE	= 11;
+	private static final int					DIALOG_BLOOD_MODIFY	= 12;
+	private static final int					DIALOG_INS_CREATE	= 21;
+	private static final int					DIALOG_INS_MODIFY	= 22;
+	private static final int					DIALOG_NOTE_CREATE	= 41;
+	private static final int					DIALOG_NOTE_MODIFY	= 42;
 
-	private static final int		CONTEXT_ITEM_EDIT	= 0;
-	private static final int		CONTEXT_ITEM_REMOVE	= 1;
+	private static final int					CONTEXT_ITEM_EDIT	= 0;
+	private static final int					CONTEXT_ITEM_REMOVE	= 1;
 
 	// --- отладочная печать ---
-	private static final String		TAG					= ActivityDiary.class.getSimpleName();
+	private static final String					TAG					= ActivityDiary.class.getSimpleName();
 	// THINK: что произойдёт на смене дат?
-	private static Date				curDate				= Calendar.getInstance().getTime();
-	private static DiaryPage		curPage				= null;
+	private static Date							curDate				= Calendar.getInstance().getTime();
+	private static List<Versioned<DiaryRecord>>	curRecords			= null;
 
 	// --- форматы ---
 	// private static final SimpleDateFormat CaptionFmt = new SimpleDateFormat("d MMMM");
-	private final SimpleDateFormat	CaptionFmt			= new SimpleDateFormat("dd.MM.yyyy", Locale.US);
+	private final SimpleDateFormat				CaptionFmt			= new SimpleDateFormat("dd.MM.yyyy", Locale.US);
 
 	// КОМПОНЕНТЫ
-	private DiaryView				diaryViewLayout;
-	private Button					buttonSelectDay;
+	private DiaryView							diaryViewLayout;
+	private Button								buttonSelectDay;
 
 	// СОБЫТИЯ
 
@@ -133,12 +135,12 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		{
 			if (v.getId() == diaryViewLayout.getId())
 			{
-				if ((DiaryView.getDownedIndex() < 0) || (DiaryView.getDownedIndex() >= curPage.count()))
+				if ((DiaryView.getDownedIndex() < 0) || (DiaryView.getDownedIndex() >= curRecords.size()))
 				{
 					return;
 				}
 
-				DiaryRecord rec = curPage.get(DiaryView.getDownedIndex()).getData();
+				DiaryRecord rec = curRecords.get(DiaryView.getDownedIndex()).getData();
 				Class<?> c = rec.getClass();
 
 				if (c == BloodRecord.class)
@@ -267,7 +269,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		{
 			final int ind = DiaryView.getDownedIndex();
 
-			if ((ind < 0) || (ind >= curPage.count()))
+			if ((ind < 0) || (ind >= curRecords.size()))
 			{
 				return false;
 			}
@@ -278,15 +280,15 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			{
 				case CONTEXT_ITEM_REMOVE:
 				{
-					diaryViewLayout.getPage().remove(ind);
-					postPage(diaryViewLayout.getPage());
+					curRecords.get(ind).setDeleted(true);
+					postRecord(curRecords.get(ind));
 					return true;
 				}
 			}
 
 			// Type-specific options
 
-			Versioned<? extends DiaryRecord> rec = curPage.get(ind);
+			Versioned<? extends DiaryRecord> rec = curRecords.get(ind);
 			Class<?> c = rec.getClass();
 
 			if (c == BloodRecord.class)
@@ -425,7 +427,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	{
 		try
 		{
-			Versioned<? extends DiaryRecord> rec = curPage.get(index);
+			Versioned<? extends DiaryRecord> rec = curRecords.get(index);
 
 			if (rec.getData().getClass() == BloodRecord.class)
 			{
@@ -468,10 +470,10 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					if (resultCode == RESULT_OK)
 					{
-						Versioned<BloodRecord> rec = (Versioned<BloodRecord>) intent.getExtras().getSerializable(
+						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
-						curPage.add(new Versioned<DiaryRecord>(rec));
-						postPage(curPage);
+
+						postRecord(rec);
 					}
 					break;
 				}
@@ -480,10 +482,9 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					if (resultCode == RESULT_OK)
 					{
-						Versioned<BloodRecord> rec = (Versioned<BloodRecord>) intent.getExtras().getSerializable(
+						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
-						curPage.update(new Versioned<DiaryRecord>(rec));
-						postPage(curPage);
+						postRecord(rec);
 					}
 					break;
 				}
@@ -492,10 +493,9 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					if (resultCode == RESULT_OK)
 					{
-						Versioned<InsRecord> rec = (Versioned<InsRecord>) intent.getExtras().getSerializable(
+						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
-						curPage.add(new Versioned<DiaryRecord>(rec));
-						postPage(curPage);
+						postRecord(rec);
 					}
 					break;
 				}
@@ -504,10 +504,9 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					if (resultCode == RESULT_OK)
 					{
-						Versioned<InsRecord> rec = (Versioned<InsRecord>) intent.getExtras().getSerializable(
+						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
-						curPage.update(new Versioned<DiaryRecord>(rec));
-						postPage(curPage);
+						postRecord(rec);
 					}
 					break;
 				}
@@ -516,10 +515,9 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					if (resultCode == RESULT_OK)
 					{
-						Versioned<NoteRecord> rec = (Versioned<NoteRecord>) intent.getExtras().getSerializable(
+						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
-						curPage.add(new Versioned<DiaryRecord>(rec));
-						postPage(curPage);
+						postRecord(rec);
 					}
 					break;
 				}
@@ -528,10 +526,9 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				{
 					if (resultCode == RESULT_OK)
 					{
-						Versioned<NoteRecord> rec = (Versioned<NoteRecord>) intent.getExtras().getSerializable(
+						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
-						curPage.update(new Versioned<DiaryRecord>(rec));
-						postPage(curPage);
+						postRecord(rec);
 					}
 					break;
 				}
@@ -548,20 +545,25 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	private void openPage(Date date)
 	{
 		curDate = date;
-		curPage = Storage.localDiary.getPage(curDate);
-		diaryViewLayout.setPage(curPage);
+
+		int year = date.getYear();
+		int month = date.getMonth();
+		int day = date.getDate();
+
+		Date start = new Date(year, month, day, 0, 0, 0);
+		Date end = Utils.getNextDay(start);
+
+		curRecords = Storage.localDiary.getRecords(start, end);
+		diaryViewLayout.setRecords(curRecords);
 		setCaptionDate(curDate);
 	}
 
-	private void postPage(DiaryPage page)
+	public void postRecord(Versioned<DiaryRecord> rec)
 	{
-		Storage.localDiary.postPage(page);
-		diaryViewLayout.setPage(page);
-
-		// Log.i(TAG, "Posting");
-		// Log.v(TAG, "  Date = " + String.valueOf(page.getDate()));
-		// Log.v(TAG, "  Stamp = " + String.valueOf(page.getTimeStamp()));
-		// Log.d(TAG, "  Page = " + page.writeFull());
+		List<Versioned<DiaryRecord>> list = new LinkedList<Versioned<DiaryRecord>>();
+		list.add(rec);
+		Storage.localDiary.postRecords(list);
+		openPage(curDate);
 	}
 
 	/**
@@ -570,27 +572,23 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	 * @param scanDaysPeriod
 	 * @return BS record if found, null otherwise
 	 */
-	private BloodRecord lastBlood(int scanDaysPeriod)
+	private static BloodRecord lastBlood(int scanDaysPeriod)
 	{
-		// TODO: make use of getPages(), not getPage()
 		// TODO: move this away from UI
 
-		Date d = Utils.now();
+		Date toDate = new Date();
+		Date fromDate = new Date(toDate.getTime() - (scanDaysPeriod * Utils.MsecPerDay));
 
-		for (int i = 1; i <= scanDaysPeriod; i++)
+		List<Versioned<DiaryRecord>> records = Storage.localDiary.getRecords(fromDate, toDate);
+		Collections.reverse(records);
+
+		// TODO: relies on not guaranteed behavior of List
+		for (Versioned<DiaryRecord> record : records)
 		{
-			DiaryPage page = Storage.localDiary.getPage(d);
-			if (page != null)
+			if (record.getData().getClass() == BloodRecord.class)
 			{
-				for (int j = page.count() - 1; j >= 0; j--)
-				{
-					if (page.get(j).getData().getClass() == BloodRecord.class)
-					{
-						return (BloodRecord) page.get(j).getData();
-					}
-				}
+				return (BloodRecord) record.getData();
 			}
-			d = Utils.getPrevDay(d);
 		}
 
 		return null;
@@ -604,7 +602,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			final int SCAN_DAYS = 5;
 			BloodRecord prev = lastBlood(SCAN_DAYS);
 			BloodRecord rec = new BloodRecord();
-			rec.setTime(Utils.curMinutes());
+			rec.setTime(new Date());
 			rec.setFinger(((prev == null) || (prev.getFinger() == -1)) ? -1 : ((prev.getFinger() + 1) % 10));
 			entity = new Versioned<BloodRecord>(rec);
 		}
@@ -621,7 +619,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		if (createMode)
 		{
 			InsRecord rec = new InsRecord();
-			rec.setTime(Utils.curMinutes());
+			rec.setTime(new Date());
 			entity = new Versioned<InsRecord>(rec);
 		}
 
@@ -643,7 +641,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		if (createMode)
 		{
 			NoteRecord rec = new NoteRecord();
-			rec.setTime(Utils.curMinutes());
+			rec.setTime(new Date());
 			entity = new Versioned<NoteRecord>(rec);
 		}
 

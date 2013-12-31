@@ -1,7 +1,7 @@
 package org.bosik.compensation.bo.diary;
 
 import java.io.Serializable;
-import org.bosik.compensation.utils.Utils;
+import java.util.Date;
 
 /* ЗАМЕТКИ 
  * 
@@ -20,23 +20,25 @@ public abstract class DiaryRecord implements Serializable
 {
 	private static final long	serialVersionUID	= 1L;
 
-	private int					time;
+	private Date				time;
 
 	// ================================ VALIDATORS ================================
 
-	public static boolean checkTime(int time)
+	// TODO: trivial (always returns true)
+	public static boolean checkTime(Date time)
 	{
-		return (time >= 0) && (time < Utils.SecPerDay);
+		// return (time >= 0) && (time < Utils.SecPerDay);
+		return true;
 	}
 
 	// ================================ GET / SET ================================
 
-	public int getTime()
+	public Date getTime()
 	{
 		return time;
 	}
 
-	public void setTime(int time)
+	public void setTime(Date time)
 	{
 		if (!checkTime(time))
 		{

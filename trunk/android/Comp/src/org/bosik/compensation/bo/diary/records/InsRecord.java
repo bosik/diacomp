@@ -1,5 +1,6 @@
 package org.bosik.compensation.bo.diary.records;
 
+import java.util.Date;
 import org.bosik.compensation.bo.diary.DiaryRecord;
 
 public class InsRecord extends DiaryRecord
@@ -13,7 +14,7 @@ public class InsRecord extends DiaryRecord
 
 	}
 
-	public InsRecord(int time, double value)
+	public InsRecord(Date time, double value)
 	{
 		setTime(time);
 		setValue(value);
@@ -24,11 +25,6 @@ public class InsRecord extends DiaryRecord
 	public static boolean check(double value)
 	{
 		return (value > 0);
-	}
-
-	public static boolean check(int time, double value)
-	{
-		return checkTime(time) && check(value);
 	}
 
 	// ================================ GET / SET ================================

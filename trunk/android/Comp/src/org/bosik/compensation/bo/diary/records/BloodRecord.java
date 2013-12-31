@@ -1,5 +1,6 @@
 package org.bosik.compensation.bo.diary.records;
 
+import java.util.Date;
 import org.bosik.compensation.bo.diary.DiaryRecord;
 
 public class BloodRecord extends DiaryRecord
@@ -16,7 +17,7 @@ public class BloodRecord extends DiaryRecord
 
 	}
 
-	public BloodRecord(int time, double value, int finger)
+	public BloodRecord(Date time, double value, int finger)
 	{
 		setTime(time);
 		setValue(value);
@@ -33,11 +34,6 @@ public class BloodRecord extends DiaryRecord
 	public static boolean checkFinger(int finger)
 	{
 		return (finger >= -1) && (finger <= 9);
-	}
-
-	public static boolean check(int time, double value, int finger)
-	{
-		return checkTime(time) && checkValue(value) && checkFinger(finger);
 	}
 
 	// ================================ GET / SET ================================

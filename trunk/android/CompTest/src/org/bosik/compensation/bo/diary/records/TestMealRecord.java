@@ -1,11 +1,12 @@
 package org.bosik.compensation.bo.diary.records;
 
+import java.util.Date;
 import junit.framework.TestCase;
 import org.bosik.compensation.bo.FoodMassed;
 
 public class TestMealRecord extends TestCase
 {
-	private MealRecord	meal	= new MealRecord(620, false);
+	private MealRecord	meal	= new MealRecord(new Date(), false);
 
 	// THINK: рандомные тесты - добро или зло?
 

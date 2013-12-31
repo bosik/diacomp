@@ -36,7 +36,7 @@ public abstract class TestDiaryDAO extends AndroidTestCase
 	public void testPersistanceMultiple()
 	{
 		List<DiaryPage> orgPages = mockDiaryPage.getSamples();
-		diaryDAO.postPages(orgPages);
+		diaryDAO.postRecords(orgPages);
 
 		List<Date> dates = new ArrayList<Date>();
 		for (DiaryPage page : orgPages)
