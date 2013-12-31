@@ -99,14 +99,15 @@ public class LocalDiaryDAO implements DiaryDAO
 		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
 				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
 				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
-		String clause = String.format("(%s >= ?) AND (%s <= ?)", DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
-				DiaryContentProvider.COLUMN_DIARY_TIMECACHE);
+		String clause = String.format("(%s >= ?) AND (%s <= ?) AND (%s = 0)",
+				DiaryContentProvider.COLUMN_DIARY_TIMECACHE, DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
+				DiaryContentProvider.COLUMN_DIARY_DELETED);
 		String[] clauseArgs = { Utils.formatTimeUTC(fromDate), Utils.formatTimeUTC(toDate) };
 		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
 		// FIXME
-		clause = null;
-		clauseArgs = new String[] {};
+		// clause = null;
+		// clauseArgs = new String[] {};
 
 		// execute
 		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,

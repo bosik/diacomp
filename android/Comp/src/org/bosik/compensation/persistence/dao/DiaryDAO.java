@@ -35,7 +35,7 @@ public interface DiaryDAO
 	// FIXME: no DELETED handling implemented
 
 	/**
-	 * Returns list of records for the specified time interval
+	 * Returns list of non-deleted records for the specified time interval
 	 * 
 	 * @param fromDate
 	 * @param toDate
