@@ -13,35 +13,31 @@ public class Sorter<T extends RelativeTagged>
 		ALPHABET, RELEVANT
 	}
 
-	private final Comparator<Versioned<T>>	COMPARATOR_ALPHABET	= new Comparator<Versioned<T>>()
+	final Comparator<Versioned<T>>	COMPARATOR_ALPHABET	= new Comparator<Versioned<T>>()
+														{
+															@Override
+															public int compare(Versioned<T> lhs, Versioned<T> rhs)
+															{
+																return lhs.getData().getName()
+																		.compareTo(rhs.getData().getName());
+															}
+														};
+	final Comparator<Versioned<T>>	COMPARATOR_RELEVANT	= new Comparator<Versioned<T>>()
+														{
+															@Override
+															public int compare(Versioned<T> lhs, Versioned<T> rhs)
+															{
+																if (lhs.getData().getTag() == rhs.getData().getTag())
 																{
-																	@Override
-																	public int compare(Versioned<T> lhs,
-																			Versioned<T> rhs)
-																	{
-																		return lhs.getData().getName()
-																				.compareTo(rhs.getData().getName());
-																	}
-																};
-	private final Comparator<Versioned<T>>	COMPARATOR_RELEVANT	= new Comparator<Versioned<T>>()
+																	return COMPARATOR_ALPHABET.compare(lhs, rhs);
+																}
+																else
 																{
-																	@Override
-																	public int compare(Versioned<T> lhs,
-																			Versioned<T> rhs)
-																	{
-																		if (lhs.getData().getTag() == rhs.getData()
-																				.getTag())
-																		{
-																			return COMPARATOR_ALPHABET
-																					.compare(lhs, rhs);
-																		}
-																		else
-																		{
-																			return rhs.getData().getTag()
-																					- lhs.getData().getTag();
-																		}
-																	}
-																};
+																	return rhs.getData().getTag()
+																			- lhs.getData().getTag();
+																}
+															}
+														};
 
 	public void sort(List<Versioned<T>> list, Sort order)
 	{
