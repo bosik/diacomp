@@ -65,7 +65,7 @@ public class LocalDiaryDAO implements DiaryDAO
 		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " in " + formatList(guids);
 		String[] clauseArgs = {};
 
-		String sortOrder = "ASC " + DiaryContentProvider.COLUMN_DIARY_TIMECACHE;
+		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
 		// execute
 		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
@@ -83,7 +83,7 @@ public class LocalDiaryDAO implements DiaryDAO
 				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
 		String clause = DiaryContentProvider.COLUMN_DIARY_TIMESTAMP + " > ?";
 		String[] clauseArgs = { Utils.formatTimeUTC(time) };
-		String sortOrder = "ASC " + DiaryContentProvider.COLUMN_DIARY_TIMECACHE;
+		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
 		// execute
 		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
