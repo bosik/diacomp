@@ -3,6 +3,7 @@ package org.bosik.compensation.persistence.dao.local;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import org.bosik.compensation.bo.diary.DiaryRecord;
 import org.bosik.compensation.persistence.common.Versioned;
@@ -65,13 +66,29 @@ public class LocalDiaryDAO implements DiaryDAO
 		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " in " + formatList(guids);
 		String[] clauseArgs = {};
 
-		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
+		String sortOrder = null;// DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
 		// execute
 		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
 				sortOrder);
 
-		return extractRecords(cursor);
+		List<Versioned<DiaryRecord>> recs = extractRecords(cursor);
+
+		// making the order the same as requested GUID's order
+		List<Versioned<DiaryRecord>> result = new LinkedList<Versioned<DiaryRecord>>();
+		for (String guid : guids)
+		{
+			for (Versioned<DiaryRecord> rec : recs)
+			{
+				if (guid.equals(rec.getId()))
+				{
+					result.add(rec);
+					break;
+				}
+			}
+		}
+
+		return result;
 	}
 
 	@Override
