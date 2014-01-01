@@ -9,13 +9,14 @@ import junit.framework.TestCase;
 import org.bosik.compensation.utils.Utils;
 import android.util.Log;
 
+@SuppressWarnings("static-method")
 public class TestUtils extends TestCase
 {
 	private static final String	TAG			= TestUtils.class.getSimpleName();
 	public static final double	EPS			= 0.00001;
-	public static final long	EPS_TIME	= 5000;							// mms
+	public static final long	EPS_TIME	= 5000;							// ms
 
-	private Date date(int year, int month, int day)
+	public static Date date(int year, int month, int day)
 	{
 		Calendar c = Calendar.getInstance();
 		c.clear();
@@ -23,7 +24,7 @@ public class TestUtils extends TestCase
 		return c.getTime();
 	}
 
-	private Date time(int year, int month, int day, int hour, int min, int sec)
+	public static Date time(int year, int month, int day, int hour, int min, int sec)
 	{
 		Calendar c = Calendar.getInstance();
 		c.clear();
@@ -32,7 +33,7 @@ public class TestUtils extends TestCase
 		return c.getTime();
 	}
 
-	private String formatArray(byte array[])
+	private static String formatArray(byte array[])
 	{
 		StringBuilder sb = new StringBuilder("{");
 
@@ -161,34 +162,34 @@ public class TestUtils extends TestCase
 		}
 	}
 
-	public void testTimeToStr()
-	{
-		// нормальный тест
-		assertEquals("00:00", Utils.timeToStr(0));
-		assertEquals("00:01", Utils.timeToStr(1));
-		assertEquals("00:59", Utils.timeToStr(59));
-		assertEquals("01:00", Utils.timeToStr(60));
-		assertEquals("10:30", Utils.timeToStr(630));
-		assertEquals("23:59", Utils.timeToStr(1439));
-
-		// краш-тест
-		try
-		{
-			Utils.timeToStr(1440);
-			fail();
-		}
-		catch (Exception e)
-		{
-		}
-		try
-		{
-			Utils.timeToStr(-1);
-			fail();
-		}
-		catch (Exception e)
-		{
-		}
-	}
+	// public void testTimeToStr()
+	// {
+	// // нормальный тест
+	// assertEquals("00:00", Utils.timeToStr(0));
+	// assertEquals("00:01", Utils.timeToStr(1));
+	// assertEquals("00:59", Utils.timeToStr(59));
+	// assertEquals("01:00", Utils.timeToStr(60));
+	// assertEquals("10:30", Utils.timeToStr(630));
+	// assertEquals("23:59", Utils.timeToStr(1439));
+	//
+	// // краш-тест
+	// try
+	// {
+	// Utils.timeToStr(1440);
+	// fail();
+	// }
+	// catch (Exception e)
+	// {
+	// }
+	// try
+	// {
+	// Utils.timeToStr(-1);
+	// fail();
+	// }
+	// catch (Exception e)
+	// {
+	// }
+	// }
 
 	public void testTimeToMin()
 	{
