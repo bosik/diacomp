@@ -1,17 +1,20 @@
 package org.bosik.compensation.persistence.dao;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
-import org.bosik.compensation.bo.diary.DiaryPage;
-import org.bosik.compensation.fakes.mocks.MockDiaryPage;
+import org.bosik.compensation.bo.diary.DiaryRecord;
 import org.bosik.compensation.fakes.mocks.Mock;
+import org.bosik.compensation.fakes.mocks.MockDiaryRecord;
+import org.bosik.compensation.fakes.mocks.MockVersionedConverter;
+import org.bosik.compensation.persistence.common.Versioned;
 import android.test.AndroidTestCase;
 
 public abstract class TestDiaryDAO extends AndroidTestCase
 {
-	private DiaryDAO						diaryDAO;
-	private static final Mock<DiaryPage>	mockDiaryPage	= new MockDiaryPage();
+	private DiaryDAO									diaryDAO;
+	private static final Mock<DiaryRecord>				mockDiaryRecord				= new MockDiaryRecord();
+	private static final Mock<Versioned<DiaryRecord>>	mockVersionedDiaryRecord	= new MockVersionedConverter<DiaryRecord>(
+																							mockDiaryRecord);
 
 	protected abstract DiaryDAO getDAO();
 
@@ -21,37 +24,29 @@ public abstract class TestDiaryDAO extends AndroidTestCase
 		diaryDAO = getDAO();
 	}
 
-	public void testPersistanceSingle()
-	{
-		DiaryPage org = mockDiaryPage.getSamples().get(0);
-		diaryDAO.postPage(org);
-
-		// ------------------
-		setUp();
-
-		DiaryPage restored = diaryDAO.getPage(org.getDate());
-		mockDiaryPage.compare(org, restored);
-	}
-
 	public void testPersistanceMultiple()
 	{
-		List<DiaryPage> orgPages = mockDiaryPage.getSamples();
-		diaryDAO.postRecords(orgPages);
+		List<Versioned<DiaryRecord>> org = mockVersionedDiaryRecord.getSamples();
 
-		List<Date> dates = new ArrayList<Date>();
-		for (DiaryPage page : orgPages)
+		List<String> guids = new LinkedList<String>();
+		for (Versioned<DiaryRecord> item : org)
 		{
-			dates.add(page.getDate());
+			guids.add(item.getId());
 		}
+		diaryDAO.postRecords(org);
 
 		// ------------------
 		setUp();
 
-		List<DiaryPage> restoredPages = diaryDAO.getPages(dates);
-		assertEquals(orgPages.size(), restoredPages.size());
-		for (int i = 0; i < orgPages.size(); i++)
+		List<Versioned<DiaryRecord>> restoredRecords = diaryDAO.getRecords(guids);
+		assertEquals(org.size(), restoredRecords.size());
+
+		// check content
+		for (int i = 0; i < org.size(); i++)
 		{
-			mockDiaryPage.compare(orgPages.get(i), restoredPages.get(i));
+			final Versioned<DiaryRecord> exp = org.get(i);
+			final Versioned<DiaryRecord> act = restoredRecords.get(i);
+			mockVersionedDiaryRecord.compare(exp, act);
 		}
 	}
 
