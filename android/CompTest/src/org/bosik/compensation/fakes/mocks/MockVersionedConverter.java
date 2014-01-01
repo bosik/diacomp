@@ -10,6 +10,7 @@ import org.bosik.compensation.utills.TestUtils;
 
 public class MockVersionedConverter<T> extends TestCase implements Mock<Versioned<T>>
 {
+	// private static final String TAG = MockVersionedConverter.class.getSimpleName();
 	private Mock<T>	generator;
 
 	public MockVersionedConverter(Mock<T> generator)
@@ -40,11 +41,20 @@ public class MockVersionedConverter<T> extends TestCase implements Mock<Versione
 		assertNotNull(exp);
 		assertNotNull(act);
 
-		assertEquals(exp, act);
+		// try
+		// {
 		assertEquals(exp.getId(), act.getId());
 		assertEquals(exp.getTimeStamp().getTime(), act.getTimeStamp().getTime(), TestUtils.EPS_TIME);
 		assertEquals(exp.getVersion(), act.getVersion());
 		assertEquals(exp.isDeleted(), act.isDeleted());
+		assertEquals(exp, act);
 		generator.compare(exp.getData(), act.getData());
+		// }
+		// catch (ComparisonFailure e)
+		// {
+		// Log.e(TAG, "Exp: " + exp.getData().toString());
+		// Log.e(TAG, "Act: " + act.getData().toString());
+		// throw e;
+		// }
 	}
 }
