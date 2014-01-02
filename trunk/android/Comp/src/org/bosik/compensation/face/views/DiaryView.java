@@ -1,6 +1,10 @@
 package org.bosik.compensation.face.views;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import org.bosik.compensation.bo.diary.DiaryRecord;
 import org.bosik.compensation.bo.diary.records.BloodRecord;
 import org.bosik.compensation.bo.diary.records.InsRecord;
@@ -8,7 +12,6 @@ import org.bosik.compensation.bo.diary.records.MealRecord;
 import org.bosik.compensation.bo.diary.records.NoteRecord;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.persistence.common.Versioned;
-import org.bosik.compensation.utils.Utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -37,6 +40,8 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	private static final Paint				paintTime				= new Paint();
 	private static final Paint				paintRec				= new Paint();
 	private static final Paint				paintDefault			= new Paint();
+	
+	private static final SimpleDateFormat	FORMAT_DIARY_TIME_LOC	= new SimpleDateFormat("HH:mm", Locale.US);
 
 	// отступы
 	private static final int				BORD					= 24;
@@ -77,6 +82,9 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	// инициализация
 	static
 	{
+		// before first use of timeToStr()
+		FORMAT_DIARY_TIME_LOC.setTimeZone(TimeZone.getDefault());
+
 		paintNoPage.setColor(Color.GRAY);
 		paintNoPage.setTextSize(TEXT_NOPAGE_SIZE);
 		paintNoPage.setAntiAlias(true);
@@ -95,7 +103,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 		paintRec.setAntiAlias(true);
 
 		LEFT_TIME = BORD + TEXT_BORD;
-		LEFT_RECS = BORD + (2 * TEXT_BORD) + getTextWidth("12:34", paintTime);
+		LEFT_RECS = BORD + (2 * TEXT_BORD) + getTextWidth(timeToStr(new Date()), paintTime);
 		REC_HEIGHT = TEXT_SIZE + (2 * TEXT_BORD);
 	}
 
@@ -186,6 +194,11 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	}
 
 	// утилиты
+
+	private static String timeToStr(Date time)
+	{
+		return FORMAT_DIARY_TIME_LOC.format(time);
+	}
 
 	private static int getTextWidth(String text, Paint paint)
 	{
@@ -350,7 +363,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 
 				String finger = temp.getFinger() == -1 ? "" : " | " + fingers[temp.getFinger()];
 
-				canvas.drawText(Utils.timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE, paintTime);
+				canvas.drawText(timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE, paintTime);
 				canvas.drawText(String.valueOf(temp.getValue()) + finger, LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE,
 						paintRec);
 
@@ -361,7 +374,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 				InsRecord temp = (InsRecord) rec;
 
 				drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_INS_SEL : COLOR_PANEL_INS_STD));
-				canvas.drawText(Utils.timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE, paintTime);
+				canvas.drawText(timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE, paintTime);
 				canvas.drawText(String.valueOf(temp.getValue()) + " ед", LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE,
 						paintRec);
 				top += (TEXT_SIZE + (2 * TEXT_BORD));
@@ -381,7 +394,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 
 				String text = trimToFit(MealFormatter.format(temp, MealFormatter.FormatStyle.MOST_CARBS), r.right
 						- LEFT_RECS);
-				canvas.drawText(Utils.timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE, paintTime);
+				canvas.drawText(timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE, paintTime);
 				canvas.drawText(text, LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE, paintRec);
 
 				top += (TEXT_SIZE + (2 * TEXT_BORD));
@@ -393,7 +406,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 				drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_NOTE_SEL : COLOR_PANEL_NOTE_STD));
 
 				String text = trimToFit(temp.getText(), r.right - LEFT_RECS);
-				canvas.drawText(Utils.timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE, paintTime);
+				canvas.drawText(timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE, paintTime);
 				canvas.drawText(text, LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE, paintRec);
 
 				top += (TEXT_SIZE + (2 * TEXT_BORD));
