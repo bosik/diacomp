@@ -89,7 +89,16 @@ public class ErrorHandler
 
 				if (webClient != null)
 				{
-					boolean sent = webClient.sendMail(m.replace("\n", "<br/>"));
+					boolean sent;
+					try
+					{
+						webClient.sendMail(m.replace("\n", "<br/>"));
+						sent = true;
+					}
+					catch (Exception ex)
+					{
+						sent = false;
+					}
 
 					if (activity != null)
 					{
