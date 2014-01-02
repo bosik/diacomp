@@ -122,10 +122,6 @@ public class LocalDiaryDAO implements DiaryDAO
 		String[] clauseArgs = { Utils.formatTimeUTC(fromDate), Utils.formatTimeUTC(toDate) };
 		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
-		// FIXME
-		// clause = null;
-		// clauseArgs = new String[] {};
-
 		// execute
 		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
 				sortOrder);
