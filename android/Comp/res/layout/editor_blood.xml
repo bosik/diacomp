@@ -6,7 +6,7 @@
     android:scrollbars="vertical" >
 
     <LinearLayout
-        android:id="@+id/LayoutBloodParent"
+        android:id="@+id/layoutBloodParent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="top"
@@ -22,7 +22,7 @@
             android:text="@string/editor_common_field_time" />
 
         <RelativeLayout
-            android:id="@+id/LayoutBloodDateTime"
+            android:id="@+id/layoutBloodDateTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
