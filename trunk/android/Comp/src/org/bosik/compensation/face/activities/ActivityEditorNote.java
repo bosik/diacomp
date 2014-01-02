@@ -8,6 +8,7 @@ import org.bosik.compensation.persistence.common.Versioned;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
@@ -20,6 +21,7 @@ public class ActivityEditorNote extends ActivityEditor<Versioned<NoteRecord>>
 
 	// компоненты
 	private TimePicker	timePicker;
+	private DatePicker	datePicker;
 	private EditText	editText;
 	private Button		buttonOK;
 
@@ -29,8 +31,10 @@ public class ActivityEditorNote extends ActivityEditor<Versioned<NoteRecord>>
 	protected void setupInterface()
 	{
 		setContentView(R.layout.editor_note);
-		editText = (EditText) findViewById(R.id.editNoteText);
 		timePicker = (TimePicker) findViewById(R.id.pickerNoteTime);
+		timePicker.setIs24HourView(true);
+		datePicker = (DatePicker) findViewById(R.id.pickerNoteDate);
+		editText = (EditText) findViewById(R.id.editNoteText);
 		buttonOK = (Button) findViewById(R.id.buttonNoteOK);
 		buttonOK.setOnClickListener(new OnClickListener()
 		{
@@ -46,24 +50,14 @@ public class ActivityEditorNote extends ActivityEditor<Versioned<NoteRecord>>
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
-		// FIXME: add date picker
-
 		if (!createMode)
 		{
-			Date time = entity.getData().getTime();
-			// datePicker.updateDate(time.getYear(), time.getMonth(), time.getDate());
-			timePicker.setCurrentHour(time.getHours());
-			timePicker.setCurrentMinute(time.getMinutes());
-
+			showTime(entity.getData().getTime(), datePicker, timePicker);
 			editText.setText(entity.getData().getText());
 		}
 		else
 		{
-			Date time = new Date();
-			// datePicker.updateDate(time.getYear(), time.getMonth(), time.getDate());
-			timePicker.setCurrentHour(time.getHours());
-			timePicker.setCurrentMinute(time.getMinutes());
-
+			showTime(new Date(), datePicker, timePicker);
 			editText.setText("");
 		}
 	}
@@ -74,13 +68,7 @@ public class ActivityEditorNote extends ActivityEditor<Versioned<NoteRecord>>
 		// читаем время
 		try
 		{
-			final int year = 2013;// datePicker.getYear();
-			final int month = 12;// datePicker.getMonth();
-			final int day = 29;// datePicker.getDayOfMonth();
-			final Integer hour = timePicker.getCurrentHour();
-			final Integer minute = timePicker.getCurrentMinute();
-			Date time = new Date(year, month, day, hour, minute);
-			entity.getData().setTime(time);
+			entity.getData().setTime(readTime(datePicker, timePicker));
 		}
 		catch (IllegalArgumentException e)
 		{
@@ -103,5 +91,4 @@ public class ActivityEditorNote extends ActivityEditor<Versioned<NoteRecord>>
 
 		return true;
 	}
-
 }

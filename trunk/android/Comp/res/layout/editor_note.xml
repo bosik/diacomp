@@ -1,19 +1,19 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ScrollNoteEditor"
-    android:layout_width="fill_parent"
+    android:id="@+id/layoutNoteScroll"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="top"
-    android:layout_margin="@dimen/padding_small" >
+    android:scrollbars="vertical"
+    tools:context=".activities.ActivityEditorNote" >
 
     <LinearLayout
-        android:id="@+id/LayoutNoteParent"
-        android:layout_width="fill_parent"
+        android:id="@+id/layoutNoteParent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="top"
         android:orientation="vertical"
-        android:scrollbarAlwaysDrawVerticalTrack="false"
-        android:scrollbarStyle="insideOverlay"
-        android:scrollbars="vertical"
+        android:padding="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_small"
         tools:context=".ActivityEditorNote" >
 
         <TextView
@@ -22,16 +22,33 @@
             android:layout_height="wrap_content"
             android:text="@string/editor_common_field_time" />
 
-        <TimePicker
-            android:id="@+id/pickerNoteTime"
+        <RelativeLayout
+            android:id="@+id/layoutNoteDateTime"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/padding_small" />
+            android:layout_height="wrap_content" >
+
+            <TimePicker
+                android:id="@+id/pickerNoteTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true" />
+
+            <DatePicker
+                android:id="@+id/pickerNoteDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/pickerNoteTime"
+                android:paddingLeft="@dimen/padding_small" />
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/labelNoteText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:labelFor="@+id/editNoteText"
+            android:paddingTop="@dimen/padding_small"
             android:text="@string/editor_note_field_text" />
 
         <EditText

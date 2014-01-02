@@ -5,7 +5,6 @@ import org.bosik.compensation.bo.diary.records.BloodRecord;
 import org.bosik.compensation.face.R;
 import org.bosik.compensation.face.UIUtils;
 import org.bosik.compensation.persistence.common.Versioned;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -17,18 +16,18 @@ import android.widget.TimePicker;
 
 public class ActivityEditorBlood extends ActivityEditor<Versioned<BloodRecord>>
 {
-	private static final String	TAG			= ActivityEditorBlood.class.getSimpleName();
+	// private static final String TAG = ActivityEditorBlood.class.getSimpleName();
 
 	// components
-	private TimePicker			timePicker;
-	private DatePicker			datePicker;
-	private EditText			editValue;
-	private TextView			labelBloodFinger;
-	private Spinner				spinnerFinger;
-	private Button				buttonOK;
+	private TimePicker	timePicker;
+	private DatePicker	datePicker;
+	private EditText	editValue;
+	private TextView	labelBloodFinger;
+	private Spinner		spinnerFinger;
+	private Button		buttonOK;
 
 	// parameters
-	private boolean				askFinger	= true;
+	private boolean		askFinger	= true;
 
 	/* =========================== OVERRIDEN METHODS ================================ */
 
@@ -60,27 +59,12 @@ public class ActivityEditorBlood extends ActivityEditor<Versioned<BloodRecord>>
 
 		if (!createMode)
 		{
-			Date time = entity.getData().getTime();
-			datePicker.updateDate(time.getYear(), time.getMonth(), time.getDate());
-			timePicker.setCurrentHour(time.getHours());
-			timePicker.setCurrentMinute(time.getMinutes());
-
+			showTime(entity.getData().getTime(), datePicker, timePicker);
 			editValue.setText(String.valueOf(entity.getData().getValue()));
-
 		}
 		else
 		{
-			Date time = new Date();
-
-			final int year = time.getYear() + 1900;
-			Log.i(TAG, "Year: " + String.valueOf(year));
-			Log.i(TAG, "Month: " + String.valueOf(time.getMonth()));
-			Log.i(TAG, "Day: " + String.valueOf(time.getDate()));
-
-			datePicker.updateDate(year, time.getMonth(), time.getDate());
-			timePicker.setCurrentHour(time.getHours());
-			timePicker.setCurrentMinute(time.getMinutes());
-
+			showTime(new Date(), datePicker, timePicker);
 			editValue.setText("");
 		}
 
@@ -99,13 +83,7 @@ public class ActivityEditorBlood extends ActivityEditor<Versioned<BloodRecord>>
 		// time
 		try
 		{
-			final int year = datePicker.getYear() - 1900;
-			final int month = datePicker.getMonth();
-			final int day = datePicker.getDayOfMonth();
-			final Integer hour = timePicker.getCurrentHour();
-			final Integer minute = timePicker.getCurrentMinute();
-			Date time = new Date(year, month, day, hour, minute);
-			entity.getData().setTime(time);
+			entity.getData().setTime(readTime(datePicker, timePicker));
 		}
 		catch (IllegalArgumentException e)
 		{

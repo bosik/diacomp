@@ -44,20 +44,12 @@ public class ActivityEditorIns extends ActivityEditor<Versioned<InsRecord>>
 	{
 		if (!createMode)
 		{
-			Date time = entity.getData().getTime();
-			datePicker.updateDate(time.getYear(), time.getMonth(), time.getDate());
-			timePicker.setCurrentHour(time.getHours());
-			timePicker.setCurrentMinute(time.getMinutes());
-
+			showTime(entity.getData().getTime(), datePicker, timePicker);
 			editValue.setText(String.valueOf(entity.getData().getValue()));
 		}
 		else
 		{
-			Date time = new Date();
-			datePicker.updateDate(time.getYear(), time.getMonth(), time.getDate());
-			timePicker.setCurrentHour(time.getHours());
-			timePicker.setCurrentMinute(time.getMinutes());
-
+			showTime(new Date(), datePicker, timePicker);
 			editValue.setText("");
 		}
 	}
@@ -70,13 +62,7 @@ public class ActivityEditorIns extends ActivityEditor<Versioned<InsRecord>>
 		// time
 		try
 		{
-			final int year = datePicker.getYear();
-			final int month = datePicker.getMonth();
-			final int day = datePicker.getDayOfMonth();
-			final Integer hour = timePicker.getCurrentHour();
-			final Integer minute = timePicker.getCurrentMinute();
-			Date time = new Date(year, month, day, hour, minute);
-			entity.getData().setTime(time);
+			entity.getData().setTime(readTime(datePicker, timePicker));
 		}
 		catch (IllegalArgumentException e)
 		{
