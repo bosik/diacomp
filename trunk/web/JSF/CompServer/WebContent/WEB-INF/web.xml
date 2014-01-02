@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
-  <display-name>CompServer</display-name>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="WebApp_ID" version="3.0">
+	<display-name>CompServer</display-name>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
     <welcome-file>index.htm</welcome-file>
@@ -15,7 +18,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>ServletAuth</servlet-name>
-    <url-pattern>/api/login/</url-pattern>
+    <url-pattern>/api/login</url-pattern>
   </servlet-mapping>
   <servlet>
     <servlet-name>ServletDiary</servlet-name>
@@ -23,7 +26,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>ServletDiary</servlet-name>
-    <url-pattern>/api/diary/</url-pattern>
+    <url-pattern>/api/diary</url-pattern>
   </servlet-mapping>
   <error-page>
     <error-code>404</error-code>
@@ -33,4 +36,33 @@
     <exception-type>java.lang.Throwable</exception-type>
     <location>/WEB-INF/error-500.jsp</location>
   </error-page>
+
+	<!-- <servlet>
+		<servlet-name>MyFirstApplication</servlet-name>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>javax.ws.rs.Application</param-name>
+			<param-value>org.bosik.diacomp.jersey.MyApp</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet> -->
+
+	<servlet>
+		<servlet-name>Service</servlet-name>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>jersey.config.server.provider.packages</param-name>
+			<param-value>org.bosik.diacomp.jersey</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Service</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+	
+<!-- 	<servlet-mapping>
+		<servlet-name>MyFirstApplication</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping> -->
 </web-app>

@@ -10,7 +10,6 @@ public class ResponseBuilder
 
 	public static String build(int code, String msg)
 	{
-		// StringEscapeUtils.escapeJava(str)
 		if (msg != null)
 		{
 			msg = msg.replace("\"", "\\\"");
