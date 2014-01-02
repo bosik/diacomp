@@ -51,6 +51,7 @@ public class Utils
 	static
 	{
 		STD_FORMAT_TIME_UTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+		STD_FORMAT_TIME_LOC.setTimeZone(TimeZone.getDefault());
 
 		NumberFormat f = NumberFormat.getInstance(Locale.US);
 		if (f instanceof DecimalFormat)
@@ -133,7 +134,7 @@ public class Utils
 		// {
 		// throw new IllegalArgumentException("Incorrect time (" + time + ")");
 		// }
-		return STD_FORMAT_TIME_UTC.format(time);
+		return STD_FORMAT_TIME_LOC.format(time);
 	}
 
 	/**
