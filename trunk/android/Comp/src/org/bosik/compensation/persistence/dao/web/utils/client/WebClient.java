@@ -24,6 +24,7 @@ import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.AuthEx
 import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.ConnectionException;
 import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.DeprecatedAPIException;
 import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.ResponseFormatException;
+import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.TaskExecutionException;
 import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.UndefinedFieldException;
 import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.WebClientException;
 import org.bosik.compensation.utils.Utils;
@@ -294,15 +295,30 @@ public class WebClient
 		}
 	}
 
-	private boolean processResponse(String resp)
+	private static void processResponse(String resp)
 	{
-		// TODO: response message is lost here
 		try
 		{
 			JSONObject json = new JSONObject(resp);
-			int status = json.getInt("status");
-			// String msg = json.getString("");
-			return (status == 0);
+			int code = json.getInt("status");
+			String msg = json.getString("message");
+
+			switch (code)
+			{
+			// TODO: use constants
+
+				case 0:
+				{
+					return;
+				}
+
+				// TODO: add another code handlers
+
+				default:
+				{
+					throw new TaskExecutionException(code, msg);
+				}
+			}
 		}
 		catch (JSONException e)
 		{
@@ -516,7 +532,7 @@ public class WebClient
 		return isOnline(false);
 	}
 
-	public boolean sendMail(String string)
+	public void sendMail(String string)
 	{
 		// конструируем запрос
 		List<NameValuePair> p = new ArrayList<NameValuePair>();
@@ -527,7 +543,7 @@ public class WebClient
 		String resp = doPostSmart(server + URL_CONSOLE, p, CODEPAGE_CP1251);
 
 		// обрабатываем результат
-		return processResponse(resp);
+		processResponse(resp);
 	}
 
 	/* ------------------------------------- ДНЕВНИК ------------------------------------- */
@@ -566,24 +582,21 @@ public class WebClient
 	 *            Страницы
 	 * @return Успешность отправки
 	 */
-	public boolean postPages(String pages)
+	public void postPages(String pages)
 	{
-		// TODO: remove return type, use exceptions to inform
-		if (pages.equals(""))
+		if (!pages.equals(""))
 		{
-			return true;
+			// конструируем запрос
+			List<NameValuePair> p = new ArrayList<NameValuePair>();
+			p.add(new BasicNameValuePair("diary:upload", ""));
+			p.add(new BasicNameValuePair("pages", pages));
+
+			// отправляем на сервер
+			String resp = doPostSmart(server + URL_CONSOLE, p, CODEPAGE_CP1251);
+
+			// обрабатываем результат
+			processResponse(resp);
 		}
-
-		// конструируем запрос
-		List<NameValuePair> p = new ArrayList<NameValuePair>();
-		p.add(new BasicNameValuePair("diary:upload", ""));
-		p.add(new BasicNameValuePair("pages", pages));
-
-		// отправляем на сервер
-		String resp = doPostSmart(server + URL_CONSOLE, p, CODEPAGE_CP1251);
-
-		// обрабатываем результат
-		return processResponse(resp);
 	}
 
 	/* ---------------------------------- БАЗА ПРОДУКТОВ ---------------------------------- */
@@ -611,7 +624,7 @@ public class WebClient
 		return source;
 	}
 
-	public boolean postFoodBase(int version, String data)
+	public void postFoodBase(int version, String data)
 	{
 		// конструируем запрос
 		List<NameValuePair> p = new ArrayList<NameValuePair>();
@@ -623,7 +636,6 @@ public class WebClient
 		String resp = doPostSmart(server + URL_CONSOLE, p, CODEPAGE_UTF8);
 
 		// обрабатываем результат
-		// FIXME: Handle the response
-		return (resp.equals(RESPONSE_DONE)); // processResponse(resp);
+		processResponse(resp);
 	}
 }
