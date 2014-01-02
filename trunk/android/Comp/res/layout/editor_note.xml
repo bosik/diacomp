@@ -3,8 +3,7 @@
     android:id="@+id/layoutNoteScroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollbars="vertical"
-    tools:context=".activities.ActivityEditorNote" >
+    android:scrollbars="vertical">
 
     <LinearLayout
         android:id="@+id/layoutNoteParent"

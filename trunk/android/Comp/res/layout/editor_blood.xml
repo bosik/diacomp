@@ -13,7 +13,7 @@
         android:orientation="vertical"
         android:padding="@dimen/padding_small"
         android:paddingBottom="@dimen/padding_small"
-        tools:context=".ActivityBlood" >
+        tools:context=".ActivityEditorBlood" >
 
         <TextView
             android:id="@+id/labelBloodTime"
