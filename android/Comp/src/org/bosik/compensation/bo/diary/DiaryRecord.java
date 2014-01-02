@@ -24,11 +24,9 @@ public abstract class DiaryRecord implements Serializable
 
 	// ================================ VALIDATORS ================================
 
-	// TODO: trivial (always returns true)
 	public static boolean checkTime(Date time)
 	{
-		// return (time >= 0) && (time < Utils.SecPerDay);
-		return true;
+		return (time != null);
 	}
 
 	// ================================ GET / SET ================================
