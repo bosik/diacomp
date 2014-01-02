@@ -116,28 +116,6 @@ public class Utils
 	}
 
 	/**
-	 * [tested] Преобразует время дневника в текстовое время
-	 * 
-	 * @param time
-	 *            Время дневника
-	 * @return Текстовое время
-	 */
-	public static String timeToStr(Date time)
-	{
-		// int hour = time.getHours();
-		// int min = time.getMinutes();
-		// if (checkTime(hour, min))
-		// {
-		// return intTo00(hour) + ":" + intTo00(min);
-		// }
-		// else
-		// {
-		// throw new IllegalArgumentException("Incorrect time (" + time + ")");
-		// }
-		return STD_FORMAT_TIME_LOC.format(time);
-	}
-
-	/**
 	 * [tested] Преобразует время во время дневника.
 	 * 
 	 * @param time
