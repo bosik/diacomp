@@ -38,10 +38,10 @@ public class AuthFilter implements Filter
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 
-		System.out.println("doFilter(): getServletPath=" + req.getServletPath());
-		System.out.println("doFilter(): getRequestURL=" + req.getRequestURL());
-		System.out.println("doFilter(): getRequestURI=" + req.getRequestURI());
-		System.out.println("doFilter(): getQueryString=" + req.getQueryString());
+		// System.out.println("doFilter(): getServletPath=" + req.getServletPath());
+		// System.out.println("doFilter(): getRequestURL=" + req.getRequestURL());
+		// System.out.println("doFilter(): getRequestURI=" + req.getRequestURI());
+		// System.out.println("doFilter(): getQueryString=" + req.getQueryString());
 
 		if (req.getRequestURI().startsWith(BASE_URL + "/api/auth/") || AuthResource.checkAuth(req))
 		{
@@ -51,7 +51,6 @@ public class AuthFilter implements Filter
 		else
 		{
 			System.err.println("Not authorized request!");
-			// res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Who r u?");
 			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			res.getWriter().write(ResponseBuilder.build(ResponseBuilder.CODE_UNAUTHORIZED, "Not authorized"));
 		}
