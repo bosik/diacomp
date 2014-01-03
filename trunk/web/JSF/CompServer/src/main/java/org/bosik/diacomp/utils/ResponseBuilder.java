@@ -10,12 +10,14 @@ public class ResponseBuilder
 
 	public static String build(int code, String msg)
 	{
-		if (msg != null)
-		{
-			msg = msg.replace("\"", "\\\"");
-		}
+		// if (msg != null)
+		// {
+		// msg = msg.replace("\"", "\\\"");
+		// }
+		//
+		// return String.format("{code:%d, msg:\"%s\"}", code, msg);
 
-		return String.format("{code:%d, response:\"%s\"}", code, msg);
+		return StdResponse.encode(new StdResponse(code, msg));
 	}
 
 	public static String buildDone(String msg)
