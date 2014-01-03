@@ -1,12 +1,12 @@
 package org.bosik.diacomp;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
 import java.net.URI;
-import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import org.bosik.diacomp.resources.CompServerApp;
 import org.glassfish.jersey.client.ClientConfig;
@@ -17,6 +17,9 @@ import org.junit.Test;
 
 public class TestAuth extends JerseyTest
 {
+	private static final String	demoLogin	= "admin";
+	private static final String	demoPass	= "1234";
+
 	public TestAuth() throws Exception
 	{
 		super(CompServerApp.class);
@@ -38,23 +41,21 @@ public class TestAuth extends JerseyTest
 	@Test
 	public void unauthTest()
 	{
-		try
-		{
-			String resp = target().path("/api/diary").request(MediaType.APPLICATION_JSON).get(String.class);
-			System.out.println(resp);
-			fail("Authentification broken");
-		}
-		catch (NotAuthorizedException e)
-		{
-		}
+		logoutTest();
+
+		final String url = "/api/diary/view";
+		Response response = target().path(url).request(MediaType.APPLICATION_JSON).get(Response.class);
+		System.out.println("unauthTest(): " + response);
+
+		assertEquals(Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 	}
 
 	@Test
 	public void logoutTest()
 	{
 		final String url = "/api/auth/logout";
-		Response resp = target().path(url).request(MediaType.APPLICATION_JSON).get(Response.class);
-		System.out.println(resp);
+		Response response = target().path(url).request(MediaType.APPLICATION_JSON).get(Response.class);
+		System.out.println("logoutTest(): " + response);
 
 		// assertEquals(resp, "")
 	}
@@ -62,14 +63,22 @@ public class TestAuth extends JerseyTest
 	@Test
 	public void loginTest()
 	{
-		final String url = "/api/auth/login_post";
-		final String demoLogin = "admin";
-		final String demoPass = "1234";
-
+		final String url = "/api/auth/login";
 		final Builder request = target().path(url).queryParam("login", demoLogin).queryParam("pass", demoPass)
 				.request(MediaType.APPLICATION_JSON);
 		String response = request.post(null, String.class);
 
-		System.out.println(response);
+		System.out.println("loginTest(): " + response);
+	}
+
+	@Test
+	public void loginGETTest()
+	{
+		final String url = "/api/auth/login";
+		final Builder request = target().path(url).queryParam("login", demoLogin).queryParam("pass", demoPass)
+				.request(MediaType.APPLICATION_JSON);
+		Response response = request.get(Response.class);
+
+		System.out.println("loginGETTest(): " + response);
 	}
 }

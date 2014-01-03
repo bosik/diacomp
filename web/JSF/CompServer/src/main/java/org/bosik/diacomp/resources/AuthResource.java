@@ -44,7 +44,7 @@ public class AuthResource
 	}
 
 	@POST
-	@Path("/login_post")
+	@Path("/login")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(@QueryParam("login") String login, @QueryParam("pass") String pass)
 	{
@@ -59,6 +59,28 @@ public class AuthResource
 		else
 		{
 			// TODO: remove returning login:password back
+			String entity = ResponseBuilder.build(ResponseBuilder.CODE_BADCREDENTIALS,
+					String.format("Bad username/password (%s:%s)", login, pass));
+			return Response.ok(entity).build();
+		}
+	}
+
+	// TODO: just for debug purpose
+	@GET
+	@Path("/login")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response loginDebug(@QueryParam("login") String login, @QueryParam("pass") String pass)
+	{
+		int id = authentificate(login, pass);
+
+		if (id != INVALID_USER)
+		{
+			req.getSession().setAttribute(PAR_USERID, id);
+			String entity = ResponseBuilder.buildDone("Logged in OK");
+			return Response.ok(entity).build();
+		}
+		else
+		{
 			String entity = ResponseBuilder.build(ResponseBuilder.CODE_BADCREDENTIALS,
 					String.format("Bad username/password (%s:%s)", login, pass));
 			return Response.ok(entity).build();
