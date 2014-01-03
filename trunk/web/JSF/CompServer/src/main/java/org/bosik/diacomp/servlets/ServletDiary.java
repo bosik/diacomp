@@ -8,13 +8,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.bosik.diacomp.MySQLAccess;
-import org.bosik.diacomp.utils.ResponseBuilder;
+import org.bosik.diacomp.resources.AuthResource;
 
 @WebServlet
 public class ServletDiary extends HttpServlet
 {
 	private static final long	serialVersionUID	= 1L;
-	private static final String	PAR_USERID			= "USER_ID";
 
 	public ServletDiary()
 	{
@@ -30,21 +29,14 @@ public class ServletDiary extends HttpServlet
 		final PrintWriter out = response.getWriter();
 		response.setStatus(HttpServletResponse.SC_OK);
 
-		if (ServletAuth.checkAuth(request))
-		{
-			int id = ServletAuth.getCurrentUserId(request);
+		int id = AuthResource.getCurrentUserId(request);
 
-			// int a = Integer.parseInt(request.getParameter("a"));
-			// int b = Integer.parseInt(request.getParameter("b"));
-			// out.print("<h1>Hello, " + id + "! a + b = " + (a + b) + "</h1>");
+		// int a = Integer.parseInt(request.getParameter("a"));
+		// int b = Integer.parseInt(request.getParameter("b"));
+		// out.print("<h1>Hello, " + id + "! a + b = " + (a + b) + "</h1>");
 
-			MySQLAccess dao = new MySQLAccess();
-			dao.readDataBase();
-		}
-		else
-		{
-			out.print(ResponseBuilder.buildNotAuthorized());
-		}
+		MySQLAccess dao = new MySQLAccess();
+		dao.readDataBase();
 
 		// response.getWriter().println("session=" + request.getSession(true).getId());
 
