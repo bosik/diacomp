@@ -72,32 +72,5 @@ public class TestAuth extends JerseyTest
 		String response = request.post(null, String.class);
 
 		System.out.println(response);
-
-		// ============================================
-		//
-		// Builder builder = service.request(MediaType.APPLICATION_JSON);
-		// builder.accept(MediaType.APPLICATION_JSON);
-		// builder.post(Example.class, example);
-		//
-		// try{
-		// response = service.request(MediaType.APPLICATION_XML).post(ClientResponse.class,
-		// request);
-		//
-		// service.request(MediaType.APPLICATION_JSON).post(searchQuery,
-		// MediaType.APPLICATION_JSON);
-		// ListWrapper listWrapper = response.getEntity(ListWrapper.class);
-		//
-		// System.out.println(response.getStatus());
-		// if(response.getStatus() == 200){
-		// EmpResponse empResponse = response.getEntity(EmpResponse.class);
-		// System.out.println(empResponse.getId() + "::"+empResponse.getName());
-		// }else{
-		// ErrorResponse exc = response.getEntity(ErrorResponse.class);
-		// System.out.println(exc.getErrorCode());
-		// System.out.println(exc.getErrorId());
-		// }
-		// }catch(Exception e){
-		// System.out.println(e.getMessage());
-		// }
 	}
 }
