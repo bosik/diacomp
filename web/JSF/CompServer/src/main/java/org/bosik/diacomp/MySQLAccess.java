@@ -13,6 +13,8 @@ public class MySQLAccess
 	private static final String	USERNAME			= "root";
 	private static final String	PASSWORD			= "root";
 
+	private static final String	TABLE_DIARY			= "diary";
+
 	private Connection			connect				= null;
 	private Statement			statement			= null;
 	private PreparedStatement	preparedStatement	= null;
@@ -31,9 +33,10 @@ public class MySQLAccess
 
 			// Statements allow to issue SQL queries to the database
 			statement = connect.createStatement();
-			// Result set get the result of the SQL query
-			resultSet = statement.executeQuery("select * from diary");
+			resultSet = statement.executeQuery("select * from " + TABLE_DIARY);
 			writeResultSet(resultSet);
+
+			// ===============================================================================================
 
 			// PreparedStatements can use variables and are more efficient
 			preparedStatement = connect
@@ -48,10 +51,14 @@ public class MySQLAccess
 			preparedStatement.setString(6, "TestComment");
 			preparedStatement.executeUpdate();
 
+			// ===============================================================================================
+
 			preparedStatement = connect
 					.prepareStatement("SELECT myuser, webpage, datum, summary, COMMENTS from FEEDBACK.COMMENTS");
 			resultSet = preparedStatement.executeQuery();
 			writeResultSet(resultSet);
+
+			// ===============================================================================================
 
 			// Remove again the insert comment
 			preparedStatement = connect.prepareStatement("delete from FEEDBACK.COMMENTS where myuser= ? ; ");
@@ -74,7 +81,6 @@ public class MySQLAccess
 		{
 			close();
 		}
-
 	}
 
 	private void writeMetaData(ResultSet resultSet) throws SQLException
