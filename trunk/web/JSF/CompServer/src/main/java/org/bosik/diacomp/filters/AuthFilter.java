@@ -34,12 +34,16 @@ public class AuthFilter implements Filter
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
 			ServletException
 	{
+		final String BASE_URL = "/CompServer";
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 
-		System.out.println(req.getServletPath());
+		System.out.println("doFilter(): getServletPath=" + req.getServletPath());
+		System.out.println("doFilter(): getRequestURL=" + req.getRequestURL());
+		System.out.println("doFilter(): getRequestURI=" + req.getRequestURI());
+		System.out.println("doFilter(): getQueryString=" + req.getQueryString());
 
-		if (req.getServletPath().startsWith("/api/login") || AuthResource.checkAuth(req) || true)
+		if (req.getRequestURI().startsWith(BASE_URL + "/api/auth/") || AuthResource.checkAuth(req))
 		{
 			System.out.println("Requested OK...");
 			chain.doFilter(request, response);
