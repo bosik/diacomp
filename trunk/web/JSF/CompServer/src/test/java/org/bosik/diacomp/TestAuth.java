@@ -6,6 +6,7 @@ import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import org.bosik.diacomp.resources.MyApp;
 import org.glassfish.jersey.client.ClientConfig;
@@ -49,19 +50,17 @@ public class TestAuth extends JerseyTest
 	}
 
 	@Test
-	public void getTest()
+	public void logoutTest()
 	{
-		final String url = "/api/auth/login_get";
-		final String login = "admin";
-		final String pass = "1234";
-		String resp = target().path(url).queryParam("login", login).queryParam("pass", pass)
-				.request(MediaType.APPLICATION_JSON).get(String.class);
-
+		final String url = "/api/auth/logout";
+		Response resp = target().path(url).request(MediaType.APPLICATION_JSON).get(Response.class);
 		System.out.println(resp);
+
+		// assertEquals(resp, "")
 	}
 
 	@Test
-	public void postTest()
+	public void loginTest()
 	{
 		final String url = "/api/auth/login_post";
 		final String demoLogin = "admin";
