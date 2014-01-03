@@ -8,7 +8,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import org.bosik.diacomp.resources.MyApp;
+import org.bosik.diacomp.resources.CompServerApp;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.JerseyClient;
 import org.glassfish.jersey.client.JerseyClientBuilder;
@@ -19,7 +19,7 @@ public class TestAuth extends JerseyTest
 {
 	public TestAuth() throws Exception
 	{
-		super(MyApp.class);
+		super(CompServerApp.class);
 	}
 
 	private static URI getBaseURI()

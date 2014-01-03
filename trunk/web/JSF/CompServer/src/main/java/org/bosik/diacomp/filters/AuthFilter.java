@@ -1,4 +1,4 @@
-package org.bosik.diacomp.resources;
+package org.bosik.diacomp.filters;
 
 import java.io.IOException;
 import javax.servlet.Filter;
@@ -10,6 +10,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.bosik.diacomp.resources.AuthResource;
 import org.bosik.diacomp.utils.ResponseBuilder;
 
 @WebFilter("/AuthenticationFilter")
