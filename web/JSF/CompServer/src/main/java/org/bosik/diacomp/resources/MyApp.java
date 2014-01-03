@@ -1,4 +1,4 @@
-package org.bosik.diacomp.jersey;
+package org.bosik.diacomp.resources;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +13,8 @@ public class MyApp extends Application
 	{
 		final Set<Class<?>> classes = new HashSet<Class<?>>();
 		// register root resource
-		classes.add(Diary.class);
+		classes.add(AuthResource.class);
+		classes.add(DiaryResource.class);
 		return classes;
 	}
 }
