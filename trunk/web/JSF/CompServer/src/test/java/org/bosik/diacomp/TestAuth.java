@@ -3,17 +3,14 @@ package org.bosik.diacomp;
 import static org.junit.Assert.fail;
 import java.net.URI;
 import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import org.bosik.diacomp.resources.MyApp;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.JerseyClient;
 import org.glassfish.jersey.client.JerseyClientBuilder;
-import org.glassfish.jersey.internal.util.collection.MultivaluedStringMap;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
@@ -22,20 +19,6 @@ public class TestAuth extends JerseyTest
 	public TestAuth() throws Exception
 	{
 		super(MyApp.class);
-	}
-
-	@Test
-	public void unauthTest()
-	{
-		try
-		{
-			String resp = target().path("/api/diary").request(MediaType.APPLICATION_JSON).get(String.class);
-			System.out.println(resp);
-			fail("Authentification broken");
-		}
-		catch (NotAuthorizedException e)
-		{
-		}
 	}
 
 	private static URI getBaseURI()
@@ -52,9 +35,23 @@ public class TestAuth extends JerseyTest
 	}
 
 	@Test
-	public void simpleGetTest()
+	public void unauthTest()
 	{
-		final String url = "/api/auth/login";
+		try
+		{
+			String resp = target().path("/api/diary").request(MediaType.APPLICATION_JSON).get(String.class);
+			System.out.println(resp);
+			fail("Authentification broken");
+		}
+		catch (NotAuthorizedException e)
+		{
+		}
+	}
+
+	@Test
+	public void getTest()
+	{
+		final String url = "/api/auth/login_get";
 		final String login = "admin";
 		final String pass = "1234";
 		String resp = target().path(url).queryParam("login", login).queryParam("pass", pass)
@@ -64,17 +61,17 @@ public class TestAuth extends JerseyTest
 	}
 
 	@Test
-	public void test()
+	public void postTest()
 	{
-		MultivaluedMap<String, String> formData = new MultivaluedStringMap();
-		formData.add("login", "admin");
-		formData.add("pass", "1234");
+		final String url = "/api/auth/login_post";
+		final String demoLogin = "admin";
+		final String demoPass = "1234";
 
-		final Builder request = target().path("/api/auth/login").request(MediaType.APPLICATION_JSON);
-		final Entity<MultivaluedMap<String, String>> entity = Entity.entity(formData, MediaType.APPLICATION_JSON);
-		String response = request.post(entity, String.class);
+		final Builder request = target().path(url).queryParam("login", demoLogin).queryParam("pass", demoPass)
+				.request(MediaType.APPLICATION_JSON);
+		String response = request.post(null, String.class);
 
-		System.err.println(response);
+		System.out.println(response);
 
 		// ============================================
 		//
@@ -103,9 +100,4 @@ public class TestAuth extends JerseyTest
 		// System.out.println(e.getMessage());
 		// }
 	}
-
-	// private static URI getBaseURI()
-	// {
-	// return UriBuilder.fromUri("http://localhost:8082/CompServer").build();
-	// }
 }

@@ -2,6 +2,7 @@ package org.bosik.diacomp.resources;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -31,11 +32,29 @@ public class AuthResource
 		return (Integer) request.getSession().getAttribute(PAR_USERID);
 	}
 
-	// FIXME: change to POST
 	@GET
-	@Path("/login")
+	@Path("/login_get")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String getIt(@QueryParam("login") String login, @QueryParam("pass") String pass)
+	public String simpleGet(@QueryParam("login") String login, @QueryParam("pass") String pass)
+	{
+		int id = authentificate(login, pass);
+
+		if (id != INVALID_USER)
+		{
+			req.getSession().setAttribute(PAR_USERID, id);
+			return ResponseBuilder.buildDone("Logged in OK");
+		}
+		else
+		{
+			return ResponseBuilder.build(ResponseBuilder.CODE_BADCREDENTIALS,
+					String.format("Bad username/password (%s:%s)", login, pass));
+		}
+	}
+
+	@POST
+	@Path("/login_post")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String simplePost(@QueryParam("login") String login, @QueryParam("pass") String pass)
 	{
 		int id = authentificate(login, pass);
 
