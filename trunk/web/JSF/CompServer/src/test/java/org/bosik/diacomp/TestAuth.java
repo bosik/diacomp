@@ -2,11 +2,9 @@ package org.bosik.diacomp;
 
 import static org.junit.Assert.assertEquals;
 import java.net.URI;
-import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import org.bosik.diacomp.resources.CompServerApp;
 import org.bosik.diacomp.utils.ResponseBuilder;
@@ -46,23 +44,22 @@ public class TestAuth extends JerseyTest
 		logoutTest();
 
 		final String url = "/api/diary/view";
-		Response response = null;
-		try
-		{
-			response = target().path(url).request(MediaType.APPLICATION_JSON).get(Response.class);
-			// fail("NotAuthorizedException was no thrown");
-		}
-		catch (NotAuthorizedException e)
-		{
-			// it's right
-		}
+		String response = null;
+		// try
+		// {
+		response = target().path(url).request(MediaType.APPLICATION_JSON).get(String.class);
+		// fail("NotAuthorizedException was not thrown");
+		// }
+		// catch (NotAuthorizedException e)
+		// {
+		// it's right
+		// }
 
 		System.out.println("unauthTest(): " + response);
 
 		// assertEquals(Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
-
-		// StdResponse r = StdResponse.decode(response);
-		// assertEquals(ResponseBuilder.CODE_UNAUTHORIZED, r.getCode());
+		StdResponse r = StdResponse.decode(response);
+		assertEquals(ResponseBuilder.CODE_UNAUTHORIZED, r.getCode());
 	}
 
 	@Test
