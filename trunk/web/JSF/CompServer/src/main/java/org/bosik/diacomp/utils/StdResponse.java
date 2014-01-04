@@ -5,8 +5,8 @@ import org.json.JSONObject;
 
 public class StdResponse
 {
-	private int				code;
-	private String			msg;
+	private int		code;
+	private String	msg;
 
 	public StdResponse(int code, String msg)
 	{
@@ -45,7 +45,7 @@ public class StdResponse
 		}
 		catch (JSONException e)
 		{
-			throw new RuntimeException(e);
+			throw new RuntimeException("Invalid JSON: " + s, e);
 		}
 	}
 
