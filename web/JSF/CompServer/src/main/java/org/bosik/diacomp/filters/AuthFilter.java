@@ -51,7 +51,7 @@ public class AuthFilter implements Filter
 		else
 		{
 			System.err.println("Not authorized request!");
-			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			// res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			res.getWriter().write(ResponseBuilder.build(ResponseBuilder.CODE_UNAUTHORIZED, "Not authorized"));
 		}
 	}
