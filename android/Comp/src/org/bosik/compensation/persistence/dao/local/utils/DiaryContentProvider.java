@@ -169,7 +169,7 @@ public class DiaryContentProvider extends ContentProvider
 		return true;
 	}
 
-	private void checkValues(ContentValues values, String key)
+	private static void checkValues(ContentValues values, String key)
 	{
 		if (!values.containsKey(key))
 		{
@@ -177,7 +177,7 @@ public class DiaryContentProvider extends ContentProvider
 		}
 	}
 
-	private void checkNull(Object x, String errorMsg)
+	private static void checkNull(Object x, String errorMsg)
 	{
 		if (null == x)
 		{
