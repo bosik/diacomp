@@ -118,13 +118,8 @@ public class MySQLAccess
 
 	private List<Versioned<DiaryRecord>> writeResultSet(ResultSet resultSet) throws SQLException
 	{
-		// ResultSet is initially before the first data set
 		while (resultSet.next())
 		{
-			// It is possible to get the columns via name
-			// also possible to get the columns via the column number
-			// which starts at 1
-			// e.g. resultSet.getString(2);
 			int pageId = resultSet.getInt("_Version");
 			String userId = resultSet.getString("_GUID");
 
@@ -137,7 +132,6 @@ public class MySQLAccess
 		return null;
 	}
 
-	// You need to close the resultSet
 	private void close()
 	{
 		try
@@ -159,7 +153,7 @@ public class MySQLAccess
 		}
 		catch (SQLException e)
 		{
-
+			throw new RuntimeException(e);
 		}
 	}
 }
