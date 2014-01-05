@@ -6,35 +6,58 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
+import org.bosik.compensation.bo.diary.DiaryRecord;
+import org.bosik.compensation.persistence.common.Versioned;
 
 public class MySQLAccess
 {
+	private static final String	SQL_DRIVER			= "com.mysql.jdbc.Driver";
 	private static final String	SCHEMA				= "compensation";
 	private static final String	USERNAME			= "root";
 	private static final String	PASSWORD			= "root";
+	private static final String	connectionString	= String.format(
+															"jdbc:mysql://127.0.0.1:3306/%s?user=%s&password=%s",
+															SCHEMA, USERNAME, PASSWORD);
 
-	private static final String	TABLE_DIARY			= "diary";
+	private static final String	TABLE_DIARY			= "diary2";
 
 	private Connection			connect				= null;
 	private Statement			statement			= null;
 	private PreparedStatement	preparedStatement	= null;
 	private ResultSet			resultSet			= null;
 
+	private static void init()
+	{
+		try
+		{
+			Class.forName(SQL_DRIVER);
+		}
+		catch (ClassNotFoundException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	public MySQLAccess()
+	{
+		init();
+	}
+
 	public void readDataBase()
 	{
 		try
 		{
-			// This will load the MySQL driver, each DB has its own driver
-			Class.forName("com.mysql.jdbc.Driver");
-
 			// Setup the connection with the DB
-			connect = DriverManager.getConnection(String.format("jdbc:mysql://127.0.0.1:3306/%s?user=%s&password=%s",
-					SCHEMA, USERNAME, PASSWORD));
+			connect = DriverManager.getConnection(connectionString);
 
 			// Statements allow to issue SQL queries to the database
 			statement = connect.createStatement();
 			resultSet = statement.executeQuery("select * from " + TABLE_DIARY);
 			writeResultSet(resultSet);
+
+			if (1 == 1)
+				return;
 
 			// ===============================================================================================
 
@@ -73,10 +96,6 @@ public class MySQLAccess
 		{
 			throw new RuntimeException(e);
 		}
-		catch (ClassNotFoundException e)
-		{
-			throw new RuntimeException(e);
-		}
 		finally
 		{
 			close();
@@ -97,7 +116,7 @@ public class MySQLAccess
 		}
 	}
 
-	private void writeResultSet(ResultSet resultSet) throws SQLException
+	private List<Versioned<DiaryRecord>> writeResultSet(ResultSet resultSet) throws SQLException
 	{
 		// ResultSet is initially before the first data set
 		while (resultSet.next())
@@ -106,12 +125,16 @@ public class MySQLAccess
 			// also possible to get the columns via the column number
 			// which starts at 1
 			// e.g. resultSet.getString(2);
-			int pageId = resultSet.getInt("PageID");
-			String userId = resultSet.getString("UserID");
+			int pageId = resultSet.getInt("_Version");
+			String userId = resultSet.getString("_GUID");
 
 			System.out.println("pageId: " + pageId);
 			System.out.println("userId: " + userId);
+			System.out.println("==================");
 		}
+
+		// FIXME
+		return null;
 	}
 
 	// You need to close the resultSet
@@ -139,5 +162,4 @@ public class MySQLAccess
 
 		}
 	}
-
 }
