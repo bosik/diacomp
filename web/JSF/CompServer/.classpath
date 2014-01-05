@@ -28,5 +28,6 @@
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.28-bin.jar"/>
 	<classpathentry kind="lib" path="lib/java-json.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Comp"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
