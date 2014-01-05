@@ -6,9 +6,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import org.bosik.compensation.bo.diary.DiaryRecord;
 import org.bosik.compensation.persistence.common.Versioned;
+import org.bosik.compensation.persistence.serializers.Parser;
+import org.bosik.compensation.persistence.serializers.ParserDiaryRecord;
+import org.bosik.compensation.persistence.serializers.Serializer;
+import org.bosik.compensation.persistence.serializers.utils.SerializerAdapter;
 
 public class MySQLAccess
 {
@@ -118,18 +124,30 @@ public class MySQLAccess
 
 	private List<Versioned<DiaryRecord>> writeResultSet(ResultSet resultSet) throws SQLException
 	{
+		Parser<DiaryRecord> parser = new ParserDiaryRecord();
+		Serializer<DiaryRecord> serializer = new SerializerAdapter<DiaryRecord>(parser);
+
+		List<Versioned<DiaryRecord>> result = new LinkedList<Versioned<DiaryRecord>>();
+
 		while (resultSet.next())
 		{
-			int pageId = resultSet.getInt("_Version");
-			String userId = resultSet.getString("_GUID");
+			String id = resultSet.getString("_GUID");
+			Date timeStamp = resultSet.getDate("_TimeStamp");
+			int version = resultSet.getInt("_Version");
+			boolean deleted = (resultSet.getInt("_Deleted") == 1);
+			String content = resultSet.getString("_Content");
 
-			System.out.println("pageId: " + pageId);
-			System.out.println("userId: " + userId);
-			System.out.println("==================");
+			Versioned<DiaryRecord> item = new Versioned<DiaryRecord>();
+			item.setId(id);
+			item.setTimeStamp(timeStamp);
+			item.setVersion(version);
+			item.setDeleted(deleted);
+			item.setData(serializer.read(content));
+
+			result.add(item);
 		}
 
-		// FIXME
-		return null;
+		return result;
 	}
 
 	private void close()
