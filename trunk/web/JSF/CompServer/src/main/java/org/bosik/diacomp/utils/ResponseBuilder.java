@@ -30,6 +30,11 @@ public class ResponseBuilder
 		return build(CODE_FAIL, msg);
 	}
 
+	public static String buildFails()
+	{
+		return build(CODE_FAIL, "Internal error");
+	}
+
 	public static String buildNotAuthorized()
 	{
 		return build(CODE_UNAUTHORIZED, "Not authorized");

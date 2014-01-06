@@ -6,15 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import org.bosik.compensation.bo.diary.DiaryRecord;
-import org.bosik.compensation.persistence.common.Versioned;
-import org.bosik.compensation.persistence.serializers.Parser;
-import org.bosik.compensation.persistence.serializers.ParserDiaryRecord;
-import org.bosik.compensation.persistence.serializers.Serializer;
-import org.bosik.compensation.persistence.serializers.utils.SerializerAdapter;
 
 public class MySQLAccess
 {
@@ -30,6 +21,7 @@ public class MySQLAccess
 
 	public static final String	TABLE_DIARY				= "diary2";
 	public static final String	COLUMN_DIARY_GUID		= "_GUID";
+	public static final String	COLUMN_DIARY_USER		= "_UserID";
 	public static final String	COLUMN_DIARY_TIMESTAMP	= "_TimeStamp";
 	public static final String	COLUMN_DIARY_VERSION	= "_Version";
 	public static final String	COLUMN_DIARY_DELETED	= "_Deleted";
@@ -60,23 +52,38 @@ public class MySQLAccess
 
 	public ResultSet select(String table, String clause) throws SQLException
 	{
+		Connection connect = null;
+		Statement statement = null;
 		try
 		{
 			connect = DriverManager.getConnection(connectionString);
 
-			// String sql = String.format("SELECT * FROM %s WHERE %s", table, clause);
-			// statement = connect.createStatement();
-			// return statement.executeQuery(sql);
+			String sql = String.format("SELECT * FROM %s WHERE %s", table, clause);
+			statement = connect.createStatement();
+			return statement.executeQuery(sql);
 
-			String sql = String.format("SELECT * FROM ? WHERE ?");
-			preparedStatement = connect.prepareStatement(sql);
-			preparedStatement.setString(1, table);
-			preparedStatement.setString(2, clause);
-			return preparedStatement.executeQuery();
+			// String sql = String.format("SELECT * FROM ? WHERE ?");
+			// preparedStatement = connect.prepareStatement(sql);
+			// preparedStatement.setString(1, table);
+			// preparedStatement.setString(2, clause);
+			// return preparedStatement.executeQuery();
 		}
 		finally
 		{
-			close();
+			// if (resultSet != null)
+			// {
+			// resultSet.close();
+			// }
+
+			// if (statement != null)
+			// {
+			// statement.close();
+			// }
+
+			// if (connect != null)
+			// {
+			// connect.close();
+			// }
 		}
 	}
 
@@ -111,7 +118,7 @@ public class MySQLAccess
 			preparedStatement = connect
 					.prepareStatement("SELECT myuser, webpage, datum, summary, COMMENTS from FEEDBACK.COMMENTS");
 			resultSet = preparedStatement.executeQuery();
-			parseDiaryRecords(resultSet);
+			// parseDiaryRecords(resultSet);
 
 			// ===============================================================================================
 
@@ -146,34 +153,6 @@ public class MySQLAccess
 		{
 			System.out.println("Column " + i + " " + resultSet.getMetaData().getColumnName(i));
 		}
-	}
-
-	private List<Versioned<DiaryRecord>> parseDiaryRecords(ResultSet resultSet) throws SQLException
-	{
-		Parser<DiaryRecord> parser = new ParserDiaryRecord();
-		Serializer<DiaryRecord> serializer = new SerializerAdapter<DiaryRecord>(parser);
-
-		List<Versioned<DiaryRecord>> result = new LinkedList<Versioned<DiaryRecord>>();
-
-		while (resultSet.next())
-		{
-			String id = resultSet.getString(COLUMN_DIARY_GUID);
-			Date timeStamp = resultSet.getDate(COLUMN_DIARY_TIMESTAMP);
-			int version = resultSet.getInt(COLUMN_DIARY_VERSION);
-			boolean deleted = (resultSet.getInt(COLUMN_DIARY_DELETED) == 1);
-			String content = resultSet.getString(COLUMN_DIARY_CONTENT);
-
-			Versioned<DiaryRecord> item = new Versioned<DiaryRecord>();
-			item.setId(id);
-			item.setTimeStamp(timeStamp);
-			item.setVersion(version);
-			item.setDeleted(deleted);
-			item.setData(serializer.read(content));
-
-			result.add(item);
-		}
-
-		return result;
 	}
 
 	private void close()
