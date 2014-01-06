@@ -25,8 +25,16 @@ public class DiaryResource
 	{
 		int id = AuthResource.getCurrentUserId(req);
 
-		MySQLAccess dao = new MySQLAccess();
-		dao.readDataBase();
+		try
+		{
+			MySQLAccess dao = new MySQLAccess();
+			dao.select(MySQLAccess.TABLE_DIARY, "");
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		return "Diary of the user #" + id;
 	}

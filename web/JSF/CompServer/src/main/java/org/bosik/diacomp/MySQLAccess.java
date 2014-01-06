@@ -18,20 +18,28 @@ import org.bosik.compensation.persistence.serializers.utils.SerializerAdapter;
 
 public class MySQLAccess
 {
-	private static final String	SQL_DRIVER			= "com.mysql.jdbc.Driver";
-	private static final String	SCHEMA				= "compensation";
-	private static final String	USERNAME			= "root";
-	private static final String	PASSWORD			= "root";
-	private static final String	connectionString	= String.format(
-															"jdbc:mysql://127.0.0.1:3306/%s?user=%s&password=%s",
-															SCHEMA, USERNAME, PASSWORD);
+	private static final String	SQL_DRIVER				= "com.mysql.jdbc.Driver";
+	private static final String	SCHEMA					= "compensation";
+	private static final String	USERNAME				= "root";
+	private static final String	PASSWORD				= "root";
+	private static final String	connectionString		= String.format(
+																"jdbc:mysql://127.0.0.1:3306/%s?user=%s&password=%s",
+																SCHEMA, USERNAME, PASSWORD);
 
-	private static final String	TABLE_DIARY			= "diary2";
+	// ======================================= Diary table =======================================
 
-	private Connection			connect				= null;
-	private Statement			statement			= null;
-	private PreparedStatement	preparedStatement	= null;
-	private ResultSet			resultSet			= null;
+	public static final String	TABLE_DIARY				= "diary2";
+	public static final String	COLUMN_DIARY_GUID		= "_GUID";
+	public static final String	COLUMN_DIARY_TIMESTAMP	= "_TimeStamp";
+	public static final String	COLUMN_DIARY_VERSION	= "_Version";
+	public static final String	COLUMN_DIARY_DELETED	= "_Deleted";
+	public static final String	COLUMN_DIARY_CONTENT	= "_Content";
+	public static final String	COLUMN_DIARY_TIMECACHE	= "_TimeCache";
+
+	private Connection			connect					= null;
+	private Statement			statement				= null;
+	private PreparedStatement	preparedStatement		= null;
+	private ResultSet			resultSet				= null;
 
 	private static void init()
 	{
@@ -50,6 +58,28 @@ public class MySQLAccess
 		init();
 	}
 
+	public ResultSet select(String table, String clause) throws SQLException
+	{
+		try
+		{
+			connect = DriverManager.getConnection(connectionString);
+
+			// String sql = String.format("SELECT * FROM %s WHERE %s", table, clause);
+			// statement = connect.createStatement();
+			// return statement.executeQuery(sql);
+
+			String sql = String.format("SELECT * FROM ? WHERE ?");
+			preparedStatement = connect.prepareStatement(sql);
+			preparedStatement.setString(1, table);
+			preparedStatement.setString(2, clause);
+			return preparedStatement.executeQuery();
+		}
+		finally
+		{
+			close();
+		}
+	}
+
 	public void readDataBase()
 	{
 		try
@@ -59,11 +89,7 @@ public class MySQLAccess
 
 			// Statements allow to issue SQL queries to the database
 			statement = connect.createStatement();
-			resultSet = statement.executeQuery("select * from " + TABLE_DIARY);
-			writeResultSet(resultSet);
-
-			if (1 == 1)
-				return;
+			statement.executeQuery("select * from " + TABLE_DIARY);
 
 			// ===============================================================================================
 
@@ -85,7 +111,7 @@ public class MySQLAccess
 			preparedStatement = connect
 					.prepareStatement("SELECT myuser, webpage, datum, summary, COMMENTS from FEEDBACK.COMMENTS");
 			resultSet = preparedStatement.executeQuery();
-			writeResultSet(resultSet);
+			parseDiaryRecords(resultSet);
 
 			// ===============================================================================================
 
@@ -122,7 +148,7 @@ public class MySQLAccess
 		}
 	}
 
-	private List<Versioned<DiaryRecord>> writeResultSet(ResultSet resultSet) throws SQLException
+	private List<Versioned<DiaryRecord>> parseDiaryRecords(ResultSet resultSet) throws SQLException
 	{
 		Parser<DiaryRecord> parser = new ParserDiaryRecord();
 		Serializer<DiaryRecord> serializer = new SerializerAdapter<DiaryRecord>(parser);
@@ -131,11 +157,11 @@ public class MySQLAccess
 
 		while (resultSet.next())
 		{
-			String id = resultSet.getString("_GUID");
-			Date timeStamp = resultSet.getDate("_TimeStamp");
-			int version = resultSet.getInt("_Version");
-			boolean deleted = (resultSet.getInt("_Deleted") == 1);
-			String content = resultSet.getString("_Content");
+			String id = resultSet.getString(COLUMN_DIARY_GUID);
+			Date timeStamp = resultSet.getDate(COLUMN_DIARY_TIMESTAMP);
+			int version = resultSet.getInt(COLUMN_DIARY_VERSION);
+			boolean deleted = (resultSet.getInt(COLUMN_DIARY_DELETED) == 1);
+			String content = resultSet.getString(COLUMN_DIARY_CONTENT);
 
 			Versioned<DiaryRecord> item = new Versioned<DiaryRecord>();
 			item.setId(id);
