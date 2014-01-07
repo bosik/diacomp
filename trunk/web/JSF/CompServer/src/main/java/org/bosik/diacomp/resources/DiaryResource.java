@@ -1,6 +1,5 @@
 package org.bosik.diacomp.resources;
 
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.DefaultValue;
@@ -11,9 +10,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import org.bosik.compensation.persistence.common.Versioned;
-import org.bosik.diacomp.Demo;
 import org.bosik.diacomp.services.DiaryService;
+import org.bosik.diacomp.transfer.Demo;
 import org.bosik.diacomp.utils.ResponseBuilder;
 
 @Path("diary")
@@ -74,8 +72,8 @@ public class DiaryResource
 	{
 		try
 		{
-			int userId = AuthResource.getCurrentUserId(req);
-			List<Versioned<String>> list = diaryService.findAll(userId);
+			// int userId = AuthResource.getCurrentUserId(req);
+			// List<Versioned<String>> list = diaryService.findAll(userId);
 			// return serializerVersionedString.writeAll(list);
 
 			Demo demo = new Demo();
