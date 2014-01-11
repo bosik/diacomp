@@ -23,13 +23,11 @@ public class FoodItem extends Food implements Serializable, RelativeTagged
 
 	// ================================ GET / SET ================================
 
-	@Override
 	public int getTag()
 	{
 		return tag;
 	}
 
-	@Override
 	public void setTag(int tag)
 	{
 		this.tag = tag;

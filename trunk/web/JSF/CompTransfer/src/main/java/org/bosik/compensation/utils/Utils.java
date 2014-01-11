@@ -1,12 +1,5 @@
 package org.bosik.compensation.utils;
 
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
-import java.nio.charset.CodingErrorAction;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -17,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import android.util.Log;
 
 public class Utils
 {
@@ -299,58 +291,6 @@ public class Utils
 		int h = c.get(Calendar.HOUR) + (c.get(Calendar.AM_PM) == Calendar.AM ? 0 : 12);
 		int m = c.get(Calendar.MINUTE);
 		return (h * 60) + m;
-	}
-
-	/*
-	 * public static void logTimer(String tag, String msg) { Log.w(tag,
-	 * String.valueOf(System.currentTimeMillis()) + " " + msg); }
-	 */
-
-	public static String Cp1251ToUtf8(String s)
-	{
-		// got no idea why it works
-		return s;
-
-		/*
-		 * try { //return new String(s.getBytes(), "UTF-8"); } catch (Exception e) {
-		 * e.printStackTrace(); throw new RuntimeException("Unsupported code page", e); }
-		 */
-
-		/*
-		 * Charset charset = Charset.forName("Cp1251"); CharsetDecoder decoder =
-		 * charset.newDecoder(); CharsetEncoder encoder = charset.newEncoder();
-		 * 
-		 * try { ByteBuffer bbuf = decoder.decode(CharBuffer.wrap(s)); CharBuffer cbuf =
-		 * encoder.encode(bbuf); return cbuf.toString(); } catch (CharacterCodingException e) {
-		 * throw new RuntimeException(e); }
-		 */
-	}
-
-	public static String Utf8ToCp1251(String s)
-	{
-		/*
-		 * try { return new String(s.getBytes(), "Cp1251"); } catch (UnsupportedEncodingException e)
-		 * { e.printStackTrace(); throw new RuntimeException("Unsupported code page", e); }
-		 */
-
-		Log.d(TAG, "Utf8ToCp1251: " + s);
-
-		Charset charset = Charset.forName("Cp1251");
-		CharsetDecoder decoder = charset.newDecoder();
-		CharsetEncoder encoder = charset.newEncoder();
-
-		decoder.onMalformedInput(CodingErrorAction.IGNORE);
-		encoder.onMalformedInput(CodingErrorAction.IGNORE);
-		try
-		{
-			ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(s));
-			CharBuffer cbuf = decoder.decode(bbuf);
-			return cbuf.toString();
-		}
-		catch (CharacterCodingException e)
-		{
-			throw new RuntimeException(e);
-		}
 	}
 
 	public static void sleep(long time)
