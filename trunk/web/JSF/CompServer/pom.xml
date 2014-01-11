@@ -55,6 +55,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20131018</version>
+		</dependency>
+
+		<dependency>
 			<groupId>diacomp</groupId>
 			<artifactId>comp-transfer</artifactId>
 			<version>1.0</version>
