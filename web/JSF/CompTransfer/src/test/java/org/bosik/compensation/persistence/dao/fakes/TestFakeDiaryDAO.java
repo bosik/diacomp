@@ -2,6 +2,7 @@ package org.bosik.compensation.persistence.dao.fakes;
 
 import org.bosik.compensation.fakes.dao.FakeDiaryDAO;
 import org.bosik.compensation.persistence.dao.DiaryDAO;
+import org.bosik.compensation.persistence.dao.TestDiaryDAO;
 import org.junit.Ignore;
 
 @Ignore
