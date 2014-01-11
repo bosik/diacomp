@@ -9,7 +9,6 @@ import org.bosik.compensation.persistence.exceptions.StoreException;
 
 public class FakeFoodBaseDAO implements FoodBaseDAO
 {
-
 	public String add(Versioned<FoodItem> item) throws StoreException
 	{
 		// TODO Auto-generated method stub
