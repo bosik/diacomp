@@ -17,7 +17,8 @@ public class ResponseBuilder
 		//
 		// return String.format("{code:%d, msg:\"%s\"}", code, msg);
 
-		return StdResponse.encode(new StdResponse(code, msg));
+		StdResponse resp = new StdResponse(code, msg);
+		return StdResponse.encode(resp);
 	}
 
 	public static String buildDone(String msg)
