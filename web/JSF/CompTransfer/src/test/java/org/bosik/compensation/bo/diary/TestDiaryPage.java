@@ -1,7 +1,10 @@
 package org.bosik.compensation.bo.diary;
 
 import junit.framework.TestCase;
+import org.junit.Ignore;
 
+@Ignore
+@Deprecated
 public class TestDiaryPage extends TestCase
 {
 	// public void testReadingBlood()
