@@ -280,7 +280,7 @@ object Form1: TForm1
                 Font.Height = -15
                 Font.Name = 'MS Sans Serif'
                 Font.Style = []
-                ItemHeight = 16
+                ItemHeight = 0
                 ParentFont = False
                 TabOrder = 1
                 OnCloseUp = ComboDiaryNewCloseUp
@@ -615,7 +615,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.999198148150000000
+            Date = 40251.748780497680000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -917,7 +917,7 @@ object Form1: TForm1
               object LabelCorrectionEmpty: TLabel
                 Left = 8
                 Top = 8
-                Width = 223
+                Width = 133
                 Height = 16
                 Align = alTop
                 Caption = 'LabelCorrectionEmpty'
