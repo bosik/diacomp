@@ -1578,9 +1578,11 @@ var
         k := DishBase.Find(DiaryMultiMap[i].Name);
         if (k > -1) then
         begin
-          DishBase[k].Tag := Round(DIaryMultiMap[i].Tag);
+          DishBase[k].Tag := Round(DiaryMultiMap[i].Tag);
         end;
       end;
+
+      // save to follow the DAO model
       SaveDishBase;
 
       { сортируем }
