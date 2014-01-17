@@ -11,7 +11,7 @@ import org.bosik.compensation.bo.diary.records.MealRecord;
 import org.bosik.compensation.bo.diary.records.NoteRecord;
 import org.bosik.compensation.utills.TestUtils;
 
-public class MockDiaryRecord extends TestCase implements Mock<DiaryRecord>
+public class MockDiaryRecord implements Mock<DiaryRecord>
 {
 	private Mock<FoodMassed>	mockFoodMassed	= new MockFoodMassed();
 
@@ -52,8 +52,8 @@ public class MockDiaryRecord extends TestCase implements Mock<DiaryRecord>
 
 	public void compare(DiaryRecord exp, DiaryRecord act)
 	{
-		assertEquals(exp.getTime(), act.getTime());
-		assertEquals(exp.getClass(), act.getClass());
+		TestCase.assertEquals(exp.getTime(), act.getTime());
+		TestCase.assertEquals(exp.getClass(), act.getClass());
 
 		// @formatter:off
 		if (exp.getClass() == BloodRecord.class)	compareBloodRecords((BloodRecord) exp, (BloodRecord) act); else
@@ -65,20 +65,20 @@ public class MockDiaryRecord extends TestCase implements Mock<DiaryRecord>
 
 	private static void compareBloodRecords(BloodRecord exp, BloodRecord act)
 	{
-		assertEquals(exp.getValue(), act.getValue(), TestUtils.EPS);
-		assertEquals(exp.getFinger(), act.getFinger());
+		TestCase.assertEquals(exp.getValue(), act.getValue(), TestUtils.EPS);
+		TestCase.assertEquals(exp.getFinger(), act.getFinger());
 	}
 
 	private static void compareInsRecords(InsRecord exp, InsRecord act)
 	{
-		assertEquals(exp.getValue(), act.getValue(), TestUtils.EPS);
+		TestCase.assertEquals(exp.getValue(), act.getValue(), TestUtils.EPS);
 	}
 
 	private void compareMealRecords(MealRecord exp, MealRecord act)
 	{
-		assertEquals(exp.getTime(), act.getTime());
-		assertEquals(exp.getShortMeal(), act.getShortMeal());
-		assertEquals(exp.count(), act.count());
+		TestCase.assertEquals(exp.getTime(), act.getTime());
+		TestCase.assertEquals(exp.getShortMeal(), act.getShortMeal());
+		TestCase.assertEquals(exp.count(), act.count());
 
 		for (int j = 0; j < exp.count(); j++)
 		{
@@ -88,6 +88,6 @@ public class MockDiaryRecord extends TestCase implements Mock<DiaryRecord>
 
 	private static void compareNoteRecords(NoteRecord expRecord, NoteRecord actRecord)
 	{
-		assertEquals(expRecord.getText(), actRecord.getText());
+		TestCase.assertEquals(expRecord.getText(), actRecord.getText());
 	}
 }
