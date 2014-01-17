@@ -1557,12 +1557,12 @@ var
 
       { дополнительные теги для блюд }
 
-      {DishModFactor := Value['DishModFactor'];
+      DishModFactor := Value['DishModFactor'];
 
       for i := 0 to DishBase.Count - 1 do
       if (DishBase[i].ModifiedTime > 0) then
         DiaryMultiMap[Offset + i].Tag := DiaryMultiMap[Offset + i].Tag +
-        DishModFactor * GetTag(DishBase[i].ModifiedTime);   }
+        DishModFactor * GetTag(DishBase[i].ModifiedTime);   
 
       { Temp: копируем теги в базы }
       for i := 0 to High(DiaryMultiMap) do
