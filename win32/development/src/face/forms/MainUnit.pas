@@ -582,6 +582,7 @@ function MySyncDiary(Terminated: TBooleanFunction = nil): integer;
 {==============================================================================}
 var
   T: TDateTime;
+  OldVersion: integer;
 begin
   StartProc('MySyncDiary');
   Result := 0;
@@ -591,12 +592,18 @@ begin
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_DIARY;
     Application.ProcessMessages;
 
+    if (Form1.DiaryView.CurrentPage <> nil) then
+      OldVersion := Form1.DiaryView.CurrentPage.Version
+    else
+      OldVersion := -1;
+
     T := StrToDateTime(Value['LastSync']);
     Result := SyncSources(LocalSource, WebSource, T - 1);
 
     Value['LastSync'] := DateTimeToStr(Now);
 
-    if (Result > 0) then
+
+    if (Diary[Trunc(Form1.CalendarDiary.Date)].Version > OldVersion) then
     begin
       Form1.DiaryView.OpenPage(Diary[Trunc(Form1.CalendarDiary.Date)], True);
       Form1.UpdateNextFinger;
