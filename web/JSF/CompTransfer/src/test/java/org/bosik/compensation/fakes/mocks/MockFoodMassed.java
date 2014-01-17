@@ -8,7 +8,7 @@ import org.bosik.compensation.bo.Food;
 import org.bosik.compensation.bo.FoodMassed;
 import org.bosik.compensation.utills.TestUtils;
 
-public class MockFoodMassed extends TestCase implements Mock<FoodMassed>
+public class MockFoodMassed implements Mock<FoodMassed>
 {
 	private static final Mock<Food>	mockFood	= new MockFood();
 
@@ -41,6 +41,6 @@ public class MockFoodMassed extends TestCase implements Mock<FoodMassed>
 	{
 		mockFood.compare(exp, act);
 
-		assertEquals(exp.getMass(), act.getMass(), TestUtils.EPS);
+		TestCase.assertEquals(exp.getMass(), act.getMass(), TestUtils.EPS);
 	}
 }
