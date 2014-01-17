@@ -234,15 +234,22 @@ procedure TFoodbaseLocalDAO.Update(Food: TFood);
 {==============================================================================}
 var
   Index: integer;
+  NameChanged: boolean;
 begin
   Index := GetIndex(Food.ID);
   if (Index <> -1) then
   begin
+    NameChanged := (Food.Name <> FBase[Index].Name);
     FBase[Index].CopyFrom(Food, True);
-    FBase.Sort;
+    if (NameChanged) then
+    begin
+      FBase.Sort;
+    end;
     Modified();
   end else
+  begin
     raise EItemNotFoundException.Create(Food.ID);
+  end;
 end;
 
 {==============================================================================}
