@@ -10,7 +10,7 @@ import org.bosik.compensation.bo.diary.records.BloodRecord;
 import org.bosik.compensation.bo.diary.records.InsRecord;
 import org.bosik.compensation.bo.diary.records.MealRecord;
 import org.bosik.compensation.bo.diary.records.NoteRecord;
-import org.bosik.compensation.face.R;
+import org.bosik.diacomp.face.R;
 import org.bosik.compensation.persistence.common.Versioned;
 import android.content.Context;
 import android.graphics.Bitmap;

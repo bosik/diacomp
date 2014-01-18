@@ -1,7 +1,7 @@
 package org.bosik.compensation.face.activities;
 
 import java.util.Map;
-import org.bosik.compensation.face.R;
+import org.bosik.diacomp.face.R;
 import org.bosik.compensation.persistence.Storage;
 import android.content.Context;
 import android.content.SharedPreferences;

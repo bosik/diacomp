@@ -2,7 +2,7 @@ package org.bosik.compensation.face.activities;
 
 import java.util.Date;
 import org.bosik.compensation.bo.diary.records.BloodRecord;
-import org.bosik.compensation.face.R;
+import org.bosik.diacomp.face.R;
 import org.bosik.compensation.face.UIUtils;
 import org.bosik.compensation.persistence.common.Versioned;
 import android.view.View;

@@ -2,7 +2,7 @@ package org.bosik.compensation.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-import org.bosik.compensation.face.BuildConfig;
+import org.bosik.diacomp.face.BuildConfig;
 import org.bosik.compensation.face.UIUtils;
 import org.bosik.compensation.persistence.dao.web.utils.client.WebClient;
 import android.app.Activity;
