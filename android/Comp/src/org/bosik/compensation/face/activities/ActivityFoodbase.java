@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bosik.compensation.bo.RelativeTagged;
 import org.bosik.compensation.bo.foodbase.FoodItem;
-import org.bosik.compensation.face.R;
+import org.bosik.diacomp.face.R;
 import org.bosik.compensation.persistence.Storage;
 import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.services.Sorter;

@@ -3,7 +3,7 @@ package org.bosik.compensation.face.activities;
 import java.text.DecimalFormat;
 import org.bosik.compensation.bo.FoodMassed;
 import org.bosik.compensation.bo.diary.records.MealRecord;
-import org.bosik.compensation.face.R;
+import org.bosik.diacomp.face.R;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
