@@ -3,13 +3,13 @@ package org.bosik.compensation.fakes.mocks;
 import java.util.ArrayList;
 import java.util.List;
 import junit.framework.TestCase;
-import org.bosik.compensation.bo.FoodMassed;
-import org.bosik.compensation.bo.diary.DiaryRecord;
-import org.bosik.compensation.bo.diary.records.BloodRecord;
-import org.bosik.compensation.bo.diary.records.InsRecord;
-import org.bosik.compensation.bo.diary.records.MealRecord;
-import org.bosik.compensation.bo.diary.records.NoteRecord;
 import org.bosik.compensation.utills.TestUtils;
+import org.bosik.diacomp.bo.FoodMassed;
+import org.bosik.diacomp.bo.diary.DiaryRecord;
+import org.bosik.diacomp.bo.diary.records.BloodRecord;
+import org.bosik.diacomp.bo.diary.records.InsRecord;
+import org.bosik.diacomp.bo.diary.records.MealRecord;
+import org.bosik.diacomp.bo.diary.records.NoteRecord;
 
 public class MockDiaryRecord implements Mock<DiaryRecord>
 {
@@ -26,12 +26,12 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 		samples.add(new InsRecord(TestUtils.time(2012, 04, 18, 17, 20, 00), 16.0));
 
 		MealRecord meal1 = new MealRecord(TestUtils.time(2012, 04, 18, 17, 25, 59), false);
-		meal1.add(new FoodMassed("Карбонат \"Восточный\" (Черн)", 9.9, 26.3, 0, 276, 90));
-		meal1.add(new FoodMassed("Хлеб чёрный \"Премиум\"", 5.5, 0.9, 44.1, 206.3, 42));
+		meal1.add(new FoodMassed("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ \"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ\" (пїЅпїЅпїЅпїЅ)", 9.9, 26.3, 0, 276, 90));
+		meal1.add(new FoodMassed("пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ \"пїЅпїЅпїЅпїЅпїЅпїЅпїЅ\"", 5.5, 0.9, 44.1, 206.3, 42));
 		samples.add(meal1);
 
 		MealRecord meal2 = new MealRecord(TestUtils.time(2012, 04, 18, 23, 59, 59), true);
-		meal2.add(new FoodMassed("Сахар", 0.0, 0.0, 99.8, 379.0, 6.0));
+		meal2.add(new FoodMassed("пїЅпїЅпїЅпїЅпїЅ", 0.0, 0.0, 99.8, 379.0, 6.0));
 		samples.add(meal2);
 
 		MealRecord meal3 = new MealRecord(TestUtils.time(2012, 04, 18, 23, 59, 59), true);
@@ -43,7 +43,7 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 
 		samples.add(new MealRecord(TestUtils.time(2012, 04, 18, 0, 0, 0), true));
 
-		samples.add(new NoteRecord(TestUtils.time(2014, 01, 01, 12, 00, 00), "Just a тестовая record with \"quotes\""));
+		samples.add(new NoteRecord(TestUtils.time(2014, 01, 01, 12, 00, 00), "Just a пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ record with \"quotes\""));
 
 		samples.add(new NoteRecord(TestUtils.time(2013, 12, 31, 23, 59, 59), ""));
 

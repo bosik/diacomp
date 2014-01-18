@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import junit.framework.TestCase;
-import org.bosik.compensation.bo.Food;
-import org.bosik.compensation.bo.FoodMassed;
 import org.bosik.compensation.utills.TestUtils;
+import org.bosik.diacomp.bo.Food;
+import org.bosik.diacomp.bo.FoodMassed;
 
 public class MockFoodMassed implements Mock<FoodMassed>
 {

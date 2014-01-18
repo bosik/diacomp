@@ -43,7 +43,7 @@
             android:theme="@android:style/Theme.Light" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.compensation.face.activities.ActivityDiary" />
+                android:value="org.bosik.diacomp.face.activities.ActivityDiary" />
         </activity>
         <activity
             android:name="org.bosik.diacomp.face.activities.ActivityEditorIns"
@@ -52,7 +52,7 @@
             android:theme="@android:style/Theme.Light" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.compensation.face.activities.ActivityDiary" />
+                android:value="org.bosik.diacomp.face.activities.ActivityDiary" />
         </activity>
         <activity
             android:name="org.bosik.diacomp.face.activities.ActivityMeal"
@@ -60,7 +60,7 @@
             android:theme="@android:style/Theme.Light" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.compensation.face.activities.ActivityDiary" />
+                android:value="org.bosik.diacomp.face.activities.ActivityDiary" />
         </activity>
         <activity
             android:name="org.bosik.diacomp.face.activities.ActivityEditorNote"
@@ -68,7 +68,7 @@
             android:theme="@android:style/Theme.Light" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.compensation.face.activities.ActivityDiary" />
+                android:value="org.bosik.diacomp.face.activities.ActivityDiary" />
         </activity>
         <activity
             android:name="org.bosik.diacomp.face.activities.ActivityPreferences"
@@ -76,7 +76,7 @@
             android:theme="@android:style/Theme.Light" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.compensation.face.activities.ActivityMain" />
+                android:value="org.bosik.diacomp.face.activities.ActivityMain" />
         </activity>
         <activity
             android:name="org.bosik.diacomp.face.activities.ActivityFoodbase"
@@ -84,7 +84,7 @@
             android:theme="@android:style/Theme.Light" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.compensation.face.activities.ActivityMain" />
+                android:value="org.bosik.diacomp.face.activities.ActivityMain" />
         </activity>
     </application>
 

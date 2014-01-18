@@ -1,13 +1,13 @@
 package org.bosik.diacomp.persistence.dao.web;
 
 import java.util.List;
-import org.bosik.compensation.bo.foodbase.FoodItem;
-import org.bosik.compensation.persistence.common.Versioned;
-import org.bosik.compensation.persistence.dao.FoodBaseDAO;
-import org.bosik.compensation.persistence.exceptions.DuplicateException;
-import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
-import org.bosik.compensation.persistence.serializers.Serializer;
+import org.bosik.diacomp.bo.foodbase.FoodItem;
+import org.bosik.diacomp.persistence.common.Versioned;
+import org.bosik.diacomp.persistence.dao.FoodBaseDAO;
 import org.bosik.diacomp.persistence.dao.web.utils.client.WebClient;
+import org.bosik.diacomp.persistence.exceptions.DuplicateException;
+import org.bosik.diacomp.persistence.exceptions.ItemNotFoundException;
+import org.bosik.diacomp.persistence.serializers.Serializer;
 
 public class WebFoodBaseDAO implements FoodBaseDAO
 {

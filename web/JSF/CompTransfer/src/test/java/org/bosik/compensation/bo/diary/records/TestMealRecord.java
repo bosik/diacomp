@@ -2,23 +2,24 @@ package org.bosik.compensation.bo.diary.records;
 
 import java.util.Date;
 import junit.framework.TestCase;
-import org.bosik.compensation.bo.FoodMassed;
+import org.bosik.diacomp.bo.FoodMassed;
+import org.bosik.diacomp.bo.diary.records.MealRecord;
 
 public class TestMealRecord extends TestCase
 {
 	private MealRecord	meal	= new MealRecord(new Date(), false);
 
-	// THINK: рандомные тесты - добро или зло?
+	// THINK: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ?
 
 	/**
-	 * Создаёт демо-экземпляр для тестирования
+	 * пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 * 
 	 * @return
 	 */
 	private static FoodMassed createDemoFood()
 	{
 		FoodMassed food = new FoodMassed();
-		food.setName("Колбаса");
+		food.setName("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
 		food.setMass(78);
 		food.setRelProts(12.2);
 		food.setRelFats(18.9);
@@ -29,7 +30,7 @@ public class TestMealRecord extends TestCase
 
 	public void testAddGet()
 	{
-		// нормальный тест
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 		for (int k = 1; k <= 10; k++)
 		{
 			FoodMassed food = createDemoFood();
@@ -37,7 +38,7 @@ public class TestMealRecord extends TestCase
 			assertEquals(food, meal.get(n));
 		}
 
-		// краш-тест
+		// пїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅ
 		try
 		{
 			meal.add(null);

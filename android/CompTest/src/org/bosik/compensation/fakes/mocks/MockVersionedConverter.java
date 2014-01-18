@@ -5,8 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import junit.framework.Assert;
-import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.utills.TestUtils;
+import org.bosik.diacomp.persistence.common.Versioned;
 
 public class MockVersionedConverter<T> implements Mock<Versioned<T>>
 {

@@ -2,12 +2,12 @@ package org.bosik.diacomp.face.activities;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.compensation.bo.RelativeTagged;
-import org.bosik.compensation.bo.foodbase.FoodItem;
+import org.bosik.diacomp.bo.RelativeTagged;
+import org.bosik.diacomp.bo.foodbase.FoodItem;
 import org.bosik.diacomp.face.R;
 import org.bosik.diacomp.persistence.Storage;
+import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.services.Sorter;
-import org.bosik.compensation.persistence.common.Versioned;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;

@@ -1,8 +1,8 @@
 package org.bosik.compensation.persistence.dao.fakes;
 
 import org.bosik.compensation.fakes.dao.FakeFoodBaseDAO;
-import org.bosik.compensation.persistence.dao.FoodBaseDAO;
 import org.bosik.compensation.persistence.dao.TestFoodBaseDAO;
+import org.bosik.diacomp.persistence.dao.FoodBaseDAO;
 import org.junit.Ignore;
 
 @Ignore

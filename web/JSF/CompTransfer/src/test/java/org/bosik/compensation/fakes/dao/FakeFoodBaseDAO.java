@@ -1,11 +1,11 @@
 package org.bosik.compensation.fakes.dao;
 
 import java.util.List;
-import org.bosik.compensation.bo.foodbase.FoodItem;
-import org.bosik.compensation.persistence.common.Versioned;
-import org.bosik.compensation.persistence.dao.FoodBaseDAO;
-import org.bosik.compensation.persistence.exceptions.ItemNotFoundException;
-import org.bosik.compensation.persistence.exceptions.StoreException;
+import org.bosik.diacomp.bo.foodbase.FoodItem;
+import org.bosik.diacomp.persistence.common.Versioned;
+import org.bosik.diacomp.persistence.dao.FoodBaseDAO;
+import org.bosik.diacomp.persistence.exceptions.ItemNotFoundException;
+import org.bosik.diacomp.persistence.exceptions.StoreException;
 
 public class FakeFoodBaseDAO implements FoodBaseDAO
 {

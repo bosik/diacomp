@@ -5,8 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import junit.framework.TestCase;
-import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.utills.TestUtils;
+import org.bosik.diacomp.persistence.common.Versioned;
 import org.junit.Ignore;
 
 @Ignore

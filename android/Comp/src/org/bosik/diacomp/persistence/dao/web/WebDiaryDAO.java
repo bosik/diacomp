@@ -2,16 +2,16 @@ package org.bosik.diacomp.persistence.dao.web;
 
 import java.util.Date;
 import java.util.List;
-import org.bosik.compensation.bo.diary.DiaryRecord;
-import org.bosik.compensation.persistence.common.Versioned;
-import org.bosik.compensation.persistence.dao.DiaryDAO;
-import org.bosik.compensation.persistence.exceptions.CommonDAOException;
-import org.bosik.compensation.persistence.serializers.Parser;
-import org.bosik.compensation.persistence.serializers.ParserDiaryRecord;
-import org.bosik.compensation.persistence.serializers.Serializer;
-import org.bosik.compensation.persistence.serializers.utils.ParserVersioned;
-import org.bosik.compensation.persistence.serializers.utils.SerializerAdapter;
+import org.bosik.diacomp.bo.diary.DiaryRecord;
+import org.bosik.diacomp.persistence.common.Versioned;
+import org.bosik.diacomp.persistence.dao.DiaryDAO;
 import org.bosik.diacomp.persistence.dao.web.utils.client.WebClient;
+import org.bosik.diacomp.persistence.exceptions.CommonDAOException;
+import org.bosik.diacomp.persistence.serializers.Parser;
+import org.bosik.diacomp.persistence.serializers.ParserDiaryRecord;
+import org.bosik.diacomp.persistence.serializers.Serializer;
+import org.bosik.diacomp.persistence.serializers.utils.ParserVersioned;
+import org.bosik.diacomp.persistence.serializers.utils.SerializerAdapter;
 
 public class WebDiaryDAO implements DiaryDAO
 {

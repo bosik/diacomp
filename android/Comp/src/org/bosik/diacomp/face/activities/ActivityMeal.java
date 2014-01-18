@@ -1,8 +1,8 @@
 package org.bosik.diacomp.face.activities;
 
 import java.text.DecimalFormat;
-import org.bosik.compensation.bo.FoodMassed;
-import org.bosik.compensation.bo.diary.records.MealRecord;
+import org.bosik.diacomp.bo.FoodMassed;
+import org.bosik.diacomp.bo.diary.records.MealRecord;
 import org.bosik.diacomp.face.R;
 import android.app.Activity;
 import android.os.Bundle;

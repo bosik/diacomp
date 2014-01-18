@@ -1,8 +1,8 @@
 package org.bosik.compensation.bo.common;
 
 import junit.framework.TestCase;
-import org.bosik.compensation.bo.FoodMassed;
 import org.bosik.compensation.utills.TestUtils;
+import org.bosik.diacomp.bo.FoodMassed;
 
 public class TestFoodMassed extends TestCase
 {
