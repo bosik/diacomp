@@ -5,7 +5,7 @@ import java.util.Locale;
 import org.bosik.diacomp.face.BuildConfig;
 import org.bosik.diacomp.face.UIUtils;
 import org.bosik.diacomp.persistence.dao.web.utils.client.WebClient;
-import org.bosik.compensation.utils.Utils;
+import org.bosik.diacomp.utils.Utils;
 import android.app.Activity;
 import android.util.Log;
 

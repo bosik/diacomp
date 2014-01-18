@@ -3,11 +3,12 @@ package org.bosik.compensation.persistence.dao;
 import java.util.LinkedList;
 import java.util.List;
 import junit.framework.TestCase;
-import org.bosik.compensation.bo.diary.DiaryRecord;
 import org.bosik.compensation.fakes.mocks.Mock;
 import org.bosik.compensation.fakes.mocks.MockDiaryRecord;
 import org.bosik.compensation.fakes.mocks.MockVersionedConverter;
-import org.bosik.compensation.persistence.common.Versioned;
+import org.bosik.diacomp.bo.diary.DiaryRecord;
+import org.bosik.diacomp.persistence.common.Versioned;
+import org.bosik.diacomp.persistence.dao.DiaryDAO;
 
 public abstract class TestDiaryDAO extends TestCase
 {

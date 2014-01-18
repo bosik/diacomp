@@ -1,10 +1,11 @@
 package org.bosik.compensation.persistence.dao;
 
-import org.bosik.compensation.bo.foodbase.FoodItem;
 import org.bosik.compensation.fakes.mocks.Mock;
 import org.bosik.compensation.fakes.mocks.MockFoodItem;
 import org.bosik.compensation.fakes.mocks.MockVersionedConverter;
-import org.bosik.compensation.persistence.common.Versioned;
+import org.bosik.diacomp.bo.foodbase.FoodItem;
+import org.bosik.diacomp.persistence.common.Versioned;
+import org.bosik.diacomp.persistence.dao.FoodBaseDAO;
 import android.test.AndroidTestCase;
 
 public abstract class TestFoodBaseDAO extends AndroidTestCase

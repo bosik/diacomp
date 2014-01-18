@@ -1,7 +1,7 @@
 package org.bosik.compensation.persistence.dao.local;
 
-import org.bosik.compensation.persistence.dao.DiaryDAO;
 import org.bosik.compensation.persistence.dao.TestDiaryDAO;
+import org.bosik.diacomp.persistence.dao.DiaryDAO;
 import org.bosik.diacomp.persistence.dao.local.LocalDiaryDAO;
 import android.content.ContentResolver;
 

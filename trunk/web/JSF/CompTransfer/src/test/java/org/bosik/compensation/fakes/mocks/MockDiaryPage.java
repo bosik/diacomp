@@ -1,7 +1,7 @@
 package org.bosik.compensation.fakes.mocks;
 
-import org.bosik.compensation.bo.diary.DiaryRecord;
-import org.bosik.compensation.persistence.common.Versioned;
+import org.bosik.diacomp.bo.diary.DiaryRecord;
+import org.bosik.diacomp.persistence.common.Versioned;
 
 // TODO: remove it
 @Deprecated

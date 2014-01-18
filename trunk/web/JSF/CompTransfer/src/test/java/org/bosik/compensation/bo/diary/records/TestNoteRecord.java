@@ -1,6 +1,7 @@
 package org.bosik.compensation.bo.diary.records;
 
 import java.util.Date;
+import org.bosik.diacomp.bo.diary.records.NoteRecord;
 import junit.framework.TestCase;
 
 public class TestNoteRecord extends TestCase

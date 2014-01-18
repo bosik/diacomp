@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.diacomp.MySQLAccess;
+import org.bosik.diacomp.persistence.common.Versioned;
 
 public class DiaryService
 {

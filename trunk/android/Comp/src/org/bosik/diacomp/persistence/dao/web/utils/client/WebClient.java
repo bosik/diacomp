@@ -20,7 +20,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
-import org.bosik.compensation.utils.Utils;
 import org.bosik.diacomp.persistence.dao.web.utils.client.exceptions.AuthException;
 import org.bosik.diacomp.persistence.dao.web.utils.client.exceptions.ConnectionException;
 import org.bosik.diacomp.persistence.dao.web.utils.client.exceptions.DeprecatedAPIException;
@@ -28,6 +27,7 @@ import org.bosik.diacomp.persistence.dao.web.utils.client.exceptions.ResponseFor
 import org.bosik.diacomp.persistence.dao.web.utils.client.exceptions.TaskExecutionException;
 import org.bosik.diacomp.persistence.dao.web.utils.client.exceptions.UndefinedFieldException;
 import org.bosik.diacomp.persistence.dao.web.utils.client.exceptions.WebClientException;
+import org.bosik.diacomp.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.util.Log;

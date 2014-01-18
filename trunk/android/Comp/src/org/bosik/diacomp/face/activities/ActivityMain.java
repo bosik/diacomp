@@ -17,7 +17,7 @@ import org.bosik.diacomp.services.sync.SyncBaseDAO;
 import org.bosik.diacomp.services.sync.SyncBaseDAO.SyncResult;
 import org.bosik.diacomp.services.sync.SyncDiaryDAO.Callback;
 import org.bosik.diacomp.utils.ErrorHandler;
-import org.bosik.compensation.utils.Utils;
+import org.bosik.diacomp.utils.Utils;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;

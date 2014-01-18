@@ -1,8 +1,8 @@
 package org.bosik.compensation.persistence.serializers.foodmassed;
 
 import junit.framework.TestCase;
-import org.bosik.compensation.bo.FoodMassed;
-import org.bosik.compensation.persistence.serializers.SerializerFoodMassedPlain;
+import org.bosik.diacomp.bo.FoodMassed;
+import org.bosik.diacomp.persistence.serializers.SerializerFoodMassedPlain;
 
 public class TestSerializerFoodMassedPlain extends TestCase
 {
@@ -11,8 +11,8 @@ public class TestSerializerFoodMassedPlain extends TestCase
 	public void testRead()
 	{
 		// with dots
-		FoodMassed food = serializer.read("Колбаса[12.7|19.1|0|270]:40");
-		assertEquals("Колбаса", food.getName());
+		FoodMassed food = serializer.read("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ[12.7|19.1|0|270]:40");
+		assertEquals("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ", food.getName());
 		assertEquals(12.7, food.getRelProts());
 		assertEquals(19.1, food.getRelFats());
 		assertEquals(0.0, food.getRelCarbs());
@@ -20,8 +20,8 @@ public class TestSerializerFoodMassedPlain extends TestCase
 		assertEquals(40.0, food.getMass());
 
 		// with both dots and commas
-		food = serializer.read("Колбаса[12,7|19.1|0|270]:40");
-		assertEquals("Колбаса", food.getName());
+		food = serializer.read("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ[12,7|19.1|0|270]:40");
+		assertEquals("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ", food.getName());
 		assertEquals(12.7, food.getRelProts());
 		assertEquals(19.1, food.getRelFats());
 		assertEquals(0.0, food.getRelCarbs());
@@ -37,14 +37,14 @@ public class TestSerializerFoodMassedPlain extends TestCase
 	public void testWrite()
 	{
 		FoodMassed food = new FoodMassed();
-		food.setName("Колбаса");
+		food.setName("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
 		food.setRelProts(12.7);
 		food.setRelFats(19.1);
 		food.setRelCarbs(0);
 		food.setRelValue(270);
 		food.setMass(40);
 
-		assertEquals("Колбаса[12,7|19,1|0|270]:40", serializer.write(food));
+		assertEquals("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ[12,7|19,1|0|270]:40", serializer.write(food));
 	}
 
 	public void testWriteAll()

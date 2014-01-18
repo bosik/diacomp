@@ -1,6 +1,6 @@
 package org.bosik.diacomp.face.views;
 
-import org.bosik.compensation.bo.diary.records.MealRecord;
+import org.bosik.diacomp.bo.diary.records.MealRecord;
 
 public class MealFormatter
 {

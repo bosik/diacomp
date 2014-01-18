@@ -2,10 +2,10 @@ package org.bosik.compensation.fakes.dao;
 
 import java.util.Date;
 import java.util.List;
-import org.bosik.compensation.bo.diary.DiaryRecord;
-import org.bosik.compensation.persistence.common.Versioned;
-import org.bosik.compensation.persistence.dao.DiaryDAO;
-import org.bosik.compensation.persistence.exceptions.CommonDAOException;
+import org.bosik.diacomp.bo.diary.DiaryRecord;
+import org.bosik.diacomp.persistence.common.Versioned;
+import org.bosik.diacomp.persistence.dao.DiaryDAO;
+import org.bosik.diacomp.persistence.exceptions.CommonDAOException;
 
 public class FakeDiaryDAO implements DiaryDAO
 {

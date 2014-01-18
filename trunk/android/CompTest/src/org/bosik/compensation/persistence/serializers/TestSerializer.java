@@ -4,6 +4,7 @@ import java.util.List;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import org.bosik.compensation.fakes.mocks.Mock;
+import org.bosik.diacomp.persistence.serializers.Serializer;
 import android.util.Log;
 
 public abstract class TestSerializer<T> extends TestCase

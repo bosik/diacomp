@@ -1,10 +1,10 @@
 package org.bosik.diacomp.face.activities;
 
 import java.util.Date;
-import org.bosik.compensation.bo.diary.records.BloodRecord;
+import org.bosik.diacomp.bo.diary.records.BloodRecord;
 import org.bosik.diacomp.face.R;
 import org.bosik.diacomp.face.UIUtils;
-import org.bosik.compensation.persistence.common.Versioned;
+import org.bosik.diacomp.persistence.common.Versioned;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;

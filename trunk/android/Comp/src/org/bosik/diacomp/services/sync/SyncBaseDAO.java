@@ -1,6 +1,6 @@
 package org.bosik.diacomp.services.sync;
 
-import org.bosik.compensation.persistence.dao.BaseDAO;
+import org.bosik.diacomp.persistence.dao.BaseDAO;
 
 public class SyncBaseDAO
 {

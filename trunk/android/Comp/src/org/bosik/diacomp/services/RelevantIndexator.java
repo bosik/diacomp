@@ -2,16 +2,16 @@ package org.bosik.diacomp.services;
 
 import java.util.Date;
 import java.util.List;
-import org.bosik.compensation.bo.FoodMassed;
-import org.bosik.compensation.bo.RelativeTagged;
-import org.bosik.compensation.bo.diary.DiaryRecord;
-import org.bosik.compensation.bo.diary.records.MealRecord;
-import org.bosik.compensation.persistence.common.Versioned;
-import org.bosik.compensation.persistence.dao.BaseDAO;
-import org.bosik.compensation.persistence.dao.DiaryDAO;
-import org.bosik.compensation.persistence.dao.DishBaseDAO;
-import org.bosik.compensation.persistence.dao.FoodBaseDAO;
-import org.bosik.compensation.utils.Utils;
+import org.bosik.diacomp.bo.FoodMassed;
+import org.bosik.diacomp.bo.RelativeTagged;
+import org.bosik.diacomp.bo.diary.DiaryRecord;
+import org.bosik.diacomp.bo.diary.records.MealRecord;
+import org.bosik.diacomp.persistence.common.Versioned;
+import org.bosik.diacomp.persistence.dao.BaseDAO;
+import org.bosik.diacomp.persistence.dao.DiaryDAO;
+import org.bosik.diacomp.persistence.dao.DishBaseDAO;
+import org.bosik.diacomp.persistence.dao.FoodBaseDAO;
+import org.bosik.diacomp.utils.Utils;
 import android.util.Log;
 
 public class RelevantIndexator
