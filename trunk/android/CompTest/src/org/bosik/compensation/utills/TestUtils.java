@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import junit.framework.TestCase;
-import org.bosik.compensation.utils.AndroidUtils;
+import org.bosik.diacomp.utils.AndroidUtils;
 
 @SuppressWarnings("static-method")
 public class TestUtils extends TestCase
