@@ -50,7 +50,7 @@ public class TestUtils extends TestCase
 
 	public void testEncodingUtf8Cp1251Utf8Persistance()
 	{
-		String utf8 = "моя строка";
+		String utf8 = "РјРѕСЏ СЃС‚СЂРѕРєР°";
 		String cp1251 = AndroidUtils.Utf8ToCp1251(utf8);
 		String utf8_again = AndroidUtils.Cp1251ToUtf8(cp1251);
 
@@ -66,7 +66,7 @@ public class TestUtils extends TestCase
 
 	public void testEncodingUtf8ToCp1251() throws UnsupportedEncodingException
 	{
-		String utf8 = "моя строка";
+		String utf8 = "РјРѕСЏ СЃС‚СЂРѕРєР°";
 		String cp1251 = AndroidUtils.Utf8ToCp1251(utf8);
 
 		// Log.d(TAG, "8->1251 test: utf8 = " + utf8);
@@ -124,6 +124,6 @@ public class TestUtils extends TestCase
 		}
 
 		// assert
-		assertEquals("моя строка", utf8);
+		assertEquals("РјРѕСЏ СЃС‚СЂРѕРєР°", utf8);
 	}
 }
