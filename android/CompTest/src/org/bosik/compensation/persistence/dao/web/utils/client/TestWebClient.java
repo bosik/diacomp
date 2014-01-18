@@ -1,7 +1,8 @@
 package org.bosik.compensation.persistence.dao.web.utils.client;
 
 import junit.framework.TestCase;
-import org.bosik.compensation.persistence.dao.web.utils.client.exceptions.WebClientException;
+import org.bosik.diacomp.persistence.dao.web.utils.client.WebClient;
+import org.bosik.diacomp.persistence.dao.web.utils.client.exceptions.WebClientException;
 import android.util.Log;
 
 public class TestWebClient extends TestCase
