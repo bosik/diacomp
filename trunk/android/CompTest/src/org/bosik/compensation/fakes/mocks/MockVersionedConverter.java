@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import junit.framework.TestCase;
+import junit.framework.Assert;
 import org.bosik.compensation.persistence.common.Versioned;
 import org.bosik.compensation.utills.TestUtils;
 
-public class MockVersionedConverter<T> extends TestCase implements Mock<Versioned<T>>
+public class MockVersionedConverter<T> implements Mock<Versioned<T>>
 {
 	// private static final String TAG = MockVersionedConverter.class.getSimpleName();
 	private Mock<T>	generator;
@@ -38,16 +38,16 @@ public class MockVersionedConverter<T> extends TestCase implements Mock<Versione
 
 	public void compare(Versioned<T> exp, Versioned<T> act)
 	{
-		assertNotNull(exp);
-		assertNotNull(act);
+		Assert.assertNotNull(exp);
+		Assert.assertNotNull(act);
 
 		// try
 		// {
-		assertEquals(exp.getId(), act.getId());
-		assertEquals(exp.getTimeStamp().getTime(), act.getTimeStamp().getTime(), TestUtils.EPS_TIME);
-		assertEquals(exp.getVersion(), act.getVersion());
-		assertEquals(exp.isDeleted(), act.isDeleted());
-		assertEquals(exp, act);
+		Assert.assertEquals(exp.getId(), act.getId());
+		Assert.assertEquals(exp.getTimeStamp().getTime(), act.getTimeStamp().getTime(), TestUtils.EPS_TIME);
+		Assert.assertEquals(exp.getVersion(), act.getVersion());
+		Assert.assertEquals(exp.isDeleted(), act.isDeleted());
+		Assert.assertEquals(exp, act);
 		generator.compare(exp.getData(), act.getData());
 		// }
 		// catch (ComparisonFailure e)
