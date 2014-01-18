@@ -1,25 +1,28 @@
 package org.bosik.compensation.persistence.dao;
 
-import junit.framework.TestCase;
 import org.bosik.compensation.fakes.mocks.Mock;
 import org.bosik.compensation.fakes.mocks.MockFoodItem;
 import org.bosik.compensation.fakes.mocks.MockVersionedConverter;
 import org.bosik.diacomp.bo.foodbase.FoodItem;
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.persistence.dao.FoodBaseDAO;
+import org.junit.Assert;
 
-public abstract class TestFoodBaseDAO extends TestCase
+public abstract class TestFoodBaseDAO
 {
-	private FoodBaseDAO							foodBaseDAO;
+	private FoodBaseDAO							foodBaseDAO_cached;
 	private static Mock<Versioned<FoodItem>>	mockGenerator	= new MockVersionedConverter<FoodItem>(
 																		new MockFoodItem());
 
 	protected abstract FoodBaseDAO getDAO();
 
-	@Override
-	protected void setUp()
+	private FoodBaseDAO getFoodBaseDAO()
 	{
-		foodBaseDAO = getDAO();
+		if (foodBaseDAO_cached == null)
+		{
+			foodBaseDAO_cached = getDAO();
+		}
+		return foodBaseDAO_cached;
 	}
 
 	public void testPersistanceSingle()
@@ -27,32 +30,37 @@ public abstract class TestFoodBaseDAO extends TestCase
 		Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
 		// int version;
 
-		if (foodBaseDAO.findById(org.getId()) != null)
+		if (getFoodBaseDAO().findById(org.getId()) != null)
 		{
 			// version = foodBaseDAO.getVersion();
-			foodBaseDAO.delete(org.getId());
+			getFoodBaseDAO().delete(org.getId());
 			// assertEquals(version + 1, foodBaseDAO.getVersion());
-			assertNull(foodBaseDAO.findById(org.getId()));
+			Assert.assertNull(getFoodBaseDAO().findById(org.getId()));
 		}
 
 		// version = foodBaseDAO.getVersion();
-		foodBaseDAO.add(org);
+		getFoodBaseDAO().add(org);
 		// assertEquals(version + 1, foodBaseDAO.getVersion());
 
 		// ------------------------------
-		setUp();
+		foodBaseDAO_cached = null; // reset
 		// ------------------------------
 
-		Versioned<FoodItem> restored = foodBaseDAO.findById(org.getId());
-		assertNotNull(restored);
-		assertNotSame(org, restored);
+		Versioned<FoodItem> restored = getFoodBaseDAO().findById(org.getId());
+		Assert.assertNotNull(restored);
+		Assert.assertNotSame(org, restored);
 		mockGenerator.compare(org, restored);
 
 		// version = foodBaseDAO.getVersion();
-		foodBaseDAO.delete(org.getId());
+		getFoodBaseDAO().delete(org.getId());
 		// assertEquals(version + 1, foodBaseDAO.getVersion());
-		assertNull(foodBaseDAO.findById(org.getId()));
+		Assert.assertNull(getFoodBaseDAO().findById(org.getId()));
 	}
 
 	// TODO: create testPersistenceMultiple()
+
+	public void testPersistanceMultiple()
+	{
+
+	}
 }
