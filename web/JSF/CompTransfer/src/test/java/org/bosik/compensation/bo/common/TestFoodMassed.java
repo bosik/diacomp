@@ -2,25 +2,25 @@ package org.bosik.compensation.bo.common;
 
 import junit.framework.TestCase;
 import org.bosik.compensation.bo.FoodMassed;
+import org.bosik.compensation.utills.TestUtils;
 
 public class TestFoodMassed extends TestCase
 {
 	private FoodMassed	food	= new FoodMassed();
 
-	// TODO: use EPS while comparing doubles
 	// TODO: change Exception to IllegalArgumentException
 
 	public void testMass()
 	{
 		// normal test
 		food.setMass(0.0);
-		assertEquals(0.0, food.getMass());
+		assertEquals(0.0, food.getMass(), TestUtils.EPS);
 		food.setMass(0.01);
-		assertEquals(0.01, food.getMass());
+		assertEquals(0.01, food.getMass(), TestUtils.EPS);
 		food.setMass(100.0);
-		assertEquals(100.0, food.getMass());
+		assertEquals(100.0, food.getMass(), TestUtils.EPS);
 		food.setMass(999.5);
-		assertEquals(999.5, food.getMass());
+		assertEquals(999.5, food.getMass(), TestUtils.EPS);
 
 		// crash-test
 		try
@@ -28,7 +28,7 @@ public class TestFoodMassed extends TestCase
 			food.setMass(-0.01);
 			fail();
 		}
-		catch (Exception e)
+		catch (IllegalArgumentException e)
 		{
 		}
 		try
@@ -36,7 +36,7 @@ public class TestFoodMassed extends TestCase
 			food.setMass(-100);
 			fail();
 		}
-		catch (Exception e)
+		catch (IllegalArgumentException e)
 		{
 		}
 	}
@@ -47,31 +47,31 @@ public class TestFoodMassed extends TestCase
 		food.setMass(10);
 
 		food.setRelProts(1);
-		assertEquals(0.1, food.getProts());
+		assertEquals(0.1, food.getProts(), TestUtils.EPS);
 		food.setRelFats(2);
-		assertEquals(0.2, food.getFats());
+		assertEquals(0.2, food.getFats(), TestUtils.EPS);
 		food.setRelCarbs(3);
-		assertEquals(0.3, food.getCarbs());
+		assertEquals(0.3, food.getCarbs(), TestUtils.EPS);
 		food.setRelValue(4);
-		assertEquals(0.4, food.getValue());
+		assertEquals(0.4, food.getValue(), TestUtils.EPS);
 
 		food.setMass(1000);
 
 		food.setRelProts(2);
-		assertEquals(20.0, food.getProts());
+		assertEquals(20.0, food.getProts(), TestUtils.EPS);
 		food.setRelFats(4);
-		assertEquals(40.0, food.getFats());
+		assertEquals(40.0, food.getFats(), TestUtils.EPS);
 		food.setRelCarbs(6);
-		assertEquals(60.0, food.getCarbs());
+		assertEquals(60.0, food.getCarbs(), TestUtils.EPS);
 		food.setRelValue(8);
-		assertEquals(80.0, food.getValue());
+		assertEquals(80.0, food.getValue(), TestUtils.EPS);
 
 		food.setMass(0);
 
-		assertEquals(0.0, food.getProts());
-		assertEquals(0.0, food.getFats());
-		assertEquals(0.0, food.getCarbs());
-		assertEquals(0.0, food.getValue());
+		assertEquals(0.0, food.getProts(), TestUtils.EPS);
+		assertEquals(0.0, food.getFats(), TestUtils.EPS);
+		assertEquals(0.0, food.getCarbs(), TestUtils.EPS);
+		assertEquals(0.0, food.getValue(), TestUtils.EPS);
 
 		// crash-test
 		try
@@ -79,7 +79,7 @@ public class TestFoodMassed extends TestCase
 			food.setRelProts(-0.01);
 			fail();
 		}
-		catch (Exception e)
+		catch (IllegalArgumentException e)
 		{
 		}
 		try
@@ -87,7 +87,7 @@ public class TestFoodMassed extends TestCase
 			food.setRelProts(100.01);
 			fail();
 		}
-		catch (Exception e)
+		catch (IllegalArgumentException e)
 		{
 		}
 		try
@@ -95,7 +95,7 @@ public class TestFoodMassed extends TestCase
 			food.setRelFats(-0.01);
 			fail();
 		}
-		catch (Exception e)
+		catch (IllegalArgumentException e)
 		{
 		}
 		try
@@ -103,7 +103,7 @@ public class TestFoodMassed extends TestCase
 			food.setRelFats(100.01);
 			fail();
 		}
-		catch (Exception e)
+		catch (IllegalArgumentException e)
 		{
 		}
 		try
@@ -111,7 +111,7 @@ public class TestFoodMassed extends TestCase
 			food.setRelCarbs(-0.01);
 			fail();
 		}
-		catch (Exception e)
+		catch (IllegalArgumentException e)
 		{
 		}
 		try
@@ -119,7 +119,7 @@ public class TestFoodMassed extends TestCase
 			food.setRelCarbs(100.01);
 			fail();
 		}
-		catch (Exception e)
+		catch (IllegalArgumentException e)
 		{
 		}
 		try
@@ -127,7 +127,7 @@ public class TestFoodMassed extends TestCase
 			food.setRelValue(-0.01);
 			fail();
 		}
-		catch (Exception e)
+		catch (IllegalArgumentException e)
 		{
 		}
 	}
