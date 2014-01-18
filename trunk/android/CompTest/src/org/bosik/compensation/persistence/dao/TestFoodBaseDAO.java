@@ -1,14 +1,14 @@
 package org.bosik.compensation.persistence.dao;
 
-import junit.framework.TestCase;
 import org.bosik.compensation.fakes.mocks.Mock;
 import org.bosik.compensation.fakes.mocks.MockFoodItem;
 import org.bosik.compensation.fakes.mocks.MockVersionedConverter;
 import org.bosik.diacomp.bo.foodbase.FoodItem;
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.persistence.dao.FoodBaseDAO;
+import android.test.AndroidTestCase;
 
-public abstract class TestFoodBaseDAO extends TestCase
+public abstract class TestFoodBaseDAO extends AndroidTestCase
 {
 	private FoodBaseDAO							foodBaseDAO;
 	private static Mock<Versioned<FoodItem>>	mockGenerator	= new MockVersionedConverter<FoodItem>(

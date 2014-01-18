@@ -2,15 +2,15 @@ package org.bosik.compensation.persistence.dao;
 
 import java.util.LinkedList;
 import java.util.List;
-import junit.framework.TestCase;
 import org.bosik.compensation.fakes.mocks.Mock;
 import org.bosik.compensation.fakes.mocks.MockDiaryRecord;
 import org.bosik.compensation.fakes.mocks.MockVersionedConverter;
 import org.bosik.diacomp.bo.diary.DiaryRecord;
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.persistence.dao.DiaryDAO;
+import android.test.AndroidTestCase;
 
-public abstract class TestDiaryDAO extends TestCase
+public abstract class TestDiaryDAO extends AndroidTestCase
 {
 	private DiaryDAO									diaryDAO;
 	private static final Mock<DiaryRecord>				mockDiaryRecord				= new MockDiaryRecord();
