@@ -1,4 +1,4 @@
-package org.bosik.diacomp.bo;
+package org.bosik.diacomp.bo.basic;
 
 public interface Tagged
 {
