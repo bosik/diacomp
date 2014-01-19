@@ -2,6 +2,7 @@ package org.bosik.diacomp.bo;
 
 import java.io.Serializable;
 import org.bosik.diacomp.bo.basic.Named;
+import org.bosik.diacomp.bo.basic.Relative;
 
 /**
  * Stores food's name and relative parameters (PFCV on 100g)
@@ -9,7 +10,7 @@ import org.bosik.diacomp.bo.basic.Named;
  * @author Bosik
  * 
  */
-public class Food implements Serializable, Named
+public class Food implements Serializable, Named, Relative
 {
 	private static final long	serialVersionUID	= -659635365362405228L;
 

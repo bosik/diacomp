@@ -3,7 +3,7 @@ package org.bosik.diacomp.services;
 import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.bo.FoodMassed;
-import org.bosik.diacomp.bo.basic.RelativeTagged;
+import org.bosik.diacomp.bo.basic.Tagged;
 import org.bosik.diacomp.bo.diary.DiaryRecord;
 import org.bosik.diacomp.bo.diary.records.MealRecord;
 import org.bosik.diacomp.persistence.common.Versioned;
@@ -59,7 +59,7 @@ public class RelevantIndexator
 		return delta * delta;
 	}
 
-	private static <T extends RelativeTagged> void clearTags(BaseDAO<T> base)
+	private static <T extends Tagged> void clearTags(BaseDAO<T> base)
 	{
 		List<Versioned<T>> list = base.findAll();
 		for (Versioned<T> item : list)
@@ -77,7 +77,7 @@ public class RelevantIndexator
 			return;
 	}
 
-	private static <T extends RelativeTagged> boolean process(String name, int delta, BaseDAO<T> base)
+	private static <T extends Tagged> boolean process(String name, int delta, BaseDAO<T> base)
 	{
 		Versioned<T> item = base.findOne(name);
 		if (null != item)
