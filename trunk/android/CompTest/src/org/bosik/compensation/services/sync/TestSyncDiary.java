@@ -85,5 +85,5 @@ public class TestSyncDiary extends TestCase
 	// assertTrue(over2.isEmpty());
 	// }
 
-	// TODO: тестировать остальные ситуации getOverLists
+	// TODO: С‚РµСЃС‚РёСЂРѕРІР°С‚СЊ РѕСЃС‚Р°Р»СЊРЅС‹Рµ СЃРёС‚СѓР°С†РёРё getOverLists
 }

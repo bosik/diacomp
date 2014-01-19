@@ -61,13 +61,13 @@ public class TestUtils extends TestCase
 
 	public void testCheckTime()
 	{
-		// ���������� �����
+		// корректное время
 		assertTrue(Utils.checkTime(0, 0));
 		assertTrue(Utils.checkTime(20, 59));
 		assertTrue(Utils.checkTime(23, 30));
 		assertTrue(Utils.checkTime(23, 59));
 
-		// ������������ �����
+		// некорректное время
 		assertFalse(Utils.checkTime(0, -1));
 		assertFalse(Utils.checkTime(-1, 0));
 		assertFalse(Utils.checkTime(24, 0));
@@ -78,7 +78,7 @@ public class TestUtils extends TestCase
 
 	public void testStrToTime()
 	{
-		// ���������� ����
+		// нормальный тест
 		assertEquals(0, Utils.strToTime("00:00"));
 		assertEquals(1, Utils.strToTime("00:01"));
 		assertEquals(59, Utils.strToTime("00:59"));
@@ -86,7 +86,7 @@ public class TestUtils extends TestCase
 		assertEquals(630, Utils.strToTime("10:30"));
 		assertEquals(1439, Utils.strToTime("23:59"));
 
-		// ����-����
+		// краш-тест
 		try
 		{
 			Utils.strToTime(null);
@@ -163,7 +163,7 @@ public class TestUtils extends TestCase
 
 	// public void testTimeToStr()
 	// {
-	// // ���������� ����
+	// // нормальный тест
 	// assertEquals("00:00", Utils.timeToStr(0));
 	// assertEquals("00:01", Utils.timeToStr(1));
 	// assertEquals("00:59", Utils.timeToStr(59));
@@ -171,7 +171,7 @@ public class TestUtils extends TestCase
 	// assertEquals("10:30", Utils.timeToStr(630));
 	// assertEquals("23:59", Utils.timeToStr(1439));
 	//
-	// // ����-����
+	// // краш-тест
 	// try
 	// {
 	// Utils.timeToStr(1440);
@@ -282,7 +282,7 @@ public class TestUtils extends TestCase
 
 	// public void testTimeToStr()
 	// {
-	// // ���������� ����
+	// // нормальный тест
 	// assertEquals("00:00", AndroidUtils.timeToStr(0));
 	// assertEquals("00:01", AndroidUtils.timeToStr(1));
 	// assertEquals("00:59", AndroidUtils.timeToStr(59));
@@ -290,7 +290,7 @@ public class TestUtils extends TestCase
 	// assertEquals("10:30", AndroidUtils.timeToStr(630));
 	// assertEquals("23:59", AndroidUtils.timeToStr(1439));
 	//
-	// // ����-����
+	// // краш-тест
 	// try
 	// {
 	// AndroidUtils.timeToStr(1440);

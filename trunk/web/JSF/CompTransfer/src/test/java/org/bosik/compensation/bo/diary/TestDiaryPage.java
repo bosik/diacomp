@@ -35,7 +35,7 @@ public class TestDiaryPage extends TestCase
 	// {
 	// DiaryPage d = new DiaryPage(Calendar.getInstance().getTime(),
 	// Calendar.getInstance().getTime(), 1,
-	// " 02.48s\n#Сахар[10|10|99,8|379]:2,5");
+	// " 02.48s\n#РЎР°С…Р°СЂ[10|10|99,8|379]:2,5");
 	//
 	// assertEquals(1, d.count());
 	// DiaryRecord r = d.get(0);
@@ -48,7 +48,7 @@ public class TestDiaryPage extends TestCase
 	// assertEquals(9.475, ((MealRecord) r).getValue());
 	//
 	// assertEquals(1, ((MealRecord) r).count());
-	// assertEquals("Сахар", ((MealRecord) r).get(0).getName());
+	// assertEquals("РЎР°С…Р°СЂ", ((MealRecord) r).get(0).getName());
 	// assertEquals(10.0, ((MealRecord) r).get(0).getRelProts());
 	// assertEquals(10.0, ((MealRecord) r).get(0).getRelFats());
 	// assertEquals(99.8, ((MealRecord) r).get(0).getRelCarbs());
@@ -61,7 +61,7 @@ public class TestDiaryPage extends TestCase
 	// {
 	// DiaryPage d = new DiaryPage(Calendar.getInstance().getTime(),
 	// Calendar.getInstance().getTime(), 1,
-	// " 02.48\n#Сахар[10|10|99,8|379]:2,5");
+	// " 02.48\n#РЎР°С…Р°СЂ[10|10|99,8|379]:2,5");
 	//
 	// assertEquals(1, d.count());
 	// DiaryRecord r = d.get(0);
@@ -74,7 +74,7 @@ public class TestDiaryPage extends TestCase
 	// assertEquals(9.475, ((MealRecord) r).getValue());
 	//
 	// assertEquals(1, ((MealRecord) r).count());
-	// assertEquals("Сахар", ((MealRecord) r).get(0).getName());
+	// assertEquals("РЎР°С…Р°СЂ", ((MealRecord) r).get(0).getName());
 	// assertEquals(10.0, ((MealRecord) r).get(0).getRelProts());
 	// assertEquals(10.0, ((MealRecord) r).get(0).getRelFats());
 	// assertEquals(99.8, ((MealRecord) r).get(0).getRelCarbs());
@@ -96,7 +96,7 @@ public class TestDiaryPage extends TestCase
 	 * assertEquals(0.25, ((MealRecord)r).getFats()); assertEquals(2.495,
 	 * ((MealRecord)r).getCarbs()); assertEquals(9.475, ((MealRecord)r).getValue());
 	 * 
-	 * assertEquals(1, ((MealRecord)r).size()); assertEquals("Сахар",
+	 * assertEquals(1, ((MealRecord)r).size()); assertEquals("РЎР°С…Р°СЂ",
 	 * ((MealRecord)r).get(0).getName()); assertEquals(10.0, ((MealRecord)r).get(0).getRelProts());
 	 * assertEquals(10.0, ((MealRecord)r).get(0).getRelFats()); assertEquals(99.8,
 	 * ((MealRecord)r).get(0).getRelCarbs()); assertEquals(379.0,

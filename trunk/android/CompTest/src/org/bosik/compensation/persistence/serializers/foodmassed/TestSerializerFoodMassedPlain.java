@@ -11,8 +11,8 @@ public class TestSerializerFoodMassedPlain extends TestCase
 	public void testRead()
 	{
 		// with dots
-		FoodMassed food = serializer.read("�������[12.7|19.1|0|270]:40");
-		assertEquals("�������", food.getName());
+		FoodMassed food = serializer.read("Колбаса[12.7|19.1|0|270]:40");
+		assertEquals("Колбаса", food.getName());
 		assertEquals(12.7, food.getRelProts());
 		assertEquals(19.1, food.getRelFats());
 		assertEquals(0.0, food.getRelCarbs());
@@ -20,8 +20,8 @@ public class TestSerializerFoodMassedPlain extends TestCase
 		assertEquals(40.0, food.getMass());
 
 		// with both dots and commas
-		food = serializer.read("�������[12,7|19.1|0|270]:40");
-		assertEquals("�������", food.getName());
+		food = serializer.read("Колбаса[12,7|19.1|0|270]:40");
+		assertEquals("Колбаса", food.getName());
 		assertEquals(12.7, food.getRelProts());
 		assertEquals(19.1, food.getRelFats());
 		assertEquals(0.0, food.getRelCarbs());
@@ -37,14 +37,14 @@ public class TestSerializerFoodMassedPlain extends TestCase
 	public void testWrite()
 	{
 		FoodMassed food = new FoodMassed();
-		food.setName("�������");
+		food.setName("Колбаса");
 		food.setRelProts(12.7);
 		food.setRelFats(19.1);
 		food.setRelCarbs(0);
 		food.setRelValue(270);
 		food.setMass(40);
 
-		assertEquals("�������[12,7|19,1|0|270]:40", serializer.write(food));
+		assertEquals("Колбаса[12,7|19,1|0|270]:40", serializer.write(food));
 	}
 
 	public void testWriteAll()

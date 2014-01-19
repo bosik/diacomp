@@ -1,4 +1,4 @@
-Вариант асинхронной авторизации
+п»їР’Р°СЂРёР°РЅС‚ Р°СЃРёРЅС…СЂРѕРЅРЅРѕР№ Р°РІС‚РѕСЂРёР·Р°С†РёРё
 
 	/**
 	 * Attempts to authenticate the user credentials on the server.
@@ -20,7 +20,7 @@
 	 * performOnBackgroundThread(runnable); }
 	 */
 	 
-Тестирование функции получения времени сервера
+РўРµСЃС‚РёСЂРѕРІР°РЅРёРµ С„СѓРЅРєС†РёРё РїРѕР»СѓС‡РµРЅРёСЏ РІСЂРµРјРµРЅРё СЃРµСЂРІРµСЂР°
 
 	Date localTime1 = Calendar.getInstance().getTime();
 	long serverTime1 = web.timeShift;
@@ -43,7 +43,7 @@
 
 	assertTrue(diff < MAX_DIFF);
 
-При конструировании потомков всегда вызывается родительский конструктор
+РџСЂРё РєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРё РїРѕС‚РѕРјРєРѕРІ РІСЃРµРіРґР° РІС‹Р·С‹РІР°РµС‚СЃСЏ СЂРѕРґРёС‚РµР»СЊСЃРєРёР№ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 
 	public static class Father
 	{
@@ -62,7 +62,7 @@
 	{
 		public Son()
 		{
-			super(); // эта строчка не влияет на вывод
+			super(); // СЌС‚Р° СЃС‚СЂРѕС‡РєР° РЅРµ РІР»РёСЏРµС‚ РЅР° РІС‹РІРѕРґ
 			Log.e(TAG, "Son's constructor");
 		}
 		
@@ -78,7 +78,7 @@
 		son.test();
 	}
 	
-	Вывод:
+	Р’С‹РІРѕРґ:
 		Father's constructor
 		Son's constructor
 		Son test!
