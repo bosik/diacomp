@@ -1,9 +1,9 @@
 package org.bosik.diacomp.bo.dishbase;
 
 import java.io.Serializable;
-import org.bosik.diacomp.bo.basic.RelativeTagged;
+import org.bosik.diacomp.bo.basic.NamedRelativeTagged;
 
-public class DishItem implements RelativeTagged, Serializable
+public class DishItem implements NamedRelativeTagged, Serializable
 {
 	private static final long	serialVersionUID	= 1L;
 

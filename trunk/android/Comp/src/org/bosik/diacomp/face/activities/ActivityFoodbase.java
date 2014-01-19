@@ -2,7 +2,7 @@ package org.bosik.diacomp.face.activities;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.diacomp.bo.basic.RelativeTagged;
+import org.bosik.diacomp.bo.basic.NamedRelativeTagged;
 import org.bosik.diacomp.bo.foodbase.FoodItem;
 import org.bosik.diacomp.face.R;
 import org.bosik.diacomp.persistence.Storage;
@@ -35,7 +35,7 @@ public class ActivityFoodbase extends Activity
 	private ListView						listFood;
 
 	// Data
-	private List<Versioned<RelativeTagged>>	data;
+	private List<Versioned<NamedRelativeTagged>>	data;
 	private static final Sorter<FoodItem>	sorter		= new Sorter<FoodItem>();
 
 	// ===========================================================================
@@ -74,16 +74,16 @@ public class ActivityFoodbase extends Activity
 
 	private void runSearch(String key)
 	{
-		new AsyncTask<String, Void, List<Versioned<RelativeTagged>>>()
+		new AsyncTask<String, Void, List<Versioned<NamedRelativeTagged>>>()
 		{
 			@Override
-			protected List<Versioned<RelativeTagged>> doInBackground(String... params)
+			protected List<Versioned<NamedRelativeTagged>> doInBackground(String... params)
 			{
 				return request(params[0]);
 			}
 
 			@Override
-			protected void onPostExecute(List<Versioned<RelativeTagged>> result)
+			protected void onPostExecute(List<Versioned<NamedRelativeTagged>> result)
 			{
 				showBase(result);
 			}
@@ -98,7 +98,7 @@ public class ActivityFoodbase extends Activity
 		return true;
 	}
 
-	private List<Versioned<RelativeTagged>> request(String filter)
+	private List<Versioned<NamedRelativeTagged>> request(String filter)
 	{
 		List<Versioned<FoodItem>> temp;
 		if (filter.trim().isEmpty())
@@ -112,16 +112,16 @@ public class ActivityFoodbase extends Activity
 		}
 
 		// TODO: check the performance
-		List<Versioned<RelativeTagged>> result = new ArrayList<Versioned<RelativeTagged>>();
+		List<Versioned<NamedRelativeTagged>> result = new ArrayList<Versioned<NamedRelativeTagged>>();
 		for (Versioned<FoodItem> item : temp)
 		{
-			result.add(new Versioned<RelativeTagged>(item.getData()));
+			result.add(new Versioned<NamedRelativeTagged>(item.getData()));
 		}
 
 		return result;
 	}
 
-	private void showBase(final List<Versioned<RelativeTagged>> foodBase)
+	private void showBase(final List<Versioned<NamedRelativeTagged>> foodBase)
 	{
 		data = foodBase;
 
@@ -160,7 +160,7 @@ public class ActivityFoodbase extends Activity
 		});
 	}
 
-	private String getInfo(RelativeTagged item)
+	private String getInfo(NamedRelativeTagged item)
 	{
 		String fmt = getString(R.string.foodbase_subinfo, item.getRelProts(), item.getRelFats(), item.getRelCarbs(),
 				item.getRelValue());
