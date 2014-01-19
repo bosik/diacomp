@@ -3,6 +3,7 @@ package org.bosik.diacomp.bo;
 import java.io.Serializable;
 import org.bosik.diacomp.bo.basic.Named;
 import org.bosik.diacomp.bo.basic.Relative;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Stores food's name and relative parameters (PFCV on 100g)
@@ -14,15 +15,15 @@ public class Food implements Serializable, Named, Relative
 {
 	private static final long	serialVersionUID	= -659635365362405228L;
 
-	// @SerializedName("name")
+	@SerializedName("name")
 	private String				name;
-	// @SerializedName("prots")
+	@SerializedName("prots")
 	private double				relProts;
-	// @SerializedName("fats")
+	@SerializedName("fats")
 	private double				relFats;
-	// @SerializedName("carbs")
+	@SerializedName("carbs")
 	private double				relCarbs;
-	// @SerializedName("value")
+	@SerializedName("value")
 	private double				relValue;
 
 	public Food()
