@@ -3,10 +3,10 @@ package org.bosik.diacomp.services;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import org.bosik.diacomp.bo.basic.RelativeTagged;
+import org.bosik.diacomp.bo.basic.NamedRelativeTagged;
 import org.bosik.diacomp.persistence.common.Versioned;
 
-public class Sorter<T extends RelativeTagged>
+public class Sorter<T extends NamedRelativeTagged>
 {
 	public enum Sort
 	{

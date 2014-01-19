@@ -3,7 +3,7 @@ package org.bosik.diacomp.bo.foodbase;
 import java.io.Serializable;
 import java.util.Locale;
 import org.bosik.diacomp.bo.Food;
-import org.bosik.diacomp.bo.basic.RelativeTagged;
+import org.bosik.diacomp.bo.basic.NamedRelativeTagged;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -12,7 +12,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Bosik
  * 
  */
-public class FoodItem extends Food implements Serializable, RelativeTagged
+public class FoodItem extends Food implements Serializable, NamedRelativeTagged
 {
 	private static final long	serialVersionUID	= 1789285539891342521L;
 
