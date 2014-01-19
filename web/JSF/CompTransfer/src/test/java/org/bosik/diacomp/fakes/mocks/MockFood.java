@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import junit.framework.TestCase;
 import org.bosik.diacomp.bo.Food;
-import org.bosik.diacomp.fakes.mocks.Mock;
 import org.bosik.diacomp.utills.TestUtils;
 
-public class MockFood extends TestCase implements Mock<Food>
+public class MockFood implements Mock<Food>
 {
 	private static Food food(String name, double relProts, double relFats, double relCarbs, double relValue)
 	{
@@ -37,13 +36,13 @@ public class MockFood extends TestCase implements Mock<Food>
 
 	public void compare(Food exp, Food act)
 	{
-		assertNotNull(exp);
-		assertNotNull(act);
+		TestCase.assertNotNull(exp);
+		TestCase.assertNotNull(act);
 
-		assertEquals(exp.getName(), act.getName());
-		assertEquals(exp.getRelProts(), act.getRelProts(), TestUtils.EPS);
-		assertEquals(exp.getRelFats(), act.getRelFats(), TestUtils.EPS);
-		assertEquals(exp.getRelCarbs(), act.getRelCarbs(), TestUtils.EPS);
-		assertEquals(exp.getRelValue(), act.getRelValue(), TestUtils.EPS);
+		TestCase.assertEquals(exp.getName(), act.getName());
+		TestCase.assertEquals(exp.getRelProts(), act.getRelProts(), TestUtils.EPS);
+		TestCase.assertEquals(exp.getRelFats(), act.getRelFats(), TestUtils.EPS);
+		TestCase.assertEquals(exp.getRelCarbs(), act.getRelCarbs(), TestUtils.EPS);
+		TestCase.assertEquals(exp.getRelValue(), act.getRelValue(), TestUtils.EPS);
 	}
 }

@@ -1,7 +1,7 @@
 package org.bosik.diacomp.persistence.dao.web;
 
-import org.bosik.compensation.persistence.dao.TestFoodBaseDAO;
 import org.bosik.diacomp.persistence.dao.FoodBaseDAO;
+import org.bosik.diacomp.persistence.dao.TestFoodBaseDAO;
 
 public class TestWebFoodBaseDAO extends TestFoodBaseDAO
 {

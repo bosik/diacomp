@@ -1,8 +1,8 @@
 package org.bosik.diacomp.persistence.serializers.fooditem;
 
-import org.bosik.compensation.fakes.mocks.Mock;
-import org.bosik.compensation.fakes.mocks.MockFoodItem;
 import org.bosik.diacomp.bo.foodbase.FoodItem;
+import org.bosik.diacomp.fakes.mocks.Mock;
+import org.bosik.diacomp.fakes.mocks.MockFoodItem;
 import org.bosik.diacomp.persistence.serializers.ParserFoodItem;
 import org.bosik.diacomp.persistence.serializers.Serializer;
 import org.bosik.diacomp.persistence.serializers.TestSerializer;

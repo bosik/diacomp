@@ -6,10 +6,8 @@ import java.util.Random;
 import junit.framework.TestCase;
 import org.bosik.diacomp.bo.Food;
 import org.bosik.diacomp.bo.foodbase.FoodItem;
-import org.bosik.diacomp.fakes.mocks.Mock;
-import org.bosik.diacomp.fakes.mocks.MockFood;
 
-public class MockFoodItem extends TestCase implements Mock<FoodItem>
+public class MockFoodItem implements Mock<FoodItem>
 {
 	private static final Mock<Food>	mockFood	= new MockFood();
 
@@ -43,7 +41,7 @@ public class MockFoodItem extends TestCase implements Mock<FoodItem>
 	{
 		mockFood.compare(exp, act);
 
-		assertEquals(exp.getFromTable(), act.getFromTable());
-		assertEquals(exp.getTag(), act.getTag());
+		TestCase.assertEquals(exp.getFromTable(), act.getFromTable());
+		TestCase.assertEquals(exp.getTag(), act.getTag());
 	}
 }

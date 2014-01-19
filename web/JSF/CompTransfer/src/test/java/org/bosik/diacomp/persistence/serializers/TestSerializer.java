@@ -3,7 +3,7 @@ package org.bosik.diacomp.persistence.serializers;
 import java.util.List;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
-import org.bosik.compensation.fakes.mocks.Mock;
+import org.bosik.diacomp.fakes.mocks.Mock;
 
 public abstract class TestSerializer<T> extends TestCase
 {
