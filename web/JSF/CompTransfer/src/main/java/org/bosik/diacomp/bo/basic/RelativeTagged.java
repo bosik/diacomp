@@ -1,6 +1,5 @@
-package org.bosik.diacomp.bo;
+package org.bosik.diacomp.bo.basic;
 
-import org.bosik.diacomp.bo.basic.Named;
 
 public interface RelativeTagged extends Named, Relative, Tagged
 {

@@ -3,7 +3,7 @@ package org.bosik.diacomp.services;
 import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.bo.FoodMassed;
-import org.bosik.diacomp.bo.RelativeTagged;
+import org.bosik.diacomp.bo.basic.RelativeTagged;
 import org.bosik.diacomp.bo.diary.DiaryRecord;
 import org.bosik.diacomp.bo.diary.records.MealRecord;
 import org.bosik.diacomp.persistence.common.Versioned;

@@ -2,7 +2,7 @@ package org.bosik.diacomp.face.activities;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.diacomp.bo.RelativeTagged;
+import org.bosik.diacomp.bo.basic.RelativeTagged;
 import org.bosik.diacomp.bo.foodbase.FoodItem;
 import org.bosik.diacomp.face.R;
 import org.bosik.diacomp.persistence.Storage;
