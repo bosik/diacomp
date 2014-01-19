@@ -9,17 +9,17 @@ public class TestMealRecord extends TestCase
 {
 	private MealRecord	meal	= new MealRecord(new Date(), false);
 
-	// THINK: ��������� ����� - ����� ��� ���?
+	// THINK: рандомные тесты - добро или зло?
 
 	/**
-	 * ������ ����-��������� ��� ������������
+	 * Создаёт демо-экземпляр для тестирования
 	 * 
 	 * @return
 	 */
 	private static FoodMassed createDemoFood()
 	{
 		FoodMassed food = new FoodMassed();
-		food.setName("�������");
+		food.setName("Колбаса");
 		food.setMass(78);
 		food.setRelProts(12.2);
 		food.setRelFats(18.9);
@@ -30,7 +30,7 @@ public class TestMealRecord extends TestCase
 
 	public void testAddGet()
 	{
-		// ���������� ����
+		// нормальный тест
 		for (int k = 1; k <= 10; k++)
 		{
 			FoodMassed food = createDemoFood();
@@ -38,7 +38,7 @@ public class TestMealRecord extends TestCase
 			assertEquals(food, meal.get(n));
 		}
 
-		// ����-����
+		// краш-тест
 		try
 		{
 			meal.add(null);
