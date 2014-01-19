@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import junit.framework.TestCase;
-import org.bosik.compensation.fakes.mocks.Mock;
-import org.bosik.compensation.fakes.mocks.MockFood;
 import org.bosik.diacomp.bo.Food;
 import org.bosik.diacomp.bo.FoodMassed;
+import org.bosik.diacomp.fakes.mocks.Mock;
+import org.bosik.diacomp.fakes.mocks.MockFood;
 import org.bosik.diacomp.utills.TestUtils;
 
 public class MockFoodMassed extends TestCase implements Mock<FoodMassed>
