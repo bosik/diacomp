@@ -10,7 +10,7 @@
 	define("S_CURDATE", "last_date");
 
 	// версия API сервера
-	define("CURRENT_API_VERSION", "1.2");
+	define("CURRENT_API_VERSION", "2.0");
 
 	// результаты
 	define("RESULT_DONE", "DONE");
@@ -210,7 +210,7 @@
 
 	function AddActivate($login, $hashpass, $key)
 	{
-		/* 		
+		/*
 		  // проверяем наличие записи на активацию
 		  $query = "SELECT `ID` FROM `Activate` WHERE `Login` = '{$login}'";
 		  $sql = mysqli_query(sqlLink(), $query);

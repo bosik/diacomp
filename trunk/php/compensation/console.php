@@ -14,6 +14,7 @@
 	// не авторизован
 	if (!IsLogged())
 	{
+		//echo '{code:401, response:"Unauthorized"}';
 		echo 'Error: log in first';
 	}
 	else
@@ -29,17 +30,18 @@
 
 		if (isset($_GET['diary:getModList']) && isset($_GET['time']))
 		{
-			$time = mysqli_real_escape_string(sqlLink(), $_GET['time']);
-			echo GetModList($cur_id, $time);
+			//$time = mysqli_real_escape_string(sqlLink(), $_GET['time']);
+			//echo GetModList($cur_id, $time);
+			echo "Error: deprecated method";
 		}
 		else
 
 		if (isset($_GET['diary:getModList']) && isset($_GET['dates']))
 		{
-			$dates = mysqli_real_escape_string(sqlLink(), $_GET['dates']);
-			$datelist = GetListColons($dates);
-			
-			echo GetModListForDates($cur_id, $datelist);
+			//$dates = mysqli_real_escape_string(sqlLink(), $_GET['dates']);
+			//$datelist = GetListColons($dates);
+			//echo GetModListForDates($cur_id, $datelist);
+			echo "Error: deprecated method";
 		}
 		else
 
@@ -48,50 +50,58 @@
 		// pages=<page><page>...<page>
 		if (isset($_POST['diary:upload']) && isset($_POST['pages']))
 		{
-			$pages = $_POST['pages'];
-
-			if (isset($_POST['format']) && ($_POST['format'] == 'json'))
-			{
-				//echo "JSON Upload; ID=<", $cur_id, ">\n", "Pages=<", $pages, ">";
-				echo Answer(PostPageJSON($cur_id, $pages));
-			}
-			else
-			{
-				//echo "<Console.php pages=" . $pages . "</Console.php>\n";
-				$response = UploadPages($cur_id, $pages);
-				//echo Answer($response->status == 0);
-				echo $response->SaveToJSON();
-			}
+			//			$pages = $_POST['pages'];
+			//
+			//			if (isset($_POST['format']) && ($_POST['format'] == 'json'))
+			//			{
+			//				//echo "JSON Upload; ID=<", $cur_id, ">\n", "Pages=<", $pages, ">";
+			//				echo Answer(PostPageJSON($cur_id, $pages));
+			//			}
+			//			else
+			//			{
+			//				//echo "<Console.php pages=" . $pages . "</Console.php>\n";
+			//				$response = UploadPages($cur_id, $pages);
+			//				//echo Answer($response->status == 0);
+			//				echo $response->SaveToJSON();
+			//			}
+			echo "Error: deprecated method";
 		}
 		else
+
+		// Uploading records
+		if (isset($_POST['diary-write']) && isset($_POST['content']))
+		{
+			echo Answer(PostRecordsJSON($cur_id, $_POST['content']));
+		}
 
 		// 3. Получение страниц с сервера
 		// diary:download
 		// dates=2009-11-18,2012-04-02
 		if (isset($_GET['diary:download']) && isset($_GET['dates']))
 		{
-			if (isset($_GET['format']) && ($_GET['format'] == 'json'))
-			{
-				$dates = mysqli_real_escape_string(sqlLink(), $_GET['dates']);
-				$datelist = GetListColons($dates);
-
-				for ($i = 0; $i < count($datelist); $i++)
-				{
-					echo GetPageJSON($cur_id, $datelist{$i});
-					break;
-					// возвращаем только первую страницу
-				}
-			}
-			else
-			{
-				$dates = mysqli_real_escape_string(sqlLink(), $_GET['dates']);
-				$datelist = GetListColons($dates);
-
-				for ($i = 0; $i < count($datelist); $i++)
-				{
-					echo GetPage($cur_id, $datelist{$i}, true);
-				}
-			}
+			//			if (isset($_GET['format']) && ($_GET['format'] == 'json'))
+			//			{
+			//				$dates = mysqli_real_escape_string(sqlLink(), $_GET['dates']);
+			//				$datelist = GetListColons($dates);
+			//
+			//				for ($i = 0; $i < count($datelist); $i++)
+			//				{
+			//					echo GetPageJSON($cur_id, $datelist{$i});
+			//					break;
+			//					// возвращаем только первую страницу
+			//				}
+			//			}
+			//			else
+			//			{
+			//				$dates = mysqli_real_escape_string(sqlLink(), $_GET['dates']);
+			//				$datelist = GetListColons($dates);
+			//
+			//				for ($i = 0; $i < count($datelist); $i++)
+			//				{
+			//					echo GetPage($cur_id, $datelist{$i}, true);
+			//				}
+			//			}
+			echo "Error: deprecated method";
 		}
 		else
 
