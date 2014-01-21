@@ -3,7 +3,7 @@ package org.bosik.diacomp.bo.foodbase;
 import java.io.Serializable;
 import java.util.Locale;
 import org.bosik.diacomp.bo.Food;
-import org.bosik.diacomp.bo.basic.NamedRelativeTagged;
+import org.bosik.diacomp.bo.interfaces.NamedRelativeTagged;
 import com.google.gson.annotations.SerializedName;
 
 /**
