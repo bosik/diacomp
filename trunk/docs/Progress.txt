@@ -1,0 +1,4 @@
+Date		Hours	Task
+01.02.2014	2	Updating API architecture
+01.02.2014	1.5	Setup Ubuntu server
+01.02.2014	7	Setup Tomcat
