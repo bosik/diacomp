@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/css" href="style.css"?>
 <spec>
-	<version>1.2</version>
+	<version>2.0</version>
 	<methods>
 		<legend>
 			<legend-item>Категория</legend-item>
@@ -14,125 +14,113 @@
 		<method>
 			<cat>Авторизация</cat>
 			<name>Вход</name>
-			<url>login.php</url>
+			<url>/auth/login/</url>
 			<params>
 				<param>
 					<par-name>login</par-name>
 					<par-desc>Логин пользователя</par-desc>
 				</param>
 				<param>
-					<par-name>password</par-name>
+					<par-name>pass</par-name>
 					<par-desc>Пароль пользователя</par-desc>
 				</param>
 				<param-optional>
 					<par-name>api</par-name>
 					<par-desc>Версия API клиента</par-desc>
 				</param-optional>
-				<param-optional>
-					<par-name>noredir</par-name>
-					<par-desc>Флаг запрета перенаправления</par-desc>
-				</param-optional>
 			</params>
 			<type>POST</type>
 			<returns>
 				<note>Количество и частота попыток не ограничены.</note>
 				<return>
-					<return-value>DONE:(время_сервера)</return-value>
-					<return-condition>Перенаправление запрещено, авторизация прошла успешно</return-condition>
+					<return-value>{"code":"0",...}</return-value>
+					<return-condition>Авторизация прошла успешно</return-condition>
 				</return>
 				<return>
-					<return-value>FAIL:DEPAPI</return-value>
-					<return-condition>Перенаправление запрещено (?), указанная версия API отличается от версии API сервера</return-condition>
+					<return-value>{"code":"4050","msg":"###",...}</return-value>
+					<return-condition>Авторизация прошла успешно; версия API клиента устарела, но ещё поддерживается</return-condition>
 				</return>
 				<return>
-					<return-value>FAIL:BADNAME</return-value>
-					<return-condition>Перенаправление запрещено, авторизация провалилась</return-condition>
+					<return-value>{"code":"4051","msg":"###",...}</return-value>
+					<return-condition>Ошибка авторизации: версия API клиента устарела и больше не поддерживается</return-condition>
 				</return>
 				<return>
-					<return-value>(HTML: страница для повторной авторизации)</return-value>
-					<return-condition>Перенаправление разрешено, авторизация провалилась</return-condition>
+					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-condition>Ошибка авторизации: неверный логин или пароль</return-condition>
 				</return>
 				<return>
-					<return-value>(HTML: главная страница)</return-value>
-					<return-condition>Перенаправление разрешено, авторизация прошла успешно</return-condition>
+					<return-value>{"code":"400","msg":"###",...}</return-value>
+					<return-condition>Ошибка авторизации: параметры неверны либо отсутствуют</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
 		</method>
 		<method>
 			<cat>Авторизация</cat>
 			<name>Выход</name>
-			<url>login.php</url>
+			<url>/auth/logout/</url>
 			<params>
-				<param>
-					<par-name>logout</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
-				<param-optional>
-					<par-name>noredir</par-name>
-					<par-desc>Флаг запрета перенаправления</par-desc>
-				</param-optional>
 			</params>
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>(HTML: страница авторизации)</return-value>
-					<return-condition>Перенаправление разрешено (по умолчанию)</return-condition>
+					<return-value>{"code":"0",...}</return-value>
+					<return-condition>Выход проведён успешно</return-condition>
 				</return>
 				<return>
-					<return-value></return-value>
-					<return-condition>Перенаправление запрещено</return-condition>
+					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
 		</method>
 		<method>
 			<cat>Авторизация</cat>
 			<name>Запрос статуса авторизации</name>
-			<url>login.php</url>
+			<url>/auth/status/</url>
 			<params>
-				<param>
-					<par-name>status</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
 			</params>
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>online</return-value>
+					<return-value>{"code":"0","status":"1",...}</return-value>
 					<return-condition>Клиент авторизован</return-condition>
 				</return>
 				<return>
-					<return-value>offline</return-value>
+					<return-value>{"code":"0","status":"0",...}</return-value>
 					<return-condition>Клиент не авторизован</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
 		</method>
 		<method>
 			<cat>Система</cat>
 			<name>Получение версии API сервера</name>
-			<url>console.php</url>
+			<url>/version/</url>
 			<params>
-				<param>
-					<par-name>getAPIVersion</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
 			</params>
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>(версия API сервера)</return-value>
+					<return-value>{"code":"0","version":"###",...}</return-value>
 					<return-condition>Всегда</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
 		</method>
 		<method>
 			<cat>Система</cat>
 			<name>Отправка сообщения на e-mail разработчика</name>
-			<url>console.php</url>
+			<url>/service/mail/</url>
 			<params>
-				<param>
-					<par-name>report</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
 				<param>
 					<par-name>msg</par-name>
 					<par-desc>Текст сообщения</par-desc>
@@ -141,23 +129,23 @@
 			<type>POST</type>
 			<returns>
 				<return>
-					<return-value>DONE</return-value>
+					<return-value>{"code":"0",...}</return-value>
 					<return-condition>Отправка прошла успешно</return-condition>
 				</return>
 				<return>
-					<return-value>FAIL</return-value>
-					<return-condition>Произошла ошибка отправки данных</return-condition>
+					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
-					<return-value>Error: log in first</return-value>
-					<return-condition>Клиент не авторизован</return-condition>
+					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
 		</method>
 		<method>
 			<cat>Дневник</cat>
 			<name>Получение версий страниц</name>
-			<url>console.php</url>
+			<url>/diary/</url>
 			<params>
 				<param>
 					<par-name>diary:getModList</par-name>
