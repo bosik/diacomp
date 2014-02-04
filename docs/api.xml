@@ -108,7 +108,7 @@
 			<returns>
 				<return>
 					<return-value>{"code":"0","version":"###",...}</return-value>
-					<return-condition>Всегда</return-condition>
+					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
 					<return-value>{"code":"500","msg":"###",...}</return-value>
@@ -130,7 +130,7 @@
 			<returns>
 				<return>
 					<return-value>{"code":"0",...}</return-value>
-					<return-condition>Отправка прошла успешно</return-condition>
+					<return-condition>Операция прошла успешно</return-condition>
 				</return>
 				<return>
 					<return-value>{"code":"401","msg":"###",...}</return-value>
@@ -142,110 +142,89 @@
 				</return>
 			</returns>
 		</method>
-		<method>
+		<method-todo>
 			<cat>Дневник</cat>
-			<name>Получение версий страниц</name>
-			<url>/diary/</url>
+			<name>Получение записей дневника, относящихся к некоторому интервалу времени</name>
+			<url>/diary/time/</url>
 			<params>
 				<param>
-					<par-name>diary:getModList</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
+					<par-name>from</par-name>
+					<par-desc>Время начала выборки (UTC) в стандартном формате</par-desc>
 				</param>
-				<param-optional>
-					<par-name>time</par-name>
-					<par-desc>Время в формате гггг-мм-дд чч:мм:сс</par-desc>
-				</param-optional>
-				<param-optional>
-					<par-name>dates</par-name>
-					<par-desc>Список дат в формате гггг-мм-дд, разделённых запятыми</par-desc>
-				</param-optional>
+				<param>
+					<par-name>to</par-name>
+					<par-desc>Время конца выборки (UTC) в стандартном формате</par-desc>
+				</param>
 			</params>
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>(список пар (дата страницы, версия страницы) для всех страниц, изменённых после указанного времени; формат записи гггг-мм-дд|версия, пары разделены символом #10)</return-value>
-					<return-condition>Указан параметр time</return-condition>
-				</return>
-				<return>
-					<return-value>(список пар (дата страницы, версия страницы) для всех страниц с указанными датами; формат записи гггг-мм-дд|версия, пары разделены символом #10)</return-value>
-					<return-condition>Указан параметр dates. Для отсутствующих страниц возвращает версию 0.</return-condition>
-				</return>
-				<return>
-					<return-value>Error: log in first</return-value>
-					<return-condition>Клиент не авторизован</return-condition>
-				</return>
-			</returns>
-		</method>
-		<method>
-			<cat>Дневник</cat>
-			<name>Выгрузка страниц дневника на сервер</name>
-			<url>console.php</url>
-			<params>
-				<param>
-					<par-name>diary:upload</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
-				<param>
-					<par-name>pages</par-name>
-					<par-desc>Набор последовательно записанных страниц</par-desc>
-				</param>
-				<param-optional>
-					<par-name>format</par-name>
-					<par-desc>Формат данных. Поддерживается только значение json, формат по умолчанию — plain</par-desc>
-				</param-optional>
-			</params>
-			<type>POST</type>
-			<returns>
-				<note>TODO: Сделать ограничение на максимальный размер заметки / максимальное количество записей / максимальное количество блюд в приёме пищи.</note>
-				<return>
-					<return-value>DONE</return-value>
-					<return-condition>Отправка прошла успешно</return-condition>
-				</return>
-				<return>
-					<return-value>FAIL</return-value>
-					<return-condition>Произошла ошибка отправки данных</return-condition>
-				</return>
-				<return>
-					<return-value>Error: log in first</return-value>
-					<return-condition>Клиент не авторизован</return-condition>
-				</return>
-			</returns>
-		</method>
-		<method>
-			<cat>Дневник</cat>
-			<name>Получение страниц с сервера</name>
-			<url>console.php</url>
-			<params>
-				<param>
-					<par-name>diary:download</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
-				<param>
-					<par-name>dates</par-name>
-					<par-desc>Список дат в формате гггг-мм-дд, разделённых запятыми</par-desc>
-				</param>
-				<param-optional>
-					<par-name>format</par-name>
-					<par-desc>Формат данных. Поддерживается только значение json, формат по умолчанию — plain</par-desc>
-				</param-optional>
-			</params>
-			<type>GET</type>
-			<returns>
-				<note>TODO: сделать ограничение на максимальное количество страниц (отчасти действует ограничение на максимальную длину URL-запроса).</note>
-				<return>
-					<return-value>(список страниц)</return-value>
+					<return-value>{"code":"0","items":[{ (item) }, ...]}, отсортирован по возрастанию времени записи</return-value>
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value>FAIL</return-value>
-					<return-condition>Произошла ошибка</return-condition>
+					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
-					<return-value>Error: log in first</return-value>
-					<return-condition>Клиент не авторизован</return-condition>
+					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method>
+		</method-todo>
+		<method-todo>
+			<cat>Дневник</cat>
+			<name>Получение записей дневника, изменённых после указанного времени</name>
+			<url>/diary/mod/</url>
+			<params>
+				<param>
+					<par-name>from</par-name>
+					<par-desc>Время (UTC) в стандартном формате</par-desc>
+				</param>
+			</params>
+			<type>GET</type>
+			<returns>
+				<return>
+					<return-value>{"code":"0","items":[{ (item) }, ...]}, отсортирован по возрастанию времени записи</return-value>
+					<return-condition>Всё хорошо</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-condition>Ошибка: отсутствует авторизация</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
+				</return>
+			</returns>
+		</method-todo>
+		<method-todo>
+			<cat>Дневник</cat>
+			<name>Выгрузка записей дневника на сервер</name>
+			<url>/diary/</url>
+			<params>
+				<param>
+					<par-name>items</par-name>
+					<par-desc>[{ (item) }, ...]</par-desc>
+				</param>
+			</params>
+			<type>POST</type>
+			<returns>
+				<note>TODO: Сделать ограничение на максимальный размер заметки / максимальное количество записей / максимальное количество блюд в приёме пищи / максимальный размер записи.</note>
+				<return>
+					<return-value>{"code":"0",...}</return-value>
+					<return-condition>Операция прошла успешно</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-condition>Ошибка: отсутствует авторизация</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
+				</return>
+			</returns>
+		</method-todo>
 		<method-todo>
 			<cat>Дневник</cat>
 			<name>[new] Создание/обновление одной или нескольких записей дневника</name>
@@ -297,7 +276,7 @@
 		</method-todo>
 		<method-todo>
 			<cat>Дневник</cat>
-			<name>[new] Получение всех записей, изменённых после указанного времени</name>
+			<name>[new] Получение записей дневника, изменённых после указанного времени</name>
 			<url>console.php</url>
 			<params>
 				<param>
