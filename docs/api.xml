@@ -144,7 +144,7 @@
 		</method>
 		<method-todo>
 			<cat>Дневник</cat>
-			<name>Получение записей дневника, относящихся к некоторому интервалу времени</name>
+			<name>Получение всех записей для указанного интервала времени</name>
 			<url>/diary/time/</url>
 			<params>
 				<param>
@@ -200,12 +200,38 @@
 		</method-todo>
 		<method-todo>
 			<cat>Дневник</cat>
-			<name>Выгрузка записей дневника на сервер</name>
+			<name>Получение записей с указанными GUID</name>
+			<url>/diary/guid/</url>
+			<params>
+				<param>
+					<par-name>guids</par-name>
+					<par-desc>["guid":"...", ...]</par-desc>
+				</param>
+			</params>
+			<type>GET</type>
+			<returns>
+				<return>
+					<return-value>{"code":"0","items":[{ (item) }, ...]}, отсортирован по возрастанию времени записи</return-value>
+					<return-condition>Всё хорошо</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-condition>Ошибка: отсутствует авторизация</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
+				</return>
+			</returns>
+		</method-todo>
+		<method-todo>
+			<cat>Дневник</cat>
+			<name>Создание/сохранение одной или нескольких записей дневника</name>
 			<url>/diary/</url>
 			<params>
 				<param>
 					<par-name>items</par-name>
-					<par-desc>[{ (item) }, ...]</par-desc>
+					<par-desc>[item, ...]</par-desc>
 				</param>
 			</params>
 			<type>POST</type>
@@ -225,292 +251,111 @@
 				</return>
 			</returns>
 		</method-todo>
-		<method-todo>
-			<cat>Дневник</cat>
-			<name>[new] Создание/обновление одной или нескольких записей дневника</name>
-			<url>console.php</url>
+		<method>
+			<cat>База продуктов</cat>
+			<name>Получение всех продуктов</name>
+			<url>/foodbase/all/</url>
 			<params>
-				<param>
-					<par-name>diary-write</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
-				<param>
-					<par-name>content</par-name>
-					<par-desc>Массив записей в формате JSON</par-desc>
-				</param>
 			</params>
-			<type>POST</type>
+			<type>GET</type>
 			<returns>
-				<note>TODO: Сделать ограничение на максимальный размер записи</note>
 				<return>
-					<return-value>Стандартный JSON-ответ со статусом выполнения операции</return-value>
-					<return-condition>Всегда</return-condition>
+					<return-value>{"code":"0","items":[item, ...]}, отсортирован по алфавиту</return-value>
+					<return-condition>Всё хорошо</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-condition>Ошибка: отсутствует авторизация</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method-todo>
-		<method-todo>
-			<cat>Дневник</cat>
-			<name>[new] Получение всех записей для указанного интервала времени</name>
-			<url>console.php</url>
+		</method>
+		<method>
+			<cat>База продуктов</cat>
+			<name>Получение продуктов, изменённых после указанного времени</name>
+			<url>/foodbase/mod/</url>
 			<params>
 				<param>
-					<par-name>diary-read-range</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
-				<param>
 					<par-name>from</par-name>
-					<par-desc>Время начала интервала (UTC)</par-desc>
-				</param>
-				<param>
-					<par-name>to</par-name>
-					<par-desc>Время конца интервала (UTC)</par-desc>
+					<par-desc>Время (UTC) в стандартном формате</par-desc>
 				</param>
 			</params>
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>JSON-ответ с массивом отсортированных по времени записей в формате JSON / кодом ошибки</return-value>
-					<return-condition>Всегда</return-condition>
+					<return-value>{"code":"0","items":[{ (item) }, ...]}, отсортирован по алфавиту</return-value>
+					<return-condition>Всё хорошо</return-condition>
 				</return>
-			</returns>
-		</method-todo>
-		<method-todo>
-			<cat>Дневник</cat>
-			<name>[new] Получение записей дневника, изменённых после указанного времени</name>
-			<url>console.php</url>
-			<params>
-				<param>
-					<par-name>diary-read-changes</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
-				<param>
-					<par-name>from</par-name>
-					<par-desc>Время (UTC)</par-desc>
-				</param>
-			</params>
-			<type>GET</type>
-			<returns>
 				<return>
-					<return-value>JSON-ответ с массивом отсортированных по времени записей в формате JSON / кодом ошибки</return-value>
-					<return-condition>Всегда</return-condition>
+					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-condition>Ошибка: отсутствует авторизация</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method-todo>
+		</method>
 		<method-todo>
-			<cat>Дневник</cat>
-			<name>[new] Получение записей с указанными GUID</name>
-			<url>console.php</url>
+			<cat>База продуктов</cat>
+			<name>Получение продуктов с указанными GUID</name>
+			<url>/foodbase/guid/</url>
 			<params>
-				<param>
-					<par-name>diary-read-guid</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
 				<param>
 					<par-name>guids</par-name>
-					<par-desc>Массив GUID  в формате JSON</par-desc>
+					<par-desc>["guid":"...", ...]</par-desc>
 				</param>
 			</params>
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>JSON-ответ с массивом отсортированных по времени записей в формате JSON / кодом ошибки</return-value>
-					<return-condition>Всегда</return-condition>
+					<return-value>{"code":"0","items":[{ (item) }, ...]}, отсортирован по алфавиту</return-value>
+					<return-condition>Всё хорошо</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-condition>Ошибка: отсутствует авторизация</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
 		</method-todo>
 		<method>
 			<cat>База продуктов</cat>
-			<name>Получение версии базы продуктов</name>
-			<url>console.php</url>
+			<name>Создание/сохранение одного или нескольких продуктов</name>
+			<url>/foodbase/</url>
 			<params>
 				<param>
-					<par-name>foodbase:getVersion</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
-			</params>
-			<type>GET</type>
-			<returns>
-				<return>
-					<return-value>(номер версии — целое неотрицательное число)</return-value>
-					<return-condition>Всё хорошо</return-condition>
-				</return>
-				<return>
-					<return-value>0</return-value>
-					<return-condition>База не существует</return-condition>
-				</return>
-				<return>
-					<return-value>FAIL</return-value>
-					<return-condition>Произошла ошибка</return-condition>
-				</return>
-				<return>
-					<return-value>Error: log in first</return-value>
-					<return-condition>Клиент не авторизован</return-condition>
-				</return>
-			</returns>
-		</method>
-		<method>
-			<cat>База продуктов</cat>
-			<name>Получение базы продуктов с сервера</name>
-			<url>console.php</url>
-			<params>
-				<param>
-					<par-name>foodbase:download</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
-			</params>
-			<type>GET</type>
-			<returns>
-				<return>
-					<return-value>(База продуктов в формате XML)</return-value>
-					<return-condition>База существует</return-condition>
-				</return>
-				<return>
-					<return-value></return-value>
-					<return-condition>База не существует</return-condition>
-				</return>
-				<return>
-					<return-value>FAIL</return-value>
-					<return-condition>Произошла ошибка</return-condition>
-				</return>
-				<return>
-					<return-value>Error: log in first</return-value>
-					<return-condition>Клиент не авторизован</return-condition>
-				</return>
-			</returns>
-		</method>
-		<method>
-			<cat>База продуктов</cat>
-			<name>Загрузка базы продуктов на сервер</name>
-			<url>console.php</url>
-			<params>
-				<param>
-					<par-name>foodbase:upload</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
-				<param>
-					<par-name>version</par-name>
-					<par-desc>Номер версии загружаемой базы</par-desc>
-				</param>
-				<param>
-					<par-name>data</par-name>
-					<par-desc>База продуктов в формате XML</par-desc>
+					<par-name>items</par-name>
+					<par-desc>[item, ...]</par-desc>
 				</param>
 			</params>
 			<type>POST</type>
 			<returns>
 				<return>
-					<return-value>DONE</return-value>
-					<return-condition>Загрузка прошла успешно</return-condition>
+					<return-value>{"code":"0",...}</return-value>
+					<return-condition>Операция прошла успешно</return-condition>
 				</return>
 				<return>
-					<return-value>FAIL</return-value>
-					<return-condition>Произошла ошибка</return-condition>
+					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
-					<return-value>Error: log in first</return-value>
-					<return-condition>Клиент не авторизован</return-condition>
-				</return>
-			</returns>
-		</method>
-		<method>
-			<cat>База блюд</cat>
-			<name>Получение версии базы блюд</name>
-			<url>console.php</url>
-			<params>
-				<param>
-					<par-name>dishbase:getVersion</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
-			</params>
-			<type>GET</type>
-			<returns>
-				<return>
-					<return-value>(номер версии — целое неотрицательное число)</return-value>
-					<return-condition>Всё хорошо</return-condition>
-				</return>
-				<return>
-					<return-value>0</return-value>
-					<return-condition>База не существует</return-condition>
-				</return>
-				<return>
-					<return-value>FAIL</return-value>
-					<return-condition>Произошла ошибка</return-condition>
-				</return>
-				<return>
-					<return-value>Error: log in first</return-value>
-					<return-condition>Клиент не авторизован</return-condition>
-				</return>
-			</returns>
-		</method>
-		<method>
-			<cat>База блюд</cat>
-			<name>Получение базы блюд с сервера</name>
-			<url>console.php</url>
-			<params>
-				<param>
-					<par-name>dishbase:download</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
-			</params>
-			<type>GET</type>
-			<returns>
-				<return>
-					<return-value>(База блюд в формате XML)</return-value>
-					<return-condition>Всё хорошо</return-condition>
-				</return>
-				<return>
-					<return-value>FAIL</return-value>
-					<return-condition>Произошла ошибка</return-condition>
-				</return>
-				<return>
-					<return-value>Error: log in first</return-value>
-					<return-condition>Клиент не авторизован</return-condition>
-				</return>
-			</returns>
-		</method>
-		<method>
-			<cat>База блюд</cat>
-			<name>Загрузка базы блюд на сервер</name>
-			<url>console.php</url>
-			<params>
-				<param>
-					<par-name>dishbase:upload</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
-				<param>
-					<par-name>version</par-name>
-					<par-desc>Номер версии загружаемой базы</par-desc>
-				</param>
-				<param>
-					<par-name>data</par-name>
-					<par-desc>База блюд в формате XML</par-desc>
-				</param>
-			</params>
-			<type>POST</type>
-			<returns>
-				<return>
-					<return-value>DONE</return-value>
-					<return-condition>Загрузка прошла успешно</return-condition>
-				</return>
-				<return>
-					<return-value>FAIL</return-value>
-					<return-condition>Произошла ошибка</return-condition>
-				</return>
-				<return>
-					<return-value>Error: log in first</return-value>
-					<return-condition>Клиент не авторизован</return-condition>
+					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
 		</method>
 		<method>
 			<cat>Коэффициенты</cat>
-			<name>Выгрузка коэффициентов на сервер</name>
-			<url>console.php</url>
+			<name>Сохранение коэффициентов</name>
+			<url>/model/</url>
 			<params>
-				<param>
-					<par-name>koofs:upload</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
 				<param>
 					<par-name>data</par-name>
 					<par-desc>Коэффициенты в формате JSON</par-desc>
@@ -519,42 +364,38 @@
 			<type>POST</type>
 			<returns>
 				<return>
-					<return-value>DONE</return-value>
-					<return-condition>Загрузка прошла успешно</return-condition>
+					<return-value>{"code":"0",...}</return-value>
+					<return-condition>Операция прошла успешно</return-condition>
 				</return>
 				<return>
-					<return-value>FAIL</return-value>
-					<return-condition>Произошла ошибка</return-condition>
+					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
-					<return-value>Error: log in first</return-value>
-					<return-condition>Клиент не авторизован</return-condition>
+					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
 		</method>
 		<method>
 			<cat>Коэффициенты</cat>
-			<name>Получение коэффициентов</name>
-			<url>console.php</url>
+			<name>Загрузка коэффициентов</name>
+			<url>/model/</url>
 			<params>
-				<param>
-					<par-name>koofs:download</par-name>
-					<par-desc>Обязательный, пустой</par-desc>
-				</param>
 			</params>
 			<type>GET</type>
 			<returns>
 				<return>
 					<return-value>(коэффициенты в формате JSON)</return-value>
-					<return-condition>Коэффициенты существуют</return-condition>
+					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value></return-value>
-					<return-condition>Коэффициенты не существуют</return-condition>
+					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
-					<return-value>Error: log in first</return-value>
-					<return-condition>Клиент не авторизован</return-condition>
+					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
 		</method>
