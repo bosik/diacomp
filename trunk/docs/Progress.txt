@@ -4,3 +4,4 @@ Date		Hours	Task
 01.02.2014	8	Setup Tomcat
 02.02.2014	2	Setup Tomcat
 02.02.2014	1.0	Setup MySQL
+02.02.2014	1.0	Tomcat: use Java 7 JRE
