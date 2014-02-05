@@ -11,7 +11,7 @@
 			<legend-item>Тип</legend-item>
 			<legend-item>Результат</legend-item>
 		</legend>
-		<method>
+		<method-todo>
 			<cat>Авторизация</cat>
 			<name>Вход</name>
 			<url>/auth/login/</url>
@@ -57,8 +57,8 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method>
-		<method>
+		</method-todo>
+		<method-todo>
 			<cat>Авторизация</cat>
 			<name>Выход</name>
 			<url>/auth/logout/</url>
@@ -75,8 +75,8 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method>
-		<method>
+		</method-todo>
+		<method-todo>
 			<cat>Авторизация</cat>
 			<name>Запрос статуса авторизации</name>
 			<url>/auth/status/</url>
@@ -97,8 +97,8 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method>
-		<method>
+		</method-todo>
+		<method-todo>
 			<cat>Система</cat>
 			<name>Получение версии API сервера</name>
 			<url>/version/</url>
@@ -115,8 +115,8 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method>
-		<method>
+		</method-todo>
+		<method-todo>
 			<cat>Система</cat>
 			<name>Отправка сообщения на e-mail разработчика</name>
 			<url>/service/mail/</url>
@@ -141,18 +141,18 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method>
+		</method-todo>
 		<method-todo>
 			<cat>Дневник</cat>
 			<name>Получение всех записей для указанного интервала времени</name>
-			<url>/diary/time/</url>
+			<url>/diary/</url>
 			<params>
 				<param>
-					<par-name>from</par-name>
+					<par-name>start_time</par-name>
 					<par-desc>Время начала выборки (UTC) в стандартном формате</par-desc>
 				</param>
 				<param>
-					<par-name>to</par-name>
+					<par-name>end_time</par-name>
 					<par-desc>Время конца выборки (UTC) в стандартном формате</par-desc>
 				</param>
 			</params>
@@ -175,10 +175,10 @@
 		<method-todo>
 			<cat>Дневник</cat>
 			<name>Получение записей дневника, изменённых после указанного времени</name>
-			<url>/diary/mod/</url>
+			<url>/diary/</url>
 			<params>
 				<param>
-					<par-name>from</par-name>
+					<par-name>mod_after</par-name>
 					<par-desc>Время (UTC) в стандартном формате</par-desc>
 				</param>
 			</params>
@@ -251,7 +251,7 @@
 				</return>
 			</returns>
 		</method-todo>
-		<method>
+		<method-todo>
 			<cat>База продуктов</cat>
 			<name>Получение всех продуктов</name>
 			<url>/foodbase/all/</url>
@@ -272,8 +272,8 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method>
-		<method>
+		</method-todo>
+		<method-todo>
 			<cat>База продуктов</cat>
 			<name>Получение продуктов, изменённых после указанного времени</name>
 			<url>/foodbase/mod/</url>
@@ -298,7 +298,7 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method>
+		</method-todo>
 		<method-todo>
 			<cat>База продуктов</cat>
 			<name>Получение продуктов с указанными GUID</name>
@@ -325,7 +325,7 @@
 				</return>
 			</returns>
 		</method-todo>
-		<method>
+		<method-todo>
 			<cat>База продуктов</cat>
 			<name>Создание/сохранение одного или нескольких продуктов</name>
 			<url>/foodbase/</url>
@@ -350,8 +350,8 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method>
-		<method>
+		</method-todo>
+		<method-todo>
 			<cat>Коэффициенты</cat>
 			<name>Сохранение коэффициентов</name>
 			<url>/model/</url>
@@ -376,8 +376,8 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method>
-		<method>
+		</method-todo>
+		<method-todo>
 			<cat>Коэффициенты</cat>
 			<name>Загрузка коэффициентов</name>
 			<url>/model/</url>
@@ -398,6 +398,6 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method>
+		</method-todo>
 	</methods>
 </spec>
