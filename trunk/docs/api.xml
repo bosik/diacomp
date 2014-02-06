@@ -107,7 +107,7 @@
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>{"code":"0","version":"###",...}</return-value>
+					<return-value>{"code":"0","current":"###","support":"###",...} - содержит текущую и самую раннюю поддерживаемую версии</return-value>
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
@@ -145,7 +145,7 @@
 		<method-todo>
 			<cat>Дневник</cat>
 			<name>Получение всех записей для указанного интервала времени</name>
-			<url>/diary/</url>
+			<url>/diary/period/</url>
 			<params>
 				<param>
 					<par-name>start_time</par-name>
@@ -175,7 +175,7 @@
 		<method-todo>
 			<cat>Дневник</cat>
 			<name>Получение записей дневника, изменённых после указанного времени</name>
-			<url>/diary/</url>
+			<url>/diary/new/</url>
 			<params>
 				<param>
 					<par-name>mod_after</par-name>

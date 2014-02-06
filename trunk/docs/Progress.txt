@@ -6,3 +6,5 @@ Date		Hours	Task
 02.02.2014	1.0	Setup MySQL
 02.02.2014	1.0	Tomcat: use Java 7 JRE
 04.02.2014	2.5	Updating API architecture
+05.02.2014	0.5	Updating API architecture
+06.02.2014	0.5	Updating API architecture
