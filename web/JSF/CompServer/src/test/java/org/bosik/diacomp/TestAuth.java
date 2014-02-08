@@ -6,7 +6,7 @@ import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
-import org.bosik.diacomp.resources.CompServerApp;
+import org.bosik.diacomp.backend.resources.CompServerApp;
 import org.bosik.diacomp.utils.ResponseBuilder;
 import org.bosik.diacomp.utils.StdResponse;
 import org.glassfish.jersey.client.ClientConfig;

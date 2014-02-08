@@ -1,4 +1,4 @@
-package org.bosik.diacomp;
+package org.bosik.diacomp.backend.services;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

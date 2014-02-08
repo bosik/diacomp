@@ -5,11 +5,11 @@ import org.bosik.diacomp.bo.dishbase.DishItem;
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.services.DishBaseService;
 import org.bosik.diacomp.services.exceptions.ItemNotFoundException;
-import org.bosik.diacomp.services.exceptions.StoreException;
+import org.bosik.diacomp.services.exceptions.PersistenceException;
 
 public class FakeDishBaseService implements DishBaseService
 {
-	public String add(Versioned<DishItem> item) throws StoreException
+	public String add(Versioned<DishItem> item) throws PersistenceException
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -45,7 +45,7 @@ public class FakeDishBaseService implements DishBaseService
 		return null;
 	}
 
-	public void update(Versioned<DishItem> item) throws ItemNotFoundException, StoreException
+	public void update(Versioned<DishItem> item) throws ItemNotFoundException, PersistenceException
 	{
 		// TODO Auto-generated method stub
 

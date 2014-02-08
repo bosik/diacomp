@@ -1,6 +1,6 @@
 package org.bosik.diacomp.services.exceptions;
 
-public class ItemNotFoundException extends CommonServiceException
+public class ItemNotFoundException extends PersistenceException
 {
 	private static final long	serialVersionUID	= 1L;
 

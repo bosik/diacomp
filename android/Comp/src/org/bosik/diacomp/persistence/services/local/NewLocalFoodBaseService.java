@@ -14,7 +14,7 @@ import org.bosik.diacomp.services.FoodBaseService;
 import org.bosik.diacomp.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.services.exceptions.ItemNotFoundException;
-import org.bosik.diacomp.services.exceptions.StoreException;
+import org.bosik.diacomp.services.exceptions.PersistenceException;
 import org.bosik.diacomp.utils.Utils;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -114,7 +114,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 	}
 
 	@Override
-	public String add(Versioned<FoodItem> item) throws StoreException
+	public String add(Versioned<FoodItem> item) throws PersistenceException
 	{
 		try
 		{
@@ -131,7 +131,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 		}
 		catch (Exception e)
 		{
-			throw new StoreException(e);
+			throw new PersistenceException(e);
 		}
 	}
 
@@ -159,7 +159,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 		}
 		catch (Exception e)
 		{
-			throw new StoreException(e);
+			throw new PersistenceException(e);
 		}
 	}
 
@@ -216,7 +216,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 	}
 
 	@Override
-	public void update(Versioned<FoodItem> item) throws ItemNotFoundException, StoreException
+	public void update(Versioned<FoodItem> item) throws ItemNotFoundException, PersistenceException
 	{
 		try
 		{
@@ -237,7 +237,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 		}
 		catch (Exception e)
 		{
-			throw new StoreException(e);
+			throw new PersistenceException(e);
 		}
 	}
 }

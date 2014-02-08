@@ -1,4 +1,4 @@
-package org.bosik.diacomp.resources;
+package org.bosik.diacomp.backend.resources;
 
 import java.util.HashSet;
 import java.util.Set;

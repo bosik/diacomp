@@ -1,22 +1,24 @@
-package org.bosik.diacomp.resources;
+package org.bosik.diacomp.backend.resources;
 
+import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import org.bosik.diacomp.backend.services.AuthWebServiceImpl;
+import org.bosik.diacomp.backend.services.DiaryWebServiceImpl;
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.persistence.serializers.Parser;
 import org.bosik.diacomp.persistence.serializers.Serializer;
 import org.bosik.diacomp.persistence.serializers.utils.ParserVersioned;
 import org.bosik.diacomp.persistence.serializers.utils.SerializerAdapter;
-import org.bosik.diacomp.services.DiaryService;
+import org.bosik.diacomp.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.utils.ResponseBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,7 +29,9 @@ public class DiaryResource
 	@Context
 	HttpServletRequest									req;
 
-	private DiaryService								diaryService				= new DiaryService();
+	private DiaryWebServiceImpl							diaryService				= new DiaryWebServiceImpl();
+
+	private AuthWebServiceImpl							authService					= new AuthWebServiceImpl();
 
 	private static final Parser<String>					parserString				= new Parser<String>()
 																					{
@@ -70,35 +74,35 @@ public class DiaryResource
 	private static final Serializer<Versioned<String>>	serializerVersionedString	= new SerializerAdapter<Versioned<String>>(
 																							parserVersionedString);
 
+	// @PUT
+	// @Path("update")
+	// @Produces(MediaType.APPLICATION_JSON)
+	// public String put(@DefaultValue("") @QueryParam("value") String value)
+	// {
+	// HttpSession session = req.getSession(true);
+	// session.setAttribute("foo", value);
+	//
+	// return "Value " + value + " putted";
+	// }
+
 	@GET
-	@Path("view")
+	@Path("new")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String demoView()
+	public Response getRecords(@QueryParam("value") Date time) throws CommonServiceException
 	{
 		try
 		{
-			int userId = AuthResource.getCurrentUserId(req);
-			List<Versioned<String>> list = diaryService.findAll(userId);
-			return serializerVersionedString.writeAll(list);
+			authService.checkAuth(req);
 
-			// Demo demo = new Demo();
-			// return String.valueOf(demo.test(2, 3));
+			int userId = authService.getCurrentUserId(req);
+			List<Versioned<String>> list = diaryService.findMod(userId, time);
+			String s = serializerVersionedString.writeAll(list);
+			return Response.ok(list).build();
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return ResponseBuilder.buildFails();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
 		}
-	}
-
-	@PUT
-	@Path("update")
-	@Produces(MediaType.APPLICATION_JSON)
-	public String put(@DefaultValue("") @QueryParam("value") String value)
-	{
-		HttpSession session = req.getSession(true);
-		session.setAttribute("foo", value);
-
-		return "Value " + value + " putted";
 	}
 }
