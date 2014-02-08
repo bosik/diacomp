@@ -3,20 +3,20 @@ package org.bosik.diacomp.persistence;
 import org.bosik.diacomp.bo.foodbase.FoodItem;
 import org.bosik.diacomp.face.activities.ActivityPreferences;
 import org.bosik.diacomp.persistence.common.Versioned;
-import org.bosik.diacomp.persistence.dao.DiaryDAO;
-import org.bosik.diacomp.persistence.dao.DishBaseDAO;
-import org.bosik.diacomp.persistence.dao.FoodBaseDAO;
-import org.bosik.diacomp.persistence.dao.local.LocalDiaryDAO;
-import org.bosik.diacomp.persistence.dao.local.NewLocalFoodBaseDAO;
-import org.bosik.diacomp.persistence.dao.web.WebDiaryDAO;
-import org.bosik.diacomp.persistence.dao.web.WebFoodBaseDAO;
-import org.bosik.diacomp.persistence.dao.web.utils.client.WebClient;
 import org.bosik.diacomp.persistence.serializers.Parser;
 import org.bosik.diacomp.persistence.serializers.ParserFoodItem;
 import org.bosik.diacomp.persistence.serializers.Serializer;
 import org.bosik.diacomp.persistence.serializers.utils.ParserVersioned;
 import org.bosik.diacomp.persistence.serializers.utils.SerializerAdapter;
+import org.bosik.diacomp.persistence.services.local.LocalDiaryService;
+import org.bosik.diacomp.persistence.services.local.NewLocalFoodBaseService;
+import org.bosik.diacomp.persistence.services.web.WebDiaryService;
+import org.bosik.diacomp.persistence.services.web.WebFoodBaseService;
+import org.bosik.diacomp.persistence.services.web.utils.client.WebClient;
 import org.bosik.diacomp.utils.ErrorHandler;
+import services.DiaryService;
+import services.DishBaseService;
+import services.FoodBaseService;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -39,14 +39,14 @@ public class Storage
 
 	public static WebClient		webClient;
 
-	public static DiaryDAO		localDiary;
-	public static DiaryDAO		webDiary;
+	public static DiaryService		localDiary;
+	public static DiaryService		webDiary;
 
-	public static FoodBaseDAO	localFoodBase;
-	public static FoodBaseDAO	webFoodBase;
+	public static FoodBaseService	localFoodBase;
+	public static FoodBaseService	webFoodBase;
 
-	public static DishBaseDAO	localDishBase;
-	public static DishBaseDAO	webDishBase;
+	public static DishBaseService	localDishBase;
+	public static DishBaseService	webDishBase;
 
 	/**
 	 * Initializes the storage. Might be called sequentially
@@ -69,19 +69,19 @@ public class Storage
 		if (null == localDiary)
 		{
 			Log.v(TAG, "Local diary initialization...");
-			localDiary = new LocalDiaryDAO(resolver);
+			localDiary = new LocalDiaryService(resolver);
 		}
 		if (null == webDiary)
 		{
 			Log.v(TAG, "Web diary initialization...");
-			webDiary = new WebDiaryDAO(webClient);
+			webDiary = new WebDiaryService(webClient);
 		}
 		if (null == localFoodBase)
 		{
 			Log.v(TAG, "Local food base initialization...");
 			// try
 			// {
-			localFoodBase = new NewLocalFoodBaseDAO(resolver);
+			localFoodBase = new NewLocalFoodBaseService(resolver);
 			// }
 			// catch (IOException e)
 			// {
@@ -94,7 +94,7 @@ public class Storage
 			Log.v(TAG, "Local dish base initialization...");
 			// try
 			// {
-			// localDishBase = new LocalDishBaseDAO(resolver);
+			// localDishBase = new LocalDishBaseService(resolver);
 			// }
 			// catch (IOException e)
 			// {
@@ -110,12 +110,12 @@ public class Storage
 			ParserVersioned<FoodItem> sJsonVersioned = new ParserVersioned<FoodItem>(sJsonItem);
 			Serializer<Versioned<FoodItem>> serializer = new SerializerAdapter<Versioned<FoodItem>>(sJsonVersioned);
 
-			webFoodBase = new WebFoodBaseDAO(webClient, serializer);
+			webFoodBase = new WebFoodBaseService(webClient, serializer);
 		}
 		if (null == webDishBase)
 		{
 			Log.v(TAG, "Web dish base initialization...");
-			// webDishBase = new WebDishBaseDAO(webClient, new SerializerDishBaseXML());
+			// webDishBase = new WebDishBaseService(webClient, new SerializerDishBaseXML());
 		}
 
 		ErrorHandler.init(webClient);

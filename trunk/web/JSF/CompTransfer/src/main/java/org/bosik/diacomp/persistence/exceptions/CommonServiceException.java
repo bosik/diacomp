@@ -1,15 +1,15 @@
 package org.bosik.diacomp.persistence.exceptions;
 
-public class StoreException extends CommonServiceException
+public class CommonServiceException extends RuntimeException
 {
 	private static final long	serialVersionUID	= 1L;
 
-	public StoreException(String msg)
+	public CommonServiceException(String msg)
 	{
 		super(msg);
 	}
 
-	public StoreException(Exception e)
+	public CommonServiceException(Exception e)
 	{
 		super(e);
 	}

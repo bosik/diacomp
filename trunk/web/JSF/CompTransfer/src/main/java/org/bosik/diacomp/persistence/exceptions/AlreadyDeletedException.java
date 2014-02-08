@@ -1,6 +1,6 @@
 package org.bosik.diacomp.persistence.exceptions;
 
-public class AlreadyDeletedException extends CommonDAOException
+public class AlreadyDeletedException extends CommonServiceException
 {
 	private static final long	serialVersionUID	= 1L;
 

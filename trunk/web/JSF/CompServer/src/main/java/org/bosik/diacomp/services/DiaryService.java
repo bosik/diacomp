@@ -10,14 +10,14 @@ import org.bosik.diacomp.persistence.common.Versioned;
 
 public class DiaryService
 {
-	private final MySQLAccess	dao	= new MySQLAccess();
+	private final MySQLAccess	db	= new MySQLAccess();
 
 	public List<Versioned<String>> findAll(int userId)
 	{
 		try
 		{
 			String clause = String.format("%s = %d", MySQLAccess.COLUMN_DIARY_USER, userId);
-			ResultSet set = dao.select(MySQLAccess.TABLE_DIARY, clause);
+			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause);
 			List<Versioned<String>> result = parseDiaryRecords(set);
 			set.close();
 			return result;
