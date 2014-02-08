@@ -7,18 +7,18 @@ import org.bosik.diacomp.bo.diary.DiaryRecord;
 import org.bosik.diacomp.bo.diary.records.MealRecord;
 import org.bosik.diacomp.bo.interfaces.Tagged;
 import org.bosik.diacomp.persistence.common.Versioned;
-import org.bosik.diacomp.persistence.dao.BaseDAO;
-import org.bosik.diacomp.persistence.dao.DiaryDAO;
-import org.bosik.diacomp.persistence.dao.DishBaseDAO;
-import org.bosik.diacomp.persistence.dao.FoodBaseDAO;
 import org.bosik.diacomp.utils.Utils;
+import services.BaseService;
+import services.DiaryService;
+import services.DishBaseService;
+import services.FoodBaseService;
 import android.util.Log;
 
 public class RelevantIndexator
 {
 	private static final String	TAG	= RelevantIndexator.class.getSimpleName();
 
-	public static void indexate(DiaryDAO diary, FoodBaseDAO foodBase, DishBaseDAO dishBase)
+	public static void indexate(DiaryService diary, FoodBaseService foodBase, DishBaseService dishBase)
 	{
 		/**/long time = System.currentTimeMillis();
 
@@ -59,7 +59,7 @@ public class RelevantIndexator
 		return delta * delta;
 	}
 
-	private static <T extends Tagged> void clearTags(BaseDAO<T> base)
+	private static <T extends Tagged> void clearTags(BaseService<T> base)
 	{
 		List<Versioned<T>> list = base.findAll();
 		for (Versioned<T> item : list)
@@ -69,7 +69,7 @@ public class RelevantIndexator
 		}
 	}
 
-	private static void process(String name, int delta, FoodBaseDAO foodBase, DishBaseDAO dishBase)
+	private static void process(String name, int delta, FoodBaseService foodBase, DishBaseService dishBase)
 	{
 		if (process(name, delta, foodBase))
 			return;
@@ -77,7 +77,7 @@ public class RelevantIndexator
 			return;
 	}
 
-	private static <T extends Tagged> boolean process(String name, int delta, BaseDAO<T> base)
+	private static <T extends Tagged> boolean process(String name, int delta, BaseService<T> base)
 	{
 		Versioned<T> item = base.findOne(name);
 		if (null != item)

@@ -23,7 +23,7 @@ public class TestSyncDiary extends TestCase
 	// public void testSort_0()
 	// {
 	// List<PageVersion> modList = new ArrayList<PageVersion>();
-	// SyncDiaryDAO.sort(modList);
+	// SyncDiaryService.sort(modList);
 	// assertTrue(ordered(modList));
 	// }
 	//
@@ -34,7 +34,7 @@ public class TestSyncDiary extends TestCase
 	// {
 	// List<PageVersion> modList = new ArrayList<PageVersion>();
 	// modList.add(new PageVersion(new Date(2013, 01, 03), 23));
-	// SyncDiaryDAO.sort(modList);
+	// SyncDiaryService.sort(modList);
 	// assertTrue(ordered(modList));
 	// }
 	//
@@ -47,7 +47,7 @@ public class TestSyncDiary extends TestCase
 	// modList.add(new PageVersion(new Date(2013, 01, 03), 23));
 	// modList.add(new PageVersion(new Date(2013, 01, 02), 11));
 	// modList.add(new PageVersion(new Date(2013, 01, 01), 48));
-	// SyncDiaryDAO.sort(modList);
+	// SyncDiaryService.sort(modList);
 	// assertTrue(ordered(modList));
 	// }
 	//
@@ -60,7 +60,7 @@ public class TestSyncDiary extends TestCase
 	// modList.add(new PageVersion(new Date(2013, 01, 01), 23));
 	// modList.add(new PageVersion(new Date(2013, 01, 02), 11));
 	// modList.add(new PageVersion(new Date(2013, 01, 06), 48));
-	// SyncDiaryDAO.sort(modList);
+	// SyncDiaryService.sort(modList);
 	// assertTrue(ordered(modList));
 	// }
 	//
@@ -79,7 +79,7 @@ public class TestSyncDiary extends TestCase
 	// List<Date> over1 = new ArrayList<Date>();
 	// List<Date> over2 = new ArrayList<Date>();
 	//
-	// SyncDiaryDAO.getOverLists(modList1, modList2, over1, over2);
+	// SyncDiaryService.getOverLists(modList1, modList2, over1, over2);
 	//
 	// assertTrue(over1.isEmpty());
 	// assertTrue(over2.isEmpty());

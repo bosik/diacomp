@@ -7,15 +7,15 @@ import org.bosik.diacomp.face.BuildConfig;
 import org.bosik.diacomp.face.R;
 import org.bosik.diacomp.face.UIUtils;
 import org.bosik.diacomp.persistence.Storage;
-import org.bosik.diacomp.persistence.dao.web.utils.client.WebClient.LoginResult;
-import org.bosik.diacomp.persistence.dao.web.utils.client.exceptions.AuthException;
-import org.bosik.diacomp.persistence.dao.web.utils.client.exceptions.ConnectionException;
-import org.bosik.diacomp.persistence.dao.web.utils.client.exceptions.DeprecatedAPIException;
-import org.bosik.diacomp.persistence.dao.web.utils.client.exceptions.ResponseFormatException;
-import org.bosik.diacomp.persistence.dao.web.utils.client.exceptions.UndefinedFieldException;
-import org.bosik.diacomp.services.sync.SyncBaseDAO;
-import org.bosik.diacomp.services.sync.SyncBaseDAO.SyncResult;
-import org.bosik.diacomp.services.sync.SyncDiaryDAO.Callback;
+import org.bosik.diacomp.persistence.services.web.utils.client.WebClient.LoginResult;
+import org.bosik.diacomp.persistence.services.web.utils.client.exceptions.AuthException;
+import org.bosik.diacomp.persistence.services.web.utils.client.exceptions.ConnectionException;
+import org.bosik.diacomp.persistence.services.web.utils.client.exceptions.DeprecatedAPIException;
+import org.bosik.diacomp.persistence.services.web.utils.client.exceptions.ResponseFormatException;
+import org.bosik.diacomp.persistence.services.web.utils.client.exceptions.UndefinedFieldException;
+import org.bosik.diacomp.services.sync.SyncBaseService;
+import org.bosik.diacomp.services.sync.SyncBaseService.SyncResult;
+import org.bosik.diacomp.services.sync.SyncDiaryService.Callback;
 import org.bosik.diacomp.utils.ErrorHandler;
 import org.bosik.diacomp.utils.Utils;
 import android.app.Activity;
@@ -160,12 +160,12 @@ public class ActivityMain extends Activity implements OnClickListener
 				Date since = new Date(2013 - 1900, 11 - 1, 1, 0, 0, 0); // а затем мы получаем
 																		// громадный синхролист, ага
 				// TODO: restore when compiled OK
-				// syncPagesCount = SyncDiaryDAO.synchronize(Storage.localDiary, Storage.webDiary,
+				// syncPagesCount = SyncDiaryService.synchronize(Storage.localDiary, Storage.webDiary,
 				// since);
 				Log.v(TAG, "Diary synced, total tranferred: " + syncPagesCount);
 
 				Log.v(TAG, "Sync foodbase...");
-				SyncResult r = SyncBaseDAO.synchronize(Storage.localFoodBase, Storage.webFoodBase);
+				SyncResult r = SyncBaseService.synchronize(Storage.localFoodBase, Storage.webFoodBase);
 				syncFoodBase = (r != SyncResult.EQUAL);
 				Log.v(TAG, "Foodbase synced, result: " + r);
 
