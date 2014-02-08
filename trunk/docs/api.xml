@@ -212,7 +212,7 @@
 					<par-desc>[item, ...]</par-desc>
 				</param>
 			</params>
-			<type>POST</type>
+			<type>PUT</type>
 			<returns>
 				<note>TODO: Сделать ограничение на максимальный размер заметки / максимальное количество записей / максимальное количество блюд в приёме пищи / максимальный размер записи.</note>
 				<return>
@@ -313,7 +313,7 @@
 					<par-desc>[item, ...]</par-desc>
 				</param>
 			</params>
-			<type>POST</type>
+			<type>PUT</type>
 			<returns>
 				<return>
 					<return-value>{"code":"0",...}</return-value>
@@ -339,7 +339,7 @@
 					<par-desc>Коэффициенты в формате JSON</par-desc>
 				</param>
 			</params>
-			<type>POST</type>
+			<type>PUT</type>
 			<returns>
 				<return>
 					<return-value>{"code":"0",...}</return-value>
