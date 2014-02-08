@@ -1,11 +1,11 @@
-package org.bosik.diacomp.backend.services;
+package org.bosik.diacomp.backend.dao;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
 
 // TODO: extract interface
-public class AuthWebServiceImpl
+public class AuthDAO
 {
 	@Context
 	HttpServletRequest			req;

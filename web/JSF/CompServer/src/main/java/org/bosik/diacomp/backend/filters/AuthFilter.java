@@ -10,14 +10,14 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.bosik.diacomp.backend.services.AuthWebServiceImpl;
+import org.bosik.diacomp.backend.dao.AuthDAO;
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.utils.ResponseBuilder;
 
 @WebFilter("/AuthenticationFilter")
 public class AuthFilter implements Filter
 {
-	private AuthWebServiceImpl	authService	= new AuthWebServiceImpl();
+	private AuthDAO	authService	= new AuthDAO();
 
 	public AuthFilter()
 	{

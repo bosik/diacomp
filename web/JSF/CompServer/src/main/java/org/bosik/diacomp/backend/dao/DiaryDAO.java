@@ -1,4 +1,4 @@
-package org.bosik.diacomp.backend.services;
+package org.bosik.diacomp.backend.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,7 +9,7 @@ import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.utils.Utils;
 
 //TODO: extract interface
-public class DiaryWebServiceImpl
+public class DiaryDAO
 {
 	private final MySQLAccess	db	= new MySQLAccess();
 
