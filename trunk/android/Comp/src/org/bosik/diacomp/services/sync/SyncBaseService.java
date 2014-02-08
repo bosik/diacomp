@@ -1,6 +1,6 @@
 package org.bosik.diacomp.services.sync;
 
-import services.BaseService;
+import org.bosik.diacomp.services.BaseService;
 
 public class SyncBaseService
 {

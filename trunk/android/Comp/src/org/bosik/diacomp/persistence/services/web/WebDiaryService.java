@@ -4,14 +4,14 @@ import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.bo.diary.DiaryRecord;
 import org.bosik.diacomp.persistence.common.Versioned;
-import org.bosik.diacomp.persistence.exceptions.CommonServiceException;
 import org.bosik.diacomp.persistence.serializers.Parser;
 import org.bosik.diacomp.persistence.serializers.ParserDiaryRecord;
 import org.bosik.diacomp.persistence.serializers.Serializer;
 import org.bosik.diacomp.persistence.serializers.utils.ParserVersioned;
 import org.bosik.diacomp.persistence.serializers.utils.SerializerAdapter;
 import org.bosik.diacomp.persistence.services.web.utils.client.WebClient;
-import services.DiaryService;
+import org.bosik.diacomp.services.DiaryService;
+import org.bosik.diacomp.services.exceptions.CommonServiceException;
 
 public class WebDiaryService implements DiaryService
 {

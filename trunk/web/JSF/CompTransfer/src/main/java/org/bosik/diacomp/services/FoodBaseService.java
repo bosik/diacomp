@@ -1,4 +1,4 @@
-package services;
+package org.bosik.diacomp.services;
 
 import org.bosik.diacomp.bo.foodbase.FoodItem;
 

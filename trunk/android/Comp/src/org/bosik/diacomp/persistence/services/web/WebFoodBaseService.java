@@ -3,11 +3,11 @@ package org.bosik.diacomp.persistence.services.web;
 import java.util.List;
 import org.bosik.diacomp.bo.foodbase.FoodItem;
 import org.bosik.diacomp.persistence.common.Versioned;
-import org.bosik.diacomp.persistence.exceptions.DuplicateException;
-import org.bosik.diacomp.persistence.exceptions.ItemNotFoundException;
 import org.bosik.diacomp.persistence.serializers.Serializer;
 import org.bosik.diacomp.persistence.services.web.utils.client.WebClient;
-import services.FoodBaseService;
+import org.bosik.diacomp.services.FoodBaseService;
+import org.bosik.diacomp.services.exceptions.DuplicateException;
+import org.bosik.diacomp.services.exceptions.ItemNotFoundException;
 
 public class WebFoodBaseService implements FoodBaseService
 {
