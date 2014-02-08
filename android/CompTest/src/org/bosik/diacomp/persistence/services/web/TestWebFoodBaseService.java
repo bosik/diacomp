@@ -1,7 +1,7 @@
 package org.bosik.diacomp.persistence.services.web;
 
 import org.bosik.diacomp.persistence.services.TestFoodBaseService;
-import services.FoodBaseService;
+import org.bosik.diacomp.services.FoodBaseService;
 
 public class TestWebFoodBaseService extends TestFoodBaseService
 {

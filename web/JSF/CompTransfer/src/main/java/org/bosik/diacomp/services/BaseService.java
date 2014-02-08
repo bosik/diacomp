@@ -1,10 +1,10 @@
-package services;
+package org.bosik.diacomp.services;
 
 import java.util.List;
 import org.bosik.diacomp.persistence.common.Versioned;
-import org.bosik.diacomp.persistence.exceptions.AlreadyDeletedException;
-import org.bosik.diacomp.persistence.exceptions.ItemNotFoundException;
-import org.bosik.diacomp.persistence.exceptions.StoreException;
+import org.bosik.diacomp.services.exceptions.AlreadyDeletedException;
+import org.bosik.diacomp.services.exceptions.ItemNotFoundException;
+import org.bosik.diacomp.services.exceptions.StoreException;
 
 public interface BaseService<Item>
 {

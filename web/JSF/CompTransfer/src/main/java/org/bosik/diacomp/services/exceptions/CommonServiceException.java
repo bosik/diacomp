@@ -1,4 +1,4 @@
-package org.bosik.diacomp.persistence.exceptions;
+package org.bosik.diacomp.services.exceptions;
 
 public class CommonServiceException extends RuntimeException
 {

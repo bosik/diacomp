@@ -3,10 +3,10 @@ package org.bosik.diacomp.persistence.services.local;
 import java.util.List;
 import org.bosik.diacomp.bo.dishbase.DishItem;
 import org.bosik.diacomp.persistence.common.Versioned;
-import org.bosik.diacomp.persistence.exceptions.AlreadyDeletedException;
-import org.bosik.diacomp.persistence.exceptions.ItemNotFoundException;
-import org.bosik.diacomp.persistence.exceptions.StoreException;
-import services.DishBaseService;
+import org.bosik.diacomp.services.DishBaseService;
+import org.bosik.diacomp.services.exceptions.AlreadyDeletedException;
+import org.bosik.diacomp.services.exceptions.ItemNotFoundException;
+import org.bosik.diacomp.services.exceptions.StoreException;
 
 public class LocalDishBaseService implements DishBaseService
 {

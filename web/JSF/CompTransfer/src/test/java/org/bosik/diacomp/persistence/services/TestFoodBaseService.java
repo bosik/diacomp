@@ -6,7 +6,7 @@ import org.bosik.diacomp.fakes.mocks.Mock;
 import org.bosik.diacomp.fakes.mocks.MockFoodItem;
 import org.bosik.diacomp.fakes.mocks.MockVersionedConverter;
 import org.bosik.diacomp.persistence.common.Versioned;
-import services.FoodBaseService;
+import org.bosik.diacomp.services.FoodBaseService;
 
 public abstract class TestFoodBaseService extends TestCase
 {

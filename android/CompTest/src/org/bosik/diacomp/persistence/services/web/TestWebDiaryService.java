@@ -3,7 +3,7 @@ package org.bosik.diacomp.persistence.services.web;
 import org.bosik.diacomp.persistence.services.TestDiaryService;
 import org.bosik.diacomp.persistence.services.web.WebDiaryService;
 import org.bosik.diacomp.persistence.services.web.utils.client.TestWebClient;
-import services.DiaryService;
+import org.bosik.diacomp.services.DiaryService;
 
 public class TestWebDiaryService extends TestDiaryService
 {

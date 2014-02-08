@@ -2,8 +2,8 @@ package org.bosik.diacomp.persistence.services.fakes;
 
 import org.bosik.diacomp.fakes.services.FakeDiaryService;
 import org.bosik.diacomp.persistence.services.TestDiaryService;
+import org.bosik.diacomp.services.DiaryService;
 import org.junit.Ignore;
-import services.DiaryService;
 
 @Ignore
 public class TestFakeDiaryService extends TestDiaryService

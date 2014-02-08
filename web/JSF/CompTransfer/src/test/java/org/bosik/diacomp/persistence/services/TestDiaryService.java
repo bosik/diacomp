@@ -8,7 +8,7 @@ import org.bosik.diacomp.fakes.mocks.Mock;
 import org.bosik.diacomp.fakes.mocks.MockDiaryRecord;
 import org.bosik.diacomp.fakes.mocks.MockVersionedConverter;
 import org.bosik.diacomp.persistence.common.Versioned;
-import services.DiaryService;
+import org.bosik.diacomp.services.DiaryService;
 
 public abstract class TestDiaryService extends TestCase
 {
