@@ -19,9 +19,8 @@ import org.bosik.diacomp.utils.StdResponse;
 import org.bosik.diacomp.utils.Utils;
 import org.json.JSONObject;
 
-public class DiaryWebService implements DiaryService
+public class DiaryWebService extends WebService implements DiaryService
 {
-	private static final String							BASE_URL	= "http://localhost:8080/CompServer/api/";
 	private static Serializer<Versioned<DiaryRecord>>	serializer	= new SerializerDiaryRecord();
 
 	@Override
@@ -35,7 +34,7 @@ public class DiaryWebService implements DiaryService
 	public List<Versioned<DiaryRecord>> getRecords(Date time) throws CommonServiceException
 	{
 		Client client = ClientBuilder.newClient();
-		WebTarget webTarget = client.target(BASE_URL + "diary/new");
+		WebTarget webTarget = client.target(getBaseUrl() + "diary/new");
 		webTarget = webTarget.queryParam("mod_after", Utils.formatTimeUTC(time));
 		String s = webTarget.request(MediaType.APPLICATION_JSON).get(String.class);
 

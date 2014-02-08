@@ -17,18 +17,39 @@ import org.bosik.diacomp.utils.ResponseBuilder;
 @Path("auth/")
 public class AuthResource
 {
-	@Context
-	HttpServletRequest	req;
+	private static final int	API_LEGACY	= 19;
+	private static final int	API_CURRENT	= 20;
 
-	private AuthDAO		authService	= new AuthDAO();
+	@Context
+	HttpServletRequest			req;
+
+	private AuthDAO				authService	= new AuthDAO();
 
 	@POST
 	@Path("login")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response login(@QueryParam("login") String login, @QueryParam("pass") String pass)
+	public Response login(@QueryParam("login") String login, @QueryParam("pass") String pass,
+			@QueryParam("api") int apiVersion)
 	{
 		try
 		{
+			if (apiVersion < API_LEGACY)
+			{
+				String msg = String.format("API %d is unsupported. The latest API: %d. Legacy API: %d.", apiVersion,
+						API_CURRENT, API_LEGACY);
+				String resp = ResponseBuilder.build(ResponseBuilder.CODE_UNSUPPORTED_API, msg);
+				return Response.ok(resp).build();
+			}
+
+			if (apiVersion < API_CURRENT)
+			{
+				String msg = String.format(
+						"API %d is still supported, but deprecated. The latest API: %d. Legacy API: %d.", apiVersion,
+						API_CURRENT, API_LEGACY);
+				String resp = ResponseBuilder.build(ResponseBuilder.CODE_DEPRECATED_API, msg);
+				return Response.ok(resp).build();
+			}
+
 			authService.login(req, login, pass);
 			String entity = ResponseBuilder.buildDone("Logged in OK");
 			return Response.ok(entity).build();
@@ -52,9 +73,10 @@ public class AuthResource
 	@GET
 	@Path("login")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response loginDebug(@QueryParam("login") String login, @QueryParam("pass") String pass)
+	public Response loginDebug(@QueryParam("login") String login, @QueryParam("pass") String pass,
+			@QueryParam("api") int apiVersion)
 	{
-		return login(login, pass);
+		return login(login, pass, apiVersion);
 	}
 
 	@GET

@@ -1,4 +1,4 @@
-package org.bosik.diacomp;
+package org.bosik.diacomp.frontend.services;
 
 import static org.junit.Assert.assertEquals;
 import java.net.URI;
@@ -15,12 +15,13 @@ import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
-public class TestAuth extends JerseyTest
+public class TestAuthResource extends JerseyTest
 {
+	private static final int	API_VERSION	= 20;
 	private static final String	demoLogin	= "admin";
 	private static final String	demoPass	= "1234";
 
-	public TestAuth() throws Exception
+	public TestAuthResource() throws Exception
 	{
 		super(CompServerApp.class);
 	}
@@ -78,7 +79,7 @@ public class TestAuth extends JerseyTest
 	{
 		final String url = "/api/auth/login";
 		final Builder request = target().path(url).queryParam("login", demoLogin).queryParam("pass", demoPass)
-				.request(MediaType.APPLICATION_JSON);
+				.queryParam("api", API_VERSION).request(MediaType.APPLICATION_JSON);
 		String response = request.post(null, String.class);
 
 		System.out.println("loginTest(): " + response);
@@ -92,7 +93,7 @@ public class TestAuth extends JerseyTest
 	{
 		final String url = "/api/auth/login";
 		final Builder request = target().path(url).queryParam("login", demoLogin).queryParam("pass", "wrong")
-				.request(MediaType.APPLICATION_JSON);
+				.queryParam("api", API_VERSION).request(MediaType.APPLICATION_JSON);
 		String response = request.post(null, String.class);
 
 		System.out.println("loginTest(): " + response);
@@ -106,7 +107,7 @@ public class TestAuth extends JerseyTest
 	{
 		final String url = "/api/auth/login";
 		final Builder request = target().path(url).queryParam("login", demoLogin).queryParam("pass", demoPass)
-				.request(MediaType.APPLICATION_JSON);
+				.queryParam("api", API_VERSION).request(MediaType.APPLICATION_JSON);
 		String response = request.get(String.class);
 
 		System.out.println("loginGETTest(): " + response);
