@@ -1,6 +1,6 @@
 package org.bosik.diacomp.services.exceptions;
 
-public class DuplicateException extends StoreException
+public class DuplicateException extends PersistenceException
 {
 	private static final long	serialVersionUID	= 1L;
 

@@ -13,4 +13,9 @@ public class CommonServiceException extends RuntimeException
 	{
 		super(e);
 	}
+
+	// public CommonServiceException()
+	// {
+	// super();
+	// }
 }

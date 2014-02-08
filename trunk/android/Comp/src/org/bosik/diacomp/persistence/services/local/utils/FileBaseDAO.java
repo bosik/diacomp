@@ -92,7 +92,7 @@ public class FileBaseDAO
 	// }
 	// }
 
-	// private void save() throws StoreException
+	// private void save() throws PersistenceException
 	// {
 	// try
 	// {
@@ -101,7 +101,7 @@ public class FileBaseDAO
 	// }
 	// catch (IOException e)
 	// {
-	// throw new StoreException(e);
+	// throw new PersistenceException(e);
 	// }
 	// }
 }

@@ -1,4 +1,4 @@
-package org.bosik.diacomp.filters;
+package org.bosik.diacomp.backend.filters;
 
 import java.io.IOException;
 import javax.servlet.Filter;
@@ -10,12 +10,15 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.bosik.diacomp.resources.AuthResource;
+import org.bosik.diacomp.backend.services.AuthWebServiceImpl;
+import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.utils.ResponseBuilder;
 
 @WebFilter("/AuthenticationFilter")
 public class AuthFilter implements Filter
 {
+	private AuthWebServiceImpl	authService	= new AuthWebServiceImpl();
+
 	public AuthFilter()
 	{
 
@@ -43,16 +46,30 @@ public class AuthFilter implements Filter
 		// System.out.println("doFilter(): getRequestURI=" + req.getRequestURI());
 		// System.out.println("doFilter(): getQueryString=" + req.getQueryString());
 
-		if (req.getRequestURI().startsWith(BASE_URL + "/api/auth/") || AuthResource.checkAuth(req))
+		if (req.getRequestURI().startsWith(BASE_URL + "/api/auth/"))
+		{
+			System.out.println("Requested OK...");
+			chain.doFilter(request, response);
+		}
+		else if (req.getRequestURI().startsWith(BASE_URL + "/api/info"))
 		{
 			System.out.println("Requested OK...");
 			chain.doFilter(request, response);
 		}
 		else
 		{
-			System.err.println("Not authorized request!");
-			// res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			res.getWriter().write(ResponseBuilder.build(ResponseBuilder.CODE_UNAUTHORIZED, "Not authorized"));
+			try
+			{
+				authService.checkAuth(req);
+				System.out.println("Requested OK...");
+				chain.doFilter(request, response);
+			}
+			catch (NotAuthorizedException e)
+			{
+				System.err.println("Not authorized request!");
+				// res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				res.getWriter().write(ResponseBuilder.build(ResponseBuilder.CODE_UNAUTHORIZED, "Not authorized"));
+			}
 		}
 	}
 

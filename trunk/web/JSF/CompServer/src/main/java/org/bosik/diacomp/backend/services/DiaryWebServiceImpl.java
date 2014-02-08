@@ -1,35 +1,22 @@
-package org.bosik.diacomp.services;
+package org.bosik.diacomp.backend.services;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import org.bosik.diacomp.MySQLAccess;
 import org.bosik.diacomp.persistence.common.Versioned;
+import org.bosik.diacomp.utils.Utils;
 
-public class DiaryService
+//TODO: extract interface
+public class DiaryWebServiceImpl
 {
 	private final MySQLAccess	db	= new MySQLAccess();
 
-	public List<Versioned<String>> findAll(int userId)
-	{
-		try
-		{
-			String clause = String.format("%s = %d", MySQLAccess.COLUMN_DIARY_USER, userId);
-			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause);
-			List<Versioned<String>> result = parseDiaryRecords(set);
-			set.close();
-			return result;
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
 	private static List<Versioned<String>> parseDiaryRecords(ResultSet resultSet) throws SQLException
 	{
+		// Don't parse to DiaryPage: we have to convert it into String in REST anyway
+
 		// Parser<DiaryRecord> parser = new ParserDiaryRecord();
 		// Serializer<DiaryRecord> serializer = new SerializerAdapter<DiaryRecord>(parser);
 
@@ -48,11 +35,29 @@ public class DiaryService
 			item.setTimeStamp(timeStamp);
 			item.setVersion(version);
 			item.setDeleted(deleted);
+			// item.setData(serializer.read(content));
 			item.setData(content);
 
 			result.add(item);
 		}
 
 		return result;
+	}
+
+	public List<Versioned<String>> findMod(int userId, Date time)
+	{
+		try
+		{
+			String clause = String.format("(%s = %d) AND (%s >= %s)", MySQLAccess.COLUMN_DIARY_USER, userId,
+					MySQLAccess.COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(time));
+			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause);
+			List<Versioned<String>> result = parseDiaryRecords(set);
+			set.close();
+			return result;
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 }

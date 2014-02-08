@@ -14,7 +14,7 @@ import org.bosik.diacomp.persistence.serializers.utils.SerializerAdapter;
 import org.bosik.diacomp.persistence.services.local.utils.DiaryContentProvider;
 import org.bosik.diacomp.services.DiaryService;
 import org.bosik.diacomp.services.exceptions.CommonServiceException;
-import org.bosik.diacomp.services.exceptions.StoreException;
+import org.bosik.diacomp.services.exceptions.PersistenceException;
 import org.bosik.diacomp.utils.Utils;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -178,7 +178,7 @@ public class LocalDiaryService implements DiaryService
 		}
 		catch (Exception e)
 		{
-			throw new StoreException(e);
+			throw new PersistenceException(e);
 		}
 	}
 

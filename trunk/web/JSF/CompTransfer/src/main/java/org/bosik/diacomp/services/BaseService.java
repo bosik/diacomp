@@ -4,7 +4,7 @@ import java.util.List;
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.services.exceptions.ItemNotFoundException;
-import org.bosik.diacomp.services.exceptions.StoreException;
+import org.bosik.diacomp.services.exceptions.PersistenceException;
 
 public interface BaseService<Item>
 {
@@ -13,10 +13,10 @@ public interface BaseService<Item>
 	 * 
 	 * @param item
 	 * @return ID of created item
-	 * @throws StoreException
+	 * @throws PersistenceException
 	 *             If storing failed
 	 */
-	String add(Versioned<Item> item) throws StoreException;
+	String add(Versioned<Item> item) throws PersistenceException;
 
 	/**
 	 * Marks item with specified ID as deleted
@@ -81,11 +81,11 @@ public interface BaseService<Item>
 	 * @param item
 	 * @throws ItemNotFoundException
 	 *             If no non-deleted item with such ID found
-	 * @throws StoreException
+	 * @throws PersistenceException
 	 *             If storing failed
 	 */
 
 	// TODO: retrieve version and increment it here
 	// TODO: set timestamp to current time
-	void update(Versioned<Item> item) throws ItemNotFoundException, StoreException;
+	void update(Versioned<Item> item) throws ItemNotFoundException, PersistenceException;
 }

@@ -5,11 +5,11 @@ import org.bosik.diacomp.bo.foodbase.FoodItem;
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.services.FoodBaseService;
 import org.bosik.diacomp.services.exceptions.ItemNotFoundException;
-import org.bosik.diacomp.services.exceptions.StoreException;
+import org.bosik.diacomp.services.exceptions.PersistenceException;
 
 public class FakeFoodBaseService implements FoodBaseService
 {
-	public String add(Versioned<FoodItem> item) throws StoreException
+	public String add(Versioned<FoodItem> item) throws PersistenceException
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -45,7 +45,7 @@ public class FakeFoodBaseService implements FoodBaseService
 		return null;
 	}
 
-	public void update(Versioned<FoodItem> item) throws ItemNotFoundException, StoreException
+	public void update(Versioned<FoodItem> item) throws ItemNotFoundException, PersistenceException
 	{
 		// TODO Auto-generated method stub
 
