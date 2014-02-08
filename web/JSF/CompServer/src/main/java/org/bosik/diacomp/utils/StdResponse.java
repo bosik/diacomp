@@ -14,6 +14,13 @@ public class StdResponse
 		this.msg = msg;
 	}
 
+	public StdResponse(String s)
+	{
+		StdResponse decoded = StdResponse.decode(s);
+		setCode(decoded.getCode());
+		setMsg(decoded.getMsg());
+	}
+
 	public int getCode()
 	{
 		return code;
@@ -40,7 +47,7 @@ public class StdResponse
 		{
 			JSONObject json = new JSONObject(s);
 			int code = json.getInt("code");
-			String msg = json.getString("msg");
+			String msg = json.has("msg") ? json.getString("msg") : "";
 			return new StdResponse(code, msg);
 		}
 		catch (JSONException e)
