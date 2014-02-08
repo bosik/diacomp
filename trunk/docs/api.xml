@@ -11,7 +11,7 @@
 			<legend-item>Тип</legend-item>
 			<legend-item>Результат</legend-item>
 		</legend>
-		<method-todo>
+		<method>
 			<cat>Авторизация</cat>
 			<name>Вход</name>
 			<url>/auth/login/</url>
@@ -57,7 +57,7 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method-todo>
+		</method>
 		<method-todo>
 			<cat>Авторизация</cat>
 			<name>Выход</name>
@@ -77,31 +77,9 @@
 			</returns>
 		</method-todo>
 		<method-todo>
-			<cat>Авторизация</cat>
-			<name>Запрос статуса авторизации</name>
-			<url>/auth/status/</url>
-			<params>
-			</params>
-			<type>GET</type>
-			<returns>
-				<return>
-					<return-value>{"code":"0","status":"1",...}</return-value>
-					<return-condition>Клиент авторизован</return-condition>
-				</return>
-				<return>
-					<return-value>{"code":"0","status":"0",...}</return-value>
-					<return-condition>Клиент не авторизован</return-condition>
-				</return>
-				<return>
-					<return-value>{"code":"500","msg":"###",...}</return-value>
-					<return-condition>Внутренняя ошибка сервера</return-condition>
-				</return>
-			</returns>
-		</method-todo>
-		<method-todo>
 			<cat>Система</cat>
 			<name>Получение версии API сервера</name>
-			<url>/version/</url>
+			<url>/service/version/</url>
 			<params>
 			</params>
 			<type>GET</type>
@@ -142,7 +120,7 @@
 				</return>
 			</returns>
 		</method-todo>
-		<method-todo>
+		<method>
 			<cat>Дневник</cat>
 			<name>Получение всех записей для указанного интервала времени</name>
 			<url>/diary/period/</url>
@@ -171,8 +149,8 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method-todo>
-		<method-todo>
+		</method>
+		<method>
 			<cat>Дневник</cat>
 			<name>Получение записей дневника, изменённых после указанного времени</name>
 			<url>/diary/new/</url>
@@ -197,7 +175,7 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method-todo>
+		</method>
 		<method-todo>
 			<cat>Дневник</cat>
 			<name>Получение записей с указанными GUID</name>
@@ -224,7 +202,7 @@
 				</return>
 			</returns>
 		</method-todo>
-		<method-todo>
+		<method>
 			<cat>Дневник</cat>
 			<name>Создание/сохранение одной или нескольких записей дневника</name>
 			<url>/diary/</url>
@@ -250,7 +228,7 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method-todo>
+		</method>
 		<method-todo>
 			<cat>База продуктов</cat>
 			<name>Получение всех продуктов</name>
