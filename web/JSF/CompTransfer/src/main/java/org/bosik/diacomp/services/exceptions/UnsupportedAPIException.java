@@ -1,10 +1,10 @@
 package org.bosik.diacomp.services.exceptions;
 
-public class DeprecatedAPIException extends AuthException
+public class UnsupportedAPIException extends AuthException
 {
 	private static final long	serialVersionUID	= 1L;
 
-	public DeprecatedAPIException(String msg)
+	public UnsupportedAPIException(String msg)
 	{
 		super(msg);
 	}

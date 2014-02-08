@@ -5,12 +5,13 @@ package org.bosik.diacomp.persistence.services.web.utils.client.exceptions;
  * 
  * @author Bosik
  */
+@Deprecated
 public class DeprecatedAPIException extends WebClientException
 {
 	private static final long	serialVersionUID	= -4897188574347397921L;
 
 	/*
-	 * public DeprecatedAPIException(String clientApiVersion, String serverApiVersion) {
+	 * public UnsupportedAPIException(String clientApiVersion, String serverApiVersion) {
 	 * super("Client API version (" + clientApiVersion + ") is deprecated, server required version "
 	 * + serverApiVersion); }
 	 */
