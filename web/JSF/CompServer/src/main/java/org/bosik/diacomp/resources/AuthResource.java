@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.bosik.diacomp.utils.ResponseBuilder;
 
-@Path("auth")
+@Path("auth/")
 public class AuthResource
 {
 	private static final String	PAR_USERID		= "USER_ID";
@@ -44,7 +44,7 @@ public class AuthResource
 	}
 
 	@POST
-	@Path("/login")
+	@Path("login")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(@QueryParam("login") String login, @QueryParam("pass") String pass)
 	{
@@ -67,7 +67,7 @@ public class AuthResource
 
 	// TODO: just for debug purpose
 	@GET
-	@Path("/login")
+	@Path("login")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response loginDebug(@QueryParam("login") String login, @QueryParam("pass") String pass)
 	{
@@ -88,7 +88,7 @@ public class AuthResource
 	}
 
 	@GET
-	@Path("/logout")
+	@Path("logout")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response logout()
 	{
