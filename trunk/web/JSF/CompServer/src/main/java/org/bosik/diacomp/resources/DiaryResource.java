@@ -21,7 +21,7 @@ import org.bosik.diacomp.utils.ResponseBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@Path("diary")
+@Path("diary/")
 public class DiaryResource
 {
 	@Context
@@ -71,7 +71,7 @@ public class DiaryResource
 																							parserVersionedString);
 
 	@GET
-	@Path("/view")
+	@Path("view")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String demoView()
 	{
@@ -92,7 +92,7 @@ public class DiaryResource
 	}
 
 	@PUT
-	@Path("/update")
+	@Path("update")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String put(@DefaultValue("") @QueryParam("value") String value)
 	{
