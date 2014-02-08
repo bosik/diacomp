@@ -11,8 +11,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.bosik.diacomp.backend.services.AuthWebServiceImpl;
-import org.bosik.diacomp.backend.services.DiaryWebServiceImpl;
+import org.bosik.diacomp.backend.dao.AuthDAO;
+import org.bosik.diacomp.backend.dao.DiaryDAO;
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.persistence.serializers.Parser;
 import org.bosik.diacomp.persistence.serializers.Serializer;
@@ -29,9 +29,9 @@ public class DiaryResource
 	@Context
 	HttpServletRequest									req;
 
-	private DiaryWebServiceImpl							diaryService				= new DiaryWebServiceImpl();
+	private DiaryDAO									diaryService				= new DiaryDAO();
 
-	private AuthWebServiceImpl							authService					= new AuthWebServiceImpl();
+	private AuthDAO										authService					= new AuthDAO();
 
 	private static final Parser<String>					parserString				= new Parser<String>()
 																					{
