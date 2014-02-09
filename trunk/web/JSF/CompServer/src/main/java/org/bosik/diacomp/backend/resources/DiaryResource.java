@@ -20,6 +20,7 @@ import org.bosik.diacomp.persistence.serializers.utils.ParserVersioned;
 import org.bosik.diacomp.persistence.serializers.utils.SerializerAdapter;
 import org.bosik.diacomp.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.utils.ResponseBuilder;
+import org.bosik.diacomp.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -88,16 +89,18 @@ public class DiaryResource
 	@GET
 	@Path("new")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getRecords(@QueryParam("value") Date time) throws CommonServiceException
+	public Response getRecords(@QueryParam("mod_after") String stime) throws CommonServiceException
 	{
 		try
 		{
 			authService.checkAuth(req);
 
 			int userId = authService.getCurrentUserId(req);
+			Date time = Utils.parseTimeUTC(stime);
 			List<Versioned<String>> list = diaryService.findMod(userId, time);
-			String s = serializerVersionedString.writeAll(list);
-			return Response.ok(list).build();
+			String items = serializerVersionedString.writeAll(list);
+			String response = ResponseBuilder.buildDone(items);
+			return Response.ok(response).build();
 		}
 		catch (Exception e)
 		{
