@@ -48,8 +48,9 @@ public class DiaryDAO
 	{
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s >= %s)", MySQLAccess.COLUMN_DIARY_USER, userId,
+			String clause = String.format("(%s = %d) AND (%s >= '%s')", MySQLAccess.COLUMN_DIARY_USER, userId,
 					MySQLAccess.COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(time));
+			//System.out.println("Requesting SQL clause: " + clause);
 			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause);
 			List<Versioned<String>> result = parseDiaryRecords(set);
 			set.close();
