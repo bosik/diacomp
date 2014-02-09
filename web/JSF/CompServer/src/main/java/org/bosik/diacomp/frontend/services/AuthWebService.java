@@ -31,13 +31,13 @@ public class AuthWebService extends WebService implements AuthService
 			case ResponseBuilder.CODE_OK:
 				return;
 			case ResponseBuilder.CODE_UNAUTHORIZED:
-				throw new NotAuthorizedException(resp.getMsg());
+				throw new NotAuthorizedException(resp.getResponse());
 			case ResponseBuilder.CODE_UNSUPPORTED_API:
-				throw new UnsupportedAPIException(resp.getMsg());
+				throw new UnsupportedAPIException(resp.getResponse());
 			case ResponseBuilder.CODE_DEPRECATED_API:
-				throw new DeprecatedAPIException(resp.getMsg());
+				throw new DeprecatedAPIException(resp.getResponse());
 			default: // case ResponseBuilder.CODE_FAIL:
-				throw new CommonServiceException(resp.getMsg());
+				throw new CommonServiceException(resp.getResponse());
 		}
 	}
 
@@ -55,7 +55,7 @@ public class AuthWebService extends WebService implements AuthService
 			case ResponseBuilder.CODE_OK:
 				return;
 			default: // case ResponseBuilder.CODE_FAIL:
-				throw new CommonServiceException(resp.getMsg());
+				throw new CommonServiceException(resp.getResponse());
 		}
 
 	}

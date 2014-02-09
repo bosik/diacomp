@@ -9,4 +9,5 @@ Date		Hours	Task
 05.02.2014	0.5	Updating API architecture
 06.02.2014	0.5	Updating API architecture
 08.02.2014	2.0	DAO/REST architecture (until 18:00)
-08.02.2014	2.0	Implementing auth stack (until 20:00)
+08.02.2014	4.0	Implementing auth stack (until 24:00)
+09.02.2014	4.0	Implementing auth stack (until 04:00)
