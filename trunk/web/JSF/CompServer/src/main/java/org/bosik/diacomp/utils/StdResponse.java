@@ -6,19 +6,19 @@ import org.json.JSONObject;
 public class StdResponse
 {
 	private int		code;
-	private String	msg;
+	private String	response;
 
-	public StdResponse(int code, String msg)
+	public StdResponse(int code, String response)
 	{
 		this.code = code;
-		this.msg = msg;
+		this.response = response;
 	}
 
 	public StdResponse(String s)
 	{
 		StdResponse decoded = StdResponse.decode(s);
 		setCode(decoded.getCode());
-		setMsg(decoded.getMsg());
+		setResponse(decoded.getResponse());
 	}
 
 	public int getCode()
@@ -31,14 +31,14 @@ public class StdResponse
 		this.code = code;
 	}
 
-	public String getMsg()
+	public String getResponse()
 	{
-		return msg;
+		return response;
 	}
 
-	public void setMsg(String msg)
+	public void setResponse(String response)
 	{
-		this.msg = msg;
+		this.response = response;
 	}
 
 	public static StdResponse decode(String s)
@@ -47,7 +47,7 @@ public class StdResponse
 		{
 			JSONObject json = new JSONObject(s);
 			int code = json.getInt("code");
-			String msg = json.has("msg") ? json.getString("msg") : "";
+			String msg = json.has("resp") ? json.getString("resp") : "";
 			return new StdResponse(code, msg);
 		}
 		catch (JSONException e)
@@ -62,7 +62,7 @@ public class StdResponse
 		{
 			JSONObject json = new JSONObject();
 			json.put("code", resp.getCode());
-			json.put("msg", resp.getMsg());
+			json.put("resp", resp.getResponse());
 			return json.toString();
 		}
 		catch (JSONException e)

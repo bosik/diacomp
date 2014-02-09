@@ -49,9 +49,9 @@ public class DiaryWebService extends WebService implements DiaryService
 				return serializer.readAll(items);
 			}
 			case ResponseBuilder.CODE_UNAUTHORIZED:
-				throw new NotAuthorizedException(resp.getMsg());
+				throw new NotAuthorizedException(resp.getResponse());
 			default: // case ResponseBuilder.CODE_FAIL:
-				throw new CommonServiceException(resp.getMsg());
+				throw new CommonServiceException(resp.getResponse());
 		}
 	}
 

@@ -37,23 +37,23 @@
 					<return-condition>Авторизация прошла успешно</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"4050","msg":"###",...}</return-value>
+					<return-value>{"code":"4050","resp":"###",...}</return-value>
 					<return-condition>Авторизация прошла успешно; версия API клиента устарела, но ещё поддерживается</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"4051","msg":"###",...}</return-value>
+					<return-value>{"code":"4051","resp":"###",...}</return-value>
 					<return-condition>Ошибка авторизации: версия API клиента устарела и больше не поддерживается</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-value>{"code":"401","resp":"###",...}</return-value>
 					<return-condition>Ошибка авторизации: неверный логин или пароль</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"400","msg":"###",...}</return-value>
+					<return-value>{"code":"400","resp":"###",...}</return-value>
 					<return-condition>Ошибка авторизации: параметры неверны либо отсутствуют</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-value>{"code":"500","resp":"###",...}</return-value>
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
@@ -71,7 +71,7 @@
 					<return-condition>Выход проведён успешно</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-value>{"code":"500","resp":"###",...}</return-value>
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
@@ -79,7 +79,7 @@
 		<method-todo>
 			<cat>Система</cat>
 			<name>Получение версии API сервера</name>
-			<url>/service/version/</url>
+			<url>/info/</url>
 			<params>
 			</params>
 			<type>GET</type>
@@ -89,7 +89,7 @@
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-value>{"code":"500","resp":"###",...}</return-value>
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
@@ -111,11 +111,11 @@
 					<return-condition>Операция прошла успешно</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-value>{"code":"401","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-value>{"code":"500","resp":"###",...}</return-value>
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
@@ -137,15 +137,15 @@
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>{"code":"0","items":[{ (item) }, ...]}, отсортирован по возрастанию времени записи</return-value>
+					<return-value>{"code":"0","resp":[{ (item) }, ...]}, отсортирован по возрастанию времени записи</return-value>
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-value>{"code":"401","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-value>{"code":"500","resp":"###",...}</return-value>
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
@@ -163,15 +163,15 @@
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>{"code":"0","items":[{ (item) }, ...]}, отсортирован по возрастанию времени записи</return-value>
+					<return-value>{"code":"0","resp":[{ (item) }, ...]}, отсортирован по возрастанию времени записи</return-value>
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-value>{"code":"401","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-value>{"code":"500","resp":"###",...}</return-value>
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
@@ -189,15 +189,15 @@
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>{"code":"0","items":[{ (item) }, ...]}, отсортирован по возрастанию времени записи</return-value>
+					<return-value>{"code":"0","resp":[{ (item) }, ...]}, отсортирован по возрастанию времени записи</return-value>
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-value>{"code":"401","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-value>{"code":"500","resp":"###",...}</return-value>
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
@@ -220,11 +220,11 @@
 					<return-condition>Операция прошла успешно</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-value>{"code":"401","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-value>{"code":"500","resp":"###",...}</return-value>
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
@@ -238,15 +238,15 @@
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>{"code":"0","items":[item, ...]}, отсортирован по алфавиту</return-value>
+					<return-value>{"code":"0","resp":[item, ...]}, отсортирован по алфавиту</return-value>
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-value>{"code":"401","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-value>{"code":"500","resp":"###",...}</return-value>
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
@@ -264,15 +264,15 @@
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>{"code":"0","items":[{ (item) }, ...]}, отсортирован по алфавиту</return-value>
+					<return-value>{"code":"0","resp":[{ (item) }, ...]}, отсортирован по алфавиту</return-value>
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-value>{"code":"401","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-value>{"code":"500","resp":"###",...}</return-value>
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
@@ -290,15 +290,15 @@
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>{"code":"0","items":[{ (item) }, ...]}, отсортирован по алфавиту</return-value>
+					<return-value>{"code":"0","resp":[{ (item) }, ...]}, отсортирован по алфавиту</return-value>
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-value>{"code":"401","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-value>{"code":"500","resp":"###",...}</return-value>
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
@@ -320,11 +320,11 @@
 					<return-condition>Операция прошла успешно</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-value>{"code":"401","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-value>{"code":"500","resp":"###",...}</return-value>
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
@@ -346,11 +346,11 @@
 					<return-condition>Операция прошла успешно</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-value>{"code":"401","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-value>{"code":"500","resp":"###",...}</return-value>
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
@@ -368,11 +368,11 @@
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","msg":"###",...}</return-value>
+					<return-value>{"code":"401","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"500","msg":"###",...}</return-value>
+					<return-value>{"code":"500","resp":"###",...}</return-value>
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
