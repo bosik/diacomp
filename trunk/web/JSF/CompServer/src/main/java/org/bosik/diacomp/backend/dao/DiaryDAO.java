@@ -5,11 +5,11 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.utils.Utils;
 
-//TODO: extract interface
-public class DiaryDAO
+public class DiaryDAO implements IDiaryDAO
 {
 	private final MySQLAccess	db	= new MySQLAccess();
 
@@ -44,6 +44,7 @@ public class DiaryDAO
 		return result;
 	}
 
+	@Override
 	public List<Versioned<String>> findMod(int userId, Date time)
 	{
 		try
