@@ -1,9 +1,7 @@
 package org.bosik.diacomp.frontend.services;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+
 import org.bosik.diacomp.services.AuthService;
 import org.bosik.diacomp.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.services.exceptions.DeprecatedAPIException;
@@ -12,17 +10,18 @@ import org.bosik.diacomp.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.utils.ResponseBuilder;
 import org.bosik.diacomp.utils.StdResponse;
 
+import com.sun.jersey.api.client.WebResource;
+
 public class AuthWebService extends WebService implements AuthService
 {
 	@Override
 	public void login(String login, String pass, int apiVersion)
 	{
-		Client client = ClientBuilder.newClient();
-		WebTarget webTarget = client.target(getBaseUrl() + "auth/login");
-		webTarget = webTarget.queryParam("login", login);
-		webTarget = webTarget.queryParam("pass", pass);
-		webTarget = webTarget.queryParam("api", apiVersion);
-		String s = webTarget.request(MediaType.APPLICATION_JSON).get(String.class);
+		WebResource resource = getClient().resource(getBaseUrl() + "auth/login");
+		resource = resource.queryParam("login", login);
+		resource = resource.queryParam("pass", pass);
+		resource = resource.queryParam("api", String.valueOf(apiVersion));
+		String s = resource.accept(MediaType.APPLICATION_JSON).post(String.class);
 
 		StdResponse resp = new StdResponse(s);
 
@@ -44,9 +43,8 @@ public class AuthWebService extends WebService implements AuthService
 	@Override
 	public void logout()
 	{
-		Client client = ClientBuilder.newClient();
-		WebTarget webTarget = client.target(getBaseUrl() + "auth/logout");
-		String s = webTarget.request(MediaType.APPLICATION_JSON).get(String.class);
+		WebResource resource = getClient().resource(getBaseUrl() + "auth/logout");
+		String s = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
 
 		StdResponse resp = new StdResponse(s);
 

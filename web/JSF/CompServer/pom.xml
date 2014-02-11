@@ -71,6 +71,12 @@
 			<artifactId>comp-transfer</artifactId>
 			<version>1.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey.contribs</groupId>
+			<artifactId>jersey-apache-client</artifactId>
+			<version>1.13</version>
+			<type>jar</type>
+		</dependency>
 	</dependencies>
 
 	<build>
