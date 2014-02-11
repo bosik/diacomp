@@ -97,4 +97,21 @@ public class AuthResource
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(entity).build();
 		}
 	}
+
+	// @GET
+	// @Path("check")
+	// @Produces(MediaType.APPLICATION_JSON)
+	// public Response check()
+	// {
+	// try
+	// {
+	// authService.checkAuth(req);
+	// return Response.ok("Logged").build();
+	// }
+	// catch (NotAuthorizedException e)
+	// {
+	// return Response.ok("No auth").build();
+	// }
+	// }
+
 }

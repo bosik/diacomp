@@ -2,7 +2,6 @@ package org.bosik.diacomp.backend.resources;
 
 import java.util.Date;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -12,7 +11,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
 import org.bosik.diacomp.backend.dao.AuthDAO;
 import org.bosik.diacomp.backend.dao.DiaryDAO;
 import org.bosik.diacomp.backend.dao.IDiaryDAO;
@@ -96,8 +94,6 @@ public class DiaryResource
 	{
 		try
 		{
-			authService.checkAuth(req);
-
 			int userId = authService.getCurrentUserId(req);
 			Date time = Utils.parseTimeUTC(stime);
 			List<Versioned<String>> list = diaryService.findMod(userId, time);

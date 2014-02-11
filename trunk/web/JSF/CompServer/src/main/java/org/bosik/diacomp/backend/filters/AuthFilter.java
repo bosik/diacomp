@@ -30,6 +30,29 @@ public class AuthFilter implements Filter
 
 	}
 
+	// private static void printRequestInfo(HttpServletRequest request)
+	// {
+	// System.out.println("Request info:");
+	//
+	// if (request.getSession(false) == null)
+	// {
+	// System.out.println("\tSession is null");
+	// }
+	// else
+	// {
+	// System.out.println("\tSession is setted");
+	// final HttpSession session = request.getSession();
+	//
+	// final Enumeration<String> attributeNames = session.getAttributeNames();
+	// while (attributeNames.hasMoreElements())
+	// {
+	// String attr = attributeNames.nextElement();
+	// Object val = session.getAttribute(attr);
+	// System.out.println("\t" + attr + "=" + val);
+	// }
+	// }
+	// }
+
 	/**
 	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
@@ -43,25 +66,27 @@ public class AuthFilter implements Filter
 
 		// System.out.println("doFilter(): getServletPath=" + req.getServletPath());
 		// System.out.println("doFilter(): getRequestURL=" + req.getRequestURL());
-		// System.out.println("doFilter(): getRequestURI=" + req.getRequestURI());
+		System.out.println("Requested: " + req.getRequestURI());
 		// System.out.println("doFilter(): getQueryString=" + req.getQueryString());
 
 		if (req.getRequestURI().startsWith(BASE_URL + "/api/auth/"))
 		{
-			System.out.println("Requested OK...");
+			System.out.println("Mode: public");
 			chain.doFilter(request, response);
 		}
 		else if (req.getRequestURI().startsWith(BASE_URL + "/api/info"))
 		{
-			System.out.println("Requested OK...");
+			System.out.println("Mode: public");
 			chain.doFilter(request, response);
 		}
 		else
 		{
+			System.out.println("Mode: private");
+			//printRequestInfo(req);
 			try
 			{
 				authService.checkAuth(req);
-				System.out.println("Requested OK...");
+				System.out.println("Authentified OK, chained");
 				chain.doFilter(request, response);
 			}
 			catch (NotAuthorizedException e)

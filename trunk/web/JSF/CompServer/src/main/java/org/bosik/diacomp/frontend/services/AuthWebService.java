@@ -1,7 +1,6 @@
 package org.bosik.diacomp.frontend.services;
 
 import javax.ws.rs.core.MediaType;
-
 import org.bosik.diacomp.services.AuthService;
 import org.bosik.diacomp.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.services.exceptions.DeprecatedAPIException;
@@ -9,7 +8,6 @@ import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.utils.ResponseBuilder;
 import org.bosik.diacomp.utils.StdResponse;
-
 import com.sun.jersey.api.client.WebResource;
 
 public class AuthWebService extends WebService implements AuthService
@@ -21,22 +19,22 @@ public class AuthWebService extends WebService implements AuthService
 		resource = resource.queryParam("login", login);
 		resource = resource.queryParam("pass", pass);
 		resource = resource.queryParam("api", String.valueOf(apiVersion));
-		String s = resource.accept(MediaType.APPLICATION_JSON).post(String.class);
+		String str = resource.accept(MediaType.APPLICATION_JSON).post(String.class);
 
-		StdResponse resp = new StdResponse(s);
+		StdResponse stdResp = new StdResponse(str);
 
-		switch (resp.getCode())
+		switch (stdResp.getCode())
 		{
 			case ResponseBuilder.CODE_OK:
 				return;
 			case ResponseBuilder.CODE_UNAUTHORIZED:
-				throw new NotAuthorizedException(resp.getResponse());
+				throw new NotAuthorizedException(stdResp.getResponse());
 			case ResponseBuilder.CODE_UNSUPPORTED_API:
-				throw new UnsupportedAPIException(resp.getResponse());
+				throw new UnsupportedAPIException(stdResp.getResponse());
 			case ResponseBuilder.CODE_DEPRECATED_API:
-				throw new DeprecatedAPIException(resp.getResponse());
+				throw new DeprecatedAPIException(stdResp.getResponse());
 			default: // case ResponseBuilder.CODE_FAIL:
-				throw new CommonServiceException(resp.getResponse());
+				throw new CommonServiceException(stdResp.getResponse());
 		}
 	}
 
@@ -44,9 +42,9 @@ public class AuthWebService extends WebService implements AuthService
 	public void logout()
 	{
 		WebResource resource = getClient().resource(getBaseUrl() + "auth/logout");
-		String s = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
+		String str = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
 
-		StdResponse resp = new StdResponse(s);
+		StdResponse resp = new StdResponse(str);
 
 		switch (resp.getCode())
 		{
@@ -55,7 +53,5 @@ public class AuthWebService extends WebService implements AuthService
 			default: // case ResponseBuilder.CODE_FAIL:
 				throw new CommonServiceException(resp.getResponse());
 		}
-
 	}
-
 }
