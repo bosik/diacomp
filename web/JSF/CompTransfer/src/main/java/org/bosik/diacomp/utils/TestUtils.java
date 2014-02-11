@@ -1,11 +1,10 @@
-package org.bosik.diacomp.utills;
+package org.bosik.diacomp.utils;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import junit.framework.TestCase;
-import org.bosik.diacomp.utils.Utils;
 import org.junit.Test;
 
 @SuppressWarnings("static-method")

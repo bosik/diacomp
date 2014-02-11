@@ -5,7 +5,7 @@ import java.util.List;
 import junit.framework.TestCase;
 import org.bosik.diacomp.bo.Food;
 import org.bosik.diacomp.fakes.mocks.Mock;
-import org.bosik.diacomp.utills.TestUtils;
+import org.bosik.diacomp.utils.TestUtils;
 
 public class MockFood extends TestCase implements Mock<Food>
 {
