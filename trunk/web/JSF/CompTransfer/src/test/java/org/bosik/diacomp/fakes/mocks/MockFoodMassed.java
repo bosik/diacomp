@@ -6,7 +6,7 @@ import java.util.Random;
 import junit.framework.TestCase;
 import org.bosik.diacomp.bo.Food;
 import org.bosik.diacomp.bo.FoodMassed;
-import org.bosik.diacomp.utills.TestUtils;
+import org.bosik.diacomp.utils.TestUtils;
 
 public class MockFoodMassed implements Mock<FoodMassed>
 {

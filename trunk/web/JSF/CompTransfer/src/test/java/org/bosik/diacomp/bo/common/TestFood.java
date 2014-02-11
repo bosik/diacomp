@@ -2,7 +2,7 @@ package org.bosik.diacomp.bo.common;
 
 import junit.framework.TestCase;
 import org.bosik.diacomp.bo.Food;
-import org.bosik.diacomp.utills.TestUtils;
+import org.bosik.diacomp.utils.TestUtils;
 
 public class TestFood extends TestCase
 {

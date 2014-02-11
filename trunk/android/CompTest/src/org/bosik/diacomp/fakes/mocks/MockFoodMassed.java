@@ -8,7 +8,7 @@ import org.bosik.diacomp.bo.Food;
 import org.bosik.diacomp.bo.FoodMassed;
 import org.bosik.diacomp.fakes.mocks.Mock;
 import org.bosik.diacomp.fakes.mocks.MockFood;
-import org.bosik.diacomp.utills.TestUtils;
+import org.bosik.diacomp.utils.TestUtils;
 
 public class MockFoodMassed extends TestCase implements Mock<FoodMassed>
 {

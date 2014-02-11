@@ -9,7 +9,7 @@ import org.bosik.diacomp.bo.diary.records.BloodRecord;
 import org.bosik.diacomp.bo.diary.records.InsRecord;
 import org.bosik.diacomp.bo.diary.records.MealRecord;
 import org.bosik.diacomp.bo.diary.records.NoteRecord;
-import org.bosik.diacomp.utills.TestUtils;
+import org.bosik.diacomp.utils.TestUtils;
 
 public class MockDiaryRecord implements Mock<DiaryRecord>
 {
