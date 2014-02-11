@@ -2,6 +2,7 @@ package org.bosik.diacomp.backend.resources;
 
 import java.util.Date;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -11,8 +12,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
 import org.bosik.diacomp.backend.dao.AuthDAO;
 import org.bosik.diacomp.backend.dao.DiaryDAO;
+import org.bosik.diacomp.backend.dao.IDiaryDAO;
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.persistence.serializers.Parser;
 import org.bosik.diacomp.persistence.serializers.Serializer;
@@ -30,7 +33,7 @@ public class DiaryResource
 	@Context
 	HttpServletRequest									req;
 
-	private DiaryDAO									diaryService				= new DiaryDAO();
+	private IDiaryDAO									diaryService				= new DiaryDAO();
 
 	private AuthDAO										authService					= new AuthDAO();
 
