@@ -89,7 +89,7 @@ public class DiaryResource
 
 	@GET
 	@Path("new")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response getRecords(@QueryParam("mod_after") String stime) throws CommonServiceException
 	{
 		try
