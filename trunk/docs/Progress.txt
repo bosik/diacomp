@@ -11,4 +11,5 @@ Date		Hours	Task
 08.02.2014	2.0	Implementing backend: DAO/REST architecture
 08.02.2014	4.0	Implementing backend
 09.02.2014	5.0	Implementing auth stack (until 06:00)
-11.02.2014	5.0	Implementing backend: Fixing problems with cookies (until 20:00)
+11.02.2014	5.0	Implementing backend: Fixing problems with cookies
+12.02.2014	2.0	Implementing backend: merging
