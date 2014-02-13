@@ -37,18 +37,6 @@ public class TestAuthWebService
 		authService.login(TEST_LOGIN + "#:&%$'\"/\\", TEST_PASSWORD, TEST_API_VERSION_CURRENT);
 	}
 
-	@Test(expected = NotAuthorizedException.class)
-	public void testLogin_nullLogin()
-	{
-		authService.login(null, TEST_PASSWORD, TEST_API_VERSION_CURRENT);
-	}
-
-	@Test(expected = NotAuthorizedException.class)
-	public void testLogin_nullPassword()
-	{
-		authService.login(TEST_LOGIN, null, TEST_API_VERSION_CURRENT);
-	}
-
 	@Test(expected = UnsupportedAPIException.class)
 	public void testLogin_unsupportedApi()
 	{
