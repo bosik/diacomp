@@ -8,7 +8,7 @@ import org.bosik.diacomp.utils.MiscUtils;
 import org.bosik.diacomp.utils.ResponseBuilder;
 import org.bosik.diacomp.utils.StdResponse;
 
-import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
@@ -16,29 +16,17 @@ import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 public class WebService
 {
 	private static ApacheHttpClient	client;
-	private String					BASE_URL;
+	private static final String		BASE_URL	= MiscUtils.loadBaseUrl();
 
 	{
 		ApacheHttpClientConfig config = new DefaultApacheHttpClientConfig();
 		config.getProperties().put(ApacheHttpClientConfig.PROPERTY_HANDLE_COOKIES, true);
 		client = ApacheHttpClient.create(config);
-
-		BASE_URL = MiscUtils.loadBaseUrl();
 	}
 
-	public WebService()
+	protected static WebResource getResource(String url)
 	{
-		System.out.println(getClass().getSimpleName() + " loaded with URL " + BASE_URL);
-	}
-
-	public String getBaseUrl()
-	{
-		return BASE_URL;
-	}
-
-	public static Client getClient()
-	{
-		return client;
+		return client.resource(BASE_URL + url);
 	}
 
 	protected static void checkResponse(StdResponse resp) throws CommonServiceException
