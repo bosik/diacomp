@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.json.JSONArray;
+
 public class Utils
 {
 	// отладочная печать
@@ -302,5 +304,22 @@ public class Utils
 		catch (Exception e)
 		{
 		}
+	}
+
+	public static String formatBoolean(boolean x)
+	{
+		return x ? "1" : "0";
+	}
+
+	public static String formatJSONArray(List<String> list)
+	{
+		JSONArray json = new JSONArray();
+
+		for (String item : list)
+		{
+			json.put(item);
+		}
+
+		return json.toString();
 	}
 }

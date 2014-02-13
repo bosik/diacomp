@@ -37,13 +37,13 @@ public interface DiaryService
 	/**
 	 * Returns list of non-deleted records for the specified time interval
 	 * 
-	 * @param fromDate
-	 * @param toDate
+	 * @param fromTime
+	 * @param toTime
 	 * @param includeRemoved
 	 * @return
 	 * @throws CommonServiceException
 	 */
-	public List<Versioned<DiaryRecord>> getRecords(Date fromDate, Date toDate, boolean includeRemoved)
+	public List<Versioned<DiaryRecord>> getRecords(Date fromTime, Date toTime, boolean includeRemoved)
 			throws CommonServiceException;
 
 	/**
