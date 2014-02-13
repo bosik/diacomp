@@ -16,31 +16,11 @@
 	<filter>
 		<filter-name>AuthFilter</filter-name>
 		<filter-class>org.bosik.diacomp.backend.filters.AuthFilter</filter-class>
-		<!-- <init-param> <param-name>test</param-name> <param-value>testValue</param-value> 
-			</init-param> -->
 	</filter>
 	<filter-mapping>
 		<filter-name>AuthFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-
-	<!-- <servlet>
-		<servlet-name>ServletAuth</servlet-name>
-		<servlet-class>org.bosik.diacomp.servlets.ServletAuth</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ServletAuth</servlet-name>
-		<url-pattern>/api/login</url-pattern>
-	</servlet-mapping> -->
-
-	<!-- <servlet>
-		<servlet-name>ServletDiary</servlet-name>
-		<servlet-class>org.bosik.diacomp.servlets.ServletDiary</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ServletDiary</servlet-name>
-		<url-pattern>/api/d____iary</url-pattern>
-	</servlet-mapping> -->
 
 	<servlet>
 		<servlet-name>Service</servlet-name>
