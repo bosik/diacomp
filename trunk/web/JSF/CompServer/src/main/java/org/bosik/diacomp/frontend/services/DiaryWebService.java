@@ -12,11 +12,8 @@ import org.bosik.diacomp.persistence.serializers.Serializer;
 import org.bosik.diacomp.persistence.serializers.ready.SerializerDiaryRecord;
 import org.bosik.diacomp.services.DiaryService;
 import org.bosik.diacomp.services.exceptions.CommonServiceException;
-import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.utils.ResponseBuilder;
 import org.bosik.diacomp.utils.StdResponse;
 import org.bosik.diacomp.utils.Utils;
-import org.json.JSONObject;
 
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
@@ -39,22 +36,12 @@ public class DiaryWebService extends WebService implements DiaryService
 		{
 			WebResource resource = getResource("api/diary/new");
 			resource = resource.queryParam("mod_after", Utils.formatTimeUTC(time));
-			String s = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
-			StdResponse resp = new StdResponse(s);
+			String str = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
 
-			switch (resp.getCode())
-			{
-				case ResponseBuilder.CODE_OK:
-				{
-					JSONObject json = new JSONObject(s);
-					String items = json.getString("resp");
-					return serializer.readAll(items);
-				}
-				case ResponseBuilder.CODE_UNAUTHORIZED:
-					throw new NotAuthorizedException(resp.getResponse());
-				default: // case ResponseBuilder.CODE_FAIL:
-					throw new CommonServiceException(resp.getResponse());
-			}
+			StdResponse resp = new StdResponse(str);
+			checkResponse(resp);
+
+			return serializer.readAll(resp.getResponse());
 		}
 		catch (UniformInterfaceException e)
 		{
