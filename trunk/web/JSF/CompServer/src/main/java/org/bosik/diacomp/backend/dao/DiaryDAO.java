@@ -45,12 +45,44 @@ public class DiaryDAO implements IDiaryDAO
 	}
 
 	@Override
-	public List<Versioned<String>> findMod(int userId, Date time)
+	public List<Versioned<String>> findMod(int userId, Date time, boolean includeRemoved)
 	{
 		try
 		{
 			String clause = String.format("(%s = %d) AND (%s >= '%s')", MySQLAccess.COLUMN_DIARY_USER, userId,
 					MySQLAccess.COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(time));
+
+			if (!includeRemoved)
+			{
+				clause += String.format(" AND (%s = FALSE)", MySQLAccess.COLUMN_DIARY_DELETED);
+			}
+
+			//System.out.println("Requesting SQL clause: " + clause);
+			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause);
+			List<Versioned<String>> result = parseDiaryRecords(set);
+			set.close();
+			return result;
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public List<Versioned<String>> findPeriod(int userId, Date startTime, Date endTime, boolean includeRemoved)
+	{
+		try
+		{
+			String clause = String.format("(%s = %d) AND (%s >= '%s') AND (%s <= '%s')", MySQLAccess.COLUMN_DIARY_USER,
+					userId, MySQLAccess.COLUMN_DIARY_TIMECACHE, Utils.formatTimeUTC(startTime),
+					MySQLAccess.COLUMN_DIARY_TIMECACHE, Utils.formatTimeUTC(endTime));
+
+			if (!includeRemoved)
+			{
+				clause += String.format(" AND (%s = FALSE)", MySQLAccess.COLUMN_DIARY_DELETED);
+			}
+
 			//System.out.println("Requesting SQL clause: " + clause);
 			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause);
 			List<Versioned<String>> result = parseDiaryRecords(set);
