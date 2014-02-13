@@ -6,10 +6,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
 import org.bosik.diacomp.utils.ResponseBuilder;
 import org.json.JSONObject;
 
 @Path("/")
+@SuppressWarnings("static-method")
 public class SystemResource
 {
 	@GET
@@ -19,10 +21,13 @@ public class SystemResource
 	{
 		try
 		{
+			JSONObject info = new JSONObject();
+			info.put("current", "2");
+			info.put("support", "2");
+
 			JSONObject r = new JSONObject();
 			r.put("code", "0");
-			r.put("current", "2");
-			r.put("support", "2");
+			r.put("resp", info);
 
 			String resp = r.toString();
 			return Response.ok(resp).build();
