@@ -85,7 +85,7 @@
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>{"code":"0","current":"###","support":"###",...} - содержит текущую и самую раннюю поддерживаемую версии</return-value>
+					<return-value>{"code":"0","resp":{"current":"###","support":"###"},...} - содержит текущую и самую раннюю поддерживаемую версии</return-value>
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
