@@ -1,6 +1,7 @@
 package org.bosik.diacomp.backend.filters;
 
 import java.io.IOException;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -10,6 +11,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.bosik.diacomp.backend.dao.AuthDAO;
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.utils.ResponseBuilder;
@@ -60,21 +62,23 @@ public class AuthFilter implements Filter
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
 			ServletException
 	{
-		final String BASE_URL = "/CompServer";
-		HttpServletRequest req = (HttpServletRequest) request;
-		HttpServletResponse res = (HttpServletResponse) response;
+		HttpServletRequest req = (HttpServletRequest)request;
+		HttpServletResponse res = (HttpServletResponse)response;
 
-		// System.out.println("doFilter(): getServletPath=" + req.getServletPath());
-		// System.out.println("doFilter(): getRequestURL=" + req.getRequestURL());
+		final String BASE_URL = req.getContextPath();
+
+		System.out.println("doFilter(): getContextPath=" + req.getContextPath());
+		System.out.println("doFilter(): getServletPath=" + req.getServletPath());
+		System.out.println("doFilter(): getRequestURL=" + req.getRequestURL());
 		System.out.println("Requested: " + req.getRequestURI());
-		// System.out.println("doFilter(): getQueryString=" + req.getQueryString());
+		System.out.println("doFilter(): getQueryString=" + req.getQueryString());
 
 		if (req.getRequestURI().startsWith(BASE_URL + "/api/auth/"))
 		{
 			System.out.println("Mode: public");
 			chain.doFilter(request, response);
 		}
-		else if (req.getRequestURI().startsWith(BASE_URL + "/api/info"))
+		else if (req.getRequestURI().startsWith(BASE_URL + "/api/info/"))
 		{
 			System.out.println("Mode: public");
 			chain.doFilter(request, response);
