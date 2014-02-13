@@ -37,7 +37,7 @@ public class DiaryWebService extends WebService implements DiaryService
 	{
 		try
 		{
-			WebResource resource = getClient().resource(getBaseUrl() + "diary/new");
+			WebResource resource = getClient().resource(getBaseUrl() + "api/diary/new");
 			resource = resource.queryParam("mod_after", Utils.formatTimeUTC(time));
 			String s = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
 			StdResponse resp = new StdResponse(s);
