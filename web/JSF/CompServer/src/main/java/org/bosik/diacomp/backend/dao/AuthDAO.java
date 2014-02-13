@@ -2,6 +2,7 @@ package org.bosik.diacomp.backend.dao;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
 
 // TODO: extract interface
@@ -11,7 +12,7 @@ public class AuthDAO
 	private static final int	INVALID_USER	= -1;
 
 	// TODO: seems bad approach
-	public static void checkAuth(HttpServletRequest request) throws NotAuthorizedException
+	public void checkAuth(HttpServletRequest request) throws NotAuthorizedException
 	{
 		// ================================================================
 		// final Enumeration<String> attributeNames = request.getSession().getAttributeNames();
