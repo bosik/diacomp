@@ -42,15 +42,15 @@
 				</return>
 				<return>
 					<return-value>{"code":"4051","resp":"###",...}</return-value>
-					<return-condition>Ошибка авторизации: версия API клиента устарела и больше не поддерживается</return-condition>
+					<return-condition>Ошибка: версия API клиента устарела и больше не поддерживается</return-condition>
 				</return>
 				<return>
 					<return-value>{"code":"401","resp":"###",...}</return-value>
-					<return-condition>Ошибка авторизации: неверный логин или пароль</return-condition>
+					<return-condition>Ошибка: неверный логин или пароль</return-condition>
 				</return>
 				<return>
 					<return-value>{"code":"400","resp":"###",...}</return-value>
-					<return-condition>Ошибка авторизации: параметры неверны либо отсутствуют</return-condition>
+					<return-condition>Ошибка: параметры неверны либо отсутствуют</return-condition>
 				</return>
 				<return>
 					<return-value>{"code":"500","resp":"###",...}</return-value>
