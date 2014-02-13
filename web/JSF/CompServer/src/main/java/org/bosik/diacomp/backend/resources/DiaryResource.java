@@ -2,6 +2,7 @@ package org.bosik.diacomp.backend.resources;
 
 import java.util.Date;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -11,6 +12,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
 import org.bosik.diacomp.backend.dao.AuthDAO;
 import org.bosik.diacomp.backend.dao.FakeDiaryDAO;
 import org.bosik.diacomp.backend.dao.IDiaryDAO;
@@ -90,13 +92,41 @@ public class DiaryResource
 	@GET
 	@Path("new")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecords(@QueryParam("mod_after") String stime) throws CommonServiceException
+	public Response getRecords(@QueryParam("mod_after") String stime, @QueryParam("show_rem") String parShowRem)
+			throws CommonServiceException
 	{
 		try
 		{
 			int userId = authService.getCurrentUserId(req);
 			Date time = Utils.parseTimeUTC(stime);
-			List<Versioned<String>> list = diaryService.findMod(userId, time);
+			boolean includeRemoved = "1".equals(parShowRem);
+			List<Versioned<String>> list = diaryService.findMod(userId, time, includeRemoved);
+			String items = serializerVersionedString.writeAll(list);
+			String response = ResponseBuilder.buildDone(items);
+			return Response.ok(response).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	@GET
+	@Path("period")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getRecords(@QueryParam("start_time") String parStartTime,
+			@QueryParam("end_time") String parEndTime, @QueryParam("show_rem") String parShowRem)
+			throws CommonServiceException
+	{
+		try
+		{
+			int userId = authService.getCurrentUserId(req);
+			Date startTime = Utils.parseTimeUTC(parStartTime);
+			Date endTime = Utils.parseTimeUTC(parEndTime);
+			boolean includeRemoved = "1".equals(parShowRem);
+
+			List<Versioned<String>> list = diaryService.findPeriod(userId, startTime, endTime, includeRemoved);
 			String items = serializerVersionedString.writeAll(list);
 			String response = ResponseBuilder.buildDone(items);
 			return Response.ok(response).build();
