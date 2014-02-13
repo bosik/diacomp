@@ -59,13 +59,13 @@ public class TestAuthWebService
 	public void testAuthAccess()
 	{
 		authService.login(TEST_LOGIN, TEST_PASSWORD, TEST_API_VERSION_CURRENT);
-		diaryService.getRecords(new Date());
+		diaryService.getRecords(new Date(), true);
 	}
 
 	@Test(expected = NotAuthorizedException.class)
 	public void testUnauthAccess()
 	{
 		authService.logout();
-		diaryService.getRecords(new Date());
+		diaryService.getRecords(new Date(), true);
 	}
 }

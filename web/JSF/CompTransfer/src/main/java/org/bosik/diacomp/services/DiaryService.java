@@ -2,6 +2,7 @@ package org.bosik.diacomp.services;
 
 import java.util.Date;
 import java.util.List;
+
 import org.bosik.diacomp.bo.diary.DiaryRecord;
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.services.exceptions.CommonServiceException;
@@ -27,22 +28,23 @@ public interface DiaryService
 	 * Returns list of records which were modified after the specified time
 	 * 
 	 * @param time
-	 * 
+	 * @param includeRemoved
 	 * @return
+	 * @throws CommonServiceException
 	 */
-	public List<Versioned<DiaryRecord>> getRecords(Date time) throws CommonServiceException;
-
-	// FIXME: no DELETED handling implemented
+	public List<Versioned<DiaryRecord>> getRecords(Date time, boolean includeRemoved) throws CommonServiceException;
 
 	/**
 	 * Returns list of non-deleted records for the specified time interval
 	 * 
 	 * @param fromDate
 	 * @param toDate
+	 * @param includeRemoved
 	 * @return
 	 * @throws CommonServiceException
 	 */
-	public List<Versioned<DiaryRecord>> getRecords(Date fromDate, Date toDate) throws CommonServiceException;
+	public List<Versioned<DiaryRecord>> getRecords(Date fromDate, Date toDate, boolean includeRemoved)
+			throws CommonServiceException;
 
 	/**
 	 * Persists records (create if not exist, update otherwise)
