@@ -129,11 +129,15 @@
 					<par-name>end_time</par-name>
 					<par-desc>Время конца выборки (UTC) в стандартном формате</par-desc>
 				</param>
+				<param>
+					<par-name>show_rem</par-name>
+					<par-desc>Показывать ли удалённые записи (значения: "0"-скрывать, "1"-показывать)</par-desc>
+				</param>
 			</params>
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>{"code":"0","resp":[{ (item) }, ...]}, отсортирован по возрастанию времени записи</return-value>
+					<return-value>{"code":"0","resp":[(item), ...]}, отсортирован по возрастанию времени записи</return-value>
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
@@ -155,11 +159,15 @@
 					<par-name>mod_after</par-name>
 					<par-desc>Время (UTC) в стандартном формате</par-desc>
 				</param>
+				<param>
+					<par-name>show_rem</par-name>
+					<par-desc>Показывать ли удалённые записи (значения: "0"-скрывать, "1"-показывать)</par-desc>
+				</param>
 			</params>
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>{"code":"0","resp":[{ (item) }, ...]}, отсортирован по возрастанию времени записи</return-value>
+					<return-value>{"code":"0","resp":[(item), ...]}, отсортирован по возрастанию времени записи</return-value>
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
@@ -179,13 +187,13 @@
 			<params>
 				<param>
 					<par-name>guids</par-name>
-					<par-desc>["guid":"...", ...]</par-desc>
+					<par-desc>["(guid-here)", ...]</par-desc>
 				</param>
 			</params>
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>{"code":"0","resp":[{ (item) }, ...]}, отсортирован по возрастанию времени записи</return-value>
+					<return-value>{"code":"0","resp":[(item), ...]}, отсортирован по возрастанию времени записи</return-value>
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
@@ -205,7 +213,7 @@
 			<params>
 				<param>
 					<par-name>items</par-name>
-					<par-desc>[item, ...]</par-desc>
+					<par-desc>[(item), ...]</par-desc>
 				</param>
 			</params>
 			<type>PUT</type>
@@ -234,7 +242,7 @@
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>{"code":"0","resp":[item, ...]}, отсортирован по алфавиту</return-value>
+					<return-value>{"code":"0","resp":[(item), ...]}, отсортирован по алфавиту</return-value>
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
@@ -260,7 +268,7 @@
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>{"code":"0","resp":[{ (item) }, ...]}, отсортирован по алфавиту</return-value>
+					<return-value>{"code":"0","resp":[(item), ...]}, отсортирован по алфавиту</return-value>
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
@@ -280,13 +288,13 @@
 			<params>
 				<param>
 					<par-name>guids</par-name>
-					<par-desc>["guid":"...", ...]</par-desc>
+					<par-desc>[(guid), ...]</par-desc>
 				</param>
 			</params>
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>{"code":"0","resp":[{ (item) }, ...]}, отсортирован по алфавиту</return-value>
+					<return-value>{"code":"0","resp":[(item), ...]}, отсортирован по алфавиту</return-value>
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>

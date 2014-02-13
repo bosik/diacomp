@@ -13,4 +13,4 @@ Date		Hours	Task
 09.02.2014	5.0	Implementing auth stack (until 06:00)
 11.02.2014	5.0	Implementing backend: Fixing problems with cookies
 12.02.2014	2.0	Implementing backend: merging
-13.02.2014	2.0	Implementing backend: auth checks (until 13:30)
+13.02.2014	6.0	Implementing backend: auth checks (until 17:30)
