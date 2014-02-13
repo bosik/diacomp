@@ -16,7 +16,7 @@ public class AuthWebService extends WebService implements AuthService
 	{
 		try
 		{
-			WebResource resource = getClient().resource(getBaseUrl() + "api/auth/login");
+			WebResource resource = getResource("api/auth/login");
 			resource = resource.queryParam("login", login);
 			resource = resource.queryParam("pass", pass);
 			resource = resource.queryParam("api", String.valueOf(apiVersion));
@@ -36,7 +36,7 @@ public class AuthWebService extends WebService implements AuthService
 	{
 		try
 		{
-			WebResource resource = getClient().resource(getBaseUrl() + "api/auth/logout");
+			WebResource resource = getResource("api/auth/logout");
 			String str = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
 
 			StdResponse resp = new StdResponse(str);
