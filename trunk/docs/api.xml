@@ -49,10 +49,6 @@
 					<return-condition>Ошибка: неверный логин или пароль</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"400","resp":"###",...}</return-value>
-					<return-condition>Ошибка: параметры неверны либо отсутствуют</return-condition>
-				</return>
-				<return>
 					<return-value>{"code":"500","resp":"###",...}</return-value>
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
