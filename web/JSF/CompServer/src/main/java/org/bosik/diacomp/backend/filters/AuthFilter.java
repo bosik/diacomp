@@ -1,6 +1,8 @@
 package org.bosik.diacomp.backend.filters;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -19,11 +21,13 @@ import org.bosik.diacomp.utils.ResponseBuilder;
 @WebFilter("/AuthenticationFilter")
 public class AuthFilter implements Filter
 {
-	private AuthDAO	authService	= new AuthDAO();
+	private AuthDAO						authService	= new AuthDAO();
 
-	public AuthFilter()
+	private static final List<String>	PUBLIC_URLS	= new LinkedList<String>();
 	{
-
+		PUBLIC_URLS.clear();
+		PUBLIC_URLS.add("/api/auth/");
+		PUBLIC_URLS.add("/api/info/");
 	}
 
 	@Override
@@ -65,40 +69,38 @@ public class AuthFilter implements Filter
 		HttpServletRequest req = (HttpServletRequest)request;
 		HttpServletResponse res = (HttpServletResponse)response;
 
+		//		System.out.println("doFilter(): getContextPath=" + req.getContextPath());
+		//		System.out.println("doFilter(): getServletPath=" + req.getServletPath());
+		//		System.out.println("doFilter(): getRequestURL=" + req.getRequestURL());
+		//		System.out.println("Requested: " + req.getRequestURI());
+		//		System.out.println("doFilter(): getQueryString=" + req.getQueryString());
+
 		final String BASE_URL = req.getContextPath();
+		final String requestURI = req.getRequestURI();
 
-		System.out.println("doFilter(): getContextPath=" + req.getContextPath());
-		System.out.println("doFilter(): getServletPath=" + req.getServletPath());
-		System.out.println("doFilter(): getRequestURL=" + req.getRequestURL());
-		System.out.println("Requested: " + req.getRequestURI());
-		System.out.println("doFilter(): getQueryString=" + req.getQueryString());
-
-		if (req.getRequestURI().startsWith(BASE_URL + "/api/auth/"))
+		for (String url : PUBLIC_URLS)
 		{
-			System.out.println("Mode: public");
-			chain.doFilter(request, response);
-		}
-		else if (req.getRequestURI().startsWith(BASE_URL + "/api/info/"))
-		{
-			System.out.println("Mode: public");
-			chain.doFilter(request, response);
-		}
-		else
-		{
-			System.out.println("Mode: private");
-			//printRequestInfo(req);
-			try
+			if (requestURI.startsWith(BASE_URL + url))
 			{
-				authService.checkAuth(req);
-				System.out.println("Authentified OK, chained");
+				// System.out.println("Mode: public");
 				chain.doFilter(request, response);
+				return;
 			}
-			catch (NotAuthorizedException e)
-			{
-				System.err.println("Not authorized request!");
-				// res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				res.getWriter().write(ResponseBuilder.build(ResponseBuilder.CODE_UNAUTHORIZED, "Not authorized"));
-			}
+		}
+
+		// System.out.println("Mode: private");
+		//printRequestInfo(req);
+		try
+		{
+			authService.checkAuth(req);
+			// System.out.println("Authentified OK, chained");
+			chain.doFilter(request, response);
+		}
+		catch (NotAuthorizedException e)
+		{
+			System.err.println("Not authorized request!");
+			// res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			res.getWriter().write(ResponseBuilder.build(ResponseBuilder.CODE_UNAUTHORIZED, "Not authorized"));
 		}
 	}
 
