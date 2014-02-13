@@ -30,7 +30,7 @@ public class DiaryWebService extends WebService implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(Date time) throws CommonServiceException
+	public List<Versioned<DiaryRecord>> getRecords(Date time, boolean includeRemoved) throws CommonServiceException
 	{
 		try
 		{
@@ -50,7 +50,8 @@ public class DiaryWebService extends WebService implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(Date fromDate, Date toDate) throws CommonServiceException
+	public List<Versioned<DiaryRecord>> getRecords(Date fromDate, Date toDate, boolean includeRemoved)
+			throws CommonServiceException
 	{
 		throw new NotSupportedException();
 	}
