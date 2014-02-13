@@ -1,12 +1,14 @@
 package org.bosik.diacomp.frontend.services;
 
 import static org.junit.Assert.assertEquals;
-import java.net.URI;
+
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
+
+import org.bosik.diacomp.utils.MiscUtils;
 import org.bosik.diacomp.utils.ResponseBuilder;
 import org.bosik.diacomp.utils.StdResponse;
 import org.junit.Test;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
@@ -15,18 +17,11 @@ import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 
 public class TestAuthResource
 {
-	// FIXME
-	private static final String	BASE_URL	= "http://localhost:8082/CompServer";
+	private static final String	BASE_URL			= MiscUtils.loadBaseUrl();
 
-	private static final String	API_VERSION	= "20";								// TODO: make it
-																					// integer
-	private static final String	demoLogin	= "admin";
-	private static final String	demoPass	= "1234";
-
-	private static URI getBaseURI()
-	{
-		return UriBuilder.fromUri(BASE_URL).build();
-	}
+	private static final String	TEST_LOGIN			= "admin";
+	private static final String	TEST_PASSWORD		= "1234";
+	private static final int	TEST_API_VERSION	= 20;
 
 	private static Client getClient()
 	{
@@ -35,27 +30,15 @@ public class TestAuthResource
 		return ApacheHttpClient.create(config);
 	}
 
-	// @Override
-	// public WebTarget target()
-	// {
-	// if (trg == null)
-	// {
-	// ClientConfig config = new ClientConfig();
-	// JerseyClient client = JerseyClientBuilder.createClient(config);
-	// trg = client.target(getBaseURI());
-	// }
-	// return trg;
-	// }
-
 	@Test
 	public void unauthTest()
 	{
 		logoutTest();
 
-		final String url = BASE_URL + "/api/diary/view";
+		final String url = BASE_URL + "api/diary/view";
 		String str = getClient().resource(url).accept(MediaType.APPLICATION_JSON).get(String.class);
 
-		System.out.println("unauthTest(): " + str);
+		//System.out.println("unauthTest(): " + str);
 
 		// assertEquals(Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 		StdResponse r = StdResponse.decode(str);
@@ -65,9 +48,9 @@ public class TestAuthResource
 	@Test
 	public void logoutTest()
 	{
-		final String url = BASE_URL + "/api/auth/logout";
+		final String url = BASE_URL + "api/auth/logout";
 		String str = getClient().resource(url).accept(MediaType.APPLICATION_JSON).get(String.class);
-		System.out.println("logoutTest(): " + str);
+		//System.out.println("logoutTest(): " + str);
 
 		StdResponse r = StdResponse.decode(str);
 		assertEquals(ResponseBuilder.CODE_OK, r.getCode());
@@ -76,13 +59,13 @@ public class TestAuthResource
 	@Test
 	public void loginTest_correct()
 	{
-		WebResource request = getClient().resource(BASE_URL + "/api/auth/login");
-		request = request.queryParam("login", demoLogin);
-		request = request.queryParam("pass", demoPass);
-		request = request.queryParam("api", "20");
+		WebResource request = getClient().resource(BASE_URL + "api/auth/login");
+		request = request.queryParam("login", TEST_LOGIN);
+		request = request.queryParam("pass", TEST_PASSWORD);
+		request = request.queryParam("api", String.valueOf(TEST_API_VERSION));
 		String str = request.accept(MediaType.APPLICATION_JSON).post(String.class);
 
-		System.out.println("loginTest(): " + str);
+		//System.out.println("loginTest(): " + str);
 
 		StdResponse r = StdResponse.decode(str);
 		assertEquals(ResponseBuilder.CODE_OK, r.getCode());
@@ -91,13 +74,13 @@ public class TestAuthResource
 	@Test
 	public void loginTest_wrong()
 	{
-		WebResource request = getClient().resource(BASE_URL + "/api/auth/login");
-		request = request.queryParam("login", demoLogin);
+		WebResource request = getClient().resource(BASE_URL + "api/auth/login");
+		request = request.queryParam("login", TEST_LOGIN);
 		request = request.queryParam("pass", "wrong");
-		request = request.queryParam("api", "20");
+		request = request.queryParam("api", String.valueOf(TEST_API_VERSION));
 		String str = request.accept(MediaType.APPLICATION_JSON).post(String.class);
 
-		System.out.println("loginTest(): " + str);
+		//System.out.println("loginTest(): " + str);
 
 		StdResponse r = StdResponse.decode(str);
 		assertEquals(ResponseBuilder.CODE_BADCREDENTIALS, r.getCode());
@@ -106,13 +89,13 @@ public class TestAuthResource
 	@Test
 	public void loginGETTest()
 	{
-		WebResource request = getClient().resource(BASE_URL + "/api/auth/login");
-		request = request.queryParam("login", demoLogin);
-		request = request.queryParam("pass", demoPass);
-		request = request.queryParam("api", "20");
+		WebResource request = getClient().resource(BASE_URL + "api/auth/login");
+		request = request.queryParam("login", TEST_LOGIN);
+		request = request.queryParam("pass", TEST_PASSWORD);
+		request = request.queryParam("api", String.valueOf(TEST_API_VERSION));
 		String str = request.accept(MediaType.APPLICATION_JSON).post(String.class);
 
-		System.out.println("loginGETTest(): " + str);
+		//System.out.println("loginGETTest(): " + str);
 		StdResponse r = StdResponse.decode(str);
 		assertEquals(ResponseBuilder.CODE_OK, r.getCode());
 	}
@@ -120,13 +103,13 @@ public class TestAuthResource
 	@Test
 	public void doubleCheck()
 	{
-		WebResource request = getClient().resource(BASE_URL + "/api/auth/login");
-		request = request.queryParam("login", demoLogin);
-		request = request.queryParam("pass", demoPass);
-		request = request.queryParam("api", "20");
+		WebResource request = getClient().resource(BASE_URL + "api/auth/login");
+		request = request.queryParam("login", TEST_LOGIN);
+		request = request.queryParam("pass", TEST_PASSWORD);
+		request = request.queryParam("api", String.valueOf(TEST_API_VERSION));
 		String str = request.accept(MediaType.APPLICATION_JSON).post(String.class);
 
-		System.out.println("doubleCheck: resp[1] = " + str);
+		//System.out.println("doubleCheck: resp[1] = " + str);
 
 		// =============================================================
 
@@ -134,7 +117,7 @@ public class TestAuthResource
 		request = request.queryParam("mod_after", "2012-01-01%2012:15:42");
 		str = request.accept(MediaType.APPLICATION_JSON).get(String.class);
 
-		System.out.println("doubleCheck: resp[2] = " + str);
+		//System.out.println("doubleCheck: resp[2] = " + str);
 
 	}
 
