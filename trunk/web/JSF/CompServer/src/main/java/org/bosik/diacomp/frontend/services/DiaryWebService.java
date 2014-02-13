@@ -3,7 +3,6 @@ package org.bosik.diacomp.frontend.services;
 import java.util.Date;
 import java.util.List;
 
-import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.core.MediaType;
 
 import org.bosik.diacomp.bo.diary.DiaryRecord;
@@ -25,8 +24,21 @@ public class DiaryWebService extends WebService implements DiaryService
 	@Override
 	public List<Versioned<DiaryRecord>> getRecords(List<String> guids) throws CommonServiceException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		try
+		{
+			WebResource resource = getResource("api/diary/guid");
+			resource = resource.queryParam("guids", Utils.formatJSONArray(guids));
+			String str = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
+
+			StdResponse resp = new StdResponse(str);
+			checkResponse(resp);
+
+			return serializer.readAll(resp.getResponse());
+		}
+		catch (UniformInterfaceException e)
+		{
+			throw new CommonServiceException(e);
+		}
 	}
 
 	@Override
@@ -50,15 +62,31 @@ public class DiaryWebService extends WebService implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(Date fromDate, Date toDate, boolean includeRemoved)
+	public List<Versioned<DiaryRecord>> getRecords(Date fromTime, Date toTime, boolean includeRemoved)
 			throws CommonServiceException
 	{
-		throw new NotSupportedException();
+		try
+		{
+			WebResource resource = getResource("api/diary/period");
+			resource = resource.queryParam("start_time", Utils.formatTimeUTC(fromTime));
+			resource = resource.queryParam("end_time", Utils.formatTimeUTC(toTime));
+			resource = resource.queryParam("show_rem", Utils.formatBoolean(includeRemoved));
+			String str = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
+
+			StdResponse resp = new StdResponse(str);
+			checkResponse(resp);
+
+			return serializer.readAll(resp.getResponse());
+		}
+		catch (UniformInterfaceException e)
+		{
+			throw new CommonServiceException(e);
+		}
 	}
 
 	@Override
 	public void postRecords(List<Versioned<DiaryRecord>> records) throws CommonServiceException
 	{
-		throw new NotSupportedException();
+		throw new UnsupportedOperationException();
 	}
 }
