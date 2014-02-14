@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.bosik.diacomp.backend.dao.auth.AuthDAO;
 import org.bosik.diacomp.backend.dao.auth.FakeAuthDAO;
 import org.bosik.diacomp.backend.dao.diary.DiaryDAO;
 import org.bosik.diacomp.backend.dao.diary.FakeDiaryDAO;
@@ -35,7 +36,7 @@ public class DiaryResource
 
 	private DiaryDAO									diaryService				= new FakeDiaryDAO();
 
-	private FakeAuthDAO										authService					= new FakeAuthDAO();
+	private AuthDAO										authService					= new FakeAuthDAO();
 
 	private static final Parser<String>					parserString				= new Parser<String>()
 																					{
