@@ -14,7 +14,7 @@ import org.bosik.diacomp.persistence.serializers.ParserDiaryRecord;
 import org.bosik.diacomp.persistence.serializers.Serializer;
 import org.bosik.diacomp.persistence.serializers.utils.SerializerAdapter;
 
-public class FakeDiaryDAO implements IDiaryDAO
+public class FakeDiaryDAO implements DiaryDAO
 {
 	private static Mock<Versioned<DiaryRecord>>	mock		= new MockVersionedConverter<DiaryRecord>(
 																	new MockDiaryRecord());
