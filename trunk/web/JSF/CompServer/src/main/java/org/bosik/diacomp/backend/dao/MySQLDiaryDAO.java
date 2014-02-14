@@ -9,7 +9,7 @@ import java.util.List;
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.utils.Utils;
 
-public class DiaryDAO implements IDiaryDAO
+public class MySQLDiaryDAO implements IDiaryDAO
 {
 	private final MySQLAccess	db	= new MySQLAccess();
 
