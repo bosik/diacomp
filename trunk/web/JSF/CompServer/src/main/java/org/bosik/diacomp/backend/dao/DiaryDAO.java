@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.bosik.diacomp.persistence.common.Versioned;
 
-public interface IDiaryDAO
+public interface DiaryDAO
 {
 	List<Versioned<String>> findMod(int userId, Date time, boolean includeRemoved);
 
