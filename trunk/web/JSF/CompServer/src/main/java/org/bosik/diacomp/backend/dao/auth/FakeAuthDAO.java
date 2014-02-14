@@ -5,13 +5,13 @@ import javax.servlet.http.HttpSession;
 
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
 
-// TODO: extract interface
-public class FakeAuthDAO
+public class FakeAuthDAO implements AuthDAO
 {
 	private static final String	PAR_USERID		= "USER_ID";
 	private static final int	INVALID_USER	= -1;
 
 	// TODO: seems bad approach
+	@Override
 	public void checkAuth(HttpServletRequest request) throws NotAuthorizedException
 	{
 		// ================================================================
@@ -33,11 +33,13 @@ public class FakeAuthDAO
 		}
 	}
 
+	@Override
 	public int getCurrentUserId(HttpServletRequest request)
 	{
 		return (Integer) request.getSession().getAttribute(PAR_USERID);
 	}
 
+	@Override
 	public void login(HttpServletRequest request, String login, String pass)
 	{
 		final HttpSession session = request.getSession();
@@ -56,6 +58,7 @@ public class FakeAuthDAO
 		}
 	}
 
+	@Override
 	public void logout(HttpServletRequest request)
 	{
 		request.getSession().removeAttribute(PAR_USERID);

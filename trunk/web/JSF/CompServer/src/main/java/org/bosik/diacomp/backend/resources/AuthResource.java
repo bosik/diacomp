@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.bosik.diacomp.backend.dao.auth.AuthDAO;
 import org.bosik.diacomp.backend.dao.auth.FakeAuthDAO;
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.utils.ResponseBuilder;
@@ -24,7 +25,7 @@ public class AuthResource
 	@Context
 	HttpServletRequest			req;
 
-	private FakeAuthDAO				authService	= new FakeAuthDAO();
+	private AuthDAO				authService	= new FakeAuthDAO();
 
 	@POST
 	@Path("login")
