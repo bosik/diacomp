@@ -50,6 +50,8 @@ public class MySQLAccess
 		init();
 	}
 
+	@SuppressWarnings("resource")
+	// the resource is returned to invoker
 	public ResultSet select(String table, String clause) throws SQLException
 	{
 		Connection connect = null;
@@ -61,33 +63,14 @@ public class MySQLAccess
 			String sql = String.format("SELECT * FROM %s WHERE %s", table, clause);
 			statement = connect.createStatement();
 			return statement.executeQuery(sql);
-
-			// String sql = String.format("SELECT * FROM ? WHERE ?");
-			// preparedStatement = connect.prepareStatement(sql);
-			// preparedStatement.setString(1, table);
-			// preparedStatement.setString(2, clause);
-			// return preparedStatement.executeQuery();
 		}
 		finally
 		{
-			// if (resultSet != null)
-			// {
-			// resultSet.close();
-			// }
-
-			// if (statement != null)
-			// {
-			// statement.close();
-			// }
-
-			// if (connect != null)
-			// {
-			// connect.close();
-			// }
+			close();
 		}
 	}
 
-	public void readDataBase()
+	private void example()
 	{
 		try
 		{
@@ -127,9 +110,16 @@ public class MySQLAccess
 			preparedStatement.setString(1, "Test");
 			preparedStatement.executeUpdate();
 
-			resultSet = statement.executeQuery("select * from diary");
-			writeMetaData(resultSet);
+			// ===============================================================================================
 
+			resultSet = statement.executeQuery("select * from diary");
+			System.out.println("The columns in the table are: ");
+
+			System.out.println("Table: " + resultSet.getMetaData().getTableName(1));
+			for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++)
+			{
+				System.out.println("Column " + i + " " + resultSet.getMetaData().getColumnName(i));
+			}
 		}
 		catch (SQLException e)
 		{
@@ -138,20 +128,6 @@ public class MySQLAccess
 		finally
 		{
 			close();
-		}
-	}
-
-	private void writeMetaData(ResultSet resultSet) throws SQLException
-	{
-		// Now get some metadata from the database
-		// Result set get the result of the SQL query
-
-		System.out.println("The columns in the table are: ");
-
-		System.out.println("Table: " + resultSet.getMetaData().getTableName(1));
-		for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++)
-		{
-			System.out.println("Column " + i + " " + resultSet.getMetaData().getColumnName(i));
 		}
 	}
 
