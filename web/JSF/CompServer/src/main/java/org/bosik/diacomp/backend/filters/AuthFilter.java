@@ -14,14 +14,14 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.bosik.diacomp.backend.dao.auth.AuthDAO;
+import org.bosik.diacomp.backend.dao.auth.FakeAuthDAO;
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.utils.ResponseBuilder;
 
 @WebFilter("/AuthenticationFilter")
 public class AuthFilter implements Filter
 {
-	private AuthDAO						authService	= new AuthDAO();
+	private FakeAuthDAO						authService	= new FakeAuthDAO();
 
 	private static final List<String>	PUBLIC_URLS	= new LinkedList<String>();
 	{

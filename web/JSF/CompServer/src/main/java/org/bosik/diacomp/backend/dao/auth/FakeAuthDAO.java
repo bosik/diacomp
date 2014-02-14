@@ -6,7 +6,7 @@ import javax.servlet.http.HttpSession;
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
 
 // TODO: extract interface
-public class AuthDAO
+public class FakeAuthDAO
 {
 	private static final String	PAR_USERID		= "USER_ID";
 	private static final int	INVALID_USER	= -1;
