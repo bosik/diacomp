@@ -14,8 +14,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.bosik.diacomp.backend.dao.AuthDAO;
-import org.bosik.diacomp.backend.dao.FakeDiaryDAO;
-import org.bosik.diacomp.backend.dao.DiaryDAO;
+import org.bosik.diacomp.backend.dao.diary.DiaryDAO;
+import org.bosik.diacomp.backend.dao.diary.FakeDiaryDAO;
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.persistence.serializers.Parser;
 import org.bosik.diacomp.persistence.serializers.Serializer;
