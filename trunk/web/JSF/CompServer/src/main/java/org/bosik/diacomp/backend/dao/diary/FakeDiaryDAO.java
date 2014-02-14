@@ -1,4 +1,4 @@
-package org.bosik.diacomp.backend.dao;
+package org.bosik.diacomp.backend.dao.diary;
 
 import java.util.ArrayList;
 import java.util.Date;
