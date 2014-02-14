@@ -10,7 +10,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.bosik.diacomp.backend.dao.AuthDAO;
+
+import org.bosik.diacomp.backend.dao.auth.AuthDAO;
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.utils.ResponseBuilder;
 

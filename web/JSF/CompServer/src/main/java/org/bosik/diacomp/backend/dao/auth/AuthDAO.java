@@ -1,4 +1,4 @@
-package org.bosik.diacomp.backend.dao;
+package org.bosik.diacomp.backend.dao.auth;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
