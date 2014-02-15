@@ -12,19 +12,18 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.features.auth.dao.AuthDAO;
 import org.bosik.diacomp.features.auth.dao.FakeAuthDAO;
+import org.bosik.diacomp.services.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
+import org.bosik.diacomp.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.utils.ResponseBuilder;
 
 @Path("auth/")
 public class AuthResource
 {
-	private static final int	API_LEGACY	= 19;
-	private static final int	API_CURRENT	= 20;
-
 	@Context
-	HttpServletRequest			req;
+	HttpServletRequest	req;
 
-	private AuthDAO				authService	= new FakeAuthDAO();
+	private AuthDAO		authService	= new FakeAuthDAO();
 
 	@POST
 	@Path("login")
@@ -34,24 +33,7 @@ public class AuthResource
 	{
 		try
 		{
-			if (apiVersion < API_LEGACY)
-			{
-				String msg = String.format("API %d is unsupported. The latest API: %d. Legacy API: %d.", apiVersion,
-						API_CURRENT, API_LEGACY);
-				String resp = ResponseBuilder.build(ResponseBuilder.CODE_UNSUPPORTED_API, msg);
-				return Response.ok(resp).build();
-			}
-
-			if (apiVersion < API_CURRENT)
-			{
-				String msg = String.format(
-						"API %d is still supported, but deprecated. The latest API: %d. Legacy API: %d.", apiVersion,
-						API_CURRENT, API_LEGACY);
-				String resp = ResponseBuilder.build(ResponseBuilder.CODE_DEPRECATED_API, msg);
-				return Response.ok(resp).build();
-			}
-
-			authService.login(req, login, pass);
+			authService.login(req, login, pass, apiVersion);
 			String entity = ResponseBuilder.buildDone("Logged in OK");
 			return Response.ok(entity).build();
 		}
@@ -62,6 +44,16 @@ public class AuthResource
 			String entity = ResponseBuilder.build(ResponseBuilder.CODE_BADCREDENTIALS,
 					String.format("Bad username/password (%s:%s)", login, pass));
 			return Response.ok(entity).build();
+		}
+		catch (UnsupportedAPIException e)
+		{
+			String resp = ResponseBuilder.build(ResponseBuilder.CODE_UNSUPPORTED_API, e.getMessage());
+			return Response.ok(resp).build();
+		}
+		catch (DeprecatedAPIException e)
+		{
+			String resp = ResponseBuilder.build(ResponseBuilder.CODE_DEPRECATED_API, e.getMessage());
+			return Response.ok(resp).build();
 		}
 		catch (Exception e)
 		{
@@ -98,21 +90,4 @@ public class AuthResource
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(entity).build();
 		}
 	}
-
-	// @GET
-	// @Path("check")
-	// @Produces(MediaType.APPLICATION_JSON)
-	// public Response check()
-	// {
-	// try
-	// {
-	// authService.checkAuth(req);
-	// return Response.ok("Logged").build();
-	// }
-	// catch (NotAuthorizedException e)
-	// {
-	// return Response.ok("No auth").build();
-	// }
-	// }
-
 }

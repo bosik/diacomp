@@ -2,14 +2,18 @@ package org.bosik.diacomp.features.auth.dao;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.bosik.diacomp.services.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
+import org.bosik.diacomp.services.exceptions.UnsupportedAPIException;
 
 public class FakeAuthDAO implements AuthDAO
 {
 	private static final String	PAR_USERID		= "USER_ID";
 	private static final int	INVALID_USER	= -1;
 
-	// TODO: seems bad approach
+	private static final int	API_CURRENT		= 20;
+	private static final int	API_LEGACY		= 19;
+
 	@Override
 	public void checkAuth(HttpServletRequest request) throws NotAuthorizedException
 	{
@@ -39,9 +43,24 @@ public class FakeAuthDAO implements AuthDAO
 	}
 
 	@Override
-	public void login(HttpServletRequest request, String login, String pass)
+	public void login(HttpServletRequest request, String login, String pass, int apiVersion)
 	{
 		final HttpSession session = request.getSession();
+
+		if (apiVersion < API_LEGACY)
+		{
+			String msg = String.format("API %d is unsupported. The latest API: %d. Legacy API: %d.", apiVersion,
+					API_CURRENT, API_LEGACY);
+			throw new UnsupportedAPIException(msg);
+		}
+
+		if (apiVersion < API_CURRENT)
+		{
+			String msg = String.format(
+					"API %d is still supported, but deprecated. The latest API: %d. Legacy API: %d.", apiVersion,
+					API_CURRENT, API_LEGACY);
+			throw new DeprecatedAPIException(msg);
+		}
 
 		if ("admin".equals(login) && "1234".equals(pass))
 		{
@@ -50,9 +69,7 @@ public class FakeAuthDAO implements AuthDAO
 		}
 		else
 		{
-			// request.getSession(true).setAttribute(PAR_USERID, INVALID_USER);
 			session.removeAttribute(PAR_USERID);
-
 			throw new NotAuthorizedException();
 		}
 	}
