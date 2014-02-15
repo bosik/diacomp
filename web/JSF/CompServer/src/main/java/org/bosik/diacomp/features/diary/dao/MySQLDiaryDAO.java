@@ -1,12 +1,11 @@
-package org.bosik.diacomp.backend.dao.diary;
+package org.bosik.diacomp.features.diary.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.bosik.diacomp.backend.dao.MySQLAccess;
+import org.bosik.diacomp.features.common.dao.MySQLAccess;
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.utils.Utils;
 

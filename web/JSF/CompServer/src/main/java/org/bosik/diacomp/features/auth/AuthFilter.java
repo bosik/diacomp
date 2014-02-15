@@ -1,9 +1,8 @@
-package org.bosik.diacomp.backend.filters;
+package org.bosik.diacomp.features.auth;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -13,9 +12,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.bosik.diacomp.backend.dao.auth.AuthDAO;
-import org.bosik.diacomp.backend.dao.auth.FakeAuthDAO;
+import org.bosik.diacomp.features.auth.dao.AuthDAO;
+import org.bosik.diacomp.features.auth.dao.FakeAuthDAO;
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.utils.ResponseBuilder;
 

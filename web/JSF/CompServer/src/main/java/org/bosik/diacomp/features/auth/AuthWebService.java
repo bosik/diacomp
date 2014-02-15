@@ -1,6 +1,7 @@
-package org.bosik.diacomp.frontend.services;
+package org.bosik.diacomp.features.auth;
 
 import javax.ws.rs.core.MediaType;
+import org.bosik.diacomp.features.common.WebService;
 import org.bosik.diacomp.services.AuthService;
 import org.bosik.diacomp.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.utils.StdResponse;

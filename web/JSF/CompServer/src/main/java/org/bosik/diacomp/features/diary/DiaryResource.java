@@ -1,8 +1,7 @@
-package org.bosik.diacomp.backend.resources;
+package org.bosik.diacomp.features.diary;
 
 import java.util.Date;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -12,11 +11,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import org.bosik.diacomp.backend.dao.auth.AuthDAO;
-import org.bosik.diacomp.backend.dao.auth.FakeAuthDAO;
-import org.bosik.diacomp.backend.dao.diary.DiaryDAO;
-import org.bosik.diacomp.backend.dao.diary.FakeDiaryDAO;
+import org.bosik.diacomp.features.auth.dao.AuthDAO;
+import org.bosik.diacomp.features.auth.dao.FakeAuthDAO;
+import org.bosik.diacomp.features.diary.dao.DiaryDAO;
+import org.bosik.diacomp.features.diary.dao.FakeDiaryDAO;
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.persistence.serializers.Parser;
 import org.bosik.diacomp.persistence.serializers.Serializer;

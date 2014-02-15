@@ -1,4 +1,4 @@
-package org.bosik.diacomp.backend.dao;
+package org.bosik.diacomp.features.common.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

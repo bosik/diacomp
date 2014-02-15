@@ -1,4 +1,4 @@
-package org.bosik.diacomp.frontend.services;
+package org.bosik.diacomp.features.common;
 
 import org.bosik.diacomp.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.services.exceptions.DeprecatedAPIException;
@@ -7,7 +7,6 @@ import org.bosik.diacomp.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.utils.MiscUtils;
 import org.bosik.diacomp.utils.ResponseBuilder;
 import org.bosik.diacomp.utils.StdResponse;
-
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
