@@ -9,13 +9,13 @@ public class CommonServiceException extends RuntimeException
 		super(msg);
 	}
 
-	public CommonServiceException(Exception e)
+	public CommonServiceException(Throwable e)
 	{
 		super(e);
 	}
 
-	// public CommonServiceException()
-	// {
-	// super();
-	// }
+	public CommonServiceException(String msg, Throwable e)
+	{
+		super(msg, e);
+	}
 }
