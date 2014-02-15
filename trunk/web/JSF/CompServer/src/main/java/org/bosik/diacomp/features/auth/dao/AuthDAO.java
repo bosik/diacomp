@@ -1,7 +1,6 @@
 package org.bosik.diacomp.features.auth.dao;
 
 import javax.servlet.http.HttpServletRequest;
-
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
 
 public interface AuthDAO
@@ -11,7 +10,7 @@ public interface AuthDAO
 
 	int getCurrentUserId(HttpServletRequest request);
 
-	void login(HttpServletRequest request, String login, String pass);
+	void login(HttpServletRequest request, String login, String pass, int apiVersion);
 
 	void logout(HttpServletRequest request);
 }
