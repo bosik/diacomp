@@ -553,7 +553,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		Date start = new Date(year, month, day, 0, 0, 0);
 		Date end = Utils.getNextDay(start);
 
-		curRecords = Storage.localDiary.getRecords(start, end);
+		curRecords = Storage.localDiary.getRecords(start, end, false);
 		diaryViewLayout.setRecords(curRecords);
 		setCaptionDate(curDate);
 	}
@@ -579,7 +579,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		Date toDate = new Date();
 		Date fromDate = new Date(toDate.getTime() - (scanDaysPeriod * Utils.MsecPerDay));
 
-		List<Versioned<DiaryRecord>> records = Storage.localDiary.getRecords(fromDate, toDate);
+		List<Versioned<DiaryRecord>> records = Storage.localDiary.getRecords(fromDate, toDate, false);
 		Collections.reverse(records);
 
 		// TODO: relies on not guaranteed behavior of List

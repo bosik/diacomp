@@ -92,14 +92,28 @@ public class LocalDiaryService implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(Date time) throws CommonServiceException
+	public List<Versioned<DiaryRecord>> getRecords(Date time, boolean includeRemoved) throws CommonServiceException
 	{
 		// construct parameters
 		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
 				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
 				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
-		String clause = DiaryContentProvider.COLUMN_DIARY_TIMESTAMP + " > ?";
-		String[] clauseArgs = { Utils.formatTimeUTC(time) };
+
+		String clause;
+		String[] clauseArgs;
+
+		if (includeRemoved)
+		{
+			clause = String.format("%s > ?", DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
+			clauseArgs = new String[] { Utils.formatTimeUTC(time) };
+		}
+		else
+		{
+			clause = String.format("(%s > ?) AND (%s = 0)", DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
+					DiaryContentProvider.COLUMN_DIARY_DELETED);
+			clauseArgs = new String[] { Utils.formatTimeUTC(time) };
+		}
+
 		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
 		// execute
@@ -110,16 +124,45 @@ public class LocalDiaryService implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(Date fromDate, Date toDate) throws CommonServiceException
+	public List<Versioned<DiaryRecord>> getRecords(Date fromDate, Date toDate, boolean includeRemoved)
+			throws CommonServiceException
 	{
 		// construct parameters
 		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
 				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
 				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
-		String clause = String.format("(%s >= ?) AND (%s <= ?) AND (%s = 0)",
-				DiaryContentProvider.COLUMN_DIARY_TIMECACHE, DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
-				DiaryContentProvider.COLUMN_DIARY_DELETED);
-		String[] clauseArgs = { Utils.formatTimeUTC(fromDate), Utils.formatTimeUTC(toDate) };
+
+		String clause;
+		String[] clauseArgs;
+
+		if (includeRemoved)
+		{
+			clause = String.format("(%s >= ?) AND (%s <= ?)", DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
+					DiaryContentProvider.COLUMN_DIARY_TIMECACHE);
+			clauseArgs = new String[] { Utils.formatTimeUTC(fromDate), Utils.formatTimeUTC(toDate) };
+		}
+		else
+		{
+			clause = String.format("(%s >= ?) AND (%s <= ?) AND (%s = 0)", DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
+					DiaryContentProvider.COLUMN_DIARY_TIMECACHE, DiaryContentProvider.COLUMN_DIARY_DELETED);
+			clauseArgs = new String[] { Utils.formatTimeUTC(fromDate), Utils.formatTimeUTC(toDate) };
+		}
+		// String clause;
+		// String[] clauseArgs;
+		//
+		// if (includeModified)
+		// {
+		// clause = String.format("%s > ?", DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
+		// clauseArgs = new String[] { Utils.formatTimeUTC(time) };
+		// }
+		// else
+		// {
+		// clause = String.format("(%s > ?) AND (%s = 0)",
+		// DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
+		// DiaryContentProvider.COLUMN_DIARY_DELETED);
+		// clauseArgs = new String[] { Utils.formatTimeUTC(time) };
+		// }
+
 		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
 		// execute
