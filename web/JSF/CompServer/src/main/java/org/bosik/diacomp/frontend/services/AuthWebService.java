@@ -1,11 +1,9 @@
 package org.bosik.diacomp.frontend.services;
 
 import javax.ws.rs.core.MediaType;
-
 import org.bosik.diacomp.services.AuthService;
 import org.bosik.diacomp.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.utils.StdResponse;
-
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 
@@ -14,9 +12,9 @@ public class AuthWebService extends WebService implements AuthService
 	@Override
 	public void login(String login, String pass, int apiVersion)
 	{
+		WebResource resource = getResource("api/auth/login");
 		try
 		{
-			WebResource resource = getResource("api/auth/login");
 			resource = resource.queryParam("login", login);
 			resource = resource.queryParam("pass", pass);
 			resource = resource.queryParam("api", String.valueOf(apiVersion));
@@ -27,16 +25,16 @@ public class AuthWebService extends WebService implements AuthService
 		}
 		catch (UniformInterfaceException e)
 		{
-			throw new CommonServiceException(e);
+			throw new CommonServiceException("URL: " + resource.getURI(), e);
 		}
 	}
 
 	@Override
 	public void logout()
 	{
+		WebResource resource = getResource("api/auth/logout");
 		try
 		{
-			WebResource resource = getResource("api/auth/logout");
 			String str = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
 
 			StdResponse resp = new StdResponse(str);
@@ -44,7 +42,7 @@ public class AuthWebService extends WebService implements AuthService
 		}
 		catch (UniformInterfaceException e)
 		{
-			throw new CommonServiceException(e);
+			throw new CommonServiceException("URL: " + resource.getURI(), e);
 		}
 	}
 }
