@@ -7,10 +7,6 @@ import org.bosik.diacomp.bo.diary.DiaryRecord;
 import org.bosik.diacomp.bo.diary.records.MealRecord;
 import org.bosik.diacomp.bo.interfaces.Tagged;
 import org.bosik.diacomp.persistence.common.Versioned;
-import org.bosik.diacomp.services.BaseService;
-import org.bosik.diacomp.services.DiaryService;
-import org.bosik.diacomp.services.DishBaseService;
-import org.bosik.diacomp.services.FoodBaseService;
 import org.bosik.diacomp.utils.Utils;
 import android.util.Log;
 
@@ -34,7 +30,7 @@ public class RelevantIndexator
 		clearTags(dishBase);
 
 		// process
-		List<Versioned<DiaryRecord>> items = diary.getRecords(min, max);
+		List<Versioned<DiaryRecord>> items = diary.getRecords(min, max, false);
 		for (Versioned<DiaryRecord> item : items)
 		{
 			DiaryRecord rec = item.getData();
