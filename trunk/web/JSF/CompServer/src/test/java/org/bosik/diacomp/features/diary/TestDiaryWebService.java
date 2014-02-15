@@ -1,9 +1,11 @@
-package org.bosik.diacomp.frontend.services;
+package org.bosik.diacomp.features.diary;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-
+import org.bosik.diacomp.features.auth.AuthWebService;
+import org.bosik.diacomp.features.auth.TestAuthWebService;
+import org.bosik.diacomp.features.diary.DiaryWebService;
 import org.bosik.diacomp.services.AuthService;
 import org.bosik.diacomp.services.DiaryService;
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;

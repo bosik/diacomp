@@ -1,4 +1,4 @@
-package org.bosik.diacomp.backend.resources;
+package org.bosik.diacomp.features.auth;
 
 import static org.junit.Assert.assertEquals;
 

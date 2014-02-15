@@ -1,4 +1,4 @@
-package org.bosik.diacomp.backend.resources;
+package org.bosik.diacomp.features.system;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -6,16 +6,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
 import org.bosik.diacomp.utils.ResponseBuilder;
 import org.json.JSONObject;
 
-@Path("/")
+@Path("info/")
 @SuppressWarnings("static-method")
 public class SystemResource
 {
 	@GET
-	@Path("info")
+	// @Path("")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAPIVersion()
 	{

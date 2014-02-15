@@ -1,8 +1,7 @@
-package org.bosik.diacomp.backend.dao.auth;
+package org.bosik.diacomp.features.auth.dao;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
 
 public class FakeAuthDAO implements AuthDAO

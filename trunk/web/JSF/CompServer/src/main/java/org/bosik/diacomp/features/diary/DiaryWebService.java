@@ -1,11 +1,10 @@
-package org.bosik.diacomp.frontend.services;
+package org.bosik.diacomp.features.diary;
 
 import java.util.Date;
 import java.util.List;
-
 import javax.ws.rs.core.MediaType;
-
 import org.bosik.diacomp.bo.diary.DiaryRecord;
+import org.bosik.diacomp.features.common.WebService;
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.persistence.serializers.Serializer;
 import org.bosik.diacomp.persistence.serializers.ready.SerializerDiaryRecord;
@@ -13,7 +12,6 @@ import org.bosik.diacomp.services.DiaryService;
 import org.bosik.diacomp.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.utils.StdResponse;
 import org.bosik.diacomp.utils.Utils;
-
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 
