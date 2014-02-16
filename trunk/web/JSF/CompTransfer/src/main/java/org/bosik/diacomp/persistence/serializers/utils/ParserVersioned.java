@@ -1,6 +1,5 @@
 package org.bosik.diacomp.persistence.serializers.utils;
 
-import java.text.ParseException;
 import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.persistence.serializers.Parser;
 import org.bosik.diacomp.utils.Utils;
@@ -9,9 +8,9 @@ import org.json.JSONObject;
 
 public class ParserVersioned<T> extends Parser<Versioned<T>>
 {
-	//private static final String	TAG	= ParserVersioned.class.getSimpleName();
+	// private static final String TAG = ParserVersioned.class.getSimpleName();
 
-	private Parser<T>			parser;
+	private Parser<T>	parser;
 
 	public ParserVersioned(Parser<T> parser)
 	{
@@ -21,21 +20,15 @@ public class ParserVersioned<T> extends Parser<Versioned<T>>
 	@Override
 	public Versioned<T> read(JSONObject json) throws JSONException
 	{
-		try
-		{
-			Versioned<T> item = new Versioned<T>();
+		Versioned<T> item = new Versioned<T>();
 
-			item.setId(json.getString("id"));
-			item.setTimeStamp(Utils.parseTimeUTC(json.getString("stamp")));
-			item.setVersion(json.getInt("version"));
-			item.setData(parser.read(json.getJSONObject("data")));
+		item.setId(json.getString("id"));
+		item.setTimeStamp(Utils.parseTimeUTC(json.getString("stamp")));
+		item.setVersion(json.getInt("version"));
+		item.setDeleted(json.getBoolean("deleted"));
+		item.setData(parser.read(json.getJSONObject("data")));
 
-			return item;
-		}
-		catch (ParseException e)
-		{
-			throw new JSONException(e.getLocalizedMessage());
-		}
+		return item;
 	}
 
 	@Override
@@ -46,6 +39,7 @@ public class ParserVersioned<T> extends Parser<Versioned<T>>
 		json.put("id", object.getId());
 		json.put("stamp", Utils.formatTimeUTC(object.getTimeStamp()));
 		json.put("version", object.getVersion());
+		json.put("deleted", object.isDeleted());
 		final JSONObject obj = parser.write(object.getData());
 		json.put("data", obj); // do not inline
 		return json;

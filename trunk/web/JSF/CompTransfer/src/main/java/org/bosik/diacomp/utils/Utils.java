@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-
+import java.util.UUID;
 import org.json.JSONArray;
 
 public class Utils
@@ -161,9 +161,16 @@ public class Utils
 	 * @return Время
 	 * @throws ParseException
 	 */
-	public static Date parseTimeUTC(String time) throws ParseException
+	public static Date parseTimeUTC(String time)
 	{
-		return STD_FORMAT_TIME_UTC.parse(time);
+		try
+		{
+			return STD_FORMAT_TIME_UTC.parse(time);
+		}
+		catch (ParseException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -306,7 +313,12 @@ public class Utils
 		}
 	}
 
-	public static String formatBoolean(boolean x)
+	public static String formatBooleanStr(boolean x)
+	{
+		return x ? "true" : "false";
+	}
+
+	public static String formatBooleanInt(boolean x)
 	{
 		return x ? "1" : "0";
 	}
@@ -321,5 +333,10 @@ public class Utils
 		}
 
 		return json.toString();
+	}
+
+	public static String getGUID()
+	{
+		return UUID.randomUUID().toString().replace("-", "");
 	}
 }

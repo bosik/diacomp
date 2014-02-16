@@ -2,7 +2,7 @@ package org.bosik.diacomp.persistence.common;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.UUID;
+import org.bosik.diacomp.utils.Utils;
 
 /**
  * Has ID field (random; useful for comparing)
@@ -30,7 +30,7 @@ public class Versioned<T> implements Serializable
 
 	public Versioned(T data)
 	{
-		id = UUID.randomUUID().toString().replace("-", "");
+		id = Utils.getGUID();
 		version = 0;
 		updateTimeStamp();
 		this.data = data;

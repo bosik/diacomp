@@ -1,6 +1,5 @@
 package org.bosik.diacomp.persistence.serializers;
 
-import java.text.ParseException;
 import java.util.List;
 import org.bosik.diacomp.bo.FoodMassed;
 import org.bosik.diacomp.bo.diary.DiaryRecord;
@@ -20,54 +19,47 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 	@Override
 	public DiaryRecord read(JSONObject json) throws JSONException
 	{
-		try
+		String type = json.getString("type");
+
+		if (type.equals("blood"))
 		{
-			String type = json.getString("type");
-
-			if (type.equals("blood"))
-			{
-				BloodRecord item = new BloodRecord();
-				item.setTime(Utils.parseTimeUTC(json.getString("time")));
-				item.setValue(json.getDouble("value"));
-				item.setFinger(json.getInt("finger"));
-				return item;
-			}
-			else if (type.equals("ins"))
-			{
-				InsRecord item = new InsRecord();
-				item.setTime(Utils.parseTimeUTC(json.getString("time")));
-				item.setValue(json.getDouble("value"));
-				return item;
-			}
-			else if (type.equals("meal"))
-			{
-				MealRecord item = new MealRecord();
-				item.setTime(Utils.parseTimeUTC(json.getString("time")));
-				item.setShortMeal(json.getBoolean("short"));
-				List<FoodMassed> items = parserFoodMassed.readAll(json.getJSONArray("content"));
-
-				for (FoodMassed f : items)
-				{
-					item.add(f);
-				}
-
-				return item;
-			}
-			else if (type.equals("note"))
-			{
-				NoteRecord item = new NoteRecord();
-				item.setTime(Utils.parseTimeUTC(json.getString("time")));
-				item.setText(json.getString("text"));
-				return item;
-			}
-			else
-			{
-				throw new UnsupportedOperationException("Unknown record type: '" + type + "'");
-			}
+			BloodRecord item = new BloodRecord();
+			item.setTime(Utils.parseTimeUTC(json.getString("time")));
+			item.setValue(json.getDouble("value"));
+			item.setFinger(json.getInt("finger"));
+			return item;
 		}
-		catch (ParseException e)
+		else if (type.equals("ins"))
 		{
-			throw new JSONException(e.getLocalizedMessage());
+			InsRecord item = new InsRecord();
+			item.setTime(Utils.parseTimeUTC(json.getString("time")));
+			item.setValue(json.getDouble("value"));
+			return item;
+		}
+		else if (type.equals("meal"))
+		{
+			MealRecord item = new MealRecord();
+			item.setTime(Utils.parseTimeUTC(json.getString("time")));
+			item.setShortMeal(json.getBoolean("short"));
+			List<FoodMassed> items = parserFoodMassed.readAll(json.getJSONArray("content"));
+
+			for (FoodMassed f : items)
+			{
+				item.add(f);
+			}
+
+			return item;
+		}
+		else if (type.equals("note"))
+		{
+			NoteRecord item = new NoteRecord();
+			item.setTime(Utils.parseTimeUTC(json.getString("time")));
+			item.setText(json.getString("text"));
+			return item;
+		}
+		else
+		{
+			throw new UnsupportedOperationException("Unknown record type: '" + type + "'");
 		}
 	}
 

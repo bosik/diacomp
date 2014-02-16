@@ -3,7 +3,6 @@ package org.bosik.diacomp.features.diary.dao;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.bosik.diacomp.bo.diary.DiaryRecord;
 import org.bosik.diacomp.fakes.mocks.Mock;
 import org.bosik.diacomp.fakes.mocks.MockDiaryRecord;
@@ -54,6 +53,35 @@ public class FakeDiaryDAO implements DiaryDAO
 			final DiaryRecord data = rec.getData();
 			if (data.getTime().after(startTime) && data.getTime().before(endTime)
 					&& (includeRemoved || !rec.isDeleted()))
+			{
+				Versioned<String> item = new Versioned<String>();
+				item.setId(rec.getId());
+				item.setTimeStamp(rec.getTimeStamp());
+				item.setVersion(rec.getVersion());
+				item.setDeleted(rec.isDeleted());
+				item.setData(serializer.write(data));
+				result.add(item);
+			}
+		}
+
+		return result;
+	}
+
+	@Override
+	public void post(int userId, List<Versioned<DiaryRecord>> records)
+	{
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public List<Versioned<String>> findGuid(int userId, String guid)
+	{
+		List<Versioned<String>> result = new ArrayList<Versioned<String>>();
+
+		for (Versioned<DiaryRecord> rec : samples)
+		{
+			final DiaryRecord data = rec.getData();
+			if (rec.getId().equals(guid))
 			{
 				Versioned<String> item = new Versioned<String>();
 				item.setId(rec.getId());

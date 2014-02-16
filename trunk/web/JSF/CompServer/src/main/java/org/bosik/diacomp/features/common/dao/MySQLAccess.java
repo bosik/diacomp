@@ -6,6 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+import java.util.SortedMap;
 
 public class MySQLAccess
 {
@@ -76,6 +80,145 @@ public class MySQLAccess
 			}
 
 			return statement.executeQuery();
+		}
+		finally
+		{
+			close();
+		}
+	}
+
+	public int insert(String table, LinkedHashMap<String, String> set)
+	{
+		Connection connect = null;
+		PreparedStatement statement = null;
+		try
+		{
+			connect = DriverManager.getConnection(connectionString);
+
+			// making wildcarded string
+
+			int count = 0;
+			Iterator<String> iterator = set.keySet().iterator();
+			while (iterator.hasNext())
+			{
+				count++;
+				iterator.next();
+			}
+
+			StringBuilder sb = new StringBuilder();
+			sb.append("INSERT INTO " + table + " \n (");
+
+			int k = 0;
+			iterator = set.keySet().iterator();
+			while (iterator.hasNext())
+			{
+				k++;
+				sb.append(iterator.next());
+				if (k < (count))
+				{
+					sb.append(",\n");
+				}
+			}
+
+			sb.append(")");
+
+			sb.append("\n VALUES \n");
+
+			StringBuilder braced = new StringBuilder();
+			braced.append("(");
+			for (int i = 0; i < count; i++)
+			{
+				braced.append("?");
+				if (i < (count - 1))
+				{
+					braced.append(",\n");
+				}
+			}
+			braced.append(")");
+
+			sb.append(braced);
+
+			statement = connect.prepareStatement(sb.toString());
+			System.out.println(sb);
+
+			// filling wildcards
+
+			int i = 1;
+			// statement.setString(i++, table);
+
+			// for (Entry<String, String> entry : set.entrySet())
+			// {
+			// statement.setString(i++, entry.getKey());
+			// }
+
+			for (Entry<String, String> entry : set.entrySet())
+			{
+				statement.setString(i++, entry.getValue());
+			}
+
+			// go
+
+			return statement.executeUpdate();
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+		finally
+		{
+			close();
+		}
+
+	}
+
+	public int update(String table, SortedMap<String, String> set, SortedMap<String, String> where) throws SQLException
+	{
+		Connection connect = null;
+		PreparedStatement statement = null;
+		try
+		{
+			connect = DriverManager.getConnection(connectionString);
+
+			// making wildcarded string
+
+			StringBuilder sb = new StringBuilder();
+			sb.append("UPDATE " + table + " SET ");
+			for (String key : set.keySet())
+			{
+				sb.append("? = ?, ");
+			}
+			sb.append("WHERE ");
+			for (String key : where.keySet())
+			{
+				sb.append("? = ?, ");
+			}
+
+			statement = connect.prepareStatement(sb.toString());
+
+			// filling wildcards
+
+			int i = 1;
+			// statement.setString(i++, table);
+
+			// for (Entry<String, String> entry : set.entrySet())
+			// {
+			// statement.setString(i++, entry.getKey());
+			// statement.setString(i++, entry.getValue());
+			// }
+
+			for (Entry<String, String> entry : where.entrySet())
+			{
+				statement.setString(i++, entry.getKey());
+				statement.setString(i++, entry.getValue());
+			}
+
+			// go
+
+			return statement.executeUpdate();
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
 		}
 		finally
 		{

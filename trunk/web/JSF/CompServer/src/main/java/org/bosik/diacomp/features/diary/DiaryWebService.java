@@ -68,7 +68,7 @@ public class DiaryWebService extends WebService implements DiaryService
 			WebResource resource = getResource("api/diary/period");
 			resource = resource.queryParam("start_time", Utils.formatTimeUTC(fromTime));
 			resource = resource.queryParam("end_time", Utils.formatTimeUTC(toTime));
-			resource = resource.queryParam("show_rem", Utils.formatBoolean(includeRemoved));
+			resource = resource.queryParam("show_rem", Utils.formatBooleanStr(includeRemoved));
 			String str = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
 
 			StdResponse resp = new StdResponse(str);
@@ -85,6 +85,19 @@ public class DiaryWebService extends WebService implements DiaryService
 	@Override
 	public void postRecords(List<Versioned<DiaryRecord>> records) throws CommonServiceException
 	{
-		throw new UnsupportedOperationException();
+		WebResource resource = getResource("api/diary/");
+		try
+		{
+			String items = serializer.writeAll(records);
+			String str = resource.accept(MediaType.APPLICATION_JSON).put(String.class, items);
+
+			StdResponse resp = new StdResponse(str);
+			checkResponse(resp);
+		}
+		catch (UniformInterfaceException e)
+		{
+			System.err.println(e.getResponse().getEntity(String.class));
+			throw new CommonServiceException("URL: " + resource.getURI(), e);
+		}
 	}
 }

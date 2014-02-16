@@ -1,9 +1,17 @@
 package org.bosik.diacomp.features.diary;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import org.bosik.diacomp.bo.diary.DiaryRecord;
+import org.bosik.diacomp.fakes.mocks.Mock;
+import org.bosik.diacomp.fakes.mocks.MockDiaryRecord;
+import org.bosik.diacomp.fakes.mocks.MockVersionedConverter;
 import org.bosik.diacomp.features.auth.AuthWebService;
+import org.bosik.diacomp.persistence.common.Versioned;
 import org.bosik.diacomp.services.AuthService;
 import org.bosik.diacomp.services.DiaryService;
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
@@ -67,5 +75,27 @@ public class TestDiaryWebService
 		login();
 		diaryService.getRecords(new Date(), new Date(), true);
 		diaryService.getRecords(new Date(), new Date(), false);
+	}
+
+	@Test
+	public void test_Post()
+	{
+		Mock<DiaryRecord> mockRecord = new MockDiaryRecord();
+		Mock<Versioned<DiaryRecord>> mockVersioned = new MockVersionedConverter<DiaryRecord>(mockRecord);
+		List<Versioned<DiaryRecord>> items = mockVersioned.getSamples();
+
+		items = items.subList(0, 1); // FIXME: temporary
+
+		login();
+		diaryService.postRecords(items);
+
+		for (Versioned<DiaryRecord> item : items)
+		{
+			List<Versioned<DiaryRecord>> restored = diaryService.getRecords(Arrays.<String> asList(item.getId()));
+			assertNotNull(restored);
+			assertEquals(1, restored.size());
+
+			mockVersioned.compare(item, restored.get(0));
+		}
 	}
 }
