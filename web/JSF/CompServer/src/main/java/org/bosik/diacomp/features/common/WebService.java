@@ -4,7 +4,7 @@ import org.bosik.diacomp.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.services.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.services.exceptions.UnsupportedAPIException;
-import org.bosik.diacomp.utils.MiscUtils;
+import org.bosik.diacomp.utils.Config;
 import org.bosik.diacomp.utils.ResponseBuilder;
 import org.bosik.diacomp.utils.StdResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -15,8 +15,6 @@ import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 public class WebService
 {
 	private static ApacheHttpClient	client;
-	private static final String		BASE_URL	= MiscUtils.loadBaseUrl();
-
 	{
 		ApacheHttpClientConfig config = new DefaultApacheHttpClientConfig();
 		config.getProperties().put(ApacheHttpClientConfig.PROPERTY_HANDLE_COOKIES, true);
@@ -25,7 +23,7 @@ public class WebService
 
 	protected static WebResource getResource(String url)
 	{
-		return client.resource(BASE_URL + url);
+		return client.resource(Config.getBaseURL() + url);
 	}
 
 	protected static void checkResponse(StdResponse resp) throws CommonServiceException

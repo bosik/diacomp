@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.features.auth.dao.AuthDAO;
-import org.bosik.diacomp.features.auth.dao.FakeAuthDAO;
+import org.bosik.diacomp.features.auth.dao.MySQLAuthDAO;
 import org.bosik.diacomp.services.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.services.exceptions.UnsupportedAPIException;
@@ -23,7 +23,7 @@ public class AuthResource
 	@Context
 	HttpServletRequest	req;
 
-	private AuthDAO		authService	= new FakeAuthDAO();
+	private AuthDAO		authDao	= new MySQLAuthDAO();
 
 	@POST
 	@Path("login")
@@ -33,12 +33,16 @@ public class AuthResource
 	{
 		try
 		{
-			authService.login(req, login, pass, apiVersion);
+			int id = authDao.login(login, pass, apiVersion);
+			UserService.setId(req, id);
+
 			String entity = ResponseBuilder.buildDone("Logged in OK");
 			return Response.ok(entity).build();
 		}
 		catch (NotAuthorizedException e)
 		{
+			// Do not reset session flag here: anyone can reset your session otherwise
+
 			// TODO: remove returning login:password back
 			// THINK: should we use status 200 here? Isn't 401 better?
 			String entity = ResponseBuilder.build(ResponseBuilder.CODE_BADCREDENTIALS,
@@ -79,7 +83,7 @@ public class AuthResource
 	{
 		try
 		{
-			authService.logout(req);
+			UserService.clearId(req);
 			String entity = ResponseBuilder.buildDone("Logged out OK");
 			return Response.ok(entity).build();
 		}

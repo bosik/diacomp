@@ -4,11 +4,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import org.bosik.diacomp.features.auth.AuthWebService;
-import org.bosik.diacomp.features.auth.TestAuthWebService;
-import org.bosik.diacomp.features.diary.DiaryWebService;
 import org.bosik.diacomp.services.AuthService;
 import org.bosik.diacomp.services.DiaryService;
 import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
+import org.bosik.diacomp.utils.Config;
 import org.junit.Test;
 
 public class TestDiaryWebService
@@ -18,12 +17,12 @@ public class TestDiaryWebService
 
 	private void login()
 	{
-		authService.login(TestAuthWebService.TEST_LOGIN, TestAuthWebService.TEST_PASSWORD,
-				TestAuthWebService.TEST_API_VERSION_CURRENT);
+		authService.login(Config.getLogin(), Config.getPassword(), Config.getAPICurrent());
 	}
 
 	/**
-	 * _simple-tests doesn't check any business logic. The only aspect the test is ability to invoke the method
+	 * _simple-tests doesn't check any business logic. The only aspect the test is ability to invoke
+	 * the method
 	 */
 
 	@Test(expected = NotAuthorizedException.class)

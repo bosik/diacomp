@@ -11,6 +11,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import org.bosik.diacomp.features.auth.UserService;
 import org.bosik.diacomp.features.auth.dao.AuthDAO;
 import org.bosik.diacomp.features.auth.dao.FakeAuthDAO;
 import org.bosik.diacomp.features.diary.dao.DiaryDAO;
@@ -96,7 +97,7 @@ public class DiaryResource
 	{
 		try
 		{
-			int userId = authService.getCurrentUserId(req);
+			int userId = UserService.getId(req);
 			Date time = Utils.parseTimeUTC(stime);
 			boolean includeRemoved = "1".equals(parShowRem);
 			List<Versioned<String>> list = diaryService.findMod(userId, time, includeRemoved);
@@ -120,7 +121,7 @@ public class DiaryResource
 	{
 		try
 		{
-			int userId = authService.getCurrentUserId(req);
+			int userId = UserService.getId(req);
 			Date startTime = Utils.parseTimeUTC(parStartTime);
 			Date endTime = Utils.parseTimeUTC(parEndTime);
 			boolean includeRemoved = "1".equals(parShowRem);
