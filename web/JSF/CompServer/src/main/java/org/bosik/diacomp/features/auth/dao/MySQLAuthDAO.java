@@ -59,6 +59,9 @@ public class MySQLAuthDAO implements AuthDAO
 				String s_id = set.getString(MySQLAccess.COLUMN_USER_ID);
 				set.close();
 				int id = Integer.parseInt(s_id);
+
+				// TODO: update DateLogin field
+
 				return id;
 			}
 			else
