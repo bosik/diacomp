@@ -1,8 +1,8 @@
 Date		Hours	Task
-01.02.2014	2	Updating API architecture
+01.02.2014	2.0	Updating API architecture
 01.02.2014	1.5	Setup Ubuntu server
-01.02.2014	8	Setup Tomcat
-02.02.2014	2	Setup Tomcat
+01.02.2014	8.0	Setup Tomcat
+02.02.2014	2.0	Setup Tomcat
 02.02.2014	1.0	Setup MySQL
 02.02.2014	1.0	Tomcat: use Java 7 JRE
 04.02.2014	2.5	Updating API architecture
@@ -10,7 +10,9 @@ Date		Hours	Task
 06.02.2014	0.5	Updating API architecture
 08.02.2014	2.0	Implementing backend: DAO/REST architecture
 08.02.2014	4.0	Implementing backend
-09.02.2014	5.0	Implementing auth stack (until 06:00)
+09.02.2014	5.0	Implementing backend: auth stack (until 06:00)
 11.02.2014	5.0	Implementing backend: Fixing problems with cookies
 12.02.2014	2.0	Implementing backend: merging
-13.02.2014	6.0	Implementing backend: auth checks (until 17:30)
+13.02.2014	6.0	Implementing backend: auth checks
+16.02.2014	8.0	Implementing backend (until 09:30)
+16.02.2014	4.0	Implementing backend (until 23:00)
