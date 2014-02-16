@@ -17,6 +17,15 @@ public class MySQLAccess
 																"jdbc:mysql://127.0.0.1:3306/%s?user=%s&password=%s",
 																SCHEMA, USERNAME, PASSWORD);
 
+	// ======================================= User table =======================================
+
+	public static final String	TABLE_USER				= "user";
+	public static final String	COLUMN_USER_ID			= "ID";
+	public static final String	COLUMN_USER_LOGIN		= "Login";
+	public static final String	COLUMN_USER_HASHPASS	= "HashPass";
+	public static final String	COLUMN_USER_DATE_REG	= "DateReg";
+	public static final String	COLUMN_USER_DATE_LOGIN	= "DateLogin";
+
 	// ======================================= Diary table =======================================
 
 	public static final String	TABLE_DIARY				= "diary2";
@@ -52,17 +61,21 @@ public class MySQLAccess
 
 	@SuppressWarnings("resource")
 	// the resource is returned to invoker
-	public ResultSet select(String table, String clause) throws SQLException
+	public ResultSet select(String table, String clause, String... params) throws SQLException
 	{
 		Connection connect = null;
-		Statement statement = null;
+		PreparedStatement statement = null;
 		try
 		{
 			connect = DriverManager.getConnection(connectionString);
 
-			String sql = String.format("SELECT * FROM %s WHERE %s", table, clause);
-			statement = connect.createStatement();
-			return statement.executeQuery(sql);
+			statement = connect.prepareStatement(String.format("SELECT * FROM %s WHERE %s", table, clause));
+			for (int i = 0; i < params.length; i++)
+			{
+				statement.setString(i + 1, params[i]);
+			}
+
+			return statement.executeQuery();
 		}
 		finally
 		{

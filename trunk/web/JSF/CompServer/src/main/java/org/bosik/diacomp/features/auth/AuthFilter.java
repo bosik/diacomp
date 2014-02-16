@@ -65,14 +65,14 @@ public class AuthFilter implements Filter
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
 			ServletException
 	{
-		HttpServletRequest req = (HttpServletRequest)request;
-		HttpServletResponse res = (HttpServletResponse)response;
+		HttpServletRequest req = (HttpServletRequest) request;
+		HttpServletResponse res = (HttpServletResponse) response;
 
-		//		System.out.println("doFilter(): getContextPath=" + req.getContextPath());
-		//		System.out.println("doFilter(): getServletPath=" + req.getServletPath());
-		//		System.out.println("doFilter(): getRequestURL=" + req.getRequestURL());
-		//		System.out.println("Requested: " + req.getRequestURI());
-		//		System.out.println("doFilter(): getQueryString=" + req.getQueryString());
+		// System.out.println("doFilter(): getContextPath=" + req.getContextPath());
+		// System.out.println("doFilter(): getServletPath=" + req.getServletPath());
+		// System.out.println("doFilter(): getRequestURL=" + req.getRequestURL());
+		// System.out.println("Requested: " + req.getRequestURI());
+		// System.out.println("doFilter(): getQueryString=" + req.getQueryString());
 
 		final String BASE_URL = req.getContextPath();
 		final String requestURI = req.getRequestURI();
@@ -88,10 +88,10 @@ public class AuthFilter implements Filter
 		}
 
 		// System.out.println("Mode: private");
-		//printRequestInfo(req);
+		// printRequestInfo(req);
 		try
 		{
-			authService.checkAuth(req);
+			UserService.checkAuth(req);
 			// System.out.println("Authentified OK, chained");
 			chain.doFilter(request, response);
 		}
