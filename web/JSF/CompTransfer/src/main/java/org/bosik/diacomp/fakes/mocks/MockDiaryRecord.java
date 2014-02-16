@@ -10,6 +10,7 @@ import org.bosik.diacomp.bo.diary.records.InsRecord;
 import org.bosik.diacomp.bo.diary.records.MealRecord;
 import org.bosik.diacomp.bo.diary.records.NoteRecord;
 import org.bosik.diacomp.utils.TestUtils;
+import org.bosik.diacomp.utils.Utils;
 
 public class MockDiaryRecord implements Mock<DiaryRecord>
 {
@@ -52,7 +53,7 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 
 	public void compare(DiaryRecord exp, DiaryRecord act)
 	{
-		TestCase.assertEquals(exp.getTime(), act.getTime());
+		TestCase.assertEquals(Utils.formatTimeUTC(exp.getTime()), Utils.formatTimeUTC(act.getTime()));
 		TestCase.assertEquals(exp.getClass(), act.getClass());
 
 		// @formatter:off
@@ -76,7 +77,6 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 
 	private void compareMealRecords(MealRecord exp, MealRecord act)
 	{
-		TestCase.assertEquals(exp.getTime(), act.getTime());
 		TestCase.assertEquals(exp.getShortMeal(), act.getShortMeal());
 		TestCase.assertEquals(exp.count(), act.count());
 

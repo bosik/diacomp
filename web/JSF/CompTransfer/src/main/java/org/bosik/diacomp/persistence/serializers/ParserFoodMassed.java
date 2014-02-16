@@ -21,17 +21,23 @@ public class ParserFoodMassed extends Parser<FoodMassed>
 		return item;
 	}
 
+	private static double round(double x)
+	{
+		// TODO: seems bad approach
+		return ((double) Math.round(x * 100)) / 100;
+	}
+
 	@Override
 	public JSONObject write(FoodMassed object) throws JSONException
 	{
 		JSONObject json = new JSONObject();
 
 		json.put("name", object.getName());
-		json.put("prots", object.getRelProts());
-		json.put("fats", object.getRelFats());
-		json.put("carbs", object.getRelCarbs());
-		json.put("value", object.getRelValue());
-		json.put("mass", object.getMass());
+		json.put("prots", round(object.getRelProts()));
+		json.put("fats", round(object.getRelFats()));
+		json.put("carbs", round(object.getRelCarbs()));
+		json.put("value", round(object.getRelValue()));
+		json.put("mass", round(object.getMass()));
 
 		return json;
 	}
