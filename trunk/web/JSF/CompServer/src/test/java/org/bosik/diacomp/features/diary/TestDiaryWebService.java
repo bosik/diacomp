@@ -78,15 +78,58 @@ public class TestDiaryWebService
 	}
 
 	@Test
-	public void test_Post()
+	public void test_Post_insert()
 	{
 		Mock<DiaryRecord> mockRecord = new MockDiaryRecord();
 		Mock<Versioned<DiaryRecord>> mockVersioned = new MockVersionedConverter<DiaryRecord>(mockRecord);
 		List<Versioned<DiaryRecord>> items = mockVersioned.getSamples();
 
-		items = items.subList(0, 1); // FIXME: temporary
+		login();
+
+		// Insertion test
+
+		diaryService.postRecords(items);
+		for (Versioned<DiaryRecord> item : items)
+		{
+			List<Versioned<DiaryRecord>> restored = diaryService.getRecords(Arrays.<String> asList(item.getId()));
+			assertNotNull(restored);
+			assertEquals(1, restored.size());
+
+			mockVersioned.compare(item, restored.get(0));
+		}
+	}
+
+	@Test
+	public void test_Post_update()
+	{
+		Mock<DiaryRecord> mockRecord = new MockDiaryRecord();
+		Mock<Versioned<DiaryRecord>> mockVersioned = new MockVersionedConverter<DiaryRecord>(mockRecord);
+		List<Versioned<DiaryRecord>> items = mockVersioned.getSamples();
 
 		login();
+
+		// Insertion test
+
+		diaryService.postRecords(items);
+		for (Versioned<DiaryRecord> item : items)
+		{
+			List<Versioned<DiaryRecord>> restored = diaryService.getRecords(Arrays.<String> asList(item.getId()));
+			assertNotNull(restored);
+			assertEquals(1, restored.size());
+
+			mockVersioned.compare(item, restored.get(0));
+		}
+
+		// Updating test
+
+		for (Versioned<DiaryRecord> item : items)
+		{
+			item.getData().setTime(new Date());
+			item.setDeleted(item.isDeleted());
+			item.setTimeStamp(new Date());
+			item.setVersion(item.getVersion() + 1);
+		}
+
 		diaryService.postRecords(items);
 
 		for (Versioned<DiaryRecord> item : items)

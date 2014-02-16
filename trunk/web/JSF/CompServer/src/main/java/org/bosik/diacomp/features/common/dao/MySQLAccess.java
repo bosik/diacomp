@@ -87,6 +87,66 @@ public class MySQLAccess
 		}
 	}
 
+	private static int count(Iterator iterator)
+	{
+		int result = 0;
+		while (iterator.hasNext())
+		{
+			result++;
+			iterator.next();
+		}
+		return result;
+	}
+
+	private static StringBuilder commaSeparated(Iterator<String> iterator)
+	{
+		StringBuilder sb = new StringBuilder();
+
+		while (iterator.hasNext())
+		{
+			sb.append(iterator.next());
+			if (iterator.hasNext())
+			{
+				sb.append(", ");
+			}
+		}
+
+		return sb;
+	}
+
+	private static StringBuilder separated(Iterator<String> iterator, String separator)
+	{
+		StringBuilder sb = new StringBuilder();
+
+		while (iterator.hasNext())
+		{
+			sb.append(iterator.next());
+			sb.append(" = ?");
+			if (iterator.hasNext())
+			{
+				sb.append(separator);
+			}
+		}
+
+		return sb;
+	}
+
+	private static StringBuilder commaSeparatedQuests(int count)
+	{
+		StringBuilder sb = new StringBuilder();
+
+		for (int i = 0; i < count; i++)
+		{
+			sb.append("?");
+			if (i < (count - 1))
+			{
+				sb.append(", ");
+			}
+		}
+
+		return sb;
+	}
+
 	public int insert(String table, LinkedHashMap<String, String> set)
 	{
 		Connection connect = null;
@@ -97,46 +157,12 @@ public class MySQLAccess
 
 			// making wildcarded string
 
-			int count = 0;
-			Iterator<String> iterator = set.keySet().iterator();
-			while (iterator.hasNext())
-			{
-				count++;
-				iterator.next();
-			}
-
 			StringBuilder sb = new StringBuilder();
-			sb.append("INSERT INTO " + table + " \n (");
-
-			int k = 0;
-			iterator = set.keySet().iterator();
-			while (iterator.hasNext())
-			{
-				k++;
-				sb.append(iterator.next());
-				if (k < (count))
-				{
-					sb.append(",\n");
-				}
-			}
-
+			sb.append("INSERT INTO " + table + " (");
+			sb.append(commaSeparated(set.keySet().iterator()));
+			sb.append(") VALUES (");
+			sb.append(commaSeparatedQuests(count(set.keySet().iterator())));
 			sb.append(")");
-
-			sb.append("\n VALUES \n");
-
-			StringBuilder braced = new StringBuilder();
-			braced.append("(");
-			for (int i = 0; i < count; i++)
-			{
-				braced.append("?");
-				if (i < (count - 1))
-				{
-					braced.append(",\n");
-				}
-			}
-			braced.append(")");
-
-			sb.append(braced);
 
 			statement = connect.prepareStatement(sb.toString());
 			System.out.println(sb);
@@ -144,13 +170,6 @@ public class MySQLAccess
 			// filling wildcards
 
 			int i = 1;
-			// statement.setString(i++, table);
-
-			// for (Entry<String, String> entry : set.entrySet())
-			// {
-			// statement.setString(i++, entry.getKey());
-			// }
-
 			for (Entry<String, String> entry : set.entrySet())
 			{
 				statement.setString(i++, entry.getValue());
@@ -180,18 +199,13 @@ public class MySQLAccess
 			connect = DriverManager.getConnection(connectionString);
 
 			// making wildcarded string
-
 			StringBuilder sb = new StringBuilder();
 			sb.append("UPDATE " + table + " SET ");
-			for (String key : set.keySet())
-			{
-				sb.append("? = ?, ");
-			}
-			sb.append("WHERE ");
-			for (String key : where.keySet())
-			{
-				sb.append("? = ?, ");
-			}
+			sb.append(separated(set.keySet().iterator(), ", "));
+			sb.append(" WHERE ");
+			sb.append(separated(where.keySet().iterator(), " AND "));
+
+			System.out.println(sb);
 
 			statement = connect.prepareStatement(sb.toString());
 
@@ -200,15 +214,15 @@ public class MySQLAccess
 			int i = 1;
 			// statement.setString(i++, table);
 
-			// for (Entry<String, String> entry : set.entrySet())
-			// {
-			// statement.setString(i++, entry.getKey());
-			// statement.setString(i++, entry.getValue());
-			// }
+			for (Entry<String, String> entry : set.entrySet())
+			{
+				// statement.setString(i++, entry.getKey());
+				statement.setString(i++, entry.getValue());
+			}
 
 			for (Entry<String, String> entry : where.entrySet())
 			{
-				statement.setString(i++, entry.getKey());
+				// statement.setString(i++, entry.getKey());
 				statement.setString(i++, entry.getValue());
 			}
 
