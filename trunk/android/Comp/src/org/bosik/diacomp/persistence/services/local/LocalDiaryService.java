@@ -1,6 +1,5 @@
 package org.bosik.diacomp.persistence.services.local;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -241,27 +240,20 @@ public class LocalDiaryService implements DiaryService
 
 			while (cursor.moveToNext())
 			{
-				try
-				{
-					String guid = cursor.getString(indexGUID);
-					Date timestamp = Utils.parseTimeUTC(cursor.getString(indexTimestamp));
-					int version = cursor.getInt(indexVersion);
-					boolean deleted = (cursor.getInt(indexDeleted) == 1);
-					String content = cursor.getString(indexContent);
-					DiaryRecord record = serializer.read(content);
+				String guid = cursor.getString(indexGUID);
+				Date timestamp = Utils.parseTimeUTC(cursor.getString(indexTimestamp));
+				int version = cursor.getInt(indexVersion);
+				boolean deleted = (cursor.getInt(indexDeleted) == 1);
+				String content = cursor.getString(indexContent);
+				DiaryRecord record = serializer.read(content);
 
-					Versioned<DiaryRecord> item = new Versioned<DiaryRecord>(record);
-					item.setId(guid);
-					item.setTimeStamp(timestamp);
-					item.setVersion(version);
-					item.setDeleted(deleted);
+				Versioned<DiaryRecord> item = new Versioned<DiaryRecord>(record);
+				item.setId(guid);
+				item.setTimeStamp(timestamp);
+				item.setVersion(version);
+				item.setDeleted(deleted);
 
-					res.add(item);
-				}
-				catch (ParseException e)
-				{
-					throw new CommonServiceException(e);
-				}
+				res.add(item);
 			}
 
 			return res;
