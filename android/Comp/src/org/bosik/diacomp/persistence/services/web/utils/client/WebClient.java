@@ -1,7 +1,6 @@
 package org.bosik.diacomp.persistence.services.web.utils.client;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -457,19 +456,12 @@ public class WebClient
 				{
 					Log.d(TAG, "login(): response means DONE, parsing time...");
 					Date serverTime;
-					try
-					{
-						serverTime = Utils.parseTimeUTC(det[1]);
-						timeShift = ((sendedTime.getTime() + Utils.now().getTime()) / 2) - serverTime.getTime();
-						// WIN! Если дошли сюда, то всё прошло успешно.
-						logged = true;
+					serverTime = Utils.parseTimeUTC(det[1]);
+					timeShift = ((sendedTime.getTime() + Utils.now().getTime()) / 2) - serverTime.getTime();
+					// WIN! Если дошли сюда, то всё прошло успешно.
+					logged = true;
 
-						Log.d(TAG, "login(): logged OK");
-					}
-					catch (ParseException e)
-					{
-						throw new ResponseFormatException("Bad current time format '" + det[1] + "'", e);
-					}
+					Log.d(TAG, "login(): logged OK");
 				}
 				else if (det[0].equals(RESPONSE_FAIL))
 				{
