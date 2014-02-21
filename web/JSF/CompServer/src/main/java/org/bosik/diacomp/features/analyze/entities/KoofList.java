@@ -1,15 +1,15 @@
 package org.bosik.diacomp.features.analyze.entities;
 
+import org.bosik.diacomp.utils.Utils;
+
 public class KoofList
 {
-	private static final int	MIN_PER_DAY	= 1440;
-
 	private Koof[]				koofs;
 
 	public KoofList()
 	{
-		koofs = new Koof[MIN_PER_DAY];
-		for (int i = 0; i < MIN_PER_DAY; i++)
+		koofs = new Koof[Utils.MinPerDay];
+		for (int i = 0; i < Utils.MinPerDay; i++)
 		{
 			koofs[i] = new Koof();
 		}
