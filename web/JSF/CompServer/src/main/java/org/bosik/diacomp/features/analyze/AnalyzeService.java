@@ -2,7 +2,6 @@ package org.bosik.diacomp.features.analyze;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bosik.diacomp.features.analyze.entities.AnalyzeRec;
 import org.bosik.diacomp.features.analyze.entities.KoofList;
 import org.bosik.diacomp.features.analyze.entities.WeightedTimePoint;
@@ -15,6 +14,43 @@ public class AnalyzeService
 		public double	p;
 		public double	q;
 		public double	g[]	= new double[3];
+
+		public Bean()
+		{
+
+		}
+	}
+
+	private interface DevFunction
+	{
+		double calculate(double x, double y);
+	}
+
+	class AbsDev implements DevFunction
+	{
+		@Override
+		public double calculate(double x, double y)
+		{
+			return Math.abs(x - y);
+		}
+	}
+
+	class SqrDev implements DevFunction
+	{
+		@Override
+		public double calculate(double x, double y)
+		{
+			return Math.pow(x - y, 2);
+		}
+	}
+
+	class RelDev implements DevFunction
+	{
+		@Override
+		public double calculate(double x, double y)
+		{
+			return Math.abs(1 - (x / y));
+		}
 	}
 
 	private static final double	TIME_WEIGHTS[]	= new double[Utils.HalfMinPerDay + 1];
@@ -30,7 +66,7 @@ public class AnalyzeService
 	{
 		if (Math.abs(rec.getCarbs()) > Utils.EPS)
 		{
-			return (rec.getBsOut() - rec.getBsIn() + rec.getIns() * q - rec.getProts() * p) / rec.getCarbs();
+			return (((rec.getBsOut() - rec.getBsIn()) + (rec.getIns() * q)) - (rec.getProts() * p)) / rec.getCarbs();
 		}
 		else
 		{
@@ -121,6 +157,46 @@ public class AnalyzeService
 		return result;
 	}
 
+	private static double getRand(double[] recs, WeightedTimePoint[] points, DevFunction func)
+	{
+		double result = 0.0;
+		int n = 0;
+		for (int i = 0; i < recs.length; i++)
+			if (!Double.isNaN(points[i].getValue()))
+			{
+				result += func.calculate(recs[points[i].getTime()], points[i].getValue());
+				n++;
+			}
+
+		if (n > 0)
+		{
+			result /= n;
+		}
+
+		return result;
+	}
+
+	private static double getDev(List<AnalyzeRec> recs, KoofList koofs, DevFunction func)
+	{
+		double result = 0.0;
+		int n = 0;
+		for (AnalyzeRec rec : recs)
+		{
+			result += func.calculate(
+					((rec.getBsIn() + (koofs.getKoof(rec.getTime()).getK() * rec.getCarbs())) - (koofs.getKoof(
+							rec.getTime()).getQ() * rec.getIns()))
+							+ (koofs.getKoof(rec.getTime()).getP() * rec.getProts()), rec.getBsOut());
+			n++;
+		}
+
+		if (n > 0)
+		{
+			result /= n;
+		}
+
+		return result;
+	}
+
 	private static KoofList copyKQP(double[] ks, double q, double p)
 	{
 		KoofList result = new KoofList();
@@ -158,6 +234,8 @@ public class AnalyzeService
 		WeightedTimePoint[] points;
 		List<Bean> V = new ArrayList<Bean>();
 		double z[];
+		DevFunction funcRelative = new RelDev();
+		DevFunction funcSqr = new SqrDev();
 
 		for (double q = MIN_Q; q < MAX_Q; q += DISC_Q)
 		{
@@ -168,10 +246,67 @@ public class AnalyzeService
 				bean.p = p;
 
 				points = calculateKW(recs, q, p);
-
 				z = approximate(points, APPROX_FACTOR);
 				koofs = copyKQP(z, q, p);
+
+				bean.g[0] = getRand(z, points, funcRelative);
+				bean.g[1] = 0.0;
+				bean.g[2] = getDev(recs, koofs, funcSqr);
+
+				V.add(bean);
 			}
 		}
+
+		// normalizing weights
+
+		for (int k = 0; k < 3; k++)
+		{
+			double min = Double.MAX_VALUE;
+			double max = Double.MIN_VALUE;
+			for (Bean bean : V)
+			{
+				if (!Double.isNaN(bean.g[k]))
+				{
+					min = Math.min(min, bean.g[k]);
+					max = Math.max(max, bean.g[k]);
+				}
+			}
+
+			if (Math.abs(min - max) > Utils.EPS)
+			{
+				for (Bean bean : V)
+				{
+					if (!Double.isNaN(bean.g[k]))
+					{
+						bean.g[k] = (bean.g[k] - min) / (max - min);
+					}
+				}
+			}
+		}
+
+		// search for best solution
+
+		double bestDev = Double.MAX_VALUE;
+		double bestQ = Double.NaN;
+		double bestP = Double.NaN;
+
+		for (Bean bean : V)
+		{
+			double curDev = Math.pow(bean.g[0], 2) + Math.pow(bean.g[1], 2) + Math.pow(bean.g[2], 2);
+			if (curDev < bestDev)
+			{
+				bestDev = curDev;
+				bestQ = bean.q;
+				bestP = bean.p;
+			}
+		}
+
+		// restore
+		points = calculateKW(recs, bestQ, bestP);
+		z = approximate(points, APPROX_FACTOR);
+		koofs = copyKQP(z, bestQ, bestP);
+
+		return koofs;
+
 	}
 }
