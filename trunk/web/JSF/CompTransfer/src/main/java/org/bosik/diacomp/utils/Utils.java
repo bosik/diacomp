@@ -25,7 +25,10 @@ public class Utils
 	public static final int					HourPerDay			= 24;
 	public static final int					SecPerDay			= SecPerMin * MinPerHour * HourPerDay;
 	public static final int					MinPerDay			= MinPerHour * HourPerDay;
+	public static final int					HalfMinPerDay		= (MinPerHour * HourPerDay) / 2;
 	public static final long				MsecPerDay			= MsecPerSec * SecPerMin * MinPerHour * HourPerDay;
+
+	public static final double				EPS					= 0.0000001;
 
 	private static char						DECIMAL_DOT;
 	private static DecimalFormat			DF;
