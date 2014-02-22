@@ -5,10 +5,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;
+import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
+import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.features.common.dao.MySQLAccess;
-import org.bosik.diacomp.services.exceptions.DeprecatedAPIException;
-import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.services.exceptions.UnsupportedAPIException;
 
 public class MySQLAuthDAO implements AuthDAO
 {

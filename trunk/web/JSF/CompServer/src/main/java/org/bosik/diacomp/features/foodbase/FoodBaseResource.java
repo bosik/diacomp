@@ -8,9 +8,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.features.auth.dao.AuthDAO;
 import org.bosik.diacomp.features.auth.dao.FakeAuthDAO;
-import org.bosik.diacomp.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.utils.ResponseBuilder;
 
 @Path("food/")

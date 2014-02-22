@@ -10,11 +10,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;
+import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
+import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.features.auth.dao.AuthDAO;
 import org.bosik.diacomp.features.auth.dao.MySQLAuthDAO;
-import org.bosik.diacomp.services.exceptions.DeprecatedAPIException;
-import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.utils.ResponseBuilder;
 
 @Path("auth/")

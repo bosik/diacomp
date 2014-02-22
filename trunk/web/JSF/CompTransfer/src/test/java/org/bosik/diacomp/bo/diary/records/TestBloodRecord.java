@@ -1,6 +1,6 @@
 package org.bosik.diacomp.bo.diary.records;
 
-import org.bosik.diacomp.bo.diary.records.BloodRecord;
+import org.bosik.diacomp.core.bo.diary.records.BloodRecord;
 import junit.framework.TestCase;
 
 public class TestBloodRecord extends TestCase

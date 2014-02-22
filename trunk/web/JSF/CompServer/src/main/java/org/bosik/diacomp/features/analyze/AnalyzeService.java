@@ -2,10 +2,10 @@ package org.bosik.diacomp.features.analyze;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.features.analyze.entities.AnalyzeRec;
 import org.bosik.diacomp.features.analyze.entities.KoofList;
 import org.bosik.diacomp.features.analyze.entities.WeightedTimePoint;
-import org.bosik.diacomp.utils.Utils;
 
 public class AnalyzeService
 {
@@ -307,6 +307,5 @@ public class AnalyzeService
 		koofs = copyKQP(z, bestQ, bestP);
 
 		return koofs;
-
 	}
 }

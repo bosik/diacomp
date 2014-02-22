@@ -1,9 +1,9 @@
 package org.bosik.diacomp.features.auth;
 
-import org.bosik.diacomp.services.AuthService;
-import org.bosik.diacomp.services.exceptions.DeprecatedAPIException;
-import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.services.exceptions.UnsupportedAPIException;
+import org.bosik.diacomp.core.services.AuthService;
+import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;
+import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
+import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.utils.Config;
 import org.junit.Test;
 

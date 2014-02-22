@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import junit.framework.TestCase;
-import org.bosik.diacomp.bo.Food;
-import org.bosik.diacomp.bo.foodbase.FoodItem;
-import org.bosik.diacomp.fakes.mocks.Mock;
-import org.bosik.diacomp.fakes.mocks.MockFood;
+import org.bosik.diacomp.core.bo.Food;
+import org.bosik.diacomp.core.bo.foodbase.FoodItem;
+import org.bosik.diacomp.core.fakes.mocks.Mock;
+import org.bosik.diacomp.core.fakes.mocks.MockFood;
 
 public class MockFoodItem extends TestCase implements Mock<FoodItem>
 {

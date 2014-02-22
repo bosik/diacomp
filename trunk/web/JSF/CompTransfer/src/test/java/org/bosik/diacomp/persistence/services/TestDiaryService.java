@@ -3,12 +3,12 @@ package org.bosik.diacomp.persistence.services;
 import java.util.LinkedList;
 import java.util.List;
 import junit.framework.TestCase;
-import org.bosik.diacomp.bo.diary.DiaryRecord;
-import org.bosik.diacomp.fakes.mocks.Mock;
-import org.bosik.diacomp.fakes.mocks.MockDiaryRecord;
-import org.bosik.diacomp.fakes.mocks.MockVersionedConverter;
-import org.bosik.diacomp.persistence.common.Versioned;
-import org.bosik.diacomp.services.DiaryService;
+import org.bosik.diacomp.core.bo.diary.DiaryRecord;
+import org.bosik.diacomp.core.fakes.mocks.Mock;
+import org.bosik.diacomp.core.fakes.mocks.MockDiaryRecord;
+import org.bosik.diacomp.core.fakes.mocks.MockVersionedConverter;
+import org.bosik.diacomp.core.persistence.common.Versioned;
+import org.bosik.diacomp.core.services.DiaryService;
 
 public abstract class TestDiaryService extends TestCase
 {
