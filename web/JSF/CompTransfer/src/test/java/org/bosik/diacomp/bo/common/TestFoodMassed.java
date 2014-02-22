@@ -1,8 +1,8 @@
 package org.bosik.diacomp.bo.common;
 
 import junit.framework.TestCase;
-import org.bosik.diacomp.bo.FoodMassed;
-import org.bosik.diacomp.utils.TestUtils;
+import org.bosik.diacomp.core.bo.FoodMassed;
+import org.bosik.diacomp.core.utils.TestUtils;
 
 public class TestFoodMassed extends TestCase
 {

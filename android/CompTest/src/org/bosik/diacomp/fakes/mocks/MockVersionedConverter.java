@@ -5,9 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import junit.framework.Assert;
-import org.bosik.diacomp.fakes.mocks.Mock;
-import org.bosik.diacomp.persistence.common.Versioned;
-import org.bosik.diacomp.utils.TestUtils;
+import org.bosik.diacomp.core.fakes.mocks.Mock;
+import org.bosik.diacomp.core.persistence.common.Versioned;
+import org.bosik.diacomp.core.utils.TestUtils;
 
 public class MockVersionedConverter<T> implements Mock<Versioned<T>>
 {

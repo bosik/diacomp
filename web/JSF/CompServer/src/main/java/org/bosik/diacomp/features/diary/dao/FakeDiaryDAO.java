@@ -3,15 +3,15 @@ package org.bosik.diacomp.features.diary.dao;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.bosik.diacomp.bo.diary.DiaryRecord;
-import org.bosik.diacomp.fakes.mocks.Mock;
-import org.bosik.diacomp.fakes.mocks.MockDiaryRecord;
-import org.bosik.diacomp.fakes.mocks.MockVersionedConverter;
-import org.bosik.diacomp.persistence.common.Versioned;
-import org.bosik.diacomp.persistence.serializers.Parser;
-import org.bosik.diacomp.persistence.serializers.ParserDiaryRecord;
-import org.bosik.diacomp.persistence.serializers.Serializer;
-import org.bosik.diacomp.persistence.serializers.utils.SerializerAdapter;
+import org.bosik.diacomp.core.bo.diary.DiaryRecord;
+import org.bosik.diacomp.core.fakes.mocks.Mock;
+import org.bosik.diacomp.core.fakes.mocks.MockDiaryRecord;
+import org.bosik.diacomp.core.fakes.mocks.MockVersionedConverter;
+import org.bosik.diacomp.core.persistence.common.Versioned;
+import org.bosik.diacomp.core.persistence.serializers.Parser;
+import org.bosik.diacomp.core.persistence.serializers.ParserDiaryRecord;
+import org.bosik.diacomp.core.persistence.serializers.Serializer;
+import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
 
 public class FakeDiaryDAO implements DiaryDAO
 {

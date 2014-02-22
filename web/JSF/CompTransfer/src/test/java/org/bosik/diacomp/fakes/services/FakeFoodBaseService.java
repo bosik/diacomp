@@ -1,11 +1,11 @@
 package org.bosik.diacomp.fakes.services;
 
 import java.util.List;
-import org.bosik.diacomp.bo.foodbase.FoodItem;
-import org.bosik.diacomp.persistence.common.Versioned;
-import org.bosik.diacomp.services.FoodBaseService;
-import org.bosik.diacomp.services.exceptions.ItemNotFoundException;
-import org.bosik.diacomp.services.exceptions.PersistenceException;
+import org.bosik.diacomp.core.bo.foodbase.FoodItem;
+import org.bosik.diacomp.core.persistence.common.Versioned;
+import org.bosik.diacomp.core.services.FoodBaseService;
+import org.bosik.diacomp.core.services.exceptions.ItemNotFoundException;
+import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 
 public class FakeFoodBaseService implements FoodBaseService
 {

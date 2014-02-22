@@ -1,7 +1,7 @@
 package org.bosik.diacomp.features.auth;
 
 import javax.servlet.http.HttpServletRequest;
-import org.bosik.diacomp.services.exceptions.NotAuthorizedException;
+import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 
 public class UserService
 {

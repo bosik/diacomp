@@ -8,14 +8,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import org.bosik.diacomp.bo.diary.DiaryRecord;
+import org.bosik.diacomp.core.bo.diary.DiaryRecord;
+import org.bosik.diacomp.core.persistence.common.Versioned;
+import org.bosik.diacomp.core.persistence.serializers.Parser;
+import org.bosik.diacomp.core.persistence.serializers.ParserDiaryRecord;
+import org.bosik.diacomp.core.persistence.serializers.Serializer;
+import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
+import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.features.common.dao.MySQLAccess;
-import org.bosik.diacomp.persistence.common.Versioned;
-import org.bosik.diacomp.persistence.serializers.Parser;
-import org.bosik.diacomp.persistence.serializers.ParserDiaryRecord;
-import org.bosik.diacomp.persistence.serializers.Serializer;
-import org.bosik.diacomp.persistence.serializers.utils.SerializerAdapter;
-import org.bosik.diacomp.utils.Utils;
 
 public class MySQLDiaryDAO implements DiaryDAO
 {

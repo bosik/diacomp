@@ -1,6 +1,6 @@
 package org.bosik.diacomp.features.analyze.entities;
 
-import org.bosik.diacomp.utils.Utils;
+import org.bosik.diacomp.core.utils.Utils;
 
 public class KoofList
 {
