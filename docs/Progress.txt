@@ -16,4 +16,10 @@ Date		Hours	Task
 13.02.2014	6.0	Implementing backend: auth checks
 16.02.2014	8.0	Implementing backend (until 09:30)
 16.02.2014	4.0	Implementing backend (until 23:00)
-24.02.2014	2.0	Implementing backend / modile app: porting analyzer service
+21.02.2014	3.0	Implementing backend: porting analyzer
+22.02.2014	1.0	Implementing backend: fixing SQL bugs (until 15:00)
+22.02.2014	6.0	Android app: fixing startup problems (until 23:00)
+23.02.2014	3.0	Android app: fixing startup problems (until 03:00)
+23.02.2014	3.0	Android app: fixing startup problems (until 22:00)
+24.02.2014	2.0	Implementing backend / mobile app: porting analyzer service
+24.02.2014	2.5	Android app: fixing startup problems (until 23:00)
