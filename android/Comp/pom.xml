@@ -15,15 +15,6 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-
-			<!-- try to remove it -->
-			<plugin>
-				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
-				<artifactId>android-maven-plugin</artifactId>
-				<version>3.1.1</version>
-				<extensions>true</extensions>
-			</plugin>
-
 		</plugins>
 	</build>
 
