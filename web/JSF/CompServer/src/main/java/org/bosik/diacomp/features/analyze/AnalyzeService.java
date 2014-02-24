@@ -7,7 +7,7 @@ import org.bosik.diacomp.features.analyze.entities.AnalyzeRec;
 import org.bosik.diacomp.features.analyze.entities.KoofList;
 import org.bosik.diacomp.features.analyze.entities.WeightedTimePoint;
 
-public class AnalyzeService
+public class AnalyzeService implements Analyzer
 {
 	private class Bean
 	{
@@ -209,6 +209,7 @@ public class AnalyzeService
 		return result;
 	}
 
+	@Override
 	public KoofList analyze(List<AnalyzeRec> recs)
 	{
 		/**
