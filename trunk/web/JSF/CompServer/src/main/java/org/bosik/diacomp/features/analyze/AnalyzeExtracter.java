@@ -3,7 +3,6 @@ package org.bosik.diacomp.features.analyze;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-
 import org.bosik.diacomp.core.bo.diary.DiaryRecord;
 import org.bosik.diacomp.core.bo.diary.records.BloodRecord;
 import org.bosik.diacomp.core.bo.diary.records.InsRecord;
@@ -11,6 +10,7 @@ import org.bosik.diacomp.core.bo.diary.records.MealRecord;
 import org.bosik.diacomp.core.persistence.common.Versioned;
 import org.bosik.diacomp.core.services.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.features.analyze.entities.AnalyzeRec;
 import org.bosik.diacomp.features.analyze.entities.PrimeRec;
 
 public class AnalyzeExtracter
@@ -144,6 +144,85 @@ public class AnalyzeExtracter
 			if (rec.getFoodTime() > -1)
 			{
 				rec.setFoodTime(rec.getFoodTime() - timeShift);
+			}
+		}
+
+		return result;
+	}
+
+	private static double f(double x, double adaptation)
+	{
+		return (adaptation - 0.5) * Math.sin(Math.PI * (x - 0.5)) + 0.5;
+	}
+
+	/**
+	 * 
+	 * @param recs
+	 * @param adaptation
+	 *            in [0..0.5]: 0.0 is the quickest (but unstable), 0.5 is the slowest (but very stable)
+	 * @return
+	 */
+	public static List<AnalyzeRec> formatRecords(List<PrimeRec> recs, double adaptation)
+	{
+		long curTime = new Date().getTime();
+		long min = curTime;
+
+		for (PrimeRec rec : recs)
+		{
+			if (rec.getDate().getTime() < min)
+			{
+				min = rec.getDate().getTime();
+			}
+		}
+
+		// building
+
+		List<AnalyzeRec> result = new LinkedList<AnalyzeRec>();
+
+		for (PrimeRec rec : recs)
+		{
+			AnalyzeRec item = new AnalyzeRec();
+			item.setProts(rec.getProts());
+			item.setFats(rec.getFats());
+			item.setCarbs(rec.getCarbs());
+			item.setIns(rec.getInsValue());
+			item.setBsIn(rec.getBloodInValue());
+			item.setBsOut(rec.getBloodOutValue());
+			item.setTime(rec.getFoodTime());
+
+			double x = (rec.getDate().getTime() - min) / (curTime - min);
+			double w = f(x, adaptation);
+			item.setWeight(w);
+
+			result.add(item);
+		}
+
+		// normalization
+
+		if (!result.isEmpty())
+		{
+			double minW = result.get(0).getWeight();
+			double maxW = result.get(0).getWeight();
+
+			for (AnalyzeRec rec : result)
+			{
+				minW = Math.min(minW, rec.getWeight());
+				maxW = Math.max(maxW, rec.getWeight());
+			}
+
+			if (maxW - minW > Utils.EPS)
+			{
+				for (AnalyzeRec rec : result)
+				{
+					rec.setWeight((rec.getWeight() - minW) / (maxW - minW));
+				}
+			}
+			else
+			{
+				for (AnalyzeRec rec : result)
+				{
+					rec.setWeight(1.0);
+				}
 			}
 		}
 
