@@ -11,10 +11,16 @@ import org.bosik.diacomp.core.persistence.common.Versioned;
 import org.bosik.diacomp.core.services.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.features.analyze.entities.AnalyzeRec;
+import org.bosik.diacomp.features.analyze.entities.Koof;
+import org.bosik.diacomp.features.analyze.entities.KoofList;
 import org.bosik.diacomp.features.analyze.entities.PrimeRec;
 
 public class AnalyzeExtracter
 {
+	public enum ValueFunction {
+		LINEAR_ABS, LINEAR_AVG, DISTANCE, QUADRIC
+	}
+
 	private static int extractMin(Date date)
 	{
 		return (int)date.getTime() / Utils.MsecPerMin;
@@ -224,6 +230,53 @@ public class AnalyzeExtracter
 					rec.setWeight(1.0);
 				}
 			}
+		}
+
+		return result;
+	}
+
+	public static double getRecError(AnalyzeRec rec, KoofList koofs, ValueFunction analyzeMethod)
+	{
+		Koof koof = koofs.getKoof(rec.getTime());
+		double err = rec.getBsIn() + rec.getCarbs() * koof.getK() + rec.getProts() * koof.getP() - rec.getIns()
+				* koof.getQ() - rec.getBsOut();
+
+		switch (analyzeMethod)
+		{
+			case LINEAR_ABS:
+				return Math.abs(err);
+			case LINEAR_AVG:
+				return err;
+			case DISTANCE:
+			{
+				double carbs2 = rec.getCarbs() * rec.getCarbs();
+				double prots2 = rec.getProts() * rec.getProts();
+				double ins2 = rec.getIns() * rec.getIns();
+				return Math.abs(err) / Math.sqrt(carbs2 + prots2 + ins2);
+			}
+			case QUADRIC:
+				return err * err;
+			default:
+				throw new IllegalArgumentException(String.format("Invalid method: %d", analyzeMethod));
+		}
+	}
+
+	public static double getRecListError(List<AnalyzeRec> recs, KoofList koofs, ValueFunction analyzeMethod)
+	{
+		double result = 0.0;
+		for (AnalyzeRec rec : recs)
+		{
+			result += getRecError(rec, koofs, analyzeMethod);
+		}
+
+		if (!recs.isEmpty())
+		{
+			result /= recs.size();
+		}
+
+		if (analyzeMethod == ValueFunction.QUADRIC)
+		{
+			result = Math.sqrt(result);
 		}
 
 		return result;
