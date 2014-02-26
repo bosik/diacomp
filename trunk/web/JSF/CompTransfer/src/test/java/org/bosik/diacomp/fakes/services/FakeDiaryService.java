@@ -7,6 +7,7 @@ import org.bosik.diacomp.core.persistence.common.Versioned;
 import org.bosik.diacomp.core.services.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 
+// FIXME: implement in-memory service
 public class FakeDiaryService implements DiaryService
 {
 	public List<Versioned<DiaryRecord>> getRecords(List<String> guids) throws CommonServiceException
