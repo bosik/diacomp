@@ -1,9 +1,9 @@
 package org.bosik.diacomp.web.backend.features.auth;
 
 import static org.junit.Assert.assertEquals;
+import org.bosik.diacomp.web.backend.common.Config;
 import org.bosik.diacomp.web.backend.features.auth.function.AuthDAO;
 import org.bosik.diacomp.web.backend.features.auth.function.MySQLAuthDAO;
-import org.bosik.diacomp.web.backend.utils.Config;
 import org.junit.Test;
 
 public class TestMySQLAuthDAO

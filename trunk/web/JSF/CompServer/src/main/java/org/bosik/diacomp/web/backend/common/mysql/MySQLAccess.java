@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.common.dao;
+package org.bosik.diacomp.web.backend.common.mysql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

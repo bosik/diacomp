@@ -14,7 +14,7 @@ import org.bosik.diacomp.core.persistence.common.Versioned;
 import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.core.services.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.web.backend.utils.Config;
+import org.bosik.diacomp.web.backend.common.Config;
 import org.bosik.diacomp.web.frontend.features.auth.AuthRestClient;
 import org.bosik.diacomp.web.frontend.features.diary.DiaryRestClient;
 import org.junit.Test;

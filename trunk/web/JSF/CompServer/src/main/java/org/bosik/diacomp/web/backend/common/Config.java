@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.utils;
+package org.bosik.diacomp.web.backend.common;
 
 import java.io.IOException;
 import java.io.InputStream;

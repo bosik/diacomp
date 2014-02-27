@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
-import org.bosik.diacomp.web.backend.features.common.dao.MySQLAccess;
+import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 
 public class MySQLAuthDAO implements AuthDAO
 {
