@@ -1,8 +1,8 @@
-package org.bosik.diacomp.core.bo;
+package org.bosik.diacomp.core.entities.business;
 
 import java.io.Serializable;
-import org.bosik.diacomp.core.bo.interfaces.Named;
-import org.bosik.diacomp.core.bo.interfaces.Relative;
+import org.bosik.diacomp.core.entities.business.interfaces.Named;
+import org.bosik.diacomp.core.entities.business.interfaces.Relative;
 import com.google.gson.annotations.SerializedName;
 
 /**

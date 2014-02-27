@@ -2,8 +2,8 @@ package org.bosik.diacomp.bo.diary.records;
 
 import java.util.Date;
 import junit.framework.TestCase;
-import org.bosik.diacomp.core.bo.FoodMassed;
-import org.bosik.diacomp.core.bo.diary.records.MealRecord;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 
 public class TestMealRecord extends TestCase
 {

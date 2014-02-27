@@ -1,7 +1,7 @@
-package org.bosik.diacomp.core.bo.dishbase;
+package org.bosik.diacomp.core.entities.business.dishbase;
 
 import java.io.Serializable;
-import org.bosik.diacomp.core.bo.interfaces.NamedRelativeTagged;
+import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 
 public class DishItem implements NamedRelativeTagged, Serializable
 {

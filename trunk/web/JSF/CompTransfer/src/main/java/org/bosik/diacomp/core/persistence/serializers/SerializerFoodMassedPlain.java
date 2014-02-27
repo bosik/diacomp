@@ -3,7 +3,7 @@ package org.bosik.diacomp.core.persistence.serializers;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.List;
-import org.bosik.diacomp.core.bo.FoodMassed;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.utils.Utils;
 
 public class SerializerFoodMassedPlain implements Serializer<FoodMassed>

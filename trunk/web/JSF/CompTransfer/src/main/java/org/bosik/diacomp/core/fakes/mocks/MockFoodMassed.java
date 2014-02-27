@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import junit.framework.TestCase;
-import org.bosik.diacomp.core.bo.Food;
-import org.bosik.diacomp.core.bo.FoodMassed;
+import org.bosik.diacomp.core.entities.business.Food;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.utils.TestUtils;
 
 public class MockFoodMassed implements Mock<FoodMassed>

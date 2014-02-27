@@ -1,7 +1,7 @@
 package org.bosik.diacomp.persistence.serializers.foodmassed;
 
 import junit.framework.TestCase;
-import org.bosik.diacomp.core.bo.FoodMassed;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.persistence.serializers.SerializerFoodMassedPlain;
 
 public class TestSerializerFoodMassedPlain extends TestCase

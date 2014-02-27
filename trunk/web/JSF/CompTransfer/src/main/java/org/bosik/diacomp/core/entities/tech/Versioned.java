@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.persistence.common;
+package org.bosik.diacomp.core.entities.tech;
 
 import java.io.Serializable;
 import java.util.Date;

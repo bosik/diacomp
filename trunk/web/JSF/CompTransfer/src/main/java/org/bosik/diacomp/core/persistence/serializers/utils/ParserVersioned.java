@@ -1,6 +1,6 @@
 package org.bosik.diacomp.core.persistence.serializers.utils;
 
-import org.bosik.diacomp.core.persistence.common.Versioned;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Parser;
 import org.bosik.diacomp.core.utils.Utils;
 import org.json.JSONException;

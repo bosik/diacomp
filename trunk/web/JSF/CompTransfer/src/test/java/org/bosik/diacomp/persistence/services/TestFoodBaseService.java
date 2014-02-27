@@ -1,11 +1,11 @@
 package org.bosik.diacomp.persistence.services;
 
 import junit.framework.TestCase;
-import org.bosik.diacomp.core.bo.foodbase.FoodItem;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.fakes.mocks.Mock;
 import org.bosik.diacomp.core.fakes.mocks.MockFoodItem;
 import org.bosik.diacomp.core.fakes.mocks.MockVersionedConverter;
-import org.bosik.diacomp.core.persistence.common.Versioned;
 import org.bosik.diacomp.core.services.FoodBaseService;
 
 public abstract class TestFoodBaseService extends TestCase

@@ -3,12 +3,12 @@ package org.bosik.diacomp.core.fakes.mocks;
 import java.util.ArrayList;
 import java.util.List;
 import junit.framework.TestCase;
-import org.bosik.diacomp.core.bo.FoodMassed;
-import org.bosik.diacomp.core.bo.diary.DiaryRecord;
-import org.bosik.diacomp.core.bo.diary.records.BloodRecord;
-import org.bosik.diacomp.core.bo.diary.records.InsRecord;
-import org.bosik.diacomp.core.bo.diary.records.MealRecord;
-import org.bosik.diacomp.core.bo.diary.records.NoteRecord;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.utils.TestUtils;
 import org.bosik.diacomp.core.utils.Utils;
 

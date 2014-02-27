@@ -2,8 +2,8 @@ package org.bosik.diacomp.web.backend.features.diary.function;
 
 import java.util.Date;
 import java.util.List;
-import org.bosik.diacomp.core.bo.diary.DiaryRecord;
-import org.bosik.diacomp.core.persistence.common.Versioned;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 
 public interface DiaryDAO
 {

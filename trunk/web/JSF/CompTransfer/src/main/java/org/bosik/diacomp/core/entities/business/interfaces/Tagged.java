@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.bo.interfaces;
+package org.bosik.diacomp.core.entities.business.interfaces;
 
 public interface Tagged
 {
