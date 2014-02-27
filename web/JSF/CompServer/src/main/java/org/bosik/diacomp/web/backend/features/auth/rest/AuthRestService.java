@@ -19,7 +19,7 @@ import org.bosik.diacomp.web.backend.features.common.UserSessionUtils;
 import org.bosik.diacomp.web.backend.utils.ResponseBuilder;
 
 @Path("auth/")
-public class AuthResource
+public class AuthRestService
 {
 	@Context
 	HttpServletRequest	req;

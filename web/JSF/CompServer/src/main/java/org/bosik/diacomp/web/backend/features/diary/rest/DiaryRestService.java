@@ -31,7 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 @Path("diary/")
-public class DiaryResource
+public class DiaryRestService
 {
 	@Context
 	HttpServletRequest										req;

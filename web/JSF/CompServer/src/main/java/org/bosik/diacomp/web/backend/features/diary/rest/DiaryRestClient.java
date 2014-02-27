@@ -10,12 +10,12 @@ import org.bosik.diacomp.core.persistence.serializers.ready.SerializerDiaryRecor
 import org.bosik.diacomp.core.services.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.features.common.WebService;
+import org.bosik.diacomp.web.backend.features.common.RestClient;
 import org.bosik.diacomp.web.backend.utils.StdResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 
-public class DiaryWebService extends WebService implements DiaryService
+public class DiaryRestClient extends RestClient implements DiaryService
 {
 	private static Serializer<Versioned<DiaryRecord>>	serializer	= new SerializerDiaryRecord();
 

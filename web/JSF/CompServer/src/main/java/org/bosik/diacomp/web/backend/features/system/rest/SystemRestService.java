@@ -11,7 +11,7 @@ import org.json.JSONObject;
 
 @Path("info/")
 @SuppressWarnings("static-method")
-public class SystemResource
+public class SystemRestService
 {
 	@GET
 	// @Path("")

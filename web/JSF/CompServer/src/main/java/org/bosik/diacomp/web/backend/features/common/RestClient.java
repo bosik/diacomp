@@ -12,7 +12,7 @@ import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 
-public class WebService
+public class RestClient
 {
 	private static ApacheHttpClient	client;
 	{

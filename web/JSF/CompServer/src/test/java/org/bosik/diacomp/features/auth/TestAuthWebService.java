@@ -4,7 +4,7 @@ import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
-import org.bosik.diacomp.web.backend.features.auth.rest.AuthWebService;
+import org.bosik.diacomp.web.backend.features.auth.rest.AuthRestClient;
 import org.bosik.diacomp.web.backend.utils.Config;
 import org.junit.Test;
 
@@ -15,7 +15,7 @@ public class TestAuthWebService
 	public static final int		TEST_API_VERSION_CURRENT	= Config.getAPICurrent();
 	public static final int		TEST_API_VERSION_SUPPORTED	= Config.getAPISupported();
 
-	private AuthService			authService					= new AuthWebService();
+	private AuthService			authService					= new AuthRestClient();
 
 	@Test
 	public void testLogin_correct()
