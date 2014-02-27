@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.diary;
+package org.bosik.diacomp.web.backend.features.diary.rest;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,8 +23,8 @@ import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.features.common.UserSessionUtils;
-import org.bosik.diacomp.web.backend.features.diary.dao.DiaryDAO;
-import org.bosik.diacomp.web.backend.features.diary.dao.MySQLDiaryDAO;
+import org.bosik.diacomp.web.backend.features.diary.function.DiaryDAO;
+import org.bosik.diacomp.web.backend.features.diary.function.MySQLDiaryDAO;
 import org.bosik.diacomp.web.backend.utils.ResponseBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
