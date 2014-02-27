@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.foodbase;
+package org.bosik.diacomp.web.backend.features.foodbase.rest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
