@@ -3,7 +3,7 @@ package org.bosik.diacomp.features.auth;
 import javax.servlet.http.HttpServletRequest;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 
-public class UserService
+public class UserSessionUtils
 {
 	private static final String	PAR_USERID	= "USER_ID";
 

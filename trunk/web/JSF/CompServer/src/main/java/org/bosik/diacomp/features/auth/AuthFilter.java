@@ -91,7 +91,7 @@ public class AuthFilter implements Filter
 		// printRequestInfo(req);
 		try
 		{
-			UserService.checkAuth(req);
+			UserSessionUtils.checkAuth(req);
 			// System.out.println("Authentified OK, chained");
 			chain.doFilter(request, response);
 		}
