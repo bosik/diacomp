@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.features.auth.dao.AuthDAO;
 import org.bosik.diacomp.features.auth.dao.FakeAuthDAO;
+import org.bosik.diacomp.features.common.UserSessionUtils;
 import org.bosik.diacomp.utils.ResponseBuilder;
 
 @WebFilter("/AuthenticationFilter")

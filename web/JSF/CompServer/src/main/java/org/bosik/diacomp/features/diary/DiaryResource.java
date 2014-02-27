@@ -22,7 +22,7 @@ import org.bosik.diacomp.core.persistence.serializers.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.features.auth.UserSessionUtils;
+import org.bosik.diacomp.features.common.UserSessionUtils;
 import org.bosik.diacomp.features.diary.dao.DiaryDAO;
 import org.bosik.diacomp.features.diary.dao.MySQLDiaryDAO;
 import org.bosik.diacomp.utils.ResponseBuilder;
