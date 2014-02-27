@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.auth;
+package org.bosik.diacomp.web.backend.features.auth.rest;
 
 import javax.ws.rs.core.MediaType;
 import org.bosik.diacomp.core.services.AuthService;

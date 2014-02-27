@@ -13,8 +13,8 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.web.backend.features.auth.dao.AuthDAO;
-import org.bosik.diacomp.web.backend.features.auth.dao.FakeAuthDAO;
+import org.bosik.diacomp.web.backend.features.auth.function.AuthDAO;
+import org.bosik.diacomp.web.backend.features.auth.function.FakeAuthDAO;
 import org.bosik.diacomp.web.backend.features.common.UserSessionUtils;
 import org.bosik.diacomp.web.backend.utils.ResponseBuilder;
 
