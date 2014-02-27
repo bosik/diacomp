@@ -12,7 +12,7 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.web.backend.utils.ResponseBuilder;
 
 @Path("food/")
-public class FoodBaseResource
+public class FoodBaseRestService
 {
 	@Context
 	HttpServletRequest									req;

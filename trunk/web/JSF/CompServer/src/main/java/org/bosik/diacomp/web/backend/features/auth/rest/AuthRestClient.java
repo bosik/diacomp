@@ -3,12 +3,12 @@ package org.bosik.diacomp.web.backend.features.auth.rest;
 import javax.ws.rs.core.MediaType;
 import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
-import org.bosik.diacomp.web.backend.features.common.WebService;
+import org.bosik.diacomp.web.backend.features.common.RestClient;
 import org.bosik.diacomp.web.backend.utils.StdResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 
-public class AuthWebService extends WebService implements AuthService
+public class AuthRestClient extends RestClient implements AuthService
 {
 	@Override
 	public void login(String login, String pass, int apiVersion)

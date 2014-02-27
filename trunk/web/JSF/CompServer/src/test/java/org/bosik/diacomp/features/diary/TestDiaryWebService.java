@@ -14,15 +14,15 @@ import org.bosik.diacomp.core.persistence.common.Versioned;
 import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.core.services.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.web.backend.features.auth.rest.AuthWebService;
-import org.bosik.diacomp.web.backend.features.diary.rest.DiaryWebService;
+import org.bosik.diacomp.web.backend.features.auth.rest.AuthRestClient;
+import org.bosik.diacomp.web.backend.features.diary.rest.DiaryRestClient;
 import org.bosik.diacomp.web.backend.utils.Config;
 import org.junit.Test;
 
 public class TestDiaryWebService
 {
-	private AuthService		authService		= new AuthWebService();
-	private DiaryService	diaryService	= new DiaryWebService();
+	private AuthService		authService		= new AuthRestClient();
+	private DiaryService	diaryService	= new DiaryRestClient();
 
 	private void login()
 	{
