@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.analyze.entities;
+package org.bosik.diacomp.web.backend.features.analyze.function.entities;
 
 import org.bosik.diacomp.core.utils.Utils;
 

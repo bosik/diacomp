@@ -13,11 +13,11 @@ import org.bosik.diacomp.core.persistence.common.Versioned;
 import org.bosik.diacomp.core.services.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.fakes.services.FakeDiaryService;
-import org.bosik.diacomp.web.backend.features.analyze.AnalyzeExtracter;
-import org.bosik.diacomp.web.backend.features.analyze.AnalyzeService;
-import org.bosik.diacomp.web.backend.features.analyze.AnalyzeServiceImpl;
-import org.bosik.diacomp.web.backend.features.analyze.entities.Koof;
-import org.bosik.diacomp.web.backend.features.analyze.entities.KoofList;
+import org.bosik.diacomp.web.backend.features.analyze.function.AnalyzeExtracter;
+import org.bosik.diacomp.web.backend.features.analyze.function.AnalyzeService;
+import org.bosik.diacomp.web.backend.features.analyze.function.AnalyzeServiceImpl;
+import org.bosik.diacomp.web.backend.features.analyze.function.entities.Koof;
+import org.bosik.diacomp.web.backend.features.analyze.function.entities.KoofList;
 import org.junit.Test;
 
 public class TestAnalyzeService

@@ -1,11 +1,11 @@
-package org.bosik.diacomp.web.backend.features.analyze;
+package org.bosik.diacomp.web.backend.features.analyze.function;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.features.analyze.entities.AnalyzeRec;
-import org.bosik.diacomp.web.backend.features.analyze.entities.KoofList;
-import org.bosik.diacomp.web.backend.features.analyze.entities.WeightedTimePoint;
+import org.bosik.diacomp.web.backend.features.analyze.function.entities.AnalyzeRec;
+import org.bosik.diacomp.web.backend.features.analyze.function.entities.KoofList;
+import org.bosik.diacomp.web.backend.features.analyze.function.entities.WeightedTimePoint;
 
 public class AnalyzeServiceImpl implements AnalyzeService
 {
