@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.diary;
+package org.bosik.diacomp.web.frontend.features.diary;
 
 import java.util.Date;
 import java.util.List;
@@ -7,7 +7,7 @@ import org.bosik.diacomp.core.persistence.common.Versioned;
 import org.bosik.diacomp.core.services.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.web.backend.features.auth.AuthRememberService;
+import org.bosik.diacomp.web.frontend.features.auth.AuthRememberService;
 
 public class DiaryAuthorizedService implements DiaryService
 {
