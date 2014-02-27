@@ -22,7 +22,7 @@ import org.bosik.diacomp.core.persistence.serializers.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.features.auth.UserService;
+import org.bosik.diacomp.features.auth.UserSessionUtils;
 import org.bosik.diacomp.features.diary.dao.DiaryDAO;
 import org.bosik.diacomp.features.diary.dao.MySQLDiaryDAO;
 import org.bosik.diacomp.utils.ResponseBuilder;
@@ -89,7 +89,7 @@ public class DiaryResource
 	{
 		try
 		{
-			int userId = UserService.getId(req);
+			int userId = UserSessionUtils.getId(req);
 
 			List<Versioned<String>> respList = new ArrayList<Versioned<String>>();
 			JSONArray json = new JSONArray(sGUID);
@@ -124,7 +124,7 @@ public class DiaryResource
 	{
 		try
 		{
-			int userId = UserService.getId(req);
+			int userId = UserSessionUtils.getId(req);
 			Date time = Utils.parseTimeUTC(stime);
 			boolean includeRemoved = Boolean.valueOf(parShowRem); // TODO: use common formatter
 			List<Versioned<String>> list = diaryService.findMod(userId, time, includeRemoved);
@@ -148,7 +148,7 @@ public class DiaryResource
 	{
 		try
 		{
-			int userId = UserService.getId(req);
+			int userId = UserSessionUtils.getId(req);
 			Date startTime = Utils.parseTimeUTC(parStartTime);
 			Date endTime = Utils.parseTimeUTC(parEndTime);
 			boolean includeRemoved = Boolean.valueOf(parShowRem);
@@ -171,7 +171,7 @@ public class DiaryResource
 	{
 		try
 		{
-			int userId = UserService.getId(req);
+			int userId = UserSessionUtils.getId(req);
 			List<Versioned<DiaryRecord>> itemList = serializerVersionedRecord.readAll(entity);
 			diaryService.post(userId, itemList);
 

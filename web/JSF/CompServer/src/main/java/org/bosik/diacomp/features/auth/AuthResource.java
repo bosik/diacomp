@@ -34,7 +34,7 @@ public class AuthResource
 		try
 		{
 			int id = authDao.login(login, pass, apiVersion);
-			UserService.setId(req, id);
+			UserSessionUtils.setId(req, id);
 
 			String entity = ResponseBuilder.buildDone("Logged in OK");
 			return Response.ok(entity).build();
@@ -83,7 +83,7 @@ public class AuthResource
 	{
 		try
 		{
-			UserService.clearId(req);
+			UserSessionUtils.clearId(req);
 			String entity = ResponseBuilder.buildDone("Logged out OK");
 			return Response.ok(entity).build();
 		}
