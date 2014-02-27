@@ -1,4 +1,4 @@
-package org.bosik.diacomp.features.auth;
+package org.bosik.diacomp.web.backend.features.auth;
 
 import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.MediaType;

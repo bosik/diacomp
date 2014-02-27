@@ -1,4 +1,4 @@
-package org.bosik.diacomp.features.diary;
+package org.bosik.diacomp.web.backend.features.diary;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

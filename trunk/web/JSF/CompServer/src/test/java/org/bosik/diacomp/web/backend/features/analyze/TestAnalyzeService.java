@@ -1,4 +1,4 @@
-package org.bosik.diacomp.features.analyze;
+package org.bosik.diacomp.web.backend.features.analyze;
 
 import static org.junit.Assert.assertEquals;
 import java.util.Date;
