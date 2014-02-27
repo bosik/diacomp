@@ -6,7 +6,7 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import org.bosik.diacomp.web.backend.features.auth.rest.AuthResource;
 import org.bosik.diacomp.web.backend.features.diary.rest.DiaryResource;
-import org.bosik.diacomp.web.backend.features.system.SystemResource;
+import org.bosik.diacomp.web.backend.features.system.rest.SystemResource;
 
 @ApplicationPath("/")
 public class CompServerApp extends Application

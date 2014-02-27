@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.system;
+package org.bosik.diacomp.web.backend.features.system.rest;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
