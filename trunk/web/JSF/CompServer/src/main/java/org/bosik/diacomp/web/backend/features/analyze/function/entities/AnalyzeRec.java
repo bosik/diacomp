@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.analyze.entities;
+package org.bosik.diacomp.web.backend.features.analyze.function.entities;
 
 public class AnalyzeRec
 {

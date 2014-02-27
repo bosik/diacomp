@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.analyze;
+package org.bosik.diacomp.web.backend.features.analyze.function;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -10,10 +10,10 @@ import org.bosik.diacomp.core.bo.diary.records.MealRecord;
 import org.bosik.diacomp.core.persistence.common.Versioned;
 import org.bosik.diacomp.core.services.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.features.analyze.entities.AnalyzeRec;
-import org.bosik.diacomp.web.backend.features.analyze.entities.Koof;
-import org.bosik.diacomp.web.backend.features.analyze.entities.KoofList;
-import org.bosik.diacomp.web.backend.features.analyze.entities.PrimeRec;
+import org.bosik.diacomp.web.backend.features.analyze.function.entities.AnalyzeRec;
+import org.bosik.diacomp.web.backend.features.analyze.function.entities.Koof;
+import org.bosik.diacomp.web.backend.features.analyze.function.entities.KoofList;
+import org.bosik.diacomp.web.backend.features.analyze.function.entities.PrimeRec;
 
 public class AnalyzeExtracter
 {
