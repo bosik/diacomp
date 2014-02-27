@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.diary;
+package org.bosik.diacomp.web.backend.features.diary.rest;
 
 import java.util.Date;
 import java.util.List;

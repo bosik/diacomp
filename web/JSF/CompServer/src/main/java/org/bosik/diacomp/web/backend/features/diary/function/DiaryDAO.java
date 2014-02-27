@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.diary.dao;
+package org.bosik.diacomp.web.backend.features.diary.function;
 
 import java.util.Date;
 import java.util.List;
