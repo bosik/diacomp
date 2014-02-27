@@ -2,9 +2,9 @@ package org.bosik.diacomp.features.auth;
 
 import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.MediaType;
-import org.bosik.diacomp.utils.Config;
-import org.bosik.diacomp.utils.ResponseBuilder;
-import org.bosik.diacomp.utils.StdResponse;
+import org.bosik.diacomp.web.backend.utils.Config;
+import org.bosik.diacomp.web.backend.utils.ResponseBuilder;
+import org.bosik.diacomp.web.backend.utils.StdResponse;
 import org.junit.Test;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
