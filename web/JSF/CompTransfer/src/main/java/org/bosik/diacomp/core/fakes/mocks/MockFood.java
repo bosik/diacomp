@@ -3,7 +3,7 @@ package org.bosik.diacomp.core.fakes.mocks;
 import java.util.ArrayList;
 import java.util.List;
 import junit.framework.TestCase;
-import org.bosik.diacomp.core.bo.Food;
+import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.utils.TestUtils;
 
 public class MockFood implements Mock<Food>

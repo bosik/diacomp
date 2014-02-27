@@ -1,12 +1,12 @@
 package org.bosik.diacomp.core.persistence.serializers;
 
 import java.util.List;
-import org.bosik.diacomp.core.bo.FoodMassed;
-import org.bosik.diacomp.core.bo.diary.DiaryRecord;
-import org.bosik.diacomp.core.bo.diary.records.BloodRecord;
-import org.bosik.diacomp.core.bo.diary.records.InsRecord;
-import org.bosik.diacomp.core.bo.diary.records.MealRecord;
-import org.bosik.diacomp.core.bo.diary.records.NoteRecord;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.utils.Utils;
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,9 +1,9 @@
-package org.bosik.diacomp.core.bo.foodbase;
+package org.bosik.diacomp.core.entities.business.foodbase;
 
 import java.io.Serializable;
 import java.util.Locale;
-import org.bosik.diacomp.core.bo.Food;
-import org.bosik.diacomp.core.bo.interfaces.NamedRelativeTagged;
+import org.bosik.diacomp.core.entities.business.Food;
+import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import com.google.gson.annotations.SerializedName;
 
 /**

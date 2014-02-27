@@ -1,6 +1,6 @@
 package org.bosik.diacomp.core.persistence.serializers;
 
-import org.bosik.diacomp.core.bo.foodbase.FoodItem;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 import com.google.gson.Gson;

@@ -1,10 +1,10 @@
-package org.bosik.diacomp.core.bo.diary.records;
+package org.bosik.diacomp.core.entities.business.diary.records;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.bosik.diacomp.core.bo.FoodMassed;
-import org.bosik.diacomp.core.bo.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 
 public class MealRecord extends DiaryRecord
 {

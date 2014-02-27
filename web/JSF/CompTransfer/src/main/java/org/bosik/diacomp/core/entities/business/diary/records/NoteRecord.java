@@ -1,7 +1,7 @@
-package org.bosik.diacomp.core.bo.diary.records;
+package org.bosik.diacomp.core.entities.business.diary.records;
 
 import java.util.Date;
-import org.bosik.diacomp.core.bo.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 
 public class NoteRecord extends DiaryRecord
 {

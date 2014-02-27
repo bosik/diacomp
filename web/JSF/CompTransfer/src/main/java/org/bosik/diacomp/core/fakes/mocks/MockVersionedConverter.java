@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 import junit.framework.ComparisonFailure;
 import junit.framework.TestCase;
-import org.bosik.diacomp.core.persistence.common.Versioned;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.utils.Utils;
 import org.junit.Ignore;
 

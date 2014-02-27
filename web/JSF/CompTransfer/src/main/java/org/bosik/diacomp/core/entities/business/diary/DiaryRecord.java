@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.bo.diary;
+package org.bosik.diacomp.core.entities.business.diary;
 
 import java.io.Serializable;
 import java.util.Date;
