@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.auth.dao;
+package org.bosik.diacomp.web.backend.features.auth.function;
 
 public interface AuthDAO
 {

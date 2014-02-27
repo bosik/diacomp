@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.auth;
+package org.bosik.diacomp.web.backend.features.auth.rest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -13,8 +13,8 @@ import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
-import org.bosik.diacomp.web.backend.features.auth.dao.AuthDAO;
-import org.bosik.diacomp.web.backend.features.auth.dao.MySQLAuthDAO;
+import org.bosik.diacomp.web.backend.features.auth.function.AuthDAO;
+import org.bosik.diacomp.web.backend.features.auth.function.MySQLAuthDAO;
 import org.bosik.diacomp.web.backend.features.common.UserSessionUtils;
 import org.bosik.diacomp.web.backend.utils.ResponseBuilder;
 

@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.auth.dao;
+package org.bosik.diacomp.web.backend.features.auth.function;
 
 import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
