@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.utils;
+package org.bosik.diacomp.web.backend.common;
 
 import org.json.JSONException;
 import org.json.JSONObject;

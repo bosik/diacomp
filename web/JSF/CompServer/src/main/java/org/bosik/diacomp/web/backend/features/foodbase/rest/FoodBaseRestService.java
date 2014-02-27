@@ -9,7 +9,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
-import org.bosik.diacomp.web.backend.utils.ResponseBuilder;
+import org.bosik.diacomp.web.backend.common.ResponseBuilder;
 
 @Path("food/")
 public class FoodBaseRestService

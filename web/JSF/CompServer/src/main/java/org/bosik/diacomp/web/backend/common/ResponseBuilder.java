@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.utils;
+package org.bosik.diacomp.web.backend.common;
 
 public class ResponseBuilder
 {

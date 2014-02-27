@@ -15,7 +15,7 @@ import org.bosik.diacomp.core.persistence.serializers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.features.common.dao.MySQLAccess;
+import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 
 public class MySQLDiaryDAO implements DiaryDAO
 {

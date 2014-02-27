@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.common;
+package org.bosik.diacomp.web.backend.common;
 
 import javax.servlet.http.HttpServletRequest;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
