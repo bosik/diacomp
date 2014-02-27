@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.common;
+package org.bosik.diacomp.web.frontend.common;
 
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;

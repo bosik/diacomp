@@ -4,8 +4,8 @@ import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
-import org.bosik.diacomp.web.backend.features.auth.rest.AuthRestClient;
 import org.bosik.diacomp.web.backend.utils.Config;
+import org.bosik.diacomp.web.frontend.features.auth.AuthRestClient;
 import org.junit.Test;
 
 public class TestAuthWebService

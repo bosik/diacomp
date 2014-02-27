@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.diary.rest;
+package org.bosik.diacomp.web.frontend.features.diary;
 
 import java.util.Date;
 import java.util.List;
@@ -10,8 +10,8 @@ import org.bosik.diacomp.core.persistence.serializers.ready.SerializerDiaryRecor
 import org.bosik.diacomp.core.services.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.features.common.RestClient;
 import org.bosik.diacomp.web.backend.utils.StdResponse;
+import org.bosik.diacomp.web.frontend.common.RestClient;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 
