@@ -2,11 +2,11 @@ package org.bosik.diacomp.android.services;
 
 import java.util.Date;
 import java.util.List;
-import org.bosik.diacomp.core.bo.FoodMassed;
-import org.bosik.diacomp.core.bo.diary.DiaryRecord;
-import org.bosik.diacomp.core.bo.diary.records.MealRecord;
-import org.bosik.diacomp.core.bo.interfaces.Tagged;
-import org.bosik.diacomp.core.persistence.common.Versioned;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.entities.business.interfaces.Tagged;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.BaseService;
 import org.bosik.diacomp.core.services.DiaryService;
 import org.bosik.diacomp.core.services.DishBaseService;

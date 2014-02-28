@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import junit.framework.TestCase;
-import org.bosik.diacomp.core.bo.Food;
-import org.bosik.diacomp.core.bo.foodbase.FoodItem;
+import org.bosik.diacomp.core.entities.business.Food;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.fakes.mocks.Mock;
 import org.bosik.diacomp.core.fakes.mocks.MockFood;
 

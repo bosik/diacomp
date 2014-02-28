@@ -1,10 +1,10 @@
 package org.bosik.diacomp.android.face.activities;
 
 import java.util.Date;
-import org.bosik.diacomp.android.face.UIUtils;
-import org.bosik.diacomp.core.bo.diary.records.InsRecord;
-import org.bosik.diacomp.core.persistence.common.Versioned;
 import org.bosik.diacomp.android.face.R;
+import org.bosik.diacomp.android.face.UIUtils;
+import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;

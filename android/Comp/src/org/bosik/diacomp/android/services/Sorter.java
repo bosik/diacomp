@@ -3,8 +3,8 @@ package org.bosik.diacomp.android.services;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import org.bosik.diacomp.core.bo.interfaces.NamedRelativeTagged;
-import org.bosik.diacomp.core.persistence.common.Versioned;
+import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 
 public class Sorter<T extends NamedRelativeTagged>
 {

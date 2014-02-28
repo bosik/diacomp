@@ -5,13 +5,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import org.bosik.diacomp.core.bo.diary.DiaryRecord;
-import org.bosik.diacomp.core.bo.diary.records.BloodRecord;
-import org.bosik.diacomp.core.bo.diary.records.InsRecord;
-import org.bosik.diacomp.core.bo.diary.records.MealRecord;
-import org.bosik.diacomp.core.bo.diary.records.NoteRecord;
-import org.bosik.diacomp.core.persistence.common.Versioned;
 import org.bosik.diacomp.android.face.R;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -40,7 +40,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	private static final Paint				paintTime				= new Paint();
 	private static final Paint				paintRec				= new Paint();
 	private static final Paint				paintDefault			= new Paint();
-	
+
 	private static final SimpleDateFormat	FORMAT_DIARY_TIME_LOC	= new SimpleDateFormat("HH:mm", Locale.US);
 
 	// отступы
