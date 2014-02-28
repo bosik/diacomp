@@ -1,9 +1,9 @@
 package org.bosik.diacomp.android.face.activities;
 
 import java.text.DecimalFormat;
-import org.bosik.diacomp.core.bo.FoodMassed;
-import org.bosik.diacomp.core.bo.diary.records.MealRecord;
 import org.bosik.diacomp.android.face.R;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;

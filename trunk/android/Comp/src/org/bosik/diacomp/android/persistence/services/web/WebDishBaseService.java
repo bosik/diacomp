@@ -2,8 +2,8 @@ package org.bosik.diacomp.android.persistence.services.web;
 
 import java.util.List;
 import org.bosik.diacomp.android.persistence.services.web.utils.client.WebClient;
-import org.bosik.diacomp.core.bo.dishbase.DishItem;
-import org.bosik.diacomp.core.persistence.common.Versioned;
+import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.services.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;

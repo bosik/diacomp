@@ -1,8 +1,8 @@
 package org.bosik.diacomp.android.persistence.services.local;
 
 import java.util.List;
-import org.bosik.diacomp.core.bo.dishbase.DishItem;
-import org.bosik.diacomp.core.persistence.common.Versioned;
+import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.ItemNotFoundException;

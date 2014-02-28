@@ -1,6 +1,6 @@
 package org.bosik.diacomp.android.face.views;
 
-import org.bosik.diacomp.core.bo.diary.records.MealRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 
 public class MealFormatter
 {
