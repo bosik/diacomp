@@ -7,25 +7,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+// TODO: separate basic Config class from concrete implementations
 public class Config
 {
 	private static Map<String, String>	props;
-
-	// public static String LOGIN;
-	// public static String PASSWORD;
-	// public static int API_CURRENT;
-	// public static int API_SUPPORTED;
-	// public static String BASE_URL;
-
-	{
-		// init();
-
-		// LOGIN = get("login");
-		// PASSWORD = get("pass");
-		// API_CURRENT = Integer.parseInt(get("current_api"));
-		// API_SUPPORTED = Integer.parseInt(get("supported_api"));
-		// BASE_URL = get("baseUrl");
-	}
 
 	public static void init()
 	{
@@ -71,26 +56,53 @@ public class Config
 		return value;
 	}
 
+	/**
+	 * Scope: frontend
+	 * 
+	 * @return
+	 */
 	public static String getBaseURL()
 	{
 		return get("baseUrl");
 	}
 
+	// TODO: rename to getTestLogin
+	/**
+	 * Scope: test
+	 * 
+	 * @return
+	 */
 	public static String getLogin()
 	{
 		return get("login");
 	}
 
+	// TODO: rename to getTestPassword
+	/**
+	 * Scope: test
+	 * 
+	 * @return
+	 */
 	public static String getPassword()
 	{
 		return get("pass");
 	}
 
+	/**
+	 * Scope: backend
+	 * 
+	 * @return
+	 */
 	public static int getAPICurrent()
 	{
 		return Integer.parseInt(get("current_api"));
 	}
 
+	/**
+	 * Scope: backend
+	 * 
+	 * @return
+	 */
 	public static int getAPISupported()
 	{
 		return Integer.parseInt(get("supported_api"));
