@@ -1,4 +1,4 @@
-package org.bosik.diacomp.services.sync;
+package org.bosik.diacomp.android.services.sync;
 
 import junit.framework.TestCase;
 

@@ -1,4 +1,4 @@
-package org.bosik.diacomp.persistence.services.web.utils.client;
+package org.bosik.diacomp.android.persistence.services.web.utils.client;
 
 import junit.framework.TestCase;
 import org.bosik.diacomp.android.persistence.services.web.utils.client.WebClient;

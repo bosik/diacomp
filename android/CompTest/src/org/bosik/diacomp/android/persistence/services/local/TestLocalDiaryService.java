@@ -1,4 +1,4 @@
-package org.bosik.diacomp.persistence.services.local;
+package org.bosik.diacomp.android.persistence.services.local;
 
 import android.test.AndroidTestCase;
 
