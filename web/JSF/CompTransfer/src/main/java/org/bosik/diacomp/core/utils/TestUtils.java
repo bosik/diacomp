@@ -17,6 +17,7 @@ public class TestUtils extends TestCase
 	{
 		Calendar c = Calendar.getInstance();
 		c.clear();
+		c.setTimeZone(TimeZone.getTimeZone("UTC"));
 		c.set(year, month - 1, day);
 		return c.getTime();
 	}
