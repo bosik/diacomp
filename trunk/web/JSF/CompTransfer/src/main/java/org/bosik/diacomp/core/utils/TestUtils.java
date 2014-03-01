@@ -1,5 +1,6 @@
 package org.bosik.diacomp.core.utils;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -215,29 +216,15 @@ public class TestUtils extends TestCase
 
 	public void testParseTime()
 	{
-		try
-		{
-			assertEquals(time(2012, 04, 02, 00, 00, 00), Utils.parseTimeUTC("2012-04-02 00:00:00"));
-			assertEquals(time(2012, 05, 01, 9, 45, 17), Utils.parseTimeUTC("2012-05-01 09:45:17"));
-			assertEquals(time(2012, 05, 01, 22, 30, 17), Utils.parseTimeUTC("2012-05-01 22:30:17"));
-		}
-		catch (Exception e)
-		{
-			fail();
-		}
+		assertEquals(time(2012, 04, 02, 00, 00, 00), Utils.parseTimeUTC("2012-04-02 00:00:00"));
+		assertEquals(time(2012, 05, 01, 9, 45, 17), Utils.parseTimeUTC("2012-05-01 09:45:17"));
+		assertEquals(time(2012, 05, 01, 22, 30, 17), Utils.parseTimeUTC("2012-05-01 22:30:17"));
 	}
 
-	public void testParseDate()
+	public void testParseDate() throws ParseException
 	{
-		try
-		{
-			assertEquals(date(2012, 04, 02), Utils.parseDate("2012-04-02"));
-			assertEquals(date(2012, 05, 01), Utils.parseDate("2012-05-01"));
-		}
-		catch (Exception e)
-		{
-			fail();
-		}
+		assertEquals(date(2012, 04, 02).getDate(), Utils.parseDate("2012-04-02").getDate());
+		assertEquals(date(2012, 05, 01).getDate(), Utils.parseDate("2012-05-01").getDate());
 	}
 
 	public void testGetPrevDay()
@@ -266,7 +253,7 @@ public class TestUtils extends TestCase
 		List<Date> dates = Utils.getPeriodDates(date(2013, 8, 4), 1);
 
 		assertEquals(1, dates.size());
-		assertEquals(date(2013, 8, 4), dates.get(0));
+		assertEquals(date(2013, 8, 4).getDate(), dates.get(0).getDate());
 	}
 
 	public void testGetPeriodDates_many()
@@ -274,10 +261,10 @@ public class TestUtils extends TestCase
 		List<Date> dates = Utils.getPeriodDates(date(2013, 8, 4), 4);
 
 		assertEquals(4, dates.size());
-		assertEquals(date(2013, 8, 1), dates.get(0));
-		assertEquals(date(2013, 8, 2), dates.get(1));
-		assertEquals(date(2013, 8, 3), dates.get(2));
-		assertEquals(date(2013, 8, 4), dates.get(3));
+		assertEquals(date(2013, 8, 1).getDate(), dates.get(0).getDate());
+		assertEquals(date(2013, 8, 2).getDate(), dates.get(1).getDate());
+		assertEquals(date(2013, 8, 3).getDate(), dates.get(2).getDate());
+		assertEquals(date(2013, 8, 4).getDate(), dates.get(3).getDate());
 	}
 
 	// public void testTimeToStr()
