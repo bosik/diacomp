@@ -2,6 +2,7 @@ package org.bosik.diacomp.web.backend.features.diary;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -35,35 +36,35 @@ public class TestDiaryWebService
 	 */
 
 	@Test(expected = NotAuthorizedException.class)
-	public void test_Unauth_getRecords_Guids()
+	public void getRecordsViaGuids_Unauth_Exception()
 	{
 		authService.logout();
 		diaryService.getRecords(Collections.<String> emptyList());
 	}
 
 	@Test(expected = NotAuthorizedException.class)
-	public void test_Unauth_getRecords_New()
+	public void getRecordsNew_Unauth_Exception()
 	{
 		authService.logout();
 		diaryService.getRecords(new Date(), true);
 	}
 
 	@Test(expected = NotAuthorizedException.class)
-	public void test_Unauth_getRecords_Period()
+	public void getRecordsPeriod_Unauth_Exception()
 	{
 		authService.logout();
 		diaryService.getRecords(new Date(), new Date(), true);
 	}
 
 	@Test
-	public void test_simple_Guids()
+	public void getRecordsViaGuids_Simple_Ok()
 	{
 		login();
 		diaryService.getRecords(Arrays.<String> asList("abc", "def"));
 	}
 
 	@Test
-	public void test_simple_New()
+	public void getRecordsNew_Simple_ok()
 	{
 		login();
 		diaryService.getRecords(new Date(), true);
@@ -71,7 +72,7 @@ public class TestDiaryWebService
 	}
 
 	@Test
-	public void test_simple_Period()
+	public void getRecordsPeriod_Simple_ok()
 	{
 		login();
 		diaryService.getRecords(new Date(), new Date(), true);
@@ -79,18 +80,47 @@ public class TestDiaryWebService
 	}
 
 	@Test
-	public void test_Post_insert()
+	public void postRecords_Insert_RestoredOrdered()
 	{
 		Mock<DiaryRecord> mockRecord = new MockDiaryRecord();
 		Mock<Versioned<DiaryRecord>> mockVersioned = new MockVersionedConverter<DiaryRecord>(mockRecord);
-		List<Versioned<DiaryRecord>> items = mockVersioned.getSamples();
+		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
+
+		Date minTime = null;
+		Date maxTime = null;
+		for (Versioned<DiaryRecord> item : originalItems)
+		{
+			Date time = item.getData().getTime();
+			if ((minTime == null) || time.before(minTime))
+			{
+				minTime = time;
+			}
+
+			if ((maxTime == null) || time.after(maxTime))
+			{
+				maxTime = time;
+			}
+		}
+
+		assertNotNull(minTime);
+		assertNotNull(maxTime);
 
 		login();
 
-		// Insertion test
+		// Check if there are no records in that period yet
 
-		diaryService.postRecords(items);
-		for (Versioned<DiaryRecord> item : items)
+		minTime = new Date(minTime.getTime() - (60 * 1000));
+		maxTime = new Date(maxTime.getTime() + (60 * 1000));
+		List<Versioned<DiaryRecord>> restoredItems = diaryService.getRecords(minTime, maxTime, true);
+		assertTrue(restoredItems.isEmpty());
+
+		// Post
+
+		diaryService.postRecords(originalItems);
+
+		// Check via GUIDs
+
+		for (Versioned<DiaryRecord> item : originalItems)
 		{
 			List<Versioned<DiaryRecord>> restored = diaryService.getRecords(Arrays.<String> asList(item.getId()));
 			assertNotNull(restored);
@@ -98,10 +128,40 @@ public class TestDiaryWebService
 
 			mockVersioned.compare(item, restored.get(0));
 		}
+
+		// Check via period
+
+		restoredItems = diaryService.getRecords(minTime, maxTime, true);
+		assertTrue(!restoredItems.isEmpty());
+		assertEquals(originalItems.size(), restoredItems.size());
+
+		// Check the order
+		for (int i = 0; i < (restoredItems.size() - 1); i++)
+		{
+			Date timeLess = restoredItems.get(i).getData().getTime();
+			Date timeMore = restoredItems.get(i + 1).getData().getTime();
+			assertTrue(!timeLess.after(timeMore));
+		}
+
+		// Check the content
+		for (Versioned<DiaryRecord> originalItem : originalItems)
+		{
+			boolean found = false;
+			for (Versioned<DiaryRecord> restoredItem : restoredItems)
+			{
+				if (restoredItem.getId().equals(originalItem.getId()))
+				{
+					mockVersioned.compare(originalItem, restoredItem);
+					found = true;
+					break;
+				}
+			}
+			assertTrue(found);
+		}
 	}
 
 	@Test
-	public void test_Post_update()
+	public void postRecords_Update_UpdatedOk()
 	{
 		Mock<DiaryRecord> mockRecord = new MockDiaryRecord();
 		Mock<Versioned<DiaryRecord>> mockVersioned = new MockVersionedConverter<DiaryRecord>(mockRecord);
