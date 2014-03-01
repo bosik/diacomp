@@ -6,8 +6,7 @@ import java.util.Random;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.fakes.mocks.Mock;
-import org.bosik.diacomp.core.fakes.mocks.MockFood;
+import org.bosik.diacomp.core.testutils.fakes.mocks.Mock;
 
 public class MockFoodItem extends TestCase implements Mock<FoodItem>
 {

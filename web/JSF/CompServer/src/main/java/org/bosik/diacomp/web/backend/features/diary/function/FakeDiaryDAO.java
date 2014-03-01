@@ -5,13 +5,13 @@ import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.fakes.mocks.Mock;
-import org.bosik.diacomp.core.fakes.mocks.MockDiaryRecord;
-import org.bosik.diacomp.core.fakes.mocks.MockVersionedConverter;
 import org.bosik.diacomp.core.persistence.serializers.Parser;
 import org.bosik.diacomp.core.persistence.serializers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
+import org.bosik.diacomp.core.testutils.fakes.mocks.Mock;
+import org.bosik.diacomp.core.testutils.fakes.mocks.MockDiaryRecord;
+import org.bosik.diacomp.core.testutils.fakes.mocks.MockVersionedConverter;
 
 public class FakeDiaryDAO implements DiaryDAO
 {

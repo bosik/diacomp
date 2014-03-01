@@ -5,11 +5,11 @@ import java.util.List;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.fakes.mocks.Mock;
-import org.bosik.diacomp.core.fakes.mocks.MockDiaryRecord;
-import org.bosik.diacomp.core.fakes.mocks.MockVersionedConverter;
-import org.bosik.diacomp.core.fakes.mocks.VersionedUtils;
 import org.bosik.diacomp.core.services.DiaryService;
+import org.bosik.diacomp.core.testutils.fakes.mocks.Mock;
+import org.bosik.diacomp.core.testutils.fakes.mocks.MockDiaryRecord;
+import org.bosik.diacomp.core.testutils.fakes.mocks.MockVersionedConverter;
+import org.bosik.diacomp.core.testutils.fakes.mocks.VersionedUtils;
 
 public abstract class TestDiaryService extends TestCase
 {
