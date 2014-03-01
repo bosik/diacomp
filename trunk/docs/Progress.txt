@@ -24,3 +24,6 @@ Date		Hours	Task
 24.02.2014	2.0	Implementing backend / mobile app: porting analyzer service
 24.02.2014	2.5	Android app: fixing startup problems (until 23:00)
 27.02.2014	6.0	Android app: refactoring (until 21:00)
+01.03.2014	6.0	Implementing backend: Fixing tests (until 19:00)
+01.03.2014	3.0	Implementing backend: Jenkins configuration (until 23:00)
+================================================================================
