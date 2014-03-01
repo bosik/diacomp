@@ -23,7 +23,8 @@ public class AnalyzeExtracter
 
 	private static int extractMin(Date date)
 	{
-		return (int)date.getTime() / Utils.MsecPerMin;
+		long val = date.getTime() / Utils.MsecPerMin;
+		return (int)val;
 	}
 
 	public static List<PrimeRec> extractRecords(DiaryService source, Date fromTime, Date toTime)
@@ -83,7 +84,7 @@ public class AnalyzeExtracter
 					prevBloodTime = rec.getTime();
 					prevBloodValue = blood.getValue();
 				}
-				else if ((carbs > 0 || prots > 0) && ins > 0)
+				else if (((carbs > 0) || (prots > 0)) && (ins > 0))
 				{
 					PrimeRec item = new PrimeRec();
 					item.setBloodInTime(extractMin(prevBloodTime));
@@ -126,7 +127,7 @@ public class AnalyzeExtracter
 		for (PrimeRec rec : result)
 		{
 			int timeShift;
-			if (rec.getProts() > 0 || rec.getCarbs() > 0)
+			if ((rec.getProts() > 0) || (rec.getCarbs() > 0))
 			{
 				timeShift = rec.getFoodTime() / Utils.MinPerDay;
 			}
@@ -158,7 +159,7 @@ public class AnalyzeExtracter
 
 	private static double f(double x, double adaptation)
 	{
-		return (adaptation - 0.5) * Math.sin(Math.PI * (x - 0.5)) + 0.5;
+		return ((adaptation - 0.5) * Math.sin(Math.PI * (x - 0.5))) + 0.5;
 	}
 
 	/**
@@ -216,7 +217,7 @@ public class AnalyzeExtracter
 				maxW = Math.max(maxW, rec.getWeight());
 			}
 
-			if (maxW - minW > Utils.EPS)
+			if ((maxW - minW) > Utils.EPS)
 			{
 				for (AnalyzeRec rec : result)
 				{
@@ -238,8 +239,8 @@ public class AnalyzeExtracter
 	public static double getRecError(AnalyzeRec rec, KoofList koofs, ValueFunction analyzeMethod)
 	{
 		Koof koof = koofs.getKoof(rec.getTime());
-		double err = rec.getBsIn() + rec.getCarbs() * koof.getK() + rec.getProts() * koof.getP() - rec.getIns()
-				* koof.getQ() - rec.getBsOut();
+		double err = (rec.getBsIn() + (rec.getCarbs() * koof.getK()) + (rec.getProts() * koof.getP()))
+				- (rec.getIns() * koof.getQ()) - rec.getBsOut();
 
 		switch (analyzeMethod)
 		{

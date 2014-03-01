@@ -85,6 +85,7 @@ public class AnalyzeServiceImpl implements AnalyzeService
 
 		for (int i = 0; i < result.length; i++)
 		{
+			result[i] = new WeightedTimePoint();
 			result[i].setTime(recs.get(i).getTime());
 			result[i].setValue(calculateK(recs.get(i), q, p));
 			result[i].setWeight(calculateW(recs.get(i)));
@@ -161,7 +162,7 @@ public class AnalyzeServiceImpl implements AnalyzeService
 	{
 		double result = 0.0;
 		int n = 0;
-		for (int i = 0; i < recs.length; i++)
+		for (int i = 0; i < points.length; i++)
 			if (!Double.isNaN(points[i].getValue()))
 			{
 				result += func.calculate(recs[points[i].getTime()], points[i].getValue());
@@ -234,7 +235,7 @@ public class AnalyzeServiceImpl implements AnalyzeService
 		KoofList koofs = new KoofList();
 		WeightedTimePoint[] points;
 		List<Bean> V = new ArrayList<Bean>();
-		double z[];
+		double k[];
 		DevFunction funcRelative = new RelDev();
 		DevFunction funcSqr = new SqrDev();
 
@@ -247,10 +248,10 @@ public class AnalyzeServiceImpl implements AnalyzeService
 				bean.p = p;
 
 				points = calculateKW(recs, q, p);
-				z = approximate(points, APPROX_FACTOR);
-				koofs = copyKQP(z, q, p);
+				k = approximate(points, APPROX_FACTOR);
+				koofs = copyKQP(k, q, p);
 
-				bean.g[0] = getRand(z, points, funcRelative);
+				bean.g[0] = getRand(k, points, funcRelative);
 				bean.g[1] = 0.0;
 				bean.g[2] = getDev(recs, koofs, funcSqr);
 
@@ -260,16 +261,16 @@ public class AnalyzeServiceImpl implements AnalyzeService
 
 		// normalizing weights
 
-		for (int k = 0; k < 3; k++)
+		for (int n = 0; n < 3; n++)
 		{
 			double min = Double.MAX_VALUE;
 			double max = Double.MIN_VALUE;
 			for (Bean bean : V)
 			{
-				if (!Double.isNaN(bean.g[k]))
+				if (!Double.isNaN(bean.g[n]))
 				{
-					min = Math.min(min, bean.g[k]);
-					max = Math.max(max, bean.g[k]);
+					min = Math.min(min, bean.g[n]);
+					max = Math.max(max, bean.g[n]);
 				}
 			}
 
@@ -277,9 +278,9 @@ public class AnalyzeServiceImpl implements AnalyzeService
 			{
 				for (Bean bean : V)
 				{
-					if (!Double.isNaN(bean.g[k]))
+					if (!Double.isNaN(bean.g[n]))
 					{
-						bean.g[k] = (bean.g[k] - min) / (max - min);
+						bean.g[n] = (bean.g[n] - min) / (max - min);
 					}
 				}
 			}
@@ -304,8 +305,8 @@ public class AnalyzeServiceImpl implements AnalyzeService
 
 		// restore
 		points = calculateKW(recs, bestQ, bestP);
-		z = approximate(points, APPROX_FACTOR);
-		koofs = copyKQP(z, bestQ, bestP);
+		k = approximate(points, APPROX_FACTOR);
+		koofs = copyKQP(k, bestQ, bestP);
 
 		return koofs;
 	}
