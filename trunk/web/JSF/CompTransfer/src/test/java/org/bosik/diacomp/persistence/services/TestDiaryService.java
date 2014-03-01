@@ -8,11 +8,12 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.fakes.mocks.Mock;
 import org.bosik.diacomp.core.fakes.mocks.MockDiaryRecord;
 import org.bosik.diacomp.core.fakes.mocks.MockVersionedConverter;
+import org.bosik.diacomp.core.fakes.mocks.VersionedUtils;
 import org.bosik.diacomp.core.services.DiaryService;
 
 public abstract class TestDiaryService extends TestCase
 {
-	private DiaryService									diaryService;
+	private DiaryService								diaryService;
 	private static final Mock<DiaryRecord>				mockDiaryRecord				= new MockDiaryRecord();
 	private static final Mock<Versioned<DiaryRecord>>	mockVersionedDiaryRecord	= new MockVersionedConverter<DiaryRecord>(
 																							mockDiaryRecord);
@@ -28,6 +29,7 @@ public abstract class TestDiaryService extends TestCase
 	public void testPersistanceMultiple()
 	{
 		List<Versioned<DiaryRecord>> org = mockVersionedDiaryRecord.getSamples();
+		VersionedUtils.enumerate(org);
 
 		List<String> guids = new LinkedList<String>();
 		for (Versioned<DiaryRecord> item : org)

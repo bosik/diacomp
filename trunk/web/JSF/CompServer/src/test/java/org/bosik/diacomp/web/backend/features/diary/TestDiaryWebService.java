@@ -12,6 +12,7 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.fakes.mocks.Mock;
 import org.bosik.diacomp.core.fakes.mocks.MockDiaryRecord;
 import org.bosik.diacomp.core.fakes.mocks.MockVersionedConverter;
+import org.bosik.diacomp.core.fakes.mocks.VersionedUtils;
 import org.bosik.diacomp.core.services.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.Config;
@@ -95,6 +96,7 @@ public class TestDiaryWebService
 		Mock<DiaryRecord> mockRecord = new MockDiaryRecord();
 		Mock<Versioned<DiaryRecord>> mockVersioned = new MockVersionedConverter<DiaryRecord>(mockRecord);
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
+		VersionedUtils.enumerate(originalItems);
 
 		assertTrue("No samples are provided", !originalItems.isEmpty());
 
@@ -136,6 +138,7 @@ public class TestDiaryWebService
 		Mock<DiaryRecord> mockRecord = new MockDiaryRecord();
 		Mock<Versioned<DiaryRecord>> mockVersioned = new MockVersionedConverter<DiaryRecord>(mockRecord);
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
+		VersionedUtils.enumerate(originalItems);
 
 		Date minTime = null;
 		Date maxTime = null;
@@ -224,13 +227,14 @@ public class TestDiaryWebService
 	{
 		Mock<DiaryRecord> mockRecord = new MockDiaryRecord();
 		Mock<Versioned<DiaryRecord>> mockVersioned = new MockVersionedConverter<DiaryRecord>(mockRecord);
-		List<Versioned<DiaryRecord>> items = mockVersioned.getSamples();
+		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
+		VersionedUtils.enumerate(originalItems);
 
 		// Insertion test
 
-		diaryService.postRecords(items);
+		diaryService.postRecords(originalItems);
 
-		for (Versioned<DiaryRecord> item : items)
+		for (Versioned<DiaryRecord> item : originalItems)
 		{
 			List<Versioned<DiaryRecord>> restored = diaryService.getRecords(Arrays.<String> asList(item.getId()));
 			assertNotNull(restored);
@@ -241,7 +245,7 @@ public class TestDiaryWebService
 
 		// Updating test
 
-		for (Versioned<DiaryRecord> item : items)
+		for (Versioned<DiaryRecord> item : originalItems)
 		{
 			item.getData().setTime(new Date());
 			item.setDeleted(!item.isDeleted());
@@ -249,9 +253,9 @@ public class TestDiaryWebService
 			item.setVersion(item.getVersion() + 1);
 		}
 
-		diaryService.postRecords(items);
+		diaryService.postRecords(originalItems);
 
-		for (Versioned<DiaryRecord> item : items)
+		for (Versioned<DiaryRecord> item : originalItems)
 		{
 			List<Versioned<DiaryRecord>> restored = diaryService.getRecords(Arrays.<String> asList(item.getId()));
 			assertNotNull(restored);
