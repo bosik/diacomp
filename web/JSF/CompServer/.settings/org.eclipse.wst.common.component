@@ -9,6 +9,6 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/CompServer/build/classes"/>
-        <property name="context-root" value="cmpsrv"/>
+        <property name="context-root" value="comp-server"/>
     </wb-module>
 </project-modules>
