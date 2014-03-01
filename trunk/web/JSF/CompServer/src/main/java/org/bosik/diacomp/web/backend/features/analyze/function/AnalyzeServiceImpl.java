@@ -221,13 +221,13 @@ public class AnalyzeServiceImpl implements AnalyzeService
 			throw new IllegalArgumentException("Recs list is empty");
 		}
 
-		final double MIN_Q = 1.50;
-		final double MAX_Q = 5.00;
 		final double DISC_Q = 0.0125;
+		final double MIN_Q = 1.50;
+		final double MAX_Q = 5.00 + (DISC_Q / 2);
 
-		final double MIN_P = 0.00;
-		final double MAX_P = 0.00;
 		final double DISC_P = 0.05;
+		final double MIN_P = 0.00;
+		final double MAX_P = 0.00 + (DISC_P / 2);
 
 		final int APPROX_FACTOR = 90;
 
