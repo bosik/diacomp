@@ -1,4 +1,4 @@
-package org.bosik.diacomp.fakes.mocks;
+package org.bosik.diacomp.android.fakes.mocks;
 
 import java.util.ArrayList;
 import java.util.Date;

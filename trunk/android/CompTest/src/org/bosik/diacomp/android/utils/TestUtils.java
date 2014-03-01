@@ -1,4 +1,4 @@
-package org.bosik.diacomp.utills;
+package org.bosik.diacomp.android.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
