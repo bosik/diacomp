@@ -59,7 +59,7 @@ public class MySQLDiaryDAO implements DiaryDAO
 			String clause = String.format("(%s = %d) AND (%s = '%s')", MySQLAccess.COLUMN_DIARY_USER, userId,
 					MySQLAccess.COLUMN_DIARY_GUID, guid);
 
-			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause);
+			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause, null);
 			List<Versioned<String>> result = parseDiaryRecords(set);
 			set.close();
 			return result;
@@ -84,7 +84,9 @@ public class MySQLDiaryDAO implements DiaryDAO
 						MySQLAccess.COLUMN_DIARY_DELETED);
 			}
 
-			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause);
+			String order = MySQLAccess.COLUMN_DIARY_TIMECACHE;
+
+			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause, order);
 			List<Versioned<String>> result = parseDiaryRecords(set);
 			set.close();
 			return result;
@@ -110,8 +112,10 @@ public class MySQLDiaryDAO implements DiaryDAO
 						MySQLAccess.COLUMN_DIARY_DELETED);
 			}
 
+			String order = MySQLAccess.COLUMN_DIARY_TIMECACHE;
+
 			// System.out.println("Requesting SQL clause: " + clause);
-			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause);
+			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause, order);
 			List<Versioned<String>> result = parseDiaryRecords(set);
 			set.close();
 			return result;

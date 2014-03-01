@@ -52,7 +52,7 @@ public class MySQLAuthDAO implements AuthDAO
 			String clause = String.format("(%s = ?) AND (%s = ?)", MySQLAccess.COLUMN_USER_LOGIN,
 					MySQLAccess.COLUMN_USER_HASHPASS);
 
-			ResultSet set = db.select(MySQLAccess.TABLE_USER, clause, login, hash);
+			ResultSet set = db.select(MySQLAccess.TABLE_USER, clause, null, login, hash);
 
 			if (set.next())
 			{
