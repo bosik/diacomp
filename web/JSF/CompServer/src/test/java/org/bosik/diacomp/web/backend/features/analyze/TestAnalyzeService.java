@@ -12,6 +12,7 @@ import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.core.services.DiaryService;
+import org.bosik.diacomp.core.utils.TestUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.Config;
 import org.bosik.diacomp.web.backend.features.analyze.function.AnalyzeExtracter;
@@ -49,28 +50,32 @@ public class TestAnalyzeService
 
 		Versioned<DiaryRecord> r;
 
-		Date fromTime = new Date(2012, 01, 01);
-		Date toTime = new Date(2012, 02, 01);
+		Date fromTime = TestUtils.date(2012, 01, 01);
+		Date toTime = TestUtils.date(2012, 02, 01);
 		double adaptation = 0.25; // [0..0.5]
 		double valueCarbs = 80.0;
 		double valueIns = 10.0;
 
 		r = new Versioned<DiaryRecord>();
-		r.setData(new BloodRecord(new Date(2012, 01, 01, 10, 00, 00), 5.0, 0));
+		r.setId("680371a2939446fd9f39f3dc40435f3d");
+		r.setData(new BloodRecord(TestUtils.time(2012, 01, 01, 10, 00, 00), 5.0, 0));
 		records.add(r);
 
 		r = new Versioned<DiaryRecord>();
-		r.setData(new InsRecord(new Date(2012, 01, 01, 10, 10, 00), valueIns));
+		r.setId("0c5f4ea3f400459491ed4daed4e41dad");
+		r.setData(new InsRecord(TestUtils.time(2012, 01, 01, 10, 10, 00), valueIns));
 		records.add(r);
 
 		r = new Versioned<DiaryRecord>();
-		MealRecord meal = new MealRecord(new Date(2012, 01, 01, 10, 40, 00), false);
+		r.setId("6d2487d5bdcd4d859c148111be000afd");
+		MealRecord meal = new MealRecord(TestUtils.time(2012, 01, 01, 10, 40, 00), false);
 		meal.add(new FoodMassed("Сахар", 0.0, 0.0, 100.0, 380, valueCarbs));
 		r.setData(meal);
 		records.add(r);
 
 		r = new Versioned<DiaryRecord>();
-		r.setData(new BloodRecord(new Date(2012, 01, 01, 14, 40, 00), 5.0, 0));
+		r.setId("9b4d7627629e4291b455b23097498624");
+		r.setData(new BloodRecord(TestUtils.time(2012, 01, 01, 14, 40, 00), 5.0, 0));
 		records.add(r);
 
 		source.postRecords(records);
