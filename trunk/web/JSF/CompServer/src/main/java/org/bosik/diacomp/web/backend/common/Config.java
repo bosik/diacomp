@@ -43,7 +43,10 @@ public class Config
 				props = new HashMap<String, String>();
 				for (Entry<Object, Object> entry : properties.entrySet())
 				{
-					props.put((String) entry.getKey(), (String) entry.getValue());
+					final String key = (String)entry.getKey();
+					final String value = (String)entry.getValue();
+					props.put(key, value);
+					// System.out.println(String.format("[CONFIG] %s = %s", key, value));
 				}
 			}
 			catch (IOException e)
