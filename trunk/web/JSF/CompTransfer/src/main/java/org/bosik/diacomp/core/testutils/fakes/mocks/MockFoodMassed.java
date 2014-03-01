@@ -1,26 +1,27 @@
-package org.bosik.diacomp.core.fakes.mocks;
+package org.bosik.diacomp.core.testutils.fakes.mocks;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.Food;
-import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.utils.TestUtils;
 
-public class MockFoodItem implements Mock<FoodItem>
+public class MockFoodMassed implements Mock<FoodMassed>
 {
 	private static final Mock<Food>	mockFood	= new MockFood();
 
-	public List<FoodItem> getSamples()
+	public List<FoodMassed> getSamples()
 	{
 		List<Food> foods = mockFood.getSamples();
 		Random r = new Random();
 
-		List<FoodItem> samples = new ArrayList<FoodItem>();
+		List<FoodMassed> samples = new ArrayList<FoodMassed>();
 
 		for (Food f : foods)
 		{
-			FoodItem item = new FoodItem();
+			FoodMassed item = new FoodMassed();
 
 			item.setName(f.getName());
 			item.setRelProts(f.getRelProts());
@@ -28,8 +29,7 @@ public class MockFoodItem implements Mock<FoodItem>
 			item.setRelCarbs(f.getRelCarbs());
 			item.setRelValue(f.getRelValue());
 
-			item.setFromTable(r.nextBoolean());
-			item.setTag(r.nextInt(100000));
+			item.setMass(r.nextInt(5000) * 0.1);
 
 			samples.add(item);
 		}
@@ -37,11 +37,10 @@ public class MockFoodItem implements Mock<FoodItem>
 		return samples;
 	}
 
-	public void compare(FoodItem exp, FoodItem act)
+	public void compare(FoodMassed exp, FoodMassed act)
 	{
 		mockFood.compare(exp, act);
 
-		TestCase.assertEquals(exp.getFromTable(), act.getFromTable());
-		TestCase.assertEquals(exp.getTag(), act.getTag());
+		TestCase.assertEquals(exp.getMass(), act.getMass(), TestUtils.EPS);
 	}
 }
