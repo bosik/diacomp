@@ -40,35 +40,98 @@ public class TestDiaryWebService
 	}
 
 	/**
-	 * _simple-tests doesn't check any business logic. The only aspect the test is ability to invoke
-	 * the method
+	 * Checks if all exp items are presented in the act list
+	 * 
+	 * @param exp
+	 * @param act
+	 * @param allowExtraItems
+	 *            Is it allowed act list to has extra items, which are not presented in the exp list
 	 */
-
-	@Test
-	public void getRecordsViaGuids_Simple_Ok()
+	private void compareItems(List<Versioned<DiaryRecord>> exp, List<Versioned<DiaryRecord>> act,
+			boolean allowExtraItems)
 	{
-		//authService.login();
-		diaryService.getRecords(Arrays.<String> asList("abc", "def"));
+		if (!allowExtraItems)
+		{
+			assertEquals(exp.size(), act.size());
+		}
+
+		for (Versioned<DiaryRecord> expectedItem : exp)
+		{
+			boolean found = false;
+			for (Versioned<DiaryRecord> actualItem : act)
+			{
+				if (actualItem.getId().equals(expectedItem.getId()))
+				{
+					mockVersioned.compare(expectedItem, actualItem);
+					found = true;
+					break;
+				}
+			}
+			assertTrue(found);
+		}
+	}
+
+	/**
+	 * Checks if items are sorted by time ascendingly
+	 * 
+	 * @param items
+	 */
+	private static void checkTimeOrder(List<Versioned<DiaryRecord>> items)
+	{
+		// Check the order
+		for (int i = 0; i < (items.size() - 1); i++)
+		{
+			String timeLess = Utils.formatTimeUTC(items.get(i).getData().getTime());
+			String timeMore = Utils.formatTimeUTC(items.get(i + 1).getData().getTime());
+			if (timeLess.compareTo(timeMore) > 0)
+			{
+				// debug print
+				System.out.println();
+				System.out.println("Items:");
+				for (int j = 0; j < (items.size()); j++)
+				{
+					final String guid = items.get(j).getId();
+					final String time = Utils.formatTimeUTC(items.get(j).getData().getTime());
+					System.out.println(j + "\t" + guid + " " + time);
+				}
+
+				fail(String.format("Items #%d and #%d are wrong ordered", i, i + 1));
+			}
+		}
 	}
 
 	@Test
-	public void getRecordsNew_Simple_ok()
+	public void getRecordsViaTimestamp_Normal_ok()
 	{
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
 		VersionedUtils.enumerate(originalItems);
 		assertTrue("No samples are provided", !originalItems.isEmpty());
 
-		diaryService.getRecords(new Date(), true);
-		diaryService.getRecords(new Date(), false);
+		Date timeBefore = Utils.time(2020, 01, 15, 10, 00, 00);
+		Date timeLine = Utils.time(2020, 01, 15, 12, 00, 00);
+		Date timeAfter = Utils.time(2020, 01, 15, 14, 00, 00);
 
-		//diaryService.getRecords(timeBorder, true);
-	}
+		// setup timestamp before line
+		for (Versioned<DiaryRecord> item : originalItems)
+		{
+			item.setTimeStamp(timeBefore);
+		}
+		diaryService.postRecords(originalItems);
 
-	@Test
-	public void getRecordsPeriod_Simple_ok()
-	{
-		diaryService.getRecords(new Date(), new Date(), true);
-		diaryService.getRecords(new Date(), new Date(), false);
+		// check if there are no items after line
+		List<Versioned<DiaryRecord>> restoredItems = diaryService.getRecords(timeLine, true);
+		assertTrue("Clear base before testing", restoredItems.isEmpty());
+
+		// modify timestamp
+		for (Versioned<DiaryRecord> item : originalItems)
+		{
+			item.setTimeStamp(timeAfter);
+		}
+		diaryService.postRecords(originalItems);
+
+		// check the result
+		restoredItems = diaryService.getRecords(timeLine, true);
+		compareItems(originalItems, restoredItems, false);
 	}
 
 	@Test
@@ -141,7 +204,7 @@ public class TestDiaryWebService
 
 		diaryService.postRecords(originalItems);
 
-		// Check via GUIDs
+		// Check via GUIDs (one by one)
 
 		for (Versioned<DiaryRecord> item : originalItems)
 		{
@@ -157,45 +220,7 @@ public class TestDiaryWebService
 		List<Versioned<DiaryRecord>> restoredItems = diaryService.getRecords(minTime, maxTime, true);
 		assertTrue(!restoredItems.isEmpty());
 		checkTimeOrder(restoredItems);
-
-		for (Versioned<DiaryRecord> originalItem : originalItems)
-		{
-			boolean found = false;
-			for (Versioned<DiaryRecord> restoredItem : restoredItems)
-			{
-				if (restoredItem.getId().equals(originalItem.getId()))
-				{
-					mockVersioned.compare(originalItem, restoredItem);
-					found = true;
-					break;
-				}
-			}
-			assertTrue(found);
-		}
-	}
-
-	private static void checkTimeOrder(List<Versioned<DiaryRecord>> items)
-	{
-		// Check the order
-		for (int i = 0; i < (items.size() - 1); i++)
-		{
-			String timeLess = Utils.formatTimeUTC(items.get(i).getData().getTime());
-			String timeMore = Utils.formatTimeUTC(items.get(i + 1).getData().getTime());
-			if (timeLess.compareTo(timeMore) > 0)
-			{
-				// debug print
-				System.out.println();
-				System.out.println("Items:");
-				for (int j = 0; j < (items.size()); j++)
-				{
-					final String guid = items.get(j).getId();
-					final String time = Utils.formatTimeUTC(items.get(j).getData().getTime());
-					System.out.println(j + "\t" + guid + " " + time);
-				}
-
-				fail(String.format("Items #%d and #%d are wrong ordered", i, i + 1));
-			}
-		}
+		compareItems(originalItems, restoredItems, true);
 	}
 
 	@Test
