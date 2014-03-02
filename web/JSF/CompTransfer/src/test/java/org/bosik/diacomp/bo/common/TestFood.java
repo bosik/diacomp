@@ -2,7 +2,7 @@ package org.bosik.diacomp.bo.common;
 
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.Food;
-import org.bosik.diacomp.core.utils.TestUtils;
+import org.bosik.diacomp.core.testutils.MiscUtils;
 
 public class TestFood extends TestCase
 {
@@ -45,11 +45,11 @@ public class TestFood extends TestCase
 	{
 		// нормальный тест
 		food.setRelProts(0.0);
-		assertEquals(0.0, food.getRelProts(), TestUtils.EPS);
+		assertEquals(0.0, food.getRelProts(), MiscUtils.EPS);
 		food.setRelProts(12.8);
-		assertEquals(12.8, food.getRelProts(), TestUtils.EPS);
+		assertEquals(12.8, food.getRelProts(), MiscUtils.EPS);
 		food.setRelProts(100.0);
-		assertEquals(100.0, food.getRelProts(), TestUtils.EPS);
+		assertEquals(100.0, food.getRelProts(), MiscUtils.EPS);
 
 		// краш-тест
 		try
@@ -74,11 +74,11 @@ public class TestFood extends TestCase
 	{
 		// нормальный тест
 		food.setRelFats(0.0);
-		assertEquals(0.0, food.getRelFats(), TestUtils.EPS);
+		assertEquals(0.0, food.getRelFats(), MiscUtils.EPS);
 		food.setRelFats(12.8);
-		assertEquals(12.8, food.getRelFats(), TestUtils.EPS);
+		assertEquals(12.8, food.getRelFats(), MiscUtils.EPS);
 		food.setRelFats(100.0);
-		assertEquals(100.0, food.getRelFats(), TestUtils.EPS);
+		assertEquals(100.0, food.getRelFats(), MiscUtils.EPS);
 
 		// краш-тест
 		try
@@ -103,11 +103,11 @@ public class TestFood extends TestCase
 	{
 		// нормальный тест
 		food.setRelCarbs(0.0);
-		assertEquals(0.0, food.getRelCarbs(), TestUtils.EPS);
+		assertEquals(0.0, food.getRelCarbs(), MiscUtils.EPS);
 		food.setRelCarbs(12.8);
-		assertEquals(12.8, food.getRelCarbs(), TestUtils.EPS);
+		assertEquals(12.8, food.getRelCarbs(), MiscUtils.EPS);
 		food.setRelCarbs(100.0);
-		assertEquals(100.0, food.getRelCarbs(), TestUtils.EPS);
+		assertEquals(100.0, food.getRelCarbs(), MiscUtils.EPS);
 
 		// краш-тест
 		try
@@ -132,11 +132,11 @@ public class TestFood extends TestCase
 	{
 		// нормальный тест
 		food.setRelValue(0.0);
-		assertEquals(0.0, food.getRelValue(), TestUtils.EPS);
+		assertEquals(0.0, food.getRelValue(), MiscUtils.EPS);
 		food.setRelValue(12.8);
-		assertEquals(12.8, food.getRelValue(), TestUtils.EPS);
+		assertEquals(12.8, food.getRelValue(), MiscUtils.EPS);
 		food.setRelValue(102.8);
-		assertEquals(102.8, food.getRelValue(), TestUtils.EPS);
+		assertEquals(102.8, food.getRelValue(), MiscUtils.EPS);
 
 		// краш-тест
 		try

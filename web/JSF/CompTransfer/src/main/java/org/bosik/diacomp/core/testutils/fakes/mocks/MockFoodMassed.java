@@ -6,7 +6,7 @@ import java.util.Random;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
-import org.bosik.diacomp.core.utils.TestUtils;
+import org.bosik.diacomp.core.testutils.MiscUtils;
 
 public class MockFoodMassed implements Mock<FoodMassed>
 {
@@ -41,6 +41,6 @@ public class MockFoodMassed implements Mock<FoodMassed>
 	{
 		mockFood.compare(exp, act);
 
-		TestCase.assertEquals(exp.getMass(), act.getMass(), TestUtils.EPS);
+		TestCase.assertEquals(exp.getMass(), act.getMass(), MiscUtils.EPS);
 	}
 }
