@@ -52,4 +52,25 @@ public class TestAuthWebService
 	{
 		authService.logout();
 	}
+
+	//	@Test(expected = NotAuthorizedException.class)
+	//	public void getRecordsViaGuids_Unauth_Exception()
+	//	{
+	//		authService.logout();
+	//		diaryService.getRecords(Collections.<String> emptyList());
+	//	}
+	//
+	//	@Test(expected = NotAuthorizedException.class)
+	//	public void getRecordsNew_Unauth_Exception()
+	//	{
+	//		authService.logout();
+	//		diaryService.getRecords(new Date(), true);
+	//	}
+	//
+	//	@Test(expected = NotAuthorizedException.class)
+	//	public void getRecordsPeriod_Unauth_Exception()
+	//	{
+	//		authService.logout();
+	//		diaryService.getRecords(new Date(), new Date(), true);
+	//	}
 }
