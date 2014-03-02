@@ -26,4 +26,21 @@ public class MiscUtils
 		c.set(year, month - 1, day, hour, min, sec);
 		return c.getTime();
 	}
+
+	// private static String formatArray(byte array[])
+	// {
+	// StringBuilder sb = new StringBuilder("{");
+	//
+	// for (int i = 0; i < array.length; i++)
+	// {
+	// sb.append(array[i]);
+	// if (i < (array.length - 1))
+	// {
+	// sb.append(", ");
+	// }
+	// }
+	//
+	// sb.append("}");
+	// return sb.toString();
+	// }
 }
