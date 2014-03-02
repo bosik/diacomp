@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.testutils.fakes.mocks;
+package org.bosik.diacomp.core.utils.test.fakes.mocks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +9,8 @@ import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
-import org.bosik.diacomp.core.testutils.MiscUtils;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.core.utils.test.MiscUtils;
 
 public class MockDiaryRecord implements Mock<DiaryRecord>
 {

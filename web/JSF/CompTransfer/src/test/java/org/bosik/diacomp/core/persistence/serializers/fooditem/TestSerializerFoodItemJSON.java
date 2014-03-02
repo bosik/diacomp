@@ -5,8 +5,8 @@ import org.bosik.diacomp.core.persistence.serializers.ParserFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.TestSerializer;
 import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
-import org.bosik.diacomp.core.testutils.fakes.mocks.Mock;
-import org.bosik.diacomp.core.testutils.fakes.mocks.MockFoodItem;
+import org.bosik.diacomp.core.utils.test.fakes.mocks.Mock;
+import org.bosik.diacomp.core.utils.test.fakes.mocks.MockFoodItem;
 
 public class TestSerializerFoodItemJSON extends TestSerializer<FoodItem>
 {

@@ -4,7 +4,7 @@ import java.util.List;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
-import org.bosik.diacomp.core.testutils.fakes.mocks.Mock;
+import org.bosik.diacomp.core.utils.test.fakes.mocks.Mock;
 
 public abstract class TestSerializer<T> extends TestCase
 {
