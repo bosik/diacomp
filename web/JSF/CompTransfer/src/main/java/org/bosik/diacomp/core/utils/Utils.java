@@ -346,6 +346,14 @@ public class Utils
 		return UUID.randomUUID().toString().replace("-", "");
 	}
 
+	/**
+	 * Constructs date (UTC)
+	 * 
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @return
+	 */
 	public static Date date(int year, int month, int day)
 	{
 		Calendar c = Calendar.getInstance();
@@ -355,6 +363,17 @@ public class Utils
 		return c.getTime();
 	}
 
+	/**
+	 * Constructs time (UTC)
+	 * 
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @param hour
+	 * @param min
+	 * @param sec
+	 * @return
+	 */
 	public static Date time(int year, int month, int day, int hour, int min, int sec)
 	{
 		Calendar c = Calendar.getInstance();
