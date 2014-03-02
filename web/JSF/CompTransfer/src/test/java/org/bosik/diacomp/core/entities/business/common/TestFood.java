@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.bo.common;
+package org.bosik.diacomp.core.entities.business.common;
 
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.Food;

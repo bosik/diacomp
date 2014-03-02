@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.bo.diary.records;
+package org.bosik.diacomp.core.entities.business.diary.records;
 
 import java.util.Date;
 import junit.framework.TestCase;
