@@ -54,7 +54,7 @@
 				</return>
 			</returns>
 		</method>
-		<method-todo>
+		<method>
 			<cat>Авторизация</cat>
 			<name>Выход</name>
 			<url>/auth/logout/</url>
@@ -71,8 +71,8 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method-todo>
-		<method-todo>
+		</method>
+		<method>
 			<cat>Система</cat>
 			<name>Получение версии API сервера</name>
 			<url>/info/</url>
@@ -89,7 +89,7 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method-todo>
+		</method>
 		<method-todo>
 			<cat>Система</cat>
 			<name>Отправка сообщения на e-mail разработчика</name>
@@ -180,7 +180,7 @@
 				</return>
 			</returns>
 		</method>
-		<method-todo>
+		<method>
 			<cat>Дневник</cat>
 			<name>Получение записей с указанными GUID</name>
 			<url>/diary/guid/</url>
@@ -205,7 +205,7 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method-todo>
+		</method>
 		<method>
 			<cat>Дневник</cat>
 			<name>Создание/сохранение одной или нескольких записей дневника</name>
