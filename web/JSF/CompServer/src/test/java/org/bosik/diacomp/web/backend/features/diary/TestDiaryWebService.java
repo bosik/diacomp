@@ -24,7 +24,10 @@ import org.junit.Test;
 
 public class TestDiaryWebService
 {
-	private DiaryService	diaryService;
+	private DiaryService					diaryService;
+
+	private Mock<DiaryRecord>				mockRecord		= new MockDiaryRecord();
+	private Mock<Versioned<DiaryRecord>>	mockVersioned	= new MockVersionedConverter<DiaryRecord>(mockRecord);
 
 	public TestDiaryWebService()
 	{
@@ -36,36 +39,10 @@ public class TestDiaryWebService
 		diaryService = new DiaryAuthorizedService(new DiaryRestClient(), authService);
 	}
 
-	//	private void login()
-	//	{
-	//		authService.login(Config.getLogin(), Config.getPassword(), Config.getAPICurrent());
-	//	}
-
 	/**
 	 * _simple-tests doesn't check any business logic. The only aspect the test is ability to invoke
 	 * the method
 	 */
-
-	//	@Test(expected = NotAuthorizedException.class)
-	//	public void getRecordsViaGuids_Unauth_Exception()
-	//	{
-	//		authService.logout();
-	//		diaryService.getRecords(Collections.<String> emptyList());
-	//	}
-	//
-	//	@Test(expected = NotAuthorizedException.class)
-	//	public void getRecordsNew_Unauth_Exception()
-	//	{
-	//		authService.logout();
-	//		diaryService.getRecords(new Date(), true);
-	//	}
-	//
-	//	@Test(expected = NotAuthorizedException.class)
-	//	public void getRecordsPeriod_Unauth_Exception()
-	//	{
-	//		authService.logout();
-	//		diaryService.getRecords(new Date(), new Date(), true);
-	//	}
 
 	@Test
 	public void getRecordsViaGuids_Simple_Ok()
@@ -77,15 +54,19 @@ public class TestDiaryWebService
 	@Test
 	public void getRecordsNew_Simple_ok()
 	{
-		//		authService.login();
+		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
+		VersionedUtils.enumerate(originalItems);
+		assertTrue("No samples are provided", !originalItems.isEmpty());
+
 		diaryService.getRecords(new Date(), true);
 		diaryService.getRecords(new Date(), false);
+
+		//diaryService.getRecords(timeBorder, true);
 	}
 
 	@Test
 	public void getRecordsPeriod_Simple_ok()
 	{
-		//		authService.login();
 		diaryService.getRecords(new Date(), new Date(), true);
 		diaryService.getRecords(new Date(), new Date(), false);
 	}
@@ -93,11 +74,8 @@ public class TestDiaryWebService
 	@Test
 	public void getRecordsViaPeriod_Normal_RestoredOrdered()
 	{
-		Mock<DiaryRecord> mockRecord = new MockDiaryRecord();
-		Mock<Versioned<DiaryRecord>> mockVersioned = new MockVersionedConverter<DiaryRecord>(mockRecord);
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
 		VersionedUtils.enumerate(originalItems);
-
 		assertTrue("No samples are provided", !originalItems.isEmpty());
 
 		Date minTime = null;
@@ -135,8 +113,6 @@ public class TestDiaryWebService
 	@Test
 	public void postRecordsGetRecordsViaPeriodAndGuid_Normal_RestoredExactly()
 	{
-		Mock<DiaryRecord> mockRecord = new MockDiaryRecord();
-		Mock<Versioned<DiaryRecord>> mockVersioned = new MockVersionedConverter<DiaryRecord>(mockRecord);
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
 		VersionedUtils.enumerate(originalItems);
 
@@ -225,8 +201,6 @@ public class TestDiaryWebService
 	@Test
 	public void postRecords_Update_UpdatedOk()
 	{
-		Mock<DiaryRecord> mockRecord = new MockDiaryRecord();
-		Mock<Versioned<DiaryRecord>> mockVersioned = new MockVersionedConverter<DiaryRecord>(mockRecord);
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
 		VersionedUtils.enumerate(originalItems);
 
