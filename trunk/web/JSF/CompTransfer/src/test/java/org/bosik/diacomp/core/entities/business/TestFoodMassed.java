@@ -2,7 +2,7 @@ package org.bosik.diacomp.core.entities.business;
 
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
-import org.bosik.diacomp.core.testutils.MiscUtils;
+import org.bosik.diacomp.core.utils.test.MiscUtils;
 
 public class TestFoodMassed extends TestCase
 {

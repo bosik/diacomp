@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.testutils.fakes.mocks;
+package org.bosik.diacomp.core.utils.test.fakes.mocks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.Random;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
-import org.bosik.diacomp.core.testutils.MiscUtils;
+import org.bosik.diacomp.core.utils.test.MiscUtils;
 
 public class MockFoodMassed extends TestCase implements Mock<FoodMassed>
 {

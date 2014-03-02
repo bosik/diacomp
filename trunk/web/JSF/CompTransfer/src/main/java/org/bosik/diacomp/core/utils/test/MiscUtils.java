@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.testutils;
+package org.bosik.diacomp.core.utils.test;
 
 import java.util.Calendar;
 import java.util.Date;

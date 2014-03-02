@@ -9,9 +9,9 @@ import org.bosik.diacomp.core.persistence.serializers.Parser;
 import org.bosik.diacomp.core.persistence.serializers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
-import org.bosik.diacomp.core.testutils.fakes.mocks.Mock;
-import org.bosik.diacomp.core.testutils.fakes.mocks.MockDiaryRecord;
-import org.bosik.diacomp.core.testutils.fakes.mocks.MockVersionedConverter;
+import org.bosik.diacomp.core.utils.test.fakes.mocks.Mock;
+import org.bosik.diacomp.core.utils.test.fakes.mocks.MockDiaryRecord;
+import org.bosik.diacomp.core.utils.test.fakes.mocks.MockVersionedConverter;
 
 public class FakeDiaryDAO implements DiaryDAO
 {
