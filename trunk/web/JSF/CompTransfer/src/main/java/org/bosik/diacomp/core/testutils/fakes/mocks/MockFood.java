@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.testutils.MiscUtils;
 
-public class MockFood implements Mock<Food>
+public class MockFood extends TestCase implements Mock<Food>
 {
 	private static Food food(String name, double relProts, double relFats, double relCarbs, double relValue)
 	{
@@ -36,13 +36,13 @@ public class MockFood implements Mock<Food>
 
 	public void compare(Food exp, Food act)
 	{
-		TestCase.assertNotNull(exp);
-		TestCase.assertNotNull(act);
+		assertNotNull(exp);
+		assertNotNull(act);
 
-		TestCase.assertEquals(exp.getName(), act.getName());
-		TestCase.assertEquals(exp.getRelProts(), act.getRelProts(), MiscUtils.EPS);
-		TestCase.assertEquals(exp.getRelFats(), act.getRelFats(), MiscUtils.EPS);
-		TestCase.assertEquals(exp.getRelCarbs(), act.getRelCarbs(), MiscUtils.EPS);
-		TestCase.assertEquals(exp.getRelValue(), act.getRelValue(), MiscUtils.EPS);
+		assertEquals(exp.getName(), act.getName());
+		assertEquals(exp.getRelProts(), act.getRelProts(), MiscUtils.EPS);
+		assertEquals(exp.getRelFats(), act.getRelFats(), MiscUtils.EPS);
+		assertEquals(exp.getRelCarbs(), act.getRelCarbs(), MiscUtils.EPS);
+		assertEquals(exp.getRelValue(), act.getRelValue(), MiscUtils.EPS);
 	}
 }
