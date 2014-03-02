@@ -1,4 +1,4 @@
-package org.bosik.diacomp.persistence.serializers;
+package org.bosik.diacomp.core.persistence.serializers;
 
 import java.util.List;
 import junit.framework.AssertionFailedError;

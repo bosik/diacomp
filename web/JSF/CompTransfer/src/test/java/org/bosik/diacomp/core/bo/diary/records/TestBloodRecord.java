@@ -1,4 +1,4 @@
-package org.bosik.diacomp.bo.diary.records;
+package org.bosik.diacomp.core.bo.diary.records;
 
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import junit.framework.TestCase;

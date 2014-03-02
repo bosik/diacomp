@@ -1,4 +1,4 @@
-package org.bosik.diacomp.persistence.serializers.diary.page;
+package org.bosik.diacomp.core.persistence.serializers.diary.page;
 
 import org.junit.Ignore;
 

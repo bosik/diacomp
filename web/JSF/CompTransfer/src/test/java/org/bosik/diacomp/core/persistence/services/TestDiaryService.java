@@ -1,4 +1,4 @@
-package org.bosik.diacomp.persistence.services;
+package org.bosik.diacomp.core.persistence.services;
 
 import java.util.LinkedList;
 import java.util.List;
