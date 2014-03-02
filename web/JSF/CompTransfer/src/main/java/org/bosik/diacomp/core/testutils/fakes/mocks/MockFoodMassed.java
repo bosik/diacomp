@@ -8,7 +8,7 @@ import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.testutils.MiscUtils;
 
-public class MockFoodMassed implements Mock<FoodMassed>
+public class MockFoodMassed extends TestCase implements Mock<FoodMassed>
 {
 	private static final Mock<Food>	mockFood	= new MockFood();
 
@@ -41,6 +41,6 @@ public class MockFoodMassed implements Mock<FoodMassed>
 	{
 		mockFood.compare(exp, act);
 
-		TestCase.assertEquals(exp.getMass(), act.getMass(), MiscUtils.EPS);
+		assertEquals(exp.getMass(), act.getMass(), MiscUtils.EPS);
 	}
 }
