@@ -2,7 +2,7 @@ package org.bosik.diacomp.bo.common;
 
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
-import org.bosik.diacomp.core.utils.TestUtils;
+import org.bosik.diacomp.core.testutils.MiscUtils;
 
 public class TestFoodMassed extends TestCase
 {
@@ -14,13 +14,13 @@ public class TestFoodMassed extends TestCase
 	{
 		// normal test
 		food.setMass(0.0);
-		assertEquals(0.0, food.getMass(), TestUtils.EPS);
+		assertEquals(0.0, food.getMass(), MiscUtils.EPS);
 		food.setMass(0.01);
-		assertEquals(0.01, food.getMass(), TestUtils.EPS);
+		assertEquals(0.01, food.getMass(), MiscUtils.EPS);
 		food.setMass(100.0);
-		assertEquals(100.0, food.getMass(), TestUtils.EPS);
+		assertEquals(100.0, food.getMass(), MiscUtils.EPS);
 		food.setMass(999.5);
-		assertEquals(999.5, food.getMass(), TestUtils.EPS);
+		assertEquals(999.5, food.getMass(), MiscUtils.EPS);
 
 		// crash-test
 		try
@@ -47,31 +47,31 @@ public class TestFoodMassed extends TestCase
 		food.setMass(10);
 
 		food.setRelProts(1);
-		assertEquals(0.1, food.getProts(), TestUtils.EPS);
+		assertEquals(0.1, food.getProts(), MiscUtils.EPS);
 		food.setRelFats(2);
-		assertEquals(0.2, food.getFats(), TestUtils.EPS);
+		assertEquals(0.2, food.getFats(), MiscUtils.EPS);
 		food.setRelCarbs(3);
-		assertEquals(0.3, food.getCarbs(), TestUtils.EPS);
+		assertEquals(0.3, food.getCarbs(), MiscUtils.EPS);
 		food.setRelValue(4);
-		assertEquals(0.4, food.getValue(), TestUtils.EPS);
+		assertEquals(0.4, food.getValue(), MiscUtils.EPS);
 
 		food.setMass(1000);
 
 		food.setRelProts(2);
-		assertEquals(20.0, food.getProts(), TestUtils.EPS);
+		assertEquals(20.0, food.getProts(), MiscUtils.EPS);
 		food.setRelFats(4);
-		assertEquals(40.0, food.getFats(), TestUtils.EPS);
+		assertEquals(40.0, food.getFats(), MiscUtils.EPS);
 		food.setRelCarbs(6);
-		assertEquals(60.0, food.getCarbs(), TestUtils.EPS);
+		assertEquals(60.0, food.getCarbs(), MiscUtils.EPS);
 		food.setRelValue(8);
-		assertEquals(80.0, food.getValue(), TestUtils.EPS);
+		assertEquals(80.0, food.getValue(), MiscUtils.EPS);
 
 		food.setMass(0);
 
-		assertEquals(0.0, food.getProts(), TestUtils.EPS);
-		assertEquals(0.0, food.getFats(), TestUtils.EPS);
-		assertEquals(0.0, food.getCarbs(), TestUtils.EPS);
-		assertEquals(0.0, food.getValue(), TestUtils.EPS);
+		assertEquals(0.0, food.getProts(), MiscUtils.EPS);
+		assertEquals(0.0, food.getFats(), MiscUtils.EPS);
+		assertEquals(0.0, food.getCarbs(), MiscUtils.EPS);
+		assertEquals(0.0, food.getValue(), MiscUtils.EPS);
 
 		// crash-test
 		try

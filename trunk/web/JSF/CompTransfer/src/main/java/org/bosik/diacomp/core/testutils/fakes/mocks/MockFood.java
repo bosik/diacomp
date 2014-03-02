@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.Food;
-import org.bosik.diacomp.core.utils.TestUtils;
+import org.bosik.diacomp.core.testutils.MiscUtils;
 
 public class MockFood implements Mock<Food>
 {
@@ -40,9 +40,9 @@ public class MockFood implements Mock<Food>
 		TestCase.assertNotNull(act);
 
 		TestCase.assertEquals(exp.getName(), act.getName());
-		TestCase.assertEquals(exp.getRelProts(), act.getRelProts(), TestUtils.EPS);
-		TestCase.assertEquals(exp.getRelFats(), act.getRelFats(), TestUtils.EPS);
-		TestCase.assertEquals(exp.getRelCarbs(), act.getRelCarbs(), TestUtils.EPS);
-		TestCase.assertEquals(exp.getRelValue(), act.getRelValue(), TestUtils.EPS);
+		TestCase.assertEquals(exp.getRelProts(), act.getRelProts(), MiscUtils.EPS);
+		TestCase.assertEquals(exp.getRelFats(), act.getRelFats(), MiscUtils.EPS);
+		TestCase.assertEquals(exp.getRelCarbs(), act.getRelCarbs(), MiscUtils.EPS);
+		TestCase.assertEquals(exp.getRelValue(), act.getRelValue(), MiscUtils.EPS);
 	}
 }

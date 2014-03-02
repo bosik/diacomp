@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Random;
 import junit.framework.Assert;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.testutils.MiscUtils;
 import org.bosik.diacomp.core.testutils.fakes.mocks.Mock;
-import org.bosik.diacomp.core.utils.TestUtils;
 
 public class MockVersionedConverter<T> implements Mock<Versioned<T>>
 {
@@ -45,7 +45,7 @@ public class MockVersionedConverter<T> implements Mock<Versioned<T>>
 		// try
 		// {
 		Assert.assertEquals(exp.getId(), act.getId());
-		Assert.assertEquals(exp.getTimeStamp().getTime(), act.getTimeStamp().getTime(), TestUtils.EPS_TIME);
+		Assert.assertEquals(exp.getTimeStamp().getTime(), act.getTimeStamp().getTime(), MiscUtils.EPS_TIME);
 		Assert.assertEquals(exp.getVersion(), act.getVersion());
 		Assert.assertEquals(exp.isDeleted(), act.isDeleted());
 		Assert.assertEquals(exp, act);
