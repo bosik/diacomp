@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.core.utils.test.MiscUtils;
 import org.junit.Test;
 
 @SuppressWarnings("static-method")
@@ -172,78 +171,78 @@ public class TestUtils extends TestCase
 
 	public void testTimeToMin()
 	{
-		assertEquals(0, Utils.timeToMin(MiscUtils.time(2013, 01, 01, 00, 00, 00)));
-		assertEquals(0, Utils.timeToMin(MiscUtils.time(2013, 01, 01, 00, 00, 01)));
-		assertEquals(1, Utils.timeToMin(MiscUtils.time(2013, 01, 01, 00, 01, 00)));
-		assertEquals(60, Utils.timeToMin(MiscUtils.time(2013, 01, 01, 01, 00, 00)));
-		assertEquals(121, Utils.timeToMin(MiscUtils.time(2013, 01, 01, 02, 01, 00)));
-		assertEquals(1439, Utils.timeToMin(MiscUtils.time(2013, 01, 01, 23, 59, 00)));
+		assertEquals(0, Utils.timeToMin(Utils.time(2013, 01, 01, 00, 00, 00)));
+		assertEquals(0, Utils.timeToMin(Utils.time(2013, 01, 01, 00, 00, 01)));
+		assertEquals(1, Utils.timeToMin(Utils.time(2013, 01, 01, 00, 01, 00)));
+		assertEquals(60, Utils.timeToMin(Utils.time(2013, 01, 01, 01, 00, 00)));
+		assertEquals(121, Utils.timeToMin(Utils.time(2013, 01, 01, 02, 01, 00)));
+		assertEquals(1439, Utils.timeToMin(Utils.time(2013, 01, 01, 23, 59, 00)));
 	}
 
 	public void testFormatDate()
 	{
-		assertEquals("2012-04-02", Utils.formatDate(MiscUtils.date(2012, 04, 02)));
-		assertEquals("2012-05-01", Utils.formatDate(MiscUtils.date(2012, 05, 01)));
+		assertEquals("2012-04-02", Utils.formatDate(Utils.date(2012, 04, 02)));
+		assertEquals("2012-05-01", Utils.formatDate(Utils.date(2012, 05, 01)));
 	}
 
 	public void testFormatTime()
 	{
-		assertEquals("2012-05-01 09:45:17", Utils.formatTimeUTC(MiscUtils.time(2012, 05, 01, 9, 45, 17)));
-		assertEquals("2012-05-01 21:45:17", Utils.formatTimeUTC(MiscUtils.time(2012, 05, 01, 21, 45, 17)));
-		assertEquals("2012-04-02 00:00:00", Utils.formatTimeUTC(MiscUtils.time(2012, 04, 02, 00, 00, 00)));
+		assertEquals("2012-05-01 09:45:17", Utils.formatTimeUTC(Utils.time(2012, 05, 01, 9, 45, 17)));
+		assertEquals("2012-05-01 21:45:17", Utils.formatTimeUTC(Utils.time(2012, 05, 01, 21, 45, 17)));
+		assertEquals("2012-04-02 00:00:00", Utils.formatTimeUTC(Utils.time(2012, 04, 02, 00, 00, 00)));
 	}
 
 	public void testParseTime()
 	{
-		assertEquals(MiscUtils.time(2012, 04, 02, 00, 00, 00), Utils.parseTimeUTC("2012-04-02 00:00:00"));
-		assertEquals(MiscUtils.time(2012, 05, 01, 9, 45, 17), Utils.parseTimeUTC("2012-05-01 09:45:17"));
-		assertEquals(MiscUtils.time(2012, 05, 01, 22, 30, 17), Utils.parseTimeUTC("2012-05-01 22:30:17"));
+		assertEquals(Utils.time(2012, 04, 02, 00, 00, 00), Utils.parseTimeUTC("2012-04-02 00:00:00"));
+		assertEquals(Utils.time(2012, 05, 01, 9, 45, 17), Utils.parseTimeUTC("2012-05-01 09:45:17"));
+		assertEquals(Utils.time(2012, 05, 01, 22, 30, 17), Utils.parseTimeUTC("2012-05-01 22:30:17"));
 	}
 
 	public void testParseDate() throws ParseException
 	{
-		assertEquals(MiscUtils.date(2012, 04, 02).getDate(), Utils.parseDate("2012-04-02").getDate());
-		assertEquals(MiscUtils.date(2012, 05, 01).getDate(), Utils.parseDate("2012-05-01").getDate());
+		assertEquals(Utils.date(2012, 04, 02).getDate(), Utils.parseDate("2012-04-02").getDate());
+		assertEquals(Utils.date(2012, 05, 01).getDate(), Utils.parseDate("2012-05-01").getDate());
 	}
 
 	public void testGetPrevDay()
 	{
-		assertEquals(MiscUtils.date(2011, 12, 31), Utils.getPrevDay(MiscUtils.date(2012, 01, 01)));
-		assertEquals(MiscUtils.date(2012, 04, 01), Utils.getPrevDay(MiscUtils.date(2012, 04, 02)));
-		assertEquals(MiscUtils.date(2012, 02, 29), Utils.getPrevDay(MiscUtils.date(2012, 03, 01))); // leap
+		assertEquals(Utils.date(2011, 12, 31), Utils.getPrevDay(Utils.date(2012, 01, 01)));
+		assertEquals(Utils.date(2012, 04, 01), Utils.getPrevDay(Utils.date(2012, 04, 02)));
+		assertEquals(Utils.date(2012, 02, 29), Utils.getPrevDay(Utils.date(2012, 03, 01))); // leap
 	}
 
 	public void testGetNextDay()
 	{
-		assertEquals(MiscUtils.date(2012, 01, 01), Utils.getNextDay(MiscUtils.date(2011, 12, 31)));
-		assertEquals(MiscUtils.date(2012, 04, 02), Utils.getNextDay(MiscUtils.date(2012, 04, 01)));
-		assertEquals(MiscUtils.date(2012, 02, 29), Utils.getNextDay(MiscUtils.date(2012, 02, 28))); // leap
+		assertEquals(Utils.date(2012, 01, 01), Utils.getNextDay(Utils.date(2011, 12, 31)));
+		assertEquals(Utils.date(2012, 04, 02), Utils.getNextDay(Utils.date(2012, 04, 01)));
+		assertEquals(Utils.date(2012, 02, 29), Utils.getNextDay(Utils.date(2012, 02, 28))); // leap
 	}
 
 	public void testGetPeriodDates_empty()
 	{
-		List<Date> dates = Utils.getPeriodDates(MiscUtils.date(2013, 8, 4), 0);
+		List<Date> dates = Utils.getPeriodDates(Utils.date(2013, 8, 4), 0);
 
 		assertEquals(0, dates.size());
 	}
 
 	public void testGetPeriodDates_one()
 	{
-		List<Date> dates = Utils.getPeriodDates(MiscUtils.date(2013, 8, 4), 1);
+		List<Date> dates = Utils.getPeriodDates(Utils.date(2013, 8, 4), 1);
 
 		assertEquals(1, dates.size());
-		assertEquals(MiscUtils.date(2013, 8, 4).getDate(), dates.get(0).getDate());
+		assertEquals(Utils.date(2013, 8, 4).getDate(), dates.get(0).getDate());
 	}
 
 	public void testGetPeriodDates_many()
 	{
-		List<Date> dates = Utils.getPeriodDates(MiscUtils.date(2013, 8, 4), 4);
+		List<Date> dates = Utils.getPeriodDates(Utils.date(2013, 8, 4), 4);
 
 		assertEquals(4, dates.size());
-		assertEquals(MiscUtils.date(2013, 8, 1).getDate(), dates.get(0).getDate());
-		assertEquals(MiscUtils.date(2013, 8, 2).getDate(), dates.get(1).getDate());
-		assertEquals(MiscUtils.date(2013, 8, 3).getDate(), dates.get(2).getDate());
-		assertEquals(MiscUtils.date(2013, 8, 4).getDate(), dates.get(3).getDate());
+		assertEquals(Utils.date(2013, 8, 1).getDate(), dates.get(0).getDate());
+		assertEquals(Utils.date(2013, 8, 2).getDate(), dates.get(1).getDate());
+		assertEquals(Utils.date(2013, 8, 3).getDate(), dates.get(2).getDate());
+		assertEquals(Utils.date(2013, 8, 4).getDate(), dates.get(3).getDate());
 	}
 
 	// public void testTimeToStr()
