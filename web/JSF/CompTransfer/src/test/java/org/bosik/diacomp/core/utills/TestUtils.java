@@ -1,10 +1,11 @@
-package org.bosik.diacomp.core.utils;
+package org.bosik.diacomp.core.utills;
 
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.testutils.MiscUtils;
+import org.bosik.diacomp.core.utils.Utils;
 import org.junit.Test;
 
 @SuppressWarnings("static-method")
