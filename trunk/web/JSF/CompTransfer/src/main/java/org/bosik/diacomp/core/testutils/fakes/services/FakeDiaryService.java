@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.fakes.services;
+package org.bosik.diacomp.core.testutils.fakes.services;
 
 import java.util.Date;
 import java.util.List;
