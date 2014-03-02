@@ -80,8 +80,8 @@ public class MySQLDiaryDAO implements DiaryDAO
 
 			if (!includeRemoved)
 			{
-				clause += String.format(" AND (%s = '%s')", Utils.formatBooleanInt(false),
-						MySQLAccess.COLUMN_DIARY_DELETED);
+				clause += String.format(" AND (%s = '%s')", MySQLAccess.COLUMN_DIARY_DELETED,
+						Utils.formatBooleanInt(false));
 			}
 
 			String order = MySQLAccess.COLUMN_DIARY_TIMECACHE;
@@ -108,8 +108,8 @@ public class MySQLDiaryDAO implements DiaryDAO
 
 			if (!includeRemoved)
 			{
-				clause += String.format(" AND (%s = '%s')", Utils.formatBooleanInt(false),
-						MySQLAccess.COLUMN_DIARY_DELETED);
+				clause += String.format(" AND (%s = '%s')", MySQLAccess.COLUMN_DIARY_DELETED,
+						Utils.formatBooleanInt(false));
 			}
 
 			String order = MySQLAccess.COLUMN_DIARY_TIMECACHE;

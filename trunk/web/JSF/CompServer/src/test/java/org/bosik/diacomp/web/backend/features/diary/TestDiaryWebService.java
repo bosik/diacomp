@@ -29,6 +29,8 @@ public class TestDiaryWebService
 	private Mock<DiaryRecord>				mockRecord		= new MockDiaryRecord();
 	private Mock<Versioned<DiaryRecord>>	mockVersioned	= new MockVersionedConverter<DiaryRecord>(mockRecord);
 
+	private static final long				DELTA			= 60000;
+
 	public TestDiaryWebService()
 	{
 		String login = Config.getLogin();
@@ -135,6 +137,89 @@ public class TestDiaryWebService
 	}
 
 	@Test
+	public void getRecords_Deleting_Removed()
+	{
+		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
+		VersionedUtils.enumerate(originalItems);
+		assertTrue("No samples are provided", !originalItems.isEmpty());
+
+		// prepare single non-deleted item
+		Versioned<DiaryRecord> item = originalItems.get(0);
+		item.setDeleted(false);
+		originalItems.clear();
+		originalItems.add(item);
+
+		final Date timestampBefore = new Date(item.getTimeStamp().getTime() - DELTA);
+		final Date timeBefore = new Date(item.getData().getTime().getTime() - DELTA);
+		final Date timeAfter = new Date(item.getData().getTime().getTime() + DELTA);
+
+		// post it
+		diaryService.postRecords(originalItems);
+
+		// CHECK IF IT IS PRESENTED NOW:
+
+		// 1. Via GUID
+		List<Versioned<DiaryRecord>> restoredItems = diaryService.getRecords(Arrays.asList(item.getId()));
+		compareItems(originalItems, restoredItems, false);
+
+		// 2. Via timestamp
+		restoredItems = diaryService.getRecords(timestampBefore, false);
+		compareItems(originalItems, restoredItems, true);
+
+		// 3. Via period
+		restoredItems = diaryService.getRecords(timeBefore, timeAfter, false);
+		compareItems(originalItems, restoredItems, true);
+
+		// REMOVE IT
+		item.setDeleted(true);
+		diaryService.postRecords(originalItems);
+
+		// CHECK IF IT IS [MARKED AS] REMOVED
+
+		// 1. Via GUID
+		restoredItems = diaryService.getRecords(Arrays.asList(item.getId()));
+		compareItems(originalItems, restoredItems, false);
+
+		// 2. Via timestamp
+		restoredItems = diaryService.getRecords(timestampBefore, false);
+		for (Versioned<DiaryRecord> restoredItem : restoredItems)
+		{
+			if (restoredItem.getId().equals(item.getId()))
+			{
+				fail("Item is not deleted");
+			}
+		}
+
+		// 3. Via period
+		restoredItems = diaryService.getRecords(timeBefore, timeAfter, false);
+		for (Versioned<DiaryRecord> restoredItem : restoredItems)
+		{
+			if (restoredItem.getId().equals(item.getId()))
+			{
+				fail("Item is not deleted");
+			}
+		}
+
+		// RESTORE IT
+		item.setDeleted(false);
+		diaryService.postRecords(originalItems);
+
+		// CHECK IF IT IS PRESENTED AGAIN:
+
+		// 1. Via GUID
+		restoredItems = diaryService.getRecords(Arrays.asList(item.getId()));
+		compareItems(originalItems, restoredItems, false);
+
+		// 2. Via timestamp
+		restoredItems = diaryService.getRecords(timestampBefore, false);
+		compareItems(originalItems, restoredItems, true);
+
+		// 3. Via period
+		restoredItems = diaryService.getRecords(timeBefore, timeAfter, false);
+		compareItems(originalItems, restoredItems, true);
+	}
+
+	@Test
 	public void getRecordsViaPeriod_Normal_RestoredOrdered()
 	{
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
@@ -159,8 +244,8 @@ public class TestDiaryWebService
 
 		// Check if there are any records in that period
 
-		minTime = new Date(minTime.getTime() - (60 * 1000));
-		maxTime = new Date(maxTime.getTime() + (60 * 1000));
+		minTime = new Date(minTime.getTime() - DELTA);
+		maxTime = new Date(maxTime.getTime() + DELTA);
 		List<Versioned<DiaryRecord>> restoredItems = diaryService.getRecords(minTime, maxTime, true);
 
 		if (restoredItems.isEmpty())
@@ -197,8 +282,8 @@ public class TestDiaryWebService
 
 		assertNotNull(minTime);
 		assertNotNull(maxTime);
-		minTime = new Date(minTime.getTime() - (60 * 1000));
-		maxTime = new Date(maxTime.getTime() + (60 * 1000));
+		minTime = new Date(minTime.getTime() - DELTA);
+		maxTime = new Date(maxTime.getTime() + DELTA);
 
 		// Post
 
