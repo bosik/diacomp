@@ -4,9 +4,9 @@ import java.io.UnsupportedEncodingException;
 import junit.framework.TestCase;
 
 @SuppressWarnings("static-method")
-public class TestUtils extends TestCase
+public class TestAndroidUtils extends TestCase
 {
-	// private static final String TAG = TestUtils.class.getSimpleName();
+	// private static final String TAG = TestAndroidUtils.class.getSimpleName();
 
 	public void testEncodingUtf8Cp1251Utf8Persistance()
 	{
