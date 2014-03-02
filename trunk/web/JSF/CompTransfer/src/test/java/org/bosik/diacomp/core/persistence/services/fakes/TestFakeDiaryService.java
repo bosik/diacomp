@@ -1,8 +1,8 @@
-package org.bosik.diacomp.persistence.services.fakes;
+package org.bosik.diacomp.core.persistence.services.fakes;
 
+import org.bosik.diacomp.core.fakes.services.FakeDiaryService;
+import org.bosik.diacomp.core.persistence.services.TestDiaryService;
 import org.bosik.diacomp.core.services.DiaryService;
-import org.bosik.diacomp.fakes.services.FakeDiaryService;
-import org.bosik.diacomp.persistence.services.TestDiaryService;
 import org.junit.Ignore;
 
 @Ignore

@@ -1,4 +1,4 @@
-package org.bosik.diacomp.persistence.services;
+package org.bosik.diacomp.core.persistence.services;
 
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;

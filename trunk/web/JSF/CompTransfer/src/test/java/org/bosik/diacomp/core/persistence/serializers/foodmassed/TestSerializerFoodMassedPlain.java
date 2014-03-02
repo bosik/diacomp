@@ -1,4 +1,4 @@
-package org.bosik.diacomp.persistence.serializers.foodmassed;
+package org.bosik.diacomp.core.persistence.serializers.foodmassed;
 
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.FoodMassed;

@@ -1,4 +1,4 @@
-package org.bosik.diacomp.bo.diary;
+package org.bosik.diacomp.core.bo.diary;
 
 import junit.framework.TestCase;
 import org.junit.Ignore;
