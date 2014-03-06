@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.face.activities;
+package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.Date;
 import java.util.Timer;
@@ -15,7 +15,7 @@ import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFi
 import org.bosik.diacomp.android.backend.features.diary.SyncDiaryService.Callback;
 import org.bosik.diacomp.android.BuildConfig;
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.face.UIUtils;
+import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;

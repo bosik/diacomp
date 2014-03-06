@@ -5,7 +5,7 @@ import org.bosik.diacomp.android.backend.features.diary.LocalDiaryService;
 import org.bosik.diacomp.android.backend.features.diary.WebDiaryService;
 import org.bosik.diacomp.android.backend.features.foodbase.NewLocalFoodBaseService;
 import org.bosik.diacomp.android.backend.features.foodbase.WebFoodBaseService;
-import org.bosik.diacomp.android.face.activities.ActivityPreferences;
+import org.bosik.diacomp.android.frontend.activities.ActivityPreferences;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
@@ -30,6 +30,8 @@ import android.util.Log;
  */
 public class Storage
 {
+	// FIXME: don't refer to ActivityPreferences here
+	
 	private static final String		TAG					= Storage.class.getSimpleName();
 
 	private static final String		FILENAME_FOODBASE	= "FoodBase.xml";

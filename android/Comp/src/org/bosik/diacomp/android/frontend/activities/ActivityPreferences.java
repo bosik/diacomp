@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.face.activities;
+package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.Map;
 import org.bosik.diacomp.android.backend.common.Storage;

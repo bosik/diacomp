@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.face.views;
+package org.bosik.diacomp.android.frontend.views;
 
 public interface RecordClickListener
 {
