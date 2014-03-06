@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.face.activities;
+package org.bosik.diacomp.android.frontend.activities;
 
 import java.io.Serializable;
 import java.util.Calendar;

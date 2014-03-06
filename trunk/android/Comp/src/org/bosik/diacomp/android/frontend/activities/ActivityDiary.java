@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.face.activities;
+package org.bosik.diacomp.android.frontend.activities;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Locale;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.face.UIUtils;
-import org.bosik.diacomp.android.face.views.DiaryView;
-import org.bosik.diacomp.android.face.views.RecordClickListener;
+import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.android.frontend.views.DiaryView;
+import org.bosik.diacomp.android.frontend.views.RecordClickListener;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;

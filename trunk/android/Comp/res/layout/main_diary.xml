@@ -67,7 +67,7 @@
         android:layout_weight="0.42"
         android:scrollbars="vertical" >
 
-        <org.bosik.diacomp.android.face.views.DiaryView
+        <org.bosik.diacomp.android.frontend.views.DiaryView
             android:id="@+id/diaryViewLayout"
             android:layout_width="fill_parent"
             android:layout_height="100dp"

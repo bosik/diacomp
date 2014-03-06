@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.face;
+package org.bosik.diacomp.android.frontend;
 
 import android.app.Activity;
 import android.widget.Toast;

@@ -23,7 +23,7 @@
         </provider>
 
         <activity
-            android:name="org.bosik.diacomp.android.face.activities.ActivityMain"
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityMain"
             android:label="@string/main_title"
             android:theme="@android:style/Theme.Light" >
             <intent-filter>
@@ -33,12 +33,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="org.bosik.diacomp.android.face.activities.ActivityDiary"
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityDiary"
             android:label="@string/diary_title"
             android:theme="@android:style/Theme.Light" >
         </activity>
         <activity
-            android:name="org.bosik.diacomp.android.face.activities.ActivityEditorBlood"
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorBlood"
             android:label="@string/editor_blood_title"
             android:theme="@android:style/Theme.Light" >
             <meta-data
@@ -46,16 +46,16 @@
                 android:value="org.bosik.diacomp.android.face.activities.ActivityDiary" />
         </activity>
         <activity
-            android:name="org.bosik.diacomp.android.face.activities.ActivityEditorIns"
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorIns"
             android:label="@string/title_activity_activity_editor_ins"
-            android:parentActivityName="org.bosik.diacomp.android.face.activities.ActivityDiary"
+            android:parentActivityName="org.bosik.diacomp.android.frontend.activities.ActivityDiary"
             android:theme="@android:style/Theme.Light" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.bosik.diacomp.android.face.activities.ActivityDiary" />
         </activity>
         <activity
-            android:name="org.bosik.diacomp.android.face.activities.ActivityMeal"
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityMeal"
             android:label="@string/editor_meal_title"
             android:theme="@android:style/Theme.Light" >
             <meta-data
@@ -63,7 +63,7 @@
                 android:value="org.bosik.diacomp.android.face.activities.ActivityDiary" />
         </activity>
         <activity
-            android:name="org.bosik.diacomp.android.face.activities.ActivityEditorNote"
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorNote"
             android:label="@string/editor_note_title"
             android:theme="@android:style/Theme.Light" >
             <meta-data
@@ -71,7 +71,7 @@
                 android:value="org.bosik.diacomp.android.face.activities.ActivityDiary" />
         </activity>
         <activity
-            android:name="org.bosik.diacomp.android.face.activities.ActivityPreferences"
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityPreferences"
             android:label="@string/preferences_title"
             android:theme="@android:style/Theme.Light" >
             <meta-data
@@ -79,7 +79,7 @@
                 android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
         </activity>
         <activity
-            android:name="org.bosik.diacomp.android.face.activities.ActivityFoodbase"
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityFoodbase"
             android:label="@string/foodbase_title"
             android:theme="@android:style/Theme.Light" >
             <meta-data
