@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.services.sync;
+package org.bosik.diacomp.android.backend.features.diary;
 
 public class SyncDiaryService
 {
