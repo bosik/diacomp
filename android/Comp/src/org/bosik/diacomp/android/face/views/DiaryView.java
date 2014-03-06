@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import org.bosik.diacomp.android.face.R;
+import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;

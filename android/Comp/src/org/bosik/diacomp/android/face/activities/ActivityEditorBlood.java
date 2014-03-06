@@ -1,7 +1,7 @@
 package org.bosik.diacomp.android.face.activities;
 
 import java.util.Date;
-import org.bosik.diacomp.android.face.R;
+import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.face.UIUtils;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;

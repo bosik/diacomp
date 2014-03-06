@@ -1,7 +1,7 @@
 package org.bosik.diacomp.android.face.activities;
 
 import java.text.DecimalFormat;
-import org.bosik.diacomp.android.face.R;
+import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import android.app.Activity;

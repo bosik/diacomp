@@ -13,8 +13,8 @@ import org.bosik.diacomp.android.backend.common.webclient.exceptions.DeprecatedA
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.ResponseFormatException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFieldException;
 import org.bosik.diacomp.android.backend.features.diary.SyncDiaryService.Callback;
-import org.bosik.diacomp.android.face.BuildConfig;
-import org.bosik.diacomp.android.face.R;
+import org.bosik.diacomp.android.BuildConfig;
+import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.face.UIUtils;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.utils.Utils;
