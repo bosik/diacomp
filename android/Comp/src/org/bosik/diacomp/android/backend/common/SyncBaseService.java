@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.services.sync;
+package org.bosik.diacomp.android.backend.common;
 
 import org.bosik.diacomp.core.services.BaseService;
 
