@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.persistence.services.local.utils;
+package org.bosik.diacomp.android.backend.common;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
