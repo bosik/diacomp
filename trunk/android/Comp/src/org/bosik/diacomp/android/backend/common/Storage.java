@@ -1,11 +1,11 @@
-package org.bosik.diacomp.android.persistence;
+package org.bosik.diacomp.android.backend.common;
 
+import org.bosik.diacomp.android.backend.common.webclient.WebClient;
+import org.bosik.diacomp.android.backend.features.diary.LocalDiaryService;
+import org.bosik.diacomp.android.backend.features.diary.WebDiaryService;
+import org.bosik.diacomp.android.backend.features.foodbase.NewLocalFoodBaseService;
+import org.bosik.diacomp.android.backend.features.foodbase.WebFoodBaseService;
 import org.bosik.diacomp.android.face.activities.ActivityPreferences;
-import org.bosik.diacomp.android.persistence.services.local.LocalDiaryService;
-import org.bosik.diacomp.android.persistence.services.local.NewLocalFoodBaseService;
-import org.bosik.diacomp.android.persistence.services.web.WebDiaryService;
-import org.bosik.diacomp.android.persistence.services.web.WebFoodBaseService;
-import org.bosik.diacomp.android.persistence.services.web.utils.client.WebClient;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;

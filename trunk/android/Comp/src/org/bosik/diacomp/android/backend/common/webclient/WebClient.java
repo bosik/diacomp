@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.persistence.services.web.utils.client;
+package org.bosik.diacomp.android.backend.common.webclient;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,13 +19,13 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
-import org.bosik.diacomp.android.persistence.services.web.utils.client.exceptions.AuthException;
-import org.bosik.diacomp.android.persistence.services.web.utils.client.exceptions.ConnectionException;
-import org.bosik.diacomp.android.persistence.services.web.utils.client.exceptions.DeprecatedAPIException;
-import org.bosik.diacomp.android.persistence.services.web.utils.client.exceptions.ResponseFormatException;
-import org.bosik.diacomp.android.persistence.services.web.utils.client.exceptions.TaskExecutionException;
-import org.bosik.diacomp.android.persistence.services.web.utils.client.exceptions.UndefinedFieldException;
-import org.bosik.diacomp.android.persistence.services.web.utils.client.exceptions.WebClientException;
+import org.bosik.diacomp.android.backend.common.webclient.exceptions.AuthException;
+import org.bosik.diacomp.android.backend.common.webclient.exceptions.ConnectionException;
+import org.bosik.diacomp.android.backend.common.webclient.exceptions.DeprecatedAPIException;
+import org.bosik.diacomp.android.backend.common.webclient.exceptions.ResponseFormatException;
+import org.bosik.diacomp.android.backend.common.webclient.exceptions.TaskExecutionException;
+import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFieldException;
+import org.bosik.diacomp.android.backend.common.webclient.exceptions.WebClientException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;

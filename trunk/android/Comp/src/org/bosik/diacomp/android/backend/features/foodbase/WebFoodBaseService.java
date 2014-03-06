@@ -1,7 +1,7 @@
-package org.bosik.diacomp.android.persistence.services.web;
+package org.bosik.diacomp.android.backend.features.foodbase;
 
 import java.util.List;
-import org.bosik.diacomp.android.persistence.services.web.utils.client.WebClient;
+import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;

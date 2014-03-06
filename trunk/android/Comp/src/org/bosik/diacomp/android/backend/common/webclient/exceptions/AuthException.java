@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.persistence.services.web.utils.client.exceptions;
+package org.bosik.diacomp.android.backend.common.webclient.exceptions;
 
 /**
  * Authentication exception
