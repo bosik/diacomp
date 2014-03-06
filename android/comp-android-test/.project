@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>CompClientAndroidTest</name>
+	<name>comp-android-test</name>
 	<comment></comment>
 	<projects>
 		<project>Comp2</project>
