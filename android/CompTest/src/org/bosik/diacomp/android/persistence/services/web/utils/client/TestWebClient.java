@@ -1,8 +1,8 @@
 package org.bosik.diacomp.android.persistence.services.web.utils.client;
 
 import junit.framework.TestCase;
-import org.bosik.diacomp.android.persistence.services.web.utils.client.WebClient;
-import org.bosik.diacomp.android.persistence.services.web.utils.client.exceptions.WebClientException;
+import org.bosik.diacomp.android.backend.common.webclient.WebClient;
+import org.bosik.diacomp.android.backend.common.webclient.exceptions.WebClientException;
 import android.util.Log;
 
 public class TestWebClient extends TestCase

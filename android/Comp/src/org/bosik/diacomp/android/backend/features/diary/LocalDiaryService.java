@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.persistence.services.local;
+package org.bosik.diacomp.android.backend.features.diary;
 
 import java.util.ArrayList;
 import java.util.Date;

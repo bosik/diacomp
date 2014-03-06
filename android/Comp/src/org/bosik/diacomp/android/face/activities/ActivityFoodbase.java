@@ -2,8 +2,8 @@ package org.bosik.diacomp.android.face.activities;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.face.R;
-import org.bosik.diacomp.android.persistence.Storage;
 import org.bosik.diacomp.android.services.Sorter;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;

@@ -2,8 +2,8 @@ package org.bosik.diacomp.android.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.face.UIUtils;
-import org.bosik.diacomp.android.persistence.services.web.utils.client.WebClient;
 import org.bosik.diacomp.android.face.BuildConfig;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;

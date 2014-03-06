@@ -1,7 +1,7 @@
 package org.bosik.diacomp.android.face.activities;
 
 import java.util.Map;
-import org.bosik.diacomp.android.persistence.Storage;
+import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.face.R;
 import android.content.Context;
 import android.content.SharedPreferences;

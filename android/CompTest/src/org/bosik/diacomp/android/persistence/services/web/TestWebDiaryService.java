@@ -1,6 +1,6 @@
 package org.bosik.diacomp.android.persistence.services.web;
 
-import org.bosik.diacomp.android.persistence.services.web.WebDiaryService;
+import org.bosik.diacomp.android.backend.features.diary.WebDiaryService;
 import org.bosik.diacomp.android.persistence.services.web.utils.client.TestWebClient;
 import org.bosik.diacomp.core.persistence.services.TestDiaryService;
 import org.bosik.diacomp.core.services.DiaryService;
