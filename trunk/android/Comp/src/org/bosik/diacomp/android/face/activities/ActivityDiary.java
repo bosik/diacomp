@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import org.bosik.diacomp.android.backend.common.Storage;
-import org.bosik.diacomp.android.face.R;
+import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.face.UIUtils;
 import org.bosik.diacomp.android.face.views.DiaryView;
 import org.bosik.diacomp.android.face.views.RecordClickListener;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.search.Sorter;
-import org.bosik.diacomp.android.face.R;
+import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import org.bosik.diacomp.core.entities.tech.Versioned;
