@@ -8,9 +8,9 @@ import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.interfaces.Tagged;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.BaseService;
-import org.bosik.diacomp.core.services.DiaryService;
 import org.bosik.diacomp.core.services.DishBaseService;
 import org.bosik.diacomp.core.services.FoodBaseService;
+import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import android.util.Log;
 
