@@ -10,16 +10,17 @@ import org.bosik.diacomp.core.persistence.serializers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
-import org.bosik.diacomp.core.services.DiaryService;
+import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 
 public class WebDiaryService implements DiaryService
 {
 	// private static String TAG = WebDiaryService.class.getSimpleName();
-	private WebClient							webClient;
-	private Parser<DiaryRecord>					parser		= new ParserDiaryRecord();
-	private Parser<Versioned<DiaryRecord>>		parserV		= new ParserVersioned<DiaryRecord>(parser);
-	private Serializer<Versioned<DiaryRecord>>	serializerV	= new SerializerAdapter<Versioned<DiaryRecord>>(parserV);
+	private final WebClient								webClient;
+	private final Parser<DiaryRecord>					parser		= new ParserDiaryRecord();
+	private final Parser<Versioned<DiaryRecord>>		parserV		= new ParserVersioned<DiaryRecord>(parser);
+	private final Serializer<Versioned<DiaryRecord>>	serializerV	= new SerializerAdapter<Versioned<DiaryRecord>>(
+																			parserV);
 
 	/* ============================ CONSTRUCTOR ============================ */
 

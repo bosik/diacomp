@@ -11,7 +11,7 @@ import org.bosik.diacomp.core.persistence.serializers.Parser;
 import org.bosik.diacomp.core.persistence.serializers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
-import org.bosik.diacomp.core.services.DiaryService;
+import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.utils.Utils;
@@ -31,15 +31,15 @@ public class LocalDiaryService implements DiaryService
 	// private Serializer<Versioned<DiaryRecord>> serializer = new
 	// SerializerAdapter<Versioned<DiaryRecord>>(parserV);
 
-	private ContentResolver			resolver;
-	private Parser<DiaryRecord>		parser		= new ParserDiaryRecord();
-	private Serializer<DiaryRecord>	serializer	= new SerializerAdapter<DiaryRecord>(parser);
+	private final ContentResolver			resolver;
+	private final Parser<DiaryRecord>		parser		= new ParserDiaryRecord();
+	private final Serializer<DiaryRecord>	serializer	= new SerializerAdapter<DiaryRecord>(parser);
 
 	/* ============================ CONSTRUCTOR ============================ */
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param resolver
 	 *            Content resolver; might be accessed by {@link Activity#getContentResolver()}
 	 */

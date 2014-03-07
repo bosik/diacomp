@@ -15,9 +15,9 @@ import org.bosik.diacomp.core.persistence.serializers.ParserFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
-import org.bosik.diacomp.core.services.DiaryService;
 import org.bosik.diacomp.core.services.DishBaseService;
 import org.bosik.diacomp.core.services.FoodBaseService;
+import org.bosik.diacomp.core.services.diary.DiaryService;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -25,13 +25,13 @@ import android.util.Log;
 
 /**
  * Stores application DAOs as singletons
- * 
+ *
  * @author Bosik
  */
 public class Storage
 {
 	// FIXME: don't refer to ActivityPreferences here
-	
+
 	private static final String		TAG					= Storage.class.getSimpleName();
 
 	private static final String		FILENAME_FOODBASE	= "FoodBase.xml";
@@ -53,7 +53,7 @@ public class Storage
 
 	/**
 	 * Initializes the storage. Might be called sequentially
-	 * 
+	 *
 	 * @param context
 	 * @param resolver
 	 * @param preferences
@@ -140,7 +140,7 @@ public class Storage
 
 	/**
 	 * Applies changed preference for specified key (if null, applies all settings)
-	 * 
+	 *
 	 * @param pref
 	 *            Preference unit
 	 * @param key
