@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.services;
+package org.bosik.diacomp.core.services.diary;
 
 import java.util.Date;
 import java.util.List;
