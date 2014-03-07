@@ -20,6 +20,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/comp-transfer/target/classes" sourcepath="/comp-transfer/src"/>
+	<classpathentry exported="true" kind="lib" path="/comp-transfer/target/classes" sourcepath="/comp-transfer/src"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -25,7 +25,7 @@ import android.util.Log;
 
 /**
  * Stores application DAOs as singletons
- *
+ * 
  * @author Bosik
  */
 public class Storage
@@ -53,7 +53,7 @@ public class Storage
 
 	/**
 	 * Initializes the storage. Might be called sequentially
-	 *
+	 * 
 	 * @param context
 	 * @param resolver
 	 * @param preferences
@@ -62,6 +62,7 @@ public class Storage
 	{
 		Log.v(TAG, "Storage unit initialization...");
 
+		// TODO: remove it when tested
 		Food smokeTest = new Food();
 		smokeTest.setName("Smoker");
 
@@ -140,7 +141,7 @@ public class Storage
 
 	/**
 	 * Applies changed preference for specified key (if null, applies all settings)
-	 *
+	 * 
 	 * @param pref
 	 *            Preference unit
 	 * @param key

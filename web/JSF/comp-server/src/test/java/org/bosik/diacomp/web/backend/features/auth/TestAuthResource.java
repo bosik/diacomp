@@ -93,6 +93,8 @@ public class TestAuthResource
 		assertEquals(ResponseBuilder.CODE_OK, r.getCode());
 	}
 
+	// TODO: remove all REST tests; test functions (BE or FE) only
+
 	@Test
 	public void doubleCheck()
 	{
