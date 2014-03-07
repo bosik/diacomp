@@ -8,7 +8,7 @@ import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.services.DiaryService;
+import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.features.analyze.function.entities.AnalyzeRec;
 import org.bosik.diacomp.web.backend.features.analyze.function.entities.Koof;

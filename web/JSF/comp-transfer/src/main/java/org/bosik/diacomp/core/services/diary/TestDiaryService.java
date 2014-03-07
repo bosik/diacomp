@@ -1,15 +1,15 @@
-package org.bosik.diacomp.core.persistence.services;
+package org.bosik.diacomp.core.services.diary;
 
 import java.util.LinkedList;
 import java.util.List;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.services.DiaryService;
 import org.bosik.diacomp.core.utils.test.fakes.mocks.Mock;
 import org.bosik.diacomp.core.utils.test.fakes.mocks.MockDiaryRecord;
 import org.bosik.diacomp.core.utils.test.fakes.mocks.MockVersionedConverter;
 import org.bosik.diacomp.core.utils.test.fakes.mocks.VersionedUtils;
+import org.junit.Test;
 
 public abstract class TestDiaryService extends TestCase
 {
@@ -26,6 +26,7 @@ public abstract class TestDiaryService extends TestCase
 		diaryService = getService();
 	}
 
+	@Test
 	public void testPersistanceMultiple()
 	{
 		List<Versioned<DiaryRecord>> org = mockVersionedDiaryRecord.getSamples();
@@ -53,6 +54,7 @@ public abstract class TestDiaryService extends TestCase
 		}
 	}
 
+	@Test
 	public void testGetModList()
 	{
 		// fail("Not yet implemented"); // TODO
