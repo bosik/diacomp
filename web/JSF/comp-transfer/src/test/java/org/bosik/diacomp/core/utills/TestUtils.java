@@ -201,8 +201,8 @@ public class TestUtils extends TestCase
 
 	public void testParseDate() throws ParseException
 	{
-		assertEquals(Utils.date(2012, 04, 02).getDate(), Utils.parseDate("2012-04-02").getDate());
-		assertEquals(Utils.date(2012, 05, 01).getDate(), Utils.parseDate("2012-05-01").getDate());
+		assertEquals(Utils.date(2012, 04, 02).getTime(), Utils.parseDate("2012-04-02").getTime());
+		assertEquals(Utils.date(2012, 05, 01).getTime(), Utils.parseDate("2012-05-01").getTime());
 	}
 
 	public void testGetPrevDay()
@@ -231,7 +231,7 @@ public class TestUtils extends TestCase
 		List<Date> dates = Utils.getPeriodDates(Utils.date(2013, 8, 4), 1);
 
 		assertEquals(1, dates.size());
-		assertEquals(Utils.date(2013, 8, 4).getDate(), dates.get(0).getDate());
+		assertEquals(Utils.date(2013, 8, 4).getTime(), dates.get(0).getTime());
 	}
 
 	public void testGetPeriodDates_many()
@@ -239,10 +239,10 @@ public class TestUtils extends TestCase
 		List<Date> dates = Utils.getPeriodDates(Utils.date(2013, 8, 4), 4);
 
 		assertEquals(4, dates.size());
-		assertEquals(Utils.date(2013, 8, 1).getDate(), dates.get(0).getDate());
-		assertEquals(Utils.date(2013, 8, 2).getDate(), dates.get(1).getDate());
-		assertEquals(Utils.date(2013, 8, 3).getDate(), dates.get(2).getDate());
-		assertEquals(Utils.date(2013, 8, 4).getDate(), dates.get(3).getDate());
+		assertEquals(Utils.date(2013, 8, 1).getTime(), dates.get(0).getTime());
+		assertEquals(Utils.date(2013, 8, 2).getTime(), dates.get(1).getTime());
+		assertEquals(Utils.date(2013, 8, 3).getTime(), dates.get(2).getTime());
+		assertEquals(Utils.date(2013, 8, 4).getTime(), dates.get(3).getTime());
 	}
 
 	// public void testTimeToStr()
