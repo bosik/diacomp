@@ -3,18 +3,17 @@ package org.bosik.diacomp.android.frontend.activities;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import org.bosik.diacomp.android.BuildConfig;
+import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.common.SyncBaseService;
 import org.bosik.diacomp.android.backend.common.SyncBaseService.SyncResult;
-import org.bosik.diacomp.android.backend.common.webclient.WebClient.LoginResult;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.AuthException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.ConnectionException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.ResponseFormatException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFieldException;
 import org.bosik.diacomp.android.backend.features.diary.SyncDiaryService.Callback;
-import org.bosik.diacomp.android.BuildConfig;
-import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.utils.Utils;
@@ -76,6 +75,45 @@ public class ActivityMain extends Activity implements OnClickListener
 		{
 			this.showProgress = showProgress;
 		}
+	}
+
+	/**
+	 * Результат авторизации
+	 * 
+	 * @author Bosik
+	 */
+	@Deprecated
+	public enum LoginResult
+	{
+		/**
+		 * Одно из полей не определено
+		 */
+		FAIL_UNDEFIELDS,
+
+		/**
+		 * Сервер не отвечает
+		 */
+		FAIL_CONNECTION,
+
+		/**
+		 * Сервер отвечает некорректно
+		 */
+		FAIL_FORMAT,
+
+		/**
+		 * Сервер сообщает об устаревшей версии API
+		 */
+		FAIL_APIVERSION,
+
+		/**
+		 * Сервер сообщает о неправильной паре "логин-пароль"
+		 */
+		FAIL_AUTH,
+
+		/**
+		 * Сервер сообщает об успешной авторизации
+		 */
+		DONE
 	}
 
 	private class AsyncTaskAuthAndSync extends AsyncTask<SyncParams, Integer, LoginResult> implements Callback
