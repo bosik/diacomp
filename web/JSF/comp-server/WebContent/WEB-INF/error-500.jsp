@@ -1,5 +1,5 @@
 <%@ page isErrorPage="true"
-	import="java.io.*,org.bosik.diacomp.web.backend.common.ResponseBuilder"
+	import="java.io.*,org.bosik.diacomp.core.rest.ResponseBuilder"
 	contentType="text/plain"%><%
 	//StringWriter stringWriter = new StringWriter();
 	//PrintWriter printWriter = new PrintWriter(stringWriter);
