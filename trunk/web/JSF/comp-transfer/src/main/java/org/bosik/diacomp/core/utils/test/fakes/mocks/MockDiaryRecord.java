@@ -15,13 +15,14 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 {
 	private Mock<FoodMassed>	mockFoodMassed	= new MockFoodMassed();
 
+	@Override
 	public List<DiaryRecord> getSamples()
 	{
 		List<DiaryRecord> samples = new ArrayList<DiaryRecord>();
 
 		samples.add(new BloodRecord(Utils.time(2012, 04, 18, 16, 42, 05), 7.1, 0));
-		samples.add(new BloodRecord(Utils.time(2012, 04, 18, 16, 50, 28), 7.0, 1));
-		samples.add(new BloodRecord(Utils.time(2012, 04, 18, 17, 00, 00), 5.2, 2));
+		samples.add(new BloodRecord(Utils.time(2013, 04, 18, 16, 50, 28), 7.0, 1));
+		samples.add(new BloodRecord(Utils.time(2010, 04, 18, 17, 00, 00), 5.2, 2));
 
 		samples.add(new InsRecord(Utils.time(2012, 04, 18, 17, 20, 00), 16.0));
 
@@ -30,26 +31,27 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 		meal1.add(new FoodMassed("Хлеб чёрный \"Премиум\"", 5.5, 0.9, 44.1, 206.3, 42));
 		samples.add(meal1);
 
-		MealRecord meal2 = new MealRecord(Utils.time(2012, 04, 18, 23, 59, 59), true);
+		MealRecord meal2 = new MealRecord(Utils.time(2009, 04, 18, 23, 59, 59), true);
 		meal2.add(new FoodMassed("Сахар", 0.0, 0.0, 99.8, 379.0, 6.0));
 		samples.add(meal2);
 
-		MealRecord meal3 = new MealRecord(Utils.time(2012, 04, 18, 23, 59, 59), true);
+		MealRecord meal3 = new MealRecord(Utils.time(2030, 04, 18, 23, 59, 59), true);
 		for (FoodMassed f : mockFoodMassed.getSamples())
 		{
 			meal3.add(f);
 		}
 		samples.add(meal3);
 
-		samples.add(new MealRecord(Utils.time(2012, 04, 18, 0, 0, 0), true));
+		samples.add(new MealRecord(Utils.time(2050, 04, 18, 0, 0, 0), true));
 
-		samples.add(new NoteRecord(Utils.time(2014, 01, 01, 12, 00, 00), "Just a тестовая record with \"quotes\""));
+		samples.add(new NoteRecord(Utils.time(2114, 01, 01, 12, 00, 00), "Just a тестовая record with \"quotes\""));
 
-		samples.add(new NoteRecord(Utils.time(2013, 12, 31, 23, 59, 59), ""));
+		samples.add(new NoteRecord(Utils.time(2080, 12, 31, 23, 59, 59), ""));
 
 		return samples;
 	}
 
+	@Override
 	public void compare(DiaryRecord exp, DiaryRecord act)
 	{
 		TestCase.assertEquals(Utils.formatTimeUTC(exp.getTime()), Utils.formatTimeUTC(act.getTime()));
