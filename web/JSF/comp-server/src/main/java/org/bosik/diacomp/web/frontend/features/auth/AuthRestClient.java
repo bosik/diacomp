@@ -1,9 +1,9 @@
 package org.bosik.diacomp.web.frontend.features.auth;
 
 import javax.ws.rs.core.MediaType;
+import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
-import org.bosik.diacomp.web.backend.common.StdResponse;
 import org.bosik.diacomp.web.frontend.common.RestClient;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
