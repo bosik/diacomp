@@ -26,9 +26,9 @@ import org.bosik.diacomp.android.backend.common.webclient.exceptions.ResponseFor
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.TaskExecutionException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFieldException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.WebClientException;
+import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.utils.Utils;
 import org.json.JSONException;
-import org.json.JSONObject;
 import android.util.Log;
 
 public class WebClient
@@ -65,62 +65,6 @@ public class WebClient
 
 	private long				lastRequestTime			= 0;
 	private static final long	TIME_LIMIT				= 200;
-
-	/* ================================ СЛУЖЕБНЫЕ МЕТОДЫ ================================ */
-
-	/**
-	 * Преобразует локальное время в серверное. При необходимости пытается предварительно
-	 * авторизоваться.
-	 * 
-	 * @param time
-	 *            Локальное время
-	 * @return Серверное время
-	 */
-	public Date localToServer(Date time)
-	{
-		if (null == time)
-		{
-			throw new NullPointerException("Specified argument is null");
-		}
-		if (null == timeShift)
-		{
-			login();
-		}
-
-		/*
-		 * if ((timeShift == null) && (login() != LoginResult.DONE)) { throw new
-		 * NullPointerException
-		 * ("WebDiaryService.localToServer(): TimeShift is null, can't login to fix"); }
-		 */
-
-		return new Date(time.getTime() - timeShift);
-	}
-
-	/**
-	 * Преобразует серверное время в локальное. При необходимости пытается предварительно
-	 * авторизоваться.
-	 * 
-	 * @param time
-	 *            Серверное время
-	 * @return Локальное время
-	 */
-	public Date serverToLocal(Date time)
-	{
-		if (time == null)
-		{
-			throw new NullPointerException("Specified argument is null");
-		}
-		if (null == timeShift)
-		{
-			login();
-		}
-		/*
-		 * if ((timeShift == null) && (login() != LoginResult.DONE)) { throw new
-		 * NullPointerException
-		 * ("WebDiaryService.serverToLocal(): TimeShift is null, can't login to fix"); }
-		 */
-		return new Date(time.getTime() + timeShift);
-	}
 
 	/* ================================ ЗАПРОСЫ ================================ */
 
@@ -257,11 +201,9 @@ public class WebClient
 	{
 		try
 		{
-			JSONObject json = new JSONObject(resp);
-			int code = json.getInt("status");
-			String msg = json.getString("message");
+			StdResponse stdResp = new StdResponse(resp);
 
-			switch (code)
+			switch (stdResp.getCode())
 			{
 			// TODO: use constants
 
@@ -274,12 +216,17 @@ public class WebClient
 
 				default:
 				{
-					throw new TaskExecutionException(code, msg);
+					throw new TaskExecutionException(stdResp.getCode(), stdResp.getResponse());
 				}
 			}
 		}
 		catch (JSONException e)
 		{
+			/**
+			 * Android's default JSONException is checked, Maven's one isn't. If you got some
+			 * problems with it, verify if Maven dependency loads before Android's in project's
+			 * build path.
+			 */
 			throw new ResponseFormatException("Invalid JSON respose: " + resp);
 		}
 	}
@@ -395,14 +342,13 @@ public class WebClient
 
 		List<NameValuePair> p = new ArrayList<NameValuePair>();
 		p.add(new BasicNameValuePair("login", username));
-		p.add(new BasicNameValuePair("password", password));
+		p.add(new BasicNameValuePair("pass", password));
 		p.add(new BasicNameValuePair("api", API_VERSION));
-		p.add(new BasicNameValuePair("noredir", ""));
 
 		// отправляем
 
 		Date sendedTime = Utils.now();
-		String resp = doPost(server + URL_LOGINPAGE, p, CODEPAGE_UTF8);
+		String resp = doPost(server + "api/auth/login", p, CODEPAGE_UTF8);
 
 		if (resp != null)
 		{
