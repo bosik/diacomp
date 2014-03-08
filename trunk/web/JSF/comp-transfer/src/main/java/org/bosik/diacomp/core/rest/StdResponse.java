@@ -1,6 +1,5 @@
 package org.bosik.diacomp.core.rest;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class StdResponse
@@ -43,31 +42,17 @@ public class StdResponse
 
 	public static StdResponse decode(String s)
 	{
-		try
-		{
-			JSONObject json = new JSONObject(s);
-			int code = json.getInt("code");
-			String msg = json.has("resp") ? json.getString("resp") : "";
-			return new StdResponse(code, msg);
-		}
-		catch (JSONException e)
-		{
-			throw new RuntimeException("Invalid JSON: " + s, e);
-		}
+		JSONObject json = new JSONObject(s);
+		int code = json.getInt("code");
+		String msg = json.has("resp") ? json.getString("resp") : "";
+		return new StdResponse(code, msg);
 	}
 
 	public static String encode(StdResponse resp)
 	{
-		try
-		{
-			JSONObject json = new JSONObject();
-			json.put("code", resp.getCode());
-			json.put("resp", resp.getResponse());
-			return json.toString();
-		}
-		catch (JSONException e)
-		{
-			throw new RuntimeException(e);
-		}
+		JSONObject json = new JSONObject();
+		json.put("code", resp.getCode());
+		json.put("resp", resp.getResponse());
+		return json.toString();
 	}
 }
