@@ -3,10 +3,11 @@ package org.bosik.diacomp.android.persistence.services.local;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiaryService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.diary.TestDiaryService;
+import org.bosik.diacomp.core.services.diary.TestDiaryServiceContract;
 import android.content.ContentResolver;
 import android.test.AndroidTestCase;
 
-public class TestLocalDiaryService extends AndroidTestCase
+public class TestLocalDiaryService extends AndroidTestCase implements TestDiaryServiceContract
 {
 	private static TestDiaryService	test;
 
@@ -67,31 +68,37 @@ public class TestLocalDiaryService extends AndroidTestCase
 	// Log.e(TAG, "testCount: " + String.valueOf(test.testCount()));
 	// }
 
+	@Override
 	public void test_getRecords_Deleting_Removed()
 	{
 		test.test_getRecords_Deleting_Removed();
 	}
 
+	@Override
 	public void test_getRecordsViaPeriod_Normal_RestoredOrdered()
 	{
 		test.test_getRecordsViaPeriod_Normal_RestoredOrdered();
 	}
 
+	@Override
 	public void test_getRecordsViaTimestamp_Normal_ok()
 	{
 		test.test_getRecordsViaTimestamp_Normal_ok();
 	}
 
+	@Override
 	public void test_PersistanceMultiple()
 	{
 		test.test_PersistanceMultiple();
 	}
 
+	@Override
 	public void test_postRecords_Update_UpdatedOk()
 	{
 		test.test_postRecords_Update_UpdatedOk();
 	}
 
+	@Override
 	public void test_postRecordsGetRecordsViaPeriodAndGuid_Normal_RestoredExactly()
 	{
 		test.test_postRecordsGetRecordsViaPeriodAndGuid_Normal_RestoredExactly();
