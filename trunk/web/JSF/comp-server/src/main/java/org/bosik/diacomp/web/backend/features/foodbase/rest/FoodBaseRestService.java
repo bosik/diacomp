@@ -8,14 +8,14 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
-import org.bosik.diacomp.web.backend.common.ResponseBuilder;
 
 @Path("food/")
 public class FoodBaseRestService
 {
 	@Context
-	HttpServletRequest									req;
+	HttpServletRequest	req;
 
 	//	private static final Parser<String>					parserString				= new Parser<String>()
 	//																					{

@@ -1,12 +1,12 @@
 package org.bosik.diacomp.web.frontend.common;
 
+import org.bosik.diacomp.core.rest.ResponseBuilder;
+import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.web.backend.common.Config;
-import org.bosik.diacomp.web.backend.common.ResponseBuilder;
-import org.bosik.diacomp.web.backend.common.StdResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
