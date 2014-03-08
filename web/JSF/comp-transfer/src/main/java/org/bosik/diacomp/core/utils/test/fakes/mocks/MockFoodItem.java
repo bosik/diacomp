@@ -1,16 +1,17 @@
 package org.bosik.diacomp.core.utils.test.fakes.mocks;
 
+import static junit.framework.TestCase.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 
-public class MockFoodItem extends TestCase implements Mock<FoodItem>
+public class MockFoodItem implements Mock<FoodItem>
 {
 	private static final Mock<Food>	mockFood	= new MockFood();
 
+	@Override
 	public List<FoodItem> getSamples()
 	{
 		List<Food> foods = mockFood.getSamples();
@@ -37,6 +38,7 @@ public class MockFoodItem extends TestCase implements Mock<FoodItem>
 		return samples;
 	}
 
+	@Override
 	public void compare(FoodItem exp, FoodItem act)
 	{
 		mockFood.compare(exp, act);

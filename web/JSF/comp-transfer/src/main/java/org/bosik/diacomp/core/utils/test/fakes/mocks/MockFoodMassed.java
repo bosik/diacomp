@@ -8,10 +8,11 @@ import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.utils.Utils;
 
-public class MockFoodMassed extends TestCase implements Mock<FoodMassed>
+public class MockFoodMassed implements Mock<FoodMassed>
 {
 	private static final Mock<Food>	mockFood	= new MockFood();
 
+	@Override
 	public List<FoodMassed> getSamples()
 	{
 		List<Food> foods = mockFood.getSamples();
@@ -37,10 +38,11 @@ public class MockFoodMassed extends TestCase implements Mock<FoodMassed>
 		return samples;
 	}
 
+	@Override
 	public void compare(FoodMassed exp, FoodMassed act)
 	{
 		mockFood.compare(exp, act);
 
-		assertEquals(exp.getMass(), act.getMass(), Utils.EPS);
+		TestCase.assertEquals(exp.getMass(), act.getMass(), Utils.EPS);
 	}
 }

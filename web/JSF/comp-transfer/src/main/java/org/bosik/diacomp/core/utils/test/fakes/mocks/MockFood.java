@@ -1,12 +1,13 @@
 package org.bosik.diacomp.core.utils.test.fakes.mocks;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
-import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.utils.Utils;
 
-public class MockFood extends TestCase implements Mock<Food>
+public class MockFood implements Mock<Food>
 {
 	private static Food food(String name, double relProts, double relFats, double relCarbs, double relValue)
 	{
@@ -19,6 +20,7 @@ public class MockFood extends TestCase implements Mock<Food>
 		return f;
 	}
 
+	@Override
 	public List<Food> getSamples()
 	{
 		List<Food> samples = new ArrayList<Food>();
@@ -34,6 +36,7 @@ public class MockFood extends TestCase implements Mock<Food>
 		return samples;
 	}
 
+	@Override
 	public void compare(Food exp, Food act)
 	{
 		assertNotNull(exp);
