@@ -13,7 +13,7 @@ import org.bosik.diacomp.core.utils.test.fakes.mocks.MockDiaryRecord;
 import org.bosik.diacomp.core.utils.test.fakes.mocks.MockVersionedConverter;
 import org.bosik.diacomp.core.utils.test.fakes.mocks.VersionedUtils;
 
-public abstract class TestDiaryService extends TestCase
+public abstract class TestDiaryService extends TestCase implements TestDiaryServiceContract
 {
 	private DiaryService								diaryService;
 	private static final Mock<DiaryRecord>				mockDiaryRecord	= new MockDiaryRecord();
@@ -34,6 +34,7 @@ public abstract class TestDiaryService extends TestCase
 		}
 	}
 
+	@Override
 	public void test_PersistanceMultiple()
 	{
 		List<Versioned<DiaryRecord>> org = mockVersioned.getSamples();
@@ -123,6 +124,7 @@ public abstract class TestDiaryService extends TestCase
 		}
 	}
 
+	@Override
 	public void test_getRecordsViaTimestamp_Normal_ok()
 	{
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
@@ -156,6 +158,7 @@ public abstract class TestDiaryService extends TestCase
 		compareItems(originalItems, restoredItems, false);
 	}
 
+	@Override
 	public void test_getRecords_Deleting_Removed()
 	{
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
@@ -238,6 +241,7 @@ public abstract class TestDiaryService extends TestCase
 		compareItems(originalItems, restoredItems, true);
 	}
 
+	@Override
 	public void test_getRecordsViaPeriod_Normal_RestoredOrdered()
 	{
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
@@ -276,6 +280,7 @@ public abstract class TestDiaryService extends TestCase
 		checkTimeOrder(restoredItems);
 	}
 
+	@Override
 	public void test_postRecordsGetRecordsViaPeriodAndGuid_Normal_RestoredExactly()
 	{
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
@@ -325,6 +330,7 @@ public abstract class TestDiaryService extends TestCase
 		compareItems(originalItems, restoredItems, true);
 	}
 
+	@Override
 	public void test_postRecords_Update_UpdatedOk()
 	{
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
