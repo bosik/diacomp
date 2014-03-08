@@ -42,11 +42,11 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 		}
 		samples.add(meal3);
 
-		samples.add(new MealRecord(Utils.time(2050, 04, 18, 0, 0, 0), true));
+		samples.add(new MealRecord(Utils.time(2035, 04, 18, 0, 0, 0), true));
 
-		samples.add(new NoteRecord(Utils.time(2114, 01, 01, 12, 00, 00), "Just a тестовая record with \"quotes\""));
+		samples.add(new NoteRecord(Utils.time(2016, 01, 01, 12, 00, 00), "Just a тестовая record with \"quotes\""));
 
-		samples.add(new NoteRecord(Utils.time(2080, 12, 31, 23, 59, 59), ""));
+		samples.add(new NoteRecord(Utils.time(2029, 12, 31, 23, 59, 59), ""));
 
 		return samples;
 	}
