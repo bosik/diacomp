@@ -21,12 +21,13 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.AuthException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.ConnectionException;
-import org.bosik.diacomp.android.backend.common.webclient.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.ResponseFormatException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.TaskExecutionException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFieldException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.WebClientException;
+import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
+import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.json.JSONException;
 import android.util.Log;
@@ -37,7 +38,7 @@ public class WebClient
 
 	/* ================ КОНСТАНТЫ ================ */
 
-	private static final String	API_VERSION				= "1.2";
+	private static final int	API_VERSION				= 20;
 	private static final String	URL_LOGINPAGE			= "login.php";
 	private static final String	URL_CONSOLE				= "console.php";
 	private static final String	RESPONSE_UNAUTH			= "Error: log in first";
@@ -56,7 +57,6 @@ public class WebClient
 	/* ================ ПОЛЯ ================ */
 
 	private HttpClient			mHttpClient				= null;
-	private Long				timeShift				= null;
 	private boolean				logged					= false;
 	private String				username				= "";								// not
 																							// null!
@@ -165,7 +165,7 @@ public class WebClient
 		}
 	}
 
-	private String doGetSmart(String URL, String codePage) throws WebClientException
+	public String doGetSmart(String URL, String codePage) throws WebClientException
 	{
 		String resp = doGet(URL, codePage);
 
@@ -181,7 +181,7 @@ public class WebClient
 		}
 	}
 
-	private String doPostSmart(String URL, List<NameValuePair> params, String codePage) throws WebClientException
+	public String doPostSmart(String URL, List<NameValuePair> params, String codePage) throws WebClientException
 	{
 		String resp = doPost(URL, params, codePage);
 
@@ -302,7 +302,6 @@ public class WebClient
 
 	public void login() throws WebClientException
 	{
-		Log.i(TAG, "login()");
 		logged = false;
 
 		// проверки
@@ -322,19 +321,6 @@ public class WebClient
 
 		if (undefServer || undefLogin || undefPassword)
 		{
-			if (undefLogin)
-			{
-				Log.e(TAG, "Login is null or empty");
-			}
-			if (undefPassword)
-			{
-				Log.e(TAG, "Password is null or empty");
-			}
-			if (undefServer)
-			{
-				Log.e(TAG, "Server is null or empty");
-			}
-
 			throw new UndefinedFieldException(undefServer, undefLogin, undefPassword);
 		}
 
@@ -343,59 +329,44 @@ public class WebClient
 		List<NameValuePair> p = new ArrayList<NameValuePair>();
 		p.add(new BasicNameValuePair("login", username));
 		p.add(new BasicNameValuePair("pass", password));
-		p.add(new BasicNameValuePair("api", API_VERSION));
+		p.add(new BasicNameValuePair("api", String.valueOf(API_VERSION)));
 
 		// отправляем
 
-		Date sendedTime = Utils.now();
-		String resp = doPost(server + "api/auth/login", p, CODEPAGE_UTF8);
+		String resp = doPost(server + "api/auth/login/", p, CODEPAGE_UTF8);
 
 		if (resp != null)
 		{
-			Log.d(TAG, "login(): response is " + resp);
-			String[] det = resp.split("\\|");
-
-			if (det.length == 2)
+			try
 			{
-				if (det[0].equals(RESPONSE_DONE))
-				{
-					Log.d(TAG, "login(): response means DONE, parsing time...");
-					Date serverTime;
-					serverTime = Utils.parseTimeUTC(det[1]);
-					timeShift = ((sendedTime.getTime() + Utils.now().getTime()) / 2) - serverTime.getTime();
-					// WIN! Если дошли сюда, то всё прошло успешно.
-					logged = true;
+				StdResponse stdResp = new StdResponse(resp);
 
-					Log.d(TAG, "login(): logged OK");
-				}
-				else if (det[0].equals(RESPONSE_FAIL))
+				switch (stdResp.getCode())
 				{
-					if (det[1].equals(RESPONSE_FAIL_AUTH))
+					case ResponseBuilder.CODE_OK:
+					{
+						logged = true;
+						break;
+					}
+					case ResponseBuilder.CODE_BADCREDENTIALS:
 					{
 						throw new AuthException("Bad username/password");
 					}
-					else if (det[1].equals(RESPONSE_FAIL_APIVER))
+					// TODO: no 4050 (deprecated, but still supported) handling
+					case ResponseBuilder.CODE_UNSUPPORTED_API:
 					{
-						throw new DeprecatedAPIException("API " + API_VERSION + " is deprecated");
+						throw new UnsupportedAPIException(stdResp.getResponse());
 					}
-					else
+					default:
 					{
-						throw new ResponseFormatException("Bad format: failed with comment '" + det[1] + "'");
+						throw new TaskExecutionException(stdResp.getCode(), "Failed with message "
+								+ stdResp.getResponse());
 					}
-				}
-				else
-				{
-					throw new ResponseFormatException("Bad format: Unknown identificator '" + det[0] + "'");
 				}
 			}
-			else
+			catch (JSONException e)
 			{
-				String msg = "Bad format: split count != 2; Content:";
-				for (int i = 0; i < det.length; i++)
-				{
-					msg += "\ndet[" + i + "]=" + det[i];
-				}
-				throw new ResponseFormatException(msg);
+				throw new ResponseFormatException("Mailformed response: " + resp, e);
 			}
 		}
 		else
