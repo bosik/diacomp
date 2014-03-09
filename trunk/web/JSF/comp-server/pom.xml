@@ -82,6 +82,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>comp-server</finalName>
 		<plugins>
 			<plugin>
 				<!-- This plugin is needed for the servlet example -->
