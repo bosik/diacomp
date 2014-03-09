@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.utills;
+package org.bosik.diacomp.core.utils;
 
 import java.text.ParseException;
 import java.util.Date;
