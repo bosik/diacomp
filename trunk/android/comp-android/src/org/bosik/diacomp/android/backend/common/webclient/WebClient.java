@@ -463,7 +463,7 @@ public class WebClient
 		String query = server + URL_CONSOLE + "?diary:download&format=json&dates=";
 		for (Date date : dates)
 		{
-			query += Utils.formatDate(date) + ",";
+			query += Utils.formatDateUTC(date) + ",";
 		}
 
 		Log.d(TAG, "getPages: query=" + query);

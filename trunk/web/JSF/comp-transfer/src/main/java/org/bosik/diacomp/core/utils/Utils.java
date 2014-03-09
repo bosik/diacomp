@@ -44,13 +44,17 @@ public class Utils
 	public static final SimpleDateFormat	STD_FORMAT_TIME_UTC	= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 	public static final SimpleDateFormat	STD_FORMAT_TIME_LOC	= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
 																		Locale.getDefault());
-	public static final SimpleDateFormat	STD_DATE_FORMAT		= new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+	public static final SimpleDateFormat	STD_FORMAT_DATE_UTC	= new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+	public static final SimpleDateFormat	STD_FORMAT_DATE_LOC	= new SimpleDateFormat("yyyy-MM-dd",
+																		Locale.getDefault());
 
 	// статическая инициализация
 	static
 	{
 		STD_FORMAT_TIME_UTC.setTimeZone(TimeZone.getTimeZone("UTC"));
 		STD_FORMAT_TIME_LOC.setTimeZone(TimeZone.getDefault());
+		STD_FORMAT_DATE_UTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+		STD_FORMAT_DATE_LOC.setTimeZone(TimeZone.getDefault());
 
 		NumberFormat f = NumberFormat.getInstance(Locale.US);
 		if (f instanceof DecimalFormat)
@@ -129,16 +133,14 @@ public class Utils
 		return (c.get(Calendar.HOUR_OF_DAY) * MinPerHour) + c.get(Calendar.MINUTE);
 	}
 
-	/**
-	 * [tested] Преобразует дату в формат сервера STD_DATE_FORMAT
-	 * 
-	 * @param date
-	 *            Дата
-	 * @return Строка
-	 */
-	public static String formatDate(Date date)
+	public static String formatDateUTC(Date date)
 	{
-		return STD_DATE_FORMAT.format(date);
+		return STD_FORMAT_DATE_UTC.format(date);
+	}
+
+	public static String formatDateLocal(Date date)
+	{
+		return STD_FORMAT_DATE_LOC.format(date);
 	}
 
 	/**
@@ -179,17 +181,14 @@ public class Utils
 		}
 	}
 
-	/**
-	 * [tested] Читает дату из строки формата STD_DATE_FORMAT
-	 * 
-	 * @param date
-	 *            Строка, хранящая дату
-	 * @return Дата
-	 * @throws ParseException
-	 */
-	public static Date parseDate(String date) throws ParseException
+	public static Date parseDateUTC(String date) throws ParseException
 	{
-		return STD_DATE_FORMAT.parse(date);
+		return STD_FORMAT_DATE_UTC.parse(date);
+	}
+
+	public static Date parseDateLocal(String date) throws ParseException
+	{
+		return STD_FORMAT_DATE_LOC.parse(date);
 	}
 
 	/**
@@ -278,6 +277,7 @@ public class Utils
 
 		Calendar c = Calendar.getInstance();
 		c.setTime(lastDate);
+		c.setTimeZone(TimeZone.getTimeZone("UTC"));
 		c.set(Calendar.HOUR_OF_DAY, 0);
 		c.set(Calendar.MINUTE, 0);
 		c.set(Calendar.SECOND, 0);

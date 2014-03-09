@@ -181,8 +181,8 @@ public class TestUtils extends TestCase
 
 	public void testFormatDate()
 	{
-		assertEquals("2012-04-02", Utils.formatDate(Utils.date(2012, 04, 02)));
-		assertEquals("2012-05-01", Utils.formatDate(Utils.date(2012, 05, 01)));
+		assertEquals("2012-04-02", Utils.formatDateUTC(Utils.date(2012, 04, 02)));
+		assertEquals("2012-05-01", Utils.formatDateUTC(Utils.date(2012, 05, 01)));
 	}
 
 	public void testFormatTime()
@@ -201,8 +201,8 @@ public class TestUtils extends TestCase
 
 	public void testParseDate() throws ParseException
 	{
-		assertEquals(Utils.date(2012, 04, 02).getTime(), Utils.parseDate("2012-04-02").getTime());
-		assertEquals(Utils.date(2012, 05, 01).getTime(), Utils.parseDate("2012-05-01").getTime());
+		assertEquals(Utils.date(2012, 04, 02), Utils.parseDateUTC("2012-04-02"));
+		assertEquals(Utils.date(2012, 05, 01), Utils.parseDateUTC("2012-05-01"));
 	}
 
 	public void testGetPrevDay()
