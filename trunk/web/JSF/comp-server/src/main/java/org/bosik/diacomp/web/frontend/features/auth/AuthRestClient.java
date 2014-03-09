@@ -7,6 +7,7 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.web.frontend.common.RestClient;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.representation.Form;
 
 public class AuthRestClient extends RestClient implements AuthService
 {
@@ -16,10 +17,11 @@ public class AuthRestClient extends RestClient implements AuthService
 		WebResource resource = getResource("api/auth/login");
 		try
 		{
-			resource = resource.queryParam("login", login);
-			resource = resource.queryParam("pass", pass);
-			resource = resource.queryParam("api", String.valueOf(apiVersion));
-			String str = resource.accept(MediaType.APPLICATION_JSON).post(String.class);
+			Form form = new Form();
+			form.add("login", login);
+			form.add("pass", pass);
+			form.add("api", String.valueOf(apiVersion));
+			String str = resource.accept(MediaType.APPLICATION_JSON).post(String.class, form);
 
 			StdResponse resp = new StdResponse(str);
 			checkResponse(resp);

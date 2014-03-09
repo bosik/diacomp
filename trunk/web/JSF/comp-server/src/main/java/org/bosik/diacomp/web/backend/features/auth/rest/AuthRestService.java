@@ -1,6 +1,8 @@
 package org.bosik.diacomp.web.backend.features.auth.rest;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -18,6 +20,8 @@ import org.bosik.diacomp.web.backend.common.UserSessionUtils;
 import org.bosik.diacomp.web.backend.features.auth.function.AuthDAO;
 import org.bosik.diacomp.web.backend.features.auth.function.MySQLAuthDAO;
 
+//FIXME: change all queryParam's to form-based in all POST requests
+
 @Path("auth/")
 public class AuthRestService
 {
@@ -29,9 +33,28 @@ public class AuthRestService
 	@POST
 	@Path("login")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response login(@QueryParam("login") String login, @QueryParam("pass") String pass,
-			@QueryParam("api") int apiVersion)
+	public Response login(@FormParam("login") String login, @FormParam("pass") String pass,
+			@FormParam("api") @DefaultValue("-1") int apiVersion)
 	{
+		if (login == null)
+		{
+			// TODO: change to BAD_REQUEST
+			String resp = ResponseBuilder.build(ResponseBuilder.CODE_FAIL, "Parameter 'login' is missing");
+			return Response.ok(resp).build();
+		}
+		if (pass == null)
+		{
+			// TODO: change to BAD_REQUEST
+			String resp = ResponseBuilder.build(ResponseBuilder.CODE_FAIL, "Parameter 'pass' is missing");
+			return Response.ok(resp).build();
+		}
+		if (apiVersion == -1)
+		{
+			// TODO: change to BAD_REQUEST
+			String resp = ResponseBuilder.build(ResponseBuilder.CODE_FAIL, "Parameter 'api' is missing");
+			return Response.ok(resp).build();
+		}
+
 		try
 		{
 			int id = authDao.login(login, pass, apiVersion);
