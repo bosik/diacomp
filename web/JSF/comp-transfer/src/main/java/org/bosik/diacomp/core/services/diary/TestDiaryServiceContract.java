@@ -2,15 +2,15 @@ package org.bosik.diacomp.core.services.diary;
 
 public interface TestDiaryServiceContract
 {
-	void test_PersistanceMultiple();
+	void test_PostRecordsGetRecordsViaGuid_Normal_RestoredOK();
 
-	void test_getRecordsViaTimestamp_Normal_ok();
+	void test_PostRecordsGetRecordsViaTimestamp_Normal_RestoredOK();
 
-	void test_getRecords_Deleting_Removed();
+	void test_PostRecordsGetRecords_Deleting_Removed();
 
-	void test_getRecordsViaPeriod_Normal_RestoredOrdered();
+	void test_PostRecordsGetRecordsViaPeriod_Normal_RestoredOrdered();
 
-	void test_postRecordsGetRecordsViaPeriodAndGuid_Normal_RestoredExactly();
+	void test_PostRecordsGetRecordsViaPeriod_Normal_RestoredOK();
 
-	void test_postRecords_Update_UpdatedOk();
+	void test_PostRecordsGetRecordsViaGuid_Update_UpdatedOk();
 }

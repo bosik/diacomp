@@ -64,16 +64,45 @@ public class WebDiaryService implements DiaryService
 	@Override
 	public List<Versioned<DiaryRecord>> getRecords(Date time, boolean includeRemoved) throws CommonServiceException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		try
+		{
+			String query = "api/diary/new/?";
+			query += "mod_after=" + Utils.formatTimeUTC(time);
+			query += "&show_rem=" + Utils.formatBooleanStr(includeRemoved);
+
+			String s = webClient.doGetSmart(query, WebClient.CODEPAGE_UTF8);
+			StdResponse resp = new StdResponse(s);
+			WebClient.checkResponse(resp);
+
+			return serializerV.readAll(resp.getResponse());
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(Date fromDate, Date toDate, boolean includeRemoved)
+	public List<Versioned<DiaryRecord>> getRecords(Date fromTime, Date toTime, boolean includeRemoved)
 			throws CommonServiceException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		try
+		{
+			String query = "api/diary/period/?";
+			query += "start_time=" + Utils.formatTimeUTC(fromTime);
+			query += "&end_time=" + Utils.formatTimeUTC(toTime);
+			query += "&show_rem=" + Utils.formatBooleanStr(includeRemoved);
+
+			String s = webClient.doGetSmart(query, WebClient.CODEPAGE_UTF8);
+			StdResponse resp = new StdResponse(s);
+			WebClient.checkResponse(resp);
+
+			return serializerV.readAll(resp.getResponse());
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
 	}
 
 	@Override
