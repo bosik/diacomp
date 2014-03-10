@@ -14,6 +14,7 @@ import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.frontend.common.RestClient;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.representation.Form;
 
 public class DiaryRestClient extends RestClient implements DiaryService
 {
@@ -89,8 +90,9 @@ public class DiaryRestClient extends RestClient implements DiaryService
 		WebResource resource = getResource("api/diary/");
 		try
 		{
-			String items = serializer.writeAll(records);
-			String str = resource.accept(MediaType.APPLICATION_JSON).put(String.class, items);
+			Form form = new Form();
+			form.add("items", serializer.writeAll(records));
+			String str = resource.accept(MediaType.APPLICATION_JSON).put(String.class, form);
 
 			StdResponse resp = new StdResponse(str);
 			checkResponse(resp);
