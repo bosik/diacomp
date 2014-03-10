@@ -69,38 +69,38 @@ public class TestLocalDiaryService extends AndroidTestCase implements TestDiaryS
 	// }
 
 	@Override
-	public void test_getRecords_Deleting_Removed()
+	public void test_PostRecordsGetRecords_Deleting_Removed()
 	{
-		test.test_getRecords_Deleting_Removed();
+		test.test_PostRecordsGetRecords_Deleting_Removed();
 	}
 
 	@Override
-	public void test_getRecordsViaPeriod_Normal_RestoredOrdered()
+	public void test_PostRecordsGetRecordsViaPeriod_Normal_RestoredOrdered()
 	{
-		test.test_getRecordsViaPeriod_Normal_RestoredOrdered();
+		test.test_PostRecordsGetRecordsViaPeriod_Normal_RestoredOrdered();
 	}
 
 	@Override
-	public void test_getRecordsViaTimestamp_Normal_ok()
+	public void test_PostRecordsGetRecordsViaTimestamp_Normal_RestoredOK()
 	{
-		test.test_getRecordsViaTimestamp_Normal_ok();
+		test.test_PostRecordsGetRecordsViaTimestamp_Normal_RestoredOK();
 	}
 
 	@Override
-	public void test_PersistanceMultiple()
+	public void test_PostRecordsGetRecordsViaGuid_Normal_RestoredOK()
 	{
-		test.test_PersistanceMultiple();
+		test.test_PostRecordsGetRecordsViaGuid_Normal_RestoredOK();
 	}
 
 	@Override
-	public void test_postRecords_Update_UpdatedOk()
+	public void test_PostRecordsGetRecordsViaGuid_Update_UpdatedOk()
 	{
-		test.test_postRecords_Update_UpdatedOk();
+		test.test_PostRecordsGetRecordsViaGuid_Update_UpdatedOk();
 	}
 
 	@Override
-	public void test_postRecordsGetRecordsViaPeriodAndGuid_Normal_RestoredExactly()
+	public void test_PostRecordsGetRecordsViaPeriod_Normal_RestoredOK()
 	{
-		test.test_postRecordsGetRecordsViaPeriodAndGuid_Normal_RestoredExactly();
+		test.test_PostRecordsGetRecordsViaPeriod_Normal_RestoredOK();
 	}
 }
