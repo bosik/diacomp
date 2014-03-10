@@ -13,6 +13,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -27,6 +28,9 @@ import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFi
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.WebClientException;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
+import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;
+import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.json.JSONException;
@@ -34,37 +38,36 @@ import android.util.Log;
 
 public class WebClient
 {
-	private static String		TAG						= WebClient.class.getSimpleName();
+	private static String		TAG				= WebClient.class.getSimpleName();
 
 	/* ================ КОНСТАНТЫ ================ */
 
-	private static final int	API_VERSION				= 20;
-	private static final String	URL_LOGINPAGE			= "login.php";
-	private static final String	URL_CONSOLE				= "console.php";
-	private static final String	RESPONSE_UNAUTH			= "Error: log in first";
-	private static final String	RESPONSE_DONE			= "DONE";
-	private static final String	RESPONSE_FAIL			= "FAIL";
-	private static final String	RESPONSE_FAIL_AUTH		= "BADNAME";
-	private static final String	RESPONSE_FAIL_APIVER	= "DEPAPI";
-	private static final String	RESPONSE_ONLINE			= "online";
-	// private static final String RESPONSE_OFFLINE = "offline";
-	private static final String	CODEPAGE_CP1251			= "Cp1251";
-	private static final String	CODEPAGE_UTF8			= "UTF-8";
-	// private static final String SERVER_CODEPAGE = "UTF-8";
+	private static final int	API_VERSION		= 20;
+	@Deprecated
+	private static final String	URL_LOGINPAGE	= "login.php";
+	@Deprecated
+	private static final String	URL_CONSOLE		= "console.php";
+	@Deprecated
+	private static final String	RESPONSE_UNAUTH	= "Error: log in first";
+	@Deprecated
+	private static final String	RESPONSE_ONLINE	= "online";
+	// TODO: verify if this codepage is necessary
+	public static final String	CODEPAGE_CP1251	= "Cp1251";
+	public static final String	CODEPAGE_UTF8	= "UTF-8";
 
-	private static final String	CODE_SPACE				= "%20";
+	private static final String	CODE_SPACE		= "%20";
 
 	/* ================ ПОЛЯ ================ */
 
-	private HttpClient			mHttpClient				= null;
-	private boolean				logged					= false;
-	private String				username				= "";								// not
-																							// null!
-	private String				password				= "";
-	private String				server					= "";
+	private HttpClient			mHttpClient		= null;
+	private boolean				logged			= false;
+	private String				username		= "";								// not
+																					// null!
+	private String				password		= "";
+	private String				server			= "";
 
-	private long				lastRequestTime			= 0;
-	private static final long	TIME_LIMIT				= 200;
+	private long				lastRequestTime	= 0;
+	private static final long	TIME_LIMIT		= 200;
 
 	/* ================================ ЗАПРОСЫ ================================ */
 
@@ -117,6 +120,8 @@ public class WebClient
 		// Log.i(TAG(), "doGet(), URL='" + URL + "'");
 		try
 		{
+			url = server + url;
+			// TODO: check if %20 replacement is necessary
 			HttpResponse resp = mHttpClient.execute(new HttpGet(url.replace(" ", CODE_SPACE)));
 			return formatResponse(resp, codePage);
 		}
@@ -148,14 +153,37 @@ public class WebClient
 			Utils.sleep(TIME_LIMIT - (now - lastRequestTime));
 		}
 
-		// Log.i(TAG(), "doPost(), URL='" + URL + "'");
 		try
 		{
 			HttpEntity entity = new UrlEncodedFormEntity(params, codePage);
-			HttpPost post = new HttpPost(url.replace(" ", CODE_SPACE));
+			HttpPost post = new HttpPost(server + url.replace(" ", CODE_SPACE));
 			post.addHeader(entity.getContentType());
 			post.setEntity(entity);
 			HttpResponse resp = mHttpClient.execute(post);
+
+			return formatResponse(resp, codePage);
+		}
+		catch (IOException e)
+		{
+			throw new ConnectionException("Failed to request " + url, e);
+		}
+	}
+
+	private String doPut(String url, List<NameValuePair> params, String codePage) throws WebClientException
+	{
+		long now = System.currentTimeMillis();
+		if ((now - lastRequestTime) < TIME_LIMIT)
+		{
+			Utils.sleep(TIME_LIMIT - (now - lastRequestTime));
+		}
+
+		try
+		{
+			HttpEntity entity = new UrlEncodedFormEntity(params, codePage);
+			HttpPut put = new HttpPut(server + url.replace(" ", CODE_SPACE));
+			put.addHeader(entity.getContentType());
+			put.setEntity(entity);
+			HttpResponse resp = mHttpClient.execute(put);
 
 			return formatResponse(resp, codePage);
 		}
@@ -194,6 +222,39 @@ public class WebClient
 		else
 		{
 			return resp;
+		}
+	}
+
+	public String doPutSmart(String URL, List<NameValuePair> params, String codePage) throws WebClientException
+	{
+		String resp = doPut(URL, params, codePage);
+
+		if (RESPONSE_UNAUTH.equals(resp))
+		{
+			Log.v(TAG, "doPostSmart(): Session timeout; re-login");
+			login();
+			return doPut(URL, params, codePage);
+		}
+		else
+		{
+			return resp;
+		}
+	}
+
+	public static void checkResponse(StdResponse resp) throws CommonServiceException
+	{
+		switch (resp.getCode())
+		{
+			case ResponseBuilder.CODE_OK:
+				return;
+			case ResponseBuilder.CODE_UNAUTHORIZED:
+				throw new NotAuthorizedException(resp.getResponse());
+			case ResponseBuilder.CODE_UNSUPPORTED_API:
+				throw new UnsupportedAPIException(resp.getResponse());
+			case ResponseBuilder.CODE_DEPRECATED_API:
+				throw new DeprecatedAPIException(resp.getResponse());
+			default: // case ResponseBuilder.CODE_FAIL:
+				throw new CommonServiceException(resp.getResponse());
 		}
 	}
 
@@ -333,7 +394,7 @@ public class WebClient
 
 		// отправляем
 
-		String resp = doPost(server + "api/auth/login/", p, CODEPAGE_UTF8);
+		String resp = doPost("api/auth/login/", p, CODEPAGE_UTF8);
 
 		if (resp != null)
 		{
@@ -383,7 +444,7 @@ public class WebClient
 
 			try
 			{
-				String resp = doGet(server + URL_LOGINPAGE + "?status", CODEPAGE_CP1251);
+				String resp = doGet(URL_LOGINPAGE + "?status", CODEPAGE_CP1251);
 				logged = RESPONSE_ONLINE.equals(resp);
 			}
 			catch (WebClientException e)
@@ -418,7 +479,7 @@ public class WebClient
 
 	public String getModList(String time)
 	{
-		return doGetSmart(server + WebClient.URL_CONSOLE + "?diary:getModList&time=" + time, CODEPAGE_CP1251);
+		return doGetSmart(WebClient.URL_CONSOLE + "?diary:getModList&time=" + time, CODEPAGE_CP1251);
 	}
 
 	public String getPages(List<Date> dates)
@@ -431,7 +492,7 @@ public class WebClient
 		// TODO: optimize if need (use StringBuilder)
 
 		// конструируем запрос
-		String query = server + URL_CONSOLE + "?diary:download&format=json&dates=";
+		String query = URL_CONSOLE + "?diary:download&format=json&dates=";
 		for (Date date : dates)
 		{
 			query += Utils.formatDateUTC(date) + ",";
@@ -473,7 +534,7 @@ public class WebClient
 	{
 		try
 		{
-			return Integer.parseInt(doGetSmart(server + URL_CONSOLE + "?foodbase:getVersion", CODEPAGE_CP1251));
+			return Integer.parseInt(doGetSmart(URL_CONSOLE + "?foodbase:getVersion", CODEPAGE_CP1251));
 		}
 		catch (NumberFormatException e)
 		{
@@ -485,7 +546,7 @@ public class WebClient
 	{
 		/**/long time = System.currentTimeMillis();
 
-		String source = doGetSmart(server + URL_CONSOLE + "?foodbase:download", CODEPAGE_UTF8);
+		String source = doGetSmart(URL_CONSOLE + "?foodbase:download", CODEPAGE_UTF8);
 
 		/**/Log.v(TAG, String.format("FoodBase downloaded in %d msec", System.currentTimeMillis() - time));
 
