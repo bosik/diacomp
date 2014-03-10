@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -167,12 +168,12 @@ public class DiaryRestService
 
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response post(String entity) throws CommonServiceException
+	public Response post(@FormParam("items") String items) throws CommonServiceException
 	{
 		try
 		{
 			int userId = UserSessionUtils.getId(req);
-			List<Versioned<DiaryRecord>> itemList = serializerVersionedRecord.readAll(entity);
+			List<Versioned<DiaryRecord>> itemList = serializerVersionedRecord.readAll(items);
 			diaryService.post(userId, itemList);
 
 			String response = ResponseBuilder.buildDone("Saved OK");
