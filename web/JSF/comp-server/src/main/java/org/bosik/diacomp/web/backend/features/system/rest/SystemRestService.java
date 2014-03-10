@@ -7,6 +7,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
+import org.bosik.diacomp.core.rest.StdResponse;
+import org.bosik.diacomp.web.backend.features.auth.function.MySQLAuthDAO;
 import org.json.JSONObject;
 
 @Path("info/")
@@ -14,22 +16,22 @@ import org.json.JSONObject;
 public class SystemRestService
 {
 	@GET
-	// @Path("")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAPIVersion()
 	{
 		try
 		{
+			// Can't use StdResponse as far as response is JSON, not regular escaped string
+
 			JSONObject info = new JSONObject();
-			info.put("current", "2");
-			info.put("support", "2");
+			info.put("current", MySQLAuthDAO.API_CURRENT);
+			info.put("support", MySQLAuthDAO.API_LEGACY);
 
-			JSONObject r = new JSONObject();
-			r.put("code", "0");
-			r.put("resp", info);
+			JSONObject resp = new JSONObject();
+			resp.put(StdResponse.TAG_CODE, ResponseBuilder.CODE_OK);
+			resp.put(StdResponse.TAG_RESPONSE, info);
 
-			String resp = r.toString();
-			return Response.ok(resp).build();
+			return Response.ok(resp.toString()).build();
 		}
 		catch (Exception e)
 		{

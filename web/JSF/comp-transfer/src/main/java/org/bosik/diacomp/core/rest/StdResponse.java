@@ -4,8 +4,11 @@ import org.json.JSONObject;
 
 public class StdResponse
 {
-	private int		code;
-	private String	response;
+	public static final String	TAG_CODE		= "code";
+	public static final String	TAG_RESPONSE	= "resp";
+
+	private int					code;
+	private String				response;
 
 	public StdResponse(int code, String response)
 	{
@@ -43,16 +46,16 @@ public class StdResponse
 	public static StdResponse decode(String s)
 	{
 		JSONObject json = new JSONObject(s);
-		int code = json.getInt("code");
-		String msg = json.has("resp") ? json.getString("resp") : "";
+		int code = json.getInt(TAG_CODE);
+		String msg = json.has(TAG_RESPONSE) ? json.getString(TAG_RESPONSE) : "";
 		return new StdResponse(code, msg);
 	}
 
 	public static String encode(StdResponse resp)
 	{
 		JSONObject json = new JSONObject();
-		json.put("code", resp.getCode());
-		json.put("resp", resp.getResponse());
+		json.put(TAG_CODE, resp.getCode());
+		json.put(TAG_RESPONSE, resp.getResponse());
 		return json.toString();
 	}
 }
