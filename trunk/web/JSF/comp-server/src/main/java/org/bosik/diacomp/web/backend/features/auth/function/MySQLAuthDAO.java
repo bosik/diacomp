@@ -14,8 +14,8 @@ public class MySQLAuthDAO implements AuthDAO
 {
 	private final MySQLAccess		db			= new MySQLAccess();
 	private static MessageDigest	md5digest;
-	private static final int		API_CURRENT	= 20;
-	private static final int		API_LEGACY	= 19;
+	public static final int			API_CURRENT	= 20;
+	public static final int			API_LEGACY	= 19;
 
 	{
 		try
