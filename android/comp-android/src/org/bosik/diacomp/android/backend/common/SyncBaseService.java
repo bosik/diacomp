@@ -4,7 +4,7 @@ import org.bosik.diacomp.core.services.BaseService;
 
 public class SyncBaseService
 {
-	private static final String	TAG	= SyncBaseService.class.getSimpleName();
+	// private static final String TAG = SyncBaseService.class.getSimpleName();
 
 	public static enum SyncResult
 	{
