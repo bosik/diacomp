@@ -16,7 +16,7 @@ import org.json.JSONArray;
 public class Utils
 {
 	// отладочная печать
-	private static final String				TAG					= "Utils";
+	// private static final String				TAG					= "Utils";
 
 	// константы
 	public static final int					MsecPerSec			= 1000;
