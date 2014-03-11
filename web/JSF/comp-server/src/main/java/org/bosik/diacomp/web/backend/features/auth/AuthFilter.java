@@ -15,14 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
-import org.bosik.diacomp.web.backend.features.auth.function.AuthDAO;
-import org.bosik.diacomp.web.backend.features.auth.function.FakeAuthDAO;
 
 @WebFilter("/AuthenticationFilter")
 public class AuthFilter implements Filter
 {
-	private AuthDAO						authService	= new FakeAuthDAO();
-
 	private static final List<String>	PUBLIC_URLS	= new LinkedList<String>();
 	{
 		PUBLIC_URLS.clear();
