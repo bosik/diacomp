@@ -1,5 +1,6 @@
 package org.bosik.diacomp.core.services;
 
+import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -10,7 +11,7 @@ public interface BaseService<Item>
 {
 	/**
 	 * Adds item to the list
-	 * 
+	 *
 	 * @param item
 	 * @return ID of created item
 	 * @throws PersistenceException
@@ -20,7 +21,7 @@ public interface BaseService<Item>
 
 	/**
 	 * Marks item with specified ID as deleted
-	 * 
+	 *
 	 * @param id
 	 * @throws ItemNotFoundException
 	 *             If no item with such ID found
@@ -31,45 +32,55 @@ public interface BaseService<Item>
 
 	/**
 	 * Returns all non-deleted items
-	 * 
+	 *
 	 * @return
 	 */
 	List<Versioned<Item>> findAll();
 
 	/**
 	 * Searches for non-deleted item with name containing specified string (case insensitive).
-	 * 
+	 *
 	 * @param filter
 	 * @return Item if found, null otherwise
 	 */
 	List<Versioned<Item>> findAny(String filter);
 
 	/**
+	 * Searches for all items modified after specified time (both deleted and non-deleted)
+	 *
+	 * @param time
+	 * @return
+	 */
+	List<Versioned<Item>> findModified(Date time);
+
+	/**
 	 * Searches for non-deleted item with exact name
-	 * 
+	 *
 	 * @param exactName
 	 * @return Item if found, null otherwise
 	 */
 	Versioned<Item> findOne(String exactName);
 
 	/**
-	 * Searches for non-deleted item with specified ID
-	 * 
-	 * @param id
+	 * Searches for items with specified IDs
+	 *
+	 * @param guids
+	 * @param showRemoved
+	 *            If deleted items should be included in the result
 	 * @return
 	 */
-	Versioned<Item> findById(String id);
+	List<Versioned<Item>> findById(List<String> guids, boolean showRemoved);
 
 	/**
 	 * Searches for all items (both deleted or not)
-	 * 
+	 *
 	 * @return
 	 */
 	List<Versioned<Item>> findSysAll();
 
 	/**
 	 * Searches for item (both deleted or not) with specified ID
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -77,7 +88,7 @@ public interface BaseService<Item>
 
 	/**
 	 * Updates single non-deleted item. Note: updating deleted item result in exception.
-	 * 
+	 *
 	 * @param item
 	 * @throws ItemNotFoundException
 	 *             If no non-deleted item with such ID found
