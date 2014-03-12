@@ -1,5 +1,6 @@
 package org.bosik.diacomp.android.backend.features.foodbase;
 
+import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
@@ -13,8 +14,8 @@ public class WebFoodBaseService implements FoodBaseService
 {
 	// private static final String TAG = WebFoodBaseService.class.getSimpleName();
 
-	private WebClient						webClient;
-	private Serializer<Versioned<FoodItem>>	serializer;
+	private final WebClient						webClient;
+	private final Serializer<Versioned<FoodItem>>	serializer;
 
 	public WebFoodBaseService(WebClient webClient, Serializer<Versioned<FoodItem>> serializer)
 	{
@@ -60,14 +61,6 @@ public class WebFoodBaseService implements FoodBaseService
 	}
 
 	@Override
-	public Versioned<FoodItem> findById(String id)
-	{
-		throw new UnsupportedOperationException();
-		// MemoryBase<FoodItem> base = load();
-		// return base.findById(id);
-	}
-
-	@Override
 	public Versioned<FoodItem> findOne(String exactName)
 	{
 		throw new UnsupportedOperationException();
@@ -93,6 +86,20 @@ public class WebFoodBaseService implements FoodBaseService
 
 	@Override
 	public Versioned<FoodItem> findSysById(String id)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Versioned<FoodItem>> findModified(Date time)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Versioned<FoodItem>> findById(List<String> guids, boolean showRemoved)
 	{
 		// TODO Auto-generated method stub
 		return null;
