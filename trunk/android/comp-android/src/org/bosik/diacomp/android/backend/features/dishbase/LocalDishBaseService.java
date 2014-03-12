@@ -1,5 +1,6 @@
 package org.bosik.diacomp.android.backend.features.dishbase;
 
+import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -10,7 +11,6 @@ import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 
 public class LocalDishBaseService implements DishBaseService
 {
-
 	@Override
 	public String add(Versioned<DishItem> item) throws PersistenceException
 	{
@@ -22,7 +22,6 @@ public class LocalDishBaseService implements DishBaseService
 	public void delete(String id) throws ItemNotFoundException, AlreadyDeletedException
 	{
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -40,6 +39,13 @@ public class LocalDishBaseService implements DishBaseService
 	}
 
 	@Override
+	public List<Versioned<DishItem>> findModified(Date time)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public Versioned<DishItem> findOne(String exactName)
 	{
 		// TODO Auto-generated method stub
@@ -47,7 +53,7 @@ public class LocalDishBaseService implements DishBaseService
 	}
 
 	@Override
-	public Versioned<DishItem> findById(String id)
+	public List<Versioned<DishItem>> findById(List<String> guids, boolean showRemoved)
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -71,7 +77,5 @@ public class LocalDishBaseService implements DishBaseService
 	public void update(Versioned<DishItem> item) throws ItemNotFoundException, PersistenceException
 	{
 		// TODO Auto-generated method stub
-
 	}
-
 }

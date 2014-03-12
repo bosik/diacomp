@@ -1,5 +1,6 @@
 package org.bosik.diacomp.android.backend.features.foodbase;
 
+import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -21,7 +22,6 @@ public class LocalFoodBaseService implements FoodBaseService
 	public void delete(String id) throws ItemNotFoundException, AlreadyDeletedException
 	{
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -39,6 +39,13 @@ public class LocalFoodBaseService implements FoodBaseService
 	}
 
 	@Override
+	public List<Versioned<FoodItem>> findModified(Date time)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public Versioned<FoodItem> findOne(String exactName)
 	{
 		// TODO Auto-generated method stub
@@ -46,7 +53,7 @@ public class LocalFoodBaseService implements FoodBaseService
 	}
 
 	@Override
-	public Versioned<FoodItem> findById(String id)
+	public List<Versioned<FoodItem>> findById(List<String> guids, boolean showRemoved)
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -70,6 +77,5 @@ public class LocalFoodBaseService implements FoodBaseService
 	public void update(Versioned<FoodItem> item) throws ItemNotFoundException, PersistenceException
 	{
 		// TODO Auto-generated method stub
-
 	}
 }
