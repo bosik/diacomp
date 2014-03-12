@@ -41,6 +41,17 @@ public class MySQLAccess
 	public static final String	COLUMN_DIARY_CONTENT	= "_Content";
 	public static final String	COLUMN_DIARY_TIMECACHE	= "_TimeCache";
 
+	// ======================================= Food table =======================================
+
+	// FIXME: check names
+	public static final String	TABLE_FOODBASE				= "foodbase";
+	public static final String	COLUMN_FOODBASE_GUID		= "_GUID";
+	public static final String	COLUMN_FOODBASE_USER		= "_UserID";
+	public static final String	COLUMN_FOODBASE_TIMESTAMP	= "_TimeStamp";
+	public static final String	COLUMN_FOODBASE_VERSION		= "_Version";
+	public static final String	COLUMN_FOODBASE_DELETED		= "_Deleted";
+	public static final String	COLUMN_FOODBASE_CONTENT		= "_Content";
+
 	public MySQLAccess()
 	{
 		try
