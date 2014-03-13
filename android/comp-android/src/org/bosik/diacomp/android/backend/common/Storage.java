@@ -4,7 +4,6 @@ import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiaryService;
 import org.bosik.diacomp.android.backend.features.diary.WebDiaryService;
 import org.bosik.diacomp.android.backend.features.foodbase.NewLocalFoodBaseService;
-import org.bosik.diacomp.android.backend.features.foodbase.WebFoodBaseService;
 import org.bosik.diacomp.android.frontend.activities.ActivityPreferences;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.Food;
@@ -25,7 +24,7 @@ import android.util.Log;
 
 /**
  * Stores application DAOs as singletons
- * 
+ *
  * @author Bosik
  */
 public class Storage
@@ -53,7 +52,7 @@ public class Storage
 
 	/**
 	 * Initializes the storage. Might be called sequentially
-	 * 
+	 *
 	 * @param context
 	 * @param resolver
 	 * @param preferences
@@ -117,7 +116,8 @@ public class Storage
 			ParserVersioned<FoodItem> sJsonVersioned = new ParserVersioned<FoodItem>(sJsonItem);
 			Serializer<Versioned<FoodItem>> serializer = new SerializerAdapter<Versioned<FoodItem>>(sJsonVersioned);
 
-			webFoodBase = new WebFoodBaseService(webClient, serializer);
+			// FIXME: uncomment when service is ready
+			// webFoodBase = new WebFoodBaseService(webClient, serializer);
 		}
 		if (null == webDishBase)
 		{
@@ -141,7 +141,7 @@ public class Storage
 
 	/**
 	 * Applies changed preference for specified key (if null, applies all settings)
-	 * 
+	 *
 	 * @param pref
 	 *            Preference unit
 	 * @param key
