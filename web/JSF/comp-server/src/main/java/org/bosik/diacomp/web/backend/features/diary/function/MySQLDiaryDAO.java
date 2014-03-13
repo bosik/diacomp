@@ -52,7 +52,7 @@ public class MySQLDiaryDAO implements DiaryDAO
 	}
 
 	@Override
-	public List<Versioned<String>> findGuid(int userId, String guid)
+	public Versioned<String> findByGuid(int userId, String guid)
 	{
 		try
 		{
@@ -62,7 +62,7 @@ public class MySQLDiaryDAO implements DiaryDAO
 			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause, null);
 			List<Versioned<String>> result = parseDiaryRecords(set);
 			set.close();
-			return result;
+			return result.isEmpty() ? null : result.get(0);
 		}
 		catch (SQLException e)
 		{
@@ -139,7 +139,7 @@ public class MySQLDiaryDAO implements DiaryDAO
 				final String version = String.valueOf(item.getVersion());
 				final String deleted = Utils.formatBooleanInt(item.isDeleted());
 
-				if (!findGuid(userId, item.getId()).isEmpty())
+				if (findByGuid(userId, item.getId()) != null)
 				{
 					// presented, update
 

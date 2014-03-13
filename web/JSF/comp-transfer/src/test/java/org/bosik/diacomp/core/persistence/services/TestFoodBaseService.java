@@ -22,22 +22,14 @@ public abstract class TestFoodBaseService extends TestCase
 		foodBaseService = getService();
 	}
 
-	public void testPersistanceSingle()
+	public void test_addFindById_single_PersistedOk()
 	{
 		Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
-		// int version;
 
-		if (foodBaseService.findById(org.getId()) != null)
+		if (foodBaseService.findById(org.getId()) == null)
 		{
-			// version = foodBaseService.getVersion();
-			foodBaseService.delete(org.getId());
-			// assertEquals(version + 1, foodBaseService.getVersion());
-			assertNull(foodBaseService.findById(org.getId()));
+			foodBaseService.add(org);
 		}
-
-		// version = foodBaseService.getVersion();
-		foodBaseService.add(org);
-		// assertEquals(version + 1, foodBaseService.getVersion());
 
 		// ------------------------------
 		setUp();
@@ -47,11 +39,6 @@ public abstract class TestFoodBaseService extends TestCase
 		assertNotNull(restored);
 		assertNotSame(org, restored);
 		mockGenerator.compare(org, restored);
-
-		// version = foodBaseService.getVersion();
-		foodBaseService.delete(org.getId());
-		// assertEquals(version + 1, foodBaseService.getVersion());
-		assertNull(foodBaseService.findById(org.getId()));
 	}
 
 	// TODO: create testPersistenceMultiple()

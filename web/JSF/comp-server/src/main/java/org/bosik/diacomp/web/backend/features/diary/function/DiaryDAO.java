@@ -7,8 +7,7 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 
 public interface DiaryDAO
 {
-	// FIXME: pass list of GUIDs
-	List<Versioned<String>> findGuid(int userId, String guid);
+	Versioned<String> findByGuid(int userId, String guid);
 
 	List<Versioned<String>> findMod(int userId, Date time, boolean includeRemoved);
 

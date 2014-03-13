@@ -1,6 +1,5 @@
 package org.bosik.diacomp.web.backend.features.diary.rest;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -8,6 +7,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -27,7 +27,6 @@ import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
 import org.bosik.diacomp.web.backend.features.diary.function.DiaryDAO;
 import org.bosik.diacomp.web.backend.features.diary.function.MySQLDiaryDAO;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,7 +36,7 @@ public class DiaryRestService
 	@Context
 	HttpServletRequest										req;
 
-	private DiaryDAO										diaryService				= new MySQLDiaryDAO();
+	private final DiaryDAO									diaryService				= new MySQLDiaryDAO();
 
 	private static final Parser<String>						parserString				= new Parser<String>()
 																						{
@@ -84,28 +83,18 @@ public class DiaryRestService
 	private static final Serializer<Versioned<DiaryRecord>>	serializerVersionedRecord	= new SerializerDiaryRecord();
 
 	@GET
-	@Path("guid")
+	@Path("guid/{guid}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecords(@QueryParam("guids") String sGUID) throws CommonServiceException
+	public Response getRecords(@PathParam("guid") String guid) throws CommonServiceException
 	{
 		try
 		{
 			int userId = UserSessionUtils.getId(req);
 
-			List<Versioned<String>> respList = new ArrayList<Versioned<String>>();
-			JSONArray json = new JSONArray(sGUID);
-			for (int i = 0; i < json.length(); i++)
-			{
-				String guid = json.get(i).toString();
-				List<Versioned<String>> temp = diaryService.findGuid(userId, guid);
-				if (!temp.isEmpty())
-				{
-					respList.add(temp.get(0));
-				}
-			}
-
-			String items = serializerVersionedString.writeAll(respList);
-			String response = ResponseBuilder.buildDone(items);
+			Versioned<String> item = diaryService.findByGuid(userId, guid);
+			String sItem = (item != null) ? serializerVersionedString.write(item) : "";
+			// TODO: use "not found", not just empty string
+			String response = ResponseBuilder.buildDone(sItem);
 			return Response.ok(response).build();
 		}
 		catch (Exception e)

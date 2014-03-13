@@ -1,6 +1,5 @@
 package org.bosik.diacomp.core.utils.test.fakes.services;
 
-import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -40,13 +39,6 @@ public class FakeFoodBaseService implements FoodBaseService
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findModified(Date time)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Versioned<FoodItem> findOne(String exactName)
 	{
 		// TODO Auto-generated method stub
@@ -54,7 +46,7 @@ public class FakeFoodBaseService implements FoodBaseService
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findById(List<String> guids, boolean showRemoved)
+	public Versioned<FoodItem> findById(String guid)
 	{
 		// TODO Auto-generated method stub
 		return null;

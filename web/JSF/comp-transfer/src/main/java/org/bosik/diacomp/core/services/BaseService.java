@@ -1,6 +1,5 @@
 package org.bosik.diacomp.core.services;
 
-import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -46,14 +45,6 @@ public interface BaseService<Item>
 	List<Versioned<Item>> findAny(String filter);
 
 	/**
-	 * Searches for all items modified after specified time (both deleted and non-deleted)
-	 *
-	 * @param time
-	 * @return
-	 */
-	List<Versioned<Item>> findModified(Date time);
-
-	/**
 	 * Searches for non-deleted item with exact name
 	 *
 	 * @param exactName
@@ -62,14 +53,12 @@ public interface BaseService<Item>
 	Versioned<Item> findOne(String exactName);
 
 	/**
-	 * Searches for items with specified IDs
-	 *
-	 * @param guids
-	 * @param showRemoved
-	 *            If deleted items should be included in the result
+	 * Searches for items with specified ID
+	 * 
+	 * @param guid
 	 * @return
 	 */
-	List<Versioned<Item>> findById(List<String> guids, boolean showRemoved);
+	Versioned<Item> findById(String guid);
 
 	/**
 	 * Searches for all items (both deleted or not)
