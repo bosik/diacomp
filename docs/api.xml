@@ -182,18 +182,14 @@
 		</method>
 		<method>
 			<cat>Дневник</cat>
-			<name>Получение записей с указанными GUID</name>
-			<url>/diary/guid/</url>
+			<name>Получение записи с указанным GUID</name>
+			<url>/diary/guid/[guid here]</url>
 			<params>
-				<param>
-					<par-name>guids</par-name>
-					<par-desc>["(guid-here)", ...]</par-desc>
-				</param>
 			</params>
 			<type>GET</type>
 			<returns>
 				<return>
-					<return-value>{"code":"0","resp":[(item), ...]}, отсортирован по возрастанию времени записи</return-value>
+					<return-value>{"code":"0","resp":(item)}</return-value>
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
@@ -238,6 +234,10 @@
 			<name>Получение всех продуктов</name>
 			<url>/foodbase/all/</url>
 			<params>
+				<param>
+					<par-name>show_rem</par-name>
+					<par-desc>Показывать ли удалённые записи (значения: "0"-скрывать, "1"-показывать)</par-desc>
+				</param>
 			</params>
 			<type>GET</type>
 			<returns>
