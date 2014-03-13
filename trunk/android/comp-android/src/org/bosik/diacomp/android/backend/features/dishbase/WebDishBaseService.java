@@ -1,6 +1,5 @@
 package org.bosik.diacomp.android.backend.features.dishbase;
 
-import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
@@ -51,21 +50,7 @@ public class WebDishBaseService implements DishBaseService
 	}
 
 	@Override
-	public List<Versioned<DishItem>> findModified(Date time)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Versioned<DishItem> findOne(String exactName)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Versioned<DishItem>> findById(List<String> guids, boolean showRemoved)
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -89,5 +74,12 @@ public class WebDishBaseService implements DishBaseService
 	public void update(Versioned<DishItem> item) throws ItemNotFoundException, PersistenceException
 	{
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public Versioned<DishItem> findById(String guid)
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
