@@ -8,6 +8,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.persistence.serializers.Serializer;
+import org.bosik.diacomp.core.persistence.serializers.ready.SerializerFoodItem;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 
@@ -15,7 +19,7 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 public class FoodBaseRestService
 {
 	@Context
-	HttpServletRequest	req;
+	HttpServletRequest										req;
 
 	//	private static final Parser<String>					parserString				= new Parser<String>()
 	//																					{
@@ -57,6 +61,8 @@ public class FoodBaseRestService
 	//																							parserString);
 	//	private static final Serializer<Versioned<String>>	serializerVersionedString	= new SerializerAdapter<Versioned<String>>(
 	//																							parserVersionedString);
+
+	private static final Serializer<Versioned<FoodItem>>	serializer	= new SerializerFoodItem();
 
 	// @PUT
 	// @Path("update")

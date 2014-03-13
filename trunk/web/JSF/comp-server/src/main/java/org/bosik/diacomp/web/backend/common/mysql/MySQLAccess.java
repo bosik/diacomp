@@ -43,14 +43,14 @@ public class MySQLAccess
 
 	// ======================================= Food table =======================================
 
-	// FIXME: check names
-	public static final String	TABLE_FOODBASE				= "foodbase";
+	public static final String	TABLE_FOODBASE				= "foodbase2";
 	public static final String	COLUMN_FOODBASE_GUID		= "_GUID";
 	public static final String	COLUMN_FOODBASE_USER		= "_UserID";
 	public static final String	COLUMN_FOODBASE_TIMESTAMP	= "_TimeStamp";
 	public static final String	COLUMN_FOODBASE_VERSION		= "_Version";
 	public static final String	COLUMN_FOODBASE_DELETED		= "_Deleted";
 	public static final String	COLUMN_FOODBASE_CONTENT		= "_Content";
+	public static final String	COLUMN_FOODBASE_NAMECACHE	= "_NameCache";
 
 	public MySQLAccess()
 	{
@@ -73,7 +73,7 @@ public class MySQLAccess
 	}
 
 	// the resource is returned to invoker
-	public static ResultSet select(String table, String clause, String order, String... params) throws SQLException
+	public ResultSet select(String table, String clause, String order, String... params) throws SQLException
 	{
 		connect();
 

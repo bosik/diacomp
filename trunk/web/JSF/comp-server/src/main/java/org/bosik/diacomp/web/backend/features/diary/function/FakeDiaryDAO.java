@@ -74,10 +74,8 @@ public class FakeDiaryDAO implements DiaryDAO
 	}
 
 	@Override
-	public List<Versioned<String>> findGuid(int userId, String guid)
+	public Versioned<String> findByGuid(int userId, String guid)
 	{
-		List<Versioned<String>> result = new ArrayList<Versioned<String>>();
-
 		for (Versioned<DiaryRecord> rec : samples)
 		{
 			final DiaryRecord data = rec.getData();
@@ -89,10 +87,10 @@ public class FakeDiaryDAO implements DiaryDAO
 				item.setVersion(rec.getVersion());
 				item.setDeleted(rec.isDeleted());
 				item.setData(serializer.write(data));
-				result.add(item);
+				return item;
 			}
 		}
 
-		return result;
+		return null;
 	}
 }
