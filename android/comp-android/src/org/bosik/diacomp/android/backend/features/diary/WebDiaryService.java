@@ -64,7 +64,7 @@ public class WebDiaryService implements DiaryService
 	{
 		try
 		{
-			String query = "api/diary/changes/?mod_after=" + Utils.formatTimeUTC(time);
+			String query = "api/diary/changes/?since=" + Utils.formatTimeUTC(time);
 
 			String s = webClient.doGetSmart(query, WebClient.CODEPAGE_UTF8);
 			StdResponse resp = new StdResponse(s);
