@@ -153,15 +153,11 @@
 		<method>
 			<cat>Дневник</cat>
 			<name>Получение записей дневника, изменённых после указанного времени</name>
-			<url>/diary/new/</url>
+			<url>/diary/changes/</url>
 			<params>
 				<param>
-					<par-name>mod_after</par-name>
+					<par-name>since</par-name>
 					<par-desc>Время (UTC) в стандартном формате</par-desc>
-				</param>
-				<param>
-					<par-name>show_rem</par-name>
-					<par-desc>Показывать ли удалённые записи (значения: "0"-скрывать, "1"-показывать)</par-desc>
 				</param>
 			</params>
 			<type>GET</type>
@@ -183,7 +179,7 @@
 		<method>
 			<cat>Дневник</cat>
 			<name>Получение записи с указанным GUID</name>
-			<url>/diary/guid/[guid here]</url>
+			<url>/diary/guid/[guid]</url>
 			<params>
 			</params>
 			<type>GET</type>
