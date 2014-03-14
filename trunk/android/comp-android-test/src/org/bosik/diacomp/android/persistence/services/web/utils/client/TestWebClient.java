@@ -34,8 +34,8 @@ public class TestWebClient extends TestCase
 			}
 			catch (WebClientException e)
 			{
-				throw new RuntimeException("Failed to initialize WebClient: " + e.getLocalizedMessage() + "\n"
-						+ "Server: " + SERVER + "\nUsername: " + USERNAME + "\nPassword: " + PASSWORD);
+				throw new RuntimeException("Failed to initialize WebClient\n" + "Server: " + SERVER + "\nUsername: "
+						+ USERNAME + "\nPassword: " + PASSWORD, e);
 			}
 		}
 		return webClient;
