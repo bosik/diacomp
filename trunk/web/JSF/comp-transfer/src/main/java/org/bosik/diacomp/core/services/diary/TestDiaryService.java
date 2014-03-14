@@ -142,7 +142,7 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 		restoredItems = diaryService.getRecords(timestampBefore);
 		for (Versioned<DiaryRecord> restoredItem : restoredItems)
 		{
-			if (restoredItem.getId().equals(item.getId()))
+			if (restoredItem.getId().equals(item.getId()) && (!restoredItem.isDeleted()))
 			{
 				fail("Item is not deleted");
 			}
