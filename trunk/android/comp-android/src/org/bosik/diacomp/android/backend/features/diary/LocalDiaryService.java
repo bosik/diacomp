@@ -2,7 +2,6 @@ package org.bosik.diacomp.android.backend.features.diary;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
@@ -55,14 +54,15 @@ public class LocalDiaryService implements DiaryService
 	/* ============================ API ============================ */
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(List<String> guids) throws CommonServiceException
+	public Versioned<DiaryRecord> getRecord(String guid) throws CommonServiceException
 	{
 		// construct parameters
 		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
 				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
 				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
 
-		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " in " + formatList(guids);
+		// FIXME: SQL injection danger
+		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = " + guid;
 		String[] clauseArgs = {};
 
 		String sortOrder = null;// DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
@@ -73,45 +73,19 @@ public class LocalDiaryService implements DiaryService
 
 		List<Versioned<DiaryRecord>> recs = extractRecords(cursor);
 
-		// making the order the same as requested GUID's order
-		List<Versioned<DiaryRecord>> result = new LinkedList<Versioned<DiaryRecord>>();
-		for (String guid : guids)
-		{
-			for (Versioned<DiaryRecord> rec : recs)
-			{
-				if (guid.equals(rec.getId()))
-				{
-					result.add(rec);
-					break;
-				}
-			}
-		}
-
-		return result;
+		return recs.isEmpty() ? null : recs.get(0);
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(Date time, boolean includeRemoved) throws CommonServiceException
+	public List<Versioned<DiaryRecord>> getRecords(Date time) throws CommonServiceException
 	{
 		// construct parameters
 		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
 				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
 				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
 
-		String clause;
-		String[] clauseArgs;
-
-		if (includeRemoved)
-		{
-			clause = String.format("%s > ?", DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
-			clauseArgs = new String[] { Utils.formatTimeUTC(time) };
-		}
-		else
-		{
-			clause = String.format("(%s > ?) AND (%s = 0)", DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
-					DiaryContentProvider.COLUMN_DIARY_DELETED);
-			clauseArgs = new String[] { Utils.formatTimeUTC(time) };
-		}
+		String clause = String.format("%s > ?", DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
+		String[] clauseArgs = new String[] { Utils.formatTimeUTC(time) };
 
 		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 

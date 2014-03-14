@@ -1,6 +1,5 @@
 package org.bosik.diacomp.android.backend.features.diary;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,17 +42,16 @@ public class WebDiaryService implements DiaryService
 	/* ============================ API ============================ */
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(List<String> guids) throws CommonServiceException
+	public Versioned<DiaryRecord> getRecord(String guid) throws CommonServiceException
 	{
 		try
 		{
-			String sGuids = Utils.formatJSONArray(guids);
-			String query = "api/diary/guid/?guids=" + URLEncoder.encode(sGuids, "UTF-8");
+			String query = String.format("api/diary/guid/%s", guid);
 			String s = webClient.doGetSmart(query, WebClient.CODEPAGE_UTF8);
 			StdResponse resp = new StdResponse(s);
 			WebClient.checkResponse(resp);
 
-			return serializerV.readAll(resp.getResponse());
+			return serializerV.read(resp.getResponse());
 		}
 		catch (Exception e)
 		{
@@ -62,13 +60,11 @@ public class WebDiaryService implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(Date time, boolean includeRemoved) throws CommonServiceException
+	public List<Versioned<DiaryRecord>> getRecords(Date time) throws CommonServiceException
 	{
 		try
 		{
-			String query = "api/diary/new/?";
-			query += "mod_after=" + Utils.formatTimeUTC(time);
-			query += "&show_rem=" + Utils.formatBooleanStr(includeRemoved);
+			String query = "api/diary/changes/?mod_after=" + Utils.formatTimeUTC(time);
 
 			String s = webClient.doGetSmart(query, WebClient.CODEPAGE_UTF8);
 			StdResponse resp = new StdResponse(s);
