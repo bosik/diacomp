@@ -109,7 +109,7 @@ public class DiaryRestService
 	@GET
 	@Path("changes")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecordsModified(@QueryParam("mod_after") String stime) throws CommonServiceException
+	public Response getRecordsModified(@QueryParam("since") String stime) throws CommonServiceException
 	{
 		try
 		{

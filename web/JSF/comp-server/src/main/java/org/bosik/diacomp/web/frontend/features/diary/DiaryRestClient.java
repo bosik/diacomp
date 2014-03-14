@@ -46,7 +46,7 @@ public class DiaryRestClient extends RestClient implements DiaryService
 		try
 		{
 			WebResource resource = getResource("api/diary/changes/");
-			resource = resource.queryParam("mod_after", Utils.formatTimeUTC(time));
+			resource = resource.queryParam("since", Utils.formatTimeUTC(time));
 			String str = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
 
 			StdResponse resp = new StdResponse(str);
