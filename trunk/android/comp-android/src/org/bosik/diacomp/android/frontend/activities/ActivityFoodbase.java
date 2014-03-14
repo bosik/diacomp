@@ -2,9 +2,9 @@ package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.search.Sorter;
-import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -103,7 +103,7 @@ public class ActivityFoodbase extends Activity
 		List<Versioned<FoodItem>> temp;
 		if (filter.trim().isEmpty())
 		{
-			temp = Storage.localFoodBase.findAll();
+			temp = Storage.localFoodBase.findAll(false);
 		}
 		else
 		{
