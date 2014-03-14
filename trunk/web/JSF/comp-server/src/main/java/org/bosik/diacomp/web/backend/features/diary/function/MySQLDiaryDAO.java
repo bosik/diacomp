@@ -71,7 +71,7 @@ public class MySQLDiaryDAO implements DiaryDAO
 	}
 
 	@Override
-	public List<Versioned<String>> findMod(int userId, Date time)
+	public List<Versioned<String>> findChanged(int userId, Date time)
 	{
 		try
 		{

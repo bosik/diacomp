@@ -22,7 +22,7 @@ public class FakeDiaryDAO implements DiaryDAO
 	private static Serializer<DiaryRecord>		serializer	= new SerializerAdapter<DiaryRecord>(parser);
 
 	@Override
-	public List<Versioned<String>> findMod(int userId, Date time)
+	public List<Versioned<String>> findChanged(int userId, Date time)
 	{
 		List<Versioned<String>> result = new ArrayList<Versioned<String>>();
 
