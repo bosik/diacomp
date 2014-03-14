@@ -61,7 +61,7 @@ public class RelevantIndexator
 
 	private static <T extends Tagged> void clearTags(BaseService<T> base)
 	{
-		List<Versioned<T>> list = base.findAll();
+		List<Versioned<T>> list = base.findAll(false);
 		for (Versioned<T> item : list)
 		{
 			item.getData().setTag(0);

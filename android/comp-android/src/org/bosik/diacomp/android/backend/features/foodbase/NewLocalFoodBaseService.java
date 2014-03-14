@@ -22,8 +22,8 @@ import android.database.Cursor;
 
 public class NewLocalFoodBaseService implements FoodBaseService
 {
-	private ContentResolver			resolver;
-	private Serializer<FoodItem>	serializer;
+	private final ContentResolver			resolver;
+	private final Serializer<FoodItem>	serializer;
 
 	// ====================================================================================
 
@@ -164,9 +164,9 @@ public class NewLocalFoodBaseService implements FoodBaseService
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findAll()
+	public List<Versioned<FoodItem>> findAll(boolean includeRemoved)
 	{
-		return find(null, false);
+		return find(null, includeRemoved);
 	}
 
 	@Override
@@ -184,7 +184,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 	@Override
 	public Versioned<FoodItem> findById(String id)
 	{
-		List<Versioned<FoodItem>> list = find(id, false);
+		List<Versioned<FoodItem>> list = find(id, true);
 		if (list.isEmpty())
 		{
 			return null;
@@ -199,20 +199,6 @@ public class NewLocalFoodBaseService implements FoodBaseService
 	public List<Versioned<FoodItem>> findSysAll()
 	{
 		return find(null, true);
-	}
-
-	@Override
-	public Versioned<FoodItem> findSysById(String id)
-	{
-		List<Versioned<FoodItem>> list = find(id, true);
-		if (list.isEmpty())
-		{
-			return null;
-		}
-		else
-		{
-			return list.get(0);
-		}
 	}
 
 	@Override
