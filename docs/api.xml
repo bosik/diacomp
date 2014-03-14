@@ -225,7 +225,7 @@
 				</return>
 			</returns>
 		</method>
-		<method-todo>
+		<method>
 			<cat>База продуктов</cat>
 			<name>Получение всех продуктов</name>
 			<url>/food/all/</url>
@@ -250,8 +250,8 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method-todo>
-		<method-todo>
+		</method>
+		<method>
 			<cat>База продуктов</cat>
 			<name>Получение продуктов, изменённых после указанного времени</name>
 			<url>/food/changes/</url>
@@ -276,8 +276,8 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method-todo>
-		<method-todo>
+		</method>
+		<method>
 			<cat>База продуктов</cat>
 			<name>Получение продуктов с указанными GUID</name>
 			<url>/food/guid/[guid]</url>
@@ -298,8 +298,8 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method-todo>
-		<method-todo>
+		</method>
+		<method>
 			<cat>База продуктов</cat>
 			<name>Создание/сохранение одного или нескольких продуктов</name>
 			<url>/food/</url>
@@ -324,7 +324,7 @@
 					<return-condition>Внутренняя ошибка сервера</return-condition>
 				</return>
 			</returns>
-		</method-todo>
+		</method>
 		<method-todo>
 			<cat>Коэффициенты</cat>
 			<name>Сохранение коэффициентов</name>
