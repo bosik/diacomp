@@ -92,9 +92,9 @@ public class DiaryRestService
 			int userId = UserSessionUtils.getId(req);
 
 			Versioned<String> item = diaryService.findByGuid(userId, parGuid);
-			String sItem = (item != null) ? serializerVersionedString.write(item) : "";
+			String s = (item != null) ? serializerVersionedString.write(item) : "";
 			// TODO: use "not found", not just empty string
-			String response = ResponseBuilder.buildDone(sItem);
+			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
 		}
 		catch (Exception e)
