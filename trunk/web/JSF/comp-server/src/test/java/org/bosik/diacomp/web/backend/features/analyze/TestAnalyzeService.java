@@ -19,15 +19,13 @@ import org.bosik.diacomp.web.backend.features.analyze.function.AnalyzeService;
 import org.bosik.diacomp.web.backend.features.analyze.function.AnalyzeServiceImpl;
 import org.bosik.diacomp.web.backend.features.analyze.function.entities.Koof;
 import org.bosik.diacomp.web.backend.features.analyze.function.entities.KoofList;
-import org.bosik.diacomp.web.frontend.features.auth.AuthRememberService;
 import org.bosik.diacomp.web.frontend.features.auth.AuthRestClient;
-import org.bosik.diacomp.web.frontend.features.diary.DiaryAuthorizedService;
 import org.bosik.diacomp.web.frontend.features.diary.DiaryRestClient;
 import org.junit.Test;
 
 public class TestAnalyzeService
 {
-	private AnalyzeService	service	= new AnalyzeServiceImpl();
+	private final AnalyzeService	service	= new AnalyzeServiceImpl();
 
 	@Test
 	public void testDiaryAnalyze_setA_ok()
@@ -37,11 +35,8 @@ public class TestAnalyzeService
 		String login = Config.getLogin();
 		String pass = Config.getPassword();
 		int apiVersion = Config.getAPICurrent();
-		AuthRememberService authRemService = new AuthRememberService(authService, login, pass, apiVersion);
 
-		DiaryService diaryService = new DiaryRestClient();
-
-		DiaryService source = new DiaryAuthorizedService(diaryService, authRemService);
+		DiaryService diaryService = new DiaryRestClient(authService, login, pass, apiVersion);
 
 		//===========================================================================
 
@@ -77,9 +72,9 @@ public class TestAnalyzeService
 		r.setData(new BloodRecord(Utils.time(2012, 01, 01, 14, 40, 00), 5.0, 0));
 		records.add(r);
 
-		source.postRecords(records);
+		diaryService.postRecords(records);
 
-		KoofList koofs = AnalyzeExtracter.analyze(service, source, fromTime, toTime, adaptation);
+		KoofList koofs = AnalyzeExtracter.analyze(service, diaryService, fromTime, toTime, adaptation);
 		Koof koof = koofs.getKoof((10 * 60) + 40);
 		double act_x = koof.getK() / koof.getQ();
 		double exp_x = valueIns / valueCarbs;
