@@ -9,7 +9,7 @@ public interface DiaryDAO
 {
 	Versioned<String> findByGuid(int userId, String guid);
 
-	List<Versioned<String>> findMod(int userId, Date time, boolean includeRemoved);
+	List<Versioned<String>> findMod(int userId, Date since);
 
 	List<Versioned<String>> findPeriod(int userId, Date startTime, Date endTime, boolean includeRemoved);
 
