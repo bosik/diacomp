@@ -75,7 +75,7 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findModified(int userId, Date since)
+	public List<Versioned<FoodItem>> findChanged(int userId, Date since)
 	{
 		try
 		{
