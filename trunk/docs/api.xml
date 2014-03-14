@@ -228,7 +228,7 @@
 		<method-todo>
 			<cat>База продуктов</cat>
 			<name>Получение всех продуктов</name>
-			<url>/foodbase/all/</url>
+			<url>/food/all/</url>
 			<params>
 				<param>
 					<par-name>show_rem</par-name>
@@ -254,7 +254,7 @@
 		<method-todo>
 			<cat>База продуктов</cat>
 			<name>Получение продуктов, изменённых после указанного времени</name>
-			<url>/foodbase/mod/</url>
+			<url>/food/mod/</url>
 			<params>
 				<param>
 					<par-name>from</par-name>
@@ -280,7 +280,7 @@
 		<method-todo>
 			<cat>База продуктов</cat>
 			<name>Получение продуктов с указанными GUID</name>
-			<url>/foodbase/guid/</url>
+			<url>/food/guid/</url>
 			<params>
 				<param>
 					<par-name>guids</par-name>
@@ -306,7 +306,7 @@
 		<method-todo>
 			<cat>База продуктов</cat>
 			<name>Создание/сохранение одного или нескольких продуктов</name>
-			<url>/foodbase/</url>
+			<url>/food/</url>
 			<params>
 				<param>
 					<par-name>items</par-name>
