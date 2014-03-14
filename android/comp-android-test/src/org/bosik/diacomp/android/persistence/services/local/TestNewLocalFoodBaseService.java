@@ -2,7 +2,7 @@ package org.bosik.diacomp.android.persistence.services.local;
 
 import android.test.AndroidTestCase;
 
-public class TestNewLocalFoodBaseService extends AndroidTestCase// TestFoodBaseService
+public class TestNewLocalFoodBaseService extends AndroidTestCase// TestFoodbaseServiceCommon
 {
 	// FIXME
 	// @Override
