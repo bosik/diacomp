@@ -20,10 +20,10 @@ public interface FoodbaseDAO
 	 * Searches for all items modified after specified time (both deleted and non-deleted)
 	 *
 	 * @param userId
-	 * @param time
+	 * @param since
 	 * @return
 	 */
-	List<Versioned<FoodItem>> findModified(int userId, Date time);
+	List<Versioned<FoodItem>> findModified(int userId, Date since);
 
 	/**
 	 * Searches the item with the specified GUID
