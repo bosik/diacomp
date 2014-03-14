@@ -30,11 +30,12 @@ public interface BaseService<Item>
 	void delete(String id) throws ItemNotFoundException, AlreadyDeletedException;
 
 	/**
-	 * Returns all non-deleted items
+	 * Returns all items
 	 *
+	 * @param includeRemoved
 	 * @return
 	 */
-	List<Versioned<Item>> findAll();
+	List<Versioned<Item>> findAll(boolean includeRemoved);
 
 	/**
 	 * Searches for non-deleted item with name containing specified string (case insensitive).
@@ -53,8 +54,8 @@ public interface BaseService<Item>
 	Versioned<Item> findOne(String exactName);
 
 	/**
-	 * Searches for items with specified ID
-	 * 
+	 * Searches for items with specified ID (both deleted or not)
+	 *
 	 * @param guid
 	 * @return
 	 */
@@ -66,14 +67,6 @@ public interface BaseService<Item>
 	 * @return
 	 */
 	List<Versioned<Item>> findSysAll();
-
-	/**
-	 * Searches for item (both deleted or not) with specified ID
-	 *
-	 * @param id
-	 * @return
-	 */
-	Versioned<Item> findSysById(String id);
 
 	/**
 	 * Updates single non-deleted item. Note: updating deleted item result in exception.

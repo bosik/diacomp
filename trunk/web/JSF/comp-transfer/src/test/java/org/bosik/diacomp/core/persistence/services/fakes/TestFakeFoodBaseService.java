@@ -1,16 +1,14 @@
 package org.bosik.diacomp.core.persistence.services.fakes;
 
-import org.bosik.diacomp.core.persistence.services.TestFoodBaseService;
-import org.bosik.diacomp.core.services.FoodBaseService;
-import org.bosik.diacomp.core.utils.test.fakes.services.FakeFoodBaseService;
 import org.junit.Ignore;
 
 @Ignore
-public class TestFakeFoodBaseService extends TestFoodBaseService
+public class TestFakeFoodBaseService //extends TestFoodBaseService
 {
-	@Override
-	protected FoodBaseService getService()
-	{
-		return new FakeFoodBaseService();
-	}
+	// TODO: uncomment if needed
+	//	@Override
+	//	protected FoodBaseService getService()
+	//	{
+	//		return new FakeFoodBaseService();
+	//	}
 }
