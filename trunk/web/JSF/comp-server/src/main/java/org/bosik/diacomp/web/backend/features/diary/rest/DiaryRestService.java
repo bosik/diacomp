@@ -85,7 +85,7 @@ public class DiaryRestService
 	@GET
 	@Path("guid/{guid}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecords(@PathParam("guid") String guid) throws CommonServiceException
+	public Response getRecordsGuid(@PathParam("guid") String guid) throws CommonServiceException
 	{
 		try
 		{
@@ -107,17 +107,15 @@ public class DiaryRestService
 	}
 
 	@GET
-	@Path("new")
+	@Path("changes")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecords(@QueryParam("mod_after") String stime, @QueryParam("show_rem") String parShowRem)
-			throws CommonServiceException
+	public Response getRecordsModified(@QueryParam("mod_after") String stime) throws CommonServiceException
 	{
 		try
 		{
 			int userId = UserSessionUtils.getId(req);
 			Date time = Utils.parseTimeUTC(stime);
-			boolean includeRemoved = Boolean.valueOf(parShowRem); // TODO: use common formatter
-			List<Versioned<String>> list = diaryService.findMod(userId, time, includeRemoved);
+			List<Versioned<String>> list = diaryService.findMod(userId, time);
 			String items = serializerVersionedString.writeAll(list);
 			String response = ResponseBuilder.buildDone(items);
 			return Response.ok(response).build();
@@ -132,7 +130,7 @@ public class DiaryRestService
 	@GET
 	@Path("period")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecords(@QueryParam("start_time") String parStartTime,
+	public Response getRecordsPeriod(@QueryParam("start_time") String parStartTime,
 			@QueryParam("end_time") String parEndTime, @QueryParam("show_rem") String parShowRem)
 			throws CommonServiceException
 	{
@@ -157,7 +155,7 @@ public class DiaryRestService
 
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response post(@FormParam("items") String items) throws CommonServiceException
+	public Response postRecords(@FormParam("items") String items) throws CommonServiceException
 	{
 		try
 		{

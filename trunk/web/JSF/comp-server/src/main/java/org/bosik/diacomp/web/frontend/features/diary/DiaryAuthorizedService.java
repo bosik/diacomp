@@ -11,8 +11,8 @@ import org.bosik.diacomp.web.frontend.features.auth.AuthRememberService;
 
 public class DiaryAuthorizedService implements DiaryService
 {
-	private DiaryService		diaryService;
-	private AuthRememberService	authService;
+	private final DiaryService		diaryService;
+	private final AuthRememberService	authService;
 
 	public DiaryAuthorizedService(DiaryService diaryService, AuthRememberService authService)
 	{
@@ -29,30 +29,30 @@ public class DiaryAuthorizedService implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(List<String> guids) throws CommonServiceException
+	public Versioned<DiaryRecord> getRecord(String guid) throws CommonServiceException
 	{
 		try
 		{
-			return diaryService.getRecords(guids);
+			return diaryService.getRecord(guid);
 		}
 		catch (NotAuthorizedException e)
 		{
 			authService.login();
-			return diaryService.getRecords(guids);
+			return diaryService.getRecord(guid);
 		}
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(Date time, boolean includeRemoved) throws CommonServiceException
+	public List<Versioned<DiaryRecord>> getRecords(Date time) throws CommonServiceException
 	{
 		try
 		{
-			return diaryService.getRecords(time, includeRemoved);
+			return diaryService.getRecords(time);
 		}
 		catch (NotAuthorizedException e)
 		{
 			authService.login();
-			return diaryService.getRecords(time, includeRemoved);
+			return diaryService.getRecords(time);
 		}
 	}
 

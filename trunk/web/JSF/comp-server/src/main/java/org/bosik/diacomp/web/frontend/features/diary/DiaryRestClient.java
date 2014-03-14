@@ -21,18 +21,18 @@ public class DiaryRestClient extends RestClient implements DiaryService
 	private static Serializer<Versioned<DiaryRecord>>	serializer	= new SerializerDiaryRecord();
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(List<String> guids) throws CommonServiceException
+	public Versioned<DiaryRecord> getRecord(String guid) throws CommonServiceException
 	{
 		try
 		{
-			WebResource resource = getResource("api/diary/guid");
-			resource = resource.queryParam("guids", Utils.formatJSONArray(guids));
+			WebResource resource = getResource(String.format("api/diary/guid/%s", guid));
 			String str = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
 
 			StdResponse resp = new StdResponse(str);
 			checkResponse(resp);
 
-			return serializer.readAll(resp.getResponse());
+			Versioned<DiaryRecord> item = serializer.read(resp.getResponse());
+			return item;
 		}
 		catch (UniformInterfaceException e)
 		{
@@ -41,13 +41,12 @@ public class DiaryRestClient extends RestClient implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(Date time, boolean includeRemoved) throws CommonServiceException
+	public List<Versioned<DiaryRecord>> getRecords(Date time) throws CommonServiceException
 	{
 		try
 		{
-			WebResource resource = getResource("api/diary/new");
+			WebResource resource = getResource("api/diary/changes/");
 			resource = resource.queryParam("mod_after", Utils.formatTimeUTC(time));
-			resource = resource.queryParam("show_rem", Utils.formatBooleanStr(includeRemoved));
 			String str = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
 
 			StdResponse resp = new StdResponse(str);

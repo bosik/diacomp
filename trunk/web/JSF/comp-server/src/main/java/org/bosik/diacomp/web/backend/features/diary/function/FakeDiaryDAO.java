@@ -22,13 +22,13 @@ public class FakeDiaryDAO implements DiaryDAO
 	private static Serializer<DiaryRecord>		serializer	= new SerializerAdapter<DiaryRecord>(parser);
 
 	@Override
-	public List<Versioned<String>> findMod(int userId, Date time, boolean includeRemoved)
+	public List<Versioned<String>> findMod(int userId, Date time)
 	{
 		List<Versioned<String>> result = new ArrayList<Versioned<String>>();
 
 		for (Versioned<DiaryRecord> rec : samples)
 		{
-			if (rec.getTimeStamp().after(time) && (includeRemoved || !rec.isDeleted()))
+			if (rec.getTimeStamp().after(time))
 			{
 				Versioned<String> item = new Versioned<String>();
 				item.setId(rec.getId());

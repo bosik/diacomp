@@ -2,7 +2,6 @@ package org.bosik.diacomp.core.services.diary;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
@@ -24,7 +23,7 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 
 	/**
 	 * Checks if items are sorted by time ascendingly
-	 * 
+	 *
 	 * @param items
 	 */
 	private static void checkTimeOrder(List<Versioned<DiaryRecord>> items)
@@ -53,7 +52,7 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 
 	/**
 	 * Checks if all exp items are presented in the act list
-	 * 
+	 *
 	 * @param exp
 	 * @param act
 	 * @param allowExtraItems
@@ -99,7 +98,7 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 	public void test_PostRecordsGetRecords_Deleting_Removed()
 	{
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
-		VersionedUtils.enumerate(originalItems);
+		VersionedUtils.enumerateGuids(originalItems);
 		assertTrue("No samples are provided", !originalItems.isEmpty());
 
 		// prepare single non-deleted item
@@ -118,11 +117,11 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 		// CHECK IF IT IS PRESENTED NOW:
 
 		// 1. Via GUID
-		List<Versioned<DiaryRecord>> restoredItems = diaryService.getRecords(Arrays.asList(item.getId()));
+		List<Versioned<DiaryRecord>> restoredItems = Arrays.asList(diaryService.getRecord(item.getId()));
 		compareItems(originalItems, restoredItems, false);
 
 		// 2. Via timestamp
-		restoredItems = diaryService.getRecords(timestampBefore, false);
+		restoredItems = diaryService.getRecords(timestampBefore);
 		compareItems(originalItems, restoredItems, true);
 
 		// 3. Via period
@@ -136,11 +135,11 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 		// CHECK IF IT IS [MARKED AS] REMOVED
 
 		// 1. Via GUID
-		restoredItems = diaryService.getRecords(Arrays.asList(item.getId()));
+		restoredItems = Arrays.asList(diaryService.getRecord(item.getId()));
 		compareItems(originalItems, restoredItems, false);
 
 		// 2. Via timestamp
-		restoredItems = diaryService.getRecords(timestampBefore, false);
+		restoredItems = diaryService.getRecords(timestampBefore);
 		for (Versioned<DiaryRecord> restoredItem : restoredItems)
 		{
 			if (restoredItem.getId().equals(item.getId()))
@@ -166,11 +165,11 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 		// CHECK IF IT IS PRESENTED AGAIN:
 
 		// 1. Via GUID
-		restoredItems = diaryService.getRecords(Arrays.asList(item.getId()));
+		restoredItems = Arrays.asList(diaryService.getRecord(item.getId()));
 		compareItems(originalItems, restoredItems, false);
 
 		// 2. Via timestamp
-		restoredItems = diaryService.getRecords(timestampBefore, false);
+		restoredItems = diaryService.getRecords(timestampBefore);
 		compareItems(originalItems, restoredItems, true);
 
 		// 3. Via period
@@ -181,31 +180,18 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 	@Override
 	public void test_PostRecordsGetRecordsViaGuid_Normal_RestoredOK()
 	{
-		List<Versioned<DiaryRecord>> org = mockVersioned.getSamples();
-		VersionedUtils.enumerate(org);
-
-		// remember the guids
-		List<String> guids = new LinkedList<String>();
-		for (Versioned<DiaryRecord> item : org)
-		{
-			guids.add(item.getId());
-		}
-
-		diaryService.postRecords(org);
+		List<Versioned<DiaryRecord>> orgs = mockVersioned.getSamples();
+		VersionedUtils.enumerateGuids(orgs);
+		diaryService.postRecords(orgs);
 
 		// ------------------
 		setUp();
 
-		List<Versioned<DiaryRecord>> restoredRecords = diaryService.getRecords(guids);
-		assertNotNull("DiaryService returned null", restoredRecords);
-		assertEquals("Diary service returned wrong number of items", org.size(), restoredRecords.size());
-
-		// check content
-		for (int i = 0; i < org.size(); i++)
+		for (Versioned<DiaryRecord> originalRecord : orgs)
 		{
-			final Versioned<DiaryRecord> exp = org.get(i);
-			final Versioned<DiaryRecord> act = restoredRecords.get(i);
-			mockVersioned.compare(exp, act);
+			Versioned<DiaryRecord> restoredRecord = diaryService.getRecord(originalRecord.getId());
+			assertNotNull("DiaryService returned null", restoredRecord);
+			mockVersioned.compare(originalRecord, restoredRecord);
 		}
 	}
 
@@ -213,7 +199,7 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 	public void test_PostRecordsGetRecordsViaGuid_Update_UpdatedOk()
 	{
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
-		VersionedUtils.enumerate(originalItems);
+		VersionedUtils.enumerateGuids(originalItems);
 
 		// Insertion test
 
@@ -221,11 +207,9 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 
 		for (Versioned<DiaryRecord> item : originalItems)
 		{
-			List<Versioned<DiaryRecord>> restored = diaryService.getRecords(Arrays.<String> asList(item.getId()));
+			Versioned<DiaryRecord> restored = diaryService.getRecord(item.getId());
 			assertNotNull(restored);
-			assertEquals(1, restored.size());
-
-			mockVersioned.compare(item, restored.get(0));
+			mockVersioned.compare(item, restored);
 		}
 
 		// Updating test
@@ -242,11 +226,9 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 
 		for (Versioned<DiaryRecord> item : originalItems)
 		{
-			List<Versioned<DiaryRecord>> restored = diaryService.getRecords(Arrays.<String> asList(item.getId()));
+			Versioned<DiaryRecord> restored = diaryService.getRecord(item.getId());
 			assertNotNull(restored);
-			assertEquals(1, restored.size());
-
-			mockVersioned.compare(item, restored.get(0));
+			mockVersioned.compare(item, restored);
 		}
 	}
 
@@ -254,7 +236,7 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 	public void test_PostRecordsGetRecordsViaPeriod_Normal_RestoredOK()
 	{
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
-		VersionedUtils.enumerate(originalItems);
+		VersionedUtils.enumerateGuids(originalItems);
 
 		Date minTime = null;
 		Date maxTime = null;
@@ -281,7 +263,7 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 
 		diaryService.postRecords(originalItems);
 
-		// Check via period: 
+		// Check via period:
 
 		List<Versioned<DiaryRecord>> restoredItems = diaryService.getRecords(minTime, maxTime, true);
 		assertTrue(!restoredItems.isEmpty());
@@ -293,7 +275,7 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 	public void test_PostRecordsGetRecordsViaPeriod_Normal_RestoredOrdered()
 	{
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
-		VersionedUtils.enumerate(originalItems);
+		VersionedUtils.enumerateGuids(originalItems);
 		assertTrue("No samples are provided", !originalItems.isEmpty());
 
 		Date minTime = null;
@@ -332,7 +314,7 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 	public void test_PostRecordsGetRecordsViaTimestamp_Normal_RestoredOK()
 	{
 		List<Versioned<DiaryRecord>> originalItems = mockVersioned.getSamples();
-		VersionedUtils.enumerate(originalItems);
+		VersionedUtils.enumerateGuids(originalItems);
 		assertTrue("No samples are provided", !originalItems.isEmpty());
 
 		Date timeBefore = Utils.time(2020, 01, 15, 10, 00, 00);
@@ -347,7 +329,7 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 		diaryService.postRecords(originalItems);
 
 		// check if there are no items after line
-		List<Versioned<DiaryRecord>> restoredItems = diaryService.getRecords(timeLine, true);
+		List<Versioned<DiaryRecord>> restoredItems = diaryService.getRecords(timeLine);
 		assertTrue("Clear base before testing", restoredItems.isEmpty());
 
 		// modify timestamp
@@ -358,7 +340,7 @@ public abstract class TestDiaryService extends TestCase implements TestDiaryServ
 		diaryService.postRecords(originalItems);
 
 		// check the result
-		restoredItems = diaryService.getRecords(timeLine, true);
+		restoredItems = diaryService.getRecords(timeLine);
 		compareItems(originalItems, restoredItems, false);
 	}
 }

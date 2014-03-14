@@ -71,18 +71,12 @@ public class MySQLDiaryDAO implements DiaryDAO
 	}
 
 	@Override
-	public List<Versioned<String>> findMod(int userId, Date time, boolean includeRemoved)
+	public List<Versioned<String>> findMod(int userId, Date time)
 	{
 		try
 		{
 			String clause = String.format("(%s = %d) AND (%s >= '%s')", MySQLAccess.COLUMN_DIARY_USER, userId,
 					MySQLAccess.COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(time));
-
-			if (!includeRemoved)
-			{
-				clause += String.format(" AND (%s = '%s')", MySQLAccess.COLUMN_DIARY_DELETED,
-						Utils.formatBooleanInt(false));
-			}
 
 			String order = MySQLAccess.COLUMN_DIARY_TIMECACHE;
 
