@@ -85,13 +85,13 @@ public class DiaryRestService
 	@GET
 	@Path("guid/{guid}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecordsGuid(@PathParam("guid") String guid) throws CommonServiceException
+	public Response getRecordsGuid(@PathParam("guid") String parGuid) throws CommonServiceException
 	{
 		try
 		{
 			int userId = UserSessionUtils.getId(req);
 
-			Versioned<String> item = diaryService.findByGuid(userId, guid);
+			Versioned<String> item = diaryService.findByGuid(userId, parGuid);
 			String sItem = (item != null) ? serializerVersionedString.write(item) : "";
 			// TODO: use "not found", not just empty string
 			String response = ResponseBuilder.buildDone(sItem);
@@ -109,15 +109,15 @@ public class DiaryRestService
 	@GET
 	@Path("changes")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecordsModified(@QueryParam("since") String stime) throws CommonServiceException
+	public Response getRecordsModified(@QueryParam("since") String parTime) throws CommonServiceException
 	{
 		try
 		{
 			int userId = UserSessionUtils.getId(req);
-			Date time = Utils.parseTimeUTC(stime);
-			List<Versioned<String>> list = diaryService.findMod(userId, time);
-			String items = serializerVersionedString.writeAll(list);
-			String response = ResponseBuilder.buildDone(items);
+			Date since = Utils.parseTimeUTC(parTime);
+			List<Versioned<String>> items = diaryService.findMod(userId, since);
+			String s = serializerVersionedString.writeAll(items);
+			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
 		}
 		catch (Exception e)
@@ -141,9 +141,9 @@ public class DiaryRestService
 			Date endTime = Utils.parseTimeUTC(parEndTime);
 			boolean includeRemoved = Boolean.valueOf(parShowRem);
 
-			List<Versioned<String>> list = diaryService.findPeriod(userId, startTime, endTime, includeRemoved);
-			String items = serializerVersionedString.writeAll(list);
-			String response = ResponseBuilder.buildDone(items);
+			List<Versioned<String>> items = diaryService.findPeriod(userId, startTime, endTime, includeRemoved);
+			String s = serializerVersionedString.writeAll(items);
+			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
 		}
 		catch (Exception e)
@@ -155,13 +155,13 @@ public class DiaryRestService
 
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response postRecords(@FormParam("items") String items) throws CommonServiceException
+	public Response postRecords(@FormParam("items") String parItems) throws CommonServiceException
 	{
 		try
 		{
 			int userId = UserSessionUtils.getId(req);
-			List<Versioned<DiaryRecord>> itemList = serializerVersionedRecord.readAll(items);
-			diaryService.post(userId, itemList);
+			List<Versioned<DiaryRecord>> items = serializerVersionedRecord.readAll(parItems);
+			diaryService.post(userId, items);
 
 			String response = ResponseBuilder.buildDone("Saved OK");
 			return Response.ok(response).build();
