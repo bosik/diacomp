@@ -254,7 +254,7 @@
 		<method-todo>
 			<cat>База продуктов</cat>
 			<name>Получение продуктов, изменённых после указанного времени</name>
-			<url>/food/mod/</url>
+			<url>/food/changes/</url>
 			<params>
 				<param>
 					<par-name>from</par-name>
