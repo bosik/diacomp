@@ -2,14 +2,14 @@ package org.bosik.diacomp.android.persistence.services.local;
 
 import org.bosik.diacomp.android.backend.features.diary.LocalDiaryService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.diary.TestDiaryServiceCommon;
 import org.bosik.diacomp.core.services.diary.TestDiaryService;
-import org.bosik.diacomp.core.services.diary.TestDiaryServiceContract;
 import android.content.ContentResolver;
 import android.test.AndroidTestCase;
 
-public class TestLocalDiaryService extends AndroidTestCase implements TestDiaryServiceContract
+public class TestLocalDiaryService extends AndroidTestCase implements TestDiaryService
 {
-	private static TestDiaryService	test;
+	private static TestDiaryServiceCommon	test;
 
 	@Override
 	protected void setUp()
@@ -17,7 +17,7 @@ public class TestLocalDiaryService extends AndroidTestCase implements TestDiaryS
 		assertNotNull(getContext());
 		ContentResolver resolver = getContext().getContentResolver();
 		final DiaryService service = new LocalDiaryService(resolver);
-		test = new TestDiaryService()
+		test = new TestDiaryServiceCommon()
 		{
 			@Override
 			protected DiaryService getService()
@@ -35,7 +35,7 @@ public class TestLocalDiaryService extends AndroidTestCase implements TestDiaryS
 	// ContentResolver resolver = getContext().getContentResolver();
 	// final DiaryService service = new LocalDiaryService(resolver);
 	//
-	// TestDiaryService test = new TestDiaryService()
+	// TestDiaryServiceCommon test = new TestDiaryServiceCommon()
 	// {
 	// @Override
 	// protected DiaryService getService()
@@ -54,7 +54,7 @@ public class TestLocalDiaryService extends AndroidTestCase implements TestDiaryS
 	// ContentResolver resolver = getContext().getContentResolver();
 	// final DiaryService service = new LocalDiaryService(resolver);
 	//
-	// TestDiaryService test = new TestDiaryService()
+	// TestDiaryServiceCommon test = new TestDiaryServiceCommon()
 	// {
 	// @Override
 	// protected DiaryService getService()
