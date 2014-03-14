@@ -4,7 +4,7 @@ import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.Suppress;
 
 @Suppress
-public class TestLocalFoodBaseService extends AndroidTestCase// TestFoodBaseService
+public class TestLocalFoodBaseService extends AndroidTestCase// TestFoodbaseServiceCommon
 {
 	// FIXME
 	// @Override

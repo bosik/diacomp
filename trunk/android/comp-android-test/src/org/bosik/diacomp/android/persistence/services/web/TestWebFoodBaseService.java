@@ -1,9 +1,9 @@
 package org.bosik.diacomp.android.persistence.services.web;
 
-import org.bosik.diacomp.core.persistence.services.TestFoodBaseService;
-import org.bosik.diacomp.core.services.FoodBaseService;
+import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
+import org.bosik.diacomp.core.services.foodbase.TestFoodbaseServiceCommon;
 
-public class TestWebFoodBaseService extends TestFoodBaseService
+public class TestWebFoodBaseService extends TestFoodbaseServiceCommon
 {
 	@Override
 	protected FoodBaseService getService()
