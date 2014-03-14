@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.auth;
+package org.bosik.diacomp.web.frontend.features.auth;
 
 import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;

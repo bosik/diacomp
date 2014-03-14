@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.foodbase;
+package org.bosik.diacomp.web.frontend.features.foodbase;
 
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import org.bosik.diacomp.core.services.foodbase.TestFoodbaseServiceCommon;
