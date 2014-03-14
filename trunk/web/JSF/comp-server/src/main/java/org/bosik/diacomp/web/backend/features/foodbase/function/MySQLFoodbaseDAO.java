@@ -75,12 +75,12 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findModified(int userId, Date time)
+	public List<Versioned<FoodItem>> findModified(int userId, Date since)
 	{
 		try
 		{
 			String clause = String.format("(%s = %d) AND (%s >= '%s')", MySQLAccess.COLUMN_FOODBASE_USER, userId,
-					MySQLAccess.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(time));
+					MySQLAccess.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(since));
 			String order = MySQLAccess.COLUMN_FOODBASE_NAMECACHE;
 
 			ResultSet set = db.select(MySQLAccess.TABLE_FOODBASE, clause, order);
