@@ -13,6 +13,7 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.frontend.common.AuthorizedRestClient;
 import com.sun.jersey.api.client.UniformInterfaceException;
+import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.representation.Form;
 
 public class DiaryRestClient extends AuthorizedRestClient implements DiaryService
@@ -29,7 +30,8 @@ public class DiaryRestClient extends AuthorizedRestClient implements DiaryServic
 	{
 		try
 		{
-			String str = authGet(String.format("api/diary/guid/%s", guid));
+			WebResource resource = getResource(String.format("api/diary/guid/%s", guid));
+			String str = authGet(resource);
 
 			StdResponse resp = new StdResponse(str);
 			checkResponse(resp);
@@ -48,7 +50,10 @@ public class DiaryRestClient extends AuthorizedRestClient implements DiaryServic
 	{
 		try
 		{
-			String str = authGet(String.format("api/diary/changes/?since=%s", Utils.formatTimeUTC(time)));
+			WebResource resource = getResource("api/diary/changes");
+			resource = resource.queryParam("since", Utils.formatTimeUTC(time));
+
+			String str = authGet(resource);
 			StdResponse resp = new StdResponse(str);
 			checkResponse(resp);
 
@@ -66,12 +71,14 @@ public class DiaryRestClient extends AuthorizedRestClient implements DiaryServic
 	{
 		try
 		{
-			String url = "api/diary/period/?";
-			url += "start_time=" + Utils.formatTimeUTC(fromTime);
-			url += "&end_time=" + Utils.formatTimeUTC(toTime);
-			url += "&show_rem=" + Utils.formatBooleanStr(includeRemoved);
+			WebResource resource = getResource("api/diary/period");
+			resource = resource.queryParam("start_time", Utils.formatTimeUTC(fromTime));
+			resource = resource.queryParam("end_time", Utils.formatTimeUTC(toTime));
+			resource = resource.queryParam("show_rem", Utils.formatBooleanStr(includeRemoved));
 
-			StdResponse resp = new StdResponse(url);
+			String str = authGet(resource);
+
+			StdResponse resp = new StdResponse(str);
 			checkResponse(resp);
 
 			return serializer.readAll(resp.getResponse());
@@ -85,12 +92,12 @@ public class DiaryRestClient extends AuthorizedRestClient implements DiaryServic
 	@Override
 	public void postRecords(List<Versioned<DiaryRecord>> records) throws CommonServiceException
 	{
-		String url = "api/diary/";
+		WebResource resource = getResource("api/diary/");
 		try
 		{
 			Form form = new Form();
 			form.add("items", serializer.writeAll(records));
-			String str = authPut(url, form);
+			String str = authPut(resource, form);
 
 			StdResponse resp = new StdResponse(str);
 			checkResponse(resp);
@@ -98,7 +105,7 @@ public class DiaryRestClient extends AuthorizedRestClient implements DiaryServic
 		catch (UniformInterfaceException e)
 		{
 			System.err.println(e.getResponse().getEntity(String.class));
-			throw new CommonServiceException("URL: " + url, e);
+			throw new CommonServiceException("URL: " + resource.getURI(), e);
 		}
 	}
 }

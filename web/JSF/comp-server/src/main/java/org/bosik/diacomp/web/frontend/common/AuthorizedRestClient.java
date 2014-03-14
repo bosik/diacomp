@@ -1,8 +1,10 @@
 package org.bosik.diacomp.web.frontend.common;
 
 import javax.ws.rs.core.MediaType;
+import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
+import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.representation.Form;
 
 public class AuthorizedRestClient extends RestClient
@@ -25,29 +27,39 @@ public class AuthorizedRestClient extends RestClient
 		this.apiVersion = apiVersion;
 	}
 
-	public String authGet(String url)
+	public String authGet(WebResource resource)
 	{
 		try
 		{
-			return getResource(url).accept(MediaType.APPLICATION_JSON).get(String.class);
+			String s = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
+			checkResponse(new StdResponse(s));
+			return s;
 		}
 		catch (NotAuthorizedException e)
 		{
 			login();
-			return getResource(url).accept(MediaType.APPLICATION_JSON).get(String.class);
+
+			String s = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
+			checkResponse(new StdResponse(s));
+			return s;
 		}
 	}
 
-	public String authPut(String url, Form form)
+	public String authPut(WebResource resource, Form form)
 	{
 		try
 		{
-			return getResource(url).accept(MediaType.APPLICATION_JSON).put(String.class, form);
+			String s = resource.accept(MediaType.APPLICATION_JSON).put(String.class, form);
+			checkResponse(new StdResponse(s));
+			return s;
 		}
 		catch (NotAuthorizedException e)
 		{
 			login();
-			return getResource(url).accept(MediaType.APPLICATION_JSON).put(String.class, form);
+
+			String s = resource.accept(MediaType.APPLICATION_JSON).put(String.class, form);
+			checkResponse(new StdResponse(s));
+			return s;
 		}
 	}
 
