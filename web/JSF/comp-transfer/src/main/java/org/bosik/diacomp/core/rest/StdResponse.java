@@ -1,5 +1,6 @@
 package org.bosik.diacomp.core.rest;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class StdResponse
@@ -45,10 +46,17 @@ public class StdResponse
 
 	public static StdResponse decode(String s)
 	{
-		JSONObject json = new JSONObject(s);
-		int code = json.getInt(TAG_CODE);
-		String msg = json.has(TAG_RESPONSE) ? json.getString(TAG_RESPONSE) : "";
-		return new StdResponse(code, msg);
+		try
+		{
+			JSONObject json = new JSONObject(s);
+			int code = json.getInt(TAG_CODE);
+			String msg = json.has(TAG_RESPONSE) ? json.getString(TAG_RESPONSE) : "";
+			return new StdResponse(code, msg);
+		}
+		catch (JSONException e)
+		{
+			throw new RuntimeException(String.format("Failed to parse JSON string '%s'", s), e);
+		}
 	}
 
 	public static String encode(StdResponse resp)
