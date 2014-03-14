@@ -115,7 +115,7 @@ public class DiaryRestService
 		{
 			int userId = UserSessionUtils.getId(req);
 			Date since = Utils.parseTimeUTC(parTime);
-			List<Versioned<String>> items = diaryService.findMod(userId, since);
+			List<Versioned<String>> items = diaryService.findChanged(userId, since);
 			String s = serializerVersionedString.writeAll(items);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
