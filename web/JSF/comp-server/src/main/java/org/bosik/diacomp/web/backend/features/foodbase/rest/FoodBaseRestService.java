@@ -1,9 +1,14 @@
 package org.bosik.diacomp.web.backend.features.foodbase.rest;
 
+import java.util.Date;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -14,6 +19,10 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.ready.SerializerFoodItem;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.backend.common.UserSessionUtils;
+import org.bosik.diacomp.web.backend.features.foodbase.function.FoodbaseDAO;
+import org.bosik.diacomp.web.backend.features.foodbase.function.MySQLFoodbaseDAO;
 
 @Path("food/")
 public class FoodBaseRestService
@@ -21,79 +30,95 @@ public class FoodBaseRestService
 	@Context
 	HttpServletRequest										req;
 
-	//	private static final Parser<String>					parserString				= new Parser<String>()
-	//																					{
-	//																						// As-is
-	//																						// "parser"
-	//
-	//																						@Override
-	//																						public String read(
-	//																								JSONObject json)
-	//																								throws JSONException
-	//																						{
-	//																							if (json == null)
-	//																							{
-	//																								return null;
-	//																							}
-	//																							else
-	//																							{
-	//																								return json.toString();
-	//																							}
-	//																						}
-	//
-	//																						@Override
-	//																						public JSONObject write(
-	//																								String object)
-	//																								throws JSONException
-	//																						{
-	//																							if (object == null)
-	//																							{
-	//																								return null;
-	//																							}
-	//																							else
-	//																							{
-	//																								return new JSONObject(
-	//																										object);
-	//																							}
-	//																						}
-	//																					};
-	//	private static final Parser<Versioned<String>>		parserVersionedString		= new ParserVersioned<String>(
-	//																							parserString);
-	//	private static final Serializer<Versioned<String>>	serializerVersionedString	= new SerializerAdapter<Versioned<String>>(
-	//																							parserVersionedString);
+	private final FoodbaseDAO								foodbaseService	= new MySQLFoodbaseDAO();
 
 	private static final Serializer<Versioned<FoodItem>>	serializer	= new SerializerFoodItem();
 
-	// @PUT
-	// @Path("update")
-	// @Produces(MediaType.APPLICATION_JSON)
-	// public String put(@DefaultValue("") @QueryParam("value") String value)
-	// {
-	// HttpSession session = req.getSession(true);
-	// session.setAttribute("foo", value);
-	//
-	// return "Value " + value + " putted";
-	// }
-
 	@GET
-	@Path("test")
+	@Path("guid/{guid}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecords() throws CommonServiceException
+	public Response getRecordsGuid(@PathParam("guid") String parGuid) throws CommonServiceException
 	{
 		try
 		{
-			//int userId = authService.getCurrentUserId(req);
+			int userId = UserSessionUtils.getId(req);
 
-			//Date time = Utils.parseTimeUTC(stime);
-			//List<Versioned<String>> list = diaryService.findMod(userId, time);
-			//String items = serializerVersionedString.writeAll(list);
-			String response = ResponseBuilder.buildDone("It works");
+			Versioned<FoodItem> item = foodbaseService.findByGuid(userId, parGuid);
+			String s = (item != null) ? serializer.write(item) : "";
+			// TODO: use "not found", not just empty string
+			String response = ResponseBuilder.buildDone(s);
+			return Response.ok(response).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			// FIXME: remove error info from response bean
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails(e.getMessage()))
+					.build();
+		}
+	}
+
+	@GET
+	@Path("all")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getRecordsAll(@QueryParam("show_rem") String parShowRem) throws CommonServiceException
+	{
+		try
+		{
+			int userId = UserSessionUtils.getId(req);
+			boolean includeRemoved = Boolean.valueOf(parShowRem);
+
+			List<Versioned<FoodItem>> items = foodbaseService.findAll(userId, includeRemoved);
+			String s = serializer.writeAll(items);
+			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	@GET
+	@Path("changes")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getRecordsModified(@QueryParam("since") String parTime) throws CommonServiceException
+	{
+		try
+		{
+			int userId = UserSessionUtils.getId(req);
+			Date since = Utils.parseTimeUTC(parTime);
+			List<Versioned<FoodItem>> items = foodbaseService.findChanged(userId, since);
+			String s = serializer.writeAll(items);
+			String response = ResponseBuilder.buildDone(s);
+			return Response.ok(response).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response postRecords(@FormParam("items") String parItems) throws CommonServiceException
+	{
+		try
+		{
+			int userId = UserSessionUtils.getId(req);
+			List<Versioned<FoodItem>> items = serializer.readAll(parItems);
+			foodbaseService.post(userId, items);
+
+			String response = ResponseBuilder.buildDone("Saved OK");
+			return Response.ok(response).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			// FIXME: remove error info from response bean
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails(e.getMessage()))
+					.build();
 		}
 	}
 }
