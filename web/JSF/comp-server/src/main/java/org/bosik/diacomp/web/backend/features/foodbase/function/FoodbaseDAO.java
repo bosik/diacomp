@@ -23,7 +23,7 @@ public interface FoodbaseDAO
 	 * @param since
 	 * @return
 	 */
-	List<Versioned<FoodItem>> findModified(int userId, Date since);
+	List<Versioned<FoodItem>> findChanged(int userId, Date since);
 
 	/**
 	 * Searches the item with the specified GUID
