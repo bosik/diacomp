@@ -145,7 +145,7 @@ public class MemoryBase
 	// }
 	// }
 	//
-	// public void remove(String id) throws ItemNotFoundException
+	// public void remove(String id) throws NotFoundException
 	// {
 	// for (Iterator<T> iterator = items.iterator(); iterator.hasNext();)
 	// {
@@ -157,7 +157,7 @@ public class MemoryBase
 	// return;
 	// }
 	// }
-	// throw new ItemNotFoundException(id);
+	// throw new NotFoundException(id);
 	// }
 	//
 	// public void replaceAll(List<T> newList, int newVersion)
@@ -177,7 +177,7 @@ public class MemoryBase
 	// }
 	// }
 	//
-	// public void update(T item) throws ItemNotFoundException
+	// public void update(T item) throws NotFoundException
 	// {
 	// // comparison performed by id, because equals() method is overridden
 	// try
@@ -190,7 +190,7 @@ public class MemoryBase
 	// }
 	// else
 	// {
-	// throw new ItemNotFoundException(item.getId());
+	// throw new NotFoundException(item.getId());
 	// }
 	// }
 	// catch (CloneNotSupportedException e)

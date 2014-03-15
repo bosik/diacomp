@@ -12,7 +12,7 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
-import org.bosik.diacomp.core.services.exceptions.ItemNotFoundException;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import org.bosik.diacomp.core.utils.Utils;
@@ -136,7 +136,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 	}
 
 	@Override
-	public void delete(String id) throws ItemNotFoundException, AlreadyDeletedException
+	public void delete(String id) throws NotFoundException, AlreadyDeletedException
 	{
 		try
 		{
@@ -144,7 +144,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 
 			if (founded == null)
 			{
-				throw new ItemNotFoundException(id);
+				throw new NotFoundException(id);
 			}
 
 			if (founded.isDeleted())
@@ -202,7 +202,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 	}
 
 	@Override
-	public void update(Versioned<FoodItem> item) throws ItemNotFoundException, PersistenceException
+	public void update(Versioned<FoodItem> item) throws NotFoundException, PersistenceException
 	{
 		try
 		{
@@ -210,7 +210,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 
 			if ((founded == null) || founded.isDeleted())
 			{
-				throw new ItemNotFoundException(item.getId());
+				throw new NotFoundException(item.getId());
 			}
 
 			ContentValues newValues = new ContentValues();
