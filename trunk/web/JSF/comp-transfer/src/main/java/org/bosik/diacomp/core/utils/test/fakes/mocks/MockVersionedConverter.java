@@ -31,7 +31,7 @@ public class MockVersionedConverter<T> implements Mock<Versioned<T>>
 			Random r = new Random();
 
 			Versioned<T> item = new Versioned<T>(sample);
-			item.setId(Utils.getGUID());
+			item.setId(Utils.generateGuid());
 			long timeBase = 1261440000000L;
 			long timeDelta = ((long)r.nextInt(315360000)) * 1000;
 			item.setTimeStamp(new Date(timeBase + timeDelta));

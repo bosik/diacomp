@@ -30,7 +30,7 @@ public class Versioned<T> implements Serializable
 
 	public Versioned(T data)
 	{
-		id = Utils.getGUID();
+		id = Utils.generateGuid();
 		version = 0;
 		updateTimeStamp();
 		this.data = data;
