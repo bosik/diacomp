@@ -3,9 +3,12 @@ package org.bosik.diacomp.core.services.foodbase;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.services.exceptions.DuplicateException;
+import org.bosik.diacomp.core.services.exceptions.ItemNotFoundException;
 import org.bosik.diacomp.core.utils.test.fakes.mocks.Mock;
 import org.bosik.diacomp.core.utils.test.fakes.mocks.MockFoodItem;
 import org.bosik.diacomp.core.utils.test.fakes.mocks.MockVersionedConverter;
+import org.junit.Test;
 
 public abstract class TestFoodbaseServiceCommon extends TestCase implements TestFoodbaseService
 {
@@ -25,20 +28,39 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 	public void test_addFindById_single_PersistedOk()
 	{
 		Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
+		String id = org.getId();
 
-		if (foodBaseService.findById(org.getId()) == null)
+		if (foodBaseService.findById(id) == null)
 		{
-			foodBaseService.add(org);
+			id = foodBaseService.add(org);
 		}
 
 		// ------------------------------
 		setUp();
 		// ------------------------------
 
-		Versioned<FoodItem> restored = foodBaseService.findById(org.getId());
+		Versioned<FoodItem> restored = foodBaseService.findById(id);
 		assertNotNull(restored);
 		assertNotSame(org, restored);
 		mockGenerator.compare(org, restored);
+	}
+
+	@Override
+	@Test(expected = DuplicateException.class)
+	public void test_add_duplication_exceptionRaised()
+	{
+		Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
+		foodBaseService.add(org);
+		foodBaseService.add(org);
+	}
+
+	@Override
+	@Test(expected = ItemNotFoundException.class)
+	public void test_delete_notFound_exceptionRaised()
+	{
+		Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
+		foodBaseService.delete(org.getId());
+		foodBaseService.delete(org.getId());
 	}
 
 	// TODO: create testPersistenceMultiple()
