@@ -1,5 +1,6 @@
 package org.bosik.diacomp.android.backend.features.search;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
@@ -65,8 +66,8 @@ public class RelevantIndexator
 		for (Versioned<T> item : list)
 		{
 			item.getData().setTag(0);
-			base.update(item);
 		}
+		base.save(list);
 	}
 
 	private static void process(String name, int delta, FoodBaseService foodBase, DishBaseService dishBase)
@@ -83,7 +84,7 @@ public class RelevantIndexator
 		if (null != item)
 		{
 			item.getData().setTag(item.getData().getTag() + delta);
-			base.update(item);
+			base.save(Arrays.asList(item));
 			return true;
 		}
 		else
