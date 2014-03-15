@@ -1,10 +1,10 @@
 package org.bosik.diacomp.core.services.exceptions;
 
-public class ItemNotFoundException extends PersistenceException
+public class NotFoundException extends PersistenceException
 {
 	private static final long	serialVersionUID	= 1L;
 
-	public ItemNotFoundException(String id)
+	public NotFoundException(String id)
 	{
 		super(String.format("Item '%s' not found", id));
 	}

@@ -5,7 +5,7 @@ import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
-import org.bosik.diacomp.core.services.exceptions.ItemNotFoundException;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import org.bosik.diacomp.web.frontend.common.AuthorizedRestClient;
@@ -25,7 +25,7 @@ public class FoodbaseRestClient extends AuthorizedRestClient implements FoodBase
 	}
 
 	@Override
-	public void delete(String id) throws ItemNotFoundException, AlreadyDeletedException
+	public void delete(String id) throws NotFoundException, AlreadyDeletedException
 	{
 		// TODO Auto-generated method stub
 
@@ -67,7 +67,7 @@ public class FoodbaseRestClient extends AuthorizedRestClient implements FoodBase
 	}
 
 	@Override
-	public void update(Versioned<FoodItem> item) throws ItemNotFoundException, PersistenceException
+	public void update(Versioned<FoodItem> item) throws NotFoundException, PersistenceException
 	{
 		// TODO Auto-generated method stub
 

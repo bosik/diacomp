@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
-import org.bosik.diacomp.core.services.exceptions.ItemNotFoundException;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.utils.test.fakes.mocks.Mock;
 import org.bosik.diacomp.core.utils.test.fakes.mocks.MockFoodItem;
 import org.bosik.diacomp.core.utils.test.fakes.mocks.MockVersionedConverter;
@@ -55,7 +55,7 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 	}
 
 	@Override
-	@Test(expected = ItemNotFoundException.class)
+	@Test(expected = NotFoundException.class)
 	public void test_delete_notFound_exceptionRaised()
 	{
 		Versioned<FoodItem> org = mockGenerator.getSamples().get(0);

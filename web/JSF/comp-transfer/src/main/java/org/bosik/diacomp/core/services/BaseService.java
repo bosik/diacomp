@@ -3,7 +3,7 @@ package org.bosik.diacomp.core.services;
 import java.util.List;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
-import org.bosik.diacomp.core.services.exceptions.ItemNotFoundException;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 
 public interface BaseService<Item>
@@ -22,12 +22,12 @@ public interface BaseService<Item>
 	 * Marks item with specified ID as deleted
 	 *
 	 * @param id
-	 * @throws ItemNotFoundException
+	 * @throws NotFoundException
 	 *             If no item with such ID found
 	 * @throws AlreadyDeletedException
 	 *             If item is already deleted
 	 */
-	void delete(String id) throws ItemNotFoundException, AlreadyDeletedException;
+	void delete(String id) throws NotFoundException, AlreadyDeletedException;
 
 	/**
 	 * Returns all items
@@ -72,7 +72,7 @@ public interface BaseService<Item>
 	 * Updates single non-deleted item. Note: updating deleted item result in exception.
 	 *
 	 * @param item
-	 * @throws ItemNotFoundException
+	 * @throws NotFoundException
 	 *             If no non-deleted item with such ID found
 	 * @throws PersistenceException
 	 *             If storing failed
@@ -80,5 +80,5 @@ public interface BaseService<Item>
 
 	// TODO: retrieve version and increment it here
 	// TODO: set timestamp to current time
-	void update(Versioned<Item> item) throws ItemNotFoundException, PersistenceException;
+	void update(Versioned<Item> item) throws NotFoundException, PersistenceException;
 }
