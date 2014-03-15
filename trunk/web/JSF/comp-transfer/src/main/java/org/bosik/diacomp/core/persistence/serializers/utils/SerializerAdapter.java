@@ -16,6 +16,7 @@ public class SerializerAdapter<T> implements Serializer<T>
 		this.parser = parser;
 	}
 
+	@Override
 	public T read(String s)
 	{
 		try
@@ -25,10 +26,11 @@ public class SerializerAdapter<T> implements Serializer<T>
 		}
 		catch (JSONException e)
 		{
-			throw new IllegalArgumentException("Failed to parse JSON: " + s, e);
+			throw new IllegalArgumentException("Failed to parse JSON: '" + s + "'", e);
 		}
 	}
 
+	@Override
 	public List<T> readAll(String s)
 	{
 		try
@@ -42,6 +44,7 @@ public class SerializerAdapter<T> implements Serializer<T>
 		}
 	}
 
+	@Override
 	public String write(T object)
 	{
 		try
@@ -54,6 +57,7 @@ public class SerializerAdapter<T> implements Serializer<T>
 		}
 	}
 
+	@Override
 	public String writeAll(List<T> objects)
 	{
 		try

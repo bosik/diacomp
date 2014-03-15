@@ -18,12 +18,12 @@ import com.sun.jersey.api.representation.Form;
 
 public class DiaryRestClient extends AuthorizedRestClient implements DiaryService
 {
+	private static Serializer<Versioned<DiaryRecord>>	serializer	= new SerializerDiaryRecord();
+
 	public DiaryRestClient(AuthService authService, String login, String pass, int apiVersion)
 	{
 		super(authService, login, pass, apiVersion);
 	}
-
-	private static Serializer<Versioned<DiaryRecord>>	serializer	= new SerializerDiaryRecord();
 
 	@Override
 	public Versioned<DiaryRecord> getRecord(String guid) throws CommonServiceException
