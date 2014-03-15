@@ -341,7 +341,12 @@ public class Utils
 		return json.toString();
 	}
 
-	public static String getGUID()
+	/**
+	 * Generates pseudo-random 32-chars-long GUID
+	 * 
+	 * @return
+	 */
+	public static String generateGuid()
 	{
 		return UUID.randomUUID().toString().replace("-", "");
 	}
