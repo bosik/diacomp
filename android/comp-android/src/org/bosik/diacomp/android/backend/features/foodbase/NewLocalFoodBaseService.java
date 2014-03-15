@@ -22,7 +22,7 @@ import android.database.Cursor;
 
 public class NewLocalFoodBaseService implements FoodBaseService
 {
-	private final ContentResolver			resolver;
+	private final ContentResolver		resolver;
 	private final Serializer<FoodItem>	serializer;
 
 	// ====================================================================================
@@ -202,24 +202,26 @@ public class NewLocalFoodBaseService implements FoodBaseService
 	}
 
 	@Override
-	public void update(Versioned<FoodItem> item) throws NotFoundException, PersistenceException
+	public void save(List<Versioned<FoodItem>> items) throws PersistenceException
 	{
 		try
 		{
-			Versioned<FoodItem> founded = findById(item.getId());
-
-			if ((founded == null) || founded.isDeleted())
+			for (Versioned<FoodItem> item : items)
 			{
-				throw new NotFoundException(item.getId());
+				// Versioned<FoodItem> founded = findById(item.getId());
+				// if ((founded == null) || founded.isDeleted())
+				// {
+				// throw new NotFoundException(item.getId());
+				// }
+
+				ContentValues newValues = new ContentValues();
+				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
+				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
+
+				String[] args = new String[] { item.getId() };
+				resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, "GUID = ?", args);
 			}
-
-			ContentValues newValues = new ContentValues();
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
-
-			String[] args = new String[] { item.getId() };
-			resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, "GUID = ?", args);
 		}
 		catch (Exception e)
 		{

@@ -80,5 +80,5 @@ public interface BaseService<Item>
 
 	// TODO: retrieve version and increment it here
 	// TODO: set timestamp to current time
-	void update(Versioned<Item> item) throws NotFoundException, PersistenceException;
+	void save(List<Versioned<Item>> items) throws NotFoundException, PersistenceException;
 }
