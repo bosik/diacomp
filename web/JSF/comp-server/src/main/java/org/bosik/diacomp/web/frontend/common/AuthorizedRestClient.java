@@ -45,6 +45,24 @@ public class AuthorizedRestClient extends RestClient
 		}
 	}
 
+	public String authPost(WebResource resource, Form form)
+	{
+		try
+		{
+			String s = resource.accept(MediaType.APPLICATION_JSON).post(String.class, form);
+			checkResponse(new StdResponse(s));
+			return s;
+		}
+		catch (NotAuthorizedException e)
+		{
+			login();
+
+			String s = resource.accept(MediaType.APPLICATION_JSON).post(String.class, form);
+			checkResponse(new StdResponse(s));
+			return s;
+		}
+	}
+
 	public String authPut(WebResource resource, Form form)
 	{
 		try
