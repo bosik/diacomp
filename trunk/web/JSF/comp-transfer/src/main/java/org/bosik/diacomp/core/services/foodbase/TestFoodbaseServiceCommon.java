@@ -46,12 +46,21 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 	}
 
 	@Override
-	@Test(expected = DuplicateException.class)
+	@Test
+	//(expected = DuplicateException.class)
 	public void test_add_duplication_exceptionRaised()
 	{
-		Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
-		foodBaseService.add(org);
-		foodBaseService.add(org);
+		try
+		{
+			Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
+			foodBaseService.add(org);
+			foodBaseService.add(org);
+			fail("DuplicateException expected");
+		}
+		catch (DuplicateException e)
+		{
+			// it's ok, just as planned
+		}
 	}
 
 	@Override
