@@ -55,12 +55,21 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 	}
 
 	@Override
-	@Test(expected = NotFoundException.class)
+	@Test
+	//(expected = NotFoundException.class)
 	public void test_delete_notFound_exceptionRaised()
 	{
-		Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
-		foodBaseService.delete(org.getId());
-		foodBaseService.delete(org.getId());
+		try
+		{
+			Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
+			foodBaseService.delete(org.getId());
+			foodBaseService.delete(org.getId());
+			fail("NotFoundException expected");
+		}
+		catch (NotFoundException e)
+		{
+			// it's ok, just as planned
+		}
 	}
 
 	// TODO: create testPersistenceMultiple()
