@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.persistence.services.local;
+package org.bosik.diacomp.android.backend.features.foodbase;
 
 import android.test.AndroidTestCase;
 

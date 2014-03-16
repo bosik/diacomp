@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.persistence.services.web;
+package org.bosik.diacomp.android.backend.features.foodbase;
 
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import org.bosik.diacomp.core.services.foodbase.TestFoodbaseServiceCommon;
