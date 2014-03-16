@@ -82,6 +82,27 @@ public class FoodBaseRestService
 	}
 
 	@GET
+	@Path("search")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getRecordsFilter(@QueryParam("q") String filter) throws CommonServiceException
+	{
+		try
+		{
+			int userId = UserSessionUtils.getId(req);
+
+			List<Versioned<FoodItem>> items = foodbaseService.findAny(userId, filter);
+			String s = serializer.writeAll(items);
+			String response = ResponseBuilder.buildDone(s);
+			return Response.ok(response).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	@GET
 	@Path("changes")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response getRecordsModified(@QueryParam("since") String parTime) throws CommonServiceException
