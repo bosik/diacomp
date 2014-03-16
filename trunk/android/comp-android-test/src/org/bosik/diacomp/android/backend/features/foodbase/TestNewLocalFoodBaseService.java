@@ -12,4 +12,9 @@ public class TestNewLocalFoodBaseService extends AndroidTestCase// TestFoodbaseS
 	// ContentResolver resolver = getContext().getContentResolver();
 	// return new NewLocalFoodBaseService(resolver);
 	// }
+
+	public void testInformer()
+	{
+		fail("Not implemented");
+	}
 }
