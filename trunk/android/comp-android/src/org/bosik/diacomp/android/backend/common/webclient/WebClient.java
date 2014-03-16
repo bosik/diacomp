@@ -8,7 +8,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -48,8 +47,6 @@ public class WebClient
 	@Deprecated
 	private static final String	URL_CONSOLE		= "console.php";
 	@Deprecated
-	private static final String	RESPONSE_UNAUTH	= "Error: log in first";
-	@Deprecated
 	private static final String	RESPONSE_ONLINE	= "online";
 	// TODO: verify if this codepage is necessary
 	public static final String	CODEPAGE_CP1251	= "Cp1251";
@@ -73,7 +70,7 @@ public class WebClient
 
 	/**
 	 * Преобразует ответ сервера в строку
-	 * 
+	 *
 	 * @param resp
 	 *            Ответ сервера
 	 * @return Строка
@@ -103,7 +100,7 @@ public class WebClient
 
 	/**
 	 * Выполняет get-запрос
-	 * 
+	 *
 	 * @param url
 	 *            Запрашиваемый адрес
 	 * @return Ответ сервера
@@ -125,11 +122,7 @@ public class WebClient
 			HttpResponse resp = mHttpClient.execute(new HttpGet(url.replace(" ", CODE_SPACE)));
 			return formatResponse(resp, codePage);
 		}
-		catch (ClientProtocolException e)
-		{
-			throw new ConnectionException(e);
-		}
-		catch (IOException e)
+		catch (Exception e)
 		{
 			throw new ConnectionException("Failed to request " + url, e);
 		}
@@ -137,7 +130,7 @@ public class WebClient
 
 	/**
 	 * Выполняет post-запрос
-	 * 
+	 *
 	 * @param url
 	 *            Запрашиваемый адрес
 	 * @param params
@@ -163,7 +156,7 @@ public class WebClient
 
 			return formatResponse(resp, codePage);
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
 			throw new ConnectionException("Failed to request " + url, e);
 		}
@@ -195,9 +188,10 @@ public class WebClient
 
 	public String doGetSmart(String URL, String codePage) throws WebClientException
 	{
-		String resp = doGet(URL, codePage);
+		String s = doGet(URL, codePage);
+		StdResponse resp = new StdResponse(s);
 
-		if (RESPONSE_UNAUTH.equals(resp))
+		if (resp.getCode() == ResponseBuilder.CODE_UNAUTHORIZED)
 		{
 			Log.v(TAG, "doGetSmart(): Session timeout; re-login");
 			login();
@@ -205,7 +199,7 @@ public class WebClient
 		}
 		else
 		{
-			return resp;
+			return s;
 		}
 	}
 
@@ -216,9 +210,10 @@ public class WebClient
 
 	public String doPostSmart(String URL, List<NameValuePair> params, String codePage) throws WebClientException
 	{
-		String resp = doPost(URL, params, codePage);
+		String s = doPost(URL, params, codePage);
+		StdResponse resp = new StdResponse(s);
 
-		if (RESPONSE_UNAUTH.equals(resp))
+		if (resp.getCode() == ResponseBuilder.CODE_UNAUTHORIZED)
 		{
 			Log.v(TAG, "doPostSmart(): Session timeout; re-login");
 			login();
@@ -226,15 +221,16 @@ public class WebClient
 		}
 		else
 		{
-			return resp;
+			return s;
 		}
 	}
 
 	public String doPutSmart(String URL, List<NameValuePair> params, String codePage) throws WebClientException
 	{
-		String resp = doPut(URL, params, codePage);
+		String s = doPut(URL, params, codePage);
+		StdResponse resp = new StdResponse(s);
 
-		if (RESPONSE_UNAUTH.equals(resp))
+		if (resp.getCode() == ResponseBuilder.CODE_UNAUTHORIZED)
 		{
 			Log.v(TAG, "doPostSmart(): Session timeout; re-login");
 			login();
@@ -242,7 +238,7 @@ public class WebClient
 		}
 		else
 		{
-			return resp;
+			return s;
 		}
 	}
 
@@ -511,7 +507,7 @@ public class WebClient
 
 	/**
 	 * Отправляет страницы на сервер.
-	 * 
+	 *
 	 * @param pages
 	 *            Страницы
 	 * @return Успешность отправки
