@@ -49,6 +49,7 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		COLUMN_FOODBASE_VERSION		= "Version";
 	public static final String		COLUMN_FOODBASE_DELETED		= "Deleted";
 	public static final String		COLUMN_FOODBASE_DATA		= "Data";
+	public static final String		COLUMN_FOODBASE_NAMECACHE	= "NameCache";
 
 	public static final String		CONTENT_FOODBASE_STRING		= SCHEME + AUTH + "/" + TABLE_FOODBASE + "/";
 	public static final Uri			CONTENT_FOODBASE_URI		= Uri.parse(CONTENT_FOODBASE_STRING);
@@ -103,8 +104,8 @@ public class DiaryContentProvider extends ContentProvider
 			db.execSQL("DROP TABLE IF EXISTS " + TABLE_DISHBASE);
 
 			// @formatter:off
-			
-			// diary table			
+
+			// diary table
 			final String SQL_CREATE_DIARY = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s, %s)",
 					TABLE_DIARY,
 					COLUMN_DIARY_GUID + " CHAR(32) NOT NULL",
@@ -115,17 +116,18 @@ public class DiaryContentProvider extends ContentProvider
 					COLUMN_DIARY_TIMECACHE + " TEXT NOT NULL"
 					);
 			db.execSQL(SQL_CREATE_DIARY);
-			
-			// foodbase table			
-			final String SQL_CREATE_FOODBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s)",
+
+			// foodbase table
+			final String SQL_CREATE_FOODBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s, %s)",
 					TABLE_FOODBASE,
 					COLUMN_FOODBASE_GUID + " TEXT PRIMARY KEY",
 					COLUMN_FOODBASE_TIMESTAMP + " TEXT",
 					COLUMN_FOODBASE_VERSION + " INTEGER",
 					COLUMN_FOODBASE_DELETED + " INTEGER", // 0 or 1
+					COLUMN_FOODBASE_NAMECACHE + " TEXT",
 					COLUMN_FOODBASE_DATA + " TEXT");
 			db.execSQL(SQL_CREATE_FOODBASE);
-			
+
 			// dishbase table
 			final String SQL_CREATE_DISHBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s)",
 					TABLE_DISHBASE,
@@ -135,7 +137,7 @@ public class DiaryContentProvider extends ContentProvider
 					COLUMN_DISHBASE_DELETED + " INTEGER", // 0 or 1
 					COLUMN_DISHBASE_DATA + " TEXT");
 			db.execSQL(SQL_CREATE_DISHBASE);
-			
+
 			// @formatter:on
 		}
 
