@@ -23,7 +23,7 @@
             android:layout_weight="1"
             android:ems="10"
             android:hint="@string/foodbase_search_hint"
-            android:inputType="text" >
+            android:inputType="textNoSuggestions" >
 
             <requestFocus />
         </EditText>
