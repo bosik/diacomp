@@ -41,4 +41,13 @@ public interface FoodbaseDAO
 	 * @param items
 	 */
 	void post(int userId, List<Versioned<FoodItem>> items);
+
+	/**
+	 * Searches for items with the specified request filter
+	 * 
+	 * @param userId
+	 * @param filter
+	 * @return
+	 */
+	List<Versioned<FoodItem>> findAny(int userId, String filter);
 }

@@ -114,6 +114,26 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	}
 
 	@Override
+	public List<Versioned<FoodItem>> findAny(int userId, String filter)
+	{
+		try
+		{
+			String clause = String.format("(%s = %d) AND (%s = '%s') AND (%s LIKE '%%%s%%')",
+					MySQLAccess.COLUMN_FOODBASE_USER, userId, MySQLAccess.COLUMN_FOODBASE_DELETED,
+					Utils.formatBooleanInt(false), MySQLAccess.COLUMN_FOODBASE_NAMECACHE, filter);
+
+			ResultSet set = db.select(MySQLAccess.TABLE_FOODBASE, clause, null);
+			List<Versioned<FoodItem>> result = parseFoodItems(set);
+			set.close();
+			return result;
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
 	public void post(int userId, List<Versioned<FoodItem>> items)
 	{
 		try

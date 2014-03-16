@@ -79,8 +79,20 @@ public class FoodbaseRestClient implements FoodBaseService
 	@Override
 	public List<Versioned<FoodItem>> findAny(String filter)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		try
+		{
+			String url = String.format("api/food/search/?q=%s", filter);
+			String str = webClient.doGetSmart(url);
+
+			StdResponse resp = new StdResponse(str);
+			WebClient.checkResponse(resp);
+
+			return serializer.readAll(resp.getResponse());
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
 	}
 
 	@Override

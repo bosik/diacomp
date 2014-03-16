@@ -78,7 +78,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 		}
 	}
 
-	private List<Versioned<FoodItem>> find(String id, boolean includeDeleted)
+	private List<Versioned<FoodItem>> find(String id, String name, boolean includeDeleted)
 	{
 		try
 		{
@@ -97,6 +97,13 @@ public class NewLocalFoodBaseService implements FoodBaseService
 				args.add(id);
 			}
 
+			if (name != null)
+			{
+				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
+				mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE + " LIKE ?";
+				args.add(name);
+			}
+
 			if (!includeDeleted)
 			{
 				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
@@ -104,13 +111,15 @@ public class NewLocalFoodBaseService implements FoodBaseService
 			}
 
 			String[] mSelectionArgs = args.toArray(new String[] {});
-			String mSortOrder = null;
+			String mSortOrder = DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE;
 
 			// execute query
 			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, mProj, mSelectionClause,
 					mSelectionArgs, mSortOrder);
 
-			return parseItems(cursor);
+			final List<Versioned<FoodItem>> result = parseItems(cursor);
+			cursor.close();
+			return result;
 		}
 		catch (Exception e)
 		{
@@ -128,6 +137,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, false);
+			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE, item.getData().getName());
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
 
 			resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues);
@@ -171,13 +181,13 @@ public class NewLocalFoodBaseService implements FoodBaseService
 	@Override
 	public List<Versioned<FoodItem>> findAll(boolean includeRemoved)
 	{
-		return find(null, includeRemoved);
+		return find(null, null, includeRemoved);
 	}
 
 	@Override
 	public List<Versioned<FoodItem>> findAny(String filter)
 	{
-		throw new UnsupportedOperationException();
+		return find(null, filter, false);
 	}
 
 	@Override
@@ -189,7 +199,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 	@Override
 	public Versioned<FoodItem> findById(String id)
 	{
-		List<Versioned<FoodItem>> list = find(id, true);
+		List<Versioned<FoodItem>> list = find(id, null, true);
 		if (list.isEmpty())
 		{
 			return null;
