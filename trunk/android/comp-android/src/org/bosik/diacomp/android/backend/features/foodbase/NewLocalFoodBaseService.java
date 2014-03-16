@@ -196,12 +196,6 @@ public class NewLocalFoodBaseService implements FoodBaseService
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findSysAll()
-	{
-		return find(null, true);
-	}
-
-	@Override
 	public void save(List<Versioned<FoodItem>> items) throws PersistenceException
 	{
 		try

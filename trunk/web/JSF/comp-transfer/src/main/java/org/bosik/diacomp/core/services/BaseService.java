@@ -62,13 +62,6 @@ public interface BaseService<Item>
 	Versioned<Item> findById(String guid);
 
 	/**
-	 * Searches for all items (both deleted or not)
-	 *
-	 * @return
-	 */
-	List<Versioned<Item>> findSysAll();
-
-	/**
 	 * Updates single non-deleted item. Note: updating deleted item result in exception.
 	 *
 	 * @param item
