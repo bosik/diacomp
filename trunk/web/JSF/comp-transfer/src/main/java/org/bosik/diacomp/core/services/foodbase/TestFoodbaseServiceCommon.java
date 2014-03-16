@@ -3,7 +3,6 @@ package org.bosik.diacomp.core.services.foodbase;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.utils.test.fakes.mocks.Mock;
 import org.bosik.diacomp.core.utils.test.fakes.mocks.MockFoodItem;
@@ -45,23 +44,23 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 		mockGenerator.compare(org, restored);
 	}
 
-	@Override
-	@Test
-	//(expected = DuplicateException.class)
-	public void test_add_duplication_exceptionRaised()
-	{
-		try
-		{
-			Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
-			foodBaseService.add(org);
-			foodBaseService.add(org);
-			fail("DuplicateException expected");
-		}
-		catch (DuplicateException e)
-		{
-			// it's ok, just as planned
-		}
-	}
+	//	@Override
+	//	@Test
+	//	//(expected = DuplicateException.class)
+	//	public void test_add_duplication_exceptionRaised()
+	//	{
+	//		try
+	//		{
+	//			Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
+	//			foodBaseService.add(org);
+	//			foodBaseService.add(org);
+	//			fail("DuplicateException expected");
+	//		}
+	//		catch (DuplicateException e)
+	//		{
+	//			// it's ok, just as planned
+	//		}
+	//	}
 
 	@Override
 	@Test
