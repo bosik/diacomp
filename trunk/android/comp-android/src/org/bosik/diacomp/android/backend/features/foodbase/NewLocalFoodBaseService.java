@@ -39,6 +39,45 @@ public class NewLocalFoodBaseService implements FoodBaseService
 		serializer = new SerializerAdapter<FoodItem>(s);
 	}
 
+	private List<Versioned<FoodItem>> parseItems(Cursor cursor)
+	{
+		// analyze response
+		if (cursor != null)
+		{
+			List<Versioned<FoodItem>> result = new LinkedList<Versioned<FoodItem>>();
+
+			int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_GUID);
+			int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP);
+			int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_VERSION);
+			int indexData = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DATA);
+			int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DELETED);
+
+			while (cursor.moveToNext())
+			{
+				String valueId = cursor.getString(indexId);
+				Date valueTimeStamp = Utils.parseTimeUTC(cursor.getString(indexTimeStamp));
+				int valueVersion = cursor.getInt(indexVersion);
+				boolean valueDeleted = cursor.getInt(indexDeleted) == 1;
+				String valueData = cursor.getString(indexData);
+
+				FoodItem item = serializer.read(valueData);
+				Versioned<FoodItem> versioned = new Versioned<FoodItem>(item);
+				versioned.setId(valueId);
+				versioned.setTimeStamp(valueTimeStamp);
+				versioned.setVersion(valueVersion);
+				versioned.setDeleted(valueDeleted);
+
+				result.add(versioned);
+			}
+
+			return result;
+		}
+		else
+		{
+			throw new NullPointerException("Cursor is null");
+		}
+	}
+
 	private List<Versioned<FoodItem>> find(String id, boolean includeDeleted)
 	{
 		try
@@ -71,41 +110,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, mProj, mSelectionClause,
 					mSelectionArgs, mSortOrder);
 
-			List<Versioned<FoodItem>> result = new LinkedList<Versioned<FoodItem>>();
-
-			// analyze response
-			if (cursor != null)
-			{
-				int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_GUID);
-				int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP);
-				int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_VERSION);
-				int indexData = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DATA);
-				int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DELETED);
-
-				while (cursor.moveToNext())
-				{
-					String valueId = cursor.getString(indexId);
-					Date valueTimeStamp = Utils.parseTimeUTC(cursor.getString(indexTimeStamp));
-					int valueVersion = cursor.getInt(indexVersion);
-					boolean valueDeleted = cursor.getInt(indexDeleted) == 1;
-					String valueData = cursor.getString(indexData);
-
-					FoodItem item = serializer.read(valueData);
-					Versioned<FoodItem> versioned = new Versioned<FoodItem>(item);
-					versioned.setId(valueId);
-					versioned.setTimeStamp(valueTimeStamp);
-					versioned.setVersion(valueVersion);
-					versioned.setDeleted(valueDeleted);
-
-					result.add(versioned);
-				}
-			}
-			else
-			{
-				throw new NullPointerException("Cursor is null");
-			}
-
-			return result;
+			return parseItems(cursor);
 		}
 		catch (Exception e)
 		{
