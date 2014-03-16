@@ -209,6 +209,11 @@ public class WebClient
 		}
 	}
 
+	public String doGetSmart(String URL) throws WebClientException
+	{
+		return doGetSmart(URL, CODEPAGE_UTF8);
+	}
+
 	public String doPostSmart(String URL, List<NameValuePair> params, String codePage) throws WebClientException
 	{
 		String resp = doPost(URL, params, codePage);

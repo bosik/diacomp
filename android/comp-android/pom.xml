@@ -24,6 +24,11 @@
 			<artifactId>json</artifactId>
 			<version>20131018</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.2.4</version>
+		</dependency>
 		<!-- <dependency>
 			<groupId>diacomp</groupId>
 			<artifactId>comp-transfer</artifactId>
