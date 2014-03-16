@@ -21,7 +21,7 @@ import com.sun.jersey.api.representation.Form;
 
 public class FoodbaseRestClient extends AuthorizedRestClient implements FoodBaseService
 {
-	private static Serializer<Versioned<FoodItem>>	serializer	= new SerializerFoodItem();
+	private final Serializer<Versioned<FoodItem>>	serializer	= new SerializerFoodItem();
 
 	public FoodbaseRestClient(AuthService authService, String login, String pass, int apiVersion)
 	{
@@ -60,8 +60,8 @@ public class FoodbaseRestClient extends AuthorizedRestClient implements FoodBase
 	{
 		try
 		{
-			WebResource resource = getResource(String.format("api/food/all/?show_rem=%s",
-					Utils.formatBooleanInt(includeRemoved)));
+			String url = String.format("api/food/all/?show_rem=%s", Utils.formatBooleanInt(includeRemoved));
+			WebResource resource = getResource(url);
 			String str = authGet(resource);
 
 			StdResponse resp = new StdResponse(str);
