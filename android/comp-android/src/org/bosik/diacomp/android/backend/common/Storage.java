@@ -3,17 +3,11 @@ package org.bosik.diacomp.android.backend.common;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiaryService;
 import org.bosik.diacomp.android.backend.features.diary.WebDiaryService;
+import org.bosik.diacomp.android.backend.features.foodbase.FoodbaseRestClient;
 import org.bosik.diacomp.android.backend.features.foodbase.NewLocalFoodBaseService;
 import org.bosik.diacomp.android.frontend.activities.ActivityPreferences;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.Food;
-import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.persistence.serializers.Parser;
-import org.bosik.diacomp.core.persistence.serializers.ParserFoodItem;
-import org.bosik.diacomp.core.persistence.serializers.Serializer;
-import org.bosik.diacomp.core.persistence.serializers.utils.ParserVersioned;
-import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.DishBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
@@ -112,12 +106,7 @@ public class Storage
 		{
 			Log.v(TAG, "Web food base initialization...");
 
-			Parser<FoodItem> sJsonItem = new ParserFoodItem();
-			ParserVersioned<FoodItem> sJsonVersioned = new ParserVersioned<FoodItem>(sJsonItem);
-			Serializer<Versioned<FoodItem>> serializer = new SerializerAdapter<Versioned<FoodItem>>(sJsonVersioned);
-
-			// FIXME: uncomment when service is ready
-			// webFoodBase = new FoodbaseRestClient(webClient, serializer);
+			webFoodBase = new FoodbaseRestClient(webClient);
 		}
 		if (null == webDishBase)
 		{
