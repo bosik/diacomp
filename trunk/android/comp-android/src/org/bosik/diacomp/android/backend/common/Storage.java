@@ -117,7 +117,7 @@ public class Storage
 			Serializer<Versioned<FoodItem>> serializer = new SerializerAdapter<Versioned<FoodItem>>(sJsonVersioned);
 
 			// FIXME: uncomment when service is ready
-			// webFoodBase = new WebFoodBaseService(webClient, serializer);
+			// webFoodBase = new FoodbaseRestClient(webClient, serializer);
 		}
 		if (null == webDishBase)
 		{
