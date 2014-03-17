@@ -77,23 +77,17 @@ public class MySQLAccess
 	{
 		connect();
 
-		String sql = "SELECT * FROM %s WHERE %s";
-		final boolean sort = (order != null) && !order.isEmpty();
-		if (sort)
+		String sql = String.format("SELECT * FROM %s WHERE %s", table, clause);
+		if ((order != null) && !order.isEmpty())
 		{
 			sql += " ORDER BY " + order;
 		}
 
-		PreparedStatement preparedStatement = connection.prepareStatement(String.format(sql, table, clause));
+		PreparedStatement preparedStatement = connection.prepareStatement(sql);
 		for (int i = 0; i < params.length; i++)
 		{
 			preparedStatement.setString(i + 1, params[i]);
 		}
-
-		//		if (sort)
-		//		{
-		//			preparedStatement.setString(params.length + 1, order);
-		//		}
 
 		// Don't close prepared statement!
 		return preparedStatement.executeQuery();
