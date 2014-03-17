@@ -121,8 +121,9 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 			String clause = String.format("(%s = %d) AND (%s = '%s') AND (%s LIKE '%%%s%%')",
 					MySQLAccess.COLUMN_FOODBASE_USER, userId, MySQLAccess.COLUMN_FOODBASE_DELETED,
 					Utils.formatBooleanInt(false), MySQLAccess.COLUMN_FOODBASE_NAMECACHE, filter);
+			String order = MySQLAccess.COLUMN_FOODBASE_NAMECACHE;
 
-			ResultSet set = db.select(MySQLAccess.TABLE_FOODBASE, clause, null);
+			ResultSet set = db.select(MySQLAccess.TABLE_FOODBASE, clause, order);
 			List<Versioned<FoodItem>> result = parseFoodItems(set);
 			set.close();
 			return result;
