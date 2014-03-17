@@ -86,6 +86,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
         </activity>
+        <activity
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorFood"
+            android:label="@string/editor_food_title"
+            android:theme="@android:style/Theme.Light" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.bosik.diacomp.android.face.activities.ActivityFoodbase" />
+        </activity>
     </application>
 
 </manifest>

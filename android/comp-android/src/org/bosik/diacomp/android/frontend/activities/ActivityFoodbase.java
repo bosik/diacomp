@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,7 @@ import android.widget.TextView;
 
 public class ActivityFoodbase extends Activity
 {
-	// private static final String TAG = ActivityFoodbase.class.getSimpleName();
+	private static final String						TAG			= ActivityFoodbase.class.getSimpleName();
 
 	public static final String						FIELD_GUID	= "bosik.pack.guid";
 
@@ -100,14 +101,16 @@ public class ActivityFoodbase extends Activity
 
 	private List<Versioned<NamedRelativeTagged>> request(String filter)
 	{
+		long tick = System.currentTimeMillis();
+
 		List<Versioned<FoodItem>> temp;
 		if (filter.trim().isEmpty())
 		{
-			temp = Storage.localFoodBase.findAll(false);
+			temp = Storage.webFoodBase.findAll(false);
 		}
 		else
 		{
-			temp = Storage.localFoodBase.findAny(filter);
+			temp = Storage.webFoodBase.findAny(filter);
 			sorter.sort(temp, Sorter.Sort.RELEVANT);
 		}
 
@@ -117,6 +120,9 @@ public class ActivityFoodbase extends Activity
 		{
 			result.add(new Versioned<NamedRelativeTagged>(item.getData()));
 		}
+
+		tick = System.currentTimeMillis() - tick;
+		Log.i(TAG, "Request handled in " + tick + " msec");
 
 		return result;
 	}
@@ -155,7 +161,12 @@ public class ActivityFoodbase extends Activity
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				returnResult(data.get(position).getId());
+				// returnResult(data.get(position).getId());
+				Intent intent = new Intent(ActivityFoodbase.this, ActivityEditorFood.class);
+				intent.putExtra(ActivityEditor.FIELD_ENTITY, data.get(position));
+				intent.putExtra(ActivityEditor.FIELD_MODE, false);
+
+				startActivityForResult(intent, 100500); // FIXME
 			}
 		});
 	}
