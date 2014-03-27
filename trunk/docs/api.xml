@@ -253,6 +253,32 @@
 		</method>
 		<method>
 			<cat>База продуктов</cat>
+			<name>Поиск продуктов</name>
+			<url>/food/search/</url>
+			<params>
+				<param>
+					<par-name>q</par-name>
+					<par-desc>Подстрока для поиска</par-desc>
+				</param>
+			</params>
+			<type>GET</type>
+			<returns>
+				<return>
+					<return-value>{"code":"0","resp":[(item), ...]}, отсортирован по алфавиту</return-value>
+					<return-condition>Всё хорошо</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"401","resp":"###",...}</return-value>
+					<return-condition>Ошибка: отсутствует авторизация</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"500","resp":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>База продуктов</cat>
 			<name>Получение продуктов, изменённых после указанного времени</name>
 			<url>/food/changes/</url>
 			<params>
