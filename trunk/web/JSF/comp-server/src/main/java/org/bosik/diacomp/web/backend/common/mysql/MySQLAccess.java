@@ -52,6 +52,17 @@ public class MySQLAccess
 	public static final String	COLUMN_FOODBASE_CONTENT		= "_Content";
 	public static final String	COLUMN_FOODBASE_NAMECACHE	= "_NameCache";
 
+	// ======================================= Dish table =======================================
+
+	public static final String	TABLE_DISHBASE				= "dishbase2";
+	public static final String	COLUMN_DISHBASE_GUID		= "_GUID";
+	public static final String	COLUMN_DISHBASE_USER		= "_UserID";
+	public static final String	COLUMN_DISHBASE_TIMESTAMP	= "_TimeStamp";
+	public static final String	COLUMN_DISHBASE_VERSION		= "_Version";
+	public static final String	COLUMN_DISHBASE_DELETED		= "_Deleted";
+	public static final String	COLUMN_DISHBASE_CONTENT		= "_Content";
+	public static final String	COLUMN_DISHBASE_NAMECACHE	= "_NameCache";
+
 	public MySQLAccess()
 	{
 		try
