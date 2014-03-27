@@ -1,11 +1,10 @@
 package org.bosik.diacomp.core.entities.business;
 
 /**
- * Stores food's name, relative parameters (PFCV on 100g) and mass. Has methods for serialization /
- * deserialization.
- * 
+ * Stores food's name, relative parameters (PFCV on 100g) and mass.
+ *
  * @author Bosik
- * 
+ *
  */
 public class FoodMassed extends Food
 {
