@@ -143,13 +143,17 @@ public class NewLocalFoodBaseService implements FoodBaseService
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_GUID, item.getId());
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, false);
+			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, item.isDeleted());
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE, item.getData().getName());
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
 
 			resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues);
 
 			return item.getId();
+		}
+		catch (PersistenceException e)
+		{
+			throw e;
 		}
 		catch (Exception e)
 		{
@@ -178,6 +182,10 @@ public class NewLocalFoodBaseService implements FoodBaseService
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, 1);
 			String[] args = new String[] { id };
 			resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, "GUID = ?", args);
+		}
+		catch (PersistenceException e)
+		{
+			throw e;
 		}
 		catch (Exception e)
 		{
@@ -239,11 +247,16 @@ public class NewLocalFoodBaseService implements FoodBaseService
 				ContentValues newValues = new ContentValues();
 				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
 				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
+				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, item.isDeleted());
 				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
 
 				String[] args = new String[] { item.getId() };
 				resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, "GUID = ?", args);
 			}
+		}
+		catch (PersistenceException e)
+		{
+			throw e;
 		}
 		catch (Exception e)
 		{

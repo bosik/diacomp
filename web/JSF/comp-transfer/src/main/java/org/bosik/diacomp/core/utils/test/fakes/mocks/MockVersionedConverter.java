@@ -21,10 +21,12 @@ public class MockVersionedConverter<T> implements Mock<Versioned<T>>
 		this.generator = generator;
 	}
 
+	@Override
 	public List<Versioned<T>> getSamples()
 	{
 		List<T> samples = generator.getSamples();
 		List<Versioned<T>> result = new ArrayList<Versioned<T>>();
+		boolean deleted = false;
 
 		for (T sample : samples)
 		{
@@ -36,13 +38,14 @@ public class MockVersionedConverter<T> implements Mock<Versioned<T>>
 			long timeDelta = ((long)r.nextInt(315360000)) * 1000;
 			item.setTimeStamp(new Date(timeBase + timeDelta));
 			item.setVersion(r.nextInt(100));
-			item.setDeleted(r.nextBoolean());
+			item.setDeleted(deleted = !deleted);
 			result.add(item);
 		}
 
 		return result;
 	}
 
+	@Override
 	public void compare(Versioned<T> exp, Versioned<T> act)
 	{
 		TestCase.assertNotNull(exp);
