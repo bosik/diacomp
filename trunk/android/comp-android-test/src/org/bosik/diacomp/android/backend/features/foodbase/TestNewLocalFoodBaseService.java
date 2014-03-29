@@ -54,4 +54,10 @@ public class TestNewLocalFoodBaseService extends AndroidTestCase implements Test
 	{
 		tester.test_delete_notFound_exceptionRaised();
 	}
+
+	@Override
+	public void test_addFindAny_single_ok()
+	{
+		tester.test_addFindAny_single_ok();
+	}
 }

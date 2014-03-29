@@ -79,8 +79,21 @@ public class FoodbaseRestClient extends AuthorizedRestClient implements FoodBase
 	@Override
 	public List<Versioned<FoodItem>> findAny(String filter)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		try
+		{
+			WebResource resource = getResource("api/food/search");
+			resource = resource.queryParam("q", filter);
+			String str = authGet(resource);
+
+			StdResponse resp = new StdResponse(str);
+			checkResponse(resp);
+
+			return serializer.readAll(resp.getResponse());
+		}
+		catch (UniformInterfaceException e)
+		{
+			throw new CommonServiceException(e);
+		}
 	}
 
 	@Override
