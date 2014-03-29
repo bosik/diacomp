@@ -16,7 +16,6 @@ import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFi
 import org.bosik.diacomp.android.backend.features.diary.SyncDiaryService.Callback;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.utils.ErrorHandler;
-import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -79,7 +78,7 @@ public class ActivityMain extends Activity implements OnClickListener
 
 	/**
 	 * Результат авторизации
-	 * 
+	 *
 	 * @author Bosik
 	 */
 	@Deprecated
@@ -491,17 +490,17 @@ public class ActivityMain extends Activity implements OnClickListener
 	{
 		// TODO: константы
 		Intent intent = new Intent(this, ActivityDiary.class);
-		intent.putExtra("date", Utils.now());
+		intent.putExtra("date", new Date());
 		startActivity(intent);
 	}
 
 	/*
 	 * private void clearLocalDiary() { // формируем параметры String mSelectionClause =
 	 * DiaryContentProvider.COLUMN_DIARY_DATE + " > ?"; String[] mSelectionArgs = {"2014-01-01"};
-	 * 
+	 *
 	 * // выполняем запрос int count = getContentResolver().delete(
 	 * DiaryContentProvider.CONTENT_DIARY_URI, mSelectionClause, mSelectionArgs);
-	 * 
+	 *
 	 * Log.w(TAG, "Deleted records: " + count); }
 	 */
 
@@ -509,17 +508,17 @@ public class ActivityMain extends Activity implements OnClickListener
 
 	/*
 	 * private void executeTaskAsync(final Runnable R, final long timeOut) { boolean result;
-	 * 
+	 *
 	 * final Thread taskThread = new Thread() {
-	 * 
+	 *
 	 * @Override public void run() { R.run(); } };
-	 * 
+	 *
 	 * final Thread controlThread = new Thread() {
-	 * 
+	 *
 	 * @Override public void run() { try { taskThread.run(); taskThread.join(timeOut); if
 	 * (taskThread.isAlive()) { result = false; taskThread.interrupt(); } else { result = true; } }
 	 * catch (InterruptedException e) { e.printStackTrace(); } } };
-	 * 
+	 *
 	 * controlThread.run(); }
 	 */
 }
