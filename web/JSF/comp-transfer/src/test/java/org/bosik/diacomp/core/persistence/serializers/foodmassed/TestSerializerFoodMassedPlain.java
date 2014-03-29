@@ -29,6 +29,19 @@ public class TestSerializerFoodMassedPlain extends TestCase
 		assertEquals(40.0, food.getMass());
 	}
 
+	public void test_read_invalid_exceptionThrown()
+	{
+		try
+		{
+			serializer.read("$#^%#*&@");
+			fail("Exception was not thrown");
+		}
+		catch (IllegalArgumentException e)
+		{
+			// just as planned
+		}
+	}
+
 	public void testReadAll()
 	{
 		// fail("Not yet implemented"); // TODO
