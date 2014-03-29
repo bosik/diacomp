@@ -39,6 +39,29 @@ public class DishItem implements NamedRelativeTagged, Serializable
 		return result;
 	}
 
+	public Double getMass()
+	{
+		return mass;
+	}
+
+	public void setMass(Double mass)
+	{
+		if (mass == null)
+		{
+			this.mass = mass;
+		}
+		else
+		{
+			setMass((double)mass);
+		}
+	}
+
+	public void setMass(double mass)
+	{
+		// TODO: validation
+		this.mass = mass;
+	}
+
 	@Override
 	public String getName()
 	{
@@ -122,8 +145,10 @@ public class DishItem implements NamedRelativeTagged, Serializable
 		{
 			content.add(item);
 		}
-
-		throw new NullPointerException("Dish item can't be null");
+		else
+		{
+			throw new NullPointerException("Dish item can't be null");
+		}
 	}
 
 	public void remove(int index)
