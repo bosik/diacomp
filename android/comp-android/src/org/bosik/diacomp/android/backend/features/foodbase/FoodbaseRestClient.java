@@ -2,6 +2,7 @@ package org.bosik.diacomp.android.backend.features.foodbase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -82,6 +83,25 @@ public class FoodbaseRestClient implements FoodBaseService
 		try
 		{
 			String url = String.format("api/food/search/?q=%s", filter);
+			String str = webClient.doGetSmart(url);
+
+			StdResponse resp = new StdResponse(str);
+			WebClient.checkResponse(resp);
+
+			return serializer.readAll(resp.getResponse());
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	@Override
+	public List<Versioned<FoodItem>> findChanged(Date since)
+	{
+		try
+		{
+			String url = String.format("api/food/changes/?since=%s", Utils.formatTimeUTC(since));
 			String str = webClient.doGetSmart(url);
 
 			StdResponse resp = new StdResponse(str);

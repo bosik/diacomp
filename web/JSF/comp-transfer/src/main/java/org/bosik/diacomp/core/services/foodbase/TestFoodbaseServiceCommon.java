@@ -1,5 +1,7 @@
 package org.bosik.diacomp.core.services.foodbase;
 
+import java.util.Date;
+import java.util.List;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -44,9 +46,30 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 		mockGenerator.compare(org, restored);
 	}
 
+	@Override
+	public void test_addFindChanged_single_ReturnedNonEmpty()
+	{
+		Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
+		org.setTimeStamp(new Date());
+		String id = org.getId();
+
+		if (foodBaseService.findById(id) == null)
+		{
+			id = foodBaseService.add(org);
+		}
+
+		// ------------------------------
+		setUp();
+		// ------------------------------
+
+		Date since = new Date(org.getTimeStamp().getTime() - 1000);
+		List<Versioned<FoodItem>> restored = foodBaseService.findChanged(since);
+		assertNotNull(restored);
+		assertTrue(!restored.isEmpty());
+	}
+
 	//	@Override
 	//	@Test
-	//	//(expected = DuplicateException.class)
 	//	public void test_add_duplication_exceptionRaised()
 	//	{
 	//		try
@@ -64,7 +87,6 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 
 	@Override
 	@Test
-	//(expected = NotFoundException.class)
 	public void test_delete_notFound_exceptionRaised()
 	{
 		try
@@ -78,6 +100,26 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 		{
 			// it's ok, just as planned
 		}
+	}
+
+	@Override
+	public void test_addFindAll_single_ReturnedNonEmpty()
+	{
+		Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
+		String id = org.getId();
+
+		if (foodBaseService.findById(id) == null)
+		{
+			id = foodBaseService.add(org);
+		}
+
+		// ------------------------------
+		setUp();
+		// ------------------------------
+
+		List<Versioned<FoodItem>> restored = foodBaseService.findAll(false);
+		assertNotNull(restored);
+		assertTrue(!restored.isEmpty());
 	}
 
 	// TODO: create testPersistenceMultiple()

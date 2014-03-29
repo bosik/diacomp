@@ -1,5 +1,6 @@
 package org.bosik.diacomp.core.services;
 
+import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -60,6 +61,15 @@ public interface BaseService<Item>
 	 * @return
 	 */
 	Versioned<Item> findById(String guid);
+
+	/**
+	 * Searches for all items modified after specified time (both deleted and non-deleted)
+	 * 
+	 * @param userId
+	 * @param since
+	 * @return
+	 */
+	List<Versioned<Item>> findChanged(Date since);
 
 	/**
 	 * Updates single non-deleted item. Note: updating deleted item result in exception.
