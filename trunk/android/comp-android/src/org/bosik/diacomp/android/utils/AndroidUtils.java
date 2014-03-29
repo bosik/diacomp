@@ -7,7 +7,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
-import android.util.Log;
 
 public class AndroidUtils
 {
@@ -27,7 +26,7 @@ public class AndroidUtils
 		/*
 		 * Charset charset = Charset.forName("Cp1251"); CharsetDecoder decoder =
 		 * charset.newDecoder(); CharsetEncoder encoder = charset.newEncoder();
-		 * 
+		 *
 		 * try { ByteBuffer bbuf = decoder.decode(CharBuffer.wrap(s)); CharBuffer cbuf =
 		 * encoder.encode(bbuf); return cbuf.toString(); } catch (CharacterCodingException e) {
 		 * throw new RuntimeException(e); }
@@ -40,8 +39,6 @@ public class AndroidUtils
 		 * try { return new String(s.getBytes(), "Cp1251"); } catch (UnsupportedEncodingException e)
 		 * { e.printStackTrace(); throw new RuntimeException("Unsupported code page", e); }
 		 */
-
-		Log.d(TAG, "Utf8ToCp1251: " + s);
 
 		Charset charset = Charset.forName("Cp1251");
 		CharsetDecoder decoder = charset.newDecoder();
