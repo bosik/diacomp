@@ -128,5 +128,26 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 		assertTrue(!restored.isEmpty());
 	}
 
+	@Override
+	public void test_addFindAny_single_ok()
+	{
+		Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
+		String id = org.getId();
+
+		if (foodBaseService.findById(id) == null)
+		{
+			id = foodBaseService.add(org);
+		}
+
+		final String filter = org.getData().getName().substring(0, 2).toLowerCase();
+		List<Versioned<FoodItem>> restored = foodBaseService.findAny(filter);
+		assertNotNull(restored);
+		assertTrue(!restored.isEmpty());
+		for (Versioned<FoodItem> item : restored)
+		{
+			assertTrue(item.getData().getName().toLowerCase().contains(filter));
+		}
+	}
+
 	// TODO: create testPersistenceMultiple()
 }
