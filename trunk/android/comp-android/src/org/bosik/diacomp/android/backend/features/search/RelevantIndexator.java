@@ -12,7 +12,6 @@ import org.bosik.diacomp.core.services.BaseService;
 import org.bosik.diacomp.core.services.DishBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
-import org.bosik.diacomp.core.utils.Utils;
 import android.util.Log;
 
 public class RelevantIndexator
@@ -25,7 +24,7 @@ public class RelevantIndexator
 
 		// constructing dates list
 		final int PERIOD = 30; // days
-		final Date max = Utils.now();
+		final Date max = new Date();
 		final Date min = new Date(max.getTime() - (PERIOD * 86400000));
 
 		// final List<Date> dates = Utils.getPeriodDates(max, PERIOD);

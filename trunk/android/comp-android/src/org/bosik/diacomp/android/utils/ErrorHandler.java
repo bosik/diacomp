@@ -1,11 +1,11 @@
 package org.bosik.diacomp.android.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
+import org.bosik.diacomp.android.BuildConfig;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.frontend.UIUtils;
-import org.bosik.diacomp.android.BuildConfig;
-import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.util.Log;
 
@@ -77,7 +77,7 @@ public class ErrorHandler
 
 				StringBuilder msg = new StringBuilder();
 				msg.append("<b>" + TAG + " has detected exception during user runtime</b>\n\n");
-				msg.append("<b>Date:</b> " + DATE_FORMAT.format(Utils.now()) + "\n");
+				msg.append("<b>Date:</b> " + DATE_FORMAT.format(new Date()) + "\n");
 				msg.append("<b>User:</b> "
 						+ (webClient != null ? safe(webClient.getUsername()) : "(webClient == null)") + "\n");
 				msg.append("<b>Exception:</b>" + exc + "\n\n");

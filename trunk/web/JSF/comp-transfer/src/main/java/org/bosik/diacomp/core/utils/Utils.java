@@ -232,17 +232,6 @@ public class Utils
 		return DF.parse(checkDot(s)).doubleValue();
 	}
 
-	/**
-	 * Returns current date-time
-	 * 
-	 * @return
-	 */
-	public static Date now()
-	{
-		// return Calendar.getInstance().getTime();
-		return new Date();
-	}
-
 	// /**
 	// * Returns current date-time in UTC
 	// *
@@ -292,20 +281,6 @@ public class Utils
 		}
 
 		return dates;
-	}
-
-	/**
-	 * Получает текущее время в минутах после полуночи
-	 * 
-	 * @return Время в минутах
-	 */
-	public static int curMinutes()
-	{
-		// TODO: check if it is used anywhere
-		Calendar c = Calendar.getInstance();
-		int h = c.get(Calendar.HOUR) + (c.get(Calendar.AM_PM) == Calendar.AM ? 0 : 12);
-		int m = c.get(Calendar.MINUTE);
-		return (h * 60) + m;
 	}
 
 	public static void sleep(long time)
