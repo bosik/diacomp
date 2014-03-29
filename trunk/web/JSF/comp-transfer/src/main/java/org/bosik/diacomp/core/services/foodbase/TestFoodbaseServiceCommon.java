@@ -22,7 +22,13 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 	@Override
 	protected void setUp()
 	{
+		init();
+	}
+
+	public void init()
+	{
 		foodBaseService = getService();
+		assertNotNull(foodBaseService);
 	}
 
 	@Override
