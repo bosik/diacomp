@@ -78,7 +78,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 		}
 	}
 
-	private List<Versioned<FoodItem>> find(String id, String name, boolean includeDeleted)
+	private List<Versioned<FoodItem>> find(String id, String name, boolean includeDeleted, Date modAfter)
 	{
 		try
 		{
@@ -102,6 +102,13 @@ public class NewLocalFoodBaseService implements FoodBaseService
 				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
 				mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE + " LIKE ?";
 				args.add(name);
+			}
+
+			if (modAfter != null)
+			{
+				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
+				mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP + " > ?";
+				args.add(Utils.formatTimeUTC(modAfter));
 			}
 
 			if (!includeDeleted)
@@ -181,13 +188,13 @@ public class NewLocalFoodBaseService implements FoodBaseService
 	@Override
 	public List<Versioned<FoodItem>> findAll(boolean includeRemoved)
 	{
-		return find(null, null, includeRemoved);
+		return find(null, null, includeRemoved, null);
 	}
 
 	@Override
 	public List<Versioned<FoodItem>> findAny(String filter)
 	{
-		return find(null, filter, false);
+		return find(null, filter, false, null);
 	}
 
 	@Override
@@ -199,7 +206,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 	@Override
 	public Versioned<FoodItem> findById(String id)
 	{
-		List<Versioned<FoodItem>> list = find(id, null, true);
+		List<Versioned<FoodItem>> list = find(id, null, true, null);
 		if (list.isEmpty())
 		{
 			return null;
@@ -208,6 +215,12 @@ public class NewLocalFoodBaseService implements FoodBaseService
 		{
 			return list.get(0);
 		}
+	}
+
+	@Override
+	public List<Versioned<FoodItem>> findChanged(Date since)
+	{
+		return find(null, null, true, since);
 	}
 
 	@Override

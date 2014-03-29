@@ -1,6 +1,7 @@
 package org.bosik.diacomp.web.frontend.features.foodbase;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -60,8 +61,8 @@ public class FoodbaseRestClient extends AuthorizedRestClient implements FoodBase
 	{
 		try
 		{
-			String url = String.format("api/food/all/?show_rem=%s", Utils.formatBooleanInt(includeRemoved));
-			WebResource resource = getResource(url);
+			WebResource resource = getResource("api/food/all");
+			resource = resource.queryParam("show_rem", Utils.formatBooleanInt(includeRemoved));
 			String str = authGet(resource);
 
 			StdResponse resp = new StdResponse(str);
@@ -102,6 +103,26 @@ public class FoodbaseRestClient extends AuthorizedRestClient implements FoodBase
 
 			Versioned<FoodItem> item = !resp.getResponse().isEmpty() ? serializer.read(resp.getResponse()) : null;
 			return item;
+		}
+		catch (UniformInterfaceException e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	@Override
+	public List<Versioned<FoodItem>> findChanged(Date since)
+	{
+		try
+		{
+			WebResource resource = getResource("api/food/changes");
+			resource = resource.queryParam("since", Utils.formatTimeUTC(since));
+
+			String str = authGet(resource);
+			StdResponse resp = new StdResponse(str);
+			checkResponse(resp);
+
+			return serializer.readAll(resp.getResponse());
 		}
 		catch (UniformInterfaceException e)
 		{
