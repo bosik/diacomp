@@ -16,6 +16,10 @@
     <string name="editor_common_field_value">Значение</string>
     <string name="editor_common_save">Сохранить</string>
     <string name="editor_food_field_name">Название</string>
+    <string name="editor_food_field_prots">Белки, г</string>
+    <string name="editor_food_field_fats">Жиры, г</string>
+    <string name="editor_food_field_carbs">Углеводы, г</string>
+    <string name="editor_food_field_value">Калорийность, ккал</string>    
     <string name="editor_food_title">Продукт</string>
     <string name="editor_meal_button_add">Добавить</string>
     <string name="editor_meal_field_fooddish">Продукт/блюдо</string>
@@ -28,6 +32,7 @@
     <string name="foodbase_search_hint">Поиск&#8230;</string>
     <string name="foodbase_subinfo" formatted="false">Б %.1f\t\tЖ %.1f\t\tУ %.1f\t\tК %.1f</string>
     <string name="foodbase_title">База продуктов</string>
+    <string name="foodbase_title_loading">База продуктов (загрузка…)</string>
     <string name="main_option_diary">Дневник</string>
     <string name="main_option_dishbase">База блюд</string>
     <string name="main_option_foodbase">База продуктов</string>

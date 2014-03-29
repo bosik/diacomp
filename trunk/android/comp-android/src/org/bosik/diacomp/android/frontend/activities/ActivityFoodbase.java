@@ -1,10 +1,12 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.search.Sorter;
+import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -78,6 +80,12 @@ public class ActivityFoodbase extends Activity
 		new AsyncTask<String, Void, List<Versioned<NamedRelativeTagged>>>()
 		{
 			@Override
+			protected void onPreExecute()
+			{
+				setTitle(getString(R.string.foodbase_title_loading));
+			}
+
+			@Override
 			protected List<Versioned<NamedRelativeTagged>> doInBackground(String... params)
 			{
 				return request(params[0]);
@@ -101,34 +109,49 @@ public class ActivityFoodbase extends Activity
 
 	private List<Versioned<NamedRelativeTagged>> request(String filter)
 	{
-		long tick = System.currentTimeMillis();
-
-		List<Versioned<FoodItem>> temp;
-		if (filter.trim().isEmpty())
+		try
 		{
-			temp = Storage.webFoodBase.findAll(false);
+			long tick = System.currentTimeMillis();
+
+			List<Versioned<FoodItem>> temp;
+			if (filter.trim().isEmpty())
+			{
+				temp = Storage.webFoodBase.findAll(false);
+			}
+			else
+			{
+				temp = Storage.webFoodBase.findAny(filter);
+				sorter.sort(temp, Sorter.Sort.RELEVANT);
+			}
+
+			// TODO: check the performance
+			List<Versioned<NamedRelativeTagged>> result = new ArrayList<Versioned<NamedRelativeTagged>>();
+			for (Versioned<FoodItem> item : temp)
+			{
+				result.add(new Versioned<NamedRelativeTagged>(item.getData()));
+			}
+
+			tick = System.currentTimeMillis() - tick;
+			Log.i(TAG, "Request handled in " + tick + " msec");
+
+			return result;
 		}
-		else
+		catch (Exception e)
 		{
-			temp = Storage.webFoodBase.findAny(filter);
-			sorter.sort(temp, Sorter.Sort.RELEVANT);
+			return null;
 		}
-
-		// TODO: check the performance
-		List<Versioned<NamedRelativeTagged>> result = new ArrayList<Versioned<NamedRelativeTagged>>();
-		for (Versioned<FoodItem> item : temp)
-		{
-			result.add(new Versioned<NamedRelativeTagged>(item.getData()));
-		}
-
-		tick = System.currentTimeMillis() - tick;
-		Log.i(TAG, "Request handled in " + tick + " msec");
-
-		return result;
 	}
 
 	private void showBase(final List<Versioned<NamedRelativeTagged>> foodBase)
 	{
+		// TODO: localization
+		if (foodBase == null)
+		{
+			UIUtils.showTip(this, "При загрузке данных произошла ошибка");
+			showBase(Collections.<Versioned<NamedRelativeTagged>> emptyList());
+			return;
+		}
+
 		data = foodBase;
 
 		String[] str = new String[foodBase.size()];

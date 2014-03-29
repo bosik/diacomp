@@ -32,6 +32,70 @@
 
             <requestFocus />
         </EditText>
+        
+        <TextView
+            android:id="@+id/labelFoodProts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/editFoodText"
+            android:paddingTop="@dimen/padding_small"
+            android:text="@string/editor_food_field_prots" />
+
+        <EditText
+            android:id="@+id/editFoodProts"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:inputType="number|text" >
+        </EditText>
+        
+        <TextView
+            android:id="@+id/labelFoodFats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/editFoodText"
+            android:paddingTop="@dimen/padding_small"
+            android:text="@string/editor_food_field_fats" />
+
+        <EditText
+            android:id="@+id/editFoodFats"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:inputType="number|text" >
+        </EditText>
+        
+        <TextView
+            android:id="@+id/labelFoodCarbs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/editFoodText"
+            android:paddingTop="@dimen/padding_small"
+            android:text="@string/editor_food_field_carbs" />
+
+        <EditText
+            android:id="@+id/editFoodCarbs"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:inputType="number|text" >
+        </EditText>
+        
+        <TextView
+            android:id="@+id/labelFoodValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/editFoodText"
+            android:paddingTop="@dimen/padding_small"
+            android:text="@string/editor_food_field_value" />
+
+        <EditText
+            android:id="@+id/editFoodValue"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:inputType="number|text" >
+        </EditText>
 
         <Button
             android:id="@+id/buttonFoodOK"

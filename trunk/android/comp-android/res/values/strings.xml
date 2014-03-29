@@ -16,6 +16,10 @@
     <string name="editor_common_field_value">Value</string>
     <string name="editor_common_save">Save</string>
     <string name="editor_food_field_name">Name</string>
+    <string name="editor_food_field_prots">Prots, g</string>
+    <string name="editor_food_field_fats">Fats, g</string>
+    <string name="editor_food_field_carbs">Carbs, g</string>
+    <string name="editor_food_field_value">Value, kcal</string>    
     <string name="editor_food_title">Food</string>
     <string name="editor_meal_button_add">Add</string>
     <string name="editor_meal_field_fooddish">Food/dish</string>
@@ -28,6 +32,7 @@
     <string name="foodbase_search_hint">Search&#8230;</string>
     <string name="foodbase_subinfo" formatted="false">P %.1f\t\tF %.1f\t\tC %.1f\t\tV %.1f</string>
     <string name="foodbase_title">Food base</string>
+    <string name="foodbase_title_loading">Food base (loading…)</string>
     <string name="main_option_diary">Diary</string>
     <string name="main_option_dishbase">Dish base</string>
     <string name="main_option_foodbase">Food base</string>
