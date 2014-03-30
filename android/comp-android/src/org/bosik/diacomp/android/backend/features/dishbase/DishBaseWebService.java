@@ -5,12 +5,12 @@ import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 
-public class WebDishBaseService// implements DishBaseService
+public class DishBaseWebService
 {
 	private final WebClient							webClient;
 	private final Serializer<Versioned<DishItem>>	serializer;
 
-	public WebDishBaseService(WebClient webClient, Serializer<Versioned<DishItem>> serializer)
+	public DishBaseWebService(WebClient webClient, Serializer<Versioned<DishItem>> serializer)
 	{
 		this.webClient = webClient;
 		this.serializer = serializer;

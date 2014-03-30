@@ -1,6 +1,6 @@
 package org.bosik.diacomp.android.backend.features.dishbase;
 
-public class LocalDishBaseService // implements DishBaseService
+public class DishBaseLocalService
 {
 	// TODO: implement when interface is ready
 }

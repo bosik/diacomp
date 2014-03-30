@@ -18,9 +18,9 @@ import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.utils.Utils;
 
-public class WebDiaryService implements DiaryService
+public class DiaryWebService implements DiaryService
 {
-	// private static String TAG = WebDiaryService.class.getSimpleName();
+	// private static String TAG = DiaryWebService.class.getSimpleName();
 	private final WebClient								webClient;
 	private final Parser<DiaryRecord>					parser		= new ParserDiaryRecord();
 	private final Parser<Versioned<DiaryRecord>>		parserV		= new ParserVersioned<DiaryRecord>(parser);
@@ -29,7 +29,7 @@ public class WebDiaryService implements DiaryService
 
 	/* ============================ CONSTRUCTOR ============================ */
 
-	public WebDiaryService(WebClient webClient)
+	public DiaryWebService(WebClient webClient)
 	{
 		if (webClient == null)
 		{

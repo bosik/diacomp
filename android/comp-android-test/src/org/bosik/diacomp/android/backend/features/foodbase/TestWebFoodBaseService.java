@@ -10,6 +10,6 @@ public class TestWebFoodBaseService extends TestFoodbaseServiceCommon
 	protected FoodBaseService getService()
 	{
 		// DO NOT MAKE IT STATIC - IT CAUSES android.os.NetworkOnMainThreadException
-		return new FoodbaseRestClient(TestWebClient.getWebClient());
+		return new FoodBaseWebService(TestWebClient.getWebClient());
 	}
 }

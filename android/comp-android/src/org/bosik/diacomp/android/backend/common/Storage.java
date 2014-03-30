@@ -1,9 +1,9 @@
 package org.bosik.diacomp.android.backend.common;
 
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
-import org.bosik.diacomp.android.backend.features.diary.LocalDiaryService;
-import org.bosik.diacomp.android.backend.features.diary.WebDiaryService;
-import org.bosik.diacomp.android.backend.features.foodbase.FoodbaseRestClient;
+import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.android.backend.features.diary.DiaryWebService;
+import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseWebService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.frontend.activities.ActivityPreferences;
 import org.bosik.diacomp.android.utils.ErrorHandler;
@@ -69,12 +69,12 @@ public class Storage
 		if (null == localDiary)
 		{
 			Log.v(TAG, "Local diary initialization...");
-			localDiary = new LocalDiaryService(resolver);
+			localDiary = new DiaryLocalService(resolver);
 		}
 		if (null == webDiary)
 		{
 			Log.v(TAG, "Web diary initialization...");
-			webDiary = new WebDiaryService(webClient);
+			webDiary = new DiaryWebService(webClient);
 		}
 		if (null == localFoodBase)
 		{
@@ -94,7 +94,7 @@ public class Storage
 			Log.v(TAG, "Local dish base initialization...");
 			// try
 			// {
-			// localDishBase = new LocalDishBaseService(resolver);
+			// localDishBase = new DishBaseLocalService(resolver);
 			// }
 			// catch (IOException e)
 			// {
@@ -106,12 +106,12 @@ public class Storage
 		{
 			Log.v(TAG, "Web food base initialization...");
 
-			webFoodBase = new FoodbaseRestClient(webClient);
+			webFoodBase = new FoodBaseWebService(webClient);
 		}
 		if (null == webDishBase)
 		{
 			Log.v(TAG, "Web dish base initialization...");
-			// webDishBase = new WebDishBaseService(webClient, new SerializerDishBaseXML());
+			// webDishBase = new DishBaseWebService(webClient, new SerializerDishBaseXML());
 		}
 
 		ErrorHandler.init(webClient);
