@@ -101,7 +101,7 @@ public class NewLocalFoodBaseService implements FoodBaseService
 			{
 				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
 				mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE + " LIKE ?";
-				args.add(name);
+				args.add("%" + name + "%");
 			}
 
 			if (modAfter != null)
@@ -202,7 +202,26 @@ public class NewLocalFoodBaseService implements FoodBaseService
 	@Override
 	public List<Versioned<FoodItem>> findAny(String filter)
 	{
-		return find(null, filter, false, null);
+		// return find(null, filter, false, null);
+
+		/*
+		 * As far as SQLite LIKE operator is case-sensitive for non-latin chars, we need to filter
+		 * it manually :(
+		 */
+
+		List<Versioned<FoodItem>> all = find(null, null, false, null);
+		List<Versioned<FoodItem>> filtered = new LinkedList<Versioned<FoodItem>>();
+		filter = filter.toLowerCase();
+
+		for (Versioned<FoodItem> item : all)
+		{
+			if (item.getData().getName().toLowerCase().contains(filter))
+			{
+				filtered.add(item);
+			}
+		}
+
+		return filtered;
 	}
 
 	@Override

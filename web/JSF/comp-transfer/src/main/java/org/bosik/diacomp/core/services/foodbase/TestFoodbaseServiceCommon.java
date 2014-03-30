@@ -132,6 +132,7 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 	public void test_addFindAny_single_ok()
 	{
 		Versioned<FoodItem> org = mockGenerator.getSamples().get(0);
+		org.setDeleted(false);
 		String id = org.getId();
 
 		if (foodBaseService.findById(id) == null)
@@ -139,13 +140,15 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 			id = foodBaseService.add(org);
 		}
 
-		final String filter = org.getData().getName().substring(0, 2).toLowerCase();
+		String filter = org.getData().getName().substring(0, 2).toLowerCase();
 		List<Versioned<FoodItem>> restored = foodBaseService.findAny(filter);
-		assertNotNull(restored);
-		assertTrue(!restored.isEmpty());
+
+		assertNotNull("Returned list is null", restored);
+		assertTrue("Returned list is empty", !restored.isEmpty());
 		for (Versioned<FoodItem> item : restored)
 		{
-			assertTrue(item.getData().getName().toLowerCase().contains(filter));
+			final String name = item.getData().getName().toLowerCase();
+			assertTrue(name.contains(filter));
 		}
 	}
 
