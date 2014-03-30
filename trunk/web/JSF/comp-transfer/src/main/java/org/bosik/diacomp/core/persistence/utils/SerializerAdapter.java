@@ -1,7 +1,7 @@
-package org.bosik.diacomp.core.persistence.serializers.utils;
+package org.bosik.diacomp.core.persistence.utils;
 
 import java.util.List;
-import org.bosik.diacomp.core.persistence.serializers.Parser;
+import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -5,7 +5,7 @@ import java.util.List;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
-import org.bosik.diacomp.core.persistence.serializers.ready.SerializerDiaryRecord;
+import org.bosik.diacomp.core.persistence.serializers.SerializerDiaryRecord;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.core.services.diary.DiaryService;

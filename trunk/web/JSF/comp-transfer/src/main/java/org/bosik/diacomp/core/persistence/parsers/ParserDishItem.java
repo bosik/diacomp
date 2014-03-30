@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.persistence.serializers;
+package org.bosik.diacomp.core.persistence.parsers;
 
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;

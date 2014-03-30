@@ -1,13 +1,12 @@
-package org.bosik.diacomp.core.persistence.serializers.ready;
+package org.bosik.diacomp.core.persistence.serializers;
 
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.persistence.serializers.Parser;
-import org.bosik.diacomp.core.persistence.serializers.ParserFoodItem;
-import org.bosik.diacomp.core.persistence.serializers.Serializer;
-import org.bosik.diacomp.core.persistence.serializers.utils.ParserVersioned;
-import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
+import org.bosik.diacomp.core.persistence.parsers.Parser;
+import org.bosik.diacomp.core.persistence.parsers.ParserFoodItem;
+import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
+import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 
 public class SerializerFoodItem implements Serializer<Versioned<FoodItem>>
 {

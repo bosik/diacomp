@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.persistence.serializers;
+package org.bosik.diacomp.core.persistence.parsers;
 
 import java.util.ArrayList;
 import java.util.List;
