@@ -4,7 +4,7 @@ import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiaryService;
 import org.bosik.diacomp.android.backend.features.diary.WebDiaryService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodbaseRestClient;
-import org.bosik.diacomp.android.backend.features.foodbase.NewLocalFoodBaseService;
+import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.frontend.activities.ActivityPreferences;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.Food;
@@ -81,7 +81,7 @@ public class Storage
 			Log.v(TAG, "Local food base initialization...");
 			// try
 			// {
-			localFoodBase = new NewLocalFoodBaseService(resolver);
+			localFoodBase = new FoodBaseLocalService(resolver);
 			// }
 			// catch (IOException e)
 			// {

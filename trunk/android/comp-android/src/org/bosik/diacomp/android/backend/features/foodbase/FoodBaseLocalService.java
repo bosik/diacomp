@@ -20,14 +20,14 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-public class NewLocalFoodBaseService implements FoodBaseService
+public class FoodBaseLocalService implements FoodBaseService
 {
 	private final ContentResolver		resolver;
 	private final Serializer<FoodItem>	serializer;
 
 	// ====================================================================================
 
-	public NewLocalFoodBaseService(ContentResolver resolver)
+	public FoodBaseLocalService(ContentResolver resolver)
 	{
 		if (null == resolver)
 		{
