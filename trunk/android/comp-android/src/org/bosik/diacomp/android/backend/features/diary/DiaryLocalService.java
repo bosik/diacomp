@@ -19,9 +19,9 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-public class LocalDiaryService implements DiaryService
+public class DiaryLocalService implements DiaryService
 {
-	// private static final String TAG = LocalDiaryService.class.getSimpleName();
+	// private static final String TAG = DiaryLocalService.class.getSimpleName();
 
 	/* ============================ FIELDS ============================ */
 
@@ -42,7 +42,7 @@ public class LocalDiaryService implements DiaryService
 	 * @param resolver
 	 *            Content resolver; might be accessed by {@link Activity#getContentResolver()}
 	 */
-	public LocalDiaryService(ContentResolver resolver)
+	public DiaryLocalService(ContentResolver resolver)
 	{
 		if (null == resolver)
 		{

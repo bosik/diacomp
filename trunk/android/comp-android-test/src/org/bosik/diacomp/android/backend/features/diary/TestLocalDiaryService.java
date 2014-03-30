@@ -1,6 +1,6 @@
 package org.bosik.diacomp.android.backend.features.diary;
 
-import org.bosik.diacomp.android.backend.features.diary.LocalDiaryService;
+import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.diary.TestDiaryServiceCommon;
 import org.bosik.diacomp.core.services.diary.TestDiaryService;
@@ -16,7 +16,7 @@ public class TestLocalDiaryService extends AndroidTestCase implements TestDiaryS
 	{
 		assertNotNull(getContext());
 		ContentResolver resolver = getContext().getContentResolver();
-		final DiaryService service = new LocalDiaryService(resolver);
+		final DiaryService service = new DiaryLocalService(resolver);
 		test = new TestDiaryServiceCommon()
 		{
 			@Override
@@ -33,7 +33,7 @@ public class TestLocalDiaryService extends AndroidTestCase implements TestDiaryS
 	// {
 	// assertNotNull(getContext());
 	// ContentResolver resolver = getContext().getContentResolver();
-	// final DiaryService service = new LocalDiaryService(resolver);
+	// final DiaryService service = new DiaryLocalService(resolver);
 	//
 	// TestDiaryServiceCommon test = new TestDiaryServiceCommon()
 	// {
@@ -52,7 +52,7 @@ public class TestLocalDiaryService extends AndroidTestCase implements TestDiaryS
 	// {
 	// assertNotNull(getContext());
 	// ContentResolver resolver = getContext().getContentResolver();
-	// final DiaryService service = new LocalDiaryService(resolver);
+	// final DiaryService service = new DiaryLocalService(resolver);
 	//
 	// TestDiaryServiceCommon test = new TestDiaryServiceCommon()
 	// {

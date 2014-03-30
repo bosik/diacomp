@@ -19,14 +19,14 @@ import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import org.bosik.diacomp.core.utils.Utils;
 
-public class FoodbaseRestClient implements FoodBaseService
+public class FoodBaseWebService implements FoodBaseService
 {
-	// private static final String TAG = FoodbaseRestClient.class.getSimpleName();
+	// private static final String TAG = FoodBaseWebService.class.getSimpleName();
 
 	private final WebClient							webClient;
 	private final Serializer<Versioned<FoodItem>>	serializer	= new SerializerFoodItem();
 
-	public FoodbaseRestClient(WebClient webClient)
+	public FoodBaseWebService(WebClient webClient)
 	{
 		this.webClient = webClient;
 	}
