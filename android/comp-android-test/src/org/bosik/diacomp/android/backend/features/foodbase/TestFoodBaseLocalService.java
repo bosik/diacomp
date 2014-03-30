@@ -6,7 +6,7 @@ import org.bosik.diacomp.core.services.foodbase.TestFoodbaseServiceCommon;
 import android.content.ContentResolver;
 import android.test.AndroidTestCase;
 
-public class TestNewLocalFoodBaseService extends AndroidTestCase implements TestFoodbaseService
+public class TestFoodBaseLocalService extends AndroidTestCase implements TestFoodbaseService
 {
 	private TestFoodbaseServiceCommon	tester;
 
@@ -18,7 +18,7 @@ public class TestNewLocalFoodBaseService extends AndroidTestCase implements Test
 			@Override
 			protected FoodBaseService getService()
 			{
-				return TestNewLocalFoodBaseService.this.getService();
+				return TestFoodBaseLocalService.this.getService();
 			}
 		};
 		tester.init();
@@ -28,7 +28,7 @@ public class TestNewLocalFoodBaseService extends AndroidTestCase implements Test
 	{
 		assertNotNull("Context is null", getContext());
 		ContentResolver resolver = getContext().getContentResolver();
-		return new NewLocalFoodBaseService(resolver);
+		return new FoodBaseLocalService(resolver);
 	}
 
 	@Override
