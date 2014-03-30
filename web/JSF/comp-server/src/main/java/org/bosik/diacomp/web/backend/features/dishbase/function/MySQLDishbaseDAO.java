@@ -10,10 +10,10 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.persistence.serializers.Parser;
-import org.bosik.diacomp.core.persistence.serializers.ParserDishItem;
+import org.bosik.diacomp.core.persistence.parsers.Parser;
+import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
-import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
+import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 

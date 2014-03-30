@@ -1,10 +1,10 @@
 package org.bosik.diacomp.core.persistence.serializers.fooditem;
 
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.persistence.serializers.ParserFoodItem;
+import org.bosik.diacomp.core.persistence.parsers.ParserFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.TestSerializer;
-import org.bosik.diacomp.core.persistence.serializers.utils.SerializerAdapter;
+import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.utils.test.fakes.mocks.Mock;
 import org.bosik.diacomp.core.utils.test.fakes.mocks.MockFoodItem;
 
