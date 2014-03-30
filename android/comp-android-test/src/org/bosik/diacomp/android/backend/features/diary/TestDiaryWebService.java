@@ -6,7 +6,7 @@ import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.diary.TestDiaryServiceCommon;
 import org.bosik.diacomp.core.services.diary.TestDiaryService;
 
-public class TestWebDiaryService extends TestDiaryServiceCommon implements TestDiaryService
+public class TestDiaryWebService extends TestDiaryServiceCommon implements TestDiaryService
 {
 	@Override
 	protected DiaryService getService()

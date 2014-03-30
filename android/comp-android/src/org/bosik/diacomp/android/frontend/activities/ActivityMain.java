@@ -13,7 +13,7 @@ import org.bosik.diacomp.android.backend.common.webclient.exceptions.ConnectionE
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.ResponseFormatException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFieldException;
-import org.bosik.diacomp.android.backend.features.diary.SyncDiaryService.Callback;
+import org.bosik.diacomp.android.backend.features.diary.DiarySyncService.Callback;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import android.app.Activity;
@@ -197,7 +197,7 @@ public class ActivityMain extends Activity implements OnClickListener
 				Date since = new Date(2013 - 1900, 11 - 1, 1, 0, 0, 0); // а затем мы получаем
 																		// громадный синхролист, ага
 				// TODO: restore when compiled OK
-				// syncPagesCount = SyncDiaryService.synchronize(Storage.localDiary,
+				// syncPagesCount = DiarySyncService.synchronize(Storage.localDiary,
 				// Storage.webDiary,
 				// since);
 				Log.v(TAG, "Diary synced, total tranferred: " + syncPagesCount);

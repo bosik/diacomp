@@ -7,7 +7,7 @@ import org.bosik.diacomp.core.services.diary.TestDiaryService;
 import android.content.ContentResolver;
 import android.test.AndroidTestCase;
 
-public class TestLocalDiaryService extends AndroidTestCase implements TestDiaryService
+public class TestDiaryLocalService extends AndroidTestCase implements TestDiaryService
 {
 	private static TestDiaryServiceCommon	test;
 
@@ -46,7 +46,7 @@ public class TestLocalDiaryService extends AndroidTestCase implements TestDiaryS
 	// return test.run();
 	// }
 
-	// private static final String TAG = TestLocalDiaryService.class.getSimpleName();
+	// private static final String TAG = TestDiaryLocalService.class.getSimpleName();
 
 	// public void testAll() throws Throwable
 	// {
