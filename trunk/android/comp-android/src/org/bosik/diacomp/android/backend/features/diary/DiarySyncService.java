@@ -1,8 +1,8 @@
 package org.bosik.diacomp.android.backend.features.diary;
 
-public class SyncDiaryService
+public class DiarySyncService
 {
-	// private static final String TAG = "SyncDiaryService";
+	// private static final String TAG = "DiarySyncService";
 
 	/* ============================ HELPER CLASSES ============================ */
 
