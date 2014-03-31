@@ -135,7 +135,7 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	}
 
 	@Override
-	public void post(int userId, List<Versioned<FoodItem>> items)
+	public void save(int userId, List<Versioned<FoodItem>> items)
 	{
 		try
 		{

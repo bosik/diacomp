@@ -39,7 +39,7 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 
 		if (foodBaseService.findById(id) == null)
 		{
-			id = foodBaseService.add(org);
+			foodBaseService.add(org);
 		}
 
 		// ------------------------------
@@ -61,7 +61,7 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 
 		if (foodBaseService.findById(id) == null)
 		{
-			id = foodBaseService.add(org);
+			foodBaseService.add(org);
 		}
 
 		// ------------------------------
@@ -116,7 +116,7 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 
 		if (foodBaseService.findById(id) == null)
 		{
-			id = foodBaseService.add(org);
+			foodBaseService.add(org);
 		}
 
 		// ------------------------------
@@ -137,7 +137,7 @@ public abstract class TestFoodbaseServiceCommon extends TestCase implements Test
 
 		if (foodBaseService.findById(id) == null)
 		{
-			id = foodBaseService.add(org);
+			foodBaseService.add(org);
 		}
 
 		String filter = org.getData().getName().substring(0, 2).toLowerCase();

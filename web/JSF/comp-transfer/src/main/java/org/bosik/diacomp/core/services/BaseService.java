@@ -4,20 +4,22 @@ import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
+import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 
 public interface BaseService<Item>
 {
 	/**
-	 * Adds item to the list
+	 * Adds item
 	 *
 	 * @param item
-	 * @return ID of created item
+	 * @throws DuplicateException
+	 *             If item already presented
 	 * @throws PersistenceException
-	 *             If storing failed
+	 *             Common inserting failure
 	 */
-	String add(Versioned<Item> item) throws PersistenceException;
+	void add(Versioned<Item> item) throws DuplicateException, PersistenceException;
 
 	/**
 	 * Marks item with specified ID as deleted
@@ -58,13 +60,13 @@ public interface BaseService<Item>
 	 * Searches for items with specified ID (both deleted or not)
 	 *
 	 * @param guid
-	 * @return
+	 * @return Item if found, null otherwise
 	 */
 	Versioned<Item> findById(String guid);
 
 	/**
 	 * Searches for all items modified after specified time (both deleted and non-deleted)
-	 * 
+	 *
 	 * @param userId
 	 * @param since
 	 * @return
@@ -72,7 +74,7 @@ public interface BaseService<Item>
 	List<Versioned<Item>> findChanged(Date since);
 
 	/**
-	 * Updates single non-deleted item. Note: updating deleted item result in exception.
+	 * Updates list of non-deleted item. Note: updating deleted item result in exception.
 	 *
 	 * @param item
 	 * @throws NotFoundException

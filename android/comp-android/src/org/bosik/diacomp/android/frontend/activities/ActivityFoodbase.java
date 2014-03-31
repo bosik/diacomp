@@ -1,15 +1,18 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.search.Sorter;
 import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -29,17 +32,31 @@ import android.widget.TextView;
 
 public class ActivityFoodbase extends Activity
 {
-	private static final String						TAG			= ActivityFoodbase.class.getSimpleName();
+	private static final String	TAG					= ActivityFoodbase.class.getSimpleName();
 
-	public static final String						FIELD_GUID	= "bosik.pack.guid";
+	public static final String	KEY_GUID			= "diacomp.activityfoodbase.guid";
+	public static final String	KEY_MODE			= "diacomp.activityfoodbase.mode";
+	public static final String	VALUE_MODE_PICK		= "diacomp.activityfoodbase.mode.pick";
+	public static final String	VALUE_MODE_EDIT		= "diacomp.activityfoodbase.mode.edit";
+
+	private static final int	DIALOG_FOOD_CREATE	= 11;
+	private static final int	DIALOG_FOOD_MODIFY	= 12;
+
+	private enum Mode
+	{
+		EDIT, PICK
+	}
 
 	// Widgets
-	private EditText								editFoodSearch;
-	private ListView								listFood;
+	private EditText						editFoodSearch;
+	private ListView						listFood;
 
 	// Data
-	private List<Versioned<NamedRelativeTagged>>	data;
-	private static final Sorter<FoodItem>			sorter		= new Sorter<FoodItem>();
+	final FoodBaseService					foodBaseService	= Storage.localFoodBase;
+	List<Versioned<NamedRelativeTagged>>	data;
+	private static final Sorter<FoodItem>	sorter			= new Sorter<FoodItem>();
+	Mode									mode;
+	private String							searchFilter	= "";
 
 	// ===========================================================================
 
@@ -48,6 +65,10 @@ public class ActivityFoodbase extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.picker_foodbase);
+
+		// reading intent
+		Intent intent = getIntent();
+		mode = VALUE_MODE_PICK.equals(intent.getStringExtra(KEY_MODE)) ? Mode.PICK : Mode.EDIT;
 
 		// Widgets binding
 		editFoodSearch = (EditText) findViewById(R.id.editFoodSearch);
@@ -66,7 +87,8 @@ public class ActivityFoodbase extends Activity
 			@Override
 			public void afterTextChanged(Editable s)
 			{
-				runSearch(s.toString());
+				searchFilter = s.toString();
+				runSearch(searchFilter);
 			}
 		});
 		listFood = (ListView) findViewById(R.id.listFood);
@@ -75,7 +97,7 @@ public class ActivityFoodbase extends Activity
 		runSearch("");
 	}
 
-	private void runSearch(String key)
+	void runSearch(String key)
 	{
 		new AsyncTask<String, Void, List<Versioned<NamedRelativeTagged>>>()
 		{
@@ -107,7 +129,7 @@ public class ActivityFoodbase extends Activity
 		return true;
 	}
 
-	private List<Versioned<NamedRelativeTagged>> request(String filter)
+	List<Versioned<NamedRelativeTagged>> request(String filter)
 	{
 		try
 		{
@@ -116,19 +138,22 @@ public class ActivityFoodbase extends Activity
 			List<Versioned<FoodItem>> temp;
 			if (filter.trim().isEmpty())
 			{
-				temp = Storage.webFoodBase.findAll(false);
+				temp = foodBaseService.findAll(false);
 			}
 			else
 			{
-				temp = Storage.webFoodBase.findAny(filter);
-				sorter.sort(temp, Sorter.Sort.RELEVANT);
+				temp = foodBaseService.findAny(filter);
 			}
+
+			// sorter.sort(temp, mode == Mode.EDIT ? Sorter.Sort.ALPHABET : Sorter.Sort.RELEVANT);
 
 			// TODO: check the performance
 			List<Versioned<NamedRelativeTagged>> result = new ArrayList<Versioned<NamedRelativeTagged>>();
 			for (Versioned<FoodItem> item : temp)
 			{
-				result.add(new Versioned<NamedRelativeTagged>(item.getData()));
+				// Log.d(TAG, item.getData().getName() + " [" + item.getData().getTag() + "]");
+
+				result.add(new Versioned<NamedRelativeTagged>(item));
 			}
 
 			tick = System.currentTimeMillis() - tick;
@@ -142,7 +167,7 @@ public class ActivityFoodbase extends Activity
 		}
 	}
 
-	private void showBase(final List<Versioned<NamedRelativeTagged>> foodBase)
+	void showBase(final List<Versioned<NamedRelativeTagged>> foodBase)
 	{
 		// TODO: localization
 		if (foodBase == null)
@@ -184,17 +209,55 @@ public class ActivityFoodbase extends Activity
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				// returnResult(data.get(position).getId());
-				Intent intent = new Intent(ActivityFoodbase.this, ActivityEditorFood.class);
-				intent.putExtra(ActivityEditor.FIELD_ENTITY, data.get(position));
-				intent.putExtra(ActivityEditor.FIELD_MODE, false);
+				final String guid = data.get(position).getId();
 
-				startActivityForResult(intent, 100500); // FIXME
+				switch (mode)
+				{
+					case PICK:
+					{
+						returnResult(guid);
+						break;
+					}
+					case EDIT:
+					{
+						new AsyncTask<String, Void, Versioned<FoodItem>>()
+						{
+							@Override
+							protected void onPreExecute()
+							{
+								// setTitle(getString(R.string.foodbase_title_loading));
+							}
+
+							@Override
+							protected Versioned<FoodItem> doInBackground(String... params)
+							{
+								Versioned<FoodItem> food = foodBaseService.findById(guid);
+								return food;
+							}
+
+							@Override
+							protected void onPostExecute(Versioned<FoodItem> food)
+							{
+								if (food != null)
+								{
+									showFoodEditor(food);
+								}
+								else
+								{
+									UIUtils.showTip(ActivityFoodbase.this, String.format("Item %s not found", guid));
+								}
+							}
+						}.execute(guid);
+
+						// TODO: do the same for dish base when ready
+					}
+				}
+
 			}
 		});
 	}
 
-	private String getInfo(NamedRelativeTagged item)
+	String getInfo(NamedRelativeTagged item)
 	{
 		String fmt = getString(R.string.foodbase_subinfo, item.getRelProts(), item.getRelFats(), item.getRelCarbs(),
 				item.getRelValue());
@@ -203,11 +266,48 @@ public class ActivityFoodbase extends Activity
 		return fmt;
 	}
 
-	private void returnResult(String guid)
+	void returnResult(String guid)
 	{
 		Intent intent = getIntent();
-		intent.putExtra(FIELD_GUID, guid);
+		intent.putExtra(KEY_GUID, guid);
 		setResult(RESULT_OK, intent);
 		finish();
+	}
+
+	void showFoodEditor(Versioned<FoodItem> food)
+	{
+		Intent intent = new Intent(this, ActivityEditorFood.class);
+		intent.putExtra(ActivityEditor.FIELD_ENTITY, food);
+		intent.putExtra(ActivityEditor.FIELD_MODE, false);
+		startActivityForResult(intent, DIALOG_FOOD_MODIFY);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+	{
+		super.onActivityResult(requestCode, resultCode, intent);
+
+		try
+		{
+			switch (requestCode)
+			{
+				case DIALOG_FOOD_MODIFY:
+				{
+					if (resultCode == RESULT_OK)
+					{
+						Versioned<FoodItem> item = (Versioned<FoodItem>) intent.getExtras().getSerializable(
+								ActivityEditor.FIELD_ENTITY);
+						foodBaseService.save(Arrays.<Versioned<FoodItem>> asList(item));
+						runSearch(searchFilter);
+					}
+					break;
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
+		}
 	}
 }

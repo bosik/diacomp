@@ -19,9 +19,12 @@ import org.bosik.diacomp.core.utils.Utils;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 
 public class FoodBaseLocalService implements FoodBaseService
 {
+	private static final String			TAG	= FoodBaseLocalService.class.getSimpleName();
+
 	private final ContentResolver		resolver;
 	private final Serializer<FoodItem>	serializer;
 
@@ -44,6 +47,8 @@ public class FoodBaseLocalService implements FoodBaseService
 		// analyze response
 		if (cursor != null)
 		{
+			long time = System.currentTimeMillis();
+
 			List<Versioned<FoodItem>> result = new LinkedList<Versioned<FoodItem>>();
 
 			int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_GUID);
@@ -51,6 +56,8 @@ public class FoodBaseLocalService implements FoodBaseService
 			int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_VERSION);
 			int indexData = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DATA);
 			int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DELETED);
+
+			long jsonTime = 0;
 
 			while (cursor.moveToNext())
 			{
@@ -60,7 +67,10 @@ public class FoodBaseLocalService implements FoodBaseService
 				boolean valueDeleted = cursor.getInt(indexDeleted) == 1;
 				String valueData = cursor.getString(indexData);
 
+				long temp = System.currentTimeMillis();
 				FoodItem item = serializer.read(valueData);
+				jsonTime += System.currentTimeMillis() - temp;
+
 				Versioned<FoodItem> versioned = new Versioned<FoodItem>(item);
 				versioned.setId(valueId);
 				versioned.setTimeStamp(valueTimeStamp);
@@ -69,6 +79,9 @@ public class FoodBaseLocalService implements FoodBaseService
 
 				result.add(versioned);
 			}
+
+			Log.i(TAG, result.size() + " json's parsed in " + jsonTime + " msec");
+			Log.i(TAG, result.size() + " items parsed in " + (System.currentTimeMillis() - time) + " msec");
 
 			return result;
 		}
@@ -80,6 +93,8 @@ public class FoodBaseLocalService implements FoodBaseService
 
 	private List<Versioned<FoodItem>> find(String id, String name, boolean includeDeleted, Date modAfter)
 	{
+		long time = System.currentTimeMillis();
+
 		try
 		{
 			// constructing parameters
@@ -126,6 +141,8 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			final List<Versioned<FoodItem>> result = parseItems(cursor);
 			cursor.close();
+
+			Log.i(TAG, "Search done in " + (System.currentTimeMillis() - time) + " msec");
 			return result;
 		}
 		catch (Exception e)
@@ -135,7 +152,7 @@ public class FoodBaseLocalService implements FoodBaseService
 	}
 
 	@Override
-	public String add(Versioned<FoodItem> item) throws PersistenceException
+	public void add(Versioned<FoodItem> item) throws PersistenceException
 	{
 		try
 		{
@@ -148,8 +165,6 @@ public class FoodBaseLocalService implements FoodBaseService
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
 
 			resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues);
-
-			return item.getId();
 		}
 		catch (PersistenceException e)
 		{
@@ -268,6 +283,7 @@ public class FoodBaseLocalService implements FoodBaseService
 				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
 				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, item.isDeleted());
 				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
+				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE, item.getData().getName());
 
 				String[] args = new String[] { item.getId() };
 				resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, "GUID = ?", args);
