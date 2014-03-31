@@ -32,11 +32,10 @@ public class FoodBaseWebService implements FoodBaseService
 	}
 
 	@Override
-	public String add(Versioned<FoodItem> item) throws PersistenceException
+	public void add(Versioned<FoodItem> item) throws PersistenceException
 	{
-		item.setId(Utils.generateGuid());
-		save(Arrays.asList(item));
-		return item.getId();
+		// TODO: current implementation doesn't fail for duplicates
+		save(Arrays.<Versioned<FoodItem>> asList(item));
 	}
 
 	@Override
@@ -158,7 +157,6 @@ public class FoodBaseWebService implements FoodBaseService
 		}
 		catch (Exception e)
 		{
-			System.err.println(str);
 			throw new CommonServiceException("URL: " + url, e);
 		}
 	}

@@ -32,7 +32,7 @@ public class ActivityMain extends Activity implements OnClickListener
 {
 	/* =========================== CONSTANTS ================================ */
 
-	private static final String	TAG				= ActivityMain.class.getSimpleName();
+	private static final String	TAG						= ActivityMain.class.getSimpleName();
 	// private static final int RESULT_SPEECH_TO_TEXT = 620;
 
 	/* =========================== FIELDS ================================ */
@@ -45,7 +45,7 @@ public class ActivityMain extends Activity implements OnClickListener
 	private Button				buttonAuth;
 	private Button				buttonTestMealEditor;
 
-	private static boolean		timerSettedUp	= false;
+	private static boolean		timerSettedUp			= false;
 
 	/* =========================== CLASSES ================================ */
 
@@ -426,6 +426,7 @@ public class ActivityMain extends Activity implements OnClickListener
 					break;
 				case R.id.ButtonFoodBase:
 					Intent intent = new Intent(this, ActivityFoodbase.class);
+					intent.putExtra(ActivityFoodbase.KEY_MODE, ActivityFoodbase.VALUE_MODE_EDIT);
 					startActivity(intent);
 					break;
 				case R.id.ButtonDishBase:

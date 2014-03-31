@@ -2,7 +2,6 @@ package org.bosik.diacomp.core.entities.tech;
 
 import java.io.Serializable;
 import java.util.Date;
-import org.bosik.diacomp.core.utils.Utils;
 
 /**
  * Has ID field (random; useful for comparing)
@@ -30,7 +29,6 @@ public class Versioned<T> implements Serializable
 
 	public Versioned(T data)
 	{
-		id = Utils.generateGuid();
 		version = 0;
 		updateTimeStamp();
 		this.data = data;

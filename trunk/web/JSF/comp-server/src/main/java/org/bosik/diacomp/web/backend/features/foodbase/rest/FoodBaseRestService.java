@@ -125,13 +125,13 @@ public class FoodBaseRestService
 
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response postRecords(@FormParam("items") String parItems) throws CommonServiceException
+	public Response saveRecords(@FormParam("items") String parItems) throws CommonServiceException
 	{
 		try
 		{
 			int userId = UserSessionUtils.getId(req);
 			List<Versioned<FoodItem>> items = serializer.readAll(parItems);
-			foodbaseService.post(userId, items);
+			foodbaseService.save(userId, items);
 
 			String response = ResponseBuilder.buildDone("Saved OK");
 			return Response.ok(response).build();

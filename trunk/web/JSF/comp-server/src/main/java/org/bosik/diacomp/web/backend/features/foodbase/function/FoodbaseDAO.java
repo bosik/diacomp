@@ -35,16 +35,16 @@ public interface FoodbaseDAO
 	Versioned<FoodItem> findByGuid(int userId, String guid);
 
 	/**
-	 * Persists the specified items in the database
-	 *
+	 * Persists the specified items in the database (i.e. updates if item exists, inserts otherwise)
+	 * 
 	 * @param userId
 	 * @param items
 	 */
-	void post(int userId, List<Versioned<FoodItem>> items);
+	void save(int userId, List<Versioned<FoodItem>> items);
 
 	/**
 	 * Searches for items with the specified request filter
-	 * 
+	 *
 	 * @param userId
 	 * @param filter
 	 * @return

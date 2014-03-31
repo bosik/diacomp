@@ -30,11 +30,10 @@ public class FoodbaseRestClient extends AuthorizedRestClient implements FoodBase
 	}
 
 	@Override
-	public String add(Versioned<FoodItem> item) throws PersistenceException
+	public void add(Versioned<FoodItem> item) throws PersistenceException
 	{
-		item.setId(Utils.generateGuid());
+		// TODO: current implementation doesn't fail for duplicates
 		save(Arrays.asList(item));
-		return item.getId();
 	}
 
 	@Override
