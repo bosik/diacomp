@@ -3,10 +3,23 @@ package org.bosik.diacomp.core.services;
 import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 
 public interface ObjectService<T>
 {
+	/**
+	 * Marks item with specified ID as deleted
+	 * 
+	 * @param id
+	 * @throws NotFoundException
+	 *             If no item with such ID found
+	 * @throws AlreadyDeletedException
+	 *             If item is already deleted
+	 */
+	void delete(String id) throws NotFoundException, AlreadyDeletedException;
+
 	/**
 	 * Returns item with the specified GUID (no matter if deleted or not)
 	 * 
