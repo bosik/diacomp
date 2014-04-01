@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.utils.test;
+package org.bosik.diacomp.core.test;
 
 import java.util.List;
 import org.bosik.diacomp.core.entities.tech.Versioned;

@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.utils.test.fakes.services;
+package org.bosik.diacomp.core.test.fakes.services;
 
 public class FakeDishBaseService // implements DishBaseService
 {

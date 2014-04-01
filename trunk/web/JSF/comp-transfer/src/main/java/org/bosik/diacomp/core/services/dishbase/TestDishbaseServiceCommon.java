@@ -6,9 +6,9 @@ import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
-import org.bosik.diacomp.core.utils.test.fakes.mocks.Mock;
-import org.bosik.diacomp.core.utils.test.fakes.mocks.MockDishItem;
-import org.bosik.diacomp.core.utils.test.fakes.mocks.MockVersionedConverter;
+import org.bosik.diacomp.core.test.fakes.mocks.Mock;
+import org.bosik.diacomp.core.test.fakes.mocks.MockDishItem;
+import org.bosik.diacomp.core.test.fakes.mocks.MockVersionedConverter;
 import org.junit.Test;
 
 public abstract class TestDishbaseServiceCommon extends TestCase implements TestDishbaseService

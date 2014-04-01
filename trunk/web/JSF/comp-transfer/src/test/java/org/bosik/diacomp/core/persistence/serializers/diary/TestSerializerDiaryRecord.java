@@ -5,9 +5,9 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.TestSerializer;
-import org.bosik.diacomp.core.utils.test.fakes.mocks.Mock;
-import org.bosik.diacomp.core.utils.test.fakes.mocks.MockDiaryRecord;
-import org.bosik.diacomp.core.utils.test.fakes.mocks.MockVersionedConverter;
+import org.bosik.diacomp.core.test.fakes.mocks.Mock;
+import org.bosik.diacomp.core.test.fakes.mocks.MockDiaryRecord;
+import org.bosik.diacomp.core.test.fakes.mocks.MockVersionedConverter;
 
 public class TestSerializerDiaryRecord extends TestSerializer<Versioned<DiaryRecord>>
 {

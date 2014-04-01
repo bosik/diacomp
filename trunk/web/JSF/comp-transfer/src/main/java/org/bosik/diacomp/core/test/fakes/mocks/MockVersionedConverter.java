@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.utils.test.fakes.mocks;
+package org.bosik.diacomp.core.test.fakes.mocks;
 
 import java.util.ArrayList;
 import java.util.Date;
