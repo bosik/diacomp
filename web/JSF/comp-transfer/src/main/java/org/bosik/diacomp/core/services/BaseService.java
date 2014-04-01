@@ -1,6 +1,5 @@
 package org.bosik.diacomp.core.services;
 
-import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -8,7 +7,7 @@ import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 
-public interface BaseService<Item>
+public interface BaseService<Item> extends ObjectService<Item>
 {
 	/**
 	 * Adds item
@@ -19,6 +18,7 @@ public interface BaseService<Item>
 	 * @throws PersistenceException
 	 *             Common inserting failure
 	 */
+	// TODO: move to ObjectService
 	void add(Versioned<Item> item) throws DuplicateException, PersistenceException;
 
 	/**
@@ -30,6 +30,7 @@ public interface BaseService<Item>
 	 * @throws AlreadyDeletedException
 	 *             If item is already deleted
 	 */
+	// TODO: move to ObjectService
 	void delete(String id) throws NotFoundException, AlreadyDeletedException;
 
 	/**
@@ -55,33 +56,4 @@ public interface BaseService<Item>
 	 * @return Item if found, null otherwise
 	 */
 	Versioned<Item> findOne(String exactName);
-
-	/**
-	 * Searches for items with specified ID (both deleted or not)
-	 *
-	 * @param guid
-	 * @return Item if found, null otherwise
-	 */
-	Versioned<Item> findById(String guid);
-
-	/**
-	 * Searches for all items modified after specified time (both deleted and non-deleted)
-	 *
-	 * @param userId
-	 * @param since
-	 * @return
-	 */
-	List<Versioned<Item>> findChanged(Date since);
-
-	/**
-	 * Updates list of items
-	 *
-	 * @param items
-	 * @throws PersistenceException
-	 *             If storing failed
-	 */
-
-	// TODO: retrieve version and increment it here
-	// TODO: set timestamp to current time
-	void save(List<Versioned<Item>> items) throws PersistenceException;
 }
