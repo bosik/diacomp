@@ -42,7 +42,7 @@ public class DiaryWebService implements DiaryService
 	/* ============================ API ============================ */
 
 	@Override
-	public Versioned<DiaryRecord> getRecord(String guid) throws CommonServiceException
+	public Versioned<DiaryRecord> findById(String guid) throws CommonServiceException
 	{
 		try
 		{
@@ -60,7 +60,7 @@ public class DiaryWebService implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(Date time) throws CommonServiceException
+	public List<Versioned<DiaryRecord>> findChanged(Date time) throws CommonServiceException
 	{
 		try
 		{
@@ -102,7 +102,7 @@ public class DiaryWebService implements DiaryService
 	}
 
 	@Override
-	public void postRecords(List<Versioned<DiaryRecord>> records) throws CommonServiceException
+	public void save(List<Versioned<DiaryRecord>> records) throws CommonServiceException
 	{
 		try
 		{
