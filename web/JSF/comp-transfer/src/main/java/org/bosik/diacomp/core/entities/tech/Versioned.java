@@ -1,6 +1,7 @@
 package org.bosik.diacomp.core.entities.tech;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -136,4 +137,14 @@ public class Versioned<T> implements Serializable
 			return false;
 		return true;
 	}
+
+	public static final Comparator<Versioned<?>>	COMPARATOR_GUID	= new Comparator<Versioned<?>>()
+																	{
+																		@Override
+																		public int compare(Versioned<?> lhs,
+																				Versioned<?> rhs)
+																		{
+																			return lhs.getId().compareTo(rhs.getId());
+																		}
+																	};
 }
