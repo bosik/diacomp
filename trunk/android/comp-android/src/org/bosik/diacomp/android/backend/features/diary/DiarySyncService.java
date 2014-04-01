@@ -1,5 +1,13 @@
 package org.bosik.diacomp.android.backend.features.diary;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.services.diary.DiaryService;
+
 public class DiarySyncService
 {
 	// private static final String TAG = "DiarySyncService";
@@ -13,221 +21,208 @@ public class DiarySyncService
 		public void update_progress(int progress);
 	}
 
-	/*
-	 * public class NoModList1Exception extends RuntimeException { private static final long
-	 * serialVersionUID = -8260973295443312746L; }
-	 */
-
-	/*
-	 * public enum SyncResultCode { FAIL_ONE_MODLIST_IS_NULL, FAIL_TWO_MODLIST_IS_NULL,
-	 * FAIL_ONE_GET_PAGES, FAIL_TWO_GET_PAGES, FAIL_ONE_POST_PAGES, FAIL_TWO_POST_PAGES, DONE }
-	 */
-
-	// /**
-	// * Результат выполнения синхронизации
-	// * @author Bosik
-	// */
-	// public class SyncResultDep
-	// {
-	// /**
-	// * Код возврата
-	// */
-	// //public final SyncResultCode code;
-	// /**
-	// * Количество страниц, переданных из первого источника во второй
-	// */
-	// public final int transferedFirstToSecond = 0;
-	// /**
-	// * Количество страниц, переданных из второго источника в первый
-	// */
-	// public final int transferedSecondToFirst = 0;
-	//
-	// /*public SyncResult(SyncResultCode code, int transferedFirstToSecond, int
-	// transferedSecondToFirst)
-	// {
-	// this.code = code;
-	// this.transferedFirstToSecond = transferedFirstToSecond;
-	// this.transferedSecondToFirst = transferedSecondToFirst;
-	// }*/
-	// }
-
 	/* ============================ METHODS ============================ */
 
 	// TODO: made public for test purposes only
 
 	/**
-	 * Sorts list by date (ascending)
-	 * 
-	 * @param modList
+	 * Calculates GUID lists for synchronization
+	 *
+	 * @param items1
+	 *            First list
+	 * @param items2
+	 *            Second list
+	 * @param newer1
+	 *            GUIDs of items which has greater version in the first list
+	 * @param newer2
+	 *            GUIDs of items which has greater version in the second list
+	 * @param only1
+	 *            GUIDs of items which are presented only in the first list
+	 * @param only2
+	 *            GUIDs of items which are presented only in the second list
 	 */
-	// public static void sort(List<PageVersion> modList)
-	// {
-	// Collections.sort(modList, new Comparator<PageVersion>()
-	// {
-	// @Override
-	// public int compare(PageVersion lhs, PageVersion rhs)
-	// {
-	// return lhs.date.compareTo(rhs.date);
-	// }
-	// });
-	// }
+	public static void getOverLists(List<Versioned<DiaryRecord>> items1, List<Versioned<DiaryRecord>> items2,
+			List<Versioned<DiaryRecord>> newer1, List<Versioned<DiaryRecord>> newer2,
+			List<Versioned<DiaryRecord>> only1, List<Versioned<DiaryRecord>> only2)
+	{
+		// null checks
+		if (null == items1)
+		{
+			throw new NullPointerException("items1 can't be null");
+		}
+		if (null == items2)
+		{
+			throw new NullPointerException("items2 can't be null");
+		}
+		if (null == newer1)
+		{
+			throw new NullPointerException("newer1 can't be null");
+		}
+		if (null == newer2)
+		{
+			throw new NullPointerException("newer2 can't be null");
+		}
+		if (null == only1)
+		{
+			throw new NullPointerException("only1 can't be null");
+		}
+		if (null == only2)
+		{
+			throw new NullPointerException("only2 can't be null");
+		}
+
+		// preparation
+
+		Collections.sort(items1, Versioned.COMPARATOR_GUID);
+		Collections.sort(items2, Versioned.COMPARATOR_GUID);
+		newer1.clear();
+		newer2.clear();
+		only1.clear();
+		only2.clear();
+		int i = 0;
+		int j = 0;
+
+		// parallel processing
+		while ((i < items1.size()) && (j < items2.size()))
+		{
+			Versioned<DiaryRecord> p1 = items1.get(i);
+			Versioned<DiaryRecord> p2 = items2.get(j);
+			int c = Versioned.COMPARATOR_GUID.compare(p1, p2);
+			if (c < 0)
+			{
+				only1.add(p1);
+				i++;
+			}
+			else if (c > 0)
+			{
+				only2.add(p2);
+				j++;
+			}
+			else
+			{
+				if (p1.getVersion() > p2.getVersion())
+				{
+					newer1.add(p1);
+				}
+				else if (p1.getVersion() < p2.getVersion())
+				{
+					newer2.add(p2);
+				}
+				i++;
+				j++;
+			}
+		}
+
+		// finish first list
+		while (i < items1.size())
+		{
+			only1.add(items1.get(i));
+			i++;
+		}
+
+		// finish second list
+		while (j < items2.size())
+		{
+			only2.add(items2.get(j));
+			j++;
+		}
+	}
 
 	/**
-	 * Calculates date lists for synchronization
-	 * 
-	 * @param modList1
-	 *            First date-version list
-	 * @param modList2
-	 *            Second date-version list
-	 * @param over1
-	 *            Dates which either (a) has greater version in the first list or (b) presented only
-	 *            in the first list
-	 * @param over2
-	 *            Dates which either (a) has greater version in the second list or (b) presented
-	 *            only in the second list
+	 * Synchronizes two diary services
+	 *
+	 * @param service1
+	 *            First service
+	 * @param service2
+	 *            Second service
+	 * @param since
+	 *            Modification time limiter: records modified after this time is taking in account
+	 *            only
+	 * @return Total number of transferred records
 	 */
-	// public static void getOverLists(List<PageVersion> modList1, List<PageVersion> modList2,
-	// List<Date> over1,
-	// List<Date> over2)
-	// {
-	// // null checks
-	// if (null == modList1)
-	// {
-	// throw new NullPointerException("modList1 can't be null");
-	// }
-	// if (null == modList2)
-	// {
-	// throw new NullPointerException("modList2 can't be null");
-	// }
-	// if (null == over1)
-	// {
-	// throw new NullPointerException("over1 can't be null");
-	// }
-	// if (null == over2)
-	// {
-	// throw new NullPointerException("over2 can't be null");
-	// }
-	//
-	// // preparation
-	// sort(modList1);
-	// sort(modList2);
-	// over1.clear();
-	// over2.clear();
-	// int i = 0;
-	// int j = 0;
-	//
-	// // parallel processing
-	// while ((i < modList1.size()) && (j < modList2.size()))
-	// {
-	// PageVersion p1 = modList1.get(i);
-	// PageVersion p2 = modList2.get(j);
-	// int c = p1.date.compareTo(p2.date);
-	// if (c < 0)
-	// {
-	// over1.add(p1.date);
-	// i++;
-	// }
-	// else if (c > 0)
-	// {
-	// over2.add(p2.date);
-	// j++;
-	// }
-	// else
-	// {
-	// if (p1.version > p2.version)
-	// {
-	// over1.add(p1.date);
-	// }
-	// else if (p1.version < p2.version)
-	// {
-	// over2.add(p2.date);
-	// }
-	// i++;
-	// j++;
-	// }
-	// }
-	//
-	// // finish first list
-	// while (i < modList1.size())
-	// {
-	// over1.add(modList1.get(i).date);
-	// i++;
-	// }
-	//
-	// // finish second list
-	// while (j < modList2.size())
-	// {
-	// over2.add(modList2.get(j).date);
-	// j++;
-	// }
-	// }
-	//
-	// /**
-	// * Synchronizes two diary DAOs
-	// *
-	// * @param source1
-	// * First DAO
-	// * @param source2
-	// * Second DAO
-	// * @param since
-	// * Modification time limiter: pages modified after this time is taking in account
-	// * only
-	// * @return Total number of transferred pages
-	// */
-	// public static int synchronize(DiaryService source1, DiaryService source2, Date since)
-	// {
-	// // FIXME: see algorithm update for desktop app
-	//
-	// // null checks
-	// if (null == source1)
-	// {
-	// throw new NullPointerException("source1 can't be null");
-	// }
-	// if (null == source2)
-	// {
-	// throw new NullPointerException("source2 can't be null");
-	// }
-	// if (null == since)
-	// {
-	// throw new NullPointerException("since date can't be null");
-	// }
-	//
-	// // requesting modlists
-	// List<PageVersion> modList1 = source1.getModList(since);
-	// List<PageVersion> modList2 = source2.getModList(since);
-	//
-	// // null checks again
-	// if (null == modList1)
-	// {
-	// throw new NullPointerException("modList1 is null");
-	// }
-	// if (null == modList2)
-	// {
-	// throw new NullPointerException("modList2 is null");
-	// }
-	//
-	// // calculating transferring lists
-	// List<Date> over1 = new ArrayList<Date>();
-	// List<Date> over2 = new ArrayList<Date>();
-	// getOverLists(modList1, modList2, over1, over2);
-	//
-	// // debug
-	//
-	// /*
-	// * if (BuildConfig.DEBUG) { Log.v(TAG, "1 --> 2 : total count: " +
-	// * String.valueOf(over1.size())); for (int i = 0; i < over1.size(); i++) { Log.v(TAG,
-	// * "1 --> 2 : " + String.valueOf(over1.get(i))); } Log.v(TAG, "2 --> 1 : total count: " +
-	// * String.valueOf(over2.size())); for (int i = 0; i < over2.size(); i++) { Log.v(TAG,
-	// * "2 --> 1 : " + String.valueOf(over2.get(i))); } }
-	// */
-	//
-	// // transfer
-	//
-	// // THINK: divide into small groups?
-	// source1.postRecords(source2.getPages(over2));
-	// source2.postRecords(source1.getPages(over1));
-	//
-	// // Result is number of transferred pages
-	// return over1.size() + over2.size();
-	// }
+	public static int synchronize(DiaryService service1, DiaryService service2, Date since)
+	{
+		// FIXME: see algorithm update for desktop app
+
+		// null checks
+		if (null == service1)
+		{
+			throw new NullPointerException("service1 can't be null");
+		}
+		if (null == service2)
+		{
+			throw new NullPointerException("service2 can't be null");
+		}
+		if (null == since)
+		{
+			throw new NullPointerException("since date can't be null");
+		}
+
+		// requesting items
+		List<Versioned<DiaryRecord>> items1 = service1.getRecords(since);
+		List<Versioned<DiaryRecord>> items2 = service2.getRecords(since);
+
+		// null checks again
+		if (null == items1)
+		{
+			throw new NullPointerException("modList1 is null");
+		}
+		if (null == items2)
+		{
+			throw new NullPointerException("modList2 is null");
+		}
+
+		// calculating transferring lists
+		List<Versioned<DiaryRecord>> newer1 = new ArrayList<Versioned<DiaryRecord>>();
+		List<Versioned<DiaryRecord>> newer2 = new ArrayList<Versioned<DiaryRecord>>();
+		List<Versioned<DiaryRecord>> only1 = new ArrayList<Versioned<DiaryRecord>>();
+		List<Versioned<DiaryRecord>> only2 = new ArrayList<Versioned<DiaryRecord>>();
+		getOverLists(items1, items2, newer1, newer2, only1, only2);
+
+		// debug
+
+		/*
+		 * if (BuildConfig.DEBUG) { Log.v(TAG, "1 --> 2 : total count: " +
+		 * String.valueOf(over1.size())); for (int i = 0; i < over1.size(); i++) { Log.v(TAG,
+		 * "1 --> 2 : " + String.valueOf(over1.get(i))); } Log.v(TAG, "2 --> 1 : total count: " +
+		 * String.valueOf(over2.size())); for (int i = 0; i < over2.size(); i++) { Log.v(TAG,
+		 * "2 --> 1 : " + String.valueOf(over2.get(i))); } }
+		 */
+
+		// checking items with are only partially presented
+		for (Versioned<DiaryRecord> item1 : only1)
+		{
+			Versioned<DiaryRecord> item2 = service2.getRecord(item1.getId());
+			if ((item2 == null) || (item2.getVersion() < item1.getVersion()))
+			{
+				newer1.add(item1);
+			}
+			else if (item2.getVersion() > item1.getVersion())
+			{
+				newer2.add(item2);
+			}
+		}
+
+		for (Versioned<DiaryRecord> item2 : only2)
+		{
+			Versioned<DiaryRecord> item1 = service1.getRecord(item2.getId());
+			if ((item1 == null) || (item1.getVersion() < item2.getVersion()))
+			{
+				newer2.add(item2);
+			}
+			else if (item1.getVersion() > item2.getVersion())
+			{
+				newer1.add(item1);
+			}
+		}
+
+		// transfer
+
+		// THINK: divide into small groups?
+		service1.postRecords(newer2);
+		service2.postRecords(newer1);
+
+		// Result is number of transferred records
+		return newer1.size() + newer2.size();
+	}
 }
