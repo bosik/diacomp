@@ -8,13 +8,13 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 public interface ObjectService<T>
 {
 	/**
-	 * Returns item with the specified GUID
-	 *
+	 * Returns item with the specified GUID (no matter if deleted or not)
+	 * 
 	 * @param guid
 	 * @return Item if found, null otherwise
 	 * @throws CommonServiceException
 	 */
-	public abstract Versioned<T> findById(String guid) throws CommonServiceException;
+	Versioned<T> findById(String guid) throws CommonServiceException;
 
 	/**
 	 * Returns list of records which were modified after the specified time (both removed or not)
@@ -23,7 +23,7 @@ public interface ObjectService<T>
 	 * @return
 	 * @throws CommonServiceException
 	 */
-	public abstract List<Versioned<T>> findChanged(Date since) throws CommonServiceException;
+	List<Versioned<T>> findChanged(Date since) throws CommonServiceException;
 
 	/**
 	 * Persists items (creates if not exist, updates otherwise)
@@ -31,6 +31,7 @@ public interface ObjectService<T>
 	 * @param items
 	 * @throws CommonServiceException
 	 */
-	public abstract void save(List<Versioned<T>> items) throws CommonServiceException;
-
+	// TODO: retrieve version and increment it here
+	// TODO: set timestamp to current time
+	void save(List<Versioned<T>> items) throws CommonServiceException;
 }
