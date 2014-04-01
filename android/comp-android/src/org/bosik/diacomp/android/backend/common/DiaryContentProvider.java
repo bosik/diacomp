@@ -64,6 +64,7 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		COLUMN_DISHBASE_VERSION		= "Version";
 	public static final String		COLUMN_DISHBASE_DELETED		= "Deleted";
 	public static final String		COLUMN_DISHBASE_DATA		= "Data";
+	public static final String		COLUMN_DISHBASE_NAMECACHE	= "NameCache";
 
 	public static final String		CONTENT_DISHBASE_STRING		= SCHEME + AUTH + "/" + TABLE_DISHBASE + "/";
 	public static final Uri			CONTENT_DISHBASE_URI		= Uri.parse(CONTENT_DISHBASE_STRING);
@@ -135,6 +136,7 @@ public class DiaryContentProvider extends ContentProvider
 					COLUMN_DISHBASE_TIMESTAMP + " TEXT",
 					COLUMN_DISHBASE_VERSION + " INTEGER",
 					COLUMN_DISHBASE_DELETED + " INTEGER", // 0 or 1
+					COLUMN_DISHBASE_NAMECACHE + " TEXT",
 					COLUMN_DISHBASE_DATA + " TEXT");
 			db.execSQL(SQL_CREATE_DISHBASE);
 
