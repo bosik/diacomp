@@ -30,7 +30,7 @@ public class AnalyzeExtracter
 	public static List<PrimeRec> extractRecords(DiaryService source, Date fromTime, Date toTime)
 	{
 		List<PrimeRec> result = new LinkedList<PrimeRec>();
-		List<Versioned<DiaryRecord>> recs = source.getRecords(fromTime, toTime, false);
+		List<Versioned<DiaryRecord>> recs = source.findBetween(fromTime, toTime, false);
 
 		double ins = 0.0;
 		double curIns = 0.0;

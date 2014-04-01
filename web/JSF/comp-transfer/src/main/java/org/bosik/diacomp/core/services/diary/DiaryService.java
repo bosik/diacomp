@@ -23,6 +23,6 @@ public interface DiaryService extends ObjectService<DiaryRecord>
 	 * @return
 	 * @throws CommonServiceException
 	 */
-	List<Versioned<DiaryRecord>> getRecords(Date fromTime, Date toTime, boolean includeRemoved)
+	List<Versioned<DiaryRecord>> findBetween(Date fromTime, Date toTime, boolean includeRemoved)
 			throws CommonServiceException;
 }
