@@ -1,16 +1,15 @@
-package org.bosik.diacomp.android.backend.features.diary;
+package org.bosik.diacomp.android.backend.features.sync;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.ObjectService;
 
-public class DiarySyncService
+public class SyncService<T>
 {
-	// private static final String TAG = "DiarySyncService";
+	// private static final String TAG = "SyncService";
 
 	/* ============================ HELPER CLASSES ============================ */
 
@@ -41,9 +40,9 @@ public class DiarySyncService
 	 * @param only2
 	 *            GUIDs of items which are presented only in the second list
 	 */
-	public static void getOverLists(List<Versioned<DiaryRecord>> items1, List<Versioned<DiaryRecord>> items2,
-			List<Versioned<DiaryRecord>> newer1, List<Versioned<DiaryRecord>> newer2,
-			List<Versioned<DiaryRecord>> only1, List<Versioned<DiaryRecord>> only2)
+	public static <T> void getOverLists(List<Versioned<T>> items1, List<Versioned<T>> items2,
+			List<Versioned<T>> newer1,
+			List<Versioned<T>> newer2, List<Versioned<T>> only1, List<Versioned<T>> only2)
 	{
 		// null checks
 		if (null == items1)
@@ -85,8 +84,8 @@ public class DiarySyncService
 		// parallel processing
 		while ((i < items1.size()) && (j < items2.size()))
 		{
-			Versioned<DiaryRecord> p1 = items1.get(i);
-			Versioned<DiaryRecord> p2 = items2.get(j);
+			Versioned<T> p1 = items1.get(i);
+			Versioned<T> p2 = items2.get(j);
 			int c = Versioned.COMPARATOR_GUID.compare(p1, p2);
 			if (c < 0)
 			{
@@ -129,18 +128,20 @@ public class DiarySyncService
 	}
 
 	/**
-	 * Synchronizes two diary services
-	 *
+	 * Synchronizes two object services
+	 * 
+	 * @param <T>
+	 * 
 	 * @param service1
 	 *            First service
 	 * @param service2
 	 *            Second service
 	 * @param since
-	 *            Modification time limiter: records modified after this time is taking in account
+	 *            Modification time limiter: items modified after this time is taking in account
 	 *            only
-	 * @return Total number of transferred records
+	 * @return Total number of transferred items
 	 */
-	public static int synchronize(DiaryService service1, DiaryService service2, Date since)
+	public static <T> int synchronize(ObjectService<T> service1, ObjectService<T> service2, Date since)
 	{
 		// FIXME: see algorithm update for desktop app
 
@@ -159,8 +160,8 @@ public class DiarySyncService
 		}
 
 		// requesting items
-		List<Versioned<DiaryRecord>> items1 = service1.getRecords(since);
-		List<Versioned<DiaryRecord>> items2 = service2.getRecords(since);
+		List<Versioned<T>> items1 = service1.getRecords(since);
+		List<Versioned<T>> items2 = service2.getRecords(since);
 
 		// null checks again
 		if (null == items1)
@@ -173,10 +174,10 @@ public class DiarySyncService
 		}
 
 		// calculating transferring lists
-		List<Versioned<DiaryRecord>> newer1 = new ArrayList<Versioned<DiaryRecord>>();
-		List<Versioned<DiaryRecord>> newer2 = new ArrayList<Versioned<DiaryRecord>>();
-		List<Versioned<DiaryRecord>> only1 = new ArrayList<Versioned<DiaryRecord>>();
-		List<Versioned<DiaryRecord>> only2 = new ArrayList<Versioned<DiaryRecord>>();
+		List<Versioned<T>> newer1 = new ArrayList<Versioned<T>>();
+		List<Versioned<T>> newer2 = new ArrayList<Versioned<T>>();
+		List<Versioned<T>> only1 = new ArrayList<Versioned<T>>();
+		List<Versioned<T>> only2 = new ArrayList<Versioned<T>>();
 		getOverLists(items1, items2, newer1, newer2, only1, only2);
 
 		// debug
@@ -190,9 +191,9 @@ public class DiarySyncService
 		 */
 
 		// checking items with are only partially presented
-		for (Versioned<DiaryRecord> item1 : only1)
+		for (Versioned<T> item1 : only1)
 		{
-			Versioned<DiaryRecord> item2 = service2.getRecord(item1.getId());
+			Versioned<T> item2 = service2.getRecord(item1.getId());
 			if ((item2 == null) || (item2.getVersion() < item1.getVersion()))
 			{
 				newer1.add(item1);
@@ -203,9 +204,9 @@ public class DiarySyncService
 			}
 		}
 
-		for (Versioned<DiaryRecord> item2 : only2)
+		for (Versioned<T> item2 : only2)
 		{
-			Versioned<DiaryRecord> item1 = service1.getRecord(item2.getId());
+			Versioned<T> item1 = service1.getRecord(item2.getId());
 			if ((item1 == null) || (item1.getVersion() < item2.getVersion()))
 			{
 				newer2.add(item2);
