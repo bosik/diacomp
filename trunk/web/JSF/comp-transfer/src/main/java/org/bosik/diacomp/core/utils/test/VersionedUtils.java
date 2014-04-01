@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.utils.test.fakes.mocks;
+package org.bosik.diacomp.core.utils.test;
 
 import java.util.List;
 import org.bosik.diacomp.core.entities.tech.Versioned;
