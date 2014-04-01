@@ -24,10 +24,11 @@ import org.xml.sax.SAXException;
  * <li>{@link #readDocument(String)}</li>
  * <li>{@link #writeDocument(Document)}</li>
  * </ul>
- * 
+ *
  * @author Bosik
- * 
+ *
  */
+@Deprecated
 public class XmlUtils
 {
 	private static final String		TAG	= XmlUtils.class.getSimpleName();
