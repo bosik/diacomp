@@ -1,5 +1,6 @@
 package org.bosik.diacomp.web.frontend.features.diary;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
@@ -9,7 +10,9 @@ import org.bosik.diacomp.core.persistence.serializers.SerializerDiaryRecord;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.frontend.common.AuthorizedRestClient;
 import com.sun.jersey.api.client.UniformInterfaceException;
@@ -107,5 +110,23 @@ public class DiaryRestClient extends AuthorizedRestClient implements DiaryServic
 			System.err.println(e.getResponse().getEntity(String.class));
 			throw new CommonServiceException("URL: " + resource.getURI(), e);
 		}
+	}
+
+	@Override
+	public void delete(String id) throws NotFoundException, AlreadyDeletedException
+	{
+		Versioned<DiaryRecord> item = findById(id);
+
+		if (item == null)
+		{
+			throw new NotFoundException(id);
+		}
+		if (item.isDeleted())
+		{
+			throw new AlreadyDeletedException(id);
+		}
+
+		item.setDeleted(true);
+		save(Arrays.<Versioned<DiaryRecord>> asList(item));
 	}
 }
