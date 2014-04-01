@@ -34,7 +34,7 @@ public class RelevantIndexator
 		clearTags(dishBase);
 
 		// process
-		List<Versioned<DiaryRecord>> items = diary.getRecords(min, max, false);
+		List<Versioned<DiaryRecord>> items = diary.findBetween(min, max, false);
 		for (Versioned<DiaryRecord> item : items)
 		{
 			DiaryRecord rec = item.getData();
