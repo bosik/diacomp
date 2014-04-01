@@ -74,16 +74,14 @@ public interface BaseService<Item>
 	List<Versioned<Item>> findChanged(Date since);
 
 	/**
-	 * Updates list of non-deleted item. Note: updating deleted item result in exception.
+	 * Updates list of items
 	 *
-	 * @param item
-	 * @throws NotFoundException
-	 *             If no non-deleted item with such ID found
+	 * @param items
 	 * @throws PersistenceException
 	 *             If storing failed
 	 */
 
 	// TODO: retrieve version and increment it here
 	// TODO: set timestamp to current time
-	void save(List<Versioned<Item>> items) throws NotFoundException, PersistenceException;
+	void save(List<Versioned<Item>> items) throws PersistenceException;
 }
