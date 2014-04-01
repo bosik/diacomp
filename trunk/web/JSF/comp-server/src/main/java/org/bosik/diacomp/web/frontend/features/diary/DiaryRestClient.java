@@ -26,7 +26,7 @@ public class DiaryRestClient extends AuthorizedRestClient implements DiaryServic
 	}
 
 	@Override
-	public Versioned<DiaryRecord> getRecord(String guid) throws CommonServiceException
+	public Versioned<DiaryRecord> findById(String guid) throws CommonServiceException
 	{
 		try
 		{
@@ -46,7 +46,7 @@ public class DiaryRestClient extends AuthorizedRestClient implements DiaryServic
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(Date time) throws CommonServiceException
+	public List<Versioned<DiaryRecord>> findChanged(Date time) throws CommonServiceException
 	{
 		try
 		{
@@ -90,7 +90,7 @@ public class DiaryRestClient extends AuthorizedRestClient implements DiaryServic
 	}
 
 	@Override
-	public void postRecords(List<Versioned<DiaryRecord>> records) throws CommonServiceException
+	public void save(List<Versioned<DiaryRecord>> records) throws CommonServiceException
 	{
 		WebResource resource = getResource("api/diary/");
 		try

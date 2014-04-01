@@ -14,23 +14,23 @@ public interface ObjectService<T>
 	 * @return Item if found, null otherwise
 	 * @throws CommonServiceException
 	 */
-	public abstract Versioned<T> getRecord(String guid) throws CommonServiceException;
+	public abstract Versioned<T> findById(String guid) throws CommonServiceException;
 
 	/**
 	 * Returns list of records which were modified after the specified time (both removed or not)
-	 *
-	 * @param time
+	 * 
+	 * @param since
 	 * @return
 	 * @throws CommonServiceException
 	 */
-	public abstract List<Versioned<T>> getRecords(Date time) throws CommonServiceException;
+	public abstract List<Versioned<T>> findChanged(Date since) throws CommonServiceException;
 
 	/**
-	 * Persists records (creates if not exist, updates otherwise)
-	 *
-	 * @param records
+	 * Persists items (creates if not exist, updates otherwise)
+	 * 
+	 * @param items
 	 * @throws CommonServiceException
 	 */
-	public abstract void postRecords(List<Versioned<T>> records) throws CommonServiceException;
+	public abstract void save(List<Versioned<T>> items) throws CommonServiceException;
 
 }

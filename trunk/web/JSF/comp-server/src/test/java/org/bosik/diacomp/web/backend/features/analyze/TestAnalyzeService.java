@@ -72,7 +72,7 @@ public class TestAnalyzeService
 		r.setData(new BloodRecord(Utils.time(2012, 01, 01, 14, 40, 00), 5.0, 0));
 		records.add(r);
 
-		diaryService.postRecords(records);
+		diaryService.save(records);
 
 		KoofList koofs = AnalyzeExtracter.analyze(service, diaryService, fromTime, toTime, adaptation);
 		Koof koof = koofs.getKoof((10 * 60) + 40);

@@ -112,16 +112,16 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 		final Date timeAfter = new Date(item.getData().getTime().getTime() + DELTA);
 
 		// post it
-		diaryService.postRecords(originalItems);
+		diaryService.save(originalItems);
 
 		// CHECK IF IT IS PRESENTED NOW:
 
 		// 1. Via GUID
-		List<Versioned<DiaryRecord>> restoredItems = Arrays.asList(diaryService.getRecord(item.getId()));
+		List<Versioned<DiaryRecord>> restoredItems = Arrays.asList(diaryService.findById(item.getId()));
 		compareItems(originalItems, restoredItems, false);
 
 		// 2. Via timestamp
-		restoredItems = diaryService.getRecords(timestampBefore);
+		restoredItems = diaryService.findChanged(timestampBefore);
 		compareItems(originalItems, restoredItems, true);
 
 		// 3. Via period
@@ -130,16 +130,16 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 
 		// REMOVE IT
 		item.setDeleted(true);
-		diaryService.postRecords(originalItems);
+		diaryService.save(originalItems);
 
 		// CHECK IF IT IS [MARKED AS] REMOVED
 
 		// 1. Via GUID
-		restoredItems = Arrays.asList(diaryService.getRecord(item.getId()));
+		restoredItems = Arrays.asList(diaryService.findById(item.getId()));
 		compareItems(originalItems, restoredItems, false);
 
 		// 2. Via timestamp
-		restoredItems = diaryService.getRecords(timestampBefore);
+		restoredItems = diaryService.findChanged(timestampBefore);
 		for (Versioned<DiaryRecord> restoredItem : restoredItems)
 		{
 			if (restoredItem.getId().equals(item.getId()) && (!restoredItem.isDeleted()))
@@ -160,16 +160,16 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 
 		// RESTORE IT
 		item.setDeleted(false);
-		diaryService.postRecords(originalItems);
+		diaryService.save(originalItems);
 
 		// CHECK IF IT IS PRESENTED AGAIN:
 
 		// 1. Via GUID
-		restoredItems = Arrays.asList(diaryService.getRecord(item.getId()));
+		restoredItems = Arrays.asList(diaryService.findById(item.getId()));
 		compareItems(originalItems, restoredItems, false);
 
 		// 2. Via timestamp
-		restoredItems = diaryService.getRecords(timestampBefore);
+		restoredItems = diaryService.findChanged(timestampBefore);
 		compareItems(originalItems, restoredItems, true);
 
 		// 3. Via period
@@ -182,14 +182,14 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 	{
 		List<Versioned<DiaryRecord>> orgs = mockVersioned.getSamples();
 		VersionedUtils.enumerateGuids(orgs);
-		diaryService.postRecords(orgs);
+		diaryService.save(orgs);
 
 		// ------------------
 		setUp();
 
 		for (Versioned<DiaryRecord> originalRecord : orgs)
 		{
-			Versioned<DiaryRecord> restoredRecord = diaryService.getRecord(originalRecord.getId());
+			Versioned<DiaryRecord> restoredRecord = diaryService.findById(originalRecord.getId());
 			assertNotNull("DiaryService returned null", restoredRecord);
 			mockVersioned.compare(originalRecord, restoredRecord);
 		}
@@ -203,11 +203,11 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 
 		// Insertion test
 
-		diaryService.postRecords(originalItems);
+		diaryService.save(originalItems);
 
 		for (Versioned<DiaryRecord> item : originalItems)
 		{
-			Versioned<DiaryRecord> restored = diaryService.getRecord(item.getId());
+			Versioned<DiaryRecord> restored = diaryService.findById(item.getId());
 			assertNotNull(restored);
 			mockVersioned.compare(item, restored);
 		}
@@ -222,11 +222,11 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 			item.setVersion(item.getVersion() + 1);
 		}
 
-		diaryService.postRecords(originalItems);
+		diaryService.save(originalItems);
 
 		for (Versioned<DiaryRecord> item : originalItems)
 		{
-			Versioned<DiaryRecord> restored = diaryService.getRecord(item.getId());
+			Versioned<DiaryRecord> restored = diaryService.findById(item.getId());
 			assertNotNull(restored);
 			mockVersioned.compare(item, restored);
 		}
@@ -261,7 +261,7 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 
 		// Post
 
-		diaryService.postRecords(originalItems);
+		diaryService.save(originalItems);
 
 		// Check via period:
 
@@ -302,7 +302,7 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 
 		if (restoredItems.isEmpty())
 		{
-			diaryService.postRecords(originalItems);
+			diaryService.save(originalItems);
 		}
 
 		// Check the order
@@ -326,10 +326,10 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 		{
 			item.setTimeStamp(timeBefore);
 		}
-		diaryService.postRecords(originalItems);
+		diaryService.save(originalItems);
 
 		// check if there are no items after line
-		List<Versioned<DiaryRecord>> restoredItems = diaryService.getRecords(timeLine);
+		List<Versioned<DiaryRecord>> restoredItems = diaryService.findChanged(timeLine);
 		assertTrue("Clear base before testing", restoredItems.isEmpty());
 
 		// modify timestamp
@@ -337,10 +337,10 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 		{
 			item.setTimeStamp(timeAfter);
 		}
-		diaryService.postRecords(originalItems);
+		diaryService.save(originalItems);
 
 		// check the result
-		restoredItems = diaryService.getRecords(timeLine);
+		restoredItems = diaryService.findChanged(timeLine);
 		compareItems(originalItems, restoredItems, false);
 	}
 }
