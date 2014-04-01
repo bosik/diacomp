@@ -7,8 +7,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.views.DiaryView;
 import org.bosik.diacomp.android.frontend.views.RecordClickListener;
@@ -562,7 +562,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	{
 		List<Versioned<DiaryRecord>> list = new LinkedList<Versioned<DiaryRecord>>();
 		list.add(rec);
-		Storage.localDiary.postRecords(list);
+		Storage.localDiary.save(list);
 		openPage(curDate);
 	}
 

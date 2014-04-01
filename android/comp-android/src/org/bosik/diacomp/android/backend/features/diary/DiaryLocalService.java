@@ -54,7 +54,7 @@ public class DiaryLocalService implements DiaryService
 	/* ============================ API ============================ */
 
 	@Override
-	public Versioned<DiaryRecord> getRecord(String guid) throws CommonServiceException
+	public Versioned<DiaryRecord> findById(String guid) throws CommonServiceException
 	{
 		// construct parameters
 		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
@@ -77,7 +77,7 @@ public class DiaryLocalService implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(Date time) throws CommonServiceException
+	public List<Versioned<DiaryRecord>> findChanged(Date since) throws CommonServiceException
 	{
 		// construct parameters
 		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
@@ -85,7 +85,7 @@ public class DiaryLocalService implements DiaryService
 				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
 
 		String clause = String.format("%s > ?", DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
-		String[] clauseArgs = new String[] { Utils.formatTimeUTC(time) };
+		String[] clauseArgs = new String[] { Utils.formatTimeUTC(since) };
 
 		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
@@ -161,7 +161,7 @@ public class DiaryLocalService implements DiaryService
 	}
 
 	@Override
-	public void postRecords(List<Versioned<DiaryRecord>> records) throws CommonServiceException
+	public void save(List<Versioned<DiaryRecord>> records) throws CommonServiceException
 	{
 		try
 		{

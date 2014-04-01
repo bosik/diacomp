@@ -160,8 +160,8 @@ public class SyncService<T>
 		}
 
 		// requesting items
-		List<Versioned<T>> items1 = service1.getRecords(since);
-		List<Versioned<T>> items2 = service2.getRecords(since);
+		List<Versioned<T>> items1 = service1.findChanged(since);
+		List<Versioned<T>> items2 = service2.findChanged(since);
 
 		// null checks again
 		if (null == items1)
@@ -193,7 +193,7 @@ public class SyncService<T>
 		// checking items with are only partially presented
 		for (Versioned<T> item1 : only1)
 		{
-			Versioned<T> item2 = service2.getRecord(item1.getId());
+			Versioned<T> item2 = service2.findById(item1.getId());
 			if ((item2 == null) || (item2.getVersion() < item1.getVersion()))
 			{
 				newer1.add(item1);
@@ -206,7 +206,7 @@ public class SyncService<T>
 
 		for (Versioned<T> item2 : only2)
 		{
-			Versioned<T> item1 = service1.getRecord(item2.getId());
+			Versioned<T> item1 = service1.findById(item2.getId());
 			if ((item1 == null) || (item1.getVersion() < item2.getVersion()))
 			{
 				newer2.add(item2);
@@ -220,8 +220,8 @@ public class SyncService<T>
 		// transfer
 
 		// THINK: divide into small groups?
-		service1.postRecords(newer2);
-		service2.postRecords(newer1);
+		service1.save(newer2);
+		service2.save(newer1);
 
 		// Result is number of transferred records
 		return newer1.size() + newer2.size();
