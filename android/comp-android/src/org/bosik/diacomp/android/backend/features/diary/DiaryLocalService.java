@@ -100,7 +100,7 @@ public class DiaryLocalService implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(Date fromDate, Date toDate, boolean includeRemoved)
+	public List<Versioned<DiaryRecord>> findBetween(Date fromDate, Date toDate, boolean includeRemoved)
 			throws CommonServiceException
 	{
 		// construct parameters

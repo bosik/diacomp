@@ -210,13 +210,13 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					 * "menuClick: downloading page..."); DiaryPage page =
 					 * Storage.webDiary.getPage(date); Date timestamp =
 					 * Storage.webDiary.diarySource.getTimeStamp(date);
-					 * 
+					 *
 					 * if (null != page) { Log.d(TAG, "menuClick: page is ok");
 					 * Storage.localDiary.postPage(page, timestamp); } else Log.d(TAG,
 					 * "menuClick: page is null");
-					 * 
+					 *
 					 * Log.d(TAG, "menuClick: invalidating...");
-					 * 
+					 *
 					 * //DiaryView.curPage = page; //mDiaryView.invalidate();
 					 * mDiaryView.setPage(page);
 					 */
@@ -229,18 +229,18 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					/*
 					 * Log.i(TAG, "menuClick: opening page..."); DiaryPage page =
 					 * Storage.localDiary.getPage(curDate);
-					 * 
+					 *
 					 * if (null != page) Log.d(TAG, "menuClick: page is ok"); else Log.d(TAG,
 					 * "menuClick: page is null");
-					 * 
+					 *
 					 * Log.d(TAG, "menuClick: invalidating...");
-					 * 
+					 *
 					 * //DiaryView.curPage = page; //mDiaryView.invalidate();
 					 * mDiaryView.setPage(page);
-					 * 
-					 * 
+					 *
+					 *
 					 * DiaryPage page = getCurPage();
-					 * 
+					 *
 					 * // добавляем int minTime = Utils.curMinutes(); NoteRecord note = new
 					 * NoteRecord(minTime, "текст"); page.add(note); // сохраняем postPage(page);
 					 */
@@ -553,7 +553,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		Date start = new Date(year, month, day, 0, 0, 0);
 		Date end = Utils.getNextDay(start);
 
-		curRecords = Storage.localDiary.getRecords(start, end, false);
+		curRecords = Storage.localDiary.findBetween(start, end, false);
 		diaryViewLayout.setRecords(curRecords);
 		setCaptionDate(curDate);
 	}
@@ -568,7 +568,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 	/**
 	 * Searches for the last BS record in last scanDaysPeriod days
-	 * 
+	 *
 	 * @param scanDaysPeriod
 	 * @return BS record if found, null otherwise
 	 */
@@ -579,7 +579,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		Date toDate = new Date();
 		Date fromDate = new Date(toDate.getTime() - (scanDaysPeriod * Utils.MsecPerDay));
 
-		List<Versioned<DiaryRecord>> records = Storage.localDiary.getRecords(fromDate, toDate, false);
+		List<Versioned<DiaryRecord>> records = Storage.localDiary.findBetween(fromDate, toDate, false);
 		Collections.reverse(records);
 
 		// TODO: relies on not guaranteed behavior of List
