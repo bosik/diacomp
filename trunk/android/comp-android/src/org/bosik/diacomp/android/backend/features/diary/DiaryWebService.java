@@ -1,6 +1,7 @@
 package org.bosik.diacomp.android.backend.features.diary;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import org.apache.http.NameValuePair;
@@ -15,7 +16,9 @@ import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.utils.Utils;
 
 public class DiaryWebService implements DiaryService
@@ -122,6 +125,21 @@ public class DiaryWebService implements DiaryService
 		}
 	}
 
-	/* ======================= ROUTINES ========================= */
+	@Override
+	public void delete(String id) throws NotFoundException, AlreadyDeletedException
+	{
+		Versioned<DiaryRecord> item = findById(id);
 
+		if (item == null)
+		{
+			throw new NotFoundException(id);
+		}
+		if (item.isDeleted())
+		{
+			throw new AlreadyDeletedException(id);
+		}
+
+		item.setDeleted(true);
+		save(Arrays.<Versioned<DiaryRecord>> asList(item));
+	}
 }

@@ -1,6 +1,7 @@
 package org.bosik.diacomp.android.backend.features.diary;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
@@ -11,7 +12,9 @@ import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
@@ -256,5 +259,23 @@ public class DiaryLocalService implements DiaryService
 		sb.append(")");
 
 		return sb.toString();
+	}
+
+	@Override
+	public void delete(String id) throws NotFoundException, AlreadyDeletedException
+	{
+		Versioned<DiaryRecord> item = findById(id);
+
+		if (item == null)
+		{
+			throw new NotFoundException(id);
+		}
+		if (item.isDeleted())
+		{
+			throw new AlreadyDeletedException(id);
+		}
+
+		item.setDeleted(true);
+		save(Arrays.<Versioned<DiaryRecord>> asList(item));
 	}
 }
