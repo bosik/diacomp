@@ -69,7 +69,7 @@ public class DiaryRestClient extends AuthorizedRestClient implements DiaryServic
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> getRecords(Date fromTime, Date toTime, boolean includeRemoved)
+	public List<Versioned<DiaryRecord>> findBetween(Date fromTime, Date toTime, boolean includeRemoved)
 			throws CommonServiceException
 	{
 		try
