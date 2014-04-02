@@ -14,10 +14,13 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 {
 	// private static final String TAG = ActivityEditor.class.getSimpleName();
 
-	public static final String	FIELD_MODE		= "bosik.pack.createMode";
-	public static final String	FIELD_ENTITY	= "bosik.pack.entity";
+	public static final String		FIELD_MODE				= "bosik.pack.createMode";
+	public static final String		FIELD_ENTITY			= "bosik.pack.entity";
 
-	protected T					entity;
+	protected T						entity;
+
+	// TODO: localize error messages
+	protected static final String	ERROR_INCORRECT_TIME	= "Введите корректное время";
 
 	/* =========================== UTIL METHODS ================================ */
 

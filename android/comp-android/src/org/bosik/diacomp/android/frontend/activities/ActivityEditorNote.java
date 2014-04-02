@@ -25,6 +25,9 @@ public class ActivityEditorNote extends ActivityEditor<Versioned<NoteRecord>>
 	private EditText	editText;
 	private Button		buttonOK;
 
+	// TODO: localize error message
+	private static final String	ERROR_INCORRECT_NOTE_VALUE	= "Ошибка: неверный текст";
+
 	/* =========================== МЕТОДЫ ================================ */
 
 	@Override
@@ -65,26 +68,26 @@ public class ActivityEditorNote extends ActivityEditor<Versioned<NoteRecord>>
 	@Override
 	protected boolean getValuesFromGUI()
 	{
-		// читаем время
+		// time
 		try
 		{
 			entity.getData().setTime(readTime(datePicker, timePicker));
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(ActivityEditorNote.this, "Ошибка: неверное время");
+			UIUtils.showTip(ActivityEditorNote.this, ERROR_INCORRECT_TIME);
 			timePicker.requestFocus();
 			return false;
 		}
 
-		// читаем значение
+		// text
 		try
 		{
 			entity.getData().setText(editText.getText().toString());
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(ActivityEditorNote.this, "Ошибка: неверный текст");
+			UIUtils.showTip(ActivityEditorNote.this, ERROR_INCORRECT_NOTE_VALUE);
 			editText.requestFocus();
 			return false;
 		}

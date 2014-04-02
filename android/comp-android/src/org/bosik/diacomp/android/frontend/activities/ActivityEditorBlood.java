@@ -19,15 +19,19 @@ public class ActivityEditorBlood extends ActivityEditor<Versioned<BloodRecord>>
 	// private static final String TAG = ActivityEditorBlood.class.getSimpleName();
 
 	// components
-	private TimePicker	timePicker;
-	private DatePicker	datePicker;
-	private EditText	editValue;
-	private TextView	labelBloodFinger;
-	private Spinner		spinnerFinger;
-	private Button		buttonOK;
+	private TimePicker			timePicker;
+	private DatePicker			datePicker;
+	private EditText			editValue;
+	private TextView			labelBloodFinger;
+	private Spinner				spinnerFinger;
+	private Button				buttonOK;
+
+	// TODO: localize error messages
+	private static final String	ERROR_INCORRECT_BS_VALUE		= "Введите корректное значение СК";
+	private static final String	ERROR_INCORRECT_FINGER_VALUE	= "Укажите палец, из которого бралась кровь";
 
 	// parameters
-	private boolean		askFinger	= true;
+	private final boolean		askFinger						= true;
 
 	/* =========================== OVERRIDEN METHODS ================================ */
 
@@ -78,8 +82,6 @@ public class ActivityEditorBlood extends ActivityEditor<Versioned<BloodRecord>>
 	@Override
 	protected boolean getValuesFromGUI()
 	{
-		// TODO: localize error messages
-
 		// time
 		try
 		{
@@ -87,7 +89,7 @@ public class ActivityEditorBlood extends ActivityEditor<Versioned<BloodRecord>>
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(this, "Введите корректное время");
+			UIUtils.showTip(this, ERROR_INCORRECT_TIME);
 			timePicker.requestFocus();
 			return false;
 		}
@@ -99,13 +101,13 @@ public class ActivityEditorBlood extends ActivityEditor<Versioned<BloodRecord>>
 		}
 		catch (NumberFormatException e)
 		{
-			UIUtils.showTip(this, "Введите корректное значение СК");
+			UIUtils.showTip(this, ERROR_INCORRECT_BS_VALUE);
 			editValue.requestFocus();
 			return false;
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(this, "Введите корректное значение СК");
+			UIUtils.showTip(this, ERROR_INCORRECT_BS_VALUE);
 			editValue.requestFocus();
 			return false;
 		}
@@ -124,7 +126,7 @@ public class ActivityEditorBlood extends ActivityEditor<Versioned<BloodRecord>>
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(this, "Укажите палец, из которого бралась кровь");
+			UIUtils.showTip(this, ERROR_INCORRECT_FINGER_VALUE);
 			spinnerFinger.requestFocus();
 			return false;
 		}
