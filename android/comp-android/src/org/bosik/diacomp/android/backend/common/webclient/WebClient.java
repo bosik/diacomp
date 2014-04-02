@@ -2,7 +2,6 @@ package org.bosik.diacomp.android.backend.common.webclient;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -203,6 +202,13 @@ public class WebClient
 		}
 	}
 
+	/**
+	 * Uses UTF-8 encoding by default
+	 * 
+	 * @param URL
+	 * @return
+	 * @throws WebClientException
+	 */
 	public String doGetSmart(String URL) throws WebClientException
 	{
 		return doGetSmart(URL, CODEPAGE_UTF8);
@@ -360,6 +366,7 @@ public class WebClient
 
 	/* ---------------------------------- ОБЩЕЕ ---------------------------------- */
 
+	@Deprecated
 	public void login() throws WebClientException
 	{
 		logged = false;
@@ -435,6 +442,7 @@ public class WebClient
 		}
 	}
 
+	@Deprecated
 	public boolean isOnline(boolean forceUpdate)
 	{
 		if (forceUpdate)
@@ -455,11 +463,13 @@ public class WebClient
 		return logged;
 	}
 
+	@Deprecated
 	public boolean isOnline()
 	{
 		return isOnline(false);
 	}
 
+	@Deprecated
 	public void sendMail(String string)
 	{
 		// конструируем запрос
@@ -469,99 +479,6 @@ public class WebClient
 
 		// отправляем на сервер
 		String resp = doPostSmart(server + URL_CONSOLE, p, CODEPAGE_CP1251);
-
-		// обрабатываем результат
-		processResponse(resp);
-	}
-
-	/* ------------------------------------- ДНЕВНИК ------------------------------------- */
-
-	public String getModList(String time)
-	{
-		return doGetSmart(WebClient.URL_CONSOLE + "?diary:getModList&time=" + time, CODEPAGE_CP1251);
-	}
-
-	public String getPages(List<Date> dates)
-	{
-		if (dates.isEmpty())
-		{
-			return "";
-		}
-
-		// TODO: optimize if need (use StringBuilder)
-
-		// конструируем запрос
-		String query = URL_CONSOLE + "?diary:download&format=json&dates=";
-		for (Date date : dates)
-		{
-			query += Utils.formatDateUTC(date) + ",";
-		}
-
-		Log.d(TAG, "getPages: query=" + query);
-
-		// обращаемся на сервер
-		return doGetSmart(query, CODEPAGE_CP1251);
-	}
-
-	/**
-	 * Отправляет страницы на сервер.
-	 *
-	 * @param pages
-	 *            Страницы
-	 * @return Успешность отправки
-	 */
-	public void postPages(String pages)
-	{
-		if (!pages.equals(""))
-		{
-			// конструируем запрос
-			List<NameValuePair> p = new ArrayList<NameValuePair>();
-			p.add(new BasicNameValuePair("diary:upload", ""));
-			p.add(new BasicNameValuePair("pages", pages));
-
-			// отправляем на сервер
-			String resp = doPostSmart(server + URL_CONSOLE, p, CODEPAGE_CP1251);
-
-			// обрабатываем результат
-			processResponse(resp);
-		}
-	}
-
-	/* ---------------------------------- БАЗА ПРОДУКТОВ ---------------------------------- */
-
-	public int getFoodBaseVersion()
-	{
-		try
-		{
-			return Integer.parseInt(doGetSmart(URL_CONSOLE + "?foodbase:getVersion", CODEPAGE_CP1251));
-		}
-		catch (NumberFormatException e)
-		{
-			throw new ResponseFormatException(e);
-		}
-	}
-
-	public String getFoodBase()
-	{
-		/**/long time = System.currentTimeMillis();
-
-		String source = doGetSmart(URL_CONSOLE + "?foodbase:download", CODEPAGE_UTF8);
-
-		/**/Log.v(TAG, String.format("FoodBase downloaded in %d msec", System.currentTimeMillis() - time));
-
-		return source;
-	}
-
-	public void postFoodBase(int version, String data)
-	{
-		// конструируем запрос
-		List<NameValuePair> p = new ArrayList<NameValuePair>();
-		p.add(new BasicNameValuePair("foodbase:upload", ""));
-		p.add(new BasicNameValuePair("version", String.valueOf(version)));
-		p.add(new BasicNameValuePair("data", data));
-
-		// отправляем на сервер
-		String resp = doPostSmart(server + URL_CONSOLE, p, CODEPAGE_UTF8);
 
 		// обрабатываем результат
 		processResponse(resp);
