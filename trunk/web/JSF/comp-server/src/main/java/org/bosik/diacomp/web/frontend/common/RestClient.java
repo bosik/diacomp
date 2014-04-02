@@ -34,6 +34,8 @@ public class RestClient
 				return;
 			case ResponseBuilder.CODE_UNAUTHORIZED:
 				throw new NotAuthorizedException(resp.getResponse());
+			case ResponseBuilder.CODE_BADCREDENTIALS:
+				throw new NotAuthorizedException(resp.getResponse());
 			case ResponseBuilder.CODE_UNSUPPORTED_API:
 				throw new UnsupportedAPIException(resp.getResponse());
 			case ResponseBuilder.CODE_DEPRECATED_API:
