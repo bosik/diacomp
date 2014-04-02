@@ -33,7 +33,7 @@ public class ActivityMain extends Activity implements OnClickListener
 {
 	/* =========================== CONSTANTS ================================ */
 
-	private static final String	TAG									= ActivityMain.class.getSimpleName();
+	static final String			TAG									= ActivityMain.class.getSimpleName();
 	// private static final int RESULT_SPEECH_TO_TEXT = 620;
 
 	private static final String	MESSAGE_PROGRESS_AUTH				= "Авторизация...";
