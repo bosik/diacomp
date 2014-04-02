@@ -56,7 +56,7 @@ public class ActivityFoodbase extends Activity
 	List<Versioned<NamedRelativeTagged>>	data;
 	private static final Sorter<FoodItem>	sorter			= new Sorter<FoodItem>();
 	Mode									mode;
-	private String							searchFilter	= "";
+	String									searchFilter	= "";
 
 	// ===========================================================================
 
