@@ -20,15 +20,13 @@ import org.bosik.diacomp.web.backend.common.UserSessionUtils;
 import org.bosik.diacomp.web.backend.features.auth.function.AuthDAO;
 import org.bosik.diacomp.web.backend.features.auth.function.MySQLAuthDAO;
 
-//FIXME: change all queryParam's to form-based in all POST requests
-
 @Path("auth/")
 public class AuthRestService
 {
 	@Context
 	HttpServletRequest	req;
 
-	private AuthDAO		authDao	= new MySQLAuthDAO();
+	private final AuthDAO		authDao	= new MySQLAuthDAO();
 
 	@POST
 	@Path("login")
@@ -38,21 +36,18 @@ public class AuthRestService
 	{
 		if (login == null)
 		{
-			// TODO: change to BAD_REQUEST
 			String resp = ResponseBuilder.build(ResponseBuilder.CODE_FAIL, "Parameter 'login' is missing");
-			return Response.ok(resp).build();
+			return Response.status(Status.BAD_REQUEST).entity(resp).build();
 		}
 		if (pass == null)
 		{
-			// TODO: change to BAD_REQUEST
 			String resp = ResponseBuilder.build(ResponseBuilder.CODE_FAIL, "Parameter 'pass' is missing");
-			return Response.ok(resp).build();
+			return Response.status(Status.BAD_REQUEST).entity(resp).build();
 		}
 		if (apiVersion == -1)
 		{
-			// TODO: change to BAD_REQUEST
 			String resp = ResponseBuilder.build(ResponseBuilder.CODE_FAIL, "Parameter 'api' is missing");
-			return Response.ok(resp).build();
+			return Response.status(Status.BAD_REQUEST).entity(resp).build();
 		}
 
 		try
@@ -67,10 +62,8 @@ public class AuthRestService
 		{
 			// Do not reset session flag here: anyone can reset your session otherwise
 
-			// TODO: remove returning login:password back
 			// THINK: should we use status 200 here? Isn't 401 better?
-			String entity = ResponseBuilder.build(ResponseBuilder.CODE_BADCREDENTIALS,
-					String.format("Bad username/password (%s:%s)", login, pass));
+			String entity = ResponseBuilder.build(ResponseBuilder.CODE_BADCREDENTIALS, "Bad username/password");
 			return Response.ok(entity).build();
 		}
 		catch (UnsupportedAPIException e)
@@ -90,15 +83,15 @@ public class AuthRestService
 		}
 	}
 
-	// TODO: GET version - just for debug purpose
-	@GET
-	@Path("login")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response loginDebug(@QueryParam("login") String login, @QueryParam("pass") String pass,
-			@QueryParam("api") int apiVersion)
-	{
-		return login(login, pass, apiVersion);
-	}
+	// @GET
+	// @Path("login")
+	// @Produces(MediaType.APPLICATION_JSON)
+	// public Response loginDebug(@QueryParam("login") String login, @QueryParam("pass") String
+	// pass,
+	// @QueryParam("api") int apiVersion)
+	// {
+	// return login(login, pass, apiVersion);
+	// }
 
 	@GET
 	@Path("logout")
