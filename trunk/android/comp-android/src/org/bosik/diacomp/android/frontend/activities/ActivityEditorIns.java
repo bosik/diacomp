@@ -20,6 +20,9 @@ public class ActivityEditorIns extends ActivityEditor<Versioned<InsRecord>>
 	private EditText	editValue;
 	private Button		buttonOK;
 
+	// TODO: localize error messages
+	final String		ERROR_INCORECT_INS_VALUE	= "Введите корректное значение инъекции";
+
 	@Override
 	protected void setupInterface()
 	{
@@ -57,8 +60,6 @@ public class ActivityEditorIns extends ActivityEditor<Versioned<InsRecord>>
 	@Override
 	protected boolean getValuesFromGUI()
 	{
-		// TODO: localize error messages
-
 		// time
 		try
 		{
@@ -66,7 +67,7 @@ public class ActivityEditorIns extends ActivityEditor<Versioned<InsRecord>>
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(this, "Введите корректное время");
+			UIUtils.showTip(this, ERROR_INCORRECT_TIME);
 			timePicker.requestFocus();
 			return false;
 		}
@@ -78,13 +79,13 @@ public class ActivityEditorIns extends ActivityEditor<Versioned<InsRecord>>
 		}
 		catch (NumberFormatException e)
 		{
-			UIUtils.showTip(this, "Введите корректное значение инъекции");
+			UIUtils.showTip(this, ERROR_INCORECT_INS_VALUE);
 			editValue.requestFocus();
 			return false;
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(this, "Введите корректное значение инъекции");
+			UIUtils.showTip(this, ERROR_INCORECT_INS_VALUE);
 			editValue.requestFocus();
 			return false;
 		}
