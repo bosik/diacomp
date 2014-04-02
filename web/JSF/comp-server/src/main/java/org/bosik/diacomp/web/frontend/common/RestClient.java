@@ -32,6 +32,8 @@ public class RestClient
 		{
 			case ResponseBuilder.CODE_OK:
 				return;
+			case ResponseBuilder.CODE_NOTFOUND:
+				return;
 			case ResponseBuilder.CODE_UNAUTHORIZED:
 				throw new NotAuthorizedException(resp.getResponse());
 			case ResponseBuilder.CODE_BADCREDENTIALS:
@@ -41,7 +43,7 @@ public class RestClient
 			case ResponseBuilder.CODE_DEPRECATED_API:
 				throw new DeprecatedAPIException(resp.getResponse());
 			default: // case ResponseBuilder.CODE_FAIL:
-				throw new CommonServiceException(resp.getResponse());
+				throw new CommonServiceException("#" + resp.getCode() + ": " + resp.getResponse());
 		}
 	}
 }

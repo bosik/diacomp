@@ -204,7 +204,7 @@ public class WebClient
 
 	/**
 	 * Uses UTF-8 encoding by default
-	 * 
+	 *
 	 * @param URL
 	 * @return
 	 * @throws WebClientException
@@ -254,14 +254,18 @@ public class WebClient
 		{
 			case ResponseBuilder.CODE_OK:
 				return;
+			case ResponseBuilder.CODE_NOTFOUND:
+				return;
 			case ResponseBuilder.CODE_UNAUTHORIZED:
+				throw new NotAuthorizedException(resp.getResponse());
+			case ResponseBuilder.CODE_BADCREDENTIALS:
 				throw new NotAuthorizedException(resp.getResponse());
 			case ResponseBuilder.CODE_UNSUPPORTED_API:
 				throw new UnsupportedAPIException(resp.getResponse());
 			case ResponseBuilder.CODE_DEPRECATED_API:
 				throw new DeprecatedAPIException(resp.getResponse());
 			default: // case ResponseBuilder.CODE_FAIL:
-				throw new CommonServiceException(resp.getResponse());
+				throw new CommonServiceException("#" + resp.getCode() + ": " + resp.getResponse());
 		}
 	}
 
