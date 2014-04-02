@@ -64,9 +64,8 @@ public class DiaryLocalService implements DiaryService
 				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
 				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
 
-		// FIXME: SQL injection danger
-		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = " + guid;
-		String[] clauseArgs = {};
+		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
+		String[] clauseArgs = { guid };
 
 		String sortOrder = null;// DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
