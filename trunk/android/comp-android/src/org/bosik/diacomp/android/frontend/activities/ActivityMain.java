@@ -33,8 +33,19 @@ public class ActivityMain extends Activity implements OnClickListener
 {
 	/* =========================== CONSTANTS ================================ */
 
-	private static final String	TAG						= ActivityMain.class.getSimpleName();
+	private static final String	TAG									= ActivityMain.class.getSimpleName();
 	// private static final int RESULT_SPEECH_TO_TEXT = 620;
+
+	private static final String	MESSAGE_PROGRESS_AUTH				= "Авторизация...";
+	private static final String	MESSAGE_PROGRESS_SYNC				= "Синхронизация...";
+	private static final String	MESSAGE_ERROR_BAD_CREDENTIALS		= "Ошибка авторизации: неверный логин/пароль";
+	private static final String	MESSAGE_ERROR_SERVER_NOT_RESPONDING	= "Ошибка: сервер не отвечает";
+	private static final String	MESSAGE_ERROR_UNDEFINED_AUTH		= "Ошибка авторизации: укажите адрес сервера, логин и пароль";
+	private static final String	MESSAGE_ERROR_DEPRECATED_API		= "Ошибка: версия API устарела, обновите приложение";
+	private static final String	MESSAGE_ERROR_BAD_RESPONSE			= "Ошибка: неверный формат";
+	private static final String	MESSAGE_SYNCED_OK					= "Синхронизация дневника прошла успешно, передано записей: %d";
+	private static final String	MESSAGE_FOODBASE_SYNCED_OK			= "База продуктов синхронизирована";
+	private static final String	MESSAGE_NO_UPDATES					= "Обновлений нет";
 
 	/* =========================== FIELDS ================================ */
 
@@ -46,7 +57,7 @@ public class ActivityMain extends Activity implements OnClickListener
 	private Button				buttonAuth;
 	private Button				buttonTestMealEditor;
 
-	private static boolean		timerSettedUp			= false;
+	private static boolean		timerSettedUp						= false;
 
 	/* =========================== CLASSES ================================ */
 
@@ -77,11 +88,6 @@ public class ActivityMain extends Activity implements OnClickListener
 		}
 	}
 
-	/**
-	 * Результат авторизации
-	 *
-	 * @author Bosik
-	 */
 	@Deprecated
 	public enum LoginResult
 	{
@@ -137,12 +143,12 @@ public class ActivityMain extends Activity implements OnClickListener
 			dialog_login = new ProgressDialog(ActivityMain.this);
 			dialog_login.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			dialog_login.setCancelable(false);
-			dialog_login.setMessage("Авторизация...");
+			dialog_login.setMessage(MESSAGE_PROGRESS_AUTH);
 
 			dialog_sync = new ProgressDialog(ActivityMain.this);
 			dialog_sync.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			dialog_sync.setCancelable(false);
-			dialog_sync.setMessage("Синхронизация...");
+			dialog_sync.setMessage(MESSAGE_PROGRESS_SYNC);
 		}
 
 		@Override
@@ -153,7 +159,7 @@ public class ActivityMain extends Activity implements OnClickListener
 
 			syncParams = new SyncParams(par[0]);
 
-			/* АВТОРИЗАЦИЯ */
+			/* AUTH */
 
 			if (!Storage.webClient.isOnline())
 			{
@@ -188,7 +194,7 @@ public class ActivityMain extends Activity implements OnClickListener
 				}
 			}
 
-			/* СИНХРОНИЗАЦИЯ */
+			/* SYNC */
 
 			publishProgress(COM_SHOW_SYNC);
 			try
@@ -197,7 +203,6 @@ public class ActivityMain extends Activity implements OnClickListener
 				// TODO: хранить время последней синхронизации
 				Date since = new Date(2013 - 1900, 11 - 1, 1, 0, 0, 0); // а затем мы получаем
 																		// громадный синхролист, ага
-				// TODO: restore when compiled OK
 				syncPagesCount = SyncService.synchronize(Storage.localDiary, Storage.webDiary, since);
 				Log.v(TAG, "Diary synced, total tranferred: " + syncPagesCount);
 
@@ -279,36 +284,37 @@ public class ActivityMain extends Activity implements OnClickListener
 					dialog_sync.dismiss();
 				}
 			}
+
 			switch (result)
 			{
 				case FAIL_UNDEFIELDS:
 					if (syncParams.getShowProgress())
 					{
-						UIUtils.showTip(ActivityMain.this, "Ошибка авторизации: укажите адрес сервера, логин и пароль");
+						UIUtils.showTip(ActivityMain.this, MESSAGE_ERROR_UNDEFINED_AUTH);
 					}
 					break;
 				case FAIL_AUTH:
 					if (syncParams.getShowProgress())
 					{
-						UIUtils.showTip(ActivityMain.this, "Ошибка авторизации: неверный логин/пароль");
+						UIUtils.showTip(ActivityMain.this, MESSAGE_ERROR_BAD_CREDENTIALS);
 					}
 					break;
 				case FAIL_CONNECTION:
 					if (syncParams.getShowProgress())
 					{
-						UIUtils.showTip(ActivityMain.this, "Ошибка: сервер не отвечает");
+						UIUtils.showTip(ActivityMain.this, MESSAGE_ERROR_SERVER_NOT_RESPONDING);
 					}
 					break;
 				case FAIL_APIVERSION:
 					if (syncParams.getShowProgress())
 					{
-						UIUtils.showTip(ActivityMain.this, "Ошибка: версия API устарела, обновите приложение");
+						UIUtils.showTip(ActivityMain.this, MESSAGE_ERROR_DEPRECATED_API);
 					}
 					break;
 				case FAIL_FORMAT:
 					if (syncParams.getShowProgress())
 					{
-						UIUtils.showTip(ActivityMain.this, "Ошибка: неверный формат");
+						UIUtils.showTip(ActivityMain.this, MESSAGE_ERROR_BAD_RESPONSE);
 					}
 					break;
 				case DONE:
@@ -321,8 +327,7 @@ public class ActivityMain extends Activity implements OnClickListener
 					if (syncPagesCount > 0)
 					{
 						transferred = true;
-						s = "Синхронизация дневника прошла успешно, передано страниц: "
-								+ String.valueOf(syncPagesCount);
+						s = String.format(MESSAGE_SYNCED_OK, syncPagesCount);
 						UIUtils.showTip(ActivityMain.this, s);
 					}
 
@@ -330,14 +335,13 @@ public class ActivityMain extends Activity implements OnClickListener
 					if (syncFoodBase)
 					{
 						transferred = true;
-						UIUtils.showTip(ActivityMain.this, "База продуктов синхронизирована");
+						UIUtils.showTip(ActivityMain.this, MESSAGE_FOODBASE_SYNCED_OK);
 					}
 
 					// check nothing happen
 					if (!transferred && syncParams.getShowProgress())
 					{
-						s = "Обновлений нет";
-						UIUtils.showTip(ActivityMain.this, s);
+						UIUtils.showTip(ActivityMain.this, MESSAGE_NO_UPDATES);
 					}
 
 					break;
