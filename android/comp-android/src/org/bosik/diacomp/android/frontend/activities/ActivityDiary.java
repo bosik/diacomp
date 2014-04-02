@@ -582,7 +582,6 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		List<Versioned<DiaryRecord>> records = Storage.localDiary.findBetween(fromDate, toDate, false);
 		Collections.reverse(records);
 
-		// TODO: relies on not guaranteed behavior of List
 		for (Versioned<DiaryRecord> record : records)
 		{
 			if (record.getData().getClass() == BloodRecord.class)
