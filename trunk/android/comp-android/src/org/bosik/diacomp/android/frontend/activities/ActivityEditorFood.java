@@ -13,13 +13,17 @@ public class ActivityEditorFood extends ActivityEditor<Versioned<FoodItem>>
 {
 	// private static final String TAG = ActivityEditorFood.class.getSimpleName();
 
+	// TODO: localize error messages
+	private static final String	MSG_INCORRECT_VALUE	= "Введите корректное значение";
+	private static final String	MSG_EMPTY_NAME		= "Введите название";
+
 	// components
-	private EditText	editName;
-	private EditText	editProts;
-	private EditText	editFats;
-	private EditText	editCarbs;
-	private EditText	editValue;
-	private Button		buttonOK;
+	private EditText			editName;
+	private EditText			editProts;
+	private EditText			editFats;
+	private EditText			editCarbs;
+	private EditText			editValue;
+	private Button				buttonOK;
 
 	/* =========================== OVERRIDEN METHODS ================================ */
 
@@ -72,9 +76,6 @@ public class ActivityEditorFood extends ActivityEditor<Versioned<FoodItem>>
 
 	private boolean readDouble(EditText editor, Setter setter)
 	{
-		// TODO: localize error messages
-		final String MSG_INCORRECT_VALUE = "Введите корректное значение";
-
 		try
 		{
 			setter.set(Double.parseDouble(editor.getText().toString()));
@@ -98,8 +99,16 @@ public class ActivityEditorFood extends ActivityEditor<Versioned<FoodItem>>
 	@Override
 	protected boolean getValuesFromGUI()
 	{
-		// FIXME: validation
-		entity.getData().setName(editName.getText().toString());
+		final String name = editName.getText().toString();
+		if (name == null || name.trim().isEmpty())
+		{
+			UIUtils.showTip(this, MSG_EMPTY_NAME);
+			editName.requestFocus();
+			return false;
+		}
+		entity.getData().setName(name);
+
+		// =============================================================
 
 		if (!readDouble(editProts, new Setter()
 		{
@@ -109,8 +118,11 @@ public class ActivityEditorFood extends ActivityEditor<Versioned<FoodItem>>
 				entity.getData().setRelProts(value);
 			}
 		}))
+		{
 			return false;
-		;
+		}
+
+		// =============================================================
 
 		if (!readDouble(editFats, new Setter()
 		{
@@ -120,8 +132,11 @@ public class ActivityEditorFood extends ActivityEditor<Versioned<FoodItem>>
 				entity.getData().setRelFats(value);
 			}
 		}))
+		{
 			return false;
-		;
+		}
+
+		// =============================================================
 
 		if (!readDouble(editCarbs, new Setter()
 		{
@@ -131,8 +146,11 @@ public class ActivityEditorFood extends ActivityEditor<Versioned<FoodItem>>
 				entity.getData().setRelCarbs(value);
 			}
 		}))
+		{
 			return false;
-		;
+		}
+
+		// =============================================================
 
 		if (!readDouble(editValue, new Setter()
 		{
@@ -142,8 +160,11 @@ public class ActivityEditorFood extends ActivityEditor<Versioned<FoodItem>>
 				entity.getData().setRelValue(value);
 			}
 		}))
+		{
 			return false;
-		;
+		}
+
+		// =============================================================
 
 		return true;
 	}
