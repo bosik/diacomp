@@ -148,7 +148,7 @@ public class ActivityMeal extends Activity
 		textMealDose.setText(df.format(dose) + " " + captionDose);
 	}
 
-	private void addItem()
+	void addItem()
 	{
 		// String name = editName.getText().toString();
 		// double mass = Double.parseDouble(editMass.getText().toString());

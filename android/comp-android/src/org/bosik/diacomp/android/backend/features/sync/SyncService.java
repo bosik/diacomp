@@ -7,7 +7,7 @@ import java.util.List;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.ObjectService;
 
-public class SyncService<T>
+public class SyncService
 {
 	// private static final String TAG = "SyncService";
 

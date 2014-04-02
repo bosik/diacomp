@@ -11,7 +11,7 @@ import java.nio.charset.CodingErrorAction;
 public class AndroidUtils
 {
 	// отладочная печать
-	private static final String	TAG	= "AndroidUtils";
+	// private static final String TAG = "AndroidUtils";
 
 	public static String Cp1251ToUtf8(String s)
 	{
