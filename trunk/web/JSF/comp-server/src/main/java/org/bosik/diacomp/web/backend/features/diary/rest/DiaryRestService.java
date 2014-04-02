@@ -90,19 +90,25 @@ public class DiaryRestService
 		try
 		{
 			int userId = UserSessionUtils.getId(req);
-
 			Versioned<String> item = diaryService.findByGuid(userId, parGuid);
-			String s = (item != null) ? serializerVersionedString.write(item) : "";
-			// TODO: use "not found", not just empty string
-			String response = ResponseBuilder.buildDone(s);
-			return Response.ok(response).build();
+
+			if (item != null)
+			{
+				String s = serializerVersionedString.write(item);
+				String response = ResponseBuilder.buildDone(s);
+				return Response.ok(response).build();
+			}
+			else
+			{
+				String response = ResponseBuilder.build(ResponseBuilder.CODE_NOTFOUND,
+						String.format("Item %s not found", parGuid));
+				return Response.ok(response).build();
+			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			// FIXME: remove error info from response bean
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails(e.getMessage()))
-					.build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
 		}
 	}
 
@@ -169,9 +175,7 @@ public class DiaryRestService
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			// FIXME: remove error info from response bean
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails(e.getMessage()))
-					.build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
 		}
 	}
 }
