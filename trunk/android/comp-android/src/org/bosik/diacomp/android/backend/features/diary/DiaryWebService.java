@@ -50,7 +50,7 @@ public class DiaryWebService implements DiaryService
 		try
 		{
 			String query = String.format("api/diary/guid/%s", guid);
-			String s = webClient.doGetSmart(query, WebClient.CODEPAGE_UTF8);
+			String s = webClient.doGetSmart(query);
 			StdResponse resp = new StdResponse(s);
 			WebClient.checkResponse(resp);
 
@@ -69,7 +69,7 @@ public class DiaryWebService implements DiaryService
 		{
 			String query = "api/diary/changes/?since=" + Utils.formatTimeUTC(time);
 
-			String s = webClient.doGetSmart(query, WebClient.CODEPAGE_UTF8);
+			String s = webClient.doGetSmart(query);
 			StdResponse resp = new StdResponse(s);
 			WebClient.checkResponse(resp);
 
@@ -92,7 +92,7 @@ public class DiaryWebService implements DiaryService
 			query += "&end_time=" + Utils.formatTimeUTC(toTime);
 			query += "&show_rem=" + Utils.formatBooleanStr(includeRemoved);
 
-			String s = webClient.doGetSmart(query, WebClient.CODEPAGE_UTF8);
+			String s = webClient.doGetSmart(query);
 			StdResponse resp = new StdResponse(s);
 			WebClient.checkResponse(resp);
 
