@@ -6,8 +6,6 @@ import java.util.TimerTask;
 import org.bosik.diacomp.android.BuildConfig;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
-import org.bosik.diacomp.android.backend.common.SyncBaseService;
-import org.bosik.diacomp.android.backend.common.SyncBaseService.SyncResult;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.AuthException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.ConnectionException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.DeprecatedAPIException;
@@ -127,8 +125,8 @@ public class ActivityMain extends Activity implements OnClickListener
 		// <Params, Progress, Result>
 		private ProgressDialog		dialog_login;
 		private ProgressDialog		dialog_sync;
-		private int					syncPagesCount;
-		private boolean				syncFoodBase;
+		private int					syncDiaryItemsCount;
+		private int					syncFoodItemsCount;
 		private SyncParams			syncParams;
 
 		// константы для управления progressbar
@@ -155,7 +153,8 @@ public class ActivityMain extends Activity implements OnClickListener
 		protected LoginResult doInBackground(SyncParams... par)
 		{
 			Log.i(TAG, "Sync()");
-			syncPagesCount = 0;
+			syncDiaryItemsCount = 0;
+			syncFoodItemsCount = 0;
 
 			syncParams = new SyncParams(par[0]);
 
@@ -203,13 +202,12 @@ public class ActivityMain extends Activity implements OnClickListener
 				// TODO: хранить время последней синхронизации
 				Date since = new Date(2013 - 1900, 11 - 1, 1, 0, 0, 0); // а затем мы получаем
 																		// громадный синхролист, ага
-				syncPagesCount = SyncService.synchronize(Storage.localDiary, Storage.webDiary, since);
-				Log.v(TAG, "Diary synced, total tranferred: " + syncPagesCount);
+				syncDiaryItemsCount = SyncService.synchronize(Storage.localDiary, Storage.webDiary, since);
+				Log.v(TAG, "Diary synced, total tranferred: " + syncDiaryItemsCount);
 
 				Log.v(TAG, "Sync foodbase...");
-				SyncResult r = SyncBaseService.synchronize(Storage.localFoodBase, Storage.webFoodBase);
-				syncFoodBase = (r != SyncResult.EQUAL);
-				Log.v(TAG, "Foodbase synced, result: " + r);
+				syncFoodItemsCount = SyncService.synchronize(Storage.localFoodBase, Storage.webFoodBase, since);
+				Log.v(TAG, "Foodbase synced, total tranferred: " + syncFoodItemsCount);
 
 				Log.v(TAG, "Sync done OK");
 				return LoginResult.DONE;
@@ -324,15 +322,15 @@ public class ActivityMain extends Activity implements OnClickListener
 					boolean transferred = false;
 
 					// check diary
-					if (syncPagesCount > 0)
+					if (syncDiaryItemsCount > 0)
 					{
 						transferred = true;
-						s = String.format(MESSAGE_SYNCED_OK, syncPagesCount);
+						s = String.format(MESSAGE_SYNCED_OK, syncDiaryItemsCount);
 						UIUtils.showTip(ActivityMain.this, s);
 					}
 
 					// check foodbase
-					if (syncFoodBase)
+					if (syncFoodItemsCount > 0)
 					{
 						transferred = true;
 						UIUtils.showTip(ActivityMain.this, MESSAGE_FOODBASE_SYNCED_OK);
