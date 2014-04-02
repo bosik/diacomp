@@ -154,7 +154,7 @@ public class DiaryRestService
 	}
 
 	@PUT
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response postRecords(@FormParam("items") String parItems) throws CommonServiceException
 	{
 		try
