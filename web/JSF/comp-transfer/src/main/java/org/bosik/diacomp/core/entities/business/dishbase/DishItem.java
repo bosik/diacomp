@@ -5,7 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
+import org.bosik.diacomp.core.utils.Utils;
 import com.google.gson.annotations.SerializedName;
+
+/**
+ * Note: no check (rel* < 100) is presented
+ */
 
 public class DishItem implements NamedRelativeTagged, Serializable
 {
@@ -58,8 +63,14 @@ public class DishItem implements NamedRelativeTagged, Serializable
 
 	public void setMass(double mass)
 	{
-		// TODO: validation
-		this.mass = mass;
+		if (mass > Utils.EPS)
+		{
+			this.mass = mass;
+		}
+		else
+		{
+			throw new IllegalArgumentException(String.format("Incorrect mass: %f", mass));
+		}
 	}
 
 	@Override
