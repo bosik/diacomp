@@ -3,11 +3,12 @@ package org.bosik.diacomp.android.backend.common;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryWebService;
+import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
+import org.bosik.diacomp.android.backend.features.dishbase.DishBaseWebService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseWebService;
 import org.bosik.diacomp.android.frontend.activities.ActivityPreferences;
 import org.bosik.diacomp.android.utils.ErrorHandler;
-import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
@@ -27,8 +28,6 @@ public class Storage
 
 	private static final String		TAG					= Storage.class.getSimpleName();
 
-	private static final String		FILENAME_FOODBASE	= "FoodBase.xml";
-	private static final String		FILENAME_DISHBASE	= "DishBase.xml";
 	private static final int		CONNECTION_TIMEOUT	= 6000;
 
 	// DAO
@@ -37,10 +36,8 @@ public class Storage
 
 	public static DiaryService		localDiary;
 	public static DiaryService		webDiary;
-
 	public static FoodBaseService	localFoodBase;
 	public static FoodBaseService	webFoodBase;
-
 	public static DishBaseService	localDishBase;
 	public static DishBaseService	webDishBase;
 
@@ -54,10 +51,6 @@ public class Storage
 	public static void init(Context context, ContentResolver resolver, SharedPreferences preferences)
 	{
 		Log.v(TAG, "Storage unit initialization...");
-
-		// TODO: remove it when tested
-		Food smokeTest = new Food();
-		smokeTest.setName("Smoker");
 
 		// DAO's setup
 
@@ -79,28 +72,12 @@ public class Storage
 		if (null == localFoodBase)
 		{
 			Log.v(TAG, "Local food base initialization...");
-			// try
-			// {
 			localFoodBase = new FoodBaseLocalService(resolver);
-			// }
-			// catch (IOException e)
-			// {
-			// localFoodBase = null;
-			// throw new RuntimeException("Failed to create local food base DAO", e);
-			// }
 		}
 		if (null == localDishBase)
 		{
 			Log.v(TAG, "Local dish base initialization...");
-			// try
-			// {
-			// localDishBase = new DishBaseLocalService(resolver);
-			// }
-			// catch (IOException e)
-			// {
-			// localDishBase = null;
-			// throw new RuntimeException("Failed to create local dish base DAO", e);
-			// }
+			localDishBase = new DishBaseLocalService(resolver);
 		}
 		if (null == webFoodBase)
 		{
@@ -111,7 +88,7 @@ public class Storage
 		if (null == webDishBase)
 		{
 			Log.v(TAG, "Web dish base initialization...");
-			// webDishBase = new DishBaseWebService(webClient, new SerializerDishBaseXML());
+			webDishBase = new DishBaseWebService(webClient);
 		}
 
 		ErrorHandler.init(webClient);
