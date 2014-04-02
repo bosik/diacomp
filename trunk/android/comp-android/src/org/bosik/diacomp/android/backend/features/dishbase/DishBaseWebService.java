@@ -11,6 +11,7 @@ import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
+import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -132,7 +133,8 @@ public class DishBaseWebService implements DishBaseService
 			StdResponse resp = new StdResponse(str);
 			WebClient.checkResponse(resp);
 
-			Versioned<DishItem> item = !resp.getResponse().isEmpty() ? serializer.read(resp.getResponse()) : null;
+			Versioned<DishItem> item = resp.getCode() != ResponseBuilder.CODE_NOTFOUND ? serializer.read(resp
+					.getResponse()) : null;
 			return item;
 		}
 		catch (Exception e)

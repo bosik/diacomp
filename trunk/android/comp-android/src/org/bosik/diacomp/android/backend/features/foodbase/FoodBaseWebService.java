@@ -11,6 +11,7 @@ import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
+import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
@@ -132,7 +133,8 @@ public class FoodBaseWebService implements FoodBaseService
 			StdResponse resp = new StdResponse(str);
 			WebClient.checkResponse(resp);
 
-			Versioned<FoodItem> item = !resp.getResponse().isEmpty() ? serializer.read(resp.getResponse()) : null;
+			Versioned<FoodItem> item = resp.getCode() != ResponseBuilder.CODE_NOTFOUND ? serializer.read(resp
+					.getResponse()) : null;
 			return item;
 		}
 		catch (Exception e)
