@@ -45,17 +45,26 @@ public class FoodBaseRestService
 			int userId = UserSessionUtils.getId(req);
 
 			Versioned<FoodItem> item = foodbaseService.findByGuid(userId, parGuid);
-			String s = (item != null) ? serializer.write(item) : "";
-			// TODO: use "not found", not just empty string
-			String response = ResponseBuilder.buildDone(s);
-			return Response.ok(response).build();
+
+			if (item != null)
+			{
+				String s = serializer.write(item);
+				String response = ResponseBuilder.buildDone(s);
+				return Response.ok(response).build();
+			}
+			else
+			{
+				String response = ResponseBuilder.build(ResponseBuilder.CODE_NOTFOUND,
+						String.format("Item %s not found", parGuid));
+				return Response.ok(response).build();
+			}
+
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			// FIXME: remove error info from response bean
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails(e.getMessage()))
-					.build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+			// Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails(e.getMessage())).build();
 		}
 	}
 
@@ -139,9 +148,8 @@ public class FoodBaseRestService
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			// FIXME: remove error info from response bean
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails(e.getMessage()))
-					.build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+			// Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails(e.getMessage())).build();
 		}
 	}
 }

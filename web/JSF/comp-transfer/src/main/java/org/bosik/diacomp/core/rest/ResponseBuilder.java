@@ -15,7 +15,7 @@ public class ResponseBuilder
 	 */
 	public static final int	CODE_UNAUTHORIZED		= 401;	// TODO
 	/**
-	 * "The requested method is not found"
+	 * "The requested method / resource not found"
 	 */
 	public static final int	CODE_NOTFOUND			= 404;
 	/**
