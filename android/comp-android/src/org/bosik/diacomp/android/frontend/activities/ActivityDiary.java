@@ -36,7 +36,8 @@ import android.widget.Button;
 
 public class ActivityDiary extends Activity implements RecordClickListener, OnClickListener
 {
-	// КОНСТАНТЫ
+	private static final String					TAG					= ActivityDiary.class.getSimpleName();
+
 	private static final int					DIALOG_BLOOD_CREATE	= 11;
 	private static final int					DIALOG_BLOOD_MODIFY	= 12;
 	private static final int					DIALOG_INS_CREATE	= 21;
@@ -47,8 +48,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	private static final int					CONTEXT_ITEM_EDIT	= 0;
 	private static final int					CONTEXT_ITEM_REMOVE	= 1;
 
-	// --- отладочная печать ---
-	private static final String					TAG					= ActivityDiary.class.getSimpleName();
+	private static final int					SCAN_FOR_BLOOD_DAYS	= 5;
+
 	// THINK: что произойдёт на смене дат?
 	private static Date							curDate				= Calendar.getInstance().getTime();
 	private static List<Versioned<DiaryRecord>>	curRecords			= null;
@@ -597,9 +598,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	{
 		if (createMode)
 		{
-			// FIXME: hardcoded scan period
-			final int SCAN_DAYS = 5;
-			BloodRecord prev = lastBlood(SCAN_DAYS);
+			BloodRecord prev = lastBlood(SCAN_FOR_BLOOD_DAYS);
 			BloodRecord rec = new BloodRecord();
 			rec.setTime(new Date());
 			rec.setFinger(((prev == null) || (prev.getFinger() == -1)) ? -1 : ((prev.getFinger() + 1) % 10));
