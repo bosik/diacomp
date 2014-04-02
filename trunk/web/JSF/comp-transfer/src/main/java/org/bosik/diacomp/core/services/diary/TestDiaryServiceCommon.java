@@ -232,6 +232,7 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 		}
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public void test_PostRecordsGetRecordsViaPeriod_Normal_RestoredOK()
 	{
@@ -271,6 +272,7 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 		compareItems(originalItems, restoredItems, true);
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public void test_PostRecordsGetRecordsViaPeriod_Normal_RestoredOrdered()
 	{
