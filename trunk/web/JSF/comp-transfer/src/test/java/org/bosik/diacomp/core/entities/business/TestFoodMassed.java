@@ -5,9 +5,7 @@ import org.bosik.diacomp.core.utils.Utils;
 
 public class TestFoodMassed extends TestCase
 {
-	private FoodMassed	food	= new FoodMassed();
-
-	// TODO: change Exception to IllegalArgumentException
+	private final FoodMassed	food	= new FoodMassed();
 
 	public void testMass()
 	{
