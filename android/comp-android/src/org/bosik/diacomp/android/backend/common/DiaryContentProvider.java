@@ -162,8 +162,25 @@ public class DiaryContentProvider extends ContentProvider
 	@Override
 	public String getType(Uri uri)
 	{
-		// TODO: заглушка
-		return "vnd.android.cursor.item.place_type_here";
+		switch (sURIMatcher.match(uri))
+		{
+			case CODE_DIARY:
+			{
+				return "org.bosik.diacomp.diary";
+			}
+			case CODE_FOODBASE:
+			{
+				return "org.bosik.diacomp.food";
+			}
+			case CODE_DISHBASE:
+			{
+				return "org.bosik.diacomp.dish";
+			}
+			default:
+			{
+				return "UNKNOWN";
+			}
+		}
 	}
 
 	@Override
@@ -326,7 +343,7 @@ public class DiaryContentProvider extends ContentProvider
 	public int delete(final Uri uri, String where, String[] whereArgs)
 	{
 		/**
-		 * TODO: This actually removes data from DB. Service should just mark rows deleted instead
+		 * NOTE: This actually removes data from DB. Service should just mark rows deleted instead
 		 * (using update method)
 		 */
 
