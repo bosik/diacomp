@@ -22,8 +22,6 @@ public class SyncService<T>
 
 	/* ============================ METHODS ============================ */
 
-	// TODO: made public for test purposes only
-
 	/**
 	 * Calculates GUID lists for synchronization
 	 *
@@ -40,7 +38,7 @@ public class SyncService<T>
 	 * @param only2
 	 *            GUIDs of items which are presented only in the second list
 	 */
-	public static <T> void getOverLists(List<Versioned<T>> items1, List<Versioned<T>> items2,
+	private static <T> void getOverLists(List<Versioned<T>> items1, List<Versioned<T>> items2,
 			List<Versioned<T>> newer1,
 			List<Versioned<T>> newer2, List<Versioned<T>> only1, List<Versioned<T>> only2)
 	{
@@ -129,9 +127,9 @@ public class SyncService<T>
 
 	/**
 	 * Synchronizes two object services
-	 * 
+	 *
 	 * @param <T>
-	 * 
+	 *
 	 * @param service1
 	 *            First service
 	 * @param service2
