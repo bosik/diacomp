@@ -6,9 +6,9 @@ import org.bosik.diacomp.core.persistence.serializers.SerializerFoodMassedPlain;
 
 public class TestSerializerFoodMassedPlain extends TestCase
 {
-	private SerializerFoodMassedPlain	serializer	= new SerializerFoodMassedPlain();
+	private final SerializerFoodMassedPlain	serializer	= new SerializerFoodMassedPlain();
 
-	public void testRead()
+	public void test_read_normalDots_Ok()
 	{
 		// with dots
 		FoodMassed food = serializer.read("Колбаса[12.7|19.1|0|270]:40");
@@ -18,9 +18,12 @@ public class TestSerializerFoodMassedPlain extends TestCase
 		assertEquals(0.0, food.getRelCarbs());
 		assertEquals(270.0, food.getRelValue());
 		assertEquals(40.0, food.getMass());
+	}
 
+	public void test_read_mixedDots_Ok()
+	{
 		// with both dots and commas
-		food = serializer.read("Колбаса[12,7|19.1|0|270]:40");
+		FoodMassed food = serializer.read("Колбаса[12,7|19.1|0|270]:40");
 		assertEquals("Колбаса", food.getName());
 		assertEquals(12.7, food.getRelProts());
 		assertEquals(19.1, food.getRelFats());
@@ -42,12 +45,7 @@ public class TestSerializerFoodMassedPlain extends TestCase
 		}
 	}
 
-	public void testReadAll()
-	{
-		// fail("Not yet implemented"); // TODO
-	}
-
-	public void testWrite()
+	public void test_write_normal_Ok()
 	{
 		FoodMassed food = new FoodMassed();
 		food.setName("Колбаса");
@@ -58,10 +56,5 @@ public class TestSerializerFoodMassedPlain extends TestCase
 		food.setMass(40);
 
 		assertEquals("Колбаса[12,7|19,1|0|270]:40", serializer.write(food));
-	}
-
-	public void testWriteAll()
-	{
-		// fail("Not yet implemented"); // TODO
 	}
 }
