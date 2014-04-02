@@ -3,15 +3,10 @@ package org.bosik.diacomp.core.persistence.serializers;
 import java.util.List;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
-import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.test.fakes.mocks.Mock;
 
 public abstract class TestSerializer<T> extends TestCase
 {
-	// private static final String TAG = TestSerializer.class.getSimpleName();
-
-	// ==========================================================================
-
 	protected abstract Serializer<T> getSerializer();
 
 	protected abstract Mock<T> getMock();
@@ -26,10 +21,9 @@ public abstract class TestSerializer<T> extends TestCase
 		}
 		catch (AssertionFailedError e)
 		{
-			// FIXME
-			// Log.e(TAG, "Comparison error:");
-			// Log.e(TAG, exp.toString());
-			// Log.e(TAG, act.toString());
+			System.err.println("Comparison error:");
+			System.err.println("\t" + exp.toString());
+			System.err.println("\t" + exp.toString());
 			throw e;
 		}
 	}
