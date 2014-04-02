@@ -9,11 +9,11 @@ public class ResponseBuilder
 	/**
 	 * "The supplied username/password pair is invalid"
 	 */
-	public static final int	CODE_BADCREDENTIALS		= 401;	// TODO
+	public static final int	CODE_BADCREDENTIALS		= 4010;
 	/**
 	 * "You need to be authorized to invoke this method"
 	 */
-	public static final int	CODE_UNAUTHORIZED		= 401;	// TODO
+	public static final int	CODE_UNAUTHORIZED		= 4011;
 	/**
 	 * "The requested method / resource not found"
 	 */
