@@ -63,8 +63,7 @@ public class FoodBaseRestService
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-			// Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails(e.getMessage())).build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
 		}
 	}
 
@@ -148,8 +147,7 @@ public class FoodBaseRestService
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-			// Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails(e.getMessage())).build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
 		}
 	}
 }
