@@ -1,6 +1,7 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.Date;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.bosik.diacomp.android.BuildConfig;
@@ -326,7 +327,7 @@ public class ActivityMain extends Activity implements OnClickListener
 					if (syncDiaryItemsCount > 0)
 					{
 						transferred = true;
-						s = String.format(MESSAGE_SYNCED_OK, syncDiaryItemsCount);
+						s = String.format(Locale.US, MESSAGE_SYNCED_OK, syncDiaryItemsCount);
 						UIUtils.showTip(ActivityMain.this, s);
 					}
 

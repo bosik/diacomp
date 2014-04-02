@@ -20,6 +20,7 @@ import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.utils.Utils;
 
+@SuppressWarnings("unchecked")
 public class DishBaseWebService implements DishBaseService
 {
 	// private static final String TAG = DishBaseWebService.class.getSimpleName();

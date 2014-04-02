@@ -20,6 +20,7 @@ import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import org.bosik.diacomp.core.utils.Utils;
 
+@SuppressWarnings("unchecked")
 public class FoodBaseWebService implements FoodBaseService
 {
 	// private static final String TAG = FoodBaseWebService.class.getSimpleName();
@@ -55,7 +56,7 @@ public class FoodBaseWebService implements FoodBaseService
 		}
 
 		item.setDeleted(true);
-		save(Arrays.asList(item));
+		save(Arrays.<Versioned<FoodItem>> asList(item));
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.utils.Utils;
 
+@SuppressWarnings("unchecked")
 public class DiaryWebService implements DiaryService
 {
 	// private static String TAG = DiaryWebService.class.getSimpleName();
