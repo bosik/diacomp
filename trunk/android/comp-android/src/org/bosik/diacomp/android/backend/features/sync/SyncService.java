@@ -143,8 +143,6 @@ public class SyncService<T>
 	 */
 	public static <T> int synchronize(ObjectService<T> service1, ObjectService<T> service2, Date since)
 	{
-		// FIXME: see algorithm update for desktop app
-
 		// null checks
 		if (null == service1)
 		{
