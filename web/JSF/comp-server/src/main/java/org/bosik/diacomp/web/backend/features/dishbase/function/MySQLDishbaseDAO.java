@@ -135,7 +135,7 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	}
 
 	@Override
-	public void post(int userId, List<Versioned<DishItem>> items)
+	public void save(int userId, List<Versioned<DishItem>> items)
 	{
 		try
 		{
