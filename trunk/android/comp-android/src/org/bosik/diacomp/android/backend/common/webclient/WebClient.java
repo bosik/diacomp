@@ -63,7 +63,7 @@ public class WebClient
 	private String				password		= "";
 	private String				server			= "";
 
-	private long				lastRequestTime	= 0;
+	private final long				lastRequestTime	= 0;
 	private static final long	TIME_LIMIT		= 200;
 
 	/* ================================ ЗАПРОСЫ ================================ */
@@ -267,9 +267,7 @@ public class WebClient
 
 			switch (stdResp.getCode())
 			{
-			// TODO: use constants
-
-				case 0:
+				case ResponseBuilder.CODE_OK:
 				{
 					return;
 				}
