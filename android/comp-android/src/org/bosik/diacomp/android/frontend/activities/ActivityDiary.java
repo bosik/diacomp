@@ -263,6 +263,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	}
 
 	// handled
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean onContextItemSelected(MenuItem item)
 	{
@@ -423,6 +424,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	}
 
 	// handled
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onRecordClick(int index)
 	{

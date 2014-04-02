@@ -22,6 +22,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+@SuppressWarnings("unchecked")
 public class DiaryLocalService implements DiaryService
 {
 	// private static final String TAG = DiaryLocalService.class.getSimpleName();

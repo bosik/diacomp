@@ -14,6 +14,7 @@ import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import android.util.Log;
 
+@SuppressWarnings("unchecked")
 public class RelevantIndexator
 {
 	private static final String	TAG	= RelevantIndexator.class.getSimpleName();

@@ -12,6 +12,7 @@ import org.bosik.diacomp.core.test.fakes.mocks.MockDiaryRecord;
 import org.bosik.diacomp.core.test.fakes.mocks.MockVersionedConverter;
 import org.bosik.diacomp.core.utils.Utils;
 
+@SuppressWarnings("unchecked")
 public abstract class TestDiaryServiceCommon extends TestCase implements TestDiaryService
 {
 	private DiaryService								diaryService;
