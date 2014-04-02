@@ -120,7 +120,7 @@ public class ActivityMain extends Activity implements OnClickListener
 		DONE
 	}
 
-	private class AsyncTaskAuthAndSync extends AsyncTask<SyncParams, Integer, LoginResult> implements Callback
+	class AsyncTaskAuthAndSync extends AsyncTask<SyncParams, Integer, LoginResult> implements Callback
 	{
 		// <Params, Progress, Result>
 		private ProgressDialog		dialog_login;
@@ -160,38 +160,39 @@ public class ActivityMain extends Activity implements OnClickListener
 
 			/* AUTH */
 
-			if (!Storage.webClient.isOnline())
-			{
-				Log.d(TAG, "Not logged, trying to auth (username=" + Storage.webClient.getUsername() + ", password="
-						+ Storage.webClient.getPassword() + ")");
-
-				publishProgress(COM_SHOW_AUTH);
-				try
-				{
-					Storage.webClient.login();
-					Log.d(TAG, "Logged OK");
-				}
-				catch (ConnectionException e)
-				{
-					return LoginResult.FAIL_CONNECTION;
-				}
-				catch (ResponseFormatException e)
-				{
-					return LoginResult.FAIL_FORMAT;
-				}
-				catch (DeprecatedAPIException e)
-				{
-					return LoginResult.FAIL_APIVERSION;
-				}
-				catch (AuthException e)
-				{
-					return LoginResult.FAIL_AUTH;
-				}
-				catch (UndefinedFieldException e)
-				{
-					return LoginResult.FAIL_UNDEFIELDS;
-				}
-			}
+			// if (!Storage.webClient.isOnline())
+			// {
+			// Log.d(TAG, "Not logged, trying to auth (username=" + Storage.webClient.getUsername()
+			// + ", password="
+			// + Storage.webClient.getPassword() + ")");
+			//
+			// publishProgress(COM_SHOW_AUTH);
+			// try
+			// {
+			// Storage.webClient.login();
+			// Log.d(TAG, "Logged OK");
+			// }
+			// catch (ConnectionException e)
+			// {
+			// return LoginResult.FAIL_CONNECTION;
+			// }
+			// catch (ResponseFormatException e)
+			// {
+			// return LoginResult.FAIL_FORMAT;
+			// }
+			// catch (DeprecatedAPIException e)
+			// {
+			// return LoginResult.FAIL_APIVERSION;
+			// }
+			// catch (AuthException e)
+			// {
+			// return LoginResult.FAIL_AUTH;
+			// }
+			// catch (UndefinedFieldException e)
+			// {
+			// return LoginResult.FAIL_UNDEFIELDS;
+			// }
+			// }
 
 			/* SYNC */
 
