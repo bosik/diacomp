@@ -100,6 +100,8 @@ public class DiaryContentProvider extends ContentProvider
 		@Override
 		public void onCreate(SQLiteDatabase db)
 		{
+			// FIXME: THIS ERASES ALL DATA
+
 			db.execSQL("DROP TABLE IF EXISTS " + TABLE_DIARY);
 			db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOODBASE);
 			db.execSQL("DROP TABLE IF EXISTS " + TABLE_DISHBASE);
@@ -130,7 +132,7 @@ public class DiaryContentProvider extends ContentProvider
 			db.execSQL(SQL_CREATE_FOODBASE);
 
 			// dishbase table
-			final String SQL_CREATE_DISHBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s)",
+			final String SQL_CREATE_DISHBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s, %s)",
 					TABLE_DISHBASE,
 					COLUMN_DISHBASE_GUID + " TEXT PRIMARY KEY",
 					COLUMN_DISHBASE_TIMESTAMP + " TEXT",
@@ -253,6 +255,26 @@ public class DiaryContentProvider extends ContentProvider
 				if (rowId > 0)
 				{
 					resultUri = ContentUris.withAppendedId(CONTENT_FOODBASE_URI, rowId);
+				}
+				else
+				{
+					throw new SQLException("Failed to insert row into " + uri);
+				}
+				break;
+			}
+
+			case CODE_DISHBASE:
+			{
+				checkValues(values, COLUMN_DISHBASE_GUID);
+				checkValues(values, COLUMN_DISHBASE_TIMESTAMP);
+				checkValues(values, COLUMN_DISHBASE_VERSION);
+				checkValues(values, COLUMN_DISHBASE_DATA);
+
+				long rowId = db.insert(TABLE_DISHBASE, null, values);
+
+				if (rowId > 0)
+				{
+					resultUri = ContentUris.withAppendedId(CONTENT_DISHBASE_URI, rowId);
 				}
 				else
 				{
