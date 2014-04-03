@@ -183,4 +183,59 @@ public class TestSync extends TestCase
 		// total check
 		assertServicesAreSynced();
 	}
+
+	public void test_sync_ContrSync_SyncedOk()
+	{
+		// create items for first storage
+
+		Date timeLess = new Date(2014, 01, 01, 10, 00, 00);
+		Date timeSync = new Date(2014, 01, 01, 12, 00, 00);
+		Date timeMore = new Date(2014, 01, 01, 14, 00, 00);
+
+		Versioned<String> a1 = new Versioned<String>();
+		a1.setData("a1 data");
+		a1.setDeleted(false);
+		a1.setId("a");
+		a1.setTimeStamp(timeMore);
+		a1.setVersion(5);
+
+		Versioned<String> b1 = new Versioned<String>();
+		b1.setData("b1 data");
+		b1.setDeleted(false);
+		b1.setId("b");
+		b1.setTimeStamp(timeLess);
+		b1.setVersion(20);
+
+		service1.save(Arrays.<Versioned<String>> asList(a1, b1));
+
+		// create items for second storage
+
+		Versioned<String> a2 = new Versioned<String>();
+		a2.setData("a2 data");
+		a2.setDeleted(true);
+		a2.setId("a");
+		a2.setTimeStamp(timeLess);
+		a2.setVersion(8);
+
+		Versioned<String> b2 = new Versioned<String>();
+		b2.setData("b2 data");
+		b2.setDeleted(true);
+		b2.setId("b");
+		b2.setTimeStamp(timeMore);
+		b2.setVersion(19);
+
+		service2.save(Arrays.<Versioned<String>> asList(a2, b2));
+
+		// sync
+		SyncService.synchronize(service1, service2, timeSync);
+
+		// total check
+		assertServicesAreSynced();
+
+		// accurate check
+		assertEquals(a2, service1.findById("a"));
+		assertEquals(a2, service2.findById("a"));
+		assertEquals(b1, service1.findById("b"));
+		assertEquals(b1, service2.findById("b"));
+	}
 }
