@@ -104,11 +104,11 @@ public class FoodbaseRestClient extends AuthorizedRestClient implements FoodBase
 	}
 
 	@Override
-	public Versioned<FoodItem> findById(String guid)
+	public Versioned<FoodItem> findById(String id)
 	{
 		try
 		{
-			WebResource resource = getResource(String.format("api/food/guid/%s", guid));
+			WebResource resource = getResource(String.format("api/food/guid/%s", id));
 			String str = authGet(resource);
 
 			StdResponse resp = new StdResponse(str);

@@ -29,11 +29,11 @@ public class DiaryRestClient extends AuthorizedRestClient implements DiaryServic
 	}
 
 	@Override
-	public Versioned<DiaryRecord> findById(String guid) throws CommonServiceException
+	public Versioned<DiaryRecord> findById(String id) throws CommonServiceException
 	{
 		try
 		{
-			WebResource resource = getResource(String.format("api/diary/guid/%s", guid));
+			WebResource resource = getResource(String.format("api/diary/guid/%s", id));
 			String str = authGet(resource);
 
 			StdResponse resp = new StdResponse(str);

@@ -104,11 +104,11 @@ public class DishbaseRestClient extends AuthorizedRestClient implements DishBase
 	}
 
 	@Override
-	public Versioned<DishItem> findById(String guid)
+	public Versioned<DishItem> findById(String id)
 	{
 		try
 		{
-			WebResource resource = getResource(String.format("api/dish/guid/%s", guid));
+			WebResource resource = getResource(String.format("api/dish/guid/%s", id));
 			String str = authGet(resource);
 
 			StdResponse resp = new StdResponse(str);

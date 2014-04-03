@@ -23,11 +23,11 @@ public interface ObjectService<T>
 	/**
 	 * Returns item with the specified GUID (no matter if deleted or not)
 	 * 
-	 * @param guid
+	 * @param id
 	 * @return Item if found, null otherwise
 	 * @throws CommonServiceException
 	 */
-	Versioned<T> findById(String guid) throws CommonServiceException;
+	Versioned<T> findById(String id) throws CommonServiceException;
 
 	/**
 	 * Returns list of records which were modified after the specified time (both removed or not)
