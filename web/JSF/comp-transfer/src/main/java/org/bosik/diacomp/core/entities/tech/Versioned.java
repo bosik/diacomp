@@ -6,7 +6,7 @@ import java.util.Date;
 
 /**
  * Has ID field (random; useful for comparing)
- * 
+ *
  * @author Bosik
  */
 
@@ -40,6 +40,7 @@ public class Versioned<T> implements Serializable
 		setId(object.getId());
 		setTimeStamp(object.getTimeStamp());
 		setVersion(object.getVersion());
+		setDeleted(object.isDeleted());
 		setData(object.getData());
 	}
 
