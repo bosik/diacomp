@@ -12,10 +12,10 @@ import org.bosik.diacomp.android.backend.common.webclient.exceptions.ConnectionE
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.ResponseFormatException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFieldException;
-import org.bosik.diacomp.android.backend.features.sync.SyncService;
-import org.bosik.diacomp.android.backend.features.sync.SyncService.Callback;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.utils.ErrorHandler;
+import org.bosik.diacomp.core.services.sync.SyncService;
+import org.bosik.diacomp.core.services.sync.SyncService.Callback;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
