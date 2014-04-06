@@ -10,8 +10,8 @@ public class TestDishbaseWebService extends TestDishbaseServiceCommon
 	@Override
 	protected DishBaseService getService()
 	{
-		String login = Config.getLogin();
-		String pass = Config.getPassword();
+		String login = Config.getTestLogin();
+		String pass = Config.getTestPassword();
 		int apiVersion = Config.getAPICurrent();
 
 		return new DishbaseRestClient(new AuthRestClient(), login, pass, apiVersion);

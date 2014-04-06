@@ -12,8 +12,8 @@ public class TestDiaryWebService extends TestDiaryServiceCommon implements TestD
 	@Override
 	protected DiaryService getService()
 	{
-		String login = Config.getLogin();
-		String pass = Config.getPassword();
+		String login = Config.getTestLogin();
+		String pass = Config.getTestPassword();
 		int apiVersion = Config.getAPICurrent();
 
 		return new DiaryRestClient(new AuthRestClient(), login, pass, apiVersion);

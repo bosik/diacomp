@@ -17,10 +17,8 @@ public class TestMySQLAuthDAO
 	@Test
 	public void test()
 	{
-		// assertEquals("4761fe12f59bb38d3faca218bcffdaa3", MySQLAuthDAO.md5("devel0pment"));
-
-		final String login = Config.getLogin();
-		final String pass = Config.getPassword();
+		final String login = Config.getTestLogin();
+		final String pass = Config.getTestPassword();
 		final int apiVersion = Integer.parseInt(Config.get("current_api"));
 
 		int id = authDao.login(login, pass, apiVersion);
