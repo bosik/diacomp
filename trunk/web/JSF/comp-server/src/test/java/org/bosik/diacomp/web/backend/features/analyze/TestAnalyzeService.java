@@ -32,8 +32,8 @@ public class TestAnalyzeService
 	{
 		AuthService authService = new AuthRestClient();
 
-		String login = Config.getLogin();
-		String pass = Config.getPassword();
+		String login = Config.getTestLogin();
+		String pass = Config.getTestPassword();
 		int apiVersion = Config.getAPICurrent();
 
 		DiaryService diaryService = new DiaryRestClient(authService, login, pass, apiVersion);

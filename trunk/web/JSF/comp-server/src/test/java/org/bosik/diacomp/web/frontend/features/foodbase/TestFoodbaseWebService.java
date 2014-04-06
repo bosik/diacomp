@@ -11,8 +11,8 @@ public class TestFoodbaseWebService extends TestFoodbaseServiceCommon
 	@Override
 	protected FoodBaseService getService()
 	{
-		String login = Config.getLogin();
-		String pass = Config.getPassword();
+		String login = Config.getTestLogin();
+		String pass = Config.getTestPassword();
 		int apiVersion = Config.getAPICurrent();
 
 		return new FoodbaseRestClient(new AuthRestClient(), login, pass, apiVersion);

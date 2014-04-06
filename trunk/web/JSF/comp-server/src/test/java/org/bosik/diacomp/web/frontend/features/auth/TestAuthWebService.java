@@ -10,8 +10,8 @@ import org.junit.Test;
 
 public class TestAuthWebService
 {
-	public static final String	TEST_LOGIN					= Config.getLogin();
-	public static final String	TEST_PASSWORD				= Config.getPassword();
+	public static final String	TEST_LOGIN					= Config.getTestLogin();
+	public static final String	TEST_PASSWORD				= Config.getTestPassword();
 	public static final int		TEST_API_VERSION_CURRENT	= Config.getAPICurrent();
 	public static final int		TEST_API_VERSION_SUPPORTED	= Config.getAPISupported();
 

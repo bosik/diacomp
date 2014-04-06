@@ -66,24 +66,22 @@ public class Config
 		return get("baseUrl");
 	}
 
-	// TODO: rename to getTestLogin
 	/**
 	 * Scope: test
 	 * 
 	 * @return
 	 */
-	public static String getLogin()
+	public static String getTestLogin()
 	{
 		return get("login");
 	}
 
-	// TODO: rename to getTestPassword
 	/**
 	 * Scope: test
 	 * 
 	 * @return
 	 */
-	public static String getPassword()
+	public static String getTestPassword()
 	{
 		return get("pass");
 	}
