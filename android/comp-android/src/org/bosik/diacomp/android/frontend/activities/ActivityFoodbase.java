@@ -12,6 +12,7 @@ import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import android.app.Activity;
 import android.content.Intent;
@@ -22,10 +23,12 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -50,6 +53,7 @@ public class ActivityFoodbase extends Activity
 	// Widgets
 	private EditText						editFoodSearch;
 	private ListView						listFood;
+	private Button							buttonFoodCreate;
 
 	// Data
 	final FoodBaseService					foodBaseService	= Storage.localFoodBase;
@@ -92,6 +96,16 @@ public class ActivityFoodbase extends Activity
 			}
 		});
 		listFood = (ListView) findViewById(R.id.listFood);
+
+		buttonFoodCreate = (Button) findViewById(R.id.buttonFoodCreate);
+		buttonFoodCreate.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View arg0)
+			{
+				showFoodEditor(new Versioned<FoodItem>(new FoodItem()), true);
+			}
+		});
 
 		// Show data
 		runSearch("");
@@ -145,6 +159,8 @@ public class ActivityFoodbase extends Activity
 				temp = foodBaseService.findAny(filter);
 			}
 
+			Log.d(TAG, String.format("Searched for '%s', founded items: %d", filter, temp.size()));
+
 			// sorter.sort(temp, mode == Mode.EDIT ? Sorter.Sort.ALPHABET : Sorter.Sort.RELEVANT);
 
 			// TODO: check the performance
@@ -157,7 +173,7 @@ public class ActivityFoodbase extends Activity
 			}
 
 			tick = System.currentTimeMillis() - tick;
-			Log.i(TAG, "Request handled in " + tick + " msec");
+			Log.i(TAG, String.format("Request handled in %d msec, founded items: %d", tick, result.size()));
 
 			return result;
 		}
@@ -240,7 +256,7 @@ public class ActivityFoodbase extends Activity
 							{
 								if (food != null)
 								{
-									showFoodEditor(food);
+									showFoodEditor(food, false);
 								}
 								else
 								{
@@ -274,12 +290,12 @@ public class ActivityFoodbase extends Activity
 		finish();
 	}
 
-	void showFoodEditor(Versioned<FoodItem> food)
+	void showFoodEditor(Versioned<FoodItem> food, boolean createMode)
 	{
 		Intent intent = new Intent(this, ActivityEditorFood.class);
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, food);
-		intent.putExtra(ActivityEditor.FIELD_MODE, false);
-		startActivityForResult(intent, DIALOG_FOOD_MODIFY);
+		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
+		startActivityForResult(intent, createMode ? DIALOG_FOOD_CREATE : DIALOG_FOOD_MODIFY);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -298,7 +314,37 @@ public class ActivityFoodbase extends Activity
 					{
 						Versioned<FoodItem> item = (Versioned<FoodItem>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
-						foodBaseService.save(Arrays.<Versioned<FoodItem>> asList(item));
+						try
+						{
+							foodBaseService.save(Arrays.<Versioned<FoodItem>> asList(item));
+							UIUtils.showTip(this, "Продукт сохранён");
+						}
+						catch (PersistenceException e)
+						{
+							// TODO: localize
+							UIUtils.showTip(this, "Ошибка сохранения продукта");
+						}
+						runSearch(searchFilter);
+					}
+					break;
+				}
+
+				case DIALOG_FOOD_CREATE:
+				{
+					if (resultCode == RESULT_OK)
+					{
+						Versioned<FoodItem> item = (Versioned<FoodItem>) intent.getExtras().getSerializable(
+								ActivityEditor.FIELD_ENTITY);
+						try
+						{
+							foodBaseService.add(item);
+							UIUtils.showTip(this, "Продукт создан");
+						}
+						catch (PersistenceException e)
+						{
+							// TODO: localize
+							UIUtils.showTip(this, "Ошибка создания продукта");
+						}
 						runSearch(searchFilter);
 					}
 					break;

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,7 +20,7 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 	public static final String		FIELD_MODE				= "bosik.pack.createMode";
 	public static final String		FIELD_ENTITY			= "bosik.pack.entity";
 
-	protected T						entity;
+	protected Versioned<T>			entity;
 
 	// TODO: localize error messages
 	protected static final String	ERROR_INCORRECT_TIME	= "Введите корректное время";
@@ -33,7 +35,7 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 	@SuppressWarnings("unchecked")
 	private void readEntity(Intent intent)
 	{
-		entity = (T) intent.getExtras().getSerializable(FIELD_ENTITY);
+		entity = (Versioned<T>) intent.getExtras().getSerializable(FIELD_ENTITY);
 	}
 
 	/**
@@ -103,6 +105,11 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 		readEntity(getIntent());
 		boolean createMode = getIntent().getBooleanExtra(FIELD_MODE, true);
 		showValuesInGUI(createMode);
+
+		if (createMode)
+		{
+			entity.setId(Utils.generateGuid());
+		}
 	}
 
 	protected void submit()

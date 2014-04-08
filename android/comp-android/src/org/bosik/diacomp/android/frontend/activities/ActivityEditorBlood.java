@@ -4,7 +4,6 @@ import java.util.Date;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
-import org.bosik.diacomp.core.entities.tech.Versioned;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -14,7 +13,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-public class ActivityEditorBlood extends ActivityEditor<Versioned<BloodRecord>>
+public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 {
 	// private static final String TAG = ActivityEditorBlood.class.getSimpleName();
 
