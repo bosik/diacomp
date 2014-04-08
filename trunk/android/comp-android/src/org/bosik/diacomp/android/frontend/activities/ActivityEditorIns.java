@@ -4,7 +4,6 @@ import java.util.Date;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
-import org.bosik.diacomp.core.entities.tech.Versioned;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -12,7 +11,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-public class ActivityEditorIns extends ActivityEditor<Versioned<InsRecord>>
+public class ActivityEditorIns extends ActivityEditor<InsRecord>
 {
 	// components
 	private TimePicker	timePicker;

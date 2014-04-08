@@ -3,13 +3,12 @@ package org.bosik.diacomp.android.frontend.activities;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.entities.tech.Versioned;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class ActivityEditorFood extends ActivityEditor<Versioned<FoodItem>>
+public class ActivityEditorFood extends ActivityEditor<FoodItem>
 {
 	// private static final String TAG = ActivityEditorFood.class.getSimpleName();
 

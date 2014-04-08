@@ -111,7 +111,7 @@ public class DiaryContentProvider extends ContentProvider
 			// diary table
 			final String SQL_CREATE_DIARY = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s, %s)",
 					TABLE_DIARY,
-					COLUMN_DIARY_GUID + " CHAR(32) NOT NULL",
+					COLUMN_DIARY_GUID + " TEXT PRIMARY KEY NOT NULL",
 					COLUMN_DIARY_TIMESTAMP + " TEXT NOT NULL",
 					COLUMN_DIARY_VERSION + " INTEGER",
 					COLUMN_DIARY_DELETED + " INTEGER",
@@ -123,7 +123,7 @@ public class DiaryContentProvider extends ContentProvider
 			// foodbase table
 			final String SQL_CREATE_FOODBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s, %s)",
 					TABLE_FOODBASE,
-					COLUMN_FOODBASE_GUID + " TEXT PRIMARY KEY",
+					COLUMN_FOODBASE_GUID + " TEXT PRIMARY KEY NOT NULL",
 					COLUMN_FOODBASE_TIMESTAMP + " TEXT",
 					COLUMN_FOODBASE_VERSION + " INTEGER",
 					COLUMN_FOODBASE_DELETED + " INTEGER", // 0 or 1
@@ -134,7 +134,7 @@ public class DiaryContentProvider extends ContentProvider
 			// dishbase table
 			final String SQL_CREATE_DISHBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s, %s)",
 					TABLE_DISHBASE,
-					COLUMN_DISHBASE_GUID + " TEXT PRIMARY KEY",
+					COLUMN_DISHBASE_GUID + " TEXT PRIMARY KEY NOT NULL",
 					COLUMN_DISHBASE_TIMESTAMP + " TEXT",
 					COLUMN_DISHBASE_VERSION + " INTEGER",
 					COLUMN_DISHBASE_DELETED + " INTEGER", // 0 or 1
