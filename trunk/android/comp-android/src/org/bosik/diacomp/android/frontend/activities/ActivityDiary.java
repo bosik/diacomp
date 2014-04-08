@@ -42,6 +42,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	private static final int					DIALOG_BLOOD_MODIFY	= 12;
 	private static final int					DIALOG_INS_CREATE	= 21;
 	private static final int					DIALOG_INS_MODIFY	= 22;
+	private static final int					DIALOG_MEAL_CREATE	= 31;
+	private static final int					DIALOG_MEAL_MODIFY	= 32;
 	private static final int					DIALOG_NOTE_CREATE	= 41;
 	private static final int					DIALOG_NOTE_MODIFY	= 42;
 
@@ -211,13 +213,13 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					 * "menuClick: downloading page..."); DiaryPage page =
 					 * Storage.webDiary.getPage(date); Date timestamp =
 					 * Storage.webDiary.diarySource.getTimeStamp(date);
-					 *
+					 * 
 					 * if (null != page) { Log.d(TAG, "menuClick: page is ok");
 					 * Storage.localDiary.postPage(page, timestamp); } else Log.d(TAG,
 					 * "menuClick: page is null");
-					 *
+					 * 
 					 * Log.d(TAG, "menuClick: invalidating...");
-					 *
+					 * 
 					 * //DiaryView.curPage = page; //mDiaryView.invalidate();
 					 * mDiaryView.setPage(page);
 					 */
@@ -230,18 +232,18 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					/*
 					 * Log.i(TAG, "menuClick: opening page..."); DiaryPage page =
 					 * Storage.localDiary.getPage(curDate);
-					 *
+					 * 
 					 * if (null != page) Log.d(TAG, "menuClick: page is ok"); else Log.d(TAG,
 					 * "menuClick: page is null");
-					 *
+					 * 
 					 * Log.d(TAG, "menuClick: invalidating...");
-					 *
+					 * 
 					 * //DiaryView.curPage = page; //mDiaryView.invalidate();
 					 * mDiaryView.setPage(page);
-					 *
-					 *
+					 * 
+					 * 
 					 * DiaryPage page = getCurPage();
-					 *
+					 * 
 					 * // добавляем int minTime = Utils.curMinutes(); NoteRecord note = new
 					 * NoteRecord(minTime, "текст"); page.add(note); // сохраняем postPage(page);
 					 */
@@ -333,6 +335,26 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 			else
 
+			if (c == MealRecord.class)
+			{
+				switch (item.getItemId())
+				{
+					case CONTEXT_ITEM_EDIT:
+					{
+						Versioned<MealRecord> temp = (Versioned<MealRecord>) rec;
+						showMealEditor(temp, false);
+						return true;
+					}
+					default:
+					{
+						UIUtils.showTip(this, "Unsupported option");
+						return true;
+					}
+				}
+			}
+
+			else
+
 			if (c == NoteRecord.class)
 			{
 				switch (item.getItemId())
@@ -406,7 +428,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 				case R.id.buttonAddMeal:
 				{
-					showMealEditor();
+					showMealEditor(null, true);
 					break;
 				}
 
@@ -440,6 +462,10 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			{
 				showInsEditor((Versioned<InsRecord>) rec, false);
 			}
+			else if (rec.getData().getClass() == MealRecord.class)
+			{
+				showMealEditor((Versioned<MealRecord>) rec, false);
+			}
 			else if (rec.getData().getClass() == NoteRecord.class)
 			{
 				showNoteEditor((Versioned<NoteRecord>) rec, false);
@@ -470,61 +496,23 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			switch (requestCode)
 			{
 				case DIALOG_BLOOD_CREATE:
-				{
-					if (resultCode == RESULT_OK)
-					{
-						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(
-								ActivityEditor.FIELD_ENTITY);
-
-						postRecord(rec);
-					}
-					break;
-				}
-
-				case DIALOG_BLOOD_MODIFY:
-				{
-					if (resultCode == RESULT_OK)
-					{
-						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(
-								ActivityEditor.FIELD_ENTITY);
-						postRecord(rec);
-					}
-					break;
-				}
-
 				case DIALOG_INS_CREATE:
-				{
-					if (resultCode == RESULT_OK)
-					{
-						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(
-								ActivityEditor.FIELD_ENTITY);
-						postRecord(rec);
-					}
-					break;
-				}
-
-				case DIALOG_INS_MODIFY:
-				{
-					if (resultCode == RESULT_OK)
-					{
-						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(
-								ActivityEditor.FIELD_ENTITY);
-						postRecord(rec);
-					}
-					break;
-				}
-
+				case DIALOG_MEAL_CREATE:
 				case DIALOG_NOTE_CREATE:
 				{
 					if (resultCode == RESULT_OK)
 					{
 						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
+						// TODO: inserting should be implemented here (not updating)
 						postRecord(rec);
 					}
 					break;
 				}
 
+				case DIALOG_BLOOD_MODIFY:
+				case DIALOG_INS_MODIFY:
+				case DIALOG_MEAL_MODIFY:
 				case DIALOG_NOTE_MODIFY:
 				{
 					if (resultCode == RESULT_OK)
@@ -571,7 +559,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 	/**
 	 * Searches for the last BS record in last scanDaysPeriod days
-	 *
+	 * 
 	 * @param scanDaysPeriod
 	 * @return BS record if found, null otherwise
 	 */
@@ -630,10 +618,20 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		startActivityForResult(intent, createMode ? DIALOG_INS_CREATE : DIALOG_INS_MODIFY);
 	}
 
-	private void showMealEditor()
+	private void showMealEditor(Versioned<MealRecord> entity, boolean createMode)
 	{
-		// TODO: make it actual editor intent
-		startActivity(new Intent(this, ActivityMeal.class));
+		if (createMode)
+		{
+			MealRecord rec = new MealRecord();
+			rec.setTime(new Date());
+			entity = new Versioned<MealRecord>(rec);
+		}
+
+		Intent intent = new Intent(this, ActivityMeal.class);
+		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
+		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
+		startActivityForResult(intent, createMode ? DIALOG_MEAL_CREATE : DIALOG_MEAL_MODIFY);
+
 	}
 
 	private void showNoteEditor(Versioned<NoteRecord> entity, boolean createMode)

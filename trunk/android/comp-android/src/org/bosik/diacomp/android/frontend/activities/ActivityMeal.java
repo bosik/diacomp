@@ -11,7 +11,6 @@ import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.utils.Utils;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
@@ -31,15 +30,14 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class ActivityMeal extends Activity
+public class ActivityMeal extends ActivityEditor<MealRecord>
 {
 	// отладочная печать
-	private static final String			TAG		= ActivityMeal.class.getSimpleName();
+	private static final String			TAG	= ActivityMeal.class.getSimpleName();
 
-	private static final DecimalFormat	df		= new DecimalFormat("###.#");
+	private static final DecimalFormat	df	= new DecimalFormat("###.#");
 
 	// data
-	private static MealRecord			meal	= new MealRecord();
 	private List<Versioned<FoodItem>>	base;
 
 	// компоненты
@@ -49,14 +47,14 @@ public class ActivityMeal extends Activity
 	private ListView					list;
 	private TextView					textMealCarbs;
 	private TextView					textMealDose;
+	private Button						buttonOK;
 
 	private String						captionCarbs;
 	private String						captionDose;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState)
+	protected void setupInterface()
 	{
-		super.onCreate(savedInstanceState);
 		setContentView(R.layout.editor_meal);
 
 		// компоненты
@@ -70,12 +68,12 @@ public class ActivityMeal extends Activity
 			public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
 			{
 				Builder builder = new AlertDialog.Builder(ActivityMeal.this);
-				final String message = meal.get(position).getName();
+				final String message = entity.getData().get(position).getName();
 
 				final EditText input = new EditText(ActivityMeal.this);
 
 				// Utils.
-				input.setText(String.valueOf(meal.get(position).getMass()));
+				input.setText(String.valueOf(entity.getData().get(position).getMass()));
 				input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
 				builder.setTitle("Change mass");
 				builder.setMessage(message);
@@ -92,11 +90,11 @@ public class ActivityMeal extends Activity
 							double mass = Utils.parseDouble(text);
 							if (mass > Utils.EPS)
 							{
-								meal.get(position).setMass(mass);
+								entity.getData().get(position).setMass(mass);
 							}
 							else
 							{
-								meal.remove(position);
+								entity.getData().remove(position);
 							}
 							showMeal();
 						}
@@ -133,7 +131,6 @@ public class ActivityMeal extends Activity
 		Log.d(TAG, "Caption dose: " + captionDose);
 
 		loadFoodList();
-		showMeal();
 
 		editMass.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 		editMass.setOnEditorActionListener(new TextView.OnEditorActionListener()
@@ -178,6 +175,22 @@ public class ActivityMeal extends Activity
 				}
 			}
 		});
+
+		buttonOK = (Button) findViewById(R.id.buttonMealOK);
+		buttonOK.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				ActivityMeal.this.submit();
+			}
+		});
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
 	}
 
 	private void loadFoodList()
@@ -202,18 +215,18 @@ public class ActivityMeal extends Activity
 
 	private void showMeal()
 	{
-		String[] temp = new String[meal.count()];
-		for (int i = 0; i < meal.count(); i++)
+		String[] temp = new String[entity.getData().count()];
+		for (int i = 0; i < entity.getData().count(); i++)
 		{
-			temp[i] = printFoodMassed(meal.get(i));
+			temp[i] = printFoodMassed(entity.getData().get(i));
 		}
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, temp);
 		list.setAdapter(adapter);
 
 		// insulin dosage info
-		double dose = meal.getCarbs() * 0.155;
-		textMealCarbs.setText(df.format(meal.getCarbs()) + " " + captionCarbs);
+		double dose = entity.getData().getCarbs() * 0.155;
+		textMealCarbs.setText(df.format(entity.getData().getCarbs()) + " " + captionCarbs);
 		textMealDose.setText(df.format(dose) + " " + captionDose);
 	}
 
@@ -236,7 +249,7 @@ public class ActivityMeal extends Activity
 			item.setRelValue(food.getRelValue());
 			item.setMass(mass);
 
-			meal.add(item);
+			entity.getData().add(item);
 
 			showMeal();
 
@@ -246,5 +259,17 @@ public class ActivityMeal extends Activity
 			Log.v(TAG, "Moving focus to name field");
 			editName.requestFocus();
 		}
+	}
+
+	@Override
+	protected void showValuesInGUI(boolean createMode)
+	{
+		showMeal();
+	}
+
+	@Override
+	protected boolean getValuesFromGUI()
+	{
+		return true;
 	}
 }
