@@ -14,6 +14,7 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 {
 	// private static final String TAG = ActivityEditor.class.getSimpleName();
 
+	// TODO: rename to FIELD_CREATE_MODE
 	public static final String		FIELD_MODE				= "bosik.pack.createMode";
 	public static final String		FIELD_ENTITY			= "bosik.pack.entity";
 
