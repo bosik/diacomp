@@ -1,20 +1,29 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.List;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
+import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -55,6 +64,62 @@ public class ActivityMeal extends Activity
 		editMass = (EditText) findViewById(R.id.editItemMass);
 		buttonAdd = (Button) findViewById(R.id.button_additem);
 		list = (ListView) findViewById(R.id.ListView01);
+		list.setOnItemClickListener(new OnItemClickListener()
+		{
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
+			{
+				Builder builder = new AlertDialog.Builder(ActivityMeal.this);
+				final String message = meal.get(position).getName();
+
+				final EditText input = new EditText(ActivityMeal.this);
+
+				// Utils.
+				input.setText(String.valueOf(meal.get(position).getMass()));
+				input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+				builder.setTitle("Change mass");
+				builder.setMessage(message);
+				builder.setView(input);
+				builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+				{
+					@Override
+					public void onClick(DialogInterface dialog, int whichButton)
+					{
+						String text = input.getText().toString();
+
+						try
+						{
+							double mass = Utils.parseDouble(text);
+							if (mass > Utils.EPS)
+							{
+								meal.get(position).setMass(mass);
+							}
+							else
+							{
+								meal.remove(position);
+							}
+							showMeal();
+						}
+						catch (ParseException e)
+						{
+							// TODO: localize
+							UIUtils.showTip(ActivityMeal.this, "Wrong mass");
+						}
+
+					}
+				});
+				builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+				{
+					@Override
+					public void onClick(DialogInterface dialog, int whichButton)
+					{
+						// Do nothing.
+					}
+				});
+				builder.show();
+			}
+		});
+
 		textMealCarbs = (TextView) findViewById(R.id.textMealCarbs);
 		textMealDose = (TextView) findViewById(R.id.textMealDose);
 
