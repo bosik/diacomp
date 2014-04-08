@@ -96,6 +96,57 @@ public class ActivityFoodbase extends Activity
 			}
 		});
 		listFood = (ListView) findViewById(R.id.listFood);
+		listFood.setOnItemClickListener(new OnItemClickListener()
+		{
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+			{
+				final String guid = data.get(position).getId();
+
+				switch (mode)
+				{
+					case PICK:
+					{
+						returnResult(guid);
+						break;
+					}
+					case EDIT:
+					{
+						new AsyncTask<String, Void, Versioned<FoodItem>>()
+						{
+							@Override
+							protected void onPreExecute()
+							{
+								// setTitle(getString(R.string.foodbase_title_loading));
+							}
+
+							@Override
+							protected Versioned<FoodItem> doInBackground(String... params)
+							{
+								Versioned<FoodItem> food = foodBaseService.findById(guid);
+								return food;
+							}
+
+							@Override
+							protected void onPostExecute(Versioned<FoodItem> food)
+							{
+								if (food != null)
+								{
+									showFoodEditor(food, false);
+								}
+								else
+								{
+									UIUtils.showTip(ActivityFoodbase.this, String.format("Item %s not found", guid));
+								}
+							}
+						}.execute(guid);
+
+						// TODO: do the same for dish base when ready
+					}
+				}
+
+			}
+		});
 
 		buttonFoodCreate = (Button) findViewById(R.id.buttonFoodCreate);
 		buttonFoodCreate.setOnClickListener(new OnClickListener()
@@ -220,57 +271,6 @@ public class ActivityFoodbase extends Activity
 		};
 
 		listFood.setAdapter(adapter);
-		listFood.setOnItemClickListener(new OnItemClickListener()
-		{
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-			{
-				final String guid = data.get(position).getId();
-
-				switch (mode)
-				{
-					case PICK:
-					{
-						returnResult(guid);
-						break;
-					}
-					case EDIT:
-					{
-						new AsyncTask<String, Void, Versioned<FoodItem>>()
-						{
-							@Override
-							protected void onPreExecute()
-							{
-								// setTitle(getString(R.string.foodbase_title_loading));
-							}
-
-							@Override
-							protected Versioned<FoodItem> doInBackground(String... params)
-							{
-								Versioned<FoodItem> food = foodBaseService.findById(guid);
-								return food;
-							}
-
-							@Override
-							protected void onPostExecute(Versioned<FoodItem> food)
-							{
-								if (food != null)
-								{
-									showFoodEditor(food, false);
-								}
-								else
-								{
-									UIUtils.showTip(ActivityFoodbase.this, String.format("Item %s not found", guid));
-								}
-							}
-						}.execute(guid);
-
-						// TODO: do the same for dish base when ready
-					}
-				}
-
-			}
-		});
 	}
 
 	String getInfo(NamedRelativeTagged item)
