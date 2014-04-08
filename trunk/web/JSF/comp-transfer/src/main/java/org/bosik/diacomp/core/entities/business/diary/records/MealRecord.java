@@ -116,4 +116,9 @@ public class MealRecord extends DiaryRecord
 	{
 		return items.size();
 	}
+
+	public void remove(int index)
+	{
+		items.remove(index);
+	}
 }
