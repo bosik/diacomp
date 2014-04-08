@@ -1,9 +1,13 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.text.DecimalFormat;
+import java.util.List;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,8 +29,9 @@ public class ActivityMeal extends Activity
 
 	private static final DecimalFormat	df		= new DecimalFormat("###.#");
 
-	// переменные
+	// data
 	private static MealRecord			meal	= new MealRecord();
+	private List<Versioned<FoodItem>>	base;
 
 	// компоненты
 	private AutoCompleteTextView		editName;
@@ -112,19 +117,17 @@ public class ActivityMeal extends Activity
 
 	private void loadFoodList()
 	{
-		// List<FoodItem> base = Storage.localFoodBase.findAll();
-		// String[] foodBase = new String[base.size()];
-		//
-		// int i = 0;
-		// for (FoodItem food : base)
-		// {
-		// // TODO: implement method returning names array sorted by tag
-		// foodBase[i++] = food.getName();
-		// }
-		//
-		// ArrayAdapter<String> baseAdapter = new ArrayAdapter<String>(this,
-		// android.R.layout.simple_list_item_1, foodBase);
-		// editName.setAdapter(baseAdapter);
+		base = Storage.localFoodBase.findAll(false);
+		String[] foodBase = new String[base.size()];
+
+		int i = 0;
+		for (Versioned<FoodItem> food : base)
+		{
+			foodBase[i++] = food.getData().getName();
+		}
+
+		ArrayAdapter<String> baseAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, foodBase);
+		editName.setAdapter(baseAdapter);
 	}
 
 	public static String printFoodMassed(FoodMassed food)
@@ -143,6 +146,7 @@ public class ActivityMeal extends Activity
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, temp);
 		list.setAdapter(adapter);
 
+		// insulin dosage info
 		double dose = meal.getCarbs() * 0.155;
 		textMealCarbs.setText(df.format(meal.getCarbs()) + " " + captionCarbs);
 		textMealDose.setText(df.format(dose) + " " + captionDose);
@@ -150,32 +154,32 @@ public class ActivityMeal extends Activity
 
 	void addItem()
 	{
-		// String name = editName.getText().toString();
-		// double mass = Double.parseDouble(editMass.getText().toString());
-		//
-		// List<FoodItem> list = Storage.localFoodBase.findAny(name);
-		//
-		// if (!list.isEmpty())
-		// {
-		// FoodItem food = list.get(0);
-		//
-		// FoodMassed item = new FoodMassed();
-		// item.setName(food.getName());
-		// item.setRelProts(food.getRelProts());
-		// item.setRelFats(food.getRelFats());
-		// item.setRelCarbs(food.getRelCarbs());
-		// item.setRelValue(food.getRelValue());
-		// item.setMass(mass);
-		//
-		// meal.add(item);
-		//
-		// showMeal();
-		//
-		// Log.v("XXX", "ADDED: " + item);
-		// editMass.setText("");
-		// editName.setText("");
-		// Log.v(TAG, "Moving focus to name field");
-		// editName.requestFocus();
-		// }
+		String name = editName.getText().toString();
+		double mass = Double.parseDouble(editMass.getText().toString());
+
+		List<Versioned<FoodItem>> list = Storage.localFoodBase.findAny(name);
+
+		if (!list.isEmpty())
+		{
+			FoodItem food = list.get(0).getData();
+
+			FoodMassed item = new FoodMassed();
+			item.setName(food.getName());
+			item.setRelProts(food.getRelProts());
+			item.setRelFats(food.getRelFats());
+			item.setRelCarbs(food.getRelCarbs());
+			item.setRelValue(food.getRelValue());
+			item.setMass(mass);
+
+			meal.add(item);
+
+			showMeal();
+
+			Log.v("XXX", "ADDED: " + item);
+			editMass.setText("");
+			editName.setText("");
+			Log.v(TAG, "Moving focus to name field");
+			editName.requestFocus();
+		}
 	}
 }
