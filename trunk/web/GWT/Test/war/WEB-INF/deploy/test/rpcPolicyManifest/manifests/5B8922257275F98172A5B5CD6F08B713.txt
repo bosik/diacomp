@@ -1,2 +1,0 @@
-serviceClass: org.bosik.gwttest.client.GreetingService
-path: 191D7D5078FAF901652F631C18C2EA8E.gwt.rpc
