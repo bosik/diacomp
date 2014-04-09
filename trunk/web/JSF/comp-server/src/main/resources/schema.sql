@@ -1,5 +1,9 @@
 delimiter $$
 
+CREATE DATABASE `compensation` /*!40100 DEFAULT CHARACTER SET cp1251 */$$
+
+delimiter $$
+
 CREATE TABLE `diary2` (
   `_GUID` char(32) CHARACTER SET armscii8 NOT NULL,
   `_UserID` int(10) unsigned NOT NULL,
