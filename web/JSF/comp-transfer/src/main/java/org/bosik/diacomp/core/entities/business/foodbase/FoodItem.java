@@ -21,6 +21,11 @@ public class FoodItem extends Food implements Serializable, NamedRelativeTagged
 	@SerializedName("table")
 	private boolean				fromTable;
 
+	public FoodItem()
+	{
+
+	}
+
 	public FoodItem(String name, double relProts, double relFats, double relCarbs, double relValue, int tag,
 			boolean fromTable)
 	{
