@@ -242,7 +242,18 @@ public class FoodBaseLocalService implements FoodBaseService
 	@Override
 	public Versioned<FoodItem> findOne(String exactName)
 	{
-		throw new UnsupportedOperationException();
+		exactName = exactName.trim();
+		List<Versioned<FoodItem>> all = find(null, exactName, false, null);
+
+		for (Versioned<FoodItem> item : all)
+		{
+			if (item.getData().getName().trim().equals(exactName))
+			{
+				return item;
+			}
+		}
+
+		return null;
 	}
 
 	@Override
