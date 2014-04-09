@@ -30,9 +30,10 @@ public class Versioned<T> implements Serializable
 
 	public Versioned(T data)
 	{
-		version = 0;
-		updateTimeStamp();
+		this.version = 0;
 		this.data = data;
+		this.deleted = false;
+		updateTimeStamp();
 	}
 
 	public Versioned(Versioned<? extends T> object)
