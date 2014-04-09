@@ -21,13 +21,23 @@ public class FoodItem extends Food implements Serializable, NamedRelativeTagged
 	@SerializedName("table")
 	private boolean				fromTable;
 
+	public FoodItem(String name, double relProts, double relFats, double relCarbs, double relValue, int tag,
+			boolean fromTable)
+	{
+		super(name, relProts, relFats, relCarbs, relValue);
+		setTag(tag);
+		setFromTable(fromTable);
+	}
+
 	// ================================ GET / SET ================================
 
+	@Override
 	public int getTag()
 	{
 		return tag;
 	}
 
+	@Override
 	public void setTag(int tag)
 	{
 		this.tag = tag;
