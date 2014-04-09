@@ -58,3 +58,17 @@ CREATE TABLE `user` (
 ) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci$$
 
 
+INSERT INTO `user`
+(`ID`,
+`Login`,
+`HashPass`,
+`DateReg`,
+`DateLogin`)
+VALUES
+(
+1,
+"bosik-007@narod.ru",
+"4761fe12f59bb38d3faca218bcffdaa3",
+"2012-01-05 14:41:01",
+"2014-02-25 20:10:34"
+);
