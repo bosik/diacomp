@@ -6,6 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import org.bosik.diacomp.android.BuildConfig;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.HardcodedFoodbase;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.AuthException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.ConnectionException;
@@ -14,8 +15,11 @@ import org.bosik.diacomp.android.backend.common.webclient.exceptions.ResponseFor
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFieldException;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.utils.ErrorHandler;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.sync.SyncService;
 import org.bosik.diacomp.core.services.sync.SyncService.Callback;
+import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -444,8 +448,9 @@ public class ActivityMain extends Activity implements OnClickListener
 					new AsyncTaskAuthAndSync().execute(par);
 					break;
 				case R.id.buttonTestMealEditor:
-					throw new RuntimeException("Test exception");
-					// break;
+					HardcodedFoodbase.restoreHardcodedBase();
+					UIUtils.showTip(this, "Hardcoded base restored");
+					break;
 			}
 		}
 		catch (Exception e)
@@ -501,10 +506,10 @@ public class ActivityMain extends Activity implements OnClickListener
 	/*
 	 * private void clearLocalDiary() { // формируем параметры String mSelectionClause =
 	 * DiaryContentProvider.COLUMN_DIARY_DATE + " > ?"; String[] mSelectionArgs = {"2014-01-01"};
-	 *
+	 * 
 	 * // выполняем запрос int count = getContentResolver().delete(
 	 * DiaryContentProvider.CONTENT_DIARY_URI, mSelectionClause, mSelectionArgs);
-	 *
+	 * 
 	 * Log.w(TAG, "Deleted records: " + count); }
 	 */
 
@@ -512,17 +517,17 @@ public class ActivityMain extends Activity implements OnClickListener
 
 	/*
 	 * private void executeTaskAsync(final Runnable R, final long timeOut) { boolean result;
-	 *
+	 * 
 	 * final Thread taskThread = new Thread() {
-	 *
+	 * 
 	 * @Override public void run() { R.run(); } };
-	 *
+	 * 
 	 * final Thread controlThread = new Thread() {
-	 *
+	 * 
 	 * @Override public void run() { try { taskThread.run(); taskThread.join(timeOut); if
 	 * (taskThread.isAlive()) { result = false; taskThread.interrupt(); } else { result = true; } }
 	 * catch (InterruptedException e) { e.printStackTrace(); } } };
-	 *
+	 * 
 	 * controlThread.run(); }
 	 */
 }
