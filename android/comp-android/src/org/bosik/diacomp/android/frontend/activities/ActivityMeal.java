@@ -8,6 +8,7 @@ import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.utils.Utils;
@@ -38,7 +39,8 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 	private static final DecimalFormat	df	= new DecimalFormat("###.#");
 
 	// data
-	private List<Versioned<FoodItem>>	base;
+	private List<Versioned<FoodItem>>	foodBase;
+	private List<Versioned<DishItem>>	dishBase;
 
 	// компоненты
 	private AutoCompleteTextView		editName;
@@ -130,7 +132,7 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 		Log.d(TAG, "Caption carbs: " + captionCarbs);
 		Log.d(TAG, "Caption dose: " + captionDose);
 
-		loadFoodList();
+		loadItemsList();
 
 		editMass.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 		editMass.setOnEditorActionListener(new TextView.OnEditorActionListener()
@@ -193,18 +195,23 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 		super.onCreate(savedInstanceState);
 	}
 
-	private void loadFoodList()
+	private void loadItemsList()
 	{
-		base = Storage.localFoodBase.findAll(false);
-		String[] foodBase = new String[base.size()];
+		foodBase = Storage.localFoodBase.findAll(false);
+		dishBase = Storage.localDishBase.findAll(false);
+		String[] items = new String[foodBase.size() + dishBase.size()];
 
 		int i = 0;
-		for (Versioned<FoodItem> food : base)
+		for (Versioned<FoodItem> food : foodBase)
 		{
-			foodBase[i++] = food.getData().getName();
+			items[i++] = food.getData().getName();
+		}
+		for (Versioned<DishItem> dish : dishBase)
+		{
+			items[i++] = dish.getData().getName();
 		}
 
-		ArrayAdapter<String> baseAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, foodBase);
+		ArrayAdapter<String> baseAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
 		editName.setAdapter(baseAdapter);
 	}
 
@@ -233,13 +240,34 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 	void addItem()
 	{
 		String name = editName.getText().toString();
-		double mass = Double.parseDouble(editMass.getText().toString());
-
-		List<Versioned<FoodItem>> list = Storage.localFoodBase.findAny(name);
-
-		if (!list.isEmpty())
+		if (name.trim().isEmpty())
 		{
-			FoodItem food = list.get(0).getData();
+			// TODO: localize
+			UIUtils.showTip(this, "Enter food or dish name");
+			editName.requestFocus();
+			return;
+		}
+
+		double mass;
+		try
+		{
+			mass = Double.parseDouble(editMass.getText().toString());
+		}
+		catch (NumberFormatException e)
+		{
+			// TODO: localize
+			UIUtils.showTip(this, "Enter food or dish name");
+			editMass.requestFocus();
+			return;
+		}
+
+		// try to search item in food base
+
+		List<Versioned<FoodItem>> listFood = Storage.localFoodBase.findAny(name);
+
+		if (!listFood.isEmpty())
+		{
+			FoodItem food = listFood.get(0).getData();
 
 			FoodMassed item = new FoodMassed();
 			item.setName(food.getName());
@@ -258,7 +286,41 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 			editName.setText("");
 			Log.v(TAG, "Moving focus to name field");
 			editName.requestFocus();
+
+			return;
 		}
+
+		// try to search item in dish base
+
+		List<Versioned<DishItem>> listDish = Storage.localDishBase.findAny(name);
+
+		if (!listDish.isEmpty())
+		{
+			DishItem dish = listDish.get(0).getData();
+
+			FoodMassed item = new FoodMassed();
+			item.setName(dish.getName());
+			item.setRelProts(dish.getRelProts());
+			item.setRelFats(dish.getRelFats());
+			item.setRelCarbs(dish.getRelCarbs());
+			item.setRelValue(dish.getRelValue());
+			item.setMass(mass);
+
+			entity.getData().add(item);
+
+			showMeal();
+
+			Log.v("XXX", "ADDED: " + item);
+			editMass.setText("");
+			editName.setText("");
+			Log.v(TAG, "Moving focus to name field");
+			editName.requestFocus();
+
+			return;
+		}
+
+		UIUtils.showTip(this, "Item not found: " + name);
+		editMass.requestFocus();
 	}
 
 	@Override
