@@ -6,12 +6,16 @@ import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
+import org.bosik.diacomp.android.backend.features.analyze.HardcodedAnalyzeService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.services.analyze.AnalyzeService;
+import org.bosik.diacomp.core.services.analyze.entities.Koof;
+import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -44,6 +48,7 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 	// data
 	private List<Versioned<FoodItem>>	foodBase;
 	private List<Versioned<DishItem>>	dishBase;
+	private static KoofList				koofs;
 
 	// компоненты
 	private TimePicker					timePicker;
@@ -228,6 +233,8 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		AnalyzeService analyzeService = new HardcodedAnalyzeService();
+		koofs = analyzeService.analyze(null);
 	}
 
 	private void loadItemsList()
@@ -267,8 +274,21 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 		list.setAdapter(adapter);
 
 		// insulin dosage info
-		double dose = entity.getData().getCarbs() * 0.155;
-		textMealCarbs.setText(df.format(entity.getData().getCarbs()) + " " + captionCarbs);
+
+		int minutesTime = Utils.timeToMin(entity.getData().getTime());
+
+		// TODO: hackfix
+		if (koofs == null)
+		{
+			koofs = new HardcodedAnalyzeService().analyze(null);
+		}
+
+		Koof koof = koofs.getKoof(minutesTime);
+
+		double carbs = entity.getData().getCarbs();
+		double prots = entity.getData().getProts();
+		double dose = (carbs * koof.getK() + prots * koof.getP()) / koof.getQ();
+		textMealCarbs.setText(df.format(carbs) + " " + captionCarbs);
 		textMealDose.setText(df.format(dose) + " " + captionDose);
 	}
 
