@@ -64,7 +64,7 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 	{
 		setContentView(R.layout.editor_meal);
 
-		// компоненты
+		// components
 		timePicker = (TimePicker) findViewById(R.id.pickerMealTime);
 		timePicker.setIs24HourView(true);
 		datePicker = (DatePicker) findViewById(R.id.pickerMealDate);
@@ -72,6 +72,26 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 		editMass = (EditText) findViewById(R.id.editItemMass);
 		buttonAdd = (Button) findViewById(R.id.button_additem);
 		list = (ListView) findViewById(R.id.ListView01);
+
+		// list.setScroll
+		// list.setScrollContainer(false);
+
+		// list.setOnTouchListener(new OnTouchListener()
+		// {
+		// @Override
+		// public boolean onTouch(View v, MotionEvent event)
+		// {
+		// if (event.getAction() == MotionEvent.ACTION_MOVE)
+		// {
+		// return true; // Indicates that this has been handled by you and will not be
+		// // forwarded further.
+		// }
+		// return false;
+		// }
+		// });
+
+		// list.addHeaderView(findViewById(R.id.layoutMealParent));
+
 		list.setOnItemClickListener(new OnItemClickListener()
 		{
 			@Override
