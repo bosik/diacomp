@@ -46,7 +46,6 @@ public class ActivityEditorNote extends ActivityEditor<NoteRecord>
 				ActivityEditorNote.this.submit();
 			}
 		});
-		timePicker.setIs24HourView(true);
 	}
 
 	@Override
@@ -74,7 +73,7 @@ public class ActivityEditorNote extends ActivityEditor<NoteRecord>
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(ActivityEditorNote.this, ERROR_INCORRECT_TIME);
+			UIUtils.showTip(this, ERROR_INCORRECT_TIME);
 			timePicker.requestFocus();
 			return false;
 		}
