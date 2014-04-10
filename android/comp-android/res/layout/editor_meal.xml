@@ -1,120 +1,115 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/meal_editor"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="top"
-    android:layout_margin="@dimen/padding_small"
-    android:gravity="top"
-    android:orientation="vertical" >
-
-    <TextView
-        android:id="@+id/labelMealTime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/editor_common_field_time" />
-
-    <RelativeLayout
-        android:id="@+id/layoutMealDateTime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <TimePicker
-            android:id="@+id/pickerMealTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true" />
-
-        <DatePicker
-            android:id="@+id/pickerMealDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/pickerMealTime"
-            android:paddingLeft="@dimen/padding_small" />
-    </RelativeLayout>
-
-    <TextView
-        android:id="@+id/textFoodName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/editor_meal_field_fooddish" />
-
-    <AutoCompleteTextView
-        android:id="@+id/autoCompleteTextView1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:completionThreshold="1"
-        android:ems="10"
-        android:imeOptions="actionSearch"
-        android:inputType="text"
-        android:singleLine="true"
-        android:textColor="@android:color/black" >
-
-        <requestFocus />
-    </AutoCompleteTextView>
-
-    <TextView
-        android:id="@+id/textItemMass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/editor_meal_field_mass" />
+    android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <EditText
-            android:id="@+id/editItemMass"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="numberDecimal|text"
-            android:singleLine="true" />
-
-        <Button
-            android:id="@+id/button_additem"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:text="@string/editor_meal_button_add" />
-    </LinearLayout>
-
-    <RelativeLayout
+        android:id="@+id/layoutMealParent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_marginTop="@dimen/padding_small"
-        android:background="#F0F0F0" >
+        android:gravity="top"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_small"
+        tools:context=".ActivityMeal" >
 
         <TextView
-            android:id="@+id/textMealCarbs"
-            android:layout_width="wrap_content"
+            android:id="@+id/labelMealTime"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:text="@string/editor_meal_label_carbs"
-            android:textStyle="bold" />
+            android:text="@string/editor_common_field_time" />
+
+        <RelativeLayout
+            android:id="@+id/layoutMealDateTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TimePicker
+                android:id="@+id/pickerMealTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true" />
+
+            <DatePicker
+                android:id="@+id/pickerMealDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/pickerMealTime"
+                android:paddingLeft="@dimen/padding_small" />
+        </RelativeLayout>
 
         <TextView
-            android:id="@+id/textMealDose"
+            android:id="@+id/textFoodName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:text="@string/editor_meal_label_dose"
-            android:textStyle="bold|normal" />
-    </RelativeLayout>
+            android:text="@string/editor_meal_field_fooddish" />
 
-    <LinearLayout
-        android:id="@+id/mealContentView"
-        android:layout_width="fill_parent"
-        android:layout_height="0dip"
-        android:layout_weight="0.42"
-        android:scrollbars="vertical" >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <AutoCompleteTextView
+                android:id="@+id/autoCompleteTextView1"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="8"
+                android:completionThreshold="1"
+                android:ems="10"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:singleLine="true"
+                android:textColor="@android:color/black" >
+
+                <requestFocus />
+            </AutoCompleteTextView>
+
+            <EditText
+                android:id="@+id/editItemMass"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:ems="10"
+                android:inputType="numberDecimal|text"
+                android:singleLine="true" />
+
+            <Button
+                android:id="@+id/button_additem"
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:focusable="false"
+                android:text="@string/editor_meal_button_add" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginTop="@dimen/padding_small"
+            android:background="#F0F0F0" >
+
+            <TextView
+                android:id="@+id/textMealCarbs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:text="@string/editor_meal_label_carbs"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textMealDose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:text="@string/editor_meal_label_dose"
+                android:textStyle="bold|normal" />
+        </RelativeLayout>
 
         <ListView
             android:id="@+id/ListView01"
@@ -122,13 +117,13 @@
             android:layout_height="wrap_content"
             android:drawSelectorOnTop="false" >
         </ListView>
-    </LinearLayout>
 
-    <Button
-        android:id="@+id/buttonMealOK"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/padding_medium"
-        android:text="@string/editor_common_save" />
+        <Button
+            android:id="@+id/buttonMealOK"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_medium"
+            android:text="@string/editor_common_save" />
+    </LinearLayout>
 
 </LinearLayout>
