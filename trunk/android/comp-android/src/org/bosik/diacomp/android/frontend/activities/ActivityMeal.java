@@ -2,6 +2,7 @@ package org.bosik.diacomp.android.frontend.activities;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
@@ -27,9 +28,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 public class ActivityMeal extends ActivityEditor<MealRecord>
 {
@@ -43,6 +46,8 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 	private List<Versioned<DishItem>>	dishBase;
 
 	// компоненты
+	private TimePicker					timePicker;
+	private DatePicker					datePicker;
 	private AutoCompleteTextView		editName;
 	private EditText					editMass;
 	private Button						buttonAdd;
@@ -60,6 +65,9 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 		setContentView(R.layout.editor_meal);
 
 		// компоненты
+		timePicker = (TimePicker) findViewById(R.id.pickerMealTime);
+		timePicker.setIs24HourView(true);
+		datePicker = (DatePicker) findViewById(R.id.pickerMealDate);
 		editName = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView1);
 		editMass = (EditText) findViewById(R.id.editItemMass);
 		buttonAdd = (Button) findViewById(R.id.button_additem);
@@ -89,14 +97,21 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 
 						try
 						{
-							double mass = Utils.parseDouble(text);
-							if (mass > Utils.EPS)
+							if (text.isEmpty())
 							{
-								entity.getData().get(position).setMass(mass);
+								entity.getData().remove(position);
 							}
 							else
 							{
-								entity.getData().remove(position);
+								double mass = Utils.parseDouble(text);
+								if (mass > Utils.EPS)
+								{
+									entity.getData().get(position).setMass(mass);
+								}
+								else
+								{
+									entity.getData().remove(position);
+								}
 							}
 							showMeal();
 						}
@@ -326,12 +341,35 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
+		if (!createMode)
+		{
+			showTime(entity.getData().getTime(), datePicker, timePicker);
+		}
+		else
+		{
+			showTime(new Date(), datePicker, timePicker);
+		}
+
 		showMeal();
 	}
 
 	@Override
 	protected boolean getValuesFromGUI()
 	{
+		// time
+		try
+		{
+			entity.getData().setTime(readTime(datePicker, timePicker));
+		}
+		catch (IllegalArgumentException e)
+		{
+			UIUtils.showTip(this, ERROR_INCORRECT_TIME);
+			timePicker.requestFocus();
+			return false;
+		}
+
+		// other data is already there
+
 		return true;
 	}
 }

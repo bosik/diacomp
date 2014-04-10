@@ -9,6 +9,33 @@
     android:orientation="vertical" >
 
     <TextView
+        android:id="@+id/labelMealTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/editor_common_field_time" />
+
+    <RelativeLayout
+        android:id="@+id/layoutMealDateTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TimePicker
+            android:id="@+id/pickerMealTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true" />
+
+        <DatePicker
+            android:id="@+id/pickerMealDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/pickerMealTime"
+            android:paddingLeft="@dimen/padding_small" />
+    </RelativeLayout>
+
+    <TextView
         android:id="@+id/textFoodName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
