@@ -103,7 +103,7 @@ public class Storage
 		// analyze using
 		// RelevantIndexator.indexate(localDiary, localFoodBase, localDishBase);
 
-		buildFoodList();
+		// buildFoodList();
 	}
 
 	private static String pair(String name, double value)
