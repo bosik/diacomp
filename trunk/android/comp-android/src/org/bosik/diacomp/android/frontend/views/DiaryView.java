@@ -122,7 +122,6 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 		setOnClickListener(this);
 		setOnTouchListener(this);
 		setClickable(true);
-		Log.e(TAG, "clickListener setuped OK");
 	}
 
 	/**
