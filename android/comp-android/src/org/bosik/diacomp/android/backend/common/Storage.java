@@ -1,5 +1,6 @@
 package org.bosik.diacomp.android.backend.common;
 
+import java.util.List;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryWebService;
@@ -9,9 +10,12 @@ import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseWebService;
 import org.bosik.diacomp.android.frontend.activities.ActivityPreferences;
 import org.bosik.diacomp.android.utils.ErrorHandler;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
+import org.bosik.diacomp.core.utils.Utils;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -19,7 +23,7 @@ import android.util.Log;
 
 /**
  * Stores application DAOs as singletons
- *
+ * 
  * @author Bosik
  */
 public class Storage
@@ -43,7 +47,7 @@ public class Storage
 
 	/**
 	 * Initializes the storage. Might be called sequentially
-	 *
+	 * 
 	 * @param context
 	 * @param resolver
 	 * @param preferences
@@ -98,6 +102,38 @@ public class Storage
 
 		// analyze using
 		// RelevantIndexator.indexate(localDiary, localFoodBase, localDishBase);
+
+		buildFoodList();
+	}
+
+	private static String pair(String name, double value)
+	{
+		return String.format("%s=\"%.1f\"", name, value).replace(",", ".");
+	}
+
+	private static String pair(String name, String value)
+	{
+		return String.format("%s=\"%s\"", name, value.replace("\"", "&quot;"));
+	}
+
+	private static void buildFoodList()
+	{
+		String result = "";
+
+		List<Versioned<FoodItem>> foods = localFoodBase.findAll(false);
+		for (Versioned<FoodItem> item : foods)
+		{
+			FoodItem food = item.getData();
+			if (food.getName().contains("Теремок"))
+			{
+				result = String.format("\t<food %s %s %s %s %s %s table=\"True\" tag=\"0\"/>",
+						pair("id", Utils.generateGuid().toUpperCase()),
+						pair("name", food.getName()), pair("prots", food.getRelProts()),
+						pair("fats", food.getRelFats()), pair("carbs", food.getRelCarbs()),
+						pair("val", food.getRelValue()));
+				Log.e(TAG, result);
+			}
+		}
 	}
 
 	private static boolean check(String testKey, String baseKey)
@@ -107,7 +143,7 @@ public class Storage
 
 	/**
 	 * Applies changed preference for specified key (if null, applies all settings)
-	 *
+	 * 
 	 * @param pref
 	 *            Preference unit
 	 * @param key
