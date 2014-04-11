@@ -318,11 +318,11 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 
 		// try to search item in food base
 
-		List<Versioned<FoodItem>> listFood = Storage.localFoodBase.findAny(name);
+		Versioned<FoodItem> foodItem = Storage.localFoodBase.findOne(name);
 
-		if (!listFood.isEmpty())
+		if (foodItem != null)
 		{
-			FoodItem food = listFood.get(0).getData();
+			FoodItem food = foodItem.getData();
 
 			FoodMassed item = new FoodMassed();
 			item.setName(food.getName());
