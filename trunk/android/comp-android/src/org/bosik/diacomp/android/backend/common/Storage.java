@@ -1,5 +1,6 @@
 package org.bosik.diacomp.android.backend.common;
 
+import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
@@ -12,6 +13,10 @@ import org.bosik.diacomp.android.frontend.activities.ActivityPreferences;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.services.analyze.AnalyzeExtracter;
+import org.bosik.diacomp.core.services.analyze.AnalyzeService;
+import org.bosik.diacomp.core.services.analyze.AnalyzeServiceImpl;
+import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
@@ -44,6 +49,11 @@ public class Storage
 	public static FoodBaseService	webFoodBase;
 	public static DishBaseService	localDishBase;
 	public static DishBaseService	webDishBase;
+
+	private static AnalyzeService	analyzeService;
+	public static KoofList			koofs;
+
+	private static int				ANALYZE_DAYS_PERIOD	= 20;
 
 	/**
 	 * Initializes the storage. Might be called sequentially
@@ -95,6 +105,20 @@ public class Storage
 			webDishBase = new DishBaseWebService(webClient);
 		}
 
+		if (null == analyzeService)
+		{
+			analyzeService = new AnalyzeServiceImpl();
+		}
+
+		if (koofs == null)
+		{
+			Date toTime = new Date();
+			Date fromTime = new Date(toTime.getTime() - (ANALYZE_DAYS_PERIOD * Utils.MsecPerDay));
+			double adaptation = 0.25; // [0..0.5]
+
+			koofs = AnalyzeExtracter.analyze(analyzeService, localDiary, fromTime, toTime, adaptation);
+		}
+
 		ErrorHandler.init(webClient);
 
 		// this applies all preferences
@@ -127,10 +151,9 @@ public class Storage
 			if (food.getName().contains("Теремок"))
 			{
 				result = String.format("\t<food %s %s %s %s %s %s table=\"True\" tag=\"0\"/>",
-						pair("id", Utils.generateGuid().toUpperCase()),
-						pair("name", food.getName()), pair("prots", food.getRelProts()),
-						pair("fats", food.getRelFats()), pair("carbs", food.getRelCarbs()),
-						pair("val", food.getRelValue()));
+						pair("id", Utils.generateGuid().toUpperCase()), pair("name", food.getName()),
+						pair("prots", food.getRelProts()), pair("fats", food.getRelFats()),
+						pair("carbs", food.getRelCarbs()), pair("val", food.getRelValue()));
 				Log.e(TAG, result);
 			}
 		}
