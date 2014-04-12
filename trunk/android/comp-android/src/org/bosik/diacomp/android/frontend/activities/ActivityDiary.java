@@ -627,7 +627,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			entity = new Versioned<MealRecord>(rec);
 		}
 
-		Intent intent = new Intent(this, ActivityMeal.class);
+		Intent intent = new Intent(this, ActivityEditorMeal.class);
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
 		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
 		startActivityForResult(intent, createMode ? DIALOG_MEAL_CREATE : DIALOG_MEAL_MODIFY);

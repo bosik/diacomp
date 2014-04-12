@@ -38,10 +38,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-public class ActivityMeal extends ActivityEditor<MealRecord>
+public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 {
 	// отладочная печать
-	private static final String			TAG	= ActivityMeal.class.getSimpleName();
+	private static final String			TAG	= ActivityEditorMeal.class.getSimpleName();
 
 	private static final DecimalFormat	df	= new DecimalFormat("###.#");
 
@@ -102,10 +102,10 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
 			{
-				Builder builder = new AlertDialog.Builder(ActivityMeal.this);
+				Builder builder = new AlertDialog.Builder(ActivityEditorMeal.this);
 				final String message = entity.getData().get(position).getName();
 
-				final EditText input = new EditText(ActivityMeal.this);
+				final EditText input = new EditText(ActivityEditorMeal.this);
 
 				// Utils.
 				input.setText(String.valueOf(entity.getData().get(position).getMass()));
@@ -143,7 +143,7 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 						catch (ParseException e)
 						{
 							// TODO: localize
-							UIUtils.showTip(ActivityMeal.this, "Wrong mass");
+							UIUtils.showTip(ActivityEditorMeal.this, "Wrong mass");
 						}
 
 					}
@@ -224,7 +224,7 @@ public class ActivityMeal extends ActivityEditor<MealRecord>
 			@Override
 			public void onClick(View v)
 			{
-				ActivityMeal.this.submit();
+				ActivityEditorMeal.this.submit();
 			}
 		});
 	}
