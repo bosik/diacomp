@@ -55,7 +55,7 @@
                 android:value="org.bosik.diacomp.android.face.activities.ActivityDiary" />
         </activity>
         <activity
-            android:name="org.bosik.diacomp.android.frontend.activities.ActivityMeal"
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorMeal"
             android:label="@string/editor_meal_title"
             android:theme="@android:style/Theme.Light" >
             <meta-data
