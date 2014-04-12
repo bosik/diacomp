@@ -4,7 +4,7 @@ import java.util.List;
 import org.bosik.diacomp.core.services.analyze.entities.AnalyzeRec;
 import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 
-public interface AnalyzeService
+public interface AnalyzeCore
 {
 	/**
 	 * Returns null if the list is empty

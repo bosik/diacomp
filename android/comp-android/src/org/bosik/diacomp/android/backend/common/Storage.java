@@ -13,9 +13,9 @@ import org.bosik.diacomp.android.frontend.activities.ActivityPreferences;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
+import org.bosik.diacomp.core.services.analyze.AnalyzeCoreImpl;
 import org.bosik.diacomp.core.services.analyze.AnalyzeExtracter;
-import org.bosik.diacomp.core.services.analyze.AnalyzeService;
-import org.bosik.diacomp.core.services.analyze.AnalyzeServiceImpl;
 import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.dishbase.DishBaseService;
@@ -50,7 +50,7 @@ public class Storage
 	public static DishBaseService	localDishBase;
 	public static DishBaseService	webDishBase;
 
-	private static AnalyzeService	analyzeService;
+	private static AnalyzeCore		analyzeService;
 	public static KoofList			koofs;
 
 	private static int				ANALYZE_DAYS_PERIOD	= 20;
@@ -107,7 +107,7 @@ public class Storage
 
 		if (null == analyzeService)
 		{
-			analyzeService = new AnalyzeServiceImpl();
+			analyzeService = new AnalyzeCoreImpl();
 		}
 
 		if (koofs == null)

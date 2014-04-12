@@ -283,7 +283,7 @@ public class AnalyzeExtracter
 		return result;
 	}
 
-	public static KoofList analyze(AnalyzeService analyzer, DiaryService source, Date fromTime, Date toTime,
+	public static KoofList analyze(AnalyzeCore analyzer, DiaryService source, Date fromTime, Date toTime,
 			double adaptation)
 	{
 		List<PrimeRec> recs = extractRecords(source, fromTime, toTime);

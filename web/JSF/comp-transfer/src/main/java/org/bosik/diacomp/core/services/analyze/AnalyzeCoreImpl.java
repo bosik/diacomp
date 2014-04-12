@@ -7,7 +7,7 @@ import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.services.analyze.entities.WeightedTimePoint;
 import org.bosik.diacomp.core.utils.Utils;
 
-public class AnalyzeServiceImpl implements AnalyzeService
+public class AnalyzeCoreImpl implements AnalyzeCore
 {
 	private class Bean
 	{
