@@ -124,7 +124,7 @@ public class Storage
 		// this applies all preferences
 		applyPreference(preferences, null);
 
-		// analyze using
+		// TODO: analyze using
 		// RelevantIndexator.indexate(localDiary, localFoodBase, localDishBase);
 
 		// buildFoodList();
