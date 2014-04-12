@@ -8,7 +8,7 @@ import org.bosik.diacomp.core.services.diary.DiaryService;
 public class KoofServiceImpl implements KoofService
 {
 	private DiaryService		diaryService;
-	private AnalyzeCore			analyzeService;
+	private AnalyzeCore			analyzeCore;
 	private Date				timeFrom;
 	private Date				timeTo;
 
@@ -23,16 +23,16 @@ public class KoofServiceImpl implements KoofService
 		STD_KOOF.setP(0.0);
 	}
 
-	public KoofServiceImpl(DiaryService diaryService, AnalyzeCore analyzeService)
+	public KoofServiceImpl(DiaryService diaryService, AnalyzeCore analyzeCore)
 	{
 		this.diaryService = diaryService;
-		this.analyzeService = analyzeService;
+		this.analyzeCore = analyzeCore;
 	}
 
 	@Override
 	public void update()
 	{
-		koofs = AnalyzeExtracter.analyze(analyzeService, diaryService, timeFrom, timeTo, adaptation);
+		koofs = AnalyzeExtracter.analyze(analyzeCore, diaryService, timeFrom, timeTo, adaptation);
 	}
 
 	@Override
