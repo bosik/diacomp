@@ -219,7 +219,8 @@ public class AnalyzeServiceImpl implements AnalyzeService
 
 		if (recs.isEmpty())
 		{
-			throw new IllegalArgumentException("Recs list is empty");
+			//throw new IllegalArgumentException("Recs list is empty");
+			return null;
 		}
 
 		final double DISC_Q = 0.0125;
