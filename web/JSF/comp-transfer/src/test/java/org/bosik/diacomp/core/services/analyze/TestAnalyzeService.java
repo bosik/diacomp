@@ -15,26 +15,32 @@ import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.test.fakes.services.FakeDiaryService;
 import org.bosik.diacomp.core.utils.Utils;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestAnalyzeService
 {
-	private final AnalyzeCore	service	= new AnalyzeCoreImpl();
+	private DiaryService	diaryService;
+	private AnalyzeCore		analyzeCore;
+	private KoofService		koofService;
+
+	@Before
+	public void setUp()
+	{
+		diaryService = new FakeDiaryService();
+		analyzeCore = new AnalyzeCoreImpl();
+		koofService = new KoofServiceImpl(diaryService, analyzeCore);
+	}
 
 	@Test
 	public void testDiaryAnalyze_setA_ok()
 	{
-		DiaryService diaryService = new FakeDiaryService();
-
 		//===========================================================================
 
 		List<Versioned<DiaryRecord>> records = new LinkedList<Versioned<DiaryRecord>>();
 
 		Versioned<DiaryRecord> r;
 
-		Date fromTime = Utils.date(2012, 01, 01);
-		Date toTime = Utils.date(2012, 02, 01);
-		double adaptation = 0.25; // [0..0.5]
 		double valueCarbs = 80.0;
 		double valueIns = 10.0;
 
@@ -62,8 +68,7 @@ public class TestAnalyzeService
 
 		diaryService.save(records);
 
-		KoofList koofs = AnalyzeExtracter.analyze(service, diaryService, fromTime, toTime, adaptation);
-		Koof koof = koofs.getKoof((10 * 60) + 40);
+		Koof koof = koofService.getKoof((10 * 60) + 40);
 		double act_x = koof.getK() / koof.getQ();
 		double exp_x = valueIns / valueCarbs;
 
