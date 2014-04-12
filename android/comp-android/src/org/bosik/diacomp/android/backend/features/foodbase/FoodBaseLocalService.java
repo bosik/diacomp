@@ -1,5 +1,6 @@
 package org.bosik.diacomp.android.backend.features.foodbase;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,10 +24,14 @@ import android.util.Log;
 
 public class FoodBaseLocalService implements FoodBaseService
 {
-	private static final String			TAG	= FoodBaseLocalService.class.getSimpleName();
+	private static final String				TAG	= FoodBaseLocalService.class.getSimpleName();
 
-	private final ContentResolver		resolver;
-	private final Serializer<FoodItem>	serializer;
+	private final ContentResolver			resolver;
+	private final Serializer<FoodItem>		serializer;
+
+	// caching
+	// NOTE: this suppose DB can't be changed outside app
+	public static List<Versioned<FoodItem>>	foodCache;
 
 	// ====================================================================================
 
@@ -40,6 +45,10 @@ public class FoodBaseLocalService implements FoodBaseService
 
 		Parser<FoodItem> s = new ParserFoodItem();
 		serializer = new SerializerAdapter<FoodItem>(s);
+		if (foodCache == null)
+		{
+			updateCache();
+		}
 	}
 
 	private List<Versioned<FoodItem>> parseItems(Cursor cursor)
@@ -93,6 +102,16 @@ public class FoodBaseLocalService implements FoodBaseService
 
 	private List<Versioned<FoodItem>> find(String id, String name, boolean includeDeleted, Date modAfter)
 	{
+		return findInCache(id, name, includeDeleted, modAfter);
+	}
+	
+	private void updateCache()
+	{
+		foodCache = findInDB(null, null, true, null);
+	}
+	
+	private List<Versioned<FoodItem>> findInDB(String id, String name, boolean includeDeleted, Date modAfter)
+	{
 		long time = System.currentTimeMillis();
 
 		try
@@ -142,7 +161,7 @@ public class FoodBaseLocalService implements FoodBaseService
 			final List<Versioned<FoodItem>> result = parseItems(cursor);
 			cursor.close();
 
-			Log.i(TAG, "Search done in " + (System.currentTimeMillis() - time) + " msec");
+			Log.i(TAG, "Search (database) done in " + (System.currentTimeMillis() - time) + " msec");
 			return result;
 		}
 		catch (Exception e)
@@ -150,7 +169,36 @@ public class FoodBaseLocalService implements FoodBaseService
 			throw new CommonServiceException(e);
 		}
 	}
+	
+	private List<Versioned<FoodItem>> findInCache(String id, String name, boolean includeDeleted, Date modAfter)
+	{
+		long time = System.currentTimeMillis();
 
+		try
+		{
+			List<Versioned<FoodItem>> result = new ArrayList<Versioned<FoodItem>>();
+			
+			for (Versioned<FoodItem> item : foodCache)
+			{
+				if ((id == null || item.getId().equals(id)) &&
+						(name == null || item.getData().getName().contains(name)) &&
+						(includeDeleted || !item.isDeleted()) &&
+						(modAfter == null || item.getTimeStamp().after(modAfter))
+						)
+				{
+					result.add(new Versioned<FoodItem>(item));
+				}
+			}
+			
+			Log.i(TAG, "Search (cache) done in " + (System.currentTimeMillis() - time) + " msec");
+			return result;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+	
 	@Override
 	public void add(Versioned<FoodItem> item) throws PersistenceException
 	{
@@ -165,6 +213,8 @@ public class FoodBaseLocalService implements FoodBaseService
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
 
 			resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues);
+			
+			updateCache();
 		}
 		catch (PersistenceException e)
 		{
@@ -197,6 +247,8 @@ public class FoodBaseLocalService implements FoodBaseService
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, 1);
 			String[] args = new String[] { id };
 			resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, "GUID = ?", args);
+			
+			updateCache();
 		}
 		catch (PersistenceException e)
 		{
@@ -298,6 +350,8 @@ public class FoodBaseLocalService implements FoodBaseService
 
 				String[] args = new String[] { item.getId() };
 				resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, "GUID = ?", args);
+				
+				updateCache();
 			}
 		}
 		catch (PersistenceException e)
