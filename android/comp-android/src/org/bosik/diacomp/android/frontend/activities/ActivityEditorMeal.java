@@ -48,7 +48,6 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 	// data
 	private List<Versioned<FoodItem>>	foodBase;
 	private List<Versioned<DishItem>>	dishBase;
-	private static KoofList				koofs;
 
 	// компоненты
 	private TimePicker					timePicker;
@@ -233,8 +232,6 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		AnalyzeService analyzeService = new HardcodedAnalyzeService();
-		koofs = analyzeService.analyze(null);
 	}
 
 	private void loadItemsList()
@@ -278,12 +275,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		int minutesTime = Utils.timeToMin(entity.getData().getTime());
 
 		// TODO: hackfix
-		if (koofs == null)
-		{
-			koofs = new HardcodedAnalyzeService().analyze(null);
-		}
-
-		Koof koof = koofs.getKoof(minutesTime);
+		Koof koof = Storage.koofs.getKoof(minutesTime);
 
 		double carbs = entity.getData().getCarbs();
 		double prots = entity.getData().getProts();
