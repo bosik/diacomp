@@ -19,7 +19,7 @@ import org.junit.Test;
 
 public class TestAnalyzeService
 {
-	private final AnalyzeService	service	= new AnalyzeServiceImpl();
+	private final AnalyzeCore	service	= new AnalyzeCoreImpl();
 
 	@Test
 	public void testDiaryAnalyze_setA_ok()

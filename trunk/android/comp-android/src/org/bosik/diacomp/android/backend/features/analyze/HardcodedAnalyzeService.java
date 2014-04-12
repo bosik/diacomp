@@ -1,11 +1,11 @@
 package org.bosik.diacomp.android.backend.features.analyze;
 
 import java.util.List;
-import org.bosik.diacomp.core.services.analyze.AnalyzeService;
+import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
 import org.bosik.diacomp.core.services.analyze.entities.AnalyzeRec;
 import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 
-public class HardcodedAnalyzeService implements AnalyzeService
+public class HardcodedAnalyzeService implements AnalyzeCore
 {
 	private static KoofList	koofs;
 	{
