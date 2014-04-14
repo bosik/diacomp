@@ -100,7 +100,11 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
+                android:paddingLeft="@dimen/padding_medium"
                 android:text="@string/editor_meal_label_carbs"
+                android:textColorHint="@color/green"
+                android:textColorLink="@color/green"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -109,8 +113,13 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
+                android:paddingRight="@dimen/padding_medium"
                 android:text="@string/editor_meal_label_dose"
+                android:textColorHint="@color/green"
+                android:textColorLink="@color/green"
+                android:textSize="20sp"
                 android:textStyle="bold|normal" />
+
         </RelativeLayout>
     </LinearLayout>
 
