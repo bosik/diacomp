@@ -3,6 +3,7 @@ package org.bosik.diacomp.android.backend.common;
 import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
+import org.bosik.diacomp.android.backend.features.analyze.HardcodedAnalyzeService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryWebService;
 import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
@@ -14,9 +15,8 @@ import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
-import org.bosik.diacomp.core.services.analyze.AnalyzeCoreImpl;
-import org.bosik.diacomp.core.services.analyze.AnalyzeExtracter;
-import org.bosik.diacomp.core.services.analyze.entities.KoofList;
+import org.bosik.diacomp.core.services.analyze.KoofService;
+import org.bosik.diacomp.core.services.analyze.KoofServiceImpl;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
@@ -50,8 +50,8 @@ public class Storage
 	public static DishBaseService	localDishBase;
 	public static DishBaseService	webDishBase;
 
-	private static AnalyzeCore		analyzeService;
-	public static KoofList			koofs;
+	private static AnalyzeCore		analyzeCore;
+	public static KoofService		koofService;
 
 	private static int				ANALYZE_DAYS_PERIOD	= 20;
 
@@ -105,18 +105,19 @@ public class Storage
 			webDishBase = new DishBaseWebService(webClient);
 		}
 
-		if (null == analyzeService)
+		if (null == analyzeCore)
 		{
-			analyzeService = new AnalyzeCoreImpl();
+			// analyzeCore = new AnalyzeCoreImpl();
+			analyzeCore = new HardcodedAnalyzeService();
 		}
 
-		if (koofs == null)
+		if (koofService == null)
 		{
-			Date toTime = new Date();
-			Date fromTime = new Date(toTime.getTime() - (ANALYZE_DAYS_PERIOD * Utils.MsecPerDay));
-			double adaptation = 0.25; // [0..0.5]
+			Date timeTo = new Date();
+			Date timeFrom = new Date(timeTo.getTime() - (ANALYZE_DAYS_PERIOD * Utils.MsecPerDay));
 
-			koofs = AnalyzeExtracter.analyze(analyzeService, localDiary, fromTime, toTime, adaptation);
+			koofService = new KoofServiceImpl(localDiary, analyzeCore);
+			koofService.setTimeRange(timeFrom, timeTo);
 		}
 
 		ErrorHandler.init(webClient);

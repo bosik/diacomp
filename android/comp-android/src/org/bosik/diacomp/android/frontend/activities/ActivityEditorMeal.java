@@ -272,13 +272,13 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		int minutesTime = Utils.timeToMin(entity.getData().getTime());
 
 		// TODO: hackfix
-		Koof koof = Storage.koofs.getKoof(minutesTime);
+		Koof koof = Storage.koofService.getKoof(minutesTime);
 
 		double carbs = entity.getData().getCarbs();
 		double prots = entity.getData().getProts();
 		double dose = (carbs * koof.getK() + prots * koof.getP()) / koof.getQ();
 		textMealCarbs.setText(df.format(carbs) + " " + captionCarbs);
-		textMealDose.setText(df.format(dose) + " " + captionDose);
+		textMealDose.setText(String.format("%.1f %s", dose, captionDose));
 	}
 
 	void addItem()
