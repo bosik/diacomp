@@ -99,6 +99,7 @@
             android:layout_weight="8"
             android:completionThreshold="1"
             android:dropDownWidth="fill_parent"
+            android:dropDownVerticalOffset="4dp"
             android:ems="10"
             android:hint="@string/common_hint_search"
             android:imeOptions="actionSearch"
