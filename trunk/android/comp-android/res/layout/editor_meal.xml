@@ -98,6 +98,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="8"
             android:completionThreshold="1"
+            android:dropDownWidth="fill_parent"
             android:ems="10"
             android:hint="@string/common_hint_search"
             android:imeOptions="actionSearch"
@@ -114,7 +115,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="3"
             android:ems="10"
-            android:hint="@string/common_hint_mass" 
+            android:hint="@string/common_hint_mass"
             android:inputType="numberDecimal|text"
             android:singleLine="true" />
 
