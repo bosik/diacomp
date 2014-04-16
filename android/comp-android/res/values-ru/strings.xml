@@ -6,6 +6,8 @@
     <string name="common_rectype_ins">Инъекция</string>
     <string name="common_rectype_meal">Приём пищи</string>
     <string name="common_rectype_note">Заметка</string>
+    <string name="common_hint_search">Поиск&#8230;</string>
+    <string name="common_hint_mass">Масса</string>
     <string name="diary_button_add">Новая запись</string>
     <string name="diary_context_common_edit">Изменить</string>
     <string name="diary_context_common_remove">Удалить</string>
@@ -29,7 +31,6 @@
     <string name="editor_meal_title">Приём пищи</string>
     <string name="editor_note_field_text">Текст</string>
     <string name="editor_note_title">Заметка</string>
-    <string name="foodbase_search_hint">Поиск&#8230;</string>
     <string name="foodbase_subinfo" formatted="false">Б %.1f\t\tЖ %.1f\t\tУ %.1f\t\tК %.1f</string>
     <string name="foodbase_title">База продуктов</string>
     <string name="foodbase_title_loading">База продуктов (загрузка…)</string>
