@@ -103,7 +103,7 @@
             android:ems="10"
             android:hint="@string/common_hint_search"
             android:imeOptions="actionSearch"
-            android:inputType="text"
+            android:inputType="textMultiLine"
             android:singleLine="true"
             android:textColor="@android:color/black" >
 
@@ -113,7 +113,7 @@
         <EditText
             android:id="@+id/editItemMass"
             android:layout_width="0px"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="3"
             android:ems="10"
             android:hint="@string/common_hint_mass"
