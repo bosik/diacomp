@@ -1,6 +1,8 @@
 package org.bosik.diacomp.android.backend.features.foodbase;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +49,7 @@ public class FoodBaseLocalService implements FoodBaseService
 		serializer = new SerializerAdapter<FoodItem>(s);
 		if (foodCache == null)
 		{
-			updateCache();
+			foodCache = findInDB(null, null, true, null);
 		}
 	}
 
@@ -100,16 +102,36 @@ public class FoodBaseLocalService implements FoodBaseService
 		}
 	}
 
+	// private List<SearchResult> parseHeaders(Cursor cursor)
+	// {
+	// // analyze response
+	// if (cursor != null)
+	// {
+	// List<SearchResult> result = new LinkedList<SearchResult>();
+	//
+	// int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_GUID);
+	// int indexName = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE);
+	//
+	// while (cursor.moveToNext())
+	// {
+	// String valueId = cursor.getString(indexId);
+	// String valueName = cursor.getString(indexName);
+	// result.add(new SearchResult(valueId, valueName));
+	// }
+	//
+	// return result;
+	// }
+	// else
+	// {
+	// throw new NullPointerException("Cursor is null");
+	// }
+	// }
+
 	private List<Versioned<FoodItem>> find(String id, String name, boolean includeDeleted, Date modAfter)
 	{
 		return findInCache(id, name, includeDeleted, modAfter);
 	}
-	
-	private void updateCache()
-	{
-		foodCache = findInDB(null, null, true, null);
-	}
-	
+
 	private List<Versioned<FoodItem>> findInDB(String id, String name, boolean includeDeleted, Date modAfter)
 	{
 		long time = System.currentTimeMillis();
@@ -169,7 +191,7 @@ public class FoodBaseLocalService implements FoodBaseService
 			throw new CommonServiceException(e);
 		}
 	}
-	
+
 	private List<Versioned<FoodItem>> findInCache(String id, String name, boolean includeDeleted, Date modAfter)
 	{
 		long time = System.currentTimeMillis();
@@ -177,19 +199,27 @@ public class FoodBaseLocalService implements FoodBaseService
 		try
 		{
 			List<Versioned<FoodItem>> result = new ArrayList<Versioned<FoodItem>>();
-			
+
 			for (Versioned<FoodItem> item : foodCache)
 			{
-				if ((id == null || item.getId().equals(id)) &&
-						(name == null || item.getData().getName().contains(name)) &&
-						(includeDeleted || !item.isDeleted()) &&
-						(modAfter == null || item.getTimeStamp().after(modAfter))
-						)
+				if ((id == null || item.getId().equals(id))
+						&& (name == null || item.getData().getName().contains(name))
+						&& (includeDeleted || !item.isDeleted())
+						&& (modAfter == null || item.getTimeStamp().after(modAfter)))
 				{
 					result.add(new Versioned<FoodItem>(item));
 				}
 			}
-			
+
+			Collections.sort(result, new Comparator<Versioned<FoodItem>>()
+			{
+				@Override
+				public int compare(Versioned<FoodItem> arg0, Versioned<FoodItem> arg1)
+				{
+					return arg0.getData().getName().compareTo(arg1.getData().getName());
+				}
+			});
+
 			Log.i(TAG, "Search (cache) done in " + (System.currentTimeMillis() - time) + " msec");
 			return result;
 		}
@@ -198,7 +228,51 @@ public class FoodBaseLocalService implements FoodBaseService
 			throw new CommonServiceException(e);
 		}
 	}
-	
+
+	// private List<SearchResult> loadHeadersFromDB(String name)
+	// {
+	// long time = System.currentTimeMillis();
+	//
+	// try
+	// {
+	// // constructing parameters
+	// String[] mProj = { DiaryContentProvider.COLUMN_FOODBASE_GUID,
+	// DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE };
+	//
+	// String mSelectionClause = "";
+	// List<String> args = new LinkedList<String>();
+	//
+	// if (name != null)
+	// {
+	// mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
+	// mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE + " LIKE ?";
+	// args.add("%" + name + "%");
+	// }
+	//
+	// mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
+	// mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_DELETED + " = 0";
+	//
+	// String[] mSelectionArgs = args.toArray(new String[] {});
+	// String mSortOrder = DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE;
+	//
+	// // execute query
+	// Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, mProj,
+	// mSelectionClause,
+	// mSelectionArgs, mSortOrder);
+	//
+	// final List<SearchResult> result = parseHeaders(cursor);
+	// cursor.close();
+	//
+	// Log.i(TAG, "Search headers (database) done in " + (System.currentTimeMillis() - time) +
+	// " msec");
+	// return result;
+	// }
+	// catch (Exception e)
+	// {
+	// throw new CommonServiceException(e);
+	// }
+	// }
+
 	@Override
 	public void add(Versioned<FoodItem> item) throws PersistenceException
 	{
@@ -213,8 +287,8 @@ public class FoodBaseLocalService implements FoodBaseService
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
 
 			resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues);
-			
-			updateCache();
+
+			foodCache.add(new Versioned<FoodItem>(item));
 		}
 		catch (PersistenceException e)
 		{
@@ -247,8 +321,15 @@ public class FoodBaseLocalService implements FoodBaseService
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, 1);
 			String[] args = new String[] { id };
 			resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, "GUID = ?", args);
-			
-			updateCache();
+
+			for (Versioned<FoodItem> item : foodCache)
+			{
+				if (item.getId().equals(id))
+				{
+					item.setDeleted(true);
+					break;
+				}
+			}
 		}
 		catch (PersistenceException e)
 		{
@@ -290,6 +371,36 @@ public class FoodBaseLocalService implements FoodBaseService
 
 		return filtered;
 	}
+
+	// @Override
+	// public List<SearchResult> quickFindAny(String filter)
+	// {
+	// /*
+	// * As far as SQLite LIKE operator is case-sensitive for non-latin chars, we need to filter
+	// * it manually :(
+	// */
+	//
+	// // List<SearchResult> items = loadHeadersFromDB(filter);
+	// // return items;
+	// long time = System.currentTimeMillis();
+	//
+	// List<SearchResult> all = loadHeadersFromDB(null); // FIXME
+	// List<SearchResult> filtered = new LinkedList<SearchResult>();
+	// filter = filter.toLowerCase();
+	//
+	// for (SearchResult item : all)
+	// {
+	// if (item.getName().toLowerCase().contains(filter))
+	// {
+	// filtered.add(item);
+	// }
+	// }
+	//
+	// time = System.currentTimeMillis() - time;
+	// Log.d(TAG, String.format("quickFindAny: filtered by '%s' within %d msec", filter, time));
+	//
+	// return filtered;
+	// }
 
 	@Override
 	public Versioned<FoodItem> findOne(String exactName)
@@ -350,8 +461,18 @@ public class FoodBaseLocalService implements FoodBaseService
 
 				String[] args = new String[] { item.getId() };
 				resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, "GUID = ?", args);
-				
-				updateCache();
+
+				for (Versioned<FoodItem> x : foodCache)
+				{
+					if (x.getId().equals(item.getId()))
+					{
+						x.setTimeStamp(item.getTimeStamp());
+						x.setVersion(item.getVersion());
+						x.setDeleted(item.isDeleted());
+						x.setData(item.getData()); // FIXME: may be problem
+						break;
+					}
+				}
 			}
 		}
 		catch (PersistenceException e)
