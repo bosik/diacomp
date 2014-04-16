@@ -25,6 +25,7 @@ import org.bosik.diacomp.core.utils.Utils;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.util.Log;
 
 /**
@@ -126,11 +127,36 @@ public class Storage
 		// this applies all preferences
 		applyPreference(preferences, null);
 
-		// TODO: analyze using
-		RelevantIndexator.indexate(localDiary, localFoodBase, localDishBase);
-
-		// buildFoodList();
+		// run background indexing
+		new AsyncTask<Void, Void, Void>()
+		{
+			@Override
+			protected Void doInBackground(Void... arg0)
+			{
+				RelevantIndexator.indexate(localDiary, localFoodBase, localDishBase);
+				return null;
+			}
+		}.execute();
 	}
+
+	// private static void speedTest()
+	// {
+	// // TODO Auto-generated method stub
+	// Serializer<Versioned<FoodItem>> serializer = new SerializerFoodItem();
+	// List<Versioned<FoodItem>> items = localFoodBase.findAll(true);
+	//
+	// long time = System.currentTimeMillis();
+	// String s = serializer.writeAll(items);
+	// Log.e(TAG,
+	// String.format("%d items serialized withing %d msec", items.size(), System.currentTimeMillis()
+	// - time));
+	//
+	// time = System.currentTimeMillis();
+	// serializer.readAll(s);
+	// Log.e(TAG, String.format("%d items de-serialized withing %d msec", items.size(),
+	// System.currentTimeMillis()
+	// - time));
+	// }
 
 	private static String pair(String name, double value)
 	{
