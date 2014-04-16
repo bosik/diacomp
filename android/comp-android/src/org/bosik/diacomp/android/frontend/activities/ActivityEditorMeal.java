@@ -67,7 +67,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		timePicker = (TimePicker) findViewById(R.id.pickerMealTime);
 		timePicker.setIs24HourView(true);
 		datePicker = (DatePicker) findViewById(R.id.pickerMealDate);
-		editName = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView1);
+		editName = (AutoCompleteTextView) findViewById(R.id.mealFoodDishInput);
 		editMass = (EditText) findViewById(R.id.editItemMass);
 		buttonAdd = (Button) findViewById(R.id.button_additem);
 		list = (ListView) findViewById(R.id.ListView01);
