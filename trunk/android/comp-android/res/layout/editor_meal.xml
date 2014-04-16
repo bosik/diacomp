@@ -44,49 +44,6 @@
                 android:paddingLeft="@dimen/padding_small" />
         </RelativeLayout>
 
-        <TextView
-            android:id="@+id/textFoodName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/editor_meal_field_fooddish" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <AutoCompleteTextView
-                android:id="@+id/autoCompleteTextView1"
-                android:layout_width="0px"
-                android:layout_height="wrap_content"
-                android:layout_weight="8"
-                android:completionThreshold="1"
-                android:ems="10"
-                android:imeOptions="actionSearch"
-                android:inputType="text"
-                android:singleLine="true"
-                android:textColor="@android:color/black" >
-
-                <requestFocus />
-            </AutoCompleteTextView>
-
-            <EditText
-                android:id="@+id/editItemMass"
-                android:layout_width="0px"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:ems="10"
-                android:inputType="numberDecimal|text"
-                android:singleLine="true" />
-
-            <Button
-                android:id="@+id/button_additem"
-                android:layout_width="0px"
-                android:layout_height="match_parent"
-                android:layout_weight="2"
-                android:focusable="false"
-                android:text="@string/editor_meal_button_add" />
-        </LinearLayout>
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -119,7 +76,6 @@
                 android:textColorLink="@color/green"
                 android:textSize="20sp"
                 android:textStyle="bold|normal" />
-
         </RelativeLayout>
     </LinearLayout>
 
@@ -131,5 +87,43 @@
         android:drawSelectorOnTop="false"
         android:scrollbars="vertical" >
     </ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <AutoCompleteTextView
+            android:id="@+id/mealFoodDishInput"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:completionThreshold="1"
+            android:ems="10"
+            android:hint="@string/editor_meal_field_fooddish"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:singleLine="true"
+            android:textColor="@android:color/black" >
+
+            <requestFocus />
+        </AutoCompleteTextView>
+
+        <EditText
+            android:id="@+id/editItemMass"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:ems="10"
+            android:inputType="numberDecimal|text"
+            android:singleLine="true" />
+
+        <Button
+            android:id="@+id/button_additem"
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:focusable="false"
+            android:text="@string/editor_meal_button_add" />
+    </LinearLayout>
 
 </LinearLayout>
