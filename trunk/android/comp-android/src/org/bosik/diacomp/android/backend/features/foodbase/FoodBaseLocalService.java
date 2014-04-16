@@ -461,7 +461,10 @@ public class FoodBaseLocalService implements FoodBaseService
 
 				String[] args = new String[] { item.getId() };
 				resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, "GUID = ?", args);
+			}
 
+			for (Versioned<FoodItem> item : items)
+			{
 				for (Versioned<FoodItem> x : foodCache)
 				{
 					if (x.getId().equals(item.getId()))

@@ -10,6 +10,7 @@ import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
 import org.bosik.diacomp.android.backend.features.dishbase.DishBaseWebService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseWebService;
+import org.bosik.diacomp.android.backend.features.search.RelevantIndexator;
 import org.bosik.diacomp.android.frontend.activities.ActivityPreferences;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
@@ -126,7 +127,7 @@ public class Storage
 		applyPreference(preferences, null);
 
 		// TODO: analyze using
-		// RelevantIndexator.indexate(localDiary, localFoodBase, localDishBase);
+		RelevantIndexator.indexate(localDiary, localFoodBase, localDishBase);
 
 		// buildFoodList();
 	}
