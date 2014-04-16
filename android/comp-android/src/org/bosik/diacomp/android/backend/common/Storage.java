@@ -127,13 +127,25 @@ public class Storage
 		// this applies all preferences
 		applyPreference(preferences, null);
 
-		// run background indexing
+		runBackgrounds();
+	}
+
+	private static void runBackgrounds()
+	{
 		new AsyncTask<Void, Void, Void>()
 		{
 			@Override
 			protected Void doInBackground(Void... arg0)
 			{
+				// indexing
 				RelevantIndexator.indexate(localDiary, localFoodBase, localDishBase);
+
+				// analyzing
+				// TODO
+
+				// synchronizing
+				// TODO
+
 				return null;
 			}
 		}.execute();
