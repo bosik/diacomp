@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -252,13 +253,27 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 
 	private void showMeal()
 	{
-		String[] temp = new String[entity.getData().count()];
+		final String[] temp = new String[entity.getData().count()];
 		for (int i = 0; i < entity.getData().count(); i++)
 		{
 			temp[i] = printFoodMassed(entity.getData().get(i));
 		}
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, temp);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_2,
+				android.R.id.text1, temp)
+		{
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent)
+			{
+				View view = super.getView(position, convertView, parent);
+				TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+				TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+
+				text1.setText(entity.getData().get(position).getName());
+				text2.setText(String.format("%.1f", entity.getData().get(position).getMass()));
+				return view;
+			}
+		};
 		list.setAdapter(adapter);
 
 		// insulin dosage info
