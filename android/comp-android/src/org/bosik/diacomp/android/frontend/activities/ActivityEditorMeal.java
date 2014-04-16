@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
+import org.bosik.diacomp.android.backend.features.search.Sorter;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
@@ -39,25 +40,27 @@ import android.widget.TimePicker;
 public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 {
 	// отладочная печать
-	private static final String			TAG	= ActivityEditorMeal.class.getSimpleName();
+	private static final String				TAG			= ActivityEditorMeal.class.getSimpleName();
 
-	private static final DecimalFormat	df	= new DecimalFormat("###.#");
+	private static final DecimalFormat		df			= new DecimalFormat("###.#");
+	private static final Sorter<FoodItem>	sorterFood	= new Sorter<FoodItem>();
+	private static final Sorter<DishItem>	sorterDish	= new Sorter<DishItem>();
 
 	// data
-	private List<Versioned<FoodItem>>	foodBase;
-	private List<Versioned<DishItem>>	dishBase;
+	private List<Versioned<FoodItem>>		foodBase;
+	private List<Versioned<DishItem>>		dishBase;
 
 	// компоненты
-	private TimePicker					timePicker;
-	private DatePicker					datePicker;
-	private AutoCompleteTextView		editName;
-	private EditText					editMass;
-	private Button						buttonAdd;
-	private ListView					list;
-	private TextView					textMealCarbs;
-	private TextView					textMealDose;
-	private String						captionCarbs;
-	private String						captionDose;
+	private TimePicker						timePicker;
+	private DatePicker						datePicker;
+	private AutoCompleteTextView			editName;
+	private EditText						editMass;
+	private Button							buttonAdd;
+	private ListView						list;
+	private TextView						textMealCarbs;
+	private TextView						textMealDose;
+	private String							captionCarbs;
+	private String							captionDose;
 
 	@Override
 	protected void setupInterface()
@@ -229,7 +232,13 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 	private void loadItemsList()
 	{
 		foodBase = Storage.localFoodBase.findAll(false);
+		sorterFood.sort(foodBase, Sorter.Sort.RELEVANT);
+
 		dishBase = Storage.localDishBase.findAll(false);
+		sorterDish.sort(dishBase, Sorter.Sort.RELEVANT);
+
+		// TODO: wrong solution, sorting should be applied after building full food/dish list
+
 		String[] items = new String[foodBase.size() + dishBase.size()];
 
 		int i = 0;
