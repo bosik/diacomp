@@ -213,6 +213,7 @@ public class ActivityFoodbase extends Activity
 			Log.d(TAG, String.format("Searched for '%s', founded items: %d", filter, temp.size()));
 
 			// sorter.sort(temp, mode == Mode.EDIT ? Sorter.Sort.ALPHABET : Sorter.Sort.RELEVANT);
+			sorter.sort(temp, Sorter.Sort.RELEVANT);
 
 			// TODO: check the performance
 			List<Versioned<NamedRelativeTagged>> result = new ArrayList<Versioned<NamedRelativeTagged>>();
