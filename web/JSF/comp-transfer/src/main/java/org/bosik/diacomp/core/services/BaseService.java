@@ -35,9 +35,17 @@ public interface BaseService<Item> extends ObjectService<Item>
 	 */
 	List<Versioned<Item>> findAny(String filter);
 
+	//	/**
+	//	 * Searches for non-deleted item with name containing specified string (case insensitive).
+	//	 * 
+	//	 * @param filter
+	//	 * @return List of (id, name) pairs
+	//	 */
+	//	List<SearchResult> quickFindAny(String filter);
+
 	/**
 	 * Searches for non-deleted item with exact name
-	 *
+	 * 
 	 * @param exactName
 	 * @return Item if found, null otherwise
 	 */
