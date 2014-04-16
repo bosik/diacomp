@@ -55,8 +55,6 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 	private ListView					list;
 	private TextView					textMealCarbs;
 	private TextView					textMealDose;
-	private Button						buttonOK;
-
 	private String						captionCarbs;
 	private String						captionDose;
 
@@ -213,16 +211,12 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 				}
 			}
 		});
+	}
 
-		buttonOK = (Button) findViewById(R.id.buttonMealOK);
-		buttonOK.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				ActivityEditorMeal.this.submit();
-			}
-		});
+	@Override
+	public void onBackPressed()
+	{
+		submit();
 	}
 
 	@Override

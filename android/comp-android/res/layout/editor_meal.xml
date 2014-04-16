@@ -132,18 +132,4 @@
         android:scrollbars="vertical" >
     </ListView>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="bottom"
-        android:orientation="horizontal" >
-
-        <Button
-            android:id="@+id/buttonMealOK"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/padding_medium"
-            android:text="@string/editor_common_save" />
-    </LinearLayout>
-
 </LinearLayout>
