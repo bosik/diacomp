@@ -91,6 +91,31 @@ public class DishBaseLocalService implements DishBaseService
 		}
 	}
 
+	// private List<SearchResult> parseHeaders(Cursor cursor)
+	// {
+	// // analyze response
+	// if (cursor != null)
+	// {
+	// List<SearchResult> result = new LinkedList<SearchResult>();
+	//
+	// int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_GUID);
+	// int indexName = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE);
+	//
+	// while (cursor.moveToNext())
+	// {
+	// String valueId = cursor.getString(indexId);
+	// String valueName = cursor.getString(indexName);
+	// result.add(new SearchResult(valueId, valueName));
+	// }
+	//
+	// return result;
+	// }
+	// else
+	// {
+	// throw new NullPointerException("Cursor is null");
+	// }
+	// }
+
 	private List<Versioned<DishItem>> find(String id, String name, boolean includeDeleted, Date modAfter)
 	{
 		long time = System.currentTimeMillis();
@@ -150,6 +175,50 @@ public class DishBaseLocalService implements DishBaseService
 			throw new CommonServiceException(e);
 		}
 	}
+
+	// private List<SearchResult> loadHeadersFromDB(String name)
+	// {
+	// long time = System.currentTimeMillis();
+	//
+	// try
+	// {
+	// // constructing parameters
+	// String[] mProj = { DiaryContentProvider.COLUMN_DISHBASE_GUID,
+	// DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE };
+	//
+	// String mSelectionClause = "";
+	// List<String> args = new LinkedList<String>();
+	//
+	// if (name != null)
+	// {
+	// mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
+	// mSelectionClause += DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE + " LIKE ?";
+	// args.add("%" + name + "%");
+	// }
+	//
+	// mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
+	// mSelectionClause += DiaryContentProvider.COLUMN_DISHBASE_DELETED + " = 0";
+	//
+	// String[] mSelectionArgs = args.toArray(new String[] {});
+	// String mSortOrder = DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE;
+	//
+	// // execute query
+	// Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DISHBASE_URI, mProj,
+	// mSelectionClause,
+	// mSelectionArgs, mSortOrder);
+	//
+	// final List<SearchResult> result = parseHeaders(cursor);
+	// cursor.close();
+	//
+	// Log.i(TAG, "Search headers (database) done in " + (System.currentTimeMillis() - time) +
+	// " msec");
+	// return result;
+	// }
+	// catch (Exception e)
+	// {
+	// throw new CommonServiceException(e);
+	// }
+	// }
 
 	@Override
 	public void add(Versioned<DishItem> item) throws PersistenceException
@@ -238,6 +307,32 @@ public class DishBaseLocalService implements DishBaseService
 
 		return filtered;
 	}
+
+	// @Override
+	// public List<SearchResult> quickFindAny(String filter)
+	// {
+	// /*
+	// * As far as SQLite LIKE operator is case-sensitive for non-latin chars, we need to filter
+	// * it manually :(
+	// */
+	//
+	// // List<SearchResult> items = loadHeadersFromDB(filter);
+	// // return items;
+	//
+	// List<SearchResult> all = loadHeadersFromDB(""); // FIXME
+	// List<SearchResult> filtered = new LinkedList<SearchResult>();
+	// filter = filter.toLowerCase();
+	//
+	// for (SearchResult item : all)
+	// {
+	// if (item.getName().toLowerCase().contains(filter))
+	// {
+	// filtered.add(item);
+	// }
+	// }
+	//
+	// return filtered;
+	// }
 
 	@Override
 	public Versioned<DishItem> findOne(String exactName)
