@@ -541,7 +541,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		int month = date.getMonth();
 		int day = date.getDate();
 
-		Date start = new Date(year, month, day, 0, 0, 0);
+		Date start = Utils.date(year, month, day);
 		Date end = Utils.getNextDay(start);
 
 		curRecords = Storage.localDiary.findBetween(start, end, false);
