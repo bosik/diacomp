@@ -15,8 +15,6 @@ import org.bosik.diacomp.android.backend.common.webclient.exceptions.ResponseFor
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFieldException;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.utils.ErrorHandler;
-import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.sync.SyncService;
 import org.bosik.diacomp.core.services.sync.SyncService.Callback;
 import org.bosik.diacomp.core.utils.Utils;
@@ -205,9 +203,8 @@ public class ActivityMain extends Activity implements OnClickListener
 			try
 			{
 				Log.v(TAG, "Sync diary...");
-				// TODO: хранить время последней синхронизации
-				Date since = new Date(2013 - 1900, 11 - 1, 1, 0, 0, 0); // а затем мы получаем
-																		// громадный синхролист, ага
+				// TODO: store last sync time
+				Date since = Utils.time(2013, 11, 1, 0, 0, 0);
 				syncDiaryItemsCount = SyncService.synchronize(Storage.localDiary, Storage.webDiary, since);
 				Log.v(TAG, "Diary synced, total tranferred: " + syncDiaryItemsCount);
 
