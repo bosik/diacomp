@@ -1,31 +1,15 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.Date;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 import org.bosik.diacomp.android.BuildConfig;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.HardcodedFoodbase;
 import org.bosik.diacomp.android.backend.common.Storage;
-import org.bosik.diacomp.android.backend.common.webclient.exceptions.AuthException;
-import org.bosik.diacomp.android.backend.common.webclient.exceptions.ConnectionException;
-import org.bosik.diacomp.android.backend.common.webclient.exceptions.DeprecatedAPIException;
-import org.bosik.diacomp.android.backend.common.webclient.exceptions.ResponseFormatException;
-import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFieldException;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.utils.ErrorHandler;
-import org.bosik.diacomp.core.services.sync.SyncService;
-import org.bosik.diacomp.core.services.sync.SyncService.Callback;
-import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -57,8 +41,6 @@ public class ActivityMain extends Activity implements OnClickListener
 	private Button				buttonPref;
 	private Button				buttonAuth;
 	private Button				buttonTestMealEditor;
-
-	private static boolean		timerSettedUp						= false;
 
 	/* =========================== CLASSES ================================ */
 
@@ -123,246 +105,248 @@ public class ActivityMain extends Activity implements OnClickListener
 		DONE
 	}
 
-	class AsyncTaskAuthAndSync extends AsyncTask<SyncParams, Integer, LoginResult> implements Callback
-	{
-		// <Params, Progress, Result>
-		private ProgressDialog		dialog_login;
-		private ProgressDialog		dialog_sync;
-		private int					syncDiaryItemsCount;
-		private int					syncFoodItemsCount;
-		private SyncParams			syncParams;
-
-		// константы для управления progressbar
-		private static final int	COM_SHOW_AUTH		= 11;
-		private static final int	COM_SHOW_SYNC		= 12;
-		private static final int	COM_PROGRESS_MAX	= 21;
-		private static final int	COM_PROGRESS_CUR	= 22;
-
-		@Override
-		protected void onPreExecute()
-		{
-			dialog_login = new ProgressDialog(ActivityMain.this);
-			dialog_login.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			dialog_login.setCancelable(false);
-			dialog_login.setMessage(MESSAGE_PROGRESS_AUTH);
-
-			dialog_sync = new ProgressDialog(ActivityMain.this);
-			dialog_sync.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-			dialog_sync.setCancelable(false);
-			dialog_sync.setMessage(MESSAGE_PROGRESS_SYNC);
-		}
-
-		@Override
-		protected LoginResult doInBackground(SyncParams... par)
-		{
-			Log.i(TAG, "Sync()");
-			syncDiaryItemsCount = 0;
-			syncFoodItemsCount = 0;
-
-			syncParams = new SyncParams(par[0]);
-
-			/* AUTH */
-
-			// if (!Storage.webClient.isOnline())
-			// {
-			// Log.d(TAG, "Not logged, trying to auth (username=" + Storage.webClient.getUsername()
-			// + ", password="
-			// + Storage.webClient.getPassword() + ")");
-			//
-			// publishProgress(COM_SHOW_AUTH);
-			// try
-			// {
-			// Storage.webClient.login();
-			// Log.d(TAG, "Logged OK");
-			// }
-			// catch (ConnectionException e)
-			// {
-			// return LoginResult.FAIL_CONNECTION;
-			// }
-			// catch (ResponseFormatException e)
-			// {
-			// return LoginResult.FAIL_FORMAT;
-			// }
-			// catch (DeprecatedAPIException e)
-			// {
-			// return LoginResult.FAIL_APIVERSION;
-			// }
-			// catch (AuthException e)
-			// {
-			// return LoginResult.FAIL_AUTH;
-			// }
-			// catch (UndefinedFieldException e)
-			// {
-			// return LoginResult.FAIL_UNDEFIELDS;
-			// }
-			// }
-
-			/* SYNC */
-
-			publishProgress(COM_SHOW_SYNC);
-			try
-			{
-				Log.v(TAG, "Sync diary...");
-				// TODO: store last sync time
-				Date since = Utils.time(2013, 11, 1, 0, 0, 0);
-				syncDiaryItemsCount = SyncService.synchronize(Storage.localDiary, Storage.webDiary, since);
-				Log.v(TAG, "Diary synced, total tranferred: " + syncDiaryItemsCount);
-
-				Log.v(TAG, "Sync foodbase...");
-				syncFoodItemsCount = SyncService.synchronize(Storage.localFoodBase, Storage.webFoodBase, since);
-				Log.v(TAG, "Foodbase synced, total tranferred: " + syncFoodItemsCount);
-
-				Log.v(TAG, "Sync done OK");
-				return LoginResult.DONE;
-			}
-			catch (ConnectionException e)
-			{
-				// Storage.logged = false;
-				Log.e(TAG, e.getLocalizedMessage());
-				return LoginResult.FAIL_CONNECTION;
-			}
-			catch (ResponseFormatException e)
-			{
-				// Storage.logged = false;
-				Log.e(TAG, e.getLocalizedMessage());
-				return LoginResult.FAIL_FORMAT;
-			}
-			catch (DeprecatedAPIException e)
-			{
-				// Storage.logged = false;
-				Log.e(TAG, e.getLocalizedMessage());
-				return LoginResult.FAIL_APIVERSION;
-			}
-			catch (AuthException e)
-			{
-				// Storage.logged = false;
-				Log.e(TAG, e.getLocalizedMessage());
-				return LoginResult.FAIL_AUTH;
-			}
-			catch (UndefinedFieldException e)
-			{
-				// Storage.logged = false;
-				Log.e(TAG, e.getLocalizedMessage());
-				return LoginResult.FAIL_UNDEFIELDS;
-			}
-		}
-
-		@Override
-		protected void onProgressUpdate(Integer... msg)
-		{
-			if (!syncParams.getShowProgress())
-			{
-				return;
-			}
-
-			switch (msg[0])
-			{
-				case COM_SHOW_AUTH:
-					dialog_login.show();
-					break;
-				case COM_SHOW_SYNC:
-					dialog_login.dismiss();
-					dialog_sync.show();
-					break;
-			/*
-			 * case COM_PROGRESS_MAX: dialog_sync.setMax(msg[1]); break; case COM_PROGRESS_CUR:
-			 * dialog_sync.setProgress(msg[1]); break;
-			 */
-			}
-		}
-
-		@Override
-		protected void onPostExecute(LoginResult result)
-		{
-			if (syncParams.getShowProgress())
-			{
-				if (dialog_login.isShowing())
-				{
-					dialog_login.dismiss();
-				}
-				if (dialog_sync.isShowing())
-				{
-					dialog_sync.dismiss();
-				}
-			}
-
-			switch (result)
-			{
-				case FAIL_UNDEFIELDS:
-					if (syncParams.getShowProgress())
-					{
-						UIUtils.showTip(ActivityMain.this, MESSAGE_ERROR_UNDEFINED_AUTH);
-					}
-					break;
-				case FAIL_AUTH:
-					if (syncParams.getShowProgress())
-					{
-						UIUtils.showTip(ActivityMain.this, MESSAGE_ERROR_BAD_CREDENTIALS);
-					}
-					break;
-				case FAIL_CONNECTION:
-					if (syncParams.getShowProgress())
-					{
-						UIUtils.showTip(ActivityMain.this, MESSAGE_ERROR_SERVER_NOT_RESPONDING);
-					}
-					break;
-				case FAIL_APIVERSION:
-					if (syncParams.getShowProgress())
-					{
-						UIUtils.showTip(ActivityMain.this, MESSAGE_ERROR_DEPRECATED_API);
-					}
-					break;
-				case FAIL_FORMAT:
-					if (syncParams.getShowProgress())
-					{
-						UIUtils.showTip(ActivityMain.this, MESSAGE_ERROR_BAD_RESPONSE);
-					}
-					break;
-				case DONE:
-				{
-					String s;
-
-					boolean transferred = false;
-
-					// check diary
-					if (syncDiaryItemsCount > 0)
-					{
-						transferred = true;
-						s = String.format(Locale.US, MESSAGE_SYNCED_OK, syncDiaryItemsCount);
-						UIUtils.showTip(ActivityMain.this, s);
-					}
-
-					// check foodbase
-					if (syncFoodItemsCount > 0)
-					{
-						transferred = true;
-						UIUtils.showTip(ActivityMain.this, MESSAGE_FOODBASE_SYNCED_OK);
-					}
-
-					// check nothing happen
-					if (!transferred && syncParams.getShowProgress())
-					{
-						UIUtils.showTip(ActivityMain.this, MESSAGE_NO_UPDATES);
-					}
-
-					break;
-				}
-			}
-		}
-
-		// implemented
-		@Override
-		public void update_max(int max)
-		{
-			publishProgress(COM_PROGRESS_MAX, max);
-		}
-
-		@Override
-		public void update_progress(int progress)
-		{
-			publishProgress(COM_PROGRESS_CUR, progress);
-		}
-	}
+	// class AsyncTaskAuthAndSync extends AsyncTask<SyncParams, Integer, LoginResult> implements
+	// Callback
+	// {
+	// // <Params, Progress, Result>
+	// private ProgressDialog dialog_login;
+	// private ProgressDialog dialog_sync;
+	// private int syncDiaryItemsCount;
+	// private int syncFoodItemsCount;
+	// private SyncParams syncParams;
+	//
+	// // константы для управления progressbar
+	// private static final int COM_SHOW_AUTH = 11;
+	// private static final int COM_SHOW_SYNC = 12;
+	// private static final int COM_PROGRESS_MAX = 21;
+	// private static final int COM_PROGRESS_CUR = 22;
+	//
+	// @Override
+	// protected void onPreExecute()
+	// {
+	// dialog_login = new ProgressDialog(ActivityMain.this);
+	// dialog_login.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+	// dialog_login.setCancelable(false);
+	// dialog_login.setMessage(MESSAGE_PROGRESS_AUTH);
+	//
+	// dialog_sync = new ProgressDialog(ActivityMain.this);
+	// dialog_sync.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+	// dialog_sync.setCancelable(false);
+	// dialog_sync.setMessage(MESSAGE_PROGRESS_SYNC);
+	// }
+	//
+	// @Override
+	// protected LoginResult doInBackground(SyncParams... par)
+	// {
+	// Log.i(TAG, "Sync()");
+	// syncDiaryItemsCount = 0;
+	// syncFoodItemsCount = 0;
+	//
+	// syncParams = new SyncParams(par[0]);
+	//
+	// /* AUTH */
+	//
+	// // if (!Storage.webClient.isOnline())
+	// // {
+	// // Log.d(TAG, "Not logged, trying to auth (username=" + Storage.webClient.getUsername()
+	// // + ", password="
+	// // + Storage.webClient.getPassword() + ")");
+	// //
+	// // publishProgress(COM_SHOW_AUTH);
+	// // try
+	// // {
+	// // Storage.webClient.login();
+	// // Log.d(TAG, "Logged OK");
+	// // }
+	// // catch (ConnectionException e)
+	// // {
+	// // return LoginResult.FAIL_CONNECTION;
+	// // }
+	// // catch (ResponseFormatException e)
+	// // {
+	// // return LoginResult.FAIL_FORMAT;
+	// // }
+	// // catch (DeprecatedAPIException e)
+	// // {
+	// // return LoginResult.FAIL_APIVERSION;
+	// // }
+	// // catch (AuthException e)
+	// // {
+	// // return LoginResult.FAIL_AUTH;
+	// // }
+	// // catch (UndefinedFieldException e)
+	// // {
+	// // return LoginResult.FAIL_UNDEFIELDS;
+	// // }
+	// // }
+	//
+	// /* SYNC */
+	//
+	// publishProgress(COM_SHOW_SYNC);
+	// try
+	// {
+	// Log.v(TAG, "Sync diary...");
+	// // TODO: store last sync time
+	// Date since = Utils.time(2013, 11, 1, 0, 0, 0);
+	// syncDiaryItemsCount = SyncService.synchronize(Storage.localDiary, Storage.webDiary, since);
+	// Log.v(TAG, "Diary synced, total tranferred: " + syncDiaryItemsCount);
+	//
+	// Log.v(TAG, "Sync foodbase...");
+	// syncFoodItemsCount = SyncService.synchronize(Storage.localFoodBase, Storage.webFoodBase,
+	// since);
+	// Log.v(TAG, "Foodbase synced, total tranferred: " + syncFoodItemsCount);
+	//
+	// Log.v(TAG, "Sync done OK");
+	// return LoginResult.DONE;
+	// }
+	// catch (ConnectionException e)
+	// {
+	// // Storage.logged = false;
+	// Log.e(TAG, e.getLocalizedMessage());
+	// return LoginResult.FAIL_CONNECTION;
+	// }
+	// catch (ResponseFormatException e)
+	// {
+	// // Storage.logged = false;
+	// Log.e(TAG, e.getLocalizedMessage());
+	// return LoginResult.FAIL_FORMAT;
+	// }
+	// catch (DeprecatedAPIException e)
+	// {
+	// // Storage.logged = false;
+	// Log.e(TAG, e.getLocalizedMessage());
+	// return LoginResult.FAIL_APIVERSION;
+	// }
+	// catch (AuthException e)
+	// {
+	// // Storage.logged = false;
+	// Log.e(TAG, e.getLocalizedMessage());
+	// return LoginResult.FAIL_AUTH;
+	// }
+	// catch (UndefinedFieldException e)
+	// {
+	// // Storage.logged = false;
+	// Log.e(TAG, e.getLocalizedMessage());
+	// return LoginResult.FAIL_UNDEFIELDS;
+	// }
+	// }
+	//
+	// @Override
+	// protected void onProgressUpdate(Integer... msg)
+	// {
+	// if (!syncParams.getShowProgress())
+	// {
+	// return;
+	// }
+	//
+	// switch (msg[0])
+	// {
+	// case COM_SHOW_AUTH:
+	// dialog_login.show();
+	// break;
+	// case COM_SHOW_SYNC:
+	// dialog_login.dismiss();
+	// dialog_sync.show();
+	// break;
+	// /*
+	// * case COM_PROGRESS_MAX: dialog_sync.setMax(msg[1]); break; case COM_PROGRESS_CUR:
+	// * dialog_sync.setProgress(msg[1]); break;
+	// */
+	// }
+	// }
+	//
+	// @Override
+	// protected void onPostExecute(LoginResult result)
+	// {
+	// if (syncParams.getShowProgress())
+	// {
+	// if (dialog_login.isShowing())
+	// {
+	// dialog_login.dismiss();
+	// }
+	// if (dialog_sync.isShowing())
+	// {
+	// dialog_sync.dismiss();
+	// }
+	// }
+	//
+	// switch (result)
+	// {
+	// case FAIL_UNDEFIELDS:
+	// if (syncParams.getShowProgress())
+	// {
+	// UIUtils.showTip(ActivityMain.this, MESSAGE_ERROR_UNDEFINED_AUTH);
+	// }
+	// break;
+	// case FAIL_AUTH:
+	// if (syncParams.getShowProgress())
+	// {
+	// UIUtils.showTip(ActivityMain.this, MESSAGE_ERROR_BAD_CREDENTIALS);
+	// }
+	// break;
+	// case FAIL_CONNECTION:
+	// if (syncParams.getShowProgress())
+	// {
+	// UIUtils.showTip(ActivityMain.this, MESSAGE_ERROR_SERVER_NOT_RESPONDING);
+	// }
+	// break;
+	// case FAIL_APIVERSION:
+	// if (syncParams.getShowProgress())
+	// {
+	// UIUtils.showTip(ActivityMain.this, MESSAGE_ERROR_DEPRECATED_API);
+	// }
+	// break;
+	// case FAIL_FORMAT:
+	// if (syncParams.getShowProgress())
+	// {
+	// UIUtils.showTip(ActivityMain.this, MESSAGE_ERROR_BAD_RESPONSE);
+	// }
+	// break;
+	// case DONE:
+	// {
+	// String s;
+	//
+	// boolean transferred = false;
+	//
+	// // check diary
+	// if (syncDiaryItemsCount > 0)
+	// {
+	// transferred = true;
+	// s = String.format(Locale.US, MESSAGE_SYNCED_OK, syncDiaryItemsCount);
+	// UIUtils.showTip(ActivityMain.this, s);
+	// }
+	//
+	// // check foodbase
+	// if (syncFoodItemsCount > 0)
+	// {
+	// transferred = true;
+	// UIUtils.showTip(ActivityMain.this, MESSAGE_FOODBASE_SYNCED_OK);
+	// }
+	//
+	// // check nothing happen
+	// if (!transferred && syncParams.getShowProgress())
+	// {
+	// UIUtils.showTip(ActivityMain.this, MESSAGE_NO_UPDATES);
+	// }
+	//
+	// break;
+	// }
+	// }
+	// }
+	//
+	// // implemented
+	// @Override
+	// public void update_max(int max)
+	// {
+	// publishProgress(COM_PROGRESS_MAX, max);
+	// }
+	//
+	// @Override
+	// public void update_progress(int progress)
+	// {
+	// publishProgress(COM_PROGRESS_CUR, progress);
+	// }
+	// }
 
 	/* =========================== МЕТОДЫ ================================ */
 
@@ -405,10 +389,6 @@ public class ActivityMain extends Activity implements OnClickListener
 			buttonPref.setOnClickListener(this);
 			buttonAuth.setOnClickListener(this);
 
-			// TODO: add force single sync on start
-
-			// setupSyncTimer(10 * 60 * 1000);
-
 			showDiary();
 		}
 		catch (Exception e)
@@ -440,9 +420,9 @@ public class ActivityMain extends Activity implements OnClickListener
 					startActivity(settingsActivity);
 					break;
 				case R.id.buttonAuth:
-					SyncParams par = new SyncParams();
-					par.setShowProgress(true);
-					new AsyncTaskAuthAndSync().execute(par);
+					// SyncParams par = new SyncParams();
+					// par.setShowProgress(true);
+					// new AsyncTaskAuthAndSync().execute(par);
 					break;
 				case R.id.buttonTestMealEditor:
 					HardcodedFoodbase.restoreHardcodedBase();
@@ -454,40 +434,6 @@ public class ActivityMain extends Activity implements OnClickListener
 		{
 			ErrorHandler.handle(e, this);
 		}
-	}
-
-	private void setupSyncTimer(long interval)
-	{
-		if (timerSettedUp)
-		{
-			return;
-		}
-		timerSettedUp = true;
-
-		final SyncParams par = new SyncParams();
-		par.setShowProgress(false);
-
-		TimerTask task = new TimerTask()
-		{
-			private final Handler	mHandler	= new Handler(Looper.getMainLooper());
-
-			@Override
-			public void run()
-			{
-				mHandler.post(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						new AsyncTaskAuthAndSync().execute(par);
-						// UIUtils.showTip(mainActivity, "Tick!");
-					}
-				});
-			}
-		};
-
-		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(task, 0, interval);
 	}
 
 	// РАБОЧИЕ: ИНТЕРФЕЙС

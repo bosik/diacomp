@@ -3,6 +3,8 @@ package org.bosik.diacomp.android.backend.common;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.features.analyze.HardcodedAnalyzeService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
@@ -28,6 +30,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 /**
@@ -43,6 +47,7 @@ public class Storage
 
 	private static final int		CONNECTION_TIMEOUT	= 6000;
 
+	private static boolean			timerSettedUp		= false;
 	private static Date				since				= Utils.time(2013, 11, 1, 0, 0, 0);
 
 	// DAO
@@ -132,6 +137,7 @@ public class Storage
 		applyPreference(preferences, null);
 
 		runBackgrounds();
+		setupSyncTimer(20 * 60 * 1000);
 	}
 
 	private static void runBackgrounds()
@@ -148,6 +154,36 @@ public class Storage
 				return null;
 			}
 		}.execute();
+	}
+
+	private static void setupSyncTimer(long interval)
+	{
+		if (timerSettedUp)
+		{
+			return;
+		}
+		timerSettedUp = true;
+
+		TimerTask task = new TimerTask()
+		{
+			private final Handler	mHandler	= new Handler(Looper.getMainLooper());
+
+			@Override
+			public void run()
+			{
+				mHandler.post(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						runBackgrounds();
+					}
+				});
+			}
+		};
+
+		Timer timer = new Timer();
+		timer.scheduleAtFixedRate(task, 0, interval);
 	}
 
 	private static void syncAll()
