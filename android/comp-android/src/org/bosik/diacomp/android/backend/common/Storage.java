@@ -2,6 +2,7 @@ package org.bosik.diacomp.android.backend.common;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.features.analyze.HardcodedAnalyzeService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
@@ -21,6 +22,7 @@ import org.bosik.diacomp.core.services.analyze.KoofServiceImpl;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
+import org.bosik.diacomp.core.services.sync.SyncService;
 import org.bosik.diacomp.core.utils.Utils;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -40,6 +42,8 @@ public class Storage
 	private static final String		TAG					= Storage.class.getSimpleName();
 
 	private static final int		CONNECTION_TIMEOUT	= 6000;
+
+	private static Date				since				= Utils.time(2013, 11, 1, 0, 0, 0);
 
 	// DAO
 
@@ -137,22 +141,50 @@ public class Storage
 			@Override
 			protected Void doInBackground(Void... arg0)
 			{
-				// indexing
-				long time = System.currentTimeMillis();
-				RelevantIndexator.indexate(localDiary, localFoodBase, localDishBase);
-				Log.v(TAG, String.format("Relevant indexation done in %d msec", System.currentTimeMillis() - time));
-
-				// analyzing
-				time = System.currentTimeMillis();
-				koofService.update();
-				Log.v(TAG, String.format("Analyzing done in %d msec", System.currentTimeMillis() - time));
-
-				// synchronizing
-				// TODO
+				syncAll();
+				relevantIndexation();
+				analyzeKoofs();
 
 				return null;
 			}
 		}.execute();
+	}
+
+	private static void syncAll()
+	{
+		Log.v(TAG, "Diary sync...");
+		long time = System.currentTimeMillis();
+		int syncDiaryItemsCount = SyncService.synchronize(localDiary, webDiary, since);
+		Log.v(TAG, String.format("Diary synced in %d msec, total tranferred: %d", System.currentTimeMillis() - time,
+				syncDiaryItemsCount));
+
+		Log.v(TAG, "Foodbase sync...");
+		time = System.currentTimeMillis();
+		int syncFoodItemsCount = SyncService.synchronize(Storage.localFoodBase, Storage.webFoodBase, since);
+		Log.v(TAG, String.format("Foodbase synced in %d msec, total tranferred: %d", System.currentTimeMillis() - time,
+				syncFoodItemsCount));
+
+		Log.v(TAG, "Dishbase sync...");
+		time = System.currentTimeMillis();
+		int syncDishItemsCount = SyncService.synchronize(Storage.localDishBase, Storage.webDishBase, since);
+		Log.v(TAG, String.format("Dishbase synced in %d msec, total tranferred: %d", System.currentTimeMillis() - time,
+				syncDishItemsCount));
+
+		since = new Date();
+	}
+
+	private static void relevantIndexation()
+	{
+		long time = System.currentTimeMillis();
+		RelevantIndexator.indexate(localDiary, localFoodBase, localDishBase);
+		Log.v(TAG, String.format("Relevant indexation done in %d msec", System.currentTimeMillis() - time));
+	}
+
+	private static void analyzeKoofs()
+	{
+		long time = System.currentTimeMillis();
+		koofService.update();
+		Log.v(TAG, String.format("Analyzing done in %d msec", System.currentTimeMillis() - time));
 	}
 
 	// private static void speedTest()
@@ -176,7 +208,7 @@ public class Storage
 
 	private static String pair(String name, double value)
 	{
-		return String.format("%s=\"%.1f\"", name, value).replace(",", ".");
+		return String.format(Locale.US, "%s=\"%.1f\"", name, value).replace(",", ".");
 	}
 
 	private static String pair(String name, String value)
