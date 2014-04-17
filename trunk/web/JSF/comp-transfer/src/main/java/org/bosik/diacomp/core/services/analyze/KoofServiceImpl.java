@@ -7,16 +7,16 @@ import org.bosik.diacomp.core.services.diary.DiaryService;
 
 public class KoofServiceImpl implements KoofService
 {
-	private DiaryService		diaryService;
-	private AnalyzeCore			analyzeCore;
+	private final DiaryService	diaryService;
+	private final AnalyzeCore	analyzeCore;
 	private Date				timeFrom;
 	private Date				timeTo;
 
 	private KoofList			koofs;
 
 	// TODO: move hardcoded constants outside
-	private static final double	adaptation		= 0.25;		// [0..0.5]
-	private static final Koof	STD_KOOF		= new Koof();
+	private static final double	adaptation	= 0.25;		// [0..0.5]
+	private static final Koof	STD_KOOF	= new Koof();
 	{
 		STD_KOOF.setK(0.25);
 		STD_KOOF.setQ(2.5);
@@ -32,6 +32,15 @@ public class KoofServiceImpl implements KoofService
 	@Override
 	public void update()
 	{
+		if (timeFrom == null)
+		{
+			throw new NullPointerException("timeFrom is null; use setTimeRange() method");
+		}
+		if (timeTo == null)
+		{
+			throw new NullPointerException("timeTo is null; use setTimeRange() method");
+		}
+
 		koofs = AnalyzeExtracter.analyze(analyzeCore, diaryService, timeFrom, timeTo, adaptation);
 	}
 
