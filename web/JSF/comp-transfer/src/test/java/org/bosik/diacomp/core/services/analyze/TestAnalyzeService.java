@@ -11,7 +11,6 @@ import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
-import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.test.fakes.services.FakeDiaryService;
 import org.bosik.diacomp.core.utils.Utils;
@@ -30,6 +29,10 @@ public class TestAnalyzeService
 		diaryService = new FakeDiaryService();
 		analyzeCore = new AnalyzeCoreImpl();
 		koofService = new KoofServiceImpl(diaryService, analyzeCore);
+
+		Date timeFrom = Utils.date(2000, 1, 1);
+		Date timeTo = Utils.date(2030, 01, 01);
+		koofService.setTimeRange(timeFrom, timeTo);
 	}
 
 	@Test
