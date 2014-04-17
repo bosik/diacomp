@@ -8,6 +8,7 @@ import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.sync.SyncService;
+import org.bosik.diacomp.core.test.fakes.services.FakeObjectService;
 import org.junit.Test;
 
 @SuppressWarnings({ "unchecked", "deprecation" })

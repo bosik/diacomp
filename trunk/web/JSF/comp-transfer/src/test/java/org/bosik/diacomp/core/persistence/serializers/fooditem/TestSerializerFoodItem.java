@@ -8,7 +8,7 @@ import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.test.fakes.mocks.Mock;
 import org.bosik.diacomp.core.test.fakes.mocks.MockFoodItem;
 
-public class TestSerializerFoodItemJSON extends TestSerializer<FoodItem>
+public class TestSerializerFoodItem extends TestSerializer<FoodItem>
 {
 	private static final Mock<FoodItem>					mockFoodItem		= new MockFoodItem();
 	private static final SerializerAdapter<FoodItem>	serializerAdapter	= new SerializerAdapter<FoodItem>(

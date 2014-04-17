@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.persistence.serializers.dishbase;
+package org.bosik.diacomp.core.persistence.serializers.dishitem;
 
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
@@ -8,7 +8,7 @@ import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.test.fakes.mocks.Mock;
 import org.bosik.diacomp.core.test.fakes.mocks.MockDishItem;
 
-public class TestSerializerDishItemJSON extends TestSerializer<DishItem>
+public class TestSerializerDishItem extends TestSerializer<DishItem>
 {
 	private static final Mock<DishItem>					mockDishItem		= new MockDishItem();
 	private static final SerializerAdapter<DishItem>	serializerAdapter	= new SerializerAdapter<DishItem>(

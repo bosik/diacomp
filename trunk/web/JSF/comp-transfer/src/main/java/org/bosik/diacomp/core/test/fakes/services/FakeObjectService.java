@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.persistence.services.fakes;
+package org.bosik.diacomp.core.test.fakes.services;
 
 import java.util.ArrayList;
 import java.util.Date;
