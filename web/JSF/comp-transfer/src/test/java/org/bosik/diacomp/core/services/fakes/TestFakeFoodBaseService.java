@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.persistence.services.fakes;
+package org.bosik.diacomp.core.services.fakes;
 
 import org.junit.Ignore;
 

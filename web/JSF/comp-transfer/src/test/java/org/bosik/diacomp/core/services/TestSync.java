@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.persistence.services.fakes;
+package org.bosik.diacomp.core.services;
 
 import java.util.Arrays;
 import java.util.Collections;

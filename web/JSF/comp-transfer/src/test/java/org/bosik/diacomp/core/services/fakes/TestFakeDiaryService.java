@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.services;
+package org.bosik.diacomp.core.services.fakes;
 
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.diary.TestDiaryServiceCommon;

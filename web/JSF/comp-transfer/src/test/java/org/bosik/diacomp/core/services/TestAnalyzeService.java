@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.services.analyze;
+package org.bosik.diacomp.core.services;
 
 import static org.junit.Assert.assertEquals;
 import java.util.Date;
@@ -10,6 +10,10 @@ import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
+import org.bosik.diacomp.core.services.analyze.AnalyzeCoreImpl;
+import org.bosik.diacomp.core.services.analyze.KoofService;
+import org.bosik.diacomp.core.services.analyze.KoofServiceImpl;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.test.fakes.services.FakeDiaryService;
