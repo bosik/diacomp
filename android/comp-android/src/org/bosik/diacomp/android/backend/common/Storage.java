@@ -1,8 +1,6 @@
 package org.bosik.diacomp.android.backend.common;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
@@ -16,8 +14,6 @@ import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseWebService;
 import org.bosik.diacomp.android.backend.features.search.RelevantIndexator;
 import org.bosik.diacomp.android.frontend.activities.ActivityPreferences;
 import org.bosik.diacomp.android.utils.ErrorHandler;
-import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
 import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.KoofServiceImpl;
@@ -223,54 +219,6 @@ public class Storage
 		Log.v(TAG, String.format("Analyzing done in %d msec", System.currentTimeMillis() - time));
 	}
 
-	// private static void speedTest()
-	// {
-	// // TODO Auto-generated method stub
-	// Serializer<Versioned<FoodItem>> serializer = new SerializerFoodItem();
-	// List<Versioned<FoodItem>> items = localFoodBase.findAll(true);
-	//
-	// long time = System.currentTimeMillis();
-	// String s = serializer.writeAll(items);
-	// Log.e(TAG,
-	// String.format("%d items serialized withing %d msec", items.size(), System.currentTimeMillis()
-	// - time));
-	//
-	// time = System.currentTimeMillis();
-	// serializer.readAll(s);
-	// Log.e(TAG, String.format("%d items de-serialized withing %d msec", items.size(),
-	// System.currentTimeMillis()
-	// - time));
-	// }
-
-	private static String pair(String name, double value)
-	{
-		return String.format(Locale.US, "%s=\"%.1f\"", name, value).replace(",", ".");
-	}
-
-	private static String pair(String name, String value)
-	{
-		return String.format("%s=\"%s\"", name, value.replace("\"", "&quot;"));
-	}
-
-	private static void buildFoodList()
-	{
-		String result = "";
-
-		List<Versioned<FoodItem>> foods = localFoodBase.findAll(false);
-		for (Versioned<FoodItem> item : foods)
-		{
-			FoodItem food = item.getData();
-			if (food.getName().contains("Теремок"))
-			{
-				result = String.format("\t<food %s %s %s %s %s %s table=\"True\" tag=\"0\"/>",
-						pair("id", Utils.generateGuid().toUpperCase()), pair("name", food.getName()),
-						pair("prots", food.getRelProts()), pair("fats", food.getRelFats()),
-						pair("carbs", food.getRelCarbs()), pair("val", food.getRelValue()));
-				Log.e(TAG, result);
-			}
-		}
-	}
-
 	private static boolean check(String testKey, String baseKey)
 	{
 		return (testKey == null) || testKey.equals(baseKey);
@@ -306,4 +254,52 @@ public class Storage
 					ActivityPreferences.PREF_ACCOUNT_PASSWORD_DEFAULT));
 		}
 	}
+
+	// private static void speedTest()
+	// {
+	// // TODO Auto-generated method stub
+	// Serializer<Versioned<FoodItem>> serializer = new SerializerFoodItem();
+	// List<Versioned<FoodItem>> items = localFoodBase.findAll(true);
+	//
+	// long time = System.currentTimeMillis();
+	// String s = serializer.writeAll(items);
+	// Log.e(TAG,
+	// String.format("%d items serialized withing %d msec", items.size(), System.currentTimeMillis()
+	// - time));
+	//
+	// time = System.currentTimeMillis();
+	// serializer.readAll(s);
+	// Log.e(TAG, String.format("%d items de-serialized withing %d msec", items.size(),
+	// System.currentTimeMillis()
+	// - time));
+	// }
+
+	// private static String pair(String name, double value)
+	// {
+	// return String.format(Locale.US, "%s=\"%.1f\"", name, value).replace(",", ".");
+	// }
+	//
+	// private static String pair(String name, String value)
+	// {
+	// return String.format("%s=\"%s\"", name, value.replace("\"", "&quot;"));
+	// }
+	//
+	// private static void buildFoodList()
+	// {
+	// String result = "";
+	//
+	// List<Versioned<FoodItem>> foods = localFoodBase.findAll(false);
+	// for (Versioned<FoodItem> item : foods)
+	// {
+	// FoodItem food = item.getData();
+	// if (food.getName().contains("Теремок"))
+	// {
+	// result = String.format("\t<food %s %s %s %s %s %s table=\"True\" tag=\"0\"/>",
+	// pair("id", Utils.generateGuid().toUpperCase()), pair("name", food.getName()),
+	// pair("prots", food.getRelProts()), pair("fats", food.getRelFats()),
+	// pair("carbs", food.getRelCarbs()), pair("val", food.getRelValue()));
+	// Log.e(TAG, result);
+	// }
+	// }
+	// }
 }
