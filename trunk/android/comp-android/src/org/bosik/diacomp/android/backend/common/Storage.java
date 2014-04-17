@@ -138,10 +138,14 @@ public class Storage
 			protected Void doInBackground(Void... arg0)
 			{
 				// indexing
+				long time = System.currentTimeMillis();
 				RelevantIndexator.indexate(localDiary, localFoodBase, localDishBase);
+				Log.v(TAG, String.format("Relevant indexation done in %d msec", System.currentTimeMillis() - time));
 
 				// analyzing
-				// TODO
+				time = System.currentTimeMillis();
+				koofService.update();
+				Log.v(TAG, String.format("Analyzing done in %d msec", System.currentTimeMillis() - time));
 
 				// synchronizing
 				// TODO
