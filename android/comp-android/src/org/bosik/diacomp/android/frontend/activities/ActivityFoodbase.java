@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.search.Sorter;
@@ -61,6 +63,10 @@ public class ActivityFoodbase extends Activity
 	private static final Sorter<FoodItem>	sorter			= new Sorter<FoodItem>();
 	Mode									mode;
 	String									searchFilter	= "";
+
+	private long							lastSearchTime;
+	private boolean							searchScheduled	= false;
+	private static final long				SEARCH_DELAY	= 1000;
 
 	// ===========================================================================
 
@@ -162,9 +168,14 @@ public class ActivityFoodbase extends Activity
 		runSearch("");
 	}
 
-	void runSearch(String key)
+	/**
+	 * Runs search process in the background thread, fills result list when done
+	 * 
+	 * @param key
+	 */
+	void runSearch(final String key)
 	{
-		new AsyncTask<String, Void, List<Versioned<NamedRelativeTagged>>>()
+		final AsyncTask<String, Void, List<Versioned<NamedRelativeTagged>>> asyncTask = new AsyncTask<String, Void, List<Versioned<NamedRelativeTagged>>>()
 		{
 			@Override
 			protected void onPreExecute()
@@ -183,7 +194,31 @@ public class ActivityFoodbase extends Activity
 			{
 				showBase(result);
 			}
-		}.execute(key);
+		};
+
+		TimerTask task = new TimerTask()
+		{
+			@Override
+			public void run()
+			{
+				lastSearchTime = System.currentTimeMillis();
+				asyncTask.execute(key);
+				searchScheduled = false;
+			}
+		};
+
+		if (System.currentTimeMillis() - lastSearchTime >= SEARCH_DELAY)
+		{
+			task.run();
+		}
+		else
+		{
+			if (!searchScheduled)
+			{
+				searchScheduled = true;
+				new Timer().schedule(task, 1000);
+			}
+		}
 	}
 
 	@Override
@@ -194,6 +229,12 @@ public class ActivityFoodbase extends Activity
 		return true;
 	}
 
+	/**
+	 * Searches for the specified filter and returns result list
+	 * 
+	 * @param filter
+	 * @return
+	 */
 	List<Versioned<NamedRelativeTagged>> request(String filter)
 	{
 		try
