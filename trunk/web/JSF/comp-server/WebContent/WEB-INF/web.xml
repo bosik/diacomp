@@ -19,7 +19,7 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>AuthFilter</filter-name>
-		<url-pattern>/*</url-pattern>
+		<url-pattern>/api/*</url-pattern>
 	</filter-mapping>
 
 	<servlet>
