@@ -22,20 +22,21 @@
 				href="#"><span class="menu_item menu_option">Регистрация</span></a>
 		</div>
 		<div class="login_panel">
-
-			Email: <br /> <input type="text" id="login" class="full_width"
-				autofocus /> <br /> Пароль: <br /> <input type="password"
-				id="password" class="full_width" /> <br /> <input type="submit"
-				class="full_width" name="log" value="Вход" onClick="login()" />
+			<form action="api/auth/login" method="post">
+			Email: <br /> <input type="text" id="login" name="login" class="full_width" autofocus /> <br />
+			Пароль: <br /> <input type="password" name="pass" id="password" class="full_width" /> <br />
+			<input type="hidden" name="api" value="20"/>
+			<input type="button" class="full_width" value="Вход" onClick="authorize()" />
 
 			<hr>
 				Нет учётной записи? <a href="reg.php">Зарегистрируйтесь</a>.
+			</form>
 		</div>
 		<span id="debug" class="hint"></span>
 	</div>
 	<script type="text/javascript" src="js/utils.js"></script>
 	<script type="text/javascript">
-		function login() {
+		function authorize() {
 			var username = document.getElementById("login").value;
 			var pass = document.getElementById("password").value;
 			var url = "api/auth/login/";
