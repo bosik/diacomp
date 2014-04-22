@@ -24,8 +24,7 @@ var INS_ACTUAL_PERIOD = 90;
 var TARGET_BS = 5.0; // TODO: load from user properties
 
 // данные
-var cur_date = new Date(Date
-		.parse(document.getElementById("origin_date").value));
+var cur_date = new Date(document.getElementById("origin_date").value);
 var prev_page = [];
 var page = [];
 var koofs = [];
@@ -62,7 +61,7 @@ function refreshCurrentPage()
 	// }
 
 	showInfoBox(-1);
-	calendar.value = formatDate(cur_date);
+	calendar.value = formatDate(cur_date, true);
 }
 
 function shiftDate(date, days)
@@ -75,14 +74,14 @@ function shiftDate(date, days)
 function prevDay()
 {
 	cur_date = shiftDate(cur_date, -1);
-	pushHistory("index.php?date=" + formatDate(cur_date));
+	pushHistory("index.php?date=" + formatDate(cur_date, false));
 	refreshCurrentPage();
 }
 
 function nextDay()
 {
 	cur_date = shiftDate(cur_date, +1);
-	pushHistory("index.php?date=" + formatDate(cur_date));
+	pushHistory("index.php?date=" + formatDate(cur_date, false));
 	refreshCurrentPage();
 }
 
@@ -95,11 +94,12 @@ function openPage()
 
 function downloadPage(pageDate, show)
 {
-	// formatDate(pageDate);
-	var start_time = "2000-01-01 00:00:00";
-	var end_time = "2020-01-01 00:00:00";
+	var start_time = formatTimestamp(pageDate, false);
+	var end_time = formatTimestamp(shiftDate(pageDate, +1), false);
 	var url = "api/diary/period/?start_time=" + start_time + "&end_time="
 			+ end_time + "&show_rem=0";
+	console.log(pageDate);
+	console.log(url);
 
 	var onSuccess = function(data)
 	{
@@ -627,17 +627,21 @@ function codePage(page)
 	var code = '';// ' <div class="diary">';
 	for (var i = 0; i < page.length; i++)
 	{
-		console.log("processing item #" + i);
-		if (page[i].data.type == "meal")
-			code += codeMeal(page[i].data, i);
-		else if (page[i].data.type == "blood")
-			code += codeBlood(page[i].data, i);
-		else if (page[i].data.type == "ins")
-			code += codeIns(page[i].data, i);
-		else if (page[i].data.type == "note")
-			code += codeNote(page[i].data, i)
-		else
-			console.log("Unknown item type: " + page[i].data.type);
+		if (page[i].deleted != "true")
+		{
+			console.log("processing item #" + i);
+
+			if (page[i].data.type == "meal")
+				code += codeMeal(page[i].data, i);
+			else if (page[i].data.type == "blood")
+				code += codeBlood(page[i].data, i);
+			else if (page[i].data.type == "ins")
+				code += codeIns(page[i].data, i);
+			else if (page[i].data.type == "note")
+				code += codeNote(page[i].data, i)
+			else
+				console.log("Unknown item type: " + page[i].data.type);
+		}
 	}
 	// code += ' </div>';
 	/*
@@ -881,7 +885,10 @@ function moveInfoBox(index)
 	var targetHeight = 0;
 	for (var i = 0; i < index; i++)
 	{
-		targetHeight += document.getElementById("diaryRec_" + i).offsetHeight;
+		if (page[i].deleted != "true")
+		{
+			targetHeight += document.getElementById("diaryRec_" + i).offsetHeight;
+		}
 	}
 	// document.getElementById('filler').setAttribute("style","height:" +
 	// targetHeight + "px");
@@ -959,8 +966,7 @@ function DiaryPage_addRecord(rec)
 
 function DiaryPage_deleteRecord(index)
 {
-	page.splice(index, 1);
-	page[index].deleted = 1; // FIXME: check
+	page[index].deleted = "true";
 	modified(index, false);
 }
 
@@ -1095,10 +1101,13 @@ function newNoteEditor()
 
 function onDateChanged(datePicker)
 {
-	var date = datePicker.value;
+	var date = datePicker.value + " 00:00:00";
+	
+	console.log("Date selected: " + date);
+	
 	if (valid(date))
 	{
-		cur_date = new Date(Date.parse(date));
+		cur_date = new Date(date);
 		// loadDoc(document.getElementById("diary_page"),
 		// "console.php?diary:download&dates=" + cur_date);
 		// window.location='index.php?date=' + date;
