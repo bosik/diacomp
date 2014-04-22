@@ -1,10 +1,8 @@
 ﻿var root = document.getElementById("diary_block");
-root.innerHTML =
-	"				<div id=\"diary_info_column\">\n" +
-"					<div id=\"filler\" style=\"height: 0px\" onclick=\"showInfoBox(-1)\" ></div>\n" +
-"					<div id=\"diary_info\"></div>\n" +
-"				</div>\n" +
-"				<div id=\"diary_page\" class=\"diary_page_empty\"></div>\n";
+root.innerHTML = "				<div id=\"diary_info_column\">\n"
+		+ "					<div id=\"filler\" style=\"height: 0px\" onclick=\"showInfoBox(-1)\" ></div>\n"
+		+ "					<div id=\"diary_info\"></div>\n" + "				</div>\n"
+		+ "				<div id=\"diary_page\" class=\"diary_page_empty\"></div>\n";
 
 // компоненты
 var calendar = document.getElementById("calendar");
@@ -16,25 +14,18 @@ var statusImg = document.getElementById("job_img");
 
 // константы
 var fingers = ["БЛ", "1Л", "2Л", "3Л", "4Л", "4П", "3П", "2П", "1П", "БП"];
-var finger_hints = [
-"Левая, большой",
-"Левая, указательный",
-"Левая, средний",
-"Левая, безымянный",
-"Левая, мизинец",
-"Правая, мизинец",
-"Правая, безымянный",
-"Правая, средний",
-"Правая, указательный",
-"Правая, большой"
-];
+var finger_hints = ["Левая, большой", "Левая, указательный", "Левая, средний",
+		"Левая, безымянный", "Левая, мизинец", "Правая, мизинец",
+		"Правая, безымянный", "Правая, средний", "Правая, указательный",
+		"Правая, большой"];
 var PERIOD = 1440;
 var BLOOD_ACTUAL_PERIOD = 60;
 var INS_ACTUAL_PERIOD = 90;
 var TARGET_BS = 5.0; // TODO: load from user properties
 
 // данные
-var cur_date = new Date(Date.parse(document.getElementById("origin_date").value));
+var cur_date = new Date(Date
+		.parse(document.getElementById("origin_date").value));
 var prev_page = [];
 var page = [];
 var koofs = [];
@@ -51,9 +42,9 @@ var dishbaseLoaded = false;
 /* ================== STARTUP ACTIONS ================== */
 
 refreshCurrentPage();
-downloadKoofs();
-downloadFoodbase();
-downloadDishbase();
+// downloadKoofs();
+// downloadFoodbase();
+// downloadDishbase();
 setProgress("ready", "Дневник сохранён");
 
 /* ================== DIARY NAVIGATION ================== */
@@ -65,10 +56,10 @@ function refreshCurrentPage()
 
 	downloadPage(cur_date, true);
 
-	//if (DiaryPage_getLastFinger(page) == -1)
-	//{
+	// if (DiaryPage_getLastFinger(page) == -1)
+	// {
 
-	//}
+	// }
 
 	showInfoBox(-1);
 	calendar.value = formatDate(cur_date);
@@ -97,39 +88,53 @@ function nextDay()
 
 function openPage()
 {
-// TODO: implement
+	// TODO: implement
 }
 
 /* ================== INTERNET ================== */
 
 function downloadPage(pageDate, show)
 {
-	//formatDate(pageDate);
+	// formatDate(pageDate);
 	var start_time = "2000-01-01 00:00:00";
 	var end_time = "2020-01-01 00:00:00";
-	var url = "http://127.0.0.1:8090/comp-server/api/diary/period/?start_time=" + start_time + 
-	  "&end_time=" + end_time + "&show_rem=0";
+	var url = "api/diary/period/?start_time=" + start_time + "&end_time="
+			+ end_time + "&show_rem=0";
 
 	var onSuccess = function(data)
 	{
 		var resp = JSON.parse(data);
-		
-		alert(data);
-		if (resp.code == 4011)
+
+		//alert(data);
+		if (resp.code == 0)
 		{
-			document.location = "login.php?redir=index.php?date=" + formatDate(pageDate);
+			var content = JSON.parse(data).resp;
+			page = JSON.parse(content.replace('\"', '"'));
+			
+			//console.log("items: " + page);
+			
+			page.sort(timeSortFunction);
+			
+			//console.log("sorted OK");
+			
+			if (show)
+			{
+				showPage();
+			}
 		}
-
-		page = JSON.parse(data);
-		page.content.sort(timeSortFunction);
-
-		if (show)
+		else if (resp.code == 4011)
 		{
-			showPage();
+			login("admin", "1234");
+			// document.location = "login.php?redir=index.php?date=" +
+			// formatDate(pageDate);
+		}
+		else
+		{
+			alert("Unknown error: " + resp);
 		}
 	};
 
-	var onFailure = function ()
+	var onFailure = function()
 	{
 		alert("failure");
 	};
@@ -153,7 +158,7 @@ function downloadKoofs()
 		}
 	};
 
-	var onFailure = function ()
+	var onFailure = function()
 	{
 		koofs = [];
 	};
@@ -187,7 +192,7 @@ function downloadFoodbase()
 			}
 			else
 			{
-			//console.log("Foodbase downloaded, wait for dishbase...");
+				// console.log("Foodbase downloaded, wait for dishbase...");
 			}
 		}
 		else
@@ -197,7 +202,7 @@ function downloadFoodbase()
 		}
 	};
 
-	var onFailure = function ()
+	var onFailure = function()
 	{
 		console.log("Failed to load foodbase");
 		foodbase = [];
@@ -232,7 +237,7 @@ function downloadDishbase()
 			}
 			else
 			{
-			//console.log("Dishbase downloaded, wait for foodbase...");
+				// console.log("Dishbase downloaded, wait for foodbase...");
 			}
 		}
 		else
@@ -242,7 +247,7 @@ function downloadDishbase()
 		}
 	};
 
-	var onFailure = function ()
+	var onFailure = function()
 	{
 		console.log("Failed to load dishbase");
 		dishbase = [];
@@ -267,8 +272,7 @@ function floatizeDish(dish)
 	{
 		dish.item = [];
 	}
-	else
-	if (!dish.item.length)
+	else if (!dish.item.length)
 	{
 		var temp = [];
 		temp.push(dish.item);
@@ -370,14 +374,49 @@ function prepareComboList()
 	createHandlers();
 }
 
+function login(username, pass)
+{
+	var url = "api/auth/login/";
+	var request = 'login=' + username + '&pass=' + pass + '&api=20';
+
+	var onSuccess = function(resp)
+	{
+		// document.getElementById("summa").innerHTML = xmlhttp.responseText; //
+		// Выводим ответ сервера
+
+		var json = JSON.parse(resp);
+
+		if (json.code == 0)
+		{
+			setProgress("ready", "Дневник сохранён");
+		}
+		else
+		{
+			setProgress("error", "Не удалось сохранить дневник");
+			alert("Failed to save with message '" + resp + "'");
+		}
+	};
+
+	var onFailure = function()
+	{
+		setProgress("error", "Не удалось сохранить дневник");
+		alert("Failed to save page");
+	};
+
+	setProgress("progress", "Идёт сохранение...");
+	upload(url, request, true, onSuccess, onFailure);
+}
+
 function uploadPage(uploadedPage)
 {
 	var url = "console.php";
-	var request = 'diary:upload=&format=json&pages=' + encodeURIComponent(ObjToSource(uploadedPage));
+	var request = 'diary:upload=&format=json&pages='
+			+ encodeURIComponent(ObjToSource(uploadedPage));
 
-	var onSuccess = function (resp)
+	var onSuccess = function(resp)
 	{
-		//document.getElementById("summa").innerHTML = xmlhttp.responseText; // Выводим ответ сервера
+		// document.getElementById("summa").innerHTML = xmlhttp.responseText; //
+		// Выводим ответ сервера
 		if (resp == "DONE")
 		{
 			setProgress("ready", "Дневник сохранён");
@@ -389,7 +428,7 @@ function uploadPage(uploadedPage)
 		}
 	};
 
-	var onFailure = function ()
+	var onFailure = function()
 	{
 		setProgress("error", "Не удалось сохранить дневник");
 		alert("Failed to save page");
@@ -403,9 +442,12 @@ function uploadPage(uploadedPage)
 
 function getR(left, right, time)
 {
-	if (left > right) right += PERIOD;
-	if (time < left) time += PERIOD;
-	if (time > right) time -= PERIOD;
+	if (left > right)
+		right += PERIOD;
+	if (time < left)
+		time += PERIOD;
+	if (time > right)
+		time -= PERIOD;
 
 	return (time - left) / (right - left);
 }
@@ -419,21 +461,23 @@ function interpolateBi(v1, v2, time)
 	var _p = (v1.p * (1 - r) + v2.p * r).toFixed(2);
 
 	return {
-		k: _k,
-		q: _q,
-		p: _p
+		k : _k,
+		q : _q,
+		p : _p
 	};
 }
 
 function interpolate(koofList, time)
 {
-	if ((koofList == null) || (koofList.length == 0)) return null;
+	if ((koofList == null) || (koofList.length == 0))
+		return null;
 
-	if ((time < koofList[0].time) || (time >= koofList[koofList.length-1].time))
-		return interpolateBi(koofList[koofList.length-1], koofList[0], time);
+	if ((time < koofList[0].time)
+			|| (time >= koofList[koofList.length - 1].time))
+		return interpolateBi(koofList[koofList.length - 1], koofList[0], time);
 
-	for (var i = 0; i < koofList.length-1; i++)
-		if ((time >= koofList[i].time) && (time < koofList[i+1].time))
+	for (var i = 0; i < koofList.length - 1; i++)
+		if ((time >= koofList[i].time) && (time < koofList[i + 1].time))
 			return interpolateBi(koofList[i], koofList[i + 1], time);
 
 	return null;
@@ -447,158 +491,208 @@ function codeBlood(blood, id)
 	var finger = fingers[blood.finger];
 	var finger_hint = finger_hints[blood.finger];
 
-	if (null == finger) finger = "";
-	if (null == finger_hint) finger_hint = "";
+	if (null == finger)
+		finger = "";
+	if (null == finger_hint)
+		finger_hint = "";
 
-	return '' +
-	'				<div id="diaryRec_'+id+'" class="rec blood" onclick="onRecordClick(this.id)">\n'+
-	'					<div class="time hoverable" id="time_' + id + '" onclick="onTimeClick(this.id)">' + formatTime(blood.time) + "</div>\n" +
-	'					<div class="item">' +
-	"						<table cellpadding=\"0\">\n" +
-	"							<tr>\n" +
-	'								<td class="col_item"><span id="item_' + id + '" class="hoverable" onclick="onBloodClick(this.id)">' + value + ' ммоль/л</span></td>\n' +
-	"								<td class=\"col_info\"><div id=\"item_" + id + "\" title=\"" + finger_hint + "\">" + finger + "</div></td>\n" +
-	"								<td class=\"col_delete\"><div id=\"item_" + id + "\" onclick=\"onDeleteClick(this.id)\" title=\"Удалить\">X</div></td>\n" +
-	"							</tr>\n" +
-	"						</table>\n" +
-	'					</div>' +
-	'				</div>';
+	return '' + '				<div id="diaryRec_'
+			+ id
+			+ '" class="rec blood" onclick="onRecordClick(this.id)">\n'
+			+ '					<div class="time hoverable" id="time_'
+			+ id
+			+ '" onclick="onTimeClick(this.id)">'
+			+ formatTime(blood.time)
+			+ "</div>\n"
+			+ '					<div class="item">'
+			+ "						<table cellpadding=\"0\">\n"
+			+ "							<tr>\n"
+			+ '								<td class="col_item"><span id="item_'
+			+ id
+			+ '" class="hoverable" onclick="onBloodClick(this.id)">'
+			+ value
+			+ ' ммоль/л</span></td>\n'
+			+ "								<td class=\"col_info\"><div id=\"item_"
+			+ id
+			+ "\" title=\""
+			+ finger_hint
+			+ "\">"
+			+ finger
+			+ "</div></td>\n"
+			+ "								<td class=\"col_delete\"><div id=\"item_"
+			+ id
+			+ "\" onclick=\"onDeleteClick(this.id)\" title=\"Удалить\">X</div></td>\n"
+			+ "							</tr>\n" + "						</table>\n" + '					</div>'
+			+ '				</div>';
 }
 
 function codeIns(ins, id)
 {
-	return '' +
-	'				<div id="diaryRec_' + id + '" class="rec ins" onclick="onRecordClick(this.id)">\n'+
-	'					<div class="time hoverable" id="time_' + id + '" onclick="onTimeClick(this.id)">' + formatTime(ins.time) + "</div>\n" +
-	'					<div class="item">' +
-	"						<table cellpadding=\"0\">\n" +
-	"							<tr>\n" +
-	'								<td class="col_item"><span id="item_' + id + '" class="hoverable" onclick="onInsClick(this.id)">' + ins.value + ' ед</span></td>\n' +
-	"								<td class=\"col_info\"></td>\n" +
-	"								<td class=\"col_delete\"><div id=\"item_" + id + "\" onclick=\"onDeleteClick(this.id)\" title=\"Удалить\">X</div></td>\n" +
-	"							</tr>\n" +
-	"						</table>\n" +
-	'					</div>' +
-	'				</div>';
+	return '' + '				<div id="diaryRec_'
+			+ id
+			+ '" class="rec ins" onclick="onRecordClick(this.id)">\n'
+			+ '					<div class="time hoverable" id="time_'
+			+ id
+			+ '" onclick="onTimeClick(this.id)">'
+			+ formatTime(ins.time)
+			+ "</div>\n"
+			+ '					<div class="item">'
+			+ "						<table cellpadding=\"0\">\n"
+			+ "							<tr>\n"
+			+ '								<td class="col_item"><span id="item_'
+			+ id
+			+ '" class="hoverable" onclick="onInsClick(this.id)">'
+			+ ins.value
+			+ ' ед</span></td>\n'
+			+ "								<td class=\"col_info\"></td>\n"
+			+ "								<td class=\"col_delete\"><div id=\"item_"
+			+ id
+			+ "\" onclick=\"onDeleteClick(this.id)\" title=\"Удалить\">X</div></td>\n"
+			+ "							</tr>\n" + "						</table>\n" + '					</div>'
+			+ '				</div>';
 }
 
 function codeMeal(meal, id)
 {
 	var t = (meal.short ? "short_meal" : "meal");
 	var code = '';
-	code +=
-	'				<div id="diaryRec_' + id + '" class="rec ' + t + '" onclick="onRecordClick(this.id)">\n';
-
-	code +=
-	'					<div class="time hoverable" id="time_' + id + '" onclick="onTimeClick(this.id)">' + formatTime(meal.time) + "</div>\n" +
-	'					<div class="item">\n' +
-	"						<table class=\"meal_table\">\n";
-	for (var i = 0; i < meal.content.length; i++)
-	{
-		code +=
-		"							<tr class=\"food\">\n" +
-		"								<td class=\"col_item\"><span id=\"food_" + id + "_" + i + "\">" + meal.content[i].name + "</span></td>\n" +
-		'								<td class="col_info"><div id="food_' + id + '_' + i + '" class="hoverable" onclick="onFoodMassClick(this.id)" title="Изменить массу">' + meal.content[i].mass + '</div></td>\n' +
-		"								<td class=\"col_delete\"><div id=\"food_" + id + "_" + i + "\" onclick=\"onRemoveFoodClick(this.id)\" title=\"Удалить\">X</div></td>\n" +
-		"							</tr>\n";
-
-
-	//code += codeFood(meal.content[i], id + "_" + i) + '<br/>\n';
-	}
-
-	code +=
-	"							<tr class=\"food meal_adder\">\n" +
-	"								<td class=\"col_item\">\n"+
-	"									<div class=\"wrapper_table\">\n"+
-	"										<span class=\"wrapper_cell\">\n"+
-	'											<input id="mealcombo_' + id + '" class="meal_input full_width bold ' + t + '" placeholder="Введите название..."/>\n'+
-	"										</span>\n"+
-	"									</div>\n"+
-	'								</td>\n' +
-	'								<td class="col_info">\n'+
-	'									<div class="wrapper_table">\n'+
-	'										<span class="wrapper_cell">\n'+
-	'											<input id="mealmass_' + id + '" class="meal_input full_width bold ' + t + '" type="number" placeholder="..." title="Масса" onkeypress="onMassKeyDown(event,'+id+')"/>\n'+
-	'										</span>\n'+
-	'									</div>\n'+
-	'								</td>\n' +
-	"								<td class=\"col_delete\"><button class=\"meal_add\" onclick=\"addItemToMeal("+id+")\" title=\"Добавить\"></button></td>\n" +
-	"							</tr>\n";
-
-	code +=
-	"						</table>\n" +
-	'					</div>\n' +
-	'				</div>\n';
+//	code += '				<div id="diaryRec_' + id + '" class="rec ' + t
+//			+ '" onclick="onRecordClick(this.id)">\n';
+//
+//	code += '					<div class="time hoverable" id="time_' + id
+//			+ '" onclick="onTimeClick(this.id)">' + formatTime(meal.time)
+//			+ "</div>\n" + '					<div class="item">\n'
+//			+ "						<table class=\"meal_table\">\n";
+//	for (var i = 0; i < meal.content.length; i++)
+//	{
+//		code += "							<tr class=\"food\">\n"
+//				+ "								<td class=\"col_item\"><span id=\"food_"
+//				+ id
+//				+ "_"
+//				+ i
+//				+ "\">"
+//				+ meal.content[i].name
+//				+ "</span></td>\n"
+//				+ '								<td class="col_info"><div id="food_'
+//				+ id
+//				+ '_'
+//				+ i
+//				+ '" class="hoverable" onclick="onFoodMassClick(this.id)" title="Изменить массу">'
+//				+ meal.content[i].mass
+//				+ '</div></td>\n'
+//				+ "								<td class=\"col_delete\"><div id=\"food_"
+//				+ id
+//				+ "_"
+//				+ i
+//				+ "\" onclick=\"onRemoveFoodClick(this.id)\" title=\"Удалить\">X</div></td>\n"
+//				+ "							</tr>\n";
+//
+//		// code += codeFood(meal.content[i], id + "_" + i) + '<br/>\n';
+//	}
+//
+//	code += "							<tr class=\"food meal_adder\">\n"
+//			+ "								<td class=\"col_item\">\n"
+//			+ "									<div class=\"wrapper_table\">\n"
+//			+ "										<span class=\"wrapper_cell\">\n"
+//			+ '											<input id="mealcombo_'
+//			+ id
+//			+ '" class="meal_input full_width bold '
+//			+ t
+//			+ '" placeholder="Введите название..."/>\n'
+//			+ "										</span>\n"
+//			+ "									</div>\n"
+//			+ '								</td>\n'
+//			+ '								<td class="col_info">\n'
+//			+ '									<div class="wrapper_table">\n'
+//			+ '										<span class="wrapper_cell">\n'
+//			+ '											<input id="mealmass_'
+//			+ id
+//			+ '" class="meal_input full_width bold '
+//			+ t
+//			+ '" type="number" placeholder="..." title="Масса" onkeypress="onMassKeyDown(event,'
+//			+ id
+//			+ ')"/>\n'
+//			+ '										</span>\n'
+//			+ '									</div>\n'
+//			+ '								</td>\n'
+//			+ "								<td class=\"col_delete\"><button class=\"meal_add\" onclick=\"addItemToMeal("
+//			+ id + ")\" title=\"Добавить\"></button></td>\n" + "							</tr>\n";
+//
+//	code += "						</table>\n" + '					</div>\n' + '				</div>\n';
 	return code;
 }
 
 function codeNote(note, id)
 {
-	return ''+
-	'				<div id="diaryRec_' + id + '" class="rec note" onclick="onRecordClick(this.id)">\n'+
-	'					<div class="time hoverable" id="time_' + id + '" onclick="onTimeClick(this.id)">' + formatTime(note.time) + "</div>\n" +
-	'					<div class="item">' +
-	"						<table cellpadding=\"0\">\n" +
-	"							<tr>\n" +
-	'								<td class="col_item"><span id="item_' + id + '" class="hoverable" onclick="onNoteClick(this.id)">' + note.text + '</span></td>\n' +
-	"								<td class=\"col_info\"></td>\n" +
-	"								<td class=\"col_delete\"><div id=\"item_" + id + "\" onclick=\"onDeleteClick(this.id)\" title=\"Удалить\">X</div></td>\n" +
-	"							</tr>\n" +
-	"						</table>\n" +
+	return '' + '				<div id="diaryRec_'
+			+ id
+			+ '" class="rec note" onclick="onRecordClick(this.id)">\n'
+			+ '					<div class="time hoverable" id="time_'
+			+ id
+			+ '" onclick="onTimeClick(this.id)">'
+			+ formatTime(note.time)
+			+ "</div>\n"
+			+ '					<div class="item">'
+			+ "						<table cellpadding=\"0\">\n"
+			+ "							<tr>\n"
+			+ '								<td class="col_item"><span id="item_'
+			+ id
+			+ '" class="hoverable" onclick="onNoteClick(this.id)">'
+			+ note.text
+			+ '</span></td>\n'
+			+ "								<td class=\"col_info\"></td>\n"
+			+ "								<td class=\"col_delete\"><div id=\"item_"
+			+ id
+			+ "\" onclick=\"onDeleteClick(this.id)\" title=\"Удалить\">X</div></td>\n"
+			+ "							</tr>\n" + "						</table>\n" +
 
-	'					</div>' +
-	'				</div>';
+			'					</div>' + '				</div>';
 }
 
 function codePage(page)
 {
-	var code = '';//'			<div class="diary">';
+	var code = '';// ' <div class="diary">';
 	for (var i = 0; i < page.length; i++)
 	{
-		if (page[i].type == "meal") code += codeMeal(page[i], i);
-		else
-		if (page[i].type == "blood") code += codeBlood(page[i], i);
-		else
-		if (page[i].type == "ins") code += codeIns(page[i], i);
-		else
-		if (page[i].type == "note") code += codeNote(page[i], i);
+		if (page[i].data.type == "meal")
+			code += codeMeal(page[i].data, i);
+		else if (page[i].data.type == "blood")
+			code += codeBlood(page[i].data, i);
+		else if (page[i].data.type == "ins")
+			code += codeIns(page[i].data, i);
+		else if (page[i].data.type == "note")
+			code += codeNote(page[i].data, i);
 	}
-	//code += '			</div>';
-	/*code +=
-'	<div class="ui-widget">\n' +
-'		<span id="meal"/>\n' +
-'		<br/>\n' +
-'		<label for="fdAutocomplete">Выберите продукт или блюдо:</label>\n' +
-'		<div>\n' +
-'			<div id="block_ok">\n' +
-'				<button title="Добавить (Enter)">+</button>\n' +
-'			</div>\n' +
-'			<div id="block_mass">\n' +
-'				<input class="myinput" id="mass"\n' +
-'					onkeypress="return onMassKeyDown(event)" type="number"/>\n' +
-'			</div>\n' +
-'			<div id="block_fd">\n' +
-'				<input class="myinput" id="fdAutocomplete"/>\n' +
-'			</div>\n' +
-'		</div>\n' +
-'	</div>';*/
+	// code += ' </div>';
+	/*
+	 * code += ' <div class="ui-widget">\n' + ' <span id="meal"/>\n' + '
+	 * <br/>\n' + ' <label for="fdAutocomplete">Выберите продукт или блюдо:</label>\n' + '
+	 * <div>\n' + ' <div id="block_ok">\n' + ' <button title="Добавить
+	 * (Enter)">+</button>\n' + ' </div>\n' + ' <div id="block_mass">\n' + '
+	 * <input class="myinput" id="mass"\n' + ' onkeypress="return
+	 * onMassKeyDown(event)" type="number"/>\n' + ' </div>\n' + ' <div
+	 * id="block_fd">\n' + ' <input class="myinput" id="fdAutocomplete"/>\n' + '
+	 * </div>\n' + ' </div>\n' + ' </div>';
+	 */
 	return code;
 }
 
 function createHandlers()
 {
-	for (var i = 0; i < page.content.length; i++)
+	for (var i = 0; i < page.length; i++)
 	{
-		if (page.content[i].type == "meal")
+		if (page[i].data.type == "meal")
 		{
 			var id = i;
 			// вешаем обработчики
-			$(function() {
-				$("#mealcombo_" + id).autocomplete({
-					autoFocus: true,
-					source: fdBase,
-					delay: 0,
-					minLength: 2
+			$(function()
+			{
+				$("#mealcombo_" + id).autocomplete(
+				{
+					autoFocus : true,
+					source : fdBase,
+					delay : 0,
+					minLength : 2
 				});
 			});
 			$("#mealcombo_" + id).on("autocompleteselect", function(event, ui)
@@ -606,22 +700,22 @@ function createHandlers()
 				selectedItem = ui.item;
 				var t = 'mealmass_' + currentID;
 				var mc = document.getElementById(t);
-				//console.log("Searching for component '" + t + "': " + mc);
+				// console.log("Searching for component '" + t + "': " + mc);
 				mc.focus();
-			} );
+			});
 		}
 	}
 }
 
 function showPage()
 {
-	if (page.content.length > 0)
+	if (page.length > 0)
 	{
 		diary.className = "diary_page_full";
-		diary.innerHTML = codePage(page.content);
-		var stamp = new Date(Date.parse(page.timestamp + " UTC"));
-		modspan.innerHTML = formatTimestamp(stamp, true).replace(" ", "<br/>");
-		versionspan.innerHTML = "";//"#" + page.version;
+		diary.innerHTML = codePage(page);
+		//var stamp = new Date(Date.parse(page.timestamp + " UTC"));
+		//modspan.innerHTML = formatTimestamp(stamp, true).replace(" ", "<br/>");
+		//versionspan.innerHTML = "";// "#" + page.version;
 		createHandlers();
 	}
 	else
@@ -637,35 +731,32 @@ function showPage()
 
 function codeNewRecord()
 {
-	return '' +
-	"						<div>\n" +
-	"							<div onclick=\"newBloodEditor()\" class=\"button_new_rec button_new_blood\">Замер СК</div>\n" +
-	"							<div onclick=\"newInsEditor()\" class=\"button_new_rec button_new_ins\">Инъекция</div>\n" +
-	"							<div onclick=\"newMealEditor()\" class=\"button_new_rec button_new_meal\">Приём пищи</div>\n" +
-	"							<div onclick=\"newNoteEditor()\" class=\"button_new_rec button_new_note\">Заметка</div>\n" +
-	"						</div>\n";
+	return ''
+			+ "						<div>\n"
+			+ "							<div onclick=\"newBloodEditor()\" class=\"button_new_rec button_new_blood\">Замер СК</div>\n"
+			+ "							<div onclick=\"newInsEditor()\" class=\"button_new_rec button_new_ins\">Инъекция</div>\n"
+			+ "							<div onclick=\"newMealEditor()\" class=\"button_new_rec button_new_meal\">Приём пищи</div>\n"
+			+ "							<div onclick=\"newNoteEditor()\" class=\"button_new_rec button_new_note\">Заметка</div>\n"
+			+ "						</div>\n";
 }
 
 function codeInfoDefault()
 {
-	return codeNewRecord() + "<hr>\n" +
-	"						Для получения более подробной информации выберите запись на странице.\n";
+	return codeNewRecord()
+			+ "<hr>\n"
+			+ "						Для получения более подробной информации выберите запись на странице.\n";
 }
 
 function codeInfoBlood(rec)
 {
-	return '' +
-	"						Вы выбрали замер СК<br/><br/><hr>\n" +
-	"						Добавить новую запись:<br/><br/>\n" +
-	codeNewRecord();
+	return '' + "						Вы выбрали замер СК<br/><br/><hr>\n"
+			+ "						Добавить новую запись:<br/><br/>\n" + codeNewRecord();
 }
 
 function codeInfoIns(rec)
 {
-	return '' +
-	"						Вы выбрали инъекцию<br/><br/><hr>\n" +
-	"						Добавить новую запись:<br/><br/>\n" +
-	codeNewRecord();
+	return '' + "						Вы выбрали инъекцию<br/><br/><hr>\n"
+			+ "						Добавить новую запись:<br/><br/>\n" + codeNewRecord();
 }
 
 function codeInfoMeal(meal)
@@ -676,10 +767,14 @@ function codeInfoMeal(meal)
 	var val = 0;
 	for (var i = 0; i < meal.content.length; i++)
 	{
-		prots += strToFloat(meal.content[i].prots) * strToFloat(meal.content[i].mass) / 100;
-		fats += strToFloat(meal.content[i].fats) * strToFloat(meal.content[i].mass) / 100;
-		carbs += strToFloat(meal.content[i].carbs) * strToFloat(meal.content[i].mass) / 100;
-		val += strToFloat(meal.content[i].value) * strToFloat(meal.content[i].mass) / 100;
+		prots += strToFloat(meal.content[i].prots)
+				* strToFloat(meal.content[i].mass) / 100;
+		fats += strToFloat(meal.content[i].fats)
+				* strToFloat(meal.content[i].mass) / 100;
+		carbs += strToFloat(meal.content[i].carbs)
+				* strToFloat(meal.content[i].mass) / 100;
+		val += strToFloat(meal.content[i].value)
+				* strToFloat(meal.content[i].mass) / 100;
 	}
 
 	var w = interpolate(koofs, meal.time);
@@ -694,77 +789,102 @@ function codeInfoMeal(meal)
 
 	if (w != null)
 	{
-		dose = ((BsInput - BsTarget + w.k * carbs + w.p * prots) / w.q).toFixed(1);
+		dose = ((BsInput - BsTarget + w.k * carbs + w.p * prots) / w.q)
+				.toFixed(1);
 		if (injectedDose != null)
 		{
-			dk = ((BsTarget - BsInput - w.p*prots + w.q * injectedDose) / w.k - carbs).toFixed(0);
-			if (Math.abs(dk) < 0.51) dk = 0;
-			if (dk > 0.5) correctionClass = "positive";
-			else
-			if (dk < -0.5) correctionClass = "negative";
-			if (dk > 0) dk = "+" + dk;
+			dk = ((BsTarget - BsInput - w.p * prots + w.q * injectedDose) / w.k - carbs)
+					.toFixed(0);
+			if (Math.abs(dk) < 0.51)
+				dk = 0;
+			if (dk > 0.5)
+				correctionClass = "positive";
+			else if (dk < -0.5)
+				correctionClass = "negative";
+			if (dk > 0)
+				dk = "+" + dk;
 		}
 	}
 
-	if (injectedDose == null) injectedDose = "?";
-	if (dose == null) dose = "?";
-	if (dk == null) dk = "?";
+	if (injectedDose == null)
+		injectedDose = "?";
+	if (dose == null)
+		dose = "?";
+	if (dk == null)
+		dk = "?";
 
-	return '' +
-	'<table cellpadding="1" style="text-align: left">\n'+
-	'							<tr>\n'+
-	'								<th class="full_width">Белки, г</th>\n'+
-	'								<td class="right">'+prots.toFixed(0)+'</td>\n'+
-	'							</tr>\n'+
-	'							<tr>\n'+
-	'								<th class="full_width">Жиры, г</th>\n'+
-	'								<td class="right">'+fats.toFixed(0)+'</td>\n'+
-	'							</tr>\n'+
-	'							<tr>\n'+
-	'								<th class="full_width">Углеводы, г</th>\n'+
-	'								<td class="right">'+carbs.toFixed(0)+'</td>\n'+
-	'							</tr>\n'+
-	'							<tr>\n'+
-	'								<th class="full_width">Ценность, ккал</th>\n'+
-	'								<td class="right">'+val.toFixed(0)+'</td>\n'+
-	'							</tr>\n'+
-	'						</table>\n'+
-	'						<hr>\n'+
-	'						<table cellpadding="1" style="text-align: left">\n'+
-	'							<tr>\n'+
-	'								<th class="full_width">Доза введённая, ед</th>\n'+
-	'								<td class="right">'+injectedDose+'</td>\n'+
-	'							</tr>\n'+
-	'							<tr>\n'+
-	'								<th class="full_width">Доза рассчётная, ед</th>\n'+
-	'								<td class="right">'+dose+'</td>\n'+
-	'							</tr>\n'+
-	'							<tr>\n'+
-	'								<th class="full_width">Коррекция, г</th>\n'+
-	'								<td class="right '+correctionClass+'">'+dk+'</td>\n'+
-	'							</tr>\n'+
-	'						</table>\n'+
-	'						<br>\n'+
-	'						<div class="hint">\n'+
-	'							<a href="#" onclick="switchMealInfo(false);">Таблица подбора</a> &gt;\n'+
-	'						</div>';
+	return '' + '<table cellpadding="1" style="text-align: left">\n'
+			+ '							<tr>\n'
+			+ '								<th class="full_width">Белки, г</th>\n'
+			+ '								<td class="right">'
+			+ prots.toFixed(0)
+			+ '</td>\n'
+			+ '							</tr>\n'
+			+ '							<tr>\n'
+			+ '								<th class="full_width">Жиры, г</th>\n'
+			+ '								<td class="right">'
+			+ fats.toFixed(0)
+			+ '</td>\n'
+			+ '							</tr>\n'
+			+ '							<tr>\n'
+			+ '								<th class="full_width">Углеводы, г</th>\n'
+			+ '								<td class="right">'
+			+ carbs.toFixed(0)
+			+ '</td>\n'
+			+ '							</tr>\n'
+			+ '							<tr>\n'
+			+ '								<th class="full_width">Ценность, ккал</th>\n'
+			+ '								<td class="right">'
+			+ val.toFixed(0)
+			+ '</td>\n'
+			+ '							</tr>\n'
+			+ '						</table>\n'
+			+ '						<hr>\n'
+			+ '						<table cellpadding="1" style="text-align: left">\n'
+			+ '							<tr>\n'
+			+ '								<th class="full_width">Доза введённая, ед</th>\n'
+			+ '								<td class="right">'
+			+ injectedDose
+			+ '</td>\n'
+			+ '							</tr>\n'
+			+ '							<tr>\n'
+			+ '								<th class="full_width">Доза рассчётная, ед</th>\n'
+			+ '								<td class="right">'
+			+ dose
+			+ '</td>\n'
+			+ '							</tr>\n'
+			+ '							<tr>\n'
+			+ '								<th class="full_width">Коррекция, г</th>\n'
+			+ '								<td class="right '
+			+ correctionClass
+			+ '">'
+			+ dk
+			+ '</td>\n'
+			+ '							</tr>\n'
+			+ '						</table>\n'
+			+ '						<br>\n'
+			+ '						<div class="hint">\n'
+			+ '							<a href="#" onclick="switchMealInfo(false);">Таблица подбора</a> &gt;\n'
+			+ '						</div>';
 }
 
 function codeInfoNote(rec)
 {
-	return '' +
-	"						Вы выбрали заметку.<br/><br/><hr>\n" +
-	"						Добавить новую запись:<br/><br/>\n" +
-	codeNewRecord();
+	return '' + "						Вы выбрали заметку.<br/><br/><hr>\n"
+			+ "						Добавить новую запись:<br/><br/>\n" + codeNewRecord();
 }
 
-/* ================================ INFO PANEL UTILS ================================ */
+/*
+ * ================================ INFO PANEL UTILS
+ * ================================
+ */
 
-function doMove(startHeight, targetHeight, startTime, duration) {
+function doMove(startHeight, targetHeight, startTime, duration)
+{
 	var currentTime = new Date().getTime();
 
 	var e = document.getElementById('filler');
-	//var current = parseInt(getBefore(e.style.height, "px"));
+	// var current = parseInt(getBefore(e.style.height, "px"));
 
 	if (currentTime > startTime + duration)
 	{
@@ -776,7 +896,8 @@ function doMove(startHeight, targetHeight, startTime, duration) {
 	var height = startHeight * (1 - k) + targetHeight * k;
 
 	e.style.height = height + "px";
-	setTimeout("doMove("+startHeight + "," + targetHeight + "," + startTime + "," + duration + ")", 2);
+	setTimeout("doMove(" + startHeight + "," + targetHeight + "," + startTime
+			+ "," + duration + ")", 2);
 }
 
 function moveInfoBox(index)
@@ -786,9 +907,11 @@ function moveInfoBox(index)
 	{
 		targetHeight += document.getElementById("diaryRec_" + i).offsetHeight;
 	}
-	//document.getElementById('filler').setAttribute("style","height:" + targetHeight + "px");
-	//document.getElementById('filler').style.height = targetHeight + "px";
-	var startHeight = getBefore(document.getElementById('filler').style.height, "px");
+	// document.getElementById('filler').setAttribute("style","height:" +
+	// targetHeight + "px");
+	// document.getElementById('filler').style.height = targetHeight + "px";
+	var startHeight = getBefore(document.getElementById('filler').style.height,
+			"px");
 	doMove(startHeight, targetHeight, new Date().getTime(), 200);
 }
 
@@ -797,15 +920,17 @@ function showInfoBox(index)
 	currentID = index;
 	moveInfoBox(index);
 
-	if ((index < 0)||(index >= page.content.length))	infoblock.innerHTML = codeInfoDefault();
+	if ((index < 0) || (index >= page.content.length))
+		infoblock.innerHTML = codeInfoDefault();
+	else if (page.content[index].type == "blood")
+		infoblock.innerHTML = codeInfoBlood(page.content[index]);
+	else if (page.content[index].type == "ins")
+		infoblock.innerHTML = codeInfoIns(page.content[index]);
+	else if (page.content[index].type == "meal")
+		infoblock.innerHTML = codeInfoMeal(page.content[index]);
+	else if (page.content[index].type == "note")
+		infoblock.innerHTML = codeInfoNote(page.content[index]);
 	else
-	if (page.content[index].type == "blood")			infoblock.innerHTML = codeInfoBlood(page.content[index]);
-	else
-	if (page.content[index].type == "ins")				infoblock.innerHTML = codeInfoIns(page.content[index]);
-	else
-	if (page.content[index].type == "meal")				infoblock.innerHTML = codeInfoMeal(page.content[index]);
-	else
-	if (page.content[index].type == "note")				infoblock.innerHTML = codeInfoNote(page.content[index]); else
 		infoblock.innerHTML = codeInfoDefault();
 
 }
@@ -817,20 +942,17 @@ function setProgress(status, hint)
 		statusImg.setAttribute("display", "block");
 		statusImg.setAttribute("src", "img/status-progress.gif");
 	}
-	else
-	if (status == "ready")
+	else if (status == "ready")
 	{
 		statusImg.setAttribute("display", "block");
 		statusImg.setAttribute("src", "img/status-ready.png");
 	}
-	else
-	if (status == "error")
+	else if (status == "error")
 	{
 		statusImg.setAttribute("display", "block");
 		statusImg.setAttribute("src", "img/status-error.png");
 	}
-	else
-	if (status == "none")
+	else if (status == "none")
 	{
 		statusImg.setAttribute("display", "none");
 		statusImg.setAttribute("src", "");
@@ -845,7 +967,8 @@ function modified(needResort)
 {
 	page.version++;
 	page.timestamp = getCurrentTimestamp();
-	if (needResort) page.content.sort(timeSortFunction);
+	if (needResort)
+		page.content.sort(timeSortFunction);
 
 	showPage();
 	uploadPage(page);
@@ -890,7 +1013,8 @@ function DiaryPage_getLastFinger(page)
 {
 	for (var i = page.content.length - 1; i >= 0; i--)
 	{
-		if (page.content[i].type == "blood") return parseInt(page.content[i].finger);
+		if (page.content[i].type == "blood")
+			return parseInt(page.content[i].finger);
 	}
 	return -1;
 }
@@ -930,10 +1054,12 @@ function DiaryPage_findIns(time, maxDist)
 function newBloodEditor()
 {
 	var finger = DiaryPage_getLastFinger(page);
-	if (finger == -1) finger = DiaryPage_getLastFinger(prev_page);
+	if (finger == -1)
+		finger = DiaryPage_getLastFinger(prev_page);
 	finger = (finger + 1) % 10;
 
-	var val = inputFloat("Введите значение СК (" + finger_hints[finger] + "):", "");
+	var val = inputFloat("Введите значение СК (" + finger_hints[finger] + "):",
+			"");
 
 	if (val > -1)
 	{
@@ -995,8 +1121,9 @@ function onDateChanged(datePicker)
 	if (valid(date))
 	{
 		cur_date = new Date(Date.parse(date));
-		//loadDoc(document.getElementById("diary_page"), "console.php?diary:download&dates=" + cur_date);
-		//window.location='index.php?date=' + date;
+		// loadDoc(document.getElementById("diary_page"),
+		// "console.php?diary:download&dates=" + cur_date);
+		// window.location='index.php?date=' + date;
 		refreshCurrentPage();
 	}
 }
@@ -1074,7 +1201,7 @@ function onFoodMassClick(id)
 	if (newMass != -1)
 	{
 		DiaryPage_changeFoodMass(mealIndex, foodIndex, newMass);
-	// info panel updates automatically due to inherited clicking
+		// info panel updates automatically due to inherited clicking
 	}
 }
 
@@ -1084,10 +1211,11 @@ function onRemoveFoodClick(id)
 	var mealIndex = getBefore(id, "_");
 	var foodIndex = getAfter(id, "_");
 
-	if (confirm("Удалить «" + page.content[mealIndex].content[foodIndex].name + "» ?"))
+	if (confirm("Удалить «" + page.content[mealIndex].content[foodIndex].name
+			+ "» ?"))
 	{
 		DiaryPage_removeFood(mealIndex, foodIndex);
-	// info panel updates automatically due to inherited clicking
+		// info panel updates automatically due to inherited clicking
 	}
 }
 
@@ -1095,8 +1223,9 @@ function pushHistory(url)
 {
 	// "index.php?date=2013-04-01"
 	// TODO: what does these parameters mean?
-	var stateObj = {
-		foo: "bar"
+	var stateObj =
+	{
+		foo : "bar"
 	};
 	history.pushState(stateObj, "Компенсация", url);
 }
@@ -1125,7 +1254,7 @@ function addItemToMeal(id)
 
 	if (item.mass >= 0)
 	{
-		//console.log("Add " + ObjToSource(item) + " to meal #" + id);
+		// console.log("Add " + ObjToSource(item) + " to meal #" + id);
 		page.content[id].content.push(item);
 		modified(false);
 
