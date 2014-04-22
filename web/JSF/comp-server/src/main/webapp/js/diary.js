@@ -132,7 +132,7 @@ function downloadPage(pageDate, show)
 	var onFailure = function ()
 	{
 		alert("failure");
-	}
+	};
 
 	download(url, false, onSuccess, onFailure);
 }
@@ -156,7 +156,7 @@ function downloadKoofs()
 	var onFailure = function ()
 	{
 		koofs = [];
-	}
+	};
 
 	download(url, true, onSuccess, onFailure);
 }
@@ -201,7 +201,7 @@ function downloadFoodbase()
 	{
 		console.log("Failed to load foodbase");
 		foodbase = [];
-	}
+	};
 
 	download(url, true, onSuccess, onFailure);
 }
@@ -246,7 +246,7 @@ function downloadDishbase()
 	{
 		console.log("Failed to load dishbase");
 		dishbase = [];
-	}
+	};
 
 	download(url, true, onSuccess, onFailure);
 }
@@ -275,7 +275,7 @@ function floatizeDish(dish)
 		dish.item = temp;
 	}
 
-	for (i = 0; i < dish.item.length; i++)
+	for (var i = 0; i < dish.item.length; i++)
 	{
 		dish.item[i].prots = strToFloat(dish.item[i].prots);
 		dish.item[i].fats = strToFloat(dish.item[i].fats);
@@ -301,7 +301,7 @@ function dishAsFood(dish)
 	var summVal = 0.0;
 	var summMass = 0.0;
 
-	for (k = 0; k < dish.item.length; k++)
+	for (var k = 0; k < dish.item.length; k++)
 	{
 		summProts += dish.item[k].mass * dish.item[k].prots / 100;
 		summFats += dish.item[k].mass * dish.item[k].fats / 100;
@@ -337,9 +337,9 @@ function prepareComboList()
 	var item;
 
 	// adding foods
-	for (i = 0; i < foodbase.food.length; i++)
+	for (var i = 0; i < foodbase.food.length; i++)
 	{
-		item = {}
+		item = {};
 		item.value = foodbase.food[i].name;
 		item.prots = foodbase.food[i].prots;
 		item.fats = foodbase.food[i].fats;
@@ -351,9 +351,9 @@ function prepareComboList()
 	}
 
 	// adding dishes
-	for (i = 0; i < dishbase.dish.length; i++)
+	for (var j = 0; j < dishbase.dish.length; j++)
 	{
-		var cnv = dishAsFood(dishbase.dish[i]);
+		var cnv = dishAsFood(dishbase.dish[j]);
 
 		item = {};
 		item.value = cnv.name;
@@ -387,13 +387,13 @@ function uploadPage(uploadedPage)
 			setProgress("error", "Не удалось сохранить дневник");
 			alert("Failed to save with message '" + resp + "'");
 		}
-	}
+	};
 
 	var onFailure = function ()
 	{
 		setProgress("error", "Не удалось сохранить дневник");
 		alert("Failed to save page");
-	}
+	};
 
 	setProgress("progress", "Идёт сохранение...");
 	upload(url, request, true, onSuccess, onFailure);
@@ -432,7 +432,7 @@ function interpolate(koofList, time)
 	if ((time < koofList[0].time) || (time >= koofList[koofList.length-1].time))
 		return interpolateBi(koofList[koofList.length-1], koofList[0], time);
 
-	for (i = 0; i < koofList.length-1; i++)
+	for (var i = 0; i < koofList.length-1; i++)
 		if ((time >= koofList[i].time) && (time < koofList[i+1].time))
 			return interpolateBi(koofList[i], koofList[i + 1], time);
 
@@ -782,7 +782,7 @@ function doMove(startHeight, targetHeight, startTime, duration) {
 function moveInfoBox(index)
 {
 	var targetHeight = 0;
-	for (i = 0; i < index; i++)
+	for (var i = 0; i < index; i++)
 	{
 		targetHeight += document.getElementById("diaryRec_" + i).offsetHeight;
 	}
@@ -888,7 +888,7 @@ function DiaryPage_removeFood(mealIndex, foodIndex)
 
 function DiaryPage_getLastFinger(page)
 {
-	for (i = page.content.length - 1; i >= 0; i--)
+	for (var i = page.content.length - 1; i >= 0; i--)
 	{
 		if (page.content[i].type == "blood") return parseInt(page.content[i].finger);
 	}
