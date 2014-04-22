@@ -106,11 +106,14 @@ function inputTime(msg, oldTime)
 	{
 		var hour = parseFloat(newValue.substr(0, 2));
 		var min = parseFloat(newValue.substr(3, 5));
-		return hour * 60 + min;
+		
+		var date = new Date();
+		date.setHours(hour, min, 0, 0);
+		return date;
 	}
 	else
 	{
-		return -1;
+		return null;
 	}
 }
 
@@ -225,9 +228,14 @@ function formatTime(time)
 {
 	// 21:14
 
-	var h = format00(Math.floor(time/60));
-	var m = format00(time % 60);
-	return h + ":" + m;
+	//var h = format00(Math.floor(time/60));
+	//var m = format00(time % 60);
+	//return h + ":" + m;
+	
+	var date = new Date(time)
+	
+	return format00(date.getHours()) + ":" + format00(date.getMinutes());
+	//return date;
 }
 
 function getCurrentTime()
@@ -346,7 +354,7 @@ function parseXml(data)
 
 function timeSortFunction(a, b)
 {
-	return a.time - b.time;
+	return a.data.time > b.data.time ? 1 : -1;
 }
 
 function nameSortFunction(a, b)
