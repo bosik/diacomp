@@ -92,6 +92,23 @@ function openPage()
 
 /* ================== INTERNET ================== */
 
+function logout()
+{
+	var url = "api/auth/logout/";
+
+	var onSuccess = function(data)
+	{
+		document.location = "index.html";
+	};
+
+	var onFailure = function()
+	{
+		document.location = "index.html";
+	};
+
+	doGet(url, false, onSuccess, onFailure);
+}
+
 function downloadPage(pageDate, show)
 {
 	var start_time = formatTimestamp(pageDate, false);
@@ -124,9 +141,7 @@ function downloadPage(pageDate, show)
 		}
 		else if (resp.code == 4011)
 		{
-			login("admin", "1234");
-			// document.location = "login.php?redir=index.php?date=" +
-			// formatDate(pageDate);
+			document.location = "login.html";
 		}
 		else
 		{
@@ -392,6 +407,10 @@ function uploadPage(uploadedItem)
 		if (json.code == 0)
 		{
 			setProgress("ready", "Дневник сохранён");
+		}
+		else if (json.code == 4011)
+		{
+			document.location = "login.html";
 		}
 		else
 		{
@@ -1086,7 +1105,7 @@ function newMealEditor()
 		
 		var meal_rec = {};
 		meal_rec.type = "meal";
-		meal_rec.time = xTime;
+		meal_rec.time = formatTimestamp(xTime, false);
 		meal_rec.content = [];
 		meal_rec.short = false;
 
