@@ -966,7 +966,7 @@ function DiaryPage_deleteRecord(index)
 
 function DiaryPage_changeTime(index, newTime)
 {
-	page[index].data.time = newTime;
+	page[index].data.time = formatTimestamp(newTime, false);
 	modified(index, true);
 }
 
@@ -1109,7 +1109,7 @@ function onDateChanged(datePicker)
 function onTimeClick(id)
 {
 	var index = getAfter(id, "_");
-	var oldTime = page[index].data.time;
+	var oldTime = new Date(page[index].data.time);
 	var newTime = inputTime("Введите время:", oldTime);
 	if (newTime != null)
 	{
