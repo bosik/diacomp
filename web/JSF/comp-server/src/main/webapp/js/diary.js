@@ -1,4 +1,4 @@
-var root = document.getElementById("diary_block");
+п»їvar root = document.getElementById("diary_block");
 root.innerHTML =
 	"				<div id=\"diary_info_column\">\n" +
 "					<div id=\"filler\" style=\"height: 0px\" onclick=\"showInfoBox(-1)\" ></div>\n" +
@@ -6,7 +6,7 @@ root.innerHTML =
 "				</div>\n" +
 "				<div id=\"diary_page\" class=\"diary_page_empty\"></div>\n";
 
-// компоненты
+// РєРѕРјРїРѕРЅРµРЅС‚С‹
 var calendar = document.getElementById("calendar");
 var modspan = document.getElementById("modspan");
 var versionspan = document.getElementById("versionspan"); // TODO: unused
@@ -14,26 +14,26 @@ var diary = document.getElementById("diary_page");
 var infoblock = document.getElementById("diary_info");
 var statusImg = document.getElementById("job_img");
 
-// константы
-var fingers = ["БЛ", "1Л", "2Л", "3Л", "4Л", "4П", "3П", "2П", "1П", "БП"];
+// РєРѕРЅСЃС‚Р°РЅС‚С‹
+var fingers = ["Р‘Р›", "1Р›", "2Р›", "3Р›", "4Р›", "4Рџ", "3Рџ", "2Рџ", "1Рџ", "Р‘Рџ"];
 var finger_hints = [
-"Левая, большой",
-"Левая, указательный",
-"Левая, средний",
-"Левая, безымянный",
-"Левая, мизинец",
-"Правая, мизинец",
-"Правая, безымянный",
-"Правая, средний",
-"Правая, указательный",
-"Правая, большой"
+"Р›РµРІР°СЏ, Р±РѕР»СЊС€РѕР№",
+"Р›РµРІР°СЏ, СѓРєР°Р·Р°С‚РµР»СЊРЅС‹Р№",
+"Р›РµРІР°СЏ, СЃСЂРµРґРЅРёР№",
+"Р›РµРІР°СЏ, Р±РµР·С‹РјСЏРЅРЅС‹Р№",
+"Р›РµРІР°СЏ, РјРёР·РёРЅРµС†",
+"РџСЂР°РІР°СЏ, РјРёР·РёРЅРµС†",
+"РџСЂР°РІР°СЏ, Р±РµР·С‹РјСЏРЅРЅС‹Р№",
+"РџСЂР°РІР°СЏ, СЃСЂРµРґРЅРёР№",
+"РџСЂР°РІР°СЏ, СѓРєР°Р·Р°С‚РµР»СЊРЅС‹Р№",
+"РџСЂР°РІР°СЏ, Р±РѕР»СЊС€РѕР№"
 ];
 var PERIOD = 1440;
 var BLOOD_ACTUAL_PERIOD = 60;
 var INS_ACTUAL_PERIOD = 90;
 var TARGET_BS = 5.0; // TODO: load from user properties
 
-// данные
+// РґР°РЅРЅС‹Рµ
 var cur_date = new Date(Date.parse(document.getElementById("origin_date").value));
 var prev_page = [];
 var page = [];
@@ -54,7 +54,7 @@ refreshCurrentPage();
 downloadKoofs();
 downloadFoodbase();
 downloadDishbase();
-setProgress("ready", "Дневник сохранён");
+setProgress("ready", "Р”РЅРµРІРЅРёРє СЃРѕС…СЂР°РЅС‘РЅ");
 
 /* ================== DIARY NAVIGATION ================== */
 
@@ -172,8 +172,8 @@ function downloadFoodbase()
 		{
 			foodbase = parseXml(data).foods;
 
-			// TODO: убрать?
-			// простановка индексов
+			// TODO: СѓР±СЂР°С‚СЊ?
+			// РїСЂРѕСЃС‚Р°РЅРѕРІРєР° РёРЅРґРµРєСЃРѕРІ
 			for (var i = 0; i < foodbase.food.length; i++)
 			{
 				foodbase.food[i] = floatizeFood(foodbase.food[i]);
@@ -217,8 +217,8 @@ function downloadDishbase()
 		{
 			dishbase = parseXml(data).dishes;
 
-			// TODO: убрать?
-			// простановка индексов
+			// TODO: СѓР±СЂР°С‚СЊ?
+			// РїСЂРѕСЃС‚Р°РЅРѕРІРєР° РёРЅРґРµРєСЃРѕРІ
 			for (var i = 0; i < dishbase.dish.length; i++)
 			{
 				dishbase.dish[i] = floatizeDish(dishbase.dish[i]);
@@ -377,25 +377,25 @@ function uploadPage(uploadedPage)
 
 	var onSuccess = function (resp)
 	{
-		//document.getElementById("summa").innerHTML = xmlhttp.responseText; // Выводим ответ сервера
+		//document.getElementById("summa").innerHTML = xmlhttp.responseText; // Р’С‹РІРѕРґРёРј РѕС‚РІРµС‚ СЃРµСЂРІРµСЂР°
 		if (resp == "DONE")
 		{
-			setProgress("ready", "Дневник сохранён");
+			setProgress("ready", "Р”РЅРµРІРЅРёРє СЃРѕС…СЂР°РЅС‘РЅ");
 		}
 		else
 		{
-			setProgress("error", "Не удалось сохранить дневник");
+			setProgress("error", "РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕС…СЂР°РЅРёС‚СЊ РґРЅРµРІРЅРёРє");
 			alert("Failed to save with message '" + resp + "'");
 		}
 	}
 
 	var onFailure = function ()
 	{
-		setProgress("error", "Не удалось сохранить дневник");
+		setProgress("error", "РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕС…СЂР°РЅРёС‚СЊ РґРЅРµРІРЅРёРє");
 		alert("Failed to save page");
 	}
 
-	setProgress("progress", "Идёт сохранение...");
+	setProgress("progress", "РРґС‘С‚ СЃРѕС…СЂР°РЅРµРЅРёРµ...");
 	upload(url, request, true, onSuccess, onFailure);
 }
 
@@ -456,9 +456,9 @@ function codeBlood(blood, id)
 	'					<div class="item">' +
 	"						<table cellpadding=\"0\">\n" +
 	"							<tr>\n" +
-	'								<td class="col_item"><span id="item_' + id + '" class="hoverable" onclick="onBloodClick(this.id)">' + value + ' ммоль/л</span></td>\n' +
+	'								<td class="col_item"><span id="item_' + id + '" class="hoverable" onclick="onBloodClick(this.id)">' + value + ' РјРјРѕР»СЊ/Р»</span></td>\n' +
 	"								<td class=\"col_info\"><div id=\"item_" + id + "\" title=\"" + finger_hint + "\">" + finger + "</div></td>\n" +
-	"								<td class=\"col_delete\"><div id=\"item_" + id + "\" onclick=\"onDeleteClick(this.id)\" title=\"Удалить\">X</div></td>\n" +
+	"								<td class=\"col_delete\"><div id=\"item_" + id + "\" onclick=\"onDeleteClick(this.id)\" title=\"РЈРґР°Р»РёС‚СЊ\">X</div></td>\n" +
 	"							</tr>\n" +
 	"						</table>\n" +
 	'					</div>' +
@@ -473,9 +473,9 @@ function codeIns(ins, id)
 	'					<div class="item">' +
 	"						<table cellpadding=\"0\">\n" +
 	"							<tr>\n" +
-	'								<td class="col_item"><span id="item_' + id + '" class="hoverable" onclick="onInsClick(this.id)">' + ins.value + ' ед</span></td>\n' +
+	'								<td class="col_item"><span id="item_' + id + '" class="hoverable" onclick="onInsClick(this.id)">' + ins.value + ' РµРґ</span></td>\n' +
 	"								<td class=\"col_info\"></td>\n" +
-	"								<td class=\"col_delete\"><div id=\"item_" + id + "\" onclick=\"onDeleteClick(this.id)\" title=\"Удалить\">X</div></td>\n" +
+	"								<td class=\"col_delete\"><div id=\"item_" + id + "\" onclick=\"onDeleteClick(this.id)\" title=\"РЈРґР°Р»РёС‚СЊ\">X</div></td>\n" +
 	"							</tr>\n" +
 	"						</table>\n" +
 	'					</div>' +
@@ -498,8 +498,8 @@ function codeMeal(meal, id)
 		code +=
 		"							<tr class=\"food\">\n" +
 		"								<td class=\"col_item\"><span id=\"food_" + id + "_" + i + "\">" + meal.content[i].name + "</span></td>\n" +
-		'								<td class="col_info"><div id="food_' + id + '_' + i + '" class="hoverable" onclick="onFoodMassClick(this.id)" title="Изменить массу">' + meal.content[i].mass + '</div></td>\n' +
-		"								<td class=\"col_delete\"><div id=\"food_" + id + "_" + i + "\" onclick=\"onRemoveFoodClick(this.id)\" title=\"Удалить\">X</div></td>\n" +
+		'								<td class="col_info"><div id="food_' + id + '_' + i + '" class="hoverable" onclick="onFoodMassClick(this.id)" title="РР·РјРµРЅРёС‚СЊ РјР°СЃСЃСѓ">' + meal.content[i].mass + '</div></td>\n' +
+		"								<td class=\"col_delete\"><div id=\"food_" + id + "_" + i + "\" onclick=\"onRemoveFoodClick(this.id)\" title=\"РЈРґР°Р»РёС‚СЊ\">X</div></td>\n" +
 		"							</tr>\n";
 
 
@@ -511,18 +511,18 @@ function codeMeal(meal, id)
 	"								<td class=\"col_item\">\n"+
 	"									<div class=\"wrapper_table\">\n"+
 	"										<span class=\"wrapper_cell\">\n"+
-	'											<input id="mealcombo_' + id + '" class="meal_input full_width bold ' + t + '" placeholder="Введите название..."/>\n'+
+	'											<input id="mealcombo_' + id + '" class="meal_input full_width bold ' + t + '" placeholder="Р’РІРµРґРёС‚Рµ РЅР°Р·РІР°РЅРёРµ..."/>\n'+
 	"										</span>\n"+
 	"									</div>\n"+
 	'								</td>\n' +
 	'								<td class="col_info">\n'+
 	'									<div class="wrapper_table">\n'+
 	'										<span class="wrapper_cell">\n'+
-	'											<input id="mealmass_' + id + '" class="meal_input full_width bold ' + t + '" type="number" placeholder="..." title="Масса" onkeypress="onMassKeyDown(event,'+id+')"/>\n'+
+	'											<input id="mealmass_' + id + '" class="meal_input full_width bold ' + t + '" type="number" placeholder="..." title="РњР°СЃСЃР°" onkeypress="onMassKeyDown(event,'+id+')"/>\n'+
 	'										</span>\n'+
 	'									</div>\n'+
 	'								</td>\n' +
-	"								<td class=\"col_delete\"><button class=\"meal_add\" onclick=\"addItemToMeal("+id+")\" title=\"Добавить\"></button></td>\n" +
+	"								<td class=\"col_delete\"><button class=\"meal_add\" onclick=\"addItemToMeal("+id+")\" title=\"Р”РѕР±Р°РІРёС‚СЊ\"></button></td>\n" +
 	"							</tr>\n";
 
 	code +=
@@ -542,7 +542,7 @@ function codeNote(note, id)
 	"							<tr>\n" +
 	'								<td class="col_item"><span id="item_' + id + '" class="hoverable" onclick="onNoteClick(this.id)">' + note.text + '</span></td>\n' +
 	"								<td class=\"col_info\"></td>\n" +
-	"								<td class=\"col_delete\"><div id=\"item_" + id + "\" onclick=\"onDeleteClick(this.id)\" title=\"Удалить\">X</div></td>\n" +
+	"								<td class=\"col_delete\"><div id=\"item_" + id + "\" onclick=\"onDeleteClick(this.id)\" title=\"РЈРґР°Р»РёС‚СЊ\">X</div></td>\n" +
 	"							</tr>\n" +
 	"						</table>\n" +
 
@@ -568,10 +568,10 @@ function codePage(page)
 '	<div class="ui-widget">\n' +
 '		<span id="meal"/>\n' +
 '		<br/>\n' +
-'		<label for="fdAutocomplete">Выберите продукт или блюдо:</label>\n' +
+'		<label for="fdAutocomplete">Р’С‹Р±РµСЂРёС‚Рµ РїСЂРѕРґСѓРєС‚ РёР»Рё Р±Р»СЋРґРѕ:</label>\n' +
 '		<div>\n' +
 '			<div id="block_ok">\n' +
-'				<button title="Добавить (Enter)">+</button>\n' +
+'				<button title="Р”РѕР±Р°РІРёС‚СЊ (Enter)">+</button>\n' +
 '			</div>\n' +
 '			<div id="block_mass">\n' +
 '				<input class="myinput" id="mass"\n' +
@@ -592,7 +592,7 @@ function createHandlers()
 		if (page.content[i].type == "meal")
 		{
 			var id = i;
-			// вешаем обработчики
+			// РІРµС€Р°РµРј РѕР±СЂР°Р±РѕС‚С‡РёРєРё
 			$(function() {
 				$("#mealcombo_" + id).autocomplete({
 					autoFocus: true,
@@ -627,7 +627,7 @@ function showPage()
 	else
 	{
 		diary.className = "diary_page_empty";
-		diary.innerHTML = "Страница пуста";
+		diary.innerHTML = "РЎС‚СЂР°РЅРёС†Р° РїСѓСЃС‚Р°";
 		modspan.innerHTML = "";
 		versionspan.innerHTML = "";
 	}
@@ -639,32 +639,32 @@ function codeNewRecord()
 {
 	return '' +
 	"						<div>\n" +
-	"							<div onclick=\"newBloodEditor()\" class=\"button_new_rec button_new_blood\">Замер СК</div>\n" +
-	"							<div onclick=\"newInsEditor()\" class=\"button_new_rec button_new_ins\">Инъекция</div>\n" +
-	"							<div onclick=\"newMealEditor()\" class=\"button_new_rec button_new_meal\">Приём пищи</div>\n" +
-	"							<div onclick=\"newNoteEditor()\" class=\"button_new_rec button_new_note\">Заметка</div>\n" +
+	"							<div onclick=\"newBloodEditor()\" class=\"button_new_rec button_new_blood\">Р—Р°РјРµСЂ РЎРљ</div>\n" +
+	"							<div onclick=\"newInsEditor()\" class=\"button_new_rec button_new_ins\">РРЅСЉРµРєС†РёСЏ</div>\n" +
+	"							<div onclick=\"newMealEditor()\" class=\"button_new_rec button_new_meal\">РџСЂРёС‘Рј РїРёС‰Рё</div>\n" +
+	"							<div onclick=\"newNoteEditor()\" class=\"button_new_rec button_new_note\">Р—Р°РјРµС‚РєР°</div>\n" +
 	"						</div>\n";
 }
 
 function codeInfoDefault()
 {
 	return codeNewRecord() + "<hr>\n" +
-	"						Для получения более подробной информации выберите запись на странице.\n";
+	"						Р”Р»СЏ РїРѕР»СѓС‡РµРЅРёСЏ Р±РѕР»РµРµ РїРѕРґСЂРѕР±РЅРѕР№ РёРЅС„РѕСЂРјР°С†РёРё РІС‹Р±РµСЂРёС‚Рµ Р·Р°РїРёСЃСЊ РЅР° СЃС‚СЂР°РЅРёС†Рµ.\n";
 }
 
 function codeInfoBlood(rec)
 {
 	return '' +
-	"						Вы выбрали замер СК<br/><br/><hr>\n" +
-	"						Добавить новую запись:<br/><br/>\n" +
+	"						Р’С‹ РІС‹Р±СЂР°Р»Рё Р·Р°РјРµСЂ РЎРљ<br/><br/><hr>\n" +
+	"						Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІСѓСЋ Р·Р°РїРёСЃСЊ:<br/><br/>\n" +
 	codeNewRecord();
 }
 
 function codeInfoIns(rec)
 {
 	return '' +
-	"						Вы выбрали инъекцию<br/><br/><hr>\n" +
-	"						Добавить новую запись:<br/><br/>\n" +
+	"						Р’С‹ РІС‹Р±СЂР°Р»Рё РёРЅСЉРµРєС†РёСЋ<br/><br/><hr>\n" +
+	"						Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІСѓСЋ Р·Р°РїРёСЃСЊ:<br/><br/>\n" +
 	codeNewRecord();
 }
 
@@ -713,48 +713,48 @@ function codeInfoMeal(meal)
 	return '' +
 	'<table cellpadding="1" style="text-align: left">\n'+
 	'							<tr>\n'+
-	'								<th class="full_width">Белки, г</th>\n'+
+	'								<th class="full_width">Р‘РµР»РєРё, Рі</th>\n'+
 	'								<td class="right">'+prots.toFixed(0)+'</td>\n'+
 	'							</tr>\n'+
 	'							<tr>\n'+
-	'								<th class="full_width">Жиры, г</th>\n'+
+	'								<th class="full_width">Р–РёСЂС‹, Рі</th>\n'+
 	'								<td class="right">'+fats.toFixed(0)+'</td>\n'+
 	'							</tr>\n'+
 	'							<tr>\n'+
-	'								<th class="full_width">Углеводы, г</th>\n'+
+	'								<th class="full_width">РЈРіР»РµРІРѕРґС‹, Рі</th>\n'+
 	'								<td class="right">'+carbs.toFixed(0)+'</td>\n'+
 	'							</tr>\n'+
 	'							<tr>\n'+
-	'								<th class="full_width">Ценность, ккал</th>\n'+
+	'								<th class="full_width">Р¦РµРЅРЅРѕСЃС‚СЊ, РєРєР°Р»</th>\n'+
 	'								<td class="right">'+val.toFixed(0)+'</td>\n'+
 	'							</tr>\n'+
 	'						</table>\n'+
 	'						<hr>\n'+
 	'						<table cellpadding="1" style="text-align: left">\n'+
 	'							<tr>\n'+
-	'								<th class="full_width">Доза введённая, ед</th>\n'+
+	'								<th class="full_width">Р”РѕР·Р° РІРІРµРґС‘РЅРЅР°СЏ, РµРґ</th>\n'+
 	'								<td class="right">'+injectedDose+'</td>\n'+
 	'							</tr>\n'+
 	'							<tr>\n'+
-	'								<th class="full_width">Доза рассчётная, ед</th>\n'+
+	'								<th class="full_width">Р”РѕР·Р° СЂР°СЃСЃС‡С‘С‚РЅР°СЏ, РµРґ</th>\n'+
 	'								<td class="right">'+dose+'</td>\n'+
 	'							</tr>\n'+
 	'							<tr>\n'+
-	'								<th class="full_width">Коррекция, г</th>\n'+
+	'								<th class="full_width">РљРѕСЂСЂРµРєС†РёСЏ, Рі</th>\n'+
 	'								<td class="right '+correctionClass+'">'+dk+'</td>\n'+
 	'							</tr>\n'+
 	'						</table>\n'+
 	'						<br>\n'+
 	'						<div class="hint">\n'+
-	'							<a href="#" onclick="switchMealInfo(false);">Таблица подбора</a> &gt;\n'+
+	'							<a href="#" onclick="switchMealInfo(false);">РўР°Р±Р»РёС†Р° РїРѕРґР±РѕСЂР°</a> &gt;\n'+
 	'						</div>';
 }
 
 function codeInfoNote(rec)
 {
 	return '' +
-	"						Вы выбрали заметку.<br/><br/><hr>\n" +
-	"						Добавить новую запись:<br/><br/>\n" +
+	"						Р’С‹ РІС‹Р±СЂР°Р»Рё Р·Р°РјРµС‚РєСѓ.<br/><br/><hr>\n" +
+	"						Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІСѓСЋ Р·Р°РїРёСЃСЊ:<br/><br/>\n" +
 	codeNewRecord();
 }
 
@@ -880,7 +880,7 @@ function DiaryPage_removeFood(mealIndex, foodIndex)
 	page.content[mealIndex].content.splice(foodIndex, 1);
 	if (page.content[mealIndex].content.length == 0)
 	{
-		// удаляем также пустой приём пищи
+		// СѓРґР°Р»СЏРµРј С‚Р°РєР¶Рµ РїСѓСЃС‚РѕР№ РїСЂРёС‘Рј РїРёС‰Рё
 		page.content.splice(mealIndex, 1);
 	}
 	modified(false);
@@ -933,7 +933,7 @@ function newBloodEditor()
 	if (finger == -1) finger = DiaryPage_getLastFinger(prev_page);
 	finger = (finger + 1) % 10;
 
-	var val = inputFloat("Введите значение СК (" + finger_hints[finger] + "):", "");
+	var val = inputFloat("Р’РІРµРґРёС‚Рµ Р·РЅР°С‡РµРЅРёРµ РЎРљ (" + finger_hints[finger] + "):", "");
 
 	if (val > -1)
 	{
@@ -948,7 +948,7 @@ function newBloodEditor()
 
 function newInsEditor()
 {
-	var val = inputFloat("Введите дозу инсулина", "");
+	var val = inputFloat("Р’РІРµРґРёС‚Рµ РґРѕР·Сѓ РёРЅСЃСѓР»РёРЅР°", "");
 
 	if (val > -1)
 	{
@@ -962,7 +962,7 @@ function newInsEditor()
 
 function newMealEditor()
 {
-	var newTime = inputTime("Введите время:", getCurrentTime());
+	var newTime = inputTime("Р’РІРµРґРёС‚Рµ РІСЂРµРјСЏ:", getCurrentTime());
 	if ((newTime >= 0) && (newTime < 1440))
 	{
 		var meal_rec = {};
@@ -977,7 +977,7 @@ function newMealEditor()
 
 function newNoteEditor()
 {
-	var val = inputText("Введите заметку:");
+	var val = inputText("Р’РІРµРґРёС‚Рµ Р·Р°РјРµС‚РєСѓ:");
 
 	if (val != null)
 	{
@@ -1005,7 +1005,7 @@ function onTimeClick(id)
 {
 	var index = getAfter(id, "_");
 	var oldTime = page.content[index].time;
-	var newTime = inputTime("Введите время:", oldTime);
+	var newTime = inputTime("Р’РІРµРґРёС‚Рµ РІСЂРµРјСЏ:", oldTime);
 	if ((newTime >= 0) && (newTime < 1440))
 	{
 		DiaryPage_changeTime(index, newTime);
@@ -1015,7 +1015,7 @@ function onTimeClick(id)
 function onDeleteClick(id)
 {
 	var index = getAfter(id, "_");
-	if (confirm("Удалить запись?"))
+	if (confirm("РЈРґР°Р»РёС‚СЊ Р·Р°РїРёСЃСЊ?"))
 	{
 		DiaryPage_deleteRecord(index);
 	}
@@ -1025,7 +1025,7 @@ function onBloodClick(id)
 {
 	var index = getAfter(id, "_");
 	var oldValue = page.content[index].value;
-	var newValue = inputFloat("Введите значение СК:", oldValue);
+	var newValue = inputFloat("Р’РІРµРґРёС‚Рµ Р·РЅР°С‡РµРЅРёРµ РЎРљ:", oldValue);
 	if (newValue > 0)
 	{
 		page.content[index].value = newValue;
@@ -1037,7 +1037,7 @@ function onInsClick(id)
 {
 	var index = getAfter(id, "_");
 	var oldValue = page.content[index].value;
-	var newValue = prompt("Введите дозу:", oldValue);
+	var newValue = prompt("Р’РІРµРґРёС‚Рµ РґРѕР·Сѓ:", oldValue);
 	if ((newValue != null) && (newValue > 0))
 	{
 		page.content[index].value = newValue;
@@ -1049,7 +1049,7 @@ function onNoteClick(id)
 {
 	var index = getAfter(id, "_");
 	var oldText = page.content[index].text;
-	var newText = prompt("Введите заметку:", oldText);
+	var newText = prompt("Р’РІРµРґРёС‚Рµ Р·Р°РјРµС‚РєСѓ:", oldText);
 	if (newText != null)
 	{
 		page.content[index].text = newText;
@@ -1070,7 +1070,7 @@ function onFoodMassClick(id)
 
 	var oldMass = page.content[mealIndex].content[foodIndex].mass;
 	var name = page.content[mealIndex].content[foodIndex].name;
-	var newMass = inputFloat(name + " (г):", oldMass);
+	var newMass = inputFloat(name + " (Рі):", oldMass);
 	if (newMass != -1)
 	{
 		DiaryPage_changeFoodMass(mealIndex, foodIndex, newMass);
@@ -1084,7 +1084,7 @@ function onRemoveFoodClick(id)
 	var mealIndex = getBefore(id, "_");
 	var foodIndex = getAfter(id, "_");
 
-	if (confirm("Удалить «" + page.content[mealIndex].content[foodIndex].name + "» ?"))
+	if (confirm("РЈРґР°Р»РёС‚СЊ В«" + page.content[mealIndex].content[foodIndex].name + "В» ?"))
 	{
 		DiaryPage_removeFood(mealIndex, foodIndex);
 	// info panel updates automatically due to inherited clicking
@@ -1098,7 +1098,7 @@ function pushHistory(url)
 	var stateObj = {
 		foo: "bar"
 	};
-	history.pushState(stateObj, "Компенсация", url);
+	history.pushState(stateObj, "РљРѕРјРїРµРЅСЃР°С†РёСЏ", url);
 }
 
 function onMassKeyDown(e, id)
@@ -1129,10 +1129,10 @@ function addItemToMeal(id)
 		page.content[id].content.push(item);
 		modified(false);
 
-		// пост-настройка интерфейса
+		// РїРѕСЃС‚-РЅР°СЃС‚СЂРѕР№РєР° РёРЅС‚РµСЂС„РµР№СЃР°
 		showInfoBox(id);
 
-		// после рендеринга страницы компоненты нужно найти заново
+		// РїРѕСЃР»Рµ СЂРµРЅРґРµСЂРёРЅРіР° СЃС‚СЂР°РЅРёС†С‹ РєРѕРјРїРѕРЅРµРЅС‚С‹ РЅСѓР¶РЅРѕ РЅР°Р№С‚Рё Р·Р°РЅРѕРІРѕ
 		component_combo = document.getElementById('mealcombo_' + id);
 		component_mass = document.getElementById("mealmass_" + id);
 
@@ -1142,7 +1142,7 @@ function addItemToMeal(id)
 	}
 	else
 	{
-		alert("Введите корректную неотрицательную массу");
+		alert("Р’РІРµРґРёС‚Рµ РєРѕСЂСЂРµРєС‚РЅСѓСЋ РЅРµРѕС‚СЂРёС†Р°С‚РµР»СЊРЅСѓСЋ РјР°СЃСЃСѓ");
 		component_mass.focus();
 		component_mass.select();
 	}

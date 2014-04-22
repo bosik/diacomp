@@ -1,6 +1,6 @@
-/* ================== INTERNET ================== */
+п»ї/* ================== INTERNET ================== */
 
-/* Данная функция создаёт кроссбраузерный объект XMLHTTP */
+/* Р”Р°РЅРЅР°СЏ С„СѓРЅРєС†РёСЏ СЃРѕР·РґР°С‘С‚ РєСЂРѕСЃСЃР±СЂР°СѓР·РµСЂРЅС‹Р№ РѕР±СЉРµРєС‚ XMLHTTP */
 /*function getXmlHttp_2() {
 	var xmlhttp;
 	try {
@@ -18,7 +18,7 @@
 	return xmlhttp;
 }*/
 
-/* Данная функция создаёт кроссбраузерный объект XMLHTTP */
+/* Р”Р°РЅРЅР°СЏ С„СѓРЅРєС†РёСЏ СЃРѕР·РґР°С‘С‚ РєСЂРѕСЃСЃР±СЂР°СѓР·РµСЂРЅС‹Р№ РѕР±СЉРµРєС‚ XMLHTTP */
 function getXmlHttp()
 {
 	if (window.XMLHttpRequest)
@@ -351,15 +351,15 @@ function timeSortFunction(a, b)
 
 function nameSortFunction(a, b)
 {
-	if (a.name < b.name) return -1; // Или любое число, меньшее нуля
-	if (a.name > b.name) return +1; // Или любое число, большее нуля
+	if (a.name < b.name) return -1; // РР»Рё Р»СЋР±РѕРµ С‡РёСЃР»Рѕ, РјРµРЅСЊС€РµРµ РЅСѓР»СЏ
+	if (a.name > b.name) return +1; // РР»Рё Р»СЋР±РѕРµ С‡РёСЃР»Рѕ, Р±РѕР»СЊС€РµРµ РЅСѓР»СЏ
 	return 0;
 }
 
 function tagSortFunction(a, b)
 {
 	if (a.tag == b.tag) return nameSortFunction(a, b);
-	if (a.tag > b.tag) return -1; // Или любое число, меньшее нуля
-	if (a.tag < b.tag) return +1; // Или любое число, большее нуля
+	if (a.tag > b.tag) return -1; // РР»Рё Р»СЋР±РѕРµ С‡РёСЃР»Рѕ, РјРµРЅСЊС€РµРµ РЅСѓР»СЏ
+	if (a.tag < b.tag) return +1; // РР»Рё Р»СЋР±РѕРµ С‡РёСЃР»Рѕ, Р±РѕР»СЊС€РµРµ РЅСѓР»СЏ
 	return 0;
 }
