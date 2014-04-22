@@ -1,4 +1,4 @@
-﻿var root = document.getElementById("diary_block");
+var root = document.getElementById("diary_block");
 root.innerHTML = "				<div id=\"diary_info_column\">\n"
 		+ "					<div id=\"filler\" style=\"height: 0px\" onclick=\"showInfoBox(-1)\" ></div>\n"
 		+ "					<div id=\"diary_info\"></div>\n" + "				</div>\n"
@@ -139,7 +139,7 @@ function downloadPage(pageDate, show)
 		alert("failure");
 	};
 
-	download(url, false, onSuccess, onFailure);
+	doGet(url, false, onSuccess, onFailure);
 }
 
 function downloadKoofs()
@@ -163,7 +163,7 @@ function downloadKoofs()
 		koofs = [];
 	};
 
-	download(url, true, onSuccess, onFailure);
+	doGet(url, true, onSuccess, onFailure);
 }
 
 function downloadFoodbase()
@@ -208,7 +208,7 @@ function downloadFoodbase()
 		foodbase = [];
 	};
 
-	download(url, true, onSuccess, onFailure);
+	doGet(url, true, onSuccess, onFailure);
 }
 
 function downloadDishbase()
@@ -253,7 +253,7 @@ function downloadDishbase()
 		dishbase = [];
 	};
 
-	download(url, true, onSuccess, onFailure);
+	doGet(url, true, onSuccess, onFailure);
 }
 
 function floatizeFood(food)
@@ -374,44 +374,11 @@ function prepareComboList()
 	createHandlers();
 }
 
-function login(username, pass)
-{
-	var url = "api/auth/login/";
-	var request = 'login=' + username + '&pass=' + pass + '&api=20';
-
-	var onSuccess = function(resp)
-	{
-		// document.getElementById("summa").innerHTML = xmlhttp.responseText; //
-		// Выводим ответ сервера
-
-		var json = JSON.parse(resp);
-
-		if (json.code == 0)
-		{
-			setProgress("ready", "Дневник сохранён");
-		}
-		else
-		{
-			setProgress("error", "Не удалось сохранить дневник");
-			alert("Failed to save with message '" + resp + "'");
-		}
-	};
-
-	var onFailure = function()
-	{
-		setProgress("error", "Не удалось сохранить дневник");
-		alert("Failed to save page");
-	};
-
-	setProgress("progress", "Идёт сохранение...");
-	upload(url, request, true, onSuccess, onFailure);
-}
-
 function uploadPage(uploadedItem)
 {
 	var url = "api/diary/";
 	var items = [];
-	items.push(uploadedItem)
+	items.push(uploadedItem);
 	var request = 'items='
 			+ encodeURIComponent(ObjToSource(items));
 
@@ -440,7 +407,7 @@ function uploadPage(uploadedItem)
 	};
 
 	setProgress("progress", "Идёт сохранение...");
-	upload(url, request, true, onSuccess, onFailure);
+	doPut(url, request, true, onSuccess, onFailure);
 }
 
 /* ================== KOOF UTILS ================== */
@@ -972,41 +939,41 @@ function setProgress(status, hint)
 
 /* ================== DIARY PAGE METHODS ================== */
 
-function modified(item, needResort)
+function modified(index, needResort)
 {
-	// TODO
-//	page.version++;
-//	page.timestamp = getCurrentTimestamp();
+	page[index].version++;
+	page[index].stamp = getCurrentTimestamp();
+	uploadPage(page[index]);
+	
 	if (needResort)
 		page.sort(timeSortFunction);
 
 	showPage();
-	uploadPage(item);
 }
 
 function DiaryPage_addRecord(rec)
 {
 	page.push(rec);
-	modified(rec, true);
+	modified(page.length - 1, true);
 }
 
 function DiaryPage_deleteRecord(index)
 {
 	page.splice(index, 1);
 	page[index].deleted = 1; // FIXME: check
-	modified(page[index], false);
+	modified(index, false);
 }
 
 function DiaryPage_changeTime(index, newTime)
 {
 	page[index].data.time = newTime;
-	modified(page[index], true);
+	modified(index, true);
 }
 
 function DiaryPage_changeFoodMass(mealIndex, foodIndex, newMass)
 {
 	page[mealIndex].data.content[foodIndex].mass = newMass;
-	modified(page[mealIndex], false);
+	modified(mealIndex, false);
 }
 
 function DiaryPage_removeFood(mealIndex, foodIndex)
@@ -1017,7 +984,7 @@ function DiaryPage_removeFood(mealIndex, foodIndex)
 		// удаляем также пустой приём пищи
 		page.splice(mealIndex, 1);
 	}
-	modified(page[mealIndex], false);
+	modified(mealIndex, false);
 }
 
 function DiaryPage_getLastFinger(page)
@@ -1169,7 +1136,7 @@ function onBloodClick(id)
 	if (newValue > 0)
 	{
 		page[index].data.value = newValue;
-		modified(page[index], false);
+		modified(index, false);
 	}
 }
 
@@ -1181,7 +1148,7 @@ function onInsClick(id)
 	if ((newValue != null) && (newValue > 0))
 	{
 		page[index].data.value = newValue;
-		modified(page[index], false);
+		modified(index, false);
 	}
 }
 
@@ -1193,7 +1160,7 @@ function onNoteClick(id)
 	if (newText != null)
 	{
 		page[index].data.text = newText;
-		modified(page[index], false);
+		modified(index, false);
 	}
 }
 
@@ -1269,7 +1236,7 @@ function addItemToMeal(id)
 	{
 		// console.log("Add " + ObjToSource(item) + " to meal #" + id);
 		page[id].data.content.push(item);
-		modified(page[id], false);
+		modified(id, false);
 
 		// пост-настройка интерфейса
 		showInfoBox(id);
