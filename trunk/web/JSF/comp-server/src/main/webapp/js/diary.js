@@ -528,6 +528,7 @@ function codeBlood(blood, id)
 
 function codeIns(ins, id)
 {
+	console.log("building ins with id " + id);
 	return '' + '				<div id="diaryRec_'
 			+ id
 			+ '" class="rec ins" onclick="onRecordClick(this.id)">\n'
@@ -556,69 +557,69 @@ function codeMeal(meal, id)
 {
 	var t = (meal.short ? "short_meal" : "meal");
 	var code = '';
-//	code += '				<div id="diaryRec_' + id + '" class="rec ' + t
-//			+ '" onclick="onRecordClick(this.id)">\n';
-//
-//	code += '					<div class="time hoverable" id="time_' + id
-//			+ '" onclick="onTimeClick(this.id)">' + formatTime(meal.time)
-//			+ "</div>\n" + '					<div class="item">\n'
-//			+ "						<table class=\"meal_table\">\n";
-//	for (var i = 0; i < meal.content.length; i++)
-//	{
-//		code += "							<tr class=\"food\">\n"
-//				+ "								<td class=\"col_item\"><span id=\"food_"
-//				+ id
-//				+ "_"
-//				+ i
-//				+ "\">"
-//				+ meal.content[i].name
-//				+ "</span></td>\n"
-//				+ '								<td class="col_info"><div id="food_'
-//				+ id
-//				+ '_'
-//				+ i
-//				+ '" class="hoverable" onclick="onFoodMassClick(this.id)" title="Изменить массу">'
-//				+ meal.content[i].mass
-//				+ '</div></td>\n'
-//				+ "								<td class=\"col_delete\"><div id=\"food_"
-//				+ id
-//				+ "_"
-//				+ i
-//				+ "\" onclick=\"onRemoveFoodClick(this.id)\" title=\"Удалить\">X</div></td>\n"
-//				+ "							</tr>\n";
-//
-//		// code += codeFood(meal.content[i], id + "_" + i) + '<br/>\n';
-//	}
-//
-//	code += "							<tr class=\"food meal_adder\">\n"
-//			+ "								<td class=\"col_item\">\n"
-//			+ "									<div class=\"wrapper_table\">\n"
-//			+ "										<span class=\"wrapper_cell\">\n"
-//			+ '											<input id="mealcombo_'
-//			+ id
-//			+ '" class="meal_input full_width bold '
-//			+ t
-//			+ '" placeholder="Введите название..."/>\n'
-//			+ "										</span>\n"
-//			+ "									</div>\n"
-//			+ '								</td>\n'
-//			+ '								<td class="col_info">\n'
-//			+ '									<div class="wrapper_table">\n'
-//			+ '										<span class="wrapper_cell">\n'
-//			+ '											<input id="mealmass_'
-//			+ id
-//			+ '" class="meal_input full_width bold '
-//			+ t
-//			+ '" type="number" placeholder="..." title="Масса" onkeypress="onMassKeyDown(event,'
-//			+ id
-//			+ ')"/>\n'
-//			+ '										</span>\n'
-//			+ '									</div>\n'
-//			+ '								</td>\n'
-//			+ "								<td class=\"col_delete\"><button class=\"meal_add\" onclick=\"addItemToMeal("
-//			+ id + ")\" title=\"Добавить\"></button></td>\n" + "							</tr>\n";
-//
-//	code += "						</table>\n" + '					</div>\n' + '				</div>\n';
+	code += '				<div id="diaryRec_' + id + '" class="rec ' + t
+			+ '" onclick="onRecordClick(this.id)">\n';
+
+	code += '					<div class="time hoverable" id="time_' + id
+			+ '" onclick="onTimeClick(this.id)">' + formatTime(meal.time)
+			+ "</div>\n" + '					<div class="item">\n'
+			+ "						<table class=\"meal_table\">\n";
+	for (var i = 0; i < meal.content.length; i++)
+	{
+		code += "							<tr class=\"food\">\n"
+				+ "								<td class=\"col_item\"><span id=\"food_"
+				+ id
+				+ "_"
+				+ i
+				+ "\">"
+				+ meal.content[i].name
+				+ "</span></td>\n"
+				+ '								<td class="col_info"><div id="food_'
+				+ id
+				+ '_'
+				+ i
+				+ '" class="hoverable" onclick="onFoodMassClick(this.id)" title="Изменить массу">'
+				+ meal.content[i].mass
+				+ '</div></td>\n'
+				+ "								<td class=\"col_delete\"><div id=\"food_"
+				+ id
+				+ "_"
+				+ i
+				+ "\" onclick=\"onRemoveFoodClick(this.id)\" title=\"Удалить\">X</div></td>\n"
+				+ "							</tr>\n";
+
+		// code += codeFood(meal.content[i], id + "_" + i) + '<br/>\n';
+	}
+
+	code += "							<tr class=\"food meal_adder\">\n"
+			+ "								<td class=\"col_item\">\n"
+			+ "									<div class=\"wrapper_table\">\n"
+			+ "										<span class=\"wrapper_cell\">\n"
+			+ '											<input id="mealcombo_'
+			+ id
+			+ '" class="meal_input full_width bold '
+			+ t
+			+ '" placeholder="Введите название..."/>\n'
+			+ "										</span>\n"
+			+ "									</div>\n"
+			+ '								</td>\n'
+			+ '								<td class="col_info">\n'
+			+ '									<div class="wrapper_table">\n'
+			+ '										<span class="wrapper_cell">\n'
+			+ '											<input id="mealmass_'
+			+ id
+			+ '" class="meal_input full_width bold '
+			+ t
+			+ '" type="number" placeholder="..." title="Масса" onkeypress="onMassKeyDown(event,'
+			+ id
+			+ ')"/>\n'
+			+ '										</span>\n'
+			+ '									</div>\n'
+			+ '								</td>\n'
+			+ "								<td class=\"col_delete\"><button class=\"meal_add\" onclick=\"addItemToMeal("
+			+ id + ")\" title=\"Добавить\"></button></td>\n" + "							</tr>\n";
+
+	code += "						</table>\n" + '					</div>\n' + '				</div>\n';
 	return code;
 }
 
@@ -654,6 +655,7 @@ function codePage(page)
 	var code = '';// ' <div class="diary">';
 	for (var i = 0; i < page.length; i++)
 	{
+		console.log("processing item #" + i);
 		if (page[i].data.type == "meal")
 			code += codeMeal(page[i].data, i);
 		else if (page[i].data.type == "blood")
@@ -661,7 +663,9 @@ function codePage(page)
 		else if (page[i].data.type == "ins")
 			code += codeIns(page[i].data, i);
 		else if (page[i].data.type == "note")
-			code += codeNote(page[i].data, i);
+			code += codeNote(page[i].data, i)
+		else
+			console.log("Unknown item type: " + page[i].data.type);
 	}
 	// code += ' </div>';
 	/*
@@ -920,16 +924,16 @@ function showInfoBox(index)
 	currentID = index;
 	moveInfoBox(index);
 
-	if ((index < 0) || (index >= page.content.length))
+	if ((index < 0) || (index >= page.length))
 		infoblock.innerHTML = codeInfoDefault();
-	else if (page.content[index].type == "blood")
-		infoblock.innerHTML = codeInfoBlood(page.content[index]);
-	else if (page.content[index].type == "ins")
-		infoblock.innerHTML = codeInfoIns(page.content[index]);
-	else if (page.content[index].type == "meal")
-		infoblock.innerHTML = codeInfoMeal(page.content[index]);
-	else if (page.content[index].type == "note")
-		infoblock.innerHTML = codeInfoNote(page.content[index]);
+	else if (page[index].data.type == "blood")
+		infoblock.innerHTML = codeInfoBlood(page[index].data);
+	else if (page[index].data.type == "ins")
+		infoblock.innerHTML = codeInfoIns(page[index].data);
+	else if (page[index].data.type == "meal")
+		infoblock.innerHTML = codeInfoMeal(page[index].data);
+	else if (page[index].data.type == "note")
+		infoblock.innerHTML = codeInfoNote(page[index].data);
 	else
 		infoblock.innerHTML = codeInfoDefault();
 
@@ -965,56 +969,57 @@ function setProgress(status, hint)
 
 function modified(needResort)
 {
-	page.version++;
-	page.timestamp = getCurrentTimestamp();
+	// TODO
+//	page.version++;
+//	page.timestamp = getCurrentTimestamp();
 	if (needResort)
-		page.content.sort(timeSortFunction);
+		page.sort(timeSortFunction);
 
 	showPage();
-	uploadPage(page);
+//	uploadPage(page);
 }
 
 function DiaryPage_addRecord(rec)
 {
-	page.content.push(rec);
+	page.push(rec);
 	modified(true);
 }
 
 function DiaryPage_deleteRecord(index)
 {
-	page.content.splice(index, 1);
+	page.splice(index, 1);
 	modified(false);
 }
 
 function DiaryPage_changeTime(index, newTime)
 {
-	page.content[index].time = newTime;
+	page[index].data.time = newTime;
 	modified(true);
 }
 
 function DiaryPage_changeFoodMass(mealIndex, foodIndex, newMass)
 {
-	page.content[mealIndex].content[foodIndex].mass = newMass;
+	page[mealIndex].data.content[foodIndex].mass = newMass;
 	modified(false);
 }
 
 function DiaryPage_removeFood(mealIndex, foodIndex)
 {
-	page.content[mealIndex].content.splice(foodIndex, 1);
-	if (page.content[mealIndex].content.length == 0)
+	page[mealIndex].data.content.splice(foodIndex, 1);
+	if (page[mealIndex].data.content.length == 0)
 	{
 		// удаляем также пустой приём пищи
-		page.content.splice(mealIndex, 1);
+		page.splice(mealIndex, 1);
 	}
 	modified(false);
 }
 
 function DiaryPage_getLastFinger(page)
 {
-	for (var i = page.content.length - 1; i >= 0; i--)
+	for (var i = page.length - 1; i >= 0; i--)
 	{
-		if (page.content[i].type == "blood")
-			return parseInt(page.content[i].finger);
+		if (page[i].data.type == "blood")
+			return parseInt(page[i].data.finger);
 	}
 	return -1;
 }
@@ -1024,15 +1029,15 @@ function DiaryPage_findRec(type, time, maxDist)
 	var min = maxDist + 1;
 	var rec = null;
 
-	for (var i = 0; i < page.content.length; i++)
+	for (var i = 0; i < page.length; i++)
 	{
-		if (page.content[i].type == type)
+		if (page[i].data.type == type)
 		{
-			var cur = Math.abs(page.content[i].time - time);
+			var cur = Math.abs(page[i].data.time - time);
 			if (cur < min)
 			{
 				min = cur;
-				rec = page.content[i];
+				rec = page[i];
 			}
 		}
 	}
@@ -1131,11 +1136,13 @@ function onDateChanged(datePicker)
 function onTimeClick(id)
 {
 	var index = getAfter(id, "_");
-	var oldTime = page.content[index].time;
+	var oldTime = page[index].data.time;
 	var newTime = inputTime("Введите время:", oldTime);
-	if ((newTime >= 0) && (newTime < 1440))
+	if (newTime != null)
 	{
-		DiaryPage_changeTime(index, newTime);
+		xTime = new Date(oldTime);
+		xTime.setHours(newTime.getHours(), newTime.getMinutes(), 0, 0);
+		DiaryPage_changeTime(index, xTime);
 	}
 }
 
@@ -1151,11 +1158,11 @@ function onDeleteClick(id)
 function onBloodClick(id)
 {
 	var index = getAfter(id, "_");
-	var oldValue = page.content[index].value;
+	var oldValue = page[index].data.value;
 	var newValue = inputFloat("Введите значение СК:", oldValue);
 	if (newValue > 0)
 	{
-		page.content[index].value = newValue;
+		page[index].data.value = newValue;
 		modified(false);
 	}
 }
@@ -1163,11 +1170,11 @@ function onBloodClick(id)
 function onInsClick(id)
 {
 	var index = getAfter(id, "_");
-	var oldValue = page.content[index].value;
+	var oldValue = page[index].data.value;
 	var newValue = prompt("Введите дозу:", oldValue);
 	if ((newValue != null) && (newValue > 0))
 	{
-		page.content[index].value = newValue;
+		page[index].data.value = newValue;
 		modified(false);
 	}
 }
@@ -1175,11 +1182,11 @@ function onInsClick(id)
 function onNoteClick(id)
 {
 	var index = getAfter(id, "_");
-	var oldText = page.content[index].text;
+	var oldText = page[index].data.text;
 	var newText = prompt("Введите заметку:", oldText);
 	if (newText != null)
 	{
-		page.content[index].text = newText;
+		page[index].data.text = newText;
 		modified(false);
 	}
 }
@@ -1195,8 +1202,8 @@ function onFoodMassClick(id)
 	var mealIndex = getBefore(id, "_");
 	var foodIndex = getAfter(id, "_");
 
-	var oldMass = page.content[mealIndex].content[foodIndex].mass;
-	var name = page.content[mealIndex].content[foodIndex].name;
+	var oldMass = page[mealIndex].data.content[foodIndex].mass;
+	var name = page[mealIndex].data.content[foodIndex].name;
 	var newMass = inputFloat(name + " (г):", oldMass);
 	if (newMass != -1)
 	{
@@ -1211,7 +1218,7 @@ function onRemoveFoodClick(id)
 	var mealIndex = getBefore(id, "_");
 	var foodIndex = getAfter(id, "_");
 
-	if (confirm("Удалить «" + page.content[mealIndex].content[foodIndex].name
+	if (confirm("Удалить «" + page[mealIndex].data.content[foodIndex].name
 			+ "» ?"))
 	{
 		DiaryPage_removeFood(mealIndex, foodIndex);
@@ -1255,7 +1262,7 @@ function addItemToMeal(id)
 	if (item.mass >= 0)
 	{
 		// console.log("Add " + ObjToSource(item) + " to meal #" + id);
-		page.content[id].content.push(item);
+		page[id].data.content.push(item);
 		modified(false);
 
 		// пост-настройка интерфейса
