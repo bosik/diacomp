@@ -8,7 +8,7 @@ import org.bosik.diacomp.web.backend.features.auth.rest.AuthRestService;
 import org.bosik.diacomp.web.backend.features.diary.rest.DiaryRestService;
 import org.bosik.diacomp.web.backend.features.system.rest.SystemRestService;
 
-@ApplicationPath("/")
+@ApplicationPath("/api/")
 public class CompServerApp extends Application
 {
 	@Override
