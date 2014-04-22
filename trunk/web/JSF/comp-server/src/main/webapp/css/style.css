@@ -52,6 +52,10 @@ hr {
 	line-height: 32px;
 }
 
+.title, .title a:link, .title a:visited {
+	color: #000;
+}
+
 .login, .login a:link, .login a:visited {
 	float: right;
 	text-align: right;
