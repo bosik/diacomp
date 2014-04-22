@@ -240,10 +240,18 @@ function formatTimestamp(time, local)
 	}
 }
 
-function formatDate(date)
+function formatDate(date, local)
 {
 	// 2013-09-07
-	return date.getFullYear() + "-" + format00(date.getMonth()+1) + "-" + format00(date.getDate());
+	
+	if (local)
+	{
+		return date.getFullYear() + "-" + format00(date.getMonth()+1) + "-" + format00(date.getDate());
+	}
+	else
+	{
+		return date.getUTCFullYear() + "-" + format00(date.getUTCMonth()+1) + "-" + format00(date.getUTCDate());
+	}
 }
 
 function formatTime(time)
