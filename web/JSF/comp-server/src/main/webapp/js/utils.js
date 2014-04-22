@@ -1,4 +1,4 @@
-﻿/* ================== INTERNET ================== */
+/* ================== INTERNET ================== */
 
 /* Данная функция создаёт кроссбраузерный объект XMLHTTP */
 /*function getXmlHttp_2() {
@@ -33,7 +33,7 @@ function getXmlHttp()
 	}
 }
 
-function download(url, async, onSuccess, onFailure)
+function doGet(url, async, onSuccess, onFailure)
 {
 	var xmlhttp = getXmlHttp();
 	xmlhttp.open("GET", url, async);
@@ -50,11 +50,33 @@ function download(url, async, onSuccess, onFailure)
 				onFailure();
 			}
 		}
-	}
+	};
 	xmlhttp.send();
 }
 
-function upload(url, request, async, onSuccess, onFailure)
+function doPost(url, request, async, onSuccess, onFailure)
+{
+	var xmlhttp = getXmlHttp();
+	xmlhttp.open('POST', url, async);
+	xmlhttp.onreadystatechange = function()
+	{
+		if (xmlhttp.readyState == 4)
+		{
+			if(xmlhttp.status == 200)
+			{
+				onSuccess(xmlhttp.responseText);
+			}
+			else
+			{
+				onFailure();
+			}
+		}
+	};
+	xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xmlhttp.send(request);
+}
+
+function doPut(url, request, async, onSuccess, onFailure)
 {
 	var xmlhttp = getXmlHttp();
 	xmlhttp.open('PUT', url, async);
@@ -232,7 +254,7 @@ function formatTime(time)
 	//var m = format00(time % 60);
 	//return h + ":" + m;
 	
-	var date = new Date(time)
+	var date = new Date(time);
 	
 	return format00(date.getHours()) + ":" + format00(date.getMinutes());
 	//return date;
