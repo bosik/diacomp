@@ -254,7 +254,7 @@ function formatTime(time)
 	//var m = format00(time % 60);
 	//return h + ":" + m;
 	
-	var date = new Date(time);
+	var date = new Date(time + " GMT");
 	
 	return format00(date.getHours()) + ":" + format00(date.getMinutes());
 	//return date;
