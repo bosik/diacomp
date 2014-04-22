@@ -57,7 +57,7 @@ function download(url, async, onSuccess, onFailure)
 function upload(url, request, async, onSuccess, onFailure)
 {
 	var xmlhttp = getXmlHttp();
-	xmlhttp.open('POST', url, async);
+	xmlhttp.open('PUT', url, async);
 	xmlhttp.onreadystatechange = function()
 	{
 		if (xmlhttp.readyState == 4)

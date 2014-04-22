@@ -407,17 +407,22 @@ function login(username, pass)
 	upload(url, request, true, onSuccess, onFailure);
 }
 
-function uploadPage(uploadedPage)
+function uploadPage(uploadedItem)
 {
-	var url = "console.php";
-	var request = 'diary:upload=&format=json&pages='
-			+ encodeURIComponent(ObjToSource(uploadedPage));
+	var url = "api/diary/";
+	var items = [];
+	items.push(uploadedItem)
+	var request = 'items='
+			+ encodeURIComponent(ObjToSource(items));
 
 	var onSuccess = function(resp)
 	{
 		// document.getElementById("summa").innerHTML = xmlhttp.responseText; //
 		// Выводим ответ сервера
-		if (resp == "DONE")
+		
+		var json = JSON.parse(resp);
+		
+		if (json.code == 0)
 		{
 			setProgress("ready", "Дневник сохранён");
 		}
@@ -967,7 +972,7 @@ function setProgress(status, hint)
 
 /* ================== DIARY PAGE METHODS ================== */
 
-function modified(needResort)
+function modified(item, needResort)
 {
 	// TODO
 //	page.version++;
@@ -976,31 +981,32 @@ function modified(needResort)
 		page.sort(timeSortFunction);
 
 	showPage();
-//	uploadPage(page);
+	uploadPage(item);
 }
 
 function DiaryPage_addRecord(rec)
 {
 	page.push(rec);
-	modified(true);
+	modified(rec, true);
 }
 
 function DiaryPage_deleteRecord(index)
 {
 	page.splice(index, 1);
-	modified(false);
+	page[index].deleted = 1; // FIXME: check
+	modified(page[index], false);
 }
 
 function DiaryPage_changeTime(index, newTime)
 {
 	page[index].data.time = newTime;
-	modified(true);
+	modified(page[index], true);
 }
 
 function DiaryPage_changeFoodMass(mealIndex, foodIndex, newMass)
 {
 	page[mealIndex].data.content[foodIndex].mass = newMass;
-	modified(false);
+	modified(page[mealIndex], false);
 }
 
 function DiaryPage_removeFood(mealIndex, foodIndex)
@@ -1011,7 +1017,7 @@ function DiaryPage_removeFood(mealIndex, foodIndex)
 		// удаляем также пустой приём пищи
 		page.splice(mealIndex, 1);
 	}
-	modified(false);
+	modified(page[mealIndex], false);
 }
 
 function DiaryPage_getLastFinger(page)
@@ -1163,7 +1169,7 @@ function onBloodClick(id)
 	if (newValue > 0)
 	{
 		page[index].data.value = newValue;
-		modified(false);
+		modified(page[index], false);
 	}
 }
 
@@ -1175,7 +1181,7 @@ function onInsClick(id)
 	if ((newValue != null) && (newValue > 0))
 	{
 		page[index].data.value = newValue;
-		modified(false);
+		modified(page[index], false);
 	}
 }
 
@@ -1187,7 +1193,7 @@ function onNoteClick(id)
 	if (newText != null)
 	{
 		page[index].data.text = newText;
-		modified(false);
+		modified(page[index], false);
 	}
 }
 
@@ -1263,7 +1269,7 @@ function addItemToMeal(id)
 	{
 		// console.log("Add " + ObjToSource(item) + " to meal #" + id);
 		page[id].data.content.push(item);
-		modified(false);
+		modified(page[id], false);
 
 		// пост-настройка интерфейса
 		showInfoBox(id);
