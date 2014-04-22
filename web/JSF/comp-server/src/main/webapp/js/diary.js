@@ -1131,7 +1131,7 @@ function onTimeClick(id)
 	var newTime = inputTime("Введите время:", oldTime);
 	if (newTime != null)
 	{
-		xTime = new Date(oldTime);
+		xTime = oldTime;
 		xTime.setHours(newTime.getHours(), newTime.getMinutes(), 0, 0);
 		DiaryPage_changeTime(index, xTime);
 	}
