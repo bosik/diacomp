@@ -960,7 +960,12 @@ function modified(index, needResort)
 
 function DiaryPage_addRecord(rec)
 {
-	page.push(rec);
+	var item = {};
+	item.version = 0;
+	item.id = generateGuid();
+	item.deleted = "false";
+	item.data = rec;
+	page.push(item);
 	modified(page.length - 1, true);
 }
 
@@ -1050,7 +1055,7 @@ function newBloodEditor()
 		var blood_rec = {};
 		blood_rec.type = "blood";
 		blood_rec.finger = finger;
-		blood_rec.time = getCurrentTime();
+		blood_rec.time = getCurrentTimestamp();
 		blood_rec.value = String(val);
 		DiaryPage_addRecord(blood_rec);
 	}
@@ -1064,7 +1069,7 @@ function newInsEditor()
 	{
 		var ins_rec = {};
 		ins_rec.type = "ins";
-		ins_rec.time = getCurrentTime();
+		ins_rec.time = getCurrentTimestamp();
 		ins_rec.value = String(val);
 		DiaryPage_addRecord(ins_rec);
 	}
@@ -1072,12 +1077,16 @@ function newInsEditor()
 
 function newMealEditor()
 {
-	var newTime = inputTime("Введите время:", getCurrentTime());
-	if ((newTime >= 0) && (newTime < 1440))
+	var oldTime = new Date();
+	var newTime = inputTime("Введите время:", oldTime);
+	if (newTime != null)
 	{
+		xTime = new Date(oldTime);
+		xTime.setHours(newTime.getHours(), newTime.getMinutes(), 0, 0);
+		
 		var meal_rec = {};
 		meal_rec.type = "meal";
-		meal_rec.time = newTime;
+		meal_rec.time = xTime;
 		meal_rec.content = [];
 		meal_rec.short = false;
 
@@ -1094,7 +1103,7 @@ function newNoteEditor()
 		var note_rec = {};
 		note_rec.type = "note";
 		note_rec.text = val;
-		note_rec.time = getCurrentTime();
+		note_rec.time = getCurrentTimestamp();
 		DiaryPage_addRecord(note_rec);
 	}
 }
