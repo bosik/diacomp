@@ -202,10 +202,10 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			for (Versioned<FoodItem> item : foodCache)
 			{
-				if ((id == null || item.getId().equals(id))
-						&& (name == null || item.getData().getName().contains(name))
+				if (((id == null) || item.getId().equals(id))
+						&& ((name == null) || item.getData().getName().contains(name))
 						&& (includeDeleted || !item.isDeleted())
-						&& (modAfter == null || item.getTimeStamp().after(modAfter)))
+						&& ((modAfter == null) || item.getTimeStamp().after(modAfter)))
 				{
 					result.add(new Versioned<FoodItem>(item));
 				}
@@ -220,7 +220,8 @@ public class FoodBaseLocalService implements FoodBaseService
 				}
 			});
 
-			Log.i(TAG, "Search (cache) done in " + (System.currentTimeMillis() - time) + " msec");
+			// Log.i(TAG, "Search (cache) done in " + (System.currentTimeMillis() - time) +
+			// " msec");
 			return result;
 		}
 		catch (Exception e)
