@@ -145,16 +145,10 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 		 * Save list to persist it through the view recreations (f.e. when screen is re-oriented)
 		 */
 		this.records = records;
-
-		Log.d(TAG, "setPage(): dimensions are setted");
 		setMeasuredDimension(getScreenWidth(), getPageHeight(records));
 
 		updateBuffer();
-
-		Log.d(TAG, "setPage(): invalidating");
 		invalidate();
-
-		Log.d(TAG, "setPage(): setMinimumHeight()");
 		setMinimumHeight(getPageHeight(records));
 		// Log.d(TAG, "setPage(): dimensions are setted");
 		// setMeasuredDimension(screenWidth(), getPageHeight(page));
@@ -321,12 +315,12 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	 */
 	private void drawPage(List<Versioned<DiaryRecord>> records, Canvas canvas)
 	{
-		// Log.d(TAG, "drawPage(): page is rendering into buffer...");
-
 		if (null == records)
 		{
 			throw new NullPointerException("Page can't be null");
 		}
+
+		Log.d(TAG, String.format("drawPage(): rendering %d items into buffer...", records.size()));
 
 		// TODO: сделать тестирование скорости вывода
 

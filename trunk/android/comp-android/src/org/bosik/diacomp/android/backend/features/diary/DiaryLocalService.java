@@ -21,11 +21,12 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 
 @SuppressWarnings("unchecked")
 public class DiaryLocalService implements DiaryService
 {
-	// private static final String TAG = DiaryLocalService.class.getSimpleName();
+	private static final String				TAG			= DiaryLocalService.class.getSimpleName();
 
 	/* ============================ FIELDS ============================ */
 
@@ -42,7 +43,7 @@ public class DiaryLocalService implements DiaryService
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param resolver
 	 *            Content resolver; might be accessed by {@link Activity#getContentResolver()}
 	 */
@@ -103,6 +104,10 @@ public class DiaryLocalService implements DiaryService
 	public List<Versioned<DiaryRecord>> findBetween(Date fromDate, Date toDate, boolean includeRemoved)
 			throws CommonServiceException
 	{
+		Log.d(TAG,
+				String.format("Searching for items between %s and %s", Utils.formatTimeUTC(fromDate),
+						Utils.formatTimeUTC(toDate)));
+
 		// construct parameters
 		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
 				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
@@ -184,12 +189,16 @@ public class DiaryLocalService implements DiaryService
 
 				if (exists)
 				{
+					Log.v(TAG, "Updating item " + record.getId() + ": " + content);
+
 					String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
 					String[] args = new String[] { record.getId() };
 					resolver.update(DiaryContentProvider.CONTENT_DIARY_URI, newValues, clause, args);
 				}
 				else
 				{
+					Log.v(TAG, "Inserting item " + record.getId() + ": " + content);
+
 					newValues.put(DiaryContentProvider.COLUMN_DIARY_GUID, record.getId());
 					resolver.insert(DiaryContentProvider.CONTENT_DIARY_URI, newValues);
 				}
@@ -231,8 +240,11 @@ public class DiaryLocalService implements DiaryService
 				item.setDeleted(deleted);
 
 				res.add(item);
+
+				Log.v(TAG, String.format("Extracted item %s", content));
 			}
 
+			Log.d(TAG, String.format("Extracted %d items", res.size()));
 			return res;
 		}
 		else

@@ -19,11 +19,10 @@ import org.bosik.diacomp.core.utils.Utils;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Log;
 
 public class DishBaseLocalService implements DishBaseService
 {
-	private static final String			TAG	= DishBaseLocalService.class.getSimpleName();
+	// private static final String			TAG	= DishBaseLocalService.class.getSimpleName();
 
 	private final ContentResolver		resolver;
 	private final Serializer<DishItem>	serializer;
@@ -80,8 +79,9 @@ public class DishBaseLocalService implements DishBaseService
 				result.add(versioned);
 			}
 
-			Log.i(TAG, result.size() + " json's parsed in " + jsonTime + " msec");
-			Log.i(TAG, result.size() + " items parsed in " + (System.currentTimeMillis() - time) + " msec");
+			// Log.i(TAG, result.size() + " json's parsed in " + jsonTime + " msec");
+			// Log.i(TAG, result.size() + " items parsed in " + (System.currentTimeMillis() - time)
+			// + " msec");
 
 			return result;
 		}
@@ -167,7 +167,7 @@ public class DishBaseLocalService implements DishBaseService
 			final List<Versioned<DishItem>> result = parseItems(cursor);
 			cursor.close();
 
-			Log.i(TAG, "Search done in " + (System.currentTimeMillis() - time) + " msec");
+			// Log.i(TAG, "Search done in " + (System.currentTimeMillis() - time) + " msec");
 			return result;
 		}
 		catch (Exception e)
