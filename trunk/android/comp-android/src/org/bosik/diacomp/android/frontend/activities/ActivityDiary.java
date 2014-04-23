@@ -537,14 +537,22 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	{
 		curDate = date;
 
-		int year = date.getYear();
-		int month = date.getMonth();
-		int day = date.getDate();
+		Calendar c = Calendar.getInstance();
+		c.setTime(curDate);
+
+		int year = c.get(Calendar.YEAR);
+		int month = c.get(Calendar.MONTH) + 1;
+		int day = c.get(Calendar.DAY_OF_MONTH);
+
+		Log.d(TAG, "Year : " + year);
 
 		Date start = Utils.date(year, month, day);
 		Date end = Utils.getNextDay(start);
 
 		curRecords = Storage.localDiary.findBetween(start, end, false);
+		Log.d(TAG,
+				String.format("Found %d items between %s and %s", curRecords.size(), Utils.formatTimeUTC(start),
+						Utils.formatTimeUTC(end)));
 		diaryViewLayout.setRecords(curRecords);
 		setCaptionDate(curDate);
 	}
