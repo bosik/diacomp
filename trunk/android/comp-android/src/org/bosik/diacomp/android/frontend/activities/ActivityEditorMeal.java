@@ -18,7 +18,6 @@ import org.bosik.diacomp.core.utils.Utils;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
-import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -49,6 +48,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 	// data
 	private List<Versioned<FoodItem>>		foodBase;
 	private List<Versioned<DishItem>>		dishBase;
+	boolean									modified	= false;
 
 	// компоненты
 	private TimePicker						timePicker;
@@ -136,6 +136,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 									entity.getData().remove(position);
 								}
 							}
+							modified = true;
 							showMeal();
 						}
 						catch (ParseException e)
@@ -220,13 +221,14 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 	@Override
 	public void onBackPressed()
 	{
-		submit();
-	}
-
-	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
+		if (modified)
+		{
+			submit();
+		}
+		else
+		{
+			super.onBackPressed();
+		}
 	}
 
 	private void loadItemsList()
@@ -260,7 +262,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		return food.getName() + " (" + df.format(food.getMass()) + ")";
 	}
 
-	private void showMeal()
+	void showMeal()
 	{
 		final String[] temp = new String[entity.getData().count()];
 		for (int i = 0; i < entity.getData().count(); i++)
@@ -294,7 +296,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 
 		double carbs = entity.getData().getCarbs();
 		double prots = entity.getData().getProts();
-		double dose = (carbs * koof.getK() + prots * koof.getP()) / koof.getQ();
+		double dose = ((carbs * koof.getK()) + (prots * koof.getP())) / koof.getQ();
 		textMealCarbs.setText(df.format(carbs) + " " + captionCarbs);
 		textMealDose.setText(String.format("%.1f %s", dose, captionDose));
 	}
@@ -340,6 +342,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 			item.setMass(mass);
 
 			entity.getData().add(item);
+			modified = true;
 
 			showMeal();
 
