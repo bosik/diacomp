@@ -14,6 +14,7 @@ import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
+import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -55,7 +56,14 @@ public class DiaryWebService implements DiaryService
 			StdResponse resp = new StdResponse(s);
 			WebClient.checkResponse(resp);
 
-			return serializerV.read(resp.getResponse());
+			if (resp.getCode() == ResponseBuilder.CODE_OK)
+			{
+				return serializerV.read(resp.getResponse());
+			}
+			else
+			{
+				return null;
+			}
 		}
 		catch (Exception e)
 		{
