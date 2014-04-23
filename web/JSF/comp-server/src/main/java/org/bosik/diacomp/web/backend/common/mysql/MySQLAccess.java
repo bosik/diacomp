@@ -13,33 +13,33 @@ public class MySQLAccess
 {
 	private static Connection	connection;
 
-	private static final String	SQL_DRIVER				= "com.mysql.jdbc.Driver";
-	private static final String	SCHEMA					= "compensation";
-	private static final String	USERNAME				= "root";
-	private static final String	PASSWORD				= "root";
-	private static final String	connectionString		= String.format(
-																"jdbc:mysql://127.0.0.1:3306/%s?user=%s&password=%s",
-																SCHEMA, USERNAME, PASSWORD);
+	private static final String	SQL_DRIVER					= "com.mysql.jdbc.Driver";
+	private static final String	SCHEMA						= "compensation";
+	private static final String	USERNAME					= "root";
+	private static final String	PASSWORD					= "root";
+	private static final String	connectionString			= String.format(
+																	"jdbc:mysql://127.0.0.1:3306/%s?user=%s&password=%s&autoReconnect=true&failOverReadOnly=false&maxReconnects=10",
+																	SCHEMA, USERNAME, PASSWORD);
 
 	// ======================================= User table =======================================
 
-	public static final String	TABLE_USER				= "user";
-	public static final String	COLUMN_USER_ID			= "ID";
-	public static final String	COLUMN_USER_LOGIN		= "Login";
-	public static final String	COLUMN_USER_HASHPASS	= "HashPass";
-	public static final String	COLUMN_USER_DATE_REG	= "DateReg";
-	public static final String	COLUMN_USER_DATE_LOGIN	= "DateLogin";
+	public static final String	TABLE_USER					= "user";
+	public static final String	COLUMN_USER_ID				= "ID";
+	public static final String	COLUMN_USER_LOGIN			= "Login";
+	public static final String	COLUMN_USER_HASHPASS		= "HashPass";
+	public static final String	COLUMN_USER_DATE_REG		= "DateReg";
+	public static final String	COLUMN_USER_DATE_LOGIN		= "DateLogin";
 
 	// ======================================= Diary table =======================================
 
-	public static final String	TABLE_DIARY				= "diary2";
-	public static final String	COLUMN_DIARY_GUID		= "_GUID";
-	public static final String	COLUMN_DIARY_USER		= "_UserID";
-	public static final String	COLUMN_DIARY_TIMESTAMP	= "_TimeStamp";
-	public static final String	COLUMN_DIARY_VERSION	= "_Version";
-	public static final String	COLUMN_DIARY_DELETED	= "_Deleted";
-	public static final String	COLUMN_DIARY_CONTENT	= "_Content";
-	public static final String	COLUMN_DIARY_TIMECACHE	= "_TimeCache";
+	public static final String	TABLE_DIARY					= "diary2";
+	public static final String	COLUMN_DIARY_GUID			= "_GUID";
+	public static final String	COLUMN_DIARY_USER			= "_UserID";
+	public static final String	COLUMN_DIARY_TIMESTAMP		= "_TimeStamp";
+	public static final String	COLUMN_DIARY_VERSION		= "_Version";
+	public static final String	COLUMN_DIARY_DELETED		= "_Deleted";
+	public static final String	COLUMN_DIARY_CONTENT		= "_Content";
+	public static final String	COLUMN_DIARY_TIMECACHE		= "_TimeCache";
 
 	// ======================================= Food table =======================================
 
