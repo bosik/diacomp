@@ -423,6 +423,16 @@ public class ActivityMain extends Activity implements OnClickListener
 					// SyncParams par = new SyncParams();
 					// par.setShowProgress(true);
 					// new AsyncTaskAuthAndSync().execute(par);
+					Storage.runBackgrounds();
+					UIUtils.showTip(this, "Sync finished");
+					// if (ok)
+					// {
+					// UIUtils.showTip(this, "Synced ok");
+					// }
+					// else
+					// {
+					// UIUtils.showTip(this, "Failed to sync");
+					// }
 					break;
 				case R.id.buttonTestMealEditor:
 					HardcodedFoodbase.restoreHardcodedBase();
