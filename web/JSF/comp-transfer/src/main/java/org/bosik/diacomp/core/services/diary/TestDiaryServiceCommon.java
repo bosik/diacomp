@@ -72,7 +72,7 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 			boolean found = false;
 			for (Versioned<DiaryRecord> actualItem : act)
 			{
-				if (actualItem.getId().equals(expectedItem.getId()))
+				if (expectedItem.getId().equals(actualItem.getId()))
 				{
 					mockVersioned.compare(expectedItem, actualItem);
 					found = true;
