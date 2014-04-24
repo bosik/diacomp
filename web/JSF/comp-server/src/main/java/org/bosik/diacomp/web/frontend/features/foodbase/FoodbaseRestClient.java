@@ -114,9 +114,7 @@ public class FoodbaseRestClient extends AuthorizedRestClient implements FoodBase
 			StdResponse resp = new StdResponse(str);
 			checkResponse(resp);
 
-			Versioned<FoodItem> item = resp.getCode() != ResponseBuilder.CODE_NOTFOUND ? serializer.read(resp
-					.getResponse()) : null;
-			return item;
+			return resp.getCode() != ResponseBuilder.CODE_NOTFOUND ? serializer.read(resp.getResponse()) : null;
 		}
 		catch (UniformInterfaceException e)
 		{

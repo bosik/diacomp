@@ -7,6 +7,7 @@ import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerDiaryRecord;
+import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
@@ -39,8 +40,7 @@ public class DiaryRestClient extends AuthorizedRestClient implements DiaryServic
 			StdResponse resp = new StdResponse(str);
 			checkResponse(resp);
 
-			Versioned<DiaryRecord> item = serializer.read(resp.getResponse());
-			return item;
+			return resp.getCode() != ResponseBuilder.CODE_NOTFOUND ? serializer.read(resp.getResponse()) : null;
 		}
 		catch (UniformInterfaceException e)
 		{
