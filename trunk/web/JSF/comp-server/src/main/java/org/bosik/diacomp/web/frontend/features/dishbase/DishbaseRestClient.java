@@ -114,9 +114,7 @@ public class DishbaseRestClient extends AuthorizedRestClient implements DishBase
 			StdResponse resp = new StdResponse(str);
 			checkResponse(resp);
 
-			Versioned<DishItem> item = resp.getCode() != ResponseBuilder.CODE_NOTFOUND ? serializer.read(resp
-					.getResponse()) : null;
-			return item;
+			return resp.getCode() != ResponseBuilder.CODE_NOTFOUND ? serializer.read(resp.getResponse()) : null;
 		}
 		catch (UniformInterfaceException e)
 		{
