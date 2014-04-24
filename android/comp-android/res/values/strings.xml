@@ -23,7 +23,6 @@
     <string name="editor_food_field_carbs">Carbs, g</string>
     <string name="editor_food_field_value">Value, kcal</string>
     <string name="editor_food_title">Food</string>
-    <string name="editor_meal_button_add">Add</string>
     <string name="editor_meal_field_fooddish">Food/dish</string>
     <string name="editor_meal_field_mass">Mass, g</string>
     <string name="editor_meal_label_carbs">g carbs.</string>
