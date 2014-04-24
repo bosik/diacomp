@@ -1,6 +1,8 @@
 package org.bosik.diacomp.android.frontend.activities;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import org.bosik.diacomp.android.BuildConfig;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.HardcodedFoodbase;
@@ -9,6 +11,7 @@ import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -420,11 +423,32 @@ public class ActivityMain extends Activity implements OnClickListener
 					startActivity(settingsActivity);
 					break;
 				case R.id.buttonAuth:
-					// SyncParams par = new SyncParams();
-					// par.setShowProgress(true);
-					// new AsyncTaskAuthAndSync().execute(par);
-					Storage.runBackgrounds();
-					UIUtils.showTip(this, "Sync finished");
+
+					new AsyncTask<Void, Void, List<Boolean>>()
+					{
+						@Override
+						protected List<Boolean> doInBackground(Void... arg0)
+						{
+							List<Boolean> result = new ArrayList<Boolean>(3);
+
+							result.add(Storage.syncDiary());
+							result.add(Storage.syncFoodbase());
+							result.add(Storage.syncDishbase());
+
+							return result;
+						}
+
+						@Override
+						protected void onPostExecute(List<Boolean> result)
+						{
+							UIUtils.showTip(ActivityMain.this, result.get(0) ? "Diary synced" : "Failed to sync diary");
+							UIUtils.showTip(ActivityMain.this, result.get(1) ? "Foodbase synced"
+									: "Failed to sync foodbase");
+							UIUtils.showTip(ActivityMain.this, result.get(2) ? "Dishbase synced"
+									: "Failed to sync dishbase");
+						}
+					}.execute();
+
 					// if (ok)
 					// {
 					// UIUtils.showTip(this, "Synced ok");

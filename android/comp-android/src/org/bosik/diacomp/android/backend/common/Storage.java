@@ -44,7 +44,9 @@ public class Storage
 	private static final int		CONNECTION_TIMEOUT	= 6000;
 
 	private static boolean			timerSettedUp		= false;
-	private static Date				since				= Utils.time(2013, 11, 1, 0, 0, 0);
+	private static Date				sinceDiary			= Utils.time(2013, 11, 1, 0, 0, 0);
+	private static Date				sinceFoodbase		= Utils.time(2013, 11, 1, 0, 0, 0);
+	private static Date				sinceDishbase		= Utils.time(2013, 11, 1, 0, 0, 0);
 
 	// DAO
 
@@ -143,7 +145,9 @@ public class Storage
 			@Override
 			protected Void doInBackground(Void... arg0)
 			{
-				syncAll();
+				syncDiary();
+				syncFoodbase();
+				syncDishbase();
 				relevantIndexation();
 				analyzeKoofs();
 
@@ -182,56 +186,61 @@ public class Storage
 		timer.scheduleAtFixedRate(task, 0, interval);
 	}
 
-	static boolean syncAll()
+	public static boolean syncDiary()
 	{
-		boolean result = true;
 		try
 		{
 			Log.v(TAG, "Diary sync...");
 			long time = System.currentTimeMillis();
-			int syncDiaryItemsCount = SyncService.synchronize(localDiary, webDiary, since);
+			int syncDiaryItemsCount = SyncService.synchronize(localDiary, webDiary, sinceDiary);
 			Log.v(TAG, String.format("Diary synced in %d msec, total tranferred: %d",
 					System.currentTimeMillis() - time, syncDiaryItemsCount));
+			sinceDiary = new Date();
+			return true;
 		}
 		catch (Exception e)
 		{
-			result = false;
 			e.printStackTrace();
+			return false;
 		}
+	}
 
+	public static boolean syncFoodbase()
+	{
 		try
 		{
 			Log.v(TAG, "Foodbase sync...");
 			long time = System.currentTimeMillis();
-			int syncFoodItemsCount = SyncService.synchronize(Storage.localFoodBase, Storage.webFoodBase, since);
+			int syncFoodItemsCount = SyncService.synchronize(Storage.localFoodBase, Storage.webFoodBase, sinceFoodbase);
 			Log.v(TAG, String.format("Foodbase synced in %d msec, total tranferred: %d", System.currentTimeMillis()
 					- time, syncFoodItemsCount));
+			sinceFoodbase = new Date();
+			return true;
 		}
 		catch (Exception e)
 		{
-			result = false;
 			e.printStackTrace();
+			return false;
 		}
+	}
 
+	public static boolean syncDishbase()
+	{
 		try
 		{
 			Log.v(TAG, "Dishbase sync...");
 			long time = System.currentTimeMillis();
-			int syncDishItemsCount = SyncService.synchronize(Storage.localDishBase, Storage.webDishBase, since);
+			int syncDishItemsCount = SyncService.synchronize(Storage.localDishBase, Storage.webDishBase, sinceDishbase);
 			Log.v(TAG, String.format("Dishbase synced in %d msec, total tranferred: %d", System.currentTimeMillis()
 					- time, syncDishItemsCount));
+			sinceDishbase = new Date();
+			return true;
 		}
 		catch (Exception e)
 		{
-			result = false;
 			e.printStackTrace();
+			return false;
 		}
-
-		if (result)
-		{
-			since = new Date();
-		}
-		return result;
 	}
 
 	static void relevantIndexation()

@@ -285,6 +285,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				case CONTEXT_ITEM_REMOVE:
 				{
 					curRecords.get(ind).setDeleted(true);
+					curRecords.get(ind).updateTimeStamp();
 					postRecord(curRecords.get(ind));
 					return true;
 				}
