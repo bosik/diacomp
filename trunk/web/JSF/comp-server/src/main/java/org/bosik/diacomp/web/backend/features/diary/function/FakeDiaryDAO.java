@@ -1,6 +1,8 @@
 package org.bosik.diacomp.web.backend.features.diary.function;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
@@ -21,6 +23,24 @@ public class FakeDiaryDAO implements DiaryDAO
 	private static Parser<DiaryRecord>			parser		= new ParserDiaryRecord();
 	private static Serializer<DiaryRecord>		serializer	= new SerializerAdapter<DiaryRecord>(parser);
 
+	private static void sort(List<Versioned<String>> items)
+	{
+		Collections.sort(items, new Comparator<Versioned<String>>()
+		{
+			@Override
+			public int compare(Versioned<String> o1, Versioned<String> o2)
+			{
+				// yep, slow
+				Date t1 = serializer.read(o1.getData()).getTime();
+				Date t2 = serializer.read(o2.getData()).getTime();
+				return t1.compareTo(t2);
+			}
+		});
+	}
+
+	/**
+	 * NOTE: ignores userId
+	 */
 	@Override
 	public List<Versioned<String>> findChanged(int userId, Date time)
 	{
@@ -40,9 +60,13 @@ public class FakeDiaryDAO implements DiaryDAO
 			}
 		}
 
+		sort(result);
 		return result;
 	}
 
+	/**
+	 * NOTE: ignores userId
+	 */
 	@Override
 	public List<Versioned<String>> findPeriod(int userId, Date startTime, Date endTime, boolean includeRemoved)
 	{
@@ -64,15 +88,39 @@ public class FakeDiaryDAO implements DiaryDAO
 			}
 		}
 
+		sort(result);
 		return result;
 	}
 
+	/**
+	 * NOTE: ignores userId
+	 */
 	@Override
 	public void post(int userId, List<Versioned<DiaryRecord>> records)
 	{
-		// TODO Auto-generated method stub
+		for (Versioned<DiaryRecord> item : records)
+		{
+			boolean found = false;
+			for (int i = 0; i < samples.size(); i++)
+			{
+				if (samples.get(i).equals(item))
+				{
+					samples.set(i, new Versioned<DiaryRecord>(item));
+					found = true;
+					break;
+				}
+			}
+
+			if (!found)
+			{
+				samples.add(new Versioned<DiaryRecord>(item));
+			}
+		}
 	}
 
+	/**
+	 * NOTE: ignores userId
+	 */
 	@Override
 	public Versioned<String> findByGuid(int userId, String guid)
 	{
