@@ -6,8 +6,10 @@ import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
 
 public class FakeAuthDAO implements AuthDAO
 {
-	private static final int	API_CURRENT	= 20;
-	private static final int	API_LEGACY	= 19;
+	private static final int	API_CURRENT		= 20;
+	private static final int	API_LEGACY		= 19;
+	private static final String	FAKE_LOGIN		= "bosik-007@narod.ru";
+	private static final String	FAKE_PASSWORD	= "devel0pment";
 
 	@Override
 	public int login(String login, String pass, int apiVersion)
@@ -27,7 +29,7 @@ public class FakeAuthDAO implements AuthDAO
 			throw new DeprecatedAPIException(msg);
 		}
 
-		if ("admin".equals(login) && "1234".equals(pass))
+		if (FAKE_LOGIN.equals(login) && FAKE_PASSWORD.equals(pass))
 		{
 			int id = 1;
 			return id;
