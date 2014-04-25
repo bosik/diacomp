@@ -5,13 +5,8 @@
 </head>
 <body>
 	<div class="main">
-		<div id="header" wicket:id="headerPanel">header</div>
-		<div class="menu">
-			<wicket:link><a wicket:id="menuItemDiary" class="menu_item menu_option"><wicket:message key="menu.diary"></wicket:message></a></wicket:link>
-			<a wicket:id="menuItemBase" class="menu_item menu_option"><wicket:message key="menu.base"></wicket:message></a>
-			<a wicket:id="menuItemDownload" class="menu_item menu_option"><wicket:message key="menu.download"></wicket:message></a>
-			<a wicket:id="menuItemAbout" class="menu_item menu_option"><wicket:message key="menu.about"></wicket:message></a>
-		</div>
+		<div wicket:id="headerPanel" id="header">header</div>
+		<div wicket:id="menu"></div>
 		<wicket:child/>
 	</div>
 </body>
