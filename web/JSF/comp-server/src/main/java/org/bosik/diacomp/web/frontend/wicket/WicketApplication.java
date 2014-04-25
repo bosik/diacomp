@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.frontend;
+package org.bosik.diacomp.web.frontend.wicket;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
