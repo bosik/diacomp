@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.frontend.wicket.pages.master;
+package org.bosik.diacomp.web.frontend.wicket.components.menu;
 
 import org.apache.wicket.markup.html.WebPage;
 
