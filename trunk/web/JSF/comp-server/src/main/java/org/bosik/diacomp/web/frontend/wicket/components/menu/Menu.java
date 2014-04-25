@@ -29,17 +29,17 @@ public class Menu extends GenericPanel<MenuContent>
 		RepeatingView menu = new RepeatingView("menuItem");
 		add(menu);
 
-		for (int i = 0; i < getModelObject().getItems().size(); i++)
+		for (final MenuItem menuItem : getModelObject().getItems())
 		{
-			final MenuItem menuItem = Menu.this.getModelObject().getItems().get(i);
-
 			BookmarkablePageLink<Void> link = new BookmarkablePageLink<Void>("Link", menuItem.getResponsePage());
 			link.add(new Label("Text", menuItem.getCaption()));
 			WebMarkupContainer itemPlace = new WebMarkupContainer(menu.newChildId());
 			menu.add(itemPlace);
 			itemPlace.add(link);
 
-			if (i == getModelObject().getSelected())
+			final String current = menuItem.getResponsePage().getName();
+			final String selected = getModelObject().getSelected().getName();
+			if (current.equals(selected))
 			{
 				link.add(new AttributeAppender("class", " menu_selected"));
 			}
