@@ -11,5 +11,4 @@ public class DiaryPage extends MasterPage
 	{
 		super(parameters);
 	}
-
 }

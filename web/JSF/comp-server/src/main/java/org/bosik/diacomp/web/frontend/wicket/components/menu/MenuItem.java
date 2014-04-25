@@ -1,9 +1,12 @@
 package org.bosik.diacomp.web.frontend.wicket.components.menu;
 
+import java.io.Serializable;
 import org.apache.wicket.markup.html.WebPage;
 
-public class MenuItem
+public class MenuItem implements Serializable
 {
+	private static final long			serialVersionUID	= 1L;
+
 	private String						caption;
 	private Class<? extends WebPage>	responsePage;
 

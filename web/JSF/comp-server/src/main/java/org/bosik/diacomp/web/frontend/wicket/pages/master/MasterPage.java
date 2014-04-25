@@ -19,13 +19,18 @@ public class MasterPage extends WebPage
 		super(parameters);
 
 		add(new HeaderPanel("headerPanel", "user@user.com"));
+		add(new Menu("menu", Model.of(getMenu())));
+	}
 
+	protected MenuContent getMenu()
+	{
 		MenuContent menuContent = new MenuContent();
 		menuContent.getItems().add(new MenuItem("Diary", DiaryPage.class));
 		menuContent.getItems().add(new MenuItem("Base", DiaryPage.class)); // TODO
 		menuContent.getItems().add(new MenuItem("About", AboutPage.class));
 		menuContent.getItems().add(new MenuItem("Download", DiaryPage.class)); // TODO
-		menuContent.setSelected(0);
-		add(new Menu("menu", Model.of(menuContent)));
+		menuContent.setSelected(getClass());
+
+		return menuContent;
 	}
 }
