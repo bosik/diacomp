@@ -6,13 +6,13 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.web.frontend.features.auth.AuthRestClient;
 
-public class Header extends Panel
+public class HeaderPanel extends Panel
 {
 	private static final long	serialVersionUID	= 1L;
 
 	AuthService					authService			= new AuthRestClient();
 
-	public Header(String id, String userName)
+	public HeaderPanel(String id, String userName)
 	{
 		super(id);
 		add(new Label("infoLogin", userName));
