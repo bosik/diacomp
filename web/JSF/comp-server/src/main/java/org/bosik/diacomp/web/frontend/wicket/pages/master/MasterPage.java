@@ -4,6 +4,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.bosik.diacomp.web.frontend.wicket.components.header.HeaderPanel;
+import org.bosik.diacomp.web.frontend.wicket.pages.about.AboutPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
 
 public class MasterPage extends WebPage
@@ -18,7 +19,7 @@ public class MasterPage extends WebPage
 
 		add(new BookmarkablePageLink<Void>("menuItemDiary", DiaryPage.class));
 		add(new BookmarkablePageLink<Void>("menuItemBase", DiaryPage.class)); // TODO
-		add(new BookmarkablePageLink<Void>("menuItemAbout", DiaryPage.class)); // TODO
+		add(new BookmarkablePageLink<Void>("menuItemAbout", AboutPage.class));
 		add(new BookmarkablePageLink<Void>("menuItemDownload", DiaryPage.class)); // TODO
 	}
 }
