@@ -2,14 +2,14 @@ package org.bosik.diacomp.web.frontend;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.bosik.diacomp.web.frontend.wicket.pages.HomePage;
+import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
 
 public class WicketApplication extends WebApplication
 {
 	@Override
 	public Class<? extends WebPage> getHomePage()
 	{
-		return HomePage.class;
+		return DiaryPage.class;
 	}
 
 	@Override
@@ -17,6 +17,6 @@ public class WicketApplication extends WebApplication
 	{
 		super.init();
 
-		mountPage("/diary", HomePage.class);
+		mountPage("/diary", DiaryPage.class);
 	}
 }

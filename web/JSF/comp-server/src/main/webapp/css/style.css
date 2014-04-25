@@ -146,6 +146,7 @@ th {
 	text-align: center;
 	width: 100px;
 	display: inline-block;
+	cursor: pointer;
 }
 
 .menu_selected {
