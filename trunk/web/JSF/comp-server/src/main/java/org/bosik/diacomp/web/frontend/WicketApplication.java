@@ -2,7 +2,7 @@ package org.bosik.diacomp.web.frontend;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.bosik.diacomp.web.frontend.pages.HomePage;
+import org.bosik.diacomp.web.frontend.wicket.pages.HomePage;
 
 public class WicketApplication extends WebApplication
 {
@@ -17,6 +17,6 @@ public class WicketApplication extends WebApplication
 	{
 		super.init();
 
-		mountPage("/test", HomePage.class);
+		mountPage("/diary", HomePage.class);
 	}
 }

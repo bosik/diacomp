@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<body>
+	<wicket:panel>
+		<div class="header">
+			<a href="#">
+				<div class="title">
+					<img class="icon" src="img/icon.jpg"
+						wicket:message="title:link.home.hint">
+					<wicket:message key="app.title">
+					</wicket:message>
+				</div>
+			</a>
+			<div class="login hint">
+				<div wicket:id="infoLogin">login here</div>
+				<a wicket:id="linkLogout"><wicket:message key="link.logout"></wicket:message></a>
+			</div>
+		</div>
+	</wicket:panel>
+</body>
+</html>
