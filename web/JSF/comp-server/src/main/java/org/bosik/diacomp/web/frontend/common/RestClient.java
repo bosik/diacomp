@@ -1,5 +1,6 @@
 package org.bosik.diacomp.web.frontend.common;
 
+import java.io.Serializable;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
@@ -12,8 +13,10 @@ import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 
-public class RestClient
+public class RestClient implements Serializable
 {
+	private static final long		serialVersionUID	= 1L;
+
 	private static ApacheHttpClient	client;
 	{
 		ApacheHttpClientConfig config = new DefaultApacheHttpClientConfig();
