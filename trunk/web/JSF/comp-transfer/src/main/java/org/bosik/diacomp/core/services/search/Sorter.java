@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.backend.features.search;
+package org.bosik.diacomp.core.services.search;
 
 import java.util.Collections;
 import java.util.Comparator;

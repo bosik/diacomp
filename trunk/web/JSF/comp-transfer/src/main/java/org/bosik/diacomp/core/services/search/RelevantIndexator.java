@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.backend.features.search;
+package org.bosik.diacomp.core.services.search;
 
 import java.util.Date;
 import java.util.List;
@@ -12,16 +12,12 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
-import android.util.Log;
 
-@SuppressWarnings("unchecked")
 public class RelevantIndexator
 {
-	private static final String	TAG	= RelevantIndexator.class.getSimpleName();
-
 	public static void indexate(DiaryService diary, FoodBaseService foodBase, DishBaseService dishBase)
 	{
-		/**/long time = System.currentTimeMillis();
+		// /**/long time = System.currentTimeMillis();
 
 		// constructing dates list
 		final long PERIOD = 30; // days
@@ -56,7 +52,7 @@ public class RelevantIndexator
 		foodBase.save(foodItems);
 		dishBase.save(dishItems);
 
-		/**/Log.v(TAG, String.format("Indexated in %d msec", System.currentTimeMillis() - time));
+		// /**/Log.v(TAG, String.format("Indexated in %d msec", System.currentTimeMillis() - time));
 	}
 
 	private static int f(Date curDate, Date minDate, Date maxDate)
