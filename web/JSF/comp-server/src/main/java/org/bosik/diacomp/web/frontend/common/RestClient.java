@@ -19,13 +19,22 @@ public class RestClient implements Serializable
 
 	private static ApacheHttpClient	client;
 	{
-		ApacheHttpClientConfig config = new DefaultApacheHttpClientConfig();
-		config.getProperties().put(ApacheHttpClientConfig.PROPERTY_HANDLE_COOKIES, true);
-		client = ApacheHttpClient.create(config);
+		initClient();
+	}
+
+	public static void initClient()
+	{
+		if (client == null)
+		{
+			ApacheHttpClientConfig config = new DefaultApacheHttpClientConfig();
+			config.getProperties().put(ApacheHttpClientConfig.PROPERTY_HANDLE_COOKIES, true);
+			client = ApacheHttpClient.create(config);
+		}
 	}
 
 	protected static WebResource getResource(String url)
 	{
+		initClient();
 		return client.resource(Config.getBaseURL() + url);
 	}
 
