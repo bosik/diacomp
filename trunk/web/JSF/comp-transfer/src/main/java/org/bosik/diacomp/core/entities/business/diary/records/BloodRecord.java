@@ -17,6 +17,16 @@ public class BloodRecord extends DiaryRecord
 
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param time
+	 *            Time of blood sugar level measurement
+	 * @param value
+	 *            Blood sugar level. Valid values: positive
+	 * @param finger
+	 *            Number of finger. Valid values are [0...9]
+	 */
 	public BloodRecord(Date time, double value, int finger)
 	{
 		setTime(time);
@@ -58,6 +68,11 @@ public class BloodRecord extends DiaryRecord
 		return finger;
 	}
 
+	/**
+	 * Number of finger. Valid values are [0...9]
+	 * 
+	 * @param value
+	 */
 	public void setFinger(int value)
 	{
 		if (!checkFinger(value))
