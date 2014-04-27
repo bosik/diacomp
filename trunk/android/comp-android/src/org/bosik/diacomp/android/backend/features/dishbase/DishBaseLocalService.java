@@ -22,7 +22,7 @@ import android.database.Cursor;
 
 public class DishBaseLocalService implements DishBaseService
 {
-	// private static final String			TAG	= DishBaseLocalService.class.getSimpleName();
+	// private static final String TAG = DishBaseLocalService.class.getSimpleName();
 
 	private final ContentResolver		resolver;
 	private final Serializer<DishItem>	serializer;
@@ -265,7 +265,8 @@ public class DishBaseLocalService implements DishBaseService
 			ContentValues newValues = new ContentValues();
 			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DELETED, 1);
 			String[] args = new String[] { id };
-			resolver.update(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues, "GUID = ?", args);
+			resolver.update(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues,
+					DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?", args);
 		}
 		catch (PersistenceException e)
 		{
@@ -381,7 +382,8 @@ public class DishBaseLocalService implements DishBaseService
 				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE, item.getData().getName());
 
 				String[] args = new String[] { item.getId() };
-				resolver.update(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues, "GUID = ?", args);
+				resolver.update(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues,
+						DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?", args);
 			}
 		}
 		catch (PersistenceException e)

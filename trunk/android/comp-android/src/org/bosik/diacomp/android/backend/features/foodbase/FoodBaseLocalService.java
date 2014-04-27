@@ -321,7 +321,8 @@ public class FoodBaseLocalService implements FoodBaseService
 			ContentValues newValues = new ContentValues();
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, 1);
 			String[] args = new String[] { id };
-			resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, "GUID = ?", args);
+			resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues,
+					DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?", args);
 
 			for (Versioned<FoodItem> item : memoryCache)
 			{
@@ -461,7 +462,8 @@ public class FoodBaseLocalService implements FoodBaseService
 				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE, item.getData().getName());
 
 				String[] args = new String[] { item.getId() };
-				resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, "GUID = ?", args);
+				resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues,
+						DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?", args);
 			}
 
 			for (Versioned<FoodItem> item : items)
