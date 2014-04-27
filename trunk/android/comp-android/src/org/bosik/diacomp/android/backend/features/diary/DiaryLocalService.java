@@ -241,7 +241,7 @@ public class DiaryLocalService implements DiaryService
 
 				res.add(item);
 
-				Log.v(TAG, String.format("Extracted item %s", content));
+				// Log.v(TAG, String.format("Extracted item %s", content));
 			}
 
 			Log.d(TAG, String.format("Extracted %d items", res.size()));
