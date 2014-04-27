@@ -1,7 +1,9 @@
 package org.bosik.diacomp.core.test.fakes.mocks;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
@@ -14,6 +16,7 @@ import org.bosik.diacomp.core.utils.Utils;
 public class MockDiaryRecord implements Mock<DiaryRecord>
 {
 	private Mock<FoodMassed>	mockFoodMassed	= new MockFoodMassed();
+	private Random				r				= new Random();
 
 	@Override
 	public List<DiaryRecord> getSamples()
@@ -49,6 +52,53 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 		samples.add(new NoteRecord(Utils.time(2029, 12, 31, 23, 59, 59), ""));
 
 		return samples;
+	}
+
+	@Override
+	public DiaryRecord getSample()
+	{
+		switch (r.nextInt(4))
+		{
+			case 0:
+			{
+				Date time = Utils.randomTime();
+				double value = 2 + (20 * r.nextDouble());
+				int finger = r.nextInt(10);
+				return new BloodRecord(time, value, finger);
+			}
+
+			case 1:
+			{
+				Date time = Utils.randomTime();
+				double value = 1 + (20 * r.nextDouble());
+				return new InsRecord(time, value);
+			}
+
+			case 2:
+			{
+				Date time = Utils.randomTime();
+				boolean shortMeal = r.nextBoolean();
+				int count = r.nextInt(20);
+
+				MealRecord meal = new MealRecord(time, shortMeal);
+
+				for (int i = 0; i < count; i++)
+				{
+					meal.add(mockFoodMassed.getSample());
+				}
+
+				return meal;
+			}
+
+			case 3:
+			default:
+			{
+				Date time = Utils.randomTime();
+				String text = Utils.randomString("", "Escape-test: %$\"'}{][#@!&`~/*-,.;", "Note", "Заметка",
+						"It's ok", "Feeling good", "Had a nice day");
+				return new NoteRecord(time, text);
+			}
+		}
 	}
 
 	@Override

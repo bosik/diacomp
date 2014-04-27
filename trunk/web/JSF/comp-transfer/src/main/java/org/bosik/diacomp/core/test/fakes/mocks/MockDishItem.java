@@ -3,12 +3,14 @@ package org.bosik.diacomp.core.test.fakes.mocks;
 import static junit.framework.TestCase.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 
 public class MockDishItem implements Mock<DishItem>
 {
 	private static final Mock<FoodMassed>	mockFood	= new MockFoodMassed();
+	private Random							r			= new Random();
 
 	@Override
 	public List<DishItem> getSamples()
@@ -71,5 +73,13 @@ public class MockDishItem implements Mock<DishItem>
 		{
 			mockFood.compare(exp.get(i), act.get(i));
 		}
+	}
+
+	@Override
+	public DishItem getSample()
+	{
+		// TODO: make it actually random
+		List<DishItem> samples = getSamples();
+		return samples.get(r.nextInt(samples.size()));
 	}
 }
