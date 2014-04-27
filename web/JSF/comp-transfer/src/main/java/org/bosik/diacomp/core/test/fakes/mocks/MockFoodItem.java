@@ -10,32 +10,37 @@ import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 public class MockFoodItem implements Mock<FoodItem>
 {
 	private static final Mock<Food>	mockFood	= new MockFood();
+	private Random					r			= new Random();
 
 	@Override
 	public List<FoodItem> getSamples()
 	{
-		List<Food> foods = mockFood.getSamples();
-		Random r = new Random();
-
 		List<FoodItem> samples = new ArrayList<FoodItem>();
 
-		for (Food f : foods)
+		for (int i = 0; i < 10; i++)
 		{
-			FoodItem item = new FoodItem();
-
-			item.setName(f.getName());
-			item.setRelProts(f.getRelProts());
-			item.setRelFats(f.getRelFats());
-			item.setRelCarbs(f.getRelCarbs());
-			item.setRelValue(f.getRelValue());
-
-			item.setFromTable(r.nextBoolean());
-			item.setTag(r.nextInt(100000));
-
-			samples.add(item);
+			samples.add(getSample());
 		}
 
 		return samples;
+	}
+
+	@Override
+	public FoodItem getSample()
+	{
+		FoodItem item = new FoodItem();
+
+		Food f = mockFood.getSample();
+		item.setName(f.getName());
+		item.setRelProts(f.getRelProts());
+		item.setRelFats(f.getRelFats());
+		item.setRelCarbs(f.getRelCarbs());
+		item.setRelValue(f.getRelValue());
+
+		item.setFromTable(r.nextBoolean());
+		item.setTag(r.nextInt(100000));
+
+		return item;
 	}
 
 	@Override

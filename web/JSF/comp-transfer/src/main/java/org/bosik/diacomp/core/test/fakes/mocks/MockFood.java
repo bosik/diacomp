@@ -4,36 +4,59 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import org.bosik.diacomp.core.entities.business.Food;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.utils.Utils;
 
 public class MockFood implements Mock<Food>
 {
-	private static Food food(String name, double relProts, double relFats, double relCarbs, double relValue)
-	{
-		Food f = new Food();
-		f.setName(name);
-		f.setRelProts(relProts);
-		f.setRelFats(relFats);
-		f.setRelCarbs(relCarbs);
-		f.setRelValue(relValue);
-		return f;
-	}
+	private Random	r	= new Random();
 
 	@Override
 	public List<Food> getSamples()
 	{
 		List<Food> samples = new ArrayList<Food>();
 
-		samples.add(food("Хлеб \"Бородино\" нарезка (JUnit test)", 5.5, 0.9, 44.1, 206.3));
-		samples.add(food("Абрикос", 0.9, 0.1, 9, 41));
-		samples.add(food("Аджика \"Кавказская\"", 0, 0, 15, 60));
-		samples.add(food("Активиа кефирная 3%", 2.9, 3, 4.5, 56));
-		samples.add(food("Батон \"К чаю\" ХЗ-2 (Золотой колос)", 7.4, 5.4, 51.2, 283));
-		samples.add(food("Мороженое эскимо пломбир ванильный в молочном шоколаде \"Олимпиада\"", 4, 23, 27, 340));
-		samples.add(food("Яйцо", 12.7, 11.5, 0.7, 157));
+		samples.add(new Food("Хлеб \"Бородино\" нарезка (JUnit test)", 5.5, 0.9, 44.1, 206.3));
+		samples.add(new Food("Абрикос", 0.9, 0.1, 9, 41));
+		samples.add(new Food("Аджика \"Кавказская\"", 0, 0, 15, 60));
+		samples.add(new Food("Активиа кефирная 3%", 2.9, 3, 4.5, 56));
+		samples.add(new Food("Батон \"К чаю\" ХЗ-2 (Золотой колос)", 7.4, 5.4, 51.2, 283));
+		samples.add(new Food("Мороженое эскимо пломбир ванильный в молочном шоколаде \"Олимпиада\"", 4, 23, 27, 340));
+		samples.add(new Food("Яйцо", 12.7, 11.5, 0.7, 157));
 
 		return samples;
+	}
+
+	@Override
+	public Food getSample()
+	{
+		Food food = new FoodMassed();
+		food.setName(Utils.randomString("Escape-test: %$\"'}{][#@!&`~/*-,.;", "Milk", "Абрикос",
+				"Аджика \"Кавказская\"", "Активиа кефирная 3%", "Батон \"К чаю\" ХЗ-2 (Золотой колос)", "Вода",
+				"Карбонат \"Восточный\" (Черн)",
+				"Мороженое эскимо пломбир ванильный в молочном шоколаде \"Олимпиада\"", "Сахар",
+				"Сметана \"Вкуснотеево\" 20%", "Хлеб \"Бородино\" нарезка", "Яйцо"));
+
+		double relProts = r.nextInt(1000) / 10;
+		double relFats = r.nextInt(1000) / 10;
+		double relCarbs = r.nextInt(1000) / 10;
+
+		double relSumm = relProts + relFats + relCarbs;
+		relProts = Utils.round2(relProts / relSumm);
+		relFats = Utils.round2(relFats / relSumm);
+		relCarbs = Utils.round2(relCarbs / relSumm);
+
+		double relValue = Utils.round2((relProts * Utils.KCAL_PER_PROTS) + (relFats * Utils.KCAL_PER_FATS)
+				+ (relCarbs * Utils.KCAL_PER_CARBS));
+
+		food.setRelProts(relProts);
+		food.setRelFats(relFats);
+		food.setRelCarbs(relCarbs);
+		food.setRelValue(relValue);
+
+		return food;
 	}
 
 	@Override

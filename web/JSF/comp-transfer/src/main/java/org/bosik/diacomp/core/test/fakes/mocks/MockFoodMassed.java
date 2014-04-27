@@ -11,31 +11,36 @@ import org.bosik.diacomp.core.utils.Utils;
 public class MockFoodMassed implements Mock<FoodMassed>
 {
 	private static final Mock<Food>	mockFood	= new MockFood();
+	private Random					r			= new Random();
 
 	@Override
 	public List<FoodMassed> getSamples()
 	{
-		List<Food> foods = mockFood.getSamples();
-		Random r = new Random();
-
 		List<FoodMassed> samples = new ArrayList<FoodMassed>();
 
-		for (Food f : foods)
+		for (int i = 0; i < 10; i++)
 		{
-			FoodMassed item = new FoodMassed();
-
-			item.setName(f.getName());
-			item.setRelProts(f.getRelProts());
-			item.setRelFats(f.getRelFats());
-			item.setRelCarbs(f.getRelCarbs());
-			item.setRelValue(f.getRelValue());
-
-			item.setMass(r.nextInt(5000) * 0.1);
-
-			samples.add(item);
+			samples.add(getSample());
 		}
 
 		return samples;
+	}
+
+	@Override
+	public FoodMassed getSample()
+	{
+		FoodMassed item = new FoodMassed();
+
+		Food f = mockFood.getSample();
+		item.setName(f.getName());
+		item.setRelProts(f.getRelProts());
+		item.setRelFats(f.getRelFats());
+		item.setRelCarbs(f.getRelCarbs());
+		item.setRelValue(f.getRelValue());
+
+		item.setMass(r.nextInt(5000) / 10);
+
+		return item;
 	}
 
 	@Override
