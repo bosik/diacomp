@@ -1,6 +1,7 @@
 package org.bosik.diacomp.core.persistence.parsers;
 
 import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,23 +22,17 @@ public class ParserFoodMassed extends Parser<FoodMassed>
 		return item;
 	}
 
-	private static double round(double x)
-	{
-		// TODO: seems bad approach
-		return ((double) Math.round(x * 100)) / 100;
-	}
-
 	@Override
 	public JSONObject write(FoodMassed object) throws JSONException
 	{
 		JSONObject json = new JSONObject();
 
 		json.put("name", object.getName());
-		json.put("prots", round(object.getRelProts()));
-		json.put("fats", round(object.getRelFats()));
-		json.put("carbs", round(object.getRelCarbs()));
-		json.put("value", round(object.getRelValue()));
-		json.put("mass", round(object.getMass()));
+		json.put("prots", Utils.round2(object.getRelProts()));
+		json.put("fats", Utils.round2(object.getRelFats()));
+		json.put("carbs", Utils.round2(object.getRelCarbs()));
+		json.put("value", Utils.round2(object.getRelValue()));
+		json.put("mass", Utils.round2(object.getMass()));
 
 		return json;
 	}
