@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.TimeZone;
 import java.util.UUID;
 import org.json.JSONArray;
@@ -17,6 +18,21 @@ public class Utils
 {
 	// отладочная печать
 	// private static final String				TAG					= "Utils";
+
+	// Energy values
+
+	/**
+	 * Value of proteins, kcal/g
+	 */
+	public static final double				KCAL_PER_PROTS		= 3.8;
+	/**
+	 * Value of fats, kcal/g
+	 */
+	public static final double				KCAL_PER_FATS		= 9.3;
+	/**
+	 * Value of carbohydrates, kcal/g
+	 */
+	public static final double				KCAL_PER_CARBS		= 4.1;
 
 	// константы
 	public static final int					MsecPerSec			= 1000;
@@ -361,6 +377,75 @@ public class Utils
 		c.setTimeZone(TimeZone.getTimeZone("UTC"));
 		c.set(year, month - 1, day, hour, min, sec);
 		return c.getTime();
+	}
+
+	public static String randomString(String... strings)
+	{
+		Random r = new Random();
+		return strings[r.nextInt(strings.length)];
+	}
+
+	public static Date randomTime()
+	{
+		Random r = new Random();
+
+		final int year = 2000 + r.nextInt(30);
+		final int month = 1 + r.nextInt(12);
+		final int day = 1 + r.nextInt(28);
+		final int hour = r.nextInt(24);
+		final int min = r.nextInt(60);
+		final int sec = r.nextInt(60);
+
+		return time(year, month, day, hour, min, sec);
+	}
+
+	/**
+	 * Rounds up to specified number of digits after dot
+	 * 
+	 * @param x
+	 * @param digits
+	 * @return
+	 */
+	public static double round(double x, int digits)
+	{
+		// TODO: seems bad approach
+		double factor;
+
+		switch (digits)
+		{
+			case 1:
+			{
+				factor = 10;
+				break;
+			}
+			case 2:
+			{
+				factor = 100;
+				break;
+			}
+			case 3:
+			{
+				factor = 1000;
+				break;
+			}
+			default:
+			{
+				factor = Math.pow(10, digits);
+			}
+		}
+
+		return (Math.round(x * factor)) / factor;
+	}
+
+	/**
+	 * Rounds up to 2 digits after dot
+	 * 
+	 * @param x
+	 * @return
+	 */
+	public static double round2(double x)
+	{
+		return round(x, 2);
 	}
 
 	// private static String formatArray(byte array[])
