@@ -33,7 +33,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 	// caching
 	// NOTE: this suppose DB can't be changed outside app
-	public static List<Versioned<FoodItem>>	foodCache;
+	public static List<Versioned<FoodItem>>	memoryCache;
 
 	// ====================================================================================
 
@@ -47,9 +47,9 @@ public class FoodBaseLocalService implements FoodBaseService
 
 		Parser<FoodItem> s = new ParserFoodItem();
 		serializer = new SerializerAdapter<FoodItem>(s);
-		if (foodCache == null)
+		if (memoryCache == null)
 		{
-			foodCache = findInDB(null, null, true, null);
+			memoryCache = findInDB(null, null, true, null);
 		}
 	}
 
@@ -200,7 +200,7 @@ public class FoodBaseLocalService implements FoodBaseService
 		{
 			List<Versioned<FoodItem>> result = new ArrayList<Versioned<FoodItem>>();
 
-			for (Versioned<FoodItem> item : foodCache)
+			for (Versioned<FoodItem> item : memoryCache)
 			{
 				if (((id == null) || item.getId().equals(id))
 						&& ((name == null) || item.getData().getName().contains(name))
@@ -289,7 +289,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues);
 
-			foodCache.add(new Versioned<FoodItem>(item));
+			memoryCache.add(new Versioned<FoodItem>(item));
 		}
 		catch (PersistenceException e)
 		{
@@ -323,7 +323,7 @@ public class FoodBaseLocalService implements FoodBaseService
 			String[] args = new String[] { id };
 			resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, "GUID = ?", args);
 
-			for (Versioned<FoodItem> item : foodCache)
+			for (Versioned<FoodItem> item : memoryCache)
 			{
 				if (item.getId().equals(id))
 				{
@@ -466,7 +466,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			for (Versioned<FoodItem> item : items)
 			{
-				for (Versioned<FoodItem> x : foodCache)
+				for (Versioned<FoodItem> x : memoryCache)
 				{
 					if (x.getId().equals(item.getId()))
 					{
