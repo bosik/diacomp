@@ -51,6 +51,8 @@ public class Utils
 	private static char						DECIMAL_DOT;
 	private static DecimalFormat			DF;
 
+	private static Random					r					= new Random();
+
 	/*
 	 * public static final String[] MONTH_NAMES = new String[] { "Январь", "Февраль", "Март",
 	 * "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
@@ -381,14 +383,11 @@ public class Utils
 
 	public static String randomString(String... strings)
 	{
-		Random r = new Random();
 		return strings[r.nextInt(strings.length)];
 	}
 
 	public static Date randomTime()
 	{
-		Random r = new Random();
-
 		final int year = 2000 + r.nextInt(30);
 		final int month = 1 + r.nextInt(12);
 		final int day = 1 + r.nextInt(28);
