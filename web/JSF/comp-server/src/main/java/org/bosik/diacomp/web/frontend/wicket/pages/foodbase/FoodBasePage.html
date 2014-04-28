@@ -5,22 +5,52 @@
 </head>
 <body>
 	<wicket:extend xmlns:wicket="http://wicket.apache.org">
-		<table cellspacing="0" class="dataview">
-			<tr>
-				<th>Name</th>
-				<th>Prots</th>
-				<th>Fats</th>
-				<th>Carbs</th>
-				<th>Value</th>
-			</tr>
-			<tr wicket:id="view">
-				<td><span wicket:id="food.name"></span></td>
-				<td><span wicket:id="food.prots"></span></td>
-				<td><span wicket:id="food.fats"></span></td>
-				<td><span wicket:id="food.carbs"></span></td>
-				<td><span wicket:id="food.value"></span></td>
-			</tr>
-		</table>
+		<div class="dataview">
+			<table cellspacing="0">
+				<tr>
+					<th class="colName">Name</th>
+					<th class="colDetails">Prots</th>
+					<th class="colDetails">Fats</th>
+					<th class="colDetails">Carbs</th>
+					<th class="colDetails">Value</th>
+				</tr>
+				<tr wicket:id="view" class="hoverableRow">
+					<td class="colName row"><span wicket:id="food.name"></span></td>
+					<td class="colDetails row"><span wicket:id="food.prots"></span></td>
+					<td class="colDetails row"><span wicket:id="food.fats"></span></td>
+					<td class="colDetails row"><span wicket:id="food.carbs"></span></td>
+					<td class="colDetails row"><span wicket:id="food.value"></span></td>
+				</tr>
+			</table>
+		</div>
+		<style>
+.dataview {
+	margin: 0;
+	padding: 0;
+}
+
+table {
+	width: 100%;
+}
+
+.row {
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.colName {
+	
+}
+
+.colDetails {
+	width: 10%;
+	text-align: center;
+}
+
+.howerable:hower {
+	background: $ff00ff;
+}
+</style>
 	</wicket:extend>
 </body>
 </html>

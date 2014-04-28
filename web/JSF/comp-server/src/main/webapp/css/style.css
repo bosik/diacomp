@@ -126,6 +126,13 @@ th {
 	text-decoration: underline;
 	cursor: pointer;
 }
+.hoverableRow:hover {
+	/*border: solid 1px #000;*/
+	/*color: #0000CC;*/
+	background: #f0f0f0;
+	cursor: pointer;
+}
+
 /* =========================== MENU STYLES =========================== */
 
 .menu {
