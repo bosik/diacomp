@@ -11,7 +11,7 @@ import org.bosik.diacomp.core.utils.Utils;
 
 public class MockFood implements Mock<Food>
 {
-	private Random	r	= new Random();
+	private final Random	r	= new Random();
 
 	@Override
 	public List<Food> getSamples()
@@ -44,9 +44,9 @@ public class MockFood implements Mock<Food>
 		double relCarbs = r.nextInt(1000) / 10;
 
 		double relSumm = relProts + relFats + relCarbs;
-		relProts = Utils.round2(relProts / relSumm);
-		relFats = Utils.round2(relFats / relSumm);
-		relCarbs = Utils.round2(relCarbs / relSumm);
+		relProts = Utils.round2(relProts / relSumm * 100);
+		relFats = Utils.round2(relFats / relSumm * 100);
+		relCarbs = Utils.round2(relCarbs / relSumm * 100);
 
 		double relValue = Utils.round2((relProts * Utils.KCAL_PER_PROTS) + (relFats * Utils.KCAL_PER_FATS)
 				+ (relCarbs * Utils.KCAL_PER_CARBS));
