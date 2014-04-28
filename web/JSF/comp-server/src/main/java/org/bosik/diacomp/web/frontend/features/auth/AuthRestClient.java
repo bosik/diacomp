@@ -4,7 +4,9 @@ import javax.ws.rs.core.MediaType;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.frontend.common.RestClient;
+import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.representation.Form;
@@ -45,6 +47,28 @@ public class AuthRestClient extends RestClient implements AuthService
 		}
 		catch (UniformInterfaceException e)
 		{
+			throw new CommonServiceException("URL: " + resource.getURI(), e);
+		}
+	}
+
+	@Override
+	public String getUserName()
+	{
+		WebResource resource = getResource("api/auth/current");
+		try
+		{
+			String str = resource.accept(MediaType.APPLICATION_JSON).get(String.class);
+
+			StdResponse resp = new StdResponse(str);
+			checkResponse(resp);
+			return resp.getResponse();
+		}
+		catch (UniformInterfaceException e)
+		{
+			if (e.getResponse().getStatus() == Status.UNAUTHORIZED.getStatusCode())
+			{
+				throw new NotAuthorizedException();
+			}
 			throw new CommonServiceException("URL: " + resource.getURI(), e);
 		}
 	}

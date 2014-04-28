@@ -6,10 +6,12 @@ import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 public class UserSessionUtils
 {
 	private static final String	PAR_USERID	= "USER_ID";
+	private static final String	PAR_USERNAME	= "USER_NAME";
 
-	public static void setId(HttpServletRequest request, int id)
+	public static void setId(HttpServletRequest request, int id, String userName)
 	{
 		request.getSession().setAttribute(PAR_USERID, id);
+		request.getSession().setAttribute(PAR_USERNAME, userName);
 	}
 
 	public static int getId(HttpServletRequest request)
@@ -44,4 +46,9 @@ public class UserSessionUtils
 		}
 	}
 
+	public static String getUserName(HttpServletRequest request)
+	{
+		checkAuth(request);
+		return (String)request.getSession().getAttribute(PAR_USERNAME);
+	}
 }

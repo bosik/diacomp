@@ -52,7 +52,7 @@ public class AuthRestService
 		try
 		{
 			int id = authDao.login(login, pass, apiVersion);
-			UserSessionUtils.setId(req, id);
+			UserSessionUtils.setId(req, id, login);
 
 			String entity = ResponseBuilder.buildDone("Logged in OK");
 			return Response.ok(entity).build();
@@ -102,6 +102,29 @@ public class AuthRestService
 			UserSessionUtils.clearId(req);
 			String entity = ResponseBuilder.buildDone("Logged out OK");
 			return Response.ok(entity).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	@GET
+	@Path("current")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getCurrentUserInfo()
+	{
+		try
+		{
+			String userName = UserSessionUtils.getUserName(req);
+			String entity = ResponseBuilder.buildDone(userName);
+			return Response.ok(entity).build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
