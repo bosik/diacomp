@@ -105,7 +105,7 @@ public class ActivityFoodbase extends Activity
 			public void afterTextChanged(Editable s)
 			{
 				searchFilter = s.toString();
-				runSearch(searchFilter);
+				runSearch();
 			}
 		});
 		listFood = (ListView) findViewById(R.id.listFood);
@@ -172,15 +172,14 @@ public class ActivityFoodbase extends Activity
 		});
 
 		// Show data
-		runSearch("");
+		runSearch();
 	}
 
 	/**
 	 * Runs search process in the background thread, fills result list when done
 	 * 
-	 * @param key
 	 */
-	void runSearch(final String key_unused)
+	void runSearch()
 	{
 		final AsyncTask<String, Void, List<Versioned<NamedRelativeTagged>>> asyncTask = new AsyncTask<String, Void, List<Versioned<NamedRelativeTagged>>>()
 		{
@@ -423,7 +422,7 @@ public class ActivityFoodbase extends Activity
 							// TODO: localize
 							UIUtils.showTip(this, "Ошибка сохранения продукта");
 						}
-						runSearch(searchFilter);
+						runSearch();
 					}
 					break;
 				}
@@ -444,7 +443,7 @@ public class ActivityFoodbase extends Activity
 							// TODO: localize
 							UIUtils.showTip(this, "Ошибка создания продукта");
 						}
-						runSearch(searchFilter);
+						runSearch();
 					}
 					break;
 				}
