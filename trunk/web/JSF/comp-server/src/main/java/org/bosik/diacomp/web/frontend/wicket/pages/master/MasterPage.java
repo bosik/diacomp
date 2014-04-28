@@ -9,6 +9,8 @@ import org.bosik.diacomp.web.frontend.wicket.components.menu.MenuContent;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.MenuItem;
 import org.bosik.diacomp.web.frontend.wicket.pages.about.AboutPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
+import org.bosik.diacomp.web.frontend.wicket.pages.download.DownloadPage;
+import org.bosik.diacomp.web.frontend.wicket.pages.foodbase.FoodBasePage;
 
 public class MasterPage extends WebPage
 {
@@ -26,9 +28,9 @@ public class MasterPage extends WebPage
 	{
 		MenuContent menuContent = new MenuContent();
 		menuContent.getItems().add(new MenuItem("Diary", DiaryPage.class));
-		menuContent.getItems().add(new MenuItem("Base", DiaryPage.class)); // TODO
+		menuContent.getItems().add(new MenuItem("Base", FoodBasePage.class));
 		menuContent.getItems().add(new MenuItem("About", AboutPage.class));
-		menuContent.getItems().add(new MenuItem("Download", DiaryPage.class)); // TODO
+		menuContent.getItems().add(new MenuItem("Download", DownloadPage.class));
 		menuContent.setSelected(getClass());
 
 		return menuContent;
