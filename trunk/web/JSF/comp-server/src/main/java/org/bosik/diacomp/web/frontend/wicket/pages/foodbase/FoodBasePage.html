@@ -4,8 +4,23 @@
 <link type="text/css" rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-	<wicket:extend>
-		Content for food/dish base page
+	<wicket:extend xmlns:wicket="http://wicket.apache.org">
+		<table cellspacing="0" class="dataview">
+			<tr>
+				<th>Name</th>
+				<th>Prots</th>
+				<th>Fats</th>
+				<th>Carbs</th>
+				<th>Value</th>
+			</tr>
+			<tr wicket:id="view">
+				<td><span wicket:id="food.name"></span></td>
+				<td><span wicket:id="food.prots"></span></td>
+				<td><span wicket:id="food.fats"></span></td>
+				<td><span wicket:id="food.carbs"></span></td>
+				<td><span wicket:id="food.value"></span></td>
+			</tr>
+		</table>
 	</wicket:extend>
 </body>
 </html>
