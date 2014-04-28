@@ -6,14 +6,16 @@
 <body>
 	<wicket:extend>
 		<div class="welcome_info">
-				<b>Что такое Компенсация?</b><br/>
-				Компенсация — это бесплатный электронный дневник, предназначенный для больных сахарным диабетом I типа.<br/>
+				<b><wicket:message key="header1"></wicket:message></b><br/>
+				<wicket:message key="answer1"></wicket:message>
 				<br/>
-				<b>Для чего она нужна?</b><br/>
-				Программа позволяет вести дневник, записывая в него данные о значениях сахара крови (СК), дозах инсулина и всей съеденной пище. Главные отличия Компенсации от других программ — возможность комплексного анализа полученной информации; автоматическое вычисление и адаптация коэффициентов, расчёт необходимой дозы инсулина; балансирование рациона.<br/>
 				<br/>
-				<b>С чего начать?</b><br/>
-				Скачать дневник можно <b><a href="download.php">здесь</a></b>.
+				<b><wicket:message key="header2"></wicket:message></b><br/>
+				<wicket:message key="answer2"></wicket:message>
+				<br/>
+				<br/>
+				<b><wicket:message key="header3"></wicket:message></b><br/>
+				<wicket:message key="answer3"></wicket:message> <b><a wicket:id="downloadLink"><wicket:message key="answer3.here"></wicket:message></a></b>.
 			</div>
 	</wicket:extend>
 </body>
