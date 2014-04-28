@@ -5,4 +5,6 @@ public interface AuthService
 	void login(String login, String pass, int apiVersion);
 
 	void logout();
+
+	String getUserName();
 }

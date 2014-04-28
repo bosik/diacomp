@@ -6,6 +6,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.bosik.diacomp.core.services.AuthService;
+import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.frontend.features.auth.AuthRestClient;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
 
@@ -18,7 +19,16 @@ public class HeaderPanel extends Panel
 	public HeaderPanel(String id, String userName)
 	{
 		super(id);
-		add(new Label("infoLogin", userName));
+		String userName2;
+		try
+		{
+			userName2 = authService.getUserName();
+		}
+		catch (NotAuthorizedException e)
+		{
+			userName2 = "";
+		}
+		add(new Label("infoLogin", userName2));
 		//		add(new Link<Void>("linkLogout")
 		//		{
 		//			private static final long	serialVersionUID	= 1L;
