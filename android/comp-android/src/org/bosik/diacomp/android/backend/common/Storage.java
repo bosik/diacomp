@@ -11,6 +11,7 @@ import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
 import org.bosik.diacomp.android.backend.features.dishbase.DishBaseWebService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseWebService;
+import org.bosik.diacomp.android.backend.features.search.TagLocalService;
 import org.bosik.diacomp.android.frontend.activities.ActivityPreferences;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
@@ -20,6 +21,7 @@ import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import org.bosik.diacomp.core.services.search.RelevantIndexator;
+import org.bosik.diacomp.core.services.search.TagService;
 import org.bosik.diacomp.core.services.sync.SyncService;
 import org.bosik.diacomp.core.utils.Utils;
 import android.content.ContentResolver;
@@ -61,6 +63,7 @@ public class Storage
 
 	private static AnalyzeCore		analyzeCore;
 	public static KoofService		koofService;
+	public static TagService		tagService;
 
 	private static int				ANALYZE_DAYS_PERIOD	= 20;
 
@@ -129,6 +132,12 @@ public class Storage
 			koofService.setTimeRange(timeFrom, timeTo);
 		}
 
+		if (null == tagService)
+		{
+			Log.v(TAG, "Local tag service initialization...");
+			tagService = new TagLocalService(resolver);
+		}
+
 		ErrorHandler.init(webClient);
 
 		// this applies all preferences
@@ -145,11 +154,12 @@ public class Storage
 			@Override
 			protected Void doInBackground(Void... arg0)
 			{
-				syncDiary();
-				syncFoodbase();
-				syncDishbase();
+				// FIXME
+				// syncDiary();
+				// syncFoodbase();
+				// syncDishbase();
 				relevantIndexation();
-				analyzeKoofs();
+				// analyzeKoofs();
 
 				return null;
 			}
@@ -246,7 +256,7 @@ public class Storage
 	static void relevantIndexation()
 	{
 		long time = System.currentTimeMillis();
-		RelevantIndexator.indexate(localDiary, localFoodBase, localDishBase);
+		RelevantIndexator.indexate(tagService, localDiary, localFoodBase, localDishBase);
 		Log.v(TAG, String.format("Relevant indexation done in %d msec", System.currentTimeMillis() - time));
 	}
 

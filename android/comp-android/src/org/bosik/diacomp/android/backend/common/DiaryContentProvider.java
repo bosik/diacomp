@@ -71,6 +71,17 @@ public class DiaryContentProvider extends ContentProvider
 
 	private static final int		CODE_DISHBASE				= 3;
 
+	// ===================================== Tags table =====================================
+
+	private static final String		TABLE_TAG					= "tag";
+	public static final String		COLUMN_TAG_GUID				= "GUID";
+	public static final String		COLUMN_TAG_TAG				= "Tag";
+
+	public static final String		CONTENT_TAG_STRING			= SCHEME + AUTH + "/" + TABLE_TAG + "/";
+	public static final Uri			CONTENT_TAG_URI				= Uri.parse(CONTENT_TAG_STRING);
+
+	private static final int		CODE_TAG					= 4;
+
 	// ==================================================================================================
 
 	static
@@ -79,11 +90,7 @@ public class DiaryContentProvider extends ContentProvider
 		sURIMatcher.addURI(AUTH, TABLE_DIARY, CODE_DIARY);
 		sURIMatcher.addURI(AUTH, TABLE_FOODBASE, CODE_FOODBASE);
 		sURIMatcher.addURI(AUTH, TABLE_DISHBASE, CODE_DISHBASE);
-		// sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/", CODE_DIARY_ITEM);
-		// sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/date", CODE_DIARY_ITEM_DATE);
-		// sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/stamp", CODE_DIARY_ITEM_TIMESTAMP);
-		// sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/version", CODE_DIARY_ITEM_VERSION);
-		// sURIMatcher.addURI(AUTH, TABLE_DIARY + "/#/page", CODE_DIARY_ITEM_PAGE);
+		sURIMatcher.addURI(AUTH, TABLE_TAG, CODE_TAG);
 	}
 
 	private static final class MyDBHelper extends SQLiteOpenHelper
@@ -105,6 +112,7 @@ public class DiaryContentProvider extends ContentProvider
 			db.execSQL("DROP TABLE IF EXISTS " + TABLE_DIARY);
 			db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOODBASE);
 			db.execSQL("DROP TABLE IF EXISTS " + TABLE_DISHBASE);
+			db.execSQL("DROP TABLE IF EXISTS " + TABLE_TAG);
 
 			// @formatter:off
 
@@ -141,6 +149,13 @@ public class DiaryContentProvider extends ContentProvider
 					COLUMN_DISHBASE_NAMECACHE + " TEXT",
 					COLUMN_DISHBASE_DATA + " TEXT");
 			db.execSQL(SQL_CREATE_DISHBASE);
+			
+			// tag table
+			final String SQL_CREATE_TAG = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s)",
+					TABLE_TAG,
+					COLUMN_TAG_GUID + " TEXT PRIMARY KEY NOT NULL",
+					COLUMN_TAG_TAG + " INTEGER NOT NULL");
+			db.execSQL(SQL_CREATE_TAG);
 
 			// @formatter:on
 		}
@@ -177,6 +192,10 @@ public class DiaryContentProvider extends ContentProvider
 			case CODE_DISHBASE:
 			{
 				return "org.bosik.diacomp.dish";
+			}
+			case CODE_TAG:
+			{
+				return "org.bosik.diacomp.tag";
 			}
 			default:
 			{
@@ -283,6 +302,24 @@ public class DiaryContentProvider extends ContentProvider
 				break;
 			}
 
+			case CODE_TAG:
+			{
+				checkValues(values, COLUMN_TAG_GUID);
+				checkValues(values, COLUMN_TAG_TAG);
+
+				long rowId = db.insert(TABLE_TAG, null, values);
+
+				if (rowId > 0)
+				{
+					resultUri = ContentUris.withAppendedId(CONTENT_TAG_URI, rowId);
+				}
+				else
+				{
+					throw new SQLException("Failed to insert row into " + uri);
+				}
+				break;
+			}
+
 			default:
 			{
 				throw new UnknownUriException(uri);
@@ -314,6 +351,11 @@ public class DiaryContentProvider extends ContentProvider
 			case CODE_DISHBASE:
 			{
 				qb.setTables(TABLE_DISHBASE);
+				break;
+			}
+			case CODE_TAG:
+			{
+				qb.setTables(TABLE_TAG);
 				break;
 			}
 
@@ -349,6 +391,11 @@ public class DiaryContentProvider extends ContentProvider
 			case CODE_DISHBASE:
 			{
 				affectedCount = db.update(TABLE_DISHBASE, values, where, whereArgs);
+				break;
+			}
+			case CODE_TAG:
+			{
+				affectedCount = db.update(TABLE_TAG, values, where, whereArgs);
 				break;
 			}
 			default:
@@ -387,6 +434,11 @@ public class DiaryContentProvider extends ContentProvider
 			case CODE_DISHBASE:
 			{
 				count = db.delete(TABLE_FOODBASE, where, whereArgs);
+				break;
+			}
+			case CODE_TAG:
+			{
+				count = db.delete(TABLE_TAG, where, whereArgs);
 				break;
 			}
 			default:

@@ -3,7 +3,10 @@ package org.bosik.diacomp.android.frontend.activities;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.bosik.diacomp.android.R;
@@ -16,10 +19,13 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import org.bosik.diacomp.core.services.search.Sorter;
+import org.bosik.diacomp.core.services.search.Sorter.Sort;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -53,20 +59,21 @@ public class ActivityFoodbase extends Activity
 	}
 
 	// Widgets
-	private EditText						editFoodSearch;
-	private ListView						listFood;
-	private Button							buttonFoodCreate;
+	private EditText									editFoodSearch;
+	private ListView									listFood;
+	private Button										buttonFoodCreate;
 
 	// Data
-	final FoodBaseService					foodBaseService	= Storage.localFoodBase;
-	List<Versioned<NamedRelativeTagged>>	data;
-	private static final Sorter<FoodItem>	sorter			= new Sorter<FoodItem>();
-	Mode									mode;
-	String									searchFilter	= "";
+	final FoodBaseService								foodBaseService	= Storage.localFoodBase;
+	private Map<String, Integer>						tagInfo			= Storage.tagService.getTags();
+	List<Versioned<NamedRelativeTagged>>				data;
+	private static final Sorter<NamedRelativeTagged>	sorter			= new Sorter<NamedRelativeTagged>();
+	Mode												mode;
+	String												searchFilter	= "";
 
-	private long							lastSearchTime;
-	private boolean							searchScheduled	= false;
-	private static final long				SEARCH_DELAY	= 1000;
+	long												lastSearchTime;
+	boolean												searchScheduled	= false;
+	private static final long							SEARCH_DELAY	= 500;
 
 	// ===========================================================================
 
@@ -173,7 +180,7 @@ public class ActivityFoodbase extends Activity
 	 * 
 	 * @param key
 	 */
-	void runSearch(final String key)
+	void runSearch(final String key_unused)
 	{
 		final AsyncTask<String, Void, List<Versioned<NamedRelativeTagged>>> asyncTask = new AsyncTask<String, Void, List<Versioned<NamedRelativeTagged>>>()
 		{
@@ -186,7 +193,7 @@ public class ActivityFoodbase extends Activity
 			@Override
 			protected List<Versioned<NamedRelativeTagged>> doInBackground(String... params)
 			{
-				return request(params[0]);
+				return request(searchFilter/* params[0] */);
 			}
 
 			@Override
@@ -198,16 +205,25 @@ public class ActivityFoodbase extends Activity
 
 		TimerTask task = new TimerTask()
 		{
+			private final Handler	mHandler	= new Handler(Looper.getMainLooper());
+
 			@Override
 			public void run()
 			{
-				lastSearchTime = System.currentTimeMillis();
-				asyncTask.execute(key);
-				searchScheduled = false;
+				mHandler.post(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						lastSearchTime = System.currentTimeMillis();
+						asyncTask.execute(/* key */);
+						searchScheduled = false;
+					}
+				});
 			}
 		};
 
-		if (System.currentTimeMillis() - lastSearchTime >= SEARCH_DELAY)
+		if ((System.currentTimeMillis() - lastSearchTime) >= SEARCH_DELAY)
 		{
 			task.run();
 		}
@@ -216,7 +232,7 @@ public class ActivityFoodbase extends Activity
 			if (!searchScheduled)
 			{
 				searchScheduled = true;
-				new Timer().schedule(task, 1000);
+				new Timer().schedule(task, SEARCH_DELAY - (System.currentTimeMillis() - lastSearchTime));
 			}
 		}
 	}
@@ -251,19 +267,60 @@ public class ActivityFoodbase extends Activity
 				temp = foodBaseService.findAny(filter);
 			}
 
+			// indexing
+			Map<String, Versioned<FoodItem>> foodBaseIndex = new HashMap<String, Versioned<FoodItem>>();
+			for (Versioned<FoodItem> item : temp)
+			{
+				foodBaseIndex.put(item.getId(), item);
+			}
+
 			Log.d(TAG, String.format("Searched for '%s', founded items: %d", filter, temp.size()));
 
 			// sorter.sort(temp, mode == Mode.EDIT ? Sorter.Sort.ALPHABET : Sorter.Sort.RELEVANT);
-			sorter.sort(temp, Sorter.Sort.RELEVANT);
+			// sorter.sort(temp, Sorter.Sort.RELEVANT);
 
 			// TODO: check the performance
 			List<Versioned<NamedRelativeTagged>> result = new ArrayList<Versioned<NamedRelativeTagged>>();
-			for (Versioned<FoodItem> item : temp)
-			{
-				// Log.d(TAG, item.getData().getName() + " [" + item.getData().getTag() + "]");
 
-				result.add(new Versioned<NamedRelativeTagged>(item));
+			for (Entry<String, Integer> tag : tagInfo.entrySet())
+			{
+				Versioned<FoodItem> food = foodBaseIndex.get(tag.getKey());
+				if (food != null)
+				{
+					Versioned<NamedRelativeTagged> item = new Versioned<NamedRelativeTagged>(food);
+					item.getData().setTag(tag.getValue());
+					result.add(item);
+				}
 			}
+
+			sorter.sort(result, Sort.RELEVANT);
+
+			final int LIMIT = 100;
+
+			if (result.size() > LIMIT)
+			{
+				result = result.subList(0, LIMIT);
+			}
+			else if (result.size() < LIMIT)
+			{
+				for (Versioned<FoodItem> item : temp)
+				{
+					if (tagInfo.get(item.getId()) == null)
+					{
+						result.add(new Versioned<NamedRelativeTagged>(item));
+						if (result.size() == LIMIT)
+						{
+							break;
+						}
+					}
+				}
+			}
+
+			// for (Versioned<FoodItem> item : temp)
+			// {
+			// // Log.d(TAG, item.getData().getName() + " [" + item.getData().getTag() + "]");
+			// result.add(new Versioned<NamedRelativeTagged>(item));
+			// }
 
 			tick = System.currentTimeMillis() - tick;
 			Log.i(TAG, String.format("Request handled in %d msec, founded items: %d", tick, result.size()));

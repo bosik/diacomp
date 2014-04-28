@@ -12,86 +12,145 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
+import org.bosik.diacomp.core.utils.Profiler;
+import org.bosik.diacomp.core.utils.Utils;
 
 public class RelevantIndexator
 {
-	public static void indexate(DiaryService diary, FoodBaseService foodBase, DishBaseService dishBase)
+	public static void indexate(TagService tagService, DiaryService diary, FoodBaseService foodBase,
+			DishBaseService dishBase)
 	{
-		// /**/long time = System.currentTimeMillis();
+		Profiler p = new Profiler();
 
-		// constructing dates list
+		// constructing dates range
 		final long PERIOD = 30; // days
-		final long MSEC_PER_DAY = 86400000;
-		final Date max = new Date(new Date().getTime() + MSEC_PER_DAY);
-		final Date min = new Date(max.getTime() - (PERIOD * MSEC_PER_DAY));
+		final Date max = new Date(new Date().getTime() + Utils.MsecPerDay);
+		final Date min = new Date(max.getTime() - (PERIOD * Utils.MsecPerDay));
 
+		System.out.println("Inits: " + p.sinceLastCheck());
+
+		// search for base items
+
+		// T.C.: O(|foodItems|) FIXME
 		List<Versioned<FoodItem>> foodItems = foodBase.findAll(false);
+		// T.C.: O(|dishItems|) FIXME
 		List<Versioned<DishItem>> dishItems = dishBase.findAll(false);
 
-		// clear tags
-		clearTags(foodItems);
-		clearTags(dishItems);
+		System.out.println("Search for base items: " + p.sinceLastCheck());
 
-		// process
+		// clear tags
+		tagService.reset();
+
+		// T.C.: O(|foodItems|)
+		//clearTags(foodItems);
+		// T.C.: O(|dishItems|)
+		//clearTags(dishItems);
+
+		System.out.println("Clearing tags: " + p.sinceLastCheck());
+
+		// search for diary items
+
+		// T.C.: const (let M)
 		List<Versioned<DiaryRecord>> items = diary.findBetween(min, max, false);
+
+		System.out.println("Search for diary items: " + p.sinceLastCheck());
+
+		// T.C.: O(M * (|foodbase| + |dishbase|))
+
 		for (Versioned<DiaryRecord> item : items)
 		{
 			DiaryRecord rec = item.getData();
 			if (rec.getClass().equals(MealRecord.class))
 			{
-				MealRecord meal = (MealRecord) rec;
+				MealRecord meal = (MealRecord)rec;
 				for (int j = 0; j < meal.count(); j++)
 				{
 					FoodMassed food = meal.get(j);
 					int delta = f(rec.getTime(), min, max);
-					process(food.getName(), delta, foodItems, dishItems);
+					process(tagService, food.getName(), delta, foodItems, dishItems);
 				}
 			}
 		}
+		System.out.println("Processing items: " + p.sinceLastCheck());
 
-		foodBase.save(foodItems);
-		dishBase.save(dishItems);
+		// T.C.: O(|foodItems|), NOTE: very slow JSON serialization
+		//foodBase.save(foodItems);
 
-		// /**/Log.v(TAG, String.format("Indexated in %d msec", System.currentTimeMillis() - time));
+		// T.C.: O(|dishItems|), NOTE: very slow JSON serialization
+		//dishBase.save(dishItems);
+
+		System.out.println("Saving tags: " + p.sinceLastCheck());
+		System.out.println("Total indexing time: " + p.sinceStart());
 	}
 
+	/**
+	 * Time complexity: O(1); NOTE: float operations
+	 * 
+	 * @param curDate
+	 * @param minDate
+	 * @param maxDate
+	 * @return
+	 */
 	private static int f(Date curDate, Date minDate, Date maxDate)
 	{
-		int delta = (int) ((100 * (curDate.getTime() - minDate.getTime())) / (maxDate.getTime() - minDate.getTime()));
+		int delta = (int)((100 * (curDate.getTime() - minDate.getTime())) / (maxDate.getTime() - minDate.getTime()));
 		return delta * delta;
 	}
 
-	private static <T extends NamedRelativeTagged> void clearTags(List<Versioned<T>> list)
-	{
-		// List<Versioned<T>> list = base.findAll(false);
-		// for (Versioned<T> item : list)
-		// {
-		// item.getData().setTag(0);
-		// }
-		// base.save(list);
+	//	/**
+	//	 * Time complexity: O(|list|)
+	//	 *
+	//	 * @param list
+	//	 */
+	//	private static <T extends NamedRelativeTagged> void clearTags(List<Versioned<T>> list)
+	//	{
+	//		// List<Versioned<T>> list = base.findAll(false);
+	//		// for (Versioned<T> item : list)
+	//		// {
+	//		// item.getData().setTag(0);
+	//		// }
+	//		// base.save(list);
+	//
+	//		for (Versioned<T> item : list)
+	//		{
+	//			item.getData().setTag(0);
+	//		}
+	//	}
 
-		for (Versioned<T> item : list)
-		{
-			item.getData().setTag(0);
-		}
-	}
-
-	private static <T extends NamedRelativeTagged> void process(String name, int delta,
+	/**
+	 * Time complexity: O(|foodbase| + |dishbase|)
+	 * 
+	 * @param name
+	 * @param delta
+	 * @param foodBase
+	 * @param dishBase
+	 */
+	private static <T extends NamedRelativeTagged> void process(TagService tagService, String name, int delta,
 			List<Versioned<FoodItem>> foodBase, List<Versioned<DishItem>> dishBase)
 	{
-		if (process(name, delta, foodBase))
-			return;
-		if (process(name, delta, dishBase))
-			return;
+		if (process(tagService, name, delta, foodBase)) return;
+		if (process(tagService, name, delta, dishBase)) return;
 	}
 
-	private static <T extends NamedRelativeTagged> boolean process(String name, int delta, List<Versioned<T>> items)
+	/**
+	 * Time complexity: O(|items|)
+	 * 
+	 * @param name
+	 * @param delta
+	 * @param items
+	 * @return
+	 */
+	private static <T extends NamedRelativeTagged> boolean process(TagService tagService, String name, int delta,
+			List<Versioned<T>> items)
 	{
+		// TODO: binary search?
+
 		for (Versioned<T> x : items)
 		{
 			if (x.getData().getName().equals(name))
 			{
-				x.getData().setTag(x.getData().getTag() + delta);
+				//x.getData().setTag(x.getData().getTag() + delta);
+				tagService.incTag(x.getId(), delta);
 				return true;
 			}
 		}
