@@ -14,7 +14,16 @@ import org.bosik.diacomp.core.test.fakes.mocks.MockVersionedConverter;
 public class FakeFoodbaseDAO implements FoodbaseDAO
 {
 	private static Mock<Versioned<FoodItem>>	mock		= new MockVersionedConverter<FoodItem>(new MockFoodItem());
-	private static List<Versioned<FoodItem>>	samples		= mock.getSamples();
+	private static List<Versioned<FoodItem>>	samples;
+	{
+		samples = new ArrayList<Versioned<FoodItem>>();
+		for (int i = 0; i < 100; i++)
+		{
+			Versioned<FoodItem> sample = mock.getSample();
+			sample.setDeleted(false);
+			samples.add(sample);
+		}
+	}
 
 	private static void sort(List<Versioned<FoodItem>> items)
 	{
