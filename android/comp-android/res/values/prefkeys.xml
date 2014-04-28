@@ -4,7 +4,7 @@
 
     <string name="pref_Account_Server_Key">pref_Account_Server_Key</string>
     <!--<string name="pref_Account_Server_Default">http://diacomp.16mb.com/</string> -->
-    <string name="pref_Account_Server_Default">192.168.0.104</string>
+    <string name="pref_Account_Server_Default">192.168.0.103:8090/comp-server/</string>
 
     <string name="pref_Account_Username_Key">pref_Account_Username_Key</string>
     <!-- <string name="pref_Account_Username_Default"></string> -->
