@@ -39,14 +39,17 @@ public class MockFood implements Mock<Food>
 				"Мороженое эскимо пломбир ванильный в молочном шоколаде \"Олимпиада\"", "Сахар",
 				"Сметана \"Вкуснотеево\" 20%", "Хлеб \"Бородино\" нарезка", "Яйцо"));
 
-		double relProts = r.nextInt(1000) / 10;
-		double relFats = r.nextInt(1000) / 10;
-		double relCarbs = r.nextInt(1000) / 10;
+		double relProts = r.nextInt(400) / 10;
+		double relFats = r.nextInt(400) / 10;
+		double relCarbs = r.nextInt(400) / 10;
 
 		double relSumm = relProts + relFats + relCarbs;
-		relProts = Utils.round2(relProts / relSumm * 100);
-		relFats = Utils.round2(relFats / relSumm * 100);
-		relCarbs = Utils.round2(relCarbs / relSumm * 100);
+		if (relSumm > 100)
+		{
+			relProts = Utils.round2(relProts / relSumm * 100);
+			relFats = Utils.round2(relFats / relSumm * 100);
+			relCarbs = Utils.round2(relCarbs / relSumm * 100);
+		}
 
 		double relValue = Utils.round2((relProts * Utils.KCAL_PER_PROTS) + (relFats * Utils.KCAL_PER_FATS)
 				+ (relCarbs * Utils.KCAL_PER_CARBS));
