@@ -10,14 +10,14 @@ import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 public class MockFoodItem implements Mock<FoodItem>
 {
 	private static final Mock<Food>	mockFood	= new MockFood();
-	private Random					r			= new Random();
+	private final Random			r			= new Random();
 
 	@Override
 	public List<FoodItem> getSamples()
 	{
 		List<FoodItem> samples = new ArrayList<FoodItem>();
 
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 50; i++)
 		{
 			samples.add(getSample());
 		}
