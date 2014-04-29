@@ -1,6 +1,7 @@
 package org.bosik.diacomp.web.frontend.common;
 
 import java.io.Serializable;
+import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
@@ -8,6 +9,7 @@ import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.web.backend.common.Config;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
@@ -56,6 +58,18 @@ public class RestClient implements Serializable
 				throw new DeprecatedAPIException(resp.getResponse());
 			default: // case ResponseBuilder.CODE_FAIL:
 				throw new CommonServiceException("#" + resp.getCode() + ": " + resp.getResponse());
+		}
+	}
+
+	protected void handleUniformInterfaceException(UniformInterfaceException e) throws CommonServiceException
+	{
+		if (e.getResponse().getStatus() == Status.UNAUTHORIZED.getStatusCode())
+		{
+			throw new NotAuthorizedException(e);
+		}
+		else
+		{
+			throw new CommonServiceException(e);
 		}
 	}
 }

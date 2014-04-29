@@ -12,7 +12,6 @@ import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
-import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.utils.Utils;
@@ -23,7 +22,9 @@ import com.sun.jersey.api.representation.Form;
 
 public class DishbaseRestClient extends AuthorizedRestClient implements DishBaseService
 {
-	private final Serializer<Versioned<DishItem>>	serializer	= new SerializerDishItem();
+	private static final long						serialVersionUID	= 1L;
+
+	private final Serializer<Versioned<DishItem>>	serializer			= new SerializerDishItem();
 
 	public DishbaseRestClient(AuthService authService, String login, String pass, int apiVersion)
 	{
@@ -72,7 +73,8 @@ public class DishbaseRestClient extends AuthorizedRestClient implements DishBase
 		}
 		catch (UniformInterfaceException e)
 		{
-			throw new CommonServiceException(e);
+			handleUniformInterfaceException(e);
+			return null; // previous method will throw exception anyway
 		}
 	}
 
@@ -92,7 +94,8 @@ public class DishbaseRestClient extends AuthorizedRestClient implements DishBase
 		}
 		catch (UniformInterfaceException e)
 		{
-			throw new CommonServiceException(e);
+			handleUniformInterfaceException(e);
+			return null; // previous method will throw exception anyway
 		}
 	}
 
@@ -118,7 +121,8 @@ public class DishbaseRestClient extends AuthorizedRestClient implements DishBase
 		}
 		catch (UniformInterfaceException e)
 		{
-			throw new CommonServiceException(e);
+			handleUniformInterfaceException(e);
+			return null; // previous method will throw exception anyway
 		}
 	}
 
@@ -138,7 +142,8 @@ public class DishbaseRestClient extends AuthorizedRestClient implements DishBase
 		}
 		catch (UniformInterfaceException e)
 		{
-			throw new CommonServiceException(e);
+			handleUniformInterfaceException(e);
+			return null; // previous method will throw exception anyway
 		}
 	}
 
@@ -158,7 +163,7 @@ public class DishbaseRestClient extends AuthorizedRestClient implements DishBase
 		catch (UniformInterfaceException e)
 		{
 			System.err.println(e.getResponse().getEntity(String.class));
-			throw new CommonServiceException("URL: " + resource.getURI(), e);
+			handleUniformInterfaceException(e);
 		}
 	}
 }
