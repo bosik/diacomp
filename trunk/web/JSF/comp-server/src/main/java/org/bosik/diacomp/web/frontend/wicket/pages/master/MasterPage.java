@@ -27,9 +27,9 @@ public class MasterPage extends WebPage
 	protected MenuContent getMenu()
 	{
 		MenuContent menuContent = new MenuContent();
+		menuContent.getItems().add(new MenuItem("About", AboutPage.class));
 		menuContent.getItems().add(new MenuItem("Diary", DiaryPage.class));
 		menuContent.getItems().add(new MenuItem("Base", FoodBasePage.class));
-		menuContent.getItems().add(new MenuItem("About", AboutPage.class));
 		menuContent.getItems().add(new MenuItem("Download", DownloadPage.class));
 		menuContent.setSelected(getClass());
 
