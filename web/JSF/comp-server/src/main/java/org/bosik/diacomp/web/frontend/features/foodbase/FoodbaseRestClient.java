@@ -11,7 +11,6 @@ import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.AuthService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
-import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
@@ -23,7 +22,9 @@ import com.sun.jersey.api.representation.Form;
 
 public class FoodbaseRestClient extends AuthorizedRestClient implements FoodBaseService
 {
-	private final Serializer<Versioned<FoodItem>>	serializer	= new SerializerFoodItem();
+	private static final long						serialVersionUID	= 1L;
+
+	private final Serializer<Versioned<FoodItem>>	serializer			= new SerializerFoodItem();
 
 	public FoodbaseRestClient(AuthService authService, String login, String pass, int apiVersion)
 	{
@@ -72,7 +73,8 @@ public class FoodbaseRestClient extends AuthorizedRestClient implements FoodBase
 		}
 		catch (UniformInterfaceException e)
 		{
-			throw new CommonServiceException(e);
+			handleUniformInterfaceException(e);
+			return null; // previous method will throw exception anyway
 		}
 	}
 
@@ -92,7 +94,8 @@ public class FoodbaseRestClient extends AuthorizedRestClient implements FoodBase
 		}
 		catch (UniformInterfaceException e)
 		{
-			throw new CommonServiceException(e);
+			handleUniformInterfaceException(e);
+			return null; // previous method will throw exception anyway
 		}
 	}
 
@@ -118,7 +121,8 @@ public class FoodbaseRestClient extends AuthorizedRestClient implements FoodBase
 		}
 		catch (UniformInterfaceException e)
 		{
-			throw new CommonServiceException(e);
+			handleUniformInterfaceException(e);
+			return null; // previous method will throw exception anyway
 		}
 	}
 
@@ -138,7 +142,8 @@ public class FoodbaseRestClient extends AuthorizedRestClient implements FoodBase
 		}
 		catch (UniformInterfaceException e)
 		{
-			throw new CommonServiceException(e);
+			handleUniformInterfaceException(e);
+			return null; // previous method will throw exception anyway
 		}
 	}
 
@@ -158,7 +163,7 @@ public class FoodbaseRestClient extends AuthorizedRestClient implements FoodBase
 		catch (UniformInterfaceException e)
 		{
 			System.err.println(e.getResponse().getEntity(String.class));
-			throw new CommonServiceException("URL: " + resource.getURI(), e);
+			handleUniformInterfaceException(e);
 		}
 	}
 }

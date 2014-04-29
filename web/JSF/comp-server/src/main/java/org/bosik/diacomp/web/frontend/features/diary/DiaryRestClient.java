@@ -22,7 +22,9 @@ import com.sun.jersey.api.representation.Form;
 
 public class DiaryRestClient extends AuthorizedRestClient implements DiaryService
 {
-	private static Serializer<Versioned<DiaryRecord>>	serializer	= new SerializerDiaryRecord();
+	private static final long							serialVersionUID	= 1L;
+
+	private static Serializer<Versioned<DiaryRecord>>	serializer			= new SerializerDiaryRecord();
 
 	public DiaryRestClient(AuthService authService, String login, String pass, int apiVersion)
 	{
@@ -44,7 +46,8 @@ public class DiaryRestClient extends AuthorizedRestClient implements DiaryServic
 		}
 		catch (UniformInterfaceException e)
 		{
-			throw new CommonServiceException(e);
+			handleUniformInterfaceException(e);
+			return null; // previous method will throw exception anyway
 		}
 	}
 
@@ -64,7 +67,8 @@ public class DiaryRestClient extends AuthorizedRestClient implements DiaryServic
 		}
 		catch (UniformInterfaceException e)
 		{
-			throw new CommonServiceException(e);
+			handleUniformInterfaceException(e);
+			return null; // previous method will throw exception anyway
 		}
 	}
 
@@ -88,7 +92,8 @@ public class DiaryRestClient extends AuthorizedRestClient implements DiaryServic
 		}
 		catch (UniformInterfaceException e)
 		{
-			throw new CommonServiceException(e);
+			handleUniformInterfaceException(e);
+			return null; // previous method will throw exception anyway
 		}
 	}
 
@@ -108,7 +113,7 @@ public class DiaryRestClient extends AuthorizedRestClient implements DiaryServic
 		catch (UniformInterfaceException e)
 		{
 			System.err.println(e.getResponse().getEntity(String.class));
-			throw new CommonServiceException("URL: " + resource.getURI(), e);
+			handleUniformInterfaceException(e);
 		}
 	}
 
