@@ -22,7 +22,7 @@ public class HeaderPanel extends Panel
 		String userName2;
 		try
 		{
-			userName2 = authService.getUserName();
+			userName2 = "demouser@gmail.com";//authService.getUserName();
 		}
 		catch (NotAuthorizedException e)
 		{
