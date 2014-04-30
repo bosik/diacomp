@@ -11,11 +11,11 @@ File_8=SourceModule,'D:\Мои программы\Compensation\src\common\DiaryDatabase.pas'
 File_9=SourceModule,'D:\Мои программы\Compensation\src\common\DiaryCore.pas',0,1,1,16,18,0,0
 
 [Modules]
-Module0=D:\Мои программы\Compensation\MathAn.dpr
+Module0=D:\Мои программы\Compensation\win32\development\MathAn.dpr
 Count=1
 EditWindowCount=1
 
-[D:\Мои программы\Compensation\MathAn.dpr]
+[D:\Мои программы\Compensation\win32\development\MathAn.dpr]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -34,28 +34,30 @@ Create=1
 Visible=1
 State=2
 Left=201
-Top=147
-Width=1302
+Top=144
+Width=1719
 Height=682
 MaxLeft=-4
-MaxTop=117
+MaxTop=114
 MaxWidth=1928
-MaxHeight=933
+MaxHeight=936
 ClientWidth=1920
-ClientHeight=901
-LeftPanelSize=140
-LeftPanelClients=CodeExplorer@EditWindow0
-LeftPanelData=000004000000000000000000000000000000000000000000000100000000000000000C000000436F64654578706C6F726572FFFFFFFF
-RightPanelSize=0
+ClientHeight=904
+LeftPanelSize=238
+LeftPanelClients=CodeExplorer@EditWindow0,ProjectManager
+LeftPanelData=0000040000000000300300000000000001EE0000000000000001000000003C0100000C000000436F64654578706C6F7265720100000000300300001200000050726F6A6563744D616E61676572466F726DFFFFFFFF
+RightPanelSize=282
+RightPanelClients=ToDo List
+RightPanelData=000004000000000000000000000000000000000000000000000100000000000000000E000000546F446F4C69737457696E646F77FFFFFFFF
 BottomPanelSize=85
 BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
 
 [View0]
-Module=D:\Мои программы\Compensation\MathAn.dpr
-CursorX=53
-CursorY=17
-TopLine=7
+Module=D:\Мои программы\Compensation\win32\development\MathAn.dpr
+CursorX=1
+CursorY=1
+TopLine=1
 LeftCol=1
 
 [Watches]
@@ -75,8 +77,8 @@ Left=0
 Top=0
 Width=1920
 Height=122
-MaxLeft=-1
-MaxTop=-1
+MaxLeft=-4
+MaxTop=-4
 MaxWidth=1928
 MaxHeight=122
 ClientWidth=1920
@@ -84,18 +86,18 @@ ClientHeight=90
 
 [ProjectManager]
 Create=1
-Visible=0
+Visible=1
 State=0
-Left=369
-Top=372
-Width=537
-Height=371
+Left=0
+Top=328
+Width=238
+Height=488
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=529
-ClientHeight=343
+ClientWidth=238
+ClientHeight=488
 TBDockHeight=371
-LRDockWidth=537
+LRDockWidth=238
 Dockable=1
 
 [AlignmentPalette]
@@ -148,20 +150,44 @@ TBDockHeight=320
 LRDockWidth=190
 Dockable=1
 
+[ToDo List]
+Create=1
+Visible=1
+State=0
+Left=0
+Top=12
+Width=282
+Height=804
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=282
+ClientHeight=804
+TBDockHeight=250
+LRDockWidth=282
+Dockable=1
+Column0Width=200
+Column1Width=30
+Column2Width=100
+Column3Width=70
+Column4Width=70
+SortOrder=4
+ShowHints=1
+ShowChecked=1
+
 [CodeExplorer@EditWindow0]
 Create=1
 Visible=1
 State=0
 Left=0
 Top=12
-Width=140
-Height=801
+Width=238
+Height=300
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=140
-ClientHeight=801
+ClientWidth=238
+ClientHeight=300
 TBDockHeight=305
-LRDockWidth=140
+LRDockWidth=238
 Dockable=1
 
 [MessageView@EditWindow0]
