@@ -1,13 +1,12 @@
 package org.bosik.diacomp.web.frontend.wicket.components.header;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.bosik.diacomp.core.services.AuthService;
-import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.frontend.features.auth.AuthRestClient;
+import org.bosik.diacomp.web.frontend.wicket.pages.about.AboutPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
 
 public class HeaderPanel extends Panel
@@ -16,42 +15,22 @@ public class HeaderPanel extends Panel
 
 	AuthService					authService			= new AuthRestClient();
 
-	public HeaderPanel(String id, String userName)
+	public HeaderPanel(String id, String userName_unused)
 	{
 		super(id);
-		String userName2;
-		try
-		{
-			userName2 = "demouser@gmail.com";//authService.getUserName();
-		}
-		catch (NotAuthorizedException e)
-		{
-			userName2 = "";
-		}
-		add(new Label("infoLogin", userName2));
-		//		add(new Link<Void>("linkLogout")
-		//		{
-		//			private static final long	serialVersionUID	= 1L;
-		//
-		//			@Override
-		//			public void onClick()
-		//			{
-		//				authService.logout();
-		//				// TODO: setResponsePage(LoginPage.class);
-		//			}
-		//		});
+		String userName = authService.getUserName();
 
-		add(new BookmarkablePageLink<Void>("linkHome", DiaryPage.class));
-		add(new AjaxFallbackLink<Void>("linkLogout")
+		if (userName == null)
 		{
-			private static final long	serialVersionUID	= 1L;
-
-			@Override
-			public void onClick(AjaxRequestTarget target)
-			{
-				authService.logout();
-				// TODO: setResponsePage(LoginPage.class);
-			}
-		});
+			add(new ExternalLink("linkLogout", "j_spring_security_logout").setVisible(false));
+			add(new BookmarkablePageLink<Void>("linkHome", AboutPage.class));
+			add(new Label("infoLogin"));
+		}
+		else
+		{
+			add(new ExternalLink("linkLogout", "j_spring_security_logout"));
+			add(new BookmarkablePageLink<Void>("linkHome", DiaryPage.class));
+			add(new Label("infoLogin", userName));
+		}
 	}
 }

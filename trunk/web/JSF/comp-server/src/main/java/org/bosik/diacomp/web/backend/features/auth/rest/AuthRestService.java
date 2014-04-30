@@ -23,9 +23,9 @@ import org.bosik.diacomp.web.backend.features.auth.function.MySQLAuthDAO;
 public class AuthRestService
 {
 	@Context
-	HttpServletRequest	req;
+	HttpServletRequest		req;
 
-	private final AuthDAO		authDao	= new MySQLAuthDAO();
+	private final AuthDAO	authDao	= new MySQLAuthDAO();
 
 	@POST
 	@Path("login")
@@ -102,29 +102,6 @@ public class AuthRestService
 			UserSessionUtils.clearId(req);
 			String entity = ResponseBuilder.buildDone("Logged out OK");
 			return Response.ok(entity).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
-	}
-
-	@GET
-	@Path("current")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getCurrentUserInfo()
-	{
-		try
-		{
-			String userName = UserSessionUtils.getUserName(req);
-			String entity = ResponseBuilder.buildDone(userName);
-			return Response.ok(entity).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
