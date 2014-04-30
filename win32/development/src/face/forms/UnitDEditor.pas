@@ -61,9 +61,9 @@ type
     procedure SmallDesigner(ShowEditors: TEditorsList);
   end;
 
-  function ShowEditor(var Time: integer; var Value: string;
+  function ShowEditor(var Time_: TDateTime; var Value: string;
     const Params: TDialogParams): boolean; overload;
-  function ShowEditor(var Time: integer; var Value: string; var Finger: integer;
+  function ShowEditor(var Time_: TDateTime; var Value: string; var Finger: integer;
     const Params: TDialogParams): boolean; overload;
 
 
@@ -74,12 +74,13 @@ implementation
 { TFormEditor }
 
 {==============================================================================}
-function ShowEditor(var Time: integer; var Value: string; var Finger: integer;
+function ShowEditor(var Time_: TDateTime; var Value: string; var Finger: integer;
   const Params: TDialogParams): boolean;
 {==============================================================================}
 var
   Dialog: TFormEditor;
   i: integer;
+  Minutes: integer;
 begin
   Dialog := TFormEditor.Create(nil);
 
@@ -98,7 +99,7 @@ begin
   end;
 
   Dialog.LabelTime.Caption := Params.CaptionTime;
-  Dialog.EditTime.Text := TimeToStr(Time);
+  Dialog.EditTime.Text := DiaryRoutines.TimeToMStr(Time_);
   Dialog.LabelValue.Caption := Params.CaptionValue;
   Dialog.EditValue.Text := Value;
   Dialog.LabelFinger.Caption := Params.CaptionFinger;
@@ -138,7 +139,8 @@ begin
 
   if Dialog.OK then
   begin
-    TryStrToTime(Dialog.EditTime.Text, Time);
+    TryStrToTime(Dialog.EditTime.Text, Minutes);
+    Time_ := Trunc(Time_) + Minutes / MinPerDay;
     Value := Dialog.EditValue.Text;
     Finger := Dialog.ComboFinger.ItemIndex;
     Result := True;
@@ -151,7 +153,7 @@ begin
 end;
 
 {==============================================================================}
-function ShowEditor(var Time: integer; var Value: string;
+function ShowEditor(var Time_: TDateTime; var Value: string;
   const Params: TDialogParams): boolean;
 {==============================================================================}
 var
@@ -160,7 +162,7 @@ begin
   f := -1;
   if Params.ShowEditors = edTimeValueFinger then
     ShowMessage('Некорректный вызов ShowEditor');
-  Result := ShowEditor(Time, Value, f, Params);
+  Result := ShowEditor(Time_, Value, f, Params);
 end;
 
 { TFormEditor }

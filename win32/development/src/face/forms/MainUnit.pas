@@ -1672,9 +1672,9 @@ end;
 procedure TForm1.TableFoodBaseKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 {==============================================================================}
-var
+{var
   j: integer;
-  c: char;
+  c: char;}
 begin
   if Key = vk_Return then
     EditFood(ListFood.ItemIndex) else
@@ -2608,7 +2608,7 @@ end;
 { ============================== –≈ƒ¿ “Œ–€ ================================ }
 
 {==============================================================================}
-function ShowBloodEditor(var Time: integer; var AValue: real; var AFinger: integer;
+function ShowBloodEditor(var Time: TDateTime; var AValue: real; var AFinger: integer;
   New: boolean; Focus: TFocusMode): boolean;
 {==============================================================================}
 var
@@ -2637,7 +2637,7 @@ begin
   if New then
   begin
     StrValue := '';
-    Time := GetCurrentMinutes;
+    Time := Now();//GetCurrentMinutes;
   end else
     StrValue := FloatToStr(AValue);
 
@@ -2650,7 +2650,7 @@ begin
 end;
 
 {==============================================================================}
-function ShowInsEditor(var Time: integer; var AValue: real; New: boolean;
+function ShowInsEditor(var Time: TDateTime; var AValue: real; New: boolean;
   Focus: TFocusMode): boolean;
 {==============================================================================}
 var
@@ -2678,10 +2678,10 @@ begin
   if New then
   begin
     StrValue := '';
-    Time := GetCurrentMinutes;
+    Time := Now();//GetCurrentMinutes;
     // TODO: hack :)
-    if (Time mod 2) = 1 then
-      dec(Time);
+    //if (Time mod 2) = 1 then
+    //  dec(Time);
   end else
     StrValue := FloatToStr(AValue);
 
@@ -2694,8 +2694,7 @@ begin
 end;
 
 {==============================================================================}
-function ShowMealEditor(var Time: integer; {var AValue: real;} New: boolean
-  {;Focus: TFocusMode}): boolean;
+function ShowMealEditor(var Time: TDateTime; New: boolean): boolean;
 {==============================================================================}
 var
   P: TDialogParams;
@@ -2721,7 +2720,7 @@ begin
   if New then
   begin
     StrValue := '';
-    Time := GetCurrentMinutes;
+    Time := Now();//GetCurrentMinutes;
   end else
     StrValue := '';//FloatToStr(AValue);
 
@@ -2734,7 +2733,7 @@ begin
 end;
 
 {==============================================================================}
-function ShowNoteEditor(var Time: integer; var AValue: string; New: boolean;
+function ShowNoteEditor(var Time: TDateTime; var AValue: string; New: boolean;
   Focus: TFocusMode): boolean;
 {==============================================================================}
 var
@@ -2761,7 +2760,7 @@ begin
   if New then
   begin
     StrValue := '';
-    Time := GetCurrentMinutes;
+    Time := Now();//GetCurrentMinutes;
   end else
     StrValue := AValue;
 
@@ -2777,7 +2776,7 @@ end;
 function TForm1.ClickBlood(New: boolean; Focus: TFocusMode): integer;
 {==============================================================================}
 var
-  ATime: integer;
+  ATime: TDateTime;
   AValue: real;
   AFinger: integer;
 
@@ -2812,7 +2811,7 @@ begin
     begin
       BeginUpdate;
 
-      Time   := ATime;
+      SetNativeTime(ATime);
       Value  := AValue;
       Finger := AFinger;
 
@@ -2826,7 +2825,7 @@ end;
 function TForm1.ClickIns(New: boolean; Focus: TFocusMode): integer;
 {==============================================================================}
 var
-  ATime: integer;
+  ATime: TDateTime;
   AValue: real;
   InsRecord: TInsRecord;
 begin
@@ -2850,7 +2849,7 @@ begin
     with InsRecord do
     begin
       BeginUpdate;
-      Time  := ATime;
+      SetNativeTime(ATime);
       Value := AValue;
       EndUpdate;
     end;
@@ -2862,7 +2861,7 @@ end;
 function TForm1.ClickMeal(New: boolean): integer;
 {==============================================================================}
 var
-  ATime: integer;
+  ATime: TDateTime;
   Meal: TMealRecord;
 begin
   Log(DEBUG, 'TForm1.ClickMeal');
@@ -2883,7 +2882,7 @@ begin
     with Meal do
     begin
       //BeginUpdate;
-      Time := ATime;
+      SetNativeTime(ATime);
       //EndUpdate; - Á‡˜ÂÏ?
       UpdateTimeLeft;
       ComboDiaryNew.SetFocus;
@@ -2897,7 +2896,7 @@ function TForm1.ClickNote(New: boolean; Focus: TFocusMode): integer;
 {==============================================================================}
 var
   Note: TNoteRecord;
-  ATime: integer;
+  ATime: TDateTime;
   AValue: string;
 begin
   Log(DEBUG, 'TForm1.ClickNote');
@@ -2914,14 +2913,14 @@ begin
     // TODO: use TRec instead of scope of field-variables
     Note := TNoteRecord(DiaryView.SelectedRecord);
 
-    ATime := Note.Time;
+    ATime := Note.GetNativeTime;
     AValue := Note.Text;
     if ShowNoteEditor(ATime, AValue, New, Focus) then
     begin
       with Note do
       begin
         BeginUpdate;
-        Time := ATime;
+        SetNativeTime(ATime);
         Text := AValue;
         EndUpdate;
       end;

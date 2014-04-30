@@ -82,10 +82,12 @@ type
   function LocalToUTC(Time: TDateTime): TDateTime;
   function UTCToLocal(Time: TDateTime): TDateTime;
   function GetCurrentTime: string;
-  function GetCurrentMinutes: integer;
-  function TimeToStr(Time: integer; Sign: char): string; overload;
-  function TimeToStr(Time: integer): string; overload;
-  function TimeToStrColon(Time: integer): string;
+  function GetCurrentMinutes: integer; deprecated;
+  function ExtractMinutes(Time: TDateTime): integer;
+  function MTimeToStr(Time: integer; Sign: char): string; overload;
+  function MTimeToStr(Time: integer): string; overload;
+  function MTimeToStrColon(Time: integer): string;
+  function TimeToMStr(Time: TDateTime): string; overload;
   function TimeSaveSecToStr(Time: integer): string;
   function TimeTrncSecToStr(Time: integer): string;
 
@@ -123,6 +125,9 @@ type
 
 var
   Decimal: char;
+
+var
+  STD_DATETIME_FMT: TFormatSettings;
 
 const
   SecPerMin     = 60; // TODO: хочу капс-константы. Все.
@@ -440,7 +445,7 @@ begin
 end;
 
 {==============================================================================}
-function TimeToStr(Time: integer; Sign: char): string;
+function MTimeToStr(Time: integer; Sign: char): string;
 {==============================================================================}
 begin
   {if time<600 then Result := '0' else Result := '';
@@ -451,17 +456,27 @@ begin
 end;
 
 {==============================================================================}
-function TimeToStr(Time: integer): string;
+function MTimeToStr(Time: integer): string;
 {==============================================================================}
 begin
-  Result := TimeToStr(Time, '.');
+  Result := MTimeToStr(Time, '.');
 end;
 
 {==============================================================================}
-function TimeToStrColon(Time: integer): string;
+function MTimeToStrColon(Time: integer): string;
 {==============================================================================}
 begin
-  Result := TimeToStr(Time, ':');
+  Result := MTimeToStr(Time, ':');
+end;
+
+{==============================================================================}
+function TimeToMStr(Time: TDateTime): string; overload;
+{==============================================================================}
+var
+  Minutes: integer;
+begin
+  Minutes := ExtractMinutes(Time);
+  Result := MTimeToStr(Minutes);
 end;
 
 {==============================================================================}
@@ -599,7 +614,15 @@ begin
   Result := h * 60 + m;
 end;
 
-(*{==============================================================================}
+{==============================================================================}
+function ExtractMinutes(Time: TDateTime): integer;
+{==============================================================================}
+begin
+  Result := Round(Time * MinPerDay) mod MinPerDay;
+end;
+
+(*
+{==============================================================================}
 function FormatDate(Date: TDate): string;
 {==============================================================================}
 const
@@ -903,4 +926,11 @@ initialization
 
   GetLocaleFormatSettings(GetThreadLocale, Temp);
   Decimal := Temp.DecimalSeparator;
+
+  // 1992-04-02 09:45:00
+  GetLocaleFormatSettings(GetThreadLocale, STD_DATETIME_FMT);
+  STD_DATETIME_FMT.DateSeparator := '-';
+  STD_DATETIME_FMT.TimeSeparator := ':';
+  STD_DATETIME_FMT.ShortDateFormat := 'yyyy-mm-dd';
+  STD_DATETIME_FMT.LongTimeFormat := 'hh:nn:ss';
 end.

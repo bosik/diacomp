@@ -1016,7 +1016,7 @@ var
 
       DrawPanelExt(
         FBitMap.Canvas,
-        DiaryRoutines.TimeToStr(time),
+        DiaryRoutines.MTimeToStrColon(time),
         Recs,
         Border,
         CurTop,

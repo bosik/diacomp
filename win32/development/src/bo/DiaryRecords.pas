@@ -17,15 +17,14 @@ type
   // #entity
   TCustomRecord = class
   private
-    FTime: integer; // в мин
+    FTime: TDateTime;
 
     FSilentMode: boolean;           // transient
     FSilentlyModified: boolean;     // transient
     FOnChange: TEventRecordChanged; // transient
 
     procedure NotifyPage;
-    procedure SetTime(Value: integer);
-    class function CheckTime(TestTime: integer): boolean;
+    function GetTime(): integer;
   public
     procedure BeginUpdate;
     procedure CopyFrom(Org: TCustomRecord); virtual; deprecated;
@@ -34,7 +33,10 @@ type
     procedure EndUpdate;
     function RecType: TClassCustomRecord;
 
-    property Time: integer read FTime write SetTime;
+    procedure SetNativeTime(Value: TDateTime);
+    property GetNativeTime: TDateTime read FTime;
+
+    property Time: integer read GetTime;
     property OnChange: TEventRecordChanged read FOnChange write FOnChange;
   end;
 
@@ -52,7 +54,7 @@ type
     class function CheckFinger(TestFinger: integer): boolean;
     class function CheckValue(const TestValue: real): boolean;
   public
-    constructor Create(ATime: integer = 0; AValue: real = -1; AFinger: integer = -1);
+    constructor Create(ATime: TDateTime = 0; AValue: real = -1; AFinger: integer = -1);
     procedure CopyFrom(Org: TCustomRecord); override; deprecated;
     property Finger: integer read FFinger write SetFinger;
     property Value: real read FValue write SetValue;
@@ -68,7 +70,7 @@ type
     class function CheckValue(const Value: real): boolean;
   public
     //procedure CopyFrom(Org: TCustomRecord); override; deprecated;
-    constructor Create(ATime: integer = 0; AValue: real = -1);
+    constructor Create(ATime: TDateTime = 0; AValue: real = -1);
     property Value: real read FValue write SetValue;
   end;
 
@@ -86,7 +88,7 @@ type
   public
     function Add(Food: TFoodMassed): integer;
     // procedure CopyFrom(Org: TCustomRecord); override; deprecated;
-    constructor Create(ATime: integer = 0; AShortMeal: boolean = False);
+    constructor Create(ATime: TDateTime = 0; AShortMeal: boolean = False);
     procedure Clear;
     destructor Destroy; override;
     procedure Exchange(Index1, Index2: integer);
@@ -110,7 +112,7 @@ type
     procedure SetText(const Value: string);
   public
     // procedure CopyFrom(Org: TCustomRecord); override; deprecated;
-    constructor Create(ATime: integer = 0; AText: string = '');
+    constructor Create(ATime: TDateTime = 0; AText: string = '');
     property Text: string read FText write SetText;
   end;
 
@@ -126,13 +128,6 @@ begin
 end;
 
 {==============================================================================}
-class function TCustomRecord.CheckTime(TestTime: integer): boolean;
-{==============================================================================}
-begin
-  Result := (TestTime >= 0) and (TestTime < SecPerDay);
-end;
-
-{==============================================================================}
 procedure TCustomRecord.CopyFrom(Org: TCustomRecord);
 {==============================================================================}
 begin
@@ -141,7 +136,7 @@ begin
   if (not (Org is Self.ClassType)) then
     raise Exception.Create('Unsupported org type');
 
-  Self.SetTime(Org.Time);
+  Self.SetNativeTime(Org.Time);
 
   // NO EVENT COPY HERE, DON'T KNOW IF IT'S OK...
 end;
@@ -179,6 +174,13 @@ begin
 end;
 
 {==============================================================================}
+function TCustomRecord.GetTime: integer;
+{==============================================================================}
+begin
+  Result := Round(FTime * MinPerDay) mod MinPerDay;
+end;
+
+{==============================================================================}
 procedure TCustomRecord.NotifyPage;
 {==============================================================================}
 begin
@@ -202,10 +204,11 @@ begin
 end;
 
 {==============================================================================}
-procedure TCustomRecord.SetTime(Value: integer);
+procedure TCustomRecord.SetNativeTime(Value: TDateTime);
 {==============================================================================}
 begin
-  if (FTime <> Value) and (CheckTime(Value)) then
+  if (FTime <> Value) //and (CheckTime(Value))
+  then
   begin
     FTime := Value;
     NotifyPage;
@@ -242,13 +245,13 @@ begin
 end;
 
 {==============================================================================}
-constructor TBloodRecord.Create(ATime: integer = 0; AValue: real = -1; AFinger: integer = -1);
+constructor TBloodRecord.Create(ATime: TDateTime = 0; AValue: real = -1; AFinger: integer = -1);
 {==============================================================================}
 begin
   inherited Create;
 
   FPostPrand := False;
-  SetTime(ATime);
+  SetNativeTime(ATime);
   SetValue(AValue);
   SetFinger(AFinger);
 end;
@@ -285,11 +288,11 @@ begin
 end;
 
 {==============================================================================}
-constructor TInsRecord.Create(ATime: integer; AValue: real);
+constructor TInsRecord.Create(ATime: TDateTime; AValue: real);
 {==============================================================================}
 begin
   inherited Create;
-  SetTime(ATime);
+  SetNativeTime(ATime);
   SetValue(AValue);
 end;
 
@@ -346,12 +349,12 @@ begin
 end;
 
 {==============================================================================}
-constructor TMealRecord.Create(ATime: integer; AShortMeal: boolean);
+constructor TMealRecord.Create(ATime: TDateTime; AShortMeal: boolean);
 {==============================================================================}
 begin
   inherited Create;
   ShortMeal := AShortMeal;
-  SetTime(ATime);
+  SetNativeTime(ATime);
 end;
 
 {==============================================================================}
@@ -448,11 +451,11 @@ end;
 { TNoteRecord }
 
 {==============================================================================}
-constructor TNoteRecord.Create(ATime: integer; AText: string);
+constructor TNoteRecord.Create(ATime: TDateTime; AText: string);
 {==============================================================================}
 begin
   inherited Create;
-  SetTime(ATime);
+  SetNativeTime(ATime);
   Text := AText;   
 end;
 
