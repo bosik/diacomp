@@ -738,9 +738,7 @@ var
   end;
 
 var
-  Meal: TMealRecord;
-  s: TStringList;
-  d, i, k: integer;
+  d, i: integer;
 
   PrevBlood: TBloodRecord;
   PrevDate: TDate;

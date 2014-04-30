@@ -514,7 +514,7 @@ begin
   try
     for i := 0 to High(List) do
       s.Add(
-        TimeToStr(List[i].Time, ':') + #9 +
+        MTimeToStrColon(List[i].Time) + #9 +
         RealToStr(List[i].Carbs) + #9 +
         RealToStr(List[i].Prots) + #9 +
         RealToStr(List[i].Ins) + #9 +

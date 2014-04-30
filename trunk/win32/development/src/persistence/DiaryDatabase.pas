@@ -284,7 +284,7 @@ begin
       for j := 0 to Page.Count - 1 do
       begin
         RecNode := PageNode.AddChild('rec');
-        RecNode.Attributes['time']  := TimeToStr(Page[j].Time/MinPerDay);
+        RecNode.Attributes['time']  := DateTimeToStr(i + Page[j].Time/MinPerDay);
 
         if (Page[j].RecType = TBloodRecord) then
         begin

@@ -540,7 +540,6 @@ procedure TFormDish.AddFood;
   end;
 
 var
-  N: integer;
   Mass: extended;
   Temp: TFoodMassed;
 

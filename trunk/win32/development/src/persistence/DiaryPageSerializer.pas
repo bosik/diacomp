@@ -133,7 +133,7 @@ var
   i,k: integer;
   CurStr: string;
   TempStr: string;
-  TempTime: integer;
+  TempTime: TDateTime;
   TempValue: real;
   TempFinger: integer;
   TempShort: boolean;
@@ -210,8 +210,8 @@ begin
           end;
           '%':
           begin
-            TempTime := StrToTimeQuick(Copy(CurStr, 2, 5));
-            TempStr := Copy(CurStr, 8, Length(CurStr) - 7);
+            TempTime := StrToDateTime(Copy(CurStr, 2, 19), STD_DATETIME_FMT);
+            TempStr := Copy(CurStr, 22, Length(CurStr) - 22 + 1);
             Add(TNoteRecord.Create(TempTime, TempStr));
           end;
           {else
@@ -281,6 +281,7 @@ class procedure TPageSerializer.WriteBody(Page: TDiaryPage; S: TStrings);
 {==============================================================================}
 var
   j, n: integer;
+  tmp: string;
 begin
   if (S = nil) then
     raise Exception.Create('TDiaryPage.WriteTo(): поток для записи не может быть nil');
@@ -293,7 +294,7 @@ begin
       begin
         // TODO: use Format() instead
         s.Add(
-          '*' + TimeToStr(Recs[j].Time) +
+          '*' + DateTimeToStr(Recs[j].Time, STD_DATETIME_FMT) +
           ' ' + FloatToStr(TBloodRecord(Recs[j]).Value) +
           '|' + IntToStr(TBloodRecord(Recs[j]).Finger)
         )
@@ -302,7 +303,7 @@ begin
       if (Recs[j].RecType = TInsRecord) then
       begin
         s.Add(
-          '-' + TimeToStr(Recs[j].Time) +
+          '-' + DateTimeToStr(Recs[j].Time, STD_DATETIME_FMT) +
           ' ' + FloatToStr(TInsRecord(Recs[j]).Value)
         );
       end else
@@ -310,9 +311,9 @@ begin
       if (Recs[j].RecType = TMealRecord) then
       begin
         if TMealRecord(Recs[j]).ShortMeal then
-          s.Add(' ' + TimeToStr(Recs[j].Time) + 's')
+          s.Add(' ' + DateTimeToStr(Recs[j].Time, STD_DATETIME_FMT) + 's')
         else
-          s.Add(' ' + TimeToStr(Recs[j].Time));
+          s.Add(' ' + DateTimeToStr(Recs[j].Time, STD_DATETIME_FMT));
 
         for n := 0 to TMealRecord(Recs[j]).Count - 1 do
           s.Add('#' + TMealRecord(Recs[j])[n].Write);
@@ -320,9 +321,10 @@ begin
 
       if (Recs[j].RecType = TNoteRecord) then
       begin
+        tmp := '%' + DateTimeToStr(Recs[j].GetNativeTime, STD_DATETIME_FMT) +
+          ' ' + TNoteRecord(Recs[j]).Text;
         s.Add(
-          '%' + TimeToStr(Recs[j].Time) +
-          ' ' + TNoteRecord(Recs[j]).Text
+          tmp
         );
       end;
     end;
