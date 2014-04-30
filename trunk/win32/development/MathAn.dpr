@@ -875,7 +875,7 @@ exports
   //Analyze_BruteforceQP name AnalyzeFunctionName;
 
 begin
-  PrepareTimeWeights(10);
+  PrepareTimeWeights(40);
 
   { ИДЕИ
     1. Вычислять коэффициенты не с нуля, а последовательными приближениями
