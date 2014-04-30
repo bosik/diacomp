@@ -15,13 +15,22 @@ http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 		/> <user name="user" password="user" authorities="ROLE_USER" /> </user-service> 
 		</authentication-provider> </authentication-manager> -->
 
-	<http access-denied-page="/error-501.jsp">
-		<intercept-url pattern="/index*" access="ROLE_USER,ROLE_ANONYMOUS" />
-		<intercept-url pattern="/add*" access="ROLE_USER" />
-		<intercept-url pattern="/delete/*" access="ROLE_ADMIN" />
-		<form-login login-page="/login.jsp" default-target-url="/index"
-			authentication-failure-url="/login.jsp?error=true" />
-		<logout logout-url="/logout" logout-success-url="/index" />
+	<http access-denied-page="/login">
+		<intercept-url pattern="/login" access="ROLE_USER,ROLE_ANONYMOUS" />
+		<intercept-url pattern="/about" access="ROLE_USER,ROLE_ANONYMOUS" />
+		<intercept-url pattern="/css/*" access="ROLE_USER,ROLE_ANONYMOUS" />
+		<intercept-url pattern="/img/*" access="ROLE_USER,ROLE_ANONYMOUS" />
+		<intercept-url pattern="/js/*" access="ROLE_USER,ROLE_ANONYMOUS" />
+		<intercept-url pattern="/api/auth/*" access="ROLE_USER,ROLE_ANONYMOUS" />
+		<intercept-url pattern="/api/info*" access="ROLE_USER,ROLE_ANONYMOUS" />
+		
+		<!-- <intercept-url pattern="/api/" access="ROLE_USER" /> -->		
+		<intercept-url pattern="/**" access="ROLE_USER" />
+
+		<form-login login-page="/login" default-target-url="/diary"
+			authentication-failure-url="/login/?error=true" />
+		<logout logout-success-url="/about" />
+
 		<anonymous username="guest" granted-authority="ROLE_ANONYMOUS" />
 		<remember-me />
 	</http>

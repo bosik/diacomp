@@ -6,19 +6,22 @@ import org.bosik.diacomp.web.frontend.wicket.pages.about.AboutPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.download.DownloadPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.foodbase.FoodBasePage;
+import org.bosik.diacomp.web.frontend.wicket.pages.login.LoginPage;
 
 public class WicketApplication extends WebApplication
 {
 	@Override
 	public Class<? extends WebPage> getHomePage()
 	{
-		return DiaryPage.class;
+		return AboutPage.class;
 	}
 
 	@Override
 	public void init()
 	{
 		super.init();
+
+		mountPage("/login", LoginPage.class);
 
 		mountPage("/diary", DiaryPage.class);
 		mountPage("/base", FoodBasePage.class);

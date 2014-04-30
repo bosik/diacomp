@@ -3,6 +3,8 @@ package org.bosik.diacomp.web.frontend.wicket.pages.master;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.bosik.diacomp.core.services.AuthService;
+import org.bosik.diacomp.web.frontend.features.auth.AuthRestClient;
 import org.bosik.diacomp.web.frontend.wicket.components.header.HeaderPanel;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.Menu;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.MenuContent;
@@ -11,10 +13,13 @@ import org.bosik.diacomp.web.frontend.wicket.pages.about.AboutPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.download.DownloadPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.foodbase.FoodBasePage;
+import org.bosik.diacomp.web.frontend.wicket.pages.login.LoginPage;
 
 public class MasterPage extends WebPage
 {
 	private static final long	serialVersionUID	= 1L;
+
+	AuthService					authService			= new AuthRestClient();
 
 	public MasterPage(final PageParameters parameters)
 	{
@@ -27,10 +32,22 @@ public class MasterPage extends WebPage
 	protected MenuContent getMenu()
 	{
 		MenuContent menuContent = new MenuContent();
-		menuContent.getItems().add(new MenuItem("About", AboutPage.class));
-		menuContent.getItems().add(new MenuItem("Diary", DiaryPage.class));
-		menuContent.getItems().add(new MenuItem("Base", FoodBasePage.class));
-		menuContent.getItems().add(new MenuItem("Download", DownloadPage.class));
+
+		// TODO: localize captions
+
+		if (authService.getUserName() == null)
+		{
+			menuContent.getItems().add(new MenuItem("About", AboutPage.class));
+			menuContent.getItems().add(new MenuItem("Login", LoginPage.class));
+		}
+		else
+		{
+			menuContent.getItems().add(new MenuItem("About", AboutPage.class));
+			menuContent.getItems().add(new MenuItem("Diary", DiaryPage.class));
+			menuContent.getItems().add(new MenuItem("Base", FoodBasePage.class));
+			menuContent.getItems().add(new MenuItem("Download", DownloadPage.class));
+		}
+
 		menuContent.setSelected(getClass());
 
 		return menuContent;
