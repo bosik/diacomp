@@ -10,8 +10,9 @@ uses
   DiaryPage,
   DiaryRecords,
   BusinessObjects,
-  DiaryRoutines // TDate
-  ;
+  DiaryRoutines, // TDate
+  Bases,
+  uLkJSON;
 
 type
   TStringsArray = array of TStrings;
@@ -69,6 +70,65 @@ end;
 {==============================================================================}
 class procedure TPageSerializer.ReadBody(S: TStrings; Page: TDiaryPage);
 {==============================================================================}
+
+  {function ParseBlood(json: TlkJSONobject): TBloodRecord;
+  begin
+    Result := TBloodRecord.Create();
+    Result.Time := StrToDateTime((json.Field['time'] as TlkJSONstring).Value);
+    Result.Value := (json.Field['value'] as TlkJSONnumber).Value;
+    Result.Finger := (json.Field['finger'] as TlkJSONnumber).Value;
+  end;
+
+  function ParseIns(json: TlkJSONobject): TInsRecord;
+  begin
+    Result := TInsRecord.Create();
+    Result.Time := StrToDateTime((json.Field['time'] as TlkJSONstring).Value);
+    Result.Value := (json.Field['value'] as TlkJSONnumber).Value;
+  end;
+
+  function ParseNote(json: TlkJSONobject): TNoteRecord;
+  begin
+    Result := TNoteRecord.Create();
+    Result.Time := StrToDateTime((json.Field['time'] as TlkJSONstring).Value);
+    Result.Text := (json.Field['text'] as TlkJSONnumber).Value;
+  end;
+
+  function ParseRecord(const S: string): TVersioned;
+  var
+    json: TlkJSONobject;
+    ID: string;
+    Stamp: TDateTime;
+    Deleted: boolean;
+    Version: integer;
+    Data: TlkJSONobject;
+    RecType: string;
+    Time: TDateTime;
+  begin
+    json := TlkJSON.ParseText(S) as TlkJSONobject;
+
+    if Assigned(json) then
+    begin
+      Result := TVersioned.Create;
+
+      Result.ID := (json.Field['id'] as TlkJSONstring).Value;
+      Result.TimeStamp := StrToDateTime((json.Field['stamp'] as TlkJSONstring).Value);
+      Result.Deleted := (json.Field['deleted'] as TlkJSONstring).Value = 'true';
+      Result.Version := (json.Field['version'] as TlkJSONnumber).Value;
+
+      Data := (json.Field['data'] as TlkJSONobject).Value;
+      RecType := (Data.Field['type'] as TlkJSONstring);
+
+      if (RecType = 'blood') then Result.Data := ParseBlood(data) else
+      if (RecType = 'ins')   then Result.Data := ParseIns(data) else
+      if (RecType = 'meal')  then Result.Data := ParseMeal(data) else
+      if (RecType = 'note')  then Result.Data := ParseNote(data) else
+                                  Result.Data := nil;
+    end else
+    begin
+      raise EFormatException.Create('Invalid JSON: ' + S);
+    end;
+  end; }
+
 var
   i,k: integer;
   CurStr: string;
@@ -102,6 +162,14 @@ begin
       begin
         CurStr := S[i];
         case CurStr[1] of
+
+          {
+          * read line
+          * parse it as json
+          * check the record type
+          * add it
+          }
+
           '*':
           begin
             TempTime := StrToTimeQuick(Copy(CurStr,2,5));
@@ -109,24 +177,24 @@ begin
             k := pos('|', curStr);
             if k > 0 then
             begin
-              TempValue := StrToFloat(CheckDot( Copy(CurStr, 8, k-8) ));
-              TempFinger := StrToInt( Copy(CurStr, k+1, Length(CurStr)-k) );
+              TempValue := StrToFloat(CheckDot( Copy(CurStr, 8, k - 8) ));
+              TempFinger := StrToInt( Copy(CurStr, k + 1, Length(CurStr) - k) );
             end else
             begin
-              TempValue := StrToFloat(CheckDot(Copy(CurStr,8,Length(CurStr)-7)));
+              TempValue := StrToFloat(CheckDot(Copy(CurStr, 8, Length(CurStr) - 7)));
               TempFinger := -1;
             end;                                                            
             Add(TBloodRecord.Create(TempTime, TempValue, TempFinger));
           end;
           '-':
           begin
-            TempTime := StrToTimeQuick(Copy(CurStr,2,5));
-            TempValue := StrToFloat(CheckDot(Copy(CurStr,8,Length(CurStr)-7)));
+            TempTime := StrToTimeQuick(Copy(CurStr, 2, 5));
+            TempValue := StrToFloat(CheckDot(Copy(CurStr, 8, Length(CurStr) - 7)));
             Add(TInsRecord.Create(TempTime, TempValue));
           end;
           ' ':
           begin
-            TempTime := StrToTimeQuick(Copy(CurStr,2,5));
+            TempTime := StrToTimeQuick(Copy(CurStr, 2, 5));
             TempShort := (CurStr[Length(CurStr)] = 's');
             Meal := TMealRecord.Create(TempTime, TempShort); // save it for further modifications
             Add(Meal);
