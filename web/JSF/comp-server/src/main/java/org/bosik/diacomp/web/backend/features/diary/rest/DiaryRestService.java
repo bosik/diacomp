@@ -17,8 +17,8 @@ import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
+import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
-import org.bosik.diacomp.core.persistence.serializers.SerializerDiaryRecord;
 import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
@@ -26,61 +26,20 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
 import org.bosik.diacomp.web.backend.features.diary.function.DiaryDAO;
-import org.bosik.diacomp.web.backend.features.diary.function.MySQLDiaryDAO;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.bosik.diacomp.web.backend.features.diary.function.FakeDiaryDAO;
 
 @Path("diary/")
 public class DiaryRestService
 {
 	@Context
-	HttpServletRequest										req;
+	HttpServletRequest									req;
 
-	private final DiaryDAO									diaryService				= new MySQLDiaryDAO();
+	private final DiaryDAO								diaryService	= new FakeDiaryDAO();
 
-	private static final Parser<String>						parserString				= new Parser<String>()
-																						{
-																							// As-is
-																							// "parser"
-
-																							@Override
-																							public String read(
-																									JSONObject json)
-																									throws JSONException
-																							{
-																								if (json == null)
-																								{
-																									return null;
-																								}
-																								else
-																								{
-																									return json
-																											.toString();
-																								}
-																							}
-
-																							@Override
-																							public JSONObject write(
-																									String object)
-																									throws JSONException
-																							{
-																								if (object == null)
-																								{
-																									return null;
-																								}
-																								else
-																								{
-																									return new JSONObject(
-																											object);
-																								}
-																							}
-																						};
-	private static final Parser<Versioned<String>>			parserVersionedString		= new ParserVersioned<String>(
-																								parserString);
-	private static final Serializer<Versioned<String>>		serializerVersionedString	= new SerializerAdapter<Versioned<String>>(
-																								parserVersionedString);
-
-	private static final Serializer<Versioned<DiaryRecord>>	serializerVersionedRecord	= new SerializerDiaryRecord();
+	private static Parser<DiaryRecord>					parser			= new ParserDiaryRecord();
+	private static Parser<Versioned<DiaryRecord>>		parserVersioned	= new ParserVersioned<DiaryRecord>(parser);
+	private static Serializer<Versioned<DiaryRecord>>	serializer		= new SerializerAdapter<Versioned<DiaryRecord>>(
+																				parserVersioned);
 
 	@GET
 	@Path("guid/{guid}")
@@ -90,11 +49,11 @@ public class DiaryRestService
 		try
 		{
 			int userId = UserSessionUtils.getId(req);
-			Versioned<String> item = diaryService.findByGuid(userId, parGuid);
+			Versioned<DiaryRecord> item = diaryService.findByGuid(userId, parGuid);
 
 			if (item != null)
 			{
-				String s = serializerVersionedString.write(item);
+				String s = serializer.write(item);
 				String response = ResponseBuilder.buildDone(s);
 				return Response.ok(response).build();
 			}
@@ -121,8 +80,8 @@ public class DiaryRestService
 		{
 			int userId = UserSessionUtils.getId(req);
 			Date since = Utils.parseTimeUTC(parTime);
-			List<Versioned<String>> items = diaryService.findChanged(userId, since);
-			String s = serializerVersionedString.writeAll(items);
+			List<Versioned<DiaryRecord>> items = diaryService.findChanged(userId, since);
+			String s = serializer.writeAll(items);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
 		}
@@ -147,8 +106,8 @@ public class DiaryRestService
 			Date endTime = Utils.parseTimeUTC(parEndTime);
 			boolean includeRemoved = Boolean.valueOf(parShowRem);
 
-			List<Versioned<String>> items = diaryService.findPeriod(userId, startTime, endTime, includeRemoved);
-			String s = serializerVersionedString.writeAll(items);
+			List<Versioned<DiaryRecord>> items = diaryService.findPeriod(userId, startTime, endTime, includeRemoved);
+			String s = serializer.writeAll(items);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
 		}
@@ -166,7 +125,7 @@ public class DiaryRestService
 		try
 		{
 			int userId = UserSessionUtils.getId(req);
-			List<Versioned<DiaryRecord>> items = serializerVersionedRecord.readAll(parItems);
+			List<Versioned<DiaryRecord>> items = serializer.readAll(parItems);
 			diaryService.post(userId, items);
 
 			String response = ResponseBuilder.buildDone("Saved OK");

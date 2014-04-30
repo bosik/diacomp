@@ -19,15 +19,13 @@ import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 
 public class MySQLDiaryDAO implements DiaryDAO
 {
-	private final MySQLAccess				db			= new MySQLAccess();
-	private final Parser<DiaryRecord>		parser		= new ParserDiaryRecord();
-	private final Serializer<DiaryRecord>	serializer	= new SerializerAdapter<DiaryRecord>(parser);
+	private final MySQLAccess						db			= new MySQLAccess();
+	private static final Parser<DiaryRecord>		parser		= new ParserDiaryRecord();
+	private static final Serializer<DiaryRecord>	serializer	= new SerializerAdapter<DiaryRecord>(parser);
 
-	private static List<Versioned<String>> parseDiaryRecords(ResultSet resultSet) throws SQLException
+	private static List<Versioned<DiaryRecord>> parseDiaryRecords(ResultSet resultSet) throws SQLException
 	{
-		// Don't parse to DiaryPage: we have to convert it into String in REST anyway
-
-		List<Versioned<String>> result = new LinkedList<Versioned<String>>();
+		List<Versioned<DiaryRecord>> result = new LinkedList<Versioned<DiaryRecord>>();
 
 		while (resultSet.next())
 		{
@@ -37,13 +35,12 @@ public class MySQLDiaryDAO implements DiaryDAO
 			boolean deleted = (resultSet.getInt(MySQLAccess.COLUMN_DIARY_DELETED) == 1);
 			String content = resultSet.getString(MySQLAccess.COLUMN_DIARY_CONTENT);
 
-			Versioned<String> item = new Versioned<String>();
+			Versioned<DiaryRecord> item = new Versioned<DiaryRecord>();
 			item.setId(id);
 			item.setTimeStamp(timeStamp);
 			item.setVersion(version);
 			item.setDeleted(deleted);
-			// item.setData(serializer.read(content));
-			item.setData(content);
+			item.setData(serializer.read(content));
 
 			result.add(item);
 		}
@@ -52,7 +49,27 @@ public class MySQLDiaryDAO implements DiaryDAO
 	}
 
 	@Override
-	public Versioned<String> findByGuid(int userId, String guid)
+	public void delete(int userId, String id)
+	{
+		try
+		{
+			SortedMap<String, String> set = new TreeMap<String, String>();
+			set.put(MySQLAccess.COLUMN_DIARY_DELETED, Utils.formatBooleanInt(true));
+
+			SortedMap<String, String> where = new TreeMap<String, String>();
+			where.put(MySQLAccess.COLUMN_DIARY_GUID, id);
+			where.put(MySQLAccess.COLUMN_DIARY_USER, String.valueOf(userId));
+
+			db.update(MySQLAccess.TABLE_DIARY, set, where);
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public Versioned<DiaryRecord> findByGuid(int userId, String guid)
 	{
 		try
 		{
@@ -60,7 +77,7 @@ public class MySQLDiaryDAO implements DiaryDAO
 					MySQLAccess.COLUMN_DIARY_GUID, guid);
 
 			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause, null);
-			List<Versioned<String>> result = parseDiaryRecords(set);
+			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
 		}
@@ -71,7 +88,7 @@ public class MySQLDiaryDAO implements DiaryDAO
 	}
 
 	@Override
-	public List<Versioned<String>> findChanged(int userId, Date time)
+	public List<Versioned<DiaryRecord>> findChanged(int userId, Date time)
 	{
 		try
 		{
@@ -81,7 +98,7 @@ public class MySQLDiaryDAO implements DiaryDAO
 			String order = MySQLAccess.COLUMN_DIARY_TIMECACHE;
 
 			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause, order);
-			List<Versioned<String>> result = parseDiaryRecords(set);
+			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
 			set.close();
 			return result;
 		}
@@ -92,7 +109,7 @@ public class MySQLDiaryDAO implements DiaryDAO
 	}
 
 	@Override
-	public List<Versioned<String>> findPeriod(int userId, Date startTime, Date endTime, boolean includeRemoved)
+	public List<Versioned<DiaryRecord>> findPeriod(int userId, Date startTime, Date endTime, boolean includeRemoved)
 	{
 		try
 		{
@@ -110,7 +127,7 @@ public class MySQLDiaryDAO implements DiaryDAO
 
 			// System.out.println("Requesting SQL clause: " + clause);
 			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause, order);
-			List<Versioned<String>> result = parseDiaryRecords(set);
+			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
 			set.close();
 			return result;
 		}
