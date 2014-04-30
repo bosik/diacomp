@@ -44,7 +44,7 @@ public class DishBaseRestService
 		{
 			int userId = UserSessionUtils.getId(req);
 
-			Versioned<DishItem> item = dishbaseService.findByGuid(userId, parGuid);
+			Versioned<DishItem> item = dishbaseService.findById(userId, parGuid);
 
 			if (item != null)
 			{

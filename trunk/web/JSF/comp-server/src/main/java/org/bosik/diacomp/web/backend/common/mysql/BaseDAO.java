@@ -8,16 +8,16 @@ public interface BaseDAO<T>
 {
 	/**
 	 * Returns all items
-	 *
-	 * @param showRemoved
+	 * 
+	 * @param includeRemoved
 	 *            If removed items should be presented in the result
 	 * @return
 	 */
-	List<Versioned<T>> findAll(int userId, boolean showRemoved);
+	List<Versioned<T>> findAll(int userId, boolean includeRemoved);
 
 	/**
 	 * Searches for all items modified after specified time (both deleted and non-deleted)
-	 *
+	 * 
 	 * @param userId
 	 * @param since
 	 * @return
@@ -26,27 +26,44 @@ public interface BaseDAO<T>
 
 	/**
 	 * Searches the item with the specified GUID
-	 *
+	 * 
 	 * @param userId
 	 * @param guids
 	 * @return
 	 */
-	Versioned<T> findByGuid(int userId, String guid);
+	Versioned<T> findById(int userId, String guid);
 
 	/**
-	 * Persists the specified items in the database
-	 *
+	 * Searches for item with exact name
+	 * 
 	 * @param userId
-	 * @param items
+	 * @param exactName
+	 * @return Item if found, null otherwise
 	 */
-	void save(int userId, List<Versioned<T>> items);
+	Versioned<T> findOne(int userId, String exactName);
 
 	/**
 	 * Searches for items with the specified request filter
-	 *
+	 * 
 	 * @param userId
 	 * @param filter
 	 * @return
 	 */
 	List<Versioned<T>> findAny(int userId, String filter);
+
+	/**
+	 * Marks item with specified ID as deleted
+	 * 
+	 * @param userId
+	 * @param id
+	 */
+	void delete(int userId, String id);
+
+	/**
+	 * Persists the specified items in the database
+	 * 
+	 * @param userId
+	 * @param items
+	 */
+	void save(int userId, List<Versioned<T>> items);
 }

@@ -5,17 +5,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 
 public class MySQLAuthDAO implements AuthDAO
 {
-	private final MySQLAccess		db			= new MySQLAccess();
+	private final MySQLAccess		db	= new MySQLAccess();
 	private static MessageDigest	md5digest;
-	public static final int			API_CURRENT	= 20;
-	public static final int			API_LEGACY	= 19;
 
 	{
 		try
@@ -29,23 +25,8 @@ public class MySQLAuthDAO implements AuthDAO
 	}
 
 	@Override
-	public int login(String login, String pass, int apiVersion)
+	public int login(String login, String pass)
 	{
-		if (apiVersion < API_LEGACY)
-		{
-			String msg = String.format("API %d is unsupported. The latest API: %d. Legacy API: %d.", apiVersion,
-					API_CURRENT, API_LEGACY);
-			throw new UnsupportedAPIException(msg);
-		}
-
-		if (apiVersion < API_CURRENT)
-		{
-			String msg = String.format(
-					"API %d is still supported, but deprecated. The latest API: %d. Legacy API: %d.", apiVersion,
-					API_CURRENT, API_LEGACY);
-			throw new DeprecatedAPIException(msg);
-		}
-
 		try
 		{
 			String hash = md5(pass);
@@ -89,6 +70,33 @@ public class MySQLAuthDAO implements AuthDAO
 			return sb.toString();
 		}
 		catch (UnsupportedEncodingException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public Integer getIdByName(String userName)
+	{
+		try
+		{
+			String clause = String.format("(%s = ?)", MySQLAccess.COLUMN_USER_LOGIN);
+
+			ResultSet set = db.select(MySQLAccess.TABLE_USER, clause, null, userName);
+
+			if (set.next())
+			{
+				String s_id = set.getString(MySQLAccess.COLUMN_USER_ID);
+				set.close();
+				return Integer.parseInt(s_id);
+			}
+			else
+			{
+				set.close();
+				return null;
+			}
+		}
+		catch (SQLException e)
 		{
 			throw new RuntimeException(e);
 		}

@@ -7,11 +7,13 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 
 public interface DiaryDAO
 {
-	Versioned<String> findByGuid(int userId, String guid);
+	void delete(int userId, String id);
 
-	List<Versioned<String>> findChanged(int userId, Date since);
+	Versioned<DiaryRecord> findByGuid(int userId, String guid);
 
-	List<Versioned<String>> findPeriod(int userId, Date startTime, Date endTime, boolean includeRemoved);
+	List<Versioned<DiaryRecord>> findChanged(int userId, Date since);
+
+	List<Versioned<DiaryRecord>> findPeriod(int userId, Date startTime, Date endTime, boolean includeRemoved);
 
 	void post(int userId, List<Versioned<DiaryRecord>> records);
 }

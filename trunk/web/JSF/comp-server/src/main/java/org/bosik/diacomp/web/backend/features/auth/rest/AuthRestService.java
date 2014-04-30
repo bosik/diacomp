@@ -22,10 +22,13 @@ import org.bosik.diacomp.web.backend.features.auth.function.MySQLAuthDAO;
 @Path("auth/")
 public class AuthRestService
 {
+	public static final int	API_CURRENT	= 20;
+	public static final int	API_LEGACY	= 19;
+
 	@Context
 	HttpServletRequest		req;
 
-	private final AuthDAO	authDao	= new MySQLAuthDAO();
+	private final AuthDAO	authDao		= new MySQLAuthDAO();
 
 	@POST
 	@Path("login")
@@ -33,6 +36,8 @@ public class AuthRestService
 	public Response login(@FormParam("login") String login, @FormParam("pass") String pass,
 			@FormParam("api") @DefaultValue("-1") int apiVersion)
 	{
+		// check if all params are presented
+
 		if (login == null)
 		{
 			String resp = ResponseBuilder.build(ResponseBuilder.CODE_FAIL, "Parameter 'login' is missing");
@@ -49,9 +54,26 @@ public class AuthRestService
 			return Response.status(Status.BAD_REQUEST).entity(resp).build();
 		}
 
+		// check the values
+
+		if (apiVersion < API_LEGACY)
+		{
+			String msg = String.format("API %d is unsupported. The latest API: %d. Legacy API: %d.", apiVersion,
+					API_CURRENT, API_LEGACY);
+			throw new UnsupportedAPIException(msg);
+		}
+
+		if (apiVersion < API_CURRENT)
+		{
+			String msg = String.format(
+					"API %d is still supported, but deprecated. The latest API: %d. Legacy API: %d.", apiVersion,
+					API_CURRENT, API_LEGACY);
+			throw new DeprecatedAPIException(msg);
+		}
+
 		try
 		{
-			int id = authDao.login(login, pass, apiVersion);
+			int id = authDao.login(login, pass);
 			UserSessionUtils.setId(req, id, login);
 
 			String entity = ResponseBuilder.buildDone("Logged in OK");

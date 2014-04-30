@@ -3,8 +3,9 @@ package org.bosik.diacomp.web.frontend.wicket.pages.master;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.bosik.diacomp.core.services.AuthService;
-import org.bosik.diacomp.web.frontend.features.auth.AuthRestClient;
+import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
+import org.bosik.diacomp.web.backend.features.auth.service.AuthService;
+import org.bosik.diacomp.web.backend.features.auth.service.FrontendAuthService;
 import org.bosik.diacomp.web.frontend.wicket.components.header.HeaderPanel;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.Menu;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.MenuContent;
@@ -19,7 +20,7 @@ public class MasterPage extends WebPage
 {
 	private static final long	serialVersionUID	= 1L;
 
-	AuthService					authService			= new AuthRestClient();
+	AuthService					authService			= new FrontendAuthService();
 
 	public MasterPage(final PageParameters parameters)
 	{
@@ -35,17 +36,18 @@ public class MasterPage extends WebPage
 
 		// TODO: localize captions
 
-		if (authService.getUserName() == null)
+		try
 		{
-			menuContent.getItems().add(new MenuItem("About", AboutPage.class));
-			menuContent.getItems().add(new MenuItem("Login", LoginPage.class));
-		}
-		else
-		{
+			authService.getCurrentUserName();
 			menuContent.getItems().add(new MenuItem("About", AboutPage.class));
 			menuContent.getItems().add(new MenuItem("Diary", DiaryPage.class));
 			menuContent.getItems().add(new MenuItem("Base", FoodBasePage.class));
 			menuContent.getItems().add(new MenuItem("Download", DownloadPage.class));
+		}
+		catch (NotAuthorizedException e)
+		{
+			menuContent.getItems().add(new MenuItem("About", AboutPage.class));
+			menuContent.getItems().add(new MenuItem("Login", LoginPage.class));
 		}
 
 		menuContent.setSelected(getClass());

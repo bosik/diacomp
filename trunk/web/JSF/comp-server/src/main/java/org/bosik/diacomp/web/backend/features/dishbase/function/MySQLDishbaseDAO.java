@@ -50,12 +50,12 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	}
 
 	@Override
-	public List<Versioned<DishItem>> findAll(int userId, boolean showRemoved)
+	public List<Versioned<DishItem>> findAll(int userId, boolean includeRemoved)
 	{
 		try
 		{
 			String clause = String.format("(%s = %d)", MySQLAccess.COLUMN_DISHBASE_USER, userId);
-			if (!showRemoved)
+			if (!includeRemoved)
 			{
 				clause += String.format(" AND (%s = '%s')", MySQLAccess.COLUMN_DISHBASE_DELETED,
 						Utils.formatBooleanInt(false));
@@ -95,7 +95,7 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	}
 
 	@Override
-	public Versioned<DishItem> findByGuid(int userId, String guid)
+	public Versioned<DishItem> findById(int userId, String guid)
 	{
 		try
 		{
@@ -147,7 +147,7 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 				final String version = String.valueOf(item.getVersion());
 				final String deleted = Utils.formatBooleanInt(item.isDeleted());
 
-				if (findByGuid(userId, item.getId()) != null)
+				if (findById(userId, item.getId()) != null)
 				{
 					// presented, update
 
@@ -180,6 +180,45 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 					db.insert(MySQLAccess.TABLE_DISHBASE, set);
 				}
 			}
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public Versioned<DishItem> findOne(int userId, String exactName)
+	{
+		try
+		{
+			String clause = String.format("(%s = %d) AND (%s = '%s')", MySQLAccess.COLUMN_DISHBASE_USER, userId,
+					MySQLAccess.COLUMN_DISHBASE_NAMECACHE, exactName);
+
+			ResultSet set = db.select(MySQLAccess.TABLE_DISHBASE, clause, null);
+			List<Versioned<DishItem>> result = parseDishItems(set);
+			set.close();
+			return result.isEmpty() ? null : result.get(0);
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void delete(int userId, String id)
+	{
+		try
+		{
+			SortedMap<String, String> set = new TreeMap<String, String>();
+			set.put(MySQLAccess.COLUMN_DISHBASE_DELETED, Utils.formatBooleanInt(true));
+
+			SortedMap<String, String> where = new TreeMap<String, String>();
+			where.put(MySQLAccess.COLUMN_DISHBASE_GUID, id);
+			where.put(MySQLAccess.COLUMN_DISHBASE_USER, String.valueOf(userId));
+
+			db.update(MySQLAccess.TABLE_DISHBASE, set, where);
 		}
 		catch (SQLException e)
 		{

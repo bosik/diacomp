@@ -20,10 +20,11 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
+import org.bosik.diacomp.web.backend.features.foodbase.function.FakeFoodbaseDAO;
 import org.bosik.diacomp.web.backend.features.foodbase.function.FoodbaseDAO;
-import org.bosik.diacomp.web.backend.features.foodbase.function.MySQLFoodbaseDAO;
 
 @Path("food/")
 public class FoodBaseRestService
@@ -31,7 +32,7 @@ public class FoodBaseRestService
 	@Context
 	HttpServletRequest										req;
 
-	private final FoodbaseDAO								foodbaseService	= new MySQLFoodbaseDAO();
+	private final FoodbaseDAO								foodbaseService	= new FakeFoodbaseDAO();
 
 	private static final Serializer<Versioned<FoodItem>>	serializer	= new SerializerFoodItem();
 
@@ -43,8 +44,7 @@ public class FoodBaseRestService
 		try
 		{
 			int userId = UserSessionUtils.getId(req);
-
-			Versioned<FoodItem> item = foodbaseService.findByGuid(userId, parGuid);
+			Versioned<FoodItem> item = foodbaseService.findById(userId, parGuid);
 
 			if (item != null)
 			{
@@ -81,6 +81,10 @@ public class FoodBaseRestService
 			String s = serializer.writeAll(items);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{

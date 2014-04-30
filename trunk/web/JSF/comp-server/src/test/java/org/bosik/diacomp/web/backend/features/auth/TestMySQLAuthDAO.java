@@ -8,7 +8,7 @@ import org.junit.Test;
 
 public class TestMySQLAuthDAO
 {
-	private AuthDAO	authDao	= new MySQLAuthDAO();
+	private final AuthDAO	authDao	= new MySQLAuthDAO();
 
 	{
 		Config.init();
@@ -19,9 +19,8 @@ public class TestMySQLAuthDAO
 	{
 		final String login = Config.getTestLogin();
 		final String pass = Config.getTestPassword();
-		final int apiVersion = Integer.parseInt(Config.get("current_api"));
 
-		int id = authDao.login(login, pass, apiVersion);
+		int id = authDao.login(login, pass);
 		assertEquals(1, id);
 	}
 }

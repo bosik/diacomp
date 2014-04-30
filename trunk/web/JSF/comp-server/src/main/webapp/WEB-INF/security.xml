@@ -38,7 +38,7 @@ http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 		<authentication-provider>
 			<user-service>
 				<user name="admin" password="pass" authorities="ROLE_ADMIN,ROLE_USER" />
-				<user name="user1" password="1111" authorities="ROLE_USER" />
+				<user name="bosik-007@narod.ru" password="devel0pment" authorities="ROLE_USER" />
 				<user name="user2" password="2222" disabled="true" authorities="ROLE_USER" />
 			</user-service>
 		</authentication-provider>

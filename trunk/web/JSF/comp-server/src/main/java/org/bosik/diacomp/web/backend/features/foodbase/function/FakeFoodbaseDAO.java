@@ -39,14 +39,14 @@ public class FakeFoodbaseDAO implements FoodbaseDAO
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findAll(int userId, boolean showRemoved)
+	public List<Versioned<FoodItem>> findAll(int userId, boolean includeRemoved)
 	{
 		List<Versioned<FoodItem>> result = new ArrayList<Versioned<FoodItem>>();
 
 		for (Versioned<FoodItem> rec : samples)
 		{
 			final FoodItem data = rec.getData();
-			if (showRemoved || !rec.isDeleted())
+			if (includeRemoved || !rec.isDeleted())
 			{
 				Versioned<FoodItem> item = new Versioned<FoodItem>();
 				item.setId(rec.getId());
@@ -86,7 +86,7 @@ public class FakeFoodbaseDAO implements FoodbaseDAO
 	}
 
 	@Override
-	public Versioned<FoodItem> findByGuid(int userId, String guid)
+	public Versioned<FoodItem> findById(int userId, String guid)
 	{
 		for (Versioned<FoodItem> rec : samples)
 		{
@@ -152,4 +152,37 @@ public class FakeFoodbaseDAO implements FoodbaseDAO
 		return result;
 	}
 
+	@Override
+	public Versioned<FoodItem> findOne(int userId, String exactName)
+	{
+		for (Versioned<FoodItem> rec : samples)
+		{
+			final FoodItem data = rec.getData();
+			if (rec.getData().getName().equals(exactName))
+			{
+				Versioned<FoodItem> item = new Versioned<FoodItem>();
+				item.setId(rec.getId());
+				item.setTimeStamp(rec.getTimeStamp());
+				item.setVersion(rec.getVersion());
+				item.setDeleted(rec.isDeleted());
+				item.setData(data);
+				return item;
+			}
+		}
+
+		return null;
+	}
+
+	@Override
+	public void delete(int userId, String id)
+	{
+		for (Versioned<FoodItem> rec : samples)
+		{
+			if (rec.getId().equals(id))
+			{
+				rec.setDeleted(true);
+				return;
+			}
+		}
+	}
 }
