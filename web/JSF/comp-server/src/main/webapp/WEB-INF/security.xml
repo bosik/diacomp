@@ -18,9 +18,7 @@ http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 	<http access-denied-page="/login">
 		<intercept-url pattern="/login" access="ROLE_USER,ROLE_ANONYMOUS" />
 		<intercept-url pattern="/about" access="ROLE_USER,ROLE_ANONYMOUS" />
-		<intercept-url pattern="/css/*" access="ROLE_USER,ROLE_ANONYMOUS" />
-		<intercept-url pattern="/img/*" access="ROLE_USER,ROLE_ANONYMOUS" />
-		<intercept-url pattern="/js/*" access="ROLE_USER,ROLE_ANONYMOUS" />
+		<intercept-url pattern="/res/**" access="ROLE_USER,ROLE_ANONYMOUS" />
 		<intercept-url pattern="/api/auth/*" access="ROLE_USER,ROLE_ANONYMOUS" />
 		<intercept-url pattern="/api/info*" access="ROLE_USER,ROLE_ANONYMOUS" />
 		

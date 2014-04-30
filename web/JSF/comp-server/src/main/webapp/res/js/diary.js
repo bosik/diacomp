@@ -942,17 +942,17 @@ function setProgress(status, hint)
 	if (status == "progress")
 	{
 		statusImg.setAttribute("display", "block");
-		statusImg.setAttribute("src", "img/status-progress.gif");
+		statusImg.setAttribute("src", "res/img/status-progress.gif");
 	}
 	else if (status == "ready")
 	{
 		statusImg.setAttribute("display", "block");
-		statusImg.setAttribute("src", "img/status-ready.png");
+		statusImg.setAttribute("src", "res/img/status-ready.png");
 	}
 	else if (status == "error")
 	{
 		statusImg.setAttribute("display", "block");
-		statusImg.setAttribute("src", "img/status-error.png");
+		statusImg.setAttribute("src", "res/img/status-error.png");
 	}
 	else if (status == "none")
 	{
