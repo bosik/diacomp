@@ -11,6 +11,21 @@ type
 
   TSortType = (stName, stTag);
 
+  TVersioned = class
+  private
+    FID: string;
+    FTimeStamp: TDateTime;
+    FVersion: integer;
+    FDeleted: boolean;
+    FData: TObject;
+  public
+    property ID: string read FID write FID;
+    property TimeStamp: TDateTime read FTimeStamp write FTimeStamp;
+    property Version: integer read FVersion write FVersion;
+    property Deleted: boolean read FDeleted write FDeleted;
+    property Data: TObject read FData write FData;
+  end;
+
   // Имеет методы для бинарного поиска
   // Имеет методы для сортировки
   // Имеет номер версии и метод для её инкремента
