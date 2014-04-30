@@ -42,8 +42,8 @@ var dishbaseLoaded = false;
 
 refreshCurrentPage();
 // downloadKoofs();
-// downloadFoodbase();
-// downloadDishbase();
+downloadFoodbase();
+downloadDishbase();
 setProgress("ready", "Дневник сохранён");
 
 /* ================== DIARY NAVIGATION ================== */
@@ -122,17 +122,12 @@ function downloadPage(pageDate, show)
 	{
 		var resp = JSON.parse(data);
 
-		//alert(data);
 		if (resp.code == 0)
 		{
 			var content = JSON.parse(data).resp;
 			page = JSON.parse(content.replace('\"', '"'));
 			
-			//console.log("items: " + page);
-			
 			page.sort(timeSortFunction);
-			
-			//console.log("sorted OK");
 			
 			if (show)
 			{
@@ -183,21 +178,22 @@ function downloadKoofs()
 
 function downloadFoodbase()
 {
-	var url = "console.php?foodbase:download";
+	var url = "api/food/all?show_rem=0";
 	foodbaseLoaded = false;
 
 	var onSuccess = function(data)
 	{
 		if (data != "")
 		{
-			foodbase = parseXml(data).foods;
+			foodbase = JSON.parse(data).resp;
+			foodbase = JSON.parse(foodbase);
 
 			// TODO: убрать?
 			// простановка индексов
-			for (var i = 0; i < foodbase.food.length; i++)
+			for (var i = 0; i < foodbase.length; i++)
 			{
-				foodbase.food[i] = floatizeFood(foodbase.food[i]);
-				foodbase.food[i].id = i;
+				foodbase[i].data = floatizeFood(foodbase[i].data);
+				foodbase[i].index = i;
 			}
 
 			foodbaseLoaded = true;
@@ -228,10 +224,10 @@ function downloadFoodbase()
 
 function downloadDishbase()
 {
-	var url = "console.php?dishbase:download";
+	var url = "api/dish/all?show_rem=0";
 	dishbaseLoaded = false;
 
-	var onSuccess = function(data)
+	/*var onSuccess = function(data)
 	{
 		if (data != "")
 		{
@@ -268,7 +264,9 @@ function downloadDishbase()
 		dishbase = [];
 	};
 
-	doGet(url, true, onSuccess, onFailure);
+	doGet(url, true, onSuccess, onFailure);*/
+	
+	dishbaseLoaded = true;
 }
 
 function floatizeFood(food)
@@ -356,23 +354,24 @@ function prepareComboList()
 	var item;
 
 	// adding foods
-	for (var i = 0; i < foodbase.food.length; i++)
+	for (var i = 0; i < foodbase.length; i++)
 	{
 		item = {};
-		item.value = foodbase.food[i].name;
-		item.prots = foodbase.food[i].prots;
-		item.fats = foodbase.food[i].fats;
-		item.carbs = foodbase.food[i].carbs;
-		item.val = foodbase.food[i].val;
-		item.tag = foodbase.food[i].tag;
+		item.value = foodbase[i].data.name;
+		item.prots = foodbase[i].data.prots;
+		item.fats = foodbase[i].data.fats;
+		item.carbs = foodbase[i].data.carbs;
+		item.val = foodbase[i].data.val;
+		item.tag = foodbase[i].data.tag;
 		item.type = "food";
+		
 		fdBase.push(item);
 	}
 
 	// adding dishes
-	for (var j = 0; j < dishbase.dish.length; j++)
+	for (var j = 0; j < dishbase.length; j++)
 	{
-		var cnv = dishAsFood(dishbase.dish[j]);
+		var cnv = dishAsFood(dishbase[j]);
 
 		item = {};
 		item.value = cnv.name;
