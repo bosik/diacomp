@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.frontend.features.diary;
+package org.bosik.diacomp.web.backend.features.diary.rest;
 
 @Deprecated
 public class DiaryRestClient //extends AuthorizedRestClient implements DiaryService

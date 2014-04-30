@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.frontend.features.auth;
+package org.bosik.diacomp.web.backend.features.auth.rest;
 
 @Deprecated
 public class AuthRestClient //extends RestClient implements AuthService

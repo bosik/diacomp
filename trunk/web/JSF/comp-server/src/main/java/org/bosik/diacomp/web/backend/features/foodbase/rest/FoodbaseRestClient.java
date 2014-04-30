@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.frontend.features.foodbase;
+package org.bosik.diacomp.web.backend.features.foodbase.rest;
 
 @Deprecated
 public class FoodbaseRestClient //extends AuthorizedRestClient implements FoodBaseService

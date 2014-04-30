@@ -17,7 +17,7 @@ import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
 import org.bosik.diacomp.web.backend.features.auth.function.AuthDAO;
-import org.bosik.diacomp.web.backend.features.auth.function.MySQLAuthDAO;
+import org.bosik.diacomp.web.backend.features.auth.function.FakeAuthDAO;
 
 @Path("auth/")
 public class AuthRestService
@@ -28,7 +28,7 @@ public class AuthRestService
 	@Context
 	HttpServletRequest		req;
 
-	private final AuthDAO	authDao		= new MySQLAuthDAO();
+	private final AuthDAO	authDao		= new FakeAuthDAO();
 
 	@POST
 	@Path("login")

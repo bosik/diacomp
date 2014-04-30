@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.frontend.common;
+package org.bosik.diacomp.web.backend.common;
 
 public class RestClient //implements Serializable
 {
