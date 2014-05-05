@@ -181,7 +181,7 @@ public class Utils
 	 * @param s
 	 *            String to calculate (f.e., "2+3*4", "-10*2")
 	 */
-	public static double calculate(String s) throws NumberFormatException
+	public static double parseExpression(String s) throws NumberFormatException
 	{
 		try
 		{
@@ -202,15 +202,15 @@ public class Utils
 
 			if (!op1.isEmpty() && op2.isEmpty())
 			{
-				return calculate(op1);
+				return parseExpression(op1);
 			}
 			if (op1.isEmpty() && !op2.isEmpty())
 			{
-				return calculate(op2);
+				return parseExpression(op2);
 			}
 			if (!op1.isEmpty() && !op2.isEmpty())
 			{
-				return calculate(op1) + calculate(op2);
+				return parseExpression(op1) + parseExpression(op2);
 			}
 		}
 
@@ -222,15 +222,15 @@ public class Utils
 
 			if (!op1.isEmpty() && op2.isEmpty())
 			{
-				return calculate(op1);
+				return parseExpression(op1);
 			}
 			if (op1.isEmpty() && !op2.isEmpty())
 			{
-				return -calculate(op2);
+				return -parseExpression(op2);
 			}
 			if (!op1.isEmpty() && !op2.isEmpty())
 			{
-				return calculate(op1) - calculate(op2);
+				return parseExpression(op1) - parseExpression(op2);
 			}
 		}
 
@@ -242,15 +242,15 @@ public class Utils
 
 			if (!op1.isEmpty() && op2.isEmpty())
 			{
-				return calculate(op1);
+				return parseExpression(op1);
 			}
 			if (op1.isEmpty() && !op2.isEmpty())
 			{
-				return calculate(op2);
+				return parseExpression(op2);
 			}
 			if (!op1.isEmpty() && !op2.isEmpty())
 			{
-				return calculate(op1) * calculate(op2);
+				return parseExpression(op1) * parseExpression(op2);
 			}
 		}
 
@@ -262,15 +262,15 @@ public class Utils
 
 			if (!op1.isEmpty() && op2.isEmpty())
 			{
-				return calculate(op1);
+				return parseExpression(op1);
 			}
 			if (op1.isEmpty() && !op2.isEmpty())
 			{
-				return calculate(op2);
+				return parseExpression(op2);
 			}
 			if (!op1.isEmpty() && !op2.isEmpty())
 			{
-				return calculate(op1) / calculate(op2);
+				return parseExpression(op1) / parseExpression(op2);
 			}
 		}
 
