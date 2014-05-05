@@ -48,7 +48,7 @@ public class Utils
 	public static final double				EPS					= 0.0000001;
 	public static final long				EPS_TIME			= 5000;													// ms
 
-	private static char						DECIMAL_DOT;
+	public static char						DECIMAL_DOT;
 	private static DecimalFormat			DF;
 
 	private static Random					r					= new Random();
@@ -445,6 +445,126 @@ public class Utils
 	public static double round2(double x)
 	{
 		return round(x, 2);
+	}
+
+	/**
+	 * Calculates value of simple math expression. Four operations supported: +, -, *, /.
+	 * Correct processing of negative values is not guaranteed (f.e., calculate(-1/-2) = -3 instead of expected 0.5)
+	 * 
+	 * @param s
+	 *            String to calculate (f.e., "2+3*4", "-10*2")
+	 */
+	public static double calculate(String s) throws NumberFormatException
+	{
+		try
+		{
+			s = s.replaceAll("\\.", String.valueOf(DECIMAL_DOT));
+			s = s.replaceAll("\\,", String.valueOf(DECIMAL_DOT));
+			return Double.parseDouble(s);
+		}
+		catch (NumberFormatException e)
+		{
+			// well, try next...
+		}
+
+		if (s.contains("+"))
+		{
+			int k = s.lastIndexOf("+");
+			String op1 = s.substring(0, k).trim();
+			String op2 = s.substring(k + 1).trim();
+
+			if (!op1.isEmpty() && op2.isEmpty())
+			{
+				return calculate(op1);
+			}
+			if (op1.isEmpty() && !op2.isEmpty())
+			{
+				return calculate(op2);
+			}
+			if (!op1.isEmpty() && !op2.isEmpty())
+			{
+				return calculate(op1) + calculate(op2);
+			}
+		}
+
+		if (s.contains("-"))
+		{
+			int k = s.lastIndexOf("-");
+			String op1 = s.substring(0, k).trim();
+			String op2 = s.substring(k + 1).trim();
+
+			if (!op1.isEmpty() && op2.isEmpty())
+			{
+				return calculate(op1);
+			}
+			if (op1.isEmpty() && !op2.isEmpty())
+			{
+				return -calculate(op2);
+			}
+			if (!op1.isEmpty() && !op2.isEmpty())
+			{
+				return calculate(op1) - calculate(op2);
+			}
+		}
+
+		if (s.contains("*"))
+		{
+			int k = s.lastIndexOf("*");
+			String op1 = s.substring(0, k).trim();
+			String op2 = s.substring(k + 1).trim();
+
+			if (!op1.isEmpty() && op2.isEmpty())
+			{
+				return calculate(op1);
+			}
+			if (op1.isEmpty() && !op2.isEmpty())
+			{
+				return calculate(op2);
+			}
+			if (!op1.isEmpty() && !op2.isEmpty())
+			{
+				return calculate(op1) * calculate(op2);
+			}
+		}
+
+		if (s.contains("/"))
+		{
+			int k = s.lastIndexOf("/");
+			String op1 = s.substring(0, k).trim();
+			String op2 = s.substring(k + 1).trim();
+
+			if (!op1.isEmpty() && op2.isEmpty())
+			{
+				return calculate(op1);
+			}
+			if (op1.isEmpty() && !op2.isEmpty())
+			{
+				return calculate(op2);
+			}
+			if (!op1.isEmpty() && !op2.isEmpty())
+			{
+				return calculate(op1) / calculate(op2);
+			}
+		}
+
+		return 0;
+
+		//		if (s.isEmpty())
+		//		{
+		//			return 0.0;
+		//		}
+		//
+		//		s = s.replaceAll("\\.", String.valueOf(DECIMAL_DOT));
+		//		s = s.replaceAll("\\,", String.valueOf(DECIMAL_DOT));
+		//
+		//		try
+		//		{
+		//			return (Double)engine.eval(s);
+		//		}
+		//		catch (ScriptException e)
+		//		{
+		//			throw new RuntimeException(e);
+		//		}
 	}
 
 	// private static String formatArray(byte array[])

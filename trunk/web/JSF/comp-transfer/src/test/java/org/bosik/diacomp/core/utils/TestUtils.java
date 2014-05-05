@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import junit.framework.TestCase;
-import org.bosik.diacomp.core.utils.Utils;
 import org.junit.Test;
 
 @SuppressWarnings("static-method")
@@ -243,6 +242,38 @@ public class TestUtils extends TestCase
 		assertEquals(Utils.date(2013, 8, 2).getTime(), dates.get(1).getTime());
 		assertEquals(Utils.date(2013, 8, 3).getTime(), dates.get(2).getTime());
 		assertEquals(Utils.date(2013, 8, 4).getTime(), dates.get(3).getTime());
+	}
+
+	public void test_Calculate()
+	{
+		assertEquals(0.0, Utils.calculate(""), Utils.EPS);
+		assertEquals(1.0, Utils.calculate("1"), Utils.EPS);
+		assertEquals(2.0, Utils.calculate("2.0"), Utils.EPS);
+		assertEquals(3.0, Utils.calculate("3,0"), Utils.EPS);
+
+		assertEquals(9.0, Utils.calculate("4+5"), Utils.EPS);
+		assertEquals(13.0, Utils.calculate("6.0+7.0"), Utils.EPS);
+		assertEquals(17.3, Utils.calculate("  8.1 + 9.2 "), Utils.EPS);
+		assertEquals(15.0, Utils.calculate("1+2+3+4+5"), Utils.EPS);
+
+		assertEquals(1.0, Utils.calculate("11-10"), Utils.EPS);
+		assertEquals(9.0, Utils.calculate("12-1-2"), Utils.EPS);
+		assertEquals(14.0, Utils.calculate("13-14+15"), Utils.EPS);
+
+		assertEquals(14.0, Utils.calculate("2+3*4"), Utils.EPS);
+		assertEquals(10.0, Utils.calculate("2*3+4"), Utils.EPS);
+		assertEquals(2.0, Utils.calculate("2*3-4"), Utils.EPS);
+		assertEquals(-10.0, Utils.calculate("2-3*4"), Utils.EPS);
+		assertEquals(120.0, Utils.calculate("2*3*4*5"), Utils.EPS);
+		assertEquals(234.0, Utils.calculate("2*3*4+5*6*7"), Utils.EPS);
+		assertEquals(-186.0, Utils.calculate("2*3*4-5*6*7"), Utils.EPS);
+
+		assertEquals(0.5, Utils.calculate("1 / 2"), Utils.EPS);
+		assertEquals(-0.5, Utils.calculate("-1/2"), Utils.EPS);
+		//		assertEquals(0.5, Utils.calculate("-1/-2"), Utils.EPS);
+		assertEquals(3.0, Utils.calculate("1+12/6"), Utils.EPS);
+		assertEquals(3.5, Utils.calculate("3/2+8/4"), Utils.EPS);
+		assertEquals(-16.0, Utils.calculate("2*3+4*5-6*7"), Utils.EPS);
 	}
 
 	// public void testTimeToStr()
