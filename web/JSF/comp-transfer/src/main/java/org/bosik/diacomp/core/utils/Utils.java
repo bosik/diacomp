@@ -128,7 +128,7 @@ public class Utils
 	 *            Time in format "hh:mm"
 	 * @return Minute time (number of minutes since midnight)
 	 */
-	public static int strToTime(String S)
+	public static int parseMinuteTime(String S)
 	{
 		int hour = Integer.parseInt(S.substring(0, 2));
 		int min = Integer.parseInt(S.substring(3, 5));

@@ -57,17 +57,17 @@ public class TestUtils extends TestCase
 	public void testStrToTime()
 	{
 		// нормальный тест
-		assertEquals(0, Utils.strToTime("00:00"));
-		assertEquals(1, Utils.strToTime("00:01"));
-		assertEquals(59, Utils.strToTime("00:59"));
-		assertEquals(60, Utils.strToTime("01:00"));
-		assertEquals(630, Utils.strToTime("10:30"));
-		assertEquals(1439, Utils.strToTime("23:59"));
+		assertEquals(0, Utils.parseMinuteTime("00:00"));
+		assertEquals(1, Utils.parseMinuteTime("00:01"));
+		assertEquals(59, Utils.parseMinuteTime("00:59"));
+		assertEquals(60, Utils.parseMinuteTime("01:00"));
+		assertEquals(630, Utils.parseMinuteTime("10:30"));
+		assertEquals(1439, Utils.parseMinuteTime("23:59"));
 
 		// краш-тест
 		try
 		{
-			Utils.strToTime(null);
+			Utils.parseMinuteTime(null);
 			fail();
 		}
 		catch (Exception e)
@@ -75,7 +75,7 @@ public class TestUtils extends TestCase
 		}
 		try
 		{
-			Utils.strToTime("");
+			Utils.parseMinuteTime("");
 			fail();
 		}
 		catch (Exception e)
@@ -83,7 +83,7 @@ public class TestUtils extends TestCase
 		}
 		try
 		{
-			Utils.strToTime("gArBAgE");
+			Utils.parseMinuteTime("gArBAgE");
 			fail();
 		}
 		catch (Exception e)
@@ -91,7 +91,7 @@ public class TestUtils extends TestCase
 		}
 		try
 		{
-			Utils.strToTime(":");
+			Utils.parseMinuteTime(":");
 			fail();
 		}
 		catch (Exception e)
@@ -99,7 +99,7 @@ public class TestUtils extends TestCase
 		}
 		try
 		{
-			Utils.strToTime("xx:yy");
+			Utils.parseMinuteTime("xx:yy");
 			fail();
 		}
 		catch (Exception e)
@@ -107,7 +107,7 @@ public class TestUtils extends TestCase
 		}
 		try
 		{
-			Utils.strToTime("10:60");
+			Utils.parseMinuteTime("10:60");
 			fail();
 		}
 		catch (Exception e)
@@ -115,7 +115,7 @@ public class TestUtils extends TestCase
 		}
 		try
 		{
-			Utils.strToTime("24:00");
+			Utils.parseMinuteTime("24:00");
 			fail();
 		}
 		catch (Exception e)
@@ -123,7 +123,7 @@ public class TestUtils extends TestCase
 		}
 		try
 		{
-			Utils.strToTime("00:-1");
+			Utils.parseMinuteTime("00:-1");
 			fail();
 		}
 		catch (Exception e)
@@ -131,7 +131,7 @@ public class TestUtils extends TestCase
 		}
 		try
 		{
-			Utils.strToTime("-1:00");
+			Utils.parseMinuteTime("-1:00");
 			fail();
 		}
 		catch (Exception e)
