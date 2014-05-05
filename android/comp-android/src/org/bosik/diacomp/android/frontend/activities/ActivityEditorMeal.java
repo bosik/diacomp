@@ -1,7 +1,6 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.android.R;
@@ -126,7 +125,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 							}
 							else
 							{
-								double mass = Utils.parseDouble(text);
+								double mass = Utils.calculate(text);
 								if (mass > Utils.EPS)
 								{
 									entity.getData().get(position).setMass(mass);
@@ -139,7 +138,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 							modified = true;
 							showMeal();
 						}
-						catch (ParseException e)
+						catch (NumberFormatException e)
 						{
 							// TODO: localize
 							UIUtils.showTip(ActivityEditorMeal.this, "Wrong mass");
@@ -315,7 +314,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		double mass;
 		try
 		{
-			mass = Double.parseDouble(editMass.getText().toString());
+			mass = Utils.calculate(editMass.getText().toString());
 		}
 		catch (NumberFormatException e)
 		{
