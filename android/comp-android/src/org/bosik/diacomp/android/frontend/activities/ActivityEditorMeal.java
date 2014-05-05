@@ -125,7 +125,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 							}
 							else
 							{
-								double mass = Utils.calculate(text);
+								double mass = Utils.parseExpression(text);
 								if (mass > Utils.EPS)
 								{
 									entity.getData().get(position).setMass(mass);
@@ -314,7 +314,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		double mass;
 		try
 		{
-			mass = Utils.calculate(editMass.getText().toString());
+			mass = Utils.parseExpression(editMass.getText().toString());
 		}
 		catch (NumberFormatException e)
 		{
