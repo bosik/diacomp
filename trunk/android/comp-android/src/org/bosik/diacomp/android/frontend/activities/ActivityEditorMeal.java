@@ -60,6 +60,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 	private TextView						textMealDose;
 	private String							captionCarbs;
 	private String							captionDose;
+	private String							captionGramm;
 
 	@Override
 	protected void setupInterface()
@@ -100,12 +101,12 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 			public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
 			{
 				Builder builder = new AlertDialog.Builder(ActivityEditorMeal.this);
-				final String message = entity.getData().get(position).getName();
+				final String message = entity.getData().get(position).getName() + ", " + captionGramm;
 
 				final EditText input = new EditText(ActivityEditorMeal.this);
 
 				// Utils.
-				input.setText(String.valueOf(entity.getData().get(position).getMass()));
+				input.setText(Utils.formatDoubleShort(entity.getData().get(position).getMass()));
 				input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
 				builder.setTitle("Change mass");
 				builder.setMessage(message);
@@ -164,6 +165,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		// текст
 		captionCarbs = getString(R.string.editor_meal_label_carbs);
 		captionDose = getString(R.string.editor_meal_label_dose);
+		captionGramm = getString(R.string.common_gramm);
 
 		// инициализация
 
@@ -280,7 +282,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 				TextView text2 = (TextView) view.findViewById(android.R.id.text2);
 
 				text1.setText(entity.getData().get(position).getName());
-				text2.setText(String.format("%.1f", entity.getData().get(position).getMass()));
+				text2.setText(Utils.formatDoubleShort(entity.getData().get(position).getMass()) + " " + captionGramm);
 				return view;
 			}
 		};
