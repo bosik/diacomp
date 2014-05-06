@@ -53,6 +53,8 @@ public class ActivityFoodbase extends Activity
 	private static final int	DIALOG_FOOD_CREATE	= 11;
 	private static final int	DIALOG_FOOD_MODIFY	= 12;
 
+	private static final int	LIMIT				= 100;
+
 	private enum Mode
 	{
 		EDIT, PICK
@@ -65,11 +67,12 @@ public class ActivityFoodbase extends Activity
 
 	// Data
 	final FoodBaseService								foodBaseService	= Storage.localFoodBase;
-	private Map<String, Integer>						tagInfo			= Storage.tagService.getTags();
+	private final Map<String, Integer>					tagInfo			= Storage.tagService.getTags();
 	List<Versioned<NamedRelativeTagged>>				data;
 	private static final Sorter<NamedRelativeTagged>	sorter			= new Sorter<NamedRelativeTagged>();
 	Mode												mode;
 	String												searchFilter	= "";
+	boolean												resultCutted;
 
 	long												lastSearchTime;
 	boolean												searchScheduled	= false;
@@ -294,22 +297,26 @@ public class ActivityFoodbase extends Activity
 
 			sorter.sort(result, Sort.RELEVANT);
 
-			final int LIMIT = 100;
-
 			if (result.size() > LIMIT)
 			{
+				resultCutted = true;
 				result = result.subList(0, LIMIT);
 			}
-			else if (result.size() < LIMIT)
+			else
 			{
-				for (Versioned<FoodItem> item : temp)
+				resultCutted = false;
+				if (result.size() < LIMIT)
 				{
-					if (tagInfo.get(item.getId()) == null)
+					for (int i = 0; i < temp.size(); i++)
 					{
-						result.add(new Versioned<NamedRelativeTagged>(item));
-						if (result.size() == LIMIT)
+						if (tagInfo.get(temp.get(i).getId()) == null)
 						{
-							break;
+							result.add(new Versioned<NamedRelativeTagged>(temp.get(i)));
+							if (result.size() == LIMIT)
+							{
+								resultCutted = (i < temp.size() - 1);
+								break;
+							}
 						}
 					}
 				}
@@ -350,7 +357,8 @@ public class ActivityFoodbase extends Activity
 			str[i] = foodBase.get(i).getData().getName();
 		}
 
-		setTitle(String.format("%s (%d)", getString(R.string.foodbase_title), foodBase.size()));
+		String fmt = resultCutted ? "%s (%d+)" : "%s (%d)";
+		setTitle(String.format(fmt, getString(R.string.foodbase_title), foodBase.size()));
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_2,
 				android.R.id.text1, str)
