@@ -1,55 +1,38 @@
 package org.bosik.diacomp.core.entities.business.diary.records;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 import java.util.Date;
-import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
-import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.test.fakes.mocks.Mock;
+import org.bosik.diacomp.core.test.fakes.mocks.MockFoodMassed;
+import org.junit.Test;
 
-public class TestMealRecord extends TestCase
+public class TestMealRecord
 {
-	private MealRecord	meal	= new MealRecord(new Date(), false);
+	private static final Mock<FoodMassed>	mock	= new MockFoodMassed();
+	private final MealRecord				meal	= new MealRecord(new Date(), false);
 
-	// THINK: рандомные тесты - добро или зло?
-
-	/**
-	 * Создаёт демо-экземпляр для тестирования
-	 * 
-	 * @return
-	 */
-	private static FoodMassed createDemoFood()
+	@Test
+	public void addGet_normal_ok()
 	{
-		FoodMassed food = new FoodMassed();
-		food.setName("Колбаса");
-		food.setMass(78);
-		food.setRelProts(12.2);
-		food.setRelFats(18.9);
-		food.setRelCarbs(0);
-		food.setRelValue(272);
-		return food;
-	}
-
-	public void testAddGet()
-	{
-		// нормальный тест
 		for (int k = 1; k <= 10; k++)
 		{
-			FoodMassed food = createDemoFood();
+			FoodMassed food = mock.getSample();
 			int n = meal.add(food);
 			assertEquals(food, meal.get(n));
 		}
-
-		// краш-тест
-		try
-		{
-			meal.add(null);
-			fail();
-		}
-		catch (Exception e)
-		{
-		}
 	}
 
-	public void testClearAddSize()
+	@Test(expected = NullPointerException.class)
+	public void addGet_null_exception()
+	{
+		meal.add(null);
+	}
+
+	@Test
+	public void clearAddSize()
 	{
 		meal.clear();
 		assertEquals(0, meal.count());
@@ -59,9 +42,10 @@ public class TestMealRecord extends TestCase
 		assertEquals(2, meal.count());
 	}
 
-	public void testPFCV()
+	@Test
+	public void PFCV()
 	{
-		FoodMassed food = createDemoFood();
+		FoodMassed food = mock.getSample();
 		meal.clear();
 		meal.add(food);
 		meal.add(food);
@@ -73,7 +57,8 @@ public class TestMealRecord extends TestCase
 		assertEquals(2 * food.getMass(), meal.getMass());
 	}
 
-	public void testShortMeal()
+	@Test
+	public void shortMeal()
 	{
 		meal.setShortMeal(true);
 		assertTrue(meal.getShortMeal());
