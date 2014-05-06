@@ -11,21 +11,15 @@ import org.bosik.diacomp.core.test.fakes.mocks.MockVersionedConverter;
 
 public class TestSerializerDiaryRecord extends TestSerializer<Versioned<DiaryRecord>>
 {
-	private static final Mock<DiaryRecord>					mockFoodItem			= new MockDiaryRecord();
-	private static final Mock<Versioned<DiaryRecord>>		mockFoodItemVersioned	= new MockVersionedConverter<DiaryRecord>(
-																							mockFoodItem);
-
-	private static final Serializer<Versioned<DiaryRecord>>	serializerAdapter		= new SerializerDiaryRecord();
-
 	@Override
 	protected Mock<Versioned<DiaryRecord>> getMock()
 	{
-		return mockFoodItemVersioned;
+		return new MockVersionedConverter<DiaryRecord>(new MockDiaryRecord());
 	}
 
 	@Override
 	protected Serializer<Versioned<DiaryRecord>> getSerializer()
 	{
-		return serializerAdapter;
+		return new SerializerDiaryRecord();
 	}
 }

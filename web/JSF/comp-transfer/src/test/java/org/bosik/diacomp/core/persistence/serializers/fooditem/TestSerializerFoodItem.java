@@ -1,28 +1,25 @@
 package org.bosik.diacomp.core.persistence.serializers.fooditem;
 
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.persistence.parsers.ParserFoodItem;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
+import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.TestSerializer;
-import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.test.fakes.mocks.Mock;
 import org.bosik.diacomp.core.test.fakes.mocks.MockFoodItem;
+import org.bosik.diacomp.core.test.fakes.mocks.MockVersionedConverter;
 
-public class TestSerializerFoodItem extends TestSerializer<FoodItem>
+public class TestSerializerFoodItem extends TestSerializer<Versioned<FoodItem>>
 {
-	private static final Mock<FoodItem>					mockFoodItem		= new MockFoodItem();
-	private static final SerializerAdapter<FoodItem>	serializerAdapter	= new SerializerAdapter<FoodItem>(
-																					new ParserFoodItem());
-
 	@Override
-	protected Mock<FoodItem> getMock()
+	protected Mock<Versioned<FoodItem>> getMock()
 	{
-		return mockFoodItem;
+		return new MockVersionedConverter<FoodItem>(new MockFoodItem());
 	}
 
 	@Override
-	protected Serializer<FoodItem> getSerializer()
+	protected Serializer<Versioned<FoodItem>> getSerializer()
 	{
-		return serializerAdapter;
+		return new SerializerFoodItem();
 	}
 }
