@@ -310,6 +310,17 @@ public class Utils
 		return (n >= 0) && (n < 10) ? "0" + String.valueOf(n) : String.valueOf(n);
 	}
 
+	/**
+	 * Converts double value into string dismissing ".0" part if the value is integer.
+	 * 
+	 * @param x
+	 * @return
+	 */
+	public static String formatDoubleShort(double x)
+	{
+		return (x % 1 == 0) ? String.valueOf((int)x) : String.valueOf(x);
+	}
+
 	public static String formatDateUTC(Date date)
 	{
 		return STD_FORMAT_DATE_UTC.format(date);

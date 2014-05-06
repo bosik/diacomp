@@ -37,6 +37,15 @@ public class TestUtils extends TestCase
 		assertEquals("10", Utils.intTo00(10));
 	}
 
+	public void test_formatDoubleShort()
+	{
+		assertEquals("0", Utils.formatDoubleShort(0.0));
+		assertEquals("1", Utils.formatDoubleShort(1.0));
+		assertEquals("-1", Utils.formatDoubleShort(-1.0));
+		assertEquals("10", Utils.formatDoubleShort(10.0));
+		assertEquals("10.1", Utils.formatDoubleShort(10.1));
+	}
+
 	public void testCheckTime()
 	{
 		// корректное время
