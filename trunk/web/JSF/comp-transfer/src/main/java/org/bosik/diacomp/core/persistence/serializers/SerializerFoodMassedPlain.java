@@ -6,12 +6,14 @@ import java.util.List;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.utils.Utils;
 
+@Deprecated
 public class SerializerFoodMassedPlain implements Serializer<FoodMassed>
 {
 	// private static final String TAG = SerializerFoodMassedPlain.class.getSimpleName();
 	private static final DecimalFormat	df			= new DecimalFormat("###.#");
 	private static final char			FOOD_SEP	= '|';
 
+	@Override
 	public FoodMassed read(String data)
 	{
 		String[] t = data.split("[\\[" + FOOD_SEP + "\\]:]+"); // БОЯН :D
@@ -41,11 +43,13 @@ public class SerializerFoodMassedPlain implements Serializer<FoodMassed>
 		}
 	}
 
+	@Override
 	public List<FoodMassed> readAll(String data)
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}
 
+	@Override
 	public String write(FoodMassed food)
 	{
 		return String.format("%s[%s" + FOOD_SEP + "%s" + FOOD_SEP + "%s" + FOOD_SEP + "%s]:%s", food.getName(),
@@ -53,6 +57,7 @@ public class SerializerFoodMassedPlain implements Serializer<FoodMassed>
 				df.format(food.getRelValue()), df.format(food.getMass()));
 	}
 
+	@Override
 	public String writeAll(List<FoodMassed> objects)
 	{
 		throw new UnsupportedOperationException("Not implemented");
