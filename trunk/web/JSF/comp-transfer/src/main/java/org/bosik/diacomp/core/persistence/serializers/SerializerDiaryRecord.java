@@ -1,37 +1,15 @@
 package org.bosik.diacomp.core.persistence.serializers;
 
-import java.util.List;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 
-public class SerializerDiaryRecord implements Serializer<Versioned<DiaryRecord>>
+public class SerializerDiaryRecord extends SerializerAdapter<Versioned<DiaryRecord>>
 {
-	private Parser<DiaryRecord>					parser			= new ParserDiaryRecord();
-	private Parser<Versioned<DiaryRecord>>		parserVersioned	= new ParserVersioned<DiaryRecord>(parser);
-	private Serializer<Versioned<DiaryRecord>>	serializer		= new SerializerAdapter<Versioned<DiaryRecord>>(
-																		parserVersioned);
-
-	public Versioned<DiaryRecord> read(String s)
+	public SerializerDiaryRecord()
 	{
-		return serializer.read(s);
-	}
-
-	public List<Versioned<DiaryRecord>> readAll(String s)
-	{
-		return serializer.readAll(s);
-	}
-
-	public String write(Versioned<DiaryRecord> object)
-	{
-		return serializer.write(object);
-	}
-
-	public String writeAll(List<Versioned<DiaryRecord>> objects)
-	{
-		return serializer.writeAll(objects);
+		super(new ParserVersioned<DiaryRecord>(new ParserDiaryRecord()));
 	}
 }
