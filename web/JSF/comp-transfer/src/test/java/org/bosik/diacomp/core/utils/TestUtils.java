@@ -261,10 +261,13 @@ public class TestUtils extends TestCase
 		assertEquals(3.0, Utils.parseExpression("3,0"), Utils.EPS);
 
 		assertEquals(9.0, Utils.parseExpression("4+5"), Utils.EPS);
+		assertEquals(4.0, Utils.parseExpression("4+"), Utils.EPS);
+		assertEquals(4.0, Utils.parseExpression("+4"), Utils.EPS);
 		assertEquals(13.0, Utils.parseExpression("6.0+7.0"), Utils.EPS);
 		assertEquals(17.3, Utils.parseExpression("  8.1 + 9.2 "), Utils.EPS);
 		assertEquals(15.0, Utils.parseExpression("1+2+3+4+5"), Utils.EPS);
 
+		assertEquals(11.0, Utils.parseExpression("11-"), Utils.EPS);
 		assertEquals(1.0, Utils.parseExpression("11-10"), Utils.EPS);
 		assertEquals(9.0, Utils.parseExpression("12-1-2"), Utils.EPS);
 		assertEquals(14.0, Utils.parseExpression("13-14+15"), Utils.EPS);
