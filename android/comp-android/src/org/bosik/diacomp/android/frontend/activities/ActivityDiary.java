@@ -540,14 +540,12 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 		Calendar c = Calendar.getInstance();
 		c.setTime(curDate);
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
 
-		int year = c.get(Calendar.YEAR);
-		int month = c.get(Calendar.MONTH) + 1;
-		int day = c.get(Calendar.DAY_OF_MONTH);
-
-		Log.d(TAG, "Year : " + year);
-
-		Date start = Utils.date(year, month, day);
+		Date start = c.getTime();
 		Date end = Utils.getNextDay(start);
 
 		curRecords = Storage.localDiary.findBetween(start, end, false);
