@@ -34,6 +34,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.TimePicker.OnTimeChangedListener;
 
 public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 {
@@ -67,6 +68,11 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 	{
 		setContentView(R.layout.editor_meal);
 
+		// string constants
+		captionCarbs = getString(R.string.editor_meal_label_carbs);
+		captionDose = getString(R.string.editor_meal_label_dose);
+		captionGramm = getString(R.string.common_gramm);
+
 		// components
 		timePicker = (TimePicker) findViewById(R.id.pickerMealTime);
 		timePicker.setIs24HourView(true);
@@ -75,6 +81,8 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		editMass = (EditText) findViewById(R.id.editItemMass);
 		buttonAdd = (Button) findViewById(R.id.button_additem);
 		list = (ListView) findViewById(R.id.ListView01);
+		textMealCarbs = (TextView) findViewById(R.id.textMealCarbs);
+		textMealDose = (TextView) findViewById(R.id.textMealDose);
 
 		// list.setScroll
 		// list.setScrollContainer(false);
@@ -95,6 +103,15 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 
 		// list.addHeaderView(findViewById(R.id.layoutMealParent));
 
+		// setting listeners
+		timePicker.setOnTimeChangedListener(new OnTimeChangedListener()
+		{
+			@Override
+			public void onTimeChanged(TimePicker view, int hourOfDay, int minute)
+			{
+				modified = true;
+			}
+		});
 		list.setOnItemClickListener(new OnItemClickListener()
 		{
 			@Override
@@ -158,22 +175,6 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 				builder.show();
 			}
 		});
-
-		textMealCarbs = (TextView) findViewById(R.id.textMealCarbs);
-		textMealDose = (TextView) findViewById(R.id.textMealDose);
-
-		// текст
-		captionCarbs = getString(R.string.editor_meal_label_carbs);
-		captionDose = getString(R.string.editor_meal_label_dose);
-		captionGramm = getString(R.string.common_gramm);
-
-		// инициализация
-
-		Log.d(TAG, "Caption carbs: " + captionCarbs);
-		Log.d(TAG, "Caption dose: " + captionDose);
-
-		loadItemsList();
-
 		editMass.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 		editMass.setOnEditorActionListener(new TextView.OnEditorActionListener()
 		{
@@ -202,8 +203,6 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 				return false;
 			}
 		});
-
-		// назначаем обработчики
 		buttonAdd.setOnClickListener(new OnClickListener()
 		{
 			@Override
@@ -217,6 +216,9 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 				}
 			}
 		});
+
+		// filling data
+		loadItemsList();
 	}
 
 	@Override
@@ -258,7 +260,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		editName.setAdapter(baseAdapter);
 	}
 
-	public static String printFoodMassed(FoodMassed food)
+	public static String formatFoodMassed(FoodMassed food)
 	{
 		return food.getName() + " (" + df.format(food.getMass()) + ")";
 	}
@@ -268,7 +270,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		final String[] temp = new String[entity.getData().count()];
 		for (int i = 0; i < entity.getData().count(); i++)
 		{
-			temp[i] = printFoodMassed(entity.getData().get(i));
+			temp[i] = formatFoodMassed(entity.getData().get(i));
 		}
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_2,
