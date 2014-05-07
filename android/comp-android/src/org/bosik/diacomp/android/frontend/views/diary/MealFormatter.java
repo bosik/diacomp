@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.frontend.views;
+package org.bosik.diacomp.android.frontend.views.diary;
 
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 
