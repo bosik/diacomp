@@ -34,6 +34,13 @@ public class FoodItem extends Food implements Serializable, NamedRelativeTagged
 		setFromTable(fromTable);
 	}
 
+	public FoodItem(FoodItem food)
+	{
+		super(food.getName(), food.getRelProts(), food.getRelFats(), food.getRelCarbs(), food.getRelValue());
+		setTag(food.getTag());
+		setFromTable(food.getFromTable());
+	}
+
 	// ================================ GET / SET ================================
 
 	@Override
