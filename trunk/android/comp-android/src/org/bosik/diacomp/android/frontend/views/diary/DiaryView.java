@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.frontend.views;
+package org.bosik.diacomp.android.frontend.views.diary;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
