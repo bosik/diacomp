@@ -92,7 +92,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <AutoCompleteTextView
+        <org.bosik.diacomp.android.frontend.views.FoodDishTextView
             android:id="@+id/mealFoodDishInput"
             android:layout_width="0px"
             android:layout_height="wrap_content"
@@ -108,7 +108,7 @@
             android:textColor="@android:color/black" >
 
             <requestFocus />
-        </AutoCompleteTextView>
+        </org.bosik.diacomp.android.frontend.views.FoodDishTextView>
 
         <EditText
             android:id="@+id/editItemMass"
