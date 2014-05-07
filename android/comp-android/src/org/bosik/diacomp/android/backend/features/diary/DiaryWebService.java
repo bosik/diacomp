@@ -51,7 +51,7 @@ public class DiaryWebService implements DiaryService
 		try
 		{
 			String query = String.format("api/diary/guid/%s", guid);
-			StdResponse resp = webClient.doGetSmart(query);
+			StdResponse resp = webClient.get(query);
 			return serializerV.read(resp.getResponse());
 		}
 		catch (NotFoundException e)
@@ -70,7 +70,7 @@ public class DiaryWebService implements DiaryService
 		try
 		{
 			String query = "api/diary/changes/?since=" + Utils.formatTimeUTC(time);
-			StdResponse resp = webClient.doGetSmart(query);
+			StdResponse resp = webClient.get(query);
 			return serializerV.readAll(resp.getResponse());
 		}
 		catch (Exception e)
@@ -90,7 +90,7 @@ public class DiaryWebService implements DiaryService
 			query += "&end_time=" + Utils.formatTimeUTC(toTime);
 			query += "&show_rem=" + Utils.formatBooleanStr(includeRemoved);
 
-			StdResponse resp = webClient.doGetSmart(query);
+			StdResponse resp = webClient.get(query);
 
 			return serializerV.readAll(resp.getResponse());
 		}
@@ -111,7 +111,7 @@ public class DiaryWebService implements DiaryService
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair("items", items));
 
-			webClient.doPutSmart(query, params, WebClient.CODEPAGE_UTF8);
+			webClient.put(query, params, WebClient.CODEPAGE_UTF8);
 		}
 		catch (Exception e)
 		{
