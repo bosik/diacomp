@@ -14,7 +14,6 @@ import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
-import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -52,18 +51,12 @@ public class DiaryWebService implements DiaryService
 		try
 		{
 			String query = String.format("api/diary/guid/%s", guid);
-			String s = webClient.doGetSmart(query);
-			StdResponse resp = new StdResponse(s);
-			WebClient.checkResponse(resp);
-
-			if (resp.getCode() == ResponseBuilder.CODE_OK)
-			{
-				return serializerV.read(resp.getResponse());
-			}
-			else
-			{
-				return null;
-			}
+			StdResponse resp = webClient.doGetSmart(query);
+			return serializerV.read(resp.getResponse());
+		}
+		catch (NotFoundException e)
+		{
+			return null;
 		}
 		catch (Exception e)
 		{
@@ -77,11 +70,7 @@ public class DiaryWebService implements DiaryService
 		try
 		{
 			String query = "api/diary/changes/?since=" + Utils.formatTimeUTC(time);
-
-			String s = webClient.doGetSmart(query);
-			StdResponse resp = new StdResponse(s);
-			WebClient.checkResponse(resp);
-
+			StdResponse resp = webClient.doGetSmart(query);
 			return serializerV.readAll(resp.getResponse());
 		}
 		catch (Exception e)
@@ -101,9 +90,7 @@ public class DiaryWebService implements DiaryService
 			query += "&end_time=" + Utils.formatTimeUTC(toTime);
 			query += "&show_rem=" + Utils.formatBooleanStr(includeRemoved);
 
-			String s = webClient.doGetSmart(query);
-			StdResponse resp = new StdResponse(s);
-			WebClient.checkResponse(resp);
+			StdResponse resp = webClient.doGetSmart(query);
 
 			return serializerV.readAll(resp.getResponse());
 		}
@@ -124,9 +111,7 @@ public class DiaryWebService implements DiaryService
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair("items", items));
 
-			String s = webClient.doPutSmart(query, params, WebClient.CODEPAGE_UTF8);
-			StdResponse resp = new StdResponse(s);
-			WebClient.checkResponse(resp);
+			webClient.doPutSmart(query, params, WebClient.CODEPAGE_UTF8);
 		}
 		catch (Exception e)
 		{

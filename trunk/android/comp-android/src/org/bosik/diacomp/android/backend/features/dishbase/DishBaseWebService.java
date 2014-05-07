@@ -11,7 +11,6 @@ import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
-import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -56,7 +55,7 @@ public class DishBaseWebService implements DishBaseService
 		}
 
 		item.setDeleted(true);
-		save(Arrays.asList(item));
+		save(Arrays.<Versioned<DishItem>> asList(item));
 	}
 
 	@Override
@@ -65,11 +64,7 @@ public class DishBaseWebService implements DishBaseService
 		try
 		{
 			String url = String.format("api/dish/all/?show_rem=%s", Utils.formatBooleanInt(includeRemoved));
-			String str = webClient.doGetSmart(url);
-
-			StdResponse resp = new StdResponse(str);
-			WebClient.checkResponse(resp);
-
+			StdResponse resp = webClient.doGetSmart(url);
 			return serializer.readAll(resp.getResponse());
 		}
 		catch (Exception e)
@@ -84,11 +79,7 @@ public class DishBaseWebService implements DishBaseService
 		try
 		{
 			String url = String.format("api/dish/search/?q=%s", filter);
-			String str = webClient.doGetSmart(url);
-
-			StdResponse resp = new StdResponse(str);
-			WebClient.checkResponse(resp);
-
+			StdResponse resp = webClient.doGetSmart(url);
 			return serializer.readAll(resp.getResponse());
 		}
 		catch (Exception e)
@@ -103,11 +94,7 @@ public class DishBaseWebService implements DishBaseService
 		try
 		{
 			String url = String.format("api/dish/changes/?since=%s", Utils.formatTimeUTC(since));
-			String str = webClient.doGetSmart(url);
-
-			StdResponse resp = new StdResponse(str);
-			WebClient.checkResponse(resp);
-
+			StdResponse resp = webClient.doGetSmart(url);
 			return serializer.readAll(resp.getResponse());
 		}
 		catch (Exception e)
@@ -129,14 +116,12 @@ public class DishBaseWebService implements DishBaseService
 		try
 		{
 			String url = String.format("api/dish/guid/%s", guid);
-			String str = webClient.doGetSmart(url);
-
-			StdResponse resp = new StdResponse(str);
-			WebClient.checkResponse(resp);
-
-			Versioned<DishItem> item = resp.getCode() != ResponseBuilder.CODE_NOTFOUND ? serializer.read(resp
-					.getResponse()) : null;
-			return item;
+			StdResponse resp = webClient.doGetSmart(url);
+			return serializer.read(resp.getResponse());
+		}
+		catch (NotFoundException e)
+		{
+			return null;
 		}
 		catch (Exception e)
 		{
@@ -148,15 +133,11 @@ public class DishBaseWebService implements DishBaseService
 	public void save(List<Versioned<DishItem>> items) throws NotFoundException, PersistenceException
 	{
 		String url = "api/dish/";
-		String str = null;
 		try
 		{
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair("items", serializer.writeAll(items)));
-			str = webClient.doPutSmart(url, params, WebClient.CODEPAGE_UTF8);
-
-			StdResponse resp = new StdResponse(str);
-			WebClient.checkResponse(resp);
+			webClient.doPutSmart(url, params, WebClient.CODEPAGE_UTF8);
 		}
 		catch (Exception e)
 		{
