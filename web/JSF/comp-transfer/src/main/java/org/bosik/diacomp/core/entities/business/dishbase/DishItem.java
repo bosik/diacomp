@@ -96,17 +96,29 @@ public class DishItem implements NamedRelativeTagged, Serializable
 		this.tag = tag;
 	}
 
+	private double getRel(double total)
+	{
+		double realMass = getRealMass();
+		if (realMass > Utils.EPS)
+		{
+			return total / realMass;
+		}
+		else
+		{
+			return 0.0;
+		}
+	}
+
 	@Override
 	public double getRelProts()
 	{
-		double result = 0.0;
+		double total = 0.0;
 		for (FoodMassed item : content)
 		{
-			result += item.getProts();
+			total += item.getProts();
 		}
 
-		// TODO: implement zero-check
-		return result / getRealMass();
+		return getRel(total);
 	}
 
 	@Override
@@ -118,34 +130,31 @@ public class DishItem implements NamedRelativeTagged, Serializable
 			result += item.getFats();
 		}
 
-		// TODO: implement zero-check
-		return result / getRealMass();
+		return getRel(result);
 	}
 
 	@Override
 	public double getRelCarbs()
 	{
-		double result = 0.0;
+		double total = 0.0;
 		for (FoodMassed item : content)
 		{
-			result += item.getCarbs();
+			total += item.getCarbs();
 		}
 
-		// TODO: implement zero-check
-		return result / getRealMass();
+		return getRel(total);
 	}
 
 	@Override
 	public double getRelValue()
 	{
-		double result = 0.0;
+		double total = 0.0;
 		for (FoodMassed item : content)
 		{
-			result += item.getValue();
+			total += item.getValue();
 		}
 
-		// TODO: implement zero-check
-		return result / getRealMass();
+		return getRel(total);
 	}
 
 	// =================================== LIST METHODS ===================================
