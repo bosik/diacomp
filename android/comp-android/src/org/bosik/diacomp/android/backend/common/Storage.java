@@ -305,7 +305,6 @@ public class Storage
 
 	// private static void speedTest()
 	// {
-	// // TODO Auto-generated method stub
 	// Serializer<Versioned<FoodItem>> serializer = new SerializerFoodItem();
 	// List<Versioned<FoodItem>> items = localFoodBase.findAll(true);
 	//
