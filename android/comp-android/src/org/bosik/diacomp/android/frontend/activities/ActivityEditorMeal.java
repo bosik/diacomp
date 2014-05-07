@@ -1,8 +1,11 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
@@ -32,25 +35,24 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.TimePicker.OnTimeChangedListener;
 
 public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 {
-	// отладочная печать
-	private static final String				TAG			= ActivityEditorMeal.class.getSimpleName();
+	// private static final String TAG = ActivityEditorMeal.class.getSimpleName();
 
 	private static final DecimalFormat		df			= new DecimalFormat("###.#");
 	private static final Sorter<FoodItem>	sorterFood	= new Sorter<FoodItem>();
-	private static final Sorter<DishItem>	sorterDish	= new Sorter<DishItem>();
+	// private static final Sorter<DishItem> sorterDish = new Sorter<DishItem>();
+	private final Map<String, Integer>		tagInfo		= Storage.tagService.getTags();
 
 	// data
-	private List<Versioned<FoodItem>>		foodBase;
-	private List<Versioned<DishItem>>		dishBase;
 	boolean									modified	= false;
 
-	// компоненты
+	// components
 	private TimePicker						timePicker;
 	private DatePicker						datePicker;
 	private AutoCompleteTextView			editName;
@@ -59,9 +61,23 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 	private ListView						list;
 	private TextView						textMealCarbs;
 	private TextView						textMealDose;
+
 	private String							captionCarbs;
 	private String							captionDose;
 	private String							captionGramm;
+
+	// ======================================================================================================
+	// Array of strings storing country names
+	// String[] countries = new String[] { "Food", "Dish" };
+
+	// Array of integers points to images stored in /res/drawable-ldpi/
+	int[]									flags		= new int[] { R.drawable.button_foodbase,
+			R.drawable.button_dishbase					};
+
+	// Array of strings to store currencies
+	String[]								currency	= new String[] { "Indian Rupee", "Pakistani Rupee" };
+
+	// ======================================================================================================
 
 	@Override
 	protected void setupInterface()
@@ -122,7 +138,6 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 
 				final EditText input = new EditText(ActivityEditorMeal.this);
 
-				// Utils.
 				input.setText(Utils.formatDoubleShort(entity.getData().get(position).getMass()));
 				input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
 				builder.setTitle("Change mass");
@@ -236,33 +251,101 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 
 	private void loadItemsList()
 	{
-		foodBase = Storage.localFoodBase.findAll(false);
-		sorterFood.sort(foodBase, Sorter.Sort.RELEVANT);
+		// preparing storages
+		List<Versioned<FoodItem>> foodBase = Storage.localFoodBase.findAll(false);
+		List<Versioned<DishItem>> dishBase = Storage.localDishBase.findAll(false);
+		// THINK: what is proper array type?
+		List<Versioned<FoodItem>> fdBase = new ArrayList<Versioned<FoodItem>>();
 
-		dishBase = Storage.localDishBase.findAll(false);
-		sorterDish.sort(dishBase, Sorter.Sort.RELEVANT);
-
-		// TODO: wrong solution, sorting should be applied after building full food/dish list
-
-		String[] items = new String[foodBase.size() + dishBase.size()];
-
-		int i = 0;
+		// filling: food
 		for (Versioned<FoodItem> food : foodBase)
 		{
-			items[i++] = food.getData().getName();
+			FoodItem data = new FoodItem(food.getData());
+			Integer tag = tagInfo.get(food.getId());
+			data.setTag(tag != null ? tag : 0);
+
+			fdBase.add(new Versioned<FoodItem>(data));
 		}
+
+		// filling: dish
 		for (Versioned<DishItem> dish : dishBase)
 		{
-			items[i++] = dish.getData().getName();
+			FoodItem data = new FoodItem();
+			data.setName(dish.getData().getName());
+			data.setRelProts(dish.getData().getRelProts());
+			data.setRelFats(dish.getData().getRelFats());
+			data.setRelCarbs(dish.getData().getRelCarbs());
+			data.setRelValue(dish.getData().getRelValue());
+
+			Versioned<FoodItem> item = new Versioned<FoodItem>();
+			item.setId(dish.getId());
+			item.setTimeStamp(dish.getTimeStamp()); // actually need?
+			item.setVersion(item.getVersion()); // actually need?
+			item.setDeleted(dish.isDeleted()); // actually need?
+			item.setData(data);
+
+			fdBase.add(item);
 		}
 
-		ArrayAdapter<String> baseAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
-		editName.setAdapter(baseAdapter);
-	}
+		// ordering
+		sorterFood.sort(fdBase, Sorter.Sort.RELEVANT);
+		//
+		// // showing
+		// String[] items = new String[fdBase.size()];
+		// int i = 0;
+		// for (Versioned<FoodItem> item : fdBase)
+		// {
+		// items[i++] = item.getData().getName();
+		// }
+		//
+		// ArrayAdapter<String> baseAdapter = new ArrayAdapter<String>(this,
+		// android.R.layout.simple_list_item_1, items)
+		// {
+		// // @Override
+		// // public View getView(int position, View convertView, ViewGroup parent)
+		// // {
+		// // View view = super.getView(position, convertView, parent);
+		// // TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+		// // // TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+		// //
+		// // FoodItem data = fdBase.get(position).getData();
+		// // text1.setText(data.getName());
+		// // // text2.setText(String.valueOf(data.getRelCarbs()));
+		// // return view;
+		// // }
+		// };
+		// editName.setAdapter(baseAdapter);
 
-	public static String formatFoodMassed(FoodMassed food)
-	{
-		return food.getName() + " (" + df.format(food.getMass()) + ")";
+		// ================================================================================================
+
+		List<HashMap<String, String>> aList = new ArrayList<HashMap<String, String>>();
+
+		for (int i = 0; i < fdBase.size(); i++)
+		{
+			HashMap<String, String> hm = new HashMap<String, String>();
+			hm.put("txt", fdBase.get(i).getData().getName());
+			hm.put("flag", Integer.toString(R.drawable.button_foodbase));
+			aList.add(hm);
+		}
+
+		// Keys used in Hashmap
+		String[] from = { "flag", "txt" };
+
+		// Ids of views in listview_layout
+		int[] to = { R.id.itemIcon, R.id.itemDescription };
+
+		editName.setAdapter(new SimpleAdapter(getBaseContext(), aList, R.layout.fooddishautocomplete, from, to));
+		editName.setOnItemClickListener(new OnItemClickListener()
+		{
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id)
+			{
+				// HashMap<String, String> hm = (HashMap<String, String>)
+				// arg0.getAdapter().getItem(position);
+				// hm.get("txt"));
+				editMass.requestFocus();
+			}
+		});
 	}
 
 	void showMeal()
@@ -270,7 +353,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		final String[] temp = new String[entity.getData().count()];
 		for (int i = 0; i < entity.getData().count(); i++)
 		{
-			temp[i] = formatFoodMassed(entity.getData().get(i));
+			temp[i] = "stub";
 		}
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_2,
@@ -310,7 +393,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		if (name.trim().isEmpty())
 		{
 			// TODO: localize
-			UIUtils.showTip(this, "Enter food or dish name");
+			UIUtils.showTip(this, "Enter food/dish name");
 			editName.requestFocus();
 			return;
 		}
@@ -323,7 +406,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		catch (NumberFormatException e)
 		{
 			// TODO: localize
-			UIUtils.showTip(this, "Enter food or dish name");
+			UIUtils.showTip(this, "Enter mass");
 			editMass.requestFocus();
 			return;
 		}
@@ -349,10 +432,8 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 
 			showMeal();
 
-			Log.v("XXX", "ADDED: " + item);
 			editMass.setText("");
 			editName.setText("");
-			Log.v(TAG, "Moving focus to name field");
 			editName.requestFocus();
 
 			return;
@@ -378,10 +459,8 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 
 			showMeal();
 
-			Log.v("XXX", "ADDED: " + item);
 			editMass.setText("");
 			editName.setText("");
-			Log.v(TAG, "Moving focus to name field");
 			editName.requestFocus();
 
 			return;
