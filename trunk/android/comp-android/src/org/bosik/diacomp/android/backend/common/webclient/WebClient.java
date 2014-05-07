@@ -116,7 +116,7 @@ public class WebClient
 
 			return responseContent;
 		}
-		catch (Exception e)
+		catch (IOException e)
 		{
 			throw new ConnectionException("Failed to request " + url, e);
 		}
@@ -150,7 +150,7 @@ public class WebClient
 
 			return formatResponse(resp, codePage);
 		}
-		catch (Exception e)
+		catch (IOException e)
 		{
 			throw new ConnectionException("Failed to request " + url, e);
 		}
@@ -180,7 +180,7 @@ public class WebClient
 		}
 	}
 
-	public StdResponse doGetSmart(String URL, String codePage) throws WebClientException
+	public StdResponse get(String URL, String codePage) throws WebClientException
 	{
 		String s = doGet(URL, codePage);
 		StdResponse resp = new StdResponse(s);
@@ -203,12 +203,12 @@ public class WebClient
 	 * @return
 	 * @throws WebClientException
 	 */
-	public StdResponse doGetSmart(String URL) throws WebClientException
+	public StdResponse get(String URL) throws WebClientException
 	{
-		return doGetSmart(URL, CODEPAGE_UTF8);
+		return get(URL, CODEPAGE_UTF8);
 	}
 
-	public StdResponse doPostSmart(String URL, List<NameValuePair> params, String codePage) throws WebClientException
+	public StdResponse post(String URL, List<NameValuePair> params, String codePage) throws WebClientException
 	{
 		String s = doPost(URL, params, codePage);
 		StdResponse resp = new StdResponse(s);
@@ -224,7 +224,7 @@ public class WebClient
 		return resp;
 	}
 
-	public StdResponse doPutSmart(String URL, List<NameValuePair> params, String codePage) throws WebClientException
+	public StdResponse put(String URL, List<NameValuePair> params, String codePage) throws WebClientException
 	{
 		String s = doPut(URL, params, codePage);
 		StdResponse resp = new StdResponse(s);

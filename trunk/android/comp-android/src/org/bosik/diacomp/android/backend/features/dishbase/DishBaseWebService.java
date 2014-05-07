@@ -64,7 +64,7 @@ public class DishBaseWebService implements DishBaseService
 		try
 		{
 			String url = String.format("api/dish/all/?show_rem=%s", Utils.formatBooleanInt(includeRemoved));
-			StdResponse resp = webClient.doGetSmart(url);
+			StdResponse resp = webClient.get(url);
 			return serializer.readAll(resp.getResponse());
 		}
 		catch (Exception e)
@@ -79,7 +79,7 @@ public class DishBaseWebService implements DishBaseService
 		try
 		{
 			String url = String.format("api/dish/search/?q=%s", filter);
-			StdResponse resp = webClient.doGetSmart(url);
+			StdResponse resp = webClient.get(url);
 			return serializer.readAll(resp.getResponse());
 		}
 		catch (Exception e)
@@ -94,7 +94,7 @@ public class DishBaseWebService implements DishBaseService
 		try
 		{
 			String url = String.format("api/dish/changes/?since=%s", Utils.formatTimeUTC(since));
-			StdResponse resp = webClient.doGetSmart(url);
+			StdResponse resp = webClient.get(url);
 			return serializer.readAll(resp.getResponse());
 		}
 		catch (Exception e)
@@ -116,7 +116,7 @@ public class DishBaseWebService implements DishBaseService
 		try
 		{
 			String url = String.format("api/dish/guid/%s", guid);
-			StdResponse resp = webClient.doGetSmart(url);
+			StdResponse resp = webClient.get(url);
 			return serializer.read(resp.getResponse());
 		}
 		catch (NotFoundException e)
@@ -137,7 +137,7 @@ public class DishBaseWebService implements DishBaseService
 		{
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair("items", serializer.writeAll(items)));
-			webClient.doPutSmart(url, params, WebClient.CODEPAGE_UTF8);
+			webClient.put(url, params, WebClient.CODEPAGE_UTF8);
 		}
 		catch (Exception e)
 		{

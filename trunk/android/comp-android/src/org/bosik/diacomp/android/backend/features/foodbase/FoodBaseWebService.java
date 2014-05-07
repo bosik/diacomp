@@ -64,7 +64,7 @@ public class FoodBaseWebService implements FoodBaseService
 		try
 		{
 			String url = String.format("api/food/all/?show_rem=%s", Utils.formatBooleanInt(includeRemoved));
-			StdResponse resp = webClient.doGetSmart(url);
+			StdResponse resp = webClient.get(url);
 			return serializer.readAll(resp.getResponse());
 		}
 		catch (Exception e)
@@ -79,7 +79,7 @@ public class FoodBaseWebService implements FoodBaseService
 		try
 		{
 			String url = String.format("api/food/search/?q=%s", filter);
-			StdResponse resp = webClient.doGetSmart(url);
+			StdResponse resp = webClient.get(url);
 			return serializer.readAll(resp.getResponse());
 		}
 		catch (Exception e)
@@ -94,7 +94,7 @@ public class FoodBaseWebService implements FoodBaseService
 		try
 		{
 			String url = String.format("api/food/changes/?since=%s", Utils.formatTimeUTC(since));
-			StdResponse resp = webClient.doGetSmart(url);
+			StdResponse resp = webClient.get(url);
 			return serializer.readAll(resp.getResponse());
 		}
 		catch (Exception e)
@@ -116,7 +116,7 @@ public class FoodBaseWebService implements FoodBaseService
 		try
 		{
 			String url = String.format("api/food/guid/%s", guid);
-			StdResponse resp = webClient.doGetSmart(url);
+			StdResponse resp = webClient.get(url);
 			return serializer.read(resp.getResponse());
 		}
 		catch (NotFoundException e)
@@ -137,7 +137,7 @@ public class FoodBaseWebService implements FoodBaseService
 		{
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair("items", serializer.writeAll(items)));
-			webClient.doPutSmart(url, params, WebClient.CODEPAGE_UTF8);
+			webClient.put(url, params, WebClient.CODEPAGE_UTF8);
 		}
 		catch (Exception e)
 		{
