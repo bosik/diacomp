@@ -11,7 +11,6 @@ import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
-import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
@@ -65,11 +64,7 @@ public class FoodBaseWebService implements FoodBaseService
 		try
 		{
 			String url = String.format("api/food/all/?show_rem=%s", Utils.formatBooleanInt(includeRemoved));
-			String str = webClient.doGetSmart(url);
-
-			StdResponse resp = new StdResponse(str);
-			WebClient.checkResponse(resp);
-
+			StdResponse resp = webClient.doGetSmart(url);
 			return serializer.readAll(resp.getResponse());
 		}
 		catch (Exception e)
@@ -84,11 +79,7 @@ public class FoodBaseWebService implements FoodBaseService
 		try
 		{
 			String url = String.format("api/food/search/?q=%s", filter);
-			String str = webClient.doGetSmart(url);
-
-			StdResponse resp = new StdResponse(str);
-			WebClient.checkResponse(resp);
-
+			StdResponse resp = webClient.doGetSmart(url);
 			return serializer.readAll(resp.getResponse());
 		}
 		catch (Exception e)
@@ -103,11 +94,7 @@ public class FoodBaseWebService implements FoodBaseService
 		try
 		{
 			String url = String.format("api/food/changes/?since=%s", Utils.formatTimeUTC(since));
-			String str = webClient.doGetSmart(url);
-
-			StdResponse resp = new StdResponse(str);
-			WebClient.checkResponse(resp);
-
+			StdResponse resp = webClient.doGetSmart(url);
 			return serializer.readAll(resp.getResponse());
 		}
 		catch (Exception e)
@@ -129,14 +116,12 @@ public class FoodBaseWebService implements FoodBaseService
 		try
 		{
 			String url = String.format("api/food/guid/%s", guid);
-			String str = webClient.doGetSmart(url);
-
-			StdResponse resp = new StdResponse(str);
-			WebClient.checkResponse(resp);
-
-			Versioned<FoodItem> item = resp.getCode() != ResponseBuilder.CODE_NOTFOUND ? serializer.read(resp
-					.getResponse()) : null;
-			return item;
+			StdResponse resp = webClient.doGetSmart(url);
+			return serializer.read(resp.getResponse());
+		}
+		catch (NotFoundException e)
+		{
+			return null;
 		}
 		catch (Exception e)
 		{
@@ -148,15 +133,11 @@ public class FoodBaseWebService implements FoodBaseService
 	public void save(List<Versioned<FoodItem>> items) throws NotFoundException, PersistenceException
 	{
 		String url = "api/food/";
-		String str = null;
 		try
 		{
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair("items", serializer.writeAll(items)));
-			str = webClient.doPutSmart(url, params, WebClient.CODEPAGE_UTF8);
-
-			StdResponse resp = new StdResponse(str);
-			WebClient.checkResponse(resp);
+			webClient.doPutSmart(url, params, WebClient.CODEPAGE_UTF8);
 		}
 		catch (Exception e)
 		{

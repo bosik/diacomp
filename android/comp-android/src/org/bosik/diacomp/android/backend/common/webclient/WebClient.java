@@ -29,47 +29,40 @@ import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.json.JSONException;
-import android.util.Log;
 
 public class WebClient
 {
-	private static String		TAG				= WebClient.class.getSimpleName();
+	// private static String TAG = WebClient.class.getSimpleName();
 
 	/* ================ КОНСТАНТЫ ================ */
 
-	private static final int	API_VERSION		= 20;
-	@Deprecated
-	private static final String	URL_LOGINPAGE	= "login.php";
-	@Deprecated
-	private static final String	URL_CONSOLE		= "console.php";
-	@Deprecated
-	private static final String	RESPONSE_ONLINE	= "online";
+	private static final int	API_VERSION			= 20;
 	// TODO: verify if this codepage is necessary
-	public static final String	CODEPAGE_CP1251	= "Cp1251";
-	public static final String	CODEPAGE_UTF8	= "UTF-8";
+	public static final String	CODEPAGE_CP1251		= "Cp1251";
+	public static final String	CODEPAGE_UTF8		= "UTF-8";
 
-	private static final String	CODE_SPACE		= "%20";
+	private static final String	CODE_SPACE			= "%20";
 
 	/* ================ ПОЛЯ ================ */
 
-	private HttpClient			mHttpClient		= null;
-	private boolean				logged			= false;
-	private String				username		= "";								// not
-																					// null!
-	private String				password		= "";
-	private String				server			= "";
+	private HttpClient			mHttpClient			= null;
+	private String				username			= "";		// not
+																// null!
+	private String				password			= "";
+	private String				server				= "";
 
-	private final long				lastRequestTime	= 0;
-	private static final long	TIME_LIMIT		= 200;
+	private final long			lastRequestTime		= 0;
+	private static final long	MIN_REQUEST_DELAY	= 200;
 
 	/* ================================ ЗАПРОСЫ ================================ */
 
 	/**
 	 * Преобразует ответ сервера в строку
-	 *
+	 * 
 	 * @param resp
 	 *            Ответ сервера
 	 * @return Строка
@@ -99,7 +92,7 @@ public class WebClient
 
 	/**
 	 * Выполняет get-запрос
-	 *
+	 * 
 	 * @param url
 	 *            Запрашиваемый адрес
 	 * @return Ответ сервера
@@ -108,9 +101,9 @@ public class WebClient
 	private String doGet(String url, String codePage) throws WebClientException
 	{
 		long now = System.currentTimeMillis();
-		if ((now - lastRequestTime) < TIME_LIMIT)
+		if ((now - lastRequestTime) < MIN_REQUEST_DELAY)
 		{
-			Utils.sleep(TIME_LIMIT - (now - lastRequestTime));
+			Utils.sleep(MIN_REQUEST_DELAY - (now - lastRequestTime));
 		}
 
 		// Log.i(TAG(), "doGet(), URL='" + URL + "'");
@@ -119,7 +112,9 @@ public class WebClient
 			url = server + url;
 			// TODO: check if %20 replacement is necessary
 			HttpResponse resp = mHttpClient.execute(new HttpGet(url.replace(" ", CODE_SPACE)));
-			return formatResponse(resp, codePage);
+			String responseContent = formatResponse(resp, codePage);
+
+			return responseContent;
 		}
 		catch (Exception e)
 		{
@@ -129,7 +124,7 @@ public class WebClient
 
 	/**
 	 * Выполняет post-запрос
-	 *
+	 * 
 	 * @param url
 	 *            Запрашиваемый адрес
 	 * @param params
@@ -140,9 +135,9 @@ public class WebClient
 	private String doPost(String url, List<NameValuePair> params, String codePage) throws WebClientException
 	{
 		long now = System.currentTimeMillis();
-		if ((now - lastRequestTime) < TIME_LIMIT)
+		if ((now - lastRequestTime) < MIN_REQUEST_DELAY)
 		{
-			Utils.sleep(TIME_LIMIT - (now - lastRequestTime));
+			Utils.sleep(MIN_REQUEST_DELAY - (now - lastRequestTime));
 		}
 
 		try
@@ -164,9 +159,9 @@ public class WebClient
 	private String doPut(String url, List<NameValuePair> params, String codePage) throws WebClientException
 	{
 		long now = System.currentTimeMillis();
-		if ((now - lastRequestTime) < TIME_LIMIT)
+		if ((now - lastRequestTime) < MIN_REQUEST_DELAY)
 		{
-			Utils.sleep(TIME_LIMIT - (now - lastRequestTime));
+			Utils.sleep(MIN_REQUEST_DELAY - (now - lastRequestTime));
 		}
 
 		try
@@ -185,77 +180,74 @@ public class WebClient
 		}
 	}
 
-	public String doGetSmart(String URL, String codePage) throws WebClientException
+	public StdResponse doGetSmart(String URL, String codePage) throws WebClientException
 	{
 		String s = doGet(URL, codePage);
 		StdResponse resp = new StdResponse(s);
 
 		if (resp.getCode() == ResponseBuilder.CODE_UNAUTHORIZED)
 		{
-			Log.v(TAG, "doGetSmart(): Session timeout; re-login");
 			login();
-			return doGet(URL, codePage);
+			s = doGet(URL, codePage);
+			resp = new StdResponse(s);
 		}
-		else
-		{
-			return s;
-		}
+
+		checkResponse(resp);
+		return resp;
 	}
 
 	/**
 	 * Uses UTF-8 encoding by default
-	 *
+	 * 
 	 * @param URL
 	 * @return
 	 * @throws WebClientException
 	 */
-	public String doGetSmart(String URL) throws WebClientException
+	public StdResponse doGetSmart(String URL) throws WebClientException
 	{
 		return doGetSmart(URL, CODEPAGE_UTF8);
 	}
 
-	public String doPostSmart(String URL, List<NameValuePair> params, String codePage) throws WebClientException
+	public StdResponse doPostSmart(String URL, List<NameValuePair> params, String codePage) throws WebClientException
 	{
 		String s = doPost(URL, params, codePage);
 		StdResponse resp = new StdResponse(s);
 
 		if (resp.getCode() == ResponseBuilder.CODE_UNAUTHORIZED)
 		{
-			Log.v(TAG, "doPostSmart(): Session timeout; re-login");
 			login();
-			return doPost(URL, params, codePage);
+			s = doPost(URL, params, codePage);
+			resp = new StdResponse(s);
 		}
-		else
-		{
-			return s;
-		}
+
+		checkResponse(resp);
+		return resp;
 	}
 
-	public String doPutSmart(String URL, List<NameValuePair> params, String codePage) throws WebClientException
+	public StdResponse doPutSmart(String URL, List<NameValuePair> params, String codePage) throws WebClientException
 	{
 		String s = doPut(URL, params, codePage);
 		StdResponse resp = new StdResponse(s);
 
 		if (resp.getCode() == ResponseBuilder.CODE_UNAUTHORIZED)
 		{
-			Log.v(TAG, "doPostSmart(): Session timeout; re-login");
 			login();
-			return doPut(URL, params, codePage);
+			s = doPut(URL, params, codePage);
+			resp = new StdResponse(s);
 		}
-		else
-		{
-			return s;
-		}
+
+		checkResponse(resp);
+		return resp;
 	}
 
-	public static void checkResponse(StdResponse resp) throws CommonServiceException
+	private static void checkResponse(StdResponse resp) throws CommonServiceException
 	{
 		switch (resp.getCode())
 		{
 			case ResponseBuilder.CODE_OK:
 				return;
 			case ResponseBuilder.CODE_NOTFOUND:
-				return;
+				throw new NotFoundException(null);
 			case ResponseBuilder.CODE_UNAUTHORIZED:
 				throw new NotAuthorizedException(resp.getResponse());
 			case ResponseBuilder.CODE_BADCREDENTIALS:
@@ -266,38 +258,6 @@ public class WebClient
 				throw new DeprecatedAPIException(resp.getResponse());
 			default: // case ResponseBuilder.CODE_FAIL:
 				throw new CommonServiceException("#" + resp.getCode() + ": " + resp.getResponse());
-		}
-	}
-
-	private static void processResponse(String resp)
-	{
-		try
-		{
-			StdResponse stdResp = new StdResponse(resp);
-
-			switch (stdResp.getCode())
-			{
-				case ResponseBuilder.CODE_OK:
-				{
-					return;
-				}
-
-				// TODO: add another code handlers
-
-				default:
-				{
-					throw new TaskExecutionException(stdResp.getCode(), stdResp.getResponse());
-				}
-			}
-		}
-		catch (JSONException e)
-		{
-			/**
-			 * Android's default JSONException is checked, Maven's one isn't. If you got some
-			 * problems with it, verify if Maven dependency loads before Android's in project's
-			 * build path.
-			 */
-			throw new ResponseFormatException("Invalid JSON respose: " + resp);
 		}
 	}
 
@@ -324,7 +284,6 @@ public class WebClient
 		if (!this.username.equals(username))
 		{
 			this.username = username;
-			logged = false;
 		}
 	}
 
@@ -338,7 +297,6 @@ public class WebClient
 		if (!this.password.equals(password))
 		{
 			this.password = password;
-			logged = false;
 		}
 	}
 
@@ -362,7 +320,6 @@ public class WebClient
 		if (!this.server.equals(server))
 		{
 			this.server = server;
-			logged = false;
 		}
 	}
 
@@ -370,11 +327,8 @@ public class WebClient
 
 	/* ---------------------------------- ОБЩЕЕ ---------------------------------- */
 
-	@Deprecated
 	public void login() throws WebClientException
 	{
-		logged = false;
-
 		// проверки
 
 		boolean undefServer = (null == server) || server.equals("");
@@ -416,7 +370,6 @@ public class WebClient
 				{
 					case ResponseBuilder.CODE_OK:
 					{
-						logged = true;
 						break;
 					}
 					case ResponseBuilder.CODE_BADCREDENTIALS:
@@ -447,44 +400,9 @@ public class WebClient
 	}
 
 	@Deprecated
-	public boolean isOnline(boolean forceUpdate)
-	{
-		if (forceUpdate)
-		{
-			logged = false;
-
-			try
-			{
-				String resp = doGet(URL_LOGINPAGE + "?status", CODEPAGE_CP1251);
-				logged = RESPONSE_ONLINE.equals(resp);
-			}
-			catch (WebClientException e)
-			{
-				return false;
-			}
-		}
-
-		return logged;
-	}
-
-	@Deprecated
-	public boolean isOnline()
-	{
-		return isOnline(false);
-	}
-
-	@Deprecated
 	public void sendMail(String string)
 	{
-		// конструируем запрос
-		List<NameValuePair> p = new ArrayList<NameValuePair>();
-		p.add(new BasicNameValuePair("report", ""));
-		p.add(new BasicNameValuePair("msg", string));
-
-		// отправляем на сервер
-		String resp = doPostSmart(server + URL_CONSOLE, p, CODEPAGE_CP1251);
-
-		// обрабатываем результат
-		processResponse(resp);
+		// TODO: move it to mailing service
+		throw new UnsupportedOperationException("Sending mail is not implemented yet");
 	}
 }
