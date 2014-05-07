@@ -104,6 +104,16 @@ public class DiaryLocalService implements DiaryService
 	public List<Versioned<DiaryRecord>> findBetween(Date fromDate, Date toDate, boolean includeRemoved)
 			throws CommonServiceException
 	{
+		if (fromDate == null)
+		{
+			throw new NullPointerException("fromDate is null");
+		}
+
+		if (toDate == null)
+		{
+			throw new NullPointerException("toDate is null");
+		}
+
 		Log.d(TAG,
 				String.format("Searching for items between %s and %s", Utils.formatTimeUTC(fromDate),
 						Utils.formatTimeUTC(toDate)));
