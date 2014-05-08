@@ -2,41 +2,36 @@ package org.bosik.diacomp.android.frontend.activities;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
-import org.bosik.diacomp.android.frontend.views.FoodDishTextView;
+import org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker;
+import org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker.Item;
+import org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker.OnSubmitListener;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
-import org.bosik.diacomp.core.services.search.Sorter;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.text.InputType;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.TimePicker.OnTimeChangedListener;
@@ -45,29 +40,23 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 {
 	// private static final String TAG = ActivityEditorMeal.class.getSimpleName();
 
-	private static final DecimalFormat		df			= new DecimalFormat("###.#");
-	private static final Sorter<FoodItem>	sorterFood	= new Sorter<FoodItem>();
-	// private static final Sorter<DishItem> sorterDish = new Sorter<DishItem>();
-	private final Map<String, Integer>		tagInfo		= Storage.tagService.getTags();
+	private static final DecimalFormat	df		= new DecimalFormat("###.#");
+	private final Map<String, Integer>	tagInfo	= Storage.tagService.getTags();
 
 	// data
-	boolean									modified	= false;
+	boolean								modified;
 
 	// components
-	private TimePicker						timePicker;
-	private DatePicker						datePicker;
+	private TimePicker					timePicker;
+	private DatePicker					datePicker;
+	private TextView					textMealCarbs;
+	private TextView					textMealDose;
+	private ListView					list;
+	private FoodDishPicker				fdPicker;
 
-	private AutoCompleteTextView			editName;
-	private EditText						editMass;
-	private Button							buttonAdd;
-
-	private ListView						list;
-	private TextView						textMealCarbs;
-	private TextView						textMealDose;
-
-	private String							captionCarbs;
-	private String							captionDose;
-	private String							captionGramm;
+	private String						captionCarbs;
+	private String						captionDose;
+	private String						captionGramm;
 
 	// ======================================================================================================
 
@@ -85,14 +74,10 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		timePicker = (TimePicker) findViewById(R.id.pickerMealTime);
 		timePicker.setIs24HourView(true);
 		datePicker = (DatePicker) findViewById(R.id.pickerMealDate);
-
-		editName = (AutoCompleteTextView) findViewById(R.id.mealFoodDishInput);
-		editMass = (EditText) findViewById(R.id.editItemMass);
-		buttonAdd = (Button) findViewById(R.id.button_additem);
-
-		list = (ListView) findViewById(R.id.ListView01);
 		textMealCarbs = (TextView) findViewById(R.id.textMealCarbs);
 		textMealDose = (TextView) findViewById(R.id.textMealDose);
+		list = (ListView) findViewById(R.id.ListView01);
+		fdPicker = (FoodDishPicker) findViewById(R.id.fdPickerMeal);
 
 		// list.setScroll
 		// list.setScrollContainer(false);
@@ -184,45 +169,59 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 				builder.show();
 			}
 		});
-		editMass.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-		editMass.setOnEditorActionListener(new TextView.OnEditorActionListener()
+		fdPicker.setOnSubmitLister(new OnSubmitListener()
 		{
 			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+			public boolean onSubmit(String name, double mass)
 			{
-				// super onEditorAction(v, actionId, event);
-				Log.d("XXX", "actionId = " + actionId);
-				Log.d("XXX", "EditorInfo.IME_ACTION_SEARCH = " + EditorInfo.IME_ACTION_SEARCH);
+				// try to search item in food base
 
-				if (actionId == EditorInfo.IME_ACTION_SEARCH)
+				Versioned<FoodItem> foodItem = Storage.localFoodBase.findOne(name);
+
+				if (foodItem != null)
 				{
-					// editMass.requestFocus();
-					Log.d("XXX", "It works!");
+					FoodItem food = foodItem.getData();
+
+					FoodMassed item = new FoodMassed();
+					item.setName(food.getName());
+					item.setRelProts(food.getRelProts());
+					item.setRelFats(food.getRelFats());
+					item.setRelCarbs(food.getRelCarbs());
+					item.setRelValue(food.getRelValue());
+					item.setMass(mass);
+
+					entity.getData().add(item);
+					modified = true;
+
+					showMeal();
 					return true;
 				}
 
-				if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED)
+				// try to search item in dish base
+
+				List<Versioned<DishItem>> listDish = Storage.localDishBase.findAny(name);
+
+				if (!listDish.isEmpty())
 				{
-					Log.d("XXX", "Enter pressed");
-					addItem();
-					// editName.requestFocus();
+					DishItem dish = listDish.get(0).getData();
+
+					FoodMassed item = new FoodMassed();
+					item.setName(dish.getName());
+					item.setRelProts(dish.getRelProts());
+					item.setRelFats(dish.getRelFats());
+					item.setRelCarbs(dish.getRelCarbs());
+					item.setRelValue(dish.getRelValue());
+					item.setMass(mass);
+
+					entity.getData().add(item);
+
+					showMeal();
 					return true;
 				}
 
+				UIUtils.showTip(ActivityEditorMeal.this, "Item not found: " + name);
+				fdPicker.focusName();
 				return false;
-			}
-		});
-		buttonAdd.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				switch (v.getId())
-				{
-					case R.id.button_additem:
-						addItem();
-						break;
-				}
 			}
 		});
 
@@ -230,116 +229,51 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		loadItemsList();
 	}
 
-	@Override
-	public void onBackPressed()
-	{
-		if (modified)
-		{
-			submit();
-		}
-		else
-		{
-			super.onBackPressed();
-		}
-	}
-
 	private void loadItemsList()
 	{
 		// preparing storages
 		List<Versioned<FoodItem>> foodBase = Storage.localFoodBase.findAll(false);
 		List<Versioned<DishItem>> dishBase = Storage.localDishBase.findAll(false);
-		// THINK: what is proper array type?
-		List<Versioned<FoodItem>> fdBase = new ArrayList<Versioned<FoodItem>>();
 
-		// filling: food
-		for (Versioned<FoodItem> food : foodBase)
+		List<Item> data = new ArrayList<Item>();
+
+		for (Versioned<FoodItem> item : foodBase)
 		{
-			FoodItem data = new FoodItem(food.getData());
-			Integer tag = tagInfo.get(food.getId());
-			data.setTag(tag != null ? tag : 0);
+			FoodItem itemData = item.getData();
 
-			fdBase.add(new Versioned<FoodItem>(data));
+			Integer tag = tagInfo.get(item.getId());
+			itemData.setTag(tag != null ? tag : 0);
+
+			data.add(new Item(itemData));
 		}
 
-		// filling: dish
-		for (Versioned<DishItem> dish : dishBase)
+		for (Versioned<DishItem> item : dishBase)
 		{
-			FoodItem data = new FoodItem();
-			data.setName(dish.getData().getName());
-			data.setRelProts(dish.getData().getRelProts());
-			data.setRelFats(dish.getData().getRelFats());
-			data.setRelCarbs(dish.getData().getRelCarbs());
-			data.setRelValue(dish.getData().getRelValue());
+			DishItem itemData = item.getData();
 
-			Versioned<FoodItem> item = new Versioned<FoodItem>();
-			item.setId(dish.getId());
-			item.setTimeStamp(dish.getTimeStamp()); // actually need?
-			item.setVersion(item.getVersion()); // actually need?
-			item.setDeleted(dish.isDeleted()); // actually need?
-			item.setData(data);
+			Integer tag = tagInfo.get(item.getId());
+			itemData.setTag(tag != null ? tag : 0);
 
-			fdBase.add(item);
+			data.add(new Item(itemData));
 		}
 
-		// ordering
-		sorterFood.sort(fdBase, Sorter.Sort.RELEVANT);
-		//
-		// // showing
-		// String[] items = new String[fdBase.size()];
-		// int i = 0;
-		// for (Versioned<FoodItem> item : fdBase)
-		// {
-		// items[i++] = item.getData().getName();
-		// }
-		//
-		// ArrayAdapter<String> baseAdapter = new ArrayAdapter<String>(this,
-		// android.R.layout.simple_list_item_1, items)
-		// {
-		// // @Override
-		// // public View getView(int position, View convertView, ViewGroup parent)
-		// // {
-		// // View view = super.getView(position, convertView, parent);
-		// // TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-		// // // TextView text2 = (TextView) view.findViewById(android.R.id.text2);
-		// //
-		// // FoodItem data = fdBase.get(position).getData();
-		// // text1.setText(data.getName());
-		// // // text2.setText(String.valueOf(data.getRelCarbs()));
-		// // return view;
-		// // }
-		// };
-		// editName.setAdapter(baseAdapter);
-
-		// ================================================================================================
-
-		List<HashMap<String, String>> aList = new ArrayList<HashMap<String, String>>();
-
-		for (int i = 0; i < fdBase.size(); i++)
-		{
-			HashMap<String, String> hm = new HashMap<String, String>();
-			hm.put(FoodDishTextView.FIELD_ICON, Integer.toString(R.drawable.button_foodbase));
-			hm.put(FoodDishTextView.FIELD_CAPTION, fdBase.get(i).getData().getName());
-			aList.add(hm);
-		}
-
-		// Keys used in Hashmap
-		String[] from = { FoodDishTextView.FIELD_ICON, FoodDishTextView.FIELD_CAPTION };
-
-		// Ids of views in layout
-		int[] to = { R.id.itemIcon, R.id.itemDescription };
-
-		editName.setAdapter(new SimpleAdapter(getBaseContext(), aList, R.layout.fooddishautocomplete, from, to));
-		editName.setOnItemClickListener(new OnItemClickListener()
+		Collections.sort(data, new Comparator<Item>()
 		{
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id)
+			public int compare(Item lhs, Item rhs)
 			{
-				// HashMap<String, String> hm = (HashMap<String, String>)
-				// arg0.getAdapter().getItem(position);
-				// hm.get(FoodDishTextView.FIELD_CAPTION));
-				editMass.requestFocus();
+				if (lhs.getData().getTag() == rhs.getData().getTag())
+				{
+					return lhs.getData().getName().compareTo(rhs.getData().getName());
+				}
+				else
+				{
+					return rhs.getData().getTag() - lhs.getData().getTag();
+				}
 			}
 		});
+
+		fdPicker.setData(data);
 	}
 
 	void showMeal()
@@ -381,91 +315,6 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		textMealDose.setText(String.format("%.1f %s", dose, captionDose));
 	}
 
-	void addItem()
-	{
-		String name = editName.getText().toString();
-		if (name.trim().isEmpty())
-		{
-			// TODO: localize
-			UIUtils.showTip(this, "Enter food/dish name");
-			editName.requestFocus();
-			return;
-		}
-
-		double mass;
-		try
-		{
-			mass = Utils.parseExpression(editMass.getText().toString());
-		}
-		catch (NumberFormatException e)
-		{
-			// TODO: localize
-			UIUtils.showTip(this, "Enter mass");
-			editMass.requestFocus();
-			return;
-		}
-
-		// ======================================================================
-
-		// try to search item in food base
-
-		Versioned<FoodItem> foodItem = Storage.localFoodBase.findOne(name);
-
-		if (foodItem != null)
-		{
-			FoodItem food = foodItem.getData();
-
-			FoodMassed item = new FoodMassed();
-			item.setName(food.getName());
-			item.setRelProts(food.getRelProts());
-			item.setRelFats(food.getRelFats());
-			item.setRelCarbs(food.getRelCarbs());
-			item.setRelValue(food.getRelValue());
-			item.setMass(mass);
-
-			entity.getData().add(item);
-			modified = true;
-
-			showMeal();
-
-			editMass.setText("");
-			editName.setText("");
-			editName.requestFocus();
-
-			return;
-		}
-
-		// try to search item in dish base
-
-		List<Versioned<DishItem>> listDish = Storage.localDishBase.findAny(name);
-
-		if (!listDish.isEmpty())
-		{
-			DishItem dish = listDish.get(0).getData();
-
-			FoodMassed item = new FoodMassed();
-			item.setName(dish.getName());
-			item.setRelProts(dish.getRelProts());
-			item.setRelFats(dish.getRelFats());
-			item.setRelCarbs(dish.getRelCarbs());
-			item.setRelValue(dish.getRelValue());
-			item.setMass(mass);
-
-			entity.getData().add(item);
-
-			showMeal();
-
-			editMass.setText("");
-			editName.setText("");
-			editName.requestFocus();
-
-			return;
-		}
-
-		UIUtils.showTip(this, "Item not found: " + name);
-		editMass.requestFocus();
-	}
-
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
@@ -498,6 +347,21 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 
 		// other data is already there
 
+		modified = false;
+
 		return true;
+	}
+
+	@Override
+	public void onBackPressed()
+	{
+		if (modified)
+		{
+			submit();
+		}
+		else
+		{
+			super.onBackPressed();
+		}
 	}
 }

@@ -1,4 +1,4 @@
-package org.bosik.diacomp.android.frontend.views;
+package org.bosik.diacomp.android.frontend.views.fdpicker;
 
 import java.util.HashMap;
 import android.content.Context;
