@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import org.bosik.diacomp.core.utils.Utils;
 import com.google.gson.annotations.SerializedName;
@@ -184,5 +185,22 @@ public class DishItem implements NamedRelativeTagged, Serializable
 	public FoodMassed get(int index)
 	{
 		return content.get(index);
+	}
+
+	// =================================== OTHER ===================================
+
+	public FoodItem convertToFood()
+	{
+		FoodItem food = new FoodItem();
+
+		food.setName(getName());
+		food.setRelProts(getRelProts());
+		food.setRelFats(getRelFats());
+		food.setRelCarbs(getRelCarbs());
+		food.setRelValue(getRelValue());
+		food.setFromTable(false);
+		food.setTag(getTag());
+
+		return food;
 	}
 }
