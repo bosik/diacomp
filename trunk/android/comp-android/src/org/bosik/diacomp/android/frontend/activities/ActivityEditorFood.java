@@ -29,7 +29,7 @@ public class ActivityEditorFood extends ActivityEditor<FoodItem>
 	@Override
 	protected void setupInterface()
 	{
-		setContentView(R.layout.editor_food);
+		setContentView(R.layout.activity_editor_food);
 		editName = (EditText) findViewById(R.id.editFoodName);
 		editProts = (EditText) findViewById(R.id.editFoodProts);
 		editFats = (EditText) findViewById(R.id.editFoodFats);

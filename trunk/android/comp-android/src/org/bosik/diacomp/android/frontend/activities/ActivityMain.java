@@ -374,7 +374,7 @@ public class ActivityMain extends Activity implements OnClickListener
 			// НАСТРОЙКА ИНТЕРФЕЙСА
 
 			// устанавливаем макет
-			setContentView(R.layout.main_menu);
+			setContentView(R.layout.activity_main);
 
 			// определяем компоненты
 			buttonDiary = (Button) findViewById(R.id.ButtonDiary);

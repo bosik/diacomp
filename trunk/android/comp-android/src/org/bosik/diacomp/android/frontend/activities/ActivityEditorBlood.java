@@ -37,7 +37,7 @@ public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
 	@Override
 	protected void setupInterface()
 	{
-		setContentView(R.layout.editor_blood);
+		setContentView(R.layout.activity_editor_blood);
 		timePicker = (TimePicker) findViewById(R.id.pickerBloodTime);
 		timePicker.setIs24HourView(true);
 		datePicker = (DatePicker) findViewById(R.id.pickerBloodDate);

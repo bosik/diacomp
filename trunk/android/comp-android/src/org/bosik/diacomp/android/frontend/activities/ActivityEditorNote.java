@@ -32,7 +32,7 @@ public class ActivityEditorNote extends ActivityEditor<NoteRecord>
 	@Override
 	protected void setupInterface()
 	{
-		setContentView(R.layout.editor_note);
+		setContentView(R.layout.activity_editor_note);
 		timePicker = (TimePicker) findViewById(R.id.pickerNoteTime);
 		timePicker.setIs24HourView(true);
 		datePicker = (DatePicker) findViewById(R.id.pickerNoteDate);

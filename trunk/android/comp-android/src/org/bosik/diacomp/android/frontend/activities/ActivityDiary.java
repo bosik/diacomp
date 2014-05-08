@@ -75,7 +75,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		try
 		{
 			// Log.i(TAG, "DiaryView(): onCreate()");
-			setContentView(R.layout.main_diary);
+			setContentView(R.layout.activity_diary);
 
 			// определяем компоненты
 			diaryViewLayout = (DiaryView) findViewById(R.id.diaryViewLayout);
