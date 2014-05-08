@@ -141,7 +141,7 @@ public class FoodDishPicker extends LinearLayout
 	private void init(Context context)
 	{
 		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		inflater.inflate(R.layout.fooddishpicker, this);
+		inflater.inflate(R.layout.view_fooddishpicker, this);
 		editName = (FoodDishTextView) findViewById(R.id.fdPickerAutocomplete);
 		editMass = (EditText) findViewById(R.id.fdPickerMass);
 		buttonSubmit = (Button) findViewById(R.id.fdPickerSubmit);
@@ -251,7 +251,7 @@ public class FoodDishPicker extends LinearLayout
 		// TODO: rename R.id.*
 		int[] to = { R.id.itemIcon, R.id.itemDescription };
 
-		editName.setAdapter(new SimpleAdapter(getContext(), aList, R.layout.fooddishautocomplete, from, to));
+		editName.setAdapter(new SimpleAdapter(getContext(), aList, R.layout.view_iconed_line, from, to));
 	}
 
 	public void focusName()

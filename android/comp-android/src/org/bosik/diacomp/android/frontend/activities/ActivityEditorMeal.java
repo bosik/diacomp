@@ -53,7 +53,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 	@Override
 	protected void setupInterface()
 	{
-		setContentView(R.layout.editor_meal);
+		setContentView(R.layout.activity_editor_meal);
 
 		// string constants
 		captionCarbs = getString(R.string.editor_meal_label_carbs);

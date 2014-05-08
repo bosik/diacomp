@@ -84,7 +84,7 @@ public class ActivityFoodbase extends Activity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.picker_foodbase);
+		setContentView(R.layout.activity_foodbase);
 
 		// reading intent
 		Intent intent = getIntent();

@@ -25,7 +25,7 @@ public class ActivityEditorIns extends ActivityEditor<InsRecord>
 	@Override
 	protected void setupInterface()
 	{
-		setContentView(R.layout.editor_ins);
+		setContentView(R.layout.activity_editor_ins);
 		timePicker = (TimePicker) findViewById(R.id.pickerInsTime);
 		timePicker.setIs24HourView(true);
 		datePicker = (DatePicker) findViewById(R.id.pickerInsDate);
