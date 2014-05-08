@@ -142,60 +142,64 @@ public class FoodDishPicker extends LinearLayout
 	{
 		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.view_fooddishpicker, this);
-		editName = (FoodDishTextView) findViewById(R.id.fdPickerAutocomplete);
-		editMass = (EditText) findViewById(R.id.fdPickerMass);
-		buttonSubmit = (Button) findViewById(R.id.fdPickerSubmit);
 
-		editName.setOnItemClickListener(new OnItemClickListener()
+		if (!isInEditMode())
 		{
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id)
+			editName = (FoodDishTextView) findViewById(R.id.fdPickerAutocomplete);
+			editMass = (EditText) findViewById(R.id.fdPickerMass);
+			buttonSubmit = (Button) findViewById(R.id.fdPickerSubmit);
+
+			editName.setOnItemClickListener(new OnItemClickListener()
 			{
-				@SuppressWarnings("unchecked")
-				HashMap<String, String> hm = (HashMap<String, String>) arg0.getAdapter().getItem(position);
-				String caption = hm.get(FoodDishTextView.FIELD_CAPTION);
-				System.out.println("Clicked item: " + caption);
-
-				editMass.requestFocus();
-			}
-		});
-		editMass.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-		editMass.setOnEditorActionListener(new TextView.OnEditorActionListener()
-		{
-			// TODO: clarify if it works or not
-
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
-			{
-				// super onEditorAction(v, actionId, event);
-
-				if (actionId == EditorInfo.IME_ACTION_SEARCH)
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id)
 				{
-					// editMass.requestFocus();
-					Log.d("XXX", "It works!");
-					return true;
+					@SuppressWarnings("unchecked")
+					HashMap<String, String> hm = (HashMap<String, String>) arg0.getAdapter().getItem(position);
+					String caption = hm.get(FoodDishTextView.FIELD_CAPTION);
+					System.out.println("Clicked item: " + caption);
+
+					editMass.requestFocus();
 				}
+			});
+			editMass.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+			editMass.setOnEditorActionListener(new TextView.OnEditorActionListener()
+			{
+				// TODO: clarify if it works or not
 
-				if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED)
+				@Override
+				public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
 				{
-					Log.d("XXX", "Enter pressed");
+					// super onEditorAction(v, actionId, event);
+
+					if (actionId == EditorInfo.IME_ACTION_SEARCH)
+					{
+						// editMass.requestFocus();
+						Log.d("XXX", "It works!");
+						return true;
+					}
+
+					if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED)
+					{
+						Log.d("XXX", "Enter pressed");
+						submit();
+						return true;
+					}
+
+					return false;
+				}
+			});
+			buttonSubmit.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
 					submit();
-					return true;
 				}
+			});
 
-				return false;
-			}
-		});
-		buttonSubmit.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				submit();
-			}
-		});
-
-		loadItemsList();
+			loadItemsList();
+		}
 	}
 
 	public void setOnSubmitLister(OnSubmitListener l)
