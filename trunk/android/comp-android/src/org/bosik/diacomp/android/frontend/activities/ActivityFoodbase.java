@@ -13,6 +13,7 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.utils.ErrorHandler;
+import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -64,6 +65,7 @@ public class ActivityFoodbase extends Activity
 	private EditText									editFoodSearch;
 	private ListView									listFood;
 	private Button										buttonFoodCreate;
+	private Button										buttonDishCreate;
 
 	// Data
 	final FoodBaseService								foodBaseService	= Storage.localFoodBase;
@@ -171,6 +173,15 @@ public class ActivityFoodbase extends Activity
 			public void onClick(View arg0)
 			{
 				showFoodEditor(new Versioned<FoodItem>(new FoodItem()), true);
+			}
+		});
+		buttonDishCreate = (Button) findViewById(R.id.buttonDishCreate);
+		buttonDishCreate.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View arg0)
+			{
+				showDishEditor(new Versioned<DishItem>(new DishItem()), true);
 			}
 		});
 
@@ -400,6 +411,14 @@ public class ActivityFoodbase extends Activity
 	{
 		Intent intent = new Intent(this, ActivityEditorFood.class);
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, food);
+		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
+		startActivityForResult(intent, createMode ? DIALOG_FOOD_CREATE : DIALOG_FOOD_MODIFY);
+	}
+
+	void showDishEditor(Versioned<DishItem> dish, boolean createMode)
+	{
+		Intent intent = new Intent(this, ActivityEditorDish.class);
+		intent.putExtra(ActivityEditor.FIELD_ENTITY, dish);
 		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
 		startActivityForResult(intent, createMode ? DIALOG_FOOD_CREATE : DIALOG_FOOD_MODIFY);
 	}

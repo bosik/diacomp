@@ -46,6 +46,7 @@
     </LinearLayout>
 
     <LinearLayout
+        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="bottom|top"
@@ -53,9 +54,17 @@
 
         <Button
             android:id="@+id/buttonFoodCreate"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add item" />
+            android:drawableLeft="@drawable/button_new_food" />
+
+        <Button
+            android:id="@+id/buttonDishCreate"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/button_new_dish" />
     </LinearLayout>
 
 </LinearLayout>
