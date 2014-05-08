@@ -22,6 +22,20 @@ public class FoodMassed extends Food
 		setMass(mass);
 	}
 
+	// ================================ VALIDATORS ================================
+
+	public static boolean checkMass(double value)
+	{
+		return checkNonNegativeValue(value);
+	}
+
+	// ================================ THROWERS ================================
+
+	protected static void checkMassThrowable(double value)
+	{
+		checkAndThrow(checkMass(value), String.format("Mass can't be negative (%f)", value));
+	}
+
 	// ================================ GET / SET ================================
 
 	public double getMass()
@@ -31,27 +45,27 @@ public class FoodMassed extends Food
 
 	public void setMass(double mass)
 	{
-		checkNonNegativeThrowable(mass);
+		checkMassThrowable(mass);
 		this.mass = mass;
 	}
 
 	public double getProts()
 	{
-		return (getRelProts() / 100) * mass;
+		return (getRelProts() / 100.0) * mass;
 	}
 
 	public double getFats()
 	{
-		return (getRelFats() / 100) * mass;
+		return (getRelFats() / 100.0) * mass;
 	}
 
 	public double getCarbs()
 	{
-		return (getRelCarbs() / 100) * mass;
+		return (getRelCarbs() / 100.0) * mass;
 	}
 
 	public double getValue()
 	{
-		return (getRelValue() / 100) * mass;
+		return (getRelValue() / 100.0) * mass;
 	}
 }

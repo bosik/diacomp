@@ -74,16 +74,17 @@ public class Food implements Serializable, Named, Relative
 
 	protected static void checkRelThrowable(double value)
 	{
-		checkAndThrow(checkRelativeValue(value), String.format("Relative value (%s) is out of [0, 100] bounds", value));
+		checkAndThrow(checkRelativeValue(value), String.format("Relative value (%f) is out of [0, 100] bounds", value));
 	}
 
 	protected static void checkNonNegativeThrowable(double value)
 	{
-		checkAndThrow(checkNonNegativeValue(value), String.format("Value can't be negative (%s)", value));
+		checkAndThrow(checkNonNegativeValue(value), String.format("Value can't be negative (%f)", value));
 	}
 
 	// ================================ GET / SET ================================
 
+	@Override
 	public String getName()
 	{
 		return name;
@@ -95,21 +96,25 @@ public class Food implements Serializable, Named, Relative
 		this.name = name;
 	}
 
+	@Override
 	public double getRelProts()
 	{
 		return relProts;
 	}
 
+	@Override
 	public double getRelFats()
 	{
 		return relFats;
 	}
 
+	@Override
 	public double getRelCarbs()
 	{
 		return relCarbs;
 	}
 
+	@Override
 	public double getRelValue()
 	{
 		return relValue;
