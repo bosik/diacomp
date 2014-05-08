@@ -9,6 +9,7 @@ import java.util.Map;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.android.frontend.views.FoodDishTextView;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
@@ -55,9 +56,11 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 	// components
 	private TimePicker						timePicker;
 	private DatePicker						datePicker;
+
 	private AutoCompleteTextView			editName;
 	private EditText						editMass;
 	private Button							buttonAdd;
+
 	private ListView						list;
 	private TextView						textMealCarbs;
 	private TextView						textMealDose;
@@ -65,17 +68,6 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 	private String							captionCarbs;
 	private String							captionDose;
 	private String							captionGramm;
-
-	// ======================================================================================================
-	// Array of strings storing country names
-	// String[] countries = new String[] { "Food", "Dish" };
-
-	// Array of integers points to images stored in /res/drawable-ldpi/
-	int[]									flags		= new int[] { R.drawable.button_foodbase,
-			R.drawable.button_dishbase					};
-
-	// Array of strings to store currencies
-	String[]								currency	= new String[] { "Indian Rupee", "Pakistani Rupee" };
 
 	// ======================================================================================================
 
@@ -93,9 +85,11 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		timePicker = (TimePicker) findViewById(R.id.pickerMealTime);
 		timePicker.setIs24HourView(true);
 		datePicker = (DatePicker) findViewById(R.id.pickerMealDate);
+
 		editName = (AutoCompleteTextView) findViewById(R.id.mealFoodDishInput);
 		editMass = (EditText) findViewById(R.id.editItemMass);
 		buttonAdd = (Button) findViewById(R.id.button_additem);
+
 		list = (ListView) findViewById(R.id.ListView01);
 		textMealCarbs = (TextView) findViewById(R.id.textMealCarbs);
 		textMealDose = (TextView) findViewById(R.id.textMealDose);
@@ -323,15 +317,15 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		for (int i = 0; i < fdBase.size(); i++)
 		{
 			HashMap<String, String> hm = new HashMap<String, String>();
-			hm.put("txt", fdBase.get(i).getData().getName());
-			hm.put("flag", Integer.toString(R.drawable.button_foodbase));
+			hm.put(FoodDishTextView.FIELD_ICON, Integer.toString(R.drawable.button_foodbase));
+			hm.put(FoodDishTextView.FIELD_CAPTION, fdBase.get(i).getData().getName());
 			aList.add(hm);
 		}
 
 		// Keys used in Hashmap
-		String[] from = { "flag", "txt" };
+		String[] from = { FoodDishTextView.FIELD_ICON, FoodDishTextView.FIELD_CAPTION };
 
-		// Ids of views in listview_layout
+		// Ids of views in layout
 		int[] to = { R.id.itemIcon, R.id.itemDescription };
 
 		editName.setAdapter(new SimpleAdapter(getBaseContext(), aList, R.layout.fooddishautocomplete, from, to));
@@ -342,7 +336,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 			{
 				// HashMap<String, String> hm = (HashMap<String, String>)
 				// arg0.getAdapter().getItem(position);
-				// hm.get("txt"));
+				// hm.get(FoodDishTextView.FIELD_CAPTION));
 				editMass.requestFocus();
 			}
 		});
@@ -410,6 +404,8 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 			editMass.requestFocus();
 			return;
 		}
+
+		// ======================================================================
 
 		// try to search item in food base
 
