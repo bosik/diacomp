@@ -183,6 +183,13 @@ public class Utils
 	 */
 	public static double parseExpression(String s) throws NumberFormatException
 	{
+		s = s.trim();
+
+		if (s.isEmpty())
+		{
+			return 0;
+		}
+
 		try
 		{
 			s = s.replaceAll("\\.", String.valueOf(DECIMAL_DOT));
@@ -274,7 +281,7 @@ public class Utils
 			}
 		}
 
-		return 0;
+		throw new NumberFormatException("Can't parse expression: " + s);
 
 		//		if (s.isEmpty())
 		//		{
