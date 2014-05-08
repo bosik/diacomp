@@ -104,9 +104,9 @@ public class FoodDishPicker extends LinearLayout
 
 	// ===================================== FIELDS ======================================
 
-	private FoodDishTextView					editName;
-	private EditText							editMass;
-	private Button								buttonSubmit;
+	FoodDishTextView							editName;
+	EditText									editMass;
+	Button										buttonSubmit;
 
 	private OnSubmitListener					onSubmit;
 
@@ -151,6 +151,7 @@ public class FoodDishPicker extends LinearLayout
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id)
 			{
+				@SuppressWarnings("unchecked")
 				HashMap<String, String> hm = (HashMap<String, String>) arg0.getAdapter().getItem(position);
 				String caption = hm.get(FoodDishTextView.FIELD_CAPTION);
 				System.out.println("Clicked item: " + caption);
@@ -264,7 +265,7 @@ public class FoodDishPicker extends LinearLayout
 		editMass.requestFocus();
 	}
 
-	private void submit()
+	void submit()
 	{
 		String name = editName.getText().toString();
 		if (name.trim().isEmpty())
