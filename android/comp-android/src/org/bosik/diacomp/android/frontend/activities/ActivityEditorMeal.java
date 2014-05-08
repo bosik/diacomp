@@ -1,17 +1,11 @@
 package org.bosik.diacomp.android.frontend.activities;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker;
-import org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker.Item;
 import org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker.OnSubmitListener;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
@@ -38,25 +32,21 @@ import android.widget.TimePicker.OnTimeChangedListener;
 
 public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 {
-	// private static final String TAG = ActivityEditorMeal.class.getSimpleName();
-
-	private static final DecimalFormat	df		= new DecimalFormat("###.#");
-	private final Map<String, Integer>	tagInfo	= Storage.tagService.getTags();
-
 	// data
-	boolean								modified;
+	boolean					modified;
 
 	// components
-	private TimePicker					timePicker;
-	private DatePicker					datePicker;
-	private TextView					textMealCarbs;
-	private TextView					textMealDose;
-	private ListView					list;
-	private FoodDishPicker				fdPicker;
+	private TimePicker		timePicker;
+	private DatePicker		datePicker;
+	private TextView		textMealCarbs;
+	private TextView		textMealDose;
+	private ListView		list;
+	private FoodDishPicker	fdPicker;
 
-	private String						captionCarbs;
-	private String						captionDose;
-	private String						captionGramm;
+	// localization
+	private String			captionCarbs;
+	private String			captionDose;
+	private String			captionGramm;
 
 	// ======================================================================================================
 
@@ -224,56 +214,6 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 				return false;
 			}
 		});
-
-		// filling data
-		loadItemsList();
-	}
-
-	private void loadItemsList()
-	{
-		// preparing storages
-		List<Versioned<FoodItem>> foodBase = Storage.localFoodBase.findAll(false);
-		List<Versioned<DishItem>> dishBase = Storage.localDishBase.findAll(false);
-
-		List<Item> data = new ArrayList<Item>();
-
-		for (Versioned<FoodItem> item : foodBase)
-		{
-			FoodItem itemData = item.getData();
-
-			Integer tag = tagInfo.get(item.getId());
-			itemData.setTag(tag != null ? tag : 0);
-
-			data.add(new Item(itemData));
-		}
-
-		for (Versioned<DishItem> item : dishBase)
-		{
-			DishItem itemData = item.getData();
-
-			Integer tag = tagInfo.get(item.getId());
-			itemData.setTag(tag != null ? tag : 0);
-
-			data.add(new Item(itemData));
-		}
-
-		Collections.sort(data, new Comparator<Item>()
-		{
-			@Override
-			public int compare(Item lhs, Item rhs)
-			{
-				if (lhs.getData().getTag() == rhs.getData().getTag())
-				{
-					return lhs.getData().getName().compareTo(rhs.getData().getName());
-				}
-				else
-				{
-					return rhs.getData().getTag() - lhs.getData().getTag();
-				}
-			}
-		});
-
-		fdPicker.setData(data);
 	}
 
 	void showMeal()
@@ -311,7 +251,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		double carbs = entity.getData().getCarbs();
 		double prots = entity.getData().getProts();
 		double dose = ((carbs * koof.getK()) + (prots * koof.getP())) / koof.getQ();
-		textMealCarbs.setText(df.format(carbs) + " " + captionCarbs);
+		textMealCarbs.setText(String.format("%.1f %s", carbs, captionCarbs));
 		textMealDose.setText(String.format("%.1f %s", dose, captionDose));
 	}
 

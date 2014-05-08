@@ -1,15 +1,18 @@
 package org.bosik.diacomp.android.frontend.views.fdpicker;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.content.Context;
@@ -36,7 +39,7 @@ public class FoodDishPicker extends LinearLayout
 		FOOD, DISH
 	}
 
-	public static class Item
+	public static class Item implements Comparable<Item>
 	{
 		private final ItemType				type;
 		private final NamedRelativeTagged	data;
@@ -66,6 +69,19 @@ public class FoodDishPicker extends LinearLayout
 		public NamedRelativeTagged getData()
 		{
 			return data;
+		}
+
+		@Override
+		public int compareTo(Item rhs)
+		{
+			if (getData().getTag() == rhs.getData().getTag())
+			{
+				return getData().getName().compareTo(rhs.getData().getName());
+			}
+			else
+			{
+				return rhs.getData().getTag() - getData().getTag();
+			}
 		}
 	}
 
@@ -177,11 +193,41 @@ public class FoodDishPicker extends LinearLayout
 				submit();
 			}
 		});
+
+		loadItemsList();
 	}
 
 	public void setOnSubmitLister(OnSubmitListener l)
 	{
 		onSubmit = l;
+	}
+
+	private void loadItemsList()
+	{
+		// preparing storages
+		List<Versioned<FoodItem>> foodBase = Storage.localFoodBase.findAll(false);
+		List<Versioned<DishItem>> dishBase = Storage.localDishBase.findAll(false);
+		Map<String, Integer> tagInfo = Storage.tagService.getTags();
+
+		List<Item> data = new ArrayList<Item>();
+
+		for (Versioned<FoodItem> item : foodBase)
+		{
+			Integer tag = tagInfo.get(item.getId());
+			item.getData().setTag(tag != null ? tag : 0);
+			data.add(new Item(item.getData()));
+		}
+
+		for (Versioned<DishItem> item : dishBase)
+		{
+			Integer tag = tagInfo.get(item.getId());
+			item.getData().setTag(tag != null ? tag : 0);
+			data.add(new Item(item.getData()));
+		}
+
+		Collections.sort(data);
+
+		setData(data);
 	}
 
 	public void setData(List<Item> data)
