@@ -1,7 +1,7 @@
 package org.bosik.diacomp.core.entities.business.dishbase;
 
 import java.io.Serializable;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
@@ -26,7 +26,7 @@ public class DishItem implements NamedRelativeTagged, Serializable
 	@SerializedName("mass")
 	private Double					mass;
 
-	private final List<FoodMassed>	content				= new LinkedList<FoodMassed>();
+	private final List<FoodMassed>	content				= new ArrayList<FoodMassed>();
 
 	// ================================ GET / SET ================================
 
@@ -170,6 +170,11 @@ public class DishItem implements NamedRelativeTagged, Serializable
 		{
 			throw new NullPointerException("Dish item can't be null");
 		}
+	}
+
+	public void clear()
+	{
+		content.clear();
 	}
 
 	public void remove(int index)
