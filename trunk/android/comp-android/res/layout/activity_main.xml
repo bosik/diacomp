@@ -2,7 +2,8 @@
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:padding="@dimen/padding_small" >
 
     <TableRow
         android:id="@+id/tableRow1"
@@ -13,18 +14,20 @@
             android:id="@+id/ButtonDiary"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/padding_small"
             android:layout_weight="0.5"
             android:drawableTop="@drawable/button_diary"
+            android:paddingBottom="@dimen/padding_large"
+            android:paddingTop="@dimen/padding_large"
             android:text="@string/main_option_diary" />
 
         <Button
             android:id="@+id/ButtonBases"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/padding_small"
             android:layout_weight="0.5"
             android:drawableTop="@drawable/button_bases"
+            android:paddingBottom="@dimen/padding_large"
+            android:paddingTop="@dimen/padding_large"
             android:text="@string/main_option_bases" />
     </TableRow>
 
@@ -37,18 +40,20 @@
             android:id="@+id/ButtonPreferences"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/padding_small"
             android:layout_weight="0.5"
             android:drawableTop="@drawable/menu_settings"
+            android:paddingBottom="@dimen/padding_large"
+            android:paddingTop="@dimen/padding_large"
             android:text="@string/main_option_preferences" />
 
         <Button
             android:id="@+id/buttonAuth"
-           android:layout_width="0dip"
+            android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/padding_small"
             android:layout_weight="0.5"
             android:drawableTop="@drawable/button_sync"
+            android:paddingBottom="@dimen/padding_large"
+            android:paddingTop="@dimen/padding_large"
             android:text="@string/main_option_sync" />
     </TableRow>
 
