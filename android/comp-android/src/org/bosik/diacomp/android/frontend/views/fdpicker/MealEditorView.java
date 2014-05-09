@@ -127,7 +127,11 @@ public class MealEditorView extends LinearLayout
 										data.remove(position);
 									}
 								}
-								// modified = true;
+								if (onChange != null)
+								{
+									onChange.onChange(data);
+								}
+
 								showData();
 							}
 							catch (NumberFormatException e)
@@ -170,7 +174,6 @@ public class MealEditorView extends LinearLayout
 						item.setMass(mass);
 
 						data.add(item);
-						// modified = true;
 						if (onChange != null)
 						{
 							onChange.onChange(data);
@@ -250,7 +253,6 @@ public class MealEditorView extends LinearLayout
 		if (data != null)
 		{
 			this.data = data;
-			// modified = false;
 			showData();
 		}
 		else
@@ -263,5 +265,4 @@ public class MealEditorView extends LinearLayout
 	{
 		onChange = l;
 	}
-
 }
