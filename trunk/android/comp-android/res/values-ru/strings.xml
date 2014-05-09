@@ -38,8 +38,7 @@
     <string name="base_title">База продуктов</string>
     <string name="base_title_loading">База продуктов (загрузка…)</string>
     <string name="main_option_diary">Дневник</string>
-    <string name="main_option_dishbase">База блюд</string>
-    <string name="main_option_foodbase">База продуктов</string>
+    <string name="main_option_bases">Базы</string>
     <string name="main_option_preferences">Настройки</string>
     <string name="main_option_sync">Синхронизировать</string>
     <string name="main_option_test">Тест</string>

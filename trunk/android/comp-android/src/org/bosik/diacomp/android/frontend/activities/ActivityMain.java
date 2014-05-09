@@ -40,7 +40,6 @@ public class ActivityMain extends Activity implements OnClickListener
 	// Components
 	private Button				buttonDiary;
 	private Button				buttonFoodBase;
-	private Button				buttonDishBase;
 	private Button				buttonPref;
 	private Button				buttonAuth;
 	private Button				buttonTestMealEditor;
@@ -378,8 +377,7 @@ public class ActivityMain extends Activity implements OnClickListener
 
 			// определяем компоненты
 			buttonDiary = (Button) findViewById(R.id.ButtonDiary);
-			buttonFoodBase = (Button) findViewById(R.id.ButtonFoodBase);
-			buttonDishBase = (Button) findViewById(R.id.ButtonDishBase);
+			buttonFoodBase = (Button) findViewById(R.id.ButtonBases);
 			buttonTestMealEditor = (Button) findViewById(R.id.buttonTestMealEditor);
 			buttonPref = (Button) findViewById(R.id.ButtonPreferences);
 			buttonAuth = (Button) findViewById(R.id.buttonAuth);
@@ -387,7 +385,6 @@ public class ActivityMain extends Activity implements OnClickListener
 			// назначаем обработчики
 			buttonDiary.setOnClickListener(this);
 			buttonFoodBase.setOnClickListener(this);
-			buttonDishBase.setOnClickListener(this);
 			buttonTestMealEditor.setOnClickListener(this);
 			buttonPref.setOnClickListener(this);
 			buttonAuth.setOnClickListener(this);
@@ -411,12 +408,10 @@ public class ActivityMain extends Activity implements OnClickListener
 				case R.id.ButtonDiary:
 					showDiary();
 					break;
-				case R.id.ButtonFoodBase:
+				case R.id.ButtonBases:
 					Intent intent = new Intent(this, ActivityBase.class);
 					intent.putExtra(ActivityBase.KEY_MODE, ActivityBase.VALUE_MODE_EDIT);
 					startActivity(intent);
-					break;
-				case R.id.ButtonDishBase:
 					break;
 				case R.id.ButtonPreferences:
 					Intent settingsActivity = new Intent(getBaseContext(), ActivityPreferences.class);

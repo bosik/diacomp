@@ -38,8 +38,7 @@
     <string name="base_title">Food base</string>
     <string name="base_title_loading">Food base (loading…)</string>
     <string name="main_option_diary">Diary</string>
-    <string name="main_option_dishbase">Dish base</string>
-    <string name="main_option_foodbase">Food base</string>
+    <string name="main_option_bases">Bases</string>
     <string name="main_option_preferences">Preferences</string>
     <string name="main_option_sync">Sync</string>
     <string name="main_option_test">Test</string>

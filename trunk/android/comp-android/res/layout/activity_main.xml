@@ -1,65 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/ButtonDiary"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_marginTop="@dimen/padding_small"
-        android:drawableLeft="@drawable/button_diary"
-        android:paddingLeft="80.5sp"
-        android:paddingRight="80.5sp"
-        android:text="@string/main_option_diary" />
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
 
-    <Button
-        android:id="@+id/ButtonFoodBase"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:drawableLeft="@drawable/button_foodbase"
-        android:paddingLeft="80.5sp"
-        android:paddingRight="80.5sp"
-        android:text="@string/main_option_foodbase" />
+        <Button
+            android:id="@+id/ButtonDiary"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_small"
+            android:layout_weight="0.5"
+            android:drawableTop="@drawable/button_diary"
+            android:text="@string/main_option_diary" />
 
-    <Button
-        android:id="@+id/ButtonDishBase"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:drawableLeft="@drawable/button_dishbase"
-        android:enabled="false"
-        android:paddingLeft="80.5sp"
-        android:paddingRight="80.5sp"
-        android:text="@string/main_option_dishbase" />
+        <Button
+            android:id="@+id/ButtonBases"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_small"
+            android:layout_weight="0.5"
+            android:drawableTop="@drawable/button_bases"
+            android:text="@string/main_option_bases" />
+    </TableRow>
 
-    <Button
-        android:id="@+id/ButtonPreferences"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_marginTop="@dimen/padding_small"
-        android:paddingLeft="80.5sp"
-        android:paddingRight="80.5sp"
-        android:text="@string/main_option_preferences" />
+    <TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
 
-    <Button
-        android:id="@+id/buttonAuth"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:paddingLeft="80.5sp"
-        android:paddingRight="80.5sp"
-        android:text="@string/main_option_sync" />
+        <Button
+            android:id="@+id/ButtonPreferences"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_small"
+            android:layout_weight="0.5"
+            android:drawableTop="@drawable/menu_settings"
+            android:text="@string/main_option_preferences" />
+
+        <Button
+            android:id="@+id/buttonAuth"
+           android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_small"
+            android:layout_weight="0.5"
+            android:drawableTop="@drawable/button_sync"
+            android:text="@string/main_option_sync" />
+    </TableRow>
 
     <Button
         android:id="@+id/buttonTestMealEditor"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top"
         android:text="@string/main_option_test" />
 
-</LinearLayout>
+</TableLayout>
