@@ -38,19 +38,19 @@ public class MealEditorView extends LinearLayout
 	}
 
 	// components
-	ListView					list;
-	FoodDishPicker				fdPicker;
+	ListView			list;
+	FoodDishPicker		fdPicker;
 
 	// localization
-	String						captionCarbs;
-	String						captionDose;
-	String						captionGramm;
+	String				captionCarbs;
+	String				captionDose;
+	String				captionGramm;
 
 	// listeners
 	OnChangeListener	onChange;
 
 	// data
-	List<FoodMassed>			data	= new ArrayList<FoodMassed>();
+	List<FoodMassed>	data	= new ArrayList<FoodMassed>();
 
 	public MealEditorView(Context context)
 	{
@@ -75,140 +75,143 @@ public class MealEditorView extends LinearLayout
 		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.view_mealeditorview, this);
 
-		// string constants
-		captionCarbs = context.getString(R.string.editor_meal_label_carbs);
-		captionDose = context.getString(R.string.editor_meal_label_dose);
-		captionGramm = context.getString(R.string.common_gramm);
-
-		// components
-		list = (ListView) findViewById(R.id.mealEditorList);
-		fdPicker = (FoodDishPicker) findViewById(R.id.mealEditorPicker);
-
-		list.setOnItemClickListener(new OnItemClickListener()
+		if (!isInEditMode())
 		{
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
+			// string constants
+			captionCarbs = context.getString(R.string.editor_meal_label_carbs);
+			captionDose = context.getString(R.string.editor_meal_label_dose);
+			captionGramm = context.getString(R.string.common_gramm);
+
+			// components
+			list = (ListView) findViewById(R.id.mealEditorList);
+			fdPicker = (FoodDishPicker) findViewById(R.id.mealEditorPicker);
+
+			list.setOnItemClickListener(new OnItemClickListener()
 			{
-				Builder builder = new AlertDialog.Builder(getContext());
-				final String message = data.get(position).getName() + ", " + captionGramm;
-
-				final EditText input = new EditText(context);
-
-				input.setText(Utils.formatDoubleShort(data.get(position).getMass()));
-				input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-				// TODO: localize
-				builder.setTitle("Change mass");
-				builder.setMessage(message);
-				builder.setView(input);
-				builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
 				{
-					@Override
-					public void onClick(DialogInterface dialog, int whichButton)
-					{
-						String text = input.getText().toString();
+					Builder builder = new AlertDialog.Builder(getContext());
+					final String message = data.get(position).getName() + ", " + captionGramm;
 
-						try
+					final EditText input = new EditText(context);
+
+					input.setText(Utils.formatDoubleShort(data.get(position).getMass()));
+					input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+					// TODO: localize
+					builder.setTitle("Change mass");
+					builder.setMessage(message);
+					builder.setView(input);
+					builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+					{
+						@Override
+						public void onClick(DialogInterface dialog, int whichButton)
 						{
-							if (text.isEmpty())
+							String text = input.getText().toString();
+
+							try
 							{
-								data.remove(position);
-							}
-							else
-							{
-								double mass = Utils.parseExpression(text);
-								if (mass > Utils.EPS)
-								{
-									data.get(position).setMass(mass);
-								}
-								else
+								if (text.isEmpty())
 								{
 									data.remove(position);
 								}
+								else
+								{
+									double mass = Utils.parseExpression(text);
+									if (mass > Utils.EPS)
+									{
+										data.get(position).setMass(mass);
+									}
+									else
+									{
+										data.remove(position);
+									}
+								}
+								// modified = true;
+								showData();
 							}
-							// modified = true;
-							showData();
+							catch (NumberFormatException e)
+							{
+								// TODO: localize
+								UIUtils.showTip((Activity) context, "Wrong mass");
+							}
 						}
-						catch (NumberFormatException e)
+					});
+					builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+					{
+						@Override
+						public void onClick(DialogInterface dialog, int whichButton)
 						{
-							// TODO: localize
-							UIUtils.showTip((Activity) context, "Wrong mass");
+							// Do nothing.
 						}
-					}
-				});
-				builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
-				{
-					@Override
-					public void onClick(DialogInterface dialog, int whichButton)
-					{
-						// Do nothing.
-					}
-				});
-				builder.show();
-			}
-		});
-		fdPicker.setOnSubmitLister(new OnSubmitListener()
-		{
-			@Override
-			public boolean onSubmit(String name, double mass)
+					});
+					builder.show();
+				}
+			});
+			fdPicker.setOnSubmitLister(new OnSubmitListener()
 			{
-				// try to search item in food base
-
-				Versioned<FoodItem> foodItem = Storage.localFoodBase.findOne(name);
-
-				if (foodItem != null)
+				@Override
+				public boolean onSubmit(String name, double mass)
 				{
-					FoodItem food = foodItem.getData();
+					// try to search item in food base
 
-					FoodMassed item = new FoodMassed();
-					item.setName(food.getName());
-					item.setRelProts(food.getRelProts());
-					item.setRelFats(food.getRelFats());
-					item.setRelCarbs(food.getRelCarbs());
-					item.setRelValue(food.getRelValue());
-					item.setMass(mass);
+					Versioned<FoodItem> foodItem = Storage.localFoodBase.findOne(name);
 
-					data.add(item);
-					// modified = true;
-					if (onChange != null)
+					if (foodItem != null)
 					{
-						onChange.onChange(data);
+						FoodItem food = foodItem.getData();
+
+						FoodMassed item = new FoodMassed();
+						item.setName(food.getName());
+						item.setRelProts(food.getRelProts());
+						item.setRelFats(food.getRelFats());
+						item.setRelCarbs(food.getRelCarbs());
+						item.setRelValue(food.getRelValue());
+						item.setMass(mass);
+
+						data.add(item);
+						// modified = true;
+						if (onChange != null)
+						{
+							onChange.onChange(data);
+						}
+
+						showData();
+						return true;
 					}
 
-					showData();
-					return true;
-				}
+					// try to search item in dish base
 
-				// try to search item in dish base
+					List<Versioned<DishItem>> listDish = Storage.localDishBase.findAny(name);
 
-				List<Versioned<DishItem>> listDish = Storage.localDishBase.findAny(name);
-
-				if (!listDish.isEmpty())
-				{
-					DishItem dish = listDish.get(0).getData();
-
-					FoodMassed item = new FoodMassed();
-					item.setName(dish.getName());
-					item.setRelProts(dish.getRelProts());
-					item.setRelFats(dish.getRelFats());
-					item.setRelCarbs(dish.getRelCarbs());
-					item.setRelValue(dish.getRelValue());
-					item.setMass(mass);
-
-					data.add(item);
-					if (onChange != null)
+					if (!listDish.isEmpty())
 					{
-						onChange.onChange(data);
+						DishItem dish = listDish.get(0).getData();
+
+						FoodMassed item = new FoodMassed();
+						item.setName(dish.getName());
+						item.setRelProts(dish.getRelProts());
+						item.setRelFats(dish.getRelFats());
+						item.setRelCarbs(dish.getRelCarbs());
+						item.setRelValue(dish.getRelValue());
+						item.setMass(mass);
+
+						data.add(item);
+						if (onChange != null)
+						{
+							onChange.onChange(data);
+						}
+
+						showData();
+						return true;
 					}
 
-					showData();
-					return true;
+					UIUtils.showTip((Activity) context, "Item not found: " + name);
+					fdPicker.focusName();
+					return false;
 				}
-
-				UIUtils.showTip((Activity) context, "Item not found: " + name);
-				fdPicker.focusName();
-				return false;
-			}
-		});
+			});
+		}
 	}
 
 	void showData()

@@ -4,11 +4,55 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:gravity="bottom|fill"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:padding="@dimen/padding_small" >
+
+    <LinearLayout
+        android:id="@+id/layoutDishParent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:gravity="top"
+        android:orientation="vertical"
+        tools:context=".ActivityEditorDish" >
+
+        <TextView
+            android:id="@+id/labelDishName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/editDishText"
+            android:text="@string/editor_dish_field_name" />
+
+        <EditText
+            android:id="@+id/editDishName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:inputType="textMultiLine" >
+
+            <requestFocus />
+        </EditText>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/labelDishContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:labelFor="@+id/dishEditor"
+        android:paddingTop="@dimen/padding_small"
+        android:text="@string/editor_dish_field_content" />
 
     <org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView
         android:id="@+id/dishEditor"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="259dp"
+        android:layout_weight="1.09" />
+
+    <Button
+        android:id="@+id/buttonDishOK"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_medium"
+        android:text="@string/editor_common_save" />
 
 </LinearLayout>

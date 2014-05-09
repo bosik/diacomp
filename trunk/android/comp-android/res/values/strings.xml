@@ -18,6 +18,8 @@
     <string name="editor_common_field_time">Time</string>
     <string name="editor_common_field_value">Value</string>
     <string name="editor_common_save">Save</string>
+    <string name="editor_dish_field_content">Content</string>
+    <string name="editor_dish_field_name">Name</string>
     <string name="editor_dish_title">Dish</string>
     <string name="editor_food_field_name">Name</string>
     <string name="editor_food_field_prots">Prots, g</string>
@@ -32,9 +34,9 @@
     <string name="editor_meal_title">Meal</string>
     <string name="editor_note_field_text">Text</string>
     <string name="editor_note_title">Note</string>
-    <string name="foodbase_subinfo" formatted="false">P %.1f\t\tF %.1f\t\tC %.1f\t\tV %.1f</string>
-    <string name="foodbase_title">Food base</string>
-    <string name="foodbase_title_loading">Food base (loading…)</string>
+    <string name="base_subinfo" formatted="false">P %.1f\t\tF %.1f\t\tC %.1f\t\tV %.1f</string>
+    <string name="base_title">Food base</string>
+    <string name="base_title_loading">Food base (loading…)</string>
     <string name="main_option_diary">Diary</string>
     <string name="main_option_dishbase">Dish base</string>
     <string name="main_option_foodbase">Food base</string>
