@@ -11,7 +11,6 @@
     tools:context=".ActivityBase" >
 
     <LinearLayout
-        android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -19,7 +18,7 @@
         android:layout_alignParentTop="true" >
 
         <EditText
-            android:id="@+id/editFoodSearch"
+            android:id="@+id/editBaseEditorSearch"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -32,14 +31,13 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/foodResultsView"
         android:layout_width="fill_parent"
         android:layout_height="0dip"
         android:layout_weight="0.42"
         android:scrollbars="vertical" >
 
         <ListView
-            android:id="@+id/listFood"
+            android:id="@+id/listBaseEditorSearchResults"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
         </ListView>
@@ -53,14 +51,14 @@
         android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/buttonFoodCreate"
+            android:id="@+id/buttonBaseEditorCreateFood"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/button_new_food" />
 
         <Button
-            android:id="@+id/buttonDishCreate"
+            android:id="@+id/buttonBaseEditorCreateDish"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
