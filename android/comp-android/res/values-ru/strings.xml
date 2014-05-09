@@ -18,6 +18,8 @@
     <string name="editor_common_field_time">Время</string>
     <string name="editor_common_field_value">Значение</string>
     <string name="editor_common_save">Сохранить</string>
+    <string name="editor_dish_field_content">Состав</string>
+    <string name="editor_dish_field_name">Название</string>
     <string name="editor_dish_title">Блюдо</string>
     <string name="editor_food_field_name">Название</string>
     <string name="editor_food_field_prots">Белки, г</string>
@@ -32,9 +34,9 @@
     <string name="editor_meal_title">Приём пищи</string>
     <string name="editor_note_field_text">Текст</string>
     <string name="editor_note_title">Заметка</string>
-    <string name="foodbase_subinfo" formatted="false">Б %.1f\t\tЖ %.1f\t\tУ %.1f\t\tК %.1f</string>
-    <string name="foodbase_title">База продуктов</string>
-    <string name="foodbase_title_loading">База продуктов (загрузка…)</string>
+    <string name="base_subinfo" formatted="false">Б %.1f\t\tЖ %.1f\t\tУ %.1f\t\tК %.1f</string>
+    <string name="base_title">База продуктов</string>
+    <string name="base_title_loading">База продуктов (загрузка…)</string>
     <string name="main_option_diary">Дневник</string>
     <string name="main_option_dishbase">База блюд</string>
     <string name="main_option_foodbase">База продуктов</string>

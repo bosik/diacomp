@@ -80,7 +80,7 @@
         </activity>
         <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityBase"
-            android:label="@string/foodbase_title"
+            android:label="@string/base_title"
             android:theme="@android:style/Theme.Light" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

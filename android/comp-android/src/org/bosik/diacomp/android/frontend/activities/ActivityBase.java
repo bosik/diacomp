@@ -55,6 +55,8 @@ public class ActivityBase extends Activity
 
 	private static final int	DIALOG_FOOD_CREATE	= 11;
 	private static final int	DIALOG_FOOD_MODIFY	= 12;
+	private static final int	DIALOG_DISH_CREATE	= 21;
+	private static final int	DIALOG_DISH_MODIFY	= 22;
 
 	private static final int	LIMIT				= 100;
 
@@ -133,39 +135,62 @@ public class ActivityBase extends Activity
 					}
 					case EDIT:
 					{
-						new AsyncTask<String, Void, Versioned<FoodItem>>()
+						new AsyncTask<String, Void, Versioned<? extends NamedRelativeTagged>>()
 						{
 							@Override
 							protected void onPreExecute()
 							{
-								// setTitle(getString(R.string.foodbase_title_loading));
+								// setTitle(getString(R.string.base_title_loading));
 							}
 
 							@Override
-							protected Versioned<FoodItem> doInBackground(String... params)
+							protected Versioned<? extends NamedRelativeTagged> doInBackground(String... params)
 							{
-								Versioned<FoodItem> food = foodBaseService.findById(guid);
-								return food;
-							}
-
-							@Override
-							protected void onPostExecute(Versioned<FoodItem> food)
-							{
+								Versioned<? extends NamedRelativeTagged> food = foodBaseService.findById(guid);
 								if (food != null)
 								{
-									showFoodEditor(food, false);
+									return food;
+								}
+
+								Versioned<? extends NamedRelativeTagged> dish = dishBaseService.findById(guid);
+								if (dish != null)
+								{
+									return dish;
+								}
+
+								return null;
+							}
+
+							@SuppressWarnings("unchecked")
+							@Override
+							protected void onPostExecute(Versioned<? extends NamedRelativeTagged> item)
+							{
+								if (item != null)
+								{
+									if (item.getData().getClass().isAssignableFrom(FoodItem.class))
+									{
+										showFoodEditor((Versioned<FoodItem>) item, false);
+									}
+									else if (item.getData().getClass().isAssignableFrom(DishItem.class))
+									{
+										showDishEditor((Versioned<DishItem>) item, false);
+									}
+									else
+									{
+										// TODO: localization
+										UIUtils.showTip(ActivityBase.this,
+												String.format("Unknown record type (ID: %s)", guid));
+									}
 								}
 								else
 								{
+									// TODO: localization
 									UIUtils.showTip(ActivityBase.this, String.format("Item %s not found", guid));
 								}
 							}
 						}.execute(guid);
-
-						// TODO: do the same for dish base when ready
 					}
 				}
-
 			}
 		});
 
@@ -203,7 +228,7 @@ public class ActivityBase extends Activity
 			@Override
 			protected void onPreExecute()
 			{
-				setTitle(getString(R.string.foodbase_title_loading));
+				setTitle(getString(R.string.base_title_loading));
 			}
 
 			@Override
@@ -257,7 +282,7 @@ public class ActivityBase extends Activity
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.diary_menu, menu);
+		// getMenuInflater().inflate(R.menu.diary_menu, menu);
 		return true;
 	}
 
@@ -273,24 +298,32 @@ public class ActivityBase extends Activity
 		{
 			long tick = System.currentTimeMillis();
 
-			List<Versioned<FoodItem>> temp;
+			List<Versioned<FoodItem>> foodItems;
+			List<Versioned<DishItem>> dishItems;
+
 			if (filter.trim().isEmpty())
 			{
-				temp = foodBaseService.findAll(false);
+				foodItems = foodBaseService.findAll(false);
+				dishItems = dishBaseService.findAll(false);
 			}
 			else
 			{
-				temp = foodBaseService.findAny(filter);
+				foodItems = foodBaseService.findAny(filter);
+				dishItems = dishBaseService.findAny(filter);
 			}
 
 			// indexing
-			Map<String, Versioned<FoodItem>> foodBaseIndex = new HashMap<String, Versioned<FoodItem>>();
-			for (Versioned<FoodItem> item : temp)
+			Map<String, Versioned<? extends NamedRelativeTagged>> baseIndex = new HashMap<String, Versioned<? extends NamedRelativeTagged>>();
+			for (Versioned<? extends NamedRelativeTagged> item : foodItems)
 			{
-				foodBaseIndex.put(item.getId(), item);
+				baseIndex.put(item.getId(), item);
+			}
+			for (Versioned<? extends NamedRelativeTagged> item : dishItems)
+			{
+				baseIndex.put(item.getId(), item);
 			}
 
-			Log.d(TAG, String.format("Searched for '%s', founded items: %d", filter, temp.size()));
+			Log.d(TAG, String.format("Searched for '%s', founded items: %d", filter, baseIndex.size()));
 
 			// sorter.sort(temp, mode == Mode.EDIT ? Sorter.Sort.ALPHABET : Sorter.Sort.RELEVANT);
 			// sorter.sort(temp, Sorter.Sort.RELEVANT);
@@ -300,10 +333,10 @@ public class ActivityBase extends Activity
 
 			for (Entry<String, Integer> tag : tagInfo.entrySet())
 			{
-				Versioned<FoodItem> food = foodBaseIndex.get(tag.getKey());
-				if (food != null)
+				Versioned<? extends NamedRelativeTagged> indexItem = baseIndex.get(tag.getKey());
+				if (indexItem != null)
 				{
-					Versioned<NamedRelativeTagged> item = new Versioned<NamedRelativeTagged>(food);
+					Versioned<NamedRelativeTagged> item = new Versioned<NamedRelativeTagged>(indexItem);
 					item.getData().setTag(tag.getValue());
 					result.add(item);
 				}
@@ -318,21 +351,63 @@ public class ActivityBase extends Activity
 			}
 			else
 			{
-				resultCutted = false;
+				resultCutted = true;
 				if (result.size() < LIMIT)
 				{
-					for (int i = 0; i < temp.size(); i++)
+					int i = 0;
+					int j = 0;
+
+					while (result.size() < LIMIT)
 					{
-						if (tagInfo.get(temp.get(i).getId()) == null)
+						while ((i < foodItems.size()) && (tagInfo.get(foodItems.get(i).getId()) != null))
 						{
-							result.add(new Versioned<NamedRelativeTagged>(temp.get(i)));
-							if (result.size() == LIMIT)
+							i++;
+						}
+						while ((j < dishItems.size()) && (tagInfo.get(dishItems.get(j).getId()) != null))
+						{
+							j++;
+						}
+
+						if ((i < foodItems.size()) && (j < dishItems.size()))
+						{
+							// TODO: check the more/less sign
+							if (foodItems.get(i).getData().getName().compareTo(dishItems.get(j).getData().getName()) < 0)
 							{
-								resultCutted = (i < temp.size() - 1);
-								break;
+								result.add(new Versioned<NamedRelativeTagged>(foodItems.get(i++)));
+							}
+							else
+							{
+								result.add(new Versioned<NamedRelativeTagged>(dishItems.get(j++)));
 							}
 						}
+						else if (i < foodItems.size())
+						{
+							result.add(new Versioned<NamedRelativeTagged>(foodItems.get(i++)));
+						}
+						else if (j < dishItems.size())
+						{
+							result.add(new Versioned<NamedRelativeTagged>(dishItems.get(j++)));
+						}
+						else
+						{
+							// no more elements are available
+							resultCutted = false;
+							break;
+						}
 					}
+
+					// for (int i = 0; i < foodItems.size(); i++)
+					// {
+					// if (tagInfo.get(foodItems.get(i).getId()) == null)
+					// {
+					// result.add(new Versioned<NamedRelativeTagged>(foodItems.get(i)));
+					// if (result.size() == LIMIT)
+					// {
+					// resultCutted = (i < foodItems.size() - 1);
+					// break;
+					// }
+					// }
+					// }
 				}
 			}
 
@@ -353,26 +428,26 @@ public class ActivityBase extends Activity
 		}
 	}
 
-	void showBase(final List<Versioned<NamedRelativeTagged>> foodBase)
+	void showBase(final List<Versioned<NamedRelativeTagged>> items)
 	{
 		// TODO: localization
-		if (foodBase == null)
+		if (items == null)
 		{
 			UIUtils.showTip(this, "При загрузке данных произошла ошибка");
 			showBase(Collections.<Versioned<NamedRelativeTagged>> emptyList());
 			return;
 		}
 
-		data = foodBase;
+		data = items;
 
-		String[] str = new String[foodBase.size()];
-		for (int i = 0; i < foodBase.size(); i++)
+		String[] str = new String[items.size()];
+		for (int i = 0; i < items.size(); i++)
 		{
-			str[i] = foodBase.get(i).getData().getName();
+			str[i] = items.get(i).getData().getName();
 		}
 
 		String fmt = resultCutted ? "%s (%d+)" : "%s (%d)";
-		setTitle(String.format(fmt, getString(R.string.foodbase_title), foodBase.size()));
+		setTitle(String.format(fmt, getString(R.string.base_title), items.size()));
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_2,
 				android.R.id.text1, str)
@@ -384,8 +459,8 @@ public class ActivityBase extends Activity
 				TextView text1 = (TextView) view.findViewById(android.R.id.text1);
 				TextView text2 = (TextView) view.findViewById(android.R.id.text2);
 
-				text1.setText(foodBase.get(position).getData().getName());
-				text2.setText(getInfo(foodBase.get(position).getData()));
+				text1.setText(items.get(position).getData().getName());
+				text2.setText(getInfo(items.get(position).getData()));
 				return view;
 			}
 		};
@@ -395,7 +470,7 @@ public class ActivityBase extends Activity
 
 	String getInfo(NamedRelativeTagged item)
 	{
-		String fmt = getString(R.string.foodbase_subinfo, item.getRelProts(), item.getRelFats(), item.getRelCarbs(),
+		String fmt = getString(R.string.base_subinfo, item.getRelProts(), item.getRelFats(), item.getRelCarbs(),
 				item.getRelValue());
 		// fmt = fmt.replaceAll(" / ", "\t\t");
 		// fmt = fmt + "\t\tTAG=" + item.getTag();
@@ -423,7 +498,7 @@ public class ActivityBase extends Activity
 		Intent intent = new Intent(this, ActivityEditorDish.class);
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, dish);
 		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
-		startActivityForResult(intent, createMode ? DIALOG_FOOD_CREATE : DIALOG_FOOD_MODIFY);
+		startActivityForResult(intent, createMode ? DIALOG_DISH_CREATE : DIALOG_DISH_MODIFY);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -436,6 +511,27 @@ public class ActivityBase extends Activity
 		{
 			switch (requestCode)
 			{
+				case DIALOG_FOOD_CREATE:
+				{
+					if (resultCode == RESULT_OK)
+					{
+						Versioned<FoodItem> item = (Versioned<FoodItem>) intent.getExtras().getSerializable(
+								ActivityEditor.FIELD_ENTITY);
+						try
+						{
+							foodBaseService.add(item);
+							UIUtils.showTip(this, "Продукт создан");
+						}
+						catch (PersistenceException e)
+						{
+							// TODO: localize
+							UIUtils.showTip(this, "Ошибка создания продукта");
+						}
+						runSearch();
+					}
+					break;
+				}
+
 				case DIALOG_FOOD_MODIFY:
 				{
 					if (resultCode == RESULT_OK)
@@ -457,21 +553,42 @@ public class ActivityBase extends Activity
 					break;
 				}
 
-				case DIALOG_FOOD_CREATE:
+				case DIALOG_DISH_CREATE:
 				{
 					if (resultCode == RESULT_OK)
 					{
-						Versioned<FoodItem> item = (Versioned<FoodItem>) intent.getExtras().getSerializable(
+						Versioned<DishItem> item = (Versioned<DishItem>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
 						try
 						{
-							foodBaseService.add(item);
-							UIUtils.showTip(this, "Продукт создан");
+							dishBaseService.add(item);
+							UIUtils.showTip(this, "Блюдо создано");
 						}
 						catch (PersistenceException e)
 						{
 							// TODO: localize
-							UIUtils.showTip(this, "Ошибка создания продукта");
+							UIUtils.showTip(this, "Ошибка создания блюда");
+						}
+						runSearch();
+					}
+					break;
+				}
+
+				case DIALOG_DISH_MODIFY:
+				{
+					if (resultCode == RESULT_OK)
+					{
+						Versioned<DishItem> item = (Versioned<DishItem>) intent.getExtras().getSerializable(
+								ActivityEditor.FIELD_ENTITY);
+						try
+						{
+							dishBaseService.save(Arrays.<Versioned<DishItem>> asList(item));
+							UIUtils.showTip(this, "Блюдо сохранено");
+						}
+						catch (PersistenceException e)
+						{
+							// TODO: localize
+							UIUtils.showTip(this, "Ошибка сохранения блюда");
 						}
 						runSearch();
 					}
