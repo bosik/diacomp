@@ -20,10 +20,32 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 	public static final String		FIELD_MODE				= "bosik.pack.createMode";
 	public static final String		FIELD_ENTITY			= "bosik.pack.entity";
 
+	/**
+	 * Stores the data for editing. Note: as far as passing this data achieved via
+	 * serialization/deserialization, the editor's entity is completely unlinked (deeply cloned)
+	 * from invoker's one. Thus, feel free to modify it the way you like.
+	 */
 	protected Versioned<T>			entity;
 
 	// TODO: localize error messages
 	protected static final String	ERROR_INCORRECT_TIME	= "Введите корректное время";
+
+	/* =========================== MAIN METHODS ================================ */
+
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		setupInterface();
+		readEntity(getIntent());
+		boolean createMode = getIntent().getBooleanExtra(FIELD_MODE, true);
+		showValuesInGUI(createMode);
+
+		if (createMode)
+		{
+			entity.setId(Utils.generateGuid());
+		}
+	}
 
 	/* =========================== UTIL METHODS ================================ */
 
@@ -76,6 +98,19 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 		timePicker.setCurrentMinute(c.get(Calendar.MINUTE));
 	}
 
+	protected void submit()
+	{
+		if (getValuesFromGUI())
+		{
+			entity.updateTimeStamp();
+
+			Intent intent = getIntent();
+			writeEntity(intent);
+			setResult(RESULT_OK, intent);
+			finish();
+		}
+	}
+
 	/* =========================== ABSTRACT METHODS ================================ */
 
 	/**
@@ -94,34 +129,4 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 	 * @return True if validation succeed, false otherwise
 	 */
 	protected abstract boolean getValuesFromGUI();
-
-	/* =========================== MAIN METHODS ================================ */
-
-	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		setupInterface();
-		readEntity(getIntent());
-		boolean createMode = getIntent().getBooleanExtra(FIELD_MODE, true);
-		showValuesInGUI(createMode);
-
-		if (createMode)
-		{
-			entity.setId(Utils.generateGuid());
-		}
-	}
-
-	protected void submit()
-	{
-		if (getValuesFromGUI())
-		{
-			entity.updateTimeStamp();
-
-			Intent intent = getIntent();
-			writeEntity(intent);
-			setResult(RESULT_OK, intent);
-			finish();
-		}
-	}
 }
