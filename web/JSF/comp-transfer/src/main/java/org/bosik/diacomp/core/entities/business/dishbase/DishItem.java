@@ -102,7 +102,7 @@ public class DishItem implements NamedRelativeTagged, Serializable
 		double realMass = getRealMass();
 		if (realMass > Utils.EPS)
 		{
-			return total / realMass;
+			return total / realMass * 100.0;
 		}
 		else
 		{

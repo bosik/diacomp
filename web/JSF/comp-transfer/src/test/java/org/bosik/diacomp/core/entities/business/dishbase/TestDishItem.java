@@ -47,20 +47,20 @@ public class TestDishItem extends TestCase
 	public void test_getRels_withoutMass_ok()
 	{
 		dish.add(new FoodMassed("Item", 10.0, 20.0, 30.0, 40.0, 100));
-		assertEquals(10.0 / 100, dish.getRelProts(), Utils.EPS);
-		assertEquals(20.0 / 100, dish.getRelFats(), Utils.EPS);
-		assertEquals(30.0 / 100, dish.getRelCarbs(), Utils.EPS);
-		assertEquals(40.0 / 100, dish.getRelValue(), Utils.EPS);
+		assertEquals(10.0, dish.getRelProts(), Utils.EPS);
+		assertEquals(20.0, dish.getRelFats(), Utils.EPS);
+		assertEquals(30.0, dish.getRelCarbs(), Utils.EPS);
+		assertEquals(40.0, dish.getRelValue(), Utils.EPS);
 	}
 
 	public void test_getRels_withMass_ok()
 	{
 		dish.add(new FoodMassed("Item", 10.0, 20.0, 30.0, 40.0, 100));
 		dish.setMass(200);
-		assertEquals(5.0 / 100, dish.getRelProts(), Utils.EPS);
-		assertEquals(10.0 / 100, dish.getRelFats(), Utils.EPS);
-		assertEquals(15.0 / 100, dish.getRelCarbs(), Utils.EPS);
-		assertEquals(20.0 / 100, dish.getRelValue(), Utils.EPS);
+		assertEquals(5.0, dish.getRelProts(), Utils.EPS);
+		assertEquals(10.0, dish.getRelFats(), Utils.EPS);
+		assertEquals(15.0, dish.getRelCarbs(), Utils.EPS);
+		assertEquals(20.0, dish.getRelValue(), Utils.EPS);
 	}
 
 	public void test_add_null_exceptionThrown()
