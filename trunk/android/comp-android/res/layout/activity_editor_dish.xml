@@ -45,7 +45,7 @@
     <org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView
         android:id="@+id/dishEditor"
         android:layout_width="match_parent"
-        android:layout_height="259dp"
+        android:layout_height="0dip"
         android:layout_weight="1.09" />
 
     <Button
@@ -53,6 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/padding_medium"
-        android:text="@string/editor_common_save" />
+        android:text="@string/editor_common_save"
+        android:visibility="gone" />
 
 </LinearLayout>
