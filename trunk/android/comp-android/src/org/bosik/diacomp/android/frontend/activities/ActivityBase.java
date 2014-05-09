@@ -42,14 +42,14 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class ActivityFoodbase extends Activity
+public class ActivityBase extends Activity
 {
-	private static final String	TAG					= ActivityFoodbase.class.getSimpleName();
+	private static final String	TAG					= ActivityBase.class.getSimpleName();
 
-	public static final String	KEY_GUID			= "diacomp.activityfoodbase.guid";
-	public static final String	KEY_MODE			= "diacomp.activityfoodbase.mode";
-	public static final String	VALUE_MODE_PICK		= "diacomp.activityfoodbase.mode.pick";
-	public static final String	VALUE_MODE_EDIT		= "diacomp.activityfoodbase.mode.edit";
+	public static final String	KEY_GUID			= "diacomp.activitybase.guid";
+	public static final String	KEY_MODE			= "diacomp.activitybase.mode";
+	public static final String	VALUE_MODE_PICK		= "diacomp.activitybase.mode.pick";
+	public static final String	VALUE_MODE_EDIT		= "diacomp.activitybase.mode.edit";
 
 	private static final int	DIALOG_FOOD_CREATE	= 11;
 	private static final int	DIALOG_FOOD_MODIFY	= 12;
@@ -154,7 +154,7 @@ public class ActivityFoodbase extends Activity
 								}
 								else
 								{
-									UIUtils.showTip(ActivityFoodbase.this, String.format("Item %s not found", guid));
+									UIUtils.showTip(ActivityBase.this, String.format("Item %s not found", guid));
 								}
 							}
 						}.execute(guid);
