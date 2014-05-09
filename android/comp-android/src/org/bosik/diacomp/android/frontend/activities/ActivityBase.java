@@ -17,6 +17,7 @@ import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import org.bosik.diacomp.core.services.search.Sorter;
@@ -48,6 +49,7 @@ public class ActivityBase extends Activity
 
 	public static final String	KEY_GUID			= "diacomp.activitybase.guid";
 	public static final String	KEY_MODE			= "diacomp.activitybase.mode";
+	// TODO: Pick mode seems to be useless
 	public static final String	VALUE_MODE_PICK		= "diacomp.activitybase.mode.pick";
 	public static final String	VALUE_MODE_EDIT		= "diacomp.activitybase.mode.edit";
 
@@ -62,13 +64,14 @@ public class ActivityBase extends Activity
 	}
 
 	// Widgets
-	private EditText									editFoodSearch;
-	private ListView									listFood;
+	private EditText									editSearch;
+	private ListView									list;
 	private Button										buttonFoodCreate;
 	private Button										buttonDishCreate;
 
 	// Data
 	final FoodBaseService								foodBaseService	= Storage.localFoodBase;
+	final DishBaseService								dishBaseService	= Storage.localDishBase;
 	private final Map<String, Integer>					tagInfo			= Storage.tagService.getTags();
 	List<Versioned<NamedRelativeTagged>>				data;
 	private static final Sorter<NamedRelativeTagged>	sorter			= new Sorter<NamedRelativeTagged>();
@@ -86,15 +89,15 @@ public class ActivityBase extends Activity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_foodbase);
+		setContentView(R.layout.activity_base);
 
 		// reading intent
 		Intent intent = getIntent();
 		mode = VALUE_MODE_PICK.equals(intent.getStringExtra(KEY_MODE)) ? Mode.PICK : Mode.EDIT;
 
 		// Widgets binding
-		editFoodSearch = (EditText) findViewById(R.id.editFoodSearch);
-		editFoodSearch.addTextChangedListener(new TextWatcher()
+		editSearch = (EditText) findViewById(R.id.editBaseEditorSearch);
+		editSearch.addTextChangedListener(new TextWatcher()
 		{
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count)
@@ -113,8 +116,8 @@ public class ActivityBase extends Activity
 				runSearch();
 			}
 		});
-		listFood = (ListView) findViewById(R.id.listFood);
-		listFood.setOnItemClickListener(new OnItemClickListener()
+		list = (ListView) findViewById(R.id.listBaseEditorSearchResults);
+		list.setOnItemClickListener(new OnItemClickListener()
 		{
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
@@ -166,7 +169,7 @@ public class ActivityBase extends Activity
 			}
 		});
 
-		buttonFoodCreate = (Button) findViewById(R.id.buttonFoodCreate);
+		buttonFoodCreate = (Button) findViewById(R.id.buttonBaseEditorCreateFood);
 		buttonFoodCreate.setOnClickListener(new OnClickListener()
 		{
 			@Override
@@ -175,7 +178,7 @@ public class ActivityBase extends Activity
 				showFoodEditor(new Versioned<FoodItem>(new FoodItem()), true);
 			}
 		});
-		buttonDishCreate = (Button) findViewById(R.id.buttonDishCreate);
+		buttonDishCreate = (Button) findViewById(R.id.buttonBaseEditorCreateDish);
 		buttonDishCreate.setOnClickListener(new OnClickListener()
 		{
 			@Override
@@ -387,7 +390,7 @@ public class ActivityBase extends Activity
 			}
 		};
 
-		listFood.setAdapter(adapter);
+		list.setAdapter(adapter);
 	}
 
 	String getInfo(NamedRelativeTagged item)
