@@ -79,18 +79,9 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/ListView01"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.42"
-        android:drawSelectorOnTop="false"
-        android:scrollbars="vertical" >
-    </ListView>
-
-    <org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker
-        android:id="@+id/fdPickerMeal"
+    <org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView
+        android:id="@+id/mealEditorMeal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>
