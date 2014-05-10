@@ -23,19 +23,18 @@ type
     FSilentMode: boolean;           // transient
     FSilentlyModified: boolean;     // transient
     FOnChange: TEventRecordChanged; // transient
-
+  protected
     procedure NotifyPage;
     function GetTime(): integer;
+    procedure SetNativeTime(Value: TDateTime);
   public
     procedure BeginUpdate;
     constructor Create; overload;
     procedure EndUpdate;
     function RecType: TClassCustomRecord;
-
-    procedure SetNativeTime(Value: TDateTime);
-    property GetNativeTime: TDateTime read FTime;
-
-    property Time: integer read GetTime;                   
+    
+    property Time: integer read GetTime;
+    property NativeTime: TDateTime read FTime write SetNativeTime;
     property OnChange: TEventRecordChanged read FOnChange write FOnChange;
   end;
 

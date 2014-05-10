@@ -402,8 +402,8 @@ procedure TDiary.SaveToJSON(const FileName: string);
     Header, Data: string;
   begin
     Header := Format('%s'#9'%s'#9'%s'#9'%d'#9'-'#9,
-      [DateTimeToStr(R.GetNativeTime, STD_DATETIME_FMT),
-       DateTimeToStr(R.GetNativeTime, STD_DATETIME_FMT),
+      [DateTimeToStr(R.NativeTime, STD_DATETIME_FMT),
+       DateTimeToStr(R.NativeTime, STD_DATETIME_FMT),
        CreateCompactGUID(),
        1]);
 

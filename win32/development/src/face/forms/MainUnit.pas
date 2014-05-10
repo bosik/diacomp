@@ -2800,7 +2800,7 @@ begin
   begin
     BloodRec := TBloodRecord(DiaryView.SelectedRecord);
 
-    ATime := BloodRec.Time;
+    ATime := BloodRec.NativeTime;
     AValue := BloodRec.Value;
     AFinger := BloodRec.Finger;
 
@@ -2811,7 +2811,7 @@ begin
     begin
       BeginUpdate;
 
-      SetNativeTime(ATime);
+      NativeTime := ATime;
       Value  := AValue;
       Finger := AFinger;
 
@@ -2843,13 +2843,13 @@ begin
   begin
     InsRecord := TInsRecord(DiaryView.SelectedRecord);
 
-    ATime := InsRecord.Time;
+    ATime := InsRecord.NativeTime;
     AValue := InsRecord.Value;
     if ShowInsEditor(ATime, AValue, New, Focus) then
     with InsRecord do
     begin
       BeginUpdate;
-      SetNativeTime(ATime);
+      NativeTime := ATime;
       Value := AValue;
       EndUpdate;
     end;
@@ -2877,12 +2877,12 @@ begin
   begin
     Meal := TMealRecord(DiaryView.SelectedRecord);
 
-    ATime := Meal.Time;
+    ATime := Meal.NativeTime;
     if ShowMealEditor(ATime, New) then
     with Meal do
     begin
       //BeginUpdate;
-      SetNativeTime(ATime);
+      NativeTime := ATime;
       //EndUpdate; - зачем?
       UpdateTimeLeft;
       ComboDiaryNew.SetFocus;
@@ -2913,14 +2913,14 @@ begin
     // TODO: use TRec instead of scope of field-variables
     Note := TNoteRecord(DiaryView.SelectedRecord);
 
-    ATime := Note.GetNativeTime;
+    ATime := Note.NativeTime;
     AValue := Note.Text;
     if ShowNoteEditor(ATime, AValue, New, Focus) then
     begin
       with Note do
       begin
         BeginUpdate;
-        SetNativeTime(ATime);
+        NativeTime := ATime;
         Text := AValue;
         EndUpdate;
       end;
