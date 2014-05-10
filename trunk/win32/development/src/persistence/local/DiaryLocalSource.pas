@@ -36,7 +36,7 @@ type
     class procedure Read(const S: string; Page: TPageData; F: TFormatSettings); overload;
     {L} class procedure Read(S: TStrings; F: TFormatSettings; out Pages: TPageDataList); overload;
     {L} class procedure Read(PageData: TPageData; Page: TDiaryPage); overload;
-    class procedure ReadHeader(const S: string; PageData: TPageData; F: TFormatSettings); overload;
+    class procedure ReadHeader_(const S: string; PageData: TPageData; F: TFormatSettings); overload;
     {L} class procedure Write(Page: TDiaryPage; PageData: TPageData); overload;
     {L} class procedure Write(const Pages: TPageDataList; S: TStrings; F: TFormatSettings); overload;
   end;
@@ -135,8 +135,8 @@ class procedure TPageData.Read(const S: string; Page: TPageData; F: TFormatSetti
 var
   header, body: string;
 begin
-  Separate(S, header, #13, body);
-  TPageData.ReadHeader(header, Page, F);
+  //Separate(S, header, #13, body);
+  //TPageData.ReadHeader(header, Page, F);
   Page.Page := body;
 end;
 
@@ -179,7 +179,7 @@ begin
 end;
 
 {==============================================================================}
-class procedure TPageData.ReadHeader(const S: string; PageData: TPageData; F: TFormatSettings);
+class procedure TPageData.ReadHeader_(const S: string; PageData: TPageData; F: TFormatSettings);
 {==============================================================================}
 begin
   TPageSerializer.ReadHeader(S, F, PageData.Date, PageData.TimeStamp, PageData.Version);
@@ -442,6 +442,7 @@ begin
       BaseVersion := StrToInt(TextAfter(s[0], '='));
       case BaseVersion of
         3:    Load_v3(s);
+        4:    Load_v3(s);
         else raise Exception.Create('Unsupported database format');
       end;
     end else
