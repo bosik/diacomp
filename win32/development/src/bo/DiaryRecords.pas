@@ -5,7 +5,8 @@ interface
 uses
   BusinessObjects,
   DiaryRoutines,
-  SysUtils;
+  SysUtils,
+  Bases;
 
 type
   TCustomRecord = class;
@@ -15,13 +16,8 @@ type
   TEventRecordChanged = procedure(Sender: TCustomRecord) of object;
 
   // #entity
-  TCustomRecord = class
+  TCustomRecord = class (TVersioned)
   private
-    FID: TCompactGUID;
-    FTimeStamp: TDateTime;
-    FVersion: integer;
-    FDeleted: boolean;
-
     FTime: TDateTime;               // UTC
 
     FSilentMode: boolean;           // transient
@@ -38,11 +34,6 @@ type
 
     procedure SetNativeTime(Value: TDateTime);
     property GetNativeTime: TDateTime read FTime;
-
-    property ID: TCompactGUID read FID write FID;
-    property TimeStamp: TDateTime read FTimeStamp write FTimeStamp;
-    property Version: integer read FVersion write FVersion;
-    property Deleted: boolean read FDeleted write FDeleted;
 
     property Time: integer read GetTime;                   
     property OnChange: TEventRecordChanged read FOnChange write FOnChange;
