@@ -74,23 +74,23 @@ class procedure TPageSerializer.ReadBody(S: TStrings; Page: TDiaryPage);
   {function ParseBlood(json: TlkJSONobject): TBloodRecord;
   begin
     Result := TBloodRecord.Create();
-    Result.Time := StrToDateTime((json.Field['time'] as TlkJSONstring).Value);
-    Result.Value := (json.Field['value'] as TlkJSONnumber).Value;
-    Result.Finger := (json.Field['finger'] as TlkJSONnumber).Value;
+    Result.Time := StrToDateTime((json['time'] as TlkJSONstring).Value);
+    Result.Value := (json['value'] as TlkJSONnumber).Value;
+    Result.Finger := (json['finger'] as TlkJSONnumber).Value;
   end;
 
   function ParseIns(json: TlkJSONobject): TInsRecord;
   begin
     Result := TInsRecord.Create();
-    Result.Time := StrToDateTime((json.Field['time'] as TlkJSONstring).Value);
-    Result.Value := (json.Field['value'] as TlkJSONnumber).Value;
+    Result.Time := StrToDateTime((json['time'] as TlkJSONstring).Value);
+    Result.Value := (json['value'] as TlkJSONnumber).Value;
   end;
 
   function ParseNote(json: TlkJSONobject): TNoteRecord;
   begin
     Result := TNoteRecord.Create();
-    Result.Time := StrToDateTime((json.Field['time'] as TlkJSONstring).Value);
-    Result.Text := (json.Field['text'] as TlkJSONnumber).Value;
+    Result.Time := StrToDateTime((json['time'] as TlkJSONstring).Value);
+    Result.Text := (json['text'] as TlkJSONnumber).Value;
   end;
 
   function ParseRecord(const S: string): TVersioned;
@@ -129,6 +129,14 @@ class procedure TPageSerializer.ReadBody(S: TStrings; Page: TDiaryPage);
     end;
   end; }
 
+  function ReadTime(const S: string): TDateTime;
+  var
+    MTime: integer;
+  begin
+    MTime := StrToTimeQuick(S);
+    Result := Page.Date + MTime / MinPerDay - 4 / HourPerDay;
+  end;
+
 var
   i,k: integer;
   CurStr: string;
@@ -152,7 +160,7 @@ begin
     end;
 
     SilentChange := True;
-
+    
     try
       Clear;
       Meal := nil;
@@ -172,9 +180,20 @@ begin
 
           '*':
           begin
-            TempTime := StrToTimeQuick(Copy(CurStr,2,5));
+            //TempTime := StrToDateTime(Copy(CurStr, 2, 19), STD_DATETIME_FMT);
+            TempTime := ReadTime(Copy(CurStr, 2, 5));
 
             k := pos('|', curStr);
+            {if k > 0 then
+            begin
+              TempValue := StrToFloat(CheckDot( Copy(CurStr, 22, k - 22) ));
+              TempFinger := StrToInt( Copy(CurStr, k + 1, Length(CurStr) - k) );
+            end else
+            begin
+              TempValue := StrToFloat(CheckDot(Copy(CurStr, 22, Length(CurStr) - 22 + 1)));
+              TempFinger := -1;
+            end;       }
+
             if k > 0 then
             begin
               TempValue := StrToFloat(CheckDot( Copy(CurStr, 8, k - 8) ));
@@ -183,18 +202,18 @@ begin
             begin
               TempValue := StrToFloat(CheckDot(Copy(CurStr, 8, Length(CurStr) - 7)));
               TempFinger := -1;
-            end;                                                            
+            end;
             Add(TBloodRecord.Create(TempTime, TempValue, TempFinger));
           end;
           '-':
           begin
-            TempTime := StrToTimeQuick(Copy(CurStr, 2, 5));
+            TempTime := ReadTime(Copy(CurStr, 2, 5));
             TempValue := StrToFloat(CheckDot(Copy(CurStr, 8, Length(CurStr) - 7)));
             Add(TInsRecord.Create(TempTime, TempValue));
           end;
           ' ':
           begin
-            TempTime := StrToTimeQuick(Copy(CurStr, 2, 5));
+            TempTime := ReadTime(Copy(CurStr, 2, 5));
             TempShort := (CurStr[Length(CurStr)] = 's');
             Meal := TMealRecord.Create(TempTime, TempShort); // save it for further modifications
             Add(Meal);
@@ -210,8 +229,12 @@ begin
           end;
           '%':
           begin
-            TempTime := StrToDateTime(Copy(CurStr, 2, 19), STD_DATETIME_FMT);
+            {TempTime := StrToDateTime(Copy(CurStr, 2, 19), STD_DATETIME_FMT);
             TempStr := Copy(CurStr, 22, Length(CurStr) - 22 + 1);
+            Add(TNoteRecord.Create(TempTime, TempStr));}
+
+            TempTime := ReadTime(Copy(CurStr, 2, 5));
+            TempStr := Copy(CurStr, 8, Length(CurStr) - 7);
             Add(TNoteRecord.Create(TempTime, TempStr));
           end;
           {else
@@ -221,7 +244,10 @@ begin
               CurStr);   }
         end;
       end;
-    finally
+    except
+      ShowMessage('Error reading line: ' + CurStr);
+    //end;
+    //finally
       //Log('TDiaryPage.ReadFrom() finished');
       //FUpdateStampOnChange := True;
     end;
@@ -279,6 +305,43 @@ end;
 {==============================================================================}
 class procedure TPageSerializer.WriteBody(Page: TDiaryPage; S: TStrings);
 {==============================================================================}
+
+  procedure RemoveAll(var S: string; c: char);
+  var
+    k: integer;
+  begin
+    k := pos(c, S);
+    while (k > 0) do
+    begin
+      Delete(S, k, 1);
+      k := pos(c, S);
+    end;
+  end;
+
+  function Generate(json: TlkJSONobject): string;
+  var
+    i: integer;
+  begin
+    Result := GenerateReadableText(json, i);
+    RemoveAll(Result, #13);
+    RemoveAll(Result, #10);
+  end;
+
+  function SerializeNote(Note: TNoteRecord): string;
+  var
+    json: TlkJSONobject;
+    i: integer;
+  begin
+    json := TlkJSONobject.Create();
+    try
+      json.Add('time', DateTimeToStr(Note.GetNativeTime, STD_DATETIME_FMT));
+      json.Add('text', Note.Text);
+      Result := Generate(json);
+    finally
+      FreeAndNil(json);
+    end;
+  end;
+
 var
   j, n: integer;
   tmp: string;
@@ -321,8 +384,8 @@ begin
 
       if (Recs[j].RecType = TNoteRecord) then
       begin
-        tmp := '%' + DateTimeToStr(Recs[j].GetNativeTime, STD_DATETIME_FMT) +
-          ' ' + TNoteRecord(Recs[j]).Text;
+        tmp := '%' + DateTimeToStr(Recs[j].GetNativeTime, STD_DATETIME_FMT) + ' ' + TNoteRecord(Recs[j]).Text;
+        //tmp := '%' + SerializeNote(Recs[j] as TNoteRecord);
         s.Add(
           tmp
         );

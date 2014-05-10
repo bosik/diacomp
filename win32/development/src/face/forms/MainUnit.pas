@@ -2637,7 +2637,7 @@ begin
   if New then
   begin
     StrValue := '';
-    Time := Now();//GetCurrentMinutes;
+    Time := GetTimeUTC();
   end else
     StrValue := FloatToStr(AValue);
 
@@ -2678,7 +2678,7 @@ begin
   if New then
   begin
     StrValue := '';
-    Time := Now();//GetCurrentMinutes;
+    Time := GetTimeUTC();
     // TODO: hack :)
     //if (Time mod 2) = 1 then
     //  dec(Time);
@@ -2720,7 +2720,7 @@ begin
   if New then
   begin
     StrValue := '';
-    Time := Now();//GetCurrentMinutes;
+    Time := GetTimeUTC();
   end else
     StrValue := '';//FloatToStr(AValue);
 
@@ -2760,7 +2760,7 @@ begin
   if New then
   begin
     StrValue := '';
-    Time := Now();//GetCurrentMinutes;
+    Time := GetTimeUTC();
   end else
     StrValue := AValue;
 

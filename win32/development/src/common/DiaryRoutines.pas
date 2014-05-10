@@ -156,6 +156,7 @@ begin
   CreateGUID(MyGUID);
   S := GUIDToString(MyGUID);
   Result := Copy(S, 2, 8) + Copy(S, 11, 4) + Copy(S, 16, 4) + Copy(S, 21, 4) + Copy(S, 26, 12);
+  Result := LowerCase(Result);
 end;
 
 { TIndexList }
