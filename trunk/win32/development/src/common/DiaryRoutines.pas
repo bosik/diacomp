@@ -800,6 +800,7 @@ end;
 procedure Separate(const S: string; out Before: string; Separator: Char; out After: string);
 var
   k: integer;
+  ResBefore, ResAfter: string;
 begin
   k := pos(Separator, S);
   if (k = 0) then
@@ -808,8 +809,11 @@ begin
     After := '';
   end else
   begin
-    Before := Copy(S, 1, k - 1);
-    After := Copy(S, k + 1, Length(S) - k);
+    // in case S == Before/After
+    ResBefore := Copy(S, 1, k - 1);
+    ResAfter := Copy(S, k + 1, Length(S) - k);
+    Before := ResBefore;
+    After := ResAfter;
   end;
 end;
 
