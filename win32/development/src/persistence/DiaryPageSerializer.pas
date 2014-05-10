@@ -330,7 +330,6 @@ class procedure TPageSerializer.WriteBody(Page: TDiaryPage; S: TStrings);
   function SerializeNote(Note: TNoteRecord): string;
   var
     json: TlkJSONobject;
-    i: integer;
   begin
     json := TlkJSONobject.Create();
     try
