@@ -134,7 +134,7 @@ class procedure TPageSerializer.ReadBody(S: TStrings; Page: TDiaryPage);
     MTime: integer;
   begin
     MTime := StrToTimeQuick(S);
-    Result := Page.Date + MTime / MinPerDay - 4 / HourPerDay;
+    Result := LocalToUTC(Page.Date + MTime / MinPerDay);
   end;
 
 var
