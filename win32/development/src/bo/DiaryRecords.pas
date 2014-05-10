@@ -88,7 +88,6 @@ type
     procedure MealChangeHandler(Sender: TObject);
   public
     function Add(Food: TFoodMassed): integer;
-    // procedure CopyFrom(Org: TCustomRecord); override; deprecated;
     constructor Create(ATime: TDateTime = 0; AShortMeal: boolean = False);
     procedure Clear;
     destructor Destroy; override;
@@ -112,7 +111,6 @@ type
   protected
     procedure SetText(const Value: string);
   public
-    // procedure CopyFrom(Org: TCustomRecord); override; deprecated;
     constructor Create(ATime: TDateTime = 0; AText: string = '');
     property Text: string read FText write SetText;
   end;
