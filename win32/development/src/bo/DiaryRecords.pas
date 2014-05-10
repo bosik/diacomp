@@ -17,7 +17,12 @@ type
   // #entity
   TCustomRecord = class
   private
-    FTime: TDateTime;
+    FID: TCompactGUID;
+    FTimeStamp: TDateTime;
+    FVersion: integer;
+    FDeleted: boolean;
+
+    FTime: TDateTime;               // UTC
 
     FSilentMode: boolean;           // transient
     FSilentlyModified: boolean;     // transient
@@ -177,7 +182,7 @@ end;
 function TCustomRecord.GetTime: integer;
 {==============================================================================}
 begin
-  Result := Round(FTime * MinPerDay) mod MinPerDay;
+  Result := Round(UTCToLocal(FTime) * MinPerDay) mod MinPerDay;
 end;
 
 {==============================================================================}
