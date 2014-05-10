@@ -13,17 +13,17 @@ type
 
   TVersioned = class
   private
-    FID: string;
+    FID: TCompactGUID;
     FTimeStamp: TDateTime;
     FVersion: integer;
     FDeleted: boolean;
-    FData: TObject;
+  protected
+    procedure Modified();
   public
-    property ID: string read FID write FID;
+    property ID: TCompactGUID read FID write FID;
     property TimeStamp: TDateTime read FTimeStamp write FTimeStamp;
     property Version: integer read FVersion write FVersion;
     property Deleted: boolean read FDeleted write FDeleted;
-    property Data: TObject read FData write FData;
   end;
 
   // Имеет методы для бинарного поиска
@@ -109,6 +109,16 @@ type
   end;
 
 implementation
+
+{ TVersioned }
+
+{==============================================================================}
+procedure TVersioned.Modified;
+{==============================================================================}
+begin
+  inc(FVersion);
+  FTimeStamp := GetTimeUTC();
+end;
 
 { TAbstractBase }
 
