@@ -338,46 +338,90 @@ end;
 procedure TDiary.SaveToJSON(const FileName: string);
 {==============================================================================}
 
+  function Escape(S: string): string;
+  var
+    i: integer;
+  begin
+    Result := '';
+    for i := 1 to Length(S) do
+    begin
+      if (S[i] = '"') then
+        Result := Result + '\"'
+      else
+        Result := Result + S[i];
+    end; 
+  end;
+
   function BlockBlood(R: TBloodRecord): string;
   begin
-    Result := Format('{type: "blood", time: %d, value: %.1f, finger: %d}', [R.Time, R.Value, R.Finger]);
+    Result := Format('{"type":"blood","value":"%.1f","finger":"%d"}', [R.Value, R.Finger]);
   end;
 
   function BlockIns(R: TInsRecord): string;
   begin
-    Result := Format('{type: "insulin", time: %d, value: %.1f}', [R.Time, R.Value]);
+    Result := Format('{"type":"insulin","value":"%.1f"}', [R.Value]);
   end;
 
   function BlockFood(R: TFoodMassed): string;
   begin
-    Result := Format('{name: "%s", prots: %.1f, fats: %.1f, carbs: %.1f, value: %.1f, mass: %.1f}', [R.Name, R.RelProts, R.RelFats, R.RelCarbs, R.RelValue, R.Mass]);
+    Result := Format('{"name":"%s","prots":"%.1f","fats":"%.1f","carbs":"%.1f","value":"%.1f","mass":"%.1f"}',
+      [Escape(R.Name), R.RelProts, R.RelFats, R.RelCarbs, R.RelValue, R.Mass]);
   end;
 
   function BlockMeal(R: TMealRecord): string;
+
+    function FmtBoolean(f: boolean): string;
+    begin
+      if (f) then
+        Result := 'true'
+      else
+        Result := 'false';
+    end;
+
   var
     i: integer;
   begin
-    Result := Format('{type: "meal", time: %d, content: [',
-      [R.Time]);
+    Result := Format('{"type":"meal","short":"%s","content":[',
+      [FmtBoolean(R.ShortMeal)]);
     for i := 0 to R.Count - 1 do
     begin
       Result := Result + BlockFood(R[i]);
       if (i < R.Count - 1) then
-        Result := Result + ', ';
+        Result := Result + ',';
     end;
     Result := Result + ']}';
   end;
 
   function BlockNote(R: TNoteRecord): string;
   begin
-    Result := Format('{type: "note", time: %d, text: "%s"}', [R.Time, R.Text]);
+    Result := Format('{"type":"note","text":"%s"}', [Escape(R.Text)]);
+  end;
+
+  function BlockRecord(R: TCustomRecord): string;
+  var
+    Header, Data: string;
+  begin
+    Header := Format('%s'#9'%s'#9'%s'#9'%d'#9'-'#9,
+      [DateTimeToStr(R.GetNativeTime, STD_DATETIME_FMT),
+       DateTimeToStr(R.GetNativeTime, STD_DATETIME_FMT),
+       CreateCompactGUID(),
+       1]);
+
+    if (R.RecType = TBloodRecord) then Data := BlockBlood(TBloodRecord(R)) else
+    if (R.RecType = TInsRecord)   then Data := BlockIns(TInsRecord(R)) else
+    if (R.RecType = TMealRecord)  then Data := BlockMeal(TMealRecord(R)) else
+    if (R.RecType = TNoteRecord)  then Data := BlockNote(TNoteRecord(R));
+
+    Result := Header + Data;
   end;
 
   function BlockPage(P: TDiaryPage): string;
   var
     i: integer;
   begin
-    Result := Format('{date: "%s", stamp: "%s", version: %d, content: [',
+    Result := '';
+
+    {Result := Format('{date: "%s", stamp: "%s", version: %d, content: [',
       [DateToStr(P.Date),
       DateTimeToStr(P.TimeStamp),
       P.Version]);
@@ -391,38 +435,49 @@ procedure TDiary.SaveToJSON(const FileName: string);
       if (i < P.Count - 1) then
         Result := Result + ', ';
     end;
-    Result := Result + ']}';
+    Result := Result + ']';
+    }
+
+    for i := 0 to P.Count - 1 do
+      Result := Result + BlockRecord(P[i]) + #13;
   end;
 
 var
-  JSON: string;
+  //JSON: string;
+  Tmp: string;
   Page: TDiaryPage;
   i: integer;
   DS: char;
   S: TStrings;
 begin
   DS := SysUtils.DecimalSeparator;
-  SysUtils.DecimalSeparator := '.';
-  JSON := '[';
+  //SysUtils.DecimalSeparator := '.';
+  //JSON := '';
 
   S := TStringList.Create;
   try
+    s.add('VERSION=4');
+
     // TODO: hardcoded date
-    for i := Trunc(EncodeDate(2009, 12, 04)) to Trunc(Now) do
+    for i := Trunc(EncodeDate(2009, 12, 03)) to Trunc(Now) + 1 do
     begin
       Page := GetPage(i);
 
-      JSON := JSON + BlockPage(Page);
-      if (i < Page.Count - 1) then
-        JSON := JSON + ', ';
+      //JSON := ;
+      //if (i < Page.Count - 1) then
+      //  JSON := JSON + ', ';
 
-      S.Add(json);
-      json := '';
+      SysUtils.DecimalSeparator := '.';
+      Tmp := BlockPage(Page);
+      if (Tmp <> '') then
+        S.Add(Tmp);
+      SysUtils.DecimalSeparator := DS;
+      //json := '';
     end;
 
-    JSON := JSON + ']';
-    S.Add(json);
-    json := '';
+    //JSON := JSON + ']';
+    //S.Add(json);
+    //json := '';
 
     S.SaveToFile(FileName);
   finally

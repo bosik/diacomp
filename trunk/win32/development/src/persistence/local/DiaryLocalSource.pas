@@ -41,7 +41,7 @@ type
     {L} class procedure Write(const Pages: TPageDataList; S: TStrings; F: TFormatSettings); overload;
   end;
 
-  TDiaryLocalSource =  class (TDiaryDAO)
+  TDiaryLocalSource = class (TDiaryDAO)
   private
     FPages: TPageDataList;
     FModified: boolean;
@@ -377,10 +377,50 @@ end;
 {==============================================================================}
 procedure TDiaryLocalSource.LoadFromFile(const FileName: string);
 {==============================================================================}
+
+  procedure Load_v1(S: TStrings);
+  var
+    Pages: TPageDataList;
+    i: integer;
+  begin
+    s.Delete(0);
+    s.Delete(0);
+    TPageData.Read(S, LocalFmt, Pages);
+
+    // для проверки сортировки и дублей используем вспомогательный список
+    for i := 0 to High(Pages) do
+      Add(Pages[i]);
+  end;
+
+  procedure Load_v2(S: TStrings);
+  var
+    Pages: TPageDataList;
+    i: integer;
+  begin
+    TPageData.Read(S, LocalFmt, Pages);
+    for i := 0 to High(Pages) do
+      Pages[i].TimeStamp := LocalToUTC(Pages[i].TimeStamp);
+
+    // для проверки сортировки и дублей используем вспомогательный список
+    for i := 0 to High(Pages) do
+      Add(Pages[i]);
+  end;
+
+  procedure Load_v3(S: TStrings);
+  var
+    Pages: TPageDataList;
+    i: integer;
+  begin
+    s.Delete(0);
+    TPageData.Read(S, LocalFmt, Pages);
+
+    // для проверки сортировки и дублей используем вспомогательный список
+    for i := 0 to High(Pages) do
+      Add(Pages[i]);
+  end;
+
 var
   s: TStrings;
-  i: integer;
-  Pages: TPageDataList;
   BaseVersion: integer;
 begin
   Clear;
@@ -393,33 +433,24 @@ begin
     // самый старый формат
     if (s.Count >= 2) and (s[0] = 'DIARYFMT') then
     begin
-      s.Delete(0);
-      s.Delete(0);
-      TPageData.Read(S, LocalFmt, Pages);
+      Load_v1(s);
     end else
 
     // формат с указанием версии
     if (s.Count >= 1) and (pos('VERSION=', s[0]) = 1) then
     begin
       BaseVersion := StrToInt(TextAfter(s[0], '='));
-      if (BaseVersion = 3) then
-      begin
-        s.Delete(0);
-        TPageData.Read(S, LocalFmt, Pages);
-      end else
-        raise Exception.Create('Unsupported database format');
+      case BaseVersion of
+        3:    Load_v3(s);
+        else raise Exception.Create('Unsupported database format');
+      end;
     end else
 
     // формат без версии - форматируем
     begin
-      TPageData.Read(S, LocalFmt, Pages);
-      for i := 0 to High(Pages) do
-        Pages[i].TimeStamp := LocalToUTC(Pages[i].TimeStamp);
+      Load_v2(s);
     end;
 
-    // для проверки сортировки и дублей используем вспомогательный список
-    for i := 0 to High(Pages) do
-      Add(Pages[i]);
   finally
     s.Free;
   end;

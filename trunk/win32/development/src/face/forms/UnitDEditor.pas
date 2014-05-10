@@ -99,7 +99,7 @@ begin
   end;
 
   Dialog.LabelTime.Caption := Params.CaptionTime;
-  Dialog.EditTime.Text := DiaryRoutines.TimeToMStr(Time_);
+  Dialog.EditTime.Text := DiaryRoutines.TimeToMStr(UTCToLocal(Time_));
   Dialog.LabelValue.Caption := Params.CaptionValue;
   Dialog.EditValue.Text := Value;
   Dialog.LabelFinger.Caption := Params.CaptionFinger;
@@ -140,7 +140,7 @@ begin
   if Dialog.OK then
   begin
     TryStrToTime(Dialog.EditTime.Text, Minutes);
-    Time_ := Trunc(Time_) + Minutes / MinPerDay;
+    Time_ := LocalToUTC(Trunc(UTCToLocal(Time_)) + Minutes / MinPerDay);
     Value := Dialog.EditValue.Text;
     Finger := Dialog.ComboFinger.ItemIndex;
     Result := True;
