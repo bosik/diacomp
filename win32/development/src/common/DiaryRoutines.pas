@@ -15,6 +15,8 @@ uses
 type
   TCompactGUID = string[32];
 
+  TGUIDList = array of TCompactGUID;
+
   TIndexList = class
   private
     FData: array of integer;
@@ -71,6 +73,10 @@ type
 
   { форматирование строк : общее }
   function CheckDot(const S: string): string;
+
+  { форматирование строк : boolean }
+  function ReadBoolean(const S: string): boolean;
+  function WriteBoolean(f: boolean): string;
 
   { форматирование строк : числа }
   function RealToStr(const X: real): string;
@@ -417,6 +423,23 @@ begin
   for n := 1 to length(Result) do
   if Result[n] in ['.', ','] then
     Result[n] := Decimal;
+end;
+
+{==============================================================================}
+function ReadBoolean(const S: string): boolean;
+{==============================================================================}
+begin
+  Result := (S = 'true');
+end;
+
+{==============================================================================}
+function WriteBoolean(f: boolean): string;
+{==============================================================================}
+begin
+  if (f) then
+    Result := 'true'
+  else
+    Result := 'false';
 end;
 
 {==============================================================================}
