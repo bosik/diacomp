@@ -38,6 +38,8 @@ type
     property OnChange: TEventRecordChanged read FOnChange write FOnChange;
   end;
 
+  TRecordList = array of TCustomRecord;
+
   TPageEventType = (etAdd, etModify, etRemove);
 
   // #entity
