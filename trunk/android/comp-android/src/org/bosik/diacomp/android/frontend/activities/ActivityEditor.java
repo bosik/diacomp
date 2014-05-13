@@ -55,7 +55,7 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 	 * @param intent
 	 */
 	@SuppressWarnings("unchecked")
-	private void readEntity(Intent intent)
+	protected void readEntity(Intent intent)
 	{
 		entity = (Versioned<T>) intent.getExtras().getSerializable(FIELD_ENTITY);
 	}
@@ -65,7 +65,7 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 	 * 
 	 * @param intent
 	 */
-	private void writeEntity(Intent intent)
+	protected void writeEntity(Intent intent)
 	{
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
 	}
