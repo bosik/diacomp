@@ -44,9 +44,9 @@
         <ToggleButton
             android:id="@+id/buttonDishMass"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
+            android:background="?android:attr/selectableItemBackground"
             android:checked="false"
-   
             android:textOff=""
             android:textOn="" />
 
