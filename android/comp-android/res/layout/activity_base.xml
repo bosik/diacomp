@@ -12,10 +12,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true" >
+        android:layout_height="wrap_content" >
 
         <EditText
             android:id="@+id/editBaseEditorSearch"
@@ -28,27 +25,6 @@
 
             <requestFocus />
         </EditText>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="0dip"
-        android:layout_weight="0.42"
-        android:scrollbars="vertical" >
-
-        <ListView
-            android:id="@+id/listBaseEditorSearchResults"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-        </ListView>
-    </LinearLayout>
-
-    <LinearLayout
-        style="?android:attr/buttonBarStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="bottom|top"
-        android:orientation="horizontal" >
 
         <Button
             android:id="@+id/buttonBaseEditorCreateFood"
@@ -63,6 +39,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/button_new_dish" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="0.42"
+        android:scrollbars="vertical" >
+
+        <ListView
+            android:id="@+id/listBaseEditorSearchResults"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+        </ListView>
     </LinearLayout>
 
 </LinearLayout>
