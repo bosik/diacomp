@@ -64,10 +64,11 @@ public class UIUtils
 						}
 					}
 				}
-				catch (NumberFormatException e)
+				catch (NumberFormatException ex)
 				{
 					// TODO: localize
 					UIUtils.showTip((Activity) context, "Wrong mass");
+					e.onSubmit(null);
 				}
 			}
 		});
