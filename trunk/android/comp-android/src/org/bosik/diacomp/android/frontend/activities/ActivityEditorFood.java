@@ -50,9 +50,10 @@ public class ActivityEditorFood extends ActivityEditor<FoodItem>
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
+		editName.setText(entity.getData().getName());
+
 		if (!createMode)
 		{
-			editName.setText(entity.getData().getName());
 			editProts.setText(String.valueOf(entity.getData().getRelProts()));
 			editFats.setText(String.valueOf(entity.getData().getRelFats()));
 			editCarbs.setText(String.valueOf(entity.getData().getRelCarbs()));
@@ -60,7 +61,6 @@ public class ActivityEditorFood extends ActivityEditor<FoodItem>
 		}
 		else
 		{
-			editName.setText("");
 			editProts.setText("");
 			editFats.setText("");
 			editCarbs.setText("");

@@ -66,7 +66,7 @@ public class ActivityBase extends Activity
 	}
 
 	// Widgets
-	private EditText									editSearch;
+	EditText											editSearch;
 	private ListView									list;
 	private Button										buttonFoodCreate;
 	private Button										buttonDishCreate;
@@ -200,7 +200,9 @@ public class ActivityBase extends Activity
 			@Override
 			public void onClick(View arg0)
 			{
-				showFoodEditor(new Versioned<FoodItem>(new FoodItem()), true);
+				final FoodItem food = new FoodItem();
+				food.setName(editSearch.getText().toString());
+				showFoodEditor(new Versioned<FoodItem>(food), true);
 			}
 		});
 		buttonDishCreate = (Button) findViewById(R.id.buttonBaseEditorCreateDish);
@@ -209,7 +211,9 @@ public class ActivityBase extends Activity
 			@Override
 			public void onClick(View arg0)
 			{
-				showDishEditor(new Versioned<DishItem>(new DishItem()), true);
+				final DishItem dish = new DishItem();
+				dish.setName(editSearch.getText().toString());
+				showDishEditor(new Versioned<DishItem>(dish), true);
 			}
 		});
 

@@ -162,14 +162,7 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 	{
 		showDish();
 
-		if (!createMode)
-		{
-			editName.setText(entity.getData().getName());
-		}
-		else
-		{
-			editName.setText("");
-		}
+		editName.setText(entity.getData().getName());
 
 		showMass();
 	}
