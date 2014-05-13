@@ -41,6 +41,7 @@ public class Utils
 	public static final int					SecPerMin			= 60;
 	public static final int					MinPerHour			= 60;
 	public static final int					HourPerDay			= 24;
+	public static final int					SecPerHour			= SecPerMin * MinPerHour;
 	public static final int					SecPerDay			= SecPerMin * MinPerHour * HourPerDay;
 	public static final int					MinPerDay			= MinPerHour * HourPerDay;
 	public static final int					HalfMinPerDay		= (MinPerHour * HourPerDay) / 2;
