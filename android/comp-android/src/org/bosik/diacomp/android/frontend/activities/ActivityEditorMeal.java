@@ -12,6 +12,7 @@ import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.utils.Utils;
+import android.content.Intent;
 import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -19,20 +20,27 @@ import android.widget.TimePicker.OnTimeChangedListener;
 
 public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 {
+	public static final String	FIELD_BS_BEFORE_MEAL	= "bosik.pack.bs.beforeMeal";
+	public static final String	FIELD_BS_TARGET			= "bosik.pack.bs.target";
+	public static final String	FIELD_INS_INJECTED		= "bosik.pack.insInjected";
+
 	// data
-	boolean					modified;
+	boolean						modified;
+	private Double				bsBeforeMeal;
+	private Double				bsTarget;
+	private Double				insInjected;
 
 	// components
-	private TimePicker		timePicker;
-	private DatePicker		datePicker;
-	private TextView		textMealCarbs;
-	private TextView		textMealDose;
-	private MealEditorView	mealEditor;
+	private TimePicker			timePicker;
+	private DatePicker			datePicker;
+	private TextView			textMealCarbs;
+	private TextView			textMealDose;
+	private MealEditorView		mealEditor;
 
 	// localization
-	private String			captionCarbs;
-	private String			captionDose;
-	private String			captionGramm;
+	private String				captionCarbs;
+	private String				captionDose;
+	private String				captionGramm;
 
 	// ======================================================================================================
 
@@ -89,11 +97,19 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 			public void onChange(List<FoodMassed> items)
 			{
 				modified = true;
+
+				entity.getData().clear();
+				for (FoodMassed item : mealEditor.getData())
+				{
+					entity.getData().add(item);
+				}
+
+				showMealInfo();
 			}
 		});
 	}
 
-	void showMeal()
+	void showMealContent()
 	{
 		List<FoodMassed> items = new ArrayList<FoodMassed>();
 
@@ -103,19 +119,50 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		}
 
 		mealEditor.setData(items);
+	}
 
+	private void showMealInfo()
+	{
 		// insulin dosage info
 
+		// FIXME: doesn't updated if time changed
 		int minutesTime = Utils.timeToMin(entity.getData().getTime());
 
 		// TODO: hackfix
 		Koof koof = Storage.koofService.getKoof(minutesTime);
 
+		double deltaBS = (bsBeforeMeal != null && bsTarget != null) ? bsTarget - bsBeforeMeal : 0.0;
+
 		double carbs = entity.getData().getCarbs();
 		double prots = entity.getData().getProts();
-		double dose = ((carbs * koof.getK()) + (prots * koof.getP())) / koof.getQ();
+		double dose = (-deltaBS + (carbs * koof.getK()) + (prots * koof.getP())) / koof.getQ();
+		Double expectedBS = bsBeforeMeal == null ? null : bsBeforeMeal + (carbs * koof.getK()) + (prots * koof.getP())
+				- (insInjected * koof.getQ());
+
 		textMealCarbs.setText(String.format("%.1f %s", carbs, captionCarbs));
 		textMealDose.setText(String.format("%.1f %s", dose, captionDose));
+		// TODO: print expectedBS somehow
+
+		// before = null, target = null --> deltaBS = 0.0; --> dose
+		// before = null, target != null --> deltaBS = 0.0; --> dose
+		// before != null, target = null --> deltaBS = 0.0; --> dose, expectedBS
+		// before != null, target != null --> deltaBS = target - before; --> dose, expectedBS
+
+		// expectedBS = f(before, meal) // undefined, if before == null
+		// dose = g(deltaBS, meal) // deltaBS = target - before (if both are not-null) : 0.0 (if
+		// something is not defined)
+	}
+
+	@Override
+	protected void readEntity(Intent intent)
+	{
+		super.readEntity(intent);
+
+		bsBeforeMeal = intent.getExtras().containsKey(FIELD_BS_BEFORE_MEAL) ? intent.getExtras().getDouble(
+				FIELD_BS_BEFORE_MEAL) : null;
+		bsTarget = intent.getExtras().containsKey(FIELD_BS_TARGET) ? intent.getExtras().getDouble(FIELD_BS_TARGET)
+				: null;
+		insInjected = intent.getExtras().getDouble(FIELD_INS_INJECTED, 0.0);
 	}
 
 	@Override
@@ -130,7 +177,8 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 			showTime(new Date(), datePicker, timePicker);
 		}
 
-		showMeal();
+		showMealContent();
+		showMealInfo();
 	}
 
 	@Override
@@ -150,11 +198,12 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 
 		// content
 
-		entity.getData().clear();
-		for (FoodMassed item : mealEditor.getData())
-		{
-			entity.getData().add(item);
-		}
+		// already there
+		// entity.getData().clear();
+		// for (FoodMassed item : mealEditor.getData())
+		// {
+		// entity.getData().add(item);
+		// }
 
 		// done
 

@@ -36,29 +36,34 @@ import android.widget.Button;
 
 public class ActivityDiary extends Activity implements RecordClickListener, OnClickListener
 {
-	private static final String					TAG					= ActivityDiary.class.getSimpleName();
+	private static final String					TAG							= ActivityDiary.class.getSimpleName();
 
-	private static final int					DIALOG_BLOOD_CREATE	= 11;
-	private static final int					DIALOG_BLOOD_MODIFY	= 12;
-	private static final int					DIALOG_INS_CREATE	= 21;
-	private static final int					DIALOG_INS_MODIFY	= 22;
-	private static final int					DIALOG_MEAL_CREATE	= 31;
-	private static final int					DIALOG_MEAL_MODIFY	= 32;
-	private static final int					DIALOG_NOTE_CREATE	= 41;
-	private static final int					DIALOG_NOTE_MODIFY	= 42;
+	private static final int					DIALOG_BLOOD_CREATE			= 11;
+	private static final int					DIALOG_BLOOD_MODIFY			= 12;
+	private static final int					DIALOG_INS_CREATE			= 21;
+	private static final int					DIALOG_INS_MODIFY			= 22;
+	private static final int					DIALOG_MEAL_CREATE			= 31;
+	private static final int					DIALOG_MEAL_MODIFY			= 32;
+	private static final int					DIALOG_NOTE_CREATE			= 41;
+	private static final int					DIALOG_NOTE_MODIFY			= 42;
 
-	private static final int					CONTEXT_ITEM_EDIT	= 0;
-	private static final int					CONTEXT_ITEM_REMOVE	= 1;
+	private static final int					CONTEXT_ITEM_EDIT			= 0;
+	private static final int					CONTEXT_ITEM_REMOVE			= 1;
 
-	private static final int					SCAN_FOR_BLOOD_DAYS	= 5;
+	private static final long					SCAN_FOR_BLOOD_FINGER		= 5 * Utils.SecPerDay;
+	private static final int					SCAN_FOR_BLOOD_BEFORE_MEAL	= 4 * Utils.SecPerHour;
+
+	// FIXME: hardcoded target BS
+	private final Double						bloodTarget					= 5.0;
 
 	// THINK: что произойдёт на смене дат?
-	private static Date							curDate				= Calendar.getInstance().getTime();
-	private static List<Versioned<DiaryRecord>>	curRecords			= null;
+	private static Date							curDate						= Calendar.getInstance().getTime();
+	private static List<Versioned<DiaryRecord>>	curRecords					= null;
 
 	// --- форматы ---
 	// private static final SimpleDateFormat CaptionFmt = new SimpleDateFormat("d MMMM");
-	private final SimpleDateFormat				CaptionFmt			= new SimpleDateFormat("dd.MM.yyyy", Locale.US);
+	private final SimpleDateFormat				CaptionFmt					= new SimpleDateFormat("dd.MM.yyyy",
+																					Locale.US);
 
 	// КОМПОНЕНТЫ
 	private DiaryView							diaryViewLayout;
@@ -565,17 +570,19 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	}
 
 	/**
-	 * Searches for the last BS record in last scanDaysPeriod days
+	 * Searches for the last BS record in period [since - scanPeriod, since]
 	 * 
-	 * @param scanDaysPeriod
-	 * @return BS record if found, null otherwise
+	 * @param scanPeriod
+	 *            , in seconds
+	 * @param since
+	 * @return
 	 */
-	private static BloodRecord lastBlood(int scanDaysPeriod)
+	private static BloodRecord lastBlood(long scanPeriod, Date since)
 	{
 		// TODO: move this away from UI
 
-		Date toDate = new Date();
-		Date fromDate = new Date(toDate.getTime() - (scanDaysPeriod * Utils.MsecPerDay));
+		Date toDate = since;
+		Date fromDate = new Date(toDate.getTime() - (scanPeriod * Utils.MsecPerSec));
 
 		List<Versioned<DiaryRecord>> records = Storage.localDiary.findBetween(fromDate, toDate, false);
 		Collections.reverse(records);
@@ -591,11 +598,22 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		return null;
 	}
 
+	/**
+	 * Searches for the last BS record in period [now - scanPeriod, now]
+	 * 
+	 * @param scanPeriod
+	 * @return
+	 */
+	private static BloodRecord lastBlood(long scanPeriod)
+	{
+		return lastBlood(scanPeriod, new Date());
+	}
+
 	private void showBloodEditor(Versioned<BloodRecord> entity, boolean createMode)
 	{
 		if (createMode)
 		{
-			BloodRecord prev = lastBlood(SCAN_FOR_BLOOD_DAYS);
+			BloodRecord prev = lastBlood(SCAN_FOR_BLOOD_FINGER);
 			BloodRecord rec = new BloodRecord();
 			rec.setTime(new Date());
 			rec.setFinger(((prev == null) || (prev.getFinger() == -1)) ? -1 : ((prev.getFinger() + 1) % 10));
@@ -634,9 +652,19 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			entity = new Versioned<MealRecord>(rec);
 		}
 
+		BloodRecord prevBlood = lastBlood(SCAN_FOR_BLOOD_BEFORE_MEAL, entity.getData().getTime());
+		Double bloodBeforeMeal = prevBlood == null ? null : prevBlood.getValue();
+
 		Intent intent = new Intent(this, ActivityEditorMeal.class);
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
 		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
+		if (bloodBeforeMeal != null)
+		{
+			intent.putExtra(ActivityEditorMeal.FIELD_BS_BEFORE_MEAL, bloodBeforeMeal);
+		}
+		intent.putExtra(ActivityEditorMeal.FIELD_BS_TARGET, bloodTarget);
+		// FIXME: implement dosage search
+		// intent.putExtra(ActivityEditorMeal.FIELD_INS_INJECTED, 0.0);
 		startActivityForResult(intent, createMode ? DIALOG_MEAL_CREATE : DIALOG_MEAL_MODIFY);
 
 	}
