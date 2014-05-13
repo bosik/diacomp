@@ -5,6 +5,7 @@ import java.util.List;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.android.frontend.UIUtils.OnSubmit;
 import org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker.OnSubmitListener;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
@@ -12,11 +13,7 @@ import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +21,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -91,65 +87,34 @@ public class MealEditorView extends LinearLayout
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
 				{
-					Builder builder = new AlertDialog.Builder(getContext());
-					final String message = data.get(position).getName() + ", " + captionGramm;
-
-					final EditText input = new EditText(context);
-
-					input.setText(Utils.formatDoubleShort(data.get(position).getMass()));
-					input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
 					// TODO: localize
-					builder.setTitle("Change mass");
-					builder.setMessage(message);
-					builder.setView(input);
-					builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+
+					final String title = "Change mass";
+					final String message = data.get(position).getName() + ", " + captionGramm;
+					final String defaultMass = Utils.formatDoubleShort(data.get(position).getMass());
+
+					UIUtils.requestMass(context, title, message, defaultMass, new OnSubmit()
 					{
 						@Override
-						public void onClick(DialogInterface dialog, int whichButton)
+						public void onSubmit(Double mass)
 						{
-							String text = input.getText().toString();
-
-							try
+							if (mass == null)
 							{
-								if (text.isEmpty())
-								{
-									data.remove(position);
-								}
-								else
-								{
-									double mass = Utils.parseExpression(text);
-									if (mass > Utils.EPS)
-									{
-										data.get(position).setMass(mass);
-									}
-									else
-									{
-										data.remove(position);
-									}
-								}
-								if (onChange != null)
-								{
-									onChange.onChange(data);
-								}
-
-								showData();
+								data.remove(position);
 							}
-							catch (NumberFormatException e)
+							else
 							{
-								// TODO: localize
-								UIUtils.showTip((Activity) context, "Wrong mass");
+								data.get(position).setMass(mass);
 							}
+
+							if (onChange != null)
+							{
+								onChange.onChange(data);
+							}
+
+							showData();
 						}
 					});
-					builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
-					{
-						@Override
-						public void onClick(DialogInterface dialog, int whichButton)
-						{
-							// Do nothing.
-						}
-					});
-					builder.show();
 				}
 			});
 			fdPicker.setOnSubmitLister(new OnSubmitListener()
