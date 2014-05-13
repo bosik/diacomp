@@ -68,7 +68,7 @@ public class UIUtils
 				{
 					// TODO: localize
 					UIUtils.showTip((Activity) context, "Wrong mass");
-					e.onSubmit(null);
+					e.onCancel();
 				}
 			}
 		});

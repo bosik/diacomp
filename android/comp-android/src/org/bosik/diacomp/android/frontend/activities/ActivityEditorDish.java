@@ -70,6 +70,8 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 			@Override
 			public void onClick(View v)
 			{
+				showMass();
+
 				// TODO: localize
 				final String title = "Change dish mass";
 				final String message = "Dish mass:";
