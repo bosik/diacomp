@@ -32,6 +32,24 @@
 
             <requestFocus />
         </EditText>
+        
+        <TextView
+            android:id="@+id/labelDishMass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/editDishMass"
+            android:paddingTop="@dimen/padding_small"
+            android:text="@string/editor_dish_field_mass" />
+
+        <ToggleButton
+            android:id="@+id/buttonDishMass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+   
+            android:textOff=""
+            android:textOn="" />
+
     </LinearLayout>
 
     <TextView

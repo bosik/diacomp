@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.text.InputType;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -20,6 +21,8 @@ public class UIUtils
 	public interface OnSubmit
 	{
 		void onSubmit(Double mass);
+
+		void onCancel();
 	}
 
 	public static void requestMass(final Context context, String title, String message, String defaultMass,
@@ -68,12 +71,20 @@ public class UIUtils
 				}
 			}
 		});
+		builder.setOnCancelListener(new OnCancelListener()
+		{
+			@Override
+			public void onCancel(DialogInterface dialog)
+			{
+				e.onCancel();
+			}
+		});
 		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
 		{
 			@Override
 			public void onClick(DialogInterface dialog, int whichButton)
 			{
-				// Do nothing.
+				e.onCancel();
 			}
 		});
 		builder.show();
