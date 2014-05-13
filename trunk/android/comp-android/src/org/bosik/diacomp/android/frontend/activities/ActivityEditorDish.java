@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.android.frontend.UIUtils.OnSubmit;
 import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView;
 import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView.OnChangeListener;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
+import org.bosik.diacomp.core.utils.Utils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ToggleButton;
 
 public class ActivityEditorDish extends ActivityEditor<DishItem>
 {
@@ -25,11 +28,10 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 	// components
 	private EditText			editName;
 	private MealEditorView		editor;
+	ToggleButton				buttonMass;
 	private Button				buttonOK;
 
 	// localization
-	private String				captionCarbs;
-	private String				captionDose;
 	private String				captionGramm;
 
 	// ======================================================================================================
@@ -40,8 +42,6 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 		setContentView(R.layout.activity_editor_dish);
 
 		// string constants
-		captionCarbs = getString(R.string.editor_meal_label_carbs);
-		captionDose = getString(R.string.editor_meal_label_dose);
 		captionGramm = getString(R.string.common_gramm);
 
 		// components
@@ -64,8 +64,69 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 				ActivityEditorDish.this.submit();
 			}
 		});
+		buttonMass = (ToggleButton) findViewById(R.id.buttonDishMass);
+		buttonMass.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				// TODO: localize
+				final String title = "Change dish mass";
+				final String message = "Dish mass:";
+				final String defaultMass = "";
+
+				UIUtils.requestMass(ActivityEditorDish.this, title, message, defaultMass, new OnSubmit()
+				{
+					@Override
+					public void onSubmit(Double mass)
+					{
+						if (mass == null)
+						{
+							entity.getData().setMass(null);
+						}
+						else
+						{
+							entity.getData().setMass(mass);
+						}
+						showMass();
+						modified = true;
+					}
+
+					@Override
+					public void onCancel()
+					{
+						showMass();
+					}
+				});
+			}
+		});
 
 		modified = false;
+	}
+
+	void showMassOn(double mass)
+	{
+		buttonMass.setChecked(true);
+		buttonMass.setText(Utils.formatDoubleShort(mass) + " " + captionGramm);
+	}
+
+	void showMassOff()
+	{
+		buttonMass.setChecked(false);
+		// TODO: localize
+		buttonMass.setText("No mass");
+	}
+
+	void showMass()
+	{
+		if (entity.getData().getMass() == null)
+		{
+			showMassOff();
+		}
+		else
+		{
+			showMassOn(entity.getData().getMass());
+		}
 	}
 
 	private void showDish()
@@ -107,6 +168,8 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 		{
 			editName.setText("");
 		}
+
+		showMass();
 	}
 
 	@Override
@@ -129,8 +192,6 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 		{
 			entity.getData().add(item);
 		}
-
-		// TODO: read mass
 
 		return true;
 	}

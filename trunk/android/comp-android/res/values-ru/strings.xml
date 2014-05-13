@@ -19,6 +19,7 @@
     <string name="editor_common_field_value">Значение</string>
     <string name="editor_common_save">Сохранить</string>
     <string name="editor_dish_field_content">Состав</string>
+    <string name="editor_dish_field_mass">Масса готового блюда</string>
     <string name="editor_dish_field_name">Название</string>
     <string name="editor_dish_title">Блюдо</string>
     <string name="editor_food_field_name">Название</string>

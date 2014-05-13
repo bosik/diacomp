@@ -114,6 +114,12 @@ public class MealEditorView extends LinearLayout
 
 							showData();
 						}
+
+						@Override
+						public void onCancel()
+						{
+							// Do nothing.
+						}
 					});
 				}
 			});

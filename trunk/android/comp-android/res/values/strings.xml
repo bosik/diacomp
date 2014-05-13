@@ -19,6 +19,7 @@
     <string name="editor_common_field_value">Value</string>
     <string name="editor_common_save">Save</string>
     <string name="editor_dish_field_content">Content</string>
+    <string name="editor_dish_field_mass">Result mass</string>
     <string name="editor_dish_field_name">Name</string>
     <string name="editor_dish_title">Dish</string>
     <string name="editor_food_field_name">Name</string>
