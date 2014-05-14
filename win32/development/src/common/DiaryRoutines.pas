@@ -117,6 +117,7 @@ type
   function TextBefore(const S: string; Terminal: char): string;
   function TextAfter(const S: string; Terminal: char): string;
   function MatchStr(const S1, S2: string; IgnoreCase: boolean): boolean;
+  procedure RemoveAll(var S: string; c: char);
   function ReplaceAll(const S, Find, Replace: string): string;
   procedure Separate(const S: string; out Before: string; Separator: Char; out After: string);
   procedure SeparateBack(const S: string; out Before: string; Separator: Char; out After: string);
@@ -837,6 +838,18 @@ begin
     Result := (AnsiLowerCase(s1) = AnsiLowerCase(s2))
   else
     Result := (s1 = s2);
+end;
+
+procedure RemoveAll(var S: string; c: char);
+var
+  k: integer;
+begin
+  k := pos(c, S);
+  while (k > 0) do
+  begin
+    Delete(S, k, 1);
+    k := pos(c, S);
+  end;
 end;
 
 function ReplaceAll(const S, Find, Replace: string): string;
