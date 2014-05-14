@@ -116,6 +116,7 @@ type
   function TextBefore(const S: string; Terminal: char): string;
   function TextAfter(const S: string; Terminal: char): string;
   function MatchStr(const S1, S2: string; IgnoreCase: boolean): boolean;
+  function ReplaceAll(const S, Find, Replace: string): string;
   procedure Separate(const S: string; out Before: string; Separator: Char; out After: string);
   procedure SeparateBack(const S: string; out Before: string; Separator: Char; out After: string);
   function StartsWith(const S: string; C: char): boolean;
@@ -818,6 +819,23 @@ begin
     Result := (AnsiLowerCase(s1) = AnsiLowerCase(s2))
   else
     Result := (s1 = s2);
+end;
+
+function ReplaceAll(const S, Find, Replace: string): string;
+var
+  k: integer;
+begin
+  k := pos(Find, S);
+  if (k > 0) then
+  begin
+    Result :=
+      Copy(S, 1, k - 1) +
+      Replace +
+      ReplaceAll(Copy(S, k + Length(Find), Length(S) - Length(Find) - k + 1), Find, Replace);
+  end else
+  begin
+    Result := S;
+  end;
 end;
 
 procedure Separate(const S: string; out Before: string; Separator: Char; out After: string);
