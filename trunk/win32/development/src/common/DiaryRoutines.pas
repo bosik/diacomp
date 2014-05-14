@@ -108,6 +108,7 @@ type
   function TestStrToFloat(const S: string): boolean;
 
   { чистая работа со строками }
+  function ChkSpace(const S: string): string;
   function EqStarts(const s1,s2: string; Count: integer): boolean;
   function ReadStrTo(const S: string; Terminal: char; var Caret: integer): string;
   function ReadFloatTo(const S: string; Terminal: char; var Caret: integer): real;
@@ -758,6 +759,23 @@ begin
   Result :=
     TryStrToFloat(CheckDot(Value), Temp) and
     (Temp > 0);
+end;
+
+{==============================================================================}
+function ChkSpace(const S: string): string;
+{==============================================================================}
+const
+  SPACE_CODE = '%20';
+var
+  k: integer;
+begin
+  Result := S;
+  k := Pos(' ', Result);
+  while (k > 0) do
+  begin
+    Result := Copy(Result, 1, k - 1) + SPACE_CODE + Copy(Result, k + 1, Length(Result) - k);
+    k := Pos(' ', Result);
+  end;
 end;
 
 function EqStarts(const s1,s2: string; Count: integer): boolean;
