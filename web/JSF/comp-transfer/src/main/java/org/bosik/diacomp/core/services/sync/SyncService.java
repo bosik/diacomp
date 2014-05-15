@@ -23,24 +23,23 @@ public class SyncService
 	/* ============================ METHODS ============================ */
 
 	/**
-	 * Calculates GUID lists for synchronization
-	 *
+	 * Calculates lists for synchronization
+	 * 
 	 * @param items1
 	 *            First list
 	 * @param items2
 	 *            Second list
 	 * @param newer1
-	 *            GUIDs of items which has greater version in the first list
+	 *            Items which has greater version in the first list
 	 * @param newer2
-	 *            GUIDs of items which has greater version in the second list
+	 *            Items which has greater version in the second list
 	 * @param only1
-	 *            GUIDs of items which are presented only in the first list
+	 *            Items which are presented only in the first list
 	 * @param only2
-	 *            GUIDs of items which are presented only in the second list
+	 *            Items which are presented only in the second list
 	 */
 	private static <T> void getOverLists(List<Versioned<T>> items1, List<Versioned<T>> items2,
-			List<Versioned<T>> newer1,
-			List<Versioned<T>> newer2, List<Versioned<T>> only1, List<Versioned<T>> only2)
+			List<Versioned<T>> newer1, List<Versioned<T>> newer2, List<Versioned<T>> only1, List<Versioned<T>> only2)
 	{
 		// null checks
 		if (null == items1)
@@ -127,9 +126,9 @@ public class SyncService
 
 	/**
 	 * Synchronizes two object services
-	 *
+	 * 
 	 * @param <T>
-	 *
+	 * 
 	 * @param service1
 	 *            First service
 	 * @param service2
