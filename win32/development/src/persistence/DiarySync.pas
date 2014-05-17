@@ -5,86 +5,35 @@ unit DiarySync;
 interface
 
 uses
-  Classes,
-  SysUtils,
-  DiaryRoutines,
-  DiaryDAO,
-  DiaryPage,
-  FoodBaseDAO,
-  DiaryCore, // TODO: remove
-  Autolog;
+  DAO, //
+  BusinessObjects; //
 
-  { возвращается количество синхронизированных страниц }
-  function SyncSources(Source1, Source2: TDiaryDAO; Since: TDateTime): integer;
-  function SyncFoodbase(Source1, Source2: TFoodbaseDAO): TSyncResult;
-  function SyncDishbase(): TSyncResult;
+  { возвращается количество синхронизированных объектов }
+  function SyncSources(Source1, Source2: TDAO; Since: TDateTime): integer;
 
 implementation
 
-type
-  TSyncInfo = class
-    Date: TDate;
-    Version1: integer;
-    Version2: integer;
-    constructor Create(Date: TDate; Version1, Version2: integer);
-  end;
-
-  TObjDate = class
-    Date: TDate;
-    constructor Create(Date: TDate);
-  end;
-
-{ TSyncInfo }
-
 {==============================================================================}
-constructor TSyncInfo.Create(Date: TDate; Version1, Version2: integer);
+procedure SortVersioned(var List: TVersionedList);
 {==============================================================================}
-begin
-  Self.Date := Date;
-  Self.Version1 := Version1;
-  Self.Version2 := Version2;
-end;
 
-
-{ TObjDate }
-
-{==============================================================================}
-constructor TObjDate.Create(Date: TDate);
-{==============================================================================}
-begin
-  Self.Date := Date;
-end;
-
-{==============================================================================}
-function ConvertToDateList(List: TList): TDateList;
-{==============================================================================}
-var
-  i: integer;
-begin
-  SetLength(Result, List.Count);
-  for i := 0 to List.Count - 1 do
-    Result[i] := TObjDate(List[i]).Date;
-end;
-
-{==============================================================================}
-procedure SortModList(var List: TModList);
-{==============================================================================}
+  // sort by ID
 
   procedure qsort(l, r: integer);
   var
     i, j: integer;
-    x: TDate;
-    y: TModItem;
+    x: string;
+    y: TVersioned;
   begin
     i := l;
     j := r;
-    x := List[(l+r) div 2].Date;
+    x := List[(l+r) div 2].ID;
     repeat
-      while List[i].Date < x do inc(i);
-      while List[j].Date > x do dec(j);
+      while List[i].ID < x do inc(i);
+      while List[j].ID > x do dec(j);
       if i <= j then
       begin
-        if (List[i].Date <> List[j].Date) then
+        if (List[i].ID <> List[j].ID) then
         begin
           y := List[i];
           List[i] := List[j];
@@ -98,12 +47,12 @@ procedure SortModList(var List: TModList);
     if i < r then qsort(i, r);
   end;
 
-  function Ordered(const List: TModList): boolean;
+  function Ordered(const List: TVersionedList): boolean;
   var
     i: integer;
   begin
     for i := 0 to High(List) - 1 do
-    if (List[i].Date > List[i + 1].Date) then
+    if (List[i].ID > List[i + 1].ID) then
     begin
       Result := False;
       Exit;
@@ -118,362 +67,116 @@ begin
 end;
 
 {==============================================================================}
-function Merge(var ModList1, ModList2: TModList; out Miss1, Miss2: TList  {of TObjDate}): TList {of TSyncInfo};
+procedure Add(const Item: TVersioned; var List: TVersionedList);
 {==============================================================================}
+begin
+  SetLength(List, Length(List) + 1);
+  List[High(List)] := Item;
+end;
 
-  procedure AddUniq1(const Item: TModItem);
-  begin
-    Result.Add(TSyncInfo.Create(Item.Date, Item.Version, -1));
-    Miss2.Add(TObjDate.Create(Item.Date));
-  end;
-
-  procedure AddUniq2(const Item: TModItem);
-  begin
-    Result.Add(TSyncInfo.Create(Item.Date, -1, Item.Version));
-    Miss1.Add(TObjDate.Create(Item.Date));
-  end;
-
+{==============================================================================}
+procedure GetOverLists(
+  var items1, items2: TVersionedList;
+  var newer1, newer2: TVersionedList;
+  var only1, only2: TVersionedList
+);
+{==============================================================================}
 var
   i, j: integer;
 begin
-  Result := TList.Create();
-  Miss1 := TList.Create();
-  Miss2 := TList.Create();
+  SortVersioned(items1);
+  SortVersioned(items2);
 
-  // готовимся
-  SortModList(ModList1);
-  SortModList(ModList2);
+  SetLength(newer1, 0);
+  SetLength(newer2, 0);
+  SetLength(only1, 0);
+  SetLength(only2, 0);
 
-  i := Low(ModList1);
-  j := Low(ModList2);
+  i := Low(items1);
+  j := Low(items2);
 
-  // параллельная обработка
-  while (i <= High(ModList1)) and (j <= High(ModList2)) do
+  // parallel processing
+  while (i <= High(items1)) and (j <= High(items2)) do
   begin
-    if (ModList1[i].Date < ModList2[j].Date) then
+    if (items1[i].ID < items2[j].ID) then
     begin
-      AddUniq1(ModList1[i]);
+      Add(items1[i], only1);
       inc(i);
     end else
-    if (ModList1[i].Date > ModList2[j].Date) then
+    if (items1[i].ID > items2[j].ID) then
     begin
-      AddUniq2(ModList2[j]);
+      Add(items2[j], only2);
       inc(j);
     end else
     begin
-      Result.Add(TSyncInfo.Create(ModList1[i].Date, ModList1[i].Version, ModList2[j].Version));
+      if (items1[i].Version > items2[j].Version) then
+        Add(items1[i], newer1) else
+      if (items1[i].Version < items2[j].Version) then
+        Add(items2[j], newer2);
+
       inc(i);
       inc(j);
     end;
   end;
 
-  // добиваем первый
-  while (i <= High(ModList1)) do
+  // finish first list
+  while (i <= High(items1)) do
   begin
-    AddUniq1(ModList1[i]);
+    Add(items1[i], only1);
     inc(i);
   end;
 
-  // добиваем второй
-  while (j <= High(ModList2)) do
+  // finish second list
+  while (j <= High(items2)) do
   begin
-    AddUniq2(ModList2[j]);
+    Add(items2[j], only2);
     inc(j);
   end;
 end;
 
 {==============================================================================}
-procedure ExtractDiffs(SyncList: TList; out Newer1, Newer2: TList);
+function SyncSources(Source1, Source2: TDAO; Since: TDateTime): integer;
 {==============================================================================}
 var
-  i: integer;
-begin
-  for i := 0 to SyncList.Count - 1 do
-  begin
-    if (TSyncInfo(SyncList[i]).Version1 > TSyncInfo(SyncList[i]).Version2) then Newer1.Add(TObjDate.Create(TSyncInfo(SyncList[i]).Date)) else
-    if (TSyncInfo(SyncList[i]).Version1 < TSyncInfo(SyncList[i]).Version2) then Newer2.Add(TObjDate.Create(TSyncInfo(SyncList[i]).Date)) else
-    // nothing to do here;
-  end;
-end;
-
-{==============================================================================}
-function SyncSources(Source1, Source2: TDiaryDAO; Since: TDateTime): integer;
-{==============================================================================}
-var
-  ModList1, ModList2: TModList;
-  Newer1, Newer2: TList;
-  Add1, Add2: TModList;
-  Miss1, Miss2: TList;
-  Pages: TDiaryPageList;
-  SyncList: TList;
-
+  Items1, Items2: TVersionedList;
+  Newer1, Newer2: TVersionedList;
+  Only1, Only2: TVersionedList;
   i, j: integer;
+  T1, T2: TVersioned;
 begin
-  Source1.GetModified(Since, ModList1);
-  Source2.GetModified(Since, ModList2);
-  SyncList := Merge(ModList1, ModList2, Miss1, Miss2);
+  Items1 := Source1.FindChanged(Since);
+  Items2 := Source2.FindChanged(Since);
+  GetOverLists(Items1, Items2, Newer1, Newer2, Only1, Only2);
 
-  Source1.GetVersions(ConvertToDateList(Miss1), Add1);
-  Source2.GetVersions(ConvertToDateList(Miss2), Add2);
-
-  for i := 0 to High(Add1) do
-  for j := 0 to SyncList.Count - 1 do
+  for i := 0 to High(Only1) do
   begin
-    if (TSyncInfo(SyncList[j]).Date = Add1[i].Date) and
-       (TSyncInfo(SyncList[j]).Version1 = -1) then
-    begin
-      TSyncInfo(SyncList[j]).Version1 := Add1[i].Version;
-      break;
-    end;
+    T1 := Only1[i];
+    T2 := Source2.FindById(T1.ID);
+
+    if (T2 = nil) or (T2.Version < T1.Version) then
+      Add(T1, Newer1) else
+    if (T2.Version > T1.Version) then
+      Add(T2, Newer2);
   end;
 
-  for i := 0 to High(Add2) do
-  for j := 0 to SyncList.Count - 1 do
+  for j := 0 to High(Only2) do
   begin
-    if (TSyncInfo(SyncList[j]).Date = Add2[i].Date) and
-       (TSyncInfo(SyncList[j]).Version2 = -1) then
-    begin
-      TSyncInfo(SyncList[j]).Version2 := Add2[i].Version;
-      break;
-    end;
+    T2 := Only2[j];
+    T1 := Source1.FindById(T2.ID);
+
+    if (T1 = nil) or (T1.Version < T2.Version) then
+      Add(T2, Newer2) else
+    if (T1.Version > T2.Version) then
+      Add(T1, Newer1);
   end;
 
-  for i := 0 to SyncList.Count - 1 do
-  begin
-    Log(DEBUG, Format('SyncList'#9'%s'#9'%d'#9'%d', [
-      DateToStr(TSyncInfo(SyncList[i]).Date),
-      TSyncInfo(SyncList[i]).Version1,
-      TSyncInfo(SyncList[i]).Version2
-      ] ));
-  end;
-
-  Newer1 := TList.Create;
-  Newer2 := TList.Create;
-  try
-    ExtractDiffs(SyncList, Newer1, Newer2);
-
-    for i := 0 to Newer1.Count - 1 do
-    begin
-      Log(DEBUG, Format('SyncList'#9'1->2'#9'%s', [
-        DateToStr(TSyncInfo(Newer1[i]).Date)
-        ] ));
-    end;
-    for i := 0 to Newer2.Count - 1 do
-    begin
-      Log(DEBUG, Format('SyncList'#9'2->1'#9'%s', [
-        DateToStr(TSyncInfo(Newer2[i]).Date)
-        ] ));
-    end;
-
-    if Source1.GetPages(ConvertToDateList(Newer1), Pages) then Source2.PostPages(Pages);
-    if Source2.GetPages(ConvertToDateList(Newer2), Pages) then Source1.PostPages(Pages);
-
-    Result := Newer1.Count + Newer2.Count;
-
-  finally
-    Newer1.Free;
-    Newer2.Free;
-  end;
+  Source1.Post(Newer2);
+  Source2.Post(Newer1);
+  Result := Length(Newer1) + Length(Newer2);
 
   // TODO: раньше здесь стояло определение минимальной даты загруженной
   // страницы и последующее UpdatePostPrand от неё
 end;
 
-{==============================================================================}
-function SyncFoodbase(Source1, Source2: TFoodbaseDAO): TSyncResult;
-{==============================================================================}
-var
-  Version1: integer;
-  Version2: integer;
-  List: TFoodList;
-begin
-  Version1 := Source1.Version;
-  Version2 := Source2.Version;
-
-  Log(DEBUG, 'Foodbase sync:');
-  Log(DEBUG, #9'Version A: ' + IntToStr(Version1));
-  Log(DEBUG, #9'Version B: ' + IntToStr(Version2));
-
-  if (Version1 < Version2) then
-  begin
-    List := Source2.FindAll();
-    Source1.ReplaceAll(List, Version2);
-    Result := srFirstUpdated;
-  end else
-
-  if (Version1 > Version2) then
-  begin
-    List := Source1.FindAll();
-    Source2.ReplaceAll(List, Version1);
-    Result := srSecondUpdated;
-  end else
-
-  begin
-    Result := srEqual;
-  end;
-end;
-
-{==============================================================================}
-function SyncDishbase(): TSyncResult;
-{==============================================================================}
-var
-  Data: string;
-  Version: integer;
-begin
-  Version := WebClient.GetDishBaseVersion();
-
-  Log(DEBUG, 'Dishbase sync:');
-  Log(DEBUG, #9'Version A (web): ' + IntToStr(Version));
-  Log(DEBUG, #9'Version B (loc): ' + IntToStr(DishBase.Version));
-
-  // download
-  if (DishBase.Version < Version) then
-  begin
-    Data := WebClient.DownloadDishBase();
-    WriteFile(WORK_FOLDER + DishBase_FileName, Data);
-    DishBase.LoadFromFile_XML(WORK_FOLDER + DishBase_FileName);
-    Result := srFirstUpdated;
-  end else
-
-  // upload
-  if (DishBase.Version > Version) then
-  begin
-    Data := ReadFile(WORK_FOLDER + DishBase_FileName);
-    WebClient.UploadDishBase(Data, DishBase.Version);
-    Result := srSecondUpdated
-  end else
-
-  // equal
-  begin
-    Result := srEqual;
-  end;
-end;
-
-(*
-{==============================================================================}
-procedure UnionDateLists(const ServerList, LocalList: TModList; out Result: TDatePairModList);
-{==============================================================================}
-
-  function Find(D: TDate): integer;
-  var
-    i: integer;
-  begin
-    for i := 0 to High(ServerList) do
-    if ServerList[i].Date = D then
-    begin
-      Result := i;
-      Exit;
-    end;
-    Result := -1;
-  end;
-
-var
-  i,j,k: integer;
-begin
-  // TODO: пока тупой вариант
-  SetLength(Result, Length(ServerList) + Length(LocalList));
-  for i := 0 to High(ServerList) do
-  begin
-    Result[i].Date := ServerList[i].Date;
-    Result[i].ServerVersion := ServerList[i].Version;
-    Result[i].LocalVersion := 0;
-  end;
-
-  k := Length(ServerList);
-  for i := 0 to High(LocalList) do
-  begin
-    j := Find(LocalList[i].Date);
-    if j = -1 then
-    begin
-      Result[k].Date := LocalList[i].Date;
-      Result[k].ServerVersion := 0;
-      Result[k].LocalVersion := LocalList[i].Version;
-      inc(k);
-    end else
-      Result[j].LocalVersion := LocalList[i].Version;
-  end;
-
-  SetLength(Result, k);
-end;
-
-{==============================================================================}
-function SyncPage(Date: TDate; ServerStamp, LocalStamp: TDateTime): TSyncResult; overload;
-{==============================================================================}
-{ TimeStamp'ы должны быть относительно сервера }
-
-  function More(Stamp1, Stamp2: TDateTime): boolean;
-  const
-    E_PS = 1 / 1440; // одна минута !!!
-  begin
-    Result := ((Stamp1 - Stamp2) > E_PS);
-  end;
-
-var
-  Source: string;
-  OK: boolean;
-begin
-  try
-    if More(ServerStamp, LocalStamp) then
-    begin
-      OK := Web.DownloadPage(Date, Source);
-
-      if ok and
-         (not(   (Source = '') and (DiaryBase[Date].Count = 0))) and// замена пустой на пустую
-
-        (MessageDlg('Страница '+DateToStr(Date)+' будет загружена с сервера. Продолжить?', mtConfirmation, [mbYes,mbNo],0) = 6{yes})
-
-      then
-
-      begin
-        Result := srDoneDownload;
-        DiaryBase[Date].ReadFrom(Source);
-        DiaryBase[Date].TimeStamp := Web.ServerToLocal(ServerStamp);
-        DiaryBase.Modified := True; // for saving on disk
-      end else
-        Result := srFailDownload;
-      //sleep(500);
-    end else
-    if More(LocalStamp, ServerStamp) then
-    begin
-      // уже приведено
-      DiaryBase[Date].WriteTo(Source);
-      if Web.UploadPage(Date, Source, LocalStamp) then
-        Result := srDoneUpload
-      else
-        Result := srFailUpload;
-      //sleep(500);
-    end else
-      Result := srDoneEqual;
-  except
-    Result := srFailCommon;
-  end;
-end;
-
-{==============================================================================}
-function SyncPage(Date: TDate): TSyncResult; overload;
-{==============================================================================}
-var
-  ServerStamp: TDateTime;
-  LocalStamp: TDateTime;
-begin
-  try
-    Web.RequestStamp(Date, ServerStamp);
-    //ServerStamp := 0; //!!!
-    LocalStamp := Web.LocalToServer(DiaryBase[Date].TimeStamp);
-    Result := SyncPage(Date, ServerStamp, LocalStamp);
-  except
-    Result := srFailCommon;
-  end;
-end;
- *)
-
-{
-srDoneEqual: //Form1.StatusBar.Panels[3].Text := 'Уже синхронизировано';
-srDoneDownload
-srDoneUpload: //Form1.StatusBar.Panels[3].Text := 'Дневник загружен на сервер';
-srFailCommon: //Form1.StatusBar.Panels[3].Text := 'Ошибка синхронизации';
-srFailDownload: //Form1.StatusBar.Panels[3].Text := 'Ошибка загрузки (down)';
-srFailUpload: //Form1.StatusBar.Panels[3].Text := 'Ошибка выгрузки (up)';
-}
-
 end.
+

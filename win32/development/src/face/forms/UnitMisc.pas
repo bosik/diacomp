@@ -380,7 +380,7 @@ var
 var
   i: integer;
   s: TStrings;
-  FoodList: TFoodList;
+  FoodList: TFoodItemList;
 begin
   DaySumm := Value['NormProts'] + Value['NormFats'] + Value['NormCarbs'];
   PercentProts := Value['NormProts'] / DaySumm ;
@@ -389,7 +389,7 @@ begin
 
   s := TStringList.Create;
   try
-    FoodList := FoodBaseLocal.FindAll();
+    FoodList := FoodBaseLocal.FindAll(false);
     for i := 0 to High(FoodList) do
       s.Add(FoodList[i].Name + #9 + FloatToStr(F(FoodList[i])));
     s.SaveToFile('FoodList.txt');
@@ -397,14 +397,15 @@ begin
     s.Free;
   end;
 
-  s := TStringList.Create;
+ { s := TStringList.Create;
   try
-    for i := 0 to DishBase.Count - 1 do
+    for i := 0 to DishBaseLocal.Count - 1 do
       s.Add(DishBase[i].Name + #9 + FloatToStr(F(DishBase[i])));
     s.SaveToFile('temp\DishList.txt');
   finally
     s.Free;
-  end;
+  end; }
+  // TODO: restore
 end;
 
 procedure TFormMisc.Button6Click(Sender: TObject);
@@ -438,7 +439,8 @@ var
   s: TStringList;
   d, i, k: integer;
 begin
-  for d := Trunc(Now - 30) to Trunc(now) do
+  // TODO: restore
+  {for d := Trunc(Now - 30) to Trunc(now) do
   for i := 0 to Diary[d].Count - 1 do
   if (Diary[d][i].RecType = TMealRecord) then
   begin
@@ -451,7 +453,7 @@ begin
   for i := 0 to High(M) do
     S.Add(M[i].Name + #9 + FloatToStr(M[i].Mass / M[i].Count));
   S.SaveToFile('temp\average_mass.txt');
-  S.Free;
+  S.Free; }
 end;
 
 procedure TFormMisc.Button8Click(Sender: TObject);
@@ -459,7 +461,7 @@ procedure TFormMisc.Button8Click(Sender: TObject);
   // TODO: в отправленном логе об ошибке в качестве отправителя e-mail указывать логин пользователя
   // TODO: реализовать на сервере API для выгрузки некоторых настроек (целевой СК, нормы и т.п.)
 
-  procedure TestVersion;
+ { procedure TestVersion;
   var
     Version: integer;
   begin
@@ -498,7 +500,7 @@ procedure TFormMisc.Button8Click(Sender: TObject);
       ShowMessage('Reported OK')
     else
       ShowMessage('Can''t report');
-  end;
+  end;  }
 
 begin
   // TestVersion;
@@ -710,7 +712,7 @@ begin
 end;
 
 procedure TFormMisc.Button1Click(Sender: TObject);
-var
+{var
   W: array[0..MinPerDay - 1] of
   record
     Value: Real;
@@ -741,9 +743,9 @@ var
   d, i: integer;
 
   PrevBlood: TBloodRecord;
-  PrevDate: TDate;
+  PrevDate: TDate;  }
 begin
-  for i := 0 to MinPerDay - 1 do
+ { for i := 0 to MinPerDay - 1 do
   begin
     W[i].Value := 0.0;
     W[i].Count := 0;
@@ -767,7 +769,9 @@ begin
   if W[i].Count > 0 then
     Memo1.Lines.Add(FloatToStr(W[i].Value / W[i].Count))
   else
-    Memo1.Lines.Add('');
+    Memo1.Lines.Add('');  }
+
+    // TODO: restore
 
 end;
 

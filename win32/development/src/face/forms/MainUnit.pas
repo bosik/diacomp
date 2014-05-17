@@ -415,7 +415,7 @@ type
     function ClickMeal(New: boolean): integer;
     function ClickNote(New: boolean; Focus: TFocusMode): integer;
 
-    procedure MoveMeal(Delta: integer);
+    procedure MoveMeal(Delta: integer); deprecated;
 
     { базы }
     function FoodEditorRect: TRect;
@@ -440,8 +440,9 @@ type
     procedure UpdateMealDose;
     procedure UpdateCombos;
     procedure UpdateFoodTable(UpdateHeaders, FullUpdate, SaveItemIndex: boolean);
-    procedure UpdateDishTable(FullUpdate: boolean; SaveItemIndex: boolean = False);
+    procedure UpdateDishTable(UpdateHeaders, FullUpdate, SaveItemIndex: boolean);
     procedure UpdateFoodbaseFilter();
+    procedure UpdateDishbaseFilter();
 
     { Информационные события }
     procedure EventFoodbaseChanged(CountChanged: boolean);
@@ -474,8 +475,8 @@ var
   DiaryMultiMap: TMultimap;
   //FoodBaseMap: TIndexList;
 
-  FoodList: TFoodList;
-  //DishList: TDishList;
+  FoodList: TFoodItemList;
+  DishList: TDishItemList;
 
   { ============================ П Р О Ч Е Е ================================= }
 
@@ -582,7 +583,6 @@ function MySyncDiary(Terminated: TBooleanFunction = nil): integer;
 {==============================================================================}
 var
   T: TDateTime;
-  OldVersion: integer;
 begin
   StartProc('MySyncDiary');
   Result := 0;
@@ -592,18 +592,12 @@ begin
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_DIARY;
     Application.ProcessMessages;
 
-    if (Form1.DiaryView.CurrentPage <> nil) then
-      OldVersion := Form1.DiaryView.CurrentPage.Version
-    else
-      OldVersion := -1;
-
     T := StrToDateTime(Value['LastSync']);
     Result := SyncSources(LocalSource, WebSource, T - 1);
 
     Value['LastSync'] := DateTimeToStr(Now);
 
-
-    if (Diary[Trunc(Form1.CalendarDiary.Date)].Version > OldVersion) then
+    if (Result > 0) then
     begin
       Form1.DiaryView.OpenPage(Diary[Trunc(Form1.CalendarDiary.Date)], True);
       Form1.UpdateNextFinger;
@@ -612,7 +606,7 @@ begin
     { база продуктов }
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_FOODBASE;
     Application.ProcessMessages;
-    if (SyncFoodbase(FoodBaseLocal, FoodBaseWeb) = srFirstUpdated) then
+    if (SyncSources(FoodBaseLocal, FoodBaseWeb, T - 1) > 0) then
     begin
       Form1.EventFoodbaseChanged(True);
     end;
@@ -620,9 +614,10 @@ begin
     { база блюд }
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_DISHBASE;
     Application.ProcessMessages;
-    if (SyncDishbase() = srFirstUpdated) then
+    if (SyncSources(DishBaseLocal, DishBaseWeb, T - 1) > 0) then
     begin
       Form1.EventDishbaseChanged(True, True);
+      // TODO: workaround
     end;
     
     { готово }
@@ -850,7 +845,7 @@ begin
 
       // TODO 1: CONVERTATION DISABLED
       ErrorMessage('Конвертирование базы отключено');
-    end else
+    end else   ;
 
     // TODO: загружается дважды :(
     // существует файл в XML-формате
@@ -866,7 +861,7 @@ begin
     { =============== ЗАГРУЗКА БАЗЫ БЛЮД =============== }
 
     // форматирование
-    if (not FileExists(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name)) and
+   { if (not FileExists(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name)) and
        (FileExists(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name_Old)) then
     begin
       StartupInfo(STATUS_ACTION_CONVERT_DISHBASE);
@@ -882,7 +877,7 @@ begin
       StartupInfo(STATUS_ACTION_LOADING_DISHBASE);
       DishBase.LoadFromFile_XML(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name);
       Log(INFO, 'Dishbase loaded ok', True);
-    end;
+    end;  }
 
     LoadExpander;
 
@@ -965,13 +960,14 @@ begin
       // TODO: реализовать на сервере API dishbase:sample
       // TODO: сейчас образец базы на сервере - в старом формате
 
-      StartupInfo(STATUS_ACTION_DOWNLOADING_DISHBASE);
+     { StartupInfo(STATUS_ACTION_DOWNLOADING_DISHBASE);
       if DownloadDishBaseSample() and
          FileExists(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name) then
       begin
         StartupInfo(STATUS_ACTION_LOADING_DISHBASE);
         DishBase.LoadFromFile_XML(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name);
-      end;
+      end;   }
+      // TODO 1: DISHBASE SAMPLES DISABLED
     end;
 
     { =============== ЗАГРУЗКА МОДУЛЯ АНАЛИЗА =============== }
@@ -992,7 +988,7 @@ begin
       if Value['AutoSync'] then
       begin
         StartupInfo(STATUS_ACTION_UPLOADING_KOOFS);
-        UploadKoofs;
+        //UploadKoofs;
       end else
         StartupInfo('');
     except
@@ -1229,11 +1225,14 @@ procedure TForm1.CreateFood;
 {==============================================================================}
 var
   Food: TFood;
+  List: TFoodItemList;
 begin
   Food := TFood.Create;
   if FormFood.OpenFoodEditor(Food, True, FoodEditorRect) then
   begin
-    FoodBaseLocal.Add(Food);
+    SetLength(List, 1);
+    List[0] := Food;
+    FoodBaseLocal.Save(List);
     {#}EventFoodbaseChanged(True);
 
     //ShowTableItem(ListFood, n);
@@ -1247,16 +1246,18 @@ procedure TForm1.CreateDish;
 {==============================================================================}
 var
   Dish: TDish;
+  List: TDishItemList;
   n: integer;
 begin
   // TODO: Create() here, not in the editor
   if FormDish.OpenDishEditor(Dish, True, DishEditorRect) then
   begin
-    n := DishBase.Add(Dish);
-    Dish.UpdateTimestamp;
+    SetLength(List, 1);
+    List[0] := Dish;
+    DishBaseLocal.Save(List);
     {#}EventDishbaseChanged(True, True);
 
-    ShowTableItem(ListDish, n);
+    //ShowTableItem(ListDish, n);
     ListDish.SetFocus;
   end;
 end;
@@ -1279,10 +1280,11 @@ begin
 
   if FormFood.OpenFoodEditor(Temp, False, FoodEditorRect) then
   begin
-    if DishBase.RenameFood(OldName, Temp.Name) then
-      SaveDishBase;
+   { if DishBaseLocal.RenameFood(OldName, Temp.Name) then
+      SaveDishBase;  }
+      // TODO 1: renaming disabled
 
-    FoodBaseLocal.Update(Temp);
+    //FoodBaseLocal.Update(Temp);
     EventFoodbaseChanged(False);
 
     //ShowTableItem(ListFood, Index);
@@ -1295,30 +1297,31 @@ procedure TForm1.EditDish(Index: integer);
 {==============================================================================}
 var
   Temp: TDish;
+  OldName: string;
 begin
   // TODO: process everywhere in the same manner
-  if (Index < 0) or (Index >= DishBase.Count) then
+  if (Index < 0) or (Index > High(DishList)) then
   begin
     Log(WARNING, 'EditDish(): incorrect index ignored (' + IntToStr(Index) + ')', True);
     Exit;
   end;
 
-  Temp := TDish.Create;
-  Temp.CopyFrom(DishBase[Index]);
+  Temp := DishList[Index];
+  OldName := DishList[Index].Name;
+
   if FormDish.OpenDishEditor(Temp, False, DishEditorRect) then
   begin
-    DishBase.RenameFood(DishBase[Index].Name, Temp.Name);
+   { if DishBaseLocal.RenameDish(OldName, Temp.Name) then
+      SaveDishBase;  }
+      // TODO 1: renaming disabled
 
-    DishBase.Delete(Index);
-    Index := DishBase.Add(Temp);
-    Temp.UpdateTimestamp;
-
+    //DishBaseLocal.Update(Temp);
     EventDishbaseChanged(False, True);
+    // TODO: rough
 
-    ShowTableItem(ListDish, Index);
+    //ShowTableItem(ListDish, Index);
     ListDish.SetFocus;
-  end else
-    Temp.Free;
+  end;
 end;
 
 {==============================================================================}
@@ -1348,9 +1351,10 @@ begin
     Exit;
   end;
 
-  DishNumber := DishBase.UsedFood(FoodList[Index].Name);
+  // TODO 1: restore functionality
+  DishNumber := -1;//DishBase.UsedFood(FoodList[Index].Name);
 
-  if ((DishNumber > -1)and(AskWarning(FoodList[Index], DishBase[DishNumber])))or
+  if //((DishNumber > -1)and(AskWarning(FoodList[Index], DishBase[DishNumber])))or
      ((DishNumber = -1)and(AskConfirm(FoodList[Index]))) then
   begin
     { порядок в базе и таблице совпадают }
@@ -1367,34 +1371,44 @@ end;
 procedure TForm1.RemoveDish(Index: integer);
 {==============================================================================}
 
-  function AskWarning(DishIndex, UsedInDishIndex: integer): boolean;
+  function AskWarning(Dish: TDish; DishParent: TDish): boolean;
   begin
     Result := MessageDlg(
-      Format(MESSAGE_CONF_REMOVE_DISH_USED, [DishBase[DishIndex].Name, DishBase[UsedInDishIndex].Name]),
-      mtWarning, [mbYes, mbNo],0) = mrYes;
+      Format(MESSAGE_CONF_REMOVE_FOOD_USED, [Dish.Name, DishParent.Name]),
+      mtWarning, [mbYes, mbNo], 0) = mrYes;
   end;
 
-  function AskConfirm(DishIndex: integer): boolean;
+  function AskConfirm(Dish: TDish): boolean;
   begin
     Result := MessageDlg(
-      Format(MESSAGE_CONF_REMOVE_DISH, [DishBase[DishIndex].Name]),
-      mtConfirmation,[mbYes,mbNo],0) = mrYes;
+      Format(MESSAGE_CONF_REMOVE_FOOD, [Dish.Name]),
+      mtConfirmation, [mbYes, mbNo], 0) = mrYes;
   end;
 
 var
-  UsedDishNumber: integer;
+  DishNumber: integer;
 begin
   // TODO: update
-  if (Index < 0) or (Index >= DishBase.Count) then Exit;
-
-  UsedDishNumber := DishBase.UsedFood(DishBase[Index].Name);
-  if ((UsedDishNumber > -1)and(AskWarning(Index, UsedDishNumber)))or
-     ((UsedDishNumber = -1)and(AskConfirm(Index))) then
+  if (Index < 0) or (Index > High(FoodList)) then
   begin
-    DishBase.Delete(Index);
-    UpdateDishTable(True);
-    UpdateCombos;
-    SaveDishBase;
+    Log(WARNING, 'EditFood(): incorrect index ignored (' + IntToStr(Index) + ')', True);
+    Exit;
+  end;
+
+  // TODO 1: restore functionality
+  DishNumber := -1;//DishBase.UsedDish(DishList[Index].Name);
+
+  if //((DishNumber > -1)and(AskWarning(DishList[Index], DishBase[DishNumber])))or
+     ((DishNumber = -1)and(AskConfirm(DishList[Index]))) then
+  begin
+    { порядок в базе и таблице совпадают }
+    DishBaseLocal.Delete(DishList[Index].ID);
+
+    //UpdateDishbaseFilter();
+    // TODO: check args
+    UpdateDishTable(False, True, False);
+    {*}UpdateCombos;
+    //{*}SaveDishBase;
   end;
 end;
 
@@ -1418,29 +1432,31 @@ var
 
   procedure InitMap(var Map: TMultiMap);
   var
-    FoodList: TFoodList;
+    FoodList: TFoodItemList;
+    DishList: TDishItemList;
     i: integer;
   begin
-    FoodList := FoodBaseLocal.FindAll();
+    FoodList := FoodBaseLocal.FindAll(false);
+    DishList := DishBaseLocal.FindAll(false);
     Offset := Length(FoodList);
-    SetLength(Map, Length(FoodList) + DishBase.Count);
+    SetLength(Map, Length(FoodList) + Length(DishList));
 
     for i := 0 to High(FoodList) do
     begin
       Map[i] := TMealItem.Create;
-      Map[i].CopyFrom(FoodList[i], True);
+      Map[i].CopyFrom(FoodList[i]);
       Map[i].Help1 := '';
       Map[i].Help2 := Format('  %.1f', [FoodList[i].RelCarbs]);
       Map[i].Icon := Byte(FoodList[i].FromTable);
       Map[i].Tag := 0;
     end;
 
-    for i := 0 to DishBase.Count - 1 do
+    for i := 0 to High(DishList) do
     begin
       Map[Offset + i] := TMealItem.Create;
-      Map[Offset + i].CopyFrom(DishBase[i].AsFoodRelative(), False);
-      Map[Offset + i].Help1 := FormatDate(DishBase[i].ModifiedTime);
-      Map[Offset + i].Help2 := Format('  %.1f', [DishBase[i].RelCarbs]);
+      Map[Offset + i].CopyFrom(DishList[i].AsFoodRelative());
+      Map[Offset + i].Help1 := FormatDate(DishList[i].TimeStamp);
+      Map[Offset + i].Help2 := Format('  %.1f', [DishList[i].RelCarbs]);
       Map[Offset + i].Icon := 2;
       Map[Offset + i].Tag := 0;
       Tag := 0;
@@ -1529,6 +1545,7 @@ var
     DishModFactor: integer;
 
     Food: TFood;
+    Recs: TRecordList;
   begin
     StartProc('TForm1.AnalyzeUsingDiary()');
 
@@ -1540,13 +1557,13 @@ var
       StartDate := Trunc(Now) - Value['AnUsingPeriod'];
       FinishDate := Trunc(Now);
 
-      for i := StartDate to FinishDate do
-      //for i := FinishDate downto StartDate do
-      for j := 0 to Diary[i].Count - 1 do
+      Recs := LocalSource.FindPeriod(StartDate, FinishDate);
+
+      for i := 0 to High(Recs) do
       begin
-        if (Diary[i][j].RecType = TMealRecord) then
+        if (Recs[i].RecType = TMealRecord) then
         begin
-          Meal := TMealRecord(Diary[i][j]);
+          Meal := TMealRecord(Recs[i]);
           DeltaTag := GetTag(i + Meal.Time / MinPerDay);
           for k := 0 to Meal.Count - 1 do
           begin
@@ -1559,10 +1576,11 @@ var
 
       DishModFactor := Value['DishModFactor'];
 
-      for i := 0 to DishBase.Count - 1 do
+      // TODO 1: restore functionality
+     { for i := 0 to DishBase.Count - 1 do
       if (DishBase[i].ModifiedTime > 0) then
         DiaryMultiMap[Offset + i].Tag := DiaryMultiMap[Offset + i].Tag +
-        DishModFactor * GetTag(DishBase[i].ModifiedTime);   
+        DishModFactor * GetTag(DishBase[i].ModifiedTime);    }
 
       { Temp: копируем теги в базы }
       for i := 0 to High(DiaryMultiMap) do
@@ -1571,19 +1589,17 @@ var
         if (Food <> nil) then
         begin
           Food.Tag := Round(DiaryMultiMap[i].Tag);
-          FoodBaseLocal.Update(Food);
+          FoodBaseLocal.Save(Food);
           Continue;
         end;
 
-        k := DishBase.Find(DiaryMultiMap[i].Name);
+        // TODO 1: restore functionality
+        {k := DishBaseLocal.FindOne(DiaryMultiMap[i].Name);
         if (k > -1) then
         begin
           DishBase[k].Tag := Round(DiaryMultiMap[i].Tag);
-        end;
+        end; }
       end;
-
-      // save to follow the DAO model
-      SaveDishBase;
 
       { сортируем }
       if Length(DiaryMultiMap) > 0 then
@@ -1602,6 +1618,7 @@ var
   procedure AnalyzeUsingDish;
   var
     i, j: integer;
+    List: TDishItemList;
   begin
     StartProc('TForm1.AnalyzeUsingDish()');
 
@@ -1610,9 +1627,10 @@ var
       InitMap(DishMultiMap);
 
       { выставляем теги }
-      for i := 0 to DishBase.Count - 1 do
-      for j := 0 to DishBase[i].Count - 1 do
-        Process(DishBase[i].Content[j].Name, 1.0, DishMultiMap);
+      List := DishBaseLocal.FindAll(false);
+      for i := 0 to High(List) do
+      for j := 0 to List[i].Count - 1 do
+        Process(List[i].Content[j].Name, 1.0, DishMultiMap);
 
       { сортируем }
       if Length(DishMultiMap) > 0 then
@@ -1706,14 +1724,15 @@ begin
   if Key = vk_Delete then
     RemoveDish(ListDish.ItemIndex) else
  begin
-    c := CodeToRus(Key);
+   // TODO 1: restore
+    {c := CodeToRus(Key);
     if c <> #0 then
-    for j := 0 to DishBase.Count-1 do
+    for j := 0 to DishBase.Count - 1 do
     if StartsWith(DishBase[j].Name, C) then
     begin
       ShowTableItem(ListDish, j, True);
       break;
-    end;
+    end; }
   end;
 end;
 
@@ -1893,9 +1912,9 @@ begin
 
   {#!!!}
   DrawBS(
-    Diary[DiaryView.CurrentDate - 1],
-    DiaryView.CurrentPage,
-    Diary[DiaryView.CurrentDate + 1],
+    Diary[Trunc(CalendarDiary.Date) - 1],
+    Diary[Trunc(CalendarDiary.Date)],
+    Diary[Trunc(CalendarDiary.Date + 1)],
     ImageLarge,
     False);
 end;
@@ -2021,11 +2040,11 @@ begin
             ComboDiaryNew.SetFocus;
 
             // промотка
+            // TODO 1: restore
             n := DiaryView.SelectedRecordIndex;
-            if (n > -1) and (DiaryView.CurrentPage <> nil)and
-               (DiaryView.CurrentPage.Count>0) then
+            if (n > -1) and (Length(DiaryView.CurrentPage) > 0) then
               ScrollBoxDiary.VertScrollBar.Position :=
-                Round(n / DiaryView.CurrentPage.Count * ScrollBoxDiary.VertScrollBar.Range);
+                Round(n / Length(DiaryView.CurrentPage) * ScrollBoxDiary.VertScrollBar.Range);
           end;
         end;
       end;
@@ -2243,9 +2262,10 @@ procedure TForm1.UpdateDayInfo;
   var
     summ: real;
     proc1,proc2,proc3: integer;
+
+    DayProts, DayFats, DayCarbs, DayValue, DayMass, DayIns: real;
   begin
-    if (DiaryView.CurrentPage = nil) or
-       (DiaryView.CurrentPage.Count = 0) then
+    if (Length(DiaryView.CurrentPage) = 0) then
     begin
       LabelDayProts_.Font.Color := clNoData;
       LabelDayProts_.Left := 2*BORD;
@@ -2263,8 +2283,9 @@ procedure TForm1.UpdateDayInfo;
       StatProgFats.Hide;
       StatProgCarbs.Hide;
     end else
-    with DiaryView.CurrentPage do
     begin
+      DiaryRecords.Statistics(DiaryView.CurrentPage, DayProts, DayFats, DayCarbs, DayValue, DayMass, DayIns);
+
       LabelDayProts_.Font.Color := clWindowText;
       LabelDayProts_.Left := StatProgProts.Width+22;
 
@@ -2302,15 +2323,15 @@ procedure TForm1.UpdateDayInfo;
             end;
         else  begin
               if Value['NormProts'] > 0 then
-                Proc1 := Round(DayProts/Value['NormProts']*100)
+                Proc1 := Round(DayProts / Value['NormProts']*100)
               else Proc1 := -1;
 
               if Value['NormFats'] > 0 then
-                Proc2 := Round(DayFats/Value['NormFats']*100)
+                Proc2 := Round(DayFats / Value['NormFats']*100)
               else Proc2 := -1;
 
               if Value['NormCarbs'] > 0 then
-                Proc3 := Round(DayCarbs/Value['NormCarbs']*100)
+                Proc3 := Round(DayCarbs / Value['NormCarbs']*100)
               else Proc3 := -1;
             end;
       end;
@@ -2356,9 +2377,9 @@ procedure TForm1.UpdateDayInfo;
   procedure UpdateDayGraph;
   begin
     DrawBS(
-      Diary[DiaryView.CurrentDate - 1],
+      Diary[Trunc(CalendarDiary.Date) - 1],
       DiaryView.CurrentPage,
-      Diary[DiaryView.CurrentDate + 1],
+      Diary[Trunc(CalendarDiary.Date) + 1],
       ImagePreview,
       True);
   end;
@@ -2471,8 +2492,7 @@ begin
     StartBlood := TBloodRecord(
       Diary.FindRecord(
         TBloodRecord,
-        DiaryView.CurrentDate,
-        SelMeal.Time,
+        SelMeal.NativeTime,
         BLOOD_ACTUALITY_TIME,
         sdBack  // TODO: Around?
       )
@@ -2481,8 +2501,7 @@ begin
     Ins := TInsRecord(
       Diary.FindRecord(
         TInsRecord,
-        DiaryView.CurrentDate,
-        SelMeal.Time,
+        SelMeal.NativeTime,
         INS_ACTUALITY_TIME,
         sdAround
       )
@@ -2791,9 +2810,8 @@ begin
 
     if ShowBloodEditor(ATime, AValue, AFinger, New, Focus) then
     begin
+      LocalSource.Add(TBloodRecord.Create(ATime, AValue, AFinger));
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
-      Result := DiaryView.CurrentPage.Add(TBloodRecord.Create(ATime, AValue, AFinger));
-      //Result := DiaryView.AddBlood(Time, Value, Finger);
     end else
       Result := -1;
   end else
@@ -2834,9 +2852,8 @@ begin
   begin
     if ShowInsEditor(ATime, AValue, New, Focus) then
     begin
+      LocalSource.Add(TInsRecord.Create(ATime, AValue));
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
-      Result := DiaryView.CurrentPage.Add(TInsRecord.Create(ATime, AValue));
-      //Result := DiaryView.AddIns(Time,Value);
     end else
       Result := -1;
   end else
@@ -2869,8 +2886,8 @@ begin
   begin
     if ShowMealEditor(ATime, New) then
     begin
+      LocalSource.Add(TMealRecord.Create(ATime, False));
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
-      Result := DiaryView.CurrentPage.Add(TMealRecord.Create(ATime, False));
     end else
       Result := -1;
   end else
@@ -2904,8 +2921,8 @@ begin
   begin
     if ShowNoteEditor(ATime, AValue, New, Focus) then
     begin
+      LocalSource.Add(TNoteRecord.Create(ATime, AValue));
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
-      Result := DiaryView.CurrentPage.Add(TNoteRecord.Create(ATime, AValue));
     end else
       Result := -1;
   end else
@@ -3032,7 +3049,7 @@ begin
   {===============================================================}
   {#}SetLength(Par, 1);
   {#}Par[PAR_ADAPTATION] := Value['Adaptation'];  { [0.5..1] }
-  {#}AnalyzeDiary(Diary, FromDate, ToDate, Par, AnalyzeCallBack);
+  {#}AnalyzeDiary(LocalSource, FromDate, ToDate, Par, AnalyzeCallBack);
   {===============================================================}
 
   ButtonUpdateKoof.Caption := 'Пересчитать';
@@ -3249,9 +3266,9 @@ begin
   begin
     n := DiaryView.SelectedRecordIndex;
     { вторая проверка, наверно, излишняя }
-    if (n > -1)and(DiaryView.CurrentPage.Count > 0) then
+    if (n > -1)and(Length(DiaryView.CurrentPage) > 0) then
     ScrollBoxDiary.VertScrollBar.Position := Round(
-      n / DiaryView.CurrentPage.Count * ScrollBoxDiary.VertScrollBar.Range);
+      n / Length(DiaryView.CurrentPage) * ScrollBoxDiary.VertScrollBar.Range);
   end;
 end;
 
@@ -3454,9 +3471,10 @@ begin
     ON_IDLE_ShowBases := False;
 
     UpdateFoodbaseFilter();
-    UpdateFoodTable(True, True, False);
+    UpdateDishbaseFilter();
 
-    UpdateDishTable(True);
+    UpdateFoodTable(True, True, False);
+    UpdateDishTable(True, True, False);
 
     { после Maximize }
     //ListFood.Columns[0].Width := ListFood.Columns[0].Width - 30;
@@ -3586,7 +3604,7 @@ begin
 
   for ToDate := Trunc(now) - LOOK_PERIOD to Trunc(Now) do
   begin
-    AnalyzeBS(Diary, ToDate - AVG_PERIOD, ToDate, Mean, StdDev, Targeted, Less, More);
+    AnalyzeBS(LocalSource, ToDate - AVG_PERIOD, ToDate, Mean, StdDev, Targeted, Less, More);
     ListBS.Items.Add(Format('%s'#9'%.2f'#9'%.2f'#9'%.1f'#9'%.1f', [DateToStr(ToDate - (AVG_PERIOD div 2)), Mean, StdDev, Less * 100, Targeted * 100]));
   end;
 
@@ -3670,7 +3688,7 @@ begin
   LastDate := Trunc(Now());
   //Summ := 0;
 
-  for i := FirstDate to LastDate do
+  {for i := FirstDate to LastDate do
   begin
     SetLength(List, Length(list) + 1);
     List[High(list)].Date := i;
@@ -3698,7 +3716,7 @@ begin
     Clear;
     for i := 0 to High(List) do
       Items.Add(RealToStrZero(List[i].Value)+':    '+DateToStr(List[i].Date));
-  end;
+  end; }
 
   FinishProc;
 end;
@@ -3844,11 +3862,14 @@ begin
     Msg := MESSAGE_CONF_REMOVE_DIARY_UNKNOWN;
 
     AutoLog.Log(ERROR, Format('Unsupported record type to delete (date: %s, index: %d)',
-      [DateToStr(DiaryView.CurrentPage.Date), DiaryView.SelectedRecordIndex]));
+      [DateToStr(CalendarDiary.Date), DiaryView.SelectedRecordIndex]));
   end;
 
   if (MessageDlg(Msg, MsgType, [mbYes, mbNo], 0) = mrYes) then
-    DiaryView.CurrentPage.Remove(DiaryView.SelectedRecordIndex);
+  begin
+    LocalSource.Delete(DiaryView.SelectedRecordID);
+    DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
+  end;
 end;
 
 {==============================================================================}
@@ -4147,9 +4168,10 @@ begin
     until FoodBaseLocal.FindOne(NewName) = nil;
 
     Temp := TFood.Create;
-    Temp.CopyFrom(FoodList[n], False);
+    Temp.CopyFrom(FoodList[n]);
     Temp.Name := NewName;
-    FoodBaseLocal.Add(Temp);
+    Temp.ID := DiaryRoutines.CreateCompactGUID;
+    FoodBaseLocal.Save(Temp);
 
     EventFoodbaseChanged(True);
 
@@ -4165,27 +4187,30 @@ procedure TForm1.ItemCopyDishClick(Sender: TObject);
 var
   Temp: TDish;
   n,i: integer;
+  OldName: string;
   NewName: string;
 begin
   n := ListDish.ItemIndex;
   if (n <> -1) then
   begin
+    OldName := DishList[n].Name;
     i := 1;
     repeat
       inc(i);
-      NewName := DishBase[n].Name + ' ('+IntToStr(i) + ')';
-    until DishBase.Find(NewName) = -1;
+      NewName := Format('%s (%d)', [OldName, i]);
+    until DishBaseLocal.FindOne(NewName) = nil;
 
     Temp := TDish.Create;
-    Temp.CopyFrom(DishBase[n]);
-    // Temp.Modified; - иначе копия будет выше оригинала
+    Temp.CopyFrom(DishList[n]);
     Temp.Name := NewName;
-    n := DishBase.Add(Temp);
+    DishBaseLocal.Save(Temp);
 
+    // TODO: rough
     EventDishbaseChanged(True, True);
 
-    ShowTableItem(ListDish, n);
+    //ShowTableItem(ListDish, n);
     ListDish.SetFocus;
+    // TODO 1: SELECTING COPIED FOOD DISABLED
   end;
 end;
 
@@ -4251,7 +4276,7 @@ begin
   if TMenuItem(Sender).Tag in [1..5] then
     UpdateFoodTable(True, True, True) else
   if -TMenuItem(Sender).Tag in [1..6] then
-    UpdateDishTable(True, True);
+    UpdateDishTable(True, True, True);
 end;
 
 {==============================================================================}
@@ -4319,17 +4344,17 @@ begin
 end;
 
 procedure TForm1.MoveMeal(Delta: integer);
-var
+{var
   n: integer;
   CurDate: TDate;
   OldPage: TDiaryPage;
   NewPage: TDiaryPage;
-  Meal: TMealRecord;
+  Meal: TMealRecord;  }
 begin
   {!!!}
-  if not (DiaryView.SelectedRecord is TMealRecord) then Exit;
+ { if not (DiaryView.SelectedRecord is TMealRecord) then Exit;
 
-  CurDate := DiaryView.CurrentDate;
+  CurDate := Trunc(CalendarDiary.Date);
   OldPage := DiaryView.CurrentPage;
   NewPage := Diary[CurDate + Delta];
 
@@ -4340,7 +4365,7 @@ begin
 
   DiaryView.OpenPage(Diary[Trunc(CurDate + Delta)], True);
   CalendarDiary.Date := CurDate + Delta;
-  DiaryView.SelectedRecordIndex := n;
+  DiaryView.SelectedRecordIndex := n;  }
 
   {DiaryView.OpenPage(CurDate+Delta, True);
   //n2 := DiaryView.AddMealBlank(Rec.Time, Rec.ShortMeal);
@@ -4531,10 +4556,11 @@ var
   Meal: TMealRecord;
   Ins: TInsRecord;
 
-  TempTime: integer;
+  TempTime: cardinal;
 
   Page: TDiaryPage;
   Today: TDate;
+  Recs: TRecordList;
 begin
   //StartProc('UpdateTimeLeft(): search for meal');
 
@@ -4542,23 +4568,20 @@ begin
   LabelDiaryTimeLeftMeal.Caption := MAIN_DIARY_PANEL_TIME_AFTER_MEAL;
 
   DecodeTime(SysUtils.Time, Hour, Min, Sec, msec);
-  Today := Trunc(Now);
 
   {=====================================================}
 
-  Founded := False;
-  for i := Today downto Today - SEARCH_INTERVAL + 1 do
-  begin
-    Page := Diary[i];
+  Recs := LocalSource.FindPeriod(Now - SEARCH_INTERVAL, Now);
 
-    for j := Page.Count - 1 downto 0 do
-    if (Page[j].RecType = TMealRecord) then
+  Founded := False;
+  for i := High(Recs) downto 0 do
+  begin
+    if (Recs[i].RecType = TMealRecord) then
     begin
-      Meal := TMealRecord(Page[j]);
+      Meal := TMealRecord(Recs[i]);
       if (Meal.Count > 0) and (not Meal.ShortMeal) then
       begin
-        TempTime := {Trunc}(Today - i)*SecPerDay+
-          Hour*3600+Min*60+Sec-Meal.Time*60;
+        TempTime := Round((Now() - Recs[i].NativeTime) * SecPerDay);
 
         if (TempTime >= 0) then
         begin
@@ -4576,17 +4599,12 @@ begin
   {=====================================================}
 
   Founded := false;
-  for i := Today downto Today - SEARCH_INTERVAL + 1 do
+  for i := High(Recs) downto 0 do
   begin
-    Page := Diary[i];
-
-    for j := Page.Count - 1 downto 0 do
-    if (Page[j].RecType = TInsRecord) then
+    if (Recs[i].RecType = TInsRecord) then
     begin
-      Ins := TInsRecord(Page[j]);
-
-      TempTime := {Trunc}(Today - i)*SecPerDay+
-        Hour*3600+Min*60+Sec-Ins.Time*60;
+      Ins := TInsRecord(Recs[i]);
+      TempTime := Round((Now() - Recs[i].NativeTime) * SecPerDay);
       if (TempTime > 0) then
       begin
         Founded := True;
@@ -4713,8 +4731,7 @@ var
 begin
   StartProc('UpdateFoodTable()');
 
-  LabelFoodBase.Caption := Format(MAIN_BASES_FOOD_TITLE, [Length(FoodList)])
-    + Format(', v%d', [FoodBaseLocal.Version]);
+  LabelFoodBase.Caption := Format(MAIN_BASES_FOOD_TITLE, [Length(FoodList)]);
   //Application.ProcessMessages;
 
   FoodP := Value['FoodP'];
@@ -4773,7 +4790,8 @@ begin
 
       Height := Height + 1;
       Height := Height - 1;
-      Columns[0].Width := Columns[0].Width - 10;
+      if Columns[0].Width > 10 then
+        Columns[0].Width := Columns[0].Width - 10;
     end else
     { not FullUpdate }
     begin
@@ -4805,7 +4823,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TForm1.UpdateDishTable(FullUpdate: boolean; SaveItemIndex: boolean = False);
+procedure TForm1.UpdateDishTable(UpdateHeaders, FullUpdate, SaveItemIndex: boolean);
 {==============================================================================}
 
   function MyTimeToStr(Date: TDateTime): string;
@@ -4840,7 +4858,7 @@ var
 begin
   StartProc('UpdateDishTable()');
 
-  LabelDishBase.Caption := Format('База блюд (%d), v%d', [DishBase.Count, DishBase.Version]);
+  LabelDishBase.Caption := Format('База блюд (%d)', [Length(DishList)]);
 
   DishM := Value['DishM'];
   DishP := Value['DishP'];
@@ -4888,10 +4906,10 @@ begin
       end;
 
       { СТРОКИ }
-      Items.BeginUpdate;
+      {Items.BeginUpdate;
       Clear;
-      AllocBy := DishBase.Count;
-      for i := 0 to DishBase.Count-1 do
+      AllocBy := Length(DishList)
+      for i := 0 to High(DishList) do
       begin
         with Items.Add do
         begin
@@ -4906,21 +4924,20 @@ begin
           if DishD then SubItems.Add(MyTimeToStr(DishBase[i].ModifiedTime));
         end;
       end;
-      Items.EndUpdate;
+      Items.EndUpdate;}
 
       Height := Height + 1;
       Height := Height - 1;
-      
       if Columns[0].Width > 10 then
         Columns[0].Width := Columns[0].Width - 10;
     end else
     { not FullUpdate }
     begin
-      if (DishBase.Count <> Items.Count) then
-        UpdateDishTable(True)
+     if (Length(DishList) <> Items.Count) then
+        UpdateDishTable(UpdateHeaders, True, SaveItemIndex)
       else
       
-      for i := 0 to DishBase.Count - 1 do
+      {for i := 0 to DishBase.Count - 1 do
       with Items[i] do
       begin
         Caption := DishBase[i].Name;
@@ -4934,7 +4951,7 @@ begin
         if DishC then SubItems.Add(RealToStr(DishBase[i].RelCarbs));
         if DishV then SubItems.Add(IntToStr(Round(DishBase[i].RelValue)));
         if DishD then SubItems.Add(MyTimeToStr(DishBase[i].ModifiedTime));
-      end;
+      end; }
     end;
 
     if SaveItemIndex or (not FullUpdate) then
@@ -4953,14 +4970,11 @@ procedure TForm1.EventDishbaseChanged(CountChanged, NamesChanged: boolean);
 begin
   StartProc('EventDishbaseChanged');
 
-  if (CountChanged) then NamesChanged := True;
+  // TODO: make it handler for DAO-generated event; don't call it manually
 
-  if (NamesChanged) then
-  begin
-    UpdateDishTable(CountChanged);
-    UpdateCombos;
-  end;
-  SaveDishBase; // TODO: remove it
+  UpdateDishbaseFilter();
+  UpdateDishTable(False, True, False);
+  UpdateCombos;
 
   FinishProc;
 end;
@@ -4998,22 +5012,19 @@ var
   Summ: real;
   i,j,Count: integer;
   FirstDate, LastDate: integer;
-  Page: TDiaryPage;
+  Recs: TRecordList;
 begin
   Summ := 0;
   Count := 0;
 
-  LastDate := Trunc(Now);
-  FirstDate := LastDate - PERIOD;
+  Recs := LocalSource.FindPeriod(Now - PERIOD, Now);
 
-  for i := FirstDate to LastDate do
+  for i := 0 to High(Recs) do
   begin
-    Page := Diary[i];
-    for j := 0 to Page.Count - 1 do
-    if (Page[j].RecType = TInsRecord) then
+    if (Recs[i].RecType = TInsRecord) then
     begin
       inc(Count);
-      Summ := Summ + TInsRecord(Page[j]).Value;
+      Summ := Summ + TInsRecord(Recs[i]).Value;
     end;
   end;
 
@@ -5063,7 +5074,7 @@ begin
   Filter := EditBaseFoodSearch.Text;
   if (Trim(Filter) = '') then
   begin
-    FoodList := FoodBaseLocal.FindAll();
+    FoodList := FoodBaseLocal.FindAll(false);
     ButtonResetFilterFoodBase.Hint := MAIN_BASES_FILTER_ALL;
     ButtonResetFilterFoodBase.Enabled := False;
   end else
@@ -5072,6 +5083,39 @@ begin
     ButtonResetFilterFoodBase.Hint := MAIN_BASES_FILTER_FILTERED;
     ButtonResetFilterFoodBase.Enabled := True;
   end;
+end;
+
+procedure TForm1.UpdateDishbaseFilter;
+
+  procedure ClearDishList;
+  var
+    i: integer;
+  begin
+    for i := 0 to High(DishList) do
+      DishList[i].Free;
+    SetLength(DishList, 0);
+  end;
+
+var
+  Filter: string;
+begin
+ { ClearDishList;
+
+  Filter := EditBaseDishSearch.Text;
+  if (Trim(Filter) = '') then
+  begin
+    DishList := DishBaseLocal.FindAll(false);
+    ButtonResetFilterDishBase.Hint := MAIN_BASES_FILTER_ALL;
+    ButtonResetFilterDishBase.Enabled := False;
+  end else
+  begin
+    DishList := DishBaseLocal.FindAny(Filter);
+    ButtonResetFilterDishBase.Hint := MAIN_BASES_FILTER_FILTERED;
+    ButtonResetFilterDishBase.Enabled := True;
+  end;     }
+
+  // TODO 1: hack
+  DishList := DishBaseLocal.FindAll(false);
 end;
 
 {==============================================================================}

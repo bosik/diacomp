@@ -48,7 +48,13 @@ uses
   UnitMisc in 'src\face\forms\UnitMisc.pas' {FormMisc},
   FoodbaseDAO in 'src\persistence\FoodbaseDAO.pas',
   FoodbaseLocalDAO in 'src\persistence\local\FoodbaseLocalDAO.pas',
-  FoodbaseWebDAO in 'src\persistence\web\FoodbaseWebDAO.pas';
+  FoodbaseWebDAO in 'src\persistence\web\FoodbaseWebDAO.pas',
+  JsonSerializer in 'src\persistence\JsonSerializer.pas',
+  JsonFoodItemSerializer in 'src\persistence\JsonFoodItemSerializer.pas',
+  DAO in 'src\persistence\DAO.pas',
+  DishbaseDAO in 'src\persistence\DishbaseDAO.pas',
+  DishbaseLocalDAO in 'src\persistence\local\DishbaseLocalDAO.pas',
+  DishbaseWebDAO in 'src\persistence\web\DishbaseWebDAO.pas';
 
 {$R *.res}
 

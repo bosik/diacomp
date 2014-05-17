@@ -9,7 +9,11 @@ uses
   DiaryWeb,
   DiaryPage,
   DiaryPageSerializer,
-  AutoLog;
+  DiaryRecords,
+  DiaryRoutines,
+  AutoLog,
+  uLkJSON,
+  JsonSerializer;
 
 type
   TDiaryWebSource = class (TDiaryDAO)
@@ -18,13 +22,30 @@ type
   public
     constructor Create(Client: TDiacompClient);
 
-    procedure GetModified(Time: TDateTime; out ModList: TModList); override;
-    procedure GetVersions(const Dates: TDateList; out ModList: TModList); override;
-    function GetPages(const Dates: TDateList; out Pages: TDiaryPageList): boolean; override;
-    function PostPages(const Pages: TDiaryPageList): boolean; override;
+    function FindChanged(Since: TDateTime): TRecordList; override;
+    function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; override;
+    function FindById(ID: TCompactGUID): TCustomRecord; override;
+    procedure Post(const Recs: TRecordList); override;
   end;
 
 implementation
+
+{==============================================================================}
+function ParseRecordList(const S: string): TRecordList;
+{==============================================================================}
+var
+  Response: TStdResponse;
+  Json: TlkJSONlist;
+begin
+  Response := TStdResponse.Create(S);
+  try
+    Json := Response.ConvertResponseToJson() as TlkJSONlist;
+    Result := ParseRecords(json);
+  finally
+    Response.Free;
+    Json.Free;
+  end;
+end;
 
 { TDiaryWebSource }
 
@@ -39,67 +60,83 @@ begin
 end;
 
 {==============================================================================}
-procedure TDiaryWebSource.GetModified(Time: TDateTime; out ModList: TModList);
-{==============================================================================}
-begin
-  FClient.GetModList(Time, ModList);
-end;
-
-{==============================================================================}
-function TDiaryWebSource.GetPages(const Dates: TDateList; out Pages: TDiaryPageList): boolean;
+function TDiaryWebSource.FindById(ID: TCompactGUID): TCustomRecord;
 {==============================================================================}
 var
   Resp: string;
-  S: TStrings;
+  List: TRecordList;
 begin
-  try
-    Resp := FClient.GetPages(Dates);
-    S := TStringList.Create;
-    try
-      S.Text := Resp;
-      TPageSerializer.ReadPages(S, DiaryWeb.WebFmt, Pages);
-    finally
-      S.Free;
-    end;
-    Result := True;
-  except
-    on E: Exception do
-    begin
-      Log(Error, 'TDiaryWebSource.GetPages(): ' + E.Message);
-      Result := False;                                       
-    end;
-  end;
+  Resp := FClient.DoGetSmart(FClient.GetApiURL() + 'diary/guid/' + ID);
+  List := ParseRecordList(Resp);
+  Result := List[0];
 end;
 
 {==============================================================================}
-procedure TDiaryWebSource.GetVersions(const Dates: TDateList; out ModList: TModList);
-{==============================================================================}
-begin
-  FClient.GetVersions(Dates, ModList);
-end;
-
-{==============================================================================}
-function TDiaryWebSource.PostPages(const Pages: TDiaryPageList): boolean;
+function TDiaryWebSource.FindChanged(Since: TDateTime): TRecordList;
 {==============================================================================}
 var
-  S: TStrings;
-  i: integer;
-  //OldTimestamp: TDateTime;
+  Query, Resp: string;
 begin
-  S := TStringList.Create;
+  {#}Log(VERBOUS, 'TDiaryWebSource.FindChanged(): started, since = "' + DateTimeToStr(Since, STD_DATETIME_FMT) + '"');
 
-  for i := 0 to High(Pages) do
+  Query := FClient.GetApiURL() + 'diary/changes/?since=' + ChkSpace(DateTimeToStr(Since, STD_DATETIME_FMT));
+  {#}Log(VERBOUS, 'TDiaryWebSource.FindChanged(): quering ' + Query);
+
+  Resp := FClient.DoGetSmart(query);
+  {#}Log(VERBOUS, 'TDiaryWebSource.FindChanged(): quered OK, Resp = "' + Resp + '"');
+
+  Result := ParseRecordList(Resp);
+  {#}Log(VERBOUS, 'TDiaryWebSource.FindChanged(): done OK');
+end;
+
+{==============================================================================}
+function TDiaryWebSource.FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList;
+{==============================================================================}
+var
+  Query: string;
+  Resp: string;
+begin
+  {#}Log(VERBOUS, 'TDiaryWebSource.FindPeriod: started');
+
+  Query :=
+    FClient.GetApiURL() + 'diary/period/?show_rem=0' +
+    '&start_time=' + ChkSpace(DateTimeToStr(TimeFrom, STD_DATETIME_FMT)) +
+    '&end_time=' + ChkSpace(DateTimeToStr(TimeTo, STD_DATETIME_FMT));
+
+  {#}Log(VERBOUS, 'TDiaryWebSource.FindPeriod: quering "' + Query + '"');
+
+
+  Resp := FClient.DoGetSmart(query);
+  {#}Log(VERBOUS, 'TDiaryWebSource.FindPeriod(): quered OK, Resp = "' + Resp + '"');
+
+  Result := ParseRecordList(Resp);
+  {#}Log(VERBOUS, 'TDiaryWebSource.FindPeriod(): done OK');
+end;
+
+{==============================================================================}
+procedure TDiaryWebSource.Post(const Recs: TRecordList);
+{==============================================================================}
+var
+  Par: TParamList;
+  Msg: string;
+  Response: TStdResponse;
+begin
+  // заглушка
+  if (Length(Recs) = 0) then
   begin
-    //OldTimestamp := Pages[i].TimeStamp;
-    //try
-      //Pages[i].TimeStamp := FClient.LocalToServer(Pages[i].TimeStamp);
-      TPageSerializer.WritePage(Pages[i], S, WebFmt);
-    //finally
-    //  Pages[i].TimeStamp := OldTimestamp;
-    //end;
+    Exit;
   end;
 
-  Result := FClient.PostPages(S.Text);
+  SetLength(Par, 1);
+  par[0] := 'items=' + JsonWrite(SerializeRecords(Recs));
+
+  Msg := FClient.DoPutSmart(FClient.GetApiURL() + 'diary/', Par);
+
+  // TODO: check response, throw exception if non-zero
+  // Response.Code = 0     it's ok
+  // Response.Code = 500   Internal server error
+  // Response.Code = xxx   Connection error
+  // etc.
 end;
 
 end.

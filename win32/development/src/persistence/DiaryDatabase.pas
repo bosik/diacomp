@@ -29,12 +29,12 @@ type
     FPostPrandStd: integer;
     FPostPrandShort: integer;
 
-    function GetPage(Date: TDate): TDiaryPage;
+    function GetPage(Date: TDate): TRecordList;
     procedure SetPostPrand(Index, Value: integer);
     procedure PageChangeListener(EventType: TPageEventType; Page: TDiaryPage; RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
   public
     constructor Create(Source: TDiaryDAO);
-    function FindRecord(RecType: TClassCustomRecord; ADate: TDate; ATime: integer;
+    function FindRecord(RecType: TClassCustomRecord; TimeUTC: TDateTime;
       DeltaTime: integer; Direction: TSearchDirection): TCustomRecord;
     function GetLastBloodRecord: TBloodRecord;
     function GetNextFinger: integer;
@@ -42,10 +42,10 @@ type
     procedure SaveToJSON(const FileName: string);
 
     // свойства
-    property Pages[Index: TDate]: TDiaryPage read GetPage; default;
-    property PostPrandStd: integer   index 1 read FPostPrandStd   write SetPostPrand default 210;
-    property PostPrandShort: integer index 2 read FPostPrandShort write SetPostPrand default 30;
-    property PostPrandIns: integer   index 3 read FPostPrandStd   write SetPostPrand default 210;
+    property Pages[Index: TDate]: TRecordList read GetPage; default;
+    property PostPrandStd: integer    index 1 read FPostPrandStd   write SetPostPrand default 210;
+    property PostPrandShort: integer  index 2 read FPostPrandShort write SetPostPrand default 30;
+    property PostPrandIns: integer    index 3 read FPostPrandStd   write SetPostPrand default 210;
  end;
 
 implementation
@@ -95,26 +95,33 @@ begin
 end;
 
 {==============================================================================}
-function TDiary.GetPage(Date: TDate): TDiaryPage;
+function TDiary.GetPage(Date: TDate): TRecordList;
 {==============================================================================}
 var
-  PrevPage: TDiaryPage;
+  //PrevPage: TDiaryPage;
+  TimeFrom, TimeTo: TDateTime;
 begin
-  Result := FSource.GetPage(Date);
+  TimeFrom := LocalToUTC(Date);
+  TimeTo := LocalToUTC(Date + 1);
+  Result := FSource.FindPeriod(TimeFrom, TimeTo);
+
+  {Result := FSource.GetPage(Date);
   PrevPage := FSource.GetPage(Date - 1);
   Result.FreeTime := GetNextDayFreeTime(PrevPage, PostPrandStd, PostPrandShort, PostPrandIns); // TODO: INS time, not meal
   Result.PostprandMealStd := PostPrandStd;
   Result.PostprandMealShort := PostPrandShort;
   Result.PostprandIns := PostPrandIns;
   Result.UpdatePostprand();
-  Result.AddChangeListener(PageChangeListener);
+  Result.AddChangeListener(PageChangeListener);  }
 
   // TODO: выделить эти параметры в рекорд/класс и сделать его отдельным полем
 end;
 
+{==============================================================================}
 function TDiary.FindRecord(RecType: TClassCustomRecord;
-  ADate: TDate; ATime: integer; DeltaTime: integer;
+  TimeUTC: TDateTime; DeltaTime: integer;
   Direction: TSearchDirection): TCustomRecord;
+{==============================================================================}
 
   {
 
@@ -129,24 +136,77 @@ function TDiary.FindRecord(RecType: TClassCustomRecord;
   }
 
 var
-  StartDate: TDate;
-  StartTime: integer;
-  FinishDate: TDate;
-  FinishTime: integer;
-  Date: TDate;
+  //StartDate: TDate;
+  //StartTime: integer;
+  //FinishDate: TDate;
+  //FinishTime: integer;
+  //Date: TDate;
 
-  Page: TDiaryPage;
-  CurDist, MinDist: integer;
+  TimeFrom, TimeTo: TDateTime;
+
+  Recs: TRecordList;
+  CurDist, MinDist: real;
   i: integer;
 begin
   { проверяем аргументы }
-  if not CorrectTime(ATime) then
-    raise Exception.Create('FindRecord: некорректное значение Time (' + IntToStr(ATime) + ')');
   if (DeltaTime <= 0) then
     raise Exception.Create('FindRecord: некорректное значение DeltaTime (' + IntToStr(DeltaTime) + ')');
 
-  { определяем границы }
+
   if (Direction = sdForward) then
+  begin
+    TimeFrom := TimeUTC;
+    TimeTo := TimeUTC + DeltaTime / MinPerDay;
+    Recs := FSource.FindPeriod(TimeFrom, TimeTo);
+    for i := 0 to High(Recs) do
+    if (RecType = nil) or (RecType = Recs[i].RecType) then
+    begin
+      Result := Recs[i];
+      Exit;
+    end;
+
+    Result := nil;
+  end else
+
+  if (Direction = sdBack) then
+  begin
+    TimeFrom := TimeUTC - DeltaTime / MinPerDay;
+    TimeTo := TimeUTC;
+    Recs := FSource.FindPeriod(TimeFrom, TimeTo);
+    for i := High(Recs) downto 0 do
+    if (RecType = nil) or (RecType = Recs[i].RecType) then
+    begin
+      Result := Recs[i];
+      Exit;
+    end;
+
+    Result := nil;
+  end else
+
+  begin
+    TimeFrom := TimeUTC - DeltaTime / MinPerDay;
+    TimeTo := TimeUTC + DeltaTime / MinPerDay;
+    Recs := FSource.FindPeriod(TimeFrom, TimeTo);
+    MinDist := 3 * DeltaTime / MinPerDay;
+
+    for i := 0 to High(Recs) do
+    if (RecType = nil) or (RecType = Recs[i].RecType) then
+    begin
+      CurDist := abs(Recs[i].NativeTime - TimeUTC);
+      if (CurDist < MinDist) then
+      begin
+        MinDist := CurDist;
+        Result := Recs[i];
+      end;
+    end;
+
+    Result := nil;
+  end
+
+
+
+  { определяем границы }
+ (* if (Direction = sdForward) then
   begin
     StartDate := ADate;
     StartTime := ATime;
@@ -186,7 +246,7 @@ begin
         Result := Page[i];
       end;
     end;
-  end;
+  end;    *)
 end;
 
 {==============================================================================}
@@ -224,21 +284,21 @@ end;
 function TDiary.GetLastBloodRecord: TBloodRecord;
 {==============================================================================}
 const
-  INTERVAL = 7;
+  INTERVAL = 7; // days
 var
-  Page: TDiaryPage;
-  Date, Today: integer;
+  TimeFrom, TimeTo: TDateTime;
+  Recs: TRecordList;
   i: integer;      
 begin
-  Today := Trunc(Now);
-  for Date := Today downto (Today - INTERVAL + 1) do
-  begin
-    Page := GetPage(Date);
+  TimeTo := GetTimeUTC;
+  TimeFrom := TimeTo - INTERVAL;
+  Recs := FSource.FindPeriod(TimeFrom, TimeTo);
 
-    for i := Page.Count - 1 downto 0 do
-    if (Page[i] is TBloodRecord) then
+  for i := High(Recs) downto 0 do
+  begin
+    if (Recs[i].RecType = TBloodRecord) then
     begin
-      Result := TBloodRecord(Page[i]);
+      Result := TBloodRecord(Recs[i]);
       Exit;
     end;
   end;
@@ -257,7 +317,7 @@ var
   i, j, k: integer;
   DS: char;
 begin
-  DS := SysUtils.DecimalSeparator;
+ (* DS := SysUtils.DecimalSeparator;
   //SysUtils.DecimalSeparator := '.';
 
   try
@@ -331,159 +391,14 @@ begin
     XML.SaveToFile(FileName);
   finally
     SysUtils.DecimalSeparator := DS;
-  end;
+  end;   *)
 end;
 
 {==============================================================================}
 procedure TDiary.SaveToJSON(const FileName: string);
 {==============================================================================}
-
-  function Escape(S: string): string;
-  var
-    i: integer;
-  begin
-    Result := '';
-    for i := 1 to Length(S) do
-    begin
-      if (S[i] = '"') then
-        Result := Result + '\"'
-      else
-        Result := Result + S[i];
-    end; 
-  end;
-
-  function BlockBlood(R: TBloodRecord): string;
-  begin
-    Result := Format('{"type":"blood","value":"%.1f","finger":"%d"}', [R.Value, R.Finger]);
-  end;
-
-  function BlockIns(R: TInsRecord): string;
-  begin
-    Result := Format('{"type":"insulin","value":"%.1f"}', [R.Value]);
-  end;
-
-  function BlockFood(R: TFoodMassed): string;
-  begin
-    Result := Format('{"name":"%s","prots":"%.1f","fats":"%.1f","carbs":"%.1f","value":"%.1f","mass":"%.1f"}',
-      [Escape(R.Name), R.RelProts, R.RelFats, R.RelCarbs, R.RelValue, R.Mass]);
-  end;
-
-  function BlockMeal(R: TMealRecord): string;
-
-    function FmtBoolean(f: boolean): string;
-    begin
-      if (f) then
-        Result := 'true'
-      else
-        Result := 'false';
-    end;
-
-  var
-    i: integer;
-  begin
-    Result := Format('{"type":"meal","short":"%s","content":[',
-      [FmtBoolean(R.ShortMeal)]);
-    for i := 0 to R.Count - 1 do
-    begin
-      Result := Result + BlockFood(R[i]);
-      if (i < R.Count - 1) then
-        Result := Result + ',';
-    end;
-    Result := Result + ']}';
-  end;
-
-  function BlockNote(R: TNoteRecord): string;
-  begin
-    Result := Format('{"type":"note","text":"%s"}', [Escape(R.Text)]);
-  end;
-
-  function BlockRecord(R: TCustomRecord): string;
-  var
-    Header, Data: string;
-  begin
-    Header := Format('%s'#9'%s'#9'%s'#9'%d'#9'-'#9,
-      [DateTimeToStr(R.NativeTime, STD_DATETIME_FMT),
-       DateTimeToStr(R.NativeTime, STD_DATETIME_FMT),
-       CreateCompactGUID(),
-       1]);
-
-    if (R.RecType = TBloodRecord) then Data := BlockBlood(TBloodRecord(R)) else
-    if (R.RecType = TInsRecord)   then Data := BlockIns(TInsRecord(R)) else
-    if (R.RecType = TMealRecord)  then Data := BlockMeal(TMealRecord(R)) else
-    if (R.RecType = TNoteRecord)  then Data := BlockNote(TNoteRecord(R));
-
-    Result := Header + Data;
-  end;
-
-  function BlockPage(P: TDiaryPage): string;
-  var
-    i: integer;
-  begin
-    Result := '';
-
-    {Result := Format('{date: "%s", stamp: "%s", version: %d, content: [',
-      [DateToStr(P.Date),
-      DateTimeToStr(P.TimeStamp),
-      P.Version]);
-    for i := 0 to P.Count - 1 do
-    begin
-      if (P[i].RecType = TBloodRecord) then Result := Result + BlockBlood(TBloodRecord(P[i])) else
-      if (P[i].RecType = TInsRecord)   then Result := Result + BlockIns(TInsRecord(P[i])) else
-      if (P[i].RecType = TMealRecord)  then Result := Result + BlockMeal(TMealRecord(P[i])) else
-      if (P[i].RecType = TNoteRecord)  then Result := Result + BlockNote(TNoteRecord(P[i]));
-
-      if (i < P.Count - 1) then
-        Result := Result + ', ';
-    end;
-    Result := Result + ']';
-    }
-
-    for i := 0 to P.Count - 1 do
-      Result := Result + BlockRecord(P[i]) + #13;
-  end;
-
-var
-  //JSON: string;
-  Tmp: string;
-  Page: TDiaryPage;
-  i: integer;
-  DS: char;
-  S: TStrings;
 begin
-  DS := SysUtils.DecimalSeparator;
-  //SysUtils.DecimalSeparator := '.';
-  //JSON := '';
-
-  S := TStringList.Create;
-  try
-    s.add('VERSION=4');
-
-    // TODO: hardcoded date
-    for i := Trunc(EncodeDate(2009, 12, 03)) to Trunc(Now) + 1 do
-    begin
-      Page := GetPage(i);
-
-      //JSON := ;
-      //if (i < Page.Count - 1) then
-      //  JSON := JSON + ', ';
-
-      SysUtils.DecimalSeparator := '.';
-      Tmp := BlockPage(Page);
-      if (Tmp <> '') then
-        S.Add(Tmp);
-      SysUtils.DecimalSeparator := DS;
-      //json := '';
-    end;
-
-    //JSON := JSON + ']';
-    //S.Add(json);
-    //json := '';
-
-    S.SaveToFile(FileName);
-  finally
-    SysUtils.DecimalSeparator := DS;
-    S.Free;
-  end;
+  // see DiaryLocalSource.Save()
 end;
 
 {==============================================================================}
@@ -505,7 +420,8 @@ procedure TDiary.PageChangeListener(EventType: TPageEventType;
   RecInstance: TCustomRecord);
 {==============================================================================}
 begin
-  FSource.PostPage(Page);
+  //FSource.PostPage(Page);
+  // TODO: fix
 end;
 
 initialization

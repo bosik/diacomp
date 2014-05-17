@@ -10,7 +10,8 @@ uses
   AnalyzeInterface,
   DiaryRoutines,
   DiaryRecords,
-  DiaryDatabase;
+  DiaryDatabase,
+  DiaryDAO;
 
 type
   TAnalyzer = record
@@ -30,7 +31,7 @@ type
 
   { инициализация }
   function AddAnalyzer(const FileName: string): boolean;
-  procedure AnalyzeDiary(Base: TDiary; FromDate, ToDate: TDate; const Par: TRealArray; CallBack: TCallbackProgressProc);
+  procedure AnalyzeDiary(Base: TDiaryDAO; FromDate, ToDate: TDate; const Par: TRealArray; CallBack: TCallbackProgressProc);
 
   { использование }
   function GetAnalyzersCount: integer;
@@ -42,7 +43,7 @@ type
   function GetRecError(const Rec: TAnalyzeRec; const KoofList: TKoofList; ValFunct: TValFunction): real;
   function GetRecListError(const List: TAnalyzeRecList; const KoofList: TKoofList; ValFunc: TValFunction): real;
 
-  procedure AnalyzeBS(Base: TDiary; FromDate, ToDate: TDate; out Mean, StdDev, Targeted, Less, More: Extended);
+  procedure AnalyzeBS(Base: TDiaryDAO; TimeFrom, TimeTo: TDateTime; out Mean, StdDev, Targeted, Less, More: Extended);
 
   procedure SaveRecords(const List: TAnalyzeRecList; const FileName: string);
 
@@ -84,13 +85,14 @@ type
 { ПОДГОТОВКА МАТЕРИАЛА }
 
 {==============================================================================}
-procedure ExtractRecords(Base: TDiary; FromDate, ToDate: TDate;
+procedure ExtractRecords(Base: TDiaryDAO; TimeFrom, TimeTo: TDateTime;
   out List: TPrimeRecList);
 {==============================================================================}
 var
   i,j: integer;
   Date: TDate;
   PageBaseTime: integer;
+  Items: TRecordList;
 
   PrevBloodTime: integer;
   PrevBloodValue: real;
@@ -123,43 +125,42 @@ begin
 
   { обработка }
 
+  Items := Base.FindPeriod(TimeFrom, TimeTo);
+
   { 1. Создаём RecList, считая время в минутах от 01/01/1899 }
-  for Date := FromDate to ToDate do
+  for i := Low(Items) to High(Items) do
   begin
-    PageBaseTime := Date * MinPerDay;
-    {=====================================================}
-    for i := 0 to Base[Date].Count - 1 do
-    if (Base[Date][i].RecType = TInsRecord) then
+    if (Items[i].RecType = TInsRecord) then
     begin
-      CurIns := TInsRecord(Base[Date][i]).Value;
+      CurIns := TInsRecord(Items[i]).Value;
       Ins := Ins + CurIns;
       if (CurIns > MaxIns) then
       begin
         MaxIns := CurIns;
-        TimeI := PageBaseTime + Base[Date][i].Time;
+        TimeI := PageBaseTime + Items[i].Time;
       end;
     end else
-    if (Base[Date][i].RecType = TMealRecord) then
+    if (Items[i].RecType = TMealRecord) then
     begin
-      Prots := Prots + TMealRecord(Base[Date][i]).Prots;
-      Fats := Fats + TMealRecord(Base[Date][i]).Fats;
-        CurCarbs := TMealRecord(Base[Date][i]).Carbs;
+      Prots := Prots + TMealRecord(Items[i]).Prots;
+      Fats := Fats + TMealRecord(Items[i]).Fats;
+        CurCarbs := TMealRecord(Items[i]).Carbs;
       Carbs := Carbs + CurCarbs;
       if (CurCarbs > MaxCarbs) then
       begin
         MaxCarbs := CurCarbs;
-        TimeF := PageBaseTime + Base[Date][i].Time;
+        TimeF := PageBaseTime + Items[i].Time;
         MealDate := Date;
       end;
     end else
 
-    if (Base[Date][i].RecType = TBloodRecord) and
-       (not TBloodRecord(Base[Date][i]).PostPrand) then
+    if (Items[i].RecType = TBloodRecord) and
+       (not TBloodRecord(Items[i]).PostPrand) then
     begin
       if (PrevBloodValue = -1) then
       begin
-        PrevBloodTime := PageBaseTime + TBloodRecord(Base[Date][i]).Time;
-        PrevBloodValue := TBloodRecord(Base[Date][i]).Value;
+        PrevBloodTime := PageBaseTime + TBloodRecord(Items[i]).Time;
+        PrevBloodValue := TBloodRecord(Items[i]).Value;
         InitCounters;
       end else
       if ((Carbs > 0) or (Prots > 0)) and (Ins > 0) then
@@ -181,24 +182,24 @@ begin
           List[j].Prots := Prots;
           List[j].Fats := Fats;
           List[j].Carbs := Carbs;
-          List[j].BloodOutTime := PageBaseTime + Base[Date][i].Time;
-          List[j].BloodOutValue := TBloodRecord(Base[Date][i]).Value;
+          List[j].BloodOutTime := PageBaseTime + Items[i].Time;
+          List[j].BloodOutValue := TBloodRecord(Items[i]).Value;
           List[j].Date := MealDate;
         end;
 
         { подготовка к следующему циклу }
-        PrevBloodTime := PageBaseTime + Base[Date][i].Time;
-        PrevBloodValue := TBloodRecord(Base[Date][i]).Value;
+        PrevBloodTime := PageBaseTime + Items[i].Time;
+        PrevBloodValue := TBloodRecord(Items[i]).Value;
         InitCounters;
       end else
       begin
         { замер нормальный, но перед ним ни еды, ни инсулина }
-        PrevBloodTime := PageBaseTime + TBloodRecord(Base[Date][i]).Time;
-        PrevBloodValue := TBloodRecord(Base[Date][i]).Value;
+        PrevBloodTime := PageBaseTime + TBloodRecord(Items[i]).Time;
+        PrevBloodValue := TBloodRecord(Items[i]).Value;
         InitCounters;
       end;
-    end;
     {=====================================================}
+  end;
   end;
 
   { 2. Восстановление относительных времён }
@@ -343,7 +344,7 @@ begin
 end;
 
 {==============================================================================}
-procedure AnalyzeDiary(Base: TDiary; FromDate, ToDate: TDate; const Par: TRealArray; CallBack: TCallbackProgressProc);
+procedure AnalyzeDiary(Base: TDiaryDAO; FromDate, ToDate: TDate; const Par: TRealArray; CallBack: TCallbackProgressProc);
 {==============================================================================}
 var
   PrimeList: TPrimeRecList;
@@ -468,24 +469,26 @@ begin
 end;
 
 {==============================================================================}
-procedure AnalyzeBS(Base: TDiary; FromDate, ToDate: TDate; out Mean, StdDev, Targeted, Less, More: Extended);
+procedure AnalyzeBS(Base: TDiaryDAO; TimeFrom, TimeTo: TDateTime; out Mean, StdDev, Targeted, Less, More: Extended);
 {==============================================================================}
 var
   Date: TDate;
   i: integer;
   List: array of double;
+  Items: TRecordList;
 begin
   Targeted := 0;
   Less := 0;
   More := 0;
 
-  for Date := FromDate to ToDate do
-  for i := 0 to Base[Date].Count - 1 do
-  if (Base[Date][i].RecType = TBloodRecord) and
-     (not TBloodRecord(Base[Date][i]).PostPrand) then
+  Items := Base.FindPeriod(TimeFrom, TimeTo);
+
+  for i := Low(Items) to High(Items) do
+  if (Items[i].RecType = TBloodRecord) and
+     (not TBloodRecord(Items[i]).PostPrand) then
   begin
     SetLength(List, Length(List) + 1);
-    List[High(List)] := TBloodRecord(Base[Date][i]).Value;
+    List[High(List)] := TBloodRecord(Items[i]).Value;
 
     // TODO: брать данные из настроек и передавать как параметры
     // TODO: учитывать постпрандиальные замеры - для них тоже есть ТЦП
