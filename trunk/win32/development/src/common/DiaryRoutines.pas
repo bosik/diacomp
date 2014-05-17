@@ -820,8 +820,14 @@ begin
 end;
 
 function TextBefore(const S: string; Terminal: char): string;
+var
+  n: integer;
 begin
-  Result := Copy(S, 1, pos(Terminal, S)-1);
+  n := pos(Terminal, S);
+  if (n > 0) then
+    Result := Copy(S, 1, n - 1)
+  else
+    Result := S;
 end;
 
 function TextAfter(const S: string; Terminal: char): string;
@@ -829,7 +835,10 @@ var
   n: integer;
 begin
   n := pos(Terminal, S);
-  Result := Copy(S, n + 1, Length(S) - n);
+  if (n > 0) then
+    Result := Copy(S, n + 1, Length(S) - n)
+  else
+    Result := S;
 end;
 
 function MatchStr(const S1, S2: string; IgnoreCase: boolean): boolean;
