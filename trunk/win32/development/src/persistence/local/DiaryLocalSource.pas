@@ -64,7 +64,7 @@ type
     FModified: boolean;
     FFileName: string;
 
-    function DoAdd(Rec: TCustomRecord): integer;
+    function AddToInternal(Rec: TCustomRecord): integer;
     procedure Clear;
     function GetRecordIndex(ID: TCompactGUID): integer;
     function TraceLastPage: integer;
@@ -151,12 +151,12 @@ end;
 {==============================================================================}
 class procedure TPageData.Read(const S: string; Page: TPageData; F: TFormatSettings);
 {==============================================================================}
-var
-  header, body: string;
+//var
+//  header, body: string;
 begin
   //Separate(S, header, #13, body);
   //TPageData.ReadHeader(header, Page, F);
-  Page.Page := body;
+  //Page.Page := body;
 end;
 
 {==============================================================================}
@@ -307,12 +307,6 @@ function TRecordData.Deserialize: TCustomRecord;
   end;
 
 var
-  STime: string;
-  STimeStamp: string;
-  SID: string;
-  SVersion: string;
-  SDeleted: string;
-
   json: TlkJSONobject;
   RecType: string;
 begin
@@ -370,13 +364,15 @@ procedure TRecordData.Serialize(Rec: TCustomRecord);
   function SerializeBlood(Rec: TBloodRecord): string;
   var
     json: TlkJSONobject;
+    Temp: string;
   begin
     json := TlkJSONobject.Create();
     try
       json.Add('type', 'blood');
       json.Add('value', Rec.Value);
       json.Add('finger', Rec.Finger);
-      Result := Generate(json);
+      Temp := Generate(json);
+      Result := Temp;
     finally
       FreeAndNil(json);
     end;
@@ -396,25 +392,19 @@ procedure TRecordData.Serialize(Rec: TCustomRecord);
     end;
   end;
 
-  function SerializeFood(Rec: TFoodMassed): string;
-  var
-    json: TlkJSONobject;
-  begin
-    json := TlkJSONobject.Create();
-    try
-      json.Add('name', Rec.Name);
-      json.Add('prots', Rec.RelProts);
-      json.Add('fats', Rec.RelFats);
-      json.Add('carbs', Rec.RelCarbs);
-      json.Add('value', Rec.RelValue);
-      json.Add('mass', Rec.Mass);
-      Result := Generate(json);
-    finally
-      FreeAndNil(json);
-    end;
-  end;
-
   function SerializeMeal(Rec: TMealRecord): string;
+
+    function SerializeFood(Rec: TFoodMassed): TlkJSONobject;
+    begin
+      Result := TlkJSONobject.Create();
+      Result.Add('name', Rec.Name);
+      Result.Add('prots', Rec.RelProts);
+      Result.Add('fats', Rec.RelFats);
+      Result.Add('carbs', Rec.RelCarbs);
+      Result.Add('value', Rec.RelValue);
+      Result.Add('mass', Rec.Mass);
+    end;
+
   var
     json: TlkJSONobject;
     items: TlkJSONlist;
@@ -477,9 +467,9 @@ var
 begin
   STime := TextBefore(S, #9);      S := TextAfter(S, #9);
   STimeStamp := TextBefore(S, #9); S := TextAfter(S, #9);
-  SID:= TextBefore(S, #9);         S := TextAfter(S, #9);
-  SVersion:= TextBefore(S, #9);    S := TextAfter(S, #9);
-  SDeleted:= TextBefore(S, #9);    S := TextAfter(S, #9);
+  SID := TextBefore(S, #9);        S := TextAfter(S, #9);
+  SVersion := TextBefore(S, #9);   S := TextAfter(S, #9);
+  SDeleted := TextBefore(S, #9);   S := TextAfter(S, #9);
 
   NativeTime := StrToDateTime(STime, STD_DATETIME_FMT);
   TimeStamp := StrToDateTime(STimeStamp, STD_DATETIME_FMT);
@@ -508,7 +498,7 @@ end;
 { TDiaryLocalSource }
 
 {==============================================================================}
-function TDiaryLocalSource.DoAdd(Rec: TCustomRecord): integer;
+function TDiaryLocalSource.AddToInternal(Rec: TCustomRecord): integer;
 {==============================================================================}
 begin
   // 1. ѕроверка дублей
@@ -523,7 +513,6 @@ begin
   end;
 
   FRecords[Result].Serialize(Rec);
-
   Result := TraceLastPage();
 end;
 
@@ -638,18 +627,22 @@ procedure TDiaryLocalSource.LoadFromFile(const FileName: string);
   procedure Load_v4(S: TStrings);
   var
     Rec: TRecordData;
-    i: integer;
+    i, k: integer;
   begin
     s.Delete(0);
 
-    for i := 0 to S.Count - 1 do
-    begin
-      Rec := TRecordData.Create;
-      Rec.Read(S[i]);
+    SetLength(FRecords, S.Count);
+    k := 0;
 
-      SetLength(FRecords, Length(FRecords) + 1);
-      FRecords[High(FRecords)] := Rec;
+    for i := 0 to S.Count - 1 do
+    if (S[i] <> '') then
+    begin
+      FRecords[k] := TRecordData.Create;
+      FRecords[k].Read(S[i]);
+      inc(k);
     end;
+
+    SetLength(FRecords, k);
   end;
 
 var
@@ -698,7 +691,7 @@ end;
 procedure TDiaryLocalSource.SaveToFile(const FileName: string);
 {==============================================================================}
 
-  function Escape(S: string): string;
+  (*function Escape(S: string): string;
   var
     i: integer;
   begin
@@ -764,18 +757,29 @@ procedure TDiaryLocalSource.SaveToFile(const FileName: string);
     Header := Format('%s'#9'%s'#9'%s'#9'%d'#9'-'#9,
       [DateTimeToStr(R.NativeTime, STD_DATETIME_FMT),
        DateTimeToStr(R.NativeTime, STD_DATETIME_FMT),
-       CreateCompactGUID(),
-       1]);
+       R.ID,
+       R.Version]);
 
     if (R.RecType = TBloodRecord) then Data := BlockBlood(TBloodRecord(R)) else
     if (R.RecType = TInsRecord)   then Data := BlockIns(TInsRecord(R)) else
     if (R.RecType = TMealRecord)  then Data := BlockMeal(TMealRecord(R)) else
-    if (R.RecType = TNoteRecord)  then Data := BlockNote(TNoteRecord(R));
+    if (R.RecType = TNoteRecord)  then Data := BlockNote(TNoteRecord(R)) else
+      raise Exception.Create('Unknown record type: ' + R.RecTYpe.ClassName);
 
     Result := Header + Data;
+  end; *)
+
+  function BlockRecordData(R: TRecordData): string;
+  begin
+    Result := Format('%s'#9'%s'#9'%s'#9'%d'#9'-'#9'%s',
+      [DateTimeToStr(R.NativeTime, STD_DATETIME_FMT),
+       DateTimeToStr(R.NativeTime, STD_DATETIME_FMT),
+       R.ID,
+       R.Version,
+       R.Data]);
   end;
 
-  function BlockPage(P: TDiaryPage): string;
+  (*function BlockPage(P: TDiaryPage): string;
   var
     i: integer;
   begin
@@ -800,22 +804,16 @@ procedure TDiaryLocalSource.SaveToFile(const FileName: string);
 
     for i := 0 to P.Count - 1 do
       Result := Result + BlockRecord(P[i]) + #13;
-  end;
+  end; *)
 
 var
-  //JSON: string;
-  Tmp: string;
-  Page: TDiaryPage;
+  DataLine: string;
   i: integer;
   DS: char;
   S: TStrings;
-
-  TimeFrom, TimeTo: TDateTime;
-  Recs: TRecordList;
 begin
   DS := SysUtils.DecimalSeparator;
   SysUtils.DecimalSeparator := '.';
-  //JSON := '';
 
   S := TStringList.Create;
   try
@@ -824,8 +822,8 @@ begin
     for i := 0 to High(FRecords) do
     begin
       //SysUtils.DecimalSeparator := '.';
-      Tmp := BlockRecord(Recs[i]);
-      S.Add(Tmp);
+      DataLine := BlockRecordData(FRecords[i]);
+      S.Add(DataLine);
       //SysUtils.DecimalSeparator := DS;
     end;
 
@@ -951,32 +949,32 @@ procedure TDiaryLocalSource.Post(const Recs: TRecordList);
   end;
 
 var
-  i, Index: integer;
-  RecordData: TRecordData;
+  i: integer;
 begin
-  for i := 0 to High(Recs) do
-  begin
-    // сериализуем
-    RecordData := TRecordData.Create();
-    RecordData.Serialize(Recs[i]);
-
-    // сохран€ем
-    Add(RecordData);
-  end;
-
   if (Length(Recs) > 0) then
   begin
+    for i := 0 to High(Recs) do
+      AddToInternal(Recs[i]);
+
     FModified := True;
     SaveToFile(FFileName);
   end;
 end;
 
+{==============================================================================}
 procedure TDiaryLocalSource.Add(const R: TCustomRecord);
+{==============================================================================}
+var
+  Recs: TRecordList;
 begin
-  DoAdd(R);
+  SetLength(Recs, 1);
+  Recs[0] := R;
+  Post(Recs);
 end;
 
+{==============================================================================}
 procedure TDiaryLocalSource.Delete(ID: TCompactGUID);
+{==============================================================================}
 var
   i: integer;
 begin
@@ -984,6 +982,8 @@ begin
   if (FRecords[i].ID = ID) then
   begin
     FRecords[i].Deleted := True;
+    FModified := True;
+    SaveToFile(FFileName);
     Exit;
   end;
 end;
