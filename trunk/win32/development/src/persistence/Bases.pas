@@ -11,28 +11,12 @@ type
 
   TSortType = (stName, stTag);
 
-  TVersioned = class
-  private
-    FID: TCompactGUID;
-    FTimeStamp: TDateTime;
-    FVersion: integer;
-    FDeleted: boolean;
-  protected
-    procedure Modified();
-  public
-    property ID: TCompactGUID read FID write FID;
-    property TimeStamp: TDateTime read FTimeStamp write FTimeStamp;
-    property Version: integer read FVersion write FVersion;
-    property Deleted: boolean read FDeleted write FDeleted;
-  end;
-
   // Имеет методы для бинарного поиска
   // Имеет методы для сортировки
   // Имеет номер версии и метод для её инкремента
   TAbstractBase = class
   private
     TempIndexList: TIndexList;
-    FVersion: integer;
     procedure ItemChangeHandler(Sender: TObject);
     function MoreName(Index1, Index2: integer): boolean;
     function MoreTag(Index1, Index2: integer): boolean;
@@ -45,16 +29,12 @@ type
     function GetName(Index: integer): string; virtual; abstract;
     function GetTag(Index: integer): integer; virtual; abstract;
     procedure SetTag(Index, Value: integer); virtual; abstract;
-    procedure Changed;
   public
     function Count: integer; virtual; abstract;
-    constructor Create;
     procedure Delete(Index: integer); virtual; abstract;
     function Find(const ItemName: string): integer;
     procedure Sort(); // вызывается потомками после загрузки
     procedure SortIndexes(IndexList: TIndexList; SortType: TSortType);
-
-    property Version: integer read FVersion write FVersion;
   end;
 
   TArrayBase = class(TAbstractBase)
@@ -67,7 +47,6 @@ type
     function Add(Item: TMutableItem): integer; virtual;
     procedure Clear;
     function Count: integer; override;
-    procedure Delete(Index: integer); override;
     destructor Destroy; override;
     function GetIndex(ID: TCompactGUID): integer; 
   end;
@@ -110,31 +89,7 @@ type
 
 implementation
 
-{ TVersioned }
-
-{==============================================================================}
-procedure TVersioned.Modified;
-{==============================================================================}
-begin
-  inc(FVersion);
-  FTimeStamp := GetTimeUTC();
-end;
-
 { TAbstractBase }
-
-{==============================================================================}
-procedure TAbstractBase.Changed;
-{==============================================================================}
-begin
-  inc(FVersion);
-end;
-
-{==============================================================================}
-constructor TAbstractBase.Create;
-{==============================================================================}
-begin
-  FVersion := 0;
-end;
 
 {==============================================================================}
 function TAbstractBase.Find(const ItemName: string): integer;
@@ -184,7 +139,7 @@ end;
 procedure TAbstractBase.ItemChangeHandler(Sender: TObject);
 {==============================================================================}
 begin
-  Changed();
+  // TODO: empty
 end;
 
 {==============================================================================}
@@ -283,8 +238,6 @@ begin
   Result := TraceLast;
 
   Item.OnChange := ItemChangeHandler;
-
-  {#}Changed;
 end;
 
 {==============================================================================}
@@ -296,8 +249,6 @@ begin
   for i := 0 to High(FBase) do
     FBase[i].Free;
   SetLength(FBase, 0);
-
-  Changed;
 end;
 
 {==============================================================================}
@@ -305,23 +256,6 @@ function TArrayBase.Count: integer;
 {==============================================================================}
 begin
   Result := Length(FBase);
-end;
-
-{==============================================================================}
-procedure TArrayBase.Delete(Index: integer);
-{==============================================================================}
-var
-  i: integer;
-begin
-  if (Index < Low(FBase)) and (Index > High(FBase)) then
-    raise ERangeError.Create(Format('TArrayBase.Delete(): Index out of bounds (%d)', [Index]));
-
-  FBase[Index].Free;
-  for i := Index to High(FBase) - 1 do
-    FBase[i] := FBase[i + 1];
-  SetLength(FBase, Length(FBase) - 1);
-
-  Changed;
 end;
 
 {==============================================================================}
@@ -460,7 +394,6 @@ begin
       //FTimeStamp := 0;
     end;
 
-    FVersion := 1;
     SetLength(FBase, s.Count);
 
     for i := 0 to s.Count - 1 do
@@ -539,7 +472,6 @@ begin
       Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): XML version is supported', LOGGING);
 
       Root := XML.DocumentElement;
-      FVersion := Root.Attributes['version'];
       SetLength(FBase, Root.ChildNodes.Count);
 
       Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): DecimalSeparator is "' + SysUtils.DecimalSeparator + '"', LOGGING);
@@ -634,7 +566,6 @@ begin
     XML.Options := [doNodeAutoIndent]; // looks better in Editor ;)
 
     Root := XML.AddChild('foods');
-    Root.Attributes['version'] := FVersion;
 
     for i := 0 to High(FBase) do
     begin
@@ -754,8 +685,6 @@ begin
       StartLine := 0;
     end;
 
-    FVersion := 1;
-
     for i := StartLine to s.Count - 1 do
     if s[i] <> '' then
     if s[i][1] = '#' then
@@ -778,7 +707,7 @@ begin
     if (s[i][1] = '%') then
     begin
       buf := Copy(s[i], 4, length(s[i]) - 3);
-      Items[n].ModifiedTime := StrToDateTime(buf);
+      Items[n].TimeStamp := StrToDateTime(buf);
     end else
     if (s[i][1] <> '=') then
     begin
@@ -830,6 +759,7 @@ var
   i, j: integer;
   Food: TFoodMassed;
   DS: char;
+  Dish: TDish;
 begin
   (*
   { если файл не существует, база пуста }
@@ -870,7 +800,6 @@ begin
       Log(DEBUG, 'TDishBase.LoadFromFile_XML(): XML version is supported', LOGGING);
 
       Root := XML.DocumentElement;
-      FVersion := Root.Attributes['version'];
       SetLength(FBase, Root.ChildNodes.Count);
 
       Log(DEBUG, 'TDishBase.LoadFromFile_XML(): DecimalSeparator is "' + SysUtils.DecimalSeparator + '"', LOGGING);
@@ -879,17 +808,29 @@ begin
       for i := 0 to Root.ChildNodes.Count - 1 do
       begin
         DishNode := Root.ChildNodes[i];
-
-        FBase[i] := TDish.Create();
-        Items[i].Name := DishNode.Attributes['name'];
-        if DishNode.HasAttribute('mass') then
-          Items[i].SetResultMass(DishNode.Attributes['mass']);
-        if DishNode.HasAttribute('tag') then
-          Items[i].Tag := DishNode.Attributes['tag']
+        Dish := TDish.Create();
+        if DishNode.HasAttribute('id') then
+          Dish.ID := DishNode.Attributes['id']
         else
-          Items[i].Tag := 0;
+          Dish.ID := CreateCompactGUID();
+        Dish.TimeStamp := StrToDateTime(DishNode.Attributes['time']);
+        if DishNode.HasAttribute('version') then
+          Dish.Version := DishNode.Attributes['version']
+        else
+          Dish.Version := 1;
+        if DishNode.HasAttribute('deleted') then
+          Dish.Deleted := DishNode.Attributes['deleted']
+        else
+          Dish.Deleted := False;
+        Dish.Name := DishNode.Attributes['name'];
+        if DishNode.HasAttribute('mass') then
+          Dish.SetResultMass(DishNode.Attributes['mass']);
+        if DishNode.HasAttribute('tag') then
+          Dish.Tag := DishNode.Attributes['tag']
+        else
+          Dish.Tag := 0;
 
-        //SetLength(FBase[i].FContent, DishNode.ChildNodes.Count);
+        //SetLength(Dish.FContent, DishNode.ChildNodes.Count);
 
         for j := 0 to DishNode.ChildNodes.Count - 1 do
         begin
@@ -909,14 +850,11 @@ begin
           Food.RelValue := StrToFloat(VarAsType(ItemNode.Attributes['val'], varOleStr));
           Food.Mass     := StrToFloat(VarAsType(ItemNode.Attributes['mass'], varOleStr));
 
-          Items[i].Add(Food);
+          Dish.Add(Food);
         end;
 
-        Items[i].OnChange := ItemChangeHandler;
-        if DishNode.HasAttribute('time') then
-          Items[i].ModifiedTime := StrToDateTime(DishNode.Attributes['time'])
-        else
-          Items[i].ModifiedTime := 0;
+        Dish.OnChange := ItemChangeHandler;
+        FBase[i] := Dish;
       end;
 
       Log(DEBUG, 'TDishBase.LoadFromFile_XML(): data fetched OK', LOGGING);
@@ -948,10 +886,9 @@ begin
   if (Items[i].Content[j].Name = OldName) then
   begin
     Items[i].Content[j].Name := NewName;
+    Items[i].Modified;
     Result := True;
   end;
-
-  if (Result) then Changed();
 end;
 
 {==============================================================================}
@@ -1007,13 +944,16 @@ begin
     XML.Options := [doNodeAutoIndent];
 
     Root := XML.AddChild('dishes');
-    Root.Attributes['version'] := FVersion;
 
     for i := 0 to High(FBase) do
     begin
       DishNode := Root.AddChild('dish');
+      DishNode.Attributes['id'] := Items[i].ID;
+      DishNode.Attributes['time'] := Items[i].TimeStamp;
+      DishNode.Attributes['version'] := Items[i].Version;
+      DishNode.Attributes['deleted'] := Items[i].Deleted;
+
       DishNode.Attributes['name'] := Items[i].Name;
-      DishNode.Attributes['time'] := Items[i].ModifiedTime;
       DishNode.Attributes['tag'] := Items[i].Tag;
       if (Items[i].FixedMass) then
         DishNode.Attributes['mass'] := Items[i].ResultMass;
@@ -1065,3 +1005,4 @@ initialization
 finalization
   ActiveX.CoUninitialize;
 end.
+

@@ -9,7 +9,7 @@ uses
   FoodbaseDAO,
   DiaryRoutines,
   Bases,
-
+  DAO,
   ExtCtrls;
 
 type
@@ -22,7 +22,8 @@ type
     FModified: boolean;
     FFirstMod: cardinal;
     FLastMod: cardinal;
-  private
+    function Add(Food: TFood): TCompactGUID;
+    procedure Update(Food: TFood);
     function GetIndex(Food: TFood): integer; overload;
     function GetIndex(ID: TCompactGUID): integer; overload;
     procedure OnTimer(Sender: TObject);
@@ -31,14 +32,14 @@ type
     constructor Create(const FileName: string);
     destructor Destroy; override;
 
-    function Add(Food: TFood): TCompactGUID; override;
     procedure Delete(ID: TCompactGUID); override;
-    function FindAll(): TFoodList; override;
-    function FindAny(const Filter: string): TFoodList; override;
+    function FindAll(ShowRemoved: boolean): TFoodItemList; override;
+    function FindAny(const Filter: string): TFoodItemList; override;
     function FindOne(const Name: string): TFood; override;
-    procedure ReplaceAll(const NewList: TFoodList; NewVersion: integer); override;
-    procedure Update(Food: TFood); override;
-    function Version(): integer; override;
+    function FindChanged(Since: TDateTime): TFoodItemList; override;
+    function FindById(ID: TCompactGUID): TFood; override;
+    procedure Save(const Items: TFoodItemList); override;
+    procedure Save(const Item: TFood); override;
   end;
 
 implementation
@@ -56,7 +57,7 @@ begin
   if (Index = -1) then
   begin
     Temp := TFood.Create;
-    Temp.CopyFrom(Food, True);
+    Temp.CopyFrom(Food);
     FBase.Add(Temp);
     Result := Food.ID;
     Modified();
@@ -92,7 +93,7 @@ begin
   Index := GetIndex(ID);
   if (Index > -1) then
   begin
-    FBase.Delete(Index);
+    FBase[Index].Deleted := True;
     Modified();
   end else
     raise EItemNotFoundException.Create(ID);
@@ -114,21 +115,22 @@ begin
 end;
 
 {==============================================================================}
-function TFoodbaseLocalDAO.FindAll(): TFoodList;
+function TFoodbaseLocalDAO.FindAll(ShowRemoved: boolean): TFoodItemList;
 {==============================================================================}
 var
   i: integer;
 begin
   SetLength(Result, FBase.Count);
   for i := 0 to FBase.Count - 1 do
+  if (ShowRemoved or not FBase[i].Deleted) then
   begin
     Result[i] := TFood.Create;
-    Result[i].CopyFrom(FBase[i], True);
+    Result[i].CopyFrom(FBase[i]);
   end;
 end;
 
 {==============================================================================}
-function TFoodbaseLocalDAO.FindAny(const Filter: string): TFoodList;
+function TFoodbaseLocalDAO.FindAny(const Filter: string): TFoodItemList;
 {==============================================================================}
 var
   i, k: integer;
@@ -142,7 +144,44 @@ begin
     inc(k);
     SetLength(Result, k);
     Result[k - 1] := TFood.Create;
-    Result[k - 1].CopyFrom(FBase[i], True);
+    Result[k - 1].CopyFrom(FBase[i]);
+  end;
+  SetLength(Result, k);
+end;
+
+{==============================================================================}
+function TFoodbaseLocalDAO.FindById(ID: TCompactGUID): TFood;
+{==============================================================================}
+var
+  i: integer;
+begin
+  for i := 0 to FBase.Count - 1 do
+  if (FBase[i].ID = ID) then
+  begin
+    Result := TFood.Create;
+    Result.CopyFrom(FBase[i]);
+    Exit;
+  end;
+
+  Result := nil;
+end;
+
+{==============================================================================}
+function TFoodbaseLocalDAO.FindChanged(Since: TDateTime): TFoodItemList;
+{==============================================================================}
+var
+  i, k: integer;
+begin
+  SetLength(Result, FBase.Count);
+  k := 0;
+  for i := 0 to FBase.Count - 1 do
+  // TODO: optimize
+  if (FBase[i].TimeStamp > Since) then
+  begin
+    inc(k);
+    SetLength(Result, k);
+    Result[k - 1] := TFood.Create;
+    Result[k - 1].CopyFrom(FBase[i]);
   end;
   SetLength(Result, k);
 end;
@@ -157,7 +196,7 @@ begin
   if (Index <> -1) then
   begin
     Result := TFood.Create;
-    Result.CopyFrom(FBase[Index], True);
+    Result.CopyFrom(FBase[Index]);
   end else
     Result := nil;
 end;
@@ -202,7 +241,7 @@ begin
       try
         FBase.SaveToFile(FFileName);
         FModified := False;
-        FFirstMod := 0;
+        FFirstMod := 0; // TODO: or GetTickCount() ?
       finally
         Timer.Enabled := True;
       end;
@@ -211,22 +250,32 @@ begin
 end;
 
 {==============================================================================}
-procedure TFoodbaseLocalDAO.ReplaceAll(const NewList: TFoodList;
-  NewVersion: integer);
+procedure TFoodbaseLocalDAO.Save(const Items: TFoodItemList);
 {==============================================================================}
 var
   i: integer;
-  Food: TFood;
 begin
-  FBase.Clear;
-  for i := 0 to High(NewList) do
-  begin
-    Food := TFood.Create;
-    Food.CopyFrom(NewList[i], True);
-    FBase.Add(Food);
+  for i := Low(Items) to High(Items) do
+  try
+    Update(Items[i]);
+  except
+    on e: EItemNotFoundException do
+      Add(Items[i]);
   end;
-  FBase.Version := NewVersion;
-  Modified();
+end;
+
+{==============================================================================}
+procedure TFoodbaseLocalDAO.Save(const Item: TFood);
+{==============================================================================}
+var
+  i: integer;
+begin
+  try
+    Update(Item);
+  except
+    on e: EItemNotFoundException do
+      Add(Item);
+  end;
 end;
 
 {==============================================================================}
@@ -240,7 +289,7 @@ begin
   if (Index <> -1) then
   begin
     NameChanged := (Food.Name <> FBase[Index].Name);
-    FBase[Index].CopyFrom(Food, True);
+    FBase[Index].CopyFrom(Food);
     if (NameChanged) then
     begin
       FBase.Sort;
@@ -250,13 +299,6 @@ begin
   begin
     raise EItemNotFoundException.Create(Food.ID);
   end;
-end;
-
-{==============================================================================}
-function TFoodbaseLocalDAO.Version: integer;
-{==============================================================================}
-begin
-  Result := FBase.Version;
 end;
 
 end.

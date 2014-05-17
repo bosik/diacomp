@@ -112,6 +112,9 @@ type
     property Text: string read FText write SetText;
   end;
 
+  procedure Statistics(const R: TRecordList; out TotalProts, TotalFats, TotalCarbs,
+    TotalValue, TotalMass, TotalIns: Real);
+
 implementation
 
 { TCustomRecord }
@@ -447,6 +450,34 @@ begin
   begin
     FText := NewValue;
     NotifyPage;
+  end;
+end;
+
+{==============================================================================}
+procedure Statistics(const R: TRecordList; out TotalProts, TotalFats, TotalCarbs,
+  TotalValue, TotalMass, TotalIns: Real);
+{==============================================================================}
+var
+  i: integer;
+begin
+  TotalProts := 0.0;
+  TotalFats := 0.0;
+  TotalCarbs := 0.0;
+  TotalValue := 0.0;
+  TotalMass := 0.0;
+  TotalIns := 0.0;
+  for i := Low(R) to High(R) do
+  if (R[i].RecType = TMealRecord) then
+  begin
+    TotalProts := TotalProts + TMealRecord(R[i]).Prots;
+    TotalFats := TotalFats + TMealRecord(R[i]).Fats;
+    TotalCarbs := TotalCarbs + TMealRecord(R[i]).Carbs;
+    TotalValue := TotalValue + TMealRecord(R[i]).Value;
+    TotalMass := TotalMass + TMealRecord(R[i]).Mass;
+  end else
+  if (R[i].REcType = TInsRecord) then
+  begin
+    TotalIns := TotalIns + TInsRecord(R[i]).Value;
   end;
 end;
 

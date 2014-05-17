@@ -12,7 +12,8 @@ uses
   BusinessObjects,
   DiaryRoutines, // TDate
   Bases,
-  uLkJSON;
+  uLkJSON,
+  JsonSerializer;
 
 type
   TStringsArray = array of TStrings;
@@ -46,7 +47,200 @@ type
       TDiaryPage --> TStrings
   }
 
+  function ParseBlood(json: TlkJSONobject): TBloodRecord;
+  function ParseIns(json: TlkJSONobject): TInsRecord;
+  function ParseFoodMassed(json: TlkJSONobject): TFoodMassed;
+  function ParseMeal(json: TlkJSONobject): TMealRecord;
+  function ParseNote(json: TlkJSONobject): TNoteRecord;
+  function ParseRecord(json: TlkJSONobject): TCustomRecord;
+  function ParseRecords(json: TlkJSONlist): TRecordList;
+
+  function SerializeBlood(R: TBloodRecord): TlkJSONobject;
+  function SerializeIns(R: TInsRecord): TlkJSONobject;
+  function SerializeFoodMassed(R: TFoodMassed): TlkJSONobject;
+  function SerializeMeal(R: TMealRecord): TlkJSONobject;
+  function SerializeNote(R: TNoteRecord): TlkJSONobject;
+  function SerializeRecord(R: TCustomRecord): TlkJSONobject;
+  function SerializeRecords(List: TRecordList): TlkJSONlist;
+
 implementation
+
+{==============================================================================}
+function ParseBlood(json: TlkJSONobject): TBloodRecord;
+{==============================================================================}
+begin
+  Result := TBloodRecord.Create();
+  Result.NativeTime := StrToDateTime((json['time'] as TlkJSONstring).Value);
+  Result.Value := (json['value'] as TlkJSONnumber).Value;
+  Result.Finger := (json['finger'] as TlkJSONnumber).Value;
+end;
+
+{==============================================================================}
+function ParseIns(json: TlkJSONobject): TInsRecord;
+{==============================================================================}
+begin
+  Result := TInsRecord.Create();
+  Result.NativeTime := StrToDateTime((json['time'] as TlkJSONstring).Value);
+  Result.Value := (json['value'] as TlkJSONnumber).Value;
+end;
+
+{==============================================================================}
+function ParseFoodMassed(json: TlkJSONobject): TFoodMassed;
+{==============================================================================}
+begin
+  Result := TFoodMassed.Create();
+  Result.Name     := (json['name']  as TlkJSONstring).Value;
+  Result.RelProts := (json['prots'] as TlkJSONnumber).Value;
+  Result.RelFats  := (json['fats']  as TlkJSONnumber).Value;
+  Result.RelCarbs := (json['carbs'] as TlkJSONnumber).Value;
+  Result.RelValue := (json['value'] as TlkJSONnumber).Value;
+  Result.Mass     := (json['mass']  as TlkJSONnumber).Value;
+end;
+
+{==============================================================================}
+function ParseMeal(json: TlkJSONobject): TMealRecord;
+{==============================================================================}
+var
+  content: TlkJSONlist;
+  i: integer;
+  Food: TFoodMassed;
+begin
+  Result := TMealRecord.Create();
+  Result.NativeTime := StrToDateTime((json['time'] as TlkJSONstring).Value);
+  Result.ShortMeal := (json['short'] as TlkJSONstring).Value = 'true';
+
+  content := (json['content'] as TlkJSONlist);
+  for i := 0 to content.Count - 1 do
+  begin
+    Food := ParseFoodMassed((content.Child[i] as TlkJSONobject));
+    Result.Add(food);
+  end;
+end;
+
+{==============================================================================}
+function ParseNote(json: TlkJSONobject): TNoteRecord;
+{==============================================================================}
+begin
+  Result := TNoteRecord.Create();
+  Result.NativeTime := StrToDateTime((json['time'] as TlkJSONstring).Value);
+  Result.Text := (json['text'] as TlkJSONstring).Value;
+end;
+
+{==============================================================================}
+function ParseRecord(json: TlkJSONobject): TCustomRecord;
+{==============================================================================}
+var
+  RecType: string;
+begin
+  RecType := (json['data'].Field['type'] as TlkJSONstring).Value;
+
+  if (RecType = 'blood') then Result := ParseBlood(json['data'] as TlkJSONobject) else
+  if (RecType = 'ins')   then Result := ParseIns(json['data'] as TlkJSONobject) else
+  if (RecType = 'meal')  then Result := ParseMeal(json['data'] as TlkJSONobject) else
+  if (RecType = 'note')  then Result := ParseNote(json['data'] as TlkJSONobject) else
+    raise Exception.Create('Unsupported record type: ' + RecType);
+
+  Result.ID := (json['id'] as TlkJSONstring).Value;
+  Result.TimeStamp := StrToDateTime((json['stamp'] as TlkJSONstring).Value);
+  Result.Version := (json['version'] as TlkJSONnumber).Value;
+  Result.Deleted := (json['deleted'] as TlkJSONboolean).Value;
+end;
+
+{==============================================================================}
+function ParseRecords(json: TlkJSONlist): TRecordList;
+{==============================================================================}
+var
+  i: integer;
+begin
+  SetLength(Result, json.Count);
+  for i := 0 to json.Count - 1 do
+    Result[i] := ParseRecord(json.Child[i] as TlkJSONobject);
+end;
+
+{==============================================================================}
+function SerializeBlood(R: TBloodRecord): TlkJSONobject;
+{==============================================================================}
+begin
+  Result := TlkJSONobject.Create();
+  Result.Add('type', 'blood');
+  Result.Add('time', DateTimeToStr(R.NativeTime, STD_DATETIME_FMT));
+  Result.Add('value', R.Value);
+  Result.Add('finger', R.Finger);
+end;
+
+{==============================================================================}
+function SerializeIns(R: TInsRecord): TlkJSONobject;
+{==============================================================================}
+begin
+  Result := TlkJSONobject.Create();
+  Result.Add('type', 'ins');
+  Result.Add('time', DateTimeToStr(R.NativeTime, STD_DATETIME_FMT));
+  Result.Add('value', R.Value);
+end;
+
+{==============================================================================}
+function SerializeFoodMassed(R: TFoodMassed): TlkJSONobject;
+{==============================================================================}
+begin
+  Result := TlkJSONobject.Create();
+  Result.Add('name', R.Name);
+  Result.Add('prots', R.RelProts);
+  Result.Add('fats', R.RelFats);
+  Result.Add('carbs', R.RelCarbs);
+  Result.Add('value', R.RelValue);
+  Result.Add('mass', R.Mass);
+end;
+
+{==============================================================================}
+function SerializeMeal(R: TMealRecord): TlkJSONobject;
+{==============================================================================}
+var
+  Content: TlkJSONlist;
+  i: integer;
+begin
+  Result := TlkJSONobject.Create();
+  Result.Add('type', 'meal');
+  Result.Add('time', DateTimeToStr(R.NativeTime, STD_DATETIME_FMT));
+  Result.Add('short', R.ShortMeal);
+
+  Content := TlkJSONlist.Create();
+  for i := 0 to R.Count - 1 do
+    Content.Add(SerializeFoodMassed(R[i]));
+
+  Result.Add('content', Content);
+end;
+
+{==============================================================================}
+function SerializeNote(R: TNoteRecord): TlkJSONobject;
+{==============================================================================}
+begin
+  Result := TlkJSONobject.Create();
+  Result.Add('type', 'note');
+  Result.Add('time', DateTimeToStr(R.NativeTime, STD_DATETIME_FMT));
+  Result.Add('text', R.Text);
+end;
+
+{==============================================================================}
+function SerializeRecord(R: TCustomRecord): TlkJSONobject;
+{==============================================================================}
+begin
+  if (R.RecType = TBloodRecord) then Result := SerializeBlood(R as TBloodRecord) else
+  if (R.RecType = TInsRecord)   then Result := SerializeIns(R as TInsRecord) else
+  if (R.RecType = TMealRecord)  then Result := SerializeMeal(R as TMealRecord) else
+  if (R.RecType = TNoteRecord)  then Result := SerializeNote(R as TNoteRecord) else
+    raise Exception.Create('Unsupported record type');
+end;
+
+{==============================================================================}
+function SerializeRecords(List: TRecordList): TlkJSONlist;
+{==============================================================================}
+var
+  i: integer;
+begin
+  Result := TlkJSONlist.Create;          
+  for i := Low(List) to High(List) do
+    Result.Add(SerializeRecord(List[i]));
+end;
 
 { TPageSerializer }
 
@@ -71,57 +265,6 @@ end;
 class procedure TPageSerializer.ReadBody(S: TStrings; Page: TDiaryPage);
 {==============================================================================}
 
-  function ParseBlood(json: TlkJSONobject): TBloodRecord;
-  begin
-    Result := TBloodRecord.Create();
-    Result.NativeTime := StrToDateTime((json['time'] as TlkJSONstring).Value);
-    Result.Value := (json['value'] as TlkJSONnumber).Value;
-    Result.Finger := (json['finger'] as TlkJSONnumber).Value;
-  end;
-
-  function ParseIns(json: TlkJSONobject): TInsRecord;
-  begin
-    Result := TInsRecord.Create();
-    Result.NativeTime := StrToDateTime((json['time'] as TlkJSONstring).Value);
-    Result.Value := (json['value'] as TlkJSONnumber).Value;
-  end;
-
-  function ParseNote(json: TlkJSONobject): TNoteRecord;
-  begin
-    Result := TNoteRecord.Create();
-    Result.NativeTime := StrToDateTime((json['time'] as TlkJSONstring).Value);
-    Result.Text := (json['text'] as TlkJSONnumber).Value;
-  end;
-
-  function ParseFoodMassed(json: TlkJSONobject): TFoodMassed;
-  begin
-    Result := TFoodMassed.Create();
-    Result.Name     := (json['name']  as TlkJSONstring).Value;
-    Result.RelProts := (json['prots'] as TlkJSONnumber).Value;
-    Result.RelFats  := (json['fats']  as TlkJSONnumber).Value;
-    Result.RelCarbs := (json['carbs'] as TlkJSONnumber).Value;
-    Result.RelValue := (json['value'] as TlkJSONnumber).Value;
-    Result.Mass     := (json['mass']  as TlkJSONnumber).Value;
-  end;
-
-  function ParseMeal(json: TlkJSONobject): TMealRecord;
-  var
-    content: TlkJSONlist;
-    i: integer;
-    Food: TFoodMassed;
-  begin
-    Result := TMealRecord.Create();
-    Result.NativeTime := StrToDateTime((json['time'] as TlkJSONstring).Value);
-    Result.ShortMeal := (json['short'] as TlkJSONstring).Value = 'true';
-
-    content := (json['content'] as TlkJSONlist);
-    for i := 0 to content.Count - 1 do
-    begin
-      Food := ParseFoodMassed((content.Child[i] as TlkJSONobject));
-      Result.Add(food);
-    end;
-  end;
-
   function ParseRecord(S: string): TCustomRecord;
   var
     STime: string;
@@ -131,12 +274,7 @@ class procedure TPageSerializer.ReadBody(S: TStrings; Page: TDiaryPage);
     SDeleted: string;
 
     json: TlkJSONobject;
-    ID: string;
-    Stamp: TDateTime;
-    Deleted: boolean;
-    Version: integer;
     RecType: string;
-    Time: TDateTime;
   begin
     Separate(S, STime, #9, S);
     Separate(S, STimeStamp, #9, S);
@@ -154,6 +292,7 @@ class procedure TPageSerializer.ReadBody(S: TStrings; Page: TDiaryPage);
       if (RecType = 'ins')   then Result := ParseIns(json) else
       if (RecType = 'meal')  then Result := ParseMeal(json) else
       if (RecType = 'note')  then Result := ParseNote(json) else
+        raise Exception.Create('Unsupported record type: ' + RecType);
 
       Result.NativeTime := StrToDateTime(STime);
       Result.TimeStamp := StrToDateTime(STimeStamp);
@@ -167,101 +306,27 @@ class procedure TPageSerializer.ReadBody(S: TStrings; Page: TDiaryPage);
   end;
 
 var
-  i,k: integer;
-  CurStr: string;
-  TempStr: string;
-  TempTime: TDateTime;
-  TempValue: real;
-  TempFinger: integer;
-  TempShort: boolean;
-  Meal: TMealRecord;
-  TempFood: TFoodMassed;
+  i: integer;
 begin
-  with Page do
+  if (S = nil) then
   begin
-    // TODO: протестировать скорость загрузки дневника из XML
-    //Log('TDiaryPage.ReadFrom() started');
-
-    if (S = nil) then
-    begin
-      //Log('TDiaryPage.ReadFrom() error: S=nil');
-      raise Exception.Create('TDiaryPage.ReadFrom(): поток для чтения не может быть nil');
-    end;
-
-    SilentChange := True;
-    
-    try
-      Clear;
-      Meal := nil;
-
-      for i := 0 to S.Count - 1 do
-      if (S[i] <> '') then
-      begin
-        CurStr := S[i];
-
-        Add(ParseRecord(CurStr));
-
-        {case CurStr[1] of
-
-          '*':
-          begin
-            //TempTime := StrToDateTime(Copy(CurStr, 2, 19), STD_DATETIME_FMT);
-            TempTime := ReadTime(Copy(CurStr, 2, 5));
-
-            k := pos('|', curStr);
-
-            if k > 0 then
-            begin
-              TempValue := StrToFloat(CheckDot( Copy(CurStr, 8, k - 8) ));
-              TempFinger := StrToInt( Copy(CurStr, k + 1, Length(CurStr) - k) );
-            end else
-            begin
-              TempValue := StrToFloat(CheckDot(Copy(CurStr, 8, Length(CurStr) - 7)));
-              TempFinger := -1;
-            end;
-            Add(TBloodRecord.Create(TempTime, TempValue, TempFinger));
-          end;
-          '-':
-          begin
-            TempTime := ReadTime(Copy(CurStr, 2, 5));
-            TempValue := StrToFloat(CheckDot(Copy(CurStr, 8, Length(CurStr) - 7)));
-            Add(TInsRecord.Create(TempTime, TempValue));
-          end;
-          ' ':
-          begin
-            TempTime := ReadTime(Copy(CurStr, 2, 5));
-            TempShort := (CurStr[Length(CurStr)] = 's');
-            Meal := TMealRecord.Create(TempTime, TempShort); // save it for further modifications
-            Add(Meal);
-          end;
-          '#':
-          begin
-            if (Meal <> nil) then
-            begin
-              TempFood := TFoodMassed.Create();
-              TempFood.Read(Copy(CurStr, 2, Length(CurStr) - 1));
-              Meal.Add(TempFood);
-            end;
-          end;
-          '%':
-          begin
-            TempTime := ReadTime(Copy(CurStr, 2, 5));
-            TempStr := Copy(CurStr, 8, Length(CurStr) - 7);
-            Add(TNoteRecord.Create(TempTime, TempStr));
-          end;
-        end; }
-      end;
-    except
-      ShowMessage('Error reading line: ' + CurStr);
-    //end;
-    //finally
-      //Log('TDiaryPage.ReadFrom() finished');
-      //FUpdateStampOnChange := True;
-    end;
-    //Log('TDiaryPage.ReadFrom() done ok');
-
-    SilentChange := False;
+    raise Exception.Create('TDiaryPage.ReadFrom(): поток для чтения не может быть nil');
   end;
+
+  Page.SilentChange := True;
+  Page.Clear;
+
+  for i := 0 to S.Count - 1 do
+  begin
+    if (S[i] <> '') then
+    try
+      Page.Add(ParseRecord(S[i]));
+    except
+     ShowMessage('Error reading line: ' + S[i]);
+    end;
+  end;
+
+  Page.SilentChange := False;
 end;
 
 {==============================================================================}
@@ -312,42 +377,6 @@ end;
 {==============================================================================}
 class procedure TPageSerializer.WriteBody(Page: TDiaryPage; S: TStrings);
 {==============================================================================}
-
-  procedure RemoveAll(var S: string; c: char);
-  var
-    k: integer;
-  begin
-    k := pos(c, S);
-    while (k > 0) do
-    begin
-      Delete(S, k, 1);
-      k := pos(c, S);
-    end;
-  end;
-
-  function Generate(json: TlkJSONobject): string;
-  var
-    i: integer;
-  begin
-    Result := GenerateReadableText(json, i);
-    RemoveAll(Result, #13);
-    RemoveAll(Result, #10);
-  end;
-
-  function SerializeNote(Note: TNoteRecord): string;
-  var
-    json: TlkJSONobject;
-  begin
-    json := TlkJSONobject.Create();
-    try
-      json.Add('time', DateTimeToStr(Note.NativeTime, STD_DATETIME_FMT));
-      json.Add('text', Note.Text);
-      Result := Generate(json);
-    finally
-      FreeAndNil(json);
-    end;
-  end;
-
 var
   j, n: integer;
   tmp: string;

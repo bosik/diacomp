@@ -8,16 +8,34 @@ uses
   DiaryRoutines;
 
 type
+  TVersioned = class
+  private
+    FID: TCompactGUID;
+    FTimeStamp: TDateTime;
+    FVersion: integer;
+    FDeleted: boolean;
+  public
+    procedure Modified();
+
+    property ID: TCompactGUID read FID write FID;
+    property TimeStamp: TDateTime read FTimeStamp write FTimeStamp;
+    property Version: integer read FVersion write FVersion;
+    property Deleted: boolean read FDeleted write FDeleted;
+  end;
+
+  TVersionedList = array of TVersioned;
+
   // Уведомляет внешнюю среду о своём изменении через событие OnChange
-  TMutableItem = class
+  // TODO: DEPRECATED
+  TMutableItem = class (TVersioned)
   private
     FOnChange: TNotifyEvent;
   protected
-    FID: TCompactGUID;
+    //FID: TCompactGUID;
     procedure Modified; virtual;
   public
     constructor Create;
-    property ID: TCompactGUID read FID write FID;
+    //property ID: TCompactGUID read FID write FID;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
@@ -33,7 +51,7 @@ type
     procedure SetName(const Value: string);
     procedure SetRel(Index: integer; const Value: real);
   public
-    procedure CopyFrom(Food: TFoodRelative; CopyID: boolean);
+    procedure CopyFrom(Food: TFoodRelative);
     constructor Create;
     class function IsCorrectRel(const Value: real): boolean;
 
@@ -55,7 +73,7 @@ type
   public
     constructor Create; overload;
     constructor Create(const Name: string; const RelProts, RelFats, RelCarbs, RelValue, Mass: real); overload;
-    procedure CopyFrom(Food: TFoodMassed; CopyID: boolean);
+    procedure CopyFrom(Food: TFoodMassed);
     class function IsCorrectMass(const Value: real): boolean;
 
     {*}procedure Read(const S: string);
@@ -70,6 +88,7 @@ type
 
   // для базы продуктов (TFoodRelative + свойство FromTable)
   // #entity
+  // TODO: rename to TFoodItem
   TFood = class (TFoodRelative)
   private
     FFromTable: boolean;
@@ -77,19 +96,20 @@ type
     procedure SetFromTable(Value: boolean);
   public
     function AsFoodMassed(Mass: real): TFoodMassed;
-    procedure CopyFrom(Food: TFood; CopyID: boolean);
+    procedure CopyFrom(Food: TFood);
     constructor Create;
 
     property FromTable: boolean read FFromTable write SetFromTable;
     property Tag: integer       read FTag       write FTag;
   end;
 
+  TFoodItemList = array of TFood;
+
   // #entity
   TDish = class (TMutableItem)
   private
     FContent: array of TFoodMassed;
     FFixedMass: boolean;
-    FModifiedTime: TDateTime;
     FName: string;
     FResultMass: real;
     FTag: integer;
@@ -110,7 +130,6 @@ type
     procedure EraseResultMass;                    
     function RealMass(): real;
     {#}procedure SetResultMass(const Value: real);
-    procedure UpdateTimestamp;
 
     property Name: string read FName write SetName;
     property SummMass: real index 0 read GetProp;
@@ -125,10 +144,11 @@ type
     property ResultMass: real read FResultMass write SetResultMass;
     property FixedMass: boolean read FFixedMass;
     property Content[Index: integer]: TFoodMassed read GetItem; //default;
-    property ModifiedTime: TDateTime read FModifiedTime write FModifiedTime; 
     property Tag: integer read FTag write FTag;
     //property SilentMode: boolean read FSilentMode write FSilentMode;
   end;
+
+  TDishItemList = array of TDish; // TODO: rename
 
 const
   FOOD_SEP          = '|';
@@ -138,6 +158,16 @@ const
   SYSTEM_CHARS      = FOODBASE_RESERVED + DISHBASE_RESERVED;
 
 implementation
+
+{ TVersioned }
+
+{==============================================================================}
+procedure TVersioned.Modified;
+{==============================================================================}
+begin
+  inc(FVersion);
+  FTimeStamp := GetTimeUTC();
+end;
 
 { TMutableItem }
 
@@ -159,7 +189,7 @@ end;
 { TFoodRelative }
 
 {==============================================================================}
-procedure TFoodRelative.CopyFrom(Food: TFoodRelative; CopyID: boolean);
+procedure TFoodRelative.CopyFrom(Food: TFoodRelative);
 {==============================================================================}
 begin
   if (Food = nil) then raise Exception.Create('TFoodRelative.CopyFrom(): Food is nil');
@@ -169,11 +199,7 @@ begin
   RelFats  := Food.RelFats;
   RelCarbs := Food.RelCarbs;
   RelValue := Food.RelValue;
-
-  if (CopyID) then
-  begin
-    ID := Food.ID;
-  end;
+  ID       := Food.ID;
 end;
 
 {==============================================================================}
@@ -232,10 +258,10 @@ end;
 { TFoodMassed }
 
 {==============================================================================}
-procedure TFoodMassed.CopyFrom(Food: TFoodMassed; CopyID: boolean);
+procedure TFoodMassed.CopyFrom(Food: TFoodMassed);
 {==============================================================================}
 begin
-  inherited CopyFrom(Food, CopyID);
+  inherited CopyFrom(Food);
   Mass := TFoodMassed(Food).Mass;
 end;
 
@@ -337,10 +363,10 @@ begin
 end;
 
 {==============================================================================}
-procedure TFood.CopyFrom(Food: TFood; CopyID: boolean);
+procedure TFood.CopyFrom(Food: TFood);
 {==============================================================================}
 begin
-  inherited CopyFrom(Food, CopyID);
+  inherited CopyFrom(Food);
 
   FFromTable := Food.FFromTable;
   FTag := Food.FTag;
@@ -428,7 +454,6 @@ constructor TDish.Create();
 begin
   inherited;
   FFixedMass := False;
-  FModifiedTime := 0;
   FName := '';
   FResultMass := 0;
   FTag := 0;
@@ -457,11 +482,9 @@ begin
   begin
     { разрываем связку (копируем) }
     Temp := TFoodMassed.Create;
-    Temp.CopyFrom(Dish.Content[i], True);
+    Temp.CopyFrom(Dish.Content[i]);
     Add(Temp);
   end;
-
-  FModifiedTime := Dish.FModifiedTime;
 end;
 
 {==============================================================================}
@@ -540,18 +563,6 @@ begin
     Result := GetProp(Index) / RM * 100
   else
     Result := 0;
-end;
-
-{==============================================================================}
-procedure TDish.UpdateTimestamp;
-{==============================================================================}
-begin
-  {if (not SilentMode) then
-  begin
-    FModifiedTime := Now();
-    inherited Modified();
-  end;   }
-  FModifiedTime := Now();
 end;
 
 {==============================================================================}

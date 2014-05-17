@@ -81,13 +81,13 @@ type
   { события }
   TClickEvent = procedure(Sender: TObject; Index: integer; Place: TClickPlace) of object;
   TFoodShowEvent = procedure(Sender: TObject; Index,Line: integer; var Text: string) of object;
-  TEventRecordChanged = procedure(Sender: TObject; EventType: TPageEventType; Page: TDiaryPage; RecClass: TClassCustomRecord; RecInstance: TCustomRecord) of object;
+  TEventRecordChanged = procedure(Sender: TObject; EventType: TPageEventType; Page: TRecordList; RecClass: TClassCustomRecord; RecInstance: TCustomRecord) of object;
 
   TDiaryView = class(TGraphicControl)
   private
     { текущая страница }
     FBitMap: Graphics.TBitMap;
-    FCurrentPage: TDiaryPage;
+    FCurrentPage: TRecordList; // TODO: rename
 
     PanelRects: array of TPanelRect;
     FSelLine: integer;
@@ -159,7 +159,7 @@ type
     procedure MouseMove(Shift: TShiftState; X,Y: Integer); override;
 
     { реакция }
-    procedure HandleBaseChanged(EventType: TPageEventType; Page: TDiaryPage;
+    procedure HandleBaseChanged(EventType: TPageEventType; Page: TRecordList;
       RecClass: TClassCustomRecord; RecInstance: TCustomRecord); deprecated;
     procedure HandlePageChanged(EventType: TPageEventType; Page: TDiaryPage; // let it [Page] be
       RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
@@ -173,27 +173,26 @@ type
     procedure ClickIns(Index: integer; Place: TClickPlace; IsDouble: boolean);
     procedure ClickMeal(Index: integer; Place: TClickPlace; IsDouble: boolean);
     procedure ClickNote(Index: integer; Place: TClickPlace; IsDouble: boolean);
+
+    function GetSelectedID(): TCompactGUID;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure OpenPage(Page: TDiaryPage; ForceRepaint: boolean = False);
+    procedure OpenPage(Page: TRecordList; ForceRepaint: boolean = False); // TODO: rename 'Page'
     procedure Paint; override;
     procedure DrawCurrentPage;
     procedure DeselectAll;
 
     { текущая страница }
-
-    function GetCurrentDate: TDate;
-
     function IsFoodSelected: boolean;
 
     function SelectedRecord: TCustomRecord;
     function SelectedFood: TFoodMassed;
 
     property SelectedRecordIndex: integer read FSelPanel write FSelPanel;
+    property SelectedRecordID: TCompactGUID read GetSelectedID;
     property SelectedLine: integer read FSelLine;
-    property CurrentPage: TDiaryPage read FCurrentPage;
-    property CurrentDate: TDate read GetCurrentDate; // TODO: дописать write, использующий OpenPage?
+    property CurrentPage: TRecordList read FCurrentPage;
   published
     property Align;
     property Anchors;
@@ -777,8 +776,7 @@ var
 begin
   with FBitMap.Canvas do
   begin
-    if (CurrentPage = nil) or
-       (CurrentPage.Count = 0) then
+    if (Length(CurrentPage) = 0) then
     begin
       SavedFontSize := Font.Size;
       Font.Style := [];
@@ -790,7 +788,7 @@ begin
       Font.Style := [fsBold];
       StandartTH := TextHeight('0123456789')+2;
       Result := (FBorder * 2) + 2;
-      for i := 0 to CurrentPage.Count - 1 do
+      for i := 0 to High(CurrentPage) do
       begin
         if (CurrentPage[i].RecType = TBloodRecord) then Result := Result + 2 * FBorderTimeTop + StandartTH - 1 else
         if (CurrentPage[i].RecType = TInsRecord)   then Result := Result + 2 * FBorderTimeTop + StandartTH - 1 else
@@ -1099,7 +1097,7 @@ const
 var
   Msg: string;
 begin
-  if (CurrentPage = nil) or (CurrentPage.Count = 0) then
+  if (Length(CurrentPage) = 0) then
   with FBitMap.Canvas do
   begin
     {if (csDesigning in ComponentState) then
@@ -1152,7 +1150,7 @@ begin
     Pen.Style := psSolid;
 
     { заполнение }
-    for i := 0 to CurrentPage.Count - 1 do
+    for i := 0 to High(CurrentPage) do
     begin
       if (CurrentPage[i].RecType = TBloodRecord) then
       begin
@@ -1195,8 +1193,6 @@ begin
                    [{fsItalic}]
                  );
     end;
-
-    TextOut(0,0, IntToStr(CurrentPage.Version));
 
     {if FSelPanel<>-1 then
     begin
@@ -1421,7 +1417,7 @@ begin
   Result :=
     (SelectedRecord is TMealRecord)and
     (FSelLine >= 0)and
-    (FSelLine < TMealRecord(CurrentPage.Recs[FSelPanel]).Count);
+    (FSelLine < TMealRecord(CurrentPage[FSelPanel]).Count);
 end;
 
 {==============================================================================}
@@ -1531,7 +1527,7 @@ end;
 *)
 
 {==============================================================================}
-procedure TDiaryView.OpenPage(Page: TDiaryPage; ForceRepaint: boolean = False);
+procedure TDiaryView.OpenPage(Page: TRecordList; ForceRepaint: boolean = False);
 {==============================================================================}
 
   procedure RedrawIt;
@@ -1543,16 +1539,9 @@ procedure TDiaryView.OpenPage(Page: TDiaryPage; ForceRepaint: boolean = False);
   end;
 
 begin
-  if (FCurrentPage <> Page) then
-  begin
-    FCurrentPage := Page;
-    Page.AddChangeListener(HandlePageChanged);
-    RedrawIt;
-  end else
-  if ForceRepaint then
-  begin
-    RedrawIt;
-  end;
+  FCurrentPage := Page;
+  //Page.AddChangeListener(HandlePageChanged);
+  RedrawIt;
 end;
 
 {==============================================================================}
@@ -1839,7 +1828,7 @@ begin
   //Log('SelectedFood()');
 
   if IsFoodSelected then
-    Result := TMealRecord(CurrentPage.Recs[FSelPanel]).Food[FSelLine]
+    Result := TMealRecord(CurrentPage[FSelPanel]).Food[FSelLine]
   else
     //Result := nil;
     raise Exception.Create('SelectedFood: not such record selected');
@@ -1851,8 +1840,8 @@ function TDiaryView.SelectedRecord: TCustomRecord;
 begin
   //Log('SelectedRecord()');
 
-  if ((CurrentPage <> nil) and (FSelPanel >= 0) and (FSelPanel < CurrentPage.Count)) then
-    Result := CurrentPage.Recs[FSelPanel]
+  if ((CurrentPage <> nil) and (FSelPanel >= 0) and (FSelPanel < Length(CurrentPage))) then
+    Result := CurrentPage[FSelPanel]
   else
     Result := nil;
 end;
@@ -2278,14 +2267,6 @@ begin
   inherited KeyPress(Key);
 end;
 
-function TDiaryView.GetCurrentDate: TDate;
-begin
-  if CurrentPage <> nil then
-    Result := CurrentPage.Date
-  else
-    raise Exception.Create('Нельзя обращаться к GetCurrentDate до открытия страницы');
-end;
-
 procedure TDiaryView.SetFont(Value: TFont);
 begin
   if (Value <> nil) then
@@ -2296,7 +2277,7 @@ begin
   end;
 end;
 
-procedure TDiaryView.HandleBaseChanged(EventType: TPageEventType; Page: TDiaryPage;
+procedure TDiaryView.HandleBaseChanged(EventType: TPageEventType; Page: TRecordList;
   RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
 //var
 //  Index: integer;
@@ -2343,11 +2324,11 @@ begin
       при перетаскивании продуктов в приёме пищи
       }
 
-      if (Page <> nil) and (Page = CurrentPage) then
+      {if (Page <> nil) and (Page = CurrentPage) then
       begin
         FSelPanel := Page.FindRecord(RecInstance);
         FSelLine := -1;
-      end;
+      end;}
     end;
 
     DrawCurrentPage; // после всего, чтобы рисовались уже новые значения
@@ -2393,6 +2374,14 @@ begin
 
   DrawCurrentPage; // после всего, чтобы рисовались уже новые значения
   if Assigned(FOnChange) then FOnChange(Self, EventType, CurrentPage, RecClass, RecInstance);
+end;
+
+function TDiaryView.GetSelectedID: TCompactGUID;
+begin
+  if (FSelPanel > -1) then
+    Result := FCUrrentPage[FSelPanel].ID
+  else
+    Result := '';
 end;
 
 end.

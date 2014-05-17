@@ -671,7 +671,7 @@ begin
   Temp := FoodBaseLocal.FindOne(s);
   if (Temp <> nil) then
     Item.ImageIndex := Byte(Temp.FromTable) else
-  if DishBase.Find(s) > -1 then
+  if DishBaseLocal.FindOne(s) <> nil then
     Item.ImageIndex := 2
   else
   if (s <> Food.Name) then
@@ -681,7 +681,7 @@ begin
     Temp := FoodBaseLocal.FindOne(s);
     if (Temp <> nil) then
       Item.ImageIndex := Byte(Temp.FromTable) else
-    if DishBase.Find(s) > -1 then
+    if DishBaseLocal.FindOne(s) <> nil then
       Item.ImageIndex := 2
     else
       Item.ImageIndex := 3;
@@ -709,7 +709,7 @@ begin
     EditName.SetFocus;
   end else
   if (ModeNew or (EditName.Text <> ADish.Name))and
-     (DishBase.Find(EditName.Text{, True})>-1) then
+     (DishBaseLocal.FindOne(EditName.Text{, True}) <> nil) then
   begin
     ErrorMessage('Блюдо с таким названием уже существует');
     EditName.SetFocus;

@@ -4,61 +4,50 @@ interface
 
 uses
   SysUtils,
+  uLkJSON,
   BusinessObjects,
   FoodbaseDAO,
   DiaryWeb,
   Bases,
-  DiaryRoutines;
+  DiaryRoutines,
+  JsonFoodItemSerializer,
+  JsonSerializer;
 
 type
   TFoodbaseWebDAO = class (TFoodbaseDAO)
   private
-    FBase: TFoodBase;
     FClient: TDiacompClient;
-  private
-    procedure Download;
-    function GetIndex(Food: TFood): integer; overload;
-    function GetIndex(ID: TCompactGUID): integer; overload;
-    procedure Upload;
   public
     constructor Create(Client: TDiacompClient);
-    destructor Destroy; override;
 
-    function Add(Food: TFood): TCompactGUID; override;
-    procedure Delete(ID: TCompactGUID); override;
-    function FindAll(): TFoodList; override;
-    function FindAny(const Filter: string): TFoodList; override;
+    function FindAll(ShowRemoved: boolean): TFoodItemList; override;
+    function FindAny(const Filter: string): TFoodItemList; override;
     function FindOne(const Name: string): TFood; override;
-    procedure ReplaceAll(const NewList: TFoodList; NewVersion: integer); override;
-    procedure Update(Food: TFood); override;
-    function Version(): integer; override;
+    function FindChanged(Since: TDateTime): TFoodItemList; override;
+    function FindById(ID: TCompactGUID): TFood; override;
+    procedure Save(const Items: TFoodItemList); override;
   end;
 
 implementation
 
-{ TFoodbaseWebDAO }
-
-const
-  FILENAME_TEMP = 'TFoodbaseWebDAO_temp.txt';
-
 {==============================================================================}
-function TFoodbaseWebDAO.Add(Food: TFood): TCompactGUID;
+function ParseFoodItemsResponse(const S: string): TFoodItemList;
 {==============================================================================}
 var
-  Index: integer;
-  Temp: TFood;
+  Response: TStdResponse;
+  Json: TlkJSONlist;
 begin
-  Index := GetIndex(Food);
-  if (Index = -1) then
-  begin
-    Temp := TFood.Create;
-    Temp.CopyFrom(Food, True);
-    FBase.Add(Temp);
-    Upload();
-    Result := Food.ID;
-  end else
-    raise EDuplicateException.Create(Food);
+  Response := TStdResponse.Create(S);
+  try
+    Json := Response.ConvertResponseToJson() as TlkJSONlist;
+    Result := ParseFoodItems(json);
+  finally
+    Response.Free;
+    Json.Free;
+  end;
 end;
+
+{ TFoodbaseWebDAO }
 
 {==============================================================================}
 constructor TFoodbaseWebDAO.Create(Client: TDiacompClient);
@@ -68,171 +57,93 @@ begin
     raise Exception.Create('Client can''t be nil');
     
   FClient := Client;
-  FBase := TFoodBase.Create;
 end;
 
 {==============================================================================}
-procedure TFoodbaseWebDAO.Delete(ID: TCompactGUID);
+function TFoodbaseWebDAO.FindAll(ShowRemoved: boolean): TFoodItemList;
 {==============================================================================}
 var
-  Index: integer;
+  Resp: string;
 begin
-  Index := GetIndex(ID);
-  if (Index > -1) then
-  begin
-    FBase.Delete(Index);
-    Upload();
-  end else
-    raise EItemNotFoundException.Create(ID);
+  Resp := FClient.DoGetSmart(FClient.GetApiURL() + 'food/all/?show_rem=' + IntToStr(byte(ShowRemoved)));
+  Result := ParseFoodItemsResponse(Resp);
 end;
 
 {==============================================================================}
-destructor TFoodbaseWebDAO.Destroy;
-{==============================================================================}
-begin
-  FBase.Free;
-  inherited;
-end;
-
-{==============================================================================}
-procedure TFoodbaseWebDAO.Download;
+function TFoodbaseWebDAO.FindAny(const Filter: string): TFoodItemList;
 {==============================================================================}
 var
-  Data: string;
+  Resp: string;
 begin
-  try
-    Data := FClient.DownloadFoodBase();
-    DiaryRoutines.WriteFile(FILENAME_TEMP, Data);
-    FBase.LoadFromFile_XML(FILENAME_TEMP);
-  finally
-    DeleteFile(FILENAME_TEMP);
-  end;
+  Resp := FClient.DoGetSmart(FClient.GetApiURL() + 'food/search/?q=' + Filter);
+  Result := ParseFoodItemsResponse(Resp);
 end;
 
 {==============================================================================}
-function TFoodbaseWebDAO.FindAll: TFoodList;
+function TFoodbaseWebDAO.FindById(ID: TCompactGUID): TFood;
 {==============================================================================}
 var
-  i: integer;
+  Resp: string;
+  List: TFoodItemList;
 begin
-  Download();
-  
-  SetLength(Result, FBase.Count);
-  for i := 0 to FBase.Count - 1 do
-  begin
-    Result[i] := TFood.Create;
-    Result[i].CopyFrom(FBase[i], True);
-  end;
+  Resp := FClient.DoGetSmart(FClient.GetApiURL() + 'food/guid/' + ID);
+  List := ParseFoodItemsResponse(Resp);
+  Result := List[0];
 end;
 
 {==============================================================================}
-function TFoodbaseWebDAO.FindAny(const Filter: string): TFoodList;
+function TFoodbaseWebDAO.FindChanged(Since: TDateTime): TFoodItemList;
 {==============================================================================}
 var
-  i, k: integer;
+  Resp: string;
 begin
-  //Download; // LOL.
-
-  SetLength(Result, FBase.Count);
-  k := 0;
-  for i := 0 to FBase.Count - 1 do
-  // TODO: optimize
-  if (pos(AnsiUpperCase(Filter), AnsiUpperCase(FBase[i].Name)) > 0) then
-  begin
-    inc(k);
-    SetLength(Result, k);
-    Result[k - 1] := TFood.Create;
-    Result[k - 1].CopyFrom(FBase[i], True);
-  end;
-  SetLength(Result, k);
+  Resp := FClient.DoGetSmart(FClient.GetApiURL() + 'food/changes/?since=' + DateTimeToStr(Since, STD_DATETIME_FMT));
+  Result := ParseFoodItemsResponse(Resp);
 end;
 
 {==============================================================================}
 function TFoodbaseWebDAO.FindOne(const Name: string): TFood;
 {==============================================================================}
 var
-  Index: integer;
-begin
-  Download;
-
-  Index := FBase.Find(Name);
-  if (Index <> -1) then
-  begin
-    Result := TFood.Create;
-    Result.CopyFrom(FBase[Index], True);
-  end else
-    Result := nil;
-end;
-
-{==============================================================================}
-function TFoodbaseWebDAO.GetIndex(Food: TFood): integer;
-{==============================================================================}
-begin
-  Result := FBase.GetIndex(Food.ID);
-end;
-
-{==============================================================================}
-function TFoodbaseWebDAO.GetIndex(ID: TCompactGUID): integer;
-{==============================================================================}
-begin
-  Result := FBase.GetIndex(ID);
-end;
-
-{==============================================================================}
-procedure TFoodbaseWebDAO.ReplaceAll(const NewList: TFoodList;
-  NewVersion: integer);
-{==============================================================================}
-var
+  Items: TFoodItemList;
   i: integer;
-  Food: TFood;
 begin
-  FBase.Clear;
-  for i := 0 to High(NewList) do
+  Items := FindAny(Name);
+
+  for i := 0 to High(Items) do
+  if (Items[i].Name = Name) then
   begin
-    Food := TFood.Create;
-    Food.CopyFrom(NewList[i], True);
-    FBase.Add(Food);
+    Result := Items[i];
+    Exit;
   end;
-  FBase.Version := NewVersion;
-  Upload;
+
+  Result := nil;
 end;
 
 {==============================================================================}
-procedure TFoodbaseWebDAO.Update(Food: TFood);
+procedure TFoodbaseWebDAO.Save(const Items: TFoodItemList);
 {==============================================================================}
 var
-  Index: integer;
+  Par: TParamList;
+  Msg: string;
+  Response: TStdResponse;
 begin
-  Index := GetIndex(Food);
-  if (Index <> -1) then
+  // заглушка
+  if (Length(Items) = 0) then
   begin
-    FBase[Index].CopyFrom(Food, True);
-    FBase.Sort;
-    Upload();
-  end else
-    raise EItemNotFoundException.Create(Food.ID);
-end;
-
-{==============================================================================}
-procedure TFoodbaseWebDAO.Upload;
-{==============================================================================}
-var
-  Data: string;
-begin
-  try
-    FBase.SaveToFile(FILENAME_TEMP);
-    Data := ReadFile(FILENAME_TEMP);
-    FClient.UploadFoodBase(Data, FBase.Version);
-  finally
-    DeleteFile(FILENAME_TEMP);
+    Exit;
   end;
-end;
 
-{==============================================================================}
-function TFoodbaseWebDAO.Version: integer;
-{==============================================================================}
-begin
-  Result := FClient.GetFoodBaseVersion();
+  SetLength(Par, 1);
+  par[0] := 'items=' + JsonWrite(SerializeFoodItems(Items));
+
+  Msg := FClient.DoPutSmart(FClient.GetApiURL() + 'food/', Par);
+
+  // TODO: check response, throw exception if non-zero
+  // Response.Code = 0     it's ok
+  // Response.Code = 500   Internal server error
+  // Response.Code = xxx   Connection error
+  // etc.
 end;
 
 end.

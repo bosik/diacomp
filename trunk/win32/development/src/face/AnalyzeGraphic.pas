@@ -30,7 +30,7 @@ type
 
   procedure PrepareBS(Image: TImage; Max: real; Mini: boolean;
     var kx,ky: real; var Border: integer);
-  procedure DrawBS(PagePrev, PageCur, PageNext: TDiaryPage; Image: TImage; Mini: boolean);
+  procedure DrawBS(PagePrev, PageCur, PageNext: TRecordList; Image: TImage; Mini: boolean);
   procedure DrawBS_Int(const Base: TDiary; FromDay, ToDay: integer; Image: TImage);
 
   procedure DrawKoof(Image: TImage; const KoofList: TKoofList;
@@ -172,7 +172,7 @@ begin
 end;
 
 {==============================================================================}
-procedure DrawBS(PagePrev, PageCur, PageNext: TDiaryPage; Image: TImage;
+procedure DrawBS(PagePrev, PageCur, PageNext: TRecordList; Image: TImage;
   Mini: boolean);
 {==============================================================================}
 
@@ -184,7 +184,7 @@ procedure DrawBS(PagePrev, PageCur, PageNext: TDiaryPage; Image: TImage;
   begin
     Result := InitMax;
 
-    for i := 0 to PageCur.Count - 1 do
+    for i := 0 to High(PageCur) do
     if (PageCur[i].RecType = TBloodRecord) and
        (TBloodRecord(PageCur[i]).Value > Result) then
       Result := TBloodRecord(PageCur[i]).Value;
@@ -206,12 +206,14 @@ var
   end;
 
 begin
-  max := FindMax;
+  // TODO 1: restore functionality
+
+  (*max := FindMax;
   PrepareBS(Image, Max, Mini, kx, ky, Border);
   Image.Picture.Bitmap.Width := Image.Width;
   Image.Picture.Bitmap.Height := Image.Height;
 
-  if (PageCur = nil) or (PageCur.FindRecordFirst(TBloodRecord) = nil) then Exit;
+  if (PageCur.FindRecordFirst(TBloodRecord) = nil) then Exit;
 
   h := Image.Height;
 
@@ -293,7 +295,7 @@ begin
         Ellipse(cx - eSize, cy - eSize, cx + eSize, cy + eSize);
       end;
     end;
-  end;
+  end;   *)
 end;
 
 {==============================================================================}

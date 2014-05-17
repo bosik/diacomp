@@ -73,8 +73,8 @@ function TFormFood.OpenFoodEditor(Food: TFood; New: boolean; ShowInRect: TRect):
 begin
   { установка размеров окна }
   SetupInterface;
-  Left := (ShowInRect.Right+ShowInRect.Left - Width) div 2;
-  Top := (ShowInRect.Bottom+ShowInRect.Top - Height) div 2;
+  Left := (ShowInRect.Right + ShowInRect.Left - Width) div 2;
+  Top := (ShowInRect.Bottom + ShowInRect.Top - Height) div 2;
 
   { корректировка положения }
   if (Left < 0) then Left := 0;
@@ -83,7 +83,7 @@ begin
 
   { вывод }
   AFood := TFood.Create;
-  AFood.CopyFrom(Food, True);
+  AFood.CopyFrom(Food);
 
   ModeNew := New;   
   ShowFoodInEditor;
@@ -98,7 +98,7 @@ begin
   { возвращаем результат }
   Result := OK;
   if OK then
-    Food.CopyFrom(AFood, True);
+    Food.CopyFrom(AFood);
 end;
 
 {==============================================================================}
@@ -175,7 +175,7 @@ begin
 
   EditName.Text := UppercaseFirst(EditName.Text);
 
-  if (DishBase.Find(EditName.Text{, True}) > -1) then
+  if (DishBaseLocal.FindOne(EditName.Text) <> nil) then
   begin
     ErrorMessage('Блюдо с таким названием уже существует');
     EditName.SetFocus;

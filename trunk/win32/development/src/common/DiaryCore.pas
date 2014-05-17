@@ -21,6 +21,10 @@ uses
   FoodBaseLocalDAO,
   FoodBaseWebDAO,
 
+  DishBaseDAO,
+  DishBaseLocalDAO,
+  DishBaseWebDAO,
+
   {#}DiaryWeb,  
   AnalyzeInterface,
   DiaryAnalyze,
@@ -44,13 +48,10 @@ type
 
   function IdentifyItem(const ItemName: string; out Item: TMutableItem): TItemType;
 
-  procedure SaveDishBase; deprecated;
-
   { web }
   function DownloadFoodBaseSample: boolean;
   function DownloadDishBaseSample: boolean;
   function CheckUpdates(var Date: string): TUpdateCheckResult;
-  function UploadKoofs(): boolean;
 
   procedure ExportKoofs(Plain: boolean; out Data: string);
 
@@ -66,7 +67,9 @@ var
 
   FoodBaseLocal: TFoodBaseDAO;
   FoodBaseWeb: TFoodBaseDAO;
-  DishBase: TDishBase;
+
+  DishBaseLocal: TDishBaseDAO;
+  DishBaseWeb: TDishBaseDAO;
 
   { системное }
   Inited: boolean = False;
@@ -137,7 +140,8 @@ begin
   FoodBaseLocal := TFoodBaseLocalDAO.Create(WORK_FOLDER + FoodBase_FileName);
   FoodBaseWeb := TFoodbaseWebDAO.Create(WebClient);
 
-  DishBase := TDishBase.Create;
+  DishBaseLocal := TDishBaseLocalDAO.Create(WORK_FOLDER + DishBase_FileName);
+  DishBaseWeb := TDishbaseWebDAO.Create(WebClient);
 
   Expander := TStringMap.Create;
 end;
@@ -153,7 +157,9 @@ begin
 
   FoodBaseLocal.Free;
   FoodBaseWeb.Free;
-  Dishbase.Free;
+  DishBaseLocal.Free;
+  DishBaseWeb.Free;
+
 
   Expander.Free;
 end;
@@ -236,22 +242,14 @@ begin
     Exit;
   end;
 
-  Index := DishBase.Find(ItemName);
-  if (Index <> -1) then
+  Item := DishBaseLocal.FindOne(ItemName);
+  if (Item <> nil) then
   begin
-    Item := DishBase[Index];
     Result := itDish;
     Exit;
   end;
 
   Result := itUnknown;
-end;
-
-{==============================================================================}
-procedure SaveDishBase;
-{==============================================================================}
-begin
-  DishBase.SaveToFile(WORK_FOLDER + DishBase_FileName);
 end;
 
 {==============================================================================}
@@ -313,18 +311,6 @@ begin
     Data := Data + ']';
   end;
 
-  FinishProc;
-end;
-
-{==============================================================================}
-function UploadKoofs(): boolean;
-{==============================================================================}
-var
-  s: string;
-begin
-  StartProc('UploadKoofs()');
-  ExportKoofs(False, S);
-  Result := WebClient.UploadKoofs(S);
   FinishProc;
 end;
 
