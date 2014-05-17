@@ -131,7 +131,10 @@ implementation
 procedure Initialize();
 {==============================================================================}
 begin
+  AutoLog.Log(DEBUG, 'Loading local diary...');
   LocalSource := TDiaryLocalSource.Create(WORK_FOLDER + Diary_FileName);
+  AutoLog.Log(DEBUG, 'Local diary loaded');
+
   WebClient := TDiacompClient.Create;
   WebSource := TDiaryWebSource.Create(WebClient);
 
@@ -212,22 +215,6 @@ begin
   end;  }
   Result := urNoConnection;
 end;
-
-(*{==============================================================================}
-procedure LoadFoodBase;
-{==============================================================================}
-begin
-  FoodBase.LoadFromFile(WORK_FOLDER + FoodBase_FileName, True);
-end; *)
-
-(*
-{==============================================================================}
-procedure LoadDishBase;
-{==============================================================================}
-begin
-  { FoodBase Ц дл€ обратной совместимости }
-  DishBase.LoadFromFile(WORK_FOLDER + DishBase_FileName, True, FoodBase);
-end;  *)
 
 {==============================================================================}
 function IdentifyItem(const ItemName: string; out Item: TMutableItem): TItemType;
