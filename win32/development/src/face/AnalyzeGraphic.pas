@@ -206,7 +206,7 @@ var
   end;
 
 begin
-  // TODO 1: restore functionality
+  // TODO 3: RF: drawing BS graph
 
   (*max := FindMax;
   PrepareBS(Image, Max, Mini, kx, ky, Border);

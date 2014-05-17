@@ -803,7 +803,7 @@ var
   procedure StartupInfo(const Text: string);
   begin
     if (Prev <> '') then
-      // TODO: make log's "Save" parameter False in release version
+      // TODO: RELEASE: make log's "Save" parameter False in release version
       Log(DEBUG, Prev + #9 + IntToStr(Timer.Time), False);
     ShowProcess(Text);
     Prev := Text;
@@ -843,7 +843,7 @@ begin
       FoodBase.SaveToFile(WORK_FOLDER + FoodBase_FileName);
       Log(INFO, 'Foodbase converted ok', True); }
 
-      // TODO 1: CONVERTATION DISABLED
+      // TODO 3: RF: convert foodbase from old format to new one
       ErrorMessage('Конвертирование базы отключено');
     end else   ;
 
@@ -950,7 +950,7 @@ begin
         FoodBase.LoadFromFile_XML(WORK_FOLDER + FoodBase_FileName);
       end;}
 
-      // TODO 1: FOODBASE SAMPLES DISABLED
+      // TODO 3: RF: load foodbase samples
     end;
 
     // не существует файл в XML-формате
@@ -967,7 +967,7 @@ begin
         StartupInfo(STATUS_ACTION_LOADING_DISHBASE);
         DishBase.LoadFromFile_XML(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name);
       end;   }
-      // TODO 1: DISHBASE SAMPLES DISABLED
+      // TODO 3: RF: load dishbase samples
     end;
 
     { =============== ЗАГРУЗКА МОДУЛЯ АНАЛИЗА =============== }
@@ -1280,13 +1280,15 @@ begin
 
   if FormFood.OpenFoodEditor(Temp, False, FoodEditorRect) then
   begin
+    // TODO 1: RF: renaming food in dishes
    { if DishBaseLocal.RenameFood(OldName, Temp.Name) then
       SaveDishBase;  }
-      // TODO 1: renaming disabled
 
+    // TODO 1: RF: editing foods
     //FoodBaseLocal.Update(Temp);
     EventFoodbaseChanged(False);
 
+    // TODO 5: RF: selecting edited food
     //ShowTableItem(ListFood, Index);
     ListFood.SetFocus;
   end;
@@ -1311,9 +1313,11 @@ begin
 
   if FormDish.OpenDishEditor(Temp, False, DishEditorRect) then
   begin
+    // TODO 1: RF: renaming dish in dishes
    { if DishBaseLocal.RenameDish(OldName, Temp.Name) then
       SaveDishBase;  }
-      // TODO 1: renaming disabled
+
+    // TODO 1: RF: editing dish
 
     //DishBaseLocal.Update(Temp);
     EventDishbaseChanged(False, True);
@@ -1351,7 +1355,7 @@ begin
     Exit;
   end;
 
-  // TODO 1: restore functionality
+  // TODO 1: RF: checking dishes on removing food
   DishNumber := -1;//DishBase.UsedFood(FoodList[Index].Name);
 
   if //((DishNumber > -1)and(AskWarning(FoodList[Index], DishBase[DishNumber])))or
@@ -1395,7 +1399,7 @@ begin
     Exit;
   end;
 
-  // TODO 1: restore functionality
+  // TODO 1: RF: checking dishes on removing dish
   DishNumber := -1;//DishBase.UsedDish(DishList[Index].Name);
 
   if //((DishNumber > -1)and(AskWarning(DishList[Index], DishBase[DishNumber])))or
@@ -1576,7 +1580,7 @@ var
 
       DishModFactor := Value['DishModFactor'];
 
-      // TODO 1: restore functionality
+      // TODO 1: RF: relevant search: taking dish mod time into account
      { for i := 0 to DishBase.Count - 1 do
       if (DishBase[i].ModifiedTime > 0) then
         DiaryMultiMap[Offset + i].Tag := DiaryMultiMap[Offset + i].Tag +
@@ -1593,7 +1597,7 @@ var
           Continue;
         end;
 
-        // TODO 1: restore functionality
+        // TODO 1: RF: storing dish tags
         {k := DishBaseLocal.FindOne(DiaryMultiMap[i].Name);
         if (k > -1) then
         begin
@@ -1707,7 +1711,6 @@ begin
       ShowTableItem(ListFood, j, True);
       break;
     end; }
-    // TODO 1: HOT CHAR SEARCH DISABLED
   end;
 end;
 
@@ -1724,7 +1727,6 @@ begin
   if Key = vk_Delete then
     RemoveDish(ListDish.ItemIndex) else
  begin
-   // TODO 1: restore
     {c := CodeToRus(Key);
     if c <> #0 then
     for j := 0 to DishBase.Count - 1 do
@@ -2040,7 +2042,6 @@ begin
             ComboDiaryNew.SetFocus;
 
             // промотка
-            // TODO 1: restore
             n := DiaryView.SelectedRecordIndex;
             if (n > -1) and (Length(DiaryView.CurrentPage) > 0) then
               ScrollBoxDiary.VertScrollBar.Position :=
@@ -2698,9 +2699,6 @@ begin
   begin
     StrValue := '';
     Time := GetTimeUTC();
-    // TODO: hack :)
-    //if (Time mod 2) = 1 then
-    //  dec(Time);
   end else
     StrValue := FloatToStr(AValue);
 
@@ -4177,7 +4175,7 @@ begin
 
     //ShowTableItem(ListFood, n);
     ListFood.SetFocus;
-    // TODO 1: SELECTING COPIED FOOD DISABLED
+    // TODO 5: RF: selecting copied food disabled
   end;
 end;
 
@@ -4210,7 +4208,7 @@ begin
 
     //ShowTableItem(ListDish, n);
     ListDish.SetFocus;
-    // TODO 1: SELECTING COPIED FOOD DISABLED
+    // TODO 5: RF: selecting copied food disabled
   end;
 end;
 
@@ -5114,7 +5112,7 @@ begin
     ButtonResetFilterDishBase.Enabled := True;
   end;     }
 
-  // TODO 1: hack
+  // TODO 3: implement dish filtering
   DishList := DishBaseLocal.FindAll(false);
 end;
 
@@ -5206,7 +5204,7 @@ begin
     Caption := FoodList[i].Name;//+' ['+IntToStr(FoodBase[i].Tag)+']';;
     ImageIndex := Byte(FoodList[i].FromTable);
 
-    // TODO 1: COLUMNS CHECKING DISABLED
+    // TODO: COLUMNS CHECKING DISABLED
     if True  then SubItems.Add(RealToStr(FoodList[i].RelProts));
     if True  then SubItems.Add(RealToStr(FoodList[i].RelFats));
     if True  then SubItems.Add(RealToStr(FoodList[i].RelCarbs));
