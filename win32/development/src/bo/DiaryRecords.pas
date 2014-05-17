@@ -130,6 +130,7 @@ end;
 constructor TCustomRecord.Create;
 {==============================================================================}
 begin
+  inherited Create();
   FOnChange := nil;
   FSilentMode := False;
   FSilentlyModified := False;
