@@ -60,13 +60,12 @@ object Form1: TForm1
     Top = 0
     Width = 1241
     Height = 30
-    UseSystemFont = False
     ActionManager = ActionManager
     ColorMap.HighlightColor = 14410210
     ColorMap.BtnSelectedColor = clBtnFace
     ColorMap.UnusedColor = 14410210
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
+    Font.Color = clMenuText
     Font.Height = -14
     Font.Name = 'Tahoma'
     Font.Style = []
@@ -87,7 +86,7 @@ object Form1: TForm1
       Top = 0
       Width = 1241
       Height = 871
-      ActivePage = TabBase
+      ActivePage = TabDiary
       Align = alClient
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -280,7 +279,7 @@ object Form1: TForm1
                 Font.Height = -15
                 Font.Name = 'MS Sans Serif'
                 Font.Style = []
-                ItemHeight = 0
+                ItemHeight = 16
                 ParentFont = False
                 TabOrder = 1
                 OnCloseUp = ComboDiaryNewCloseUp
@@ -615,7 +614,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.160907939810000000
+            Date = 40251.695805810190000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -917,7 +916,7 @@ object Form1: TForm1
               object LabelCorrectionEmpty: TLabel
                 Left = 8
                 Top = 8
-                Width = 133
+                Width = 223
                 Height = 16
                 Align = alTop
                 Caption = 'LabelCorrectionEmpty'
