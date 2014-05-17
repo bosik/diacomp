@@ -15,6 +15,7 @@ type
     FVersion: integer;
     FDeleted: boolean;
   public
+    constructor Create();
     procedure Modified();
 
     property ID: TCompactGUID read FID write FID;
@@ -160,6 +161,15 @@ const
 implementation
 
 { TVersioned }
+
+{==============================================================================}
+constructor TVersioned.Create;
+{==============================================================================}
+begin
+  FID := CreateCompactGUID;
+  FVersion := 0;
+  FDeleted := False;
+end;
 
 {==============================================================================}
 procedure TVersioned.Modified;
