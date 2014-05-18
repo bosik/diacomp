@@ -5,7 +5,7 @@ object FormEditor: TFormEditor
   BorderStyle = bsDialog
   Caption = 'FormEditor'
   ClientHeight = 235
-  ClientWidth = 343
+  ClientWidth = 441
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -52,24 +52,13 @@ object FormEditor: TFormEditor
     Height = 16
     Caption = 'LabelFinger'
   end
-  object EditTime: TMaskEdit
-    Left = 144
-    Top = 32
-    Width = 200
-    Height = 24
-    EditMask = '!99.99;1;_'
-    MaxLength = 5
-    TabOrder = 0
-    Text = '  .  '
-    OnKeyDown = EditTimeKeyDown
-  end
   object ButtonOK: TBitBtn
     Left = 32
     Top = 191
     Width = 120
     Height = 28
     Caption = 'ButtonOK'
-    TabOrder = 1
+    TabOrder = 2
     OnClick = ButtonOKClick
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
@@ -98,7 +87,7 @@ object FormEditor: TFormEditor
     Cancel = True
     Caption = 'ButtonCancel'
     ModalResult = 2
-    TabOrder = 2
+    TabOrder = 3
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
       0400000000006801000000000000000000001000000000000000000000000000
@@ -125,7 +114,7 @@ object FormEditor: TFormEditor
     Height = 24
     Style = csDropDownList
     ItemHeight = 16
-    TabOrder = 3
+    TabOrder = 1
     OnKeyDown = ComboFingerKeyDown
   end
   object EditValue: TEditNumb
@@ -133,11 +122,30 @@ object FormEditor: TFormEditor
     Top = 88
     Width = 121
     Height = 24
-    TabOrder = 4
+    TabOrder = 0
     Text = 'EditValue'
     OnKeyDown = EditValueKeyDown
     AcceptNegative = False
     Decimal = ','
     WarningShow = True
+  end
+  object TimePicker: TDateTimePicker
+    Left = 112
+    Top = 32
+    Width = 81
+    Height = 24
+    Date = 41777.158689432870000000
+    Time = 41777.158689432870000000
+    Kind = dtkTime
+    TabOrder = 4
+  end
+  object DatePicker: TDateTimePicker
+    Left = 216
+    Top = 32
+    Width = 113
+    Height = 24
+    Date = 41777.159941967590000000
+    Time = 41777.159941967590000000
+    TabOrder = 5
   end
 end

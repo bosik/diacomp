@@ -17,9 +17,23 @@ type
     function FindChanged(Since: TDateTime): TRecordList; virtual; abstract;
     function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; virtual; abstract;
     function FindById(ID: TCompactGUID): TCustomRecord; virtual; abstract;
-    procedure Post(const Recs: TRecordList); virtual; abstract;
+    procedure Post(const Recs: TRecordList); overload; virtual; abstract;
+
+    // sugar
+    procedure Post(const Rec: TCustomRecord); overload;
   end;
 
 implementation
+
+{ TDiaryDAO }
+
+procedure TDiaryDAO.Post(const Rec: TCustomRecord);
+var
+  List: TRecordList;
+begin
+  SetLength(List, 1);
+  List[0] := Rec;
+  Post(List);
+end;
 
 end.

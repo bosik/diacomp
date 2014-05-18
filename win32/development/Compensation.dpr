@@ -54,7 +54,8 @@ uses
   DAO in 'src\persistence\DAO.pas',
   DishbaseDAO in 'src\persistence\DishbaseDAO.pas',
   DishbaseLocalDAO in 'src\persistence\local\DishbaseLocalDAO.pas',
-  DishbaseWebDAO in 'src\persistence\web\DishbaseWebDAO.pas';
+  DishbaseWebDAO in 'src\persistence\web\DishbaseWebDAO.pas',
+  UnitEditor in 'src\face\forms\UnitEditor.pas';
 
 {$R *.res}
 

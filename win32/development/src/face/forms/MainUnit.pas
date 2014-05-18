@@ -2628,45 +2628,11 @@ end;
 { ============================== РЕДАКТОРЫ ================================ }
 
 {==============================================================================}
-function ShowBloodEditor(var Time: TDateTime; var AValue: real; var AFinger: integer;
-  New: boolean; Focus: TFocusMode): boolean;
+function ShowBloodEditor(var Rec: TBloodRecord; New: boolean; Focus: TFocusMode): boolean;
 {==============================================================================}
-var
-  P: TDialogParams;
-  StrValue: string;
 begin
   Log(DEBUG, 'ShowBloodEditor()');
-
-  P.Image := Form1.ButtonAddBlood.Glyph;
-
-  if Value['ColoredEditors'] then
-    P.Color := Value['Color_SelBlood']
-  else
-    P.Color := clBtnFace;
-
-  P.Caption := 'Замер СК';
-  P.CaptionTime := 'Время';
-  P.CaptionValue := 'Значение';
-  P.CaptionFinger := 'Палец';
-  P.CaptionOK := SAVE_CAPTION[New];
-  P.CaptionCancel := 'Отмена';
-  P.FocusMode := Focus;
-  P.ShowEditors := edTimeValueFinger;
-  P.CheckValue := CheckPositiveFloat;
-
-  if New then
-  begin
-    StrValue := '';
-    Time := GetTimeUTC();
-  end else
-    StrValue := FloatToStr(AValue);
-
-  if ShowEditor(Time, StrValue, AFinger, P) then
-  begin
-    AValue := StrToFloat(CheckDot(StrValue));
-    Result := True;
-  end else
-    Result := False;
+  Result := TFormEditor.ShowEditor(TVersioned(Rec), New);
 end;
 
 {==============================================================================}
@@ -2793,10 +2759,7 @@ end;
 function TForm1.ClickBlood(New: boolean; Focus: TFocusMode): integer;
 {==============================================================================}
 var
-  ATime: TDateTime;
-  AValue: real;
-  AFinger: integer;
-
+  ID: TCompactGUID;
   BloodRec: TBloodRecord;
 begin
   Log(DEBUG, 'TForm1.ClickBlood');
@@ -2804,34 +2767,25 @@ begin
   if New then
   begin
     // определение пальца
-    AFinger := Diary.GetNextFinger();
+    BloodRec := TBloodRecord.Create();
+    BloodRec.Finger := Diary.GetNextFinger();
 
-    if ShowBloodEditor(ATime, AValue, AFinger, New, Focus) then
+    if ShowBloodEditor(BloodRec, New, Focus) then
     begin
-      LocalSource.Add(TBloodRecord.Create(ATime, AValue, AFinger));
+      LocalSource.Add(BloodRec);
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
+      // TODO: what is returned value's purpose?
     end else
       Result := -1;
   end else
   begin
-    BloodRec := TBloodRecord(DiaryView.SelectedRecord);
+    ID := DiaryView.SelectedRecordID;
+    BloodRec := TBloodRecord(LocalSource.FindById(ID));
 
-    ATime := BloodRec.NativeTime;
-    AValue := BloodRec.Value;
-    AFinger := BloodRec.Finger;
-
-    // TODO: refactor, pass whole TBloodRecord
-
-    if ShowBloodEditor(ATime, AValue, AFinger, New, Focus) then
-    with BloodRec do
+    if ShowBloodEditor(BloodRec, New, Focus) then
     begin
-      BeginUpdate;
-
-      NativeTime := ATime;
-      Value  := AValue;
-      Finger := AFinger;
-
-      EndUpdate;
+      LocalSource.Post(BloodRec);
+      DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
     end;
     Result := DiaryView.SelectedRecordIndex;
   end;

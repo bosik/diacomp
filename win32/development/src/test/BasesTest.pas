@@ -61,25 +61,21 @@ begin
   Food.Name := 'яблоко';
   Index := FoodBase.Add(Food);
   CheckEquals(0, Index);
-  CheckEquals(1, FoodBase.Version);
 
   Food := TFood.Create;
   Food.Name := 'мандарин';
   Index := FoodBase.Add(Food);
   CheckEquals(0, Index);
-  CheckEquals(2, FoodBase.Version);
 
   Food := TFood.Create;
   Food.Name := 'јбрикос';
   Index := FoodBase.Add(Food);
   CheckEquals(0, Index);
-  CheckEquals(3, FoodBase.Version);
 
   Food := TFood.Create;
   Food.Name := '€йцо';
   Index := FoodBase.Add(Food);
   CheckEquals(3, Index);
-  CheckEquals(4, FoodBase.Version);
 
   CheckEquals(4, FoodBase.Count, 'Count check failed');
 
@@ -108,27 +104,22 @@ begin
   Food := TFood.Create;
   Food.Name := 'яблоко';
   FoodBase.Add(Food);
-  CheckEquals(1, FoodBase.Version);
 
   Food := TFood.Create;
   Food.Name := 'мандарин';
   FoodBase.Add(Food);
-  CheckEquals(2, FoodBase.Version);
 
   Food := TFood.Create;
   Food.Name := 'јбрикос';
   FoodBase.Add(Food);
-  CheckEquals(3, FoodBase.Version);
 
   Food := TFood.Create;
   Food.Name := '€йцо';
   FoodBase.Add(Food);
-  CheckEquals(4, FoodBase.Version);
 
   CheckEquals(4, FoodBase.Count, 'Count check failed');
 
   FoodBase.Delete(0);
-  CheckEquals(5, FoodBase.Version);
 
   CheckEquals(3, FoodBase.Count, 'Count check failed');
 
@@ -165,25 +156,21 @@ begin
   Dish.Name := 'яблочный пирог';
   Index := DishBase.Add(Dish);
   CheckEquals(0, Index);
-  CheckEquals(1, DishBase.Version);
 
   Dish := TDish.Create;
   Dish.Name := 'макароны';
   Index := DishBase.Add(Dish);
   CheckEquals(0, Index);
-  CheckEquals(2, DishBase.Version);
 
   Dish := TDish.Create;
   Dish.Name := 'Ѕлинчики';
   Index := DishBase.Add(Dish);
   CheckEquals(0, Index);
-  CheckEquals(3, DishBase.Version);
 
   Dish := TDish.Create;
   Dish.Name := '€ичница';
   Index := DishBase.Add(Dish);
   CheckEquals(3, Index);
-  CheckEquals(4, DishBase.Version);
 
   CheckEquals(4, DishBase.Count, 'Count check failed');
 
@@ -212,27 +199,22 @@ begin
   Dish := TDish.Create;
   Dish.Name := 'яблочный пирог';
   DishBase.Add(Dish);
-  CheckEquals(1, DishBase.Version);
 
   Dish := TDish.Create;
   Dish.Name := 'макароны';
   DishBase.Add(Dish);
-  CheckEquals(2, DishBase.Version);
 
   Dish := TDish.Create;
   Dish.Name := 'Ѕлинчики';
   DishBase.Add(Dish);
-  CheckEquals(3, DishBase.Version);
 
   Dish := TDish.Create;
   Dish.Name := '€ичница';
   DishBase.Add(Dish);
-  CheckEquals(4, DishBase.Version);
 
   CheckEquals(4, DishBase.Count, 'Count check failed');
 
   DishBase.Delete(0);
-  CheckEquals(5, DishBase.Version);
 
   CheckEquals(3, DishBase.Count, 'Count check failed');
 

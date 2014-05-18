@@ -21,7 +21,9 @@ uses
   DiarySourceTest in 'DiarySourceTest.pas',
   DiaryWebSourceTest in 'DiaryWebSourceTest.pas',
   DiaryWebSource in '..\persistence\web\DiaryWebSource.pas',
-  DiaryPageSerializerTest in 'DiaryPageSerializerTest.pas';
+  DiaryPageSerializerTest in 'DiaryPageSerializerTest.pas',
+  DAO in '..\persistence\DAO.pas',
+  JsonSerializer in '..\persistence\JsonSerializer.pas';
 
 {$R *.res}
 
