@@ -5,6 +5,7 @@ MAIN_BASES = Базы
 MAIN_BASES_FILTER_ALL                    = Показаны все записи
 MAIN_BASES_FILTER_FILTERED               = Убрать фильтр (Escape)
 MAIN_BASES_FOOD_TITLE                    = База продуктов (%d)
+MAIN_BASES_DISH_TITLE                    = База блюд (%d)
 MAIN_DIARY                               = Дневник
 MAIN_DIARY_PANEL_ADD_SELECT_MEAL         = Выберите приём пищи или создайте новый
 MAIN_DIARY_PANEL_TIME_AFTER_INS          = После укола:

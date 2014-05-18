@@ -384,6 +384,7 @@ type
     procedure ButtonResetFilterFoodBaseClick(Sender: TObject);
     procedure EditBaseFoodSearchKeyPress(Sender: TObject; var Key: Char);
     procedure ListFoodData(Sender: TObject; Item: TListItem);
+    procedure ListDishData(Sender: TObject; Item: TListItem);
   protected
     // определяет расположение компонентов интерфейса
     procedure Designer; override;
@@ -4624,15 +4625,6 @@ end;
 {==============================================================================}
 procedure TForm1.UpdateDishTable(UpdateHeaders, FullUpdate, SaveItemIndex: boolean);
 {==============================================================================}
-
-  function MyTimeToStr(Date: TDateTime): string;
-  begin
-    if (Date <> 0) then
-      Result := DateToStr(Date)
-    else
-      Result := '---';
-  end;
-
 const
   COL_CAPTIONS: array[0..6] of string = (
     'Наименование',
@@ -4657,7 +4649,7 @@ var
 begin
   StartProc('UpdateDishTable()');
 
-  LabelDishBase.Caption := Format('База блюд (%d)', [Length(DishList)]);
+  LabelFoodBase.Caption := Format(MAIN_BASES_DISH_TITLE, [Length(FoodList)]);
 
   DishM := Value['DishM'];
   DishP := Value['DishP'];
@@ -4673,35 +4665,40 @@ begin
     else
       SavedIndex := -1; // для компилятора
 
+    ListDish.Items.Count := Length(DishList);
+
     if FullUpdate then
     begin
       { ЗАГОЛОВКИ }
-      Columns.Clear;
-
-      with Columns.Add do
+      if (UpdateHeaders) then
       begin
-        Caption := COL_CAPTIONS[0];
-        AutoSize := True;
-        MinWidth := 150;
-      end;
+        Columns.Clear;
 
-      if DishM then
-      with Columns.Add do
-      begin
-        Caption := COL_CAPTIONS[1];
-        MinWidth := 50;
-        Width := 60;
-      end;
+        with Columns.Add do
+        begin
+          Caption := COL_CAPTIONS[0];
+          AutoSize := True;
+          MinWidth := 150;
+        end;
 
-      if DishP then Columns.Add.Caption := COL_CAPTIONS[2];
-      if DishF then Columns.Add.Caption := COL_CAPTIONS[3];
-      if DishC then Columns.Add.Caption := COL_CAPTIONS[4];
-      if DishV then Columns.Add.Caption := COL_CAPTIONS[5];
-      if DishD then with Columns.Add do
-      begin
-        Caption := COL_CAPTIONS[6];
-        MinWidth := 80;
-        Width := 80;
+        if DishM then
+        with Columns.Add do
+        begin
+          Caption := COL_CAPTIONS[1];
+          MinWidth := 50;
+          Width := 60;
+        end;
+
+        if DishP then Columns.Add.Caption := COL_CAPTIONS[2];
+        if DishF then Columns.Add.Caption := COL_CAPTIONS[3];
+        if DishC then Columns.Add.Caption := COL_CAPTIONS[4];
+        if DishV then Columns.Add.Caption := COL_CAPTIONS[5];
+        if DishD then with Columns.Add do
+        begin
+          Caption := COL_CAPTIONS[6];
+          MinWidth := 80;
+          Width := 80;
+        end;
       end;
 
       { СТРОКИ }
@@ -4757,6 +4754,7 @@ begin
       ShowTableItem(ListDish, SavedIndex);
   end;
 
+  ListDish.Repaint;
   FinishProc;
 end;
 
@@ -4994,7 +4992,9 @@ begin
     Key := #0;
 end;
 
+{==============================================================================}
 procedure TForm1.ListFoodData(Sender: TObject; Item: TListItem);
+{==============================================================================}
 var
   i: integer;
 begin
@@ -5010,6 +5010,38 @@ begin
     if True  then SubItems.Add(RealToStr(FoodList[i].RelFats));
     if True  then SubItems.Add(RealToStr(FoodList[i].RelCarbs));
     if True  then SubItems.Add(IntToStr(Round(FoodList[i].RelValue)));
+  end;
+end;
+
+{==============================================================================}
+procedure TForm1.ListDishData(Sender: TObject; Item: TListItem);
+{==============================================================================}
+
+  function MyTimeToStr(Date: TDateTime): string;
+  begin
+    if (Date <> 0) then
+      Result := DateToStr(Date)
+    else
+      Result := '---';
+  end;
+
+var
+  i: integer;
+begin
+  i := Item.Index;
+  if (i >= 0) and (i <= High(DishList)) then
+  with Item do
+  begin
+    Caption := DishList[i].Name;//+' ['+IntToStr(DishBase[i].Tag)+']';;
+    ImageIndex := 2;
+
+    // TODO: COLUMNS CHECKING DISABLED
+    if True  then SubItems.Add(RealToStr(DishList[i].RealMass));
+    if True  then SubItems.Add(RealToStr(DishList[i].RelProts));
+    if True  then SubItems.Add(RealToStr(DishList[i].RelFats));
+    if True  then SubItems.Add(RealToStr(DishList[i].RelCarbs));
+    if True  then SubItems.Add(IntToStr(Round(DishList[i].RelValue)));
+    if True  then SubItems.Add(MyTimeToStr(DishList[i].TimeStamp)); 
   end;
 end;
 
