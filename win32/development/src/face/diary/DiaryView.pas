@@ -149,6 +149,8 @@ type
     procedure SetPopupMeal(Value: TPopupMenu);
     procedure SetPopupFood(Value: TPopupMenu);
     procedure SetPopupNote(Value: TPopupMenu);
+
+    function SelectedRecord: TCustomRecord;
   protected
     { обработчики событий }
     procedure DblClick; override;
@@ -186,8 +188,6 @@ type
 
     { текущая страница }
     function IsFoodSelected: boolean;
-
-    function SelectedRecord: TCustomRecord; deprecated;
     function SelectedFood: TFoodMassed;
 
     property SelectedRecordIndex: integer read FSelPanel write FSelPanel;
@@ -1836,7 +1836,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryView.SelectedRecord: TCustomRecord;
+function TDiaryView.SelectedRecord(): TCustomRecord;
 {==============================================================================}
 begin
   //Log('SelectedRecord()');

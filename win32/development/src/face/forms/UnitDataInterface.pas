@@ -72,9 +72,12 @@ uses MainUnit;
 {==============================================================================}
 procedure TDataInterface.PopupDiaryMealPopup(Sender: TObject);
 {==============================================================================}
+var
+  Rec: TCustomRecord;
 begin
-  if (Form1.DiaryView.SelectedRecord is TMealRecord) then
-    Form1.ActionShortMeal.Checked := TMealRecord(Form1.DiaryView.SelectedRecord).ShortMeal;
+  Rec := Form1.SelectedRecord();
+  if (Rec is TMealRecord) then
+    Form1.ActionShortMeal.Checked := TMealRecord(Rec).ShortMeal;
 end;
 
 end.
