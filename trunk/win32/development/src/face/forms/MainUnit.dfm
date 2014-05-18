@@ -615,7 +615,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.944057870370000000
+            Date = 40251.040449618060000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -1055,7 +1055,7 @@ object Form1: TForm1
           object LabelFoodBase: TLabel
             Left = 9
             Top = 9
-            Width = 121
+            Width = 535
             Height = 16
             Align = alTop
             Caption = #1041#1072#1079#1072' '#1087#1088#1086#1076#1091#1082#1090#1086#1074
@@ -2290,16 +2290,6 @@ object Form1: TForm1
       AutoCheck = True
       Caption = #1057#1086#1082#1088#1072#1097#1105#1085#1085#1099#1081' '#1087#1086#1089#1090#1087#1088#1072#1085#1076#1080#1072#1083
       OnExecute = ActionShortMealExecute
-    end
-    object ActionMoveMealBack: TAction
-      Category = 'Popup: '#1087#1088#1080#1105#1084' '#1087#1080#1097#1080
-      Caption = '<< '#1053#1072' '#1076#1077#1085#1100' '#1085#1072#1079#1072#1076
-      OnExecute = ActionMoveMealBackExecute
-    end
-    object ActionMoveMealForward: TAction
-      Category = 'Popup: '#1087#1088#1080#1105#1084' '#1087#1080#1097#1080
-      Caption = #1053#1072' '#1076#1077#1085#1100' '#1074#1087#1077#1088#1105#1076' >>'
-      OnExecute = ActionMoveMealForwardExecute
     end
   end
   object TrayIcon: TCoolTrayIcon

@@ -33,9 +33,6 @@ type
     ItemEditMeal: TMenuItem;
     Item_ShortMeal: TMenuItem;
     ItemBestMasses: TMenuItem;
-    Item_MoveMeal: TMenuItem;
-    Item_MoveMealBack: TMenuItem;
-    Item_MoveMealForward: TMenuItem;
     ItemSep_3: TMenuItem;
     ItemRemoveMeal: TMenuItem;
     PopupDiaryNote: TPopupActionBarEx;

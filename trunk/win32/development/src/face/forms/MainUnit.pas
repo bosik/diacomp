@@ -227,8 +227,6 @@ type
     Item_DishM: TMenuItem;
     ActionShortMeal: TAction;
     ButtonInsList: TButton;
-    ActionMoveMealBack: TAction;
-    ActionMoveMealForward: TAction;
     ItemCopyFood: TMenuItem;
     Item_SepFood: TMenuItem;
     TimerAutosave: TTimer;
@@ -363,8 +361,6 @@ type
     procedure Item_BaseColClick(Sender: TObject);
     procedure ActionShortMealExecute(Sender: TObject);
     procedure ButtonInsListClick(Sender: TObject);
-    procedure ActionMoveMealForwardExecute(Sender: TObject);
-    procedure ActionMoveMealBackExecute(Sender: TObject);
     procedure ItemCopyFoodClick(Sender: TObject);
     procedure ButtonAnListClick(Sender: TObject);
     procedure ComboDiaryNewKeyDown(Sender: TObject; var Key: Word;
@@ -418,8 +414,6 @@ type
     procedure ClickIns(New: boolean);
     procedure ClickMeal(New: boolean);
     procedure ClickNote(New: boolean);
-
-    procedure MoveMeal(Delta: integer); deprecated;
 
     { базы }
     function FoodEditorRect: TRect;
@@ -4184,54 +4178,6 @@ begin
 
     ListBS.Items.Add(DateToStr(DiaryBase[i - (AVG_PERIOD div 2)].Date) + #9 + FloatToStr(Summ));
   end;   *)
-end;
-
-procedure TForm1.ActionMoveMealForwardExecute(Sender: TObject);
-begin
-  MoveMeal(+1);
-end;
-
-procedure TForm1.ActionMoveMealBackExecute(Sender: TObject);
-begin
-  MoveMeal(-1);
-end;
-
-procedure TForm1.MoveMeal(Delta: integer);
-{var
-  n: integer;
-  CurDate: TDate;
-  OldPage: TDiaryPage;
-  NewPage: TDiaryPage;
-  Meal: TMealRecord;  }
-begin
-  {!!!}
- { if not (DiaryView.SelectedRecord is TMealRecord) then Exit;
-
-  CurDate := Trunc(CalendarDiary.Date);
-  OldPage := DiaryView.CurrentPage;
-  NewPage := Diary[CurDate + Delta];
-
-  n := DiaryView.SelectedRecordIndex;
-  Meal := TMealRecord(DiaryView.SelectedRecord);
-  OldPage.Remove(n, False);
-  n := NewPage.Add(Meal);
-
-  DiaryView.OpenPage(Diary[Trunc(CurDate + Delta)], True);
-  CalendarDiary.Date := CurDate + Delta;
-  DiaryView.SelectedRecordIndex := n;  }
-
-  {DiaryView.OpenPage(CurDate+Delta, True);
-  //n2 := DiaryView.AddMealBlank(Rec.Time, Rec.ShortMeal);
-  n2 := DiaryView.CurrentPage.Add(TMealRecord.Create(DiaryView.CurrentPage, Rec.ShortMeal));
-
-  for i := 0 to Rec.Count-1 do
-  begin
-    Item := TFoo dMassed.Create(Rec.Food[i]);
-    DiaryView.AddFoodToMeal(Item);
-  end;
-
-  DiaryView.OpenPage(CurDate, True);
-  DiaryView.CurrentPage.Remove(n1);  }
 end;
 
 procedure TForm1.ButtonAnListClick(Sender: TObject);
