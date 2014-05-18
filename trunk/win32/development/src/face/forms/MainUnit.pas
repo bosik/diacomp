@@ -2632,40 +2632,15 @@ end;
 { ============================== –≈ƒ¿ “Œ–€ ================================ }
 
 {==============================================================================}
-function ShowBloodEditor(var Rec: TBloodRecord; New: boolean): boolean;
-{==============================================================================}
-begin
-  Log(DEBUG, 'ShowBloodEditor()');
-  Result := TFormEditorBlood.ShowEditor(TVersioned(Rec), New);
-end;
-
-{==============================================================================}
-function ShowInsEditor(var Rec: TInsRecord; New: boolean): boolean;
-{==============================================================================}
-begin
-  Log(DEBUG, 'TForm1.ShowInsEditor()');
-  Result := TFormEditorIns.ShowEditor(TVersioned(Rec), New);
-end;
-
-{==============================================================================}
-function ShowMealEditor(var Rec: TMealRecord; New: boolean): boolean;
-{==============================================================================}
-begin
-  Log(DEBUG, 'TForm1.ShowMealEditor()');
-  Result := TFormEditorMeal.ShowEditor(TVersioned(Rec), New);
-end;
-
-{==============================================================================}
-function ShowNoteEditor(var Rec: TNoteRecord; New: boolean): boolean;
-{==============================================================================}
-begin
-  Log(DEBUG, 'TForm1.ShowNoteEditor()');
-  Result := TFormEditorNote.ShowEditor(TVersioned(Rec), New);
-end;
-
-{==============================================================================}
 procedure TForm1.ClickBlood(New: boolean);
 {==============================================================================}
+
+  function ShowBloodEditor(var Rec: TBloodRecord; New: boolean): boolean;
+  begin
+    Log(DEBUG, 'ShowBloodEditor()');
+    Result := TFormEditorBlood.ShowEditor(TVersioned(Rec), New);
+  end;
+
 var
   ID: TCompactGUID;
   Rec: TBloodRecord;
@@ -2703,6 +2678,13 @@ end;
 {==============================================================================}
 procedure TForm1.ClickIns(New: boolean);
 {==============================================================================}
+
+  function ShowInsEditor(var Rec: TInsRecord; New: boolean): boolean;
+  begin
+    Log(DEBUG, 'TForm1.ShowInsEditor()');
+    Result := TFormEditorIns.ShowEditor(TVersioned(Rec), New);
+  end;
+
 var
   ID: TCompactGUID;
   Rec: TInsRecord;
@@ -2736,6 +2718,13 @@ end;
 {==============================================================================}
 procedure TForm1.ClickMeal(New: boolean);
 {==============================================================================}
+
+  function ShowMealEditor(var Rec: TMealRecord; New: boolean): boolean;
+  begin
+    Log(DEBUG, 'TForm1.ShowMealEditor()');
+    Result := TFormEditorMeal.ShowEditor(TVersioned(Rec), New);
+end;
+
 var
   ID: TCompactGUID;
   Rec: TMealRecord;
@@ -2773,6 +2762,13 @@ end;
 {==============================================================================}
 procedure TForm1.ClickNote(New: boolean);
 {==============================================================================}
+
+  function ShowNoteEditor(var Rec: TNoteRecord; New: boolean): boolean;
+  begin
+    Log(DEBUG, 'TForm1.ShowNoteEditor()');
+    Result := TFormEditorNote.ShowEditor(TVersioned(Rec), New);
+  end;
+  
 var
   ID: TCompactGUID;
   Rec: TNoteRecord;
