@@ -56,7 +56,8 @@ object FormEditorBlood: TFormEditorBlood
     Width = 120
     Height = 28
     Caption = 'ButtonOK'
-    TabOrder = 0
+    TabOrder = 2
+    OnClick = ButtonOKClick
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
       0400000000006801000000000000000000001000000000000000000000000000
@@ -84,7 +85,7 @@ object FormEditorBlood: TFormEditorBlood
     Cancel = True
     Caption = 'ButtonCancel'
     ModalResult = 2
-    TabOrder = 1
+    TabOrder = 3
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
       0400000000006801000000000000000000001000000000000000000000000000
@@ -111,15 +112,17 @@ object FormEditorBlood: TFormEditorBlood
     Height = 24
     Style = csDropDownList
     ItemHeight = 16
-    TabOrder = 2
+    TabOrder = 1
+    OnKeyDown = FieldKeyDown
   end
   object EditValue: TEditNumb
     Left = 104
     Top = 80
     Width = 121
     Height = 24
-    TabOrder = 3
+    TabOrder = 0
     Text = 'EditValue'
+    OnKeyDown = FieldKeyDown
     AcceptNegative = False
     Decimal = ','
     WarningShow = True
@@ -133,6 +136,7 @@ object FormEditorBlood: TFormEditorBlood
     Time = 41777.158689432870000000
     Kind = dtkTime
     TabOrder = 4
+    OnKeyDown = FieldKeyDown
   end
   object DatePicker: TDateTimePicker
     Left = 208
@@ -142,5 +146,6 @@ object FormEditorBlood: TFormEditorBlood
     Date = 41777.159941967590000000
     Time = 41777.159941967590000000
     TabOrder = 5
+    OnKeyDown = FieldKeyDown
   end
 end

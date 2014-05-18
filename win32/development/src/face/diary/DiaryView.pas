@@ -175,6 +175,7 @@ type
     procedure ClickNote(Index: integer; Place: TClickPlace; IsDouble: boolean);
 
     function GetSelectedID(): TCompactGUID;
+    procedure SetSelectedID(const ID: TCompactGUID);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -186,11 +187,11 @@ type
     { текущая страница }
     function IsFoodSelected: boolean;
 
-    function SelectedRecord: TCustomRecord;
+    function SelectedRecord: TCustomRecord; deprecated;
     function SelectedFood: TFoodMassed;
 
     property SelectedRecordIndex: integer read FSelPanel write FSelPanel;
-    property SelectedRecordID: TCompactGUID read GetSelectedID;
+    property SelectedRecordID: TCompactGUID read GetSelectedID write SetSelectedID;
     property SelectedLine: integer read FSelLine;
     property CurrentPage: TRecordList read FCurrentPage;
   published
@@ -2382,6 +2383,20 @@ begin
     Result := FCurrentPage[FSelPanel].ID
   else
     Result := '';
+end;
+
+procedure TDiaryView.SetSelectedID(const ID: TCompactGUID);
+var
+  i: integer;
+begin
+  for i := 0 to High(FCurrentPage) do
+  if (FCurrentPage[i].ID = ID) then
+  begin
+    FSelPanel := i;
+    Exit;
+  end;
+
+  FSelPanel := -1;
 end;
 
 end.

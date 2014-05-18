@@ -223,6 +223,8 @@ begin
   begin
     if (Sender = TimePicker) then
       EditValue.SetFocus() else
+    if (Sender = DatePicker) then
+      EditValue.SetFocus() else
     if (Sender = EditValue) then
       ComboFinger.SetFocus() else
     if (Sender = ComboFinger) then
