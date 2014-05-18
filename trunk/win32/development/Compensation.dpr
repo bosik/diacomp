@@ -57,7 +57,8 @@ uses
   DishbaseWebDAO in 'src\persistence\web\DishbaseWebDAO.pas',
   UnitEditor in 'src\face\forms\UnitEditor.pas',
   UnitEditorBlood in 'src\face\forms\UnitEditorBlood.pas' {FormEditorBlood},
-  UnitEditorIns in 'src\face\forms\UnitEditorIns.pas' {FormEditorIns};
+  UnitEditorIns in 'src\face\forms\UnitEditorIns.pas' {FormEditorIns},
+  UnitDMealEditor in 'src\face\forms\UnitDMealEditor.pas' {FormEditorMeal};
 
 {$R *.res}
 

@@ -25,7 +25,9 @@ uses
   UnitFirstMan,
   UnitStartup,
   UnitDEditor,
+  UnitEditorBlood,
   UnitEditorIns,
+  UnitDMealEditor,
   UnitEditDish,
   UnitEditFood,
   UnitSettings,
@@ -562,7 +564,7 @@ const
 
 implementation
 
-uses UnitMisc, UnitEditorBlood;
+uses UnitMisc;
 
 {$R *.dfm}
 
@@ -2645,37 +2647,11 @@ begin
 end;
 
 {==============================================================================}
-function ShowMealEditor(var Time: TDateTime; New: boolean): boolean;
+function ShowMealEditor(var Rec: TMealRecord; New: boolean): boolean;
 {==============================================================================}
-var
-  P: TDialogParams;
-  StrValue: string;
 begin
   Log(DEBUG, 'TForm1.ShowMealEditor()');
-  P.Image := Form1.ButtonAddMeal.Glyph;
-
-  if Value['ColoredEditors'] then
-    P.Color := Value['Color_SelMeal']
-  else
-    P.Color := clBtnFace;
-
-  P.Caption := 'Приём пищи';
-  P.CaptionTime := 'Время';
-  P.CaptionValue := '***';
-
-  if New then
-  begin
-    StrValue := '';
-    Time := GetTimeUTC();
-  end else
-    StrValue := '';//FloatToStr(AValue);
-
-  if ShowEditor(Time, StrValue, P) then
-  begin
-    //AValue := StrToFloat(CheckDot(StrValue));
-    Result := True;
-  end else
-    Result := False;
+  Result := TFormEditorMeal.ShowEditor(TVersioned(Rec), New);
 end;
 
 {==============================================================================}
@@ -2786,26 +2762,33 @@ end;
 procedure TForm1.ClickMeal(New: boolean);
 {==============================================================================}
 var
-  ATime: TDateTime;
-  Meal: TMealRecord;
+  ID: TCompactGUID;
+  Rec: TMealRecord;
 begin
   Log(DEBUG, 'TForm1.ClickMeal');
   if New then
   begin
-    if ShowMealEditor(ATime, New) then
+    Rec := TMealRecord.Create();
+    if ShowMealEditor(Rec, New) then
     begin
-      LocalSource.Add(TMealRecord.Create(ATime, False));
+      LocalSource.Add(Rec);
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
+      DiaryView.SelectedRecordID := Rec.ID;
+      ScrollToSelected;
     end;
   end else
   begin
-    Meal := TMealRecord(DiaryView.SelectedRecord);
+    ID := DiaryView.SelectedRecordID;
+    Rec := TMealRecord(LocalSource.FindById(ID));
 
-    ATime := Meal.NativeTime;
-    if ShowMealEditor(ATime, New) then
-    with Meal do
+    if ShowMealEditor(Rec, New) then
     begin
-      NativeTime := ATime;
+      LocalSource.Post(Rec);
+      DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
+      DiaryView.SelectedRecordID := Rec.ID;
+      ScrollToSelected;
+
+      // UX features
       UpdateTimeLeft;
       ComboDiaryNew.SetFocus;
     end;
