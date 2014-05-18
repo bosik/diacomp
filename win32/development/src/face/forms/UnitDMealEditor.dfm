@@ -1,11 +1,11 @@
-object DMealEditor: TDMealEditor
-  Left = 608
-  Top = 30
+object FormEditorMeal: TFormEditorMeal
+  Left = 724
+  Top = 543
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = #1055#1088#1080#1105#1084' '#1087#1080#1097#1080
-  ClientHeight = 121
-  ClientWidth = 261
+  ClientHeight = 245
+  ClientWidth = 366
   Color = 14811135
   Constraints.MinHeight = 130
   Constraints.MinWidth = 220
@@ -16,56 +16,36 @@ object DMealEditor: TDMealEditor
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
-  OnShow = FormShow
-  DesignSize = (
-    261
-    121)
   PixelsPerInch = 120
   TextHeight = 16
   object Image: TImage
-    Left = 32
-    Top = 24
-    Width = 39
-    Height = 42
-    AutoSize = True
-    Stretch = True
-    Transparent = True
+    Left = 8
+    Top = 8
+    Width = 80
+    Height = 80
+    Center = True
   end
   object LabelTime: TLabel
-    Left = 97
-    Top = 1
-    Width = 44
+    Left = 104
+    Top = 8
+    Width = 65
     Height = 16
-    Caption = #1042#1088#1077#1084#1103':'
+    Caption = 'LabelTime'
   end
   object Bevel1: TBevel
-    Left = 9
-    Top = 74
-    Width = 241
+    Left = 16
+    Top = 175
+    Width = 313
     Height = 2
-    Anchors = [akLeft, akRight, akBottom]
   end
-  object EditTime: TMaskEdit
-    Left = 65
-    Top = 41
-    Width = 112
-    Height = 24
-    Anchors = [akLeft, akTop, akRight]
-    EditMask = '!99.99;1;_'
-    MaxLength = 5
-    TabOrder = 0
-    Text = '  .  '
-    OnKeyDown = EditTimeKeyDown
-  end
-  object ButtonSave: TBitBtn
-    Left = 9
-    Top = 82
-    Width = 119
+  object ButtonOK: TBitBtn
+    Left = 32
+    Top = 191
+    Width = 120
     Height = 28
-    Anchors = [akLeft, akBottom]
-    Caption = #1054#1050
-    TabOrder = 1
-    OnClick = ButtonSaveClick
+    Caption = 'ButtonOK'
+    TabOrder = 0
+    OnClick = ButtonOKClick
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
       0400000000006801000000000000000000001000000000000000000000000000
@@ -86,14 +66,59 @@ object DMealEditor: TDMealEditor
     NumGlyphs = 2
   end
   object ButtonCancel: TBitBtn
-    Left = 139
-    Top = 82
-    Width = 111
+    Left = 213
+    Top = 191
+    Width = 110
     Height = 28
-    Anchors = [akRight, akBottom]
-    Caption = #1054#1090#1084#1077#1085#1072
+    Cancel = True
+    Caption = 'ButtonCancel'
+    ModalResult = 2
+    TabOrder = 1
+    Glyph.Data = {
+      DE010000424DDE01000000000000760000002800000024000000120000000100
+      0400000000006801000000000000000000001000000000000000000000000000
+      80000080000000808000800000008000800080800000C0C0C000808080000000
+      FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00333333333333
+      3333333333333FFFFF333333000033333388888833333333333F888888FFF333
+      000033338811111188333333338833FFF388FF33000033381119999111833333
+      38F338888F338FF30000339119933331111833338F388333383338F300003391
+      13333381111833338F8F3333833F38F3000039118333381119118338F38F3338
+      33F8F38F000039183333811193918338F8F333833F838F8F0000391833381119
+      33918338F8F33833F8338F8F000039183381119333918338F8F3833F83338F8F
+      000039183811193333918338F8F833F83333838F000039118111933339118338
+      F3833F83333833830000339111193333391833338F33F8333FF838F300003391
+      11833338111833338F338FFFF883F83300003339111888811183333338FF3888
+      83FF83330000333399111111993333333388FFFFFF8833330000333333999999
+      3333333333338888883333330000333333333333333333333333333333333333
+      0000}
+    NumGlyphs = 2
+  end
+  object TimePicker: TDateTimePicker
+    Left = 104
+    Top = 24
+    Width = 81
+    Height = 24
+    Date = 41777.158689432870000000
+    Time = 41777.158689432870000000
+    Kind = dtkTime
     TabOrder = 2
-    OnClick = ButtonCancelClick
-    Kind = bkNo
+    OnKeyDown = FieldKeyDown
+  end
+  object DatePicker: TDateTimePicker
+    Left = 208
+    Top = 24
+    Width = 113
+    Height = 24
+    Date = 41777.159941967590000000
+    Time = 41777.159941967590000000
+    TabOrder = 3
+  end
+  object CheckShortMeal: TCheckBox
+    Left = 104
+    Top = 64
+    Width = 73
+    Height = 17
+    Caption = 'CheckShortMeal'
+    TabOrder = 4
   end
 end

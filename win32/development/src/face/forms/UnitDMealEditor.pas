@@ -4,123 +4,189 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Mask, ExtCtrls, DiaryRoutines, Buttons,
-  DiaryInterface;
+  Dialogs, Mask, StdCtrls, ExtCtrls, DiaryRoutines, Buttons, DiaryInterface,
+  UnitShadow, SettingsINI, DiaryView, ComCtrls, DiaryRecords, BusinessObjects,
+  UnitEditor, JsonSerializer, uLKjson, DiaryPageSerializer, TextInterface, Math;
 
 type
-  TDMealEditor = class(TAutosetupForm)
+  TFormEditorMeal = class(TFormEditor)
     Image: TImage;
     LabelTime: TLabel;
     Bevel1: TBevel;
-    EditTime: TMaskEdit;
-    ButtonSave: TBitBtn;
+    ButtonOK: TBitBtn;
     ButtonCancel: TBitBtn;
-    procedure ButtonCancelClick(Sender: TObject);
-    procedure ButtonSaveClick(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure EditTimeKeyDown(Sender: TObject; var Key: Word;
+    TimePicker: TDateTimePicker;
+    DatePicker: TDateTimePicker;
+    CheckShortMeal: TCheckBox;
+    procedure FieldKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure ButtonOKClick(Sender: TObject);
+  private
+    function Entity(): TMealRecord;
   protected
-    procedure Designer; override;
-  public
-    function ShowMealEditor(var DefaultTime: integer;
-      New: boolean): boolean;
+    class function Clone(X: TVersioned): TVersioned; override;
+    class function CreateEditorForm(CreateMode: boolean): TFormEditor; override;
+    function ReadEntityFromGUI(): boolean; override;
+    procedure ShowEntityInGUI(CreateMode: boolean); override;
+    procedure Designer(); override;
   end;
 
-var
-  DMealEditor: TDMealEditor;
-  OK: boolean;
-  Time: integer;
-const
-  NO_TEXT = '  .  ';
-  SAVE_CAPTION: array[Boolean] of string = ('Сохранить','Добавить');
 implementation
-
-uses UnitShadow, SettingsINI;
 
 {$R *.dfm}
 
-{ TDMealEditor }
+{ TFormEditorMeal }
 
-{========================================================}
-function TDMealEditor.ShowMealEditor(var DefaultTime: integer;
-  New: boolean): boolean;
-{========================================================}
+{==============================================================================}
+class function TFormEditorMeal.Clone(X: TVersioned): TVersioned;
+{==============================================================================}
+var
+  S: string;
 begin
-  { подготовка к редактированию }
-  if New then
-    TryStrToTime(GetCurrentTime,Time)
+  S := JsonWrite(SerializeVersionedDiaryRecord(X as TCustomRecord));
+  Result := ParseVersionedDiaryRecord(JsonRead(S) as TlkJSONobject);
+end;
+
+{==============================================================================}
+class function TFormEditorMeal.CreateEditorForm(CreateMode: boolean): TFormEditor;
+{==============================================================================}
+var
+  Dialog: TFormEditorMeal;
+begin
+  Dialog := TFormEditorMeal.Create(nil);
+
+  Dialog.Caption := 'Приём пищи';
+  if Value['ColoredEditors'] then
+    Dialog.Color := Value['Color_SelMeal']
   else
-    Time:=DefaultTime;
-  EditTime.Text:=TimeToStr(Time);
-  ButtonSave.Caption:=SAVE_CAPTION[New];
+    Dialog.Color := clBtnFace;
 
-  { запускаем пользователя }
-  Shadow(true, Color);
-  ShowModal;
-  Shadow(false);
+  Dialog.LabelTime.Caption := 'Время';
+  Dialog.CheckShortMeal.Caption := 'Сокращённый постпрандиал';
 
-  { обрабатываем результаты редактирования }
-  if OK then
-    DefaultTime:=Time; {else ничего}
-  Result:=OK;
+  Dialog.ButtonOK.Caption := SAVE_CAPTION[CreateMode];
+  Dialog.ButtonCancel.Caption := 'Отмена';
+
+  Result := Dialog;
 end;
 
-procedure TDMealEditor.ButtonCancelClick(Sender: TObject);
+{==============================================================================}
+function TFormEditorMeal.ReadEntityFromGUI(): boolean;
+{==============================================================================}
 begin
-  OK:=false;
-  Close;
+  Entity.NativeTime := LocalToUTC(Trunc(DatePicker.Date) + Frac(TimePicker.Time));
+  Entity.ShortMeal := CheckShortMeal.Checked;
+  Result := True;
 end;
 
-procedure TDMealEditor.ButtonSaveClick(Sender: TObject);
+{==============================================================================}
+procedure TFormEditorMeal.ShowEntityInGUI(CreateMode: boolean);
+{==============================================================================}
+var
+  LocalTime: TDateTime;
 begin
-  if not TryStrToTime(EditTime.Text,Time) then
+  if (CreateMode) then
   begin
-    ErrorMessage('Неверное время');
-    EditTime.SetFocus;
+    LocalTime := Now();
+    TimePicker.Time := LocalTime;
+    DatePicker.Date := LocalTime;
+    CheckShortMeal.Checked := False;
   end else
   begin
-    OK:=true;
-    Close;
+    LocalTime := UTCToLocal(Entity.NativeTime);
+    TimePicker.Time := LocalTime;
+    DatePicker.Date := LocalTime;
+    CheckShortMeal.Checked := Entity.ShortMeal;
   end;
 end;
 
-procedure TDMealEditor.FormShow(Sender: TObject);
+{==============================================================================}
+function TFormEditorMeal.Entity: TMealRecord;
+{==============================================================================}
 begin
- { if Value_ColoredEditors then
-    Color := Value_Color_SelMeal
-  else
-    Color := clBtnFace;
-
-  PlaceCenter(DMealEditor);
-  EditTime.SetFocus;
-  EditTime.SelectAll;    }
+  Result := TMealRecord(inherited Entity);
 end;
 
-procedure TDMealEditor.EditTimeKeyDown(Sender: TObject; var Key: Word;
+{==============================================================================}
+procedure TFormEditorMeal.ButtonOKClick(Sender: TObject);
+{==============================================================================}
+begin
+  Submit();
+end;
+
+{==============================================================================}
+procedure TFormEditorMeal.Designer();
+{==============================================================================}
+var
+  BottomLine: integer;
+
+  procedure AlignTop(Control: TControl);
+  begin
+    Control.Top := BottomLine;
+    inc(BottomLine, Control.Height);
+  end;
+
+  procedure BorderTop(Size: integer);
+  begin
+    inc(BottomLine, Size);
+  end;
+
+begin
+  ClientWidth := 350;
+  BottomLine := 2 * BORD;
+
+  Image.Left := 2 * BORD;
+  Image.Top := 2 * BORD;
+  Image.Width := 10 * BORD;
+  Image.Height := 10 * BORD;
+
+  AlignTop(LabelTime);
+  AlignTop(TimePicker);
+  DatePicker.Top := TimePicker.Top;
+
+  BorderTop(2 * BORD);
+
+  LabelTime.Left := 14 * BORD;
+  TimePicker.Left := 14 * BORD;
+  DatePicker.Left := TimePicker.Left + TimePicker.Width + 2 * BORD;
+
+  { * * * * * }
+
+  // field "Short meal"
+  CheckShortMeal.Left := 14 * BORD;
+  AlignTop(CheckShortMeal);
+  BorderTop(2 * BORD);
+  CheckShortMeal.Width := ClientWidth - 16 * BORD;
+
+  { * * * * * }
+  BottomLine := Max(BottomLine, 14 * BORD);
+
+  FormatBevel(Bevel1);
+  AlignTop(Bevel1);
+  BorderTop(2 * BORD);
+
+  ButtonOK.Top := BottomLine;
+  AlignTop(ButtonCancel);
+
+  ButtonOK.Left := 2 * BORD;
+  ButtonCancel.Left := ClientWidth - ButtonCancel.Width - 2 * BORD;
+
+  ClientHeight := BottomLine + 2 * BORD;
+  {!!!}
+
+  PlaceCenter(Self);
+end;
+
+{==============================================================================}
+procedure TFormEditorMeal.FieldKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
+{==============================================================================}
 begin
-  if Key = vk_Return then
-    ButtonSaveClick(nil);
-end;
-
-procedure TDMealEditor.Designer;
-begin
-  Image.Top := Bord;
-  Image.Left := 2*Bord;
-  LabelTime.Left := Image.Width + 4*BORD;
-  EditTime.Left := LabelTime.Left;
-  LabelTime.Top := BORD;
-  EditTime.Top := BORD + LabelTime.Height;
-  EditTime.Width := ClientWidth - EditTime.Left - 2*BORD;
-
-  ClientHeight := Image.Height + 4*Bord+ButtonSave.Height;
-
-  Bevel1.Top := Image.Top+Image.Height+Bord;
-  ButtonSave.Top := Bevel1.Top+Bord;
-  ButtonCancel.Top := Bevel1.Top+Bord;
-
-  FormatBevel(Bevel1,  Self);
+  if (Key = vk_Return) then
+  begin
+    //if (Sender = TimePicker) then
+    Submit()
+  end;
 end;
 
 end.
