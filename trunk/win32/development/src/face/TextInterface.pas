@@ -10,9 +10,7 @@ var
 
   BALLOON_INFO_NEW_VERSION_AVAILABLE  : string = 'Доступна новая версия программы. Для просмотра более подробной информации нажмите на это сообщение.';
   BALLOON_ERROR_ANALYZER_NOT_FOUNDED  : string = 'Ошибка: модуль анализа не загружен';
-  MAIN_BASES                               : string; 
-  MAIN_BASES_FILTER_ALL                    : string = 'Показаны все записи';
-  MAIN_BASES_FILTER_FILTERED               : string = 'Убрать фильтр (Escape)';
+  MAIN_BASES                               : string;
   MAIN_BASES_FOOD_TITLE                    : string;
   MAIN_BASES_DISH_TITLE                    : string;
   MAIN_DIARY                               : string;
@@ -159,8 +157,6 @@ begin
     BALLOON_INFO_NEW_VERSION_AVAILABLE  := Extract('BALLOON_INFO_NEW_VERSION_AVAILABLE');
     BALLOON_ERROR_ANALYZER_NOT_FOUNDED  := Extract('BALLOON_ERROR_ANALYZER_NOT_FOUNDED');
     MAIN_BASES                               := Extract('MAIN_BASES');
-    MAIN_BASES_FILTER_ALL                    := Extract('MAIN_BASES_FILTER_ALL');
-    MAIN_BASES_FILTER_FILTERED               := Extract('MAIN_BASES_FILTER_FILTERED');
     MAIN_BASES_FOOD_TITLE                    := Extract('MAIN_BASES_FOOD_TITLE');
     MAIN_BASES_DISH_TITLE                    := Extract('MAIN_BASES_DISH_TITLE');
     MAIN_DIARY                               := Extract('MAIN_DIARY'); 

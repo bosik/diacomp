@@ -155,14 +155,12 @@ type
     LabelFoodBase: TLabel;
     PanelFoodButtons: TPanel;
     ButtonCreateFood: TSpeedButton;
-    ButtonDeleteFood: TSpeedButton;
     PanelBaseDish: TPanel;
     Shape11: TShape;
     PanelDishHeader: TPanel;
     LabelDishBase: TLabel;
     PanelDishButtons: TPanel;
     ButtonCreateDish: TSpeedButton;
-    ButtonDeleteDish: TSpeedButton;
     TabAnalyze: TTabSheet;
     PanelAnManagment: TPanel;
     ShapeAn1: TShape;
@@ -264,7 +262,6 @@ type
     Shape2: TShape;
     GroupBasesSearch: TGroupBox;
     EditBaseFoodSearch: TEdit;
-    ButtonBasesFilterReset: TSpeedButton;
 
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ButtonCreateFoodClick(Sender: TObject);
@@ -764,24 +761,16 @@ begin
 
   { БАЗЫ }
   ButtonCreateFood.Height := BASE_BUTTON_HEIGHT;
-  ButtonDeleteFood.Height := BASE_BUTTON_HEIGHT;
   ButtonCreateDish.Height := BASE_BUTTON_HEIGHT;
-  ButtonDeleteDish.Height := BASE_BUTTON_HEIGHT;
 
   ButtonCreateFood.Width := BASE_BUTTON_WIDTH;
-  ButtonDeleteFood.Width := BASE_BUTTON_WIDTH;
   ButtonCreateDish.Width := BASE_BUTTON_WIDTH;
-  ButtonDeleteDish.Width := BASE_BUTTON_WIDTH;
 
   ButtonCreateFood.Top := BORD;
-  ButtonDeleteFood.Top := BORD;
   ButtonCreateDish.Top := BORD;
-  ButtonDeleteDish.Top := BORD;
 
   ButtonCreateFood.Left := 0;
-  ButtonDeleteFood.Left := PanelFoodButtons.Width - BASE_BUTTON_WIDTH;
   ButtonCreateDish.Left := 0;
-  ButtonDeleteDish.Left := PanelDishButtons.Width - BASE_BUTTON_WIDTH;
 
   PanelFoodButtons.Height := BASE_BUTTON_HEIGHT + BORD; // no 2*
   PanelDishButtons.Height := BASE_BUTTON_HEIGHT + BORD; // no 2*
@@ -1175,11 +1164,8 @@ begin
   LoadImage(WORK_FOLDER + IMAGE_EDITOR_CALC, FormDish.ButtonRunCalc.Glyph);
   LoadImage(WORK_FOLDER + IMAGE_EDITOR_REMOVE, FormDish.ButtonSimpleMass.Glyph);
 
-  LoadImage(WORK_FOLDER + IMAGE_BASE_SEARCH_RESET, ButtonBasesFilterReset.Glyph);
   LoadImage(WORK_FOLDER + IMAGE_BASE_NEW_FOOD, ButtonCreateFood.Glyph);
   LoadImage(WORK_FOLDER + IMAGE_BASE_NEW_DISH, ButtonCreateDish.Glyph);
-  LoadImage(WORK_FOLDER + IMAGE_BASE_REMOVE, ButtonDeleteFood.Glyph);
-  LoadImage(WORK_FOLDER + IMAGE_BASE_REMOVE, ButtonDeleteDish.Glyph);
   LoadImage(WORK_FOLDER + IMAGE_EXPORT_SAVE, FormExportText.ButtonSave.Glyph);
 
   // кнопки закладок в настройках
@@ -3289,9 +3275,6 @@ begin
 
     1: { базы }
     begin
-      ButtonDeleteFood.Enabled := ListFood.ItemIndex > -1;
-      ButtonDeleteDish.Enabled := ListDish.ItemIndex > -1;
-
       {Item_EditFood.Enabled   := ListFood.ItemIndex > -1;
       Item_RemoveFood.Enabled := ListFood.ItemIndex > -1;
        }
@@ -4898,13 +4881,9 @@ begin
   if (Trim(Filter) = '') then
   begin
     FoodList := FoodBaseLocal.FindAll(false);
-    ButtonBasesFilterReset.Hint := MAIN_BASES_FILTER_ALL;
-    ButtonBasesFilterReset.Enabled := False;
   end else
   begin
     FoodList := FoodBaseLocal.FindAny(Filter);
-    ButtonBasesFilterReset.Hint := MAIN_BASES_FILTER_FILTERED;
-    ButtonBasesFilterReset.Enabled := True;
   end;
 end;
 
@@ -4928,14 +4907,9 @@ begin
   if (Trim(Filter) = '') then
   begin
     DishList := DishBaseLocal.FindAll(false);
-    // TODO: duplicated code
-    ButtonBasesFilterReset.Hint := MAIN_BASES_FILTER_ALL;
-    ButtonBasesFilterReset.Enabled := False;
   end else
   begin
     DishList := DishBaseLocal.FindAny(Filter);
-    ButtonBasesFilterReset.Hint := MAIN_BASES_FILTER_FILTERED;
-    ButtonBasesFilterReset.Enabled := True;
   end;
 end;
 

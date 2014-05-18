@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = -4
-  Top = -4
-  Width = 1928
-  Height = 1054
+  Left = 449
+  Top = 37
+  Width = 1249
+  Height = 959
   Caption = #1053#1072#1079#1074#1072#1085#1080#1077
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,14 +19,14 @@ object Form1: TForm1
   object BevelTop: TBevel
     Left = 0
     Top = 30
-    Width = 1920
+    Width = 1241
     Height = 2
     Align = alTop
   end
   object ShapeTop: TShape
     Left = 0
     Top = 32
-    Width = 1920
+    Width = 1241
     Height = 5
     Align = alTop
     Brush.Style = bsClear
@@ -34,8 +34,8 @@ object Form1: TForm1
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 1003
-    Width = 1920
+    Top = 908
+    Width = 1241
     Height = 19
     Panels = <
       item
@@ -58,7 +58,7 @@ object Form1: TForm1
   object MainMenu: TActionMainMenuBar
     Left = 0
     Top = 0
-    Width = 1920
+    Width = 1241
     Height = 30
     UseSystemFont = False
     ActionManager = ActionManager
@@ -77,16 +77,16 @@ object Form1: TForm1
   object PanelMain: TPanel
     Left = 0
     Top = 37
-    Width = 1920
-    Height = 966
+    Width = 1241
+    Height = 871
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
     object PageControl1: TPageControl
       Left = 0
       Top = 0
-      Width = 1920
-      Height = 966
+      Width = 1241
+      Height = 871
       ActivePage = TabBase
       Align = alClient
       Font.Charset = DEFAULT_CHARSET
@@ -108,9 +108,9 @@ object Form1: TForm1
         ParentShowHint = False
         ShowHint = False
         object Splitter4: TSplitter
-          Left = 1644
+          Left = 965
           Top = 0
-          Height = 932
+          Height = 837
           Align = alRight
           Color = clSkyBlue
           ParentColor = False
@@ -119,8 +119,8 @@ object Form1: TForm1
         object PanelDiaryTop: TPanel
           Left = 222
           Top = 0
-          Width = 1422
-          Height = 932
+          Width = 743
+          Height = 837
           Align = alClient
           BevelOuter = bvNone
           ParentBackground = True
@@ -128,8 +128,8 @@ object Form1: TForm1
           object ScrollBoxDiary: TScrollBox
             Left = 0
             Top = 0
-            Width = 1422
-            Height = 851
+            Width = 743
+            Height = 756
             VertScrollBar.Increment = 40
             VertScrollBar.Tracking = True
             Align = alClient
@@ -149,7 +149,7 @@ object Form1: TForm1
             object DiaryView: TDiaryView
               Left = 0
               Top = 0
-              Width = 1418
+              Width = 739
               Height = 117
               Align = alTop
               Font.Charset = DEFAULT_CHARSET
@@ -175,8 +175,8 @@ object Form1: TForm1
           end
           object PanelDiaryBottom: TPanel
             Left = 0
-            Top = 851
-            Width = 1422
+            Top = 756
+            Width = 743
             Height = 81
             Align = alBottom
             BevelOuter = bvNone
@@ -235,7 +235,7 @@ object Form1: TForm1
             object GroupBoxAdd: TGroupBox
               Left = 291
               Top = 0
-              Width = 1131
+              Width = 452
               Height = 81
               Align = alClient
               Caption = #1055#1088#1086#1076#1091#1082#1090#1099' '#1080' '#1073#1083#1102#1076#1072
@@ -250,10 +250,10 @@ object Form1: TForm1
               ParentFont = False
               TabOrder = 1
               DesignSize = (
-                1131
+                452
                 81)
               object ButtonDiaryNewAddFood: TSpeedButton
-                Left = 1067
+                Left = 388
                 Top = 25
                 Width = 25
                 Height = 25
@@ -268,7 +268,7 @@ object Form1: TForm1
                 Tag = 1
                 Left = 56
                 Top = 24
-                Width = 930
+                Width = 251
                 Height = 24
                 UserHint = #1053#1072#1095#1085#1080#1090#1077' '#1074#1074#1086#1076#1080#1090#1100' '#1085#1072#1079#1074#1072#1085#1080#1077
                 ShowUserHint = True
@@ -289,7 +289,7 @@ object Form1: TForm1
               end
               object EditDiaryNewMass: TEditNumb
                 Tag = 1
-                Left = 1006
+                Left = 327
                 Top = 25
                 Width = 56
                 Height = 25
@@ -318,7 +318,7 @@ object Form1: TForm1
           Left = 0
           Top = 0
           Width = 222
-          Height = 932
+          Height = 837
           Align = alLeft
           BevelOuter = bvLowered
           BorderWidth = 8
@@ -615,7 +615,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.040449618060000000
+            Date = 40251.146927557870000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -778,10 +778,10 @@ object Form1: TForm1
           end
         end
         object PanelDiaryDish: TPanel
-          Left = 1647
+          Left = 968
           Top = 0
           Width = 265
-          Height = 932
+          Height = 837
           Align = alRight
           BevelOuter = bvLowered
           BorderWidth = 10
@@ -892,7 +892,7 @@ object Form1: TForm1
             Left = 11
             Top = 243
             Width = 243
-            Height = 678
+            Height = 583
             Align = alClient
             Caption = #1055#1086#1076#1073#1086#1088' '#1091#1075#1083#1077#1074#1086#1076#1086#1074
             Color = clWhite
@@ -908,7 +908,7 @@ object Form1: TForm1
               Left = 2
               Top = 18
               Width = 239
-              Height = 658
+              Height = 563
               Align = alClient
               BevelOuter = bvNone
               BorderWidth = 8
@@ -932,7 +932,7 @@ object Form1: TForm1
                 Left = 8
                 Top = 24
                 Width = 223
-                Height = 626
+                Height = 531
                 Align = alClient
                 BorderStyle = bsNone
                 Columns = <
@@ -1033,8 +1033,8 @@ object Form1: TForm1
         ShowHint = False
         object SplitterBase: TSplitter
           Left = 553
-          Top = 64
-          Height = 868
+          Top = 65
+          Height = 772
           Color = clSkyBlue
           ParentColor = False
           OnCanResize = SplitterBaseCanResize
@@ -1042,9 +1042,9 @@ object Form1: TForm1
         end
         object PanelBaseFood: TPanel
           Left = 0
-          Top = 64
+          Top = 65
           Width = 553
-          Height = 868
+          Height = 772
           Align = alLeft
           BevelOuter = bvLowered
           BorderWidth = 8
@@ -1076,64 +1076,12 @@ object Form1: TForm1
             Brush.Style = bsClear
             Pen.Style = psClear
           end
-          object PanelFoodButtons: TPanel
-            Left = 9
-            Top = 801
-            Width = 535
-            Height = 58
-            Align = alBottom
-            BevelOuter = bvNone
-            ParentColor = True
-            TabOrder = 1
-            DesignSize = (
-              535
-              58)
-            object ButtonCreateFood: TSpeedButton
-              Left = 0
-              Top = 12
-              Width = 160
-              Height = 40
-              Hint = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1099#1081' '#1087#1088#1086#1076#1091#1082#1090
-              Caption = #1053#1086#1074#1099#1081' '#1087#1088#1086#1076#1091#1082#1090
-              Flat = True
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -15
-              Font.Name = 'MS Sans Serif'
-              Font.Style = []
-              ParentFont = False
-              ParentShowHint = False
-              ShowHint = True
-              OnClick = ButtonCreateFoodClick
-            end
-            object ButtonDeleteFood: TSpeedButton
-              Left = 368
-              Top = 12
-              Width = 160
-              Height = 41
-              Hint = #1059#1076#1072#1083#1080#1090#1100' '#1087#1088#1086#1076#1091#1082#1090' (Delete)'
-              Anchors = [akTop, akRight]
-              Caption = #1059#1076#1072#1083#1080#1090#1100
-              Enabled = False
-              Flat = True
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -15
-              Font.Name = 'MS Sans Serif'
-              Font.Style = []
-              NumGlyphs = 2
-              ParentFont = False
-              ParentShowHint = False
-              ShowHint = True
-              OnClick = ButtonDeleteFoodClick
-            end
-          end
           object ListFood: TListView
             Tag = 1
             Left = 9
             Top = 32
             Width = 535
-            Height = 769
+            Height = 673
             Align = alClient
             Columns = <
               item
@@ -1186,12 +1134,40 @@ object Form1: TForm1
             OnKeyPress = ListFoodKeyPress
             OnMouseDown = ListBaseMouseDown
           end
+          object PanelFoodButtons: TPanel
+            Left = 9
+            Top = 705
+            Width = 535
+            Height = 58
+            Align = alBottom
+            BevelOuter = bvNone
+            ParentColor = True
+            TabOrder = 1
+            object ButtonCreateFood: TSpeedButton
+              Left = 0
+              Top = 12
+              Width = 160
+              Height = 40
+              Hint = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1099#1081' '#1087#1088#1086#1076#1091#1082#1090
+              Caption = #1053#1086#1074#1099#1081' '#1087#1088#1086#1076#1091#1082#1090
+              Flat = True
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -15
+              Font.Name = 'MS Sans Serif'
+              Font.Style = []
+              ParentFont = False
+              ParentShowHint = False
+              ShowHint = True
+              OnClick = ButtonCreateFoodClick
+            end
+          end
         end
         object PanelBaseDish: TPanel
           Left = 556
-          Top = 64
-          Width = 1356
-          Height = 868
+          Top = 65
+          Width = 677
+          Height = 772
           Align = alClient
           BevelOuter = bvLowered
           BorderWidth = 8
@@ -1201,7 +1177,7 @@ object Form1: TForm1
           object Shape11: TShape
             Left = 9
             Top = 25
-            Width = 1338
+            Width = 659
             Height = 7
             Align = alTop
             Brush.Style = bsClear
@@ -1210,7 +1186,7 @@ object Form1: TForm1
           object PanelDishHeader: TPanel
             Left = 9
             Top = 9
-            Width = 1338
+            Width = 659
             Height = 16
             Align = alTop
             AutoSize = True
@@ -1232,64 +1208,12 @@ object Form1: TForm1
               Transparent = False
             end
           end
-          object PanelDishButtons: TPanel
-            Left = 9
-            Top = 801
-            Width = 1338
-            Height = 58
-            Align = alBottom
-            BevelOuter = bvNone
-            ParentColor = True
-            TabOrder = 1
-            DesignSize = (
-              1338
-              58)
-            object ButtonCreateDish: TSpeedButton
-              Left = 0
-              Top = 12
-              Width = 160
-              Height = 42
-              Hint = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1086#1077' '#1073#1083#1102#1076#1086
-              Caption = #1053#1086#1074#1086#1077' '#1073#1083#1102#1076#1086
-              Flat = True
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -15
-              Font.Name = 'MS Sans Serif'
-              Font.Style = []
-              ParentFont = False
-              ParentShowHint = False
-              ShowHint = True
-              OnClick = ButtonCreateDishClick
-            end
-            object ButtonDeleteDish: TSpeedButton
-              Left = 1642
-              Top = 12
-              Width = 160
-              Height = 42
-              Hint = #1059#1076#1072#1083#1080#1090#1100' '#1073#1083#1102#1076#1086' (Delete)'
-              Anchors = [akTop, akRight]
-              Caption = #1059#1076#1072#1083#1080#1090#1100
-              Enabled = False
-              Flat = True
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -15
-              Font.Name = 'MS Sans Serif'
-              Font.Style = []
-              NumGlyphs = 2
-              ParentFont = False
-              ParentShowHint = False
-              ShowHint = True
-              OnClick = ButtonDeleteDishClick
-            end
-          end
           object ListDish: TListView
             Tag = 2
             Left = 9
             Top = 32
-            Width = 1338
-            Height = 769
+            Width = 659
+            Height = 673
             Align = alClient
             Color = clWhite
             Columns = <
@@ -1337,7 +1261,7 @@ object Form1: TForm1
             ReadOnly = True
             RowSelect = True
             SmallImages = DataInterface.Images_BaseContent
-            TabOrder = 2
+            TabOrder = 1
             ViewStyle = vsReport
             OnColumnRightClick = ListBaseColumnRightClick
             OnData = ListDishData
@@ -1346,150 +1270,52 @@ object Form1: TForm1
             OnKeyPress = ListFoodKeyPress
             OnMouseDown = ListBaseMouseDown
           end
+          object PanelDishButtons: TPanel
+            Left = 9
+            Top = 705
+            Width = 659
+            Height = 58
+            Align = alBottom
+            BevelOuter = bvNone
+            ParentColor = True
+            TabOrder = 2
+            object ButtonCreateDish: TSpeedButton
+              Left = 0
+              Top = 12
+              Width = 160
+              Height = 42
+              Hint = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1086#1077' '#1073#1083#1102#1076#1086
+              Caption = #1053#1086#1074#1086#1077' '#1073#1083#1102#1076#1086
+              Flat = True
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -15
+              Font.Name = 'MS Sans Serif'
+              Font.Style = []
+              ParentFont = False
+              ParentShowHint = False
+              ShowHint = True
+              OnClick = ButtonCreateDishClick
+            end
+          end
         end
         object GroupBasesSearch: TGroupBox
           Left = 0
           Top = 0
-          Width = 1912
-          Height = 64
+          Width = 1233
+          Height = 65
           Align = alTop
           Caption = 'Search'
           Color = clBtnFace
           ParentColor = False
           TabOrder = 2
           DesignSize = (
-            1912
-            64)
-          object ButtonBasesFilterReset: TSpeedButton
-            Left = 1873
-            Top = 20
-            Width = 28
-            Height = 28
-            Hint = '123'
-            Anchors = [akTop, akRight]
-            Enabled = False
-            Flat = True
-            Glyph.Data = {
-              B60D0000424DB60D000000000000360000002800000030000000180000000100
-              180000000000800D000074120000741200000000000000000000FFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA
-              FAFAE3E3E3CECECEC0C0C0BABABABABABABEBEBECBCBCBDEDEDEF7F7F7FFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFAFAFAE3E3E3CECECEC0C0C0BABABABABABABEBEBECBCBCBDE
-              DEDEF7F7F7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFDFDFDDFDFDFB1B7C3718FD6396DEB1558F9034DFF034D
-              FF0E54FB3068EE6185DBA6AFC4D7D7D7FBFBFBFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDFDFDDFDFDFB9B9B99D9D9D868686
-              777777707070707070747474828282969696B3B3B3D7D7D7FBFBFBFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFAFAFAC6C8CC688ADA11
-              58FB0651FF135EFF206BFF2771FF2771FF226CFF1761FF0651FF0A53FD527EE2
-              B8BDC7F5F5F5FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFAFA
-              FAC9C9C99999997777777272727B7B7B8383838888888888888484847D7D7D72
-              7272737373919191BFBFBFF5F5F5FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFCFCFCB9BECA386FEE0D56FF2469FF245EFF2052FF1D4CF81C49EF1C49
-              EF1D4BF51F51FF235BFF296DFF0D56FF2564F5A7B1C9F5F5F5FFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFCFCFCC0C0C08787877676768484848080807B7B7B
-              7676767171717171717474747A7A7A7F7F7F8787877676767F7F7FB6B6B6F5F5
-              F5FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC6C9D1306BF31259FF275FFF20
-              4EF71F4CF11F4CF11F4CF11F4CF11F4CF11F4CF11F4CF11F4CF11F4DF3255BFF
-              145AFF2062F9ACB6CDFCFCFCFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFCBCBCB8585
-              8579797982828277777774747474747474747474747474747474747474747474
-              74747575758080807A7A7A7E7E7EBABABAFCFCFCFFFFFFFFFFFFFFFFFFFFFFFF
-              EBEBEB497BEA175BFF2A5EFF285AFF295DFF285CFF2758FF2451F82451F82451
-              F82451F82759FF295CFF295DFF2758FF2759FF195AFF336EF4D5D8E0FFFFFFFF
-              FFFFFFFFFFFFFFFFEBEBEB8F8F8F7B7B7B8282828080808282828181817F7F7F
-              7A7A7A7A7A7A7A7A7A7A7A7A8080808181818282827F7F7F8080807B7B7B8787
-              87DADADAFFFFFFFFFFFFFFFFFFFFFFFF95AAD71E63FF2A59FF2B5CFF99B3FFFF
-              FFFFFFFFFF2F64FF2C5DFF2855FA2855FA2D5FFF2F65FFFFFFFFFFFFFF99B2FF
-              2B5AFF2856FD1C5DFF7193DDFAFAFAFFFFFFFFFFFFFFFFFFB2B2B28080808181
-              81828282C4C4C4FFFFFFFFFFFF8686868383837D7D7D7D7D7D848484868686FF
-              FFFFFFFFFFC3C3C38181817E7E7E7D7D7DA0A0A0FAFAFAFFFFFFFFFFFFF0F0F0
-              3F7AF32355FF2B57F72D5BFFFFFFFFFFFFFFFFFFFFFFFFFF3469FF3366FF3266
-              FF3367FFFFFFFFFFFFFFFFFFFFFFFFFF2D5CFF2B57F72957FF2C6DFCD6DBE5FF
-              FFFFFFFFFFF0F0F08F8F8F7D7D7D7E7E7E828282FFFFFFFFFFFFFFFFFFFFFFFF
-              898989888888888888888888FFFFFFFFFFFFFFFFFFFFFFFF8383837E7E7E8080
-              80878787DDDDDDFFFFFFFFFFFFBAC8E62661FF305BF9305BF9315CFDFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFF3D74FF3C71FFEEF2FFFFFFFFFFFFFFFFFFFFFFFFFF
-              305CFB305BF9305BF92358FF90ACE4FFFFFFFFFFFFCDCDCD8282828181818181
-              81838383FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9090908F8F8FF5F5F5FFFFFFFF
-              FFFFFFFFFFFFFFFF8282828181818181817E7E7EB5B5B5FFFFFFFFFFFF8AAAE7
-              2251F83460FB3561FE3562FF3562FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFF3562FF3562FF3460FC3460FB2754F26491ECFF
-              FFFFFFFFFFB4B4B4797979858585878787878787878787FFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF8787878787878585858585
-              857A7A7AA0A0A0FFFFFFFFFFFF6D94ED2A55EE3965FF3A66FF3A66FF3A66FF3A
-              66FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF3A66FF3A66FF
-              3A66FF3A65FF3964FD325DF64A78F4FFFFFFFFFFFFA5A5A57A7A7A8A8A8A8A8A
-              8A8A8A8A8A8A8A8A8A8AFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFF8A8A8A8A8A8A8A8A8A8A8A8A898989828282929292FFFFFFFFFFFF6288F1
-              325DF43F6BFF3F6BFF3F6BFF3F6BFF3F6BFF3F6BFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFFF3F6BFF3F6BFF3F6BFF3F6BFF3F6BFF3F6AFF3964FA416DF8FF
-              FFFFFFFFFF9E9E9E8181818E8E8E8E8E8E8E8E8E8E8E8E8E8E8E8E8E8EFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF8E8E8E8E8E8E8E8E8E8E8E8E8E8E8E8D8D
-              8D8888888D8D8DFFFFFFFFFFFF698BF23762F9446FFF4570FF446FFF446FFF44
-              6FFF4570FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF4774FF4774FF446FFF
-              446FFF4570FF446FFF3F6AFF456EF8FFFFFFFFFFFFA2A2A28686869191919191
-              91919191919191919191919191FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF93
-              93939393939191919191919191919191918D8D8D8E8E8EFFFFFFFFFFFF84A1F5
-              3864FB4975FF4975FF4A77FF5081FF5585FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFF5386FF4F80FF4975FF4975FF4976FF3F6BFF5F82F6FF
-              FFFFFFFFFFB3B3B38888889494949494949595959B9B9B9E9E9EFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9D9D9D9A9A9A9494949494949595
-              958E8E8E9D9D9DFFFFFFFFFFFFBACBFC3B66FD4F7BFF4E79FF5584FF6E98FFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5A8AFF
-              5483FF4E7AFF4F7BFF3C67FE92AAF8FFFFFFFFFFFFD6D6D68A8A8A9898989797
-              979D9D9DACACACFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFA1A1A19D9D9D9898989898988B8B8BBCBCBCFFFFFFFFFFFFF2F6FF
-              4470FE5380FF537FFF5784FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF527CFF527C
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5988FF5480FF5582FF406DFFD6E1FFFF
-              FFFFFFFFFFF8F8F89191919B9B9B9B9B9B9E9E9EFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFF9A9A9A9A9A9AFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA0A0A09C9C9C9D9D
-              9D8F8F8FE7E7E7FFFFFFFFFFFFFFFFFF8CA6FC4673FF5A85FF5883FFFFFFFFFF
-              FFFFFFFFFFFFFFFF5781FF5781FF5781FF5781FFFFFFFFFFFFFFFFFFFFFFFFFF
-              5B87FF5B86FF4D7AFF698CFCFFFFFFFFFFFFFFFFFFFFFFFFBABABA9393939F9F
-              9F9E9E9EFFFFFFFFFFFFFFFFFFFFFFFF9D9D9D9D9D9D9D9D9D9D9D9DFFFFFFFF
-              FFFFFFFFFFFFFFFFA0A0A0A0A0A0979797A6A6A6FFFFFFFFFFFFFFFFFFFFFFFF
-              ECF1FF5580FE5581FF5E8AFFAEC3FFFFFFFFFFFFFF5B85FF5B85FF5B85FF5B85
-              FF5B85FF5B85FFFFFFFFFFFFFFB0C5FF5F8BFF5D8AFF4D7AFFD5DFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFF4F4F49C9C9C9C9C9CA2A2A2D0D0D0FFFFFFFFFFFFA0A0A0
-              A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0FFFFFFFFFFFFD1D1D1A3A3A3A2A2A29797
-              97E6E6E6FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFCAD8FF5280FF608DFF638FFF61
-              8BFF608AFF5F89FF5F89FF5F89FF5F89FF5F89FF5F89FF608AFF628DFF6491FF
-              6795FF5381FFAAC1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE0E0E09B9B
-              9BA4A4A4A6A6A6A4A4A4A3A3A3A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A2A3
-              A3A3A5A5A5A7A7A7A9A9A99C9C9CCECECEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFB6CBFF5987FF5E8CFF6995FF6692FF648FFF648FFF648EFF648F
-              FF648FFF6590FF6793FF6A97FF6694FF5887FF99B6FFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFD5D5D5A0A0A0A3A3A3AAAAAAA8A8A8A6A6A6
-              A6A6A6A6A6A6A6A6A6A6A6A6A7A7A7A8A8A8ABABABA8A8A89F9F9FC5C5C5FFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFD1DFFF6895FF5B
-              8AFF6C9BFF6E9BFF6C99FF6C99FF6C99FF6D9BFF6F9DFF709FFF5D8DFF6191FF
-              B8CDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFE5E5E5A9A9A9A1A1A1ADADADADADADACACACACACACACACACADADADAEAEAEAF
-              AFAFA3A3A3A6A6A6D7D7D7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFF6F9FFABC5FF6C99FF6291FF6190FF6392FF6594
-              FF6191FF6292FF6796FF9EBCFFEDF2FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFAFAFAD0D0D0ACACACA6A6A6
-              A5A5A5A7A7A7A8A8A8A6A6A6A6A6A6A9A9A9C8C8C8F5F5F5FFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFBFDFFD6E3FFC2D6FFA9C5FFA4C2FFC2D6FFD1E0FFF4F8FFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-              FFFFFFFFFFFFFFFFFFFFFDFDFDE8E8E8DDDDDDCFCFCFCCCCCCDDDDDDE5E5E5F9
-              F9F9FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
-            NumGlyphs = 2
-            ParentShowHint = False
-            ShowHint = True
-            Transparent = False
-            OnClick = ButtonBasesFilterResetClick
-          end
+            1233
+            65)
           object EditBaseFoodSearch: TEdit
-            Left = 8
+            Left = 16
             Top = 24
-            Width = 1859
+            Width = 1201
             Height = 24
             Anchors = [akLeft, akTop, akRight]
             Font.Charset = DEFAULT_CHARSET
@@ -1515,7 +1341,7 @@ object Form1: TForm1
           Left = 0
           Top = 0
           Width = 249
-          Height = 932
+          Height = 837
           Align = alLeft
           BevelOuter = bvLowered
           BorderWidth = 8
@@ -1739,8 +1565,8 @@ object Form1: TForm1
         object PanelImageLarge: TPanel
           Left = 249
           Top = 0
-          Width = 1663
-          Height = 932
+          Width = 984
+          Height = 837
           Align = alClient
           BevelOuter = bvLowered
           Caption = #1053#1077#1090' '#1075#1088#1072#1092#1080#1082#1072
@@ -1773,13 +1599,13 @@ object Form1: TForm1
           Left = 0
           Top = 0
           Width = 225
-          Height = 932
+          Height = 837
           Align = alLeft
           Caption = #1056#1077#1082#1086#1088#1076#1099' '#1057#1050
           TabOrder = 0
           DesignSize = (
             225
-            932)
+            837)
           object ButtonBSHistory: TButton
             Left = 9
             Top = 25
@@ -1802,7 +1628,7 @@ object Form1: TForm1
             Left = 2
             Top = 296
             Width = 221
-            Height = 634
+            Height = 539
             Align = alBottom
             Anchors = [akLeft, akTop, akRight, akBottom]
             Font.Charset = RUSSIAN_CHARSET
@@ -1874,18 +1700,18 @@ object Form1: TForm1
           Left = 225
           Top = 0
           Width = 225
-          Height = 932
+          Height = 837
           Align = alLeft
           Caption = #1056#1077#1082#1086#1088#1076#1099' '#1041#1046#1059
           TabOrder = 1
           DesignSize = (
             225
-            932)
+            837)
           object ListCB: TListBox
             Left = 2
             Top = 56
             Width = 221
-            Height = 874
+            Height = 779
             Hint = #1050#1083#1080#1082#1085#1080#1090#1077' '#1076#1074#1072' '#1088#1072#1079#1072' '#1076#1083#1103' '#1087#1077#1088#1077#1093#1086#1076#1072
             Style = lbOwnerDrawFixed
             Align = alBottom
@@ -2102,8 +1928,8 @@ object Form1: TForm1
           end>
       end>
     Images = DataInterface.Images_Menu
-    Left = 239
-    Top = 83
+    Left = 247
+    Top = 131
     StyleName = 'XP Style'
     object ActionSync: TAction
       Category = #1060#1072#1081#1083
@@ -2608,7 +2434,7 @@ object Form1: TForm1
   object ThreadExec_: TThreadExecutor
     OnDone = ThreadExec_Done
     OnTimeOut = ThreadExec_TimeOut
-    Left = 296
-    Top = 80
+    Left = 304
+    Top = 128
   end
 end
