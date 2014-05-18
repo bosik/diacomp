@@ -32,7 +32,7 @@ type
     CheckValue: TCheckValue;   // функция проверки значения
   end;
 
-  TFormEditor = class(TFormCommonEditor)
+  TFormEditorBlood = class(TFormCommonEditor)
     Image: TImage;
     LabelTime: TLabel;
     LabelValue: TLabel;
@@ -76,14 +76,14 @@ implementation
 
 {$R *.dfm}
 
-{ TFormEditor }
+{ TFormEditorBlood }
 
 {==============================================================================}
 function ShowEditor(var Time_: TDateTime; var Value: string; var Finger: integer;
   const Params: TDialogParams): boolean;
 {==============================================================================}
 var
-  Dialog: TFormEditor;
+  Dialog: TFormEditorBlood;
   i: integer;
   Minutes: integer;
 begin
@@ -103,10 +103,10 @@ begin
   Result := ShowEditor(Time_, Value, f, Params);
 end;
 
-{ TFormEditor }
+{ TFormEditorBlood }
 
 {==============================================================================}
-procedure TFormEditor.SmallDesigner(ShowEditors: TEditorsList);
+procedure TFormEditorBlood.SmallDesigner(ShowEditors: TEditorsList);
 {==============================================================================}
 var
   BottomLine: integer;
@@ -199,7 +199,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TFormEditor.FormShow(Sender: TObject);
+procedure TFormEditorBlood.FormShow(Sender: TObject);
 {==============================================================================}
 begin
   PlaceCenter(Self);
@@ -212,7 +212,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TFormEditor.EditTimeKeyDown(Sender: TObject; var Key: Word;
+procedure TFormEditorBlood.EditTimeKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 {==============================================================================}
 begin
@@ -221,7 +221,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TFormEditor.EditValueKeyDown(Sender: TObject; var Key: Word;
+procedure TFormEditorBlood.EditValueKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 {==============================================================================}
 begin
@@ -230,7 +230,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TFormEditor.ComboFingerKeyDown(Sender: TObject; var Key: Word;
+procedure TFormEditorBlood.ComboFingerKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 {==============================================================================}
 begin
@@ -240,13 +240,13 @@ begin
   end;
 end;
 
-procedure TFormEditor.FormPaint(Sender: TObject);
+procedure TFormEditorBlood.FormPaint(Sender: TObject);
 begin
  // Image.Transparent := True;
 end;
 
 {==============================================================================}
-procedure TFormEditor.FormCreate(Sender: TObject);
+procedure TFormEditorBlood.FormCreate(Sender: TObject);
 {==============================================================================}
 var
   i: integer;
@@ -277,7 +277,7 @@ begin
 end;
 
 {==============================================================================}
-class function TFormEditor.Clone(X: TVersioned): TVersioned;
+class function TFormEditorBlood.Clone(X: TVersioned): TVersioned;
 {==============================================================================}
 var
   S: string;
@@ -287,14 +287,14 @@ begin
 end;
 
 {==============================================================================}
-class function TFormEditor.CreateEditorForm: TFormCommonEditor;
+class function TFormEditorBlood.CreateEditorForm: TFormCommonEditor;
 {==============================================================================}
 begin
-  Result := TFormEditor.Create(nil);
+  Result := TFormEditorBlood.Create(nil);
 end;
 
 {==============================================================================}
-function TFormEditor.ReadEntityFromGUI: boolean;
+function TFormEditorBlood.ReadEntityFromGUI: boolean;
 {==============================================================================}
 var
   T: integer;
@@ -315,7 +315,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TFormEditor.ShowEntityInGUI(CreateMode: boolean);
+procedure TFormEditorBlood.ShowEntityInGUI(CreateMode: boolean);
 {==============================================================================}
 var
   LocalTime: TDateTime;
@@ -340,13 +340,13 @@ begin
 end;
 
 {==============================================================================}
-function TFormEditor.Entity: TBloodRecord;
+function TFormEditorBlood.Entity: TBloodRecord;
 {==============================================================================}
 begin
   Result := TBloodRecord(inherited Entity);
 end;
 
-procedure TFormEditor.ButtonOKClick(Sender: TObject);
+procedure TFormEditorBlood.ButtonOKClick(Sender: TObject);
 begin
   if (ReadEntityFromGUI()) then
   begin
