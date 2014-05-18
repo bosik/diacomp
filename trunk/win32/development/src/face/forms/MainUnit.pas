@@ -25,7 +25,7 @@ uses
   UnitFirstMan,
   UnitStartup,
   UnitDEditor,
-  UnitDInsEditor,
+  UnitEditorIns,
   UnitEditDish,
   UnitEditFood,
   UnitSettings,
