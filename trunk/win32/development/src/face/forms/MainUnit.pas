@@ -2632,7 +2632,7 @@ function ShowBloodEditor(var Rec: TBloodRecord; New: boolean; Focus: TFocusMode)
 {==============================================================================}
 begin
   Log(DEBUG, 'ShowBloodEditor()');
-  Result := TFormEditor.ShowEditor(TVersioned(Rec), New);
+  Result := TFormEditorBlood.ShowEditor(TVersioned(Rec), New);
 end;
 
 {==============================================================================}

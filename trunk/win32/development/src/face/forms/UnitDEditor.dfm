@@ -1,4 +1,4 @@
-object FormEditor: TFormEditor
+object FormEditorBlood: TFormEditorBlood
   Left = 278
   Top = 399
   BorderIcons = [biSystemMenu]
