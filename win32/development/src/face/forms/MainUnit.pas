@@ -261,7 +261,8 @@ type
     LabelAvgDeviation: TLabel;
     LabelWeight: TLabel;
     PanelDevelopment: TPanel;
-    PanelSearchFoodBase: TPanel;
+    Shape2: TShape;
+    GroupBasesSearch: TGroupBox;
     EditBaseFoodSearch: TEdit;
     ButtonResetFilterFoodBase: TSpeedButton;
 
@@ -4649,7 +4650,7 @@ var
 begin
   StartProc('UpdateDishTable()');
 
-  LabelFoodBase.Caption := Format(MAIN_BASES_DISH_TITLE, [Length(FoodList)]);
+  LabelDishBase.Caption := Format(MAIN_BASES_DISH_TITLE, [Length(DishList)]);
 
   DishM := Value['DishM'];
   DishP := Value['DishP'];
@@ -4896,23 +4897,21 @@ procedure TForm1.UpdateDishbaseFilter;
 var
   Filter: string;
 begin
- { ClearDishList;
+  ClearDishList;
 
-  Filter := EditBaseDishSearch.Text;
+  Filter := EditBaseFoodSearch.Text;
   if (Trim(Filter) = '') then
   begin
     DishList := DishBaseLocal.FindAll(false);
-    ButtonResetFilterDishBase.Hint := MAIN_BASES_FILTER_ALL;
-    ButtonResetFilterDishBase.Enabled := False;
+    // TODO: duplicated code
+    ButtonResetFilterFoodBase.Hint := MAIN_BASES_FILTER_ALL;
+    ButtonResetFilterFoodBase.Enabled := False;
   end else
   begin
     DishList := DishBaseLocal.FindAny(Filter);
-    ButtonResetFilterDishBase.Hint := MAIN_BASES_FILTER_FILTERED;
-    ButtonResetFilterDishBase.Enabled := True;
-  end;     }
-
-  // TODO 3: implement dish filtering
-  DishList := DishBaseLocal.FindAll(false);
+    ButtonResetFilterFoodBase.Hint := MAIN_BASES_FILTER_FILTERED;
+    ButtonResetFilterFoodBase.Enabled := True;
+  end;
 end;
 
 {==============================================================================}
@@ -4925,6 +4924,14 @@ begin
   begin
     ListFood.Items[0].Selected := True;
     ListFood.Items[0].Focused := True;
+  end;
+
+  UpdateDishbaseFilter();
+  UpdateDishTable(False, True, False);
+  if (ListDish.Items.Count > 0) then
+  begin
+    ListDish.Items[0].Selected := True;
+    ListDish.Items[0].Focused := True;
   end;
 end;
 
