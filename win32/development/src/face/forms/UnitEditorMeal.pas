@@ -1,4 +1,4 @@
-unit UnitDMealEditor;
+unit UnitEditorMeal;
 
 interface
 
