@@ -58,7 +58,7 @@ uses
   UnitEditor in 'src\face\forms\UnitEditor.pas',
   UnitEditorBlood in 'src\face\forms\UnitEditorBlood.pas' {FormEditorBlood},
   UnitEditorIns in 'src\face\forms\UnitEditorIns.pas' {FormEditorIns},
-  UnitDMealEditor in 'src\face\forms\UnitDMealEditor.pas' {FormEditorMeal};
+  UnitEditorMeal in 'src\face\forms\UnitEditorMeal.pas' {FormEditorMeal};
 
 {$R *.res}
 

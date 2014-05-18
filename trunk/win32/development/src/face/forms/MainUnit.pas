@@ -27,7 +27,7 @@ uses
   UnitDEditor,
   UnitEditorBlood,
   UnitEditorIns,
-  UnitDMealEditor,
+  UnitEditorMeal,
   UnitEditDish,
   UnitEditFood,
   UnitSettings,
