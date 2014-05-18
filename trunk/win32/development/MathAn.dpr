@@ -9,9 +9,10 @@ uses
   AnalyzeInterface in 'src\analyze\AnalyzeInterface.pas',
   DiaryRecords in 'src\bo\DiaryRecords.pas',
   BusinessObjects in 'src\bo\BusinessObjects.pas',
-  DiaryRoutines in 'src\common\DiaryRoutines.pas';
+  DiaryRoutines in 'src\common\DiaryRoutines.pas',
+  Bases in 'src\persistence\Bases.pas';
 
-  // TODO 1: move code to some unit into src/analyze
+// TODO 1: move code to some unit into src/analyze
 
 type
   TTimePoint = record
