@@ -28,6 +28,7 @@ uses
   UnitEditorBlood,
   UnitEditorIns,
   UnitEditorMeal,
+  UnitEditorNote,
   UnitEditDish,
   UnitEditFood,
   UnitSettings,
@@ -2655,37 +2656,11 @@ begin
 end;
 
 {==============================================================================}
-function ShowNoteEditor(var Time: TDateTime; var AValue: string; New: boolean): boolean;
+function ShowNoteEditor(var Rec: TNoteRecord; New: boolean): boolean;
 {==============================================================================}
-var
-  P: TDialogParams;
-  StrValue: string;
 begin
   Log(DEBUG, 'TForm1.ShowNoteEditor()');
-  P.Image := Form1.ImageNote.Picture.Bitmap;
-
-  if Value['ColoredEditors'] then
-    P.Color := Value['Color_SelNote']
-  else
-    P.Color := clBtnFace;
-
-  P.Caption := 'Заметка';
-  P.CaptionTime := 'Время';
-  P.CaptionValue := 'Текст';
-
-  if New then
-  begin
-    StrValue := '';
-    Time := GetTimeUTC();
-  end else
-    StrValue := AValue;
-
-  if ShowEditor(Time, StrValue, P) then
-  begin
-    AValue := StrValue;
-    Result := True;
-  end else
-    Result := False;
+  Result := TFormEditorNote.ShowEditor(TVersioned(Rec), New);
 end;
 
 {==============================================================================}
@@ -2799,34 +2774,31 @@ end;
 procedure TForm1.ClickNote(New: boolean);
 {==============================================================================}
 var
-  Note: TNoteRecord;
-  ATime: TDateTime;
-  AValue: string;
+  ID: TCompactGUID;
+  Rec: TNoteRecord;
 begin
   Log(DEBUG, 'TForm1.ClickNote');
   if New then
   begin
-    if ShowNoteEditor(ATime, AValue, New) then
+    Rec := TNoteRecord.Create();
+    if ShowNoteEditor(Rec, New) then
     begin
-      LocalSource.Add(TNoteRecord.Create(ATime, AValue));
+      LocalSource.Add(Rec);
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
+      DiaryView.SelectedRecordID := Rec.ID;
+      ScrollToSelected;
     end;
   end else
   begin
-    // TODO: use TRec instead of scope of field-variables
-    Note := TNoteRecord(DiaryView.SelectedRecord);
+    ID := DiaryView.SelectedRecordID;
+    Rec := TNoteRecord(LocalSource.FindById(ID));
 
-    ATime := Note.NativeTime;
-    AValue := Note.Text;
-    if ShowNoteEditor(ATime, AValue, New) then
+    if ShowNoteEditor(Rec, New) then
     begin
-      with Note do
-      begin
-        BeginUpdate;
-        NativeTime := ATime;
-        Text := AValue;
-        EndUpdate;
-      end;
+      LocalSource.Post(Rec);
+      DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
+      DiaryView.SelectedRecordID := Rec.ID;
+      ScrollToSelected;
     end;
   end;
 end;
