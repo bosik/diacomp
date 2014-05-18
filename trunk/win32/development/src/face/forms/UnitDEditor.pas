@@ -236,7 +236,7 @@ procedure TFormEditor.ComboFingerKeyDown(Sender: TObject; var Key: Word;
 begin
   if Key = vk_Return then
   begin
-    ModalResult := mrOk; Close;
+    ModalResult := mrOk;
   end;
 end;
 
