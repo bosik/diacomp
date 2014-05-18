@@ -5,6 +5,7 @@ MAIN_BASES                               = Bases
 MAIN_BASES_FILTER_ALL                    = All items are shown
 MAIN_BASES_FILTER_FILTERED               = Remove filter (Escape)
 MAIN_BASES_FOOD_TITLE                    = Food base (%d)
+MAIN_BASES_DISH_TITLE                    = Dish base (%d)
 MAIN_DIARY                               = Diary
 MAIN_DIARY_PANEL_ADD_SELECT_MEAL         = Select existing meal or create new one
 MAIN_DIARY_PANEL_TIME_AFTER_INS          = After injection:

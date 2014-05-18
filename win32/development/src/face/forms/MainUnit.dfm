@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 31
-  Top = 31
+  Left = 423
+  Top = 19
   Width = 1249
   Height = 959
   Caption = #1053#1072#1079#1074#1072#1085#1080#1077
@@ -87,7 +87,7 @@ object Form1: TForm1
       Top = 0
       Width = 1241
       Height = 871
-      ActivePage = TabDiary
+      ActivePage = TabBase
       Align = alClient
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -1479,12 +1479,14 @@ object Form1: TForm1
               end>
             GridLines = True
             HideSelection = False
+            OwnerData = True
             ReadOnly = True
             RowSelect = True
             SmallImages = DataInterface.Images_BaseContent
             TabOrder = 2
             ViewStyle = vsReport
             OnColumnRightClick = ListBaseColumnRightClick
+            OnData = ListDishData
             OnDblClick = ListDishDblClick
             OnKeyDown = ListDishKeyDown
             OnKeyPress = ListFoodKeyPress
