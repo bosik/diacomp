@@ -67,7 +67,7 @@ type
     function AddToInternal(Rec: TCustomRecord): integer;
     procedure Clear;
     function GetRecordIndex(ID: TCompactGUID): integer;
-    function TraceLastPage: integer;
+    function Trace(Index: integer): integer;
 
     procedure LoadFromFile(const FileName: string);
     procedure SaveToFile(const FileName: string);
@@ -495,7 +495,7 @@ begin
   end;
 
   FRecords[Result].Serialize(Rec);
-  Result := TraceLastPage();
+  Result := Trace(Result);
 end;
 
 {==============================================================================}
@@ -818,23 +818,40 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryLocalSource.TraceLastPage(): integer;
+function TDiaryLocalSource.Trace(Index: integer): integer;
 {==============================================================================}
 var
   Temp: TRecordData;
+  Changed: boolean;
 begin
-  Result := High(FRecords);
-  if (Result > -1) then
+  Result := Index;
+  if (Index >= 0) and (Index <= High(FRecords)) then
   begin
     Temp := FRecords[Result];
-    while (Result > 0) and (FRecords[Result - 1].NativeTime > Temp.NativeTime) do
+    Changed := False;
+
+    { прогон вверх }
+    while (Result > 0)and(FRecords[Result - 1].NativeTime > Temp.NativeTime) do
     begin
       FRecords[Result] := FRecords[Result - 1];
       dec(Result);
+      Changed := True;
     end;
-    FRecords[Result] := Temp;
+
+    { прогон вниз }
+    while (Result < High(FRecords))and(FRecords[Result + 1].NativeTime < Temp.NativeTime) do
+    begin
+      FRecords[Result] := FRecords[Result + 1];
+      inc(Result);
+      Changed := True;
+    end;
+
+    { запись }
+    if Changed then
+      FRecords[Result] := Temp;
   end;
 end;
+
 
 {==============================================================================}
 function TDiaryLocalSource.FindById(ID: TCompactGUID): TCustomRecord;

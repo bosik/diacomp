@@ -25,6 +25,7 @@ uses
   UnitFirstMan,
   UnitStartup,
   UnitDEditor,
+  UnitDInsEditor,
   UnitEditDish,
   UnitEditFood,
   UnitSettings,
@@ -410,10 +411,10 @@ type
     { =========== РЕДАКТИРОВАНИЕ =========== }
 
     { дневник }
-    function ClickBlood(New: boolean): integer;
-    function ClickIns(New: boolean): integer;
-    function ClickMeal(New: boolean): integer;
-    function ClickNote(New: boolean): integer;
+    procedure ClickBlood(New: boolean);
+    procedure ClickIns(New: boolean);
+    procedure ClickMeal(New: boolean);
+    procedure ClickNote(New: boolean);
 
     procedure MoveMeal(Delta: integer); deprecated;
 
@@ -2636,38 +2637,11 @@ begin
 end;
 
 {==============================================================================}
-function ShowInsEditor(var Time: TDateTime; var AValue: real; New: boolean): boolean;
+function ShowInsEditor(var Rec: TInsRecord; New: boolean): boolean;
 {==============================================================================}
-var
-  P: TDialogParams;
-  StrValue: string;
 begin
   Log(DEBUG, 'TForm1.ShowInsEditor()');
-
-  P.Image := Form1.ButtonAddIns.Glyph;
-
-  if Value['ColoredEditors'] then
-    P.Color := Value['Color_SelIns']
-  else
-    P.Color := clBtnFace;
-
-  P.Caption := 'Инъекция';
-  P.CaptionTime := 'Время';
-  P.CaptionValue := 'Доза';
-
-  if New then
-  begin
-    StrValue := '';
-    Time := GetTimeUTC();
-  end else
-    StrValue := FloatToStr(AValue);
-
-  if ShowEditor(Time, StrValue, P) then
-  begin
-    AValue := StrToFloat(CheckDot(StrValue));
-    Result := True;
-  end else
-    Result := False;
+  Result := TFormEditorIns.ShowEditor(TVersioned(Rec), New);
 end;
 
 {==============================================================================}
@@ -2739,78 +2713,77 @@ begin
 end;
 
 {==============================================================================}
-function TForm1.ClickBlood(New: boolean): integer;
+procedure TForm1.ClickBlood(New: boolean);
 {==============================================================================}
 var
   ID: TCompactGUID;
-  BloodRec: TBloodRecord;
+  Rec: TBloodRecord;
 begin
   Log(DEBUG, 'TForm1.ClickBlood');
 
   if New then
   begin
     // определение пальца
-    BloodRec := TBloodRecord.Create();
-    BloodRec.Finger := Diary.GetNextFinger();
+    Rec := TBloodRecord.Create();
+    Rec.Finger := Diary.GetNextFinger();
 
-    if ShowBloodEditor(BloodRec, New) then
+    if ShowBloodEditor(Rec, New) then
     begin
-      LocalSource.Add(BloodRec);
+      LocalSource.Add(Rec);
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
-      // TODO: what is returned value's purpose?
-    end else
-      Result := -1;
+      DiaryView.SelectedRecordID := Rec.ID;
+      ScrollToSelected;
+    end;
   end else
   begin
     ID := DiaryView.SelectedRecordID;
-    BloodRec := TBloodRecord(LocalSource.FindById(ID));
+    Rec := TBloodRecord(LocalSource.FindById(ID));
 
-    if ShowBloodEditor(BloodRec, New) then
+    if ShowBloodEditor(Rec, New) then
     begin
-      LocalSource.Post(BloodRec);
+      LocalSource.Post(Rec);
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
+      DiaryView.SelectedRecordID := Rec.ID;
+      ScrollToSelected;
     end;
-    Result := DiaryView.SelectedRecordIndex;
   end;
 end;
 
 {==============================================================================}
-function TForm1.ClickIns(New: boolean): integer;
+procedure TForm1.ClickIns(New: boolean);
 {==============================================================================}
 var
-  ATime: TDateTime;
-  AValue: real;
-  InsRecord: TInsRecord;
+  ID: TCompactGUID;
+  Rec: TInsRecord;
 begin
   Log(DEBUG, 'TForm1.ClickIns');
   if New then
   begin
-    if ShowInsEditor(ATime, AValue, New) then
+    Rec := TInsRecord.Create();
+    if ShowInsEditor(Rec, New) then
     begin
-      LocalSource.Add(TInsRecord.Create(ATime, AValue));
+      LocalSource.Add(Rec);
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
-    end else
-      Result := -1;
+      DiaryView.SelectedRecordID := Rec.ID;
+      ScrollToSelected;
+    end;
   end else
   begin
-    InsRecord := TInsRecord(DiaryView.SelectedRecord);
+    ID := DiaryView.SelectedRecordID;
+    Rec := TInsRecord(LocalSource.FindById(ID));
 
-    ATime := InsRecord.NativeTime;
-    AValue := InsRecord.Value;
-    if ShowInsEditor(ATime, AValue, New) then
-    with InsRecord do
+    if ShowInsEditor(Rec, New) then
     begin
-      BeginUpdate;
-      NativeTime := ATime;
-      Value := AValue;
-      EndUpdate;
+      LocalSource.Post(Rec);
+      DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
+      DiaryView.SelectedRecordID := Rec.ID;
+      ScrollToSelected;
     end;
-    Result := DiaryView.SelectedRecordIndex;
   end;
 end;
 
 {==============================================================================}
-function TForm1.ClickMeal(New: boolean): integer;
+procedure TForm1.ClickMeal(New: boolean);
 {==============================================================================}
 var
   ATime: TDateTime;
@@ -2823,8 +2796,7 @@ begin
     begin
       LocalSource.Add(TMealRecord.Create(ATime, False));
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
-    end else
-      Result := -1;
+    end;
   end else
   begin
     Meal := TMealRecord(DiaryView.SelectedRecord);
@@ -2833,18 +2805,15 @@ begin
     if ShowMealEditor(ATime, New) then
     with Meal do
     begin
-      //BeginUpdate;
       NativeTime := ATime;
-      //EndUpdate; - зачем?
       UpdateTimeLeft;
       ComboDiaryNew.SetFocus;
     end;
-    Result := DiaryView.SelectedRecordIndex;
   end;
 end;
 
 {==============================================================================}
-function TForm1.ClickNote(New: boolean): integer;
+procedure TForm1.ClickNote(New: boolean);
 {==============================================================================}
 var
   Note: TNoteRecord;
@@ -2858,8 +2827,7 @@ begin
     begin
       LocalSource.Add(TNoteRecord.Create(ATime, AValue));
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
-    end else
-      Result := -1;
+    end;
   end else
   begin
     // TODO: use TRec instead of scope of field-variables
@@ -2877,7 +2845,6 @@ begin
         EndUpdate;
       end;
     end;
-    Result := DiaryView.SelectedRecordIndex;
   end;
 end;
 
@@ -3200,14 +3167,11 @@ procedure TForm1.ScrollToSelected;
 var
   n: integer;
 begin
-  if (DiaryView.CurrentPage <> nil) then
-  begin
-    n := DiaryView.SelectedRecordIndex;
-    { вторая проверка, наверно, излишняя }
-    if (n > -1)and(Length(DiaryView.CurrentPage) > 0) then
-    ScrollBoxDiary.VertScrollBar.Position := Round(
-      n / Length(DiaryView.CurrentPage) * ScrollBoxDiary.VertScrollBar.Range);
-  end;
+  n := DiaryView.SelectedRecordIndex;
+  { вторая проверка, наверно, излишняя }
+  if (n > -1)and(Length(DiaryView.CurrentPage) > 0) then
+    ScrollBoxDiary.VertScrollBar.Position :=
+      Round(n / Length(DiaryView.CurrentPage) * ScrollBoxDiary.VertScrollBar.Range);
 end;
 
 {==============================================================================}
@@ -3259,10 +3223,10 @@ begin
   TrayIcon.ShowMainForm;
   PageControl1.ActivePageIndex := 0;
   case TControl(Sender).Tag of
-    1: if ClickBlood(True) > -1 then ScrollToSelected;
-    2: if ClickIns(True)   > -1 then ScrollToSelected;
-    3: if ClickMeal(True)  > -1 then ScrollToSelected;
-    4: if ClickNote(True)  > -1 then ScrollToSelected;
+    1: ClickBlood(True);
+    2: ClickIns(True);
+    3: ClickMeal(True);
+    4: ClickNote(True);
   end;
 end;
 
