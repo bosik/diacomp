@@ -10,8 +10,6 @@ uses
   JsonSerializer, uLkJSON, ComCtrls, SettingsINI;
 
 type
-  TFocusMode = (fmTime, fmValue);
-
   // not bad...
   // Nope, it's bad.
   TDialogParams = record
@@ -24,8 +22,6 @@ type
     CaptionFinger: string;     // подпись в лейбле "Палец"
     CaptionOK: string;         // подпись к кнопке "ОК"
     CaptionCancel: string;     // подпись к кнопке "Отмена"
-
-    //FocusMode: TFocusMode;     // фокус после отображения
   end;
 
   TFormEditorBlood = class(TFormCommonEditor)

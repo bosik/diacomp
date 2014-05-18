@@ -410,10 +410,10 @@ type
     { =========== ÐÅÄÀÊÒÈÐÎÂÀÍÈÅ =========== }
 
     { äíåâíèê }
-    function ClickBlood(New: boolean; Focus: TFocusMode): integer;
-    function ClickIns(New: boolean; Focus: TFocusMode): integer;
+    function ClickBlood(New: boolean): integer;
+    function ClickIns(New: boolean): integer;
     function ClickMeal(New: boolean): integer;
-    function ClickNote(New: boolean; Focus: TFocusMode): integer;
+    function ClickNote(New: boolean): integer;
 
     procedure MoveMeal(Delta: integer); deprecated;
 
@@ -2628,7 +2628,7 @@ end;
 { ============================== ÐÅÄÀÊÒÎÐÛ ================================ }
 
 {==============================================================================}
-function ShowBloodEditor(var Rec: TBloodRecord; New: boolean; Focus: TFocusMode): boolean;
+function ShowBloodEditor(var Rec: TBloodRecord; New: boolean): boolean;
 {==============================================================================}
 begin
   Log(DEBUG, 'ShowBloodEditor()');
@@ -2636,8 +2636,7 @@ begin
 end;
 
 {==============================================================================}
-function ShowInsEditor(var Time: TDateTime; var AValue: real; New: boolean;
-  Focus: TFocusMode): boolean;
+function ShowInsEditor(var Time: TDateTime; var AValue: real; New: boolean): boolean;
 {==============================================================================}
 var
   P: TDialogParams;
@@ -2710,8 +2709,7 @@ begin
 end;
 
 {==============================================================================}
-function ShowNoteEditor(var Time: TDateTime; var AValue: string; New: boolean;
-  Focus: TFocusMode): boolean;
+function ShowNoteEditor(var Time: TDateTime; var AValue: string; New: boolean): boolean;
 {==============================================================================}
 var
   P: TDialogParams;
@@ -2747,7 +2745,7 @@ begin
 end;
 
 {==============================================================================}
-function TForm1.ClickBlood(New: boolean; Focus: TFocusMode): integer;
+function TForm1.ClickBlood(New: boolean): integer;
 {==============================================================================}
 var
   ID: TCompactGUID;
@@ -2761,7 +2759,7 @@ begin
     BloodRec := TBloodRecord.Create();
     BloodRec.Finger := Diary.GetNextFinger();
 
-    if ShowBloodEditor(BloodRec, New, Focus) then
+    if ShowBloodEditor(BloodRec, New) then
     begin
       LocalSource.Add(BloodRec);
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
@@ -2773,7 +2771,7 @@ begin
     ID := DiaryView.SelectedRecordID;
     BloodRec := TBloodRecord(LocalSource.FindById(ID));
 
-    if ShowBloodEditor(BloodRec, New, Focus) then
+    if ShowBloodEditor(BloodRec, New) then
     begin
       LocalSource.Post(BloodRec);
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
@@ -2783,7 +2781,7 @@ begin
 end;
 
 {==============================================================================}
-function TForm1.ClickIns(New: boolean; Focus: TFocusMode): integer;
+function TForm1.ClickIns(New: boolean): integer;
 {==============================================================================}
 var
   ATime: TDateTime;
@@ -2793,7 +2791,7 @@ begin
   Log(DEBUG, 'TForm1.ClickIns');
   if New then
   begin
-    if ShowInsEditor(ATime, AValue, New, Focus) then
+    if ShowInsEditor(ATime, AValue, New) then
     begin
       LocalSource.Add(TInsRecord.Create(ATime, AValue));
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
@@ -2805,7 +2803,7 @@ begin
 
     ATime := InsRecord.NativeTime;
     AValue := InsRecord.Value;
-    if ShowInsEditor(ATime, AValue, New, Focus) then
+    if ShowInsEditor(ATime, AValue, New) then
     with InsRecord do
     begin
       BeginUpdate;
@@ -2852,7 +2850,7 @@ begin
 end;
 
 {==============================================================================}
-function TForm1.ClickNote(New: boolean; Focus: TFocusMode): integer;
+function TForm1.ClickNote(New: boolean): integer;
 {==============================================================================}
 var
   Note: TNoteRecord;
@@ -2862,7 +2860,7 @@ begin
   Log(DEBUG, 'TForm1.ClickNote');
   if New then
   begin
-    if ShowNoteEditor(ATime, AValue, New, Focus) then
+    if ShowNoteEditor(ATime, AValue, New) then
     begin
       LocalSource.Add(TNoteRecord.Create(ATime, AValue));
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
@@ -2875,7 +2873,7 @@ begin
 
     ATime := Note.NativeTime;
     AValue := Note.Text;
-    if ShowNoteEditor(ATime, AValue, New, Focus) then
+    if ShowNoteEditor(ATime, AValue, New) then
     begin
       with Note do
       begin
@@ -2894,9 +2892,10 @@ procedure TForm1.DiaryViewDoubleClickBlood(Sender: TObject; Index: Integer;
   Place: TClickPlace);
 {==============================================================================}
 begin
+  // TODO 5: sense less
   case Place of
-    cpTime:  ClickBlood(False, fmTime);
-    cpRec,cpPanel: ClickBlood(False, fmValue);
+    cpTime:  ClickBlood(False);
+    cpRec,cpPanel: ClickBlood(False);
   end;
 end;
 
@@ -2905,9 +2904,10 @@ procedure TForm1.DiaryViewDoubleClickIns(Sender: TObject; Index: Integer;
   Place: TClickPlace);
 {==============================================================================}
 begin
+  // TODO 5: sense less
   case Place of
-    cpTime:  ClickIns(False,fmTime);
-    cpRec,cpPanel: ClickIns(False,fmValue);
+    cpTime:  ClickIns(False);
+    cpRec,cpPanel: ClickIns(False);
   end;
 end;
 
@@ -2938,9 +2938,10 @@ procedure TForm1.DiaryViewDoubleClickNote(Sender: TObject; Index: Integer;
   Place: TClickPlace);
 {==============================================================================}
 begin
+  // TODO 5: sense less
   case Place of
-    cpTime:  ClickNote(False,fmTime);
-    cpRec,cpPanel: ClickNote(False,fmValue);
+    cpTime:  ClickNote(False);
+    cpRec,cpPanel: ClickNote(False);
   end;
 end;
 
@@ -3264,10 +3265,10 @@ begin
   TrayIcon.ShowMainForm;
   PageControl1.ActivePageIndex := 0;
   case TControl(Sender).Tag of
-    1: if ClickBlood(True, fmTime) > -1 then ScrollToSelected;
-    2: if ClickIns(True,fmTime)   > -1 then ScrollToSelected;
-    3: if ClickMeal(True)         > -1 then ScrollToSelected;
-    4: if ClickNote(True,fmTime) > -1 then ScrollToSelected;
+    1: if ClickBlood(True) > -1 then ScrollToSelected;
+    2: if ClickIns(True)   > -1 then ScrollToSelected;
+    3: if ClickMeal(True)  > -1 then ScrollToSelected;
+    4: if ClickNote(True)  > -1 then ScrollToSelected;
   end;
 end;
 
@@ -3748,14 +3749,14 @@ end;
 procedure TForm1.ActionEditBloodExecute(Sender: TObject);
 {==============================================================================}
 begin
-  ClickBlood(False, fmTime);
+  ClickBlood(False);
 end;
 
 {==============================================================================}
 procedure TForm1.ActionEditInsExecute(Sender: TObject);
 {==============================================================================}
 begin
-  ClickIns(False, fmValue);
+  ClickIns(False);
 end;
 
 {==============================================================================}
@@ -3769,7 +3770,7 @@ end;
 procedure TForm1.ActionEditNoteExecute(Sender: TObject);
 {==============================================================================}
 begin
-  ClickNote(False, fmValue);
+  ClickNote(False);
 end;
 
 {==============================================================================}
