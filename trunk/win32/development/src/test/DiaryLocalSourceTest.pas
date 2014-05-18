@@ -20,7 +20,7 @@ implementation
 
 const
   TEMP_FOLDER   = 'temp';
-  BASE_FILENAME = 'diary.txt';
+  BASE_FILENAME = 'test_diary.txt';
 
 { TDiaryLocalSourceTest }
 

@@ -4,8 +4,7 @@ interface
 
 uses
   SysUtils,
-  uLkJSON,
-  DiaryRoutines;
+  uLkJSON;
 
   function JsonRead(const s: string): TlkJSONbase;
   function JsonWrite(json: TlkJSONbase): string;
@@ -24,12 +23,8 @@ end;
 {==============================================================================}
 function JsonWrite(json: TlkJSONbase): string;
 {==============================================================================}
-var
-  i: integer;
 begin
-  Result := GenerateReadableText(json, i);
-  RemoveAll(Result, #13);
-  RemoveAll(Result, #10);
+  Result := TlkJSON.GenerateText(json);
 end;
 
 end.

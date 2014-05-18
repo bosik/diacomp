@@ -2379,7 +2379,7 @@ end;
 function TDiaryView.GetSelectedID: TCompactGUID;
 begin
   if (FSelPanel > -1) then
-    Result := FCUrrentPage[FSelPanel].ID
+    Result := FCurrentPage[FSelPanel].ID
   else
     Result := '';
 end;

@@ -259,7 +259,7 @@ end;
 function TRecordData.Deserialize: TCustomRecord;
 {==============================================================================}
 
-  function ParseBlood(json: TlkJSONobject): TBloodRecord;
+ { function ParseBlood(json: TlkJSONobject): TBloodRecord;
   begin
     Result := TBloodRecord.Create();
     Result.Value := StrToFloat(CheckDot((json['value'] as TlkJSONstring).Value));
@@ -304,16 +304,18 @@ function TRecordData.Deserialize: TCustomRecord;
   begin
     Result := TNoteRecord.Create();
     Result.Text := (json['text'] as TlkJSONstring).Value;
-  end;
+  end;   }
 
 var
   json: TlkJSONobject;
-  RecType: string;
 begin
   json := TlkJSON.ParseText(Data) as TlkJSONobject;
 
   if Assigned(json) then
   begin
+    Result := DiaryPageSerializer.ParseDiaryRecord(json);
+
+    {
     RecType  := (json['type'] as TlkJSONstring).Value;
     //SDeleted := (json['text'] as TlkJSONstring).Value;
 
@@ -323,13 +325,13 @@ begin
     if (RecType = 'ins')   then Result := ParseIns(json) else
     if (RecType = 'meal')  then Result := ParseMeal(json) else
     if (RecType = 'note')  then Result := ParseNote(json) else
-      raise Exception.Create('Unsupported record type: ' + RecType);
+      raise Exception.Create('Unsupported record type: ' + RecType);  }
 
     Result.NativeTime := NativeTime;
     Result.TimeStamp := TimeStamp;
     Result.ID := ID;
     Result.Version := Version;
-    Result.Deleted := Deleted;
+    Result.Deleted := Deleted; 
   end else
   begin
     raise Exception.Create('Invalid JSON: ' + Data);
@@ -340,28 +342,7 @@ end;
 procedure TRecordData.Serialize(Rec: TCustomRecord);
 {==============================================================================}
 
-  procedure RemoveAll(var S: string; c: char);
-  var
-    k: integer;
-  begin
-    k := pos(c, S);
-    while (k > 0) do
-    begin
-      Delete(S, k, 1);
-      k := pos(c, S);
-    end;
-  end;
-
-  function Generate(json: TlkJSONobject): string;
-  var
-    i: integer;
-  begin
-    Result := GenerateReadableText(json, i);
-    RemoveAll(Result, #13);
-    RemoveAll(Result, #10);
-  end;
-
-  function SerializeBlood(Rec: TBloodRecord): string;
+  {function SerializeBlood(Rec: TBloodRecord): string;
   var
     json: TlkJSONobject;
     Temp: string;
@@ -439,20 +420,21 @@ procedure TRecordData.Serialize(Rec: TCustomRecord);
     finally
       FreeAndNil(json);
     end;
-  end;
+  end; }
 
+var
+  Json: TlkJSONobject;
 begin
-  if (Rec.RecType = TBloodRecord) then Data := SerializeBlood(TBloodRecord(Rec)) else
-  if (Rec.RecType = TInsRecord)   then Data := SerializeIns(TInsRecord(Rec)) else
-  if (Rec.RecType = TMealRecord)  then Data := SerializeMeal(TMealRecord(Rec)) else
-  if (Rec.RecType = TNoteRecord)  then Data := SerializeNote(TNoteRecord(Rec)) else
-    raise Exception.Create('Unsupported record type: ' + Rec.RecType.ClassName);
+  Json := DiaryPageSerializer.SerializeDiaryRecord(Rec);
 
-  NativeTime := Rec.NativeTime;
-  TimeStamp := Rec.TimeStamp;
   ID := Rec.ID;
+  TimeStamp := Rec.TimeStamp;
   Version := Rec.Version;
   Deleted := Rec.Deleted;
+  Data := TlkJSON.GenerateText(Json);
+
+  // cache
+  NativeTime := Rec.NativeTime;
 end;
 
 {==============================================================================}
@@ -555,7 +537,7 @@ end;
 function TDiaryLocalSource.GetRecordIndex(ID: TCompactGUID): integer;
 {==============================================================================}
 var
-  L,R: integer;
+  // L,R: integer;
   i: integer;
 begin
   {L := 0;
@@ -626,7 +608,6 @@ procedure TDiaryLocalSource.LoadFromFile(const FileName: string);
 
   procedure Load_v4(S: TStrings);
   var
-    Rec: TRecordData;
     i, k: integer;
   begin
     s.Delete(0);
@@ -771,11 +752,12 @@ procedure TDiaryLocalSource.SaveToFile(const FileName: string);
 
   function BlockRecordData(R: TRecordData): string;
   begin
-    Result := Format('%s'#9'%s'#9'%s'#9'%d'#9'-'#9'%s',
+    Result := Format('%s'#9'%s'#9'%s'#9'%d'#9'%s'#9'%s',
       [DateTimeToStr(R.NativeTime, STD_DATETIME_FMT),
-       DateTimeToStr(R.NativeTime, STD_DATETIME_FMT),
+       DateTimeToStr(R.TimeStamp, STD_DATETIME_FMT),
        R.ID,
        R.Version,
+       DiaryRoutines.WriteBoolean(R.Deleted),
        R.Data]);
   end;
 
@@ -836,22 +818,22 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryLocalSource.TraceLastPage: integer;
+function TDiaryLocalSource.TraceLastPage(): integer;
 {==============================================================================}
-{var
-  Temp: TPageData;  }
+var
+  Temp: TRecordData;
 begin
-  {Result := High(FPages);
+  Result := High(FRecords);
   if (Result > -1) then
   begin
-    Temp := FPages[Result];
-    while (Result > 0) and (FPages[Result - 1].Date > Temp.Date) do
+    Temp := FRecords[Result];
+    while (Result > 0) and (FRecords[Result - 1].NativeTime > Temp.NativeTime) do
     begin
-      FPages[Result] := FPages[Result - 1];
+      FRecords[Result] := FRecords[Result - 1];
       dec(Result);
     end;
-    FPages[Result] := Temp;
-  end;  }
+    FRecords[Result] := Temp;
+  end;
 end;
 
 {==============================================================================}

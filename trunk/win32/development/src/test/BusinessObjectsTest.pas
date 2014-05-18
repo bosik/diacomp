@@ -92,7 +92,7 @@ begin
   Food.Mass := 200;
 
   Temp := TFoodMassed.Create;
-  Temp.CopyFrom(Food, True);
+  Temp.CopyFrom(Food);
 
   CheckEquals(Food.Name,     Temp.Name);
   CheckEquals(Food.ID,       Temp.ID);

@@ -40,7 +40,7 @@ begin
   Response := TStdResponse.Create(S);
   try
     Json := Response.ConvertResponseToJson() as TlkJSONlist;
-    Result := ParseRecords(json);
+    Result := ParseVersionedDiaryRecords(json);
   finally
     Response.Free;
     Json.Free;
@@ -119,7 +119,7 @@ procedure TDiaryWebSource.Post(const Recs: TRecordList);
 var
   Par: TParamList;
   Msg: string;
-  Response: TStdResponse;
+  // Response: TStdResponse;
 begin
   // заглушка
   if (Length(Recs) = 0) then
@@ -128,7 +128,7 @@ begin
   end;
 
   SetLength(Par, 1);
-  par[0] := 'items=' + JsonWrite(SerializeRecords(Recs));
+  par[0] := 'items=' + JsonWrite(SerializeVersionedDiaryRecords(Recs));
 
   Msg := FClient.DoPutSmart(FClient.GetApiURL() + 'diary/', Par);
 

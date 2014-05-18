@@ -127,7 +127,6 @@ const
 function TStdResponse.ConvertResponseToJson(): TlkJSONbase;
 {==============================================================================}
 var
-  json: TlkJSONobject;
   s: string;
 begin
   s := ReplaceAll(FResponse, '\"', '"');
@@ -369,11 +368,8 @@ procedure TDiacompClient.Login();
 var
   Query: string;
   Par: TParamList;
-  ServerTime: TDateTime;
   S: string;
   Response: TStdResponse;
-  Res, Desc: string;
-  SendedTime: TDateTime;
 begin
   Query := GetApiURL + 'auth/login/';
 
@@ -383,7 +379,6 @@ begin
   par[2] := 'api=' + CURRENT_API_VERSION;
   {#}Log(VERBOUS, 'TDiacompClient.Login(): quering ' + Query);
 
-  SendedTime := GetTimeUTC();
   S := DoPost(Query, par);
   {#}Log(VERBOUS, 'TDiacompClient.Login(): quered OK, resp = "' + S + '"');
 

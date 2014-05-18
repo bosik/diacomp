@@ -6,7 +6,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Buttons, Mask, ExtCtrls, UnitShadow,
   DiaryInterface {for BORD}, TextInterface{finger names}, DiaryRoutines {TimeToStr}, Math,
-  DiaryView {Max};
+  DiaryView {Max}, UnitEditor, BusinessObjects, DiaryRecords, DiaryPageSerializer,
+  JsonSerializer, uLkJSON, ComCtrls, SettingsINI;
 
 type
   TEditorsList = (edTime, edTimeValue, edTimeValueFinger);
@@ -14,6 +15,7 @@ type
   TCheckValue = function(const Value: string): boolean;
 
   // not bad...
+  // Nope, it's bad.
   TDialogParams = record
     Image: TBitMap; // иконка
     Color: TColor;  // цвет окна
@@ -30,33 +32,37 @@ type
     CheckValue: TCheckValue;   // функция проверки значения
   end;
 
-  TFormEditor = class(TForm)
+  TFormEditor = class(TFormCommonEditor)
     Image: TImage;
     LabelTime: TLabel;
     LabelValue: TLabel;
     Bevel1: TBevel;
-    EditTime: TMaskEdit;
     ButtonOK: TBitBtn;
     ButtonCancel: TBitBtn;
     LabelFinger: TLabel;
     ComboFinger: TComboBox;
     EditValue: TEditNumb;
+    TimePicker: TDateTimePicker;
+    DatePicker: TDateTimePicker;
     procedure FormShow(Sender: TObject);
     procedure EditTimeKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure ButtonOKClick(Sender: TObject);
     procedure EditValueKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure FormPaint(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ComboFingerKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure ButtonOKClick(Sender: TObject);
   private
-
+    function Entity(): TBloodRecord;
+  protected
+    class function Clone(X: TVersioned): TVersioned; override;
+    class function CreateEditorForm(): TFormCommonEditor; override;
+    function ReadEntityFromGUI(): boolean; override;
+    procedure ShowEntityInGUI(CreateMode: boolean); override;
   public
-    FocusMode: TFocusMode;
-    ShowEditors: TEditorsList;
-    CheckValue: TCheckValue;
+    //FocusMode: TFocusMode;
     OK: boolean;
     procedure SmallDesigner(ShowEditors: TEditorsList);
   end;
@@ -65,7 +71,6 @@ type
     const Params: TDialogParams): boolean; overload;
   function ShowEditor(var Time_: TDateTime; var Value: string; var Finger: integer;
     const Params: TDialogParams): boolean; overload;
-
 
 implementation
 
@@ -82,74 +87,7 @@ var
   i: integer;
   Minutes: integer;
 begin
-  Dialog := TFormEditor.Create(nil);
-
-  { подготовка }
-  Dialog.Caption := Params.Caption;
-  Dialog.Color := Params.Color;
-
-  // TODO: FIX IT
-  if (Params.Image <> nil) then
-  begin
-    //Dialog.Image.Picture.Bitmap.Assign(Params.Image);
-    Dialog.Image.Picture.Bitmap.Width := Params.Image.Width;
-    Dialog.Image.Picture.Bitmap.Height := Params.Image.Height;
-    Dialog.Image{.Picture.Bitmap}.Canvas.Draw(0,0, Params.Image);
-    Dialog.Image.Transparent := True;
-  end;
-
-  Dialog.LabelTime.Caption := Params.CaptionTime;
-  Dialog.EditTime.Text := DiaryRoutines.TimeToMStr(UTCToLocal(Time_));
-  Dialog.LabelValue.Caption := Params.CaptionValue;
-  Dialog.EditValue.Text := Value;
-  Dialog.LabelFinger.Caption := Params.CaptionFinger;
-
-  if Params.ShowEditors = edTimeValueFinger then
-  with Dialog.ComboFinger.Items do
-  begin
-    Clear;
-    {Add('[Левая]: большой');
-    Add('[Левая]: указательный');
-    Add('[Левая]: средний');
-    Add('[Левая]: безымянный');
-    Add('[Левая]: мизинец');
-    Add('[Правая]: мизинец');
-    Add('[Правая]: безымянный');
-    Add('[Правая]: средний');
-    Add('[Правая]: указательный');
-    Add('[Правая]: большой');  }
-    for i := 0 to 9 do
-      Add(LongFingerNames[i]);
-
-    Dialog.ComboFinger.ItemIndex := Finger;
-  end;
-
-  Dialog.ButtonOK.Caption := Params.CaptionOK;
-  Dialog.ButtonCancel.Caption := Params.CaptionCancel;
-  Dialog.FocusMode := Params.FocusMode;
-  Dialog.ShowEditors := Params.ShowEditors;
-  Dialog.CheckValue := Params.CheckValue;
-  Dialog.EditValue.BlockKeys := False;
-
-  Dialog.SmallDesigner(Params.ShowEditors);
-
-  { запускаем пользователя }
-  Shadow(true, Params.Color);
-  Dialog.ShowModal;
-
-  if Dialog.OK then
-  begin
-    TryStrToTime(Dialog.EditTime.Text, Minutes);
-    Time_ := LocalToUTC(Trunc(UTCToLocal(Time_)) + Minutes / MinPerDay);
-    Value := Dialog.EditValue.Text;
-    Finger := Dialog.ComboFinger.ItemIndex;
-    Result := True;
-  end else
-    Result := False;
-
-  Shadow(false);
-
-  Dialog.Free;
+ 
 end;
 
 {==============================================================================}
@@ -185,34 +123,37 @@ var
   end;
 
 begin
-  ClientWidth := 320;
-  BottomLine := 2*BORD;
+  ClientWidth := 350;
+  BottomLine := 2 * BORD;
 
-  Image.Left := 2*BORD;
-  Image.Top := 2*BORD;
-  Image.Width := 10*BORD;
-  Image.Height := 10*BORD;
+  Image.Left := 2 * BORD;
+  Image.Top := 2 * BORD;
+  Image.Width := 10 * BORD;
+  Image.Height := 10 * BORD;
 
   AlignTop(LabelTime);
-  AlignTop(EditTime);
-  BorderTop(2*BORD);
+  AlignTop(TimePicker);
+  DatePicker.Top := TimePicker.Top;
 
-  LabelTime.Left := 14*BORD;
-  EditTime.Left := 14*BORD;
-  EditTime.Width := ClientWidth - 16*BORD;
+  BorderTop(2 * BORD);
 
-  {*****}
+  LabelTime.Left := 14 * BORD;
+  TimePicker.Left := 14 * BORD;
+  DatePicker.Left := TimePicker.Left + TimePicker.Width + 2 * BORD;
+
+
+  { * * * * * }
 
   // если нужно поле "Значение"
 
   if ShowEditors in [edTimeValue, edTimeValueFinger] then
   begin
-    LabelValue.Left := 14*BORD;
-    EditValue.Left := 14*BORD;
+    LabelValue.Left := 14 * BORD;
+    EditValue.Left := 14 * BORD;
     AlignTop(LabelValue);
     AlignTop(EditValue);
-    BorderTop(2*BORD);
-    EditValue.Width := ClientWidth - 16*BORD;
+    BorderTop(2 * BORD);
+    EditValue.Width := ClientWidth - 16 * BORD;
     LabelValue.Show;
     EditValue.Show;
   end else
@@ -225,12 +166,12 @@ begin
 
   if ShowEditors in [edTimeValueFinger] then
   begin
-    LabelFinger.Left := 14*BORD;
-    ComboFinger.Left := 14*BORD;
+    LabelFinger.Left := 14 * BORD;
+    ComboFinger.Left := 14 * BORD;
     AlignTop(LabelFinger);
     AlignTop(ComboFinger);
-    BorderTop(2*BORD);
-    ComboFinger.Width := ClientWidth - 16*BORD;
+    BorderTop(2 * BORD);
+    ComboFinger.Width := ClientWidth - 16 * BORD;
     LabelFinger.Show;
     ComboFinger.Show;
   end else
@@ -240,20 +181,20 @@ begin
   end;
 
 
-  {*****}
-  BottomLine := Max(BottomLine, 14*BORD);
+  { * * * * * }
+  BottomLine := Max(BottomLine, 14 * BORD);
 
   FormatBevel(Bevel1);
   AlignTop(Bevel1);
-  BorderTop(2*BORD);
+  BorderTop(2 * BORD);
 
   ButtonOK.Top := BottomLine;
   AlignTop(ButtonCancel);
 
   ButtonOK.Left := 2 * BORD;
-  ButtonCancel.Left := ClientWidth - ButtonCancel.Width - 2*BORD;
+  ButtonCancel.Left := ClientWidth - ButtonCancel.Width - 2 * BORD;
 
-  ClientHeight := BottomLine + 2*BORD;
+  ClientHeight := BottomLine + 2 * BORD;
   {!!!}
 end;
 
@@ -262,11 +203,12 @@ procedure TFormEditor.FormShow(Sender: TObject);
 {==============================================================================}
 begin
   PlaceCenter(Self);
-  case FocusMode of
+  {case FocusMode of
     fmTime: EditTime.SetFocus;
     fmValue: EditValue.SetFocus;
   end;
-  OK := False;
+  OK := False; }
+  // TODO 5: RF (?): focusing modes in editor
 end;
 
 {==============================================================================}
@@ -275,11 +217,7 @@ procedure TFormEditor.EditTimeKeyDown(Sender: TObject; var Key: Word;
 {==============================================================================}
 begin
   if Key = vk_Return then
-  case ShowEditors of
-    edTime:              ButtonOKClick(nil);
-    edTimeValue:         EditValue.SetFocus;
-    edTimeValueFinger:   EditValue.SetFocus;
-  end;
+    EditValue.SetFocus;
 end;
 
 {==============================================================================}
@@ -288,11 +226,7 @@ procedure TFormEditor.EditValueKeyDown(Sender: TObject; var Key: Word;
 {==============================================================================}
 begin
   if Key = vk_Return then
-  case ShowEditors of
-    edTime:              ;// LOLWHAT
-    edTimeValue:         ButtonOKClick(nil);
-    edTimeValueFinger:   ComboFinger.SetFocus;
-  end;
+    ComboFinger.SetFocus;
 end;
 
 {==============================================================================}
@@ -301,35 +235,8 @@ procedure TFormEditor.ComboFingerKeyDown(Sender: TObject; var Key: Word;
 {==============================================================================}
 begin
   if Key = vk_Return then
-  case ShowEditors of
-    edTime:              ;// LOLWHAT
-    edTimeValue:         ;// LOLWHAT
-    edTimeValueFinger:   ButtonOKClick(nil);
-  end;
-end;
-
-{==============================================================================}
-procedure TFormEditor.ButtonOKClick(Sender: TObject);
-{==============================================================================}
-var
-  T: integer;
-begin
-  if not TryStrToTime(EditTime.Text, T) then
   begin
-    ErrorMessage('Неверное время');
-    EditTime.SetFocus;
-    Exit;
-  end;
-
-  // not bad...
-  if Assigned(CheckValue) and (not CheckValue(EditValue.Text)) then
-  begin
-    ErrorMessage('Неверное значение');
-    EditValue.SetFocus;
-  end else
-  begin
-    OK := True;
-    Close;
+    ModalResult := mrOk; Close;
   end;
 end;
 
@@ -338,9 +245,114 @@ begin
  // Image.Transparent := True;
 end;
 
+{==============================================================================}
 procedure TFormEditor.FormCreate(Sender: TObject);
+{==============================================================================}
+var
+  i: integer;
 begin
   CheckAllComponentsCharset(Self);
+
+  Caption := 'Замер СК';
+  if Value['ColoredEditors'] then
+    Color := Value['Color_SelBlood']
+  else
+    Color := clBtnFace;
+
+  LabelTime.Caption := 'Время';
+  LabelValue.Caption := 'Значение';
+  LabelFinger.Caption := 'Палец';
+
+  with ComboFinger.Items do
+  begin
+    Clear;
+    for i := 0 to 9 do
+      Add(LongFingerNames[i]);
+  end;
+
+  ButtonCancel.Caption := 'Отмена';
+  EditValue.BlockKeys := True;
+
+  SmallDesigner(edTimeValueFinger);
+end;
+
+{==============================================================================}
+class function TFormEditor.Clone(X: TVersioned): TVersioned;
+{==============================================================================}
+var
+  S: string;
+begin
+  S := JsonWrite(SerializeVersionedDiaryRecord(X as TCustomRecord));
+  Result := ParseVersionedDiaryRecord(JsonRead(S) as TlkJSONobject);
+end;
+
+{==============================================================================}
+class function TFormEditor.CreateEditorForm: TFormCommonEditor;
+{==============================================================================}
+begin
+  Result := TFormEditor.Create(nil);
+end;
+
+{==============================================================================}
+function TFormEditor.ReadEntityFromGUI: boolean;
+{==============================================================================}
+var
+  T: integer;
+  X: Extended;
+begin
+  if (not TryStrToFloat(CheckDot(EditValue.Text), X) or (X <= 0)) then
+  begin
+    ErrorMessage('Неверное значение');
+    EditValue.SetFocus;
+    Result := False;
+  end else
+  begin
+    Entity.NativeTime := LocalToUTC(Trunc(DatePicker.Date) + Frac(TimePicker.Time));
+    Entity.Finger := ComboFinger.ItemIndex;
+    Entity.Value := X;
+    Result := True;
+  end;
+end;
+
+{==============================================================================}
+procedure TFormEditor.ShowEntityInGUI(CreateMode: boolean);
+{==============================================================================}
+var
+  LocalTime: TDateTime;
+begin
+  if (CreateMode) then
+  begin
+    LocalTime := Now();
+    TimePicker.Time := LocalTime;
+    DatePicker.Date := LocalTime;
+    EditValue.Text := '';
+    ComboFinger.ItemIndex := Entity.Finger;
+  end else
+  begin
+    LocalTime := UTCToLocal(Entity.NativeTime);
+    TimePicker.Time := LocalTime;
+    DatePicker.Date := LocalTime;
+    EditValue.Text := FloatToStr(Entity.Value);
+    ComboFinger.ItemIndex := Entity.Finger;
+  end;
+
+  ButtonOK.Caption := SAVE_CAPTION[CreateMode];
+end;
+
+{==============================================================================}
+function TFormEditor.Entity: TBloodRecord;
+{==============================================================================}
+begin
+  Result := TBloodRecord(inherited Entity);
+end;
+
+procedure TFormEditor.ButtonOKClick(Sender: TObject);
+begin
+  if (ReadEntityFromGUI()) then
+  begin
+    ModalResult := mrOK;
+  end;
 end;
 
 end.
+
