@@ -561,7 +561,7 @@ const
 
 implementation
 
-uses UnitMisc;
+uses UnitMisc, UnitDBloodEditor;
 
 {$R *.dfm}
 
@@ -2654,8 +2654,6 @@ begin
   P.Caption := 'Инъекция';
   P.CaptionTime := 'Время';
   P.CaptionValue := 'Доза';
-  P.CaptionOK := SAVE_CAPTION[New];
-  P.CaptionCancel := 'Отмена';
 
   if New then
   begin
@@ -2690,8 +2688,6 @@ begin
   P.Caption := 'Приём пищи';
   P.CaptionTime := 'Время';
   P.CaptionValue := '***';
-  P.CaptionOK := SAVE_CAPTION[New];
-  P.CaptionCancel := 'Отмена';
 
   if New then
   begin
@@ -2726,8 +2722,6 @@ begin
   P.Caption := 'Заметка';
   P.CaptionTime := 'Время';
   P.CaptionValue := 'Текст';
-  P.CaptionOK := SAVE_CAPTION[New];
-  P.CaptionCancel := 'Отмена';
 
   if New then
   begin

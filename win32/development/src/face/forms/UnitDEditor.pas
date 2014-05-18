@@ -3,28 +3,42 @@ unit UnitDEditor;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons, Mask, ExtCtrls, UnitShadow,
-  DiaryInterface {for BORD}, TextInterface{finger names}, DiaryRoutines {TimeToStr}, Math,
-  DiaryView {Max}, UnitEditor, BusinessObjects, DiaryRecords, DiaryPageSerializer,
-  JsonSerializer, uLkJSON, ComCtrls, SettingsINI;
+  Windows, // vk_Return
+  SysUtils, // TryStrToFloat
+  Classes, //
+  Graphics, // clBtnFace
+  Controls,
+  Forms,
+  StdCtrls,
+  Buttons,
+  ExtCtrls, //
+  DiaryInterface {for BORD},
+  TextInterface{finger names},
+  DiaryRoutines {TimeToStr},
+  Math, // Max
+  UnitEditor,
+  BusinessObjects, //
+  DiaryRecords,
+  DiaryPageSerializer,
+  JsonSerializer,
+  uLkJSON,
+  ComCtrls,
+  SettingsINI, DiaryView;
 
 type
   // not bad...
   // Nope, it's bad.
   TDialogParams = record
     Image: TBitMap; // иконка
-    Color: TColor;  // цвет окна
 
     Caption: string;           // заголовок окна
     CaptionTime: string;       // подпись в лейбле "Время"
     CaptionValue: string;      // подпись в лейбле "Значение"
     CaptionFinger: string;     // подпись в лейбле "Палец"
-    CaptionOK: string;         // подпись к кнопке "ОК"
-    CaptionCancel: string;     // подпись к кнопке "Отмена"
+    Color: TColor;
   end;
 
-  TFormEditorBlood = class(TFormCommonEditor)
+  TFormEditorCommon = class(TFormCommonEditor)
     Image: TImage;
     LabelTime: TLabel;
     LabelValue: TLabel;
@@ -36,7 +50,6 @@ type
     EditValue: TEditNumb;
     TimePicker: TDateTimePicker;
     DatePicker: TDateTimePicker;
-    procedure FormShow(Sender: TObject);
     procedure FieldKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure ButtonOKClick(Sender: TObject);
@@ -48,8 +61,6 @@ type
     function ReadEntityFromGUI(): boolean; override;
     procedure ShowEntityInGUI(CreateMode: boolean); override;
     procedure Designer(); override;
-  public
-    //FocusMode: TFocusMode;
   end;
 
   function ShowEditor(var Time_: TDateTime; var Value: string;
@@ -59,12 +70,14 @@ type
 
 implementation
 
+uses UnitDBloodEditor;
+
 {$R *.dfm}
 
 { TFormEditorBlood }
 
 {==============================================================================}
-class function TFormEditorBlood.Clone(X: TVersioned): TVersioned;
+class function TFormEditorCommon.Clone(X: TVersioned): TVersioned;
 {==============================================================================}
 var
   S: string;
@@ -74,7 +87,7 @@ begin
 end;
 
 {==============================================================================}
-class function TFormEditorBlood.CreateEditorForm(CreateMode: boolean): TFormCommonEditor;
+class function TFormEditorCommon.CreateEditorForm(CreateMode: boolean): TFormCommonEditor;
 {==============================================================================}
 var
   Dialog: TFormEditorBlood;
@@ -107,7 +120,7 @@ begin
 end;
 
 {==============================================================================}
-function TFormEditorBlood.ReadEntityFromGUI: boolean;
+function TFormEditorCommon.ReadEntityFromGUI(): boolean;
 {==============================================================================}
 var
   T: integer;
@@ -128,7 +141,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TFormEditorBlood.ShowEntityInGUI(CreateMode: boolean);
+procedure TFormEditorCommon.ShowEntityInGUI(CreateMode: boolean);
 {==============================================================================}
 var
   LocalTime: TDateTime;
@@ -151,14 +164,14 @@ begin
 end;
 
 {==============================================================================}
-function TFormEditorBlood.Entity: TBloodRecord;
+function TFormEditorCommon.Entity: TBloodRecord;
 {==============================================================================}
 begin
   Result := TBloodRecord(inherited Entity);
 end;
 
 {==============================================================================}
-procedure TFormEditorBlood.ButtonOKClick(Sender: TObject);
+procedure TFormEditorCommon.ButtonOKClick(Sender: TObject);
 {==============================================================================}
 begin
   Submit();
@@ -187,7 +200,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TFormEditorBlood.Designer();
+procedure TFormEditorCommon.Designer();
 {==============================================================================}
 var
   BottomLine: integer;
@@ -255,27 +268,16 @@ begin
 
   ClientHeight := BottomLine + 2 * BORD;
   {!!!}
-end;
 
-{==============================================================================}
-procedure TFormEditorBlood.FormShow(Sender: TObject);
-{==============================================================================}
-begin
   PlaceCenter(Self);
-  {case FocusMode of
-    fmTime: EditTime.SetFocus;
-    fmValue: EditValue.SetFocus;
-  end;
-  OK := False; }
-  // TODO 5: RF (?): focusing modes in editor
 end;
 
 {==============================================================================}
-procedure TFormEditorBlood.FieldKeyDown(Sender: TObject; var Key: Word;
+procedure TFormEditorCommon.FieldKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 {==============================================================================}
 begin
-  if Key = vk_Return then
+  if (Key = vk_Return) then
   begin
     if (Sender = TimePicker) then
       EditValue.SetFocus() else
