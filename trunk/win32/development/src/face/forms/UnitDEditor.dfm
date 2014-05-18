@@ -1,4 +1,4 @@
-object FormEditorBlood: TFormEditorBlood
+object FormEditorCommon: TFormEditorCommon
   Left = 278
   Top = 399
   BorderIcons = [biSystemMenu]
@@ -13,7 +13,6 @@ object FormEditorBlood: TFormEditorBlood
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  OnShow = FormShow
   PixelsPerInch = 120
   TextHeight = 16
   object Image: TImage

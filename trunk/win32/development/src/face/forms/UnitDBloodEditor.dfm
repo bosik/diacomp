@@ -1,12 +1,12 @@
-object DBloodEditor: TDBloodEditor
+object FormEditorBlood: TFormEditorBlood
   Left = 388
   Top = 407
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
-  Caption = #1047#1072#1084#1077#1088' '#1057#1050
-  ClientHeight = 164
-  ClientWidth = 262
-  Color = 16311512
+  Caption = 'FormEditorBlood'
+  ClientHeight = 267
+  ClientWidth = 409
+  Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -13
@@ -14,61 +14,49 @@ object DBloodEditor: TDBloodEditor
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
-  OnShow = FormShow
-  DesignSize = (
-    262
-    164)
   PixelsPerInch = 120
   TextHeight = 16
   object Image: TImage
-    Left = 16
-    Top = 16
+    Left = 8
+    Top = 8
     Width = 80
     Height = 80
     Center = True
-    Transparent = True
   end
   object LabelTime: TLabel
-    Left = 112
+    Left = 104
     Top = 8
-    Width = 44
+    Width = 65
     Height = 16
-    Caption = #1042#1088#1077#1084#1103':'
+    Caption = 'LabelTime'
   end
   object LabelValue: TLabel
-    Left = 112
-    Top = 56
-    Width = 68
+    Left = 104
+    Top = 64
+    Width = 69
     Height = 16
-    Caption = #1047#1085#1072#1095#1077#1085#1080#1077':'
+    Caption = 'LabelValue'
   end
-  object Bevel: TBevel
-    Left = 8
-    Top = 121
-    Width = 245
+  object Bevel1: TBevel
+    Left = 16
+    Top = 175
+    Width = 313
     Height = 2
   end
-  object EditTime: TMaskEdit
-    Tag = 1
-    Left = 112
-    Top = 24
-    Width = 138
-    Height = 24
-    Anchors = [akLeft, akTop, akRight]
-    EditMask = '!99.99;1;_'
-    MaxLength = 5
-    TabOrder = 0
-    Text = '  .  '
-    OnKeyDown = EditKeyDown
+  object LabelFinger: TLabel
+    Left = 104
+    Top = 112
+    Width = 72
+    Height = 16
+    Caption = 'LabelFinger'
   end
-  object ButtonSave: TBitBtn
-    Left = 8
-    Top = 132
+  object ButtonOK: TBitBtn
+    Left = 32
+    Top = 191
     Width = 120
     Height = 28
-    Caption = #1054#1050
-    TabOrder = 1
-    OnClick = ButtonSaveClick
+    Caption = 'ButtonOK'
+    TabOrder = 0
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
       0400000000006801000000000000000000001000000000000000000000000000
@@ -89,25 +77,70 @@ object DBloodEditor: TDBloodEditor
     NumGlyphs = 2
   end
   object ButtonCancel: TBitBtn
-    Left = 142
-    Top = 132
+    Left = 213
+    Top = 191
     Width = 110
     Height = 28
-    Caption = #1054#1090#1084#1077#1085#1072
+    Cancel = True
+    Caption = 'ButtonCancel'
+    ModalResult = 2
+    TabOrder = 1
+    Glyph.Data = {
+      DE010000424DDE01000000000000760000002800000024000000120000000100
+      0400000000006801000000000000000000001000000000000000000000000000
+      80000080000000808000800000008000800080800000C0C0C000808080000000
+      FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00333333333333
+      3333333333333FFFFF333333000033333388888833333333333F888888FFF333
+      000033338811111188333333338833FFF388FF33000033381119999111833333
+      38F338888F338FF30000339119933331111833338F388333383338F300003391
+      13333381111833338F8F3333833F38F3000039118333381119118338F38F3338
+      33F8F38F000039183333811193918338F8F333833F838F8F0000391833381119
+      33918338F8F33833F8338F8F000039183381119333918338F8F3833F83338F8F
+      000039183811193333918338F8F833F83333838F000039118111933339118338
+      F3833F83333833830000339111193333391833338F33F8333FF838F300003391
+      11833338111833338F338FFFF883F83300003339111888811183333338FF3888
+      83FF83330000333399111111993333333388FFFFFF8833330000333333999999
+      3333333333338888883333330000333333333333333333333333333333333333
+      0000}
+    NumGlyphs = 2
+  end
+  object ComboFinger: TComboBox
+    Left = 104
+    Top = 128
+    Width = 201
+    Height = 24
+    Style = csDropDownList
+    ItemHeight = 16
     TabOrder = 2
-    OnClick = ButtonCancelClick
-    Kind = bkNo
   end
   object EditValue: TEditNumb
-    Tag = 2
-    Left = 112
-    Top = 72
+    Left = 104
+    Top = 80
     Width = 121
     Height = 24
-    Anchors = [akLeft, akTop, akRight]
     TabOrder = 3
     Text = 'EditValue'
-    OnKeyDown = EditKeyDown
+    AcceptNegative = False
     Decimal = ','
+    WarningShow = True
+  end
+  object TimePicker: TDateTimePicker
+    Left = 104
+    Top = 24
+    Width = 81
+    Height = 24
+    Date = 41777.158689432870000000
+    Time = 41777.158689432870000000
+    Kind = dtkTime
+    TabOrder = 4
+  end
+  object DatePicker: TDateTimePicker
+    Left = 208
+    Top = 24
+    Width = 113
+    Height = 24
+    Date = 41777.159941967590000000
+    Time = 41777.159941967590000000
+    TabOrder = 5
   end
 end

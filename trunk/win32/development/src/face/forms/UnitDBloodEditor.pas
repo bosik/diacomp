@@ -5,166 +5,229 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Mask, StdCtrls, ExtCtrls, DiaryRoutines, Buttons, DiaryInterface,
-  UnitShadow, SettingsINI, DiaryView;
+  UnitShadow, SettingsINI, DiaryView, ComCtrls, DiaryRecords, BusinessObjects,
+  UnitEditor, JsonSerializer, uLKjson, DiaryPageSerializer, TextInterface, Math;
 
 type
-  TDBloodEditor = class(TAutosetupForm)
+  TFormEditorBlood = class(TFormCommonEditor)
     Image: TImage;
     LabelTime: TLabel;
     LabelValue: TLabel;
-    Bevel: TBevel;
-    EditTime: TMaskEdit;
-    ButtonSave: TBitBtn;
+    Bevel1: TBevel;
+    LabelFinger: TLabel;
+    ButtonOK: TBitBtn;
     ButtonCancel: TBitBtn;
+    ComboFinger: TComboBox;
     EditValue: TEditNumb;
-    procedure ButtonCancelClick(Sender: TObject);
-    procedure ButtonSaveClick(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure EditKeyDown(Sender: TObject; var Key: Word;
+    TimePicker: TDateTimePicker;
+    DatePicker: TDateTimePicker;
+    procedure FieldKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure ButtonOKClick(Sender: TObject);
+  private
+    function Entity(): TBloodRecord;
   protected
-    procedure Designer; override;
-  public
-    CurMode: integer; 
+    class function Clone(X: TVersioned): TVersioned; override;
+    class function CreateEditorForm(CreateMode: boolean): TFormCommonEditor; override;
+    function ReadEntityFromGUI(): boolean; override;
+    procedure ShowEntityInGUI(CreateMode: boolean); override;
+    procedure Designer(); override;
   end;
 
-  function ShowBloodEditor(var DefaultTime: integer;
-    var DefaultValue: real; New: boolean; FocusMode: integer): boolean;
-
-var
-  DBloodEditor: TDBloodEditor;
- (* OK: boolean;
-  Time: integer;
-  Value: extended; {for TryStrToFloat}
-    *)
-const
-  NO_TEXT = '  .  ';
-  fmTime  = 0;
-  fmValue = 1;
-  SAVE_CAPTION: array[Boolean] of string = ('Сохранить','Добавить');
 implementation
 
 {$R *.dfm}
 
-{ TDBloodEditor }
+{ TFormEditorBlood }
 
 {==============================================================================}
-function ShowBloodEditor(var DefaultTime: integer;
-  var DefaultValue: real; New: boolean; FocusMode: integer): boolean;
+class function TFormEditorBlood.Clone(X: TVersioned): TVersioned;
 {==============================================================================}
+var
+  S: string;
 begin
-  { подготовка к редактированию }
-  (*Time:=DefaultTime;
-  Value:=DefaultValue;
-  if New then
+  S := JsonWrite(SerializeVersionedDiaryRecord(X as TCustomRecord));
+  Result := ParseVersionedDiaryRecord(JsonRead(S) as TlkJSONobject);
+end;
+
+{==============================================================================}
+class function TFormEditorBlood.CreateEditorForm(CreateMode: boolean): TFormCommonEditor;
+{==============================================================================}
+var
+  Dialog: TFormEditorBlood;
+  i: integer;
+begin
+  Dialog := TFormEditorBlood.Create(nil);
+
+  Dialog.Caption := 'Замер СК';
+  if Value['ColoredEditors'] then
+    Dialog.Color := Value['Color_SelBlood']
+  else
+    Dialog.Color := clBtnFace;
+
+  Dialog.LabelTime.Caption := 'Время';
+  Dialog.LabelValue.Caption := 'Значение';
+  Dialog.LabelFinger.Caption := 'Палец';
+
+  with Dialog.ComboFinger.Items do
   begin
-    EditTime.Text:=GetCurrentTime;
-    EditValue.Text:='';
-    CurMode:=fmTime;
-  end else
-  begin
-    EditTime.Text:=TimeToStr(Time);
-    EditValue.Text:=FloatToStr(Value);
-    CurMode:=FocusMode;
+    Clear;
+    for i := 0 to High(LongFingerNames) do
+      Add(LongFingerNames[i]);
   end;
-  ButtonSave.Caption:=SAVE_CAPTION[New];
 
-  { запускаем пользователя }
-  Shadow(true, Color);
-  ShowModal;
-  Shadow(false);
+  Dialog.ButtonOK.Caption := SAVE_CAPTION[CreateMode];
+  Dialog.ButtonCancel.Caption := 'Отмена';
+  Dialog.EditValue.BlockKeys := True;
 
-  { обрабатываем результаты редактирования }
-  Result:=OK;
-  if OK then
-  begin
-    DefaultTime:=Time;
-    DefaultValue:=Value;
-  end; {else ничего}  *)
+  Result := Dialog;
 end;
 
-procedure TDBloodEditor.ButtonCancelClick(Sender: TObject);
+{==============================================================================}
+function TFormEditorBlood.ReadEntityFromGUI(): boolean;
+{==============================================================================}
+var
+  T: integer;
+  X: Extended;
 begin
-  {OK:=false;
-  Close;  }
-end;
-
-procedure TDBloodEditor.ButtonSaveClick(Sender: TObject);
-begin
-  (*if not TryStrToTime(EditTime.Text,Time) then
-  begin
-    ErrorMessage('Неверное время');
-    EditTime.SetFocus;
-  end else
-  if not TryStrToFloat(CheckDot(EditValue.Text),Value) then
+  if (not TryStrToFloat(CheckDot(EditValue.Text), X) or (X <= 0)) then
   begin
     ErrorMessage('Неверное значение');
     EditValue.SetFocus;
+    Result := False;
   end else
   begin
-    OK:=true;
-    Close;
-  end;    *)
+    Entity.NativeTime := LocalToUTC(Trunc(DatePicker.Date) + Frac(TimePicker.Time));
+    Entity.Finger := ComboFinger.ItemIndex;
+    Entity.Value := X;
+    Result := True;
+  end;
 end;
 
-procedure TDBloodEditor.FormShow(Sender: TObject);
+{==============================================================================}
+procedure TFormEditorBlood.ShowEntityInGUI(CreateMode: boolean);
+{==============================================================================}
+var
+  LocalTime: TDateTime;
 begin
-  if Value['ColoredEditors'] then
-    Color := Value['Color_SelBlood']
-  else
-    Color := clBtnFace;
-
-  case CurMode of
-    fmTime: EditTime.SetFocus;
-    fmValue: EditValue.SetFocus;
+  if (CreateMode) then
+  begin
+    LocalTime := Now();
+    TimePicker.Time := LocalTime;
+    DatePicker.Date := LocalTime;
+    EditValue.Text := '';
+    ComboFinger.ItemIndex := Entity.Finger;
+  end else
+  begin
+    LocalTime := UTCToLocal(Entity.NativeTime);
+    TimePicker.Time := LocalTime;
+    DatePicker.Date := LocalTime;
+    EditValue.Text := FloatToStr(Entity.Value);
+    ComboFinger.ItemIndex := Entity.Finger;
   end;
+end;
+
+{==============================================================================}
+function TFormEditorBlood.Entity: TBloodRecord;
+{==============================================================================}
+begin
+  Result := TBloodRecord(inherited Entity);
+end;
+
+{==============================================================================}
+procedure TFormEditorBlood.ButtonOKClick(Sender: TObject);
+{==============================================================================}
+begin
+  Submit();
+end;
+
+{==============================================================================}
+procedure TFormEditorBlood.Designer();
+{==============================================================================}
+var
+  BottomLine: integer;
+
+  procedure AlignTop(Control: TControl);
+  begin
+    Control.Top := BottomLine;
+    inc(BottomLine, Control.Height);
+  end;
+
+  procedure BorderTop(Size: integer);
+  begin
+    inc(BottomLine, Size);
+  end;
+
+begin
+  ClientWidth := 350;
+  BottomLine := 2 * BORD;
+
+  Image.Left := 2 * BORD;
+  Image.Top := 2 * BORD;
+  Image.Width := 10 * BORD;
+  Image.Height := 10 * BORD;
+
+  AlignTop(LabelTime);
+  AlignTop(TimePicker);
+  DatePicker.Top := TimePicker.Top;
+
+  BorderTop(2 * BORD);
+
+  LabelTime.Left := 14 * BORD;
+  TimePicker.Left := 14 * BORD;
+  DatePicker.Left := TimePicker.Left + TimePicker.Width + 2 * BORD;
+
+  { * * * * * }
+
+  // поле "Значение"
+  LabelValue.Left := 14 * BORD;
+  EditValue.Left := 14 * BORD;
+  AlignTop(LabelValue);
+  AlignTop(EditValue);
+  BorderTop(2 * BORD);
+  EditValue.Width := ClientWidth - 16 * BORD;
+
+  // поле "Пальцы"
+  LabelFinger.Left := 14 * BORD;
+  ComboFinger.Left := 14 * BORD;
+  AlignTop(LabelFinger);
+  AlignTop(ComboFinger);
+  BorderTop(2 * BORD);
+  ComboFinger.Width := ClientWidth - 16 * BORD;
+
+  { * * * * * }
+  BottomLine := Max(BottomLine, 14 * BORD);
+
+  FormatBevel(Bevel1);
+  AlignTop(Bevel1);
+  BorderTop(2 * BORD);
+
+  ButtonOK.Top := BottomLine;
+  AlignTop(ButtonCancel);
+
+  ButtonOK.Left := 2 * BORD;
+  ButtonCancel.Left := ClientWidth - ButtonCancel.Width - 2 * BORD;
+
+  ClientHeight := BottomLine + 2 * BORD;
+  {!!!}
+
   PlaceCenter(Self);
 end;
 
-procedure TDBloodEditor.EditKeyDown(Sender: TObject; var Key: Word;
+{==============================================================================}
+procedure TFormEditorBlood.FieldKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
+{==============================================================================}
 begin
-  if Key = vk_Return then
-  case TControl(Sender).Tag of
-    1: EditValue.SetFocus;
-    2: ButtonSaveClick(nil);
+  if (Key = vk_Return) then
+  begin
+    if (Sender = TimePicker) then
+      EditValue.SetFocus() else
+    if (Sender = EditValue) then
+      ComboFinger.SetFocus() else
+    if (Sender = ComboFinger) then
+      Submit();
   end;
-end;
-
-procedure TDBloodEditor.Designer;
-var
-  t: integer;
-begin
-  Image.Left := 2*Bord;
-  LabelTime.Left := Image.Width + 4*BORD;
-  EditTime.Left := Image.Width + 4*BORD;
-  LabelValue.Left := Image.Width + 4*BORD;
-  EditValue.Left := Image.Width + 4*BORD;
-
-  EditTime.Width := ClientWidth - Image.Width - 6*BORD;
-  EditValue.Width := ClientWidth - Image.Width - 6*BORD;
-
-  t := BORD;
-  Image.Top := t;
-  inc(t, LabelTime.Height);
-  EditTime.Top := t;
-  inc(t, EditTime.Height+BORD);
-  LabelValue.Top := t;
-  inc(t, LabelValue.Height);
-  EditValue.Top := t;
-  inc(t, EditValue.Height+2*BORD);
-  Bevel.Top := t;
-  inc(t, BORD);
-  ButtonSave.Top := t;
-  ButtonCancel.Top := t;
-  inc(t, ButtonSave.Height+BORD);
-  ClientHeight := t;
-
-  FormatBevel(DBloodEditor.Bevel);
-
-  //LabelTime.Top := BORD;
-  //EditTime.Top := BORD + LabelTime.Height;
-  //ClientHeight := Image.Height + 4*Bord+ButtonSave.Height;
 end;
 
 end.

@@ -25,7 +25,7 @@ uses
   UnitStartup in 'src\face\forms\UnitStartup.pas' {FormProcess},
   UnitResources in 'src\face\forms\UnitResources.pas' {FormResources},
   UnitDataInterface in 'src\face\forms\UnitDataInterface.pas' {DataInterface: TDataModule},
-  UnitDEditor in 'src\face\forms\UnitDEditor.pas' {FormEditor},
+  UnitDEditor in 'src\face\forms\UnitDEditor.pas' {FormEditorCommon},
   SettingsINI in 'src\common\SettingsINI.pas',
   DiaryCore in 'src\common\DiaryCore.pas',
   ThreadTask in 'src\common\ThreadTask.pas',
@@ -56,7 +56,7 @@ uses
   DishbaseLocalDAO in 'src\persistence\local\DishbaseLocalDAO.pas',
   DishbaseWebDAO in 'src\persistence\web\DishbaseWebDAO.pas',
   UnitEditor in 'src\face\forms\UnitEditor.pas',
-  UnitDBloodEditor in 'src\face\forms\UnitDBloodEditor.pas' {DBloodEditor};
+  UnitDBloodEditor in 'src\face\forms\UnitDBloodEditor.pas' {FormEditorBlood};
 
 {$R *.res}
 
@@ -209,7 +209,6 @@ begin
   Application.CreateForm(TFormAbout, FormAbout);
   Application.CreateForm(TFormExportText, FormExportText);
   Application.CreateForm(TFormMisc, FormMisc);
-  Application.CreateForm(TDBloodEditor, DBloodEditor);
   {#}Application.CreateForm(TFormSync, FormSync);
   {#}Application.CreateForm(TFormResources, FormResources);
   Application.CreateForm(TDataInterface, DataInterface);
