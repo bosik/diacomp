@@ -2657,7 +2657,6 @@ begin
   P.CaptionValue := 'Доза';
   P.CaptionOK := SAVE_CAPTION[New];
   P.CaptionCancel := 'Отмена';
-  P.FocusMode := Focus;
 
   if New then
   begin
@@ -2694,7 +2693,6 @@ begin
   P.CaptionValue := '***';
   P.CaptionOK := SAVE_CAPTION[New];
   P.CaptionCancel := 'Отмена';
-  P.FocusMode := fmTime;
 
   if New then
   begin
@@ -2732,7 +2730,6 @@ begin
   P.CaptionValue := 'Текст';
   P.CaptionOK := SAVE_CAPTION[New];
   P.CaptionCancel := 'Отмена';
-  P.FocusMode := Focus;
 
   if New then
   begin

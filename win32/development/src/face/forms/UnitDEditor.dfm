@@ -13,8 +13,6 @@ object FormEditorBlood: TFormEditorBlood
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  OnCreate = FormCreate
-  OnPaint = FormPaint
   OnShow = FormShow
   PixelsPerInch = 120
   TextHeight = 16
@@ -115,7 +113,7 @@ object FormEditorBlood: TFormEditorBlood
     Style = csDropDownList
     ItemHeight = 16
     TabOrder = 1
-    OnKeyDown = ComboFingerKeyDown
+    OnKeyDown = FieldKeyDown
   end
   object EditValue: TEditNumb
     Left = 136
@@ -124,7 +122,7 @@ object FormEditorBlood: TFormEditorBlood
     Height = 24
     TabOrder = 0
     Text = 'EditValue'
-    OnKeyDown = EditValueKeyDown
+    OnKeyDown = FieldKeyDown
     AcceptNegative = False
     Decimal = ','
     WarningShow = True
@@ -138,6 +136,7 @@ object FormEditorBlood: TFormEditorBlood
     Time = 41777.158689432870000000
     Kind = dtkTime
     TabOrder = 4
+    OnKeyDown = FieldKeyDown
   end
   object DatePicker: TDateTimePicker
     Left = 216
@@ -147,5 +146,6 @@ object FormEditorBlood: TFormEditorBlood
     Date = 41777.159941967590000000
     Time = 41777.159941967590000000
     TabOrder = 5
+    OnKeyDown = FieldKeyDown
   end
 end

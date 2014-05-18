@@ -6,10 +6,11 @@ uses
   Forms,
   Controls,
   BusinessObjects,
-  DiaryRoutines;
+  DiaryRoutines,
+  DiaryInterface;
 
 type
-  TFormCommonEditor = class(TForm)
+  TFormCommonEditor = class(TAutosetupForm)
   private
     FEntity: TVersioned;
   protected
@@ -17,9 +18,10 @@ type
 
     // deep, null-safe
     class function Clone(X: TVersioned): TVersioned; virtual; abstract;
-    class function CreateEditorForm(): TFormCommonEditor; virtual; abstract;
+    class function CreateEditorForm(CreateMode: boolean): TFormCommonEditor; virtual; abstract;
     function ReadEntityFromGUI(): boolean; virtual; abstract;
     procedure ShowEntityInGUI(CreateMode: boolean); virtual; abstract;
+    procedure Submit();
   public
     class function ShowEditor(var Entity: TVersioned; CreateMode: boolean): boolean;
   end;
@@ -28,11 +30,13 @@ implementation
 
 { TFormCommonEditor }
 
+{==============================================================================}
 class function TFormCommonEditor.ShowEditor(var Entity: TVersioned; CreateMode: boolean): boolean;
+{==============================================================================}
 var
   Dialog: TFormCommonEditor;
 begin
-  Dialog := CreateEditorForm();
+  Dialog := CreateEditorForm(CreateMode);
 
   Dialog.Entity := Clone(Entity);
   if (CreateMode) then
@@ -48,6 +52,14 @@ begin
     Result := True;
   end else
     Result := False;
+end;
+
+{==============================================================================}
+procedure TFormCommonEditor.Submit;
+{==============================================================================}
+begin
+  if (ReadEntityFromGUI()) then
+    ModalResult := mrOK;
 end;
 
 end.
