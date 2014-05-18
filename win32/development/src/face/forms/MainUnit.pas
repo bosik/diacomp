@@ -561,7 +561,7 @@ const
 
 implementation
 
-uses UnitMisc, UnitDBloodEditor;
+uses UnitMisc, UnitEditorBlood;
 
 {$R *.dfm}
 

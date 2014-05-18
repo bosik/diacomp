@@ -70,7 +70,7 @@ type
 
 implementation
 
-uses UnitDBloodEditor;
+uses UnitEditorBlood;
 
 {$R *.dfm}
 
