@@ -109,15 +109,6 @@ object DataInterface: TDataInterface
     object ItemBestMasses: TMenuItem
       Action = Form1.ActionBalanceMeal
     end
-    object Item_MoveMeal: TMenuItem
-      Caption = #1055#1077#1088#1077#1085#1077#1089#1090#1080
-      object Item_MoveMealBack: TMenuItem
-        Action = Form1.ActionMoveMealBack
-      end
-      object Item_MoveMealForward: TMenuItem
-        Action = Form1.ActionMoveMealForward
-      end
-    end
     object ItemSep_3: TMenuItem
       Caption = '-'
     end
