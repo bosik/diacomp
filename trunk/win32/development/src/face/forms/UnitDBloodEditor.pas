@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Mask, StdCtrls, ExtCtrls, DiaryRoutines, Diary, Buttons, DiaryInterface,
-  UnitShadow, SettingsINI;
+  Dialogs, Mask, StdCtrls, ExtCtrls, DiaryRoutines, Buttons, DiaryInterface,
+  UnitShadow, SettingsINI, DiaryView;
 
 type
   TDBloodEditor = class(TAutosetupForm)
@@ -118,7 +118,7 @@ begin
     fmTime: EditTime.SetFocus;
     fmValue: EditValue.SetFocus;
   end;
-  PlaceCenter(DBloodEditor);
+  PlaceCenter(Self);
 end;
 
 procedure TDBloodEditor.EditKeyDown(Sender: TObject; var Key: Word;
@@ -160,7 +160,7 @@ begin
   inc(t, ButtonSave.Height+BORD);
   ClientHeight := t;
 
-  FormatBevel(DBloodEditor.Bevel,  DBloodEditor);
+  FormatBevel(DBloodEditor.Bevel);
 
   //LabelTime.Top := BORD;
   //EditTime.Top := BORD + LabelTime.Height;

@@ -55,7 +55,8 @@ uses
   DishbaseDAO in 'src\persistence\DishbaseDAO.pas',
   DishbaseLocalDAO in 'src\persistence\local\DishbaseLocalDAO.pas',
   DishbaseWebDAO in 'src\persistence\web\DishbaseWebDAO.pas',
-  UnitEditor in 'src\face\forms\UnitEditor.pas';
+  UnitEditor in 'src\face\forms\UnitEditor.pas',
+  UnitDBloodEditor in 'src\face\forms\UnitDBloodEditor.pas' {DBloodEditor};
 
 {$R *.res}
 
@@ -208,6 +209,7 @@ begin
   Application.CreateForm(TFormAbout, FormAbout);
   Application.CreateForm(TFormExportText, FormExportText);
   Application.CreateForm(TFormMisc, FormMisc);
+  Application.CreateForm(TDBloodEditor, DBloodEditor);
   {#}Application.CreateForm(TFormSync, FormSync);
   {#}Application.CreateForm(TFormResources, FormResources);
   Application.CreateForm(TDataInterface, DataInterface);
