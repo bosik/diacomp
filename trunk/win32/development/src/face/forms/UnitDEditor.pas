@@ -10,9 +10,7 @@ uses
   JsonSerializer, uLkJSON, ComCtrls, SettingsINI;
 
 type
-  TEditorsList = (edTime, edTimeValue, edTimeValueFinger);
   TFocusMode = (fmTime, fmValue);
-  TCheckValue = function(const Value: string): boolean;
 
   // not bad...
   // Nope, it's bad.
@@ -28,8 +26,6 @@ type
     CaptionCancel: string;     // подпись к кнопке "Отмена"
 
     FocusMode: TFocusMode;     // фокус после отображения
-    ShowEditors: TEditorsList; // какие поля отображать
-    CheckValue: TCheckValue;   // функция проверки значения
   end;
 
   TFormEditorBlood = class(TFormCommonEditor)
@@ -64,7 +60,7 @@ type
   public
     //FocusMode: TFocusMode;
     OK: boolean;
-    procedure SmallDesigner(ShowEditors: TEditorsList);
+    procedure SmallDesigner();
   end;
 
   function ShowEditor(var Time_: TDateTime; var Value: string;
@@ -98,15 +94,11 @@ var
   f: integer;
 begin
   f := -1;
-  if Params.ShowEditors = edTimeValueFinger then
-    ShowMessage('Некорректный вызов ShowEditor');
   Result := ShowEditor(Time_, Value, f, Params);
 end;
 
-{ TFormEditorBlood }
-
 {==============================================================================}
-procedure TFormEditorBlood.SmallDesigner(ShowEditors: TEditorsList);
+procedure TFormEditorBlood.SmallDesigner();
 {==============================================================================}
 var
   BottomLine: integer;
@@ -144,42 +136,21 @@ begin
 
   { * * * * * }
 
-  // если нужно поле "Значение"
+  // поле "Значение"
+  LabelValue.Left := 14 * BORD;
+  EditValue.Left := 14 * BORD;
+  AlignTop(LabelValue);
+  AlignTop(EditValue);
+  BorderTop(2 * BORD);
+  EditValue.Width := ClientWidth - 16 * BORD;
 
-  if ShowEditors in [edTimeValue, edTimeValueFinger] then
-  begin
-    LabelValue.Left := 14 * BORD;
-    EditValue.Left := 14 * BORD;
-    AlignTop(LabelValue);
-    AlignTop(EditValue);
-    BorderTop(2 * BORD);
-    EditValue.Width := ClientWidth - 16 * BORD;
-    LabelValue.Show;
-    EditValue.Show;
-  end else
-  begin
-    LabelValue.Hide;
-    EditValue.Hide;
-  end;
-
-  // если нужно поле "Пальцы"
-
-  if ShowEditors in [edTimeValueFinger] then
-  begin
-    LabelFinger.Left := 14 * BORD;
-    ComboFinger.Left := 14 * BORD;
-    AlignTop(LabelFinger);
-    AlignTop(ComboFinger);
-    BorderTop(2 * BORD);
-    ComboFinger.Width := ClientWidth - 16 * BORD;
-    LabelFinger.Show;
-    ComboFinger.Show;
-  end else
-  begin
-    LabelFinger.Hide;
-    ComboFinger.Hide;
-  end;
-
+  // поле "Пальцы"
+  LabelFinger.Left := 14 * BORD;
+  ComboFinger.Left := 14 * BORD;
+  AlignTop(LabelFinger);
+  AlignTop(ComboFinger);
+  BorderTop(2 * BORD);
+  ComboFinger.Width := ClientWidth - 16 * BORD;
 
   { * * * * * }
   BottomLine := Max(BottomLine, 14 * BORD);
@@ -273,7 +244,7 @@ begin
   ButtonCancel.Caption := 'Отмена';
   EditValue.BlockKeys := True;
 
-  SmallDesigner(edTimeValueFinger);
+  SmallDesigner();
 end;
 
 {==============================================================================}

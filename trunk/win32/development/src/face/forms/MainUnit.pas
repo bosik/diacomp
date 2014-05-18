@@ -2658,8 +2658,6 @@ begin
   P.CaptionOK := SAVE_CAPTION[New];
   P.CaptionCancel := 'Отмена';
   P.FocusMode := Focus;
-  P.ShowEditors := edTimeValue;
-  P.CheckValue := CheckPositiveFloat;
 
   if New then
   begin
@@ -2697,8 +2695,6 @@ begin
   P.CaptionOK := SAVE_CAPTION[New];
   P.CaptionCancel := 'Отмена';
   P.FocusMode := fmTime;
-  P.ShowEditors := edTime;
-  P.CheckValue := nil;//CheckPositiveFloat;
 
   if New then
   begin
@@ -2737,8 +2733,6 @@ begin
   P.CaptionOK := SAVE_CAPTION[New];
   P.CaptionCancel := 'Отмена';
   P.FocusMode := Focus;
-  P.ShowEditors := edTimeValue;
-  P.CheckValue := nil;
 
   if New then
   begin
