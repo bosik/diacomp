@@ -1,4 +1,4 @@
-object FormEditorCommon: TFormEditorCommon
+object FormEditorOld: TFormEditorOld
   Left = 278
   Top = 399
   BorderIcons = [biSystemMenu]

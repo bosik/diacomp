@@ -10,7 +10,7 @@ uses
   DiaryInterface;
 
 type
-  TFormCommonEditor = class(TAutosetupForm)
+  TFormEditor = class(TAutosetupForm)
   private
     FEntity: TVersioned;
   protected
@@ -18,7 +18,7 @@ type
 
     // deep, null-safe
     class function Clone(X: TVersioned): TVersioned; virtual; abstract;
-    class function CreateEditorForm(CreateMode: boolean): TFormCommonEditor; virtual; abstract;
+    class function CreateEditorForm(CreateMode: boolean): TFormEditor; virtual; abstract;
     function ReadEntityFromGUI(): boolean; virtual; abstract;
     procedure ShowEntityInGUI(CreateMode: boolean); virtual; abstract;
     procedure Submit();
@@ -28,13 +28,13 @@ type
 
 implementation
 
-{ TFormCommonEditor }
+{ TFormEditor }
 
 {==============================================================================}
-class function TFormCommonEditor.ShowEditor(var Entity: TVersioned; CreateMode: boolean): boolean;
+class function TFormEditor.ShowEditor(var Entity: TVersioned; CreateMode: boolean): boolean;
 {==============================================================================}
 var
-  Dialog: TFormCommonEditor;
+  Dialog: TFormEditor;
 begin
   Dialog := CreateEditorForm(CreateMode);
 
@@ -55,7 +55,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TFormCommonEditor.Submit;
+procedure TFormEditor.Submit;
 {==============================================================================}
 begin
   if (ReadEntityFromGUI()) then

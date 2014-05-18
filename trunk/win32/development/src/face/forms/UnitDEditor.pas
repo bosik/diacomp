@@ -38,7 +38,7 @@ type
     Color: TColor;
   end;
 
-  TFormEditorCommon = class(TFormCommonEditor)
+  TFormEditorOld = class(TFormEditor)
     Image: TImage;
     LabelTime: TLabel;
     LabelValue: TLabel;
@@ -57,7 +57,7 @@ type
     function Entity(): TBloodRecord;
   protected
     class function Clone(X: TVersioned): TVersioned; override;
-    class function CreateEditorForm(CreateMode: boolean): TFormCommonEditor; override;
+    class function CreateEditorForm(CreateMode: boolean): TFormEditor; override;
     function ReadEntityFromGUI(): boolean; override;
     procedure ShowEntityInGUI(CreateMode: boolean); override;
     procedure Designer(); override;
@@ -77,7 +77,7 @@ uses UnitEditorBlood;
 { TFormEditorBlood }
 
 {==============================================================================}
-class function TFormEditorCommon.Clone(X: TVersioned): TVersioned;
+class function TFormEditorOld.Clone(X: TVersioned): TVersioned;
 {==============================================================================}
 var
   S: string;
@@ -87,7 +87,7 @@ begin
 end;
 
 {==============================================================================}
-class function TFormEditorCommon.CreateEditorForm(CreateMode: boolean): TFormCommonEditor;
+class function TFormEditorOld.CreateEditorForm(CreateMode: boolean): TFormEditor;
 {==============================================================================}
 var
   Dialog: TFormEditorBlood;
@@ -120,7 +120,7 @@ begin
 end;
 
 {==============================================================================}
-function TFormEditorCommon.ReadEntityFromGUI(): boolean;
+function TFormEditorOld.ReadEntityFromGUI(): boolean;
 {==============================================================================}
 var
   T: integer;
@@ -141,7 +141,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TFormEditorCommon.ShowEntityInGUI(CreateMode: boolean);
+procedure TFormEditorOld.ShowEntityInGUI(CreateMode: boolean);
 {==============================================================================}
 var
   LocalTime: TDateTime;
@@ -164,14 +164,14 @@ begin
 end;
 
 {==============================================================================}
-function TFormEditorCommon.Entity: TBloodRecord;
+function TFormEditorOld.Entity: TBloodRecord;
 {==============================================================================}
 begin
   Result := TBloodRecord(inherited Entity);
 end;
 
 {==============================================================================}
-procedure TFormEditorCommon.ButtonOKClick(Sender: TObject);
+procedure TFormEditorOld.ButtonOKClick(Sender: TObject);
 {==============================================================================}
 begin
   Submit();
@@ -200,7 +200,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TFormEditorCommon.Designer();
+procedure TFormEditorOld.Designer();
 {==============================================================================}
 var
   BottomLine: integer;
@@ -273,7 +273,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TFormEditorCommon.FieldKeyDown(Sender: TObject; var Key: Word;
+procedure TFormEditorOld.FieldKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 {==============================================================================}
 begin
