@@ -9,7 +9,7 @@ uses
   UnitEditor, JsonSerializer, uLKjson, DiaryPageSerializer, TextInterface, Math;
 
 type
-  TFormEditorBlood = class(TFormCommonEditor)
+  TFormEditorBlood = class(TFormEditor)
     Image: TImage;
     LabelTime: TLabel;
     LabelValue: TLabel;
@@ -28,7 +28,7 @@ type
     function Entity(): TBloodRecord;
   protected
     class function Clone(X: TVersioned): TVersioned; override;
-    class function CreateEditorForm(CreateMode: boolean): TFormCommonEditor; override;
+    class function CreateEditorForm(CreateMode: boolean): TFormEditor; override;
     function ReadEntityFromGUI(): boolean; override;
     procedure ShowEntityInGUI(CreateMode: boolean); override;
     procedure Designer(); override;
@@ -51,7 +51,7 @@ begin
 end;
 
 {==============================================================================}
-class function TFormEditorBlood.CreateEditorForm(CreateMode: boolean): TFormCommonEditor;
+class function TFormEditorBlood.CreateEditorForm(CreateMode: boolean): TFormEditor;
 {==============================================================================}
 var
   Dialog: TFormEditorBlood;
