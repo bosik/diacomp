@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 544
-  Top = 218
-  Width = 1249
-  Height = 959
+  Left = -4
+  Top = -4
+  Width = 1928
+  Height = 1054
   Caption = #1053#1072#1079#1074#1072#1085#1080#1077
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,14 +19,14 @@ object Form1: TForm1
   object BevelTop: TBevel
     Left = 0
     Top = 30
-    Width = 1241
+    Width = 1920
     Height = 2
     Align = alTop
   end
   object ShapeTop: TShape
     Left = 0
     Top = 32
-    Width = 1241
+    Width = 1920
     Height = 5
     Align = alTop
     Brush.Style = bsClear
@@ -34,8 +34,8 @@ object Form1: TForm1
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 908
-    Width = 1241
+    Top = 1003
+    Width = 1920
     Height = 19
     Panels = <
       item
@@ -58,7 +58,7 @@ object Form1: TForm1
   object MainMenu: TActionMainMenuBar
     Left = 0
     Top = 0
-    Width = 1241
+    Width = 1920
     Height = 30
     UseSystemFont = False
     ActionManager = ActionManager
@@ -77,16 +77,16 @@ object Form1: TForm1
   object PanelMain: TPanel
     Left = 0
     Top = 37
-    Width = 1241
-    Height = 871
+    Width = 1920
+    Height = 966
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
     object PageControl1: TPageControl
       Left = 0
       Top = 0
-      Width = 1241
-      Height = 871
+      Width = 1920
+      Height = 966
       ActivePage = TabBase
       Align = alClient
       Font.Charset = DEFAULT_CHARSET
@@ -108,9 +108,9 @@ object Form1: TForm1
         ParentShowHint = False
         ShowHint = False
         object Splitter4: TSplitter
-          Left = 965
+          Left = 1644
           Top = 0
-          Height = 837
+          Height = 932
           Align = alRight
           Color = clSkyBlue
           ParentColor = False
@@ -119,8 +119,8 @@ object Form1: TForm1
         object PanelDiaryTop: TPanel
           Left = 222
           Top = 0
-          Width = 743
-          Height = 837
+          Width = 1422
+          Height = 932
           Align = alClient
           BevelOuter = bvNone
           ParentBackground = True
@@ -128,8 +128,8 @@ object Form1: TForm1
           object ScrollBoxDiary: TScrollBox
             Left = 0
             Top = 0
-            Width = 743
-            Height = 756
+            Width = 1422
+            Height = 851
             VertScrollBar.Increment = 40
             VertScrollBar.Tracking = True
             Align = alClient
@@ -149,7 +149,7 @@ object Form1: TForm1
             object DiaryView: TDiaryView
               Left = 0
               Top = 0
-              Width = 739
+              Width = 1418
               Height = 117
               Align = alTop
               Font.Charset = DEFAULT_CHARSET
@@ -175,8 +175,8 @@ object Form1: TForm1
           end
           object PanelDiaryBottom: TPanel
             Left = 0
-            Top = 756
-            Width = 743
+            Top = 851
+            Width = 1422
             Height = 81
             Align = alBottom
             BevelOuter = bvNone
@@ -235,7 +235,7 @@ object Form1: TForm1
             object GroupBoxAdd: TGroupBox
               Left = 291
               Top = 0
-              Width = 452
+              Width = 1131
               Height = 81
               Align = alClient
               Caption = #1055#1088#1086#1076#1091#1082#1090#1099' '#1080' '#1073#1083#1102#1076#1072
@@ -250,10 +250,10 @@ object Form1: TForm1
               ParentFont = False
               TabOrder = 1
               DesignSize = (
-                452
+                1131
                 81)
               object ButtonDiaryNewAddFood: TSpeedButton
-                Left = 388
+                Left = 1067
                 Top = 25
                 Width = 25
                 Height = 25
@@ -268,7 +268,7 @@ object Form1: TForm1
                 Tag = 1
                 Left = 56
                 Top = 24
-                Width = 251
+                Width = 930
                 Height = 24
                 UserHint = #1053#1072#1095#1085#1080#1090#1077' '#1074#1074#1086#1076#1080#1090#1100' '#1085#1072#1079#1074#1072#1085#1080#1077
                 ShowUserHint = True
@@ -289,7 +289,7 @@ object Form1: TForm1
               end
               object EditDiaryNewMass: TEditNumb
                 Tag = 1
-                Left = 327
+                Left = 1006
                 Top = 25
                 Width = 56
                 Height = 25
@@ -318,7 +318,7 @@ object Form1: TForm1
           Left = 0
           Top = 0
           Width = 222
-          Height = 837
+          Height = 932
           Align = alLeft
           BevelOuter = bvLowered
           BorderWidth = 8
@@ -778,10 +778,10 @@ object Form1: TForm1
           end
         end
         object PanelDiaryDish: TPanel
-          Left = 968
+          Left = 1647
           Top = 0
           Width = 265
-          Height = 837
+          Height = 932
           Align = alRight
           BevelOuter = bvLowered
           BorderWidth = 10
@@ -892,7 +892,7 @@ object Form1: TForm1
             Left = 11
             Top = 243
             Width = 243
-            Height = 583
+            Height = 678
             Align = alClient
             Caption = #1055#1086#1076#1073#1086#1088' '#1091#1075#1083#1077#1074#1086#1076#1086#1074
             Color = clWhite
@@ -908,7 +908,7 @@ object Form1: TForm1
               Left = 2
               Top = 18
               Width = 239
-              Height = 563
+              Height = 658
               Align = alClient
               BevelOuter = bvNone
               BorderWidth = 8
@@ -932,7 +932,7 @@ object Form1: TForm1
                 Left = 8
                 Top = 24
                 Width = 223
-                Height = 531
+                Height = 626
                 Align = alClient
                 BorderStyle = bsNone
                 Columns = <
@@ -1034,7 +1034,7 @@ object Form1: TForm1
         object SplitterBase: TSplitter
           Left = 553
           Top = 64
-          Height = 773
+          Height = 868
           Color = clSkyBlue
           ParentColor = False
           OnCanResize = SplitterBaseCanResize
@@ -1044,7 +1044,7 @@ object Form1: TForm1
           Left = 0
           Top = 64
           Width = 553
-          Height = 773
+          Height = 868
           Align = alLeft
           BevelOuter = bvLowered
           BorderWidth = 8
@@ -1078,7 +1078,7 @@ object Form1: TForm1
           end
           object PanelFoodButtons: TPanel
             Left = 9
-            Top = 706
+            Top = 801
             Width = 535
             Height = 58
             Align = alBottom
@@ -1133,7 +1133,7 @@ object Form1: TForm1
             Left = 9
             Top = 32
             Width = 535
-            Height = 674
+            Height = 769
             Align = alClient
             Columns = <
               item
@@ -1190,8 +1190,8 @@ object Form1: TForm1
         object PanelBaseDish: TPanel
           Left = 556
           Top = 64
-          Width = 677
-          Height = 773
+          Width = 1356
+          Height = 868
           Align = alClient
           BevelOuter = bvLowered
           BorderWidth = 8
@@ -1201,7 +1201,7 @@ object Form1: TForm1
           object Shape11: TShape
             Left = 9
             Top = 25
-            Width = 659
+            Width = 1338
             Height = 7
             Align = alTop
             Brush.Style = bsClear
@@ -1210,7 +1210,7 @@ object Form1: TForm1
           object PanelDishHeader: TPanel
             Left = 9
             Top = 9
-            Width = 659
+            Width = 1338
             Height = 16
             Align = alTop
             AutoSize = True
@@ -1234,15 +1234,15 @@ object Form1: TForm1
           end
           object PanelDishButtons: TPanel
             Left = 9
-            Top = 706
-            Width = 659
+            Top = 801
+            Width = 1338
             Height = 58
             Align = alBottom
             BevelOuter = bvNone
             ParentColor = True
             TabOrder = 1
             DesignSize = (
-              659
+              1338
               58)
             object ButtonCreateDish: TSpeedButton
               Left = 0
@@ -1263,7 +1263,7 @@ object Form1: TForm1
               OnClick = ButtonCreateDishClick
             end
             object ButtonDeleteDish: TSpeedButton
-              Left = 963
+              Left = 1642
               Top = 12
               Width = 160
               Height = 42
@@ -1288,8 +1288,8 @@ object Form1: TForm1
             Tag = 2
             Left = 9
             Top = 32
-            Width = 659
-            Height = 674
+            Width = 1338
+            Height = 769
             Align = alClient
             Color = clWhite
             Columns = <
@@ -1350,7 +1350,7 @@ object Form1: TForm1
         object GroupBasesSearch: TGroupBox
           Left = 0
           Top = 0
-          Width = 1233
+          Width = 1912
           Height = 64
           Align = alTop
           Caption = 'Search'
@@ -1358,10 +1358,10 @@ object Form1: TForm1
           ParentColor = False
           TabOrder = 2
           DesignSize = (
-            1233
+            1912
             64)
-          object ButtonResetFilterFoodBase: TSpeedButton
-            Left = 1194
+          object ButtonBasesFilterReset: TSpeedButton
+            Left = 1873
             Top = 20
             Width = 28
             Height = 28
@@ -1484,12 +1484,12 @@ object Form1: TForm1
             ParentShowHint = False
             ShowHint = True
             Transparent = False
-            OnClick = ButtonResetFilterFoodBaseClick
+            OnClick = ButtonBasesFilterResetClick
           end
           object EditBaseFoodSearch: TEdit
             Left = 8
             Top = 24
-            Width = 1180
+            Width = 1859
             Height = 24
             Anchors = [akLeft, akTop, akRight]
             Font.Charset = DEFAULT_CHARSET
@@ -1515,7 +1515,7 @@ object Form1: TForm1
           Left = 0
           Top = 0
           Width = 249
-          Height = 837
+          Height = 932
           Align = alLeft
           BevelOuter = bvLowered
           BorderWidth = 8
@@ -1739,8 +1739,8 @@ object Form1: TForm1
         object PanelImageLarge: TPanel
           Left = 249
           Top = 0
-          Width = 984
-          Height = 837
+          Width = 1663
+          Height = 932
           Align = alClient
           BevelOuter = bvLowered
           Caption = #1053#1077#1090' '#1075#1088#1072#1092#1080#1082#1072
@@ -1773,13 +1773,13 @@ object Form1: TForm1
           Left = 0
           Top = 0
           Width = 225
-          Height = 837
+          Height = 932
           Align = alLeft
           Caption = #1056#1077#1082#1086#1088#1076#1099' '#1057#1050
           TabOrder = 0
           DesignSize = (
             225
-            837)
+            932)
           object ButtonBSHistory: TButton
             Left = 9
             Top = 25
@@ -1802,7 +1802,7 @@ object Form1: TForm1
             Left = 2
             Top = 296
             Width = 221
-            Height = 539
+            Height = 634
             Align = alBottom
             Anchors = [akLeft, akTop, akRight, akBottom]
             Font.Charset = RUSSIAN_CHARSET
@@ -1874,18 +1874,18 @@ object Form1: TForm1
           Left = 225
           Top = 0
           Width = 225
-          Height = 837
+          Height = 932
           Align = alLeft
           Caption = #1056#1077#1082#1086#1088#1076#1099' '#1041#1046#1059
           TabOrder = 1
           DesignSize = (
             225
-            837)
+            932)
           object ListCB: TListBox
             Left = 2
             Top = 56
             Width = 221
-            Height = 779
+            Height = 874
             Hint = #1050#1083#1080#1082#1085#1080#1090#1077' '#1076#1074#1072' '#1088#1072#1079#1072' '#1076#1083#1103' '#1087#1077#1088#1077#1093#1086#1076#1072
             Style = lbOwnerDrawFixed
             Align = alBottom

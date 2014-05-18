@@ -264,7 +264,7 @@ type
     Shape2: TShape;
     GroupBasesSearch: TGroupBox;
     EditBaseFoodSearch: TEdit;
-    ButtonResetFilterFoodBase: TSpeedButton;
+    ButtonBasesFilterReset: TSpeedButton;
 
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ButtonCreateFoodClick(Sender: TObject);
@@ -382,7 +382,7 @@ type
     procedure EditBaseFoodSearchChange(Sender: TObject);
     procedure EditBaseFoodSearchKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure ButtonResetFilterFoodBaseClick(Sender: TObject);
+    procedure ButtonBasesFilterResetClick(Sender: TObject);
     procedure EditBaseFoodSearchKeyPress(Sender: TObject; var Key: Char);
     procedure ListFoodData(Sender: TObject; Item: TListItem);
     procedure ListDishData(Sender: TObject; Item: TListItem);
@@ -403,7 +403,7 @@ type
     procedure BalloonAction_ShowForm;
     procedure BalloonAction_StartUpdate;
     procedure BalloonAction_ShowInternetSettings;
-  public                          
+  public
     procedure FullInit;
     procedure FullFree;
     procedure ShowMessages;
@@ -416,6 +416,8 @@ type
     procedure ClickIns(New: boolean);
     procedure ClickMeal(New: boolean);
     procedure ClickNote(New: boolean);
+
+    function SelectedRecord(): TCustomRecord;
 
     { базы }
     function FoodEditorRect: TRect;
@@ -500,21 +502,22 @@ const
   CC_HIGH   = clRed;
 
   { пути к картинкам }
-  FOLDER_BUTTONS          = 'Images\Buttons\';
-    IMAGE_DIARY_NEW_BLOOD = FOLDER_BUTTONS + 'Diary_New_Blood.bmp';
-    IMAGE_DIARY_NEW_INS   = FOLDER_BUTTONS + 'Diary_New_Ins.bmp';
-    IMAGE_DIARY_NEW_MEAL  = FOLDER_BUTTONS + 'Diary_New_Meal.bmp';
-    IMAGE_DIARY_NEW_NOTE  = FOLDER_BUTTONS + 'Diary_New_Note.bmp';
-    IMAGE_PANEL_MIN       = FOLDER_BUTTONS + 'Panel_Min.bmp';
-    IMAGE_PANEL_MAX       = FOLDER_BUTTONS + 'Panel_Max.bmp';
-    IMAGE_EDITOR_ADD      = FOLDER_BUTTONS + 'Editor_Add.bmp';
-    IMAGE_EDITOR_REMOVE   = FOLDER_BUTTONS + 'Editor_Remove.bmp';
-    IMAGE_EDITOR_REPLACE  = FOLDER_BUTTONS + 'Editor_Replace.bmp';
-    IMAGE_EDITOR_CALC     = FOLDER_BUTTONS + 'Editor_Calc.bmp';
-    IMAGE_BASE_NEW_FOOD   = FOLDER_BUTTONS + 'Base_New_Food.bmp';
-    IMAGE_BASE_NEW_DISH   = FOLDER_BUTTONS + 'Base_New_Dish.bmp';
-    IMAGE_BASE_REMOVE     = FOLDER_BUTTONS + 'Base_Remove.bmp';
-    IMAGE_EXPORT_SAVE     = FOLDER_BUTTONS + 'Export_Save.bmp';
+  FOLDER_BUTTONS             = 'Images\Buttons\';
+    IMAGE_DIARY_NEW_BLOOD    = FOLDER_BUTTONS + 'Diary_New_Blood.bmp';
+    IMAGE_DIARY_NEW_INS      = FOLDER_BUTTONS + 'Diary_New_Ins.bmp';
+    IMAGE_DIARY_NEW_MEAL     = FOLDER_BUTTONS + 'Diary_New_Meal.bmp';
+    IMAGE_DIARY_NEW_NOTE     = FOLDER_BUTTONS + 'Diary_New_Note.bmp';
+    IMAGE_PANEL_MIN          = FOLDER_BUTTONS + 'Panel_Min.bmp';
+    IMAGE_PANEL_MAX          = FOLDER_BUTTONS + 'Panel_Max.bmp';
+    IMAGE_EDITOR_ADD         = FOLDER_BUTTONS + 'Editor_Add.bmp';
+    IMAGE_EDITOR_REMOVE      = FOLDER_BUTTONS + 'Editor_Remove.bmp';
+    IMAGE_EDITOR_REPLACE     = FOLDER_BUTTONS + 'Editor_Replace.bmp';
+    IMAGE_EDITOR_CALC        = FOLDER_BUTTONS + 'Editor_Calc.bmp';
+    IMAGE_BASE_SEARCH_RESET  = FOLDER_BUTTONS + 'Base_Search_Clear.bmp';
+    IMAGE_BASE_NEW_FOOD      = FOLDER_BUTTONS + 'Base_New_Food.bmp';
+    IMAGE_BASE_NEW_DISH      = FOLDER_BUTTONS + 'Base_New_Dish.bmp';
+    IMAGE_BASE_REMOVE        = FOLDER_BUTTONS + 'Base_Remove.bmp';
+    IMAGE_EXPORT_SAVE        = FOLDER_BUTTONS + 'Export_Save.bmp';
 
     IMAGE_SETTINGS_PRIVATE   = FOLDER_BUTTONS + 'Settings_Private.bmp';
     IMAGE_SETTINGS_ANALYZE   = FOLDER_BUTTONS + 'Settings_Analyze.bmp';
@@ -1172,6 +1175,7 @@ begin
   LoadImage(WORK_FOLDER + IMAGE_EDITOR_CALC, FormDish.ButtonRunCalc.Glyph);
   LoadImage(WORK_FOLDER + IMAGE_EDITOR_REMOVE, FormDish.ButtonSimpleMass.Glyph);
 
+  LoadImage(WORK_FOLDER + IMAGE_BASE_SEARCH_RESET, ButtonBasesFilterReset.Glyph);
   LoadImage(WORK_FOLDER + IMAGE_BASE_NEW_FOOD, ButtonCreateFood.Glyph);
   LoadImage(WORK_FOLDER + IMAGE_BASE_NEW_DISH, ButtonCreateDish.Glyph);
   LoadImage(WORK_FOLDER + IMAGE_BASE_REMOVE, ButtonDeleteFood.Glyph);
@@ -1989,15 +1993,17 @@ var
   ItemType: TItemType;
   n: integer;
   Mass: Extended;
+  Rec: TCustomRecord;
   Meal: TMealRecord;
   Item: TMutableItem;
 begin
   StartProc('TForm1.ButtonDiaryNewAddClick()');
   try
     try
-      if (DiaryView.SelectedRecord is TMealRecord) then
+      Rec := SelectedRecord();
+      if ((Rec <> nil) and (Rec is TMealRecord)) then
       begin
-        Meal := TMealRecord(DiaryView.SelectedRecord);
+        Meal := TMealRecord(Rec);
 
         ComboDiaryNew.Text := Trim(ComboDiaryNew.Text);
         EditDiaryNewMass.Text := Trim(EditDiaryNewMass.Text);
@@ -2397,13 +2403,15 @@ end;
 procedure TForm1.UpdateMealStatistics;
 {==============================================================================}
 var
+  Rec: TCustomRecord;
   SelMeal: TMealRecord;
 begin
   StartProc('TForm1.UpdateMealStatistic()');
 
-  if (DiaryView.SelectedRecord is TMealRecord) then
+  Rec := SelectedRecord();
+  if ((Rec <> nil) and (Rec is TMealRecord)) then
   begin
-    SelMeal := TMealRecord(DiaryView.SelectedRecord);
+    SelMeal := TMealRecord(Rec);
 
     LabelDiaryMealProts.Font.Color := clWindowText;
     LabelDiaryMealProts.Caption := 'Белки: '+IntToStr(Round(SelMeal.Prots))+' (г)';
@@ -2467,7 +2475,7 @@ begin
   StartProc('TForm1.UpdateMealDose()');
 
   // блюдо не выбрано, очищаем
-  if not (DiaryView.SelectedRecord is TMealRecord) then
+  if not (SelectedRecord() is TMealRecord) then
   begin
     LabelDiaryMealDose.Font.Color := clNoData;
     LabelDiaryMealDose.Font.Style := [];
@@ -2488,7 +2496,7 @@ begin
   // блюдо выбрано, информируем 
   begin
     { ищем приём пищи, замер и инъекцию }
-    SelMeal := TMEalRecord(DiaryView.SelectedRecord);
+    SelMeal := TMealRecord(SelectedRecord());
 
     StartBlood := TBloodRecord(
       Diary.FindRecord(
@@ -2909,7 +2917,7 @@ begin
   if (ComboKoof.ItemIndex <> -1) then
     ComboKoofChange(nil);
 
-  if (DiaryView.SelectedRecord is TMealRecord) then
+  if (SelectedRecord() is TMealRecord) then
     UpdateMealDose;
 
   TimerTimeLeft.Enabled := True;
@@ -2927,9 +2935,9 @@ var
 begin
   Log(DEBUG, 'TForm1.GetCompensationMass()');
 
-  if (DiaryView.SelectedRecord is TMealRecord) then
+  if (SelectedRecord() is TMealRecord) then
   begin
-    Kf := GetKoof(TMealRecord(DiaryView.SelectedRecord).Time);
+    Kf := GetKoof(TMealRecord(SelectedRecord()).Time);
     RelBS := (RelCarbs*Kf.k + RelProts*Kf.p)/100;
     if (RelBS > 0) then
       Result := CurrentDB/RelBS
@@ -2944,19 +2952,21 @@ function TForm1.GetBestMass(const RelCarbs, RelProts, CurMass: real): real;
 {==============================================================================}
 { подбор массы в приёме пищи }
 var
+  Rec: TCustomRecord;
   Kf: TKoof;
   RelBS: real;
 begin
-  if (DiaryView.SelectedRecord is TMealRecord) then
+  Rec := SelectedRecord();
+  if (Rec is TMealRecord) then
   begin
-    Kf := GetKoof(TMealRecord(DiaryView.SelectedRecord).Time);
-    RelBS := (RelCarbs*Kf.k + RelProts*Kf.p)/100;
+    Kf := GetKoof(TMealRecord(Rec).Time);
+    RelBS := (RelCarbs * Kf.k + RelProts * Kf.p) / 100;
     if (RelBS > 0) then
-      Result := (CurrentDB+RelBS*CurMass)/RelBS
+      Result := (CurrentDB + RelBS * CurMass) / RelBS
     else
-      Result := 0;
+      Result := 0.0;
   end else
-    Result := 0;
+    Result := 0.0;
 end;
 
 {==============================================================================}
@@ -3270,7 +3280,7 @@ begin
   case PageControl1.ActivePageIndex of
     0: { дневник }
     begin
-      ProcessMealSelected(DiaryView.SelectedRecord is TMealRecord);
+      ProcessMealSelected(SelectedRecord() is TMealRecord);
       if WebClient.Online then
         Form1.StatusBar.Panels[2].Text := STATUS_RESULT_STATE_ONLINE
       else
@@ -3682,25 +3692,27 @@ end;
 procedure TForm1.ActionRemovePanelExecute(Sender: TObject);
 {==============================================================================}
 var
+  Rec: TCustomRecord;
   MsgType: TMsgDlgType;
   Msg: string;
 begin
-  if (DiaryView.SelectedRecord is TBloodRecord) then
+  Rec := SelectedRecord();
+  if (Rec is TBloodRecord) then
   begin
     MsgType := mtConfirmation;
     Msg := MESSAGE_CONF_REMOVE_DIARY_BLOOD;
   end else
-  if (DiaryView.SelectedRecord is TInsRecord) then
+  if (Rec is TInsRecord) then
   begin
     MsgType := mtConfirmation;
     Msg := MESSAGE_CONF_REMOVE_DIARY_INS;
   end else
-  if (DiaryView.SelectedRecord is TMealRecord) then
+  if (Rec is TMealRecord) then
   begin
     MsgType := mtWarning;
     Msg := MESSAGE_CONF_REMOVE_DIARY_MEAL;
   end else
-  if (DiaryView.SelectedRecord is TNoteRecord) then
+  if (Rec is TNoteRecord) then
   begin
     MsgType := mtConfirmation;
     Msg := MESSAGE_CONF_REMOVE_DIARY_NOTE;
@@ -3729,8 +3741,8 @@ procedure TForm1.ActionBalanceMealExecute(Sender: TObject);
   SCarbs: string;
   FullCarbs,TCarbs,TProts,TFats: extended;   }
 begin
-  if (DiaryView.SelectedRecord is TMealRecord) then
-  begin
+  //if (DiaryView.SelectedRecord is TMealRecord) then
+  //begin
     //SCarbs := InputBox(
     //  'Подбор',
     //  'Целевое количество углеводов:','');
@@ -3761,7 +3773,7 @@ begin
       TCarbs
     );
     DrawCP;    }
-  end;
+  //end;
 end;
 
 procedure TForm1.ActionCalcMassExecute(Sender: TObject);
@@ -3832,7 +3844,7 @@ var
 begin
   if (DiaryView.IsFoodSelected) then
   begin
-    Meal := TMealRecord(DiaryView.SelectedRecord);
+    Meal := TMealRecord(SelectedRecord());
     Food := DiaryView.SelectedFood;
 
     if MessageDlg(Format(MESSAGE_CONF_REMOVE_DIARY_FOOD, [Food.Name]), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
@@ -4131,12 +4143,25 @@ end;
 {==============================================================================}
 procedure TForm1.ActionShortMealExecute(Sender: TObject);
 {==============================================================================}
+var
+  Rec: TCustomRecord;
+  Meal: TMealRecord;
 begin
   //{ все проверки - внутри }
   //DiaryView.SetShortMeal(ActionShortMeal.Checked);
 
-  if (DiaryView.SelectedRecord is TMealRecord) then
-    TMealRecord(DiaryView.SelectedRecord).ShortMeal := ActionShortMeal.Checked;
+  Rec := SelectedRecord();
+
+  if (Rec is TMealRecord) then
+  begin
+    Meal := TMealRecord(Rec);
+    Meal.ShortMeal := ActionShortMeal.Checked;
+    Meal.Modified;
+    LocalSource.Post(Meal);
+
+    // TODO: check if it is really necessary
+    UpdateTimeLeft;
+  end;
 end;
 
 {==============================================================================}
@@ -4873,13 +4898,13 @@ begin
   if (Trim(Filter) = '') then
   begin
     FoodList := FoodBaseLocal.FindAll(false);
-    ButtonResetFilterFoodBase.Hint := MAIN_BASES_FILTER_ALL;
-    ButtonResetFilterFoodBase.Enabled := False;
+    ButtonBasesFilterReset.Hint := MAIN_BASES_FILTER_ALL;
+    ButtonBasesFilterReset.Enabled := False;
   end else
   begin
     FoodList := FoodBaseLocal.FindAny(Filter);
-    ButtonResetFilterFoodBase.Hint := MAIN_BASES_FILTER_FILTERED;
-    ButtonResetFilterFoodBase.Enabled := True;
+    ButtonBasesFilterReset.Hint := MAIN_BASES_FILTER_FILTERED;
+    ButtonBasesFilterReset.Enabled := True;
   end;
 end;
 
@@ -4904,13 +4929,13 @@ begin
   begin
     DishList := DishBaseLocal.FindAll(false);
     // TODO: duplicated code
-    ButtonResetFilterFoodBase.Hint := MAIN_BASES_FILTER_ALL;
-    ButtonResetFilterFoodBase.Enabled := False;
+    ButtonBasesFilterReset.Hint := MAIN_BASES_FILTER_ALL;
+    ButtonBasesFilterReset.Enabled := False;
   end else
   begin
     DishList := DishBaseLocal.FindAny(Filter);
-    ButtonResetFilterFoodBase.Hint := MAIN_BASES_FILTER_FILTERED;
-    ButtonResetFilterFoodBase.Enabled := True;
+    ButtonBasesFilterReset.Hint := MAIN_BASES_FILTER_FILTERED;
+    ButtonBasesFilterReset.Enabled := True;
   end;
 end;
 
@@ -4936,7 +4961,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TForm1.ButtonResetFilterFoodBaseClick(Sender: TObject);
+procedure TForm1.ButtonBasesFilterResetClick(Sender: TObject);
 {==============================================================================}
 begin
   if (not TSpeedButton(Sender).Down) then
@@ -5050,6 +5075,17 @@ begin
     if True  then SubItems.Add(IntToStr(Round(DishList[i].RelValue)));
     if True  then SubItems.Add(MyTimeToStr(DishList[i].TimeStamp)); 
   end;
+end;
+
+function TForm1.SelectedRecord(): TCustomRecord;
+var
+  ID: TCompactGUID;
+begin
+  ID := DiaryView.SelectedRecordID;
+  if (ID <> '') then
+    Result := LocalSource.FindById(ID)
+  else
+    Result := nil;
 end;
 
 end.
