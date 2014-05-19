@@ -1,7 +1,7 @@
 object DataInterface: TDataInterface
   OldCreateOrder = False
-  Left = 534
-  Top = 101
+  Left = 552
+  Top = 347
   Height = 624
   Width = 551
   object Image_MinMax: TImageList
