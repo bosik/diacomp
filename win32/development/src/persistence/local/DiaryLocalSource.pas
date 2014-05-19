@@ -981,6 +981,7 @@ begin
   if (FRecords[i].ID = ID) then
   begin
     FRecords[i].Deleted := True;
+    FRecords[i].Modified;
     FModified := True;
     SaveToFile(FFileName);
     Exit;

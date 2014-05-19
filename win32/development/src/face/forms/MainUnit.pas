@@ -414,6 +414,9 @@ type
     procedure ClickMeal(New: boolean);
     procedure ClickNote(New: boolean);
 
+    procedure ClickMealFoodMassChange();
+    procedure ClickMealFoodMassDelta();
+
     function SelectedRecord(): TCustomRecord;
 
     { базы }
@@ -2029,6 +2032,10 @@ begin
               itDish: Meal.Add(TDish(Item).AsFoodMassed(Mass));
             end;
 
+            Meal.Modified;
+            LocalSource.Post(Meal);
+            DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
+
             ComboDiaryNew.Text := '';
             EditDiaryNewMass.Text := '';
             ComboDiaryNew.SetFocus;
@@ -2790,6 +2797,73 @@ begin
 end;
 
 {==============================================================================}
+procedure TForm1.ClickMealFoodMassChange();
+{==============================================================================}
+var
+  NewMass: real;
+  Rec: TCustomRecord;
+  Meal: TMealRecord;
+  Line: integer;
+begin
+  Rec := SelectedRecord();
+  if ((Rec <> nil) and (Rec is TMealRecord)) then
+  begin
+    Meal := TMealRecord(Rec);
+    NewMass := Meal[DiaryView.SelectedLine].Mass;
+    if (DialogFoodMass(dtChangeMass, DiaryView.SelectedFood.Name, NewMass))and
+       (NewMass >= 0)
+    then
+    begin
+      Meal[DiaryView.SelectedLine].Mass := NewMass;
+      Meal.Modified;
+      LocalSource.Post(Meal);
+      UpdateMealStatistics();
+      UpdateMealDose();
+
+      Line := DiaryView.SelectedLine;
+      DiaryView.OpenPage(Diary[Trunc(Now)], True);
+      DiaryView.SelectedRecordID := Rec.ID;
+      DiaryView.SelectedLine := Line;
+    end else
+      ErrorMessage('Неверная масса');
+  end;
+end;
+
+{==============================================================================}
+procedure TForm1.ClickMealFoodMassDelta;
+{==============================================================================}
+var
+  DeltaMass: real;
+  Rec: TCustomRecord;
+  Meal: TMealRecord;
+  Line: integer;
+begin
+  Rec := SelectedRecord();
+  if ((Rec <> nil) and (Rec is TMealRecord)) then
+  begin
+    Meal := TMealRecord(Rec);
+    DeltaMass := 0;
+    if DialogFoodMass(dtDeltaMass, Meal[DiaryView.SelectedLine].Name, DeltaMass) then
+    begin
+      if (DiaryView.SelectedFood.Mass+DeltaMass >= 0) then
+      begin
+        Meal[DiaryView.SelectedLine].Mass := Meal[DiaryView.SelectedLine].Mass + DeltaMass;
+        Meal.Modified;
+        LocalSource.Post(Meal);
+        UpdateMealStatistics();
+        UpdateMealDose();
+
+        Line := DiaryView.SelectedLine;
+        DiaryView.OpenPage(Diary[Trunc(Now)], True);
+        DiaryView.SelectedRecordID := Rec.ID;
+        DiaryView.SelectedLine := Line;
+      end else
+        ErrorMessage('Новая масса не может быть отрицательной.');
+    end;
+  end;
+end;
+
+{==============================================================================}
 procedure TForm1.DiaryViewDoubleClickBlood(Sender: TObject; Index: Integer;
   Place: TClickPlace);
 {==============================================================================}
@@ -2823,15 +2897,7 @@ begin
   case Place of
     cpTime:  ClickMeal(False);
     cpPanel: ClickMeal(False);
-    cpRec: begin
-             NewMass := DiaryView.SelectedFood.Mass;
-             if DialogFoodMass(
-               dtChangeMass,DiaryView.SelectedFood.Name,NewMass)
-             then
-               DiaryView.SelectedFood.Mass := NewMass;
-
-             //DiaryView.EditFoodMass(NewMass);
-           end;
+    cpRec:   ClickMealFoodMassChange();
   end;
 end;
 
@@ -3789,33 +3855,13 @@ begin
 end;
 
 procedure TForm1.ActionEditFoodExecute(Sender: TObject);
-var
-  NewMass: real;
 begin
-  NewMass := DiaryView.SelectedFood.Mass;
-  if (DialogFoodMass(dtChangeMass, DiaryView.SelectedFood.Name, NewMass))and
-     (NewMass >= 0)
-  then
-    DiaryView.SelectedFood.Mass := NewMass
-    //DiaryView.EditFoodMass(NewMass)
-  else
-    ErrorMessage('Неверная масса');
-    //DiaryView.EditFoodMass(0);
+  ClickMealFoodMassChange();
 end;
 
 procedure TForm1.ActionDeltaMassExecute(Sender: TObject);
-var
-  DeltaMass: real;
 begin
-  DeltaMass := 0;
-  if DialogFoodMass(dtDeltaMass,DiaryView.SelectedFood.Name,DeltaMass) then
-  if DiaryView.SelectedFood.Mass+DeltaMass >= 0 then
-    //DiaryView.EditFoodMass(DiaryView.SelectedFood.Mass+DeltaMass)
-    DiaryView.SelectedFood.Mass := DiaryView.SelectedFood.Mass + DeltaMass
-  else
-  begin
-    ErrorMessage('Новая масса не может быть отрицательной.');
-  end;
+  ClickMealFoodMassDelta();
 end;
 
 {==============================================================================}

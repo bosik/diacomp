@@ -178,6 +178,7 @@ type
 
     function GetSelectedID(): TCompactGUID;
     procedure SetSelectedID(const ID: TCompactGUID);
+    procedure SetSelectedLine(Line: integer);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -192,7 +193,7 @@ type
 
     property SelectedRecordIndex: integer read FSelPanel write FSelPanel;
     property SelectedRecordID: TCompactGUID read GetSelectedID write SetSelectedID;
-    property SelectedLine: integer read FSelLine;
+    property SelectedLine: integer read FSelLine write SetSelectedLine;
     property CurrentPage: TRecordList read FCurrentPage;
   published
     property Align;
@@ -2397,6 +2398,12 @@ begin
   end;
 
   FSelPanel := -1;
+end;
+
+procedure TDiaryView.SetSelectedLine(Line: integer);
+begin
+  FSelLine := Line;
+  Repaint;
 end;
 
 end.
