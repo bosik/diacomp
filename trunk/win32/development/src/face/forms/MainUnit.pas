@@ -2044,6 +2044,10 @@ begin
             Meal.Modified;
             LocalSource.Post(Meal);
             DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
+            DiaryView.SelectedRecordID := Meal.ID;
+            DiaryView.SelectedLine := Meal.Count - 1;
+            UpdateMealStatistics;
+            UpdateMealDose;
 
             ComboDiaryNew.Text := '';
             EditDiaryNewMass.Text := '';
