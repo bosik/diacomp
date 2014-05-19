@@ -4436,7 +4436,7 @@ begin
       Meal := TMealRecord(Recs[i]);
       if (Meal.Count > 0) and (not Meal.ShortMeal) then
       begin
-        TempTime := Round((Now() - Recs[i].NativeTime) * SecPerDay);
+        TempTime := Round((LocalToUTC(Now()) - Recs[i].NativeTime) * SecPerDay);
 
         if (TempTime >= 0) then
         begin
@@ -4459,7 +4459,7 @@ begin
     if (Recs[i].RecType = TInsRecord) then
     begin
       Ins := TInsRecord(Recs[i]);
-      TempTime := Round((Now() - Recs[i].NativeTime) * SecPerDay);
+      TempTime := Round((LocalToUTC(Now()) - Recs[i].NativeTime) * SecPerDay);
       if (TempTime > 0) then
       begin
         Founded := True;
