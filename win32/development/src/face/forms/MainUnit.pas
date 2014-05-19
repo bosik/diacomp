@@ -3887,10 +3887,16 @@ begin
   if (DiaryView.IsFoodSelected) then
   begin
     Meal := TMealRecord(SelectedRecord());
-    Food := DiaryView.SelectedFood;
+    Food := Meal[DiaryView.SelectedLine];
 
     if MessageDlg(Format(MESSAGE_CONF_REMOVE_DIARY_FOOD, [Food.Name]), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+    begin
       Meal.Remove(DiaryView.SelectedLine);
+      Meal.Modified;
+      LocalSource.Post(Meal);
+      DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
+      DiaryView.SelectedRecordID := Meal.ID;
+    end;
   end;
 end;
 
