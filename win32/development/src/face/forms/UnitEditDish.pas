@@ -124,6 +124,8 @@ const
   
 implementation
 
+uses MainUnit;
+
 var
   DishP: boolean;
   DishF: boolean;
@@ -907,6 +909,7 @@ begin
     Control,
     Rect,
     DishMultiMap[ComboFood.ShowedIndex[Index]],
+    MainUnit.MaxDishTag,
     odSelected in State,
     Value['CarbsInfo']
     );

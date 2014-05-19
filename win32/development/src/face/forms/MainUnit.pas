@@ -475,6 +475,8 @@ var
   CurrentDB: real;       // текущая коррекция СК
   CurrentNextFinger: integer;
   DiaryMultiMap: TMultimap;
+  MaxDiaryTag: real;
+  MaxDishTag: real;
   //FoodBaseMap: TIndexList;
 
   FoodList: TFoodItemList;
@@ -1498,11 +1500,6 @@ var
     if i < r then qsort(Map, i, r);
   end;
 
- { procedure IncReal(var X: Real; const Value: Real);
-  begin
-    X := X + Value;
-  end;   }
-
   procedure Process(const ItemName: string; Tag: real; var Map: TMultimap);
   var
     i: integer;
@@ -1517,7 +1514,7 @@ var
 
   procedure AnalyzeUsingDiary;
   var
-    StartDate, FinishDate: integer;
+    StartDate, FinishDate: TDateTime;
 
     function GetTag(Time: TDateTime): real;
     const
@@ -1551,8 +1548,8 @@ var
       InitMap(DiaryMultiMap);
 
       { выставляем теги }
-      StartDate := Trunc(Now) - Value['AnUsingPeriod'];
-      FinishDate := Trunc(Now);
+      StartDate := Now() - Value['AnUsingPeriod'];
+      FinishDate := Now();
 
       Recs := LocalSource.FindPeriod(StartDate, FinishDate);
 
@@ -1561,7 +1558,7 @@ var
         if (Recs[i].RecType = TMealRecord) then
         begin
           Meal := TMealRecord(Recs[i]);
-          DeltaTag := GetTag(i + Meal.Time / MinPerDay);
+          DeltaTag := GetTag(Meal.NativeTime);
           for k := 0 to Meal.Count - 1 do
           begin
             Process(Meal[k].Name, DeltaTag, DiaryMultiMap);
@@ -1655,6 +1652,16 @@ var
     end;
   end;
 
+  function MaxTag(const Map: TMultiMap): Real;
+  var
+    i: integer;
+  begin
+    Result := 0;
+    for i := 0 to High(Map) do
+    if (Map[i].Tag > Result) then
+      Result := Map[i].Tag;
+  end;
+
 begin
   StartProc('TForm1.UpdateCombos()');
   try
@@ -1662,6 +1669,8 @@ begin
     AnalyzeUsingDish;
     FillACBox(ComboDiaryNew, DiaryMultiMap);
     FillACBox(FormDish.ComboFood, DishMultiMap);
+    MaxDiaryTag := MaxTag(DiaryMultiMap);
+    MaxDishTag := MaxTag(DishMultiMap);
   finally
     FinishProc;
   end;
@@ -4309,6 +4318,7 @@ begin
     Control,
     Rect,
     DiaryMultiMap[ComboDiaryNew.ShowedIndex[Index]],
+    MaxDiaryTag,
     odSelected in State,
     Value['CarbsInfo']
   );
