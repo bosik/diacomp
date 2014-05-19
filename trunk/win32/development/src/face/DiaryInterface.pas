@@ -96,7 +96,7 @@ type
   {@}procedure MinMaxBox(Box: TGroupBox; Image: TImage; Icons: TImageList;
     Animated: boolean; OpenHeight,CloseHeight,OpenTime,CloseTime: integer);
    procedure DrawACItem(Control: TControl; Rect: TRect; const Item: TMealItem;
-     Selected: Boolean; ShowHelpInfo: boolean);
+     MaxTag: real; Selected: Boolean; ShowHelpInfo: boolean);
 
   { технические }
   {@}function CodeToRus(Key: byte): char;
@@ -521,14 +521,14 @@ end;     }
 
 {==============================================================================}
 procedure DrawACItem(Control: TControl; Rect: TRect; const Item: TMealItem;
-  Selected: Boolean; ShowHelpInfo: boolean);
+  MaxTag: real; Selected: Boolean; ShowHelpInfo: boolean);
 {==============================================================================}
 
   procedure GetColors(Tag: Real; Selected: Boolean; out FontColor, BrushColor: TColor);
   var
     FC: integer;
   begin
-    FC := Round(190 / IntPower(Tag + 1, 5));
+    FC := Round(190 / IntPower(Tag + 1, 5) - 190 / IntPower(MaxTag + 1, 5));
 
     if (Selected) then
     begin
