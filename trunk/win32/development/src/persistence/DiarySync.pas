@@ -170,8 +170,8 @@ begin
       Add(T1, Newer1);
   end;
 
-  Source1.Post(Newer2);
-  Source2.Post(Newer1);
+  Source1.Save(Newer2);
+  Source2.Save(Newer1);
   Result := Length(Newer1) + Length(Newer2);
 
   // TODO: раньше здесь стояло определение минимальной даты загруженной

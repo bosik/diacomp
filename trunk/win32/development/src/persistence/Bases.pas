@@ -47,6 +47,7 @@ type
     function Add(Item: TMutableItem): integer; virtual;
     procedure Clear;
     function Count: integer; override;
+    procedure Delete(Index: integer); override;
     destructor Destroy; override;
     function GetIndex(ID: TCompactGUID): integer; 
   end;
@@ -256,6 +257,13 @@ function TArrayBase.Count: integer;
 {==============================================================================}
 begin
   Result := Length(FBase);
+end;
+
+{==============================================================================}
+procedure TArrayBase.Delete(Index: integer);
+{==============================================================================}
+begin
+  FBase[Index].Deleted := True;
 end;
 
 {==============================================================================}

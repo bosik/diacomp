@@ -24,7 +24,7 @@ type
     function FindAny(const Filter: string): TDishItemList; override;
     function FindOne(const Name: string): TDish; override;
     function FindChanged(Since: TDateTime): TDishItemList; override;
-    function FindById(ID: string): TDish; override;
+    function FindById(ID: TCompactGUID): TDish; override;
     procedure Save(const Items: TDishItemList); override;
   end;
 
@@ -81,7 +81,7 @@ begin
 end;
 
 {==============================================================================}
-function TDishbaseWebDAO.FindById(ID: string): TDish;
+function TDishbaseWebDAO.FindById(ID: TCompactGUID): TDish;
 {==============================================================================}
 var
   Resp: string;
@@ -127,7 +127,7 @@ procedure TDishbaseWebDAO.Save(const Items: TDishItemList);
 var
   Par: TParamList;
   Msg: string;
-  Response: TStdResponse;
+  // Response: TStdResponse;
 begin
   // заглушка
   if (Length(Items) = 0) then

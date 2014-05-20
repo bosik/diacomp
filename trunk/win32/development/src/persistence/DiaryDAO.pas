@@ -14,9 +14,9 @@ type
   public
     procedure Add(const R: TCustomRecord); virtual; abstract;
     procedure Delete(ID: TCompactGUID); virtual; abstract;
-    function FindChanged(Since: TDateTime): TRecordList; virtual; abstract;
-    function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; virtual; abstract;
-    function FindById(ID: TCompactGUID): TCustomRecord; virtual; abstract;
+    function FindChanged(Since: TDateTime): TRecordList; reintroduce; virtual; abstract;
+    function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; reintroduce;virtual; abstract;
+    function FindById(ID: TCompactGUID): TCustomRecord; reintroduce; virtual; abstract;
     procedure Post(const Recs: TRecordList); overload; virtual; abstract;
 
     // sugar

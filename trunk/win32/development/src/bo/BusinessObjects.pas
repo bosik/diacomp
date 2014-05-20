@@ -107,6 +107,7 @@ type
   TFoodItemList = array of TFood;
 
   // #entity
+  // TODO: rename to TDishItem
   TDish = class (TMutableItem)
   private
     FContent: array of TFoodMassed;
