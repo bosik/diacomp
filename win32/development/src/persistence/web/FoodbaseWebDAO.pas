@@ -126,7 +126,7 @@ procedure TFoodbaseWebDAO.Save(const Items: TFoodItemList);
 var
   Par: TParamList;
   Msg: string;
-  Response: TStdResponse;
+  // Response: TStdResponse;
 begin
   // заглушка
   if (Length(Items) = 0) then

@@ -23,7 +23,6 @@ type
     FFirstMod: cardinal;
     FLastMod: cardinal;
     function Add(Food: TFood): TCompactGUID;
-    procedure Update(Food: TFood);
     function GetIndex(Food: TFood): integer; overload;
     function GetIndex(ID: TCompactGUID): integer; overload;
     procedure OnTimer(Sender: TObject);
@@ -38,8 +37,8 @@ type
     function FindOne(const Name: string): TFood; override;
     function FindChanged(Since: TDateTime): TFoodItemList; override;
     function FindById(ID: TCompactGUID): TFood; override;
+    procedure Save(Item: TFood);  override;
     procedure Save(const Items: TFoodItemList); override;
-    procedure Save(const Item: TFood); override;
   end;
 
 implementation
@@ -118,15 +117,18 @@ end;
 function TFoodbaseLocalDAO.FindAll(ShowRemoved: boolean): TFoodItemList;
 {==============================================================================}
 var
-  i: integer;
+  i, k: integer;
 begin
   SetLength(Result, FBase.Count);
+  k := 0;
   for i := 0 to FBase.Count - 1 do
   if (ShowRemoved or not FBase[i].Deleted) then
   begin
-    Result[i] := TFood.Create;
-    Result[i].CopyFrom(FBase[i]);
+    Result[k] := TFood.Create;
+    Result[k].CopyFrom(FBase[i]);
+    inc(k);
   end;
+  SetLength(Result, k);
 end;
 
 {==============================================================================}
@@ -250,55 +252,34 @@ begin
 end;
 
 {==============================================================================}
-procedure TFoodbaseLocalDAO.Save(const Items: TFoodItemList);
-{==============================================================================}
-var
-  i: integer;
-begin
-  for i := Low(Items) to High(Items) do
-  try
-    Update(Items[i]);
-  except
-    on e: EItemNotFoundException do
-      Add(Items[i]);
-  end;
-end;
-
-{==============================================================================}
-procedure TFoodbaseLocalDAO.Save(const Item: TFood);
-{==============================================================================}
-var
-  i: integer;
-begin
-  try
-    Update(Item);
-  except
-    on e: EItemNotFoundException do
-      Add(Item);
-  end;
-end;
-
-{==============================================================================}
-procedure TFoodbaseLocalDAO.Update(Food: TFood);
+procedure TFoodbaseLocalDAO.Save(Item: TFood);
 {==============================================================================}
 var
   Index: integer;
   NameChanged: boolean;
 begin
-  Index := GetIndex(Food.ID);
+  Index := GetIndex(Item.ID);
   if (Index <> -1) then
   begin
-    NameChanged := (Food.Name <> FBase[Index].Name);
-    FBase[Index].CopyFrom(Food);
+    NameChanged := (Item.Name <> FBase[Index].Name);
+    FBase[Index].CopyFrom(Item);
     if (NameChanged) then
     begin
       FBase.Sort;
     end;
     Modified();
   end else
-  begin
-    raise EItemNotFoundException.Create(Food.ID);
-  end;
+    Add(Item);
+end;
+
+{==============================================================================}
+procedure TFoodbaseLocalDAO.Save(const Items: TFoodItemList);
+{==============================================================================}
+var
+  i: integer;
+begin
+  for i := Low(Items) to High(Items) do
+    Save(Items[i]);
 end;
 
 end.

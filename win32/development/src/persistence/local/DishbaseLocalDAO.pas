@@ -23,8 +23,6 @@ type
     FFirstMod: cardinal;
     FLastMod: cardinal;
     function Add(Dish: TDish): TCompactGUID;
-    procedure Delete(ID: TCompactGUID);
-    procedure Update(Dish: TDish);
     function GetIndex(Dish: TDish): integer; overload;
     function GetIndex(ID: TCompactGUID): integer; overload;
     procedure OnTimer(Sender: TObject);
@@ -33,11 +31,13 @@ type
     constructor Create(const FileName: string);
     destructor Destroy; override;
 
+    procedure Delete(ID: TCompactGUID); override;
     function FindAll(ShowRemoved: boolean): TDishItemList; override;
     function FindAny(const Filter: string): TDishItemList; override;
     function FindOne(const Name: string): TDish; override;
     function FindChanged(Since: TDateTime): TDishItemList; override;
-    function FindById(ID: string): TDish; override;
+    function FindById(ID: TCompactGUID): TDish; override;
+    procedure Save(Item: TDish); override;
     procedure Save(const Items: TDishItemList); override;
   end;
 
@@ -117,15 +117,18 @@ end;
 function TDishbaseLocalDAO.FindAll(ShowRemoved: boolean): TDishItemList;
 {==============================================================================}
 var
-  i: integer;
+  i, k: integer;
 begin
   SetLength(Result, FBase.Count);
+  k := 0;
   for i := 0 to FBase.Count - 1 do
   if (ShowRemoved or not FBase[i].Deleted) then
   begin
-    Result[i] := TDish.Create;
-    Result[i].CopyFrom(FBase[i]);
+    Result[k] := TDish.Create;
+    Result[k].CopyFrom(FBase[i]);
+    inc(k);
   end;
+  SetLength(Result, k);
 end;
 
 {==============================================================================}
@@ -149,7 +152,7 @@ begin
 end;
 
 {==============================================================================}
-function TDishbaseLocalDAO.FindById(ID: string): TDish;
+function TDishbaseLocalDAO.FindById(ID: TCompactGUID): TDish;
 {==============================================================================}
 var
   i: integer;
@@ -249,41 +252,34 @@ begin
 end;
 
 {==============================================================================}
-procedure TDishbaseLocalDAO.Save(const Items: TDishItemList);
-{==============================================================================}
-var
-  i: integer;
-begin
-  for i := Low(Items) to High(Items) do
-  try
-    Update(Items[i]);
-  except
-    on e: EItemNotFoundException do
-      Add(Items[i]);
-  end;
-end;
-
-{==============================================================================}
-procedure TDishbaseLocalDAO.Update(Dish: TDish);
+procedure TDishbaseLocalDAO.Save(Item: TDish);
 {==============================================================================}
 var
   Index: integer;
   NameChanged: boolean;
 begin
-  Index := GetIndex(Dish.ID);
+  Index := GetIndex(Item.ID);
   if (Index <> -1) then
   begin
-    NameChanged := (Dish.Name <> FBase[Index].Name);
-    FBase[Index].CopyFrom(Dish);
+    NameChanged := (Item.Name <> FBase[Index].Name);
+    FBase[Index].CopyFrom(Item);
     if (NameChanged) then
     begin
       FBase.Sort;
     end;
     Modified();
   end else
-  begin
-    raise EItemNotFoundException.Create(Dish.ID);
-  end;
+    Add(Item);
+end;
+
+{==============================================================================}
+procedure TDishbaseLocalDAO.Save(const Items: TDishItemList);
+{==============================================================================}
+var
+  i: integer;
+begin
+  for i := Low(Items) to High(Items) do
+    Save(Items[i]);
 end;
 
 end.

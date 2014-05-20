@@ -1314,7 +1314,7 @@ begin
 
     // TODO 1: RF: editing dish
 
-    //DishBaseLocal.Update(Temp);
+    DishBaseLocal.Save(Temp);
     EventDishbaseChanged(False, True);
     // TODO: rough
 
@@ -1403,7 +1403,7 @@ begin
     { порядок в базе и таблице совпадают }
     DishBaseLocal.Delete(DishList[Index].ID);
 
-    //UpdateDishbaseFilter();
+    UpdateDishbaseFilter();
     // TODO: check args
     UpdateDishTable(False, True, False);
     {*}UpdateCombos;
