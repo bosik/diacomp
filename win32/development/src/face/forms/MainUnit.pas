@@ -1279,7 +1279,6 @@ begin
    { if DishBaseLocal.RenameFood(OldName, Temp.Name) then
       SaveDishBase;  }
 
-    // TODO 1: RF: editing foods
     FoodBaseLocal.Save(Temp);
     EventFoodbaseChanged(False);
 
@@ -1312,12 +1311,11 @@ begin
    { if DishBaseLocal.RenameDish(OldName, Temp.Name) then
       SaveDishBase;  }
 
-    // TODO 1: RF: editing dish
-
     DishBaseLocal.Save(Temp);
     EventDishbaseChanged(False, True);
     // TODO: rough
 
+    // TODO 5: RF: selecting edited dish
     //ShowTableItem(ListDish, Index);
     ListDish.SetFocus;
   end;
