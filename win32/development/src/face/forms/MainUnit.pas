@@ -1535,6 +1535,7 @@ var
     DishModFactor: integer;
 
     Food: TFood;
+    Dish: TDish;
     Recs: TRecordList;
   begin
     StartProc('TForm1.AnalyzeUsingDiary()');
@@ -1583,12 +1584,13 @@ var
           Continue;
         end;
 
-        // TODO 1: RF: storing dish tags
-        {k := DishBaseLocal.FindOne(DiaryMultiMap[i].Name);
-        if (k > -1) then
+        Dish := DishBaseLocal.FindOne(DiaryMultiMap[i].Name);
+        if (Dish <> nil) then
         begin
-          DishBase[k].Tag := Round(DiaryMultiMap[i].Tag);
-        end; }
+          Dish.Tag := Round(DiaryMultiMap[i].Tag);
+          DishBaseLocal.Save(Dish);
+          Continue;
+        end;
       end;
 
       { сортируем }
