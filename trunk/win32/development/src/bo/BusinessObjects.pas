@@ -16,6 +16,7 @@ type
     FDeleted: boolean;
   public
     constructor Create();
+    procedure CopyFrom(Source: TVersioned);
     procedure Modified();
 
     property ID: TCompactGUID read FID write FID;
@@ -164,6 +165,16 @@ implementation
 { TVersioned }
 
 {==============================================================================}
+procedure TVersioned.CopyFrom(Source: TVersioned);
+{==============================================================================}
+begin
+  FID := Source.ID;
+  FTimeStamp := Source.TimeStamp;
+  FVersion := Source.Version;
+  FDeleted := Source.Deleted;
+end;
+
+{==============================================================================}
 constructor TVersioned.Create;
 {==============================================================================}
 begin
@@ -205,12 +216,13 @@ procedure TFoodRelative.CopyFrom(Food: TFoodRelative);
 begin
   if (Food = nil) then raise Exception.Create('TFoodRelative.CopyFrom(): Food is nil');
 
+  inherited CopyFrom(Food);
+
   Name     := Food.Name;
   RelProts := Food.RelProts;
   RelFats  := Food.RelFats;
   RelCarbs := Food.RelCarbs;
   RelValue := Food.RelValue;
-  ID       := Food.ID;
 end;
 
 {==============================================================================}
@@ -478,6 +490,8 @@ var
   Temp: TFoodMassed;
 begin
   if (Dish = nil) then raise Exception.Create('TDish.CopyFrom(): Dish is nil');
+
+  inherited CopyFrom(Dish);
 
   Name := Dish.Name;
   Tag := Dish.Tag;

@@ -153,10 +153,7 @@ begin
 
   { вывод }
   ADish := TDish.Create;
-  if New then
-    Dish := TDish.Create
-  else
-    ADish.CopyFrom(Dish);
+  ADish.CopyFrom(Dish);
 
   DishP := True; //Value['DishP'];
   DishF := True; //Value['DishF'];
