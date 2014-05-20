@@ -1280,7 +1280,7 @@ begin
       SaveDishBase;  }
 
     // TODO 1: RF: editing foods
-    //FoodBaseLocal.Update(Temp);
+    FoodBaseLocal.Save(Temp);
     EventFoodbaseChanged(False);
 
     // TODO 5: RF: selecting edited food
