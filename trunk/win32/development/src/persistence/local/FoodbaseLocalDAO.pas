@@ -141,7 +141,8 @@ begin
   k := 0;
   for i := 0 to FBase.Count - 1 do
   // TODO: optimize
-  if (pos(AnsiUpperCase(Filter), AnsiUpperCase(FBase[i].Name)) > 0) then
+  if (not FBase[i].Deleted) and
+     (pos(AnsiUpperCase(Filter), AnsiUpperCase(FBase[i].Name)) > 0) then
   begin
     inc(k);
     SetLength(Result, k);
