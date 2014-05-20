@@ -1219,49 +1219,45 @@ end;
 procedure TForm1.CreateFood;
 {==============================================================================}
 var
-  Food: TFood;
-  List: TFoodItemList;
+  Item: TFood;
 begin
-  Food := TFood.Create;
-  if FormFood.OpenFoodEditor(Food, True, FoodEditorRect) then
+  Item := TFood.Create();
+  if FormFood.OpenFoodEditor(Item, True, FoodEditorRect) then
   begin
-    SetLength(List, 1);
-    List[0] := Food;
-    FoodBaseLocal.Save(List);
+    Item.Modified();
+    FoodBaseLocal.Save(Item);
     {#}EventFoodbaseChanged(True);
 
     //ShowTableItem(ListFood, n);
     ListFood.SetFocus;
   end else
-    Food.Free;
+    Item.Free;
 end;
 
 {==============================================================================}
 procedure TForm1.CreateDish;
 {==============================================================================}
 var
-  Dish: TDish;
-  List: TDishItemList;
-  n: integer;
+  Item: TDish;
 begin
-  // TODO: Create() here, not in the editor
-  if FormDish.OpenDishEditor(Dish, True, DishEditorRect) then
+  Item := TDish.Create();
+  if FormDish.OpenDishEditor(Item, True, DishEditorRect) then
   begin
-    SetLength(List, 1);
-    List[0] := Dish;
-    DishBaseLocal.Save(List);
+    Item.Modified();
+    DishBaseLocal.Save(Item);
     {#}EventDishbaseChanged(True, True);
 
     //ShowTableItem(ListDish, n);
     ListDish.SetFocus;
-  end;
+  end else
+    Item.Free;
 end;
 
 {==============================================================================}
 procedure TForm1.EditFood(Index: integer);
 {==============================================================================}
 var
-  Temp: TFood;
+  Item: TFood;
   OldName: string;
 begin
   if (Index < 0) or (Index > High(FoodList)) then
@@ -1270,16 +1266,17 @@ begin
     Exit;
   end;
 
-  Temp := FoodList[Index];
+  Item := FoodList[Index];
   OldName := FoodList[Index].Name;
 
-  if FormFood.OpenFoodEditor(Temp, False, FoodEditorRect) then
+  if FormFood.OpenFoodEditor(Item, False, FoodEditorRect) then
   begin
     // TODO 1: RF: renaming food in dishes
    { if DishBaseLocal.RenameFood(OldName, Temp.Name) then
       SaveDishBase;  }
 
-    FoodBaseLocal.Save(Temp);
+    Item.Modified();
+    FoodBaseLocal.Save(Item);
     EventFoodbaseChanged(False);
 
     // TODO 5: RF: selecting edited food
@@ -1292,7 +1289,7 @@ end;
 procedure TForm1.EditDish(Index: integer);
 {==============================================================================}
 var
-  Temp: TDish;
+  Item: TDish;
   OldName: string;
 begin
   // TODO: process everywhere in the same manner
@@ -1302,16 +1299,17 @@ begin
     Exit;
   end;
 
-  Temp := DishList[Index];
+  Item := DishList[Index];
   OldName := DishList[Index].Name;
 
-  if FormDish.OpenDishEditor(Temp, False, DishEditorRect) then
+  if FormDish.OpenDishEditor(Item, False, DishEditorRect) then
   begin
     // TODO 1: RF: renaming dish in dishes
    { if DishBaseLocal.RenameDish(OldName, Temp.Name) then
       SaveDishBase;  }
 
-    DishBaseLocal.Save(Temp);
+    Item.Modified();
+    DishBaseLocal.Save(Item);
     EventDishbaseChanged(False, True);
     // TODO: rough
 

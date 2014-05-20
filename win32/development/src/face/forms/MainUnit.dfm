@@ -87,7 +87,7 @@ object Form1: TForm1
       Top = 0
       Width = 1241
       Height = 871
-      ActivePage = TabDiary
+      ActivePage = TabBase
       Align = alClient
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -615,7 +615,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.156309178240000000
+            Date = 40251.964895960650000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -1055,7 +1055,7 @@ object Form1: TForm1
           object LabelFoodBase: TLabel
             Left = 9
             Top = 9
-            Width = 112
+            Width = 535
             Height = 16
             Align = alTop
             Caption = 'LabelFoodBase'

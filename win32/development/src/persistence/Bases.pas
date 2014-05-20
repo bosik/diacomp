@@ -31,7 +31,6 @@ type
     procedure SetTag(Index, Value: integer); virtual; abstract;
   public
     function Count: integer; virtual; abstract;
-    procedure Delete(Index: integer); virtual; abstract;
     function Find(const ItemName: string): integer;
     procedure Sort(); // вызывается потомками после загрузки
     procedure SortIndexes(IndexList: TIndexList; SortType: TSortType);
@@ -47,7 +46,6 @@ type
     function Add(Item: TMutableItem): integer; virtual;
     procedure Clear;
     function Count: integer; override;
-    procedure Delete(Index: integer); override;
     destructor Destroy; override;
     function GetIndex(ID: TCompactGUID): integer; 
   end;
@@ -257,13 +255,6 @@ function TArrayBase.Count: integer;
 {==============================================================================}
 begin
   Result := Length(FBase);
-end;
-
-{==============================================================================}
-procedure TArrayBase.Delete(Index: integer);
-{==============================================================================}
-begin
-  FBase[Index].Deleted := True;
 end;
 
 {==============================================================================}
@@ -492,11 +483,28 @@ begin
         // TODO: debug only
         //CheckNode(FoodNode, i);
 
-        FBase[i]           := TFood.Create();
+        FBase[i] := TFood.Create();
+
         if (FoodNode.HasAttribute('id')) then
           Items[i].ID := FoodNode.Attributes['id']
         else
           Items[i].ID := CreateCompactGUID();
+
+        if FoodNode.HasAttribute('timestamp') then
+          Items[i].TimeStamp := StrToDateTime(FoodNode.Attributes['timestamp'])
+        else
+          Items[i].TimeStamp := GetTimeUTC();
+
+        if FoodNode.HasAttribute('version') then
+          Items[i].Version := FoodNode.Attributes['version']
+        else
+          Items[i].Version := 1;
+
+        if FoodNode.HasAttribute('deleted') then
+          Items[i].Deleted := FoodNode.Attributes['deleted']
+        else
+          Items[i].Deleted := False;
+
         Items[i].Name      := FoodNode.Attributes['name'];
         {Items[i].RelProts := FoodNode.Attributes['prots'];
         Items[i].RelFats   := FoodNode.Attributes['fats'];
@@ -578,7 +586,12 @@ begin
     for i := 0 to High(FBase) do
     begin
       FoodNode := Root.AddChild('food');
-      FoodNode.Attributes['id']    := Items[i].ID;
+
+      FoodNode.Attributes['id']        := Items[i].ID;
+      FoodNode.Attributes['timestamp'] := Items[i].TimeStamp;
+      FoodNode.Attributes['version']   := Items[i].Version;
+      FoodNode.Attributes['deleted']   := Items[i].Deleted;
+
       FoodNode.Attributes['name']  := Items[i].Name;
       FoodNode.Attributes['prots'] := Items[i].RelProts;
       FoodNode.Attributes['fats']  := Items[i].RelFats;
@@ -821,7 +834,14 @@ begin
           Dish.ID := DishNode.Attributes['id']
         else
           Dish.ID := CreateCompactGUID();
-        Dish.TimeStamp := StrToDateTime(DishNode.Attributes['time']);
+
+        if DishNode.HasAttribute('timestamp') then
+          Dish.TimeStamp := StrToDateTime(DishNode.Attributes['timestamp']) else
+        if DishNode.HasAttribute('time') then
+          Dish.TimeStamp := StrToDateTime(DishNode.Attributes['time'])
+        else
+          Dish.TimeStamp := GetTimeUTC();
+
         if DishNode.HasAttribute('version') then
           Dish.Version := DishNode.Attributes['version']
         else
@@ -956,10 +976,10 @@ begin
     for i := 0 to High(FBase) do
     begin
       DishNode := Root.AddChild('dish');
-      DishNode.Attributes['id'] := Items[i].ID;
-      DishNode.Attributes['time'] := Items[i].TimeStamp;
-      DishNode.Attributes['version'] := Items[i].Version;
-      DishNode.Attributes['deleted'] := Items[i].Deleted;
+      DishNode.Attributes['id']        := Items[i].ID;
+      DishNode.Attributes['timestamp'] := Items[i].TimeStamp;
+      DishNode.Attributes['version']   := Items[i].Version;
+      DishNode.Attributes['deleted']   := Items[i].Deleted;
 
       DishNode.Attributes['name'] := Items[i].Name;
       DishNode.Attributes['tag'] := Items[i].Tag;

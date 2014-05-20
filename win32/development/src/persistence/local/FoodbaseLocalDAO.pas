@@ -93,6 +93,7 @@ begin
   if (Index > -1) then
   begin
     FBase[Index].Deleted := True;
+    FBase[Index].Modified();
     Modified();
   end else
     raise EItemNotFoundException.Create(ID);
