@@ -44,7 +44,5 @@ public interface ObjectService<T>
 	 * @param items
 	 * @throws CommonServiceException
 	 */
-	// TODO: retrieve version and increment it here
-	// TODO: set timestamp to current time
 	void save(List<Versioned<T>> items) throws CommonServiceException;
 }
