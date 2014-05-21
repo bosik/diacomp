@@ -257,7 +257,7 @@ var
   Min: TDate;
   MinW, MaxW: real;
 begin
-  CurTime := now;
+  CurTime := GetTimeUTC();
   Min := Trunc(CurTime);
 
   for i := 0 to High(PrimeList) do

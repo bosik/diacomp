@@ -602,7 +602,7 @@ begin
     T := StrToDateTime(Value['LastSync']);
     Result := SyncSources(LocalSource, WebSource, T - 1);
 
-    Value['LastSync'] := DateTimeToStr(Now);
+    Value['LastSync'] := DateTimeToStr(GetTimeUTC());
 
     if (Result > 0) then
     begin
@@ -1027,14 +1027,14 @@ begin
     UpdateMealDose;
     //ProcessMealSelected(False);
     UpdateNextFinger();
-    DiaryView.OpenPage(Diary[Trunc(Now)], True);
+    DiaryView.OpenPage(Diary[Trunc(GetTimeUTC())], True);
 
     { =============== ÂÊËÞ×ÅÍÈÅ IDLE-ÇÀÄÀ× =============== }
 
     ON_IDLE_UpdateCombos := True;
     ON_IDLE_ShowBases := True;
     if Value['CheckUpdates'] and
-       (Now - Value['LastUpdateCheck']  > UPDATES_CHECKING_PERIOD) then
+       (GetTimeUTC() - Value['LastUpdateCheck']  > UPDATES_CHECKING_PERIOD) then
       IN_IDLE_CheckUpdates := True;
 
     {=============================================}
@@ -1547,8 +1547,8 @@ var
       InitMap(DiaryMultiMap);
 
       { âûñòàâëÿåì òåãè }
-      StartDate := Now() - Value['AnUsingPeriod'];
-      FinishDate := Now();
+      StartDate := GetTimeUTC() - Value['AnUsingPeriod'];
+      FinishDate := GetTimeUTC();
 
       Recs := LocalSource.FindPeriod(StartDate, FinishDate);
 
@@ -2834,7 +2834,7 @@ begin
       UpdateMealDose();
 
       Line := DiaryView.SelectedLine;
-      DiaryView.OpenPage(Diary[Trunc(Now)], True);
+      DiaryView.OpenPage(Diary[Trunc(GetTimeUTC())], True);
       DiaryView.SelectedRecordID := Rec.ID;
       DiaryView.SelectedLine := Line;
     end else
@@ -2867,7 +2867,7 @@ begin
         UpdateMealDose();
 
         Line := DiaryView.SelectedLine;
-        DiaryView.OpenPage(Diary[Trunc(Now)], True);
+        DiaryView.OpenPage(Diary[Trunc(GetTimeUTC())], True);
         DiaryView.SelectedRecordID := Rec.ID;
         DiaryView.SelectedLine := Line;
       end else
@@ -2968,7 +2968,7 @@ begin
   ButtonUpdateKoof.Caption := 'Ðàñ÷¸ò...';
   Application.ProcessMessages;
 
-  ToDate := Trunc(Now);
+  ToDate := Trunc(GetTimeUTC());
   FromDate := ToDate - Value['DaysProcess'] + 1;
 
   {===============================================================}
@@ -3210,7 +3210,7 @@ begin
   {Summ := 0;
   Count := 0;
 
-  LastDate := Trunc(Now);
+  LastDate := Trunc(GetTimeUTC());
   FirstDate := LastDate - PERIOD;
 
   for i := FirstDate to LastDate do
@@ -3486,7 +3486,7 @@ var
 var
   i,j,k: integer;   }
 begin
- { for i := Trunc(Now)-29 to Trunc(Now) do
+ { for i := Trunc(GetTimeUTC())-29 to Trunc(GetTimeUTC()) do
   for j := 0 to DiaryBase[i].Count-1 do
   if DiaryBase[i][j].TagType = rtBlood then
   begin
@@ -3523,7 +3523,7 @@ var
 begin
   ListBS.Clear;
 
-  for ToDate := Trunc(now) - LOOK_PERIOD to Trunc(Now) do
+  for ToDate := Trunc(GetTimeUTC()) - LOOK_PERIOD to Trunc(GetTimeUTC()) do
   begin
     AnalyzeBS(LocalSource, ToDate - AVG_PERIOD, ToDate, Mean, StdDev, Targeted, Less, More);
     ListBS.Items.Add(Format('%s'#9'%.2f'#9'%.2f'#9'%.1f'#9'%.1f', [DateToStr(ToDate - (AVG_PERIOD div 2)), Mean, StdDev, Less * 100, Targeted * 100]));
@@ -3531,7 +3531,7 @@ begin
 
   ListBS.Items.SaveToFile('temp\BS.txt');
 
-  {for i := Trunc(Now)-LOOK_PERIOD to Trunc(Now) do
+  {for i := Trunc(GetTimeUTC()) - LOOK_PERIOD to Trunc(GetTimeUTC()) do
   begin
     Summ := 0;
     SummWeight := 0;
@@ -3606,7 +3606,7 @@ begin
   //if not LocalSource.GetLastDate(LastDate) then Exit;
 
   FirstDate := Trunc(EncodeDate(2010, 01, 01));
-  LastDate := Trunc(Now());
+  LastDate := Trunc(GetTimeUTC());
   //Summ := 0;
 
   {for i := FirstDate to LastDate do
@@ -4236,7 +4236,7 @@ begin
 
   {===============================================================}
 
- (* for i := Trunc(Now) - LOOK_PERIOD + 1 to Trunc(Now) do
+ (* for i := Trunc(GetTimeUTC()) - LOOK_PERIOD + 1 to Trunc(GetTimeUTC()) do
   begin
     Summ := 0;
     Count := 0;
@@ -4446,7 +4446,7 @@ begin
 
   {=====================================================}
 
-  Recs := LocalSource.FindPeriod(Now - SEARCH_INTERVAL, Now);
+  Recs := LocalSource.FindPeriod(GetTimeUTC() - SEARCH_INTERVAL, GetTimeUTC());
 
   Founded := False;
   for i := High(Recs) downto 0 do
@@ -4456,7 +4456,7 @@ begin
       Meal := TMealRecord(Recs[i]);
       if (Meal.Count > 0) and (not Meal.ShortMeal) then
       begin
-        TempTime := Round((LocalToUTC(Now()) - Recs[i].NativeTime) * SecPerDay);
+        TempTime := Round((GetTimeUTC() - Recs[i].NativeTime) * SecPerDay);
 
         if (TempTime >= 0) then
         begin
@@ -4479,7 +4479,7 @@ begin
     if (Recs[i].RecType = TInsRecord) then
     begin
       Ins := TInsRecord(Recs[i]);
-      TempTime := Round((LocalToUTC(Now()) - Recs[i].NativeTime) * SecPerDay);
+      TempTime := Round((GetTimeUTC() - Recs[i].NativeTime) * SecPerDay);
       if (TempTime > 0) then
       begin
         Founded := True;
@@ -4889,7 +4889,7 @@ begin
   Summ := 0;
   Count := 0;
 
-  Recs := LocalSource.FindPeriod(Now - PERIOD, Now);
+  Recs := LocalSource.FindPeriod(GetTimeUTC() - PERIOD, GetTimeUTC());
 
   for i := 0 to High(Recs) do
   begin

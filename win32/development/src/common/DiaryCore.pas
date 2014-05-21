@@ -194,7 +194,7 @@ var
   f: TextFile;   }
 begin
  { MessageDlg('Проверка обновлений отключена за неуплату', mtInformation, [mbNo], 0);
-  Value['LastUpdateCheck'] := Round(now);
+  Value['LastUpdateCheck'] := Round(GetTimeUTC());
   Result := urNoConnection;
   try
     if GetInetFile('Compensation', URL_VERINFO, TEMP, nil, CONNECTION_TIME_OUT, 15) then

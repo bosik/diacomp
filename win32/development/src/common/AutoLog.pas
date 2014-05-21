@@ -5,7 +5,7 @@ unit AutoLog;
 interface
 
 uses
-  Windows, Classes, SysUtils;
+  Windows, Classes, SysUtils, DiaryRoutines;
 
 type
   TLogType = (ERROR, WARNING, INFO, DEBUG, VERBOUS);
@@ -65,7 +65,7 @@ begin
   if (LogFile = nil) then
     StartLogger;
 
-  DateTimeToString(Temp, 'hh:mm:ss.zzz', Now);
+  DateTimeToString(Temp, 'hh:mm:ss.zzz', GetTimeUTC());
   Temp := Temp + #9 + TYPES[MsgType] + #9 + Msg;
 
   LogFile.Add(Temp);
@@ -129,7 +129,7 @@ begin
   if not DirectoryExists(FOLDER_LOGS) then
     CreateDirectory(PChar(FOLDER_LOGS), nil);
 
-  DateTimeToString(FileName, 'yyyy-mm-dd_hh-mm-ss', Now);
+  DateTimeToString(FileName, 'yyyy-mm-dd_hh-mm-ss', GetTimeUTC());
   FileName := FOLDER_LOGS + '\' + FileName + '.txt';
 
   LogFile := TStringList.Create;

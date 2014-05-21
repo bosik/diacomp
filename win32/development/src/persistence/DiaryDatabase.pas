@@ -332,7 +332,7 @@ begin
     //DiaryLocalSource.TDiaryLocalSource(FSource).
 
     // TODO: hardcoded date
-    for i := Trunc(EncodeDate(2009, 12, 01)) to Trunc(Now) do
+    for i := Trunc(EncodeDate(2009, 12, 01)) to Trunc(GetTimeUTC()) do
     begin
       Page := GetPage(i);
 
