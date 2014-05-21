@@ -29,7 +29,7 @@ uses
   SettingsINI in 'src\common\SettingsINI.pas',
   DiaryCore in 'src\common\DiaryCore.pas',
   ThreadTask in 'src\common\ThreadTask.pas',
-  AutoLog in 'src\common\Autolog.pas',
+  AutoLog in 'src\common\AutoLog.pas',
   AnalyzeInterface in 'src\analyze\AnalyzeInterface.pas',
   DiaryDatabase in 'src\persistence\DiaryDatabase.pas',
   DiaryWeb in 'src\persistence\web\DiaryWeb.pas',
@@ -59,7 +59,8 @@ uses
   UnitEditorBlood in 'src\face\forms\UnitEditorBlood.pas' {FormEditorBlood},
   UnitEditorIns in 'src\face\forms\UnitEditorIns.pas' {FormEditorIns},
   UnitEditorMeal in 'src\face\forms\UnitEditorMeal.pas' {FormEditorMeal},
-  UnitEditorNote in 'src\face\forms\UnitEditorNote.pas' {FormEditorNote};
+  UnitEditorNote in 'src\face\forms\UnitEditorNote.pas' {FormEditorNote},
+  UnitLogViewer in 'src\face\forms\UnitLogViewer.pas' {FormLogViewer};
 
 {$R *.res}
 
@@ -212,6 +213,7 @@ begin
   Application.CreateForm(TFormAbout, FormAbout);
   Application.CreateForm(TFormExportText, FormExportText);
   Application.CreateForm(TFormMisc, FormMisc);
+  Application.CreateForm(TFormLogViewer, FormLogViewer);
   {#}Application.CreateForm(TFormSync, FormSync);
   {#}Application.CreateForm(TFormResources, FormResources);
   Application.CreateForm(TDataInterface, DataInterface);

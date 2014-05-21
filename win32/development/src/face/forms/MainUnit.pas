@@ -262,6 +262,7 @@ type
     Shape2: TShape;
     GroupBasesSearch: TGroupBox;
     EditBaseFoodSearch: TEdit;
+    ActionViewLogs: TAction;
 
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ButtonCreateFoodClick(Sender: TObject);
@@ -383,6 +384,7 @@ type
     procedure EditBaseFoodSearchKeyPress(Sender: TObject; var Key: Char);
     procedure ListFoodData(Sender: TObject; Item: TListItem);
     procedure ListDishData(Sender: TObject; Item: TListItem);
+    procedure ActionViewLogsExecute(Sender: TObject);
   protected
     // определяет расположение компонентов интерфейса
     procedure Designer; override;
@@ -566,7 +568,7 @@ const
 
 implementation
 
-uses UnitMisc;
+uses UnitMisc, UnitLogViewer;
 
 {$R *.dfm}
 
@@ -5124,6 +5126,11 @@ begin
     Result := LocalSource.FindById(ID) as TCustomRecord
   else
     Result := nil;
+end;
+
+procedure TForm1.ActionViewLogsExecute(Sender: TObject);
+begin
+  FormLogViewer.ShowModal;
 end;
 
 end.

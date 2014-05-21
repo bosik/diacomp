@@ -19,6 +19,11 @@ type
   procedure StartProc(const Name: string);
   procedure FinishProc;
 
+  {$IFDEF LOGGING}
+  function GetCurrentLog(): TStrings;
+  {$ENDIF}
+
+
 implementation
 
 {$IFDEF LOGGING}
@@ -37,6 +42,11 @@ var
   Stack: array of TStackNode;
   StackSize: integer = 0;
   FileName: string;  
+
+  function GetCurrentLog(): TStrings;
+  begin
+    Result := LogFile;
+  end;
 
 {$ENDIF}
 

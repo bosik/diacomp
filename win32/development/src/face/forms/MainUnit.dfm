@@ -60,13 +60,12 @@ object Form1: TForm1
     Top = 0
     Width = 1241
     Height = 30
-    UseSystemFont = False
     ActionManager = ActionManager
     ColorMap.HighlightColor = 14410210
     ColorMap.BtnSelectedColor = clBtnFace
     ColorMap.UnusedColor = 14410210
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
+    Font.Color = clMenuText
     Font.Height = -14
     Font.Name = 'Tahoma'
     Font.Style = []
@@ -87,7 +86,7 @@ object Form1: TForm1
       Top = 0
       Width = 1241
       Height = 871
-      ActivePage = TabBase
+      ActivePage = TabDiary
       Align = alClient
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -615,7 +614,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.964895960650000000
+            Date = 40251.071313333330000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -1868,6 +1867,15 @@ object Form1: TForm1
           item
             Items = <
               item
+                Action = ActionViewLogs
+                Caption = '&View logs'
+                ShortCut = 16460
+              end>
+            Caption = '&Debug'
+          end
+          item
+            Items = <
+              item
                 Action = ActionHelp
                 ImageIndex = 6
                 ShortCut = 112
@@ -2129,6 +2137,12 @@ object Form1: TForm1
       AutoCheck = True
       Caption = #1057#1086#1082#1088#1072#1097#1105#1085#1085#1099#1081' '#1087#1086#1089#1090#1087#1088#1072#1085#1076#1080#1072#1083
       OnExecute = ActionShortMealExecute
+    end
+    object ActionViewLogs: TAction
+      Category = 'Debug'
+      Caption = 'View logs'
+      ShortCut = 16460
+      OnExecute = ActionViewLogsExecute
     end
   end
   object TrayIcon: TCoolTrayIcon
