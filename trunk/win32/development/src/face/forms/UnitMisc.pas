@@ -440,7 +440,7 @@ var
   d, i, k: integer;
 begin
   // TODO: restore
-  {for d := Trunc(Now - 30) to Trunc(now) do
+  {for d := Trunc(GetTimeUTC() - 30) to Trunc(GetTimeUTC()) do
   for i := 0 to Diary[d].Count - 1 do
   if (Diary[d][i].RecType = TMealRecord) then
   begin
@@ -751,10 +751,10 @@ begin
     W[i].Count := 0;
   end;
 
-  PrevDate := Trunc(Now - 30 - 1);
+  PrevDate := Trunc(GetTimeUTC() - 30 - 1);
   PrevBlood := Diary[PrevDate].FindRecordLast(TBloodRecord) as TBloodRecord;
 
-  for d := Trunc(Now - 30) to Trunc(now) - 1 do
+  for d := Trunc(GetTimeUTC() - 30) to Trunc(GetTimeUTC()) - 1 do
   for i := 0 to Diary[d].Count - 1 do
   if (Diary[d][i].RecType = TBloodRecord) then
   begin

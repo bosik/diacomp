@@ -549,7 +549,7 @@ procedure TFoodBase.SaveToFile(const FileName: string);
     s := TStringList.Create;
     try
       { Time Stamp }
-      FTimeStamp := now;
+      FTimeStamp := GetTimeUTC();
       s.Add(FOODBASE_FORMAT);
       s.Add(DateTimeToStr(FTimeStamp));
 
@@ -685,7 +685,7 @@ begin
     else
       Result := False;
     SetLength(FBase,0);
-    FTimeStamp := Now;
+    FTimeStamp := GetTimeUTC();
     Exit;
   end;}
 
@@ -926,7 +926,7 @@ procedure TDishBase.SaveToFile(const FileName: string);
     s := TStringList.Create;
     try
       { Time Stamp }
-      FTimeStamp := now;
+      FTimeStamp := GetTimeUTC();
       s.Add(DISHBASE_FORMAT);
       s.Add(DateTimeToStr(FTimeStamp));
 
