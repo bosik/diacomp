@@ -92,7 +92,7 @@ public class Food implements Serializable, Named, Relative
 
 	public void setName(String name)
 	{
-		checkNameThrowable(name);
+		//checkNameThrowable(name);
 		this.name = name;
 	}
 
