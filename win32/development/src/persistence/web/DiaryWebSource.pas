@@ -11,6 +11,7 @@ uses
   DiaryPageSerializer,
   DiaryRecords,
   DiaryRoutines,
+  BusinessObjects,
   AutoLog,
   uLkJSON,
   JsonSerializer;
@@ -22,27 +23,27 @@ type
   public
     constructor Create(Client: TDiacompClient);
 
-    function FindChanged(Since: TDateTime): TRecordList; override;
+    function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; override;
-    function FindById(ID: TCompactGUID): TCustomRecord; override;
-    procedure Post(const Recs: TRecordList); override;
+    function FindById(ID: TCompactGUID): TVersioned; override;
+    procedure Save(const Recs: TRecordList); override;
   end;
 
 implementation
 
 {==============================================================================}
-function ParseRecordList(const S: string): TRecordList;
+function ParseRecordList(S: string): TRecordList;
 {==============================================================================}
 var
-  Response: TStdResponse;
   Json: TlkJSONlist;
 begin
-  Response := TStdResponse.Create(S);
   try
-    Json := Response.ConvertResponseToJson() as TlkJSONlist;
+    if (s <> '') and (s[1] = '{') and (s[Length(S)] = '}') then
+      S := '[' + s + ']';
+
+    Json := TlkJSON.ParseText(S) as TlkJSONlist;
     Result := ParseVersionedDiaryRecords(json);
   finally
-    Response.Free;
     Json.Free;
   end;
 end;
@@ -60,19 +61,25 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryWebSource.FindById(ID: TCompactGUID): TCustomRecord;
+function TDiaryWebSource.FindById(ID: TCompactGUID): TVersioned;
 {==============================================================================}
 var
-  Resp: string;
+  Response: TStdResponse;
   List: TRecordList;
 begin
-  Resp := FClient.DoGetSmart(FClient.GetApiURL() + 'diary/guid/' + ID);
-  List := ParseRecordList(Resp);
-  Result := List[0];
+  Response := FClient.DoGetSmart(FClient.GetApiURL() + 'diary/guid/' + ID);
+  case Response.Code of
+    // TODO: constants
+    0: begin
+         List := ParseRecordList(Response.Response);
+         Result := List[0];
+       end;
+    404: Result := nil;
+  end;
 end;
 
 {==============================================================================}
-function TDiaryWebSource.FindChanged(Since: TDateTime): TRecordList;
+function TDiaryWebSource.FindChanged(Since: TDateTime): TVersionedList;
 {==============================================================================}
 var
   Query, Resp: string;
@@ -82,10 +89,10 @@ begin
   Query := FClient.GetApiURL() + 'diary/changes/?since=' + ChkSpace(DateTimeToStr(Since, STD_DATETIME_FMT));
   {#}Log(VERBOUS, 'TDiaryWebSource.FindChanged(): quering ' + Query);
 
-  Resp := FClient.DoGetSmart(query);
+  Resp := FClient.DoGetSmart(query).Response;
   {#}Log(VERBOUS, 'TDiaryWebSource.FindChanged(): quered OK, Resp = "' + Resp + '"');
 
-  Result := ParseRecordList(Resp);
+  Result := RecordToVersioned(ParseRecordList(Resp));
   {#}Log(VERBOUS, 'TDiaryWebSource.FindChanged(): done OK');
 end;
 
@@ -106,7 +113,7 @@ begin
   {#}Log(VERBOUS, 'TDiaryWebSource.FindPeriod: quering "' + Query + '"');
 
 
-  Resp := FClient.DoGetSmart(query);
+  Resp := FClient.DoGetSmart(query).Response;
   {#}Log(VERBOUS, 'TDiaryWebSource.FindPeriod(): quered OK, Resp = "' + Resp + '"');
 
   Result := ParseRecordList(Resp);
@@ -114,12 +121,12 @@ begin
 end;
 
 {==============================================================================}
-procedure TDiaryWebSource.Post(const Recs: TRecordList);
+procedure TDiaryWebSource.Save(const Recs: TRecordList);
 {==============================================================================}
 var
   Par: TParamList;
   Msg: string;
-  // Response: TStdResponse;
+  Response: TStdResponse;
 begin
   // заглушка
   if (Length(Recs) = 0) then
@@ -130,7 +137,7 @@ begin
   SetLength(Par, 1);
   par[0] := 'items=' + JsonWrite(SerializeVersionedDiaryRecords(Recs));
 
-  Msg := FClient.DoPutSmart(FClient.GetApiURL() + 'diary/', Par);
+  Response := FClient.DoPutSmart(FClient.GetApiURL() + 'diary/', Par);
 
   // TODO: check response, throw exception if non-zero
   // Response.Code = 0     it's ok

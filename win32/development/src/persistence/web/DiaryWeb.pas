@@ -6,24 +6,24 @@ unit DiaryWeb;
 interface
 
 uses
-  SysUtils, // IntToStr
+  SysUtils, // Exception
   Classes, // TStrings
   Windows, // debug: GetTickCount
   Dialogs, // debug
   IdHTTP,
   IdException,
-  DiaryRoutines, // Separate()
-  DiaryRecords,
-  DiaryDAO, // TModList // TODO: remove
+  DiaryRoutines, // ReplaceAll()
   uLkJSON,
   AutoLog;
 
 type
-  ECommonException     = class (Exception);
-  EConnectionException = class (ECommonException);   // Ошибка подключения
-  EFormatException     = class (ECommonException);   // Ошибка формата данных
-  EAPIException        = class (EFormatException);   // Ошибка версии API
-  EAuthException       = class (ECommonException);   // Ошибка авторизации
+  ECommonException         = class (Exception);
+  EConnectionException     = class (ECommonException);   // Ошибка подключения
+  EFormatException         = class (ECommonException);   // Ошибка формата данных
+  EAPIException            = class (EFormatException);   // Ошибка версии API
+  EBadCredentialsException = class (ECommonException);   // Wrong username/password
+  ENotAuthorizedException  = class (ECommonException);   // Must be authorized to perform
+  EInternalServerException = class (ECommonException);   // Internal server error
 
   TParamList = array of string;
 
@@ -34,6 +34,7 @@ type
   public
     constructor Create(const S: string);
     function ConvertResponseToJson(): TlkJSONbase;
+    function Encode(): string;
     property Code: integer read FCode write FCode;
     property Response: string read FResponse write FResponse;
   end;
@@ -48,13 +49,15 @@ type
     FOnline: boolean;
     FTimeShift: double;
 
-    function DoGet(const URL: string): string;
-    function DoPost(const URL: string; const Par: TParamList): string;
-    function DoPut(const URL: string; const Par: TParamList): string;
+    function DoGet(const URL: string; Autocheck: boolean = True): TStdResponse;
+    function DoPost(const URL: string; const Par: TParamList; Autocheck: boolean = True): TStdResponse;
+    function DoPut(const URL: string; const Par: TParamList; Autocheck: boolean = True): TStdResponse;
+
+    procedure CheckResponse(const Response: TStdResponse);
   public
-    function DoGetSmart(const URL: string): string;
-    function DoPostSmart(const URL: string; const Par: TParamList): string;
-    function DoPutSmart(const URL: string; const Par: TParamList): string;
+    function DoGetSmart(const URL: string): TStdResponse;
+    function DoPostSmart(const URL: string; const Par: TParamList): TStdResponse;
+    function DoPutSmart(const URL: string; const Par: TParamList): TStdResponse;
 
     // TODO: sort
     constructor Create;
@@ -70,7 +73,6 @@ type
     function GetApiURL(): string;
 
     { свойства }
-//    property LoginResult: TLoginResult read FLoginResult;
     property Online: boolean read FOnline;
     property Username: string read FUsername write FUsername;
     property Password: string read FPassword write FPassword;
@@ -85,41 +87,8 @@ implementation
 const
   STATUS_OK                 = 0;
 
-{type
-  TResponse = record
-    Status: integer;
-    Message: string;
-  end;
-
-  function DecodeResponse(const S: string): TResponse;
-  var
-    json: TlkJSONobject;
-  begin
-    json := TlkJSON.ParseText(S) as TlkJSONobject;
-
-    if Assigned(json) then
-    begin
-      Result.Status := (json.Field['status'] as TlkJSONnumber).Value;
-      Result.Message := (json.Field['message'] as TlkJSONstring).Value
-    end else
-    begin
-      raise EFormatException.Create('Invalid JSON: ' + S);
-    end;    
-  end;   }
-
 const
-  CURRENT_API_VERSION  = '1.2';
-
-  //PAGE_LOGIN   = 'login.php';
-  //PAGE_CONSOLE = 'console.php';
-
-  //MESSAGE_DONE            = 'DONE';
-  //MESSAGE_FAIL            = 'FAIL';
-  //MESSAGE_FAIL_AUTH       = MESSAGE_FAIL + '|BADNAME';
-  //MESSAGE_FAIL_APIVERSION = MESSAGE_FAIL + '|DEPAPI';
-  //MESSAGE_ONLINE          = 'online';
-  //MESSAGE_OFFLINE         = 'offline';
-  //MESSAGE_UNAUTH          = 'Error: log in first';
+  CURRENT_API_VERSION  = '20';
 
 { TStdResponse }
 
@@ -129,7 +98,9 @@ function TStdResponse.ConvertResponseToJson(): TlkJSONbase;
 var
   s: string;
 begin
-  s := ReplaceAll(FResponse, '\"', '"');
+  s := FResponse;
+  //s := ReplaceAll(s, '\"', '"');
+  //s := ReplaceAll(s, '\\', '\');
 
   Result := TlkJSON.ParseText(S);
 
@@ -143,15 +114,33 @@ begin
 end;
 
 {==============================================================================}
-constructor TStdResponse.Create(const S: string);
+function TStdResponse.Encode: string;
 {==============================================================================}
 var
   json: TlkJSONobject;
 begin
-  json := TlkJSON.ParseText(S) as TlkJSONobject;
+  json := TlkJSONobject.Create();
+  try
+    json.Add('code', FCode);
+    json.Add('resp', FResponse);
+    Result := TlkJSON.GenerateText(json);
+  finally
+    json.Free;
+  end;
+end;
 
-  if Assigned(json) then
+{==============================================================================}
+constructor TStdResponse.Create(const S: string);
+{==============================================================================}
+var
+  base: TlkJSONbase;
+  json: TlkJSONobject;
+begin
+  base := TlkJSON.ParseText(S);
+
+  if Assigned(base) then
   begin
+    json := base as TlkJSONobject;
     FCode := (json['code'] as TlkJSONnumber).Value;
     FResponse := (json['resp'] as TlkJSONstring).Value;
   end else
@@ -185,6 +174,7 @@ begin
   FOnline := False;
   FTimeShift := 0;
   FHTTP := TIdHTTP.Create(nil);
+  FHTTP.HandleRedirects := True;
 end;
 
 {==============================================================================}
@@ -195,23 +185,41 @@ begin
 end;
 
 {==============================================================================}
-function TDiacompClient.DoGet(const URL: string): string;
+procedure TDiacompClient.CheckResponse(const Response: TStdResponse);
 {==============================================================================}
-var
-  Tick: cardinal;
 begin
-  {#}Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '")');
-  {#} Tick := GetTickCount();
-  Result := FHTTP.Get(URL);
-  {#}Log(VERBOUS, Format('TDiacompClient.DoGet(): responsed in %d msec: "%s"', [GetTickCount - Tick, Result]));
-
   // TODO: constants
-  if (TStdResponse.Create(Result).Code = 401) then
-    raise EAuthException.Create('Необходима авторизация');
+  case Response.Code of
+    0:    ; // life is good
+    404:  ; // something is not found
+    4050: ; // API is about to be deprecated; ignore
+    4051: raise EAPIException.Create('Deprecated API version');
+    4010: raise EBadCredentialsException.Create('Bad credentials');
+    4011: raise ENotAuthorizedException.Create('Not authorized');
+    500:  raise EInternalServerException.Create('Internal server error');
+    else  raise EFormatException.CreateFmt('Unknown response; code: %d, message: %s', [Response.Code, Response.Response])
+  end;
 end;
 
 {==============================================================================}
-function TDiacompClient.DoPost(const URL: string; const Par: TParamList): string;
+function TDiacompClient.DoGet(const URL: string; Autocheck: boolean): TStdResponse;
+{==============================================================================}
+var
+  Tick: cardinal;
+  S: string;
+begin
+  {#}Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '")');
+  {#} Tick := GetTickCount();
+  S := FHTTP.Get(URL);
+  {#}Log(VERBOUS, Format('TDiacompClient.DoGet(): responsed in %d msec: "%s"', [GetTickCount - Tick, S]));
+
+  Result := TStdResponse.Create(S);
+  if (Autocheck) then
+    CheckResponse(Result);
+end;
+
+{==============================================================================}
+function TDiacompClient.DoPost(const URL: string; const Par: TParamList; Autocheck: boolean): TStdResponse;
 {==============================================================================}
 
   function PrintParams: string;
@@ -231,6 +239,7 @@ var
   Data: TStrings;
   i: integer;
   Tick: cardinal;
+  S: string;
 begin
   {#}Log(VERBOUS, 'TDiacompClient.DoPost("' + URL + '"), ' + PrintParams());
 
@@ -241,20 +250,20 @@ begin
       Data.Add(Par[i]);
 
     {#} Tick := GetTickCount();
-    Result := FHTTP.Post(URL, Data);
-    {#}Log(VERBOUS, Format('TDiacompClient.DoPost(): responsed in %d msec: "%s"', [GetTickCount - Tick, Result]));
+    S := FHTTP.Post(URL, Data);
+    {#}Log(VERBOUS, Format('TDiacompClient.DoPost(): responsed in %d msec: "%s"', [GetTickCount - Tick, S]));
+
+    Result := TStdResponse.Create(S);
+    if (Autocheck) then
+      CheckResponse(Result);
   finally
     //FHTTP.Disconnect;
     Data.Free;
   end;
-
-  // TODO: constants
-  if (TStdResponse.Create(Result).Code = 401) then
-    raise EAuthException.Create('Необходима авторизация');
 end;
 
 {==============================================================================}
-function TDiacompClient.DoPut(const URL: string; const Par: TParamList): string;
+function TDiacompClient.DoPut(const URL: string; const Par: TParamList; Autocheck: boolean): TStdResponse;
 {==============================================================================}
 
   function PrintParams: string;
@@ -274,6 +283,7 @@ var
   Data: TStrings;
   i: integer;
   Tick: cardinal;
+  S: string;
 begin
   {#}Log(VERBOUS, 'TDiacompClient.DoPut("' + URL + '"), ' + PrintParams());
 
@@ -284,31 +294,33 @@ begin
       Data.Add(Par[i]);
 
     {#} Tick := GetTickCount();
-    Result := FHTTP.Put(URL, TStringStream.Create(Data.Text));
-    {#}Log(VERBOUS, Format('TDiacompClient.DoPut(): responsed in %d msec: "%s"', [GetTickCount - Tick, Result]));
+    S := FHTTP.Put(URL, TStringStream.Create(Data.Text));
+    {#}Log(VERBOUS, Format('TDiacompClient.DoPut(): responsed in %d msec: "%s"', [GetTickCount - Tick, S]));
+
+    Result := TStdResponse.Create(S);
+    if (Autocheck) then
+      CheckResponse(Result);
   finally
     //FHTTP.Disconnect;
     Data.Free;
   end;
-
-  // TODO: constants
-  if (TStdResponse.Create(Result).Code = 401) then
-    raise EAuthException.Create('Необходима авторизация');
 end;
 
 {==============================================================================}
-function TDiacompClient.DoGetSmart(const URL: string): string;
+function TDiacompClient.DoGetSmart(const URL: string): TStdResponse;
 {==============================================================================}
 begin
   try
-    Result := DoGet(URL);
-  except
-    on E: EAuthException do
+    Result := DoGet(URL, False);
+    // TODO: implement POST / PUT in this manner
+    // TODO: constants
+    if (Result.Code = 4011) then
     begin
       Login();
       Result := DoGet(URL); // здесь не ловим возможное исключение отсутствия авторизации
     end;
-
+  except
+    //on E: ENotAuthorizedException do
     on SocketError: EIdSocketError do
     begin
       FHTTP.Disconnect;
@@ -319,13 +331,13 @@ begin
 end;
 
 {==============================================================================}
-function TDiacompClient.DoPostSmart(const URL: string; const Par: TParamList): string;
+function TDiacompClient.DoPostSmart(const URL: string; const Par: TParamList): TStdResponse;
 {==============================================================================}
 begin
   try
     Result := DoPost(URL, Par);
   except
-    on E: EAuthException do
+    on E: ENotAuthorizedException do
     begin
       Login();
       Result := DoPost(URL, Par); // здесь не ловим возможное исключение отсутствия авторизации
@@ -341,13 +353,13 @@ begin
 end;
 
 {==============================================================================}
-function TDiacompClient.DoPutSmart(const URL: string; const Par: TParamList): string;
+function TDiacompClient.DoPutSmart(const URL: string; const Par: TParamList): TStdResponse;
 {==============================================================================}
 begin
   try
     Result := DoPut(URL, Par);
   except
-    on E: EAuthException do
+    on E: ENotAuthorizedException do
     begin
       Login();
       Result := DoPut(URL, Par); // здесь не ловим возможное исключение отсутствия авторизации
@@ -373,25 +385,22 @@ var
 begin
   Query := GetApiURL + 'auth/login/';
 
-  SetLength(Par, 4);
+  SetLength(Par, 3);
   par[0] := 'login=' + FUsername;
   par[1] := 'pass=' + FPassword;
   par[2] := 'api=' + CURRENT_API_VERSION;
   {#}Log(VERBOUS, 'TDiacompClient.Login(): quering ' + Query);
 
-  S := DoPost(Query, par);
-  {#}Log(VERBOUS, 'TDiacompClient.Login(): quered OK, resp = "' + S + '"');
-
-  Response := TStdResponse.Create(S);
+  Response := DoPost(Query, par);
+  {#}Log(VERBOUS, 'TDiacompClient.Login(): quered OK, resp = "' + Response.Encode() + '"');
 
   // TODO: constants
 
-  case Response.Code of
-    0:    {#}Log(VERBOUS, 'TDiacompClient.Login(): logged OK');
-    401:  raise EAuthException.Create('Ошибка авторизации');
-    4051: raise EAPIException.Create('Версия API не поддерживается');
-    else  raise EFormatException.CreateFmt('Неизвестная ошибка (%d): %s', [Response.Code, Response.Response]);
-  end;
+  CheckResponse(Response);
+
+  // TODO: constants
+  if (Response.Code = 0) then
+    {#}Log(VERBOUS, 'TDiacompClient.Login(): logged OK');
 
   {#}Log(VERBOUS, 'TDiacompClient.Login(): done');
 end;

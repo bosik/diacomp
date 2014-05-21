@@ -77,10 +77,10 @@ type
 
     procedure Add(const R: TCustomRecord); override;
     procedure Delete(ID: TCompactGUID); override;
-    function FindChanged(Since: TDateTime): TRecordList; override;
+    function FindChanged(Since: TDateTime): TVersionedList; override; 
     function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; override;
-    function FindById(ID: TCompactGUID): TCustomRecord; override;
-    procedure Post(const Recs: TRecordList); override;
+    function FindById(ID: TCompactGUID): TVersioned; override;
+    procedure Save(const Recs: TRecordList); override;
 
     // свойства
     // TODO: think about it
@@ -854,7 +854,7 @@ end;
 
 
 {==============================================================================}
-function TDiaryLocalSource.FindById(ID: TCompactGUID): TCustomRecord;
+function TDiaryLocalSource.FindById(ID: TCompactGUID): TVersioned;
 {==============================================================================}
 var
   i: integer;
@@ -870,7 +870,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiaryLocalSource.FindChanged(Since: TDateTime): TRecordList;
+function TDiaryLocalSource.FindChanged(Since: TDateTime): TVersionedList;
 {==============================================================================}
 var
   i: integer;
@@ -904,8 +904,34 @@ begin
 end;
 
 {==============================================================================}
-procedure TDiaryLocalSource.Post(const Recs: TRecordList);
+procedure TDiaryLocalSource.Add(const R: TCustomRecord);
 {==============================================================================}
+var
+  Recs: TRecordList;
+begin
+  SetLength(Recs, 1);
+  Recs[0] := R;
+  Save(Recs);
+end;
+
+{==============================================================================}
+procedure TDiaryLocalSource.Delete(ID: TCompactGUID);
+{==============================================================================}
+var
+  i: integer;
+begin
+  for i := 0 to High(FRecords) do
+  if (FRecords[i].ID = ID) then
+  begin
+    FRecords[i].Deleted := True;
+    FRecords[i].Modified;
+    FModified := True;
+    SaveToFile(FFileName);
+    Exit;
+  end;
+end;
+
+procedure TDiaryLocalSource.Save(const Recs: TRecordList);
 
  function PureLength(const S: string): integer;
   var
@@ -957,34 +983,6 @@ begin
 
     FModified := True;
     SaveToFile(FFileName);
-  end;
-end;
-
-{==============================================================================}
-procedure TDiaryLocalSource.Add(const R: TCustomRecord);
-{==============================================================================}
-var
-  Recs: TRecordList;
-begin
-  SetLength(Recs, 1);
-  Recs[0] := R;
-  Post(Recs);
-end;
-
-{==============================================================================}
-procedure TDiaryLocalSource.Delete(ID: TCompactGUID);
-{==============================================================================}
-var
-  i: integer;
-begin
-  for i := 0 to High(FRecords) do
-  if (FRecords[i].ID = ID) then
-  begin
-    FRecords[i].Deleted := True;
-    FRecords[i].Modified;
-    FModified := True;
-    SaveToFile(FFileName);
-    Exit;
   end;
 end;
 

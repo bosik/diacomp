@@ -114,8 +114,32 @@ type
 
   procedure Statistics(const R: TRecordList; out TotalProts, TotalFats, TotalCarbs,
     TotalValue, TotalMass, TotalIns: Real);
+  function RecordToVersioned(const List: TRecordList): TVersionedList;
+  function VersionedToRecord(const List: TVersionedList): TRecordList;
 
 implementation
+
+{==============================================================================}
+function RecordToVersioned(const List: TRecordList): TVersionedList;
+{==============================================================================}
+var
+  i: integer;
+begin
+  SetLength(Result, Length(List));
+  for i := 0 to High(Result) do
+    Result[i] := List[i];
+end;
+
+{==============================================================================}
+function VersionedToRecord(const List: TVersionedList): TRecordList;
+{==============================================================================}
+var
+  i: integer;
+begin
+  SetLength(Result, Length(List));
+  for i := 0 to High(Result) do
+    Result[i] := List[i] as TCustomRecord;
+end;
 
 { TCustomRecord }
 
