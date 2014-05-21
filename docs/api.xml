@@ -45,7 +45,7 @@
 					<return-condition>Ошибка: версия API клиента устарела и больше не поддерживается</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","resp":"###",...}</return-value>
+					<return-value>{"code":"4010","resp":"###",...}</return-value>
 					<return-condition>Ошибка: неверный логин или пароль</return-condition>
 				</return>
 				<return>
@@ -107,7 +107,7 @@
 					<return-condition>Операция прошла успешно</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","resp":"###",...}</return-value>
+					<return-value>{"code":"4011","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
@@ -141,7 +141,7 @@
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","resp":"###",...}</return-value>
+					<return-value>{"code":"4011","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
@@ -167,7 +167,7 @@
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","resp":"###",...}</return-value>
+					<return-value>{"code":"4011","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
@@ -186,10 +186,14 @@
 			<returns>
 				<return>
 					<return-value>{"code":"0","resp":(item)}</return-value>
-					<return-condition>Всё хорошо</return-condition>
+					<return-condition>Запись найдена</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","resp":"###",...}</return-value>
+					<return-value>{"code":"404","resp":"###",...}</return-value>
+					<return-condition>Запись не найдена</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"4011","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
@@ -216,7 +220,7 @@
 					<return-condition>Операция прошла успешно</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","resp":"###",...}</return-value>
+					<return-value>{"code":"4011","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
@@ -242,7 +246,7 @@
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","resp":"###",...}</return-value>
+					<return-value>{"code":"4011","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
@@ -268,7 +272,7 @@
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","resp":"###",...}</return-value>
+					<return-value>{"code":"4011","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
@@ -294,7 +298,7 @@
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","resp":"###",...}</return-value>
+					<return-value>{"code":"4011","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
@@ -316,7 +320,7 @@
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","resp":"###",...}</return-value>
+					<return-value>{"code":"4011","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
@@ -342,7 +346,7 @@
 					<return-condition>Операция прошла успешно</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","resp":"###",...}</return-value>
+					<return-value>{"code":"4011","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
@@ -368,7 +372,7 @@
 					<return-condition>Операция прошла успешно</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","resp":"###",...}</return-value>
+					<return-value>{"code":"4011","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
@@ -390,7 +394,7 @@
 					<return-condition>Всё хорошо</return-condition>
 				</return>
 				<return>
-					<return-value>{"code":"401","resp":"###",...}</return-value>
+					<return-value>{"code":"4011","resp":"###",...}</return-value>
 					<return-condition>Ошибка: отсутствует авторизация</return-condition>
 				</return>
 				<return>
