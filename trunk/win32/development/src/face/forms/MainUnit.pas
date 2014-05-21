@@ -609,7 +609,7 @@ begin
     end;
 
     { база продуктов }
-    Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_FOODBASE;
+   (* Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_FOODBASE;
     Application.ProcessMessages;
     if (SyncSources(FoodBaseLocal, FoodBaseWeb, T - 1) > 0) then
     begin
@@ -623,7 +623,7 @@ begin
     begin
       Form1.EventDishbaseChanged(True, True);
       // TODO: workaround
-    end;
+    end;    *)
     
     { готово }
     Form1.StatusBar.Panels[3].Text := STATUS_RESULT_SYNC_DONE;
@@ -898,7 +898,7 @@ begin
           ShowBalloon('Авторизация не удалась [сервер не отвечает]', bitError);
         end;
 
-        on AuthError: EAuthException do
+        on AuthError: ENotAuthorizedException do
         begin
           Log(ERROR, 'Form1.FullInit(): ошибка при синхронизации дневника: ' + AuthError.Message);
           ShowBalloon('Авторизация не удалась [неверный логин/пароль]. Щёлкните это сообщение, чтобы открыть настройки.', bitError, BalloonAction_ShowInternetSettings);
@@ -2040,7 +2040,7 @@ begin
             end;
 
             Meal.Modified;
-            LocalSource.Post(Meal);
+            LocalSource.Save(Meal);
             DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
             DiaryView.SelectedRecordID := Meal.ID;
             DiaryView.SelectedLine := Meal.Count - 1;
@@ -2675,7 +2675,7 @@ begin
 
     if ShowBloodEditor(Rec, New) then
     begin
-      LocalSource.Post(Rec);
+      LocalSource.Save(Rec);
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Rec.ID;
       ScrollToSelected;
@@ -2715,7 +2715,7 @@ begin
 
     if ShowInsEditor(Rec, New) then
     begin
-      LocalSource.Post(Rec);
+      LocalSource.Save(Rec);
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Rec.ID;
       ScrollToSelected;
@@ -2755,7 +2755,7 @@ begin
 
     if ShowMealEditor(Rec, New) then
     begin
-      LocalSource.Post(Rec);
+      LocalSource.Save(Rec);
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Rec.ID;
       ScrollToSelected;
@@ -2799,7 +2799,7 @@ begin
 
     if ShowNoteEditor(Rec, New) then
     begin
-      LocalSource.Post(Rec);
+      LocalSource.Save(Rec);
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Rec.ID;
       ScrollToSelected;
@@ -2827,7 +2827,7 @@ begin
     begin
       Meal[DiaryView.SelectedLine].Mass := NewMass;
       Meal.Modified;
-      LocalSource.Post(Meal);
+      LocalSource.Save(Meal);
       UpdateMealStatistics();
       UpdateMealDose();
 
@@ -2860,7 +2860,7 @@ begin
       begin
         Meal[DiaryView.SelectedLine].Mass := Meal[DiaryView.SelectedLine].Mass + DeltaMass;
         Meal.Modified;
-        LocalSource.Post(Meal);
+        LocalSource.Save(Meal);
         UpdateMealStatistics();
         UpdateMealDose();
 
@@ -3891,7 +3891,7 @@ begin
     begin
       Meal.Remove(DiaryView.SelectedLine);
       Meal.Modified;
-      LocalSource.Post(Meal);
+      LocalSource.Save(Meal);
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Meal.ID;
     end;
@@ -4203,7 +4203,7 @@ begin
     Meal := TMealRecord(Rec);
     Meal.ShortMeal := ActionShortMeal.Checked;
     Meal.Modified;
-    LocalSource.Post(Meal);
+    LocalSource.Save(Meal);
 
     // TODO: check if it is really necessary
     UpdateTimeLeft;
@@ -5121,7 +5121,7 @@ var
 begin
   ID := DiaryView.SelectedRecordID;
   if (ID <> '') then
-    Result := LocalSource.FindById(ID)
+    Result := LocalSource.FindById(ID) as TCustomRecord
   else
     Result := nil;
 end;

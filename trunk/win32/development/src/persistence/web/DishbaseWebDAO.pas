@@ -64,42 +64,48 @@ end;
 function TDishbaseWebDAO.FindAll(ShowRemoved: boolean): TDishItemList;
 {==============================================================================}
 var
-  Resp: string;
+  Response: TStdResponse;
 begin
-  Resp := FClient.DoGetSmart(FClient.GetApiURL() + 'food/all/?show_rem=' + IntToStr(byte(ShowRemoved)));
-  Result := ParseDishItemsResponse(Resp);
+  Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/all/?show_rem=' + IntToStr(byte(ShowRemoved)));
+  Result := ParseDishItemsResponse(Response.Response);
 end;
 
 {==============================================================================}
 function TDishbaseWebDAO.FindAny(const Filter: string): TDishItemList;
 {==============================================================================}
 var
-  Resp: string;
+  Response: TStdResponse;
 begin
-  Resp := FClient.DoGetSmart(FClient.GetApiURL() + 'food/search/?q=' + Filter);
-  Result := ParseDishItemsResponse(Resp);
+  Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/search/?q=' + Filter);
+  Result := ParseDishItemsResponse(Response.Response);
 end;
 
 {==============================================================================}
 function TDishbaseWebDAO.FindById(ID: TCompactGUID): TDish;
 {==============================================================================}
 var
-  Resp: string;
+  Response: TStdResponse;
   List: TDishItemList;
 begin
-  Resp := FClient.DoGetSmart(FClient.GetApiURL() + 'food/guid/' + ID);
-  List := ParseDishItemsResponse(Resp);
-  Result := List[0];
+  Response := FClient.DoGetSmart(FClient.GetApiURL() + 'dish/guid/' + ID);
+  // TODO: constants
+  case Response.Code of
+    0:   begin
+           List := ParseDishItemsResponse(Response.Response);
+           Result := List[0];
+         end;
+    404: Result := nil;
+  end;
 end;
 
 {==============================================================================}
 function TDishbaseWebDAO.FindChanged(Since: TDateTime): TDishItemList;
 {==============================================================================}
 var
-  Resp: string;
+  Response: TStdResponse;
 begin
-  Resp := FClient.DoGetSmart(FClient.GetApiURL() + 'food/changes/?since=' + DateTimeToStr(Since, STD_DATETIME_FMT));
-  Result := ParseDishItemsResponse(Resp);
+  Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/changes/?since=' + DateTimeToStr(Since, STD_DATETIME_FMT));
+  Result := ParseDishItemsResponse(Response.Response);
 end;
 
 {==============================================================================}
@@ -126,8 +132,7 @@ procedure TDishbaseWebDAO.Save(const Items: TDishItemList);
 {==============================================================================}
 var
   Par: TParamList;
-  Msg: string;
-  // Response: TStdResponse;
+  Response: TStdResponse;
 begin
   // заглушка
   if (Length(Items) = 0) then
@@ -136,11 +141,11 @@ begin
   end;
 
   SetLength(Par, 1);
-  par[0] := 'items=' + '[]';
-  //JsonWrite(SerializeDishItems(Items));
-  // TODO 1: FIXME
+  //par[0] := 'items=' + JsonWrite(SerializeDishItems(Items));
+  par[0] := 'items=[]';
+  // TODO 1: RF: DishbaseWeb.Post()
 
-  Msg := FClient.DoPutSmart(FClient.GetApiURL() + 'food/', Par);
+  Response := FClient.DoPutSmart(FClient.GetApiURL() + 'dish/', Par);
 
   // TODO: check response, throw exception if non-zero
   // Response.Code = 0     it's ok
