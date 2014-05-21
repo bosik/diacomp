@@ -3,6 +3,7 @@ package org.bosik.diacomp.web.backend.features.diary.rest;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -23,10 +24,11 @@ import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
 import org.bosik.diacomp.web.backend.features.diary.function.DiaryDAO;
-import org.bosik.diacomp.web.backend.features.diary.function.FakeDiaryDAO;
+import org.bosik.diacomp.web.backend.features.diary.function.MySQLDiaryDAO;
 
 @Path("diary/")
 public class DiaryRestService
@@ -34,7 +36,7 @@ public class DiaryRestService
 	@Context
 	HttpServletRequest									req;
 
-	private final DiaryDAO								diaryService	= new FakeDiaryDAO();
+	private final DiaryDAO								diaryService	= new MySQLDiaryDAO();
 
 	private static Parser<DiaryRecord>					parser			= new ParserDiaryRecord();
 	private static Parser<Versioned<DiaryRecord>>		parserVersioned	= new ParserVersioned<DiaryRecord>(parser);
@@ -64,6 +66,10 @@ public class DiaryRestService
 				return Response.ok(response).build();
 			}
 		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
@@ -84,6 +90,10 @@ public class DiaryRestService
 			String s = serializer.writeAll(items);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
@@ -111,6 +121,10 @@ public class DiaryRestService
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
 		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
@@ -119,6 +133,7 @@ public class DiaryRestService
 	}
 
 	@PUT
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response postRecords(@FormParam("items") String parItems) throws CommonServiceException
 	{
@@ -130,6 +145,10 @@ public class DiaryRestService
 
 			String response = ResponseBuilder.buildDone("Saved OK");
 			return Response.ok(response).build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
