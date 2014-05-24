@@ -119,14 +119,6 @@ begin
 
   CheckEquals(4, FoodBase.Count, 'Count check failed');
 
-  FoodBase.Delete(0);
-
-  CheckEquals(3, FoodBase.Count, 'Count check failed');
-
-  CheckEqualsString('мандарин', FoodBase[0].Name);
-  CheckEqualsString('яблоко', FoodBase[1].Name);
-  CheckEqualsString('€йцо', FoodBase[2].Name);
-
   FoodBase.Free;
 end;
 
@@ -213,14 +205,6 @@ begin
   DishBase.Add(Dish);
 
   CheckEquals(4, DishBase.Count, 'Count check failed');
-
-  DishBase.Delete(0);
-
-  CheckEquals(3, DishBase.Count, 'Count check failed');
-
-  CheckEqualsString('макароны', DishBase[0].Name);
-  CheckEqualsString('яблочный пирог', DishBase[1].Name);
-  CheckEqualsString('€ичница', DishBase[2].Name);
 
   DishBase.Free;
 end;
