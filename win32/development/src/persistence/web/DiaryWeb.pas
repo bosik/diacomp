@@ -122,7 +122,7 @@ begin
   json := TlkJSONobject.Create();
   try
     json.Add('code', FCode);
-    json.Add('resp', FResponse);
+    json.Add('resp', FResponse); // wrong
     Result := TlkJSON.GenerateText(json);
   finally
     json.Free;
@@ -142,7 +142,7 @@ begin
   begin
     json := base as TlkJSONobject;
     FCode := (json['code'] as TlkJSONnumber).Value;
-    FResponse := (json['resp'] as TlkJSONstring).Value;
+    FResponse := TlkJSON.GenerateText(json['resp']);
   end else
   begin
     raise Exception.Create('Invalid JSON: ' + S);
@@ -175,6 +175,7 @@ begin
   FTimeShift := 0;
   FHTTP := TIdHTTP.Create(nil);
   FHTTP.HandleRedirects := True;
+  FHTTP.Request.ContentEncoding := 'UTF-8';
 end;
 
 {==============================================================================}
@@ -283,6 +284,7 @@ var
   Data: TStrings;
   i: integer;
   Tick: cardinal;
+  Req: string;
   S: string;
 begin
   {#}Log(VERBOUS, 'TDiacompClient.DoPut("' + URL + '"), ' + PrintParams());
@@ -294,7 +296,10 @@ begin
       Data.Add(Par[i]);
 
     {#} Tick := GetTickCount();
-    S := FHTTP.Put(URL, TStringStream.Create(Data.Text));
+    Req := Trim(Data.Text);
+    Req := ReplaceAll(Req, '%', '%25');
+    S := FHTTP.Put(URL, TStringStream.Create(Req));
+
     {#}Log(VERBOUS, Format('TDiacompClient.DoPut(): responsed in %d msec: "%s"', [GetTickCount - Tick, S]));
 
     Result := TStdResponse.Create(S);
@@ -380,7 +385,6 @@ procedure TDiacompClient.Login();
 var
   Query: string;
   Par: TParamList;
-  S: string;
   Response: TStdResponse;
 begin
   Query := GetApiURL + 'auth/login/';
