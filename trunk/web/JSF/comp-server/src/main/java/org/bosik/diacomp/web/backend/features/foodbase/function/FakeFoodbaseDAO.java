@@ -109,22 +109,25 @@ public class FakeFoodbaseDAO implements FoodbaseDAO
 	@Override
 	public void save(int userId, List<Versioned<FoodItem>> items)
 	{
-		for (Versioned<FoodItem> item : samples)
+		synchronized (samples)
 		{
-			boolean found = false;
-			for (int i = 0; i < samples.size(); i++)
+			for (Versioned<FoodItem> item : samples)
 			{
-				if (samples.get(i).equals(item))
+				boolean found = false;
+				for (int i = 0; i < samples.size(); i++)
 				{
-					samples.set(i, new Versioned<FoodItem>(item));
-					found = true;
-					break;
+					if (samples.get(i).equals(item))
+					{
+						samples.set(i, new Versioned<FoodItem>(item));
+						found = true;
+						break;
+					}
 				}
-			}
 
-			if (!found)
-			{
-				samples.add(new Versioned<FoodItem>(item));
+				if (!found)
+				{
+					samples.add(new Versioned<FoodItem>(item));
+				}
 			}
 		}
 	}
@@ -176,12 +179,15 @@ public class FakeFoodbaseDAO implements FoodbaseDAO
 	@Override
 	public void delete(int userId, String id)
 	{
-		for (Versioned<FoodItem> rec : samples)
+		synchronized (samples)
 		{
-			if (rec.getId().equals(id))
+			for (Versioned<FoodItem> rec : samples)
 			{
-				rec.setDeleted(true);
-				return;
+				if (rec.getId().equals(id))
+				{
+					rec.setDeleted(true);
+					return;
+				}
 			}
 		}
 	}
