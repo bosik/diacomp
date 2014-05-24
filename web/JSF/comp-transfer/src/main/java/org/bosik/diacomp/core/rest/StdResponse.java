@@ -1,5 +1,6 @@
 package org.bosik.diacomp.core.rest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,13 +45,63 @@ public class StdResponse
 		this.response = response;
 	}
 
+	private static boolean isValidJsonObject(String s)
+	{
+		try
+		{
+			new JSONObject(s);
+			return true;
+		}
+		catch (JSONException e)
+		{
+			return false;
+		}
+	}
+
+	private static boolean isValidJsonArray(String s)
+	{
+		try
+		{
+			new JSONArray(s);
+			return true;
+		}
+		catch (JSONException e)
+		{
+			return false;
+		}
+	}
+
 	public static StdResponse decode(String s)
 	{
 		try
 		{
 			JSONObject json = new JSONObject(s);
 			int code = json.getInt(TAG_CODE);
-			String msg = json.has(TAG_RESPONSE) ? json.getString(TAG_RESPONSE) : "";
+			String msg;
+
+			if (json.has(TAG_RESPONSE))
+			{
+				try
+				{
+					msg = json.getJSONObject(TAG_RESPONSE).toString();
+				}
+				catch (JSONException e)
+				{
+					try
+					{
+						msg = json.getJSONArray(TAG_RESPONSE).toString();
+					}
+					catch (JSONException e2)
+					{
+						msg = json.getString(TAG_RESPONSE);
+					}
+				}
+			}
+			else
+			{
+				msg = "";
+			}
+
 			return new StdResponse(code, msg);
 		}
 		catch (JSONException e)
@@ -63,7 +114,19 @@ public class StdResponse
 	{
 		JSONObject json = new JSONObject();
 		json.put(TAG_CODE, resp.getCode());
-		json.put(TAG_RESPONSE, resp.getResponse());
+
+		if (isValidJsonObject(resp.getResponse()))
+		{
+			json.put(TAG_RESPONSE, new JSONObject(resp.getResponse()));
+		}
+		else if (isValidJsonArray(resp.getResponse()))
+		{
+			json.put(TAG_RESPONSE, new JSONArray(resp.getResponse()));
+		}
+		else
+		{
+			json.put(TAG_RESPONSE, resp.getResponse());
+		}
 		return json.toString();
 	}
 }
