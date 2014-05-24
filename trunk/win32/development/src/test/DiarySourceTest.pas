@@ -99,7 +99,7 @@ begin
     FreeAndNil(Source);
   SetupSource;
 
-  Source.Post(DemoRecs);
+  Source.Save(DemoRecs);
 
   FreeAndNil(Source);
   SetupSource;
@@ -186,7 +186,7 @@ begin
   // as far as it is run right after posting records, expected result
   // is all records persisted
 
-  Recs := Source.FindChanged(GetTimeUTC() - 1);
+  Recs := VersionedToRecord(Source.FindChanged(GetTimeUTC() - 1));
   CompareRecs(DemoRecs, Recs);
 end;
 
@@ -230,7 +230,7 @@ begin
 
   // find by ID
   OrgRec := BuildNoteRecord();
-  RestoredRec := Source.FindById(OrgRec.ID);
+  RestoredRec := VersionedToRecord(Source.FindById(OrgRec.ID));
   CompareRecs(OrgRec, RestoredRec);
   RestoredRec.Free;
 
@@ -249,13 +249,13 @@ begin
   OrgRec.Modified;
   SetLength(Recs, 1);
   Recs[0] := OrgRec;
-  Source.Post(Recs);
+  Source.Save(Recs);
 
   // -------------------------
   Source.Free;
   SetupSource;
 
-  RestoredRecs := Source.FindChanged(OrgRec.TimeStamp - 1 / SecPerDay);
+  RestoredRecs := VersionedToRecord(Source.FindChanged(OrgRec.TimeStamp - 1 / SecPerDay));
   CheckEquals(1, Length(RestoredRecs), 'Count of records differs');
   CompareRecs(OrgRec, RestoredRecs[0]);
   RestoredRecs[0].Free;
