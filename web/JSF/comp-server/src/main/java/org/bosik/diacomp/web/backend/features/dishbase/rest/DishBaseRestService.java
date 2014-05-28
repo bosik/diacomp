@@ -20,6 +20,7 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
 import org.bosik.diacomp.web.backend.features.dishbase.function.DishbaseDAO;
@@ -60,6 +61,10 @@ public class DishBaseRestService
 			}
 
 		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
@@ -82,6 +87,10 @@ public class DishBaseRestService
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
 		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
@@ -102,6 +111,10 @@ public class DishBaseRestService
 			String s = serializer.writeAll(items);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
@@ -124,6 +137,10 @@ public class DishBaseRestService
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
 		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
@@ -143,6 +160,10 @@ public class DishBaseRestService
 
 			String response = ResponseBuilder.buildDone("Saved OK");
 			return Response.ok(response).build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
