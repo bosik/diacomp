@@ -34,7 +34,7 @@ public class FoodBaseRestService
 
 	private final FoodbaseDAO								foodbaseService	= new FakeFoodbaseDAO();
 
-	private static final Serializer<Versioned<FoodItem>>	serializer	= new SerializerFoodItem();
+	private static final Serializer<Versioned<FoodItem>>	serializer		= new SerializerFoodItem();
 
 	@GET
 	@Path("guid/{guid}")
@@ -59,6 +59,10 @@ public class FoodBaseRestService
 				return Response.ok(response).build();
 			}
 
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
@@ -107,6 +111,10 @@ public class FoodBaseRestService
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
 		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
@@ -128,6 +136,10 @@ public class FoodBaseRestService
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
 		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
@@ -147,6 +159,10 @@ public class FoodBaseRestService
 
 			String response = ResponseBuilder.buildDone("Saved OK");
 			return Response.ok(response).build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
