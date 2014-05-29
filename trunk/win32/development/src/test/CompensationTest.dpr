@@ -12,7 +12,7 @@ uses
   AutoLog in '..\common\AutoLog.pas',
   DiaryRoutinesTest in 'DiaryRoutinesTest.pas',
   DiaryWeb in '..\persistence\web\DiaryWeb.pas',
-  DiaryDAO in '..\persistence\DiaryDAO.pas',
+  DiaryDAO in '..\backend\features\diary\DiaryDAO.pas',
   DiaryPage in '..\bo\DiaryPage.pas',
   DiaryRecords in '..\bo\DiaryRecords.pas',
   DiaryPageSerializer in '..\backend\features\diary\DiaryPageSerializer.pas',
@@ -23,7 +23,8 @@ uses
   DiaryWebSource in '..\persistence\web\DiaryWebSource.pas',
   DiaryPageSerializerTest in 'DiaryPageSerializerTest.pas',
   ObjectService in '..\persistence\ObjectService.pas',
-  JsonSerializer in '..\persistence\JsonSerializer.pas';
+  JsonSerializer in '..\persistence\serializers\JsonSerializer.pas',
+  JsonVersionedSerializer in '..\persistence\serializers\JsonVersionedSerializer.pas';
 
 {$R *.res}
 
