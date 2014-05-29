@@ -34,6 +34,7 @@ type
     function FindAll(ShowRemoved: boolean): TDishItemList; override;
     function FindAny(const Filter: string): TDishItemList; override;
     function FindOne(const Name: string): TDishItem; override;
+    
     function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
     procedure Save(Item: TVersioned); override;
