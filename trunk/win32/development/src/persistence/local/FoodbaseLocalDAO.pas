@@ -175,7 +175,6 @@ function TFoodbaseLocalDAO.FindChanged(Since: TDateTime): TVersionedList;
 {==============================================================================}
 var
   i, k: integer;
-  Item: TFoodItem;
 begin
   SetLength(Result, FBase.Count);
   k := 0;
@@ -284,6 +283,7 @@ procedure TFoodbaseLocalDAO.Save(const Items: TVersionedList);
 var
   i: integer;
 begin
+  // TODO: optimize
   for i := Low(Items) to High(Items) do
     Save(Items[i]);
 end;
