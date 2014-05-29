@@ -23,8 +23,8 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
-import org.bosik.diacomp.web.backend.features.foodbase.function.FakeFoodbaseDAO;
 import org.bosik.diacomp.web.backend.features.foodbase.function.FoodbaseDAO;
+import org.bosik.diacomp.web.backend.features.foodbase.function.MySQLFoodbaseDAO;
 
 @Path("food/")
 public class FoodBaseRestService
@@ -32,7 +32,7 @@ public class FoodBaseRestService
 	@Context
 	HttpServletRequest										req;
 
-	private final FoodbaseDAO								foodbaseService	= new FakeFoodbaseDAO();
+	private final FoodbaseDAO								foodbaseService	= new MySQLFoodbaseDAO();
 
 	private static final Serializer<Versioned<FoodItem>>	serializer		= new SerializerFoodItem();
 
