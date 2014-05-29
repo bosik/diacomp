@@ -4,7 +4,6 @@ interface
 
 uses
   uLkJSON,
-  JsonSerializer,
   JsonVersionedSerializer,
   BusinessObjects;
 

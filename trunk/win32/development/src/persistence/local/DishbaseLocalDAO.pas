@@ -283,6 +283,7 @@ procedure TDishbaseLocalDAO.Save(const Items: TVersionedList);
 var
   i: integer;
 begin
+  // TODO: optimize, sort once
   for i := Low(Items) to High(Items) do
     Save(Items[i]);
 end;
