@@ -363,7 +363,7 @@ var
         sqr(Food.RelCarbs/summ - PercentCarbs)
   end;
 
-  function F(Food: TDish): real; overload;
+  function F(Food: TDishItem): real; overload;
   var
     summ: real;
   begin

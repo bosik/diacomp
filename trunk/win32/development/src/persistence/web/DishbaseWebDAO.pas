@@ -21,7 +21,7 @@ type
 
     function FindAll(ShowRemoved: boolean): TDishItemList; override;
     function FindAny(const Filter: string): TDishItemList; override;
-    function FindOne(const Name: string): TDish; override;
+    function FindOne(const Name: string): TDishItem; override;
     function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
     procedure Save(const Items: TVersionedList); override;
@@ -108,7 +108,7 @@ begin
 end;
 
 {==============================================================================}
-function TDishbaseWebDAO.FindOne(const Name: string): TDish;
+function TDishbaseWebDAO.FindOne(const Name: string): TDishItem;
 {==============================================================================}
 var
   Items: TDishItemList;

@@ -111,8 +111,7 @@ type
   TFoodItemList = array of TFoodItem;
 
   // #entity
-  // TODO: rename to TDishItem
-  TDish = class (TMutableItem)
+  TDishItem = class (TMutableItem)
   private
     FContent: array of TFoodMassed;
     FFixedMass: boolean;
@@ -154,7 +153,7 @@ type
     //property SilentMode: boolean read FSilentMode write FSilentMode;
   end;
 
-  TDishItemList = array of TDish; // TODO: rename
+  TDishItemList = array of TDishItem;
 
   function CreateCompactGUID(): TCompactGUID;
 
@@ -226,7 +225,7 @@ var
 begin
   SetLength(Result, Length(List));
   for i := 0 to High(Result) do
-    Result[i] := List[i] as TDish;
+    Result[i] := List[i] as TDishItem;
 end;
 
 { TVersioned }
@@ -491,7 +490,7 @@ end;
 { TDish }
 
 {==============================================================================}
-function TDish.Add(Food: TFoodMassed): integer;
+function TDishItem.Add(Food: TFoodMassed): integer;
 {==============================================================================}
 begin
   Food.OnChange := OnChange; 
@@ -504,7 +503,7 @@ begin
 end;
 
 {==============================================================================}
-function TDish.AsFoodMassed(Mass: real): TFoodMassed;
+function TDishItem.AsFoodMassed(Mass: real): TFoodMassed;
 {==============================================================================}
 begin
   Result := TFoodMassed.Create();
@@ -517,7 +516,7 @@ begin
 end;
 
 {==============================================================================}
-function TDish.AsFoodRelative: TFoodRelative;
+function TDishItem.AsFoodRelative: TFoodRelative;
 {==============================================================================}
 begin
   Result := TFoodRelative.Create;
@@ -529,7 +528,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TDish.Clear();
+procedure TDishItem.Clear();
 {==============================================================================}
 var
   i: integer;
@@ -545,7 +544,7 @@ begin
 end;
 
 {==============================================================================}
-constructor TDish.Create();
+constructor TDishItem.Create();
 {==============================================================================}
 begin
   inherited;
@@ -556,18 +555,18 @@ begin
 end;
 
 {==============================================================================}
-procedure TDish.CopyFrom(Dish: TVersioned);
+procedure TDishItem.CopyFrom(Dish: TVersioned);
 {==============================================================================}
 var
   i: integer;
   Temp: TFoodMassed;
-  TypedDish: TDish;
+  TypedDish: TDishItem;
 begin
   if (Dish = nil) then raise Exception.Create('TDish.CopyFrom(): Dish is nil');
 
   inherited CopyFrom(Dish);
 
-  TypedDish := Dish as TDish;
+  TypedDish := Dish as TDishItem;
 
   Name := TypedDish.Name;
   Tag := TypedDish.Tag;
@@ -589,14 +588,14 @@ begin
 end;
 
 {==============================================================================}
-function TDish.Count(): integer;
+function TDishItem.Count(): integer;
 {==============================================================================}
 begin
   Result := Length(FContent);
 end;
 
 {==============================================================================}
-procedure TDish.Delete(Index: integer);
+procedure TDishItem.Delete(Index: integer);
 {==============================================================================}
 var
   i: integer;
@@ -614,7 +613,7 @@ begin
 end;
 
 {==============================================================================}
-destructor TDish.Destroy;
+destructor TDishItem.Destroy;
 {==============================================================================}
 begin
   OnChange := nil; // TODO: "до Clear(), чтобы не оповещать об очистке" - обновить
@@ -623,21 +622,21 @@ begin
 end;
 
 {==============================================================================}
-procedure TDish.EraseResultMass;
+procedure TDishItem.EraseResultMass;
 {==============================================================================}
 begin
   FFixedMass := False;
 end;
 
 {==============================================================================}
-function TDish.GetItem(Index: integer): TFoodMassed;
+function TDishItem.GetItem(Index: integer): TFoodMassed;
 {==============================================================================}
 begin
   Result := FContent[Index];
 end;
 
 {==============================================================================}
-function TDish.GetProp(Index: integer): real;
+function TDishItem.GetProp(Index: integer): real;
 {==============================================================================}
 var
   i: integer;
@@ -654,7 +653,7 @@ begin
 end;
 
 {==============================================================================}
-function TDish.GetRel(Index: integer): real;
+function TDishItem.GetRel(Index: integer): real;
 {==============================================================================}
 var
   RM: Real;
@@ -667,7 +666,7 @@ begin
 end;
 
 {==============================================================================}
-function TDish.RealMass(): real;
+function TDishItem.RealMass(): real;
 {==============================================================================}
 begin
   if FixedMass then
@@ -677,7 +676,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TDish.SetName(Value: string);
+procedure TDishItem.SetName(Value: string);
 {==============================================================================}
 begin
   if (Value <> FName) then
@@ -688,7 +687,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TDish.SetResultMass(const Value: real);
+procedure TDishItem.SetResultMass(const Value: real);
 {==============================================================================}
 var
   MinResultMass: Real;
