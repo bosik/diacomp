@@ -8,19 +8,19 @@ uses
   JsonVersionedSerializer,
   BusinessObjects;
 
-  function ParseVersionedFoodItem(json: TlkJSONbase): TFood;
+  function ParseVersionedFoodItem(json: TlkJSONbase): TFoodItem;
   function ParseVersionedFoodItems(json: TlkJSONlist): TFoodItemList;
 
-  function SerializeVersionedFoodItem(Item: TFood): TlkJSONobject;
+  function SerializeVersionedFoodItem(Item: TFoodItem): TlkJSONobject;
   function SerializeVersionedFoodItems(Items: TFoodItemList): TlkJSONlist;
 
 implementation
 
 {==============================================================================}
-function ParseFoodItem(json: TlkJSONobject): TFood;
+function ParseFoodItem(json: TlkJSONobject): TFoodItem;
 {==============================================================================}
 begin
-  Result := TFood.Create();
+  Result := TFoodItem.Create();
   Result.Name      := (json['name']  as TlkJSONstring).Value;
   Result.RelProts  := (json['prots'] as TlkJSONnumber).Value;
   Result.RelFats   := (json['fats']  as TlkJSONnumber).Value;
@@ -31,7 +31,7 @@ begin
 end;
 
 {==============================================================================}
-function ParseVersionedFoodItem(json: TlkJSONbase): TFood;
+function ParseVersionedFoodItem(json: TlkJSONbase): TFoodItem;
 {==============================================================================}
 var
   JsonObj: TlkJSONobject;
@@ -54,7 +54,7 @@ begin
 end;
 
 {==============================================================================}
-function SerializeFoodItem(Item: TFood): TlkJSONobject;
+function SerializeFoodItem(Item: TFoodItem): TlkJSONobject;
 {==============================================================================}
 begin
   Result := TlkJSONobject.Create();
@@ -68,7 +68,7 @@ begin
 end;
 
 {==============================================================================}
-function SerializeVersionedFoodItem(Item: TFood): TlkJSONobject;
+function SerializeVersionedFoodItem(Item: TFoodItem): TlkJSONobject;
 {==============================================================================}
 begin
   Result := TlkJSONobject.Create();

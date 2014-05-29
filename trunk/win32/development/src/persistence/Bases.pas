@@ -52,18 +52,18 @@ type
 
   TFoodBase = class(TArrayBase)
   private
-    function GetFood(Index: integer): TFood;
+    function GetFood(Index: integer): TFoodItem;
   protected
     function GetName(Index: integer): string; override;
     function GetTag(Index: integer): integer; override;
     procedure SetTag(Index, Value: integer); override;
   public
-    function Add(Food: TFood): integer; reintroduce;
+    function Add(Food: TFoodItem): integer; reintroduce;
     procedure LoadFromFile_Old(const FileName: string);
     procedure LoadFromFile_XML(const FileName: string);
     procedure SaveToFile(const FileName: string);
 
-    property Items[Index: integer]: TFood read GetFood; default;
+    property Items[Index: integer]: TFoodItem read GetFood; default;
   end;
 
   TDishBase = class(TArrayBase)
@@ -308,17 +308,17 @@ end;
 { TFoodBase }
 
 {==============================================================================}
-function TFoodBase.Add(Food: TFood): integer;
+function TFoodBase.Add(Food: TFoodItem): integer;
 {==============================================================================}
 begin
   Result := inherited Add(Food);
 end;
 
 {==============================================================================}
-function TFoodBase.GetFood(Index: integer): TFood;
+function TFoodBase.GetFood(Index: integer): TFoodItem;
 {==============================================================================}
 begin
-  Result := TFood(GetItem(Index));
+  Result := TFoodItem(GetItem(Index));
 end;
 
 {==============================================================================}
@@ -341,7 +341,7 @@ procedure TFoodBase.LoadFromFile_Old(const FileName: string);
 const
   FOODBASE_FORMAT = 'FBASEFMT';
 
-  procedure Read(Food: TFood; const S: string);
+  procedure Read(Food: TFoodItem; const S: string);
   var
     j: integer;
   begin
@@ -376,7 +376,7 @@ const
 var
   s: TStringList;
   i: integer;
-  Temp: TFood;
+  Temp: TFoodItem;
 begin
   s := TStringList.Create;
 
@@ -397,7 +397,7 @@ begin
 
     for i := 0 to s.Count - 1 do
     begin
-      Temp := TFood.Create();
+      Temp := TFoodItem.Create();
       Read(Temp, S[i]);
       Temp.OnChange := ItemChangeHandler;
       FBase[i] := Temp;
@@ -483,7 +483,7 @@ begin
         // TODO: debug only
         //CheckNode(FoodNode, i);
 
-        FBase[i] := TFood.Create();
+        FBase[i] := TFoodItem.Create();
 
         if (FoodNode.HasAttribute('id')) then
           Items[i].ID := FoodNode.Attributes['id']
