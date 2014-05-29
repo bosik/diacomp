@@ -1240,9 +1240,9 @@ end;
 procedure TForm1.CreateDish;
 {==============================================================================}
 var
-  Item: TDish;
+  Item: TDishItem;
 begin
-  Item := TDish.Create();
+  Item := TDishItem.Create();
   if FormDish.OpenDishEditor(Item, True, DishEditorRect) then
   begin
     Item.Modified();
@@ -1291,7 +1291,7 @@ end;
 procedure TForm1.EditDish(Index: integer);
 {==============================================================================}
 var
-  Item: TDish;
+  Item: TDishItem;
   OldName: string;
 begin
   // TODO: process everywhere in the same manner
@@ -1325,7 +1325,7 @@ end;
 procedure TForm1.RemoveFood(Index: integer);
 {==============================================================================}
 
-  function AskWarning(Food: TFoodItem; Dish: TDish): boolean;
+  function AskWarning(Food: TFoodItem; Dish: TDishItem): boolean;
   begin
     Result := MessageDlg(
       Format(MESSAGE_CONF_REMOVE_FOOD_USED, [Food.Name, Dish.Name]),
@@ -1368,14 +1368,14 @@ end;
 procedure TForm1.RemoveDish(Index: integer);
 {==============================================================================}
 
-  function AskWarning(Dish: TDish; DishParent: TDish): boolean;
+  function AskWarning(Dish: TDishItem; DishParent: TDishItem): boolean;
   begin
     Result := MessageDlg(
       Format(MESSAGE_CONF_REMOVE_FOOD_USED, [Dish.Name, DishParent.Name]),
       mtWarning, [mbYes, mbNo], 0) = mrYes;
   end;
 
-  function AskConfirm(Dish: TDish): boolean;
+  function AskConfirm(Dish: TDishItem): boolean;
   begin
     Result := MessageDlg(
       Format(MESSAGE_CONF_REMOVE_FOOD, [Dish.Name]),
@@ -1537,7 +1537,7 @@ var
     DishModFactor: integer;
 
     Food: TFoodItem;
-    Dish: TDish;
+    Dish: TDishItem;
     Recs: TRecordList;
   begin
     StartProc('TForm1.AnalyzeUsingDiary()');
@@ -1971,7 +1971,7 @@ var
 begin
   case IdentifyItem(Trim(ComboDiaryNew.Text), Item) of
     itFood: Temp := TFoodItem(Item);
-    itDish: Temp := TDish(Item).AsFoodRelative();
+    itDish: Temp := TDishItem(Item).AsFoodRelative();
   end;
 
   Expander.Add(DiaryFoodDishInput, Temp.Name);
@@ -2038,7 +2038,7 @@ begin
           begin
             case ItemType of
               itFood: Meal.Add(TFoodItem(Item).AsFoodMassed(Mass));
-              itDish: Meal.Add(TDish(Item).AsFoodMassed(Mass));
+              itDish: Meal.Add(TDishItem(Item).AsFoodMassed(Mass));
             end;
 
             Meal.Modified;
@@ -4094,7 +4094,7 @@ end;
 procedure TForm1.ItemCopyDishClick(Sender: TObject);
 {==============================================================================}
 var
-  Temp: TDish;
+  Temp: TDishItem;
   n,i: integer;
   OldName: string;
   NewName: string;
@@ -4109,7 +4109,7 @@ begin
       NewName := Format('%s (%d)', [OldName, i]);
     until DishBaseLocal.FindOne(NewName) = nil;
 
-    Temp := TDish.Create;
+    Temp := TDishItem.Create;
     Temp.CopyFrom(DishList[n]);
     Temp.Name := NewName;
     DishBaseLocal.Save(Temp);

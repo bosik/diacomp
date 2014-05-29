@@ -68,13 +68,13 @@ type
 
   TDishBase = class(TArrayBase)
   private
-    function GetDish(Index: integer): TDish;
+    function GetDish(Index: integer): TDishItem;
   protected
     function GetName(Index: integer): string; override;
     function GetTag(Index: integer): integer; override;
     procedure SetTag(Index, Value: integer); override;
   public
-    function Add(Dish: TDish): integer; reintroduce;
+    function Add(Dish: TDishItem): integer; reintroduce;
     procedure LoadFromFile_Old(const FileName: string);
     procedure LoadFromFile_XML(const FileName: string);
     procedure SaveToFile(const FileName: string);
@@ -83,7 +83,7 @@ type
     {#}function RenameFood(const OldName, NewName: string): boolean;
     function UsedFood(const FoodName: string): integer;
 
-    property Items[Index: integer]: TDish read GetDish; default;
+    property Items[Index: integer]: TDishItem read GetDish; default;
   end;
 
 implementation
@@ -617,7 +617,7 @@ end;
 { TDishBase }
 
 {==============================================================================}
-function TDishBase.Add(Dish: TDish): integer;
+function TDishBase.Add(Dish: TDishItem): integer;
 {==============================================================================}
 begin
   Result := inherited Add(Dish);
@@ -642,13 +642,13 @@ begin
 end;
 
 {==============================================================================}
-function TDishBase.GetDish(Index: integer): TDish;
+function TDishBase.GetDish(Index: integer): TDishItem;
 {==============================================================================}
 begin
   if (Index < 0) or (Index > High(FBase)) then
     raise ERangeError.CreateFmt('TDishBase.GetDish(): index out of bounds (%d)', [Index]);
 
-  Result := TDish(FBase[Index]);
+  Result := TDishItem(FBase[Index]);
 end;
 
 {==============================================================================}
@@ -712,7 +712,7 @@ begin
     begin
       inc(n);
       SetLength(FBase, n + 1);
-      FBase[n] := TDish.Create;
+      FBase[n] := TDishItem.Create;
       Items[n].OnChange := ItemChangeHandler;
       ///FBase[n].SilentMode := True;
       w := pos(':', s[i]);
@@ -780,7 +780,7 @@ var
   i, j: integer;
   Food: TFoodMassed;
   DS: char;
-  Dish: TDish;
+  Dish: TDishItem;
 begin
   (*
   { если файл не существует, база пуста }
@@ -829,7 +829,7 @@ begin
       for i := 0 to Root.ChildNodes.Count - 1 do
       begin
         DishNode := Root.ChildNodes[i];
-        Dish := TDish.Create();
+        Dish := TDishItem.Create();
         if DishNode.HasAttribute('id') then
           Dish.ID := DishNode.Attributes['id']
         else

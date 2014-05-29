@@ -21,8 +21,8 @@ type
     FModified: boolean;
     FFirstMod: cardinal;
     FLastMod: cardinal;
-    function Add(Dish: TDish): TCompactGUID;
-    function GetIndex(Dish: TDish): integer; overload;
+    function Add(Dish: TDishItem): TCompactGUID;
+    function GetIndex(Dish: TDishItem): integer; overload;
     function GetIndex(ID: TCompactGUID): integer; overload;
     procedure OnTimer(Sender: TObject);
     procedure Modified();
@@ -33,7 +33,7 @@ type
     procedure Delete(ID: TCompactGUID); override;
     function FindAll(ShowRemoved: boolean): TDishItemList; override;
     function FindAny(const Filter: string): TDishItemList; override;
-    function FindOne(const Name: string): TDish; override;
+    function FindOne(const Name: string): TDishItem; override;
     function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
     procedure Save(Item: TVersioned); override;
@@ -45,16 +45,16 @@ implementation
 { TDishbaseLocalDAO }
 
 {==============================================================================}
-function TDishbaseLocalDAO.Add(Dish: TDish): TCompactGUID;
+function TDishbaseLocalDAO.Add(Dish: TDishItem): TCompactGUID;
 {==============================================================================}
 var
   Index: integer;
-  Temp: TDish;
+  Temp: TDishItem;
 begin
   Index := GetIndex(Dish);
   if (Index = -1) then
   begin
-    Temp := TDish.Create;
+    Temp := TDishItem.Create;
     Temp.CopyFrom(Dish);
     FBase.Add(Temp);
     Result := Dish.ID;
@@ -124,7 +124,7 @@ begin
   for i := 0 to FBase.Count - 1 do
   if (ShowRemoved or not FBase[i].Deleted) then
   begin
-    Result[k] := TDish.Create;
+    Result[k] := TDishItem.Create;
     Result[k].CopyFrom(FBase[i]);
     inc(k);
   end;
@@ -146,7 +146,7 @@ begin
   begin
     inc(k);
     SetLength(Result, k);
-    Result[k - 1] := TDish.Create;
+    Result[k - 1] := TDishItem.Create;
     Result[k - 1].CopyFrom(FBase[i]);
   end;
   SetLength(Result, k);
@@ -161,7 +161,7 @@ begin
   for i := 0 to FBase.Count - 1 do
   if (FBase[i].ID = ID) then
   begin
-    Result := TDish.Create;
+    Result := TDishItem.Create;
     Result.CopyFrom(FBase[i]);
     Exit;
   end;
@@ -183,14 +183,14 @@ begin
   begin
     inc(k);
     SetLength(Result, k);
-    Result[k - 1] := TDish.Create;
+    Result[k - 1] := TDishItem.Create;
     Result[k - 1].CopyFrom(FBase[i]);
   end;
   SetLength(Result, k);
 end;
 
 {==============================================================================}
-function TDishbaseLocalDAO.FindOne(const Name: string): TDish;
+function TDishbaseLocalDAO.FindOne(const Name: string): TDishItem;
 {==============================================================================}
 var
   Index: integer;
@@ -198,14 +198,14 @@ begin
   Index := FBase.Find(Name);
   if (Index <> -1) then
   begin
-    Result := TDish.Create;
+    Result := TDishItem.Create;
     Result.CopyFrom(FBase[Index]);
   end else
     Result := nil;
 end;
 
 {==============================================================================}
-function TDishbaseLocalDAO.GetIndex(Dish: TDish): integer;
+function TDishbaseLocalDAO.GetIndex(Dish: TDishItem): integer;
 {==============================================================================}
 begin
   Result := FBase.GetIndex(Dish.ID);
@@ -256,11 +256,11 @@ end;
 procedure TDishbaseLocalDAO.Save(Item: TVersioned);
 {==============================================================================}
 var
-  Dish: TDish;
+  Dish: TDishItem;
   Index: integer;
   NameChanged: boolean;
 begin
-  Dish := Item as TDish;
+  Dish := Item as TDishItem;
 
   Index := GetIndex(Dish.ID);
   if (Index <> -1) then

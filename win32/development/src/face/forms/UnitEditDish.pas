@@ -89,7 +89,7 @@ type
   private
     { Private declarations }
     Modified: boolean;
-    ADish: TDish;
+    ADish: TDishItem;
     OK: boolean;
     ModeNew: boolean;
 
@@ -107,7 +107,7 @@ type
     { food/dish }
     procedure AddFood;
   public
-    function OpenDishEditor(var Dish: TDish; New: boolean; ShowInRect: TRect): boolean;
+    function OpenDishEditor(var Dish: TDishItem; New: boolean; ShowInRect: TRect): boolean;
   end;
 
 var
@@ -137,7 +137,7 @@ var
 { TFormEditDish }
 
 {==============================================================================}
-function TFormDish.OpenDishEditor(var Dish: TDish; New: boolean; ShowInRect: TRect): boolean;
+function TFormDish.OpenDishEditor(var Dish: TDishItem; New: boolean; ShowInRect: TRect): boolean;
 {==============================================================================}
 begin
   { установка размеров окна }
@@ -152,7 +152,7 @@ begin
     Top := Screen.Height - Height;
 
   { вывод }
-  ADish := TDish.Create;
+  ADish := TDishItem.Create;
   ADish.CopyFrom(Dish);
 
   DishP := True; //Value['DishP'];
@@ -613,7 +613,7 @@ begin
     begin
       case ItemType of
         itFood: Temp := TFoodItem(Item).AsFoodMassed(Mass);
-        itDish: Temp := TDish(Item).AsFoodMassed(Mass);
+        itDish: Temp := TDishItem(Item).AsFoodMassed(Mass);
         else raise Exception.Create('Invalid ItemType');
       end;
 
