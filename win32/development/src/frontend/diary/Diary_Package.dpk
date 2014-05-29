@@ -29,7 +29,8 @@ requires
   vcl,
   indy,
   MiscComp,
-  xmlrtl;
+  xmlrtl,
+  inet;
 
 contains
   ACCombo in 'ACCombo.pas',
@@ -39,6 +40,7 @@ contains
   TextInterface in '..\TextInterface.pas',
   BusinessObjects in '..\..\bo\BusinessObjects.pas',
   DiaryPage in '..\..\bo\DiaryPage.pas',
-  DiaryRecords in '..\..\bo\DiaryRecords.pas';
+  DiaryRecords in '..\..\bo\DiaryRecords.pas',
+  Bases in '..\..\persistence\Bases.pas';
 
 end.
