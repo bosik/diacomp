@@ -4,7 +4,9 @@ interface
 
 uses
   TestFrameWork,
-  BusinessObjects;
+  BusinessObjects,
+  DiaryWeb,
+  uLKjson;
 
 type
   TFoodDataTest = class(TTestCase)
@@ -27,6 +29,12 @@ type
   published
     procedure TestCopy;
     procedure TestWrite;
+  end;
+
+  TStdResponseTest = class(TTestCase)
+  published
+    procedure Test0;
+    procedure Test1;
   end;
 
 implementation
@@ -114,7 +122,36 @@ begin
   CheckEqualsString('Колбаса[0,1|0,2|0,3|0,4]:200', Food.Write());
 end;
 
+{ TStdResponseTest }
+
+procedure TStdResponseTest.Test0;
+const
+  //TXT = '{"field":"значение"}';
+  TXT = '{"field":"Р·РЅР°С‡РµРЅРёРµ"}';
+var
+  json: TlkJSONobject;
+  val: string;
+begin
+  json:= TlkJSON.ParseText(TXT) as TlkJSONobject;
+  val := json.getString('field');
+  CheckEqualsString('значение', val);
+end;
+
+procedure TStdResponseTest.Test1;
+const
+  RESP = '{"text":"тест 7"}';
+  JSON = '{"code":0,"resp":' + RESP + '}';
+var
+  utf8: string;
+  r: TStdResponse;
+begin
+  utf8 := UTF8Encode(JSON);
+  r := TStdResponse.Create(JSON);
+  CheckEqualsString(RESP, r.Response, 'Responses differs');
+end;
+
 initialization
   TestFramework.RegisterTest(TFoodDataTest.Suite);
   TestFramework.RegisterTest(TFoodMassedTest.Suite);
+  TestFramework.RegisterTest(TStdResponseTest.Suite);
 end.
