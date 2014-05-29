@@ -8,7 +8,7 @@ uses
   BusinessObjects,
   FoodbaseDAO,
   Bases,
-  DAO,
+  ObjectService,
   ExtCtrls;
 
 type

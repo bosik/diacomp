@@ -1,4 +1,4 @@
-unit DAO;
+unit ObjectService;
 
 interface
 
@@ -15,7 +15,7 @@ type
     constructor Create(Item: TVersioned);
   end;
 
-  TDAO = class
+  TObjectService = class
   public
     procedure Delete(ID: TCompactGUID); virtual; abstract;
     function FindChanged(Since: TDateTime): TVersionedList; virtual; abstract;
@@ -44,7 +44,7 @@ end;
 
 { TDAO }
 
-procedure TDAO.Save(Item: TVersioned);
+procedure TObjectService.Save(Item: TVersioned);
 var
   List: TVersionedList;
 begin

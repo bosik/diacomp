@@ -4,10 +4,10 @@ interface
 
 uses
   BusinessObjects,
-  DAO;
+  ObjectService;
 
 type
-  TDishbaseDAO = class (TDAO)
+  TDishbaseDAO = class (TObjectService)
     function FindAll(ShowRemoved: boolean): TDishItemList; virtual; abstract;
     function FindAny(const Filter: string): TDishItemList; virtual; abstract;
     function FindOne(const Name: string): TDishItem; virtual; abstract;
