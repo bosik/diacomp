@@ -60,7 +60,8 @@ uses
   UnitEditorIns in 'src\face\forms\UnitEditorIns.pas' {FormEditorIns},
   UnitEditorMeal in 'src\face\forms\UnitEditorMeal.pas' {FormEditorMeal},
   UnitEditorNote in 'src\face\forms\UnitEditorNote.pas' {FormEditorNote},
-  UnitLogViewer in 'src\face\forms\UnitLogViewer.pas' {FormLogViewer};
+  UnitLogViewer in 'src\face\forms\UnitLogViewer.pas' {FormLogViewer},
+  JsonVersionedSerializer in 'src\persistence\JsonVersionedSerializer.pas';
 
 {$R *.res}
 

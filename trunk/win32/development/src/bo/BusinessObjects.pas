@@ -16,7 +16,7 @@ type
     FDeleted: boolean;
   public
     constructor Create();
-    procedure CopyFrom(Source: TVersioned);
+    procedure CopyFrom(Source: TVersioned); virtual;
     procedure Modified();
 
     property ID: TCompactGUID read FID write FID;
@@ -53,7 +53,7 @@ type
     procedure SetName(const Value: string);
     procedure SetRel(Index: integer; const Value: real);
   public
-    procedure CopyFrom(Food: TFoodRelative);
+    procedure CopyFrom(Food: TVersioned); override;
     constructor Create;
     class function IsCorrectRel(const Value: real): boolean;
 
@@ -75,7 +75,7 @@ type
   public
     constructor Create; overload;
     constructor Create(const Name: string; const RelProts, RelFats, RelCarbs, RelValue, Mass: real); overload;
-    procedure CopyFrom(Food: TFoodMassed);
+    procedure CopyFrom(Food: TVersioned); override;
     class function IsCorrectMass(const Value: real): boolean;
 
     {*}procedure Read(const S: string);
@@ -98,7 +98,7 @@ type
     procedure SetFromTable(Value: boolean);
   public
     function AsFoodMassed(Mass: real): TFoodMassed;
-    procedure CopyFrom(Food: TFood);
+    procedure CopyFrom(Food: TVersioned); override;
     constructor Create;
 
     property FromTable: boolean read FFromTable write SetFromTable;
@@ -125,7 +125,7 @@ type
     function AsFoodMassed(Mass: real): TFoodMassed;
     function AsFoodRelative(): TFoodRelative;
     {#}procedure Clear();
-    procedure CopyFrom(Dish: TDish);
+    procedure CopyFrom(Dish: TVersioned); override;
     function Count(): integer;
     constructor Create;
     {#}procedure Delete(Index: integer);
@@ -153,6 +153,11 @@ type
 
   TDishItemList = array of TDish; // TODO: rename
 
+  function FoodItemListToVersionedList(const List: TFoodItemList): TVersionedList;
+  function VersionedListToFoodItemList(const List: TVersionedList): TFoodItemList;
+  function DishItemListToVersionedList(const List: TDishItemList): TVersionedList;
+  function VersionedListToDishItemList(const List: TVersionedList): TDishItemList;
+
 const
   FOOD_SEP          = '|';
   FOOD_RESERVED     = ['[', FOOD_SEP, ']', ':'];
@@ -161,6 +166,50 @@ const
   SYSTEM_CHARS      = FOODBASE_RESERVED + DISHBASE_RESERVED;
 
 implementation
+
+{==============================================================================}
+function FoodItemListToVersionedList(const List: TFoodItemList): TVersionedList;
+{==============================================================================}
+var
+  i: integer;
+begin
+  SetLength(Result, Length(List));
+  for i := 0 to High(Result) do
+    Result[i] := List[i];
+end;
+
+{==============================================================================}
+function VersionedListToFoodItemList(const List: TVersionedList): TFoodItemList;
+{==============================================================================}
+var
+  i: integer;
+begin
+  SetLength(Result, Length(List));
+  for i := 0 to High(Result) do
+    Result[i] := List[i] as TFood;
+end;
+
+{==============================================================================}
+function DishItemListToVersionedList(const List: TDishItemList): TVersionedList;
+{==============================================================================}
+var
+  i: integer;
+begin
+  SetLength(Result, Length(List));
+  for i := 0 to High(Result) do
+    Result[i] := List[i];
+end;
+
+{==============================================================================}
+function VersionedListToDishItemList(const List: TVersionedList): TDishItemList;
+{==============================================================================}
+var
+  i: integer;
+begin
+  SetLength(Result, Length(List));
+  for i := 0 to High(Result) do
+    Result[i] := List[i] as TDish;
+end;
 
 { TVersioned }
 
@@ -211,18 +260,22 @@ end;
 { TFoodRelative }
 
 {==============================================================================}
-procedure TFoodRelative.CopyFrom(Food: TFoodRelative);
+procedure TFoodRelative.CopyFrom(Food: TVersioned);
 {==============================================================================}
+var
+  TypedFood: TFoodRelative;
 begin
   if (Food = nil) then raise Exception.Create('TFoodRelative.CopyFrom(): Food is nil');
 
   inherited CopyFrom(Food);
 
-  Name     := Food.Name;
-  RelProts := Food.RelProts;
-  RelFats  := Food.RelFats;
-  RelCarbs := Food.RelCarbs;
-  RelValue := Food.RelValue;
+  TypedFood := Food as TFoodRelative;
+
+  Name     := TypedFood.Name;
+  RelProts := TypedFood.RelProts;
+  RelFats  := TypedFood.RelFats;
+  RelCarbs := TypedFood.RelCarbs;
+  RelValue := TypedFood.RelValue;
 end;
 
 {==============================================================================}
@@ -281,7 +334,7 @@ end;
 { TFoodMassed }
 
 {==============================================================================}
-procedure TFoodMassed.CopyFrom(Food: TFoodMassed);
+procedure TFoodMassed.CopyFrom(Food: TVersioned);
 {==============================================================================}
 begin
   inherited CopyFrom(Food);
@@ -386,13 +439,15 @@ begin
 end;
 
 {==============================================================================}
-procedure TFood.CopyFrom(Food: TFood);
+procedure TFood.CopyFrom(Food: TVersioned);
 {==============================================================================}
 begin
+  if (Food = nil) then raise Exception.Create('TFood.CopyFrom(): Food is nil');
+
   inherited CopyFrom(Food);
 
-  FFromTable := Food.FFromTable;
-  FTag := Food.FTag;
+  FFromTable := TFood(Food).FromTable;
+  FTag := TFood(Food).Tag;
 end;
 
 {==============================================================================}
@@ -483,31 +538,34 @@ begin
 end;
 
 {==============================================================================}
-procedure TDish.CopyFrom(Dish: TDish);
+procedure TDish.CopyFrom(Dish: TVersioned);
 {==============================================================================}
 var
   i: integer;
   Temp: TFoodMassed;
+  TypedDish: TDish;
 begin
   if (Dish = nil) then raise Exception.Create('TDish.CopyFrom(): Dish is nil');
 
   inherited CopyFrom(Dish);
 
-  Name := Dish.Name;
-  Tag := Dish.Tag;
-  FID := Dish.ID; 
+  TypedDish := Dish as TDish;
 
-  if Dish.FixedMass then
-    SetResultMass(Dish.RealMass)
+  Name := TypedDish.Name;
+  Tag := TypedDish.Tag;
+  FID := TypedDish.ID;
+
+  if TypedDish.FixedMass then
+    SetResultMass(TypedDish.RealMass)
   else
     EraseResultMass;
 
   Clear;
-  for i := 0 to Dish.Count - 1 do
+  for i := 0 to TypedDish.Count - 1 do
   begin
     { разрываем связку (копируем) }
     Temp := TFoodMassed.Create;
-    Temp.CopyFrom(Dish.Content[i]);
+    Temp.CopyFrom(TypedDish.Content[i]);
     Add(Temp);
   end;
 end;

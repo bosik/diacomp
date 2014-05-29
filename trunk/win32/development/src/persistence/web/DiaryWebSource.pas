@@ -26,7 +26,7 @@ type
     function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
-    procedure Save(const Recs: TRecordList); override;
+    procedure Save(const Recs: TVersionedList); override;
   end;
 
 implementation
@@ -75,6 +75,7 @@ begin
          Result := List[0];
        end;
     404: Result := nil;
+    else FClient.CheckResponse(Response);
   end;
 end;
 
@@ -84,16 +85,11 @@ function TDiaryWebSource.FindChanged(Since: TDateTime): TVersionedList;
 var
   Query, Resp: string;
 begin
-  {#}Log(VERBOUS, 'TDiaryWebSource.FindChanged(): started, since = "' + DateTimeToStr(Since, STD_DATETIME_FMT) + '"');
-
-  Query := FClient.GetApiURL() + 'diary/changes/?since=' + ChkSpace(DateTimeToStr(Since, STD_DATETIME_FMT));
-  {#}Log(VERBOUS, 'TDiaryWebSource.FindChanged(): quering ' + Query);
-
+  Query := FClient.GetApiURL() + 'diary/changes/?since=' + DateTimeToStr(Since, STD_DATETIME_FMT);
   Resp := FClient.DoGetSmart(query).Response;
   {#}Log(VERBOUS, 'TDiaryWebSource.FindChanged(): quered OK, Resp = "' + Resp + '"');
 
   Result := RecordToVersioned(ParseRecordList(Resp));
-  {#}Log(VERBOUS, 'TDiaryWebSource.FindChanged(): done OK');
 end;
 
 {==============================================================================}
@@ -103,29 +99,22 @@ var
   Query: string;
   Resp: string;
 begin
-  {#}Log(VERBOUS, 'TDiaryWebSource.FindPeriod: started');
-
   Query :=
     FClient.GetApiURL() + 'diary/period/?show_rem=0' +
-    '&start_time=' + ChkSpace(DateTimeToStr(TimeFrom, STD_DATETIME_FMT)) +
-    '&end_time=' + ChkSpace(DateTimeToStr(TimeTo, STD_DATETIME_FMT));
-
-  {#}Log(VERBOUS, 'TDiaryWebSource.FindPeriod: quering "' + Query + '"');
-
+    '&start_time=' + DateTimeToStr(TimeFrom, STD_DATETIME_FMT) +
+    '&end_time=' + DateTimeToStr(TimeTo, STD_DATETIME_FMT);
 
   Resp := FClient.DoGetSmart(query).Response;
   {#}Log(VERBOUS, 'TDiaryWebSource.FindPeriod(): quered OK, Resp = "' + Resp + '"');
 
   Result := ParseRecordList(Resp);
-  {#}Log(VERBOUS, 'TDiaryWebSource.FindPeriod(): done OK');
 end;
 
 {==============================================================================}
-procedure TDiaryWebSource.Save(const Recs: TRecordList);
+procedure TDiaryWebSource.Save(const Recs: TVersionedList);
 {==============================================================================}
 var
   Par: TParamList;
-  Msg: string;
   Response: TStdResponse;
 begin
   // заглушка
@@ -135,7 +124,7 @@ begin
   end;
 
   SetLength(Par, 1);
-  par[0] := 'items=' + JsonWrite(SerializeVersionedDiaryRecords(Recs));
+  par[0] := 'items=' + JsonWrite(SerializeVersionedDiaryRecords(VersionedToRecord(Recs)));
 
   Response := FClient.DoPutSmart(FClient.GetApiURL() + 'diary/', Par);
 

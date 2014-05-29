@@ -611,13 +611,13 @@ begin
     end;
 
     { база продуктов }
-   (* Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_FOODBASE;
+    Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_FOODBASE;
     Application.ProcessMessages;
     if (SyncSources(FoodBaseLocal, FoodBaseWeb, T - 1) > 0) then
     begin
       Form1.EventFoodbaseChanged(True);
     end;
-
+    (*
     { база блюд }
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_DISHBASE;
     Application.ProcessMessages;

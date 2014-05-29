@@ -188,6 +188,7 @@ begin
     TimeTo := TimeUTC + DeltaTime / MinPerDay;
     Recs := FSource.FindPeriod(TimeFrom, TimeTo);
     MinDist := 3 * DeltaTime / MinPerDay;
+    Result := nil;
 
     for i := 0 to High(Recs) do
     if (RecType = nil) or (RecType = Recs[i].RecType) then
@@ -199,11 +200,7 @@ begin
         Result := Recs[i];
       end;
     end;
-
-    Result := nil;
-  end
-
-
+  end;
 
   { определяем границы }
  (* if (Direction = sdForward) then
@@ -309,13 +306,13 @@ end;
 {==============================================================================}
 procedure TDiary.SaveToXML(const FileName: string);
 {==============================================================================}
-var
+{var
   XML: IXMLDocument;
   Page: TDiaryPage;
   Meal: TMealRecord;
   Root, PageNode, RecNode, ItemNode: IXMLNODE;
   i, j, k: integer;
-  DS: char;
+  DS: char;  }
 begin
  (* DS := SysUtils.DecimalSeparator;
   //SysUtils.DecimalSeparator := '.';

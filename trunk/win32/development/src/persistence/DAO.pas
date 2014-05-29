@@ -18,13 +18,13 @@ type
 
   TDAO = class
   public
+    procedure Delete(ID: TCompactGUID); virtual; abstract;
     function FindChanged(Since: TDateTime): TVersionedList; virtual; abstract;
-    function FindPeriod(TimeFrom, TimeTo: TDateTime): TVersionedList; virtual; abstract;
     function FindById(ID: TCompactGUID): TVersioned; virtual; abstract;
     procedure Save(const Items: TVersionedList); overload; virtual; abstract;
 
     // sugar
-    procedure Save(Item: TVersioned); overload;
+    procedure Save(Item: TVersioned); overload; virtual;
   end;
 
 implementation
