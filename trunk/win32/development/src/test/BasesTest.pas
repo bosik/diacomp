@@ -52,27 +52,27 @@ end;
 procedure TFoodBaseTest.TestAdd;
 var
   FoodBase: TFoodBase;
-  Food: TFood;
+  Food: TFoodItem;
   Index: integer;
 begin
   FoodBase := TFoodBase.Create();
 
-  Food := TFood.Create;
+  Food := TFoodItem.Create;
   Food.Name := 'яблоко';
   Index := FoodBase.Add(Food);
   CheckEquals(0, Index);
 
-  Food := TFood.Create;
+  Food := TFoodItem.Create;
   Food.Name := 'мандарин';
   Index := FoodBase.Add(Food);
   CheckEquals(0, Index);
 
-  Food := TFood.Create;
+  Food := TFoodItem.Create;
   Food.Name := 'јбрикос';
   Index := FoodBase.Add(Food);
   CheckEquals(0, Index);
 
-  Food := TFood.Create;
+  Food := TFoodItem.Create;
   Food.Name := '€йцо';
   Index := FoodBase.Add(Food);
   CheckEquals(3, Index);
@@ -97,23 +97,23 @@ end;
 procedure TFoodBaseTest.TestDelete;
 var
   FoodBase: TFoodBase;
-  Food: TFood;
+  Food: TFoodItem;
 begin
   FoodBase := TFoodBase.Create();
 
-  Food := TFood.Create;
+  Food := TFoodItem.Create;
   Food.Name := 'яблоко';
   FoodBase.Add(Food);
 
-  Food := TFood.Create;
+  Food := TFoodItem.Create;
   Food.Name := 'мандарин';
   FoodBase.Add(Food);
 
-  Food := TFood.Create;
+  Food := TFoodItem.Create;
   Food.Name := 'јбрикос';
   FoodBase.Add(Food);
 
-  Food := TFood.Create;
+  Food := TFoodItem.Create;
   Food.Name := '€йцо';
   FoodBase.Add(Food);
 
@@ -139,27 +139,27 @@ end;
 procedure TDishBaseTest.TestAdd;
 var
   DishBase: TDishBase;
-  Dish: TDish;
+  Dish: TDishItem;
   Index: integer;
 begin
   DishBase := TDishBase.Create();
 
-  Dish := TDish.Create;
+  Dish := TDishItem.Create;
   Dish.Name := 'яблочный пирог';
   Index := DishBase.Add(Dish);
   CheckEquals(0, Index);
 
-  Dish := TDish.Create;
+  Dish := TDishItem.Create;
   Dish.Name := 'макароны';
   Index := DishBase.Add(Dish);
   CheckEquals(0, Index);
 
-  Dish := TDish.Create;
+  Dish := TDishItem.Create;
   Dish.Name := 'Ѕлинчики';
   Index := DishBase.Add(Dish);
   CheckEquals(0, Index);
 
-  Dish := TDish.Create;
+  Dish := TDishItem.Create;
   Dish.Name := '€ичница';
   Index := DishBase.Add(Dish);
   CheckEquals(3, Index);
@@ -184,23 +184,23 @@ end;
 procedure TDishBaseTest.TestDelete;
 var
   DishBase: TDishBase;
-  Dish: TDish;
+  Dish: TDishItem;
 begin
   DishBase := TDishBase.Create();
 
-  Dish := TDish.Create;
+  Dish := TDishItem.Create;
   Dish.Name := 'яблочный пирог';
   DishBase.Add(Dish);
 
-  Dish := TDish.Create;
+  Dish := TDishItem.Create;
   Dish.Name := 'макароны';
   DishBase.Add(Dish);
 
-  Dish := TDish.Create;
+  Dish := TDishItem.Create;
   Dish.Name := 'Ѕлинчики';
   DishBase.Add(Dish);
 
-  Dish := TDish.Create;
+  Dish := TDishItem.Create;
   Dish.Name := '€ичница';
   DishBase.Add(Dish);
 

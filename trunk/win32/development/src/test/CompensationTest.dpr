@@ -15,14 +15,14 @@ uses
   DiaryDAO in '..\persistence\DiaryDAO.pas',
   DiaryPage in '..\bo\DiaryPage.pas',
   DiaryRecords in '..\bo\DiaryRecords.pas',
-  DiaryPageSerializer in '..\persistence\DiaryPageSerializer.pas',
+  DiaryPageSerializer in '..\backend\features\diary\DiaryPageSerializer.pas',
   DiaryLocalSourceTest in 'DiaryLocalSourceTest.pas',
   DiaryLocalSource in '..\persistence\local\DiaryLocalSource.pas',
   DiarySourceTest in 'DiarySourceTest.pas',
   DiaryWebSourceTest in 'DiaryWebSourceTest.pas',
   DiaryWebSource in '..\persistence\web\DiaryWebSource.pas',
   DiaryPageSerializerTest in 'DiaryPageSerializerTest.pas',
-  DAO in '..\persistence\DAO.pas',
+  ObjectService in '..\persistence\ObjectService.pas',
   JsonSerializer in '..\persistence\JsonSerializer.pas';
 
 {$R *.res}
