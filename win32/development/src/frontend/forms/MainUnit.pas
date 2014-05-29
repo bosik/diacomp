@@ -369,7 +369,7 @@ type
     procedure ComboDiaryNewDrawItem(Control: TWinControl;
       Index: Integer; Rect: TRect; State: TOwnerDrawState);
     procedure DiaryViewChange(Sender: TObject; EventType: TPageEventType;
-      Page: TDiaryPage; RecClass: TClassCustomRecord;
+      Page: TRecordList; RecClass: TClassCustomRecord;
       RecInstance: TCustomRecord);
     procedure FormResize(Sender: TObject);
     procedure SplitterBaseMoved(Sender: TObject);
@@ -4335,8 +4335,7 @@ begin
 end;
 
 procedure TForm1.DiaryViewChange(Sender: TObject; EventType: TPageEventType;
-  Page: TDiaryPage; RecClass: TClassCustomRecord;
-  RecInstance: TCustomRecord);
+  Page: TRecordList; RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
 begin
   { TODO: ѕроблема: по идее, лучше наблюдать за изменением дневника непосредственно -
   то есть за событием от типа TDiary. Ќо тогда получаетс€, что при изменении
