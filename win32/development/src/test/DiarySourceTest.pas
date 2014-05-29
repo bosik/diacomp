@@ -99,7 +99,7 @@ begin
     FreeAndNil(Source);
   SetupSource;
 
-  Source.Save(DemoRecs);
+  Source.Save(RecordToVersioned(DemoRecs));
 
   FreeAndNil(Source);
   SetupSource;
@@ -249,7 +249,7 @@ begin
   OrgRec.Modified;
   SetLength(Recs, 1);
   Recs[0] := OrgRec;
-  Source.Save(Recs);
+  Source.Save(RecordToVersioned(Recs));
 
   // -------------------------
   Source.Free;
