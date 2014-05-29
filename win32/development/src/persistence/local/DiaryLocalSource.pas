@@ -17,34 +17,6 @@ uses
   BusinessObjects;
 
 type
-  TPageData = class;
-  TPageDataList = array of TPageData;
-
-  // частично распарсенная страница
-  TPageData = class
-  private
-    procedure CopyFrom(ADate: TDate; ATimeStamp: TDateTime; AVersion: integer; const APage: string); overload;
-    procedure CopyFrom(APage: TPageData); overload;
-  public
-    Date: TDate;
-    TimeStamp: TDateTime;
-    Version: integer;
-    Page: string;
-
-    constructor Create(ADate: TDate; ATimeStamp: TDateTime; AVersion: integer; const APage: string); overload;
-    constructor Create(APage: TPageData); overload;
-
-    function Write(F: TFormatSettings): string; overload;
-    function WriteHeader(F: TFormatSettings): string;
-
-    class procedure Read(const S: string; Page: TPageData; F: TFormatSettings); overload;
-    {L} class procedure Read(S: TStrings; F: TFormatSettings; out Pages: TPageDataList); overload;
-    {L} class procedure Read(PageData: TPageData; Page: TDiaryPage); overload;
-    class procedure ReadHeader_(const S: string; PageData: TPageData; F: TFormatSettings); overload;
-    {L} class procedure Write(Page: TDiaryPage; PageData: TPageData); overload;
-    {L} class procedure Write(const Pages: TPageDataList; S: TStrings; F: TFormatSettings); overload;
-  end;
-
   // частично распарсенная запись
   TRecordData = class (TCustomRecord)
   public
@@ -94,164 +66,6 @@ var
   
 const
   ShowUpdateWarning = True;
-
-{ TPageData }
-
-{==============================================================================}
-procedure TPageData.CopyFrom(ADate: TDate; ATimeStamp: TDateTime; AVersion: integer; const APage: string);
-{==============================================================================}
-begin
-  Date := ADate;
-  TimeStamp := ATimeStamp;
-  Version := AVersion;
-  Page := APage;
-end;
-
-{==============================================================================}
-procedure TPageData.CopyFrom(APage: TPageData);
-{==============================================================================}
-begin
-  CopyFrom(APage.Date, APage.TimeStamp, APage.Version, APage.Page);
-end;
-
-{==============================================================================}
-constructor TPageData.Create(ADate: TDate; ATimeStamp: TDateTime;
-  AVersion: integer; const APage: string);
-{==============================================================================}
-begin
-  CopyFrom(ADate, ATimeStamp, AVersion, APage);
-end;
-
-{==============================================================================}
-constructor TPageData.Create(APage: TPageData);
-{==============================================================================}
-begin
-  CopyFrom(APage);
-end;
-
-{==============================================================================}
-function TPageData.Write(F: TFormatSettings): string;
-{==============================================================================}
-var
-  Header: string;
-  Body: string;
-begin
-  Header := WriteHeader(F);
-  Body := Page;
-  Result := Header + #13 + Body;
-end;
-
-{==============================================================================}
-function TPageData.WriteHeader(F: TFormatSettings): string;
-{==============================================================================}
-begin
-  TPageSerializer.WriteHeader(Date, Timestamp, Version, F, Result);
-end;
-
-{==============================================================================}
-class procedure TPageData.Read(const S: string; Page: TPageData; F: TFormatSettings);
-{==============================================================================}
-//var
-//  header, body: string;
-begin
-  //Separate(S, header, #13, body);
-  //TPageData.ReadHeader(header, Page, F);
-  //Page.Page := body;
-end;
-
-{==============================================================================}
-class procedure TPageData.Read(PageData: TPageData; Page: TDiaryPage);
-{==============================================================================}
-begin
-  with Page do
-  begin
-    Date := PageData.Date;
-    TimeStamp := PageData.TimeStamp;
-    Version := PageData.Version;
-    TPageSerializer.ReadBody(PageData.Page, Page);
-  end;
-
-
-  {
-
-  Switch: boolean;
-
-  ------
-
-  Switch := Switch and (not SilentMode);
-  SilentMode := SilentMode or Switch;
-
-  ...
-
-  SilentMode := SilentMode and (not Switch);
-
-  ------
-
-  OldMode := SilentMode;
-  if Switch then SilentMode := True;
-
-  ...
-
-  SilentMode := OldMode;
-
-  }
-end;
-
-{==============================================================================}
-class procedure TPageData.ReadHeader_(const S: string; PageData: TPageData; F: TFormatSettings);
-{==============================================================================}
-begin
-  TPageSerializer.ReadHeader(S, F, PageData.Date, PageData.TimeStamp, PageData.Version);
-end;
-
-{==============================================================================}
-class procedure TPageData.Read(S: TStrings; F: TFormatSettings; out Pages: TPageDataList);
-{==============================================================================}
-var
-  PageList: TStringsArray;
-  i: integer;
-begin
-  TPageSerializer.SeparatePages(S, PageList);
-
-  SetLength(Pages, Length(PageList));
-  for i := 0 to High(PageList) do
-  begin
-    Pages[i] := TPageData.Create;
-    TPageData.Read(PageList[i].Text, Pages[i], F);
-  end;
-end;
-
-{==============================================================================}
-class procedure TPageData.Write(Page: TDiaryPage; PageData: TPageData);
-{==============================================================================}
-begin
-  with Page do
-  begin
-    PageData.Date := Date;
-    PageData.TimeStamp := TimeStamp;
-    PageData.Version := Version;
-    TPageSerializer.WriteBody(Page, PageData.Page);
-  end;
-end;
-
-{==============================================================================}
-class procedure TPageData.Write(const Pages: TPageDataList; S: TStrings; F: TFormatSettings);
-{==============================================================================}
-var
-  i: integer;
-begin
-  // пустые страницы могут появляться после интенсивного тыкания по календарю,
-  // поэтому сохраняем только страницы с записями - МОЛОДЕЦ! :-)
-  // ---
-  // No. С таким подходом я не смогу перезаписать страницу на пустую. Пустое содержание - тоже содержание
-  // ---
-  /// Yes. Проверять нужно номер версии, а не содержание.
-
-  for i := 0 to High(Pages) do
-  // (Trim(Pages[i].Page) <> '') then
-  if (Pages[i].Version > 0) then
-      s.Add(Pages[i].Write(F));
-end;
 
 { TRecordData }
 
@@ -945,7 +759,7 @@ procedure TDiaryLocalSource.Save(const Recs: TVersionedList);
         dec(Result);
   end;
 
-  function Worry(PageOld, PageNew: TPageData): boolean;
+  {function Worry(PageOld, PageNew: TPageData): boolean;
   var
     Msg: string;
     MsgType: TMsgDlgType;
@@ -973,7 +787,7 @@ procedure TDiaryLocalSource.Save(const Recs: TVersionedList);
         Msg + #13+
         'Продолжить?',
          MsgType, [mbYes,mbNo],0) <> 6); // mrYes
-  end;
+  end; }
 
 var
   i: integer;

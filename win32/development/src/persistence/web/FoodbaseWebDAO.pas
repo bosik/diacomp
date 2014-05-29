@@ -8,10 +8,9 @@ uses
   BusinessObjects,
   FoodbaseDAO,
   DiaryWeb,
-  Bases,
   DiaryRoutines,
-  JsonFoodItemSerializer,
-  JsonSerializer;
+  JsonSerializer,
+  DiaryPageSerializer;
 
 type
   TFoodbaseWebDAO = class (TFoodbaseDAO)

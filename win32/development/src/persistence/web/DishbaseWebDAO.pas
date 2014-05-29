@@ -8,9 +8,9 @@ uses
   BusinessObjects,
   DishbaseDAO,
   DiaryWeb,
-  Bases,
   DiaryRoutines,
-  JsonSerializer;
+  JsonSerializer,
+  DiaryPageSerializer;
 
 type
   TDishbaseWebDAO = class (TDishbaseDAO)
@@ -30,19 +30,18 @@ type
 implementation
 
 {==============================================================================}
-function ParseDishItemsResponse(const S: string): TDishItemList;
+function ParseDishItemsResponse(S: string): TDishItemList;
 {==============================================================================}
 var
-  Response: TStdResponse;
   Json: TlkJSONlist;
 begin
-  Response := TStdResponse.Create(S);
   try
-    Json := Response.ConvertResponseToJson() as TlkJSONlist;
-    //Result := ParseDishItems(json);
-    //TODO 1: FIXME
+    if (s <> '') and (s[1] = '{') and (s[Length(S)] = '}') then
+      S := '[' + s + ']';
+
+    Json := TlkJSON.ParseText(S) as TlkJSONlist;
+    Result := ParseVersionedDishItems(json);
   finally
-    Response.Free;
     Json.Free;
   end;
 end;
@@ -65,7 +64,7 @@ function TDishbaseWebDAO.FindAll(ShowRemoved: boolean): TDishItemList;
 var
   Response: TStdResponse;
 begin
-  Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/all/?show_rem=' + IntToStr(byte(ShowRemoved)));
+  Response := FClient.DoGetSmart(FClient.GetApiURL() + 'dish/all/?show_rem=' + IntToStr(byte(ShowRemoved)));
   Result := ParseDishItemsResponse(Response.Response);
 end;
 
@@ -75,7 +74,7 @@ function TDishbaseWebDAO.FindAny(const Filter: string): TDishItemList;
 var
   Response: TStdResponse;
 begin
-  Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/search/?q=' + Filter);
+  Response := FClient.DoGetSmart(FClient.GetApiURL() + 'dish/search/?q=' + Filter);
   Result := ParseDishItemsResponse(Response.Response);
 end;
 
@@ -94,6 +93,7 @@ begin
            Result := List[0];
          end;
     404: Result := nil;
+    else FClient.CheckResponse(Response);
   end;
 end;
 
@@ -103,7 +103,7 @@ function TDishbaseWebDAO.FindChanged(Since: TDateTime): TVersionedList;
 var
   Response: TStdResponse;
 begin
-  Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/changes/?since=' + DateTimeToStr(Since, STD_DATETIME_FMT));
+  Response := FClient.DoGetSmart(FClient.GetApiURL() + 'dish/changes/?since=' + DateTimeToStr(Since, STD_DATETIME_FMT));
   Result := DishItemListToVersionedList(ParseDishItemsResponse(Response.Response));
 end;
 
@@ -140,9 +140,7 @@ begin
   end;
 
   SetLength(Par, 1);
-  //par[0] := 'items=' + JsonWrite(SerializeDishItems(Items));
-  par[0] := 'items=[]';
-  // TODO 1: RF: DishbaseWeb.Post()
+  par[0] := 'items=' + JsonWrite(SerializeVersionedDishItems(VersionedListToDishItemList(Items)));
 
   Response := FClient.DoPutSmart(FClient.GetApiURL() + 'dish/', Par);
 
