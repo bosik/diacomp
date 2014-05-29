@@ -5,11 +5,11 @@ unit DiarySync;
 interface
 
 uses
-  DAO, //
+  ObjectService, //
   BusinessObjects; //
 
   { возвращается количество синхронизированных объектов }
-  function SyncSources(Source1, Source2: TDAO; Since: TDateTime): integer;
+  function SyncSources(Source1, Source2: TObjectService; Since: TDateTime): integer;
 
 implementation
 
@@ -135,7 +135,7 @@ begin
 end;
 
 {==============================================================================}
-function SyncSources(Source1, Source2: TDAO; Since: TDateTime): integer;
+function SyncSources(Source1, Source2: TObjectService; Since: TDateTime): integer;
 {==============================================================================}
 var
   Items1, Items2: TVersionedList;

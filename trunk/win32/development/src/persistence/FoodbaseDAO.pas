@@ -4,10 +4,10 @@ interface
 
 uses
   BusinessObjects,
-  DAO;
+  ObjectService;
 
 type
-  TFoodbaseDAO = class (TDAO)
+  TFoodbaseDAO = class (TObjectService)
     function FindAll(ShowRemoved: boolean): TFoodItemList; virtual; abstract;
     function FindAny(const Filter: string): TFoodItemList; virtual; abstract;
     function FindOne(const Name: string): TFoodItem; virtual; abstract;

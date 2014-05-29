@@ -4,10 +4,10 @@ interface
 
 uses
   DiaryRecords,
-  DAO;
+  ObjectService;
 
 type
-  TDiaryDAO = class (TDAO)
+  TDiaryDAO = class (TObjectService)
   public
     procedure Add(const R: TCustomRecord); virtual; abstract;
     function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; virtual; abstract;

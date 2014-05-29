@@ -8,7 +8,7 @@ uses
   BusinessObjects,
   DishbaseDAO,
   Bases,
-  DAO,
+  ObjectService,
   ExtCtrls;
 
 type
