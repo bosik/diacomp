@@ -617,7 +617,7 @@ begin
     begin
       Form1.EventFoodbaseChanged(True);
     end;
-    (*
+
     { база блюд }
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_DISHBASE;
     Application.ProcessMessages;
@@ -625,7 +625,7 @@ begin
     begin
       Form1.EventDishbaseChanged(True, True);
       // TODO: workaround
-    end;    *)
+    end;
     
     { готово }
     Form1.StatusBar.Panels[3].Text := STATUS_RESULT_SYNC_DONE;
