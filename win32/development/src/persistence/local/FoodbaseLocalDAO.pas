@@ -7,7 +7,6 @@ uses
   Windows,
   BusinessObjects,
   FoodbaseDAO,
-  DiaryRoutines,
   Bases,
   DAO,
   ExtCtrls;

@@ -4079,7 +4079,7 @@ begin
     Temp := TFood.Create;
     Temp.CopyFrom(FoodList[n]);
     Temp.Name := NewName;
-    Temp.ID := DiaryRoutines.CreateCompactGUID;
+    Temp.ID := CreateCompactGUID;
     FoodBaseLocal.Save(Temp);
 
     EventFoodbaseChanged(True);
