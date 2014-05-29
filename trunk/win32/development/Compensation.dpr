@@ -33,7 +33,7 @@ uses
   AnalyzeInterface in 'src\backend\features\analyze\AnalyzeInterface.pas',
   DiaryDatabase in 'src\persistence\DiaryDatabase.pas',
   DiaryWeb in 'src\persistence\web\DiaryWeb.pas',
-  DiarySync in 'src\persistence\DiarySync.pas',
+  DiarySync in 'src\backend\features\sync\DiarySync.pas',
   DiaryDAO in 'src\backend\features\diary\DiaryDAO.pas',
   DiaryLocalSource in 'src\persistence\local\DiaryLocalSource.pas',
   BusinessObjects in 'src\bo\BusinessObjects.pas',
@@ -49,8 +49,8 @@ uses
   FoodbaseDAO in 'src\persistence\FoodbaseDAO.pas',
   FoodbaseLocalDAO in 'src\persistence\local\FoodbaseLocalDAO.pas',
   FoodbaseWebDAO in 'src\persistence\web\FoodbaseWebDAO.pas',
-  JsonSerializer in 'src\persistence\JsonSerializer.pas',
-  JsonFoodItemSerializer in 'src\persistence\JsonFoodItemSerializer.pas',
+  JsonSerializer in 'src\persistence\serializers\JsonSerializer.pas',
+  JsonFoodItemSerializer in 'src\persistence\serializers\JsonFoodItemSerializer.pas',
   ObjectService in 'src\persistence\ObjectService.pas',
   DishbaseDAO in 'src\persistence\DishbaseDAO.pas',
   DishbaseLocalDAO in 'src\persistence\local\DishbaseLocalDAO.pas',
@@ -61,7 +61,7 @@ uses
   UnitEditorMeal in 'src\frontend\forms\UnitEditorMeal.pas' {FormEditorMeal},
   UnitEditorNote in 'src\frontend\forms\UnitEditorNote.pas' {FormEditorNote},
   UnitLogViewer in 'src\frontend\forms\UnitLogViewer.pas' {FormLogViewer},
-  JsonVersionedSerializer in 'src\persistence\JsonVersionedSerializer.pas';
+  JsonVersionedSerializer in 'src\persistence\serializers\JsonVersionedSerializer.pas';
 
 {$R *.res}
 
