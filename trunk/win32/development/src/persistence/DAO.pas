@@ -4,7 +4,6 @@ interface
 
 uses
   SysUtils,
-  DiaryRoutines,
   BusinessObjects;
 
 type

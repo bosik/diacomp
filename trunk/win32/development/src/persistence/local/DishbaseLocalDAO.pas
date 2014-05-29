@@ -7,7 +7,6 @@ uses
   Windows,
   BusinessObjects,
   DishbaseDAO,
-  DiaryRoutines,
   Bases,
   DAO,
   ExtCtrls;

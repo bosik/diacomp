@@ -8,6 +8,10 @@ uses
   DiaryRoutines;
 
 type
+  TCompactGUID = string[32];
+
+  TGUIDList = array of TCompactGUID;
+
   TVersioned = class
   private
     FID: TCompactGUID;
@@ -153,6 +157,8 @@ type
 
   TDishItemList = array of TDish; // TODO: rename
 
+  function CreateCompactGUID(): TCompactGUID;
+
   function FoodItemListToVersionedList(const List: TFoodItemList): TVersionedList;
   function VersionedListToFoodItemList(const List: TVersionedList): TFoodItemList;
   function DishItemListToVersionedList(const List: TDishItemList): TVersionedList;
@@ -166,6 +172,19 @@ const
   SYSTEM_CHARS      = FOODBASE_RESERVED + DISHBASE_RESERVED;
 
 implementation
+
+{==============================================================================}
+function CreateCompactGUID(): TCompactGUID;
+{==============================================================================}
+var
+  MyGUID: TGUID;
+  S: string;
+begin
+  CreateGUID(MyGUID);
+  S := GUIDToString(MyGUID);
+  Result := Copy(S, 2, 8) + Copy(S, 11, 4) + Copy(S, 16, 4) + Copy(S, 21, 4) + Copy(S, 26, 12);
+  Result := LowerCase(Result);
+end;
 
 {==============================================================================}
 function FoodItemListToVersionedList(const List: TFoodItemList): TVersionedList;

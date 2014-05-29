@@ -13,10 +13,6 @@ uses
   Windows {GetThreadLocale};
 
 type
-  TCompactGUID = string[32];
-
-  TGUIDList = array of TCompactGUID;
-
   TIndexList = class
   private
     FData: array of integer;
@@ -130,7 +126,6 @@ type
   function BinarySearch(Value: Variant; Left, Right: integer; Getter: TGetterFunction): integer;
 
   procedure Wait(Time: cardinal);
-  function CreateCompactGUID(): TCompactGUID;
 
 var
   Decimal: char;
@@ -154,19 +149,6 @@ const
   ENERGY_CARBS = 4.1;
 
 implementation
-
-{==============================================================================}
-function CreateCompactGUID(): TCompactGUID;
-{==============================================================================}
-var
-  MyGUID: TGUID;
-  S: string;
-begin
-  CreateGUID(MyGUID);
-  S := GUIDToString(MyGUID);
-  Result := Copy(S, 2, 8) + Copy(S, 11, 4) + Copy(S, 16, 4) + Copy(S, 21, 4) + Copy(S, 26, 12);
-  Result := LowerCase(Result);
-end;
 
 { TIndexList }
 
