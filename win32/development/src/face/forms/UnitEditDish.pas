@@ -612,7 +612,7 @@ begin
     end else
     begin
       case ItemType of
-        itFood: Temp := TFood(Item).AsFoodMassed(Mass);
+        itFood: Temp := TFoodItem(Item).AsFoodMassed(Mass);
         itDish: Temp := TDish(Item).AsFoodMassed(Mass);
         else raise Exception.Create('Invalid ItemType');
       end;
@@ -650,7 +650,7 @@ procedure TFormDish.ShowFood(Food: TFoodMassed; Item: TListItem);
 var
   n: integer;
   s: string;
-  Temp: TFood;
+  Temp: TFoodItem;
 begin
   Item.Caption := Food.Name;
   

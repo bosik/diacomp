@@ -1221,9 +1221,9 @@ end;
 procedure TForm1.CreateFood;
 {==============================================================================}
 var
-  Item: TFood;
+  Item: TFoodItem;
 begin
-  Item := TFood.Create();
+  Item := TFoodItem.Create();
   if FormFood.OpenFoodEditor(Item, True, FoodEditorRect) then
   begin
     Item.Modified();
@@ -1259,7 +1259,7 @@ end;
 procedure TForm1.EditFood(Index: integer);
 {==============================================================================}
 var
-  Item: TFood;
+  Item: TFoodItem;
   OldName: string;
 begin
   if (Index < 0) or (Index > High(FoodList)) then
@@ -1325,14 +1325,14 @@ end;
 procedure TForm1.RemoveFood(Index: integer);
 {==============================================================================}
 
-  function AskWarning(Food: TFood; Dish: TDish): boolean;
+  function AskWarning(Food: TFoodItem; Dish: TDish): boolean;
   begin
     Result := MessageDlg(
       Format(MESSAGE_CONF_REMOVE_FOOD_USED, [Food.Name, Dish.Name]),
       mtWarning, [mbYes, mbNo], 0) = mrYes;
   end;
 
-  function AskConfirm(Food: TFood): boolean;
+  function AskConfirm(Food: TFoodItem): boolean;
   begin
     Result := MessageDlg(
       Format(MESSAGE_CONF_REMOVE_FOOD, [Food.Name]),
@@ -1536,7 +1536,7 @@ var
     DeltaTag: real;
     DishModFactor: integer;
 
-    Food: TFood;
+    Food: TFoodItem;
     Dish: TDish;
     Recs: TRecordList;
   begin
@@ -1970,7 +1970,7 @@ var
   Temp: TFoodRelative;
 begin
   case IdentifyItem(Trim(ComboDiaryNew.Text), Item) of
-    itFood: Temp := TFood(Item);
+    itFood: Temp := TFoodItem(Item);
     itDish: Temp := TDish(Item).AsFoodRelative();
   end;
 
@@ -2037,7 +2037,7 @@ begin
           end else
           begin
             case ItemType of
-              itFood: Meal.Add(TFood(Item).AsFoodMassed(Mass));
+              itFood: Meal.Add(TFoodItem(Item).AsFoodMassed(Mass));
               itDish: Meal.Add(TDish(Item).AsFoodMassed(Mass));
             end;
 
@@ -4061,7 +4061,7 @@ end;
 procedure TForm1.ItemCopyFoodClick(Sender: TObject);
 {==============================================================================}
 var
-  Temp: TFood;
+  Temp: TFoodItem;
   n,i: integer;
   OldName: string;
   NewName: string;
@@ -4076,7 +4076,7 @@ begin
       NewName := Format('%s (%d)', [OldName, i]);
     until FoodBaseLocal.FindOne(NewName) = nil;
 
-    Temp := TFood.Create;
+    Temp := TFoodItem.Create;
     Temp.CopyFrom(FoodList[n]);
     Temp.Name := NewName;
     Temp.ID := CreateCompactGUID;

@@ -94,8 +94,7 @@ type
 
   // для базы продуктов (TFoodRelative + свойство FromTable)
   // #entity
-  // TODO: rename to TFoodItem
-  TFood = class (TFoodRelative)
+  TFoodItem = class (TFoodRelative)
   private
     FFromTable: boolean;
     FTag: integer;  { для хранения частоты использования (transient) }
@@ -109,7 +108,7 @@ type
     property Tag: integer       read FTag       write FTag;
   end;
 
-  TFoodItemList = array of TFood;
+  TFoodItemList = array of TFoodItem;
 
   // #entity
   // TODO: rename to TDishItem
@@ -205,7 +204,7 @@ var
 begin
   SetLength(Result, Length(List));
   for i := 0 to High(Result) do
-    Result[i] := List[i] as TFood;
+    Result[i] := List[i] as TFoodItem;
 end;
 
 {==============================================================================}
@@ -445,7 +444,7 @@ end;
 { TFood }
 
 {==============================================================================}
-function TFood.AsFoodMassed(Mass: real): TFoodMassed;
+function TFoodItem.AsFoodMassed(Mass: real): TFoodMassed;
 {==============================================================================}
 begin
   Result := TFoodMassed.Create();
@@ -458,19 +457,19 @@ begin
 end;
 
 {==============================================================================}
-procedure TFood.CopyFrom(Food: TVersioned);
+procedure TFoodItem.CopyFrom(Food: TVersioned);
 {==============================================================================}
 begin
   if (Food = nil) then raise Exception.Create('TFood.CopyFrom(): Food is nil');
 
   inherited CopyFrom(Food);
 
-  FFromTable := TFood(Food).FromTable;
-  FTag := TFood(Food).Tag;
+  FFromTable := TFoodItem(Food).FromTable;
+  FTag := TFoodItem(Food).Tag;
 end;
 
 {==============================================================================}
-constructor TFood.Create;
+constructor TFoodItem.Create;
 {==============================================================================}
 begin
   inherited Create();
@@ -479,7 +478,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TFood.SetFromTable(Value: boolean);
+procedure TFoodItem.SetFromTable(Value: boolean);
 {==============================================================================}
 begin
   if (Value <> FFromTable) then

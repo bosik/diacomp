@@ -22,7 +22,7 @@ type
 
     function FindAll(ShowRemoved: boolean): TFoodItemList; override;
     function FindAny(const Filter: string): TFoodItemList; override;
-    function FindOne(const Name: string): TFood; override;
+    function FindOne(const Name: string): TFoodItem; override;
     function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
     procedure Save(const Items: TVersionedList); override;
@@ -109,7 +109,7 @@ begin
 end;
 
 {==============================================================================}
-function TFoodbaseWebDAO.FindOne(const Name: string): TFood;
+function TFoodbaseWebDAO.FindOne(const Name: string): TFoodItem;
 {==============================================================================}
 var
   Items: TFoodItemList;

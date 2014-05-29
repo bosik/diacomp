@@ -42,13 +42,13 @@ type
   protected
     procedure Designer; override;
   public
-    function OpenFoodEditor(Food: TFood; New: boolean; ShowInRect: TRect): boolean;
+    function OpenFoodEditor(Food: TFoodItem; New: boolean; ShowInRect: TRect): boolean;
     procedure ShowFoodInEditor;
   end;
 
 var
   FormFood: TFormFood;
-  AFood: TFood;
+  AFood: TFoodItem;
   ModeNew: boolean;
   OK: boolean;
 
@@ -68,7 +68,7 @@ uses MainUnit, UnitShadow;
 {$R *.dfm}
 
 {==============================================================================}
-function TFormFood.OpenFoodEditor(Food: TFood; New: boolean; ShowInRect: TRect): boolean;
+function TFormFood.OpenFoodEditor(Food: TFoodItem; New: boolean; ShowInRect: TRect): boolean;
 {==============================================================================}
 begin
   { установка размеров окна }
@@ -82,7 +82,7 @@ begin
     Top := Screen.Height-Height;  }
 
   { вывод }
-  AFood := TFood.Create;
+  AFood := TFoodItem.Create;
   AFood.CopyFrom(Food);
 
   ModeNew := New;   

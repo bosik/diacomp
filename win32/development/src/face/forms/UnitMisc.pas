@@ -349,7 +349,7 @@ var
   PercentFats: real;
   PercentCarbs: real;   
 
-  function F(Food: TFood): real; overload;
+  function F(Food: TFoodItem): real; overload;
   var
     summ: real;
   begin

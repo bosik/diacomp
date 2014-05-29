@@ -21,8 +21,8 @@ type
     FModified: boolean;
     FFirstMod: cardinal;
     FLastMod: cardinal;
-    function Add(Food: TFood): TCompactGUID;
-    function GetIndex(Food: TFood): integer; overload;
+    function Add(Food: TFoodItem): TCompactGUID;
+    function GetIndex(Food: TFoodItem): integer; overload;
     function GetIndex(ID: TCompactGUID): integer; overload;
     procedure OnTimer(Sender: TObject);
     procedure Modified();
@@ -33,7 +33,7 @@ type
     procedure Delete(ID: TCompactGUID); override;
     function FindAll(ShowRemoved: boolean): TFoodItemList; override;
     function FindAny(const Filter: string): TFoodItemList; override;
-    function FindOne(const Name: string): TFood; override;
+    function FindOne(const Name: string): TFoodItem; override;
 
     function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
@@ -46,16 +46,16 @@ implementation
 { TFoodbaseLocalDAO }
 
 {==============================================================================}
-function TFoodbaseLocalDAO.Add(Food: TFood): TCompactGUID;
+function TFoodbaseLocalDAO.Add(Food: TFoodItem): TCompactGUID;
 {==============================================================================}
 var
   Index: integer;
-  Temp: TFood;
+  Temp: TFoodItem;
 begin
   Index := GetIndex(Food);
   if (Index = -1) then
   begin
-    Temp := TFood.Create;
+    Temp := TFoodItem.Create;
     Temp.CopyFrom(Food);
     FBase.Add(Temp);
     Result := Food.ID;
@@ -125,7 +125,7 @@ begin
   for i := 0 to FBase.Count - 1 do
   if (ShowRemoved or not FBase[i].Deleted) then
   begin
-    Result[k] := TFood.Create;
+    Result[k] := TFoodItem.Create;
     Result[k].CopyFrom(FBase[i]);
     inc(k);
   end;
@@ -147,7 +147,7 @@ begin
   begin
     inc(k);
     SetLength(Result, k);
-    Result[k - 1] := TFood.Create;
+    Result[k - 1] := TFoodItem.Create;
     Result[k - 1].CopyFrom(FBase[i]);
   end;
   SetLength(Result, k);
@@ -162,7 +162,7 @@ begin
   for i := 0 to FBase.Count - 1 do
   if (FBase[i].ID = ID) then
   begin
-    Result := TFood.Create;
+    Result := TFoodItem.Create;
     Result.CopyFrom(FBase[i]);
     Exit;
   end;
@@ -175,7 +175,7 @@ function TFoodbaseLocalDAO.FindChanged(Since: TDateTime): TVersionedList;
 {==============================================================================}
 var
   i, k: integer;
-  Item: TFood;
+  Item: TFoodItem;
 begin
   SetLength(Result, FBase.Count);
   k := 0;
@@ -185,14 +185,14 @@ begin
   begin
     inc(k);
     SetLength(Result, k);
-    Result[k - 1] := TFood.Create;
+    Result[k - 1] := TFoodItem.Create;
     Result[k - 1].CopyFrom(FBase[i]);
   end;
   SetLength(Result, k);
 end;
 
 {==============================================================================}
-function TFoodbaseLocalDAO.FindOne(const Name: string): TFood;
+function TFoodbaseLocalDAO.FindOne(const Name: string): TFoodItem;
 {==============================================================================}
 var
   Index: integer;
@@ -200,14 +200,14 @@ begin
   Index := FBase.Find(Name);
   if (Index <> -1) then
   begin
-    Result := TFood.Create;
+    Result := TFoodItem.Create;
     Result.CopyFrom(FBase[Index]);
   end else
     Result := nil;
 end;
 
 {==============================================================================}
-function TFoodbaseLocalDAO.GetIndex(Food: TFood): integer;
+function TFoodbaseLocalDAO.GetIndex(Food: TFoodItem): integer;
 {==============================================================================}
 begin
   Result := FBase.GetIndex(Food.ID);
@@ -258,11 +258,11 @@ end;
 procedure TFoodbaseLocalDAO.Save(Item: TVersioned);
 {==============================================================================}
 var
-  Food: TFood;
+  Food: TFoodItem;
   Index: integer;
   NameChanged: boolean;
 begin
-  Food := Item as TFood;
+  Food := Item as TFoodItem;
 
   Index := GetIndex(Food.ID);
   if (Index <> -1) then
