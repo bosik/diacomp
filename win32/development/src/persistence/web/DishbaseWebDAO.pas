@@ -23,9 +23,9 @@ type
     function FindAll(ShowRemoved: boolean): TDishItemList; override;
     function FindAny(const Filter: string): TDishItemList; override;
     function FindOne(const Name: string): TDish; override;
-    function FindChanged(Since: TDateTime): TDishItemList; override;
-    function FindById(ID: TCompactGUID): TDish; override;
-    procedure Save(const Items: TDishItemList); override;
+    function FindChanged(Since: TDateTime): TVersionedList; override;
+    function FindById(ID: TCompactGUID): TVersioned; override;
+    procedure Save(const Items: TVersionedList); override;
   end;
 
 implementation
@@ -81,7 +81,7 @@ begin
 end;
 
 {==============================================================================}
-function TDishbaseWebDAO.FindById(ID: TCompactGUID): TDish;
+function TDishbaseWebDAO.FindById(ID: TCompactGUID): TVersioned;
 {==============================================================================}
 var
   Response: TStdResponse;
@@ -99,13 +99,13 @@ begin
 end;
 
 {==============================================================================}
-function TDishbaseWebDAO.FindChanged(Since: TDateTime): TDishItemList;
+function TDishbaseWebDAO.FindChanged(Since: TDateTime): TVersionedList;
 {==============================================================================}
 var
   Response: TStdResponse;
 begin
   Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/changes/?since=' + DateTimeToStr(Since, STD_DATETIME_FMT));
-  Result := ParseDishItemsResponse(Response.Response);
+  Result := DishItemListToVersionedList(ParseDishItemsResponse(Response.Response));
 end;
 
 {==============================================================================}
@@ -128,7 +128,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TDishbaseWebDAO.Save(const Items: TDishItemList);
+procedure TDishbaseWebDAO.Save(const Items: TVersionedList);
 {==============================================================================}
 var
   Par: TParamList;

@@ -23,26 +23,26 @@ type
     function FindAll(ShowRemoved: boolean): TFoodItemList; override;
     function FindAny(const Filter: string): TFoodItemList; override;
     function FindOne(const Name: string): TFood; override;
-    function FindChanged(Since: TDateTime): TFoodItemList; override;
-    function FindById(ID: TCompactGUID): TFood; override;
-    procedure Save(const Items: TFoodItemList); override;
+    function FindChanged(Since: TDateTime): TVersionedList; override;
+    function FindById(ID: TCompactGUID): TVersioned; override;
+    procedure Save(const Items: TVersionedList); override;
   end;
 
 implementation
 
 {==============================================================================}
-function ParseFoodItemsResponse(const S: string): TFoodItemList;
+function ParseFoodItemsResponse(S: string): TFoodItemList;
 {==============================================================================}
 var
-  Response: TStdResponse;
   Json: TlkJSONlist;
 begin
-  Response := TStdResponse.Create(S);
   try
-    Json := Response.ConvertResponseToJson() as TlkJSONlist;
-    Result := ParseFoodItems(json);
+    if (s <> '') and (s[1] = '{') and (s[Length(S)] = '}') then
+      S := '[' + s + ']';
+
+    Json := TlkJSON.ParseText(S) as TlkJSONlist;
+    Result := ParseVersionedFoodItems(json);
   finally
-    Response.Free;
     Json.Free;
   end;
 end;
@@ -80,7 +80,7 @@ begin
 end;
 
 {==============================================================================}
-function TFoodbaseWebDAO.FindById(ID: TCompactGUID): TFood;
+function TFoodbaseWebDAO.FindById(ID: TCompactGUID): TVersioned;
 {==============================================================================}
 var
   Response: TStdResponse;
@@ -94,17 +94,18 @@ begin
            Result := List[0];
          end;
     404: Result := nil;
+    else FClient.CheckResponse(Response);
   end;
 end;
 
 {==============================================================================}
-function TFoodbaseWebDAO.FindChanged(Since: TDateTime): TFoodItemList;
+function TFoodbaseWebDAO.FindChanged(Since: TDateTime): TVersionedList;
 {==============================================================================}
 var
   Response: TStdResponse;
 begin
   Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/changes/?since=' + DateTimeToStr(Since, STD_DATETIME_FMT));
-  Result := ParseFoodItemsResponse(Response.Response);
+  Result := FoodItemListToVersionedList(ParseFoodItemsResponse(Response.Response));
 end;
 
 {==============================================================================}
@@ -127,7 +128,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TFoodbaseWebDAO.Save(const Items: TFoodItemList);
+procedure TFoodbaseWebDAO.Save(const Items: TVersionedList);
 {==============================================================================}
 var
   Par: TParamList;
@@ -140,7 +141,7 @@ begin
   end;
 
   SetLength(Par, 1);
-  par[0] := 'items=' + JsonWrite(SerializeFoodItems(Items));
+  par[0] := 'items=' + JsonWrite(SerializeVersionedFoodItems(VersionedListToFoodItemList(Items)));
 
   Response := FClient.DoPutSmart(FClient.GetApiURL() + 'food/', Par);
 

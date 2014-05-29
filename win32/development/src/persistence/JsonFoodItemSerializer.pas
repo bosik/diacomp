@@ -5,13 +5,14 @@ interface
 uses
   uLkJSON,
   JsonSerializer,
+  JsonVersionedSerializer,
   BusinessObjects;
 
-  function ParseFoodItem(json: TlkJSONobject): TFood;
-  function ParseFoodItems(json: TlkJSONlist): TFoodItemList;
+  function ParseVersionedFoodItem(json: TlkJSONbase): TFood;
+  function ParseVersionedFoodItems(json: TlkJSONlist): TFoodItemList;
 
-  function SerializeFoodItem(Item: TFood): TlkJSONobject;
-  function SerializeFoodItems(Items: TFoodItemList): TlkJSONlist;
+  function SerializeVersionedFoodItem(Item: TFood): TlkJSONobject;
+  function SerializeVersionedFoodItems(Items: TFoodItemList): TlkJSONlist;
 
 implementation
 
@@ -30,14 +31,26 @@ begin
 end;
 
 {==============================================================================}
-function ParseFoodItems(json: TlkJSONlist): TFoodItemList;
+function ParseVersionedFoodItem(json: TlkJSONbase): TFood;
+{==============================================================================}
+var
+  JsonObj: TlkJSONobject;
+begin
+  JsonObj := json as TlkJSONobject;
+
+  Result := ParseFoodItem(JsonObj[REC_DATA] as TlkJSONobject);
+  ReadVersioned(JsonObj, Result);
+end;
+
+{==============================================================================}
+function ParseVersionedFoodItems(json: TlkJSONlist): TFoodItemList;
 {==============================================================================}
 var
   i: integer;
 begin
   SetLength(Result, json.Count);
   for i := 0 to json.Count - 1 do
-    Result[i] := ParseFoodItem(json.Child[i] as TlkJSONobject);
+    Result[i] := ParseVersionedFoodItem(json.Child[i] as TlkJSONobject);
 end;
 
 {==============================================================================}
@@ -55,13 +68,23 @@ begin
 end;
 
 {==============================================================================}
-function SerializeFoodItems(Items: TFoodItemList): TlkJSONlist;
+function SerializeVersionedFoodItem(Item: TFood): TlkJSONobject;
+{==============================================================================}
+begin
+  Result := TlkJSONobject.Create();
+  WriteVersioned(Item, Result);
+  Result.Add(REC_DATA, SerializeFoodItem(Item));
+end;
+
+{==============================================================================}
+function SerializeVersionedFoodItems(Items: TFoodItemList): TlkJSONlist;
 {==============================================================================}
 var
   i: integer;
 begin
   Result := TlkJSONlist.Create;          
   for i := Low(Items) to High(Items) do
-    Result.Add(SerializeFoodItem(Items[i]));
+    Result.Add(SerializeVersionedFoodItem(Items[i]));
 end;
+
 end.

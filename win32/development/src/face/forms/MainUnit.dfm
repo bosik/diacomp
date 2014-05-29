@@ -60,12 +60,13 @@ object Form1: TForm1
     Top = 0
     Width = 1241
     Height = 30
+    UseSystemFont = False
     ActionManager = ActionManager
     ColorMap.HighlightColor = 14410210
     ColorMap.BtnSelectedColor = clBtnFace
     ColorMap.UnusedColor = 14410210
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clMenuText
+    Font.Color = clWindowText
     Font.Height = -14
     Font.Name = 'Tahoma'
     Font.Style = []
@@ -614,7 +615,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.071313333330000000
+            Date = 40251.193371562500000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -1054,7 +1055,7 @@ object Form1: TForm1
           object LabelFoodBase: TLabel
             Left = 9
             Top = 9
-            Width = 535
+            Width = 112
             Height = 16
             Align = alTop
             Caption = 'LabelFoodBase'

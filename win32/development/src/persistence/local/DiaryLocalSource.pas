@@ -80,7 +80,7 @@ type
     function FindChanged(Since: TDateTime): TVersionedList; override; 
     function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
-    procedure Save(const Recs: TRecordList); override;
+    procedure Save(const Recs: TVersionedList); override;
 
     // свойства
     // TODO: think about it
@@ -907,7 +907,7 @@ end;
 procedure TDiaryLocalSource.Add(const R: TCustomRecord);
 {==============================================================================}
 var
-  Recs: TRecordList;
+  Recs: TVersionedList;
 begin
   SetLength(Recs, 1);
   Recs[0] := R;
@@ -931,7 +931,9 @@ begin
   end;
 end;
 
-procedure TDiaryLocalSource.Save(const Recs: TRecordList);
+{==============================================================================}
+procedure TDiaryLocalSource.Save(const Recs: TVersionedList);
+{==============================================================================}
 
  function PureLength(const S: string): integer;
   var
@@ -979,7 +981,7 @@ begin
   if (Length(Recs) > 0) then
   begin
     for i := 0 to High(Recs) do
-      AddToInternal(Recs[i]);
+      AddToInternal(Recs[i] as TCustomRecord);
 
     FModified := True;
     SaveToFile(FFileName);

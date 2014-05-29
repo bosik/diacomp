@@ -35,10 +35,10 @@ type
     function FindAll(ShowRemoved: boolean): TDishItemList; override;
     function FindAny(const Filter: string): TDishItemList; override;
     function FindOne(const Name: string): TDish; override;
-    function FindChanged(Since: TDateTime): TDishItemList; override;
-    function FindById(ID: TCompactGUID): TDish; override;
-    procedure Save(Item: TDish); override;
-    procedure Save(const Items: TDishItemList); override;
+    function FindChanged(Since: TDateTime): TVersionedList; override;
+    function FindById(ID: TCompactGUID): TVersioned; override;
+    procedure Save(Item: TVersioned); override;
+    procedure Save(const Items: TVersionedList); override;
   end;
 
 implementation
@@ -154,7 +154,7 @@ begin
 end;
 
 {==============================================================================}
-function TDishbaseLocalDAO.FindById(ID: TCompactGUID): TDish;
+function TDishbaseLocalDAO.FindById(ID: TCompactGUID): TVersioned;
 {==============================================================================}
 var
   i: integer;
@@ -171,7 +171,7 @@ begin
 end;
 
 {==============================================================================}
-function TDishbaseLocalDAO.FindChanged(Since: TDateTime): TDishItemList;
+function TDishbaseLocalDAO.FindChanged(Since: TDateTime): TVersionedList;
 {==============================================================================}
 var
   i, k: integer;
@@ -254,28 +254,31 @@ begin
 end;
 
 {==============================================================================}
-procedure TDishbaseLocalDAO.Save(Item: TDish);
+procedure TDishbaseLocalDAO.Save(Item: TVersioned);
 {==============================================================================}
 var
+  Dish: TDish;
   Index: integer;
   NameChanged: boolean;
 begin
-  Index := GetIndex(Item.ID);
+  Dish := Item as TDish;
+
+  Index := GetIndex(Dish.ID);
   if (Index <> -1) then
   begin
-    NameChanged := (Item.Name <> FBase[Index].Name);
-    FBase[Index].CopyFrom(Item);
+    NameChanged := (Dish.Name <> FBase[Index].Name);
+    FBase[Index].CopyFrom(Dish);
     if (NameChanged) then
     begin
       FBase.Sort;
     end;
     Modified();
   end else
-    Add(Item);
+    Add(Dish);
 end;
 
 {==============================================================================}
-procedure TDishbaseLocalDAO.Save(const Items: TDishItemList);
+procedure TDishbaseLocalDAO.Save(const Items: TVersionedList);
 {==============================================================================}
 var
   i: integer;

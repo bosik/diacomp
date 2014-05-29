@@ -13,7 +13,8 @@ uses
   DiaryRoutines, // TDate
   Bases,
   uLkJSON,
-  JsonSerializer;
+  JsonSerializer,
+  JsonVersionedSerializer;
 
 type
   TStringsArray = array of TStrings;
@@ -66,12 +67,6 @@ type
   function SerializeVersionedDiaryRecords(List: TRecordList): TlkJSONlist;
 
 const
-  REC_ID              = 'id';
-  REC_TIMESTAMP       = 'stamp';
-  REC_VERSION         = 'version';
-  REC_DELETED         = 'deleted';
-  REC_DATA            = 'data';
-
   REC_TYPE            = 'type';
   REC_TYPE_BLOOD      = 'blood';
   REC_TYPE_INS        = 'ins';

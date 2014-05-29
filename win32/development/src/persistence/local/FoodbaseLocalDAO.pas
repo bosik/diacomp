@@ -35,10 +35,11 @@ type
     function FindAll(ShowRemoved: boolean): TFoodItemList; override;
     function FindAny(const Filter: string): TFoodItemList; override;
     function FindOne(const Name: string): TFood; override;
-    function FindChanged(Since: TDateTime): TFoodItemList; override;
-    function FindById(ID: TCompactGUID): TFood; override;
-    procedure Save(Item: TFood);  override;
-    procedure Save(const Items: TFoodItemList); override;
+
+    function FindChanged(Since: TDateTime): TVersionedList; override;
+    function FindById(ID: TCompactGUID): TVersioned; override;
+    procedure Save(Item: TVersioned); override;
+    procedure Save(const Items: TVersionedList); override;
   end;
 
 implementation
@@ -154,7 +155,7 @@ begin
 end;
 
 {==============================================================================}
-function TFoodbaseLocalDAO.FindById(ID: TCompactGUID): TFood;
+function TFoodbaseLocalDAO.FindById(ID: TCompactGUID): TVersioned;
 {==============================================================================}
 var
   i: integer;
@@ -171,10 +172,11 @@ begin
 end;
 
 {==============================================================================}
-function TFoodbaseLocalDAO.FindChanged(Since: TDateTime): TFoodItemList;
+function TFoodbaseLocalDAO.FindChanged(Since: TDateTime): TVersionedList;
 {==============================================================================}
 var
   i, k: integer;
+  Item: TFood;
 begin
   SetLength(Result, FBase.Count);
   k := 0;
@@ -254,28 +256,31 @@ begin
 end;
 
 {==============================================================================}
-procedure TFoodbaseLocalDAO.Save(Item: TFood);
+procedure TFoodbaseLocalDAO.Save(Item: TVersioned);
 {==============================================================================}
 var
+  Food: TFood;
   Index: integer;
   NameChanged: boolean;
 begin
-  Index := GetIndex(Item.ID);
+  Food := Item as TFood;
+
+  Index := GetIndex(Food.ID);
   if (Index <> -1) then
   begin
-    NameChanged := (Item.Name <> FBase[Index].Name);
-    FBase[Index].CopyFrom(Item);
+    NameChanged := (Food.Name <> FBase[Index].Name);
+    FBase[Index].CopyFrom(Food);
     if (NameChanged) then
     begin
       FBase.Sort;
     end;
     Modified();
   end else
-    Add(Item);
+    Add(Food);
 end;
 
 {==============================================================================}
-procedure TFoodbaseLocalDAO.Save(const Items: TFoodItemList);
+procedure TFoodbaseLocalDAO.Save(const Items: TVersionedList);
 {==============================================================================}
 var
   i: integer;

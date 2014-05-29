@@ -49,12 +49,12 @@ type
     FOnline: boolean;
     FTimeShift: double;
 
-    function DoGet(const URL: string; Autocheck: boolean = True): TStdResponse;
-    function DoPost(const URL: string; const Par: TParamList; Autocheck: boolean = True): TStdResponse;
-    function DoPut(const URL: string; const Par: TParamList; Autocheck: boolean = True): TStdResponse;
-
-    procedure CheckResponse(const Response: TStdResponse);
+    function DoGet(URL: string; Autocheck: boolean = True): TStdResponse;
+    function DoPost(URL: string; const Par: TParamList; Autocheck: boolean = True): TStdResponse;
+    function DoPut(URL: string; const Par: TParamList; Autocheck: boolean = True): TStdResponse;
   public
+    procedure CheckResponse(const Response: TStdResponse);
+    
     function DoGetSmart(const URL: string): TStdResponse;
     function DoPostSmart(const URL: string; const Par: TParamList): TStdResponse;
     function DoPutSmart(const URL: string; const Par: TParamList): TStdResponse;
@@ -203,12 +203,13 @@ begin
 end;
 
 {==============================================================================}
-function TDiacompClient.DoGet(const URL: string; Autocheck: boolean): TStdResponse;
+function TDiacompClient.DoGet(URL: string; Autocheck: boolean): TStdResponse;
 {==============================================================================}
 var
   Tick: cardinal;
   S: string;
 begin
+  URL := ChkSpace(URL);
   {#}Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '")');
   {#} Tick := GetTickCount();
   S := FHTTP.Get(URL);
@@ -220,7 +221,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiacompClient.DoPost(const URL: string; const Par: TParamList; Autocheck: boolean): TStdResponse;
+function TDiacompClient.DoPost(URL: string; const Par: TParamList; Autocheck: boolean): TStdResponse;
 {==============================================================================}
 
   function PrintParams: string;
@@ -242,6 +243,7 @@ var
   Tick: cardinal;
   S: string;
 begin
+  URL := ChkSpace(URL);
   {#}Log(VERBOUS, 'TDiacompClient.DoPost("' + URL + '"), ' + PrintParams());
 
   Data := TStringList.Create;
@@ -264,7 +266,7 @@ begin
 end;
 
 {==============================================================================}
-function TDiacompClient.DoPut(const URL: string; const Par: TParamList; Autocheck: boolean): TStdResponse;
+function TDiacompClient.DoPut(URL: string; const Par: TParamList; Autocheck: boolean): TStdResponse;
 {==============================================================================}
 
   function PrintParams: string;
@@ -287,6 +289,7 @@ var
   Req: string;
   S: string;
 begin
+  URL := ChkSpace(URL);
   {#}Log(VERBOUS, 'TDiacompClient.DoPut("' + URL + '"), ' + PrintParams());
 
   Data := TStringList.Create;
