@@ -183,8 +183,8 @@ begin
   Items2 := Source2.FindChanged(Since);
   GetOverLists(Items1, Items2, Newer1, Newer2, Only1, Only2);
 
-  NewerSize1 := 0;
-  NewerSize2 := 0;
+  NewerSize1 := Length(Newer1);
+  NewerSize2 := Length(Newer2);
 
   for i := 0 to High(Only1) do
   begin
