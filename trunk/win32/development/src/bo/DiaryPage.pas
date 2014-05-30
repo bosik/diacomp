@@ -11,8 +11,6 @@ uses
 type
   { 2. ДНЕВНИК }
 
-  TRecordsList = array of TCustomRecord; // слава полиморфизму!
-
   TDiaryPage = class;
 
   TEventPageChanged = procedure(EventType: TPageEventType; Page: TDiaryPage; RecClass: TClassCustomRecord; RecInstance: TCustomRecord) of object;
@@ -22,7 +20,7 @@ type
     FDate: TDate;
     FTimeStamp: TDateTime;
     FVersion: integer;
-    {+}FRecs: TRecordsList;
+    {+}FRecs: TRecordList;
     {+}FSilentChange: boolean;
 
     FFreeTime: integer;
@@ -57,9 +55,7 @@ type
     
     // Listeners
     procedure AddChangeListener(Listener: TEventPageChanged);
-
-    procedure UpdatePostprand();
-
+    
     // свойства
     property Date: TDate read FDate write FDate;
     property TimeStamp: TDateTime read FTimeStamp write FTimeStamp;
@@ -316,7 +312,7 @@ begin
     end;
   end;
 
-  UpdatePostprand;
+  UpdatePostprand(FRecs, FInsPeriod, FStdMealPeriod, FShortMealPeriod);
 
   // информируем слушателей (ПОСЛЕ коррекций)
 
@@ -414,40 +410,6 @@ begin
   end;   *)
 
   Result := Trace(High(FRecs));
-end;
-
-{==============================================================================}
-procedure TDiaryPage.UpdatePostprand();
-{==============================================================================}
-var
-  CurFreeTime, i: integer;
-begin
-  //Log('TDiaryPage.UpdatePostPrand()');
-  // TODO: дублирующийся код (GetNextDayFreeTime)
-
-  CurFreeTime := FreeTime;
-
-  for i := 0 to Count - 1 do
-  begin
-    if (Recs[i].RecType = TInsRecord) then
-    begin
-      CurFreeTime := Max(CurFreeTime, Recs[i].Time + FInsPeriod);
-    end else
-
-    if (Recs[i].RecType = TMealRecord) then
-    begin
-      if TMealRecord(Recs[i]).Carbs > 0 then
-         if TMealRecord(Recs[i]).ShortMeal then
-           CurFreeTime := Max(CurFreeTime, Recs[i].Time + FShortMealPeriod)
-         else
-           CurFreeTime := Max(CurFreeTime, Recs[i].Time + FStdMealPeriod);
-    end else
-
-    if (Recs[i].RecType = TBloodRecord) then
-    begin
-      TBloodRecord(Recs[i]).PostPrand := (Recs[i].Time < CurFreeTime);
-    end;
-  end;
 end;
 
 end.

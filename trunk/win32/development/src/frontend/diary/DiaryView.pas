@@ -1542,6 +1542,9 @@ procedure TDiaryView.OpenPage(Page: TRecordList; ForceRepaint: boolean = False);
 
 begin
   FCurrentPage := Page;
+  // TODO: hardcode
+  UpdatePostprand(Page, 3.5 / HourPerDay, 3.5 / HourPerDay, 20 / MinPerDay);
+
   //Page.AddChangeListener(HandlePageChanged);
   RedrawIt;
 end;
