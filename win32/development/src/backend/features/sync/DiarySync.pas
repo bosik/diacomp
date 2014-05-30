@@ -67,11 +67,14 @@ begin
 end;
 
 {==============================================================================}
-procedure Add(const Item: TVersioned; var List: TVersionedList);
+procedure Add(const Item: TVersioned; var List: TVersionedList; var CurrentSize: integer);
 {==============================================================================}
 begin
-  SetLength(List, Length(List) + 1);
-  List[High(List)] := Item;
+  if (CurrentSize >= Length(List)) then
+    SetLength(List, Length(List) * 2 + 1);
+
+  List[CurrentSize] := Item;
+  inc(CurrentSize);
 end;
 
 {==============================================================================}
@@ -83,14 +86,21 @@ procedure GetOverLists(
 {==============================================================================}
 var
   i, j: integer;
+  NewerSize1, NewerSize2: integer;
+  OnlySize1, OnlySize2: integer;
 begin
   SortVersioned(items1);
   SortVersioned(items2);
 
-  SetLength(newer1, 0);
-  SetLength(newer2, 0);
-  SetLength(only1, 0);
-  SetLength(only2, 0);
+  SetLength(newer1, 16);
+  SetLength(newer2, 16);
+  SetLength(only1, 16);
+  SetLength(only2, 16);
+
+  NewerSize1 := 0;
+  NewerSize2 := 0;
+  OnlySize1 := 0;
+  OnlySize2 := 0;
 
   i := Low(items1);
   j := Low(items2);
@@ -100,19 +110,19 @@ begin
   begin
     if (items1[i].ID < items2[j].ID) then
     begin
-      Add(items1[i], only1);
+      Add(items1[i], only1, OnlySize1);
       inc(i);
     end else
     if (items1[i].ID > items2[j].ID) then
     begin
-      Add(items2[j], only2);
+      Add(items2[j], only2, OnlySize2);
       inc(j);
     end else
     begin
       if (items1[i].Version > items2[j].Version) then
-        Add(items1[i], newer1) else
+        Add(items1[i], newer1, NewerSize1) else
       if (items1[i].Version < items2[j].Version) then
-        Add(items2[j], newer2);
+        Add(items2[j], newer2, NewerSize2);
 
       inc(i);
       inc(j);
@@ -122,31 +132,59 @@ begin
   // finish first list
   while (i <= High(items1)) do
   begin
-    Add(items1[i], only1);
+    Add(items1[i], only1, OnlySize1);
     inc(i);
   end;
 
   // finish second list
   while (j <= High(items2)) do
   begin
-    Add(items2[j], only2);
+    Add(items2[j], only2, OnlySize2);
     inc(j);
   end;
+
+  SetLength(Newer1, NewerSize1);
+  SetLength(Newer2, NewerSize2);
+  SetLength(Only1, OnlySize1);
+  SetLength(Only2, OnlySize2);
 end;
 
 {==============================================================================}
 function SyncSources(Source1, Source2: TObjectService; Since: TDateTime): integer;
 {==============================================================================}
+const
+  MAX_BLOCK_SIZE = 100;
+
+  procedure BlockSave(Data: TVersionedList; Source: TObjectService);
+  var
+    Start, Count: integer;
+  begin
+    Start := 0;
+    while (Start <= High(Data)) do
+    begin
+      if (Start + MAX_BLOCK_SIZE <= High(Data)) then
+        Count := MAX_BLOCK_SIZE
+      else
+        Count := High(Data) - Start + 1;
+      Source.Save(Copy(Data, Start, Count));
+      Start := Start + MAX_BLOCK_SIZE;
+    end;
+  end;
+
 var
   Items1, Items2: TVersionedList;
   Newer1, Newer2: TVersionedList;
   Only1, Only2: TVersionedList;
   i, j: integer;
   T1, T2: TVersioned;
+  NewerSize1, NewerSize2: integer;
 begin
   Items1 := Source1.FindChanged(Since);
   Items2 := Source2.FindChanged(Since);
   GetOverLists(Items1, Items2, Newer1, Newer2, Only1, Only2);
+
+  NewerSize1 := 0;
+  NewerSize2 := 0;
 
   for i := 0 to High(Only1) do
   begin
@@ -154,9 +192,9 @@ begin
     T2 := Source2.FindById(T1.ID);
 
     if (T2 = nil) or (T2.Version < T1.Version) then
-      Add(T1, Newer1) else
+      Add(T1, Newer1, NewerSize1) else
     if (T2.Version > T1.Version) then
-      Add(T2, Newer2);
+      Add(T2, Newer2, NewerSize2);
   end;
 
   for j := 0 to High(Only2) do
@@ -165,14 +203,22 @@ begin
     T1 := Source1.FindById(T2.ID);
 
     if (T1 = nil) or (T1.Version < T2.Version) then
-      Add(T2, Newer2) else
+      Add(T2, Newer2, NewerSize2) else
     if (T1.Version > T2.Version) then
-      Add(T1, Newer1);
+      Add(T1, Newer1, NewerSize1);
   end;
 
-  Source1.Save(Newer2);
-  Source2.Save(Newer1);
+  SetLength(Newer1, NewerSize1);
+  SetLength(Newer2, NewerSize2);
+
+  BlockSave(Newer2, Source1);
+  BlockSave(Newer1, Source2);
   Result := Length(Newer1) + Length(Newer2);
+
+  for i := 0 to High(Newer1) do
+    Newer1[i].Free;       
+  for i := 0 to High(Newer2) do
+    Newer2[i].Free;
 
   // TODO: раньше здесь стояло определение минимальной даты загруженной
   // страницы и последующее UpdatePostPrand от неё
