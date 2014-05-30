@@ -91,15 +91,14 @@ procedure ExtractRecords(Base: TDiaryDAO; TimeFrom, TimeTo: TDateTime;
 var
   i,j: integer;
   Date: TDate;
-  PageBaseTime: integer;
   Items: TRecordList;
 
-  PrevBloodTime: integer;
+  PrevBloodTime: TDateTime;
   PrevBloodValue: real;
 
   Prots,Fats,Carbs,CurCarbs,MaxCarbs: real;
   Ins,CurIns,MaxIns: real;
-  TimeF,TimeI: integer;
+  TimeF,TimeI: TDateTime;
   TimeShift: integer;
   MealDate: TDate;
 
@@ -115,6 +114,11 @@ var
     TimeI := -1;
   end;
 
+  function GetAbsLocalMinutes(Time: TDateTime): integer;
+  begin
+    Result := Round(UTCToLocal(Time) * MinPerDay);
+  end;
+
 begin
   SetLength(List, 0);
 
@@ -126,6 +130,8 @@ begin
   { обработка }
 
   Items := Base.FindPeriod(TimeFrom, TimeTo);
+  // TODO: hardcode
+  UpdatePostprand(Items, 3.5 / HourPerDay, 3.5 / HourPerDay, 20 / MinPerDay);
 
   { 1. Создаём RecList, считая время в минутах от 01/01/1899 }
   for i := Low(Items) to High(Items) do
@@ -137,7 +143,7 @@ begin
       if (CurIns > MaxIns) then
       begin
         MaxIns := CurIns;
-        TimeI := PageBaseTime + Items[i].Time;
+        TimeI := Items[i].NativeTime;
       end;
     end else
     if (Items[i].RecType = TMealRecord) then
@@ -149,7 +155,7 @@ begin
       if (CurCarbs > MaxCarbs) then
       begin
         MaxCarbs := CurCarbs;
-        TimeF := PageBaseTime + Items[i].Time;
+        TimeF := Items[i].NativeTime;
         MealDate := Date;
       end;
     end else
@@ -159,7 +165,7 @@ begin
     begin
       if (PrevBloodValue = -1) then
       begin
-        PrevBloodTime := PageBaseTime + TBloodRecord(Items[i]).Time;
+        PrevBloodTime := TBloodRecord(Items[i]).NativeTime;
         PrevBloodValue := TBloodRecord(Items[i]).Value;
         InitCounters;
       end else
@@ -174,27 +180,27 @@ begin
         begin
           j := length(List);
           SetLength(List,j+1);
-          List[j].BloodInTime := PrevBloodTime;
+          List[j].BloodInTime := GetAbsLocalMinutes(PrevBloodTime);
           List[j].BloodInValue := PrevBloodValue;
-          List[j].InsTime := TimeI;  { абсолютное время }
+          List[j].InsTime :=  GetAbsLocalMinutes(TimeI);  { абсолютное время }
           List[j].InsValue := Ins;
-          List[j].FoodTime := TimeF; { абсолютное время }
+          List[j].FoodTime := GetAbsLocalMinutes(TimeF); { абсолютное время }
           List[j].Prots := Prots;
           List[j].Fats := Fats;
           List[j].Carbs := Carbs;
-          List[j].BloodOutTime := PageBaseTime + Items[i].Time;
+          List[j].BloodOutTime := GetAbsLocalMinutes(Items[i].Time);
           List[j].BloodOutValue := TBloodRecord(Items[i]).Value;
           List[j].Date := MealDate;
         end;
 
         { подготовка к следующему циклу }
-        PrevBloodTime := PageBaseTime + Items[i].Time;
+        PrevBloodTime := Items[i].NativeTime;
         PrevBloodValue := TBloodRecord(Items[i]).Value;
         InitCounters;
       end else
       begin
         { замер нормальный, но перед ним ни еды, ни инсулина }
-        PrevBloodTime := PageBaseTime + TBloodRecord(Items[i]).Time;
+        PrevBloodTime := TBloodRecord(Items[i]).NativeTime;
         PrevBloodValue := TBloodRecord(Items[i]).Value;
         InitCounters;
       end;

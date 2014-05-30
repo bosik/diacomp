@@ -3,6 +3,7 @@ unit DiaryRecords;
 interface
 
 uses
+  Math,
   BusinessObjects,
   DiaryRoutines,
   SysUtils,
@@ -117,6 +118,8 @@ type
   function RecordToVersioned(const List: TRecordList): TVersionedList;
   function VersionedToRecord(const Item: TVersioned): TCustomRecord; overload;
   function VersionedToRecord(const List: TVersionedList): TRecordList; overload;
+
+  procedure UpdatePostprand(const Recs: TRecordList; InsPeriod, StdMealPeriod, ShortMealPeriod: Real);
 
 implementation
 
@@ -511,6 +514,41 @@ begin
   if (R[i].REcType = TInsRecord) then
   begin
     TotalIns := TotalIns + TInsRecord(R[i]).Value;
+  end;
+end;
+
+{==============================================================================}
+procedure UpdatePostprand(const Recs: TRecordList; InsPeriod, StdMealPeriod, ShortMealPeriod: Real);
+{==============================================================================}
+var
+  i: integer;
+  CurFreeTime: TDateTime;
+begin
+  //Log('TDiaryPage.UpdatePostPrand()');
+  // TODO: дублирующийся код (GetNextDayFreeTime)
+
+  CurFreeTime := 0.0;
+
+  for i := Low(Recs) to High(Recs) do
+  begin
+    if (Recs[i].RecType = TInsRecord) then
+    begin
+      CurFreeTime := Max(CurFreeTime, Recs[i].NativeTime + InsPeriod);
+    end else
+
+    if (Recs[i].RecType = TMealRecord) then
+    begin
+      if TMealRecord(Recs[i]).Carbs > 0 then
+         if TMealRecord(Recs[i]).ShortMeal then
+           CurFreeTime := Max(CurFreeTime, Recs[i].NativeTime + ShortMealPeriod)
+         else
+           CurFreeTime := Max(CurFreeTime, Recs[i].NativeTime + StdMealPeriod);
+    end else
+
+    if (Recs[i].RecType = TBloodRecord) then
+    begin
+      TBloodRecord(Recs[i]).PostPrand := (Recs[i].NativeTime < CurFreeTime);
+    end;
   end;
 end;
 
