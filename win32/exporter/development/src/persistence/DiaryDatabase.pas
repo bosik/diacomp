@@ -369,7 +369,7 @@ procedure TDiary.SaveToJSON(const FileName: string);
 
   function BlockFood(R: TFoodMassed): string;
   begin
-    Result := Format('{"name":"%s","prots":"%.1f","fats":"%.1f","carbs":"%.1f","value":"%.1f","mass":"%.1f"}',
+    Result := Format('{"name":"%s","prots":%.2f,"fats":%.2f,"carbs":%.2f,"value":%.2f,"mass":%.1f}',
       [Escape(R.Name), R.RelProts, R.RelFats, R.RelCarbs, R.RelValue, R.Mass]);
   end;
 
