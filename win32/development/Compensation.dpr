@@ -50,7 +50,6 @@ uses
   FoodbaseLocalDAO in 'src\persistence\local\FoodbaseLocalDAO.pas',
   FoodbaseWebDAO in 'src\persistence\web\FoodbaseWebDAO.pas',
   JsonSerializer in 'src\persistence\serializers\JsonSerializer.pas',
-  JsonFoodItemSerializer in 'src\persistence\serializers\JsonFoodItemSerializer.pas',
   ObjectService in 'src\persistence\ObjectService.pas',
   DishbaseDAO in 'src\persistence\DishbaseDAO.pas',
   DishbaseLocalDAO in 'src\persistence\local\DishbaseLocalDAO.pas',
