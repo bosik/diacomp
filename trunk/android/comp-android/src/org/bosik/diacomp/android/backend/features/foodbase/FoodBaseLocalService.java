@@ -448,22 +448,27 @@ public class FoodBaseLocalService implements FoodBaseService
 		{
 			for (Versioned<FoodItem> item : items)
 			{
-				// Versioned<FoodItem> founded = findById(item.getId());
-				// if ((founded == null) || founded.isDeleted())
-				// {
-				// throw new NotFoundException(item.getId());
-				// }
-
 				ContentValues newValues = new ContentValues();
 				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
 				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
 				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, item.isDeleted());
-				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
+				String content = serializer.write(item.getData());
+				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, content);
 				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE, item.getData().getName());
 
-				String[] args = new String[] { item.getId() };
-				resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues,
-						DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?", args);
+				if (findById(item.getId()) != null)
+				{
+					Log.v(TAG, "Updating item " + item.getId() + ": " + content);
+					String clause = DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
+					String[] args = new String[] { item.getId() };
+					resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, clause, args);
+				}
+				else
+				{
+					Log.v(TAG, "Inserting item " + item.getId() + ": " + content);
+					newValues.put(DiaryContentProvider.COLUMN_FOODBASE_GUID, item.getId());
+					resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues);
+				}
 			}
 
 			for (Versioned<FoodItem> item : items)
