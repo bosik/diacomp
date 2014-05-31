@@ -1,8 +1,8 @@
 package org.bosik.diacomp.android.frontend.activities;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import org.bosik.diacomp.android.BuildConfig;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.HardcodedFoodbase;
@@ -419,28 +419,71 @@ public class ActivityMain extends Activity implements OnClickListener
 					break;
 				case R.id.buttonAuth:
 
-					new AsyncTask<Void, Void, List<Boolean>>()
+					new AsyncTask<Void, Void, Map<String, Integer>>()
 					{
-						@Override
-						protected List<Boolean> doInBackground(Void... arg0)
-						{
-							List<Boolean> result = new ArrayList<Boolean>(3);
+						final String	DIARY	= "diary";
+						final String	FOOD	= "food";
+						final String	DISH	= "dish";
 
-							result.add(Storage.syncDiary());
-							result.add(Storage.syncFoodbase());
-							result.add(Storage.syncDishbase());
+						@Override
+						protected Map<String, Integer> doInBackground(Void... arg0)
+						{
+							Map<String, Integer> result = new HashMap<String, Integer>();
+
+							result.put(DIARY, Storage.syncDiary());
+							result.put(FOOD, Storage.syncFoodbase());
+							result.put(DISH, Storage.syncDishbase());
 
 							return result;
 						}
 
 						@Override
-						protected void onPostExecute(List<Boolean> result)
+						protected void onPostExecute(Map<String, Integer> result)
 						{
-							UIUtils.showTip(ActivityMain.this, result.get(0) ? "Diary synced" : "Failed to sync diary");
-							UIUtils.showTip(ActivityMain.this, result.get(1) ? "Foodbase synced"
-									: "Failed to sync foodbase");
-							UIUtils.showTip(ActivityMain.this, result.get(2) ? "Dishbase synced"
-									: "Failed to sync dishbase");
+							Integer countDiary = result.get(DIARY);
+							if (countDiary == null)
+							{
+								UIUtils.showTip(ActivityMain.this, "Failed to sync diary");
+							}
+							else if (countDiary > 0)
+							{
+								UIUtils.showTip(ActivityMain.this,
+										String.format("Diary synced, transferred: %d", countDiary));
+							}
+							else
+							{
+								UIUtils.showTip(ActivityMain.this, "Diary synced [no changes]");
+							}
+
+							Integer countFood = result.get(FOOD);
+							if (countFood == null)
+							{
+								UIUtils.showTip(ActivityMain.this, "Failed to sync food base");
+							}
+							else if (countFood > 0)
+							{
+								UIUtils.showTip(ActivityMain.this,
+										String.format("Food base synced, transferred: %d", countFood));
+							}
+							else
+							{
+								UIUtils.showTip(ActivityMain.this, "Food base synced [no changes]");
+							}
+
+							Integer countDish = result.get(DISH);
+							if (countDish == null)
+							{
+								UIUtils.showTip(ActivityMain.this, "Failed to sync dish base");
+							}
+							else if (countDish > 0)
+							{
+								UIUtils.showTip(ActivityMain.this,
+										String.format("Dish base synced, transferred: %d", countDish));
+							}
+							else
+							{
+								UIUtils.showTip(ActivityMain.this, "Dish base synced [no changes]");
+							}
 						}
 					}.execute();
 
