@@ -19,10 +19,11 @@ import org.bosik.diacomp.core.utils.Utils;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 
 public class DishBaseLocalService implements DishBaseService
 {
-	// private static final String TAG = DishBaseLocalService.class.getSimpleName();
+	private static final String			TAG	= DishBaseLocalService.class.getSimpleName();
 
 	private final ContentResolver		resolver;
 	private final Serializer<DishItem>	serializer;
@@ -368,23 +369,43 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			for (Versioned<DishItem> item : items)
 			{
-				// Versioned<DishItem> founded = findById(item.getId());
-				// if ((founded == null) || founded.isDeleted())
-				// {
-				// throw new NotFoundException(item.getId());
-				// }
-
 				ContentValues newValues = new ContentValues();
 				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
 				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_VERSION, item.getVersion());
 				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DELETED, item.isDeleted());
-				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DATA, serializer.write(item.getData()));
+				String content = serializer.write(item.getData());
+				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DATA, content);
 				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE, item.getData().getName());
 
-				String[] args = new String[] { item.getId() };
-				resolver.update(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues,
-						DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?", args);
+				if (findById(item.getId()) != null)
+				{
+					Log.v(TAG, "Updating item " + item.getId() + ": " + content);
+					String clause = DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?";
+					String[] args = new String[] { item.getId() };
+					resolver.update(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues, clause, args);
+				}
+				else
+				{
+					Log.v(TAG, "Inserting item " + item.getId() + ": " + content);
+					newValues.put(DiaryContentProvider.COLUMN_DISHBASE_GUID, item.getId());
+					resolver.insert(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues);
+				}
 			}
+
+			// for (Versioned<DishItem> item : items)
+			// {
+			// for (Versioned<DishItem> x : memoryCache)
+			// {
+			// if (x.getId().equals(item.getId()))
+			// {
+			// x.setTimeStamp(item.getTimeStamp());
+			// x.setVersion(item.getVersion());
+			// x.setDeleted(item.isDeleted());
+			// x.setData(item.getData()); // FIXME: may be problem
+			// break;
+			// }
+			// }
+			// }
 		}
 		catch (PersistenceException e)
 		{
