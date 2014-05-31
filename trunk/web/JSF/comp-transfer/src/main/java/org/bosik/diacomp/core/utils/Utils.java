@@ -170,8 +170,15 @@ public class Utils
 		}
 		catch (ParseException e)
 		{
-			// TODO: don't wrap (or wrap time parser too)
-			throw new RuntimeException(e);
+			try
+			{
+				return STD_FORMAT_DATE_UTC.parse(time);
+			}
+			catch (ParseException e2)
+			{
+				// TODO: don't wrap (or wrap time parser too)
+				throw new RuntimeException(e2);
+			}
 		}
 	}
 
