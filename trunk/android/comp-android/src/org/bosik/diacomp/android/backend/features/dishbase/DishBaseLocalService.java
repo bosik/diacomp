@@ -1,5 +1,8 @@
 package org.bosik.diacomp.android.backend.features.dishbase;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,10 +26,14 @@ import android.util.Log;
 
 public class DishBaseLocalService implements DishBaseService
 {
-	private static final String			TAG	= DishBaseLocalService.class.getSimpleName();
+	private static final String				TAG	= DishBaseLocalService.class.getSimpleName();
 
-	private final ContentResolver		resolver;
-	private final Serializer<DishItem>	serializer;
+	private final ContentResolver			resolver;
+	private final Serializer<DishItem>		serializer;
+
+	// caching
+	// NOTE: this suppose DB can't be changed outside app
+	public static List<Versioned<DishItem>>	memoryCache;
 
 	// ====================================================================================
 
@@ -40,6 +47,10 @@ public class DishBaseLocalService implements DishBaseService
 
 		Parser<DishItem> s = new ParserDishItem();
 		serializer = new SerializerAdapter<DishItem>(s);
+		if (memoryCache == null)
+		{
+			memoryCache = findInDB(null, null, true, null);
+		}
 	}
 
 	private List<Versioned<DishItem>> parseItems(Cursor cursor)
@@ -119,6 +130,11 @@ public class DishBaseLocalService implements DishBaseService
 
 	private List<Versioned<DishItem>> find(String id, String name, boolean includeDeleted, Date modAfter)
 	{
+		return findInCache(id, name, includeDeleted, modAfter);
+	}
+
+	private List<Versioned<DishItem>> findInDB(String id, String name, boolean includeDeleted, Date modAfter)
+	{
 		long time = System.currentTimeMillis();
 
 		try
@@ -169,6 +185,44 @@ public class DishBaseLocalService implements DishBaseService
 			cursor.close();
 
 			// Log.i(TAG, "Search done in " + (System.currentTimeMillis() - time) + " msec");
+			return result;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	private List<Versioned<DishItem>> findInCache(String id, String name, boolean includeDeleted, Date modAfter)
+	{
+		long time = System.currentTimeMillis();
+
+		try
+		{
+			List<Versioned<DishItem>> result = new ArrayList<Versioned<DishItem>>();
+
+			for (Versioned<DishItem> item : memoryCache)
+			{
+				if (((id == null) || item.getId().equals(id))
+						&& ((name == null) || item.getData().getName().contains(name))
+						&& (includeDeleted || !item.isDeleted())
+						&& ((modAfter == null) || item.getTimeStamp().after(modAfter)))
+				{
+					result.add(new Versioned<DishItem>(item));
+				}
+			}
+
+			Collections.sort(result, new Comparator<Versioned<DishItem>>()
+			{
+				@Override
+				public int compare(Versioned<DishItem> arg0, Versioned<DishItem> arg1)
+				{
+					return arg0.getData().getName().compareTo(arg1.getData().getName());
+				}
+			});
+
+			// Log.i(TAG, "Search (cache) done in " + (System.currentTimeMillis() - time) +
+			// " msec");
 			return result;
 		}
 		catch (Exception e)
@@ -235,6 +289,8 @@ public class DishBaseLocalService implements DishBaseService
 			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DATA, serializer.write(item.getData()));
 
 			resolver.insert(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues);
+
+			memoryCache.add(new Versioned<DishItem>(item));
 		}
 		catch (PersistenceException e)
 		{
@@ -268,6 +324,15 @@ public class DishBaseLocalService implements DishBaseService
 			String[] args = new String[] { id };
 			resolver.update(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues,
 					DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?", args);
+
+			for (Versioned<DishItem> item : memoryCache)
+			{
+				if (item.getId().equals(id))
+				{
+					item.setDeleted(true);
+					break;
+				}
+			}
 		}
 		catch (PersistenceException e)
 		{
