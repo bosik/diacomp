@@ -196,7 +196,7 @@ public class Storage
 		timer.scheduleAtFixedRate(task, 0, interval);
 	}
 
-	public static boolean syncDiary()
+	public static Integer syncDiary()
 	{
 		try
 		{
@@ -206,16 +206,16 @@ public class Storage
 			Log.v(TAG, String.format("Diary synced in %d msec, total tranferred: %d",
 					System.currentTimeMillis() - time, syncDiaryItemsCount));
 			sinceDiary = new Date();
-			return true;
+			return syncDiaryItemsCount;
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return false;
+			return null;
 		}
 	}
 
-	public static boolean syncFoodbase()
+	public static Integer syncFoodbase()
 	{
 		try
 		{
@@ -225,16 +225,16 @@ public class Storage
 			Log.v(TAG, String.format("Foodbase synced in %d msec, total tranferred: %d", System.currentTimeMillis()
 					- time, syncFoodItemsCount));
 			sinceFoodbase = new Date();
-			return true;
+			return syncFoodItemsCount;
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return false;
+			return null;
 		}
 	}
 
-	public static boolean syncDishbase()
+	public static Integer syncDishbase()
 	{
 		try
 		{
@@ -244,12 +244,12 @@ public class Storage
 			Log.v(TAG, String.format("Dishbase synced in %d msec, total tranferred: %d", System.currentTimeMillis()
 					- time, syncDishItemsCount));
 			sinceDishbase = new Date();
-			return true;
+			return syncDishItemsCount;
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return false;
+			return null;
 		}
 	}
 
