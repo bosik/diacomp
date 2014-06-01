@@ -44,7 +44,7 @@ object FormEditorMeal: TFormEditorMeal
     Width = 120
     Height = 28
     Caption = 'ButtonOK'
-    TabOrder = 0
+    TabOrder = 3
     OnClick = ButtonOKClick
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
@@ -73,7 +73,7 @@ object FormEditorMeal: TFormEditorMeal
     Cancel = True
     Caption = 'ButtonCancel'
     ModalResult = 2
-    TabOrder = 1
+    TabOrder = 4
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
       0400000000006801000000000000000000001000000000000000000000000000
@@ -101,7 +101,7 @@ object FormEditorMeal: TFormEditorMeal
     Date = 41777.158689432870000000
     Time = 41777.158689432870000000
     Kind = dtkTime
-    TabOrder = 2
+    TabOrder = 0
     OnKeyDown = FieldKeyDown
   end
   object DatePicker: TDateTimePicker
@@ -111,7 +111,7 @@ object FormEditorMeal: TFormEditorMeal
     Height = 24
     Date = 41777.159941967590000000
     Time = 41777.159941967590000000
-    TabOrder = 3
+    TabOrder = 1
   end
   object CheckShortMeal: TCheckBox
     Left = 104
@@ -119,6 +119,6 @@ object FormEditorMeal: TFormEditorMeal
     Width = 73
     Height = 17
     Caption = 'CheckShortMeal'
-    TabOrder = 4
+    TabOrder = 2
   end
 end
