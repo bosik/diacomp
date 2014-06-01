@@ -175,6 +175,7 @@ begin
   FTimeShift := 0;
   FHTTP := TIdHTTP.Create(nil);
   FHTTP.HandleRedirects := True;
+  FHTTP.ProtocolVersion := pv1_1;
   FHTTP.Request.ContentEncoding := 'UTF-8';
 end;
 
