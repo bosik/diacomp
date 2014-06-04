@@ -30,8 +30,9 @@ object FormLogViewer: TFormLogViewer
     Lines.Strings = (
       'MemoLog')
     ParentFont = False
-    ScrollBars = ssVertical
+    ScrollBars = ssBoth
     TabOrder = 0
+    WordWrap = False
     OnKeyDown = FormKeyDown
   end
   object Timer1: TTimer
