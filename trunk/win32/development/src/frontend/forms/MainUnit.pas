@@ -1616,6 +1616,7 @@ var
     List: TDishItemList;
   begin
     StartProc('TForm1.AnalyzeUsingDish()');
+    List := nil; // for compiler
 
     try  
       { инициализируем карту }
@@ -1721,9 +1722,9 @@ end;
 procedure TForm1.ListDishKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 {==============================================================================}
-var
+{var
   j: integer;
-  c: char;
+  c: char; }
 begin
   if Key = vk_Return then
     EditDish(ListDish.ItemIndex) else
@@ -4813,7 +4814,6 @@ const
 var
   Summ: real;
   i, Count: integer;
-  FirstDate, LastDate: integer;
   Recs: TRecordList;
 begin
   Summ := 0;
