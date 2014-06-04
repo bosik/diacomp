@@ -1912,16 +1912,19 @@ end;
 {==============================================================================}
 procedure TForm1.ImagePreviewDblClick(Sender: TObject);
 {==============================================================================}
+var
+  Today: TDateTime;
+  Recs: TRecordList;
 begin
   PageControl1.ActivePage := TabAnalyze;
 
-  {#!!!}
-  DrawBS(
-    Diary[Trunc(CalendarDiary.Date) - 1],
-    Diary[Trunc(CalendarDiary.Date)],
-    Diary[Trunc(CalendarDiary.Date + 1)],
-    ImageLarge,
-    False);
+  Today := LocalToUTC(Trunc(CalendarDiary.Date));
+  Recs := LocalSource.FindPeriod(Today - 1, Today + 2);
+  try
+    DrawBS(Recs, Today, ImageLarge, False);
+  finally
+    FreeRecords(Recs);
+  end;
 end;
 
 {==============================================================================}
@@ -2389,13 +2392,17 @@ procedure TForm1.UpdateDayInfo;
 
   { график СК }
   procedure UpdateDayGraph;
+  var
+    Today: TDateTime;
+    Recs: TRecordList;
   begin
-    DrawBS(
-      Diary[Trunc(CalendarDiary.Date) - 1],
-      DiaryView.CurrentPage,
-      Diary[Trunc(CalendarDiary.Date) + 1],
-      ImagePreview,
-      True);
+    Today := LocalToUTC(Trunc(CalendarDiary.Date));
+    Recs := LocalSource.FindPeriod(Today - 1, Today + 2);
+    try
+      DrawBS(Recs, Today, ImagePreview, True);
+    finally
+      FreeRecords(Recs);
+    end;
   end;
 
 begin
@@ -4424,7 +4431,7 @@ procedure TForm1.UpdateTimeLeft;
 {==============================================================================}
 var
   hour,min,sec,msec: word;
-  i, j: integer;
+  i: integer;
   Founded: boolean;
   Meal: TMealRecord;
   TempTime: integer;
