@@ -4425,14 +4425,11 @@ procedure TForm1.UpdateTimeLeft;
 {==============================================================================}
 var
   hour,min,sec,msec: word;
-  i,j: integer;
+  i, j: integer;
   Founded: boolean;
   Meal: TMealRecord;
-
   TempTime: cardinal;
 
-  Page: TDiaryPage;
-  Today: TDate;
   Recs: TRecordList;
 begin
   //StartProc('UpdateTimeLeft(): search for meal');
