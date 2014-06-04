@@ -87,7 +87,6 @@ end;
 function TFormEditorBlood.ReadEntityFromGUI(): boolean;
 {==============================================================================}
 var
-  T: integer;
   X: Extended;
 begin
   if (not TryStrToFloat(CheckDot(EditValue.Text), X) or (X <= 0)) then

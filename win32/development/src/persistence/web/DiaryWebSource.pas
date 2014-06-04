@@ -65,6 +65,7 @@ var
   List: TRecordList;
 begin
   Response := FClient.DoGetSmart(FClient.GetApiURL() + 'diary/guid/' + ID);
+  List := nil; // for compiler
   case Response.Code of
     // TODO: constants
     0: begin

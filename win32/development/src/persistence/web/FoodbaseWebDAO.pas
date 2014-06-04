@@ -30,15 +30,12 @@ type
 implementation
 
 {==============================================================================}
-function ParseFoodItemsResponse(S: string): TFoodItemList;
+function ParseFoodItemsResponse(const S: string): TFoodItemList;
 {==============================================================================}
 var
   Json: TlkJSONlist;
 begin
-  if (s <> '') and (s[1] = '{') and (s[Length(S)] = '}') then
-    S := '[' + s + ']';
-
-  Json := TlkJSON.ParseText(S) as TlkJSONlist;
+  Json := TlkJSON.ParseText(MakeSureJsonList(S)) as TlkJSONlist;
   try
     Result := ParseVersionedFoodItems(json);
   finally
@@ -86,6 +83,7 @@ var
   List: TFoodItemList;
 begin
   Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/guid/' + ID);
+  List := nil; // for compiler
   // TODO: constants
   case Response.Code of
     0:   begin
@@ -131,7 +129,7 @@ procedure TFoodbaseWebDAO.Save(const Items: TVersionedList);
 {==============================================================================}
 var
   Par: TParamList;
-  Response: TStdResponse;
+  //Response: TStdResponse;
 begin
   // заглушка
   if (Length(Items) = 0) then
@@ -142,7 +140,7 @@ begin
   SetLength(Par, 1);
   par[0] := 'items=' + JsonWrite(SerializeVersionedFoodItems(VersionedListToFoodItemList(Items)));
 
-  Response := FClient.DoPutSmart(FClient.GetApiURL() + 'food/', Par);
+  {Response :=} FClient.DoPutSmart(FClient.GetApiURL() + 'food/', Par);
 
   // TODO: check response, throw exception if non-zero
   // Response.Code = 0     it's ok

@@ -1531,7 +1531,7 @@ var
     end;
 
   var
-    i,j,k: integer;
+    i, k: integer;
     Meal: TMealRecord;
     DeltaTag: real;
     DishModFactor: integer;
@@ -2906,8 +2906,6 @@ end;
 procedure TForm1.DiaryViewDoubleClickMeal(Sender: TObject; Index: Integer;
   Place: TClickPlace);
 {==============================================================================}
-var
-  NewMass: real;
 begin
   case Place of
     cpTime:  ClickMeal(False);
@@ -4430,7 +4428,6 @@ var
   i,j: integer;
   Founded: boolean;
   Meal: TMealRecord;
-  Ins: TInsRecord;
 
   TempTime: cardinal;
 
@@ -4479,7 +4476,6 @@ begin
   begin
     if (Recs[i].RecType = TInsRecord) then
     begin
-      Ins := TInsRecord(Recs[i]);
       TempTime := Round((GetTimeUTC() - Recs[i].NativeTime) * SecPerDay);
       if (TempTime > 0) then
       begin
@@ -4647,25 +4643,6 @@ begin
         if FoodV  then Columns.Add.Caption := COL_CAPTIONS[4];
       end;
 
-      { ÑÒÐÎÊÈ }
-      {Items.BeginUpdate;
-      Clear;
-      ListFood.AllocBy := Length(FoodList);
-      for i := 0 to High(FoodList) do
-      begin
-        with Items.Add do
-        begin
-          Caption := FoodList[i].Name;//+' ['+IntToStr(FoodBase[i].Tag)+']';;
-          ImageIndex := Byte(FoodList[i].FromTable);
-
-          if FoodP  then SubItems.Add(RealToStr(FoodList[i].RelProts));
-          if FoodF  then SubItems.Add(RealToStr(FoodList[i].RelFats));
-          if FoodC  then SubItems.Add(RealToStr(FoodList[i].RelCarbs));
-          if FoodV  then SubItems.Add(IntToStr(Round(FoodList[i].RelValue)));
-        end;
-      end;
-      Items.EndUpdate;  }
-
       Height := Height + 1;
       Height := Height - 1;
       if Columns[0].Width > 10 then
@@ -4674,21 +4651,7 @@ begin
     { not FullUpdate }
     begin
       if (Length(FoodList) <> Items.Count) then
-        UpdateFoodTable(UpdateHeaders, True, SaveItemIndex)
-      else
-
-      {for i := 0 to High(FoodList) do
-      with Items[i] do
-      begin
-        Caption := FoodList[i].Name;
-        ImageIndex := Byte(FoodList[i].FromTable);
-
-        SubItems.Clear;
-        if FoodP  then SubItems.Add(RealToStr(FoodList[i].RelProts));
-        if FoodF  then SubItems.Add(RealToStr(FoodList[i].RelFats));
-        if FoodC  then SubItems.Add(RealToStr(FoodList[i].RelCarbs));
-        if FoodV  then SubItems.Add(IntToStr(Round(FoodList[i].RelValue)));
-      end;  }
+        UpdateFoodTable(UpdateHeaders, True, SaveItemIndex);
     end;
 
     if SaveItemIndex or (not FullUpdate) then
@@ -4715,7 +4678,6 @@ const
   );
 
 var
-  i: integer;
   SavedIndex: integer;
 
   DishM: boolean;
@@ -4779,27 +4741,6 @@ begin
         end;
       end;
 
-      { ÑÒÐÎÊÈ }
-      {Items.BeginUpdate;
-      Clear;
-      AllocBy := Length(DishList)
-      for i := 0 to High(DishList) do
-      begin
-        with Items.Add do
-        begin
-          Caption := DishBase[i].Name;//+' ['+IntToStr(DishBase[i].Tag)+']';
-          ImageIndex := 2;//+Byte(DishBase[i].HasErrors);
-
-          if DishM then SubItems.Add(RealToStr(DishBase[i].RealMass));
-          if DishP then SubItems.Add(RealToStr(DishBase[i].RelProts));
-          if DishF then SubItems.Add(RealToStr(DishBase[i].RelFats));
-          if DishC then SubItems.Add(RealToStr(DishBase[i].RelCarbs));
-          if DishV then SubItems.Add(IntToStr(Round(DishBase[i].RelValue)));
-          if DishD then SubItems.Add(MyTimeToStr(DishBase[i].ModifiedTime));
-        end;
-      end;
-      Items.EndUpdate;}
-
       Height := Height + 1;
       Height := Height - 1;
       if Columns[0].Width > 10 then
@@ -4808,24 +4749,7 @@ begin
     { not FullUpdate }
     begin
      if (Length(DishList) <> Items.Count) then
-        UpdateDishTable(UpdateHeaders, True, SaveItemIndex)
-      else
-      
-      {for i := 0 to DishBase.Count - 1 do
-      with Items[i] do
-      begin
-        Caption := DishBase[i].Name;
-        ImageIndex := 2;
-
-        SubItems.Clear;
-
-        if DishM then SubItems.Add(RealToStr(DishBase[i].RealMass));
-        if DishP then SubItems.Add(RealToStr(DishBase[i].RelProts));
-        if DishF then SubItems.Add(RealToStr(DishBase[i].RelFats));
-        if DishC then SubItems.Add(RealToStr(DishBase[i].RelCarbs));
-        if DishV then SubItems.Add(IntToStr(Round(DishBase[i].RelValue)));
-        if DishD then SubItems.Add(MyTimeToStr(DishBase[i].ModifiedTime));
-      end; }
+        UpdateDishTable(UpdateHeaders, True, SaveItemIndex);
     end;
 
     if SaveItemIndex or (not FullUpdate) then
@@ -4885,7 +4809,7 @@ const
   CARTRIDGE = 300;
 var
   Summ: real;
-  i,j,Count: integer;
+  i, Count: integer;
   FirstDate, LastDate: integer;
   Recs: TRecordList;
 begin

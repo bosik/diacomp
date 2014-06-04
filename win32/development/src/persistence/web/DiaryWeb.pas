@@ -144,7 +144,7 @@ begin
     FCode := (json['code'] as TlkJSONnumber).Value;
     FResponse := TlkJSON.GenerateText(json['resp']);
   finally
-    json.Free;
+    base.Free;
   end else
   begin
     raise Exception.Create('Invalid JSON: ' + S);
