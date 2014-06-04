@@ -35,11 +35,11 @@ function ParseFoodItemsResponse(S: string): TFoodItemList;
 var
   Json: TlkJSONlist;
 begin
-  try
-    if (s <> '') and (s[1] = '{') and (s[Length(S)] = '}') then
-      S := '[' + s + ']';
+  if (s <> '') and (s[1] = '{') and (s[Length(S)] = '}') then
+    S := '[' + s + ']';
 
-    Json := TlkJSON.ParseText(S) as TlkJSONlist;
+  Json := TlkJSON.ParseText(S) as TlkJSONlist;
+  try
     Result := ParseVersionedFoodItems(json);
   finally
     Json.Free;

@@ -30,16 +30,13 @@ type
 implementation
 
 {==============================================================================}
-function ParseDishItemsResponse(S: string): TDishItemList;
+function ParseDishItemsResponse(const S: string): TDishItemList;
 {==============================================================================}
 var
   Json: TlkJSONlist;
 begin
+  Json := TlkJSON.ParseText(MakeSureJsonList(S)) as TlkJSONlist;
   try
-    if (s <> '') and (s[1] = '{') and (s[Length(S)] = '}') then
-      S := '[' + s + ']';
-
-    Json := TlkJSON.ParseText(S) as TlkJSONlist;
     Result := ParseVersionedDishItems(json);
   finally
     Json.Free;

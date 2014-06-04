@@ -112,6 +112,7 @@ type
   function FmtArray(const S: string): TStringArray;
   function TextBefore(const S: string; Terminal: char): string;
   function TextAfter(const S: string; Terminal: char): string;
+  function MakeSureJsonList(const S: string): string;
   function MatchStr(const S1, S2: string; IgnoreCase: boolean): boolean;
   procedure RemoveAll(var S: string; c: char);
   function ReplaceAll(const S, Find, Replace: string): string;
@@ -819,6 +820,16 @@ begin
   n := pos(Terminal, S);
   if (n > 0) then
     Result := Copy(S, n + 1, Length(S) - n)
+  else
+    Result := S;
+end;
+
+{==============================================================================}
+function MakeSureJsonList(const S: string): string;
+{==============================================================================}
+begin
+  if (S <> '') and (S[1] = '{') and (S[Length(S)] = '}') then
+    Result := '[' + S + ']'
   else
     Result := S;
 end;
