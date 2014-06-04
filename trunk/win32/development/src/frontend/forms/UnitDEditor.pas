@@ -123,7 +123,6 @@ end;
 function TFormEditorOld.ReadEntityFromGUI(): boolean;
 {==============================================================================}
 var
-  T: integer;
   X: Extended;
 begin
   if (not TryStrToFloat(CheckDot(EditValue.Text), X) or (X <= 0)) then
@@ -181,10 +180,6 @@ end;
 function ShowEditor(var Time_: TDateTime; var Value: string; var Finger: integer;
   const Params: TDialogParams): boolean;
 {==============================================================================}
-var
-  Dialog: TFormEditorBlood;
-  i: integer;
-  Minutes: integer;
 begin
  
 end;

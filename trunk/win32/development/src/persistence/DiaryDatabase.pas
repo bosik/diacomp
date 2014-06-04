@@ -31,7 +31,6 @@ type
 
     function GetPage(Date: TDate): TRecordList;
     procedure SetPostPrand(Index, Value: integer);
-    procedure PageChangeListener(EventType: TPageEventType; Page: TDiaryPage; RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
   public
     constructor Create(Source: TDiaryDAO);
     function FindRecord(RecType: TClassCustomRecord; TimeUTC: TDateTime;
@@ -409,16 +408,6 @@ begin
     Result := (Blood.Finger + 1) mod 10
   else
     Result := -1;
-end;
-
-{==============================================================================}
-procedure TDiary.PageChangeListener(EventType: TPageEventType;
-  Page: TDiaryPage; RecClass: TClassCustomRecord;
-  RecInstance: TCustomRecord);
-{==============================================================================}
-begin
-  //FSource.PostPage(Page);
-  // TODO: fix
 end;
 
 initialization

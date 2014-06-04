@@ -75,8 +75,6 @@ type
     property PostPrandIns: integer       read FInsPeriod       write FInsPeriod;
   end;
 
-  TDiaryPageList = array of TDiaryPage;
-
 implementation
 
 { TDiaryPage }

@@ -478,7 +478,6 @@ end;
 procedure AnalyzeBS(Base: TDiaryDAO; TimeFrom, TimeTo: TDateTime; out Mean, StdDev, Targeted, Less, More: Extended);
 {==============================================================================}
 var
-  Date: TDate;
   i: integer;
   List: array of double;
   Items: TRecordList;

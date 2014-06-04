@@ -219,8 +219,6 @@ end;
 {==============================================================================}
 function IdentifyItem(const ItemName: string; out Item: TMutableItem): TItemType;
 {==============================================================================}
-var
-  Index: integer;
 begin
   Item := FoodBaseLocal.FindOne(ItemName);
   if (Item <> nil) then
