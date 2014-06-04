@@ -47,9 +47,8 @@ type
     constructor Create(const FileName: string);
     destructor Destroy; override;
 
-    procedure Add(const R: TCustomRecord); override;
     procedure Delete(ID: TCompactGUID); override;
-    function FindChanged(Since: TDateTime): TVersionedList; override; 
+    function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
     procedure Save(const Recs: TVersionedList); override;
@@ -717,17 +716,6 @@ begin
     SetLength(Result, Length(Result) + 1);
     Result[High(Result)] := FRecords[i].Deserialize;
   end;
-end;
-
-{==============================================================================}
-procedure TDiaryLocalSource.Add(const R: TCustomRecord);
-{==============================================================================}
-var
-  Recs: TVersionedList;
-begin
-  SetLength(Recs, 1);
-  Recs[0] := R;
-  Save(Recs);
 end;
 
 {==============================================================================}
