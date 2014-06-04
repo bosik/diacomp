@@ -188,7 +188,7 @@ begin
           List[j].Prots := Prots;
           List[j].Fats := Fats;
           List[j].Carbs := Carbs;
-          List[j].BloodOutTime := GetAbsLocalMinutes(Items[i].Time);
+          List[j].BloodOutTime := GetAbsLocalMinutes(Items[i].NativeTime);
           List[j].BloodOutValue := TBloodRecord(Items[i]).Value;
           List[j].Date := MealDate;
         end;

@@ -2532,7 +2532,7 @@ begin
     );
 
     { Определяем коэффициенты }
-    Koof := GetKoof(SelMeal.Time);
+    Koof := GetKoof(SelMeal.Time_);
 
     { Коррекция СК }
     if (StartBlood <> nil) then
@@ -3009,7 +3009,7 @@ begin
 
   if (SelectedRecord() is TMealRecord) then
   begin
-    Kf := GetKoof(TMealRecord(SelectedRecord()).Time);
+    Kf := GetKoof(TMealRecord(SelectedRecord()).Time_);
     RelBS := (RelCarbs*Kf.k + RelProts*Kf.p)/100;
     if (RelBS > 0) then
       Result := CurrentDB/RelBS
@@ -3031,7 +3031,7 @@ begin
   Rec := SelectedRecord();
   if (Rec is TMealRecord) then
   begin
-    Kf := GetKoof(TMealRecord(Rec).Time);
+    Kf := GetKoof(TMealRecord(Rec).Time_);
     RelBS := (RelCarbs * Kf.k + RelProts * Kf.p) / 100;
     if (RelBS > 0) then
       Result := (CurrentDB + RelBS * CurMass) / RelBS
@@ -3102,7 +3102,7 @@ procedure TForm1.DiaryViewFoodShow(Sender: TObject; Index, Line: Integer;
 var
   R: TKoof;
 begin
-  R := GetKoof(DiaryView.CurrentPage[Index].Time);
+  R := GetKoof(DiaryView.CurrentPage[Index].Time_);
 
   if (R.q > 0) then
     Text := ' [+'+

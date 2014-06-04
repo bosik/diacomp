@@ -65,19 +65,19 @@ procedure TFormExportText.CreateLog(Sender: TObject);
 type
   TMealType = (mtBU, mtCarbs, mtCarbsProts);
 const
-  BREAK_TIME = 3 * MinPerHour;
+  BREAK_TIME = 3 / HourPerday;
   BREAK_SYMB = ' - ';
 var
   IncBreaks: boolean;
   LastEventTime: TDateTime;
 
-  procedure CheckBreak(Recs: TRecordList; Index: integer);
+  procedure CheckBreak(Rec: TCustomRecord);
   begin
     if IncBreaks then
     begin
-      if Recs[Index].NativeTime - LastEventTime >= BREAK_TIME then
+      if (Rec.NativeTime - LastEventTime >= BREAK_TIME) then
         MemoOut.Lines.Add('');
-      LastEventTime := Recs[Index].NativeTime;
+      LastEventTime := Rec.NativeTime;
     end;
   end;
 
@@ -89,10 +89,8 @@ var
   IncNote: boolean;
   MealInfo: TMealType;
 
-  j,k: integer;
-  //TempDate: TDate;
-  Date: integer;
   Recs: TRecordList;
+  i, j, k: integer;
 
   function CheckedCount(Recs: TRecordList): integer;
   var
@@ -157,58 +155,60 @@ begin
   if (n1=-1) and (n2=-1) then
     Exit;    }
 
-  for Date := Trunc(Picker1.Date) to Trunc(Picker2.Date) do
-  begin    
-    Recs := LocalSource.FindPeriod(Date, Date + 1);
-    if (CheckedCount(Recs) > 0) then
-    with MemoOut.Lines, Form1.DiaryView do
-    begin
-      if Date > Picker1.Date then Add('');
-      MemoOut.SelAttributes.Style := [fsBold];
-      Add('====== ' + DateToStr(Date) + ' ======');
-      MemoOut.SelAttributes.Style := [];
-      LastEventTime := 1440;
+  Recs := LocalSource.FindPeriod(Trunc(Picker1.Date), Trunc(Picker2.Date) + 1);
 
-      for j := 0 to High(Recs) do
+  try
+    LastEventTime := MinPerDay;
+    if (CheckedCount(Recs) > 0) then
+    for j := Low(Recs) to High(Recs) do
+    begin
+      with MemoOut.Lines, Form1.DiaryView do
       begin
+        //if Date > Picker1.Date then Add('');
+        MemoOut.SelAttributes.Style := [fsBold];
+  //      Add('====== ' + DateToStr(Date) + ' ======');
+        MemoOut.SelAttributes.Style := [];
+
         if (Recs[j].RecType = TBloodRecord) and (IncBS) then
         begin
-          CheckBreak(Diary[Date], j);
-          Add(TimeToStr(Recs[j].Time)+BREAK_SYMB+RealToStrZero(TBloodRecord(Recs[j]).Value)
+          CheckBreak(Recs[j]);
+          Add(DateTimeToStr(UTCToLocal(Recs[j].NativeTime), STD_DATETIME_FMT) + BREAK_SYMB + RealToStrZero(TBloodRecord(Recs[j]).Value)
           +' ммоль/л');
         end  else
 
         if (Recs[j].RecType = TInsRecord) and (IncIns) then
         begin
-          CheckBreak(Diary[Date], j);
-          Add(TimeToStr(Recs[j].Time)+BREAK_SYMB+'['+RealToStr(TInsRecord(Recs[j]).Value)+' ЕД]');
+          CheckBreak(Recs[j]);
+          Add(DateTimeToStr(UTCToLocal(Recs[j].NativeTime), STD_DATETIME_FMT) + BREAK_SYMB + '['+RealToStr(TInsRecord(Recs[j]).Value) + ' ЕД]');
         end else
 
         if (Recs[j].RecType = TMealRecord) and (IncMeal) then
         begin
-          CheckBreak(Diary[Date], j);
+          CheckBreak(Recs[j]);
           case MealInfo of
-            mtBU:         Add(TimeToStr(Recs[j].Time)+BREAK_SYMB+
+            mtBU:         Add(DateTimeToStr(UTCToLocal(Recs[j].NativeTime), STD_DATETIME_FMT) + BREAK_SYMB +
                             RealToStr(TMealRecord(Recs[j]).Carbs/12)+' ХЕ');
-            mtCarbs:      Add(TimeToStr(Recs[j].Time)+BREAK_SYMB+
+            mtCarbs:      Add(DateTimeToStr(UTCToLocal(Recs[j].NativeTime), STD_DATETIME_FMT) + BREAK_SYMB +
                             IntToStr(Round(TMealRecord(Recs[j]).Carbs))+'г угл.');
-            mtCarbsProts: Add(TimeToStr(Recs[j].Time)+BREAK_SYMB+
+            mtCarbsProts: Add(DateTimeToStr(UTCToLocal(Recs[j].NativeTime), STD_DATETIME_FMT) + BREAK_SYMB +
                             IntToStr(Round(TMealRecord(Recs[j]).Carbs))+'г угл., '+
                             IntToStr(Round(TMealRecord(Recs[j]).Prots))+'г белков');
           end;
           if IncCont then
-          for k := 0 to TMealRecord(Recs[j]).Count-1 do
+          for k := 0 to TMealRecord(Recs[j]).Count - 1 do
             Add('   '+TMealRecord(Recs[j]).Food[k].Name+' ('+
             RealToStr(TMealRecord(Recs[j]).Food[k].Mass)+')');
         end else
 
         if (Recs[j].RecType = TNoteRecord) and (IncNote) then
         begin
-          CheckBreak(Diary[Date],j);
-          Add(TimeToStr(Recs[j].Time)+BREAK_SYMB+TNoteRecord(Recs[j]).Text);
+          CheckBreak(Recs[j]);
+          Add(DateTimeToStr(UTCToLocal(Recs[j].NativeTime), STD_DATETIME_FMT) + BREAK_SYMB + TNoteRecord(Recs[j]).Text);
         end; 
       end;
     end;
+  finally
+    FreeRecords(Recs);
   end;
 end;
 

@@ -26,7 +26,7 @@ type
   public
     function RecType: TClassCustomRecord;
 
-    property Time: integer read GetTime;
+    property Time_: integer read GetTime;
     property NativeTime: TDateTime read FTime write SetNativeTime;
   end;
 
