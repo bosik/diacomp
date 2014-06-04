@@ -32,16 +32,13 @@ type
 implementation
 
 {==============================================================================}
-function ParseRecordList(S: string): TRecordList;
+function ParseRecordList(const S: string): TRecordList;
 {==============================================================================}
 var
   Json: TlkJSONlist;
 begin
+  Json := TlkJSON.ParseText(MakeSureJsonList(S)) as TlkJSONlist;
   try
-    if (s <> '') and (s[1] = '{') and (s[Length(S)] = '}') then
-      S := '[' + s + ']';
-
-    Json := TlkJSON.ParseText(S) as TlkJSONlist;
     Result := ParseVersionedDiaryRecords(json);
   finally
     Json.Free;
@@ -75,7 +72,11 @@ begin
          Result := List[0];
        end;
     404: Result := nil;
-    else FClient.CheckResponse(Response);
+    else
+    begin
+      Result := nil;
+      FClient.CheckResponse(Response);
+    end;
   end;
 end;
 
@@ -115,7 +116,7 @@ procedure TDiaryWebSource.Save(const Recs: TVersionedList);
 {==============================================================================}
 var
   Par: TParamList;
-  Response: TStdResponse;
+  //Response: TStdResponse;
 begin
   // заглушка
   if (Length(Recs) = 0) then
@@ -126,7 +127,7 @@ begin
   SetLength(Par, 1);
   par[0] := 'items=' + JsonWrite(SerializeVersionedDiaryRecords(VersionedToRecord(Recs)));
 
-  Response := FClient.DoPutSmart(FClient.GetApiURL() + 'diary/', Par);
+  {Response :=} FClient.DoPutSmart(FClient.GetApiURL() + 'diary/', Par);
 
   // TODO: check response, throw exception if non-zero
   // Response.Code = 0     it's ok
