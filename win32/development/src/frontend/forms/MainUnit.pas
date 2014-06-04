@@ -4428,7 +4428,7 @@ var
   i, j: integer;
   Founded: boolean;
   Meal: TMealRecord;
-  TempTime: cardinal;
+  TempTime: integer;
 
   Recs: TRecordList;
 begin
