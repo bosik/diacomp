@@ -24,7 +24,6 @@ uses
 
   UnitFirstMan,
   UnitStartup,
-  UnitDEditor,
   UnitEditorBlood,
   UnitEditorIns,
   UnitEditorMeal,
