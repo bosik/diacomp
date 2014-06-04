@@ -51,7 +51,6 @@ class function TFormEditorIns.CreateEditorForm(CreateMode: boolean): TFormEditor
 {==============================================================================}
 var
   Dialog: TFormEditorIns;
-  i: integer;
 begin
   Dialog := TFormEditorIns.Create(nil);
 
