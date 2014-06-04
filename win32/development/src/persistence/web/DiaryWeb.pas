@@ -31,9 +31,9 @@ type
   private
     FCode: integer;
     FResponse: string;
+    function ConvertResponseToJson(): TlkJSONbase;
   public
     constructor Create(const S: string);
-    function ConvertResponseToJson(): TlkJSONbase;
     function Encode(): string;
     property Code: integer read FCode write FCode;
     property Response: string read FResponse write FResponse;
@@ -95,10 +95,10 @@ const
 {==============================================================================}
 function TStdResponse.ConvertResponseToJson(): TlkJSONbase;
 {==============================================================================}
-var
-  s: string;
+{var
+  s: string; }
 begin
-  s := FResponse;
+ { s := FResponse;
   //s := ReplaceAll(s, '\"', '"');
   //s := ReplaceAll(s, '\\', '\');
 
@@ -110,7 +110,7 @@ begin
   end else
   begin
     raise Exception.Create('Invalid JSON: ' + S);
-  end;
+  end;    }
 end;
 
 {==============================================================================}
@@ -139,10 +139,12 @@ begin
   base := TlkJSON.ParseText(S);
 
   if Assigned(base) then
-  begin
+  try
     json := base as TlkJSONobject;
     FCode := (json['code'] as TlkJSONnumber).Value;
     FResponse := TlkJSON.GenerateText(json['resp']);
+  finally
+    json.Free;
   end else
   begin
     raise Exception.Create('Invalid JSON: ' + S);

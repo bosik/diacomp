@@ -126,7 +126,7 @@ begin
   json := TlkJSON.ParseText(Data) as TlkJSONobject;
 
   if Assigned(json) then
-  begin
+  try
     Result := DiaryPageSerializer.ParseDiaryRecord(json);
 
     {
@@ -145,7 +145,9 @@ begin
     Result.TimeStamp := TimeStamp;
     Result.ID := ID;
     Result.Version := Version;
-    Result.Deleted := Deleted; 
+    Result.Deleted := Deleted;
+  finally
+    json.Free;
   end else
   begin
     raise Exception.Create('Invalid JSON: ' + Data);

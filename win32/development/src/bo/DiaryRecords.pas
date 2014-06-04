@@ -25,7 +25,7 @@ type
     FSilentlyModified: boolean;     // transient
     FOnChange: TEventRecordChanged; // transient
   protected
-    procedure NotifyPage;
+    procedure NotifyPage; deprecated;
     function GetTime(): integer;
     procedure SetNativeTime(Value: TDateTime);
   public
@@ -33,10 +33,10 @@ type
     constructor Create; overload;
     procedure EndUpdate;
     function RecType: TClassCustomRecord;
-    
+
     property Time: integer read GetTime;
     property NativeTime: TDateTime read FTime write SetNativeTime;
-    property OnChange: TEventRecordChanged read FOnChange write FOnChange;
+    property OnChange: TEventRecordChanged read FOnChange write FOnChange; 
   end;
 
   TRecordList = array of TCustomRecord;
@@ -120,6 +120,7 @@ type
   function VersionedToRecord(const List: TVersionedList): TRecordList; overload;
 
   procedure UpdatePostprand(const Recs: TRecordList; InsPeriod, StdMealPeriod, ShortMealPeriod: Real);
+  procedure FreeRecords(var Recs: TRecordList);
 
 implementation
 
@@ -550,6 +551,17 @@ begin
       TBloodRecord(Recs[i]).PostPrand := (Recs[i].NativeTime < CurFreeTime);
     end;
   end;
+end;
+
+{==============================================================================}
+procedure FreeRecords(var Recs: TRecordList);
+{==============================================================================}
+var
+  i: integer;
+begin
+  for i := Low(Recs) to High(Recs) do
+    Recs[i].Free;
+  SetLength(Recs, 0);
 end;
 
 end.
