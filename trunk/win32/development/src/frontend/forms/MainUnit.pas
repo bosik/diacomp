@@ -1565,6 +1565,8 @@ var
         end;
       end;
 
+      FreeRecords(Recs);
+
       { дополнительные теги для блюд }
 
       DishModFactor := Value['DishModFactor'];
@@ -4421,7 +4423,7 @@ begin
 end;
 
 {==============================================================================}
-procedure TForm1.UpdateTimeLeft;
+procedure TForm1.UpdateTimeLeft;  
 {==============================================================================}
 var
   hour,min,sec,msec: word;
@@ -4437,7 +4439,7 @@ var
   Recs: TRecordList;
 begin
   //StartProc('UpdateTimeLeft(): search for meal');
-
+                              
   LabelDiaryTimeLeftIns.Caption := MAIN_DIARY_PANEL_TIME_AFTER_INS;
   LabelDiaryTimeLeftMeal.Caption := MAIN_DIARY_PANEL_TIME_AFTER_MEAL;
 
@@ -4491,6 +4493,8 @@ begin
   Form1.LabelDiaryTimeLeftInsVal.Font.Color := COLOR_HASDATA[Founded];
   if not Founded then
     Form1.LabelDiaryTimeLeftInsVal.Caption := '?';
+
+  FreeRecords(Recs);
 
   //FinishProc;
 end;
@@ -4898,6 +4902,8 @@ begin
       Summ := Summ + TInsRecord(Recs[i]).Value;
     end;
   end;
+
+  FreeRecords(Recs);
 
   ShowMessage(Format(
     'Проанализирован срок, дней: %d'#13+
