@@ -25,7 +25,6 @@ uses
   UnitStartup in 'src\frontend\forms\UnitStartup.pas' {FormProcess},
   UnitResources in 'src\frontend\forms\UnitResources.pas' {FormResources},
   UnitDataInterface in 'src\frontend\forms\UnitDataInterface.pas' {DataInterface: TDataModule},
-  UnitDEditor in 'src\frontend\forms\UnitDEditor.pas' {FormEditorOld},
   SettingsINI in 'src\common\SettingsINI.pas',
   DiaryCore in 'src\common\DiaryCore.pas',
   ThreadTask in 'src\common\ThreadTask.pas',
