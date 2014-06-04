@@ -91,7 +91,11 @@ begin
            Result := List[0];
          end;
     404: Result := nil;
-    else FClient.CheckResponse(Response);
+    else
+    begin
+      Result := nil;
+      FClient.CheckResponse(Response);
+    end;
   end;
 end;
 
