@@ -94,7 +94,6 @@ begin
   Result := Length(FRecs);
   SetLength(FRecs, Result + 1);
   FRecs[Result] := Rec;
-  Rec.OnChange := ProcessRecordChanged;
   Result := TraceLast;
 
   //{#}Changed({FRecs[Result]}Rec);
