@@ -49,6 +49,7 @@ type
 
 implementation
 
+(*
 {==============================================================================}
 function GetNextDayFreeTime(Page: TDiaryPage; StdMealPeriod, ShortMealPeriod, InsPeriod: integer): integer;
 {==============================================================================}
@@ -62,7 +63,7 @@ begin
   // TODO: дублирующийся код (UpdatePostprand)
   for i := 0 to Page.Count - 1 do
   begin
-    CurTime := Page.Recs[i].Time;
+    CurTime := Page.Recs[i].Time_;
 
     if (Page.Recs[i].RecType = TInsRecord) then
       Result := Max(Result, CurTime + InsPeriod) else
@@ -75,7 +76,7 @@ begin
   end;
 
   Result := Result - MinPerDay;
-end;
+end;    *)
 
 { TDiary }
 
