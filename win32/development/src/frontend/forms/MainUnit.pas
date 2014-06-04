@@ -1010,7 +1010,7 @@ begin
     PanelDevelopment.Visible := Value['Debug'];
     TabStat.TabVisible := ADVANCED_MODE;
     StatusBar.Panels[3].Text := '';
-    CalendarDiary.Date := now;  
+    CalendarDiary.Date := Now();  
     ImagePreview.Align := alNone;
     ImagePreview.Width := GroupBoxGraph.Width - 3;
     PageControl1.ActivePageIndex := 0;
@@ -1026,7 +1026,7 @@ begin
     UpdateMealDose;
     //ProcessMealSelected(False);
     UpdateNextFinger();
-    DiaryView.OpenPage(Diary[Trunc(GetTimeUTC())], True);
+    DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
 
     { =============== ÂÊËÞ×ÅÍÈÅ IDLE-ÇÀÄÀ× =============== }
 
@@ -2843,7 +2843,7 @@ begin
       UpdateMealDose();
 
       Line := DiaryView.SelectedLine;
-      DiaryView.OpenPage(Diary[Trunc(GetTimeUTC())], True);
+      DiaryView.OpenPage(Diary[Trunc(Form1.CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Rec.ID;
       DiaryView.SelectedLine := Line;
     end else
@@ -2876,7 +2876,7 @@ begin
         UpdateMealDose();
 
         Line := DiaryView.SelectedLine;
-        DiaryView.OpenPage(Diary[Trunc(GetTimeUTC())], True);
+        DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
         DiaryView.SelectedRecordID := Rec.ID;
         DiaryView.SelectedLine := Line;
       end else
