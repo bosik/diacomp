@@ -46,9 +46,9 @@ public class Storage
 	private static final int		CONNECTION_TIMEOUT	= 6000;
 
 	private static boolean			timerSettedUp		= false;
-	private static Date				sinceDiary			= Utils.time(2013, 11, 1, 0, 0, 0);
-	private static Date				sinceFoodbase		= Utils.time(2013, 11, 1, 0, 0, 0);
-	private static Date				sinceDishbase		= Utils.time(2013, 11, 1, 0, 0, 0);
+	private static Date				sinceDiary			= Utils.time(2014, 05, 1, 0, 0, 0);
+	private static Date				sinceFoodbase		= Utils.time(2014, 05, 1, 0, 0, 0);
+	private static Date				sinceDishbase		= Utils.time(2014, 05, 1, 0, 0, 0);
 
 	// DAO
 

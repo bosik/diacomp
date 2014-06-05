@@ -154,6 +154,8 @@ public class DiaryLocalService implements DiaryService
 		// clauseArgs = new String[] { Utils.formatTimeUTC(time) };
 		// }
 
+		Log.d(TAG, "Search clause: " + clause);
+
 		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
 		// execute
@@ -251,7 +253,7 @@ public class DiaryLocalService implements DiaryService
 
 				res.add(item);
 
-				// Log.v(TAG, String.format("Extracted item %s", content));
+				Log.v(TAG, String.format("Extracted item #%s: %s", guid, content));
 			}
 
 			Log.d(TAG, String.format("Extracted %d items", res.size()));
