@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -200,11 +201,15 @@ public class DishBaseLocalService implements DishBaseService
 		try
 		{
 			List<Versioned<DishItem>> result = new ArrayList<Versioned<DishItem>>();
+			if (name != null)
+			{
+				name = name.toLowerCase(Locale.US);
+			}
 
 			for (Versioned<DishItem> item : memoryCache)
 			{
 				if (((id == null) || item.getId().equals(id))
-						&& ((name == null) || item.getData().getName().contains(name))
+						&& ((name == null) || item.getData().getName().toLowerCase(Locale.US).contains(name))
 						&& (includeDeleted || !item.isDeleted())
 						&& ((modAfter == null) || item.getTimeStamp().after(modAfter)))
 				{
@@ -353,26 +358,26 @@ public class DishBaseLocalService implements DishBaseService
 	@Override
 	public List<Versioned<DishItem>> findAny(String filter)
 	{
-		// return find(null, filter, false, null);
+		return find(null, filter, false, null);
 
 		/*
 		 * As far as SQLite LIKE operator is case-sensitive for non-latin chars, we need to filter
 		 * it manually :(
 		 */
 
-		List<Versioned<DishItem>> all = find(null, null, false, null);
-		List<Versioned<DishItem>> filtered = new LinkedList<Versioned<DishItem>>();
-		filter = filter.toLowerCase();
-
-		for (Versioned<DishItem> item : all)
-		{
-			if (item.getData().getName().toLowerCase().contains(filter))
-			{
-				filtered.add(item);
-			}
-		}
-
-		return filtered;
+		// List<Versioned<DishItem>> all = find(null, null, false, null);
+		// List<Versioned<DishItem>> filtered = new LinkedList<Versioned<DishItem>>();
+		// filter = filter.toLowerCase();
+		//
+		// for (Versioned<DishItem> item : all)
+		// {
+		// if (item.getData().getName().toLowerCase().contains(filter))
+		// {
+		// filtered.add(item);
+		// }
+		// }
+		//
+		// return filtered;
 	}
 
 	// @Override
