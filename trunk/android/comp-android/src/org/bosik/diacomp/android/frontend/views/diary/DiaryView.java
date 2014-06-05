@@ -342,7 +342,6 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 
 		for (int i = 0; i < records.size(); i++)
 		{
-			// Log.d(TAG, "drawPage():извлечение записи №" + i);
 			DiaryRecord rec = records.get(i).getData();
 
 			r.top = top;
@@ -381,9 +380,6 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 				 * drawPanelBack(canvas, r, COLOR_PANEL_MEAL_STD);
 				 */
 				drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_MEAL_SEL : COLOR_PANEL_MEAL_STD));
-
-				Log.v(TAG, "drawPage(): r.right = " + r.right);
-				Log.v(TAG, "drawPage(): LEFT_RECS = " + LEFT_RECS);
 
 				String text = trimToFit(MealFormatter.format(temp, MealFormatter.FormatStyle.MOST_CARBS), r.right
 						- LEFT_RECS);
@@ -512,9 +508,6 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 			clickedX = (int) E.getX();
 			clickedY = (int) E.getY();
 			setDownedIndex((clickedY - BORD) / REC_HEIGHT);
-
-			updateBuffer();
-			invalidate();
 		}
 		return false;
 	}
