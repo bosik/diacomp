@@ -2975,8 +2975,8 @@ begin
   ButtonUpdateKoof.Caption := 'Расчёт...';
   Application.ProcessMessages;
 
-  ToDate := Trunc(GetTimeUTC());
-  FromDate := ToDate - Value['DaysProcess'] + 1;
+  ToDate := Trunc(GetTimeUTC()) + 1;
+  FromDate := ToDate - Value['DaysProcess'];
 
   {===============================================================}
   {#}SetLength(Par, 1);

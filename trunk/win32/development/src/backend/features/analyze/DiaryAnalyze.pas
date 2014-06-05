@@ -64,7 +64,7 @@ var
 type
   // #dao
   TPrimeRec = record
-    Date: TDate; // для взвешивания
+    Date: TDateTime; // для взвешивания
 
     BloodInTime: integer;  // в минутах, возможно больше 1440
     BloodInValue: real;
@@ -89,8 +89,7 @@ procedure ExtractRecords(Base: TDiaryDAO; TimeFrom, TimeTo: TDateTime;
   out List: TPrimeRecList);
 {==============================================================================}
 var
-  i,j: integer;
-  Date: TDate;
+  i, j: integer;
   Items: TRecordList;
 
   PrevBloodTime: TDateTime;
@@ -100,7 +99,6 @@ var
   Ins,CurIns,MaxIns: real;
   TimeF,TimeI: TDateTime;
   TimeShift: integer;
-  MealDate: TDate;
 
   procedure InitCounters;
   begin
@@ -124,7 +122,6 @@ begin
 
   PrevBloodTime := -1;
   PrevBloodValue := -1;
-  MealDate := 0;
   InitCounters;
 
   { обработка }
@@ -136,7 +133,9 @@ begin
   { 1. Создаём RecList, считая время в минутах от 01/01/1899 }
   for i := Low(Items) to High(Items) do
   begin
-    if (Items[i].RecType = TInsRecord) then
+    // **** INSULIN RECORD ****
+    if (Items[i].RecType = TInsRecord) and
+       (PrevBloodTime > -1) then
     begin
       CurIns := TInsRecord(Items[i]).Value;
       Ins := Ins + CurIns;
@@ -146,7 +145,10 @@ begin
         TimeI := Items[i].NativeTime;
       end;
     end else
-    if (Items[i].RecType = TMealRecord) then
+
+    // **** MEAL RECORD ****
+    if (Items[i].RecType = TMealRecord) and
+       (PrevBloodTime > -1) then
     begin
       Prots := Prots + TMealRecord(Items[i]).Prots;
       Fats := Fats + TMealRecord(Items[i]).Fats;
@@ -156,16 +158,16 @@ begin
       begin
         MaxCarbs := CurCarbs;
         TimeF := Items[i].NativeTime;
-        MealDate := Date;
       end;
     end else
 
+    // **** BLOOD RECORD ****
     if (Items[i].RecType = TBloodRecord) and
        (not TBloodRecord(Items[i]).PostPrand) then
     begin
       if (PrevBloodValue = -1) then
       begin
-        PrevBloodTime := TBloodRecord(Items[i]).NativeTime;
+        PrevBloodTime := Items[i].NativeTime;
         PrevBloodValue := TBloodRecord(Items[i]).Value;
         InitCounters;
       end else
@@ -179,18 +181,18 @@ begin
         then  }
         begin
           j := length(List);
-          SetLength(List,j+1);
+          SetLength(List, j + 1);
           List[j].BloodInTime := GetAbsLocalMinutes(PrevBloodTime);
           List[j].BloodInValue := PrevBloodValue;
-          List[j].InsTime :=  GetAbsLocalMinutes(TimeI);  { абсолютное время }
+          List[j].InsTime :=  GetAbsLocalMinutes(TimeI);
           List[j].InsValue := Ins;
-          List[j].FoodTime := GetAbsLocalMinutes(TimeF); { абсолютное время }
+          List[j].FoodTime := GetAbsLocalMinutes(TimeF);
           List[j].Prots := Prots;
           List[j].Fats := Fats;
           List[j].Carbs := Carbs;
           List[j].BloodOutTime := GetAbsLocalMinutes(Items[i].NativeTime);
           List[j].BloodOutValue := TBloodRecord(Items[i]).Value;
-          List[j].Date := MealDate;
+          List[j].Date := UTCToLocal(TimeF);
         end;
 
         { подготовка к следующему циклу }
@@ -200,7 +202,7 @@ begin
       end else
       begin
         { замер нормальный, но перед ним ни еды, ни инсулина }
-        PrevBloodTime := TBloodRecord(Items[i]).NativeTime;
+        PrevBloodTime := Items[i].NativeTime;
         PrevBloodValue := TBloodRecord(Items[i]).Value;
         InitCounters;
       end;
@@ -218,7 +220,7 @@ begin
       TimeShift := List[i].FoodTime-TimeShift;}
       TimeShift := (List[i].FoodTime div MinPerDay);
     end else
-    if List[i].InsValue > 0 then
+    if (List[i].InsValue > 0) then
     begin
       {TimeShift := List[i].InsTime mod MinPerDay;
       TimeShift := List[i].InsTime-TimeShift; }
@@ -233,9 +235,9 @@ begin
 
     List[i].BloodInTime := List[i].BloodInTime - TimeShift;
     List[i].BloodOutTime := List[i].BloodOutTime - TimeShift;
-    if List[i].InsTime >- 1 then
+    if (List[i].InsTime >- 1) then
       List[i].InsTime := List[i].InsTime - TimeShift;
-    if List[i].FoodTime >- 1 then
+    if (List[i].FoodTime >- 1) then
       List[i].FoodTime := List[i].FoodTime - TimeShift;
   end;
 end;
@@ -260,7 +262,7 @@ procedure FormatRecords(const PrimeList: TPrimeRecList; out List: TAnalyzeRecLis
 var
   i: integer;
   CurTime: TDateTime;
-  Min: TDate;
+  Min: TDateTime;
   MinW, MaxW: real;
 begin
   CurTime := GetTimeUTC();
