@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -199,11 +200,15 @@ public class FoodBaseLocalService implements FoodBaseService
 		try
 		{
 			List<Versioned<FoodItem>> result = new ArrayList<Versioned<FoodItem>>();
+			if (name != null)
+			{
+				name = name.toLowerCase(Locale.US);
+			}
 
 			for (Versioned<FoodItem> item : memoryCache)
 			{
 				if (((id == null) || item.getId().equals(id))
-						&& ((name == null) || item.getData().getName().contains(name))
+						&& ((name == null) || item.getData().getName().toLowerCase(Locale.US).contains(name))
 						&& (includeDeleted || !item.isDeleted())
 						&& ((modAfter == null) || item.getTimeStamp().after(modAfter)))
 				{
@@ -352,26 +357,26 @@ public class FoodBaseLocalService implements FoodBaseService
 	@Override
 	public List<Versioned<FoodItem>> findAny(String filter)
 	{
-		// return find(null, filter, false, null);
+		return find(null, filter, false, null);
 
 		/*
 		 * As far as SQLite LIKE operator is case-sensitive for non-latin chars, we need to filter
 		 * it manually :(
 		 */
 
-		List<Versioned<FoodItem>> all = find(null, null, false, null);
-		List<Versioned<FoodItem>> filtered = new LinkedList<Versioned<FoodItem>>();
-		filter = filter.toLowerCase();
-
-		for (Versioned<FoodItem> item : all)
-		{
-			if (item.getData().getName().toLowerCase().contains(filter))
-			{
-				filtered.add(item);
-			}
-		}
-
-		return filtered;
+		// List<Versioned<FoodItem>> all = find(null, null, false, null);
+		// List<Versioned<FoodItem>> filtered = new LinkedList<Versioned<FoodItem>>();
+		// filter = filter.toLowerCase();
+		//
+		// for (Versioned<FoodItem> item : all)
+		// {
+		// if (item.getData().getName().toLowerCase().contains(filter))
+		// {
+		// filtered.add(item);
+		// }
+		// }
+		//
+		// return filtered;
 	}
 
 	// @Override
@@ -455,6 +460,9 @@ public class FoodBaseLocalService implements FoodBaseService
 				String content = serializer.write(item.getData());
 				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, content);
 				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE, item.getData().getName());
+
+				// TODO: DB has new row, cache still doesn't
+				// Thus app tries to insert row and ends up with PK constraint violation
 
 				if (findById(item.getId()) != null)
 				{
