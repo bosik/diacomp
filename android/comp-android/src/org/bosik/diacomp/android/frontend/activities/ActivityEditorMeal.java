@@ -13,13 +13,17 @@ import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.utils.Utils;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.DatePicker;
+import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.TimePicker.OnTimeChangedListener;
 
 public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 {
+	public static final String	TAG						= ActivityEditorMeal.class.getSimpleName();
+
 	public static final String	FIELD_BS_BEFORE_MEAL	= "bosik.pack.bs.beforeMeal";
 	public static final String	FIELD_BS_TARGET			= "bosik.pack.bs.target";
 	public static final String	FIELD_INS_INJECTED		= "bosik.pack.insInjected";
@@ -88,6 +92,17 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 			public void onTimeChanged(TimePicker view, int hourOfDay, int minute)
 			{
 				modified = true;
+				Log.i(TAG, "Time changed");
+			}
+		});
+		datePicker.init(2000, 06, 06, new OnDateChangedListener()
+		{
+			// the initial values doesn't matter
+			@Override
+			public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth)
+			{
+				modified = true;
+				Log.i(TAG, "Date changed");
 			}
 		});
 
@@ -97,6 +112,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 			public void onChange(List<FoodMassed> items)
 			{
 				modified = true;
+				Log.i(TAG, "Content changed");
 
 				entity.getData().clear();
 				for (FoodMassed item : mealEditor.getData())
@@ -179,6 +195,8 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 
 		showMealContent();
 		showMealInfo();
+		modified = false;
+		Log.i(TAG, "Mod flag reseted");
 	}
 
 	@Override
@@ -196,18 +214,10 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 			return false;
 		}
 
-		// content
-
-		// already there
-		// entity.getData().clear();
-		// for (FoodMassed item : mealEditor.getData())
-		// {
-		// entity.getData().add(item);
-		// }
+		// content is already there
+		// ...
 
 		// done
-
-		modified = false;
 		return true;
 	}
 
@@ -217,6 +227,8 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		if (modified)
 		{
 			submit();
+			// TODO: localization
+			UIUtils.showTip(this, "Meal saved");
 		}
 		else
 		{
