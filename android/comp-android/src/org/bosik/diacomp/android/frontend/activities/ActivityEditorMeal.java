@@ -38,6 +38,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 	private TimePicker			timePicker;
 	private DatePicker			datePicker;
 	private TextView			textMealCarbs;
+	private TextView			textMealCorrection;
 	private TextView			textMealDose;
 	private MealEditorView		mealEditor;
 
@@ -63,6 +64,7 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		timePicker.setIs24HourView(true);
 		datePicker = (DatePicker) findViewById(R.id.pickerMealDate);
 		textMealCarbs = (TextView) findViewById(R.id.textMealCarbs);
+		textMealCorrection = (TextView) findViewById(R.id.textMealCorrection);
 		textMealDose = (TextView) findViewById(R.id.textMealDose);
 		mealEditor = (MealEditorView) findViewById(R.id.mealEditorMeal);
 
@@ -154,11 +156,21 @@ public class ActivityEditorMeal extends ActivityEditor<MealRecord>
 		double dose = (-deltaBS + (carbs * koof.getK()) + (prots * koof.getP())) / koof.getQ();
 		Double expectedBS = bsBeforeMeal == null ? null : bsBeforeMeal + (carbs * koof.getK()) + (prots * koof.getP())
 				- (insInjected * koof.getQ());
+		double correctionCarbs = (insInjected * koof.getQ() - prots * koof.getP() + deltaBS) / koof.getK() - carbs;
 
 		textMealCarbs.setText(String.format("%.1f %s", carbs, captionCarbs));
+		textMealCorrection.setText(Utils.formatDoubleSigned(correctionCarbs) + " " + captionGramm);
 		textMealDose.setText(String.format("%.1f %s", dose, captionDose));
 		// TODO: print expectedBS somehow
-
+		
+		if (correctionCarbs < 0)
+		{
+			textMealCorrection.setTextColor(getResources().getColor(R.color.meal_correction_negative));
+		}
+		else
+		{
+			textMealCorrection.setTextColor(getResources().getColor(R.color.meal_correction_positive));
+		}
 		// before = null, target = null --> deltaBS = 0.0; --> dose
 		// before = null, target != null --> deltaBS = 0.0; --> dose
 		// before != null, target = null --> deltaBS = 0.0; --> dose, expectedBS

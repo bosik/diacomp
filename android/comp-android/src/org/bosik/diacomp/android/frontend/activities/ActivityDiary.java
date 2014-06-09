@@ -52,6 +52,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 	private static final long					SCAN_FOR_BLOOD_FINGER		= 5 * Utils.SecPerDay;
 	private static final int					SCAN_FOR_BLOOD_BEFORE_MEAL	= 4 * Utils.SecPerHour;
+	private static final long					SCAN_FOR_INS_AROUND_MEAL	= 3 * Utils.SecPerHour;
 
 	// FIXME: hardcoded target BS
 	private final Double						bloodTarget					= 5.0;
@@ -599,6 +600,47 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	}
 
 	/**
+	 * Searches for the insulin injection nearest to the specified time
+	 * 
+	 * @param near
+	 *            Time to search around
+	 * @param scanPeriod
+	 *            , in seconds
+	 * @return
+	 */
+	private static InsRecord findInsulin(Date near, long scanPeriod)
+	{
+		Log.d(TAG, "findInsulin(): near = " + near + ", scanPeriod = " + scanPeriod);
+		
+		// TODO: move this away from UI
+
+		Date fromDate = new Date(near.getTime() - (scanPeriod * Utils.MsecPerSec));
+		Date toDate = new Date(near.getTime() + (scanPeriod * Utils.MsecPerSec));
+		List<Versioned<DiaryRecord>> records = Storage.localDiary.findBetween(fromDate, toDate, false);
+
+		Log.d(TAG, "findInsulin(): fromDate = " + fromDate);
+		Log.d(TAG, "findInsulin(): toDate = " + toDate);
+		Log.d(TAG, "findInsulin(): items found: " + records.size());
+		
+		long min = scanPeriod * Utils.MsecPerSec * 2;
+		InsRecord ins = null;
+
+		for (Versioned<DiaryRecord> record : records)
+		{
+			if (record.getData().getClass() == InsRecord.class)
+			{
+				long currentDist = Math.abs(record.getData().getTime().getTime() - near.getTime());
+				if (currentDist < min)
+				{
+					ins = (InsRecord) record.getData();
+				}
+			}
+		}
+
+		return ins;
+	}
+
+	/**
 	 * Searches for the last BS record in period [now - scanPeriod, now]
 	 * 
 	 * @param scanPeriod
@@ -654,6 +696,11 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 		BloodRecord prevBlood = lastBlood(SCAN_FOR_BLOOD_BEFORE_MEAL, entity.getData().getTime());
 		Double bloodBeforeMeal = prevBlood == null ? null : prevBlood.getValue();
+		InsRecord insRecord = findInsulin(entity.getData().getTime(), SCAN_FOR_INS_AROUND_MEAL);
+		Double insInjected = insRecord == null ? null : insRecord.getValue();
+		
+		Log.d(TAG, insRecord == null ? "insRecord == null" : "insRecord != null");
+		Log.d(TAG, "insInjected: " + insInjected);
 
 		Intent intent = new Intent(this, ActivityEditorMeal.class);
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
@@ -663,10 +710,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			intent.putExtra(ActivityEditorMeal.FIELD_BS_BEFORE_MEAL, bloodBeforeMeal);
 		}
 		intent.putExtra(ActivityEditorMeal.FIELD_BS_TARGET, bloodTarget);
-		// FIXME: implement dosage search
-		// intent.putExtra(ActivityEditorMeal.FIELD_INS_INJECTED, 0.0);
+		intent.putExtra(ActivityEditorMeal.FIELD_INS_INJECTED, insInjected);
 		startActivityForResult(intent, createMode ? DIALOG_MEAL_CREATE : DIALOG_MEAL_MODIFY);
-
 	}
 
 	private void showNoteEditor(Versioned<NoteRecord> entity, boolean createMode)

@@ -336,6 +336,11 @@ public class Utils
 		return (x % 1 == 0) ? String.valueOf((int)x) : String.valueOf(x);
 	}
 
+	public static String formatDoubleSigned(double x)
+	{
+		return (x > 0 ? "+" : "") + String.format("%.1f", x);
+	}
+
 	public static String formatDateUTC(Date date)
 	{
 		return STD_FORMAT_DATE_UTC.format(date);

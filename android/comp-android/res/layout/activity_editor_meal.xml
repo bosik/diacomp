@@ -44,7 +44,7 @@
                 android:paddingLeft="@dimen/padding_small" />
         </RelativeLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
@@ -53,30 +53,37 @@
 
             <TextView
                 android:id="@+id/textMealCarbs"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
+                android:layout_weight="1"
                 android:paddingLeft="@dimen/padding_medium"
                 android:text="@string/editor_meal_label_carbs"
-                android:textColorHint="@color/green"
-                android:textColorLink="@color/green"
                 android:textSize="20sp"
                 android:textStyle="bold" />
+            
+            <TextView
+                android:id="@+id/textMealCorrection"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:paddingRight="@dimen/padding_medium"
+                android:text="@string/editor_meal_label_correction"
+                android:textSize="20sp"
+                android:textStyle="bold|normal" />
 
             <TextView
                 android:id="@+id/textMealDose"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
+                android:layout_weight="1"
+                android:gravity="right"
                 android:paddingRight="@dimen/padding_medium"
                 android:text="@string/editor_meal_label_dose"
-                android:textColorHint="@color/green"
-                android:textColorLink="@color/green"
                 android:textSize="20sp"
                 android:textStyle="bold|normal" />
-        </RelativeLayout>
+
+        </LinearLayout>
     </LinearLayout>
 
     <org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView
