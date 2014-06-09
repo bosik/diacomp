@@ -481,6 +481,8 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			for (Versioned<FoodItem> item : items)
 			{
+				boolean found = false;
+
 				for (Versioned<FoodItem> x : memoryCache)
 				{
 					if (x.getId().equals(item.getId()))
@@ -489,8 +491,14 @@ public class FoodBaseLocalService implements FoodBaseService
 						x.setVersion(item.getVersion());
 						x.setDeleted(item.isDeleted());
 						x.setData(item.getData()); // FIXME: may be problem
+						found = true;
 						break;
 					}
+				}
+
+				if (!found)
+				{
+					memoryCache.add(new Versioned<FoodItem>(item));
 				}
 			}
 		}

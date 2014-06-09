@@ -462,20 +462,28 @@ public class DishBaseLocalService implements DishBaseService
 				}
 			}
 
-			// for (Versioned<DishItem> item : items)
-			// {
-			// for (Versioned<DishItem> x : memoryCache)
-			// {
-			// if (x.getId().equals(item.getId()))
-			// {
-			// x.setTimeStamp(item.getTimeStamp());
-			// x.setVersion(item.getVersion());
-			// x.setDeleted(item.isDeleted());
-			// x.setData(item.getData()); // FIXME: may be problem
-			// break;
-			// }
-			// }
-			// }
+			for (Versioned<DishItem> item : items)
+			{
+				boolean found = false;
+
+				for (Versioned<DishItem> x : memoryCache)
+				{
+					if (x.getId().equals(item.getId()))
+					{
+						x.setTimeStamp(item.getTimeStamp());
+						x.setVersion(item.getVersion());
+						x.setDeleted(item.isDeleted());
+						x.setData(item.getData()); // FIXME: may be problem
+						found = true;
+						break;
+					}
+				}
+
+				if (!found)
+				{
+					memoryCache.add(new Versioned<DishItem>(item));
+				}
+			}
 		}
 		catch (PersistenceException e)
 		{
