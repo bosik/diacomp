@@ -47,7 +47,7 @@
         </activity>
         <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorIns"
-            android:label="@string/title_activity_activity_editor_ins"
+            android:label="@string/editor_ins_title"
             android:parentActivityName="org.bosik.diacomp.android.frontend.activities.ActivityDiary"
             android:theme="@android:style/Theme.Light" >
             <meta-data
