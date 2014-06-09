@@ -3,6 +3,7 @@
 
     <color name="diary_foreground">#00FF00</color>
     <color name="diary_background">#00FF00</color>
-	<color name="green">#008000</color>
+	<color name="meal_correction_positive">#00CC00</color>
+	<color name="meal_correction_negative">#CC0000</color>
     
 </resources>

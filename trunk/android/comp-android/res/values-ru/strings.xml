@@ -31,13 +31,14 @@
     <string name="editor_meal_field_fooddish">Продукт/блюдо</string>
     <string name="editor_meal_field_mass">Масса, г</string>
     <string name="editor_meal_label_carbs">г угл.</string>
+    <string name="editor_meal_label_correction">+8 г</string>
     <string name="editor_meal_label_dose">ед.</string>
     <string name="editor_meal_title">Приём пищи</string>
     <string name="editor_note_field_text">Текст</string>
     <string name="editor_note_title">Заметка</string>
     <string name="base_subinfo" formatted="false">Б %.1f\t\tЖ %.1f\t\tУ %.1f\t\tК %.1f</string>
-    <string name="base_title">База продуктов</string>
-    <string name="base_title_loading">База продуктов (загрузка…)</string>
+    <string name="base_title">База продуктов и блюд</string>
+    <string name="base_title_loading">База продуктов и блюд (загрузка…)</string>
     <string name="main_option_diary">Дневник</string>
     <string name="main_option_bases">Базы</string>
     <string name="main_option_preferences">Настройки</string>
