@@ -581,6 +581,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	private static BloodRecord lastBlood(long scanPeriod, Date since)
 	{
 		// TODO: move this away from UI
+		// TODO: ignore postprandial measurements
 
 		Date toDate = since;
 		Date fromDate = new Date(toDate.getTime() - (scanPeriod * Utils.MsecPerSec));
