@@ -351,13 +351,13 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 			{
 				BloodRecord temp = (BloodRecord) rec;
 
+				String units = getContext().getString(R.string.common_bs_unit_mmol);
+				String finger = temp.getFinger() == -1 ? "" : String.format("(%s)", fingers[temp.getFinger()]);
+				String text = String.format(Locale.US, "%.1f %s %s", temp.getValue(), units, finger);
+
 				drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_BLOOD_SEL : COLOR_PANEL_BLOOD_STD));
-
-				String finger = temp.getFinger() == -1 ? "" : " | " + fingers[temp.getFinger()];
-
 				canvas.drawText(timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE, paintTime);
-				canvas.drawText(String.valueOf(temp.getValue()) + finger, LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE,
-						paintRec);
+				canvas.drawText(text, LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE, paintRec);
 
 				top += (TEXT_SIZE + (2 * TEXT_BORD));
 			}
