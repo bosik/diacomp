@@ -6,9 +6,13 @@
 </head>
 <body>
 	<div class="main">
-		<div wicket:id="headerPanel" id="header">header</div>
-		<div wicket:id="menu"></div>
-		<wicket:child/>
+		<div id="sticky">
+			<div wicket:id="headerPanel" id="header">header</div>
+			<div wicket:id="menu"></div>
+		</div>
+		<div id="pageContent">
+			<wicket:child/>
+		</div>
 	</div>
 </body>
 </html>
