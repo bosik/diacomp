@@ -65,7 +65,7 @@ public class Storage
 	public static KoofService		koofService;
 	public static TagService		tagService;
 
-	private static int				ANALYZE_DAYS_PERIOD	= 20;
+	private static int				ANALYZE_DAYS_PERIOD	= 14;								// 20;
 
 	/**
 	 * Initializes the storage. Might be called sequentially
@@ -119,7 +119,7 @@ public class Storage
 
 		if (null == analyzeCore)
 		{
-			// analyzeCore = new AnalyzeCoreImpl();
+			// analyzeCore = new AnalyzeCoreImpl(40.0);
 			analyzeCore = new HardcodedAnalyzeService();
 		}
 
@@ -128,8 +128,10 @@ public class Storage
 			Date timeTo = new Date();
 			Date timeFrom = new Date(timeTo.getTime() - (ANALYZE_DAYS_PERIOD * Utils.MsecPerDay));
 
+			long time = System.currentTimeMillis();
 			koofService = new KoofServiceImpl(localDiary, analyzeCore);
-			koofService.setTimeRange(timeFrom, timeTo);
+			koofService.setTimeRange(timeFrom, timeTo); // analyzing here
+			Log.i(TAG, "Diary analyzed in " + (System.currentTimeMillis() - time) + " msec");
 		}
 
 		if (null == tagService)
