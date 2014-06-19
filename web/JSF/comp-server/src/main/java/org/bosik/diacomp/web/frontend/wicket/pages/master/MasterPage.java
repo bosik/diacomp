@@ -39,15 +39,15 @@ public class MasterPage extends WebPage
 		try
 		{
 			authService.getCurrentUserName();
-			menuContent.getItems().add(new MenuItem("About", AboutPage.class));
-			menuContent.getItems().add(new MenuItem("Diary", DiaryPage.class));
-			menuContent.getItems().add(new MenuItem("Base", FoodBasePage.class));
-			menuContent.getItems().add(new MenuItem("Download", DownloadPage.class));
+			menuContent.getItems().add(new MenuItem(getString("menu.about"), AboutPage.class));
+			menuContent.getItems().add(new MenuItem(getString("menu.diary"), DiaryPage.class));
+			menuContent.getItems().add(new MenuItem(getString("menu.base"), FoodBasePage.class));
+			menuContent.getItems().add(new MenuItem(getString("menu.download"), DownloadPage.class));
 		}
 		catch (NotAuthorizedException e)
 		{
-			menuContent.getItems().add(new MenuItem("About", AboutPage.class));
-			menuContent.getItems().add(new MenuItem("Login", LoginPage.class));
+			menuContent.getItems().add(new MenuItem(getString("menu.about"), AboutPage.class));
+			menuContent.getItems().add(new MenuItem(getString("menu.login"), LoginPage.class));
 		}
 
 		menuContent.setSelected(getClass());
