@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:wicket="http://wicket.apache.org">
 <head>
+	<link type="text/css" rel="stylesheet" href="res/css/style.css" />
 </head>
 <body>
 	<wicket:extend xmlns:wicket="http://wicket.apache.org">
 		<div class="dataview">
-			<table cellspacing="0">
+			<table cellspacing="0" class="full_width">
 				<tr>
+					<th class="colIcon"></th>
 					<th class="colName"><wicket:message key="food.column.name"/></th>
 					<th class="colDetails"><wicket:message key="food.column.prots"/></th>
 					<th class="colDetails"><wicket:message key="food.column.fats"/></th>
@@ -14,6 +16,7 @@
 					<th class="colDetails"><wicket:message key="food.column.value"/></th>
 				</tr>
 				<tr wicket:id="view" class="hoverableRow">
+					<td class="colIcon row"><img src="res/img/button_foodbase.png"/></td>
 					<td class="colName row"><span wicket:id="food.name"></span></td>
 					<td class="colDetails row"><span wicket:id="food.prots"></span></td>
 					<td class="colDetails row"><span wicket:id="food.fats"></span></td>
@@ -28,13 +31,15 @@
 	padding: 0;
 }
 
-table {
-	width: 100%;
-}
-
 .row {
 	padding-top: 5px;
 	padding-bottom: 5px;
+	/*vertical-align: middle;*/
+}
+
+.colIcon {
+	padding-left: 5px;
+	padding-right: 5px;
 }
 
 .colName {
@@ -44,10 +49,6 @@ table {
 .colDetails {
 	width: 10%;
 	text-align: center;
-}
-
-.howerable:hower {
-	background: $ff00ff;
 }
 </style>
 	</wicket:extend>
