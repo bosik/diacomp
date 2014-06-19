@@ -1,5 +1,6 @@
 package org.bosik.diacomp.core.services.analyze;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -184,7 +185,7 @@ public class AnalyzeExtracter
 
 		// building
 
-		List<AnalyzeRec> result = new LinkedList<AnalyzeRec>();
+		List<AnalyzeRec> result = new ArrayList<AnalyzeRec>();
 
 		for (PrimeRec rec : recs)
 		{
@@ -195,9 +196,9 @@ public class AnalyzeExtracter
 			item.setIns(rec.getInsValue());
 			item.setBsIn(rec.getBloodInValue());
 			item.setBsOut(rec.getBloodOutValue());
-			item.setTime(rec.getFoodTime());
+			item.setTime(rec.getFoodTime() + 4 * 60); // FIXME
 
-			double x = (rec.getDate().getTime() - min) / (curTime - min);
+			double x = (double)(rec.getDate().getTime() - min) / (curTime - min);
 			double w = f(x, adaptation);
 			item.setWeight(w);
 

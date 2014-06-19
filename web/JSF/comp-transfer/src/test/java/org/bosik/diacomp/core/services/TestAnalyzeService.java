@@ -31,7 +31,7 @@ public class TestAnalyzeService
 	public void setUp()
 	{
 		diaryService = new FakeDiaryService();
-		analyzeCore = new AnalyzeCoreImpl();
+		analyzeCore = new AnalyzeCoreImpl(25.0);
 		koofService = new KoofServiceImpl(diaryService, analyzeCore);
 
 		Date timeFrom = Utils.date(2000, 1, 1);

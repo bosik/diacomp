@@ -9,6 +9,15 @@ import org.bosik.diacomp.core.utils.Utils;
 
 public class AnalyzeCoreImpl implements AnalyzeCore
 {
+	public AnalyzeCoreImpl(double approxFactor)
+	{
+		// pre-calculation
+		for (int i = 0; i < TIME_WEIGHTS.length; i++)
+		{
+			TIME_WEIGHTS[i] = Math.exp(-approxFactor * Math.pow(i / Utils.HalfMinPerDay, 2));
+		}
+	}
+
 	private class Bean
 	{
 		public double	p;
@@ -54,13 +63,6 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	}
 
 	private static final double	TIME_WEIGHTS[]	= new double[Utils.HalfMinPerDay + 1];
-	{
-		final double K = 10.0;
-		for (int i = 0; i < TIME_WEIGHTS.length; i++)
-		{
-			TIME_WEIGHTS[i] = Math.exp(-K * Math.pow(i / Utils.HalfMinPerDay, 2));
-		}
-	}
 
 	private static double calculateK(AnalyzeRec rec, double q, double p)
 	{
@@ -104,13 +106,13 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		return result;
 	}
 
-	private static double timeWeight(int time1, int time2, double factor)
+	private static double timeWeight(int time1, int time2)
 	{
 		int dist = timeDistance(time1, time2);
 		return TIME_WEIGHTS[dist];
 	}
 
-	private static double approximatePoint(WeightedTimePoint[] points, double factor, int time)
+	private static double approximatePoint(WeightedTimePoint[] points, int time)
 	{
 		double summ = 0.0;
 		double summWeight = 0.0;
@@ -119,7 +121,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 			if (!Double.isNaN(points[i].getValue()))
 			{
 				// TODO: optimize
-				double curWeight = points[i].getWeight() * timeWeight(time, points[i].getTime(), factor);
+				double curWeight = points[i].getWeight() * timeWeight(time, points[i].getTime());
 				summWeight += curWeight;
 				summ += points[i].getValue() * curWeight;
 			}
@@ -135,7 +137,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		}
 	}
 
-	private static double[] approximate(WeightedTimePoint[] points, double factor)
+	private static double[] approximate(WeightedTimePoint[] points)
 	{
 		double[] result = new double[Utils.MinPerDay];
 
@@ -151,7 +153,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		{
 			for (int i = 0; i < Utils.MinPerDay; i++)
 			{
-				result[i] = approximatePoint(points, factor, i);
+				result[i] = approximatePoint(points, i);
 			}
 		}
 
@@ -231,8 +233,6 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		final double MIN_P = 0.00;
 		final double MAX_P = 0.00 + (DISC_P / 2);
 
-		final int APPROX_FACTOR = 90;
-
 		KoofList koofs = new KoofList();
 		WeightedTimePoint[] points;
 		List<Bean> V = new ArrayList<Bean>();
@@ -249,7 +249,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 				bean.p = p;
 
 				points = calculateKW(recs, q, p);
-				k = approximate(points, APPROX_FACTOR);
+				k = approximate(points);
 				koofs = copyKQP(k, q, p);
 
 				bean.g[0] = getRand(k, points, funcRelative);
@@ -306,7 +306,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 		// restore
 		points = calculateKW(recs, bestQ, bestP);
-		k = approximate(points, APPROX_FACTOR);
+		k = approximate(points);
 		koofs = copyKQP(k, bestQ, bestP);
 
 		return koofs;
