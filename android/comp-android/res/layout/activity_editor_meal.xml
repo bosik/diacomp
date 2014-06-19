@@ -51,16 +51,50 @@
             android:layout_marginTop="@dimen/padding_small"
             android:background="#F0F0F0" >
 
-            <TextView
-                android:id="@+id/textMealCarbs"
+            <LinearLayout
+                android:id="@+id/layoutMealStat"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:paddingLeft="@dimen/padding_medium"
-                android:text="@string/editor_meal_label_carbs"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-            
+                android:orientation="vertical" >
+
+            <TextView
+                    android:id="@+id/textMealProts"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:paddingLeft="@dimen/padding_medium"
+                    android:text="@string/editor_meal_label_carbs"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textMealFats"
+                    android:layout_height="wrap_content"                    
+                     android:layout_width="match_parent"
+                    android:paddingLeft="@dimen/padding_medium"
+                    android:text="@string/editor_meal_label_carbs"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+                
+                <TextView
+                    android:id="@+id/textMealCarbs"
+                    android:layout_height="wrap_content"                    
+                     android:layout_width="match_parent"
+                    android:paddingLeft="@dimen/padding_medium"
+                    android:text="@string/editor_meal_label_carbs"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+                
+                <TextView
+                    android:id="@+id/textMealValue"
+                    android:layout_height="wrap_content"                    
+                     android:layout_width="match_parent"
+                    android:paddingLeft="@dimen/padding_medium"
+                    android:text="@string/editor_meal_label_carbs"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+              </LinearLayout>  
+                
             <TextView
                 android:id="@+id/textMealCorrection"
                 android:layout_width="0dp"
