@@ -25,14 +25,13 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 
-public class DiaryView extends View implements OnClickListener, View.OnTouchListener
+public class DiaryView extends View
 {
 	// отладочная печать
-	private static final String				TAG						= DiaryView.class.getSimpleName();
+	static final String						TAG						= DiaryView.class.getSimpleName();
 
 	// стили рисования
 	private static final Paint				paintNoPage				= new Paint();
@@ -50,7 +49,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	private static final int				TEXT_BORD				= 20;
 	private static int						LEFT_TIME;
 	private static int						LEFT_RECS;
-	private static final int				REC_HEIGHT;
+	static final int						REC_HEIGHT;
 
 	// цвета
 	private static final int				COLOR_PANEL_LIGHT_BORD	= Color.WHITE;
@@ -70,14 +69,14 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	// private static final String TEXT_NOPAGE = "Страница пуста";
 	private String[]						fingers;
 	private int								screenWidth				= getScreenWidth();
-	private List<Versioned<DiaryRecord>>	records					= null;
+	List<Versioned<DiaryRecord>>			records					= null;
 	private Bitmap							bufferBitmap;
 	private Canvas							bufferCanvas;
-	private int								clickedX				= -1;
-	private int								clickedY				= -1;
+	int										clickedX				= -1;
+	int										clickedY				= -1;
 	private static int						downedIndex				= -1;
 	private static int						clickedIndex			= -1;
-	private RecordClickListener				recordClickListener;
+	RecordClickListener						recordClickListener;
 
 	// инициализация
 	static
@@ -119,8 +118,40 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 		{
 			fingers = getResources().getStringArray(R.array.fingers_short);
 		}
-		setOnClickListener(this);
-		setOnTouchListener(this);
+		setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				Log.e(TAG, "onClick()");
+
+				setClickedIndex(getDownedIndex());
+				updateBuffer();
+				invalidate();
+
+				if ((records != null) && (getDownedIndex() >= 0) && (getDownedIndex() < records.size()))
+				{
+					if (recordClickListener != null)
+					{
+						recordClickListener.onRecordClick(getDownedIndex());
+					}
+				}
+			}
+		});
+		setOnTouchListener(new OnTouchListener()
+		{
+			@Override
+			public boolean onTouch(View v, MotionEvent event)
+			{
+				if (event.getAction() == MotionEvent.ACTION_DOWN)
+				{
+					clickedX = (int) event.getX();
+					clickedY = (int) event.getY();
+					setDownedIndex((clickedY - BORD) / REC_HEIGHT);
+				}
+				return false;
+			}
+		});
 		setClickable(true);
 	}
 
@@ -285,7 +316,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	 * @param color
 	 *            Каким цветом
 	 */
-	private void drawPanelBack(Canvas canvas, RectF r, int color)
+	private static void drawPanelBack(Canvas canvas, RectF r, int color)
 	{
 		Paint paint = new Paint();
 
@@ -413,7 +444,7 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	/**
 	 * Пересчёт размера буфера и повторный рендеринг страницы
 	 */
-	private void updateBuffer()
+	void updateBuffer()
 	{
 		if (null != records)
 		{
@@ -481,35 +512,4 @@ public class DiaryView extends View implements OnClickListener, View.OnTouchList
 	 * if (rec.getClass() == BloodRecord.class) { BloodRecord temp = (BloodRecord) rec; Log.i(TAG,
 	 * "BloodRec: " + temp.getTime() + ": " + temp.getValue()); } } } return false; }
 	 */
-
-	@Override
-	public void onClick(View v)
-	{
-		Log.e(TAG, "onClick()");
-
-		setClickedIndex(getDownedIndex());
-		updateBuffer();
-		invalidate();
-
-		if ((records != null) && (getDownedIndex() >= 0) && (getDownedIndex() < records.size()))
-		{
-			if (recordClickListener != null)
-			{
-				recordClickListener.onRecordClick(getDownedIndex());
-			}
-		}
-	}
-
-	@Override
-	public boolean onTouch(View v, MotionEvent E)
-	{
-		if (E.getAction() == MotionEvent.ACTION_DOWN)
-		{
-			clickedX = (int) E.getX();
-			clickedY = (int) E.getY();
-			setDownedIndex((clickedY - BORD) / REC_HEIGHT);
-		}
-		return false;
-	}
-
 }
