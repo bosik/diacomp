@@ -90,8 +90,8 @@ type
     FCurrentPage: TRecordList; // TODO: rename
 
     PanelRects: array of TPanelRect;
+    FSelID: TCompactGUID;
     FSelLine: integer;
-    FSelPanel: integer;
 
     { интерфейс }
     FLastClickedTime: cardinal;
@@ -190,8 +190,8 @@ type
     { текущая страница }
     function IsFoodSelected: boolean;
     function SelectedFood: TFoodMassed;
+    function GetSelectedRecordIndex(): integer;
 
-    property SelectedRecordIndex: integer read FSelPanel write FSelPanel;
     property SelectedRecordID: TCompactGUID read GetSelectedID write SetSelectedID;
     property SelectedLine: integer read FSelLine write SetSelectedLine;
     property CurrentPage: TRecordList read FCurrentPage;
@@ -881,7 +881,7 @@ begin
   FBorderTimeLeft := 10;
 
   FCurrentPage := nil;
-  FSelPanel := -1;
+  FSelID := '';
   FSelLine := -1;
   FMouseDowned := false;
 end;
@@ -890,7 +890,7 @@ end;
 procedure TDiaryView.DeselectAll;
 {==============================================================================}
 begin
-  FSelPanel := -1;
+  FSelID := '';
   FSelLine := -1;
   DrawCurrentPage;
 end;
@@ -987,7 +987,7 @@ var
   begin
     with FBitMap.Canvas do
     begin
-      Color := PanelColor(CurrentPage[Index], FSelPanel = Index, Colors);
+      Color := PanelColor(CurrentPage[Index], FSelID = FCurrentPage[Index].ID, Colors);
 
       TimeFont := TFont.Create;
       RecsFont := TFont.Create;
@@ -999,7 +999,7 @@ var
       TimeFont.Style := [fsBold{,fsUnderline}]; {magic!}
 
       RecsFont.Style := RecsFontStyle;
-      if FSelPanel = Index then
+      if (FSelID = FCurrentPage[Index].ID) then
         Sel := FSelLine
       else
         Sel := -1;
@@ -1419,7 +1419,7 @@ begin
   Result :=
     (SelectedRecord is TMealRecord)and
     (FSelLine >= 0)and
-    (FSelLine < TMealRecord(CurrentPage[FSelPanel]).Count);
+    (FSelLine < TMealRecord(CurrentPage[GetSelectedRecordIndex()]).Count);
 end;
 
 {==============================================================================}
@@ -1437,6 +1437,7 @@ procedure TDiaryView.MouseMove(Shift: TShiftState; X, Y: Integer);
 var
   ClickInfo: TClickInfo;
   Meal: TMealRecord;
+  SelectedPanelIndex: integer;
 begin
   inherited;
 
@@ -1456,8 +1457,9 @@ begin
        (ClickInfo.Line < Meal.Count) then
     begin
       // чтобы края не блокировались
-      if (ClickInfo.Index < FSelPanel) then ClickInfo.Line := 0 else
-      if (ClickInfo.Index > FSelPanel) then ClickInfo.Line := Meal.Count - 1;
+      SelectedPanelIndex := GetSelectedRecordIndex();
+      if (ClickInfo.Index < SelectedPanelIndex) then ClickInfo.Line := 0 else
+      if (ClickInfo.Index > SelectedPanelIndex) then ClickInfo.Line := Meal.Count - 1;
 
       // поехали
       while (FSelLine < ClickInfo.Line) do
@@ -1531,22 +1533,14 @@ end;
 {==============================================================================}
 procedure TDiaryView.OpenPage(Page: TRecordList; ForceRepaint: boolean = False);
 {==============================================================================}
-
-  procedure RedrawIt;
-  begin
-    FSelPanel := -1;
-    FSelLine := -1;
-    DrawCurrentPage;
-    MyPage;
-  end;
-
 begin
   FCurrentPage := Page;
   // TODO: hardcode
   UpdatePostprand(Page, 3.5 / HourPerDay, 3.5 / HourPerDay, 20 / MinPerDay);
 
   //Page.AddChangeListener(HandlePageChanged);
-  RedrawIt;
+  DrawCurrentPage;
+  MyPage;
 end;
 
 {==============================================================================}
@@ -1569,6 +1563,13 @@ end;
 {==============================================================================}
 procedure TDiaryView.ProcessClick(X, Y: integer; Button: TMouseButton);
 {==============================================================================}
+
+  procedure SelectPanel(PanelIndex: integer; LineIndex: integer = -1);
+  begin
+    FSelID := FCurrentPage[PanelIndex].ID;
+    FSelLine := LineIndex;
+  end;
+
 type
   TPopup = (pNothing, pBlood, pIns, pMeal, pFood, pNote);
 var
@@ -1605,29 +1606,25 @@ begin
                 begin
                   if (TagType = TBloodRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                   end else
 
                   if (TagType = TInsRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                   end else
 
                   if (TagType = TMealRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                   end else
 
                   if (TagType = TNoteRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                   end;
                 end;
@@ -1635,32 +1632,28 @@ begin
                 begin
                   if (TagType = TBloodRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                     Popup := pBlood;
                   end else
 
                   if (TagType = TInsRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                     Popup := pIns;
                   end else
 
                   if (TagType = TMealRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                     Popup := pMeal;
                   end else
 
                   if (TagType = TNoteRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                     Popup := pNote;
                   end;
@@ -1672,29 +1665,25 @@ begin
                 begin
                   if (TagType = TBloodRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                   end else
 
                   if (TagType = TInsRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                   end else
 
                   if (TagType = TMealRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                   end else
 
                   if (TagType = TNoteRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                   end;
                 end;
@@ -1703,32 +1692,28 @@ begin
                 begin
                   if (TagType = TBloodRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                     Popup := pBlood;
                   end else
 
                   if (TagType = TInsRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                     Popup := pIns;
                   end else
 
                   if (TagType = TMealRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                     Popup := pMeal;
                   end else
 
                   if (TagType = TNoteRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                     Popup := pNote;
                   end;
@@ -1740,64 +1725,55 @@ begin
                 begin
                   if (TagType = TBloodRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                   end else
 
                   if (TagType = TInsRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                   end else
 
                   if (TagType = TMealRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := ClickInfo.Line;
+                    SelectPanel(ClickInfo.Index, ClickInfo.Line);
                     ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                   end else
 
                   if (TagType = TNoteRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                   end;
                 end;
-
 
                 mbRight:
                 begin
                   if (TagType = TBloodRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickBlood(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                     Popup := pBlood;
                   end else
 
                   if (TagType = TInsRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickIns(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                     Popup := pIns;
                   end else
 
                   if (TagType = TMealRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := ClickInfo.Line;
+                    SelectPanel(ClickInfo.Index, ClickInfo.Line);
                     ClickMeal(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                     Popup := pFood;
                   end else
 
                   if (TagType = TNoteRecord) then
                   begin
-                    FSelPanel := ClickInfo.Index;
-                    FSelLine := -1;
+                    SelectPanel(ClickInfo.Index);
                     ClickNote(ClickInfo.Index,ClickInfo.Place,DoubleClick);
                     Popup := pNote;
                   end;
@@ -1805,7 +1781,7 @@ begin
               end;
 
     cpNoWhere:begin
-                FSelPanel := -1;
+                FSelID := '';
                 FSelLine := -1;
               end;
   end;
@@ -1833,7 +1809,7 @@ begin
   //Log('SelectedFood()');
 
   if IsFoodSelected then
-    Result := TMealRecord(CurrentPage[FSelPanel]).Food[FSelLine]
+    Result := TMealRecord(CurrentPage[GetSelectedRecordIndex()]).Food[FSelLine]
   else
     //Result := nil;
     raise Exception.Create('SelectedFood: not such record selected');
@@ -1842,11 +1818,17 @@ end;
 {==============================================================================}
 function TDiaryView.SelectedRecord(): TCustomRecord;
 {==============================================================================}
+var
+  SelectedRecordIndex: integer;
 begin
   //Log('SelectedRecord()');
 
-  if ((CurrentPage <> nil) and (FSelPanel >= 0) and (FSelPanel < Length(CurrentPage))) then
-    Result := CurrentPage[FSelPanel]
+  SelectedRecordIndex := GetSelectedRecordIndex();
+
+  if ((CurrentPage <> nil) and
+     (SelectedRecordIndex >= 0) and
+     (SelectedRecordIndex < Length(CurrentPage))) then
+    Result := CurrentPage[SelectedRecordIndex]
   else
     Result := nil;
 end;
@@ -2319,7 +2301,7 @@ begin
 
     if (EventType = etRemove) then
     begin
-      FSelPanel := -1;
+      FSelID := '';
       FSelLine := -1;
     end else
     if (EventType = etAdd){or(EventType = etModify)} then
@@ -2358,7 +2340,7 @@ begin
   if (EventType = etRemove) then
   begin
     // TODO: а если удалили не то, что было выделено?
-    FSelPanel := -1;
+    FSelID := '';
     FSelLine := -1;
   end else
   if (EventType = etAdd){or(EventType = etModify)} then
@@ -2372,7 +2354,7 @@ begin
 
     //if (Page <> nil) and (Page = CurrentPage) then - здесь всегда так
     begin
-      FSelPanel := Page.FindRecord(RecInstance);
+      FSelID := RecInstance.ID;
       FSelLine := -1;
     end;
   end;
@@ -2383,30 +2365,32 @@ end;
 
 function TDiaryView.GetSelectedID: TCompactGUID;
 begin
-  if (FSelPanel > -1) then
-    Result := FCurrentPage[FSelPanel].ID
-  else
-    Result := '';
+  Result := FSelID;
 end;
 
 procedure TDiaryView.SetSelectedID(const ID: TCompactGUID);
-var
-  i: integer;
 begin
-  for i := 0 to High(FCurrentPage) do
-  if (FCurrentPage[i].ID = ID) then
-  begin
-    FSelPanel := i;
-    Exit;
-  end;
-
-  FSelPanel := -1;
+  FSelID := ID;
 end;
 
 procedure TDiaryView.SetSelectedLine(Line: integer);
 begin
   FSelLine := Line;
   Repaint;
+end;
+
+function TDiaryView.GetSelectedRecordIndex: integer;
+var
+  i: integer;
+begin
+  for i := 0 to High(FCurrentPage) do
+  if (FCurrentPage[i].ID = FSelID) then
+  begin
+    Result := i;
+    Exit;
+  end;
+
+  Result := -1;
 end;
 
 end.
