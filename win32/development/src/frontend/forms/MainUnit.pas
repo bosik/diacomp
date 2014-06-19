@@ -1008,7 +1008,8 @@ begin
     Caption := APPLICATION_TITLE + ' ' + PROGRAM_VERSION;
 
     PanelDevelopment.Visible := Value['Debug'];
-    TabStat.TabVisible := ADVANCED_MODE;
+    ActionViewLogs.Visible := Value['Debug'];
+    TabStat.TabVisible := Value['Debug'];
     StatusBar.Panels[3].Text := '';
     CalendarDiary.Date := Now();  
     ImagePreview.Align := alNone;
@@ -2059,7 +2060,7 @@ begin
             ComboDiaryNew.SetFocus;
 
             // промотка
-            n := DiaryView.SelectedRecordIndex;
+            n := DiaryView.GetSelectedRecordIndex;
             if (n > -1) and (Length(DiaryView.CurrentPage) > 0) then
               ScrollBoxDiary.VertScrollBar.Position :=
                 Round(n / Length(DiaryView.CurrentPage) * ScrollBoxDiary.VertScrollBar.Range);
@@ -3196,7 +3197,7 @@ procedure TForm1.ScrollToSelected;
 var
   n: integer;
 begin
-  n := DiaryView.SelectedRecordIndex;
+  n := DiaryView.GetSelectedRecordIndex;
   { вторая проверка, наверно, излишняя }
   if (n > -1)and(Length(DiaryView.CurrentPage) > 0) then
     ScrollBoxDiary.VertScrollBar.Position :=
@@ -3792,7 +3793,7 @@ begin
     Msg := MESSAGE_CONF_REMOVE_DIARY_UNKNOWN;
 
     AutoLog.Log(ERROR, Format('Unsupported record type to delete (date: %s, index: %d)',
-      [DateToStr(CalendarDiary.Date), DiaryView.SelectedRecordIndex]));
+      [DateToStr(CalendarDiary.Date), DiaryView.GetSelectedRecordIndex]));
   end;
 
   if (MessageDlg(Msg, MsgType, [mbYes, mbNo], 0) = mrYes) then
