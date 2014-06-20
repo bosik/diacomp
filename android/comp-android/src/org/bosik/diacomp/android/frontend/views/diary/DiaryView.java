@@ -1,10 +1,8 @@
 package org.bosik.diacomp.android.frontend.views.diary;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
@@ -12,6 +10,7 @@ import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.utils.Utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -31,59 +30,54 @@ import android.view.WindowManager;
 public class DiaryView extends View
 {
 	// отладочная печать
-	static final String						TAG						= DiaryView.class.getSimpleName();
+	static final String				TAG						= DiaryView.class.getSimpleName();
 
 	// стили рисования
-	private static final Paint				paintNoPage				= new Paint();
-	private static final Paint				paintCaption			= new Paint();
-	private static final Paint				paintTime				= new Paint();
-	private static final Paint				paintRec				= new Paint();
-	private static final Paint				paintDefault			= new Paint();
-
-	private static final SimpleDateFormat	FORMAT_DIARY_TIME_LOC	= new SimpleDateFormat("HH:mm", Locale.US);
+	private static final Paint		paintNoPage				= new Paint();
+	private static final Paint		paintCaption			= new Paint();
+	private static final Paint		paintTime				= new Paint();
+	private static final Paint		paintRec				= new Paint();
+	private static final Paint		paintDefault			= new Paint();
 
 	// отступы
-	private static final int				BORD					= 24;
-	private static final int				TEXT_SIZE				= 48;
-	private static final int				TEXT_NOPAGE_SIZE		= 64;
-	private static final int				TEXT_BORD				= 20;
-	private static int						LEFT_TIME;
-	private static int						LEFT_RECS;
-	static final int						REC_HEIGHT;
+	private static final int		BORD					= 24;
+	private static final int		TEXT_SIZE				= 48;
+	private static final int		TEXT_NOPAGE_SIZE		= 64;
+	private static final int		TEXT_BORD				= 20;
+	private static int				LEFT_TIME;
+	private static int				LEFT_RECS;
+	static final int				REC_HEIGHT;
 
 	// цвета
-	private static final int				COLOR_PANEL_LIGHT_BORD	= Color.WHITE;
-	private static final int				COLOR_PANEL_DARK_BORD	= Color.GRAY;
-	private static final int				COLOR_PANEL_BLOOD_STD	= Color.rgb(230, 238, 255);
-	private static final int				COLOR_PANEL_BLOOD_SEL	= Color.rgb(204, 221, 247);
-	private static final int				COLOR_PANEL_INS_STD		= Color.WHITE;
-	private static final int				COLOR_PANEL_INS_SEL		= Color.rgb(240, 240, 240);
-	private static final int				COLOR_PANEL_NOTE_STD	= Color.rgb(216, 255, 228);
-	private static final int				COLOR_PANEL_NOTE_SEL	= Color.rgb(179, 255, 202);
-	private static final int				COLOR_PANEL_MEAL_STD	= Color.rgb(255, 255, 221);
-	private static final int				COLOR_PANEL_MEAL_SEL	= Color.rgb(255, 255, 153);
-	private static final int				COLOR_BACKGROUND		= Color.WHITE;
+	private static final int		COLOR_PANEL_LIGHT_BORD	= Color.WHITE;
+	private static final int		COLOR_PANEL_DARK_BORD	= Color.GRAY;
+	private static final int		COLOR_PANEL_BLOOD_STD	= Color.rgb(230, 238, 255);
+	private static final int		COLOR_PANEL_BLOOD_SEL	= Color.rgb(204, 221, 247);
+	private static final int		COLOR_PANEL_INS_STD		= Color.WHITE;
+	private static final int		COLOR_PANEL_INS_SEL		= Color.rgb(240, 240, 240);
+	private static final int		COLOR_PANEL_NOTE_STD	= Color.rgb(216, 255, 228);
+	private static final int		COLOR_PANEL_NOTE_SEL	= Color.rgb(179, 255, 202);
+	private static final int		COLOR_PANEL_MEAL_STD	= Color.rgb(255, 255, 221);
+	private static final int		COLOR_PANEL_MEAL_SEL	= Color.rgb(255, 255, 153);
+	private static final int		COLOR_BACKGROUND		= Color.WHITE;
 
 	// поля
 
 	// private static final String TEXT_NOPAGE = "Страница пуста";
-	private String[]						fingers;
-	private int								screenWidth				= getScreenWidth();
-	List<Versioned<DiaryRecord>>			records					= null;
-	private Bitmap							bufferBitmap;
-	private Canvas							bufferCanvas;
-	int										clickedX				= -1;
-	int										clickedY				= -1;
-	private static int						downedIndex				= -1;
-	private static int						clickedIndex			= -1;
-	RecordClickListener						recordClickListener;
+	private String[]				fingers;
+	private int						screenWidth				= getScreenWidth();
+	List<Versioned<DiaryRecord>>	records					= null;
+	private Bitmap					bufferBitmap;
+	private Canvas					bufferCanvas;
+	int								clickedX				= -1;
+	int								clickedY				= -1;
+	private static int				downedIndex				= -1;
+	private static int				clickedIndex			= -1;
+	RecordClickListener				recordClickListener;
 
 	// инициализация
 	static
 	{
-		// before first use of timeToStr()
-		FORMAT_DIARY_TIME_LOC.setTimeZone(TimeZone.getDefault());
-
 		paintNoPage.setColor(Color.GRAY);
 		paintNoPage.setTextSize(TEXT_NOPAGE_SIZE);
 		paintNoPage.setAntiAlias(true);
@@ -102,7 +96,7 @@ public class DiaryView extends View
 		paintRec.setAntiAlias(true);
 
 		LEFT_TIME = BORD + TEXT_BORD;
-		LEFT_RECS = BORD + (2 * TEXT_BORD) + getTextWidth(timeToStr(new Date()), paintTime);
+		LEFT_RECS = BORD + (2 * TEXT_BORD) + getTextWidth(Utils.formatTimeLocalShort(new Date()), paintTime);
 		REC_HEIGHT = TEXT_SIZE + (2 * TEXT_BORD);
 	}
 
@@ -214,13 +208,6 @@ public class DiaryView extends View
 	}
 
 	// утилиты
-
-	private static String timeToStr(Date time)
-	{
-		String s = FORMAT_DIARY_TIME_LOC.format(time);
-		Log.v(TAG, "timeToStr(" + time + ") = " + s);
-		return s;
-	}
 
 	private static int getTextWidth(String text, Paint paint)
 	{
@@ -385,7 +372,8 @@ public class DiaryView extends View
 				String text = String.format(Locale.US, "%.1f %s %s", temp.getValue(), units, finger);
 
 				drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_BLOOD_SEL : COLOR_PANEL_BLOOD_STD));
-				canvas.drawText(timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE, paintTime);
+				canvas.drawText(Utils.formatTimeLocalShort(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE,
+						paintTime);
 				canvas.drawText(text, LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE, paintRec);
 
 				top += (TEXT_SIZE + (2 * TEXT_BORD));
@@ -395,7 +383,8 @@ public class DiaryView extends View
 				InsRecord temp = (InsRecord) rec;
 
 				drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_INS_SEL : COLOR_PANEL_INS_STD));
-				canvas.drawText(timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE, paintTime);
+				canvas.drawText(Utils.formatTimeLocalShort(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE,
+						paintTime);
 				canvas.drawText(String.valueOf(temp.getValue()) + " ед", LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE,
 						paintRec);
 				top += (TEXT_SIZE + (2 * TEXT_BORD));
@@ -412,7 +401,8 @@ public class DiaryView extends View
 
 				String text = trimToFit(MealFormatter.format(temp, MealFormatter.FormatStyle.MOST_CARBS), r.right
 						- LEFT_RECS);
-				canvas.drawText(timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE, paintTime);
+				canvas.drawText(Utils.formatTimeLocalShort(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE,
+						paintTime);
 				canvas.drawText(text, LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE, paintRec);
 
 				top += (TEXT_SIZE + (2 * TEXT_BORD));
@@ -424,7 +414,8 @@ public class DiaryView extends View
 				drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_NOTE_SEL : COLOR_PANEL_NOTE_STD));
 
 				String text = trimToFit(temp.getText(), r.right - LEFT_RECS);
-				canvas.drawText(timeToStr(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE, paintTime);
+				canvas.drawText(Utils.formatTimeLocalShort(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE,
+						paintTime);
 				canvas.drawText(text, LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE, paintRec);
 
 				top += (TEXT_SIZE + (2 * TEXT_BORD));
