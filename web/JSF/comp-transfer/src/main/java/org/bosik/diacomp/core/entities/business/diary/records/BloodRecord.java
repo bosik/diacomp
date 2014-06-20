@@ -9,8 +9,7 @@ public class BloodRecord extends DiaryRecord
 
 	private double				value;
 	private int					finger;
-
-	// private transient boolean postPrand;
+	private transient boolean	postPrand;
 
 	public BloodRecord()
 	{
@@ -83,4 +82,13 @@ public class BloodRecord extends DiaryRecord
 		finger = value;
 	}
 
+	public boolean isPostPrand()
+	{
+		return postPrand;
+	}
+
+	public void setPostPrand(boolean postPrand)
+	{
+		this.postPrand = postPrand;
+	}
 }

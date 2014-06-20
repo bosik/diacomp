@@ -28,10 +28,56 @@ public class AnalyzeExtracter
 		return (int)val;
 	}
 
+	/**
+	 * 
+	 * @param records
+	 * @param insulinAffectTime
+	 *            (minutes)
+	 * @param mealAffectTime
+	 *            (minutes)
+	 * @param mealShortAffectTime
+	 *            (minutes)
+	 */
+	public static void updatePostprand(List<Versioned<DiaryRecord>> records, int insulinAffectTime, int mealAffectTime,
+			int mealShortAffectTime)
+	{
+		long minFreeTime = 0;
+
+		for (Versioned<DiaryRecord> versionedRecord : records)
+		{
+			DiaryRecord record = versionedRecord.getData();
+			if (record instanceof InsRecord)
+			{
+				long curFreeTime = record.getTime().getTime() + insulinAffectTime * Utils.MsecPerMin;
+				if (curFreeTime > minFreeTime)
+				{
+					minFreeTime = curFreeTime;
+				}
+			}
+			else if (record instanceof MealRecord)
+			{
+				long affectTime = ((MealRecord)record).getShortMeal() ? mealShortAffectTime : mealAffectTime;
+				long curFreeTime = record.getTime().getTime() + affectTime * Utils.MsecPerMin;
+				if (curFreeTime > minFreeTime)
+				{
+					minFreeTime = curFreeTime;
+				}
+			}
+			else if (record instanceof BloodRecord)
+			{
+				((BloodRecord)record).setPostPrand(record.getTime().getTime() < minFreeTime);
+			}
+		}
+	}
+
 	public static List<PrimeRec> extractRecords(DiaryService source, Date fromTime, Date toTime)
 	{
 		List<PrimeRec> result = new LinkedList<PrimeRec>();
 		List<Versioned<DiaryRecord>> recs = source.findBetween(fromTime, toTime, false);
+		int insulinAffectTime = 210;
+		int mealAffectTime = 210;
+		int mealShortAffectTime = 20;
+		updatePostprand(recs, insulinAffectTime, mealAffectTime, mealShortAffectTime);
 
 		double ins = 0.0;
 		double curIns = 0.0;
@@ -48,22 +94,22 @@ public class AnalyzeExtracter
 		Date prevBloodTime = null;
 		double prevBloodValue = -1;
 
-		for (Versioned<DiaryRecord> vrec : recs)
+		for (Versioned<DiaryRecord> versionedRecord : recs)
 		{
-			DiaryRecord rec = vrec.getData();
-			if (rec instanceof InsRecord)
+			DiaryRecord record = versionedRecord.getData();
+			if (record instanceof InsRecord)
 			{
-				curIns = ((InsRecord)rec).getValue();
+				curIns = ((InsRecord)record).getValue();
 				ins += curIns;
 				if (curIns > maxIns)
 				{
 					maxIns = curIns;
-					timeI = rec.getTime();
+					timeI = record.getTime();
 				}
 			}
-			else if (rec instanceof MealRecord)
+			else if (record instanceof MealRecord)
 			{
-				MealRecord meal = (MealRecord)rec;
+				MealRecord meal = (MealRecord)record;
 				prots += meal.getProts();
 				fats += meal.getFats();
 				curCarbs = meal.getCarbs();
@@ -71,55 +117,57 @@ public class AnalyzeExtracter
 				if (curCarbs > maxCarbs)
 				{
 					maxCarbs = curCarbs;
-					timeF = rec.getTime();
-					mealDate = rec.getTime();
+					timeF = record.getTime();
+					mealDate = record.getTime();
 				}
 			}
-			else if (rec instanceof BloodRecord)
+			else if (record instanceof BloodRecord)
 			{
-				// TODO: check postprand property
-				BloodRecord blood = (BloodRecord)rec;
+				BloodRecord blood = (BloodRecord)record;
 
-				if (prevBloodValue < 0)
+				if (!blood.isPostPrand())
 				{
-					prevBloodTime = rec.getTime();
-					prevBloodValue = blood.getValue();
-				}
-				else if (((carbs > 0) || (prots > 0)) && (ins > 0))
-				{
-					PrimeRec item = new PrimeRec();
-					item.setBloodInTime(extractMin(prevBloodTime));
-					item.setBloodInValue(prevBloodValue);
-					item.setInsTime(extractMin(timeI));
-					item.setInsValue(ins);
-					item.setFoodTime(extractMin(timeF));
-					item.setProts(prots);
-					item.setFats(fats);
-					item.setCarbs(carbs);
-					item.setBloodOutTime(extractMin(blood.getTime()));
-					item.setBloodOutValue(blood.getValue());
-					item.setDate(mealDate);
+					if (prevBloodValue < 0)
+					{
+						prevBloodTime = record.getTime();
+						prevBloodValue = blood.getValue();
+					}
+					else if (((carbs > 0) || (prots > 0)) && (ins > 0))
+					{
+						PrimeRec item = new PrimeRec();
+						item.setBloodInTime(extractMin(prevBloodTime));
+						item.setBloodInValue(prevBloodValue);
+						item.setInsTime(extractMin(timeI));
+						item.setInsValue(ins);
+						item.setFoodTime(extractMin(timeF));
+						item.setProts(prots);
+						item.setFats(fats);
+						item.setCarbs(carbs);
+						item.setBloodOutTime(extractMin(blood.getTime()));
+						item.setBloodOutValue(blood.getValue());
+						item.setDate(mealDate);
 
-					result.add(item);
+						result.add(item);
 
-					prevBloodTime = blood.getTime();
-					prevBloodValue = blood.getValue();
-				}
-				else
-				// there is no meal nor ins before this BS measurement
-				{
-					prevBloodTime = blood.getTime();
-					prevBloodValue = blood.getValue();
-				}
+						prevBloodTime = blood.getTime();
+						prevBloodValue = blood.getValue();
+					}
+					else
+					// there is no meal nor ins before this BS measurement
+					{
+						prevBloodTime = blood.getTime();
+						prevBloodValue = blood.getValue();
+					}
 
-				ins = 0.0;
-				maxIns = -1.0;
-				prots = 0.0;
-				fats = 0.0;
-				carbs = 0.0;
-				maxCarbs = -1.0;
-				timeF = null;
-				timeI = null;
+					ins = 0.0;
+					maxIns = -1.0;
+					prots = 0.0;
+					fats = 0.0;
+					carbs = 0.0;
+					maxCarbs = -1.0;
+					timeF = null;
+					timeI = null;
+				}
 			}
 		}
 
@@ -196,7 +244,7 @@ public class AnalyzeExtracter
 			item.setIns(rec.getInsValue());
 			item.setBsIn(rec.getBloodInValue());
 			item.setBsOut(rec.getBloodOutValue());
-			item.setTime(rec.getFoodTime() + 4 * 60); // FIXME
+			item.setTime((rec.getFoodTime() + 4 * 60) % Utils.MinPerDay); // FIXME
 
 			double x = (double)(rec.getDate().getTime() - min) / (curTime - min);
 			double w = f(x, adaptation);

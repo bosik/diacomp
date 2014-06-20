@@ -62,7 +62,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		}
 	}
 
-	private static final double	TIME_WEIGHTS[]	= new double[Utils.HalfMinPerDay + 1];
+	private final double	TIME_WEIGHTS[]	= new double[Utils.HalfMinPerDay + 1];
 
 	private static double calculateK(AnalyzeRec rec, double q, double p)
 	{
@@ -98,7 +98,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 	private static int timeDistance(int time1, int time2)
 	{
-		int result = Math.abs(time1 - time2);
+		int result = Math.abs(time1 - time2) % Utils.MinPerDay;
 		if (result > Utils.HalfMinPerDay)
 		{
 			result = Utils.MinPerDay - result;
@@ -106,13 +106,14 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		return result;
 	}
 
-	private static double timeWeight(int time1, int time2)
+	private double timeWeight(int time1, int time2)
 	{
 		int dist = timeDistance(time1, time2);
+		System.out.println("distance " + time1 + " & " + time2 + " is " + dist);
 		return TIME_WEIGHTS[dist];
 	}
 
-	private static double approximatePoint(WeightedTimePoint[] points, int time)
+	private double approximatePoint(WeightedTimePoint[] points, int time)
 	{
 		double summ = 0.0;
 		double summWeight = 0.0;
@@ -137,7 +138,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		}
 	}
 
-	private static double[] approximate(WeightedTimePoint[] points)
+	private double[] approximate(WeightedTimePoint[] points)
 	{
 		double[] result = new double[Utils.MinPerDay];
 
