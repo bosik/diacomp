@@ -26,12 +26,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
-            <TimePicker
-                android:id="@+id/pickerBloodTime"
+            <Button
+                android:id="@+id/buttonBloodTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true" />
+                android:text="Button"
+                android:textSize="@dimen/font_datetime" />
 
             <DatePicker
                 android:id="@+id/pickerBloodDate"
@@ -40,7 +40,6 @@
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/pickerBloodTime"
                 android:paddingLeft="@dimen/padding_small" />
-
         </RelativeLayout>
 
         <TextView
@@ -57,7 +56,8 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="text|numberDecimal"
-            android:singleLine="true" >
+            android:singleLine="true"
+            android:textSize="@dimen/font_datetime" >
 
             <requestFocus />
         </EditText>

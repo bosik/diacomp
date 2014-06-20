@@ -221,7 +221,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(this, ERROR_INCORRECT_TIME);
+			UIUtils.showTip(this, "");
 			timePicker.requestFocus();
 			return false;
 		}
@@ -246,5 +246,11 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		{
 			super.onBackPressed();
 		}
+	}
+
+	@Override
+	protected void onTimeChanged(Date time)
+	{
+		// TODO Auto-generated method stub
 	}
 }

@@ -66,7 +66,7 @@ public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(this, ERROR_INCORRECT_TIME);
+			UIUtils.showTip(this, "");
 			timePicker.requestFocus();
 			return false;
 		}
@@ -90,5 +90,11 @@ public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 		}
 
 		return true;
+	}
+
+	@Override
+	protected void onTimeChanged(Date time)
+	{
+		// TODO Auto-generated method stub
 	}
 }

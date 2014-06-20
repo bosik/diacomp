@@ -4,25 +4,23 @@ import java.util.Date;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
+import org.bosik.diacomp.core.utils.Utils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 {
 	// private static final String TAG = ActivityEditorBlood.class.getSimpleName();
 
 	// components
-	private TimePicker			timePicker;
-	private DatePicker			datePicker;
 	private EditText			editValue;
 	private TextView			labelBloodFinger;
 	private Spinner				spinnerFinger;
+	private Button				buttonTime;
 	private Button				buttonOK;
 
 	// TODO: localize error messages
@@ -38,12 +36,20 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 	protected void setupInterface()
 	{
 		setContentView(R.layout.activity_editor_blood);
-		timePicker = (TimePicker) findViewById(R.id.pickerBloodTime);
-		timePicker.setIs24HourView(true);
-		datePicker = (DatePicker) findViewById(R.id.pickerBloodDate);
 		editValue = (EditText) findViewById(R.id.editBloodValue);
 		labelBloodFinger = (TextView) findViewById(R.id.labelBloodFinger);
 		spinnerFinger = (Spinner) findViewById(R.id.spinnerBloodFinger);
+
+		buttonTime = (Button) findViewById(R.id.buttonBloodTime);
+		buttonTime.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				showTimePickerDialog();
+			}
+		});
+
 		buttonOK = (Button) findViewById(R.id.buttonBloodOK);
 		buttonOK.setOnClickListener(new OnClickListener()
 		{
@@ -62,12 +68,12 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 
 		if (!createMode)
 		{
-			showTime(entity.getData().getTime(), datePicker, timePicker);
+			buttonTime.setText(Utils.formatTimeLocalShort(entity.getData().getTime()));
 			editValue.setText(String.valueOf(entity.getData().getValue()));
 		}
 		else
 		{
-			showTime(new Date(), datePicker, timePicker);
+			buttonTime.setText(Utils.formatTimeLocalShort(new Date()));
 			editValue.setText("");
 		}
 
@@ -81,18 +87,6 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 	@Override
 	protected boolean getValuesFromGUI()
 	{
-		// time
-		try
-		{
-			entity.getData().setTime(readTime(datePicker, timePicker));
-		}
-		catch (IllegalArgumentException e)
-		{
-			UIUtils.showTip(this, ERROR_INCORRECT_TIME);
-			timePicker.requestFocus();
-			return false;
-		}
-
 		// value
 		try
 		{
@@ -131,5 +125,11 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 		}
 
 		return true;
+	}
+
+	@Override
+	protected void onTimeChanged(Date time)
+	{
+		buttonTime.setText(Utils.formatTimeLocalShort(time));
 	}
 }
