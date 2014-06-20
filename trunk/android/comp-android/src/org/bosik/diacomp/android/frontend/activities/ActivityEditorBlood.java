@@ -13,7 +13,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-public class ActivityEditorBlood extends ActivityEditor<BloodRecord>
+public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 {
 	// private static final String TAG = ActivityEditorBlood.class.getSimpleName();
 
