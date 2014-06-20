@@ -163,7 +163,7 @@ public class DiaryView extends View
 	 */
 	public void setRecords(List<Versioned<DiaryRecord>> records)
 	{
-		// Log.i(TAG, "setPage()");
+		Log.i(TAG, "setRecords()");
 		if (null == records)
 		{
 			throw new NullPointerException("Records list can't be null");
@@ -172,17 +172,13 @@ public class DiaryView extends View
 		setDownedIndex(-1);
 		setClickedIndex(-1);
 
-		/**
-		 * Save list to persist it through the view recreations (f.e. when screen is re-oriented)
-		 */
+		// Save list to persist it through the view recreations (f.e. when screen is re-oriented)
 		this.records = records;
-		setMeasuredDimension(getScreenWidth(), getPageHeight(records));
 
-		updateBuffer();
+		int pageHeight = getPageHeight(records);
+		setMeasuredDimension(getScreenWidth(), pageHeight);
+		setMinimumHeight(pageHeight);
 		invalidate();
-		setMinimumHeight(getPageHeight(records));
-		// Log.d(TAG, "setPage(): dimensions are setted");
-		// setMeasuredDimension(screenWidth(), getPageHeight(page));
 	}
 
 	// =========================== GET / SET ===========================
@@ -221,7 +217,9 @@ public class DiaryView extends View
 
 	private static String timeToStr(Date time)
 	{
-		return FORMAT_DIARY_TIME_LOC.format(time);
+		String s = FORMAT_DIARY_TIME_LOC.format(time);
+		Log.v(TAG, "timeToStr(" + time + ") = " + s);
+		return s;
 	}
 
 	private static int getTextWidth(String text, Paint paint)
@@ -470,7 +468,7 @@ public class DiaryView extends View
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
 	{
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-		// Log.d(TAG, "onMeasure(): dimensions are setted");
+		Log.i(TAG, "onMeasure(): dimensions are setted");
 		if (!isInEditMode())
 		{
 			setMeasuredDimension(getScreenWidth(), getPageHeight());
