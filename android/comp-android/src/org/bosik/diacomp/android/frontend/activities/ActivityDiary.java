@@ -717,6 +717,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 	private void showNoteEditor(Versioned<NoteRecord> entity, boolean createMode)
 	{
+		Log.d("PRFM", "showNoteEditor() started");
 		if (createMode)
 		{
 			NoteRecord rec = new NoteRecord();
@@ -728,5 +729,6 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
 		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
 		startActivityForResult(intent, createMode ? DIALOG_NOTE_CREATE : DIALOG_NOTE_MODIFY);
+		Log.d("PRFM", "showNoteEditor() finished");
 	}
 }
