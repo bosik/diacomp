@@ -16,7 +16,7 @@
     <string name="diary_title">Дневник</string>
     <string name="editor_blood_field_finger">Палец</string>
     <string name="editor_blood_title">Замер СК</string>
-    <string name="editor_common_field_time">Время</string>
+    <string name="editor_common_field_time">Дата и время</string>
     <string name="editor_common_field_value">Значение</string>
     <string name="editor_common_save">Сохранить</string>
     <string name="editor_dish_field_content">Состав</string>
