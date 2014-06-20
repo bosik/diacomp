@@ -25,40 +25,41 @@ public class Utils
 	/**
 	 * Value of proteins, kcal/g
 	 */
-	public static final double				KCAL_PER_PROTS		= 3.8;
+	public static final double				KCAL_PER_PROTS				= 3.8;
 	/**
 	 * Value of fats, kcal/g
 	 */
-	public static final double				KCAL_PER_FATS		= 9.3;
+	public static final double				KCAL_PER_FATS				= 9.3;
 	/**
 	 * Value of carbohydrates, kcal/g
 	 */
-	public static final double				KCAL_PER_CARBS		= 4.1;
+	public static final double				KCAL_PER_CARBS				= 4.1;
 
 	// Time
 
-	public static final int					MsecPerSec			= 1000;
-	public static final int					SecPerMin			= 60;
-	public static final int					MinPerHour			= 60;
-	public static final int					HourPerDay			= 24;
-	public static final int					SecPerHour			= SecPerMin * MinPerHour;
-	public static final int					SecPerDay			= SecPerMin * MinPerHour * HourPerDay;
-	public static final int					MinPerDay			= MinPerHour * HourPerDay;
-	public static final int					HalfMinPerDay		= (MinPerHour * HourPerDay) / 2;
-	public static final long				MsecPerMin			= MsecPerSec * SecPerMin;
-	public static final long				MsecPerDay			= MsecPerSec * SecPerMin * MinPerHour * HourPerDay;
+	public static final int					MsecPerSec					= 1000;
+	public static final int					SecPerMin					= 60;
+	public static final int					MinPerHour					= 60;
+	public static final int					HourPerDay					= 24;
+	public static final int					SecPerHour					= SecPerMin * MinPerHour;
+	public static final int					SecPerDay					= SecPerMin * MinPerHour * HourPerDay;
+	public static final int					MinPerDay					= MinPerHour * HourPerDay;
+	public static final int					HalfMinPerDay				= (MinPerHour * HourPerDay) / 2;
+	public static final long				MsecPerMin					= MsecPerSec * SecPerMin;
+	public static final long				MsecPerDay					= MsecPerSec * SecPerMin * MinPerHour
+																				* HourPerDay;
 
 	// Epsilon values
 
-	public static final double				EPS					= 0.0000001;
-	public static final long				EPS_TIME			= 5000;													// ms
+	public static final double				EPS							= 0.0000001;
+	public static final long				EPS_TIME					= 5000;											// ms
 
 	// Format settings
 
 	public static char						DECIMAL_DOT;
 	private static DecimalFormat			DF;
 
-	private static Random					r					= new Random();
+	private static Random					r							= new Random();
 
 	/*
 	 * public static final String[] MONTH_NAMES = new String[] { "Январь", "Февраль", "Март",
@@ -67,12 +68,15 @@ public class Utils
 
 	// Foramtters
 
-	public static final SimpleDateFormat	STD_FORMAT_TIME_UTC	= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-	public static final SimpleDateFormat	STD_FORMAT_TIME_LOC	= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
-																		Locale.getDefault());
-	public static final SimpleDateFormat	STD_FORMAT_DATE_UTC	= new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-	public static final SimpleDateFormat	STD_FORMAT_DATE_LOC	= new SimpleDateFormat("yyyy-MM-dd",
-																		Locale.getDefault());
+	public static final SimpleDateFormat	STD_FORMAT_TIME_UTC			= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+																				Locale.US);
+	public static final SimpleDateFormat	STD_FORMAT_TIME_LOC			= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+																				Locale.getDefault());
+	public static final SimpleDateFormat	STD_FORMAT_TIME_LOC_SHORT	= new SimpleDateFormat("HH:mm",
+																				Locale.getDefault());
+	public static final SimpleDateFormat	STD_FORMAT_DATE_UTC			= new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+	public static final SimpleDateFormat	STD_FORMAT_DATE_LOC			= new SimpleDateFormat("yyyy-MM-dd",
+																				Locale.getDefault());
 
 	static
 	{
@@ -388,6 +392,11 @@ public class Utils
 	public static String formatTimeLocal(Date time)
 	{
 		return STD_FORMAT_TIME_LOC.format(time);
+	}
+
+	public static String formatTimeLocalShort(Date time)
+	{
+		return STD_FORMAT_TIME_LOC_SHORT.format(time);
 	}
 
 	/**
