@@ -19,6 +19,8 @@
     <string name="editor_common_field_time">Date and time</string>
     <string name="editor_common_field_value">Value</string>
     <string name="editor_common_save">Save</string>
+    <string name="editor_common_stub_date">02/04/2014</string>
+    <string name="editor_common_stub_time">09:45</string>
     <string name="editor_dish_field_content">Content</string>
     <string name="editor_dish_field_mass">Result mass</string>
     <string name="editor_dish_field_name">Name</string>
