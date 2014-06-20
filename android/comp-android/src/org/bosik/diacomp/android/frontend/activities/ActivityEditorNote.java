@@ -11,7 +11,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-public class ActivityEditorNote extends ActivityEditor<NoteRecord>
+public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 {
 	/* =========================== КОНСТАНТЫ ================================ */
 	// private static final String TAG = "ActivityEditorNote";

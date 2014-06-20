@@ -20,7 +20,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.TimePicker.OnTimeChangedListener;
 
-public class ActivityEditorMeal extends ActivityEditor<MealRecord>
+public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 {
 	public static final String	TAG						= ActivityEditorMeal.class.getSimpleName();
 

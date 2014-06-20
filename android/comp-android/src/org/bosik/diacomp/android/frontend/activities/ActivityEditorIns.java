@@ -11,7 +11,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-public class ActivityEditorIns extends ActivityEditor<InsRecord>
+public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 {
 	// components
 	private TimePicker	timePicker;
