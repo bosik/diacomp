@@ -15,7 +15,7 @@
     <string name="diary_context_common_remove">Remove</string>
     <string name="diary_title">Diary</string>
     <string name="editor_blood_field_finger">Finger</string>
-    <string name="editor_blood_title">BS</string>
+    <string name="editor_blood_title">Blood sugar</string>
     <string name="editor_common_field_time">Time</string>
     <string name="editor_common_field_value">Value</string>
     <string name="editor_common_save">Save</string>
