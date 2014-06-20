@@ -21,26 +21,28 @@
             android:layout_height="wrap_content"
             android:text="@string/editor_common_field_time" />
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/layoutBloodDateTime"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
 
             <Button
                 android:id="@+id/buttonBloodTime"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Button"
+                android:layout_weight="2"
+                android:text="@string/editor_common_stub_time"
                 android:textSize="@dimen/font_datetime" />
 
-            <DatePicker
-                android:id="@+id/pickerBloodDate"
-                android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/buttonBloodDate"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/pickerBloodTime"
-                android:paddingLeft="@dimen/padding_small" />
-        </RelativeLayout>
+                android:layout_weight="3"
+                android:text="@string/editor_common_stub_date"
+                android:textSize="@dimen/font_datetime" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/labelBloodValue"

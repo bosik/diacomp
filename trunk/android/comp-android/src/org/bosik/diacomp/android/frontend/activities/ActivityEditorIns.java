@@ -93,7 +93,7 @@ public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 	}
 
 	@Override
-	protected void onTimeChanged(Date time)
+	protected void onDateTimeChanged(Date time)
 	{
 		// TODO Auto-generated method stub
 	}

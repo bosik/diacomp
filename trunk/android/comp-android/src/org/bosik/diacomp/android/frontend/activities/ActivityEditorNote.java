@@ -4,12 +4,11 @@ import java.util.Date;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TimePicker;
 
 public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 {
@@ -19,23 +18,51 @@ public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 	/* =========================== ПОЛЯ ================================ */
 
 	// компоненты
-	private TimePicker	timePicker;
-	private DatePicker	datePicker;
-	private EditText	editText;
-	private Button		buttonOK;
+	private Button				buttonTime;
+	private Button				buttonDate;
+	private EditText			editText;
+	private Button				buttonOK;
 
 	// TODO: localize error message
 	private static final String	ERROR_INCORRECT_NOTE_VALUE	= "Ошибка: неверный текст";
 
 	/* =========================== МЕТОДЫ ================================ */
 
+	public ActivityEditorNote()
+	{
+		Log.d("PRFM", "ActivityEditorNote() constructing");
+	}
+
 	@Override
 	protected void setupInterface()
 	{
+		Log.d("PRFM", "setupInterface() started");
+
 		setContentView(R.layout.activity_editor_note);
-		timePicker = (TimePicker) findViewById(R.id.pickerNoteTime);
-		timePicker.setIs24HourView(true);
-		datePicker = (DatePicker) findViewById(R.id.pickerNoteDate);
+
+		Log.d("PRFM", "setupInterface() content view setted");
+
+		buttonTime = (Button) findViewById(R.id.buttonNoteTime);
+		buttonTime.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				showTimePickerDialog();
+			}
+		});
+		buttonDate = (Button) findViewById(R.id.buttonNoteDate);
+		buttonDate.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				showDatePickerDialog();
+			}
+		});
+
+		Log.d("PRFM", "setupInterface() date/time components are ready");
+
 		editText = (EditText) findViewById(R.id.editNoteText);
 		buttonOK = (Button) findViewById(R.id.buttonNoteOK);
 		buttonOK.setOnClickListener(new OnClickListener()
@@ -46,38 +73,30 @@ public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 				ActivityEditorNote.this.submit();
 			}
 		});
+
+		Log.d("PRFM", "setupInterface() finished");
 	}
 
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
+		Log.d("PRFM", "showValuesInGUI() started");
 		if (!createMode)
 		{
-			showTime(entity.getData().getTime(), datePicker, timePicker);
+			onDateTimeChanged(entity.getData().getTime());
 			editText.setText(entity.getData().getText());
 		}
 		else
 		{
-			showTime(new Date(), datePicker, timePicker);
+			onDateTimeChanged(new Date());
 			editText.setText("");
 		}
+		Log.d("PRFM", "showValuesInGUI() finished");
 	}
 
 	@Override
 	protected boolean getValuesFromGUI()
 	{
-		// time
-		try
-		{
-			entity.getData().setTime(readTime(datePicker, timePicker));
-		}
-		catch (IllegalArgumentException e)
-		{
-			UIUtils.showTip(this, "");
-			timePicker.requestFocus();
-			return false;
-		}
-
 		// text
 		try
 		{
@@ -94,8 +113,9 @@ public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 	}
 
 	@Override
-	protected void onTimeChanged(Date time)
+	protected void onDateTimeChanged(Date time)
 	{
-		// TODO Auto-generated method stub
+		buttonTime.setText(formatTime(time));
+		buttonDate.setText(formatDate(time));
 	}
 }

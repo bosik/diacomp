@@ -4,7 +4,6 @@ import java.util.Date;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
-import org.bosik.diacomp.core.utils.Utils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -21,6 +20,7 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 	private TextView			labelBloodFinger;
 	private Spinner				spinnerFinger;
 	private Button				buttonTime;
+	private Button				buttonDate;
 	private Button				buttonOK;
 
 	// TODO: localize error messages
@@ -49,6 +49,15 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 				showTimePickerDialog();
 			}
 		});
+		buttonDate = (Button) findViewById(R.id.buttonBloodDate);
+		buttonDate.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				showDatePickerDialog();
+			}
+		});
 
 		buttonOK = (Button) findViewById(R.id.buttonBloodOK);
 		buttonOK.setOnClickListener(new OnClickListener()
@@ -68,12 +77,12 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 
 		if (!createMode)
 		{
-			buttonTime.setText(Utils.formatTimeLocalShort(entity.getData().getTime()));
+			onDateTimeChanged(entity.getData().getTime());
 			editValue.setText(String.valueOf(entity.getData().getValue()));
 		}
 		else
 		{
-			buttonTime.setText(Utils.formatTimeLocalShort(new Date()));
+			onDateTimeChanged(new Date());
 			editValue.setText("");
 		}
 
@@ -128,8 +137,9 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 	}
 
 	@Override
-	protected void onTimeChanged(Date time)
+	protected void onDateTimeChanged(Date time)
 	{
-		buttonTime.setText(Utils.formatTimeLocalShort(time));
+		buttonTime.setText(formatTime(time));
+		buttonDate.setText(formatDate(time));
 	}
 }

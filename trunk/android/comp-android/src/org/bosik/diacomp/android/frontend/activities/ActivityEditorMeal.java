@@ -249,7 +249,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	}
 
 	@Override
-	protected void onTimeChanged(Date time)
+	protected void onDateTimeChanged(Date time)
 	{
 		// TODO Auto-generated method stub
 	}
