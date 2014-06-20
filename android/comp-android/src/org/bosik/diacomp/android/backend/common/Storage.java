@@ -262,7 +262,7 @@ public class Storage
 		Log.v(TAG, String.format("Relevant indexation done in %d msec", System.currentTimeMillis() - time));
 	}
 
-	static void analyzeKoofs()
+	public static void analyzeKoofs()
 	{
 		long time = System.currentTimeMillis();
 		koofService.update();

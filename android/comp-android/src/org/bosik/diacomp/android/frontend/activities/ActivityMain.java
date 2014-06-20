@@ -10,6 +10,7 @@ import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,7 +18,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-public class ActivityMain extends Activity implements OnClickListener
+public class ActivityMain extends Activity
 {
 	/* =========================== CONSTANTS ================================ */
 
@@ -39,10 +40,11 @@ public class ActivityMain extends Activity implements OnClickListener
 
 	// Components
 	private Button				buttonDiary;
-	private Button				buttonFoodBase;
-	private Button				buttonPref;
-	private Button				buttonAuth;
-	private Button				buttonTestMealEditor;
+	private Button				buttonBase;
+	private Button				buttonPreferences;
+	private Button				buttonSync;
+	private Button				buttonTest;
+	private Button				buttonAnalyze;
 
 	/* =========================== CLASSES ================================ */
 
@@ -352,6 +354,44 @@ public class ActivityMain extends Activity implements OnClickListener
 
 	/* =========================== МЕТОДЫ ================================ */
 
+	class AsyncTaskAnalyzeDiary extends AsyncTask<Void, Integer, Void>
+	{
+		// <Params, Progress, Result>
+		private ProgressDialog	dialog;
+
+		@Override
+		protected void onPreExecute()
+		{
+			dialog = new ProgressDialog(ActivityMain.this);
+			dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			dialog.setCancelable(false);
+			// TODO: localization
+			dialog.setMessage("Analyzing...");
+		}
+
+		@Override
+		protected Void doInBackground(Void... par)
+		{
+			publishProgress(50);
+			Storage.analyzeKoofs();
+			publishProgress(100);
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result)
+		{
+			if (dialog.isShowing())
+			{
+				dialog.dismiss();
+			}
+
+			// TODO: i18n
+			UIUtils.showTip(ActivityMain.this, "Model updated");
+		}
+	}
+
 	// СТАНДАРТНЫЕ
 
 	// handled
@@ -377,48 +417,45 @@ public class ActivityMain extends Activity implements OnClickListener
 
 			// определяем компоненты
 			buttonDiary = (Button) findViewById(R.id.ButtonDiary);
-			buttonFoodBase = (Button) findViewById(R.id.ButtonBases);
-			buttonTestMealEditor = (Button) findViewById(R.id.buttonTestMealEditor);
-			buttonPref = (Button) findViewById(R.id.ButtonPreferences);
-			buttonAuth = (Button) findViewById(R.id.buttonAuth);
+			buttonBase = (Button) findViewById(R.id.ButtonBase);
+			buttonTest = (Button) findViewById(R.id.buttonTest);
+			buttonPreferences = (Button) findViewById(R.id.ButtonPreferences);
+			buttonSync = (Button) findViewById(R.id.buttonSync);
+			buttonAnalyze = (Button) findViewById(R.id.buttonAnalyze);
 
 			// назначаем обработчики
-			buttonDiary.setOnClickListener(this);
-			buttonFoodBase.setOnClickListener(this);
-			buttonTestMealEditor.setOnClickListener(this);
-			buttonPref.setOnClickListener(this);
-			buttonAuth.setOnClickListener(this);
-
-			showDiary();
-		}
-		catch (Exception e)
-		{
-			ErrorHandler.handle(e, this);
-		}
-	}
-
-	// handled
-	@Override
-	public void onClick(View v)
-	{
-		try
-		{
-			switch (v.getId())
+			buttonDiary.setOnClickListener(new OnClickListener()
 			{
-				case R.id.ButtonDiary:
+				@Override
+				public void onClick(View v)
+				{
 					showDiary();
-					break;
-				case R.id.ButtonBases:
-					Intent intent = new Intent(this, ActivityBase.class);
+				}
+			});
+			buttonBase.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					Intent intent = new Intent(ActivityMain.this, ActivityBase.class);
 					intent.putExtra(ActivityBase.KEY_MODE, ActivityBase.VALUE_MODE_EDIT);
 					startActivity(intent);
-					break;
-				case R.id.ButtonPreferences:
+				}
+			});
+			buttonPreferences.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
 					Intent settingsActivity = new Intent(getBaseContext(), ActivityPreferences.class);
 					startActivity(settingsActivity);
-					break;
-				case R.id.buttonAuth:
-
+				}
+			});
+			buttonSync.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
 					new AsyncTask<Void, Void, Map<String, Integer>>()
 					{
 						final String	DIARY	= "diary";
@@ -495,12 +532,29 @@ public class ActivityMain extends Activity implements OnClickListener
 					// {
 					// UIUtils.showTip(this, "Failed to sync");
 					// }
-					break;
-				case R.id.buttonTestMealEditor:
+				}
+			});
+			buttonTest.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
 					HardcodedFoodbase.restoreHardcodedBase();
-					UIUtils.showTip(this, "Hardcoded base restored");
-					break;
-			}
+					UIUtils.showTip(ActivityMain.this, "Hardcoded base restored");
+				}
+			});
+			buttonAnalyze.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					//Storage.analyzeKoofs();
+					ActivityMain.AsyncTaskAnalyzeDiary task = new ActivityMain.AsyncTaskAnalyzeDiary();
+					task.execute();
+				}
+			});
+
+			showDiary();
 		}
 		catch (Exception e)
 		{
@@ -510,7 +564,7 @@ public class ActivityMain extends Activity implements OnClickListener
 
 	// РАБОЧИЕ: ИНТЕРФЕЙС
 
-	private void showDiary()
+	void showDiary()
 	{
 		// TODO: константы
 		Intent intent = new Intent(this, ActivityDiary.class);
