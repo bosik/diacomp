@@ -14,11 +14,10 @@ import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.utils.Utils;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.DatePicker;
-import android.widget.DatePicker.OnDateChangedListener;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
-import android.widget.TimePicker;
-import android.widget.TimePicker.OnTimeChangedListener;
 
 public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 {
@@ -35,15 +34,23 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private Double				insInjected;
 
 	// components
-	private TimePicker			timePicker;
-	private DatePicker			datePicker;
-	private TextView			textMealCarbs;
-	private TextView			textMealCorrection;
-	private TextView			textMealDose;
+	private Button				buttonTime;
+	private Button				buttonDate;
+	private TextView			textMealStatProts;
+	private TextView			textMealStatFats;
+	private TextView			textMealStatCarbs;
+	private TextView			textMealStatValue;
+	private TextView			textMealStatDosage;
+	private TextView			textMealShiftBS;
+	private TextView			textMealShiftDosage;
+	private TextView			textMealShiftCarbs;
 	private MealEditorView		mealEditor;
 
 	// localization
+	private String				captionProts;
+	private String				captionFats;
 	private String				captionCarbs;
+	private String				captionValue;
 	private String				captionDose;
 	private String				captionGramm;
 
@@ -55,17 +62,42 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		setContentView(R.layout.activity_editor_meal);
 
 		// string constants
-		captionCarbs = getString(R.string.editor_meal_label_carbs);
+		captionProts = "P";
+		captionFats = "F";
+		captionCarbs = "C";
+		captionValue = "V";
 		captionDose = getString(R.string.editor_meal_label_dose);
 		captionGramm = getString(R.string.common_gramm);
 
 		// components
-		timePicker = (TimePicker) findViewById(R.id.pickerMealTime);
-		timePicker.setIs24HourView(true);
-		datePicker = (DatePicker) findViewById(R.id.pickerMealDate);
-		textMealCarbs = (TextView) findViewById(R.id.textMealCarbs);
-		textMealCorrection = (TextView) findViewById(R.id.textMealCorrection);
-		textMealDose = (TextView) findViewById(R.id.textMealDose);
+
+		buttonTime = (Button) findViewById(R.id.buttonMealTime);
+		buttonTime.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				showTimePickerDialog();
+			}
+		});
+		buttonDate = (Button) findViewById(R.id.buttonMealDate);
+		buttonDate.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				showDatePickerDialog();
+			}
+		});
+
+		textMealStatProts = (TextView) findViewById(R.id.textMealStatProts);
+		textMealStatFats = (TextView) findViewById(R.id.textMealStatFats);
+		textMealStatCarbs = (TextView) findViewById(R.id.textMealStatCarbs);
+		textMealStatValue = (TextView) findViewById(R.id.textMealStatValue);
+		textMealStatDosage = (TextView) findViewById(R.id.textMealStatDosage);
+		textMealShiftBS = (TextView) findViewById(R.id.textMealShiftBS);
+		textMealShiftDosage = (TextView) findViewById(R.id.textMealShiftDosage);
+		textMealShiftCarbs = (TextView) findViewById(R.id.textMealShiftCarbs);
 		mealEditor = (MealEditorView) findViewById(R.id.mealEditorMeal);
 
 		// list.setScroll
@@ -88,26 +120,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		// list.addHeaderView(findViewById(R.id.layoutMealParent));
 
 		// setting listeners
-		timePicker.setOnTimeChangedListener(new OnTimeChangedListener()
-		{
-			@Override
-			public void onTimeChanged(TimePicker view, int hourOfDay, int minute)
-			{
-				modified = true;
-				Log.i(TAG, "Time changed");
-			}
-		});
-		datePicker.init(2000, 06, 06, new OnDateChangedListener()
-		{
-			// the initial values doesn't matter
-			@Override
-			public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth)
-			{
-				modified = true;
-				Log.i(TAG, "Date changed");
-			}
-		});
-
 		mealEditor.setOnChangeListener(new OnChangeListener()
 		{
 			@Override
@@ -158,18 +170,24 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 				- (insInjected * koof.getQ());
 		double correctionCarbs = (insInjected * koof.getQ() - prots * koof.getP() + deltaBS) / koof.getK() - carbs;
 
-		textMealCarbs.setText(String.format("%.1f %s", carbs, captionCarbs));
-		textMealCorrection.setText(Utils.formatDoubleSigned(correctionCarbs) + " " + captionGramm);
-		textMealDose.setText(String.format("%.1f %s", dose, captionDose));
+		textMealStatProts.setText(String.format("%s %.1f", captionProts, entity.getData().getProts()));
+		textMealStatFats.setText(String.format("%s %.1f", captionFats, entity.getData().getFats()));
+		textMealStatCarbs.setText(String.format("%s %.1f", captionCarbs, entity.getData().getCarbs()));
+		textMealStatValue.setText(String.format("%s %.1f", captionValue, entity.getData().getValue()));
+		textMealStatDosage.setText(String.format("%.1f %s", insInjected, captionDose));
+
+		textMealShiftBS.setText(String.format("%.1f %s", deltaBS, "mmol/l"));
+		textMealShiftDosage.setText(String.format("%.1f %s", dose, captionDose));
+		textMealShiftCarbs.setText(Utils.formatDoubleSigned(correctionCarbs) + " " + captionGramm);
 		// TODO: print expectedBS somehow
-		
+
 		if (correctionCarbs < 0)
 		{
-			textMealCorrection.setTextColor(getResources().getColor(R.color.meal_correction_negative));
+			textMealShiftCarbs.setTextColor(getResources().getColor(R.color.meal_correction_negative));
 		}
 		else
 		{
-			textMealCorrection.setTextColor(getResources().getColor(R.color.meal_correction_positive));
+			textMealShiftCarbs.setTextColor(getResources().getColor(R.color.meal_correction_positive));
 		}
 		// before = null, target = null --> deltaBS = 0.0; --> dose
 		// before = null, target != null --> deltaBS = 0.0; --> dose
@@ -198,11 +216,11 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	{
 		if (!createMode)
 		{
-			showTime(entity.getData().getTime(), datePicker, timePicker);
+			onDateTimeChanged(entity.getData().getTime());
 		}
 		else
 		{
-			showTime(new Date(), datePicker, timePicker);
+			onDateTimeChanged(new Date());
 		}
 
 		showMealContent();
@@ -214,22 +232,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	@Override
 	protected boolean getValuesFromGUI()
 	{
-		// time
-		try
-		{
-			entity.getData().setTime(readTime(datePicker, timePicker));
-		}
-		catch (IllegalArgumentException e)
-		{
-			UIUtils.showTip(this, "");
-			timePicker.requestFocus();
-			return false;
-		}
-
-		// content is already there
-		// ...
-
-		// done
 		return true;
 	}
 
@@ -251,6 +253,10 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	@Override
 	protected void onDateTimeChanged(Date time)
 	{
-		// TODO Auto-generated method stub
+		buttonTime.setText(formatTime(time));
+		buttonDate.setText(formatDate(time));
+		modified = true;
+		Log.i(TAG, "Time changed");
+		// TODO: change koofs & update dosage stats
 	}
 }

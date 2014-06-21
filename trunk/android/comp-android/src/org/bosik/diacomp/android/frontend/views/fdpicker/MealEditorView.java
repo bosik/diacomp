@@ -74,7 +74,7 @@ public class MealEditorView extends LinearLayout
 		if (!isInEditMode())
 		{
 			// string constants
-			captionCarbs = context.getString(R.string.editor_meal_label_carbs);
+			captionCarbs = context.getString(R.string.editor_meal_label_stat);
 			captionDose = context.getString(R.string.editor_meal_label_dose);
 			captionGramm = context.getString(R.string.common_gramm);
 
