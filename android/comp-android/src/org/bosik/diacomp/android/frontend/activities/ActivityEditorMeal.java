@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
@@ -41,9 +42,13 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private TextView			textMealStatCarbs;
 	private TextView			textMealStatValue;
 	private TextView			textMealStatDosage;
+
+	private LinearLayout		layoutDosageShift;
 	private TextView			textMealShiftBS;
 	private TextView			textMealShiftDosage;
 	private TextView			textMealShiftCarbs;
+	private TextView			textMealCompDosage;
+	private TextView			textMealCompCarbs;
 	private MealEditorView		mealEditor;
 
 	// localization
@@ -53,6 +58,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private String				captionValue;
 	private String				captionDose;
 	private String				captionGramm;
+	private String				captionMmol;
 
 	// ======================================================================================================
 
@@ -68,6 +74,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		captionValue = "V";
 		captionDose = getString(R.string.editor_meal_label_dose);
 		captionGramm = getString(R.string.common_gramm);
+		captionMmol = getString(R.string.common_bs_unit_mmol);
 
 		// components
 
@@ -95,9 +102,13 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		textMealStatCarbs = (TextView) findViewById(R.id.textMealStatCarbs);
 		textMealStatValue = (TextView) findViewById(R.id.textMealStatValue);
 		textMealStatDosage = (TextView) findViewById(R.id.textMealStatDosage);
+
+		layoutDosageShift = (LinearLayout) findViewById(R.id.layoutMealDosageShift);
 		textMealShiftBS = (TextView) findViewById(R.id.textMealShiftBS);
 		textMealShiftDosage = (TextView) findViewById(R.id.textMealShiftDosage);
 		textMealShiftCarbs = (TextView) findViewById(R.id.textMealShiftCarbs);
+		textMealCompDosage = (TextView) findViewById(R.id.textMealCompDosage);
+		textMealCompCarbs = (TextView) findViewById(R.id.textMealCompCarbs);
 		mealEditor = (MealEditorView) findViewById(R.id.mealEditorMeal);
 
 		// list.setScroll
@@ -165,30 +176,68 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 
 		double carbs = entity.getData().getCarbs();
 		double prots = entity.getData().getProts();
-		double dose = (-deltaBS + (carbs * koof.getK()) + (prots * koof.getP())) / koof.getQ();
+
 		Double expectedBS = bsBeforeMeal == null ? null : bsBeforeMeal + (carbs * koof.getK()) + (prots * koof.getP())
 				- (insInjected * koof.getQ());
-		double correctionCarbs = (insInjected * koof.getQ() - prots * koof.getP() + deltaBS) / koof.getK() - carbs;
 
-		textMealStatProts.setText(String.format("%s %.1f", captionProts, entity.getData().getProts()));
-		textMealStatFats.setText(String.format("%s %.1f", captionFats, entity.getData().getFats()));
-		textMealStatCarbs.setText(String.format("%s %.1f", captionCarbs, entity.getData().getCarbs()));
-		textMealStatValue.setText(String.format("%s %.1f", captionValue, entity.getData().getValue()));
-		textMealStatDosage.setText(String.format("%.1f %s", insInjected, captionDose));
+		// textMealStatProts.setText(String.format("%s %.1f", captionProts,
+		// entity.getData().getProts()));
+		// textMealStatFats.setText(String.format("%s %.1f", captionFats,
+		// entity.getData().getFats()));
+		// textMealStatCarbs.setText(String.format("%s %.1f", captionCarbs,
+		// entity.getData().getCarbs()));
+		// textMealStatValue.setText(String.format("%s %.1f", captionValue,
+		// entity.getData().getValue()));
+		// textMealStatDosage.setText(String.format("%.1f %s", insInjected, captionDose));
 
-		textMealShiftBS.setText(String.format("%.1f %s", deltaBS, "mmol/l"));
-		textMealShiftDosage.setText(String.format("%.1f %s", dose, captionDose));
-		textMealShiftCarbs.setText(Utils.formatDoubleSigned(correctionCarbs) + " " + captionGramm);
-		// TODO: print expectedBS somehow
+		// shift dosage
 
-		if (correctionCarbs < 0)
+		if (Math.abs(deltaBS) > 0.00001)
 		{
-			textMealShiftCarbs.setTextColor(getResources().getColor(R.color.meal_correction_negative));
+			layoutDosageShift.setVisibility(View.VISIBLE);
+
+			double shiftDose = (-deltaBS + (carbs * koof.getK()) + (prots * koof.getP())) / koof.getQ();
+			double shiftCarbs = (insInjected * koof.getQ() - prots * koof.getP() + deltaBS) / koof.getK() - carbs;
+
+			textMealShiftBS.setText(Utils.formatDoubleSigned(deltaBS) + " " + captionMmol);
+			final String shiftDosage = insInjected > 0 ? String.format("%.1f / %.1f %s", shiftDose, insInjected,
+					captionDose) : String.format("%.1f %s", shiftDose, captionDose);
+			textMealShiftDosage.setText(shiftDosage);
+			textMealShiftCarbs.setText(Utils.formatDoubleSigned(shiftCarbs) + " " + captionGramm);
+			if (shiftCarbs < 0)
+			{
+				textMealShiftCarbs.setTextColor(getResources().getColor(R.color.meal_correction_negative));
+			}
+			else
+			{
+				textMealShiftCarbs.setTextColor(getResources().getColor(R.color.meal_correction_positive));
+			}
 		}
 		else
 		{
-			textMealShiftCarbs.setTextColor(getResources().getColor(R.color.meal_correction_positive));
+			layoutDosageShift.setVisibility(View.GONE);
 		}
+
+		// pure compensation dosage
+
+		double compDose = (carbs * koof.getK() + (prots * koof.getP())) / koof.getQ();
+		double compCarbs = (insInjected * koof.getQ() - prots * koof.getP()) / koof.getK() - carbs;
+
+		final String compDosage = insInjected > 0 ? String.format("%.1f / %.1f %s", compDose, insInjected, captionDose)
+				: String.format("%.1f %s", compDose, captionDose);
+		textMealCompDosage.setText(compDosage);
+		textMealCompCarbs.setText(Utils.formatDoubleSigned(compCarbs) + " " + captionGramm);
+		if (compCarbs < 0)
+		{
+			textMealCompCarbs.setTextColor(getResources().getColor(R.color.meal_correction_negative));
+		}
+		else
+		{
+			textMealCompCarbs.setTextColor(getResources().getColor(R.color.meal_correction_positive));
+		}
+
+		// TODO: print expectedBS somehow
+
 		// before = null, target = null --> deltaBS = 0.0; --> dose
 		// before = null, target != null --> deltaBS = 0.0; --> dose
 		// before != null, target = null --> deltaBS = 0.0; --> dose, expectedBS

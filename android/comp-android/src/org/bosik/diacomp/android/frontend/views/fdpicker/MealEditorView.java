@@ -196,7 +196,7 @@ public class MealEditorView extends LinearLayout
 			temp[i] = "stub";
 		}
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_2,
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.view_meal_item,
 				android.R.id.text1, temp)
 		{
 			@Override

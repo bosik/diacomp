@@ -4,7 +4,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:gravity="bottom|fill"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:padding="@dimen/padding_small" >
 
     <LinearLayout
         android:id="@+id/layoutMealParent"
@@ -13,7 +14,6 @@
         android:baselineAligned="false"
         android:gravity="top"
         android:orientation="vertical"
-        android:padding="@dimen/padding_small"
         android:visibility="visible"
         tools:context=".ActivityEditorMeal" >
 
@@ -58,7 +58,7 @@
             android:id="@+id/labelMealCalculation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Calculation"
+            android:text="@string/editor_meal_header_dosage"
             android:textSize="18sp" />
 
         <View
@@ -71,77 +71,120 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:layout_marginTop="@dimen/padding_small"
-            android:background="#F0F0F0"
-            android:paddingLeft="@dimen/padding_medium" >
+            android:orientation="horizontal" >
 
-            <TextView
-                android:id="@+id/textMealShiftBS"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="+2.8 mmol/l" />
-
-            <TextView
-                android:id="@+id/textMealShiftDosage"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_gravity="top"
                 android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:paddingRight="@dimen/padding_medium"
-                android:text="@string/editor_meal_label_dose" />
+                android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/textMealShiftCarbs"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="right"
-                android:paddingRight="@dimen/padding_medium"
-                android:text="@string/editor_meal_label_correction" />
+                <LinearLayout
+                    android:id="@+id/layoutMealDosageShift"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginTop="@dimen/padding_small"
+                    android:background="#F0F0F0"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/padding_medium" >
+
+                    <TextView
+                        android:id="@+id/textMealShiftBS"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/common_bs_unit_mmol"
+                        android:textColor="@color/font_gray" />
+
+                    <TextView
+                        android:id="@+id/textMealShiftDosage"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:gravity="center_horizontal"
+                        android:paddingRight="@dimen/padding_medium"
+                        android:text="@string/editor_meal_label_dose" />
+
+                    <TextView
+                        android:id="@+id/textMealShiftCarbs"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="right"
+                        android:paddingRight="@dimen/padding_medium"
+                        android:text="@string/editor_meal_label_correction" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layoutMealDosageComp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginTop="@dimen/padding_small"
+                    android:background="#F0F0F0"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/padding_medium" >
+
+                    <TextView
+                        android:id="@+id/textMealCompBS"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/editor_meal_label_no_correction"
+                        android:textColor="@color/font_gray" />
+
+                    <TextView
+                        android:id="@+id/textMealCompDosage"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:gravity="center_horizontal"
+                        android:paddingRight="@dimen/padding_medium"
+                        android:text="@string/editor_meal_label_dose" />
+
+                    <TextView
+                        android:id="@+id/textMealCompCarbs"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="right"
+                        android:paddingRight="@dimen/padding_medium"
+                        android:text="@string/editor_meal_label_correction" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/buttonMealInfo"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:layout_marginLeft="@dimen/padding_small"
+                android:layout_marginTop="@dimen/padding_small"
+                android:text=" ? " />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/labelMealContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/padding_small"
+            android:text="@string/editor_meal_header_content"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:background="#c0c0c0"
+            android:divider="?android:dividerHorizontal" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
             android:layout_marginTop="@dimen/padding_small"
             android:background="#F0F0F0"
-            android:paddingLeft="@dimen/padding_medium" >
-
-            <TextView
-                android:id="@+id/textMealCompBS"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="@string/editor_meal_label_no_correction" />
-
-            <TextView
-                android:id="@+id/textMealCompDosage"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:paddingRight="@dimen/padding_medium"
-                android:text="@string/editor_meal_label_dose" />
-
-            <TextView
-                android:id="@+id/textMealCompCarbs"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="right"
-                android:paddingRight="@dimen/padding_medium"
-                android:text="@string/editor_meal_label_correction" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginTop="@dimen/padding_small"
-            android:background="#F0F0F0"
-            android:paddingLeft="@dimen/padding_medium" >
+            android:paddingLeft="@dimen/padding_medium"
+            android:visibility="gone" >
 
             <TextView
                 android:id="@+id/textMealStatProts"
@@ -178,20 +221,6 @@
                 android:layout_weight="1"
                 android:text="@string/editor_meal_label_stat" />
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/labelMealContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/padding_small"
-            android:text="Content"
-            android:textSize="18sp" />
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dip"
-            android:background="#c0c0c0"
-            android:divider="?android:dividerHorizontal" />
     </LinearLayout>
 
     <org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView
