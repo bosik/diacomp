@@ -1344,7 +1344,7 @@ var
 begin
   if (Index < 0) or (Index > High(FoodList)) then
   begin
-    Log(WARNING, 'EditFood(): incorrect index ignored (' + IntToStr(Index) + ')', True);
+    Log(WARNING, 'RemoveFood(): incorrect index ignored (' + IntToStr(Index) + ')', True);
     Exit;
   end;
 
@@ -1360,7 +1360,6 @@ begin
     UpdateFoodbaseFilter();
     UpdateFoodTable(False, True, False);
     {*}UpdateCombos;
-    //{*}SaveFoodBase;
   end;
 end;
 
@@ -1371,14 +1370,14 @@ procedure TForm1.RemoveDish(Index: integer);
   function AskWarning(Dish: TDishItem; DishParent: TDishItem): boolean;
   begin
     Result := MessageDlg(
-      Format(MESSAGE_CONF_REMOVE_FOOD_USED, [Dish.Name, DishParent.Name]),
+      Format(MESSAGE_CONF_REMOVE_DISH_USED, [Dish.Name, DishParent.Name]),
       mtWarning, [mbYes, mbNo], 0) = mrYes;
   end;
 
   function AskConfirm(Dish: TDishItem): boolean;
   begin
     Result := MessageDlg(
-      Format(MESSAGE_CONF_REMOVE_FOOD, [Dish.Name]),
+      Format(MESSAGE_CONF_REMOVE_DISH, [Dish.Name]),
       mtConfirmation, [mbYes, mbNo], 0) = mrYes;
   end;
 
@@ -1386,9 +1385,9 @@ var
   DishNumber: integer;
 begin
   // TODO: update
-  if (Index < 0) or (Index > High(FoodList)) then
+  if (Index < 0) or (Index > High(DishList)) then
   begin
-    Log(WARNING, 'EditFood(): incorrect index ignored (' + IntToStr(Index) + ')', True);
+    Log(WARNING, 'RemoveDish(): incorrect index ignored (' + IntToStr(Index) + ')', True);
     Exit;
   end;
 
@@ -1405,7 +1404,6 @@ begin
     // TODO: check args
     UpdateDishTable(False, True, False);
     {*}UpdateCombos;
-    //{*}SaveDishBase;
   end;
 end;
 
