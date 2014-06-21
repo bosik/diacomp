@@ -148,6 +148,24 @@ object FormMisc: TFormMisc
     TabOrder = 12
     OnClick = Button1Click
   end
+  object ButtonFoodBSCorrelation: TButton
+    Left = 8
+    Top = 440
+    Width = 201
+    Height = 25
+    Caption = 'ButtonFoodBSCorrelation'
+    TabOrder = 13
+    OnClick = ButtonFoodBSCorrelationClick
+  end
+  object ButtonVerifyLinear: TButton
+    Left = 16
+    Top = 472
+    Width = 193
+    Height = 25
+    Caption = 'ButtonVerifyLinear'
+    TabOrder = 14
+    OnClick = ButtonVerifyLinearClick
+  end
   object Timer1: TTimer
     Enabled = False
     Interval = 500

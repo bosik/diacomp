@@ -25,6 +25,8 @@ type
     ButtonCovariance: TButton;
     ButtonExportRaw: TButton;
     Button1: TButton;
+    ButtonFoodBSCorrelation: TButton;
+    ButtonVerifyLinear: TButton;
     procedure ButtonExportXmlClick(Sender: TObject);
     procedure ButtonExportJsonClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -38,6 +40,8 @@ type
     procedure ButtonCovarianceClick(Sender: TObject);
     procedure ButtonExportRawClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure ButtonFoodBSCorrelationClick(Sender: TObject);
+    procedure ButtonVerifyLinearClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -773,6 +777,167 @@ begin
 
     // TODO: restore
 
+end;
+
+{==============================================================================}
+procedure TFormMisc.ButtonFoodBSCorrelationClick(Sender: TObject);
+{==============================================================================}
+const
+  MIN_INTERVAL = 4 / HourPerDay;
+  MAX_INTERVAL = 9 / HourPerDay;
+type
+  TNode = record
+    Items: TStringArray;
+    BS: real;
+  end;
+
+  TFoodInfo = record
+    Name: string;
+    PresentedCount: integer;
+    PresentedSumm: real;
+    NonPresentedCount: integer;
+    NonPresentedSumm: real;
+  end;
+
+  function ExtractNames(Meal: TMealRecord): TStringArray;
+  var
+    i: integer;
+  begin
+    SetLength(Result, Meal.Count);
+    for i := 0 to Meal.Count - 1 do
+      Result[i] := Meal[i].Name;
+  end;
+
+var
+  Data: array of TFoodInfo;
+
+  procedure ProcessFood(const FoodName: string; BS: Real);
+  var
+    i: integer;
+  begin
+    for i := 0 to High(Data) do
+    if (Data[i].Name = FoodName) then
+    begin
+      Data[i].PresentedCount := Data[i].PresentedCount + 1;
+      Data[i].PresentedSumm := Data[i].PresentedSumm + BS;
+      Exit;
+    end;
+
+    SetLength(Data, Length(Data) + 1);
+    with Data[High(Data)] do
+    begin
+      Name := FoodName;
+      PresentedCount := 1;
+      PresentedSumm := BS;
+    end;
+  end;
+
+  procedure ProcessNode(const Node: TNode);
+  var
+    i: integer;
+  begin
+    for i := 0 to High(Node.Items) do
+      ProcessFood(Node.Items[i], Node.BS);
+  end;
+
+var
+  Recs: TRecordList;
+  buf: TStringArray;
+  Nodes: array of TNode;
+  MealTime: TDateTime;
+  i: integer;
+  TotalBS: real;
+  AvgBS: real;
+begin
+  // STEP 1: extracting data for analysis
+
+  Recs := LocalSource.FindPeriod(EncodeDate(2009, 11, 1), EncodeDate(2015, 01, 01));
+  try
+    for i := Low(Recs) to High(Recs) do
+    begin
+      if (Recs[i].RecType = TMealRecord) then
+      begin
+        buf := ExtractNames(TMealRecord(Recs[i]));
+        MealTime := Recs[i].NativeTime;
+      end else
+      if (Recs[i].RecType = TBloodRecord) and
+         (Recs[i].NativeTime - MealTime > MIN_INTERVAL) and
+         (Recs[i].NativeTime - MealTime < MAX_INTERVAL) then
+      begin
+        SetLength(Nodes, Length(Nodes) + 1);
+        with Nodes[High(Nodes)] do
+        begin
+          Items := buf;
+          BS := TBloodRecord(Recs[i]).Value;
+        end;
+      end;
+    end;
+  finally
+    FreeRecords(Recs);
+  end;
+
+  // STEP 2: analysis
+
+  TotalBS := 0.0;
+  for i := 0 to High(Nodes) do
+  begin
+    ProcessNode(Nodes[i]);
+    TotalBS := TotalBS + Nodes[i].BS;
+  end;
+
+  AvgBS := TotalBS / Length(Nodes);
+
+  for i := 0 to High(Data) do
+  begin
+    Data[i].NonPresentedCount := Length(Nodes) - Data[i].PresentedCount;
+    Data[i].NonPresentedSumm := TotalBS - Data[i].PresentedSumm; 
+  end;
+
+  // STEP 3: output
+  with TStringList.Create do
+  try
+    Add(Format('Meals analyzed: %d', [Length(Nodes)]));
+    Add(Format('Foods analyzed: %d', [Length(Data)]));
+    Add(Format('Average BS: %.3f', [AvgBS]));
+    Add('');
+
+    for i := 0 to High(Data) do
+      Add(Format(
+        '%s'#9'%.4f'#9'%.3f'#9'%.3f'#9'%.3f',
+        [
+          Data[i].Name,
+          Data[i].PresentedCount / Length(Nodes) * 100,
+          Data[i].NonPresentedSumm / Data[i].NonPresentedCount,
+          Data[i].PresentedSumm / Data[i].PresentedCount,
+          Data[i].PresentedSumm / Data[i].PresentedCount - Data[i].NonPresentedSumm / Data[i].NonPresentedCount
+        ]
+      ));
+    SaveToFile('temp\Food_affect.txt');
+  finally
+    Free;
+  end;
+end;
+
+procedure TFormMisc.ButtonVerifyLinearClick(Sender: TObject);
+var
+  s: TStrings;
+  i: integer;
+begin
+  s := TStringList.Create;
+  try
+    s := TStringList.Create;
+
+    for i := 0 to High(AnList) do
+    begin
+      if (AnList[i].Ins > 1) then
+      S.Add(Format('%.4f'#9'%.1f', [
+        AnList[i].Carbs / AnList[i].Ins,
+        AnList[i].BSOut - AnList[i].BSIn]));
+    end;
+    S.SaveToFile('temp\linearity.txt');
+  finally
+    s.Free;
+  end;
 end;
 
 end.
