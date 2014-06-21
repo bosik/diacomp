@@ -32,7 +32,7 @@
     <string name="editor_ins_title">Инсулин</string>
     <string name="editor_meal_field_fooddish">Продукт/блюдо</string>
     <string name="editor_meal_field_mass">Масса, г</string>
-    <string name="editor_meal_label_carbs">г угл.</string>
+    <string name="editor_meal_label_stat">г угл.</string>
     <string name="editor_meal_label_correction">+8 г</string>
     <string name="editor_meal_label_dose">ед.</string>
     <string name="editor_meal_title">Приём пищи</string>
