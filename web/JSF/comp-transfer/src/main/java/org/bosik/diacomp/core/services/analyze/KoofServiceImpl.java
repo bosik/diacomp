@@ -7,18 +7,17 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.utils.Utils;
 
 public class KoofServiceImpl implements KoofService
 {
 	private final DiaryService	diaryService;
 	private final AnalyzeCore	analyzeCore;
-	private Date				timeFrom;
-	private Date				timeTo;
+	private int					analyzePeriod;
+	private double				adaptation;
 
 	private KoofList			koofs;
 
-	// TODO: move hardcoded constants outside
-	private static final double	adaptation	= 0.99;		// [0..0.1]
 	private static final Koof	STD_KOOF	= new Koof();
 	{
 		STD_KOOF.setK(0.25);
@@ -26,24 +25,28 @@ public class KoofServiceImpl implements KoofService
 		STD_KOOF.setP(0.0);
 	}
 
-	public KoofServiceImpl(DiaryService diaryService, AnalyzeCore analyzeCore)
+	/**
+	 * 
+	 * @param diaryService
+	 * @param analyzeCore
+	 * @param analyzePeriod
+	 *            In days
+	 * @param adaptation
+	 *            [0 .. 0.1]
+	 */
+	public KoofServiceImpl(DiaryService diaryService, AnalyzeCore analyzeCore, int analyzePeriod, double adaptation)
 	{
 		this.diaryService = diaryService;
 		this.analyzeCore = analyzeCore;
+		this.analyzePeriod = analyzePeriod;
+		this.adaptation = adaptation;
 	}
 
 	@Override
 	public void update()
 	{
-		if (timeFrom == null)
-		{
-			throw new NullPointerException("timeFrom is null; use setTimeRange() method");
-		}
-		if (timeTo == null)
-		{
-			throw new NullPointerException("timeTo is null; use setTimeRange() method");
-		}
-
+		Date timeTo = new Date();
+		Date timeFrom = new Date(timeTo.getTime() - (analyzePeriod * Utils.MsecPerDay));
 		List<Versioned<DiaryRecord>> recs = diaryService.findBetween(timeFrom, timeTo, false);
 		koofs = AnalyzeExtracter.analyze(recs, analyzeCore, adaptation);
 	}
@@ -56,19 +59,12 @@ public class KoofServiceImpl implements KoofService
 			update();
 		}
 
+		// that means analyzing failed
 		if (koofs == null)
 		{
 			return STD_KOOF;
 		}
 
 		return koofs.getKoof(time);
-	}
-
-	@Override
-	public void setTimeRange(Date timeFrom, Date timeTo)
-	{
-		this.timeFrom = timeFrom;
-		this.timeTo = timeTo;
-		update();
 	}
 }
