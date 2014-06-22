@@ -1,7 +1,6 @@
 package org.bosik.diacomp.core.services;
 
 import static org.junit.Assert.assertEquals;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
@@ -32,11 +31,8 @@ public class TestAnalyzeService
 	{
 		diaryService = new FakeDiaryService();
 		analyzeCore = new AnalyzeCoreImpl(25.0);
-		koofService = new KoofServiceImpl(diaryService, analyzeCore);
-
-		Date timeFrom = Utils.date(2000, 1, 1);
-		Date timeTo = Utils.date(2030, 01, 01);
-		koofService.setTimeRange(timeFrom, timeTo);
+		koofService = new KoofServiceImpl(diaryService, analyzeCore, 3650, 0.99);
+		koofService.update();
 	}
 
 	@Test

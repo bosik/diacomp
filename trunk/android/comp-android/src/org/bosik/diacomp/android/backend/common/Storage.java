@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
-import org.bosik.diacomp.android.backend.features.analyze.HardcodedAnalyzeService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryWebService;
 import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
@@ -15,6 +14,7 @@ import org.bosik.diacomp.android.backend.features.search.TagLocalService;
 import org.bosik.diacomp.android.frontend.activities.ActivityPreferences;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
+import org.bosik.diacomp.core.services.analyze.AnalyzeCoreImpl;
 import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.KoofServiceImpl;
 import org.bosik.diacomp.core.services.diary.DiaryService;
@@ -119,18 +119,16 @@ public class Storage
 
 		if (null == analyzeCore)
 		{
-			// analyzeCore = new AnalyzeCoreImpl(40.0);
-			analyzeCore = new HardcodedAnalyzeService();
+			analyzeCore = new AnalyzeCoreImpl(40.0);
+			// analyzeCore = new HardcodedAnalyzeService();
 		}
 
 		if (koofService == null)
 		{
-			Date timeTo = new Date();
-			Date timeFrom = new Date(timeTo.getTime() - (ANALYZE_DAYS_PERIOD * Utils.MsecPerDay));
-
 			long time = System.currentTimeMillis();
-			koofService = new KoofServiceImpl(localDiary, analyzeCore);
-			koofService.setTimeRange(timeFrom, timeTo); // analyzing here
+			// TODO: hardcoded adaptation
+			koofService = new KoofServiceImpl(localDiary, analyzeCore, ANALYZE_DAYS_PERIOD, 0.99);
+			koofService.update(); // analyzing here
 			Log.i(TAG, "Diary analyzed in " + (System.currentTimeMillis() - time) + " msec");
 		}
 
