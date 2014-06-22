@@ -15,7 +15,7 @@ public class KoofServiceImpl implements KoofService
 	private KoofList			koofs;
 
 	// TODO: move hardcoded constants outside
-	private static final double	adaptation	= 0.495;		//0.25;		// [0..0.5]
+	private static final double	adaptation	= 0.99;		// [0..0.1]
 	private static final Koof	STD_KOOF	= new Koof();
 	{
 		STD_KOOF.setK(0.25);

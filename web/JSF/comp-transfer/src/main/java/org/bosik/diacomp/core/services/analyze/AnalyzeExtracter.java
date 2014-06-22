@@ -208,7 +208,8 @@ public class AnalyzeExtracter
 
 	private static double f(double x, double adaptation)
 	{
-		return ((adaptation - 0.5) * Math.sin(Math.PI * (x - 0.5))) + 0.5;
+		//return (adaptation - 0.5d) * Math.sin(Math.PI * (x - 0.5d)) + 0.5d;
+		return 1.0 + 0.5 * adaptation * (Math.sin(Math.PI * (x - 0.5)) - 1);
 	}
 
 	/**
@@ -220,43 +221,46 @@ public class AnalyzeExtracter
 	 */
 	public static List<AnalyzeRec> formatRecords(List<PrimeRec> recs, double adaptation)
 	{
-		long curTime = new Date().getTime();
-		long min = curTime;
-
-		for (PrimeRec rec : recs)
-		{
-			if (rec.getDate().getTime() < min)
-			{
-				min = rec.getDate().getTime();
-			}
-		}
-
-		// building
-
 		List<AnalyzeRec> result = new ArrayList<AnalyzeRec>();
 
-		for (PrimeRec rec : recs)
+		if (!recs.isEmpty())
 		{
-			AnalyzeRec item = new AnalyzeRec();
-			item.setProts(rec.getProts());
-			item.setFats(rec.getFats());
-			item.setCarbs(rec.getCarbs());
-			item.setIns(rec.getInsValue());
-			item.setBsIn(rec.getBloodInValue());
-			item.setBsOut(rec.getBloodOutValue());
-			item.setTime((rec.getFoodTime() + 4 * 60) % Utils.MinPerDay); // FIXME
+			// calculating min
 
-			double x = (double)(rec.getDate().getTime() - min) / (curTime - min);
-			double w = f(x, adaptation);
-			item.setWeight(w);
+			long curTime = new Date().getTime();
+			long min = curTime;
 
-			result.add(item);
-		}
+			for (PrimeRec rec : recs)
+			{
+				if (rec.getDate().getTime() < min)
+				{
+					min = rec.getDate().getTime();
+				}
+			}
 
-		// normalization
+			// building
 
-		if (!result.isEmpty())
-		{
+			for (PrimeRec rec : recs)
+			{
+				AnalyzeRec item = new AnalyzeRec();
+				item.setProts(rec.getProts());
+				item.setFats(rec.getFats());
+				item.setCarbs(rec.getCarbs());
+				item.setIns(rec.getInsValue());
+				item.setBsIn(rec.getBloodInValue());
+				item.setBsOut(rec.getBloodOutValue());
+				item.setTime((rec.getFoodTime() + 4 * 60) % Utils.MinPerDay); // FIXME
+
+				double x = (double)(rec.getDate().getTime() - min) / (curTime - min);
+				double w = f(x, adaptation);
+				//System.out.println(String.format("f(%.2f, %.2f) = %.4f", x, adaptation, w));
+				item.setWeight(w);
+
+				result.add(item);
+			}
+
+			// normalization
+
 			double minW = result.get(0).getWeight();
 			double maxW = result.get(0).getWeight();
 
@@ -337,6 +341,13 @@ public class AnalyzeExtracter
 	{
 		List<PrimeRec> recs = extractRecords(source, fromTime, toTime);
 		List<AnalyzeRec> formatted = formatRecords(recs, adaptation);
-		return analyzer.analyze(formatted);
+
+		for (AnalyzeRec rec : formatted)
+		{
+			System.out.println(String.format("%d\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", rec.getTime(), rec.getWeight(),
+					rec.getProts(), rec.getFats(), rec.getCarbs(), rec.getIns(), rec.getBsOut() - rec.getBsIn()));
+		}
+
+		return null;//analyzer.analyze(formatted);
 	}
 }
