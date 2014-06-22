@@ -52,9 +52,11 @@ type
     function DoGet(URL: string; Autocheck: boolean = True): TStdResponse;
     function DoPost(URL: string; const Par: TParamList; Autocheck: boolean = True): TStdResponse;
     function DoPut(URL: string; const Par: TParamList; Autocheck: boolean = True): TStdResponse;
+
+    //procedure PrintProtocolVersion(const Msg: string = 'TDiacompClient');
   public
     procedure CheckResponse(const Response: TStdResponse);
-    
+
     function DoGetSmart(const URL: string): TStdResponse;
     function DoPostSmart(const URL: string; const Par: TParamList): TStdResponse;
     function DoPutSmart(const URL: string; const Par: TParamList): TStdResponse;
@@ -85,10 +87,30 @@ var
 implementation
 
 const
-  STATUS_OK                 = 0;
+  CURRENT_API_VERSION               = '20';
 
-const
-  CURRENT_API_VERSION  = '20';
+  STATUS_OK                         = 0;
+  STATUS_NOT_FOUND                  = 404;
+  STATUS_DEPRECATED_STILL_SUPPORTED = 4050;
+  STATUS_DEPERECATED                = 4051;
+  STATUS_BAD_CREDENTIALS            = 4010;
+  STATUS_NOT_AUTHORIZED             = 4011;
+  STATUS_SERVER_ERROR               = 500;
+
+  TIME_RECONNECT                    = 1200;
+
+  function PrintParams(const Par: TParamList): string;
+  var
+    i: integer;
+  begin
+    Result := '';
+    for i := Low(Par) to High(Par) do
+    begin
+      Result := Result + Par[i];
+      if (i < High(Par)) then
+        Result := Result + '&';
+    end;
+  end;
 
 { TStdResponse }
 
@@ -179,6 +201,7 @@ begin
   FHTTP.HandleRedirects := True;
   FHTTP.ProtocolVersion := pv1_1;
   FHTTP.Request.ContentEncoding := 'UTF-8';
+  // {#}PrintProtocolVersion('TDiacompClient.Create: ');
 end;
 
 {==============================================================================}
@@ -192,16 +215,15 @@ end;
 procedure TDiacompClient.CheckResponse(const Response: TStdResponse);
 {==============================================================================}
 begin
-  // TODO: constants
   case Response.Code of
-    0:    ; // life is good
-    404:  ; // something is not found
-    4050: ; // API is about to be deprecated; ignore
-    4051: raise EAPIException.Create('Deprecated API version');
-    4010: raise EBadCredentialsException.Create('Bad credentials');
-    4011: raise ENotAuthorizedException.Create('Not authorized');
-    500:  raise EInternalServerException.Create('Internal server error');
-    else  raise EFormatException.CreateFmt('Unknown response; code: %d, message: %s', [Response.Code, Response.Response])
+    STATUS_OK:                         ; // life is good
+    STATUS_NOT_FOUND:                  ; // something is not found
+    STATUS_DEPRECATED_STILL_SUPPORTED: ; // API is about to be deprecated; ignore
+    STATUS_DEPERECATED:     raise EAPIException.Create('Deprecated API version');
+    STATUS_BAD_CREDENTIALS: raise EBadCredentialsException.Create('Bad credentials');
+    STATUS_NOT_AUTHORIZED:  raise ENotAuthorizedException.Create('Not authorized');
+    STATUS_SERVER_ERROR:    raise EInternalServerException.Create('Internal server error');
+    else                    raise EFormatException.CreateFmt('Unknown response; code: %d, message: %s', [Response.Code, Response.Response])
   end;
 end;
 
@@ -213,7 +235,9 @@ var
   S: string;
 begin
   URL := ChkSpace(URL);
+  FHTTP.ProtocolVersion := pv1_1;
   {#}Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '")');
+  // {#}PrintProtocolVersion('TDiacompClient.DoGet.1');
   {#} Tick := GetTickCount();
   S := FHTTP.Get(URL);
   {#}Log(VERBOUS, Format('TDiacompClient.DoGet(): responsed in %d msec: "%s"', [GetTickCount - Tick, S]));
@@ -221,25 +245,12 @@ begin
   Result := TStdResponse.Create(S);
   if (Autocheck) then
     CheckResponse(Result);
+  // {#}PrintProtocolVersion('TDiacompClient.DoGet.2');
 end;
 
 {==============================================================================}
 function TDiacompClient.DoPost(URL: string; const Par: TParamList; Autocheck: boolean): TStdResponse;
 {==============================================================================}
-
-  function PrintParams: string;
-  var
-    i: integer;
-  begin
-    Result := '';
-    for i := Low(Par) to High(Par) do
-    begin
-      Result := Result + Par[i];
-      if (i < High(Par)) then
-        Result := Result + '&';
-    end;
-  end;
-
 var
   Data: TStrings;
   i: integer;
@@ -247,7 +258,9 @@ var
   S: string;
 begin
   URL := ChkSpace(URL);
-  {#}Log(VERBOUS, 'TDiacompClient.DoPost("' + URL + '"), ' + PrintParams());
+  FHTTP.ProtocolVersion := pv1_1;
+  {#}Log(VERBOUS, 'TDiacompClient.DoPost("' + URL + '"), ' + PrintParams(Par));
+  // {#}PrintProtocolVersion('TDiacompClient.DoPost.1');
 
   Data := TStringList.Create;
   try
@@ -264,6 +277,7 @@ begin
       CheckResponse(Result);
   finally
     //FHTTP.Disconnect;
+    // {#}PrintProtocolVersion('TDiacompClient.DoPost.2');
     Data.Free;
   end;
 end;
@@ -271,20 +285,6 @@ end;
 {==============================================================================}
 function TDiacompClient.DoPut(URL: string; const Par: TParamList; Autocheck: boolean): TStdResponse;
 {==============================================================================}
-
-  function PrintParams: string;
-  var
-    i: integer;
-  begin
-    Result := '';
-    for i := Low(Par) to High(Par) do
-    begin
-      Result := Result + Par[i];
-      if (i < High(Par)) then
-        Result := Result + '&';
-    end;
-  end;
-
 var
   Data: TStrings;
   i: integer;
@@ -293,7 +293,9 @@ var
   S: string;
 begin
   URL := ChkSpace(URL);
-  {#}Log(VERBOUS, 'TDiacompClient.DoPut("' + URL + '"), ' + PrintParams());
+  FHTTP.ProtocolVersion := pv1_1;
+  {#}Log(VERBOUS, 'TDiacompClient.DoPut("' + URL + '"), ' + PrintParams(Par));
+  // {#}PrintProtocolVersion('TDiacompClient.DoPut.1');
 
   Data := TStringList.Create;
   try
@@ -304,6 +306,7 @@ begin
     {#} Tick := GetTickCount();
     Req := Trim(Data.Text);
     Req := ReplaceAll(Req, '%', '%25');
+
     S := FHTTP.Put(URL, TStringStream.Create(Req));
 
     {#}Log(VERBOUS, Format('TDiacompClient.DoPut(): responsed in %d msec: "%s"', [GetTickCount - Tick, S]));
@@ -314,6 +317,7 @@ begin
   finally
     //FHTTP.Disconnect;
     Data.Free;
+    // {#}PrintProtocolVersion('TDiacompClient.DoPut.2');
   end;
 end;
 
@@ -324,9 +328,9 @@ begin
   try
     Result := DoGet(URL, False);
     // TODO: implement POST / PUT in this manner
-    // TODO: constants
-    if (Result.Code = 4011) then
+    if (Result.Code = STATUS_NOT_AUTHORIZED) then
     begin
+      Log(INFO, 'TDiacompClient.DoGetSmart(): Session expired, re-login');
       Login();
       Result := DoGet(URL); // здесь не ловим возможное исключение отсутствия авторизации
     end;
@@ -334,8 +338,11 @@ begin
     //on E: ENotAuthorizedException do
     on SocketError: EIdSocketError do
     begin
+      Log(ERROR, 'TDiacompClient.DoGetSmart(): Waiting for timeout due to SocketException occured: ' + SocketError.Message);
+      // {#}PrintProtocolVersion('TDiacompClient.DoGetSmart().1');
       FHTTP.Disconnect;
-      Wait(1200);
+      // {#}PrintProtocolVersion('TDiacompClient.DoGetSmart().2');
+      Wait(TIME_RECONNECT);
       Result := DoGet(URL);
     end;
   end;
@@ -350,14 +357,18 @@ begin
   except
     on E: ENotAuthorizedException do
     begin
+      Log(INFO, 'TDiacompClient.DoPostSmart(): Session expired, re-login');
       Login();
       Result := DoPost(URL, Par); // здесь не ловим возможное исключение отсутствия авторизации
     end;
 
     on SocketError: EIdSocketError do
     begin
+      Log(ERROR, 'TDiacompClient.DoPostSmart(): Waiting for timeout due to SocketException occured: ' + SocketError.Message);
+      // {#}PrintProtocolVersion('TDiacompClient.DoPostSmart().1');
       FHTTP.Disconnect;
-      Wait(1200);
+      // {#}PrintProtocolVersion('TDiacompClient.DoPostSmart().2');
+      Wait(TIME_RECONNECT);
       Result := DoPost(URL, Par);
     end;
   end;
@@ -372,14 +383,18 @@ begin
   except
     on E: ENotAuthorizedException do
     begin
+      Log(INFO, 'TDiacompClient.DoPutSmart(): Session expired, re-login');
       Login();
       Result := DoPut(URL, Par); // здесь не ловим возможное исключение отсутствия авторизации
     end;
 
     on SocketError: EIdSocketError do
     begin
+      Log(ERROR, 'TDiacompClient.DoPutSmart(): Waiting for timeout due to SocketException occured: ' + SocketError.Message);
+      // {#}PrintProtocolVersion('TDiacompClient.DoPutSmart().1');
       FHTTP.Disconnect;
-      Wait(1200);
+      // {#}PrintProtocolVersion('TDiacompClient.DoPutSmart().2');
+      Wait(TIME_RECONNECT);
       Result := DoPut(URL, Par);
     end;
   end;
@@ -404,12 +419,9 @@ begin
   Response := DoPost(Query, par);
   {#}Log(VERBOUS, 'TDiacompClient.Login(): quered OK, resp = "' + Response.Encode() + '"');
 
-  // TODO: constants
-
   CheckResponse(Response);
 
-  // TODO: constants
-  if (Response.Code = 0) then
+  if (Response.Code = STATUS_OK) then
     {#}Log(VERBOUS, 'TDiacompClient.Login(): logged OK');
 
   {#}Log(VERBOUS, 'TDiacompClient.Login(): done');
