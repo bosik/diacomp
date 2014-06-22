@@ -96,7 +96,7 @@ begin
     Result := False;
   end else
   begin
-    Entity.NativeTime := LocalToUTC(Trunc(DatePicker.Date) + Frac(TimePicker.Time));
+    Entity.Time := LocalToUTC(Trunc(DatePicker.Date) + Frac(TimePicker.Time));
     Entity.Finger := ComboFinger.ItemIndex;
     Entity.Value := X;
     Result := True;
@@ -118,7 +118,7 @@ begin
     ComboFinger.ItemIndex := Entity.Finger;
   end else
   begin
-    LocalTime := UTCToLocal(Entity.NativeTime);
+    LocalTime := UTCToLocal(Entity.Time);
     TimePicker.Time := LocalTime;
     DatePicker.Date := LocalTime;
     EditValue.Text := FloatToStr(Entity.Value);

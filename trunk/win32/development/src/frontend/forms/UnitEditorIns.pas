@@ -83,7 +83,7 @@ begin
     Result := False;
   end else
   begin
-    Entity.NativeTime := LocalToUTC(Trunc(DatePicker.Date) + Frac(TimePicker.Time));
+    Entity.Time := LocalToUTC(Trunc(DatePicker.Date) + Frac(TimePicker.Time));
     Entity.Value := X;
     Result := True;
   end;
@@ -103,7 +103,7 @@ begin
     EditValue.Text := '';
   end else
   begin
-    LocalTime := UTCToLocal(Entity.NativeTime);
+    LocalTime := UTCToLocal(Entity.Time);
     TimePicker.Time := LocalTime;
     DatePicker.Date := LocalTime;
     EditValue.Text := FloatToStr(Entity.Value);

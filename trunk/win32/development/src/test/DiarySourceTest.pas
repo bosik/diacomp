@@ -121,7 +121,7 @@ var
   k: integer;
 begin
   // common
-  CheckEquals(DateTimeToStr(ExpRec.NativeTime), DateTimeToStr(ActRec.NativeTime), 'Time differs');
+  CheckEquals(DateTimeToStr(ExpRec.Time), DateTimeToStr(ActRec.Time), 'Time differs');
   CheckEquals(ExpRec.ID, ActRec.ID, 'ID differs');
   CheckEquals(DateTimeToStr(ExpRec.TimeStamp), DateTimeToStr(ActRec.TimeStamp), 'TimeStamp differs');
   CheckEquals(ExpRec.Version, ActRec.Version, 'Version differs');
@@ -236,7 +236,7 @@ begin
 
   // find by period
   OrgRec := BuildNoteRecord();
-  RestoredRecs := Source.FindPeriod(OrgRec.NativeTime - 5 / SecPerDay, OrgRec.NativeTime + 5 / SecPerDay);
+  RestoredRecs := Source.FindPeriod(OrgRec.Time - 5 / SecPerDay, OrgRec.Time + 5 / SecPerDay);
   CheckEquals(1, Length(RestoredRecs));
   CompareRecs(OrgRec, RestoredRecs[0]);
   RestoredRecs[0].Free;
@@ -262,7 +262,7 @@ begin
 
   // -------------------------
 
-  RestoredRecs := Source.FindPeriod(OrgRec.NativeTime - 5 / SecPerDay, OrgRec.NativeTime + 5 / SecPerDay);
+  RestoredRecs := Source.FindPeriod(OrgRec.Time - 5 / SecPerDay, OrgRec.Time + 5 / SecPerDay);
   CheckEquals(1, Length(RestoredRecs));
   Source.Delete(OrgRec.ID);
 
@@ -270,7 +270,7 @@ begin
   Source.Free;
   SetupSource;
   
-  RestoredRecs := Source.FindPeriod(OrgRec.NativeTime - 5 / SecPerDay, OrgRec.NativeTime + 5 / SecPerDay);
+  RestoredRecs := Source.FindPeriod(OrgRec.Time - 5 / SecPerDay, OrgRec.Time + 5 / SecPerDay);
   CheckEquals(0, Length(RestoredRecs));
 end;
 

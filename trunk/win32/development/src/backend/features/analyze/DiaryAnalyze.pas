@@ -145,7 +145,7 @@ begin
       if (CurIns > MaxIns) then
       begin
         MaxIns := CurIns;
-        TimeI := Items[i].NativeTime;
+        TimeI := Items[i].Time;
       end;
     end else
 
@@ -160,7 +160,7 @@ begin
       if (CurCarbs > MaxCarbs) then
       begin
         MaxCarbs := CurCarbs;
-        TimeF := Items[i].NativeTime;
+        TimeF := Items[i].Time;
       end;
     end else
 
@@ -170,7 +170,7 @@ begin
     begin
       if (PrevBloodValue = -1) then
       begin
-        PrevBloodTime := Items[i].NativeTime;
+        PrevBloodTime := Items[i].Time;
         PrevBloodValue := TBloodRecord(Items[i]).Value;
         InitCounters;
       end else
@@ -193,19 +193,19 @@ begin
           List[j].Prots := Prots;
           List[j].Fats := Fats;
           List[j].Carbs := Carbs;
-          List[j].BloodOutTime := GetAbsLocalMinutes(Items[i].NativeTime);
+          List[j].BloodOutTime := GetAbsLocalMinutes(Items[i].Time);
           List[j].BloodOutValue := TBloodRecord(Items[i]).Value;
           List[j].Date := UTCToLocal(TimeF);
         end;
 
         { подготовка к следующему циклу }
-        PrevBloodTime := Items[i].NativeTime;
+        PrevBloodTime := Items[i].Time;
         PrevBloodValue := TBloodRecord(Items[i]).Value;
         InitCounters;
       end else
       begin
         { замер нормальный, но перед ним ни еды, ни инсулина }
-        PrevBloodTime := Items[i].NativeTime;
+        PrevBloodTime := Items[i].Time;
         PrevBloodValue := TBloodRecord(Items[i]).Value;
         InitCounters;
       end;

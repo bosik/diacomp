@@ -193,7 +193,7 @@ begin
     for i := 0 to High(Recs) do
     if (RecType = nil) or (RecType = Recs[i].RecType) then
     begin
-      CurDist := abs(Recs[i].NativeTime - TimeUTC);
+      CurDist := abs(Recs[i].Time - TimeUTC);
       if (CurDist < MinDist) then
       begin
         MinDist := CurDist;

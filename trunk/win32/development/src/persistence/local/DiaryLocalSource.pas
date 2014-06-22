@@ -142,7 +142,7 @@ begin
     if (RecType = 'note')  then Result := ParseNote(json) else
       raise Exception.Create('Unsupported record type: ' + RecType);  }
 
-    Result.NativeTime := NativeTime;
+    Result.Time := Time;
     Result.TimeStamp := TimeStamp;
     Result.ID := ID;
     Result.Version := Version;
@@ -251,7 +251,7 @@ begin
   Data := TlkJSON.GenerateText(Json);
 
   // cache
-  NativeTime := Rec.NativeTime;
+  Time := Rec.Time;
 end;
 
 {==============================================================================}
@@ -270,7 +270,7 @@ begin
   SVersion := TextBefore(S, #9);   S := TextAfter(S, #9);
   SDeleted := TextBefore(S, #9);   S := TextAfter(S, #9);
 
-  NativeTime := StrToDateTime(STime, STD_DATETIME_FMT);
+  Time := StrToDateTime(STime, STD_DATETIME_FMT);
   TimeStamp := StrToDateTime(STimeStamp, STD_DATETIME_FMT);
   ID := SID;
   Version := StrToInt(SVersion);
@@ -284,7 +284,7 @@ function TRecordData.Write: string;
 begin
   Result := Format('%s'#9'%s'#9'%s'#9'%d'#9'%s'#9'%s',
     [
-      DateTimeToStr(NativeTime, STD_DATETIME_FMT),
+      DateTimeToStr(Time, STD_DATETIME_FMT),
       DateTimeToStr(TimeStamp, STD_DATETIME_FMT),
       ID,
       Version,
@@ -570,7 +570,7 @@ procedure TDiaryLocalSource.SaveToFile(const FileName: string);
   function BlockRecordData(R: TRecordData): string;
   begin
     Result := Format('%s'#9'%s'#9'%s'#9'%d'#9'%s'#9'%s',
-      [DateTimeToStr(R.NativeTime, STD_DATETIME_FMT),
+      [DateTimeToStr(R.Time, STD_DATETIME_FMT),
        DateTimeToStr(R.TimeStamp, STD_DATETIME_FMT),
        R.ID,
        R.Version,
@@ -648,7 +648,7 @@ begin
     Changed := False;
 
     { прогон вверх }
-    while (Result > 0)and(FRecords[Result - 1].NativeTime > Temp.NativeTime) do
+    while (Result > 0)and(FRecords[Result - 1].Time > Temp.Time) do
     begin
       FRecords[Result] := FRecords[Result - 1];
       dec(Result);
@@ -656,7 +656,7 @@ begin
     end;
 
     { прогон вниз }
-    while (Result < High(FRecords))and(FRecords[Result + 1].NativeTime < Temp.NativeTime) do
+    while (Result < High(FRecords))and(FRecords[Result + 1].Time < Temp.Time) do
     begin
       FRecords[Result] := FRecords[Result + 1];
       inc(Result);
@@ -712,8 +712,8 @@ begin
 
   for i := 0 to High(FRecords) do
   if (not FRecords[i].Deleted) and
-     (FRecords[i].NativeTime >= TimeFrom) and
-     (FRecords[i].NativeTime <= TimeTo) then
+     (FRecords[i].Time >= TimeFrom) and
+     (FRecords[i].Time <= TimeTo) then
   begin
     SetLength(Result, Length(Result) + 1);
     Result[High(Result)] := FRecords[i].Deserialize;

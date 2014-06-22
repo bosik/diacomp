@@ -74,7 +74,7 @@ end;
 function TFormEditorMeal.ReadEntityFromGUI(): boolean;
 {==============================================================================}
 begin
-  Entity.NativeTime := LocalToUTC(Trunc(DatePicker.Date) + Frac(TimePicker.Time));
+  Entity.Time := LocalToUTC(Trunc(DatePicker.Date) + Frac(TimePicker.Time));
   Entity.ShortMeal := CheckShortMeal.Checked;
   Result := True;
 end;
@@ -93,7 +93,7 @@ begin
     CheckShortMeal.Checked := False;
   end else
   begin
-    LocalTime := UTCToLocal(Entity.NativeTime);
+    LocalTime := UTCToLocal(Entity.Time);
     TimePicker.Time := LocalTime;
     DatePicker.Date := LocalTime;
     CheckShortMeal.Checked := Entity.ShortMeal;

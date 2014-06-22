@@ -858,11 +858,11 @@ begin
       if (Recs[i].RecType = TMealRecord) then
       begin
         buf := ExtractNames(TMealRecord(Recs[i]));
-        MealTime := Recs[i].NativeTime;
+        MealTime := Recs[i].Time;
       end else
       if (Recs[i].RecType = TBloodRecord) and
-         (Recs[i].NativeTime - MealTime > MIN_INTERVAL) and
-         (Recs[i].NativeTime - MealTime < MAX_INTERVAL) then
+         (Recs[i].Time - MealTime > MIN_INTERVAL) and
+         (Recs[i].Time - MealTime < MAX_INTERVAL) then
       begin
         SetLength(Nodes, Length(Nodes) + 1);
         with Nodes[High(Nodes)] do

@@ -20,13 +20,11 @@ type
   TCustomRecord = class (TVersioned)
   private
     FTime: TDateTime;               // UTC
-  protected
-    function GetTime(): integer;
   public
+    function TimeInMinutes(): integer;
     function RecType: TClassCustomRecord;
 
-    property Time_: integer read GetTime;
-    property NativeTime: TDateTime read FTime write FTime;
+    property Time: TDateTime read FTime write FTime;
   end;
 
   TRecordList = array of TCustomRecord;
@@ -144,7 +142,7 @@ end;
 { TCustomRecord }
 
 {==============================================================================}
-function TCustomRecord.GetTime: integer;
+function TCustomRecord.TimeInMinutes: integer;
 {==============================================================================}
 begin
   Result := Round(UTCToLocal(FTime) * MinPerDay) mod MinPerDay;
@@ -434,21 +432,21 @@ begin
   begin
     if (Recs[i].RecType = TInsRecord) then
     begin
-      CurFreeTime := Max(CurFreeTime, Recs[i].NativeTime + InsPeriod);
+      CurFreeTime := Max(CurFreeTime, Recs[i].Time + InsPeriod);
     end else
 
     if (Recs[i].RecType = TMealRecord) then
     begin
       if TMealRecord(Recs[i]).Carbs > 0 then
          if TMealRecord(Recs[i]).ShortMeal then
-           CurFreeTime := Max(CurFreeTime, Recs[i].NativeTime + ShortMealPeriod)
+           CurFreeTime := Max(CurFreeTime, Recs[i].Time + ShortMealPeriod)
          else
-           CurFreeTime := Max(CurFreeTime, Recs[i].NativeTime + StdMealPeriod);
+           CurFreeTime := Max(CurFreeTime, Recs[i].Time + StdMealPeriod);
     end else
 
     if (Recs[i].RecType = TBloodRecord) then
     begin
-      TBloodRecord(Recs[i]).PostPrand := (Recs[i].NativeTime < CurFreeTime);
+      TBloodRecord(Recs[i]).PostPrand := (Recs[i].Time < CurFreeTime);
     end;
   end;
 end;

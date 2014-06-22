@@ -1159,7 +1159,7 @@ begin
           if (TBloodRecord(CurrentPage[i]).Finger > -1) then
             AddPanel(
                    i,
-                   CurrentPage[i].NativeTime,
+                   CurrentPage[i].Time,
                    FmtArray(RealToStrZero(TBloodRecord(CurrentPage[i]).Value) + '  ' +
                    ShortFingerNames[TBloodRecord(CurrentPage[i]).Finger]),
                    [{fsBold}]
@@ -1167,7 +1167,7 @@ begin
           else
             AddPanel(
                    i,
-                   CurrentPage[i].NativeTime,
+                   CurrentPage[i].Time,
                    FmtArray(RealToStrZero(TBloodRecord(CurrentPage[i]).Value)),
                    [{fsBold}]
                  )
@@ -1176,21 +1176,21 @@ begin
       if (CurrentPage[i].RecType = TInsRecord) then
         AddPanel(
                    i,
-                   CurrentPage[i].NativeTime,
+                   CurrentPage[i].Time,
                    FmtArray(RealToStr(TInsRecord(CurrentPage[i]).Value)+' ед'),
                    []
                  ) else
       if (CurrentPage[i].RecType = TMealRecord) then
         AddPanel(
                     i,
-                    CurrentPage[i].NativeTime,
+                    CurrentPage[i].Time,
                     CreateRecsArray(i),
                     []
                   ) else
       if (CurrentPage[i].RecType = TNoteRecord) then
          AddPanel(
                    i,
-                   CurrentPage[i].NativeTime,
+                   CurrentPage[i].Time,
                    FmtArray(TNoteRecord(CurrentPage[i]).Text),
                    [{fsItalic}]
                  );

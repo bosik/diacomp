@@ -245,7 +245,7 @@ begin
     { первая точка }
 
     TempBlood := TBloodRecord(Recs[k]);
-    CalcXY(TempBlood.NativeTime, TempBlood.Value, cx, cy);
+    CalcXY(TempBlood.Time, TempBlood.Value, cx, cy);
     MoveTo(cx, cy);
 
     { основная линия }
@@ -253,7 +253,7 @@ begin
     if (Recs[i].RecType = TBloodRecord) then
     begin
       TempBlood := TBloodRecord(Recs[i]);
-      CalcXY(TempBlood.NativeTime, TempBlood.Value, cx, cy);
+      CalcXY(TempBlood.Time, TempBlood.Value, cx, cy);
       LineTo(cx, cy);
     end;
 
@@ -266,7 +266,7 @@ begin
       if (Recs[i].RecType = TBloodRecord) then
       begin
         TempBlood := TBloodRecord(Recs[i]);
-        CalcXY(TempBlood.NativeTime, TempBlood.Value, cx, cy);
+        CalcXY(TempBlood.Time, TempBlood.Value, cx, cy);
 
         if (TempBlood.PostPrand) then
           Brush.Color := COLOR_BACK
