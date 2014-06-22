@@ -48,7 +48,7 @@ type
 
   procedure AnalyzeBS(Base: TDiaryDAO; TimeFrom, TimeTo: TDateTime; out Mean, StdDev, Targeted, Less, More: Extended);
 
-  procedure SaveRecords(const List: TAnalyzeRecList; const FileName: string);
+  procedure SaveAnalyzeList(const List: TAnalyzeRecList; const FileName: string);
 
 var
   // TODO: move to DiaryCore
@@ -269,33 +269,34 @@ var
   Min: TDateTime;
   MinW, MaxW: real;
 begin
-  CurTime := GetTimeUTC();
-  Min := Trunc(CurTime);
-
-  for i := 0 to High(PrimeList) do
-  if PrimeList[i].Date < Min then
-    Min := PrimeList[i].Date;
-
-  Min := Min - 1; // muahahahaha  
-
   SetLength(List, Length(PrimeList));
-  for i := 0 to High(List) do
-  begin
-    List[i].Prots  := PrimeList[i].Prots;
-    List[i].Fats   := PrimeList[i].Fats;
-    List[i].Carbs  := PrimeList[i].Carbs;
-    List[i].Ins    := PrimeList[i].InsValue;
-    List[i].BSIn   := PrimeList[i].BloodInValue;
-    List[i].BSOut  := PrimeList[i].BloodOutValue;
-    List[i].Time   := (MinPerDay + PrimeList[i].FoodTime) mod MinPerDay;
-    List[i].Weight := F((PrimeList[i].Date - Min) / (CurTime - Min)){ * PrimeList[i].Carbs};
-  end;
 
-  Log(DEBUG, 'Saved', True);
-
-  { нормализация }
-  if Length(List) > 0 then
+  if (Length(List) > 0) then
   begin
+    CurTime := GetTimeUTC();
+    Min := Trunc(CurTime);
+
+    for i := 0 to High(PrimeList) do
+    if (PrimeList[i].Date < Min) then
+      Min := PrimeList[i].Date;
+
+    for i := 0 to High(List) do
+    begin
+      List[i].Prots  := PrimeList[i].Prots;
+      List[i].Fats   := PrimeList[i].Fats;
+      List[i].Carbs  := PrimeList[i].Carbs;
+      List[i].Ins    := PrimeList[i].InsValue;
+      List[i].BSIn   := PrimeList[i].BloodInValue;
+      List[i].BSOut  := PrimeList[i].BloodOutValue;
+      List[i].Time   := (MinPerDay + PrimeList[i].FoodTime) mod MinPerDay;
+      List[i].Weight := F((PrimeList[i].Date - Min) / (CurTime - Min)){ * PrimeList[i].Carbs};
+    end;
+
+    Log(DEBUG, 'Saved', True);
+
+    SaveAnalyzeList(List, 'temp\denormalized_anlist.txt');
+
+    { нормализация }
     MinW := List[0].Weight;
     MaxW := List[0].Weight;
     for i := 1 to High(List) do
@@ -520,23 +521,37 @@ begin
 end;
 
 {==============================================================================}
-procedure SaveRecords(const List: TAnalyzeRecList; const FileName: string);
+procedure SaveAnalyzeList(const List: TAnalyzeRecList; const FileName: string);
 {==============================================================================}
 var
-  s: TStringList;
+  s: TStrings;
   i: integer;
 begin
   s := TStringList.Create;
   try
-    for i := 0 to High(List) do
-      s.Add(
-        MTimeToStrColon(List[i].Time) + #9 +
-        RealToStr(List[i].Carbs) + #9 +
-        RealToStr(List[i].Prots) + #9 +
-        RealToStr(List[i].Ins) + #9 +
-        RealToStr(List[i].BSOut - List[i].BSIn)
-      );
-    s.SaveToFile(FileName);
+    s := TStringList.Create;
+
+    S.Add(Format('%s'#9'%s'#9'%s'#9'%s'#9'%s'#9'%s'#9'%s', [
+      'Time',
+      'Weight',
+      'Prots',
+      'Fats',
+      'Carbs',
+      'Ins',
+      'DBS']));
+
+    for i := 0 to High(AnList) do
+    begin
+      S.Add(Format('%d'#9'%f'#9'%f'#9'%f'#9'%f'#9'%f'#9'%f', [
+        AnList[i].Time,
+        AnList[i].Weight,
+        AnList[i].Prots,
+        AnList[i].Fats,
+        AnList[i].Carbs,
+        AnList[i].Ins,
+        AnList[i].BSOut - AnList[i].BSIn]));
+    end;
+    S.SaveToFile(FileName);
   finally
     s.Free;
   end;
