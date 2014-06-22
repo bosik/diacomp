@@ -13,13 +13,13 @@ import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import org.bosik.diacomp.web.backend.features.auth.service.AuthService;
 import org.bosik.diacomp.web.backend.features.auth.service.FrontendAuthService;
-import org.bosik.diacomp.web.backend.features.foodbase.function.FakeFoodbaseDAO;
 import org.bosik.diacomp.web.backend.features.foodbase.function.FoodbaseDAO;
+import org.bosik.diacomp.web.backend.features.foodbase.function.MySQLFoodbaseDAO;
 
 public class FrontendFoodbaseService implements FoodBaseService
 {
 	private final AuthService	authService	= new FrontendAuthService();
-	private final FoodbaseDAO	foodbaseDao	= new FakeFoodbaseDAO();
+	private final FoodbaseDAO	foodbaseDao	= new MySQLFoodbaseDAO();
 
 	@Override
 	public void add(Versioned<FoodItem> item) throws DuplicateException, PersistenceException
