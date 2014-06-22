@@ -11,7 +11,9 @@ uses
   DiaryRoutines,
   DiaryRecords,
   DiaryDatabase,
-  DiaryDAO;
+  DiaryDAO,
+
+  AutoLog;
 
 type
   TAnalyzer = record
@@ -31,7 +33,8 @@ type
 
   { инициализация }
   function AddAnalyzer(const FileName: string): boolean;
-  procedure AnalyzeDiary(Base: TDiaryDAO; FromDate, ToDate: TDate; const Par: TRealArray; CallBack: TCallbackProgressProc);
+  procedure AnalyzeDiary(Base: TDiaryDAO; FromDate, ToDate: TDateTime; const Par: TRealArray;
+    CallBack: TCallbackProgressProc);
 
   { использование }
   function GetAnalyzersCount: integer;
@@ -248,15 +251,16 @@ procedure FormatRecords(const PrimeList: TPrimeRecList; out List: TAnalyzeRecLis
 {==============================================================================}
 { Копирует основные поля и вычисляет нормальные веса }
 
-  // Adaptation in [0..0.5]:
-  // 0.0 is the quickest (but unstable),
-  // 0.5 is the slowest (but very stable)
-
   function F(const X: real): real;
-  { Adaptation in [0, 0.5] }
-  { X from [0, 1] }
+  { Adaptation in [0.0, 1.0]                 }
+  {    0.0 is the slowest (but very stable), }
+  {    1.0 is the quickest (but unstable)    }
+  { X from [0, 1]                            }
   begin
-    Result := (Adaptation - 0.5) * sin(pi * (X - 0.5)) + 0.5;
+    Result := 1 + 0.5 * Adaptation * ( sin(pi * (X - 0.5) ) - 1 );
+    // Result := Adaptation * X + (1 - Adaptation);
+
+    Log(DEBUG, Format('F(%.2f, %.2f) = %.4f', [X, Adaptation, Result]));
   end;
 
 var
@@ -286,6 +290,8 @@ begin
     List[i].Time   := (MinPerDay + PrimeList[i].FoodTime) mod MinPerDay;
     List[i].Weight := F((PrimeList[i].Date - Min) / (CurTime - Min)){ * PrimeList[i].Carbs};
   end;
+
+  Log(DEBUG, 'Saved', True);
 
   { нормализация }
   if Length(List) > 0 then
@@ -352,7 +358,7 @@ begin
 end;
 
 {==============================================================================}
-procedure AnalyzeDiary(Base: TDiaryDAO; FromDate, ToDate: TDate; const Par: TRealArray; CallBack: TCallbackProgressProc);
+procedure AnalyzeDiary(Base: TDiaryDAO; FromDate, ToDate: TDateTime; const Par: TRealArray; CallBack: TCallbackProgressProc);
 {==============================================================================}
 var
   PrimeList: TPrimeRecList;

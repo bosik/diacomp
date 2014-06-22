@@ -2952,7 +2952,7 @@ procedure TForm1.UpdateKoofs;
 {==============================================================================}
 var
   Par: TRealArray;
-  FromDate, ToDate: TDate;
+  FromDate, ToDate: TDateTime;
 begin
   if (GetAnalyzersCount = 0) then
   begin
@@ -2974,12 +2974,12 @@ begin
   ButtonUpdateKoof.Caption := 'Расчёт...';
   Application.ProcessMessages;
 
-  ToDate := Trunc(GetTimeUTC()) + 1;
-  FromDate := ToDate - Value['DaysProcess'];
+  ToDate := GetTimeUTC();
+  FromDate := GetTimeUTC() - Value['DaysProcess'];
 
   {===============================================================}
   {#}SetLength(Par, 1);
-  {#}Par[PAR_ADAPTATION] := Value['Adaptation'];  { [0.5..1] }
+  {#}Par[PAR_ADAPTATION] := Value['Adaptation'];  { [0.5..1.0] }
   {#}AnalyzeDiary(LocalSource, FromDate, ToDate, Par, AnalyzeCallBack);
   {===============================================================}
 
