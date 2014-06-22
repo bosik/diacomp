@@ -14,7 +14,9 @@ uses
   DiaryRecords,
   DiaryPageSerializer,
   uLkJSON,
-  BusinessObjects;
+  BusinessObjects,
+
+  AutoLog {TODO: debug only};
 
 type
   // частично распарсенная запись
@@ -716,6 +718,11 @@ begin
     SetLength(Result, Length(Result) + 1);
     Result[High(Result)] := FRecords[i].Deserialize;
   end;
+
+  Log(DEBUG, Format('Extracting diary records between %s and %s; %d items found', [
+    DateTimeToStr(TimeFrom, STD_DATETIME_FMT),
+    DateTimeToStr(TimeTo, STD_DATETIME_FMT),
+    Length(Result)]));
 end;
 
 {==============================================================================}
