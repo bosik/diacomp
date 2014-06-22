@@ -13,7 +13,6 @@ import org.bosik.diacomp.core.services.analyze.entities.AnalyzeRec;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.services.analyze.entities.PrimeRec;
-import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 
 public class AnalyzeExtracter
@@ -70,10 +69,11 @@ public class AnalyzeExtracter
 		}
 	}
 
-	public static List<PrimeRec> extractRecords(DiaryService source, Date fromTime, Date toTime)
+	public static List<PrimeRec> extractPrimeRecords(List<Versioned<DiaryRecord>> recs)
 	{
 		List<PrimeRec> result = new LinkedList<PrimeRec>();
-		List<Versioned<DiaryRecord>> recs = source.findBetween(fromTime, toTime, false);
+
+		// TODO: move hardcode
 		int insulinAffectTime = 210;
 		int mealAffectTime = 210;
 		int mealShortAffectTime = 20;
@@ -336,11 +336,10 @@ public class AnalyzeExtracter
 		return result;
 	}
 
-	public static KoofList analyze(AnalyzeCore analyzer, DiaryService source, Date fromTime, Date toTime,
-			double adaptation)
+	public static KoofList analyze(List<Versioned<DiaryRecord>> recs, AnalyzeCore analyzer, double adaptation)
 	{
-		List<PrimeRec> recs = extractRecords(source, fromTime, toTime);
-		List<AnalyzeRec> formatted = formatRecords(recs, adaptation);
+		List<PrimeRec> prime = extractPrimeRecords(recs);
+		List<AnalyzeRec> formatted = formatRecords(prime, adaptation);
 
 		for (AnalyzeRec rec : formatted)
 		{
@@ -348,6 +347,6 @@ public class AnalyzeExtracter
 					rec.getProts(), rec.getFats(), rec.getCarbs(), rec.getIns(), rec.getBsOut() - rec.getBsIn()));
 		}
 
-		return null;//analyzer.analyze(formatted);
+		return analyzer.analyze(formatted);
 	}
 }
