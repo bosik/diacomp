@@ -1,6 +1,9 @@
 package org.bosik.diacomp.core.services.analyze;
 
 import java.util.Date;
+import java.util.List;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.services.diary.DiaryService;
@@ -41,7 +44,8 @@ public class KoofServiceImpl implements KoofService
 			throw new NullPointerException("timeTo is null; use setTimeRange() method");
 		}
 
-		koofs = AnalyzeExtracter.analyze(analyzeCore, diaryService, timeFrom, timeTo, adaptation);
+		List<Versioned<DiaryRecord>> recs = diaryService.findBetween(timeFrom, timeTo, false);
+		koofs = AnalyzeExtracter.analyze(recs, analyzeCore, adaptation);
 	}
 
 	@Override

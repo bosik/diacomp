@@ -64,6 +64,14 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 	private final double	TIME_WEIGHTS[]	= new double[Utils.HalfMinPerDay + 1];
 
+	/**
+	 * O(1)
+	 * 
+	 * @param rec
+	 * @param q
+	 * @param p
+	 * @return
+	 */
 	private static double calculateK(AnalyzeRec rec, double q, double p)
 	{
 		if (Math.abs(rec.getCarbs()) > Utils.EPS)
@@ -76,11 +84,25 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		}
 	}
 
+	/**
+	 * O(1)
+	 * 
+	 * @param rec
+	 * @return
+	 */
 	private static Double calculateW(AnalyzeRec rec)
 	{
 		return rec.getWeight();
 	}
 
+	/**
+	 * O(N) (~50)
+	 * 
+	 * @param recs
+	 * @param q
+	 * @param p
+	 * @return
+	 */
 	private static WeightedTimePoint[] calculateKW(List<AnalyzeRec> recs, double q, double p)
 	{
 		WeightedTimePoint[] result = new WeightedTimePoint[recs.size()];
@@ -96,6 +118,13 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		return result;
 	}
 
+	/**
+	 * O(1)
+	 * 
+	 * @param time1
+	 * @param time2
+	 * @return
+	 */
 	private static int timeDistance(int time1, int time2)
 	{
 		int result = Math.abs(time1 - time2) % Utils.MinPerDay;
@@ -106,6 +135,13 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		return result;
 	}
 
+	/**
+	 * O(1)
+	 * 
+	 * @param time1
+	 * @param time2
+	 * @return
+	 */
 	private double timeWeight(int time1, int time2)
 	{
 		int dist = timeDistance(time1, time2);
@@ -113,6 +149,13 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		return TIME_WEIGHTS[dist];
 	}
 
+	/**
+	 * O(N) (~50)
+	 * 
+	 * @param points
+	 * @param time
+	 * @return
+	 */
 	private double approximatePoint(WeightedTimePoint[] points, int time)
 	{
 		double summ = 0.0;
@@ -138,7 +181,13 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		}
 	}
 
-	private double[] approximate(WeightedTimePoint[] points)
+	/**
+	 * O(N * M) (~72000) (~1200)
+	 * 
+	 * @param points
+	 * @return
+	 */
+	private double[] approximate(WeightedTimePoint[] points, boolean highResolution)
 	{
 		double[] result = new double[Utils.MinPerDay];
 
@@ -152,15 +201,45 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		}
 		else
 		{
-			for (int i = 0; i < Utils.MinPerDay; i++)
+			if (highResolution)
 			{
-				result[i] = approximatePoint(points, i);
+				for (int i = 0; i < Utils.MinPerDay; i++)
+				{
+					result[i] = approximatePoint(points, i);
+				}
+			}
+			else
+			{
+				for (int i = 0; i < Utils.MinPerDay / Utils.MinPerHour; i++)
+				{
+					result[i * Utils.MinPerHour] = approximatePoint(points, i * Utils.MinPerHour);
+				}
+
+				// linear interpolation
+				for (int left = 0; left < Utils.MinPerDay; left += Utils.MinPerHour) //0, 60, 120, ..., 1380
+				{
+					int right = (left + Utils.MinPerHour) % Utils.MinPerDay;
+
+					for (int m = 1; m < Utils.MinPerHour; m++) // 1..59
+					{
+						double w = m / Utils.MinPerHour;
+						result[left + m] = (1 - w) * result[left] + w * result[right];
+					}
+				}
 			}
 		}
 
 		return result;
 	}
 
+	/**
+	 * O(N) (~50)
+	 * 
+	 * @param recs
+	 * @param points
+	 * @param func
+	 * @return
+	 */
 	private static double getRand(double[] recs, WeightedTimePoint[] points, DevFunction func)
 	{
 		double result = 0.0;
@@ -180,6 +259,14 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		return result;
 	}
 
+	/**
+	 * O(N) (~50)
+	 * 
+	 * @param recs
+	 * @param koofs
+	 * @param func
+	 * @return
+	 */
 	private static double getDev(List<AnalyzeRec> recs, KoofList koofs, DevFunction func)
 	{
 		double result = 0.0;
@@ -201,6 +288,14 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		return result;
 	}
 
+	/**
+	 * O(M) (~1440) (~24)
+	 * 
+	 * @param ks
+	 * @param q
+	 * @param p
+	 * @return
+	 */
 	private static KoofList copyKQP(double[] ks, double q, double p)
 	{
 		KoofList result = new KoofList();
@@ -241,23 +336,24 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		DevFunction funcRelative = new RelDev();
 		DevFunction funcSqr = new SqrDev();
 
+		// 20 605 200 (384 720)
 		for (double q = MIN_Q; q < MAX_Q; q += DISC_Q)
 		{
-			for (double p = MIN_P; p < MAX_P; p += DISC_P)
+			for (double p = MIN_P; p < MAX_P; p += DISC_P) // *280
 			{
 				Bean bean = new Bean();
 				bean.q = q;
 				bean.p = p;
 
-				points = calculateKW(recs, q, p);
-				k = approximate(points);
-				koofs = copyKQP(k, q, p);
+				points = calculateKW(recs, q, p); // 50
+				k = approximate(points, false); // 72 000 (1 200)
+				koofs = copyKQP(k, q, p); // 1 440 (24)
 
-				bean.g[0] = getRand(k, points, funcRelative);
+				bean.g[0] = getRand(k, points, funcRelative); // 50
 				bean.g[1] = 0.0;
-				bean.g[2] = getDev(recs, koofs, funcSqr);
+				bean.g[2] = getDev(recs, koofs, funcSqr); // 50
 
-				V.add(bean);
+				V.add(bean); // 280
 			}
 		}
 
@@ -269,6 +365,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 			double max = Double.MIN_VALUE;
 			for (Bean bean : V)
 			{
+				// 840
 				if (!Double.isNaN(bean.g[n]))
 				{
 					min = Math.min(min, bean.g[n]);
@@ -280,6 +377,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 			{
 				for (Bean bean : V)
 				{
+					// 840
 					if (!Double.isNaN(bean.g[n]))
 					{
 						bean.g[n] = (bean.g[n] - min) / (max - min);
@@ -307,7 +405,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 		// restore
 		points = calculateKW(recs, bestQ, bestP);
-		k = approximate(points);
+		k = approximate(points, true);
 		koofs = copyKQP(k, bestQ, bestP);
 
 		return koofs;
