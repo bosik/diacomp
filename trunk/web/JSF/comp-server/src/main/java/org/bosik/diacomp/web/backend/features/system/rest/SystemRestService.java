@@ -1,6 +1,9 @@
 package org.bosik.diacomp.web.backend.features.system.rest;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -8,6 +11,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
+import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.web.backend.features.auth.rest.AuthRestService;
 import org.json.JSONObject;
 
@@ -38,6 +42,24 @@ public class SystemRestService
 			e.printStackTrace();
 			String entity = ResponseBuilder.buildFails();
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(entity).build();
+		}
+	}
+
+	@PUT
+	@Path("test")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response testPut(@FormParam("items") String parX) throws CommonServiceException
+	{
+		try
+		{
+			String response = ResponseBuilder.buildDone("OK, X=" + parX);
+			return Response.ok(response).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
 		}
 	}
 }
