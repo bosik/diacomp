@@ -22,12 +22,11 @@ type
     FTime: TDateTime;               // UTC
   protected
     function GetTime(): integer;
-    procedure SetNativeTime(Value: TDateTime);
   public
     function RecType: TClassCustomRecord;
 
     property Time_: integer read GetTime;
-    property NativeTime: TDateTime read FTime write SetNativeTime;
+    property NativeTime: TDateTime read FTime write FTime;
   end;
 
   TRecordList = array of TCustomRecord;
@@ -158,13 +157,6 @@ begin
   Result := TClassCustomRecord(Self.ClassType);
 end;
 
-{==============================================================================}
-procedure TCustomRecord.SetNativeTime(Value: TDateTime);
-{==============================================================================}
-begin
-  FTime := Value;
-end;
-
 { TBloodRecord }
 
 {==============================================================================}
@@ -188,7 +180,7 @@ begin
   inherited Create;
 
   FPostPrand := False;
-  SetNativeTime(ATime);
+  FTime := ATime;
   SetValue(AValue);
   SetFinger(AFinger);
 end;
@@ -227,7 +219,7 @@ constructor TInsRecord.Create(ATime: TDateTime; AValue: real);
 {==============================================================================}
 begin
   inherited Create;
-  SetNativeTime(ATime);
+  FTime := ATime;
   SetValue(AValue);
 end;
 
@@ -284,7 +276,7 @@ constructor TMealRecord.Create(ATime: TDateTime; AShortMeal: boolean);
 begin
   inherited Create;
   ShortMeal := AShortMeal;
-  SetNativeTime(ATime);
+  FTime := ATime;
 end;
 
 {==============================================================================}
@@ -369,7 +361,7 @@ constructor TNoteRecord.Create(ATime: TDateTime; AText: string);
 {==============================================================================}
 begin
   inherited Create;
-  SetNativeTime(ATime);
+  FTime := ATime;
   Text := AText;   
 end;
 
