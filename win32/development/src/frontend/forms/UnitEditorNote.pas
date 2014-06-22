@@ -72,7 +72,7 @@ end;
 function TFormEditorNote.ReadEntityFromGUI(): boolean;
 {==============================================================================}
 begin
-  Entity.NativeTime := LocalToUTC(Trunc(DatePicker.Date) + Frac(TimePicker.Time));
+  Entity.Time := LocalToUTC(Trunc(DatePicker.Date) + Frac(TimePicker.Time));
   Entity.Text := EditText.Text;
   Result := True;
 end;
@@ -91,7 +91,7 @@ begin
     EditText.Text := '';
   end else
   begin
-    LocalTime := UTCToLocal(Entity.NativeTime);
+    LocalTime := UTCToLocal(Entity.Time);
     TimePicker.Time := LocalTime;
     DatePicker.Date := LocalTime;
     EditText.Text := Entity.Text;

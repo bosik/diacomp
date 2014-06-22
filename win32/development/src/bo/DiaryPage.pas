@@ -358,7 +358,7 @@ begin
     Changed := False;
 
     { прогон вверх }
-    while (Result > 0)and(FRecs[Result - 1].NativeTime > Temp.NativeTime) do
+    while (Result > 0)and(FRecs[Result - 1].Time > Temp.Time) do
     begin
       FRecs[Result] := FRecs[Result - 1];
       dec(Result);
@@ -366,7 +366,7 @@ begin
     end;
 
     { прогон вниз }
-    while (Result < High(FRecs))and(FRecs[Result + 1].NativeTime < Temp.NativeTime) do
+    while (Result < High(FRecs))and(FRecs[Result + 1].Time < Temp.Time) do
     begin
       FRecs[Result] := FRecs[Result + 1];
       inc(Result);

@@ -1555,7 +1555,7 @@ var
         if (Recs[i].RecType = TMealRecord) then
         begin
           Meal := TMealRecord(Recs[i]);
-          DeltaTag := GetTag(Meal.NativeTime);
+          DeltaTag := GetTag(Meal.Time);
           for k := 0 to Meal.Count - 1 do
           begin
             Process(Meal[k].Name, DeltaTag, DiaryMultiMap);
@@ -2515,7 +2515,7 @@ begin
     StartBlood := TBloodRecord(
       Diary.FindRecord(
         TBloodRecord,
-        SelMeal.NativeTime,
+        SelMeal.Time,
         BLOOD_ACTUALITY_TIME,
         sdBack  // TODO: Around?
       )
@@ -2524,14 +2524,14 @@ begin
     Ins := TInsRecord(
       Diary.FindRecord(
         TInsRecord,
-        SelMeal.NativeTime,
+        SelMeal.Time,
         INS_ACTUALITY_TIME,
         sdAround
       )
     );
 
     { Определяем коэффициенты }
-    Koof := GetKoof(SelMeal.Time_);
+    Koof := GetKoof(SelMeal.TimeInMinutes);
 
     { Коррекция СК }
     if (StartBlood <> nil) then
@@ -3008,7 +3008,7 @@ begin
 
   if (SelectedRecord() is TMealRecord) then
   begin
-    Kf := GetKoof(TMealRecord(SelectedRecord()).Time_);
+    Kf := GetKoof(TMealRecord(SelectedRecord()).TimeInMinutes);
     RelBS := (RelCarbs*Kf.k + RelProts*Kf.p)/100;
     if (RelBS > 0) then
       Result := CurrentDB/RelBS
@@ -3030,7 +3030,7 @@ begin
   Rec := SelectedRecord();
   if (Rec is TMealRecord) then
   begin
-    Kf := GetKoof(TMealRecord(Rec).Time_);
+    Kf := GetKoof(TMealRecord(Rec).TimeInMinutes);
     RelBS := (RelCarbs * Kf.k + RelProts * Kf.p) / 100;
     if (RelBS > 0) then
       Result := (CurrentDB + RelBS * CurMass) / RelBS
@@ -3101,7 +3101,7 @@ procedure TForm1.DiaryViewFoodShow(Sender: TObject; Index, Line: Integer;
 var
   R: TKoof;
 begin
-  R := GetKoof(DiaryView.CurrentPage[Index].Time_);
+  R := GetKoof(DiaryView.CurrentPage[Index].TimeInMinutes);
 
   if (R.q > 0) then
     Text := ' [+'+
@@ -4457,7 +4457,7 @@ begin
       Meal := TMealRecord(Recs[i]);
       if (Meal.Count > 0) and (not Meal.ShortMeal) then
       begin
-        TempTime := Round((GetTimeUTC() - Recs[i].NativeTime) * SecPerDay);
+        TempTime := Round((GetTimeUTC() - Recs[i].Time) * SecPerDay);
 
         if (TempTime >= 0) then
         begin
@@ -4479,7 +4479,7 @@ begin
   begin
     if (Recs[i].RecType = TInsRecord) then
     begin
-      TempTime := Round((GetTimeUTC() - Recs[i].NativeTime) * SecPerDay);
+      TempTime := Round((GetTimeUTC() - Recs[i].Time) * SecPerDay);
       if (TempTime > 0) then
       begin
         Founded := True;

@@ -71,7 +71,7 @@ function ParseBlood(json: TlkJSONobject): TBloodRecord;
 {==============================================================================}
 begin
   Result := TBloodRecord.Create();
-  Result.NativeTime := StrToDateTime((json[REC_TIME] as TlkJSONstring).Value, STD_DATETIME_FMT);
+  Result.Time := StrToDateTime((json[REC_TIME] as TlkJSONstring).Value, STD_DATETIME_FMT);
   Result.Value := (json[REC_BLOOD_VALUE] as TlkJSONnumber).Value;
   Result.Finger := (json[REC_BLOOD_FINGER] as TlkJSONnumber).Value;
 end;
@@ -81,7 +81,7 @@ function ParseIns(json: TlkJSONobject): TInsRecord;
 {==============================================================================}
 begin
   Result := TInsRecord.Create();
-  Result.NativeTime := StrToDateTime((json[REC_TIME] as TlkJSONstring).Value, STD_DATETIME_FMT);
+  Result.Time := StrToDateTime((json[REC_TIME] as TlkJSONstring).Value, STD_DATETIME_FMT);
   Result.Value := (json[REC_INS_VALUE] as TlkJSONnumber).Value;
 end;
 
@@ -107,7 +107,7 @@ var
   Food: TFoodMassed;
 begin
   Result := TMealRecord.Create();
-  Result.NativeTime := StrToDateTime((json[REC_TIME] as TlkJSONstring).Value, STD_DATETIME_FMT);
+  Result.Time := StrToDateTime((json[REC_TIME] as TlkJSONstring).Value, STD_DATETIME_FMT);
   Result.ShortMeal := (json[REC_MEAL_SHORT] as TlkJSONboolean).Value;
 
   content := (json[REC_MEAL_CONTENT] as TlkJSONlist);
@@ -125,7 +125,7 @@ begin
   Result := TNoteRecord.Create();
 
   if (Assigned(json[REC_TIME])) then
-    Result.NativeTime := StrToDateTime((json[REC_TIME] as TlkJSONstring).Value, STD_DATETIME_FMT)
+    Result.Time := StrToDateTime((json[REC_TIME] as TlkJSONstring).Value, STD_DATETIME_FMT)
   else
     raise Exception.Create('Failed to read JSON: missing field: ' + REC_TIME);
 
@@ -268,7 +268,7 @@ function SerializeBlood(R: TBloodRecord): TlkJSONobject;
 begin
   Result := TlkJSONobject.Create();
   Result.Add(REC_TYPE, REC_TYPE_BLOOD);
-  Result.Add(REC_TIME, DateTimeToStr(R.NativeTime, STD_DATETIME_FMT));
+  Result.Add(REC_TIME, DateTimeToStr(R.Time, STD_DATETIME_FMT));
   Result.Add(REC_BLOOD_VALUE, R.Value);
   Result.Add(REC_BLOOD_FINGER, R.Finger);
 end;
@@ -279,7 +279,7 @@ function SerializeIns(R: TInsRecord): TlkJSONobject;
 begin
   Result := TlkJSONobject.Create();
   Result.Add(REC_TYPE, REC_TYPE_INS);
-  Result.Add(REC_TIME, DateTimeToStr(R.NativeTime, STD_DATETIME_FMT));
+  Result.Add(REC_TIME, DateTimeToStr(R.Time, STD_DATETIME_FMT));
   Result.Add(REC_INS_VALUE, R.Value);
 end;
 
@@ -305,7 +305,7 @@ var
 begin
   Result := TlkJSONobject.Create();
   Result.Add(REC_TYPE, REC_TYPE_MEAL);
-  Result.Add(REC_TIME, DateTimeToStr(R.NativeTime, STD_DATETIME_FMT));
+  Result.Add(REC_TIME, DateTimeToStr(R.Time, STD_DATETIME_FMT));
   Result.Add(REC_MEAL_SHORT, R.ShortMeal);
 
   Content := TlkJSONlist.Create();
@@ -321,7 +321,7 @@ function SerializeNote(R: TNoteRecord): TlkJSONobject;
 begin
   Result := TlkJSONobject.Create();
   Result.Add(REC_TYPE, REC_TYPE_NOTE);
-  Result.Add(REC_TIME, DateTimeToStr(R.NativeTime, STD_DATETIME_FMT));
+  Result.Add(REC_TIME, DateTimeToStr(R.Time, STD_DATETIME_FMT));
   Result.Add(REC_NOTE_TEXT, R.Text);
 end;
 
