@@ -280,7 +280,7 @@ object Form1: TForm1
                 Font.Height = -15
                 Font.Name = 'MS Sans Serif'
                 Font.Style = []
-                ItemHeight = 16
+                ItemHeight = 0
                 ParentFont = False
                 TabOrder = 1
                 OnCloseUp = ComboDiaryNewCloseUp
@@ -615,7 +615,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.194739224530000000
+            Date = 40251.871813576390000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -917,7 +917,7 @@ object Form1: TForm1
               object LabelCorrectionEmpty: TLabel
                 Left = 8
                 Top = 8
-                Width = 223
+                Width = 133
                 Height = 16
                 Align = alTop
                 Caption = 'LabelCorrectionEmpty'
@@ -1305,7 +1305,7 @@ object Form1: TForm1
           Width = 1233
           Height = 65
           Align = alTop
-          Caption = 'Search'
+          Caption = #1055#1086#1080#1089#1082
           Color = clBtnFace
           ParentColor = False
           TabOrder = 2
@@ -1856,6 +1856,11 @@ object Form1: TForm1
                 ShortCut = 121
               end
               item
+                Action = ActionViewLogs
+                Caption = '&View logs'
+                ShortCut = 16460
+              end
+              item
                 Caption = '-'
               end
               item
@@ -1864,15 +1869,6 @@ object Form1: TForm1
                 ShortCut = 32883
               end>
             Caption = #1060#1072#1081#1083
-          end
-          item
-            Items = <
-              item
-                Action = ActionViewLogs
-                Caption = '&View logs'
-                ShortCut = 16460
-              end>
-            Caption = '&Debug'
           end
           item
             Items = <
