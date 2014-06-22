@@ -125,11 +125,8 @@ public class Storage
 
 		if (koofService == null)
 		{
-			long time = System.currentTimeMillis();
 			// TODO: hardcoded adaptation
 			koofService = new KoofServiceImpl(localDiary, analyzeCore, ANALYZE_DAYS_PERIOD, 0.99);
-			koofService.update(); // analyzing here
-			Log.i(TAG, "Diary analyzed in " + (System.currentTimeMillis() - time) + " msec");
 		}
 
 		if (null == tagService)
@@ -144,7 +141,7 @@ public class Storage
 		applyPreference(preferences, null);
 
 		runBackgrounds();
-		setupSyncTimer(20 * 60 * 1000);
+		// setupSyncTimer(20 * 60 * 1000);
 	}
 
 	public static void runBackgrounds()
@@ -159,7 +156,7 @@ public class Storage
 				// syncFoodbase();
 				// syncDishbase();
 				relevantIndexation();
-				// analyzeKoofs();
+				analyzeKoofs();
 
 				return null;
 			}
