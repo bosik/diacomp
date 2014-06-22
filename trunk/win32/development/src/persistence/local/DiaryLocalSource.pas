@@ -73,54 +73,6 @@ const
 {==============================================================================}
 function TRecordData.Deserialize: TCustomRecord;
 {==============================================================================}
-
- { function ParseBlood(json: TlkJSONobject): TBloodRecord;
-  begin
-    Result := TBloodRecord.Create();
-    Result.Value := StrToFloat(CheckDot((json['value'] as TlkJSONstring).Value));
-    Result.Finger := StrToInt((json['finger'] as TlkJSONstring).Value);
-  end;
-
-  function ParseIns(json: TlkJSONobject): TInsRecord;
-  begin
-    Result := TInsRecord.Create();
-    Result.Value := StrToFloat(CheckDot((json['value'] as TlkJSONstring).Value));
-  end;
-
-  function ParseFoodMassed(json: TlkJSONobject): TFoodMassed;
-  begin
-    Result := TFoodMassed.Create();
-    Result.Name     := (json['name'] as TlkJSONstring).Value;
-    Result.RelProts := StrToFloat(CheckDot((json['prots'] as TlkJSONstring).Value));
-    Result.RelFats  := StrToFloat(CheckDot((json['fats']  as TlkJSONstring).Value));
-    Result.RelCarbs := StrToFloat(CheckDot((json['carbs'] as TlkJSONstring).Value));
-    Result.RelValue := StrToFloat(CheckDot((json['value'] as TlkJSONstring).Value));
-    Result.Mass     := StrToFloat(CheckDot((json['mass']  as TlkJSONstring).Value));
-  end;
-
-  function ParseMeal(json: TlkJSONobject): TMealRecord;
-  var
-    content: TlkJSONlist;
-    i: integer;
-    Food: TFoodMassed;
-  begin
-    Result := TMealRecord.Create();
-    Result.ShortMeal := (json['short'] as TlkJSONstring).Value = 'true';
-
-    content := (json['content'] as TlkJSONlist);
-    for i := 0 to content.Count - 1 do
-    begin
-      Food := ParseFoodMassed(content.Child[i] as TlkJSONobject);
-      Result.Add(food);
-    end;
-  end;
-
-  function ParseNote(json: TlkJSONobject): TNoteRecord;
-  begin
-    Result := TNoteRecord.Create();
-    Result.Text := (json['text'] as TlkJSONstring).Value;
-  end;   }
-
 var
   json: TlkJSONobject;
 begin
@@ -129,18 +81,6 @@ begin
   if Assigned(json) then
   try
     Result := DiaryPageSerializer.ParseDiaryRecord(json);
-
-    {
-    RecType  := (json['type'] as TlkJSONstring).Value;
-    //SDeleted := (json['text'] as TlkJSONstring).Value;
-
-    //if (SDeleted <> 'x123') then
-
-    if (RecType = 'blood') then Result := ParseBlood(json) else
-    if (RecType = 'ins')   then Result := ParseIns(json) else
-    if (RecType = 'meal')  then Result := ParseMeal(json) else
-    if (RecType = 'note')  then Result := ParseNote(json) else
-      raise Exception.Create('Unsupported record type: ' + RecType);  }
 
     Result.Time := Time;
     Result.TimeStamp := TimeStamp;
@@ -158,87 +98,6 @@ end;
 {==============================================================================}
 procedure TRecordData.Serialize(Rec: TCustomRecord);
 {==============================================================================}
-
-  {function SerializeBlood(Rec: TBloodRecord): string;
-  var
-    json: TlkJSONobject;
-    Temp: string;
-  begin
-    json := TlkJSONobject.Create();
-    try
-      json.Add('type', 'blood');
-      json.Add('value', Rec.Value);
-      json.Add('finger', Rec.Finger);
-      Temp := Generate(json);
-      Result := Temp;
-    finally
-      FreeAndNil(json);
-    end;
-  end;
-
-  function SerializeIns(Rec: TInsRecord): string;
-  var
-    json: TlkJSONobject;
-  begin
-    json := TlkJSONobject.Create();
-    try
-      json.Add('type', 'ins');
-      json.Add('value', Rec.Value);
-      Result := Generate(json);
-    finally
-      FreeAndNil(json);
-    end;
-  end;
-
-  function SerializeMeal(Rec: TMealRecord): string;
-
-    function SerializeFood(Rec: TFoodMassed): TlkJSONobject;
-    begin
-      Result := TlkJSONobject.Create();
-      Result.Add('name', Rec.Name);
-      Result.Add('prots', Rec.RelProts);
-      Result.Add('fats', Rec.RelFats);
-      Result.Add('carbs', Rec.RelCarbs);
-      Result.Add('value', Rec.RelValue);
-      Result.Add('mass', Rec.Mass);
-    end;
-
-  var
-    json: TlkJSONobject;
-    items: TlkJSONlist;
-    i: integer;
-  begin
-    json := TlkJSONobject.Create();
-    try
-      json.Add('type', 'meal');
-      json.Add('short', WriteBoolean(Rec.ShortMeal));
-
-      items := TlkJSONlist.Create;
-
-      for i := 0 to Rec.Count - 1 do
-        items.Add(SerializeFood(Rec[i]));
-
-      json.Add('content', items);
-      Result := Generate(json);
-    finally
-      FreeAndNil(json);
-    end;
-  end;
-
-  function SerializeNote(Rec: TNoteRecord): string;
-  var
-    json: TlkJSONobject;
-  begin
-    json := TlkJSONobject.Create();
-    try
-      json.Add('type', 'note');
-      json.Add('text', Rec.Text);
-      Result := Generate(json);
-    finally
-      FreeAndNil(json);
-    end;
-  end; }
-
 var
   Json: TlkJSONobject;
 begin
@@ -489,84 +348,6 @@ end;
 procedure TDiaryLocalSource.SaveToFile(const FileName: string);
 {==============================================================================}
 
-  (*function Escape(S: string): string;
-  var
-    i: integer;
-  begin
-    Result := '';
-    for i := 1 to Length(S) do
-    begin
-      if (S[i] = '"') then
-        Result := Result + '\"'
-      else
-        Result := Result + S[i];
-    end; 
-  end;
-
-  function BlockBlood(R: TBloodRecord): string;
-  begin
-    Result := Format('{"type":"blood","value":"%.1f","finger":"%d"}', [R.Value, R.Finger]);
-  end;
-
-  function BlockIns(R: TInsRecord): string;
-  begin
-    Result := Format('{"type":"insulin","value":"%.1f"}', [R.Value]);
-  end;
-
-  function BlockFood(R: TFoodMassed): string;
-  begin
-    Result := Format('{"name":"%s","prots":"%.1f","fats":"%.1f","carbs":"%.1f","value":"%.1f","mass":"%.1f"}',
-      [Escape(R.Name), R.RelProts, R.RelFats, R.RelCarbs, R.RelValue, R.Mass]);
-  end;
-
-  function BlockMeal(R: TMealRecord): string;
-
-    function FmtBoolean(f: boolean): string;
-    begin
-      if (f) then
-        Result := 'true'
-      else
-        Result := 'false';
-    end;
-
-  var
-    i: integer;
-  begin
-    Result := Format('{"type":"meal","short":"%s","content":[',
-      [FmtBoolean(R.ShortMeal)]);
-    for i := 0 to R.Count - 1 do
-    begin
-      Result := Result + BlockFood(R[i]);
-      if (i < R.Count - 1) then
-        Result := Result + ',';
-    end;
-    Result := Result + ']}';
-  end;
-
-  function BlockNote(R: TNoteRecord): string;
-  begin
-    Result := Format('{"type":"note","text":"%s"}', [Escape(R.Text)]);
-  end;
-
-  function BlockRecord(R: TCustomRecord): string;
-  var
-    Header, Data: string;
-  begin
-    Header := Format('%s'#9'%s'#9'%s'#9'%d'#9'-'#9,
-      [DateTimeToStr(R.NativeTime, STD_DATETIME_FMT),
-       DateTimeToStr(R.NativeTime, STD_DATETIME_FMT),
-       R.ID,
-       R.Version]);
-
-    if (R.RecType = TBloodRecord) then Data := BlockBlood(TBloodRecord(R)) else
-    if (R.RecType = TInsRecord)   then Data := BlockIns(TInsRecord(R)) else
-    if (R.RecType = TMealRecord)  then Data := BlockMeal(TMealRecord(R)) else
-    if (R.RecType = TNoteRecord)  then Data := BlockNote(TNoteRecord(R)) else
-      raise Exception.Create('Unknown record type: ' + R.RecTYpe.ClassName);
-
-    Result := Header + Data;
-  end; *)
-
   function BlockRecordData(R: TRecordData): string;
   begin
     Result := Format('%s'#9'%s'#9'%s'#9'%d'#9'%s'#9'%s',
@@ -577,33 +358,6 @@ procedure TDiaryLocalSource.SaveToFile(const FileName: string);
        DiaryRoutines.WriteBoolean(R.Deleted),
        R.Data]);
   end;
-
-  (*function BlockPage(P: TDiaryPage): string;
-  var
-    i: integer;
-  begin
-    Result := '';
-
-    {Result := Format('{date: "%s", stamp: "%s", version: %d, content: [',
-      [DateToStr(P.Date),
-      DateTimeToStr(P.TimeStamp),
-      P.Version]);
-    for i := 0 to P.Count - 1 do
-    begin
-      if (P[i].RecType = TBloodRecord) then Result := Result + BlockBlood(TBloodRecord(P[i])) else
-      if (P[i].RecType = TInsRecord)   then Result := Result + BlockIns(TInsRecord(P[i])) else
-      if (P[i].RecType = TMealRecord)  then Result := Result + BlockMeal(TMealRecord(P[i])) else
-      if (P[i].RecType = TNoteRecord)  then Result := Result + BlockNote(TNoteRecord(P[i]));
-
-      if (i < P.Count - 1) then
-        Result := Result + ', ';
-    end;
-    Result := Result + ']';
-    }
-
-    for i := 0 to P.Count - 1 do
-      Result := Result + BlockRecord(P[i]) + #13;
-  end; *)
 
 var
   DataLine: string;
@@ -668,7 +422,6 @@ begin
       FRecords[Result] := Temp;
   end;
 end;
-
 
 {==============================================================================}
 function TDiaryLocalSource.FindById(ID: TCompactGUID): TVersioned;
