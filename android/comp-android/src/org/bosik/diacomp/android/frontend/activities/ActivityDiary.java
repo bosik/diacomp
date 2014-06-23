@@ -578,11 +578,9 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	 * @param since
 	 * @return
 	 */
-	private static BloodRecord lastBlood(long scanPeriod, Date since)
+	private static BloodRecord lastBlood(long scanPeriod, Date since, boolean skipPostprandials)
 	{
 		// TODO: move this away from UI
-		// TODO: ignore postprandial measurements
-
 		Date toDate = since;
 		Date fromDate = new Date(toDate.getTime() - (scanPeriod * Utils.MsecPerSec));
 
@@ -591,7 +589,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 		for (Versioned<DiaryRecord> record : records)
 		{
-			if (record.getData().getClass() == BloodRecord.class)
+			if ((record.getData().getClass() == BloodRecord.class)
+					&& (!skipPostprandials || !((BloodRecord) record.getData()).isPostPrand()))
 			{
 				return (BloodRecord) record.getData();
 			}
@@ -612,7 +611,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	private static InsRecord findInsulin(Date near, long scanPeriod)
 	{
 		Log.d(TAG, "findInsulin(): near = " + near + ", scanPeriod = " + scanPeriod);
-		
+
 		// TODO: move this away from UI
 
 		Date fromDate = new Date(near.getTime() - (scanPeriod * Utils.MsecPerSec));
@@ -622,7 +621,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		Log.d(TAG, "findInsulin(): fromDate = " + fromDate);
 		Log.d(TAG, "findInsulin(): toDate = " + toDate);
 		Log.d(TAG, "findInsulin(): items found: " + records.size());
-		
+
 		long min = scanPeriod * Utils.MsecPerSec * 2;
 		InsRecord ins = null;
 
@@ -641,22 +640,11 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		return ins;
 	}
 
-	/**
-	 * Searches for the last BS record in period [now - scanPeriod, now]
-	 * 
-	 * @param scanPeriod
-	 * @return
-	 */
-	private static BloodRecord lastBlood(long scanPeriod)
-	{
-		return lastBlood(scanPeriod, new Date());
-	}
-
 	private void showBloodEditor(Versioned<BloodRecord> entity, boolean createMode)
 	{
 		if (createMode)
 		{
-			BloodRecord prev = lastBlood(SCAN_FOR_BLOOD_FINGER);
+			BloodRecord prev = lastBlood(SCAN_FOR_BLOOD_FINGER, new Date(), false);
 			BloodRecord rec = new BloodRecord();
 			rec.setTime(new Date());
 			rec.setFinger(((prev == null) || (prev.getFinger() == -1)) ? -1 : ((prev.getFinger() + 1) % 10));
@@ -695,11 +683,11 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			entity = new Versioned<MealRecord>(rec);
 		}
 
-		BloodRecord prevBlood = lastBlood(SCAN_FOR_BLOOD_BEFORE_MEAL, entity.getData().getTime());
+		BloodRecord prevBlood = lastBlood(SCAN_FOR_BLOOD_BEFORE_MEAL, entity.getData().getTime(), true);
 		Double bloodBeforeMeal = prevBlood == null ? null : prevBlood.getValue();
 		InsRecord insRecord = findInsulin(entity.getData().getTime(), SCAN_FOR_INS_AROUND_MEAL);
 		Double insInjected = insRecord == null ? null : insRecord.getValue();
-		
+
 		Log.d(TAG, insRecord == null ? "insRecord == null" : "insRecord != null");
 		Log.d(TAG, "insInjected: " + insInjected);
 
