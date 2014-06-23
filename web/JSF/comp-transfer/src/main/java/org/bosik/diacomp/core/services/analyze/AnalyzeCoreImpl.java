@@ -12,15 +12,6 @@ import org.bosik.diacomp.core.utils.Utils;
 
 public class AnalyzeCoreImpl implements AnalyzeCore
 {
-	public AnalyzeCoreImpl(double approxFactor)
-	{
-		// pre-calculation
-		for (int i = 0; i < TIME_WEIGHTS.length; i++)
-		{
-			TIME_WEIGHTS[i] = Math.exp(-approxFactor * Math.pow(i / Utils.HalfMinPerDay, 2));
-		}
-	}
-
 	private class Bean
 	{
 		public double	p;
@@ -66,6 +57,15 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	}
 
 	private final double	TIME_WEIGHTS[]	= new double[Utils.HalfMinPerDay + 1];
+
+	public AnalyzeCoreImpl(double approxFactor)
+	{
+		// pre-calculation
+		for (int i = 0; i < TIME_WEIGHTS.length; i++)
+		{
+			TIME_WEIGHTS[i] = Math.exp(-approxFactor * Math.pow((double)i / Utils.HalfMinPerDay, 2));
+		}
+	}
 
 	/**
 	 * O(1)
@@ -148,7 +148,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	private double timeWeight(int time1, int time2)
 	{
 		int dist = timeDistance(time1, time2);
-		System.out.println("distance " + time1 + " & " + time2 + " is " + dist);
+		// System.out.println("distance " + time1 + " & " + time2 + " is " + dist);
 		return TIME_WEIGHTS[dist];
 	}
 
@@ -319,11 +319,11 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		List<PrimeRec> prime = AnalyzeExtracter.extractPrimeRecords(records);
 		List<AnalyzeRec> items = AnalyzeExtracter.formatRecords(prime, adaptation);
 
-		for (AnalyzeRec item : items)
-		{
-			System.out.println(String.format("%d\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", item.getTime(), item.getWeight(),
-					item.getProts(), item.getFats(), item.getCarbs(), item.getIns(), item.getBsOut() - item.getBsIn()));
-		}
+		//		for (AnalyzeRec item : items)
+		//		{
+		//			System.out.println(String.format("%d\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", item.getTime(), item.getWeight(),
+		//					item.getProts(), item.getFats(), item.getCarbs(), item.getIns(), item.getBsOut() - item.getBsIn()));
+		//		}
 
 		/**
 		 * This method assumes the Q and P koofs are fixed and K is floating within the day
@@ -419,6 +419,12 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 		// restore
 		points = calculateKW(items, bestQ, bestP);
+
+		//		for (WeightedTimePoint point : points)
+		//		{
+		//			System.out.println(String.format("%d\t%.4f", point.getTime(), point.getValue()));
+		//		}
+
 		k = approximate(points, true);
 		koofs = copyKQP(k, bestQ, bestP);
 
