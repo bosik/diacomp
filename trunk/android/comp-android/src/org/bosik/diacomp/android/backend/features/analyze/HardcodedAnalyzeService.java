@@ -1,8 +1,9 @@
 package org.bosik.diacomp.android.backend.features.analyze;
 
 import java.util.List;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
-import org.bosik.diacomp.core.services.analyze.entities.AnalyzeRec;
 import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 
 public class HardcodedAnalyzeService implements AnalyzeCore
@@ -4333,7 +4334,7 @@ public class HardcodedAnalyzeService implements AnalyzeCore
 	}
 
 	@Override
-	public KoofList analyze(List<AnalyzeRec> recs)
+	public KoofList analyze(List<Versioned<DiaryRecord>> records)
 	{
 		return koofs;
 	}
