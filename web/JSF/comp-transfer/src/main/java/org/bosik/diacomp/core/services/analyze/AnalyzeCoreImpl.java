@@ -2,8 +2,11 @@ package org.bosik.diacomp.core.services.analyze;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.analyze.entities.AnalyzeRec;
 import org.bosik.diacomp.core.services.analyze.entities.KoofList;
+import org.bosik.diacomp.core.services.analyze.entities.PrimeRec;
 import org.bosik.diacomp.core.services.analyze.entities.WeightedTimePoint;
 import org.bosik.diacomp.core.utils.Utils;
 
@@ -309,13 +312,24 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	}
 
 	@Override
-	public KoofList analyze(List<AnalyzeRec> recs)
+	public KoofList analyze(List<Versioned<DiaryRecord>> records)
 	{
+		double adaptation = 0.95;
+
+		List<PrimeRec> prime = AnalyzeExtracter.extractPrimeRecords(records);
+		List<AnalyzeRec> items = AnalyzeExtracter.formatRecords(prime, adaptation);
+
+		for (AnalyzeRec item : items)
+		{
+			System.out.println(String.format("%d\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", item.getTime(), item.getWeight(),
+					item.getProts(), item.getFats(), item.getCarbs(), item.getIns(), item.getBsOut() - item.getBsIn()));
+		}
+
 		/**
 		 * This method assumes the Q and P koofs are fixed and K is floating within the day
 		 */
 
-		if (recs.isEmpty())
+		if (items.isEmpty())
 		{
 			//throw new IllegalArgumentException("Recs list is empty");
 			return null;
@@ -345,13 +359,13 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 				bean.q = q;
 				bean.p = p;
 
-				points = calculateKW(recs, q, p); // 50
+				points = calculateKW(items, q, p); // 50
 				k = approximate(points, false); // 72 000 (1 200)
 				koofs = copyKQP(k, q, p); // 1 440 (24)
 
 				bean.g[0] = getRand(k, points, funcRelative); // 50
 				bean.g[1] = 0.0;
-				bean.g[2] = getDev(recs, koofs, funcSqr); // 50
+				bean.g[2] = getDev(items, koofs, funcSqr); // 50
 
 				V.add(bean); // 280
 			}
@@ -404,7 +418,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		}
 
 		// restore
-		points = calculateKW(recs, bestQ, bestP);
+		points = calculateKW(items, bestQ, bestP);
 		k = approximate(points, true);
 		koofs = copyKQP(k, bestQ, bestP);
 
