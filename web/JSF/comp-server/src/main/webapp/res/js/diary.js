@@ -23,6 +23,8 @@ var BLOOD_ACTUAL_PERIOD = 60;
 var INS_ACTUAL_PERIOD = 90;
 var TARGET_BS = 5.0; // TODO: load from user properties
 
+var URL_LOGIN_PAGE = "login";
+
 // данные
 var cur_date = new Date(document.getElementById("origin_date").value);
 var prev_page = [];
@@ -136,7 +138,7 @@ function downloadPage(pageDate, show)
 		}
 		else if (resp.code == 4011)
 		{
-			document.location = "login.html";
+			document.location = URL_LOGIN_PAGE;
 		}
 		else
 		{
@@ -409,7 +411,7 @@ function uploadPage(uploadedItem)
 		}
 		else if (json.code == 4011)
 		{
-			document.location = "login.html";
+			document.location = URL_LOGIN_PAGE;
 		}
 		else
 		{
