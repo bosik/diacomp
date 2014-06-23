@@ -335,18 +335,4 @@ public class AnalyzeExtracter
 
 		return result;
 	}
-
-	public static KoofList analyze(List<Versioned<DiaryRecord>> recs, AnalyzeCore analyzer, double adaptation)
-	{
-		List<PrimeRec> prime = extractPrimeRecords(recs);
-		List<AnalyzeRec> formatted = formatRecords(prime, adaptation);
-
-		for (AnalyzeRec rec : formatted)
-		{
-			System.out.println(String.format("%d\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", rec.getTime(), rec.getWeight(),
-					rec.getProts(), rec.getFats(), rec.getCarbs(), rec.getIns(), rec.getBsOut() - rec.getBsIn()));
-		}
-
-		return analyzer.analyze(formatted);
-	}
 }

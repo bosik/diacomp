@@ -13,8 +13,8 @@ public class KoofServiceImpl implements KoofService
 {
 	private final DiaryService	diaryService;
 	private final AnalyzeCore	analyzeCore;
-	private int					analyzePeriod;
-	private double				adaptation;
+	private final int			analyzePeriod;
+	private final double		adaptation;
 
 	private KoofList			koofs;
 
@@ -48,7 +48,7 @@ public class KoofServiceImpl implements KoofService
 		Date timeTo = new Date();
 		Date timeFrom = new Date(timeTo.getTime() - (analyzePeriod * Utils.MsecPerDay));
 		List<Versioned<DiaryRecord>> recs = diaryService.findBetween(timeFrom, timeTo, false);
-		koofs = AnalyzeExtracter.analyze(recs, analyzeCore, adaptation);
+		koofs = analyzeCore.analyze(recs);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class KoofServiceImpl implements KoofService
 			update();
 		}
 
-		// that means analyzing failed
+		// that means analyzing failed (f.e. if no diary records found)
 		if (koofs == null)
 		{
 			return STD_KOOF;
