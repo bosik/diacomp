@@ -17,8 +17,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 {
@@ -34,21 +37,22 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private Double				bsTarget;
 	private Double				insInjected;
 
+	private static boolean		correctBs				= true;
+
 	// components
 	private Button				buttonTime;
 	private Button				buttonDate;
-	private TextView			textMealStatProts;
-	private TextView			textMealStatFats;
-	private TextView			textMealStatCarbs;
-	private TextView			textMealStatValue;
-	private TextView			textMealStatDosage;
+	// private TextView textMealStatProts;
+	// private TextView textMealStatFats;
+	// private TextView textMealStatCarbs;
+	// private TextView textMealStatValue;
+	// private TextView textMealStatDosage;
 
-	private LinearLayout		layoutDosageShift;
-	private TextView			textMealShiftBS;
-	private TextView			textMealShiftDosage;
-	private TextView			textMealShiftCarbs;
-	private TextView			textMealCompDosage;
-	private TextView			textMealCompCarbs;
+	private LinearLayout		layoutShifted;
+	private TextView			textMealCurrentDosage;
+	private TextView			textMealShiftedCarbs;
+	private TextView			textMealShiftedDosage;
+	private ToggleButton		mealSwitchCorrection;
 	private MealEditorView		mealEditor;
 
 	// localization
@@ -97,18 +101,18 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			}
 		});
 
-		textMealStatProts = (TextView) findViewById(R.id.textMealStatProts);
-		textMealStatFats = (TextView) findViewById(R.id.textMealStatFats);
-		textMealStatCarbs = (TextView) findViewById(R.id.textMealStatCarbs);
-		textMealStatValue = (TextView) findViewById(R.id.textMealStatValue);
-		textMealStatDosage = (TextView) findViewById(R.id.textMealStatDosage);
+		// textMealStatProts = (TextView) findViewById(R.id.textMealStatProts);
+		// textMealStatFats = (TextView) findViewById(R.id.textMealStatFats);
+		// textMealStatCarbs = (TextView) findViewById(R.id.textMealStatCarbs);
+		// textMealStatValue = (TextView) findViewById(R.id.textMealStatValue);
+		// textMealStatDosage = (TextView) findViewById(R.id.textMealStatDosage);
 
-		layoutDosageShift = (LinearLayout) findViewById(R.id.layoutMealDosageShift);
-		textMealShiftBS = (TextView) findViewById(R.id.textMealShiftBS);
-		textMealShiftDosage = (TextView) findViewById(R.id.textMealShiftDosage);
-		textMealShiftCarbs = (TextView) findViewById(R.id.textMealShiftCarbs);
-		textMealCompDosage = (TextView) findViewById(R.id.textMealCompDosage);
-		textMealCompCarbs = (TextView) findViewById(R.id.textMealCompCarbs);
+		layoutShifted = (LinearLayout) findViewById(R.id.layoutMealShifted);
+		textMealCurrentDosage = (TextView) findViewById(R.id.textMealCurrentDosage);
+		textMealShiftedCarbs = (TextView) findViewById(R.id.textMealShiftedCarbs);
+		textMealShiftedDosage = (TextView) findViewById(R.id.textMealShiftedDosage);
+		mealSwitchCorrection = (ToggleButton) findViewById(R.id.buttonMealSwitchCorrection);
+
 		mealEditor = (MealEditorView) findViewById(R.id.mealEditorMeal);
 
 		// list.setScroll
@@ -148,6 +152,21 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 				showMealInfo();
 			}
 		});
+
+		mealSwitchCorrection.setOnCheckedChangeListener(new OnCheckedChangeListener()
+		{
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+			{
+				if ((insInjected != null) && (insInjected > Utils.EPS))
+				{
+					ActivityEditorMeal.correctBs = isChecked;
+					ActivityEditorMeal.this.showMealInfo();
+				}
+			}
+
+		});
+		mealSwitchCorrection.setChecked(correctBs);
 	}
 
 	void showMealContent()
@@ -172,7 +191,20 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		// TODO: hackfix
 		Koof koof = Storage.koofService.getKoof(minutesTime);
 
-		double deltaBS = (bsBeforeMeal != null && bsTarget != null) ? bsTarget - bsBeforeMeal : 0.0;
+		double deltaBS = 0.0;
+
+		if (bsBeforeMeal != null && bsTarget != null)
+		{
+			if (correctBs)
+			{
+				deltaBS = bsTarget - bsBeforeMeal;
+				mealSwitchCorrection.setTextOn(Utils.formatDoubleSigned(deltaBS) + " " + captionMmol);
+			}
+		}
+		else
+		{
+			mealSwitchCorrection.setEnabled(false);
+		}
 
 		double carbs = entity.getData().getCarbs();
 		double prots = entity.getData().getProts();
@@ -190,50 +222,33 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		// entity.getData().getValue()));
 		// textMealStatDosage.setText(String.format("%.1f %s", insInjected, captionDose));
 
-		// shift dosage
+		// current dosage
 
-		if (Math.abs(deltaBS) > 0.00001)
+		double currentDose = (-deltaBS + carbs * koof.getK() + (prots * koof.getP())) / koof.getQ();
+		textMealCurrentDosage.setText(String.format("%.1f %s", currentDose, captionDose));
+
+		// shifted dosage
+
+		if (insInjected > Utils.EPS)
 		{
-			layoutDosageShift.setVisibility(View.VISIBLE);
+			layoutShifted.setVisibility(View.VISIBLE);
 
-			double shiftDose = (-deltaBS + (carbs * koof.getK()) + (prots * koof.getP())) / koof.getQ();
-			double shiftCarbs = (insInjected * koof.getQ() - prots * koof.getP() + deltaBS) / koof.getK() - carbs;
-
-			textMealShiftBS.setText(Utils.formatDoubleSigned(deltaBS) + " " + captionMmol);
-			final String shiftDosage = insInjected > 0 ? String.format("%.1f / %.1f %s", shiftDose, insInjected,
-					captionDose) : String.format("%.1f %s", shiftDose, captionDose);
-			textMealShiftDosage.setText(shiftDosage);
-			textMealShiftCarbs.setText(Utils.formatDoubleSigned(shiftCarbs) + " " + captionGramm);
-			if (shiftCarbs < 0)
+			double shiftedCarbs = (insInjected * koof.getQ() - prots * koof.getP() + deltaBS) / koof.getK() - carbs;
+			if (shiftedCarbs < 0)
 			{
-				textMealShiftCarbs.setTextColor(getResources().getColor(R.color.meal_correction_negative));
+				textMealShiftedCarbs.setTextColor(getResources().getColor(R.color.meal_correction_negative));
 			}
 			else
 			{
-				textMealShiftCarbs.setTextColor(getResources().getColor(R.color.meal_correction_positive));
+				textMealShiftedCarbs.setTextColor(getResources().getColor(R.color.meal_correction_positive));
 			}
+			textMealShiftedCarbs.setText(Utils.formatDoubleSigned(shiftedCarbs) + " " + captionGramm);
+
+			textMealShiftedDosage.setText(String.format("%.1f %s", insInjected, captionDose));
 		}
 		else
 		{
-			layoutDosageShift.setVisibility(View.GONE);
-		}
-
-		// pure compensation dosage
-
-		double compDose = (carbs * koof.getK() + (prots * koof.getP())) / koof.getQ();
-		double compCarbs = (insInjected * koof.getQ() - prots * koof.getP()) / koof.getK() - carbs;
-
-		final String compDosage = insInjected > 0 ? String.format("%.1f / %.1f %s", compDose, insInjected, captionDose)
-				: String.format("%.1f %s", compDose, captionDose);
-		textMealCompDosage.setText(compDosage);
-		textMealCompCarbs.setText(Utils.formatDoubleSigned(compCarbs) + " " + captionGramm);
-		if (compCarbs < 0)
-		{
-			textMealCompCarbs.setTextColor(getResources().getColor(R.color.meal_correction_negative));
-		}
-		else
-		{
-			textMealCompCarbs.setTextColor(getResources().getColor(R.color.meal_correction_positive));
+			layoutShifted.setVisibility(View.GONE);
 		}
 
 		// TODO: print expectedBS somehow
