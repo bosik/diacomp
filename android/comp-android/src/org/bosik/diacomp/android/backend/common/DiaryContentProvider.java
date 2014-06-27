@@ -109,10 +109,10 @@ public class DiaryContentProvider extends ContentProvider
 		{
 			// FIXME: THIS ERASES ALL DATA
 
-			db.execSQL("DROP TABLE IF EXISTS " + TABLE_DIARY);
-			db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOODBASE);
-			db.execSQL("DROP TABLE IF EXISTS " + TABLE_DISHBASE);
-			db.execSQL("DROP TABLE IF EXISTS " + TABLE_TAG);
+			// db.execSQL("DROP TABLE IF EXISTS " + TABLE_DIARY);
+			// db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOODBASE);
+			// db.execSQL("DROP TABLE IF EXISTS " + TABLE_DISHBASE);
+			// db.execSQL("DROP TABLE IF EXISTS " + TABLE_TAG);
 
 			// @formatter:off
 
