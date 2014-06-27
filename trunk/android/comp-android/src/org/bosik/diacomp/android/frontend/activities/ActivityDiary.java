@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.common.Storage;
+import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.views.diary.DiaryView;
 import org.bosik.diacomp.android.frontend.views.diary.RecordClickListener;
@@ -19,6 +19,7 @@ import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.content.Intent;
@@ -70,6 +71,9 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	private DiaryView							diaryViewLayout;
 	private Button								buttonSelectDay;
 
+	// Services
+	private DiaryService						diary;
+
 	// СОБЫТИЯ
 
 	// handled
@@ -80,6 +84,9 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 		try
 		{
+			// initializing services
+			diary = new DiaryLocalService(getContentResolver());
+
 			// Log.i(TAG, "DiaryView(): onCreate()");
 			setContentView(R.layout.activity_diary);
 
@@ -220,9 +227,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					 * Storage.webDiary.getPage(date); Date timestamp =
 					 * Storage.webDiary.diarySource.getTimeStamp(date);
 					 * 
-					 * if (null != page) { Log.d(TAG, "menuClick: page is ok");
-					 * Storage.localDiary.postPage(page, timestamp); } else Log.d(TAG,
-					 * "menuClick: page is null");
+					 * if (null != page) { Log.d(TAG, "menuClick: page is ok"); diary.postPage(page,
+					 * timestamp); } else Log.d(TAG, "menuClick: page is null");
 					 * 
 					 * Log.d(TAG, "menuClick: invalidating...");
 					 * 
@@ -237,7 +243,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					UIUtils.showTip(this, "Creating note is not implemented yet");
 					/*
 					 * Log.i(TAG, "menuClick: opening page..."); DiaryPage page =
-					 * Storage.localDiary.getPage(curDate);
+					 * diary.getPage(curDate);
 					 * 
 					 * if (null != page) Log.d(TAG, "menuClick: page is ok"); else Log.d(TAG,
 					 * "menuClick: page is null");
@@ -547,19 +553,84 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		Date start = c.getTime();
 		Date end = Utils.getNextDay(start);
 
-		curRecords = Storage.localDiary.findBetween(start, end, false);
-		Log.d(TAG,
-				String.format("Found %d items between %s and %s", curRecords.size(), Utils.formatTimeUTC(start),
-						Utils.formatTimeUTC(end)));
+		curRecords = diary.findBetween(start, end, false);
+
+		if (!verifyRecords(curRecords, start, end))
+		{
+			UIUtils.showTip(this, "Diary verification failed");
+		}
+
+		// Log.d(TAG, String.format("#DBF Found %d items between %s and %s", curRecords.size(),
+		// Utils.formatTimeUTC(start), Utils.formatTimeUTC(end)));
+		//
+		// for (Versioned<DiaryRecord> record : curRecords)
+		// {
+		// Log.v(TAG,
+		// String.format("#DBF RCVD #%s: %s", record.getId(),
+		// Utils.formatTimeUTC(record.getData().getTime())));
+		// }
+
 		diaryViewLayout.setRecords(curRecords);
 		buttonSelectDay.setText(FORMAT_DATE.format(curDate));
+	}
+
+	private boolean verifyRecords(List<Versioned<DiaryRecord>> records, Date start, Date end)
+	{
+		// null check #1
+		if (records == null)
+		{
+			Log.e(TAG, "Records validation failed: records are null");
+			return false;
+		}
+
+		// null check #2 / range check
+		for (Versioned<DiaryRecord> record : records)
+		{
+			if (record == null)
+			{
+				Log.e(TAG, "Records validation failed: record list contain null items");
+				return false;
+			}
+
+			if (record.getData().getTime().before(start) || record.getData().getTime().after(end))
+			{
+				Log.e(TAG, String.format(
+						"Records validation failed: time of item %s (%s) is out of time range (%s -- %s)",
+						record.getId(), Utils.formatTimeUTC(record.getData().getTime()), Utils.formatTimeUTC(start),
+						Utils.formatTimeUTC(end)));
+				for (Versioned<DiaryRecord> item : records)
+				{
+					Log.e(TAG, String.format("ID %s %s", item.getId(), Utils.formatTimeUTC(item.getData().getTime())));
+				}
+				return false;
+			}
+		}
+
+		// sorting check
+		for (int i = 0; i < records.size() - 1; i++)
+		{
+			Date time1 = records.get(i).getData().getTime();
+			Date time2 = records.get(i + 1).getData().getTime();
+			if (time1.after(time2))
+			{
+				Log.e(TAG, String.format("Records validation failed: items %d and %d are wrong sorted", i, i + 1));
+				for (Versioned<DiaryRecord> item : records)
+				{
+					Log.e(TAG, String.format("ID %s %s", item.getId(), Utils.formatTimeUTC(item.getData().getTime())));
+				}
+				return false;
+			}
+		}
+
+		Log.i(TAG, "Diary records successfully verified");
+		return true;
 	}
 
 	public void postRecord(Versioned<DiaryRecord> rec)
 	{
 		List<Versioned<DiaryRecord>> list = new LinkedList<Versioned<DiaryRecord>>();
 		list.add(rec);
-		Storage.localDiary.save(list);
+		diary.save(list);
 		openPage(curDate);
 	}
 
@@ -571,13 +642,13 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	 * @param since
 	 * @return
 	 */
-	private static BloodRecord lastBlood(long scanPeriod, Date since, boolean skipPostprandials)
+	private BloodRecord lastBlood(long scanPeriod, Date since, boolean skipPostprandials)
 	{
 		// TODO: move this away from UI
 		Date toDate = since;
 		Date fromDate = new Date(toDate.getTime() - (scanPeriod * Utils.MsecPerSec));
 
-		List<Versioned<DiaryRecord>> records = Storage.localDiary.findBetween(fromDate, toDate, false);
+		List<Versioned<DiaryRecord>> records = diary.findBetween(fromDate, toDate, false);
 		Collections.reverse(records);
 
 		for (Versioned<DiaryRecord> record : records)
@@ -601,7 +672,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	 *            , in seconds
 	 * @return
 	 */
-	private static InsRecord findInsulin(Date near, long scanPeriod)
+	private InsRecord findInsulin(Date near, long scanPeriod)
 	{
 		Log.d(TAG, "findInsulin(): near = " + near + ", scanPeriod = " + scanPeriod);
 
@@ -609,7 +680,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 		Date fromDate = new Date(near.getTime() - (scanPeriod * Utils.MsecPerSec));
 		Date toDate = new Date(near.getTime() + (scanPeriod * Utils.MsecPerSec));
-		List<Versioned<DiaryRecord>> records = Storage.localDiary.findBetween(fromDate, toDate, false);
+		List<Versioned<DiaryRecord>> records = diary.findBetween(fromDate, toDate, false);
 
 		Log.d(TAG, "findInsulin(): fromDate = " + fromDate);
 		Log.d(TAG, "findInsulin(): toDate = " + toDate);

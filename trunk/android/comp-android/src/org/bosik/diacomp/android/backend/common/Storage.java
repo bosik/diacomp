@@ -54,7 +54,7 @@ public class Storage
 
 	public static WebClient			webClient;
 
-	public static DiaryService		localDiary;
+	private static DiaryService		localDiary;
 	public static DiaryService		webDiary;
 	public static FoodBaseService	localFoodBase;
 	public static FoodBaseService	webFoodBase;
@@ -140,8 +140,8 @@ public class Storage
 		// this applies all preferences
 		applyPreference(preferences, null);
 
-		runBackgrounds();
-		// setupSyncTimer(20 * 60 * 1000);
+		// runBackgrounds();
+		setupSyncTimer(20 * 60 * 1000);
 	}
 
 	public static void runBackgrounds()
@@ -190,7 +190,8 @@ public class Storage
 		};
 
 		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(task, 0, interval);
+		// timer.scheduleAtFixedRate(task, 0, interval);
+		timer.schedule(task, 2000);
 	}
 
 	public static Integer syncDiary()
