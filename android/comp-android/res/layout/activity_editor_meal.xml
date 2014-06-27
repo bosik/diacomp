@@ -140,16 +140,15 @@
             <ToggleButton
                 android:id="@+id/buttonMealSwitchCorrection"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/padding_small"
-                android:textOn="-2,3 ммоль/л"
+                android:layout_height="46dp"
                 android:textOff="No correction"
+                android:textOn="-2,3 ммоль/л"
                 android:textSize="@dimen/font_datetime" />
 
             <Button
                 android:id="@+id/buttonMealInfo"
                 android:layout_width="46dp"
-                android:layout_height="match_parent"
+                android:layout_height="46dp"
                 android:layout_marginTop="@dimen/padding_small"
                 android:text=" ? "
                 android:textSize="@dimen/font_datetime" />
