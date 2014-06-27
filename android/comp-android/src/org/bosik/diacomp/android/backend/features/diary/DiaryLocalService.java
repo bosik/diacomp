@@ -101,7 +101,7 @@ public class DiaryLocalService implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> findBetween(Date fromDate, Date toDate, boolean includeRemoved)
+	public synchronized List<Versioned<DiaryRecord>> findBetween(Date fromDate, Date toDate, boolean includeRemoved)
 			throws CommonServiceException
 	{
 		if (fromDate == null)
@@ -115,7 +115,7 @@ public class DiaryLocalService implements DiaryService
 		}
 
 		Log.d(TAG,
-				String.format("Searching for items between %s and %s", Utils.formatTimeUTC(fromDate),
+				String.format("#DBF Searching for items between %s and %s", Utils.formatTimeUTC(fromDate),
 						Utils.formatTimeUTC(toDate)));
 
 		// construct parameters
@@ -153,8 +153,6 @@ public class DiaryLocalService implements DiaryService
 		// DiaryContentProvider.COLUMN_DIARY_DELETED);
 		// clauseArgs = new String[] { Utils.formatTimeUTC(time) };
 		// }
-
-		Log.d(TAG, "Search clause: " + clause);
 
 		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
@@ -253,10 +251,10 @@ public class DiaryLocalService implements DiaryService
 
 				res.add(item);
 
-				Log.v(TAG, String.format("Extracted item #%s: %s", guid, content));
+				Log.v(TAG, String.format("#DBF Extracted item #%s: %s", guid, content));
 			}
 
-			Log.d(TAG, String.format("Extracted %d items", res.size()));
+			Log.d(TAG, String.format("#DBF Extracted %d items", res.size()));
 			return res;
 		}
 		else
