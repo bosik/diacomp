@@ -63,7 +63,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 	// --- форматы ---
 	// private static final SimpleDateFormat CaptionFmt = new SimpleDateFormat("d MMMM");
-	private final SimpleDateFormat				CaptionFmt					= new SimpleDateFormat("dd.MM.yyyy",
+	private static final SimpleDateFormat		FORMAT_DATE					= new SimpleDateFormat("dd.MM.yyyy",
 																					Locale.US);
 
 	// КОМПОНЕНТЫ
@@ -484,13 +484,6 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		}
 	}
 
-	private void setCaptionDate(Date date)
-	{
-		String s = CaptionFmt.format(date);
-		setTitle(String.format("%s (%s)", getString(R.string.diary_title), s));
-		buttonSelectDay.setText(s);
-	}
-
 	// handled
 	@SuppressWarnings("unchecked")
 	@Override
@@ -559,7 +552,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				String.format("Found %d items between %s and %s", curRecords.size(), Utils.formatTimeUTC(start),
 						Utils.formatTimeUTC(end)));
 		diaryViewLayout.setRecords(curRecords);
-		setCaptionDate(curDate);
+		buttonSelectDay.setText(FORMAT_DATE.format(curDate));
 	}
 
 	public void postRecord(Versioned<DiaryRecord> rec)
