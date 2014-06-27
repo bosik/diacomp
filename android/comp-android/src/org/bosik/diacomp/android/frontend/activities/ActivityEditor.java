@@ -37,6 +37,8 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 		{
 			entity.setId(Utils.generateGuid());
 		}
+
+		setTitle(entity.getId());
 	}
 
 	/* =========================== PROTECTED METHODS ================================ */
