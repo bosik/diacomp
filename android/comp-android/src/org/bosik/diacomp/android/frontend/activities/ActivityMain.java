@@ -477,61 +477,57 @@ public class ActivityMain extends Activity
 						@Override
 						protected void onPostExecute(Map<String, Integer> result)
 						{
+							String message = "";
+
 							Integer countDiary = result.get(DIARY);
 							if (countDiary == null)
 							{
-								UIUtils.showTip(ActivityMain.this, "Failed to sync diary");
+								message += "Diary: failed\n";
 							}
 							else if (countDiary > 0)
 							{
-								UIUtils.showTip(ActivityMain.this,
-										String.format("Diary synced, transferred: %d", countDiary));
+								message += String.format("Diary: %d\n", countDiary);
 							}
 							else
 							{
-								UIUtils.showTip(ActivityMain.this, "Diary synced [no changes]");
+								message += "Diary: \t\tno changes\n";
 							}
+
+							// =================================================================
 
 							Integer countFood = result.get(FOOD);
 							if (countFood == null)
 							{
-								UIUtils.showTip(ActivityMain.this, "Failed to sync food base");
+								message += "Foods: failed\n";
 							}
 							else if (countFood > 0)
 							{
-								UIUtils.showTip(ActivityMain.this,
-										String.format("Food base synced, transferred: %d", countFood));
+								message += String.format("Foods: %d\n", countFood);
 							}
 							else
 							{
-								UIUtils.showTip(ActivityMain.this, "Food base synced [no changes]");
+								message += "Foods: \tno changes\n";
 							}
+
+							// =================================================================
 
 							Integer countDish = result.get(DISH);
 							if (countDish == null)
 							{
-								UIUtils.showTip(ActivityMain.this, "Failed to sync dish base");
+								message += "Dishes: failed";
 							}
 							else if (countDish > 0)
 							{
-								UIUtils.showTip(ActivityMain.this,
-										String.format("Dish base synced, transferred: %d", countDish));
+								message += String.format("Dishes: %d", countDish);
 							}
 							else
 							{
-								UIUtils.showTip(ActivityMain.this, "Dish base synced [no changes]");
+								message += "Dishes:\tno changes";
 							}
+
+							UIUtils.showTip(ActivityMain.this, message);
 						}
 					}.execute();
-
-					// if (ok)
-					// {
-					// UIUtils.showTip(this, "Synced ok");
-					// }
-					// else
-					// {
-					// UIUtils.showTip(this, "Failed to sync");
-					// }
 				}
 			});
 			buttonTest.setOnClickListener(new OnClickListener()
@@ -548,7 +544,7 @@ public class ActivityMain extends Activity
 				@Override
 				public void onClick(View v)
 				{
-					//Storage.analyzeKoofs();
+					// Storage.analyzeKoofs();
 					ActivityMain.AsyncTaskAnalyzeDiary task = new ActivityMain.AsyncTaskAnalyzeDiary();
 					task.execute();
 				}
