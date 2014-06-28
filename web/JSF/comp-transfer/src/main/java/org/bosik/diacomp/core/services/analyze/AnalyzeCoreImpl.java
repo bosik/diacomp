@@ -225,7 +225,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 					for (int m = 1; m < Utils.MinPerHour; m++) // 1..59
 					{
-						double w = m / Utils.MinPerHour;
+						double w = (double)m / Utils.MinPerHour;
 						result[left + m] = (1 - w) * result[left] + w * result[right];
 					}
 				}
@@ -314,6 +314,10 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	@Override
 	public KoofList analyze(List<Versioned<DiaryRecord>> records)
 	{
+		/**
+		 * This method assumes the Q and P koofs are fixed and K is floating within the day
+		 */
+
 		double adaptation = 0.95;
 
 		List<PrimeRec> prime = AnalyzeExtracter.extractPrimeRecords(records);
@@ -324,10 +328,6 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		//			System.out.println(String.format("%d\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", item.getTime(), item.getWeight(),
 		//					item.getProts(), item.getFats(), item.getCarbs(), item.getIns(), item.getBsOut() - item.getBsIn()));
 		//		}
-
-		/**
-		 * This method assumes the Q and P koofs are fixed and K is floating within the day
-		 */
 
 		if (items.isEmpty())
 		{
