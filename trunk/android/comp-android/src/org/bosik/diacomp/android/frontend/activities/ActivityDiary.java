@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService.Verifier;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.views.diary.DiaryView;
 import org.bosik.diacomp.android.frontend.views.diary.RecordClickListener;
@@ -555,7 +556,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 		curRecords = diary.findBetween(start, end, false);
 
-		if (!verifyRecords(curRecords, start, end))
+		Log.i(TAG, "External records verification...");
+		if (!Verifier.verifyRecords(curRecords, start, end))
 		{
 			UIUtils.showTip(this, "Diary verification failed");
 		}
@@ -572,58 +574,6 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 		diaryViewLayout.setRecords(curRecords);
 		buttonSelectDay.setText(FORMAT_DATE.format(curDate));
-	}
-
-	private boolean verifyRecords(List<Versioned<DiaryRecord>> records, Date start, Date end)
-	{
-		// null check #1
-		if (records == null)
-		{
-			Log.e(TAG, "Records validation failed: records are null");
-			return false;
-		}
-
-		// null check #2 / range check
-		for (Versioned<DiaryRecord> record : records)
-		{
-			if (record == null)
-			{
-				Log.e(TAG, "Records validation failed: record list contain null items");
-				return false;
-			}
-
-			if (record.getData().getTime().before(start) || record.getData().getTime().after(end))
-			{
-				Log.e(TAG, String.format(
-						"Records validation failed: time of item %s (%s) is out of time range (%s -- %s)",
-						record.getId(), Utils.formatTimeUTC(record.getData().getTime()), Utils.formatTimeUTC(start),
-						Utils.formatTimeUTC(end)));
-				for (Versioned<DiaryRecord> item : records)
-				{
-					Log.e(TAG, String.format("ID %s %s", item.getId(), Utils.formatTimeUTC(item.getData().getTime())));
-				}
-				return false;
-			}
-		}
-
-		// sorting check
-		for (int i = 0; i < records.size() - 1; i++)
-		{
-			Date time1 = records.get(i).getData().getTime();
-			Date time2 = records.get(i + 1).getData().getTime();
-			if (time1.after(time2))
-			{
-				Log.e(TAG, String.format("Records validation failed: items %d and %d are wrong sorted", i, i + 1));
-				for (Versioned<DiaryRecord> item : records)
-				{
-					Log.e(TAG, String.format("ID %s %s", item.getId(), Utils.formatTimeUTC(item.getData().getTime())));
-				}
-				return false;
-			}
-		}
-
-		Log.i(TAG, "Diary records successfully verified");
-		return true;
 	}
 
 	public void postRecord(Versioned<DiaryRecord> rec)

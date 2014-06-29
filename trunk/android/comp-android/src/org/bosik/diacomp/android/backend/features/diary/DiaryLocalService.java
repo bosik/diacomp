@@ -26,7 +26,7 @@ import android.util.Log;
 @SuppressWarnings("unchecked")
 public class DiaryLocalService implements DiaryService
 {
-	private static final String				TAG			= DiaryLocalService.class.getSimpleName();
+	static final String						TAG			= DiaryLocalService.class.getSimpleName();
 
 	/* ============================ FIELDS ============================ */
 
@@ -57,6 +57,24 @@ public class DiaryLocalService implements DiaryService
 	}
 
 	/* ============================ API ============================ */
+
+	@Override
+	public void delete(String id) throws NotFoundException, AlreadyDeletedException
+	{
+		Versioned<DiaryRecord> item = findById(id);
+
+		if (item == null)
+		{
+			throw new NotFoundException(id);
+		}
+		if (item.isDeleted())
+		{
+			throw new AlreadyDeletedException(id);
+		}
+
+		item.setDeleted(true);
+		save(Arrays.<Versioned<DiaryRecord>> asList(item));
+	}
 
 	@Override
 	public Versioned<DiaryRecord> findById(String guid) throws CommonServiceException
@@ -138,21 +156,6 @@ public class DiaryLocalService implements DiaryService
 					DiaryContentProvider.COLUMN_DIARY_TIMECACHE, DiaryContentProvider.COLUMN_DIARY_DELETED);
 			clauseArgs = new String[] { Utils.formatTimeUTC(fromDate), Utils.formatTimeUTC(toDate) };
 		}
-		// String clause;
-		// String[] clauseArgs;
-		//
-		// if (includeModified)
-		// {
-		// clause = String.format("%s > ?", DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
-		// clauseArgs = new String[] { Utils.formatTimeUTC(time) };
-		// }
-		// else
-		// {
-		// clause = String.format("(%s > ?) AND (%s = 0)",
-		// DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
-		// DiaryContentProvider.COLUMN_DIARY_DELETED);
-		// clauseArgs = new String[] { Utils.formatTimeUTC(time) };
-		// }
 
 		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
@@ -160,7 +163,11 @@ public class DiaryLocalService implements DiaryService
 		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
 				sortOrder);
 
-		return extractRecords(cursor);
+		List<Versioned<DiaryRecord>> records = extractRecords(cursor);
+		Log.i(TAG, "Internal records verification...");
+		Verifier.verifyRecords(records, fromDate, toDate);
+
+		return records;
 	}
 
 	private boolean recordExists(String guid)
@@ -283,21 +290,60 @@ public class DiaryLocalService implements DiaryService
 		return sb.toString();
 	}
 
-	@Override
-	public void delete(String id) throws NotFoundException, AlreadyDeletedException
+	public static class Verifier
 	{
-		Versioned<DiaryRecord> item = findById(id);
-
-		if (item == null)
+		public static boolean verifyRecords(List<Versioned<DiaryRecord>> records, Date start, Date end)
 		{
-			throw new NotFoundException(id);
-		}
-		if (item.isDeleted())
-		{
-			throw new AlreadyDeletedException(id);
+			// null check #1
+			if (records == null)
+			{
+				Log.e(TAG, "Records validation failed: records are null");
+				return false;
+			}
+
+			// null check #2 / range check
+			for (Versioned<DiaryRecord> record : records)
+			{
+				if (record == null)
+				{
+					Log.e(TAG, "Records validation failed: record list contain null items");
+					return false;
+				}
+
+				if (record.getData().getTime().before(start) || record.getData().getTime().after(end))
+				{
+					Log.e(TAG, String.format(
+							"Records validation failed: time of item %s (%s) is out of time range (%s -- %s)",
+							record.getId(), Utils.formatTimeUTC(record.getData().getTime()),
+							Utils.formatTimeUTC(start), Utils.formatTimeUTC(end)));
+					print(records);
+					return false;
+				}
+			}
+
+			// sorting check
+			for (int i = 0; i < records.size() - 1; i++)
+			{
+				Date time1 = records.get(i).getData().getTime();
+				Date time2 = records.get(i + 1).getData().getTime();
+				if (time1.after(time2))
+				{
+					Log.e(TAG, String.format("Records validation failed: items %d and %d are wrong sorted", i, i + 1));
+					print(records);
+					return false;
+				}
+			}
+
+			Log.i(TAG, "Diary records successfully verified");
+			return true;
 		}
 
-		item.setDeleted(true);
-		save(Arrays.<Versioned<DiaryRecord>> asList(item));
+		public static void print(List<Versioned<DiaryRecord>> records)
+		{
+			for (Versioned<DiaryRecord> item : records)
+			{
+				Log.e(TAG, String.format("ID %s %s", item.getId(), Utils.formatTimeUTC(item.getData().getTime())));
+			}
+		}
 	}
 }
