@@ -125,7 +125,7 @@ public class TestAnalyzeService
 		for (int time = 0; time < Utils.MinPerDay; time++)
 		{
 			Koof koof = koofs.getKoof(time);
-			System.out.println(String.format("%.3f\t%.3f\t%.3f", koof.getK(), koof.getQ(), koof.getP()));
+			System.out.println(String.format("%.5f\t%.3f\t%.3f", koof.getK(), koof.getQ(), koof.getP()));
 		}
 	}
 }

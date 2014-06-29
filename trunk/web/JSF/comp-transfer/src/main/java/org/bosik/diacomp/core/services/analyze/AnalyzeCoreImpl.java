@@ -52,7 +52,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		@Override
 		public double calculate(double x, double y)
 		{
-			return Math.abs(1 - (x / y));
+			return Math.pow(1 - (x / y), 2);
 		}
 	}
 
@@ -243,7 +243,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	 * @param func
 	 * @return
 	 */
-	private static double getRand(double[] recs, WeightedTimePoint[] points, DevFunction func)
+	private static double getDispersion(double[] recs, WeightedTimePoint[] points, DevFunction func)
 	{
 		double result = 0.0;
 		int n = 0;
@@ -270,16 +270,20 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	 * @param func
 	 * @return
 	 */
-	private static double getDev(List<AnalyzeRec> recs, KoofList koofs, DevFunction func)
+	private static double getError(List<AnalyzeRec> recs, KoofList koofs, DevFunction func)
 	{
 		double result = 0.0;
 		int n = 0;
 		for (AnalyzeRec rec : recs)
 		{
-			result += func.calculate(
-					((rec.getBsIn() + (koofs.getKoof(rec.getTime()).getK() * rec.getCarbs())) - (koofs.getKoof(
-							rec.getTime()).getQ() * rec.getIns()))
-							+ (koofs.getKoof(rec.getTime()).getP() * rec.getProts()), rec.getBsOut());
+			double k = koofs.getKoof(rec.getTime()).getK();
+			double q = koofs.getKoof(rec.getTime()).getQ();
+			double p = koofs.getKoof(rec.getTime()).getP();
+
+			double expBs = rec.getBsIn() + k * rec.getCarbs() + p * rec.getProts() - q * rec.getIns();
+			double actBs = rec.getBsOut();
+
+			result += func.calculate(expBs, actBs);
 			n++;
 		}
 
@@ -292,7 +296,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	}
 
 	/**
-	 * O(M) (~1440) (~24)
+	 * O(M) (~1440)
 	 * 
 	 * @param ks
 	 * @param q
@@ -361,11 +365,11 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 				points = calculateKW(items, q, p); // 50
 				k = approximate(points, false); // 72 000 (1 200)
-				koofs = copyKQP(k, q, p); // 1 440 (24)
+				koofs = copyKQP(k, q, p); // 1 440
 
-				bean.g[0] = getRand(k, points, funcRelative); // 50
+				bean.g[0] = getDispersion(k, points, funcRelative); // 50
 				bean.g[1] = 0.0;
-				bean.g[2] = getDev(items, koofs, funcSqr); // 50
+				bean.g[2] = getError(items, koofs, funcSqr); // 50
 
 				V.add(bean); // 280
 			}
