@@ -165,13 +165,19 @@ public class Utils
 	{
 		try
 		{
-			return STD_FORMAT_TIME_UTC.parse(time);
+			synchronized (STD_FORMAT_TIME_UTC)
+			{
+				return STD_FORMAT_TIME_UTC.parse(time);
+			}
 		}
 		catch (ParseException e)
 		{
 			try
 			{
-				return STD_FORMAT_DATE_UTC.parse(time);
+				synchronized (STD_FORMAT_DATE_UTC)
+				{
+					return STD_FORMAT_DATE_UTC.parse(time);
+				}
 			}
 			catch (ParseException e2)
 			{
@@ -381,7 +387,10 @@ public class Utils
 	 */
 	public static String formatTimeUTC(Date time)
 	{
-		return STD_FORMAT_TIME_UTC.format(time);
+		synchronized (STD_FORMAT_TIME_UTC)
+		{
+			return STD_FORMAT_TIME_UTC.format(time);
+		}
 	}
 
 	public static String formatTimeLocal(Date time)
