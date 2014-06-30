@@ -221,7 +221,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		}
 		else
 		{
-			textMealExpectedBs.setText("");
+			textMealExpectedBs.setText("?");
 		}
 
 		// textMealStatProts.setText(String.format("%s %.1f", captionProts,
