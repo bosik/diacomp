@@ -132,10 +132,6 @@ public class DiaryLocalService implements DiaryService
 			throw new NullPointerException("toDate is null");
 		}
 
-		Log.d(TAG,
-				String.format("#DBF Searching for items between %s and %s", Utils.formatTimeUTC(fromDate),
-						Utils.formatTimeUTC(toDate)));
-
 		// construct parameters
 		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
 				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
@@ -164,7 +160,11 @@ public class DiaryLocalService implements DiaryService
 				sortOrder);
 
 		List<Versioned<DiaryRecord>> records = extractRecords(cursor);
-		Log.i(TAG, "Internal records verification...");
+
+		Log.d(TAG, String.format("#DBF %d items found between %s and %s", records.size(),
+				Utils.formatTimeUTC(fromDate), Utils.formatTimeUTC(toDate)));
+
+		// detailed logging inside
 		Verifier.verifyRecords(records, fromDate, toDate);
 
 		return records;
@@ -261,7 +261,6 @@ public class DiaryLocalService implements DiaryService
 				Log.v(TAG, String.format("#DBF Extracted item #%s: %s", guid, content));
 			}
 
-			Log.d(TAG, String.format("#DBF Extracted %d items", res.size()));
 			return res;
 		}
 		else
