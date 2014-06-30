@@ -32,14 +32,17 @@
     <string name="editor_food_field_value">Value, kcal</string>
     <string name="editor_food_title">Food</string>
     <string name="editor_ins_title">Insulin</string>
+    <string name="editor_meal_button_more">…</string>
     <string name="editor_meal_field_fooddish">Food/dish</string>
     <string name="editor_meal_field_mass">Mass, g</string>
     <string name="editor_meal_header_content">Content</string>
-    <string name="editor_meal_header_dosage">Dosage</string>
+    <string name="editor_meal_header_dosage">Calculator</string>
     <string name="editor_meal_label_stat"  formatted="false">P 10.2</string>
     <string name="editor_meal_label_correction">+8 g</string>
     <string name="editor_meal_label_no_correction">no correction</string>
     <string name="editor_meal_label_dose">U</string>
+    <string name="editor_meal_parenthesis_close">)</string>
+    <string name="editor_meal_parenthesis_open">(</string>    
     <string name="editor_meal_title">Meal</string>
     <string name="editor_note_field_text">Text</string>
     <string name="editor_note_title">Note</string>

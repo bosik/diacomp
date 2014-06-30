@@ -17,11 +17,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 {
@@ -52,7 +49,9 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private TextView			textMealCurrentDosage;
 	private TextView			textMealShiftedCarbs;
 	private TextView			textMealShiftedDosage;
-	private ToggleButton		mealSwitchCorrection;
+	private TextView			textMealExpectedBs;
+	private Button				buttonCorrection;
+	private Button				buttonStatistics;
 	private MealEditorView		mealEditor;
 
 	// localization
@@ -111,7 +110,9 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		textMealCurrentDosage = (TextView) findViewById(R.id.textMealCurrentDosage);
 		textMealShiftedCarbs = (TextView) findViewById(R.id.textMealShiftedCarbs);
 		textMealShiftedDosage = (TextView) findViewById(R.id.textMealShiftedDosage);
-		mealSwitchCorrection = (ToggleButton) findViewById(R.id.buttonMealSwitchCorrection);
+		textMealExpectedBs = (TextView) findViewById(R.id.textMealExpectedBs);
+		buttonCorrection = (Button) findViewById(R.id.buttonMealCorrection);
+		buttonStatistics = (Button) findViewById(R.id.buttonMealInfo);
 
 		mealEditor = (MealEditorView) findViewById(R.id.mealEditorMeal);
 
@@ -153,20 +154,27 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			}
 		});
 
-		mealSwitchCorrection.setOnCheckedChangeListener(new OnCheckedChangeListener()
+		buttonCorrection.setOnClickListener(new OnClickListener()
 		{
 			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+			public void onClick(View v)
 			{
 				if ((insInjected != null) && (insInjected > Utils.EPS))
 				{
-					ActivityEditorMeal.correctBs = isChecked;
+					ActivityEditorMeal.correctBs = !ActivityEditorMeal.correctBs;
 					ActivityEditorMeal.this.showMealInfo();
+					
+					if (ActivityEditorMeal.correctBs)
+					{
+						buttonCorrection.setText("\\");
+					}
+					else
+					{
+						buttonCorrection.setText("—");
+					}
 				}
 			}
-
 		});
-		mealSwitchCorrection.setChecked(correctBs);
 	}
 
 	void showMealContent()
@@ -198,12 +206,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			if (correctBs)
 			{
 				deltaBS = bsTarget - bsBeforeMeal;
-				mealSwitchCorrection.setTextOn(Utils.formatDoubleSigned(deltaBS) + " " + captionMmol);
 			}
-		}
-		else
-		{
-			mealSwitchCorrection.setEnabled(false);
 		}
 
 		double carbs = entity.getData().getCarbs();
@@ -211,6 +214,15 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 
 		Double expectedBS = bsBeforeMeal == null ? null : bsBeforeMeal + (carbs * koof.getK()) + (prots * koof.getP())
 				- (insInjected * koof.getQ());
+
+		if (expectedBS != null)
+		{
+			textMealExpectedBs.setText(String.format("%.1f %s", expectedBS, captionMmol));
+		}
+		else
+		{
+			textMealExpectedBs.setText("");
+		}
 
 		// textMealStatProts.setText(String.format("%s %.1f", captionProts,
 		// entity.getData().getProts()));
