@@ -33,7 +33,7 @@
     <string name="editor_meal_field_fooddish">Продукт/блюдо</string>
     <string name="editor_meal_field_mass">Масса, г</string>
     <string name="editor_meal_header_content">Состав</string>
-    <string name="editor_meal_header_dosage">Дозировка</string>
+    <string name="editor_meal_header_dosage">Расчёт</string>
     <string name="editor_meal_label_stat">г угл.</string>
     <string name="editor_meal_label_correction">+8 г</string>
     <string name="editor_meal_label_no_correction">без коррекции</string>
