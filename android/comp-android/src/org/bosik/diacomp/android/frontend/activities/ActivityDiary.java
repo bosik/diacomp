@@ -556,7 +556,6 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 		curRecords = diary.findBetween(start, end, false);
 
-		Log.i(TAG, "External records verification...");
 		if (!Verifier.verifyRecords(curRecords, start, end))
 		{
 			UIUtils.showTip(this, "Diary verification failed");
