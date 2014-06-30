@@ -61,12 +61,7 @@ public class Utils
 
 	private static Random					r							= new Random();
 
-	/*
-	 * public static final String[] MONTH_NAMES = new String[] { "Январь", "Февраль", "Март",
-	 * "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
-	 */
-
-	// Foramtters
+	// Formatters
 
 	public static final SimpleDateFormat	STD_FORMAT_TIME_UTC			= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
 																				Locale.US);
