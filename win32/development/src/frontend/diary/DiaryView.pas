@@ -87,7 +87,7 @@ type
   private
     { текущая страница }
     FBitMap: Graphics.TBitMap;
-    FCurrentPage: TRecordList; // TODO: rename
+    FItems: TRecordList;
 
     PanelRects: array of TPanelRect;
     FSelID: TCompactGUID;
@@ -182,7 +182,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure OpenPage(Page: TRecordList; ForceRepaint: boolean = False); // TODO: rename 'Page'
+    procedure OpenPage(Items: TRecordList; ForceRepaint: boolean = False); // TODO: rename 'Page'
     procedure Paint; override;
     procedure DrawCurrentPage;
     procedure DeselectAll;
@@ -194,7 +194,7 @@ type
 
     property SelectedRecordID: TCompactGUID read GetSelectedID write SetSelectedID;
     property SelectedLine: integer read FSelLine write SetSelectedLine;
-    property CurrentPage: TRecordList read FCurrentPage;
+    property CurrentPage: TRecordList read FItems;
   published
     property Align;
     property Anchors;
@@ -356,10 +356,9 @@ const
 
   FONTSIZE_EMPTYPAGE = 30;
 
-  PANEL_LIGHT_BORD = clWhite;
-  PANEL_DARK_BORD  = clGray;
-  SELECTED_LINE    = clYellow;
-  LINES_COLOR      = $FBF1EB;//$F8E4D8;
+  COLOR_PANEL_LIGHT_BORD = clWhite;
+  COLOR_PANEL_DARK_BORD  = clGray;
+  COLOR_SELECTED_LINE    = clYellow;
 
 implementation
 
@@ -484,11 +483,11 @@ procedure DrawPanelExt(
     begin
       Brush.Color := Color;
       Brush.Style := bsSolid;
-      Pen.Color := PANEL_LIGHT_BORD;
+      Pen.Color := COLOR_PANEL_LIGHT_BORD;
       Pen.Width := 1;
       Rectangle(R);
 
-      Pen.Color := PANEL_DARK_BORD;
+      Pen.Color := COLOR_PANEL_DARK_BORD;
       MoveTo(R.Left + 1,R.Bottom-2);
       LineTo(R.Left + 1,R.Top + 1);
       LineTo(R.Right-1,R.Top + 1);
@@ -553,7 +552,7 @@ begin
         BackColor,
         SelItem = i,
         SelColor,
-        PANEL_DARK_BORD
+        COLOR_PANEL_DARK_BORD
       );
   end;
 end;
@@ -880,7 +879,7 @@ begin
   FBorderTimeTop := 3;
   FBorderTimeLeft := 10;
 
-  FCurrentPage := nil;
+  FItems := nil;
   FSelID := '';
   FSelLine := -1;
   FMouseDowned := false;
@@ -987,7 +986,7 @@ var
   begin
     with FBitMap.Canvas do
     begin
-      Color := PanelColor(CurrentPage[Index], FSelID = FCurrentPage[Index].ID, Colors);
+      Color := PanelColor(CurrentPage[Index], FSelID = FItems[Index].ID, Colors);
 
       TimeFont := TFont.Create;
       RecsFont := TFont.Create;
@@ -999,7 +998,7 @@ var
       TimeFont.Style := [fsBold{,fsUnderline}]; {magic!}
 
       RecsFont.Style := RecsFontStyle;
-      if (FSelID = FCurrentPage[Index].ID) then
+      if (FSelID = FItems[Index].ID) then
         Sel := FSelLine
       else
         Sel := -1;
@@ -1027,7 +1026,7 @@ var
         TimeFont,
         RecsFont,
         Sel,
-        SELECTED_LINE,
+        COLOR_SELECTED_LINE,
         NewRect
       );
 
@@ -1531,12 +1530,12 @@ end;
 *)
 
 {==============================================================================}
-procedure TDiaryView.OpenPage(Page: TRecordList; ForceRepaint: boolean = False);
+procedure TDiaryView.OpenPage(Items: TRecordList; ForceRepaint: boolean = False);
 {==============================================================================}
 begin
-  FCurrentPage := Page;
+  FItems := Items;
   // TODO: hardcode
-  UpdatePostprand(Page, 3.5 / HourPerDay, 3.5 / HourPerDay, 20 / MinPerDay);
+  UpdatePostprand(FItems, 3.5 / HourPerDay, 3.5 / HourPerDay, 20 / MinPerDay);
 
   //Page.AddChangeListener(HandlePageChanged);
   DrawCurrentPage;
@@ -1566,7 +1565,7 @@ procedure TDiaryView.ProcessClick(X, Y: integer; Button: TMouseButton);
 
   procedure SelectPanel(PanelIndex: integer; LineIndex: integer = -1);
   begin
-    FSelID := FCurrentPage[PanelIndex].ID;
+    FSelID := FItems[PanelIndex].ID;
     FSelLine := LineIndex;
   end;
 
@@ -2383,8 +2382,8 @@ function TDiaryView.GetSelectedRecordIndex: integer;
 var
   i: integer;
 begin
-  for i := 0 to High(FCurrentPage) do
-  if (FCurrentPage[i].ID = FSelID) then
+  for i := 0 to High(FItems) do
+  if (FItems[i].ID = FSelID) then
   begin
     Result := i;
     Exit;
