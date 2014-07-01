@@ -1689,7 +1689,12 @@ end;
 
 procedure TDiaryView.SetSelectedID(const ID: TCompactGUID);
 begin
-  FSelID := ID;
+  if (ID <> FSelID) then
+  begin
+    FSelID := ID;
+    FSelLine := -1;
+    Repaint;
+  end;
 end;
 
 procedure TDiaryView.SetSelectedLine(Line: integer);
