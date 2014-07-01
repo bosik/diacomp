@@ -1134,34 +1134,6 @@ begin
   if Assigned(FOnPage) then FOnPage(Self);
 end;
 
-(*
-{======================================================================================================================}
-procedure TDiaryView.OpenPage(Date: TDateTime; ForceRepaint: boolean = False);
-{======================================================================================================================}
-
-  procedure RedrawIt;
-  begin
-    FSelPanel := -1;
-    FSelLine := -1;
-    DrawCurrentPage;
-    MyPage;
-  end;
-
-begin
-  if FBase <> nil then
-
-  if (CurrentPage = nil) or (CurrentDate <> Date) then
-  begin
-    FCurrentPage := FBase[Date];
-    RedrawIt;
-  end else
-  if ForceRepaint then
-  begin
-    RedrawIt;
-  end;
-end;
-*)
-
 {======================================================================================================================}
 procedure TDiaryView.OpenPage(Items: TRecordList; ForceRepaint: boolean = False);
 {======================================================================================================================}
@@ -1592,8 +1564,10 @@ begin
   end;
 end;
 
-procedure TDiaryView.HandleBaseChanged(EventType: TPageEventType; Page: TRecordList;
-  RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
+{======================================================================================================================}
+procedure TDiaryView.HandleBaseChanged(EventType: TPageEventType; Page: TRecordList; RecClass: TClassCustomRecord;
+  RecInstance: TCustomRecord);
+{======================================================================================================================}
 //var
 //  Index: integer;
 begin
@@ -1652,8 +1626,8 @@ begin
 end;
 
 {======================================================================================================================}
-procedure TDiaryView.HandlePageChanged(EventType: TPageEventType;
-  Page: TDiaryPage; RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
+procedure TDiaryView.HandlePageChanged(EventType: TPageEventType; Page: TDiaryPage; RecClass: TClassCustomRecord;
+  RecInstance: TCustomRecord);
 {======================================================================================================================}
 begin
   if (EventType = etRemove) then
@@ -1682,12 +1656,16 @@ begin
   if Assigned(FOnChange) then FOnChange(Self, EventType, CurrentPage, RecClass, RecInstance);
 end;
 
+{======================================================================================================================}
 function TDiaryView.GetSelectedID: TCompactGUID;
+{======================================================================================================================}
 begin
   Result := FSelID;
 end;
 
+{======================================================================================================================}
 procedure TDiaryView.SetSelectedID(const ID: TCompactGUID);
+{======================================================================================================================}
 begin
   if (ID <> FSelID) then
   begin
@@ -1697,13 +1675,17 @@ begin
   end;
 end;
 
+{======================================================================================================================}
 procedure TDiaryView.SetSelectedLine(Line: integer);
+{======================================================================================================================}
 begin
   FSelLine := Line;
   Repaint;
 end;
 
+{======================================================================================================================}
 function TDiaryView.GetSelectedRecordIndex: integer;
+{======================================================================================================================}
 var
   i: integer;
 begin
@@ -1719,7 +1701,9 @@ end;
 
 { TStatProgress }
 
+{======================================================================================================================}
 constructor TStatProgress.Create(AOwner: TComponent);
+{======================================================================================================================}
 begin
   inherited;
   Width := 50;
@@ -1732,7 +1716,9 @@ begin
   FColorOver := clRed;
 end;
 
+{======================================================================================================================}
 procedure TStatProgress.Paint;
+{======================================================================================================================}
 
   function F(x: real): real;
   begin
@@ -1901,25 +1887,31 @@ begin
   end;
 end;
 
+{======================================================================================================================}
 procedure TStatProgress.SetColorFill(Value: TColor);
+{======================================================================================================================}
 begin
-  if (Value<>FColorFill) then
+  if (Value <> FColorFill) then
   begin
     FColorFill := Value;
     Paint;
   end;
 end;
 
+{======================================================================================================================}
 procedure TStatProgress.SetColorOver(Value: TColor);
+{======================================================================================================================}
 begin
-  if (Value<>FColorOver) then
+  if (Value <> FColorOver) then
   begin
     FColorOver := Value;
     Paint;
   end;
 end;
 
+{======================================================================================================================}
 procedure TStatProgress.SetRotation(Value: integer);
+{======================================================================================================================}
 begin
   if Value < 0 then Value := 0 else
   if Value > 100 then Value := 100;
@@ -1931,7 +1923,9 @@ begin
   end;
 end;
 
+{======================================================================================================================}
 procedure TStatProgress.SetVolume(Value: integer);
+{======================================================================================================================}
 begin
   if Value < 0 then Value := 0 else
   if Value > 100 then Value := 100;
@@ -1944,18 +1938,22 @@ begin
   end;
 end;
 
+{======================================================================================================================}
 procedure TStatProgress.SetMax(Value: integer);
+{======================================================================================================================}
 begin
-  if (Value>0)and(Value<>FMax) then
+  if (Value > 0) and (Value <> FMax) then
   begin
     FMax := Value;
     Paint;
   end;
 end;
 
+{======================================================================================================================}
 procedure TStatProgress.SetProgress(Value: integer);
+{======================================================================================================================}
 begin
-  if (Value>=0)and(Value<>FProgress) then
+  if (Value >= 0) and (Value <> FProgress) then
   begin
     FProgress := Value;
     Paint;
@@ -1964,7 +1962,9 @@ end;
 
 { TEditNumb }
 
+{======================================================================================================================}
 procedure TEditNumb.Change;
+{======================================================================================================================}
 var
   Accept: boolean;
   X: Extended;
@@ -1989,7 +1989,9 @@ begin
   end;
 end;
 
+{======================================================================================================================}
 constructor TEditNumb.Create(AOwner: TComponent);
+{======================================================================================================================}
 begin
   inherited Create(AOwner);
 
@@ -2005,7 +2007,9 @@ begin
   FWarningShow := False;
 end;
 
+{======================================================================================================================}
 procedure TEditNumb.KeyPress(var Key: Char);
+{======================================================================================================================}
 var
   Accept: set of char;
 begin
