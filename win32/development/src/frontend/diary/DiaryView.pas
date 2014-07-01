@@ -81,11 +81,12 @@ type
   { события }
   TClickEvent = procedure(Sender: TObject; Index: integer; Place: TClickPlace) of object;
   TFoodShowEvent = procedure(Sender: TObject; Index,Line: integer; var Text: string) of object;
-  TEventRecordChanged = procedure(Sender: TObject; EventType: TPageEventType; Page: TRecordList; RecClass: TClassCustomRecord; RecInstance: TCustomRecord) of object;
+  TEventRecordChanged = procedure(Sender: TObject; EventType: TPageEventType; Page: TRecordList;
+    RecClass: TClassCustomRecord; RecInstance: TCustomRecord) of object;
 
   TDiaryView = class(TGraphicControl)
   private
-    { текущая страница }
+    { data }
     FBitMap: Graphics.TBitMap;
     FItems: TRecordList;
 
@@ -137,7 +138,7 @@ type
     procedure GetMousePlace(x,y: integer; var ClickInfo: TClickInfo);
     procedure ProcessClick(X,Y: integer; Button: TMouseButton);
 
-    { Get/Set }
+    { get/set }
     procedure SetBorder(const Value: integer);
     procedure SetBorderRight(const Value: integer);
     procedure SetBorderTimeTop(const Value: integer);
@@ -154,15 +155,13 @@ type
   protected
     { обработчики событий }
     procedure DblClick; override;
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState;
-      X, Y: Integer); override;
-    procedure MouseUp(Button: TMouseButton; Shift: TShiftState;
-      X, Y: Integer); override;
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X,Y: Integer); override;
 
     { реакция }
-    procedure HandleBaseChanged(EventType: TPageEventType; Page: TRecordList;
-      RecClass: TClassCustomRecord; RecInstance: TCustomRecord); deprecated;
+    procedure HandleBaseChanged(EventType: TPageEventType; Page: TRecordList; RecClass: TClassCustomRecord;
+      RecInstance: TCustomRecord); deprecated;
     procedure HandlePageChanged(EventType: TPageEventType; Page: TDiaryPage; // let it [Page] be
       RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
 
@@ -291,26 +290,12 @@ type
 
   procedure Register;
 
-  { рисует основу панели }
-  //procedure DrawPanelBack(Canvas: TCanvas; R: TRect; Color: TColor);
-
   { рисует текст, записывает в ATextRect прямоугольник вывода }
-  procedure DrawText(
-    Canvas: TCanvas;
-    x,y: integer;
-    const Text: string;
-    var ATextRect: TRect;
-    StdColor: TColor;
-    Selected: boolean = False;
-    SelColor: TColor = 0;
-    FrameColor: TColor = 0); overload;
-
-  { рисует текст }
-  {...}
+  procedure DrawText(Canvas: TCanvas; x,y: integer; const Text: string; var ATextRect: TRect; StdColor: TColor;
+    Selected: boolean = False; SelColor: TColor = 0; FrameColor: TColor = 0); overload;
 
   { определяет цвет панели }
-  function PanelColor(ARec: TCustomRecord; Selected: boolean;
-    Colors: TColorSettings): TColor;
+  function PanelColor(ARec: TCustomRecord; IsSelected: boolean; Colors: TColorSettings): TColor;
 
   { рисует панель }
   procedure DrawPanelExt(
@@ -333,20 +318,9 @@ type
     out Rects: TPanelRect
   ); 
 
-  procedure DrawPanel(
-    Canvas: TCanvas;
-    const Time: string;
-    const Recs: TStringArray;
-    Left, Top, Width: integer;
-    LeftSpacing: integer;
-    TopSpacing: integer;
-    BackColor: TColor;
-    TimeFont: TFont;
-    RecsFont: TFont;
-    SelItem: integer;
-    SelColor: TColor
-    { без Rects }
-  );
+  procedure DrawPanel(Canvas: TCanvas; const Time: string; const Recs: TStringArray; Left, Top, Width: integer;
+    LeftSpacing: integer; TopSpacing: integer; BackColor: TColor; TimeFont: TFont; RecsFont: TFont; SelItem: integer;
+    SelColor: TColor { без Rects });
 
 const
   DoubleClickTime  = 350;
@@ -364,33 +338,107 @@ implementation
 
 {$R *.dcr}
 
-{==============================================================================}
+{======================================================================================================================}
 procedure Register;
-{==============================================================================}
+{======================================================================================================================}
 begin
   RegisterComponents('Компенсация', [TDiaryView]);
   RegisterComponents('Компенсация', [TStatProgress]);
   RegisterComponents('Компенсация', [TEditNumb]);
-
-  //RegisterComponents('Компенсация', [TFoodBase]);
-  //RegisterComponents('Компенсация', [TDishBase]);
-
-  //RegisterComponents('Компенсация', [TCompensationServer]);
-  //RegisterComponents('Компенсация', [TCompensationClient]);
-  //RegisterComponents('Компенсация', [TWebShell]);
 end;
 
-{==============================================================================}
-procedure DrawText(
-{==============================================================================}
-  Canvas: TCanvas;
-  x,y: integer;
-  const Text: string;
-  var ATextRect: TRect;
-  StdColor: TColor;
-  Selected: boolean = False; 
-  SelColor: TColor = 0;
-  FrameColor: TColor = 0); overload;
+{ TColorSettings }
+
+{======================================================================================================================}
+procedure TColorSettings.AssignTo(Dest: TPersistent);
+{======================================================================================================================}
+begin
+  if Dest is TColorSettings then
+    with TColorSettings(Dest) do
+    begin
+      FBackground        := Self.FBackground;
+
+      FPanel_StdBlood    := Self.FPanel_StdBlood;
+      FPanel_StdIns      := Self.FPanel_StdIns;
+      FPanel_StdMeal     := Self.FPanel_StdMeal;
+      FPanel_StdNote     := Self.FPanel_StdNote;
+      FPanel_StdBloodPP  := Self.FPanel_StdBloodPP;
+      FPanel_SelBlood    := Self.FPanel_SelBlood;
+      FPanel_SelIns      := Self.FPanel_SelIns;
+      FPanel_SelMeal     := Self.FPanel_SelMeal;
+      FPanel_SelNote     := Self.FPanel_SelNote;
+      FPanel_SelBloodPP  := Self.FPanel_SelBloodPP;
+
+      {...}
+      Change;
+    end
+  else inherited AssignTo(Dest);
+end;
+
+{======================================================================================================================}
+procedure TColorSettings.Change;
+{======================================================================================================================}
+begin
+  if Assigned(FOnChange) then FOnChange(Self);
+end;
+
+{======================================================================================================================}
+constructor TColorSettings.Create(Control: TControl);
+{======================================================================================================================}
+begin
+  inherited Create;
+  FControl := Control;
+
+  FBackground       :=  $FFFFFF;
+
+  FPanel_StdBlood   :=  $F8E4D8;
+  FPanel_StdIns     :=  $FFFFFF;
+  FPanel_StdMeal    :=  $E1FFFF;
+  FPanel_StdNote    :=  $E4F8D8;
+  FPanel_StdBloodPP :=  $E6E6FF;
+
+  FPanel_SelBlood   :=  $FFD0D0;
+  FPanel_SelIns     :=  $F0F0F0;
+  FPanel_SelMeal    :=  $A1FFFF;
+  FPanel_SelNote    :=  $B0FFC0;
+  FPanel_SelBloodPP :=  $F5C9F1;
+end;
+
+{======================================================================================================================}
+procedure TColorSettings.SetColors(Index: Integer; Value: TColor);
+{======================================================================================================================}
+
+  procedure MicroSet(var Field: TColor);
+  begin
+    if Value <> Field then
+    begin
+      Field := Value;
+      Change;
+    end;
+  end;
+
+begin
+  case Index of
+    0:  MicroSet(FBackground);
+    
+    +1: MicroSet(FPanel_StdBlood);
+    +2: MicroSet(FPanel_StdIns);
+    +3: MicroSet(FPanel_StdMeal);
+    +4: MicroSet(FPanel_StdNote);
+    +5: MicroSet(FPanel_StdBloodPP);
+
+    -1: MicroSet(FPanel_SelBlood);
+    -2: MicroSet(FPanel_SelIns);
+    -3: MicroSet(FPanel_SelMeal);
+    -4: MicroSet(FPanel_SelNote);
+    -5: MicroSet(FPanel_SelBloodPP);
+  end;
+end;
+
+{======================================================================================================================}
+procedure DrawText(Canvas: TCanvas; x,y: integer; const Text: string; var ATextRect: TRect; StdColor: TColor;
+  Selected: boolean = False; SelColor: TColor = 0; FrameColor: TColor = 0); overload;
+{======================================================================================================================}
 begin
   with Canvas do
   begin
@@ -424,21 +472,19 @@ begin
   end;
 end;
 
-{==============================================================================}
-function PanelColor(ARec: TCustomRecord; Selected: boolean;
-  Colors: TColorSettings): TColor;
-{==============================================================================}
+{======================================================================================================================}
+function PanelColor(ARec: TCustomRecord; IsSelected: boolean; Colors: TColorSettings): TColor;
+{======================================================================================================================}
 begin
-  if (ARec.RecType = TBloodRecord) and
-     (TBloodRecord(ARec).PostPrand) then
-  if Selected then
-    Result := Colors.Panel_SelBloodPP
-  else
-    Result := Colors.Panel_StdBloodPP
+  if (ARec.RecType = TBloodRecord) and (TBloodRecord(ARec).PostPrand) then
+  begin
+    if IsSelected then
+      Result := Colors.Panel_SelBloodPP
+    else
+      Result := Colors.Panel_StdBloodPP;
+  end else
 
-  else
-
-  if Selected then
+  if IsSelected then
   begin
     if (ARec.RecType = TBloodRecord) then Result := Colors.Panel_SelBlood else
     if (ARec.RecType = TInsRecord)   then Result := Colors.Panel_SelIns else
@@ -455,28 +501,14 @@ begin
   end;
 end;
 
-{==============================================================================}
-procedure DrawPanelExt(
-{==============================================================================}
-  { на чём рисовать }
-  Canvas: TCanvas;
-  { что рисовать }
-  const Time: string;
-  const Recs: TStringArray;
-  { где рисовать }
-  Left, Top, Width: integer;
-  LeftSpacing: integer;
-  TopSpacing: integer;
-  { как рисовать }
-  BackColor: TColor;
-  TimeFont: TFont;
-  RecsFont: TFont;
-  SelItem: integer;
-  SelColor: TColor;
-  { дополнительно }
-  out Rects: TPanelRect
-);
+{======================================================================================================================}
+procedure DrawPanelExt( { на чём рисовать } Canvas: TCanvas; { что рисовать } const Time: string;
+  const Recs: TStringArray; { где рисовать } Left, Top, Width: integer; LeftSpacing: integer; TopSpacing: integer;
+  { как рисовать } BackColor: TColor; TimeFont: TFont; RecsFont: TFont; SelItem: integer; SelColor: TColor;
+  { дополнительно } out Rects: TPanelRect);
+{======================================================================================================================}
 
+  { рисует основу панели }
   procedure DrawPanelBack(Canvas: TCanvas; R: TRect; Color: TColor);
   begin
     with Canvas do
@@ -503,19 +535,19 @@ var
   StandartTH: integer;
   RecsLeftBord: integer;
 begin
-  RecsCount := length(Recs);
+  RecsCount := Length(Recs);
 
   with Canvas do
   begin
     { определить высоту панели }
     Font.Assign(TimeFont);
     StandartTH := TextHeight('0123456789') + 2;
-    RecsLeftBord := 2*LeftSpacing + TextWidth(Time);
+    RecsLeftBord := 2 * LeftSpacing + TextWidth(Time);
 
     cnt := max(1, RecsCount);
     Rects.Rect := Rect(
       Left, Top, Left + Width,
-      Top + 2*TopSpacing + StandartTH*cnt
+      Top + 2 * TopSpacing + StandartTH * cnt
     );
 
     { нарисовать основу }
@@ -546,7 +578,7 @@ begin
       DrawText(
         Canvas,
         Rects.Rect.Left + RecsLeftBord,
-        Rects.Rect.Top + TopSpacing + StandartTH*i + 1,
+        Rects.Rect.Top + TopSpacing + StandartTH * i + 1,
         recs[i],
         Rects.Recs[i],
         BackColor,
@@ -557,20 +589,11 @@ begin
   end;
 end;
 
-procedure DrawPanel(
-  Canvas: TCanvas;
-  const Time: string;
-  const Recs: TStringArray;
-  Left, Top, Width: integer;
-  LeftSpacing: integer;
-  TopSpacing: integer;
-  BackColor: TColor;
-  TimeFont: TFont;
-  RecsFont: TFont;
-  SelItem: integer;
-  SelColor: TColor
-  { без Rects }
-);
+{======================================================================================================================}
+procedure DrawPanel(Canvas: TCanvas; const Time: string; const Recs: TStringArray; Left, Top, Width: integer;
+  LeftSpacing: integer; TopSpacing: integer; BackColor: TColor; TimeFont: TFont; RecsFont: TFont; SelItem: integer;
+  SelColor: TColor { без Rects });
+{======================================================================================================================}
 var
   R: TPanelRect;
 begin
@@ -582,185 +605,9 @@ begin
   );
 end;
 
-{ TColorSettings }
-
-procedure TColorSettings.AssignTo(Dest: TPersistent);
-begin
-  if Dest is TColorSettings then
-    with TColorSettings(Dest) do
-    begin
-      FBackground        := Self.FBackground;
-
-      FPanel_StdBlood    := Self.FPanel_StdBlood;
-      FPanel_StdIns      := Self.FPanel_StdIns;
-      FPanel_StdMeal     := Self.FPanel_StdMeal;
-      FPanel_StdNote     := Self.FPanel_StdNote;
-      FPanel_StdBloodPP  := Self.FPanel_StdBloodPP;
-      FPanel_SelBlood    := Self.FPanel_SelBlood;
-      FPanel_SelIns      := Self.FPanel_SelIns;
-      FPanel_SelMeal     := Self.FPanel_SelMeal;
-      FPanel_SelNote     := Self.FPanel_SelNote;
-      FPanel_SelBloodPP  := Self.FPanel_SelBloodPP;
-
-      {...}
-      Change;
-    end
-  else inherited AssignTo(Dest);
-end;
-
-procedure TColorSettings.Change;
-begin
-  if Assigned(FOnChange) then FOnChange(Self);
-end;
-
-constructor TColorSettings.Create(Control: TControl);
-begin
-  inherited Create;
-  FControl := Control;
-
-  FBackground       :=  $FFFFFF;
-
-  FPanel_StdBlood   :=  $F8E4D8;
-  FPanel_StdIns     :=  $FFFFFF;
-  FPanel_StdMeal    :=  $E1FFFF;
-  FPanel_StdNote    :=  $E4F8D8;
-  FPanel_StdBloodPP :=  $E6E6FF;
-
-  FPanel_SelBlood   :=  $FFD0D0;
-  FPanel_SelIns     :=  $F0F0F0;
-  FPanel_SelMeal    :=  $A1FFFF;
-  FPanel_SelNote    :=  $B0FFC0;
-  FPanel_SelBloodPP :=  $F5C9F1;
-end;
-
-procedure TColorSettings.SetColors(Index: Integer; Value: TColor);
-
-  procedure MicroSet(var Field: TColor);
-  begin
-    if Value <> Field then
-    begin
-      Field := Value;
-      Change;
-    end;
-  end;
-
-begin
-  case Index of
-    0:  MicroSet(FBackground);
-    
-    +1: MicroSet(FPanel_StdBlood);
-    +2: MicroSet(FPanel_StdIns);
-    +3: MicroSet(FPanel_StdMeal);
-    +4: MicroSet(FPanel_StdNote);
-    +5: MicroSet(FPanel_StdBloodPP);
-
-    -1: MicroSet(FPanel_SelBlood);
-    -2: MicroSet(FPanel_SelIns);
-    -3: MicroSet(FPanel_SelMeal);
-    -4: MicroSet(FPanel_SelNote);
-    -5: MicroSet(FPanel_SelBloodPP);
-  end;
-end;
-
-{ TDiary }
-
-(*
-{==============================================================================}
-function TDiaryView.AddBlood(Time: integer; const Value: real; Finger: integer): integer;
-{==============================================================================}
-begin
-  if not CurrentIsEmpty then
-    Result := CurrentPage.AddBlood(Time, Value, Finger)
-  else
-    Result := -1;
-
-  if Result >- 1 then
-  begin
-    FSelPanel := Result;
-    FSelLine := -1;
-    RecBloodChange(Result);
-    Change;
-  end;
-end;
-
-{==============================================================================}
-function TDiaryView.AddFoodToMeal(Index: integer; Food: TFoodMassed): integer;
-{==============================================================================}
-begin
-  if not CurrentIsEmpty then
-    Result := CurrentPage.AddFoodToMeal(Index,Food)
-  else
-    Result := -1;
-  if Result > -1 then
-  begin
-    FSelPanel := Index;
-    FSelLine := Result;
-    RecMealChange(Result);
-    Change;
-  end;
-end;
-
-{==============================================================================}
-function TDiaryView.AddFoodToMeal(Food: TFoodMassed): integer;
-{==============================================================================}
-begin
-  Result := AddFoodToMeal(FSelPanel,Food);
-end;
-
-{==============================================================================}
-function TDiaryView.AddIns(Time: integer; const Value: real): integer;
-{==============================================================================}
-begin
-  if not CurrentIsEmpty then
-    Result := CurrentPage.AddIns(Time,Value)
-  else
-    Result := -1;
-  if Result>-1 then
-  begin
-    FSelPanel := Result;
-    FSelLine := -1;
-    RecInsChange(Result);
-    Change;
-  end;
-end;
-
-{==============================================================================}
-function TDiaryView.AddMealBlank(Time: integer; ShortMeal: boolean): integer;
-{==============================================================================}
-begin
-  if not CurrentIsEmpty then
-    Result := CurrentPage.AddMealBlank(Time, ShortMeal)
-  else
-    Result := -1;
-  if Result>-1 then
-  begin
-    FSelPanel := Result;
-    FSelLine := -1;
-    RecMealChange(Result);
-    Change;
-  end;
-end;
-
-{==============================================================================}
-function TDiaryView.AddNote(Time: integer; const Value: string): integer;
-{==============================================================================}
-begin
-  if not CurrentIsEmpty then
-    Result := CurrentPage.AddNote(Time,Value)
-  else
-    Result := -1;
-  if Result>-1 then
-  begin
-    FSelPanel := Result;
-    FSelLine := -1;
-    Change;
-  end;
-end;
-*)
-
-{==============================================================================}
+{======================================================================================================================}
 function TDiaryView.CalcHeight: integer;
-{==============================================================================}
+{======================================================================================================================}
 
   function F(n: integer): integer;
   begin
@@ -800,9 +647,9 @@ begin
   end;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.ClickBlood(Index: integer; Place: TClickPlace; IsDouble: boolean);
-{==============================================================================}
+{======================================================================================================================}
 begin
   if (not IsDouble) and Assigned(FOnClickBlood) then
     FOnClickBlood(Self,Index,Place) else
@@ -810,9 +657,9 @@ begin
     FOnDoubleClickBlood(Self,Index,Place);
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.ClickIns(Index: integer; Place: TClickPlace; IsDouble: boolean);
-{==============================================================================}
+{======================================================================================================================}
 begin
   if (not IsDouble) and Assigned(FOnClickIns) then
     FOnClickIns(Self,Index,Place) else
@@ -820,9 +667,9 @@ begin
     FOnDoubleClickIns(Self,Index,Place);
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.ClickMeal(Index: integer; Place: TClickPlace; IsDouble: boolean);
-{==============================================================================}
+{======================================================================================================================}
 begin
   if (not IsDouble) and Assigned(FOnClickMeal) then
     FOnClickMeal(Self,Index,Place) else
@@ -830,9 +677,9 @@ begin
     FOnDoubleClickMeal(Self,Index,Place);
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.ClickNote(Index: integer; Place: TClickPlace; IsDouble: boolean);
-{==============================================================================}
+{======================================================================================================================}
 begin
   if (not IsDouble) and Assigned(FOnClickNote) then
     FOnClickNote(Self,Index,Place) else
@@ -840,9 +687,9 @@ begin
     FOnDoubleClickNote(Self,Index,Place);
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 constructor TDiaryView.Create(AOwner: TComponent);
-{==============================================================================}
+{======================================================================================================================}
 begin
   inherited Create(AOwner);
 
@@ -885,18 +732,18 @@ begin
   FMouseDowned := false;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.DeselectAll;
-{==============================================================================}
+{======================================================================================================================}
 begin
   FSelID := '';
   FSelLine := -1;
   DrawCurrentPage;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 destructor TDiaryView.Destroy;
-{==============================================================================}
+{======================================================================================================================}
 begin
   FBitMap.Free;
   FColors.Free;
@@ -904,17 +751,17 @@ begin
   inherited;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.DblClick;
-{==============================================================================}
+{======================================================================================================================}
 begin
   inherited;
   // TODO: remove?
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.DrawCurrentPage;
-{==============================================================================}
+{======================================================================================================================}
 var
   NewHeight: integer;
 begin
@@ -933,9 +780,9 @@ begin
   Canvas.Draw(0, 0, FBitMap);
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.DrawIntoBuffer;
-{==============================================================================}
+{======================================================================================================================}
 var
   w: integer;
   i: integer;
@@ -1034,49 +881,6 @@ var
       RecsFont.Free;
 
       AddPanelRect(NewRect);
-
-      { ВРЕМЯ }
-      (*Brush.Color := Color;
-      Font.Color := clBlack;  {magic!}
-      Font.Style := [fsBold,fsUnderline]; {magic!}
-      DrawText(
-        FBitMap.Canvas,
-        r.Left+FBorderTimeLeft,
-        r.Top+FBorderTimeTop+1,
-        TimeToStr(time),
-        PanelRects[n].TimeRect,
-        Color
-      );  *)
-
-      { ЗАПИСИ }
-      //Font.Style := RecsFontStyle;
-      //SetLength(PanelRects[n].Recs,length(Recs));
-
-      {if (FSelPanel=n) then
-      for i := 0 to high(recs) do
-      begin
-        if FSelLine = i then // не слишком быстро, но лаконично
-          Brush.Color := SELECTED_LINE
-        else
-          Brush.Color := Color;
-        DrawText(
-          FBitMap.Canvas,
-          r.Left+RecsLeftBord,
-          r.Top+FBorderTimeTop+StandartTH*i+1,
-          recs[i],
-          FSelLine=i,
-          PanelRects[n].Recs[i]
-        );
-      end else
-      for i := 0 to high(recs) do
-      DrawText(
-        FBitMap.Canvas,
-        r.Left+RecsLeftBord,
-        r.Top+FBorderTimeTop+StandartTH*i+1,
-        recs[i],
-        false,
-        PanelRects[n].Recs[i]
-      );  }
     end;
     CurTop := CurTop+(NewRect.Rect.Bottom-NewRect.Rect.Top)-1;
   end;
@@ -1194,183 +998,12 @@ begin
                    [{fsItalic}]
                  );
     end;
-
-    {if FSelPanel<>-1 then
-    begin
-      Brush.Style := bsSolid;
-      Pen.Style := psClear;
-      Brush.Color := clNavy;
-
-      Rectangle(
-        PanelRects[FSelPanel].Rect.Left-10,
-        PanelRects[FSelPanel].Rect.Top,
-        PanelRects[FSelPanel].Rect.Left-1,
-        PanelRects[FSelPanel].Rect.Bottom
-      );
-
-      Rectangle(
-        PanelRects[FSelPanel].Rect.Right+1,
-        PanelRects[FSelPanel].Rect.Top,
-        PanelRects[FSelPanel].Rect.Right+10,
-        PanelRects[FSelPanel].Rect.Bottom
-      );
-
-      Pen.Style := psSolid;
-      Pen.Width := 4;
-
-      MoveTo(
-        PanelRects[FSelPanel].Rect.Left+2,
-        PanelRects[FSelPanel].Rect.Bottom
-      );
-
-      LineTo(
-        PanelRects[FSelPanel].Rect.Right+1,
-        PanelRects[FSelPanel].Rect.Bottom
-      );
-
-      LineTo(
-        PanelRects[FSelPanel].Rect.Right+1,
-        PanelRects[FSelPanel].Rect.Top+2
-      );
-    end;   }
   end;
 end;
 
-(*
-{==============================================================================}
-function TDiaryView.EditFoodMass(Index, Line: integer; const NewMass: real): boolean;
-{==============================================================================}
-begin
-  if (not CurrentIsEmpty) then
-    Result := CurrentPage.EditFoodMass(Index,Line,NewMass)
-  else
-    Result := false;
-  if Result then
-  begin
-    RecMealChange(Index);
-    Change;
-  end;
-end;
-
-{==============================================================================}
-function TDiaryView.EditFoodMass(Line: integer; const NewMass: real): boolean;
-{==============================================================================}
-begin
-  Result := EditFoodMass(FSelPanel,Line,NewMass);
-end;
-
-{==============================================================================}
-function TDiaryView.EditFoodMass(const NewMass: real): boolean;
-{==============================================================================}
-begin
-  Result := EditFoodMass(FSelPanel,FSelLine,NewMass);
-end;
-
-{==============================================================================}
-function TDiaryView.EditTime(Index, NewTime: integer): integer;
-{==============================================================================}
-begin
-  if (not CurrentIsEmpty) then
-    Result := CurrentPage.EditTime(Index,NewTime)
-  else
-    Result := -1;
-
-  if Result>-1 then
-  begin
-    if Index=FSelPanel then
-      FSelPanel := Result else
-    if (Index<FSelPanel)and(Result>FSelPanel) then
-      dec(FSelPanel) else
-    if (Index>FSelPanel)and(Result<FSelPanel) then
-      inc(FSelPanel);
-
-    case CurrentPage[Result].TagType of
-      rtBlood: RecBloodChange(Result);
-      rtIns: RecInsChange(Result);
-      rtMeal: RecMealChange(Result);
-    end;
-    Change;
-    DrawCurrentPage;
-  end;
-end;
-
-{==============================================================================}
-function TDiaryView.EditBloodValue(Index: integer;
-  const NewValue: real): boolean;
-{==============================================================================}
-begin
-  if (not CurrentIsEmpty) then
-    Result := CurrentPage.EditBloodValue(Index,NewValue)
-  else
-    Result := false;
-  if Result then
-  begin
-    RecBloodChange(Index);
-    Change;
-  end;
-end;
-
-{==============================================================================}
-function TDiaryView.EditBloodValue(const NewValue: real): boolean;
-{==============================================================================}
-begin
-  Result := EditBloodValue(FSelPanel,NewValue);
-end;
-
-{==============================================================================}
-function TDiaryView.EditInsValue(Index: integer; const NewValue: real): boolean;
-{==============================================================================}
-begin
-  if (not CurrentIsEmpty) then
-    Result := CurrentPage.EditInsValue(Index,NewValue)
-  else
-    Result := false;
-  if Result then
-  begin
-    RecInsChange(Index);
-    Change;
-  end;
-end;
-
-{==============================================================================}
-function TDiaryView.EditInsValue(const NewValue: real): boolean;
-{==============================================================================}
-begin
-  Result := EditInsValue(FSelPanel,NewValue);
-end;
-
-{==============================================================================}
-function TDiaryView.EditNoteValue(Index: integer; const NewValue: string): boolean;
-{==============================================================================}
-begin
-  if (not CurrentIsEmpty) then
-    Result := CurrentPage.EditNoteValue(Index,NewValue)
-  else
-    Result := false;
-  if Result then
-  begin
-    Change;
-  end;
-end;
-
-{==============================================================================}
-function TDiaryView.EditNoteValue(const NewValue: string): boolean;
-{==============================================================================}
-begin
-  Result := EditNoteValue(FSelPanel,NewValue);
-end;
-
-{==============================================================================}
-function TDiaryView.EditTime(NewTime: integer): integer;
-{==============================================================================}
-begin
-  Result := EditTime(FSelPanel,NewTime);
-end;
-*)
-
-{==============================================================================}
+{======================================================================================================================}
 function TDiaryView.GetFoodInfo(Index, Line: integer): string;
-{==============================================================================}
+{======================================================================================================================}
 begin
   if Assigned(FOnFoodShow) then
     FOnFoodShow(Self,Index,Line,Result)
@@ -1378,9 +1011,9 @@ begin
     Result := '';
 end;
      
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.GetMousePlace(x, y: integer; var ClickInfo: TClickInfo);
-{==============================================================================}
+{======================================================================================================================}
 var
   i,j: integer;
 begin
@@ -1411,9 +1044,9 @@ begin
   end;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 function TDiaryView.IsFoodSelected: boolean;
-{==============================================================================}
+{======================================================================================================================}
 begin
   Result :=
     (SelectedRecord is TMealRecord)and
@@ -1421,18 +1054,18 @@ begin
     (FSelLine < TMealRecord(CurrentPage[GetSelectedRecordIndex()]).Count);
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
-{==============================================================================}
+{======================================================================================================================}
 begin
   FMouseDowned := (Button = mbLeft);
   ProcessClick(x,y,Button);
   inherited; { после ProcessClick }
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.MouseMove(Shift: TShiftState; X, Y: Integer);
-{==============================================================================}
+{======================================================================================================================}
 var
   ClickInfo: TClickInfo;
   Meal: TMealRecord;
@@ -1479,32 +1112,32 @@ begin
   end;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
-{==============================================================================}
+{======================================================================================================================}
 begin
   FMouseDowned := false;
   inherited;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.MyColorsChanged(Sender: TObject);
-{==============================================================================}
+{======================================================================================================================}
 begin
   Paint;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.MyPage;
-{==============================================================================}
+{======================================================================================================================}
 begin
   if Assigned(FOnPage) then FOnPage(Self);
 end;
 
 (*
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.OpenPage(Date: TDateTime; ForceRepaint: boolean = False);
-{==============================================================================}
+{======================================================================================================================}
 
   procedure RedrawIt;
   begin
@@ -1529,9 +1162,9 @@ begin
 end;
 *)
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.OpenPage(Items: TRecordList; ForceRepaint: boolean = False);
-{==============================================================================}
+{======================================================================================================================}
 begin
   FItems := Items;
   // TODO: hardcode
@@ -1542,9 +1175,9 @@ begin
   MyPage;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.Paint;
-{==============================================================================}
+{======================================================================================================================}
 begin
   {if csDesigning in ComponentState then
 	begin
@@ -1559,9 +1192,9 @@ begin
   end;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.ProcessClick(X, Y: integer; Button: TMouseButton);
-{==============================================================================}
+{======================================================================================================================}
 
   procedure SelectPanel(PanelIndex: integer; LineIndex: integer = -1);
   begin
@@ -1801,9 +1434,9 @@ begin
   end;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 function TDiaryView.SelectedFood: TFoodMassed;
-{==============================================================================}
+{======================================================================================================================}
 begin
   //Log('SelectedFood()');
 
@@ -1814,9 +1447,9 @@ begin
     raise Exception.Create('SelectedFood: not such record selected');
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 function TDiaryView.SelectedRecord(): TCustomRecord;
-{==============================================================================}
+{======================================================================================================================}
 var
   SelectedRecordIndex: integer;
 begin
@@ -1832,9 +1465,9 @@ begin
     Result := nil;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.SetBorder(const Value: integer);
-{==============================================================================}
+{======================================================================================================================}
 begin
   if (Value>=0)and(Value<>FBorder) then
   begin
@@ -1844,9 +1477,9 @@ begin
   end;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.SetBorderRight(const Value: integer);
-{==============================================================================}
+{======================================================================================================================}
 begin
   if (Value>=0)and(Value<>FBorderRight) then
   begin
@@ -1856,9 +1489,9 @@ begin
   end;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.SetBorderTimeLeft(const Value: integer);
-{==============================================================================}
+{======================================================================================================================}
 begin
   if (Value>=0)and(Value<>FBorderTimeLeft) then
   begin
@@ -1868,9 +1501,9 @@ begin
   end;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.SetBorderTimeTop(const Value: integer);
-{==============================================================================}
+{======================================================================================================================}
 begin
   if (Value>=0)and(Value<>FBorderTimeTop) then
   begin
@@ -1880,71 +1513,203 @@ begin
   end;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.SetColors(Value: TColorSettings);
-{==============================================================================}
+{======================================================================================================================}
 begin
   FColors.AssignTo(Value);
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.SetPopupBlood(Value: TPopupMenu);
-{==============================================================================}
+{======================================================================================================================}
 begin
   FPopupBlood := Value;
-  if Value <> nil then
+  if (Value <> nil) then
   begin
     Value.ParentBiDiModeChanged(Self);
     Value.FreeNotification(Self);
   end;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.SetPopupFood(Value: TPopupMenu);
-{==============================================================================}
+{======================================================================================================================}
 begin
   FPopupFood := Value;
-  if Value <> nil then
+  if (Value <> nil) then
   begin
     Value.ParentBiDiModeChanged(Self);
     Value.FreeNotification(Self);
   end;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.SetPopupIns(Value: TPopupMenu);
-{==============================================================================}
+{======================================================================================================================}
 begin
   FPopupIns := Value;
-  if Value <> nil then
+  if (Value <> nil) then
   begin
     Value.ParentBiDiModeChanged(Self);
     Value.FreeNotification(Self);
   end;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.SetPopupMeal(Value: TPopupMenu);
-{==============================================================================}
+{======================================================================================================================}
 begin
   FPopupMeal := Value;
-  if Value <> nil then
+  if (Value <> nil) then
   begin
     Value.ParentBiDiModeChanged(Self);
     Value.FreeNotification(Self);
   end;
 end;
 
-{==============================================================================}
+{======================================================================================================================}
 procedure TDiaryView.SetPopupNote(Value: TPopupMenu);
-{==============================================================================}
+{======================================================================================================================}
 begin
   FPopupNote := Value;
-  if Value <> nil then
+  if (Value <> nil) then
   begin
     Value.ParentBiDiModeChanged(Self);
     Value.FreeNotification(Self);
   end;
+end;
+
+{======================================================================================================================}
+procedure TDiaryView.SetFont(Value: TFont);
+{======================================================================================================================}
+begin
+  if (Value <> nil) then
+  begin
+    FFont := Value;
+    FFont.Charset := RUSSIAN_CHARSET;
+    Paint;
+  end;
+end;
+
+procedure TDiaryView.HandleBaseChanged(EventType: TPageEventType; Page: TRecordList;
+  RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
+//var
+//  Index: integer;
+begin
+  //if (Page <> nil) then // типа лишних проверок не бывает?
+  //begin
+    (*if (RecInstance <> nil) then
+    begin
+      Index := Page.FindRecord(RecInstance);
+
+      // DONE: вызывать OnChange
+      {if (CurrentPage = Page) then
+      case RecInstance.TagType of
+        rtBlood: RecBloodChange(Index);        // а где IF ASSIGNED() ???
+        rtIns: RecInsChange(Index);            // а где IF ASSIGNED() ???
+        rtMeal: RecMealChange(Index);          // а где IF ASSIGNED() ???
+        //rtNote: RecNoteChange(Index);        // а где IF ASSIGNED() ???
+      end; }
+      //if FBase <> nil then
+      //  FBase.UpdatePostprand(Page.Date - 1);
+    end else
+    begin
+      // TODO: хак, но работать будет
+      if (CurrentPage = Page) then
+      begin
+        RecBloodChange(-1);  // а где IF ASSIGNED() ???
+        RecInsChange(-1);    // а где IF ASSIGNED() ???
+        RecMealChange(-1);   // а где IF ASSIGNED() ???
+      end;
+    end;
+      *)
+    // TODO: добавить условия перерисовки
+    // TODO: что делать с выделениями?
+
+    if (EventType = etRemove) then
+    begin
+      FSelID := '';
+      FSelLine := -1;
+    end else
+    if (EventType = etAdd){or(EventType = etModify)} then
+    begin
+      {
+      Если по событию etModify менять FSelLine, То возникает косвенная рекурсия
+      при перетаскивании продуктов в приёме пищи
+      }
+
+      {if (Page <> nil) and (Page = CurrentPage) then
+      begin
+        FSelPanel := Page.FindRecord(RecInstance);
+        FSelLine := -1;
+      end;}
+    end;
+
+    DrawCurrentPage; // после всего, чтобы рисовались уже новые значения
+    if Assigned(FOnChange) then FOnChange(Self, EventType, Page, RecClass, RecInstance);
+//  end;
+end;
+
+{======================================================================================================================}
+procedure TDiaryView.HandlePageChanged(EventType: TPageEventType;
+  Page: TDiaryPage; RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
+{======================================================================================================================}
+begin
+  if (EventType = etRemove) then
+  begin
+    // TODO: а если удалили не то, что было выделено?
+    FSelID := '';
+    FSelLine := -1;
+  end else
+  if (EventType = etAdd){or(EventType = etModify)} then
+  begin
+    {
+    Если по событию etModify менять FSelLine, то возникает косвенная рекурсия
+    при перетаскивании продуктов в приёме пищи
+    }
+
+    // TODO: аккуратнее обработать разные типы записей и событий
+
+    //if (Page <> nil) and (Page = CurrentPage) then - здесь всегда так
+    begin
+      FSelID := RecInstance.ID;
+      FSelLine := -1;
+    end;
+  end;
+
+  DrawCurrentPage; // после всего, чтобы рисовались уже новые значения
+  if Assigned(FOnChange) then FOnChange(Self, EventType, CurrentPage, RecClass, RecInstance);
+end;
+
+function TDiaryView.GetSelectedID: TCompactGUID;
+begin
+  Result := FSelID;
+end;
+
+procedure TDiaryView.SetSelectedID(const ID: TCompactGUID);
+begin
+  FSelID := ID;
+end;
+
+procedure TDiaryView.SetSelectedLine(Line: integer);
+begin
+  FSelLine := Line;
+  Repaint;
+end;
+
+function TDiaryView.GetSelectedRecordIndex: integer;
+var
+  i: integer;
+begin
+  for i := 0 to High(FItems) do
+  if (FItems[i].ID = FSelID) then
+  begin
+    Result := i;
+    Exit;
+  end;
+
+  Result := -1;
 end;
 
 { TStatProgress }
@@ -2251,145 +2016,6 @@ begin
   end;
 
   inherited KeyPress(Key);
-end;
-
-procedure TDiaryView.SetFont(Value: TFont);
-begin
-  if (Value <> nil) then
-  begin
-    FFont := Value;
-    FFont.Charset := RUSSIAN_CHARSET;
-    Paint;
-  end;
-end;
-
-procedure TDiaryView.HandleBaseChanged(EventType: TPageEventType; Page: TRecordList;
-  RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
-//var
-//  Index: integer;
-begin
-  //if (Page <> nil) then // типа лишних проверок не бывает?
-  //begin
-    (*if (RecInstance <> nil) then
-    begin
-      Index := Page.FindRecord(RecInstance);
-
-      // DONE: вызывать OnChange
-      {if (CurrentPage = Page) then
-      case RecInstance.TagType of
-        rtBlood: RecBloodChange(Index);        // а где IF ASSIGNED() ???
-        rtIns: RecInsChange(Index);            // а где IF ASSIGNED() ???
-        rtMeal: RecMealChange(Index);          // а где IF ASSIGNED() ???
-        //rtNote: RecNoteChange(Index);        // а где IF ASSIGNED() ???
-      end; }
-      //if FBase <> nil then
-      //  FBase.UpdatePostprand(Page.Date - 1);
-    end else
-    begin
-      // TODO: хак, но работать будет
-      if (CurrentPage = Page) then
-      begin
-        RecBloodChange(-1);  // а где IF ASSIGNED() ???
-        RecInsChange(-1);    // а где IF ASSIGNED() ???
-        RecMealChange(-1);   // а где IF ASSIGNED() ???
-      end;
-    end;
-      *)
-    // TODO: добавить условия перерисовки
-    // TODO: что делать с выделениями?
-
-    if (EventType = etRemove) then
-    begin
-      FSelID := '';
-      FSelLine := -1;
-    end else
-    if (EventType = etAdd){or(EventType = etModify)} then
-    begin
-      {
-      Если по событию etModify менять FSelLine, То возникает косвенная рекурсия
-      при перетаскивании продуктов в приёме пищи
-      }
-
-      {if (Page <> nil) and (Page = CurrentPage) then
-      begin
-        FSelPanel := Page.FindRecord(RecInstance);
-        FSelLine := -1;
-      end;}
-    end;
-
-    DrawCurrentPage; // после всего, чтобы рисовались уже новые значения
-    if Assigned(FOnChange) then FOnChange(Self, EventType, Page, RecClass, RecInstance);
-//  end;
-end;
-
-{procedure TDiaryView.SetBase(Value: TDiary);
-begin
-  FBase := Value;
-  if FBase <> nil then
-  begin
-    FBase.OnChange := HandleBaseChanged;
-  end;
-end;}
-
-{==============================================================================}
-procedure TDiaryView.HandlePageChanged(EventType: TPageEventType;
-  Page: TDiaryPage; RecClass: TClassCustomRecord; RecInstance: TCustomRecord);
-{==============================================================================}
-begin
-  if (EventType = etRemove) then
-  begin
-    // TODO: а если удалили не то, что было выделено?
-    FSelID := '';
-    FSelLine := -1;
-  end else
-  if (EventType = etAdd){or(EventType = etModify)} then
-  begin
-    {
-    Если по событию etModify менять FSelLine, то возникает косвенная рекурсия
-    при перетаскивании продуктов в приёме пищи
-    }
-
-    // TODO: аккуратнее обработать разные типы записей и событий
-
-    //if (Page <> nil) and (Page = CurrentPage) then - здесь всегда так
-    begin
-      FSelID := RecInstance.ID;
-      FSelLine := -1;
-    end;
-  end;
-
-  DrawCurrentPage; // после всего, чтобы рисовались уже новые значения
-  if Assigned(FOnChange) then FOnChange(Self, EventType, CurrentPage, RecClass, RecInstance);
-end;
-
-function TDiaryView.GetSelectedID: TCompactGUID;
-begin
-  Result := FSelID;
-end;
-
-procedure TDiaryView.SetSelectedID(const ID: TCompactGUID);
-begin
-  FSelID := ID;
-end;
-
-procedure TDiaryView.SetSelectedLine(Line: integer);
-begin
-  FSelLine := Line;
-  Repaint;
-end;
-
-function TDiaryView.GetSelectedRecordIndex: integer;
-var
-  i: integer;
-begin
-  for i := 0 to High(FItems) do
-  if (FItems[i].ID = FSelID) then
-  begin
-    Result := i;
-    Exit;
-  end;
-
-  Result := -1;
 end;
 
 end.
