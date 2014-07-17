@@ -27,7 +27,7 @@
     <string name="editor_food_field_prots">Белки, г</string>
     <string name="editor_food_field_fats">Жиры, г</string>
     <string name="editor_food_field_carbs">Углеводы, г</string>
-    <string name="editor_food_field_value">Калорийность, ккал</string>    
+    <string name="editor_food_field_value">Калорийность, ккал</string>
     <string name="editor_food_title">Продукт</string>
     <string name="editor_ins_title">Инсулин</string>
     <string name="editor_meal_field_fooddish">Продукт/блюдо</string>
@@ -94,4 +94,5 @@
         <item>1П</item>
         <item>БП</item>
     </string-array>
-</resources>
+
+</resources>
