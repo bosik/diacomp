@@ -1976,6 +1976,7 @@ begin
   case IdentifyItem(Trim(ComboDiaryNew.Text), Item) of
     itFood: Temp := TFoodItem(Item);
     itDish: Temp := TDishItem(Item).AsFoodRelative();
+    itUnknown: Exit;
   end;
 
   Expander.Add(DiaryFoodDishInput, Temp.Name);
@@ -3169,7 +3170,7 @@ begin
   if (PageControl1.ActivePage = TabAnalyze)and
      (ComboKoof.ItemIndex = -1) then
   begin
-    ComboKoof.ItemIndex := 3;
+    ComboKoof.ItemIndex := 0;
     ComboKoofChange(nil);
   end else
   if (PageControl1.ActivePage = TabBase) then
