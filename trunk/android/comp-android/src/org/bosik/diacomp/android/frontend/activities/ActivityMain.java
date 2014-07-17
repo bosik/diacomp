@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.bosik.diacomp.android.BuildConfig;
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.common.HardcodedFoodbase;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.utils.ErrorHandler;
@@ -535,8 +534,11 @@ public class ActivityMain extends Activity
 				@Override
 				public void onClick(View v)
 				{
-					HardcodedFoodbase.restoreHardcodedBase();
-					UIUtils.showTip(ActivityMain.this, "Hardcoded base restored");
+					// HardcodedFoodbase.restoreHardcodedBase();
+					// UIUtils.showTip(ActivityMain.this, "Hardcoded base restored");
+
+					Intent intent = new Intent(ActivityMain.this, ActivityGraph.class);
+					startActivity(intent);
 				}
 			});
 			buttonAnalyze.setOnClickListener(new OnClickListener()

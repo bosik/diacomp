@@ -104,5 +104,6 @@
     </string-array>
 
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_activity_graph">ActivityGraph</string>
 
 </resources>
