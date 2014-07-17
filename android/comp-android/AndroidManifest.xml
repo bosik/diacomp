@@ -102,6 +102,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.bosik.diacomp.android.face.activities.ActivityBase" />
         </activity>
+        <activity
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityGraph"
+            android:label="@string/title_activity_activity_graph" >
+        </activity>
     </application>
 
 </manifest>
