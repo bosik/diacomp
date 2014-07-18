@@ -32,11 +32,7 @@ public class AnalyzeExtracter
 	{
 		List<PrimeRec> result = new LinkedList<PrimeRec>();
 
-		// TODO: move hardcode
-		int insulinAffectTime = 210;
-		int mealAffectTime = 210;
-		int mealShortAffectTime = 20;
-		PostprandUtils.updatePostprand(recs, insulinAffectTime, mealAffectTime, mealShortAffectTime);
+		PostprandUtils.updatePostprand(recs);
 
 		double ins = 0.0;
 		double curIns = 0.0;
