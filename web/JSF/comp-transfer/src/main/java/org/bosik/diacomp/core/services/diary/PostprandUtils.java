@@ -10,6 +10,11 @@ import org.bosik.diacomp.core.utils.Utils;
 
 public class PostprandUtils
 {
+	// TODO: move hardcode
+	private static final int	DEFAULT_AFFECT_TIME_INSULIN		= 210;
+	private static final int	DEFAULT_AFFECT_TIME_MEAL_STD	= 210;
+	private static final int	DEFAULT_AFFECT_TIME_MEAL_SHORT	= 20;
+
 	/**
 	 * 
 	 * @param records
@@ -24,7 +29,7 @@ public class PostprandUtils
 			int mealShortAffectTime)
 	{
 		long minFreeTime = 0;
-	
+
 		for (Versioned<DiaryRecord> versionedRecord : records)
 		{
 			DiaryRecord record = versionedRecord.getData();
@@ -50,5 +55,15 @@ public class PostprandUtils
 				((BloodRecord)record).setPostPrand(record.getTime().getTime() < minFreeTime);
 			}
 		}
+	}
+
+	/**
+	 * 
+	 * @param records
+	 */
+	public static void updatePostprand(List<Versioned<DiaryRecord>> records)
+	{
+		updatePostprand(records, DEFAULT_AFFECT_TIME_INSULIN, DEFAULT_AFFECT_TIME_MEAL_STD,
+				DEFAULT_AFFECT_TIME_MEAL_SHORT);
 	}
 }
