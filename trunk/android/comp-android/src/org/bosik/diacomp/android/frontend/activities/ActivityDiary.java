@@ -64,8 +64,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	private static List<Versioned<DiaryRecord>>	curRecords					= null;
 
 	// --- форматы ---
-	// private static final SimpleDateFormat CaptionFmt = new SimpleDateFormat("d MMMM");
-	private static final SimpleDateFormat		FORMAT_DATE					= new SimpleDateFormat("dd.MM.yyyy",
+	// private final SimpleDateFormat CaptionFmt = new SimpleDateFormat("d MMMM");
+	private final SimpleDateFormat				FORMAT_DATE					= new SimpleDateFormat("dd.MM.yyyy",
 																					Locale.US);
 
 	// КОМПОНЕНТЫ

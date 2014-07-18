@@ -12,8 +12,8 @@ import android.widget.TimePicker;
 
 public abstract class ActivityEditorTime<T extends DiaryRecord> extends ActivityEditor<T>
 {
-	private static final SimpleDateFormat	FORMAT_TIME	= new SimpleDateFormat("HH:mm", Locale.getDefault());
-	private static final SimpleDateFormat	FORMAT_DATE	= new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+	private final SimpleDateFormat	FORMAT_TIME	= new SimpleDateFormat("HH:mm", Locale.getDefault());
+	private final SimpleDateFormat	FORMAT_DATE	= new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
 	/* =========================== PROTECTED METHODS ================================ */
 
@@ -86,12 +86,12 @@ public abstract class ActivityEditorTime<T extends DiaryRecord> extends Activity
 		newFragment.show(getFragmentManager(), "datePicker");
 	}
 
-	protected static String formatDate(Date date)
+	protected String formatDate(Date date)
 	{
 		return FORMAT_DATE.format(date);
 	}
 
-	protected static String formatTime(Date time)
+	protected String formatTime(Date time)
 	{
 		return FORMAT_TIME.format(time);
 	}
