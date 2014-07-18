@@ -13,6 +13,7 @@ import org.bosik.diacomp.core.services.analyze.entities.AnalyzeRec;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.services.analyze.entities.PrimeRec;
+import org.bosik.diacomp.core.services.diary.PostprandUtils;
 import org.bosik.diacomp.core.utils.Utils;
 
 public class AnalyzeExtracter
@@ -27,48 +28,6 @@ public class AnalyzeExtracter
 		return (int)val;
 	}
 
-	/**
-	 * 
-	 * @param records
-	 * @param insulinAffectTime
-	 *            (minutes)
-	 * @param mealAffectTime
-	 *            (minutes)
-	 * @param mealShortAffectTime
-	 *            (minutes)
-	 */
-	public static void updatePostprand(List<Versioned<DiaryRecord>> records, int insulinAffectTime, int mealAffectTime,
-			int mealShortAffectTime)
-	{
-		long minFreeTime = 0;
-
-		for (Versioned<DiaryRecord> versionedRecord : records)
-		{
-			DiaryRecord record = versionedRecord.getData();
-			if (record instanceof InsRecord)
-			{
-				long curFreeTime = record.getTime().getTime() + insulinAffectTime * Utils.MsecPerMin;
-				if (curFreeTime > minFreeTime)
-				{
-					minFreeTime = curFreeTime;
-				}
-			}
-			else if (record instanceof MealRecord)
-			{
-				long affectTime = ((MealRecord)record).getShortMeal() ? mealShortAffectTime : mealAffectTime;
-				long curFreeTime = record.getTime().getTime() + affectTime * Utils.MsecPerMin;
-				if (curFreeTime > minFreeTime)
-				{
-					minFreeTime = curFreeTime;
-				}
-			}
-			else if (record instanceof BloodRecord)
-			{
-				((BloodRecord)record).setPostPrand(record.getTime().getTime() < minFreeTime);
-			}
-		}
-	}
-
 	public static List<PrimeRec> extractPrimeRecords(List<Versioned<DiaryRecord>> recs)
 	{
 		List<PrimeRec> result = new LinkedList<PrimeRec>();
@@ -77,7 +36,7 @@ public class AnalyzeExtracter
 		int insulinAffectTime = 210;
 		int mealAffectTime = 210;
 		int mealShortAffectTime = 20;
-		updatePostprand(recs, insulinAffectTime, mealAffectTime, mealShortAffectTime);
+		PostprandUtils.updatePostprand(recs, insulinAffectTime, mealAffectTime, mealShortAffectTime);
 
 		double ins = 0.0;
 		double curIns = 0.0;
