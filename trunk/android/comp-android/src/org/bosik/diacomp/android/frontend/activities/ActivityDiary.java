@@ -21,6 +21,7 @@ import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.diary.PostprandUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.content.Intent;
@@ -598,6 +599,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		Date fromDate = new Date(toDate.getTime() - (scanPeriod * Utils.MsecPerSec));
 
 		List<Versioned<DiaryRecord>> records = diary.findBetween(fromDate, toDate, false);
+		PostprandUtils.updatePostprand(records);
 		Collections.reverse(records);
 
 		for (Versioned<DiaryRecord> record : records)
@@ -696,10 +698,11 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			entity = new Versioned<MealRecord>(rec);
 		}
 
-		BloodRecord prevBlood = lastBlood(SCAN_FOR_BLOOD_BEFORE_MEAL, entity.getData().getTime(), true);
+		BloodRecord prevBlood = lastBlood(SCAN_FOR_BLOOD_BEFORE_MEAL, entity.getData().getTime(), false);
 		Double bloodBeforeMeal = prevBlood == null ? null : prevBlood.getValue();
 		InsRecord insRecord = findInsulin(entity.getData().getTime(), SCAN_FOR_INS_AROUND_MEAL);
-		Double insInjected = insRecord == null ? null : insRecord.getValue();
+		Double insInjected = insRecord == null || (prevBlood != null && prevBlood.isPostPrand()) ? null : insRecord
+				.getValue();
 
 		Log.d(TAG, insRecord == null ? "insRecord == null" : "insRecord != null");
 		Log.d(TAG, "insInjected: " + insInjected);
