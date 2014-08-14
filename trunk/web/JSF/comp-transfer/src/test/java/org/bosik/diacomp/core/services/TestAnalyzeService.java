@@ -38,7 +38,7 @@ public class TestAnalyzeService
 	{
 		diaryService = new FakeDiaryService();
 		analyzeCore = new AnalyzeCoreImpl(40.0);
-		koofService = new KoofServiceImpl(diaryService, analyzeCore, 3650, 0.99);
+		koofService = new KoofServiceImpl(diaryService, analyzeCore, 3650, 0.995);
 		koofService.update();
 	}
 
@@ -89,11 +89,11 @@ public class TestAnalyzeService
 	{
 		String str = "";
 		StringBuffer buf = new StringBuffer();
-		InputStream is = getClass().getResourceAsStream(fileName);
+		InputStream stream = getClass().getResourceAsStream(fileName);
 		try
 		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-			if (is != null)
+			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+			if (stream != null)
 			{
 				while ((str = reader.readLine()) != null)
 				{
@@ -103,7 +103,10 @@ public class TestAnalyzeService
 		}
 		finally
 		{
-			is.close();
+			if (stream != null)
+			{
+				stream.close();
+			}
 		}
 
 		return buf.toString();
@@ -116,16 +119,49 @@ public class TestAnalyzeService
 		return serializer.readAll(content);
 	}
 
+	private KoofList loadKoofs(String fileName) throws IOException
+	{
+		String content = readFile(fileName);
+		KoofList koofs = new KoofList();
+
+		String[] lines = content.split("\n");
+		for (int time = 0; time < Utils.MinPerDay; time++)
+		{
+			String[] values = lines[time].split("\t");
+			koofs.getKoof(time).setK(Double.parseDouble(values[0]));
+			koofs.getKoof(time).setQ(Double.parseDouble(values[1]));
+			koofs.getKoof(time).setP(Double.parseDouble(values[2]));
+		}
+
+		return koofs;
+	}
+
 	@Test
 	public void testDiaryAnalyze_setB_ok() throws IOException
 	{
-		List<Versioned<DiaryRecord>> records = loadRecords("/analyze_data_2.txt");
+		List<Versioned<DiaryRecord>> records = loadRecords("/analyze_set_1_input.txt");
 		KoofList koofs = analyzeCore.analyze(records);
 
 		for (int time = 0; time < Utils.MinPerDay; time++)
 		{
 			Koof koof = koofs.getKoof(time);
 			System.out.println(String.format("%.5f\t%.3f\t%.3f", koof.getK(), koof.getQ(), koof.getP()));
+		}
+	}
+
+	@Test
+	public void testDiaryAnalyze_set2_ok() throws IOException
+	{
+		List<Versioned<DiaryRecord>> records = loadRecords("/analyze_set_2_input.txt");
+		KoofList koofsExpected = loadKoofs("/analyze_set_2_output.txt");
+		KoofList koofsActual = analyzeCore.analyze(records);
+
+		for (int time = 0; time < Utils.MinPerDay; time++)
+		{
+			Koof koofExp = koofsExpected.getKoof(time);
+			Koof koofAct = koofsActual.getKoof(time);
+			System.out.println(String.format("%.5f\t%.3f\t%.3f\t%.5f\t%.3f\t%.3f", koofExp.getK(), koofExp.getQ(),
+					koofExp.getP(), koofAct.getK(), koofAct.getQ(), koofAct.getP()));
 		}
 	}
 }
