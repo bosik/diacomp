@@ -126,7 +126,7 @@ public class Storage
 		if (koofService == null)
 		{
 			// TODO: hardcoded adaptation
-			koofService = new KoofServiceImpl(localDiary, analyzeCore, ANALYZE_DAYS_PERIOD, 0.99);
+			koofService = new KoofServiceImpl(localDiary, analyzeCore, ANALYZE_DAYS_PERIOD, 0.995);
 		}
 
 		if (null == tagService)

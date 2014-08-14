@@ -194,10 +194,16 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		// insulin dosage info
 
 		// FIXME: doesn't updated if time changed
-		int minutesTime = Utils.timeToMin(entity.getData().getTime());
+		// FIXME: hardcode
+		int minutesTime = (Utils.timeToMin(entity.getData().getTime()) + 4 * 60) % Utils.MinPerDay;
 
 		// TODO: hackfix
 		Koof koof = Storage.koofService.getKoof(minutesTime);
+
+		Log.i(TAG, "Time: " + minutesTime);
+		Log.i(TAG, "k = " + koof.getK());
+		Log.i(TAG, "q = " + koof.getQ());
+		Log.i(TAG, "p = " + koof.getP());
 
 		double deltaBS = 0.0;
 
