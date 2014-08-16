@@ -13,6 +13,11 @@ uses
   DiaryDatabase,
   DiaryDAO,
 
+  // <DEBUG ONLY>
+  JsonSerializer,
+  DiaryPageSerializer,
+  // </DEBUG ONLY>
+
   AutoLog;
 
 type
@@ -91,6 +96,8 @@ type
 procedure ExtractRecords(Base: TDiaryDAO; TimeFrom, TimeTo: TDateTime;
   out List: TPrimeRecList);
 {==============================================================================}
+const
+  MAX_BLOCK_TIME = 12 / 24; // 12 hours
 var
   i, j: integer;
   Items: TRecordList;
@@ -102,6 +109,8 @@ var
   Ins,CurIns,MaxIns: real;
   TimeF,TimeI: TDateTime;
   TimeShift: integer;
+
+  // Debug: string;
 
   procedure InitCounters;
   begin
@@ -132,6 +141,9 @@ begin
   Items := Base.FindPeriod(TimeFrom, TimeTo);
   // TODO: hardcode
   UpdatePostprand(Items, 3.5 / HourPerDay, 3.5 / HourPerDay, 20 / MinPerDay);
+
+  //Debug := JsonWrite(SerializeVersionedDiaryRecords(Items));
+  //DiaryRoutines.WriteFile('temp\analyze_input.txt', Debug);
 
   { 1. Создаём RecList, считая время в минутах от 01/01/1899 }
   for i := Low(Items) to High(Items) do
@@ -174,7 +186,9 @@ begin
         PrevBloodValue := TBloodRecord(Items[i]).Value;
         InitCounters;
       end else
-      if ((Carbs > 0) or (Prots > 0)) and (Ins > 0) then
+      if ((Carbs > 0) or (Prots > 0)) and (Ins > 0) and
+         (Items[i].Time - PrevBloodTime < MAX_BLOCK_TIME)
+         then
       //if (True) then
       begin
         { запись }
@@ -292,9 +306,9 @@ begin
       List[i].Weight := F((PrimeList[i].Date - Min) / (CurTime - Min)){ * PrimeList[i].Carbs};
     end;
 
-    Log(DEBUG, 'Saved', True);
+    //Log(DEBUG, 'Saved', True);
 
-    SaveAnalyzeList(List, 'temp\denormalized_anlist.txt');
+    //SaveAnalyzeList(List, 'temp\denormalized_anlist.txt');
 
     { нормализация }
     MinW := List[0].Weight;
@@ -393,7 +407,6 @@ begin
   if (SummWeight > 0) then
   for i := 0 to High(Analyzer) do
     Analyzer[i].Weight := Analyzer[i].Weight / SummWeight;
-
 
   // определение средних коэффицентов
   for Time := 0 to MinPerDay - 1 do
