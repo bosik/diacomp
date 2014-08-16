@@ -714,7 +714,7 @@ begin
   end;
 
   { инициализация }
-  for i := 0 to MinPerDay-1 do
+  for i := 0 to MinPerDay - 1 do
   begin
     KoofList[i].q := INIT_Q;
     KoofList[i].p := 0;
@@ -763,7 +763,7 @@ begin
     NormalizeForceField;
 
     { применяем силы }
-    for i := 0 to MinPerDay-1 do
+    for i := 0 to MinPerDay - 1 do
       KoofList[i].q := KoofList[i].q + ForceField[i] * STEP;
 
     inc(Counter);
