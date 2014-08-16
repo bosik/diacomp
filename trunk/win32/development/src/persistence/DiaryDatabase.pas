@@ -396,6 +396,7 @@ procedure TDiary.SaveToJSON(const FileName: string);
 {==============================================================================}
 begin
   // see DiaryLocalSource.Save()
+  raise Exception.Create('The TDiary.SaveToJSON() method is obsolete');
 end;
 
 {==============================================================================}
