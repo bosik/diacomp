@@ -53,7 +53,7 @@ type
   function DownloadDishBaseSample: boolean;
   function CheckUpdates(var Date: string): TUpdateCheckResult;
 
-  procedure ExportKoofs(Plain: boolean; out Data: string);
+  function ExportKoofs(Plain: boolean): string;
 
 var
   { данные }
@@ -253,7 +253,7 @@ begin
 end;
 
 {==============================================================================}
-procedure ExportKoofs(Plain: boolean; out Data: string);
+function ExportKoofs(Plain: boolean): string;
 {==============================================================================}
 var
   i: integer;
@@ -263,20 +263,20 @@ var
 begin
   StartProc('ExportKoofs()');
 
-  Data := '';
+  Result := '';
   if (Plain) then
   begin
     for i := 0 to MinPerDay - 1 do
     begin
       Koof := GetKoof(i);
-      Data := Data +
+      Result := Result +
         //Format('%2.2d',[i]) + '.00 - '+Format('%2.2d',[i + 1]) + '.00' + #9+
         Format('%.6f'#9'%.6f'#9'%.6f'#13#10, [Koof.k, Koof.q, Koof.p])
       ;
     end;
   end else
   begin
-    Data := '[';
+    Result := '[';
     DC := DecimalSeparator;
     try                    
       DecimalSeparator := '.';
@@ -288,12 +288,12 @@ begin
         s := Format('{"time":%d,"k":%.4f,"q":%.2f,"p":%.2f}',[i, Koof.k, Koof.q, Koof.p]);
         if (i < MinPerDay - 1) then
           s := s + ',';
-        Data := Data + s;
+        Result := Result + s;
       end;
     finally
       DecimalSeparator := DC;
     end;  
-    Data := Data + ']';
+    Result := Result + ']';
   end;
 
   FinishProc;
