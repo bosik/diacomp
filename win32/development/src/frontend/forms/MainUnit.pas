@@ -2462,9 +2462,9 @@ procedure TForm1.UpdateMealDose;
     end else
     begin
       LabelDiaryCorrection.Caption := 'Коррекция:  '+FloatToStrP(Delta)+' ммоль/л';
-      if abs(Delta)<3 then
+      if abs(Delta) < 3 then
         LabelDiaryCorrection.Font.Color := CC_LOW else
-      if abs(Delta)<6 then
+      if abs(Delta) < 6 then
         LabelDiaryCorrection.Font.Color := CC_MIDDLE
       else
       begin
@@ -2485,33 +2485,17 @@ var
   s: string;
   Koof: TKoof;
   SelMeal: TMealRecord;
-
+  Rec: TCustomRecord;
 begin
   StartProc('TForm1.UpdateMealDose()');
 
-  // блюдо не выбрано, очищаем
-  if not (SelectedRecord() is TMealRecord) then
-  begin
-    LabelDiaryMealDose.Font.Color := clNoData;
-    LabelDiaryMealDose.Font.Style := [];
-    LabelDiaryMealDose.Caption := 'Не выбрано';
-
-    LabelDiaryCorrection.Caption := '';
-
-    LabelDiaryMealExpectedBS.Caption := '';
-
-    ListCorrectCarbs.Clear;
-
-    LabelCorrectionEmpty.Caption := '  Не выбрано';
-    LabelCorrectionEmpty.Font.Color := clNoData;
-    LabelCorrectionEmpty.Show;
-    ListCorrectCarbs.Hide;
-  end else
-
-  // блюдо выбрано, информируем 
+  Rec := SelectedRecord();
+  
+  if ((Rec <> nil) and (Rec is TMealRecord)) then
+  // блюдо выбрано, информируем
   begin
     { ищем приём пищи, замер и инъекцию }
-    SelMeal := TMealRecord(SelectedRecord());
+    SelMeal := TMealRecord(Rec);
 
     StartBlood := TBloodRecord(
       Diary.FindRecord(
@@ -2554,8 +2538,6 @@ begin
         LabelDiaryMealDose.Caption := 'Расчётная доза: ' + RealToStr(Dose)
       else
         LabelDiaryMealDose.Caption := 'Расчётная доза:  --';
-
-
 
       { <вспомогательный список> }
 
@@ -2643,6 +2625,24 @@ begin
       LabelCorrectionEmpty.Show;
       ListCorrectCarbs.Hide;
     end;
+  end else
+
+  // блюдо не выбрано, очищаем
+  begin
+    LabelDiaryMealDose.Font.Color := clNoData;
+    LabelDiaryMealDose.Font.Style := [];
+    LabelDiaryMealDose.Caption := 'Не выбрано';
+
+    LabelDiaryCorrection.Caption := '';
+
+    LabelDiaryMealExpectedBS.Caption := '';
+
+    ListCorrectCarbs.Clear;
+
+    LabelCorrectionEmpty.Caption := '  Не выбрано';
+    LabelCorrectionEmpty.Font.Color := clNoData;
+    LabelCorrectionEmpty.Show;
+    ListCorrectCarbs.Hide;
   end;
 
   FinishProc;
@@ -2758,6 +2758,9 @@ begin
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Rec.ID;
       ScrollToSelected;
+
+      UpdateMealDose;
+      UpdateMealStatistics;
     end;
   end else
   begin
@@ -2770,6 +2773,8 @@ begin
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Rec.ID;
       ScrollToSelected;
+
+      UpdateMealDose;
 
       // UX features
       UpdateTimeLeft;
@@ -3291,16 +3296,8 @@ end;
 {==============================================================================}
 procedure TForm1.ActionExportKoofsExecute(Sender: TObject);
 {==============================================================================}
-var
-  S: string;
 begin
-  with TStringList.Create do
-  begin
-    ExportKoofs(False, S);
-    Add(S);
-    SaveToFile('Koofs.json');
-    Free;
-  end;
+  WriteFile('temp/Koofs.json', ExportKoofs(True));
 end;
 
 {==============================================================================}
@@ -3798,7 +3795,11 @@ begin
   if (MessageDlg(Msg, MsgType, [mbYes, mbNo], 0) = mrYes) then
   begin
     LocalSource.Delete(DiaryView.SelectedRecordID);
+    DiaryView.SelectedRecordID := '';
     DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
+
+    UpdateMealDose;
+    UpdateMealStatistics;
   end;
 end;
 
