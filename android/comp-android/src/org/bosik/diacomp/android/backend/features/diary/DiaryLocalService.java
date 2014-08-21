@@ -30,11 +30,6 @@ public class DiaryLocalService implements DiaryService
 
 	/* ============================ FIELDS ============================ */
 
-	// private Parser<DiaryRecord> parser = new ParserDiaryRecord();
-	// private Parser<Versioned<DiaryRecord>> parserV = new ParserVersioned<DiaryRecord>(parser);
-	// private Serializer<Versioned<DiaryRecord>> serializer = new
-	// SerializerAdapter<Versioned<DiaryRecord>>(parserV);
-
 	private final ContentResolver			resolver;
 	private final Parser<DiaryRecord>		parser		= new ParserDiaryRecord();
 	private final Serializer<DiaryRecord>	serializer	= new SerializerAdapter<DiaryRecord>(parser);
@@ -269,25 +264,27 @@ public class DiaryLocalService implements DiaryService
 		}
 	}
 
-	private static String formatList(List<?> list)
-	{
-		StringBuilder sb = new StringBuilder();
+	// 2014-08-17 Commented out as unused
 
-		sb.append("(");
-		for (int i = 0; i < list.size(); i++)
-		{
-			sb.append("\"");
-			sb.append(list.get(i));
-			sb.append("\"");
-			if (i < (list.size() - 1))
-			{
-				sb.append(", ");
-			}
-		}
-		sb.append(")");
-
-		return sb.toString();
-	}
+	// private static String formatList(List<?> list)
+	// {
+	// StringBuilder sb = new StringBuilder();
+	//
+	// sb.append("(");
+	// for (int i = 0; i < list.size(); i++)
+	// {
+	// sb.append("\"");
+	// sb.append(list.get(i));
+	// sb.append("\"");
+	// if (i < (list.size() - 1))
+	// {
+	// sb.append(", ");
+	// }
+	// }
+	// sb.append(")");
+	//
+	// return sb.toString();
+	// }
 
 	public static class Verifier
 	{
