@@ -634,8 +634,9 @@ public class Utils
 		{
 			Thread.sleep(time);
 		}
-		catch (Exception e)
+		catch (InterruptedException e)
 		{
+			throw new RuntimeException(e);
 		}
 	}
 
