@@ -33,10 +33,11 @@ import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.json.JSONException;
+import android.util.Log;
 
 public class WebClient
 {
-	// private static String TAG = WebClient.class.getSimpleName();
+	private static String		TAG					= WebClient.class.getSimpleName();
 
 	/* ================ КОНСТАНТЫ ================ */
 
@@ -50,8 +51,8 @@ public class WebClient
 	/* ================ ПОЛЯ ================ */
 
 	private HttpClient			mHttpClient			= null;
-	private String				username			= "";		// not
-																// null!
+	private String				username			= "";								// not
+																						// null!
 	private String				password			= "";
 	private String				server				= "";
 
@@ -90,6 +91,18 @@ public class WebClient
 		}
 	}
 
+	private void checkTimeout()
+	{
+		long now = System.currentTimeMillis();
+		if ((now - lastRequestTime) < MIN_REQUEST_DELAY)
+		{
+			Log.i(TAG,
+					String.format("Too many requests per second, sleeping for %d msec", MIN_REQUEST_DELAY
+							- (now - lastRequestTime)));
+			Utils.sleep(MIN_REQUEST_DELAY - (now - lastRequestTime));
+		}
+	}
+
 	/**
 	 * Выполняет get-запрос
 	 * 
@@ -100,11 +113,7 @@ public class WebClient
 	 */
 	private String doGet(String url, String codePage) throws WebClientException
 	{
-		long now = System.currentTimeMillis();
-		if ((now - lastRequestTime) < MIN_REQUEST_DELAY)
-		{
-			Utils.sleep(MIN_REQUEST_DELAY - (now - lastRequestTime));
-		}
+		checkTimeout();
 
 		// Log.i(TAG(), "doGet(), URL='" + URL + "'");
 		try
@@ -134,11 +143,7 @@ public class WebClient
 	 */
 	private String doPost(String url, List<NameValuePair> params, String codePage) throws WebClientException
 	{
-		long now = System.currentTimeMillis();
-		if ((now - lastRequestTime) < MIN_REQUEST_DELAY)
-		{
-			Utils.sleep(MIN_REQUEST_DELAY - (now - lastRequestTime));
-		}
+		checkTimeout();
 
 		try
 		{
@@ -158,11 +163,7 @@ public class WebClient
 
 	private String doPut(String url, List<NameValuePair> params, String codePage) throws WebClientException
 	{
-		long now = System.currentTimeMillis();
-		if ((now - lastRequestTime) < MIN_REQUEST_DELAY)
-		{
-			Utils.sleep(MIN_REQUEST_DELAY - (now - lastRequestTime));
-		}
+		checkTimeout();
 
 		try
 		{
