@@ -1,9 +1,8 @@
 package org.bosik.diacomp.android.backend.features.diary;
 
-import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
-import org.bosik.diacomp.core.services.diary.TestDiaryServiceCommon;
 import org.bosik.diacomp.core.services.diary.TestDiaryService;
+import org.bosik.diacomp.core.services.diary.TestDiaryServiceCommon;
 import android.content.ContentResolver;
 import android.test.AndroidTestCase;
 
@@ -27,46 +26,6 @@ public class TestDiaryLocalService extends AndroidTestCase implements TestDiaryS
 		};
 		test.setUp();
 	}
-
-	// @Override
-	// public TestResult run()
-	// {
-	// assertNotNull(getContext());
-	// ContentResolver resolver = getContext().getContentResolver();
-	// final DiaryService service = new DiaryLocalService(resolver);
-	//
-	// TestDiaryServiceCommon test = new TestDiaryServiceCommon()
-	// {
-	// @Override
-	// protected DiaryService getService()
-	// {
-	// return service;
-	// }
-	// };
-	// return test.run();
-	// }
-
-	// private static final String TAG = TestDiaryLocalService.class.getSimpleName();
-
-	// public void testAll() throws Throwable
-	// {
-	// assertNotNull(getContext());
-	// ContentResolver resolver = getContext().getContentResolver();
-	// final DiaryService service = new DiaryLocalService(resolver);
-	//
-	// TestDiaryServiceCommon test = new TestDiaryServiceCommon()
-	// {
-	// @Override
-	// protected DiaryService getService()
-	// {
-	// return service;
-	// }
-	// };
-	//
-	// test.setName("test_postRecordsGetRecordsViaPeriodAndGuid_Normal_RestoredExactly");
-	// Log.e(TAG, "countTestCases: " + String.valueOf(test.countTestCases()));
-	// Log.e(TAG, "testCount: " + String.valueOf(test.testCount()));
-	// }
 
 	@Override
 	public void test_PostRecordsGetRecords_Deleting_Removed()
