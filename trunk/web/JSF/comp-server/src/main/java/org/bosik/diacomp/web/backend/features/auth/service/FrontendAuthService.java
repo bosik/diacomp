@@ -36,14 +36,18 @@ public class FrontendAuthService implements AuthService
 	{
 		SecurityContext context = SecurityContextHolder.getContext();
 		Authentication auth = context.getAuthentication();
+
+		if (auth == null)
+		{
+			throw new NotAuthorizedException();
+		}
+
 		String userName = auth.getName();
 		if (userName.equals("guest"))
 		{
 			throw new NotAuthorizedException();
 		}
-		else
-		{
-			return userName;
-		}
+
+		return userName;
 	}
 }
