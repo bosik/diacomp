@@ -12,9 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
-import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
 import org.bosik.diacomp.web.backend.features.auth.function.AuthDAO;
 import org.bosik.diacomp.web.backend.features.auth.function.FakeAuthDAO;
@@ -36,43 +34,45 @@ public class AuthRestService
 	public Response login(@FormParam("login") String login, @FormParam("pass") String pass,
 			@FormParam("api") @DefaultValue("-1") int apiVersion)
 	{
-		// check if all params are presented
-
-		if (login == null)
-		{
-			String resp = ResponseBuilder.build(ResponseBuilder.CODE_FAIL, "Parameter 'login' is missing");
-			return Response.status(Status.BAD_REQUEST).entity(resp).build();
-		}
-		if (pass == null)
-		{
-			String resp = ResponseBuilder.build(ResponseBuilder.CODE_FAIL, "Parameter 'pass' is missing");
-			return Response.status(Status.BAD_REQUEST).entity(resp).build();
-		}
-		if (apiVersion == -1)
-		{
-			String resp = ResponseBuilder.build(ResponseBuilder.CODE_FAIL, "Parameter 'api' is missing");
-			return Response.status(Status.BAD_REQUEST).entity(resp).build();
-		}
-
-		// check the values
-
-		if (apiVersion < API_LEGACY)
-		{
-			String msg = String.format("API %d is unsupported. The latest API: %d. Legacy API: %d.", apiVersion,
-					API_CURRENT, API_LEGACY);
-			throw new UnsupportedAPIException(msg);
-		}
-
-		if (apiVersion < API_CURRENT)
-		{
-			String msg = String.format(
-					"API %d is still supported, but deprecated. The latest API: %d. Legacy API: %d.", apiVersion,
-					API_CURRENT, API_LEGACY);
-			throw new DeprecatedAPIException(msg);
-		}
-
 		try
 		{
+			// check if all params are presented
+
+			if (login == null)
+			{
+				String resp = ResponseBuilder.build(ResponseBuilder.CODE_FAIL, "Parameter 'login' is missing");
+				return Response.status(Status.BAD_REQUEST).entity(resp).build();
+			}
+			if (pass == null)
+			{
+				String resp = ResponseBuilder.build(ResponseBuilder.CODE_FAIL, "Parameter 'pass' is missing");
+				return Response.status(Status.BAD_REQUEST).entity(resp).build();
+			}
+			if (apiVersion == -1)
+			{
+				String resp = ResponseBuilder.build(ResponseBuilder.CODE_FAIL, "Parameter 'api' is missing");
+				return Response.status(Status.BAD_REQUEST).entity(resp).build();
+			}
+
+			// check the values
+
+			if (apiVersion < API_LEGACY)
+			{
+				String msg = String.format("API %d is unsupported. The latest API: %d. Legacy API: %d.", apiVersion,
+						API_CURRENT, API_LEGACY);
+				String resp = ResponseBuilder.build(ResponseBuilder.CODE_UNSUPPORTED_API, msg);
+				return Response.ok(resp).build();
+			}
+
+			if (apiVersion < API_CURRENT)
+			{
+				String msg = String.format(
+						"API %d is still supported, but deprecated. The latest API: %d. Legacy API: %d.", apiVersion,
+						API_CURRENT, API_LEGACY);
+				String resp = ResponseBuilder.build(ResponseBuilder.CODE_DEPRECATED_API, msg);
+				return Response.ok(resp).build();
+			}
+
 			int id = authDao.login(login, pass);
 			UserSessionUtils.setId(req, id, login);
 
@@ -83,23 +83,15 @@ public class AuthRestService
 		{
 			// Do not reset session flag here: anyone can reset your session otherwise
 
-			// THINK: should we use status 200 here? Isn't 401 better?
+			// THINK: should we use status 200 OK here? Isn't 401 better?
 			String entity = ResponseBuilder.build(ResponseBuilder.CODE_BADCREDENTIALS, "Bad username/password");
 			return Response.ok(entity).build();
 		}
-		catch (UnsupportedAPIException e)
-		{
-			String resp = ResponseBuilder.build(ResponseBuilder.CODE_UNSUPPORTED_API, e.getMessage());
-			return Response.ok(resp).build();
-		}
-		catch (DeprecatedAPIException e)
-		{
-			String resp = ResponseBuilder.build(ResponseBuilder.CODE_DEPRECATED_API, e.getMessage());
-			return Response.ok(resp).build();
-		}
 		catch (Exception e)
 		{
+			// FIXME: FOR DEBUG PURPOSE ONLY
 			e.printStackTrace();
+
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
 		}
 	}
@@ -127,7 +119,9 @@ public class AuthRestService
 		}
 		catch (Exception e)
 		{
+			// FIXME: FOR DEBUG PURPOSE ONLY
 			e.printStackTrace();
+
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
 		}
 	}
