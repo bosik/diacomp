@@ -25,6 +25,10 @@ public class FrontendAuthService implements AuthService
 		if (id == null)
 		{
 			id = authDao.getIdByName(userName);
+			if (id == null)
+			{
+				throw new NotAuthorizedException(String.format("User %s is not authorized", userName));
+			}
 			userMap.put(userName, id);
 		}
 
