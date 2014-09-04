@@ -126,7 +126,7 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 		compareItems(originalItems, restoredItems, true);
 
 		// 3. Via period
-		restoredItems = diaryService.findBetween(timeBefore, timeAfter, false);
+		restoredItems = diaryService.findPeriod(timeBefore, timeAfter, false);
 		compareItems(originalItems, restoredItems, true);
 
 		// REMOVE IT
@@ -150,7 +150,7 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 		}
 
 		// 3. Via period
-		restoredItems = diaryService.findBetween(timeBefore, timeAfter, false);
+		restoredItems = diaryService.findPeriod(timeBefore, timeAfter, false);
 		for (Versioned<DiaryRecord> restoredItem : restoredItems)
 		{
 			if (restoredItem.getId().equals(item.getId()))
@@ -174,7 +174,7 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 		compareItems(originalItems, restoredItems, true);
 
 		// 3. Via period
-		restoredItems = diaryService.findBetween(timeBefore, timeAfter, false);
+		restoredItems = diaryService.findPeriod(timeBefore, timeAfter, false);
 		compareItems(originalItems, restoredItems, true);
 	}
 
@@ -267,7 +267,7 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 
 		// Check via period:
 
-		List<Versioned<DiaryRecord>> restoredItems = diaryService.findBetween(minTime, maxTime, true);
+		List<Versioned<DiaryRecord>> restoredItems = diaryService.findPeriod(minTime, maxTime, true);
 		assertTrue(!restoredItems.isEmpty());
 		checkTimeOrder(restoredItems);
 		compareItems(originalItems, restoredItems, true);
@@ -301,7 +301,7 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 
 		minTime = new Date(minTime.getTime() - DELTA);
 		maxTime = new Date(maxTime.getTime() + DELTA);
-		List<Versioned<DiaryRecord>> restoredItems = diaryService.findBetween(minTime, maxTime, true);
+		List<Versioned<DiaryRecord>> restoredItems = diaryService.findPeriod(minTime, maxTime, true);
 
 		if (restoredItems.isEmpty())
 		{
@@ -309,7 +309,7 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 		}
 
 		// Check the order
-		restoredItems = diaryService.findBetween(minTime, maxTime, true);
+		restoredItems = diaryService.findPeriod(minTime, maxTime, true);
 		checkTimeOrder(restoredItems);
 	}
 
