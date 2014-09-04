@@ -28,7 +28,6 @@ public class HeaderPanel extends Panel
 		}
 		catch (NotAuthorizedException e)
 		{
-
 			add(new ExternalLink("linkLogout", "j_spring_security_logout").setVisible(false));
 			add(new BookmarkablePageLink<Void>("linkHome", AboutPage.class));
 			add(new Label("infoLogin"));
