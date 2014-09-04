@@ -11,16 +11,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class FrontendAuthService implements AuthService
 {
-	private final AuthDAO						authDao	= new FakeAuthDAO();
+	private static final String					GUEST_USERNAME	= "guest";
 
-	private static final Map<String, Integer>	userMap	= new HashMap<String, Integer>();
+	private final AuthDAO						authDao			= new FakeAuthDAO();
+
+	private static final Map<String, Integer>	userMap			= new HashMap<String, Integer>();
 
 	@Override
 	public int getCurrentUserId()
 	{
 		String userName = getCurrentUserName();
 
-		// cashing
+		// caching
 		Integer id = userMap.get(userName);
 		if (id == null)
 		{
@@ -47,7 +49,7 @@ public class FrontendAuthService implements AuthService
 		}
 
 		String userName = auth.getName();
-		if (userName.equals("guest"))
+		if (userName.equals(GUEST_USERNAME))
 		{
 			throw new NotAuthorizedException();
 		}
