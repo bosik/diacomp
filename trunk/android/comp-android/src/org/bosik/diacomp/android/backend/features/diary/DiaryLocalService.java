@@ -114,17 +114,17 @@ public class DiaryLocalService implements DiaryService
 	}
 
 	@Override
-	public synchronized List<Versioned<DiaryRecord>> findBetween(Date fromDate, Date toDate, boolean includeRemoved)
+	public synchronized List<Versioned<DiaryRecord>> findPeriod(Date startTime, Date endTime, boolean includeRemoved)
 			throws CommonServiceException
 	{
-		if (fromDate == null)
+		if (startTime == null)
 		{
-			throw new NullPointerException("fromDate is null");
+			throw new NullPointerException("startTime is null");
 		}
 
-		if (toDate == null)
+		if (endTime == null)
 		{
-			throw new NullPointerException("toDate is null");
+			throw new NullPointerException("endTime is null");
 		}
 
 		// construct parameters
@@ -139,13 +139,13 @@ public class DiaryLocalService implements DiaryService
 		{
 			clause = String.format("(%s >= ?) AND (%s <= ?)", DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
 					DiaryContentProvider.COLUMN_DIARY_TIMECACHE);
-			clauseArgs = new String[] { Utils.formatTimeUTC(fromDate), Utils.formatTimeUTC(toDate) };
+			clauseArgs = new String[] { Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime) };
 		}
 		else
 		{
 			clause = String.format("(%s >= ?) AND (%s <= ?) AND (%s = 0)", DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
 					DiaryContentProvider.COLUMN_DIARY_TIMECACHE, DiaryContentProvider.COLUMN_DIARY_DELETED);
-			clauseArgs = new String[] { Utils.formatTimeUTC(fromDate), Utils.formatTimeUTC(toDate) };
+			clauseArgs = new String[] { Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime) };
 		}
 
 		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
@@ -157,10 +157,10 @@ public class DiaryLocalService implements DiaryService
 		List<Versioned<DiaryRecord>> records = extractRecords(cursor);
 
 		Log.d(TAG, String.format("#DBF %d items found between %s and %s", records.size(),
-				Utils.formatTimeUTC(fromDate), Utils.formatTimeUTC(toDate)));
+				Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime)));
 
 		// detailed logging inside
-		Verifier.verifyRecords(records, fromDate, toDate);
+		Verifier.verifyRecords(records, startTime, endTime);
 
 		return records;
 	}
