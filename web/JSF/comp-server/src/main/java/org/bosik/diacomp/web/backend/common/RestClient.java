@@ -1,5 +1,6 @@
 package org.bosik.diacomp.web.backend.common;
 
+@Deprecated
 public class RestClient //implements Serializable
 {
 	//	private static final long		serialVersionUID	= 1L;
