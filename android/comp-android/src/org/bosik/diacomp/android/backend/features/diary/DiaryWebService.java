@@ -80,14 +80,14 @@ public class DiaryWebService implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> findBetween(Date fromTime, Date toTime, boolean includeRemoved)
+	public List<Versioned<DiaryRecord>> findPeriod(Date startTime, Date endTime, boolean includeRemoved)
 			throws CommonServiceException
 	{
 		try
 		{
 			String query = "api/diary/period/?";
-			query += "start_time=" + Utils.formatTimeUTC(fromTime);
-			query += "&end_time=" + Utils.formatTimeUTC(toTime);
+			query += "start_time=" + Utils.formatTimeUTC(startTime);
+			query += "&end_time=" + Utils.formatTimeUTC(endTime);
 			query += "&show_rem=" + Utils.formatBooleanStr(includeRemoved);
 
 			StdResponse resp = webClient.get(query);

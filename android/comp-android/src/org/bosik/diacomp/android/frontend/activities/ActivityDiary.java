@@ -555,7 +555,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		Date start = c.getTime();
 		Date end = Utils.getNextDay(start);
 
-		curRecords = diary.findBetween(start, end, false);
+		curRecords = diary.findPeriod(start, end, false);
 
 		if (!Verifier.verifyRecords(curRecords, start, end))
 		{
@@ -595,10 +595,10 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 	private BloodRecord lastBlood(long scanPeriod, Date since, boolean skipPostprandials)
 	{
 		// TODO: move this away from UI
-		Date toDate = since;
-		Date fromDate = new Date(toDate.getTime() - (scanPeriod * Utils.MsecPerSec));
+		Date endTime = since;
+		Date startTime = new Date(endTime.getTime() - (scanPeriod * Utils.MsecPerSec));
 
-		List<Versioned<DiaryRecord>> records = diary.findBetween(fromDate, toDate, false);
+		List<Versioned<DiaryRecord>> records = diary.findPeriod(startTime, endTime, false);
 		PostprandUtils.updatePostprand(records);
 		Collections.reverse(records);
 
@@ -629,12 +629,12 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 		// TODO: move this away from UI
 
-		Date fromDate = new Date(near.getTime() - (scanPeriod * Utils.MsecPerSec));
-		Date toDate = new Date(near.getTime() + (scanPeriod * Utils.MsecPerSec));
-		List<Versioned<DiaryRecord>> records = diary.findBetween(fromDate, toDate, false);
+		Date startTime = new Date(near.getTime() - (scanPeriod * Utils.MsecPerSec));
+		Date endTime = new Date(near.getTime() + (scanPeriod * Utils.MsecPerSec));
+		List<Versioned<DiaryRecord>> records = diary.findPeriod(startTime, endTime, false);
 
-		Log.d(TAG, "findInsulin(): fromDate = " + fromDate);
-		Log.d(TAG, "findInsulin(): toDate = " + toDate);
+		Log.d(TAG, "findInsulin(): startTime = " + startTime);
+		Log.d(TAG, "findInsulin(): endTime = " + endTime);
 		Log.d(TAG, "findInsulin(): items found: " + records.size());
 
 		long min = scanPeriod * Utils.MsecPerSec * 2;

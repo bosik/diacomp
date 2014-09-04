@@ -19,9 +19,9 @@ public class TestDiaryLocalServicePerformance extends AndroidTestCase
 
 		long start = System.currentTimeMillis();
 
-		Date fromTime = Utils.date(2014, 01, 01);
-		Date toTime = Utils.date(2014, 12, 31);
-		List<Versioned<DiaryRecord>> items = service.findBetween(fromTime, toTime, true);
+		Date startTime = Utils.date(2014, 01, 01);
+		Date endTime = Utils.date(2014, 12, 31);
+		List<Versioned<DiaryRecord>> items = service.findPeriod(startTime, endTime, true);
 
 		long time = System.currentTimeMillis() - start;
 		if (items.size() > 0)
