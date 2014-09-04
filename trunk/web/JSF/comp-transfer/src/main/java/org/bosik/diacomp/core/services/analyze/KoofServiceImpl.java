@@ -47,7 +47,7 @@ public class KoofServiceImpl implements KoofService
 	{
 		Date timeTo = new Date();
 		Date timeFrom = new Date(timeTo.getTime() - (analyzePeriod * Utils.MsecPerDay));
-		List<Versioned<DiaryRecord>> recs = diaryService.findBetween(timeFrom, timeTo, false);
+		List<Versioned<DiaryRecord>> recs = diaryService.findPeriod(timeFrom, timeTo, false);
 		koofs = analyzeCore.analyze(recs);
 	}
 

@@ -51,7 +51,7 @@ public class RelevantIndexator
 		// search for diary items
 
 		// T.C.: const (let M)
-		List<Versioned<DiaryRecord>> items = diary.findBetween(min, max, false);
+		List<Versioned<DiaryRecord>> items = diary.findPeriod(min, max, false);
 
 		System.out.println("Search for diary items: " + p.sinceLastCheck());
 

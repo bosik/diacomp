@@ -35,23 +35,22 @@ public class FrontendDiaryService implements DiaryService
 	@Override
 	public List<Versioned<DiaryRecord>> findChanged(Date since) throws CommonServiceException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		int userId = authService.getCurrentUserId();
+		return diaryDao.findChanged(userId, since);
 	}
 
 	@Override
 	public void save(List<Versioned<DiaryRecord>> items) throws CommonServiceException
 	{
-		// TODO Auto-generated method stub
-
+		int userId = authService.getCurrentUserId();
+		diaryDao.post(userId, items);
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> findBetween(Date fromTime, Date toTime, boolean includeRemoved)
+	public List<Versioned<DiaryRecord>> findPeriod(Date startTime, Date endTime, boolean includeRemoved)
 			throws CommonServiceException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		int userId = authService.getCurrentUserId();
+		return diaryDao.findPeriod(userId, startTime, endTime, includeRemoved);
 	}
-
 }

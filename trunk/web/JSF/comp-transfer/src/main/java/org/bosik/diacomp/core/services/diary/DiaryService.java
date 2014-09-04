@@ -17,12 +17,12 @@ public interface DiaryService extends ObjectService<DiaryRecord>
 	/**
 	 * Returns list of non-deleted records for the specified time interval
 	 *
-	 * @param fromTime
-	 * @param toTime
+	 * @param startTime
+	 * @param endTime
 	 * @param includeRemoved
 	 * @return
 	 * @throws CommonServiceException
 	 */
-	List<Versioned<DiaryRecord>> findBetween(Date fromTime, Date toTime, boolean includeRemoved)
+	List<Versioned<DiaryRecord>> findPeriod(Date startTime, Date endTime, boolean includeRemoved)
 			throws CommonServiceException;
 }

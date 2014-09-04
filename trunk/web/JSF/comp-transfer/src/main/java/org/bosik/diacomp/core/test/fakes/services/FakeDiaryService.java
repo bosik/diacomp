@@ -104,7 +104,7 @@ public class FakeDiaryService implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> findBetween(Date fromTime, Date toTime, boolean includeRemoved)
+	public List<Versioned<DiaryRecord>> findPeriod(Date startTime, Date endTime, boolean includeRemoved)
 			throws CommonServiceException
 	{
 		List<Versioned<DiaryRecord>> result = new ArrayList<Versioned<DiaryRecord>>();
@@ -113,7 +113,7 @@ public class FakeDiaryService implements DiaryService
 		{
 			Date time = item.getData().getTime();
 
-			if ((includeRemoved || !item.isDeleted()) && (time.after(fromTime) && time.before(toTime)))
+			if ((includeRemoved || !item.isDeleted()) && (time.after(startTime) && time.before(endTime)))
 			{
 				result.add(new Versioned<DiaryRecord>(item));
 			}
