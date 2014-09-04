@@ -1,6 +1,5 @@
 package org.bosik.diacomp.web.frontend.wicket.components.menu;
 
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -23,8 +22,6 @@ public class Menu extends GenericPanel<MenuContent>
 	protected void onInitialize()
 	{
 		super.onInitialize();
-
-		add(new AttributeModifier("class", "menu"));
 
 		RepeatingView menu = new RepeatingView("menuItem");
 		add(menu);
