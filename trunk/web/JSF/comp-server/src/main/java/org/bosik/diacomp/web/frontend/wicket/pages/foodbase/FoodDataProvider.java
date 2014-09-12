@@ -23,11 +23,21 @@ public class FoodDataProvider implements IDataProvider<Versioned<FoodItem>>
 	@Override
 	public Iterator<? extends Versioned<FoodItem>> iterator(long first, long count)
 	{
-		int iFirst = (int)first;
-		int iCount = (int)count;
-
 		List<Versioned<FoodItem>> items = foodService.findAll(false);
-		return items./* subList(iFirst, iFirst + iCount). */iterator();
+
+		int iFirst = (int)first;
+		int iLast = (int)(first + count);
+
+		if (first < 0)
+		{
+			first = 0;
+		}
+		if (iLast > items.size())
+		{
+			iLast = items.size();
+		}
+
+		return items.subList(iFirst, iLast).iterator();
 	}
 
 	@Override

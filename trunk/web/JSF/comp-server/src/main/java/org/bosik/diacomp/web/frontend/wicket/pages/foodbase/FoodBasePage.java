@@ -31,15 +31,6 @@ public class FoodBasePage extends MasterPage
 			foodBase.add(dp.model(it.next()));
 		}
 
-		//		Mock<FoodItem> mock = new MockFoodItem();
-		//		Mock<Versioned<FoodItem>> mockVersioned = new MockVersionedConverter<FoodItem>(mock);
-		//
-		//		for (Versioned<FoodItem> versioned : mockVersioned.getSamples())
-		//		{
-		//			DetachableFoodModel model = new DetachableFoodModel(versioned);
-		//			foodBase.add(model);
-		//		}
-
 		// create the refreshing view
 		RefreshingView<Versioned<FoodItem>> view = new RefreshingView<Versioned<FoodItem>>("view")
 		{
