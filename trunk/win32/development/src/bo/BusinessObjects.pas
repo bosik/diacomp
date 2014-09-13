@@ -57,7 +57,7 @@ type
     procedure SetName(const Value: string);
     procedure SetRel(Index: integer; const Value: real);
   public
-    procedure CopyFrom(Food: TVersioned); override;
+    procedure CopyFrom(Source: TVersioned); override;
     constructor Create;
     class function IsCorrectRel(const Value: real): boolean;
 
@@ -79,7 +79,7 @@ type
   public
     constructor Create; overload;
     constructor Create(const Name: string; const RelProts, RelFats, RelCarbs, RelValue, Mass: real); overload;
-    procedure CopyFrom(Food: TVersioned); override;
+    procedure CopyFrom(Source: TVersioned); override;
     class function IsCorrectMass(const Value: real): boolean;
 
     {*}procedure Read(const S: string);
@@ -101,7 +101,7 @@ type
     procedure SetFromTable(Value: boolean);
   public
     function AsFoodMassed(Mass: real): TFoodMassed;
-    procedure CopyFrom(Food: TVersioned); override;
+    procedure CopyFrom(Source: TVersioned); override;
     constructor Create;
 
     property FromTable: boolean read FFromTable write SetFromTable;
@@ -127,7 +127,7 @@ type
     function AsFoodMassed(Mass: real): TFoodMassed;
     function AsFoodRelative(): TFoodRelative;
     {#}procedure Clear();
-    procedure CopyFrom(Dish: TVersioned); override;
+    procedure CopyFrom(Source: TVersioned); override;
     function Count(): integer;
     constructor Create;
     {#}procedure Delete(Index: integer);
@@ -234,6 +234,13 @@ end;
 procedure TVersioned.CopyFrom(Source: TVersioned);
 {==============================================================================}
 begin
+  if (Source = nil) then
+    raise Exception.Create('CopyFrom(): Source is nil');
+
+  if not (Source is Self.ClassType) then
+    raise Exception.CreateFmt('CopyFrom(): Invalid source type. Expected: %s (or inherited), found: %s',
+      [Self.ClassName, Source.ClassName]);
+
   FID := Source.ID;
   FTimeStamp := Source.TimeStamp;
   FVersion := Source.Version;
@@ -277,22 +284,20 @@ end;
 { TFoodRelative }
 
 {==============================================================================}
-procedure TFoodRelative.CopyFrom(Food: TVersioned);
+procedure TFoodRelative.CopyFrom(Source: TVersioned);
 {==============================================================================}
 var
-  TypedFood: TFoodRelative;
+  FoodRelative: TFoodRelative;
 begin
-  if (Food = nil) then raise Exception.Create('TFoodRelative.CopyFrom(): Food is nil');
+  inherited CopyFrom(Source);
 
-  inherited CopyFrom(Food);
+  FoodRelative := Source as TFoodRelative;
 
-  TypedFood := Food as TFoodRelative;
-
-  Name     := TypedFood.Name;
-  RelProts := TypedFood.RelProts;
-  RelFats  := TypedFood.RelFats;
-  RelCarbs := TypedFood.RelCarbs;
-  RelValue := TypedFood.RelValue;
+  Name     := FoodRelative.Name;
+  RelProts := FoodRelative.RelProts;
+  RelFats  := FoodRelative.RelFats;
+  RelCarbs := FoodRelative.RelCarbs;
+  RelValue := FoodRelative.RelValue;
 end;
 
 {==============================================================================}
@@ -351,11 +356,15 @@ end;
 { TFoodMassed }
 
 {==============================================================================}
-procedure TFoodMassed.CopyFrom(Food: TVersioned);
+procedure TFoodMassed.CopyFrom(Source: TVersioned);
 {==============================================================================}
+var
+  FoodMassed: TFoodMassed;
 begin
-  inherited CopyFrom(Food);
-  Mass := TFoodMassed(Food).Mass;
+  inherited CopyFrom(Source);
+
+  FoodMassed := TFoodMassed(Source);
+  Mass := FoodMassed.Mass;
 end;
 
 {==============================================================================}
@@ -456,15 +465,16 @@ begin
 end;
 
 {==============================================================================}
-procedure TFoodItem.CopyFrom(Food: TVersioned);
+procedure TFoodItem.CopyFrom(Source: TVersioned);
 {==============================================================================}
+var
+  FoodItem: TFoodItem;
 begin
-  if (Food = nil) then raise Exception.Create('TFood.CopyFrom(): Food is nil');
+  inherited CopyFrom(Source);
 
-  inherited CopyFrom(Food);
-
-  FFromTable := TFoodItem(Food).FromTable;
-  FTag := TFoodItem(Food).Tag;
+  FoodItem := TFoodItem(Source);
+  FFromTable := FoodItem.FromTable;
+  FTag := FoodItem.Tag;
 end;
 
 {==============================================================================}
@@ -555,34 +565,32 @@ begin
 end;
 
 {==============================================================================}
-procedure TDishItem.CopyFrom(Dish: TVersioned);
+procedure TDishItem.CopyFrom(Source: TVersioned);
 {==============================================================================}
 var
   i: integer;
   Temp: TFoodMassed;
-  TypedDish: TDishItem;
+  DishItem: TDishItem;
 begin
-  if (Dish = nil) then raise Exception.Create('TDish.CopyFrom(): Dish is nil');
+  inherited CopyFrom(Source);
 
-  inherited CopyFrom(Dish);
+  DishItem := TDishItem(Source);
 
-  TypedDish := Dish as TDishItem;
+  Name := DishItem.Name;
+  Tag := DishItem.Tag;
+  FID := DishItem.ID;
 
-  Name := TypedDish.Name;
-  Tag := TypedDish.Tag;
-  FID := TypedDish.ID;
-
-  if TypedDish.FixedMass then
-    SetResultMass(TypedDish.RealMass)
+  if DishItem.FixedMass then
+    SetResultMass(DishItem.RealMass)
   else
-    EraseResultMass;
+    EraseResultMass();
 
   Clear;
-  for i := 0 to TypedDish.Count - 1 do
+  for i := 0 to DishItem.Count - 1 do
   begin
     { разрываем связку (копируем) }
     Temp := TFoodMassed.Create;
-    Temp.CopyFrom(TypedDish.Content[i]);
+    Temp.CopyFrom(DishItem.Content[i]);
     Add(Temp);
   end;
 end;

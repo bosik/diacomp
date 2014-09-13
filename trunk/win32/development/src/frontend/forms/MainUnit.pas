@@ -1066,8 +1066,14 @@ end;
 {==============================================================================}
 procedure TForm1.FullFree;
 {==============================================================================}
+var
+  i: integer;
 begin
-
+  for i := 0 to High(DiaryMultiMap) do
+  begin
+    DiaryMultiMap[i].Data.Free;
+    DiaryMultiMap[i].Free;
+  end;
 end;
 
 {==============================================================================}
@@ -1439,7 +1445,9 @@ var
     for i := 0 to High(FoodList) do
     begin
       Map[i] := TMealItem.Create;
-      Map[i].CopyFrom(FoodList[i]);
+
+      Map[i].Data := TFoodRelative.Create();
+      Map[i].Data.CopyFrom(FoodList[i]);
       Map[i].Help1 := '';
       Map[i].Help2 := Format('  %.1f', [FoodList[i].RelCarbs]);
       Map[i].Icon := Byte(FoodList[i].FromTable);
@@ -1449,7 +1457,9 @@ var
     for i := 0 to High(DishList) do
     begin
       Map[Offset + i] := TMealItem.Create;
-      Map[Offset + i].CopyFrom(DishList[i].AsFoodRelative());
+
+      Map[Offset + i].Data := TFoodRelative.Create();
+      Map[Offset + i].Data.CopyFrom(DishList[i].AsFoodRelative());
       Map[Offset + i].Help1 := FormatDate(DishList[i].TimeStamp);
       Map[Offset + i].Help2 := Format('  %.1f', [DishList[i].RelCarbs]);
       Map[Offset + i].Icon := 2;
@@ -1463,7 +1473,7 @@ var
     if (abs(Item1.Tag - Item2.Tag) > EPS) then
       Result := (Item1.Tag < Item2.Tag)
     else
-      Result := (Item1.Name > Item2.Name);
+      Result := (Item1.Data.Name > Item2.Data.Name);
   end;
 
   procedure qsort(var Map: TMultiMap; l,r: integer);
@@ -1501,7 +1511,7 @@ var
     i: integer;
   begin
     for i := 0 to High(Map) do
-    if (Map[i].Name = ItemName) then
+    if (Map[i].Data.Name = ItemName) then
     begin
       Map[i].Tag := Map[i].Tag + Tag;
       Exit;
@@ -1578,7 +1588,7 @@ var
       { Temp: копируем теги в базы }
       for i := 0 to High(DiaryMultiMap) do
       begin
-        Food := FoodBaseLocal.FindOne(DiaryMultiMap[i].Name);
+        Food := FoodBaseLocal.FindOne(DiaryMultiMap[i].Data.Name);
         if (Food <> nil) then
         begin
           Food.Tag := Round(DiaryMultiMap[i].Tag);
@@ -1586,7 +1596,7 @@ var
           Continue;
         end;
 
-        Dish := DishBaseLocal.FindOne(DiaryMultiMap[i].Name);
+        Dish := DishBaseLocal.FindOne(DiaryMultiMap[i].Data.Name);
         if (Dish <> nil) then
         begin
           Dish.Tag := Round(DiaryMultiMap[i].Tag);
@@ -1649,7 +1659,7 @@ var
     begin
       Clear;
       for i := 0 to High(Map) do
-        Add(Map[i].Name);
+        Add(Map[i].Data.Name);
     end;
   end;
 

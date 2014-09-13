@@ -26,13 +26,15 @@ uses
 
 type
   // продуктоблюдо
-  TMealItem = class (TFoodRelative)
+  TMealItem = class
   private
+    FData: TFoodRelative;
     FIcon: integer;
     FHelp1: string;
     FHelp2: string;
     FTag: Real;
   public
+    property Data: TFoodRelative read FData write FData;
     property Help1: string read FHelp1 write FHelp1;
     property Help2: string read FHelp2 write FHelp2;
     property Icon: integer read FIcon write FIcon;
@@ -548,7 +550,7 @@ var
 begin
   GetColors(Item.Tag, Selected, FontColor, BrushColor);
 
-  Caption := Item.Name;
+  Caption := Item.Data.Name;
   IconIndex := Item.Icon;
   if (ShowHelpInfo) then
   begin

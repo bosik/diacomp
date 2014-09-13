@@ -13,6 +13,7 @@ uses
   Grids, ValEdit, ComCtrls, Menus,
   DiaryInterface, BusinessObjects, DiaryRoutines,
   ShellApi, ActnPopupCtrl, ACCombo,
+  AutoLog,
 
   DiaryCore, Bases, UnitShadow, UnitDataInterface, DiaryView;
   
@@ -71,7 +72,6 @@ type
     procedure Item_SaveClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure ResetTabStop(Sender: TObject);
-    procedure ButtonAddDish_Click(Sender: TObject);
     procedure Item_RemoveClick(Sender: TObject);
     procedure Item_ChangeMassClick(Sender: TObject);
     procedure TableDishContentMouseDown(Sender: TObject;
@@ -116,10 +116,7 @@ var
   
 const
   SAVE_CAPTION: array[Boolean] of string = ('Сохранить','Создать');
-  AddHint: array[Boolean] of string = ('Сначала выберите продукт и введите массу', 'Добавить указанный продукт (Enter)');
-  RepHint: array[Boolean] of string = ('Сначала выберите продукт и введите массу', 'Заменить указанный продукт (Ctrl+Enter)');
-  RemHint: array[Boolean] of string = ('Сначала выберите продукт', 'Удалить указанный продукт (Delete)');
-  CAPTION_NO_REAL_MASS = 'Указать массу ГБ'; //'<Масса ГБ не указана>';
+  CAPTION_NO_REAL_MASS = 'Указать массу ГБ';
   CALC_PATH = 'C:\WINDOWS\system32\Calc.exe';
   
 implementation
@@ -136,9 +133,9 @@ var
 
 { TFormEditDish }
 
-{==============================================================================}
+{======================================================================================================================}
 function TFormDish.OpenDishEditor(var Dish: TDishItem; New: boolean; ShowInRect: TRect): boolean;
-{==============================================================================}
+{======================================================================================================================}
 begin
   { установка размеров окна }
   SetupInterface;
@@ -183,11 +180,20 @@ begin
   Shadow(false);
 
   { возвращаем результат }
+
+  Log(DEBUG, 'Dish editor has been closed');
+
   Result := OK;
   if OK then
+  begin
+    Log(DEBUG, 'Copying dish info...');
     Dish.CopyFrom(ADish);
+    Log(DEBUG, 'Dish info copied OK');
+  end;
 
+  Log(DEBUG, 'ADish.Free() in progress...');
   ADish.Free;
+  Log(DEBUG, 'ADish.Free() done');
 end;
 
 {==============================================================================}
@@ -688,62 +694,50 @@ begin
     Item.ImageIndex := 3;
 end;
 
+{======================================================================================================================}
 function TFormDish.ReadAttributes(): boolean;
+{======================================================================================================================}
 begin
-  Result := False;
-  EditName.Text := Trim(EditName.Text);
+  Log(DEBUG, 'TFormDish.ReadAttributes()');
 
-  if EditName.Text = '' then
+  Log(VERBOUS, 'TFormDish.ReadAttributes(): reading name...');
+
+  Result := False;
+
+  EditName.Text := Trim(EditName.Text);
+  if (EditName.Text = '') then
   begin
     ErrorMessage('Введите название блюда');
     EditName.SetFocus;
-    exit;
+    Exit;
   end;
 
   EditName.Text := UppercaseFirst(EditName.Text);
+
+  Log(VERBOUS, 'TFormDish.ReadAttributes(): checking the uniqueness VS food base...');
 
   if (FoodBaseLocal.FindOne(EditName.Text) <> nil) then
   begin
     ErrorMessage('Продукт с таким названием уже существует');
     EditName.SetFocus;
-  end else
-  if (ModeNew or (EditName.Text <> ADish.Name))and
-     (DishBaseLocal.FindOne(EditName.Text{, True}) <> nil) then
+    Exit;
+  end;
+
+  Log(VERBOUS, 'TFormDish.ReadAttributes(): checking the uniqueness VS dish base...');
+
+  if (ModeNew or (EditName.Text <> ADish.Name)) and
+     (DishBaseLocal.FindOne(EditName.Text) <> nil) then
   begin
     ErrorMessage('Блюдо с таким названием уже существует');
     EditName.SetFocus;
-  end else
-
-  {if (CheckFixedMass.Checked)and(Trim(EditResultMass.Text)='')then
-  begin
-    ErrorMessage('Введите массу готового блюда');
-    EditResultMass.SetFocus;
-  end else
-  if (CheckFixedMass.Checked)and
-     ((not TryStrToFloat(CheckDot(EditResultMass.Text),Mass))or
-     (Mass<=0)) then
-  begin
-    ErrorMessage(
-      'Неверная масса готового блюда'+#13+
-      '(должна быть больше нуля)');
-    EditResultMass.SetFocus;
-  end else
-  if (CheckFixedMass.Checked)and(ADish.SummMass = Mass)and
-     (MessageDlg('Масса готового блюда совпадает с суммой масс его компонентов. Продолжить?',
-      mtConfirmation, [mbYes, mbNo], 0) = mrNo )then
-  begin
-    EditResultMass.SetFocus;
-  end else }
-  begin
-    ADish.Name := EditName.Text;
-    {if CheckFixedMass.Checked then
-      ADish.ResultMass := Mass
-    else
-      ADish.EraseResultMass;   }
-
-    Result := true;
-    Modified := false;
+    Exit;
   end;
+
+  Log(VERBOUS, 'TFormDish.ReadAttributes(): uniqueness approved, updating dish name');
+
+  ADish.Name := EditName.Text;
+  Result := True;
+  Modified := False;
 end;
 
 {==============================================================================}
@@ -774,13 +768,6 @@ procedure TFormDish.ResetTabStop(Sender: TObject);
 {==============================================================================}
 begin
   TWinControl(Sender).TabStop := false;
-end;
-
-{==============================================================================}
-procedure TFormDish.ButtonAddDish_Click(Sender: TObject);
-{==============================================================================}
-begin
-  //AddDish;
 end;
 
 {==============================================================================}
