@@ -18,7 +18,9 @@ public class MySQLAccess
 	private static final String	USERNAME					= "root";
 	private static final String	PASSWORD					= "root";
 	private static final String	connectionString			= String.format(
-																	"jdbc:mysql://127.0.0.1:3306/%s?user=%s&password=%s&autoReconnect=true&failOverReadOnly=false&maxReconnects=10",
+																	"jdbc:mysql://127.0.0.1:3306/%s?user=%s&password=%s"
+																			+ "&autoReconnect=true&failOverReadOnly=false&maxReconnects=10"
+																			+ "&useUnicode=true&characterEncoding=UTF8",
 																	SCHEMA, USERNAME, PASSWORD);
 
 	// ======================================= User table =======================================
@@ -166,6 +168,7 @@ public class MySQLAccess
 			{
 				// statement.setString(i++, entry.getKey());
 				preparedStatement.setString(i++, entry.getValue());
+				System.out.println("UPDATE: " + entry.getKey() + " = " + entry.getValue());
 			}
 
 			for (Entry<String, String> entry : where.entrySet())
