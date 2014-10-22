@@ -41,14 +41,14 @@ public class Storage
 {
 	// FIXME: don't refer to ActivityPreferences here
 
-	private static final String		TAG					= Storage.class.getSimpleName();
+	static final String				TAG					= Storage.class.getSimpleName();
 
 	private static final int		CONNECTION_TIMEOUT	= 6000;
 
 	private static boolean			timerSettedUp		= false;
-	private static Date				sinceDiary			= Utils.time(2014, 05, 1, 0, 0, 0);
-	private static Date				sinceFoodbase		= Utils.time(2014, 05, 1, 0, 0, 0);
-	private static Date				sinceDishbase		= Utils.time(2014, 05, 1, 0, 0, 0);
+	private static Date				sinceDiary			= Utils.time(2014, 9, 1, 0, 0, 0);
+	private static Date				sinceFoodbase		= Utils.time(2001, 9, 1, 0, 0, 0);
+	private static Date				sinceDishbase		= Utils.time(2001, 9, 1, 0, 0, 0);
 
 	// DAO
 
@@ -141,7 +141,7 @@ public class Storage
 		applyPreference(preferences, null);
 
 		// runBackgrounds();
-		setupSyncTimer(20 * 60 * 1000);
+		setupSyncTimer(10 * 60 * 1000);
 	}
 
 	public static void runBackgrounds()
@@ -152,11 +152,17 @@ public class Storage
 			protected Void doInBackground(Void... arg0)
 			{
 				// FIXME
-				// syncDiary();
-				// syncFoodbase();
-				// syncDishbase();
+
+				long time = System.currentTimeMillis();
+
+				syncDiary();
+				syncFoodbase();
+				syncDishbase();
 				relevantIndexation();
 				analyzeKoofs();
+
+				time = System.currentTimeMillis() - time;
+				Log.d(TAG, "Backgrounds done in " + time + " msec");
 
 				return null;
 			}
@@ -190,8 +196,8 @@ public class Storage
 		};
 
 		Timer timer = new Timer();
-		// timer.scheduleAtFixedRate(task, 0, interval);
-		timer.schedule(task, 2000);
+		timer.scheduleAtFixedRate(task, 2000, interval);
+		// timer.schedule(task, 2000);
 	}
 
 	public static Integer syncDiary()
@@ -217,6 +223,9 @@ public class Storage
 	{
 		try
 		{
+			// the hack
+			sinceFoodbase = Utils.time(2001, 9, 1, 0, 0, 0);
+
 			Log.v(TAG, "Foodbase sync...");
 			long time = System.currentTimeMillis();
 			int syncFoodItemsCount = SyncService.synchronize(Storage.localFoodBase, Storage.webFoodBase, sinceFoodbase);
@@ -236,6 +245,9 @@ public class Storage
 	{
 		try
 		{
+			// the hack
+			sinceDishbase = Utils.time(2001, 9, 1, 0, 0, 0);
+
 			Log.v(TAG, "Dishbase sync...");
 			long time = System.currentTimeMillis();
 			int syncDishItemsCount = SyncService.synchronize(Storage.localDishBase, Storage.webDishBase, sinceDishbase);
