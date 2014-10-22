@@ -111,7 +111,7 @@ public class DiaryWebService implements DiaryService
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair("items", items));
 
-			webClient.put(query, params, WebClient.CODEPAGE_UTF8);
+			webClient.put(query, params);
 		}
 		catch (Exception e)
 		{

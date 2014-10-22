@@ -137,7 +137,7 @@ public class DishBaseWebService implements DishBaseService
 		{
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair("items", serializer.writeAll(items)));
-			webClient.put(url, params, WebClient.CODEPAGE_UTF8);
+			webClient.put(url, params);
 		}
 		catch (Exception e)
 		{

@@ -23,7 +23,6 @@ import org.bosik.diacomp.android.backend.common.webclient.exceptions.ConnectionE
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.ResponseFormatException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.TaskExecutionException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFieldException;
-import org.bosik.diacomp.android.backend.common.webclient.exceptions.WebClientException;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
@@ -39,27 +38,22 @@ public class WebClient
 {
 	private static String		TAG					= WebClient.class.getSimpleName();
 
-	/* ================ КОНСТАНТЫ ================ */
+	/* ================ CONSTS ================ */
 
 	private static final int	API_VERSION			= 20;
-	// TODO: verify if this codepage is necessary
-	public static final String	CODEPAGE_CP1251		= "Cp1251";
-	public static final String	CODEPAGE_UTF8		= "UTF-8";
-
+	private static final String	ENCODING_UTF8		= "UTF-8";
 	private static final String	CODE_SPACE			= "%20";
-
-	/* ================ ПОЛЯ ================ */
-
-	private HttpClient			mHttpClient			= null;
-	private String				username			= "";								// not
-																						// null!
-	private String				password			= "";
-	private String				server				= "";
-
-	private final long			lastRequestTime		= 0;
 	private static final long	MIN_REQUEST_DELAY	= 200;
 
-	/* ================================ ЗАПРОСЫ ================================ */
+	/* ================ FIELDS ================ */
+
+	private HttpClient			mHttpClient			= null;
+	private String				username;
+	private String				password;
+	private String				server;
+	private final long			lastRequestTime		= 0;
+
+	/* ================================ ROUTINES ================================ */
 
 	/**
 	 * Преобразует ответ сервера в строку
@@ -67,9 +61,8 @@ public class WebClient
 	 * @param resp
 	 *            Ответ сервера
 	 * @return Строка
-	 * @throws ResponseFormatException
 	 */
-	private static String formatResponse(HttpResponse resp, String codePage) throws ResponseFormatException
+	private static String formatResponse(HttpResponse resp, String encoding)
 	{
 		if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
 		{
@@ -83,7 +76,7 @@ public class WebClient
 
 		try
 		{
-			return EntityUtils.toString(resp.getEntity(), codePage);
+			return EntityUtils.toString(resp.getEntity(), encoding);
 		}
 		catch (IOException e)
 		{
@@ -104,24 +97,23 @@ public class WebClient
 	}
 
 	/**
-	 * Выполняет get-запрос
+	 * Performs GET request
 	 * 
 	 * @param url
-	 *            Запрашиваемый адрес
-	 * @return Ответ сервера
-	 * @throws ConnectionException
+	 * @return
 	 */
-	private String doGet(String url, String codePage) throws WebClientException
+	private String doGet(String url, String encoding)
 	{
 		checkTimeout();
 
-		// Log.i(TAG(), "doGet(), URL='" + URL + "'");
+		Log.d(TAG, "GET " + url);
+
 		try
 		{
 			url = server + url;
 			// TODO: check if %20 replacement is necessary
 			HttpResponse resp = mHttpClient.execute(new HttpGet(url.replace(" ", CODE_SPACE)));
-			String responseContent = formatResponse(resp, codePage);
+			String responseContent = formatResponse(resp, encoding);
 
 			return responseContent;
 		}
@@ -132,28 +124,27 @@ public class WebClient
 	}
 
 	/**
-	 * Выполняет post-запрос
+	 * Performs POST request
 	 * 
 	 * @param url
-	 *            Запрашиваемый адрес
 	 * @param params
-	 *            Параметры
-	 * @return Ответ сервера
-	 * @throws ConnectionException
+	 * @return
 	 */
-	private String doPost(String url, List<NameValuePair> params, String codePage) throws WebClientException
+	private String doPost(String url, List<NameValuePair> params, String encoding)
 	{
 		checkTimeout();
 
+		Log.d(TAG, "POST " + url);
+
 		try
 		{
-			HttpEntity entity = new UrlEncodedFormEntity(params, codePage);
+			HttpEntity entity = new UrlEncodedFormEntity(params, encoding);
 			HttpPost post = new HttpPost(server + url.replace(" ", CODE_SPACE));
 			post.addHeader(entity.getContentType());
 			post.setEntity(entity);
 			HttpResponse resp = mHttpClient.execute(post);
 
-			return formatResponse(resp, codePage);
+			return formatResponse(resp, encoding);
 		}
 		catch (IOException e)
 		{
@@ -161,19 +152,29 @@ public class WebClient
 		}
 	}
 
-	private String doPut(String url, List<NameValuePair> params, String codePage) throws WebClientException
+	/**
+	 * Performs PUT request
+	 * 
+	 * @param url
+	 * @param params
+	 * @param encoding
+	 * @return
+	 */
+	private String doPut(String url, List<NameValuePair> params, String encoding)
 	{
 		checkTimeout();
 
+		Log.d(TAG, "PUT " + url);
+
 		try
 		{
-			HttpEntity entity = new UrlEncodedFormEntity(params, codePage);
+			HttpEntity entity = new UrlEncodedFormEntity(params, encoding);
 			HttpPut put = new HttpPut(server + url.replace(" ", CODE_SPACE));
 			put.addHeader(entity.getContentType());
 			put.setEntity(entity);
 			HttpResponse resp = mHttpClient.execute(put);
 
-			return formatResponse(resp, codePage);
+			return formatResponse(resp, encoding);
 		}
 		catch (IOException e)
 		{
@@ -181,67 +182,12 @@ public class WebClient
 		}
 	}
 
-	public StdResponse get(String URL, String codePage) throws WebClientException
-	{
-		String s = doGet(URL, codePage);
-		StdResponse resp = new StdResponse(s);
-
-		if (resp.getCode() == ResponseBuilder.CODE_UNAUTHORIZED)
-		{
-			login();
-			s = doGet(URL, codePage);
-			resp = new StdResponse(s);
-		}
-
-		checkResponse(resp);
-		return resp;
-	}
-
 	/**
-	 * Uses UTF-8 encoding by default
+	 * Checks the response code and throws exception if need
 	 * 
-	 * @param URL
-	 * @return
-	 * @throws WebClientException
+	 * @param resp
 	 */
-	public StdResponse get(String URL) throws WebClientException
-	{
-		return get(URL, CODEPAGE_UTF8);
-	}
-
-	public StdResponse post(String URL, List<NameValuePair> params, String codePage) throws WebClientException
-	{
-		String s = doPost(URL, params, codePage);
-		StdResponse resp = new StdResponse(s);
-
-		if (resp.getCode() == ResponseBuilder.CODE_UNAUTHORIZED)
-		{
-			login();
-			s = doPost(URL, params, codePage);
-			resp = new StdResponse(s);
-		}
-
-		checkResponse(resp);
-		return resp;
-	}
-
-	public StdResponse put(String URL, List<NameValuePair> params, String codePage) throws WebClientException
-	{
-		String s = doPut(URL, params, codePage);
-		StdResponse resp = new StdResponse(s);
-
-		if (resp.getCode() == ResponseBuilder.CODE_UNAUTHORIZED)
-		{
-			login();
-			s = doPut(URL, params, codePage);
-			resp = new StdResponse(s);
-		}
-
-		checkResponse(resp);
-		return resp;
-	}
-
-	private static void checkResponse(StdResponse resp) throws CommonServiceException
+	private static void checkResponse(StdResponse resp)
 	{
 		switch (resp.getCode())
 		{
@@ -262,7 +208,7 @@ public class WebClient
 		}
 	}
 
-	/* ================================ КОНСТРУКТОР ================================ */
+	/* ================================ CONSTRUCTOR ================================ */
 
 	public WebClient(int connectionTimeout)
 	{
@@ -282,10 +228,7 @@ public class WebClient
 
 	public void setUsername(String username)
 	{
-		if (!this.username.equals(username))
-		{
-			this.username = username;
-		}
+		this.username = username;
 	}
 
 	public String getPassword()
@@ -295,10 +238,7 @@ public class WebClient
 
 	public void setPassword(String password)
 	{
-		if (!this.password.equals(password))
-		{
-			this.password = password;
-		}
+		this.password = password;
 	}
 
 	public String getServer()
@@ -318,17 +258,119 @@ public class WebClient
 			server = server + "/";
 		}
 
-		if (!this.server.equals(server))
-		{
-			this.server = server;
-		}
+		this.server = server;
 	}
 
 	/* ================================ API ================================ */
 
-	/* ---------------------------------- ОБЩЕЕ ---------------------------------- */
+	/**
+	 * Performs authenticated GET request
+	 * 
+	 * @param url
+	 * @param encoding
+	 * @return
+	 */
+	public StdResponse get(String url, String encoding)
+	{
+		String s = doGet(url, encoding);
+		StdResponse resp = new StdResponse(s);
 
-	public void login() throws WebClientException
+		if (resp.getCode() == ResponseBuilder.CODE_UNAUTHORIZED)
+		{
+			login();
+			s = doGet(url, encoding);
+			resp = new StdResponse(s);
+		}
+
+		checkResponse(resp);
+		return resp;
+	}
+
+	/**
+	 * Performs authenticated GET request. Uses default UTF-8 encoding
+	 * 
+	 * @param URL
+	 * @return
+	 */
+	public StdResponse get(String URL)
+	{
+		return get(URL, ENCODING_UTF8);
+	}
+
+	/**
+	 * Performs authenticated POST request
+	 * 
+	 * @param URL
+	 * @param params
+	 * @param encoding
+	 * @return
+	 */
+	public StdResponse post(String URL, List<NameValuePair> params, String encoding)
+	{
+		String s = doPost(URL, params, encoding);
+		StdResponse resp = new StdResponse(s);
+
+		if (resp.getCode() == ResponseBuilder.CODE_UNAUTHORIZED)
+		{
+			login();
+			s = doPost(URL, params, encoding);
+			resp = new StdResponse(s);
+		}
+
+		checkResponse(resp);
+		return resp;
+	}
+
+	/**
+	 * Performs authenticated POST request. Uses default UTF-8 encoding
+	 * 
+	 * @param URL
+	 * @param params
+	 * @return
+	 */
+	public StdResponse post(String URL, List<NameValuePair> params)
+	{
+		return post(URL, params, ENCODING_UTF8);
+	}
+
+	/**
+	 * Performs authenticated PUT request
+	 * 
+	 * @param URL
+	 * @param params
+	 * @param encoding
+	 * @return
+	 */
+	public StdResponse put(String URL, List<NameValuePair> params, String encoding)
+	{
+		String s = doPut(URL, params, encoding);
+		StdResponse resp = new StdResponse(s);
+
+		if (resp.getCode() == ResponseBuilder.CODE_UNAUTHORIZED)
+		{
+			login();
+			s = doPut(URL, params, encoding);
+			resp = new StdResponse(s);
+		}
+
+		checkResponse(resp);
+		return resp;
+	}
+
+	/**
+	 * Performs authenticated PUT request. Uses default UTF-8 encoding
+	 * 
+	 * @param URL
+	 * @param params
+	 * @param codePage
+	 * @return
+	 */
+	public StdResponse put(String URL, List<NameValuePair> params)
+	{
+		return put(URL, params, ENCODING_UTF8);
+	}
+
+	public void login()
 	{
 		// проверки
 
@@ -359,7 +401,7 @@ public class WebClient
 
 		// отправляем
 
-		String resp = doPost("api/auth/login/", p, CODEPAGE_UTF8);
+		String resp = doPost("api/auth/login/", p, ENCODING_UTF8);
 
 		if (resp != null)
 		{
