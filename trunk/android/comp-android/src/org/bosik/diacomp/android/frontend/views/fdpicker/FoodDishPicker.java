@@ -21,70 +21,176 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+enum ItemType
+{
+	FOOD, DISH
+}
+
+class Item implements Comparable<Item>
+{
+	private final ItemType				type;
+	private final NamedRelativeTagged	data;
+
+	public Item(FoodItem food)
+	{
+		this.type = ItemType.FOOD;
+		this.data = food;
+	}
+
+	public Item(DishItem dish)
+	{
+		this.type = ItemType.DISH;
+		this.data = dish;
+	}
+
+	public ItemType getType()
+	{
+		return type;
+	}
+
+	public String getCaption()
+	{
+		return data.getName();
+	}
+
+	public NamedRelativeTagged getData()
+	{
+		return data;
+	}
+
+	@Override
+	public int compareTo(Item rhs)
+	{
+		if (getData().getTag() == rhs.getData().getTag())
+		{
+			return getData().getName().compareTo(rhs.getData().getName());
+		}
+		else
+		{
+			return rhs.getData().getTag() - getData().getTag();
+		}
+	}
+}
+
+class ItemAdapter extends ArrayAdapter<Item>
+{
+	List<Item>			itemsAll;
+	List<Item>			suggestions;
+	private int			viewResourceId;
+
+	public ItemAdapter(Context context, int viewResourceId, List<Item> items)
+	{
+		super(context, viewResourceId, items);
+
+		this.itemsAll = new ArrayList<Item>();
+		itemsAll.addAll(items);
+		this.suggestions = new ArrayList<Item>();
+		this.viewResourceId = viewResourceId;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent)
+	{
+		View v = convertView;
+		if (v == null)
+		{
+			LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			v = vi.inflate(viewResourceId, null);
+		}
+
+		if (position < suggestions.size())
+		{
+			Item item = suggestions.get(position);
+
+			TextView itemCaption = (TextView) v.findViewById(R.id.itemDescription);
+			itemCaption.setText(item.getCaption());
+
+			ImageView itemIcon = (ImageView) v.findViewById(R.id.itemIcon);
+
+			int iconResId = FoodDishPicker.iconMap.get(item.getType());
+			itemIcon.setImageResource(iconResId);
+		}
+		return v;
+	}
+
+	@Override
+	public Filter getFilter()
+	{
+		return filter;
+	}
+
+	Filter	filter	= new Filter()
+					{
+						@Override
+						public String convertResultToString(Object resultValue)
+						{
+							String str = ((Item) resultValue).getCaption();
+							return str;
+						}
+
+						@Override
+						protected FilterResults performFiltering(CharSequence constraint)
+						{
+							if (constraint != null)
+							{
+								suggestions.clear();
+								for (Item item : itemsAll)
+								{
+									if (item.getCaption().toLowerCase().contains(constraint.toString().toLowerCase()))
+									{
+										suggestions.add(item);
+									}
+								}
+								FilterResults filterResults = new FilterResults();
+								filterResults.values = suggestions;
+								filterResults.count = suggestions.size();
+
+								return filterResults;
+							}
+							else
+							{
+								return new FilterResults();
+							}
+						}
+
+						@Override
+						protected void publishResults(CharSequence constraint, FilterResults results)
+						{
+							clear();
+
+							if (results != null && results.values != null)
+							{
+								@SuppressWarnings("unchecked")
+								List<Item> filteredList = (List<Item>) results.values;
+								addAll(filteredList);
+							}
+
+							notifyDataSetChanged();
+						}
+					};
+
+}
+
+/**
+ * Composite component: autocomplete box + mass input + submit button
+ * 
+ * @author Bosik
+ * 
+ */
 public class FoodDishPicker extends LinearLayout
 {
-	// ===================================== CLASSES ======================================
-
-	public enum ItemType
-	{
-		FOOD, DISH
-	}
-
-	public static class Item implements Comparable<Item>
-	{
-		private final ItemType				type;
-		private final NamedRelativeTagged	data;
-
-		public Item(FoodItem food)
-		{
-			this.type = ItemType.FOOD;
-			this.data = food;
-		}
-
-		public Item(DishItem dish)
-		{
-			this.type = ItemType.DISH;
-			this.data = dish;
-		}
-
-		public ItemType getType()
-		{
-			return type;
-		}
-
-		public String getCaption()
-		{
-			return data.getName();
-		}
-
-		public NamedRelativeTagged getData()
-		{
-			return data;
-		}
-
-		@Override
-		public int compareTo(Item rhs)
-		{
-			if (getData().getTag() == rhs.getData().getTag())
-			{
-				return getData().getName().compareTo(rhs.getData().getName());
-			}
-			else
-			{
-				return rhs.getData().getTag() - getData().getTag();
-			}
-		}
-	}
-
 	// ===================================== CALLBACKS ======================================
 
 	public interface OnSubmitListener
@@ -110,12 +216,13 @@ public class FoodDishPicker extends LinearLayout
 
 	private OnSubmitListener					onSubmit;
 
-	private static final Map<ItemType, String>	iconMap	= new HashMap<ItemType, String>();
+	public static final Map<ItemType, Integer>	iconMap	= new HashMap<ItemType, Integer>();
+	static
 	{
 		iconMap.clear();
 		// FIXME: use separated resources
-		iconMap.put(ItemType.FOOD, Integer.toString(R.drawable.button_foodbase));
-		iconMap.put(ItemType.DISH, Integer.toString(R.drawable.button_dishbase));
+		iconMap.put(ItemType.FOOD, R.drawable.button_foodbase);
+		iconMap.put(ItemType.DISH, R.drawable.button_dishbase);
 	}
 
 	// ===================================== METHODS ======================================
@@ -154,11 +261,6 @@ public class FoodDishPicker extends LinearLayout
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id)
 				{
-					@SuppressWarnings("unchecked")
-					HashMap<String, String> hm = (HashMap<String, String>) arg0.getAdapter().getItem(position);
-					String caption = hm.get(FoodDishTextView.FIELD_CAPTION);
-					System.out.println("Clicked item: " + caption);
-
 					editMass.requestFocus();
 				}
 			});
@@ -237,26 +339,8 @@ public class FoodDishPicker extends LinearLayout
 
 	public void setData(List<Item> data)
 	{
-		List<HashMap<String, String>> aList = new ArrayList<HashMap<String, String>>();
-
-		for (Item item : data)
-		{
-			HashMap<String, String> hm = new HashMap<String, String>();
-
-			hm.put(FoodDishTextView.FIELD_ICON, iconMap.get(item.getType()));
-			hm.put(FoodDishTextView.FIELD_CAPTION, item.getCaption());
-
-			aList.add(hm);
-		}
-
-		// Keys used in Hashmap
-		String[] from = { FoodDishTextView.FIELD_ICON, FoodDishTextView.FIELD_CAPTION };
-
-		// Ids of views in layout
-		// TODO: rename R.id.*
-		int[] to = { R.id.itemIcon, R.id.itemDescription };
-
-		editName.setAdapter(new SimpleAdapter(getContext(), aList, R.layout.view_iconed_line, from, to));
+		ItemAdapter adapter = new ItemAdapter(getContext(), R.layout.view_iconed_line, data);
+		editName.setAdapter(adapter);
 	}
 
 	public void focusName()
@@ -301,9 +385,9 @@ public class FoodDishPicker extends LinearLayout
 			return;
 		}
 
-		if (FoodDishPicker.this.onSubmit != null)
+		if (onSubmit != null)
 		{
-			if (FoodDishPicker.this.onSubmit.onSubmit(name, mass))
+			if (onSubmit.onSubmit(name, mass))
 			{
 				editMass.setText("");
 				editName.setText("");
