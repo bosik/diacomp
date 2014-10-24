@@ -288,6 +288,16 @@ public class TestUtils extends TestCase
 		assertEquals(-16.0, Utils.parseExpression("2*3+4*5-6*7"), Utils.EPS);
 	}
 
+	public void test_hasWordStartedWith()
+	{
+		assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", ""));
+		assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "в"));
+		assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "вкус"));
+		assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "вкусНоТеЕвО"));
+		assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "моло"));
+		assertFalse(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "сыр"));
+	}
+
 	// public void testTimeToStr()
 	// {
 	// // нормальный тест
