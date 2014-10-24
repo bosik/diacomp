@@ -52,7 +52,7 @@ public class Utils
 	// Epsilon values
 
 	public static final double				EPS							= 0.0000001;
-	public static final long				EPS_TIME					= 5000;											// ms
+	public static final long				EPS_TIME					= 5000;																	// ms
 
 	// Format settings
 
@@ -72,6 +72,8 @@ public class Utils
 	public static final SimpleDateFormat	STD_FORMAT_DATE_UTC			= new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	public static final SimpleDateFormat	STD_FORMAT_DATE_LOC			= new SimpleDateFormat("yyyy-MM-dd",
 																				Locale.getDefault());
+
+	public static final String				ALPHANUMERIC				= "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
 
 	static
 	{
@@ -638,6 +640,48 @@ public class Utils
 		{
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static boolean hasWordStartedWith(String s, String editText)
+	{
+		if (editText.isEmpty())
+		{
+			return true;
+		}
+
+		s = s.toUpperCase();
+		editText = editText.toUpperCase();
+
+		boolean ignore = false;
+		int j = 0;
+		for (int i = 0; i < s.length(); i++)
+		{
+			if (ALPHANUMERIC.indexOf(s.charAt(i)) != -1)
+			{
+				if (!ignore)
+				{
+					if (s.charAt(i) == editText.charAt(j))
+					{
+						if (++j == editText.length())
+						{
+							return true;
+						}
+					}
+					else
+					{
+						j = 0;
+						ignore = true;
+					}
+				}
+			}
+			else
+			{
+				j = 0;
+				ignore = false;
+			}
+		}
+
+		return false;
 	}
 
 	// private static String formatArray(byte array[])

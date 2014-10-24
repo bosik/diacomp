@@ -86,9 +86,9 @@ class Item implements Comparable<Item>
 
 class ItemAdapter extends ArrayAdapter<Item>
 {
-	List<Item>			itemsAll;
-	List<Item>			suggestions;
-	private int			viewResourceId;
+	List<Item>	itemsAll;
+	List<Item>	suggestions;
+	private int	viewResourceId;
 
 	public ItemAdapter(Context context, int viewResourceId, List<Item> items)
 	{
@@ -145,14 +145,28 @@ class ItemAdapter extends ArrayAdapter<Item>
 						{
 							if (constraint != null)
 							{
-								suggestions.clear();
+								List<Item> firstList = new ArrayList<Item>();
+								List<Item> secondList = new ArrayList<Item>();
+
+								String search = constraint.toString().toLowerCase();
 								for (Item item : itemsAll)
 								{
-									if (item.getCaption().toLowerCase().contains(constraint.toString().toLowerCase()))
+									String line = item.getCaption().toLowerCase();
+
+									if (Utils.hasWordStartedWith(line, search))
 									{
-										suggestions.add(item);
+										firstList.add(item);
+									}
+									else if (line.contains(search))
+									{
+										secondList.add(item);
 									}
 								}
+
+								suggestions.clear();
+								suggestions.addAll(firstList);
+								suggestions.addAll(secondList);
+
 								FilterResults filterResults = new FilterResults();
 								filterResults.values = suggestions;
 								filterResults.count = suggestions.size();
