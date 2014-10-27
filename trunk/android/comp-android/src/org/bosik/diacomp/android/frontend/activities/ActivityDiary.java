@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService.Verifier;
 import org.bosik.diacomp.android.frontend.UIUtils;
@@ -514,6 +515,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 								ActivityEditor.FIELD_ENTITY);
 						// TODO: inserting should be implemented here (not updating)
 						postRecord(rec);
+						Storage.syncDiary(rec.getId());
 					}
 					break;
 				}
@@ -528,6 +530,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
 						postRecord(rec);
+						Storage.syncDiary(rec.getId());
 					}
 					break;
 				}

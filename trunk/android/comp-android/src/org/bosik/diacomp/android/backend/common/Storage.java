@@ -54,7 +54,7 @@ public class Storage
 
 	public static WebClient			webClient;
 
-	private static DiaryService		localDiary;
+	static DiaryService				localDiary;
 	public static DiaryService		webDiary;
 	public static FoodBaseService	localFoodBase;
 	public static FoodBaseService	webFoodBase;
@@ -167,6 +167,19 @@ public class Storage
 				return null;
 			}
 		}.execute();
+	}
+
+	public static void syncDiary(String guid)
+	{
+		new AsyncTask<String, Void, Void>()
+		{
+			@Override
+			protected Void doInBackground(String... guids)
+			{
+				SyncService.synchronize(localDiary, webDiary, guids[0]);
+				return null;
+			}
+		}.execute(guid);
 	}
 
 	private static void setupSyncTimer(long interval)
