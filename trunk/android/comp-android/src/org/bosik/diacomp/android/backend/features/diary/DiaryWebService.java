@@ -58,6 +58,10 @@ public class DiaryWebService implements DiaryService
 		{
 			return null;
 		}
+		catch (CommonServiceException e)
+		{
+			throw e;
+		}
 		catch (Exception e)
 		{
 			throw new CommonServiceException(e);
@@ -72,6 +76,10 @@ public class DiaryWebService implements DiaryService
 			String query = "api/diary/changes/?since=" + Utils.formatTimeUTC(time);
 			StdResponse resp = webClient.get(query);
 			return serializerV.readAll(resp.getResponse());
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
 		}
 		catch (Exception e)
 		{
@@ -94,6 +102,10 @@ public class DiaryWebService implements DiaryService
 
 			return serializerV.readAll(resp.getResponse());
 		}
+		catch (CommonServiceException e)
+		{
+			throw e;
+		}
 		catch (Exception e)
 		{
 			throw new CommonServiceException(e);
@@ -112,6 +124,10 @@ public class DiaryWebService implements DiaryService
 			params.add(new BasicNameValuePair("items", items));
 
 			webClient.put(query, params);
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
 		}
 		catch (Exception e)
 		{
