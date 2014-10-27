@@ -176,7 +176,15 @@ public class Storage
 			@Override
 			protected Void doInBackground(String... guids)
 			{
-				SyncService.synchronize(localDiary, webDiary, guids[0]);
+				try
+				{
+					SyncService.synchronize(localDiary, webDiary, guids[0]);
+				}
+				catch (Exception e)
+				{
+					// there is nothing to do with it
+					// e.printStackTrace();
+				}
 				return null;
 			}
 		}.execute(guid);
