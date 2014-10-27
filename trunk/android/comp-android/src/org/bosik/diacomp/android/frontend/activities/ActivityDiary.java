@@ -508,17 +508,6 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				case DIALOG_INS_CREATE:
 				case DIALOG_MEAL_CREATE:
 				case DIALOG_NOTE_CREATE:
-				{
-					if (resultCode == RESULT_OK)
-					{
-						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(
-								ActivityEditor.FIELD_ENTITY);
-						// TODO: inserting should be implemented here (not updating)
-						postRecord(rec);
-						Storage.syncDiary(rec.getId());
-					}
-					break;
-				}
 
 				case DIALOG_BLOOD_MODIFY:
 				case DIALOG_INS_MODIFY:
