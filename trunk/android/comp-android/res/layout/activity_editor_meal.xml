@@ -179,6 +179,7 @@
                 android:id="@+id/buttonMealInfo"
                 android:layout_width="46dp"
                 android:layout_height="46dp"
+                android:drawableLeft="@drawable/button_meal_info"
                 android:text="@string/editor_meal_button_more"
                 android:textSize="@dimen/font_datetime" />
         </LinearLayout>
