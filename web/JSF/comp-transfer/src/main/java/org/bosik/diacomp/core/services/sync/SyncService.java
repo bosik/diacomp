@@ -1,6 +1,7 @@
 package org.bosik.diacomp.core.services.sync;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -220,5 +221,58 @@ public class SyncService
 
 		// Result is number of transferred records
 		return newer1.size() + newer2.size();
+	}
+
+	@SuppressWarnings({ "null", "unchecked" })
+	public static <T> int synchronize(ObjectService<T> service1, ObjectService<T> service2, String id)
+	{
+		// null checks
+		if (null == service1)
+		{
+			throw new NullPointerException("service1 can't be null");
+		}
+		if (null == service2)
+		{
+			throw new NullPointerException("service2 can't be null");
+		}
+		if (null == id)
+		{
+			throw new NullPointerException("id can't be null");
+		}
+
+		// requesting items
+		Versioned<T> item1 = service1.findById(id);
+		Versioned<T> item2 = service2.findById(id);
+
+		if ((item1 == null) && (item2 == null))
+		{
+			return 0; // item was not found in any sources
+		}
+
+		if ((item1 != null) && (item2 == null))
+		{
+			service2.save(Arrays.asList(item1));
+			return 1;
+		}
+
+		if ((item1 == null) && (item2 != null))
+		{
+			service1.save(Arrays.asList(item2));
+			return 1;
+		}
+
+		if (item1.getVersion() < item2.getVersion())
+		{
+			service1.save(Arrays.asList(item2));
+			return 1;
+		}
+
+		if (item1.getVersion() > item2.getVersion())
+		{
+			service2.save(Arrays.asList(item1));
+			return 1;
+		}
+
+		return 0;
 	}
 }
