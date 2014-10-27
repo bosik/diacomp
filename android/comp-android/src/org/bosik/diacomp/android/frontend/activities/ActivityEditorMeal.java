@@ -163,7 +163,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 				{
 					ActivityEditorMeal.correctBs = !ActivityEditorMeal.correctBs;
 					ActivityEditorMeal.this.showMealInfo();
-					
+
 					if (ActivityEditorMeal.correctBs)
 					{
 						buttonCorrection.setText("\\");
@@ -173,6 +173,18 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 						buttonCorrection.setText("—");
 					}
 				}
+			}
+		});
+
+		buttonStatistics.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				String info = String.format("Prots: %.1f\nFats: %.1f\nCarbs: %.1f\nValue: %.1f\nMass: %.0f", entity
+						.getData().getProts(), entity.getData().getFats(), entity.getData().getCarbs(), entity
+						.getData().getValue(), entity.getData().getMass());
+				UIUtils.showTip(ActivityEditorMeal.this, info);
 			}
 		});
 	}
