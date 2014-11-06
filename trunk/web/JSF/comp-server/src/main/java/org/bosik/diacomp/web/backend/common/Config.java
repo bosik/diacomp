@@ -12,7 +12,7 @@ public class Config
 {
 	private static Map<String, String>	props;
 
-	public static void init()
+	public static synchronized void init()
 	{
 		if (props == null)
 		{
