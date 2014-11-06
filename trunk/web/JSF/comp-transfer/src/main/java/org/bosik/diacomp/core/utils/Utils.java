@@ -694,6 +694,11 @@ public class Utils
 		return false;
 	}
 
+	public static boolean isNullOrEmpty(String s)
+	{
+		return (s == null) || (s.isEmpty());
+	}
+
 	// private static String formatArray(byte array[])
 	// {
 	// StringBuilder sb = new StringBuilder("{");
