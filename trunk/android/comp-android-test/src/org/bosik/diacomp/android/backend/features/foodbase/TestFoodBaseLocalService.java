@@ -11,8 +11,9 @@ public class TestFoodBaseLocalService extends AndroidTestCase implements TestFoo
 	private TestFoodbaseServiceCommon	tester;
 
 	@Override
-	public void setUp()
+	public void setUp() throws Exception
 	{
+		super.setUp();
 		tester = new TestFoodbaseServiceCommon()
 		{
 			@Override

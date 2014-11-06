@@ -20,8 +20,8 @@ import android.test.AndroidTestCase;
 public class TestTagLocalService extends AndroidTestCase
 {
 	private TagService								tagService;
-	private Mock<FoodItem>							mockFood		= new MockFoodItem();
-	private Mock<Versioned<FoodItem>>				mockVersioned	= new MockVersionedConverter<FoodItem>(mockFood);
+	private final Mock<FoodItem>					mockFood		= new MockFoodItem();
+	private final Mock<Versioned<FoodItem>>			mockVersioned	= new MockVersionedConverter<FoodItem>(mockFood);
 	private static final Sorter<FoodItem>			sorterFood		= new Sorter<FoodItem>();
 	/**
 	 * Size of (food+dish) base
@@ -39,30 +39,34 @@ public class TestTagLocalService extends AndroidTestCase
 	private static Map<String, Versioned<FoodItem>>	foodBaseIndex;
 
 	{
-		if (foodBase == null)
+		synchronized (this)
 		{
-			Profiler p = new Profiler();
-
-			foodBase = new ArrayList<Versioned<FoodItem>>();
-			foodBaseIndex = new HashMap<String, Versioned<FoodItem>>();
-
-			for (int i = 0; i < N_TOTAL; i++)
+			if (foodBase == null)
 			{
-				final Versioned<FoodItem> item = mockVersioned.getSample();
-				item.getData().setTag(0);
-				foodBase.add(item);
-				foodBaseIndex.put(item.getId(), item);
+				Profiler p = new Profiler();
+
+				foodBase = new ArrayList<Versioned<FoodItem>>();
+				foodBaseIndex = new HashMap<String, Versioned<FoodItem>>();
+
+				for (int i = 0; i < N_TOTAL; i++)
+				{
+					final Versioned<FoodItem> item = mockVersioned.getSample();
+					item.getData().setTag(0);
+					foodBase.add(item);
+					foodBaseIndex.put(item.getId(), item);
+				}
+
+				sorterFood.sort(foodBase, Sort.ALPHABET);
+
+				System.err.println("Foodbase inited in " + (p.sinceStart() / 1000000) + " ms");
 			}
-
-			sorterFood.sort(foodBase, Sort.ALPHABET);
-
-			System.err.println("Foodbase inited in " + (p.sinceStart() / 1000000) + " ms");
 		}
 	}
 
 	@Override
-	public void setUp()
+	public void setUp() throws Exception
 	{
+		super.setUp();
 		ContentResolver resolver = getContext().getContentResolver();
 		tagService = new TagLocalService(resolver);
 	}
