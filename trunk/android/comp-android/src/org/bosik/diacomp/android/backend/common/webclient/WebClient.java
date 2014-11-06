@@ -43,40 +43,46 @@ public class WebClient
 	private static final int	API_VERSION			= 20;
 	private static final String	ENCODING_UTF8		= "UTF-8";
 	private static final String	CODE_SPACE			= "%20";
-	private static final long	MIN_REQUEST_DELAY	= 200;
+	private static final long	MIN_REQUEST_DELAY	= 200;								// msec
 
 	/* ================ FIELDS ================ */
 
-	private HttpClient			mHttpClient			= null;
+	private final HttpClient	mHttpClient;
 	private String				username;
 	private String				password;
 	private String				server;
-	private final long			lastRequestTime		= 0;
+	private long				lastRequestTime		= 0;
 
 	/* ================================ ROUTINES ================================ */
 
 	/**
-	 * Преобразует ответ сервера в строку
+	 * Converts server's response into String
 	 * 
-	 * @param resp
-	 *            Ответ сервера
-	 * @return Строка
+	 * @param response
+	 *            Server's response
+	 * @return String
 	 */
-	private static String formatResponse(HttpResponse resp, String encoding)
+	private static String formatResponse(HttpResponse response, String encoding)
 	{
-		if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
+		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
 		{
 			// TODO: add error code description
-			throw new ResponseFormatException("Bad response, status code is " + resp.getStatusLine().getStatusCode());
+			throw new ResponseFormatException("Bad response, status code is "
+					+ response.getStatusLine().getStatusCode());
 		}
-		if (null == resp.getEntity())
+		if (null == response.getEntity())
 		{
 			throw new ResponseFormatException("Bad response, getEntity() is null");
 		}
 
 		try
 		{
-			return EntityUtils.toString(resp.getEntity(), encoding);
+			String s = EntityUtils.toString(response.getEntity(), encoding);
+			if (s == null)
+			{
+				throw new ResponseFormatException("Bad response, response is null");
+			}
+			return s;
 		}
 		catch (IOException e)
 		{
@@ -84,7 +90,7 @@ public class WebClient
 		}
 	}
 
-	private void checkTimeout()
+	private synchronized void checkTimeout()
 	{
 		long now = System.currentTimeMillis();
 		if ((now - lastRequestTime) < MIN_REQUEST_DELAY)
@@ -94,6 +100,7 @@ public class WebClient
 							- (now - lastRequestTime)));
 			Utils.sleep(MIN_REQUEST_DELAY - (now - lastRequestTime));
 		}
+		lastRequestTime = now;
 	}
 
 	/**
@@ -119,7 +126,7 @@ public class WebClient
 		}
 		catch (IOException e)
 		{
-			throw new ConnectionException("Failed to request " + url, e);
+			throw new ConnectionException("Failed to GET " + url, e);
 		}
 	}
 
@@ -148,7 +155,7 @@ public class WebClient
 		}
 		catch (IOException e)
 		{
-			throw new ConnectionException("Failed to request " + url, e);
+			throw new ConnectionException("Failed to POST " + url, e);
 		}
 	}
 
@@ -178,7 +185,7 @@ public class WebClient
 		}
 		catch (IOException e)
 		{
-			throw new ConnectionException("Failed to request " + url, e);
+			throw new ConnectionException("Failed to PUT " + url, e);
 		}
 	}
 
@@ -372,73 +379,56 @@ public class WebClient
 
 	public void login()
 	{
-		// проверки
+		// checks
 
-		boolean undefServer = (null == server) || server.equals("");
-		boolean undefLogin = (null == username) || username.equals("");
-		boolean undefPassword = (null == password) || password.equals("");
-
-		/*
-		 * if (null == server) throw new NullPointerException("Server URL can't be null"); if (null
-		 * == username) throw new NullPointerException("Username can't be null"); if (null ==
-		 * password) throw new NullPointerException("Password can't be null"); if ("" == server)
-		 * throw new IllegalArgumentException("Server URL is empty"); if ("" == username) throw new
-		 * IllegalArgumentException("Username is empty"); if ("" == password) throw new
-		 * IllegalArgumentException("Password is empty");
-		 */
+		boolean undefServer = Utils.isNullOrEmpty(server);
+		boolean undefLogin = Utils.isNullOrEmpty(username);
+		boolean undefPassword = Utils.isNullOrEmpty(password);
 
 		if (undefServer || undefLogin || undefPassword)
 		{
 			throw new UndefinedFieldException(undefServer, undefLogin, undefPassword);
 		}
 
-		// конструируем запрос
+		// building request
 
 		List<NameValuePair> p = new ArrayList<NameValuePair>();
 		p.add(new BasicNameValuePair("login", username));
 		p.add(new BasicNameValuePair("pass", password));
 		p.add(new BasicNameValuePair("api", String.valueOf(API_VERSION)));
 
-		// отправляем
+		// send
 
 		String resp = doPost("api/auth/login/", p, ENCODING_UTF8);
 
-		if (resp != null)
+		try
 		{
-			try
-			{
-				StdResponse stdResp = new StdResponse(resp);
+			StdResponse stdResp = new StdResponse(resp);
 
-				switch (stdResp.getCode())
+			switch (stdResp.getCode())
+			{
+				case ResponseBuilder.CODE_OK:
 				{
-					case ResponseBuilder.CODE_OK:
-					{
-						break;
-					}
-					case ResponseBuilder.CODE_BADCREDENTIALS:
-					{
-						throw new AuthException("Bad username/password");
-					}
-					// TODO: no 4050 (deprecated, but still supported) handling
-					case ResponseBuilder.CODE_UNSUPPORTED_API:
-					{
-						throw new UnsupportedAPIException(stdResp.getResponse());
-					}
-					default:
-					{
-						throw new TaskExecutionException(stdResp.getCode(), "Failed with message "
-								+ stdResp.getResponse());
-					}
+					break;
+				}
+				case ResponseBuilder.CODE_BADCREDENTIALS:
+				{
+					throw new AuthException("Bad username/password");
+				}
+				// TODO: no 4050 (deprecated, but still supported) handling
+				case ResponseBuilder.CODE_UNSUPPORTED_API:
+				{
+					throw new UnsupportedAPIException(stdResp.getResponse());
+				}
+				default:
+				{
+					throw new TaskExecutionException(stdResp.getCode(), "Failed with message " + stdResp.getResponse());
 				}
 			}
-			catch (JSONException e)
-			{
-				throw new ResponseFormatException("Mailformed response: " + resp, e);
-			}
 		}
-		else
+		catch (JSONException e)
 		{
-			throw new ConnectionException("doPost(): response is null");
+			throw new ResponseFormatException("Mailformed response: " + resp, e);
 		}
 	}
 
