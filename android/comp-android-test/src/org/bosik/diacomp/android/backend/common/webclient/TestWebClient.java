@@ -19,7 +19,7 @@ public class TestWebClient extends TestCase
 	 * 
 	 * @return
 	 */
-	public static WebClient getWebClient()
+	public static synchronized WebClient getWebClient()
 	{
 		if (webClient == null)
 		{

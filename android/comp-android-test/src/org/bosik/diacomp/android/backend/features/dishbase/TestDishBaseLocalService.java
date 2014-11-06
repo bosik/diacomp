@@ -11,8 +11,9 @@ public class TestDishBaseLocalService extends AndroidTestCase implements TestDis
 	private TestDishbaseServiceCommon	tester;
 
 	@Override
-	public void setUp()
+	public void setUp() throws Exception
 	{
+		super.setUp();
 		tester = new TestDishbaseServiceCommon()
 		{
 			@Override

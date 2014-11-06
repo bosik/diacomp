@@ -9,6 +9,7 @@ import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 public class HardcodedAnalyzeService implements AnalyzeCore
 {
 	private static KoofList	koofs;
+	static
 	{
 		koofs = new KoofList();
 		koofs.getKoof(0).setK(0.3625);

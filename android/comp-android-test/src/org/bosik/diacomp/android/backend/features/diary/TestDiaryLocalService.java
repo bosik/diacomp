@@ -11,8 +11,9 @@ public class TestDiaryLocalService extends AndroidTestCase implements TestDiaryS
 	private static TestDiaryServiceCommon	test;
 
 	@Override
-	protected void setUp()
+	protected void setUp() throws Exception
 	{
+		super.setUp();
 		assertNotNull(getContext());
 		ContentResolver resolver = getContext().getContentResolver();
 		final DiaryService service = new DiaryLocalService(resolver);
