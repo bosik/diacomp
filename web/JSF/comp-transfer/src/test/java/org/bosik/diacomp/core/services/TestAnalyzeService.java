@@ -90,20 +90,17 @@ public class TestAnalyzeService
 		String str = "";
 		StringBuffer buf = new StringBuffer();
 		InputStream stream = getClass().getResourceAsStream(fileName);
-		try
+		if (stream != null)
 		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-			if (stream != null)
+			try
 			{
+				BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 				while ((str = reader.readLine()) != null)
 				{
 					buf.append(str + "\n");
 				}
 			}
-		}
-		finally
-		{
-			if (stream != null)
+			finally
 			{
 				stream.close();
 			}
