@@ -24,12 +24,20 @@ import org.bosik.diacomp.core.utils.Utils;
 @SuppressWarnings("unchecked")
 public class DiaryWebService implements DiaryService
 {
-	// private static String TAG = DiaryWebService.class.getSimpleName();
+	// private static final String TAG = DiaryWebService.class.getSimpleName();
+
+	// REST methods
+	private static final String							API_DIARY_FIND_BY_ID	= "api/diary/guid/%s";
+	private static final String							API_DIARY_FIND_CHANGES	= "api/diary/changes/?since=%s";
+	private static final String							API_DIARY_FIND_PERIOD	= "api/diary/period/?start_time=%s&end_time=%s&show_rem=%s";
+	private static final String							API_DIARY_SAVE			= "api/diary/";
+
 	private final WebClient								webClient;
-	private final Parser<DiaryRecord>					parser		= new ParserDiaryRecord();
-	private final Parser<Versioned<DiaryRecord>>		parserV		= new ParserVersioned<DiaryRecord>(parser);
-	private final Serializer<Versioned<DiaryRecord>>	serializerV	= new SerializerAdapter<Versioned<DiaryRecord>>(
-																			parserV);
+	private final Parser<DiaryRecord>					parser					= new ParserDiaryRecord();
+	private final Parser<Versioned<DiaryRecord>>		parserV					= new ParserVersioned<DiaryRecord>(
+																						parser);
+	private final Serializer<Versioned<DiaryRecord>>	serializerV				= new SerializerAdapter<Versioned<DiaryRecord>>(
+																						parserV);
 
 	/* ============================ CONSTRUCTOR ============================ */
 
@@ -50,7 +58,7 @@ public class DiaryWebService implements DiaryService
 	{
 		try
 		{
-			String query = String.format("api/diary/guid/%s", guid);
+			String query = String.format(API_DIARY_FIND_BY_ID, guid);
 			StdResponse resp = webClient.get(query);
 			return serializerV.read(resp.getResponse());
 		}
@@ -73,7 +81,7 @@ public class DiaryWebService implements DiaryService
 	{
 		try
 		{
-			String query = "api/diary/changes/?since=" + Utils.formatTimeUTC(time);
+			String query = String.format(API_DIARY_FIND_CHANGES, Utils.formatTimeUTC(time));
 			StdResponse resp = webClient.get(query);
 			return serializerV.readAll(resp.getResponse());
 		}
@@ -93,13 +101,9 @@ public class DiaryWebService implements DiaryService
 	{
 		try
 		{
-			String query = "api/diary/period/?";
-			query += "start_time=" + Utils.formatTimeUTC(startTime);
-			query += "&end_time=" + Utils.formatTimeUTC(endTime);
-			query += "&show_rem=" + Utils.formatBooleanStr(includeRemoved);
-
+			String query = String.format(API_DIARY_FIND_PERIOD, Utils.formatTimeUTC(startTime),
+					Utils.formatTimeUTC(endTime), Utils.formatBooleanStr(includeRemoved));
 			StdResponse resp = webClient.get(query);
-
 			return serializerV.readAll(resp.getResponse());
 		}
 		catch (CommonServiceException e)
@@ -117,13 +121,12 @@ public class DiaryWebService implements DiaryService
 	{
 		try
 		{
-			String query = "api/diary/";
 			String items = serializerV.writeAll(records);
 
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair("items", items));
 
-			webClient.put(query, params);
+			webClient.put(API_DIARY_SAVE, params);
 		}
 		catch (CommonServiceException e)
 		{
