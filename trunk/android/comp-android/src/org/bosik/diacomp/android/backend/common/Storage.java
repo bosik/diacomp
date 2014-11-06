@@ -46,9 +46,9 @@ public class Storage
 	private static final int		CONNECTION_TIMEOUT	= 6000;
 
 	private static boolean			timerSettedUp		= false;
-	private static Date				sinceDiary			= Utils.time(2014, 9, 1, 0, 0, 0);
-	private static Date				sinceFoodbase		= Utils.time(2001, 9, 1, 0, 0, 0);
-	private static Date				sinceDishbase		= Utils.time(2001, 9, 1, 0, 0, 0);
+	private static Date				sinceDiary			= Utils.time(2014, 10, 1, 0, 0, 0);
+	private static Date				sinceFoodbase		= Utils.time(2014, 10, 1, 0, 0, 0);
+	private static Date				sinceDishbase		= Utils.time(2014, 10, 1, 0, 0, 0);
 
 	// DAO
 
@@ -244,9 +244,6 @@ public class Storage
 	{
 		try
 		{
-			// the hack
-			sinceFoodbase = Utils.time(2001, 9, 1, 0, 0, 0);
-
 			Log.v(TAG, "Foodbase sync...");
 			long time = System.currentTimeMillis();
 			int syncFoodItemsCount = SyncService.synchronize(Storage.localFoodBase, Storage.webFoodBase, sinceFoodbase);
@@ -266,9 +263,6 @@ public class Storage
 	{
 		try
 		{
-			// the hack
-			sinceDishbase = Utils.time(2001, 9, 1, 0, 0, 0);
-
 			Log.v(TAG, "Dishbase sync...");
 			long time = System.currentTimeMillis();
 			int syncDishItemsCount = SyncService.synchronize(Storage.localDishBase, Storage.webDishBase, sinceDishbase);
