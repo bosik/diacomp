@@ -266,7 +266,7 @@ public class AnalyzeExtracter
 			case QUADRIC:
 				return err * err;
 			default:
-				throw new IllegalArgumentException(String.format("Invalid method: %d", analyzeMethod));
+				throw new IllegalArgumentException(String.format("Invalid method: %s", analyzeMethod.toString()));
 		}
 	}
 
