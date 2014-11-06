@@ -24,8 +24,15 @@ public class DishBaseWebService implements DishBaseService
 {
 	// private static final String TAG = DishBaseWebService.class.getSimpleName();
 
+	// REST methods
+	private static final String						API_DISH_FIND_ALL		= "api/dish/all/?show_rem=%s";
+	private static final String						API_DISH_FIND_ANY		= "api/dish/search/?q=%s";
+	private static final String						API_DISH_FIND_CHANGES	= "api/dish/changes/?since=%s";
+	private static final String						API_DISH_FIND_BY_ID		= "api/dish/guid/%s";
+	private static final String						API_DISH_SAVE			= "api/dish/";
+
 	private final WebClient							webClient;
-	private final Serializer<Versioned<DishItem>>	serializer	= new SerializerDishItem();
+	private final Serializer<Versioned<DishItem>>	serializer				= new SerializerDishItem();
 
 	public DishBaseWebService(WebClient webClient)
 	{
@@ -63,7 +70,7 @@ public class DishBaseWebService implements DishBaseService
 	{
 		try
 		{
-			String url = String.format("api/dish/all/?show_rem=%s", Utils.formatBooleanInt(includeRemoved));
+			String url = String.format(API_DISH_FIND_ALL, Utils.formatBooleanInt(includeRemoved));
 			StdResponse resp = webClient.get(url);
 			return serializer.readAll(resp.getResponse());
 		}
@@ -78,7 +85,7 @@ public class DishBaseWebService implements DishBaseService
 	{
 		try
 		{
-			String url = String.format("api/dish/search/?q=%s", filter);
+			String url = String.format(API_DISH_FIND_ANY, filter);
 			StdResponse resp = webClient.get(url);
 			return serializer.readAll(resp.getResponse());
 		}
@@ -93,7 +100,7 @@ public class DishBaseWebService implements DishBaseService
 	{
 		try
 		{
-			String url = String.format("api/dish/changes/?since=%s", Utils.formatTimeUTC(since));
+			String url = String.format(API_DISH_FIND_CHANGES, Utils.formatTimeUTC(since));
 			StdResponse resp = webClient.get(url);
 			return serializer.readAll(resp.getResponse());
 		}
@@ -115,7 +122,7 @@ public class DishBaseWebService implements DishBaseService
 	{
 		try
 		{
-			String url = String.format("api/dish/guid/%s", guid);
+			String url = String.format(API_DISH_FIND_BY_ID, guid);
 			StdResponse resp = webClient.get(url);
 			return serializer.read(resp.getResponse());
 		}
@@ -132,16 +139,15 @@ public class DishBaseWebService implements DishBaseService
 	@Override
 	public void save(List<Versioned<DishItem>> items) throws NotFoundException, PersistenceException
 	{
-		String url = "api/dish/";
 		try
 		{
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair("items", serializer.writeAll(items)));
-			webClient.put(url, params);
+			webClient.put(API_DISH_SAVE, params);
 		}
 		catch (Exception e)
 		{
-			throw new CommonServiceException("URL: " + url, e);
+			throw new CommonServiceException("URL: " + API_DISH_SAVE, e);
 		}
 	}
 }

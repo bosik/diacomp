@@ -24,8 +24,15 @@ public class FoodBaseWebService implements FoodBaseService
 {
 	// private static final String TAG = FoodBaseWebService.class.getSimpleName();
 
+	// REST methods
+	private static final String						API_FOOD_FIND_ALL		= "api/food/all/?show_rem=%s";
+	private static final String						API_FOOD_FIND_ANY		= "api/food/search/?q=%s";
+	private static final String						API_FOOD_FIND_CHANGES	= "api/food/changes/?since=%s";
+	private static final String						API_FOOD_FIND_BY_ID		= "api/food/guid/%s";
+	private static final String						API_FOOD_SAVE			= "api/food/";
+
 	private final WebClient							webClient;
-	private final Serializer<Versioned<FoodItem>>	serializer	= new SerializerFoodItem();
+	private final Serializer<Versioned<FoodItem>>	serializer				= new SerializerFoodItem();
 
 	public FoodBaseWebService(WebClient webClient)
 	{
@@ -63,7 +70,7 @@ public class FoodBaseWebService implements FoodBaseService
 	{
 		try
 		{
-			String url = String.format("api/food/all/?show_rem=%s", Utils.formatBooleanInt(includeRemoved));
+			String url = String.format(API_FOOD_FIND_ALL, Utils.formatBooleanInt(includeRemoved));
 			StdResponse resp = webClient.get(url);
 			return serializer.readAll(resp.getResponse());
 		}
@@ -78,7 +85,7 @@ public class FoodBaseWebService implements FoodBaseService
 	{
 		try
 		{
-			String url = String.format("api/food/search/?q=%s", filter);
+			String url = String.format(API_FOOD_FIND_ANY, filter);
 			StdResponse resp = webClient.get(url);
 			return serializer.readAll(resp.getResponse());
 		}
@@ -93,7 +100,7 @@ public class FoodBaseWebService implements FoodBaseService
 	{
 		try
 		{
-			String url = String.format("api/food/changes/?since=%s", Utils.formatTimeUTC(since));
+			String url = String.format(API_FOOD_FIND_CHANGES, Utils.formatTimeUTC(since));
 			StdResponse resp = webClient.get(url);
 			return serializer.readAll(resp.getResponse());
 		}
@@ -115,7 +122,7 @@ public class FoodBaseWebService implements FoodBaseService
 	{
 		try
 		{
-			String url = String.format("api/food/guid/%s", guid);
+			String url = String.format(API_FOOD_FIND_BY_ID, guid);
 			StdResponse resp = webClient.get(url);
 			return serializer.read(resp.getResponse());
 		}
@@ -132,16 +139,15 @@ public class FoodBaseWebService implements FoodBaseService
 	@Override
 	public void save(List<Versioned<FoodItem>> items) throws NotFoundException, PersistenceException
 	{
-		String url = "api/food/";
 		try
 		{
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair("items", serializer.writeAll(items)));
-			webClient.put(url, params);
+			webClient.put(API_FOOD_SAVE, params);
 		}
 		catch (Exception e)
 		{
-			throw new CommonServiceException("URL: " + url, e);
+			throw new CommonServiceException("URL: " + API_FOOD_SAVE, e);
 		}
 	}
 }
