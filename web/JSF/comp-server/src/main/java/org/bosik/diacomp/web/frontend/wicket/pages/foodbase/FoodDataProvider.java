@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
@@ -11,9 +12,9 @@ import org.bosik.diacomp.web.backend.features.foodbase.service.FrontendFoodbaseS
 
 public class FoodDataProvider implements IDataProvider<Versioned<FoodItem>>
 {
-	public static final FoodBaseService	foodService			= new FrontendFoodbaseService();
+	private static final long		serialVersionUID	= 1L;
 
-	private static final long			serialVersionUID	= 1L;
+	public final FoodBaseService	foodService			= new FrontendFoodbaseService();
 
 	@Override
 	public void detach()
@@ -49,6 +50,6 @@ public class FoodDataProvider implements IDataProvider<Versioned<FoodItem>>
 	@Override
 	public IModel<Versioned<FoodItem>> model(Versioned<FoodItem> object)
 	{
-		return new DetachableFoodModel(object);
+		return Model.of(object);
 	}
 }

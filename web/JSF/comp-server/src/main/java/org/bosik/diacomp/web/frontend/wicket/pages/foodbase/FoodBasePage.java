@@ -3,6 +3,8 @@ package org.bosik.diacomp.web.frontend.wicket.pages.foodbase;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.wicket.ajax.AjaxEventBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
@@ -20,28 +22,22 @@ public class FoodBasePage extends MasterPage
 	{
 		super(parameters);
 
-		final List<IModel<Versioned<FoodItem>>> foodBase = new ArrayList<IModel<Versioned<FoodItem>>>();
-
-		// populate list of contacts to be displayed
-
-		FoodDataProvider dp = new FoodDataProvider();
-		Iterator<? extends Versioned<FoodItem>> it = dp.iterator(0, 9);
-		while (it.hasNext())
-		{
-			foodBase.add(dp.model(it.next()));
-		}
-
-		// create the refreshing view
 		RefreshingView<Versioned<FoodItem>> view = new RefreshingView<Versioned<FoodItem>>("view")
 		{
 			private static final long	serialVersionUID	= 1L;
 
-			/**
-			 * Return an iterator over models for items in the view
-			 */
 			@Override
 			protected Iterator<IModel<Versioned<FoodItem>>> getItemModels()
 			{
+				final List<IModel<Versioned<FoodItem>>> foodBase = new ArrayList<IModel<Versioned<FoodItem>>>();
+
+				FoodDataProvider provider = new FoodDataProvider();
+				Iterator<? extends Versioned<FoodItem>> it = provider.iterator(0, 19);
+				while (it.hasNext())
+				{
+					foodBase.add(provider.model(it.next()));
+				}
+
 				return foodBase.iterator();
 			}
 
@@ -54,6 +50,18 @@ public class FoodBasePage extends MasterPage
 				item.add(new Label("food.fats", food.getRelFats()));
 				item.add(new Label("food.carbs", food.getRelCarbs()));
 				item.add(new Label("food.value", food.getRelValue()));
+
+				item.add(new AjaxEventBehavior("onclick")
+				{
+					private static final long	serialVersionUID	= 1L;
+
+					@Override
+					protected void onEvent(AjaxRequestTarget target)
+					{
+						Versioned<FoodItem> food = item.getModelObject();
+						System.out.println("Food clicked: " + food.getData().getName());
+					}
+				});
 			}
 		};
 
