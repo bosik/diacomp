@@ -20,31 +20,40 @@ public class MasterPage extends WebPage
 {
 	private static final long	serialVersionUID	= 1L;
 
-	AuthService					authService			= new FrontendAuthService();
-
 	public MasterPage(final PageParameters parameters)
 	{
 		super(parameters);
 
-		add(new HeaderPanel("headerPanel", "user@user.com"));
-		add(new Menu("menu", Model.of(getMenu())));
-	}
-
-	protected MenuContent getMenu()
-	{
-		MenuContent menuContent = new MenuContent();
-
-		// TODO: localize captions
+		AuthService authService = new FrontendAuthService();
 
 		try
 		{
-			authService.getCurrentUserName();
+			String userName = authService.getCurrentUserName();
+			add(new HeaderPanel("headerPanel", userName));
+			add(new Menu("menu", Model.of(getMenu(true))));
+		}
+		catch (NotAuthorizedException e)
+		{
+			add(new HeaderPanel("headerPanel"));
+			add(new Menu("menu", Model.of(getMenu(false))));
+		}
+
+	}
+
+	protected MenuContent getMenu(boolean authorized)
+	{
+		// TODO: localize captions
+
+		MenuContent menuContent = new MenuContent();
+
+		if (authorized)
+		{
 			menuContent.getItems().add(new MenuItem(getString("menu.about"), AboutPage.class));
 			menuContent.getItems().add(new MenuItem(getString("menu.diary"), DiaryPage.class));
 			menuContent.getItems().add(new MenuItem(getString("menu.base"), FoodBasePage.class));
 			menuContent.getItems().add(new MenuItem(getString("menu.download"), DownloadPage.class));
 		}
-		catch (NotAuthorizedException e)
+		else
 		{
 			menuContent.getItems().add(new MenuItem(getString("menu.about"), AboutPage.class));
 			menuContent.getItems().add(new MenuItem(getString("menu.login"), LoginPage.class));
