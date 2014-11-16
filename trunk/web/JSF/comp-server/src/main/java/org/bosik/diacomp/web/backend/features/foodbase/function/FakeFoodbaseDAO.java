@@ -15,7 +15,9 @@ public class FakeFoodbaseDAO implements FoodbaseDAO
 {
 	private static Mock<Versioned<FoodItem>>	mock	= new MockVersionedConverter<FoodItem>(new MockFoodItem());
 	private static List<Versioned<FoodItem>>	samples	= new ArrayList<Versioned<FoodItem>>();
+	static
 	{
+		samples.clear();
 		for (int i = 0; i < 100; i++)
 		{
 			Versioned<FoodItem> sample = mock.getSample();
@@ -111,7 +113,7 @@ public class FakeFoodbaseDAO implements FoodbaseDAO
 	{
 		synchronized (samples)
 		{
-			for (Versioned<FoodItem> item : samples)
+			for (Versioned<FoodItem> item : items)
 			{
 				boolean found = false;
 				for (int i = 0; i < samples.size(); i++)
