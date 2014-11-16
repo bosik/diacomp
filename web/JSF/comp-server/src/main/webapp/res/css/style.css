@@ -127,7 +127,7 @@ th {
 }
 
 .hoverableRow:hover {
-	/*border: solid 1px #000;*/
+	outline: thin solid #e0e0e0;
 	/*color: #0000CC;*/
 	background: #f0f0f0;
 	cursor: pointer;
