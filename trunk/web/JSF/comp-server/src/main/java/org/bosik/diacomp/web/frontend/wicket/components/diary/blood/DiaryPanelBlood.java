@@ -20,10 +20,6 @@ public class DiaryPanelBlood extends Panel
 		add(new Label("value", formatBloodValue(rec.getValue())));
 		add(new Label("finger", formatBloodFinger(rec.getFinger())).add(AttributeModifier.replace("title",
 				formatBloodFingerHint(rec.getFinger()))));
-
-		//		add(new ExternalLink("linkLogout", "j_spring_security_logout").setVisible(false));
-		//		add(new BookmarkablePageLink<Void>("linkHome", AboutPage.class));
-		//		add(new Label("infoLogin"));
 	}
 
 	private static String formatBloodValue(double value)
