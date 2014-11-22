@@ -6,8 +6,8 @@
 	<wicket:extend>
 		<div class="date_panel">
 
-			Дата <input type="date" id="calendar" name="date" size="14" />
-			<input type="hidden" id="origin_date" />
+			Дата <input type="date" id="calendar" name="date" size="14" /> <input
+				type="hidden" id="origin_date" />
 
 			<button onclick="prevDay()"
 				class="tsc_awb_small tsc_awb_white tsc_flat" title="Предыдущий день">&lt;</button>
@@ -32,6 +32,11 @@
 		<script type="text/javascript" src="res/js/utils.js"></script>
 		<script type="text/javascript" src="res/js/xml2json.js"></script>
 		<!--script type="text/javascript" src="res/js/diary.js"></script-->
+		<div wicket:id="wrapper" class="dataview">
+			<div wicket:id="diaryRecord">
+				<div wicket:id="diaryRecordPanel"></div>
+			</div>
+		</div>
 	</wicket:extend>
 </body>
 </html>
