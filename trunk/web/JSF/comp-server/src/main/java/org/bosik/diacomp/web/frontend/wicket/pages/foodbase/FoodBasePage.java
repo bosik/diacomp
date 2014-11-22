@@ -25,12 +25,12 @@ import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 
 public class FoodBasePage extends MasterPage
 {
-	private static final long		serialVersionUID	= 1L;
+	private static final long				serialVersionUID	= 1L;
 
-	WebMarkupContainer				container;
+	WebMarkupContainer						container;
 
-	transient final FoodBaseService	foodService			= new FrontendFoodbaseService();
-	String							search;
+	transient static final FoodBaseService	foodService			= new FrontendFoodbaseService();
+	String									search;
 
 	public FoodBasePage(PageParameters parameters)
 	{
