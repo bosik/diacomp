@@ -2,11 +2,35 @@
 <html xmlns:wicket="http://wicket.apache.org">
 <wicket:panel>
 	<form wicket:id="form">
-		<div>Name</div>
-		<input wicket:id="inputName" type="text"/>
-		
-		<input wicket:id="buttonSelect" type="button" value="Select something else" />
-		<input wicket:id="buttonClose" type="button" value="Close" />
+		<input wicket:id="inputName" type="text" placeholder="Name..."
+			class="full_width" />
+
+		<table>
+			<tr>
+				<td class="half_width">Prots, g</td>
+				<td class="half_width"><input type="text" /></td>
+			</tr>
+			<tr>
+				<td class="half_width">Fats, g</td>
+				<td class="half_width"><input type="text" /></td>
+			</tr>
+			<tr>
+				<td class="half_width">Carbs, g</td>
+				<td class="half_width"><input type="text" /></td>
+			</tr>
+			<tr>
+				<td class="half_width">Value, kcal</td>
+				<td class="half_width"><input type="text" /></td>
+			</tr>
+		</table>
+
+		<input wicket:id="buttonSelect" type="button" value="Save" /> <input
+			wicket:id="buttonClose" type="button" value="Cancel" />
 	</form>
+	<style>
+.half_width {
+	width: 50%;
+}
+</style>
 </wicket:panel>
 </html>
