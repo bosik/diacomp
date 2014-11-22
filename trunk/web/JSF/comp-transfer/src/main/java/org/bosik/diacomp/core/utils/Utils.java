@@ -637,6 +637,41 @@ public class Utils
 	}
 
 	/**
+	 * Constructs date (local)
+	 * 
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @return
+	 */
+	public static Date dateLocal(int year, int month, int day)
+	{
+		Calendar c = Calendar.getInstance();
+		c.clear();
+		c.set(year, month - 1, day);
+		return c.getTime();
+	}
+
+	/**
+	 * Constructs time (local)
+	 * 
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @param hour
+	 * @param min
+	 * @param sec
+	 * @return
+	 */
+	public static Date timeLocal(int year, int month, int day, int hour, int min, int sec)
+	{
+		Calendar c = Calendar.getInstance();
+		c.clear();
+		c.set(year, month - 1, day, hour, min, sec);
+		return c.getTime();
+	}
+
+	/**
 	 * MISC
 	 */
 
