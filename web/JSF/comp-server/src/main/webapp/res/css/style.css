@@ -406,6 +406,13 @@ th {
 	background: red;
 }
 
+.diary-day-caption {
+	padding-top: 15px;
+	padding-bottom: 2px;
+	font-size: 110%;
+	color: #cccccc;
+}
+
 /* =========================== TABLE =========================== */
 .col_item {
 	width: 99%;
