@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.frontend.wicket.components.diary.page;
+package org.bosik.diacomp.web.frontend.wicket.components.diary.day;
 
 import java.io.Serializable;
 import java.util.Date;

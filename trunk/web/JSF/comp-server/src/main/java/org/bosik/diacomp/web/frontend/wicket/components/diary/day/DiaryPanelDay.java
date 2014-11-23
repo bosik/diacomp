@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.frontend.wicket.components.diary.page;
+package org.bosik.diacomp.web.frontend.wicket.components.diary.day;
 
 import java.util.ArrayList;
 import java.util.Iterator;
