@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.frontend.wicket.dialogs;
+package org.bosik.diacomp.web.frontend.wicket.dialogs.foodeditor;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
