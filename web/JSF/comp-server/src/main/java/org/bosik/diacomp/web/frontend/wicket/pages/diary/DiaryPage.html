@@ -4,27 +4,22 @@
 </head>
 <body>
 	<wicket:extend>
-		<div class="date_panel">
-
-			Дата <input type="date" id="calendar" name="date" size="14" /> <input
-				type="hidden" id="origin_date" />
-
-			<button onclick="prevDay()"
-				class="tsc_awb_small tsc_awb_white tsc_flat" title="Предыдущий день">&lt;</button>
-			<button onclick="nextDay()"
-				class="tsc_awb_small tsc_awb_white tsc_flat" title="Следующий день">&gt;</button>
-			<div class="hint" style="float: right; text-align: right;">
-				<div id="modspan" title="Последнее изменение"></div>
-				<div id="versionspan" title="Версия"></div>
-			</div>
-			<div style="float: right; text-align: right; overflow: hidden;">
-				<img id="job_img" style="float: right; padding-right: 12px;">
+	<div id="diary-workspace">
+		<div id="diary-left-panel">
+			<div class="date_panel">
+				<input type="date" id="calendar" name="date" size="14" /> <input
+					type="hidden" id="origin_date" />
+				<button class="tsc_awb_small tsc_awb_white tsc_flat"
+					title="Предыдущий день">&lt;</button>
+				<button class="tsc_awb_small tsc_awb_white tsc_flat"
+					title="Следующий день">&gt;</button>
 			</div>
 		</div>
 		<div wicket:id="wrapper" class="dataview">
 			<div wicket:id="diaryDay">
 				<div wicket:id="diaryDayPanel" class="diary_page_full"></div>
 			</div>
+		</div>
 		</div>
 	</wicket:extend>
 </body>
