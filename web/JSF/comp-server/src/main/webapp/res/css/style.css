@@ -71,12 +71,12 @@ th {
 #error_nojs {
 	width: 22em;
 	position: absolute;
-	left: 50%;
-	margin-left: -11em;
-	color: red;
-	background-color: white;
-	border: 1px solid red;
-	padding: 4px;
+	left: 11em;
+	top: 200px;
+	color: #f00;
+	background-color: #fff;
+	border: 5px solid #f00;
+	padding: 20px;
 	font-family: sans-serif;
 	text-align: center;
 }
@@ -210,8 +210,7 @@ th {
 }
 
 #diary_block {
-	padding-top: 10px;
-	overflow: hidden;
+	
 }
 
 .diary_page_full {
