@@ -500,6 +500,64 @@ public class Utils
 	}
 
 	/**
+	 * Calculates summ
+	 * 
+	 * @param values
+	 * @return
+	 */
+	public static double getSumm(List<Double> values)
+	{
+		double summ = 0.0;
+
+		for (Double x : values)
+		{
+			summ += x;
+		}
+
+		return summ;
+	}
+
+	/**
+	 * Calculates mean value
+	 * 
+	 * @param values
+	 * @return
+	 */
+	public static double getMean(List<Double> values)
+	{
+		if (values.size() > 0)
+		{
+			return getSumm(values) / values.size();
+		}
+		else
+		{
+			return 0.0;
+		}
+	}
+
+	/**
+	 * Calculates standard deviation using pre-calculated mean
+	 * 
+	 * @param values
+	 * @param mean
+	 * @return
+	 */
+	public static double getDeviation(List<Double> values, double mean)
+	{
+		double s = 0.0;
+
+		if (values.size() > 0)
+		{
+			for (Double x : values)
+			{
+				s += (x - mean) * (x - mean);
+			}
+			s /= values.size();
+		}
+		return Math.sqrt(s);
+	}
+
+	/**
 	 * RANDOM
 	 */
 
@@ -565,6 +623,14 @@ public class Utils
 	public static Date getNextDay(Date date)
 	{
 		return new Date(date.getTime() + MsecPerDay);
+	}
+
+	public static Date getNextMonth(Date date)
+	{
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		c.add(Calendar.MONTH, 1);
+		return c.getTime();
 	}
 
 	/**
