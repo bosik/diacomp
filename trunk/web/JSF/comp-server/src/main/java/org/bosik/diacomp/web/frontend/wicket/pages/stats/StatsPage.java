@@ -9,8 +9,9 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
+import org.bosik.diacomp.web.backend.features.diary.service.FrontendDiaryService;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import com.googlecode.wickedcharts.highcharts.options.Axis;
 import com.googlecode.wickedcharts.highcharts.options.ChartOptions;
@@ -48,7 +49,7 @@ class BasicLineOptions extends Options
 
 		for (int i = 1; i < 13; i++)
 		{
-			List<Versioned<DiaryRecord>> recs = DiaryPage.diaryService.findPeriod(dateFrom, dateTo, false);
+			List<Versioned<DiaryRecord>> recs = StatsPage.diaryService.findPeriod(dateFrom, dateTo, false);
 			dateFrom = dateTo;
 			dateTo = Utils.getNextMonth(dateTo);
 
@@ -143,7 +144,9 @@ class BasicLineOptions extends Options
 
 public class StatsPage extends MasterPage
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long			serialVersionUID	= 1L;
+
+	transient static final DiaryService	diaryService		= new FrontendDiaryService();
 
 	public StatsPage(PageParameters parameters)
 	{
