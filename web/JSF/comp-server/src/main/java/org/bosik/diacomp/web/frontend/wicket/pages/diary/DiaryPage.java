@@ -15,8 +15,8 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.features.diary.service.FrontendDiaryService;
-import org.bosik.diacomp.web.frontend.wicket.components.diary.page.DiaryPanelDay;
-import org.bosik.diacomp.web.frontend.wicket.components.diary.page.DiaryPanelDayModelObject;
+import org.bosik.diacomp.web.frontend.wicket.components.diary.day.DiaryPanelDay;
+import org.bosik.diacomp.web.frontend.wicket.components.diary.day.DiaryPanelDayModelObject;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 
 public class DiaryPage extends MasterPage
