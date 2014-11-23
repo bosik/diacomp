@@ -239,6 +239,11 @@ th {
 	overflow: hidden;
 }
 
+.diary-icon {
+	float: left;
+	padding: 2px 0px 0px 6px;
+}
+
 .time {
 	display: inline-block;
 	float: left;

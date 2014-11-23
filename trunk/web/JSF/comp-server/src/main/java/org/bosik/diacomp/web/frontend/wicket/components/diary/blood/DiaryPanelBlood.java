@@ -2,7 +2,9 @@ package org.bosik.diacomp.web.frontend.wicket.components.diary.blood;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.Model;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.utils.Utils;
 
@@ -16,6 +18,7 @@ public class DiaryPanelBlood extends Panel
 	{
 		super(id);
 
+		add(new Image("icon", new Model<String>("icon.png")).add(AttributeModifier.replace("title", "Замер СК")));
 		add(new Label("time", Utils.formatTimeLocalShort(rec.getTime())));
 		add(new Label("value", formatBloodValue(rec.getValue())));
 		add(new Label("finger", formatBloodFinger(rec.getFinger())).add(AttributeModifier.replace("title",
