@@ -20,7 +20,7 @@ import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import org.bosik.diacomp.web.backend.features.foodbase.service.FrontendFoodbaseService;
-import org.bosik.diacomp.web.frontend.wicket.dialogs.FoodEditor;
+import org.bosik.diacomp.web.frontend.wicket.dialogs.foodeditor.FoodEditor;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 
 public class FoodBasePage extends MasterPage
