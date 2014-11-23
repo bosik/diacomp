@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.frontend.wicket.pages.foodbase;
+package org.bosik.diacomp.web.frontend.wicket.pages.base;
 
 import java.util.Iterator;
 import java.util.List;
