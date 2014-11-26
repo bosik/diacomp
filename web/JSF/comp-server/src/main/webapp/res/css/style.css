@@ -136,7 +136,7 @@ th {
 /* =========================== MENU STYLES =========================== */
 .menu {
 	margin-top: 5px;
-	/*margin-bottom: 15px;*/
+	margin-bottom: 5px;
 	border-top: solid 1px #e0e0e0;
 	border-bottom: solid 1px #e0e0e0;
 }
@@ -214,9 +214,13 @@ th {
 #diary-left-panel {
 	float: left;
 	width: 230px;
-	background: #ff0;
+	/*background: #ff0;*/
 	margin-left: -230px;
 	position: fixed;
+}
+
+#diary-main-panel {
+	padding-left: 10px;
 }
 
 #diary_block {
