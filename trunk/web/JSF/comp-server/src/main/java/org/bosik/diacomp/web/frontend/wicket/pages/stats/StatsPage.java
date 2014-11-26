@@ -151,8 +151,6 @@ public class StatsPage extends MasterPage
 	public StatsPage(PageParameters parameters)
 	{
 		super(parameters);
-
-		Chart chart = new Chart("chart", new BasicLineOptions());
-		add(chart);
+		add(new Chart("chart", new BasicLineOptions()));
 	}
 }
