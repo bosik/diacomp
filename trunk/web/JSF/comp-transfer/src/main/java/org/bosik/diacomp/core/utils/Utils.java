@@ -737,6 +737,13 @@ public class Utils
 		return c.getTime();
 	}
 
+	public static int getDayMinutes(Date date)
+	{
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		return c.get(Calendar.HOUR_OF_DAY) * MinPerHour + c.get(Calendar.MINUTE);
+	}
+
 	/**
 	 * MISC
 	 */
