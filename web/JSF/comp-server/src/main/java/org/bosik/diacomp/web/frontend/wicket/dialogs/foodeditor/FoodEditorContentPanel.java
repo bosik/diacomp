@@ -9,6 +9,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.utils.Utils;
 
 public abstract class FoodEditorContentPanel extends Panel
 {
@@ -21,10 +22,15 @@ public abstract class FoodEditorContentPanel extends Panel
 		super(id);
 
 		// clone
+
+		if (model.getObject().getId() == null)
+		{
+			model.getObject().setId(Utils.generateGuid());
+		}
 		food = new Versioned<FoodItem>(model.getObject());
 		food.setData(new FoodItem(food.getData()));
 
-		Form form = new Form("form");
+		Form<Void> form = new Form<Void>("form");
 		add(form);
 
 		//		add(new AjaxLink("selectionLink")

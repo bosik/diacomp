@@ -7,8 +7,10 @@ import java.util.List;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.markup.html.form.AjaxFallbackButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
@@ -36,20 +38,6 @@ public class FoodBasePage extends MasterPage
 	{
 		super(parameters);
 
-		TextField<String> textSearch = new TextField<String>("inputSearchName", new PropertyModel<String>(this,
-				"search"));
-		textSearch.add(new AjaxFormComponentUpdatingBehavior("onkeyup")
-		{
-			private static final long	serialVersionUID	= 1L;
-
-			@Override
-			protected void onUpdate(AjaxRequestTarget target)
-			{
-				target.add(container);
-			}
-		});
-		add(textSearch);
-
 		final FoodEditor foodEditor = new FoodEditor("foodEditor")
 		{
 			private static final long	serialVersionUID	= 1L;
@@ -73,6 +61,49 @@ public class FoodBasePage extends MasterPage
 			}
 		};
 		add(foodEditor);
+
+		TextField<String> textSearch = new TextField<String>("inputSearchName", new PropertyModel<String>(this,
+				"search"));
+		textSearch.add(new AjaxFormComponentUpdatingBehavior("onkeyup")
+		{
+			private static final long	serialVersionUID	= 1L;
+
+			@Override
+			protected void onUpdate(AjaxRequestTarget target)
+			{
+				target.add(container);
+			}
+		});
+		add(textSearch);
+
+		Form<Void> form = new Form<Void>("formNew");
+		add(form);
+
+		AjaxFallbackButton buttonNewFood = new AjaxFallbackButton("buttonNewFood", form)
+		{
+			private static final long	serialVersionUID	= 1417984638165989821L;
+
+			@Override
+			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
+			{
+				super.onSubmit(target, form);
+				Versioned<FoodItem> food = new Versioned<FoodItem>(new FoodItem());
+				foodEditor.show(target, Model.of(food));
+			}
+		};
+		form.add(buttonNewFood);
+
+		AjaxFallbackButton buttonNewDish = new AjaxFallbackButton("buttonNewDish", form)
+		{
+			private static final long	serialVersionUID	= 1417984638165989821L;
+
+			@Override
+			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
+			{
+				super.onSubmit(target, form);
+			}
+		};
+		form.add(buttonNewDish);
 
 		container = new WebMarkupContainer("tableContainer");
 		container.setOutputMarkupId(true);
