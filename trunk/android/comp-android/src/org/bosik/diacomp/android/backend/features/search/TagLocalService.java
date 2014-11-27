@@ -7,17 +7,17 @@ import android.content.ContentResolver;
 
 public class TagLocalService implements TagService
 {
-	private final ContentResolver		resolver;
+	// private final ContentResolver resolver;
 
 	private static final Map<String, Integer>	cache	= new HashMap<String, Integer>();
 
 	public TagLocalService(ContentResolver resolver)
 	{
-		if (null == resolver)
-		{
-			throw new NullPointerException("Content resolver can't be null");
-		}
-		this.resolver = resolver;
+		// if (null == resolver)
+		// {
+		// throw new NullPointerException("Content resolver can't be null");
+		// }
+		// this.resolver = resolver;
 	}
 
 	/**
@@ -171,14 +171,17 @@ public class TagLocalService implements TagService
 		//
 		// cache.add(new TagInfo(id, value));
 
-		Integer tag = cache.get(id);
-		if (tag == null)
+		synchronized (cache)
 		{
-			cache.put(id, value);
-		}
-		else
-		{
-			cache.put(id, tag + value);
+			Integer tag = cache.get(id);
+			if (tag == null)
+			{
+				cache.put(id, value);
+			}
+			else
+			{
+				cache.put(id, tag + value);
+			}
 		}
 	}
 
@@ -197,6 +200,9 @@ public class TagLocalService implements TagService
 		// {
 		// throw new PersistenceException(e);
 		// }
-		cache.clear();
+		synchronized (cache)
+		{
+			cache.clear();
+		}
 	}
 }
