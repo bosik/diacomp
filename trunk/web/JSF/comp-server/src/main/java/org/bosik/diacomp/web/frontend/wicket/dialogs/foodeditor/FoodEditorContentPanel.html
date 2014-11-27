@@ -2,30 +2,30 @@
 <html xmlns:wicket="http://wicket.apache.org">
 <wicket:panel>
 	<form wicket:id="form">
-		<input wicket:id="inputName" type="text" placeholder="Name..."
+		<input wicket:id="inputName" type="text" wicket:message="placeholder:foodEditor.fields.name"
 			class="full_width" />
 
 		<table>
 			<tr>
-				<td class="half_width">Prots, g</td>
+				<td class="half_width"><wicket:message key="foodEditor.fields.prots"></wicket:message></td>
 				<td class="half_width"><input type="text" /></td>
 			</tr>
 			<tr>
-				<td class="half_width">Fats, g</td>
+				<td class="half_width"><wicket:message key="foodEditor.fields.fats"></wicket:message></td>
 				<td class="half_width"><input type="text" /></td>
 			</tr>
 			<tr>
-				<td class="half_width">Carbs, g</td>
+				<td class="half_width"><wicket:message key="foodEditor.fields.carbs"></wicket:message></td>
 				<td class="half_width"><input type="text" /></td>
 			</tr>
 			<tr>
-				<td class="half_width">Value, kcal</td>
+				<td class="half_width"><wicket:message key="foodEditor.fields.value"></wicket:message></td>
 				<td class="half_width"><input type="text" /></td>
 			</tr>
 		</table>
 
-		<input wicket:id="buttonSelect" type="button" value="Save" /> <input
-			wicket:id="buttonClose" type="button" value="Cancel" />
+		<input wicket:id="buttonSelect" type="button" wicket:message="value:foodEditor.buttons.save" />
+		<input wicket:id="buttonClose" type="button" wicket:message="value:foodEditor.buttons.cancel" />
 	</form>
 	<style>
 .half_width {

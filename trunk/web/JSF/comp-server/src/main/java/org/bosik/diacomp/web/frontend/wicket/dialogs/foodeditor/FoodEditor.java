@@ -17,8 +17,7 @@ public abstract class FoodEditor extends ModalWindow
 		setInitialWidth(450);
 		setInitialHeight(300);
 
-		// TODO: localization
-		setTitle("Редактор продуктов");
+		setTitle(getString("foodEditor.caption"));
 	}
 
 	public void show(AjaxRequestTarget target, Model<Versioned<FoodItem>> model)
