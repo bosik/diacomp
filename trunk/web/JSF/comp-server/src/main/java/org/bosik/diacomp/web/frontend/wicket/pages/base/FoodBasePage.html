@@ -6,8 +6,10 @@
 <body>
 	<wicket:extend xmlns:wicket="http://wicket.apache.org">
 		<div id="diary-tools">
-			<input type="button" class="btn btn-new-food" title="New food"></input> <input
-				type="button" class="btn btn-new-dish" title="New dish"></input>
+			<form wicket:id="formNew">
+				<input wicket:id="buttonNewFood" type="button" class="btn btn-new-food" title="New food"></input>
+				<input wicket:id="buttonNewDish" type="button" class="btn btn-new-dish" title="New dish"></input>
+			</form>
 		</div>
 		<div id="diary-search">
 			<input wicket:id="inputSearchName"
@@ -64,7 +66,7 @@
 
 #diary-search {
 	overflow: hidden;
-	padding-right: 10px;
+	padding-right: 15px;
 	margin-bottom: 16px;
 }
 
@@ -80,8 +82,8 @@
 }
 
 .btn-new-food,.btn-new-dish {
-	min-width: 40px;
-	min-height: 32px;
+	min-width: 36px;
+	min-height: 36px;
 	margin-left: 5px;
 }
 
