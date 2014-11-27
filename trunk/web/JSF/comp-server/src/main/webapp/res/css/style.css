@@ -133,6 +133,24 @@ th {
 	cursor: pointer;
 }
 
+.btn-positive, .btn-negative {
+	cursor: pointer;
+	padding: 4px;
+	min-width: 100px;
+	font-size: 100%;
+	border: solid 1px #ccc;
+	background: #e0e0e0;
+	transition: background-color 80ms ease-in-out;
+}
+
+.btn-positive:hover {
+	background: #bdb;
+}
+
+.btn-negative:hover {
+	background: #dbb;
+}
+
 /* =========================== MENU STYLES =========================== */
 .menu {
 	margin-top: 5px;
@@ -455,6 +473,16 @@ th {
 
 .col_delete:hover {
 	color: #ff0000;
+}
+
+/* =========================== EDITORS =========================== */
+.image-editor-food {
+	background-image: url("../img/editor-food.png");
+	background-position: center center;
+	background-repeat: no-repeat;
+	width: 96px;
+	height: 96px;
+	float: left;
 }
 
 /* =========================== ETC =========================== */
