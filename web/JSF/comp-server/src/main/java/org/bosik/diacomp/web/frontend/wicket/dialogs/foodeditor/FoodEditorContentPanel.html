@@ -13,31 +13,36 @@
 					<tr>
 						<td class="editor-food-key"><wicket:message
 								key="foodEditor.fields.prots"></wicket:message></td>
-						<td class="editor-food-value"><input class="full_width" type="text" /></td>
+						<td class="editor-food-value"><input wicket:id="inputProts"
+							class="full_width" type="text" /></td>
 					</tr>
 					<tr>
 						<td class="editor-food-key"><wicket:message
 								key="foodEditor.fields.fats"></wicket:message></td>
-						<td class="editor-food-value"><input class="full_width" type="text" /></td>
+						<td class="editor-food-value"><input wicket:id="inputFats"
+							class="full_width" type="text" /></td>
 					</tr>
 					<tr>
 						<td class="editor-food-key"><wicket:message
 								key="foodEditor.fields.carbs"></wicket:message></td>
-						<td class="editor-food-value"><input class="full_width" type="text" /></td>
+						<td class="editor-food-value"><input wicket:id="inputCarbs"
+							class="full_width" type="text" /></td>
 					</tr>
 					<tr>
 						<td class="editor-food-key"><wicket:message
 								key="foodEditor.fields.value"></wicket:message></td>
-						<td class="editor-food-value"><input class="full_width" type="text" /></td>
+						<td class="editor-food-value"><input wicket:id="inputValue"
+							class="full_width" type="text" /></td>
 					</tr>
 				</table>
 			</div>
 			<div class="editor-controls-container">
 				<div class="editor-controls-content">
-					<input wicket:id="buttonSelect" type="button"
-						wicket:message="value:foodEditor.buttons.save" class="btn-positive" /> <input
-						wicket:id="buttonClose" type="button"
-						wicket:message="value:foodEditor.buttons.cancel" class="btn-negative" />
+					<input wicket:id="buttonSave" type="button"
+						wicket:message="value:foodEditor.buttons.save"
+						class="btn-positive" /> <input wicket:id="buttonCancel"
+						type="button" wicket:message="value:foodEditor.buttons.cancel"
+						class="btn-negative" />
 				</div>
 			</div>
 		</form>
