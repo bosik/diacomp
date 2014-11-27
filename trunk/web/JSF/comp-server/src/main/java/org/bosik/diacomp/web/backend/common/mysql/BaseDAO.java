@@ -60,7 +60,7 @@ public interface BaseDAO<T>
 	void delete(int userId, String id);
 
 	/**
-	 * Persists the specified items in the database
+	 * Persists the specified items in the database (updates item if already presented, creates otherwise)
 	 * 
 	 * @param userId
 	 * @param items
