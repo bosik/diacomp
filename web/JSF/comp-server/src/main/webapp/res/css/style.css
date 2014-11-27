@@ -136,7 +136,7 @@ th {
 .btn, .btn-positive, .btn-negative {
 	cursor: pointer;
 	padding: 4px;
-	min-width: 100px;
+	min-width: 110px;
 	font-size: 100%;
 	border: solid 1px #ccc;
 	background-color: #e0e0e0;
