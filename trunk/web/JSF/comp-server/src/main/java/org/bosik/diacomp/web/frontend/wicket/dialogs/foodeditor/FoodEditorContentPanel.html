@@ -3,38 +3,41 @@
 <wicket:panel>
 	<div class="editor-panel">
 		<form wicket:id="form">
-			<div class="image-editor-food"></div>
 			<div class="editor-panel-content">
-				<input wicket:id="inputName" type="text"
-					wicket:message="placeholder:foodEditor.fields.name"
-					class="full_width" />
-
-				<table class="full_width">
-					<tr>
-						<td class="editor-food-key"><wicket:message
-								key="foodEditor.fields.prots"></wicket:message></td>
-						<td class="editor-food-value"><input wicket:id="inputProts"
-							class="full_width" type="text" /></td>
-					</tr>
-					<tr>
-						<td class="editor-food-key"><wicket:message
-								key="foodEditor.fields.fats"></wicket:message></td>
-						<td class="editor-food-value"><input wicket:id="inputFats"
-							class="full_width" type="text" /></td>
-					</tr>
-					<tr>
-						<td class="editor-food-key"><wicket:message
-								key="foodEditor.fields.carbs"></wicket:message></td>
-						<td class="editor-food-value"><input wicket:id="inputCarbs"
-							class="full_width" type="text" /></td>
-					</tr>
-					<tr>
-						<td class="editor-food-key"><wicket:message
-								key="foodEditor.fields.value"></wicket:message></td>
-						<td class="editor-food-value"><input wicket:id="inputValue"
-							class="full_width" type="text" /></td>
-					</tr>
-				</table>
+				<h4><wicket:message key="foodEditor.group.name"></wicket:message></h4>
+				<div class="group">
+					<input wicket:id="inputName" type="text" class="full_width"
+						autofocus />
+				</div>
+				<h4><wicket:message key="foodEditor.group.pfcv"></wicket:message></h4>
+				<div class="group">
+					<table class="full_width">
+						<tr>
+							<td class="editor-food-key"><wicket:message
+									key="foodEditor.fields.prots"></wicket:message></td>
+							<td class="editor-food-value"><input wicket:id="inputProts"
+								class="full_width" type="text" /></td>
+						</tr>
+						<tr>
+							<td class="editor-food-key"><wicket:message
+									key="foodEditor.fields.fats"></wicket:message></td>
+							<td class="editor-food-value"><input wicket:id="inputFats"
+								class="full_width" type="text" /></td>
+						</tr>
+						<tr>
+							<td class="editor-food-key"><wicket:message
+									key="foodEditor.fields.carbs"></wicket:message></td>
+							<td class="editor-food-value"><input wicket:id="inputCarbs"
+								class="full_width" type="text" /></td>
+						</tr>
+						<tr>
+							<td class="editor-food-key"><wicket:message
+									key="foodEditor.fields.value"></wicket:message></td>
+							<td class="editor-food-value"><input wicket:id="inputValue"
+								class="full_width" type="text" /></td>
+						</tr>
+					</table>
+				</div>
 			</div>
 			<div class="editor-controls-container">
 				<div class="editor-controls-content">
@@ -57,7 +60,7 @@
 }
 
 .editor-food-key {
-	width: 100px;
+	width: 50%;
 	padding-top: 5px;
 }
 
@@ -67,7 +70,8 @@
 }
 
 .editor-panel-content {
-	margin-left: 112px;
+	/*margin-left: 112px;*/
+	
 }
 
 .editor-controls-container {
@@ -78,12 +82,27 @@
 	bottom: 0;
 	height: 46px;
 	width: 100%;
+	bottom: 0;
+	height: 46px;
 }
 
 .editor-controls-content {
 	padding-top: 10px;
 	padding-right: 10px;
 	float: right;
+}
+
+h4 {
+	border-bottom: solid 1px #ccc;
+	font-size: 100%;
+	margin-bottom: 10px;
+	padding-bottom: 15px;
+	margin-top: 10px;
+	line-height: 0em;
+}
+
+.group {
+	margin-bottom: 30px;
 }
 </style>
 </wicket:panel>

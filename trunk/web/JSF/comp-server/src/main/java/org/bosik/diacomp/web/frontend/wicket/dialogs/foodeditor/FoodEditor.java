@@ -14,11 +14,11 @@ public abstract class FoodEditor extends ModalWindow
 	{
 		super(id);
 
-		setMinimalWidth(450);
-		setMinimalHeight(250);
+		setMinimalWidth(350);
+		setMinimalHeight(350);
 
-		setInitialWidth(450);
-		setInitialHeight(250);
+		setInitialWidth(350);
+		setInitialHeight(350);
 
 		setTitle(getString("foodEditor.caption"));
 	}
