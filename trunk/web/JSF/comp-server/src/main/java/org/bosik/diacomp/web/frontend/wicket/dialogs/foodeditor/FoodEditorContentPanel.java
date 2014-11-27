@@ -39,8 +39,12 @@ public abstract class FoodEditorContentPanel extends Panel
 		//		});
 
 		form.add(new TextField<String>("inputName", new PropertyModel<String>(food, "data.name")));
+		form.add(new TextField<Double>("inputProts", new PropertyModel<Double>(food, "data.relProts")));
+		form.add(new TextField<Double>("inputFats", new PropertyModel<Double>(food, "data.relFats")));
+		form.add(new TextField<Double>("inputCarbs", new PropertyModel<Double>(food, "data.relCarbs")));
+		form.add(new TextField<Double>("inputValue", new PropertyModel<Double>(food, "data.relValue")));
 
-		form.add(new AjaxFallbackButton("buttonSelect", form)
+		form.add(new AjaxFallbackButton("buttonSave", form)
 		{
 			private static final long	serialVersionUID	= 1L;
 
@@ -51,8 +55,7 @@ public abstract class FoodEditorContentPanel extends Panel
 			}
 		});
 
-		// Add a cancel / close button.
-		form.add(new AjaxFallbackButton("buttonClose", form)
+		form.add(new AjaxFallbackButton("buttonCancel", form)
 		{
 			private static final long	serialVersionUID	= -3966833383602736092L;
 
