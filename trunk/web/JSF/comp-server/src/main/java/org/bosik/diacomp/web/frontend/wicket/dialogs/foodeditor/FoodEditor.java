@@ -21,6 +21,7 @@ public abstract class FoodEditor extends ModalWindow
 		setInitialHeight(350);
 
 		setTitle(getString("foodEditor.caption"));
+		setCssClassName(CSS_CLASS_GRAY);
 	}
 
 	public void show(AjaxRequestTarget target, Model<Versioned<FoodItem>> model)
