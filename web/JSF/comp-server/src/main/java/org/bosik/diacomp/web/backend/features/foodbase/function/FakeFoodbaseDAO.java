@@ -138,10 +138,11 @@ public class FakeFoodbaseDAO implements FoodbaseDAO
 	public List<Versioned<FoodItem>> findAny(int userId, String filter)
 	{
 		List<Versioned<FoodItem>> result = new ArrayList<Versioned<FoodItem>>();
+		filter = filter.toLowerCase();
 
 		for (Versioned<FoodItem> rec : samples)
 		{
-			if (rec.getData().getName().contains(filter))
+			if (rec.getData().getName().toLowerCase().contains(filter))
 			{
 				Versioned<FoodItem> item = new Versioned<FoodItem>();
 				item.setId(rec.getId());
