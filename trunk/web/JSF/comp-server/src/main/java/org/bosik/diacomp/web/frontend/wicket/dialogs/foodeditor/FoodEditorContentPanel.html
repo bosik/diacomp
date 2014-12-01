@@ -4,12 +4,16 @@
 	<div class="editor-panel">
 		<form wicket:id="form">
 			<div class="editor-panel-content">
-				<h4><wicket:message key="foodEditor.group.name"></wicket:message></h4>
+				<h4>
+					<wicket:message key="foodEditor.group.name"></wicket:message>
+				</h4>
 				<div class="group">
 					<input wicket:id="inputName" type="text" class="full_width"
 						autofocus />
 				</div>
-				<h4><wicket:message key="foodEditor.group.pfcv"></wicket:message></h4>
+				<h4>
+					<wicket:message key="foodEditor.group.pfcv"></wicket:message>
+				</h4>
 				<div class="group">
 					<table class="full_width">
 						<tr>
@@ -103,6 +107,15 @@ h4 {
 
 .group {
 	margin-bottom: 30px;
+}
+
+div.w_caption {
+	background-color: rgb(0, 88, 0) !important;
+	color: #FFF !important;
+}
+
+a.w_close {
+	display: none;
 }
 </style>
 </wicket:panel>
