@@ -21,28 +21,17 @@ public abstract class FoodEditorContentPanel extends Panel
 	{
 		super(id);
 
-		// clone
+		final Versioned<FoodItem> modelObject = model.getObject();
 
-		if (model.getObject().getId() == null)
+		if (modelObject.getId() == null)
 		{
-			model.getObject().setId(Utils.generateGuid());
+			modelObject.setId(Utils.generateGuid());
 		}
-		food = new Versioned<FoodItem>(model.getObject());
+		food = new Versioned<FoodItem>(modelObject);
 		food.setData(new FoodItem(food.getData()));
 
 		Form<Void> form = new Form<Void>("form");
 		add(form);
-
-		//		add(new AjaxLink("selectionLink")
-		//		{
-		//			private static final long	serialVersionUID	= 2551387346578773401L;
-		//
-		//			@Override
-		//			public void onClick(AjaxRequestTarget target)
-		//			{
-		//				onSelect(target, new String("Selection using the link."));
-		//			}
-		//		});
 
 		form.add(new TextField<String>("inputName", new PropertyModel<String>(food, "data.name")));
 		form.add(new TextField<Double>("inputProts", new PropertyModel<Double>(food, "data.relProts")));
@@ -55,9 +44,9 @@ public abstract class FoodEditorContentPanel extends Panel
 			private static final long	serialVersionUID	= 1L;
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form form)
+			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
 			{
-				onSelect(target, Model.of(food));
+				onSave(target, Model.of(food));
 			}
 		});
 
@@ -66,7 +55,7 @@ public abstract class FoodEditorContentPanel extends Panel
 			private static final long	serialVersionUID	= -3966833383602736092L;
 
 			@Override
-			public void onSubmit(AjaxRequestTarget target, Form form)
+			public void onSubmit(AjaxRequestTarget target, Form<?> form)
 			{
 				onCancel(target);
 			}
@@ -75,5 +64,5 @@ public abstract class FoodEditorContentPanel extends Panel
 
 	abstract void onCancel(AjaxRequestTarget target);
 
-	abstract void onSelect(AjaxRequestTarget target, Model<Versioned<FoodItem>> model);
+	abstract void onSave(AjaxRequestTarget target, Model<Versioned<FoodItem>> model);
 }

@@ -37,7 +37,7 @@ public abstract class FoodEditor extends ModalWindow
 			}
 
 			@Override
-			void onSelect(AjaxRequestTarget target, Model<Versioned<FoodItem>> model)
+			void onSave(AjaxRequestTarget target, Model<Versioned<FoodItem>> model)
 			{
 				FoodEditor.this.onSelect(target, model);
 			}
