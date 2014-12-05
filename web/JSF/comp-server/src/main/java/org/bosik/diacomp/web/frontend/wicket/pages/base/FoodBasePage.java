@@ -43,7 +43,7 @@ public class FoodBasePage extends MasterPage
 			private static final long	serialVersionUID	= 1L;
 
 			@Override
-			public void onSelect(AjaxRequestTarget target, Model<Versioned<FoodItem>> model)
+			public void onSave(AjaxRequestTarget target, Model<Versioned<FoodItem>> model)
 			{
 				System.out.println("Saving: " + model.getObject().getData().getName());
 
