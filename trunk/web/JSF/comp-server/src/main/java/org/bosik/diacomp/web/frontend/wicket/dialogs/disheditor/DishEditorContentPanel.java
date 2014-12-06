@@ -1,0 +1,35 @@
+package org.bosik.diacomp.web.frontend.wicket.dialogs.disheditor;
+
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
+import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
+import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.frontend.wicket.dialogs.common.CommonEditorContentPanel;
+
+public abstract class DishEditorContentPanel extends CommonEditorContentPanel<DishItem>
+{
+	private static final long	serialVersionUID	= 1L;
+
+	public DishEditorContentPanel(String id, final Model<Versioned<DishItem>> model)
+	{
+		super(id, model);
+
+		final Versioned<DishItem> modelObject = model.getObject();
+
+		if (modelObject.getId() == null)
+		{
+			modelObject.setId(Utils.generateGuid());
+		}
+		entity = new Versioned<DishItem>(modelObject);
+		//dish.setData(new DishItem(dish.getData()));
+		//FIXME
+
+		form.add(new TextField<String>("inputName", new PropertyModel<String>(entity, "data.name")));
+		//		form.add(new TextField<Double>("inputProts", new PropertyModel<Double>(dish, "data.relProts")));
+		//		form.add(new TextField<Double>("inputFats", new PropertyModel<Double>(dish, "data.relFats")));
+		//		form.add(new TextField<Double>("inputCarbs", new PropertyModel<Double>(dish, "data.relCarbs")));
+		//		form.add(new TextField<Double>("inputValue", new PropertyModel<Double>(dish, "data.relValue")));
+	}
+}
