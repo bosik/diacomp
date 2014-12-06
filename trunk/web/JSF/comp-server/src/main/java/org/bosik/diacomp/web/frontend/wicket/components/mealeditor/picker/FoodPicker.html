@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+<wicket:head>
+	<style>
+div.wicket-aa-container {
+	border-width: 1px;
+	border-color: #cccccc;
+	border-style: solid;
+	max-height: 250px;
+	margin-top: 2px !important;
+}
+
+div.wicket-aa {
+	background-color: white;
+	padding: 2px;
+	text-align: left;
+}
+
+div.wicket-aa ul {
+	list-style: none;
+	padding: 2px;
+	margin: 0;
+}
+
+div.wicket-aa ul li.selected {
+	background-color: #f0f0f0;
+	margin: 0;
+}
+
+div.wicket-aa ul li {
+	padding: 2px 0 2px 2px;
+}
+</style>
+</wicket:head>
+</head>
+<body>
+	<wicket:panel>
+		<div>
+			<form wicket:id="form">
+				<input wicket:id="picker" type="text" class="full_width" />
+			</form>
+		</div>
+	</wicket:panel>
+</body>
+</html>
