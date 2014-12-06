@@ -18,20 +18,26 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
+import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.backend.features.dishbase.service.FrontendDishbaseService;
 import org.bosik.diacomp.web.backend.features.foodbase.service.FrontendFoodbaseService;
+import org.bosik.diacomp.web.frontend.wicket.dialogs.disheditor.DishEditor;
 import org.bosik.diacomp.web.frontend.wicket.dialogs.foodeditor.FoodEditor;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 
 public class FoodBasePage extends MasterPage
 {
-	private static final long				serialVersionUID	= 1L;
+	private static final long	serialVersionUID	= 3940559525543830406L;
 
 	WebMarkupContainer						container;
 
 	transient static final FoodBaseService	foodService			= new FrontendFoodbaseService();
+	transient static final DishBaseService	dishService			= new FrontendDishbaseService();
 	String									search;
 
 	public FoodBasePage(PageParameters parameters)
@@ -40,7 +46,7 @@ public class FoodBasePage extends MasterPage
 
 		final FoodEditor foodEditor = new FoodEditor("foodEditor")
 		{
-			private static final long	serialVersionUID	= 1L;
+			private static final long	serialVersionUID	= -8842868450540695476L;
 
 			@Override
 			public void onSave(AjaxRequestTarget target, Model<Versioned<FoodItem>> model)
@@ -61,6 +67,30 @@ public class FoodBasePage extends MasterPage
 			}
 		};
 		add(foodEditor);
+
+		final DishEditor dishEditor = new DishEditor("dishEditor")
+		{
+			private static final long	serialVersionUID	= -2502982139788686873L;
+
+			@Override
+			public void onSave(AjaxRequestTarget target, Model<Versioned<DishItem>> model)
+			{
+				System.out.println("Saving: " + model.getObject().getData().getName());
+
+				model.getObject().updateTimeStamp();
+				dishService.save(Arrays.asList(model.getObject()));
+
+				target.add(container);
+				close(target);
+			}
+
+			@Override
+			public void onCancel(AjaxRequestTarget target)
+			{
+				close(target);
+			}
+		};
+		add(dishEditor);
 
 		TextField<String> textSearch = new TextField<String>("inputSearchName", new PropertyModel<String>(this,
 				"search"));
@@ -88,6 +118,7 @@ public class FoodBasePage extends MasterPage
 			{
 				super.onSubmit(target, form);
 				Versioned<FoodItem> food = new Versioned<FoodItem>(new FoodItem());
+				food.setId(Utils.generateGuid());
 				foodEditor.show(target, Model.of(food));
 			}
 		};
@@ -101,6 +132,9 @@ public class FoodBasePage extends MasterPage
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
 			{
 				super.onSubmit(target, form);
+				Versioned<DishItem> dish = new Versioned<DishItem>(new DishItem());
+				dish.setId(Utils.generateGuid());
+				dishEditor.show(target, Model.of(dish));
 			}
 		};
 		form.add(buttonNewDish);
