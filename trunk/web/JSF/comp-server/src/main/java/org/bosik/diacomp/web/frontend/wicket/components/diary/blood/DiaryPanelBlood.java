@@ -27,7 +27,7 @@ public class DiaryPanelBlood extends Panel
 
 	private static String formatBloodValue(double value)
 	{
-		return String.format("%.1f", value) + " ммоль/л";
+		return String.format("%.1f ", value) + "ммоль/л";
 	}
 
 	private static String formatBloodFinger(int index)
