@@ -56,7 +56,7 @@ public abstract class FoodPicker extends Panel
 			{
 				String name = field.getModelObject();
 				Versioned<FoodItem> item = foodBase.findOne(name);
-				onSelected(item);
+				onSelected(target, item);
 			}
 
 			@Override
@@ -66,5 +66,5 @@ public abstract class FoodPicker extends Panel
 		});
 	}
 
-	public abstract void onSelected(Versioned<FoodItem> item);
+	public abstract void onSelected(AjaxRequestTarget target, Versioned<FoodItem> item);
 }
