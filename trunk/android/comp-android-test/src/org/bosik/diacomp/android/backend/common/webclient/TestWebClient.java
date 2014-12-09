@@ -1,21 +1,17 @@
 package org.bosik.diacomp.android.backend.common.webclient;
 
-import junit.framework.TestCase;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.WebClientException;
+import org.bosik.diacomp.android.test.R;
+import android.test.AndroidTestCase;
 
-public class TestWebClient extends TestCase
+public class TestWebClient extends AndroidTestCase
 {
 	// private static final String TAG = TestWebClient.class.getSimpleName();
-	// private static final String SERVER = "http://diacomp.16mb.com/";
-	private static final String	SERVER		= "http://192.168.0.103:8090/comp-server/";
-	private static final String	USERNAME	= "bosik-007@narod.ru";
-	private static final String	PASSWORD	= "devel0pment";
-	private static final int	TIMEOUT		= 3000;
 
 	private static WebClient	webClient;
 
 	/**
-	 * Constructs logged-in WebClient
+	 * Constructs authorized WebClient
 	 * 
 	 * @return
 	 */
@@ -23,6 +19,12 @@ public class TestWebClient extends TestCase
 	{
 		if (webClient == null)
 		{
+			TestWebClient test = new TestWebClient();
+			String SERVER = test.getContext().getString(R.string.test_url);
+			String USERNAME = test.getContext().getString(R.string.test_username);
+			String PASSWORD = test.getContext().getString(R.string.test_password);
+			int TIMEOUT = 3000;
+
 			webClient = new WebClient(TIMEOUT);
 			try
 			{
@@ -42,6 +44,6 @@ public class TestWebClient extends TestCase
 
 	public void testLogin()
 	{
-		WebClient client = getWebClient();
+		getWebClient();
 	}
 }
