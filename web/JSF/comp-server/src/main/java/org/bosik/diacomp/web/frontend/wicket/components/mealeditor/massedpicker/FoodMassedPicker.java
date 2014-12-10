@@ -1,6 +1,10 @@
 package org.bosik.diacomp.web.frontend.wicket.components.mealeditor.massedpicker;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -14,18 +18,18 @@ public abstract class FoodMassedPicker extends Panel
 	private static final long	serialVersionUID	= 1L;
 
 	// values
-	double						mass;
 	Versioned<FoodItem>			selectedItem;
+	Double						mass;
 
 	// components
+	FoodPicker					fieldFood;
 	TextField<Double>			fieldMass;
-	FoodPicker					picker;
 
 	public FoodMassedPicker(String id)
 	{
 		super(id);
 
-		picker = new FoodPicker("picker")
+		fieldFood = new FoodPicker("picker")
 		{
 			private static final long	serialVersionUID	= 1L;
 
@@ -36,17 +40,50 @@ public abstract class FoodMassedPicker extends Panel
 				target.focusComponent(fieldMass);
 			}
 		};
-		add(picker);
+		fieldFood.setOutputMarkupId(true);
+		add(fieldFood);
 
 		fieldMass = new TextField<Double>("mass", new PropertyModel<Double>(this, "mass"));
-		fieldMass.add(new AjaxFormComponentUpdatingBehavior("keyup")
+		fieldMass.add(new AjaxFormComponentUpdatingBehavior("keydown")
 		{
-			private static final long	serialVersionUID	= 1L;
+			private static final long	serialVersionUID	= 1072515919159765189L;
 
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
 			{
+			}
+		});
+		fieldMass.add(new AjaxEventBehavior("keydown")
+		{
+			private static final long	serialVersionUID	= 1L;
+
+			@Override
+			protected void updateAjaxAttributes(AjaxRequestAttributes attributes)
+			{
+				super.updateAjaxAttributes(attributes);
+
+				attributes.getAjaxCallListeners().add(new AjaxCallListener()
+				{
+					private static final long	serialVersionUID	= -846467011322058537L;
+
+					@Override
+					public CharSequence getPrecondition(Component component)
+					{
+						return "return (Wicket.Event.keyCode(attrs.event) === 13);";
+					}
+				});
+				attributes.setAllowDefault(true);
+			}
+
+			@Override
+			protected void onEvent(AjaxRequestTarget target)
+			{
 				onSelected(selectedItem, mass);
+
+				fieldFood.clear();
+				fieldMass.setModelObject(null);
+				fieldFood.focus(target);
+				target.add(fieldFood, fieldMass);
 			}
 		});
 		add(fieldMass);

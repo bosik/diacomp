@@ -27,7 +27,7 @@ public abstract class DishEditorContentPanel extends CommonEditorContentPanel<Di
 		form.add(new TextField<String>("inputName", new PropertyModel<String>(entity, "data.name")));
 
 		FoodList list = new FoodList();
-		DishItem data = model.getObject().getData();
+		DishItem data = modelObject.getData();
 		for (int i = 0; i < data.count(); i++)
 		{
 			list.getContent().add(data.get(i));
@@ -44,13 +44,12 @@ public abstract class DishEditorContentPanel extends CommonEditorContentPanel<Di
 			{
 				if (item != null)
 				{
-					System.out.println("Selected: " + item.getData().getName());
+					System.out.println("Selected: " + mass + " g of " + item.getData());
 				}
 				else
 				{
 					System.out.println("Null selected");
 				}
-				System.out.println("Mass: " + mass);
 			}
 		});
 	}

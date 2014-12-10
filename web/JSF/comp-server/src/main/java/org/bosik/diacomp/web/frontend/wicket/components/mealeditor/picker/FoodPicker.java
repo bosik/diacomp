@@ -16,9 +16,11 @@ import org.bosik.diacomp.web.backend.features.foodbase.service.FrontendFoodbaseS
 
 public abstract class FoodPicker extends Panel
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long				serialVersionUID	= 1L;
 
-	transient FoodBaseService	foodBase			= new FrontendFoodbaseService();
+	transient FoodBaseService				foodBase			= new FrontendFoodbaseService();
+
+	private AutoCompleteTextField<String>	field;
 
 	public FoodPicker(String id)
 	{
@@ -27,7 +29,7 @@ public abstract class FoodPicker extends Panel
 		Form<Void> form = new Form<Void>("form");
 		add(form);
 
-		final AutoCompleteTextField<String> field = new AutoCompleteTextField<String>("picker", new Model<String>(""))
+		field = new AutoCompleteTextField<String>("picker", new Model<String>(""))
 		{
 			private static final long	serialVersionUID	= 1L;
 
@@ -45,8 +47,6 @@ public abstract class FoodPicker extends Panel
 				return choices.iterator();
 			}
 		};
-		form.add(field);
-
 		field.add(new AjaxFormSubmitBehavior(form, "onchange")
 		{
 			private static final long	serialVersionUID	= 1L;
@@ -64,7 +64,19 @@ public abstract class FoodPicker extends Panel
 			{
 			}
 		});
+		field.setOutputMarkupId(true);
+		form.add(field);
+	}
+
+	public void clear()
+	{
+		field.setModelObject("");
 	}
 
 	public abstract void onSelected(AjaxRequestTarget target, Versioned<FoodItem> item);
+
+	public void focus(AjaxRequestTarget target)
+	{
+		target.focusComponent(field);
+	}
 }
