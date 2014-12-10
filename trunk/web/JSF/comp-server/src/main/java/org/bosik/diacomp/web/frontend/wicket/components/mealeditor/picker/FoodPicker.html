@@ -31,13 +31,17 @@ div.wicket-aa ul li.selected {
 div.wicket-aa ul li {
 	padding: 2px 0 2px 2px;
 }
+
+.foodpicker-form {
+	padding-right: 10px;
+}
 </style>
 </wicket:head>
 </head>
 <body>
 	<wicket:panel>
-		<form wicket:id="form">
-			<input wicket:id="picker" type="text" class="full_width" />
+		<form wicket:id="form" class="foodpicker-form">
+			<input wicket:id="picker" type="text" class="full_width" wicket:message="placeholder:picker.hint"/>
 		</form>
 	</wicket:panel>
 </body>
