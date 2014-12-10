@@ -3,13 +3,23 @@
 <head>
 <wicket:head>
 	<style>
+.foodpicker-food {
+	overflow: hidden;
+}
+
+.foodpicker-mass {
+	float: right;
+	width: 80px;
+	margin-left: 5px;
+	font-size: 100%;
+}
 </style>
 </wicket:head>
 </head>
 <body>
 	<wicket:panel>
-		<div wicket:id="picker"></div>
-		<input wicket:id="mass" type="text" />
+		<input wicket:id="mass" type="text" class="foodpicker-mass" wicket:message="placeholder:mass.hint"/>
+		<div wicket:id="picker" class="foodpicker-food"></div>
 	</wicket:panel>
 </body>
 </html>
