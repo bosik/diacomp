@@ -31,6 +31,11 @@ public class Food implements Serializable, Named, Relative
 
 	}
 
+	public Food(Food food)
+	{
+		this(food.getName(), food.getRelProts(), food.getRelFats(), food.getRelCarbs(), food.getRelValue());
+	}
+
 	public Food(String name, double relProts, double relFats, double relCarbs, double relValue)
 	{
 		setName(name);

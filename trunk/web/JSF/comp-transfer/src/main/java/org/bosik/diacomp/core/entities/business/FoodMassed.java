@@ -22,6 +22,12 @@ public class FoodMassed extends Food
 		setMass(mass);
 	}
 
+	public FoodMassed(Food food, double mass)
+	{
+		super(food);
+		setMass(mass);
+	}
+
 	// ================================ VALIDATORS ================================
 
 	public static boolean checkMass(double value)
