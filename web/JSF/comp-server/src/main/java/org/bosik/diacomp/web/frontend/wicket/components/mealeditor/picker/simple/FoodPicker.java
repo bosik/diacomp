@@ -9,6 +9,7 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTe
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
+import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
@@ -55,8 +56,12 @@ public abstract class FoodPicker extends Panel
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				String name = field.getModelObject();
-				Versioned<FoodItem> item = foodBase.findOne(name);
-				onSelected(target, item);
+				Versioned<FoodItem> food = foodBase.findOne(name);
+				if (food != null)
+				{
+					Food item = food.getData();
+					onSelected(target, item);
+				}
 			}
 
 			@Override
@@ -73,7 +78,7 @@ public abstract class FoodPicker extends Panel
 		field.setModelObject("");
 	}
 
-	public abstract void onSelected(AjaxRequestTarget target, Versioned<FoodItem> item);
+	public abstract void onSelected(AjaxRequestTarget target, Food item);
 
 	public void focus(AjaxRequestTarget target)
 	{

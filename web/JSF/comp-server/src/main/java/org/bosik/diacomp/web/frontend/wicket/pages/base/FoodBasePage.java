@@ -23,6 +23,7 @@ import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
+import org.bosik.diacomp.core.test.fakes.mocks.MockFoodMassed;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.features.dishbase.service.FrontendDishbaseService;
 import org.bosik.diacomp.web.backend.features.foodbase.service.FrontendFoodbaseService;
@@ -32,7 +33,7 @@ import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 
 public class FoodBasePage extends MasterPage
 {
-	private static final long	serialVersionUID	= 3940559525543830406L;
+	private static final long				serialVersionUID	= 3940559525543830406L;
 
 	WebMarkupContainer						container;
 
@@ -134,6 +135,18 @@ public class FoodBasePage extends MasterPage
 				super.onSubmit(target, form);
 				Versioned<DishItem> dish = new Versioned<DishItem>(new DishItem());
 				dish.setId(Utils.generateGuid());
+
+				// == TEST ONLY =============================
+
+				MockFoodMassed mock = new MockFoodMassed();
+
+				dish.getData().add(mock.getSample());
+				dish.getData().add(mock.getSample());
+				dish.getData().add(mock.getSample());
+				dish.getData().add(mock.getSample());
+
+				// == TEST ONLY =============================
+
 				dishEditor.show(target, Model.of(dish));
 			}
 		};
