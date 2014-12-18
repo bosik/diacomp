@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker;
+package org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.simple;
 
 import java.util.ArrayList;
 import java.util.Iterator;

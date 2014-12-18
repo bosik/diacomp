@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.frontend.wicket.components.mealeditor.massedpicker;
+package org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.massed;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -11,7 +11,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.PropertyModel;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.FoodPicker;
+import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.simple.FoodPicker;
 
 public abstract class FoodMassedPicker extends Panel
 {

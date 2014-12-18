@@ -6,8 +6,8 @@ import org.apache.wicket.model.PropertyModel;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.massedpicker.FoodMassedPicker;
-import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.FoodList;
+import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.massed.FoodMassedPicker;
+import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.simple.FoodList;
 import org.bosik.diacomp.web.frontend.wicket.dialogs.common.CommonEditorContentPanel;
 
 public abstract class DishEditorContentPanel extends CommonEditorContentPanel<DishItem>
