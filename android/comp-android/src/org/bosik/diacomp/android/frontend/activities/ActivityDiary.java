@@ -109,6 +109,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			((Button) findViewById(R.id.buttonAddMeal)).setOnClickListener(this);
 			((Button) findViewById(R.id.buttonAddNote)).setOnClickListener(this);
 			findViewById(R.id.scrollView).setBackgroundColor(Color.WHITE);
+			// ((ScrollView) findViewById(R.id.scrollView)).set
 			diaryViewLayout.setOnRecordClickListener(this);
 
 			// определение параметров запроса
@@ -299,6 +300,9 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			{
 				case CONTEXT_ITEM_REMOVE:
 				{
+					// String id = curRecords.get(ind).getId();
+					// ((DiaryLocalService) diary).deletePermanently(id);
+					
 					curRecords.get(ind).setDeleted(true);
 					curRecords.get(ind).updateTimeStamp();
 					postRecord(curRecords.get(ind));
