@@ -1,6 +1,5 @@
 package org.bosik.diacomp.core.entities.business.foodbase;
 
-import java.io.Serializable;
 import java.util.Locale;
 import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
@@ -12,7 +11,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Bosik
  * 
  */
-public class FoodItem extends Food implements Serializable, NamedRelativeTagged
+public class FoodItem extends Food implements NamedRelativeTagged
 {
 	private static final long	serialVersionUID	= 1789285539891342521L;
 
