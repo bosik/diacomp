@@ -4,9 +4,8 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
-import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.massed.FoodMassedPicker;
+import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.editor.MealEditor;
 import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.simple.FoodList;
 import org.bosik.diacomp.web.frontend.wicket.dialogs.common.CommonEditorContentPanel;
 
@@ -33,24 +32,6 @@ public abstract class DishEditorContentPanel extends CommonEditorContentPanel<Di
 			list.getContent().add(data.get(i));
 		}
 
-		// Model.of(list)
-
-		form.add(new FoodMassedPicker("editor")
-		{
-			private static final long	serialVersionUID	= 6850233237789079835L;
-
-			@Override
-			public void onSelected(Versioned<FoodItem> item, Double mass)
-			{
-				if (item != null)
-				{
-					System.out.println("Selected: " + mass + " g of " + item.getData());
-				}
-				else
-				{
-					System.out.println("Null selected");
-				}
-			}
-		});
+		form.add(new MealEditor("editor", Model.of(list)));
 	}
 }

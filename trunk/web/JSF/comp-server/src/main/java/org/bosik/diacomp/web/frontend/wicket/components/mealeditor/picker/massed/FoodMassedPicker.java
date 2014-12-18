@@ -9,8 +9,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.PropertyModel;
-import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.simple.FoodPicker;
 
 public abstract class FoodMassedPicker extends Panel
@@ -18,7 +17,7 @@ public abstract class FoodMassedPicker extends Panel
 	private static final long	serialVersionUID	= 1L;
 
 	// values
-	Versioned<FoodItem>			selectedItem;
+	Food						selectedItem;
 	Double						mass;
 
 	// components
@@ -34,7 +33,7 @@ public abstract class FoodMassedPicker extends Panel
 			private static final long	serialVersionUID	= 1L;
 
 			@Override
-			public void onSelected(AjaxRequestTarget target, Versioned<FoodItem> item)
+			public void onSelected(AjaxRequestTarget target, Food item)
 			{
 				selectedItem = item;
 				target.focusComponent(fieldMass);
@@ -78,16 +77,23 @@ public abstract class FoodMassedPicker extends Panel
 			@Override
 			protected void onEvent(AjaxRequestTarget target)
 			{
-				onSelected(selectedItem, mass);
+				if (selectedItem != null)
+				{
+					onSelected(target, selectedItem, mass);
 
-				fieldFood.clear();
-				fieldMass.setModelObject(null);
-				fieldFood.focus(target);
-				target.add(fieldFood, fieldMass);
+					fieldFood.clear();
+					fieldMass.setModelObject(null);
+					fieldFood.focus(target);
+					target.add(fieldFood, fieldMass);
+				}
+				else
+				{
+					fieldFood.focus(target);
+				}
 			}
 		});
 		add(fieldMass);
 	}
 
-	public abstract void onSelected(Versioned<FoodItem> item, Double mass);
+	public abstract void onSelected(AjaxRequestTarget target, Food item, Double mass);
 }
