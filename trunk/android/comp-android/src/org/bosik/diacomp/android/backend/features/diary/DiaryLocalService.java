@@ -222,6 +222,20 @@ public class DiaryLocalService implements DiaryService
 		}
 	}
 
+	public void deletePermanently(String id) throws CommonServiceException
+	{
+		try
+		{
+			String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
+			String[] args = new String[] { id };
+			resolver.delete(DiaryContentProvider.CONTENT_DIARY_URI, clause, args);
+		}
+		catch (Exception e)
+		{
+			throw new PersistenceException(e);
+		}
+	}
+
 	/* ======================= ROUTINES ========================= */
 
 	private List<Versioned<DiaryRecord>> extractRecords(Cursor cursor)
