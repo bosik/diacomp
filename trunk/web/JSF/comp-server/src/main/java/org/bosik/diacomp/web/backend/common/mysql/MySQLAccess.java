@@ -8,20 +8,13 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.SortedMap;
+import org.bosik.diacomp.web.backend.common.Config;
 
 public class MySQLAccess
 {
 	private static Connection	connection;
 
 	private static final String	SQL_DRIVER					= "com.mysql.jdbc.Driver";
-	private static final String	SCHEMA						= "compensation";
-	private static final String	USERNAME					= "root";
-	private static final String	PASSWORD					= "root";
-	private static final String	connectionString			= String.format(
-																	"jdbc:mysql://127.0.0.1:3306/%s?user=%s&password=%s"
-																			+ "&autoReconnect=true&failOverReadOnly=false&maxReconnects=10"
-																			+ "&useUnicode=true&characterEncoding=UTF8",
-																	SCHEMA, USERNAME, PASSWORD);
 
 	// ======================================= User table =======================================
 
@@ -81,12 +74,31 @@ public class MySQLAccess
 	{
 		if (connection == null)
 		{
+			String connectionString = Config.get("connection");
 			connection = DriverManager.getConnection(connectionString);
 		}
 	}
 
 	// the resource is returned to invoker
-	public ResultSet select(String table, String clause, String order, String... params) throws SQLException
+	/**
+	 * 
+	 * @param table
+	 *            Table name
+	 * @param clause
+	 *            Selection clause
+	 * @param order
+	 *            Name of column to be ordered by
+	 * @param offset
+	 *            Index of first row to select
+	 * @param limit
+	 *            Max number of rows to be selected
+	 * @param params
+	 *            Arguments for clause
+	 * @return
+	 * @throws SQLException
+	 */
+	public ResultSet select(String table, String clause, String order, int offset, int limit, String... params)
+			throws SQLException
 	{
 		connect();
 
@@ -94,6 +106,11 @@ public class MySQLAccess
 		if ((order != null) && !order.isEmpty())
 		{
 			sql += " ORDER BY " + order;
+		}
+
+		if (offset >= 0)
+		{
+			sql += " LIMIT " + offset + ", " + limit;
 		}
 
 		PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -104,6 +121,12 @@ public class MySQLAccess
 
 		// Don't close prepared statement!
 		return preparedStatement.executeQuery();
+	}
+
+	// the resource is returned to invoker
+	public ResultSet select(String table, String clause, String order, String... params) throws SQLException
+	{
+		return select(table, clause, order, -1, -1, params);
 	}
 
 	public int insert(String table, LinkedHashMap<String, String> set)
@@ -122,6 +145,7 @@ public class MySQLAccess
 			sb.append(")");
 
 			PreparedStatement preparedStatement = connection.prepareStatement(sb.toString());
+			// TODO: debug only
 			System.out.println(sb);
 
 			// filling wildcards
@@ -155,6 +179,7 @@ public class MySQLAccess
 			sb.append(" WHERE ");
 			sb.append(Utils.separated(where.keySet().iterator(), " AND "));
 
+			// TODO: debug only
 			System.out.println(sb);
 
 			PreparedStatement preparedStatement = connection.prepareStatement(sb.toString());
@@ -168,6 +193,7 @@ public class MySQLAccess
 			{
 				// statement.setString(i++, entry.getKey());
 				preparedStatement.setString(i++, entry.getValue());
+				// TODO: debug only
 				System.out.println("UPDATE: " + entry.getKey() + " = " + entry.getValue());
 			}
 
