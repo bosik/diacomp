@@ -5,19 +5,27 @@ import org.apache.wicket.ajax.markup.html.form.AjaxFallbackButton;
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.model.IModel;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 
 public abstract class CommonEditorContentPanel<T> extends Panel implements IHeaderContributor
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long		serialVersionUID	= 1L;
 
-	protected Form<Void>		form;
-	protected Versioned<T>		entity;
+	protected Form<Void>			form;
+	protected IModel<Versioned<T>>	model;
 
-	public CommonEditorContentPanel(String id, final Model<Versioned<T>> model)
+	public CommonEditorContentPanel(String id, final IModel<Versioned<T>> model)
 	{
 		super(id);
+		this.model = model;
+	}
+
+	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
+
 		form = new Form<Void>("form");
 		add(form);
 
@@ -44,7 +52,7 @@ public abstract class CommonEditorContentPanel<T> extends Panel implements IHead
 		});
 	}
 
-	protected abstract void onSave(AjaxRequestTarget target, Model<Versioned<T>> model);
+	protected abstract void onSave(AjaxRequestTarget target, IModel<Versioned<T>> model);
 
 	protected abstract void onCancel(AjaxRequestTarget target);
 }

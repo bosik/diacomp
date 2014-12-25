@@ -150,7 +150,7 @@ public class DiaryPage extends MasterPage
 			@Override
 			protected void populateItem(final Item<DiaryPanelDayModelObject> item)
 			{
-				item.add(new DiaryPanelDay("diaryDayPanel", item.getModelObject()));
+				item.add(new DiaryPanelDay("diaryDayPanel", item.getModel()));
 			}
 		});
 	}

@@ -37,7 +37,7 @@ public abstract class FoodPicker extends Panel
 		Form<Void> form = new Form<Void>("form");
 		add(form);
 
-		field = new AutoCompleteTextField<String>("picker", new Model<String>(""))
+		field = new AutoCompleteTextField<String>("picker", Model.of(""))
 		{
 			private static final long	serialVersionUID	= 1L;
 

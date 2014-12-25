@@ -1,6 +1,7 @@
 package org.bosik.diacomp.web.frontend.wicket.dialogs.disheditor;
 
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
@@ -13,17 +14,22 @@ public abstract class DishEditorContentPanel extends CommonEditorContentPanel<Di
 {
 	private static final long	serialVersionUID	= 1L;
 
-	public DishEditorContentPanel(String id, final Model<Versioned<DishItem>> model)
+	public DishEditorContentPanel(String id, final IModel<Versioned<DishItem>> model)
 	{
 		super(id, model);
+	}
+
+	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
 
 		final Versioned<DishItem> modelObject = model.getObject();
 
-		entity = new Versioned<DishItem>(modelObject);
 		//dish.setData(new DishItem(dish.getData()));
 		//FIXME
 
-		form.add(new TextField<String>("inputName", new PropertyModel<String>(entity, "data.name")));
+		form.add(new TextField<String>("inputName", new PropertyModel<String>(model, "data.name")));
 
 		FoodList list = new FoodList();
 		DishItem data = modelObject.getData();

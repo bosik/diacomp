@@ -5,6 +5,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxFallbackButton;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
@@ -15,10 +16,18 @@ public abstract class FoodEditorContentPanel extends Panel
 	private static final long	serialVersionUID	= 1L;
 
 	Versioned<FoodItem>			food;
+	IModel<Versioned<FoodItem>>	model;
 
-	public FoodEditorContentPanel(String id, final Model<Versioned<FoodItem>> model)
+	public FoodEditorContentPanel(String id, IModel<Versioned<FoodItem>> model)
 	{
 		super(id);
+		this.model = model;
+	}
+
+	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
 
 		final Versioned<FoodItem> modelObject = model.getObject();
 
@@ -59,5 +68,5 @@ public abstract class FoodEditorContentPanel extends Panel
 
 	abstract void onCancel(AjaxRequestTarget target);
 
-	abstract void onSave(AjaxRequestTarget target, Model<Versioned<FoodItem>> model);
+	abstract void onSave(AjaxRequestTarget target, IModel<Versioned<FoodItem>> model);
 }

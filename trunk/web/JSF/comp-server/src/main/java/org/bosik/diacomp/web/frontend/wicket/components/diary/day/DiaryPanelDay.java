@@ -21,11 +21,22 @@ import org.bosik.diacomp.web.frontend.wicket.components.diary.note.DiaryPanelNot
 
 public class DiaryPanelDay extends Panel
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long			serialVersionUID	= 1L;
 
-	public DiaryPanelDay(String id, final DiaryPanelDayModelObject data)
+	IModel<DiaryPanelDayModelObject>	model;
+
+	public DiaryPanelDay(String id, IModel<DiaryPanelDayModelObject> model)
 	{
 		super(id);
+		this.model = model;
+	}
+
+	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
+
+		final DiaryPanelDayModelObject data = model.getObject();
 
 		add(new Label("caption", Utils.formatDateLocal(data.getDate())));
 		add(new RefreshingView<Versioned<DiaryRecord>>("diaryRecord")
@@ -63,15 +74,15 @@ public class DiaryPanelDay extends Panel
 
 				if (record instanceof BloodRecord)
 				{
-					item.add(new DiaryPanelBlood("diaryRecordPanel", (BloodRecord)record));
+					item.add(new DiaryPanelBlood("diaryRecordPanel", Model.of((BloodRecord)record)));
 				}
 				else if (record instanceof InsRecord)
 				{
-					item.add(new DiaryPanelIns("diaryRecordPanel", (InsRecord)record));
+					item.add(new DiaryPanelIns("diaryRecordPanel", Model.of((InsRecord)record)));
 				}
 				else if (record instanceof NoteRecord)
 				{
-					item.add(new DiaryPanelNote("diaryRecordPanel", (NoteRecord)record));
+					item.add(new DiaryPanelNote("diaryRecordPanel", Model.of((NoteRecord)record)));
 				}
 				else
 				{

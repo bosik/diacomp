@@ -27,6 +27,12 @@ public abstract class FoodMassedPicker extends Panel
 	public FoodMassedPicker(String id)
 	{
 		super(id);
+	}
+
+	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
 
 		fieldFood = new FoodPicker("picker")
 		{
