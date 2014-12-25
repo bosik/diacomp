@@ -2,6 +2,7 @@ package org.bosik.diacomp.web.frontend.wicket;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.bosik.diacomp.web.frontend.wicket.pages.about.AboutPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.base.FoodBasePage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
@@ -21,6 +22,7 @@ public class WicketApplication extends WebApplication
 	public void init()
 	{
 		super.init();
+		getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 
 		mountPage("/about", AboutPage.class);
 		mountPage("/login", LoginPage.class);

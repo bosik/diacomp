@@ -9,23 +9,30 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTe
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
-import org.bosik.diacomp.web.backend.features.foodbase.service.FrontendFoodbaseService;
 
 public abstract class FoodPicker extends Panel
 {
 	private static final long				serialVersionUID	= 1L;
 
-	transient FoodBaseService				foodBase			= new FrontendFoodbaseService();
+	@SpringBean
+	private FoodBaseService					foodBase;
 
 	private AutoCompleteTextField<String>	field;
 
 	public FoodPicker(String id)
 	{
 		super(id);
+	}
+
+	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
 
 		Form<Void> form = new Form<Void>("form");
 		add(form);
@@ -78,10 +85,10 @@ public abstract class FoodPicker extends Panel
 		field.setModelObject("");
 	}
 
-	public abstract void onSelected(AjaxRequestTarget target, Food item);
-
 	public void focus(AjaxRequestTarget target)
 	{
 		target.focusComponent(field);
 	}
+
+	public abstract void onSelected(AjaxRequestTarget target, Food item);
 }
