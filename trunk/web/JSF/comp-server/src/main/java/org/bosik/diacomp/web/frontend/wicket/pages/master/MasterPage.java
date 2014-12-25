@@ -1,6 +1,7 @@
 package org.bosik.diacomp.web.frontend.wicket.pages.master;
 
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
@@ -39,6 +40,7 @@ public class MasterPage extends WebPage
 			add(new Menu("menu", Model.of(getMenu(false))));
 		}
 
+		add(new Label("pageTitle", getString("res.appTitle")));
 	}
 
 	protected MenuContent getMenu(boolean authorized)
