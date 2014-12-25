@@ -4,21 +4,31 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.utils.Utils;
 
 public class DiaryPanelBlood extends Panel
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long				serialVersionUID	= 1L;
 
-	//private String[] fingerShort = new String[10];
+	private IModel<BloodRecord>	model;
 
-	public DiaryPanelBlood(String id, BloodRecord rec)
+	public DiaryPanelBlood(String id, IModel<BloodRecord> model)
 	{
 		super(id);
+		this.model = model;
+	}
 
-		add(new Image("icon", new Model<String>("icon.png")).add(AttributeModifier.replace("title", "Замер СК")));
+	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
+
+		BloodRecord rec = model.getObject();
+		// TODO: localization
+		add(new Image("icon", Model.of("icon.png")).add(AttributeModifier.replace("title", "Замер СК")));
 		add(new Label("time", Utils.formatTimeLocalShort(rec.getTime())));
 		add(new Label("value", formatBloodValue(rec.getValue())));
 		add(new Label("finger", formatBloodFinger(rec.getFinger())).add(AttributeModifier.replace("title",

@@ -2,7 +2,7 @@ package org.bosik.diacomp.web.frontend.wicket.dialogs.common;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.AppendingStringBuffer;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 
@@ -66,5 +66,5 @@ public abstract class CommonEditor<T> extends ModalWindow
 
 	public abstract void onCancel(AjaxRequestTarget target);
 
-	public abstract void onSave(AjaxRequestTarget target, Model<Versioned<T>> model);
+	public abstract void onSave(AjaxRequestTarget target, IModel<Versioned<T>> model);
 }

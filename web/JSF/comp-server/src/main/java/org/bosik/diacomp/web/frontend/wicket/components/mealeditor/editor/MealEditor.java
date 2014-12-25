@@ -23,10 +23,18 @@ public class MealEditor extends Panel
 	// components
 	//FoodPicker					fieldFood;
 	WebMarkupContainer			container;
+	IModel<FoodList>			model;
 
 	public MealEditor(String id, final IModel<FoodList> model)
 	{
 		super(id);
+		this.model = model;
+	}
+
+	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
 
 		container = new WebMarkupContainer("tableContainer");
 		container.setOutputMarkupId(true);
@@ -79,7 +87,6 @@ public class MealEditor extends Panel
 			@Override
 			public void onSelected(AjaxRequestTarget target, Food item, Double mass)
 			{
-				
 				if (item != null)
 				{
 					model.getObject().getContent().add(new FoodMassed(item, mass));

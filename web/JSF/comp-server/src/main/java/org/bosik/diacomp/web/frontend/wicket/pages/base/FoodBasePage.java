@@ -50,7 +50,7 @@ public class FoodBasePage extends MasterPage
 			private static final long	serialVersionUID	= -8842868450540695476L;
 
 			@Override
-			public void onSave(AjaxRequestTarget target, Model<Versioned<FoodItem>> model)
+			public void onSave(AjaxRequestTarget target, IModel<Versioned<FoodItem>> model)
 			{
 				System.out.println("Saving: " + model.getObject().getData().getName());
 
@@ -74,7 +74,7 @@ public class FoodBasePage extends MasterPage
 			private static final long	serialVersionUID	= -2502982139788686873L;
 
 			@Override
-			public void onSave(AjaxRequestTarget target, Model<Versioned<DishItem>> model)
+			public void onSave(AjaxRequestTarget target, IModel<Versioned<DishItem>> model)
 			{
 				System.out.println("Saving: " + model.getObject().getData().getName());
 

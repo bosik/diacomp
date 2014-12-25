@@ -2,7 +2,7 @@ package org.bosik.diacomp.web.frontend.wicket.dialogs.foodeditor;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.model.IModel;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 
@@ -24,7 +24,7 @@ public abstract class FoodEditor extends ModalWindow
 		setCssClassName(CSS_CLASS_GRAY);
 	}
 
-	public void show(AjaxRequestTarget target, Model<Versioned<FoodItem>> model)
+	public void show(AjaxRequestTarget target, IModel<Versioned<FoodItem>> model)
 	{
 		setContent(new FoodEditorContentPanel(getContentId(), model)
 		{
@@ -37,7 +37,7 @@ public abstract class FoodEditor extends ModalWindow
 			}
 
 			@Override
-			void onSave(AjaxRequestTarget target, Model<Versioned<FoodItem>> model)
+			void onSave(AjaxRequestTarget target, IModel<Versioned<FoodItem>> model)
 			{
 				FoodEditor.this.onSave(target, model);
 			}
@@ -47,5 +47,5 @@ public abstract class FoodEditor extends ModalWindow
 
 	public abstract void onCancel(AjaxRequestTarget target);
 
-	public abstract void onSave(AjaxRequestTarget target, Model<Versioned<FoodItem>> model);
+	public abstract void onSave(AjaxRequestTarget target, IModel<Versioned<FoodItem>> model);
 }
