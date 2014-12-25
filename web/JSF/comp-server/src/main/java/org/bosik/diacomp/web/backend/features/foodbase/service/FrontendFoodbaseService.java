@@ -15,7 +15,9 @@ import org.bosik.diacomp.web.backend.features.auth.service.AuthService;
 import org.bosik.diacomp.web.backend.features.auth.service.FrontendAuthService;
 import org.bosik.diacomp.web.backend.features.foodbase.function.FoodbaseDAO;
 import org.bosik.diacomp.web.backend.features.foodbase.function.MySQLFoodbaseDAO;
+import org.springframework.stereotype.Service;
 
+@Service
 public class FrontendFoodbaseService implements FoodBaseService
 {
 	private final AuthService	authService	= new FrontendAuthService();
