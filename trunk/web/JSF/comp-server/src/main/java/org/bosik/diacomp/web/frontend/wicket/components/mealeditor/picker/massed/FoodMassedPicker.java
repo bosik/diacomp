@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.PropertyModel;
 import org.bosik.diacomp.core.entities.business.Food;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.simple.FoodPicker;
 
 public abstract class FoodMassedPicker extends Panel
@@ -83,23 +84,28 @@ public abstract class FoodMassedPicker extends Panel
 			@Override
 			protected void onEvent(AjaxRequestTarget target)
 			{
-				if (selectedItem != null)
+				if (selectedItem == null)
 				{
-					onSelected(target, selectedItem, mass);
+					fieldFood.focus(target);
+				}
+				else if (mass == null)
+				{
+					target.focusComponent(fieldMass);
+				}
+				else
+				{
+					FoodMassed foodMassed = new FoodMassed(selectedItem, mass);
+					onSelected(target, foodMassed);
 
 					fieldFood.clear();
 					fieldMass.setModelObject(null);
 					fieldFood.focus(target);
 					target.add(fieldFood, fieldMass);
 				}
-				else
-				{
-					fieldFood.focus(target);
-				}
 			}
 		});
 		add(fieldMass);
 	}
 
-	public abstract void onSelected(AjaxRequestTarget target, Food item, Double mass);
+	public abstract void onSelected(AjaxRequestTarget target, FoodMassed item);
 }
