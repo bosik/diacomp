@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.simple;
+package org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.food;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -12,8 +12,8 @@ import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
-import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.massed.FoodMassedPicker;
-import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.simple.FoodList;
+import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.food.FoodList;
+import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.foodMassed.inserter.FoodMassedInserter;
 
 public class MealEditor extends Panel
 {
@@ -79,16 +79,19 @@ public class MealEditor extends Panel
 			}
 		});
 
-		add(new FoodMassedPicker("picker")
+		add(new FoodMassedInserter("picker")
 		{
 			private static final long	serialVersionUID	= 6850233237789079835L;
 
 			@Override
-			public void onSelected(AjaxRequestTarget target, FoodMassed item)
+			public void onSelected(AjaxRequestTarget target, IModel<FoodMassed> item)
 			{
 				if (item != null)
 				{
-					model.getObject().getContent().add(item);
+					FoodList modelObject = MealEditor.this.model.getObject();
+					modelObject.getContent().add(item.getObject());
+					MealEditor.this.model.setObject(modelObject);
+
 					target.add(container);
 				}
 				else
