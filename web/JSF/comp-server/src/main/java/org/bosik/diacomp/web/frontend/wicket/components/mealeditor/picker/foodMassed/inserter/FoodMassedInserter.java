@@ -16,20 +16,15 @@ public abstract class FoodMassedInserter extends FoodMassedPicker
 	}
 
 	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
+		icon.setVisible(false);
+	}
+
+	@Override
 	public void onFoodChanged(AjaxRequestTarget target, IModel<Food> item)
 	{
-		// copy food info to model
-
-		Food newFood = item.getObject();
-
-		FoodMassed modelObject = model.getObject();
-		modelObject.setName(newFood.getName());
-		modelObject.setRelProts(newFood.getRelProts());
-		modelObject.setRelFats(newFood.getRelFats());
-		modelObject.setRelCarbs(newFood.getRelCarbs());
-		modelObject.setRelValue(newFood.getRelValue());
-		model.setObject(modelObject);
-
 		// proceed the focus
 
 		target.focusComponent(fieldMass);
@@ -38,12 +33,6 @@ public abstract class FoodMassedInserter extends FoodMassedPicker
 	@Override
 	public void onMassChanged(AjaxRequestTarget target, IModel<Double> mass)
 	{
-		// copy the mass to model
-
-		FoodMassed modelObject = model.getObject();
-		modelObject.setMass(mass.getObject());
-		model.setObject(modelObject);
-
 		// call the event
 
 		onSelected(target, model);

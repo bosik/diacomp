@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
@@ -14,6 +13,7 @@ import org.apache.wicket.model.Model;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.food.FoodList;
 import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.foodMassed.inserter.FoodMassedInserter;
+import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.foodMassed.updater.FoodMassedUpdater;
 
 public class MealEditor extends Panel
 {
@@ -46,10 +46,7 @@ public class MealEditor extends Panel
 			@Override
 			protected void populateItem(final Item<FoodMassed> item)
 			{
-				FoodMassed food = item.getModelObject();
-
-				item.add(new Label("food.name", food.getName()));
-				item.add(new Label("food.mass", food.getMass()));
+				item.add(new FoodMassedUpdater("food", item.getModel()));
 
 				//				item.add(new AjaxEventBehavior("onclick")
 				//				{

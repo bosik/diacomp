@@ -13,21 +13,19 @@ public class FoodMassedUpdater extends FoodMassedPicker
 	public FoodMassedUpdater(String id, IModel<FoodMassed> model)
 	{
 		super(id, model);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void onFoodChanged(AjaxRequestTarget target, IModel<Food> food)
 	{
-		// TODO Auto-generated method stub
-
+		target.focusComponent(fieldMass);
+		target.add(fieldMass);
 	}
 
 	@Override
 	public void onMassChanged(AjaxRequestTarget target, IModel<Double> mass)
 	{
-		// TODO Auto-generated method stub
-
+		//		target.focusComponent(fieldFood);
+		//		target.add(fieldMass, fieldFood);
 	}
-
 }
