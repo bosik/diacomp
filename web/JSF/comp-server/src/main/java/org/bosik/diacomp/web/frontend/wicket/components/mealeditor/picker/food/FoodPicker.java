@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.simple;
+package org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.food;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,6 +8,7 @@ import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.entities.business.Food;
@@ -24,9 +25,12 @@ public abstract class FoodPicker extends Panel
 
 	private AutoCompleteTextField<String>	field;
 
-	public FoodPicker(String id)
+	private final IModel<String>			model;
+
+	public FoodPicker(String id, IModel<String> model)
 	{
 		super(id);
+		this.model = model;
 	}
 
 	@Override
@@ -37,7 +41,7 @@ public abstract class FoodPicker extends Panel
 		Form<Void> form = new Form<Void>("form");
 		add(form);
 
-		field = new AutoCompleteTextField<String>("picker", Model.of(""))
+		field = new AutoCompleteTextField<String>("picker", model)
 		{
 			private static final long	serialVersionUID	= 1L;
 
@@ -67,7 +71,7 @@ public abstract class FoodPicker extends Panel
 				if (food != null)
 				{
 					Food item = food.getData();
-					onSelected(target, item);
+					onSelected(target, Model.of(item));
 				}
 			}
 
@@ -90,5 +94,5 @@ public abstract class FoodPicker extends Panel
 		target.focusComponent(field);
 	}
 
-	public abstract void onSelected(AjaxRequestTarget target, Food item);
+	public abstract void onSelected(AjaxRequestTarget target, IModel<Food> item);
 }

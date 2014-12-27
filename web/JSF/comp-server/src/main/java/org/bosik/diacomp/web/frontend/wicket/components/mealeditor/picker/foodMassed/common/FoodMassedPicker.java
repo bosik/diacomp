@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.massed;
+package org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.foodMassed.common;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -8,26 +8,38 @@ import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
-import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.simple.FoodPicker;
+import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.food.FoodPicker;
 
 public abstract class FoodMassedPicker extends Panel
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long		serialVersionUID	= 1L;
+
+	protected IModel<FoodMassed>	model;
 
 	// values
-	Food						selectedItem;
-	Double						mass;
+	//		Food						selectedItem;
+	IModel<Double>					mass;
 
 	// components
-	FoodPicker					fieldFood;
-	TextField<Double>			fieldMass;
+	protected FoodPicker			fieldFood;
+	protected TextField<Double>		fieldMass;
+
+	public FoodMassedPicker(String id, IModel<FoodMassed> model)
+	{
+		super(id);
+		this.model = model;
+		mass = new PropertyModel<Double>(model, "mass");
+		//Model.of(model.getObject().getMass());
+	}
 
 	public FoodMassedPicker(String id)
 	{
-		super(id);
+		this(id, Model.of(new FoodMassed()));
 	}
 
 	@Override
@@ -35,21 +47,20 @@ public abstract class FoodMassedPicker extends Panel
 	{
 		super.onInitialize();
 
-		fieldFood = new FoodPicker("picker")
+		fieldFood = new FoodPicker("picker", Model.of(model.getObject().getName()))
 		{
 			private static final long	serialVersionUID	= 1L;
 
 			@Override
-			public void onSelected(AjaxRequestTarget target, Food item)
+			public void onSelected(AjaxRequestTarget target, IModel<Food> food)
 			{
-				selectedItem = item;
-				target.focusComponent(fieldMass);
+				onFoodChanged(target, food);
 			}
 		};
 		fieldFood.setOutputMarkupId(true);
 		add(fieldFood);
 
-		fieldMass = new TextField<Double>("mass", new PropertyModel<Double>(this, "mass"));
+		fieldMass = new TextField<Double>("mass", mass);
 		fieldMass.add(new AjaxFormComponentUpdatingBehavior("keydown")
 		{
 			private static final long	serialVersionUID	= 1072515919159765189L;
@@ -84,28 +95,27 @@ public abstract class FoodMassedPicker extends Panel
 			@Override
 			protected void onEvent(AjaxRequestTarget target)
 			{
-				if (selectedItem == null)
+				if (mass == null)
 				{
-					fieldFood.focus(target);
-				}
-				else if (mass == null)
-				{
-					target.focusComponent(fieldMass);
+					//					// TODO: is it possible?
+					//					fieldFood.focus(target);
 				}
 				else
 				{
-					FoodMassed foodMassed = new FoodMassed(selectedItem, mass);
-					onSelected(target, foodMassed);
-
-					fieldFood.clear();
-					fieldMass.setModelObject(null);
-					fieldFood.focus(target);
-					target.add(fieldFood, fieldMass);
+					onMassChanged(target, mass);
+					//					onSelected(target, model);
+					//
+					//					fieldFood.clear();
+					//					fieldMass.setModelObject(null);
+					//					fieldFood.focus(target);
+					//					target.add(fieldFood, fieldMass);
 				}
 			}
 		});
 		add(fieldMass);
 	}
 
-	public abstract void onSelected(AjaxRequestTarget target, FoodMassed item);
+	public abstract void onFoodChanged(AjaxRequestTarget target, IModel<Food> food);
+
+	public abstract void onMassChanged(AjaxRequestTarget target, IModel<Double> mass);
 }
