@@ -7,6 +7,7 @@ import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -26,6 +27,7 @@ public abstract class FoodMassedPicker extends Panel
 	IModel<Double>					mass;
 
 	// components
+	protected Image					icon;
 	protected FoodPicker			fieldFood;
 	protected TextField<Double>		fieldMass;
 
@@ -34,7 +36,6 @@ public abstract class FoodMassedPicker extends Panel
 		super(id);
 		this.model = model;
 		mass = new PropertyModel<Double>(model, "mass");
-		//Model.of(model.getObject().getMass());
 	}
 
 	public FoodMassedPicker(String id)
@@ -47,6 +48,9 @@ public abstract class FoodMassedPicker extends Panel
 	{
 		super.onInitialize();
 
+		icon = new Image("icon", "");
+		add(icon);
+
 		fieldFood = new FoodPicker("picker", Model.of(model.getObject().getName()))
 		{
 			private static final long	serialVersionUID	= 1L;
@@ -54,6 +58,18 @@ public abstract class FoodMassedPicker extends Panel
 			@Override
 			public void onSelected(AjaxRequestTarget target, IModel<Food> food)
 			{
+				// copy food info to model
+
+				Food newFood = food.getObject();
+
+				FoodMassed modelObject = model.getObject();
+				modelObject.setName(newFood.getName());
+				modelObject.setRelProts(newFood.getRelProts());
+				modelObject.setRelFats(newFood.getRelFats());
+				modelObject.setRelCarbs(newFood.getRelCarbs());
+				modelObject.setRelValue(newFood.getRelValue());
+				model.setObject(modelObject);
+
 				onFoodChanged(target, food);
 			}
 		};
@@ -102,13 +118,13 @@ public abstract class FoodMassedPicker extends Panel
 				}
 				else
 				{
+					// copy the mass to model
+
+					FoodMassed modelObject = model.getObject();
+					modelObject.setMass(mass.getObject());
+					model.setObject(modelObject);
+
 					onMassChanged(target, mass);
-					//					onSelected(target, model);
-					//
-					//					fieldFood.clear();
-					//					fieldMass.setModelObject(null);
-					//					fieldFood.focus(target);
-					//					target.add(fieldFood, fieldMass);
 				}
 			}
 		});
