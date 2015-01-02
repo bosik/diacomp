@@ -74,4 +74,11 @@ public class FoodMassed extends Food
 	{
 		return (getRelValue() / 100.0) * mass;
 	}
+
+	@Override
+	public String toString()
+	{
+		return String.format("%s [%.1f|%.1f|%.1f|%.1f]:%.1f", getName(), getRelProts(), getRelFats(), getRelCarbs(),
+				getRelValue(), getMass());
+	}
 }
