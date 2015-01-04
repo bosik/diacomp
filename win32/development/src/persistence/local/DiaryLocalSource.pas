@@ -53,6 +53,7 @@ type
     function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
+    function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList; override;
     procedure Save(const Recs: TVersionedList); override;
 
     // свойства
@@ -71,7 +72,7 @@ const
 { TRecordData }
 
 {==============================================================================}
-function TRecordData.Deserialize: TCustomRecord;
+function TRecordData.Deserialize(): TCustomRecord;
 {==============================================================================}
 var
   json: TlkJSONobject;
@@ -84,6 +85,7 @@ begin
 
     Result.Time := Time;
     Result.TimeStamp := TimeStamp;
+    Result.Hash := Hash;
     Result.ID := ID;
     Result.Version := Version;
     Result.Deleted := Deleted;
@@ -104,6 +106,7 @@ begin
   Json := DiaryPageSerializer.SerializeDiaryRecord(Rec);
 
   ID := Rec.ID;
+  Hash := Rec.Hash;
   TimeStamp := Rec.TimeStamp;
   Version := Rec.Version;
   Deleted := Rec.Deleted;
@@ -116,21 +119,45 @@ end;
 {==============================================================================}
 procedure TRecordData.Read(S: string);
 {==============================================================================}
+
+  // TODO 1: remove this magic after migration
+  function Count(c: char; const s: string): integer;
+  var
+    i: integer;
+  begin
+    Result := 0;
+    for i := 1 to Length(s) do
+    if (s[i] = c) then
+      inc(Result);
+  end;
+  
 var
   STime: string;
   STimeStamp: string;
+  SHash: string;
   SID: string;
   SVersion: string;
   SDeleted: string;
 begin
   STime := TextBefore(S, #9);      S := TextAfter(S, #9);
   STimeStamp := TextBefore(S, #9); S := TextAfter(S, #9);
+
+  // TODO 1: remove this magic after migration
+  if (Count(#9, S) = 4) then
+  begin
+    SHash := TextBefore(S, #9);      S := TextAfter(S, #9);
+  end else
+  begin
+    SHash := CreateCompactGUID();
+  end;
+
   SID := TextBefore(S, #9);        S := TextAfter(S, #9);
   SVersion := TextBefore(S, #9);   S := TextAfter(S, #9);
   SDeleted := TextBefore(S, #9);   S := TextAfter(S, #9);
 
   Time := StrToDateTime(STime, STD_DATETIME_FMT);
   TimeStamp := StrToDateTime(STimeStamp, STD_DATETIME_FMT);
+  Hash := SHash;
   ID := SID;
   Version := StrToInt(SVersion);
   Deleted := ReadBoolean(SDeleted);
@@ -138,13 +165,14 @@ begin
 end;
 
 {==============================================================================}
-function TRecordData.Write: string;
+function TRecordData.Write(): string;
 {==============================================================================}
 begin
-  Result := Format('%s'#9'%s'#9'%s'#9'%d'#9'%s'#9'%s',
+  Result := Format('%s'#9'%s'#9'%s'#9'%s'#9'%d'#9'%s'#9'%s',
     [
       DateTimeToStr(Time, STD_DATETIME_FMT),
       DateTimeToStr(TimeStamp, STD_DATETIME_FMT),
+      Hash,
       ID,
       Version,
       WriteBoolean(Deleted),
@@ -347,18 +375,6 @@ end;
 {==============================================================================}
 procedure TDiaryLocalSource.SaveToFile(const FileName: string);
 {==============================================================================}
-
-  function BlockRecordData(R: TRecordData): string;
-  begin
-    Result := Format('%s'#9'%s'#9'%s'#9'%d'#9'%s'#9'%s',
-      [DateTimeToStr(R.Time, STD_DATETIME_FMT),
-       DateTimeToStr(R.TimeStamp, STD_DATETIME_FMT),
-       R.ID,
-       R.Version,
-       DiaryRoutines.WriteBoolean(R.Deleted),
-       R.Data]);
-  end;
-
 var
   DataLine: string;
   i: integer;
@@ -375,7 +391,7 @@ begin
     for i := 0 to High(FRecords) do
     begin
       //SysUtils.DecimalSeparator := '.';
-      DataLine := BlockRecordData(FRecords[i]);
+      DataLine := FRecords[i].Write();
       S.Add(DataLine);
       //SysUtils.DecimalSeparator := DS;
     end;
@@ -449,6 +465,22 @@ begin
 
   for i := 0 to High(FRecords) do
   if (FRecords[i].TimeStamp >= Since) then
+  begin
+    SetLength(Result, Length(Result) + 1);
+    Result[High(Result)] := FRecords[i].Deserialize;
+  end;
+end;
+
+{==============================================================================}
+function TDiaryLocalSource.FindByIdPrefix(Prefix: TCompactGUID): TVersionedList;
+{==============================================================================}
+var
+  i: integer;
+begin
+  SetLength(Result, 0);
+
+  for i := 0 to High(FRecords) do
+  if (StartsWith(FRecords[i].ID, Prefix)) then
   begin
     SetLength(Result, Length(Result) + 1);
     Result[High(Result)] := FRecords[i].Deserialize;

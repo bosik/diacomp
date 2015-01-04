@@ -20,7 +20,9 @@ type
     procedure Delete(ID: TCompactGUID); virtual; abstract;
     function FindChanged(Since: TDateTime): TVersionedList; virtual; abstract;
     function FindById(ID: TCompactGUID): TVersioned; virtual; abstract;
+    function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList;  virtual; abstract;
     procedure Save(const Items: TVersionedList); overload; virtual; abstract;
+    function GetHash(Prefix: TCompactGUID): TCompactGUID; virtual; abstract;
 
     // sugar
     procedure Save(Item: TVersioned); overload; virtual;
