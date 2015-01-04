@@ -115,15 +115,23 @@ const
 
     FoodBase_Name     = 'FoodBase.xml';
     FoodBase_Name_old = 'FoodBase.txt';
+    FoodBaseHash_Name = 'FoodBaseHash.txt';
+
     DishBase_Name     = 'DishBase.xml';
     DishBase_Name_old = 'DishBase.txt';
+    DishBaseHash_Name = 'DishBaseHash.txt';
+
     Diary_Name        = 'Diary.txt';
     Expander_Name     = 'Expander.txt';
 
-    FoodBase_FileName = FOLDER_BASES + '\' + FoodBase_Name;
-    DishBase_FileName = FOLDER_BASES + '\' + DishBase_Name;
-    Diary_FileName    = FOLDER_BASES + '\' + Diary_Name;
-    Expander_FileName = FOLDER_BASES + '\' + Expander_Name;
+    FoodBase_FileName     = FOLDER_BASES + '\' + FoodBase_Name;
+    FoodBaseHash_FileName = FOLDER_BASES + '\' + FoodBaseHash_Name;
+
+    DishBase_FileName     = FOLDER_BASES + '\' + DishBase_Name;
+    DishBaseHash_FileName = FOLDER_BASES + '\' + DishBaseHash_Name;
+
+    Diary_FileName        = FOLDER_BASES + '\' + Diary_Name;
+    Expander_FileName     = FOLDER_BASES + '\' + Expander_Name;
 
 implementation
 
@@ -140,10 +148,10 @@ begin
 
   Diary := TDiary.Create(LocalSource);
 
-  FoodBaseLocal := TFoodBaseLocalDAO.Create(WORK_FOLDER + FoodBase_FileName);
+  FoodBaseLocal := TFoodBaseLocalDAO.Create(WORK_FOLDER + FoodBase_FileName, WORK_FOLDER + FoodBaseHash_FileName);
   FoodBaseWeb := TFoodbaseWebDAO.Create(WebClient);
 
-  DishBaseLocal := TDishBaseLocalDAO.Create(WORK_FOLDER + DishBase_FileName);
+  DishBaseLocal := TDishBaseLocalDAO.Create(WORK_FOLDER + DishBase_FileName, WORK_FOLDER + DishBaseHash_FileName);
   DishBaseWeb := TDishbaseWebDAO.Create(WebClient);
 
   Expander := TStringMap.Create;

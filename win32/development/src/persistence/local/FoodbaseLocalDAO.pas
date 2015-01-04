@@ -9,13 +9,16 @@ uses
   FoodbaseDAO,
   Bases,
   ObjectService,
-  ExtCtrls;
+  ExtCtrls,
+  HashService;
 
 type
   TFoodbaseLocalDAO = class (TFoodbaseDAO)
   private
-    FFileName: string;
+    FBaseFileName: string;
+    FHashFileName: string;
     FBase: TFoodBase;
+    FHash: THashService;
 
     Timer: TTimer;
     FModified: boolean;
@@ -27,7 +30,7 @@ type
     procedure OnTimer(Sender: TObject);
     procedure Modified();
   public
-    constructor Create(const FileName: string);
+    constructor Create(const BaseFileName, HashFileName: string);
     destructor Destroy; override;
 
     procedure Delete(ID: TCompactGUID); override;
@@ -65,17 +68,36 @@ begin
 end;
 
 {==============================================================================}
-constructor TFoodbaseLocalDAO.Create(const FileName: string);
+constructor TFoodbaseLocalDAO.Create(const BaseFileName, HashFileName: string);
 {==============================================================================}
+
+  procedure UpdateHash();
+  var
+    i: integer;
+  begin
+    for i := 0 to FBase.Count - 1 do
+      FHash.Update(FBase[i].ID, FBase[i].Hash);
+  end;
+
 begin
   FBase := TFoodBase.Create;
-  if FileExists(FileName) then
-    FBase.LoadFromFile_XML(FileName);
-  FFileName := FileName;
+  if FileExists(BaseFileName) then
+    FBase.LoadFromFile_XML(BaseFileName);
+  FBaseFileName := BaseFileName;
 
   FModified := False;
   FFirstMod := 0;
   FLastMod := 0;
+
+  FHash := THashService.Create();
+  if FileExists(HashFileName) then
+    FHash.LoadFromFile(HashFileName)
+  else
+  begin
+    UpdateHash;
+    FModified := True;
+  end;
+  FHashFileName := HashFileName;
 
   Timer := TTimer.Create(nil);
   Timer.Interval := 1000;
@@ -105,11 +127,13 @@ destructor TFoodbaseLocalDAO.Destroy;
 begin
   if (FModified) then
   begin
-    FBase.SaveToFile(FFileName);
+    FBase.SaveToFile(FBaseFileName);
+    FHash.SaveToFile(FHashFileName);
     FModified := False;
   end;
 
   FBase.Free;
+  FHash.Free;
   Timer.Free;
   inherited;
 end;
@@ -243,7 +267,8 @@ begin
     begin
       Timer.Enabled := False;
       try
-        FBase.SaveToFile(FFileName);
+        FBase.SaveToFile(FBaseFileName);
+        FHash.SaveToFile(FHashFileName);
         FModified := False;
         FFirstMod := 0; // TODO: or GetTickCount() ?
       finally
@@ -272,6 +297,7 @@ begin
     begin
       FBase.Sort;
     end;
+    FHash.Update(Food.ID, Food.Hash);
     Modified();
   end else
     Add(Food);
