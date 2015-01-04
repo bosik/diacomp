@@ -275,6 +275,7 @@ procedure TVersioned.Modified;
 begin
   inc(FVersion);
   FTimeStamp := GetTimeUTC();
+  FHash := CreateCompactGUID();
 end;
 
 { TMutableItem }
