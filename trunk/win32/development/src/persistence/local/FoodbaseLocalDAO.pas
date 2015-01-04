@@ -10,7 +10,8 @@ uses
   Bases,
   ObjectService,
   ExtCtrls,
-  HashService;
+  HashService,
+  DiaryRoutines;
 
 type
   TFoodbaseLocalDAO = class (TFoodbaseDAO)
@@ -40,6 +41,8 @@ type
 
     function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
+    function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList; override;
+    function GetHash(Prefix: TCompactGUID): TCompactGUID; override;
     procedure Save(Item: TVersioned); override;
     procedure Save(const Items: TVersionedList); override;
   end;
@@ -194,6 +197,23 @@ begin
   Result := nil;
 end;
 
+{======================================================================================================================}
+function TFoodbaseLocalDAO.FindByIdPrefix(Prefix: TCompactGUID): TVersionedList;
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  SetLength(Result, 0);
+
+  for i := 0 to FBase.Count - 1 do
+  if (StartsWith(FBase[i].ID, Prefix)) then
+  begin
+    SetLength(Result, Length(Result) + 1);
+    Result[High(Result)] := TFoodItem.Create;
+    Result[High(Result)].CopyFrom(FBase[i]);
+  end;
+end;
+
 {==============================================================================}
 function TFoodbaseLocalDAO.FindChanged(Since: TDateTime): TVersionedList;
 {==============================================================================}
@@ -234,6 +254,14 @@ function TFoodbaseLocalDAO.GetIndex(Food: TFoodItem): integer;
 {==============================================================================}
 begin
   Result := FBase.GetIndex(Food.ID);
+end;
+
+
+{======================================================================================================================}
+function TFoodbaseLocalDAO.GetHash(Prefix: TCompactGUID): TCompactGUID;
+{======================================================================================================================}
+begin
+  Result := FHash[Prefix];
 end;
 
 {==============================================================================}
