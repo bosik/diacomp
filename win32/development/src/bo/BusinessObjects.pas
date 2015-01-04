@@ -7,15 +7,23 @@ uses
   SysUtils,
   DiaryRoutines;
 
+const
+  COMPACT_GUID_SIZE = 32;
+
 type
-  TCompactGUID = string[32];
+  TCompactGUID = string[COMPACT_GUID_SIZE];
 
   TGUIDList = array of TCompactGUID;
 
   TVersioned = class
   private
     FID: TCompactGUID;
+
+    // TODO: DEPRECTED
     FTimeStamp: TDateTime;
+
+    FHash: TCompactGUID;
+
     FVersion: integer;
     FDeleted: boolean;
   public
@@ -24,7 +32,10 @@ type
     procedure Modified();
 
     property ID: TCompactGUID read FID write FID;
+
     property TimeStamp: TDateTime read FTimeStamp write FTimeStamp;
+
+    property Hash: TCompactGUID read FHash write FHash;
     property Version: integer read FVersion write FVersion;
     property Deleted: boolean read FDeleted write FDeleted;
   end;
@@ -243,6 +254,7 @@ begin
 
   FID := Source.ID;
   FTimeStamp := Source.TimeStamp;
+  FHash := Source.Hash;
   FVersion := Source.Version;
   FDeleted := Source.Deleted;
 end;
@@ -251,7 +263,8 @@ end;
 constructor TVersioned.Create;
 {==============================================================================}
 begin
-  FID := CreateCompactGUID;
+  FID := CreateCompactGUID();
+  FHash := CreateCompactGUID();
   FVersion := 0;
   FDeleted := False;
 end;
