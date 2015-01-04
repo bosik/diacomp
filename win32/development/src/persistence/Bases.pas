@@ -88,6 +88,35 @@ type
 
 implementation
 
+const
+  FIELD_FOOD_ID         = 'id';
+  FIELD_FOOD_TIMESTAMP  = 'timestamp';
+  FIELD_FOOD_HASH       = 'hash';
+  FIELD_FOOD_VERSION    = 'version';
+  FIELD_FOOD_DELETED    = 'deleted';
+  FIELD_FOOD_NAME       = 'name';
+  FIELD_FOOD_PROTS      = 'prots';
+  FIELD_FOOD_FATS       = 'fats';
+  FIELD_FOOD_CARBS      = 'carbs';
+  FIELD_FOOD_VALUE      = 'val';
+  FIELD_FOOD_TABLE      = 'table';
+  FIELD_FOOD_TAG        = 'tag';
+
+  FIELD_DISH_ID         = 'id';
+  FIELD_DISH_TIMESTAMP  = 'timestamp';
+  FIELD_DISH_HASH       = 'hash';
+  FIELD_DISH_VERSION    = 'version';
+  FIELD_DISH_DELETED    = 'deleted';
+  FIELD_DISH_NAME       = 'name';
+  FIELD_DISH_MASS       = 'mass';
+  FIELD_DISH_TAG        = 'tag';
+  FIELD_DISH_FOOD_NAME  = 'name';
+  FIELD_DISH_FOOD_PROTS = 'prots';
+  FIELD_DISH_FOOD_FATS  = 'fats';
+  FIELD_DISH_FOOD_CARBS = 'carbs';
+  FIELD_DISH_FOOD_VALUE = 'val';
+  FIELD_DISH_FOOD_MASS  = 'mass';
+
 { TAbstractBase }
 
 {==============================================================================}
@@ -417,7 +446,14 @@ const
 
   procedure CheckNode(Node: IXMLNODE; Index: integer);
   const
-    A: array[1..6] of string = ('name', 'prots', 'fats', 'carbs', 'val', 'table');
+    A: array[1..6] of string = (
+      FIELD_FOOD_NAME,
+      FIELD_FOOD_PROTS,
+      FIELD_FOOD_FATS,
+      FIELD_FOOD_CARBS,
+      FIELD_FOOD_VALUE,
+      FIELD_FOOD_TABLE
+    );
   var
     i: integer;
   begin
@@ -426,9 +462,55 @@ const
         raise Exception.CreateFmt('Food node #%d has no %s attribute', [Index, A[i]]);
   end;
 
+  function ReadNode(FoodNode: IXMLNODE): TFoodItem;
+  begin
+    Result := TFoodItem.Create();
+
+    if (FoodNode.HasAttribute(FIELD_FOOD_ID)) then
+      Result.ID := FoodNode.Attributes[FIELD_FOOD_ID]
+    else
+      Result.ID := CreateCompactGUID();
+
+    if FoodNode.HasAttribute(FIELD_FOOD_TIMESTAMP) then
+      Result.TimeStamp := StrToDateTime(FoodNode.Attributes[FIELD_FOOD_TIMESTAMP])
+    else
+      Result.TimeStamp := GetTimeUTC();
+
+    if (FoodNode.HasAttribute(FIELD_FOOD_HASH)) then
+      Result.Hash := FoodNode.Attributes[FIELD_FOOD_HASH]
+    else
+      Result.Hash := CreateCompactGUID();
+
+    if FoodNode.HasAttribute(FIELD_FOOD_VERSION) then
+      Result.Version := FoodNode.Attributes[FIELD_FOOD_VERSION]
+    else
+      Result.Version := 1;
+
+    if FoodNode.HasAttribute(FIELD_FOOD_DELETED) then
+      Result.Deleted := FoodNode.Attributes[FIELD_FOOD_DELETED]
+    else
+      Result.Deleted := False;
+
+    Result.Name      := FoodNode.Attributes[FIELD_FOOD_NAME];
+    Result.RelProts  := StrToFloat(VarAsType(FoodNode.Attributes[FIELD_FOOD_PROTS], varOleStr));
+    Result.RelFats   := StrToFloat(VarAsType(FoodNode.Attributes[FIELD_FOOD_FATS], varOleStr));
+    Result.RelCarbs  := StrToFloat(VarAsType(FoodNode.Attributes[FIELD_FOOD_CARBS], varOleStr));
+    Result.RelValue  := StrToFloat(VarAsType(FoodNode.Attributes[FIELD_FOOD_VALUE], varOleStr));
+
+    // TODO: what if the field is missing?
+    Result.FromTable := FoodNode.Attributes[FIELD_FOOD_TABLE];
+
+    if (FoodNode.HasAttribute(FIELD_FOOD_TAG)) then
+      Result.Tag := FoodNode.Attributes[FIELD_FOOD_TAG]
+    else
+      Result.Tag := 0;
+
+    Result.OnChange  := ItemChangeHandler;
+  end;
+
 var
   XML: IXMLDocument;
-  Root, FoodNode: IXMLNODE;
+  Root: IXMLNODE;
   i: integer;
   DS: char;
 begin
@@ -471,6 +553,8 @@ begin
       Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): XML version is supported', LOGGING);
 
       Root := XML.DocumentElement;
+
+      Clear();
       SetLength(FBase, Root.ChildNodes.Count);
 
       Log(DEBUG, 'TFoodBase.LoadFromFile_XML(): DecimalSeparator is "' + SysUtils.DecimalSeparator + '"', LOGGING);
@@ -479,49 +563,8 @@ begin
       {=========================================================}
       for i := 0 to Root.ChildNodes.Count - 1 do
       begin
-        FoodNode := Root.ChildNodes[i];
-        // TODO: debug only
-        //CheckNode(FoodNode, i);
-
-        FBase[i] := TFoodItem.Create();
-
-        if (FoodNode.HasAttribute('id')) then
-          Items[i].ID := FoodNode.Attributes['id']
-        else
-          Items[i].ID := CreateCompactGUID();
-
-        if FoodNode.HasAttribute('timestamp') then
-          Items[i].TimeStamp := StrToDateTime(FoodNode.Attributes['timestamp'])
-        else
-          Items[i].TimeStamp := GetTimeUTC();
-
-        if FoodNode.HasAttribute('version') then
-          Items[i].Version := FoodNode.Attributes['version']
-        else
-          Items[i].Version := 1;
-
-        if FoodNode.HasAttribute('deleted') then
-          Items[i].Deleted := FoodNode.Attributes['deleted']
-        else
-          Items[i].Deleted := False;
-
-        Items[i].Name      := FoodNode.Attributes['name'];
-        {Items[i].RelProts := FoodNode.Attributes['prots'];
-        Items[i].RelFats   := FoodNode.Attributes['fats'];
-        Items[i].RelCarbs  := FoodNode.Attributes['carbs'];
-        Items[i].RelValue  := FoodNode.Attributes['val'];  }
-        Items[i].RelProts  := StrToFloat(VarAsType(FoodNode.Attributes['prots'], varOleStr));
-        Items[i].RelFats   := StrToFloat(VarAsType(FoodNode.Attributes['fats'], varOleStr));
-        Items[i].RelCarbs  := StrToFloat(VarAsType(FoodNode.Attributes['carbs'], varOleStr));
-        Items[i].RelValue  := StrToFloat(VarAsType(FoodNode.Attributes['val'], varOleStr));
-
-        Items[i].FromTable := FoodNode.Attributes['table'];
-        if (FoodNode.HasAttribute('tag')) then
-          Items[i].Tag := FoodNode.Attributes['tag']
-        else
-          Items[i].Tag := 0;
-
-        Items[i].OnChange  := ItemChangeHandler;
+        //CheckNode(Root.ChildNodes[i], i);
+        FBase[i] := ReadNode(Root.ChildNodes[i]);
       end;
       {=========================================================}
 
@@ -587,18 +630,19 @@ begin
     begin
       FoodNode := Root.AddChild('food');
 
-      FoodNode.Attributes['id']        := Items[i].ID;
-      FoodNode.Attributes['timestamp'] := Items[i].TimeStamp;
-      FoodNode.Attributes['version']   := Items[i].Version;
-      FoodNode.Attributes['deleted']   := Items[i].Deleted;
+      FoodNode.Attributes[FIELD_FOOD_ID]        := Items[i].ID;
+      FoodNode.Attributes[FIELD_FOOD_TIMESTAMP] := Items[i].TimeStamp;
+      FoodNode.Attributes[FIELD_FOOD_HASH]      := Items[i].Hash;
+      FoodNode.Attributes[FIELD_FOOD_VERSION]   := Items[i].Version;
+      FoodNode.Attributes[FIELD_FOOD_DELETED]   := Items[i].Deleted;
 
-      FoodNode.Attributes['name']  := Items[i].Name;
-      FoodNode.Attributes['prots'] := Items[i].RelProts;
-      FoodNode.Attributes['fats']  := Items[i].RelFats;
-      FoodNode.Attributes['carbs'] := Items[i].RelCarbs;
-      FoodNode.Attributes['val']   := Items[i].RelValue;
-      FoodNode.Attributes['table'] := Items[i].FromTable;
-      FoodNode.Attributes['tag']   := Items[i].Tag;
+      FoodNode.Attributes[FIELD_FOOD_NAME]      := Items[i].Name;
+      FoodNode.Attributes[FIELD_FOOD_PROTS]     := Items[i].RelProts;
+      FoodNode.Attributes[FIELD_FOOD_FATS]      := Items[i].RelFats;
+      FoodNode.Attributes[FIELD_FOOD_CARBS]     := Items[i].RelCarbs;
+      FoodNode.Attributes[FIELD_FOOD_VALUE]     := Items[i].RelValue;
+      FoodNode.Attributes[FIELD_FOOD_TABLE]     := Items[i].FromTable;
+      FoodNode.Attributes[FIELD_FOOD_TAG]       := Items[i].Tag;
     end;
 
     XML.SaveToFile(FileName);
@@ -771,16 +815,81 @@ end;
 {==============================================================================}
 procedure TDishBase.LoadFromFile_XML(const FileName: string);
 {==============================================================================}
+
+  function ReadNode(DishNode: IXMLNODE): TDishItem;
+  var
+    ItemNode: IXMLNODE;
+    Food: TFoodMassed;
+    i: integer;
+  begin
+    Result := TDishItem.Create();
+    if DishNode.HasAttribute(FIELD_DISH_ID) then
+      Result.ID := DishNode.Attributes[FIELD_DISH_ID]
+    else
+      Result.ID := CreateCompactGUID();
+
+    if DishNode.HasAttribute(FIELD_DISH_HASH) then
+      Result.Hash := DishNode.Attributes[FIELD_DISH_HASH]
+    else
+      Result.Hash := CreateCompactGUID();
+
+    if DishNode.HasAttribute(FIELD_DISH_TIMESTAMP) then
+      Result.TimeStamp := StrToDateTime(DishNode.Attributes[FIELD_DISH_TIMESTAMP]) else
+    if DishNode.HasAttribute('time') then
+      Result.TimeStamp := StrToDateTime(DishNode.Attributes['time'])
+    else
+      Result.TimeStamp := GetTimeUTC();
+
+    if DishNode.HasAttribute(FIELD_DISH_VERSION) then
+      Result.Version := DishNode.Attributes[FIELD_DISH_VERSION]
+    else
+      Result.Version := 1;
+    if DishNode.HasAttribute(FIELD_DISH_DELETED) then
+      Result.Deleted := DishNode.Attributes[FIELD_DISH_DELETED]
+    else
+      Result.Deleted := False;
+    Result.Name := DishNode.Attributes[FIELD_DISH_NAME];
+    if DishNode.HasAttribute(FIELD_DISH_MASS) then
+      Result.SetResultMass(DishNode.Attributes[FIELD_DISH_MASS]);
+    if DishNode.HasAttribute(FIELD_DISH_TAG) then
+      Result.Tag := DishNode.Attributes[FIELD_DISH_TAG]
+    else
+      Result.Tag := 0;
+
+    //SetLength(Result.FContent, DishNode.ChildNodes.Count);
+
+    for i := 0 to DishNode.ChildNodes.Count - 1 do
+    begin
+      ItemNode := DishNode.ChildNodes[i];
+
+      Food := TFoodMassed.Create();
+      Food.Name     := ItemNode.Attributes[FIELD_DISH_FOOD_NAME];
+
+      {Food.RelProts := ItemNode.Attributes['prots'];
+      Food.RelFats  := ItemNode.Attributes['fats'];
+      Food.RelCarbs := ItemNode.Attributes['carbs'];
+      Food.RelValue := ItemNode.Attributes['val'];
+      Food.Mass     := ItemNode.Attributes['mass'];}
+      Food.RelProts := StrToFloat(VarAsType(ItemNode.Attributes[FIELD_DISH_FOOD_PROTS], varOleStr));
+      Food.RelFats  := StrToFloat(VarAsType(ItemNode.Attributes[FIELD_DISH_FOOD_FATS], varOleStr));
+      Food.RelCarbs := StrToFloat(VarAsType(ItemNode.Attributes[FIELD_DISH_FOOD_CARBS], varOleStr));
+      Food.RelValue := StrToFloat(VarAsType(ItemNode.Attributes[FIELD_DISH_FOOD_VALUE], varOleStr));
+      Food.Mass     := StrToFloat(VarAsType(ItemNode.Attributes[FIELD_DISH_FOOD_MASS], varOleStr));
+
+      Result.Add(Food);
+    end;
+
+    Result.OnChange := ItemChangeHandler;
+  end;
+
 const
   LOGGING = False;
 
 var
   XML: IXMLDocument;
-  Root, DishNode, ItemNode: IXMLNODE;
-  i, j: integer;
-  Food: TFoodMassed;
+  Root, DishNode: IXMLNODE;
+  i: integer;
   DS: char;
-  Dish: TDishItem;
 begin
   (*
   { если файл не существует, база пуста }
@@ -821,6 +930,8 @@ begin
       Log(DEBUG, 'TDishBase.LoadFromFile_XML(): XML version is supported', LOGGING);
 
       Root := XML.DocumentElement;
+
+      Clear();
       SetLength(FBase, Root.ChildNodes.Count);
 
       Log(DEBUG, 'TDishBase.LoadFromFile_XML(): DecimalSeparator is "' + SysUtils.DecimalSeparator + '"', LOGGING);
@@ -829,60 +940,7 @@ begin
       for i := 0 to Root.ChildNodes.Count - 1 do
       begin
         DishNode := Root.ChildNodes[i];
-        Dish := TDishItem.Create();
-        if DishNode.HasAttribute('id') then
-          Dish.ID := DishNode.Attributes['id']
-        else
-          Dish.ID := CreateCompactGUID();
-
-        if DishNode.HasAttribute('timestamp') then
-          Dish.TimeStamp := StrToDateTime(DishNode.Attributes['timestamp']) else
-        if DishNode.HasAttribute('time') then
-          Dish.TimeStamp := StrToDateTime(DishNode.Attributes['time'])
-        else
-          Dish.TimeStamp := GetTimeUTC();
-
-        if DishNode.HasAttribute('version') then
-          Dish.Version := DishNode.Attributes['version']
-        else
-          Dish.Version := 1;
-        if DishNode.HasAttribute('deleted') then
-          Dish.Deleted := DishNode.Attributes['deleted']
-        else
-          Dish.Deleted := False;
-        Dish.Name := DishNode.Attributes['name'];
-        if DishNode.HasAttribute('mass') then
-          Dish.SetResultMass(DishNode.Attributes['mass']);
-        if DishNode.HasAttribute('tag') then
-          Dish.Tag := DishNode.Attributes['tag']
-        else
-          Dish.Tag := 0;
-
-        //SetLength(Dish.FContent, DishNode.ChildNodes.Count);
-
-        for j := 0 to DishNode.ChildNodes.Count - 1 do
-        begin
-          ItemNode := DishNode.ChildNodes[j];
-
-          Food := TFoodMassed.Create();
-          Food.Name     := ItemNode.Attributes['name'];
-
-          {Food.RelProts := ItemNode.Attributes['prots'];
-          Food.RelFats  := ItemNode.Attributes['fats'];
-          Food.RelCarbs := ItemNode.Attributes['carbs'];
-          Food.RelValue := ItemNode.Attributes['val'];
-          Food.Mass     := ItemNode.Attributes['mass'];}
-          Food.RelProts := StrToFloat(VarAsType(ItemNode.Attributes['prots'], varOleStr));
-          Food.RelFats  := StrToFloat(VarAsType(ItemNode.Attributes['fats'], varOleStr));
-          Food.RelCarbs := StrToFloat(VarAsType(ItemNode.Attributes['carbs'], varOleStr));
-          Food.RelValue := StrToFloat(VarAsType(ItemNode.Attributes['val'], varOleStr));
-          Food.Mass     := StrToFloat(VarAsType(ItemNode.Attributes['mass'], varOleStr));
-
-          Dish.Add(Food);
-        end;
-
-        Dish.OnChange := ItemChangeHandler;
-        FBase[i] := Dish;
+        FBase[i] := ReadNode(DishNode);
       end;
 
       Log(DEBUG, 'TDishBase.LoadFromFile_XML(): data fetched OK', LOGGING);
@@ -976,26 +1034,27 @@ begin
     for i := 0 to High(FBase) do
     begin
       DishNode := Root.AddChild('dish');
-      DishNode.Attributes['id']        := Items[i].ID;
-      DishNode.Attributes['timestamp'] := Items[i].TimeStamp;
-      DishNode.Attributes['version']   := Items[i].Version;
-      DishNode.Attributes['deleted']   := Items[i].Deleted;
+      DishNode.Attributes[FIELD_DISH_ID]        := Items[i].ID;
+      DishNode.Attributes[FIELD_DISH_HASH]      := Items[i].Hash;
+      DishNode.Attributes[FIELD_DISH_TIMESTAMP] := Items[i].TimeStamp;
+      DishNode.Attributes[FIELD_DISH_VERSION]   := Items[i].Version;
+      DishNode.Attributes[FIELD_DISH_DELETED]   := Items[i].Deleted;
 
-      DishNode.Attributes['name'] := Items[i].Name;
-      DishNode.Attributes['tag'] := Items[i].Tag;
+      DishNode.Attributes[FIELD_DISH_NAME] := Items[i].Name;
+      DishNode.Attributes[FIELD_DISH_TAG] := Items[i].Tag;
       if (Items[i].FixedMass) then
-        DishNode.Attributes['mass'] := Items[i].ResultMass;
+        DishNode.Attributes[FIELD_DISH_MASS] := Items[i].ResultMass;
 
       for j := 0 to Items[i].Count - 1 do
       begin
         ItemNode := DishNode.AddChild('item');
 
-        ItemNode.Attributes['name']  := Items[i].Content[j].Name;
-        ItemNode.Attributes['prots'] := Items[i].Content[j].RelProts;
-        ItemNode.Attributes['fats']  := Items[i].Content[j].RelFats;
-        ItemNode.Attributes['carbs'] := Items[i].Content[j].RelCarbs;
-        ItemNode.Attributes['val']   := Items[i].Content[j].RelValue;
-        ItemNode.Attributes['mass']  := Items[i].Content[j].Mass;
+        ItemNode.Attributes[FIELD_DISH_FOOD_NAME]  := Items[i].Content[j].Name;
+        ItemNode.Attributes[FIELD_DISH_FOOD_PROTS] := Items[i].Content[j].RelProts;
+        ItemNode.Attributes[FIELD_DISH_FOOD_FATS]  := Items[i].Content[j].RelFats;
+        ItemNode.Attributes[FIELD_DISH_FOOD_CARBS] := Items[i].Content[j].RelCarbs;
+        ItemNode.Attributes[FIELD_DISH_FOOD_VALUE] := Items[i].Content[j].RelValue;
+        ItemNode.Attributes[FIELD_DISH_FOOD_MASS]  := Items[i].Content[j].Mass;
       end;
     end;
 
