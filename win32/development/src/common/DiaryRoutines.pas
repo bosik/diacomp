@@ -42,11 +42,12 @@ type
     FData: array of TStringPair;
   protected
     function GetItem(Index: integer): TStringPair;
-    function GetValue(Key: string): string;
+    function GetValue(Key: string): string; virtual;
     function IndexOf(const Key: string): integer;
   public
     procedure Add(const Key, Value: string; Overwrite: boolean = False);
     procedure Clear;
+    function Contains(Key: string): boolean;
     function Count: integer;
     destructor Destroy; override;
     procedure LoadFromFile(const FileName: string);
@@ -118,7 +119,8 @@ type
   function ReplaceAll(const S, Find, Replace: string): string;
   procedure Separate(const S: string; out Before: string; Separator: Char; out After: string);
   procedure SeparateBack(const S: string; out Before: string; Separator: Char; out After: string);
-  function StartsWith(const S: string; C: char): boolean;
+  function StartsWith(const S: string; C: char): boolean; overload;
+  function StartsWith(const S: string; Prefix: string): boolean; overload;
   function UppercaseFirst(const S: string): string;
 
   { быстрая сортировка }
@@ -276,6 +278,13 @@ begin
     FData[i].Free;
     
   SetLength(FData, 0);
+end;
+
+{==============================================================================}
+function TStringMap.Contains(Key: string): boolean;
+{==============================================================================}
+begin
+  Result := IndexOf(Key) > -1;
 end;
 
 {==============================================================================}
@@ -926,6 +935,13 @@ function StartsWith(const S: string; C: char): boolean;
 {==============================================================================}
 begin
   Result := (length(S) > 0) and (S[1] = C);
+end;
+
+{==============================================================================}
+function StartsWith(const S: string; Prefix: string): boolean; overload;
+{==============================================================================}
+begin
+  Result := (Length(S) >= Length(Prefix)) and (Copy(S, 1, Length(Prefix)) = Prefix);
 end;
 
 {==============================================================================}
