@@ -467,7 +467,7 @@ const
     Result := TFoodItem.Create();
 
     if (FoodNode.HasAttribute(FIELD_FOOD_ID)) then
-      Result.ID := FoodNode.Attributes[FIELD_FOOD_ID]
+      Result.ID := LowerCase(FoodNode.Attributes[FIELD_FOOD_ID])
     else
       Result.ID := CreateCompactGUID();
 
@@ -477,7 +477,7 @@ const
       Result.TimeStamp := GetTimeUTC();
 
     if (FoodNode.HasAttribute(FIELD_FOOD_HASH)) then
-      Result.Hash := FoodNode.Attributes[FIELD_FOOD_HASH]
+      Result.Hash := LowerCase(FoodNode.Attributes[FIELD_FOOD_HASH])
     else
       Result.Hash := CreateCompactGUID();
 
@@ -820,16 +820,16 @@ procedure TDishBase.LoadFromFile_XML(const FileName: string);
   var
     ItemNode: IXMLNODE;
     Food: TFoodMassed;
-    i: integer;
+    i: integer;     
   begin
     Result := TDishItem.Create();
     if DishNode.HasAttribute(FIELD_DISH_ID) then
-      Result.ID := DishNode.Attributes[FIELD_DISH_ID]
+      Result.ID := LowerCase(DishNode.Attributes[FIELD_DISH_ID])
     else
       Result.ID := CreateCompactGUID();
 
     if DishNode.HasAttribute(FIELD_DISH_HASH) then
-      Result.Hash := DishNode.Attributes[FIELD_DISH_HASH]
+      Result.Hash := LowerCase(DishNode.Attributes[FIELD_DISH_HASH])
     else
       Result.Hash := CreateCompactGUID();
 
