@@ -725,7 +725,7 @@ begin
 
   Log(VERBOUS, 'TFormDish.ReadAttributes(): checking the uniqueness VS dish base...');
 
-  if (ModeNew or (EditName.Text <> ADish.Name)) and
+  if (ModeNew or (AnsiLowerCase(EditName.Text) <> AnsiLowerCase(ADish.Name))) and
      (DishBaseLocal.FindOne(EditName.Text) <> nil) then
   begin
     ErrorMessage('Блюдо с таким названием уже существует');

@@ -180,7 +180,7 @@ begin
     ErrorMessage('Ѕлюдо с таким названием уже существует');
     EditName.SetFocus;
   end else
-  if (ModeNew or (EditName.Text <> AFood.Name)) and
+  if (ModeNew or (AnsiLowerCase(EditName.Text) <> AnsiLowerCase(AFood.Name))) and
      (FoodBaseLocal.FindOne(EditName.Text) <> nil) then
   begin
     ErrorMessage('ѕродукт с таким названием уже существует');
