@@ -98,7 +98,7 @@ begin
   else
   begin
     UpdateHash;
-    FModified := True;
+    FHash.SaveToFile(HashFileName);
   end;
   FHashFileName := HashFileName;
 
@@ -119,6 +119,7 @@ begin
   begin
     FBase[Index].Deleted := True;
     FBase[Index].Modified();
+    FHash.Update(ID, FBase[Index].Hash);
     Modified();
   end else
     raise EItemNotFoundException.Create(ID);

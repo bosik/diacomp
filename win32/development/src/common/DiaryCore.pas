@@ -122,6 +122,8 @@ const
     DishBaseHash_Name = 'DishBaseHash.txt';
 
     Diary_Name        = 'Diary.txt';
+    DiaryHash_Name    = 'DiaryHash.txt';
+
     Expander_Name     = 'Expander.txt';
 
     FoodBase_FileName     = FOLDER_BASES + '\' + FoodBase_Name;
@@ -131,6 +133,8 @@ const
     DishBaseHash_FileName = FOLDER_BASES + '\' + DishBaseHash_Name;
 
     Diary_FileName        = FOLDER_BASES + '\' + Diary_Name;
+    DiaryHash_FileName    = FOLDER_BASES + '\' + DiaryHash_Name;
+
     Expander_FileName     = FOLDER_BASES + '\' + Expander_Name;
 
 implementation
@@ -140,7 +144,7 @@ procedure Initialize();
 {==============================================================================}
 begin
   AutoLog.Log(DEBUG, 'Loading local diary...');
-  LocalSource := TDiaryLocalSource.Create(WORK_FOLDER + Diary_FileName);
+  LocalSource := TDiaryLocalSource.Create(WORK_FOLDER + Diary_FileName, WORK_FOLDER + DiaryHash_FileName);
   AutoLog.Log(DEBUG, 'Local diary loaded');
 
   WebClient := TDiacompClient.Create;
