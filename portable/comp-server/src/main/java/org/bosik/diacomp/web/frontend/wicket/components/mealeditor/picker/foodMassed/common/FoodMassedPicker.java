@@ -86,6 +86,15 @@ public abstract class FoodMassedPicker extends Panel
 			{
 			}
 		});
+		fieldMass.add(new AjaxFormComponentUpdatingBehavior("onblur")
+		{
+			private static final long	serialVersionUID	= 1072515919159765189L;
+
+			@Override
+			protected void onUpdate(AjaxRequestTarget target)
+			{
+			}
+		});
 		fieldMass.add(new AjaxEventBehavior("keydown")
 		{
 			private static final long	serialVersionUID	= 1L;
