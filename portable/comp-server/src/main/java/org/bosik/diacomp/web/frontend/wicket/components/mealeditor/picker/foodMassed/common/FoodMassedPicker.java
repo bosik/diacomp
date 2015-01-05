@@ -7,7 +7,6 @@ import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -27,7 +26,6 @@ public abstract class FoodMassedPicker extends Panel
 	IModel<Double>					mass;
 
 	// components
-	protected Image					icon;
 	protected FoodPicker			fieldFood;
 	protected TextField<Double>		fieldMass;
 
@@ -47,9 +45,6 @@ public abstract class FoodMassedPicker extends Panel
 	protected void onInitialize()
 	{
 		super.onInitialize();
-
-		icon = new Image("icon", "");
-		add(icon);
 
 		fieldFood = new FoodPicker("picker", Model.of(model.getObject().getName()))
 		{
