@@ -16,7 +16,8 @@ uses
   uLkJSON,
   BusinessObjects,
 
-  AutoLog {TODO: debug only};
+  AutoLog {TODO: debug only},
+  HashService;
 
 type
   // частично распарсенная запись
@@ -35,8 +36,10 @@ type
   TDiaryLocalSource = class (TDiaryDAO)
   private
     FRecords: TRecordDataList;
+    FHash: THashService;
     FModified: boolean;
-    FFileName: string;
+    FBaseFileName: string;
+    FHashFileName: string;
 
     function AddToInternal(Rec: TCustomRecord): integer;
     procedure Clear;
@@ -46,7 +49,7 @@ type
     procedure LoadFromFile(const FileName: string);
     procedure SaveToFile(const FileName: string);
   public
-    constructor Create(const FileName: string);
+    constructor Create(const BaseFileName, HashFileName: string);
     destructor Destroy; override;
 
     procedure Delete(ID: TCompactGUID); override;
@@ -200,6 +203,8 @@ begin
 
   FRecords[Result].Serialize(Rec);
   Result := Trace(Result);
+
+  FHash.Update(rec.ID, Rec.Hash);
 end;
 
 {==============================================================================}
@@ -219,14 +224,33 @@ begin
 end;
 
 {==============================================================================}
-constructor TDiaryLocalSource.Create(const FileName: string);
+constructor TDiaryLocalSource.Create(const BaseFileName, HashFileName: string);
 {==============================================================================}
+
+  procedure UpdateHash();
+  var
+    i: integer;
+  begin
+    for i := 0 to High(FRecords) do
+      FHash.Update(FRecords[i].ID, FRecords[i].Hash);
+  end;
+
 begin
   FModified := False;
-  FFileName := FileName;
+  FBaseFileName := BaseFileName;
+  FHashFileName := HashFileName;
 
-  if (FileExists(FileName)) then
-    LoadFromFile(FileName);
+  if (FileExists(BaseFileName)) then
+    LoadFromFile(BaseFileName);
+
+  FHash := THashService.Create();
+  if FileExists(HashFileName) then
+    FHash.LoadFromFile(HashFileName)
+  else
+  begin
+    UpdateHash;
+    FHash.SaveToFile(HashFileName);
+  end;
 end;
 
 {==============================================================================}
@@ -234,6 +258,7 @@ destructor TDiaryLocalSource.Destroy;
 {==============================================================================}
 begin
   Clear;
+  FHash.Free;
   inherited;
 end;
 
@@ -522,7 +547,9 @@ begin
     FRecords[i].Deleted := True;
     FRecords[i].Modified;
     FModified := True;
-    SaveToFile(FFileName);
+    SaveToFile(FBaseFileName);
+    FHash.Update(ID, FRecords[i].Hash);
+    FHash.SaveToFile(FHashFileName);
     Exit;
   end;
 end;
@@ -580,7 +607,8 @@ begin
       AddToInternal(Recs[i] as TCustomRecord);
 
     FModified := True;
-    SaveToFile(FFileName);
+    SaveToFile(FBaseFileName);
+    FHash.SaveToFile(FHashFileName);
   end;
 end;
 
