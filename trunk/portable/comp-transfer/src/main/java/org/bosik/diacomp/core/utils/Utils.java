@@ -4,9 +4,9 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -644,15 +644,10 @@ public class Utils
 	 */
 	public static List<Date> getPeriodDates(Date lastDate, int period)
 	{
-		List<Date> dates = new LinkedList<Date>();
+		List<Date> dates = new ArrayList<Date>();
 
 		Calendar c = Calendar.getInstance();
 		c.setTime(lastDate);
-		c.setTimeZone(TimeZone.getTimeZone("UTC"));
-		c.set(Calendar.HOUR_OF_DAY, 0);
-		c.set(Calendar.MINUTE, 0);
-		c.set(Calendar.SECOND, 0);
-		c.set(Calendar.MILLISECOND, 0);
 
 		c.add(Calendar.DATE, -period);
 
