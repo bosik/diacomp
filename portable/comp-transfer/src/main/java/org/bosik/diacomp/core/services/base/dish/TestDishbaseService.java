@@ -1,6 +1,6 @@
-package org.bosik.diacomp.core.services.foodbase;
+package org.bosik.diacomp.core.services.base.dish;
 
-public interface TestFoodbaseService
+public interface TestDishbaseService
 {
 	void test_addFindById_single_PersistedOk();
 

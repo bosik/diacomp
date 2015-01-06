@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.services.dishbase.DishBaseService;
+import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;

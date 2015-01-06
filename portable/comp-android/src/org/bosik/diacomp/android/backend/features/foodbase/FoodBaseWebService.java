@@ -12,11 +12,11 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
 import org.bosik.diacomp.core.rest.StdResponse;
+import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
-import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import org.bosik.diacomp.core.utils.Utils;
 
 @SuppressWarnings("unchecked")

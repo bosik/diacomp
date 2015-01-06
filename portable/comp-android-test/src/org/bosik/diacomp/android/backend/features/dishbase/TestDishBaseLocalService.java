@@ -1,8 +1,8 @@
 package org.bosik.diacomp.android.backend.features.dishbase;
 
-import org.bosik.diacomp.core.services.dishbase.DishBaseService;
-import org.bosik.diacomp.core.services.dishbase.TestDishbaseService;
-import org.bosik.diacomp.core.services.dishbase.TestDishbaseServiceCommon;
+import org.bosik.diacomp.core.services.base.dish.DishBaseService;
+import org.bosik.diacomp.core.services.base.dish.TestDishbaseService;
+import org.bosik.diacomp.core.services.base.dish.TestDishbaseServiceCommon;
 import android.content.ContentResolver;
 import android.test.AndroidTestCase;
 
