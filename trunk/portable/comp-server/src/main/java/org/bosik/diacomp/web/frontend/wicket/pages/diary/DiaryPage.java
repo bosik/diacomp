@@ -118,7 +118,7 @@ public class DiaryPage extends MasterPage
 		list.clear();
 		for (int i = 1; i <= 40; i++)
 		{
-			Date dateFrom = Utils.dateLocal(2013, 1, i);
+			Date dateFrom = Utils.dateLocal(2015, 1, i);
 			Date dateTo = Utils.getNextDay(dateFrom);
 			List<Versioned<DiaryRecord>> day = diaryService.findPeriod(dateFrom, dateTo, false);
 			DiaryPanelDayModelObject mo = new DiaryPanelDayModelObject(dateFrom, day);
