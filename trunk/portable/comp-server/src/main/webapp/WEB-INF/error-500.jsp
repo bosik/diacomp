@@ -1,6 +1,7 @@
 <%@ page isErrorPage="true"
 	import="java.io.*,org.bosik.diacomp.core.rest.ResponseBuilder"
-	contentType="text/plain"%><%
+	contentType="text/plain"%>
+<%
 	//StringWriter stringWriter = new StringWriter();
 	//PrintWriter printWriter = new PrintWriter(stringWriter);
 	//exception.printStackTrace(printWriter);
