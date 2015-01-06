@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.dishbase.rest;
+package org.bosik.diacomp.web.backend.features.base.dish.rest;
 
 import java.util.Date;
 import java.util.List;
@@ -24,8 +24,8 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
-import org.bosik.diacomp.web.backend.features.dishbase.function.DishbaseDAO;
-import org.bosik.diacomp.web.backend.features.dishbase.function.MySQLDishbaseDAO;
+import org.bosik.diacomp.web.backend.features.base.dish.function.DishbaseDAO;
+import org.bosik.diacomp.web.backend.features.base.dish.function.MySQLDishbaseDAO;
 
 @Path("dish/")
 public class DishBaseRestService

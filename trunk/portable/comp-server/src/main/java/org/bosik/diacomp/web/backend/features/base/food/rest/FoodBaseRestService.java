@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.foodbase.rest;
+package org.bosik.diacomp.web.backend.features.base.food.rest;
 
 import java.util.Date;
 import java.util.List;
@@ -24,8 +24,8 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
-import org.bosik.diacomp.web.backend.features.foodbase.function.FoodbaseDAO;
-import org.bosik.diacomp.web.backend.features.foodbase.function.MySQLFoodbaseDAO;
+import org.bosik.diacomp.web.backend.features.base.food.function.FoodbaseDAO;
+import org.bosik.diacomp.web.backend.features.base.food.function.MySQLFoodbaseDAO;
 
 @Path("food/")
 public class FoodBaseRestService
