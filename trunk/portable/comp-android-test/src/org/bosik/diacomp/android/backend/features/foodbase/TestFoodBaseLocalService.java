@@ -1,8 +1,8 @@
 package org.bosik.diacomp.android.backend.features.foodbase;
 
-import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
-import org.bosik.diacomp.core.services.foodbase.TestFoodbaseService;
-import org.bosik.diacomp.core.services.foodbase.TestFoodbaseServiceCommon;
+import org.bosik.diacomp.core.services.base.food.FoodBaseService;
+import org.bosik.diacomp.core.services.base.food.TestFoodbaseService;
+import org.bosik.diacomp.core.services.base.food.TestFoodbaseServiceCommon;
 import android.content.ContentResolver;
 import android.test.AndroidTestCase;
 

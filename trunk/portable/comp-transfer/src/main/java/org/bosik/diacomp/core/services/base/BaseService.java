@@ -1,7 +1,8 @@
-package org.bosik.diacomp.core.services;
+package org.bosik.diacomp.core.services.base;
 
 import java.util.List;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 

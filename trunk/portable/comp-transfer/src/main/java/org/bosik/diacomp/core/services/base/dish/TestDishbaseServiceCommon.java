@@ -1,4 +1,4 @@
-package org.bosik.diacomp.core.services.dishbase;
+package org.bosik.diacomp.core.services.base.dish;
 
 import java.util.Date;
 import java.util.List;
