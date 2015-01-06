@@ -12,11 +12,13 @@ import org.apache.wicket.model.Model;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.frontend.wicket.components.diary.blood.DiaryPanelBlood;
 import org.bosik.diacomp.web.frontend.wicket.components.diary.ins.DiaryPanelIns;
+import org.bosik.diacomp.web.frontend.wicket.components.diary.meal.DiaryPanelMeal;
 import org.bosik.diacomp.web.frontend.wicket.components.diary.note.DiaryPanelNote;
 
 public class DiaryPanelDay extends Panel
@@ -57,8 +59,9 @@ public class DiaryPanelDay extends Panel
 
 				for (Versioned<DiaryRecord> item : data.getItems())
 				{
-					if ((item.getData() instanceof BloodRecord) || (item.getData() instanceof InsRecord)
-							|| (item.getData() instanceof NoteRecord))
+					DiaryRecord data = item.getData();
+					if ((data instanceof BloodRecord) || (data instanceof InsRecord) || (data instanceof MealRecord)
+							|| (data instanceof NoteRecord))
 					{
 						list.add(Model.of(item));
 					}
@@ -79,6 +82,10 @@ public class DiaryPanelDay extends Panel
 				else if (record instanceof InsRecord)
 				{
 					item.add(new DiaryPanelIns("diaryRecordPanel", Model.of((InsRecord)record)));
+				}
+				else if (record instanceof MealRecord)
+				{
+					item.add(new DiaryPanelMeal("diaryRecordPanel", Model.of((MealRecord)record)));
 				}
 				else if (record instanceof NoteRecord)
 				{
