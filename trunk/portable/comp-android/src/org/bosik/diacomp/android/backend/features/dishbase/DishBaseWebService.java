@@ -25,14 +25,15 @@ public class DishBaseWebService implements DishBaseService
 	// private static final String TAG = DishBaseWebService.class.getSimpleName();
 
 	// REST methods
-	private static final String						API_DISH_FIND_ALL		= "api/dish/all/?show_rem=%s";
-	private static final String						API_DISH_FIND_ANY		= "api/dish/search/?q=%s";
-	private static final String						API_DISH_FIND_CHANGES	= "api/dish/changes/?since=%s";
-	private static final String						API_DISH_FIND_BY_ID		= "api/dish/guid/%s";
-	private static final String						API_DISH_SAVE			= "api/dish/";
+	private static final String						API_DISH_FIND_ALL			= "api/dish/all/?show_rem=%s";
+	private static final String						API_DISH_FIND_ANY			= "api/dish/search/?q=%s";
+	private static final String						API_DISH_FIND_BY_ID			= "api/dish/guid/%s";
+	private static final String						API_DISH_FIND_BY_ID_PREFIX	= "api/dish/guid/%s";
+	private static final String						API_DISH_FIND_CHANGES		= "api/dish/changes/?since=%s";
+	private static final String						API_DISH_SAVE				= "api/dish/";
 
 	private final WebClient							webClient;
-	private final Serializer<Versioned<DishItem>>	serializer				= new SerializerDishItem();
+	private final Serializer<Versioned<DishItem>>	serializer					= new SerializerDishItem();
 
 	public DishBaseWebService(WebClient webClient)
 	{
@@ -129,6 +130,25 @@ public class DishBaseWebService implements DishBaseService
 		catch (NotFoundException e)
 		{
 			return null;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	@Override
+	public List<Versioned<DishItem>> findByIdPrefix(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			String url = String.format(API_DISH_FIND_BY_ID_PREFIX, prefix);
+			StdResponse resp = webClient.get(url);
+			return serializer.readAll(resp.getResponse());
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
 		}
 		catch (Exception e)
 		{

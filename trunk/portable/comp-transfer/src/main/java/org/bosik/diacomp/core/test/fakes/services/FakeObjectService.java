@@ -49,6 +49,22 @@ public class FakeObjectService implements ObjectService<String>
 	}
 
 	@Override
+	public List<Versioned<String>> findByIdPrefix(String prefix) throws CommonServiceException
+	{
+		List<Versioned<String>> result = new ArrayList<Versioned<String>>();
+
+		for (Versioned<String> item : data)
+		{
+			if (item.getId().startsWith(prefix))
+			{
+				result.add(new Versioned<String>(item));
+			}
+		}
+
+		return result;
+	}
+
+	@Override
 	public List<Versioned<String>> findChanged(Date since) throws CommonServiceException
 	{
 		List<Versioned<String>> result = new ArrayList<Versioned<String>>();

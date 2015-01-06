@@ -11,6 +11,7 @@ import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
+import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
@@ -91,6 +92,32 @@ public class DiaryLocalService implements DiaryService
 		List<Versioned<DiaryRecord>> recs = extractRecords(cursor);
 
 		return recs.isEmpty() ? null : recs.get(0);
+	}
+
+	@Override
+	public List<Versioned<DiaryRecord>> findByIdPrefix(String prefix)
+	{
+		if (prefix.length() != ObjectService.ID_PREFIX_SIZE)
+		{
+			throw new IllegalArgumentException(String.format("Invalid prefix length, expected %d chars, but %d found",
+					ObjectService.ID_PREFIX_SIZE, prefix.length()));
+		}
+
+		// construct parameters
+		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
+				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
+				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
+
+		String clause = String.format("%s LIKE ?%", DiaryContentProvider.COLUMN_DIARY_GUID);
+		String[] clauseArgs = new String[] { prefix };
+
+		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
+
+		// execute
+		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
+				sortOrder);
+
+		return extractRecords(cursor);
 	}
 
 	@Override

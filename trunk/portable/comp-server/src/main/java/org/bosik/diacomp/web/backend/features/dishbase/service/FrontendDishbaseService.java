@@ -57,6 +57,13 @@ public class FrontendDishbaseService implements DishBaseService
 	}
 
 	@Override
+	public List<Versioned<DishItem>> findByIdPrefix(String prefix) throws CommonServiceException
+	{
+		int userId = authService.getCurrentUserId();
+		return dishbaseDao.findByIdPrefix(userId, prefix);
+	}
+
+	@Override
 	public List<Versioned<DishItem>> findChanged(Date since) throws CommonServiceException
 	{
 		int userId = authService.getCurrentUserId();

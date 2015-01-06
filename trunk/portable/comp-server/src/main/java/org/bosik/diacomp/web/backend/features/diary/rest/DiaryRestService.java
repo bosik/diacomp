@@ -23,6 +23,7 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
+import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.utils.Utils;
@@ -46,24 +47,39 @@ public class DiaryRestService
 	@GET
 	@Path("guid/{guid}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecordsGuid(@PathParam("guid") String parGuid) throws CommonServiceException
+	public Response getRecordsGuid(@PathParam("guid") String parId) throws CommonServiceException
 	{
 		try
 		{
 			int userId = UserSessionUtils.getId(req);
-			Versioned<DiaryRecord> item = diaryService.findByGuid(userId, parGuid);
 
-			if (item != null)
+			// Prefix form
+			if (parId.length() == ObjectService.ID_PREFIX_SIZE)
 			{
-				String s = serializer.write(item);
+				List<Versioned<DiaryRecord>> items = diaryService.findByIdPrefix(userId, parId);
+
+				String s = serializer.writeAll(items);
 				String response = ResponseBuilder.buildDone(s);
 				return Response.ok(response).build();
 			}
+
+			// Full form
 			else
 			{
-				String response = ResponseBuilder.build(ResponseBuilder.CODE_NOTFOUND,
-						String.format("Item %s not found", parGuid));
-				return Response.ok(response).build();
+				Versioned<DiaryRecord> item = diaryService.findById(userId, parId);
+
+				if (item != null)
+				{
+					String s = serializer.write(item);
+					String response = ResponseBuilder.buildDone(s);
+					return Response.ok(response).build();
+				}
+				else
+				{
+					String response = ResponseBuilder.build(ResponseBuilder.CODE_NOTFOUND,
+							String.format("Item %s not found", parId));
+					return Response.ok(response).build();
+				}
 			}
 		}
 		catch (NotAuthorizedException e)

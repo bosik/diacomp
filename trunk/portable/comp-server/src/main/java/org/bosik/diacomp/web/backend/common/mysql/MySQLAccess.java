@@ -16,6 +16,8 @@ public class MySQLAccess
 
 	private static final String	SQL_DRIVER					= "com.mysql.jdbc.Driver";
 
+	// TODO: move this constants to the appropriative DAOs
+
 	// ======================================= User table =======================================
 
 	public static final String	TABLE_USER					= "user";

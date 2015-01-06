@@ -25,14 +25,15 @@ public class FoodBaseWebService implements FoodBaseService
 	// private static final String TAG = FoodBaseWebService.class.getSimpleName();
 
 	// REST methods
-	private static final String						API_FOOD_FIND_ALL		= "api/food/all/?show_rem=%s";
-	private static final String						API_FOOD_FIND_ANY		= "api/food/search/?q=%s";
-	private static final String						API_FOOD_FIND_CHANGES	= "api/food/changes/?since=%s";
-	private static final String						API_FOOD_FIND_BY_ID		= "api/food/guid/%s";
-	private static final String						API_FOOD_SAVE			= "api/food/";
+	private static final String						API_FOOD_FIND_ALL			= "api/food/all/?show_rem=%s";
+	private static final String						API_FOOD_FIND_ANY			= "api/food/search/?q=%s";
+	private static final String						API_FOOD_FIND_BY_ID			= "api/food/guid/%s";
+	private static final String						API_FOOD_FIND_BY_ID_PREFIX	= "api/food/guid/%s";
+	private static final String						API_FOOD_FIND_CHANGES		= "api/food/changes/?since=%s";
+	private static final String						API_FOOD_SAVE				= "api/food/";
 
 	private final WebClient							webClient;
-	private final Serializer<Versioned<FoodItem>>	serializer				= new SerializerFoodItem();
+	private final Serializer<Versioned<FoodItem>>	serializer					= new SerializerFoodItem();
 
 	public FoodBaseWebService(WebClient webClient)
 	{
@@ -129,6 +130,25 @@ public class FoodBaseWebService implements FoodBaseService
 		catch (NotFoundException e)
 		{
 			return null;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	@Override
+	public List<Versioned<FoodItem>> findByIdPrefix(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			String url = String.format(API_FOOD_FIND_BY_ID_PREFIX, prefix);
+			StdResponse resp = webClient.get(url);
+			return serializer.readAll(resp.getResponse());
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
 		}
 		catch (Exception e)
 		{
