@@ -14,7 +14,7 @@ public class MySQLAccess
 {
 	private static Connection	connection;
 
-	private static final String	SQL_DRIVER					= "com.mysql.jdbc.Driver";
+	private static final String	SQL_DRIVER	= "com.mysql.jdbc.Driver";
 
 	public MySQLAccess()
 	{
