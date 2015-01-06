@@ -59,6 +59,13 @@ public class FrontendFoodbaseService implements FoodBaseService
 	}
 
 	@Override
+	public List<Versioned<FoodItem>> findByIdPrefix(String prefix) throws CommonServiceException
+	{
+		int userId = authService.getCurrentUserId();
+		return foodbaseDao.findByIdPrefix(userId, prefix);
+	}
+
+	@Override
 	public List<Versioned<FoodItem>> findChanged(Date since) throws CommonServiceException
 	{
 		int userId = authService.getCurrentUserId();

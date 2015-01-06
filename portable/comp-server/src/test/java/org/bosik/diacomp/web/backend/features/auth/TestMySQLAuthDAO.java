@@ -10,10 +10,6 @@ public class TestMySQLAuthDAO
 {
 	private final AuthDAO	authDao	= new MySQLAuthDAO();
 
-	{
-		Config.init();
-	}
-
 	@Test
 	public void test()
 	{

@@ -14,6 +14,7 @@ import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
+import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 
@@ -69,7 +70,7 @@ public class MySQLDiaryDAO implements DiaryDAO
 	}
 
 	@Override
-	public Versioned<DiaryRecord> findByGuid(int userId, String guid)
+	public Versioned<DiaryRecord> findById(int userId, String guid)
 	{
 		try
 		{
@@ -80,6 +81,33 @@ public class MySQLDiaryDAO implements DiaryDAO
 			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public List<Versioned<DiaryRecord>> findByIdPrefix(int userId, String prefix)
+	{
+		if (prefix.length() != ObjectService.ID_PREFIX_SIZE)
+		{
+			throw new IllegalArgumentException(String.format("Invalid prefix length, expected %d chars, but %d found",
+					ObjectService.ID_PREFIX_SIZE, prefix.length()));
+		}
+
+		try
+		{
+			String clause = String.format("(%s = %d) AND (%s LIKE '%s%%')", MySQLAccess.COLUMN_DIARY_USER, userId,
+					MySQLAccess.COLUMN_DIARY_GUID, prefix);
+
+			String order = MySQLAccess.COLUMN_DIARY_TIMECACHE;
+
+			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause, order);
+			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
+			set.close();
+			return result;
 		}
 		catch (SQLException e)
 		{
@@ -150,7 +178,7 @@ public class MySQLDiaryDAO implements DiaryDAO
 				final String version = String.valueOf(item.getVersion());
 				final String deleted = Utils.formatBooleanInt(item.isDeleted());
 
-				if (findByGuid(userId, item.getId()) != null)
+				if (findById(userId, item.getId()) != null)
 				{
 					// presented, update
 

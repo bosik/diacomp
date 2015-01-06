@@ -14,6 +14,7 @@ import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
+import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
@@ -150,9 +151,18 @@ public class DishBaseLocalService implements DishBaseService
 
 			if (id != null)
 			{
-				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-				mSelectionClause += DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?";
-				args.add(id);
+				if (id.length() == ObjectService.ID_PREFIX_SIZE)
+				{
+					mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
+					mSelectionClause += DiaryContentProvider.COLUMN_DISHBASE_GUID + " LIKE ?%";
+					args.add(id);
+				}
+				else
+				{
+					mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
+					mSelectionClause += DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?";
+					args.add(id);
+				}
 			}
 
 			if (name != null)
@@ -208,7 +218,7 @@ public class DishBaseLocalService implements DishBaseService
 
 			for (Versioned<DishItem> item : memoryCache)
 			{
-				if (((id == null) || item.getId().equals(id))
+				if (((id == null) || item.getId().startsWith(id))
 						&& ((name == null) || item.getData().getName().toLowerCase(Locale.US).contains(name))
 						&& (includeDeleted || !item.isDeleted())
 						&& ((modAfter == null) || item.getTimeStamp().after(modAfter)))
@@ -424,6 +434,12 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			return list.get(0);
 		}
+	}
+
+	@Override
+	public List<Versioned<DishItem>> findByIdPrefix(String prefix) throws CommonServiceException
+	{
+		return find(prefix, null, true, null);
 	}
 
 	@Override

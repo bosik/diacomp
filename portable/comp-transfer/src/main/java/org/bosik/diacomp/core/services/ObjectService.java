@@ -9,6 +9,8 @@ import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 
 public interface ObjectService<T>
 {
+	static final int	ID_PREFIX_SIZE	= 4;
+
 	/**
 	 * Marks item with specified ID as deleted
 	 * 
@@ -28,6 +30,16 @@ public interface ObjectService<T>
 	 * @throws CommonServiceException
 	 */
 	Versioned<T> findById(String id) throws CommonServiceException;
+
+	/**
+	 * Returns list of records which id starts with specified prefix
+	 * 
+	 * @param prefix
+	 *            Prefix, must be ID_PREFIX_SIZE chars long
+	 * @return
+	 * @throws CommonServiceException
+	 */
+	List<Versioned<T>> findByIdPrefix(String prefix) throws CommonServiceException;
 
 	/**
 	 * Returns list of records which were modified after the specified time (both removed or not)

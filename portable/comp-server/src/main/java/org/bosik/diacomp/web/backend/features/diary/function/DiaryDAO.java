@@ -9,7 +9,9 @@ public interface DiaryDAO
 {
 	void delete(int userId, String id);
 
-	Versioned<DiaryRecord> findByGuid(int userId, String guid);
+	Versioned<DiaryRecord> findById(int userId, String id);
+
+	List<Versioned<DiaryRecord>> findByIdPrefix(int userId, String prefix);
 
 	List<Versioned<DiaryRecord>> findChanged(int userId, Date since);
 

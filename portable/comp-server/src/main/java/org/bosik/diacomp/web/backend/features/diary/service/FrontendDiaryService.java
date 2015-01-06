@@ -29,7 +29,14 @@ public class FrontendDiaryService implements DiaryService
 	public Versioned<DiaryRecord> findById(String id) throws CommonServiceException
 	{
 		int userId = authService.getCurrentUserId();
-		return diaryDao.findByGuid(userId, id);
+		return diaryDao.findById(userId, id);
+	}
+
+	@Override
+	public List<Versioned<DiaryRecord>> findByIdPrefix(String prefix) throws CommonServiceException
+	{
+		int userId = authService.getCurrentUserId();
+		return diaryDao.findByIdPrefix(userId, prefix);
 	}
 
 	@Override

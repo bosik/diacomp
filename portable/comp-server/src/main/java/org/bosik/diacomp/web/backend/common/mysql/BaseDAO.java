@@ -28,10 +28,19 @@ public interface BaseDAO<T>
 	 * Searches the item with the specified GUID
 	 * 
 	 * @param userId
-	 * @param guids
+	 * @param id
 	 * @return
 	 */
-	Versioned<T> findById(int userId, String guid);
+	Versioned<T> findById(int userId, String id);
+
+	/**
+	 * Searches items with the specified GUID prefix
+	 * 
+	 * @param userId
+	 * @param prefix
+	 * @return
+	 */
+	List<Versioned<T>> findByIdPrefix(int userId, String prefix);
 
 	/**
 	 * Searches for item with exact name

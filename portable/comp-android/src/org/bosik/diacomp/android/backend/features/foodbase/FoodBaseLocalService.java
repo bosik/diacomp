@@ -14,6 +14,7 @@ import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
+import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
@@ -149,9 +150,18 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			if (id != null)
 			{
-				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-				mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
-				args.add(id);
+				if (id.length() == ObjectService.ID_PREFIX_SIZE)
+				{
+					mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
+					mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_GUID + " LIKE ?%";
+					args.add(id);
+				}
+				else
+				{
+					mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
+					mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
+					args.add(id);
+				}
 			}
 
 			if (name != null)
@@ -207,7 +217,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			for (Versioned<FoodItem> item : memoryCache)
 			{
-				if (((id == null) || item.getId().equals(id))
+				if (((id == null) || item.getId().startsWith(id))
 						&& ((name == null) || item.getData().getName().toLowerCase(Locale.US).contains(name))
 						&& (includeDeleted || !item.isDeleted())
 						&& ((modAfter == null) || item.getTimeStamp().after(modAfter)))
@@ -438,6 +448,12 @@ public class FoodBaseLocalService implements FoodBaseService
 		{
 			return list.get(0);
 		}
+	}
+
+	@Override
+	public List<Versioned<FoodItem>> findByIdPrefix(String prefix) throws CommonServiceException
+	{
+		return find(prefix, null, true, null);
 	}
 
 	@Override

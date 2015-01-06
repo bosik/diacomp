@@ -27,17 +27,18 @@ public class DiaryWebService implements DiaryService
 	// private static final String TAG = DiaryWebService.class.getSimpleName();
 
 	// REST methods
-	private static final String							API_DIARY_FIND_BY_ID	= "api/diary/guid/%s";
-	private static final String							API_DIARY_FIND_CHANGES	= "api/diary/changes/?since=%s";
-	private static final String							API_DIARY_FIND_PERIOD	= "api/diary/period/?start_time=%s&end_time=%s&show_rem=%s";
-	private static final String							API_DIARY_SAVE			= "api/diary/";
+	private static final String							API_DIARY_FIND_BY_ID		= "api/diary/guid/%s";
+	private static final String							API_DIARY_FIND_BY_ID_PREFIX	= "api/diary/guid/%s";
+	private static final String							API_DIARY_FIND_CHANGES		= "api/diary/changes/?since=%s";
+	private static final String							API_DIARY_FIND_PERIOD		= "api/diary/period/?start_time=%s&end_time=%s&show_rem=%s";
+	private static final String							API_DIARY_SAVE				= "api/diary/";
 
 	private final WebClient								webClient;
-	private final Parser<DiaryRecord>					parser					= new ParserDiaryRecord();
-	private final Parser<Versioned<DiaryRecord>>		parserV					= new ParserVersioned<DiaryRecord>(
-																						parser);
-	private final Serializer<Versioned<DiaryRecord>>	serializerV				= new SerializerAdapter<Versioned<DiaryRecord>>(
-																						parserV);
+	private final Parser<DiaryRecord>					parser						= new ParserDiaryRecord();
+	private final Parser<Versioned<DiaryRecord>>		parserV						= new ParserVersioned<DiaryRecord>(
+																							parser);
+	private final Serializer<Versioned<DiaryRecord>>	serializerV					= new SerializerAdapter<Versioned<DiaryRecord>>(
+																							parserV);
 
 	/* ============================ CONSTRUCTOR ============================ */
 
@@ -82,6 +83,25 @@ public class DiaryWebService implements DiaryService
 		try
 		{
 			String query = String.format(API_DIARY_FIND_CHANGES, Utils.formatTimeUTC(time));
+			StdResponse resp = webClient.get(query);
+			return serializerV.readAll(resp.getResponse());
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	@Override
+	public List<Versioned<DiaryRecord>> findByIdPrefix(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			String query = String.format(API_DIARY_FIND_BY_ID_PREFIX, prefix);
 			StdResponse resp = webClient.get(query);
 			return serializerV.readAll(resp.getResponse());
 		}
