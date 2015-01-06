@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.dishbase.rest;
+package org.bosik.diacomp.web.backend.features.base.dish.rest;
 
 @Deprecated
 public class DishbaseRestClient //extends AuthorizedRestClient implements DishBaseService

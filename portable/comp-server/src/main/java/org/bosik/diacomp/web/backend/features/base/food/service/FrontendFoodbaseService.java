@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.foodbase.service;
+package org.bosik.diacomp.web.backend.features.base.food.service;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -13,8 +13,8 @@ import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import org.bosik.diacomp.web.backend.features.auth.service.AuthService;
 import org.bosik.diacomp.web.backend.features.auth.service.FrontendAuthService;
-import org.bosik.diacomp.web.backend.features.foodbase.function.FoodbaseDAO;
-import org.bosik.diacomp.web.backend.features.foodbase.function.MySQLFoodbaseDAO;
+import org.bosik.diacomp.web.backend.features.base.food.function.FoodbaseDAO;
+import org.bosik.diacomp.web.backend.features.base.food.function.MySQLFoodbaseDAO;
 import org.springframework.stereotype.Service;
 
 @Service

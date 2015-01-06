@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.dishbase.service;
+package org.bosik.diacomp.web.backend.features.base.dish.service;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -13,8 +13,8 @@ import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.web.backend.features.auth.service.AuthService;
 import org.bosik.diacomp.web.backend.features.auth.service.FrontendAuthService;
-import org.bosik.diacomp.web.backend.features.dishbase.function.DishbaseDAO;
-import org.bosik.diacomp.web.backend.features.dishbase.function.MySQLDishbaseDAO;
+import org.bosik.diacomp.web.backend.features.base.dish.function.DishbaseDAO;
+import org.bosik.diacomp.web.backend.features.base.dish.function.MySQLDishbaseDAO;
 
 public class FrontendDishbaseService implements DishBaseService
 {

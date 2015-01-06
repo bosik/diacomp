@@ -8,7 +8,7 @@ import org.apache.wicket.model.Model;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
-import org.bosik.diacomp.web.backend.features.foodbase.service.FrontendFoodbaseService;
+import org.bosik.diacomp.web.backend.features.base.food.service.FrontendFoodbaseService;
 
 public class FoodDataProvider implements IDataProvider<Versioned<FoodItem>>
 {
