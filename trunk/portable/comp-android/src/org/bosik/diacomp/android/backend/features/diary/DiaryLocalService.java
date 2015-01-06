@@ -69,6 +69,7 @@ public class DiaryLocalService implements DiaryService
 		}
 
 		item.setDeleted(true);
+		item.updateTimeStamp();
 		save(Arrays.<Versioned<DiaryRecord>> asList(item));
 	}
 
