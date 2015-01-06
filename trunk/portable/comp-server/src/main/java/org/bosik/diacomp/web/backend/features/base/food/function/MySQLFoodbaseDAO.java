@@ -20,9 +20,18 @@ import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 
 public class MySQLFoodbaseDAO implements FoodbaseDAO
 {
-	private static final MySQLAccess			db			= new MySQLAccess();
-	private static final Parser<FoodItem>		parser		= new ParserFoodItem();
-	private static final Serializer<FoodItem>	serializer	= new SerializerAdapter<FoodItem>(parser);
+	private static final String					TABLE_FOODBASE				= "foodbase2";
+	private static final String					COLUMN_FOODBASE_GUID		= "_GUID";
+	private static final String					COLUMN_FOODBASE_USER		= "_UserID";
+	private static final String					COLUMN_FOODBASE_TIMESTAMP	= "_TimeStamp";
+	private static final String					COLUMN_FOODBASE_VERSION		= "_Version";
+	private static final String					COLUMN_FOODBASE_DELETED		= "_Deleted";
+	private static final String					COLUMN_FOODBASE_CONTENT		= "_Content";
+	private static final String					COLUMN_FOODBASE_NAMECACHE	= "_NameCache";
+
+	private static final MySQLAccess			db							= new MySQLAccess();
+	private static final Parser<FoodItem>		parser						= new ParserFoodItem();
+	private static final Serializer<FoodItem>	serializer					= new SerializerAdapter<FoodItem>(parser);
 
 	private static List<Versioned<FoodItem>> parseFoodItems(ResultSet resultSet) throws SQLException
 	{
@@ -30,11 +39,11 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 
 		while (resultSet.next())
 		{
-			String id = resultSet.getString(MySQLAccess.COLUMN_FOODBASE_GUID);
-			Date timeStamp = Utils.parseTimeUTC(resultSet.getString(MySQLAccess.COLUMN_FOODBASE_TIMESTAMP));
-			int version = resultSet.getInt(MySQLAccess.COLUMN_FOODBASE_VERSION);
-			boolean deleted = (resultSet.getInt(MySQLAccess.COLUMN_FOODBASE_DELETED) == 1);
-			String content = resultSet.getString(MySQLAccess.COLUMN_FOODBASE_CONTENT);
+			String id = resultSet.getString(COLUMN_FOODBASE_GUID);
+			Date timeStamp = Utils.parseTimeUTC(resultSet.getString(COLUMN_FOODBASE_TIMESTAMP));
+			int version = resultSet.getInt(COLUMN_FOODBASE_VERSION);
+			boolean deleted = (resultSet.getInt(COLUMN_FOODBASE_DELETED) == 1);
+			String content = resultSet.getString(COLUMN_FOODBASE_CONTENT);
 
 			Versioned<FoodItem> item = new Versioned<FoodItem>();
 			item.setId(id);
@@ -55,16 +64,15 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	{
 		try
 		{
-			String clause = String.format("(%s = %d)", MySQLAccess.COLUMN_FOODBASE_USER, userId);
+			String clause = String.format("(%s = %d)", COLUMN_FOODBASE_USER, userId);
 			if (!includeRemoved)
 			{
-				clause += String.format(" AND (%s = '%s')", MySQLAccess.COLUMN_FOODBASE_DELETED,
-						Utils.formatBooleanInt(false));
+				clause += String.format(" AND (%s = '%s')", COLUMN_FOODBASE_DELETED, Utils.formatBooleanInt(false));
 			}
 
-			String order = MySQLAccess.COLUMN_FOODBASE_NAMECACHE;
+			String order = COLUMN_FOODBASE_NAMECACHE;
 
-			ResultSet set = db.select(MySQLAccess.TABLE_FOODBASE, clause, order);
+			ResultSet set = db.select(TABLE_FOODBASE, clause, order);
 			List<Versioned<FoodItem>> result = parseFoodItems(set);
 			set.close();
 			return result;
@@ -80,11 +88,11 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	{
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s >= '%s')", MySQLAccess.COLUMN_FOODBASE_USER, userId,
-					MySQLAccess.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(since));
-			String order = MySQLAccess.COLUMN_FOODBASE_NAMECACHE;
+			String clause = String.format("(%s = %d) AND (%s >= '%s')", COLUMN_FOODBASE_USER, userId,
+					COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(since));
+			String order = COLUMN_FOODBASE_NAMECACHE;
 
-			ResultSet set = db.select(MySQLAccess.TABLE_FOODBASE, clause, order);
+			ResultSet set = db.select(TABLE_FOODBASE, clause, order);
 			List<Versioned<FoodItem>> result = parseFoodItems(set);
 			set.close();
 			return result;
@@ -100,10 +108,10 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	{
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s = '%s')", MySQLAccess.COLUMN_FOODBASE_USER, userId,
-					MySQLAccess.COLUMN_FOODBASE_GUID, guid);
+			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_FOODBASE_USER, userId,
+					COLUMN_FOODBASE_GUID, guid);
 
-			ResultSet set = db.select(MySQLAccess.TABLE_FOODBASE, clause, null);
+			ResultSet set = db.select(TABLE_FOODBASE, clause, null);
 			List<Versioned<FoodItem>> result = parseFoodItems(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
@@ -125,12 +133,12 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s LIKE '%s%%')", MySQLAccess.COLUMN_FOODBASE_USER, userId,
-					MySQLAccess.COLUMN_FOODBASE_GUID, prefix);
+			String clause = String.format("(%s = %d) AND (%s LIKE '%s%%')", COLUMN_FOODBASE_USER, userId,
+					COLUMN_FOODBASE_GUID, prefix);
 
-			String order = MySQLAccess.COLUMN_FOODBASE_NAMECACHE;
+			String order = COLUMN_FOODBASE_NAMECACHE;
 
-			ResultSet set = db.select(MySQLAccess.TABLE_FOODBASE, clause, order);
+			ResultSet set = db.select(TABLE_FOODBASE, clause, order);
 			List<Versioned<FoodItem>> result = parseFoodItems(set);
 			set.close();
 			return result;
@@ -146,12 +154,11 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	{
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s = '%s') AND (%s LIKE '%%%s%%')",
-					MySQLAccess.COLUMN_FOODBASE_USER, userId, MySQLAccess.COLUMN_FOODBASE_DELETED,
-					Utils.formatBooleanInt(false), MySQLAccess.COLUMN_FOODBASE_NAMECACHE, filter);
-			String order = MySQLAccess.COLUMN_FOODBASE_NAMECACHE;
+			String clause = String.format("(%s = %d) AND (%s = '%s') AND (%s LIKE '%%%s%%')", COLUMN_FOODBASE_USER,
+					userId, COLUMN_FOODBASE_DELETED, Utils.formatBooleanInt(false), COLUMN_FOODBASE_NAMECACHE, filter);
+			String order = COLUMN_FOODBASE_NAMECACHE;
 
-			ResultSet set = db.select(MySQLAccess.TABLE_FOODBASE, clause, order);
+			ResultSet set = db.select(TABLE_FOODBASE, clause, order);
 			List<Versioned<FoodItem>> result = parseFoodItems(set);
 			set.close();
 			return result;
@@ -180,32 +187,32 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 					// presented, update
 
 					SortedMap<String, String> set = new TreeMap<String, String>();
-					set.put(MySQLAccess.COLUMN_FOODBASE_TIMESTAMP, timeStamp);
-					set.put(MySQLAccess.COLUMN_FOODBASE_VERSION, version);
-					set.put(MySQLAccess.COLUMN_FOODBASE_DELETED, deleted);
-					set.put(MySQLAccess.COLUMN_FOODBASE_CONTENT, content);
-					set.put(MySQLAccess.COLUMN_FOODBASE_NAMECACHE, nameCache);
+					set.put(COLUMN_FOODBASE_TIMESTAMP, timeStamp);
+					set.put(COLUMN_FOODBASE_VERSION, version);
+					set.put(COLUMN_FOODBASE_DELETED, deleted);
+					set.put(COLUMN_FOODBASE_CONTENT, content);
+					set.put(COLUMN_FOODBASE_NAMECACHE, nameCache);
 
 					SortedMap<String, String> where = new TreeMap<String, String>();
-					where.put(MySQLAccess.COLUMN_FOODBASE_GUID, item.getId());
-					where.put(MySQLAccess.COLUMN_FOODBASE_USER, String.valueOf(userId));
+					where.put(COLUMN_FOODBASE_GUID, item.getId());
+					where.put(COLUMN_FOODBASE_USER, String.valueOf(userId));
 
-					db.update(MySQLAccess.TABLE_FOODBASE, set, where);
+					db.update(TABLE_FOODBASE, set, where);
 				}
 				else
 				{
 					// not presented, insert
 
 					LinkedHashMap<String, String> set = new LinkedHashMap<String, String>();
-					set.put(MySQLAccess.COLUMN_FOODBASE_GUID, item.getId());
-					set.put(MySQLAccess.COLUMN_FOODBASE_USER, String.valueOf(userId));
-					set.put(MySQLAccess.COLUMN_FOODBASE_TIMESTAMP, timeStamp);
-					set.put(MySQLAccess.COLUMN_FOODBASE_VERSION, version);
-					set.put(MySQLAccess.COLUMN_FOODBASE_DELETED, deleted);
-					set.put(MySQLAccess.COLUMN_FOODBASE_CONTENT, content);
-					set.put(MySQLAccess.COLUMN_FOODBASE_NAMECACHE, nameCache);
+					set.put(COLUMN_FOODBASE_GUID, item.getId());
+					set.put(COLUMN_FOODBASE_USER, String.valueOf(userId));
+					set.put(COLUMN_FOODBASE_TIMESTAMP, timeStamp);
+					set.put(COLUMN_FOODBASE_VERSION, version);
+					set.put(COLUMN_FOODBASE_DELETED, deleted);
+					set.put(COLUMN_FOODBASE_CONTENT, content);
+					set.put(COLUMN_FOODBASE_NAMECACHE, nameCache);
 
-					db.insert(MySQLAccess.TABLE_FOODBASE, set);
+					db.insert(TABLE_FOODBASE, set);
 				}
 			}
 		}
@@ -221,13 +228,13 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 		try
 		{
 			SortedMap<String, String> set = new TreeMap<String, String>();
-			set.put(MySQLAccess.COLUMN_FOODBASE_DELETED, Utils.formatBooleanInt(true));
+			set.put(COLUMN_FOODBASE_DELETED, Utils.formatBooleanInt(true));
 
 			SortedMap<String, String> where = new TreeMap<String, String>();
-			where.put(MySQLAccess.COLUMN_FOODBASE_GUID, id);
-			where.put(MySQLAccess.COLUMN_FOODBASE_USER, String.valueOf(userId));
+			where.put(COLUMN_FOODBASE_GUID, id);
+			where.put(COLUMN_FOODBASE_USER, String.valueOf(userId));
 
-			db.update(MySQLAccess.TABLE_FOODBASE, set, where);
+			db.update(TABLE_FOODBASE, set, where);
 		}
 		catch (SQLException e)
 		{
@@ -240,10 +247,10 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	{
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s = '%s')", MySQLAccess.COLUMN_FOODBASE_USER, userId,
-					MySQLAccess.COLUMN_FOODBASE_NAMECACHE, exactName);
+			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_FOODBASE_USER, userId,
+					COLUMN_FOODBASE_NAMECACHE, exactName);
 
-			ResultSet set = db.select(MySQLAccess.TABLE_FOODBASE, clause, null);
+			ResultSet set = db.select(TABLE_FOODBASE, clause, null);
 			List<Versioned<FoodItem>> result = parseFoodItems(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);

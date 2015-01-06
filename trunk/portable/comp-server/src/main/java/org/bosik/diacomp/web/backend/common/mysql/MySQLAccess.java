@@ -16,50 +16,6 @@ public class MySQLAccess
 
 	private static final String	SQL_DRIVER					= "com.mysql.jdbc.Driver";
 
-	// TODO: move this constants to the appropriative DAOs
-
-	// ======================================= User table =======================================
-
-	public static final String	TABLE_USER					= "user";
-	public static final String	COLUMN_USER_ID				= "ID";
-	public static final String	COLUMN_USER_LOGIN			= "Login";
-	public static final String	COLUMN_USER_HASHPASS		= "HashPass";
-	public static final String	COLUMN_USER_DATE_REG		= "DateReg";
-	public static final String	COLUMN_USER_DATE_LOGIN		= "DateLogin";
-
-	// ======================================= Diary table =======================================
-
-	public static final String	TABLE_DIARY					= "diary2";
-	public static final String	COLUMN_DIARY_GUID			= "_GUID";
-	public static final String	COLUMN_DIARY_USER			= "_UserID";
-	public static final String	COLUMN_DIARY_TIMESTAMP		= "_TimeStamp";
-	public static final String	COLUMN_DIARY_VERSION		= "_Version";
-	public static final String	COLUMN_DIARY_DELETED		= "_Deleted";
-	public static final String	COLUMN_DIARY_CONTENT		= "_Content";
-	public static final String	COLUMN_DIARY_TIMECACHE		= "_TimeCache";
-
-	// ======================================= Food table =======================================
-
-	public static final String	TABLE_FOODBASE				= "foodbase2";
-	public static final String	COLUMN_FOODBASE_GUID		= "_GUID";
-	public static final String	COLUMN_FOODBASE_USER		= "_UserID";
-	public static final String	COLUMN_FOODBASE_TIMESTAMP	= "_TimeStamp";
-	public static final String	COLUMN_FOODBASE_VERSION		= "_Version";
-	public static final String	COLUMN_FOODBASE_DELETED		= "_Deleted";
-	public static final String	COLUMN_FOODBASE_CONTENT		= "_Content";
-	public static final String	COLUMN_FOODBASE_NAMECACHE	= "_NameCache";
-
-	// ======================================= Dish table =======================================
-
-	public static final String	TABLE_DISHBASE				= "dishbase2";
-	public static final String	COLUMN_DISHBASE_GUID		= "_GUID";
-	public static final String	COLUMN_DISHBASE_USER		= "_UserID";
-	public static final String	COLUMN_DISHBASE_TIMESTAMP	= "_TimeStamp";
-	public static final String	COLUMN_DISHBASE_VERSION		= "_Version";
-	public static final String	COLUMN_DISHBASE_DELETED		= "_Deleted";
-	public static final String	COLUMN_DISHBASE_CONTENT		= "_Content";
-	public static final String	COLUMN_DISHBASE_NAMECACHE	= "_NameCache";
-
 	public MySQLAccess()
 	{
 		try

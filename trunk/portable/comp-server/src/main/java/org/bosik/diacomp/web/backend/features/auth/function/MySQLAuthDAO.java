@@ -10,8 +10,15 @@ import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 
 public class MySQLAuthDAO implements AuthDAO
 {
-	private final MySQLAccess		db	= new MySQLAccess();
-	private static MessageDigest	md5digest;
+	private static final String			TABLE_USER				= "user";
+	private static final String			COLUMN_USER_ID			= "ID";
+	private static final String			COLUMN_USER_LOGIN		= "Login";
+	private static final String			COLUMN_USER_HASHPASS	= "HashPass";
+	private static final String			COLUMN_USER_DATE_REG	= "DateReg";
+	private static final String			COLUMN_USER_DATE_LOGIN	= "DateLogin";
+
+	private static final MySQLAccess	db						= new MySQLAccess();
+	private static MessageDigest		md5digest;
 
 	{
 		try
@@ -30,14 +37,13 @@ public class MySQLAuthDAO implements AuthDAO
 		try
 		{
 			String hash = md5(pass);
-			String clause = String.format("(%s = ?) AND (%s = ?)", MySQLAccess.COLUMN_USER_LOGIN,
-					MySQLAccess.COLUMN_USER_HASHPASS);
+			String clause = String.format("(%s = ?) AND (%s = ?)", COLUMN_USER_LOGIN, COLUMN_USER_HASHPASS);
 
-			ResultSet set = db.select(MySQLAccess.TABLE_USER, clause, null, login, hash);
+			ResultSet set = db.select(TABLE_USER, clause, null, login, hash);
 
 			if (set.next())
 			{
-				String s_id = set.getString(MySQLAccess.COLUMN_USER_ID);
+				String s_id = set.getString(COLUMN_USER_ID);
 				set.close();
 				int id = Integer.parseInt(s_id);
 
@@ -80,13 +86,13 @@ public class MySQLAuthDAO implements AuthDAO
 	{
 		try
 		{
-			String clause = String.format("(%s = ?)", MySQLAccess.COLUMN_USER_LOGIN);
+			String clause = String.format("(%s = ?)", COLUMN_USER_LOGIN);
 
-			ResultSet set = db.select(MySQLAccess.TABLE_USER, clause, null, userName);
+			ResultSet set = db.select(TABLE_USER, clause, null, userName);
 
 			if (set.next())
 			{
-				String s_id = set.getString(MySQLAccess.COLUMN_USER_ID);
+				String s_id = set.getString(COLUMN_USER_ID);
 				set.close();
 				return Integer.parseInt(s_id);
 			}
