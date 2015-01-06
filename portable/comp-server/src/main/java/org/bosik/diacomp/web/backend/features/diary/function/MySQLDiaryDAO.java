@@ -20,9 +20,18 @@ import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 
 public class MySQLDiaryDAO implements DiaryDAO
 {
-	private final MySQLAccess						db			= new MySQLAccess();
-	private static final Parser<DiaryRecord>		parser		= new ParserDiaryRecord();
-	private static final Serializer<DiaryRecord>	serializer	= new SerializerAdapter<DiaryRecord>(parser);
+	private static final String						TABLE_DIARY				= "diary2";
+	private static final String						COLUMN_DIARY_GUID		= "_GUID";
+	private static final String						COLUMN_DIARY_USER		= "_UserID";
+	private static final String						COLUMN_DIARY_TIMESTAMP	= "_TimeStamp";
+	private static final String						COLUMN_DIARY_VERSION	= "_Version";
+	private static final String						COLUMN_DIARY_DELETED	= "_Deleted";
+	private static final String						COLUMN_DIARY_CONTENT	= "_Content";
+	private static final String						COLUMN_DIARY_TIMECACHE	= "_TimeCache";
+
+	private static final MySQLAccess				db						= new MySQLAccess();
+	private static final Parser<DiaryRecord>		parser					= new ParserDiaryRecord();
+	private static final Serializer<DiaryRecord>	serializer				= new SerializerAdapter<DiaryRecord>(parser);
 
 	private static List<Versioned<DiaryRecord>> parseDiaryRecords(ResultSet resultSet) throws SQLException
 	{
@@ -30,11 +39,11 @@ public class MySQLDiaryDAO implements DiaryDAO
 
 		while (resultSet.next())
 		{
-			String id = resultSet.getString(MySQLAccess.COLUMN_DIARY_GUID);
-			Date timeStamp = Utils.parseTimeUTC(resultSet.getString(MySQLAccess.COLUMN_DIARY_TIMESTAMP));
-			int version = resultSet.getInt(MySQLAccess.COLUMN_DIARY_VERSION);
-			boolean deleted = (resultSet.getInt(MySQLAccess.COLUMN_DIARY_DELETED) == 1);
-			String content = resultSet.getString(MySQLAccess.COLUMN_DIARY_CONTENT);
+			String id = resultSet.getString(COLUMN_DIARY_GUID);
+			Date timeStamp = Utils.parseTimeUTC(resultSet.getString(COLUMN_DIARY_TIMESTAMP));
+			int version = resultSet.getInt(COLUMN_DIARY_VERSION);
+			boolean deleted = (resultSet.getInt(COLUMN_DIARY_DELETED) == 1);
+			String content = resultSet.getString(COLUMN_DIARY_CONTENT);
 
 			Versioned<DiaryRecord> item = new Versioned<DiaryRecord>();
 			item.setId(id);
@@ -55,13 +64,13 @@ public class MySQLDiaryDAO implements DiaryDAO
 		try
 		{
 			SortedMap<String, String> set = new TreeMap<String, String>();
-			set.put(MySQLAccess.COLUMN_DIARY_DELETED, Utils.formatBooleanInt(true));
+			set.put(COLUMN_DIARY_DELETED, Utils.formatBooleanInt(true));
 
 			SortedMap<String, String> where = new TreeMap<String, String>();
-			where.put(MySQLAccess.COLUMN_DIARY_GUID, id);
-			where.put(MySQLAccess.COLUMN_DIARY_USER, String.valueOf(userId));
+			where.put(COLUMN_DIARY_GUID, id);
+			where.put(COLUMN_DIARY_USER, String.valueOf(userId));
 
-			db.update(MySQLAccess.TABLE_DIARY, set, where);
+			db.update(TABLE_DIARY, set, where);
 		}
 		catch (SQLException e)
 		{
@@ -74,10 +83,10 @@ public class MySQLDiaryDAO implements DiaryDAO
 	{
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s = '%s')", MySQLAccess.COLUMN_DIARY_USER, userId,
-					MySQLAccess.COLUMN_DIARY_GUID, guid);
+			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_DIARY_USER, userId, COLUMN_DIARY_GUID,
+					guid);
 
-			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause, null);
+			ResultSet set = db.select(TABLE_DIARY, clause, null);
 			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
@@ -99,12 +108,12 @@ public class MySQLDiaryDAO implements DiaryDAO
 
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s LIKE '%s%%')", MySQLAccess.COLUMN_DIARY_USER, userId,
-					MySQLAccess.COLUMN_DIARY_GUID, prefix);
+			String clause = String.format("(%s = %d) AND (%s LIKE '%s%%')", COLUMN_DIARY_USER, userId,
+					COLUMN_DIARY_GUID, prefix);
 
-			String order = MySQLAccess.COLUMN_DIARY_TIMECACHE;
+			String order = COLUMN_DIARY_TIMECACHE;
 
-			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause, order);
+			ResultSet set = db.select(TABLE_DIARY, clause, order);
 			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
 			set.close();
 			return result;
@@ -120,12 +129,12 @@ public class MySQLDiaryDAO implements DiaryDAO
 	{
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s >= '%s')", MySQLAccess.COLUMN_DIARY_USER, userId,
-					MySQLAccess.COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(time));
+			String clause = String.format("(%s = %d) AND (%s >= '%s')", COLUMN_DIARY_USER, userId,
+					COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(time));
 
-			String order = MySQLAccess.COLUMN_DIARY_TIMECACHE;
+			String order = COLUMN_DIARY_TIMECACHE;
 
-			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause, order);
+			ResultSet set = db.select(TABLE_DIARY, clause, order);
 			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
 			set.close();
 			return result;
@@ -141,20 +150,19 @@ public class MySQLDiaryDAO implements DiaryDAO
 	{
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s >= '%s') AND (%s <= '%s')", MySQLAccess.COLUMN_DIARY_USER,
-					userId, MySQLAccess.COLUMN_DIARY_TIMECACHE, Utils.formatTimeUTC(startTime),
-					MySQLAccess.COLUMN_DIARY_TIMECACHE, Utils.formatTimeUTC(endTime));
+			String clause = String.format("(%s = %d) AND (%s >= '%s') AND (%s <= '%s')", COLUMN_DIARY_USER, userId,
+					COLUMN_DIARY_TIMECACHE, Utils.formatTimeUTC(startTime), COLUMN_DIARY_TIMECACHE,
+					Utils.formatTimeUTC(endTime));
 
 			if (!includeRemoved)
 			{
-				clause += String.format(" AND (%s = '%s')", MySQLAccess.COLUMN_DIARY_DELETED,
-						Utils.formatBooleanInt(false));
+				clause += String.format(" AND (%s = '%s')", COLUMN_DIARY_DELETED, Utils.formatBooleanInt(false));
 			}
 
-			String order = MySQLAccess.COLUMN_DIARY_TIMECACHE;
+			String order = COLUMN_DIARY_TIMECACHE;
 
 			// System.out.println("Requesting SQL clause: " + clause);
-			ResultSet set = db.select(MySQLAccess.TABLE_DIARY, clause, order);
+			ResultSet set = db.select(TABLE_DIARY, clause, order);
 			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
 			set.close();
 			return result;
@@ -183,32 +191,32 @@ public class MySQLDiaryDAO implements DiaryDAO
 					// presented, update
 
 					SortedMap<String, String> set = new TreeMap<String, String>();
-					set.put(MySQLAccess.COLUMN_DIARY_TIMESTAMP, timeStamp);
-					set.put(MySQLAccess.COLUMN_DIARY_VERSION, version);
-					set.put(MySQLAccess.COLUMN_DIARY_DELETED, deleted);
-					set.put(MySQLAccess.COLUMN_DIARY_CONTENT, content);
-					set.put(MySQLAccess.COLUMN_DIARY_TIMECACHE, timeCache);
+					set.put(COLUMN_DIARY_TIMESTAMP, timeStamp);
+					set.put(COLUMN_DIARY_VERSION, version);
+					set.put(COLUMN_DIARY_DELETED, deleted);
+					set.put(COLUMN_DIARY_CONTENT, content);
+					set.put(COLUMN_DIARY_TIMECACHE, timeCache);
 
 					SortedMap<String, String> where = new TreeMap<String, String>();
-					where.put(MySQLAccess.COLUMN_DIARY_GUID, item.getId());
-					where.put(MySQLAccess.COLUMN_DIARY_USER, String.valueOf(userId));
+					where.put(COLUMN_DIARY_GUID, item.getId());
+					where.put(COLUMN_DIARY_USER, String.valueOf(userId));
 
-					db.update(MySQLAccess.TABLE_DIARY, set, where);
+					db.update(TABLE_DIARY, set, where);
 				}
 				else
 				{
 					// not presented, insert
 
 					LinkedHashMap<String, String> set = new LinkedHashMap<String, String>();
-					set.put(MySQLAccess.COLUMN_DIARY_GUID, item.getId());
-					set.put(MySQLAccess.COLUMN_DIARY_USER, String.valueOf(userId));
-					set.put(MySQLAccess.COLUMN_DIARY_TIMESTAMP, timeStamp);
-					set.put(MySQLAccess.COLUMN_DIARY_VERSION, version);
-					set.put(MySQLAccess.COLUMN_DIARY_DELETED, deleted);
-					set.put(MySQLAccess.COLUMN_DIARY_CONTENT, content);
-					set.put(MySQLAccess.COLUMN_DIARY_TIMECACHE, timeCache);
+					set.put(COLUMN_DIARY_GUID, item.getId());
+					set.put(COLUMN_DIARY_USER, String.valueOf(userId));
+					set.put(COLUMN_DIARY_TIMESTAMP, timeStamp);
+					set.put(COLUMN_DIARY_VERSION, version);
+					set.put(COLUMN_DIARY_DELETED, deleted);
+					set.put(COLUMN_DIARY_CONTENT, content);
+					set.put(COLUMN_DIARY_TIMECACHE, timeCache);
 
-					db.insert(MySQLAccess.TABLE_DIARY, set);
+					db.insert(TABLE_DIARY, set);
 				}
 			}
 		}

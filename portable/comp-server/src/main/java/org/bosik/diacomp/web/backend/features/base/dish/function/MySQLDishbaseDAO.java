@@ -20,9 +20,18 @@ import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 
 public class MySQLDishbaseDAO implements DishbaseDAO
 {
-	private static final MySQLAccess			db			= new MySQLAccess();
-	private static final Parser<DishItem>		parser		= new ParserDishItem();
-	private static final Serializer<DishItem>	serializer	= new SerializerAdapter<DishItem>(parser);
+	private static final String					TABLE_DISHBASE				= "dishbase2";
+	private static final String					COLUMN_DISHBASE_GUID		= "_GUID";
+	private static final String					COLUMN_DISHBASE_USER		= "_UserID";
+	private static final String					COLUMN_DISHBASE_TIMESTAMP	= "_TimeStamp";
+	private static final String					COLUMN_DISHBASE_VERSION		= "_Version";
+	private static final String					COLUMN_DISHBASE_DELETED		= "_Deleted";
+	private static final String					COLUMN_DISHBASE_CONTENT		= "_Content";
+	private static final String					COLUMN_DISHBASE_NAMECACHE	= "_NameCache";
+
+	private static final MySQLAccess			db							= new MySQLAccess();
+	private static final Parser<DishItem>		parser						= new ParserDishItem();
+	private static final Serializer<DishItem>	serializer					= new SerializerAdapter<DishItem>(parser);
 
 	private static List<Versioned<DishItem>> parseDishItems(ResultSet resultSet) throws SQLException
 	{
@@ -30,11 +39,11 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 
 		while (resultSet.next())
 		{
-			String id = resultSet.getString(MySQLAccess.COLUMN_DISHBASE_GUID);
-			Date timeStamp = Utils.parseTimeUTC(resultSet.getString(MySQLAccess.COLUMN_DISHBASE_TIMESTAMP));
-			int version = resultSet.getInt(MySQLAccess.COLUMN_DISHBASE_VERSION);
-			boolean deleted = (resultSet.getInt(MySQLAccess.COLUMN_DISHBASE_DELETED) == 1);
-			String content = resultSet.getString(MySQLAccess.COLUMN_DISHBASE_CONTENT);
+			String id = resultSet.getString(COLUMN_DISHBASE_GUID);
+			Date timeStamp = Utils.parseTimeUTC(resultSet.getString(COLUMN_DISHBASE_TIMESTAMP));
+			int version = resultSet.getInt(COLUMN_DISHBASE_VERSION);
+			boolean deleted = (resultSet.getInt(COLUMN_DISHBASE_DELETED) == 1);
+			String content = resultSet.getString(COLUMN_DISHBASE_CONTENT);
 
 			Versioned<DishItem> item = new Versioned<DishItem>();
 			item.setId(id);
@@ -55,16 +64,15 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	{
 		try
 		{
-			String clause = String.format("(%s = %d)", MySQLAccess.COLUMN_DISHBASE_USER, userId);
+			String clause = String.format("(%s = %d)", COLUMN_DISHBASE_USER, userId);
 			if (!includeRemoved)
 			{
-				clause += String.format(" AND (%s = '%s')", MySQLAccess.COLUMN_DISHBASE_DELETED,
-						Utils.formatBooleanInt(false));
+				clause += String.format(" AND (%s = '%s')", COLUMN_DISHBASE_DELETED, Utils.formatBooleanInt(false));
 			}
 
-			String order = MySQLAccess.COLUMN_DISHBASE_NAMECACHE;
+			String order = COLUMN_DISHBASE_NAMECACHE;
 
-			ResultSet set = db.select(MySQLAccess.TABLE_DISHBASE, clause, order);
+			ResultSet set = db.select(TABLE_DISHBASE, clause, order);
 			List<Versioned<DishItem>> result = parseDishItems(set);
 			set.close();
 			return result;
@@ -80,11 +88,11 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	{
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s >= '%s')", MySQLAccess.COLUMN_DISHBASE_USER, userId,
-					MySQLAccess.COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(since));
-			String order = MySQLAccess.COLUMN_DISHBASE_NAMECACHE;
+			String clause = String.format("(%s = %d) AND (%s >= '%s')", COLUMN_DISHBASE_USER, userId,
+					COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(since));
+			String order = COLUMN_DISHBASE_NAMECACHE;
 
-			ResultSet set = db.select(MySQLAccess.TABLE_DISHBASE, clause, order);
+			ResultSet set = db.select(TABLE_DISHBASE, clause, order);
 			List<Versioned<DishItem>> result = parseDishItems(set);
 			set.close();
 			return result;
@@ -100,10 +108,10 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	{
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s = '%s')", MySQLAccess.COLUMN_DISHBASE_USER, userId,
-					MySQLAccess.COLUMN_DISHBASE_GUID, guid);
+			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_DISHBASE_USER, userId,
+					COLUMN_DISHBASE_GUID, guid);
 
-			ResultSet set = db.select(MySQLAccess.TABLE_DISHBASE, clause, null);
+			ResultSet set = db.select(TABLE_DISHBASE, clause, null);
 			List<Versioned<DishItem>> result = parseDishItems(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
@@ -125,12 +133,12 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s LIKE '%s%%')", MySQLAccess.COLUMN_DISHBASE_USER, userId,
-					MySQLAccess.COLUMN_DISHBASE_GUID, prefix);
+			String clause = String.format("(%s = %d) AND (%s LIKE '%s%%')", COLUMN_DISHBASE_USER, userId,
+					COLUMN_DISHBASE_GUID, prefix);
 
-			String order = MySQLAccess.COLUMN_DISHBASE_NAMECACHE;
+			String order = COLUMN_DISHBASE_NAMECACHE;
 
-			ResultSet set = db.select(MySQLAccess.TABLE_DISHBASE, clause, order);
+			ResultSet set = db.select(TABLE_DISHBASE, clause, order);
 			List<Versioned<DishItem>> result = parseDishItems(set);
 			set.close();
 			return result;
@@ -146,12 +154,11 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	{
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s = '%s') AND (%s LIKE '%%%s%%')",
-					MySQLAccess.COLUMN_DISHBASE_USER, userId, MySQLAccess.COLUMN_DISHBASE_DELETED,
-					Utils.formatBooleanInt(false), MySQLAccess.COLUMN_DISHBASE_NAMECACHE, filter);
-			String order = MySQLAccess.COLUMN_DISHBASE_NAMECACHE;
+			String clause = String.format("(%s = %d) AND (%s = '%s') AND (%s LIKE '%%%s%%')", COLUMN_DISHBASE_USER,
+					userId, COLUMN_DISHBASE_DELETED, Utils.formatBooleanInt(false), COLUMN_DISHBASE_NAMECACHE, filter);
+			String order = COLUMN_DISHBASE_NAMECACHE;
 
-			ResultSet set = db.select(MySQLAccess.TABLE_DISHBASE, clause, order);
+			ResultSet set = db.select(TABLE_DISHBASE, clause, order);
 			List<Versioned<DishItem>> result = parseDishItems(set);
 			set.close();
 			return result;
@@ -180,32 +187,32 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 					// presented, update
 
 					SortedMap<String, String> set = new TreeMap<String, String>();
-					set.put(MySQLAccess.COLUMN_DISHBASE_TIMESTAMP, timeStamp);
-					set.put(MySQLAccess.COLUMN_DISHBASE_VERSION, version);
-					set.put(MySQLAccess.COLUMN_DISHBASE_DELETED, deleted);
-					set.put(MySQLAccess.COLUMN_DISHBASE_CONTENT, content);
-					set.put(MySQLAccess.COLUMN_DISHBASE_NAMECACHE, nameCache);
+					set.put(COLUMN_DISHBASE_TIMESTAMP, timeStamp);
+					set.put(COLUMN_DISHBASE_VERSION, version);
+					set.put(COLUMN_DISHBASE_DELETED, deleted);
+					set.put(COLUMN_DISHBASE_CONTENT, content);
+					set.put(COLUMN_DISHBASE_NAMECACHE, nameCache);
 
 					SortedMap<String, String> where = new TreeMap<String, String>();
-					where.put(MySQLAccess.COLUMN_DISHBASE_GUID, item.getId());
-					where.put(MySQLAccess.COLUMN_DISHBASE_USER, String.valueOf(userId));
+					where.put(COLUMN_DISHBASE_GUID, item.getId());
+					where.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
 
-					db.update(MySQLAccess.TABLE_DISHBASE, set, where);
+					db.update(TABLE_DISHBASE, set, where);
 				}
 				else
 				{
 					// not presented, insert
 
 					LinkedHashMap<String, String> set = new LinkedHashMap<String, String>();
-					set.put(MySQLAccess.COLUMN_DISHBASE_GUID, item.getId());
-					set.put(MySQLAccess.COLUMN_DISHBASE_USER, String.valueOf(userId));
-					set.put(MySQLAccess.COLUMN_DISHBASE_TIMESTAMP, timeStamp);
-					set.put(MySQLAccess.COLUMN_DISHBASE_VERSION, version);
-					set.put(MySQLAccess.COLUMN_DISHBASE_DELETED, deleted);
-					set.put(MySQLAccess.COLUMN_DISHBASE_CONTENT, content);
-					set.put(MySQLAccess.COLUMN_DISHBASE_NAMECACHE, nameCache);
+					set.put(COLUMN_DISHBASE_GUID, item.getId());
+					set.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
+					set.put(COLUMN_DISHBASE_TIMESTAMP, timeStamp);
+					set.put(COLUMN_DISHBASE_VERSION, version);
+					set.put(COLUMN_DISHBASE_DELETED, deleted);
+					set.put(COLUMN_DISHBASE_CONTENT, content);
+					set.put(COLUMN_DISHBASE_NAMECACHE, nameCache);
 
-					db.insert(MySQLAccess.TABLE_DISHBASE, set);
+					db.insert(TABLE_DISHBASE, set);
 				}
 			}
 		}
@@ -220,10 +227,10 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	{
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s = '%s')", MySQLAccess.COLUMN_DISHBASE_USER, userId,
-					MySQLAccess.COLUMN_DISHBASE_NAMECACHE, exactName);
+			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_DISHBASE_USER, userId,
+					COLUMN_DISHBASE_NAMECACHE, exactName);
 
-			ResultSet set = db.select(MySQLAccess.TABLE_DISHBASE, clause, null);
+			ResultSet set = db.select(TABLE_DISHBASE, clause, null);
 			List<Versioned<DishItem>> result = parseDishItems(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
@@ -240,13 +247,13 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 		try
 		{
 			SortedMap<String, String> set = new TreeMap<String, String>();
-			set.put(MySQLAccess.COLUMN_DISHBASE_DELETED, Utils.formatBooleanInt(true));
+			set.put(COLUMN_DISHBASE_DELETED, Utils.formatBooleanInt(true));
 
 			SortedMap<String, String> where = new TreeMap<String, String>();
-			where.put(MySQLAccess.COLUMN_DISHBASE_GUID, id);
-			where.put(MySQLAccess.COLUMN_DISHBASE_USER, String.valueOf(userId));
+			where.put(COLUMN_DISHBASE_GUID, id);
+			where.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
 
-			db.update(MySQLAccess.TABLE_DISHBASE, set, where);
+			db.update(TABLE_DISHBASE, set, where);
 		}
 		catch (SQLException e)
 		{
