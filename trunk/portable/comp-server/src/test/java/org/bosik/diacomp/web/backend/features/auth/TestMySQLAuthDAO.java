@@ -13,8 +13,8 @@ public class TestMySQLAuthDAO
 	@Test
 	public void test()
 	{
-		final String login = Config.getTestLogin();
-		final String pass = Config.getTestPassword();
+		final String login = Config.get("login");
+		final String pass = Config.get("pass");
 
 		int id = authDao.login(login, pass);
 		assertEquals(1, id);
