@@ -80,6 +80,13 @@ public class FrontendFoodbaseService implements FoodBaseService
 	}
 
 	@Override
+	public String getHash(String prefix) throws CommonServiceException
+	{
+		int userId = authService.getCurrentUserId();
+		return foodbaseDao.getHash(userId, prefix);
+	}
+
+	@Override
 	public void save(List<Versioned<FoodItem>> items) throws CommonServiceException
 	{
 		int userId = authService.getCurrentUserId();

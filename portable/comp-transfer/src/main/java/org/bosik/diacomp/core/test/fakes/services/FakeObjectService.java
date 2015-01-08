@@ -108,4 +108,10 @@ public class FakeObjectService implements ObjectService<String>
 			}
 		}
 	}
+
+	@Override
+	public String getHash(String prefix) throws CommonServiceException
+	{
+		throw new UnsupportedOperationException("Not implemented");
+	}
 }

@@ -3,10 +3,11 @@ package org.bosik.diacomp.core.entities.tech;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
+import org.bosik.diacomp.core.utils.Utils;
 
 /**
  * Has ID field (random; useful for comparing)
- *
+ * 
  * @author Bosik
  */
 
@@ -16,6 +17,7 @@ public class Versioned<T> implements Serializable
 
 	private String				id;
 	private Date				timeStamp;
+	private String				hash;
 	private int					version;
 	private boolean				deleted;
 
@@ -25,7 +27,7 @@ public class Versioned<T> implements Serializable
 
 	public Versioned()
 	{
-		this((T) null);
+		this((T)null);
 	}
 
 	public Versioned(T data)
@@ -40,14 +42,17 @@ public class Versioned<T> implements Serializable
 	{
 		setId(object.getId());
 		setTimeStamp(object.getTimeStamp());
+		setHash(object.getHash());
 		setVersion(object.getVersion());
 		setDeleted(object.isDeleted());
 		setData(object.getData());
 	}
 
+	// TODO: rename to 'modified'
 	public void updateTimeStamp()
 	{
 		version++;
+		hash = Utils.generateGuid();
 		timeStamp = new Date();
 	}
 
@@ -76,6 +81,16 @@ public class Versioned<T> implements Serializable
 	public void setTimeStamp(Date timeStamp)
 	{
 		this.timeStamp = timeStamp;
+	}
+
+	public String getHash()
+	{
+		return hash;
+	}
+
+	public void setHash(String hash)
+	{
+		this.hash = hash;
 	}
 
 	public int getVersion()
@@ -123,20 +138,15 @@ public class Versioned<T> implements Serializable
 	@SuppressWarnings("unchecked")
 	public boolean equals(Object obj)
 	{
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Versioned<T> other = (Versioned<T>) obj;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		Versioned<T> other = (Versioned<T>)obj;
 		if (id == null)
 		{
-			if (other.id != null)
-				return false;
+			if (other.id != null) return false;
 		}
-		else if (!id.equals(other.id))
-			return false;
+		else if (!id.equals(other.id)) return false;
 		return true;
 	}
 

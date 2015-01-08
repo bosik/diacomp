@@ -5,9 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.SortedMap;
 import org.bosik.diacomp.web.backend.common.Config;
 
 public class MySQLAccess
@@ -87,7 +86,7 @@ public class MySQLAccess
 		return select(table, clause, order, -1, -1, params);
 	}
 
-	public int insert(String table, LinkedHashMap<String, String> set)
+	public int insert(String table, Map<String, String> set)
 	{
 		try
 		{
@@ -124,7 +123,7 @@ public class MySQLAccess
 		}
 	}
 
-	public int update(String table, SortedMap<String, String> set, SortedMap<String, String> where) throws SQLException
+	public int update(String table, Map<String, String> set, Map<String, String> where) throws SQLException
 	{
 		try
 		{

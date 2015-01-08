@@ -30,6 +30,7 @@ public class DishBaseWebService implements DishBaseService
 	private static final String						API_DISH_FIND_BY_ID			= "api/dish/guid/%s";
 	private static final String						API_DISH_FIND_BY_ID_PREFIX	= "api/dish/guid/%s";
 	private static final String						API_DISH_FIND_CHANGES		= "api/dish/changes/?since=%s";
+	private static final String						API_DISH_HASH				= "api/dish/hash/%s";
 	private static final String						API_DISH_SAVE				= "api/dish/";
 
 	private final WebClient							webClient;
@@ -145,6 +146,25 @@ public class DishBaseWebService implements DishBaseService
 			String url = String.format(API_DISH_FIND_BY_ID_PREFIX, prefix);
 			StdResponse resp = webClient.get(url);
 			return serializer.readAll(resp.getResponse());
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	@Override
+	public String getHash(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			String query = String.format(API_DISH_HASH, prefix);
+			StdResponse resp = webClient.get(query);
+			return resp.getResponse();
 		}
 		catch (CommonServiceException e)
 		{

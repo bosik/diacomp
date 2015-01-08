@@ -20,6 +20,7 @@ import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 
 public class MySQLFoodbaseDAO implements FoodbaseDAO
 {
+	// Foodbase table
 	private static final String					TABLE_FOODBASE				= "foodbase2";
 	private static final String					COLUMN_FOODBASE_GUID		= "_GUID";
 	private static final String					COLUMN_FOODBASE_USER		= "_UserID";
@@ -28,6 +29,12 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	private static final String					COLUMN_FOODBASE_DELETED		= "_Deleted";
 	private static final String					COLUMN_FOODBASE_CONTENT		= "_Content";
 	private static final String					COLUMN_FOODBASE_NAMECACHE	= "_NameCache";
+
+	// Foodbase hash table
+	private static final String					TABLE_FOODBASE_HASH			= "dishbase_hash";
+	private static final String					COLUMN_FOODBASE_HASH_USER	= "_UserID";
+	private static final String					COLUMN_FOODBASE_HASH_GUID	= "_GUID";
+	private static final String					COLUMN_FOODBASE_HASH_HASH	= "_Hash";
 
 	private static final MySQLAccess			db							= new MySQLAccess();
 	private static final Parser<FoodItem>		parser						= new ParserFoodItem();
@@ -254,6 +261,32 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 			List<Versioned<FoodItem>> result = parseFoodItems(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public String getHash(int userId, String prefix)
+	{
+		try
+		{
+			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_FOODBASE_HASH_USER, userId,
+					COLUMN_FOODBASE_HASH_GUID, prefix);
+
+			ResultSet set = db.select(TABLE_FOODBASE_HASH, clause, null);
+
+			String hash = "";
+
+			if (set.next())
+			{
+				hash = set.getString(COLUMN_FOODBASE_HASH_HASH);
+			}
+
+			set.close();
+			return hash;
 		}
 		catch (SQLException e)
 		{

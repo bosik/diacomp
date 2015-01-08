@@ -11,6 +11,8 @@ public interface ObjectService<T>
 {
 	static final int	ID_PREFIX_SIZE	= 4;
 
+	// static final String EMPTY_HASH = "00000000000000000000000000000000";
+
 	/**
 	 * Marks item with specified ID as deleted
 	 * 
@@ -49,6 +51,16 @@ public interface ObjectService<T>
 	 * @throws CommonServiceException
 	 */
 	List<Versioned<T>> findChanged(Date since) throws CommonServiceException;
+
+	/**
+	 * Returns hash for specified ID prefix
+	 * 
+	 * @param prefix
+	 *            Up to ID_PREFIX_SIZE chars long
+	 * @return Empty string if hash not found
+	 * @throws CommonServiceException
+	 */
+	String getHash(String prefix) throws CommonServiceException;
 
 	/**
 	 * Persists items (creates if not exist, updates otherwise)

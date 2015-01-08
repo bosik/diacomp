@@ -69,6 +69,15 @@ public interface BaseDAO<T>
 	void delete(int userId, String id);
 
 	/**
+	 * Returns hash
+	 * 
+	 * @param userId
+	 * @param prefix
+	 * @return
+	 */
+	String getHash(int userId, String prefix);
+
+	/**
 	 * Persists the specified items in the database (updates item if already presented, creates otherwise)
 	 * 
 	 * @param userId

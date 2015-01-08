@@ -78,6 +78,13 @@ public class FrontendDishbaseService implements DishBaseService
 	}
 
 	@Override
+	public String getHash(String prefix) throws CommonServiceException
+	{
+		int userId = authService.getCurrentUserId();
+		return dishbaseDao.getHash(userId, prefix);
+	}
+
+	@Override
 	public void save(List<Versioned<DishItem>> items) throws CommonServiceException
 	{
 		int userId = authService.getCurrentUserId();

@@ -10,6 +10,7 @@ import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
+import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.test.fakes.mocks.Mock;
@@ -185,5 +186,11 @@ public class FakeDishBaseService implements DishBaseService
 				}
 			}
 		}
+	}
+
+	@Override
+	public String getHash(String prefix) throws CommonServiceException
+	{
+		throw new UnsupportedOperationException("Not implemented");
 	}
 }
