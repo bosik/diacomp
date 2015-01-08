@@ -162,4 +162,10 @@ public class FakeDiaryService implements DiaryService
 			}
 		}
 	}
+
+	@Override
+	public String getHash(String prefix) throws CommonServiceException
+	{
+		throw new UnsupportedOperationException("Not implemented");
+	}
 }

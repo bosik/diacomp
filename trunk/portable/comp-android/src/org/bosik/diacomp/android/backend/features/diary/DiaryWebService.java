@@ -21,7 +21,6 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.utils.Utils;
 
-@SuppressWarnings("unchecked")
 public class DiaryWebService implements DiaryService
 {
 	// private static final String TAG = DiaryWebService.class.getSimpleName();
@@ -31,6 +30,7 @@ public class DiaryWebService implements DiaryService
 	private static final String							API_DIARY_FIND_BY_ID_PREFIX	= "api/diary/guid/%s";
 	private static final String							API_DIARY_FIND_CHANGES		= "api/diary/changes/?since=%s";
 	private static final String							API_DIARY_FIND_PERIOD		= "api/diary/period/?start_time=%s&end_time=%s&show_rem=%s";
+	private static final String							API_DIARY_HASH				= "api/diary/hash/%s";
 	private static final String							API_DIARY_SAVE				= "api/diary/";
 
 	private final WebClient								webClient;
@@ -125,6 +125,25 @@ public class DiaryWebService implements DiaryService
 					Utils.formatTimeUTC(endTime), Utils.formatBooleanStr(includeRemoved));
 			StdResponse resp = webClient.get(query);
 			return serializerV.readAll(resp.getResponse());
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	@Override
+	public String getHash(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			String query = String.format(API_DIARY_HASH, prefix);
+			StdResponse resp = webClient.get(query);
+			return resp.getResponse();
 		}
 		catch (CommonServiceException e)
 		{

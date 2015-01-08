@@ -64,4 +64,10 @@ public class FakeDishbaseDAO implements DishbaseDAO
 	{
 		dishbaseService.save(items);
 	}
+
+	@Override
+	public String getHash(int userId, String prefix)
+	{
+		return dishbaseService.getHash(prefix);
+	}
 }

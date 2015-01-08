@@ -20,6 +20,7 @@ import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 
 public class MySQLDishbaseDAO implements DishbaseDAO
 {
+	// Dishbase table
 	private static final String					TABLE_DISHBASE				= "dishbase2";
 	private static final String					COLUMN_DISHBASE_GUID		= "_GUID";
 	private static final String					COLUMN_DISHBASE_USER		= "_UserID";
@@ -28,6 +29,12 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	private static final String					COLUMN_DISHBASE_DELETED		= "_Deleted";
 	private static final String					COLUMN_DISHBASE_CONTENT		= "_Content";
 	private static final String					COLUMN_DISHBASE_NAMECACHE	= "_NameCache";
+
+	// Dishbase hash table
+	private static final String					TABLE_DISHBASE_HASH			= "dishbase_hash";
+	private static final String					COLUMN_DISHBASE_HASH_USER	= "_UserID";
+	private static final String					COLUMN_DISHBASE_HASH_GUID	= "_GUID";
+	private static final String					COLUMN_DISHBASE_HASH_HASH	= "_Hash";
 
 	private static final MySQLAccess			db							= new MySQLAccess();
 	private static final Parser<DishItem>		parser						= new ParserDishItem();
@@ -254,6 +261,32 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 			where.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
 
 			db.update(TABLE_DISHBASE, set, where);
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public String getHash(int userId, String prefix)
+	{
+		try
+		{
+			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_DISHBASE_HASH_USER, userId,
+					COLUMN_DISHBASE_HASH_GUID, prefix);
+
+			ResultSet set = db.select(TABLE_DISHBASE_HASH, clause, null);
+
+			String hash = "";
+
+			if (set.next())
+			{
+				hash = set.getString(COLUMN_DISHBASE_HASH_HASH);
+			}
+
+			set.close();
+			return hash;
 		}
 		catch (SQLException e)
 		{

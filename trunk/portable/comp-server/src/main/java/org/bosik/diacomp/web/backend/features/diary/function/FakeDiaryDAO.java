@@ -53,4 +53,9 @@ public class FakeDiaryDAO implements DiaryDAO
 		diaryService.save(records);
 	}
 
+	@Override
+	public String getHash(int userId, String prefix)
+	{
+		return diaryService.getHash(prefix);
+	}
 }

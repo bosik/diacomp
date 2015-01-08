@@ -153,8 +153,8 @@ public class FoodBaseLocalService implements FoodBaseService
 				if (id.length() == ObjectService.ID_PREFIX_SIZE)
 				{
 					mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-					mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_GUID + " LIKE ?%";
-					args.add(id);
+					mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_GUID + " LIKE ?";
+					args.add(id + "%");
 				}
 				else
 				{
@@ -463,6 +463,45 @@ public class FoodBaseLocalService implements FoodBaseService
 	}
 
 	@Override
+	public String getHash(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			// constructing parameters
+			final String[] select = { DiaryContentProvider.COLUMN_FOODBASE_HASH_HASH };
+			final String where = DiaryContentProvider.COLUMN_FOODBASE_HASH_GUID + " = ?";
+			final String[] whereArgs = new String[] { prefix };
+
+			// execute query
+			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_HASH_URI, select, where, whereArgs,
+					null);
+
+			// analyze response
+			if (cursor != null)
+			{
+				int indexTag = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_HASH_HASH);
+				String hash = null;
+
+				if (cursor.moveToNext())
+				{
+					hash = cursor.getString(indexTag);
+				}
+
+				cursor.close();
+				return hash;
+			}
+			else
+			{
+				throw new NullPointerException("Cursor is null");
+			}
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	@Override
 	public void save(List<Versioned<FoodItem>> items) throws PersistenceException
 	{
 		try
@@ -471,6 +510,7 @@ public class FoodBaseLocalService implements FoodBaseService
 			{
 				ContentValues newValues = new ContentValues();
 				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_HASH, item.getHash());
 				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
 				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, item.isDeleted());
 				String content = serializer.write(item.getData());

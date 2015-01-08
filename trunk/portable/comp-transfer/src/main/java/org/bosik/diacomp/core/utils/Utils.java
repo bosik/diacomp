@@ -7,8 +7,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -19,6 +21,11 @@ public class Utils
 	/**
 	 * CONSTANTS
 	 */
+
+	/**
+	 * Size of standard GUID
+	 */
+	public static final int			GUID_SIZE		= 32;
 
 	// Energy values
 
@@ -800,6 +807,106 @@ public class Utils
 	public static boolean isNullOrEmpty(String s)
 	{
 		return (s == null) || (s.isEmpty());
+	}
+
+	static final Map<String, Character>	MAP_SUM	= new HashMap<String, Character>(16 * 16);
+	static final Map<String, Character>	MAP_SUB	= new HashMap<String, Character>(16 * 16);
+
+	static
+	{
+		MAP_SUM.clear();
+		MAP_SUB.clear();
+
+		final String pattern = "0123456789abcdef";
+		for (int i = 0; i < 16; i++)
+		{
+			for (int j = 0; j < 16; j++)
+			{
+				char a = pattern.charAt(i);
+				char b = pattern.charAt(j);
+				String key = "" + a + b;
+				MAP_SUM.put(key, pattern.charAt((i + j) % 16));
+				MAP_SUB.put(key, pattern.charAt((i - j + 16) % 16));
+			}
+		}
+	}
+
+	/**
+	 * null + a = a
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static String sumHash(String a, String b)
+	{
+		if (a != null && a.length() != GUID_SIZE)
+		{
+			throw new IllegalArgumentException(String.format("Invalid hash #1 ('%s'), expected: %d chars, found: %d",
+					a, GUID_SIZE, a.length()));
+		}
+		if (b.length() != GUID_SIZE)
+		{
+			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d",
+					b, GUID_SIZE, b.length()));
+		}
+
+		if (a == null)
+		{
+			return b;
+		}
+
+		a = a.toLowerCase();
+		b = b.toLowerCase();
+
+		StringBuilder result = new StringBuilder(GUID_SIZE);
+		for (int i = 0; i < GUID_SIZE; i++)
+		{
+			char ca = a.charAt(i);
+			char cb = b.charAt(i);
+			result.append(MAP_SUM.get("" + ca + cb));
+		}
+
+		return result.toString();
+	}
+
+	/**
+	 * a - null = a
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static String subHash(String a, String b)
+	{
+		if (a.length() != GUID_SIZE)
+		{
+			throw new IllegalArgumentException(String.format("Invalid hash #1 ('%s'), expected: %d chars, found: %d",
+					a, GUID_SIZE, a.length()));
+		}
+		if (b != null && b.length() != GUID_SIZE)
+		{
+			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d",
+					b, GUID_SIZE, b.length()));
+		}
+
+		if (b == null)
+		{
+			return a;
+		}
+
+		a = a.toLowerCase();
+		b = b.toLowerCase();
+
+		StringBuilder result = new StringBuilder(GUID_SIZE);
+		for (int i = 0; i < GUID_SIZE; i++)
+		{
+			char ca = a.charAt(i);
+			char cb = b.charAt(i);
+			result.append(MAP_SUB.get("" + ca + cb));
+		}
+
+		return result.toString();
 	}
 
 	// private static String formatArray(byte array[])

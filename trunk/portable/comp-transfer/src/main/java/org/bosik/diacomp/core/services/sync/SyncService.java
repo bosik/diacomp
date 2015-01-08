@@ -10,7 +10,7 @@ import org.bosik.diacomp.core.services.ObjectService;
 
 public class SyncService
 {
-	// private static final String TAG = "SyncService";
+	private static final String	PATTERN	= "0123456789abcdef";
 
 	/* ============================ HELPER CLASSES ============================ */
 
@@ -221,6 +221,116 @@ public class SyncService
 
 		// Result is number of transferred records
 		return newer1.size() + newer2.size();
+	}
+
+	private static <T> int synchronizePrefix(ObjectService<T> service1, ObjectService<T> service2, String prefix)
+	{
+		String hash1 = service1.getHash(prefix);
+		String hash2 = service2.getHash(prefix);
+
+		System.out.println("Hashes for " + prefix + ": " + hash1 + " " + hash2);
+
+		if (hash1 != null && hash1.equals(hash2) || hash1 == hash2)
+		{
+			return 0;
+		}
+
+		if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
+		{
+			int result = 0;
+
+			for (int i = 0; i < PATTERN.length(); i++)
+			{
+				result += synchronizePrefix(service1, service2, prefix + PATTERN.charAt(i));
+			}
+
+			return result;
+		}
+		else
+		{
+			// requesting items
+			List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
+			List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
+
+			// null checks again
+			if (null == items1)
+			{
+				throw new NullPointerException("Service1 returned null list");
+			}
+			if (null == items2)
+			{
+				throw new NullPointerException("Service2 returned null list");
+			}
+
+			// calculating transferring lists
+			List<Versioned<T>> newer1 = new ArrayList<Versioned<T>>();
+			List<Versioned<T>> newer2 = new ArrayList<Versioned<T>>();
+			List<Versioned<T>> only1 = new ArrayList<Versioned<T>>();
+			List<Versioned<T>> only2 = new ArrayList<Versioned<T>>();
+			getOverLists(items1, items2, newer1, newer2, only1, only2);
+
+			// checking items with are only partially presented
+			for (Versioned<T> item1 : only1)
+			{
+				Versioned<T> item2 = service2.findById(item1.getId());
+				if ((item2 == null) || (item2.getVersion() < item1.getVersion()))
+				{
+					newer1.add(item1);
+				}
+				else if (item2.getVersion() > item1.getVersion())
+				{
+					newer2.add(item2);
+				}
+			}
+
+			for (Versioned<T> item2 : only2)
+			{
+				Versioned<T> item1 = service1.findById(item2.getId());
+				if ((item1 == null) || (item1.getVersion() < item2.getVersion()))
+				{
+					newer2.add(item2);
+				}
+				else if (item1.getVersion() > item2.getVersion())
+				{
+					newer1.add(item1);
+				}
+			}
+
+			// transfer
+
+			// THINK: divide into small groups?
+			service1.save(newer2);
+			service2.save(newer1);
+
+			// Result is number of transferred records
+			return newer1.size() + newer2.size();
+		}
+	}
+
+	/**
+	 * Synchronizes two object services
+	 * 
+	 * @param <T>
+	 * 
+	 * @param service1
+	 *            First service
+	 * @param service2
+	 *            Second service
+	 * @return Total number of transferred items
+	 */
+	public static <T> int synchronize(ObjectService<T> service1, ObjectService<T> service2)
+	{
+		// null checks
+		if (null == service1)
+		{
+			throw new NullPointerException("service1 can't be null");
+		}
+		if (null == service2)
+		{
+			throw new NullPointerException("service2 can't be null");
+		}
+
+		return synchronizePrefix(service1, service2, "");
 	}
 
 	@SuppressWarnings({ "null", "unchecked" })

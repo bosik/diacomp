@@ -154,8 +154,8 @@ public class DishBaseLocalService implements DishBaseService
 				if (id.length() == ObjectService.ID_PREFIX_SIZE)
 				{
 					mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-					mSelectionClause += DiaryContentProvider.COLUMN_DISHBASE_GUID + " LIKE ?%";
-					args.add(id);
+					mSelectionClause += DiaryContentProvider.COLUMN_DISHBASE_GUID + " LIKE ?";
+					args.add(id + "%");
 				}
 				else
 				{
@@ -449,6 +449,45 @@ public class DishBaseLocalService implements DishBaseService
 	}
 
 	@Override
+	public String getHash(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			// constructing parameters
+			final String[] select = { DiaryContentProvider.COLUMN_DISHBASE_HASH_HASH };
+			final String where = DiaryContentProvider.COLUMN_DISHBASE_HASH_GUID + " = ?";
+			final String[] whereArgs = new String[] { prefix };
+
+			// execute query
+			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DISHBASE_HASH_URI, select, where, whereArgs,
+					null);
+
+			// analyze response
+			if (cursor != null)
+			{
+				int indexTag = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_HASH_HASH);
+				String hash = null;
+
+				if (cursor.moveToNext())
+				{
+					hash = cursor.getString(indexTag);
+				}
+
+				cursor.close();
+				return hash;
+			}
+			else
+			{
+				throw new NullPointerException("Cursor is null");
+			}
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	@Override
 	public void save(List<Versioned<DishItem>> items) throws PersistenceException
 	{
 		try
@@ -457,6 +496,7 @@ public class DishBaseLocalService implements DishBaseService
 			{
 				ContentValues newValues = new ContentValues();
 				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_HASH, item.getHash());
 				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_VERSION, item.getVersion());
 				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DELETED, item.isDeleted());
 				String content = serializer.write(item.getData());

@@ -94,6 +94,30 @@ public class DiaryRestService
 	}
 
 	@GET
+	@Path("hash/{prefix: .*}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getHash(@PathParam("prefix") String parPrefix) throws CommonServiceException
+	{
+		try
+		{
+			int userId = UserSessionUtils.getId(req);
+
+			String s = diaryService.getHash(userId, parPrefix != null ? parPrefix : "");
+			String response = ResponseBuilder.buildDone(s != null ? s : "");
+			return Response.ok(response).build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	@GET
 	@Path("changes")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response getRecordsModified(@QueryParam("since") String parTime) throws CommonServiceException

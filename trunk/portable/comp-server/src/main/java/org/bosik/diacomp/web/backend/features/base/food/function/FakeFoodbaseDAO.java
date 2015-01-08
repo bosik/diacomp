@@ -64,4 +64,10 @@ public class FakeFoodbaseDAO implements FoodbaseDAO
 	{
 		foodbaseService.save(items);
 	}
+
+	@Override
+	public String getHash(int userId, String prefix)
+	{
+		return foodbaseService.getHash(prefix);
+	}
 }

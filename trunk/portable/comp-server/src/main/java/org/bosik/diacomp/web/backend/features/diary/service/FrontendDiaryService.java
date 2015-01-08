@@ -47,6 +47,13 @@ public class FrontendDiaryService implements DiaryService
 	}
 
 	@Override
+	public String getHash(String prefix) throws CommonServiceException
+	{
+		int userId = authService.getCurrentUserId();
+		return diaryDao.getHash(userId, prefix);
+	}
+
+	@Override
 	public void save(List<Versioned<DiaryRecord>> items) throws CommonServiceException
 	{
 		int userId = authService.getCurrentUserId();
