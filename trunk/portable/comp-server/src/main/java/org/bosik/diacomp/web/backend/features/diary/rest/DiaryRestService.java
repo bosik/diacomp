@@ -2,8 +2,10 @@ package org.bosik.diacomp.web.backend.features.diary.rest;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -20,6 +22,7 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
+import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
@@ -39,10 +42,11 @@ public class DiaryRestService
 
 	private final DiaryDAO								diaryService	= new MySQLDiaryDAO();
 
-	private static Parser<DiaryRecord>					parser			= new ParserDiaryRecord();
-	private static Parser<Versioned<DiaryRecord>>		parserVersioned	= new ParserVersioned<DiaryRecord>(parser);
-	private static Serializer<Versioned<DiaryRecord>>	serializer		= new SerializerAdapter<Versioned<DiaryRecord>>(
+	private final Parser<DiaryRecord>					parser			= new ParserDiaryRecord();
+	private final Parser<Versioned<DiaryRecord>>		parserVersioned	= new ParserVersioned<DiaryRecord>(parser);
+	private final Serializer<Versioned<DiaryRecord>>	serializer		= new SerializerAdapter<Versioned<DiaryRecord>>(
 																				parserVersioned);
+	private final Serializer<Map<String, String>>		serializerMap	= new SerializerMap();
 
 	@GET
 	@Path("guid/{guid}")
@@ -96,14 +100,40 @@ public class DiaryRestService
 	@GET
 	@Path("hash/{prefix: .*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getHash(@PathParam("prefix") String parPrefix) throws CommonServiceException
+	public Response getHash(@PathParam("prefix") @DefaultValue("") String parPrefix) throws CommonServiceException
 	{
 		try
 		{
 			int userId = UserSessionUtils.getId(req);
 
-			String s = diaryService.getHash(userId, parPrefix != null ? parPrefix : "");
+			String s = diaryService.getHash(userId, parPrefix);
 			String response = ResponseBuilder.buildDone(s != null ? s : "");
+			return Response.ok(response).build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	@GET
+	@Path("hashes/{prefix: .*}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getHashChildren(@PathParam("prefix") @DefaultValue("") String parPrefix)
+			throws CommonServiceException
+	{
+		try
+		{
+			int userId = UserSessionUtils.getId(req);
+
+			Map<String, String> map = diaryService.getHashChildren(userId, parPrefix);
+			String s = serializerMap.write(map);
+			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)

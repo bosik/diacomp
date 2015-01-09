@@ -3,6 +3,7 @@ package org.bosik.diacomp.web.backend.features.base.dish.service;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
@@ -82,6 +83,13 @@ public class FrontendDishbaseService implements DishBaseService
 	{
 		int userId = authService.getCurrentUserId();
 		return dishbaseDao.getHash(userId, prefix);
+	}
+
+	@Override
+	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
+	{
+		int userId = authService.getCurrentUserId();
+		return dishbaseDao.getHashChildren(userId, prefix);
 	}
 
 	@Override

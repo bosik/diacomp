@@ -2,6 +2,7 @@ package org.bosik.diacomp.web.backend.features.diary.function;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.diary.DiaryService;
@@ -57,5 +58,11 @@ public class FakeDiaryDAO implements DiaryDAO
 	public String getHash(int userId, String prefix)
 	{
 		return diaryService.getHash(prefix);
+	}
+
+	@Override
+	public Map<String, String> getHashChildren(int userId, String prefix)
+	{
+		return diaryService.getHashChildren(prefix);
 	}
 }

@@ -2,6 +2,7 @@ package org.bosik.diacomp.web.backend.features.base;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 
 public interface BaseDAO<T>
@@ -76,6 +77,15 @@ public interface BaseDAO<T>
 	 * @return
 	 */
 	String getHash(int userId, String prefix);
+
+	/**
+	 * Returns hash children
+	 * 
+	 * @param userId
+	 * @param prefix
+	 * @return
+	 */
+	Map<String, String> getHashChildren(int userId, String prefix);
 
 	/**
 	 * Persists the specified items in the database (updates item if already presented, creates otherwise)
