@@ -27,12 +27,12 @@ import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.ObjectService;
+import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
-import org.bosik.diacomp.web.backend.features.diary.function.DiaryDAO;
-import org.bosik.diacomp.web.backend.features.diary.function.MySQLDiaryDAO;
+import org.bosik.diacomp.web.backend.features.diary.function.DiaryLocalService;
 
 @Path("diary/")
 public class DiaryRestService
@@ -40,7 +40,14 @@ public class DiaryRestService
 	@Context
 	HttpServletRequest									req;
 
-	private final DiaryDAO								diaryService	= new MySQLDiaryDAO();
+	private final DiaryService							diaryService	= new DiaryLocalService()
+																		{
+																			@Override
+																			protected int getCurrentUserId()
+																			{
+																				return UserSessionUtils.getId(req);
+																			};
+																		};
 
 	private final Parser<DiaryRecord>					parser			= new ParserDiaryRecord();
 	private final Parser<Versioned<DiaryRecord>>		parserVersioned	= new ParserVersioned<DiaryRecord>(parser);
@@ -55,12 +62,10 @@ public class DiaryRestService
 	{
 		try
 		{
-			int userId = UserSessionUtils.getId(req);
-
 			// Prefix form
 			if (parId.length() == ObjectService.ID_PREFIX_SIZE)
 			{
-				List<Versioned<DiaryRecord>> items = diaryService.findByIdPrefix(userId, parId);
+				List<Versioned<DiaryRecord>> items = diaryService.findByIdPrefix(parId);
 
 				String s = serializer.writeAll(items);
 				String response = ResponseBuilder.buildDone(s);
@@ -70,7 +75,7 @@ public class DiaryRestService
 			// Full form
 			else
 			{
-				Versioned<DiaryRecord> item = diaryService.findById(userId, parId);
+				Versioned<DiaryRecord> item = diaryService.findById(parId);
 
 				if (item != null)
 				{
@@ -104,9 +109,7 @@ public class DiaryRestService
 	{
 		try
 		{
-			int userId = UserSessionUtils.getId(req);
-
-			String s = diaryService.getHash(userId, parPrefix);
+			String s = diaryService.getHash(parPrefix);
 			String response = ResponseBuilder.buildDone(s != null ? s : "");
 			return Response.ok(response).build();
 		}
@@ -129,9 +132,7 @@ public class DiaryRestService
 	{
 		try
 		{
-			int userId = UserSessionUtils.getId(req);
-
-			Map<String, String> map = diaryService.getHashChildren(userId, parPrefix);
+			Map<String, String> map = diaryService.getHashChildren(parPrefix);
 			String s = serializerMap.write(map);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
@@ -154,9 +155,8 @@ public class DiaryRestService
 	{
 		try
 		{
-			int userId = UserSessionUtils.getId(req);
 			Date since = Utils.parseTimeUTC(parTime);
-			List<Versioned<DiaryRecord>> items = diaryService.findChanged(userId, since);
+			List<Versioned<DiaryRecord>> items = diaryService.findChanged(since);
 			String s = serializer.writeAll(items);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
@@ -181,12 +181,11 @@ public class DiaryRestService
 	{
 		try
 		{
-			int userId = UserSessionUtils.getId(req);
 			Date startTime = Utils.parseTimeUTC(parStartTime);
 			Date endTime = Utils.parseTimeUTC(parEndTime);
 			boolean includeRemoved = Boolean.valueOf(parShowRem);
 
-			List<Versioned<DiaryRecord>> items = diaryService.findPeriod(userId, startTime, endTime, includeRemoved);
+			List<Versioned<DiaryRecord>> items = diaryService.findPeriod(startTime, endTime, includeRemoved);
 			String s = serializer.writeAll(items);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
@@ -209,9 +208,8 @@ public class DiaryRestService
 	{
 		try
 		{
-			int userId = UserSessionUtils.getId(req);
 			List<Versioned<DiaryRecord>> items = serializer.readAll(parItems);
-			diaryService.post(userId, items);
+			diaryService.save(items);
 
 			String response = ResponseBuilder.buildDone("Saved OK");
 			return Response.ok(response).build();
