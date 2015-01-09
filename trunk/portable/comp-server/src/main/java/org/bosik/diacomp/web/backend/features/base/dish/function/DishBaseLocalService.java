@@ -32,6 +32,7 @@ public class DishBaseLocalService implements DishBaseService
 	private static final String					COLUMN_DISHBASE_GUID		= "_GUID";
 	private static final String					COLUMN_DISHBASE_USER		= "_UserID";
 	private static final String					COLUMN_DISHBASE_TIMESTAMP	= "_TimeStamp";
+	private static final String					COLUMN_DISHBASE_HASH		= "_Hash";
 	private static final String					COLUMN_DISHBASE_VERSION		= "_Version";
 	private static final String					COLUMN_DISHBASE_DELETED		= "_Deleted";
 	private static final String					COLUMN_DISHBASE_CONTENT		= "_Content";
@@ -62,6 +63,7 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			String id = resultSet.getString(COLUMN_DISHBASE_GUID);
 			Date timeStamp = Utils.parseTimeUTC(resultSet.getString(COLUMN_DISHBASE_TIMESTAMP));
+			String hash = resultSet.getString(COLUMN_DISHBASE_HASH);
 			int version = resultSet.getInt(COLUMN_DISHBASE_VERSION);
 			boolean deleted = (resultSet.getInt(COLUMN_DISHBASE_DELETED) == 1);
 			String content = resultSet.getString(COLUMN_DISHBASE_CONTENT);
@@ -69,10 +71,10 @@ public class DishBaseLocalService implements DishBaseService
 			Versioned<DishItem> item = new Versioned<DishItem>();
 			item.setId(id);
 			item.setTimeStamp(timeStamp);
+			item.setHash(hash);
 			item.setVersion(version);
 			item.setDeleted(deleted);
 			item.setData(serializer.read(content));
-			//item.setData(content);
 
 			result.add(item);
 		}
@@ -218,6 +220,7 @@ public class DishBaseLocalService implements DishBaseService
 				final String content = serializer.write(item.getData());
 				final String nameCache = item.getData().getName();
 				final String timeStamp = Utils.formatTimeUTC(item.getTimeStamp());
+				final String hash = item.getHash();
 				final String version = String.valueOf(item.getVersion());
 				final String deleted = Utils.formatBooleanInt(item.isDeleted());
 
@@ -227,6 +230,7 @@ public class DishBaseLocalService implements DishBaseService
 
 					Map<String, String> set = new HashMap<String, String>();
 					set.put(COLUMN_DISHBASE_TIMESTAMP, timeStamp);
+					set.put(COLUMN_DISHBASE_HASH, hash);
 					set.put(COLUMN_DISHBASE_VERSION, version);
 					set.put(COLUMN_DISHBASE_DELETED, deleted);
 					set.put(COLUMN_DISHBASE_CONTENT, content);
@@ -246,6 +250,7 @@ public class DishBaseLocalService implements DishBaseService
 					set.put(COLUMN_DISHBASE_GUID, item.getId());
 					set.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
 					set.put(COLUMN_DISHBASE_TIMESTAMP, timeStamp);
+					set.put(COLUMN_DISHBASE_HASH, hash);
 					set.put(COLUMN_DISHBASE_VERSION, version);
 					set.put(COLUMN_DISHBASE_DELETED, deleted);
 					set.put(COLUMN_DISHBASE_CONTENT, content);
