@@ -51,7 +51,7 @@ public class DishBaseRestService
 	@GET
 	@Path("guid/{guid}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecordsGuid(@PathParam("guid") String parId) throws CommonServiceException
+	public Response findById(@PathParam("guid") String parId) throws CommonServiceException
 	{
 		try
 		{
@@ -98,7 +98,7 @@ public class DishBaseRestService
 	@GET
 	@Path("all")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecordsAll(@QueryParam("show_rem") String parShowRem) throws CommonServiceException
+	public Response findAll(@QueryParam("show_rem") String parShowRem) throws CommonServiceException
 	{
 		try
 		{
@@ -123,7 +123,7 @@ public class DishBaseRestService
 	@GET
 	@Path("search")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecordsFilter(@QueryParam("q") String filter) throws CommonServiceException
+	public Response findAny(@QueryParam("q") String filter) throws CommonServiceException
 	{
 		try
 		{
@@ -146,7 +146,7 @@ public class DishBaseRestService
 	@GET
 	@Path("changes")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecordsModified(@QueryParam("since") String parTime) throws CommonServiceException
+	public Response findChanged(@QueryParam("since") String parTime) throws CommonServiceException
 	{
 		try
 		{
@@ -215,7 +215,7 @@ public class DishBaseRestService
 
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response saveRecords(@FormParam("items") String parItems) throws CommonServiceException
+	public Response save(@FormParam("items") String parItems) throws CommonServiceException
 	{
 		try
 		{

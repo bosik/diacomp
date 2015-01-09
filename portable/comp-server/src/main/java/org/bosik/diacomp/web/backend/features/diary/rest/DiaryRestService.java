@@ -58,7 +58,7 @@ public class DiaryRestService
 	@GET
 	@Path("guid/{guid}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecordsGuid(@PathParam("guid") String parId) throws CommonServiceException
+	public Response findById(@PathParam("guid") String parId) throws CommonServiceException
 	{
 		try
 		{
@@ -151,7 +151,7 @@ public class DiaryRestService
 	@GET
 	@Path("changes")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecordsModified(@QueryParam("since") String parTime) throws CommonServiceException
+	public Response findChanged(@QueryParam("since") String parTime) throws CommonServiceException
 	{
 		try
 		{
@@ -175,7 +175,7 @@ public class DiaryRestService
 	@GET
 	@Path("period")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getRecordsPeriod(@QueryParam("start_time") String parStartTime,
+	public Response findPeriod(@QueryParam("start_time") String parStartTime,
 			@QueryParam("end_time") String parEndTime, @QueryParam("show_rem") String parShowRem)
 			throws CommonServiceException
 	{
@@ -204,7 +204,7 @@ public class DiaryRestService
 	@PUT
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response postRecords(@FormParam("items") String parItems) throws CommonServiceException
+	public Response save(@FormParam("items") String parItems) throws CommonServiceException
 	{
 		try
 		{
