@@ -12,12 +12,12 @@ import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.features.diary.service.FrontendDiaryService;
 import org.bosik.diacomp.web.frontend.wicket.components.diary.day.DiaryPanelDay;
 import org.bosik.diacomp.web.frontend.wicket.components.diary.day.DiaryPanelDayModelObject;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
@@ -107,8 +107,9 @@ public class DiaryPage extends MasterPage
 {
 	private static final long						serialVersionUID	= 1L;
 
-	WebMarkupContainer								container;
-	transient static final DiaryService				diaryService		= new FrontendDiaryService();
+	private WebMarkupContainer						container;
+	@SpringBean
+	private DiaryService							diaryService;
 	final List<IModel<DiaryPanelDayModelObject>>	list				= new ArrayList<IModel<DiaryPanelDayModelObject>>();
 
 	public DiaryPage(final PageParameters parameters)
