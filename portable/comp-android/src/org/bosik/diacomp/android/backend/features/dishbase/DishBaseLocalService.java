@@ -148,8 +148,9 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			// constructing parameters
 			String[] mProj = { DiaryContentProvider.COLUMN_DISHBASE_GUID,
-					DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP, DiaryContentProvider.COLUMN_DISHBASE_VERSION,
-					DiaryContentProvider.COLUMN_DISHBASE_DELETED, DiaryContentProvider.COLUMN_DISHBASE_DATA };
+					DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP, DiaryContentProvider.COLUMN_DISHBASE_HASH,
+					DiaryContentProvider.COLUMN_DISHBASE_VERSION, DiaryContentProvider.COLUMN_DISHBASE_DELETED,
+					DiaryContentProvider.COLUMN_DISHBASE_DATA };
 
 			String mSelectionClause = "";
 			List<String> args = new LinkedList<String>();
