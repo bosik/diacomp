@@ -2,6 +2,7 @@ package org.bosik.diacomp.core.services;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
@@ -61,6 +62,16 @@ public interface ObjectService<T>
 	 * @throws CommonServiceException
 	 */
 	String getHash(String prefix) throws CommonServiceException;
+
+	/**
+	 * Returns map (prefix + one_char, hash)
+	 * 
+	 * @param prefix
+	 *            Should have less than ID_PREFIX_SIZE chars
+	 * @return
+	 * @throws CommonServiceException
+	 */
+	Map<String, String> getHashChildren(String prefix) throws CommonServiceException;
 
 	/**
 	 * Persists items (creates if not exist, updates otherwise)

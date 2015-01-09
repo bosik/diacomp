@@ -3,9 +3,11 @@ package org.bosik.diacomp.web.backend.features.base.dish.function;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
@@ -287,6 +289,32 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 
 			set.close();
 			return hash;
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public Map<String, String> getHashChildren(int userId, String prefix)
+	{
+		try
+		{
+			String clause = String.format("(%s = %d) AND (%s LIKE '%s')", COLUMN_DISHBASE_HASH_USER, userId,
+					COLUMN_DISHBASE_HASH_GUID, prefix + "_");
+			ResultSet set = db.select(TABLE_DISHBASE_HASH, clause, null);
+
+			Map<String, String> result = new HashMap<String, String>();
+			while (set.next())
+			{
+				String id = set.getString(COLUMN_DISHBASE_HASH_GUID);
+				String hash = set.getString(COLUMN_DISHBASE_HASH_HASH);
+				result.put(id, hash);
+			}
+
+			set.close();
+			return result;
 		}
 		catch (SQLException e)
 		{

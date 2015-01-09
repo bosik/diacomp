@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
@@ -11,6 +12,7 @@ import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
+import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -31,10 +33,12 @@ public class DishBaseWebService implements DishBaseService
 	private static final String						API_DISH_FIND_BY_ID_PREFIX	= "api/dish/guid/%s";
 	private static final String						API_DISH_FIND_CHANGES		= "api/dish/changes/?since=%s";
 	private static final String						API_DISH_HASH				= "api/dish/hash/%s";
+	private static final String						API_DISH_HASH_CHILDREN		= "api/dish/hashes/%s";
 	private static final String						API_DISH_SAVE				= "api/dish/";
 
 	private final WebClient							webClient;
 	private final Serializer<Versioned<DishItem>>	serializer					= new SerializerDishItem();
+	private final Serializer<Map<String, String>>	serializerMap				= new SerializerMap();
 
 	public DishBaseWebService(WebClient webClient)
 	{
@@ -165,6 +169,26 @@ public class DishBaseWebService implements DishBaseService
 			String query = String.format(API_DISH_HASH, prefix);
 			StdResponse resp = webClient.get(query);
 			return resp.getResponse();
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	@Override
+	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			String query = String.format(API_DISH_HASH_CHILDREN, prefix);
+			StdResponse resp = webClient.get(query);
+			String data = resp.getResponse();
+			return serializerMap.read(data);
 		}
 		catch (CommonServiceException e)
 		{

@@ -2,7 +2,9 @@ package org.bosik.diacomp.web.backend.features.base.food.rest;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -18,6 +20,7 @@ import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
+import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
@@ -31,11 +34,12 @@ import org.bosik.diacomp.web.backend.features.base.food.function.MySQLFoodbaseDA
 public class FoodBaseRestService
 {
 	@Context
-	HttpServletRequest										req;
+	HttpServletRequest								req;
 
-	private final FoodbaseDAO								foodbaseService	= new MySQLFoodbaseDAO();
+	private final FoodbaseDAO						foodbaseService	= new MySQLFoodbaseDAO();
 
-	private static final Serializer<Versioned<FoodItem>>	serializer		= new SerializerFoodItem();
+	private final Serializer<Versioned<FoodItem>>	serializer		= new SerializerFoodItem();
+	private final Serializer<Map<String, String>>	serializerMap	= new SerializerMap();
 
 	@GET
 	@Path("guid/{guid}")
@@ -148,6 +152,56 @@ public class FoodBaseRestService
 			Date since = Utils.parseTimeUTC(parTime);
 			List<Versioned<FoodItem>> items = foodbaseService.findChanged(userId, since);
 			String s = serializer.writeAll(items);
+			String response = ResponseBuilder.buildDone(s);
+			return Response.ok(response).build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	@GET
+	@Path("hash/{prefix: .*}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getHash(@PathParam("prefix") @DefaultValue("") String parPrefix) throws CommonServiceException
+	{
+		try
+		{
+			int userId = UserSessionUtils.getId(req);
+
+			String s = foodbaseService.getHash(userId, parPrefix);
+			String response = ResponseBuilder.buildDone(s != null ? s : "");
+			return Response.ok(response).build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	@GET
+	@Path("hashes/{prefix: .*}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getHashChildren(@PathParam("prefix") @DefaultValue("") String parPrefix)
+			throws CommonServiceException
+	{
+		try
+		{
+			int userId = UserSessionUtils.getId(req);
+
+			Map<String, String> map = foodbaseService.getHashChildren(userId, parPrefix);
+			String s = serializerMap.write(map);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
 		}

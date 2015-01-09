@@ -2,6 +2,7 @@ package org.bosik.diacomp.web.backend.features.base.dish.function;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
@@ -69,5 +70,11 @@ public class FakeDishbaseDAO implements DishbaseDAO
 	public String getHash(int userId, String prefix)
 	{
 		return dishbaseService.getHash(prefix);
+	}
+
+	@Override
+	public Map<String, String> getHashChildren(int userId, String prefix)
+	{
+		return dishbaseService.getHashChildren(prefix);
 	}
 }

@@ -2,6 +2,7 @@ package org.bosik.diacomp.web.backend.features.diary.function;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 
@@ -32,6 +33,8 @@ public interface DiaryDAO
 	 * @return Null if hash not found
 	 */
 	String getHash(int userId, String prefix);
+
+	Map<String, String> getHashChildren(int userId, String prefix);
 
 	void post(int userId, List<Versioned<DiaryRecord>> records);
 }

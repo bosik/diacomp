@@ -2,6 +2,7 @@ package org.bosik.diacomp.web.backend.features.diary.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.diary.DiaryService;
@@ -51,6 +52,13 @@ public class FrontendDiaryService implements DiaryService
 	{
 		int userId = authService.getCurrentUserId();
 		return diaryDao.getHash(userId, prefix);
+	}
+
+	@Override
+	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
+	{
+		int userId = authService.getCurrentUserId();
+		return diaryDao.getHashChildren(userId, prefix);
 	}
 
 	@Override

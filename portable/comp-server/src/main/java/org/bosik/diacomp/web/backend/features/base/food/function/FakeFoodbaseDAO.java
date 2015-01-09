@@ -2,6 +2,7 @@ package org.bosik.diacomp.web.backend.features.base.food.function;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
@@ -69,5 +70,11 @@ public class FakeFoodbaseDAO implements FoodbaseDAO
 	public String getHash(int userId, String prefix)
 	{
 		return foodbaseService.getHash(prefix);
+	}
+
+	@Override
+	public Map<String, String> getHashChildren(int userId, String prefix)
+	{
+		return foodbaseService.getHashChildren(prefix);
 	}
 }

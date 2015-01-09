@@ -214,6 +214,32 @@ public class MySQLDiaryDAO implements DiaryDAO
 	}
 
 	@Override
+	public Map<String, String> getHashChildren(int userId, String prefix)
+	{
+		try
+		{
+			String clause = String.format("(%s = %d) AND (%s LIKE '%s')", COLUMN_DIARY_HASH_USER, userId,
+					COLUMN_DIARY_HASH_GUID, prefix + "_");
+			ResultSet set = db.select(TABLE_DIARY_HASH, clause, null);
+
+			Map<String, String> result = new HashMap<String, String>();
+			while (set.next())
+			{
+				String id = set.getString(COLUMN_DIARY_HASH_GUID);
+				String hash = set.getString(COLUMN_DIARY_HASH_HASH);
+				result.put(id, hash);
+			}
+
+			set.close();
+			return result;
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
 	public void post(int userId, List<Versioned<DiaryRecord>> records)
 	{
 		try

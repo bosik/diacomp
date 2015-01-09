@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -489,6 +491,51 @@ public class FoodBaseLocalService implements FoodBaseService
 
 				cursor.close();
 				return hash;
+			}
+			else
+			{
+				throw new NullPointerException("Cursor is null");
+			}
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	@Override
+	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			// constructing parameters
+			final String[] select = { DiaryContentProvider.COLUMN_FOODBASE_HASH_GUID,
+					DiaryContentProvider.COLUMN_FOODBASE_HASH_HASH };
+			final String where = DiaryContentProvider.COLUMN_FOODBASE_HASH_GUID + " = ?";
+			final String[] whereArgs = new String[] { prefix + "_" };
+
+			// execute query
+			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_HASH_URI, select, where, whereArgs,
+					null);
+
+			// analyze response
+			if (cursor != null)
+			{
+				int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_HASH_GUID);
+				int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_HASH_HASH);
+
+				Map<String, String> result = new HashMap<String, String>();
+
+				if (cursor.moveToNext())
+				{
+					String id = cursor.getString(indexId);
+					String hash = cursor.getString(indexHash);
+					result.put(id, hash);
+				}
+
+				cursor.close();
+
+				return result;
 			}
 			else
 			{

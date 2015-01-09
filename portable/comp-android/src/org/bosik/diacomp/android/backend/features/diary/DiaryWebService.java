@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
@@ -12,6 +13,7 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
+import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.rest.StdResponse;
@@ -31,6 +33,7 @@ public class DiaryWebService implements DiaryService
 	private static final String							API_DIARY_FIND_CHANGES		= "api/diary/changes/?since=%s";
 	private static final String							API_DIARY_FIND_PERIOD		= "api/diary/period/?start_time=%s&end_time=%s&show_rem=%s";
 	private static final String							API_DIARY_HASH				= "api/diary/hash/%s";
+	private static final String							API_DIARY_HASH_CHILDREN		= "api/diary/hashes/%s";
 	private static final String							API_DIARY_SAVE				= "api/diary/";
 
 	private final WebClient								webClient;
@@ -39,6 +42,7 @@ public class DiaryWebService implements DiaryService
 																							parser);
 	private final Serializer<Versioned<DiaryRecord>>	serializerV					= new SerializerAdapter<Versioned<DiaryRecord>>(
 																							parserV);
+	private final Serializer<Map<String, String>>		serializerMap				= new SerializerMap();
 
 	/* ============================ CONSTRUCTOR ============================ */
 
@@ -144,6 +148,26 @@ public class DiaryWebService implements DiaryService
 			String query = String.format(API_DIARY_HASH, prefix);
 			StdResponse resp = webClient.get(query);
 			return resp.getResponse();
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	@Override
+	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			String query = String.format(API_DIARY_HASH_CHILDREN, prefix);
+			StdResponse resp = webClient.get(query);
+			String data = resp.getResponse();
+			return serializerMap.read(data);
 		}
 		catch (CommonServiceException e)
 		{

@@ -3,6 +3,7 @@ package org.bosik.diacomp.core.test.fakes.services;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -111,6 +112,12 @@ public class FakeObjectService implements ObjectService<String>
 
 	@Override
 	public String getHash(String prefix) throws CommonServiceException
+	{
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}

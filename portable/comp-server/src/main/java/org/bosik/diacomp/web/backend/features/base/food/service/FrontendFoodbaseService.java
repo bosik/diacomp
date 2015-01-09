@@ -3,6 +3,7 @@ package org.bosik.diacomp.web.backend.features.base.food.service;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
@@ -84,6 +85,13 @@ public class FrontendFoodbaseService implements FoodBaseService
 	{
 		int userId = authService.getCurrentUserId();
 		return foodbaseDao.getHash(userId, prefix);
+	}
+
+	@Override
+	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
+	{
+		int userId = authService.getCurrentUserId();
+		return foodbaseDao.getHashChildren(userId, prefix);
 	}
 
 	@Override
