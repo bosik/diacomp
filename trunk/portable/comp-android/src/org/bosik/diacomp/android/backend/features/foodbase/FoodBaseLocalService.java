@@ -68,6 +68,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_GUID);
 			int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP);
+			int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_HASH);
 			int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_VERSION);
 			int indexData = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DATA);
 			int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DELETED);
@@ -78,6 +79,7 @@ public class FoodBaseLocalService implements FoodBaseService
 			{
 				String valueId = cursor.getString(indexId);
 				Date valueTimeStamp = Utils.parseTimeUTC(cursor.getString(indexTimeStamp));
+				String valueHash = cursor.getString(indexHash);
 				int valueVersion = cursor.getInt(indexVersion);
 				boolean valueDeleted = cursor.getInt(indexDeleted) == 1;
 				String valueData = cursor.getString(indexData);
@@ -89,6 +91,7 @@ public class FoodBaseLocalService implements FoodBaseService
 				Versioned<FoodItem> versioned = new Versioned<FoodItem>(item);
 				versioned.setId(valueId);
 				versioned.setTimeStamp(valueTimeStamp);
+				versioned.setHash(valueHash);
 				versioned.setVersion(valueVersion);
 				versioned.setDeleted(valueDeleted);
 
@@ -299,6 +302,7 @@ public class FoodBaseLocalService implements FoodBaseService
 			ContentValues newValues = new ContentValues();
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_GUID, item.getId());
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_HASH, item.getHash());
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, item.isDeleted());
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE, item.getData().getName());
