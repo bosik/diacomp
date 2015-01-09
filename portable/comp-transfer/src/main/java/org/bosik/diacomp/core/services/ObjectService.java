@@ -12,8 +12,6 @@ public interface ObjectService<T>
 {
 	static final int	ID_PREFIX_SIZE	= 4;
 
-	// static final String EMPTY_HASH = "00000000000000000000000000000000";
-
 	/**
 	 * Marks item with specified ID as deleted
 	 * 
