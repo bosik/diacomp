@@ -2,14 +2,12 @@ package org.bosik.diacomp.web.backend.features.base.food.function;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
@@ -17,10 +15,17 @@ import org.bosik.diacomp.core.persistence.parsers.ParserFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.ObjectService;
+import org.bosik.diacomp.core.services.base.food.FoodBaseService;
+import org.bosik.diacomp.core.services.exceptions.DuplicateException;
+import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
+import org.bosik.diacomp.web.backend.features.auth.service.AuthService;
+import org.bosik.diacomp.web.backend.features.auth.service.FrontendAuthService;
+import org.springframework.stereotype.Service;
 
-public class MySQLFoodbaseDAO implements FoodbaseDAO
+@Service
+public class FoodBaseLocalService implements FoodBaseService
 {
 	// Foodbase table
 	private static final String					TABLE_FOODBASE				= "foodbase2";
@@ -42,9 +47,16 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	private static final Parser<FoodItem>		parser						= new ParserFoodItem();
 	private static final Serializer<FoodItem>	serializer					= new SerializerAdapter<FoodItem>(parser);
 
+	private final AuthService					authService					= new FrontendAuthService();
+
+	protected int getCurrentUserId()
+	{
+		return authService.getCurrentUserId();
+	}
+
 	private static List<Versioned<FoodItem>> parseFoodItems(ResultSet resultSet) throws SQLException
 	{
-		List<Versioned<FoodItem>> result = new LinkedList<Versioned<FoodItem>>();
+		List<Versioned<FoodItem>> result = new ArrayList<Versioned<FoodItem>>();
 
 		while (resultSet.next())
 		{
@@ -69,10 +81,18 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findAll(int userId, boolean includeRemoved)
+	public void add(Versioned<FoodItem> item) throws DuplicateException, PersistenceException
+	{
+		save(Arrays.<Versioned<FoodItem>> asList(item));
+	}
+
+	@Override
+	public List<Versioned<FoodItem>> findAll(boolean includeRemoved)
 	{
 		try
 		{
+			int userId = getCurrentUserId();
+
 			String clause = String.format("(%s = %d)", COLUMN_FOODBASE_USER, userId);
 			if (!includeRemoved)
 			{
@@ -93,10 +113,12 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findChanged(int userId, Date since)
+	public List<Versioned<FoodItem>> findChanged(Date since)
 	{
 		try
 		{
+			int userId = getCurrentUserId();
+
 			String clause = String.format("(%s = %d) AND (%s >= '%s')", COLUMN_FOODBASE_USER, userId,
 					COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(since));
 			String order = COLUMN_FOODBASE_NAMECACHE;
@@ -113,10 +135,12 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	}
 
 	@Override
-	public Versioned<FoodItem> findById(int userId, String guid)
+	public Versioned<FoodItem> findById(String guid)
 	{
 		try
 		{
+			int userId = getCurrentUserId();
+
 			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_FOODBASE_USER, userId,
 					COLUMN_FOODBASE_GUID, guid);
 
@@ -132,8 +156,10 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findByIdPrefix(int userId, String prefix)
+	public List<Versioned<FoodItem>> findByIdPrefix(String prefix)
 	{
+		int userId = getCurrentUserId();
+
 		if (prefix.length() != ObjectService.ID_PREFIX_SIZE)
 		{
 			throw new IllegalArgumentException(String.format("Invalid prefix length, expected %d chars, but %d found",
@@ -159,10 +185,12 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findAny(int userId, String filter)
+	public List<Versioned<FoodItem>> findAny(String filter)
 	{
 		try
 		{
+			int userId = getCurrentUserId();
+
 			String clause = String.format("(%s = %d) AND (%s = '%s') AND (%s LIKE '%%%s%%')", COLUMN_FOODBASE_USER,
 					userId, COLUMN_FOODBASE_DELETED, Utils.formatBooleanInt(false), COLUMN_FOODBASE_NAMECACHE, filter);
 			String order = COLUMN_FOODBASE_NAMECACHE;
@@ -179,10 +207,12 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	}
 
 	@Override
-	public void save(int userId, List<Versioned<FoodItem>> items)
+	public void save(List<Versioned<FoodItem>> items)
 	{
 		try
 		{
+			int userId = getCurrentUserId();
+
 			for (Versioned<FoodItem> item : items)
 			{
 				final String content = serializer.write(item.getData());
@@ -191,18 +221,18 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 				final String version = String.valueOf(item.getVersion());
 				final String deleted = Utils.formatBooleanInt(item.isDeleted());
 
-				if (findById(userId, item.getId()) != null)
+				if (findById(item.getId()) != null)
 				{
 					// presented, update
 
-					SortedMap<String, String> set = new TreeMap<String, String>();
+					Map<String, String> set = new HashMap<String, String>();
 					set.put(COLUMN_FOODBASE_TIMESTAMP, timeStamp);
 					set.put(COLUMN_FOODBASE_VERSION, version);
 					set.put(COLUMN_FOODBASE_DELETED, deleted);
 					set.put(COLUMN_FOODBASE_CONTENT, content);
 					set.put(COLUMN_FOODBASE_NAMECACHE, nameCache);
 
-					SortedMap<String, String> where = new TreeMap<String, String>();
+					Map<String, String> where = new HashMap<String, String>();
 					where.put(COLUMN_FOODBASE_GUID, item.getId());
 					where.put(COLUMN_FOODBASE_USER, String.valueOf(userId));
 
@@ -212,7 +242,7 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 				{
 					// not presented, insert
 
-					LinkedHashMap<String, String> set = new LinkedHashMap<String, String>();
+					Map<String, String> set = new HashMap<String, String>();
 					set.put(COLUMN_FOODBASE_GUID, item.getId());
 					set.put(COLUMN_FOODBASE_USER, String.valueOf(userId));
 					set.put(COLUMN_FOODBASE_TIMESTAMP, timeStamp);
@@ -232,14 +262,16 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	}
 
 	@Override
-	public void delete(int userId, String id)
+	public void delete(String id)
 	{
 		try
 		{
-			SortedMap<String, String> set = new TreeMap<String, String>();
+			int userId = getCurrentUserId();
+
+			Map<String, String> set = new HashMap<String, String>();
 			set.put(COLUMN_FOODBASE_DELETED, Utils.formatBooleanInt(true));
 
-			SortedMap<String, String> where = new TreeMap<String, String>();
+			Map<String, String> where = new HashMap<String, String>();
 			where.put(COLUMN_FOODBASE_GUID, id);
 			where.put(COLUMN_FOODBASE_USER, String.valueOf(userId));
 
@@ -252,10 +284,12 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	}
 
 	@Override
-	public Versioned<FoodItem> findOne(int userId, String exactName)
+	public Versioned<FoodItem> findOne(String exactName)
 	{
 		try
 		{
+			int userId = getCurrentUserId();
+
 			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_FOODBASE_USER, userId,
 					COLUMN_FOODBASE_NAMECACHE, exactName);
 
@@ -271,10 +305,12 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	}
 
 	@Override
-	public String getHash(int userId, String prefix)
+	public String getHash(String prefix)
 	{
 		try
 		{
+			int userId = getCurrentUserId();
+
 			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_FOODBASE_HASH_USER, userId,
 					COLUMN_FOODBASE_HASH_GUID, prefix);
 
@@ -297,10 +333,12 @@ public class MySQLFoodbaseDAO implements FoodbaseDAO
 	}
 
 	@Override
-	public Map<String, String> getHashChildren(int userId, String prefix)
+	public Map<String, String> getHashChildren(String prefix)
 	{
 		try
 		{
+			int userId = getCurrentUserId();
+
 			String clause = String.format("(%s = %d) AND (%s LIKE '%s')", COLUMN_FOODBASE_HASH_USER, userId,
 					COLUMN_FOODBASE_HASH_GUID, prefix + "_");
 			ResultSet set = db.select(TABLE_FOODBASE_HASH, clause, null);

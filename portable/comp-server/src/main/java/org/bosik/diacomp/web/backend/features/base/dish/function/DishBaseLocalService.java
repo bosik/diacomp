@@ -2,14 +2,12 @@ package org.bosik.diacomp.web.backend.features.base.dish.function;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
@@ -17,10 +15,17 @@ import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.ObjectService;
+import org.bosik.diacomp.core.services.base.dish.DishBaseService;
+import org.bosik.diacomp.core.services.exceptions.DuplicateException;
+import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
+import org.bosik.diacomp.web.backend.features.auth.service.AuthService;
+import org.bosik.diacomp.web.backend.features.auth.service.FrontendAuthService;
+import org.springframework.stereotype.Service;
 
-public class MySQLDishbaseDAO implements DishbaseDAO
+@Service
+public class DishBaseLocalService implements DishBaseService
 {
 	// Dishbase table
 	private static final String					TABLE_DISHBASE				= "dishbase2";
@@ -42,9 +47,16 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	private static final Parser<DishItem>		parser						= new ParserDishItem();
 	private static final Serializer<DishItem>	serializer					= new SerializerAdapter<DishItem>(parser);
 
+	private final AuthService					authService					= new FrontendAuthService();
+
+	protected int getCurrentUserId()
+	{
+		return authService.getCurrentUserId();
+	}
+
 	private static List<Versioned<DishItem>> parseDishItems(ResultSet resultSet) throws SQLException
 	{
-		List<Versioned<DishItem>> result = new LinkedList<Versioned<DishItem>>();
+		List<Versioned<DishItem>> result = new ArrayList<Versioned<DishItem>>();
 
 		while (resultSet.next())
 		{
@@ -69,10 +81,18 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	}
 
 	@Override
-	public List<Versioned<DishItem>> findAll(int userId, boolean includeRemoved)
+	public void add(Versioned<DishItem> item) throws DuplicateException, PersistenceException
+	{
+		save(Arrays.<Versioned<DishItem>> asList(item));
+	}
+
+	@Override
+	public List<Versioned<DishItem>> findAll(boolean includeRemoved)
 	{
 		try
 		{
+			int userId = getCurrentUserId();
+
 			String clause = String.format("(%s = %d)", COLUMN_DISHBASE_USER, userId);
 			if (!includeRemoved)
 			{
@@ -93,10 +113,12 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	}
 
 	@Override
-	public List<Versioned<DishItem>> findChanged(int userId, Date since)
+	public List<Versioned<DishItem>> findChanged(Date since)
 	{
 		try
 		{
+			int userId = getCurrentUserId();
+
 			String clause = String.format("(%s = %d) AND (%s >= '%s')", COLUMN_DISHBASE_USER, userId,
 					COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(since));
 			String order = COLUMN_DISHBASE_NAMECACHE;
@@ -113,10 +135,12 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	}
 
 	@Override
-	public Versioned<DishItem> findById(int userId, String guid)
+	public Versioned<DishItem> findById(String guid)
 	{
 		try
 		{
+			int userId = getCurrentUserId();
+
 			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_DISHBASE_USER, userId,
 					COLUMN_DISHBASE_GUID, guid);
 
@@ -132,8 +156,10 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	}
 
 	@Override
-	public List<Versioned<DishItem>> findByIdPrefix(int userId, String prefix)
+	public List<Versioned<DishItem>> findByIdPrefix(String prefix)
 	{
+		int userId = getCurrentUserId();
+
 		if (prefix.length() != ObjectService.ID_PREFIX_SIZE)
 		{
 			throw new IllegalArgumentException(String.format("Invalid prefix length, expected %d chars, but %d found",
@@ -159,10 +185,12 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	}
 
 	@Override
-	public List<Versioned<DishItem>> findAny(int userId, String filter)
+	public List<Versioned<DishItem>> findAny(String filter)
 	{
 		try
 		{
+			int userId = getCurrentUserId();
+
 			String clause = String.format("(%s = %d) AND (%s = '%s') AND (%s LIKE '%%%s%%')", COLUMN_DISHBASE_USER,
 					userId, COLUMN_DISHBASE_DELETED, Utils.formatBooleanInt(false), COLUMN_DISHBASE_NAMECACHE, filter);
 			String order = COLUMN_DISHBASE_NAMECACHE;
@@ -179,10 +207,12 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	}
 
 	@Override
-	public void save(int userId, List<Versioned<DishItem>> items)
+	public void save(List<Versioned<DishItem>> items)
 	{
 		try
 		{
+			int userId = getCurrentUserId();
+
 			for (Versioned<DishItem> item : items)
 			{
 				final String content = serializer.write(item.getData());
@@ -191,18 +221,18 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 				final String version = String.valueOf(item.getVersion());
 				final String deleted = Utils.formatBooleanInt(item.isDeleted());
 
-				if (findById(userId, item.getId()) != null)
+				if (findById(item.getId()) != null)
 				{
 					// presented, update
 
-					SortedMap<String, String> set = new TreeMap<String, String>();
+					Map<String, String> set = new HashMap<String, String>();
 					set.put(COLUMN_DISHBASE_TIMESTAMP, timeStamp);
 					set.put(COLUMN_DISHBASE_VERSION, version);
 					set.put(COLUMN_DISHBASE_DELETED, deleted);
 					set.put(COLUMN_DISHBASE_CONTENT, content);
 					set.put(COLUMN_DISHBASE_NAMECACHE, nameCache);
 
-					SortedMap<String, String> where = new TreeMap<String, String>();
+					Map<String, String> where = new HashMap<String, String>();
 					where.put(COLUMN_DISHBASE_GUID, item.getId());
 					where.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
 
@@ -212,7 +242,7 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 				{
 					// not presented, insert
 
-					LinkedHashMap<String, String> set = new LinkedHashMap<String, String>();
+					Map<String, String> set = new HashMap<String, String>();
 					set.put(COLUMN_DISHBASE_GUID, item.getId());
 					set.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
 					set.put(COLUMN_DISHBASE_TIMESTAMP, timeStamp);
@@ -232,10 +262,12 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	}
 
 	@Override
-	public Versioned<DishItem> findOne(int userId, String exactName)
+	public Versioned<DishItem> findOne(String exactName)
 	{
 		try
 		{
+			int userId = getCurrentUserId();
+
 			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_DISHBASE_USER, userId,
 					COLUMN_DISHBASE_NAMECACHE, exactName);
 
@@ -251,14 +283,16 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	}
 
 	@Override
-	public void delete(int userId, String id)
+	public void delete(String id)
 	{
 		try
 		{
-			SortedMap<String, String> set = new TreeMap<String, String>();
+			int userId = getCurrentUserId();
+
+			Map<String, String> set = new HashMap<String, String>();
 			set.put(COLUMN_DISHBASE_DELETED, Utils.formatBooleanInt(true));
 
-			SortedMap<String, String> where = new TreeMap<String, String>();
+			Map<String, String> where = new HashMap<String, String>();
 			where.put(COLUMN_DISHBASE_GUID, id);
 			where.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
 
@@ -271,10 +305,12 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	}
 
 	@Override
-	public String getHash(int userId, String prefix)
+	public String getHash(String prefix)
 	{
 		try
 		{
+			int userId = getCurrentUserId();
+
 			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_DISHBASE_HASH_USER, userId,
 					COLUMN_DISHBASE_HASH_GUID, prefix);
 
@@ -297,10 +333,12 @@ public class MySQLDishbaseDAO implements DishbaseDAO
 	}
 
 	@Override
-	public Map<String, String> getHashChildren(int userId, String prefix)
+	public Map<String, String> getHashChildren(String prefix)
 	{
 		try
 		{
+			int userId = getCurrentUserId();
+
 			String clause = String.format("(%s = %d) AND (%s LIKE '%s')", COLUMN_DISHBASE_HASH_USER, userId,
 					COLUMN_DISHBASE_HASH_GUID, prefix + "_");
 			ResultSet set = db.select(TABLE_DISHBASE_HASH, clause, null);
