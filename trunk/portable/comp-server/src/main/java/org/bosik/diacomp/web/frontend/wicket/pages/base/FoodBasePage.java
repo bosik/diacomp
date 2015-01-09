@@ -18,6 +18,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -25,21 +26,21 @@ import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.test.fakes.mocks.MockFoodMassed;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.features.base.dish.function.DishBaseLocalService;
-import org.bosik.diacomp.web.backend.features.base.food.function.FoodBaseLocalService;
 import org.bosik.diacomp.web.frontend.wicket.dialogs.disheditor.DishEditor;
 import org.bosik.diacomp.web.frontend.wicket.dialogs.foodeditor.FoodEditor;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 
 public class FoodBasePage extends MasterPage
 {
-	private static final long				serialVersionUID	= 3940559525543830406L;
+	private static final long	serialVersionUID	= 3940559525543830406L;
 
-	WebMarkupContainer						container;
+	WebMarkupContainer			container;
 
-	transient static final FoodBaseService	foodService			= new FoodBaseLocalService();
-	transient static final DishBaseService	dishService			= new DishBaseLocalService();
-	String									search;
+	@SpringBean
+	FoodBaseService				foodService;
+	@SpringBean
+	DishBaseService				dishService;
+	String						search;
 
 	public FoodBasePage(PageParameters parameters)
 	{
