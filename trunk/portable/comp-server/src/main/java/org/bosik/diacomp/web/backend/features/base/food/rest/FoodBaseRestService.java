@@ -23,12 +23,12 @@ import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.ObjectService;
+import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
-import org.bosik.diacomp.web.backend.features.base.food.function.FoodbaseDAO;
-import org.bosik.diacomp.web.backend.features.base.food.function.MySQLFoodbaseDAO;
+import org.bosik.diacomp.web.backend.features.base.food.function.FoodBaseLocalService;
 
 @Path("food/")
 public class FoodBaseRestService
@@ -36,7 +36,14 @@ public class FoodBaseRestService
 	@Context
 	HttpServletRequest								req;
 
-	private final FoodbaseDAO						foodbaseService	= new MySQLFoodbaseDAO();
+	private final FoodBaseService					foodbaseService	= new FoodBaseLocalService()
+																	{
+																		@Override
+																		protected int getCurrentUserId()
+																		{
+																			return UserSessionUtils.getId(req);
+																		};
+																	};
 
 	private final Serializer<Versioned<FoodItem>>	serializer		= new SerializerFoodItem();
 	private final Serializer<Map<String, String>>	serializerMap	= new SerializerMap();
@@ -48,12 +55,10 @@ public class FoodBaseRestService
 	{
 		try
 		{
-			int userId = UserSessionUtils.getId(req);
-
 			// Prefix form
 			if (parId.length() == ObjectService.ID_PREFIX_SIZE)
 			{
-				List<Versioned<FoodItem>> items = foodbaseService.findByIdPrefix(userId, parId);
+				List<Versioned<FoodItem>> items = foodbaseService.findByIdPrefix(parId);
 
 				String s = serializer.writeAll(items);
 				String response = ResponseBuilder.buildDone(s);
@@ -63,7 +68,7 @@ public class FoodBaseRestService
 			// Full form
 			else
 			{
-				Versioned<FoodItem> item = foodbaseService.findById(userId, parId);
+				Versioned<FoodItem> item = foodbaseService.findById(parId);
 
 				if (item != null)
 				{
@@ -97,10 +102,9 @@ public class FoodBaseRestService
 	{
 		try
 		{
-			int userId = UserSessionUtils.getId(req);
 			boolean includeRemoved = Boolean.valueOf(parShowRem);
 
-			List<Versioned<FoodItem>> items = foodbaseService.findAll(userId, includeRemoved);
+			List<Versioned<FoodItem>> items = foodbaseService.findAll(includeRemoved);
 			String s = serializer.writeAll(items);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
@@ -123,9 +127,7 @@ public class FoodBaseRestService
 	{
 		try
 		{
-			int userId = UserSessionUtils.getId(req);
-
-			List<Versioned<FoodItem>> items = foodbaseService.findAny(userId, filter);
+			List<Versioned<FoodItem>> items = foodbaseService.findAny(filter);
 			String s = serializer.writeAll(items);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
@@ -148,9 +150,8 @@ public class FoodBaseRestService
 	{
 		try
 		{
-			int userId = UserSessionUtils.getId(req);
 			Date since = Utils.parseTimeUTC(parTime);
-			List<Versioned<FoodItem>> items = foodbaseService.findChanged(userId, since);
+			List<Versioned<FoodItem>> items = foodbaseService.findChanged(since);
 			String s = serializer.writeAll(items);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
@@ -173,9 +174,7 @@ public class FoodBaseRestService
 	{
 		try
 		{
-			int userId = UserSessionUtils.getId(req);
-
-			String s = foodbaseService.getHash(userId, parPrefix);
+			String s = foodbaseService.getHash(parPrefix);
 			String response = ResponseBuilder.buildDone(s != null ? s : "");
 			return Response.ok(response).build();
 		}
@@ -198,9 +197,7 @@ public class FoodBaseRestService
 	{
 		try
 		{
-			int userId = UserSessionUtils.getId(req);
-
-			Map<String, String> map = foodbaseService.getHashChildren(userId, parPrefix);
+			Map<String, String> map = foodbaseService.getHashChildren(parPrefix);
 			String s = serializerMap.write(map);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
@@ -222,9 +219,8 @@ public class FoodBaseRestService
 	{
 		try
 		{
-			int userId = UserSessionUtils.getId(req);
 			List<Versioned<FoodItem>> items = serializer.readAll(parItems);
-			foodbaseService.save(userId, items);
+			foodbaseService.save(items);
 
 			String response = ResponseBuilder.buildDone("Saved OK");
 			return Response.ok(response).build();

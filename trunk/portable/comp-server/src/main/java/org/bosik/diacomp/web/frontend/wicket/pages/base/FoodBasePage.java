@@ -25,8 +25,8 @@ import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.test.fakes.mocks.MockFoodMassed;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.features.base.dish.service.FrontendDishbaseService;
-import org.bosik.diacomp.web.backend.features.base.food.service.FrontendFoodbaseService;
+import org.bosik.diacomp.web.backend.features.base.dish.function.DishBaseLocalService;
+import org.bosik.diacomp.web.backend.features.base.food.function.FoodBaseLocalService;
 import org.bosik.diacomp.web.frontend.wicket.dialogs.disheditor.DishEditor;
 import org.bosik.diacomp.web.frontend.wicket.dialogs.foodeditor.FoodEditor;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
@@ -37,8 +37,8 @@ public class FoodBasePage extends MasterPage
 
 	WebMarkupContainer						container;
 
-	transient static final FoodBaseService	foodService			= new FrontendFoodbaseService();
-	transient static final DishBaseService	dishService			= new FrontendDishbaseService();
+	transient static final FoodBaseService	foodService			= new FoodBaseLocalService();
+	transient static final DishBaseService	dishService			= new DishBaseLocalService();
 	String									search;
 
 	public FoodBasePage(PageParameters parameters)
