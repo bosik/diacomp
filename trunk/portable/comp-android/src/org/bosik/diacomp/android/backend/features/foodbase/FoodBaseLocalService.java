@@ -147,8 +147,9 @@ public class FoodBaseLocalService implements FoodBaseService
 		{
 			// constructing parameters
 			String[] mProj = { DiaryContentProvider.COLUMN_FOODBASE_GUID,
-					DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, DiaryContentProvider.COLUMN_FOODBASE_VERSION,
-					DiaryContentProvider.COLUMN_FOODBASE_DELETED, DiaryContentProvider.COLUMN_FOODBASE_DATA };
+					DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, DiaryContentProvider.COLUMN_DISHBASE_HASH,
+					DiaryContentProvider.COLUMN_FOODBASE_VERSION, DiaryContentProvider.COLUMN_FOODBASE_DELETED,
+					DiaryContentProvider.COLUMN_FOODBASE_DATA };
 
 			String mSelectionClause = "";
 			List<String> args = new LinkedList<String>();
