@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -64,7 +63,7 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			long time = System.currentTimeMillis();
 
-			List<Versioned<DishItem>> result = new LinkedList<Versioned<DishItem>>();
+			List<Versioned<DishItem>> result = new ArrayList<Versioned<DishItem>>();
 
 			int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_GUID);
 			int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP);
@@ -147,56 +146,53 @@ public class DishBaseLocalService implements DishBaseService
 		try
 		{
 			// constructing parameters
-			String[] mProj = { DiaryContentProvider.COLUMN_DISHBASE_GUID,
-					DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP, DiaryContentProvider.COLUMN_DISHBASE_HASH,
-					DiaryContentProvider.COLUMN_DISHBASE_VERSION, DiaryContentProvider.COLUMN_DISHBASE_DELETED,
-					DiaryContentProvider.COLUMN_DISHBASE_DATA };
+			String[] columns = null; // all
 
-			String mSelectionClause = "";
-			List<String> args = new LinkedList<String>();
+			String where = "";
+			List<String> whereArgs = new ArrayList<String>();
 
 			if (id != null)
 			{
 				if (id.length() == ObjectService.ID_PREFIX_SIZE)
 				{
-					mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-					mSelectionClause += DiaryContentProvider.COLUMN_DISHBASE_GUID + " LIKE ?";
-					args.add(id + "%");
+					where += where.isEmpty() ? "" : " AND ";
+					where += DiaryContentProvider.COLUMN_DISHBASE_GUID + " LIKE ?";
+					whereArgs.add(id + "%");
 				}
 				else
 				{
-					mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-					mSelectionClause += DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?";
-					args.add(id);
+					where += where.isEmpty() ? "" : " AND ";
+					where += DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?";
+					whereArgs.add(id);
 				}
 			}
 
 			if (name != null)
 			{
-				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-				mSelectionClause += DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE + " LIKE ?";
-				args.add("%" + name + "%");
+				where += where.isEmpty() ? "" : " AND ";
+				where += DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE + " LIKE ?";
+				whereArgs.add("%" + name + "%");
 			}
 
 			if (modAfter != null)
 			{
-				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-				mSelectionClause += DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP + " > ?";
-				args.add(Utils.formatTimeUTC(modAfter));
+				where += where.isEmpty() ? "" : " AND ";
+				where += DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP + " > ?";
+				whereArgs.add(Utils.formatTimeUTC(modAfter));
 			}
 
 			if (!includeDeleted)
 			{
-				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-				mSelectionClause += DiaryContentProvider.COLUMN_DISHBASE_DELETED + " = 0";
+				where += where.isEmpty() ? "" : " AND ";
+				where += DiaryContentProvider.COLUMN_DISHBASE_DELETED + " = 0";
 			}
 
-			String[] mSelectionArgs = args.toArray(new String[] {});
+			String[] mSelectionArgs = whereArgs.toArray(new String[] {});
 			String mSortOrder = DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE;
 
 			// execute query
-			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DISHBASE_URI, mProj, mSelectionClause,
-					mSelectionArgs, mSortOrder);
+			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DISHBASE_URI, columns, where, mSelectionArgs,
+					mSortOrder);
 
 			final List<Versioned<DishItem>> result = parseItems(cursor);
 			cursor.close();
