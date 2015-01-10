@@ -33,7 +33,7 @@ public class DishBaseWebService implements DishBaseService
 	private static final String						API_DISH_FIND_BY_ID_PREFIX	= "api/dish/guid/%s";
 	private static final String						API_DISH_FIND_CHANGES		= "api/dish/changes/?since=%s";
 	private static final String						API_DISH_HASH				= "api/dish/hash/%s";
-	private static final String						API_DISH_HASH_CHILDREN		= "api/dish/hashes/%s";
+	private static final String						API_DISH_HASHES				= "api/dish/hashes/%s";
 	private static final String						API_DISH_SAVE				= "api/dish/";
 
 	private final WebClient							webClient;
@@ -162,6 +162,26 @@ public class DishBaseWebService implements DishBaseService
 	}
 
 	@Override
+	public Map<String, String> getDataHashes(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			String query = String.format(API_DISH_HASHES, prefix);
+			StdResponse resp = webClient.get(query);
+			String data = resp.getResponse();
+			return serializerMap.read(data);
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	@Override
 	public String getHash(String prefix) throws CommonServiceException
 	{
 		try
@@ -185,7 +205,7 @@ public class DishBaseWebService implements DishBaseService
 	{
 		try
 		{
-			String query = String.format(API_DISH_HASH_CHILDREN, prefix);
+			String query = String.format(API_DISH_HASHES, prefix);
 			StdResponse resp = webClient.get(query);
 			String data = resp.getResponse();
 			return serializerMap.read(data);

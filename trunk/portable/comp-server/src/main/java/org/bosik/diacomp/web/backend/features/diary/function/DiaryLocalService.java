@@ -20,6 +20,7 @@ import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
+import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
@@ -225,7 +226,7 @@ public class DiaryLocalService implements DiaryService
 	}
 
 	@SuppressWarnings("static-method")
-	public String getDataHash(int userId, String id)
+	private String getDataHash(int userId, String id)
 	{
 		try
 		{
@@ -245,6 +246,37 @@ public class DiaryLocalService implements DiaryService
 
 			set.close();
 			return hash;
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public Map<String, String> getDataHashes(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			int userId = getCurrentUserId();
+
+			final String[] select = { COLUMN_DIARY_GUID, COLUMN_DIARY_HASH };
+			final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_DIARY_USER, COLUMN_DIARY_GUID);
+			final String[] whereArgs = { String.valueOf(userId), prefix + "%" };
+			final String order = null;
+
+			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
+
+			Map<String, String> result = new HashMap<String, String>();
+			while (set.next())
+			{
+				String id = set.getString(COLUMN_DIARY_GUID);
+				String hash = set.getString(COLUMN_DIARY_HASH);
+				result.put(id, hash);
+			}
+
+			set.close();
+			return result;
 		}
 		catch (SQLException e)
 		{

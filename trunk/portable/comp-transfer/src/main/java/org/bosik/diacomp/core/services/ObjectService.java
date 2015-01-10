@@ -36,9 +36,10 @@ public interface ObjectService<T>
 	 * Returns list of records which id starts with specified prefix
 	 * 
 	 * @param prefix
-	 *            Prefix, must be ID_PREFIX_SIZE chars long
+	 *            Must be exactly ID_PREFIX_SIZE chars long
 	 * @return
 	 * @throws CommonServiceException
+	 * @see #getDataHashes
 	 */
 	List<Versioned<T>> findByIdPrefix(String prefix) throws CommonServiceException;
 
@@ -52,21 +53,28 @@ public interface ObjectService<T>
 	List<Versioned<T>> findChanged(Date since) throws CommonServiceException;
 
 	/**
-	 * Returns hash for specified ID prefix
 	 * 
 	 * @param prefix
-	 *            Up to ID_PREFIX_SIZE chars long
-	 * @return Empty string if hash not found
+	 *            Must be exactly ID_PREFIX_SIZE chars long
+	 * @return Map (id, hash) for all items with specified prefix
+	 * @throws CommonServiceException
+	 */
+	Map<String, String> getDataHashes(String prefix) throws CommonServiceException;
+
+	/**
+	 * 
+	 * @param prefix
+	 *            Must be 0..ID_PREFIX_SIZE chars long
+	 * @return Hash for specified ID prefix, or empty string if hash not found
 	 * @throws CommonServiceException
 	 */
 	String getHash(String prefix) throws CommonServiceException;
 
 	/**
-	 * Returns map (prefix + one_char, hash)
 	 * 
 	 * @param prefix
-	 *            Should have less than ID_PREFIX_SIZE chars
-	 * @return
+	 *            Must be less than ID_PREFIX_SIZE chars long
+	 * @return Map (prefix + one_char, hash)
 	 * @throws CommonServiceException
 	 */
 	Map<String, String> getHashChildren(String prefix) throws CommonServiceException;

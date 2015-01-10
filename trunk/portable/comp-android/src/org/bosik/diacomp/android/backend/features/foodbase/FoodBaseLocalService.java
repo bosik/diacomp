@@ -191,8 +191,8 @@ public class FoodBaseLocalService implements FoodBaseService
 			String mSortOrder = DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE;
 
 			// execute query
-			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, columns, where,
-					mSelectionArgs, mSortOrder);
+			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, columns, where, mSelectionArgs,
+					mSortOrder);
 
 			final List<Versioned<FoodItem>> result = parseItems(cursor);
 			cursor.close();
@@ -464,6 +464,50 @@ public class FoodBaseLocalService implements FoodBaseService
 	public List<Versioned<FoodItem>> findChanged(Date since)
 	{
 		return find(null, null, true, since);
+	}
+
+	@Override
+	public Map<String, String> getDataHashes(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			// constructing parameters
+			final String[] select = { DiaryContentProvider.COLUMN_FOODBASE_GUID,
+					DiaryContentProvider.COLUMN_FOODBASE_HASH };
+			final String where = String.format("%s LIKE ?", DiaryContentProvider.COLUMN_FOODBASE_GUID);
+			final String[] whereArgs = new String[] { prefix + "%" };
+
+			// execute query
+			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, select, where, whereArgs, null);
+
+			// analyze response
+			if (cursor != null)
+			{
+				int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_GUID);
+				int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_HASH);
+
+				Map<String, String> result = new HashMap<String, String>();
+
+				if (cursor.moveToNext())
+				{
+					String id = cursor.getString(indexId);
+					String hash = cursor.getString(indexHash);
+					result.put(id, hash);
+				}
+
+				cursor.close();
+
+				return result;
+			}
+			else
+			{
+				throw new NullPointerException("Cursor is null");
+			}
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
 	}
 
 	@Override

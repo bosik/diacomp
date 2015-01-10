@@ -200,4 +200,10 @@ public class FakeDishBaseService implements DishBaseService
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}
+
+	@Override
+	public Map<String, String> getDataHashes(String prefix) throws CommonServiceException
+	{
+		throw new UnsupportedOperationException("Not implemented");
+	}
 }

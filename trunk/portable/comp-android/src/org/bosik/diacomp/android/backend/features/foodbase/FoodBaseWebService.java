@@ -33,7 +33,7 @@ public class FoodBaseWebService implements FoodBaseService
 	private static final String						API_FOOD_FIND_BY_ID_PREFIX	= "api/food/guid/%s";
 	private static final String						API_FOOD_FIND_CHANGES		= "api/food/changes/?since=%s";
 	private static final String						API_FOOD_HASH				= "api/food/hash/%s";
-	private static final String						API_FOOD_HASH_CHILDREN		= "api/food/hashes/%s";
+	private static final String						API_FOOD_HASHES				= "api/food/hashes/%s";
 	private static final String						API_FOOD_SAVE				= "api/food/";
 
 	private final WebClient							webClient;
@@ -162,6 +162,26 @@ public class FoodBaseWebService implements FoodBaseService
 	}
 
 	@Override
+	public Map<String, String> getDataHashes(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			String query = String.format(API_FOOD_HASHES, prefix);
+			StdResponse resp = webClient.get(query);
+			String data = resp.getResponse();
+			return serializerMap.read(data);
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	@Override
 	public String getHash(String prefix) throws CommonServiceException
 	{
 		try
@@ -185,7 +205,7 @@ public class FoodBaseWebService implements FoodBaseService
 	{
 		try
 		{
-			String query = String.format(API_FOOD_HASH_CHILDREN, prefix);
+			String query = String.format(API_FOOD_HASHES, prefix);
 			StdResponse resp = webClient.get(query);
 			String data = resp.getResponse();
 			return serializerMap.read(data);
