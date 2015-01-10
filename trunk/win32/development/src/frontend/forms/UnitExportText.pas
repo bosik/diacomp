@@ -90,7 +90,7 @@ var
   MealInfo: TMealType;
 
   Recs: TRecordList;
-  i, j, k: integer;
+  j, k: integer;
 
   function CheckedCount(Recs: TRecordList): integer;
   var

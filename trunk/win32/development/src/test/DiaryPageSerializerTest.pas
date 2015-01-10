@@ -21,13 +21,13 @@ implementation
 {======================================================================================================================}
 procedure TDiaryPageSerializerTest.TestSeparatePages;
 {======================================================================================================================}
-const
+{const
   N = 5;
 var
   OriginalPages: TStringsArray;
   S: TStrings;
   ParsedPages: TStringsArray;
-  i, j: integer;
+  i, j: integer; }
 begin
   // TODO: update test
 
