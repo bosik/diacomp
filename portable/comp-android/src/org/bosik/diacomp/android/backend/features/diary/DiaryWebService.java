@@ -33,7 +33,7 @@ public class DiaryWebService implements DiaryService
 	private static final String							API_DIARY_FIND_CHANGES		= "api/diary/changes/?since=%s";
 	private static final String							API_DIARY_FIND_PERIOD		= "api/diary/period/?start_time=%s&end_time=%s&show_rem=%s";
 	private static final String							API_DIARY_HASH				= "api/diary/hash/%s";
-	private static final String							API_DIARY_HASH_CHILDREN		= "api/diary/hashes/%s";
+	private static final String							API_DIARY_HASHES			= "api/diary/hashes/%s";
 	private static final String							API_DIARY_SAVE				= "api/diary/";
 
 	private final WebClient								webClient;
@@ -141,6 +141,26 @@ public class DiaryWebService implements DiaryService
 	}
 
 	@Override
+	public Map<String, String> getDataHashes(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			String query = String.format(API_DIARY_HASHES, prefix);
+			StdResponse resp = webClient.get(query);
+			String data = resp.getResponse();
+			return serializerMap.read(data);
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	@Override
 	public String getHash(String prefix) throws CommonServiceException
 	{
 		try
@@ -164,7 +184,7 @@ public class DiaryWebService implements DiaryService
 	{
 		try
 		{
-			String query = String.format(API_DIARY_HASH_CHILDREN, prefix);
+			String query = String.format(API_DIARY_HASHES, prefix);
 			StdResponse resp = webClient.get(query);
 			String data = resp.getResponse();
 			return serializerMap.read(data);

@@ -197,7 +197,16 @@ public class DishBaseRestService
 	{
 		try
 		{
-			Map<String, String> map = dishbaseService.getHashChildren(parPrefix);
+			Map<String, String> map;
+
+			if (parPrefix.length() < ObjectService.ID_PREFIX_SIZE)
+			{
+				map = dishbaseService.getHashChildren(parPrefix);
+			}
+			else
+			{
+				map = dishbaseService.getDataHashes(parPrefix);
+			}
 			String s = serializerMap.write(map);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();

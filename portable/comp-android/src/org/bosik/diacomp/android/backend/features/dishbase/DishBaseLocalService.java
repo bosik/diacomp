@@ -452,6 +452,50 @@ public class DishBaseLocalService implements DishBaseService
 	}
 
 	@Override
+	public Map<String, String> getDataHashes(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			// constructing parameters
+			final String[] select = { DiaryContentProvider.COLUMN_DISHBASE_GUID,
+					DiaryContentProvider.COLUMN_DISHBASE_HASH };
+			final String where = String.format("%s LIKE ?", DiaryContentProvider.COLUMN_DISHBASE_GUID);
+			final String[] whereArgs = new String[] { prefix + "%" };
+
+			// execute query
+			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DISHBASE_URI, select, where, whereArgs, null);
+
+			// analyze response
+			if (cursor != null)
+			{
+				int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_GUID);
+				int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_HASH);
+
+				Map<String, String> result = new HashMap<String, String>();
+
+				if (cursor.moveToNext())
+				{
+					String id = cursor.getString(indexId);
+					String hash = cursor.getString(indexHash);
+					result.put(id, hash);
+				}
+
+				cursor.close();
+
+				return result;
+			}
+			else
+			{
+				throw new NullPointerException("Cursor is null");
+			}
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
+
+	@Override
 	public String getHash(String prefix) throws CommonServiceException
 	{
 		try

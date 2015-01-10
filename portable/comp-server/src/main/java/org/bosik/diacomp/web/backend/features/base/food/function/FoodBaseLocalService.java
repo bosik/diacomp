@@ -16,6 +16,7 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
+import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.utils.Utils;
@@ -268,6 +269,37 @@ public class FoodBaseLocalService implements FoodBaseService
 			List<Versioned<FoodItem>> result = parseFoodItems(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public Map<String, String> getDataHashes(String prefix) throws CommonServiceException
+	{
+		try
+		{
+			int userId = getCurrentUserId();
+
+			final String[] select = { COLUMN_FOODBASE_GUID, COLUMN_FOODBASE_HASH };
+			final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_GUID);
+			final String[] whereArgs = { String.valueOf(userId), prefix + "%" };
+			final String order = null;
+
+			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);
+
+			Map<String, String> result = new HashMap<String, String>();
+			while (set.next())
+			{
+				String id = set.getString(COLUMN_FOODBASE_GUID);
+				String hash = set.getString(COLUMN_FOODBASE_HASH);
+				result.put(id, hash);
+			}
+
+			set.close();
+			return result;
 		}
 		catch (SQLException e)
 		{
