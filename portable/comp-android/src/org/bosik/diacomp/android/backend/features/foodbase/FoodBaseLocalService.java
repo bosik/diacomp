@@ -64,7 +64,7 @@ public class FoodBaseLocalService implements FoodBaseService
 		{
 			long time = System.currentTimeMillis();
 
-			List<Versioned<FoodItem>> result = new LinkedList<Versioned<FoodItem>>();
+			List<Versioned<FoodItem>> result = new ArrayList<Versioned<FoodItem>>();
 
 			int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_GUID);
 			int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP);
@@ -146,55 +146,52 @@ public class FoodBaseLocalService implements FoodBaseService
 		try
 		{
 			// constructing parameters
-			String[] mProj = { DiaryContentProvider.COLUMN_FOODBASE_GUID,
-					DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, DiaryContentProvider.COLUMN_DISHBASE_HASH,
-					DiaryContentProvider.COLUMN_FOODBASE_VERSION, DiaryContentProvider.COLUMN_FOODBASE_DELETED,
-					DiaryContentProvider.COLUMN_FOODBASE_DATA };
+			String[] columns = null; // all
 
-			String mSelectionClause = "";
-			List<String> args = new LinkedList<String>();
+			String where = "";
+			List<String> whereArgs = new LinkedList<String>();
 
 			if (id != null)
 			{
 				if (id.length() == ObjectService.ID_PREFIX_SIZE)
 				{
-					mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-					mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_GUID + " LIKE ?";
-					args.add(id + "%");
+					where += where.isEmpty() ? "" : " AND ";
+					where += DiaryContentProvider.COLUMN_FOODBASE_GUID + " LIKE ?";
+					whereArgs.add(id + "%");
 				}
 				else
 				{
-					mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-					mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
-					args.add(id);
+					where += where.isEmpty() ? "" : " AND ";
+					where += DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
+					whereArgs.add(id);
 				}
 			}
 
 			if (name != null)
 			{
-				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-				mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE + " LIKE ?";
-				args.add("%" + name + "%");
+				where += where.isEmpty() ? "" : " AND ";
+				where += DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE + " LIKE ?";
+				whereArgs.add("%" + name + "%");
 			}
 
 			if (modAfter != null)
 			{
-				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-				mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP + " > ?";
-				args.add(Utils.formatTimeUTC(modAfter));
+				where += where.isEmpty() ? "" : " AND ";
+				where += DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP + " > ?";
+				whereArgs.add(Utils.formatTimeUTC(modAfter));
 			}
 
 			if (!includeDeleted)
 			{
-				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-				mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_DELETED + " = 0";
+				where += where.isEmpty() ? "" : " AND ";
+				where += DiaryContentProvider.COLUMN_FOODBASE_DELETED + " = 0";
 			}
 
-			String[] mSelectionArgs = args.toArray(new String[] {});
+			String[] mSelectionArgs = whereArgs.toArray(new String[] {});
 			String mSortOrder = DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE;
 
 			// execute query
-			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, mProj, mSelectionClause,
+			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, columns, where,
 					mSelectionArgs, mSortOrder);
 
 			final List<Versioned<FoodItem>> result = parseItems(cursor);

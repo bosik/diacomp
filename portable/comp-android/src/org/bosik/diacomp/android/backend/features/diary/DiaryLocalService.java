@@ -79,15 +79,10 @@ public class DiaryLocalService implements DiaryService
 	public Versioned<DiaryRecord> findById(String id) throws CommonServiceException
 	{
 		// construct parameters
-		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
-				DiaryContentProvider.COLUMN_DIARY_HASH, DiaryContentProvider.COLUMN_DIARY_VERSION,
-				DiaryContentProvider.COLUMN_DIARY_DELETED, DiaryContentProvider.COLUMN_DIARY_CONTENT,
-				DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
-
+		String[] projection = null; // all
 		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
 		String[] clauseArgs = { id };
-
-		String sortOrder = null;// DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
+		String sortOrder = null;
 
 		// execute
 		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
@@ -108,14 +103,9 @@ public class DiaryLocalService implements DiaryService
 		}
 
 		// construct parameters
-		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
-				DiaryContentProvider.COLUMN_DIARY_HASH, DiaryContentProvider.COLUMN_DIARY_VERSION,
-				DiaryContentProvider.COLUMN_DIARY_DELETED, DiaryContentProvider.COLUMN_DIARY_CONTENT,
-				DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
-
+		String[] projection = null; // all
 		String clause = String.format("%s LIKE ?", DiaryContentProvider.COLUMN_DIARY_GUID);
 		String[] clauseArgs = new String[] { prefix + "%" };
-
 		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
 		// execute
@@ -129,14 +119,9 @@ public class DiaryLocalService implements DiaryService
 	public List<Versioned<DiaryRecord>> findChanged(Date since) throws CommonServiceException
 	{
 		// construct parameters
-		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
-				DiaryContentProvider.COLUMN_DIARY_HASH, DiaryContentProvider.COLUMN_DIARY_VERSION,
-				DiaryContentProvider.COLUMN_DIARY_DELETED, DiaryContentProvider.COLUMN_DIARY_CONTENT,
-				DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
-
+		String[] projection = null;
 		String clause = String.format("%s > ?", DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
 		String[] clauseArgs = new String[] { Utils.formatTimeUTC(since) };
-
 		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
 		// execute
@@ -161,10 +146,7 @@ public class DiaryLocalService implements DiaryService
 		}
 
 		// construct parameters
-		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
-				DiaryContentProvider.COLUMN_DIARY_HASH, DiaryContentProvider.COLUMN_DIARY_VERSION,
-				DiaryContentProvider.COLUMN_DIARY_DELETED, DiaryContentProvider.COLUMN_DIARY_CONTENT,
-				DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
+		String[] projection = null; // all
 
 		String clause;
 		String[] clauseArgs;
