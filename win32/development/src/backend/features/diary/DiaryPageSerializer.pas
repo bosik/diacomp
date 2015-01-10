@@ -161,6 +161,7 @@ begin
   Result := ParseDiaryRecord(JsonObj[REC_DATA] as TlkJSONobject);
   Result.ID := (JsonObj[REC_ID] as TlkJSONstring).Value;
   Result.TimeStamp := StrToDateTime((JsonObj[REC_TIMESTAMP] as TlkJSONstring).Value, STD_DATETIME_FMT);
+  Result.Hash := (JsonObj[REC_HASH] as TlkJSONstring).Value;
   Result.Version := (JsonObj[REC_VERSION] as TlkJSONnumber).Value;
   Result.Deleted := (JsonObj[REC_DELETED] as TlkJSONboolean).Value;
 end;
@@ -343,6 +344,7 @@ begin
   Result := TlkJSONobject.Create();
   Result.Add(REC_ID, R.ID);
   Result.Add(REC_TIMESTAMP, DateTimeToStr(R.TimeStamp, STD_DATETIME_FMT));
+  Result.Add(REC_HASH, R.Hash);
   Result.Add(REC_VERSION, R.Version);
   Result.Add(REC_DELETED, R.Deleted);
   Result.Add(REC_DATA, SerializeDiaryRecord(R));
