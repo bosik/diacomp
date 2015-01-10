@@ -55,15 +55,6 @@ public interface ObjectService<T>
 	/**
 	 * 
 	 * @param prefix
-	 *            Must be exactly ID_PREFIX_SIZE chars long
-	 * @return Map (id, hash) for all items with specified prefix
-	 * @throws CommonServiceException
-	 */
-	Map<String, String> getDataHashes(String prefix) throws CommonServiceException;
-
-	/**
-	 * 
-	 * @param prefix
 	 *            Must be 0..ID_PREFIX_SIZE chars long
 	 * @return Hash for specified ID prefix, or empty string if hash not found
 	 * @throws CommonServiceException
@@ -71,10 +62,11 @@ public interface ObjectService<T>
 	String getHash(String prefix) throws CommonServiceException;
 
 	/**
+	 * Returns children for specified node
 	 * 
 	 * @param prefix
-	 *            Must be less than ID_PREFIX_SIZE chars long
-	 * @return Map (prefix + one_char, hash)
+	 *            Must be 0..ID_PREFIX_SIZE chars long
+	 * @return Map (prefix + one_char, hash) if prefix is shorter than ID_PREFIX_SIZE; (id, hash) otherwise
 	 * @throws CommonServiceException
 	 */
 	Map<String, String> getHashChildren(String prefix) throws CommonServiceException;
