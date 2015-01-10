@@ -96,11 +96,11 @@ public class FakeFoodBaseService implements FoodBaseService
 	}
 
 	@Override
-	public Versioned<FoodItem> findById(String guid)
+	public Versioned<FoodItem> findById(String id)
 	{
 		for (Versioned<FoodItem> rec : samples)
 		{
-			if (rec.getId().equals(guid))
+			if (rec.getId().equals(id))
 			{
 				return new Versioned<FoodItem>(rec);
 			}

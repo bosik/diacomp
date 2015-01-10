@@ -124,11 +124,11 @@ public class FoodBaseWebService implements FoodBaseService
 	}
 
 	@Override
-	public Versioned<FoodItem> findById(String guid)
+	public Versioned<FoodItem> findById(String id)
 	{
 		try
 		{
-			String url = String.format(API_FOOD_FIND_BY_ID, guid);
+			String url = String.format(API_FOOD_FIND_BY_ID, id);
 			StdResponse resp = webClient.get(url);
 			return serializer.read(resp.getResponse());
 		}

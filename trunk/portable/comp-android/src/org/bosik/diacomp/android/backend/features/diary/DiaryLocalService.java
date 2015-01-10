@@ -76,7 +76,7 @@ public class DiaryLocalService implements DiaryService
 	}
 
 	@Override
-	public Versioned<DiaryRecord> findById(String guid) throws CommonServiceException
+	public Versioned<DiaryRecord> findById(String id) throws CommonServiceException
 	{
 		// construct parameters
 		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
@@ -85,7 +85,7 @@ public class DiaryLocalService implements DiaryService
 				DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
 
 		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
-		String[] clauseArgs = { guid };
+		String[] clauseArgs = { id };
 
 		String sortOrder = null;// DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
@@ -199,12 +199,12 @@ public class DiaryLocalService implements DiaryService
 		return records;
 	}
 
-	private boolean recordExists(String guid)
+	private boolean recordExists(String id)
 	{
 		// construct parameters
 		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID };
 		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
-		String[] clauseArgs = { guid };
+		String[] clauseArgs = { id };
 		String sortOrder = null;
 
 		// execute
@@ -359,7 +359,7 @@ public class DiaryLocalService implements DiaryService
 	{
 		if (cursor != null)
 		{
-			int indexGUID = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_GUID);
+			int indexID = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_GUID);
 			int indexTimestamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
 			int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_HASH);
 			int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_VERSION);
@@ -370,7 +370,7 @@ public class DiaryLocalService implements DiaryService
 
 			while (cursor.moveToNext())
 			{
-				String guid = cursor.getString(indexGUID);
+				String id = cursor.getString(indexID);
 				Date timestamp = Utils.parseTimeUTC(cursor.getString(indexTimestamp));
 				String hash = cursor.getString(indexHash);
 				int version = cursor.getInt(indexVersion);
@@ -379,7 +379,7 @@ public class DiaryLocalService implements DiaryService
 				DiaryRecord record = serializer.read(content);
 
 				Versioned<DiaryRecord> item = new Versioned<DiaryRecord>(record);
-				item.setId(guid);
+				item.setId(id);
 				item.setTimeStamp(timestamp);
 				item.setHash(hash);
 				item.setVersion(version);
@@ -387,7 +387,7 @@ public class DiaryLocalService implements DiaryService
 
 				res.add(item);
 
-				Log.v(TAG, String.format("#DBF Extracted item #%s: %s", guid, content));
+				Log.v(TAG, String.format("#DBF Extracted item #%s: %s", id, content));
 			}
 
 			return res;

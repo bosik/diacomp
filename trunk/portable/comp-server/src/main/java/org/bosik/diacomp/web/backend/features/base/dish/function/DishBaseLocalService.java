@@ -172,7 +172,7 @@ public class DishBaseLocalService implements DishBaseService
 	}
 
 	@Override
-	public Versioned<DishItem> findById(String guid)
+	public Versioned<DishItem> findById(String id)
 	{
 		try
 		{
@@ -180,7 +180,7 @@ public class DishBaseLocalService implements DishBaseService
 
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DISHBASE_USER, COLUMN_DISHBASE_GUID);
-			final String[] whereArgs = { String.valueOf(userId), guid };
+			final String[] whereArgs = { String.valueOf(userId), id };
 			final String order = null;
 
 			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);

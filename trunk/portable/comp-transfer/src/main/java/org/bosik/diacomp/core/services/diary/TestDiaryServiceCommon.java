@@ -41,9 +41,9 @@ public abstract class TestDiaryServiceCommon extends TestCase implements TestDia
 				System.out.println("Items:");
 				for (int j = 0; j < (items.size()); j++)
 				{
-					final String guid = items.get(j).getId();
+					final String id = items.get(j).getId();
 					final String time = Utils.formatTimeUTC(items.get(j).getData().getTime());
-					System.out.println(j + "\t" + guid + " " + time);
+					System.out.println(j + "\t" + id + " " + time);
 				}
 
 				fail(String.format("Items #%d and #%d are wrong ordered", i, i + 1));
