@@ -89,6 +89,28 @@ public class FoodBaseLocalService implements FoodBaseService
 	}
 
 	@Override
+	public void delete(String id)
+	{
+		try
+		{
+			int userId = getCurrentUserId();
+
+			Map<String, String> set = new HashMap<String, String>();
+			set.put(COLUMN_FOODBASE_DELETED, Utils.formatBooleanInt(true));
+
+			Map<String, String> where = new HashMap<String, String>();
+			where.put(COLUMN_FOODBASE_GUID, id);
+			where.put(COLUMN_FOODBASE_USER, String.valueOf(userId));
+
+			db.update(TABLE_FOODBASE, set, where);
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
 	public List<Versioned<FoodItem>> findAll(boolean includeRemoved)
 	{
 		try
@@ -125,16 +147,16 @@ public class FoodBaseLocalService implements FoodBaseService
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findChanged(Date since)
+	public List<Versioned<FoodItem>> findAny(String filter)
 	{
 		try
 		{
 			int userId = getCurrentUserId();
 
 			final String[] select = null; // all
-			final String where = String.format("(%s = ?) AND (%s >= ?)", COLUMN_FOODBASE_USER,
-					COLUMN_FOODBASE_TIMESTAMP);
-			final String[] whereArgs = { String.valueOf(userId), Utils.formatTimeUTC(since) };
+			final String where = String.format("(%s = ?) AND (%s = ?) AND (%s LIKE ?)", COLUMN_FOODBASE_USER,
+					COLUMN_FOODBASE_DELETED, COLUMN_FOODBASE_NAMECACHE);
+			final String[] whereArgs = { String.valueOf(userId), Utils.formatBooleanInt(false), "%" + filter + "%" };
 			final String order = COLUMN_FOODBASE_NAMECACHE;
 
 			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);
@@ -204,16 +226,16 @@ public class FoodBaseLocalService implements FoodBaseService
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findAny(String filter)
+	public List<Versioned<FoodItem>> findChanged(Date since)
 	{
 		try
 		{
 			int userId = getCurrentUserId();
 
 			final String[] select = null; // all
-			final String where = String.format("(%s = ?) AND (%s = ?) AND (%s LIKE ?)", COLUMN_FOODBASE_USER,
-					COLUMN_FOODBASE_DELETED, COLUMN_FOODBASE_NAMECACHE);
-			final String[] whereArgs = { String.valueOf(userId), Utils.formatBooleanInt(false), "%" + filter + "%" };
+			final String where = String.format("(%s = ?) AND (%s >= ?)", COLUMN_FOODBASE_USER,
+					COLUMN_FOODBASE_TIMESTAMP);
+			final String[] whereArgs = { String.valueOf(userId), Utils.formatTimeUTC(since) };
 			final String order = COLUMN_FOODBASE_NAMECACHE;
 
 			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);
@@ -221,86 +243,6 @@ public class FoodBaseLocalService implements FoodBaseService
 			List<Versioned<FoodItem>> result = parseFoodItems(set);
 			set.close();
 			return result;
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public void save(List<Versioned<FoodItem>> items)
-	{
-		try
-		{
-			int userId = getCurrentUserId();
-
-			for (Versioned<FoodItem> item : items)
-			{
-				final String content = serializer.write(item.getData());
-				final String nameCache = item.getData().getName();
-				final String timeStamp = Utils.formatTimeUTC(item.getTimeStamp());
-				final String hash = item.getHash();
-				final String version = String.valueOf(item.getVersion());
-				final String deleted = Utils.formatBooleanInt(item.isDeleted());
-
-				if (findById(item.getId()) != null)
-				{
-					// presented, update
-
-					Map<String, String> set = new HashMap<String, String>();
-					set.put(COLUMN_FOODBASE_TIMESTAMP, timeStamp);
-					set.put(COLUMN_FOODBASE_HASH, hash);
-					set.put(COLUMN_FOODBASE_VERSION, version);
-					set.put(COLUMN_FOODBASE_DELETED, deleted);
-					set.put(COLUMN_FOODBASE_CONTENT, content);
-					set.put(COLUMN_FOODBASE_NAMECACHE, nameCache);
-
-					Map<String, String> where = new HashMap<String, String>();
-					where.put(COLUMN_FOODBASE_GUID, item.getId());
-					where.put(COLUMN_FOODBASE_USER, String.valueOf(userId));
-
-					db.update(TABLE_FOODBASE, set, where);
-				}
-				else
-				{
-					// not presented, insert
-
-					Map<String, String> set = new HashMap<String, String>();
-					set.put(COLUMN_FOODBASE_GUID, item.getId());
-					set.put(COLUMN_FOODBASE_USER, String.valueOf(userId));
-					set.put(COLUMN_FOODBASE_TIMESTAMP, timeStamp);
-					set.put(COLUMN_FOODBASE_HASH, hash);
-					set.put(COLUMN_FOODBASE_VERSION, version);
-					set.put(COLUMN_FOODBASE_DELETED, deleted);
-					set.put(COLUMN_FOODBASE_CONTENT, content);
-					set.put(COLUMN_FOODBASE_NAMECACHE, nameCache);
-
-					db.insert(TABLE_FOODBASE, set);
-				}
-			}
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public void delete(String id)
-	{
-		try
-		{
-			int userId = getCurrentUserId();
-
-			Map<String, String> set = new HashMap<String, String>();
-			set.put(COLUMN_FOODBASE_DELETED, Utils.formatBooleanInt(true));
-
-			Map<String, String> where = new HashMap<String, String>();
-			where.put(COLUMN_FOODBASE_GUID, id);
-			where.put(COLUMN_FOODBASE_USER, String.valueOf(userId));
-
-			db.update(TABLE_FOODBASE, set, where);
 		}
 		catch (SQLException e)
 		{
@@ -389,6 +331,64 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			set.close();
 			return result;
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void save(List<Versioned<FoodItem>> items)
+	{
+		try
+		{
+			int userId = getCurrentUserId();
+
+			for (Versioned<FoodItem> item : items)
+			{
+				final String content = serializer.write(item.getData());
+				final String nameCache = item.getData().getName();
+				final String timeStamp = Utils.formatTimeUTC(item.getTimeStamp());
+				final String hash = item.getHash();
+				final String version = String.valueOf(item.getVersion());
+				final String deleted = Utils.formatBooleanInt(item.isDeleted());
+
+				if (findById(item.getId()) != null)
+				{
+					// presented, update
+
+					Map<String, String> set = new HashMap<String, String>();
+					set.put(COLUMN_FOODBASE_TIMESTAMP, timeStamp);
+					set.put(COLUMN_FOODBASE_HASH, hash);
+					set.put(COLUMN_FOODBASE_VERSION, version);
+					set.put(COLUMN_FOODBASE_DELETED, deleted);
+					set.put(COLUMN_FOODBASE_CONTENT, content);
+					set.put(COLUMN_FOODBASE_NAMECACHE, nameCache);
+
+					Map<String, String> where = new HashMap<String, String>();
+					where.put(COLUMN_FOODBASE_GUID, item.getId());
+					where.put(COLUMN_FOODBASE_USER, String.valueOf(userId));
+
+					db.update(TABLE_FOODBASE, set, where);
+				}
+				else
+				{
+					// not presented, insert
+
+					Map<String, String> set = new HashMap<String, String>();
+					set.put(COLUMN_FOODBASE_GUID, item.getId());
+					set.put(COLUMN_FOODBASE_USER, String.valueOf(userId));
+					set.put(COLUMN_FOODBASE_TIMESTAMP, timeStamp);
+					set.put(COLUMN_FOODBASE_HASH, hash);
+					set.put(COLUMN_FOODBASE_VERSION, version);
+					set.put(COLUMN_FOODBASE_DELETED, deleted);
+					set.put(COLUMN_FOODBASE_CONTENT, content);
+					set.put(COLUMN_FOODBASE_NAMECACHE, nameCache);
+
+					db.insert(TABLE_FOODBASE, set);
+				}
+			}
 		}
 		catch (SQLException e)
 		{
