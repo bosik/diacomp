@@ -59,11 +59,11 @@ public class DiaryWebService implements DiaryService
 	/* ============================ API ============================ */
 
 	@Override
-	public Versioned<DiaryRecord> findById(String guid) throws CommonServiceException
+	public Versioned<DiaryRecord> findById(String id) throws CommonServiceException
 	{
 		try
 		{
-			String query = String.format(API_DIARY_FIND_BY_ID, guid);
+			String query = String.format(API_DIARY_FIND_BY_ID, id);
 			StdResponse resp = webClient.get(query);
 			return serializerV.read(resp.getResponse());
 		}

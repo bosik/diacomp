@@ -105,7 +105,7 @@ public class DiaryLocalService implements DiaryService
 	}
 
 	@Override
-	public Versioned<DiaryRecord> findById(String guid)
+	public Versioned<DiaryRecord> findById(String id)
 	{
 		try
 		{
@@ -113,7 +113,7 @@ public class DiaryLocalService implements DiaryService
 
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DIARY_USER, COLUMN_DIARY_GUID);
-			final String[] whereArgs = { String.valueOf(userId), guid };
+			final String[] whereArgs = { String.valueOf(userId), id };
 			final String order = null;
 
 			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);

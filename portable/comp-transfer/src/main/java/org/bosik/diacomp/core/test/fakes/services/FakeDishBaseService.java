@@ -96,11 +96,11 @@ public class FakeDishBaseService implements DishBaseService
 	}
 
 	@Override
-	public Versioned<DishItem> findById(String guid)
+	public Versioned<DishItem> findById(String id)
 	{
 		for (Versioned<DishItem> rec : samples)
 		{
-			if (rec.getId().equals(guid))
+			if (rec.getId().equals(id))
 			{
 				return new Versioned<DishItem>(rec);
 			}

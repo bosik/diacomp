@@ -24,7 +24,7 @@ public interface ObjectService<T>
 	void delete(String id) throws NotFoundException, AlreadyDeletedException;
 
 	/**
-	 * Returns item with the specified GUID (no matter if deleted or not)
+	 * Returns item with the specified ID (no matter if deleted or not)
 	 * 
 	 * @param id
 	 * @return Item if found, null otherwise

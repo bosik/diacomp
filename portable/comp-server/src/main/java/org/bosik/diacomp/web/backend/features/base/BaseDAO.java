@@ -26,7 +26,7 @@ public interface BaseDAO<T>
 	List<Versioned<T>> findChanged(int userId, Date since);
 
 	/**
-	 * Searches the item with the specified GUID
+	 * Searches the item with the specified ID
 	 * 
 	 * @param userId
 	 * @param id
@@ -35,7 +35,7 @@ public interface BaseDAO<T>
 	Versioned<T> findById(int userId, String id);
 
 	/**
-	 * Searches items with the specified GUID prefix
+	 * Searches items with the specified ID prefix
 	 * 
 	 * @param userId
 	 * @param prefix

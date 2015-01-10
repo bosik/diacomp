@@ -122,15 +122,15 @@ public class ActivityBase extends Activity
 		list.setOnItemClickListener(new OnItemClickListener()
 		{
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+			public void onItemClick(AdapterView<?> parent, View view, int position, long itemIndex)
 			{
-				final String guid = data.get(position).getId();
+				final String id = data.get(position).getId();
 
 				switch (mode)
 				{
 					case PICK:
 					{
-						returnResult(guid);
+						returnResult(id);
 						break;
 					}
 					case EDIT:
@@ -146,13 +146,13 @@ public class ActivityBase extends Activity
 							@Override
 							protected Versioned<? extends NamedRelativeTagged> doInBackground(String... params)
 							{
-								Versioned<? extends NamedRelativeTagged> food = foodBaseService.findById(guid);
+								Versioned<? extends NamedRelativeTagged> food = foodBaseService.findById(id);
 								if (food != null)
 								{
 									return food;
 								}
 
-								Versioned<? extends NamedRelativeTagged> dish = dishBaseService.findById(guid);
+								Versioned<? extends NamedRelativeTagged> dish = dishBaseService.findById(id);
 								if (dish != null)
 								{
 									return dish;
@@ -179,16 +179,16 @@ public class ActivityBase extends Activity
 									{
 										// TODO: localization
 										UIUtils.showTip(ActivityBase.this,
-												String.format("Unknown record type (ID: %s)", guid));
+												String.format("Unknown record type (ID: %s)", id));
 									}
 								}
 								else
 								{
 									// TODO: localization
-									UIUtils.showTip(ActivityBase.this, String.format("Item %s not found", guid));
+									UIUtils.showTip(ActivityBase.this, String.format("Item %s not found", id));
 								}
 							}
-						}.execute(guid);
+						}.execute(id);
 					}
 				}
 			}
@@ -481,10 +481,10 @@ public class ActivityBase extends Activity
 		return fmt;
 	}
 
-	void returnResult(String guid)
+	void returnResult(String id)
 	{
 		Intent intent = getIntent();
-		intent.putExtra(KEY_GUID, guid);
+		intent.putExtra(KEY_GUID, id);
 		setResult(RESULT_OK, intent);
 		finish();
 	}

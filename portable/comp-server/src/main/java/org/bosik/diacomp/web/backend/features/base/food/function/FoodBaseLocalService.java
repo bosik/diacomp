@@ -172,7 +172,7 @@ public class FoodBaseLocalService implements FoodBaseService
 	}
 
 	@Override
-	public Versioned<FoodItem> findById(String guid)
+	public Versioned<FoodItem> findById(String id)
 	{
 		try
 		{
@@ -180,7 +180,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_GUID);
-			final String[] whereArgs = { String.valueOf(userId), guid };
+			final String[] whereArgs = { String.valueOf(userId), id };
 			final String order = null;
 
 			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);

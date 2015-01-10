@@ -124,11 +124,11 @@ public class DishBaseWebService implements DishBaseService
 	}
 
 	@Override
-	public Versioned<DishItem> findById(String guid)
+	public Versioned<DishItem> findById(String id)
 	{
 		try
 		{
-			String url = String.format(API_DISH_FIND_BY_ID, guid);
+			String url = String.format(API_DISH_FIND_BY_ID, id);
 			StdResponse resp = webClient.get(url);
 			return serializer.read(resp.getResponse());
 		}
