@@ -105,7 +105,7 @@ public class DiaryLocalService implements DiaryService
 		// construct parameters
 		String[] projection = null; // all
 		String clause = String.format("%s LIKE ?", DiaryContentProvider.COLUMN_DIARY_GUID);
-		String[] clauseArgs = new String[] { prefix + "%" };
+		String[] clauseArgs = { prefix + "%" };
 		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
 		// execute
@@ -121,7 +121,7 @@ public class DiaryLocalService implements DiaryService
 		// construct parameters
 		String[] projection = null;
 		String clause = String.format("%s > ?", DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
-		String[] clauseArgs = new String[] { Utils.formatTimeUTC(since) };
+		String[] clauseArgs = { Utils.formatTimeUTC(since) };
 		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
 		// execute
@@ -211,7 +211,7 @@ public class DiaryLocalService implements DiaryService
 			// constructing parameters
 			final String[] select = { DiaryContentProvider.COLUMN_DIARY_HASH_HASH };
 			final String where = DiaryContentProvider.COLUMN_DIARY_HASH_GUID + " = ?";
-			final String[] whereArgs = new String[] { prefix };
+			final String[] whereArgs = { prefix };
 
 			// execute query
 			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_HASH_URI, select, where, whereArgs, null);
@@ -252,7 +252,7 @@ public class DiaryLocalService implements DiaryService
 				final String[] select = { DiaryContentProvider.COLUMN_DIARY_HASH_GUID,
 						DiaryContentProvider.COLUMN_DIARY_HASH_HASH };
 				final String where = DiaryContentProvider.COLUMN_DIARY_HASH_GUID + " = ?";
-				final String[] whereArgs = new String[] { prefix + "_" };
+				final String[] whereArgs = { prefix + "_" };
 
 				// execute query
 				Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_HASH_URI, select, where, whereArgs,
@@ -288,7 +288,7 @@ public class DiaryLocalService implements DiaryService
 				final String[] select = { DiaryContentProvider.COLUMN_DIARY_GUID,
 						DiaryContentProvider.COLUMN_DIARY_HASH };
 				final String where = String.format("%s LIKE ?", DiaryContentProvider.COLUMN_DIARY_GUID);
-				final String[] whereArgs = new String[] { prefix + "%" };
+				final String[] whereArgs = { prefix + "%" };
 
 				// execute query
 				Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, select, where, whereArgs, null);

@@ -361,7 +361,7 @@ public class DishBaseLocalService implements DishBaseService
 
 			ContentValues newValues = new ContentValues();
 			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DELETED, 1);
-			String[] args = new String[] { id };
+			String[] args = { id };
 			resolver.update(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues,
 					DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?", args);
 
@@ -481,7 +481,7 @@ public class DishBaseLocalService implements DishBaseService
 			// constructing parameters
 			final String[] select = { DiaryContentProvider.COLUMN_DISHBASE_HASH_HASH };
 			final String where = DiaryContentProvider.COLUMN_DISHBASE_HASH_GUID + " = ?";
-			final String[] whereArgs = new String[] { prefix };
+			final String[] whereArgs = { prefix };
 
 			// execute query
 			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DISHBASE_HASH_URI, select, where, whereArgs,
@@ -523,7 +523,7 @@ public class DishBaseLocalService implements DishBaseService
 				final String[] select = { DiaryContentProvider.COLUMN_DISHBASE_HASH_GUID,
 						DiaryContentProvider.COLUMN_DISHBASE_HASH_HASH };
 				final String where = DiaryContentProvider.COLUMN_DISHBASE_HASH_GUID + " = ?";
-				final String[] whereArgs = new String[] { prefix + "_" };
+				final String[] whereArgs = { prefix + "_" };
 
 				// execute query
 				Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DISHBASE_HASH_URI, select, where,
@@ -559,7 +559,7 @@ public class DishBaseLocalService implements DishBaseService
 				final String[] select = { DiaryContentProvider.COLUMN_DISHBASE_GUID,
 						DiaryContentProvider.COLUMN_DISHBASE_HASH };
 				final String where = String.format("%s LIKE ?", DiaryContentProvider.COLUMN_DISHBASE_GUID);
-				final String[] whereArgs = new String[] { prefix + "%" };
+				final String[] whereArgs = { prefix + "%" };
 
 				// execute query
 				Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DISHBASE_URI, select, where, whereArgs,
@@ -616,7 +616,7 @@ public class DishBaseLocalService implements DishBaseService
 				{
 					Log.v(TAG, "Updating item " + item.getId() + ": " + content);
 					String clause = DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?";
-					String[] args = new String[] { item.getId() };
+					String[] args = { item.getId() };
 					resolver.update(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues, clause, args);
 				}
 				else
