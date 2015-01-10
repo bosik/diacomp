@@ -41,7 +41,7 @@ public class MySQLAccess
 	 * 
 	 * @param table
 	 *            Table name
-	 * @param clause
+	 * @param where
 	 *            Selection clause
 	 * @param order
 	 *            Name of column to be ordered by
@@ -54,12 +54,13 @@ public class MySQLAccess
 	 * @return
 	 * @throws SQLException
 	 */
-	public ResultSet select(String table, String clause, String order, int offset, int limit, String... params)
+	@SuppressWarnings("static-method")
+	public ResultSet select(String table, String where, String order, int offset, int limit, String... params)
 			throws SQLException
 	{
 		connect();
 
-		String sql = String.format("SELECT * FROM %s WHERE %s", table, clause);
+		String sql = String.format("SELECT * FROM %s WHERE %s", table, where);
 		if ((order != null) && !order.isEmpty())
 		{
 			sql += " ORDER BY " + order;
@@ -81,12 +82,13 @@ public class MySQLAccess
 	}
 
 	// the resource is returned to invoker
-	public ResultSet select(String table, String clause, String order, String... params) throws SQLException
+	public ResultSet select(String table, String where, String order, String... params) throws SQLException
 	{
-		return select(table, clause, order, -1, -1, params);
+		return select(table, where, order, -1, -1, params);
 	}
 
-	public int insert(String table, Map<String, String> set)
+	@SuppressWarnings("static-method")
+	public int insert(String table, Map<String, String> values)
 	{
 		try
 		{
@@ -96,9 +98,9 @@ public class MySQLAccess
 
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO " + table + " (");
-			sb.append(Utils.commaSeparated(set.keySet().iterator()));
+			sb.append(Utils.commaSeparated(values.keySet().iterator()));
 			sb.append(") VALUES (");
-			sb.append(Utils.commaSeparatedQuests(Utils.count(set.keySet().iterator())));
+			sb.append(Utils.commaSeparatedQuests(Utils.count(values.keySet().iterator())));
 			sb.append(")");
 
 			PreparedStatement preparedStatement = connection.prepareStatement(sb.toString());
@@ -108,7 +110,7 @@ public class MySQLAccess
 			// filling wildcards
 
 			int i = 1;
-			for (Entry<String, String> entry : set.entrySet())
+			for (Entry<String, String> entry : values.entrySet())
 			{
 				preparedStatement.setString(i++, entry.getValue());
 			}
@@ -123,6 +125,7 @@ public class MySQLAccess
 		}
 	}
 
+	@SuppressWarnings("static-method")
 	public int update(String table, Map<String, String> set, Map<String, String> where) throws SQLException
 	{
 		try
