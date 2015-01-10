@@ -909,6 +909,18 @@ public class Utils
 		return result.toString();
 	}
 
+	public static String calculateHash(Map<String, String> hashes)
+	{
+		String result = null;
+
+		for (String hash : hashes.values())
+		{
+			result = sumHash(result, hash);
+		}
+
+		return result;
+	}
+
 	// private static String formatArray(byte array[])
 	// {
 	// StringBuilder sb = new StringBuilder("{");
