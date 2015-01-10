@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.base.dish.function;
+package org.bosik.diacomp.web.backend.features.base.dish;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

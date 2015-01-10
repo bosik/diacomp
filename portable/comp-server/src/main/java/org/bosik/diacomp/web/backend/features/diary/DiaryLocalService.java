@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.diary.function;
+package org.bosik.diacomp.web.backend.features.diary;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
