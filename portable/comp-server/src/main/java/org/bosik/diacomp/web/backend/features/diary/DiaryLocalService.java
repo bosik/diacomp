@@ -21,6 +21,7 @@ import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
+import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 import org.bosik.diacomp.web.backend.features.auth.service.AuthService;
@@ -465,13 +466,13 @@ public class DiaryLocalService implements DiaryService
 	private void updateHashTree(int userId, String id, String newItemHash)
 	{
 		String oldItemHash = getDataHash(userId, id);
-		String hashDiff = Utils.subHash(newItemHash, oldItemHash);
+		String hashDiff = HashUtils.subHash(newItemHash, oldItemHash);
 
 		for (int i = 0; i <= ObjectService.ID_PREFIX_SIZE; i++)
 		{
 			String prefix = id.substring(0, i);
 			String oldHash = getHash(prefix);
-			String newHash = Utils.sumHash(oldHash, hashDiff);
+			String newHash = HashUtils.sumHash(oldHash, hashDiff);
 			setHash(prefix, newHash);
 		}
 	}

@@ -11,8 +11,6 @@ import org.bosik.diacomp.core.services.ObjectService;
 
 public class SyncService
 {
-	private static final String	PATTERN	= "0123456789abcdef";
-
 	/* ============================ HELPER CLASSES ============================ */
 
 	public static interface Callback
@@ -296,9 +294,9 @@ public class SyncService
 		{
 			int result = 0;
 
-			for (int i = 0; i < PATTERN.length(); i++)
+			for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
 			{
-				result += synchronizePrefix(service1, service2, prefix + PATTERN.charAt(i));
+				result += synchronizePrefix(service1, service2, prefix + HashUtils.PATTERN.charAt(i));
 			}
 
 			return result;
@@ -345,9 +343,9 @@ public class SyncService
 			Map<String, String> hashes1 = service1.getHashChildren(prefix);
 			Map<String, String> hashes2 = service2.getHashChildren(prefix);
 			int result = 0;
-			for (int i = 0; i < PATTERN.length(); i++)
+			for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
 			{
-				String key = prefix + PATTERN.charAt(i);
+				String key = prefix + HashUtils.PATTERN.charAt(i);
 				String hash1 = hashes1.get(key);
 				String hash2 = hashes2.get(key);
 				if (hash1 != hash2)
@@ -391,44 +389,4 @@ public class SyncService
 			return 0;
 		}
 	}
-
-	//	public static <T> void updateHashBranch(ObjectService<T> service, String prefix) // v1, from leaf to root, fast, not stable
-	//	{
-	//		Map<String, String> hashes = service.getHashChildren(prefix);
-	//		String hash = Utils.calculateHash(hashes);
-	//		if (hash != "")
-	//		{
-	//			service.setHash(prefix, hash);
-	//		}
-	//		if (prefix != "")
-	//		{
-	//			updateHashBranch(service, prefix.substring(0, prefix.length() - 1));
-	//		}
-	//	}
-
-	//	public static <T> String updateHashTree(ObjectService<T> service, String prefix) // v2, from root to leafs, slow, very stable
-	//	{
-	//		Map<String, String> childHashes;
-	//
-	//		if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
-	//		{
-	//			childHashes = new HashMap<String, String>();
-	//			for (int i = 0; i < PATTERN.length(); i++)
-	//			{
-	//				String key = prefix + PATTERN.charAt(i);
-	//				childHashes.put(key, updateHashTree(service, key));
-	//			}
-	//		}
-	//		else
-	//		{
-	//			childHashes = service.getHashChildren(prefix);
-	//		}
-	//
-	//		String hash = Utils.calculateHash(childHashes);
-	//		if (hash != "")
-	//		{
-	//			service.setHash(prefix, hash);
-	//		}
-	//		return hash;
-	//	}
 }
