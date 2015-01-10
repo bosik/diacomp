@@ -95,15 +95,25 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d)", COLUMN_DISHBASE_USER, userId);
-			if (!includeRemoved)
+			final String[] select = null; // all
+			String where;
+			String[] whereArgs;
+
+			if (includeRemoved)
 			{
-				clause += String.format(" AND (%s = '%s')", COLUMN_DISHBASE_DELETED, Utils.formatBooleanInt(false));
+				where = String.format("(%s = ?)", COLUMN_DISHBASE_USER, userId);
+				whereArgs = new String[] { String.valueOf(userId) };
+			}
+			else
+			{
+				where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DISHBASE_USER, COLUMN_DISHBASE_DELETED);
+				whereArgs = new String[] { String.valueOf(userId), Utils.formatBooleanInt(false) };
 			}
 
-			String order = COLUMN_DISHBASE_NAMECACHE;
+			final String order = null;
 
-			ResultSet set = db.select(TABLE_DISHBASE, clause, order);
+			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
+
 			List<Versioned<DishItem>> result = parseDishItems(set);
 			set.close();
 			return result;
@@ -121,11 +131,14 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d) AND (%s >= '%s')", COLUMN_DISHBASE_USER, userId,
-					COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(since));
-			String order = COLUMN_DISHBASE_NAMECACHE;
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?) AND (%s >= ?)", COLUMN_DISHBASE_USER,
+					COLUMN_DISHBASE_TIMESTAMP);
+			final String[] whereArgs = { String.valueOf(userId), Utils.formatTimeUTC(since) };
+			final String order = COLUMN_DISHBASE_NAMECACHE;
 
-			ResultSet set = db.select(TABLE_DISHBASE, clause, order);
+			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
+
 			List<Versioned<DishItem>> result = parseDishItems(set);
 			set.close();
 			return result;
@@ -143,10 +156,13 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_DISHBASE_USER, userId,
-					COLUMN_DISHBASE_GUID, guid);
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DISHBASE_USER, COLUMN_DISHBASE_GUID);
+			final String[] whereArgs = { String.valueOf(userId), guid };
+			final String order = null;
 
-			ResultSet set = db.select(TABLE_DISHBASE, clause, null);
+			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
+
 			List<Versioned<DishItem>> result = parseDishItems(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
@@ -170,12 +186,13 @@ public class DishBaseLocalService implements DishBaseService
 
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s LIKE '%s%%')", COLUMN_DISHBASE_USER, userId,
-					COLUMN_DISHBASE_GUID, prefix);
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_DISHBASE_USER, COLUMN_DISHBASE_GUID);
+			final String[] whereArgs = { String.valueOf(userId), prefix + "%" };
+			final String order = COLUMN_DISHBASE_NAMECACHE;
 
-			String order = COLUMN_DISHBASE_NAMECACHE;
+			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
 
-			ResultSet set = db.select(TABLE_DISHBASE, clause, order);
 			List<Versioned<DishItem>> result = parseDishItems(set);
 			set.close();
 			return result;
@@ -193,11 +210,14 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d) AND (%s = '%s') AND (%s LIKE '%%%s%%')", COLUMN_DISHBASE_USER,
-					userId, COLUMN_DISHBASE_DELETED, Utils.formatBooleanInt(false), COLUMN_DISHBASE_NAMECACHE, filter);
-			String order = COLUMN_DISHBASE_NAMECACHE;
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?) AND (%s = ?) AND (%s LIKE ?)", COLUMN_DISHBASE_USER,
+					COLUMN_DISHBASE_DELETED, COLUMN_DISHBASE_NAMECACHE);
+			final String[] whereArgs = { String.valueOf(userId), Utils.formatBooleanInt(false), "%" + filter + "%" };
+			final String order = COLUMN_DISHBASE_NAMECACHE;
 
-			ResultSet set = db.select(TABLE_DISHBASE, clause, order);
+			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
+
 			List<Versioned<DishItem>> result = parseDishItems(set);
 			set.close();
 			return result;
@@ -273,10 +293,14 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_DISHBASE_USER, userId,
-					COLUMN_DISHBASE_NAMECACHE, exactName);
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?) AND (%s = ?) AND (%s = ?)", COLUMN_DISHBASE_USER,
+					COLUMN_DISHBASE_DELETED, COLUMN_DISHBASE_NAMECACHE);
+			final String[] whereArgs = { String.valueOf(userId), Utils.formatBooleanInt(false), exactName };
+			final String order = null;
 
-			ResultSet set = db.select(TABLE_DISHBASE, clause, null);
+			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
+
 			List<Versioned<DishItem>> result = parseDishItems(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
@@ -316,10 +340,13 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_DISHBASE_HASH_USER, userId,
-					COLUMN_DISHBASE_HASH_GUID, prefix);
+			final String[] select = { COLUMN_DISHBASE_HASH_HASH };
+			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DISHBASE_HASH_USER,
+					COLUMN_DISHBASE_HASH_GUID);
+			final String[] whereArgs = { String.valueOf(userId), prefix };
+			final String order = null;
 
-			ResultSet set = db.select(TABLE_DISHBASE_HASH, clause, null);
+			ResultSet set = db.select(TABLE_DISHBASE_HASH, select, where, whereArgs, order);
 
 			String hash = "";
 
@@ -344,9 +371,13 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d) AND (%s LIKE '%s')", COLUMN_DISHBASE_HASH_USER, userId,
-					COLUMN_DISHBASE_HASH_GUID, prefix + "_");
-			ResultSet set = db.select(TABLE_DISHBASE_HASH, clause, null);
+			final String[] select = { COLUMN_DISHBASE_HASH_GUID, COLUMN_DISHBASE_HASH_HASH };
+			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DISHBASE_HASH_USER,
+					COLUMN_DISHBASE_HASH_GUID);
+			final String[] whereArgs = { String.valueOf(userId), prefix + "_" };
+			final String order = null;
+
+			ResultSet set = db.select(TABLE_DISHBASE_HASH, select, where, whereArgs, order);
 
 			Map<String, String> result = new HashMap<String, String>();
 			while (set.next())

@@ -95,15 +95,25 @@ public class FoodBaseLocalService implements FoodBaseService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d)", COLUMN_FOODBASE_USER, userId);
-			if (!includeRemoved)
+			final String[] select = null; // all
+			String where;
+			String[] whereArgs;
+
+			if (includeRemoved)
 			{
-				clause += String.format(" AND (%s = '%s')", COLUMN_FOODBASE_DELETED, Utils.formatBooleanInt(false));
+				where = String.format("(%s = ?)", COLUMN_FOODBASE_USER, userId);
+				whereArgs = new String[] { String.valueOf(userId) };
+			}
+			else
+			{
+				where = String.format("(%s = ?) AND (%s = ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_DELETED);
+				whereArgs = new String[] { String.valueOf(userId), Utils.formatBooleanInt(false) };
 			}
 
-			String order = COLUMN_FOODBASE_NAMECACHE;
+			final String order = null;
 
-			ResultSet set = db.select(TABLE_FOODBASE, clause, order);
+			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);
+
 			List<Versioned<FoodItem>> result = parseFoodItems(set);
 			set.close();
 			return result;
@@ -121,11 +131,14 @@ public class FoodBaseLocalService implements FoodBaseService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d) AND (%s >= '%s')", COLUMN_FOODBASE_USER, userId,
-					COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(since));
-			String order = COLUMN_FOODBASE_NAMECACHE;
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?) AND (%s >= ?)", COLUMN_FOODBASE_USER,
+					COLUMN_FOODBASE_TIMESTAMP);
+			final String[] whereArgs = { String.valueOf(userId), Utils.formatTimeUTC(since) };
+			final String order = COLUMN_FOODBASE_NAMECACHE;
 
-			ResultSet set = db.select(TABLE_FOODBASE, clause, order);
+			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);
+
 			List<Versioned<FoodItem>> result = parseFoodItems(set);
 			set.close();
 			return result;
@@ -143,10 +156,13 @@ public class FoodBaseLocalService implements FoodBaseService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_FOODBASE_USER, userId,
-					COLUMN_FOODBASE_GUID, guid);
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_GUID);
+			final String[] whereArgs = { String.valueOf(userId), guid };
+			final String order = null;
 
-			ResultSet set = db.select(TABLE_FOODBASE, clause, null);
+			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);
+
 			List<Versioned<FoodItem>> result = parseFoodItems(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
@@ -170,12 +186,13 @@ public class FoodBaseLocalService implements FoodBaseService
 
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s LIKE '%s%%')", COLUMN_FOODBASE_USER, userId,
-					COLUMN_FOODBASE_GUID, prefix);
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_GUID);
+			final String[] whereArgs = { String.valueOf(userId), prefix + "%" };
+			final String order = COLUMN_FOODBASE_NAMECACHE;
 
-			String order = COLUMN_FOODBASE_NAMECACHE;
+			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);
 
-			ResultSet set = db.select(TABLE_FOODBASE, clause, order);
 			List<Versioned<FoodItem>> result = parseFoodItems(set);
 			set.close();
 			return result;
@@ -193,11 +210,14 @@ public class FoodBaseLocalService implements FoodBaseService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d) AND (%s = '%s') AND (%s LIKE '%%%s%%')", COLUMN_FOODBASE_USER,
-					userId, COLUMN_FOODBASE_DELETED, Utils.formatBooleanInt(false), COLUMN_FOODBASE_NAMECACHE, filter);
-			String order = COLUMN_FOODBASE_NAMECACHE;
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?) AND (%s = ?) AND (%s LIKE ?)", COLUMN_FOODBASE_USER,
+					COLUMN_FOODBASE_DELETED, COLUMN_FOODBASE_NAMECACHE);
+			final String[] whereArgs = { String.valueOf(userId), Utils.formatBooleanInt(false), "%" + filter + "%" };
+			final String order = COLUMN_FOODBASE_NAMECACHE;
 
-			ResultSet set = db.select(TABLE_FOODBASE, clause, order);
+			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);
+
 			List<Versioned<FoodItem>> result = parseFoodItems(set);
 			set.close();
 			return result;
@@ -295,10 +315,14 @@ public class FoodBaseLocalService implements FoodBaseService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_FOODBASE_USER, userId,
-					COLUMN_FOODBASE_NAMECACHE, exactName);
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?) AND (%s = ?) AND (%s = ?)", COLUMN_FOODBASE_USER,
+					COLUMN_FOODBASE_DELETED, COLUMN_FOODBASE_NAMECACHE);
+			final String[] whereArgs = { String.valueOf(userId), Utils.formatBooleanInt(false), exactName };
+			final String order = null;
 
-			ResultSet set = db.select(TABLE_FOODBASE, clause, null);
+			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);
+
 			List<Versioned<FoodItem>> result = parseFoodItems(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
@@ -316,10 +340,13 @@ public class FoodBaseLocalService implements FoodBaseService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_FOODBASE_HASH_USER, userId,
-					COLUMN_FOODBASE_HASH_GUID, prefix);
+			final String[] select = { COLUMN_FOODBASE_HASH_HASH };
+			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_FOODBASE_HASH_USER,
+					COLUMN_FOODBASE_HASH_GUID);
+			final String[] whereArgs = { String.valueOf(userId), prefix };
+			final String order = null;
 
-			ResultSet set = db.select(TABLE_FOODBASE_HASH, clause, null);
+			ResultSet set = db.select(TABLE_FOODBASE_HASH, select, where, whereArgs, order);
 
 			String hash = "";
 
@@ -344,9 +371,13 @@ public class FoodBaseLocalService implements FoodBaseService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d) AND (%s LIKE '%s')", COLUMN_FOODBASE_HASH_USER, userId,
-					COLUMN_FOODBASE_HASH_GUID, prefix + "_");
-			ResultSet set = db.select(TABLE_FOODBASE_HASH, clause, null);
+			final String[] select = { COLUMN_FOODBASE_HASH_GUID, COLUMN_FOODBASE_HASH_HASH };
+			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_FOODBASE_HASH_USER,
+					COLUMN_FOODBASE_HASH_GUID);
+			final String[] whereArgs = { String.valueOf(userId), prefix + "_" };
+			final String order = null;
+
+			ResultSet set = db.select(TABLE_FOODBASE_HASH, select, where, whereArgs, order);
 
 			Map<String, String> result = new HashMap<String, String>();
 			while (set.next())
