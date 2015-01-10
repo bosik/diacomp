@@ -89,6 +89,28 @@ public class DishBaseLocalService implements DishBaseService
 	}
 
 	@Override
+	public void delete(String id)
+	{
+		try
+		{
+			int userId = getCurrentUserId();
+
+			Map<String, String> set = new HashMap<String, String>();
+			set.put(COLUMN_DISHBASE_DELETED, Utils.formatBooleanInt(true));
+
+			Map<String, String> where = new HashMap<String, String>();
+			where.put(COLUMN_DISHBASE_GUID, id);
+			where.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
+
+			db.update(TABLE_DISHBASE, set, where);
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
 	public List<Versioned<DishItem>> findAll(boolean includeRemoved)
 	{
 		try
@@ -125,16 +147,16 @@ public class DishBaseLocalService implements DishBaseService
 	}
 
 	@Override
-	public List<Versioned<DishItem>> findChanged(Date since)
+	public List<Versioned<DishItem>> findAny(String filter)
 	{
 		try
 		{
 			int userId = getCurrentUserId();
 
 			final String[] select = null; // all
-			final String where = String.format("(%s = ?) AND (%s >= ?)", COLUMN_DISHBASE_USER,
-					COLUMN_DISHBASE_TIMESTAMP);
-			final String[] whereArgs = { String.valueOf(userId), Utils.formatTimeUTC(since) };
+			final String where = String.format("(%s = ?) AND (%s = ?) AND (%s LIKE ?)", COLUMN_DISHBASE_USER,
+					COLUMN_DISHBASE_DELETED, COLUMN_DISHBASE_NAMECACHE);
+			final String[] whereArgs = { String.valueOf(userId), Utils.formatBooleanInt(false), "%" + filter + "%" };
 			final String order = COLUMN_DISHBASE_NAMECACHE;
 
 			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
@@ -204,16 +226,16 @@ public class DishBaseLocalService implements DishBaseService
 	}
 
 	@Override
-	public List<Versioned<DishItem>> findAny(String filter)
+	public List<Versioned<DishItem>> findChanged(Date since)
 	{
 		try
 		{
 			int userId = getCurrentUserId();
 
 			final String[] select = null; // all
-			final String where = String.format("(%s = ?) AND (%s = ?) AND (%s LIKE ?)", COLUMN_DISHBASE_USER,
-					COLUMN_DISHBASE_DELETED, COLUMN_DISHBASE_NAMECACHE);
-			final String[] whereArgs = { String.valueOf(userId), Utils.formatBooleanInt(false), "%" + filter + "%" };
+			final String where = String.format("(%s = ?) AND (%s >= ?)", COLUMN_DISHBASE_USER,
+					COLUMN_DISHBASE_TIMESTAMP);
+			final String[] whereArgs = { String.valueOf(userId), Utils.formatTimeUTC(since) };
 			final String order = COLUMN_DISHBASE_NAMECACHE;
 
 			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
@@ -221,64 +243,6 @@ public class DishBaseLocalService implements DishBaseService
 			List<Versioned<DishItem>> result = parseDishItems(set);
 			set.close();
 			return result;
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public void save(List<Versioned<DishItem>> items)
-	{
-		try
-		{
-			int userId = getCurrentUserId();
-
-			for (Versioned<DishItem> item : items)
-			{
-				final String content = serializer.write(item.getData());
-				final String nameCache = item.getData().getName();
-				final String timeStamp = Utils.formatTimeUTC(item.getTimeStamp());
-				final String hash = item.getHash();
-				final String version = String.valueOf(item.getVersion());
-				final String deleted = Utils.formatBooleanInt(item.isDeleted());
-
-				if (findById(item.getId()) != null)
-				{
-					// presented, update
-
-					Map<String, String> set = new HashMap<String, String>();
-					set.put(COLUMN_DISHBASE_TIMESTAMP, timeStamp);
-					set.put(COLUMN_DISHBASE_HASH, hash);
-					set.put(COLUMN_DISHBASE_VERSION, version);
-					set.put(COLUMN_DISHBASE_DELETED, deleted);
-					set.put(COLUMN_DISHBASE_CONTENT, content);
-					set.put(COLUMN_DISHBASE_NAMECACHE, nameCache);
-
-					Map<String, String> where = new HashMap<String, String>();
-					where.put(COLUMN_DISHBASE_GUID, item.getId());
-					where.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
-
-					db.update(TABLE_DISHBASE, set, where);
-				}
-				else
-				{
-					// not presented, insert
-
-					Map<String, String> set = new HashMap<String, String>();
-					set.put(COLUMN_DISHBASE_GUID, item.getId());
-					set.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
-					set.put(COLUMN_DISHBASE_TIMESTAMP, timeStamp);
-					set.put(COLUMN_DISHBASE_HASH, hash);
-					set.put(COLUMN_DISHBASE_VERSION, version);
-					set.put(COLUMN_DISHBASE_DELETED, deleted);
-					set.put(COLUMN_DISHBASE_CONTENT, content);
-					set.put(COLUMN_DISHBASE_NAMECACHE, nameCache);
-
-					db.insert(TABLE_DISHBASE, set);
-				}
-			}
 		}
 		catch (SQLException e)
 		{
@@ -304,28 +268,6 @@ public class DishBaseLocalService implements DishBaseService
 			List<Versioned<DishItem>> result = parseDishItems(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public void delete(String id)
-	{
-		try
-		{
-			int userId = getCurrentUserId();
-
-			Map<String, String> set = new HashMap<String, String>();
-			set.put(COLUMN_DISHBASE_DELETED, Utils.formatBooleanInt(true));
-
-			Map<String, String> where = new HashMap<String, String>();
-			where.put(COLUMN_DISHBASE_GUID, id);
-			where.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
-
-			db.update(TABLE_DISHBASE, set, where);
 		}
 		catch (SQLException e)
 		{
@@ -389,6 +331,64 @@ public class DishBaseLocalService implements DishBaseService
 
 			set.close();
 			return result;
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void save(List<Versioned<DishItem>> items)
+	{
+		try
+		{
+			int userId = getCurrentUserId();
+
+			for (Versioned<DishItem> item : items)
+			{
+				final String content = serializer.write(item.getData());
+				final String nameCache = item.getData().getName();
+				final String timeStamp = Utils.formatTimeUTC(item.getTimeStamp());
+				final String hash = item.getHash();
+				final String version = String.valueOf(item.getVersion());
+				final String deleted = Utils.formatBooleanInt(item.isDeleted());
+
+				if (findById(item.getId()) != null)
+				{
+					// presented, update
+
+					Map<String, String> set = new HashMap<String, String>();
+					set.put(COLUMN_DISHBASE_TIMESTAMP, timeStamp);
+					set.put(COLUMN_DISHBASE_HASH, hash);
+					set.put(COLUMN_DISHBASE_VERSION, version);
+					set.put(COLUMN_DISHBASE_DELETED, deleted);
+					set.put(COLUMN_DISHBASE_CONTENT, content);
+					set.put(COLUMN_DISHBASE_NAMECACHE, nameCache);
+
+					Map<String, String> where = new HashMap<String, String>();
+					where.put(COLUMN_DISHBASE_GUID, item.getId());
+					where.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
+
+					db.update(TABLE_DISHBASE, set, where);
+				}
+				else
+				{
+					// not presented, insert
+
+					Map<String, String> set = new HashMap<String, String>();
+					set.put(COLUMN_DISHBASE_GUID, item.getId());
+					set.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
+					set.put(COLUMN_DISHBASE_TIMESTAMP, timeStamp);
+					set.put(COLUMN_DISHBASE_HASH, hash);
+					set.put(COLUMN_DISHBASE_VERSION, version);
+					set.put(COLUMN_DISHBASE_DELETED, deleted);
+					set.put(COLUMN_DISHBASE_CONTENT, content);
+					set.put(COLUMN_DISHBASE_NAMECACHE, nameCache);
+
+					db.insert(TABLE_DISHBASE, set);
+				}
+			}
 		}
 		catch (SQLException e)
 		{
