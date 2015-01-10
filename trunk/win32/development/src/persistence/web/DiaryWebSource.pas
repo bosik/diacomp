@@ -14,7 +14,8 @@ uses
   BusinessObjects,
   AutoLog,
   uLkJSON,
-  JsonSerializer;
+  JsonSerializer,
+  ObjectService;
 
 type
   TDiaryWebSource = class (TDiaryDAO)
@@ -23,9 +24,12 @@ type
   public
     constructor Create(Client: TDiacompClient);
 
+    procedure Delete(ID: TCompactGUID); override;
     function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
+    function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList; override;
+    function GetHash(Prefix: TCompactGUID): TCompactGUID; override;
     procedure Save(const Recs: TVersionedList); override;
   end;
 
@@ -58,6 +62,20 @@ begin
 end;
 
 {======================================================================================================================}
+procedure TDiaryWebSource.Delete(ID: TCompactGUID);
+{======================================================================================================================}
+var
+  Item: TVersioned;
+begin
+  Item := FindById(ID);
+  if (Item <> nil) then
+  begin
+    Item.Deleted := True;
+    Save(Item);
+  end;
+end;
+
+{======================================================================================================================}
 function TDiaryWebSource.FindById(ID: TCompactGUID): TVersioned;
 {======================================================================================================================}
 var
@@ -79,6 +97,19 @@ begin
       FClient.CheckResponse(Response);
     end;
   end;
+end;
+
+{======================================================================================================================}
+function TDiaryWebSource.FindByIdPrefix(Prefix: TCompactGUID): TVersionedList;
+{======================================================================================================================}
+var
+  Query, Resp: string;
+begin
+  Query := FClient.GetApiURL() + 'diary/guid/' + Prefix;
+  Resp := FClient.DoGetSmart(query).Response;
+  {#}Log(VERBOUS, 'TDiaryWebSource.FindByIdPrefix(): quered OK, Resp = "' + Resp + '"');
+
+  Result := RecordToVersioned(ParseRecordList(Resp));
 end;
 
 {======================================================================================================================}
@@ -110,6 +141,19 @@ begin
   {#}Log(VERBOUS, 'TDiaryWebSource.FindPeriod(): quered OK, Resp = "' + Resp + '"');
 
   Result := ParseRecordList(Resp);
+end;
+
+{======================================================================================================================}
+function TDiaryWebSource.GetHash(Prefix: TCompactGUID): TCompactGUID;
+{======================================================================================================================}
+var
+  Query, Resp: string;
+begin
+  Query := FClient.GetApiURL() + 'diary/hash/' + Prefix;
+  Resp := FClient.DoGetSmart(query).Response;
+  {#}Log(VERBOUS, 'TDiaryWebSource.GetHash(): quered OK, Resp = "' + Resp + '"');
+
+  Result := Resp;
 end;
 
 {======================================================================================================================}
