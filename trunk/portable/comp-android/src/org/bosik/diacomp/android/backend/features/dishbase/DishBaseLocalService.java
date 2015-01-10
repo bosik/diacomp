@@ -537,7 +537,7 @@ public class DishBaseLocalService implements DishBaseService
 
 					Map<String, String> result = new HashMap<String, String>();
 
-					if (cursor.moveToNext())
+					while (cursor.moveToNext())
 					{
 						String id = cursor.getString(indexId);
 						String hash = cursor.getString(indexHash);
@@ -573,7 +573,7 @@ public class DishBaseLocalService implements DishBaseService
 
 					Map<String, String> result = new HashMap<String, String>();
 
-					if (cursor.moveToNext())
+					while (cursor.moveToNext())
 					{
 						String id = cursor.getString(indexId);
 						String hash = cursor.getString(indexHash);

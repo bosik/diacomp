@@ -51,7 +51,6 @@ public class Utils
 	// Epsilon values
 
 	public static final double		EPS				= 0.0000001;
-	public static final long		EPS_TIME		= 5000;											// ms
 
 	// Format settings
 
@@ -800,6 +799,18 @@ public class Utils
 	public static boolean isNullOrEmpty(String s)
 	{
 		return (s == null) || (s.isEmpty());
+	}
+
+	/**
+	 * Null-safe check.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return True if both strings are null or equal
+	 */
+	public static boolean equals(String a, String b)
+	{
+		return a != null && a.equals(b) || a == b;
 	}
 
 	// private static String formatArray(byte array[])
