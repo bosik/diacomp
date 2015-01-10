@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.ObjectService;
 
@@ -333,6 +334,111 @@ public class SyncService
 		return synchronizePrefix(service1, service2, "");
 	}
 
+	private static <T> int synchronizeChildren(ObjectService<T> service1, ObjectService<T> service2, String prefix)
+	{
+		if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
+		{
+			Map<String, String> hashes1 = service1.getHashChildren(prefix);
+			Map<String, String> hashes2 = service2.getHashChildren(prefix);
+			int result = 0;
+			for (int i = 0; i < PATTERN.length(); i++)
+			{
+				String key = prefix + PATTERN.charAt(i);
+				String hash1 = hashes1.get(key);
+				String hash2 = hashes2.get(key);
+				if (hash1 != hash2)
+				{
+					result += synchronizeChildren(service1, service2, key);
+				}
+			}
+
+			return result;
+		}
+		else
+		{
+			// requesting items
+			List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
+			List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
+
+			// null checks again
+			if (null == items1)
+			{
+				throw new NullPointerException("Service1 returned null list");
+			}
+			if (null == items2)
+			{
+				throw new NullPointerException("Service2 returned null list");
+			}
+
+			// calculating transferring lists
+			List<Versioned<T>> newer1 = new ArrayList<Versioned<T>>();
+			List<Versioned<T>> newer2 = new ArrayList<Versioned<T>>();
+			List<Versioned<T>> only1 = new ArrayList<Versioned<T>>();
+			List<Versioned<T>> only2 = new ArrayList<Versioned<T>>();
+			getOverLists(items1, items2, newer1, newer2, only1, only2);
+
+			// checking items with are only partially presented
+			for (Versioned<T> item1 : only1)
+			{
+				Versioned<T> item2 = service2.findById(item1.getId());
+				if ((item2 == null) || (item2.getVersion() < item1.getVersion()))
+				{
+					newer1.add(item1);
+				}
+				else if (item2.getVersion() > item1.getVersion())
+				{
+					newer2.add(item2);
+				}
+			}
+
+			for (Versioned<T> item2 : only2)
+			{
+				Versioned<T> item1 = service1.findById(item2.getId());
+				if ((item1 == null) || (item1.getVersion() < item2.getVersion()))
+				{
+					newer2.add(item2);
+				}
+				else if (item1.getVersion() > item2.getVersion())
+				{
+					newer1.add(item1);
+				}
+			}
+
+			// transfer
+
+			// THINK: divide into small groups?
+			service1.save(newer2);
+			service2.save(newer1);
+
+			// Result is number of transferred records
+			return newer1.size() + newer2.size();
+		}
+	}
+
+	public static <T> int synchronize_v2(ObjectService<T> service1, ObjectService<T> service2)
+	{
+		// null checks
+		if (null == service1)
+		{
+			throw new NullPointerException("service1 can't be null");
+		}
+		if (null == service2)
+		{
+			throw new NullPointerException("service2 can't be null");
+		}
+
+		String hash1 = service1.getHash("");
+		String hash2 = service2.getHash("");
+		if (hash1 != hash2)
+		{
+			return synchronizeChildren(service1, service2, "");
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
 	@SuppressWarnings({ "null", "unchecked" })
 	public static <T> int synchronize(ObjectService<T> service1, ObjectService<T> service2, String id)
 	{
@@ -385,4 +491,44 @@ public class SyncService
 
 		return 0;
 	}
+
+	//	public static <T> void updateHashBranch(ObjectService<T> service, String prefix) // v1, from leaf to root, fast, not stable
+	//	{
+	//		Map<String, String> hashes = service.getHashChildren(prefix);
+	//		String hash = Utils.calculateHash(hashes);
+	//		if (hash != "")
+	//		{
+	//			service.setHash(prefix, hash);
+	//		}
+	//		if (prefix != "")
+	//		{
+	//			updateHashBranch(service, prefix.substring(0, prefix.length() - 1));
+	//		}
+	//	}
+
+	//	public static <T> String updateHashTree(ObjectService<T> service, String prefix) // v2, from root to leafs, slow, very stable
+	//	{
+	//		Map<String, String> childHashes;
+	//
+	//		if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
+	//		{
+	//			childHashes = new HashMap<String, String>();
+	//			for (int i = 0; i < PATTERN.length(); i++)
+	//			{
+	//				String key = prefix + PATTERN.charAt(i);
+	//				childHashes.put(key, updateHashTree(service, key));
+	//			}
+	//		}
+	//		else
+	//		{
+	//			childHashes = service.getHashChildren(prefix);
+	//		}
+	//
+	//		String hash = Utils.calculateHash(childHashes);
+	//		if (hash != "")
+	//		{
+	//			service.setHash(prefix, hash);
+	//		}
+	//		return hash;
+	//	}
 }
