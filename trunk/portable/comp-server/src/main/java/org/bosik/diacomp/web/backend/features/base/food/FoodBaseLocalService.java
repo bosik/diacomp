@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.base.food.function;
+package org.bosik.diacomp.web.backend.features.base.food;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

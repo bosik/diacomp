@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.base.dish.rest;
+package org.bosik.diacomp.web.backend.features.base.food;
 
 import java.util.Date;
 import java.util.List;
@@ -16,27 +16,26 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
-import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
+import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.ObjectService;
-import org.bosik.diacomp.core.services.base.dish.DishBaseService;
+import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
-import org.bosik.diacomp.web.backend.features.base.dish.function.DishBaseLocalService;
 
-@Path("dish/")
-public class DishBaseRestService
+@Path("food/")
+public class FoodBaseRest
 {
 	@Context
 	HttpServletRequest								req;
 
-	private final DishBaseService					dishbaseService	= new DishBaseLocalService()
+	private final FoodBaseService					foodbaseService	= new FoodBaseLocalService()
 																	{
 																		@Override
 																		protected int getCurrentUserId()
@@ -45,7 +44,7 @@ public class DishBaseRestService
 																		};
 																	};
 
-	private final Serializer<Versioned<DishItem>>	serializer		= new SerializerDishItem();
+	private final Serializer<Versioned<FoodItem>>	serializer		= new SerializerFoodItem();
 	private final Serializer<Map<String, String>>	serializerMap	= new SerializerMap();
 
 	@GET
@@ -58,7 +57,7 @@ public class DishBaseRestService
 			// Prefix form
 			if (parId.length() == ObjectService.ID_PREFIX_SIZE)
 			{
-				List<Versioned<DishItem>> items = dishbaseService.findByIdPrefix(parId);
+				List<Versioned<FoodItem>> items = foodbaseService.findByIdPrefix(parId);
 
 				String s = serializer.writeAll(items);
 				String response = ResponseBuilder.buildDone(s);
@@ -68,7 +67,7 @@ public class DishBaseRestService
 			// Full form
 			else
 			{
-				Versioned<DishItem> item = dishbaseService.findById(parId);
+				Versioned<FoodItem> item = foodbaseService.findById(parId);
 
 				if (item != null)
 				{
@@ -104,14 +103,14 @@ public class DishBaseRestService
 		{
 			boolean includeRemoved = Boolean.valueOf(parShowRem);
 
-			List<Versioned<DishItem>> items = dishbaseService.findAll(includeRemoved);
+			List<Versioned<FoodItem>> items = foodbaseService.findAll(includeRemoved);
 			String s = serializer.writeAll(items);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)
 		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
@@ -127,7 +126,7 @@ public class DishBaseRestService
 	{
 		try
 		{
-			List<Versioned<DishItem>> items = dishbaseService.findAny(filter);
+			List<Versioned<FoodItem>> items = foodbaseService.findAny(filter);
 			String s = serializer.writeAll(items);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
@@ -151,7 +150,7 @@ public class DishBaseRestService
 		try
 		{
 			Date since = Utils.parseTimeUTC(parTime);
-			List<Versioned<DishItem>> items = dishbaseService.findChanged(since);
+			List<Versioned<FoodItem>> items = foodbaseService.findChanged(since);
 			String s = serializer.writeAll(items);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
@@ -174,7 +173,7 @@ public class DishBaseRestService
 	{
 		try
 		{
-			String s = dishbaseService.getHash(parPrefix);
+			String s = foodbaseService.getHash(parPrefix);
 			String response = ResponseBuilder.buildDone(s != null ? s : "");
 			return Response.ok(response).build();
 		}
@@ -201,12 +200,13 @@ public class DishBaseRestService
 
 			if (parPrefix.length() < ObjectService.ID_PREFIX_SIZE)
 			{
-				map = dishbaseService.getHashChildren(parPrefix);
+				map = foodbaseService.getHashChildren(parPrefix);
 			}
 			else
 			{
-				map = dishbaseService.getDataHashes(parPrefix);
+				map = foodbaseService.getDataHashes(parPrefix);
 			}
+
 			String s = serializerMap.write(map);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();
@@ -228,8 +228,8 @@ public class DishBaseRestService
 	{
 		try
 		{
-			List<Versioned<DishItem>> items = serializer.readAll(parItems);
-			dishbaseService.save(items);
+			List<Versioned<FoodItem>> items = serializer.readAll(parItems);
+			foodbaseService.save(items);
 
 			String response = ResponseBuilder.buildDone("Saved OK");
 			return Response.ok(response).build();

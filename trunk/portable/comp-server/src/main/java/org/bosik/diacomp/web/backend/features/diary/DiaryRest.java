@@ -1,9 +1,10 @@
-package org.bosik.diacomp.web.backend.features.base.food.rest;
+package org.bosik.diacomp.web.backend.features.diary;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -16,37 +17,42 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.persistence.parsers.Parser;
+import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
-import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
+import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
+import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.ObjectService;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
+import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
-import org.bosik.diacomp.web.backend.features.base.food.function.FoodBaseLocalService;
 
-@Path("food/")
-public class FoodBaseRestService
+@Path("diary/")
+public class DiaryRest
 {
 	@Context
-	HttpServletRequest								req;
+	HttpServletRequest									req;
 
-	private final FoodBaseService					foodbaseService	= new FoodBaseLocalService()
-																	{
-																		@Override
-																		protected int getCurrentUserId()
+	private final DiaryService							diaryService	= new DiaryLocalService()
 																		{
-																			return UserSessionUtils.getId(req);
+																			@Override
+																			protected int getCurrentUserId()
+																			{
+																				return UserSessionUtils.getId(req);
+																			};
 																		};
-																	};
 
-	private final Serializer<Versioned<FoodItem>>	serializer		= new SerializerFoodItem();
-	private final Serializer<Map<String, String>>	serializerMap	= new SerializerMap();
+	private final Parser<DiaryRecord>					parser			= new ParserDiaryRecord();
+	private final Parser<Versioned<DiaryRecord>>		parserVersioned	= new ParserVersioned<DiaryRecord>(parser);
+	private final Serializer<Versioned<DiaryRecord>>	serializer		= new SerializerAdapter<Versioned<DiaryRecord>>(
+																				parserVersioned);
+	private final Serializer<Map<String, String>>		serializerMap	= new SerializerMap();
 
 	@GET
 	@Path("guid/{guid}")
@@ -58,7 +64,7 @@ public class FoodBaseRestService
 			// Prefix form
 			if (parId.length() == ObjectService.ID_PREFIX_SIZE)
 			{
-				List<Versioned<FoodItem>> items = foodbaseService.findByIdPrefix(parId);
+				List<Versioned<DiaryRecord>> items = diaryService.findByIdPrefix(parId);
 
 				String s = serializer.writeAll(items);
 				String response = ResponseBuilder.buildDone(s);
@@ -68,7 +74,7 @@ public class FoodBaseRestService
 			// Full form
 			else
 			{
-				Versioned<FoodItem> item = foodbaseService.findById(parId);
+				Versioned<DiaryRecord> item = diaryService.findById(parId);
 
 				if (item != null)
 				{
@@ -96,85 +102,13 @@ public class FoodBaseRestService
 	}
 
 	@GET
-	@Path("all")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response findAll(@QueryParam("show_rem") String parShowRem) throws CommonServiceException
-	{
-		try
-		{
-			boolean includeRemoved = Boolean.valueOf(parShowRem);
-
-			List<Versioned<FoodItem>> items = foodbaseService.findAll(includeRemoved);
-			String s = serializer.writeAll(items);
-			String response = ResponseBuilder.buildDone(s);
-			return Response.ok(response).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
-	}
-
-	@GET
-	@Path("search")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response findAny(@QueryParam("q") String filter) throws CommonServiceException
-	{
-		try
-		{
-			List<Versioned<FoodItem>> items = foodbaseService.findAny(filter);
-			String s = serializer.writeAll(items);
-			String response = ResponseBuilder.buildDone(s);
-			return Response.ok(response).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
-	}
-
-	@GET
-	@Path("changes")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response findChanged(@QueryParam("since") String parTime) throws CommonServiceException
-	{
-		try
-		{
-			Date since = Utils.parseTimeUTC(parTime);
-			List<Versioned<FoodItem>> items = foodbaseService.findChanged(since);
-			String s = serializer.writeAll(items);
-			String response = ResponseBuilder.buildDone(s);
-			return Response.ok(response).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
-	}
-
-	@GET
 	@Path("hash/{prefix: .*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response getHash(@PathParam("prefix") @DefaultValue("") String parPrefix) throws CommonServiceException
 	{
 		try
 		{
-			String s = foodbaseService.getHash(parPrefix);
+			String s = diaryService.getHash(parPrefix);
 			String response = ResponseBuilder.buildDone(s != null ? s : "");
 			return Response.ok(response).build();
 		}
@@ -201,11 +135,11 @@ public class FoodBaseRestService
 
 			if (parPrefix.length() < ObjectService.ID_PREFIX_SIZE)
 			{
-				map = foodbaseService.getHashChildren(parPrefix);
+				map = diaryService.getHashChildren(parPrefix);
 			}
 			else
 			{
-				map = foodbaseService.getDataHashes(parPrefix);
+				map = diaryService.getDataHashes(parPrefix);
 			}
 
 			String s = serializerMap.write(map);
@@ -223,14 +157,68 @@ public class FoodBaseRestService
 		}
 	}
 
+	@GET
+	@Path("changes")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response findChanged(@QueryParam("since") String parTime) throws CommonServiceException
+	{
+		try
+		{
+			Date since = Utils.parseTimeUTC(parTime);
+			List<Versioned<DiaryRecord>> items = diaryService.findChanged(since);
+			String s = serializer.writeAll(items);
+			String response = ResponseBuilder.buildDone(s);
+			return Response.ok(response).build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	@GET
+	@Path("period")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response findPeriod(@QueryParam("start_time") String parStartTime,
+			@QueryParam("end_time") String parEndTime, @QueryParam("show_rem") String parShowRem)
+			throws CommonServiceException
+	{
+		try
+		{
+			Date startTime = Utils.parseTimeUTC(parStartTime);
+			Date endTime = Utils.parseTimeUTC(parEndTime);
+			boolean includeRemoved = Boolean.valueOf(parShowRem);
+
+			List<Versioned<DiaryRecord>> items = diaryService.findPeriod(startTime, endTime, includeRemoved);
+			String s = serializer.writeAll(items);
+			String response = ResponseBuilder.buildDone(s);
+			return Response.ok(response).build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
 	@PUT
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response save(@FormParam("items") String parItems) throws CommonServiceException
 	{
 		try
 		{
-			List<Versioned<FoodItem>> items = serializer.readAll(parItems);
-			foodbaseService.save(items);
+			List<Versioned<DiaryRecord>> items = serializer.readAll(parItems);
+			diaryService.save(items);
 
 			String response = ResponseBuilder.buildDone("Saved OK");
 			return Response.ok(response).build();
