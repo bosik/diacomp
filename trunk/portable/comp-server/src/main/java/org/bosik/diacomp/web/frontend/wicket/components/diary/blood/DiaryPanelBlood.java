@@ -42,13 +42,13 @@ public class DiaryPanelBlood extends Panel
 
 	private static String formatBloodFinger(int index)
 	{
-		String[] fingers = new String[] { "БЛ", "1Л", "2Л", "3Л", "4Л", "4П", "3П", "2П", "1П", "БП" };
+		String[] fingers = { "БЛ", "1Л", "2Л", "3Л", "4Л", "4П", "3П", "2П", "1П", "БП" };
 		return fingers[index];
 	}
 
 	private static String formatBloodFingerHint(int index)
 	{
-		String[] fingers = new String[] { "Левая, большой", "Левая, указательный", "Левая, средний",
+		String[] fingers = { "Левая, большой", "Левая, указательный", "Левая, средний",
 				"Левая, безымянный", "Левая, мизинец", "Правая, мизинец", "Правая, безымянный", "Правая, средний",
 				"Правая, указательный", "Правая, большой" };
 		return fingers[index];

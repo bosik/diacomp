@@ -361,7 +361,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			ContentValues newValues = new ContentValues();
 			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, 1);
-			String[] args = new String[] { id };
+			String[] args = { id };
 			resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues,
 					DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?", args);
 
@@ -496,7 +496,7 @@ public class FoodBaseLocalService implements FoodBaseService
 			// constructing parameters
 			final String[] select = { DiaryContentProvider.COLUMN_FOODBASE_HASH_HASH };
 			final String where = DiaryContentProvider.COLUMN_FOODBASE_HASH_GUID + " = ?";
-			final String[] whereArgs = new String[] { prefix };
+			final String[] whereArgs = { prefix };
 
 			// execute query
 			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_HASH_URI, select, where, whereArgs,
@@ -538,7 +538,7 @@ public class FoodBaseLocalService implements FoodBaseService
 				final String[] select = { DiaryContentProvider.COLUMN_FOODBASE_HASH_GUID,
 						DiaryContentProvider.COLUMN_FOODBASE_HASH_HASH };
 				final String where = DiaryContentProvider.COLUMN_FOODBASE_HASH_GUID + " = ?";
-				final String[] whereArgs = new String[] { prefix + "_" };
+				final String[] whereArgs = { prefix + "_" };
 
 				// execute query
 				Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_HASH_URI, select, where,
@@ -574,7 +574,7 @@ public class FoodBaseLocalService implements FoodBaseService
 				final String[] select = { DiaryContentProvider.COLUMN_FOODBASE_GUID,
 						DiaryContentProvider.COLUMN_FOODBASE_HASH };
 				final String where = String.format("%s LIKE ?", DiaryContentProvider.COLUMN_FOODBASE_GUID);
-				final String[] whereArgs = new String[] { prefix + "%" };
+				final String[] whereArgs = { prefix + "%" };
 
 				// execute query
 				Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, select, where, whereArgs,
@@ -634,7 +634,7 @@ public class FoodBaseLocalService implements FoodBaseService
 				{
 					Log.v(TAG, "Updating item " + item.getId() + ": " + content);
 					String clause = DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
-					String[] args = new String[] { item.getId() };
+					String[] args = { item.getId() };
 					resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, clause, args);
 				}
 				else
