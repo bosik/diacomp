@@ -162,26 +162,6 @@ public class DishBaseWebService implements DishBaseService
 	}
 
 	@Override
-	public Map<String, String> getDataHashes(String prefix) throws CommonServiceException
-	{
-		try
-		{
-			String query = String.format(API_DISH_HASHES, prefix);
-			StdResponse resp = webClient.get(query);
-			String data = resp.getResponse();
-			return serializerMap.read(data);
-		}
-		catch (CommonServiceException e)
-		{
-			throw e;
-		}
-		catch (Exception e)
-		{
-			throw new CommonServiceException(e);
-		}
-	}
-
-	@Override
 	public String getHash(String prefix) throws CommonServiceException
 	{
 		try

@@ -196,17 +196,7 @@ public class FoodBaseRest
 	{
 		try
 		{
-			Map<String, String> map;
-
-			if (parPrefix.length() < ObjectService.ID_PREFIX_SIZE)
-			{
-				map = foodbaseService.getHashChildren(parPrefix);
-			}
-			else
-			{
-				map = foodbaseService.getDataHashes(parPrefix);
-			}
-
+			Map<String, String> map = foodbaseService.getHashChildren(parPrefix);
 			String s = serializerMap.write(map);
 			String response = ResponseBuilder.buildDone(s);
 			return Response.ok(response).build();

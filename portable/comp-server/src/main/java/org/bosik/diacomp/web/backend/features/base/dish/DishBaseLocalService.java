@@ -16,7 +16,6 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
-import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.utils.Utils;
@@ -277,37 +276,6 @@ public class DishBaseLocalService implements DishBaseService
 	}
 
 	@Override
-	public Map<String, String> getDataHashes(String prefix) throws CommonServiceException
-	{
-		try
-		{
-			int userId = getCurrentUserId();
-
-			final String[] select = { COLUMN_DISHBASE_GUID, COLUMN_DISHBASE_HASH };
-			final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_DISHBASE_USER, COLUMN_DISHBASE_GUID);
-			final String[] whereArgs = { String.valueOf(userId), prefix + "%" };
-			final String order = null;
-
-			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
-
-			Map<String, String> result = new HashMap<String, String>();
-			while (set.next())
-			{
-				String id = set.getString(COLUMN_DISHBASE_GUID);
-				String hash = set.getString(COLUMN_DISHBASE_HASH);
-				result.put(id, hash);
-			}
-
-			set.close();
-			return result;
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
 	public String getHash(String prefix)
 	{
 		try
@@ -345,23 +313,47 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			int userId = getCurrentUserId();
 
-			final String[] select = { COLUMN_DISHBASE_HASH_GUID, COLUMN_DISHBASE_HASH_HASH };
-			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DISHBASE_HASH_USER,
-					COLUMN_DISHBASE_HASH_GUID);
-			final String[] whereArgs = { String.valueOf(userId), prefix + "_" };
-			final String order = null;
-
-			ResultSet set = db.select(TABLE_DISHBASE_HASH, select, where, whereArgs, order);
-
 			Map<String, String> result = new HashMap<String, String>();
-			while (set.next())
+
+			if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
 			{
-				String id = set.getString(COLUMN_DISHBASE_HASH_GUID);
-				String hash = set.getString(COLUMN_DISHBASE_HASH_HASH);
-				result.put(id, hash);
+				final String[] select = { COLUMN_DISHBASE_HASH_GUID, COLUMN_DISHBASE_HASH_HASH };
+				final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DISHBASE_HASH_USER,
+						COLUMN_DISHBASE_HASH_GUID);
+				final String[] whereArgs = { String.valueOf(userId), prefix + "_" };
+				final String order = null;
+
+				ResultSet set = db.select(TABLE_DISHBASE_HASH, select, where, whereArgs, order);
+
+				while (set.next())
+				{
+					String id = set.getString(COLUMN_DISHBASE_HASH_GUID);
+					String hash = set.getString(COLUMN_DISHBASE_HASH_HASH);
+					result.put(id, hash);
+				}
+
+				set.close();
+			}
+			else
+			{
+				final String[] select = { COLUMN_DISHBASE_GUID, COLUMN_DISHBASE_HASH };
+				final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_DISHBASE_USER,
+						COLUMN_DISHBASE_GUID);
+				final String[] whereArgs = { String.valueOf(userId), prefix + "%" };
+				final String order = null;
+
+				ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
+
+				while (set.next())
+				{
+					String id = set.getString(COLUMN_DISHBASE_GUID);
+					String hash = set.getString(COLUMN_DISHBASE_HASH);
+					result.put(id, hash);
+				}
+
+				set.close();
 			}
 
-			set.close();
 			return result;
 		}
 		catch (SQLException e)
