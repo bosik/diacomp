@@ -10,7 +10,8 @@ uses
   DiaryWeb,
   DiaryRoutines,
   JsonSerializer,
-  DiaryPageSerializer;
+  DiaryPageSerializer,
+  AutoLog;
 
 type
   TFoodbaseWebDAO = class (TFoodbaseDAO)
@@ -19,11 +20,14 @@ type
   public
     constructor Create(Client: TDiacompClient);
 
+    procedure Delete(ID: TCompactGUID); override;
     function FindAll(ShowRemoved: boolean): TFoodItemList; override;
     function FindAny(const Filter: string): TFoodItemList; override;
     function FindOne(const Name: string): TFoodItem; override;
     function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
+    function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList; override;
+    function GetHash(Prefix: TCompactGUID): TCompactGUID; override;
     procedure Save(const Items: TVersionedList); override;
   end;
 
@@ -53,6 +57,20 @@ begin
     raise Exception.Create('Client can''t be nil');
     
   FClient := Client;
+end;
+
+{======================================================================================================================}
+procedure TFoodbaseWebDAO.Delete(ID: TCompactGUID);
+{======================================================================================================================}
+var
+  Item: TVersioned;
+begin
+  Item := FindById(ID);
+  if (Item <> nil) then  
+  begin
+    Item.Deleted := True;
+    Save(Item);
+  end;
 end;
 
 {======================================================================================================================}
@@ -100,6 +118,16 @@ begin
 end;
 
 {======================================================================================================================}
+function TFoodbaseWebDAO.FindByIdPrefix(Prefix: TCompactGUID): TVersionedList;
+{======================================================================================================================}
+var
+  Response: TStdResponse;
+begin
+  Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/guid/' + Prefix);
+  Result := FoodItemListToVersionedList(ParseFoodItemsResponse(Response.Response));
+end;
+
+{======================================================================================================================}
 function TFoodbaseWebDAO.FindChanged(Since: TDateTime): TVersionedList;
 {======================================================================================================================}
 var
@@ -126,6 +154,19 @@ begin
   end;
 
   Result := nil;
+end;
+
+{======================================================================================================================}
+function TFoodbaseWebDAO.GetHash(Prefix: TCompactGUID): TCompactGUID;
+{======================================================================================================================}
+var
+  Query, Resp: string;
+begin
+  Query := FClient.GetApiURL() + 'food/hash/' + Prefix;
+  Resp := FClient.DoGetSmart(query).Response;
+  {#}Log(VERBOUS, 'TFoodbaseWebDAO.GetHash(): quered OK, Resp = "' + Resp + '"');
+
+  Result := Resp;
 end;
 
 {======================================================================================================================}

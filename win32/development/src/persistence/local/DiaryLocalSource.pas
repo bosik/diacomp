@@ -57,6 +57,7 @@ type
     function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
     function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList; override;
+    function GetHash(Prefix: TCompactGUID): TCompactGUID; override;
     procedure Save(const Recs: TVersionedList); override;
 
     // свойства
@@ -552,6 +553,13 @@ begin
     FHash.SaveToFile(FHashFileName);
     Exit;
   end;
+end;
+
+{======================================================================================================================}
+function TDiaryLocalSource.GetHash(Prefix: TCompactGUID): TCompactGUID;
+{======================================================================================================================}
+begin
+  Result := FHash[Prefix];
 end;
 
 {======================================================================================================================}
