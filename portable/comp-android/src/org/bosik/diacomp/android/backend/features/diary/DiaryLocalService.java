@@ -19,6 +19,7 @@ import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
+import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -220,7 +221,7 @@ public class DiaryLocalService implements DiaryService
 			if (cursor != null)
 			{
 				int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_HASH_HASH);
-				String hash = "";
+				String hash = null;
 
 				if (cursor.moveToNext())
 				{
@@ -251,7 +252,7 @@ public class DiaryLocalService implements DiaryService
 				// constructing parameters
 				final String[] select = { DiaryContentProvider.COLUMN_DIARY_HASH_GUID,
 						DiaryContentProvider.COLUMN_DIARY_HASH_HASH };
-				final String where = DiaryContentProvider.COLUMN_DIARY_HASH_GUID + " = ?";
+				final String where = DiaryContentProvider.COLUMN_DIARY_HASH_GUID + " LIKE ?";
 				final String[] whereArgs = { prefix + "_" };
 
 				// execute query
@@ -359,6 +360,8 @@ public class DiaryLocalService implements DiaryService
 					newValues.put(DiaryContentProvider.COLUMN_DIARY_GUID, record.getId());
 					resolver.insert(DiaryContentProvider.CONTENT_DIARY_URI, newValues);
 				}
+
+				HashUtils.updateHashBranch(this, record.getId().substring(0, ID_PREFIX_SIZE));
 			}
 		}
 		catch (Exception e)

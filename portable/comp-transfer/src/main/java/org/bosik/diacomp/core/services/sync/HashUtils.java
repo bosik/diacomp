@@ -18,24 +18,29 @@ public class HashUtils
 
 	static
 	{
+		System.out.println("Hash tables initialization...");
+
 		MAP_SUM.clear();
 		MAP_SUB.clear();
 
 		for (int i = 0; i < PATTERN_SIZE; i++)
 		{
+			char a = PATTERN.charAt(i);
 			for (int j = 0; j < PATTERN_SIZE; j++)
 			{
-				char a = PATTERN.charAt(i);
 				char b = PATTERN.charAt(j);
 				String key = "" + a + b;
 				MAP_SUM.put(key, PATTERN.charAt((i + j) % PATTERN_SIZE));
 				MAP_SUB.put(key, PATTERN.charAt((i - j + PATTERN_SIZE) % PATTERN_SIZE));
 			}
 		}
+
+		System.out.println("Hash tables initialized OK");
 	}
 
 	/**
-	 * null + a = a
+	 * null + a = a<br/>
+	 * null + null = null
 	 * 
 	 * @param a
 	 * @param b
@@ -48,15 +53,16 @@ public class HashUtils
 			throw new IllegalArgumentException(String.format("Invalid hash #1 ('%s'), expected: %d chars, found: %d",
 					a, ObjectService.ID_FULL_SIZE, a.length()));
 		}
-		if (b.length() != ObjectService.ID_FULL_SIZE)
-		{
-			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d",
-					b, ObjectService.ID_FULL_SIZE, b.length()));
-		}
 
 		if (a == null)
 		{
 			return b;
+		}
+
+		if (b.length() != ObjectService.ID_FULL_SIZE)
+		{
+			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d",
+					b, ObjectService.ID_FULL_SIZE, b.length()));
 		}
 
 		a = a.toLowerCase();
@@ -74,7 +80,8 @@ public class HashUtils
 	}
 
 	/**
-	 * a - null = a
+	 * a - null = a<br/>
+	 * null - null = null
 	 * 
 	 * @param a
 	 * @param b
@@ -82,11 +89,6 @@ public class HashUtils
 	 */
 	public static String subHash(String a, String b)
 	{
-		if (a.length() != ObjectService.ID_FULL_SIZE)
-		{
-			throw new IllegalArgumentException(String.format("Invalid hash #1 ('%s'), expected: %d chars, found: %d",
-					a, ObjectService.ID_FULL_SIZE, a.length()));
-		}
 		if (b != null && b.length() != ObjectService.ID_FULL_SIZE)
 		{
 			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d",
@@ -96,6 +98,12 @@ public class HashUtils
 		if (b == null)
 		{
 			return a;
+		}
+
+		if (a.length() != ObjectService.ID_FULL_SIZE)
+		{
+			throw new IllegalArgumentException(String.format("Invalid hash #1 ('%s'), expected: %d chars, found: %d",
+					a, ObjectService.ID_FULL_SIZE, a.length()));
 		}
 
 		a = a.toLowerCase();
@@ -134,11 +142,11 @@ public class HashUtils
 	{
 		Map<String, String> hashes = service.getHashChildren(prefix);
 		String hash = calculateHash(hashes);
-		if (hash != "")
+		if (hash != null)
 		{
 			service.setHash(prefix, hash);
 		}
-		if (prefix != "")
+		if (prefix.length() > 0)
 		{
 			updateHashBranch(service, prefix.substring(0, prefix.length() - 1));
 		}
@@ -153,6 +161,11 @@ public class HashUtils
 	 */
 	public static <T> String updateHashTree(ObjectService<T> service, String prefix)
 	{
+		if (prefix.length() < 3)
+		{
+			System.out.println("Updating tree branch # " + prefix);
+		}
+
 		Map<String, String> childHashes;
 
 		if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
@@ -161,7 +174,12 @@ public class HashUtils
 			for (int i = 0; i < PATTERN_SIZE; i++)
 			{
 				String key = prefix + PATTERN.charAt(i);
-				childHashes.put(key, updateHashTree(service, key));
+				String value = updateHashTree(service, key);
+
+				if (value != null)
+				{
+					childHashes.put(key, value);
+				}
 			}
 		}
 		else
@@ -170,7 +188,7 @@ public class HashUtils
 		}
 
 		String hash = calculateHash(childHashes);
-		if (hash != "")
+		if (hash != null)
 		{
 			service.setHash(prefix, hash);
 		}

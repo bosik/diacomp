@@ -321,7 +321,7 @@ public class FoodBaseLocalService implements FoodBaseService
 			if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
 			{
 				final String[] select = { COLUMN_FOODBASE_HASH_GUID, COLUMN_FOODBASE_HASH_HASH };
-				final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_FOODBASE_HASH_USER,
+				final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_FOODBASE_HASH_USER,
 						COLUMN_FOODBASE_HASH_GUID);
 				final String[] whereArgs = { String.valueOf(userId), prefix + "_" };
 				final String order = null;
