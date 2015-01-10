@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
@@ -17,6 +19,7 @@ import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
@@ -378,6 +381,7 @@ public class DishBaseLocalService implements DishBaseService
 				final String version = String.valueOf(item.getVersion());
 				final String deleted = Utils.formatBooleanInt(item.isDeleted());
 
+				// FIXME: full parsing performed - too slow
 				if (findById(item.getId()) != null)
 				{
 					// presented, update
@@ -412,6 +416,69 @@ public class DishBaseLocalService implements DishBaseService
 
 					db.insert(TABLE_DISHBASE, set);
 				}
+			}
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void setHash(String prefix, String hash)
+	{
+		try
+		{
+			int userId = getCurrentUserId();
+
+			if (prefix.length() <= ObjectService.ID_PREFIX_SIZE)
+			{
+				if (getHash(prefix) != null)
+				{
+					Map<String, String> set = new HashMap<String, String>();
+					set.put(COLUMN_DISHBASE_HASH_HASH, hash);
+
+					Map<String, String> where = new HashMap<String, String>();
+					where.put(COLUMN_DISHBASE_HASH_USER, String.valueOf(userId));
+					where.put(COLUMN_DISHBASE_HASH_GUID, prefix);
+
+					db.update(TABLE_DISHBASE_HASH, set, where);
+				}
+				else
+				{
+					Map<String, String> set = new HashMap<String, String>();
+					set.put(COLUMN_DISHBASE_HASH_USER, String.valueOf(userId));
+					set.put(COLUMN_DISHBASE_HASH_GUID, prefix);
+					set.put(COLUMN_DISHBASE_HASH_HASH, hash);
+
+					db.insert(TABLE_DISHBASE_HASH, set);
+				}
+			}
+			else if (prefix.length() == ObjectService.ID_FULL_SIZE)
+			{
+				// FIXME: full parsing performed - too slow
+				if (findById(prefix) != null)
+				{
+					SortedMap<String, String> set = new TreeMap<String, String>();
+					set.put(COLUMN_DISHBASE_HASH, hash);
+
+					SortedMap<String, String> where = new TreeMap<String, String>();
+					where.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
+					where.put(COLUMN_DISHBASE_GUID, prefix);
+
+					db.update(TABLE_DISHBASE, set, where);
+				}
+				else
+				{
+					// fail
+					throw new NotFoundException(prefix);
+				}
+			}
+			else
+			{
+				throw new IllegalArgumentException(String.format(
+						"Invalid prefix ('%s'), expected: 0..%d or %d chars, found: %d", prefix,
+						ObjectService.ID_PREFIX_SIZE, ObjectService.ID_FULL_SIZE, prefix.length()));
 			}
 		}
 		catch (SQLException e)

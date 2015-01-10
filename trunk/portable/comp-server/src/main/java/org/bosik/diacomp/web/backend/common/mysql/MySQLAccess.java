@@ -142,6 +142,10 @@ public class MySQLAccess
 	{
 		connect();
 
+		/**
+		 * THINK Requires set.keySet().iterator() and set.entrySet().iterator() return items in the same order
+		 */
+
 		// making wildcarded string
 		StringBuilder sb = new StringBuilder();
 		sb.append("UPDATE " + table + " SET ");

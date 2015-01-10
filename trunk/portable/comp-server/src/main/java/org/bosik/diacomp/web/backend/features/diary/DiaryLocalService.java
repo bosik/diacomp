@@ -357,6 +357,7 @@ public class DiaryLocalService implements DiaryService
 				// before persisting item
 				updateHashTree(userId, id, hash);
 
+				// FIXME: full parsing performed - too slow
 				if (findById(item.getId()) != null)
 				{
 					// presented, update
@@ -400,29 +401,61 @@ public class DiaryLocalService implements DiaryService
 		}
 	}
 
-	private void setHash(int userId, String prefix, String hash)
+	@Override
+	public void setHash(String prefix, String hash)
 	{
 		try
 		{
-			if (getHash(prefix) != null)
+			int userId = getCurrentUserId();
+
+			if (prefix.length() <= ObjectService.ID_PREFIX_SIZE)
 			{
-				Map<String, String> set = new HashMap<String, String>();
-				set.put(COLUMN_DIARY_HASH_HASH, hash);
+				if (getHash(prefix) != null)
+				{
+					Map<String, String> set = new HashMap<String, String>();
+					set.put(COLUMN_DIARY_HASH_HASH, hash);
 
-				Map<String, String> where = new HashMap<String, String>();
-				where.put(COLUMN_DIARY_HASH_USER, String.valueOf(userId));
-				where.put(COLUMN_DIARY_HASH_GUID, prefix);
+					Map<String, String> where = new HashMap<String, String>();
+					where.put(COLUMN_DIARY_HASH_USER, String.valueOf(userId));
+					where.put(COLUMN_DIARY_HASH_GUID, prefix);
 
-				db.update(TABLE_DIARY_HASH, set, where);
+					db.update(TABLE_DIARY_HASH, set, where);
+				}
+				else
+				{
+					Map<String, String> set = new HashMap<String, String>();
+					set.put(COLUMN_DIARY_HASH_USER, String.valueOf(userId));
+					set.put(COLUMN_DIARY_HASH_GUID, prefix);
+					set.put(COLUMN_DIARY_HASH_HASH, hash);
+
+					db.insert(TABLE_DIARY_HASH, set);
+				}
+			}
+			else if (prefix.length() == ObjectService.ID_FULL_SIZE)
+			{
+				// FIXME: full parsing performed - too slow
+				if (findById(prefix) != null)
+				{
+					SortedMap<String, String> set = new TreeMap<String, String>();
+					set.put(COLUMN_DIARY_HASH, hash);
+
+					SortedMap<String, String> where = new TreeMap<String, String>();
+					where.put(COLUMN_DIARY_USER, String.valueOf(userId));
+					where.put(COLUMN_DIARY_GUID, prefix);
+
+					db.update(TABLE_DIARY, set, where);
+				}
+				else
+				{
+					// fail
+					throw new NotFoundException(prefix);
+				}
 			}
 			else
 			{
-				Map<String, String> set = new HashMap<String, String>();
-				set.put(COLUMN_DIARY_HASH_USER, String.valueOf(userId));
-				set.put(COLUMN_DIARY_HASH_GUID, prefix);
-				set.put(COLUMN_DIARY_HASH_HASH, hash);
-
-				db.insert(TABLE_DIARY_HASH, set);
+				throw new IllegalArgumentException(String.format(
+						"Invalid prefix ('%s'), expected: 0..%d or %d chars, found: %d", prefix,
+						ObjectService.ID_PREFIX_SIZE, ObjectService.ID_FULL_SIZE, prefix.length()));
 			}
 		}
 		catch (SQLException e)
@@ -441,7 +474,7 @@ public class DiaryLocalService implements DiaryService
 			String prefix = id.substring(0, i);
 			String oldHash = getHash(prefix);
 			String newHash = Utils.sumHash(oldHash, hashDiff);
-			setHash(userId, prefix, newHash);
+			setHash(prefix, newHash);
 		}
 	}
 }

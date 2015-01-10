@@ -590,6 +590,7 @@ public class DishBaseLocalService implements DishBaseService
 				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DATA, content);
 				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE, item.getData().getName());
 
+				// FIXME: full parsing performed - too slow
 				if (findById(item.getId()) != null)
 				{
 					Log.v(TAG, "Updating item " + item.getId() + ": " + content);
@@ -631,6 +632,67 @@ public class DishBaseLocalService implements DishBaseService
 		catch (PersistenceException e)
 		{
 			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new PersistenceException(e);
+		}
+	}
+
+	@Override
+	public void setHash(String prefix, String hash)
+	{
+		try
+		{
+			if (prefix.length() <= ObjectService.ID_PREFIX_SIZE)
+			{
+				if (getHash(prefix) != null)
+				{
+					// update
+					ContentValues newValues = new ContentValues();
+					newValues.put(DiaryContentProvider.COLUMN_DISHBASE_HASH_HASH, hash);
+					String clause = String.format("%s = ?", DiaryContentProvider.COLUMN_DISHBASE_HASH_GUID);
+					String[] args = { prefix };
+					resolver.update(DiaryContentProvider.CONTENT_DISHBASE_HASH_URI, newValues, clause, args);
+				}
+				else
+				{
+					// insert
+					ContentValues newValues = new ContentValues();
+					newValues.put(DiaryContentProvider.COLUMN_DISHBASE_HASH_GUID, prefix);
+					newValues.put(DiaryContentProvider.COLUMN_DISHBASE_HASH_HASH, hash);
+					resolver.insert(DiaryContentProvider.CONTENT_DISHBASE_HASH_URI, newValues);
+				}
+			}
+			else if (prefix.length() == ObjectService.ID_FULL_SIZE)
+			{
+				final String[] select = { DiaryContentProvider.COLUMN_DISHBASE_GUID };
+				final String where = String.format("%s = ?", DiaryContentProvider.COLUMN_DISHBASE_GUID);
+				final String[] whereArgs = { prefix };
+				Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DISHBASE_URI, select, where, whereArgs,
+						null);
+
+				if (cursor != null && cursor.moveToFirst())
+				{
+					// update
+					ContentValues newValues = new ContentValues();
+					newValues.put(DiaryContentProvider.COLUMN_DISHBASE_HASH, hash);
+					String clause = String.format("%s = ?", DiaryContentProvider.COLUMN_DISHBASE_GUID);
+					String[] args = { prefix };
+					resolver.update(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues, clause, args);
+				}
+				else
+				{
+					// fail
+					throw new NotFoundException(prefix);
+				}
+			}
+			else
+			{
+				throw new IllegalArgumentException(String.format(
+						"Invalid prefix ('%s'), expected: 0..%d or %d chars, found: %d", prefix,
+						ObjectService.ID_PREFIX_SIZE, ObjectService.ID_FULL_SIZE, prefix.length()));
+			}
 		}
 		catch (Exception e)
 		{

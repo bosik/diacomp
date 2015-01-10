@@ -175,4 +175,10 @@ public class FakeDiaryService implements DiaryService
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}
+
+	@Override
+	public void setHash(String prefix, String hash)
+	{
+		throw new UnsupportedOperationException("Not implemented");
+	}
 }

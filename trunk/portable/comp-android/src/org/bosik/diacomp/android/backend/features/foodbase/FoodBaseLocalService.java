@@ -608,6 +608,7 @@ public class FoodBaseLocalService implements FoodBaseService
 				// TODO: DB has new row, cache still doesn't
 				// Thus app tries to insert row and ends up with PK constraint violation
 
+				// FIXME: full parsing performed - too slow
 				if (findById(item.getId()) != null)
 				{
 					Log.v(TAG, "Updating item " + item.getId() + ": " + content);
@@ -649,6 +650,67 @@ public class FoodBaseLocalService implements FoodBaseService
 		catch (PersistenceException e)
 		{
 			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new PersistenceException(e);
+		}
+	}
+
+	@Override
+	public void setHash(String prefix, String hash)
+	{
+		try
+		{
+			if (prefix.length() <= ObjectService.ID_PREFIX_SIZE)
+			{
+				if (getHash(prefix) != null)
+				{
+					// update
+					ContentValues newValues = new ContentValues();
+					newValues.put(DiaryContentProvider.COLUMN_FOODBASE_HASH_HASH, hash);
+					String clause = String.format("%s = ?", DiaryContentProvider.COLUMN_FOODBASE_HASH_GUID);
+					String[] args = { prefix };
+					resolver.update(DiaryContentProvider.CONTENT_FOODBASE_HASH_URI, newValues, clause, args);
+				}
+				else
+				{
+					// insert
+					ContentValues newValues = new ContentValues();
+					newValues.put(DiaryContentProvider.COLUMN_FOODBASE_HASH_GUID, prefix);
+					newValues.put(DiaryContentProvider.COLUMN_FOODBASE_HASH_HASH, hash);
+					resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_HASH_URI, newValues);
+				}
+			}
+			else if (prefix.length() == ObjectService.ID_FULL_SIZE)
+			{
+				final String[] select = { DiaryContentProvider.COLUMN_FOODBASE_GUID };
+				final String where = String.format("%s = ?", DiaryContentProvider.COLUMN_FOODBASE_GUID);
+				final String[] whereArgs = { prefix };
+				Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, select, where, whereArgs,
+						null);
+
+				if (cursor != null && cursor.moveToFirst())
+				{
+					// update
+					ContentValues newValues = new ContentValues();
+					newValues.put(DiaryContentProvider.COLUMN_FOODBASE_HASH, hash);
+					String clause = String.format("%s = ?", DiaryContentProvider.COLUMN_FOODBASE_GUID);
+					String[] args = { prefix };
+					resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, clause, args);
+				}
+				else
+				{
+					// fail
+					throw new NotFoundException(prefix);
+				}
+			}
+			else
+			{
+				throw new IllegalArgumentException(String.format(
+						"Invalid prefix ('%s'), expected: 0..%d or %d chars, found: %d", prefix,
+						ObjectService.ID_PREFIX_SIZE, ObjectService.ID_FULL_SIZE, prefix.length()));
+			}
 		}
 		catch (Exception e)
 		{
