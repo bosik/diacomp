@@ -107,89 +107,75 @@ public class MySQLAccess
 	}
 
 	@SuppressWarnings("static-method")
-	public int insert(String table, Map<String, String> values)
+	public int insert(String table, Map<String, String> values) throws SQLException
 	{
-		try
+		connect();
+
+		// making wildcarded string
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("INSERT INTO " + table + " (");
+		sb.append(Utils.commaSeparated(values.keySet().iterator()));
+		sb.append(") VALUES (");
+		sb.append(Utils.commaSeparatedQuests(Utils.count(values.keySet().iterator())));
+		sb.append(")");
+
+		PreparedStatement preparedStatement = connection.prepareStatement(sb.toString());
+		// TODO: debug only
+		System.out.println(sb);
+
+		// filling wildcards
+
+		int i = 1;
+		for (Entry<String, String> entry : values.entrySet())
 		{
-			connect();
-
-			// making wildcarded string
-
-			StringBuilder sb = new StringBuilder();
-			sb.append("INSERT INTO " + table + " (");
-			sb.append(Utils.commaSeparated(values.keySet().iterator()));
-			sb.append(") VALUES (");
-			sb.append(Utils.commaSeparatedQuests(Utils.count(values.keySet().iterator())));
-			sb.append(")");
-
-			PreparedStatement preparedStatement = connection.prepareStatement(sb.toString());
-			// TODO: debug only
-			System.out.println(sb);
-
-			// filling wildcards
-
-			int i = 1;
-			for (Entry<String, String> entry : values.entrySet())
-			{
-				preparedStatement.setString(i++, entry.getValue());
-			}
-
-			// go
-
-			return preparedStatement.executeUpdate();
+			preparedStatement.setString(i++, entry.getValue());
 		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+
+		// go
+
+		return preparedStatement.executeUpdate();
 	}
 
 	@SuppressWarnings("static-method")
 	public int update(String table, Map<String, String> set, Map<String, String> where) throws SQLException
 	{
-		try
+		connect();
+
+		// making wildcarded string
+		StringBuilder sb = new StringBuilder();
+		sb.append("UPDATE " + table + " SET ");
+		sb.append(Utils.separated(set.keySet().iterator(), ", "));
+		sb.append(" WHERE ");
+		sb.append(Utils.separated(where.keySet().iterator(), " AND "));
+
+		// TODO: debug only
+		System.out.println(sb);
+
+		PreparedStatement preparedStatement = connection.prepareStatement(sb.toString());
+
+		// filling wildcards
+
+		int i = 1;
+		// statement.setString(i++, table);
+
+		for (Entry<String, String> entry : set.entrySet())
 		{
-			connect();
-
-			// making wildcarded string
-			StringBuilder sb = new StringBuilder();
-			sb.append("UPDATE " + table + " SET ");
-			sb.append(Utils.separated(set.keySet().iterator(), ", "));
-			sb.append(" WHERE ");
-			sb.append(Utils.separated(where.keySet().iterator(), " AND "));
-
+			// statement.setString(i++, entry.getKey());
+			preparedStatement.setString(i++, entry.getValue());
 			// TODO: debug only
-			System.out.println(sb);
-
-			PreparedStatement preparedStatement = connection.prepareStatement(sb.toString());
-
-			// filling wildcards
-
-			int i = 1;
-			// statement.setString(i++, table);
-
-			for (Entry<String, String> entry : set.entrySet())
-			{
-				// statement.setString(i++, entry.getKey());
-				preparedStatement.setString(i++, entry.getValue());
-				// TODO: debug only
-				System.out.println("UPDATE: " + entry.getKey() + " = " + entry.getValue());
-			}
-
-			for (Entry<String, String> entry : where.entrySet())
-			{
-				// statement.setString(i++, entry.getKey());
-				preparedStatement.setString(i++, entry.getValue());
-			}
-
-			// go
-
-			return preparedStatement.executeUpdate();
+			System.out.println("UPDATE: " + entry.getKey() + " = " + entry.getValue());
 		}
-		catch (SQLException e)
+
+		for (Entry<String, String> entry : where.entrySet())
 		{
-			throw new RuntimeException(e);
+			// statement.setString(i++, entry.getKey());
+			preparedStatement.setString(i++, entry.getValue());
 		}
+
+		// go
+
+		return preparedStatement.executeUpdate();
 	}
 
 	// private void example()
