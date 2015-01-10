@@ -522,7 +522,7 @@ public class DishBaseLocalService implements DishBaseService
 				// constructing parameters
 				final String[] select = { DiaryContentProvider.COLUMN_DISHBASE_HASH_GUID,
 						DiaryContentProvider.COLUMN_DISHBASE_HASH_HASH };
-				final String where = DiaryContentProvider.COLUMN_DISHBASE_HASH_GUID + " = ?";
+				final String where = DiaryContentProvider.COLUMN_DISHBASE_HASH_GUID + " LIKE ?";
 				final String[] whereArgs = { prefix + "_" };
 
 				// execute query

@@ -537,7 +537,7 @@ public class FoodBaseLocalService implements FoodBaseService
 				// constructing parameters
 				final String[] select = { DiaryContentProvider.COLUMN_FOODBASE_HASH_GUID,
 						DiaryContentProvider.COLUMN_FOODBASE_HASH_HASH };
-				final String where = DiaryContentProvider.COLUMN_FOODBASE_HASH_GUID + " = ?";
+				final String where = DiaryContentProvider.COLUMN_FOODBASE_HASH_GUID + " LIKE ?";
 				final String[] whereArgs = { prefix + "_" };
 
 				// execute query
