@@ -381,8 +381,7 @@ public class DishBaseLocalService implements DishBaseService
 				final String version = String.valueOf(item.getVersion());
 				final String deleted = Utils.formatBooleanInt(item.isDeleted());
 
-				// FIXME: full parsing performed - too slow
-				if (findById(item.getId()) != null)
+				if (recordExists(userId, item.getId()))
 				{
 					// presented, update
 
@@ -456,8 +455,7 @@ public class DishBaseLocalService implements DishBaseService
 			}
 			else if (prefix.length() == ObjectService.ID_FULL_SIZE)
 			{
-				// FIXME: full parsing performed - too slow
-				if (findById(prefix) != null)
+				if (recordExists(userId, prefix))
 				{
 					SortedMap<String, String> set = new TreeMap<String, String>();
 					set.put(COLUMN_DISHBASE_HASH, hash);
@@ -485,5 +483,19 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			throw new RuntimeException(e);
 		}
+	}
+
+	private boolean recordExists(int userId, String id) throws SQLException
+	{
+		final String[] select = { COLUMN_DISHBASE_GUID };
+		final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DISHBASE_USER, COLUMN_DISHBASE_GUID);
+		final String[] whereArgs = { String.valueOf(userId), id };
+		final String order = null;
+
+		ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
+		boolean result = set.first();
+
+		set.close();
+		return result;
 	}
 }

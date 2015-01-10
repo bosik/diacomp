@@ -183,17 +183,24 @@ public class DiaryLocalService implements DiaryService
 
 	private boolean recordExists(String id)
 	{
-		// construct parameters
-		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID };
-		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
-		String[] clauseArgs = { id };
-		String sortOrder = null;
+		final String[] select = { DiaryContentProvider.COLUMN_DIARY_GUID };
+		final String where = String.format("%s = ?", DiaryContentProvider.COLUMN_DIARY_GUID);
+		final String[] whereArgs = { id };
+		final String sortOrder = null;
 
-		// execute
-		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
-				sortOrder);
+		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, select, where, whereArgs, sortOrder);
 
-		return cursor != null && cursor.moveToFirst();
+		try
+		{
+			return cursor != null && cursor.moveToFirst();
+		}
+		finally
+		{
+			if (cursor != null)
+			{
+				cursor.close();
+			}
+		}
 	}
 
 	@Override
