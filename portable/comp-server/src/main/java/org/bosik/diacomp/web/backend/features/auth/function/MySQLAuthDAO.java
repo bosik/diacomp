@@ -37,15 +37,17 @@ public class MySQLAuthDAO implements AuthDAO
 		try
 		{
 			String hash = md5(pass);
-			String clause = String.format("(%s = ?) AND (%s = ?)", COLUMN_USER_LOGIN, COLUMN_USER_HASHPASS);
 
-			ResultSet set = db.select(TABLE_USER, clause, null, login, hash);
+			final String[] select = { COLUMN_USER_ID };
+			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_USER_LOGIN, COLUMN_USER_HASHPASS);
+			final String[] whereArgs = { login, hash };
+
+			ResultSet set = db.select(TABLE_USER, select, where, whereArgs, null);
 
 			if (set.next())
 			{
-				String s_id = set.getString(COLUMN_USER_ID);
+				int id = set.getInt(COLUMN_USER_ID);
 				set.close();
-				int id = Integer.parseInt(s_id);
 
 				// TODO: update DateLogin field
 
@@ -86,15 +88,17 @@ public class MySQLAuthDAO implements AuthDAO
 	{
 		try
 		{
-			String clause = String.format("(%s = ?)", COLUMN_USER_LOGIN);
+			final String[] select = { COLUMN_USER_ID };
+			final String where = String.format("(%s = ?)", COLUMN_USER_LOGIN);
+			final String[] whereArgs = { userName };
 
-			ResultSet set = db.select(TABLE_USER, clause, null, userName);
+			ResultSet set = db.select(TABLE_USER, select, where, whereArgs, null);
 
 			if (set.next())
 			{
-				String s_id = set.getString(COLUMN_USER_ID);
+				int id = set.getInt(COLUMN_USER_ID);
 				set.close();
-				return Integer.parseInt(s_id);
+				return id;
 			}
 			else
 			{

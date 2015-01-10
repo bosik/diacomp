@@ -110,10 +110,14 @@ public class DiaryLocalService implements DiaryService
 		try
 		{
 			int userId = getCurrentUserId();
-			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_DIARY_USER, userId, COLUMN_DIARY_GUID,
-					guid);
 
-			ResultSet set = db.select(TABLE_DIARY, clause, null);
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DIARY_USER, COLUMN_DIARY_GUID);
+			final String[] whereArgs = { String.valueOf(userId), guid };
+			final String order = null;
+
+			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
+
 			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
@@ -137,12 +141,13 @@ public class DiaryLocalService implements DiaryService
 
 		try
 		{
-			String clause = String.format("(%s = %d) AND (%s LIKE '%s%%')", COLUMN_DIARY_USER, userId,
-					COLUMN_DIARY_GUID, prefix);
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_DIARY_USER, COLUMN_DIARY_GUID);
+			final String[] whereArgs = { String.valueOf(userId), prefix + "%" };
+			final String order = COLUMN_DIARY_TIMECACHE;
 
-			String order = COLUMN_DIARY_TIMECACHE;
+			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
 
-			ResultSet set = db.select(TABLE_DIARY, clause, order);
 			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
 			set.close();
 			return result;
@@ -160,12 +165,13 @@ public class DiaryLocalService implements DiaryService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d) AND (%s >= '%s')", COLUMN_DIARY_USER, userId,
-					COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(time));
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?) AND (%s >= ?)", COLUMN_DIARY_USER, COLUMN_DIARY_TIMESTAMP);
+			final String[] whereArgs = { String.valueOf(userId), Utils.formatTimeUTC(time) };
+			final String order = COLUMN_DIARY_TIMECACHE;
 
-			String order = COLUMN_DIARY_TIMECACHE;
+			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
 
-			ResultSet set = db.select(TABLE_DIARY, clause, order);
 			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
 			set.close();
 			return result;
@@ -183,19 +189,31 @@ public class DiaryLocalService implements DiaryService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d) AND (%s >= '%s') AND (%s <= '%s')", COLUMN_DIARY_USER, userId,
-					COLUMN_DIARY_TIMECACHE, Utils.formatTimeUTC(startTime), COLUMN_DIARY_TIMECACHE,
-					Utils.formatTimeUTC(endTime));
+			final String[] select = null; // all
 
-			if (!includeRemoved)
+			String where;
+			String[] whereArgs;
+
+			if (includeRemoved)
 			{
-				clause += String.format(" AND (%s = '%s')", COLUMN_DIARY_DELETED, Utils.formatBooleanInt(false));
+				where = String.format("(%s = ?) AND (%s >= ?) AND (%s <= ?)", COLUMN_DIARY_USER,
+						COLUMN_DIARY_TIMECACHE, COLUMN_DIARY_TIMECACHE);
+				whereArgs = new String[] { String.valueOf(userId), Utils.formatTimeUTC(startTime),
+						Utils.formatTimeUTC(endTime) };
+			}
+			else
+			{
+				where = String.format("(%s = ?) AND (%s >= ?) AND (%s <= ?) AND (%s = ?)", COLUMN_DIARY_USER,
+						COLUMN_DIARY_TIMECACHE, COLUMN_DIARY_TIMECACHE, COLUMN_DIARY_DELETED);
+				whereArgs = new String[] { String.valueOf(userId), Utils.formatTimeUTC(startTime),
+						Utils.formatTimeUTC(endTime), Utils.formatBooleanInt(false) };
 			}
 
-			String order = COLUMN_DIARY_TIMECACHE;
+			final String order = COLUMN_DIARY_TIMECACHE;
 
 			// System.out.println("Requesting SQL clause: " + clause);
-			ResultSet set = db.select(TABLE_DIARY, clause, order);
+			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
+
 			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
 			set.close();
 			return result;
@@ -213,10 +231,12 @@ public class DiaryLocalService implements DiaryService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d) AND (%s = '%s')", COLUMN_DIARY_HASH_USER, userId,
-					COLUMN_DIARY_HASH_GUID, prefix);
+			final String[] select = { COLUMN_DIARY_HASH_HASH };
+			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DIARY_HASH_USER, COLUMN_DIARY_HASH_GUID);
+			final String[] whereArgs = { String.valueOf(userId), prefix };
+			final String order = null;
 
-			ResultSet set = db.select(TABLE_DIARY_HASH, clause, null);
+			ResultSet set = db.select(TABLE_DIARY_HASH, select, where, whereArgs, order);
 
 			String hash = null;
 
@@ -241,9 +261,13 @@ public class DiaryLocalService implements DiaryService
 		{
 			int userId = getCurrentUserId();
 
-			String clause = String.format("(%s = %d) AND (%s LIKE '%s')", COLUMN_DIARY_HASH_USER, userId,
-					COLUMN_DIARY_HASH_GUID, prefix + "_");
-			ResultSet set = db.select(TABLE_DIARY_HASH, clause, null);
+			final String[] select = { COLUMN_DIARY_HASH_GUID, COLUMN_DIARY_HASH_HASH };
+			final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_DIARY_HASH_USER,
+					COLUMN_DIARY_HASH_GUID);
+			final String[] whereArgs = { String.valueOf(userId), prefix + "_" };
+			final String order = null;
+
+			ResultSet set = db.select(TABLE_DIARY_HASH, select, where, whereArgs, order);
 
 			Map<String, String> result = new HashMap<String, String>();
 			while (set.next())
@@ -326,14 +350,16 @@ public class DiaryLocalService implements DiaryService
 	}
 
 	@SuppressWarnings("static-method")
-	private String getItemHash(int userId, String id)
+	public String getDataHash(int userId, String id)
 	{
 		try
 		{
-			String clause = String
-					.format("(%s = %d) AND (%s = '%s')", COLUMN_DIARY_USER, userId, COLUMN_DIARY_GUID, id);
+			final String[] select = { COLUMN_DIARY_HASH };
+			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DIARY_USER, COLUMN_DIARY_GUID);
+			final String[] whereArgs = { String.valueOf(userId), id };
+			final String order = null;
 
-			ResultSet set = db.select(TABLE_DIARY, clause, null);
+			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
 
 			String hash = null;
 
@@ -384,7 +410,7 @@ public class DiaryLocalService implements DiaryService
 
 	private void updateHashTree(int userId, String id, String newItemHash)
 	{
-		String oldItemHash = getItemHash(userId, id);
+		String oldItemHash = getDataHash(userId, id);
 		String hashDiff = Utils.subHash(newItemHash, oldItemHash);
 
 		for (int i = 0; i <= ObjectService.ID_PREFIX_SIZE; i++)

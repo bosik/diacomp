@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.bosik.diacomp.web.backend.common.Config;
@@ -58,12 +57,12 @@ public class MySQLAccess
 	 * @throws SQLException
 	 */
 	@SuppressWarnings("static-method")
-	public ResultSet select(String table, List<String> columns, String where, String[] whereArgs, String order,
-			int offset, int limit) throws SQLException
+	public ResultSet select(String table, String[] columns, String where, String[] whereArgs, String order, int offset,
+			int limit) throws SQLException
 	{
 		connect();
 
-		String projection = columns == null ? "*" : Utils.commaSeparated(columns.iterator()).toString();
+		String projection = columns == null ? "*" : Utils.commaSeparated(columns).toString();
 
 		String sql = String.format("SELECT %s FROM %s WHERE %s", projection, table, where);
 		if ((order != null) && !order.isEmpty())
@@ -96,15 +95,15 @@ public class MySQLAccess
 	 * @return
 	 * @throws SQLException
 	 */
-	public ResultSet select(String table, String where, String order, String... whereArgs) throws SQLException
+	public ResultSet select(String table, String where, String order, String[] whereArgs) throws SQLException
 	{
 		return select(table, null, where, whereArgs, order, -1, -1);
 	}
 
-	public ResultSet select(String table, List<String> fields, String where, String[] whereArgs, String order)
+	public ResultSet select(String table, String[] columns, String where, String[] whereArgs, String order)
 			throws SQLException
 	{
-		return select(table, fields, where, whereArgs, order, -1, -1);
+		return select(table, columns, where, whereArgs, order, -1, -1);
 	}
 
 	@SuppressWarnings("static-method")
