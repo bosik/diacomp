@@ -248,6 +248,28 @@ public class FoodBaseLocalService implements FoodBaseService
 		}
 	}
 
+	private boolean recordExists(String id)
+	{
+		final String[] select = { DiaryContentProvider.COLUMN_FOODBASE_GUID };
+		final String where = String.format("%s = ?", DiaryContentProvider.COLUMN_FOODBASE_GUID);
+		final String[] whereArgs = { id };
+		final String sortOrder = null;
+
+		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, select, where, whereArgs, sortOrder);
+
+		try
+		{
+			return cursor != null && cursor.moveToFirst();
+		}
+		finally
+		{
+			if (cursor != null)
+			{
+				cursor.close();
+			}
+		}
+	}
+
 	// private List<SearchResult> loadHeadersFromDB(String name)
 	// {
 	// long time = System.currentTimeMillis();
@@ -608,8 +630,7 @@ public class FoodBaseLocalService implements FoodBaseService
 				// TODO: DB has new row, cache still doesn't
 				// Thus app tries to insert row and ends up with PK constraint violation
 
-				// FIXME: full parsing performed - too slow
-				if (findById(item.getId()) != null)
+				if (recordExists(item.getId()))
 				{
 					Log.v(TAG, "Updating item " + item.getId() + ": " + content);
 					String clause = DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
@@ -684,13 +705,7 @@ public class FoodBaseLocalService implements FoodBaseService
 			}
 			else if (prefix.length() == ObjectService.ID_FULL_SIZE)
 			{
-				final String[] select = { DiaryContentProvider.COLUMN_FOODBASE_GUID };
-				final String where = String.format("%s = ?", DiaryContentProvider.COLUMN_FOODBASE_GUID);
-				final String[] whereArgs = { prefix };
-				Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, select, where, whereArgs,
-						null);
-
-				if (cursor != null && cursor.moveToFirst())
+				if (recordExists(prefix))
 				{
 					// update
 					ContentValues newValues = new ContentValues();

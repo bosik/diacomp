@@ -357,8 +357,7 @@ public class DiaryLocalService implements DiaryService
 				// before persisting item
 				updateHashTree(userId, id, hash);
 
-				// FIXME: full parsing performed - too slow
-				if (findById(item.getId()) != null)
+				if (recordExists(userId, item.getId()))
 				{
 					// presented, update
 
@@ -433,8 +432,7 @@ public class DiaryLocalService implements DiaryService
 			}
 			else if (prefix.length() == ObjectService.ID_FULL_SIZE)
 			{
-				// FIXME: full parsing performed - too slow
-				if (findById(prefix) != null)
+				if (recordExists(userId, prefix))
 				{
 					SortedMap<String, String> set = new TreeMap<String, String>();
 					set.put(COLUMN_DIARY_HASH, hash);
@@ -476,5 +474,19 @@ public class DiaryLocalService implements DiaryService
 			String newHash = Utils.sumHash(oldHash, hashDiff);
 			setHash(prefix, newHash);
 		}
+	}
+
+	private boolean recordExists(int userId, String id) throws SQLException
+	{
+		final String[] select = { COLUMN_DIARY_GUID };
+		final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DIARY_USER, COLUMN_DIARY_GUID);
+		final String[] whereArgs = { String.valueOf(userId), id };
+		final String order = null;
+
+		ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
+		boolean result = set.first();
+
+		set.close();
+		return result;
 	}
 }
