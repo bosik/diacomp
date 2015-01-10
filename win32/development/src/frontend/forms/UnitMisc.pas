@@ -413,7 +413,7 @@ begin
 end;
 
 procedure TFormMisc.Button6Click(Sender: TObject);
-var
+{var
   M: array of
   record
     Name: string;
@@ -441,7 +441,7 @@ var
 var
   Meal: TMealRecord;
   s: TStringList;
-  d, i, k: integer;
+  d, i, k: integer; }
 begin
   // TODO: restore
   {for d := Trunc(GetTimeUTC() - 30) to Trunc(GetTimeUTC()) do
