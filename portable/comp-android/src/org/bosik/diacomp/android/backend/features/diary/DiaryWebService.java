@@ -218,4 +218,10 @@ public class DiaryWebService implements DiaryService
 		item.setDeleted(true);
 		save(Arrays.<Versioned<DiaryRecord>> asList(item));
 	}
+
+	@Override
+	public void setHash(String prefix, String hash)
+	{
+		throw new UnsupportedOperationException("Can't set hash via REST");
+	}
 }

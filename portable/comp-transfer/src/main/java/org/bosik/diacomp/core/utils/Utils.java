@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.UUID;
+import org.bosik.diacomp.core.services.ObjectService;
 import org.json.JSONArray;
 
 public class Utils
@@ -21,11 +22,6 @@ public class Utils
 	/**
 	 * CONSTANTS
 	 */
-
-	/**
-	 * Size of standard GUID
-	 */
-	public static final int			GUID_SIZE		= 32;
 
 	// Energy values
 
@@ -840,15 +836,15 @@ public class Utils
 	 */
 	public static String sumHash(String a, String b)
 	{
-		if (a != null && a.length() != GUID_SIZE)
+		if (a != null && a.length() != ObjectService.ID_FULL_SIZE)
 		{
 			throw new IllegalArgumentException(String.format("Invalid hash #1 ('%s'), expected: %d chars, found: %d",
-					a, GUID_SIZE, a.length()));
+					a, ObjectService.ID_FULL_SIZE, a.length()));
 		}
-		if (b.length() != GUID_SIZE)
+		if (b.length() != ObjectService.ID_FULL_SIZE)
 		{
 			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d",
-					b, GUID_SIZE, b.length()));
+					b, ObjectService.ID_FULL_SIZE, b.length()));
 		}
 
 		if (a == null)
@@ -859,8 +855,8 @@ public class Utils
 		a = a.toLowerCase();
 		b = b.toLowerCase();
 
-		StringBuilder result = new StringBuilder(GUID_SIZE);
-		for (int i = 0; i < GUID_SIZE; i++)
+		StringBuilder result = new StringBuilder(ObjectService.ID_FULL_SIZE);
+		for (int i = 0; i < ObjectService.ID_FULL_SIZE; i++)
 		{
 			char ca = a.charAt(i);
 			char cb = b.charAt(i);
@@ -879,15 +875,15 @@ public class Utils
 	 */
 	public static String subHash(String a, String b)
 	{
-		if (a.length() != GUID_SIZE)
+		if (a.length() != ObjectService.ID_FULL_SIZE)
 		{
 			throw new IllegalArgumentException(String.format("Invalid hash #1 ('%s'), expected: %d chars, found: %d",
-					a, GUID_SIZE, a.length()));
+					a, ObjectService.ID_FULL_SIZE, a.length()));
 		}
-		if (b != null && b.length() != GUID_SIZE)
+		if (b != null && b.length() != ObjectService.ID_FULL_SIZE)
 		{
 			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d",
-					b, GUID_SIZE, b.length()));
+					b, ObjectService.ID_FULL_SIZE, b.length()));
 		}
 
 		if (b == null)
@@ -898,8 +894,8 @@ public class Utils
 		a = a.toLowerCase();
 		b = b.toLowerCase();
 
-		StringBuilder result = new StringBuilder(GUID_SIZE);
-		for (int i = 0; i < GUID_SIZE; i++)
+		StringBuilder result = new StringBuilder(ObjectService.ID_FULL_SIZE);
+		for (int i = 0; i < ObjectService.ID_FULL_SIZE; i++)
 		{
 			char ca = a.charAt(i);
 			char cb = b.charAt(i);

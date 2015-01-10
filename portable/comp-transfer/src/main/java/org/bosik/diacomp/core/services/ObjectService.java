@@ -10,6 +10,13 @@ import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 
 public interface ObjectService<T>
 {
+	/**
+	 * Size of standard ID
+	 */
+	static final int	ID_FULL_SIZE	= 32;
+	/**
+	 * Size of ID prefix used in hash trees
+	 */
 	static final int	ID_PREFIX_SIZE	= 4;
 
 	/**
@@ -56,7 +63,7 @@ public interface ObjectService<T>
 	 * 
 	 * @param prefix
 	 *            Must be 0..ID_PREFIX_SIZE chars long
-	 * @return Hash for specified ID prefix, or empty string if hash not found
+	 * @return Hash for specified ID prefix, or null if hash not found
 	 * @throws CommonServiceException
 	 */
 	String getHash(String prefix) throws CommonServiceException;
@@ -78,4 +85,13 @@ public interface ObjectService<T>
 	 * @throws CommonServiceException
 	 */
 	void save(List<Versioned<T>> items) throws CommonServiceException;
+
+	/**
+	 * Sets the hash for specified node
+	 * 
+	 * @param prefix
+	 *            Must be either 0..ID_PREFIX_SIZE or full-size chars long
+	 * @param hash
+	 */
+	void setHash(String prefix, String hash);
 }
