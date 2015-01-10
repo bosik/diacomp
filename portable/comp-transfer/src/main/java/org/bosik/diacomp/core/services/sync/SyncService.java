@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.ObjectService;
+import org.bosik.diacomp.core.utils.Utils;
 
 public class SyncService
 {
@@ -285,7 +286,7 @@ public class SyncService
 
 		System.out.println("Hashes for " + prefix + ": " + hash1 + " " + hash2);
 
-		if (hash1 != null && hash1.equals(hash2) || hash1 == hash2)
+		if (Utils.equals(hash1, hash2))
 		{
 			return 0;
 		}
@@ -348,7 +349,7 @@ public class SyncService
 				String key = prefix + HashUtils.PATTERN.charAt(i);
 				String hash1 = hashes1.get(key);
 				String hash2 = hashes2.get(key);
-				if (hash1 != hash2)
+				if (!Utils.equals(hash1, hash2))
 				{
 					result += synchronizeChildren(service1, service2, key);
 				}
@@ -380,7 +381,7 @@ public class SyncService
 
 		String hash1 = service1.getHash("");
 		String hash2 = service2.getHash("");
-		if (hash1 != hash2)
+		if (!Utils.equals(hash1, hash2))
 		{
 			return synchronizeChildren(service1, service2, "");
 		}

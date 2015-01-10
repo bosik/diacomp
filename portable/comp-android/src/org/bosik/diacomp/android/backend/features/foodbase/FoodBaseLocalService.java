@@ -552,7 +552,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 					Map<String, String> result = new HashMap<String, String>();
 
-					if (cursor.moveToNext())
+					while (cursor.moveToNext())
 					{
 						String id = cursor.getString(indexId);
 						String hash = cursor.getString(indexHash);
@@ -588,7 +588,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 					Map<String, String> result = new HashMap<String, String>();
 
-					if (cursor.moveToNext())
+					while (cursor.moveToNext())
 					{
 						String id = cursor.getString(indexId);
 						String hash = cursor.getString(indexHash);
