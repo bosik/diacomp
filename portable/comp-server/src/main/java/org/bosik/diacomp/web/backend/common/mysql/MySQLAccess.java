@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.bosik.diacomp.web.backend.common.Config;
@@ -41,26 +42,30 @@ public class MySQLAccess
 	 * 
 	 * @param table
 	 *            Table name
+	 * @param columns
+	 *            A list of which columns to return. Passing null will return all columns, which is inefficient.
 	 * @param where
 	 *            Selection clause
+	 * @param whereArgs
+	 *            Arguments for clause
 	 * @param order
 	 *            Name of column to be ordered by
 	 * @param offset
 	 *            Index of first row to select
 	 * @param limit
 	 *            Max number of rows to be selected
-	 * @param params
-	 *            Arguments for clause
 	 * @return
 	 * @throws SQLException
 	 */
 	@SuppressWarnings("static-method")
-	public ResultSet select(String table, String where, String order, int offset, int limit, String... params)
-			throws SQLException
+	public ResultSet select(String table, List<String> columns, String where, String[] whereArgs, String order,
+			int offset, int limit) throws SQLException
 	{
 		connect();
 
-		String sql = String.format("SELECT * FROM %s WHERE %s", table, where);
+		String projection = columns == null ? "*" : Utils.commaSeparated(columns.iterator()).toString();
+
+		String sql = String.format("SELECT %s FROM %s WHERE %s", projection, table, where);
 		if ((order != null) && !order.isEmpty())
 		{
 			sql += " ORDER BY " + order;
@@ -72,19 +77,34 @@ public class MySQLAccess
 		}
 
 		PreparedStatement preparedStatement = connection.prepareStatement(sql);
-		for (int i = 0; i < params.length; i++)
+		for (int i = 0; i < whereArgs.length; i++)
 		{
-			preparedStatement.setString(i + 1, params[i]);
+			preparedStatement.setString(i + 1, whereArgs[i]);
 		}
 
 		// Don't close prepared statement!
 		return preparedStatement.executeQuery();
 	}
 
-	// the resource is returned to invoker
-	public ResultSet select(String table, String where, String order, String... params) throws SQLException
+	/**
+	 * Selects all fields
+	 * 
+	 * @param table
+	 * @param where
+	 * @param order
+	 * @param whereArgs
+	 * @return
+	 * @throws SQLException
+	 */
+	public ResultSet select(String table, String where, String order, String... whereArgs) throws SQLException
 	{
-		return select(table, where, order, -1, -1, params);
+		return select(table, null, where, whereArgs, order, -1, -1);
+	}
+
+	public ResultSet select(String table, List<String> fields, String where, String[] whereArgs, String order)
+			throws SQLException
+	{
+		return select(table, fields, where, whereArgs, order, -1, -1);
 	}
 
 	@SuppressWarnings("static-method")
