@@ -164,7 +164,13 @@ begin
   try
     json := base as TlkJSONobject;
     FCode := (json['code'] as TlkJSONnumber).Value;
-    FResponse := TlkJSON.GenerateText(json['resp']);
+
+    case json['resp'].SelfType of
+      jsString:  FResponse := (json['resp'] as TlkJSONstring).Value;
+      jsNumber:  FResponse := IntToStr((json['resp'] as TlkJSONnumber).Value);
+      else FResponse := TlkJSON.GenerateText(json['resp']);
+    end;
+
   finally
     base.Free;
   end else
@@ -287,6 +293,7 @@ function TDiacompClient.DoPut(URL: string; const Par: TParamList; Autocheck: boo
 {======================================================================================================================}
 var
   Data: TStrings;
+  Stream: TStream;
   i: integer;
   Tick: cardinal;
   Req: string;
@@ -307,7 +314,8 @@ begin
     Req := Trim(Data.Text);
     Req := ReplaceAll(Req, '%', '%25');
 
-    S := FHTTP.Put(URL, TStringStream.Create(Req));
+    Stream := TStringStream.Create(Req);
+    S := FHTTP.Put(URL, Stream);
 
     {#}Log(VERBOUS, Format('TDiacompClient.DoPut(): responsed in %d msec: "%s"', [GetTickCount - Tick, S]));
 
@@ -316,6 +324,7 @@ begin
       CheckResponse(Result);
   finally
     //FHTTP.Disconnect;
+    Stream.Free;
     Data.Free;
     // {#}PrintProtocolVersion('TDiacompClient.DoPut.2');
   end;
