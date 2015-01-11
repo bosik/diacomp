@@ -72,6 +72,7 @@ var
   
 const
   ShowUpdateWarning = True;
+  CURRENT_VERSION   = 5;
 
 { TRecordData }
 
@@ -107,17 +108,21 @@ procedure TRecordData.Serialize(Rec: TCustomRecord);
 var
   Json: TlkJSONobject;
 begin
-  Json := DiaryPageSerializer.SerializeDiaryRecord(Rec);
+  try
+    Json := DiaryPageSerializer.SerializeDiaryRecord(Rec);
 
-  ID := Rec.ID;
-  Hash := Rec.Hash;
-  TimeStamp := Rec.TimeStamp;
-  Version := Rec.Version;
-  Deleted := Rec.Deleted;
-  Data := TlkJSON.GenerateText(Json);
+    ID := Rec.ID;
+    Hash := Rec.Hash;
+    TimeStamp := Rec.TimeStamp;
+    Version := Rec.Version;
+    Deleted := Rec.Deleted;
+    Data := TlkJSON.GenerateText(Json);
 
-  // cache
-  Time := Rec.Time;
+    // cache
+    Time := Rec.Time;
+  finally
+    Json.Free;
+  end;
 end;
 
 {======================================================================================================================}
@@ -337,6 +342,48 @@ procedure TDiaryLocalSource.LoadFromFile(const FileName: string);
   end;     }
 
   procedure Load_v4(S: TStrings);
+
+    function InsertHash(S: string): string;
+    var
+      i, k: integer;
+    begin
+      i := 1;
+      k := 0;
+      while (i <= Length(S)) do
+      begin
+        if (S[i] = #9) then
+        begin
+          inc(k);
+          if (k = 2) then
+            break;
+        end;
+        inc(i);
+      end;
+
+      Insert(CreateCompactGUID() + #9, S, i + 1);
+      Result := S;
+    end;
+
+  var
+    i, k: integer;
+  begin
+    s.Delete(0);
+
+    SetLength(FRecords, S.Count);
+    k := 0;
+
+    for i := 0 to S.Count - 1 do
+    if (S[i] <> '') then
+    begin
+      FRecords[k] := TRecordData.Create;
+      FRecords[k].Read(InsertHash(S[i]));
+      inc(k);
+    end;
+
+    SetLength(FRecords, k);
+  end;
+
+  procedure Load_v5(S: TStrings);
   var
     i, k: integer;
   begin
@@ -380,6 +427,7 @@ begin
       case BaseVersion of
         //3:    Load_v3(s);
         4:    Load_v4(s);
+        5:    Load_v5(s);
         else raise Exception.Create('Unsupported database format');
       end;
     end else
@@ -394,6 +442,9 @@ begin
   finally
     s.Free;
   end;
+
+  if (baseVersion < CURRENT_VERSION) then
+    SaveToFile(FileName);
 
   FModified := False;  // да)
 end;
@@ -412,7 +463,7 @@ begin
 
   S := TStringList.Create;
   try
-    s.Add('VERSION=4');
+    s.Add('VERSION=' + IntToStr(CURRENT_VERSION));
 
     for i := 0 to High(FRecords) do
     begin
