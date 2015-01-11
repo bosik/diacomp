@@ -22,6 +22,7 @@ import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
+import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -643,6 +644,8 @@ public class FoodBaseLocalService implements FoodBaseService
 					newValues.put(DiaryContentProvider.COLUMN_FOODBASE_GUID, item.getId());
 					resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues);
 				}
+
+				HashUtils.updateHashBranch(this, item.getId().substring(0, ID_PREFIX_SIZE));
 			}
 
 			for (Versioned<FoodItem> item : items)

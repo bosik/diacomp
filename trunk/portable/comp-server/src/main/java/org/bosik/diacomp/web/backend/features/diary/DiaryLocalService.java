@@ -225,34 +225,6 @@ public class DiaryLocalService implements DiaryService
 		}
 	}
 
-	@SuppressWarnings("static-method")
-	private String getDataHash(int userId, String id)
-	{
-		try
-		{
-			final String[] select = { COLUMN_DIARY_HASH };
-			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DIARY_USER, COLUMN_DIARY_GUID);
-			final String[] whereArgs = { String.valueOf(userId), id };
-			final String order = null;
-
-			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
-
-			String hash = null;
-
-			if (set.next())
-			{
-				hash = set.getString(COLUMN_DIARY_HASH);
-			}
-
-			set.close();
-			return hash;
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
 	@Override
 	public String getHash(String prefix)
 	{
@@ -463,6 +435,34 @@ public class DiaryLocalService implements DiaryService
 		}
 	}
 
+	@SuppressWarnings("static-method")
+	private String getDataHash(int userId, String id)
+	{
+		try
+		{
+			final String[] select = { COLUMN_DIARY_HASH };
+			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DIARY_USER, COLUMN_DIARY_GUID);
+			final String[] whereArgs = { String.valueOf(userId), id };
+			final String order = null;
+
+			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
+
+			String hash = null;
+
+			if (set.next())
+			{
+				hash = set.getString(COLUMN_DIARY_HASH);
+			}
+
+			set.close();
+			return hash;
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
 	private void updateHashTree(int userId, String id, String newItemHash)
 	{
 		String oldItemHash = getDataHash(userId, id);
@@ -477,6 +477,7 @@ public class DiaryLocalService implements DiaryService
 		}
 	}
 
+	@SuppressWarnings("static-method")
 	private boolean recordExists(int userId, String id) throws SQLException
 	{
 		final String[] select = { COLUMN_DIARY_GUID };

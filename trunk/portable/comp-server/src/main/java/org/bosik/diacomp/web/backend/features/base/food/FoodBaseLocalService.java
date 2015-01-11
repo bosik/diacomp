@@ -21,6 +21,7 @@ import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
+import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 import org.bosik.diacomp.web.backend.features.auth.service.AuthService;
@@ -415,6 +416,8 @@ public class FoodBaseLocalService implements FoodBaseService
 
 					db.insert(TABLE_FOODBASE, set);
 				}
+
+				HashUtils.updateHashBranch(this, item.getId().substring(0, ID_PREFIX_SIZE));
 			}
 		}
 		catch (SQLException e)
@@ -485,6 +488,7 @@ public class FoodBaseLocalService implements FoodBaseService
 		}
 	}
 
+	@SuppressWarnings("static-method")
 	private boolean recordExists(int userId, String id) throws SQLException
 	{
 		final String[] select = { COLUMN_FOODBASE_GUID };
