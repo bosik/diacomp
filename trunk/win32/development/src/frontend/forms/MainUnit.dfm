@@ -34,7 +34,7 @@ object Form1: TForm1
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 884
+    Top = 908
     Width = 1241
     Height = 19
     Panels = <
@@ -60,12 +60,13 @@ object Form1: TForm1
     Top = 0
     Width = 1241
     Height = 30
+    UseSystemFont = False
     ActionManager = ActionManager
     ColorMap.HighlightColor = 14410210
     ColorMap.BtnSelectedColor = clBtnFace
     ColorMap.UnusedColor = 14410210
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clMenuText
+    Font.Color = clWindowText
     Font.Height = -14
     Font.Name = 'Tahoma'
     Font.Style = []
@@ -77,7 +78,7 @@ object Form1: TForm1
     Left = 0
     Top = 37
     Width = 1241
-    Height = 847
+    Height = 871
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
@@ -85,7 +86,7 @@ object Form1: TForm1
       Left = 0
       Top = 0
       Width = 1241
-      Height = 847
+      Height = 871
       ActivePage = TabDiary
       Align = alClient
       Font.Charset = DEFAULT_CHARSET
@@ -109,7 +110,7 @@ object Form1: TForm1
         object Splitter4: TSplitter
           Left = 965
           Top = 0
-          Height = 813
+          Height = 837
           Align = alRight
           Color = clSkyBlue
           ParentColor = False
@@ -119,7 +120,7 @@ object Form1: TForm1
           Left = 222
           Top = 0
           Width = 743
-          Height = 813
+          Height = 837
           Align = alClient
           BevelOuter = bvNone
           ParentBackground = True
@@ -128,7 +129,7 @@ object Form1: TForm1
             Left = 0
             Top = 0
             Width = 743
-            Height = 732
+            Height = 756
             VertScrollBar.Increment = 40
             VertScrollBar.Tracking = True
             Align = alClient
@@ -174,7 +175,7 @@ object Form1: TForm1
           end
           object PanelDiaryBottom: TPanel
             Left = 0
-            Top = 732
+            Top = 756
             Width = 743
             Height = 81
             Align = alBottom
@@ -317,7 +318,7 @@ object Form1: TForm1
           Left = 0
           Top = 0
           Width = 222
-          Height = 813
+          Height = 837
           Align = alLeft
           BevelOuter = bvLowered
           BorderWidth = 8
@@ -614,7 +615,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.656915196760000000
+            Date = 40251.111148541670000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -780,7 +781,7 @@ object Form1: TForm1
           Left = 968
           Top = 0
           Width = 265
-          Height = 813
+          Height = 837
           Align = alRight
           BevelOuter = bvLowered
           BorderWidth = 10
@@ -891,7 +892,7 @@ object Form1: TForm1
             Left = 11
             Top = 243
             Width = 243
-            Height = 559
+            Height = 583
             Align = alClient
             Caption = #1055#1086#1076#1073#1086#1088' '#1091#1075#1083#1077#1074#1086#1076#1086#1074
             Color = clWhite
@@ -907,7 +908,7 @@ object Form1: TForm1
               Left = 2
               Top = 18
               Width = 239
-              Height = 539
+              Height = 563
               Align = alClient
               BevelOuter = bvNone
               BorderWidth = 8
@@ -931,7 +932,7 @@ object Form1: TForm1
                 Left = 8
                 Top = 24
                 Width = 223
-                Height = 507
+                Height = 531
                 Align = alClient
                 BorderStyle = bsNone
                 Columns = <
@@ -1135,7 +1136,7 @@ object Form1: TForm1
           end
           object PanelFoodButtons: TPanel
             Left = 9
-            Top = 681
+            Top = 705
             Width = 535
             Height = 58
             Align = alBottom
@@ -1166,7 +1167,7 @@ object Form1: TForm1
           Left = 556
           Top = 65
           Width = 677
-          Height = 748
+          Height = 772
           Align = alClient
           BevelOuter = bvLowered
           BorderWidth = 8
@@ -1271,7 +1272,7 @@ object Form1: TForm1
           end
           object PanelDishButtons: TPanel
             Left = 9
-            Top = 681
+            Top = 705
             Width = 659
             Height = 58
             Align = alBottom
@@ -1340,7 +1341,7 @@ object Form1: TForm1
           Left = 0
           Top = 0
           Width = 249
-          Height = 813
+          Height = 837
           Align = alLeft
           BevelOuter = bvLowered
           BorderWidth = 8
@@ -1565,7 +1566,7 @@ object Form1: TForm1
           Left = 249
           Top = 0
           Width = 984
-          Height = 813
+          Height = 837
           Align = alClient
           BevelOuter = bvLowered
           Caption = #1053#1077#1090' '#1075#1088#1072#1092#1080#1082#1072
@@ -1598,13 +1599,13 @@ object Form1: TForm1
           Left = 0
           Top = 0
           Width = 225
-          Height = 813
+          Height = 837
           Align = alLeft
           Caption = #1056#1077#1082#1086#1088#1076#1099' '#1057#1050
           TabOrder = 0
           DesignSize = (
             225
-            813)
+            837)
           object ButtonBSHistory: TButton
             Left = 9
             Top = 25
@@ -1625,7 +1626,7 @@ object Form1: TForm1
           end
           object ListBS: TListBox
             Left = 2
-            Top = 296
+            Top = 320
             Width = 221
             Height = 515
             Align = alBottom
@@ -1699,16 +1700,16 @@ object Form1: TForm1
           Left = 225
           Top = 0
           Width = 225
-          Height = 813
+          Height = 837
           Align = alLeft
           Caption = #1056#1077#1082#1086#1088#1076#1099' '#1041#1046#1059
           TabOrder = 1
           DesignSize = (
             225
-            813)
+            837)
           object ListCB: TListBox
             Left = 2
-            Top = 56
+            Top = 80
             Width = 221
             Height = 755
             Hint = #1050#1083#1080#1082#1085#1080#1090#1077' '#1076#1074#1072' '#1088#1072#1079#1072' '#1076#1083#1103' '#1087#1077#1088#1077#1093#1086#1076#1072

@@ -573,22 +573,20 @@ uses UnitMisc, UnitLogViewer;
 
 { TForm1 }
 
-(*
+
 {======================================================================================================================}
 procedure SyncProgress(P: integer);
 {======================================================================================================================}
 begin
-  Form1.StatusBar.Panels[1].Text := Format(STATUS_SYNC, [P]);//'Синхронизация ' + IntToStr(p) + '%';
-  FormProcess.LabelHint.Caption := Format(STATUS_SYNC, [P]);//'Синхронизация ' + IntToStr(p) + '%';
+  Form1.StatusBar.Panels[1].Text := Format('Синхронизация %d%%...', [P]);//'Синхронизация ' + IntToStr(p) + '%';
+  FormProcess.LabelHint.Caption := Format('Синхронизация %d%%...', [P]);//'Синхронизация ' + IntToStr(p) + '%';
   Application.ProcessMessages;
 end;
-*)
+
 
 {======================================================================================================================}
 function MySyncDiary(Terminated: TBooleanFunction = nil): integer;
 {======================================================================================================================}
-var
-  T: TDateTime;
 begin
   StartProc('MySyncDiary');
   Result := 0;
@@ -598,8 +596,7 @@ begin
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_DIARY;
     Application.ProcessMessages;
 
-    T := StrToDateTime(Value['LastSync']);
-    Result := SyncSources(LocalSource, WebSource, T - 1);
+    Result := SyncSources(LocalSource, WebSource, SyncProgress);
 
     Value['LastSync'] := DateTimeToStr(GetTimeUTC());
 
@@ -612,7 +609,7 @@ begin
     { база продуктов }
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_FOODBASE;
     Application.ProcessMessages;
-    if (SyncSources(FoodBaseLocal, FoodBaseWeb, T - 1) > 0) then
+    if (SyncSources(FoodBaseLocal, FoodBaseWeb, SyncProgress) > 0) then
     begin
       Form1.EventFoodbaseChanged(True);
     end;
@@ -620,7 +617,7 @@ begin
     { база блюд }
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_DISHBASE;
     Application.ProcessMessages;
-    if (SyncSources(DishBaseLocal, DishBaseWeb, T - 1) > 0) then
+    if (SyncSources(DishBaseLocal, DishBaseWeb, SyncProgress) > 0) then
     begin
       Form1.EventDishbaseChanged(True, True);
       // TODO: workaround
