@@ -18,15 +18,9 @@ type
 
   procedure StartProc(const Name: string);
   procedure FinishProc;
-
-  {$IFDEF LOGGING}
   function GetCurrentLog(): TStrings;
-  {$ENDIF}
-
 
 implementation
-
-{$IFDEF LOGGING}
 
 type
   TStackNode = record
@@ -47,8 +41,6 @@ var
   begin
     Result := LogFile;
   end;
-
-{$ENDIF}
 
 {======================================================================================================================}
 procedure Log(MsgType: TLogType; const Msg: string; Save: boolean = False);
@@ -89,6 +81,7 @@ end;
 procedure StartProc(const Name: string);
 {======================================================================================================================}
 begin
+  {$IFDEF LOGGING}
   if (StackSize = Length(Stack)) then
     SetLength(Stack, Length(Stack)*2 + 1);
 
@@ -98,17 +91,20 @@ begin
   Stack[StackSize - 1].Time := GetTickCount;
 
   Log(VERBOUS, Tabs(StackSize) + '<' + Name + '>');
+  {$ENDIF}
 end;
 
 {======================================================================================================================}
 procedure FinishProc;
 {======================================================================================================================}
 begin
+  {$IFDEF LOGGING}
   if (StackSize > 0) then
   begin
     Log(VERBOUS, Tabs(StackSize) + '</' + Stack[StackSize - 1].Name + '> (' + IntToStr(GetTickCount - Stack[StackSize - 1].Time) + ')');
     dec(StackSize);
   end;
+  {$ENDIF}
 end;
 
 {======================================================================================================================}
