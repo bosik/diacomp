@@ -294,7 +294,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			ResultSet set = db.select(TABLE_FOODBASE_HASH, select, where, whereArgs, order);
 
-			String hash = "";
+			String hash = null;
 
 			if (set.next())
 			{

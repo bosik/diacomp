@@ -294,7 +294,7 @@ public class DishBaseLocalService implements DishBaseService
 
 			ResultSet set = db.select(TABLE_DISHBASE_HASH, select, where, whereArgs, order);
 
-			String hash = "";
+			String hash = null;
 
 			if (set.next())
 			{
