@@ -97,19 +97,20 @@ begin
       FClient.CheckResponse(Response);
     end;
   end;
+  Response.Free;
 end;
 
 {======================================================================================================================}
 function TDiaryWebSource.FindByIdPrefix(Prefix: TCompactGUID): TVersionedList;
 {======================================================================================================================}
 var
-  Query, Resp: string;
+  StdResp: TStdResponse;
+  Query: string;
 begin
   Query := FClient.GetApiURL() + 'diary/guid/' + Prefix;
-  Resp := FClient.DoGetSmart(query).Response;
-  {#}Log(VERBOUS, 'TDiaryWebSource.FindByIdPrefix(): quered OK, Resp = "' + Resp + '"');
-
-  Result := RecordToVersioned(ParseRecordList(Resp));
+  StdResp := FClient.DoGetSmart(query) ;
+  Result := RecordToVersioned(ParseRecordList(StdResp.Response));
+  StdResp.Free;
 end;
 
 {======================================================================================================================}
@@ -147,13 +148,13 @@ end;
 function TDiaryWebSource.GetHash(Prefix: TCompactGUID): TCompactGUID;
 {======================================================================================================================}
 var
+  StdResp: TStdResponse;
   Query, Resp: string;
 begin
   Query := FClient.GetApiURL() + 'diary/hash/' + Prefix;
-  Resp := FClient.DoGetSmart(query).Response;
-  {#}Log(VERBOUS, 'TDiaryWebSource.GetHash(): quered OK, Resp = "' + Resp + '"');
-
-  Result := Resp;
+  StdResp := FClient.DoGetSmart(query);
+  Result := StdResp.Response;
+  StdResp.Free;
 end;
 
 {======================================================================================================================}
@@ -161,7 +162,8 @@ procedure TDiaryWebSource.Save(const Recs: TVersionedList);
 {======================================================================================================================}
 var
   Par: TParamList;
-  //Response: TStdResponse;
+  json: TlkJSONlist;
+  Response: TStdResponse;
 begin
   // заглушка
   if (Length(Recs) = 0) then
@@ -170,15 +172,19 @@ begin
   end;
 
   SetLength(Par, 1);
-  par[0] := 'items=' + JsonWrite(SerializeVersionedDiaryRecords(VersionedToRecord(Recs)));
+  json := SerializeVersionedDiaryRecords(VersionedToRecord(Recs));
+  par[0] := 'items=' + JsonWrite(json);
+  json.Free;
 
-  {Response :=} FClient.DoPutSmart(FClient.GetApiURL() + 'diary/', Par);
+  Response := FClient.DoPutSmart(FClient.GetApiURL() + 'diary/', Par);
 
   // TODO: check response, throw exception if non-zero
   // Response.Code = 0     it's ok
   // Response.Code = 500   Internal server error
   // Response.Code = xxx   Connection error
   // etc.
+
+  Response.Free;
 end;
 
 end.
