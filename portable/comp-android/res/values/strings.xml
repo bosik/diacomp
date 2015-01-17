@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Compensation</string>
+    <string name="app_name">Diacomp Stable</string>
     <string name="common_gramm">g</string>
     <string name="common_bs_unit_mmol">mmol/l</string>
     <string name="common_rectype_blood">Blood sugar</string>
@@ -54,7 +54,7 @@
     <string name="main_option_preferences">Preferences</string>
     <string name="main_option_sync">Sync</string>
     <string name="main_option_test">Test</string>
-    <string name="main_title">Compensation</string>
+    <string name="main_title">Diacomp Stable</string>
     <string name="preferences_sync">Account</string>
     <string name="preferences_sync_password">Password</string>
     <string name="preferences_sync_server">Server</string>

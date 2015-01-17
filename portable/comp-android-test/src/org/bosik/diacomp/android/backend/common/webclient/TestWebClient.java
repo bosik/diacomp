@@ -1,7 +1,7 @@
 package org.bosik.diacomp.android.backend.common.webclient;
 
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.WebClientException;
-import org.bosik.diacomp.android.test.R;
+import org.bosik.diacomp.android.v1.test.R;
 import android.test.AndroidTestCase;
 
 public class TestWebClient extends AndroidTestCase

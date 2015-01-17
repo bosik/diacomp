@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
-import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.v1.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.utils.ErrorHandler;

@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.v1.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.FoodMassed;

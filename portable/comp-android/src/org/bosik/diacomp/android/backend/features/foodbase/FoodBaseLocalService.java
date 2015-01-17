@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider_v1;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
@@ -63,11 +63,11 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			List<Versioned<FoodItem>> result = new LinkedList<Versioned<FoodItem>>();
 
-			int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_GUID);
-			int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP);
-			int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_VERSION);
-			int indexData = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DATA);
-			int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_DELETED);
+			int indexId = cursor.getColumnIndex(DiaryContentProvider_v1.COLUMN_FOODBASE_GUID);
+			int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider_v1.COLUMN_FOODBASE_TIMESTAMP);
+			int indexVersion = cursor.getColumnIndex(DiaryContentProvider_v1.COLUMN_FOODBASE_VERSION);
+			int indexData = cursor.getColumnIndex(DiaryContentProvider_v1.COLUMN_FOODBASE_DATA);
+			int indexDeleted = cursor.getColumnIndex(DiaryContentProvider_v1.COLUMN_FOODBASE_DELETED);
 
 			long jsonTime = 0;
 
@@ -140,9 +140,9 @@ public class FoodBaseLocalService implements FoodBaseService
 		try
 		{
 			// constructing parameters
-			String[] mProj = { DiaryContentProvider.COLUMN_FOODBASE_GUID,
-					DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, DiaryContentProvider.COLUMN_FOODBASE_VERSION,
-					DiaryContentProvider.COLUMN_FOODBASE_DELETED, DiaryContentProvider.COLUMN_FOODBASE_DATA };
+			String[] mProj = { DiaryContentProvider_v1.COLUMN_FOODBASE_GUID,
+					DiaryContentProvider_v1.COLUMN_FOODBASE_TIMESTAMP, DiaryContentProvider_v1.COLUMN_FOODBASE_VERSION,
+					DiaryContentProvider_v1.COLUMN_FOODBASE_DELETED, DiaryContentProvider_v1.COLUMN_FOODBASE_DATA };
 
 			String mSelectionClause = "";
 			List<String> args = new LinkedList<String>();
@@ -150,35 +150,35 @@ public class FoodBaseLocalService implements FoodBaseService
 			if (id != null)
 			{
 				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-				mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
+				mSelectionClause += DiaryContentProvider_v1.COLUMN_FOODBASE_GUID + " = ?";
 				args.add(id);
 			}
 
 			if (name != null)
 			{
 				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-				mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE + " LIKE ?";
+				mSelectionClause += DiaryContentProvider_v1.COLUMN_FOODBASE_NAMECACHE + " LIKE ?";
 				args.add("%" + name + "%");
 			}
 
 			if (modAfter != null)
 			{
 				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-				mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP + " > ?";
+				mSelectionClause += DiaryContentProvider_v1.COLUMN_FOODBASE_TIMESTAMP + " > ?";
 				args.add(Utils.formatTimeUTC(modAfter));
 			}
 
 			if (!includeDeleted)
 			{
 				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-				mSelectionClause += DiaryContentProvider.COLUMN_FOODBASE_DELETED + " = 0";
+				mSelectionClause += DiaryContentProvider_v1.COLUMN_FOODBASE_DELETED + " = 0";
 			}
 
 			String[] mSelectionArgs = args.toArray(new String[] {});
-			String mSortOrder = DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE;
+			String mSortOrder = DiaryContentProvider_v1.COLUMN_FOODBASE_NAMECACHE;
 
 			// execute query
-			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, mProj, mSelectionClause,
+			Cursor cursor = resolver.query(DiaryContentProvider_v1.CONTENT_FOODBASE_URI, mProj, mSelectionClause,
 					mSelectionArgs, mSortOrder);
 
 			final List<Versioned<FoodItem>> result = parseItems(cursor);
@@ -285,14 +285,14 @@ public class FoodBaseLocalService implements FoodBaseService
 		try
 		{
 			ContentValues newValues = new ContentValues();
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_GUID, item.getId());
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, item.isDeleted());
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE, item.getData().getName());
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
+			newValues.put(DiaryContentProvider_v1.COLUMN_FOODBASE_GUID, item.getId());
+			newValues.put(DiaryContentProvider_v1.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+			newValues.put(DiaryContentProvider_v1.COLUMN_FOODBASE_VERSION, item.getVersion());
+			newValues.put(DiaryContentProvider_v1.COLUMN_FOODBASE_DELETED, item.isDeleted());
+			newValues.put(DiaryContentProvider_v1.COLUMN_FOODBASE_NAMECACHE, item.getData().getName());
+			newValues.put(DiaryContentProvider_v1.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
 
-			resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues);
+			resolver.insert(DiaryContentProvider_v1.CONTENT_FOODBASE_URI, newValues);
 
 			memoryCache.add(new Versioned<FoodItem>(item));
 		}
@@ -324,10 +324,10 @@ public class FoodBaseLocalService implements FoodBaseService
 			}
 
 			ContentValues newValues = new ContentValues();
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, 1);
+			newValues.put(DiaryContentProvider_v1.COLUMN_FOODBASE_DELETED, 1);
 			String[] args = new String[] { id };
-			resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues,
-					DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?", args);
+			resolver.update(DiaryContentProvider_v1.CONTENT_FOODBASE_URI, newValues,
+					DiaryContentProvider_v1.COLUMN_FOODBASE_GUID + " = ?", args);
 
 			for (Versioned<FoodItem> item : memoryCache)
 			{
@@ -454,12 +454,12 @@ public class FoodBaseLocalService implements FoodBaseService
 			for (Versioned<FoodItem> item : items)
 			{
 				ContentValues newValues = new ContentValues();
-				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
-				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
-				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, item.isDeleted());
+				newValues.put(DiaryContentProvider_v1.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+				newValues.put(DiaryContentProvider_v1.COLUMN_FOODBASE_VERSION, item.getVersion());
+				newValues.put(DiaryContentProvider_v1.COLUMN_FOODBASE_DELETED, item.isDeleted());
 				String content = serializer.write(item.getData());
-				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, content);
-				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE, item.getData().getName());
+				newValues.put(DiaryContentProvider_v1.COLUMN_FOODBASE_DATA, content);
+				newValues.put(DiaryContentProvider_v1.COLUMN_FOODBASE_NAMECACHE, item.getData().getName());
 
 				// TODO: DB has new row, cache still doesn't
 				// Thus app tries to insert row and ends up with PK constraint violation
@@ -467,15 +467,15 @@ public class FoodBaseLocalService implements FoodBaseService
 				if (findById(item.getId()) != null)
 				{
 					Log.v(TAG, "Updating item " + item.getId() + ": " + content);
-					String clause = DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
+					String clause = DiaryContentProvider_v1.COLUMN_FOODBASE_GUID + " = ?";
 					String[] args = new String[] { item.getId() };
-					resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, clause, args);
+					resolver.update(DiaryContentProvider_v1.CONTENT_FOODBASE_URI, newValues, clause, args);
 				}
 				else
 				{
 					Log.v(TAG, "Inserting item " + item.getId() + ": " + content);
-					newValues.put(DiaryContentProvider.COLUMN_FOODBASE_GUID, item.getId());
-					resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues);
+					newValues.put(DiaryContentProvider_v1.COLUMN_FOODBASE_GUID, item.getId());
+					resolver.insert(DiaryContentProvider_v1.CONTENT_FOODBASE_URI, newValues);
 				}
 			}
 

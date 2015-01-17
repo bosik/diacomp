@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Компенсация</string>
+    <string name="app_name">Diacomp Stable</string>
     <string name="common_gramm">г</string>
     <string name="common_bs_unit_mmol">ммоль/л</string>
     <string name="common_rectype_blood">Замер СК</string>
@@ -49,7 +49,7 @@
     <string name="main_option_preferences">Настройки</string>
     <string name="main_option_sync">Синхронизировать</string>
     <string name="main_option_test">Тест</string>
-    <string name="main_title">Компенсация</string>
+    <string name="main_title">Diacomp Stable</string>
     <string name="preferences_sync">Учётная запись</string>
     <string name="preferences_sync_password">Пароль</string>
     <string name="preferences_sync_server">Сервер</string>

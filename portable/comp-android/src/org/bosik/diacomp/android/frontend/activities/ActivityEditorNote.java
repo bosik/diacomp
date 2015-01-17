@@ -1,7 +1,7 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.Date;
-import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.v1.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import android.util.Log;

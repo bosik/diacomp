@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.v1.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService.Verifier;

@@ -3,7 +3,7 @@ package org.bosik.diacomp.android.utils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import org.bosik.diacomp.android.BuildConfig;
+import org.bosik.diacomp.android.v1.BuildConfig;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import android.app.Activity;
