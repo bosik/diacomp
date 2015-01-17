@@ -10,6 +10,7 @@ uses
   DiaryRecords in 'src\bo\DiaryRecords.pas',
   BusinessObjects in 'src\bo\BusinessObjects.pas',
   DiaryRoutines in 'src\common\DiaryRoutines.pas',
+  AutoLog in 'src\common\AutoLog.pas',
   Bases in 'src\persistence\Bases.pas';
 
 // TODO 1: move code to some unit into src/analyze
