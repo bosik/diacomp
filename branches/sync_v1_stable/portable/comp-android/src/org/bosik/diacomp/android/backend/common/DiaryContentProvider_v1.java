@@ -12,7 +12,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
-public class DiaryContentProvider extends ContentProvider
+public class DiaryContentProvider_v1 extends ContentProvider
 {
 	// private static final String TAG = DiaryContentProvider.class.getSimpleName();
 
@@ -24,7 +24,7 @@ public class DiaryContentProvider extends ContentProvider
 	private static final String		DATABASE_NAME				= "Comp.db";
 	private static final int		DATABASE_VERSION			= 1;
 	private static final String		SCHEME						= "content://";
-	private static final String		AUTH						= "diacomp.provider";
+	private static final String		AUTH						= "diacomp.provider_v1";
 
 	// ======================================= Diary table =======================================
 

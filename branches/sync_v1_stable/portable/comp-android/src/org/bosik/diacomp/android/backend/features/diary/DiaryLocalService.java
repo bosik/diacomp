@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider_v1;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
@@ -75,17 +75,17 @@ public class DiaryLocalService implements DiaryService
 	public Versioned<DiaryRecord> findById(String guid) throws CommonServiceException
 	{
 		// construct parameters
-		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
-				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
-				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
+		String[] projection = { DiaryContentProvider_v1.COLUMN_DIARY_GUID, DiaryContentProvider_v1.COLUMN_DIARY_TIMESTAMP,
+				DiaryContentProvider_v1.COLUMN_DIARY_VERSION, DiaryContentProvider_v1.COLUMN_DIARY_DELETED,
+				DiaryContentProvider_v1.COLUMN_DIARY_CONTENT, DiaryContentProvider_v1.COLUMN_DIARY_TIMECACHE };
 
-		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
+		String clause = DiaryContentProvider_v1.COLUMN_DIARY_GUID + " = ?";
 		String[] clauseArgs = { guid };
 
 		String sortOrder = null;// DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
 		// execute
-		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
+		Cursor cursor = resolver.query(DiaryContentProvider_v1.CONTENT_DIARY_URI, projection, clause, clauseArgs,
 				sortOrder);
 
 		List<Versioned<DiaryRecord>> recs = extractRecords(cursor);
@@ -97,17 +97,17 @@ public class DiaryLocalService implements DiaryService
 	public List<Versioned<DiaryRecord>> findChanged(Date since) throws CommonServiceException
 	{
 		// construct parameters
-		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
-				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
-				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
+		String[] projection = { DiaryContentProvider_v1.COLUMN_DIARY_GUID, DiaryContentProvider_v1.COLUMN_DIARY_TIMESTAMP,
+				DiaryContentProvider_v1.COLUMN_DIARY_VERSION, DiaryContentProvider_v1.COLUMN_DIARY_DELETED,
+				DiaryContentProvider_v1.COLUMN_DIARY_CONTENT, DiaryContentProvider_v1.COLUMN_DIARY_TIMECACHE };
 
-		String clause = String.format("%s > ?", DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
+		String clause = String.format("%s > ?", DiaryContentProvider_v1.COLUMN_DIARY_TIMESTAMP);
 		String[] clauseArgs = new String[] { Utils.formatTimeUTC(since) };
 
-		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
+		String sortOrder = DiaryContentProvider_v1.COLUMN_DIARY_TIMECACHE + " ASC";
 
 		// execute
-		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
+		Cursor cursor = resolver.query(DiaryContentProvider_v1.CONTENT_DIARY_URI, projection, clause, clauseArgs,
 				sortOrder);
 
 		return extractRecords(cursor);
@@ -128,30 +128,30 @@ public class DiaryLocalService implements DiaryService
 		}
 
 		// construct parameters
-		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
-				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
-				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
+		String[] projection = { DiaryContentProvider_v1.COLUMN_DIARY_GUID, DiaryContentProvider_v1.COLUMN_DIARY_TIMESTAMP,
+				DiaryContentProvider_v1.COLUMN_DIARY_VERSION, DiaryContentProvider_v1.COLUMN_DIARY_DELETED,
+				DiaryContentProvider_v1.COLUMN_DIARY_CONTENT, DiaryContentProvider_v1.COLUMN_DIARY_TIMECACHE };
 
 		String clause;
 		String[] clauseArgs;
 
 		if (includeRemoved)
 		{
-			clause = String.format("(%s >= ?) AND (%s <= ?)", DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
-					DiaryContentProvider.COLUMN_DIARY_TIMECACHE);
+			clause = String.format("(%s >= ?) AND (%s <= ?)", DiaryContentProvider_v1.COLUMN_DIARY_TIMECACHE,
+					DiaryContentProvider_v1.COLUMN_DIARY_TIMECACHE);
 			clauseArgs = new String[] { Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime) };
 		}
 		else
 		{
-			clause = String.format("(%s >= ?) AND (%s <= ?) AND (%s = 0)", DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
-					DiaryContentProvider.COLUMN_DIARY_TIMECACHE, DiaryContentProvider.COLUMN_DIARY_DELETED);
+			clause = String.format("(%s >= ?) AND (%s <= ?) AND (%s = 0)", DiaryContentProvider_v1.COLUMN_DIARY_TIMECACHE,
+					DiaryContentProvider_v1.COLUMN_DIARY_TIMECACHE, DiaryContentProvider_v1.COLUMN_DIARY_DELETED);
 			clauseArgs = new String[] { Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime) };
 		}
 
-		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
+		String sortOrder = DiaryContentProvider_v1.COLUMN_DIARY_TIMECACHE + " ASC";
 
 		// execute
-		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
+		Cursor cursor = resolver.query(DiaryContentProvider_v1.CONTENT_DIARY_URI, projection, clause, clauseArgs,
 				sortOrder);
 
 		List<Versioned<DiaryRecord>> records = extractRecords(cursor);
@@ -168,13 +168,13 @@ public class DiaryLocalService implements DiaryService
 	private boolean recordExists(String guid)
 	{
 		// construct parameters
-		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID };
-		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
+		String[] projection = { DiaryContentProvider_v1.COLUMN_DIARY_GUID };
+		String clause = DiaryContentProvider_v1.COLUMN_DIARY_GUID + " = ?";
 		String[] clauseArgs = { guid };
 		String sortOrder = null;
 
 		// execute
-		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
+		Cursor cursor = resolver.query(DiaryContentProvider_v1.CONTENT_DIARY_URI, projection, clause, clauseArgs,
 				sortOrder);
 
 		return cursor.moveToFirst();
@@ -192,27 +192,27 @@ public class DiaryLocalService implements DiaryService
 
 				ContentValues newValues = new ContentValues();
 
-				newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(record.getTimeStamp()));
-				newValues.put(DiaryContentProvider.COLUMN_DIARY_VERSION, record.getVersion());
-				newValues.put(DiaryContentProvider.COLUMN_DIARY_DELETED, record.isDeleted());
-				newValues.put(DiaryContentProvider.COLUMN_DIARY_CONTENT, content);
-				newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
+				newValues.put(DiaryContentProvider_v1.COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(record.getTimeStamp()));
+				newValues.put(DiaryContentProvider_v1.COLUMN_DIARY_VERSION, record.getVersion());
+				newValues.put(DiaryContentProvider_v1.COLUMN_DIARY_DELETED, record.isDeleted());
+				newValues.put(DiaryContentProvider_v1.COLUMN_DIARY_CONTENT, content);
+				newValues.put(DiaryContentProvider_v1.COLUMN_DIARY_TIMECACHE,
 						Utils.formatTimeUTC(record.getData().getTime()));
 
 				if (exists)
 				{
 					Log.v(TAG, "Updating item " + record.getId() + ": " + content);
 
-					String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
+					String clause = DiaryContentProvider_v1.COLUMN_DIARY_GUID + " = ?";
 					String[] args = new String[] { record.getId() };
-					resolver.update(DiaryContentProvider.CONTENT_DIARY_URI, newValues, clause, args);
+					resolver.update(DiaryContentProvider_v1.CONTENT_DIARY_URI, newValues, clause, args);
 				}
 				else
 				{
 					Log.v(TAG, "Inserting item " + record.getId() + ": " + content);
 
-					newValues.put(DiaryContentProvider.COLUMN_DIARY_GUID, record.getId());
-					resolver.insert(DiaryContentProvider.CONTENT_DIARY_URI, newValues);
+					newValues.put(DiaryContentProvider_v1.COLUMN_DIARY_GUID, record.getId());
+					resolver.insert(DiaryContentProvider_v1.CONTENT_DIARY_URI, newValues);
 				}
 			}
 		}
@@ -226,9 +226,9 @@ public class DiaryLocalService implements DiaryService
 	{
 		try
 		{
-			String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
+			String clause = DiaryContentProvider_v1.COLUMN_DIARY_GUID + " = ?";
 			String[] args = new String[] { id };
-			resolver.delete(DiaryContentProvider.CONTENT_DIARY_URI, clause, args);
+			resolver.delete(DiaryContentProvider_v1.CONTENT_DIARY_URI, clause, args);
 		}
 		catch (Exception e)
 		{
@@ -242,11 +242,11 @@ public class DiaryLocalService implements DiaryService
 	{
 		if (cursor != null)
 		{
-			int indexGUID = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_GUID);
-			int indexTimestamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
-			int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_VERSION);
-			int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_DELETED);
-			int indexContent = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_CONTENT);
+			int indexGUID = cursor.getColumnIndex(DiaryContentProvider_v1.COLUMN_DIARY_GUID);
+			int indexTimestamp = cursor.getColumnIndex(DiaryContentProvider_v1.COLUMN_DIARY_TIMESTAMP);
+			int indexVersion = cursor.getColumnIndex(DiaryContentProvider_v1.COLUMN_DIARY_VERSION);
+			int indexDeleted = cursor.getColumnIndex(DiaryContentProvider_v1.COLUMN_DIARY_DELETED);
+			int indexContent = cursor.getColumnIndex(DiaryContentProvider_v1.COLUMN_DIARY_CONTENT);
 
 			List<Versioned<DiaryRecord>> res = new ArrayList<Versioned<DiaryRecord>>();
 

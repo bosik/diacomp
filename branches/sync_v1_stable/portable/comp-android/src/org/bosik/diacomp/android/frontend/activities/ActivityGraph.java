@@ -2,7 +2,7 @@ package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.v1.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.utils.Utils;

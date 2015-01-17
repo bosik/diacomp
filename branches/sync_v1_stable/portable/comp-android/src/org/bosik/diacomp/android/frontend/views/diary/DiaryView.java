@@ -3,7 +3,7 @@ package org.bosik.diacomp.android.frontend.views.diary;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.v1.R;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;

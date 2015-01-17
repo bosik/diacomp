@@ -2,7 +2,7 @@ package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.Map;
 import org.bosik.diacomp.android.backend.common.Storage;
-import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.v1.R;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;

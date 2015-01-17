@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider_v1;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
@@ -63,11 +63,11 @@ public class DishBaseLocalService implements DishBaseService
 
 			List<Versioned<DishItem>> result = new LinkedList<Versioned<DishItem>>();
 
-			int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_GUID);
-			int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP);
-			int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_VERSION);
-			int indexData = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_DATA);
-			int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_DELETED);
+			int indexId = cursor.getColumnIndex(DiaryContentProvider_v1.COLUMN_DISHBASE_GUID);
+			int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider_v1.COLUMN_DISHBASE_TIMESTAMP);
+			int indexVersion = cursor.getColumnIndex(DiaryContentProvider_v1.COLUMN_DISHBASE_VERSION);
+			int indexData = cursor.getColumnIndex(DiaryContentProvider_v1.COLUMN_DISHBASE_DATA);
+			int indexDeleted = cursor.getColumnIndex(DiaryContentProvider_v1.COLUMN_DISHBASE_DELETED);
 
 			long jsonTime = 0;
 
@@ -141,9 +141,9 @@ public class DishBaseLocalService implements DishBaseService
 		try
 		{
 			// constructing parameters
-			String[] mProj = { DiaryContentProvider.COLUMN_DISHBASE_GUID,
-					DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP, DiaryContentProvider.COLUMN_DISHBASE_VERSION,
-					DiaryContentProvider.COLUMN_DISHBASE_DELETED, DiaryContentProvider.COLUMN_DISHBASE_DATA };
+			String[] mProj = { DiaryContentProvider_v1.COLUMN_DISHBASE_GUID,
+					DiaryContentProvider_v1.COLUMN_DISHBASE_TIMESTAMP, DiaryContentProvider_v1.COLUMN_DISHBASE_VERSION,
+					DiaryContentProvider_v1.COLUMN_DISHBASE_DELETED, DiaryContentProvider_v1.COLUMN_DISHBASE_DATA };
 
 			String mSelectionClause = "";
 			List<String> args = new LinkedList<String>();
@@ -151,35 +151,35 @@ public class DishBaseLocalService implements DishBaseService
 			if (id != null)
 			{
 				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-				mSelectionClause += DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?";
+				mSelectionClause += DiaryContentProvider_v1.COLUMN_DISHBASE_GUID + " = ?";
 				args.add(id);
 			}
 
 			if (name != null)
 			{
 				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-				mSelectionClause += DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE + " LIKE ?";
+				mSelectionClause += DiaryContentProvider_v1.COLUMN_DISHBASE_NAMECACHE + " LIKE ?";
 				args.add("%" + name + "%");
 			}
 
 			if (modAfter != null)
 			{
 				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-				mSelectionClause += DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP + " > ?";
+				mSelectionClause += DiaryContentProvider_v1.COLUMN_DISHBASE_TIMESTAMP + " > ?";
 				args.add(Utils.formatTimeUTC(modAfter));
 			}
 
 			if (!includeDeleted)
 			{
 				mSelectionClause += mSelectionClause.isEmpty() ? "" : " AND ";
-				mSelectionClause += DiaryContentProvider.COLUMN_DISHBASE_DELETED + " = 0";
+				mSelectionClause += DiaryContentProvider_v1.COLUMN_DISHBASE_DELETED + " = 0";
 			}
 
 			String[] mSelectionArgs = args.toArray(new String[] {});
-			String mSortOrder = DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE;
+			String mSortOrder = DiaryContentProvider_v1.COLUMN_DISHBASE_NAMECACHE;
 
 			// execute query
-			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DISHBASE_URI, mProj, mSelectionClause,
+			Cursor cursor = resolver.query(DiaryContentProvider_v1.CONTENT_DISHBASE_URI, mProj, mSelectionClause,
 					mSelectionArgs, mSortOrder);
 
 			final List<Versioned<DishItem>> result = parseItems(cursor);
@@ -286,14 +286,14 @@ public class DishBaseLocalService implements DishBaseService
 		try
 		{
 			ContentValues newValues = new ContentValues();
-			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_GUID, item.getId());
-			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
-			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_VERSION, item.getVersion());
-			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DELETED, item.isDeleted());
-			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE, item.getData().getName());
-			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DATA, serializer.write(item.getData()));
+			newValues.put(DiaryContentProvider_v1.COLUMN_DISHBASE_GUID, item.getId());
+			newValues.put(DiaryContentProvider_v1.COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+			newValues.put(DiaryContentProvider_v1.COLUMN_DISHBASE_VERSION, item.getVersion());
+			newValues.put(DiaryContentProvider_v1.COLUMN_DISHBASE_DELETED, item.isDeleted());
+			newValues.put(DiaryContentProvider_v1.COLUMN_DISHBASE_NAMECACHE, item.getData().getName());
+			newValues.put(DiaryContentProvider_v1.COLUMN_DISHBASE_DATA, serializer.write(item.getData()));
 
-			resolver.insert(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues);
+			resolver.insert(DiaryContentProvider_v1.CONTENT_DISHBASE_URI, newValues);
 
 			memoryCache.add(new Versioned<DishItem>(item));
 		}
@@ -325,10 +325,10 @@ public class DishBaseLocalService implements DishBaseService
 			}
 
 			ContentValues newValues = new ContentValues();
-			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DELETED, 1);
+			newValues.put(DiaryContentProvider_v1.COLUMN_DISHBASE_DELETED, 1);
 			String[] args = new String[] { id };
-			resolver.update(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues,
-					DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?", args);
+			resolver.update(DiaryContentProvider_v1.CONTENT_DISHBASE_URI, newValues,
+					DiaryContentProvider_v1.COLUMN_DISHBASE_GUID + " = ?", args);
 
 			for (Versioned<DishItem> item : memoryCache)
 			{
@@ -440,25 +440,25 @@ public class DishBaseLocalService implements DishBaseService
 			for (Versioned<DishItem> item : items)
 			{
 				ContentValues newValues = new ContentValues();
-				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
-				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_VERSION, item.getVersion());
-				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DELETED, item.isDeleted());
+				newValues.put(DiaryContentProvider_v1.COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+				newValues.put(DiaryContentProvider_v1.COLUMN_DISHBASE_VERSION, item.getVersion());
+				newValues.put(DiaryContentProvider_v1.COLUMN_DISHBASE_DELETED, item.isDeleted());
 				String content = serializer.write(item.getData());
-				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DATA, content);
-				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE, item.getData().getName());
+				newValues.put(DiaryContentProvider_v1.COLUMN_DISHBASE_DATA, content);
+				newValues.put(DiaryContentProvider_v1.COLUMN_DISHBASE_NAMECACHE, item.getData().getName());
 
 				if (findById(item.getId()) != null)
 				{
 					Log.v(TAG, "Updating item " + item.getId() + ": " + content);
-					String clause = DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?";
+					String clause = DiaryContentProvider_v1.COLUMN_DISHBASE_GUID + " = ?";
 					String[] args = new String[] { item.getId() };
-					resolver.update(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues, clause, args);
+					resolver.update(DiaryContentProvider_v1.CONTENT_DISHBASE_URI, newValues, clause, args);
 				}
 				else
 				{
 					Log.v(TAG, "Inserting item " + item.getId() + ": " + content);
-					newValues.put(DiaryContentProvider.COLUMN_DISHBASE_GUID, item.getId());
-					resolver.insert(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues);
+					newValues.put(DiaryContentProvider_v1.COLUMN_DISHBASE_GUID, item.getId());
+					resolver.insert(DiaryContentProvider_v1.CONTENT_DISHBASE_URI, newValues);
 				}
 			}
 

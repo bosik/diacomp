@@ -2,7 +2,7 @@ package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.v1.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.UIUtils.OnSubmit;
 import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView;
