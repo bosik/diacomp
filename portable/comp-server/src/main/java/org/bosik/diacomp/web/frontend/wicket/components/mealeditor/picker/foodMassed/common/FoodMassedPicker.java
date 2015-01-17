@@ -7,6 +7,7 @@ import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -26,6 +27,7 @@ public abstract class FoodMassedPicker extends Panel
 	IModel<Double>					mass;
 
 	// components
+	protected Image					icon;
 	protected FoodPicker			fieldFood;
 	protected TextField<Double>		fieldMass;
 
@@ -45,6 +47,9 @@ public abstract class FoodMassedPicker extends Panel
 	protected void onInitialize()
 	{
 		super.onInitialize();
+
+		icon = new Image("icon", "");
+		add(icon);
 
 		fieldFood = new FoodPicker("picker", Model.of(model.getObject().getName()))
 		{
@@ -73,15 +78,6 @@ public abstract class FoodMassedPicker extends Panel
 
 		fieldMass = new TextField<Double>("mass", mass);
 		fieldMass.add(new AjaxFormComponentUpdatingBehavior("keydown")
-		{
-			private static final long	serialVersionUID	= 1072515919159765189L;
-
-			@Override
-			protected void onUpdate(AjaxRequestTarget target)
-			{
-			}
-		});
-		fieldMass.add(new AjaxFormComponentUpdatingBehavior("onblur")
 		{
 			private static final long	serialVersionUID	= 1072515919159765189L;
 

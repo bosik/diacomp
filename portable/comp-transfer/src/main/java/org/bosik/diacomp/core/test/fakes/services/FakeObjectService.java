@@ -3,7 +3,6 @@ package org.bosik.diacomp.core.test.fakes.services;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -50,22 +49,6 @@ public class FakeObjectService implements ObjectService<String>
 	}
 
 	@Override
-	public List<Versioned<String>> findByIdPrefix(String prefix) throws CommonServiceException
-	{
-		List<Versioned<String>> result = new ArrayList<Versioned<String>>();
-
-		for (Versioned<String> item : data)
-		{
-			if (item.getId().startsWith(prefix))
-			{
-				result.add(new Versioned<String>(item));
-			}
-		}
-
-		return result;
-	}
-
-	@Override
 	public List<Versioned<String>> findChanged(Date since) throws CommonServiceException
 	{
 		List<Versioned<String>> result = new ArrayList<Versioned<String>>();
@@ -108,23 +91,5 @@ public class FakeObjectService implements ObjectService<String>
 
 			}
 		}
-	}
-
-	@Override
-	public String getHash(String prefix) throws CommonServiceException
-	{
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
-	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
-	{
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
-	public void setHash(String prefix, String hash)
-	{
-		throw new UnsupportedOperationException("Not implemented");
 	}
 }

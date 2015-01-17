@@ -10,11 +10,15 @@ public class TestMySQLAuthDAO
 {
 	private final AuthDAO	authDao	= new MySQLAuthDAO();
 
+	{
+		Config.init();
+	}
+
 	@Test
 	public void test()
 	{
-		final String login = Config.get("login");
-		final String pass = Config.get("pass");
+		final String login = Config.getTestLogin();
+		final String pass = Config.getTestPassword();
 
 		int id = authDao.login(login, pass);
 		assertEquals(1, id);

@@ -5,13 +5,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.ObjectService;
-import org.bosik.diacomp.core.utils.Utils;
 
 public class SyncService
 {
+	// private static final String TAG = "SyncService";
+
 	/* ============================ HELPER CLASSES ============================ */
 
 	public static interface Callback
@@ -125,17 +125,48 @@ public class SyncService
 		}
 	}
 
-	private static <T> int processItems(ObjectService<T> service1, ObjectService<T> service2,
-			List<Versioned<T>> items1, List<Versioned<T>> items2)
+	/**
+	 * Synchronizes two object services
+	 * 
+	 * @param <T>
+	 * 
+	 * @param service1
+	 *            First service
+	 * @param service2
+	 *            Second service
+	 * @param since
+	 *            Modification time limiter: items modified after this time is taking in account
+	 *            only
+	 * @return Total number of transferred items
+	 */
+	public static <T> int synchronize(ObjectService<T> service1, ObjectService<T> service2, Date since)
 	{
+		// null checks
+		if (null == service1)
+		{
+			throw new NullPointerException("service1 can't be null");
+		}
+		if (null == service2)
+		{
+			throw new NullPointerException("service2 can't be null");
+		}
+		if (null == since)
+		{
+			throw new NullPointerException("since date can't be null");
+		}
+
+		// requesting items
+		List<Versioned<T>> items1 = service1.findChanged(since);
+		List<Versioned<T>> items2 = service2.findChanged(since);
+
 		// null checks again
 		if (null == items1)
 		{
-			throw new NullPointerException("Service1 returned null list");
+			throw new NullPointerException("modList1 is null");
 		}
 		if (null == items2)
 		{
-			throw new NullPointerException("Service2 returned null list");
+			throw new NullPointerException("modList2 is null");
 		}
 
 		// calculating transferring lists
@@ -144,6 +175,16 @@ public class SyncService
 		List<Versioned<T>> only1 = new ArrayList<Versioned<T>>();
 		List<Versioned<T>> only2 = new ArrayList<Versioned<T>>();
 		getOverLists(items1, items2, newer1, newer2, only1, only2);
+
+		// debug
+
+		/*
+		 * if (BuildConfig.DEBUG) { Log.v(TAG, "1 --> 2 : total count: " +
+		 * String.valueOf(over1.size())); for (int i = 0; i < over1.size(); i++) { Log.v(TAG,
+		 * "1 --> 2 : " + String.valueOf(over1.get(i))); } Log.v(TAG, "2 --> 1 : total count: " +
+		 * String.valueOf(over2.size())); for (int i = 0; i < over2.size(); i++) { Log.v(TAG,
+		 * "2 --> 1 : " + String.valueOf(over2.get(i))); } }
+		 */
 
 		// checking items with are only partially presented
 		for (Versioned<T> item1 : only1)
@@ -182,50 +223,6 @@ public class SyncService
 		return newer1.size() + newer2.size();
 	}
 
-	/**
-	 * Synchronizes two object services
-	 * 
-	 * @param <T>
-	 * 
-	 * @param service1
-	 *            First service
-	 * @param service2
-	 *            Second service
-	 * @param since
-	 *            Modification time limiter: items modified after this time is taking in account
-	 *            only
-	 * @return Total number of transferred items
-	 */
-	public static <T> int synchronize(ObjectService<T> service1, ObjectService<T> service2, Date since)
-	{
-		// null checks
-		if (null == service1)
-		{
-			throw new NullPointerException("service1 can't be null");
-		}
-		if (null == service2)
-		{
-			throw new NullPointerException("service2 can't be null");
-		}
-		if (null == since)
-		{
-			throw new NullPointerException("since date can't be null");
-		}
-
-		List<Versioned<T>> items1 = service1.findChanged(since);
-		List<Versioned<T>> items2 = service2.findChanged(since);
-
-		return processItems(service1, service2, items1, items2);
-	}
-
-	/**
-	 * Synchronizes single item
-	 * 
-	 * @param service1
-	 * @param service2
-	 * @param id
-	 * @return
-	 */
 	@SuppressWarnings({ "null", "unchecked" })
 	public static <T> int synchronize(ObjectService<T> service1, ObjectService<T> service2, String id)
 	{
@@ -277,117 +274,5 @@ public class SyncService
 		}
 
 		return 0;
-	}
-
-	private static <T> int synchronizePrefix(ObjectService<T> service1, ObjectService<T> service2, String prefix)
-	{
-		String hash1 = service1.getHash(prefix);
-		String hash2 = service2.getHash(prefix);
-
-		System.out.println("Hashes for " + prefix + ": " + hash1 + " " + hash2);
-
-		if (Utils.equals(hash1, hash2))
-		{
-			return 0;
-		}
-
-		if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
-		{
-			int result = 0;
-
-			for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
-			{
-				result += synchronizePrefix(service1, service2, prefix + HashUtils.PATTERN.charAt(i));
-			}
-
-			return result;
-		}
-		else
-		{
-			List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
-			List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
-
-			return processItems(service1, service2, items1, items2);
-		}
-	}
-
-	/**
-	 * Synchronizes two object services
-	 * 
-	 * @param <T>
-	 * 
-	 * @param service1
-	 *            First service
-	 * @param service2
-	 *            Second service
-	 * @return Total number of transferred items
-	 */
-	public static <T> int synchronize(ObjectService<T> service1, ObjectService<T> service2)
-	{
-		// null checks
-		if (null == service1)
-		{
-			throw new NullPointerException("service1 can't be null");
-		}
-		if (null == service2)
-		{
-			throw new NullPointerException("service2 can't be null");
-		}
-
-		return synchronizePrefix(service1, service2, "");
-	}
-
-	private static <T> int synchronizeChildren(ObjectService<T> service1, ObjectService<T> service2, String prefix)
-	{
-		if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
-		{
-			Map<String, String> hashes1 = service1.getHashChildren(prefix);
-			Map<String, String> hashes2 = service2.getHashChildren(prefix);
-			int result = 0;
-			for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
-			{
-				String key = prefix + HashUtils.PATTERN.charAt(i);
-				String hash1 = hashes1.get(key);
-				String hash2 = hashes2.get(key);
-				if (!Utils.equals(hash1, hash2))
-				{
-					result += synchronizeChildren(service1, service2, key);
-				}
-			}
-
-			return result;
-		}
-		else
-		{
-			// requesting items
-			List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
-			List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
-
-			return processItems(service1, service2, items1, items2);
-		}
-	}
-
-	public static <T> int synchronize_v2(ObjectService<T> service1, ObjectService<T> service2)
-	{
-		// null checks
-		if (null == service1)
-		{
-			throw new NullPointerException("service1 can't be null");
-		}
-		if (null == service2)
-		{
-			throw new NullPointerException("service2 can't be null");
-		}
-
-		String hash1 = service1.getHash("");
-		String hash2 = service2.getHash("");
-		if (!Utils.equals(hash1, hash2))
-		{
-			return synchronizeChildren(service1, service2, "");
-		}
-		else
-		{
-			return 0;
-		}
 	}
 }

@@ -36,7 +36,7 @@ public class TestAnalyzeService
 	@Before
 	public void setUp()
 	{
-		diaryService = new FakeDiaryService(false);
+		diaryService = new FakeDiaryService();
 		analyzeCore = new AnalyzeCoreImpl(40.0);
 		koofService = new KoofServiceImpl(diaryService, analyzeCore, 3650, 0.995);
 		koofService.update();

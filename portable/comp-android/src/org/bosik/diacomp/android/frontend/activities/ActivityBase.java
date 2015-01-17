@@ -17,9 +17,9 @@ import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.services.base.dish.DishBaseService;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
+import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
+import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import org.bosik.diacomp.core.services.search.Sorter;
 import org.bosik.diacomp.core.services.search.Sorter.Sort;
 import android.app.Activity;
@@ -122,15 +122,15 @@ public class ActivityBase extends Activity
 		list.setOnItemClickListener(new OnItemClickListener()
 		{
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long itemIndex)
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				final String id = data.get(position).getId();
+				final String guid = data.get(position).getId();
 
 				switch (mode)
 				{
 					case PICK:
 					{
-						returnResult(id);
+						returnResult(guid);
 						break;
 					}
 					case EDIT:
@@ -146,13 +146,13 @@ public class ActivityBase extends Activity
 							@Override
 							protected Versioned<? extends NamedRelativeTagged> doInBackground(String... params)
 							{
-								Versioned<? extends NamedRelativeTagged> food = foodBaseService.findById(id);
+								Versioned<? extends NamedRelativeTagged> food = foodBaseService.findById(guid);
 								if (food != null)
 								{
 									return food;
 								}
 
-								Versioned<? extends NamedRelativeTagged> dish = dishBaseService.findById(id);
+								Versioned<? extends NamedRelativeTagged> dish = dishBaseService.findById(guid);
 								if (dish != null)
 								{
 									return dish;
@@ -179,16 +179,16 @@ public class ActivityBase extends Activity
 									{
 										// TODO: localization
 										UIUtils.showTip(ActivityBase.this,
-												String.format("Unknown record type (ID: %s)", id));
+												String.format("Unknown record type (ID: %s)", guid));
 									}
 								}
 								else
 								{
 									// TODO: localization
-									UIUtils.showTip(ActivityBase.this, String.format("Item %s not found", id));
+									UIUtils.showTip(ActivityBase.this, String.format("Item %s not found", guid));
 								}
 							}
-						}.execute(id);
+						}.execute(guid);
 					}
 				}
 			}
@@ -481,10 +481,10 @@ public class ActivityBase extends Activity
 		return fmt;
 	}
 
-	void returnResult(String id)
+	void returnResult(String guid)
 	{
 		Intent intent = getIntent();
-		intent.putExtra(KEY_GUID, id);
+		intent.putExtra(KEY_GUID, guid);
 		setResult(RESULT_OK, intent);
 		finish();
 	}

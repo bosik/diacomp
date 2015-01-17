@@ -31,22 +31,6 @@ public class Utils
 		return sb;
 	}
 
-	public static StringBuilder commaSeparated(String[] array)
-	{
-		StringBuilder sb = new StringBuilder();
-
-		for (int i = 0; i < array.length; i++)
-		{
-			sb.append(array[i]);
-			if (i < array.length - 1)
-			{
-				sb.append(", ");
-			}
-		}
-
-		return sb;
-	}
-
 	public static StringBuilder separated(Iterator<String> iterator, String separator)
 	{
 		StringBuilder sb = new StringBuilder();

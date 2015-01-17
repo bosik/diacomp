@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
@@ -47,20 +46,7 @@ public class MealEditor extends Panel
 			@Override
 			protected void populateItem(final Item<FoodMassed> item)
 			{
-				item.add(new FoodMassedUpdater("food", item.getModel(), item.getIndex())
-				{
-					@Override
-					protected void onDelete(AjaxRequestTarget target, int index)
-					{
-						FoodList mo = model.getObject();
-						List<FoodMassed> content = mo.getContent();
-						content.remove(index);
-						mo.setContent(content);
-						model.setObject(mo);
-
-						target.add(container);
-					};
-				});
+				item.add(new FoodMassedUpdater("food", item.getModel()));
 
 				//				item.add(new AjaxEventBehavior("onclick")
 				//				{
@@ -108,18 +94,6 @@ public class MealEditor extends Panel
 				else
 				{
 					System.out.println("Null selected");
-				}
-			}
-		});
-
-		add(new AjaxLink<Void>("debug")
-		{
-			@Override
-			public void onClick(AjaxRequestTarget target)
-			{
-				for (FoodMassed item : model.getObject().getContent())
-				{
-					System.out.println(item);
 				}
 			}
 		});

@@ -3,9 +3,7 @@ package org.bosik.diacomp.android.backend.features.diary;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -13,13 +11,11 @@ import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
-import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
-import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -72,18 +68,21 @@ public class DiaryLocalService implements DiaryService
 		}
 
 		item.setDeleted(true);
-		item.updateTimeStamp();
 		save(Arrays.<Versioned<DiaryRecord>> asList(item));
 	}
 
 	@Override
-	public Versioned<DiaryRecord> findById(String id) throws CommonServiceException
+	public Versioned<DiaryRecord> findById(String guid) throws CommonServiceException
 	{
 		// construct parameters
-		String[] projection = null; // all
+		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
+				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
+				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
+
 		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
-		String[] clauseArgs = { id };
-		String sortOrder = null;
+		String[] clauseArgs = { guid };
+
+		String sortOrder = null;// DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
 		// execute
 		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
@@ -95,34 +94,16 @@ public class DiaryLocalService implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> findByIdPrefix(String prefix)
-	{
-		if (prefix.length() != ObjectService.ID_PREFIX_SIZE)
-		{
-			throw new IllegalArgumentException(String.format("Invalid prefix length, expected %d chars, but %d found",
-					ObjectService.ID_PREFIX_SIZE, prefix.length()));
-		}
-
-		// construct parameters
-		String[] projection = null; // all
-		String clause = String.format("%s LIKE ?", DiaryContentProvider.COLUMN_DIARY_GUID);
-		String[] clauseArgs = { prefix + "%" };
-		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
-
-		// execute
-		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
-				sortOrder);
-
-		return extractRecords(cursor);
-	}
-
-	@Override
 	public List<Versioned<DiaryRecord>> findChanged(Date since) throws CommonServiceException
 	{
 		// construct parameters
-		String[] projection = null;
+		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
+				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
+				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
+
 		String clause = String.format("%s > ?", DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
-		String[] clauseArgs = { Utils.formatTimeUTC(since) };
+		String[] clauseArgs = new String[] { Utils.formatTimeUTC(since) };
+
 		String sortOrder = DiaryContentProvider.COLUMN_DIARY_TIMECACHE + " ASC";
 
 		// execute
@@ -147,7 +128,9 @@ public class DiaryLocalService implements DiaryService
 		}
 
 		// construct parameters
-		String[] projection = null; // all
+		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
+				DiaryContentProvider.COLUMN_DIARY_VERSION, DiaryContentProvider.COLUMN_DIARY_DELETED,
+				DiaryContentProvider.COLUMN_DIARY_CONTENT, DiaryContentProvider.COLUMN_DIARY_TIMECACHE };
 
 		String clause;
 		String[] clauseArgs;
@@ -182,147 +165,19 @@ public class DiaryLocalService implements DiaryService
 		return records;
 	}
 
-	private boolean recordExists(String id)
+	private boolean recordExists(String guid)
 	{
-		final String[] select = { DiaryContentProvider.COLUMN_DIARY_GUID };
-		final String where = String.format("%s = ?", DiaryContentProvider.COLUMN_DIARY_GUID);
-		final String[] whereArgs = { id };
-		final String sortOrder = null;
+		// construct parameters
+		String[] projection = { DiaryContentProvider.COLUMN_DIARY_GUID };
+		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
+		String[] clauseArgs = { guid };
+		String sortOrder = null;
 
-		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, select, where, whereArgs, sortOrder);
+		// execute
+		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
+				sortOrder);
 
-		try
-		{
-			return cursor != null && cursor.moveToFirst();
-		}
-		finally
-		{
-			if (cursor != null)
-			{
-				cursor.close();
-			}
-		}
-	}
-
-	@Override
-	public String getHash(String prefix) throws CommonServiceException
-	{
-		try
-		{
-			// constructing parameters
-			final String[] select = { DiaryContentProvider.COLUMN_DIARY_HASH_HASH };
-			final String where = DiaryContentProvider.COLUMN_DIARY_HASH_GUID + " = ?";
-			final String[] whereArgs = { prefix };
-
-			// execute query
-			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_HASH_URI, select, where, whereArgs, null);
-
-			// analyze response
-			if (cursor != null)
-			{
-				int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_HASH_HASH);
-				String hash = null;
-
-				if (cursor.moveToNext())
-				{
-					hash = cursor.getString(indexHash);
-				}
-
-				cursor.close();
-				return hash;
-			}
-			else
-			{
-				throw new NullPointerException("Cursor is null");
-			}
-		}
-		catch (Exception e)
-		{
-			throw new CommonServiceException(e);
-		}
-	}
-
-	@Override
-	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
-	{
-		try
-		{
-			if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
-			{
-				// constructing parameters
-				final String[] select = { DiaryContentProvider.COLUMN_DIARY_HASH_GUID,
-						DiaryContentProvider.COLUMN_DIARY_HASH_HASH };
-				final String where = DiaryContentProvider.COLUMN_DIARY_HASH_GUID + " LIKE ?";
-				final String[] whereArgs = { prefix + "_" };
-
-				// execute query
-				Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_HASH_URI, select, where, whereArgs,
-						null);
-
-				// analyze response
-				if (cursor != null)
-				{
-					int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_HASH_GUID);
-					int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_HASH_HASH);
-
-					Map<String, String> result = new HashMap<String, String>();
-
-					while (cursor.moveToNext())
-					{
-						String id = cursor.getString(indexId);
-						String hash = cursor.getString(indexHash);
-						result.put(id, hash);
-					}
-
-					cursor.close();
-
-					return result;
-				}
-				else
-				{
-					throw new NullPointerException("Cursor is null");
-				}
-			}
-			else
-			{
-				// constructing parameters
-				final String[] select = { DiaryContentProvider.COLUMN_DIARY_GUID,
-						DiaryContentProvider.COLUMN_DIARY_HASH };
-				final String where = String.format("%s LIKE ?", DiaryContentProvider.COLUMN_DIARY_GUID);
-				final String[] whereArgs = { prefix + "%" };
-
-				// execute query
-				Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, select, where, whereArgs, null);
-
-				// analyze response
-				if (cursor != null)
-				{
-					int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_GUID);
-					int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_HASH);
-
-					Map<String, String> result = new HashMap<String, String>();
-
-					while (cursor.moveToNext())
-					{
-						String id = cursor.getString(indexId);
-						String hash = cursor.getString(indexHash);
-						result.put(id, hash);
-					}
-
-					cursor.close();
-
-					return result;
-				}
-				else
-				{
-					throw new NullPointerException("Cursor is null");
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			throw new CommonServiceException(e);
-		}
+		return cursor.moveToFirst();
 	}
 
 	@Override
@@ -338,7 +193,6 @@ public class DiaryLocalService implements DiaryService
 				ContentValues newValues = new ContentValues();
 
 				newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(record.getTimeStamp()));
-				newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH, record.getHash());
 				newValues.put(DiaryContentProvider.COLUMN_DIARY_VERSION, record.getVersion());
 				newValues.put(DiaryContentProvider.COLUMN_DIARY_DELETED, record.isDeleted());
 				newValues.put(DiaryContentProvider.COLUMN_DIARY_CONTENT, content);
@@ -350,7 +204,7 @@ public class DiaryLocalService implements DiaryService
 					Log.v(TAG, "Updating item " + record.getId() + ": " + content);
 
 					String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
-					String[] args = { record.getId() };
+					String[] args = new String[] { record.getId() };
 					resolver.update(DiaryContentProvider.CONTENT_DIARY_URI, newValues, clause, args);
 				}
 				else
@@ -360,63 +214,6 @@ public class DiaryLocalService implements DiaryService
 					newValues.put(DiaryContentProvider.COLUMN_DIARY_GUID, record.getId());
 					resolver.insert(DiaryContentProvider.CONTENT_DIARY_URI, newValues);
 				}
-
-				HashUtils.updateHashBranch(this, record.getId().substring(0, ID_PREFIX_SIZE));
-			}
-		}
-		catch (Exception e)
-		{
-			throw new PersistenceException(e);
-		}
-	}
-
-	@Override
-	public void setHash(String prefix, String hash)
-	{
-		try
-		{
-			if (prefix.length() <= ObjectService.ID_PREFIX_SIZE)
-			{
-				if (getHash(prefix) != null)
-				{
-					// update
-					ContentValues newValues = new ContentValues();
-					newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH_HASH, hash);
-					String clause = String.format("%s = ?", DiaryContentProvider.COLUMN_DIARY_HASH_GUID);
-					String[] args = { prefix };
-					resolver.update(DiaryContentProvider.CONTENT_DIARY_HASH_URI, newValues, clause, args);
-				}
-				else
-				{
-					// insert
-					ContentValues newValues = new ContentValues();
-					newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH_GUID, prefix);
-					newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH_HASH, hash);
-					resolver.insert(DiaryContentProvider.CONTENT_DIARY_HASH_URI, newValues);
-				}
-			}
-			else if (prefix.length() == ObjectService.ID_FULL_SIZE)
-			{
-				if (recordExists(prefix))
-				{
-					// update
-					ContentValues newValues = new ContentValues();
-					newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH, hash);
-					String clause = String.format("%s = ?", DiaryContentProvider.COLUMN_DIARY_GUID);
-					String[] args = { prefix };
-					resolver.update(DiaryContentProvider.CONTENT_DIARY_URI, newValues, clause, args);
-				}
-				else
-				{
-					// fail
-					throw new NotFoundException(prefix);
-				}
-			}
-			else
-			{
-				throw new IllegalArgumentException(String.format(
-						"Invalid prefix ('%s'), expected: 0..%d or %d chars, found: %d", prefix,
-						ObjectService.ID_PREFIX_SIZE, ObjectService.ID_FULL_SIZE, prefix.length()));
 			}
 		}
 		catch (Exception e)
@@ -430,7 +227,7 @@ public class DiaryLocalService implements DiaryService
 		try
 		{
 			String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
-			String[] args = { id };
+			String[] args = new String[] { id };
 			resolver.delete(DiaryContentProvider.CONTENT_DIARY_URI, clause, args);
 		}
 		catch (Exception e)
@@ -445,9 +242,8 @@ public class DiaryLocalService implements DiaryService
 	{
 		if (cursor != null)
 		{
-			int indexID = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_GUID);
+			int indexGUID = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_GUID);
 			int indexTimestamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP);
-			int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_HASH);
 			int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_VERSION);
 			int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_DELETED);
 			int indexContent = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_CONTENT);
@@ -456,24 +252,22 @@ public class DiaryLocalService implements DiaryService
 
 			while (cursor.moveToNext())
 			{
-				String id = cursor.getString(indexID);
+				String guid = cursor.getString(indexGUID);
 				Date timestamp = Utils.parseTimeUTC(cursor.getString(indexTimestamp));
-				String hash = cursor.getString(indexHash);
 				int version = cursor.getInt(indexVersion);
 				boolean deleted = (cursor.getInt(indexDeleted) == 1);
 				String content = cursor.getString(indexContent);
 				DiaryRecord record = serializer.read(content);
 
 				Versioned<DiaryRecord> item = new Versioned<DiaryRecord>(record);
-				item.setId(id);
+				item.setId(guid);
 				item.setTimeStamp(timestamp);
-				item.setHash(hash);
 				item.setVersion(version);
 				item.setDeleted(deleted);
 
 				res.add(item);
 
-				Log.v(TAG, String.format("#DBF Extracted item #%s: %s", id, content));
+				Log.v(TAG, String.format("#DBF Extracted item #%s: %s", guid, content));
 			}
 
 			return res;
@@ -483,6 +277,28 @@ public class DiaryLocalService implements DiaryService
 			throw new CommonServiceException(new NullPointerException("Cursor is null"));
 		}
 	}
+
+	// 2014-08-17 Commented out as unused
+
+	// private static String formatList(List<?> list)
+	// {
+	// StringBuilder sb = new StringBuilder();
+	//
+	// sb.append("(");
+	// for (int i = 0; i < list.size(); i++)
+	// {
+	// sb.append("\"");
+	// sb.append(list.get(i));
+	// sb.append("\"");
+	// if (i < (list.size() - 1))
+	// {
+	// sb.append(", ");
+	// }
+	// }
+	// sb.append(")");
+	//
+	// return sb.toString();
+	// }
 
 	public static class Verifier
 	{
@@ -540,5 +356,4 @@ public class DiaryLocalService implements DiaryService
 			}
 		}
 	}
-
 }

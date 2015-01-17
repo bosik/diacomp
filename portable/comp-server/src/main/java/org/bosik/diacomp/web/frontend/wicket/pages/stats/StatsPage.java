@@ -5,14 +5,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import org.apache.wicket.injection.Injector;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.backend.features.diary.service.FrontendDiaryService;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import com.googlecode.wickedcharts.highcharts.options.Axis;
 import com.googlecode.wickedcharts.highcharts.options.ChartOptions;
@@ -38,13 +37,8 @@ class BasicLineOptions extends Options
 {
 	private static final long	serialVersionUID	= 1L;
 
-	@SpringBean
-	private DiaryService		diaryService;
-
 	public BasicLineOptions()
 	{
-		Injector.get().inject(this);
-
 		List<Number> s1 = new ArrayList<Number>();
 		List<Number> s2 = new ArrayList<Number>();
 		List<Number> s3 = new ArrayList<Number>();
@@ -55,7 +49,7 @@ class BasicLineOptions extends Options
 
 		for (int i = 1; i < 13; i++)
 		{
-			List<Versioned<DiaryRecord>> recs = diaryService.findPeriod(dateFrom, dateTo, false);
+			List<Versioned<DiaryRecord>> recs = StatsPage.diaryService.findPeriod(dateFrom, dateTo, false);
 			dateFrom = dateTo;
 			dateTo = Utils.getNextMonth(dateTo);
 
@@ -150,7 +144,9 @@ class BasicLineOptions extends Options
 
 public class StatsPage extends MasterPage
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long			serialVersionUID	= 1L;
+
+	transient static final DiaryService	diaryService		= new FrontendDiaryService();
 
 	public StatsPage(PageParameters parameters)
 	{

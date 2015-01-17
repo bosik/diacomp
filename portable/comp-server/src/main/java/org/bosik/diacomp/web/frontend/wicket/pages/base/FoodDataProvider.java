@@ -5,17 +5,16 @@ import java.util.List;
 import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
+import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
+import org.bosik.diacomp.web.backend.features.foodbase.service.FrontendFoodbaseService;
 
 public class FoodDataProvider implements IDataProvider<Versioned<FoodItem>>
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long		serialVersionUID	= 1L;
 
-	@SpringBean
-	public FoodBaseService		foodService;
+	public final FoodBaseService	foodService			= new FrontendFoodbaseService();
 
 	@Override
 	public void detach()

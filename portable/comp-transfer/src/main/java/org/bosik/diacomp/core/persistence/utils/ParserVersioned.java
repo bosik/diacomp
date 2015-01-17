@@ -24,7 +24,6 @@ public class ParserVersioned<T> extends Parser<Versioned<T>>
 
 		item.setId(json.getString("id"));
 		item.setTimeStamp(Utils.parseTimeUTC(json.getString("stamp")));
-		item.setHash(json.getString("hash"));
 		item.setVersion(json.getInt("version"));
 		item.setDeleted(json.getBoolean("deleted"));
 		item.setData(parser.read(json.getJSONObject("data")));
@@ -39,7 +38,6 @@ public class ParserVersioned<T> extends Parser<Versioned<T>>
 
 		json.put("id", object.getId());
 		json.put("stamp", Utils.formatTimeUTC(object.getTimeStamp()));
-		json.put("hash", object.getHash());
 		json.put("version", object.getVersion());
 		json.put("deleted", object.isDeleted());
 		final JSONObject obj = parser.write(object.getData());

@@ -1,5 +1,6 @@
 package org.bosik.diacomp.android.backend.common;
 
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
@@ -16,12 +17,13 @@ import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCoreImpl;
 import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.KoofServiceImpl;
-import org.bosik.diacomp.core.services.base.dish.DishBaseService;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.dishbase.DishBaseService;
+import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
 import org.bosik.diacomp.core.services.search.RelevantIndexator;
 import org.bosik.diacomp.core.services.search.TagService;
 import org.bosik.diacomp.core.services.sync.SyncService;
+import org.bosik.diacomp.core.utils.Utils;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -44,6 +46,9 @@ public class Storage
 	private static final int		CONNECTION_TIMEOUT	= 6000;
 
 	private static boolean			timerSettedUp		= false;
+	private static Date				sinceDiary			= new Date(new Date().getTime() - Utils.MsecPerDay * 30);
+	private static Date				sinceFoodbase		= Utils.time(2000, 12, 1, 0, 0, 0);
+	private static Date				sinceDishbase		= Utils.time(2000, 12, 1, 0, 0, 0);
 
 	// DAO
 
@@ -222,9 +227,10 @@ public class Storage
 		{
 			Log.v(TAG, "Diary sync...");
 			long time = System.currentTimeMillis();
-			int syncDiaryItemsCount = SyncService.synchronize_v2(localDiary, webDiary);
+			int syncDiaryItemsCount = SyncService.synchronize(localDiary, webDiary, sinceDiary);
 			Log.v(TAG, String.format("Diary synced in %d msec, total tranferred: %d",
 					System.currentTimeMillis() - time, syncDiaryItemsCount));
+			sinceDiary = new Date();
 			return syncDiaryItemsCount;
 		}
 		catch (Exception e)
@@ -240,9 +246,10 @@ public class Storage
 		{
 			Log.v(TAG, "Foodbase sync...");
 			long time = System.currentTimeMillis();
-			int syncFoodItemsCount = SyncService.synchronize_v2(Storage.localFoodBase, Storage.webFoodBase);
+			int syncFoodItemsCount = SyncService.synchronize(Storage.localFoodBase, Storage.webFoodBase, sinceFoodbase);
 			Log.v(TAG, String.format("Foodbase synced in %d msec, total tranferred: %d", System.currentTimeMillis()
 					- time, syncFoodItemsCount));
+			sinceFoodbase = new Date();
 			return syncFoodItemsCount;
 		}
 		catch (Exception e)
@@ -258,9 +265,10 @@ public class Storage
 		{
 			Log.v(TAG, "Dishbase sync...");
 			long time = System.currentTimeMillis();
-			int syncDishItemsCount = SyncService.synchronize_v2(Storage.localDishBase, Storage.webDishBase);
+			int syncDishItemsCount = SyncService.synchronize(Storage.localDishBase, Storage.webDishBase, sinceDishbase);
 			Log.v(TAG, String.format("Dishbase synced in %d msec, total tranferred: %d", System.currentTimeMillis()
 					- time, syncDishItemsCount));
+			sinceDishbase = new Date();
 			return syncDishItemsCount;
 		}
 		catch (Exception e)

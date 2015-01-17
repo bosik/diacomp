@@ -6,7 +6,7 @@ import org.bosik.diacomp.core.test.fakes.services.FakeDiaryService;
 
 public class TestFakeDiaryService extends TestDiaryServiceCommon
 {
-	private final DiaryService	service	= new FakeDiaryService(false);
+	private static final DiaryService	service	= new FakeDiaryService();
 
 	@Override
 	protected DiaryService getService()

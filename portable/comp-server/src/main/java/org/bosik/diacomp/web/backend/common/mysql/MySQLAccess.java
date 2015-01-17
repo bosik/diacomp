@@ -5,15 +5,58 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.SortedMap;
 import org.bosik.diacomp.web.backend.common.Config;
 
 public class MySQLAccess
 {
 	private static Connection	connection;
 
-	private static final String	SQL_DRIVER	= "com.mysql.jdbc.Driver";
+	private static final String	SQL_DRIVER					= "com.mysql.jdbc.Driver";
+
+	// ======================================= User table =======================================
+
+	public static final String	TABLE_USER					= "user";
+	public static final String	COLUMN_USER_ID				= "ID";
+	public static final String	COLUMN_USER_LOGIN			= "Login";
+	public static final String	COLUMN_USER_HASHPASS		= "HashPass";
+	public static final String	COLUMN_USER_DATE_REG		= "DateReg";
+	public static final String	COLUMN_USER_DATE_LOGIN		= "DateLogin";
+
+	// ======================================= Diary table =======================================
+
+	public static final String	TABLE_DIARY					= "diary2";
+	public static final String	COLUMN_DIARY_GUID			= "_GUID";
+	public static final String	COLUMN_DIARY_USER			= "_UserID";
+	public static final String	COLUMN_DIARY_TIMESTAMP		= "_TimeStamp";
+	public static final String	COLUMN_DIARY_VERSION		= "_Version";
+	public static final String	COLUMN_DIARY_DELETED		= "_Deleted";
+	public static final String	COLUMN_DIARY_CONTENT		= "_Content";
+	public static final String	COLUMN_DIARY_TIMECACHE		= "_TimeCache";
+
+	// ======================================= Food table =======================================
+
+	public static final String	TABLE_FOODBASE				= "foodbase2";
+	public static final String	COLUMN_FOODBASE_GUID		= "_GUID";
+	public static final String	COLUMN_FOODBASE_USER		= "_UserID";
+	public static final String	COLUMN_FOODBASE_TIMESTAMP	= "_TimeStamp";
+	public static final String	COLUMN_FOODBASE_VERSION		= "_Version";
+	public static final String	COLUMN_FOODBASE_DELETED		= "_Deleted";
+	public static final String	COLUMN_FOODBASE_CONTENT		= "_Content";
+	public static final String	COLUMN_FOODBASE_NAMECACHE	= "_NameCache";
+
+	// ======================================= Dish table =======================================
+
+	public static final String	TABLE_DISHBASE				= "dishbase2";
+	public static final String	COLUMN_DISHBASE_GUID		= "_GUID";
+	public static final String	COLUMN_DISHBASE_USER		= "_UserID";
+	public static final String	COLUMN_DISHBASE_TIMESTAMP	= "_TimeStamp";
+	public static final String	COLUMN_DISHBASE_VERSION		= "_Version";
+	public static final String	COLUMN_DISHBASE_DELETED		= "_Deleted";
+	public static final String	COLUMN_DISHBASE_CONTENT		= "_Content";
+	public static final String	COLUMN_DISHBASE_NAMECACHE	= "_NameCache";
 
 	public MySQLAccess()
 	{
@@ -41,30 +84,25 @@ public class MySQLAccess
 	 * 
 	 * @param table
 	 *            Table name
-	 * @param columns
-	 *            A list of which columns to return. Passing null will return all columns, which is inefficient.
-	 * @param where
+	 * @param clause
 	 *            Selection clause
-	 * @param whereArgs
-	 *            Arguments for clause
 	 * @param order
 	 *            Name of column to be ordered by
 	 * @param offset
 	 *            Index of first row to select
 	 * @param limit
 	 *            Max number of rows to be selected
+	 * @param params
+	 *            Arguments for clause
 	 * @return
 	 * @throws SQLException
 	 */
-	@SuppressWarnings("static-method")
-	public ResultSet select(String table, String[] columns, String where, String[] whereArgs, String order, int offset,
-			int limit) throws SQLException
+	public ResultSet select(String table, String clause, String order, int offset, int limit, String... params)
+			throws SQLException
 	{
 		connect();
 
-		String projection = columns == null ? "*" : Utils.commaSeparated(columns).toString();
-
-		String sql = String.format("SELECT %s FROM %s WHERE %s", projection, table, where);
+		String sql = String.format("SELECT * FROM %s WHERE %s", table, clause);
 		if ((order != null) && !order.isEmpty())
 		{
 			sql += " ORDER BY " + order;
@@ -76,110 +114,103 @@ public class MySQLAccess
 		}
 
 		PreparedStatement preparedStatement = connection.prepareStatement(sql);
-		for (int i = 0; i < whereArgs.length; i++)
+		for (int i = 0; i < params.length; i++)
 		{
-			preparedStatement.setString(i + 1, whereArgs[i]);
+			preparedStatement.setString(i + 1, params[i]);
 		}
 
 		// Don't close prepared statement!
 		return preparedStatement.executeQuery();
 	}
 
-	/**
-	 * Selects all fields
-	 * 
-	 * @param table
-	 * @param where
-	 * @param order
-	 * @param whereArgs
-	 * @return
-	 * @throws SQLException
-	 */
-	public ResultSet select(String table, String where, String order, String[] whereArgs) throws SQLException
+	// the resource is returned to invoker
+	public ResultSet select(String table, String clause, String order, String... params) throws SQLException
 	{
-		return select(table, null, where, whereArgs, order, -1, -1);
+		return select(table, clause, order, -1, -1, params);
 	}
 
-	public ResultSet select(String table, String[] columns, String where, String[] whereArgs, String order)
-			throws SQLException
+	public int insert(String table, LinkedHashMap<String, String> set)
 	{
-		return select(table, columns, where, whereArgs, order, -1, -1);
-	}
-
-	@SuppressWarnings("static-method")
-	public int insert(String table, Map<String, String> values) throws SQLException
-	{
-		connect();
-
-		// making wildcarded string
-
-		StringBuilder sb = new StringBuilder();
-		sb.append("INSERT INTO " + table + " (");
-		sb.append(Utils.commaSeparated(values.keySet().iterator()));
-		sb.append(") VALUES (");
-		sb.append(Utils.commaSeparatedQuests(Utils.count(values.keySet().iterator())));
-		sb.append(")");
-
-		PreparedStatement preparedStatement = connection.prepareStatement(sb.toString());
-		// TODO: debug only
-		System.out.println(sb);
-
-		// filling wildcards
-
-		int i = 1;
-		for (Entry<String, String> entry : values.entrySet())
+		try
 		{
-			preparedStatement.setString(i++, entry.getValue());
-		}
+			connect();
 
-		// go
+			// making wildcarded string
 
-		return preparedStatement.executeUpdate();
-	}
+			StringBuilder sb = new StringBuilder();
+			sb.append("INSERT INTO " + table + " (");
+			sb.append(Utils.commaSeparated(set.keySet().iterator()));
+			sb.append(") VALUES (");
+			sb.append(Utils.commaSeparatedQuests(Utils.count(set.keySet().iterator())));
+			sb.append(")");
 
-	@SuppressWarnings("static-method")
-	public int update(String table, Map<String, String> set, Map<String, String> where) throws SQLException
-	{
-		connect();
-
-		/**
-		 * THINK Requires set.keySet().iterator() and set.entrySet().iterator() return items in the same order
-		 */
-
-		// making wildcarded string
-		StringBuilder sb = new StringBuilder();
-		sb.append("UPDATE " + table + " SET ");
-		sb.append(Utils.separated(set.keySet().iterator(), ", "));
-		sb.append(" WHERE ");
-		sb.append(Utils.separated(where.keySet().iterator(), " AND "));
-
-		// TODO: debug only
-		System.out.println(sb);
-
-		PreparedStatement preparedStatement = connection.prepareStatement(sb.toString());
-
-		// filling wildcards
-
-		int i = 1;
-		// statement.setString(i++, table);
-
-		for (Entry<String, String> entry : set.entrySet())
-		{
-			// statement.setString(i++, entry.getKey());
-			preparedStatement.setString(i++, entry.getValue());
+			PreparedStatement preparedStatement = connection.prepareStatement(sb.toString());
 			// TODO: debug only
-			System.out.println("UPDATE: " + entry.getKey() + " = " + entry.getValue());
-		}
+			System.out.println(sb);
 
-		for (Entry<String, String> entry : where.entrySet())
+			// filling wildcards
+
+			int i = 1;
+			for (Entry<String, String> entry : set.entrySet())
+			{
+				preparedStatement.setString(i++, entry.getValue());
+			}
+
+			// go
+
+			return preparedStatement.executeUpdate();
+		}
+		catch (SQLException e)
 		{
-			// statement.setString(i++, entry.getKey());
-			preparedStatement.setString(i++, entry.getValue());
+			throw new RuntimeException(e);
 		}
+	}
 
-		// go
+	public int update(String table, SortedMap<String, String> set, SortedMap<String, String> where) throws SQLException
+	{
+		try
+		{
+			connect();
 
-		return preparedStatement.executeUpdate();
+			// making wildcarded string
+			StringBuilder sb = new StringBuilder();
+			sb.append("UPDATE " + table + " SET ");
+			sb.append(Utils.separated(set.keySet().iterator(), ", "));
+			sb.append(" WHERE ");
+			sb.append(Utils.separated(where.keySet().iterator(), " AND "));
+
+			// TODO: debug only
+			System.out.println(sb);
+
+			PreparedStatement preparedStatement = connection.prepareStatement(sb.toString());
+
+			// filling wildcards
+
+			int i = 1;
+			// statement.setString(i++, table);
+
+			for (Entry<String, String> entry : set.entrySet())
+			{
+				// statement.setString(i++, entry.getKey());
+				preparedStatement.setString(i++, entry.getValue());
+				// TODO: debug only
+				System.out.println("UPDATE: " + entry.getKey() + " = " + entry.getValue());
+			}
+
+			for (Entry<String, String> entry : where.entrySet())
+			{
+				// statement.setString(i++, entry.getKey());
+				preparedStatement.setString(i++, entry.getValue());
+			}
+
+			// go
+
+			return preparedStatement.executeUpdate();
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	// private void example()

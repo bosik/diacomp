@@ -33,7 +33,7 @@ public class TagLocalService implements TagService
 	// // constructing parameters
 	// final String[] select = { DiaryContentProvider.COLUMN_TAG_TAG };
 	// final String where = DiaryContentProvider.COLUMN_TAG_GUID + " = ?";
-	// final String[] whereArgs = { id };
+	// final String[] whereArgs = new String[] { id };
 	//
 	// // execute query
 	// Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_TAG_URI, select, where,
@@ -71,7 +71,7 @@ public class TagLocalService implements TagService
 	// final ContentValues newValues = new ContentValues();
 	// newValues.put(DiaryContentProvider.COLUMN_TAG_TAG, tag);
 	// final String where = DiaryContentProvider.COLUMN_TAG_GUID + " = ?";
-	// String[] whereArgs = { id };
+	// String[] whereArgs = new String[] { id };
 	// resolver.update(DiaryContentProvider.CONTENT_TAG_URI, newValues, where, whereArgs);
 	// }
 	// catch (PersistenceException e)
@@ -113,7 +113,7 @@ public class TagLocalService implements TagService
 		// final String[] select = { DiaryContentProvider.COLUMN_TAG_GUID,
 		// DiaryContentProvider.COLUMN_TAG_TAG };
 		// final String where = null;// DiaryContentProvider.COLUMN_TAG_GUID + " = ?";
-		// final String[] whereArgs = null;// { id };
+		// final String[] whereArgs = null;// new String[] { id };
 		//
 		// // execute query
 		// Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_TAG_URI, select, where,

@@ -1,10 +1,10 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import org.bosik.diacomp.android.R;
@@ -300,10 +300,12 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			{
 				case CONTEXT_ITEM_REMOVE:
 				{
-					String id = curRecords.get(ind).getId();
-					diary.delete(id);
-					openPage(curDate);
-
+					// String id = curRecords.get(ind).getId();
+					// ((DiaryLocalService) diary).deletePermanently(id);
+					
+					curRecords.get(ind).setDeleted(true);
+					curRecords.get(ind).updateTimeStamp();
+					postRecord(curRecords.get(ind));
 					return true;
 				}
 			}
@@ -520,9 +522,7 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 					{
 						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(
 								ActivityEditor.FIELD_ENTITY);
-
-						diary.save(Arrays.<Versioned<DiaryRecord>> asList(rec));
-						openPage(curDate);
+						postRecord(rec);
 						Storage.syncDiary(rec.getId());
 					}
 					break;
@@ -570,6 +570,14 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 		diaryViewLayout.setRecords(curRecords);
 		buttonSelectDay.setText(FORMAT_DATE.format(curDate));
+	}
+
+	public void postRecord(Versioned<DiaryRecord> rec)
+	{
+		List<Versioned<DiaryRecord>> list = new LinkedList<Versioned<DiaryRecord>>();
+		list.add(rec);
+		diary.save(list);
+		openPage(curDate);
 	}
 
 	/**

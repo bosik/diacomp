@@ -5,30 +5,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
-import org.bosik.diacomp.core.test.fakes.mocks.Mock;
-import org.bosik.diacomp.core.test.fakes.mocks.MockDiaryRecord;
-import org.bosik.diacomp.core.test.fakes.mocks.MockVersionedConverter;
 
 public class FakeDiaryService implements DiaryService
 {
-	private Mock<Versioned<DiaryRecord>>	mock	= new MockVersionedConverter<DiaryRecord>(new MockDiaryRecord());
-	private List<Versioned<DiaryRecord>>	samples	= new ArrayList<Versioned<DiaryRecord>>();
-
-	public FakeDiaryService(boolean withSampleData)
-	{
-		if (withSampleData)
-		{
-			samples.addAll(mock.getSamples());
-		}
-	}
+	private final List<Versioned<DiaryRecord>>	data	= new ArrayList<Versioned<DiaryRecord>>();
 
 	private static void sort(List<Versioned<DiaryRecord>> items)
 	{
@@ -37,9 +23,7 @@ public class FakeDiaryService implements DiaryService
 			@Override
 			public int compare(Versioned<DiaryRecord> o1, Versioned<DiaryRecord> o2)
 			{
-				Date t1 = o1.getData().getTime();
-				Date t2 = o2.getData().getTime();
-				return t1.compareTo(t2);
+				return o1.getData().getTime().compareTo(o2.getData().getTime());
 			}
 		});
 	}
@@ -47,7 +31,7 @@ public class FakeDiaryService implements DiaryService
 	@Override
 	public void delete(String id) throws NotFoundException, AlreadyDeletedException
 	{
-		for (Versioned<DiaryRecord> item : samples)
+		for (Versioned<DiaryRecord> item : data)
 		{
 			if (item.getId().equals(id))
 			{
@@ -64,11 +48,10 @@ public class FakeDiaryService implements DiaryService
 	@Override
 	public Versioned<DiaryRecord> findById(String id) throws CommonServiceException
 	{
-		for (Versioned<DiaryRecord> item : samples)
+		for (Versioned<DiaryRecord> item : data)
 		{
 			if (item.getId().equals(id))
 			{
-				// FIXME: unlink data
 				return new Versioned<DiaryRecord>(item);
 			}
 		}
@@ -76,57 +59,13 @@ public class FakeDiaryService implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> findByIdPrefix(String prefix)
-	{
-		if (prefix.length() != ObjectService.ID_PREFIX_SIZE)
-		{
-			throw new IllegalArgumentException(String.format("Invalid prefix length, expected %d chars, but %d found",
-					ObjectService.ID_PREFIX_SIZE, prefix.length()));
-		}
-
-		List<Versioned<DiaryRecord>> result = new ArrayList<Versioned<DiaryRecord>>();
-
-		for (Versioned<DiaryRecord> rec : samples)
-		{
-			if (rec.getId().startsWith(prefix))
-			{
-				// FIXME: unlink data
-				result.add(new Versioned<DiaryRecord>(rec));
-			}
-		}
-
-		sort(result);
-		return result;
-	}
-
-	@Override
 	public List<Versioned<DiaryRecord>> findChanged(Date since) throws CommonServiceException
 	{
 		List<Versioned<DiaryRecord>> result = new ArrayList<Versioned<DiaryRecord>>();
 
-		for (Versioned<DiaryRecord> item : samples)
+		for (Versioned<DiaryRecord> item : data)
 		{
 			if (item.getTimeStamp().after(since))
-			{
-				result.add(new Versioned<DiaryRecord>(item));
-			}
-		}
-
-		sort(result);
-		return result;
-	}
-
-	@Override
-	public List<Versioned<DiaryRecord>> findPeriod(Date startTime, Date endTime, boolean includeRemoved)
-			throws CommonServiceException
-	{
-		List<Versioned<DiaryRecord>> result = new ArrayList<Versioned<DiaryRecord>>();
-
-		for (Versioned<DiaryRecord> item : samples)
-		{
-			Date time = item.getData().getTime();
-
-			if ((includeRemoved || !item.isDeleted()) && (time.after(startTime) && time.before(endTime)))
 			{
 				result.add(new Versioned<DiaryRecord>(item));
 			}
@@ -143,7 +82,7 @@ public class FakeDiaryService implements DiaryService
 		{
 			boolean found = false;
 
-			for (Versioned<DiaryRecord> x : samples)
+			for (Versioned<DiaryRecord> x : data)
 			{
 				if (x.getId().equals(item.getId()))
 				{
@@ -159,26 +98,28 @@ public class FakeDiaryService implements DiaryService
 
 			if (!found)
 			{
-				samples.add(new Versioned<DiaryRecord>(item));
+				data.add(new Versioned<DiaryRecord>(item));
 			}
 		}
 	}
 
 	@Override
-	public String getHash(String prefix) throws CommonServiceException
+	public List<Versioned<DiaryRecord>> findPeriod(Date startTime, Date endTime, boolean includeRemoved)
+			throws CommonServiceException
 	{
-		throw new UnsupportedOperationException("Not implemented");
-	}
+		List<Versioned<DiaryRecord>> result = new ArrayList<Versioned<DiaryRecord>>();
 
-	@Override
-	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
-	{
-		throw new UnsupportedOperationException("Not implemented");
-	}
+		for (Versioned<DiaryRecord> item : data)
+		{
+			Date time = item.getData().getTime();
 
-	@Override
-	public void setHash(String prefix, String hash)
-	{
-		throw new UnsupportedOperationException("Not implemented");
+			if ((includeRemoved || !item.isDeleted()) && (time.after(startTime) && time.before(endTime)))
+			{
+				result.add(new Versioned<DiaryRecord>(item));
+			}
+		}
+
+		sort(result);
+		return result;
 	}
 }

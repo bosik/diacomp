@@ -1,8 +1,8 @@
 package org.bosik.diacomp.android.backend.features.foodbase;
 
 import org.bosik.diacomp.android.backend.common.webclient.TestWebClient;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
-import org.bosik.diacomp.core.services.base.food.TestFoodbaseServiceCommon;
+import org.bosik.diacomp.core.services.foodbase.FoodBaseService;
+import org.bosik.diacomp.core.services.foodbase.TestFoodbaseServiceCommon;
 
 public class TestFoodBaseWebService extends TestFoodbaseServiceCommon
 {

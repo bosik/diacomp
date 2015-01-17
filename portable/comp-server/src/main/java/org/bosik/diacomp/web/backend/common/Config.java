@@ -31,6 +31,7 @@ public class Config
 					final String key = (String)entry.getKey();
 					final String value = (String)entry.getValue();
 					props.put(key, value);
+					// System.out.println(String.format("[CONFIG] %s = %s", key, value));
 				}
 			}
 			catch (IOException e)
@@ -47,19 +48,61 @@ public class Config
 		init();
 
 		String value = props.get(key);
-
+		// System.out.println(String.format("Config: %s=%s", key, value));
 		if (null == value)
 		{
 			throw new RuntimeException(String.format("Config property '%s' not found", key));
 		}
-		else
-		{
-			return value;
-		}
+		return value;
 	}
 
-	public static int getInt(String key)
+	/**
+	 * Scope: frontend
+	 * 
+	 * @return
+	 */
+	public static String getBaseURL()
 	{
-		return Integer.parseInt(get(key));
+		return get("baseUrl");
+	}
+
+	/**
+	 * Scope: test
+	 * 
+	 * @return
+	 */
+	public static String getTestLogin()
+	{
+		return get("login");
+	}
+
+	/**
+	 * Scope: test
+	 * 
+	 * @return
+	 */
+	public static String getTestPassword()
+	{
+		return get("pass");
+	}
+
+	/**
+	 * Scope: backend
+	 * 
+	 * @return
+	 */
+	public static int getAPICurrent()
+	{
+		return Integer.parseInt(get("current_api"));
+	}
+
+	/**
+	 * Scope: backend
+	 * 
+	 * @return
+	 */
+	public static int getAPISupported()
+	{
+		return Integer.parseInt(get("supported_api"));
 	}
 }

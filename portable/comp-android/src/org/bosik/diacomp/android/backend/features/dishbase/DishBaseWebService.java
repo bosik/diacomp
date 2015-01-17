@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
@@ -12,9 +11,8 @@ import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
-import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.rest.StdResponse;
-import org.bosik.diacomp.core.services.base.dish.DishBaseService;
+import org.bosik.diacomp.core.services.dishbase.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
@@ -27,18 +25,14 @@ public class DishBaseWebService implements DishBaseService
 	// private static final String TAG = DishBaseWebService.class.getSimpleName();
 
 	// REST methods
-	private static final String						API_DISH_FIND_ALL			= "api/dish/all/?show_rem=%s";
-	private static final String						API_DISH_FIND_ANY			= "api/dish/search/?q=%s";
-	private static final String						API_DISH_FIND_BY_ID			= "api/dish/guid/%s";
-	private static final String						API_DISH_FIND_BY_ID_PREFIX	= "api/dish/guid/%s";
-	private static final String						API_DISH_FIND_CHANGES		= "api/dish/changes/?since=%s";
-	private static final String						API_DISH_HASH				= "api/dish/hash/%s";
-	private static final String						API_DISH_HASHES				= "api/dish/hashes/%s";
-	private static final String						API_DISH_SAVE				= "api/dish/";
+	private static final String						API_DISH_FIND_ALL		= "api/dish/all/?show_rem=%s";
+	private static final String						API_DISH_FIND_ANY		= "api/dish/search/?q=%s";
+	private static final String						API_DISH_FIND_CHANGES	= "api/dish/changes/?since=%s";
+	private static final String						API_DISH_FIND_BY_ID		= "api/dish/guid/%s";
+	private static final String						API_DISH_SAVE			= "api/dish/";
 
 	private final WebClient							webClient;
-	private final Serializer<Versioned<DishItem>>	serializer					= new SerializerDishItem();
-	private final Serializer<Map<String, String>>	serializerMap				= new SerializerMap();
+	private final Serializer<Versioned<DishItem>>	serializer				= new SerializerDishItem();
 
 	public DishBaseWebService(WebClient webClient)
 	{
@@ -124,75 +118,17 @@ public class DishBaseWebService implements DishBaseService
 	}
 
 	@Override
-	public Versioned<DishItem> findById(String id)
+	public Versioned<DishItem> findById(String guid)
 	{
 		try
 		{
-			String url = String.format(API_DISH_FIND_BY_ID, id);
+			String url = String.format(API_DISH_FIND_BY_ID, guid);
 			StdResponse resp = webClient.get(url);
 			return serializer.read(resp.getResponse());
 		}
 		catch (NotFoundException e)
 		{
 			return null;
-		}
-		catch (Exception e)
-		{
-			throw new CommonServiceException(e);
-		}
-	}
-
-	@Override
-	public List<Versioned<DishItem>> findByIdPrefix(String prefix) throws CommonServiceException
-	{
-		try
-		{
-			String url = String.format(API_DISH_FIND_BY_ID_PREFIX, prefix);
-			StdResponse resp = webClient.get(url);
-			return serializer.readAll(resp.getResponse());
-		}
-		catch (CommonServiceException e)
-		{
-			throw e;
-		}
-		catch (Exception e)
-		{
-			throw new CommonServiceException(e);
-		}
-	}
-
-	@Override
-	public String getHash(String prefix) throws CommonServiceException
-	{
-		try
-		{
-			String query = String.format(API_DISH_HASH, prefix);
-			StdResponse resp = webClient.get(query);
-			return resp.getResponse();
-		}
-		catch (CommonServiceException e)
-		{
-			throw e;
-		}
-		catch (Exception e)
-		{
-			throw new CommonServiceException(e);
-		}
-	}
-
-	@Override
-	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
-	{
-		try
-		{
-			String query = String.format(API_DISH_HASHES, prefix);
-			StdResponse resp = webClient.get(query);
-			String data = resp.getResponse();
-			return serializerMap.read(data);
-		}
-		catch (CommonServiceException e)
-		{
-			throw e;
 		}
 		catch (Exception e)
 		{
@@ -213,11 +149,5 @@ public class DishBaseWebService implements DishBaseService
 		{
 			throw new CommonServiceException("URL: " + API_DISH_SAVE, e);
 		}
-	}
-
-	@Override
-	public void setHash(String prefix, String hash)
-	{
-		throw new UnsupportedOperationException("Can't set hash via REST");
 	}
 }
