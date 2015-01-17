@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+<wicket:head>
+	<link type="text/css" rel="stylesheet" href="res/css/style.css" />
+	<style>
+.dataview {
+	margin: 0;
+	padding: 0;
+}
+
+.row {
+	/*padding-top: 5px;*/
+	/*padding-bottom: 5px;*/
+	/*vertical-align: middle;*/
+}
+
+.colIcon {
+	padding-left: 5px;
+	padding-right: 5px;
+	width: 40px;
+}
+
+.colName {
+	
+}
+
+.colDetails {
+	width: 10%;
+	text-align: center;
+}
+
+#diary-search {
+	overflow: hidden;
+	padding-right: 15px;
+	margin-bottom: 16px;
+}
+
+.diary-search-input {
+	height: 25px;
+	padding-left: 5px;
+}
+
+#diary-tools {
+	float: right;
+	width: 96px;
+	min-height: 50px;
+}
+
+.btn-new-food,.btn-new-dish {
+	min-width: 36px;
+	min-height: 36px;
+	margin-left: 5px;
+}
+
+.btn-new-food:hover,.btn-new-dish:hover {
+	/*background-position: center center;
+	background-repeat: no-repeat;
+	min-width: 40px;
+	min-height: 32px;
+	margin-left: 5px;
+	border: solid 1px #ccc;
+	cursor: pointer;
+	background-image: url("res/img/button_foodbase.png");
+	background-color: #ccc;*/
+	
+}
+
+.btn-new-food {
+	background-image: url("res/img/button_new_food.png");
+}
+
+.btn-new-dish {
+	background-image: url("res/img/button_new_dish.png");
+}
+</style>
+</wicket:head>
+</head>
+<body>
+	<wicket:extend xmlns:wicket="http://wicket.apache.org">
+		<div id="diary-tools">
+			<form wicket:id="formNew">
+				<input wicket:id="buttonNewFood" type="button"
+					class="btn btn-new-food" title="New food"></input> <input
+					wicket:id="buttonNewDish" type="button" class="btn btn-new-dish"
+					title="New dish"></input>
+			</form>
+		</div>
+		<div id="diary-search">
+			<input wicket:id="inputSearchName"
+				class="full_width diary-search-input" type="text"
+				placeholder="Search..." />
+		</div>
+		<div wicket:id="tableContainer" class="dataview">
+			<table cellspacing="0" class="full_width">
+				<tr>
+					<th class="colIcon"></th>
+					<th class="colName"><wicket:message key="food.column.name" /></th>
+					<th class="colDetails"><wicket:message key="food.column.prots" /></th>
+					<th class="colDetails"><wicket:message key="food.column.fats" /></th>
+					<th class="colDetails"><wicket:message key="food.column.carbs" /></th>
+					<th class="colDetails"><wicket:message key="food.column.value" /></th>
+				</tr>
+				<tr wicket:id="view" class="hoverableRow">
+					<td class="colIcon row"><img src="res/img/button_foodbase.png" /></td>
+					<td class="colName row"><span wicket:id="food.name"></span></td>
+					<td class="colDetails row"><span wicket:id="food.prots"></span></td>
+					<td class="colDetails row"><span wicket:id="food.fats"></span></td>
+					<td class="colDetails row"><span wicket:id="food.carbs"></span></td>
+					<td class="colDetails row"><span wicket:id="food.value"></span></td>
+				</tr>
+			</table>
+		</div>
+		<div wicket:id="foodEditor"></div>
+		<div wicket:id="dishEditor"></div>
+	</wicket:extend>
+</body>
+</html>

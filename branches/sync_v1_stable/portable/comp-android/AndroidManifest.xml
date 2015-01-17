@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.bosik.diacomp.android"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="13"
+        android:targetSdkVersion="21" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Light.NoTitleBar" >
+        <provider
+            android:name="org.bosik.diacomp.android.backend.common.DiaryContentProvider"
+            android:authorities="diacomp.provider"
+            android:exported="false" >
+            <grant-uri-permission android:pathPattern=".*" />
+        </provider>
+
+        <activity
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityMain"
+            android:label="@string/main_title"
+            android:theme="@android:style/Theme.Light" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityDiary"
+            android:label="@string/diary_title"
+            android:theme="@android:style/Theme.Light" >
+        </activity>
+        <activity
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorBlood"
+            android:label="@string/editor_blood_title"
+            android:theme="@android:style/Theme.Light" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.bosik.diacomp.android.face.activities.ActivityDiary" />
+        </activity>
+        <activity
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorIns"
+            android:label="@string/editor_ins_title"
+            android:parentActivityName="org.bosik.diacomp.android.frontend.activities.ActivityDiary"
+            android:theme="@android:style/Theme.Light" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.bosik.diacomp.android.face.activities.ActivityDiary" />
+        </activity>
+        <activity
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorMeal"
+            android:label="@string/editor_meal_title"
+            android:theme="@android:style/Theme.Light" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.bosik.diacomp.android.face.activities.ActivityDiary" />
+        </activity>
+        <activity
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorNote"
+            android:label="@string/editor_note_title"
+            android:theme="@android:style/Theme.Light" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.bosik.diacomp.android.face.activities.ActivityDiary" />
+        </activity>
+        <activity
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityPreferences"
+            android:label="@string/preferences_title"
+            android:theme="@android:style/Theme.Light" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
+        </activity>
+        <activity
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityBase"
+            android:label="@string/base_title"
+            android:theme="@android:style/Theme.Light" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
+        </activity>
+        <activity
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorFood"
+            android:label="@string/editor_food_title"
+            android:theme="@android:style/Theme.Light" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.bosik.diacomp.android.face.activities.ActivityBase" />
+        </activity>
+        <activity
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorDish"
+            android:label="@string/editor_dish_title"
+            android:theme="@android:style/Theme.Light" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.bosik.diacomp.android.face.activities.ActivityBase" />
+        </activity>
+        <activity
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityGraph"
+            android:label="@string/title_activity_activity_graph" >
+        </activity>
+    </application>
+
+</manifest>

@@ -1,0 +1,108 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutNoteScroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="vertical">
+
+    <LinearLayout
+        android:id="@+id/layoutNoteParent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_small"
+        tools:context=".ActivityEditorFood" >
+
+        <TextView
+            android:id="@+id/labelFoodName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/editFoodText"
+            android:paddingTop="@dimen/padding_small"
+            android:text="@string/editor_food_field_name" />
+
+        <EditText
+            android:id="@+id/editFoodName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:inputType="textMultiLine" >
+
+            <requestFocus />
+        </EditText>
+        
+        <TextView
+            android:id="@+id/labelFoodProts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/editFoodText"
+            android:paddingTop="@dimen/padding_small"
+            android:text="@string/editor_food_field_prots" />
+
+        <EditText
+            android:id="@+id/editFoodProts"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:inputType="number|text" >
+        </EditText>
+        
+        <TextView
+            android:id="@+id/labelFoodFats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/editFoodText"
+            android:paddingTop="@dimen/padding_small"
+            android:text="@string/editor_food_field_fats" />
+
+        <EditText
+            android:id="@+id/editFoodFats"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:inputType="number|text" >
+        </EditText>
+        
+        <TextView
+            android:id="@+id/labelFoodCarbs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/editFoodText"
+            android:paddingTop="@dimen/padding_small"
+            android:text="@string/editor_food_field_carbs" />
+
+        <EditText
+            android:id="@+id/editFoodCarbs"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:inputType="number|text" >
+        </EditText>
+        
+        <TextView
+            android:id="@+id/labelFoodValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/editFoodText"
+            android:paddingTop="@dimen/padding_small"
+            android:text="@string/editor_food_field_value" />
+
+        <EditText
+            android:id="@+id/editFoodValue"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:inputType="number|text" >
+        </EditText>
+
+        <Button
+            android:id="@+id/buttonFoodOK"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_medium"
+            android:text="@string/editor_common_save" />
+    </LinearLayout>
+
+</ScrollView>

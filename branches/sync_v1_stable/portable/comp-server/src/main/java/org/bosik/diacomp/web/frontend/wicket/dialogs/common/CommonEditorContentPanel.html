@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<html xmlns:wicket="http://wicket.apache.org">
+<wicket:panel>
+	<div class="editor-panel">
+		<form wicket:id="form">
+			<wicket:child />
+			<div class="editor-controls-container">
+				<div class="editor-controls-content">
+					<input wicket:id="buttonSave" type="button"
+						wicket:message="value:editor.buttons.save"
+						class="btn-positive" /> <input wicket:id="buttonCancel"
+						type="button" wicket:message="value:editor.buttons.cancel"
+						class="btn" />
+				</div>
+			</div>
+		</form>
+	</div>
+	<style>
+.editor-panel {
+	padding: 10px;
+}
+
+.editor-controls-container {
+	border-top: solid 1px #ccc;
+	margin-top: 10px;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	height: 46px;
+	width: 100%;
+	bottom: 0;
+	height: 46px;
+}
+
+.editor-controls-content {
+	padding-top: 10px;
+	padding-right: 10px;
+	float: right;
+}
+
+h4 {
+	border-bottom: solid 1px #ccc;
+	font-size: 100%;
+	margin-bottom: 10px;
+	padding-bottom: 15px;
+	margin-top: 10px;
+	line-height: 0em;
+}
+
+.group {
+	margin-bottom: 30px;
+}
+
+div.w_caption {
+	background-color: rgb(0, 88, 0) !important;
+	color: #FFF !important;
+}
+
+a.w_close {
+	display: none;
+}
+</style>
+</wicket:panel>
+</html>

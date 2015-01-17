@@ -1,0 +1,72 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutInsScroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="vertical" >
+
+    <LinearLayout
+        android:id="@+id/LayoutInsParent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_small"
+        tools:context=".ActivityIns" >
+
+        <TextView
+            android:id="@+id/labelInsTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/editor_common_field_time" />
+
+        <RelativeLayout
+            android:id="@+id/LayoutInsDateTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TimePicker
+                android:id="@+id/pickerInsTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true" />
+
+            <DatePicker
+                android:id="@+id/pickerInsDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/pickerInsTime"
+                android:paddingLeft="@dimen/padding_small" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/labelInsValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/editInsValue"
+            android:paddingTop="@dimen/padding_small"
+            android:text="@string/editor_common_field_value" />
+
+        <EditText
+            android:id="@+id/editInsValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text|numberDecimal"
+            android:singleLine="true" >
+
+            <requestFocus />
+        </EditText>
+
+        <Button
+            android:id="@+id/buttonInsOK"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_medium"
+            android:text="@string/editor_common_save" />
+    </LinearLayout>
+
+</ScrollView>

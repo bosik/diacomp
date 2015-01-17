@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Compensation</string>
+    <string name="common_gramm">g</string>
+    <string name="common_bs_unit_mmol">mmol/l</string>
+    <string name="common_rectype_blood">Blood sugar</string>
+    <string name="common_rectype_ins">Injection</string>
+    <string name="common_rectype_meal">Meal</string>
+    <string name="common_rectype_note">Note</string>
+    <string name="common_hint_search">Search&#8230;</string>
+    <string name="common_hint_mass">Mass</string>
+    <string name="diary_button_add">Add</string>
+    <string name="diary_context_common_edit">Edit</string>
+    <string name="diary_context_common_remove">Remove</string>
+    <string name="diary_title">Diary</string>
+    <string name="editor_blood_field_finger">Finger</string>
+    <string name="editor_blood_title">Blood sugar</string>
+    <string name="editor_common_field_time">Date and time</string>
+    <string name="editor_common_field_value">Value</string>
+    <string name="editor_common_save">Save</string>
+    <string name="editor_common_stub_date">02/04/2014</string>
+    <string name="editor_common_stub_time">09:45</string>
+    <string name="editor_dish_field_content">Content</string>
+    <string name="editor_dish_field_mass">Result mass</string>
+    <string name="editor_dish_field_name">Name</string>
+    <string name="editor_dish_title">Dish</string>
+    <string name="editor_food_field_name">Name</string>
+    <string name="editor_food_field_prots">Prots, g</string>
+    <string name="editor_food_field_fats">Fats, g</string>
+    <string name="editor_food_field_carbs">Carbs, g</string>
+    <string name="editor_food_field_value">Value, kcal</string>
+    <string name="editor_food_title">Food</string>
+    <string name="editor_ins_title">Insulin</string>
+    <string name="editor_meal_button_more">…</string>
+    <string name="editor_meal_field_fooddish">Food/dish</string>
+    <string name="editor_meal_field_mass">Mass, g</string>
+    <string name="editor_meal_header_content">Content</string>
+    <string name="editor_meal_header_dosage">Calculator</string>
+    <string name="editor_meal_label_stat" formatted="false">P 10.2</string>
+    <string name="editor_meal_label_correction">+8 g</string>
+    <string name="editor_meal_label_no_correction">no correction</string>
+    <string name="editor_meal_label_dose">U</string>
+    <string name="editor_meal_parenthesis_close">)</string>
+    <string name="editor_meal_parenthesis_open">(</string>
+    <string name="editor_meal_title">Meal</string>
+    <string name="editor_note_field_text">Text</string>
+    <string name="editor_note_title">Note</string>
+    <string name="base_subinfo" formatted="false">P %.1f\t\tF %.1f\t\tC %.1f\t\tV %.1f</string>
+    <string name="base_title">Food &amp; dish base</string>
+    <string name="base_title_loading">Food &amp; dish base (loading…)</string>
+    <string name="main_option_diary">Diary</string>
+    <string name="main_option_bases">Bases</string>
+    <string name="main_option_preferences">Preferences</string>
+    <string name="main_option_sync">Sync</string>
+    <string name="main_option_test">Test</string>
+    <string name="main_title">Compensation</string>
+    <string name="preferences_sync">Account</string>
+    <string name="preferences_sync_password">Password</string>
+    <string name="preferences_sync_server">Server</string>
+    <string name="preferences_sync_username">Login (e-mail)</string>
+    <string name="preferences_title">Preferences</string>
+
+    <!-- ========================================================================= -->
+
+
+    <!-- Arrays -->
+
+    <string-array name="fingers">
+        <item>[Left]: thumb</item>
+        <item>[Left]: index</item>
+        <item>[Left]: middle</item>
+        <item>[Left]: ring</item>
+        <item>[Left]: little</item>
+        <item>[Right]: little</item>
+        <item>[Right]: ring</item>
+        <item>[Right]: middle</item>
+        <item>[Right]: index</item>
+        <item>[Right]: thumb</item>
+    </string-array>
+    <string-array name="fingers_middle">
+        <item>Left thumb</item>
+        <item>Left index</item>
+        <item>Left middle</item>
+        <item>Left ring</item>
+        <item>Left little</item>
+        <item>Right little</item>
+        <item>Right ring</item>
+        <item>Right middle</item>
+        <item>Right index</item>
+        <item>Right thumb</item>
+    </string-array>
+    <string-array name="fingers_short">
+        <item>TL</item>
+        <item>1L</item>
+        <item>2L</item>
+        <item>3L</item>
+        <item>4L</item>
+        <item>4R</item>
+        <item>3R</item>
+        <item>2R</item>
+        <item>1R</item>
+        <item>TR</item>
+    </string-array>
+
+    <string name="title_activity_activity_graph">ActivityGraph</string>
+
+</resources>

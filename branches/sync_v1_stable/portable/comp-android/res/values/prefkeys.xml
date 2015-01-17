@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Preference keys & defaults (placed here to be accessable from preferences.xml) -->
+
+    <string name="pref_Account_Server_Key">pref_Account_Server_Key</string>
+    <string name="pref_Account_Server_Default"></string>
+
+    <string name="pref_Account_Username_Key">pref_Account_Username_Key</string>
+    <string name="pref_Account_Username_Default"></string>
+    
+    <string name="pref_Account_Password_Key">pref_Account_Password_Key</string>
+    <string name="pref_Account_Password_Default"></string>
+
+</resources>

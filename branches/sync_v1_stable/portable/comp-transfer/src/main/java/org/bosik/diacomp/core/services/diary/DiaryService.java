@@ -1,0 +1,28 @@
+package org.bosik.diacomp.core.services.diary;
+
+import java.util.Date;
+import java.util.List;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.core.services.ObjectService;
+import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+
+/**
+ * Diary records service
+ *
+ * @author Bosik
+ */
+public interface DiaryService extends ObjectService<DiaryRecord>
+{
+	/**
+	 * Returns list of non-deleted records for the specified time interval
+	 *
+	 * @param startTime
+	 * @param endTime
+	 * @param includeRemoved
+	 * @return
+	 * @throws CommonServiceException
+	 */
+	List<Versioned<DiaryRecord>> findPeriod(Date startTime, Date endTime, boolean includeRemoved)
+			throws CommonServiceException;
+}

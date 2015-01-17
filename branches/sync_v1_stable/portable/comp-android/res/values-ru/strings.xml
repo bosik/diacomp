@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Компенсация</string>
+    <string name="common_gramm">г</string>
+    <string name="common_bs_unit_mmol">ммоль/л</string>
+    <string name="common_rectype_blood">Замер СК</string>
+    <string name="common_rectype_ins">Инъекция</string>
+    <string name="common_rectype_meal">Приём пищи</string>
+    <string name="common_rectype_note">Заметка</string>
+    <string name="common_hint_search">Поиск&#8230;</string>
+    <string name="common_hint_mass">Масса</string>
+    <string name="diary_button_add">Новая запись</string>
+    <string name="diary_context_common_edit">Изменить</string>
+    <string name="diary_context_common_remove">Удалить</string>
+    <string name="diary_title">Дневник</string>
+    <string name="editor_blood_field_finger">Палец</string>
+    <string name="editor_blood_title">Замер СК</string>
+    <string name="editor_common_field_time">Дата и время</string>
+    <string name="editor_common_field_value">Значение</string>
+    <string name="editor_common_save">Сохранить</string>
+    <string name="editor_dish_field_content">Состав</string>
+    <string name="editor_dish_field_mass">Масса готового блюда</string>
+    <string name="editor_dish_field_name">Название</string>
+    <string name="editor_dish_title">Блюдо</string>
+    <string name="editor_food_field_name">Название</string>
+    <string name="editor_food_field_prots">Белки, г</string>
+    <string name="editor_food_field_fats">Жиры, г</string>
+    <string name="editor_food_field_carbs">Углеводы, г</string>
+    <string name="editor_food_field_value">Калорийность, ккал</string>
+    <string name="editor_food_title">Продукт</string>
+    <string name="editor_ins_title">Инсулин</string>
+    <string name="editor_meal_field_fooddish">Продукт/блюдо</string>
+    <string name="editor_meal_field_mass">Масса, г</string>
+    <string name="editor_meal_header_content">Состав</string>
+    <string name="editor_meal_header_dosage">Расчёт</string>
+    <string name="editor_meal_label_stat">г угл.</string>
+    <string name="editor_meal_label_correction">+8 г</string>
+    <string name="editor_meal_label_no_correction">без коррекции</string>
+    <string name="editor_meal_label_dose">ед.</string>
+    <string name="editor_meal_title">Приём пищи</string>
+    <string name="editor_note_field_text">Текст</string>
+    <string name="editor_note_title">Заметка</string>
+    <string name="base_subinfo" formatted="false">Б %.1f\t\tЖ %.1f\t\tУ %.1f\t\tК %.1f</string>
+    <string name="base_title">База продуктов и блюд</string>
+    <string name="base_title_loading">База продуктов и блюд (загрузка…)</string>
+    <string name="main_option_diary">Дневник</string>
+    <string name="main_option_bases">Базы</string>
+    <string name="main_option_preferences">Настройки</string>
+    <string name="main_option_sync">Синхронизировать</string>
+    <string name="main_option_test">Тест</string>
+    <string name="main_title">Компенсация</string>
+    <string name="preferences_sync">Учётная запись</string>
+    <string name="preferences_sync_password">Пароль</string>
+    <string name="preferences_sync_server">Сервер</string>
+    <string name="preferences_sync_username">Логин (e-mail)</string>
+    <string name="preferences_title">Настройки</string>
+
+    <!-- Arrays -->
+
+    <string-array name="fingers">
+        <item>[Левая]: большой</item>
+        <item>[Левая]: указательный</item>
+        <item>[Левая]: средний</item>
+        <item>[Левая]: безымянный</item>
+        <item>[Левая]: мизинец</item>
+        <item>[Правая]: мизинец</item>
+        <item>[Правая]: безымянный</item>
+        <item>[Правая]: средний</item>
+        <item>[Правая]: указательный</item>
+        <item>[Правая]: большой</item>
+    </string-array>
+    <string-array name="fingers_middle">
+        <item>Лев.большой</item>
+        <item>Лев.указательный</item>
+        <item>Лев.средний</item>
+        <item>Лев.безымянный</item>
+        <item>Лев.мизинец</item>
+        <item>Пр.мизинец</item>
+        <item>Пр.безымянный</item>
+        <item>Пр.средний</item>
+        <item>Пр.указательный</item>
+        <item>Пр.большой</item>
+    </string-array>
+    <string-array name="fingers_short">
+        <item>БЛ</item>
+        <item>1Л</item>
+        <item>2Л</item>
+        <item>3Л</item>
+        <item>4Л</item>
+        <item>4П</item>
+        <item>3П</item>
+        <item>2П</item>
+        <item>1П</item>
+        <item>БП</item>
+    </string-array>
+
+</resources>

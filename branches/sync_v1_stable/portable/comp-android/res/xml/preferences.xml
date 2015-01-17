@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/preferences_sync" >
+        <EditTextPreference
+            android:name="prefServer"
+            android:defaultValue="@string/pref_Account_Server_Default"
+            android:key="@string/pref_Account_Server_Key"
+            android:summary=""
+            android:title="@string/preferences_sync_server" />
+        <EditTextPreference
+            android:name="prefUsername"
+            android:defaultValue="@string/pref_Account_Username_Default"
+            android:key="@string/pref_Account_Username_Key"
+            android:summary=""
+            android:title="@string/preferences_sync_username" />
+        <EditTextPreference
+            android:name="prefPassword"
+            android:defaultValue="@string/pref_Account_Password_Default"
+            android:key="@string/pref_Account_Password_Key"
+            android:summary=""
+            android:title="@string/preferences_sync_password" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
