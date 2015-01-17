@@ -1,0 +1,46 @@
+package Diary_Package;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$IMPLICITBUILD OFF}
+
+requires
+  rtl,
+  vcl,
+  indy,
+  MiscComp,
+  xmlrtl,
+  inet;
+
+contains
+  ACCombo in 'ACCombo.pas',
+  DiaryView in 'DiaryView.pas',
+  AutoLog in '..\src\common\AutoLog.pas',
+  DiaryRoutines in '..\..\common\DiaryRoutines.pas',
+  TextInterface in '..\TextInterface.pas',
+  BusinessObjects in '..\..\bo\BusinessObjects.pas',
+  DiaryPage in '..\..\bo\DiaryPage.pas',
+  DiaryRecords in '..\..\bo\DiaryRecords.pas',
+  Bases in '..\..\persistence\Bases.pas';
+
+end.
