@@ -21,7 +21,7 @@ public class SyncService
 		public void update_progress(int progress);
 	}
 
-	/* ============================ METHODS ============================ */
+	/* ============================ ROUTINES ============================ */
 
 	/**
 	 * Calculates lists for synchronization
@@ -145,32 +145,8 @@ public class SyncService
 		List<Versioned<T>> only2 = new ArrayList<Versioned<T>>();
 		getOverLists(items1, items2, newer1, newer2, only1, only2);
 
-		// checking items with are only partially presented
-		for (Versioned<T> item1 : only1)
-		{
-			Versioned<T> item2 = service2.findById(item1.getId());
-			if ((item2 == null) || (item2.getVersion() < item1.getVersion()))
-			{
-				newer1.add(item1);
-			}
-			else if (item2.getVersion() > item1.getVersion())
-			{
-				newer2.add(item2);
-			}
-		}
-
-		for (Versioned<T> item2 : only2)
-		{
-			Versioned<T> item1 = service1.findById(item2.getId());
-			if ((item1 == null) || (item1.getVersion() < item2.getVersion()))
-			{
-				newer2.add(item2);
-			}
-			else if (item1.getVersion() > item2.getVersion())
-			{
-				newer1.add(item1);
-			}
-		}
+		newer1.addAll(only1);
+		newer2.addAll(only2);
 
 		// transfer
 
@@ -181,6 +157,8 @@ public class SyncService
 		// Result is number of transferred records
 		return newer1.size() + newer2.size();
 	}
+
+	/* ============================ SYNC METHODS: NAIVE ============================ */
 
 	/**
 	 * Synchronizes two object services
@@ -279,6 +257,8 @@ public class SyncService
 		return 0;
 	}
 
+	/* ============================ SYNC METHODS: HASH-BASED (v1) ============================ */
+
 	private static <T> int synchronizePrefix(ObjectService<T> service1, ObjectService<T> service2, String prefix)
 	{
 		String hash1 = service1.getHash(prefix);
@@ -337,29 +317,44 @@ public class SyncService
 		return synchronizePrefix(service1, service2, "");
 	}
 
+	/* ============================ SYNC METHODS: HASH-BASED (v2) ============================ */
+
 	private static <T> int synchronizeChildren(ObjectService<T> service1, ObjectService<T> service2, String prefix)
 	{
 		if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
 		{
-			Map<String, String> hashes1 = service1.getHashChildren(prefix);
-			Map<String, String> hashes2 = service2.getHashChildren(prefix);
-			int result = 0;
-			for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
-			{
-				String key = prefix + HashUtils.PATTERN.charAt(i);
-				String hash1 = hashes1.get(key);
-				String hash2 = hashes2.get(key);
-				if (!Utils.equals(hash1, hash2))
-				{
-					result += synchronizeChildren(service1, service2, key);
-				}
-			}
+			int count1 = service1.count(prefix);
+			int count2 = service2.count(prefix);
 
-			return result;
+			if (count1 <= ObjectService.MAX_ITEMS_COUNT && count2 <= ObjectService.MAX_ITEMS_COUNT)
+			{
+				// there are not too many items, process it at once
+				List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
+				List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
+				return processItems(service1, service2, items1, items2);
+			}
+			else
+			{
+				// ok, need for finer separation
+				Map<String, String> hashes1 = service1.getHashChildren(prefix);
+				Map<String, String> hashes2 = service2.getHashChildren(prefix);
+				int result = 0;
+				for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
+				{
+					String key = prefix + HashUtils.PATTERN.charAt(i);
+					String hash1 = hashes1.get(key);
+					String hash2 = hashes2.get(key);
+					if (!Utils.equals(hash1, hash2))
+					{
+						result += synchronizeChildren(service1, service2, key);
+					}
+				}
+
+				return result;
+			}
 		}
 		else
 		{
-			// requesting items
 			List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
 			List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
 
