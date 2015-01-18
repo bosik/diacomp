@@ -71,11 +71,26 @@ public class DiaryLocalService implements DiaryService
 		String[] clauseArgs = { prefix + "%" };
 
 		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs, null);
-		cursor.moveToFirst();
-		int count = cursor.getInt(0);
-		cursor.close();
 
-		return count;
+		try
+		{
+			if (cursor != null)
+			{
+				cursor.moveToFirst();
+				return cursor.getInt(0);
+			}
+			else
+			{
+				throw new NullPointerException("Cursor is null");
+			}
+		}
+		finally
+		{
+			if (cursor != null)
+			{
+				cursor.close();
+			}
+		}
 	}
 
 	@Override
