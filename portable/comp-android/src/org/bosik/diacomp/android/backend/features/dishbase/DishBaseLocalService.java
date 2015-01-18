@@ -21,6 +21,7 @@ import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
+import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import android.content.ContentResolver;
@@ -354,7 +355,7 @@ public class DishBaseLocalService implements DishBaseService
 		String[] projection = new String[] { "count(*) AS count" };
 		String clause = String.format("%s LIKE ?", DiaryContentProvider.COLUMN_DISHBASE_GUID);
 		String[] clauseArgs = { prefix + "%" };
-		
+
 		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DISHBASE_URI, projection, clause, clauseArgs, null);
 		cursor.moveToFirst();
 		int count = cursor.getInt(0);
@@ -485,7 +486,16 @@ public class DishBaseLocalService implements DishBaseService
 	@Override
 	public List<Versioned<DishItem>> findByIdPrefix(String prefix) throws CommonServiceException
 	{
-		return find(prefix, null, true, null);
+		List<Versioned<DishItem>> items = find(prefix, null, true, null);
+		if (items.size() <= MAX_ITEMS_COUNT)
+		{
+			return items;
+		}
+		else
+		{
+			// workaround for satisfying specification
+			throw new TooManyItemsException("Too many items");
+		}
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
+import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
@@ -59,7 +60,7 @@ public class DiaryLocalService implements DiaryService
 		return authService.getCurrentUserId();
 	}
 
-	private List<Versioned<DiaryRecord>> parseDiaryRecords(ResultSet resultSet) throws SQLException
+	private List<Versioned<DiaryRecord>> parseItems(ResultSet resultSet, int limit) throws SQLException
 	{
 		List<Versioned<DiaryRecord>> result = new LinkedList<Versioned<DiaryRecord>>();
 
@@ -81,9 +82,19 @@ public class DiaryLocalService implements DiaryService
 			item.setData(serializer.read(content));
 
 			result.add(item);
+
+			if (limit > 0 && result.size() > limit)
+			{
+				throw new TooManyItemsException("Too many items");
+			}
 		}
 
 		return result;
+	}
+
+	private List<Versioned<DiaryRecord>> parseItems(ResultSet resultSet) throws SQLException
+	{
+		return parseItems(resultSet, 0);
 	}
 
 	@Override
@@ -155,7 +166,7 @@ public class DiaryLocalService implements DiaryService
 
 			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
 
-			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
+			List<Versioned<DiaryRecord>> result = parseItems(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
 		}
@@ -170,12 +181,6 @@ public class DiaryLocalService implements DiaryService
 	{
 		int userId = getCurrentUserId();
 
-		if (prefix.length() != ObjectService.ID_PREFIX_SIZE)
-		{
-			throw new IllegalArgumentException(String.format("Invalid prefix length, expected %d chars, but %d found",
-					ObjectService.ID_PREFIX_SIZE, prefix.length()));
-		}
-
 		try
 		{
 			final String[] select = null; // all
@@ -185,7 +190,7 @@ public class DiaryLocalService implements DiaryService
 
 			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
 
-			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
+			List<Versioned<DiaryRecord>> result = parseItems(set, MAX_ITEMS_COUNT);
 			set.close();
 			return result;
 		}
@@ -209,7 +214,7 @@ public class DiaryLocalService implements DiaryService
 
 			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
 
-			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
+			List<Versioned<DiaryRecord>> result = parseItems(set);
 			set.close();
 			return result;
 		}
@@ -251,7 +256,7 @@ public class DiaryLocalService implements DiaryService
 			// System.out.println("Requesting SQL clause: " + clause);
 			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
 
-			List<Versioned<DiaryRecord>> result = parseDiaryRecords(set);
+			List<Versioned<DiaryRecord>> result = parseItems(set);
 			set.close();
 			return result;
 		}

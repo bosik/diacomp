@@ -21,6 +21,7 @@ import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
+import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
@@ -59,7 +60,7 @@ public class DishBaseLocalService implements DishBaseService
 		return authService.getCurrentUserId();
 	}
 
-	private static List<Versioned<DishItem>> parseDishItems(ResultSet resultSet) throws SQLException
+	private static List<Versioned<DishItem>> parseItems(ResultSet resultSet, int limit) throws SQLException
 	{
 		List<Versioned<DishItem>> result = new ArrayList<Versioned<DishItem>>();
 
@@ -81,9 +82,19 @@ public class DishBaseLocalService implements DishBaseService
 			item.setData(serializer.read(content));
 
 			result.add(item);
+
+			if (limit > 0 && result.size() > limit)
+			{
+				throw new TooManyItemsException("Too many items");
+			}
 		}
 
 		return result;
+	}
+
+	private static List<Versioned<DishItem>> parseItems(ResultSet resultSet) throws SQLException
+	{
+		return parseItems(resultSet, 0);
 	}
 
 	@Override
@@ -176,7 +187,7 @@ public class DishBaseLocalService implements DishBaseService
 
 			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
 
-			List<Versioned<DishItem>> result = parseDishItems(set);
+			List<Versioned<DishItem>> result = parseItems(set);
 			set.close();
 			return result;
 		}
@@ -201,7 +212,7 @@ public class DishBaseLocalService implements DishBaseService
 
 			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
 
-			List<Versioned<DishItem>> result = parseDishItems(set);
+			List<Versioned<DishItem>> result = parseItems(set);
 			set.close();
 			return result;
 		}
@@ -225,7 +236,7 @@ public class DishBaseLocalService implements DishBaseService
 
 			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
 
-			List<Versioned<DishItem>> result = parseDishItems(set);
+			List<Versioned<DishItem>> result = parseItems(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
 		}
@@ -240,12 +251,6 @@ public class DishBaseLocalService implements DishBaseService
 	{
 		int userId = getCurrentUserId();
 
-		if (prefix.length() != ObjectService.ID_PREFIX_SIZE)
-		{
-			throw new IllegalArgumentException(String.format("Invalid prefix length, expected %d chars, but %d found",
-					ObjectService.ID_PREFIX_SIZE, prefix.length()));
-		}
-
 		try
 		{
 			final String[] select = null; // all
@@ -255,7 +260,7 @@ public class DishBaseLocalService implements DishBaseService
 
 			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
 
-			List<Versioned<DishItem>> result = parseDishItems(set);
+			List<Versioned<DishItem>> result = parseItems(set, MAX_ITEMS_COUNT);
 			set.close();
 			return result;
 		}
@@ -280,7 +285,7 @@ public class DishBaseLocalService implements DishBaseService
 
 			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
 
-			List<Versioned<DishItem>> result = parseDishItems(set);
+			List<Versioned<DishItem>> result = parseItems(set);
 			set.close();
 			return result;
 		}
@@ -305,7 +310,7 @@ public class DishBaseLocalService implements DishBaseService
 
 			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
 
-			List<Versioned<DishItem>> result = parseDishItems(set);
+			List<Versioned<DishItem>> result = parseItems(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
 		}

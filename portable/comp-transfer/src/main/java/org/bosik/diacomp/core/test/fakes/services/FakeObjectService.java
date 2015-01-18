@@ -9,6 +9,7 @@ import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
+import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 
 public class FakeObjectService implements ObjectService<String>
 {
@@ -75,6 +76,11 @@ public class FakeObjectService implements ObjectService<String>
 			if (item.getId().startsWith(prefix))
 			{
 				result.add(new Versioned<String>(item));
+			}
+
+			if (result.size() > MAX_ITEMS_COUNT)
+			{
+				throw new TooManyItemsException("Too many items");
 			}
 		}
 

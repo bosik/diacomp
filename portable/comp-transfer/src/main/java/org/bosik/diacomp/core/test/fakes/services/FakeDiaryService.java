@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
+import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.test.fakes.mocks.Mock;
 import org.bosik.diacomp.core.test.fakes.mocks.MockDiaryRecord;
 import org.bosik.diacomp.core.test.fakes.mocks.MockVersionedConverter;
@@ -94,12 +94,6 @@ public class FakeDiaryService implements DiaryService
 	@Override
 	public List<Versioned<DiaryRecord>> findByIdPrefix(String prefix)
 	{
-		if (prefix.length() != ObjectService.ID_PREFIX_SIZE)
-		{
-			throw new IllegalArgumentException(String.format("Invalid prefix length, expected %d chars, but %d found",
-					ObjectService.ID_PREFIX_SIZE, prefix.length()));
-		}
-
 		List<Versioned<DiaryRecord>> result = new ArrayList<Versioned<DiaryRecord>>();
 
 		for (Versioned<DiaryRecord> rec : samples)
@@ -108,6 +102,11 @@ public class FakeDiaryService implements DiaryService
 			{
 				// FIXME: unlink data
 				result.add(new Versioned<DiaryRecord>(rec));
+			}
+
+			if (result.size() > MAX_ITEMS_COUNT)
+			{
+				throw new TooManyItemsException("Too many items");
 			}
 		}
 
