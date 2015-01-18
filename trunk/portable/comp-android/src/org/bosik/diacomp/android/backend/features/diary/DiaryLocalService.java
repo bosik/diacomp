@@ -58,6 +58,26 @@ public class DiaryLocalService implements DiaryService
 	/* ============================ API ============================ */
 
 	@Override
+	public int count(String prefix)
+	{
+		if (prefix == null)
+		{
+			throw new NullPointerException("ID prefix can't be null");
+		}
+
+		String[] projection = new String[] { "count(*) AS count" };
+		String clause = String.format("%s LIKE ?", DiaryContentProvider.COLUMN_DIARY_GUID);
+		String[] clauseArgs = { prefix + "%" };
+
+		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs, null);
+		cursor.moveToFirst();
+		int count = cursor.getInt(0);
+		cursor.close();
+
+		return count;
+	}
+
+	@Override
 	public void delete(String id) throws NotFoundException, AlreadyDeletedException
 	{
 		Versioned<DiaryRecord> item = findById(id);
@@ -540,5 +560,4 @@ public class DiaryLocalService implements DiaryService
 			}
 		}
 	}
-
 }

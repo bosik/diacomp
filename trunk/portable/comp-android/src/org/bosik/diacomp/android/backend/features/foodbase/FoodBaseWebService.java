@@ -27,6 +27,7 @@ public class FoodBaseWebService implements FoodBaseService
 	// private static final String TAG = FoodBaseWebService.class.getSimpleName();
 
 	// REST methods
+	private static final String						API_FOOD_COUNT				= "api/food/count/%s";
 	private static final String						API_FOOD_FIND_ALL			= "api/food/all/?show_rem=%s";
 	private static final String						API_FOOD_FIND_ANY			= "api/food/search/?q=%s";
 	private static final String						API_FOOD_FIND_BY_ID			= "api/food/guid/%s";
@@ -50,6 +51,25 @@ public class FoodBaseWebService implements FoodBaseService
 	{
 		// TODO: current implementation doesn't fail for duplicates
 		save(Arrays.<Versioned<FoodItem>> asList(item));
+	}
+
+	@Override
+	public int count(String prefix)
+	{
+		try
+		{
+			String query = String.format(API_FOOD_COUNT, prefix);
+			StdResponse resp = webClient.get(query);
+			return Integer.parseInt(resp.getResponse());
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
 	}
 
 	@Override

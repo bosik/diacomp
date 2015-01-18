@@ -45,6 +45,22 @@ public class FakeDishBaseService implements DishBaseService
 	}
 
 	@Override
+	public int count(String prefix)
+	{
+		int count = 0;
+
+		for (Versioned<DishItem> item : samples)
+		{
+			if (item.getId().startsWith(prefix))
+			{
+				count++;
+			}
+		}
+
+		return count;
+	}
+
+	@Override
 	public void delete(String id)
 	{
 		synchronized (samples)

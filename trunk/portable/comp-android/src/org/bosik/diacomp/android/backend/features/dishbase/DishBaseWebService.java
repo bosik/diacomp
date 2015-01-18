@@ -27,6 +27,7 @@ public class DishBaseWebService implements DishBaseService
 	// private static final String TAG = DishBaseWebService.class.getSimpleName();
 
 	// REST methods
+	private static final String						API_DISH_COUNT				= "api/dish/count/%s";
 	private static final String						API_DISH_FIND_ALL			= "api/dish/all/?show_rem=%s";
 	private static final String						API_DISH_FIND_ANY			= "api/dish/search/?q=%s";
 	private static final String						API_DISH_FIND_BY_ID			= "api/dish/guid/%s";
@@ -50,6 +51,25 @@ public class DishBaseWebService implements DishBaseService
 	{
 		// TODO: current implementation doesn't fail for duplicates
 		save(Arrays.<Versioned<DishItem>> asList(item));
+	}
+
+	@Override
+	public int count(String prefix)
+	{
+		try
+		{
+			String query = String.format(API_DISH_COUNT, prefix);
+			StdResponse resp = webClient.get(query);
+			return Integer.parseInt(resp.getResponse());
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
 	}
 
 	@Override
