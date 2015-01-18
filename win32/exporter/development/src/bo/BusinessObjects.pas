@@ -8,8 +8,35 @@ uses
   DiaryRoutines;
 
 type
+  TVersioned = class
+  private
+    FID: TCompactGUID;
+
+    // TODO: DEPRECTED
+    FTimeStamp: TDateTime;
+
+    FHash: TCompactGUID;
+
+    FVersion: integer;
+    FDeleted: boolean;
+  public
+    constructor Create();
+    procedure CopyFrom(Source: TVersioned); virtual;
+    procedure Modified();
+
+    property ID: TCompactGUID read FID write FID;
+
+    property TimeStamp: TDateTime read FTimeStamp write FTimeStamp;
+
+    property Hash: TCompactGUID read FHash write FHash;
+    property Version: integer read FVersion write FVersion;
+    property Deleted: boolean read FDeleted write FDeleted;
+  end;
+
+  TVersionedList = array of TVersioned;
+
   // Уведомляет внешнюю среду о своём изменении через событие OnChange
-  TMutableItem = class
+  TMutableItem = class (TVersioned)
   private
     FOnChange: TNotifyEvent;
   protected
@@ -84,6 +111,8 @@ type
     property Tag: integer       read FTag       write FTag;
   end;
 
+  TFoodList = array of TFood;
+
   // #entity
   TDish = class (TMutableItem)
   private
@@ -130,6 +159,8 @@ type
     //property SilentMode: boolean read FSilentMode write FSilentMode;
   end;
 
+  TDishList = array of TDish;
+
 const
   FOOD_SEP          = '|';
   FOOD_RESERVED     = ['[', FOOD_SEP, ']', ':'];
@@ -138,6 +169,45 @@ const
   SYSTEM_CHARS      = FOODBASE_RESERVED + DISHBASE_RESERVED;
 
 implementation
+
+{ TVersioned }
+
+{======================================================================================================================}
+procedure TVersioned.CopyFrom(Source: TVersioned);
+{======================================================================================================================}
+begin
+  if (Source = nil) then
+    raise Exception.Create('CopyFrom(): Source is nil');
+
+  if not (Source is Self.ClassType) then
+    raise Exception.CreateFmt('CopyFrom(): Invalid source type. Expected: %s (or inherited), found: %s',
+      [Self.ClassName, Source.ClassName]);
+
+  FID := Source.ID;
+  FTimeStamp := Source.TimeStamp;
+  FHash := Source.Hash;
+  FVersion := Source.Version;
+  FDeleted := Source.Deleted;
+end;
+
+{======================================================================================================================}
+constructor TVersioned.Create;
+{======================================================================================================================}
+begin
+  FID := CreateCompactGUID();
+  FHash := CreateCompactGUID();
+  FVersion := 0;
+  FDeleted := False;
+end;
+
+{======================================================================================================================}
+procedure TVersioned.Modified;
+{======================================================================================================================}
+begin
+  inc(FVersion);
+  FTimeStamp := GetTimeUTC();
+  FHash := CreateCompactGUID();
+end;
 
 { TMutableItem }
 
