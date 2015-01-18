@@ -344,6 +344,26 @@ public class FoodBaseLocalService implements FoodBaseService
 	}
 
 	@Override
+	public int count(String prefix)
+	{
+		if (prefix == null)
+		{
+			throw new NullPointerException("ID prefix can't be null");
+		}
+
+		String[] projection = new String[] { "count(*) AS count" };
+		String clause = String.format("%s LIKE ?", DiaryContentProvider.COLUMN_FOODBASE_GUID);
+		String[] clauseArgs = { prefix + "%" };
+		
+		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, projection, clause, clauseArgs, null);
+		cursor.moveToFirst();
+		int count = cursor.getInt(0);
+		cursor.close();
+
+		return count;
+	}
+
+	@Override
 	public void delete(String id) throws NotFoundException, AlreadyDeletedException
 	{
 		try

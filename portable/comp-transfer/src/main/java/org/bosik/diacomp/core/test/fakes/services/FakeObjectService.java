@@ -15,6 +15,22 @@ public class FakeObjectService implements ObjectService<String>
 	private final List<Versioned<String>>	data	= new ArrayList<Versioned<String>>();
 
 	@Override
+	public int count(String prefix)
+	{
+		int count = 0;
+
+		for (Versioned<String> item : data)
+		{
+			if (item.getId().startsWith(prefix))
+			{
+				count++;
+			}
+		}
+
+		return count;
+	}
+
+	@Override
 	public void delete(String id) throws NotFoundException, AlreadyDeletedException
 	{
 		for (Versioned<String> item : data)

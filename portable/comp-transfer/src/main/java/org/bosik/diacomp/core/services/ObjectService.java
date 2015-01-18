@@ -20,6 +20,14 @@ public interface ObjectService<T>
 	static final int	ID_PREFIX_SIZE	= 4;
 
 	/**
+	 * Calculates number of objects with specified ID prefix
+	 * 
+	 * @param prefix
+	 * @return
+	 */
+	int count(String prefix);
+
+	/**
 	 * Marks item with specified ID as deleted
 	 * 
 	 * @param id

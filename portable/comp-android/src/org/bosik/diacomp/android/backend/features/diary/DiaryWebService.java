@@ -28,6 +28,7 @@ public class DiaryWebService implements DiaryService
 	// private static final String TAG = DiaryWebService.class.getSimpleName();
 
 	// REST methods
+	private static final String							API_DIARY_COUNT				= "api/diary/count/%s";
 	private static final String							API_DIARY_FIND_BY_ID		= "api/diary/guid/%s";
 	private static final String							API_DIARY_FIND_BY_ID_PREFIX	= "api/diary/guid/%s";
 	private static final String							API_DIARY_FIND_CHANGES		= "api/diary/changes/?since=%s";
@@ -57,6 +58,25 @@ public class DiaryWebService implements DiaryService
 	}
 
 	/* ============================ API ============================ */
+
+	@Override
+	public int count(String prefix)
+	{
+		try
+		{
+			String query = String.format(API_DIARY_COUNT, prefix);
+			StdResponse resp = webClient.get(query);
+			return Integer.parseInt(resp.getResponse());
+		}
+		catch (CommonServiceException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new CommonServiceException(e);
+		}
+	}
 
 	@Override
 	public Versioned<DiaryRecord> findById(String id) throws CommonServiceException

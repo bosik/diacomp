@@ -45,6 +45,22 @@ public class FakeDiaryService implements DiaryService
 	}
 
 	@Override
+	public int count(String prefix)
+	{
+		int count = 0;
+
+		for (Versioned<DiaryRecord> item : samples)
+		{
+			if (item.getId().startsWith(prefix))
+			{
+				count++;
+			}
+		}
+
+		return count;
+	}
+
+	@Override
 	public void delete(String id) throws NotFoundException, AlreadyDeletedException
 	{
 		for (Versioned<DiaryRecord> item : samples)

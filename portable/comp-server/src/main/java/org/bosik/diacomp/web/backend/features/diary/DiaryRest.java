@@ -55,6 +55,28 @@ public class DiaryRest
 	private final Serializer<Map<String, String>>		serializerMap	= new SerializerMap();
 
 	@GET
+	@Path("count/{prefix: .*}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response count(@PathParam("prefix") @DefaultValue("") String parPrefix) throws CommonServiceException
+	{
+		try
+		{
+			int count = diaryService.count(parPrefix);
+			String response = ResponseBuilder.buildDone(String.valueOf(count));
+			return Response.ok(response).build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	@GET
 	@Path("guid/{guid}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response findById(@PathParam("guid") String parId) throws CommonServiceException

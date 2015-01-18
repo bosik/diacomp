@@ -93,6 +93,42 @@ public class FoodBaseLocalService implements FoodBaseService
 	}
 
 	@Override
+	public int count(String prefix)
+	{
+		int userId = getCurrentUserId();
+
+		if (prefix == null)
+		{
+			throw new NullPointerException("ID prefix can't be null");
+		}
+
+		try
+		{
+			final String[] select = { "COUNT(*)" };
+			final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_GUID);
+			final String[] whereArgs = { String.valueOf(userId), prefix + "%" };
+			final String order = null;
+
+			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);
+
+			if (set.next())
+			{
+				int count = set.getInt(1);
+				set.close();
+				return count;
+			}
+			else
+			{
+				throw new IllegalStateException("Failed to request SQL database");
+			}
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
 	public void delete(String id)
 	{
 		try
