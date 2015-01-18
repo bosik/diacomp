@@ -19,6 +19,7 @@ import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
+import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
@@ -117,12 +118,6 @@ public class DiaryLocalService implements DiaryService
 	@Override
 	public List<Versioned<DiaryRecord>> findByIdPrefix(String prefix)
 	{
-		if (prefix.length() != ObjectService.ID_PREFIX_SIZE)
-		{
-			throw new IllegalArgumentException(String.format("Invalid prefix length, expected %d chars, but %d found",
-					ObjectService.ID_PREFIX_SIZE, prefix.length()));
-		}
-
 		// construct parameters
 		String[] projection = null; // all
 		String clause = String.format("%s LIKE ?", DiaryContentProvider.COLUMN_DIARY_GUID);
@@ -133,7 +128,7 @@ public class DiaryLocalService implements DiaryService
 		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
 				sortOrder);
 
-		return extractRecords(cursor);
+		return extractRecords(cursor, MAX_ITEMS_COUNT);
 	}
 
 	@Override
@@ -461,7 +456,7 @@ public class DiaryLocalService implements DiaryService
 
 	/* ======================= ROUTINES ========================= */
 
-	private List<Versioned<DiaryRecord>> extractRecords(Cursor cursor)
+	private List<Versioned<DiaryRecord>> extractRecords(Cursor cursor, int limit)
 	{
 		if (cursor != null)
 		{
@@ -472,7 +467,7 @@ public class DiaryLocalService implements DiaryService
 			int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_DELETED);
 			int indexContent = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_CONTENT);
 
-			List<Versioned<DiaryRecord>> res = new ArrayList<Versioned<DiaryRecord>>();
+			List<Versioned<DiaryRecord>> result = new ArrayList<Versioned<DiaryRecord>>();
 
 			while (cursor.moveToNext())
 			{
@@ -491,17 +486,27 @@ public class DiaryLocalService implements DiaryService
 				item.setVersion(version);
 				item.setDeleted(deleted);
 
-				res.add(item);
+				result.add(item);
 
 				Log.v(TAG, String.format("#DBF Extracted item #%s: %s", id, content));
+
+				if (limit > 0 && result.size() > limit)
+				{
+					throw new TooManyItemsException("Too many items");
+				}
 			}
 
-			return res;
+			return result;
 		}
 		else
 		{
 			throw new CommonServiceException(new NullPointerException("Cursor is null"));
 		}
+	}
+
+	private List<Versioned<DiaryRecord>> extractRecords(Cursor cursor)
+	{
+		return extractRecords(cursor, 0);
 	}
 
 	public static class Verifier

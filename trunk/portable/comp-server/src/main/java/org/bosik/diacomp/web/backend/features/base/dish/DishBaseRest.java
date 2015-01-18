@@ -26,6 +26,7 @@ import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
+import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
 
@@ -70,14 +71,14 @@ public class DishBaseRest
 	}
 
 	@GET
-	@Path("guid/{guid}")
+	@Path("guid/{guid: .*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response findById(@PathParam("guid") String parId) throws CommonServiceException
 	{
 		try
 		{
 			// Prefix form
-			if (parId.length() == ObjectService.ID_PREFIX_SIZE)
+			if (parId.length() <= ObjectService.ID_PREFIX_SIZE)
 			{
 				List<Versioned<DishItem>> items = dishbaseService.findByIdPrefix(parId);
 
@@ -108,6 +109,10 @@ public class DishBaseRest
 		catch (NotAuthorizedException e)
 		{
 			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (TooManyItemsException e)
+		{
+			return Response.status(Status.OK).entity(ResponseBuilder.buildFails("Too many items found")).build();
 		}
 		catch (Exception e)
 		{

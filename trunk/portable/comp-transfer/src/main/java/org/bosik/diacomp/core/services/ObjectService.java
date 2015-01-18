@@ -7,6 +7,7 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
+import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 
 public interface ObjectService<T>
 {
@@ -18,6 +19,10 @@ public interface ObjectService<T>
 	 * Size of ID prefix used in hash trees
 	 */
 	static final int	ID_PREFIX_SIZE	= 4;
+	/**
+	 * Max number of items returned
+	 */
+	static final int	MAX_ITEMS_COUNT	= 100;
 
 	/**
 	 * Calculates number of objects with specified ID prefix
@@ -51,12 +56,13 @@ public interface ObjectService<T>
 	 * Returns list of records which id starts with specified prefix
 	 * 
 	 * @param prefix
-	 *            Must be exactly ID_PREFIX_SIZE chars long
+	 *            Must be 0..ID_PREFIX_SIZE or ID_FULL_SIZE chars long
 	 * @return
-	 * @throws CommonServiceException
+	 * @throws TooManyItemsException
+	 *             If there are more than MAX_ITEMS_COUNT items to return
 	 * @see #getDataHashes
 	 */
-	List<Versioned<T>> findByIdPrefix(String prefix) throws CommonServiceException;
+	List<Versioned<T>> findByIdPrefix(String prefix) throws TooManyItemsException;
 
 	/**
 	 * Returns list of records which were modified after the specified time (both removed or not)

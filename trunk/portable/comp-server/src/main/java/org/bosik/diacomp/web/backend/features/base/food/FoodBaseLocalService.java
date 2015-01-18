@@ -21,6 +21,7 @@ import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
+import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
@@ -59,7 +60,7 @@ public class FoodBaseLocalService implements FoodBaseService
 		return authService.getCurrentUserId();
 	}
 
-	private static List<Versioned<FoodItem>> parseFoodItems(ResultSet resultSet) throws SQLException
+	private static List<Versioned<FoodItem>> parseItems(ResultSet resultSet, int limit) throws SQLException
 	{
 		List<Versioned<FoodItem>> result = new ArrayList<Versioned<FoodItem>>();
 
@@ -81,9 +82,19 @@ public class FoodBaseLocalService implements FoodBaseService
 			item.setData(serializer.read(content));
 
 			result.add(item);
+
+			if (limit > 0 && result.size() > limit)
+			{
+				throw new TooManyItemsException("Too many items");
+			}
 		}
 
 		return result;
+	}
+
+	private static List<Versioned<FoodItem>> parseItems(ResultSet resultSet) throws SQLException
+	{
+		return parseItems(resultSet, 0);
 	}
 
 	@Override
@@ -176,7 +187,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);
 
-			List<Versioned<FoodItem>> result = parseFoodItems(set);
+			List<Versioned<FoodItem>> result = parseItems(set);
 			set.close();
 			return result;
 		}
@@ -201,7 +212,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);
 
-			List<Versioned<FoodItem>> result = parseFoodItems(set);
+			List<Versioned<FoodItem>> result = parseItems(set);
 			set.close();
 			return result;
 		}
@@ -225,7 +236,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);
 
-			List<Versioned<FoodItem>> result = parseFoodItems(set);
+			List<Versioned<FoodItem>> result = parseItems(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
 		}
@@ -240,12 +251,6 @@ public class FoodBaseLocalService implements FoodBaseService
 	{
 		int userId = getCurrentUserId();
 
-		if (prefix.length() != ObjectService.ID_PREFIX_SIZE)
-		{
-			throw new IllegalArgumentException(String.format("Invalid prefix length, expected %d chars, but %d found",
-					ObjectService.ID_PREFIX_SIZE, prefix.length()));
-		}
-
 		try
 		{
 			final String[] select = null; // all
@@ -255,7 +260,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);
 
-			List<Versioned<FoodItem>> result = parseFoodItems(set);
+			List<Versioned<FoodItem>> result = parseItems(set, MAX_ITEMS_COUNT);
 			set.close();
 			return result;
 		}
@@ -280,7 +285,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);
 
-			List<Versioned<FoodItem>> result = parseFoodItems(set);
+			List<Versioned<FoodItem>> result = parseItems(set);
 			set.close();
 			return result;
 		}
@@ -305,7 +310,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			ResultSet set = db.select(TABLE_FOODBASE, select, where, whereArgs, order);
 
-			List<Versioned<FoodItem>> result = parseFoodItems(set);
+			List<Versioned<FoodItem>> result = parseItems(set);
 			set.close();
 			return result.isEmpty() ? null : result.get(0);
 		}
