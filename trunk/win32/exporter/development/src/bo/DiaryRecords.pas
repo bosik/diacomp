@@ -15,7 +15,7 @@ type
   TEventRecordChanged = procedure(Sender: TCustomRecord) of object;
 
   // #entity
-  TCustomRecord = class
+  TCustomRecord = class (TVersioned)
   private
     FTime: TDateTime;
 

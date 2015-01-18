@@ -50,7 +50,10 @@ uses
   FoodbaseLocalDAO in 'src\persistence\local\FoodbaseLocalDAO.pas',
   FoodbaseWebDAO in 'src\persistence\web\FoodbaseWebDAO.pas',
   ACCombo in 'src\face\diary\ACCombo.pas',
-  DiaryView in 'src\face\diary\DiaryView.pas';
+  DiaryView in 'src\face\diary\DiaryView.pas',
+  JsonSerializer in 'src\persistence\serializers\JsonSerializer.pas',
+  JsonVersionedSerializer in 'src\persistence\serializers\JsonVersionedSerializer.pas',
+  ObjectService in 'src\persistence\ObjectService.pas';
 
 {$R *.res}
 

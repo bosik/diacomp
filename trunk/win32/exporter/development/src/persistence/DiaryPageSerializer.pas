@@ -12,10 +12,13 @@ uses
   BusinessObjects,
   DiaryRoutines, // TDate
   Bases,
-  uLkJSON;
+  uLkJSON,
+  JsonVersionedSerializer;
 
 type
   TStringsArray = array of TStrings;
+
+  TRecordList = array of TCustomRecord;
 
   TPageSerializer = class
   public
@@ -45,6 +48,36 @@ type
       TStrings --> TDiaryPageList
       TDiaryPage --> TStrings
   }
+
+  function SerializeBlood(R: TBloodRecord): TlkJSONobject;
+  function SerializeIns(R: TInsRecord): TlkJSONobject;
+  function SerializeFoodMassed(R: TFoodMassed): TlkJSONobject;
+  function SerializeMeal(R: TMealRecord): TlkJSONobject;
+  function SerializeNote(R: TNoteRecord): TlkJSONobject;
+  function SerializeDiaryRecord(R: TCustomRecord): TlkJSONobject;
+  function SerializeVersionedDiaryRecord(R: TCustomRecord): TlkJSONobject;
+  function SerializeVersionedDiaryRecords(List: TRecordList): TlkJSONlist;
+
+const
+  REC_TYPE            = 'type';
+  REC_TYPE_BLOOD      = 'blood';
+  REC_TYPE_INS        = 'ins';
+  REC_TYPE_MEAL       = 'meal';
+  REC_TYPE_NOTE       = 'note';
+
+  REC_TIME            = 'time';
+  REC_BLOOD_VALUE     = 'value';
+  REC_BLOOD_FINGER    = 'finger';
+  REC_INS_VALUE       = 'value';
+  REC_MEAL_SHORT      = 'short';
+  REC_MEAL_CONTENT    = 'content';
+  REC_MEAL_FOOD_NAME  = 'name';
+  REC_MEAL_FOOD_PROTS = 'prots';
+  REC_MEAL_FOOD_FATS  = 'fats';
+  REC_MEAL_FOOD_CARBS = 'carbs';
+  REC_MEAL_FOOD_VALUE = 'value';
+  REC_MEAL_FOOD_MASS  = 'mass';
+  REC_NOTE_TEXT       = 'text';
 
 implementation
 
@@ -134,7 +167,7 @@ class procedure TPageSerializer.ReadBody(S: TStrings; Page: TDiaryPage);
     MTime: integer;
   begin
     MTime := StrToTimeQuick(S);
-    Result := Page.Date + MTime / MinPerDay - 4 / HourPerDay;
+    Result := LocalToUTC(Page.Date + MTime / MinPerDay);
   end;
 
 var
@@ -330,11 +363,10 @@ class procedure TPageSerializer.WriteBody(Page: TDiaryPage; S: TStrings);
   function SerializeNote(Note: TNoteRecord): string;
   var
     json: TlkJSONobject;
-    i: integer;
   begin
     json := TlkJSONobject.Create();
     try
-      json.Add('time', DateTimeToStr(Note.GetNativeTime, STD_DATETIME_FMT));
+      json.Add('time', DateTimeToStr(Note.Time, STD_DATETIME_FMT));
       json.Add('text', Note.Text);
       Result := Generate(json);
     finally
@@ -384,7 +416,7 @@ begin
 
       if (Recs[j].RecType = TNoteRecord) then
       begin
-        tmp := '%' + DateTimeToStr(Recs[j].GetNativeTime, STD_DATETIME_FMT) + ' ' + TNoteRecord(Recs[j]).Text;
+        tmp := '%' + DateTimeToStr(Recs[j].Time, STD_DATETIME_FMT) + ' ' + TNoteRecord(Recs[j]).Text;
         //tmp := '%' + SerializeNote(Recs[j] as TNoteRecord);
         s.Add(
           tmp
@@ -499,6 +531,180 @@ begin
   Page.Version := Version;
 
   ReadBody(T, Page);
+end;
+
+{======================================================================================================================}
+function SerializeBlood(R: TBloodRecord): TlkJSONobject;
+{======================================================================================================================}
+begin
+  Result := TlkJSONobject.Create();
+  Result.Add(REC_TYPE, REC_TYPE_BLOOD);
+  Result.Add(REC_TIME, DateTimeToStr(R.GetNativeTime, STD_DATETIME_FMT));
+  Result.Add(REC_BLOOD_VALUE, R.Value);
+  Result.Add(REC_BLOOD_FINGER, R.Finger);
+end;
+
+{======================================================================================================================}
+function SerializeIns(R: TInsRecord): TlkJSONobject;
+{======================================================================================================================}
+begin
+  Result := TlkJSONobject.Create();
+  Result.Add(REC_TYPE, REC_TYPE_INS);
+  Result.Add(REC_TIME, DateTimeToStr(R.GetNativeTime, STD_DATETIME_FMT));
+  Result.Add(REC_INS_VALUE, R.Value);
+end;
+
+{======================================================================================================================}
+function SerializeFoodMassed(R: TFoodMassed): TlkJSONobject;
+{======================================================================================================================}
+begin
+  Result := TlkJSONobject.Create();
+  Result.Add(REC_MEAL_FOOD_NAME, R.Name);
+  Result.Add(REC_MEAL_FOOD_PROTS, R.RelProts);
+  Result.Add(REC_MEAL_FOOD_FATS, R.RelFats);
+  Result.Add(REC_MEAL_FOOD_CARBS, R.RelCarbs);
+  Result.Add(REC_MEAL_FOOD_VALUE, R.RelValue);
+  Result.Add(REC_MEAL_FOOD_MASS, R.Mass);
+end;
+
+{======================================================================================================================}
+function SerializeMeal(R: TMealRecord): TlkJSONobject;
+{======================================================================================================================}
+var
+  Content: TlkJSONlist;
+  i: integer;
+begin
+  Result := TlkJSONobject.Create();
+  Result.Add(REC_TYPE, REC_TYPE_MEAL);
+  Result.Add(REC_TIME, DateTimeToStr(R.GetNativeTime, STD_DATETIME_FMT));
+  Result.Add(REC_MEAL_SHORT, R.ShortMeal);
+
+  Content := TlkJSONlist.Create();
+  for i := 0 to R.Count - 1 do
+    Content.Add(SerializeFoodMassed(R[i]));
+
+  Result.Add(REC_MEAL_CONTENT, Content);
+end;
+
+{======================================================================================================================}
+function SerializeNote(R: TNoteRecord): TlkJSONobject;
+{======================================================================================================================}
+begin
+  Result := TlkJSONobject.Create();
+  Result.Add(REC_TYPE, REC_TYPE_NOTE);
+  Result.Add(REC_TIME, DateTimeToStr(R.GetNativeTime, STD_DATETIME_FMT));
+  Result.Add(REC_NOTE_TEXT, R.Text);
+end;
+
+{======================================================================================================================}
+function SerializeDiaryRecord(R: TCustomRecord): TlkJSONobject;
+{======================================================================================================================}
+begin
+  if (R.RecType = TBloodRecord) then Result := SerializeBlood(R as TBloodRecord) else
+  if (R.RecType = TInsRecord)   then Result := SerializeIns(R as TInsRecord) else
+  if (R.RecType = TMealRecord)  then Result := SerializeMeal(R as TMealRecord) else
+  if (R.RecType = TNoteRecord)  then Result := SerializeNote(R as TNoteRecord) else
+    raise Exception.Create('Unsupported record type: ' + R.ClassName);
+end;
+
+{======================================================================================================================}
+function SerializeVersionedDiaryRecord(R: TCustomRecord): TlkJSONobject;
+{======================================================================================================================}
+begin
+  Result := TlkJSONobject.Create();
+  Result.Add(REC_ID, R.ID);
+  Result.Add(REC_TIMESTAMP, DateTimeToStr(R.TimeStamp, STD_DATETIME_FMT));
+  Result.Add(REC_HASH, R.Hash);
+  Result.Add(REC_VERSION, R.Version);
+  Result.Add(REC_DELETED, R.Deleted);
+  Result.Add(REC_DATA, SerializeDiaryRecord(R));
+end;
+
+
+{======================================================================================================================}
+function SerializeVersionedDiaryRecords(List: TRecordList): TlkJSONlist;
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  Result := TlkJSONlist.Create;
+  for i := Low(List) to High(List) do
+    Result.Add(SerializeVersionedDiaryRecord(List[i]));
+end;
+
+{======================================================================================================================}
+function SerializeDishItem(Item: TDish): TlkJSONobject;
+{======================================================================================================================}
+var
+  Content: TlkJSONlist;
+  i: integer;
+begin
+  Result := TlkJSONobject.Create();
+  Result.Add('name', Item.Name);
+  Result.Add('tag', Item.Tag);
+
+  if (Item.FixedMass) then
+    Result.Add('mass', Item.ResultMass);
+
+  Content := TlkJSONlist.Create;
+  for i := 0 to Item.Count - 1 do
+    Content.Add(SerializeFoodMassed(Item.Content[i]));
+
+  Result.Add('content', Content);
+end;
+
+{======================================================================================================================}
+function SerializeFoodItem(Item: TFood): TlkJSONobject;
+{======================================================================================================================}
+begin
+  Result := TlkJSONobject.Create();
+  Result.Add('name', Item.Name);
+  Result.Add('prots', Item.RelProts);
+  Result.Add('fats', Item.RelFats);
+  Result.Add('carbs', Item.RelCarbs);
+  Result.Add('value', Item.RelValue);
+  Result.Add('tag', Item.Tag);
+  Result.Add('table', Item.FromTable);
+end;
+
+{======================================================================================================================}
+function SerializeVersionedFoodItem(Item: TFood): TlkJSONobject;
+{======================================================================================================================}
+begin
+  Result := TlkJSONobject.Create();
+  WriteVersioned(Item, Result);
+  Result.Add(REC_DATA, SerializeFoodItem(Item));
+end;
+
+{======================================================================================================================}
+function SerializeVersionedFoodItems(Items: TFoodList): TlkJSONlist;
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  Result := TlkJSONlist.Create;          
+  for i := Low(Items) to High(Items) do
+    Result.Add(SerializeVersionedFoodItem(Items[i]));
+end;
+
+{======================================================================================================================}
+function SerializeVersionedDishItem(Item: TDish): TlkJSONobject;
+{======================================================================================================================}
+begin
+  Result := TlkJSONobject.Create();
+  WriteVersioned(Item, Result);
+  Result.Add(REC_DATA, SerializeDishItem(Item));
+end;
+
+{======================================================================================================================}
+function SerializeVersionedDishItems(Items: TDishList): TlkJSONlist;
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  Result := TlkJSONlist.Create;          
+  for i := Low(Items) to High(Items) do
+    Result.Add(SerializeVersionedDishItem(Items[i]));
 end;
 
 end.

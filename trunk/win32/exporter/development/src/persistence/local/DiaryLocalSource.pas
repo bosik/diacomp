@@ -10,7 +10,9 @@ uses
   DiaryRoutines,
   DiaryDAO,
   DiaryPage,
-  DiaryPageSerializer;
+  DiaryPageSerializer,
+  DiaryRecords,
+  uLkJSON;
 
 type
   TPageData = class;
@@ -54,6 +56,7 @@ type
 
     procedure LoadFromFile(const FileName: string);
     procedure SaveToFile(const FileName: string);
+    procedure MigrateToV4(const FileName: string);
   public
     constructor Create(const FileName: string);
     destructor Destroy; override;
@@ -456,6 +459,8 @@ begin
   end;
 
   FModified := False;  // да)
+
+  MigrateToV4('Bases\Diary_migrated_v4.txt');
 end;
 
 {==============================================================================}
@@ -552,6 +557,67 @@ begin
     s.Free;
   end;
   FModified := False;
+end;
+
+procedure TDiaryLocalSource.MigrateToV4(const FileName: string);
+
+  function SerializeData(Rec: TCustomRecord): string;
+  var
+    Json: TlkJSONobject;
+  begin
+    try
+      Json := DiaryPageSerializer.SerializeDiaryRecord(Rec);
+      Result := TlkJSON.GenerateText(Json);
+    finally
+      Json.Free;
+    end;
+  end;
+
+  function Serialize(Rec: TCustomRecord): string;
+  begin
+    Rec.TimeStamp := Rec.GetNativeTime;
+                        
+    Result := Format('%s'#9'%s'#9'%s'#9'%d'#9'%s'#9'%s',
+      [
+        DateTimeToStr(Rec.GetNativeTime, STD_DATETIME_FMT),
+        DateTimeToStr(Rec.TimeStamp, STD_DATETIME_FMT),
+        //CreateCompactGuid(), //Rec.Hash,
+        CreateCompactGuid(), //Rec.ID,
+        1, //Rec.Version,
+        WriteBoolean(false), // WriteBoolean(Deleted),
+        SerializeData(Rec)
+      ]
+    );
+  end;
+
+var
+  DataLine: string;
+  i, j: integer;
+  S: TStrings;
+
+  Page: TDiaryPage;
+  Rec: TCustomRecord;
+begin
+  S := TStringList.Create;
+  try
+    s.Add('VERSION=' + IntToStr(4));
+
+    for i := 0 to High(FPages) do
+    begin
+      Page := TDiaryPage.Create;
+      TPageData.Read(FPages[i], Page);
+      for j := 0 to Page.Count - 1 do
+      begin
+        Rec := Page[j];
+        DataLine := Serialize(Rec);
+        S.Add(DataLine);
+      end;
+    end;
+
+    S.SaveToFile(FileName);
+  finally
+    S.Free;
+  end;
 end;
 
 {==============================================================================}
