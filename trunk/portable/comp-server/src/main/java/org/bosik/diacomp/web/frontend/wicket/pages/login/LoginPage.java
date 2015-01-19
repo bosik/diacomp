@@ -10,5 +10,15 @@ public class LoginPage extends MasterPage
 	public LoginPage(final PageParameters parameters)
 	{
 		super(parameters);
+
+		// TODO: implement UI feedback
+		if (parameters.getPosition("error") == -1)
+		{
+			System.out.println("First try");
+		}
+		else
+		{
+			System.out.println("Bad credentials");
+		}
 	}
 }

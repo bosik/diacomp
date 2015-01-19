@@ -6,46 +6,25 @@ http://www.springframework.org/schema/security
 http://www.springframework.org/schema/security/spring-security-3.2.xsd
 http://www.springframework.org/schema/beans
 http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-
-	<!-- <http entry-point-ref="restAuthenticationEntryPoint"> <intercept-url 
-		pattern="/api/admin/**" access="ROLE_ADMIN" /> <form-login authentication-success-handler-ref="mySuccessHandler" 
-		/> <logout /> </http> <beans:bean id="mySuccessHandler" class="org.rest.security.MySavedRequestAwareAuthenticationSuccessHandler" 
-		/> <authentication-manager alias="authenticationManager"> <authentication-provider> 
-		<user-service> <user name="temporary" password="temporary" authorities="ROLE_ADMIN" 
-		/> <user name="user" password="user" authorities="ROLE_USER" /> </user-service> 
-		</authentication-provider> </authentication-manager> -->
-
 	<http access-denied-page="/login">
 		<!-- Allow -->
 		<intercept-url pattern="/login" access="ROLE_USER,ROLE_ANONYMOUS" />
 		<intercept-url pattern="/about" access="ROLE_USER,ROLE_ANONYMOUS" />
 		<intercept-url pattern="/res/**" access="ROLE_USER,ROLE_ANONYMOUS" />
 		<intercept-url pattern="/favicon.ico" access="ROLE_USER,ROLE_ANONYMOUS" />
-		<!-- <intercept-url pattern="/api/auth/*" access="ROLE_USER,ROLE_ANONYMOUS" 
-			/> <intercept-url pattern="/api/info*" access="ROLE_USER,ROLE_ANONYMOUS" 
-			/> -->
-
 		<intercept-url pattern="/api/**" access="ROLE_USER,ROLE_ANONYMOUS" />
 
 		<!-- Block: others -->
 		<intercept-url pattern="/**" access="ROLE_USER" />
 
 		<form-login login-page="/login" default-target-url="/diary"
-			authentication-failure-url="/login/?error=true" />
+			authentication-failure-url="/login?error" />
 		<logout logout-success-url="/about" />
 
 		<anonymous username="guest" granted-authority="ROLE_ANONYMOUS" />
-		<remember-me />
 	</http>
 
 	<authentication-manager>
-		<authentication-provider>
-			<user-service>
-				<!-- <user name="admin" password="pass" authorities="ROLE_ADMIN,ROLE_USER" 
-					/> -->
-				<user name="bosik-007@narod.ru" password="devel0pment"
-					authorities="ROLE_USER" />
-			</user-service>
-		</authentication-provider>
+		<authentication-provider ref="authProvider" />
 	</authentication-manager>
 </beans:beans>
