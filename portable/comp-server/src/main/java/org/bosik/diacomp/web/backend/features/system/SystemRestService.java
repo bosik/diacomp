@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.system.rest;
+package org.bosik.diacomp.web.backend.features.system;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
