@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 
 @Path("auth/")
 @Component
-public class AuthRestService
+public class AuthRest
 {
 	public static final int		API_CURRENT	= 20;
 	public static final int		API_LEGACY	= 19;
