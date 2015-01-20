@@ -1,13 +1,13 @@
-package org.bosik.diacomp.web.backend.common.mysql;
+package org.bosik.diacomp.web.backend.common;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.bosik.diacomp.web.backend.common.Config;
 
 public class MySQLAccess
 {
@@ -247,4 +247,83 @@ public class MySQLAccess
 	// //close();
 	// }
 	// }
+}
+
+class Utils
+{
+	public static int count(Iterator<?> iterator)
+	{
+		int result = 0;
+		while (iterator.hasNext())
+		{
+			result++;
+			iterator.next();
+		}
+		return result;
+	}
+
+	public static StringBuilder commaSeparated(Iterator<String> iterator)
+	{
+		StringBuilder sb = new StringBuilder();
+
+		while (iterator.hasNext())
+		{
+			sb.append(iterator.next());
+			if (iterator.hasNext())
+			{
+				sb.append(", ");
+			}
+		}
+
+		return sb;
+	}
+
+	public static StringBuilder commaSeparated(String[] array)
+	{
+		StringBuilder sb = new StringBuilder();
+
+		for (int i = 0; i < array.length; i++)
+		{
+			sb.append(array[i]);
+			if (i < array.length - 1)
+			{
+				sb.append(", ");
+			}
+		}
+
+		return sb;
+	}
+
+	public static StringBuilder separated(Iterator<String> iterator, String separator)
+	{
+		StringBuilder sb = new StringBuilder();
+
+		while (iterator.hasNext())
+		{
+			sb.append(iterator.next());
+			sb.append(" = ?");
+			if (iterator.hasNext())
+			{
+				sb.append(separator);
+			}
+		}
+
+		return sb;
+	}
+
+	public static StringBuilder commaSeparatedQuests(int count)
+	{
+		StringBuilder sb = new StringBuilder();
+
+		for (int i = 0; i < count; i++)
+		{
+			sb.append("?");
+			if (i < (count - 1))
+			{
+				sb.append(", ");
+			}
+		}
+
+		return sb;
+	}
 }
