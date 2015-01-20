@@ -9,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FrontendAuthService implements AuthService
+public class UserInfoServiceImpl implements UserInfoService
 {
 	private static final String	GUEST_USERNAME	= "guest";
 

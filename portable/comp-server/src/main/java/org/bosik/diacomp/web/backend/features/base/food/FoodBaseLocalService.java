@@ -25,7 +25,7 @@ import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
-import org.bosik.diacomp.web.backend.features.auth.service.AuthService;
+import org.bosik.diacomp.web.backend.features.auth.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,11 +54,11 @@ public class FoodBaseLocalService implements FoodBaseService
 	private static final Serializer<FoodItem>	serializer					= new SerializerAdapter<FoodItem>(parser);
 
 	@Autowired
-	private AuthService							authService;
+	private UserInfoService						userInfoService;
 
 	protected int getCurrentUserId()
 	{
-		return authService.getCurrentUserId();
+		return userInfoService.getCurrentUserId();
 	}
 
 	private static List<Versioned<FoodItem>> parseItems(ResultSet resultSet, int limit) throws SQLException
