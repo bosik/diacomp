@@ -26,7 +26,7 @@ import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 import org.bosik.diacomp.web.backend.features.auth.service.AuthService;
-import org.bosik.diacomp.web.backend.features.auth.service.FrontendAuthService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -53,7 +53,8 @@ public class FoodBaseLocalService implements FoodBaseService
 	private static final Parser<FoodItem>		parser						= new ParserFoodItem();
 	private static final Serializer<FoodItem>	serializer					= new SerializerAdapter<FoodItem>(parser);
 
-	private final AuthService					authService					= new FrontendAuthService();
+	@Autowired
+	private AuthService							authService;
 
 	protected int getCurrentUserId()
 	{

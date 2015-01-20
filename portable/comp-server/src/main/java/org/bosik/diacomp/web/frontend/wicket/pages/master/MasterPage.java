@@ -4,9 +4,9 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.features.auth.service.AuthService;
-import org.bosik.diacomp.web.backend.features.auth.service.FrontendAuthService;
 import org.bosik.diacomp.web.frontend.wicket.components.header.HeaderPanel;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.Menu;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.MenuContent;
@@ -22,11 +22,12 @@ public class MasterPage extends WebPage
 {
 	private static final long	serialVersionUID	= 1L;
 
+	@SpringBean
+	private AuthService			authService;
+
 	public MasterPage(final PageParameters parameters)
 	{
 		super(parameters);
-
-		AuthService authService = new FrontendAuthService();
 
 		try
 		{

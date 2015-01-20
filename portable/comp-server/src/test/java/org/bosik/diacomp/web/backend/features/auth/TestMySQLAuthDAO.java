@@ -3,12 +3,15 @@ package org.bosik.diacomp.web.backend.features.auth;
 import static org.junit.Assert.assertEquals;
 import org.bosik.diacomp.web.backend.common.Config;
 import org.bosik.diacomp.web.backend.features.auth.function.AuthDAO;
-import org.bosik.diacomp.web.backend.features.auth.function.MySQLAuthDAO;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class TestMySQLAuthDAO
 {
-	private final AuthDAO	authDao	= new MySQLAuthDAO();
+	@Autowired
+	private AuthDAO	authDao;
 
 	@Test
 	public void test()
