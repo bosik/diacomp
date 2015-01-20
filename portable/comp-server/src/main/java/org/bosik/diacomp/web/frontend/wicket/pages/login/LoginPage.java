@@ -1,5 +1,6 @@
 package org.bosik.diacomp.web.frontend.wicket.pages.login;
 
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 
@@ -11,14 +12,15 @@ public class LoginPage extends MasterPage
 	{
 		super(parameters);
 
-		// TODO: implement UI feedback
+		FeedbackPanel hint = new FeedbackPanel("hintInvalidCredentials");
+		add(hint);
+
 		if (parameters.getPosition("error") == -1)
 		{
-			System.out.println("First try");
 		}
 		else
 		{
-			System.out.println("Bad credentials");
+			hint.error(getString("label.invalidCredentails"));
 		}
 	}
 }
