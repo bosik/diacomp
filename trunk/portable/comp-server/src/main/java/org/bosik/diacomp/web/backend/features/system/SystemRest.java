@@ -17,7 +17,7 @@ import org.json.JSONObject;
 
 @Path("info/")
 @SuppressWarnings("static-method")
-public class SystemRestService
+public class SystemRest
 {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
