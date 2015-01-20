@@ -2,16 +2,19 @@ package org.bosik.diacomp.web.backend.features.auth.service;
 
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.features.auth.function.AuthDAO;
-import org.bosik.diacomp.web.backend.features.auth.function.MySQLAuthDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
+@Service
 public class FrontendAuthService implements AuthService
 {
 	private static final String	GUEST_USERNAME	= "guest";
 
-	private final AuthDAO		authDao			= new MySQLAuthDAO();
+	@Autowired
+	private AuthDAO				authDao;
 
 	//private static final Map<String, Integer>	userMap			= new HashMap<String, Integer>();
 

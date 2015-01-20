@@ -15,18 +15,21 @@ import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
 import org.bosik.diacomp.web.backend.features.auth.function.AuthDAO;
-import org.bosik.diacomp.web.backend.features.auth.function.MySQLAuthDAO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Path("auth/")
+@Component
 public class AuthRestService
 {
-	public static final int	API_CURRENT	= 20;
-	public static final int	API_LEGACY	= 19;
+	public static final int		API_CURRENT	= 20;
+	public static final int		API_LEGACY	= 19;
 
 	@Context
-	HttpServletRequest		req;
+	private HttpServletRequest	req;
 
-	private final AuthDAO	authDao		= new MySQLAuthDAO();
+	@Autowired
+	private AuthDAO				authDao;
 
 	@POST
 	@Path("login")

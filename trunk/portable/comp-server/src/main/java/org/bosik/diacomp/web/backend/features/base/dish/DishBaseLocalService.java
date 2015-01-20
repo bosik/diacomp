@@ -26,7 +26,7 @@ import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 import org.bosik.diacomp.web.backend.features.auth.service.AuthService;
-import org.bosik.diacomp.web.backend.features.auth.service.FrontendAuthService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -53,7 +53,8 @@ public class DishBaseLocalService implements DishBaseService
 	private static final Parser<DishItem>		parser						= new ParserDishItem();
 	private static final Serializer<DishItem>	serializer					= new SerializerAdapter<DishItem>(parser);
 
-	private final AuthService					authService					= new FrontendAuthService();
+	@Autowired
+	private AuthService							authService;
 
 	protected int getCurrentUserId()
 	{
