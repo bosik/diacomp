@@ -12,7 +12,7 @@ import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
-import org.bosik.diacomp.web.backend.features.auth.function.AuthRest;
+import org.bosik.diacomp.web.backend.features.user.auth.AuthRest;
 import org.json.JSONObject;
 
 @Path("info/")
