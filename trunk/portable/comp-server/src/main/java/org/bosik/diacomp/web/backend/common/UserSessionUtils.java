@@ -27,17 +27,6 @@ public class UserSessionUtils
 
 	public static void checkAuth(HttpServletRequest request) throws NotAuthorizedException
 	{
-		// ================================================================
-		// final Enumeration<String> attributeNames = request.getSession().getAttributeNames();
-		// System.out.println("checkAuth, attributes are:");
-		// while (attributeNames.hasMoreElements())
-		// {
-		// String attr = attributeNames.nextElement();
-		// Object val = request.getSession().getAttribute(attr);
-		// System.out.println("\t" + attr + "=" + val);
-		// }
-		// ================================================================
-
 		if ((request == null) || (request.getSession(false) == null)
 				|| (request.getSession().getAttribute(PAR_USERID) == null)
 				|| ((Integer)request.getSession().getAttribute(PAR_USERID) <= 0))
