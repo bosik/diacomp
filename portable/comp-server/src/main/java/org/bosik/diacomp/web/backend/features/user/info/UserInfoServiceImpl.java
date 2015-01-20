@@ -1,7 +1,7 @@
-package org.bosik.diacomp.web.backend.features.auth.info;
+package org.bosik.diacomp.web.backend.features.user.info;
 
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.web.backend.features.auth.function.AuthService;
+import org.bosik.diacomp.web.backend.features.user.auth.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;

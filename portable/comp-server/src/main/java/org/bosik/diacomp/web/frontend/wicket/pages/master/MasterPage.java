@@ -6,7 +6,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.web.backend.features.auth.info.UserInfoService;
+import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.diacomp.web.frontend.wicket.components.header.HeaderPanel;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.Menu;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.MenuContent;

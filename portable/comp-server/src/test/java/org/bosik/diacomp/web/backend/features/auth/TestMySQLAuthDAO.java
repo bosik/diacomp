@@ -2,7 +2,7 @@ package org.bosik.diacomp.web.backend.features.auth;
 
 import static org.junit.Assert.assertEquals;
 import org.bosik.diacomp.web.backend.common.Config;
-import org.bosik.diacomp.web.backend.features.auth.function.AuthService;
+import org.bosik.diacomp.web.backend.features.user.auth.AuthService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

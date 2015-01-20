@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.auth.function;
+package org.bosik.diacomp.web.backend.features.user.auth;
 
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 
