@@ -1,19 +1,37 @@
 <!DOCTYPE html>
 <html xmlns:wicket="http://wicket.apache.org">
 <head>
+<wicket:head>
+	<style>
+.feedbackPanel {
+	padding: 10px;
+	background-color: #fdd;
+}
+
+li.feedbackPanelERROR {
+	display: block;
+}
+</style>
+</wicket:head>
 </head>
 <body>
 	<wicket:extend>
+		<div wicket:id="hintInvalidCredentials" class="invalid-credentials"></div>
 		<div class="login_panel">
 			<form action="j_spring_security_check" method="post">
-				<wicket:message key="field.username"></wicket:message><br />
-				<input type="text" id="login" name="j_username" class="full_width" autofocus /> <br />
-				<wicket:message key="field.password"></wicket:message><br />
-				<input type="password" name="j_password" id="password" class="full_width" /> <br />
-				<input type="hidden" name="api" value="20" />
-				<button type="submit" class="full_width"><wicket:message key="button.login"></wicket:message></button>
+				<wicket:message key="field.username"></wicket:message>
+				<br /> <input type="text" id="login" name="j_username"
+					class="full_width" autofocus /> <br />
+				<wicket:message key="field.password"></wicket:message>
+				<br /> <input type="password" name="j_password" id="password"
+					class="full_width" /> <br /> <input type="hidden" name="api"
+					value="20" />
+				<button type="submit" class="full_width">
+					<wicket:message key="button.login"></wicket:message>
+				</button>
 				<hr>
-				<wicket:message key="label.notRegistered"></wicket:message> <a href="#"><wicket:message key="label.registerNow"></wicket:message></a>.
+				<wicket:message key="label.notRegistered"></wicket:message>
+				<a href="#"><wicket:message key="label.registerNow"></wicket:message></a>.
 			</form>
 		</div>
 	</wicket:extend>
