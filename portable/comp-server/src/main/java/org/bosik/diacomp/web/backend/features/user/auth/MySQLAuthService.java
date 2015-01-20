@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
+import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.springframework.stereotype.Service;
 
 @Service
