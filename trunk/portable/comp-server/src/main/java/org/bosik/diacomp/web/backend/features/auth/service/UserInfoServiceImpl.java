@@ -1,7 +1,7 @@
 package org.bosik.diacomp.web.backend.features.auth.service;
 
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.web.backend.features.auth.function.AuthDAO;
+import org.bosik.diacomp.web.backend.features.auth.function.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -14,7 +14,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	private static final String	GUEST_USERNAME	= "guest";
 
 	@Autowired
-	private AuthDAO				authDao;
+	private AuthService			authService;
 
 	//private static final Map<String, Integer>	userMap			= new HashMap<String, Integer>();
 
@@ -27,7 +27,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		Integer id;// = userMap.get(userName);
 		//if (id == null)
 		{
-			id = authDao.getIdByName(userName);
+			id = authService.getIdByName(userName);
 			if (id == null)
 			{
 				throw new NotAuthorizedException(String.format("User %s is not authorized", userName));

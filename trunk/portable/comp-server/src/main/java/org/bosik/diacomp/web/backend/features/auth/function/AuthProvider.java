@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class AuthProvider implements AuthenticationProvider
 {
 	@Autowired
-	private AuthDAO	authDAO;
+	private AuthService	authService;
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException
@@ -25,7 +25,7 @@ public class AuthProvider implements AuthenticationProvider
 		{
 			String email = authentication.getName();
 			String password = authentication.getCredentials().toString();
-			authDAO.login(email, password);
+			authService.login(email, password);
 
 			List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));

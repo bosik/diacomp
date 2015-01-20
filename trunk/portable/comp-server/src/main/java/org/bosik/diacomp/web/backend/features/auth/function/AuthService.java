@@ -2,7 +2,7 @@ package org.bosik.diacomp.web.backend.features.auth.function;
 
 import org.bosik.diacomp.core.services.exceptions.AuthException;
 
-public interface AuthDAO
+public interface AuthService
 {
 	/**
 	 * Validates the supplied userName:password pair

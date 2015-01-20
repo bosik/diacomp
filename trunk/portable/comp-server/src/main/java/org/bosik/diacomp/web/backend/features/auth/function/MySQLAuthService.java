@@ -10,7 +10,7 @@ import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MySQLAuthDAO implements AuthDAO
+public class MySQLAuthService implements AuthService
 {
 	private static final String			TABLE_USER				= "user";
 	private static final String			COLUMN_USER_ID			= "ID";

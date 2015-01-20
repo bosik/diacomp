@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
-import org.bosik.diacomp.web.backend.features.auth.function.AuthDAO;
+import org.bosik.diacomp.web.backend.features.auth.function.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +29,7 @@ public class AuthRest
 	private HttpServletRequest	req;
 
 	@Autowired
-	private AuthDAO				authDao;
+	private AuthService			authService;
 
 	@POST
 	@Path("login")
@@ -76,7 +76,7 @@ public class AuthRest
 				return Response.ok(resp).build();
 			}
 
-			int id = authDao.login(login, pass);
+			int id = authService.login(login, pass);
 			UserSessionUtils.setId(req, id, login);
 
 			String entity = ResponseBuilder.buildDone("Logged in OK");
