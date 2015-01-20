@@ -25,7 +25,7 @@ import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.mysql.MySQLAccess;
-import org.bosik.diacomp.web.backend.features.auth.service.UserInfoService;
+import org.bosik.diacomp.web.backend.features.auth.info.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
