@@ -1,4 +1,4 @@
-package org.bosik.diacomp.web.backend.features.auth.rest;
+package org.bosik.diacomp.web.backend.features.auth.function;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DefaultValue;
@@ -14,7 +14,6 @@ import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.common.UserSessionUtils;
-import org.bosik.diacomp.web.backend.features.auth.function.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
