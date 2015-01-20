@@ -2,10 +2,10 @@ package org.bosik.diacomp.web.backend.features.auth.function;
 
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 
-public class FakeAuthDAO implements AuthDAO
+public class FakeAuthService implements AuthService
 {
-	private static final String	FAKE_USERNAME	= "bosik-007@narod.ru";
-	private static final String	FAKE_PASSWORD	= "devel0pment";
+	private static final String	FAKE_USERNAME	= "admin";
+	private static final String	FAKE_PASSWORD	= "password";
 	private static final int	FAKE_USER_ID	= 1;
 
 	@Override
