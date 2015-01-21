@@ -42,6 +42,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 {
 	private static final String					TAG							= ActivityDiary.class.getSimpleName();
 
+	public static final String					KEY_DATE					= "diacomp.activitydiary.date";
+
 	private static final int					DIALOG_BLOOD_CREATE			= 11;
 	private static final int					DIALOG_BLOOD_MODIFY			= 12;
 	private static final int					DIALOG_INS_CREATE			= 21;
@@ -90,7 +92,6 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			// initializing services
 			diary = new DiaryLocalService(getContentResolver());
 
-			// Log.i(TAG, "DiaryView(): onCreate()");
 			setContentView(R.layout.activity_diary);
 
 			// определяем компоненты
@@ -116,8 +117,8 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			// Intent intent = getIntent();
 
 			/*
-			 * if (intent.hasExtra("date")) { Date date = (Date)
-			 * intent.getSerializableExtra("date"); openPage(date); Log.d(TAG,
+			 * if (intent.hasExtra(KEY_DATE)) { Date date = (Date)
+			 * intent.getSerializableExtra(KEY_DATE); openPage(date); Log.d(TAG,
 			 * "DiaryView(): onCreate(), date is specified: " + date); } else
 			 */
 			{
