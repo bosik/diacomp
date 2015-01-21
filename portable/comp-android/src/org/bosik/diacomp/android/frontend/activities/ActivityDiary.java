@@ -3,7 +3,6 @@ package org.bosik.diacomp.android.frontend.activities;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -37,49 +36,55 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ScrollView;
 
-public class ActivityDiary extends Activity implements RecordClickListener, OnClickListener
+public class ActivityDiary extends Activity
 {
-	private static final String					TAG							= ActivityDiary.class.getSimpleName();
+	private static final String			TAG							= ActivityDiary.class.getSimpleName();
 
-	public static final String					KEY_DATE					= "diacomp.activitydiary.date";
+	public static final String			KEY_DATE					= "diacomp.activitydiary.date";
 
-	private static final int					DIALOG_BLOOD_CREATE			= 11;
-	private static final int					DIALOG_BLOOD_MODIFY			= 12;
-	private static final int					DIALOG_INS_CREATE			= 21;
-	private static final int					DIALOG_INS_MODIFY			= 22;
-	private static final int					DIALOG_MEAL_CREATE			= 31;
-	private static final int					DIALOG_MEAL_MODIFY			= 32;
-	private static final int					DIALOG_NOTE_CREATE			= 41;
-	private static final int					DIALOG_NOTE_MODIFY			= 42;
+	private static final int			DIALOG_BLOOD_CREATE			= 11;
+	private static final int			DIALOG_BLOOD_MODIFY			= 12;
+	private static final int			DIALOG_INS_CREATE			= 21;
+	private static final int			DIALOG_INS_MODIFY			= 22;
+	private static final int			DIALOG_MEAL_CREATE			= 31;
+	private static final int			DIALOG_MEAL_MODIFY			= 32;
+	private static final int			DIALOG_NOTE_CREATE			= 41;
+	private static final int			DIALOG_NOTE_MODIFY			= 42;
 
-	private static final int					CONTEXT_ITEM_EDIT			= 0;
-	private static final int					CONTEXT_ITEM_REMOVE			= 1;
+	private static final int			CONTEXT_ITEM_EDIT			= 0;
+	private static final int			CONTEXT_ITEM_REMOVE			= 1;
 
-	private static final long					SCAN_FOR_BLOOD_FINGER		= 5 * Utils.SecPerDay;
-	private static final int					SCAN_FOR_BLOOD_BEFORE_MEAL	= 4 * Utils.SecPerHour;
-	private static final long					SCAN_FOR_INS_AROUND_MEAL	= 3 * Utils.SecPerHour;
-
-	// FIXME: hardcoded target BS
-	private final Double						bloodTarget					= 5.0;
+	// FIXME: hardcoded patient params
+	private static final long			SCAN_FOR_BLOOD_FINGER		= 5 * Utils.SecPerDay;
+	private static final int			SCAN_FOR_BLOOD_BEFORE_MEAL	= 4 * Utils.SecPerHour;
+	private static final long			SCAN_FOR_INS_AROUND_MEAL	= 3 * Utils.SecPerHour;
+	private final Double				bloodTarget					= 5.0;
 
 	// THINK: что произойдёт на смене дат?
-	private static Date							curDate						= Calendar.getInstance().getTime();
-	private static List<Versioned<DiaryRecord>>	curRecords					= null;
+	static Date							curDate						= Calendar.getInstance().getTime();
+	static List<Versioned<DiaryRecord>>	curRecords					= null;
 
 	// --- форматы ---
 	// private final SimpleDateFormat CaptionFmt = new SimpleDateFormat("d MMMM");
-	private final SimpleDateFormat				FORMAT_DATE					= new SimpleDateFormat("dd.MM.yyyy",
-																					Locale.US);
-
-	// КОМПОНЕНТЫ
-	private DiaryView							diaryViewLayout;
-	private Button								buttonSelectDay;
+	private final SimpleDateFormat		FORMAT_DATE					= new SimpleDateFormat("dd.MM.yyyy", Locale.US);
 
 	// Services
-	private DiaryService						diary;
+	private DiaryService				diary;
 
-	// СОБЫТИЯ
+	// Components
+	private DiaryView					diaryViewLayout;
+	private Button						buttonPrevDay;
+	private Button						buttonNextDay;
+	private Button						buttonSelectDay;
+
+	private Button						buttonAddBlood;
+	private Button						buttonAddIns;
+	private Button						buttonAddMeal;
+	private Button						buttonAddNote;
+
+	private ScrollView					scrollView;
 
 	// handled
 	@Override
@@ -89,29 +94,121 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 
 		try
 		{
-			// initializing services
-			diary = new DiaryLocalService(getContentResolver());
-
 			setContentView(R.layout.activity_diary);
 
-			// определяем компоненты
+			// services
+			diary = new DiaryLocalService(getContentResolver());
+
+			// UI: components
+
 			diaryViewLayout = (DiaryView) findViewById(R.id.diaryViewLayout);
+			registerForContextMenu(diaryViewLayout);
+			buttonPrevDay = (Button) findViewById(R.id.buttonPrevDay);
+			buttonNextDay = (Button) findViewById(R.id.buttonNextDay);
 			buttonSelectDay = (Button) findViewById(R.id.buttonSelectDay);
 
-			// НАСТРОЙКА СИСТЕМЫ
-			registerForContextMenu(diaryViewLayout);
+			buttonAddBlood = (Button) findViewById(R.id.buttonAddBlood);
+			buttonAddIns = (Button) findViewById(R.id.buttonAddIns);
+			buttonAddMeal = (Button) findViewById(R.id.buttonAddMeal);
+			buttonAddNote = (Button) findViewById(R.id.buttonAddNote);
 
-			// назначаем обработчики
-			((Button) findViewById(R.id.buttonPrevDay)).setOnClickListener(this);
-			buttonSelectDay.setOnClickListener(this);
-			((Button) findViewById(R.id.buttonNextDay)).setOnClickListener(this);
-			((Button) findViewById(R.id.buttonAddBlood)).setOnClickListener(this);
-			((Button) findViewById(R.id.buttonAddIns)).setOnClickListener(this);
-			((Button) findViewById(R.id.buttonAddMeal)).setOnClickListener(this);
-			((Button) findViewById(R.id.buttonAddNote)).setOnClickListener(this);
-			findViewById(R.id.scrollView).setBackgroundColor(Color.WHITE);
-			// ((ScrollView) findViewById(R.id.scrollView)).set
-			diaryViewLayout.setOnRecordClickListener(this);
+			scrollView = (ScrollView) findViewById(R.id.scrollView);
+
+			// UI: events handling
+
+			buttonPrevDay.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					openPage(Utils.getPrevDay(curDate));
+				}
+			});
+			buttonNextDay.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					openPage(Utils.getNextDay(curDate));
+				}
+			});
+			buttonSelectDay.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					// ((Button)v).setText("it's ok");
+				}
+			});
+
+			buttonAddBlood.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					showBloodEditor(null, true);
+				}
+			});
+			buttonAddIns.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					showInsEditor(null, true);
+				}
+			});
+			buttonAddMeal.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					showMealEditor(null, true);
+				}
+			});
+			buttonAddNote.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					showNoteEditor(null, true);
+				}
+			});
+
+			scrollView.setBackgroundColor(Color.WHITE);
+			diaryViewLayout.setOnRecordClickListener(new RecordClickListener()
+			{
+				// handled
+				@SuppressWarnings("unchecked")
+				@Override
+				public void onRecordClick(int index)
+				{
+					try
+					{
+						Versioned<? extends DiaryRecord> rec = curRecords.get(index);
+
+						if (rec.getData() instanceof BloodRecord)
+						{
+							showBloodEditor((Versioned<BloodRecord>) rec, false);
+						}
+						else if (rec.getData() instanceof InsRecord)
+						{
+							showInsEditor((Versioned<InsRecord>) rec, false);
+						}
+						else if (rec.getData() instanceof MealRecord)
+						{
+							showMealEditor((Versioned<MealRecord>) rec, false);
+						}
+						else if (rec.getData() instanceof NoteRecord)
+						{
+							showNoteEditor((Versioned<NoteRecord>) rec, false);
+						}
+					}
+					catch (Exception e)
+					{
+						ErrorHandler.handle(e, ActivityDiary.this);
+					}
+				}
+			});
 
 			// определение параметров запроса
 			// Intent intent = getIntent();
@@ -392,8 +489,6 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 				}
 			}
 
-			// TODO: implement other record types
-
 			else
 
 			{
@@ -407,93 +502,6 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		}
 
 		return true;
-	}
-
-	// handled
-	@Override
-	public void onClick(View v)
-	{
-		try
-		{
-			switch (v.getId())
-			{
-				case R.id.buttonPrevDay:
-				{
-					openPage(Utils.getPrevDay(curDate));
-					break;
-				}
-				case R.id.buttonNextDay:
-				{
-					openPage(Utils.getNextDay(curDate));
-					break;
-				}
-				case R.id.buttonSelectDay:
-				{
-					// ...
-					// ((Button)v).setText("it's ok");
-					break;
-				}
-				case R.id.buttonAddBlood:
-				{
-					showBloodEditor(null, true);
-					break;
-				}
-
-				case R.id.buttonAddIns:
-				{
-					showInsEditor(null, true);
-					break;
-				}
-
-				case R.id.buttonAddMeal:
-				{
-					showMealEditor(null, true);
-					break;
-				}
-
-				case R.id.buttonAddNote:
-				{
-					showNoteEditor(null, true);
-					break;
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			ErrorHandler.handle(e, this);
-		}
-	}
-
-	// handled
-	@SuppressWarnings("unchecked")
-	@Override
-	public void onRecordClick(int index)
-	{
-		try
-		{
-			Versioned<? extends DiaryRecord> rec = curRecords.get(index);
-
-			if (rec.getData().getClass() == BloodRecord.class)
-			{
-				showBloodEditor((Versioned<BloodRecord>) rec, false);
-			}
-			else if (rec.getData().getClass() == InsRecord.class)
-			{
-				showInsEditor((Versioned<InsRecord>) rec, false);
-			}
-			else if (rec.getData().getClass() == MealRecord.class)
-			{
-				showMealEditor((Versioned<MealRecord>) rec, false);
-			}
-			else if (rec.getData().getClass() == NoteRecord.class)
-			{
-				showNoteEditor((Versioned<NoteRecord>) rec, false);
-			}
-		}
-		catch (Exception e)
-		{
-			ErrorHandler.handle(e, this);
-		}
 	}
 
 	// handled
@@ -536,9 +544,9 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 		}
 	}
 
-	// ДЕЙСТВИЯ
+	// ACTIONS
 
-	private void openPage(Date date)
+	void openPage(Date date)
 	{
 		curDate = date;
 
@@ -559,169 +567,122 @@ public class ActivityDiary extends Activity implements RecordClickListener, OnCl
 			UIUtils.showTip(this, "Diary verification failed");
 		}
 
-		// Log.d(TAG, String.format("#DBF Found %d items between %s and %s", curRecords.size(),
-		// Utils.formatTimeUTC(start), Utils.formatTimeUTC(end)));
-		//
-		// for (Versioned<DiaryRecord> record : curRecords)
-		// {
-		// Log.v(TAG,
-		// String.format("#DBF RCVD #%s: %s", record.getId(),
-		// Utils.formatTimeUTC(record.getData().getTime())));
-		// }
-
 		diaryViewLayout.setRecords(curRecords);
 		buttonSelectDay.setText(FORMAT_DATE.format(curDate));
 	}
 
-	/**
-	 * Searches for the last BS record in period [since - scanPeriod, since]
-	 * 
-	 * @param scanPeriod
-	 *            , in seconds
-	 * @param since
-	 * @return
-	 */
-	private BloodRecord lastBlood(long scanPeriod, Date since, boolean skipPostprandials)
+	// handled
+	void showBloodEditor(Versioned<BloodRecord> entity, boolean createMode)
 	{
-		// TODO: move this away from UI
-		Date endTime = since;
-		Date startTime = new Date(endTime.getTime() - (scanPeriod * Utils.MsecPerSec));
-
-		List<Versioned<DiaryRecord>> records = diary.findPeriod(startTime, endTime, false);
-		PostprandUtils.updatePostprand(records);
-		Collections.reverse(records);
-
-		for (Versioned<DiaryRecord> record : records)
+		try
 		{
-			if ((record.getData().getClass() == BloodRecord.class)
-					&& (!skipPostprandials || !((BloodRecord) record.getData()).isPostPrand()))
+			if (createMode)
 			{
-				return (BloodRecord) record.getData();
+				BloodRecord prev = PostprandUtils.findLastBlood(diary, new Date(), SCAN_FOR_BLOOD_FINGER, false);
+				BloodRecord rec = new BloodRecord();
+				rec.setTime(new Date());
+				rec.setFinger(((prev == null) || (prev.getFinger() == -1)) ? -1 : ((prev.getFinger() + 1) % 10));
+				entity = new Versioned<BloodRecord>(rec);
 			}
-		}
 
-		return null;
+			Intent intent = new Intent(this, ActivityEditorBlood.class);
+			intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
+			intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
+
+			startActivityForResult(intent, createMode ? DIALOG_BLOOD_CREATE : DIALOG_BLOOD_MODIFY);
+		}
+		catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
+		}
 	}
 
-	/**
-	 * Searches for the insulin injection nearest to the specified time
-	 * 
-	 * @param near
-	 *            Time to search around
-	 * @param scanPeriod
-	 *            , in seconds
-	 * @return
-	 */
-	private InsRecord findInsulin(Date near, long scanPeriod)
+	// handled
+	void showInsEditor(Versioned<InsRecord> entity, boolean createMode)
 	{
-		Log.d(TAG, "findInsulin(): near = " + near + ", scanPeriod = " + scanPeriod);
-
-		// TODO: move this away from UI
-
-		Date startTime = new Date(near.getTime() - (scanPeriod * Utils.MsecPerSec));
-		Date endTime = new Date(near.getTime() + (scanPeriod * Utils.MsecPerSec));
-		List<Versioned<DiaryRecord>> records = diary.findPeriod(startTime, endTime, false);
-
-		Log.d(TAG, "findInsulin(): startTime = " + startTime);
-		Log.d(TAG, "findInsulin(): endTime = " + endTime);
-		Log.d(TAG, "findInsulin(): items found: " + records.size());
-
-		long min = scanPeriod * Utils.MsecPerSec * 2;
-		InsRecord ins = null;
-
-		for (Versioned<DiaryRecord> record : records)
+		try
 		{
-			if (record.getData().getClass() == InsRecord.class)
+			if (createMode)
 			{
-				long currentDist = Math.abs(record.getData().getTime().getTime() - near.getTime());
-				if (currentDist < min)
-				{
-					ins = (InsRecord) record.getData();
-				}
+				InsRecord rec = new InsRecord();
+				rec.setTime(new Date());
+				entity = new Versioned<InsRecord>(rec);
 			}
-		}
 
-		return ins;
+			Intent intent = new Intent(this, ActivityEditorIns.class);
+			intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
+			intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
+
+			startActivityForResult(intent, createMode ? DIALOG_INS_CREATE : DIALOG_INS_MODIFY);
+		}
+		catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
+		}
 	}
 
-	private void showBloodEditor(Versioned<BloodRecord> entity, boolean createMode)
+	// handled
+	void showMealEditor(Versioned<MealRecord> entity, boolean createMode)
 	{
-		if (createMode)
+		try
 		{
-			BloodRecord prev = lastBlood(SCAN_FOR_BLOOD_FINGER, new Date(), false);
-			BloodRecord rec = new BloodRecord();
-			rec.setTime(new Date());
-			rec.setFinger(((prev == null) || (prev.getFinger() == -1)) ? -1 : ((prev.getFinger() + 1) % 10));
-			entity = new Versioned<BloodRecord>(rec);
+			if (createMode)
+			{
+				MealRecord rec = new MealRecord();
+				rec.setTime(new Date());
+				entity = new Versioned<MealRecord>(rec);
+			}
+
+			BloodRecord prevBlood = PostprandUtils.findLastBlood(diary, entity.getData().getTime(),
+					SCAN_FOR_BLOOD_BEFORE_MEAL, false);
+			Double bloodBeforeMeal = prevBlood == null ? null : prevBlood.getValue();
+			InsRecord insRecord = PostprandUtils.findNearestInsulin(diary, entity.getData().getTime(),
+					SCAN_FOR_INS_AROUND_MEAL);
+			Double insInjected = insRecord == null || (prevBlood != null && prevBlood.isPostPrand()) ? null : insRecord
+					.getValue();
+
+			Log.d(TAG, insRecord == null ? "insRecord == null" : "insRecord != null");
+			Log.d(TAG, "insInjected: " + insInjected);
+
+			Intent intent = new Intent(this, ActivityEditorMeal.class);
+			intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
+			intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
+			if (bloodBeforeMeal != null)
+			{
+				intent.putExtra(ActivityEditorMeal.FIELD_BS_BEFORE_MEAL, bloodBeforeMeal);
+			}
+			intent.putExtra(ActivityEditorMeal.FIELD_BS_TARGET, bloodTarget);
+			intent.putExtra(ActivityEditorMeal.FIELD_INS_INJECTED, insInjected);
+			startActivityForResult(intent, createMode ? DIALOG_MEAL_CREATE : DIALOG_MEAL_MODIFY);
 		}
-
-		Intent intent = new Intent(this, ActivityEditorBlood.class);
-		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
-		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
-
-		startActivityForResult(intent, createMode ? DIALOG_BLOOD_CREATE : DIALOG_BLOOD_MODIFY);
+		catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
+		}
 	}
 
-	private void showInsEditor(Versioned<InsRecord> entity, boolean createMode)
+	// handled
+	void showNoteEditor(Versioned<NoteRecord> entity, boolean createMode)
 	{
-		if (createMode)
+		try
 		{
-			InsRecord rec = new InsRecord();
-			rec.setTime(new Date());
-			entity = new Versioned<InsRecord>(rec);
+			Log.d("PRFM", "showNoteEditor() started");
+			if (createMode)
+			{
+				NoteRecord rec = new NoteRecord();
+				rec.setTime(new Date());
+				entity = new Versioned<NoteRecord>(rec);
+			}
+
+			Intent intent = new Intent(this, ActivityEditorNote.class);
+			intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
+			intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
+			startActivityForResult(intent, createMode ? DIALOG_NOTE_CREATE : DIALOG_NOTE_MODIFY);
+			Log.d("PRFM", "showNoteEditor() finished");
 		}
-
-		Intent intent = new Intent(this, ActivityEditorIns.class);
-		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
-		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
-
-		startActivityForResult(intent, createMode ? DIALOG_INS_CREATE : DIALOG_INS_MODIFY);
-	}
-
-	private void showMealEditor(Versioned<MealRecord> entity, boolean createMode)
-	{
-		if (createMode)
+		catch (Exception e)
 		{
-			MealRecord rec = new MealRecord();
-			rec.setTime(new Date());
-			entity = new Versioned<MealRecord>(rec);
+			ErrorHandler.handle(e, this);
 		}
-
-		BloodRecord prevBlood = lastBlood(SCAN_FOR_BLOOD_BEFORE_MEAL, entity.getData().getTime(), false);
-		Double bloodBeforeMeal = prevBlood == null ? null : prevBlood.getValue();
-		InsRecord insRecord = findInsulin(entity.getData().getTime(), SCAN_FOR_INS_AROUND_MEAL);
-		Double insInjected = insRecord == null || (prevBlood != null && prevBlood.isPostPrand()) ? null : insRecord
-				.getValue();
-
-		Log.d(TAG, insRecord == null ? "insRecord == null" : "insRecord != null");
-		Log.d(TAG, "insInjected: " + insInjected);
-
-		Intent intent = new Intent(this, ActivityEditorMeal.class);
-		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
-		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
-		if (bloodBeforeMeal != null)
-		{
-			intent.putExtra(ActivityEditorMeal.FIELD_BS_BEFORE_MEAL, bloodBeforeMeal);
-		}
-		intent.putExtra(ActivityEditorMeal.FIELD_BS_TARGET, bloodTarget);
-		intent.putExtra(ActivityEditorMeal.FIELD_INS_INJECTED, insInjected);
-		startActivityForResult(intent, createMode ? DIALOG_MEAL_CREATE : DIALOG_MEAL_MODIFY);
-	}
-
-	private void showNoteEditor(Versioned<NoteRecord> entity, boolean createMode)
-	{
-		Log.d("PRFM", "showNoteEditor() started");
-		if (createMode)
-		{
-			NoteRecord rec = new NoteRecord();
-			rec.setTime(new Date());
-			entity = new Versioned<NoteRecord>(rec);
-		}
-
-		Intent intent = new Intent(this, ActivityEditorNote.class);
-		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
-		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
-		startActivityForResult(intent, createMode ? DIALOG_NOTE_CREATE : DIALOG_NOTE_MODIFY);
-		Log.d("PRFM", "showNoteEditor() finished");
 	}
 }
