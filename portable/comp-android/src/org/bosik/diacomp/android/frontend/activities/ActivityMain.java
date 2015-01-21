@@ -250,9 +250,8 @@ public class ActivityMain extends Activity
 
 	void showDiary()
 	{
-		// TODO: extract constants
 		Intent intent = new Intent(this, ActivityDiary.class);
-		intent.putExtra("date", new Date());
+		intent.putExtra(ActivityDiary.KEY_DATE, new Date());
 		startActivity(intent);
 	}
 }
