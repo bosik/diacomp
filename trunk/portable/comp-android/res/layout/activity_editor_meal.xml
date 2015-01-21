@@ -21,8 +21,7 @@
             android:id="@+id/labelMealTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/editor_common_field_time"
-            android:textSize="18sp" />
+            android:text="@string/editor_common_field_time" />
 
         <View
             android:layout_width="fill_parent"
@@ -58,8 +57,7 @@
             android:id="@+id/labelMealCalculation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/editor_meal_header_dosage"
-            android:textSize="18sp" />
+            android:text="@string/editor_meal_header_dosage" />
 
         <View
             android:layout_width="fill_parent"
@@ -188,8 +186,7 @@
             android:id="@+id/labelMealContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/editor_meal_header_content"
-            android:textSize="18sp" />
+            android:text="@string/editor_meal_header_content" />
 
         <View
             android:layout_width="fill_parent"
