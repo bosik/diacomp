@@ -3,7 +3,6 @@ package org.bosik.diacomp.android.frontend.activities;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import android.app.DialogFragment;
@@ -16,34 +15,6 @@ public abstract class ActivityEditorTime<T extends DiaryRecord> extends Activity
 	private final SimpleDateFormat	FORMAT_DATE	= new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
 	/* =========================== PROTECTED METHODS ================================ */
-
-	@Deprecated
-	protected static Date readTime(DatePicker datePicker, TimePicker timePicker)
-	{
-		final int year = datePicker.getYear();
-		final int month = datePicker.getMonth();
-		final int day = datePicker.getDayOfMonth();
-		final Integer hour = timePicker.getCurrentHour();
-		final Integer minute = timePicker.getCurrentMinute();
-		Calendar time = new GregorianCalendar(year, month, day, hour, minute);
-
-		return time.getTime();
-	}
-
-	@Deprecated
-	protected static void showTime(Date time, DatePicker datePicker, TimePicker timePicker)
-	{
-		Calendar c = Calendar.getInstance();
-		c.setTime(time);
-
-		final int year = c.get(Calendar.YEAR);
-		final int month = c.get(Calendar.MONTH);
-		final int day = c.get(Calendar.DAY_OF_MONTH);
-
-		datePicker.updateDate(year, month, day);
-		timePicker.setCurrentHour(c.get(Calendar.HOUR_OF_DAY));
-		timePicker.setCurrentMinute(c.get(Calendar.MINUTE));
-	}
 
 	protected void showTimePickerDialog()
 	{
