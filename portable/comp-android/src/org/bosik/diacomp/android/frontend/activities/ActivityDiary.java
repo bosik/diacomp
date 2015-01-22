@@ -302,8 +302,6 @@ public class ActivityDiary extends Activity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		// FIXME: ########################### UNUSED ##############################
-
 		try
 		{
 			switch (item.getItemId())
@@ -328,7 +326,6 @@ public class ActivityDiary extends Activity
 					showNoteEditor(null, true);
 					return true;
 				}
-				// TODO: other handlers
 
 				default:
 					return super.onOptionsItemSelected(item);
