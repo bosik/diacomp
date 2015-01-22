@@ -41,6 +41,8 @@
     <string name="editor_meal_title">Приём пищи</string>
     <string name="editor_note_field_text">Текст</string>
     <string name="editor_note_title">Заметка</string>
+    <string name="base_action_new_dish">Новое блюдо</string>
+    <string name="base_action_new_food">Новый продукт</string>
     <string name="base_subinfo" formatted="false">Б %.1f\t\tЖ %.1f\t\tУ %.1f\t\tК %.1f</string>
     <string name="base_title">Продукты и блюда</string>
     <string name="base_title_loading">Продукты и блюда (загрузка…)</string>

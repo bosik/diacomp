@@ -25,20 +25,6 @@
 
             <requestFocus />
         </EditText>
-
-        <Button
-            android:id="@+id/buttonBaseEditorCreateFood"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/button_new_food" />
-
-        <Button
-            android:id="@+id/buttonBaseEditorCreateDish"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/button_new_dish" />
     </LinearLayout>
 
     <LinearLayout
