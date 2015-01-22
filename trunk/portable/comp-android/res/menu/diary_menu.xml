@@ -2,24 +2,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/item_diary_add"
-        android:icon="@drawable/diary_add"
-        android:title="@string/diary_button_add">
-        <menu>
-            <item
-                android:id="@+id/item_diary_addblood"
-                android:icon="@drawable/diary_addblood"
-                android:title="@string/common_rectype_blood"/>
-            <item
-                android:id="@+id/item_diary_addins"
-                android:title="@string/common_rectype_ins"/>
-            <item
-                android:id="@+id/item_diary_addmeal"
-                android:title="@string/common_rectype_meal"/>
-            <item
-                android:id="@+id/item_diary_addnote"
-                android:title="@string/common_rectype_note"/>
-        </menu>
-    </item>
+        android:id="@+id/item_diary_addblood"
+        android:icon="@drawable/diary_addblood"
+        android:title="@string/common_rectype_blood"/>
+    <item
+        android:id="@+id/item_diary_addins"
+        android:icon="@drawable/diary_addins"
+        android:title="@string/common_rectype_ins"/>
+    <item
+        android:id="@+id/item_diary_addmeal"
+        android:icon="@drawable/diary_addmeal"
+        android:title="@string/common_rectype_meal"/>
+    <item
+        android:id="@+id/item_diary_addnote"
+        android:icon="@drawable/diary_addnote"
+        android:title="@string/common_rectype_note"/>
 
 </menu>

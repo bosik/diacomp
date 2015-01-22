@@ -37,6 +37,7 @@
         </activity>
         <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorBlood"
+            android:icon="@drawable/diary_addblood"
             android:label="@string/editor_blood_title" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -44,6 +45,7 @@
         </activity>
         <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorIns"
+            android:icon="@drawable/diary_addins"
             android:label="@string/editor_ins_title"
             android:parentActivityName="org.bosik.diacomp.android.frontend.activities.ActivityDiary" >
             <meta-data
@@ -52,6 +54,7 @@
         </activity>
         <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorMeal"
+            android:icon="@drawable/diary_addmeal"
             android:label="@string/editor_meal_title" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -59,6 +62,7 @@
         </activity>
         <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorNote"
+            android:icon="@drawable/diary_addnote"
             android:label="@string/editor_note_title" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -73,7 +77,7 @@
         </activity>
         <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityBase"
-            android:label="@string/base_title">
+            android:label="@string/base_title" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
