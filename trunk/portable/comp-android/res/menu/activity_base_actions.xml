@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/item_base_add"
+        android:icon="@drawable/ic_action_new"
+        android:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/item_base_addFood"
+                android:icon="@drawable/ic_menu_new_food"
+                android:title="@string/base_action_new_food"/>
+            <item
+                android:id="@+id/item_base_addDish"
+                android:icon="@drawable/ic_menu_new_dish"
+                android:title="@string/base_action_new_dish"/>
+        </menu>
+    </item>
+
+</menu>

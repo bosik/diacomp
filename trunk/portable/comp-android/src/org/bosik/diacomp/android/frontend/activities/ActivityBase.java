@@ -32,13 +32,13 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -68,8 +68,6 @@ public class ActivityBase extends Activity
 	// Widgets
 	EditText											editSearch;
 	private ListView									list;
-	private Button										buttonFoodCreate;
-	private Button										buttonDishCreate;
 
 	// Data
 	final FoodBaseService								foodBaseService	= Storage.localFoodBase;
@@ -194,31 +192,50 @@ public class ActivityBase extends Activity
 			}
 		});
 
-		buttonFoodCreate = (Button) findViewById(R.id.buttonBaseEditorCreateFood);
-		buttonFoodCreate.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View arg0)
-			{
-				final FoodItem food = new FoodItem();
-				food.setName(editSearch.getText().toString());
-				showFoodEditor(new Versioned<FoodItem>(food), true);
-			}
-		});
-		buttonDishCreate = (Button) findViewById(R.id.buttonBaseEditorCreateDish);
-		buttonDishCreate.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View arg0)
-			{
-				final DishItem dish = new DishItem();
-				dish.setName(editSearch.getText().toString());
-				showDishEditor(new Versioned<DishItem>(dish), true);
-			}
-		});
-
 		// Show data
 		runSearch();
+	}
+
+	// handled
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		try
+		{
+			MenuInflater inflater = getMenuInflater();
+			inflater.inflate(R.menu.activity_base_actions, menu);
+		}
+		catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+			case R.id.item_base_addFood:
+			{
+				FoodItem food = new FoodItem();
+				food.setName(editSearch.getText().toString());
+				showFoodEditor(new Versioned<FoodItem>(food), true);
+				return true;
+			}
+			case R.id.item_base_addDish:
+			{
+				DishItem dish = new DishItem();
+				dish.setName(editSearch.getText().toString());
+				showDishEditor(new Versioned<DishItem>(dish), true);
+				return true;
+			}
+			default:
+			{
+				return super.onOptionsItemSelected(item);
+			}
+		}
 	}
 
 	/**
@@ -280,14 +297,6 @@ public class ActivityBase extends Activity
 				new Timer().schedule(task, SEARCH_DELAY - (System.currentTimeMillis() - lastSearchTime));
 			}
 		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
-	{
-		// Inflate the menu; this adds items to the action bar if it is present.
-		// getMenuInflater().inflate(R.menu.diary_menu, menu);
-		return true;
 	}
 
 	/**
