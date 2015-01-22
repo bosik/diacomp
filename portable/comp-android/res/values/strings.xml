@@ -47,8 +47,8 @@
     <string name="editor_note_field_text">Text</string>
     <string name="editor_note_title">Note</string>
     <string name="base_subinfo" formatted="false">P %.1f\t\tF %.1f\t\tC %.1f\t\tV %.1f</string>
-    <string name="base_title">Food &amp; dish base</string>
-    <string name="base_title_loading">Food &amp; dish base (loading…)</string>
+    <string name="base_title">Foods &amp; dishes</string>
+    <string name="base_title_loading">Foods &amp; dishes (loading…)</string>
     <string name="main_option_diary">Diary</string>
     <string name="main_option_bases">Bases</string>
     <string name="main_option_preferences">Preferences</string>

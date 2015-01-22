@@ -320,48 +320,12 @@ public class ActivityDiary extends Activity
 				}
 				case R.id.item_diary_addmeal:
 				{
-					// TODO: handler
-					UIUtils.showTip(this, "Creating meal is not implemented yet");
-
-					/*
-					 * Date date = Calendar.getInstance().getTime(); Log.i(TAG,
-					 * "menuClick: downloading page..."); DiaryPage page =
-					 * Storage.webDiary.getPage(date); Date timestamp =
-					 * Storage.webDiary.diarySource.getTimeStamp(date);
-					 * 
-					 * if (null != page) { Log.d(TAG, "menuClick: page is ok"); diary.postPage(page,
-					 * timestamp); } else Log.d(TAG, "menuClick: page is null");
-					 * 
-					 * Log.d(TAG, "menuClick: invalidating...");
-					 * 
-					 * //DiaryView.curPage = page; //mDiaryView.invalidate();
-					 * mDiaryView.setPage(page);
-					 */
-
+					showMealEditor(null, true);
 					return true;
 				}
 				case R.id.item_diary_addnote:
 				{
-					UIUtils.showTip(this, "Creating note is not implemented yet");
-					/*
-					 * Log.i(TAG, "menuClick: opening page..."); DiaryPage page =
-					 * diary.getPage(curDate);
-					 * 
-					 * if (null != page) Log.d(TAG, "menuClick: page is ok"); else Log.d(TAG,
-					 * "menuClick: page is null");
-					 * 
-					 * Log.d(TAG, "menuClick: invalidating...");
-					 * 
-					 * //DiaryView.curPage = page; //mDiaryView.invalidate();
-					 * mDiaryView.setPage(page);
-					 * 
-					 * 
-					 * DiaryPage page = getCurPage();
-					 * 
-					 * // добавляем int minTime = Utils.curMinutes(); NoteRecord note = new
-					 * NoteRecord(minTime, "текст"); page.add(note); // сохраняем postPage(page);
-					 */
-
+					showNoteEditor(null, true);
 					return true;
 				}
 				// TODO: other handlers
