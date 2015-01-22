@@ -65,7 +65,7 @@ public class Storage
 	public static KoofService		koofService;
 	public static TagService		tagService;
 
-	private static int				ANALYZE_DAYS_PERIOD	= 14;								// 20;
+	private static int				ANALYZE_DAYS_PERIOD	= 14;
 
 	/**
 	 * Initializes the storage. Might be called sequentially
@@ -227,7 +227,7 @@ public class Storage
 		{
 			Log.v(TAG, "Diary sync...");
 			long time = System.currentTimeMillis();
-			int syncDiaryItemsCount = SyncService.synchronize(localDiary, webDiary, sinceDiary);
+			int syncDiaryItemsCount = SyncService.synchronize(localDiary, webDiary, Utils.getPrevDay(sinceDiary));
 			Log.v(TAG, String.format("Diary synced in %d msec, total tranferred: %d",
 					System.currentTimeMillis() - time, syncDiaryItemsCount));
 			sinceDiary = new Date();
@@ -246,7 +246,8 @@ public class Storage
 		{
 			Log.v(TAG, "Foodbase sync...");
 			long time = System.currentTimeMillis();
-			int syncFoodItemsCount = SyncService.synchronize(Storage.localFoodBase, Storage.webFoodBase, sinceFoodbase);
+			int syncFoodItemsCount = SyncService.synchronize(localFoodBase, webFoodBase,
+					Utils.getPrevDay(sinceFoodbase));
 			Log.v(TAG, String.format("Foodbase synced in %d msec, total tranferred: %d", System.currentTimeMillis()
 					- time, syncFoodItemsCount));
 			sinceFoodbase = new Date();
@@ -265,7 +266,8 @@ public class Storage
 		{
 			Log.v(TAG, "Dishbase sync...");
 			long time = System.currentTimeMillis();
-			int syncDishItemsCount = SyncService.synchronize(Storage.localDishBase, Storage.webDishBase, sinceDishbase);
+			int syncDishItemsCount = SyncService.synchronize(localDishBase, webDishBase,
+					Utils.getPrevDay(sinceDishbase));
 			Log.v(TAG, String.format("Dishbase synced in %d msec, total tranferred: %d", System.currentTimeMillis()
 					- time, syncDishItemsCount));
 			sinceDishbase = new Date();
