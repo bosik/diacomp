@@ -2,11 +2,11 @@ package org.bosik.diacomp.android.frontend.views.fdpicker;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.diacomp.android.v1.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.UIUtils.OnSubmit;
 import org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker.OnSubmitListener;
+import org.bosik.diacomp.android.v1.R;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
@@ -57,12 +57,6 @@ public class MealEditorView extends LinearLayout
 	public MealEditorView(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
-		init(context);
-	}
-
-	public MealEditorView(Context context, AttributeSet attrs, int defStyle)
-	{
-		super(context, attrs, defStyle);
 		init(context);
 	}
 

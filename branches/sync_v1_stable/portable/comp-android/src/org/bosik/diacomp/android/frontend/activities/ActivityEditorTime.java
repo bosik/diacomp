@@ -3,10 +3,11 @@ package org.bosik.diacomp.android.frontend.activities;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
-import android.app.DialogFragment;
+import android.app.DatePickerDialog.OnDateSetListener;
+import android.app.TimePickerDialog.OnTimeSetListener;
+import android.os.Bundle;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
@@ -17,37 +18,10 @@ public abstract class ActivityEditorTime<T extends DiaryRecord> extends Activity
 
 	/* =========================== PROTECTED METHODS ================================ */
 
-	@Deprecated
-	protected static Date readTime(DatePicker datePicker, TimePicker timePicker)
+	public void showTimePickerDialog()
 	{
-		final int year = datePicker.getYear();
-		final int month = datePicker.getMonth();
-		final int day = datePicker.getDayOfMonth();
-		final Integer hour = timePicker.getCurrentHour();
-		final Integer minute = timePicker.getCurrentMinute();
-		Calendar time = new GregorianCalendar(year, month, day, hour, minute);
-
-		return time.getTime();
-	}
-
-	@Deprecated
-	protected static void showTime(Date time, DatePicker datePicker, TimePicker timePicker)
-	{
-		Calendar c = Calendar.getInstance();
-		c.setTime(time);
-
-		final int year = c.get(Calendar.YEAR);
-		final int month = c.get(Calendar.MONTH);
-		final int day = c.get(Calendar.DAY_OF_MONTH);
-
-		datePicker.updateDate(year, month, day);
-		timePicker.setCurrentHour(c.get(Calendar.HOUR_OF_DAY));
-		timePicker.setCurrentMinute(c.get(Calendar.MINUTE));
-	}
-
-	protected void showTimePickerDialog()
-	{
-		DialogFragment newFragment = new TimePickerFragment(entity.getData().getTime())
+		TimePickerFragment newFragment = new TimePickerFragment();
+		newFragment.setOnTimeSetListener(new OnTimeSetListener()
 		{
 			@Override
 			public void onTimeSet(TimePicker view, int hourOfDay, int minute)
@@ -61,13 +35,17 @@ public abstract class ActivityEditorTime<T extends DiaryRecord> extends Activity
 				entity.getData().setTime(c.getTime());
 				onDateTimeChanged(c.getTime());
 			}
-		};
-		newFragment.show(getFragmentManager(), "timePicker");
+		});
+		Bundle args = new Bundle();
+		args.putSerializable(TimePickerFragment.FIELD_TIME, entity.getData().getTime());
+		newFragment.setArguments(args);
+		newFragment.show(getSupportFragmentManager(), "timePicker");
 	}
 
 	protected void showDatePickerDialog()
 	{
-		DialogFragment newFragment = new DatePickerFragment(entity.getData().getTime())
+		DatePickerFragment newFragment = new DatePickerFragment();
+		newFragment.setOnDateSetListener(new OnDateSetListener()
 		{
 			@Override
 			public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
@@ -81,9 +59,13 @@ public abstract class ActivityEditorTime<T extends DiaryRecord> extends Activity
 
 				entity.getData().setTime(c.getTime());
 				onDateTimeChanged(c.getTime());
+
 			}
-		};
-		newFragment.show(getFragmentManager(), "datePicker");
+		});
+		Bundle args = new Bundle();
+		args.putSerializable(DatePickerFragment.FIELD_DATE, entity.getData().getTime());
+		newFragment.setArguments(args);
+		newFragment.show(getSupportFragmentManager(), "datePicker");
 	}
 
 	protected String formatDate(Date date)

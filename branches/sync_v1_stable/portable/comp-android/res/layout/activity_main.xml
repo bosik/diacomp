@@ -61,12 +61,14 @@
         android:id="@+id/buttonTest"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/main_option_test" />
+        android:text="@string/main_option_test"
+        android:visibility="gone" />
     
     <Button
         android:id="@+id/buttonAnalyze"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Re-Analyze" />
+        android:text="Re-Analyze"
+        android:visibility="gone" />
 
 </TableLayout>

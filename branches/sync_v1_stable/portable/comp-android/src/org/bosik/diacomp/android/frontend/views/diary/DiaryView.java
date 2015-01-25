@@ -17,10 +17,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
-import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,13 +40,16 @@ public class DiaryView extends View
 	private static final Paint		paintDefault			= new Paint();
 
 	// отступы
-	private static final int		BORD					= 24;
-	private static final int		TEXT_SIZE				= 48;
-	private static final int		TEXT_NOPAGE_SIZE		= 64;
-	private static final int		TEXT_BORD				= 20;
+	private final int				BORD					= getResources().getDimensionPixelSize(R.dimen.diaryBord);
+	private final int				TEXT_SIZE				= getResources().getDimensionPixelSize(
+																	R.dimen.diaryTextSizeBase);
+	private final int				TEXT_NOPAGE_SIZE		= getResources().getDimensionPixelSize(
+																	R.dimen.diaryTextSizeNoPage);
+	private final int				TEXT_BORD				= getResources().getDimensionPixelSize(
+																	R.dimen.diaryTextBord);
 	private static int				LEFT_TIME;
 	private static int				LEFT_RECS;
-	static final int				REC_HEIGHT;
+	final int						REC_HEIGHT;
 
 	// цвета
 	private static final int		COLOR_PANEL_LIGHT_BORD	= Color.WHITE;
@@ -76,7 +79,6 @@ public class DiaryView extends View
 	RecordClickListener				recordClickListener;
 
 	// инициализация
-	static
 	{
 		paintNoPage.setColor(Color.GRAY);
 		paintNoPage.setTextSize(TEXT_NOPAGE_SIZE);
@@ -172,6 +174,7 @@ public class DiaryView extends View
 		int pageHeight = getPageHeight(records);
 		setMeasuredDimension(getScreenWidth(), pageHeight);
 		setMinimumHeight(pageHeight);
+		updateBuffer();
 		invalidate();
 	}
 
@@ -228,7 +231,7 @@ public class DiaryView extends View
 	 *            Страница
 	 * @return Высота
 	 */
-	private static int getPageHeight(List<?> page)
+	private int getPageHeight(List<?> page)
 	{
 		if (null == page)
 		{
@@ -281,12 +284,12 @@ public class DiaryView extends View
 		{
 			return 380;
 		}
+
 		Context ctx = getContext();
 		WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
-
-		Point outSize = new Point();
-		wm.getDefaultDisplay().getSize(outSize);
-		return outSize.x;
+		DisplayMetrics metrics = new DisplayMetrics();
+		wm.getDefaultDisplay().getMetrics(metrics);
+		return metrics.widthPixels;
 	}
 
 	// вспомогательные методы рисования

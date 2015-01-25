@@ -3,11 +3,11 @@ package org.bosik.diacomp.android.frontend.activities;
 import java.io.Serializable;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.utils.Utils;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
-public abstract class ActivityEditor<T extends Serializable> extends Activity
+public abstract class ActivityEditor<T extends Serializable> extends FragmentActivity
 {
 	// private static final String TAG = ActivityEditor.class.getSimpleName();
 
@@ -37,8 +37,6 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 		{
 			entity.setId(Utils.generateGuid());
 		}
-
-		setTitle(entity.getId());
 	}
 
 	/* =========================== PROTECTED METHODS ================================ */

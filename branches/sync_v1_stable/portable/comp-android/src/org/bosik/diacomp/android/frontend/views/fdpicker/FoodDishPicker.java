@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.bosik.diacomp.android.v1.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.android.v1.R;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
@@ -86,9 +86,9 @@ class Item implements Comparable<Item>
 
 class ItemAdapter extends ArrayAdapter<Item>
 {
-	List<Item>	itemsAll;
-	List<Item>	suggestions;
-	private int	viewResourceId;
+	List<Item>					itemsAll;
+	List<Item>					suggestions;
+	private int					viewResourceId;
 
 	public ItemAdapter(Context context, int viewResourceId, List<Item> items)
 	{
@@ -103,97 +103,109 @@ class ItemAdapter extends ArrayAdapter<Item>
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
-		View v = convertView;
-		if (v == null)
+		synchronized (suggestions)
 		{
-			LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			v = vi.inflate(viewResourceId, null);
+			View v = convertView;
+			if (v == null)
+			{
+				LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				v = vi.inflate(viewResourceId, null);
+			}
+
+			if (position < suggestions.size())
+			{
+				Item item = suggestions.get(position);
+
+				TextView itemCaption = (TextView) v.findViewById(R.id.itemDescription);
+				itemCaption.setText(item.getCaption());
+
+				ImageView itemIcon = (ImageView) v.findViewById(R.id.itemIcon);
+
+				int iconResId = FoodDishPicker.iconMap.get(item.getType());
+				itemIcon.setImageResource(iconResId);
+			}
+			return v;
 		}
-
-		if (position < suggestions.size())
-		{
-			Item item = suggestions.get(position);
-
-			TextView itemCaption = (TextView) v.findViewById(R.id.itemDescription);
-			itemCaption.setText(item.getCaption());
-
-			ImageView itemIcon = (ImageView) v.findViewById(R.id.itemIcon);
-
-			int iconResId = FoodDishPicker.iconMap.get(item.getType());
-			itemIcon.setImageResource(iconResId);
-		}
-		return v;
 	}
 
 	@Override
 	public Filter getFilter()
 	{
-		return filter;
-	}
+		return new Filter()
+		{
+			@Override
+			public String convertResultToString(Object resultValue)
+			{
+				String str = ((Item) resultValue).getCaption();
+				return str;
+			}
 
-	Filter	filter	= new Filter()
+			@Override
+			protected FilterResults performFiltering(CharSequence constraint)
+			{
+				synchronized (suggestions)
+				{
+					if (constraint != null)
 					{
-						@Override
-						public String convertResultToString(Object resultValue)
-						{
-							String str = ((Item) resultValue).getCaption();
-							return str;
-						}
+						List<Item> firstList = new ArrayList<Item>();
+						List<Item> secondList = new ArrayList<Item>();
 
-						@Override
-						protected FilterResults performFiltering(CharSequence constraint)
+						String search = constraint.toString().toLowerCase();
+						for (Item item : itemsAll)
 						{
-							if (constraint != null)
+							String line = item.getCaption().toLowerCase();
+
+							if (Utils.hasWordStartedWith(line, search))
 							{
-								List<Item> firstList = new ArrayList<Item>();
-								List<Item> secondList = new ArrayList<Item>();
-
-								String search = constraint.toString().toLowerCase();
-								for (Item item : itemsAll)
-								{
-									String line = item.getCaption().toLowerCase();
-
-									if (Utils.hasWordStartedWith(line, search))
-									{
-										firstList.add(item);
-									}
-									else if (line.contains(search))
-									{
-										secondList.add(item);
-									}
-								}
-
-								suggestions.clear();
-								suggestions.addAll(firstList);
-								suggestions.addAll(secondList);
-
-								FilterResults filterResults = new FilterResults();
-								filterResults.values = suggestions;
-								filterResults.count = suggestions.size();
-
-								return filterResults;
+								firstList.add(item);
 							}
-							else
+							else if (line.contains(search))
 							{
-								return new FilterResults();
+								secondList.add(item);
 							}
 						}
 
-						@Override
-						protected void publishResults(CharSequence constraint, FilterResults results)
+						suggestions.clear();
+						suggestions.addAll(firstList);
+						suggestions.addAll(secondList);
+
+						FilterResults filterResults = new FilterResults();
+						filterResults.values = suggestions;
+						filterResults.count = suggestions.size();
+
+						return filterResults;
+					}
+					else
+					{
+						return new FilterResults();
+					}
+				}
+			}
+
+			@Override
+			protected void publishResults(CharSequence constraint, FilterResults results)
+			{
+				synchronized (ItemAdapter.this)
+				{
+					setNotifyOnChange(false);
+
+					clear();
+
+					if (results != null && results.values != null)
+					{
+						@SuppressWarnings("unchecked")
+						List<Item> filteredList = (List<Item>) results.values;
+						for (Item item : filteredList)
 						{
-							clear();
-
-							if (results != null && results.values != null)
-							{
-								@SuppressWarnings("unchecked")
-								List<Item> filteredList = (List<Item>) results.values;
-								addAll(filteredList);
-							}
-
-							notifyDataSetChanged();
+							add(item);
 						}
-					};
+					}
+
+					notifyDataSetChanged();
+				}
+			}
+		};
+	}
 
 }
 
@@ -250,12 +262,6 @@ public class FoodDishPicker extends LinearLayout
 	public FoodDishPicker(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
-		init(context);
-	}
-
-	public FoodDishPicker(Context context, AttributeSet attrs, int defStyle)
-	{
-		super(context, attrs, defStyle);
 		init(context);
 	}
 
