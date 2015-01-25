@@ -3,28 +3,44 @@ package org.bosik.diacomp.android.frontend.activities;
 import java.util.Calendar;
 import java.util.Date;
 import android.app.DatePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 
-public abstract class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener
+public class DatePickerFragment extends DialogFragment
 {
-	private final Date	time;
+	public static final String	FIELD_DATE	= "date";
 
-	public DatePickerFragment(Date time)
-	{
-		this.time = time;
-	}
+	private Date				date;
+	private OnDateSetListener	onDateSet;
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState)
 	{
+		Bundle args = getArguments();
+
+		if (args != null && args.containsKey(FIELD_DATE))
+		{
+			date = (Date) args.getSerializable(FIELD_DATE);
+		}
+		else
+		{
+			date = new Date();
+		}
+
 		Calendar c = Calendar.getInstance();
-		c.setTime(time);
+		c.setTime(date);
 		int year = c.get(Calendar.YEAR);
 		int month = c.get(Calendar.MONTH);
 		int day = c.get(Calendar.DAY_OF_MONTH);
 
-		return new DatePickerDialog(getActivity(), this, year, month, day);
+		return new DatePickerDialog(getActivity(), onDateSet, year, month, day);
+	}
+
+	public DatePickerFragment setOnDateSetListener(OnDateSetListener l)
+	{
+		onDateSet = l;
+		return this;
 	}
 }

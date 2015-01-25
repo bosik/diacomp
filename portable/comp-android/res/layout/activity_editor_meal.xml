@@ -27,8 +27,7 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dip"
-            android:background="#c0c0c0"
-            android:divider="?android:dividerHorizontal" />
+            android:background="#c0c0c0" />
 
         <LinearLayout
             android:id="@+id/layoutMealDateTime"
@@ -64,8 +63,7 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dip"
-            android:background="#c0c0c0"
-            android:divider="?android:dividerHorizontal" />
+            android:background="#c0c0c0" />
 
         <LinearLayout
             android:id="@+id/layoutMealCalculator"
@@ -95,7 +93,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="left"
-                    android:text="Expected BS:" />
+                    android:text="BS:" />
             </LinearLayout>
 
             <LinearLayout
@@ -173,7 +171,8 @@
                 android:layout_width="46dp"
                 android:layout_height="46dp"
                 android:text="@string/editor_meal_button_more"
-                android:textSize="@dimen/font_datetime" />
+                android:textSize="@dimen/font_datetime"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/buttonMealInfo"
@@ -194,8 +193,7 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dip"
-            android:background="#c0c0c0"
-            android:divider="?android:dividerHorizontal" />
+            android:background="#c0c0c0" />
 
         <LinearLayout
             android:layout_width="match_parent"

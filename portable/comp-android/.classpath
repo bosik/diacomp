@@ -22,5 +22,6 @@
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/comp-transfer-v1/target/classes" sourcepath="/comp-transfer-v1/src"/>
 	<classpathentry exported="true" kind="lib" path="libs/gson-2.2.4.jar"/>
+	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
