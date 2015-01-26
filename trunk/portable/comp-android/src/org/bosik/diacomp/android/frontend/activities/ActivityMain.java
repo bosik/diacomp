@@ -1,8 +1,6 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import org.bosik.diacomp.android.BuildConfig;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
@@ -29,7 +27,6 @@ public class ActivityMain extends Activity
 	// Components
 	private Button		buttonDiary;
 	private Button		buttonBase;
-	private Button		buttonSync;
 
 	/* =========================== CLASSES ================================ */
 
@@ -99,7 +96,6 @@ public class ActivityMain extends Activity
 			// определяем компоненты
 			buttonDiary = (Button) findViewById(R.id.ButtonDiary);
 			buttonBase = (Button) findViewById(R.id.ButtonBase);
-			buttonSync = (Button) findViewById(R.id.buttonSync);
 
 			// назначаем обработчики
 			buttonDiary.setOnClickListener(new OnClickListener()
@@ -118,85 +114,6 @@ public class ActivityMain extends Activity
 					Intent intent = new Intent(ActivityMain.this, ActivityBase.class);
 					intent.putExtra(ActivityBase.KEY_MODE, ActivityBase.VALUE_MODE_EDIT);
 					startActivity(intent);
-				}
-			});
-			buttonSync.setOnClickListener(new OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					new AsyncTask<Void, Void, Map<String, Integer>>()
-					{
-						final String	DIARY	= "diary";
-						final String	FOOD	= "food";
-						final String	DISH	= "dish";
-
-						@Override
-						protected Map<String, Integer> doInBackground(Void... arg0)
-						{
-							Map<String, Integer> result = new HashMap<String, Integer>();
-
-							result.put(DIARY, Storage.syncDiary());
-							result.put(FOOD, Storage.syncFoodbase());
-							result.put(DISH, Storage.syncDishbase());
-
-							return result;
-						}
-
-						@Override
-						protected void onPostExecute(Map<String, Integer> result)
-						{
-							String message = "";
-
-							Integer countDiary = result.get(DIARY);
-							if (countDiary == null)
-							{
-								message += "Diary: failed\n";
-							}
-							else if (countDiary > 0)
-							{
-								message += String.format("Diary: %d\n", countDiary);
-							}
-							else
-							{
-								message += "Diary: \t\tno changes\n";
-							}
-
-							// =================================================================
-
-							Integer countFood = result.get(FOOD);
-							if (countFood == null)
-							{
-								message += "Foods: failed\n";
-							}
-							else if (countFood > 0)
-							{
-								message += String.format("Foods: %d\n", countFood);
-							}
-							else
-							{
-								message += "Foods: \tno changes\n";
-							}
-
-							// =================================================================
-
-							Integer countDish = result.get(DISH);
-							if (countDish == null)
-							{
-								message += "Dishes: failed";
-							}
-							else if (countDish > 0)
-							{
-								message += String.format("Dishes: %d", countDish);
-							}
-							else
-							{
-								message += "Dishes:\tno changes";
-							}
-
-							UIUtils.showTip(ActivityMain.this, message);
-						}
-					}.execute();
 				}
 			});
 
