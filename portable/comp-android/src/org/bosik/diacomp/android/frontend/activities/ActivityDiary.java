@@ -326,6 +326,12 @@ public class ActivityDiary extends Activity
 					showNoteEditor(null, true);
 					return true;
 				}
+				case R.id.item_diary_preferences:
+				{
+					Intent settingsActivity = new Intent(getBaseContext(), ActivityPreferences.class);
+					startActivity(settingsActivity);
+					return true;
+				}
 
 				default:
 					return super.onOptionsItemSelected(item);

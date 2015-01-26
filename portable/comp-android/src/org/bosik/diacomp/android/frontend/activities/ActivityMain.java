@@ -29,7 +29,6 @@ public class ActivityMain extends Activity
 	// Components
 	private Button		buttonDiary;
 	private Button		buttonBase;
-	private Button		buttonPreferences;
 	private Button		buttonSync;
 
 	/* =========================== CLASSES ================================ */
@@ -100,7 +99,6 @@ public class ActivityMain extends Activity
 			// определяем компоненты
 			buttonDiary = (Button) findViewById(R.id.ButtonDiary);
 			buttonBase = (Button) findViewById(R.id.ButtonBase);
-			buttonPreferences = (Button) findViewById(R.id.ButtonPreferences);
 			buttonSync = (Button) findViewById(R.id.buttonSync);
 
 			// назначаем обработчики
@@ -120,15 +118,6 @@ public class ActivityMain extends Activity
 					Intent intent = new Intent(ActivityMain.this, ActivityBase.class);
 					intent.putExtra(ActivityBase.KEY_MODE, ActivityBase.VALUE_MODE_EDIT);
 					startActivity(intent);
-				}
-			});
-			buttonPreferences.setOnClickListener(new OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					Intent settingsActivity = new Intent(getBaseContext(), ActivityPreferences.class);
-					startActivity(settingsActivity);
 				}
 			});
 			buttonSync.setOnClickListener(new OnClickListener()
