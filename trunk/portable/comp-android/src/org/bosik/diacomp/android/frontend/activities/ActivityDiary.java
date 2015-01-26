@@ -27,6 +27,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -35,7 +36,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.ScrollView;
 
 public class ActivityDiary extends Activity
@@ -85,6 +89,10 @@ public class ActivityDiary extends Activity
 	private Button						buttonAddNote;
 
 	private ScrollView					scrollView;
+
+	private String[]					mPlanetTitles;
+	DrawerLayout						mDrawerLayout;
+	ListView							mDrawerList;
 
 	// handled
 	@Override
@@ -210,6 +218,25 @@ public class ActivityDiary extends Activity
 				}
 			});
 
+			mPlanetTitles = getResources().getStringArray(R.array.fingers_middle);
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+			mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+			// Set the adapter for the list view
+			mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mPlanetTitles));
+			// Set the list's click listener
+			mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener()
+			{
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+				{
+					UIUtils.showTip(ActivityDiary.this, "Selected item #" + position);
+					mDrawerLayout.closeDrawer(mDrawerList);
+				}
+			});
+			// getActionBar().setDisplayHomeAsUpEnabled(true);
+			// getActionBar().setHomeButtonEnabled(true);
+
 			// определение параметров запроса
 			// Intent intent = getIntent();
 
@@ -242,7 +269,17 @@ public class ActivityDiary extends Activity
 		{
 			ErrorHandler.handle(e, this);
 		}
-		return true;
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	/* Called whenever we call invalidateOptionsMenu() */
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu)
+	{
+		// If the nav drawer is open, hide action items related to the content view
+		// boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+		// menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
+		return super.onPrepareOptionsMenu(menu);
 	}
 
 	// handled
