@@ -31,20 +31,4 @@
             android:text="@string/main_option_bases" />
     </TableRow>
 
-    <TableRow
-        android:id="@+id/tableRow2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
-        <Button
-            android:id="@+id/buttonSync"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:drawableTop="@drawable/button_sync"
-            android:paddingBottom="@dimen/padding_large"
-            android:paddingTop="@dimen/padding_large"
-            android:text="@string/main_option_sync" />
-    </TableRow>
-
 </TableLayout>

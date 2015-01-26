@@ -4,8 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
@@ -26,6 +28,7 @@ import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -330,6 +333,83 @@ public class ActivityDiary extends Activity
 				{
 					Intent settingsActivity = new Intent(getBaseContext(), ActivityPreferences.class);
 					startActivity(settingsActivity);
+					return true;
+				}
+				case R.id.item_diary_sync:
+				{
+					new AsyncTask<Void, Void, Map<String, Integer>>()
+					{
+						final String	DIARY	= "diary";
+						final String	FOOD	= "food";
+						final String	DISH	= "dish";
+
+						@Override
+						protected Map<String, Integer> doInBackground(Void... arg0)
+						{
+							Map<String, Integer> result = new HashMap<String, Integer>();
+
+							result.put(DIARY, Storage.syncDiary());
+							result.put(FOOD, Storage.syncFoodbase());
+							result.put(DISH, Storage.syncDishbase());
+
+							return result;
+						}
+
+						@Override
+						protected void onPostExecute(Map<String, Integer> result)
+						{
+							String message = "";
+
+							Integer countDiary = result.get(DIARY);
+							if (countDiary == null)
+							{
+								message += "Diary: failed\n";
+							}
+							else if (countDiary > 0)
+							{
+								message += String.format("Diary: %d\n", countDiary);
+							}
+							else
+							{
+								message += "Diary: \t\tno changes\n";
+							}
+
+							// =================================================================
+
+							Integer countFood = result.get(FOOD);
+							if (countFood == null)
+							{
+								message += "Foods: failed\n";
+							}
+							else if (countFood > 0)
+							{
+								message += String.format("Foods: %d\n", countFood);
+							}
+							else
+							{
+								message += "Foods: \tno changes\n";
+							}
+
+							// =================================================================
+
+							Integer countDish = result.get(DISH);
+							if (countDish == null)
+							{
+								message += "Dishes: failed";
+							}
+							else if (countDish > 0)
+							{
+								message += String.format("Dishes: %d", countDish);
+							}
+							else
+							{
+								message += "Dishes:\tno changes";
+							}
+
+							UIUtils.showTip(ActivityDiary.this, message);
+						}
+					}.execute();
+
 					return true;
 				}
 
