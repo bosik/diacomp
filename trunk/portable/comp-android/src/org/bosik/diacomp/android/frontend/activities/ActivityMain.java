@@ -31,8 +31,6 @@ public class ActivityMain extends Activity
 	private Button		buttonBase;
 	private Button		buttonPreferences;
 	private Button		buttonSync;
-	private Button		buttonTest;
-	private Button		buttonAnalyze;
 
 	/* =========================== CLASSES ================================ */
 
@@ -102,10 +100,8 @@ public class ActivityMain extends Activity
 			// определяем компоненты
 			buttonDiary = (Button) findViewById(R.id.ButtonDiary);
 			buttonBase = (Button) findViewById(R.id.ButtonBase);
-			buttonTest = (Button) findViewById(R.id.buttonTest);
 			buttonPreferences = (Button) findViewById(R.id.ButtonPreferences);
 			buttonSync = (Button) findViewById(R.id.buttonSync);
-			buttonAnalyze = (Button) findViewById(R.id.buttonAnalyze);
 
 			// назначаем обработчики
 			buttonDiary.setOnClickListener(new OnClickListener()
@@ -212,31 +208,6 @@ public class ActivityMain extends Activity
 							UIUtils.showTip(ActivityMain.this, message);
 						}
 					}.execute();
-				}
-			});
-			buttonTest.setOnClickListener(new OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					// HardcodedFoodbase.restoreHardcodedBase();
-					// UIUtils.showTip(ActivityMain.this, "Hardcoded base restored");
-
-					Intent intent = new Intent(ActivityMain.this, ActivityGraph.class);
-					startActivity(intent);
-
-					// DiaryService diary = new DiaryLocalService(getContentResolver());
-					// HashUtils.updateHashTree(diary, "");
-				}
-			});
-			buttonAnalyze.setOnClickListener(new OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					// Storage.analyzeKoofs();
-					ActivityMain.AsyncTaskAnalyzeDiary task = new ActivityMain.AsyncTaskAnalyzeDiary();
-					task.execute();
 				}
 			});
 
