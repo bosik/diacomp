@@ -37,16 +37,6 @@
         android:layout_height="wrap_content" >
 
         <Button
-            android:id="@+id/ButtonPreferences"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:drawableTop="@drawable/menu_settings"
-            android:paddingBottom="@dimen/padding_large"
-            android:paddingTop="@dimen/padding_large"
-            android:text="@string/main_option_preferences" />
-
-        <Button
             android:id="@+id/buttonSync"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
