@@ -1,32 +1,32 @@
 package org.bosik.diacomp.android.frontend.activities;
 
-import java.util.Date;
 import org.bosik.diacomp.android.BuildConfig;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.android.frontend.fragments.FragmentBase;
 import org.bosik.diacomp.android.utils.ErrorHandler;
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.widget.Button;
 
-public class ActivityMain extends Activity
+public class ActivityMain extends FragmentActivity
 {
 	/* =========================== CONSTANTS ================================ */
 
-	static final String	TAG	= ActivityMain.class.getSimpleName();
+	static final String			TAG	= ActivityMain.class.getSimpleName();
 	// private static final int RESULT_SPEECH_TO_TEXT = 620;
 
 	/* =========================== FIELDS ================================ */
 
-	// Components
-	private Button		buttonDiary;
-	private Button		buttonBase;
+	DemoCollectionPagerAdapter	mDemoCollectionPagerAdapter;
+	ViewPager					mViewPager;
 
 	/* =========================== CLASSES ================================ */
 
@@ -44,7 +44,7 @@ public class ActivityMain extends Activity
 			dialog = new ProgressDialog(ActivityMain.this);
 			dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			dialog.setCancelable(false);
-			// TODO: localization
+			// TODO: i18n
 			dialog.setMessage("Analyzing...");
 		}
 
@@ -93,41 +93,55 @@ public class ActivityMain extends Activity
 			// устанавливаем макет
 			setContentView(R.layout.activity_main);
 
-			// определяем компоненты
-			buttonDiary = (Button) findViewById(R.id.ButtonDiary);
-			buttonBase = (Button) findViewById(R.id.ButtonBase);
-
-			// назначаем обработчики
-			buttonDiary.setOnClickListener(new OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					showDiary();
-				}
-			});
-			buttonBase.setOnClickListener(new OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					Intent intent = new Intent(ActivityMain.this, ActivityBase.class);
-					startActivity(intent);
-				}
-			});
-
-			showDiary();
+			mDemoCollectionPagerAdapter = new DemoCollectionPagerAdapter(getSupportFragmentManager());
+			mViewPager = (ViewPager) findViewById(R.id.pager);
+			mViewPager.setAdapter(mDemoCollectionPagerAdapter);
 		}
 		catch (Exception e)
 		{
 			ErrorHandler.handle(e, this);
 		}
 	}
+}
 
-	void showDiary()
+// Since this is an object collection, use a FragmentStatePagerAdapter,
+// and NOT a FragmentPagerAdapter.
+class DemoCollectionPagerAdapter extends FragmentStatePagerAdapter
+{
+	public DemoCollectionPagerAdapter(FragmentManager fm)
 	{
-		Intent intent = new Intent(this, ActivityDiary.class);
-		intent.putExtra(ActivityDiary.KEY_DATE, new Date());
-		startActivity(intent);
+		super(fm);
+	}
+
+	@Override
+	public Fragment getItem(int i)
+	{
+		return new FragmentBase();
+	}
+
+	@Override
+	public int getCount()
+	{
+		return 2;
+	}
+
+	@Override
+	public CharSequence getPageTitle(int position)
+	{
+		switch (position)
+		{
+			case 0:
+			{
+				return "Diary";
+			}
+			case 1:
+			{
+				return "Bases";
+			}
+			default:
+			{
+				throw new IllegalArgumentException(String.format("Index %d is out of bounds", position));
+			}
+		}
 	}
 }
