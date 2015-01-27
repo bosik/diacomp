@@ -6,6 +6,9 @@ import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.FragmentBase;
 import org.bosik.diacomp.android.utils.ErrorHandler;
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,7 +17,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.widget.Button;
 
 public class ActivityMain extends FragmentActivity
 {
@@ -96,6 +98,48 @@ public class ActivityMain extends FragmentActivity
 			mDemoCollectionPagerAdapter = new DemoCollectionPagerAdapter(getSupportFragmentManager());
 			mViewPager = (ViewPager) findViewById(R.id.pager);
 			mViewPager.setAdapter(mDemoCollectionPagerAdapter);
+			mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener()
+			{
+				@Override
+				public void onPageSelected(int position)
+				{
+					getActionBar().setSelectedNavigationItem(position);
+				}
+			});
+
+			final ActionBar actionBar = getActionBar();
+
+			// Specify that tabs should be displayed in the action bar.
+			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+			// Create a tab listener that is called when the user changes tabs.
+			ActionBar.TabListener tabListener = new ActionBar.TabListener()
+			{
+				@Override
+				public void onTabSelected(Tab tab, FragmentTransaction ft)
+				{
+					mViewPager.setCurrentItem(tab.getPosition());
+				}
+
+				@Override
+				public void onTabUnselected(Tab tab, FragmentTransaction ft)
+				{
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void onTabReselected(Tab tab, FragmentTransaction ft)
+				{
+					// TODO Auto-generated method stub
+				}
+			};
+
+			// Add 3 tabs, specifying the tab's text and TabListener
+			for (int i = 0; i < mDemoCollectionPagerAdapter.getCount(); i++)
+			{
+				CharSequence title = mDemoCollectionPagerAdapter.getPageTitle(i);
+				actionBar.addTab(actionBar.newTab().setText(title).setTabListener(tabListener));
+			}
 		}
 		catch (Exception e)
 		{
