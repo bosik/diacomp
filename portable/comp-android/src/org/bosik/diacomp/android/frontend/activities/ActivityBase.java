@@ -47,8 +47,6 @@ public class ActivityBase extends Activity
 {
 	private static final String							TAG					= ActivityBase.class.getSimpleName();
 
-	public static final String							KEY_GUID			= "diacomp.activitybase.guid";
-
 	private static final int							DIALOG_FOOD_CREATE	= 11;
 	private static final int							DIALOG_FOOD_MODIFY	= 12;
 	private static final int							DIALOG_DISH_CREATE	= 21;
