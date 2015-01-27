@@ -45,43 +45,33 @@ import android.widget.TextView;
 
 public class ActivityBase extends Activity
 {
-	private static final String	TAG					= ActivityBase.class.getSimpleName();
+	private static final String							TAG					= ActivityBase.class.getSimpleName();
 
-	public static final String	KEY_GUID			= "diacomp.activitybase.guid";
-	public static final String	KEY_MODE			= "diacomp.activitybase.mode";
-	// TODO: Pick mode seems to be useless
-	public static final String	VALUE_MODE_PICK		= "diacomp.activitybase.mode.pick";
-	public static final String	VALUE_MODE_EDIT		= "diacomp.activitybase.mode.edit";
+	public static final String							KEY_GUID			= "diacomp.activitybase.guid";
 
-	private static final int	DIALOG_FOOD_CREATE	= 11;
-	private static final int	DIALOG_FOOD_MODIFY	= 12;
-	private static final int	DIALOG_DISH_CREATE	= 21;
-	private static final int	DIALOG_DISH_MODIFY	= 22;
+	private static final int							DIALOG_FOOD_CREATE	= 11;
+	private static final int							DIALOG_FOOD_MODIFY	= 12;
+	private static final int							DIALOG_DISH_CREATE	= 21;
+	private static final int							DIALOG_DISH_MODIFY	= 22;
 
-	private static final int	LIMIT				= 100;
-
-	private enum Mode
-	{
-		EDIT, PICK
-	}
+	private static final int							LIMIT				= 100;
 
 	// Widgets
 	EditText											editSearch;
 	private ListView									list;
 
 	// Data
-	final FoodBaseService								foodBaseService	= Storage.localFoodBase;
-	final DishBaseService								dishBaseService	= Storage.localDishBase;
-	private final Map<String, Integer>					tagInfo			= Storage.tagService.getTags();
+	final FoodBaseService								foodBaseService		= Storage.localFoodBase;
+	final DishBaseService								dishBaseService		= Storage.localDishBase;
+	private final Map<String, Integer>					tagInfo				= Storage.tagService.getTags();
 	List<Versioned<NamedRelativeTagged>>				data;
-	private static final Sorter<NamedRelativeTagged>	sorter			= new Sorter<NamedRelativeTagged>();
-	Mode												mode;
-	String												searchFilter	= "";
+	private static final Sorter<NamedRelativeTagged>	sorter				= new Sorter<NamedRelativeTagged>();
+	String												searchFilter		= "";
 	boolean												resultCutted;
 
 	long												lastSearchTime;
-	boolean												searchScheduled	= false;
-	private static final long							SEARCH_DELAY	= 500;
+	boolean												searchScheduled		= false;
+	private static final long							SEARCH_DELAY		= 500;
 
 	// ===========================================================================
 
@@ -90,10 +80,6 @@ public class ActivityBase extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_base);
-
-		// reading intent
-		Intent intent = getIntent();
-		mode = VALUE_MODE_PICK.equals(intent.getStringExtra(KEY_MODE)) ? Mode.PICK : Mode.EDIT;
 
 		// Widgets binding
 		editSearch = (EditText) findViewById(R.id.editBaseEditorSearch);
@@ -124,71 +110,59 @@ public class ActivityBase extends Activity
 			{
 				final String id = data.get(position).getId();
 
-				switch (mode)
+				new AsyncTask<String, Void, Versioned<? extends NamedRelativeTagged>>()
 				{
-					case PICK:
+					@Override
+					protected void onPreExecute()
 					{
-						returnResult(id);
-						break;
+						// setTitle(getString(R.string.base_title_loading));
 					}
-					case EDIT:
+
+					@Override
+					protected Versioned<? extends NamedRelativeTagged> doInBackground(String... params)
 					{
-						new AsyncTask<String, Void, Versioned<? extends NamedRelativeTagged>>()
+						Versioned<? extends NamedRelativeTagged> food = foodBaseService.findById(id);
+						if (food != null)
 						{
-							@Override
-							protected void onPreExecute()
-							{
-								// setTitle(getString(R.string.base_title_loading));
-							}
+							return food;
+						}
 
-							@Override
-							protected Versioned<? extends NamedRelativeTagged> doInBackground(String... params)
-							{
-								Versioned<? extends NamedRelativeTagged> food = foodBaseService.findById(id);
-								if (food != null)
-								{
-									return food;
-								}
+						Versioned<? extends NamedRelativeTagged> dish = dishBaseService.findById(id);
+						if (dish != null)
+						{
+							return dish;
+						}
 
-								Versioned<? extends NamedRelativeTagged> dish = dishBaseService.findById(id);
-								if (dish != null)
-								{
-									return dish;
-								}
-
-								return null;
-							}
-
-							@SuppressWarnings("unchecked")
-							@Override
-							protected void onPostExecute(Versioned<? extends NamedRelativeTagged> item)
-							{
-								if (item != null)
-								{
-									if (item.getData().getClass().isAssignableFrom(FoodItem.class))
-									{
-										showFoodEditor((Versioned<FoodItem>) item, false);
-									}
-									else if (item.getData().getClass().isAssignableFrom(DishItem.class))
-									{
-										showDishEditor((Versioned<DishItem>) item, false);
-									}
-									else
-									{
-										// TODO: localization
-										UIUtils.showTip(ActivityBase.this,
-												String.format("Unknown record type (ID: %s)", id));
-									}
-								}
-								else
-								{
-									// TODO: localization
-									UIUtils.showTip(ActivityBase.this, String.format("Item %s not found", id));
-								}
-							}
-						}.execute(id);
+						return null;
 					}
-				}
+
+					@SuppressWarnings("unchecked")
+					@Override
+					protected void onPostExecute(Versioned<? extends NamedRelativeTagged> item)
+					{
+						if (item != null)
+						{
+							if (item.getData().getClass().isAssignableFrom(FoodItem.class))
+							{
+								showFoodEditor((Versioned<FoodItem>) item, false);
+							}
+							else if (item.getData().getClass().isAssignableFrom(DishItem.class))
+							{
+								showDishEditor((Versioned<DishItem>) item, false);
+							}
+							else
+							{
+								// TODO: i18n
+								UIUtils.showTip(ActivityBase.this, String.format("Unknown record type (ID: %s)", id));
+							}
+						}
+						else
+						{
+							// TODO: i18n
+							UIUtils.showTip(ActivityBase.this, String.format("Item %s not found", id));
+						}
+					}
+				}.execute(id);
 			}
 		});
 
@@ -443,7 +417,7 @@ public class ActivityBase extends Activity
 
 	void showBase(final List<Versioned<NamedRelativeTagged>> items)
 	{
-		// TODO: localization
+		// TODO: i18n
 		if (items == null)
 		{
 			UIUtils.showTip(this, "При загрузке данных произошла ошибка");
@@ -533,11 +507,12 @@ public class ActivityBase extends Activity
 						try
 						{
 							foodBaseService.add(item);
+							// TODO: i18n
 							UIUtils.showTip(this, "Продукт создан");
 						}
 						catch (PersistenceException e)
 						{
-							// TODO: localize
+							// TODO: i18n
 							UIUtils.showTip(this, "Ошибка создания продукта");
 						}
 						runSearch();
@@ -553,12 +528,13 @@ public class ActivityBase extends Activity
 								ActivityEditor.FIELD_ENTITY);
 						try
 						{
+							// TODO: i18n
 							foodBaseService.save(Arrays.<Versioned<FoodItem>> asList(item));
 							UIUtils.showTip(this, "Продукт сохранён");
 						}
 						catch (PersistenceException e)
 						{
-							// TODO: localize
+							// TODO: i18n
 							UIUtils.showTip(this, "Ошибка сохранения продукта");
 						}
 						runSearch();
@@ -575,11 +551,12 @@ public class ActivityBase extends Activity
 						try
 						{
 							dishBaseService.add(item);
+							// TODO: i18n
 							UIUtils.showTip(this, "Блюдо создано");
 						}
 						catch (PersistenceException e)
 						{
-							// TODO: localize
+							// TODO: i18n
 							UIUtils.showTip(this, "Ошибка создания блюда");
 						}
 						runSearch();
@@ -596,11 +573,12 @@ public class ActivityBase extends Activity
 						try
 						{
 							dishBaseService.save(Arrays.<Versioned<DishItem>> asList(item));
+							// TODO: i18n
 							UIUtils.showTip(this, "Блюдо сохранено");
 						}
 						catch (PersistenceException e)
 						{
-							// TODO: localize
+							// TODO: i18n
 							UIUtils.showTip(this, "Ошибка сохранения блюда");
 						}
 						runSearch();

@@ -112,7 +112,6 @@ public class ActivityMain extends Activity
 				public void onClick(View v)
 				{
 					Intent intent = new Intent(ActivityMain.this, ActivityBase.class);
-					intent.putExtra(ActivityBase.KEY_MODE, ActivityBase.VALUE_MODE_EDIT);
 					startActivity(intent);
 				}
 			});
