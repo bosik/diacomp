@@ -36,6 +36,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +79,8 @@ public class FragmentBase extends Fragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
+		setHasOptionsMenu(true);
+
 		View rootView = inflater.inflate(R.layout.fragment_base, container, false);
 
 		// Widgets binding
@@ -181,7 +185,7 @@ public class FragmentBase extends Fragment
 			@Override
 			protected void onPreExecute()
 			{
-				getActivity().setTitle(getString(R.string.base_title_loading));
+				// getActivity().setTitle(getString(R.string.base_title_loading));
 			}
 
 			@Override
@@ -391,8 +395,8 @@ public class FragmentBase extends Fragment
 			str[i] = items.get(i).getData().getName();
 		}
 
-		String fmt = resultCutted ? "%s (%d+)" : "%s (%d)";
-		getActivity().setTitle(String.format(fmt, getString(R.string.base_title), items.size()));
+		// String fmt = resultCutted ? "%s (%d+)" : "%s (%d)";
+		// getActivity().setTitle(String.format(fmt, getString(R.string.base_title), items.size()));
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_2,
 				android.R.id.text1, str)
@@ -436,6 +440,39 @@ public class FragmentBase extends Fragment
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, dish);
 		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
 		startActivityForResult(intent, createMode ? DIALOG_DISH_CREATE : DIALOG_DISH_MODIFY);
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+	{
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.activity_base_actions, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+			case R.id.item_base_addFood:
+			{
+				FoodItem food = new FoodItem();
+				food.setName(editSearch.getText().toString());
+				showFoodEditor(new Versioned<FoodItem>(food), true);
+				return true;
+			}
+			case R.id.item_base_addDish:
+			{
+				DishItem dish = new DishItem();
+				dish.setName(editSearch.getText().toString());
+				showDishEditor(new Versioned<DishItem>(dish), true);
+				return true;
+			}
+			default:
+			{
+				return false;// super.onOptionsItemSelected(item);
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -538,32 +575,6 @@ public class FragmentBase extends Fragment
 		catch (Exception e)
 		{
 			ErrorHandler.handle(e, getActivity());
-		}
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		switch (item.getItemId())
-		{
-			case R.id.item_base_addFood:
-			{
-				FoodItem food = new FoodItem();
-				food.setName(editSearch.getText().toString());
-				showFoodEditor(new Versioned<FoodItem>(food), true);
-				return true;
-			}
-			case R.id.item_base_addDish:
-			{
-				DishItem dish = new DishItem();
-				dish.setName(editSearch.getText().toString());
-				showDishEditor(new Versioned<DishItem>(dish), true);
-				return true;
-			}
-			default:
-			{
-				return super.onOptionsItemSelected(item);
-			}
 		}
 	}
 }

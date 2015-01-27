@@ -6,10 +6,8 @@ import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.FragmentBase;
 import org.bosik.diacomp.android.utils.ErrorHandler;
-import android.app.ActionBar;
-import android.app.ActionBar.Tab;
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,6 +15,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 public class ActivityMain extends FragmentActivity
 {
@@ -98,52 +99,100 @@ public class ActivityMain extends FragmentActivity
 			mDemoCollectionPagerAdapter = new DemoCollectionPagerAdapter(getSupportFragmentManager());
 			mViewPager = (ViewPager) findViewById(R.id.pager);
 			mViewPager.setAdapter(mDemoCollectionPagerAdapter);
-			mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener()
-			{
-				@Override
-				public void onPageSelected(int position)
-				{
-					getActionBar().setSelectedNavigationItem(position);
-				}
-			});
+			// mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener()
+			// {
+			// @Override
+			// public void onPageSelected(int position)
+			// {
+			// getActionBar().setSelectedNavigationItem(position);
+			// }
+			// });
 
-			final ActionBar actionBar = getActionBar();
+			// final ActionBar actionBar = getActionBar();
 
 			// Specify that tabs should be displayed in the action bar.
-			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+			// actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 			// Create a tab listener that is called when the user changes tabs.
-			ActionBar.TabListener tabListener = new ActionBar.TabListener()
-			{
-				@Override
-				public void onTabSelected(Tab tab, FragmentTransaction ft)
-				{
-					mViewPager.setCurrentItem(tab.getPosition());
-				}
-
-				@Override
-				public void onTabUnselected(Tab tab, FragmentTransaction ft)
-				{
-					// TODO Auto-generated method stub
-				}
-
-				@Override
-				public void onTabReselected(Tab tab, FragmentTransaction ft)
-				{
-					// TODO Auto-generated method stub
-				}
-			};
-
-			// Add 3 tabs, specifying the tab's text and TabListener
-			for (int i = 0; i < mDemoCollectionPagerAdapter.getCount(); i++)
-			{
-				CharSequence title = mDemoCollectionPagerAdapter.getPageTitle(i);
-				actionBar.addTab(actionBar.newTab().setText(title).setTabListener(tabListener));
-			}
+			// ActionBar.TabListener tabListener = new ActionBar.TabListener()
+			// {
+			// @Override
+			// public void onTabSelected(Tab tab, FragmentTransaction ft)
+			// {
+			// mViewPager.setCurrentItem(tab.getPosition());
+			// }
+			//
+			// @Override
+			// public void onTabUnselected(Tab tab, FragmentTransaction ft)
+			// {
+			// // TODO Auto-generated method stub
+			// }
+			//
+			// @Override
+			// public void onTabReselected(Tab tab, FragmentTransaction ft)
+			// {
+			// // TODO Auto-generated method stub
+			// }
+			// };
+			//
+			// // Add 3 tabs, specifying the tab's text and TabListener
+			// for (int i = 0; i < mDemoCollectionPagerAdapter.getCount(); i++)
+			// {
+			// CharSequence title = mDemoCollectionPagerAdapter.getPageTitle(i);
+			// actionBar.addTab(actionBar.newTab().setText(title).setTabListener(tabListener));
+			// }
 		}
 		catch (Exception e)
 		{
 			ErrorHandler.handle(e, this);
+		}
+	}
+
+	// handled
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		try
+		{
+			MenuInflater inflater = getMenuInflater();
+			inflater.inflate(R.menu.diary_menu, menu);
+		}
+		catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+			case R.id.item_diary_preferences:
+			{
+				Intent settingsActivity = new Intent(getBaseContext(), ActivityPreferences.class);
+				startActivity(settingsActivity);
+				return true;
+			}
+			// case R.id.item_base_addFood:
+			// {
+			// FoodItem food = new FoodItem();
+			// food.setName(editSearch.getText().toString());
+			// showFoodEditor(new Versioned<FoodItem>(food), true);
+			// return true;
+			// }
+			// case R.id.item_base_addDish:
+			// {
+			// DishItem dish = new DishItem();
+			// dish.setName(editSearch.getText().toString());
+			// showDishEditor(new Versioned<DishItem>(dish), true);
+			// return true;
+			// }
+			default:
+			{
+				return false;// super.onOptionsItemSelected(item);
+			}
 		}
 	}
 }
