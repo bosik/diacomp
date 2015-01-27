@@ -464,14 +464,6 @@ public class ActivityBase extends Activity
 		return fmt;
 	}
 
-	void returnResult(String id)
-	{
-		Intent intent = getIntent();
-		intent.putExtra(KEY_GUID, id);
-		setResult(RESULT_OK, intent);
-		finish();
-	}
-
 	void showFoodEditor(Versioned<FoodItem> food, boolean createMode)
 	{
 		Intent intent = new Intent(this, ActivityEditorFood.class);
