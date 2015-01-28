@@ -41,7 +41,7 @@
             android:label="@string/editor_blood_title" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.diacomp.android.face.activities.ActivityDiary" />
+                android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
         </activity>
         <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorIns"
@@ -50,7 +50,7 @@
             android:parentActivityName="org.bosik.diacomp.android.frontend.activities.ActivityDiary" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.diacomp.android.face.activities.ActivityDiary" />
+                android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
         </activity>
         <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorMeal"
@@ -58,7 +58,7 @@
             android:label="@string/editor_meal_title" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.diacomp.android.face.activities.ActivityDiary" />
+                android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
         </activity>
         <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorNote"
@@ -66,7 +66,7 @@
             android:label="@string/editor_note_title" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.diacomp.android.face.activities.ActivityDiary" />
+                android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
         </activity>
         <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityPreferences"
@@ -76,25 +76,18 @@
                 android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
         </activity>
         <activity
-            android:name="org.bosik.diacomp.android.frontend.activities.ActivityBase"
-            android:label="@string/base_title" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
-        </activity>
-        <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorFood"
             android:label="@string/editor_food_title" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.diacomp.android.face.activities.ActivityBase" />
+                android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
         </activity>
         <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityEditorDish"
             android:label="@string/editor_dish_title" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.diacomp.android.face.activities.ActivityBase" />
+                android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
         </activity>
         <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityGraph"
