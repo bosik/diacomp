@@ -243,18 +243,11 @@ public class FragmentDiary extends Fragment
 		return rootView;
 	}
 
-	// handled
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
-		try
-		{
-			inflater.inflate(R.menu.diary_menu, menu);
-		}
-		catch (Exception e)
-		{
-			ErrorHandler.handle(e, getActivity());
-		}
+		inflater.inflate(R.menu.diary_menu, menu);
+		super.onCreateOptionsMenu(menu, inflater);
 	}
 
 	// handled
