@@ -1,6 +1,7 @@
 package org.bosik.diacomp.core.services.analyze;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -315,6 +316,43 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		return result;
 	}
 
+	/**
+	 * O(N) (~50)
+	 * 
+	 * @param points
+	 * @param index
+	 * @return
+	 */
+	private WeightedTimePoint[] remove(WeightedTimePoint[] points, int index)
+	{
+		List<WeightedTimePoint> pointsList = Arrays.asList(points);
+		pointsList.remove(index);
+		return (WeightedTimePoint[])pointsList.toArray();
+	}
+
+	/**
+	 * O(N^2) (~2500)
+	 * 
+	 * @param points
+	 * @param bypass
+	 * @return
+	 */
+	private WeightedTimePoint[] filter(WeightedTimePoint[] points, double bypass)
+	{
+		List<WeightedTimePoint> result = new ArrayList<WeightedTimePoint>(points.length);
+
+		for (int i = 0; i < points.length; i++)
+		{
+			double average = approximatePoint(remove(points, i), points[i].getTime());
+			if (Math.abs(points[i].getValue() - average) / average < bypass)
+			{
+				result.add(points[i]);
+			}
+		}
+
+		return (WeightedTimePoint[])result.toArray();
+	}
+
 	@Override
 	public KoofList analyze(List<Versioned<DiaryRecord>> records)
 	{
@@ -322,10 +360,11 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		 * This method assumes the Q and P koofs are fixed and K is floating within the day
 		 */
 
-		double adaptation = 0.95;
+		final double ADPTATION_FACTOR = 0.95;
+		final double FILTER_BYPASS = 0.5;
 
 		List<PrimeRec> prime = AnalyzeExtracter.extractPrimeRecords(records);
-		List<AnalyzeRec> items = AnalyzeExtracter.formatRecords(prime, adaptation);
+		List<AnalyzeRec> items = AnalyzeExtracter.formatRecords(prime, ADPTATION_FACTOR);
 
 		//		for (AnalyzeRec item : items)
 		//		{
@@ -364,6 +403,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 				bean.p = p;
 
 				points = calculateKW(items, q, p); // 50
+				points = filter(points, FILTER_BYPASS);
 				k = approximate(points, false); // 72 000 (1 200)
 				koofs = copyKQP(k, q, p); // 1 440
 
@@ -423,6 +463,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 		// restore
 		points = calculateKW(items, bestQ, bestP);
+		points = filter(points, FILTER_BYPASS);
 
 		//		for (WeightedTimePoint point : points)
 		//		{
