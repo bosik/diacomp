@@ -22,8 +22,6 @@
             android:ems="10"
             android:hint="@string/common_hint_search"
             android:inputType="textNoSuggestions" >
-
-            <requestFocus />
         </EditText>
     </LinearLayout>
 
