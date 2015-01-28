@@ -5,6 +5,7 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.FragmentBase;
+import org.bosik.diacomp.android.frontend.fragments.FragmentDiary;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -109,7 +110,7 @@ public class ActivityMain extends FragmentActivity
 					{
 						case 0:
 						{
-							return new FragmentBase();
+							return new FragmentDiary();
 						}
 						case 1:
 						{
