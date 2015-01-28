@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/item_diary_sync"
+        android:icon="@drawable/button_sync"
+        android:title="@string/main_option_sync"/>
+    <item
+        android:id="@+id/item_diary_preferences"
+        android:icon="@drawable/menu_settings"
+        android:title="@string/main_option_preferences"/>
+
+</menu>

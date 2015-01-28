@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
@@ -23,13 +22,12 @@ public class ActivityMain extends FragmentActivity
 {
 	/* =========================== CONSTANTS ================================ */
 
-	static final String			TAG	= ActivityMain.class.getSimpleName();
+	static final String	TAG	= ActivityMain.class.getSimpleName();
 	// private static final int RESULT_SPEECH_TO_TEXT = 620;
 
 	/* =========================== FIELDS ================================ */
 
-	DemoCollectionPagerAdapter	mDemoCollectionPagerAdapter;
-	ViewPager					mViewPager;
+	ViewPager			mViewPager;
 
 	/* =========================== CLASSES ================================ */
 
@@ -82,21 +80,68 @@ public class ActivityMain extends FragmentActivity
 		super.onCreate(savedInstanceState);
 		try
 		{
+			// Backend
+
 			if (BuildConfig.DEBUG)
 			{
 				UIUtils.showTip(this, "Debug mode is on");
 			}
 
-			// Core initialization
 			ActivityPreferences.init(this);
 			Storage.init(this, getContentResolver(), ActivityPreferences.preferences);
 
-			// НАСТРОЙКА ИНТЕРФЕЙСА
+			// Frontend
 
-			// устанавливаем макет
 			setContentView(R.layout.activity_main);
+			FragmentStatePagerAdapter mDemoCollectionPagerAdapter = new FragmentStatePagerAdapter(
+					getSupportFragmentManager())
+			{
+				@Override
+				public int getCount()
+				{
+					return 2;
+				}
 
-			mDemoCollectionPagerAdapter = new DemoCollectionPagerAdapter(getSupportFragmentManager());
+				@Override
+				public Fragment getItem(int position)
+				{
+					switch (position)
+					{
+						case 0:
+						{
+							return new FragmentBase();
+						}
+						case 1:
+						{
+							return new FragmentBase();
+						}
+						default:
+						{
+							throw new IllegalArgumentException(String.format("Index %d is out of bounds", position));
+						}
+					}
+				}
+
+				@Override
+				public CharSequence getPageTitle(int position)
+				{
+					switch (position)
+					{
+						case 0:
+						{
+							return ActivityMain.this.getString(R.string.main_option_diary);
+						}
+						case 1:
+						{
+							return ActivityMain.this.getString(R.string.main_option_bases);
+						}
+						default:
+						{
+							throw new IllegalArgumentException(String.format("Index %d is out of bounds", position));
+						}
+					}
+				}
+			};
 			mViewPager = (ViewPager) findViewById(R.id.pager);
 			mViewPager.setAdapter(mDemoCollectionPagerAdapter);
 			// mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener()
@@ -155,7 +200,7 @@ public class ActivityMain extends FragmentActivity
 		try
 		{
 			MenuInflater inflater = getMenuInflater();
-			inflater.inflate(R.menu.diary_menu, menu);
+			inflater.inflate(R.menu.actions_common, menu);
 		}
 		catch (Exception e)
 		{
@@ -175,65 +220,9 @@ public class ActivityMain extends FragmentActivity
 				startActivity(settingsActivity);
 				return true;
 			}
-			// case R.id.item_base_addFood:
-			// {
-			// FoodItem food = new FoodItem();
-			// food.setName(editSearch.getText().toString());
-			// showFoodEditor(new Versioned<FoodItem>(food), true);
-			// return true;
-			// }
-			// case R.id.item_base_addDish:
-			// {
-			// DishItem dish = new DishItem();
-			// dish.setName(editSearch.getText().toString());
-			// showDishEditor(new Versioned<DishItem>(dish), true);
-			// return true;
-			// }
 			default:
 			{
-				return false;// super.onOptionsItemSelected(item);
-			}
-		}
-	}
-}
-
-// Since this is an object collection, use a FragmentStatePagerAdapter,
-// and NOT a FragmentPagerAdapter.
-class DemoCollectionPagerAdapter extends FragmentStatePagerAdapter
-{
-	public DemoCollectionPagerAdapter(FragmentManager fm)
-	{
-		super(fm);
-	}
-
-	@Override
-	public Fragment getItem(int i)
-	{
-		return new FragmentBase();
-	}
-
-	@Override
-	public int getCount()
-	{
-		return 2;
-	}
-
-	@Override
-	public CharSequence getPageTitle(int position)
-	{
-		switch (position)
-		{
-			case 0:
-			{
-				return "Diary";
-			}
-			case 1:
-			{
-				return "Bases";
-			}
-			default:
-			{
-				throw new IllegalArgumentException(String.format("Index %d is out of bounds", position));
+				return false;
 			}
 		}
 	}
