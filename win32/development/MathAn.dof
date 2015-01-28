@@ -101,7 +101,7 @@ DebugSourceDirs=
 UsePackages=0
 [Parameters]
 RunParams=
-HostApplication=D:\Мои программы\Compensation\win32\development\target\Compensation.exe
+HostApplication=target\Compensation.exe
 Launcher=
 UseLauncher=0
 DebugCWD=
