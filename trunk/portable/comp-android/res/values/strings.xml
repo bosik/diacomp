@@ -21,9 +21,13 @@
     <string name="editor_common_save">Save</string>
     <string name="editor_common_stub_date">02/04/2014</string>
     <string name="editor_common_stub_time">09:45</string>
+    <string name="editor_dish_error_empty_name">Enter a dish name</string>
     <string name="editor_dish_field_content">Content</string>
     <string name="editor_dish_field_mass">Result mass</string>
     <string name="editor_dish_field_name">Name</string>
+    <string name="editor_dish_rm_empty">No mass</string>
+    <string name="editor_dish_rm_hint">Enter mass:</string>
+    <string name="editor_dish_rm_title">Dish mass</string>
     <string name="editor_dish_title">Dish</string>
     <string name="editor_food_field_name">Name</string>
     <string name="editor_food_field_prots">Prots, g</string>
@@ -65,7 +69,8 @@
 
     <!-- ========================================================================= -->
 
-    <!-- Arrays -->
+
+    <!-- Arrays -->
 
     <string-array name="fingers">
         <item>[Left]: thumb</item>
