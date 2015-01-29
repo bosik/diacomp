@@ -10,6 +10,8 @@ import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView.OnChange
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.utils.Utils;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -18,21 +20,15 @@ import android.widget.ToggleButton;
 
 public class ActivityEditorDish extends ActivityEditor<DishItem>
 {
-	// TODO: localize error messages
-	private static final String	MSG_INCORRECT_VALUE	= "Введите корректное значение";
-	private static final String	MSG_EMPTY_NAME		= "Введите название";
-
 	// data
-	boolean						modified;
+	boolean					modified;
 
 	// components
-	private EditText			editName;
-	private MealEditorView		editor;
-	ToggleButton				buttonMass;
-	private Button				buttonOK;
-
-	// localization
-	private String				captionGramm;
+	private EditText		editName;
+	private ToggleButton	buttonMass;
+	private MealEditorView	editor;
+	// TODO: this button is hidden
+	private Button			buttonOK;
 
 	// ======================================================================================================
 
@@ -41,11 +37,27 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 	{
 		setContentView(R.layout.activity_editor_dish);
 
-		// string constants
-		captionGramm = getString(R.string.common_gramm);
-
 		// components
 		editName = (EditText) findViewById(R.id.editDishName);
+		editName.addTextChangedListener(new TextWatcher()
+		{
+			@Override
+			public void afterTextChanged(Editable s)
+			{
+				modified = true;
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after)
+			{
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count)
+			{
+			}
+		});
+
 		editor = (MealEditorView) findViewById(R.id.dishEditor);
 		editor.setOnChangeListener(new OnChangeListener()
 		{
@@ -72,9 +84,8 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 			{
 				showMass();
 
-				// TODO: localize
-				final String title = "Change dish mass";
-				final String message = "Dish mass:";
+				final String title = getString(R.string.editor_dish_rm_title);
+				final String message = getString(R.string.editor_dish_rm_hint);
 				final String defaultMass = "";
 
 				UIUtils.requestMass(ActivityEditorDish.this, title, message, defaultMass, new OnSubmit()
@@ -102,21 +113,18 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 				});
 			}
 		});
-
-		modified = false;
 	}
 
 	void showMassOn(double mass)
 	{
 		buttonMass.setChecked(true);
-		buttonMass.setText(Utils.formatDoubleShort(mass) + " " + captionGramm);
+		buttonMass.setText(Utils.formatDoubleShort(mass) + " " + getString(R.string.common_gramm));
 	}
 
 	void showMassOff()
 	{
 		buttonMass.setChecked(false);
-		// TODO: localize
-		buttonMass.setText("No mass");
+		buttonMass.setText(getString(R.string.editor_dish_rm_empty));
 	}
 
 	void showMass()
@@ -161,10 +169,9 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 	protected void showValuesInGUI(boolean createMode)
 	{
 		showDish();
-
 		editName.setText(entity.getData().getName());
-
 		showMass();
+		modified = false;
 	}
 
 	@Override
@@ -173,7 +180,7 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 		final String name = editName.getText().toString();
 		if (name == null || name.trim().isEmpty())
 		{
-			UIUtils.showTip(this, MSG_EMPTY_NAME);
+			UIUtils.showTip(this, getString(R.string.editor_dish_error_empty_name));
 			editName.requestFocus();
 			return false;
 		}

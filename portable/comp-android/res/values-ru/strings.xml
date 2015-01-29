@@ -19,9 +19,13 @@
     <string name="editor_common_field_time">Дата и время</string>
     <string name="editor_common_field_value">Значение</string>
     <string name="editor_common_save">Сохранить</string>
+    <string name="editor_dish_error_empty_name">Введите название блюда</string>
     <string name="editor_dish_field_content">Состав</string>
     <string name="editor_dish_field_mass">Масса готового блюда</string>
     <string name="editor_dish_field_name">Название</string>
+    <string name="editor_dish_rm_empty">Нет массы ГБ</string>
+    <string name="editor_dish_rm_hint">Введите массу:</string>
+    <string name="editor_dish_rm_title">Масса готового блюда</string>
     <string name="editor_dish_title">Блюдо</string>
     <string name="editor_food_field_name">Название</string>
     <string name="editor_food_field_prots">Белки, г</string>
