@@ -598,8 +598,6 @@ begin
 
     Result := SyncSources(LocalSource, WebSource, SyncProgress);
 
-    Value['LastSync'] := DateTimeToStr(GetTimeUTC());
-
     if (Result > 0) then
     begin
       Form1.DiaryView.OpenPage(Diary[Trunc(Form1.CalendarDiary.Date)], True);
@@ -820,7 +818,7 @@ begin
     {*}WebClient.Username := Value['Login'];
     {*}WebClient.Password := Value['Password'];
     {*}WebClient.Server := Value['ServerURL'];
-    {*}WebClient.SetTimeout(5000);
+    {*}WebClient.SetTimeout(12000);
 
     { =============== Õ¿—“–Œ… ¿ ƒÕ≈¬Õ» ¿ =============== }
     {*}StartupInfo(STATUS_ACTION_LOADING_DIARY);
