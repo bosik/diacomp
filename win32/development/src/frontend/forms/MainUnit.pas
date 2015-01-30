@@ -2844,22 +2844,23 @@ begin
   begin
     Meal := TMealRecord(Rec);
     NewMass := Meal[DiaryView.SelectedLine].Mass;
-    if (DialogFoodMass(dtChangeMass, DiaryView.SelectedFood.Name, NewMass))and
-       (NewMass >= 0)
-    then
+    if (DialogFoodMass(dtChangeMass, DiaryView.SelectedFood.Name, NewMass)) then
     begin
-      Meal[DiaryView.SelectedLine].Mass := NewMass;
-      Meal.Modified;
-      LocalSource.Save(Meal);
-      UpdateMealStatistics();
-      UpdateMealDose();
+      if (NewMass >= 0) then
+      begin
+        Meal[DiaryView.SelectedLine].Mass := NewMass;
+        Meal.Modified;
+        LocalSource.Save(Meal);
+        UpdateMealStatistics();
+        UpdateMealDose();
 
-      Line := DiaryView.SelectedLine;
-      DiaryView.OpenPage(Diary[Trunc(Form1.CalendarDiary.Date)], True);
-      DiaryView.SelectedRecordID := Rec.ID;
-      DiaryView.SelectedLine := Line;
-    end else
-      ErrorMessage('Неверная масса');
+        Line := DiaryView.SelectedLine;
+        DiaryView.OpenPage(Diary[Trunc(Form1.CalendarDiary.Date)], True);
+        DiaryView.SelectedRecordID := Rec.ID;
+        DiaryView.SelectedLine := Line;
+      end else
+        ErrorMessage('Масса не может быть отрицательной');
+    end;
   end;
 end;
 
