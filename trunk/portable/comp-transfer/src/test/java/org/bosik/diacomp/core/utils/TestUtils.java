@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import junit.framework.TestCase;
-import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.junit.Test;
 
 @SuppressWarnings("static-method")
@@ -297,30 +296,6 @@ public class TestUtils extends TestCase
 		assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "вкусНоТеЕвО"));
 		assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "моло"));
 		assertFalse(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "сыр"));
-	}
-
-	public void test_sumHash()
-	{
-		assertEquals("00000000000000000000000000000000",
-				HashUtils.sumHash("00000000000000000000000000000000", "00000000000000000000000000000000"));
-		assertEquals("22222222222222222222222222222222",
-				HashUtils.sumHash("11111111111111111111111111111111", "11111111111111111111111111111111"));
-		assertEquals("ffffffffffffffffffffffffffffffff",
-				HashUtils.sumHash("88888888888888888888888888888888", "77777777777777777777777777777777"));
-		assertEquals("00000000000000000000000000000000",
-				HashUtils.sumHash("88888888888888888888888888888888", "88888888888888888888888888888888"));
-	}
-
-	public void test_subHash()
-	{
-		assertEquals("00000000000000000000000000000000",
-				HashUtils.subHash("00000000000000000000000000000000", "00000000000000000000000000000000"));
-		assertEquals("00000000000000000000000000000000",
-				HashUtils.subHash("11111111111111111111111111111111", "11111111111111111111111111111111"));
-		assertEquals("11111111111111111111111111111111",
-				HashUtils.subHash("88888888888888888888888888888888", "77777777777777777777777777777777"));
-		assertEquals("0000000000000000000000000000000f",
-				HashUtils.subHash("00000000000000000000000000000000", "00000000000000000000000000000001"));
 	}
 
 	// public void testTimeToStr()
