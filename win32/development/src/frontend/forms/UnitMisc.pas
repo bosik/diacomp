@@ -27,6 +27,7 @@ type
     Button1: TButton;
     ButtonFoodBSCorrelation: TButton;
     ButtonVerifyLinear: TButton;
+    ButtonTimeShift: TButton;
     procedure ButtonExportXmlClick(Sender: TObject);
     procedure ButtonExportJsonClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -42,6 +43,7 @@ type
     procedure Button1Click(Sender: TObject);
     procedure ButtonFoodBSCorrelationClick(Sender: TObject);
     procedure ButtonVerifyLinearClick(Sender: TObject);
+    procedure ButtonTimeShiftClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -907,6 +909,28 @@ begin
     S.SaveToFile('temp\linearity.txt');
   finally
     s.Free;
+  end;
+end;
+
+procedure TFormMisc.ButtonTimeShiftClick(Sender: TObject);
+var
+  VList: TVersionedList;
+  RList: TRecordList;
+  i: integer;
+begin
+  if (MessageDlg('This will shift all diary items. Continue?', mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+  begin
+    VList := LocalSource.FindChanged(0);
+    RList := VersionedToRecord(VList);
+    ShowMessage(IntToStr(Length(RList)));
+
+    for i := 0 to High(RList) do
+    begin
+      RList[i].Time := RList[i].Time + 1/24;
+      RList[i].Modified;
+    end;
+
+    LocalSource.Save(RecordToVersioned(RList));
   end;
 end;
 

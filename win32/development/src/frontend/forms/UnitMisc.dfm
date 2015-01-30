@@ -166,6 +166,15 @@ object FormMisc: TFormMisc
     TabOrder = 14
     OnClick = ButtonVerifyLinearClick
   end
+  object ButtonTimeShift: TButton
+    Left = 232
+    Top = 8
+    Width = 185
+    Height = 25
+    Caption = 'ButtonTimeShift'
+    TabOrder = 15
+    OnClick = ButtonTimeShiftClick
+  end
   object Timer1: TTimer
     Enabled = False
     Interval = 500
