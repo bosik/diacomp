@@ -1,5 +1,6 @@
 package org.bosik.diacomp.core.services.sync;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.bosik.diacomp.core.services.ObjectService;
@@ -120,11 +121,11 @@ public class HashUtils
 		return result.toString();
 	}
 
-	public static String calculateHash(Map<String, String> hashes)
+	public static String calculateHash(Collection<String> collection)
 	{
 		String result = null;
 
-		for (String hash : hashes.values())
+		for (String hash : collection)
 		{
 			result = sumHash(result, hash);
 		}
@@ -141,7 +142,7 @@ public class HashUtils
 	public static <T> void updateHashBranch(ObjectService<T> service, String prefix)
 	{
 		Map<String, String> hashes = service.getHashChildren(prefix);
-		String hash = calculateHash(hashes);
+		String hash = calculateHash(hashes.values());
 		if (hash != null)
 		{
 			service.setHash(prefix, hash);
@@ -187,7 +188,7 @@ public class HashUtils
 			childHashes = service.getHashChildren(prefix);
 		}
 
-		String hash = calculateHash(childHashes);
+		String hash = calculateHash(childHashes.values());
 		if (hash != null)
 		{
 			service.setHash(prefix, hash);
