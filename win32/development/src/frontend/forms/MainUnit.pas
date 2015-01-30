@@ -601,8 +601,6 @@ begin
     T := StrToDateTime(Value['LastSync']);
     Result := SyncSources(LocalSource, WebSource, T - 1);
 
-    Value['LastSync'] := DateTimeToStr(GetTimeUTC());
-
     if (Result > 0) then
     begin
       Form1.DiaryView.OpenPage(Diary[Trunc(Form1.CalendarDiary.Date)], True);
@@ -625,7 +623,9 @@ begin
       Form1.EventDishbaseChanged(True, True);
       // TODO: workaround
     end;
-    
+
+    Value['LastSync'] := DateTimeToStr(GetTimeUTC());
+
     { „ÓÚÓ‚Ó }
     Form1.StatusBar.Panels[3].Text := STATUS_RESULT_SYNC_DONE;
     Application.ProcessMessages;
@@ -823,7 +823,7 @@ begin
     {*}WebClient.Username := Value['Login'];
     {*}WebClient.Password := Value['Password'];
     {*}WebClient.Server := Value['ServerURL'];
-    {*}WebClient.SetTimeout(5000);
+    {*}WebClient.SetTimeout(12000);
 
     { =============== Õ¿—“–Œ… ¿ ƒÕ≈¬Õ» ¿ =============== }
     {*}StartupInfo(STATUS_ACTION_LOADING_DIARY);
