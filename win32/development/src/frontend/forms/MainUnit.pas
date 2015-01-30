@@ -625,7 +625,7 @@ begin
     end;
 
     Value['LastSync'] := DateTimeToStr(GetTimeUTC());
-
+    
     { готово }
     Form1.StatusBar.Panels[3].Text := STATUS_RESULT_SYNC_DONE;
     Application.ProcessMessages;
@@ -2282,21 +2282,21 @@ procedure TForm1.UpdateDayInfo;
     function Info(const Val: real; Proc: integer): string;
     begin
       if Proc > -1 then
-        Result := IntToStr(Round(Val)) + ' (' + IntToStr(Proc) + '%)'
+        Result := Format('%.0f г (%d%%)', [Val, Proc])
       else
-        Result := IntToStr(Round(Val));
+        Result := Format('%.0f', [Val]);
     end;
 
   var
     summ: real;
-    proc1,proc2,proc3: integer;
+    proc1, proc2, proc3: integer;
 
     DayProts, DayFats, DayCarbs, DayValue, DayMass, DayIns: real;
   begin
     if (Length(DiaryView.CurrentPage) = 0) then
     begin
       LabelDayProts_.Font.Color := clNoData;
-      LabelDayProts_.Left := 2*BORD;
+      LabelDayProts_.Left := 2 * BORD;
       LabelDayProts_.Caption := 'Нет данных';
       LabelDayProtsVal.Caption := '';
       LabelDayFats_.Caption := '';
@@ -2339,9 +2339,9 @@ procedure TForm1.UpdateDayInfo;
                 ENERGY_CARBS * DayCarbs;
               if summ > 0 then
               begin
-                Proc1 := Round(ENERGY_PROTS * DayProts/summ*100);
-                Proc2 := Round(ENERGY_FATS * DayFats/summ*100);
-                Proc3 := Round(ENERGY_CARBS * DayCarbs/summ*100);
+                Proc1 := Round(ENERGY_PROTS * DayProts / summ * 100);
+                Proc2 := Round(ENERGY_FATS * DayFats / summ * 100);
+                Proc3 := Round(ENERGY_CARBS * DayCarbs / summ * 100);
               end else
               begin
                 Proc1 := -1;
@@ -2351,15 +2351,15 @@ procedure TForm1.UpdateDayInfo;
             end;
         else  begin
               if Value['NormProts'] > 0 then
-                Proc1 := Round(DayProts / Value['NormProts']*100)
+                Proc1 := Round(DayProts / Value['NormProts'] * 100)
               else Proc1 := -1;
 
               if Value['NormFats'] > 0 then
-                Proc2 := Round(DayFats / Value['NormFats']*100)
+                Proc2 := Round(DayFats / Value['NormFats'] * 100)
               else Proc2 := -1;
 
               if Value['NormCarbs'] > 0 then
-                Proc3 := Round(DayCarbs / Value['NormCarbs']*100)
+                Proc3 := Round(DayCarbs / Value['NormCarbs'] * 100)
               else Proc3 := -1;
             end;
       end;
@@ -2385,19 +2385,19 @@ procedure TForm1.UpdateDayInfo;
         StatProgProts.Progress := Round(DayProts);
         StatProgFats.Progress := Round(DayFats);
         StatProgCarbs.Progress := Round(DayCarbs);
-        LabelDayProts_.Left := StatProgProts.Width+3*BORD;
-        LabelDayFats_.Left := StatProgProts.Width+3*BORD;
-        LabelDayCarbs_.Left := StatProgProts.Width+3*BORD;
+        LabelDayProts_.Left := StatProgProts.Width + 3 * BORD;
+        LabelDayFats_.Left := StatProgProts.Width + 3 * BORD;
+        LabelDayCarbs_.Left := StatProgProts.Width + 3 * BORD;
       end else
       begin
-        LabelDayProts_.Left := 2*BORD;
-        LabelDayFats_.Left := 2*BORD;
-        LabelDayCarbs_.Left := 2*BORD;
+        LabelDayProts_.Left := 2 * BORD;
+        LabelDayFats_.Left := 2 * BORD;
+        LabelDayCarbs_.Left := 2 * BORD;
       end;
 
-      LabelDayValue.Caption  := 'Ценность: '+ IntToStr(Round(DayValue)) + ' (ккал)';
-      LabelDayMass.Caption   := 'Масса: '   + IntToStr(Round(DayMass)) + ' (г)';
-      LabelDayIns.Caption    := 'Инсулин: ' + FloatToStr(DayIns) + ' ед';
+      LabelDayValue.Caption  := Format('Ценность: %.0f ккал', [DayValue]);
+      LabelDayMass.Caption   := Format('Масса: %.0f г', [DayMass]);
+      LabelDayIns.Caption    := Format('Инсулин: %.1f ед', [DayIns]);
     end;
   end;
 
@@ -2427,6 +2427,8 @@ end;
 {==============================================================================}
 procedure TForm1.UpdateMealStatistics;
 {==============================================================================}
+const
+  CARBS_PER_BU = 12.0;
 var
   Rec: TCustomRecord;
   SelMeal: TMealRecord;
@@ -2439,11 +2441,11 @@ begin
     SelMeal := TMealRecord(Rec);
 
     LabelDiaryMealProts.Font.Color := clWindowText;
-    LabelDiaryMealProts.Caption := 'Белки: '+IntToStr(Round(SelMeal.Prots))+' (г)';
-    LabelDiaryMealFats.Caption := 'Жиры: '+IntToStr(Round(SelMeal.Fats))+' (г)';
-    LabelDiaryMealCarbs.Caption := 'Углеводы: '+IntToStr(Round(SelMeal.Carbs))+' (г)';
-    LabelDiaryMealValue.Caption := 'Ценность: '+IntToStr(Round(SelMeal.Value))+' (ккал)';
-    LabelDiaryMealMass.Caption := 'Масса: '+IntToStr(Round(SelMeal.Mass))+' (г)';
+    LabelDiaryMealProts.Caption := Format('Белки: %.0f г', [SelMeal.Prots]);
+    LabelDiaryMealFats.Caption := Format('Жиры: %.0f г', [SelMeal.Fats]);
+    LabelDiaryMealCarbs.Caption := Format('Углеводы: %.0f г / %.1f ХЕ', [SelMeal.Carbs, SelMeal.Carbs / CARBS_PER_BU]);
+    LabelDiaryMealValue.Caption := Format('Ценность: %.0f ккал', [SelMeal.Value]);
+    LabelDiaryMealMass.Caption := Format('Масса: %.0f г', [SelMeal.Mass]);
   end else
   begin
     LabelDiaryMealProts.Font.Color := clNoData;
@@ -2545,7 +2547,7 @@ begin
       { доза }
       Dose := (Koof.k * SelMeal.Carbs + Koof.p * SelMeal.Prots - Delta) / Koof.q;
       if (Dose >= 0) then
-        LabelDiaryMealDose.Caption := 'Расчётная доза: ' + RealToStr(Dose)
+        LabelDiaryMealDose.Caption := 'Расчётная доза: ' + RealToStr(Dose) + ' ед'
       else
         LabelDiaryMealDose.Caption := 'Расчётная доза:  --';
 
@@ -2578,7 +2580,7 @@ begin
         end;
 
         if (ExpectedBS > -1) then
-          LabelDiaryMealExpectedBS.Caption := Format('Ожидаемый СК: %.1f', [ExpectedBS])
+          LabelDiaryMealExpectedBS.Caption := Format('Ожидаемый СК: %.1f ммоль/л', [ExpectedBS])
         else
           LabelDiaryMealExpectedBS.Caption := 'Ожидаемый СК: ?';
 
@@ -2588,17 +2590,17 @@ begin
         begin
           DCarbs := Round((Delta+Koof.q*i-Koof.P*SelMeal.Prots)/Koof.K-SelMeal.Carbs);
           if DCarbs>0 then
-            s := '+' + RealToStr(DCarbs)+'г'
+            s := '+' + RealToStr(DCarbs)+' г'
           else
-            s := RealToStr(DCarbs) + 'г';
+            s := RealToStr(DCarbs) + ' г';
 
           with ListCorrectCarbs.Items.Add do
           begin
-            Caption := IntToStr(i) + ' ед.';
+            Caption := IntToStr(i) + ' ед';
             if SelMeal.Carbs + DCarbs >= 0 then
             begin
               SubItems.Add(s);
-              SubItems.Add(IntToStr(Round(SelMeal.Carbs+DCarbs)) + 'г');
+              SubItems.Add(IntToStr(Round(SelMeal.Carbs+DCarbs)) + ' г');
             end else
             begin
               SubItems.Add('--');
