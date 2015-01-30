@@ -2277,9 +2277,9 @@ procedure TForm1.UpdateDayInfo;
     function Info(const Val: real; Proc: integer): string;
     begin
       if Proc > -1 then
-        Result := IntToStr(Round(Val)) + ' (' + IntToStr(Proc) + '%)'
+        Result := Format('%.0f г (%d%%)', [Val, Proc])
       else
-        Result := IntToStr(Round(Val));
+        Result := Format('%.0f', [Val]);
     end;
 
   var
@@ -2390,9 +2390,9 @@ procedure TForm1.UpdateDayInfo;
         LabelDayCarbs_.Left := 2*BORD;
       end;
 
-      LabelDayValue.Caption  := 'Ценность: '+ IntToStr(Round(DayValue)) + ' (ккал)';
-      LabelDayMass.Caption   := 'Масса: '   + IntToStr(Round(DayMass)) + ' (г)';
-      LabelDayIns.Caption    := 'Инсулин: ' + FloatToStr(DayIns) + ' ед';
+      LabelDayValue.Caption  := Format('Ценность: %.0f ккал', [DayValue]);
+      LabelDayMass.Caption   := Format('Масса: %.0f г', [DayMass]);
+      LabelDayIns.Caption    := Format('Инсулин: %.1f ед', [DayIns]);
     end;
   end;
 
@@ -2422,6 +2422,8 @@ end;
 {======================================================================================================================}
 procedure TForm1.UpdateMealStatistics;
 {======================================================================================================================}
+const
+  CARBS_PER_BU = 12.0;
 var
   Rec: TCustomRecord;
   SelMeal: TMealRecord;
@@ -2434,11 +2436,11 @@ begin
     SelMeal := TMealRecord(Rec);
 
     LabelDiaryMealProts.Font.Color := clWindowText;
-    LabelDiaryMealProts.Caption := 'Белки: '+IntToStr(Round(SelMeal.Prots))+' (г)';
-    LabelDiaryMealFats.Caption := 'Жиры: '+IntToStr(Round(SelMeal.Fats))+' (г)';
-    LabelDiaryMealCarbs.Caption := 'Углеводы: '+IntToStr(Round(SelMeal.Carbs))+' (г)';
-    LabelDiaryMealValue.Caption := 'Ценность: '+IntToStr(Round(SelMeal.Value))+' (ккал)';
-    LabelDiaryMealMass.Caption := 'Масса: '+IntToStr(Round(SelMeal.Mass))+' (г)';
+    LabelDiaryMealProts.Caption := Format('Белки: %.0f г', [SelMeal.Prots]);
+    LabelDiaryMealFats.Caption := Format('Жиры: %.0f г', [SelMeal.Fats]);
+    LabelDiaryMealCarbs.Caption := Format('Углеводы: %.0f г / %.1f ХЕ', [SelMeal.Carbs, SelMeal.Carbs / CARBS_PER_BU]);
+    LabelDiaryMealValue.Caption := Format('Ценность: %.0f ккал', [SelMeal.Value]);
+    LabelDiaryMealMass.Caption := Format('Масса: %.0f г', [SelMeal.Mass]);
   end else
   begin
     LabelDiaryMealProts.Font.Color := clNoData;
@@ -2540,7 +2542,7 @@ begin
       { доза }
       Dose := (Koof.k * SelMeal.Carbs + Koof.p * SelMeal.Prots - Delta) / Koof.q;
       if (Dose >= 0) then
-        LabelDiaryMealDose.Caption := 'Расчётная доза: ' + RealToStr(Dose)
+        LabelDiaryMealDose.Caption := 'Расчётная доза: ' + RealToStr(Dose) + ' ед'
       else
         LabelDiaryMealDose.Caption := 'Расчётная доза:  --';
 
@@ -2573,7 +2575,7 @@ begin
         end;
 
         if (ExpectedBS > -1) then
-          LabelDiaryMealExpectedBS.Caption := Format('Ожидаемый СК: %.1f', [ExpectedBS])
+          LabelDiaryMealExpectedBS.Caption := Format('Ожидаемый СК: %.1f ммоль/л', [ExpectedBS])
         else
           LabelDiaryMealExpectedBS.Caption := 'Ожидаемый СК: ?';
 
@@ -2589,7 +2591,7 @@ begin
 
           with ListCorrectCarbs.Items.Add do
           begin
-            Caption := IntToStr(i) + ' ед.';
+            Caption := IntToStr(i) + ' ед';
             if SelMeal.Carbs + DCarbs >= 0 then
             begin
               SubItems.Add(s);
