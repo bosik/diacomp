@@ -1,8 +1,13 @@
 package org.bosik.diacomp.core.services.sync;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import org.bosik.diacomp.core.services.ObjectService;
 
 public class HashUtils
@@ -55,15 +60,20 @@ public class HashUtils
 					a, ObjectService.ID_FULL_SIZE, a.length()));
 		}
 
+		if (b != null && b.length() != ObjectService.ID_FULL_SIZE)
+		{
+			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d",
+					b, ObjectService.ID_FULL_SIZE, b.length()));
+		}
+
 		if (a == null)
 		{
 			return b;
 		}
 
-		if (b.length() != ObjectService.ID_FULL_SIZE)
+		if (b == null)
 		{
-			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d",
-					b, ObjectService.ID_FULL_SIZE, b.length()));
+			return a;
 		}
 
 		a = a.toLowerCase();
@@ -82,7 +92,8 @@ public class HashUtils
 
 	/**
 	 * a - null = a<br/>
-	 * null - null = null
+	 * null - null = null<br/>
+	 * null - a = NPE
 	 * 
 	 * @param a
 	 * @param b
@@ -90,6 +101,12 @@ public class HashUtils
 	 */
 	public static String subHash(String a, String b)
 	{
+		if (a != null && a.length() != ObjectService.ID_FULL_SIZE)
+		{
+			throw new IllegalArgumentException(String.format("Invalid hash #1 ('%s'), expected: %d chars, found: %d",
+					a, ObjectService.ID_FULL_SIZE, a.length()));
+		}
+
 		if (b != null && b.length() != ObjectService.ID_FULL_SIZE)
 		{
 			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d",
@@ -99,12 +116,6 @@ public class HashUtils
 		if (b == null)
 		{
 			return a;
-		}
-
-		if (a.length() != ObjectService.ID_FULL_SIZE)
-		{
-			throw new IllegalArgumentException(String.format("Invalid hash #1 ('%s'), expected: %d chars, found: %d",
-					a, ObjectService.ID_FULL_SIZE, a.length()));
 		}
 
 		a = a.toLowerCase();
@@ -194,5 +205,47 @@ public class HashUtils
 			service.setHash(prefix, hash);
 		}
 		return hash;
+	}
+
+	public static SortedMap<String, String> buildParentHashes(SortedMap<String, String> map, int prefixSize)
+	{
+		SortedMap<String, String> result = new TreeMap<String, String>();
+
+		List<String> buffer = new ArrayList<String>();
+		String prevKey = null;
+		for (Entry<String, String> entry : map.entrySet())
+		{
+			if (prevKey != null && !prevKey.regionMatches(0, entry.getKey(), 0, prefixSize))
+			{
+				String key = prevKey.substring(0, prefixSize);
+				String value = calculateHash(buffer);
+				result.put(key, value);
+				buffer.clear();
+			}
+			buffer.add(entry.getValue());
+			prevKey = entry.getKey();
+		}
+
+		if (!buffer.isEmpty())
+		{
+			String key = prevKey.substring(0, prefixSize);
+			String value = calculateHash(buffer);
+			result.put(key, value);
+		}
+
+		return result;
+	}
+
+	public static SortedMap<String, String> buildHashTree(SortedMap<String, String> map)
+	{
+		SortedMap<String, String> result = new TreeMap<String, String>();
+
+		for (int i = ObjectService.ID_PREFIX_SIZE; i >= 0; i--)
+		{
+			map = buildParentHashes(map, i);
+			result.putAll(map);
+		}
+
+		return result;
 	}
 }
