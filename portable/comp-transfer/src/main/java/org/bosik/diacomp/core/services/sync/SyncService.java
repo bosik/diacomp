@@ -277,7 +277,7 @@ public class SyncService
 
 			for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
 			{
-				result += synchronizePrefix(service1, service2, prefix + HashUtils.PATTERN.charAt(i));
+				result += synchronizePrefix(service1, service2, prefix + HashUtils.BYTE_TO_CHAR[i]);
 			}
 
 			return result;
@@ -341,7 +341,7 @@ public class SyncService
 				int result = 0;
 				for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
 				{
-					String key = prefix + HashUtils.PATTERN.charAt(i);
+					String key = prefix + HashUtils.BYTE_TO_CHAR[i];
 					String hash1 = hashes1.get(key);
 					String hash2 = hashes2.get(key);
 					if (!Utils.equals(hash1, hash2))

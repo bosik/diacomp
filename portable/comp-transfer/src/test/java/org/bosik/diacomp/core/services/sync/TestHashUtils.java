@@ -36,7 +36,7 @@ public class TestHashUtils extends TestCase
 	{
 		long time = System.currentTimeMillis();
 		SortedMap<String, String> data = new TreeMap<String, String>();
-		for (int i = 0; i < 25000; i++)
+		for (int i = 0; i < 500000; i++)
 		{
 			String id = Utils.generateGuid();
 			String hash = Utils.generateGuid();
