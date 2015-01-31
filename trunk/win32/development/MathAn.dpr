@@ -418,6 +418,42 @@ begin
 end;
 
 {==============================================================================}
+function Remove(const K: TWeightedTimePointArray; index: integer): TWeightedTimePointArray;
+{==============================================================================}
+begin
+  Result := Copy(K, Low(K), Length(K));
+  Result[Index] := Result[High(Result)];
+  SetLength(Result, Length(Result) - 1);
+end;
+
+{==============================================================================}
+function Filter(const Data: TWeightedTimePointArray; const Factor, Limit: Real): TWeightedTimePointArray;
+{==============================================================================}
+
+// Limit: 0.05 (very strict) - 0.60 (very moderate)
+
+var
+  i, count: integer;
+  Average: Real;
+begin
+  SetLength(Result, Length(Data));
+  count := 0;
+
+  for i := Low(Data) to High(Data) do
+  begin
+    Average := ApproximatePoint(Remove(Data, i), Factor, Data[i].Time);
+
+    if (abs(Data[i].Value - Average) / Average < Limit) then
+    begin
+      Result[count] := Data[i];
+      inc(count);
+    end;
+  end;
+
+  SetLength(Result, count);
+end;
+
+{==============================================================================}
 function Info_BruteforceQP: PChar; StdCall;
 {==============================================================================}
 begin
@@ -502,6 +538,9 @@ var
     end;
   end;
 
+const
+  APPROX_FACTOR = 90;
+  FILTER_LIMIT  = 0.5;
 var
   Ks: TWeightedTimePointArray;
   Z: TDayArray;
@@ -552,7 +591,8 @@ begin
 
       // находим K в точках, считаем среднюю кривую
       CalculateK(RecList, V[i,j].Q, V[i,j].P, Ks);
-      Approximate(Ks, 90, Z);
+      Ks := Filter(Ks, APPROX_FACTOR, FILTER_LIMIT);
+      Approximate(Ks, APPROX_FACTOR, Z);
       CopyKQP(Z, V[i,j].Q, V[i,j].P, KoofList); // for GetDev only
 
       // находим оценки
@@ -585,7 +625,8 @@ begin
 
   // находим K в точках, считаем среднюю кривую
   CalculateK(RecList, BestQ, BestP, Ks);
-  Approximate(Ks, 90, Z);
+  Ks := Filter(Ks, APPROX_FACTOR, FILTER_LIMIT);
+  Approximate(Ks, APPROX_FACTOR, Z);
 
   // копируем в массив коэффициентов
   CopyKQP(Z, BestQ, BestP, KoofList);
