@@ -12,36 +12,31 @@ import org.bosik.diacomp.core.services.ObjectService;
 
 public class HashUtils
 {
-	/**
-	 * Standard alphanumeric hash chars
-	 */
-	public static final String					PATTERN			= "0123456789abcdef";
-	public static final int						PATTERN_SIZE	= PATTERN.length();
-	private static final Map<String, Character>	MAP_SUM			= new HashMap<String, Character>(PATTERN_SIZE
-																		* PATTERN_SIZE);
-	private static final Map<String, Character>	MAP_SUB			= new HashMap<String, Character>(PATTERN_SIZE
-																		* PATTERN_SIZE);
+	public static final int		PATTERN_SIZE	= 16;
+	public static final char[]	BYTE_TO_CHAR	= new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a',
+			'b', 'c', 'd', 'e', 'f'			};
+	private static final byte[]	CHAR_TO_BYTE	= new byte[65536];
 
 	static
 	{
-		System.out.println("Hash tables initialization...");
-
-		MAP_SUM.clear();
-		MAP_SUB.clear();
-
 		for (int i = 0; i < PATTERN_SIZE; i++)
 		{
-			char a = PATTERN.charAt(i);
-			for (int j = 0; j < PATTERN_SIZE; j++)
-			{
-				char b = PATTERN.charAt(j);
-				String key = "" + a + b;
-				MAP_SUM.put(key, PATTERN.charAt((i + j) % PATTERN_SIZE));
-				MAP_SUB.put(key, PATTERN.charAt((i - j + PATTERN_SIZE) % PATTERN_SIZE));
-			}
-		}
+			char c_lower = BYTE_TO_CHAR[i];
+			char c_upper = ("" + c_lower).toUpperCase().charAt(0);
 
-		System.out.println("Hash tables initialized OK");
+			CHAR_TO_BYTE[c_lower] = (byte)i;
+			CHAR_TO_BYTE[c_upper] = (byte)i;
+		}
+	}
+
+	private static byte charToByte(char c)
+	{
+		return CHAR_TO_BYTE[c];
+	}
+
+	private static final char byteToChar(byte b)
+	{
+		return BYTE_TO_CHAR[b];
 	}
 
 	/**
@@ -76,15 +71,17 @@ public class HashUtils
 			return a;
 		}
 
-		a = a.toLowerCase();
-		b = b.toLowerCase();
+		char[] a_array = a.toCharArray();
+		char[] b_array = b.toCharArray();
 
 		StringBuilder result = new StringBuilder(ObjectService.ID_FULL_SIZE);
+		result.setLength(ObjectService.ID_FULL_SIZE);
 		for (int i = 0; i < ObjectService.ID_FULL_SIZE; i++)
 		{
-			char ca = a.charAt(i);
-			char cb = b.charAt(i);
-			result.append(MAP_SUM.get("" + ca + cb));
+			byte b1 = charToByte(a_array[i]);
+			byte b2 = charToByte(b_array[i]);
+			byte s = (byte)((b1 + b2) % 16);
+			result.setCharAt(i, byteToChar(s));
 		}
 
 		return result.toString();
@@ -118,15 +115,17 @@ public class HashUtils
 			return a;
 		}
 
-		a = a.toLowerCase();
-		b = b.toLowerCase();
+		char[] a_array = a.toCharArray();
+		char[] b_array = b.toCharArray();
 
 		StringBuilder result = new StringBuilder(ObjectService.ID_FULL_SIZE);
+		result.setLength(ObjectService.ID_FULL_SIZE);
 		for (int i = 0; i < ObjectService.ID_FULL_SIZE; i++)
 		{
-			char ca = a.charAt(i);
-			char cb = b.charAt(i);
-			result.append(MAP_SUB.get("" + ca + cb));
+			byte b1 = charToByte(a_array[i]);
+			byte b2 = charToByte(b_array[i]);
+			byte s = (byte)((16 + b1 - b2) % 16);
+			result.setCharAt(i, byteToChar(s));
 		}
 
 		return result.toString();
@@ -185,7 +184,7 @@ public class HashUtils
 			childHashes = new HashMap<String, String>();
 			for (int i = 0; i < PATTERN_SIZE; i++)
 			{
-				String key = prefix + PATTERN.charAt(i);
+				String key = prefix + BYTE_TO_CHAR[i];
 				String value = updateHashTree(service, key);
 
 				if (value != null)
