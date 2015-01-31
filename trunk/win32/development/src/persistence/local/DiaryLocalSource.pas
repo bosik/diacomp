@@ -58,7 +58,9 @@ type
     function FindById(ID: TCompactGUID): TVersioned; override;
     function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList; override;
     function GetHash(Prefix: TCompactGUID): TCompactGUID; override;
+    function GetHashChildren(Prefix: TCompactGUID): THashService; override;
     procedure Save(const Recs: TVersionedList); override;
+    procedure SetHash(Prefix, Hash: TCompactGUID); override;
 
     // свойства
     // TODO: think about it
@@ -66,6 +68,8 @@ type
  end;
 
 implementation
+
+uses ObjectService;
 
 var
   LocalFmt: TFormatSettings;
@@ -195,6 +199,8 @@ end;
 {======================================================================================================================}
 function TDiaryLocalSource.AddToInternal(Rec: TCustomRecord): integer;
 {======================================================================================================================}
+var
+  OldHash, Diff: TCompactGUID;
 begin
   // 1. Проверка дублей
   // 2. Сортировка
@@ -205,12 +211,18 @@ begin
     Result := Length(FRecords);
     SetLength(FRecords, Length(FRecords) + 1);
     FRecords[Result] := TRecordData.Create;
+    OldHash := '';
+  end else
+  begin
+    OldHash := FRecords[Result].Hash;
   end;
+
+  Diff := Sub(Rec.Hash, OldHash);
 
   FRecords[Result].Serialize(Rec);
   Result := Trace(Result);
 
-  FHash.Update(rec.ID, Rec.Hash);
+  FHash.UpdateDiff(Copy(rec.ID, 1, MAX_PREFIX_SIZE), Diff);
 end;
 
 {======================================================================================================================}
@@ -232,15 +244,6 @@ end;
 {======================================================================================================================}
 constructor TDiaryLocalSource.Create(const BaseFileName, HashFileName: string);
 {======================================================================================================================}
-
-  procedure UpdateHash();
-  var
-    i: integer;
-  begin
-    for i := 0 to High(FRecords) do
-      FHash.Update(FRecords[i].ID, FRecords[i].Hash);
-  end;
-
 begin
   FModified := False;
   FBaseFileName := BaseFileName;
@@ -254,7 +257,7 @@ begin
     FHash.LoadFromFile(HashFileName)
   else
   begin
-    UpdateHash;
+    UpdateHashTree();
     FHash.SaveToFile(HashFileName);
   end;
 end;
@@ -600,7 +603,7 @@ begin
     FRecords[i].Modified;
     FModified := True;
     SaveToFile(FBaseFileName);
-    FHash.Update(ID, FRecords[i].Hash);
+    UpdateHashBranch(Copy(ID, 1, MAX_PREFIX_SIZE));
     FHash.SaveToFile(FHashFileName);
     Exit;
   end;
@@ -611,6 +614,13 @@ function TDiaryLocalSource.GetHash(Prefix: TCompactGUID): TCompactGUID;
 {======================================================================================================================}
 begin
   Result := FHash[Prefix];
+end;
+
+{======================================================================================================================}
+function TDiaryLocalSource.GetHashChildren(Prefix: TCompactGUID): THashService;
+{======================================================================================================================}
+begin
+  Result := FHash.GetChildren(Prefix, True);
 end;
 
 {======================================================================================================================}
@@ -669,6 +679,11 @@ begin
     SaveToFile(FBaseFileName);
     FHash.SaveToFile(FHashFileName);
   end;
+end;
+
+procedure TDiaryLocalSource.SetHash(Prefix, Hash: TCompactGUID);
+begin
+  FHash.Add(Prefix, Hash, True);
 end;
 
 initialization

@@ -43,8 +43,10 @@ type
     function FindById(ID: TCompactGUID): TVersioned; override;
     function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList; override;
     function GetHash(Prefix: TCompactGUID): TCompactGUID; override;
+    function GetHashChildren(Prefix: TCompactGUID): THashService; override;
     procedure Save(Item: TVersioned); override;
     procedure Save(const Items: TVersionedList); override;
+    procedure SetHash(Prefix, Hash: TCompactGUID); override;
   end;
 
 implementation
@@ -73,15 +75,6 @@ end;
 {======================================================================================================================}
 constructor TDishbaseLocalDAO.Create(const BaseFileName, HashFileName: string);
 {======================================================================================================================}
-
-  procedure UpdateHash();
-  var
-    i: integer;
-  begin
-    for i := 0 to FBase.Count - 1 do
-      FHash.Update(FBase[i].ID, FBase[i].Hash);
-  end;
-
 begin
   FBase := TDishBase.Create;
   if FileExists(BaseFileName) then
@@ -97,7 +90,7 @@ begin
     FHash.LoadFromFile(HashFileName)
   else
   begin
-    UpdateHash;
+    UpdateHashTree('');
     FHash.SaveToFile(HashFileName);
   end;
   FHashFileName := HashFileName;
@@ -119,7 +112,7 @@ begin
   begin
     FBase[Index].Deleted := True;
     FBase[Index].Modified();
-    FHash.Update(ID, FBase[Index].Hash);
+    UpdateHashBranch(Copy(ID, 1, MAX_PREFIX_SIZE));
     Modified();
   end else
     raise EItemNotFoundException.Create(ID);
@@ -265,6 +258,13 @@ begin
 end;
 
 {======================================================================================================================}
+function TDishbaseLocalDAO.GetHashChildren(Prefix: TCompactGUID): THashService;
+{======================================================================================================================}
+begin
+  Result := FHash.GetChildren(Prefix, True);
+end;
+
+{======================================================================================================================}
 function TDishbaseLocalDAO.GetIndex(ID: TCompactGUID): integer;
 {======================================================================================================================}
 begin
@@ -325,7 +325,7 @@ begin
     begin
       FBase.Sort;
     end;
-    FHash.Update(Dish.ID, Dish.Hash);
+    UpdateHashBranch(Copy(Item.ID, 1, MAX_PREFIX_SIZE));
     Modified();
   end else
     Add(Dish);
@@ -340,6 +340,13 @@ begin
   // TODO: optimize, sort once
   for i := Low(Items) to High(Items) do
     Save(Items[i]);
+end;
+
+{======================================================================================================================}
+procedure TDishbaseLocalDAO.SetHash(Prefix, Hash: TCompactGUID);
+{======================================================================================================================}
+begin
+  FHash.Add(Prefix, Hash, True);
 end;
 
 end.
