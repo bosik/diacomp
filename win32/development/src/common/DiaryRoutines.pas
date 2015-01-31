@@ -13,6 +13,8 @@ uses
   Windows {GetThreadLocale};
 
 type
+  TStringArray = array of string;
+
   TIndexList = class
   private
     FData: array of integer;
@@ -38,9 +40,8 @@ type
   EKeyNotFoundException = class (Exception);
 
   TStringMap = class
-  private
-    FData: array of TStringPair;
   protected
+    FData: array of TStringPair;
     function GetItem(Index: integer): TStringPair;
     function GetValue(Key: string): string; virtual;
     function IndexOf(const Key: string): integer;
@@ -52,13 +53,13 @@ type
     destructor Destroy; override;
     procedure LoadFromFile(const FileName: string);
     procedure SaveToFile(const FileName: string);
+    function Values(): TStringArray; virtual;
 
     property Items[Key: string]: string read GetValue; default;
   end;
 
   TDate = type integer; // yao ming ;D
 
-  TStringArray = array of string;
   TSwapProcedure = procedure(Index1, Index2: integer) of object;
   TMoreFunction = function(Index1,Index2: integer): boolean of object;
   TGetterFunction = function(Index: integer): Variant of object;
@@ -371,6 +372,17 @@ begin
     SaveToFile(FileName);
     Free;
   end;
+end;
+
+{======================================================================================================================}
+function TStringMap.Values: TStringArray;
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  SetLength(Result, Length(FData));
+  for i := 0 to High(FData) do
+    Result[i] := FData[i].Value;
 end;
 
 {======================================================================================================================}
