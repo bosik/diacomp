@@ -587,16 +587,20 @@ end;
 {======================================================================================================================}
 function MySyncDiary(Terminated: TBooleanFunction = nil): integer;
 {======================================================================================================================}
+var
+  T: TDateTime;
 begin
   StartProc('MySyncDiary');
   Result := 0;
 
   try
+    T := StrToDateTime(Value['LastSync']);
+
     { дневник }
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_DIARY;
     Application.ProcessMessages;
 
-    Result := SyncSources(LocalSource, WebSource, SyncProgress);
+    Result := SyncSources(LocalSource, WebSource, T - 1);
 
     if (Result > 0) then
     begin
@@ -607,7 +611,7 @@ begin
     { база продуктов }
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_FOODBASE;
     Application.ProcessMessages;
-    if (SyncSources(FoodBaseLocal, FoodBaseWeb, SyncProgress) > 0) then
+    if (SyncSources(FoodBaseLocal, FoodBaseWeb, T - 1) > 0) then
     begin
       Form1.EventFoodbaseChanged(True);
     end;
@@ -615,11 +619,13 @@ begin
     { база блюд }
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_DISHBASE;
     Application.ProcessMessages;
-    if (SyncSources(DishBaseLocal, DishBaseWeb, SyncProgress) > 0) then
+    if (SyncSources(DishBaseLocal, DishBaseWeb, T - 1) > 0) then
     begin
       Form1.EventDishbaseChanged(True, True);
       // TODO: workaround
     end;
+
+    Value['LastSync'] := DateTimeToStr(GetTimeUTC());
     
     { готово }
     Form1.StatusBar.Panels[3].Text := STATUS_RESULT_SYNC_DONE;
