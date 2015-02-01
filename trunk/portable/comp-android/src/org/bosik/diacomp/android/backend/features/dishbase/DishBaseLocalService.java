@@ -276,10 +276,7 @@ public class DishBaseLocalService implements DishBaseService
 		}
 		finally
 		{
-			if (cursor != null)
-			{
-				cursor.close();
-			}
+			cursor.close();
 		}
 	}
 
