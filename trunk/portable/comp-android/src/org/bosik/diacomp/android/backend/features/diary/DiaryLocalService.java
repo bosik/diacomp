@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -466,6 +469,58 @@ public class DiaryLocalService implements DiaryService
 		catch (Exception e)
 		{
 			throw new PersistenceException(e);
+		}
+	}
+
+	/**
+	 * Returns sorted map (ID, Hash) for all items
+	 * 
+	 * @return
+	 */
+	private SortedMap<String, String> getAllHashes()
+	{
+		// constructing parameters
+		final String[] select = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_HASH };
+		final String where = null;
+		final String[] whereArgs = null;
+
+		// execute query
+		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, select, where, whereArgs, null);
+
+		// analyze response
+		int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_GUID);
+		int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_HASH);
+
+		SortedMap<String, String> result = new TreeMap<String, String>();
+
+		while (cursor.moveToNext())
+		{
+			String id = cursor.getString(indexId);
+			String hash = cursor.getString(indexHash);
+			// THINK: probably storing entries is unnecessary, so we should process it as we go
+			result.put(id, hash);
+		}
+
+		cursor.close();
+		return result;
+	}
+
+	public synchronized void rebuildHashTree()
+	{
+		// processing data
+		SortedMap<String, String> hashes = getAllHashes();
+		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
+
+		// clearing
+		resolver.delete(DiaryContentProvider.CONTENT_DIARY_HASH_URI, null, null);
+
+		// persisting new values
+		for (Entry<String, String> entry : tree.entrySet())
+		{
+			ContentValues newValues = new ContentValues();
+			newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH_GUID, entry.getKey());
+			newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH_HASH, entry.getValue());
+			resolver.insert(DiaryContentProvider.CONTENT_DIARY_HASH_URI, newValues);
 		}
 	}
 
