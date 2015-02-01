@@ -23,7 +23,8 @@ type
 
   function Sum(a, b: TCompactGUID): TCompactGUID;
   function Sub(a, b: TCompactGUID): TCompactGUID;
-  function CalculateHash(Hashes: TGUIDList): TCompactGUID;
+  function CalculateHash(Hashes: TGUIDList): TCompactGUID; overload;
+  function CalculateHash(Hashes: TStringArray): string; overload;
 
 const
   // TODO: rename
@@ -92,6 +93,18 @@ end;
 
 {======================================================================================================================}
 function CalculateHash(Hashes: TGUIDList): TCompactGUID;
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  Result := '';
+
+  for i := 0 to High(Hashes) do
+    Result := Sum(Result, Hashes[i]);
+end;
+
+{======================================================================================================================}
+function CalculateHash(Hashes: TStringArray): string;
 {======================================================================================================================}
 var
   i: integer;
