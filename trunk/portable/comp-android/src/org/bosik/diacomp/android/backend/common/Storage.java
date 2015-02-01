@@ -41,7 +41,7 @@ public class Storage
 
 	static final String				TAG					= Storage.class.getSimpleName();
 
-	private static final int		CONNECTION_TIMEOUT	= 6000;
+	private static final int		CONNECTION_TIMEOUT	= 12000;
 
 	private static boolean			timerSettedUp		= false;
 
