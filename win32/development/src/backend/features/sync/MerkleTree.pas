@@ -9,7 +9,7 @@ uses
 
 type
   THashTree = class
-    function GetHash(): string; virtual; abstract;
+    function GetHash(const Prefix: string): string; virtual; abstract;
     function GetHashChildren(): TStringMap; virtual; abstract;
   end;
 
@@ -26,7 +26,7 @@ type
     procedure Clear();
     constructor Create;
     destructor Destroy; override;
-    function GetHash(): string; override;
+    function GetHash(const Prefix: string): string; override;
     function GetHashChildren(): TStringMap; override;
     procedure Put(const Key, Value: string; PrefixSize: integer; UpdateHash: boolean = True);
     procedure PutAll(Map: TStringMap; PrefixSize: integer; UpdateHash: boolean = True);
@@ -83,10 +83,16 @@ begin
 end;
 
 {======================================================================================================================}
-function TMerkleTree.GetHash(): string;
+function TMerkleTree.GetHash(const Prefix: string): string;
 {======================================================================================================================}
+var
+  Child: TMerkleTree;
 begin
-  Result := FHash;
+  Child := Self.Child(Prefix);
+  if (Child <> nil) then
+    Result := Child.FHash
+  else
+    Result := EMPTY_HASH;
 end;
 
 {======================================================================================================================}
@@ -104,7 +110,7 @@ begin
   begin
     for i := 0 to 15 do
     if (FChildren[i] <> nil) then
-      Result.Add(INT_TO_CHAR[i], FChildren[i].GetHash());
+      Result.Add(INT_TO_CHAR[i], FChildren[i].FHash);
   end;
 end;
 

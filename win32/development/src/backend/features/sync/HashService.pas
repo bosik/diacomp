@@ -14,11 +14,7 @@ type
   protected
     function GetValue(Key: string): string; override;
   public
-    function GetChildren(const Key: TCompactGUID; Direct: boolean): THashService; 
     procedure UpdateDiff(Prefix, Diff: TCompactGUID);
-
-    // workaround for converting TStringArray into TGUIDList
-    function Values(): TGUIDList; reintroduce;
   end;
 
   function Sum(a, b: TCompactGUID): TCompactGUID;
@@ -97,7 +93,7 @@ function CalculateHash(Hashes: TGUIDList): TCompactGUID;
 var
   i: integer;
 begin
-  Result := '';
+  Result := EMPTY_HASH;
 
   for i := 0 to High(Hashes) do
     Result := Sum(Result, Hashes[i]);
@@ -109,7 +105,7 @@ function CalculateHash(Hashes: TStringArray): string;
 var
   i: integer;
 begin
-  Result := '';
+  Result := EMPTY_HASH;
 
   for i := 0 to High(Hashes) do
     Result := Sum(Result, Hashes[i]);
@@ -117,36 +113,6 @@ end;
 
 { THashService }
 
-{======================================================================================================================}
-function THashService.GetChildren(const Key: TCompactGUID; Direct: boolean): THashService;
-{======================================================================================================================}
-var
-  i: integer;
-begin
-  Result := THashService.Create;
-
-  if (Direct) then
-  begin
-    for i := 0 to High(FData) do
-    begin
-      if (StartsWith(FData[i].Key, Key)) and
-         (Length(FData[i].Key) = Length(Key) + 1) then
-      begin
-        Result.Add(FData[i].Key, FData[i].Value);
-      end;
-    end;
-  end else
-  begin
-    for i := 0 to High(FData) do
-    begin
-      if (StartsWith(FData[i].Key, Key)) and
-         (Length(FData[i].Key) > Length(Key)) then
-      begin
-        Result.Add(FData[i].Key, FData[i].Value);
-      end;
-    end;
-  end
-end;
 
 {======================================================================================================================}
 function THashService.GetValue(Key: string): string;
@@ -175,19 +141,6 @@ begin
     Key := Copy(Prefix, 1, i);
     Add(Key, Sum(GetValue(Key), Diff), True);
   end;
-end;
-
-{======================================================================================================================}
-function THashService.Values: TGUIDList;
-{======================================================================================================================}
-var
-  s: TStringArray;
-  i: integer;
-begin
-  s := inherited Values();
-  SetLength(Result, Length(s));
-  for i := 0 to High(s) do
-    Result[i] := s[i];
 end;
 
 initialization
