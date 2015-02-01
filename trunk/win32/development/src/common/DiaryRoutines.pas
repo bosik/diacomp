@@ -56,6 +56,7 @@ type
     function Values(): TStringArray; virtual;
 
     property Items[Key: string]: string read GetValue; default;
+    property Item[Index: integer]: TStringPair read GetItem;
   end;
 
   TDate = type integer; // yao ming ;D
