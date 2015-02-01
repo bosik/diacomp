@@ -319,7 +319,8 @@ public class SyncService
 
 	/* ============================ SYNC METHODS: HASH-BASED (v2) ============================ */
 
-	private static <T> int synchronizeChildren(ObjectService<T> service1, ObjectService<T> service2, String prefix)
+	private static <T> int synchronizeChildren(ObjectService<T> service1, MerkleTree tree1, ObjectService<T> service2,
+			MerkleTree tree2, String prefix)
 	{
 		if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
 		{
@@ -336,8 +337,8 @@ public class SyncService
 			else
 			{
 				// ok, need for finer separation
-				Map<String, String> hashes1 = service1.getHashChildren(prefix);
-				Map<String, String> hashes2 = service2.getHashChildren(prefix);
+				Map<String, String> hashes1 = tree1.getHashChildren(prefix);
+				Map<String, String> hashes2 = tree2.getHashChildren(prefix);
 				int result = 0;
 				for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
 				{
@@ -346,7 +347,7 @@ public class SyncService
 					String hash2 = hashes2.get(key);
 					if (!Utils.equals(hash1, hash2))
 					{
-						result += synchronizeChildren(service1, service2, key);
+						result += synchronizeChildren(service1, tree1, service2, tree2, key);
 					}
 				}
 
@@ -374,11 +375,14 @@ public class SyncService
 			throw new NullPointerException("service2 can't be null");
 		}
 
-		String hash1 = service1.getHash("");
-		String hash2 = service2.getHash("");
+		MerkleTree tree1 = service1.getHashTree();
+		MerkleTree tree2 = service2.getHashTree();
+
+		String hash1 = tree1.getHash("");
+		String hash2 = tree2.getHash("");
 		if (!Utils.equals(hash1, hash2))
 		{
-			return synchronizeChildren(service1, service2, "");
+			return synchronizeChildren(service1, tree1, service2, tree2, "");
 		}
 		else
 		{
