@@ -13,6 +13,7 @@ import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
+import org.bosik.diacomp.core.services.sync.MerkleTree;
 import org.bosik.diacomp.core.test.fakes.mocks.Mock;
 import org.bosik.diacomp.core.test.fakes.mocks.MockDiaryRecord;
 import org.bosik.diacomp.core.test.fakes.mocks.MockVersionedConverter;
@@ -193,6 +194,12 @@ public class FakeDiaryService implements DiaryService
 
 	@Override
 	public void setHash(String prefix, String hash)
+	{
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	public MerkleTree getHashTree()
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}

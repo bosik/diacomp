@@ -14,6 +14,7 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
+import org.bosik.diacomp.core.services.sync.MerkleTree;
 import org.bosik.diacomp.core.test.fakes.mocks.Mock;
 import org.bosik.diacomp.core.test.fakes.mocks.MockFoodItem;
 import org.bosik.diacomp.core.test.fakes.mocks.MockVersionedConverter;
@@ -218,6 +219,12 @@ public class FakeFoodBaseService implements FoodBaseService
 
 	@Override
 	public void setHash(String prefix, String hash)
+	{
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	public MerkleTree getHashTree()
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}

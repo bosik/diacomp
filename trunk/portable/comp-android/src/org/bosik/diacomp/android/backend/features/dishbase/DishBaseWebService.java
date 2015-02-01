@@ -19,6 +19,7 @@ import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
+import org.bosik.diacomp.core.services.sync.MerkleTree;
 import org.bosik.diacomp.core.utils.Utils;
 
 @SuppressWarnings("unchecked")
@@ -218,6 +219,25 @@ public class DishBaseWebService implements DishBaseService
 		{
 			throw new CommonServiceException(e);
 		}
+	}
+
+	@Override
+	public MerkleTree getHashTree()
+	{
+		return new MerkleTree()
+		{
+			@Override
+			public String getHash(String prefix)
+			{
+				return DishBaseWebService.this.getHash(prefix);
+			}
+
+			@Override
+			public Map<String, String> getHashChildren(String prefix)
+			{
+				return DishBaseWebService.this.getHashChildren(prefix);
+			}
+		};
 	}
 
 	@Override

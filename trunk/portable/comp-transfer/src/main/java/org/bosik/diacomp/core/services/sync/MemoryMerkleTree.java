@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
+import org.bosik.diacomp.core.services.ObjectService;
 
 public class MemoryMerkleTree extends TreeMap<String, String> implements MerkleTree
 {
@@ -23,7 +24,7 @@ public class MemoryMerkleTree extends TreeMap<String, String> implements MerkleT
 
 		for (java.util.Map.Entry<String, String> entry : allChildren.entrySet())
 		{
-			if (entry.getKey().length() == prefix.length() + 1)
+			if (prefix.length() >= ObjectService.ID_PREFIX_SIZE || entry.getKey().length() == prefix.length() + 1)
 			{
 				directChildren.put(entry.getKey(), entry.getValue());
 			}

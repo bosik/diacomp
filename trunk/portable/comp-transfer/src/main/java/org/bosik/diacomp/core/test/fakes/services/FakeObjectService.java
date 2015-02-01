@@ -10,6 +10,7 @@ import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
+import org.bosik.diacomp.core.services.sync.MerkleTree;
 
 public class FakeObjectService implements ObjectService<String>
 {
@@ -146,6 +147,12 @@ public class FakeObjectService implements ObjectService<String>
 
 	@Override
 	public void setHash(String prefix, String hash)
+	{
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	@Override
+	public MerkleTree getHashTree()
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}
