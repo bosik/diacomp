@@ -276,10 +276,7 @@ public class FoodBaseLocalService implements FoodBaseService
 		}
 		finally
 		{
-			if (cursor != null)
-			{
-				cursor.close();
-			}
+			cursor.close();
 		}
 	}
 
