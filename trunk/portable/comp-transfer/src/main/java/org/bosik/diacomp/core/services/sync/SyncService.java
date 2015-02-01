@@ -405,18 +405,31 @@ public class SyncService
 			throw new NullPointerException("service2 can't be null");
 		}
 
+		if (callback != null)
+		{
+			callback.update(0, 256);
+		}
+
 		MerkleTree tree1 = service1.getHashTree();
 		MerkleTree tree2 = service2.getHashTree();
 
 		String hash1 = tree1.getHash("");
 		String hash2 = tree2.getHash("");
+		int count;
 		if (!Utils.equals(hash1, hash2))
 		{
-			return synchronizeChildren(service1, tree1, service2, tree2, "", callback);
+			count = synchronizeChildren(service1, tree1, service2, tree2, "", callback);
 		}
 		else
 		{
-			return 0;
+			count = 0;
 		}
+
+		if (callback != null)
+		{
+			callback.update(256, 256);
+		}
+
+		return count;
 	}
 }
