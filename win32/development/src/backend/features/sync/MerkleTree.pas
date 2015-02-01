@@ -10,7 +10,7 @@ uses
 type
   THashTree = class
     function GetHash(const Prefix: string): string; virtual; abstract;
-    function GetHashChildren(): TStringMap; virtual; abstract;
+    function GetHashChildren(const Prefix: string): TStringMap; virtual; abstract;
   end;
 
   TMerkleTree = class (THashTree)
@@ -27,7 +27,7 @@ type
     constructor Create;
     destructor Destroy; override;
     function GetHash(const Prefix: string): string; override;
-    function GetHashChildren(): TStringMap; override;
+    function GetHashChildren(const Prefix: string): TStringMap; override;
     procedure Put(const Key, Value: string; PrefixSize: integer; UpdateHash: boolean = True);
     procedure PutAll(Map: TStringMap; PrefixSize: integer; UpdateHash: boolean = True);
     function UpdateHash(): string;
@@ -96,21 +96,26 @@ begin
 end;
 
 {======================================================================================================================}
-function TMerkleTree.GetHashChildren(): TStringMap;
+function TMerkleTree.GetHashChildren(const Prefix: string): TStringMap;
 {======================================================================================================================}
 var
+  Child: TMerkleTree;
   i: integer;
 begin
   Result := TStringMap.Create();
 
-  if (FData.Count > 0) then
+  Child := Self.Child(Prefix);
+  if (Child <> nil) then
   begin
-    Result.AddAll(FData);
-  end else
-  begin
-    for i := 0 to 15 do
-    if (FChildren[i] <> nil) then
-      Result.Add(INT_TO_CHAR[i], FChildren[i].FHash);
+    if (Child.FData.Count > 0) then
+    begin
+      Result.AddAll(Child.FData);
+    end else
+    begin
+      for i := 0 to 15 do
+      if (Child.FChildren[i] <> nil) then
+        Result.Add(INT_TO_CHAR[i], Child.FChildren[i].FHash);
+    end;
   end;
 end;
 
