@@ -40,7 +40,7 @@ type
     FModified: boolean;
     FBaseFileName: string;
 
-    function AddToInternal(Rec: TCustomRecord; UpdateHash: boolean): integer;
+    function AddToInternal(Rec: TCustomRecord): integer;
     procedure Clear;
     function GetRecordIndex(ID: TCompactGUID): integer;
     procedure LoadFromFile(const FileName: string);
@@ -49,18 +49,13 @@ type
   public
     constructor Create(const BaseFileName: string);
     destructor Destroy; override;
-
     procedure Delete(ID: TCompactGUID); override;
     function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
     function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList; override;
-
-    function GetHash(Prefix: TCompactGUID): TCompactGUID; override;
-    function GetHashChildren(Prefix: TCompactGUID): THashService; override;
-    function GetHashTree(): TMerkleTree; override;
+    function GetHashTree(): THashTree; override;
     procedure Save(const Recs: TVersionedList); override;
-    procedure SetHash(Prefix, Hash: TCompactGUID); override;
 
     // свойства
     // TODO: think about it
@@ -197,7 +192,7 @@ end;
 { TDiaryLocalSource }
 
 {======================================================================================================================}
-function TDiaryLocalSource.AddToInternal(Rec: TCustomRecord; UpdateHash: boolean): integer;
+function TDiaryLocalSource.AddToInternal(Rec: TCustomRecord): integer;
 {======================================================================================================================}
 begin
   // 1. Проверка дублей
@@ -432,7 +427,7 @@ begin
 
   FModified := False;  // да)
 
-  UpdateHashTree;
+  {* tree outdated *}
 end;
 
 {======================================================================================================================}
@@ -593,40 +588,21 @@ begin
 end;
 
 {======================================================================================================================}
-function TDiaryLocalSource.GetHash(Prefix: TCompactGUID): TCompactGUID;
+function TDiaryLocalSource.GetHashTree(): THashTree;
 {======================================================================================================================}
 var
-  Child: TMerkleTree;
-begin
-  {Child := FHashTree.Child(Prefix);
-  if (Child <> nil) then
-    Result := Child.Hash
-  else
-    Result := '';  }
-  raise Exception.Create('Not implemented');   
-end;
-
-{======================================================================================================================}
-function TDiaryLocalSource.GetHashChildren(Prefix: TCompactGUID): THashService;
-{======================================================================================================================}
-begin
-  raise Exception.Create('Not implemented');
-end;
-
-{======================================================================================================================}
-function TDiaryLocalSource.GetHashTree(): TMerkleTree;
-{======================================================================================================================}
-var
+  Tree: TMerkleTree;
   i: integer;
 begin
-  Result := TMerkleTree.Create();
+  Tree := TMerkleTree.Create();
 
   for i := 0 to High(FRecords) do
   begin
-    Result.Put(FRecords[i].ID, FRecords[i].Hash, MAX_PREFIX_SIZE, False);
+    Tree.Put(FRecords[i].ID, FRecords[i].Hash, MAX_PREFIX_SIZE, False);
   end;
 
-  Result.UpdateHash();
+  Tree.UpdateHash();
+  Result := Tree;
 end;
 
 {======================================================================================================================}
@@ -679,20 +655,13 @@ begin
   if (Length(Recs) > 0) then
   begin
     for i := 0 to High(Recs) do
-      AddToInternal(Recs[i] as TCustomRecord, False);
+      AddToInternal(Recs[i] as TCustomRecord);
 
     FModified := True;
     SaveToFile(FBaseFileName);
 
-    UpdateHashTree;
+    {* tree outdated *}
   end;
-end;
-
-{======================================================================================================================}
-procedure TDiaryLocalSource.SetHash(Prefix, Hash: TCompactGUID);
-{======================================================================================================================}
-begin
-  raise Exception.Create('Not implemented');
 end;
 
 initialization

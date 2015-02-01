@@ -11,7 +11,8 @@ uses
   DiaryRoutines,
   JsonSerializer,
   DiaryPageSerializer,
-  AutoLog;
+  AutoLog,
+  MerkleTree;
 
 type
   TDishbaseWebDAO = class (TDishbaseDAO)
@@ -27,8 +28,16 @@ type
     function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
     function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList; override;
-    function GetHash(Prefix: TCompactGUID): TCompactGUID; override;
+    function GetHashTree(): THashTree; override;
     procedure Save(const Items: TVersionedList); override;
+  end;
+
+  TDishbaseWebHash = class(THashTree)
+  private
+    FClient: TDiacompClient;
+  public
+    constructor Create(Client: TDiacompClient);
+    function GetHash(const Prefix: string): string; override;
   end;
 
 implementation
@@ -157,16 +166,10 @@ begin
 end;
 
 {======================================================================================================================}
-function TDishbaseWebDAO.GetHash(Prefix: TCompactGUID): TCompactGUID;
+function TDishbaseWebDAO.GetHashTree: THashTree;
 {======================================================================================================================}
-var
-  Query, Resp: string;
 begin
-  Query := FClient.GetApiURL() + 'dish/hash/' + Prefix;
-  Resp := FClient.DoGetSmart(query).Response;
-  {#}Log(VERBOUS, 'TDishbaseWebDAO.GetHash(): quered OK, Resp = "' + Resp + '"');
-
-  Result := Resp;
+  Result := TDishbaseWebHash.Create(FClient);
 end;
 
 {======================================================================================================================}
@@ -194,6 +197,31 @@ begin
   // etc.
 
   Response.Free;
+end;
+
+{ TDishbaseWebHash }
+
+{======================================================================================================================}
+constructor TDishbaseWebHash.Create(Client: TDiacompClient);
+{======================================================================================================================}
+begin
+  if (Client = nil) then
+    raise Exception.Create('Client can''t be nil');
+
+  FClient := Client;
+end;
+
+{======================================================================================================================}
+function TDishbaseWebHash.GetHash(const Prefix: string): string;
+{======================================================================================================================}
+var
+  StdResp: TStdResponse;
+  Query: string;
+begin
+  Query := FClient.GetApiURL() + 'dish/hash/' + Prefix;
+  StdResp := FClient.DoGetSmart(query);
+  Result := StdResp.Response;
+  StdResp.Free;
 end;
 
 end.

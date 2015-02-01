@@ -15,7 +15,8 @@ uses
   AutoLog,
   uLkJSON,
   JsonSerializer,
-  ObjectService;
+  ObjectService,
+  MerkleTree;
 
 type
   TDiaryWebSource = class (TDiaryDAO)
@@ -29,8 +30,16 @@ type
     function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
     function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList; override;
-    function GetHash(Prefix: TCompactGUID): TCompactGUID; override;
+    function GetHashTree(): THashTree; override;
     procedure Save(const Recs: TVersionedList); override;
+  end;
+
+  TDiaryWebHash = class(THashTree)
+  private
+    FClient: TDiacompClient;
+  public
+    constructor Create(Client: TDiacompClient);
+    function GetHash(const Prefix: string): string; override;
   end;
 
 implementation
@@ -57,7 +66,7 @@ constructor TDiaryWebSource.Create(Client: TDiacompClient);
 begin
   if (Client = nil) then
     raise Exception.Create('Client can''t be nil');
-    
+
   FClient := Client;
 end;
 
@@ -145,16 +154,10 @@ begin
 end;
 
 {======================================================================================================================}
-function TDiaryWebSource.GetHash(Prefix: TCompactGUID): TCompactGUID;
+function TDiaryWebSource.GetHashTree(): THashTree;
 {======================================================================================================================}
-var
-  StdResp: TStdResponse;
-  Query: string;
 begin
-  Query := FClient.GetApiURL() + 'diary/hash/' + Prefix;
-  StdResp := FClient.DoGetSmart(query);
-  Result := StdResp.Response;
-  StdResp.Free;
+  Result := TDiaryWebHash.Create(FClient);
 end;
 
 {======================================================================================================================}
@@ -185,6 +188,31 @@ begin
   // etc.
 
   Response.Free;
+end;
+
+{ TDiaryWebHash }
+
+{======================================================================================================================}
+constructor TDiaryWebHash.Create(Client: TDiacompClient);
+{======================================================================================================================}
+begin
+  if (Client = nil) then
+    raise Exception.Create('Client can''t be nil');
+
+  FClient := Client;
+end;
+
+{======================================================================================================================}
+function TDiaryWebHash.GetHash(const Prefix: string): string;
+{======================================================================================================================}
+var
+  StdResp: TStdResponse;
+  Query: string;
+begin
+  Query := FClient.GetApiURL() + 'diary/hash/' + Prefix;
+  StdResp := FClient.DoGetSmart(query);
+  Result := StdResp.Response;
+  StdResp.Free;
 end;
 
 end.

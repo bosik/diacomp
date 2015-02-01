@@ -150,10 +150,10 @@ begin
 
   Diary := TDiary.Create(LocalSource);
 
-  FoodBaseLocal := TFoodBaseLocalDAO.Create(WORK_FOLDER + FoodBase_FileName, WORK_FOLDER + FoodBaseHash_FileName);
+  FoodBaseLocal := TFoodBaseLocalDAO.Create(WORK_FOLDER + FoodBase_FileName);
   FoodBaseWeb := TFoodbaseWebDAO.Create(WebClient);
 
-  DishBaseLocal := TDishBaseLocalDAO.Create(WORK_FOLDER + DishBase_FileName, WORK_FOLDER + DishBaseHash_FileName);
+  DishBaseLocal := TDishBaseLocalDAO.Create(WORK_FOLDER + DishBase_FileName);
   DishBaseWeb := TDishbaseWebDAO.Create(WebClient);
 
   Expander := TStringMap.Create;

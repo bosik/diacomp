@@ -11,15 +11,14 @@ uses
   ObjectService,
   ExtCtrls,
   HashService,
-  DiaryRoutines;
+  DiaryRoutines,
+  MerkleTree;
 
 type
   TDishbaseLocalDAO = class (TDishbaseDAO)
   private
     FBaseFileName: string;
-    FHashFileName: string;
     FBase: TDishBase;
-    FHash: THashService;
 
     Timer: TTimer;
     FModified: boolean;
@@ -31,22 +30,18 @@ type
     procedure OnTimer(Sender: TObject);
     procedure Modified();
   public
-    constructor Create(const BaseFileName, HashFileName: string);
+    constructor Create(const BaseFileName: string);
     destructor Destroy; override;
-
     procedure Delete(ID: TCompactGUID); override;
     function FindAll(ShowRemoved: boolean): TDishItemList; override;
     function FindAny(const Filter: string): TDishItemList; override;
     function FindOne(const Name: string): TDishItem; override;
-    
     function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
     function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList; override;
-    function GetHash(Prefix: TCompactGUID): TCompactGUID; override;
-    function GetHashChildren(Prefix: TCompactGUID): THashService; override;
+    function GetHashTree(): THashTree; override;
     procedure Save(Item: TVersioned); override;
     procedure Save(const Items: TVersionedList); override;
-    procedure SetHash(Prefix, Hash: TCompactGUID); override;
   end;
 
 implementation
@@ -73,7 +68,7 @@ begin
 end;
 
 {======================================================================================================================}
-constructor TDishbaseLocalDAO.Create(const BaseFileName, HashFileName: string);
+constructor TDishbaseLocalDAO.Create(const BaseFileName: string);
 {======================================================================================================================}
 begin
   FBase := TDishBase.Create;
@@ -84,16 +79,6 @@ begin
   FModified := False;
   FFirstMod := 0;
   FLastMod := 0;
-
-  FHash := THashService.Create();
-  if FileExists(HashFileName) then
-    FHash.LoadFromFile(HashFileName)
-  else
-  begin
-    UpdateHashTree('');
-    FHash.SaveToFile(HashFileName);
-  end;
-  FHashFileName := HashFileName;
 
   Timer := TTimer.Create(nil);
   Timer.Interval := 1000;
@@ -112,7 +97,6 @@ begin
   begin
     FBase[Index].Deleted := True;
     FBase[Index].Modified();
-    UpdateHashBranch(Copy(ID, 1, MAX_PREFIX_SIZE));
     Modified();
   end else
     raise EItemNotFoundException.Create(ID);
@@ -125,12 +109,10 @@ begin
   if (FModified) then
   begin
     FBase.SaveToFile(FBaseFileName);
-    FHash.SaveToFile(FHashFileName);
     FModified := False;
   end;
 
   FBase.Free;
-  FHash.Free;
   Timer.Free;
   inherited;
 end;
@@ -251,17 +233,21 @@ begin
 end;
 
 {======================================================================================================================}
-function TDishbaseLocalDAO.GetHash(Prefix: TCompactGUID): TCompactGUID;
+function TDishbaseLocalDAO.GetHashTree(): THashTree;
 {======================================================================================================================}
+var
+  Tree: TMerkleTree;
+  i: integer;
 begin
-  Result := FHash[Prefix];
-end;
+  Tree := TMerkleTree.Create();
 
-{======================================================================================================================}
-function TDishbaseLocalDAO.GetHashChildren(Prefix: TCompactGUID): THashService;
-{======================================================================================================================}
-begin
-  Result := FHash.GetChildren(Prefix, True);
+  for i := 0 to FBase.Count - 1 do
+  begin
+    Tree.Put(FBase[i].ID, FBase[i].Hash, MAX_PREFIX_SIZE, False);
+  end;
+
+  Tree.UpdateHash();
+  Result := Tree;
 end;
 
 {======================================================================================================================}
@@ -296,7 +282,6 @@ begin
       Timer.Enabled := False;
       try
         FBase.SaveToFile(FBaseFileName);
-        FHash.SaveToFile(FHashFileName);
         FModified := False;
         FFirstMod := 0; // TODO: or GetTickCount() ?
       finally
@@ -325,7 +310,6 @@ begin
     begin
       FBase.Sort;
     end;
-    UpdateHashBranch(Copy(Item.ID, 1, MAX_PREFIX_SIZE));
     Modified();
   end else
     Add(Dish);
@@ -340,13 +324,6 @@ begin
   // TODO: optimize, sort once
   for i := Low(Items) to High(Items) do
     Save(Items[i]);
-end;
-
-{======================================================================================================================}
-procedure TDishbaseLocalDAO.SetHash(Prefix, Hash: TCompactGUID);
-{======================================================================================================================}
-begin
-  FHash.Add(Prefix, Hash, True);
 end;
 
 end.
