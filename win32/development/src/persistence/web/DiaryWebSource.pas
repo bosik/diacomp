@@ -161,7 +161,7 @@ end;
 procedure TDiaryWebSource.Save(const Recs: TVersionedList);
 {======================================================================================================================}
 var
-  Par: TParamList;
+  Par: TStringArray;
   json: TlkJSONlist;
   Response: TStdResponse;
 begin

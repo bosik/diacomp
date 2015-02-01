@@ -173,8 +173,8 @@ end;
 procedure TFoodbaseWebDAO.Save(const Items: TVersionedList);
 {======================================================================================================================}
 var
-  Par: TParamList;
-  //Response: TStdResponse;
+  Par: TStringArray;
+  Response: TStdResponse;
 begin
   // заглушка
   if (Length(Items) = 0) then
@@ -185,13 +185,15 @@ begin
   SetLength(Par, 1);
   par[0] := 'items=' + JsonWrite(SerializeVersionedFoodItems(VersionedListToFoodItemList(Items)));
 
-  {Response :=} FClient.DoPutSmart(FClient.GetApiURL() + 'food/', Par);
+  Response := FClient.DoPutSmart(FClient.GetApiURL() + 'food/', Par);
 
   // TODO: check response, throw exception if non-zero
   // Response.Code = 0     it's ok
   // Response.Code = 500   Internal server error
   // Response.Code = xxx   Connection error
   // etc.
+
+  Response.Free;
 end;
 
 end.

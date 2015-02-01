@@ -25,8 +25,6 @@ type
   ENotAuthorizedException  = class (ECommonException);   // Must be authorized to perform
   EInternalServerException = class (ECommonException);   // Internal server error
 
-  TParamList = array of string;
-
   TStdResponse = class
   private
     FCode: integer;
@@ -50,16 +48,16 @@ type
     FTimeShift: double;
 
     function DoGet(URL: string; Autocheck: boolean = True): TStdResponse;
-    function DoPost(URL: string; const Par: TParamList; Autocheck: boolean = True): TStdResponse;
-    function DoPut(URL: string; const Par: TParamList; Autocheck: boolean = True): TStdResponse;
+    function DoPost(URL: string; const Par: TStringArray; Autocheck: boolean = True): TStdResponse;
+    function DoPut(URL: string; const Par: TStringArray; Autocheck: boolean = True): TStdResponse;
 
     //procedure PrintProtocolVersion(const Msg: string = 'TDiacompClient');
   public
     procedure CheckResponse(const Response: TStdResponse);
 
     function DoGetSmart(const URL: string): TStdResponse;
-    function DoPostSmart(const URL: string; const Par: TParamList): TStdResponse;
-    function DoPutSmart(const URL: string; const Par: TParamList): TStdResponse;
+    function DoPostSmart(const URL: string; const Par: TStringArray): TStdResponse;
+    function DoPutSmart(const URL: string; const Par: TStringArray): TStdResponse;
 
     // TODO: sort
     constructor Create;
@@ -99,7 +97,7 @@ const
 
   TIME_RECONNECT                    = 1200;
 
-  function PrintParams(const Par: TParamList): string;
+  function PrintParams(const Par: TStringArray): string;
   var
     i: integer;
   begin
@@ -255,7 +253,7 @@ begin
 end;
 
 {======================================================================================================================}
-function TDiacompClient.DoPost(URL: string; const Par: TParamList; Autocheck: boolean): TStdResponse;
+function TDiacompClient.DoPost(URL: string; const Par: TStringArray; Autocheck: boolean): TStdResponse;
 {======================================================================================================================}
 var
   Data: TStrings;
@@ -287,7 +285,7 @@ begin
 end;
 
 {======================================================================================================================}
-function TDiacompClient.DoPut(URL: string; const Par: TParamList; Autocheck: boolean): TStdResponse;
+function TDiacompClient.DoPut(URL: string; const Par: TStringArray; Autocheck: boolean): TStdResponse;
 {======================================================================================================================}
 var
   Data: TStrings;
@@ -350,7 +348,7 @@ begin
 end;
 
 {======================================================================================================================}
-function TDiacompClient.DoPostSmart(const URL: string; const Par: TParamList): TStdResponse;
+function TDiacompClient.DoPostSmart(const URL: string; const Par: TStringArray): TStdResponse;
 {======================================================================================================================}
 begin
   try
@@ -376,7 +374,7 @@ begin
 end;
 
 {======================================================================================================================}
-function TDiacompClient.DoPutSmart(const URL: string; const Par: TParamList): TStdResponse;
+function TDiacompClient.DoPutSmart(const URL: string; const Par: TStringArray): TStdResponse;
 {======================================================================================================================}
 begin
   try
@@ -406,7 +404,7 @@ procedure TDiacompClient.Login();
 {======================================================================================================================}
 var
   Query: string;
-  Par: TParamList;
+  Par: TStringArray;
   Response: TStdResponse;
 begin
   Query := GetApiURL + 'auth/login/';
