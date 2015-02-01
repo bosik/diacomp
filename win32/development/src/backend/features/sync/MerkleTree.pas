@@ -20,6 +20,7 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure Put(const Key, Value: string; PrefixSize: integer; UpdateHash: boolean = True);
+    procedure PutAll(Map: TStringMap; PrefixSize: integer; UpdateHash: boolean = True);
     function UpdateHash(): string;
 
     property Hash: string read FHash write FHash;
@@ -73,6 +74,19 @@ begin
     PutLong(Key, Value, PrefixSize)
   else
     PutShort(Key, Value);
+
+  if (UpdateHash) then
+    Self.UpdateHash();
+end;
+
+{======================================================================================================================}
+procedure TMerkleTree.PutAll(Map: TStringMap; PrefixSize: integer; UpdateHash: boolean);
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  for i := 0 to Map.Count - 1 do
+    Put(Map.Item[i].Key, Map.Item[i].Value, PrefixSize, False);
 
   if (UpdateHash) then
     Self.UpdateHash();
