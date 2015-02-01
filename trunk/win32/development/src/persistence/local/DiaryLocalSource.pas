@@ -17,7 +17,8 @@ uses
   BusinessObjects,
 
   AutoLog {TODO: debug only},
-  HashService;
+  HashService,
+  MerkleTree;
 
 type
   // частично распарсенная запись
@@ -36,20 +37,20 @@ type
   TDiaryLocalSource = class (TDiaryDAO)
   private
     FRecords: TRecordDataList;
-    FHash: THashService;
+    FHashTree: TMerkleTree;
     FModified: boolean;
     FBaseFileName: string;
-    FHashFileName: string;
 
-    function AddToInternal(Rec: TCustomRecord): integer;
+    function AddToInternal(Rec: TCustomRecord; UpdateHash: boolean): integer;
     procedure Clear;
+    function GetAllHashes(): TStringMap;
     function GetRecordIndex(ID: TCompactGUID): integer;
-    function Trace(Index: integer): integer;
-
     procedure LoadFromFile(const FileName: string);
     procedure SaveToFile(const FileName: string);
+    function Trace(Index: integer): integer;
+    procedure UpdateHashTree();
   public
-    constructor Create(const BaseFileName, HashFileName: string);
+    constructor Create(const BaseFileName: string);
     destructor Destroy; override;
 
     procedure Delete(ID: TCompactGUID); override;
@@ -57,6 +58,7 @@ type
     function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
     function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList; override;
+
     function GetHash(Prefix: TCompactGUID): TCompactGUID; override;
     function GetHashChildren(Prefix: TCompactGUID): THashService; override;
     procedure Save(const Recs: TVersionedList); override;
@@ -197,10 +199,8 @@ end;
 { TDiaryLocalSource }
 
 {======================================================================================================================}
-function TDiaryLocalSource.AddToInternal(Rec: TCustomRecord): integer;
+function TDiaryLocalSource.AddToInternal(Rec: TCustomRecord; UpdateHash: boolean): integer;
 {======================================================================================================================}
-var
-  OldHash, Diff: TCompactGUID;
 begin
   // 1. Проверка дублей
   // 2. Сортировка
@@ -211,18 +211,13 @@ begin
     Result := Length(FRecords);
     SetLength(FRecords, Length(FRecords) + 1);
     FRecords[Result] := TRecordData.Create;
-    OldHash := '';
-  end else
-  begin
-    OldHash := FRecords[Result].Hash;
   end;
-
-  Diff := Sub(Rec.Hash, OldHash);
 
   FRecords[Result].Serialize(Rec);
   Result := Trace(Result);
 
-  FHash.UpdateDiff(Copy(rec.ID, 1, MAX_PREFIX_SIZE), Diff);
+  // full tree update
+  FHashTree.Put(rec.ID, Rec.Hash, MAX_PREFIX_SIZE, UpdateHash);
 end;
 
 {======================================================================================================================}
@@ -242,24 +237,15 @@ begin
 end;
 
 {======================================================================================================================}
-constructor TDiaryLocalSource.Create(const BaseFileName, HashFileName: string);
+constructor TDiaryLocalSource.Create(const BaseFileName: string);
 {======================================================================================================================}
 begin
   FModified := False;
   FBaseFileName := BaseFileName;
-  FHashFileName := HashFileName;
+  FHashTree := TMerkleTree.Create();
 
   if (FileExists(BaseFileName)) then
     LoadFromFile(BaseFileName);
-
-  FHash := THashService.Create();
-  if FileExists(HashFileName) then
-    FHash.LoadFromFile(HashFileName)
-  else
-  begin
-    UpdateHashTree();
-    FHash.SaveToFile(HashFileName);
-  end;
 end;
 
 {======================================================================================================================}
@@ -267,7 +253,7 @@ destructor TDiaryLocalSource.Destroy;
 {======================================================================================================================}
 begin
   Clear;
-  FHash.Free;
+  FHashTree.Free;
   inherited;
 end;
 
@@ -450,6 +436,8 @@ begin
     SaveToFile(FileName);
 
   FModified := False;  // да)
+
+  UpdateHashTree;
 end;
 
 {======================================================================================================================}
@@ -600,27 +588,47 @@ begin
   if (FRecords[i].ID = ID) then
   begin
     FRecords[i].Deleted := True;
-    FRecords[i].Modified;
+    FRecords[i].Modified();
     FModified := True;
     SaveToFile(FBaseFileName);
-    UpdateHashBranch(Copy(ID, 1, MAX_PREFIX_SIZE));
-    FHash.SaveToFile(FHashFileName);
+
+    // full tree update
+    FHashTree.Put(FRecords[i].ID, FRecords[i].Hash, MAX_PREFIX_SIZE);
     Exit;
+  end;
+end;
+
+{======================================================================================================================}
+function TDiaryLocalSource.GetAllHashes: TStringMap;
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  Result := TStringMap.Create;
+  for i := 0 to High(FRecords) do
+  begin
+    Result.Add(FRecords[i].ID, FRecords[i].Hash);
   end;
 end;
 
 {======================================================================================================================}
 function TDiaryLocalSource.GetHash(Prefix: TCompactGUID): TCompactGUID;
 {======================================================================================================================}
+var
+  Child: TMerkleTree;
 begin
-  Result := FHash[Prefix];
+  Child := FHashTree.Child(Prefix);
+  if (Child <> nil) then
+    Result := Child.Hash
+  else
+    Result := '';
 end;
 
 {======================================================================================================================}
 function TDiaryLocalSource.GetHashChildren(Prefix: TCompactGUID): THashService;
 {======================================================================================================================}
 begin
-  Result := FHash.GetChildren(Prefix, True);
+  raise Exception.Create('Not implemented');
 end;
 
 {======================================================================================================================}
@@ -673,17 +681,34 @@ begin
   if (Length(Recs) > 0) then
   begin
     for i := 0 to High(Recs) do
-      AddToInternal(Recs[i] as TCustomRecord);
+      AddToInternal(Recs[i] as TCustomRecord, False);
 
     FModified := True;
     SaveToFile(FBaseFileName);
-    FHash.SaveToFile(FHashFileName);
+
+    UpdateHashTree;
   end;
 end;
 
+{======================================================================================================================}
 procedure TDiaryLocalSource.SetHash(Prefix, Hash: TCompactGUID);
+{======================================================================================================================}
 begin
-  FHash.Add(Prefix, Hash, True);
+  raise Exception.Create('Not implemented');
+end;
+
+{======================================================================================================================}
+procedure TDiaryLocalSource.UpdateHashTree;
+{======================================================================================================================}
+var
+  Hashes: TStringMap;
+begin
+  Hashes := GetAllHashes();
+
+  FHashTree.Clear();
+  FHashTree.PutAll(Hashes, MAX_PREFIX_SIZE);
+
+  Hashes.Free;
 end;
 
 initialization
