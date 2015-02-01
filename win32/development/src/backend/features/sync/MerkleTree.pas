@@ -21,6 +21,7 @@ type
     procedure Clear();
     constructor Create;
     destructor Destroy; override;
+    function GetHashChildren(): TStringMap;
     procedure Put(const Key, Value: string; PrefixSize: integer; UpdateHash: boolean = True);
     procedure PutAll(Map: TStringMap; PrefixSize: integer; UpdateHash: boolean = True);
     function UpdateHash(): string;
@@ -32,6 +33,7 @@ implementation
 
 var
   CHAR_TO_INT: array[char] of integer;
+  INT_TO_CHAR: array[0..15] of char = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
 
 { TMerkleTree }
 
@@ -74,6 +76,25 @@ destructor TMerkleTree.Destroy;
 begin
   Clear();
   FData.Free;
+end;
+
+{======================================================================================================================}
+function TMerkleTree.GetHashChildren(): TStringMap;
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  Result := TStringMap.Create();
+
+  if (FData.Count > 0) then
+  begin
+    Result.AddAll(FData);
+  end else
+  begin
+    for i := 0 to 15 do
+    if (FChildren[i] <> nil) then
+      Result.Add(INT_TO_CHAR[i], FChildren[i].Hash);
+  end;
 end;
 
 {======================================================================================================================}
