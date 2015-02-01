@@ -511,8 +511,6 @@ public class DishBaseLocalService implements DishBaseService
 
 					db.insert(TABLE_DISHBASE, set);
 				}
-
-				HashUtils.updateHashBranch(this, item.getId().substring(0, ID_PREFIX_SIZE));
 			}
 		}
 		catch (SQLException e)

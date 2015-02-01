@@ -723,8 +723,6 @@ public class FoodBaseLocalService implements FoodBaseService
 					newValues.put(DiaryContentProvider.COLUMN_FOODBASE_GUID, item.getId());
 					resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues);
 				}
-
-				HashUtils.updateHashBranch(this, item.getId().substring(0, ID_PREFIX_SIZE));
 			}
 
 			for (Versioned<FoodItem> item : items)
