@@ -24,6 +24,8 @@ import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.sync.HashUtils;
+import org.bosik.diacomp.core.services.sync.MemoryMerkleTree;
+import org.bosik.diacomp.core.services.sync.MerkleTree;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -477,7 +479,7 @@ public class DiaryLocalService implements DiaryService
 	 * 
 	 * @return
 	 */
-	private SortedMap<String, String> getAllHashes()
+	private SortedMap<String, String> getDataHashes()
 	{
 		// constructing parameters
 		final String[] select = { DiaryContentProvider.COLUMN_DIARY_GUID, DiaryContentProvider.COLUMN_DIARY_HASH };
@@ -508,7 +510,7 @@ public class DiaryLocalService implements DiaryService
 	public synchronized void rebuildHashTree()
 	{
 		// processing data
-		SortedMap<String, String> hashes = getAllHashes();
+		SortedMap<String, String> hashes = getDataHashes();
 		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
 
 		// clearing
@@ -522,6 +524,18 @@ public class DiaryLocalService implements DiaryService
 			newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH_HASH, entry.getValue());
 			resolver.insert(DiaryContentProvider.CONTENT_DIARY_HASH_URI, newValues);
 		}
+	}
+
+	@Override
+	public MerkleTree getHashTree()
+	{
+		SortedMap<String, String> hashes = getDataHashes();
+		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
+
+		MemoryMerkleTree result = new MemoryMerkleTree();
+		result.putAll(tree); // headers (0..4 chars id)
+		result.putAll(hashes); // leafs (32 chars id)
+		return result;
 	}
 
 	/* ======================= ROUTINES ========================= */

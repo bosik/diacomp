@@ -21,6 +21,7 @@ import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
+import org.bosik.diacomp.core.services.sync.MerkleTree;
 import org.bosik.diacomp.core.utils.Utils;
 
 public class DiaryWebService implements DiaryService
@@ -197,6 +198,25 @@ public class DiaryWebService implements DiaryService
 		{
 			throw new CommonServiceException(e);
 		}
+	}
+
+	@Override
+	public MerkleTree getHashTree()
+	{
+		return new MerkleTree()
+		{
+			@Override
+			public String getHash(String prefix)
+			{
+				return DiaryWebService.this.getHash(prefix);
+			}
+
+			@Override
+			public Map<String, String> getHashChildren(String prefix)
+			{
+				return DiaryWebService.this.getHashChildren(prefix);
+			}
+		};
 	}
 
 	@Override

@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -24,6 +26,8 @@ import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.sync.HashUtils;
+import org.bosik.diacomp.core.services.sync.MemoryMerkleTree;
+import org.bosik.diacomp.core.services.sync.MerkleTree;
 import org.bosik.diacomp.core.utils.Utils;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -519,6 +523,39 @@ public class FoodBaseLocalService implements FoodBaseService
 		return find(null, null, true, since);
 	}
 
+	/**
+	 * Returns sorted map (ID, Hash) for all items
+	 * 
+	 * @return
+	 */
+	private SortedMap<String, String> getDataHashes()
+	{
+		// constructing parameters
+		final String[] select = { DiaryContentProvider.COLUMN_FOODBASE_GUID, DiaryContentProvider.COLUMN_FOODBASE_HASH };
+		final String where = null;
+		final String[] whereArgs = null;
+
+		// execute query
+		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, select, where, whereArgs, null);
+
+		// analyze response
+		int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_GUID);
+		int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_HASH);
+
+		SortedMap<String, String> result = new TreeMap<String, String>();
+
+		while (cursor.moveToNext())
+		{
+			String id = cursor.getString(indexId);
+			String hash = cursor.getString(indexHash);
+			// THINK: probably storing entries is unnecessary, so we should process it as we go
+			result.put(id, hash);
+		}
+
+		cursor.close();
+		return result;
+	}
+
 	@Override
 	public String getHash(String prefix) throws CommonServiceException
 	{
@@ -640,6 +677,18 @@ public class FoodBaseLocalService implements FoodBaseService
 		{
 			throw new CommonServiceException(e);
 		}
+	}
+
+	@Override
+	public MerkleTree getHashTree()
+	{
+		SortedMap<String, String> hashes = getDataHashes();
+		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
+
+		MemoryMerkleTree result = new MemoryMerkleTree();
+		result.putAll(tree); // headers (0..4 chars id)
+		result.putAll(hashes); // leafs (32 chars id)
+		return result;
 	}
 
 	@Override

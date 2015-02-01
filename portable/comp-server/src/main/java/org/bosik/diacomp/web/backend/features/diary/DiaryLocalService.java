@@ -23,6 +23,8 @@ import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.sync.HashUtils;
+import org.bosik.diacomp.core.services.sync.MemoryMerkleTree;
+import org.bosik.diacomp.core.services.sync.MerkleTree;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
@@ -353,6 +355,20 @@ public class DiaryLocalService implements DiaryService
 	}
 
 	@Override
+	public MerkleTree getHashTree()
+	{
+		int userId = getCurrentUserId();
+
+		SortedMap<String, String> hashes = getDataHashes(userId);
+		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
+
+		MemoryMerkleTree result = new MemoryMerkleTree();
+		result.putAll(tree); // headers (0..4 chars id)
+		result.putAll(hashes); // leafs (32 chars id)
+		return result;
+	}
+
+	@Override
 	public void save(List<Versioned<DiaryRecord>> records)
 	{
 		try
@@ -498,6 +514,43 @@ public class DiaryLocalService implements DiaryService
 
 			set.close();
 			return hash;
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Returns sorted map (ID, Hash) for all items
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("static-method")
+	private SortedMap<String, String> getDataHashes(int userId)
+	{
+		try
+		{
+			final String[] select = { COLUMN_DIARY_GUID, COLUMN_DIARY_HASH };
+			final String where = String.format("(%s = ?)", COLUMN_DIARY_USER);
+			final String[] whereArgs = { String.valueOf(userId) };
+			final String order = null;
+
+			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
+
+			SortedMap<String, String> result = new TreeMap<String, String>();
+
+			while (set.next())
+			{
+				String id = set.getString(COLUMN_DIARY_GUID);
+				String hash = set.getString(COLUMN_DIARY_HASH);
+				// THINK: probably storing entries is unnecessary, so we should process it as we go
+				result.put(id, hash);
+			}
+
+			set.close();
+
+			return result;
 		}
 		catch (SQLException e)
 		{

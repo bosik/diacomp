@@ -8,6 +8,7 @@ import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
+import org.bosik.diacomp.core.services.sync.MerkleTree;
 
 public interface ObjectService<T>
 {
@@ -91,6 +92,13 @@ public interface ObjectService<T>
 	 * @throws CommonServiceException
 	 */
 	Map<String, String> getHashChildren(String prefix) throws CommonServiceException;
+
+	/**
+	 * Returns hash tree
+	 * 
+	 * @return
+	 */
+	MerkleTree getHashTree();
 
 	/**
 	 * Persists items (creates if not exist, updates otherwise)

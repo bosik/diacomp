@@ -23,6 +23,8 @@ import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.sync.HashUtils;
+import org.bosik.diacomp.core.services.sync.MemoryMerkleTree;
+import org.bosik.diacomp.core.services.sync.MerkleTree;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
@@ -321,6 +323,43 @@ public class DishBaseLocalService implements DishBaseService
 		}
 	}
 
+	/**
+	 * Returns sorted map (ID, Hash) for all items
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("static-method")
+	private SortedMap<String, String> getDataHashes(int userId)
+	{
+		try
+		{
+			final String[] select = { COLUMN_DISHBASE_GUID, COLUMN_DISHBASE_HASH };
+			final String where = String.format("(%s = ?)", COLUMN_DISHBASE_USER);
+			final String[] whereArgs = { String.valueOf(userId) };
+			final String order = null;
+
+			ResultSet set = db.select(TABLE_DISHBASE, select, where, whereArgs, order);
+
+			SortedMap<String, String> result = new TreeMap<String, String>();
+
+			while (set.next())
+			{
+				String id = set.getString(COLUMN_DISHBASE_GUID);
+				String hash = set.getString(COLUMN_DISHBASE_HASH);
+				// THINK: probably storing entries is unnecessary, so we should process it as we go
+				result.put(id, hash);
+			}
+
+			set.close();
+
+			return result;
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
 	@Override
 	public String getHash(String prefix)
 	{
@@ -406,6 +445,20 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public MerkleTree getHashTree()
+	{
+		int userId = getCurrentUserId();
+
+		SortedMap<String, String> hashes = getDataHashes(userId);
+		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
+
+		MemoryMerkleTree result = new MemoryMerkleTree();
+		result.putAll(tree); // headers (0..4 chars id)
+		result.putAll(hashes); // leafs (32 chars id)
+		return result;
 	}
 
 	@Override
