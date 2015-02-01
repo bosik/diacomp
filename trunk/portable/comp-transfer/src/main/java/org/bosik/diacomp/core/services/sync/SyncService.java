@@ -21,6 +21,11 @@ public class SyncService
 		public void update_progress(int progress);
 	}
 
+	public static interface ProgressCallback
+	{
+		public void update(int progress, int max);
+	}
+
 	/* ============================ ROUTINES ============================ */
 
 	/**
@@ -320,8 +325,33 @@ public class SyncService
 	/* ============================ SYNC METHODS: HASH-BASED (v2) ============================ */
 
 	private static <T> int synchronizeChildren(ObjectService<T> service1, MerkleTree tree1, ObjectService<T> service2,
-			MerkleTree tree2, String prefix)
+			MerkleTree tree2, String prefix, ProgressCallback callback)
 	{
+		if (callback != null)
+		{
+			switch (prefix.length())
+			{
+				case 0:
+				{
+					callback.update(0, 256);
+					break;
+				}
+				case 1:
+				{
+					int progress = HashUtils.CHAR_TO_BYTE[prefix.charAt(0)] * 16;
+					callback.update(progress, 256);
+					break;
+				}
+				case 2:
+				{
+					int progress = HashUtils.CHAR_TO_BYTE[prefix.charAt(0)] * 16
+							+ HashUtils.CHAR_TO_BYTE[prefix.charAt(1)];
+					callback.update(progress, 256);
+					break;
+				}
+			}
+		}
+
 		if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
 		{
 			int count1 = service1.count(prefix);
@@ -347,7 +377,7 @@ public class SyncService
 					String hash2 = hashes2.get(key);
 					if (!Utils.equals(hash1, hash2))
 					{
-						result += synchronizeChildren(service1, tree1, service2, tree2, key);
+						result += synchronizeChildren(service1, tree1, service2, tree2, key, callback);
 					}
 				}
 
@@ -363,7 +393,7 @@ public class SyncService
 		}
 	}
 
-	public static <T> int synchronize_v2(ObjectService<T> service1, ObjectService<T> service2)
+	public static <T> int synchronize_v2(ObjectService<T> service1, ObjectService<T> service2, ProgressCallback callback)
 	{
 		// null checks
 		if (null == service1)
@@ -382,7 +412,7 @@ public class SyncService
 		String hash2 = tree2.getHash("");
 		if (!Utils.equals(hash1, hash2))
 		{
-			return synchronizeChildren(service1, tree1, service2, tree2, "");
+			return synchronizeChildren(service1, tree1, service2, tree2, "", callback);
 		}
 		else
 		{
