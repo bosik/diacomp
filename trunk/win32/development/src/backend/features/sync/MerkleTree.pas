@@ -13,10 +13,11 @@ type
     FChildren: array[0..15] of TMerkleTree;
     FData: TStringMap;
   protected
-    function Child(const Key: string): TMerkleTree;
     procedure PutLong(const Key, Value: string; PrefixSize: integer);
     procedure PutShort(const Key, Value: string);
   public
+    function Child(const Key: string): TMerkleTree;
+    procedure Clear();
     constructor Create;
     destructor Destroy; override;
     procedure Put(const Key, Value: string; PrefixSize: integer; UpdateHash: boolean = True);
@@ -49,6 +50,17 @@ begin
 end;
 
 {======================================================================================================================}
+procedure TMerkleTree.Clear;
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  FData.Clear();
+  for i := 0 to 15 do
+    FChildren[i].Free;
+end;
+
+{======================================================================================================================}
 constructor TMerkleTree.Create;
 {======================================================================================================================}
 begin
@@ -58,12 +70,9 @@ end;
 {======================================================================================================================}
 destructor TMerkleTree.Destroy;
 {======================================================================================================================}
-var
-  i: integer;
 begin
+  Clear();
   FData.Free;
-  for i := 0 to 15 do
-    FChildren[i].Free;
 end;
 
 {======================================================================================================================}
