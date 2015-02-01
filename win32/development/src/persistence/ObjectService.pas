@@ -5,7 +5,8 @@ interface
 uses
   SysUtils,
   BusinessObjects,
-  HashService;
+  HashService,
+  MerkleTree;
 
 type
   EItemNotFoundException = class(Exception)
@@ -24,6 +25,7 @@ type
     function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList;  virtual; abstract;
     function GetHash(Prefix: TCompactGUID): TCompactGUID; virtual; abstract;
     function GetHashChildren(Prefix: TCompactGUID): THashService; virtual; abstract;
+    function GetHashTree(): TMerkleTree; virtual; abstract;
     procedure Save(const Items: TVersionedList); overload; virtual; abstract;
     procedure SetHash(Prefix, Hash: TCompactGUID); virtual; abstract;
 
