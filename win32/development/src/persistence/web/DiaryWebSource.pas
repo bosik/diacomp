@@ -149,7 +149,7 @@ function TDiaryWebSource.GetHash(Prefix: TCompactGUID): TCompactGUID;
 {======================================================================================================================}
 var
   StdResp: TStdResponse;
-  Query, Resp: string;
+  Query: string;
 begin
   Query := FClient.GetApiURL() + 'diary/hash/' + Prefix;
   StdResp := FClient.DoGetSmart(query);

@@ -266,13 +266,12 @@ begin
   URL := ChkSpace(URL);
   FHTTP.ProtocolVersion := pv1_1;
   {#}Log(VERBOUS, 'TDiacompClient.DoPost("' + URL + '"), ' + PrintParams(Par));
-  // {#}PrintProtocolVersion('TDiacompClient.DoPost.1');
 
   Data := TStringList.Create;
   try
     // формируем тело запроса
     for i := Low(Par) to High(Par) do
-      Data.Add(Par[i]);
+      Data.Add(ReplaceAll(Par[i], '%', '%25'));
 
     {#} Tick := GetTickCount();
     S := FHTTP.Post(URL, Data);
@@ -283,7 +282,6 @@ begin
       CheckResponse(Result);
   finally
     //FHTTP.Disconnect;
-    // {#}PrintProtocolVersion('TDiacompClient.DoPost.2');
     Data.Free;
   end;
 end;
@@ -296,27 +294,22 @@ var
   Stream: TStream;
   i: integer;
   Tick: cardinal;
-  Req: string;
   S: string;
 begin
   URL := ChkSpace(URL);
   FHTTP.ProtocolVersion := pv1_1;
   {#}Log(VERBOUS, 'TDiacompClient.DoPut("' + URL + '"), ' + PrintParams(Par));
-  // {#}PrintProtocolVersion('TDiacompClient.DoPut.1');
 
+  // формируем тело запроса
   Data := TStringList.Create;
+  for i := Low(Par) to High(Par) do
+    Data.Add(ReplaceAll(Par[i], '%', '%25'));
+
+  Stream := TStringStream.Create(Trim(Data.Text));
+
   try
-    // формируем тело запроса
-    for i := Low(Par) to High(Par) do
-      Data.Add(Par[i]);
-
     {#} Tick := GetTickCount();
-    Req := Trim(Data.Text);
-    Req := ReplaceAll(Req, '%', '%25');
-
-    Stream := TStringStream.Create(Req);
     S := FHTTP.Put(URL, Stream);
-
     {#}Log(VERBOUS, Format('TDiacompClient.DoPut(): responsed in %d msec: "%s"', [GetTickCount - Tick, S]));
 
     Result := TStdResponse.Create(S);
@@ -326,7 +319,6 @@ begin
     //FHTTP.Disconnect;
     Stream.Free;
     Data.Free;
-    // {#}PrintProtocolVersion('TDiacompClient.DoPut.2');
   end;
 end;
 
