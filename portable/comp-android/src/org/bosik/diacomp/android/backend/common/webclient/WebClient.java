@@ -43,7 +43,7 @@ public class WebClient
 	private static final int	API_VERSION			= 20;
 	private static final String	ENCODING_UTF8		= "UTF-8";
 	private static final String	CODE_SPACE			= "%20";
-	private static final long	MIN_REQUEST_DELAY	= 200;								// msec
+	private static final long	MIN_REQUEST_DELAY	= 100;								// msec
 
 	/* ================ FIELDS ================ */
 
