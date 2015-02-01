@@ -135,6 +135,7 @@ public class HashUtils
 	 * @param service
 	 * @param prefix
 	 */
+	@Deprecated
 	public static <T> void updateHashBranch(ObjectService<T> service, String prefix)
 	{
 		Map<String, String> hashes = service.getHashChildren(prefix);
@@ -156,6 +157,7 @@ public class HashUtils
 	 * @param prefix
 	 * @return
 	 */
+	@Deprecated
 	public static <T> String updateHashTree(ObjectService<T> service, String prefix)
 	{
 		if (prefix.length() < 3)

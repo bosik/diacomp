@@ -395,8 +395,6 @@ public class DiaryLocalService implements DiaryService
 					newValues.put(DiaryContentProvider.COLUMN_DIARY_GUID, record.getId());
 					resolver.insert(DiaryContentProvider.CONTENT_DIARY_URI, newValues);
 				}
-
-				HashUtils.updateHashBranch(this, record.getId().substring(0, ID_PREFIX_SIZE));
 			}
 		}
 		catch (Exception e)

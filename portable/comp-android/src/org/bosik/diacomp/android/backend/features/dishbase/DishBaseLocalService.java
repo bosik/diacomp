@@ -705,8 +705,6 @@ public class DishBaseLocalService implements DishBaseService
 					newValues.put(DiaryContentProvider.COLUMN_DISHBASE_GUID, item.getId());
 					resolver.insert(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues);
 				}
-
-				HashUtils.updateHashBranch(this, item.getId().substring(0, ID_PREFIX_SIZE));
 			}
 
 			for (Versioned<DishItem> item : items)

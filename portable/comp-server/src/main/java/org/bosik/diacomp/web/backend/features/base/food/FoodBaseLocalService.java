@@ -497,8 +497,6 @@ public class FoodBaseLocalService implements FoodBaseService
 
 					db.insert(TABLE_FOODBASE, set);
 				}
-
-				HashUtils.updateHashBranch(this, item.getId().substring(0, ID_PREFIX_SIZE));
 			}
 		}
 		catch (SQLException e)
