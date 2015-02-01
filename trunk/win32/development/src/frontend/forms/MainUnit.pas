@@ -1586,26 +1586,6 @@ var
         DiaryMultiMap[Offset + i].Tag := DiaryMultiMap[Offset + i].Tag +
         DishModFactor * GetTag(DishBase[i].ModifiedTime);    }
 
-      { Temp: копируем теги в базы }
-      for i := 0 to High(DiaryMultiMap) do
-      begin
-        Food := FoodBaseLocal.FindOne(DiaryMultiMap[i].Data.Name);
-        if (Food <> nil) then
-        begin
-          Food.Tag := Round(DiaryMultiMap[i].Tag);
-          FoodBaseLocal.Save(Food);
-          Continue;
-        end;
-
-        Dish := DishBaseLocal.FindOne(DiaryMultiMap[i].Data.Name);
-        if (Dish <> nil) then
-        begin
-          Dish.Tag := Round(DiaryMultiMap[i].Tag);
-          DishBaseLocal.Save(Dish);
-          Continue;
-        end;
-      end;
-
       { сортируем }
       if Length(DiaryMultiMap) > 0 then
         qsort(DiaryMultiMap, 0, High(DiaryMultiMap));
