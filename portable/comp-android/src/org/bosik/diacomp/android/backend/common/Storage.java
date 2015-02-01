@@ -212,7 +212,7 @@ public class Storage
 		};
 
 		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(task, 2000, interval);
+		// timer.scheduleAtFixedRate(task, 2000, interval);
 		// timer.schedule(task, 2000);
 	}
 
@@ -222,7 +222,7 @@ public class Storage
 		{
 			Log.v(TAG, "Diary sync...");
 			long time = System.currentTimeMillis();
-			int syncDiaryItemsCount = SyncService.synchronize_v2(localDiary, webDiary);
+			int syncDiaryItemsCount = SyncService.synchronize_v2(localDiary, webDiary, null);
 			Log.v(TAG, String.format("Diary synced in %d msec, total tranferred: %d",
 					System.currentTimeMillis() - time, syncDiaryItemsCount));
 			return syncDiaryItemsCount;
@@ -240,7 +240,7 @@ public class Storage
 		{
 			Log.v(TAG, "Foodbase sync...");
 			long time = System.currentTimeMillis();
-			int syncFoodItemsCount = SyncService.synchronize_v2(Storage.localFoodBase, Storage.webFoodBase);
+			int syncFoodItemsCount = SyncService.synchronize_v2(Storage.localFoodBase, Storage.webFoodBase, null);
 			Log.v(TAG, String.format("Foodbase synced in %d msec, total tranferred: %d", System.currentTimeMillis()
 					- time, syncFoodItemsCount));
 			return syncFoodItemsCount;
@@ -258,7 +258,7 @@ public class Storage
 		{
 			Log.v(TAG, "Dishbase sync...");
 			long time = System.currentTimeMillis();
-			int syncDishItemsCount = SyncService.synchronize_v2(Storage.localDishBase, Storage.webDishBase);
+			int syncDishItemsCount = SyncService.synchronize_v2(Storage.localDishBase, Storage.webDishBase, null);
 			Log.v(TAG, String.format("Dishbase synced in %d msec, total tranferred: %d", System.currentTimeMillis()
 					- time, syncDishItemsCount));
 			return syncDishItemsCount;

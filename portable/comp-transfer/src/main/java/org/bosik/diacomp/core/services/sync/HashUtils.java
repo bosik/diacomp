@@ -15,7 +15,7 @@ public class HashUtils
 	public static final int		PATTERN_SIZE	= 16;
 	public static final char[]	BYTE_TO_CHAR	= new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a',
 			'b', 'c', 'd', 'e', 'f'			};
-	private static final byte[]	CHAR_TO_BYTE	= new byte[65536];
+	public static final byte[]	CHAR_TO_BYTE	= new byte[65536];
 
 	static
 	{

@@ -1,20 +1,33 @@
 package org.bosik.diacomp.android.frontend.activities;
 
+import java.util.SortedMap;
+import java.util.TreeMap;
 import org.bosik.diacomp.android.BuildConfig;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
+import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.FragmentBase;
 import org.bosik.diacomp.android.frontend.fragments.FragmentDiary;
 import org.bosik.diacomp.android.utils.ErrorHandler;
+import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.sync.HashUtils;
+import org.bosik.diacomp.core.services.sync.SyncService;
+import org.bosik.diacomp.core.services.sync.SyncService.ProgressCallback;
+import org.bosik.diacomp.core.utils.Utils;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.Builder;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -210,6 +223,96 @@ public class ActivityMain extends FragmentActivity
 		return true;
 	}
 
+	public void testSyncPerformance()
+	{
+		long time = System.currentTimeMillis();
+		SortedMap<String, String> data = new TreeMap<String, String>();
+		for (int i = 0; i < 25000; i++)
+		{
+			String id = Utils.generateGuid();
+			String hash = Utils.generateGuid();
+			data.put(id, hash);
+		}
+		time = System.currentTimeMillis() - time;
+		Log.i(TAG, String.format("%d items prepared in %d ms", data.size(), time));
+
+		time = System.currentTimeMillis();
+		SortedMap<String, String> tree = HashUtils.buildHashTree(data);
+		time = System.currentTimeMillis() - time;
+
+		Log.i(TAG, String.format("Tree with %d items build in %d ms", tree.size(), time));
+	}
+
+	private void testSync()
+	{
+		// TODO: i18n
+		String TEXT_SYNC_PROGRESS = "Synchronizing...";
+
+		final NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		final Builder mBuilder = new NotificationCompat.Builder(this);
+		mBuilder.setContentTitle(TEXT_SYNC_PROGRESS).setSmallIcon(R.drawable.button_sync).setOngoing(true);
+		final int ID = 42;
+
+		new AsyncTask<Void, Integer, String>()
+		{
+			@Override
+			protected String doInBackground(Void... par)
+			{
+				try
+				{
+					DiaryService diaryLocal = new DiaryLocalService(getContentResolver());
+					DiaryService diaryWeb = Storage.webDiary;
+
+					int count = SyncService.synchronize_v2(diaryLocal, diaryWeb, new ProgressCallback()
+					{
+						@SuppressWarnings("synthetic-access")
+						@Override
+						public void update(int progress, int max)
+						{
+							publishProgress(progress, max);
+						}
+					});
+
+					return String.format("Synced items: %d", count);
+				}
+				// catch (ConnectTimeoutException e)
+				// {
+				// return "Server not responding";
+				// }
+				catch (Exception e)
+				{
+					// TODO: i18n
+					return BuildConfig.DEBUG ? e.getMessage() : "Failed to sync personal data";
+				}
+			}
+
+			@Override
+			protected void onProgressUpdate(Integer... values)
+			{
+				mBuilder.setProgress(values[1], values[0], false);
+				int percentage = values[0] * 100 / values[1];
+				mBuilder.setContentText(String.format("%d %%", percentage));
+				mNotifyManager.notify(ID, mBuilder.build());
+			}
+
+			@Override
+			protected void onPostExecute(String message)
+			{
+				if (message != null)
+				{
+					mBuilder.setContentTitle("Data sync");
+					mBuilder.setContentText(message);
+					mBuilder.setOngoing(false);
+					mNotifyManager.notify(ID, mBuilder.build());
+				}
+				else
+				{
+					mNotifyManager.cancel(ID);
+				}
+			};
+		}.execute();
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -219,6 +322,11 @@ public class ActivityMain extends FragmentActivity
 			{
 				Intent settingsActivity = new Intent(getBaseContext(), ActivityPreferences.class);
 				startActivity(settingsActivity);
+				return true;
+			}
+			case R.id.item_diary_sync:
+			{
+				testSync();
 				return true;
 			}
 			default:
