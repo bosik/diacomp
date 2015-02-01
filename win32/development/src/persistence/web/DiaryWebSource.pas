@@ -40,6 +40,7 @@ type
   public
     constructor Create(Client: TDiacompClient);
     function GetHash(const Prefix: string): string; override;
+    function GetHashChildren(const Prefix: string): TStringMap; override;
   end;
 
 implementation
@@ -212,6 +213,22 @@ begin
   Query := FClient.GetApiURL() + 'diary/hash/' + Prefix;
   StdResp := FClient.DoGetSmart(query);
   Result := StdResp.Response;
+  StdResp.Free;
+end;
+
+{======================================================================================================================}
+function TDiaryWebHash.GetHashChildren(const Prefix: string): TStringMap;
+{======================================================================================================================}
+var
+  StdResp: TStdResponse;
+  Query, Resp: string;
+begin
+  Query := FClient.GetApiURL() + 'diary/hashes/' + Prefix;
+  StdResp := FClient.DoGetSmart(query);
+  Resp := StdResp.Response;
+
+  // TODO: PARSE MAP
+
   StdResp.Free;
 end;
 
