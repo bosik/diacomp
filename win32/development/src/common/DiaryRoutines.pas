@@ -32,9 +32,8 @@ type
     property Items[Index: integer]: integer read GetItem write SetItem; default;
   end;
 
-  TStringPair = class
+  TStringPair = record
     Key, Value: string;
-    constructor Create(const Key, Value: string);
   end;
 
   EKeyNotFoundException = class (Exception);
@@ -42,19 +41,21 @@ type
   TStringMap = class
   protected
     FData: array of TStringPair;
+    FCount: integer;
     function GetItem(Index: integer): TStringPair;
     function GetValue(Key: string): string; virtual;
     function IndexOf(const Key: string): integer;
   public
     procedure Add(const Key, Value: string; Overwrite: boolean = False);
     procedure Clear;
+    constructor Create;
     function Contains(Key: string): boolean;
-    function Count: integer;
     destructor Destroy; override;
     procedure LoadFromFile(const FileName: string);
     procedure SaveToFile(const FileName: string);
     function Values(): TStringArray; virtual;
 
+    property Count: integer read FCount;
     property Items[Key: string]: string read GetValue; default;
     property Item[Index: integer]: TStringPair read GetItem;
   end;
@@ -65,6 +66,8 @@ type
   TMoreFunction = function(Index1,Index2: integer): boolean of object;
   TGetterFunction = function(Index: integer): Variant of object;
   TCallbackProgress = procedure(Progress: integer);
+
+  function StringPair(const Key, Value: string): TStringPair;
 
   { פאיכמגûו }
   function ReadFile(const FileName: string): string;
@@ -242,10 +245,12 @@ end;
 
 { TStringPair }
 
-constructor TStringPair.Create(const Key, Value: string);
+{======================================================================================================================}
+function StringPair(const Key, Value: string): TStringPair;
+{======================================================================================================================}
 begin
-  Self.Key := Key;
-  Self.Value := Value;
+  Result.Key := Key;
+  Result.Value := Value;
 end;
 
 { TStringMap }
@@ -266,20 +271,19 @@ begin
     end;
   end;
 
-  SetLength(FData, Length(FData) + 1);
-  FData[High(FData)] := TStringPair.Create(Key, Value);
+  if (FCount = Length(FData)) then
+  begin
+    SetLength(FData, Length(FData) * 2 + 1);
+  end;
+  FData[FCount] := StringPair(Key, Value);
+  inc(FCount);
 end;
 
 {======================================================================================================================}
 procedure TStringMap.Clear;
 {======================================================================================================================}
-var
-  i: integer;
 begin
-  for i := 0 to High(FData) do
-    FData[i].Free;
-    
-  SetLength(FData, 0);
+  FCount := 0;
 end;
 
 {======================================================================================================================}
@@ -290,10 +294,11 @@ begin
 end;
 
 {======================================================================================================================}
-function TStringMap.Count: integer;
+constructor TStringMap.Create;
 {======================================================================================================================}
 begin
-  Result := Length(FData);
+  FCount := 0;
+  SetLength(FData, 16);
 end;
 
 {======================================================================================================================}
@@ -331,7 +336,7 @@ var
   i: integer;
 begin
   // TODO: make it binary
-  for i := 0 to High(FData) do
+  for i := 0 to FCount - 1 do
   if (FData[i].Key = Key) then
   begin
     Result := i;
@@ -350,11 +355,13 @@ begin
   with TStringList.Create do
   begin
     LoadFromFile(FileName);
+    SetLength(FData, Count);
+    FCount := Count;
     for i := 0 to Count - 1 do
     begin
       Key := TrimRight(TextBefore(Strings[i], '='));
       Value := TrimLeft(TextAfter(Strings[i], '='));
-      Self.Add(Key, Value, False);
+      FData[i] := StringPair(Key, Value);
     end;
     Free;
   end;
@@ -368,7 +375,7 @@ var
 begin
   with TStringList.Create do
   begin
-    for i := 0 to High(FData) do
+    for i := 0 to FCount - 1 do
       Add(FData[i].Key + '=' + FData[i].Value);
     SaveToFile(FileName);
     Free;
@@ -382,7 +389,7 @@ var
   i: integer;
 begin
   SetLength(Result, Length(FData));
-  for i := 0 to High(FData) do
+  for i := 0 to FCount - 1 do
     Result[i] := FData[i].Value;
 end;
 
