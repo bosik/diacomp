@@ -99,7 +99,7 @@ begin
   begin
     for i := 0 to 15 do
     if (FChildren[i] <> nil) then
-      Result.Add(INT_TO_CHAR[i], FChildren[i].Hash);
+      Result.Add(INT_TO_CHAR[i], FChildren[i].GetHash());
   end;
 end;
 
