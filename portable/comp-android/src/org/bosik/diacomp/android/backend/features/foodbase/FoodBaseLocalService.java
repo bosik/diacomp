@@ -63,6 +63,13 @@ public class FoodBaseLocalService implements FoodBaseService
 		}
 	}
 
+	/**
+	 * Automatically closes cursor after read
+	 * 
+	 * @param cursor
+	 * @param limit
+	 * @return
+	 */
 	private List<Versioned<FoodItem>> parseItems(Cursor cursor)
 	{
 		// analyze response
@@ -107,6 +114,7 @@ public class FoodBaseLocalService implements FoodBaseService
 			Log.i(TAG, result.size() + " json's parsed in " + jsonTime + " msec");
 			Log.i(TAG, result.size() + " items parsed in " + (System.currentTimeMillis() - time) + " msec");
 
+			cursor.close();
 			return result;
 		}
 		else
@@ -201,7 +209,6 @@ public class FoodBaseLocalService implements FoodBaseService
 					mSortOrder);
 
 			final List<Versioned<FoodItem>> result = parseItems(cursor);
-			cursor.close();
 
 			Log.i(TAG, "Search (database) done in " + (System.currentTimeMillis() - time) + " msec");
 			return result;
