@@ -47,6 +47,7 @@ type
     function IndexOf(const Key: string): integer;
   public
     procedure Add(const Key, Value: string; Overwrite: boolean = False);
+    procedure AddAll(Map: TStringMap; Overwrite: boolean = False);
     procedure Clear;
     constructor Create;
     function Contains(Key: string): boolean;
@@ -277,6 +278,16 @@ begin
   end;
   FData[FCount] := StringPair(Key, Value);
   inc(FCount);
+end;
+
+{======================================================================================================================}
+procedure TStringMap.AddAll(Map: TStringMap; Overwrite: boolean);
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  for i := 0 to Map.Count - 1 do
+    Add(Map.Item[i].Key, Map.Item[i].Value, Overwrite);
 end;
 
 {======================================================================================================================}
