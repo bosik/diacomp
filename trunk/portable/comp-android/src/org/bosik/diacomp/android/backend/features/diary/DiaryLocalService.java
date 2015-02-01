@@ -163,8 +163,7 @@ public class DiaryLocalService implements DiaryService
 		// execute
 		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
 				sortOrder);
-
-		return extractRecords(cursor);
+		return extractRecords(cursor, MAX_ITEMS_COUNT);
 	}
 
 	@Override
@@ -538,6 +537,13 @@ public class DiaryLocalService implements DiaryService
 
 	/* ======================= ROUTINES ========================= */
 
+	/**
+	 * Automatically closes cursor after read
+	 * 
+	 * @param cursor
+	 * @param limit
+	 * @return
+	 */
 	private List<Versioned<DiaryRecord>> extractRecords(Cursor cursor, int limit)
 	{
 		if (cursor != null)
@@ -577,6 +583,8 @@ public class DiaryLocalService implements DiaryService
 					throw new TooManyItemsException("Too many items");
 				}
 			}
+
+			cursor.close();
 
 			return result;
 		}

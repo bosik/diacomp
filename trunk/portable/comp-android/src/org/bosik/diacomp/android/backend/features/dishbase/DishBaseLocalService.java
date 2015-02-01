@@ -62,6 +62,13 @@ public class DishBaseLocalService implements DishBaseService
 		}
 	}
 
+	/**
+	 * Automatically closes cursor after read
+	 * 
+	 * @param cursor
+	 * @param limit
+	 * @return
+	 */
 	private List<Versioned<DishItem>> parseItems(Cursor cursor)
 	{
 		// analyze response
@@ -106,6 +113,7 @@ public class DishBaseLocalService implements DishBaseService
 			// Log.i(TAG, result.size() + " json's parsed in " + jsonTime + " msec");
 			// Log.i(TAG, result.size() + " items parsed in " + (System.currentTimeMillis() - time)
 			// + " msec");
+			cursor.close();
 
 			return result;
 		}
@@ -201,7 +209,6 @@ public class DishBaseLocalService implements DishBaseService
 					mSortOrder);
 
 			final List<Versioned<DishItem>> result = parseItems(cursor);
-			cursor.close();
 
 			// Log.i(TAG, "Search done in " + (System.currentTimeMillis() - time) + " msec");
 			return result;
