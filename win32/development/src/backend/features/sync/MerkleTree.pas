@@ -21,12 +21,11 @@ type
     procedure Clear();
     constructor Create;
     destructor Destroy; override;
+    function GetHash(): string;
     function GetHashChildren(): TStringMap;
     procedure Put(const Key, Value: string; PrefixSize: integer; UpdateHash: boolean = True);
     procedure PutAll(Map: TStringMap; PrefixSize: integer; UpdateHash: boolean = True);
     function UpdateHash(): string;
-
-    property Hash: string read FHash write FHash;
   end;
 
 implementation
@@ -76,6 +75,13 @@ destructor TMerkleTree.Destroy;
 begin
   Clear();
   FData.Free;
+end;
+
+{======================================================================================================================}
+function TMerkleTree.GetHash(): string;
+{======================================================================================================================}
+begin
+  Result := FHash;
 end;
 
 {======================================================================================================================}
