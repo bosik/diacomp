@@ -8,7 +8,12 @@ uses
   HashService;
 
 type
-  TMerkleTree = class
+  THashTree = class
+    function GetHash(): string; virtual; abstract;
+    function GetHashChildren(): TStringMap; virtual; abstract;
+  end;
+
+  TMerkleTree = class (THashTree)
   private
     FHash: string;
     FChildren: array[0..15] of TMerkleTree;
@@ -21,8 +26,8 @@ type
     procedure Clear();
     constructor Create;
     destructor Destroy; override;
-    function GetHash(): string;
-    function GetHashChildren(): TStringMap;
+    function GetHash(): string; override;
+    function GetHashChildren(): TStringMap; override;
     procedure Put(const Key, Value: string; PrefixSize: integer; UpdateHash: boolean = True);
     procedure PutAll(Map: TStringMap; PrefixSize: integer; UpdateHash: boolean = True);
     function UpdateHash(): string;
