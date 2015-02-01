@@ -297,7 +297,7 @@ const
   end;
 
   function Sync(const Prefix: string): integer;
-  var
+  (*var
     Hash1, Hash2: string;
 
     Items1, Items2: TVersionedList;
@@ -305,9 +305,9 @@ const
     Only1, Only2: TVersionedList;
     i, j: integer;
     T1, T2: TVersioned;
-    NewerSize1, NewerSize2: integer;
+    NewerSize1, NewerSize2: integer; *)
   begin
-    Result := 0;
+   (* Result := 0;
     Hash1 := Source1.GetHash(Prefix);
     Hash2 := Source2.GetHash(Prefix);
 
@@ -368,7 +368,7 @@ const
         Items1[i].Free;
       for i := 0 to High(Items2) do
         Items2[i].Free;  
-    end;
+    end;       *)
   end;
 
 begin
