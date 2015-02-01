@@ -3,6 +3,7 @@ unit MerkleTree;
 interface
 
 uses
+  SysUtils,
   DiaryRoutines,
   HashService;
 
@@ -57,7 +58,7 @@ var
 begin
   FData.Clear();
   for i := 0 to 15 do
-    FChildren[i].Free;
+    FreeAndNil(FChildren[i]);
 end;
 
 {======================================================================================================================}
