@@ -60,7 +60,8 @@ uses
   UnitEditorNote in 'src\frontend\forms\UnitEditorNote.pas' {FormEditorNote},
   UnitLogViewer in 'src\frontend\forms\UnitLogViewer.pas' {FormLogViewer},
   JsonVersionedSerializer in 'src\persistence\serializers\JsonVersionedSerializer.pas',
-  HashService in 'src\backend\features\sync\HashService.pas';
+  HashService in 'src\backend\features\sync\HashService.pas',
+  MerkleTree in 'src\backend\features\sync\MerkleTree.pas';
 
 {$R *.res}
 
