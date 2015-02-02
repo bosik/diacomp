@@ -243,6 +243,11 @@ public class FoodBaseWebService implements FoodBaseService
 	@Override
 	public void save(List<Versioned<FoodItem>> items) throws NotFoundException, PersistenceException
 	{
+		if (items.isEmpty())
+		{
+			return;
+		}
+
 		try
 		{
 			List<NameValuePair> params = new ArrayList<NameValuePair>();

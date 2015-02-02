@@ -222,6 +222,11 @@ public class DiaryWebService implements DiaryService
 	@Override
 	public void save(List<Versioned<DiaryRecord>> records) throws CommonServiceException
 	{
+		if (records.isEmpty())
+		{
+			return;
+		}
+
 		try
 		{
 			String items = serializerV.writeAll(records);

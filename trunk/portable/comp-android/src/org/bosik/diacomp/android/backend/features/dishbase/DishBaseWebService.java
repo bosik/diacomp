@@ -243,6 +243,11 @@ public class DishBaseWebService implements DishBaseService
 	@Override
 	public void save(List<Versioned<DishItem>> items) throws NotFoundException, PersistenceException
 	{
+		if (items.isEmpty())
+		{
+			return;
+		}
+
 		try
 		{
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
