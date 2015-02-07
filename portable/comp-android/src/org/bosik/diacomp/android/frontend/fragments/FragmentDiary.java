@@ -246,7 +246,7 @@ public class FragmentDiary extends Fragment
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
-		inflater.inflate(R.menu.diary_menu, menu);
+		inflater.inflate(R.menu.actions_diary, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
