@@ -26,6 +26,7 @@ import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.services.sync.MemoryMerkleTree;
 import org.bosik.diacomp.core.services.sync.MerkleTree;
+import org.bosik.diacomp.core.utils.Profiler;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -523,12 +524,20 @@ public class DiaryLocalService implements DiaryService
 	@Override
 	public MerkleTree getHashTree()
 	{
+		/**/Profiler p = new Profiler();
+
 		SortedMap<String, String> hashes = getDataHashes();
+		/**/Log.d(TAG, "getDataHashes(): " + p.sinceLastCheck() / 1000000 + " ms");
+
 		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
+		/**/Log.d(TAG, "buildHashTree(): " + p.sinceLastCheck() / 1000000 + " ms");
 
 		MemoryMerkleTree result = new MemoryMerkleTree();
 		result.putAll(tree); // headers (0..4 chars id)
 		result.putAll(hashes); // leafs (32 chars id)
+
+		/**/Log.d(TAG, "getHashTree() [total]: " + p.sinceStart() / 1000000 + " ms");
+
 		return result;
 	}
 
