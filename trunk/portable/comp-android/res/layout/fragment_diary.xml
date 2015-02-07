@@ -3,6 +3,7 @@
     android:id="@+id/diary"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@color/app_background"
     android:gravity="bottom|fill"
     android:orientation="vertical" >
 
