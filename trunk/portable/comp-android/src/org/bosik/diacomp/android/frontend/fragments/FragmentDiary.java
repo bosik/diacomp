@@ -30,7 +30,6 @@ import org.bosik.diacomp.core.services.diary.PostprandUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -182,7 +181,7 @@ public class FragmentDiary extends Fragment
 				}
 			});
 
-			scrollView.setBackgroundColor(Color.WHITE);
+			scrollView.setBackgroundResource(R.color.app_background);
 			diaryViewLayout.setOnRecordClickListener(new RecordClickListener()
 			{
 				// handled
