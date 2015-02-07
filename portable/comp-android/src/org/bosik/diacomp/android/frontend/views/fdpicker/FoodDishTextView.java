@@ -7,8 +7,6 @@ import android.widget.AutoCompleteTextView;
 /**
  * Autocomplete box with icons
  * 
- * @author nkrenev
- * 
  */
 public class FoodDishTextView extends AutoCompleteTextView
 {
