@@ -4,10 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
@@ -18,7 +16,6 @@ import org.bosik.diacomp.android.frontend.activities.ActivityEditorBlood;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorIns;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorMeal;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorNote;
-import org.bosik.diacomp.android.frontend.activities.ActivityPreferences;
 import org.bosik.diacomp.android.frontend.views.diary.DiaryView;
 import org.bosik.diacomp.android.frontend.views.diary.RecordClickListener;
 import org.bosik.diacomp.android.utils.ErrorHandler;
@@ -34,7 +31,6 @@ import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -311,110 +307,6 @@ public class FragmentDiary extends Fragment
 		{
 			switch (item.getItemId())
 			{
-				case R.id.item_diary_addblood:
-				{
-					showBloodEditor(null, true);
-					return true;
-				}
-				case R.id.item_diary_addins:
-				{
-					showInsEditor(null, true);
-					return true;
-				}
-				case R.id.item_diary_addmeal:
-				{
-					showMealEditor(null, true);
-					return true;
-				}
-				case R.id.item_diary_addnote:
-				{
-					showNoteEditor(null, true);
-					return true;
-				}
-				case R.id.item_diary_preferences:
-				{
-					Intent settingsActivity = new Intent(getActivity(), ActivityPreferences.class);
-					startActivity(settingsActivity);
-					return true;
-				}
-				case R.id.item_diary_sync:
-				{
-					new AsyncTask<Void, Void, Map<String, Integer>>()
-					{
-						final String	DIARY	= "diary";
-						final String	FOOD	= "food";
-						final String	DISH	= "dish";
-
-						@Override
-						protected Map<String, Integer> doInBackground(Void... arg0)
-						{
-							Map<String, Integer> result = new HashMap<String, Integer>();
-
-							result.put(DIARY, Storage.syncDiary());
-							result.put(FOOD, Storage.syncFoodbase());
-							result.put(DISH, Storage.syncDishbase());
-
-							return result;
-						}
-
-						@Override
-						protected void onPostExecute(Map<String, Integer> result)
-						{
-							String message = "";
-
-							Integer countDiary = result.get(DIARY);
-							if (countDiary == null)
-							{
-								message += "Diary: failed\n";
-							}
-							else if (countDiary > 0)
-							{
-								message += String.format("Diary: %d\n", countDiary);
-							}
-							else
-							{
-								message += "Diary: \t\tno changes\n";
-							}
-
-							// =================================================================
-
-							Integer countFood = result.get(FOOD);
-							if (countFood == null)
-							{
-								message += "Foods: failed\n";
-							}
-							else if (countFood > 0)
-							{
-								message += String.format("Foods: %d\n", countFood);
-							}
-							else
-							{
-								message += "Foods: \tno changes\n";
-							}
-
-							// =================================================================
-
-							Integer countDish = result.get(DISH);
-							if (countDish == null)
-							{
-								message += "Dishes: failed";
-							}
-							else if (countDish > 0)
-							{
-								message += String.format("Dishes: %d", countDish);
-							}
-							else
-							{
-								message += "Dishes:\tno changes";
-							}
-
-							UIUtils.showTip(getActivity(), message);
-						}
-					}.execute();
-
-					return true;
-				}
-
 				default:
 					return super.onOptionsItemSelected(item);
 			}
