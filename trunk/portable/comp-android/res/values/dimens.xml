@@ -7,5 +7,9 @@
     <dimen name="activity_horizontal_margin">8dp</dimen>
     <dimen name="activity_vertical_margin">8dp</dimen>
     <dimen name="font_datetime">18dp</dimen>
+    <dimen name="diaryBord">12sp</dimen>
+    <dimen name="diaryTextBord">10sp</dimen>
+    <dimen name="diaryTextSizeBase">24sp</dimen>
+    <dimen name="diaryTextSizeNoPage">32sp</dimen>
 
 </resources>
