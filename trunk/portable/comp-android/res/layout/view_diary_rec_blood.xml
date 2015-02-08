@@ -6,7 +6,7 @@
     android:layout_marginLeft="@dimen/padding_tiny"
     android:layout_marginRight="@dimen/padding_tiny"
     android:layout_marginTop="@dimen/padding_tiny"
-    android:background="@color/diary_blood"
+    android:background="@drawable/background_diary_blood"
     android:baselineAligned="false"
     android:gravity="top"
     android:orientation="horizontal"
