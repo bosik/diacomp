@@ -17,10 +17,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
-import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,26 +40,20 @@ public class DiaryView extends View
 	private static final Paint		paintDefault			= new Paint();
 
 	// отступы
-	private static final int		BORD					= 24;
-	private static final int		TEXT_SIZE				= 48;
-	private static final int		TEXT_NOPAGE_SIZE		= 64;
-	private static final int		TEXT_BORD				= 20;
+	private final int				BORD					= getResources().getDimensionPixelSize(R.dimen.diaryBord);
+	private final int				TEXT_SIZE				= getResources().getDimensionPixelSize(
+																	R.dimen.diaryTextSizeBase);
+	private final int				TEXT_NOPAGE_SIZE		= getResources().getDimensionPixelSize(
+																	R.dimen.diaryTextSizeNoPage);
+	private final int				TEXT_BORD				= getResources().getDimensionPixelSize(
+																	R.dimen.diaryTextBord);
 	private static int				LEFT_TIME;
 	private static int				LEFT_RECS;
-	static final int				REC_HEIGHT;
+	final int						REC_HEIGHT;
 
 	// цвета
 	private static final int		COLOR_PANEL_LIGHT_BORD	= Color.WHITE;
 	private static final int		COLOR_PANEL_DARK_BORD	= Color.GRAY;
-	private static final int		COLOR_PANEL_BLOOD_STD	= Color.rgb(230, 238, 255);
-	private static final int		COLOR_PANEL_BLOOD_SEL	= Color.rgb(204, 221, 247);
-	private static final int		COLOR_PANEL_INS_STD		= Color.WHITE;
-	private static final int		COLOR_PANEL_INS_SEL		= Color.rgb(240, 240, 240);
-	private static final int		COLOR_PANEL_NOTE_STD	= Color.rgb(216, 255, 228);
-	private static final int		COLOR_PANEL_NOTE_SEL	= Color.rgb(179, 255, 202);
-	private static final int		COLOR_PANEL_MEAL_STD	= Color.rgb(255, 255, 221);
-	private static final int		COLOR_PANEL_MEAL_SEL	= Color.rgb(255, 255, 153);
-	private static final int		COLOR_BACKGROUND		= Color.WHITE;
 
 	// поля
 
@@ -76,22 +70,21 @@ public class DiaryView extends View
 	RecordClickListener				recordClickListener;
 
 	// инициализация
-	static
 	{
-		paintNoPage.setColor(Color.GRAY);
+		paintNoPage.setColor(getResources().getColor(R.color.font_gray));
 		paintNoPage.setTextSize(TEXT_NOPAGE_SIZE);
 		paintNoPage.setAntiAlias(true);
 
-		paintCaption.setColor(Color.GRAY);
+		paintCaption.setColor(getResources().getColor(R.color.font_gray));
 		paintCaption.setTextSize((TEXT_SIZE * 3) / 4);
 		paintCaption.setAntiAlias(true);
 
-		paintTime.setColor(Color.BLACK);
+		paintTime.setColor(getResources().getColor(R.color.diary_font));
 		paintTime.setTextSize(TEXT_SIZE);
 		paintTime.setAntiAlias(true);
 		paintTime.setTypeface(Typeface.DEFAULT_BOLD);
 
-		paintRec.setColor(Color.BLACK);
+		paintRec.setColor(getResources().getColor(R.color.diary_font));
 		paintRec.setTextSize(TEXT_SIZE);
 		paintRec.setAntiAlias(true);
 
@@ -172,6 +165,7 @@ public class DiaryView extends View
 		int pageHeight = getPageHeight(records);
 		setMeasuredDimension(getScreenWidth(), pageHeight);
 		setMinimumHeight(pageHeight);
+		updateBuffer();
 		invalidate();
 	}
 
@@ -228,7 +222,7 @@ public class DiaryView extends View
 	 *            Страница
 	 * @return Высота
 	 */
-	private static int getPageHeight(List<?> page)
+	private int getPageHeight(List<?> page)
 	{
 		if (null == page)
 		{
@@ -281,12 +275,12 @@ public class DiaryView extends View
 		{
 			return 380;
 		}
+
 		Context ctx = getContext();
 		WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
-
-		Point outSize = new Point();
-		wm.getDefaultDisplay().getSize(outSize);
-		return outSize.x;
+		DisplayMetrics metrics = new DisplayMetrics();
+		wm.getDefaultDisplay().getMetrics(metrics);
+		return metrics.widthPixels;
 	}
 
 	// вспомогательные методы рисования
@@ -342,7 +336,7 @@ public class DiaryView extends View
 
 		// очистка
 		canvas.clipRect(0, 0, screenWidth, getPageHeight(records));
-		canvas.drawColor(COLOR_BACKGROUND);
+		canvas.drawColor(getResources().getColor(R.color.app_background));
 
 		// заполнение
 
@@ -371,7 +365,9 @@ public class DiaryView extends View
 				String finger = temp.getFinger() == -1 ? "" : String.format("(%s)", fingers[temp.getFinger()]);
 				String text = String.format(Locale.US, "%.1f %s %s", temp.getValue(), units, finger);
 
-				drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_BLOOD_SEL : COLOR_PANEL_BLOOD_STD));
+				final int colorStd = getResources().getColor(R.color.diary_blood);
+				final int colorSel = getResources().getColor(R.color.diary_blood_sel);
+				drawPanelBack(canvas, r, (getClickedIndex() == i ? colorSel : colorStd));
 				canvas.drawText(Utils.formatTimeLocalShort(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE,
 						paintTime);
 				canvas.drawText(text, LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE, paintRec);
@@ -382,7 +378,9 @@ public class DiaryView extends View
 			{
 				InsRecord temp = (InsRecord) rec;
 
-				drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_INS_SEL : COLOR_PANEL_INS_STD));
+				final int colorStd = getResources().getColor(R.color.diary_ins);
+				final int colorSel = getResources().getColor(R.color.diary_ins_sel);
+				drawPanelBack(canvas, r, (getClickedIndex() == i ? colorSel : colorStd));
 				canvas.drawText(Utils.formatTimeLocalShort(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE,
 						paintTime);
 				canvas.drawText(String.valueOf(temp.getValue()) + " ед", LEFT_RECS, r.top + TEXT_BORD + TEXT_SIZE,
@@ -397,7 +395,9 @@ public class DiaryView extends View
 				 * if (temp.getShortMeal()) drawPanelBack(canvas, r, Color.YELLOW); else
 				 * drawPanelBack(canvas, r, COLOR_PANEL_MEAL_STD);
 				 */
-				drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_MEAL_SEL : COLOR_PANEL_MEAL_STD));
+				final int colorStd = getResources().getColor(R.color.diary_meal);
+				final int colorSel = getResources().getColor(R.color.diary_meal_sel);
+				drawPanelBack(canvas, r, (getClickedIndex() == i ? colorSel : colorStd));
 
 				String text = trimToFit(MealFormatter.format(temp, MealFormatter.FormatStyle.MOST_CARBS), r.right
 						- LEFT_RECS);
@@ -410,8 +410,9 @@ public class DiaryView extends View
 			else if (rec.getClass() == NoteRecord.class)
 			{
 				NoteRecord temp = (NoteRecord) rec;
-
-				drawPanelBack(canvas, r, (getClickedIndex() == i ? COLOR_PANEL_NOTE_SEL : COLOR_PANEL_NOTE_STD));
+				final int colorStd = getResources().getColor(R.color.diary_note);
+				final int colorSel = getResources().getColor(R.color.diary_note_sel);
+				drawPanelBack(canvas, r, (getClickedIndex() == i ? colorSel : colorStd));
 
 				String text = trimToFit(temp.getText(), r.right - LEFT_RECS);
 				canvas.drawText(Utils.formatTimeLocalShort(temp.getTime()), LEFT_TIME, r.top + TEXT_BORD + TEXT_SIZE,
