@@ -171,6 +171,8 @@ public class DiaryLocalService implements DiaryService
 	public synchronized List<Versioned<DiaryRecord>> findPeriod(Date startTime, Date endTime, boolean includeRemoved)
 			throws CommonServiceException
 	{
+		long time = System.currentTimeMillis();
+
 		if (startTime == null)
 		{
 			throw new NullPointerException("startTime is null");
@@ -208,11 +210,14 @@ public class DiaryLocalService implements DiaryService
 
 		List<Versioned<DiaryRecord>> records = extractRecords(cursor);
 
-		Log.d(TAG, String.format("#DBF %d items found between %s and %s", records.size(),
-				Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime)));
-
 		// detailed logging inside
 		Verifier.verifyRecords(records, startTime, endTime);
+
+		time = System.currentTimeMillis() - time;
+
+		Log.d(TAG,
+				String.format("#DBF %d items found between %s and %s in %d ms", records.size(),
+						Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime), time));
 
 		return records;
 	}
