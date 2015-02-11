@@ -18,14 +18,6 @@
         android:textColor="@color/font_gray"
         android:textSize="20sp" />
 
-    <ProgressBar
-        android:id="@+id/diaryProgressBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        android:indeterminate="true" />
-    
     <org.bosik.diacomp.android.frontend.views.ExpandedListView
         android:id="@+id/listRecs"
         android:layout_width="match_parent"
@@ -33,5 +25,13 @@
         android:layout_weight="1"
         android:divider="@null" >
     </org.bosik.diacomp.android.frontend.views.ExpandedListView>
+
+    <ProgressBar
+        android:id="@+id/diaryProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:indeterminate="true" />
 
 </LinearLayout>
