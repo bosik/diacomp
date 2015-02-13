@@ -57,11 +57,31 @@ public class FragmentDiaryScroller extends Fragment
 			}
 
 			@Override
-			public View getView(int pos, View v, ViewGroup p)
+			public View getView(int pos, View convertView, ViewGroup p)
 			{
 				final Date date = new Date(baseDate.getTime() + Utils.MsecPerDay * (pos - Integer.MAX_VALUE / 2));
-				DiaryDayView diaryDayView = new DiaryDayView(FragmentDiaryScroller.this.getActivity(), date);
-				return diaryDayView;
+
+				// if (convertView == null)
+				{
+					DiaryDayView diaryDayView = new DiaryDayView(FragmentDiaryScroller.this.getActivity(), date);
+					return diaryDayView;
+				}
+				// else
+				// {
+				// DiaryDayView diaryDayView = (DiaryDayView) convertView;
+				// diaryDayView.setDate(date);
+				// return diaryDayView;
+				// }
+				// diaryDayView.setOnLoadedListener(new OnLoadedListener()
+				// {
+				// @Override
+				// public void onLoaded(int contentHeight)
+				// {
+				// // FragmentDiaryScroller.this.list.scrollBy(0, -contentHeight);
+				// Log.d(TAG, "Item at pos " + pos + " loaded with height " + contentHeight);
+				// }
+				// });
+
 			}
 		};
 		list.setAdapter(adapter);
