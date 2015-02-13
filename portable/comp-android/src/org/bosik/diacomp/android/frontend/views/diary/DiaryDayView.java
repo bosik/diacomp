@@ -3,7 +3,6 @@ package org.bosik.diacomp.android.frontend.views.diary;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.frontend.views.ExpandedListView;
@@ -13,31 +12,41 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class DiaryDayView extends LinearLayout
 {
+	public static interface OnLoadedListener
+	{
+		void onLoaded(int contentHeight);
+	}
+
 	static final String						TAG		= DiaryDayView.class.getSimpleName();
 
 	// Data
 	private Date							date;
-	List<Versioned<? extends DiaryRecord>>	recs	= new ArrayList<Versioned<? extends DiaryRecord>>();
+	List<Versioned<? extends DiaryRecord>>	data	= new ArrayList<Versioned<? extends DiaryRecord>>();
+	OnLoadedListener						onLoadedListener;
 
 	// Components
 	private TextView						textDate;
 	ExpandedListView						listRecs;
+	ProgressBar								progressBar;
 
 	// Services
-	private static DiaryService				diaryService;
+	static DiaryService						diaryService;
 
 	public DiaryDayView(Context context)
 	{
+		// Should never be called actually
 		this(context, new Date());
 	}
 
@@ -57,14 +66,19 @@ public class DiaryDayView extends LinearLayout
 
 		textDate = (TextView) findViewById(R.id.textDayTitle);
 		listRecs = (ExpandedListView) findViewById(R.id.listRecs);
-		setDate(date);
+		progressBar = (ProgressBar) findViewById(R.id.diaryProgressBar);
+
+		this.date = date;
+		textDate.setText(Utils.formatDateLocal(date));
+
+		// ================================================================
 
 		final BaseAdapter adapter = new BaseAdapter()
 		{
 			@Override
 			public int getCount()
 			{
-				return recs.size();
+				return data.size();
 			}
 
 			@Override
@@ -83,34 +97,44 @@ public class DiaryDayView extends LinearLayout
 			@Override
 			public View getView(int pos, View v, ViewGroup p)
 			{
-				// View view =
-				// LayoutInflater.from(FragmentBase.this.getActivity()).inflate(R.layout.view_iconed_line,
-				// null);
-				// return view;
-				// DiaryDayView diaryDayView = new DiaryDayView(getActivity());
-				// diaryDayView.setDate(new Date(System.currentTimeMillis() + Utils.MsecPerDay
-				// * (pos - Integer.MAX_VALUE / 2)));
-				// return diaryDayView;
+				View result;
 
-				Versioned<? extends DiaryRecord> record = recs.get(pos);
+				Versioned<? extends DiaryRecord> record = data.get(pos);
 				DiaryRecord data = record.getData();
 				if (data instanceof BloodRecord)
 				{
 					DiaryRecBloodView rec = new DiaryRecBloodView(DiaryDayView.this.getContext());
 					rec.setData((Versioned<BloodRecord>) record);
-					return rec;
+					result = rec;
+				}
+				else
+				{
+					// temp stub for unknown record types
+					DiaryRecBloodView rec = new DiaryRecBloodView(DiaryDayView.this.getContext());
+					rec.setData(new Versioned<BloodRecord>(new BloodRecord()));
+					result = rec;
 				}
 
-				// temp stub for unknown record types
-				DiaryRecBloodView rec = new DiaryRecBloodView(DiaryDayView.this.getContext());
-				rec.setData(new Versioned<BloodRecord>(new BloodRecord()));
-				return rec;
+				// Log.v(TAG, "pos: " + pos + "; first: " +
+				// DiaryDayView.this.parentList.getFirstVisiblePosition());
 
-				// return null;
+				// if (pos <= DiaryDayView.this.parentList.getFirstVisiblePosition())
+				// {
+				// result.measure(ViewGroup.LayoutParams.MATCH_PARENT,
+				// ViewGroup.LayoutParams.WRAP_CONTENT);
+				// int itemHeight = result.getMeasuredHeight();
+				// DiaryDayView.this.parentList.scrollBy(0, itemHeight);
+				// Log.v(TAG, "Scrolling to " + -itemHeight);
+				// }
+
+				return result;
 			}
 		};
 		listRecs.setAdapter(adapter);
-		updateHeight();
+		updateContent();
+
+		// ============================================================================
+
 		// listRecs.setOnFocusChangeListener(new OnFocusChangeListener()
 		// {
 		// @Override
@@ -121,47 +145,72 @@ public class DiaryDayView extends LinearLayout
 		// });
 	}
 
-	void updateContent()
+	private void updateContent()
 	{
-		List<Versioned<DiaryRecord>> temp = diaryService.findPeriod(date, Utils.getNextDay(date), false);
+		new AsyncTask<Date, Void, List<Versioned<? extends DiaryRecord>>>()
+		{
+			@Override
+			protected void onPreExecute()
+			{
+				progressBar.setVisibility(View.VISIBLE);
+			}
 
-		recs.clear();
+			@Override
+			protected List<Versioned<? extends DiaryRecord>> doInBackground(Date... params)
+			{
+				return request(params[0]);
+			}
+
+			@Override
+			protected void onPostExecute(List<Versioned<? extends DiaryRecord>> result)
+			{
+				progressBar.setVisibility(View.GONE);
+				data = result;
+
+				((BaseAdapter) listRecs.getAdapter()).notifyDataSetChanged();
+
+				int contentHeight = updateHeight();
+				// if (onLoadedListener != null)
+				// {
+				// onLoadedListener.onLoaded(contentHeight);
+				// }
+			}
+		}.execute(date);
+
+		// int contentHeight = updateHeight();
+		// if (onLoadedListener != null)
+		// {
+		// onLoadedListener.onLoaded(contentHeight);
+		// }
+	}
+
+	int updateHeight()
+	{
+		// emulating height="wrap_content"
+		ViewGroup.LayoutParams params = listRecs.getLayoutParams();
+		params.height = listRecs.getFullHeight();
+		listRecs.setLayoutParams(params);
+		Log.v(TAG, "Full height: " + params.height);
+		return params.height;
+	}
+
+	List<Versioned<? extends DiaryRecord>> request(Date date)
+	{
+		Date startTime = date;
+		Date endTime = Utils.getNextDay(date);
+		List<Versioned<DiaryRecord>> temp = diaryService.findPeriod(startTime, endTime, false);
+
+		List<Versioned<? extends DiaryRecord>> result = new ArrayList<Versioned<? extends DiaryRecord>>();
+
 		for (Versioned<DiaryRecord> item : temp)
 		{
 			if (item.getData() instanceof BloodRecord)
 			{
-				recs.add(item);
+				result.add(item);
 			}
 		}
 
-		int n = new Random().nextInt(10);
-
-		// for (int i = 0; i < n; i++)
-		// {
-		// switch (new Random().nextInt(1))
-		// {
-		// case 0:
-		// {
-		// recs.add(new Versioned<BloodRecord>(new BloodRecord(new Date(), 5.0, 1)));
-		// break;
-		// }
-		// case 1:
-		// {
-		// recs.add(new Versioned<InsRecord>(new InsRecord(new Date(), 12.0)));
-		// break;
-		// }
-		// }
-		// }
-
-		updateHeight();
-	}
-
-	private void updateHeight()
-	{
-		ViewGroup.LayoutParams params = listRecs.getLayoutParams();
-		params.height = listRecs.getFullHeight();
-		Log.v(TAG, "Full height: " + params.height);
-		listRecs.setLayoutParams(params);
+		return result;
 	}
 
 	public Date getDate()
@@ -172,7 +221,11 @@ public class DiaryDayView extends LinearLayout
 	public void setDate(Date date)
 	{
 		this.date = date;
-		textDate.setText(Utils.formatDateLocal(date));
 		updateContent();
+	}
+
+	public void setOnLoadedListener(OnLoadedListener onLoadedListener)
+	{
+		this.onLoadedListener = onLoadedListener;
 	}
 }
