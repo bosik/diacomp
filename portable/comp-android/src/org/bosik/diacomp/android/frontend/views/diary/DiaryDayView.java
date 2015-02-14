@@ -170,18 +170,12 @@ public class DiaryDayView extends LinearLayout
 				((BaseAdapter) listRecs.getAdapter()).notifyDataSetChanged();
 
 				int contentHeight = updateHeight();
-				// if (onLoadedListener != null)
-				// {
-				// onLoadedListener.onLoaded(contentHeight);
-				// }
+				if (onLoadedListener != null)
+				{
+					onLoadedListener.onLoaded(contentHeight);
+				}
 			}
 		}.execute(date);
-
-		// int contentHeight = updateHeight();
-		// if (onLoadedListener != null)
-		// {
-		// onLoadedListener.onLoaded(contentHeight);
-		// }
 	}
 
 	int updateHeight()
