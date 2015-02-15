@@ -361,7 +361,7 @@ public class DiaryView extends View
 			{
 				BloodRecord temp = (BloodRecord) rec;
 
-				String units = getContext().getString(R.string.common_bs_unit_mmol);
+				String units = getContext().getString(R.string.common_unit_bs_mmoll);
 				String finger = temp.getFinger() == -1 ? "" : String.format("(%s)", fingers[temp.getFinger()]);
 				String text = String.format(Locale.US, "%.1f %s %s", temp.getValue(), units, finger);
 

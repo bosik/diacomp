@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Компенсация</string>
-    <string name="common_gramm">г</string>
-    <string name="common_bs_unit_mmol">ммоль/л</string>
+    <string name="base_action_new_dish">Новое блюдо</string>
+    <string name="base_action_new_food">Новый продукт</string>
+    <string name="base_subinfo" formatted="false">Б %.1f\t\tЖ %.1f\t\tУ %.1f\t\tК %.1f</string>
+    <string name="base_title">Продукты и блюда</string>
+    <string name="base_title_loading">Продукты и блюда (загрузка…)</string>
+    <string name="common_hint_mass">Масса</string>
+    <string name="common_hint_search">Поиск&#8230;</string>
     <string name="common_rectype_blood">Замер СК</string>
     <string name="common_rectype_ins">Инъекция</string>
     <string name="common_rectype_meal">Приём пищи</string>
     <string name="common_rectype_note">Заметка</string>
-    <string name="common_hint_search">Поиск&#8230;</string>
-    <string name="common_hint_mass">Масса</string>
+    <string name="common_unit_bs_mmoll">ммоль/л</string>
+    <string name="common_unit_insulin">ед.</string>
+    <string name="common_unit_mass_gramm">г</string>
     <string name="diary_button_add">Новая запись</string>
     <string name="diary_context_common_edit">Изменить</string>
     <string name="diary_context_common_remove">Удалить</string>
@@ -27,10 +32,10 @@
     <string name="editor_dish_rm_hint">Введите массу:</string>
     <string name="editor_dish_rm_title">Масса готового блюда</string>
     <string name="editor_dish_title">Блюдо</string>
+    <string name="editor_food_field_carbs">Углеводы, г</string>
+    <string name="editor_food_field_fats">Жиры, г</string>
     <string name="editor_food_field_name">Название</string>
     <string name="editor_food_field_prots">Белки, г</string>
-    <string name="editor_food_field_fats">Жиры, г</string>
-    <string name="editor_food_field_carbs">Углеводы, г</string>
     <string name="editor_food_field_value">Калорийность, ккал</string>
     <string name="editor_food_title">Продукт</string>
     <string name="editor_ins_title">Инсулин</string>
@@ -38,20 +43,14 @@
     <string name="editor_meal_field_mass">Масса, г</string>
     <string name="editor_meal_header_content">Состав</string>
     <string name="editor_meal_header_dosage">Расчёт</string>
-    <string name="editor_meal_label_stat">г угл.</string>
     <string name="editor_meal_label_correction">+8 г</string>
     <string name="editor_meal_label_no_correction">без коррекции</string>
-    <string name="editor_meal_label_dose">ед.</string>
+    <string name="editor_meal_label_stat">г угл.</string>
     <string name="editor_meal_title">Приём пищи</string>
     <string name="editor_note_field_text">Текст</string>
     <string name="editor_note_title">Заметка</string>
-    <string name="base_action_new_dish">Новое блюдо</string>
-    <string name="base_action_new_food">Новый продукт</string>
-    <string name="base_subinfo" formatted="false">Б %.1f\t\tЖ %.1f\t\tУ %.1f\t\tК %.1f</string>
-    <string name="base_title">Продукты и блюда</string>
-    <string name="base_title_loading">Продукты и блюда (загрузка…)</string>
-    <string name="main_option_diary">Дневник</string>
     <string name="main_option_bases">Базы</string>
+    <string name="main_option_diary">Дневник</string>
     <string name="main_option_preferences">Настройки</string>
     <string name="main_option_sync">Синхронизировать</string>
     <string name="main_option_test">Тест</string>
@@ -61,6 +60,7 @@
     <string name="preferences_sync_server">Сервер</string>
     <string name="preferences_sync_username">Логин (e-mail)</string>
     <string name="preferences_title">Настройки</string>
+    <string name="app_name">Компенсация</string>
 
     <!-- Arrays -->
 

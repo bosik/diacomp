@@ -75,9 +75,9 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		captionFats = "F";
 		captionCarbs = "C";
 		captionValue = "V";
-		captionDose = getString(R.string.editor_meal_label_dose);
-		captionGramm = getString(R.string.common_gramm);
-		captionMmol = getString(R.string.common_bs_unit_mmol);
+		captionDose = getString(R.string.common_unit_insulin);
+		captionGramm = getString(R.string.common_unit_mass_gramm);
+		captionMmol = getString(R.string.common_unit_bs_mmoll);
 
 		// components
 

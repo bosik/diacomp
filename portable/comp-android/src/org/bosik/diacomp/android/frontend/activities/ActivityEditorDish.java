@@ -118,7 +118,7 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 	void showMassOn(double mass)
 	{
 		buttonMass.setChecked(true);
-		buttonMass.setText(Utils.formatDoubleShort(mass) + " " + getString(R.string.common_gramm));
+		buttonMass.setText(Utils.formatDoubleShort(mass) + " " + getString(R.string.common_unit_mass_gramm));
 	}
 
 	void showMassOff()

@@ -36,7 +36,7 @@ public class DiaryRecInsView extends LinearLayout
 
 		textTime.setText(Utils.formatTimeLocalShort(data.getTime()));
 
-		String units = getContext().getString(R.string.editor_meal_label_dose);
+		String units = getContext().getString(R.string.common_unit_insulin);
 		String text = String.format(Locale.US, "%.1f %s", data.getValue(), units);
 
 		textValue.setText(text);
