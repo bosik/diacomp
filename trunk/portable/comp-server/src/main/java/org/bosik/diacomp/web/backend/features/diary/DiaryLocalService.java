@@ -241,14 +241,14 @@ public class DiaryLocalService implements DiaryService
 
 			if (includeRemoved)
 			{
-				where = String.format("(%s = ?) AND (%s >= ?) AND (%s <= ?)", COLUMN_DIARY_USER,
-						COLUMN_DIARY_TIMECACHE, COLUMN_DIARY_TIMECACHE);
+				where = String.format("(%s = ?) AND (%s >= ?) AND (%s < ?)", COLUMN_DIARY_USER, COLUMN_DIARY_TIMECACHE,
+						COLUMN_DIARY_TIMECACHE);
 				whereArgs = new String[] { String.valueOf(userId), Utils.formatTimeUTC(startTime),
 						Utils.formatTimeUTC(endTime) };
 			}
 			else
 			{
-				where = String.format("(%s = ?) AND (%s >= ?) AND (%s <= ?) AND (%s = ?)", COLUMN_DIARY_USER,
+				where = String.format("(%s = ?) AND (%s >= ?) AND (%s < ?) AND (%s = ?)", COLUMN_DIARY_USER,
 						COLUMN_DIARY_TIMECACHE, COLUMN_DIARY_TIMECACHE, COLUMN_DIARY_DELETED);
 				whereArgs = new String[] { String.valueOf(userId), Utils.formatTimeUTC(startTime),
 						Utils.formatTimeUTC(endTime), Utils.formatBooleanInt(false) };

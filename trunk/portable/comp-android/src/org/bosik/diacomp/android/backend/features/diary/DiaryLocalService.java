@@ -191,13 +191,13 @@ public class DiaryLocalService implements DiaryService
 
 		if (includeRemoved)
 		{
-			clause = String.format("(%s >= ?) AND (%s <= ?)", DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
+			clause = String.format("(%s >= ?) AND (%s < ?)", DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
 					DiaryContentProvider.COLUMN_DIARY_TIMECACHE);
 			clauseArgs = new String[] { Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime) };
 		}
 		else
 		{
-			clause = String.format("(%s >= ?) AND (%s <= ?) AND (%s = 0)", DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
+			clause = String.format("(%s >= ?) AND (%s < ?) AND (%s = 0)", DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
 					DiaryContentProvider.COLUMN_DIARY_TIMECACHE, DiaryContentProvider.COLUMN_DIARY_DELETED);
 			clauseArgs = new String[] { Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime) };
 		}
