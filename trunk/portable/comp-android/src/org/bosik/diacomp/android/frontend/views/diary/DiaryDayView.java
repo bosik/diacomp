@@ -8,6 +8,7 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
@@ -191,6 +192,12 @@ public class DiaryDayView extends LinearLayout
 						{
 							DiaryRecBloodView rec = new DiaryRecBloodView(context);
 							rec.setData((Versioned<BloodRecord>) record);
+							convertView = rec;
+						}
+						else if (data instanceof InsRecord)
+						{
+							DiaryRecInsView rec = new DiaryRecInsView(context);
+							rec.setData((Versioned<InsRecord>) record);
 							convertView = rec;
 						}
 						else
@@ -422,7 +429,7 @@ public class DiaryDayView extends LinearLayout
 
 		for (Versioned<DiaryRecord> item : temp)
 		{
-			if (item.getData() instanceof BloodRecord)
+			if (item.getData() instanceof BloodRecord || item.getData() instanceof InsRecord)
 			{
 				result.add(item);
 			}
