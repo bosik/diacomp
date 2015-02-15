@@ -609,7 +609,7 @@ public class Utils
 	 */
 	public static Date getPrevDay(Date date)
 	{
-		return new Date(date.getTime() - MsecPerDay);
+		return shiftDate(date, -1);
 	}
 
 	/**
@@ -621,7 +621,7 @@ public class Utils
 	 */
 	public static Date getNextDay(Date date)
 	{
-		return new Date(date.getTime() + MsecPerDay);
+		return shiftDate(date, +1);
 	}
 
 	public static Date getNextMonth(Date date)
@@ -630,6 +630,18 @@ public class Utils
 		c.setTime(date);
 		c.add(Calendar.MONTH, 1);
 		return c.getTime();
+	}
+
+	/**
+	 * Adds specified amount of days to the date
+	 * 
+	 * @param date
+	 * @param days
+	 * @return
+	 */
+	public static Date shiftDate(Date date, int days)
+	{
+		return new Date(date.getTime() + MsecPerDay * days);
 	}
 
 	/**
