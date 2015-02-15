@@ -5,7 +5,6 @@
     android:background="@color/app_background"
     android:gravity="bottom|fill"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin" >
@@ -18,10 +17,50 @@
         android:divider="@null" >
     </org.bosik.diacomp.android.frontend.views.diary.DiaryDayView>
 
-    <Button
-        android:id="@+id/button1"
+    <LinearLayout
+        android:id="@+id/bottomLayout"
+        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Button" />
+        android:gravity="bottom|top"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/activity_vertical_margin" >
+
+        <Button
+            android:id="@+id/buttonAddBlood"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/diary_addblood"
+            android:paddingBottom="0dp" />
+
+        <Button
+            android:id="@+id/buttonAddIns"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/diary_addins"
+            android:paddingBottom="0dp" />
+
+        <Button
+            android:id="@+id/buttonAddMeal"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/diary_addmeal"
+            android:paddingBottom="0dp" />
+
+        <Button
+            android:id="@+id/buttonAddNote"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/diary_addnote"
+            android:paddingBottom="0dp" />
+    </LinearLayout>
 
 </LinearLayout>
