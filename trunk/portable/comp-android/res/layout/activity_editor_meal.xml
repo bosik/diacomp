@@ -118,7 +118,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="right"
                         android:paddingRight="@dimen/padding_medium"
-                        android:text="@string/editor_meal_label_dose"
+                        android:text="@string/common_unit_insulin"
                         android:textStyle="bold" />
 
                     <LinearLayout
@@ -148,7 +148,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="left"
-                            android:text="@string/editor_meal_label_dose" />
+                            android:text="@string/common_unit_insulin" />
 
                         <TextView
                             android:id="@+id/textMealParenthClose"
@@ -163,7 +163,7 @@
                     android:id="@+id/textMealExpectedBs"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/common_bs_unit_mmol" />
+                    android:text="@string/common_unit_bs_mmoll" />
             </LinearLayout>
 
             <Button

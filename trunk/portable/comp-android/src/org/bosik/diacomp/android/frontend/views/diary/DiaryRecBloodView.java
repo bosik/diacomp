@@ -39,7 +39,7 @@ public class DiaryRecBloodView extends LinearLayout
 
 		textTime.setText(Utils.formatTimeLocalShort(data.getTime()));
 
-		String units = getContext().getString(R.string.common_bs_unit_mmol);
+		String units = getContext().getString(R.string.common_unit_bs_mmoll);
 		String finger = data.getFinger() == -1 ? "" : String.format("(%s)", fingers[data.getFinger()]);
 		String text = String.format(Locale.US, "%.1f %s %s", data.getValue(), units, finger);
 
