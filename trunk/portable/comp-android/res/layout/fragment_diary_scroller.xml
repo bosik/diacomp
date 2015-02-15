@@ -10,13 +10,13 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin" >
 
-    <ListView
+    <org.bosik.diacomp.android.frontend.views.diary.DiaryDayView
         android:id="@+id/listDiary"
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="1"
         android:divider="@null" >
-    </ListView>
+    </org.bosik.diacomp.android.frontend.views.diary.DiaryDayView>
 
     <Button
         android:id="@+id/button1"
