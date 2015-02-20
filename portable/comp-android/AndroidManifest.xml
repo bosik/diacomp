@@ -22,6 +22,16 @@
             <grant-uri-permission android:pathPattern=".*" />
         </provider>
 
+        <service android:name="org.bosik.diacomp.android.backend.features.sync.AuthenticatorService" >
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+
         <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityMain"
             android:label="@string/main_title" >
@@ -94,6 +104,11 @@
         <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityGraph"
             android:label="@string/title_activity_activity_graph" >
+        </activity>
+        <activity
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityLogin"
+            android:label="@string/title_activity_activity_login"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
     </application>
 
