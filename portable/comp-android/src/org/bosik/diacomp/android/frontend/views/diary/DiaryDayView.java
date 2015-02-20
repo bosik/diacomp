@@ -148,76 +148,75 @@ public class DiaryDayView extends LinearLayout
 			}
 
 			@Override
-			public Object getItem(int pos)
+			public Object getItem(int position)
 			{
-				return pos;
+				synchronized (data)
+				{
+					return data.get(position);
+				}
 			}
 
 			@Override
-			public long getItemId(int pos)
+			public long getItemId(int position)
 			{
-				return pos;
+				return ((Item) getItem(position)).extractDate().getTime();
 			}
 
 			@SuppressWarnings("unchecked")
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent)
 			{
-				synchronized (data)
+				Log.d(TAG,
+						String.format("getView() for position %d / FV: %d", position,
+								listRecs.getFirstVisiblePosition()));
+
+				Object item = getItem(position);
+
+				if (item instanceof ItemHeader)
 				{
-					int index = position;
-					Log.d(TAG,
-							String.format("getView() for position %d / FV: %d", position,
-									listRecs.getFirstVisiblePosition()));
-
-					Item item = data.get(index);
-
-					if (item instanceof ItemHeader)
+					if (convertView == null)
 					{
-						if (convertView == null)
-						{
-							LayoutInflater inflater = (LayoutInflater) context
-									.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-							convertView = inflater.inflate(R.layout.view_diary_rec_header, null);
-						}
-
-						TextView textTitle = (TextView) convertView.findViewById(R.id.diaryDayHeader);
-						textTitle.setText(Utils.formatDateLocal(((ItemHeader) item).date));
+						LayoutInflater inflater = (LayoutInflater) context
+								.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+						convertView = inflater.inflate(R.layout.view_diary_rec_header, null);
 					}
-					else if (item instanceof ItemData)
+
+					TextView textTitle = (TextView) convertView.findViewById(R.id.diaryDayHeader);
+					textTitle.setText(Utils.formatDateLocal(((ItemHeader) item).date));
+				}
+				else if (item instanceof ItemData)
+				{
+					Versioned<? extends DiaryRecord> record = ((ItemData) item).record;
+					DiaryRecord data = record.getData();
+					if (data instanceof BloodRecord)
 					{
-						Versioned<? extends DiaryRecord> record = ((ItemData) item).record;
-						DiaryRecord data = record.getData();
-						if (data instanceof BloodRecord)
-						{
-							DiaryRecBloodView rec = new DiaryRecBloodView(context);
-							rec.setData((Versioned<BloodRecord>) record);
-							convertView = rec;
-						}
-						else if (data instanceof InsRecord)
-						{
-							DiaryRecInsView rec = new DiaryRecInsView(context);
-							rec.setData((Versioned<InsRecord>) record);
-							convertView = rec;
-						}
-						else if (data instanceof MealRecord)
-						{
-							DiaryRecMealView rec = new DiaryRecMealView(context);
-							rec.setData((Versioned<MealRecord>) record);
-							convertView = rec;
-						}
-						else
-						{
-							throw new RuntimeException("Unsupported data type: " + data.getClass().getSimpleName());
-						}
+						DiaryRecBloodView rec = new DiaryRecBloodView(context);
+						rec.setData((Versioned<BloodRecord>) record);
+						convertView = rec;
+					}
+					else if (data instanceof InsRecord)
+					{
+						DiaryRecInsView rec = new DiaryRecInsView(context);
+						rec.setData((Versioned<InsRecord>) record);
+						convertView = rec;
+					}
+					else if (data instanceof MealRecord)
+					{
+						DiaryRecMealView rec = new DiaryRecMealView(context);
+						rec.setData((Versioned<MealRecord>) record);
+						convertView = rec;
 					}
 					else
 					{
-						throw new RuntimeException("Invalid data type: " + item);
+						throw new RuntimeException("Unsupported data type: " + data.getClass().getSimpleName());
 					}
-
-					return convertView;
 				}
+				else
+				{
+					throw new RuntimeException("Invalid data type: " + item);
+				}
+
+				return convertView;
 			}
 		};
 		listRecs.setAdapter(adapter);
