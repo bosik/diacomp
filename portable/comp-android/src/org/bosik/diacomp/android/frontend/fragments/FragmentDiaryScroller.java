@@ -109,9 +109,7 @@ public class FragmentDiaryScroller extends Fragment
 			@Override
 			public void onClick(View v)
 			{
-				// showNoteEditor(null, true);
-				list.refresh();
-				// list.listRecs.smoothScrollToPositionFromTop(20, 0);
+				showNoteEditor(null, true);
 			}
 		});
 
