@@ -70,13 +70,15 @@ public class DiaryDayView extends LinearLayout
 	static final String	TAG				= DiaryDayView.class.getSimpleName();
 
 	// Data
-	private Date		date;
+	Date				firstDate;
+	int					countOfDays;
 	List<Item>			data			= new ArrayList<Item>();
+	boolean				loading			= false;
 	boolean				loadingBefore	= false;
 	boolean				loadingAfter	= false;
 
 	// Components
-	ListView			listRecs;
+	public ListView		listRecs;
 
 	// Services
 	static DiaryService	diaryService;
@@ -88,7 +90,7 @@ public class DiaryDayView extends LinearLayout
 
 	public DiaryDayView(final Context context, AttributeSet attributes)
 	{
-		super(context);
+		super(context, attributes);
 		final LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.view_diary_day, this);
 
@@ -106,10 +108,7 @@ public class DiaryDayView extends LinearLayout
 		c.set(Calendar.SECOND, 0);
 		c.set(Calendar.MILLISECOND, 0);
 
-		// FIXME: DEBUG ONLY
-		c.set(Calendar.DAY_OF_YEAR, 1);
-
-		setDate(c.getTime());
+		setDate(Utils.getNextDay(c.getTime()));
 
 		// ================================================================
 
@@ -236,14 +235,14 @@ public class DiaryDayView extends LinearLayout
 			@Override
 			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount)
 			{
-				int threshold = 15;
+				int threshold = 2;
 				if (firstVisibleItem < threshold)
 				{
-					loadBefore(getFirstDate());
+					loadBefore(1);
 				}
 				else if (firstVisibleItem + visibleItemCount > totalItemCount - threshold)
 				{
-					loadAfter(getLastDate());
+					loadAfter(1);
 				}
 			}
 		});
@@ -253,47 +252,99 @@ public class DiaryDayView extends LinearLayout
 	{
 		synchronized (data)
 		{
-			// TODO: workaround
-			this.date = Utils.getNextDay(date);
-			data.clear();
-			loadAfter(date);
+			Log.d(TAG, "Refreshing: setting date = " + date);
+			firstDate = Utils.getPrevDay(date);
+			countOfDays = 3;
+			refresh();
 		}
 	}
 
-	Date getFirstDate()
+	List<Item> groupItems(List<Versioned<? extends DiaryRecord>> records, Date firstDate, int countOfDays)
 	{
-		synchronized (data)
+		List<Item> result = new ArrayList<Item>();
+
+		Date curDate = firstDate;
+		int index = 0;
+		for (int i = 1; i <= countOfDays; i++, curDate = Utils.getNextDay(curDate))
 		{
-			if (!data.isEmpty())
+			// TODO: it's time, not the date
+			result.add(new ItemHeader(curDate));
+			while (index < records.size() && sameDate(curDate, records.get(index).getData().getTime()))
 			{
-				Item item = data.get(0);
-				return item.extractDate();
-			}
-			else
-			{
-				return date;
+				result.add(new ItemData(records.get(index)));
+				index++;
 			}
 		}
+
+		return result;
 	}
 
-	Date getLastDate()
+	public void refresh()
 	{
-		synchronized (data)
+		// int index = listRecs.getFirstVisiblePosition();
+		// Log.d(TAG, "Refreshing: first visible index = " + index);
+		// if (!data.isEmpty())
+		// {
+		// Log.d(TAG, "Refreshing: data is not empty");
+		// setDate(data.get(index).extractDate());
+		// }
+		// else
+		// {
+		// Calendar c = Calendar.getInstance();
+		// c.set(Calendar.HOUR_OF_DAY, 0);
+		// c.set(Calendar.MINUTE, 0);
+		// c.set(Calendar.SECOND, 0);
+		// c.set(Calendar.MILLISECOND, 0);
+		// setDate(c.getTime());
+		// }
+
+		if (loading)
 		{
-			Date result;
-			if (!data.isEmpty())
+			return;
+		}
+
+		final Date timeFrom = firstDate;
+		final Date timeTo = Utils.shiftDate(firstDate, countOfDays);
+		final int days = countOfDays;
+
+		new AsyncTask<Date, Void, List<Versioned<? extends DiaryRecord>>>()
+		{
+			@Override
+			protected void onPreExecute()
 			{
-				Item item = data.get(data.size() - 1);
-				result = item.extractDate();
-			}
-			else
-			{
-				result = date;
+				loading = true;
 			}
 
-			// to exclude the last date
-			return new Date(result.getTime() + 1000);
-		}
+			@Override
+			protected List<Versioned<? extends DiaryRecord>> doInBackground(Date... params)
+			{
+				Date timeFrom = params[0];
+				Date timeTo = params[1];
+				Log.d(TAG, String.format("load(): %s - %s", timeFrom, timeTo));
+				return request(timeFrom, timeTo);
+			}
+
+			@Override
+			protected void onPostExecute(List<Versioned<? extends DiaryRecord>> records)
+			{
+				synchronized (data)
+				{
+					data = groupItems(records, timeFrom, days);
+
+					final int oldFirst = listRecs.getFirstVisiblePosition();
+					int c = listRecs.getChildAt(0).getTop();
+
+					((BaseAdapter) ((HeaderViewListAdapter) listRecs.getAdapter()).getWrappedAdapter())
+							.notifyDataSetChanged();
+					listRecs.setSelection(oldFirst);
+					// listRecs.smoothScrollToPositionFromTop(oldFirst + delta + 1, 0);
+
+					listRecs.scrollBy(0, -c);
+
+					loading = false;
+				}
+			}
+		}.execute(timeFrom, timeTo);
 	}
 
 	// TODO: optimize and move to Utils
@@ -302,13 +353,16 @@ public class DiaryDayView extends LinearLayout
 		return Utils.formatDateLocal(date1).equals(Utils.formatDateLocal(date2));
 	}
 
-	void loadBefore(Date date)
+	void loadBefore(final int days)
 	{
 		if (loadingBefore)
 		{
 			Log.w(TAG, "loadBefore() ignored");
 			return;
 		}
+
+		final Date timeFrom = Utils.shiftDate(firstDate, -days);
+		final Date timeTo = firstDate;
 
 		new AsyncTask<Date, Void, List<Versioned<? extends DiaryRecord>>>()
 		{
@@ -321,9 +375,9 @@ public class DiaryDayView extends LinearLayout
 			@Override
 			protected List<Versioned<? extends DiaryRecord>> doInBackground(Date... params)
 			{
-				Date timeTo = params[0];
-				Date timeFrom = Utils.getPrevDay(timeTo);
-				Log.d(TAG, String.format("loadBefore(): %s and %s", timeFrom, timeTo));
+				Date timeFrom = params[0];
+				Date timeTo = params[1];
+				Log.d(TAG, String.format("loadBefore(): %s - %s", timeFrom, timeTo));
 				return request(timeFrom, timeTo);
 			}
 
@@ -332,50 +386,41 @@ public class DiaryDayView extends LinearLayout
 			{
 				synchronized (data)
 				{
-					Date nextDate = getFirstDate();
-					int oldSize = data.size();
+					List<Item> newItems = groupItems(records, timeFrom, days);
+					data.addAll(0, newItems);
 
-					if (!records.isEmpty())
-					{
-						for (int i = records.size() - 1; i >= 0; i--)
-						{
-							Versioned<? extends DiaryRecord> record = records.get(i);
-							if (!sameDate(record.getData().getTime(), nextDate))
-							{
-								// TODO: it's time, not the date
-								data.add(0, new ItemHeader(nextDate));
-							}
-							data.add(0, new ItemData(record));
-							nextDate = record.getData().getTime();
-						}
-					}
-					else
-					{
-						data.add(0, new ItemHeader(Utils.getPrevDay(getFirstDate())));
-					}
-
-					final int delta = data.size() - oldSize;
-
+					int delta = newItems.size();
 					Log.i(TAG, String.format("loadBefore(): %d new items loaded", delta));
 
-					final int oldFirst = listRecs.getFirstVisiblePosition();
-					((BaseAdapter) ((HeaderViewListAdapter) listRecs.getAdapter()).getWrappedAdapter())
-							.notifyDataSetChanged();
-					listRecs.setSelection(oldFirst + delta + 1);
+					int oldFirst = listRecs.getFirstVisiblePosition();
+					int c = listRecs.getChildAt(0).getTop();
+
+					firstDate = timeFrom;
+					countOfDays += days;
 
 					loadingBefore = false;
+
+					((BaseAdapter) ((HeaderViewListAdapter) listRecs.getAdapter()).getWrappedAdapter())
+							.notifyDataSetChanged();
+					listRecs.setSelection(oldFirst + delta);
+					listRecs.scrollBy(0, -c);
+
+					// listRecs.smoothScrollToPositionFromTop(oldFirst + delta + 1, 0);
 				}
 			}
-		}.execute(date);
+		}.execute(timeFrom, timeTo);
 	}
 
-	void loadAfter(Date date)
+	void loadAfter(final int days)
 	{
 		if (loadingAfter)
 		{
 			Log.w(TAG, "loadAfter() ignored");
 			return;
 		}
+
+		final Date timeFrom = Utils.shiftDate(firstDate, countOfDays);
+		final Date timeTo = Utils.shiftDate(firstDate, countOfDays + days);
 
 		new AsyncTask<Date, Void, List<Versioned<? extends DiaryRecord>>>()
 		{
@@ -389,7 +434,7 @@ public class DiaryDayView extends LinearLayout
 			protected List<Versioned<? extends DiaryRecord>> doInBackground(Date... params)
 			{
 				Date timeFrom = params[0];
-				Date timeTo = Utils.getNextDay(timeFrom);
+				Date timeTo = params[1];
 				Log.d(TAG, String.format("loadAfter(): %s and %s", timeFrom, timeTo));
 				return request(timeFrom, timeTo);
 			}
@@ -399,36 +444,19 @@ public class DiaryDayView extends LinearLayout
 			{
 				synchronized (data)
 				{
-					Date prevDate = getLastDate();
-
-					if (!records.isEmpty())
-					{
-						for (int i = 0; i < records.size(); i++)
-						{
-							Versioned<? extends DiaryRecord> record = records.get(i);
-							if (!sameDate(prevDate, record.getData().getTime()))
-							{
-								// TODO: it's time, not the date
-								data.add(new ItemHeader(record.getData().getTime()));
-							}
-							data.add(new ItemData(record));
-							prevDate = record.getData().getTime();
-						}
-					}
-					else
-					{
-						data.add(new ItemHeader(Utils.getNextDay(getLastDate())));
-					}
+					List<Item> newItems = groupItems(records, timeFrom, days);
+					data.addAll(newItems);
+					countOfDays += days;
 
 					loadingAfter = false;
 					((BaseAdapter) ((HeaderViewListAdapter) listRecs.getAdapter()).getWrappedAdapter())
 							.notifyDataSetChanged();
 				}
 			}
-		}.execute(date);
+		}.execute(timeFrom, timeTo);
 	}
 
-	List<Versioned<? extends DiaryRecord>> request(Date startTime, Date endTime)
+	static List<Versioned<? extends DiaryRecord>> request(Date startTime, Date endTime)
 	{
 		List<Versioned<DiaryRecord>> temp = diaryService.findPeriod(startTime, endTime, false);
 
