@@ -157,6 +157,12 @@ public class DiaryDayView extends LinearLayout
 			}
 
 			@Override
+			public boolean hasStableIds()
+			{
+				return true;
+			}
+
+			@Override
 			public long getItemId(int position)
 			{
 				return ((Item) getItem(position)).extractDate().getTime();
@@ -329,17 +335,10 @@ public class DiaryDayView extends LinearLayout
 				synchronized (data)
 				{
 					data = groupItems(records, timeFrom, days);
-
-					final int oldFirst = listRecs.getFirstVisiblePosition();
-					int c = listRecs.getChildAt(0).getTop();
-
+					// int oldFirst = listRecs.getFirstVisiblePosition();
 					((BaseAdapter) ((HeaderViewListAdapter) listRecs.getAdapter()).getWrappedAdapter())
 							.notifyDataSetChanged();
-					listRecs.setSelection(oldFirst);
-					// listRecs.smoothScrollToPositionFromTop(oldFirst + delta + 1, 0);
-
-					listRecs.scrollBy(0, -c);
-
+					// listRecs.setSelection(oldFirst);
 					loading = false;
 				}
 			}
@@ -392,8 +391,6 @@ public class DiaryDayView extends LinearLayout
 					Log.i(TAG, String.format("loadBefore(): %d new items loaded", delta));
 
 					int oldFirst = listRecs.getFirstVisiblePosition();
-					int c = listRecs.getChildAt(0).getTop();
-
 					firstDate = timeFrom;
 					countOfDays += days;
 
@@ -402,9 +399,6 @@ public class DiaryDayView extends LinearLayout
 					((BaseAdapter) ((HeaderViewListAdapter) listRecs.getAdapter()).getWrappedAdapter())
 							.notifyDataSetChanged();
 					listRecs.setSelection(oldFirst + delta);
-					listRecs.scrollBy(0, -c);
-
-					// listRecs.smoothScrollToPositionFromTop(oldFirst + delta + 1, 0);
 				}
 			}
 		}.execute(timeFrom, timeTo);
