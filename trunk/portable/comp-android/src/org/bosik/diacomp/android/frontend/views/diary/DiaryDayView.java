@@ -10,6 +10,7 @@ import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
@@ -210,6 +211,12 @@ public class DiaryDayView extends LinearLayout
 					{
 						DiaryRecMealView rec = new DiaryRecMealView(context);
 						rec.setData((Versioned<MealRecord>) record);
+						convertView = rec;
+					}
+					else if (data instanceof NoteRecord)
+					{
+						DiaryRecNoteView rec = new DiaryRecNoteView(context);
+						rec.setData((Versioned<NoteRecord>) record);
 						convertView = rec;
 					}
 					else
@@ -451,19 +458,8 @@ public class DiaryDayView extends LinearLayout
 
 	static List<Versioned<? extends DiaryRecord>> request(Date startTime, Date endTime)
 	{
-		List<Versioned<DiaryRecord>> temp = diaryService.findPeriod(startTime, endTime, false);
-
 		List<Versioned<? extends DiaryRecord>> result = new ArrayList<Versioned<? extends DiaryRecord>>();
-
-		for (Versioned<DiaryRecord> item : temp)
-		{
-			if (item.getData() instanceof BloodRecord || item.getData() instanceof InsRecord
-					|| item.getData() instanceof MealRecord)
-			{
-				result.add(item);
-			}
-		}
-
+		result.addAll(diaryService.findPeriod(startTime, endTime, false));
 		return result;
 	}
 }
