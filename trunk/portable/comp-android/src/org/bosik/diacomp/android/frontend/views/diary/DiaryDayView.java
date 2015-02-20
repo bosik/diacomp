@@ -23,6 +23,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.HeaderViewListAdapter;
 import android.widget.LinearLayout;
@@ -68,21 +70,35 @@ public class DiaryDayView extends LinearLayout
 		}
 	}
 
-	static final String	TAG				= DiaryDayView.class.getSimpleName();
+	public static interface OnRecordClickListener
+	{
+		void onRecordClick(Versioned<? extends DiaryRecord> record);
+	}
+
+	public static interface OnHeaderClickListener
+	{
+		void onHeaderClick(Date date);
+	}
+
+	static final String		TAG				= DiaryDayView.class.getSimpleName();
 
 	// Data
-	Date				firstDate;
-	int					countOfDays;
-	List<Item>			data			= new ArrayList<Item>();
-	boolean				loading			= false;
-	boolean				loadingBefore	= false;
-	boolean				loadingAfter	= false;
+	Date					firstDate;
+	int						countOfDays;
+	List<Item>				data			= new ArrayList<Item>();
+	boolean					loading			= false;
+	boolean					loadingBefore	= false;
+	boolean					loadingAfter	= false;
 
 	// Components
-	public ListView		listRecs;
+	public ListView			listRecs;
 
 	// Services
-	static DiaryService	diaryService;
+	static DiaryService		diaryService;
+
+	// Listeners
+	OnRecordClickListener	onRecordClickListener;
+	OnHeaderClickListener	onHeaderClickListener;
 
 	public DiaryDayView(final Context context)
 	{
@@ -109,7 +125,7 @@ public class DiaryDayView extends LinearLayout
 		c.set(Calendar.SECOND, 0);
 		c.set(Calendar.MILLISECOND, 0);
 
-		setDate(Utils.getNextDay(c.getTime()));
+		setDate(Utils.shiftDate(c.getTime(), 3));
 
 		// ================================================================
 
@@ -255,6 +271,42 @@ public class DiaryDayView extends LinearLayout
 				else if (firstVisibleItem + visibleItemCount > totalItemCount - threshold)
 				{
 					loadAfter(1);
+				}
+			}
+		});
+
+		listRecs.setOnItemClickListener(new OnItemClickListener()
+		{
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+			{
+				position--;
+
+				if (position < 0 || position >= data.size())
+				{
+					return;
+				}
+
+				Object item = data.get(position);
+
+				if (item instanceof ItemHeader)
+				{
+					if (onHeaderClickListener != null)
+					{
+						onHeaderClickListener.onHeaderClick(((ItemHeader) item).date);
+					}
+				}
+				else if (item instanceof ItemData)
+				{
+					Versioned<? extends DiaryRecord> record = ((ItemData) item).record;
+					if (onRecordClickListener != null)
+					{
+						onRecordClickListener.onRecordClick(record);
+					}
+				}
+				else
+				{
+					throw new RuntimeException("Invalid data type: " + item);
 				}
 			}
 		});
@@ -461,5 +513,15 @@ public class DiaryDayView extends LinearLayout
 		List<Versioned<? extends DiaryRecord>> result = new ArrayList<Versioned<? extends DiaryRecord>>();
 		result.addAll(diaryService.findPeriod(startTime, endTime, false));
 		return result;
+	}
+
+	public void setOnHeaderClickListener(OnHeaderClickListener l)
+	{
+		onHeaderClickListener = l;
+	}
+
+	public void setOnRecordClickListener(OnRecordClickListener l)
+	{
+		onRecordClickListener = l;
 	}
 }

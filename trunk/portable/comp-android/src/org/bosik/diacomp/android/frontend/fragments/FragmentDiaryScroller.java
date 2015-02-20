@@ -11,6 +11,7 @@ import org.bosik.diacomp.android.frontend.activities.ActivityEditorIns;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorMeal;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorNote;
 import org.bosik.diacomp.android.frontend.views.diary.DiaryDayView;
+import org.bosik.diacomp.android.frontend.views.diary.DiaryDayView.OnRecordClickListener;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
@@ -110,6 +111,31 @@ public class FragmentDiaryScroller extends Fragment
 			public void onClick(View v)
 			{
 				showNoteEditor(null, true);
+			}
+		});
+
+		list.setOnRecordClickListener(new OnRecordClickListener()
+		{
+			@SuppressWarnings("unchecked")
+			@Override
+			public void onRecordClick(Versioned<? extends DiaryRecord> record)
+			{
+				if (record.getData() instanceof BloodRecord)
+				{
+					showBloodEditor((Versioned<BloodRecord>) record, false);
+				}
+				else if (record.getData() instanceof InsRecord)
+				{
+					showInsEditor((Versioned<InsRecord>) record, false);
+				}
+				else if (record.getData() instanceof MealRecord)
+				{
+					showMealEditor((Versioned<MealRecord>) record, false);
+				}
+				else if (record.getData() instanceof NoteRecord)
+				{
+					showNoteEditor((Versioned<NoteRecord>) record, false);
+				}
 			}
 		});
 
