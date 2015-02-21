@@ -50,6 +50,7 @@
     <string name="editor_meal_title">Meal</string>
     <string name="editor_note_field_text">Text</string>
     <string name="editor_note_title">Note</string>
+    <string name="fd_action_add">Add</string>
     <string name="base_action_new_dish">New dish</string>
     <string name="base_action_new_food">New food</string>
     <string name="base_subinfo" formatted="false">P %.1f\t\tF %.1f\t\tC %.1f\t\tV %.1f</string>

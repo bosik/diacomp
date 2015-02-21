@@ -49,6 +49,7 @@
     <string name="editor_meal_title">Приём пищи</string>
     <string name="editor_note_field_text">Текст</string>
     <string name="editor_note_title">Заметка</string>
+    <string name="fd_action_add">Добавить</string>
     <string name="main_option_bases">Базы</string>
     <string name="main_option_diary">Дневник</string>
     <string name="main_option_preferences">Настройки</string>

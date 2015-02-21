@@ -31,6 +31,9 @@
         android:layout_weight="3"
         android:ems="10"
         android:hint="@string/common_hint_mass"
+        android:imeActionId="@+id/actionAddFood"
+        android:imeActionLabel="@string/fd_action_add"
+        android:imeOptions="actionUnspecified"
         android:inputType="numberDecimal|text"
         android:singleLine="true" />
 
