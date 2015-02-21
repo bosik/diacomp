@@ -110,8 +110,6 @@ public class DiaryView extends View
 			@Override
 			public void onClick(View v)
 			{
-				Log.e(TAG, "onClick()");
-
 				setClickedIndex(getDownedIndex());
 				updateBuffer();
 				invalidate();
