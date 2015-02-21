@@ -281,23 +281,11 @@ public class FoodDishPicker extends LinearLayout
 			editMass.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 			editMass.setOnEditorActionListener(new TextView.OnEditorActionListener()
 			{
-				// TODO: clarify if it works or not
-
 				@Override
 				public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
 				{
-					// super onEditorAction(v, actionId, event);
-
-					if (actionId == EditorInfo.IME_ACTION_SEARCH)
+					if (actionId == R.id.actionAddFood || actionId == EditorInfo.IME_NULL)
 					{
-						// editMass.requestFocus();
-						Log.d("XXX", "It works!");
-						return true;
-					}
-
-					if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED)
-					{
-						Log.d("XXX", "Enter pressed");
 						submit();
 						return true;
 					}
