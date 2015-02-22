@@ -37,11 +37,13 @@
         android:layout_height="match_parent" >
 
         <LinearLayout
-            style="@style/LoginFormContainer"
-            android:orientation="vertical" >
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp" >
 
             <EditText
-                android:id="@+id/email"
+                android:id="@+id/accountName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/prompt_email"
@@ -50,7 +52,7 @@
                 android:singleLine="true" />
 
             <EditText
-                android:id="@+id/password"
+                android:id="@+id/accountPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/prompt_password"

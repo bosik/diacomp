@@ -1,10 +1,14 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.webclient.WebClient;
+import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
+import android.accounts.AccountManager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,26 +25,25 @@ import android.widget.TextView;
  */
 public class ActivityLogin extends AccountAuthenticatorActivity
 {
-	/**
-	 * A dummy authentication store containing known user names and passwords. TODO: remove after
-	 * connecting to a real authentication system.
-	 */
-	private static final String[]	DUMMY_CREDENTIALS	= new String[] { "foo@example.com:hello",
-			"bar@example.com:world"					};
+	public static final String		EXTRA_EMAIL					= "com.example.android.authenticatordemo.extra.EMAIL";
+	public static final String		EXTRA_PASS					= "com.example.android.authenticatordemo.extra.PASS";
 
-	/**
-	 * The default email to populate the email field with.
-	 */
-	public static final String		EXTRA_EMAIL			= "com.example.android.authenticatordemo.extra.EMAIL";
+	public static final String		ARG_ACCOUNT_TYPE			= "org.bosik.diacomp.activityLogin.accountType";
+	public static final String		ARG_AUTH_TYPE				= "org.bosik.diacomp.activityLogin.authType";
+	public static final String		ARG_IS_ADDING_NEW_ACCOUNT	= "org.bosik.diacomp.activityLogin.newAccount";
 
 	/**
 	 * Keep track of the login task to ensure we can cancel it if requested.
 	 */
-	private UserLoginTask			mAuthTask			= null;
+	private UserLoginTask			mAuthTask					= null;
 
 	// Values for email and password at the time of the login attempt.
 	private String					mEmail;
 	private String					mPassword;
+
+	private String					mAccountType;
+	private String					mAuthTokenType;
+	private boolean					mNewAccount;
 
 	// UI references.
 	private EditText				mEmailView;
@@ -56,12 +59,16 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 
 		setContentView(R.layout.activity_login);
 
+		mAccountType = getIntent().getStringExtra(ARG_ACCOUNT_TYPE);
+		mAuthTokenType = getIntent().getStringExtra(ARG_AUTH_TYPE);
+		mNewAccount = getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false);
+
 		// Set up the login form.
 		mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
-		mEmailView = (EditText) findViewById(R.id.email);
+		mEmailView = (EditText) findViewById(R.id.accountName);
 		mEmailView.setText(mEmail);
 
-		mPasswordView = (EditText) findViewById(R.id.password);
+		mPasswordView = (EditText) findViewById(R.id.accountPassword);
 		mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener()
 		{
 			@Override
@@ -218,30 +225,20 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		@Override
 		protected Boolean doInBackground(Void... params)
 		{
-			// TODO: attempt authentication against a network service.
+			WebClient client = new WebClient(12000);
+			client.setServer("http://192.168.0.100:8190/comp-server/");
+			client.setUsername(mEmail);
+			client.setPassword(mPassword);
 
 			try
 			{
-				// Simulate network access.
-				Thread.sleep(2000);
+				client.login();
+				return true;
 			}
-			catch (InterruptedException e)
+			catch (Exception e)
 			{
 				return false;
 			}
-
-			for (String credential : DUMMY_CREDENTIALS)
-			{
-				String[] pieces = credential.split(":");
-				if (pieces[0].equals(mEmail))
-				{
-					// Account exists, return true if the password matches.
-					return pieces[1].equals(mPassword);
-				}
-			}
-
-			// TODO: register the new account here.
-			return true;
 		}
 
 		@Override
@@ -252,7 +249,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 
 			if (success)
 			{
-				finish();
+				submit();
 			}
 			else
 			{
@@ -267,5 +264,57 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			mAuthTask = null;
 			showProgress(false);
 		}
+	}
+
+	public void submit()
+	{
+		final String userName = ((TextView) findViewById(R.id.accountName)).getText().toString();
+		final String userPass = ((TextView) findViewById(R.id.accountPassword)).getText().toString();
+		new AsyncTask<Void, Void, Intent>()
+		{
+			@Override
+			protected Intent doInBackground(Void... params)
+			{
+				String authtoken = "token-goes-here";// sServerAuthenticate.userSignIn(userName,
+														// userPass, mAuthTokenType);
+				final Intent res = new Intent();
+				res.putExtra(AccountManager.KEY_ACCOUNT_NAME, userName);
+				res.putExtra(AccountManager.KEY_ACCOUNT_TYPE, mAccountType);
+				res.putExtra(AccountManager.KEY_AUTHTOKEN, authtoken);
+				res.putExtra(EXTRA_PASS, userPass);
+				return res;
+			}
+
+			@Override
+			protected void onPostExecute(Intent intent)
+			{
+				finishLogin(intent);
+			}
+		}.execute();
+	}
+
+	private void finishLogin(Intent intent)
+	{
+		final AccountManager mAccountManager = AccountManager.get(this);
+
+		String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+		String accountPassword = intent.getStringExtra(EXTRA_PASS);
+		final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
+		if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false))
+		{
+			// String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
+			// Creating the account on the device and setting the auth token we got
+			// (Not setting the auth token will cause another call to the server to authenticate the
+			// user)
+			mAccountManager.addAccountExplicitly(account, accountPassword, null);
+			// mAccountManager.setAuthToken(account, mAuthTokenType, authtoken);
+		}
+		else
+		{
+			mAccountManager.setPassword(account, accountPassword);
+		}
+		setAccountAuthenticatorResult(intent.getExtras());
+		setResult(RESULT_OK, intent);
+		finish();
 	}
 }
