@@ -84,8 +84,8 @@ const
   UPDATES_CHECKING_PERIOD = 7; { дней }
 
   { время актуальности замера и инсулина }
-  BLOOD_ACTUALITY_TIME  = 90;
-  INS_ACTUALITY_TIME    = 4*60;
+  BLOOD_ACTUALITY_TIME  = 120;   // minutes
+  INS_ACTUALITY_TIME    = 4*60;  // minutes
   SEARCH_INTERVAL       = 14; // for time left
 
   { Параметры подключения }
