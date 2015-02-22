@@ -386,7 +386,7 @@ public class DiaryDayView extends LinearLayout
 		final Date timeTo = Utils.shiftDate(firstDate, countOfDays);
 		final int days = countOfDays;
 
-		new AsyncTask<Date, Void, List<Versioned<? extends DiaryRecord>>>()
+		new AsyncTask<Date, Void, List<Item>>()
 		{
 			@Override
 			protected void onPreExecute()
@@ -395,20 +395,21 @@ public class DiaryDayView extends LinearLayout
 			}
 
 			@Override
-			protected List<Versioned<? extends DiaryRecord>> doInBackground(Date... params)
+			protected List<Item> doInBackground(Date... params)
 			{
 				Date timeFrom = params[0];
 				Date timeTo = params[1];
 				Log.d(TAG, String.format("load(): %s - %s", timeFrom, timeTo));
-				return request(timeFrom, timeTo);
+				List<Versioned<? extends DiaryRecord>> records = request(timeFrom, timeTo);
+				return groupItems(records, timeFrom, days);
 			}
 
 			@Override
-			protected void onPostExecute(List<Versioned<? extends DiaryRecord>> records)
+			protected void onPostExecute(List<Item> items)
 			{
 				synchronized (data)
 				{
-					data = groupItems(records, timeFrom, days);
+					data = items;
 				}
 				adapter.notifyDataSetChanged();
 				loading = false;
@@ -433,7 +434,7 @@ public class DiaryDayView extends LinearLayout
 		final Date timeFrom = Utils.shiftDate(firstDate, -days);
 		final Date timeTo = firstDate;
 
-		new AsyncTask<Date, Void, List<Versioned<? extends DiaryRecord>>>()
+		new AsyncTask<Date, Void, List<Item>>()
 		{
 			@Override
 			protected void onPreExecute()
@@ -442,23 +443,23 @@ public class DiaryDayView extends LinearLayout
 			}
 
 			@Override
-			protected List<Versioned<? extends DiaryRecord>> doInBackground(Date... params)
+			protected List<Item> doInBackground(Date... params)
 			{
 				Date timeFrom = params[0];
 				Date timeTo = params[1];
 				Log.d(TAG, String.format("loadBefore(): %s - %s", timeFrom, timeTo));
-				return request(timeFrom, timeTo);
+				final List<Versioned<? extends DiaryRecord>> records = request(timeFrom, timeTo);
+				return groupItems(records, timeFrom, days);
 			}
 
 			@Override
-			protected void onPostExecute(List<Versioned<? extends DiaryRecord>> records)
+			protected void onPostExecute(List<Item> items)
 			{
-				List<Item> newItems = groupItems(records, timeFrom, days);
 				synchronized (data)
 				{
-					data.addAll(0, newItems);
+					data.addAll(0, items);
 				}
-				int delta = newItems.size();
+				int delta = items.size();
 				Log.i(TAG, String.format("loadBefore(): %d new items loaded", delta));
 
 				firstDate = timeFrom;
@@ -483,7 +484,7 @@ public class DiaryDayView extends LinearLayout
 		final Date timeFrom = Utils.shiftDate(firstDate, countOfDays);
 		final Date timeTo = Utils.shiftDate(firstDate, countOfDays + days);
 
-		new AsyncTask<Date, Void, List<Versioned<? extends DiaryRecord>>>()
+		new AsyncTask<Date, Void, List<Item>>()
 		{
 			@Override
 			protected void onPreExecute()
@@ -492,21 +493,21 @@ public class DiaryDayView extends LinearLayout
 			}
 
 			@Override
-			protected List<Versioned<? extends DiaryRecord>> doInBackground(Date... params)
+			protected List<Item> doInBackground(Date... params)
 			{
 				Date timeFrom = params[0];
 				Date timeTo = params[1];
 				Log.d(TAG, String.format("loadAfter(): %s and %s", timeFrom, timeTo));
-				return request(timeFrom, timeTo);
+				final List<Versioned<? extends DiaryRecord>> records = request(timeFrom, timeTo);
+				return groupItems(records, timeFrom, days);
 			}
 
 			@Override
-			protected void onPostExecute(List<Versioned<? extends DiaryRecord>> records)
+			protected void onPostExecute(List<Item> items)
 			{
-				List<Item> newItems = groupItems(records, timeFrom, days);
 				synchronized (data)
 				{
-					data.addAll(newItems);
+					data.addAll(items);
 				}
 				countOfDays += days;
 
