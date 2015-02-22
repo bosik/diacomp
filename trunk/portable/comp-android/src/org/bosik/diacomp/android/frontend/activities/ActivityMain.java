@@ -10,7 +10,6 @@ import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.FragmentBase;
-import org.bosik.diacomp.android.frontend.fragments.FragmentDiary;
 import org.bosik.diacomp.android.frontend.fragments.FragmentDiaryScroller;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.services.diary.DiaryService;
@@ -39,13 +38,12 @@ public class ActivityMain extends FragmentActivity
 {
 	/* =========================== CONSTANTS ================================ */
 
-	static final String			TAG					= ActivityMain.class.getSimpleName();
+	static final String			TAG			= ActivityMain.class.getSimpleName();
 	// private static final int RESULT_SPEECH_TO_TEXT = 620;
 
-	private static final int	TAB_COUNT			= 3;
-	private static final int	TAB_DIARY			= 0;
-	private static final int	TAB_DIARY_SCROLLER	= 1;
-	private static final int	TAB_BASE			= 2;
+	private static final int	TAB_COUNT	= 2;
+	private static final int	TAB_DIARY	= 0;
+	private static final int	TAB_BASE	= 1;
 
 	/* =========================== FIELDS ================================ */
 
@@ -131,10 +129,6 @@ public class ActivityMain extends FragmentActivity
 					{
 						case TAB_DIARY:
 						{
-							return new FragmentDiary();
-						}
-						case TAB_DIARY_SCROLLER:
-						{
 							return new FragmentDiaryScroller();
 						}
 						case TAB_BASE:
@@ -154,10 +148,6 @@ public class ActivityMain extends FragmentActivity
 					switch (position)
 					{
 						case TAB_DIARY:
-						{
-							return ActivityMain.this.getString(R.string.main_option_diary);
-						}
-						case TAB_DIARY_SCROLLER:
 						{
 							return ActivityMain.this.getString(R.string.main_option_diary);
 						}
