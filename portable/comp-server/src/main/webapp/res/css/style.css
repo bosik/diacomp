@@ -260,28 +260,21 @@ th {
 }
 
 .diary_page_full {
-	border-bottom: solid 1px #cccccc;
 	overflow: hidden;
-	/*min-height: 160px;*/
-	margin-bottom: 15px;
 }
 
 .diary_page_empty {
-	/*padding: 10px;*/
 	font-size: 120%;
 	text-align: center;
 	color: #cccccc;
-	/*border-right: solid 1px #cccccc;*/
-	/*min-height: 160px;*/
 }
 
 .rec {
 	padding-top: 5px;
 	padding-bottom: 5px;
 	padding-left: 5px;
-	border-top: solid 1px #d8d8d8;
-	border-left: solid 1px #d8d8d8;
-	border-right: solid 1px #d8d8d8;
+	margin-bottom: 5px;
+	border: solid 1px #d8d8d8;
 	overflow: hidden;
 }
 
@@ -459,8 +452,11 @@ th {
 
 .diary-day-caption {
 	padding-bottom: 2px;
-	font-size: 140%;
+	font-size: 110%;
 	color: #cccccc;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	text-align: center;
 }
 
 /* =========================== TABLE =========================== */
