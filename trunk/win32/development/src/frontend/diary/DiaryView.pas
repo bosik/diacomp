@@ -901,6 +901,7 @@ const
   //BEST_CHARSET = CHINESEBIG5_CHARSET;
 var
   Msg: string;
+  TempBlood: TBloodRecord;
 begin
   if (Length(CurrentPage) = 0) then
   with FBitMap.Canvas do
@@ -959,21 +960,16 @@ begin
     begin
       if (CurrentPage[i].RecType = TBloodRecord) then
       begin
-          if (TBloodRecord(CurrentPage[i]).Finger > -1) then
-            AddPanel(
-                   i,
-                   CurrentPage[i].Time,
-                   FmtArray(RealToStrZero(TBloodRecord(CurrentPage[i]).Value) + '  ' +
-                   ShortFingerNames[TBloodRecord(CurrentPage[i]).Finger]),
-                   [{fsBold}]
-                 )
-          else
-            AddPanel(
-                   i,
-                   CurrentPage[i].Time,
-                   FmtArray(RealToStrZero(TBloodRecord(CurrentPage[i]).Value)),
-                   [{fsBold}]
-                 )
+        TempBlood := TBloodRecord(CurrentPage[i]);
+        if (TempBlood.Finger > -1) then
+        begin
+          Msg := Format('%.1f %s (%s)', [TempBlood.Value, 'ללמכü/כ', ShortFingerNames[TempBlood.Finger]]);
+        end else
+        begin
+          Msg := Format('%.1f %s', [TempBlood.Value, 'ללמכü/כ']);
+        end;
+
+        AddPanel(i, CurrentPage[i].Time, FmtArray(Msg), []);
       end else
 
       if (CurrentPage[i].RecType = TInsRecord) then
