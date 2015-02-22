@@ -26,7 +26,6 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.HeaderViewListAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -89,8 +88,10 @@ public class DiaryDayView extends LinearLayout
 	boolean					loading			= false;
 	boolean					loadingBefore	= false;
 	boolean					loadingAfter	= false;
+	int						offset;
 
 	// Components
+	BaseAdapter				adapter;
 	public ListView			listRecs;
 
 	// Services
@@ -103,6 +104,11 @@ public class DiaryDayView extends LinearLayout
 	public DiaryDayView(final Context context)
 	{
 		this(context, null);
+	}
+
+	int positionToIndex(int position)
+	{
+		return position - offset;
 	}
 
 	public DiaryDayView(final Context context, AttributeSet attributes)
@@ -125,43 +131,48 @@ public class DiaryDayView extends LinearLayout
 		c.set(Calendar.SECOND, 0);
 		c.set(Calendar.MILLISECOND, 0);
 
-		setDate(Utils.shiftDate(c.getTime(), 3));
+		setDate(c.getTime());
 
 		// ================================================================
 
-		View progressView = inflater.inflate(R.layout.view_diary_rec_loading, null);
-		listRecs.addHeaderView(progressView);
-		listRecs.addFooterView(progressView);
-
-		final BaseAdapter adapter = new BaseAdapter()
+		adapter = new BaseAdapter()
 		{
 			@Override
 			public int getViewTypeCount()
 			{
-				return 3;
+				return 4;
 			}
 
 			@Override
 			public int getItemViewType(int position)
 			{
-				if (data.get(position) instanceof ItemHeader)
+				final Object item = getItem(position);
+
+				final int LOADING = -16;
+				final int UNKNOWN = -17;
+
+				if (item == null)
+				{
+					return LOADING;
+				}
+				else if (item instanceof ItemHeader)
 				{
 					return 1;
 				}
-				else if (data.get(position) instanceof ItemData)
+				else if (item instanceof ItemData)
 				{
 					return 2;
 				}
 				else
 				{
-					return -17;
+					return UNKNOWN;
 				}
 			}
 
 			@Override
 			public int getCount()
 			{
-				return data.size();
+				return Integer.MAX_VALUE / 2;
 			}
 
 			@Override
@@ -169,7 +180,15 @@ public class DiaryDayView extends LinearLayout
 			{
 				synchronized (data)
 				{
-					return data.get(position);
+					int index = positionToIndex(position);
+					if (index >= 0 && index < data.size())
+					{
+						return data.get(index);
+					}
+					else
+					{
+						return null;
+					}
 				}
 			}
 
@@ -182,20 +201,31 @@ public class DiaryDayView extends LinearLayout
 			@Override
 			public long getItemId(int position)
 			{
-				return ((Item) getItem(position)).extractDate().getTime();
+				final Object item = getItem(position);
+				if (item != null)
+				{
+					return ((Item) item).extractDate().getTime();
+				}
+				else
+				{
+					return position;
+				}
 			}
 
 			@SuppressWarnings("unchecked")
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent)
 			{
-				Log.d(TAG,
-						String.format("getView() for position %d / FV: %d", position,
-								listRecs.getFirstVisiblePosition()));
-
 				Object item = getItem(position);
 
-				if (item instanceof ItemHeader)
+				if (item == null)
+				{
+					if (convertView == null)
+					{
+						convertView = inflater.inflate(R.layout.view_diary_rec_loading, null);
+					}
+				}
+				else if (item instanceof ItemHeader)
 				{
 					if (convertView == null)
 					{
@@ -248,8 +278,9 @@ public class DiaryDayView extends LinearLayout
 				return convertView;
 			}
 		};
+		offset = (Integer.MAX_VALUE / 2) / 2;
 		listRecs.setAdapter(adapter);
-		listRecs.setSelection(1);
+		listRecs.setSelection(offset);
 
 		// ============================================================================
 
@@ -263,14 +294,15 @@ public class DiaryDayView extends LinearLayout
 			@Override
 			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount)
 			{
-				int threshold = 2;
-				if (firstVisibleItem < threshold)
+				int threshold = 10;
+				if (positionToIndex(firstVisibleItem) < threshold)
 				{
-					loadBefore(1);
+					loadBefore(4);
 				}
-				else if (firstVisibleItem + visibleItemCount > totalItemCount - threshold)
+				// else
+				if (positionToIndex(firstVisibleItem + visibleItemCount) > data.size() - threshold)
 				{
-					loadAfter(1);
+					loadAfter(4);
 				}
 			}
 		});
@@ -280,14 +312,14 @@ public class DiaryDayView extends LinearLayout
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				position--;
+				int index = positionToIndex(position);
 
-				if (position < 0 || position >= data.size())
+				if (index < 0 || index >= data.size())
 				{
 					return;
 				}
 
-				Object item = data.get(position);
+				Object item = data.get(index);
 
 				if (item instanceof ItemHeader)
 				{
@@ -317,8 +349,8 @@ public class DiaryDayView extends LinearLayout
 		synchronized (data)
 		{
 			Log.d(TAG, "Refreshing: setting date = " + date);
-			firstDate = Utils.getPrevDay(date);
-			countOfDays = 3;
+			firstDate = date;
+			countOfDays = 1;
 			refresh();
 		}
 	}
@@ -345,23 +377,6 @@ public class DiaryDayView extends LinearLayout
 
 	public void refresh()
 	{
-		// int index = listRecs.getFirstVisiblePosition();
-		// Log.d(TAG, "Refreshing: first visible index = " + index);
-		// if (!data.isEmpty())
-		// {
-		// Log.d(TAG, "Refreshing: data is not empty");
-		// setDate(data.get(index).extractDate());
-		// }
-		// else
-		// {
-		// Calendar c = Calendar.getInstance();
-		// c.set(Calendar.HOUR_OF_DAY, 0);
-		// c.set(Calendar.MINUTE, 0);
-		// c.set(Calendar.SECOND, 0);
-		// c.set(Calendar.MILLISECOND, 0);
-		// setDate(c.getTime());
-		// }
-
 		if (loading)
 		{
 			return;
@@ -394,12 +409,9 @@ public class DiaryDayView extends LinearLayout
 				synchronized (data)
 				{
 					data = groupItems(records, timeFrom, days);
-					// int oldFirst = listRecs.getFirstVisiblePosition();
-					((BaseAdapter) ((HeaderViewListAdapter) listRecs.getAdapter()).getWrappedAdapter())
-							.notifyDataSetChanged();
-					// listRecs.setSelection(oldFirst);
-					loading = false;
 				}
+				adapter.notifyDataSetChanged();
+				loading = false;
 			}
 		}.execute(timeFrom, timeTo);
 	}
@@ -441,24 +453,21 @@ public class DiaryDayView extends LinearLayout
 			@Override
 			protected void onPostExecute(List<Versioned<? extends DiaryRecord>> records)
 			{
+				List<Item> newItems = groupItems(records, timeFrom, days);
 				synchronized (data)
 				{
-					List<Item> newItems = groupItems(records, timeFrom, days);
 					data.addAll(0, newItems);
-
-					int delta = newItems.size();
-					Log.i(TAG, String.format("loadBefore(): %d new items loaded", delta));
-
-					int oldFirst = listRecs.getFirstVisiblePosition();
-					firstDate = timeFrom;
-					countOfDays += days;
-
-					loadingBefore = false;
-
-					((BaseAdapter) ((HeaderViewListAdapter) listRecs.getAdapter()).getWrappedAdapter())
-							.notifyDataSetChanged();
-					listRecs.setSelection(oldFirst + delta + 1);
 				}
+				int delta = newItems.size();
+				Log.i(TAG, String.format("loadBefore(): %d new items loaded", delta));
+
+				firstDate = timeFrom;
+				countOfDays += days;
+
+				loadingBefore = false;
+
+				offset -= delta;
+				adapter.notifyDataSetChanged();
 			}
 		}.execute(timeFrom, timeTo);
 	}
@@ -494,16 +503,15 @@ public class DiaryDayView extends LinearLayout
 			@Override
 			protected void onPostExecute(List<Versioned<? extends DiaryRecord>> records)
 			{
+				List<Item> newItems = groupItems(records, timeFrom, days);
 				synchronized (data)
 				{
-					List<Item> newItems = groupItems(records, timeFrom, days);
 					data.addAll(newItems);
-					countOfDays += days;
-
-					loadingAfter = false;
-					((BaseAdapter) ((HeaderViewListAdapter) listRecs.getAdapter()).getWrappedAdapter())
-							.notifyDataSetChanged();
 				}
+				countOfDays += days;
+
+				loadingAfter = false;
+				adapter.notifyDataSetChanged();
 			}
 		}.execute(timeFrom, timeTo);
 	}
