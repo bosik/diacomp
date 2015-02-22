@@ -150,6 +150,13 @@ public class Versioned<T> implements Serializable
 		return true;
 	}
 
+	@Override
+	public String toString()
+	{
+		return String.format("(ID=%s, Hash=%s, Version=%d, Timestamp=%s)", getId(), getHash(), getVersion(),
+				getTimeStamp().toString());
+	}
+
 	public static final Comparator<Versioned<?>>	COMPARATOR_GUID	= new Comparator<Versioned<?>>()
 																	{
 																		@Override
