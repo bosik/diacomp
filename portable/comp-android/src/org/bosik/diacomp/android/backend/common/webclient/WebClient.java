@@ -113,11 +113,11 @@ public class WebClient
 	{
 		checkTimeout();
 
+		url = server + url;
 		Log.d(TAG, "GET " + url);
 
 		try
 		{
-			url = server + url;
 			// TODO: check if %20 replacement is necessary
 			HttpResponse resp = mHttpClient.execute(new HttpGet(url.replace(" ", CODE_SPACE)));
 			String responseContent = formatResponse(resp, encoding);
@@ -141,12 +141,13 @@ public class WebClient
 	{
 		checkTimeout();
 
+		url = server + url;
 		Log.d(TAG, "POST " + url);
 
 		try
 		{
 			HttpEntity entity = new UrlEncodedFormEntity(params, encoding);
-			HttpPost post = new HttpPost(server + url.replace(" ", CODE_SPACE));
+			HttpPost post = new HttpPost(url.replace(" ", CODE_SPACE));
 			post.addHeader(entity.getContentType());
 			post.setEntity(entity);
 			HttpResponse resp = mHttpClient.execute(post);
@@ -171,12 +172,13 @@ public class WebClient
 	{
 		checkTimeout();
 
+		url = server + url;
 		Log.d(TAG, "PUT " + url);
 
 		try
 		{
 			HttpEntity entity = new UrlEncodedFormEntity(params, encoding);
-			HttpPut put = new HttpPut(server + url.replace(" ", CODE_SPACE));
+			HttpPut put = new HttpPut(url.replace(" ", CODE_SPACE));
 			put.addHeader(entity.getContentType());
 			put.setEntity(entity);
 			HttpResponse resp = mHttpClient.execute(put);
