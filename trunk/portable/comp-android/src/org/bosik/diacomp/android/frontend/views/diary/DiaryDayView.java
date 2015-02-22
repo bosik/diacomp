@@ -457,7 +457,7 @@ public class DiaryDayView extends LinearLayout
 
 					((BaseAdapter) ((HeaderViewListAdapter) listRecs.getAdapter()).getWrappedAdapter())
 							.notifyDataSetChanged();
-					listRecs.setSelection(oldFirst + delta);
+					listRecs.setSelection(oldFirst + delta + 1);
 				}
 			}
 		}.execute(timeFrom, timeTo);
