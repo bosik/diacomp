@@ -2486,6 +2486,35 @@ procedure TForm1.UpdateMealDose;
     end;
   end;
 
+  function FindBlood(Time: TDateTime): TBloodRecord;
+  var
+    Recs: TRecordList;
+    TimeFrom: TDateTime;
+    TimeTo: TDateTIme;
+    i: integer;
+  begin
+    TimeFrom := Time - 1;//BLOOD_ACTUALITY_TIME / MinPerDay;
+    TimeTo := Time;
+    Recs := LocalSource.FindPeriod(TimeFrom, TimeTo);
+
+    // TODO: ins time hardcoded
+    UpdatePostprand(Recs, 3.5 / HourPerDay, Value['PostPrandTime'] / MinPerDay, Value['ShortPostPrandTime'] / MinPerDay);
+
+    for i := High(Recs) downto 0 do
+    if (abs(Recs[i].Time - Time) <= BLOOD_ACTUALITY_TIME / MinPerDay) then
+    begin
+      if (Recs[i].RecType = TBloodRecord) and
+         (not TBloodRecord(Recs[i]).PostPrand) then
+      begin
+        Result := Recs[i] as TBloodRecord;
+        Exit;
+      end;
+    end else
+      break;
+
+    Result := nil;
+  end;
+
 var
   StartBlood: TBloodRecord;
   Ins: TInsRecord;
@@ -2509,14 +2538,7 @@ begin
     { ищем приём пищи, замер и инъекцию }
     SelMeal := TMealRecord(Rec);
 
-    StartBlood := TBloodRecord(
-      Diary.FindRecord(
-        TBloodRecord,
-        SelMeal.Time,
-        BLOOD_ACTUALITY_TIME,
-        sdBack  // TODO: Around?
-      )
-    );
+    StartBlood := FindBlood(SelMeal.Time);
 
     Ins := TInsRecord(
       Diary.FindRecord(
