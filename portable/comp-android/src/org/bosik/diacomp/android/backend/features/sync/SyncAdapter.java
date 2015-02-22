@@ -5,6 +5,7 @@ import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryWebService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -18,7 +19,8 @@ import android.os.Bundle;
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter
 {
-	ContentResolver	mContentResolver;
+	private final ContentResolver	mContentResolver;
+	private final AccountManager	mAccountManager;
 
 	/**
 	 * Set up the sync adapter
@@ -27,6 +29,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 	{
 		super(context, autoInitialize);
 		mContentResolver = context.getContentResolver();
+		mAccountManager = AccountManager.get(context);
 	}
 
 	/**
@@ -37,23 +40,35 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 	{
 		super(context, autoInitialize, allowParallelSyncs);
 		mContentResolver = context.getContentResolver();
+		mAccountManager = AccountManager.get(context);
 	}
 
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
 			SyncResult syncResult)
 	{
-		final int CONNECTION_TIMEOUT = 12000;
+		try
+		{
+			final int CONNECTION_TIMEOUT = 12000;
 
-		final ContentResolver contentResolver = getContext().getContentResolver();
-		DiaryService localDiary = new DiaryLocalService(contentResolver);
+			String password = mAccountManager.getPassword(account);
+			String name = account.name;
 
-		WebClient webClient = new WebClient(CONNECTION_TIMEOUT);
-		webClient.setServer("http://diacomp.org/");
-		webClient.setUsername("username");
-		webClient.setUsername("password");
-		DiaryService webDiary = new DiaryWebService(webClient);
+			final ContentResolver contentResolver = getContext().getContentResolver();
+			DiaryService localDiary = new DiaryLocalService(contentResolver);
 
-		// SyncService.synchronize_v2(localDiary, webDiary, null);
+			WebClient webClient = new WebClient(CONNECTION_TIMEOUT);
+			webClient.setServer("http://192.168.0.100:8190/comp-server/");
+			webClient.setUsername(name);
+			webClient.setPassword(password);
+			DiaryService webDiary = new DiaryWebService(webClient);
+
+			org.bosik.diacomp.core.services.sync.SyncService.synchronize_v2(localDiary, webDiary, null);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			syncResult.stats.numIoExceptions = 1;
+		}
 	}
 }
