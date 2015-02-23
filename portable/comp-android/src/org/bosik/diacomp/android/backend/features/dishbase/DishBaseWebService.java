@@ -13,7 +13,6 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
-import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
@@ -60,8 +59,8 @@ public class DishBaseWebService implements DishBaseService
 		try
 		{
 			String query = String.format(API_DISH_COUNT, prefix);
-			StdResponse resp = webClient.get(query);
-			return Integer.parseInt(resp.getResponse());
+			String resp = webClient.get(query);
+			return Integer.parseInt(resp);
 		}
 		catch (CommonServiceException e)
 		{
@@ -98,8 +97,8 @@ public class DishBaseWebService implements DishBaseService
 		try
 		{
 			String url = String.format(API_DISH_FIND_ALL, Utils.formatBooleanInt(includeRemoved));
-			StdResponse resp = webClient.get(url);
-			return serializer.readAll(resp.getResponse());
+			String resp = webClient.get(url);
+			return serializer.readAll(resp);
 		}
 		catch (Exception e)
 		{
@@ -113,8 +112,8 @@ public class DishBaseWebService implements DishBaseService
 		try
 		{
 			String url = String.format(API_DISH_FIND_ANY, filter);
-			StdResponse resp = webClient.get(url);
-			return serializer.readAll(resp.getResponse());
+			String resp = webClient.get(url);
+			return serializer.readAll(resp);
 		}
 		catch (Exception e)
 		{
@@ -128,8 +127,8 @@ public class DishBaseWebService implements DishBaseService
 		try
 		{
 			String url = String.format(API_DISH_FIND_CHANGES, Utils.formatTimeUTC(since));
-			StdResponse resp = webClient.get(url);
-			return serializer.readAll(resp.getResponse());
+			String resp = webClient.get(url);
+			return serializer.readAll(resp);
 		}
 		catch (Exception e)
 		{
@@ -150,8 +149,8 @@ public class DishBaseWebService implements DishBaseService
 		try
 		{
 			String url = String.format(API_DISH_FIND_BY_ID, id);
-			StdResponse resp = webClient.get(url);
-			return serializer.read(resp.getResponse());
+			String resp = webClient.get(url);
+			return serializer.read(resp);
 		}
 		catch (NotFoundException e)
 		{
@@ -169,8 +168,8 @@ public class DishBaseWebService implements DishBaseService
 		try
 		{
 			String url = String.format(API_DISH_FIND_BY_ID_PREFIX, prefix);
-			StdResponse resp = webClient.get(url);
-			return serializer.readAll(resp.getResponse());
+			String resp = webClient.get(url);
+			return serializer.readAll(resp);
 		}
 		catch (CommonServiceException e)
 		{
@@ -188,8 +187,8 @@ public class DishBaseWebService implements DishBaseService
 		try
 		{
 			String query = String.format(API_DISH_HASH, prefix);
-			StdResponse resp = webClient.get(query);
-			return resp.getResponse();
+			String resp = webClient.get(query);
+			return resp;
 		}
 		catch (CommonServiceException e)
 		{
@@ -207,8 +206,8 @@ public class DishBaseWebService implements DishBaseService
 		try
 		{
 			String query = String.format(API_DISH_HASHES, prefix);
-			StdResponse resp = webClient.get(query);
-			String data = resp.getResponse();
+			String resp = webClient.get(query);
+			String data = resp;
 			return serializerMap.read(data);
 		}
 		catch (CommonServiceException e)

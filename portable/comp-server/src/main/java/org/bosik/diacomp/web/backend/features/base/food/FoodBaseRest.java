@@ -56,12 +56,12 @@ public class FoodBaseRest
 		try
 		{
 			int count = foodbaseService.count(parPrefix);
-			String response = ResponseBuilder.buildDone(String.valueOf(count));
+			String response = String.valueOf(count);
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)
 		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
@@ -82,8 +82,7 @@ public class FoodBaseRest
 			{
 				List<Versioned<FoodItem>> items = foodbaseService.findByIdPrefix(parId);
 
-				String s = serializer.writeAll(items);
-				String response = ResponseBuilder.buildDone(s);
+				String response = serializer.writeAll(items);
 				return Response.ok(response).build();
 			}
 
@@ -94,25 +93,24 @@ public class FoodBaseRest
 
 				if (item != null)
 				{
-					String s = serializer.write(item);
-					String response = ResponseBuilder.buildDone(s);
+					String response = serializer.write(item);
 					return Response.ok(response).build();
 				}
 				else
 				{
-					String response = ResponseBuilder.build(ResponseBuilder.CODE_NOTFOUND,
-							String.format("Item %s not found", parId));
-					return Response.ok(response).build();
+					String response = String.format("Item %s not found", parId);
+					return Response.status(Status.NOT_FOUND).entity(response).build();
 				}
 			}
 		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
 		catch (TooManyItemsException e)
 		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildFails("Too many items found")).build();
+			return Response.status(Status.BAD_REQUEST).entity(ResponseBuilder.buildFails("Too many items found"))
+					.build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
@@ -131,8 +129,7 @@ public class FoodBaseRest
 			boolean includeRemoved = Boolean.valueOf(parShowRem);
 
 			List<Versioned<FoodItem>> items = foodbaseService.findAll(includeRemoved);
-			String s = serializer.writeAll(items);
-			String response = ResponseBuilder.buildDone(s);
+			String response = serializer.writeAll(items);
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)
@@ -154,13 +151,12 @@ public class FoodBaseRest
 		try
 		{
 			List<Versioned<FoodItem>> items = foodbaseService.findAny(filter);
-			String s = serializer.writeAll(items);
-			String response = ResponseBuilder.buildDone(s);
+			String response = serializer.writeAll(items);
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)
 		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
@@ -178,13 +174,12 @@ public class FoodBaseRest
 		{
 			Date since = Utils.parseTimeUTC(parTime);
 			List<Versioned<FoodItem>> items = foodbaseService.findChanged(since);
-			String s = serializer.writeAll(items);
-			String response = ResponseBuilder.buildDone(s);
+			String response = serializer.writeAll(items);
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)
 		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
@@ -201,12 +196,12 @@ public class FoodBaseRest
 		try
 		{
 			String s = foodbaseService.getHash(parPrefix);
-			String response = ResponseBuilder.buildDone(s != null ? s : "");
+			String response = s != null ? s : "";
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)
 		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
@@ -224,13 +219,12 @@ public class FoodBaseRest
 		try
 		{
 			Map<String, String> map = foodbaseService.getHashChildren(parPrefix);
-			String s = serializerMap.write(map);
-			String response = ResponseBuilder.buildDone(s);
+			String response = serializerMap.write(map);
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)
 		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
@@ -248,12 +242,12 @@ public class FoodBaseRest
 			List<Versioned<FoodItem>> items = serializer.readAll(parItems);
 			foodbaseService.save(items);
 
-			String response = ResponseBuilder.buildDone("Saved OK");
+			String response = "Saved OK";
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)
 		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
