@@ -207,6 +207,24 @@ public class TestUtils extends TestCase
 		assertEquals(Utils.time(2012, 05, 01, 22, 30, 17), Utils.parseTimeUTC("2012-05-01 22:30:17"));
 	}
 
+	public void testParseTime_performance()
+	{
+		long time = System.currentTimeMillis();
+		final int count = 1000000;
+
+		for (int i = 0; i < count; i++)
+		{
+			Utils.parseTimeUTC("2012-04-02 00:00:00");
+		}
+
+		time = System.currentTimeMillis() - time;
+		final double itemsPerSec = (double)count / (double)time * 1000.0;
+		if (itemsPerSec < 500000)
+		{
+			fail(String.format("Speed: %.0f items/sec", itemsPerSec));
+		}
+	}
+
 	public void testParseDate() throws ParseException
 	{
 		assertEquals(Utils.date(2012, 04, 02), Utils.parseDateUTC("2012-04-02"));
