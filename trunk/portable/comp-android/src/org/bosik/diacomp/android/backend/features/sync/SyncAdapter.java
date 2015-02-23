@@ -12,6 +12,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
+import android.util.Log;
 
 /**
  * Handle the transfer of data between a server and an app, using the Android sync adapter
@@ -19,6 +20,8 @@ import android.os.Bundle;
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter
 {
+	private static final String		TAG	= SyncAdapter.class.getSimpleName();
+
 	private final ContentResolver	mContentResolver;
 	private final AccountManager	mAccountManager;
 
@@ -49,7 +52,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 	{
 		try
 		{
-			final int CONNECTION_TIMEOUT = 12000;
+			Log.i(TAG, "Sync fired");
+
+			final int CONNECTION_TIMEOUT = 30000;
 
 			String password = mAccountManager.getPassword(account);
 			String name = account.name;
@@ -67,7 +72,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			Log.e(TAG, "Sync failed", e);
 			syncResult.stats.numIoExceptions = 1;
 		}
 	}
