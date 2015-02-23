@@ -27,6 +27,7 @@ import org.bosik.diacomp.core.services.sync.MemoryMerkleTree;
 import org.bosik.diacomp.core.services.sync.MerkleTree;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
+import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,6 @@ public class DiaryLocalService implements DiaryService
 	private static final String				COLUMN_DIARY_HASH_GUID	= "_GUID";
 	private static final String				COLUMN_DIARY_HASH_HASH	= "_Hash";
 
-	private static final MySQLAccess		db						= new MySQLAccess();
 	private final Parser<DiaryRecord>		parser					= new ParserDiaryRecord();
 	private final Serializer<DiaryRecord>	serializer				= new SerializerAdapter<DiaryRecord>(parser);
 
@@ -63,8 +63,21 @@ public class DiaryLocalService implements DiaryService
 		return userInfoService.getCurrentUserId();
 	}
 
-	private List<Versioned<DiaryRecord>> parseItems(ResultSet resultSet, int limit) throws SQLException
+	List<Versioned<DiaryRecord>> parseItems(ResultSet resultSet, int limit) throws SQLException
 	{
+		if (limit > 0)
+		{
+			if (resultSet.last())
+			{
+				if (resultSet.getRow() > limit)
+				{
+					throw new TooManyItemsException("Too many items");
+				}
+
+				resultSet.beforeFirst();
+			}
+		}
+
 		List<Versioned<DiaryRecord>> result = new LinkedList<Versioned<DiaryRecord>>();
 
 		while (resultSet.next())
@@ -85,17 +98,12 @@ public class DiaryLocalService implements DiaryService
 			item.setData(serializer.read(content));
 
 			result.add(item);
-
-			if (limit > 0 && result.size() > limit)
-			{
-				throw new TooManyItemsException("Too many items");
-			}
 		}
 
 		return result;
 	}
 
-	private List<Versioned<DiaryRecord>> parseItems(ResultSet resultSet) throws SQLException
+	List<Versioned<DiaryRecord>> parseItems(ResultSet resultSet) throws SQLException
 	{
 		return parseItems(resultSet, 0);
 	}
@@ -107,6 +115,7 @@ public class DiaryLocalService implements DiaryService
 
 		if (prefix == null)
 		{
+			// TODO: switch to IllegalArgumentException("X is null") (here & everywhere)
 			throw new NullPointerException("ID prefix can't be null");
 		}
 
@@ -117,18 +126,22 @@ public class DiaryLocalService implements DiaryService
 			final String[] whereArgs = { String.valueOf(userId), prefix + "%" };
 			final String order = null;
 
-			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
+			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order, new DataCallback<Integer>()
+			{
+				@Override
+				public Integer onData(ResultSet set) throws SQLException
+				{
+					if (set.next())
+					{
+						return set.getInt(1);
+					}
+					else
+					{
+						throw new IllegalStateException("Failed to request SQL database");
+					}
+				}
+			});
 
-			if (set.next())
-			{
-				int count = set.getInt(1);
-				set.close();
-				return count;
-			}
-			else
-			{
-				throw new IllegalStateException("Failed to request SQL database");
-			}
 		}
 		catch (SQLException e)
 		{
@@ -158,20 +171,25 @@ public class DiaryLocalService implements DiaryService
 	@Override
 	public Versioned<DiaryRecord> findById(String id)
 	{
+		int userId = getCurrentUserId();
+
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DIARY_USER, COLUMN_DIARY_GUID);
 			final String[] whereArgs = { String.valueOf(userId), id };
 			final String order = null;
 
-			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
-
-			List<Versioned<DiaryRecord>> result = parseItems(set);
-			set.close();
-			return result.isEmpty() ? null : result.get(0);
+			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order,
+					new DataCallback<Versioned<DiaryRecord>>()
+					{
+						@Override
+						public Versioned<DiaryRecord> onData(ResultSet set) throws SQLException
+						{
+							List<Versioned<DiaryRecord>> result = parseItems(set);
+							return result.isEmpty() ? null : result.get(0);
+						}
+					});
 		}
 		catch (SQLException e)
 		{
@@ -191,11 +209,15 @@ public class DiaryLocalService implements DiaryService
 			final String[] whereArgs = { String.valueOf(userId), prefix + "%" };
 			final String order = COLUMN_DIARY_TIMECACHE;
 
-			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
-
-			List<Versioned<DiaryRecord>> result = parseItems(set, MAX_ITEMS_COUNT);
-			set.close();
-			return result;
+			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order,
+					new DataCallback<List<Versioned<DiaryRecord>>>()
+					{
+						@Override
+						public List<Versioned<DiaryRecord>> onData(ResultSet set) throws SQLException
+						{
+							return parseItems(set, MAX_ITEMS_COUNT);
+						}
+					});
 		}
 		catch (SQLException e)
 		{
@@ -215,11 +237,15 @@ public class DiaryLocalService implements DiaryService
 			final String[] whereArgs = { String.valueOf(userId), Utils.formatTimeUTC(time) };
 			final String order = COLUMN_DIARY_TIMECACHE;
 
-			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
-
-			List<Versioned<DiaryRecord>> result = parseItems(set);
-			set.close();
-			return result;
+			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order,
+					new DataCallback<List<Versioned<DiaryRecord>>>()
+					{
+						@Override
+						public List<Versioned<DiaryRecord>> onData(ResultSet set) throws SQLException
+						{
+							return parseItems(set, MAX_ITEMS_COUNT);
+						}
+					});
 		}
 		catch (SQLException e)
 		{
@@ -256,12 +282,15 @@ public class DiaryLocalService implements DiaryService
 
 			final String order = COLUMN_DIARY_TIMECACHE;
 
-			// System.out.println("Requesting SQL clause: " + clause);
-			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
-
-			List<Versioned<DiaryRecord>> result = parseItems(set);
-			set.close();
-			return result;
+			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order,
+					new DataCallback<List<Versioned<DiaryRecord>>>()
+					{
+						@Override
+						public List<Versioned<DiaryRecord>> onData(ResultSet set) throws SQLException
+						{
+							return parseItems(set, MAX_ITEMS_COUNT);
+						}
+					});
 		}
 		catch (SQLException e)
 		{
@@ -272,26 +301,30 @@ public class DiaryLocalService implements DiaryService
 	@Override
 	public String getHash(String prefix)
 	{
+		int userId = getCurrentUserId();
+
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = { COLUMN_DIARY_HASH_HASH };
 			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DIARY_HASH_USER, COLUMN_DIARY_HASH_GUID);
 			final String[] whereArgs = { String.valueOf(userId), prefix };
 			final String order = null;
 
-			ResultSet set = db.select(TABLE_DIARY_HASH, select, where, whereArgs, order);
-
-			String hash = null;
-
-			if (set.next())
+			return MySQLAccess.select(TABLE_DIARY_HASH, select, where, whereArgs, order, new DataCallback<String>()
 			{
-				hash = set.getString(COLUMN_DIARY_HASH_HASH);
-			}
-
-			set.close();
-			return hash;
+				@Override
+				public String onData(ResultSet set) throws SQLException
+				{
+					if (set.next())
+					{
+						return set.getString(COLUMN_DIARY_HASH_HASH);
+					}
+					else
+					{
+						return null;
+					}
+				}
+			});
 		}
 		catch (SQLException e)
 		{
@@ -302,51 +335,46 @@ public class DiaryLocalService implements DiaryService
 	@Override
 	public Map<String, String> getHashChildren(String prefix)
 	{
+		int userId = getCurrentUserId();
+
 		try
 		{
-			int userId = getCurrentUserId();
-
-			Map<String, String> result = new HashMap<String, String>();
+			String[] select;
+			String where;
+			String[] whereArgs;
+			String order = null;
 
 			if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
 			{
-				final String[] select = { COLUMN_DIARY_HASH_GUID, COLUMN_DIARY_HASH_HASH };
-				final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_DIARY_HASH_USER,
-						COLUMN_DIARY_HASH_GUID);
-				final String[] whereArgs = { String.valueOf(userId), prefix + "_" };
-				final String order = null;
-
-				ResultSet set = db.select(TABLE_DIARY_HASH, select, where, whereArgs, order);
-
-				while (set.next())
-				{
-					String id = set.getString(COLUMN_DIARY_HASH_GUID);
-					String hash = set.getString(COLUMN_DIARY_HASH_HASH);
-					result.put(id, hash);
-				}
-
-				set.close();
+				select = new String[] { COLUMN_DIARY_HASH_GUID, COLUMN_DIARY_HASH_HASH };
+				where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_DIARY_HASH_USER, COLUMN_DIARY_HASH_GUID);
+				whereArgs = new String[] { String.valueOf(userId), prefix + "_" };
 			}
 			else
 			{
-				final String[] select = { COLUMN_DIARY_GUID, COLUMN_DIARY_HASH };
-				final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_DIARY_USER, COLUMN_DIARY_GUID);
-				final String[] whereArgs = { String.valueOf(userId), prefix + "%" };
-				final String order = null;
-
-				ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
-
-				while (set.next())
-				{
-					String id = set.getString(COLUMN_DIARY_GUID);
-					String hash = set.getString(COLUMN_DIARY_HASH);
-					result.put(id, hash);
-				}
-
-				set.close();
+				select = new String[] { COLUMN_DIARY_GUID, COLUMN_DIARY_HASH };
+				where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_DIARY_USER, COLUMN_DIARY_GUID);
+				whereArgs = new String[] { String.valueOf(userId), prefix + "%" };
 			}
 
-			return result;
+			return MySQLAccess.select(TABLE_DIARY_HASH, select, where, whereArgs, order,
+					new DataCallback<Map<String, String>>()
+					{
+						@Override
+						public Map<String, String> onData(ResultSet set) throws SQLException
+						{
+							Map<String, String> result = new HashMap<String, String>();
+
+							while (set.next())
+							{
+								String id = set.getString(COLUMN_DIARY_GUID);
+								String hash = set.getString(COLUMN_DIARY_HASH);
+								result.put(id, hash);
+							}
+
+							return result;
+						}
+					});
 		}
 		catch (SQLException e)
 		{
@@ -371,9 +399,10 @@ public class DiaryLocalService implements DiaryService
 	@Override
 	public void save(List<Versioned<DiaryRecord>> records)
 	{
+		int userId = getCurrentUserId();
+
 		try
 		{
-			int userId = getCurrentUserId();
 
 			for (Versioned<DiaryRecord> item : records)
 			{
@@ -404,7 +433,7 @@ public class DiaryLocalService implements DiaryService
 					where.put(COLUMN_DIARY_GUID, id);
 					where.put(COLUMN_DIARY_USER, String.valueOf(userId));
 
-					db.update(TABLE_DIARY, set, where);
+					MySQLAccess.update(TABLE_DIARY, set, where);
 				}
 				else
 				{
@@ -420,7 +449,7 @@ public class DiaryLocalService implements DiaryService
 					set.put(COLUMN_DIARY_CONTENT, content);
 					set.put(COLUMN_DIARY_TIMECACHE, timeCache);
 
-					db.insert(TABLE_DIARY, set);
+					MySQLAccess.insert(TABLE_DIARY, set);
 				}
 
 			}
@@ -434,10 +463,10 @@ public class DiaryLocalService implements DiaryService
 	@Override
 	public void setHash(String prefix, String hash)
 	{
+		int userId = getCurrentUserId();
+
 		try
 		{
-			int userId = getCurrentUserId();
-
 			if (prefix.length() <= ObjectService.ID_PREFIX_SIZE)
 			{
 				if (getHash(prefix) != null)
@@ -449,7 +478,7 @@ public class DiaryLocalService implements DiaryService
 					where.put(COLUMN_DIARY_HASH_USER, String.valueOf(userId));
 					where.put(COLUMN_DIARY_HASH_GUID, prefix);
 
-					db.update(TABLE_DIARY_HASH, set, where);
+					MySQLAccess.update(TABLE_DIARY_HASH, set, where);
 				}
 				else
 				{
@@ -458,7 +487,7 @@ public class DiaryLocalService implements DiaryService
 					set.put(COLUMN_DIARY_HASH_GUID, prefix);
 					set.put(COLUMN_DIARY_HASH_HASH, hash);
 
-					db.insert(TABLE_DIARY_HASH, set);
+					MySQLAccess.insert(TABLE_DIARY_HASH, set);
 				}
 			}
 			else if (prefix.length() == ObjectService.ID_FULL_SIZE)
@@ -472,7 +501,7 @@ public class DiaryLocalService implements DiaryService
 					where.put(COLUMN_DIARY_USER, String.valueOf(userId));
 					where.put(COLUMN_DIARY_GUID, prefix);
 
-					db.update(TABLE_DIARY, set, where);
+					MySQLAccess.update(TABLE_DIARY, set, where);
 				}
 				else
 				{
@@ -503,17 +532,21 @@ public class DiaryLocalService implements DiaryService
 			final String[] whereArgs = { String.valueOf(userId), id };
 			final String order = null;
 
-			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
-
-			String hash = null;
-
-			if (set.next())
+			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order, new DataCallback<String>()
 			{
-				hash = set.getString(COLUMN_DIARY_HASH);
-			}
-
-			set.close();
-			return hash;
+				@Override
+				public String onData(ResultSet set) throws SQLException
+				{
+					if (set.next())
+					{
+						return set.getString(COLUMN_DIARY_HASH);
+					}
+					else
+					{
+						return null;
+					}
+				}
+			});
 		}
 		catch (SQLException e)
 		{
@@ -536,21 +569,25 @@ public class DiaryLocalService implements DiaryService
 			final String[] whereArgs = { String.valueOf(userId) };
 			final String order = null;
 
-			ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
+			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order,
+					new DataCallback<SortedMap<String, String>>()
+					{
+						@Override
+						public SortedMap<String, String> onData(ResultSet set) throws SQLException
+						{
+							SortedMap<String, String> result = new TreeMap<String, String>();
 
-			SortedMap<String, String> result = new TreeMap<String, String>();
+							while (set.next())
+							{
+								String id = set.getString(COLUMN_DIARY_GUID);
+								String hash = set.getString(COLUMN_DIARY_HASH);
+								// THINK: probably storing entries is unnecessary, so we should process it as we go
+								result.put(id, hash);
+							}
 
-			while (set.next())
-			{
-				String id = set.getString(COLUMN_DIARY_GUID);
-				String hash = set.getString(COLUMN_DIARY_HASH);
-				// THINK: probably storing entries is unnecessary, so we should process it as we go
-				result.put(id, hash);
-			}
-
-			set.close();
-
-			return result;
+							return result;
+						}
+					});
 		}
 		catch (SQLException e)
 		{
@@ -580,10 +617,13 @@ public class DiaryLocalService implements DiaryService
 		final String[] whereArgs = { String.valueOf(userId), id };
 		final String order = null;
 
-		ResultSet set = db.select(TABLE_DIARY, select, where, whereArgs, order);
-		boolean result = set.first();
-
-		set.close();
-		return result;
+		return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order, new DataCallback<Boolean>()
+		{
+			@Override
+			public Boolean onData(ResultSet set) throws SQLException
+			{
+				return set.first();
+			}
+		});
 	}
 }

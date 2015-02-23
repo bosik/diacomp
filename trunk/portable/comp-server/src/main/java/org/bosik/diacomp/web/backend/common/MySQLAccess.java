@@ -1,19 +1,24 @@
 package org.bosik.diacomp.web.backend.common;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.tomcat.jdbc.pool.DataSource;
+import org.apache.tomcat.jdbc.pool.PoolProperties;
 
 public class MySQLAccess
 {
-	private static Connection	connection;
+	public interface DataCallback<T>
+	{
+		T onData(ResultSet set) throws SQLException;
+	}
 
-	private static final String	SQL_DRIVER	= "com.mysql.jdbc.Driver";
+	private static final String		SQL_DRIVER	= "com.mysql.jdbc.Driver";
+	private static final DataSource	datasource;
 
 	public MySQLAccess()
 	{
@@ -27,16 +32,37 @@ public class MySQLAccess
 		}
 	}
 
-	private static void connect() throws SQLException
+	static
 	{
-		if (connection == null)
-		{
-			String connectionString = Config.get("connection");
-			connection = DriverManager.getConnection(connectionString);
-		}
+		PoolProperties p = new PoolProperties();
+
+		p.setUrl(Config.get("scheme"));
+		p.setDriverClassName(SQL_DRIVER);
+		p.setUsername(Config.get("user"));
+		p.setPassword(Config.get("password"));
+		p.setJmxEnabled(true);
+		p.setTestWhileIdle(false);
+		p.setTestOnBorrow(true);
+		p.setValidationQuery("SELECT 1");
+		p.setTestOnReturn(false);
+		p.setValidationInterval(30000);
+		p.setTimeBetweenEvictionRunsMillis(30000);
+		p.setMaxActive(20);
+		p.setInitialSize(10);
+		p.setMaxWait(10000);
+		p.setRemoveAbandonedTimeout(60);
+		p.setMinEvictableIdleTimeMillis(30000);
+		p.setMinIdle(10);
+		p.setMaxIdle(20);
+		p.setLogAbandoned(true);
+		p.setRemoveAbandoned(true);
+		p.setJdbcInterceptors("org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;"
+				+ "org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer");
+
+		datasource = new DataSource();
+		datasource.setPoolProperties(p);
 	}
 
-	// the resource is returned to invoker
 	/**
 	 * 
 	 * @param table
@@ -53,200 +79,114 @@ public class MySQLAccess
 	 *            Index of first row to select
 	 * @param limit
 	 *            Max number of rows to be selected
+	 * @param callback
+	 *            What to do with the data
 	 * @return
 	 * @throws SQLException
 	 */
-	@SuppressWarnings("static-method")
-	public ResultSet select(String table, String[] columns, String where, String[] whereArgs, String order, int offset,
-			int limit) throws SQLException
+	public static <T> T select(String table, String[] columns, String where, String[] whereArgs, String order,
+			int offset, int limit, DataCallback<T> callback) throws SQLException
 	{
-		connect();
-
-		String projection = columns == null ? "*" : Utils.commaSeparated(columns).toString();
-
-		String sql = String.format("SELECT %s FROM %s WHERE %s", projection, table, where);
-		if ((order != null) && !order.isEmpty())
+		Connection connection = datasource.getConnection();
+		try
 		{
-			sql += " ORDER BY " + order;
+			PreparedStatement statement = Utils.prepareSelectStatement(connection, table, columns, where, whereArgs,
+					order, offset, limit);
+			// TODO: debug
+			System.out.println(statement);
+			try
+			{
+				ResultSet set = statement.executeQuery();
+				try
+				{
+					return callback.onData(set);
+				}
+				finally
+				{
+					if (set != null) set.close();
+				}
+			}
+			finally
+			{
+				if (statement != null) statement.close();
+			}
 		}
-
-		if (offset >= 0)
+		finally
 		{
-			sql += " LIMIT " + offset + ", " + limit;
+			if (connection != null) connection.close();
 		}
-
-		PreparedStatement preparedStatement = connection.prepareStatement(sql);
-		for (int i = 0; i < whereArgs.length; i++)
-		{
-			preparedStatement.setString(i + 1, whereArgs[i]);
-		}
-
-		// Don't close prepared statement!
-		return preparedStatement.executeQuery();
 	}
 
 	/**
-	 * Selects all fields
 	 * 
 	 * @param table
+	 *            Table name
+	 * @param columns
+	 *            A list of which columns to return. Passing null will return all columns, which is inefficient.
 	 * @param where
-	 * @param order
+	 *            Selection clause
 	 * @param whereArgs
+	 *            Arguments for clause
+	 * @param order
+	 *            Name of column to be ordered by
+	 * @param callback
+	 *            What to do with the data
 	 * @return
 	 * @throws SQLException
 	 */
-	public ResultSet select(String table, String where, String order, String[] whereArgs) throws SQLException
+	public static <T> T select(String table, String[] columns, String where, String[] whereArgs, String order,
+			DataCallback<T> callback) throws SQLException
 	{
-		return select(table, null, where, whereArgs, order, -1, -1);
+		final int offset = -1;
+		final int limit = -1;
+		return select(table, columns, where, whereArgs, order, offset, limit, callback);
 	}
 
-	public ResultSet select(String table, String[] columns, String where, String[] whereArgs, String order)
-			throws SQLException
+	public static int insert(String table, Map<String, String> values) throws SQLException
 	{
-		return select(table, columns, where, whereArgs, order, -1, -1);
-	}
-
-	@SuppressWarnings("static-method")
-	public int insert(String table, Map<String, String> values) throws SQLException
-	{
-		connect();
-
-		// making wildcarded string
-
-		StringBuilder sb = new StringBuilder();
-		sb.append("INSERT INTO " + table + " (");
-		sb.append(Utils.commaSeparated(values.keySet().iterator()));
-		sb.append(") VALUES (");
-		sb.append(Utils.commaSeparatedQuests(Utils.count(values.keySet().iterator())));
-		sb.append(")");
-
-		PreparedStatement preparedStatement = connection.prepareStatement(sb.toString());
-		// TODO: debug only
-		System.out.println(sb);
-
-		// filling wildcards
-
-		int i = 1;
-		for (Entry<String, String> entry : values.entrySet())
+		Connection connection = datasource.getConnection();
+		try
 		{
-			preparedStatement.setString(i++, entry.getValue());
+			PreparedStatement statement = Utils.prepareInsertStatement(connection, table, values);
+			// TODO: debug
+			System.out.println(statement);
+			try
+			{
+				return statement.executeUpdate();
+			}
+			finally
+			{
+				if (statement != null) statement.close();
+			}
 		}
-
-		// go
-
-		return preparedStatement.executeUpdate();
+		finally
+		{
+			if (connection != null) connection.close();
+		}
 	}
 
-	@SuppressWarnings("static-method")
-	public int update(String table, Map<String, String> set, Map<String, String> where) throws SQLException
+	public static int update(String table, Map<String, String> set, Map<String, String> where) throws SQLException
 	{
-		connect();
-
-		/**
-		 * THINK Requires set.keySet().iterator() and set.entrySet().iterator() return items in the same order
-		 */
-
-		// making wildcarded string
-		StringBuilder sb = new StringBuilder();
-		sb.append("UPDATE " + table + " SET ");
-		sb.append(Utils.separated(set.keySet().iterator(), ", "));
-		sb.append(" WHERE ");
-		sb.append(Utils.separated(where.keySet().iterator(), " AND "));
-
-		// TODO: debug only
-		System.out.println(sb);
-
-		PreparedStatement preparedStatement = connection.prepareStatement(sb.toString());
-
-		// filling wildcards
-
-		int i = 1;
-		// statement.setString(i++, table);
-
-		for (Entry<String, String> entry : set.entrySet())
+		Connection connection = datasource.getConnection();
+		try
 		{
-			// statement.setString(i++, entry.getKey());
-			preparedStatement.setString(i++, entry.getValue());
-			// TODO: debug only
-			System.out.println("UPDATE: " + entry.getKey() + " = " + entry.getValue());
+			PreparedStatement statement = Utils.prepareUpdateStatement(connection, table, set, where);
+			// TODO: debug
+			System.out.println(statement);
+			try
+			{
+				return statement.executeUpdate();
+			}
+			finally
+			{
+				if (statement != null) statement.close();
+			}
 		}
-
-		for (Entry<String, String> entry : where.entrySet())
+		finally
 		{
-			// statement.setString(i++, entry.getKey());
-			preparedStatement.setString(i++, entry.getValue());
+			if (connection != null) connection.close();
 		}
-
-		// go
-
-		return preparedStatement.executeUpdate();
 	}
-
-	// private void example()
-	// {
-	// try
-	// {
-	// // Setup the connection with the DB
-	// connection = DriverManager.getConnection(connectionString);
-	//
-	// // Statements allow to issue SQL queries to the database
-	// statement = connection.createStatement();
-	// statement.executeQuery("select * from " + TABLE_DIARY);
-	//
-	// //
-	// ===============================================================================================
-	//
-	// // PreparedStatements can use variables and are more efficient
-	// preparedStatement = connection
-	// .prepareStatement("insert into FEEDBACK.COMMENTS values (default, ?, ?, ?, ? , ?, ?)");
-	// // "myuser, webpage, datum, summary, COMMENTS from FEEDBACK.COMMENTS");
-	// // Parameters start with 1
-	// preparedStatement.setString(1, "Test");
-	// preparedStatement.setString(2, "TestEmail");
-	// preparedStatement.setString(3, "TestWebpage");
-	// preparedStatement.setDate(4, new java.sql.Date(2009, 12, 11));
-	// preparedStatement.setString(5, "TestSummary");
-	// preparedStatement.setString(6, "TestComment");
-	// preparedStatement.executeUpdate();
-	//
-	// //
-	// ===============================================================================================
-	//
-	// preparedStatement = connection
-	// .prepareStatement("SELECT myuser, webpage, datum, summary, COMMENTS from FEEDBACK.COMMENTS");
-	// resultSet = preparedStatement.executeQuery();
-	// // parseDiaryRecords(resultSet);
-	//
-	// //
-	// ===============================================================================================
-	//
-	// // Remove again the insert comment
-	// preparedStatement =
-	// connection.prepareStatement("delete from FEEDBACK.COMMENTS where myuser= ? ; ");
-	// preparedStatement.setString(1, "Test");
-	// preparedStatement.executeUpdate();
-	//
-	// //
-	// ===============================================================================================
-	//
-	// resultSet = statement.executeQuery("select * from diary");
-	// System.out.println("The columns in the table are: ");
-	//
-	// System.out.println("Table: " + resultSet.getMetaData().getTableName(1));
-	// for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++)
-	// {
-	// System.out.println("Column " + i + " " + resultSet.getMetaData().getColumnName(i));
-	// }
-	// }
-	// catch (SQLException e)
-	// {
-	// throw new RuntimeException(e);
-	// }
-	// finally
-	// {
-	// //close();
-	// }
-	// }
 }
 
 class Utils
@@ -325,5 +265,82 @@ class Utils
 		}
 
 		return sb;
+	}
+
+	public static PreparedStatement prepareSelectStatement(Connection connection, String table, String[] columns,
+			String where, String[] whereArgs, String order, int offset, int limit) throws SQLException
+	{
+		String projection = columns == null ? "*" : Utils.commaSeparated(columns).toString();
+
+		String sql = String.format("SELECT %s FROM %s WHERE %s", projection, table, where);
+		if ((order != null) && !order.isEmpty())
+		{
+			sql += " ORDER BY " + order;
+		}
+
+		if (offset >= 0)
+		{
+			sql += " LIMIT " + offset + ", " + limit;
+		}
+
+		PreparedStatement statement = connection.prepareStatement(sql);
+		for (int i = 0; i < whereArgs.length; i++)
+		{
+			statement.setString(i + 1, whereArgs[i]);
+		}
+
+		return statement;
+	}
+
+	public static PreparedStatement prepareInsertStatement(Connection connection, String table,
+			Map<String, String> values) throws SQLException
+	{
+		// making wildcarded string
+		StringBuilder sb = new StringBuilder();
+		sb.append("INSERT INTO " + table + " (");
+		sb.append(Utils.commaSeparated(values.keySet().iterator()));
+		sb.append(") VALUES (");
+		sb.append(Utils.commaSeparatedQuests(Utils.count(values.keySet().iterator())));
+		sb.append(")");
+
+		PreparedStatement statement = connection.prepareStatement(sb.toString());
+
+		// filling wildcards
+		int i = 1;
+		for (Entry<String, String> entry : values.entrySet())
+		{
+			statement.setString(i++, entry.getValue());
+		}
+		return statement;
+	}
+
+	public static PreparedStatement prepareUpdateStatement(Connection connection, String table,
+			Map<String, String> set, Map<String, String> where) throws SQLException
+	{
+		/**
+		 * THINK Requires set.keySet().iterator() and set.entrySet().iterator() return items in the same order
+		 */
+
+		// making wildcarded string
+		StringBuilder sb = new StringBuilder();
+		sb.append("UPDATE " + table + " SET ");
+		sb.append(Utils.separated(set.keySet().iterator(), ", "));
+		sb.append(" WHERE ");
+		sb.append(Utils.separated(where.keySet().iterator(), " AND "));
+
+		PreparedStatement statement = connection.prepareStatement(sb.toString());
+
+		// filling wildcards
+		int i = 1;
+		for (Entry<String, String> entry : set.entrySet())
+		{
+			statement.setString(i++, entry.getValue());
+		}
+
+		for (Entry<String, String> entry : where.entrySet())
+		{
+			statement.setString(i++, entry.getValue());
+		}
+		return statement;
 	}
 }
