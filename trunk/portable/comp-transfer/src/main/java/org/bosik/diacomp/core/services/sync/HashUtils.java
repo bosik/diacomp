@@ -202,6 +202,12 @@ public class HashUtils
 		String prevKey = null;
 		for (Entry<String, String> entry : map.entrySet())
 		{
+			if (entry.getKey().length() < prefixSize)
+			{
+				throw new IllegalArgumentException(String.format("Invalid key '%s', must be at least %d chars long",
+						entry.getKey(), prefixSize));
+			}
+
 			if (prevKey != null && !prevKey.regionMatches(0, entry.getKey(), 0, prefixSize))
 			{
 				String key = prevKey.substring(0, prefixSize);
@@ -225,6 +231,17 @@ public class HashUtils
 
 	public static SortedMap<String, String> buildHashTree(SortedMap<String, String> map)
 	{
+		// Validation
+		for (String key : map.keySet())
+		{
+			if (key.length() < ObjectService.ID_PREFIX_SIZE)
+			{
+				throw new IllegalArgumentException(String.format("Invalid key '%s', must be at least %d chars long",
+						key, ObjectService.ID_PREFIX_SIZE));
+			}
+		}
+
+		// Process
 		SortedMap<String, String> result = new TreeMap<String, String>();
 
 		for (int i = ObjectService.ID_PREFIX_SIZE; i >= 0; i--)

@@ -369,33 +369,41 @@ public class DiaryLocalService implements DiaryService
 		{
 			for (Versioned<DiaryRecord> record : records)
 			{
-				String content = serializer.write(record.getData());
-				boolean exists = recordExists(record.getId());
-
-				ContentValues newValues = new ContentValues();
-
-				newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(record.getTimeStamp()));
-				newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH, record.getHash());
-				newValues.put(DiaryContentProvider.COLUMN_DIARY_VERSION, record.getVersion());
-				newValues.put(DiaryContentProvider.COLUMN_DIARY_DELETED, record.isDeleted());
-				newValues.put(DiaryContentProvider.COLUMN_DIARY_CONTENT, content);
-				newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
-						Utils.formatTimeUTC(record.getData().getTime()));
-
-				if (exists)
+				if (verify(record))
 				{
-					Log.v(TAG, "Updating item " + record.getId() + ": " + content);
+					String content = serializer.write(record.getData());
+					boolean exists = recordExists(record.getId());
 
-					String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
-					String[] args = { record.getId() };
-					resolver.update(DiaryContentProvider.CONTENT_DIARY_URI, newValues, clause, args);
+					ContentValues newValues = new ContentValues();
+
+					newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
+							Utils.formatTimeUTC(record.getTimeStamp()));
+					newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH, record.getHash());
+					newValues.put(DiaryContentProvider.COLUMN_DIARY_VERSION, record.getVersion());
+					newValues.put(DiaryContentProvider.COLUMN_DIARY_DELETED, record.isDeleted());
+					newValues.put(DiaryContentProvider.COLUMN_DIARY_CONTENT, content);
+					newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
+							Utils.formatTimeUTC(record.getData().getTime()));
+
+					if (exists)
+					{
+						Log.v(TAG, "Updating item " + record.getId() + ": " + content);
+
+						String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
+						String[] args = { record.getId() };
+						resolver.update(DiaryContentProvider.CONTENT_DIARY_URI, newValues, clause, args);
+					}
+					else
+					{
+						Log.v(TAG, "Inserting item " + record.getId() + ": " + content);
+
+						newValues.put(DiaryContentProvider.COLUMN_DIARY_GUID, record.getId());
+						resolver.insert(DiaryContentProvider.CONTENT_DIARY_URI, newValues);
+					}
 				}
 				else
 				{
-					Log.v(TAG, "Inserting item " + record.getId() + ": " + content);
-
-					newValues.put(DiaryContentProvider.COLUMN_DIARY_GUID, record.getId());
-					resolver.insert(DiaryContentProvider.CONTENT_DIARY_URI, newValues);
+					Log.e(TAG, "Invalid record: " + record);
 				}
 			}
 		}
@@ -403,6 +411,11 @@ public class DiaryLocalService implements DiaryService
 		{
 			throw new PersistenceException(e);
 		}
+	}
+
+	private static boolean verify(Versioned<DiaryRecord> record)
+	{
+		return (record != null && record.getId() != null && record.getId().length() == ObjectService.ID_FULL_SIZE);
 	}
 
 	@Override
@@ -499,8 +512,16 @@ public class DiaryLocalService implements DiaryService
 		{
 			String id = cursor.getString(indexId);
 			String hash = cursor.getString(indexHash);
-			// THINK: probably storing entries is unnecessary, so we should process it as we go
-			result.put(id, hash);
+
+			if (id == null || id.length() < ObjectService.ID_PREFIX_SIZE)
+			{
+				Log.w(TAG, String.format("Invalid hash ignored: %s = %s", id, hash));
+			}
+			else
+			{
+				// THINK: probably storing entries is unnecessary, so we should process it as we go
+				result.put(id, hash);
+			}
 		}
 
 		cursor.close();
