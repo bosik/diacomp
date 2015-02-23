@@ -87,7 +87,7 @@ public class AuthRest
 
 			// THINK: should we use status 200 OK here? Isn't 401 better?
 			String entity = ResponseBuilder.build(ResponseBuilder.CODE_BADCREDENTIALS, "Bad username/password");
-			return Response.ok(entity).build();
+			return Response.status(Status.UNAUTHORIZED).entity(entity).build();
 		}
 		catch (Exception e)
 		{
@@ -116,7 +116,7 @@ public class AuthRest
 		try
 		{
 			UserSessionUtils.clearId(req);
-			String entity = ResponseBuilder.buildDone("Logged out OK");
+			String entity = "Logged out OK";
 			return Response.ok(entity).build();
 		}
 		catch (Exception e)

@@ -60,20 +60,26 @@ public class DiaryRest
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response count(@PathParam("prefix") @DefaultValue("") String parPrefix) throws CommonServiceException
 	{
+		long time = System.currentTimeMillis();
 		try
 		{
 			int count = diaryService.count(parPrefix);
-			String response = ResponseBuilder.buildDone(String.valueOf(count));
+			String response = String.valueOf(count);
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)
 		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+			return Response.status(Status.NOT_FOUND).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+		finally
+		{
+			time = System.currentTimeMillis() - time;
+			System.out.println(String.format("count(%s) performed in %d msec", parPrefix, time));
 		}
 	}
 
@@ -82,6 +88,7 @@ public class DiaryRest
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response findById(@PathParam("guid") String parId) throws CommonServiceException
 	{
+		long time = System.currentTimeMillis();
 		try
 		{
 			// Prefix form
@@ -89,8 +96,7 @@ public class DiaryRest
 			{
 				List<Versioned<DiaryRecord>> items = diaryService.findByIdPrefix(parId);
 
-				String s = serializer.writeAll(items);
-				String response = ResponseBuilder.buildDone(s);
+				String response = serializer.writeAll(items);
 				return Response.ok(response).build();
 			}
 
@@ -101,30 +107,34 @@ public class DiaryRest
 
 				if (item != null)
 				{
-					String s = serializer.write(item);
-					String response = ResponseBuilder.buildDone(s);
+					String response = serializer.write(item);
 					return Response.ok(response).build();
 				}
 				else
 				{
-					String response = ResponseBuilder.build(ResponseBuilder.CODE_NOTFOUND,
-							String.format("Item %s not found", parId));
-					return Response.ok(response).build();
+					String response = String.format("Item %s not found", parId);
+					return Response.status(Status.NOT_FOUND).entity(response).build();
 				}
 			}
 		}
 		catch (NotAuthorizedException e)
 		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (TooManyItemsException e)
 		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildFails("Too many items found")).build();
+			return Response.status(Status.BAD_REQUEST).entity(ResponseBuilder.buildFails("Too many items found"))
+					.build();
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+		finally
+		{
+			time = System.currentTimeMillis() - time;
+			System.out.println(String.format("findById(%s) performed in %d msec", parId, time));
 		}
 	}
 
@@ -136,12 +146,12 @@ public class DiaryRest
 		try
 		{
 			String s = diaryService.getHash(parPrefix);
-			String response = ResponseBuilder.buildDone(s != null ? s : "");
+			String response = s != null ? s : "";
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)
 		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
@@ -159,13 +169,12 @@ public class DiaryRest
 		try
 		{
 			Map<String, String> map = diaryService.getHashChildren(parPrefix);
-			String s = serializerMap.write(map);
-			String response = ResponseBuilder.buildDone(s);
+			String response = serializerMap.write(map);
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)
 		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
@@ -183,13 +192,12 @@ public class DiaryRest
 		{
 			Date since = Utils.parseTimeUTC(parTime);
 			List<Versioned<DiaryRecord>> items = diaryService.findChanged(since);
-			String s = serializer.writeAll(items);
-			String response = ResponseBuilder.buildDone(s);
+			String response = serializer.writeAll(items);
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)
 		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
@@ -212,13 +220,12 @@ public class DiaryRest
 			boolean includeRemoved = Boolean.valueOf(parShowRem);
 
 			List<Versioned<DiaryRecord>> items = diaryService.findPeriod(startTime, endTime, includeRemoved);
-			String s = serializer.writeAll(items);
-			String response = ResponseBuilder.buildDone(s);
+			String response = serializer.writeAll(items);
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)
 		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
@@ -237,12 +244,12 @@ public class DiaryRest
 			List<Versioned<DiaryRecord>> items = serializer.readAll(parItems);
 			diaryService.save(items);
 
-			String response = ResponseBuilder.buildDone("Saved OK");
+			String response = "Saved OK";
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)
 		{
-			return Response.status(Status.OK).entity(ResponseBuilder.buildNotAuthorized()).build();
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{

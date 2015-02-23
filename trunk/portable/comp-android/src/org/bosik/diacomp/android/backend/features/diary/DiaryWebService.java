@@ -16,7 +16,6 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
-import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
@@ -66,8 +65,8 @@ public class DiaryWebService implements DiaryService
 		try
 		{
 			String query = String.format(API_DIARY_COUNT, prefix);
-			StdResponse resp = webClient.get(query);
-			return Integer.parseInt(resp.getResponse());
+			String resp = webClient.get(query);
+			return Integer.parseInt(resp);
 		}
 		catch (CommonServiceException e)
 		{
@@ -85,8 +84,8 @@ public class DiaryWebService implements DiaryService
 		try
 		{
 			String query = String.format(API_DIARY_FIND_BY_ID, id);
-			StdResponse resp = webClient.get(query);
-			return serializerV.read(resp.getResponse());
+			String resp = webClient.get(query);
+			return serializerV.read(resp);
 		}
 		catch (NotFoundException e)
 		{
@@ -108,8 +107,8 @@ public class DiaryWebService implements DiaryService
 		try
 		{
 			String query = String.format(API_DIARY_FIND_CHANGES, Utils.formatTimeUTC(time));
-			StdResponse resp = webClient.get(query);
-			return serializerV.readAll(resp.getResponse());
+			String resp = webClient.get(query);
+			return serializerV.readAll(resp);
 		}
 		catch (CommonServiceException e)
 		{
@@ -127,8 +126,8 @@ public class DiaryWebService implements DiaryService
 		try
 		{
 			String query = String.format(API_DIARY_FIND_BY_ID_PREFIX, prefix);
-			StdResponse resp = webClient.get(query);
-			return serializerV.readAll(resp.getResponse());
+			String resp = webClient.get(query);
+			return serializerV.readAll(resp);
 		}
 		catch (CommonServiceException e)
 		{
@@ -148,8 +147,8 @@ public class DiaryWebService implements DiaryService
 		{
 			String query = String.format(API_DIARY_FIND_PERIOD, Utils.formatTimeUTC(startTime),
 					Utils.formatTimeUTC(endTime), Utils.formatBooleanStr(includeRemoved));
-			StdResponse resp = webClient.get(query);
-			return serializerV.readAll(resp.getResponse());
+			String resp = webClient.get(query);
+			return serializerV.readAll(resp);
 		}
 		catch (CommonServiceException e)
 		{
@@ -167,8 +166,8 @@ public class DiaryWebService implements DiaryService
 		try
 		{
 			String query = String.format(API_DIARY_HASH, prefix);
-			StdResponse resp = webClient.get(query);
-			return resp.getResponse();
+			String resp = webClient.get(query);
+			return resp;
 		}
 		catch (CommonServiceException e)
 		{
@@ -186,8 +185,8 @@ public class DiaryWebService implements DiaryService
 		try
 		{
 			String query = String.format(API_DIARY_HASHES, prefix);
-			StdResponse resp = webClient.get(query);
-			String data = resp.getResponse();
+			String resp = webClient.get(query);
+			String data = resp;
 			return serializerMap.read(data);
 		}
 		catch (CommonServiceException e)

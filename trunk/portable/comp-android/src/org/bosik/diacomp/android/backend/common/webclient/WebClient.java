@@ -18,7 +18,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
-import org.bosik.diacomp.android.backend.common.webclient.exceptions.AuthException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.ConnectionException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.ResponseFormatException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.TaskExecutionException;
@@ -31,7 +30,6 @@ import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.core.utils.Utils;
-import org.json.JSONException;
 import android.util.Log;
 
 public class WebClient
@@ -64,12 +62,6 @@ public class WebClient
 	 */
 	private static String formatResponse(HttpResponse response, String encoding)
 	{
-		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
-		{
-			// TODO: add error code description
-			throw new ResponseFormatException("Bad response, status code is "
-					+ response.getStatusLine().getStatusCode());
-		}
 		if (null == response.getEntity())
 		{
 			throw new ResponseFormatException("Bad response, getEntity() is null");
@@ -82,7 +74,29 @@ public class WebClient
 			{
 				throw new ResponseFormatException("Bad response, response is null");
 			}
-			return s;
+
+			final int statusCode = response.getStatusLine().getStatusCode();
+
+			switch (statusCode)
+			{
+				case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+				{
+					throw new TaskExecutionException(42, s);
+				}
+				case HttpStatus.SC_NOT_FOUND:
+				{
+					throw new NotFoundException(s);
+				}
+				case HttpStatus.SC_UNAUTHORIZED:
+				{
+					throw new NotAuthorizedException(s);
+				}
+				case HttpStatus.SC_OK:
+				default:
+				{
+					return s;
+				}
+			}
 		}
 		catch (IOException e)
 		{
@@ -279,20 +293,17 @@ public class WebClient
 	 * @param encoding
 	 * @return
 	 */
-	public StdResponse get(String url, String encoding)
+	public String get(String url, String encoding)
 	{
-		String s = doGet(url, encoding);
-		StdResponse resp = new StdResponse(s);
-
-		if (resp.getCode() == ResponseBuilder.CODE_UNAUTHORIZED)
+		try
+		{
+			return doGet(url, encoding);
+		}
+		catch (NotAuthorizedException e)
 		{
 			login();
-			s = doGet(url, encoding);
-			resp = new StdResponse(s);
+			return doGet(url, encoding);
 		}
-
-		checkResponse(resp);
-		return resp;
 	}
 
 	/**
@@ -301,7 +312,7 @@ public class WebClient
 	 * @param URL
 	 * @return
 	 */
-	public StdResponse get(String URL)
+	public String get(String URL)
 	{
 		return get(URL, ENCODING_UTF8);
 	}
@@ -314,20 +325,17 @@ public class WebClient
 	 * @param encoding
 	 * @return
 	 */
-	public StdResponse post(String URL, List<NameValuePair> params, String encoding)
+	public String post(String URL, List<NameValuePair> params, String encoding)
 	{
-		String s = doPost(URL, params, encoding);
-		StdResponse resp = new StdResponse(s);
-
-		if (resp.getCode() == ResponseBuilder.CODE_UNAUTHORIZED)
+		try
+		{
+			return doPost(URL, params, encoding);
+		}
+		catch (NotAuthorizedException e)
 		{
 			login();
-			s = doPost(URL, params, encoding);
-			resp = new StdResponse(s);
+			return doPost(URL, params, encoding);
 		}
-
-		checkResponse(resp);
-		return resp;
 	}
 
 	/**
@@ -337,7 +345,7 @@ public class WebClient
 	 * @param params
 	 * @return
 	 */
-	public StdResponse post(String URL, List<NameValuePair> params)
+	public String post(String URL, List<NameValuePair> params)
 	{
 		return post(URL, params, ENCODING_UTF8);
 	}
@@ -350,20 +358,17 @@ public class WebClient
 	 * @param encoding
 	 * @return
 	 */
-	public StdResponse put(String URL, List<NameValuePair> params, String encoding)
+	public String put(String URL, List<NameValuePair> params, String encoding)
 	{
-		String s = doPut(URL, params, encoding);
-		StdResponse resp = new StdResponse(s);
-
-		if (resp.getCode() == ResponseBuilder.CODE_UNAUTHORIZED)
+		try
+		{
+			return doPut(URL, params, encoding);
+		}
+		catch (NotAuthorizedException e)
 		{
 			login();
-			s = doPut(URL, params, encoding);
-			resp = new StdResponse(s);
+			return doPut(URL, params, encoding);
 		}
-
-		checkResponse(resp);
-		return resp;
 	}
 
 	/**
@@ -374,7 +379,7 @@ public class WebClient
 	 * @param codePage
 	 * @return
 	 */
-	public StdResponse put(String URL, List<NameValuePair> params)
+	public String put(String URL, List<NameValuePair> params)
 	{
 		return put(URL, params, ENCODING_UTF8);
 	}
@@ -401,37 +406,7 @@ public class WebClient
 
 		// send
 
-		String resp = doPost("api/auth/login/", p, ENCODING_UTF8);
-
-		try
-		{
-			StdResponse stdResp = new StdResponse(resp);
-
-			switch (stdResp.getCode())
-			{
-				case ResponseBuilder.CODE_OK:
-				{
-					break;
-				}
-				case ResponseBuilder.CODE_BADCREDENTIALS:
-				{
-					throw new AuthException("Bad username/password");
-				}
-				// TODO: no 4050 (deprecated, but still supported) handling
-				case ResponseBuilder.CODE_UNSUPPORTED_API:
-				{
-					throw new UnsupportedAPIException(stdResp.getResponse());
-				}
-				default:
-				{
-					throw new TaskExecutionException(stdResp.getCode(), "Failed with message " + stdResp.getResponse());
-				}
-			}
-		}
-		catch (JSONException e)
-		{
-			throw new ResponseFormatException("Mailformed response: " + resp, e);
-		}
+		doPost("api/auth/login/", p, ENCODING_UTF8);
 	}
 
 	@Deprecated
