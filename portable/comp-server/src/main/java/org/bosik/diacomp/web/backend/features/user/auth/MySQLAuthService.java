@@ -7,20 +7,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
+import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MySQLAuthService implements AuthService
 {
-	private static final String			TABLE_USER				= "user";
-	private static final String			COLUMN_USER_ID			= "ID";
-	private static final String			COLUMN_USER_LOGIN		= "Login";
-	private static final String			COLUMN_USER_HASHPASS	= "HashPass";
-	private static final String			COLUMN_USER_DATE_REG	= "DateReg";
-	private static final String			COLUMN_USER_DATE_LOGIN	= "DateLogin";
+	private static final String		TABLE_USER				= "user";
+	private static final String		COLUMN_USER_ID			= "ID";
+	private static final String		COLUMN_USER_LOGIN		= "Login";
+	private static final String		COLUMN_USER_HASHPASS	= "HashPass";
+	private static final String		COLUMN_USER_DATE_REG	= "DateReg";
+	private static final String		COLUMN_USER_DATE_LOGIN	= "DateLogin";
 
-	private static final MySQLAccess	db						= new MySQLAccess();
-	private static MessageDigest		md5digest;
+	private static MessageDigest	md5digest;
 
 	{
 		try
@@ -44,22 +44,23 @@ public class MySQLAuthService implements AuthService
 			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_USER_LOGIN, COLUMN_USER_HASHPASS);
 			final String[] whereArgs = { login, hash };
 
-			ResultSet set = db.select(TABLE_USER, select, where, whereArgs, null);
-
-			if (set.next())
+			return MySQLAccess.select(TABLE_USER, select, where, whereArgs, null, new DataCallback<Integer>()
 			{
-				int id = set.getInt(COLUMN_USER_ID);
-				set.close();
-
-				// TODO: update DateLogin field
-
-				return id;
-			}
-			else
-			{
-				set.close();
-				throw new NotAuthorizedException();
-			}
+				@Override
+				public Integer onData(ResultSet set) throws SQLException
+				{
+					if (set.next())
+					{
+						int id = set.getInt(COLUMN_USER_ID);
+						// TODO: update DateLogin field
+						return id;
+					}
+					else
+					{
+						throw new NotAuthorizedException();
+					}
+				}
+			});
 		}
 		catch (SQLException e)
 		{
@@ -94,19 +95,21 @@ public class MySQLAuthService implements AuthService
 			final String where = String.format("(%s = ?)", COLUMN_USER_LOGIN);
 			final String[] whereArgs = { userName };
 
-			ResultSet set = db.select(TABLE_USER, select, where, whereArgs, null);
-
-			if (set.next())
+			return MySQLAccess.select(TABLE_USER, select, where, whereArgs, null, new DataCallback<Integer>()
 			{
-				int id = set.getInt(COLUMN_USER_ID);
-				set.close();
-				return id;
-			}
-			else
-			{
-				set.close();
-				return null;
-			}
+				@Override
+				public Integer onData(ResultSet set) throws SQLException
+				{
+					if (set.next())
+					{
+						return set.getInt(COLUMN_USER_ID);
+					}
+					else
+					{
+						return null;
+					}
+				}
+			});
 		}
 		catch (SQLException e)
 		{
