@@ -23,7 +23,7 @@ public interface ObjectService<T>
 	/**
 	 * Max number of items returned
 	 */
-	static final int	MAX_ITEMS_COUNT	= 100;
+	static final int	MAX_ITEMS_COUNT	= 500;
 
 	/**
 	 * Calculates number of objects with specified ID prefix
