@@ -24,7 +24,7 @@ public class DiaryContentProvider extends ContentProvider
 	private static final String		DATABASE_NAME					= "Comp.db";
 	private static final int		DATABASE_VERSION				= 1;
 	private static final String		SCHEME							= "content://";
-	private static final String		AUTH							= "diacomp.provider";
+	public static final String		AUTHORITY						= "diacomp.provider";
 
 	// ======================================= Diary table =======================================
 
@@ -37,7 +37,7 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		COLUMN_DIARY_CONTENT			= "_Content";
 	public static final String		COLUMN_DIARY_TIMECACHE			= "_TimeCache";
 
-	public static final String		CONTENT_DIARY_STRING			= SCHEME + AUTH + "/" + TABLE_DIARY + "/";
+	public static final String		CONTENT_DIARY_STRING			= SCHEME + AUTHORITY + "/" + TABLE_DIARY + "/";
 	public static final Uri			CONTENT_DIARY_URI				= Uri.parse(CONTENT_DIARY_STRING);
 
 	private static final int		CODE_DIARY						= 1;
@@ -48,7 +48,7 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		COLUMN_DIARY_HASH_GUID			= "_GUID";
 	public static final String		COLUMN_DIARY_HASH_HASH			= "_Hash";
 
-	public static final String		CONTENT_DIARY_HASH_STRING		= SCHEME + AUTH + "/" + TABLE_DIARY_HASH + "/";
+	public static final String		CONTENT_DIARY_HASH_STRING		= SCHEME + AUTHORITY + "/" + TABLE_DIARY_HASH + "/";
 	public static final Uri			CONTENT_DIARY_HASH_URI			= Uri.parse(CONTENT_DIARY_HASH_STRING);
 
 	private static final int		CODE_DIARY_HASH					= 10;
@@ -64,7 +64,7 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		COLUMN_FOODBASE_DATA			= "Data";
 	public static final String		COLUMN_FOODBASE_NAMECACHE		= "NameCache";
 
-	public static final String		CONTENT_FOODBASE_STRING			= SCHEME + AUTH + "/" + TABLE_FOODBASE + "/";
+	public static final String		CONTENT_FOODBASE_STRING			= SCHEME + AUTHORITY + "/" + TABLE_FOODBASE + "/";
 	public static final Uri			CONTENT_FOODBASE_URI			= Uri.parse(CONTENT_FOODBASE_STRING);
 
 	private static final int		CODE_FOODBASE					= 2;
@@ -75,7 +75,8 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		COLUMN_FOODBASE_HASH_GUID		= "_GUID";
 	public static final String		COLUMN_FOODBASE_HASH_HASH		= "_Hash";
 
-	public static final String		CONTENT_FOODBASE_HASH_STRING	= SCHEME + AUTH + "/" + TABLE_FOODBASE_HASH + "/";
+	public static final String		CONTENT_FOODBASE_HASH_STRING	= SCHEME + AUTHORITY + "/" + TABLE_FOODBASE_HASH
+																			+ "/";
 	public static final Uri			CONTENT_FOODBASE_HASH_URI		= Uri.parse(CONTENT_FOODBASE_HASH_STRING);
 
 	private static final int		CODE_FOODBASE_HASH				= 20;
@@ -91,7 +92,7 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		COLUMN_DISHBASE_DATA			= "Data";
 	public static final String		COLUMN_DISHBASE_NAMECACHE		= "NameCache";
 
-	public static final String		CONTENT_DISHBASE_STRING			= SCHEME + AUTH + "/" + TABLE_DISHBASE + "/";
+	public static final String		CONTENT_DISHBASE_STRING			= SCHEME + AUTHORITY + "/" + TABLE_DISHBASE + "/";
 	public static final Uri			CONTENT_DISHBASE_URI			= Uri.parse(CONTENT_DISHBASE_STRING);
 
 	private static final int		CODE_DISHBASE					= 3;
@@ -102,7 +103,8 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		COLUMN_DISHBASE_HASH_GUID		= "_GUID";
 	public static final String		COLUMN_DISHBASE_HASH_HASH		= "_Hash";
 
-	public static final String		CONTENT_DISHBASE_HASH_STRING	= SCHEME + AUTH + "/" + TABLE_DISHBASE_HASH + "/";
+	public static final String		CONTENT_DISHBASE_HASH_STRING	= SCHEME + AUTHORITY + "/" + TABLE_DISHBASE_HASH
+																			+ "/";
 	public static final Uri			CONTENT_DISHBASE_HASH_URI		= Uri.parse(CONTENT_DISHBASE_HASH_STRING);
 
 	private static final int		CODE_DISHBASE_HASH				= 30;
@@ -113,7 +115,7 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		COLUMN_TAG_GUID					= "GUID";
 	public static final String		COLUMN_TAG_TAG					= "Tag";
 
-	public static final String		CONTENT_TAG_STRING				= SCHEME + AUTH + "/" + TABLE_TAG + "/";
+	public static final String		CONTENT_TAG_STRING				= SCHEME + AUTHORITY + "/" + TABLE_TAG + "/";
 	public static final Uri			CONTENT_TAG_URI					= Uri.parse(CONTENT_TAG_STRING);
 
 	private static final int		CODE_TAG						= 4;
@@ -123,13 +125,13 @@ public class DiaryContentProvider extends ContentProvider
 	static
 	{
 		sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		sURIMatcher.addURI(AUTH, TABLE_DIARY, CODE_DIARY);
-		sURIMatcher.addURI(AUTH, TABLE_DIARY_HASH, CODE_DIARY_HASH);
-		sURIMatcher.addURI(AUTH, TABLE_FOODBASE, CODE_FOODBASE);
-		sURIMatcher.addURI(AUTH, TABLE_FOODBASE_HASH, CODE_FOODBASE_HASH);
-		sURIMatcher.addURI(AUTH, TABLE_DISHBASE, CODE_DISHBASE);
-		sURIMatcher.addURI(AUTH, TABLE_DISHBASE_HASH, CODE_DISHBASE_HASH);
-		sURIMatcher.addURI(AUTH, TABLE_TAG, CODE_TAG);
+		sURIMatcher.addURI(AUTHORITY, TABLE_DIARY, CODE_DIARY);
+		sURIMatcher.addURI(AUTHORITY, TABLE_DIARY_HASH, CODE_DIARY_HASH);
+		sURIMatcher.addURI(AUTHORITY, TABLE_FOODBASE, CODE_FOODBASE);
+		sURIMatcher.addURI(AUTHORITY, TABLE_FOODBASE_HASH, CODE_FOODBASE_HASH);
+		sURIMatcher.addURI(AUTHORITY, TABLE_DISHBASE, CODE_DISHBASE);
+		sURIMatcher.addURI(AUTHORITY, TABLE_DISHBASE_HASH, CODE_DISHBASE_HASH);
+		sURIMatcher.addURI(AUTHORITY, TABLE_TAG, CODE_TAG);
 	}
 
 	private static final class MyDBHelper extends SQLiteOpenHelper
