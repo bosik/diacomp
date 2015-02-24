@@ -38,14 +38,15 @@ public class Versioned<T> implements Serializable
 		updateTimeStamp();
 	}
 
-	public Versioned(Versioned<? extends T> object)
+	@SuppressWarnings("unchecked")
+	public Versioned(Versioned<?> object)
 	{
 		setId(object.getId());
 		setTimeStamp(object.getTimeStamp());
 		setHash(object.getHash());
 		setVersion(object.getVersion());
 		setDeleted(object.isDeleted());
-		setData(object.getData());
+		setData((T)object.getData());
 	}
 
 	// TODO: rename to 'modified'
