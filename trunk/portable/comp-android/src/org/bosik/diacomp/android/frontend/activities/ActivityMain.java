@@ -6,8 +6,10 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import org.bosik.diacomp.android.BuildConfig;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.android.backend.features.sync.SyncService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.FragmentBase;
 import org.bosik.diacomp.android.frontend.fragments.FragmentDiaryScroller;
@@ -17,8 +19,11 @@ import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.services.sync.SyncService;
 import org.bosik.diacomp.core.services.sync.SyncService.ProgressCallback;
 import org.bosik.diacomp.core.utils.Utils;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -109,6 +114,20 @@ public class ActivityMain extends FragmentActivity
 
 			ActivityPreferences.init(this);
 			Storage.init(this, getContentResolver(), ActivityPreferences.preferences);
+
+			// Account sync
+			AccountManager am = AccountManager.get(this);
+			Account[] accounts = am.getAccountsByType("diacomp.org");
+			if (accounts.length > 0)
+			{
+				long SYNC_INTERVAL = 20; // sec
+				ContentResolver.addPeriodicSync(accounts[0], DiaryContentProvider.AUTHORITY, Bundle.EMPTY,
+						SYNC_INTERVAL);
+			}
+			else
+			{
+				Log.w(TAG, "No account found");
+			}
 
 			// Frontend
 
@@ -395,6 +414,25 @@ public class ActivityMain extends FragmentActivity
 		}.execute();
 	}
 
+	private void syncViaAdapter()
+	{
+		Bundle settingsBundle = new Bundle();
+		settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+		settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+
+		AccountManager am = AccountManager.get(this);
+		Account[] accounts = am.getAccountsByType("diacomp.org");
+		if (accounts.length > 0)
+		{
+			Log.i(TAG, "Accounts found: " + accounts.length);
+			ContentResolver.requestSync(accounts[0], DiaryContentProvider.AUTHORITY, settingsBundle);
+		}
+		else
+		{
+			Log.w(TAG, "No account found");
+		}
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -408,7 +446,7 @@ public class ActivityMain extends FragmentActivity
 			}
 			case R.id.item_diary_sync:
 			{
-				testSync();
+				syncViaAdapter();
 				return true;
 			}
 			default:
