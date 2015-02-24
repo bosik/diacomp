@@ -21,7 +21,7 @@ import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.search.RelevantIndexator;
 import org.bosik.diacomp.core.services.search.TagService;
-import org.bosik.diacomp.core.services.sync.SyncService;
+import org.bosik.diacomp.core.services.sync.SyncUtils;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -173,7 +173,7 @@ public class Storage
 			{
 				try
 				{
-					SyncService.synchronize(localDiary, webDiary, guids[0]);
+					SyncUtils.synchronize(localDiary, webDiary, guids[0]);
 				}
 				catch (Exception e)
 				{
@@ -222,7 +222,7 @@ public class Storage
 		{
 			Log.v(TAG, "Diary sync...");
 			long time = System.currentTimeMillis();
-			int syncDiaryItemsCount = SyncService.synchronize_v2(localDiary, webDiary, null);
+			int syncDiaryItemsCount = SyncUtils.synchronize_v2(localDiary, webDiary, null);
 			Log.v(TAG, String.format("Diary synced in %d msec, total tranferred: %d",
 					System.currentTimeMillis() - time, syncDiaryItemsCount));
 			return syncDiaryItemsCount;
@@ -240,7 +240,7 @@ public class Storage
 		{
 			Log.v(TAG, "Foodbase sync...");
 			long time = System.currentTimeMillis();
-			int syncFoodItemsCount = SyncService.synchronize_v2(Storage.localFoodBase, Storage.webFoodBase, null);
+			int syncFoodItemsCount = SyncUtils.synchronize_v2(Storage.localFoodBase, Storage.webFoodBase, null);
 			Log.v(TAG, String.format("Foodbase synced in %d msec, total tranferred: %d", System.currentTimeMillis()
 					- time, syncFoodItemsCount));
 			return syncFoodItemsCount;
@@ -258,7 +258,7 @@ public class Storage
 		{
 			Log.v(TAG, "Dishbase sync...");
 			long time = System.currentTimeMillis();
-			int syncDishItemsCount = SyncService.synchronize_v2(Storage.localDishBase, Storage.webDishBase, null);
+			int syncDishItemsCount = SyncUtils.synchronize_v2(Storage.localDishBase, Storage.webDishBase, null);
 			Log.v(TAG, String.format("Dishbase synced in %d msec, total tranferred: %d", System.currentTimeMillis()
 					- time, syncDishItemsCount));
 			return syncDishItemsCount;

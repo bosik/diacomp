@@ -9,15 +9,14 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
-import org.bosik.diacomp.android.backend.features.sync.SyncService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.FragmentBase;
 import org.bosik.diacomp.android.frontend.fragments.FragmentDiaryScroller;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.sync.HashUtils;
-import org.bosik.diacomp.core.services.sync.SyncService;
-import org.bosik.diacomp.core.services.sync.SyncService.ProgressCallback;
+import org.bosik.diacomp.core.services.sync.SyncUtils;
+import org.bosik.diacomp.core.services.sync.SyncUtils.ProgressCallback;
 import org.bosik.diacomp.core.utils.Utils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -288,7 +287,7 @@ public class ActivityMain extends FragmentActivity
 					DiaryService diaryLocal = new DiaryLocalService(getContentResolver());
 					DiaryService diaryWeb = Storage.webDiary;
 
-					int count = SyncService.synchronize_v2(diaryLocal, diaryWeb, new ProgressCallback()
+					int count = SyncUtils.synchronize_v2(diaryLocal, diaryWeb, new ProgressCallback()
 					{
 						@SuppressWarnings("synthetic-access")
 						@Override

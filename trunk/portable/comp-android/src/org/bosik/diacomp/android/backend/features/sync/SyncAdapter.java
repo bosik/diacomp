@@ -4,6 +4,7 @@ import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryWebService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.sync.SyncUtils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
@@ -63,12 +64,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			DiaryService localDiary = new DiaryLocalService(contentResolver);
 
 			WebClient webClient = new WebClient(CONNECTION_TIMEOUT);
-			webClient.setServer("http://192.168.0.100:8190/comp-server/");
+			webClient.setServer("http://192.168.0.100:8190/");
 			webClient.setUsername(name);
 			webClient.setPassword(password);
 			DiaryService webDiary = new DiaryWebService(webClient);
 
-			org.bosik.diacomp.core.services.sync.SyncService.synchronize_v2(localDiary, webDiary, null);
+			SyncUtils.synchronize_v2(localDiary, webDiary, null);
 		}
 		catch (Exception e)
 		{
