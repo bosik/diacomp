@@ -21,6 +21,7 @@ public class DiaryPanelBlood extends Panel
 	private static final long		serialVersionUID	= 1L;
 
 	IModel<Versioned<BloodRecord>>	model;
+	Label							deleteHint;
 
 	@SpringBean
 	DiaryService					diaryService;
@@ -43,7 +44,8 @@ public class DiaryPanelBlood extends Panel
 		add(new Label("value", formatBloodValue(rec.getValue())));
 		add(new Label("finger", formatBloodFinger(rec.getFinger())).add(AttributeModifier.replace("title",
 				formatBloodFingerHint(rec.getFinger()))));
-		add(new AjaxFallbackLink<Void>("delete")
+
+		AjaxFallbackLink<Void> linkDelete = new AjaxFallbackLink<Void>("delete")
 		{
 			private static final long	serialVersionUID	= -3995475639165455772L;
 
@@ -54,19 +56,39 @@ public class DiaryPanelBlood extends Panel
 				if (!object.isDeleted())
 				{
 					object.setDeleted(true);
-					DiaryPanelBlood.this.add(AttributeModifier.replace("style", "opacity: 0.5"));
-					target.add(DiaryPanelBlood.this);
+					DiaryPanelBlood.this.add(AttributeModifier.replace("style", "opacity: 0.4"));
+					// TODO: i18n
+					deleteHint.add(AttributeModifier.replace("title", "Восстановить"));
+					target.add(DiaryPanelBlood.this, deleteHint);
 				}
 				else
 				{
 					object.setDeleted(false);
 					DiaryPanelBlood.this.add(AttributeModifier.replace("style", ""));
-					target.add(DiaryPanelBlood.this);
+					// TODO: i18n
+					deleteHint.add(AttributeModifier.replace("title", "Удалить"));
+					target.add(DiaryPanelBlood.this, deleteHint);
 				}
 				object.updateTimeStamp();
 				diaryService.save(Arrays.<Versioned<DiaryRecord>> asList(new Versioned<DiaryRecord>(object)));
 			}
+		};
+		add(linkDelete);
+
+		deleteHint = new Label("deleteText", new Model<String>()
+		{
+			private static final long	serialVersionUID	= 3936985834863628353L;
+
+			@Override
+			public String getObject()
+			{
+				return model.getObject().isDeleted() ? "↶" : "×";
+			}
 		});
+		// TODO: i18n
+		deleteHint.add(AttributeModifier.replace("title", "Удалить"));
+		deleteHint.setOutputMarkupId(true);
+		linkDelete.add(deleteHint);
 
 		setOutputMarkupId(true);
 	}
