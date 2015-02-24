@@ -7,15 +7,16 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
+import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.utils.Utils;
 
 public class DiaryPanelIns extends Panel
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long				serialVersionUID	= 1L;
 
-	private IModel<InsRecord>	model;
+	private IModel<Versioned<InsRecord>>	model;
 
-	public DiaryPanelIns(String id, IModel<InsRecord> model)
+	public DiaryPanelIns(String id, Model<Versioned<InsRecord>> model)
 	{
 		super(id);
 		this.model = model;
@@ -26,7 +27,7 @@ public class DiaryPanelIns extends Panel
 	{
 		super.onInitialize();
 
-		InsRecord rec = model.getObject();
+		InsRecord rec = model.getObject().getData();
 		// TODO: localization
 		add(new Image("icon", Model.of("icon.png")).add(AttributeModifier.replace("title", "Инъекция")));
 		add(new Label("time", Utils.formatTimeLocalShort(rec.getTime())));

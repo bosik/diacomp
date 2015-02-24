@@ -50,21 +50,9 @@ public class DiaryPanelDay extends Panel
 			{
 				final List<IModel<Versioned<DiaryRecord>>> list = new ArrayList<IModel<Versioned<DiaryRecord>>>();
 
-				//				FoodDataProvider provider = new FoodDataProvider();
-				//				Iterator<? extends Versioned<FoodItem>> it = provider.iterator(0, 19);
-				//				while (it.hasNext())
-				//				{
-				//					foodBase.add(provider.model(it.next()));
-				//				}
-
 				for (Versioned<DiaryRecord> item : data.getItems())
 				{
-					DiaryRecord data = item.getData();
-					if ((data instanceof BloodRecord) || (data instanceof InsRecord) || (data instanceof MealRecord)
-							|| (data instanceof NoteRecord))
-					{
-						list.add(Model.of(item));
-					}
+					list.add(Model.<Versioned<DiaryRecord>> of(item));
 				}
 
 				return list.iterator();
@@ -73,43 +61,29 @@ public class DiaryPanelDay extends Panel
 			@Override
 			protected void populateItem(final Item<Versioned<DiaryRecord>> item)
 			{
-				DiaryRecord record = item.getModelObject().getData();
+				Versioned<DiaryRecord> record = item.getModelObject();
+				DiaryRecord data = record.getData();
 
-				if (record instanceof BloodRecord)
+				if (data instanceof BloodRecord)
 				{
-					item.add(new DiaryPanelBlood("diaryRecordPanel", Model.of((BloodRecord)record)));
+					item.add(new DiaryPanelBlood("diaryRecordPanel", Model.of(new Versioned<BloodRecord>(record))));
 				}
-				else if (record instanceof InsRecord)
+				else if (data instanceof InsRecord)
 				{
-					item.add(new DiaryPanelIns("diaryRecordPanel", Model.of((InsRecord)record)));
+					item.add(new DiaryPanelIns("diaryRecordPanel", Model.of(new Versioned<InsRecord>(record))));
 				}
-				else if (record instanceof MealRecord)
+				else if (data instanceof MealRecord)
 				{
-					item.add(new DiaryPanelMeal("diaryRecordPanel", Model.of((MealRecord)record)));
+					item.add(new DiaryPanelMeal("diaryRecordPanel", Model.of(new Versioned<MealRecord>(record))));
 				}
-				else if (record instanceof NoteRecord)
+				else if (data instanceof NoteRecord)
 				{
-					item.add(new DiaryPanelNote("diaryRecordPanel", Model.of((NoteRecord)record)));
+					item.add(new DiaryPanelNote("diaryRecordPanel", Model.of(new Versioned<NoteRecord>(record))));
 				}
 				else
 				{
-					/// TODO: other diary types
-					//item.add(new DiaryPanelBlood("diaryRecordPanel", record));
+					// ignore unknown types
 				}
-
-				//				rec.add(new AjaxEventBehavior("onclick")
-				//				{
-				//					private static final long	serialVersionUID	= 1L;
-				//
-				//					@Override
-				//					protected void onEvent(AjaxRequestTarget target)
-				//					{
-				//						Versioned<FoodItem> food = rec.getModelObject();
-				//						System.out.println("Opening: " + food.getData().getName());
-				//
-				//						foodEditor.show(target, Model.of(food));
-				//					}
-				//				});
 			}
 		});
 	}
