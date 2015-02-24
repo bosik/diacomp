@@ -10,7 +10,7 @@ import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.utils.Utils;
 
-public class SyncService
+public class SyncUtils
 {
 	/* ============================ HELPER CLASSES ============================ */
 

@@ -7,7 +7,7 @@ import java.util.List;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.ObjectService;
-import org.bosik.diacomp.core.services.sync.SyncService;
+import org.bosik.diacomp.core.services.sync.SyncUtils;
 import org.bosik.diacomp.core.test.fakes.services.FakeObjectService;
 import org.junit.Test;
 
@@ -75,7 +75,7 @@ public class TestSync extends TestCase
 
 		service1.save(Arrays.<Versioned<String>> asList(item));
 
-		SyncService.synchronize(service1, service2, new Date(2014, 01, 01, 18, 30, 00));
+		SyncUtils.synchronize(service1, service2, new Date(2014, 01, 01, 18, 30, 00));
 		assertServicesAreSynced();
 		//		Versioned<String> restored = service2.findById(item.getId());
 		//		assertEquals(item, restored);
@@ -93,7 +93,7 @@ public class TestSync extends TestCase
 
 		service1.save(Arrays.<Versioned<String>> asList(item));
 
-		SyncService.synchronize(service2, service1, new Date(2014, 01, 01, 18, 30, 00));
+		SyncUtils.synchronize(service2, service1, new Date(2014, 01, 01, 18, 30, 00));
 
 		assertServicesAreSynced();
 		//		Versioned<String> restored = service2.findById(item.getId());
@@ -111,7 +111,7 @@ public class TestSync extends TestCase
 
 		service1.save(Arrays.<Versioned<String>> asList(item));
 
-		SyncService.synchronize(service1, service2, new Date(2014, 01, 01, 18, 30, 16));
+		SyncUtils.synchronize(service1, service2, new Date(2014, 01, 01, 18, 30, 16));
 
 		// item check
 		Versioned<String> restored = service2.findById(item.getId());
@@ -146,7 +146,7 @@ public class TestSync extends TestCase
 		service1.save(Arrays.<Versioned<String>> asList(item));
 
 		// sync
-		SyncService.synchronize(service1, service2, new Date(2014, 01, 01, 18, 30, 00));
+		SyncUtils.synchronize(service1, service2, new Date(2014, 01, 01, 18, 30, 00));
 
 		// check the result
 		assertEquals(item, service2.findById(item.getId()));
@@ -179,7 +179,7 @@ public class TestSync extends TestCase
 		service2.save(Arrays.<Versioned<String>> asList(item2));
 
 		// sync
-		SyncService.synchronize(service1, service2, new Date(2014, 01, 01, 00, 00, 00));
+		SyncUtils.synchronize(service1, service2, new Date(2014, 01, 01, 00, 00, 00));
 
 		// total check
 		assertServicesAreSynced();
@@ -228,7 +228,7 @@ public class TestSync extends TestCase
 		service2.save(Arrays.<Versioned<String>> asList(a2, b2));
 
 		// sync
-		SyncService.synchronize(service1, service2, timeSync);
+		SyncUtils.synchronize(service1, service2, timeSync);
 
 		// total check
 		assertServicesAreSynced();
