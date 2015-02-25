@@ -243,8 +243,7 @@ public class DiaryDayView extends LinearLayout
 					DiaryRecord data = record.getData();
 					if (data instanceof BloodRecord)
 					{
-						DiaryRecBloodView rec = new DiaryRecBloodView(context);
-						rec.setData((Versioned<BloodRecord>) record);
+						DiaryRecBloodView rec = new DiaryRecBloodView(context, (Versioned<BloodRecord>) record);
 						convertView = rec;
 					}
 					else if (data instanceof InsRecord)
@@ -410,6 +409,7 @@ public class DiaryDayView extends LinearLayout
 				synchronized (data)
 				{
 					data = items;
+					updatePostprand();
 				}
 				adapter.notifyDataSetChanged();
 				loading = false;
@@ -458,6 +458,7 @@ public class DiaryDayView extends LinearLayout
 				synchronized (data)
 				{
 					data.addAll(0, items);
+					updatePostprand();
 				}
 				int delta = items.size();
 				Log.i(TAG, String.format("loadBefore(): %d new items loaded", delta));
@@ -508,6 +509,7 @@ public class DiaryDayView extends LinearLayout
 				synchronized (data)
 				{
 					data.addAll(items);
+					updatePostprand();
 				}
 				countOfDays += days;
 
@@ -532,5 +534,45 @@ public class DiaryDayView extends LinearLayout
 	public void setOnRecordClickListener(OnRecordClickListener l)
 	{
 		onRecordClickListener = l;
+	}
+
+	private void updatePostprand()
+	{
+		// TODO: move hardcode
+		final int DEFAULT_AFFECT_TIME_INSULIN = 210;
+		final int DEFAULT_AFFECT_TIME_MEAL_STD = 210;
+		final int DEFAULT_AFFECT_TIME_MEAL_SHORT = 20;
+		long minFreeTime = 0;
+
+		for (Item item : data)
+		{
+			if (item instanceof ItemData)
+			{
+				ItemData itemData = (ItemData) item;
+				DiaryRecord record = itemData.record.getData();
+				if (record instanceof InsRecord)
+				{
+					long curFreeTime = record.getTime().getTime() + DEFAULT_AFFECT_TIME_INSULIN * Utils.MsecPerMin;
+					if (curFreeTime > minFreeTime)
+					{
+						minFreeTime = curFreeTime;
+					}
+				}
+				else if (record instanceof MealRecord)
+				{
+					long affectTime = ((MealRecord) record).getShortMeal() ? DEFAULT_AFFECT_TIME_MEAL_SHORT
+							: DEFAULT_AFFECT_TIME_MEAL_STD;
+					long curFreeTime = record.getTime().getTime() + affectTime * Utils.MsecPerMin;
+					if (curFreeTime > minFreeTime)
+					{
+						minFreeTime = curFreeTime;
+					}
+				}
+				else if (record instanceof BloodRecord)
+				{
+					((BloodRecord) record).setPostPrand(record.getTime().getTime() < minFreeTime);
+				}
+			}
+		}
 	}
 }
