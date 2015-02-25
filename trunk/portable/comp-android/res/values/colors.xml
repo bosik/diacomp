@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="app_background">#FFFFFF</color>
+    <color name="app_background">#F9F9F9</color>
     <color name="diary_foreground">#00FF00</color>
     <color name="meal_correction_positive">#00CC00</color>
     <color name="meal_correction_negative">#CC0000</color>
