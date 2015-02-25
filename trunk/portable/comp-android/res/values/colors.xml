@@ -9,7 +9,7 @@
     <color name="diary_font">#000000</color>
     <color name="diary_blood_std">#E6EEFF</color>
     <color name="diary_blood_sel">#CCDDF7</color>
-    <color name="diary_blood_postprand">#FFEEFF</color>
+    <color name="diary_blood_postprand">#F0E4F8</color>
     <color name="diary_ins">#FFFFFF</color>
     <color name="diary_ins_sel">#F0F0F0</color>
     <color name="diary_meal">#FFFFDD</color>
