@@ -16,20 +16,30 @@ public class DiaryRecBloodView extends LinearLayout
 	private Versioned<BloodRecord>	record;
 
 	// Components
-	private TextView				textTime;
-	private TextView				textValue;
+	private final TextView			textTime;
+	private final TextView			textValue;
 
-	private String[]				fingers	= !isInEditMode() ? getResources().getStringArray(R.array.fingers_short)
+	private final String[]			fingers	= !isInEditMode() ? getResources().getStringArray(R.array.fingers_short)
 													: null;
 
-	public DiaryRecBloodView(Context context)
+	public DiaryRecBloodView(Context context, Versioned<BloodRecord> record)
 	{
 		super(context);
 		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		inflater.inflate(R.layout.view_diary_rec_blood, this);
+
+		if (record.getData().isPostPrand())
+		{
+			inflater.inflate(R.layout.view_diary_rec_blood_postprand, this);
+		}
+		else
+		{
+			inflater.inflate(R.layout.view_diary_rec_blood_std, this);
+		}
 
 		textTime = (TextView) findViewById(R.id.textBloodTime);
 		textValue = (TextView) findViewById(R.id.textBloodValue);
+
+		setData(record);
 	}
 
 	public void setData(Versioned<BloodRecord> record)
