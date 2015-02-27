@@ -116,25 +116,24 @@ public class FragmentDiaryScroller extends Fragment
 
 		list.setOnRecordClickListener(new OnRecordClickListener()
 		{
-			@SuppressWarnings("unchecked")
 			@Override
-			public void onRecordClick(Versioned<? extends DiaryRecord> record)
+			public void onRecordClick(Versioned<DiaryRecord> record)
 			{
 				if (record.getData() instanceof BloodRecord)
 				{
-					showBloodEditor((Versioned<BloodRecord>) record, false);
+					showBloodEditor(new Versioned<BloodRecord>(record), false);
 				}
 				else if (record.getData() instanceof InsRecord)
 				{
-					showInsEditor((Versioned<InsRecord>) record, false);
+					showInsEditor(new Versioned<InsRecord>(record), false);
 				}
 				else if (record.getData() instanceof MealRecord)
 				{
-					showMealEditor((Versioned<MealRecord>) record, false);
+					showMealEditor(new Versioned<MealRecord>(record), false);
 				}
 				else if (record.getData() instanceof NoteRecord)
 				{
-					showNoteEditor((Versioned<NoteRecord>) record, false);
+					showNoteEditor(new Versioned<NoteRecord>(record), false);
 				}
 			}
 		});
