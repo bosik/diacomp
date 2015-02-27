@@ -2,6 +2,8 @@
 <resources>
 
     <color name="app_background">#F9F9F9</color>
+    <color name="base_highlighted">#F0F0F0</color>
+    <color name="base_selected">#E0E0E0</color>
     <color name="diary_foreground">#00FF00</color>
     <color name="meal_correction_positive">#00CC00</color>
     <color name="meal_correction_negative">#CC0000</color>

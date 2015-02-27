@@ -33,18 +33,23 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class FragmentBase extends Fragment
 {
@@ -65,7 +70,8 @@ public class FragmentBase extends Fragment
 	final FoodBaseService								foodBaseService		= Storage.localFoodBase;
 	final DishBaseService								dishBaseService		= Storage.localDishBase;
 	private final Map<String, Integer>					tagInfo				= Storage.tagService.getTags();
-	List<Versioned<NamedRelativeTagged>>				data;
+	List<Versioned<NamedRelativeTagged>>				data				= new ArrayList<Versioned<NamedRelativeTagged>>();
+	BaseAdapter											adapter;
 	private static final Sorter<NamedRelativeTagged>	sorter				= new Sorter<NamedRelativeTagged>();
 	String												searchFilter		= "";
 	boolean												resultCutted;
@@ -75,7 +81,7 @@ public class FragmentBase extends Fragment
 	private static final long							SEARCH_DELAY		= 500;
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		setHasOptionsMenu(true);
 
@@ -103,6 +109,89 @@ public class FragmentBase extends Fragment
 			}
 		});
 		list = (ListView) rootView.findViewById(R.id.listBaseEditorSearchResults);
+		list.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
+		list.setMultiChoiceModeListener(new MultiChoiceModeListener()
+		{
+			@Override
+			public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b)
+			{
+				int selectedCount = list.getCheckedItemCount();
+				setSubtitle(actionMode, selectedCount);
+			}
+
+			@Override
+			public boolean onCreateActionMode(ActionMode actionMode, Menu menu)
+			{
+				MenuInflater inflater = actionMode.getMenuInflater();
+				inflater.inflate(R.menu.actions_base_context, menu);
+				return true;
+			}
+
+			@Override
+			public boolean onPrepareActionMode(ActionMode actionMode, Menu menu)
+			{
+				return false;
+			}
+
+			@Override
+			public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem)
+			{
+				List<Versioned<FoodItem>> removedFoods = new ArrayList<Versioned<FoodItem>>();
+				List<Versioned<DishItem>> removedDishes = new ArrayList<Versioned<DishItem>>();
+
+				SparseBooleanArray checkList = list.getCheckedItemPositions();
+				for (int i = 0; i < checkList.size(); i++)
+				{
+					if (checkList.valueAt(i))
+					{
+						int index = checkList.keyAt(i);
+						if (index >= 0 && index < data.size())
+						{
+							Versioned<NamedRelativeTagged> item = data.get(index);
+
+							if (item.getData() instanceof FoodItem)
+							{
+								item.setDeleted(true);
+								removedFoods.add(new Versioned<FoodItem>(item));
+							}
+							else if (item.getData() instanceof DishItem)
+							{
+								item.setDeleted(true);
+								removedDishes.add(new Versioned<DishItem>(item));
+							}
+						}
+					}
+				}
+
+				foodBaseService.save(removedFoods);
+				dishBaseService.save(removedDishes);
+				runSearch();
+
+				// TODO: i18n
+				String text = (removedFoods.size() + removedDishes.size()) + " items removed";
+				Toast.makeText(list.getContext(), text, Toast.LENGTH_LONG).show();
+
+				return true;
+			}
+
+			@Override
+			public void onDestroyActionMode(ActionMode actionMode)
+			{
+			}
+
+			private void setSubtitle(ActionMode mode, int selectedCount)
+			{
+				switch (selectedCount)
+				{
+					case 0:
+						mode.setSubtitle(null);
+						break;
+					default:
+						mode.setTitle(String.valueOf(selectedCount));
+						break;
+				}
+			}
+		});
 		list.setOnItemClickListener(new OnItemClickListener()
 		{
 			@Override
@@ -166,7 +255,141 @@ public class FragmentBase extends Fragment
 			}
 		});
 
-		// Show data
+		adapter = new BaseAdapter()
+		{
+			static final int	TYPE_FOOD	= 1;
+			static final int	TYPE_DISH	= 2;
+			static final int	UNKNOWN		= -17;
+
+			@Override
+			public int getViewTypeCount()
+			{
+				return 3;
+			}
+
+			@Override
+			public int getItemViewType(int position)
+			{
+				final Versioned<?> item = (Versioned<?>) getItem(position);
+				final Object itemData = item.getData();
+
+				if (itemData instanceof FoodItem)
+				{
+					return TYPE_FOOD;
+				}
+				else if (itemData instanceof DishItem)
+				{
+					return TYPE_DISH;
+				}
+				else
+				{
+					return UNKNOWN;
+				}
+			}
+
+			@Override
+			public int getCount()
+			{
+				return data.size();
+			}
+
+			@Override
+			public Object getItem(int position)
+			{
+				synchronized (data)
+				{
+					if (position >= 0 && position < data.size())
+					{
+						return data.get(position);
+					}
+					else
+					{
+						return null;
+					}
+				}
+			}
+
+			@Override
+			public boolean hasStableIds()
+			{
+				return true;
+			}
+
+			@Override
+			public long getItemId(int position)
+			{
+				Object item = getItem(position);
+				if (item != null)
+				{
+					return ((Versioned<?>) item).getId().hashCode();
+				}
+				else
+				{
+					return position;
+				}
+			}
+
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent)
+			{
+				Versioned<?> item = (Versioned<?>) getItem(position);
+
+				if (item == null)
+				{
+					if (convertView == null)
+					{
+						// FIXME
+						convertView = inflater.inflate(R.layout.view_diary_rec_loading, null);
+					}
+				}
+				else
+				{
+					switch (getItemViewType(position))
+					{
+						case TYPE_FOOD:
+						{
+							if (convertView == null)
+							{
+								convertView = inflater.inflate(R.layout.view_base_food, null);
+							}
+
+							final FoodItem food = (FoodItem) item.getData();
+
+							TextView textName = (TextView) convertView.findViewById(R.id.baseItemFoodName);
+							textName.setText(food.getName());
+							TextView textInfo = (TextView) convertView.findViewById(R.id.baseItemFoodInfo);
+							textInfo.setText(getInfo(food));
+							break;
+						}
+						case TYPE_DISH:
+						{
+							// TODO: use dish-specific layout
+							if (convertView == null)
+							{
+								convertView = inflater.inflate(R.layout.view_base_food, null);
+							}
+
+							final DishItem dish = (DishItem) item.getData();
+
+							TextView textName = (TextView) convertView.findViewById(R.id.baseItemFoodName);
+							textName.setText(dish.getName());
+							TextView textInfo = (TextView) convertView.findViewById(R.id.baseItemFoodInfo);
+							textInfo.setText(getInfo(dish));
+							break;
+						}
+						default:
+						{
+							throw new RuntimeException("Invalid data type: " + item);
+						}
+					}
+				}
+
+				convertView.setBackgroundDrawable(getResources().getDrawable(R.drawable.background_base_item));
+				return convertView;
+			}
+		};
+
+		list.setAdapter(adapter);
 		runSearch();
 
 		return rootView;
@@ -195,7 +418,18 @@ public class FragmentBase extends Fragment
 			@Override
 			protected void onPostExecute(List<Versioned<NamedRelativeTagged>> result)
 			{
-				showBase(result);
+				// TODO: i18n
+				if (result == null)
+				{
+					UIUtils.showTip(getActivity(), "При загрузке данных произошла ошибка");
+					result = Collections.<Versioned<NamedRelativeTagged>> emptyList();
+				}
+
+				synchronized (data)
+				{
+					data = result;
+				}
+				adapter.notifyDataSetChanged();
 				searchScheduled = false;
 			}
 		};
@@ -364,46 +598,6 @@ public class FragmentBase extends Fragment
 		{
 			return null;
 		}
-	}
-
-	void showBase(final List<Versioned<NamedRelativeTagged>> items)
-	{
-		// TODO: i18n
-		if (items == null)
-		{
-			UIUtils.showTip(getActivity(), "При загрузке данных произошла ошибка");
-			showBase(Collections.<Versioned<NamedRelativeTagged>> emptyList());
-			return;
-		}
-
-		data = items;
-
-		String[] str = new String[items.size()];
-		for (int i = 0; i < items.size(); i++)
-		{
-			str[i] = items.get(i).getData().getName();
-		}
-
-		// String fmt = resultCutted ? "%s (%d+)" : "%s (%d)";
-		// getActivity().setTitle(String.format(fmt, getString(R.string.base_title), items.size()));
-
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_2,
-				android.R.id.text1, str)
-		{
-			@Override
-			public View getView(int position, View convertView, ViewGroup parent)
-			{
-				View view = super.getView(position, convertView, parent);
-				TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-				TextView text2 = (TextView) view.findViewById(android.R.id.text2);
-
-				text1.setText(items.get(position).getData().getName());
-				text2.setText(getInfo(items.get(position).getData()));
-				return view;
-			}
-		};
-
-		list.setAdapter(adapter);
 	}
 
 	String getInfo(NamedRelativeTagged item)
