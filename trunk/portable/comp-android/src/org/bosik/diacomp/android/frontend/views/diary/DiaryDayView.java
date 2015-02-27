@@ -18,10 +18,16 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -29,6 +35,7 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class DiaryDayView extends LinearLayout
 {
@@ -124,6 +131,71 @@ public class DiaryDayView extends LinearLayout
 		}
 
 		listRecs = (ListView) findViewById(R.id.listRecs);
+		listRecs.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
+		listRecs.setMultiChoiceModeListener(new MultiChoiceModeListener()
+		{
+			@Override
+			public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b)
+			{
+				int selectedCount = listRecs.getCheckedItemCount();
+				setSubtitle(actionMode, selectedCount);
+			}
+
+			@Override
+			public boolean onCreateActionMode(ActionMode actionMode, Menu menu)
+			{
+				MenuInflater inflater = actionMode.getMenuInflater();
+				inflater.inflate(R.menu.actions_diary_context, menu);
+				return true;
+			}
+
+			@Override
+			public boolean onPrepareActionMode(ActionMode actionMode, Menu menu)
+			{
+				return false;
+			}
+
+			@Override
+			public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem)
+			{
+				String text = "Action - " + menuItem.getTitle() + " ; Selected items: " + getSelectedFiles();
+				Toast.makeText(listRecs.getContext(), text, Toast.LENGTH_LONG).show();
+				return false;
+			}
+
+			@Override
+			public void onDestroyActionMode(ActionMode actionMode)
+			{
+			}
+
+			private void setSubtitle(ActionMode mode, int selectedCount)
+			{
+				switch (selectedCount)
+				{
+					case 0:
+						mode.setSubtitle(null);
+						break;
+					default:
+						mode.setTitle(String.valueOf(selectedCount));
+						break;
+				}
+			}
+
+			private List<String> getSelectedFiles()
+			{
+				List<String> selectedFiles = new ArrayList<String>();
+
+				SparseBooleanArray sparseBooleanArray = listRecs.getCheckedItemPositions();
+				for (int i = 0; i < sparseBooleanArray.size(); i++)
+				{
+					if (sparseBooleanArray.valueAt(i))
+					{
+						selectedFiles.add(String.valueOf(sparseBooleanArray.keyAt(i)));
+					}
+				}
+				return selectedFiles;
+			}
+		});
 
 		Calendar c = Calendar.getInstance();
 		c.set(Calendar.HOUR_OF_DAY, 0);
