@@ -29,8 +29,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -191,38 +189,29 @@ public class FragmentBase extends Fragment
 			@Override
 			protected List<Versioned<NamedRelativeTagged>> doInBackground(String... params)
 			{
-				return request(searchFilter/* params[0] */);
+				return request(params[0]);
 			}
 
 			@Override
 			protected void onPostExecute(List<Versioned<NamedRelativeTagged>> result)
 			{
 				showBase(result);
+				searchScheduled = false;
 			}
 		};
 
 		TimerTask task = new TimerTask()
 		{
-			private final Handler	mHandler	= new Handler(Looper.getMainLooper());
-
 			@Override
 			public void run()
 			{
-				mHandler.post(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						lastSearchTime = System.currentTimeMillis();
-						asyncTask.execute(/* key */);
-						searchScheduled = false;
-					}
-				});
+				asyncTask.execute(searchFilter);
 			}
 		};
 
 		if ((System.currentTimeMillis() - lastSearchTime) >= SEARCH_DELAY)
 		{
+			lastSearchTime = System.currentTimeMillis();
 			task.run();
 		}
 		else
