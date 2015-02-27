@@ -62,9 +62,9 @@ public class DiaryDayView extends LinearLayout
 
 	private static class ItemData extends Item
 	{
-		public Versioned<? extends DiaryRecord>	record;
+		public Versioned<DiaryRecord>	record;
 
-		public ItemData(Versioned<? extends DiaryRecord> record)
+		public ItemData(Versioned<DiaryRecord> record)
 		{
 			this.record = record;
 		}
@@ -78,7 +78,7 @@ public class DiaryDayView extends LinearLayout
 
 	public static interface OnRecordClickListener
 	{
-		void onRecordClick(Versioned<? extends DiaryRecord> record);
+		void onRecordClick(Versioned<DiaryRecord> record);
 	}
 
 	public static interface OnHeaderClickListener
@@ -158,9 +158,36 @@ public class DiaryDayView extends LinearLayout
 			@Override
 			public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem)
 			{
-				String text = "Action - " + menuItem.getTitle() + " ; Selected items: " + getSelectedFiles();
+				List<Versioned<DiaryRecord>> removedRecords = new ArrayList<Versioned<DiaryRecord>>();
+
+				SparseBooleanArray sparseBooleanArray = listRecs.getCheckedItemPositions();
+				for (int i = 0; i < sparseBooleanArray.size(); i++)
+				{
+					if (sparseBooleanArray.valueAt(i))
+					{
+						int position = sparseBooleanArray.keyAt(i);
+						int index = positionToIndex(position);
+						if (index >= 0 && index < data.size())
+						{
+							Item item = data.get(index);
+							if (item instanceof ItemData)
+							{
+								ItemData itemData = (ItemData) item;
+								itemData.record.setDeleted(true);
+								removedRecords.add(itemData.record);
+							}
+						}
+					}
+				}
+
+				diaryService.save(removedRecords);
+				refresh();
+
+				// TODO: i18n
+				String text = removedRecords.size() + " items removed";
 				Toast.makeText(listRecs.getContext(), text, Toast.LENGTH_LONG).show();
-				return false;
+
+				return true;
 			}
 
 			@Override
@@ -179,21 +206,6 @@ public class DiaryDayView extends LinearLayout
 						mode.setTitle(String.valueOf(selectedCount));
 						break;
 				}
-			}
-
-			private List<String> getSelectedFiles()
-			{
-				List<String> selectedFiles = new ArrayList<String>();
-
-				SparseBooleanArray sparseBooleanArray = listRecs.getCheckedItemPositions();
-				for (int i = 0; i < sparseBooleanArray.size(); i++)
-				{
-					if (sparseBooleanArray.valueAt(i))
-					{
-						selectedFiles.add(String.valueOf(sparseBooleanArray.keyAt(i)));
-					}
-				}
-				return selectedFiles;
 			}
 		});
 
@@ -409,7 +421,7 @@ public class DiaryDayView extends LinearLayout
 				}
 				else if (item instanceof ItemData)
 				{
-					Versioned<? extends DiaryRecord> record = ((ItemData) item).record;
+					Versioned<DiaryRecord> record = ((ItemData) item).record;
 					if (onRecordClickListener != null)
 					{
 						onRecordClickListener.onRecordClick(record);
@@ -434,7 +446,7 @@ public class DiaryDayView extends LinearLayout
 		}
 	}
 
-	List<Item> groupItems(List<Versioned<? extends DiaryRecord>> records, Date firstDate, int countOfDays)
+	List<Item> groupItems(List<Versioned<DiaryRecord>> records, Date firstDate, int countOfDays)
 	{
 		List<Item> result = new ArrayList<Item>();
 
@@ -479,7 +491,7 @@ public class DiaryDayView extends LinearLayout
 				Date timeFrom = params[0];
 				Date timeTo = params[1];
 				Log.d(TAG, String.format("load(): %s - %s", timeFrom, timeTo));
-				List<Versioned<? extends DiaryRecord>> records = request(timeFrom, timeTo);
+				List<Versioned<DiaryRecord>> records = request(timeFrom, timeTo);
 				return groupItems(records, timeFrom, days);
 			}
 
@@ -528,7 +540,7 @@ public class DiaryDayView extends LinearLayout
 				Date timeFrom = params[0];
 				Date timeTo = params[1];
 				Log.d(TAG, String.format("loadBefore(): %s - %s", timeFrom, timeTo));
-				final List<Versioned<? extends DiaryRecord>> records = request(timeFrom, timeTo);
+				final List<Versioned<DiaryRecord>> records = request(timeFrom, timeTo);
 				return groupItems(records, timeFrom, days);
 			}
 
@@ -579,7 +591,7 @@ public class DiaryDayView extends LinearLayout
 				Date timeFrom = params[0];
 				Date timeTo = params[1];
 				Log.d(TAG, String.format("loadAfter(): %s and %s", timeFrom, timeTo));
-				final List<Versioned<? extends DiaryRecord>> records = request(timeFrom, timeTo);
+				final List<Versioned<DiaryRecord>> records = request(timeFrom, timeTo);
 				return groupItems(records, timeFrom, days);
 			}
 
@@ -599,9 +611,9 @@ public class DiaryDayView extends LinearLayout
 		}.execute(timeFrom, timeTo);
 	}
 
-	static List<Versioned<? extends DiaryRecord>> request(Date startTime, Date endTime)
+	static List<Versioned<DiaryRecord>> request(Date startTime, Date endTime)
 	{
-		List<Versioned<? extends DiaryRecord>> result = new ArrayList<Versioned<? extends DiaryRecord>>();
+		List<Versioned<DiaryRecord>> result = new ArrayList<Versioned<DiaryRecord>>();
 		result.addAll(diaryService.findPeriod(startTime, endTime, false));
 		return result;
 	}
