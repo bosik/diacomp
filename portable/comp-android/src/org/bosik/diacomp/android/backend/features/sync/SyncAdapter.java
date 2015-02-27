@@ -25,6 +25,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 
 	private final ContentResolver	mContentResolver;
 	private final AccountManager	mAccountManager;
+	private static WebClient		webClient;
 
 	/**
 	 * Set up the sync adapter
@@ -57,19 +58,26 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 
 			final int CONNECTION_TIMEOUT = 30000;
 
-			String password = mAccountManager.getPassword(account);
 			String name = account.name;
+			String password = mAccountManager.getPassword(account);
 
 			final ContentResolver contentResolver = getContext().getContentResolver();
 			DiaryService localDiary = new DiaryLocalService(contentResolver);
 
-			WebClient webClient = new WebClient(CONNECTION_TIMEOUT);
+			if (webClient == null)
+			{
+				webClient = new WebClient(CONNECTION_TIMEOUT);
+			}
 			webClient.setServer("http://192.168.0.100:8190/");
 			webClient.setUsername(name);
 			webClient.setPassword(password);
 			DiaryService webDiary = new DiaryWebService(webClient);
 
-			SyncUtils.synchronize_v2(localDiary, webDiary, null);
+			/**/long time = System.currentTimeMillis();
+			int counter = SyncUtils.synchronize_v2(localDiary, webDiary, null);
+			/**/time = System.currentTimeMillis() - time;
+			/**/Log.i(TAG, "SPC: synchronized in " + time + " ms, items transferred: " + counter);
+
 		}
 		catch (Exception e)
 		{
