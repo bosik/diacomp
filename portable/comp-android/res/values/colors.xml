@@ -17,5 +17,7 @@
     <color name="diary_meal_sel">#FFFF99</color>
     <color name="diary_note">#D8FFE4</color>
     <color name="diary_note_sel">#B3FFCA</color>
+    <color name="diary_border">#C0C0C0</color>
+    <color name="diary_border_sel">#000000</color>
 
 </resources>
