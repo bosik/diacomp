@@ -123,7 +123,7 @@
         </activity>
         <activity
             android:name="org.bosik.diacomp.android.frontend.activities.ActivityLogin"
-            android:label="@string/title_activity_activity_login"
+            android:label="@string/login_title"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
     </application>
