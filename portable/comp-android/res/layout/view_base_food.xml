@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/padding_tiny"
+    android:layout_marginLeft="@dimen/padding_tiny"
+    android:layout_marginRight="@dimen/padding_tiny"
+    android:layout_marginTop="@dimen/padding_tiny"
+    android:gravity="top"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/baseItemFoodName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/padding_small"
+        android:layout_marginRight="@dimen/padding_small"
+        android:text="Milk"
+        android:textSize="@dimen/diaryTextSizeBase" />
+
+    <TextView
+        android:id="@+id/baseItemFoodInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/padding_small"
+        android:layout_marginRight="@dimen/padding_small"
+        android:text="P: 4.2   F: 3.2   C: 4.7   V: 42"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+</LinearLayout>
