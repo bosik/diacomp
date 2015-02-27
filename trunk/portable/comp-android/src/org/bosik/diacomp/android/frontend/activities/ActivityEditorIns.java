@@ -12,13 +12,10 @@ import android.widget.EditText;
 public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 {
 	// components
-	private Button				buttonTime;
-	private Button				buttonDate;
-	private EditText			editValue;
-	private Button				buttonOK;
-
-	// TODO: i18n
-	private static final String	ERROR_INCORECT_INS_VALUE	= "Введите корректное значение инъекции";
+	private Button		buttonTime;
+	private Button		buttonDate;
+	private EditText	editValue;
+	private Button		buttonOK;
 
 	@Override
 	protected void setupInterface()
@@ -72,7 +69,8 @@ public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 	@Override
 	protected boolean getValuesFromGUI()
 	{
-		// value
+		final String ERROR_INCORECT_INS_VALUE = getString(R.string.editor_ins_error_invalid_dosage);
+
 		try
 		{
 			entity.getData().setValue(Double.parseDouble(editValue.getText().toString()));

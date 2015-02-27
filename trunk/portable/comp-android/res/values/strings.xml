@@ -36,6 +36,7 @@
     <string name="editor_food_field_carbs">Carbs, g</string>
     <string name="editor_food_field_value">Value, kcal</string>
     <string name="editor_food_title">Food</string>
+    <string name="editor_ins_error_invalid_dosage">Invalid insulin dosage</string>
     <string name="editor_ins_title">Insulin</string>
     <string name="editor_meal_button_more">…</string>
     <string name="editor_meal_field_fooddish">Food/dish</string>
