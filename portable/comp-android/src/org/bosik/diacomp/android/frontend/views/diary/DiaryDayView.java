@@ -209,6 +209,11 @@ public class DiaryDayView extends LinearLayout
 
 		adapter = new BaseAdapter()
 		{
+			static final int	TYPE_HEADER		= 1;
+			static final int	TYPE_DATA		= 2;
+			static final int	TYPE_PROGRESS	= 3;
+			static final int	UNKNOWN			= -17;
+
 			@Override
 			public int getViewTypeCount()
 			{
@@ -220,25 +225,28 @@ public class DiaryDayView extends LinearLayout
 			{
 				final Object item = getItem(position);
 
-				final int LOADING = -16;
-				final int UNKNOWN = -17;
-
 				if (item == null)
 				{
-					return LOADING;
+					return TYPE_PROGRESS;
 				}
 				else if (item instanceof ItemHeader)
 				{
-					return 1;
+					return TYPE_HEADER;
 				}
 				else if (item instanceof ItemData)
 				{
-					return 2;
+					return TYPE_DATA;
 				}
 				else
 				{
 					return UNKNOWN;
 				}
+			}
+
+			@Override
+			public boolean isEnabled(int position)
+			{
+				return (getItemViewType(position) == TYPE_DATA);
 			}
 
 			@Override
