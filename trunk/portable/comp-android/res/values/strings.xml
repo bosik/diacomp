@@ -46,6 +46,8 @@
     <string name="editor_meal_label_stat" formatted="false">P 10.2</string>
     <string name="editor_meal_label_correction">+8 g</string>
     <string name="editor_meal_label_no_correction">no correction</string>
+    <string name="editor_meal_label_isulin_dosage">Insulin:</string>
+    <string name="editor_meal_label_expected_bs">Expected BS:</string>
     <string name="editor_meal_parenthesis_close">)</string>
     <string name="editor_meal_parenthesis_open">(</string>
     <string name="editor_meal_title">Meal</string>
