@@ -174,6 +174,7 @@ public class DiaryDayView extends LinearLayout
 							{
 								ItemData itemData = (ItemData) item;
 								itemData.record.setDeleted(true);
+								itemData.record.updateTimeStamp();
 								removedRecords.add(itemData.record);
 							}
 						}
