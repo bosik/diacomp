@@ -45,6 +45,8 @@
     <string name="editor_meal_header_content">Состав</string>
     <string name="editor_meal_header_dosage">Расчёт</string>
     <string name="editor_meal_label_correction">+8 г</string>
+    <string name="editor_meal_label_isulin_dosage">Инсулин:</string>
+    <string name="editor_meal_label_expected_bs">Ожидаемый СК:</string>
     <string name="editor_meal_label_no_correction">без коррекции</string>
     <string name="editor_meal_label_stat">г угл.</string>
     <string name="editor_meal_title">Приём пищи</string>
