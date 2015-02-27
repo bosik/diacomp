@@ -322,8 +322,6 @@ public class DiaryDayView extends LinearLayout
 				{
 					if (convertView == null)
 					{
-						LayoutInflater inflater = (LayoutInflater) context
-								.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 						convertView = inflater.inflate(R.layout.view_diary_rec_header, null);
 					}
 
