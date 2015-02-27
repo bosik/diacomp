@@ -131,13 +131,13 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		// Check for a valid password.
 		if (TextUtils.isEmpty(mPassword))
 		{
-			mPasswordView.setError(getString(R.string.error_field_required));
+			mPasswordView.setError(getString(R.string.login_error_field_required));
 			focusView = mPasswordView;
 			cancel = true;
 		}
 		else if (mPassword.length() < 4)
 		{
-			mPasswordView.setError(getString(R.string.error_invalid_password));
+			mPasswordView.setError(getString(R.string.login_error_invalid_password));
 			focusView = mPasswordView;
 			cancel = true;
 		}
@@ -145,13 +145,13 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		// Check for a valid email address.
 		if (TextUtils.isEmpty(mEmail))
 		{
-			mEmailView.setError(getString(R.string.error_field_required));
+			mEmailView.setError(getString(R.string.login_error_field_required));
 			focusView = mEmailView;
 			cancel = true;
 		}
 		else if (!mEmail.contains("@"))
 		{
-			mEmailView.setError(getString(R.string.error_invalid_email));
+			mEmailView.setError(getString(R.string.login_error_invalid_email));
 			focusView = mEmailView;
 			cancel = true;
 		}
@@ -166,7 +166,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		{
 			// Show a progress spinner, and kick off a background task to
 			// perform the user login attempt.
-			mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
+			mLoginStatusMessageView.setText(R.string.login_login_progress_signing_in);
 			showProgress(true);
 			mAuthTask = new UserLoginTask();
 			mAuthTask.execute((Void) null);
@@ -253,7 +253,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			}
 			else
 			{
-				mPasswordView.setError(getString(R.string.error_incorrect_password));
+				mPasswordView.setError(getString(R.string.login_error_incorrect_password));
 				mPasswordView.requestFocus();
 			}
 		}
