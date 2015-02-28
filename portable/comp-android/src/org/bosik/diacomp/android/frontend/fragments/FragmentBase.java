@@ -363,17 +363,16 @@ public class FragmentBase extends Fragment
 						}
 						case TYPE_DISH:
 						{
-							// TODO: use dish-specific layout
 							if (convertView == null)
 							{
-								convertView = inflater.inflate(R.layout.view_base_food, null);
+								convertView = inflater.inflate(R.layout.view_base_dish, null);
 							}
 
 							final DishItem dish = (DishItem) item.getData();
 
-							TextView textName = (TextView) convertView.findViewById(R.id.baseItemFoodName);
+							TextView textName = (TextView) convertView.findViewById(R.id.baseItemDishName);
 							textName.setText(dish.getName());
-							TextView textInfo = (TextView) convertView.findViewById(R.id.baseItemFoodInfo);
+							TextView textInfo = (TextView) convertView.findViewById(R.id.baseItemDishInfo);
 							textInfo.setText(getInfo(dish));
 							break;
 						}
