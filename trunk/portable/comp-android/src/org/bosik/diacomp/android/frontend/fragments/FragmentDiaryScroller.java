@@ -3,6 +3,7 @@ package org.bosik.diacomp.android.frontend.fragments;
 import java.util.Arrays;
 import java.util.Date;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
@@ -24,6 +25,8 @@ import org.bosik.diacomp.core.services.diary.PostprandUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.content.Intent;
+import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -62,6 +65,39 @@ public class FragmentDiaryScroller extends Fragment
 	private Button				buttonAddIns;
 	private Button				buttonAddMeal;
 	private Button				buttonAddNote;
+
+	private ContentObserver		observer					= new ContentObserver(null)
+															{
+																@Override
+																public void onChange(boolean selfChange)
+																{
+																	this.onChange(selfChange, null);
+																}
+
+																@Override
+																public void onChange(boolean selfChange, Uri uri)
+																{
+																	if (list != null)
+																	{
+																		list.refresh();
+																	}
+																}
+															};
+
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		getActivity().getContentResolver().registerContentObserver(DiaryContentProvider.CONTENT_DIARY_URI, true,
+				observer);
+	};
+
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		getActivity().getContentResolver().unregisterContentObserver(observer);
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -283,7 +319,6 @@ public class FragmentDiaryScroller extends Fragment
 								ActivityEditor.FIELD_ENTITY);
 
 						diary.save(Arrays.<Versioned<DiaryRecord>> asList(rec));
-						list.refresh();
 						Storage.syncDiary(rec.getId());
 					}
 					break;
