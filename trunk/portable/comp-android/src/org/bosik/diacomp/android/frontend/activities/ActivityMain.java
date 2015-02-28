@@ -413,25 +413,6 @@ public class ActivityMain extends FragmentActivity
 		}.execute();
 	}
 
-	private void syncViaAdapter()
-	{
-		Bundle settingsBundle = new Bundle();
-		settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-		settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-
-		AccountManager am = AccountManager.get(this);
-		Account[] accounts = am.getAccountsByType("diacomp.org");
-		if (accounts.length > 0)
-		{
-			Log.i(TAG, "Accounts found: " + accounts.length);
-			ContentResolver.requestSync(accounts[0], DiaryContentProvider.AUTHORITY, settingsBundle);
-		}
-		else
-		{
-			Log.w(TAG, "No account found");
-		}
-	}
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -441,11 +422,6 @@ public class ActivityMain extends FragmentActivity
 			{
 				Intent settingsActivity = new Intent(getBaseContext(), ActivityPreferences.class);
 				startActivity(settingsActivity);
-				return true;
-			}
-			case R.id.item_diary_sync:
-			{
-				syncViaAdapter();
 				return true;
 			}
 			default:
