@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <string name="app_name">Компенсация</string>
     <string name="base_action_new_dish">Новое блюдо</string>
     <string name="base_action_new_food">Новый продукт</string>
     <string name="base_subinfo" formatted="false">Б %.1f\t\tЖ %.1f\t\tУ %.1f\t\tК %.1f</string>
@@ -45,8 +45,8 @@
     <string name="editor_meal_header_content">Состав</string>
     <string name="editor_meal_header_dosage">Расчёт</string>
     <string name="editor_meal_label_correction">+8 г</string>
-    <string name="editor_meal_label_isulin_dosage">Инсулин:</string>
     <string name="editor_meal_label_expected_bs">Ожидаемый СК:</string>
+    <string name="editor_meal_label_isulin_dosage">Инсулин:</string>
     <string name="editor_meal_label_no_correction">без коррекции</string>
     <string name="editor_meal_label_stat">г угл.</string>
     <string name="editor_meal_short_postprandial">Сокращённый постпрандиал</string>
@@ -54,17 +54,17 @@
     <string name="editor_note_field_text">Текст</string>
     <string name="editor_note_title">Заметка</string>
     <string name="fd_action_add">Добавить</string>
-    <string name="login_title">Авторизация</string>
-    <string name="login_prompt_email">Email</string>
-    <string name="login_prompt_password">Пароль</string>
+    <string name="login_action_forgot_password">Восстановить пароль</string>
     <string name="login_action_sign_in_register"><b>Войти</b> или зарегистрироваться</string>
     <string name="login_action_sign_in_short">Войти</string>
-    <string name="login_action_forgot_password">Восстановить пароль</string>
-    <string name="login_login_progress_signing_in">Вход&#8230;</string>
+    <string name="login_error_field_required">Введите значение</string>
+    <string name="login_error_incorrect_password">Неверный пароль</string>
     <string name="login_error_invalid_email">Неверный адрес электронной почты</string>
     <string name="login_error_invalid_password">Слишком короткий пароль</string>
-    <string name="login_error_incorrect_password">Неверный пароль</string>
-    <string name="login_error_field_required">Введите значение</string>
+    <string name="login_login_progress_signing_in">Вход&#8230;</string>
+    <string name="login_prompt_email">Email</string>
+    <string name="login_prompt_password">Пароль</string>
+    <string name="login_title">Авторизация</string>
     <string name="main_option_bases">Базы</string>
     <string name="main_option_diary">Дневник</string>
     <string name="main_option_preferences">Настройки</string>
@@ -76,7 +76,6 @@
     <string name="preferences_sync_server">Сервер</string>
     <string name="preferences_sync_username">Логин (e-mail)</string>
     <string name="preferences_title">Настройки</string>
-    <string name="app_name">Компенсация</string>
 
     <!-- Arrays -->
 
