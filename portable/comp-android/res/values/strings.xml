@@ -50,6 +50,7 @@
     <string name="editor_meal_label_expected_bs">Expected BS:</string>
     <string name="editor_meal_parenthesis_close">)</string>
     <string name="editor_meal_parenthesis_open">(</string>
+    <string name="editor_meal_short_postprandial">Short postprandial</string>
     <string name="editor_meal_title">Meal</string>
     <string name="editor_note_field_text">Text</string>
     <string name="editor_note_title">Note</string>

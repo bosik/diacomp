@@ -49,6 +49,7 @@
     <string name="editor_meal_label_expected_bs">Ожидаемый СК:</string>
     <string name="editor_meal_label_no_correction">без коррекции</string>
     <string name="editor_meal_label_stat">г угл.</string>
+    <string name="editor_meal_short_postprandial">Сокращённый постпрандиал</string>
     <string name="editor_meal_title">Приём пищи</string>
     <string name="editor_note_field_text">Текст</string>
     <string name="editor_note_title">Заметка</string>

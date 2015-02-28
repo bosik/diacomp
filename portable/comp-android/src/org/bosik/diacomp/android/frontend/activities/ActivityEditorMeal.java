@@ -8,12 +8,15 @@ import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView;
 import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView.OnChangeListener;
+import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.utils.Utils;
 import android.content.Intent;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -32,9 +35,9 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	boolean						modified;
 	private Double				bsBeforeMeal;
 	private Double				bsTarget;
-	private Double				insInjected;
+	Double						insInjected;
 
-	private static boolean		correctBs				= true;
+	static boolean				correctBs				= true;
 
 	// components
 	private Button				buttonTime;
@@ -50,9 +53,9 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private TextView			textMealShiftedCarbs;
 	private TextView			textMealShiftedDosage;
 	private TextView			textMealExpectedBs;
-	private Button				buttonCorrection;
+	Button						buttonCorrection;
 	private Button				buttonStatistics;
-	private MealEditorView		mealEditor;
+	MealEditorView				mealEditor;
 
 	// localization
 	private String				captionProts;
@@ -189,6 +192,42 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		});
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		try
+		{
+			getMenuInflater().inflate(R.menu.actions_meal, menu);
+			MenuItem itemShort = menu.findItem(R.id.item_meal_short);
+			itemShort.setChecked(entity.getData().getShortMeal());
+		}
+		catch (Exception e)
+		{
+			ErrorHandler.handle(e, this);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+			case R.id.item_meal_short:
+			{
+				boolean newValue = !entity.getData().getShortMeal();
+				entity.getData().setShortMeal(newValue);
+				modified = true;
+				item.setChecked(newValue);
+				return true;
+			}
+			default:
+			{
+				return false;
+			}
+		}
+	}
+
 	void showMealContent()
 	{
 		List<FoodMassed> items = new ArrayList<FoodMassed>();
@@ -201,7 +240,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		mealEditor.setData(items);
 	}
 
-	private void showMealInfo()
+	void showMealInfo()
 	{
 		// insulin dosage info
 

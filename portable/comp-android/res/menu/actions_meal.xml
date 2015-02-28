@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/item_meal_short"
+        android:checkable="true"
+        android:title="@string/editor_meal_short_postprandial"/>
+
+</menu>
