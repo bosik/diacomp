@@ -95,17 +95,20 @@ begin
   Response := FClient.DoGetSmart(FClient.GetApiURL() + 'diary/guid/' + ID);
   List := nil; // for compiler
   case Response.Code of
-    // TODO: constants
-    0: begin
-         List := ParseRecordList(Response.Response);
-         Result := List[0];
-       end;
-    404: Result := nil;
+    STATUS_OK:
+      begin
+        List := ParseRecordList(Response.Response);
+        Result := List[0];
+      end;
+    STATUS_NOT_FOUND:
+      begin
+        Result := nil;
+      end;
     else
-    begin
-      Result := nil;
-      FClient.CheckResponse(Response);
-    end;
+      begin
+        Result := nil;
+        FClient.CheckResponse(Response);
+      end;
   end;
   Response.Free;
 end;
