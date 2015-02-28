@@ -48,6 +48,7 @@
     <string name="editor_meal_field_mass">Mass, g</string>
     <string name="editor_meal_header_content">Content</string>
     <string name="editor_meal_header_dosage">Calculator</string>
+    <string name="editor_meal_info">Info</string>
     <string name="editor_meal_label_correction">+8 g</string>
     <string name="editor_meal_label_expected_bs">Expected BS:</string>
     <string name="editor_meal_label_isulin_dosage">Insulin:</string>

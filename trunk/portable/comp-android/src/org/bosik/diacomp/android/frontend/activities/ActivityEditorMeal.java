@@ -54,7 +54,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private TextView			textMealShiftedDosage;
 	private TextView			textMealExpectedBs;
 	Button						buttonCorrection;
-	private Button				buttonStatistics;
 	MealEditorView				mealEditor;
 
 	// localization
@@ -115,7 +114,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		textMealShiftedDosage = (TextView) findViewById(R.id.textMealShiftedDosage);
 		textMealExpectedBs = (TextView) findViewById(R.id.textMealExpectedBs);
 		buttonCorrection = (Button) findViewById(R.id.buttonMealCorrection);
-		buttonStatistics = (Button) findViewById(R.id.buttonMealInfo);
 
 		mealEditor = (MealEditorView) findViewById(R.id.mealEditorMeal);
 
@@ -178,18 +176,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 				}
 			}
 		});
-
-		buttonStatistics.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				String info = String.format("Prots: %.1f\nFats: %.1f\nCarbs: %.1f\nValue: %.1f\nMass: %.0f", entity
-						.getData().getProts(), entity.getData().getFats(), entity.getData().getCarbs(), entity
-						.getData().getValue(), entity.getData().getMass());
-				UIUtils.showTip(ActivityEditorMeal.this, info);
-			}
-		});
 	}
 
 	@Override
@@ -219,6 +205,14 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 				entity.getData().setShortMeal(newValue);
 				modified = true;
 				item.setChecked(newValue);
+				return true;
+			}
+			case R.id.item_meal_info:
+			{
+				String info = String.format("Prots: %.1f\nFats: %.1f\nCarbs: %.1f\nValue: %.1f\nMass: %.0f", entity
+						.getData().getProts(), entity.getData().getFats(), entity.getData().getCarbs(), entity
+						.getData().getValue(), entity.getData().getMass());
+				UIUtils.showTip(ActivityEditorMeal.this, info);
 				return true;
 			}
 			default:

@@ -86,7 +86,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="left"
-                    android:text="@string/editor_meal_label_isulin_dosage"/>
+                    android:text="@string/editor_meal_label_isulin_dosage" />
 
                 <TextView
                     android:id="@+id/textMealTitleExpectedBS"
@@ -170,14 +170,6 @@
                 android:id="@+id/buttonMealCorrection"
                 android:layout_width="46dp"
                 android:layout_height="46dp"
-                android:text="@string/editor_meal_button_more"
-                android:textSize="@dimen/font_datetime" />
-
-            <Button
-                android:id="@+id/buttonMealInfo"
-                android:layout_width="46dp"
-                android:layout_height="46dp"
-                android:drawableLeft="@drawable/button_meal_info"
                 android:text="@string/editor_meal_button_more"
                 android:textSize="@dimen/font_datetime" />
         </LinearLayout>
