@@ -14,10 +14,10 @@
         android:id="@+id/itemBaseIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@+id/editor_food_title"
+        android:contentDescription="@+id/editor_dish_title"
         android:paddingLeft="@dimen/padding_large"
         android:paddingRight="@dimen/padding_tiny"
-        android:src="@drawable/button_foodbase" />
+        android:src="@drawable/button_dishbase" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,16 +25,16 @@
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/baseItemFoodName"
+            android:id="@+id/baseItemDishName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/padding_small"
             android:layout_marginRight="@dimen/padding_small"
-            android:text="Food"
+            android:text="Dish"
             android:textSize="@dimen/diaryTextSizeBase" />
 
         <TextView
-            android:id="@+id/baseItemFoodInfo"
+            android:id="@+id/baseItemDishInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/padding_small"

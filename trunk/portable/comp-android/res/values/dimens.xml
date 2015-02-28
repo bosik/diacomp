@@ -10,7 +10,8 @@
     <dimen name="font_datetime">18dp</dimen>
     <dimen name="diaryBord">12sp</dimen>
     <dimen name="diaryTextBord">10sp</dimen>
-    <dimen name="diaryTextSizeBase">24sp</dimen>
+    <dimen name="diaryTextSizeBase">22sp</dimen>
+    <dimen name="diaryTextSizeSmall">14sp</dimen>
     <dimen name="diaryTextSizeNoPage">32sp</dimen>
 
 </resources>
