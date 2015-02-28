@@ -615,7 +615,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.954549293980000000
+            Date = 40251.525848171300000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -2087,6 +2087,7 @@ object Form1: TForm1
       Category = 'Popup: '#1087#1088#1080#1105#1084' '#1087#1080#1097#1080
       Caption = #1055#1086#1076#1086#1073#1088#1072#1090#1100' '#1076#1086' '#1074#1074#1077#1076#1105#1085#1085#1086#1081' '#1076#1086#1079#1099
       ImageIndex = 16
+      Visible = False
       OnExecute = ActionCalcMassExecute
     end
     object ActionRemoveFood: TAction
