@@ -182,7 +182,6 @@ public class DiaryDayView extends LinearLayout
 				}
 
 				diaryService.save(removedRecords);
-				refresh();
 
 				// TODO: i18n
 				String text = removedRecords.size() + " items removed";
