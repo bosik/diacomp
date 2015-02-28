@@ -31,7 +31,8 @@ type
     FResponse: string;
     function ConvertResponseToJson(): TlkJSONbase;
   public
-    constructor Create(const S: string);
+    constructor Create(const S: string); overload; deprecated;
+    constructor Create(const Status: integer; const Response: string); overload;
     function Encode(): string;
     property Code: integer read FCode write FCode;
     property Response: string read FResponse write FResponse;
@@ -82,20 +83,19 @@ type
 var
   WebFmt: TFormatSettings;
 
-implementation
-
 const
   CURRENT_API_VERSION               = '20';
 
-  STATUS_OK                         = 0;
+  STATUS_OK                         = 200;
   STATUS_NOT_FOUND                  = 404;
-  STATUS_DEPRECATED_STILL_SUPPORTED = 4050;
-  STATUS_DEPERECATED                = 4051;
-  STATUS_BAD_CREDENTIALS            = 4010;
-  STATUS_NOT_AUTHORIZED             = 4011;
+  //STATUS_DEPRECATED_STILL_SUPPORTED = 4050;
+  //STATUS_DEPERECATED                = 4051;
+  STATUS_BAD_CREDENTIALS            = 401;
+  STATUS_NOT_AUTHORIZED             = 401;
   STATUS_SERVER_ERROR               = 500;
-
   TIME_RECONNECT                    = 1200;
+
+implementation
 
   function PrintParams(const Par: TStringArray): string;
   var
@@ -177,6 +177,14 @@ begin
   end;
 end;
 
+{======================================================================================================================}
+constructor TStdResponse.Create(const Status: integer; const Response: string);
+{======================================================================================================================}
+begin
+  FCode := Status;
+  FResponse := Response;
+end;
+
 { TDiacompClient }
 
 {======================================================================================================================}
@@ -222,9 +230,9 @@ begin
   case Response.Code of
     STATUS_OK:                         ; // life is good
     STATUS_NOT_FOUND:                  ; // something is not found
-    STATUS_DEPRECATED_STILL_SUPPORTED: ; // API is about to be deprecated; ignore
-    STATUS_DEPERECATED:     raise EAPIException.Create('Deprecated API version');
-    STATUS_BAD_CREDENTIALS: raise EBadCredentialsException.Create('Bad credentials');
+    //STATUS_DEPRECATED_STILL_SUPPORTED: ; // API is about to be deprecated; ignore
+    //STATUS_DEPERECATED:     raise EAPIException.Create('Deprecated API version');
+    //STATUS_BAD_CREDENTIALS: raise EBadCredentialsException.Create('Bad credentials');
     STATUS_NOT_AUTHORIZED:  raise ENotAuthorizedException.Create('Not authorized');
     STATUS_SERVER_ERROR:    raise EInternalServerException.Create('Internal server error');
     else                    raise EFormatException.CreateFmt('Unknown response; code: %d, message: %s', [Response.Code, Response.Response])
@@ -238,18 +246,22 @@ var
   Tick: cardinal;
   S: string;
 begin
+  {#} Tick := GetTickCount();
+
   URL := ChkSpace(URL);
   FHTTP.ProtocolVersion := pv1_1;
-  {#}Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '")');
-  // {#}PrintProtocolVersion('TDiacompClient.DoGet.1');
-  {#} Tick := GetTickCount();
-  S := FHTTP.Get(URL);
-  {#}Log(VERBOUS, Format('TDiacompClient.DoGet(): responsed in %d msec: "%s"', [GetTickCount - Tick, S]));
 
-  Result := TStdResponse.Create(S);
+  {#}Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '")');
+  try
+    S := FHTTP.Get(URL);
+  except
+    // Error handling is done via response code
+  end;
+
+  Result := TStdResponse.Create(FHTTP.ResponseCode, S);
+  {#}Log(VERBOUS, Format('TDiacompClient.DoGet(): responsed in %d msec: "[%d] %s"', [GetTickCount - Tick, Result.Code, Result.Response]));
   if (Autocheck) then
     CheckResponse(Result);
-  // {#}PrintProtocolVersion('TDiacompClient.DoGet.2');
 end;
 
 {======================================================================================================================}
@@ -261,21 +273,26 @@ var
   Tick: cardinal;
   S: string;
 begin
+  {#} Tick := GetTickCount();
+
   URL := ChkSpace(URL);
   FHTTP.ProtocolVersion := pv1_1;
   {#}Log(VERBOUS, 'TDiacompClient.DoPost("' + URL + '"), ' + PrintParams(Par));
 
   Data := TStringList.Create;
   try
-    // формируем тело запроса
     for i := Low(Par) to High(Par) do
       Data.Add(ReplaceAll(Par[i], '%', '%25'));
 
-    {#} Tick := GetTickCount();
-    S := FHTTP.Post(URL, Data);
-    {#}Log(VERBOUS, Format('TDiacompClient.DoPost(): responsed in %d msec: "%s"', [GetTickCount - Tick, S]));
+    try
+      S := FHTTP.Post(URL, Data);
+    except
+      // Error handling is done via response code
+    end;
 
-    Result := TStdResponse.Create(S);
+    Result := TStdResponse.Create(FHTTP.ResponseCode, S);
+
+    {#}Log(VERBOUS, Format('TDiacompClient.DoPost(): responsed in %d msec: "[%d] %s"', [GetTickCount - Tick, Result.Code, Result.Response]));
     if (Autocheck) then
       CheckResponse(Result);
   finally
@@ -294,6 +311,8 @@ var
   Tick: cardinal;
   S: string;
 begin
+  {#} Tick := GetTickCount();
+
   URL := ChkSpace(URL);
   FHTTP.ProtocolVersion := pv1_1;
   {#}Log(VERBOUS, 'TDiacompClient.DoPut("' + URL + '"), ' + PrintParams(Par));
@@ -304,13 +323,15 @@ begin
     Data.Add(ReplaceAll(Par[i], '%', '%25'));
 
   Stream := TStringStream.Create(Trim(Data.Text));
-
   try
-    {#} Tick := GetTickCount();
-    S := FHTTP.Put(URL, Stream);
-    {#}Log(VERBOUS, Format('TDiacompClient.DoPut(): responsed in %d msec: "%s"', [GetTickCount - Tick, S]));
+    try
+      S := FHTTP.Put(URL, Stream);
+    except
+      // Error handling is done via response code
+    end;
 
-    Result := TStdResponse.Create(S);
+    Result := TStdResponse.Create(FHTTP.ResponseCode, S);
+    {#}Log(VERBOUS, Format('TDiacompClient.DoPut(): responsed in %d msec: "[%d] %s"', [GetTickCount - Tick, Result.Code, Result.Response]));
     if (Autocheck) then
       CheckResponse(Result);
   finally
