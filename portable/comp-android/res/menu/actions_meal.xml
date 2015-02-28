@@ -5,5 +5,8 @@
         android:id="@+id/item_meal_short"
         android:checkable="true"
         android:title="@string/editor_meal_short_postprandial"/>
+    <item
+        android:id="@+id/item_meal_info"
+        android:title="@string/editor_meal_info"/>
 
 </menu>
