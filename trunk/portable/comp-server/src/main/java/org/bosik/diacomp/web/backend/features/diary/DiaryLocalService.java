@@ -50,7 +50,7 @@ public class DiaryLocalService implements DiaryService
 	@Autowired
 	private UserInfoService					userInfoService;
 
-	protected int getCurrentUserId()
+	private int getCurrentUserId()
 	{
 		return userInfoService.getCurrentUserId();
 	}
