@@ -16,10 +16,8 @@ import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
-import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
-import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.sync.HashUtils;
@@ -45,12 +43,6 @@ public class FoodBaseLocalService implements FoodBaseService
 	private static final String					COLUMN_FOODBASE_DELETED		= "_Deleted";
 	private static final String					COLUMN_FOODBASE_CONTENT		= "_Content";
 	private static final String					COLUMN_FOODBASE_NAMECACHE	= "_NameCache";
-
-	// Foodbase hash table
-	private static final String					TABLE_FOODBASE_HASH			= "foodbase_hash";
-	private static final String					COLUMN_FOODBASE_HASH_USER	= "_UserID";
-	private static final String					COLUMN_FOODBASE_HASH_GUID	= "_GUID";
-	private static final String					COLUMN_FOODBASE_HASH_HASH	= "_Hash";
 
 	private static final Parser<FoodItem>		parser						= new ParserFoodItem();
 	private static final Serializer<FoodItem>	serializer					= new SerializerAdapter<FoodItem>(parser);
@@ -404,95 +396,48 @@ public class FoodBaseLocalService implements FoodBaseService
 	@Override
 	public String getHash(String prefix)
 	{
-		try
-		{
-			int userId = getCurrentUserId();
-
-			final String[] select = { COLUMN_FOODBASE_HASH_HASH };
-			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_FOODBASE_HASH_USER,
-					COLUMN_FOODBASE_HASH_GUID);
-			final String[] whereArgs = { String.valueOf(userId), prefix };
-			final String order = null;
-
-			return MySQLAccess.select(TABLE_FOODBASE_HASH, select, where, whereArgs, order, new DataCallback<String>()
-			{
-				@Override
-				public String onData(ResultSet set) throws SQLException
-				{
-					if (set.next())
-					{
-						return set.getString(COLUMN_FOODBASE_HASH_HASH);
-					}
-					else
-					{
-						return null;
-					}
-				}
-			});
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		MerkleTree tree = getHashTree();
+		return tree.getHash(prefix);
 	}
 
 	@Override
 	public Map<String, String> getHashChildren(String prefix)
 	{
+		MerkleTree tree = getHashTree();
+		return tree.getHashChildren(prefix);
+	}
+
+	@Override
+	public MerkleTree getHashTree()
+	{
+		/**/long timeStart = System.currentTimeMillis();
+
 		int userId = getCurrentUserId();
 
-		try
-		{
-			String[] select;
-			String where;
-			String[] whereArgs;
-			String order = null;
+		SortedMap<String, String> hashes = getDataHashes(userId);
+		/**/long timeFetch = System.currentTimeMillis();
 
-			if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
-			{
-				select = new String[] { COLUMN_FOODBASE_HASH_GUID, COLUMN_FOODBASE_HASH_HASH };
-				where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_FOODBASE_HASH_USER, COLUMN_FOODBASE_HASH_GUID);
-				whereArgs = new String[] { String.valueOf(userId), prefix + "_" };
-			}
-			else
-			{
-				select = new String[] { COLUMN_FOODBASE_GUID, COLUMN_FOODBASE_HASH };
-				where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_GUID);
-				whereArgs = new String[] { String.valueOf(userId), prefix + "%" };
-			}
+		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
+		/**/long timeProcess = System.currentTimeMillis();
 
-			return MySQLAccess.select(TABLE_FOODBASE_HASH, select, where, whereArgs, order,
-					new DataCallback<Map<String, String>>()
-					{
-						@Override
-						public Map<String, String> onData(ResultSet set) throws SQLException
-						{
-							Map<String, String> result = new HashMap<String, String>();
+		MemoryMerkleTree result = new MemoryMerkleTree();
+		result.putAll(tree); // headers (0..4 chars id)
+		result.putAll(hashes); // leafs (32 chars id)
+		/**/long timePut = System.currentTimeMillis();
+		/**/System.out.println(String.format("Tree built in %s ms (fetch: %d ms, process: %d ms, put: %d ms)",
+				System.currentTimeMillis() - timeStart, timeFetch - timeStart, timeProcess - timeFetch, timePut
+						- timeProcess));
 
-							while (set.next())
-							{
-								String id = set.getString(COLUMN_FOODBASE_GUID);
-								String hash = set.getString(COLUMN_FOODBASE_HASH);
-								result.put(id, hash);
-							}
-
-							return result;
-						}
-					});
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		return result;
 	}
 
 	@Override
 	public void save(List<Versioned<FoodItem>> items)
 	{
+		int userId = getCurrentUserId();
+
 		try
 		{
-			int userId = getCurrentUserId();
-
 			for (Versioned<FoodItem> item : items)
 			{
 				final String content = serializer.write(item.getData());
@@ -536,88 +481,20 @@ public class FoodBaseLocalService implements FoodBaseService
 
 					MySQLAccess.insert(TABLE_FOODBASE, set);
 				}
+
+				// TODO: invalidate cached tree here
 			}
 		}
 		catch (SQLException e)
 		{
 			throw new RuntimeException(e);
 		}
-	}
-
-	@Override
-	public MerkleTree getHashTree()
-	{
-		int userId = getCurrentUserId();
-
-		SortedMap<String, String> hashes = getDataHashes(userId);
-		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
-
-		MemoryMerkleTree result = new MemoryMerkleTree();
-		result.putAll(tree); // headers (0..4 chars id)
-		result.putAll(hashes); // leafs (32 chars id)
-		return result;
 	}
 
 	@Override
 	public void setHash(String prefix, String hash)
 	{
-		try
-		{
-			int userId = getCurrentUserId();
-
-			if (prefix.length() <= ObjectService.ID_PREFIX_SIZE)
-			{
-				if (getHash(prefix) != null)
-				{
-					Map<String, String> set = new HashMap<String, String>();
-					set.put(COLUMN_FOODBASE_HASH_HASH, hash);
-
-					Map<String, String> where = new HashMap<String, String>();
-					where.put(COLUMN_FOODBASE_HASH_USER, String.valueOf(userId));
-					where.put(COLUMN_FOODBASE_HASH_GUID, prefix);
-
-					MySQLAccess.update(TABLE_FOODBASE_HASH, set, where);
-				}
-				else
-				{
-					Map<String, String> set = new HashMap<String, String>();
-					set.put(COLUMN_FOODBASE_HASH_USER, String.valueOf(userId));
-					set.put(COLUMN_FOODBASE_HASH_GUID, prefix);
-					set.put(COLUMN_FOODBASE_HASH_HASH, hash);
-
-					MySQLAccess.insert(TABLE_FOODBASE_HASH, set);
-				}
-			}
-			else if (prefix.length() == ObjectService.ID_FULL_SIZE)
-			{
-				if (recordExists(userId, prefix))
-				{
-					SortedMap<String, String> set = new TreeMap<String, String>();
-					set.put(COLUMN_FOODBASE_HASH, hash);
-
-					SortedMap<String, String> where = new TreeMap<String, String>();
-					where.put(COLUMN_FOODBASE_USER, String.valueOf(userId));
-					where.put(COLUMN_FOODBASE_GUID, prefix);
-
-					MySQLAccess.update(TABLE_FOODBASE, set, where);
-				}
-				else
-				{
-					// fail
-					throw new NotFoundException(prefix);
-				}
-			}
-			else
-			{
-				throw new IllegalArgumentException(String.format(
-						"Invalid prefix ('%s'), expected: 0..%d or %d chars, found: %d", prefix,
-						ObjectService.ID_PREFIX_SIZE, ObjectService.ID_FULL_SIZE, prefix.length()));
-			}
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		// to be removed
 	}
 
 	@SuppressWarnings("static-method")
