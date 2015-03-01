@@ -69,7 +69,7 @@ public class DiaryRest
 		}
 		catch (NotAuthorizedException e)
 		{
-			return Response.status(Status.NOT_FOUND).entity(ResponseBuilder.buildNotAuthorized()).build();
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
 		catch (Exception e)
 		{
