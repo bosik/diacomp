@@ -50,7 +50,7 @@ public class FoodBaseLocalService implements FoodBaseService
 	@Autowired
 	private UserInfoService						userInfoService;
 
-	protected int getCurrentUserId()
+	private int getCurrentUserId()
 	{
 		return userInfoService.getCurrentUserId();
 	}

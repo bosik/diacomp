@@ -50,7 +50,7 @@ public class DishBaseLocalService implements DishBaseService
 	@Autowired
 	private UserInfoService						userInfoService;
 
-	protected int getCurrentUserId()
+	private int getCurrentUserId()
 	{
 		return userInfoService.getCurrentUserId();
 	}
