@@ -3,7 +3,6 @@ package org.bosik.diacomp.web.backend.features.base.dish;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -12,7 +11,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -28,22 +26,15 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.common.UserSessionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 @Path("dish/")
 public class DishBaseRest
 {
-	@Context
-	HttpServletRequest								req;
-
-	private final DishBaseService					dishbaseService	= new DishBaseLocalService()
-																	{
-																		@Override
-																		protected int getCurrentUserId()
-																		{
-																			return UserSessionUtils.getId(req);
-																		};
-																	};
+	@Autowired
+	private DishBaseService							dishbaseService;
 
 	private final Serializer<Versioned<DishItem>>	serializer		= new SerializerDishItem();
 	private final Serializer<Map<String, String>>	serializerMap	= new SerializerMap();
