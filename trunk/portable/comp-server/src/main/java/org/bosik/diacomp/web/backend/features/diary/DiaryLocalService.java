@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +16,6 @@ import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
-import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
@@ -45,12 +43,6 @@ public class DiaryLocalService implements DiaryService
 	private static final String				COLUMN_DIARY_DELETED	= "_Deleted";
 	private static final String				COLUMN_DIARY_CONTENT	= "_Content";
 	private static final String				COLUMN_DIARY_TIMECACHE	= "_TimeCache";
-
-	// Diary hash table
-	private static final String				TABLE_DIARY_HASH		= "diary_hash";
-	private static final String				COLUMN_DIARY_HASH_USER	= "_UserID";
-	private static final String				COLUMN_DIARY_HASH_GUID	= "_GUID";
-	private static final String				COLUMN_DIARY_HASH_HASH	= "_Hash";
 
 	private final Parser<DiaryRecord>		parser					= new ParserDiaryRecord();
 	private final Serializer<DiaryRecord>	serializer				= new SerializerAdapter<DiaryRecord>(parser);
@@ -301,98 +293,38 @@ public class DiaryLocalService implements DiaryService
 	@Override
 	public String getHash(String prefix)
 	{
-		int userId = getCurrentUserId();
-
-		try
-		{
-			final String[] select = { COLUMN_DIARY_HASH_HASH };
-			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DIARY_HASH_USER, COLUMN_DIARY_HASH_GUID);
-			final String[] whereArgs = { String.valueOf(userId), prefix };
-			final String order = null;
-
-			return MySQLAccess.select(TABLE_DIARY_HASH, select, where, whereArgs, order, new DataCallback<String>()
-			{
-				@Override
-				public String onData(ResultSet set) throws SQLException
-				{
-					if (set.next())
-					{
-						return set.getString(COLUMN_DIARY_HASH_HASH);
-					}
-					else
-					{
-						return null;
-					}
-				}
-			});
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		MerkleTree tree = getHashTree();
+		return tree.getHash(prefix);
 	}
 
 	@Override
 	public Map<String, String> getHashChildren(String prefix)
 	{
-		int userId = getCurrentUserId();
-
-		try
-		{
-			String[] select;
-			String where;
-			String[] whereArgs;
-			String order = null;
-
-			if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
-			{
-				select = new String[] { COLUMN_DIARY_HASH_GUID, COLUMN_DIARY_HASH_HASH };
-				where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_DIARY_HASH_USER, COLUMN_DIARY_HASH_GUID);
-				whereArgs = new String[] { String.valueOf(userId), prefix + "_" };
-			}
-			else
-			{
-				select = new String[] { COLUMN_DIARY_GUID, COLUMN_DIARY_HASH };
-				where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_DIARY_USER, COLUMN_DIARY_GUID);
-				whereArgs = new String[] { String.valueOf(userId), prefix + "%" };
-			}
-
-			return MySQLAccess.select(TABLE_DIARY_HASH, select, where, whereArgs, order,
-					new DataCallback<Map<String, String>>()
-					{
-						@Override
-						public Map<String, String> onData(ResultSet set) throws SQLException
-						{
-							Map<String, String> result = new HashMap<String, String>();
-
-							while (set.next())
-							{
-								String id = set.getString(COLUMN_DIARY_GUID);
-								String hash = set.getString(COLUMN_DIARY_HASH);
-								result.put(id, hash);
-							}
-
-							return result;
-						}
-					});
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		MerkleTree tree = getHashTree();
+		return tree.getHashChildren(prefix);
 	}
 
 	@Override
 	public MerkleTree getHashTree()
 	{
+		/**/long timeStart = System.currentTimeMillis();
+
 		int userId = getCurrentUserId();
 
 		SortedMap<String, String> hashes = getDataHashes(userId);
+		/**/long timeFetch = System.currentTimeMillis();
+
 		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
+		/**/long timeProcess = System.currentTimeMillis();
 
 		MemoryMerkleTree result = new MemoryMerkleTree();
 		result.putAll(tree); // headers (0..4 chars id)
 		result.putAll(hashes); // leafs (32 chars id)
+		/**/long timePut = System.currentTimeMillis();
+		/**/System.out.println(String.format("Tree built in %s ms (fetch: %d ms, process: %d ms, put: %d ms)",
+				System.currentTimeMillis() - timeStart, timeFetch - timeStart, timeProcess - timeFetch, timePut
+						- timeProcess));
+
 		return result;
 	}
 
@@ -403,7 +335,6 @@ public class DiaryLocalService implements DiaryService
 
 		try
 		{
-
 			for (Versioned<DiaryRecord> item : records)
 			{
 				final String id = item.getId().toLowerCase();
@@ -413,9 +344,6 @@ public class DiaryLocalService implements DiaryService
 				final String hash = item.getHash();
 				final String version = String.valueOf(item.getVersion());
 				final String deleted = Utils.formatBooleanInt(item.isDeleted());
-
-				// before persisting item
-				updateHashTree(userId, id, hash);
 
 				if (recordExists(userId, item.getId()))
 				{
@@ -452,6 +380,7 @@ public class DiaryLocalService implements DiaryService
 					MySQLAccess.insert(TABLE_DIARY, set);
 				}
 
+				// TODO: invalidate cached tree here
 			}
 		}
 		catch (SQLException e)
@@ -463,95 +392,7 @@ public class DiaryLocalService implements DiaryService
 	@Override
 	public void setHash(String prefix, String hash)
 	{
-		int userId = getCurrentUserId();
-
-		try
-		{
-			if (prefix.length() <= ObjectService.ID_PREFIX_SIZE)
-			{
-				if (getHash(prefix) != null)
-				{
-					Map<String, String> set = new HashMap<String, String>();
-					set.put(COLUMN_DIARY_HASH_HASH, hash);
-
-					Map<String, String> where = new HashMap<String, String>();
-					where.put(COLUMN_DIARY_HASH_USER, String.valueOf(userId));
-					where.put(COLUMN_DIARY_HASH_GUID, prefix);
-
-					MySQLAccess.update(TABLE_DIARY_HASH, set, where);
-				}
-				else
-				{
-					Map<String, String> set = new HashMap<String, String>();
-					set.put(COLUMN_DIARY_HASH_USER, String.valueOf(userId));
-					set.put(COLUMN_DIARY_HASH_GUID, prefix);
-					set.put(COLUMN_DIARY_HASH_HASH, hash);
-
-					MySQLAccess.insert(TABLE_DIARY_HASH, set);
-				}
-			}
-			else if (prefix.length() == ObjectService.ID_FULL_SIZE)
-			{
-				if (recordExists(userId, prefix))
-				{
-					SortedMap<String, String> set = new TreeMap<String, String>();
-					set.put(COLUMN_DIARY_HASH, hash);
-
-					SortedMap<String, String> where = new TreeMap<String, String>();
-					where.put(COLUMN_DIARY_USER, String.valueOf(userId));
-					where.put(COLUMN_DIARY_GUID, prefix);
-
-					MySQLAccess.update(TABLE_DIARY, set, where);
-				}
-				else
-				{
-					// fail
-					throw new NotFoundException(prefix);
-				}
-			}
-			else
-			{
-				throw new IllegalArgumentException(String.format(
-						"Invalid prefix ('%s'), expected: 0..%d or %d chars, found: %d", prefix,
-						ObjectService.ID_PREFIX_SIZE, ObjectService.ID_FULL_SIZE, prefix.length()));
-			}
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
-	@SuppressWarnings("static-method")
-	private String getDataHash(int userId, String id)
-	{
-		try
-		{
-			final String[] select = { COLUMN_DIARY_HASH };
-			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DIARY_USER, COLUMN_DIARY_GUID);
-			final String[] whereArgs = { String.valueOf(userId), id };
-			final String order = null;
-
-			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order, new DataCallback<String>()
-			{
-				@Override
-				public String onData(ResultSet set) throws SQLException
-				{
-					if (set.next())
-					{
-						return set.getString(COLUMN_DIARY_HASH);
-					}
-					else
-					{
-						return null;
-					}
-				}
-			});
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		// to be removed
 	}
 
 	/**
@@ -592,20 +433,6 @@ public class DiaryLocalService implements DiaryService
 		catch (SQLException e)
 		{
 			throw new RuntimeException(e);
-		}
-	}
-
-	private void updateHashTree(int userId, String id, String newItemHash)
-	{
-		String oldItemHash = getDataHash(userId, id);
-		String hashDiff = HashUtils.subHash(newItemHash, oldItemHash);
-
-		for (int i = 0; i <= ObjectService.ID_PREFIX_SIZE; i++)
-		{
-			String prefix = id.substring(0, i);
-			String oldHash = getHash(prefix);
-			String newHash = HashUtils.sumHash(oldHash, hashDiff);
-			setHash(prefix, newHash);
 		}
 	}
 
