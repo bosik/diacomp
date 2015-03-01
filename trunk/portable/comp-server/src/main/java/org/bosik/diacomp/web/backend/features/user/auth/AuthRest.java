@@ -84,29 +84,15 @@ public class AuthRest
 		catch (NotAuthorizedException e)
 		{
 			// Do not reset session flag here: anyone can reset your session otherwise
-
-			// THINK: should we use status 200 OK here? Isn't 401 better?
 			String entity = ResponseBuilder.build(ResponseBuilder.CODE_BADCREDENTIALS, "Bad username/password");
 			return Response.status(Status.UNAUTHORIZED).entity(entity).build();
 		}
 		catch (Exception e)
 		{
-			// FIXME: FOR DEBUG PURPOSE ONLY
 			e.printStackTrace();
-
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
 		}
 	}
-
-	// @GET
-	// @Path("login")
-	// @Produces(MediaType.APPLICATION_JSON)
-	// public Response loginDebug(@QueryParam("login") String login, @QueryParam("pass") String
-	// pass,
-	// @QueryParam("api") int apiVersion)
-	// {
-	// return login(login, pass, apiVersion);
-	// }
 
 	@GET
 	@Path("logout")
@@ -121,9 +107,7 @@ public class AuthRest
 		}
 		catch (Exception e)
 		{
-			// FIXME: FOR DEBUG PURPOSE ONLY
 			e.printStackTrace();
-
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
 		}
 	}
