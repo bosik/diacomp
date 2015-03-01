@@ -2,9 +2,7 @@ package org.bosik.diacomp.core.services.sync;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -127,71 +125,6 @@ public class HashUtils
 		}
 
 		return result;
-	}
-
-	/**
-	 * Updates tree from leaf to root. Fast, not stable.
-	 * 
-	 * @param service
-	 * @param prefix
-	 */
-	@Deprecated
-	public static <T> void updateHashBranch(ObjectService<T> service, String prefix)
-	{
-		Map<String, String> hashes = service.getHashChildren(prefix);
-		String hash = calculateHash(hashes.values());
-		if (hash != null)
-		{
-			service.setHash(prefix, hash);
-		}
-		if (prefix.length() > 0)
-		{
-			updateHashBranch(service, prefix.substring(0, prefix.length() - 1));
-		}
-	}
-
-	/**
-	 * Updates tree from root to leafs. Slow, very stable.
-	 * 
-	 * @param service
-	 * @param prefix
-	 * @return
-	 */
-	@Deprecated
-	public static <T> String updateHashTree(ObjectService<T> service, String prefix)
-	{
-		if (prefix.length() < 3)
-		{
-			System.out.println("Updating tree branch # " + prefix);
-		}
-
-		Map<String, String> childHashes;
-
-		if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
-		{
-			childHashes = new HashMap<String, String>();
-			for (int i = 0; i < PATTERN_SIZE; i++)
-			{
-				String key = prefix + BYTE_TO_CHAR[i];
-				String value = updateHashTree(service, key);
-
-				if (value != null)
-				{
-					childHashes.put(key, value);
-				}
-			}
-		}
-		else
-		{
-			childHashes = service.getHashChildren(prefix);
-		}
-
-		String hash = calculateHash(childHashes.values());
-		if (hash != null)
-		{
-			service.setHash(prefix, hash);
-		}
-		return hash;
 	}
 
 	public static SortedMap<String, String> buildParentHashes(SortedMap<String, String> map, int prefixSize)
