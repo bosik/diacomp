@@ -5,6 +5,7 @@ import java.util.List;
 import org.bosik.diacomp.core.services.exceptions.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -33,7 +34,7 @@ public class AuthProvider implements AuthenticationProvider
 		}
 		catch (AuthException e)
 		{
-			return null;
+			throw new BadCredentialsException("Unauthorized", e);
 		}
 	}
 
