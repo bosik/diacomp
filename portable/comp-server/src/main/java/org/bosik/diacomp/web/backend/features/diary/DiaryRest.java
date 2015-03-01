@@ -3,7 +3,6 @@ package org.bosik.diacomp.web.backend.features.diary;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -13,7 +12,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -32,22 +30,15 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.common.UserSessionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 @Path("diary/")
 public class DiaryRest
 {
-	@Context
-	HttpServletRequest									req;
-
-	private final DiaryService							diaryService	= new DiaryLocalService()
-																		{
-																			@Override
-																			protected int getCurrentUserId()
-																			{
-																				return UserSessionUtils.getId(req);
-																			};
-																		};
+	@Autowired
+	private DiaryService								diaryService;
 
 	private final Parser<DiaryRecord>					parser			= new ParserDiaryRecord();
 	private final Parser<Versioned<DiaryRecord>>		parserVersioned	= new ParserVersioned<DiaryRecord>(parser);
