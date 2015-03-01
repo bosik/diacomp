@@ -1,34 +1,32 @@
 package org.bosik.diacomp.web.backend.features.user.auth;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
-import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.web.backend.common.UserSessionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
+@Service
 @Path("auth/")
-@Component
 public class AuthRest
 {
-	public static final int		API_CURRENT	= 20;
-	public static final int		API_LEGACY	= 19;
-
-	@Context
-	private HttpServletRequest	req;
+	public static final int	API_CURRENT	= 20;
+	public static final int	API_LEGACY	= 19;
 
 	@Autowired
-	private AuthService			authService;
+	private AuthProvider	authProvider;
 
 	@POST
 	@Path("login")
@@ -75,13 +73,14 @@ public class AuthRest
 				return Response.ok(resp).build();
 			}
 
-			int id = authService.login(login, pass);
-			UserSessionUtils.setId(req, id, login);
-
-			String entity = ResponseBuilder.buildDone("Logged in OK");
-			return Response.ok(entity).build();
+			Authentication authentication = authProvider.authenticate(new UsernamePasswordAuthenticationToken(login,
+					pass));
+			SecurityContext context = SecurityContextHolder.getContext();
+			context.setAuthentication(authentication);
+			// Do not pass any data in the body in order to store the same session-id
+			return Response.ok().build();
 		}
-		catch (NotAuthorizedException e)
+		catch (AuthenticationException e)
 		{
 			// Do not reset session flag here: anyone can reset your session otherwise
 			String entity = ResponseBuilder.build(ResponseBuilder.CODE_BADCREDENTIALS, "Bad username/password");
@@ -101,7 +100,7 @@ public class AuthRest
 	{
 		try
 		{
-			UserSessionUtils.clearId(req);
+			SecurityContextHolder.clearContext();
 			String entity = "Logged out OK";
 			return Response.ok(entity).build();
 		}
