@@ -24,6 +24,8 @@ import org.bosik.diacomp.core.services.sync.HashUtils;
 import org.bosik.diacomp.core.services.sync.MemoryMerkleTree;
 import org.bosik.diacomp.core.services.sync.MerkleTree;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.backend.common.CachedHashTree;
+import org.bosik.diacomp.web.backend.common.CachedHashTree.TreeType;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
@@ -49,6 +51,9 @@ public class DiaryLocalService implements DiaryService
 
 	@Autowired
 	private UserInfoService					userInfoService;
+
+	@Autowired
+	private CachedHashTree					cachedHashTree;
 
 	private int getCurrentUserId()
 	{
@@ -307,9 +312,26 @@ public class DiaryLocalService implements DiaryService
 	@Override
 	public MerkleTree getHashTree()
 	{
-		/**/long timeStart = System.currentTimeMillis();
-
 		int userId = getCurrentUserId();
+
+		MerkleTree tree = cachedHashTree.getTree(userId, TreeType.DIARY);
+		if (tree == null)
+		{
+			tree = rebuildHashTree(userId);
+			cachedHashTree.setTree(userId, TreeType.DIARY, tree);
+		}
+		else
+		{
+			/**/System.out.println("Returning cached hash tree");
+		}
+
+		return tree;
+	}
+
+	private MerkleTree rebuildHashTree(int userId)
+	{
+		MemoryMerkleTree result = new MemoryMerkleTree();
+		/**/long timeStart = System.currentTimeMillis();
 
 		SortedMap<String, String> hashes = getDataHashes(userId);
 		/**/long timeFetch = System.currentTimeMillis();
@@ -317,14 +339,13 @@ public class DiaryLocalService implements DiaryService
 		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
 		/**/long timeProcess = System.currentTimeMillis();
 
-		MemoryMerkleTree result = new MemoryMerkleTree();
+		result = new MemoryMerkleTree();
 		result.putAll(tree); // headers (0..4 chars id)
 		result.putAll(hashes); // leafs (32 chars id)
 		/**/long timePut = System.currentTimeMillis();
 		/**/System.out.println(String.format("Tree built in %s ms (fetch: %d ms, process: %d ms, put: %d ms)",
 				System.currentTimeMillis() - timeStart, timeFetch - timeStart, timeProcess - timeFetch, timePut
 						- timeProcess));
-
 		return result;
 	}
 
@@ -380,7 +401,7 @@ public class DiaryLocalService implements DiaryService
 					MySQLAccess.insert(TABLE_DIARY, set);
 				}
 
-				// TODO: invalidate cached tree here
+				cachedHashTree.setTree(userId, TreeType.DIARY, null);
 			}
 		}
 		catch (SQLException e)
