@@ -96,7 +96,7 @@ public class MealRecord extends DiaryRecord
 	{
 		if (item == null)
 		{
-			throw new NullPointerException("FoodItem item can't be null");
+			throw new IllegalArgumentException("FoodItem item is null");
 		}
 		items.add(item);
 		return items.size() - 1;

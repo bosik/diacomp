@@ -51,7 +51,7 @@ public class DiaryWebService implements DiaryService
 	{
 		if (webClient == null)
 		{
-			throw new NullPointerException("WebClient can't be null");
+			throw new IllegalArgumentException("WebClient is null");
 		}
 
 		this.webClient = webClient;

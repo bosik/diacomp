@@ -112,8 +112,7 @@ public class DiaryLocalService implements DiaryService
 
 		if (prefix == null)
 		{
-			// TODO: switch to IllegalArgumentException("X is null") (here & everywhere)
-			throw new NullPointerException("ID prefix can't be null");
+			throw new IllegalArgumentException("ID prefix is null");
 		}
 
 		try

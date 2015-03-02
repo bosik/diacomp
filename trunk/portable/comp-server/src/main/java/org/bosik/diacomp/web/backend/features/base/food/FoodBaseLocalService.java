@@ -118,7 +118,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 		if (prefix == null)
 		{
-			throw new NullPointerException("ID prefix can't be null");
+			throw new IllegalArgumentException("ID prefix is null");
 		}
 
 		try

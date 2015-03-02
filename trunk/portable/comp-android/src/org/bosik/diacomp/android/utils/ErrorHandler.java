@@ -29,7 +29,7 @@ public class ErrorHandler
 	{
 		if (webClient == null)
 		{
-			throw new NullPointerException("Client can't be null");
+			throw new IllegalArgumentException("Client is null");
 		}
 		ErrorHandler.webClient = webClient;
 	}

@@ -228,7 +228,7 @@ public class MealEditorView extends LinearLayout
 		}
 		else
 		{
-			throw new NullPointerException("Data can't be null");
+			throw new IllegalArgumentException("Data is null");
 		}
 	}
 

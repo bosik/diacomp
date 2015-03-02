@@ -57,7 +57,7 @@ public class DiaryLocalService implements DiaryService
 	{
 		if (null == resolver)
 		{
-			throw new NullPointerException("Content Resolver can't be null");
+			throw new IllegalArgumentException("Content Resolver is null");
 		}
 		this.resolver = resolver;
 	}
@@ -69,7 +69,7 @@ public class DiaryLocalService implements DiaryService
 	{
 		if (prefix == null)
 		{
-			throw new NullPointerException("ID prefix can't be null");
+			throw new IllegalArgumentException("ID prefix is null");
 		}
 
 		String[] projection = new String[] { "count(*) AS count" };
@@ -87,7 +87,7 @@ public class DiaryLocalService implements DiaryService
 			}
 			else
 			{
-				throw new NullPointerException("Cursor is null");
+				throw new IllegalArgumentException("Cursor is null");
 			}
 		}
 		finally
@@ -175,12 +175,12 @@ public class DiaryLocalService implements DiaryService
 
 		if (startTime == null)
 		{
-			throw new NullPointerException("startTime is null");
+			throw new IllegalArgumentException("startTime is null");
 		}
 
 		if (endTime == null)
 		{
-			throw new NullPointerException("endTime is null");
+			throw new IllegalArgumentException("endTime is null");
 		}
 
 		// construct parameters
@@ -270,7 +270,7 @@ public class DiaryLocalService implements DiaryService
 			}
 			else
 			{
-				throw new NullPointerException("Cursor is null");
+				throw new IllegalArgumentException("Cursor is null");
 			}
 		}
 		catch (Exception e)
@@ -317,7 +317,7 @@ public class DiaryLocalService implements DiaryService
 				}
 				else
 				{
-					throw new NullPointerException("Cursor is null");
+					throw new IllegalArgumentException("Cursor is null");
 				}
 			}
 			else
@@ -352,7 +352,7 @@ public class DiaryLocalService implements DiaryService
 				}
 				else
 				{
-					throw new NullPointerException("Cursor is null");
+					throw new IllegalArgumentException("Cursor is null");
 				}
 			}
 		}
@@ -622,7 +622,7 @@ public class DiaryLocalService implements DiaryService
 		}
 		else
 		{
-			throw new CommonServiceException(new NullPointerException("Cursor is null"));
+			throw new CommonServiceException(new IllegalArgumentException("Cursor is null"));
 		}
 	}
 
