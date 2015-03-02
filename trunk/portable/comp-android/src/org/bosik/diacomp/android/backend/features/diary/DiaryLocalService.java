@@ -3,10 +3,8 @@ package org.bosik.diacomp.android.backend.features.diary;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
@@ -244,122 +242,15 @@ public class DiaryLocalService implements DiaryService
 	@Override
 	public String getHash(String prefix) throws CommonServiceException
 	{
-		try
-		{
-			// constructing parameters
-			final String[] select = { DiaryContentProvider.COLUMN_DIARY_HASH_HASH };
-			final String where = DiaryContentProvider.COLUMN_DIARY_HASH_GUID + " = ?";
-			final String[] whereArgs = { prefix };
-
-			// execute query
-			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_HASH_URI, select, where, whereArgs, null);
-
-			// analyze response
-			if (cursor != null)
-			{
-				int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_HASH_HASH);
-				String hash = null;
-
-				if (cursor.moveToNext())
-				{
-					hash = cursor.getString(indexHash);
-				}
-
-				cursor.close();
-				return hash;
-			}
-			else
-			{
-				throw new IllegalArgumentException("Cursor is null");
-			}
-		}
-		catch (Exception e)
-		{
-			throw new CommonServiceException(e);
-		}
+		MerkleTree tree = getHashTree();
+		return tree.getHash(prefix);
 	}
 
 	@Override
 	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
 	{
-		try
-		{
-			if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
-			{
-				// constructing parameters
-				final String[] select = { DiaryContentProvider.COLUMN_DIARY_HASH_GUID,
-						DiaryContentProvider.COLUMN_DIARY_HASH_HASH };
-				final String where = DiaryContentProvider.COLUMN_DIARY_HASH_GUID + " LIKE ?";
-				final String[] whereArgs = { prefix + "_" };
-
-				// execute query
-				Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_HASH_URI, select, where, whereArgs,
-						null);
-
-				// analyze response
-				if (cursor != null)
-				{
-					int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_HASH_GUID);
-					int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_HASH_HASH);
-
-					Map<String, String> result = new HashMap<String, String>();
-
-					while (cursor.moveToNext())
-					{
-						String id = cursor.getString(indexId);
-						String hash = cursor.getString(indexHash);
-						result.put(id, hash);
-					}
-
-					cursor.close();
-
-					return result;
-				}
-				else
-				{
-					throw new IllegalArgumentException("Cursor is null");
-				}
-			}
-			else
-			{
-				// constructing parameters
-				final String[] select = { DiaryContentProvider.COLUMN_DIARY_GUID,
-						DiaryContentProvider.COLUMN_DIARY_HASH };
-				final String where = String.format("%s LIKE ?", DiaryContentProvider.COLUMN_DIARY_GUID);
-				final String[] whereArgs = { prefix + "%" };
-
-				// execute query
-				Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, select, where, whereArgs, null);
-
-				// analyze response
-				if (cursor != null)
-				{
-					int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_GUID);
-					int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DIARY_HASH);
-
-					Map<String, String> result = new HashMap<String, String>();
-
-					while (cursor.moveToNext())
-					{
-						String id = cursor.getString(indexId);
-						String hash = cursor.getString(indexHash);
-						result.put(id, hash);
-					}
-
-					cursor.close();
-
-					return result;
-				}
-				else
-				{
-					throw new IllegalArgumentException("Cursor is null");
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			throw new CommonServiceException(e);
-		}
+		MerkleTree tree = getHashTree();
+		return tree.getHashChildren(prefix);
 	}
 
 	@Override
@@ -471,25 +362,6 @@ public class DiaryLocalService implements DiaryService
 
 		cursor.close();
 		return result;
-	}
-
-	public synchronized void rebuildHashTree()
-	{
-		// processing data
-		SortedMap<String, String> hashes = getDataHashes();
-		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
-
-		// clearing
-		resolver.delete(DiaryContentProvider.CONTENT_DIARY_HASH_URI, null, null);
-
-		// persisting new values
-		for (Entry<String, String> entry : tree.entrySet())
-		{
-			ContentValues newValues = new ContentValues();
-			newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH_GUID, entry.getKey());
-			newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH_HASH, entry.getValue());
-			resolver.insert(DiaryContentProvider.CONTENT_DIARY_HASH_URI, newValues);
-		}
 	}
 
 	@Override
