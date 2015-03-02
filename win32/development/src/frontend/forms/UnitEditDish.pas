@@ -46,18 +46,14 @@ type
     ButtonRunCalc: TSpeedButton;
     Shape4: TShape;
     CheckFixedMass_: TCheckBox;
-    EditResultMass_: TEdit;
     ButtonSimpleMass: TSpeedButton;
     procedure ButtonSaveClick(Sender: TObject);
     procedure ButtonAddFoodClick(Sender: TObject);
     procedure ComboFoodCloseUp(Sender: TObject);
-    procedure ValueEditKeyPress(Sender: TObject; var Key: Char);
     procedure EditMassKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure CheckFixedMass_Click(Sender: TObject);
     procedure ButtonCancelClick(Sender: TObject);
-    procedure EditResultMass_KeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
     procedure ComboKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure TableDishContentDblClick(Sender: TObject);
@@ -84,6 +80,7 @@ type
     procedure EditResultMass_Change(Sender: TObject);
     procedure ButtonRealMassClick(Sender: TObject);
     procedure ButtonSimpleMassClick(Sender: TObject);
+    procedure EditFoodMassKeyPress(Sender: TObject; var Key: Char);
   protected
     procedure Designer; override;
   private
@@ -294,35 +291,33 @@ begin
 end;
 
 {======================================================================================================================}
-procedure TFormDish.ValueEditKeyPress(Sender: TObject;
-  var Key: Char);
+procedure TFormDish.ComboKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 {======================================================================================================================}
 begin
-  if Key in ['.',','] then Key := Decimal else
-  if not (Key in ['0'..'9',Decimal,#8]) then Key := #0;
+  if (Key = vk_Return) or ((Key = vk_right) and (ComboFood.SelStart = Length(ComboFood.Text))) then
+    ComboFood.OnCloseUp(Sender);
 end;
 
 {======================================================================================================================}
-procedure TFormDish.EditMassKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TFormDish.EditMassKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 {======================================================================================================================}
 begin
-  case TWinControl(Sender).Tag of
-    1:  if Key = vk_Return then
-          AddFood else
-        if (key = vk_left)and(EditFoodMass.SelStart=0) then
-        begin
-          ComboFood.SetFocus;
-          //key := 0;
-        end;
-   { 2:  if Key = vk_Return then
-          AddDish else
-        if (key = vk_left)and(EditDishMass.SelStart=0) then
-        begin
-          ComboDish.SetFocus;
-          //key := 0;
-        end; }
+  if (Key = vk_Return) then
+  begin
+    AddFood();
+  end else
+  if (key = vk_left) and (EditFoodMass.SelStart = 0) then
+  begin
+    ComboFood.SetFocus;
   end;
+end;
+
+{======================================================================================================================}
+procedure TFormDish.EditFoodMassKeyPress(Sender: TObject; var Key: Char);
+{======================================================================================================================}
+begin
+  if (Key = #13) then
+    Key := #0;
 end;
 
 {======================================================================================================================}
@@ -350,24 +345,6 @@ procedure TFormDish.ButtonCancelClick(Sender: TObject);
 {======================================================================================================================}
 begin
   Close;
-end;
-
-{======================================================================================================================}
-procedure TFormDish.EditResultMass_KeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-{======================================================================================================================}
-begin
-  //if Key = vk_Return then EditResultMass.SelectAll; // затычка :) - так мило...
-end;
-
-{======================================================================================================================}
-procedure TFormDish.ComboKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-{======================================================================================================================}
-begin
-  if (Key=vk_Return)or
-     ((Key=vk_right)and(TACComboBox(Sender).SelStart = Length(TACComboBox(Sender).Text)))then
-  TACComboBox(Sender).OnCloseUp(Sender);
 end;
 
 {======================================================================================================================}
