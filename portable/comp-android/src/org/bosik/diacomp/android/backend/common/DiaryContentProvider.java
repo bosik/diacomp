@@ -306,7 +306,7 @@ public class DiaryContentProvider extends ContentProvider
 	{
 		if (null == x)
 		{
-			throw new NullPointerException(errorMsg);
+			throw new IllegalArgumentException(errorMsg);
 		}
 	}
 

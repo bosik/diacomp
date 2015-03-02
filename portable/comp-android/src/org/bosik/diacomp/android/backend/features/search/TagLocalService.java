@@ -15,7 +15,7 @@ public class TagLocalService implements TagService
 	{
 		// if (null == resolver)
 		// {
-		// throw new NullPointerException("Content resolver can't be null");
+		// throw new IllegalArgumentException("Content resolver is null");
 		// }
 		// this.resolver = resolver;
 	}
@@ -55,7 +55,7 @@ public class TagLocalService implements TagService
 	// }
 	// else
 	// {
-	// throw new NullPointerException("Cursor is null");
+	// throw new IllegalArgumentException("Cursor is null");
 	// }
 	// }
 	// catch (Exception e)
@@ -138,7 +138,7 @@ public class TagLocalService implements TagService
 		// }
 		// else
 		// {
-		// throw new NullPointerException("Cursor is null");
+		// throw new IllegalArgumentException("Cursor is null");
 		// }
 		// }
 		// catch (Exception e)

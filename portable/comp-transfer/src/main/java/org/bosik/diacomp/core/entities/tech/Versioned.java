@@ -68,7 +68,7 @@ public class Versioned<T> implements Serializable
 	{
 		if (id == null)
 		{
-			throw new NullPointerException("ID can't be null");
+			throw new IllegalArgumentException("ID is null");
 		}
 
 		this.id = id;

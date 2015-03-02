@@ -51,7 +51,7 @@ public class FoodBaseLocalService implements FoodBaseService
 	{
 		if (null == resolver)
 		{
-			throw new NullPointerException("Content resolver can't be null");
+			throw new IllegalArgumentException("Content resolver is null");
 		}
 		this.resolver = resolver;
 
@@ -119,7 +119,7 @@ public class FoodBaseLocalService implements FoodBaseService
 		}
 		else
 		{
-			throw new NullPointerException("Cursor is null");
+			throw new IllegalArgumentException("Cursor is null");
 		}
 	}
 
@@ -144,7 +144,7 @@ public class FoodBaseLocalService implements FoodBaseService
 	// }
 	// else
 	// {
-	// throw new NullPointerException("Cursor is null");
+	// throw new IllegalArgumentException("Cursor is null");
 	// }
 	// }
 
@@ -357,7 +357,7 @@ public class FoodBaseLocalService implements FoodBaseService
 	{
 		if (prefix == null)
 		{
-			throw new NullPointerException("ID prefix can't be null");
+			throw new IllegalArgumentException("ID prefix is null");
 		}
 
 		String[] projection = new String[] { "count(*) AS count" };
@@ -590,7 +590,7 @@ public class FoodBaseLocalService implements FoodBaseService
 			}
 			else
 			{
-				throw new NullPointerException("Cursor is null");
+				throw new IllegalArgumentException("Cursor is null");
 			}
 		}
 		catch (Exception e)
@@ -637,7 +637,7 @@ public class FoodBaseLocalService implements FoodBaseService
 				}
 				else
 				{
-					throw new NullPointerException("Cursor is null");
+					throw new IllegalArgumentException("Cursor is null");
 				}
 			}
 			else
@@ -673,7 +673,7 @@ public class FoodBaseLocalService implements FoodBaseService
 				}
 				else
 				{
-					throw new NullPointerException("Cursor is null");
+					throw new IllegalArgumentException("Cursor is null");
 				}
 			}
 		}

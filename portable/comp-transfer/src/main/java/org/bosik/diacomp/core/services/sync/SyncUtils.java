@@ -50,27 +50,27 @@ public class SyncUtils
 		// null checks
 		if (null == items1)
 		{
-			throw new NullPointerException("items1 can't be null");
+			throw new IllegalArgumentException("items1 is null");
 		}
 		if (null == items2)
 		{
-			throw new NullPointerException("items2 can't be null");
+			throw new IllegalArgumentException("items2 is null");
 		}
 		if (null == newer1)
 		{
-			throw new NullPointerException("newer1 can't be null");
+			throw new IllegalArgumentException("newer1 is null");
 		}
 		if (null == newer2)
 		{
-			throw new NullPointerException("newer2 can't be null");
+			throw new IllegalArgumentException("newer2 is null");
 		}
 		if (null == only1)
 		{
-			throw new NullPointerException("only1 can't be null");
+			throw new IllegalArgumentException("only1 is null");
 		}
 		if (null == only2)
 		{
-			throw new NullPointerException("only2 can't be null");
+			throw new IllegalArgumentException("only2 is null");
 		}
 
 		// preparation
@@ -136,11 +136,11 @@ public class SyncUtils
 		// null checks again
 		if (null == items1)
 		{
-			throw new NullPointerException("Service1 returned null list");
+			throw new IllegalArgumentException("Service1 returned null list");
 		}
 		if (null == items2)
 		{
-			throw new NullPointerException("Service2 returned null list");
+			throw new IllegalArgumentException("Service2 returned null list");
 		}
 
 		// calculating transferring lists
@@ -184,15 +184,15 @@ public class SyncUtils
 		// null checks
 		if (null == service1)
 		{
-			throw new NullPointerException("service1 can't be null");
+			throw new IllegalArgumentException("service1 is null");
 		}
 		if (null == service2)
 		{
-			throw new NullPointerException("service2 can't be null");
+			throw new IllegalArgumentException("service2 is null");
 		}
 		if (null == since)
 		{
-			throw new NullPointerException("since date can't be null");
+			throw new IllegalArgumentException("since date is null");
 		}
 
 		List<Versioned<T>> items1 = service1.findChanged(since);
@@ -215,15 +215,15 @@ public class SyncUtils
 		// null checks
 		if (null == service1)
 		{
-			throw new NullPointerException("service1 can't be null");
+			throw new IllegalArgumentException("service1 is null");
 		}
 		if (null == service2)
 		{
-			throw new NullPointerException("service2 can't be null");
+			throw new IllegalArgumentException("service2 is null");
 		}
 		if (null == id)
 		{
-			throw new NullPointerException("id can't be null");
+			throw new IllegalArgumentException("id is null");
 		}
 
 		// requesting items
@@ -312,11 +312,11 @@ public class SyncUtils
 		// null checks
 		if (null == service1)
 		{
-			throw new NullPointerException("service1 can't be null");
+			throw new IllegalArgumentException("service1 is null");
 		}
 		if (null == service2)
 		{
-			throw new NullPointerException("service2 can't be null");
+			throw new IllegalArgumentException("service2 is null");
 		}
 
 		return synchronizePrefix(service1, service2, "");
@@ -398,11 +398,11 @@ public class SyncUtils
 		// null checks
 		if (null == service1)
 		{
-			throw new NullPointerException("service1 can't be null");
+			throw new IllegalArgumentException("service1 is null");
 		}
 		if (null == service2)
 		{
-			throw new NullPointerException("service2 can't be null");
+			throw new IllegalArgumentException("service2 is null");
 		}
 
 		if (callback != null)

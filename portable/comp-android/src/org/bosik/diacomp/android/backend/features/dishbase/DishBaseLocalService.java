@@ -50,7 +50,7 @@ public class DishBaseLocalService implements DishBaseService
 	{
 		if (null == resolver)
 		{
-			throw new NullPointerException("Content resolver can't be null");
+			throw new IllegalArgumentException("Content resolver is null");
 		}
 		this.resolver = resolver;
 
@@ -119,7 +119,7 @@ public class DishBaseLocalService implements DishBaseService
 		}
 		else
 		{
-			throw new NullPointerException("Cursor is null");
+			throw new IllegalArgumentException("Cursor is null");
 		}
 	}
 
@@ -144,7 +144,7 @@ public class DishBaseLocalService implements DishBaseService
 	// }
 	// else
 	// {
-	// throw new NullPointerException("Cursor is null");
+	// throw new IllegalArgumentException("Cursor is null");
 	// }
 	// }
 
@@ -357,7 +357,7 @@ public class DishBaseLocalService implements DishBaseService
 	{
 		if (prefix == null)
 		{
-			throw new NullPointerException("ID prefix can't be null");
+			throw new IllegalArgumentException("ID prefix is null");
 		}
 
 		String[] projection = new String[] { "count(*) AS count" };
@@ -575,7 +575,7 @@ public class DishBaseLocalService implements DishBaseService
 			}
 			else
 			{
-				throw new NullPointerException("Cursor is null");
+				throw new IllegalArgumentException("Cursor is null");
 			}
 		}
 		catch (Exception e)
@@ -622,7 +622,7 @@ public class DishBaseLocalService implements DishBaseService
 				}
 				else
 				{
-					throw new NullPointerException("Cursor is null");
+					throw new IllegalArgumentException("Cursor is null");
 				}
 			}
 			else
@@ -658,7 +658,7 @@ public class DishBaseLocalService implements DishBaseService
 				}
 				else
 				{
-					throw new NullPointerException("Cursor is null");
+					throw new IllegalArgumentException("Cursor is null");
 				}
 			}
 		}

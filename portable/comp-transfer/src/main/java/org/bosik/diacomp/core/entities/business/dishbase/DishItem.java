@@ -168,7 +168,7 @@ public class DishItem implements NamedRelativeTagged, Serializable
 		}
 		else
 		{
-			throw new NullPointerException("Dish item can't be null");
+			throw new IllegalArgumentException("Dish item is null");
 		}
 	}
 
