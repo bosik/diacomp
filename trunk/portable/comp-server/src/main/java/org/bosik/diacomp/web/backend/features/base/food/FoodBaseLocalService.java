@@ -512,12 +512,6 @@ public class FoodBaseLocalService implements FoodBaseService
 		}
 	}
 
-	@Override
-	public void setHash(String prefix, String hash)
-	{
-		// to be removed
-	}
-
 	@SuppressWarnings("static-method")
 	private boolean recordExists(int userId, String id) throws SQLException
 	{

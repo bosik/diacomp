@@ -258,10 +258,4 @@ public class FoodBaseWebService implements FoodBaseService
 			throw new CommonServiceException("URL: " + API_FOOD_SAVE, e);
 		}
 	}
-
-	@Override
-	public void setHash(String prefix, String hash)
-	{
-		throw new UnsupportedOperationException("Can't set hash via REST");
-	}
 }

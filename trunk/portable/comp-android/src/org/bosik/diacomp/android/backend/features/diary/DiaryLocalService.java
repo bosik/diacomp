@@ -418,61 +418,6 @@ public class DiaryLocalService implements DiaryService
 		return (record != null && record.getId() != null && record.getId().length() == ObjectService.ID_FULL_SIZE);
 	}
 
-	@Override
-	public void setHash(String prefix, String hash)
-	{
-		try
-		{
-			if (prefix.length() <= ObjectService.ID_PREFIX_SIZE)
-			{
-				if (getHash(prefix) != null)
-				{
-					// update
-					ContentValues newValues = new ContentValues();
-					newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH_HASH, hash);
-					String clause = String.format("%s = ?", DiaryContentProvider.COLUMN_DIARY_HASH_GUID);
-					String[] args = { prefix };
-					resolver.update(DiaryContentProvider.CONTENT_DIARY_HASH_URI, newValues, clause, args);
-				}
-				else
-				{
-					// insert
-					ContentValues newValues = new ContentValues();
-					newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH_GUID, prefix);
-					newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH_HASH, hash);
-					resolver.insert(DiaryContentProvider.CONTENT_DIARY_HASH_URI, newValues);
-				}
-			}
-			else if (prefix.length() == ObjectService.ID_FULL_SIZE)
-			{
-				if (recordExists(prefix))
-				{
-					// update
-					ContentValues newValues = new ContentValues();
-					newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH, hash);
-					String clause = String.format("%s = ?", DiaryContentProvider.COLUMN_DIARY_GUID);
-					String[] args = { prefix };
-					resolver.update(DiaryContentProvider.CONTENT_DIARY_URI, newValues, clause, args);
-				}
-				else
-				{
-					// fail
-					throw new NotFoundException(prefix);
-				}
-			}
-			else
-			{
-				throw new IllegalArgumentException(String.format(
-						"Invalid prefix ('%s'), expected: 0..%d or %d chars, found: %d", prefix,
-						ObjectService.ID_PREFIX_SIZE, ObjectService.ID_FULL_SIZE, prefix.length()));
-			}
-		}
-		catch (Exception e)
-		{
-			throw new PersistenceException(e);
-		}
-	}
-
 	public void deletePermanently(String id) throws CommonServiceException
 	{
 		try

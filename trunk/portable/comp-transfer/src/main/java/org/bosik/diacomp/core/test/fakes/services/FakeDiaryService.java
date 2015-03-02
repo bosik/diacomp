@@ -20,8 +20,8 @@ import org.bosik.diacomp.core.test.fakes.mocks.MockVersionedConverter;
 
 public class FakeDiaryService implements DiaryService
 {
-	private Mock<Versioned<DiaryRecord>>	mock	= new MockVersionedConverter<DiaryRecord>(new MockDiaryRecord());
-	private List<Versioned<DiaryRecord>>	samples	= new ArrayList<Versioned<DiaryRecord>>();
+	private final Mock<Versioned<DiaryRecord>>	mock	= new MockVersionedConverter<DiaryRecord>(new MockDiaryRecord());
+	private final List<Versioned<DiaryRecord>>	samples	= new ArrayList<Versioned<DiaryRecord>>();
 
 	public FakeDiaryService(boolean withSampleData)
 	{
@@ -188,12 +188,6 @@ public class FakeDiaryService implements DiaryService
 
 	@Override
 	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
-	{
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
-	public void setHash(String prefix, String hash)
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}
