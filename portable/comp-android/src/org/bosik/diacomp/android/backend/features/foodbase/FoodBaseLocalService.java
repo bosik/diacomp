@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -534,153 +533,57 @@ public class FoodBaseLocalService implements FoodBaseService
 	 */
 	private SortedMap<String, String> getDataHashes()
 	{
-		// constructing parameters
-		final String[] select = { DiaryContentProvider.COLUMN_FOODBASE_GUID, DiaryContentProvider.COLUMN_FOODBASE_HASH };
-		final String where = null;
-		final String[] whereArgs = null;
-
-		// execute query
-		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, select, where, whereArgs, null);
-
-		// analyze response
-		int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_GUID);
-		int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_HASH);
-
 		SortedMap<String, String> result = new TreeMap<String, String>();
 
-		while (cursor.moveToNext())
+		for (Versioned<FoodItem> item : memoryCache)
 		{
-			String id = cursor.getString(indexId);
-			String hash = cursor.getString(indexHash);
+			String id = item.getId();
+			String hash = item.getHash();
 			// THINK: probably storing entries is unnecessary, so we should process it as we go
 			result.put(id, hash);
 		}
 
-		cursor.close();
+		// =============================================================
+
+		// // constructing parameters
+		// final String[] select = { DiaryContentProvider.COLUMN_FOODBASE_GUID,
+		// DiaryContentProvider.COLUMN_FOODBASE_HASH };
+		// final String where = null;
+		// final String[] whereArgs = null;
+		//
+		// // execute query
+		// Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, select, where,
+		// whereArgs, null);
+		//
+		// // analyze response
+		// int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_GUID);
+		// int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_HASH);
+		//
+		//
+		// while (cursor.moveToNext())
+		// {
+		// String id = cursor.getString(indexId);
+		// String hash = cursor.getString(indexHash);
+		// // THINK: probably storing entries is unnecessary, so we should process it as we go
+		// result.put(id, hash);
+		// }
+		//
+		// cursor.close();
 		return result;
 	}
 
 	@Override
 	public String getHash(String prefix) throws CommonServiceException
 	{
-		try
-		{
-			// constructing parameters
-			final String[] select = { DiaryContentProvider.COLUMN_FOODBASE_HASH_HASH };
-			final String where = DiaryContentProvider.COLUMN_FOODBASE_HASH_GUID + " = ?";
-			final String[] whereArgs = { prefix };
-
-			// execute query
-			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_HASH_URI, select, where, whereArgs,
-					null);
-
-			// analyze response
-			if (cursor != null)
-			{
-				int indexTag = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_HASH_HASH);
-				String hash = null;
-
-				if (cursor.moveToNext())
-				{
-					hash = cursor.getString(indexTag);
-				}
-
-				cursor.close();
-				return hash;
-			}
-			else
-			{
-				throw new IllegalArgumentException("Cursor is null");
-			}
-		}
-		catch (Exception e)
-		{
-			throw new CommonServiceException(e);
-		}
+		MerkleTree tree = getHashTree();
+		return tree.getHash(prefix);
 	}
 
 	@Override
 	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
 	{
-		try
-		{
-			if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
-			{
-				// constructing parameters
-				final String[] select = { DiaryContentProvider.COLUMN_FOODBASE_HASH_GUID,
-						DiaryContentProvider.COLUMN_FOODBASE_HASH_HASH };
-				final String where = DiaryContentProvider.COLUMN_FOODBASE_HASH_GUID + " LIKE ?";
-				final String[] whereArgs = { prefix + "_" };
-
-				// execute query
-				Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_HASH_URI, select, where,
-						whereArgs, null);
-
-				// analyze response
-				if (cursor != null)
-				{
-					int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_HASH_GUID);
-					int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_HASH_HASH);
-
-					Map<String, String> result = new HashMap<String, String>();
-
-					while (cursor.moveToNext())
-					{
-						String id = cursor.getString(indexId);
-						String hash = cursor.getString(indexHash);
-						result.put(id, hash);
-					}
-
-					cursor.close();
-
-					return result;
-				}
-				else
-				{
-					throw new IllegalArgumentException("Cursor is null");
-				}
-			}
-			else
-			{
-				// constructing parameters
-				final String[] select = { DiaryContentProvider.COLUMN_FOODBASE_GUID,
-						DiaryContentProvider.COLUMN_FOODBASE_HASH };
-				final String where = String.format("%s LIKE ?", DiaryContentProvider.COLUMN_FOODBASE_GUID);
-				final String[] whereArgs = { prefix + "%" };
-
-				// execute query
-				Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_FOODBASE_URI, select, where, whereArgs,
-						null);
-
-				// analyze response
-				if (cursor != null)
-				{
-					int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_GUID);
-					int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_FOODBASE_HASH);
-
-					Map<String, String> result = new HashMap<String, String>();
-
-					while (cursor.moveToNext())
-					{
-						String id = cursor.getString(indexId);
-						String hash = cursor.getString(indexHash);
-						result.put(id, hash);
-					}
-
-					cursor.close();
-
-					return result;
-				}
-				else
-				{
-					throw new IllegalArgumentException("Cursor is null");
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			throw new CommonServiceException(e);
-		}
+		MerkleTree tree = getHashTree();
+		return tree.getHashChildren(prefix);
 	}
 
 	@Override
