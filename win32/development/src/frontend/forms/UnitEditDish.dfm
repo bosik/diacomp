@@ -1,6 +1,6 @@
 object FormDish: TFormDish
-  Left = 401
-  Top = 158
+  Left = 417
+  Top = 118
   Width = 662
   Height = 695
   BorderIcons = [biSystemMenu]
@@ -246,6 +246,7 @@ object FormDish: TFormDish
           Text = 'EditFoodMass'
           OnEnter = ResetTabStop
           OnKeyDown = EditMassKeyDown
+          OnKeyPress = EditFoodMassKeyPress
           Decimal = ','
           WarningShow = True
         end
@@ -308,20 +309,6 @@ object FormDish: TFormDish
       TabOrder = 1
       OnClick = CheckFixedMass_Click
       OnEnter = ResetTabStop
-    end
-    object EditResultMass_: TEdit
-      Left = 81
-      Top = 73
-      Width = 56
-      Height = 24
-      TabStop = False
-      TabOrder = 2
-      Text = 'EditResultMass_'
-      OnChange = EditResultMass_Change
-      OnClick = EditResultMass_Click
-      OnEnter = ResetTabStop
-      OnKeyDown = EditResultMass_KeyDown
-      OnKeyPress = ValueEditKeyPress
     end
   end
   object GroupBoxMass: TGroupBox
