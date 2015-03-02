@@ -409,12 +409,6 @@ public class DiaryLocalService implements DiaryService
 		}
 	}
 
-	@Override
-	public void setHash(String prefix, String hash)
-	{
-		// to be removed
-	}
-
 	/**
 	 * Returns sorted map (ID, Hash) for all items
 	 * 

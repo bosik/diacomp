@@ -146,12 +146,6 @@ public class FakeObjectService implements ObjectService<String>
 	}
 
 	@Override
-	public void setHash(String prefix, String hash)
-	{
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
 	public MerkleTree getHashTree()
 	{
 		throw new UnsupportedOperationException("Not implemented");

@@ -107,13 +107,4 @@ public interface ObjectService<T>
 	 * @throws CommonServiceException
 	 */
 	void save(List<Versioned<T>> items) throws CommonServiceException;
-
-	/**
-	 * Sets the hash for specified node
-	 * 
-	 * @param prefix
-	 *            Must be either 0..ID_PREFIX_SIZE or full-size chars long
-	 * @param hash
-	 */
-	void setHash(String prefix, String hash);
 }

@@ -258,10 +258,4 @@ public class DishBaseWebService implements DishBaseService
 			throw new CommonServiceException("URL: " + API_DISH_SAVE, e);
 		}
 	}
-
-	@Override
-	public void setHash(String prefix, String hash)
-	{
-		throw new UnsupportedOperationException("Can't set hash via REST");
-	}
 }

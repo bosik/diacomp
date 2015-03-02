@@ -21,8 +21,8 @@ import org.bosik.diacomp.core.test.fakes.mocks.MockVersionedConverter;
 
 public class FakeFoodBaseService implements FoodBaseService
 {
-	private Mock<Versioned<FoodItem>>	mock	= new MockVersionedConverter<FoodItem>(new MockFoodItem());
-	private List<Versioned<FoodItem>>	samples	= mock.getSamples();
+	private final Mock<Versioned<FoodItem>>	mock	= new MockVersionedConverter<FoodItem>(new MockFoodItem());
+	private final List<Versioned<FoodItem>>	samples	= mock.getSamples();
 
 	private static void sort(List<Versioned<FoodItem>> items)
 	{
@@ -213,12 +213,6 @@ public class FakeFoodBaseService implements FoodBaseService
 
 	@Override
 	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
-	{
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
-	public void setHash(String prefix, String hash)
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}
