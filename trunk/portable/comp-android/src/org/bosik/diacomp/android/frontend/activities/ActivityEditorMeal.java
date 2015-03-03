@@ -238,11 +238,8 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	{
 		// insulin dosage info
 
-		// FIXME: doesn't updated if time changed
-		// FIXME: hardcode
-		int minutesTime = (Utils.timeToMin(entity.getData().getTime()) + 4 * 60) % Utils.MinPerDay;
-
-		// TODO: hackfix
+		// FIXME: hardcoded timezone
+		int minutesTime = (Utils.timeToMin(entity.getData().getTime()) + 3 * 60) % Utils.MinPerDay;
 		Koof koof = Storage.koofService.getKoof(minutesTime);
 
 		Log.i(TAG, "Time: " + minutesTime);
@@ -268,7 +265,16 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 
 		if (expectedBS != null)
 		{
-			textMealExpectedBs.setText(String.format("%.1f %s", expectedBS, captionMmol));
+			// FIXME: hardcoded BS value
+			if (expectedBS > 1.5)
+			{
+				textMealExpectedBs.setText(String.format("%.1f %s", expectedBS, captionMmol));
+			}
+			else
+			{
+				// TODO: i18n
+				textMealExpectedBs.setText(String.format("%.1f %s", expectedBS, "hypoglycemia"));
+			}
 		}
 		else
 		{
@@ -313,8 +319,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		{
 			layoutShifted.setVisibility(View.GONE);
 		}
-
-		// TODO: print expectedBS somehow
 
 		// before = null, target = null --> deltaBS = 0.0; --> dose
 		// before = null, target != null --> deltaBS = 0.0; --> dose
@@ -383,7 +387,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		buttonTime.setText(formatTime(time));
 		buttonDate.setText(formatDate(time));
 		modified = true;
+		showMealInfo();
 		Log.i(TAG, "Time changed");
-		// TODO: change koofs & update dosage stats
 	}
 }
