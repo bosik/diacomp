@@ -46,8 +46,6 @@ public class MasterPage extends WebPage
 
 	protected MenuContent getMenu(boolean authorized)
 	{
-		// TODO: localize captions
-
 		MenuContent menuContent = new MenuContent();
 
 		if (authorized)
