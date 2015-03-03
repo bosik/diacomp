@@ -54,6 +54,7 @@
     <string name="editor_meal_label_isulin_dosage">Insulin:</string>
     <string name="editor_meal_label_no_correction">no correction</string>
     <string name="editor_meal_label_stat" formatted="false">P 10.2</string>
+    <string name="editor_meal_message_saved">Meal saved</string>
     <string name="editor_meal_parenthesis_close">)</string>
     <string name="editor_meal_parenthesis_open">(</string>
     <string name="editor_meal_short_postprandial">Short postprandial</string>

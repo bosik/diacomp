@@ -372,8 +372,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		if (modified)
 		{
 			submit();
-			// TODO: localization
-			UIUtils.showTip(this, "Meal saved");
+			UIUtils.showTip(this, getString(R.string.editor_meal_message_saved));
 		}
 		else
 		{
@@ -388,6 +387,5 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		buttonDate.setText(formatDate(time));
 		modified = true;
 		showMealInfo();
-		Log.i(TAG, "Time changed");
 	}
 }
