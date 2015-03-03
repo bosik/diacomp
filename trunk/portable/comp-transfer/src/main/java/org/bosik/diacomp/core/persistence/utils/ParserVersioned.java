@@ -31,7 +31,8 @@ public class ParserVersioned<T> extends Parser<Versioned<T>>
 
 		item.setId(json.getString(FIELD_ID));
 		item.setTimeStamp(Utils.parseTimeUTC(json.getString(FIELD_TIMESTAMP)));
-		item.setHash(json.getString(FIELD_HASH));
+		// TODO: make the Hash field mandatory again after data migration
+		item.setHash(json.has(FIELD_HASH) ? json.getString(FIELD_HASH) : Utils.generateGuid());
 		item.setVersion(json.getInt(FIELD_VERSION));
 		item.setDeleted(json.getBoolean(FIELD_DELETED));
 		item.setData(parser.read(json.getJSONObject(FIELD_DATA)));
