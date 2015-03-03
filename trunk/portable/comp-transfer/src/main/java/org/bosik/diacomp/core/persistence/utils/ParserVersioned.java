@@ -9,8 +9,15 @@ import org.json.JSONObject;
 public class ParserVersioned<T> extends Parser<Versioned<T>>
 {
 	// private static final String TAG = ParserVersioned.class.getSimpleName();
+	
+	private static final String	FIELD_ID		= "id";
+	private static final String	FIELD_TIMESTAMP	= "stamp";
+	private static final String	FIELD_HASH		= "hash";
+	private static final String	FIELD_VERSION	= "version";
+	private static final String	FIELD_DELETED	= "deleted";
+	private static final String	FIELD_DATA		= "data";
 
-	private Parser<T>	parser;
+	private final Parser<T>		parser;
 
 	public ParserVersioned(Parser<T> parser)
 	{
@@ -22,12 +29,12 @@ public class ParserVersioned<T> extends Parser<Versioned<T>>
 	{
 		Versioned<T> item = new Versioned<T>();
 
-		item.setId(json.getString("id"));
-		item.setTimeStamp(Utils.parseTimeUTC(json.getString("stamp")));
-		item.setHash(json.getString("hash"));
-		item.setVersion(json.getInt("version"));
-		item.setDeleted(json.getBoolean("deleted"));
-		item.setData(parser.read(json.getJSONObject("data")));
+		item.setId(json.getString(FIELD_ID));
+		item.setTimeStamp(Utils.parseTimeUTC(json.getString(FIELD_TIMESTAMP)));
+		item.setHash(json.getString(FIELD_HASH));
+		item.setVersion(json.getInt(FIELD_VERSION));
+		item.setDeleted(json.getBoolean(FIELD_DELETED));
+		item.setData(parser.read(json.getJSONObject(FIELD_DATA)));
 
 		return item;
 	}
@@ -37,13 +44,13 @@ public class ParserVersioned<T> extends Parser<Versioned<T>>
 	{
 		JSONObject json = new JSONObject();
 
-		json.put("id", object.getId());
-		json.put("stamp", Utils.formatTimeUTC(object.getTimeStamp()));
-		json.put("hash", object.getHash());
-		json.put("version", object.getVersion());
-		json.put("deleted", object.isDeleted());
+		json.put(FIELD_ID, object.getId());
+		json.put(FIELD_TIMESTAMP, Utils.formatTimeUTC(object.getTimeStamp()));
+		json.put(FIELD_HASH, object.getHash());
+		json.put(FIELD_VERSION, object.getVersion());
+		json.put(FIELD_DELETED, object.isDeleted());
 		final JSONObject obj = parser.write(object.getData());
-		json.put("data", obj); // do not inline
+		json.put(FIELD_DATA, obj); // do not inline
 		return json;
 	}
 }
