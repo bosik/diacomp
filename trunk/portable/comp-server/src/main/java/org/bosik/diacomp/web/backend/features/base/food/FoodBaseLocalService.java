@@ -317,7 +317,7 @@ public class FoodBaseLocalService implements FoodBaseService
 						@Override
 						public List<Versioned<FoodItem>> onData(ResultSet set) throws SQLException
 						{
-							return parseItems(set, MAX_ITEMS_COUNT);
+							return parseItems(set, 0);
 						}
 					});
 		}
