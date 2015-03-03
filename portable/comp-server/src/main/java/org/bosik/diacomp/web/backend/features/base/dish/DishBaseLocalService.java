@@ -317,7 +317,7 @@ public class DishBaseLocalService implements DishBaseService
 						@Override
 						public List<Versioned<DishItem>> onData(ResultSet set) throws SQLException
 						{
-							return parseItems(set, MAX_ITEMS_COUNT);
+							return parseItems(set, 0);
 						}
 					});
 		}

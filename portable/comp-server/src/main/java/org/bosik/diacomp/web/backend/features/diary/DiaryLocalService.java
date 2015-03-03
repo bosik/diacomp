@@ -239,7 +239,7 @@ public class DiaryLocalService implements DiaryService
 						@Override
 						public List<Versioned<DiaryRecord>> onData(ResultSet set) throws SQLException
 						{
-							return parseItems(set, MAX_ITEMS_COUNT);
+							return parseItems(set, 0);
 						}
 					});
 		}
