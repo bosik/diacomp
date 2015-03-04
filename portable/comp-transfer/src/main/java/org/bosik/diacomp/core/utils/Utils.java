@@ -604,7 +604,7 @@ public class Utils
 	 */
 	public static String generateGuid()
 	{
-		return UUID.randomUUID().toString().replace("-", "");
+		return UUID.randomUUID().toString().replace("-", "").toLowerCase();
 	}
 
 	/**
