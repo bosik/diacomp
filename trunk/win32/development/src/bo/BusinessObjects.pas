@@ -26,16 +26,19 @@ type
 
     FVersion: integer;
     FDeleted: boolean;
+  protected
+    procedure SetHash(const Value: TCompactGUID);
+    procedure SetID(const Value: TCompactGUID);
   public
     constructor Create();
     procedure CopyFrom(Source: TVersioned); virtual;
     procedure Modified();
 
-    property ID: TCompactGUID read FID write FID;
+    property ID: TCompactGUID read FID write SetID;
 
     property TimeStamp: TDateTime read FTimeStamp write FTimeStamp;
 
-    property Hash: TCompactGUID read FHash write FHash;
+    property Hash: TCompactGUID read FHash write SetHash;
     property Version: integer read FVersion write FVersion;
     property Deleted: boolean read FDeleted write FDeleted;
   end;
@@ -48,11 +51,8 @@ type
   private
     FOnChange: TNotifyEvent;
   protected
-    //FID: TCompactGUID;
     procedure Modified; virtual;
   public
-    constructor Create;
-    //property ID: TCompactGUID read FID write FID;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
@@ -252,21 +252,21 @@ begin
     raise Exception.CreateFmt('CopyFrom(): Invalid source type. Expected: %s (or inherited), found: %s',
       [Self.ClassName, Source.ClassName]);
 
-  FID := Source.ID;
-  FTimeStamp := Source.TimeStamp;
-  FHash := Source.Hash;
-  FVersion := Source.Version;
-  FDeleted := Source.Deleted;
+  ID := Source.ID;
+  TimeStamp := Source.TimeStamp;
+  Hash := Source.Hash;
+  Version := Source.Version;
+  Deleted := Source.Deleted;
 end;
 
 {======================================================================================================================}
 constructor TVersioned.Create;
 {======================================================================================================================}
 begin
-  FID := CreateCompactGUID();
-  FHash := CreateCompactGUID();
-  FVersion := 0;
-  FDeleted := False;
+  ID := CreateCompactGUID();
+  Hash := CreateCompactGUID();
+  Version := 0;
+  Deleted := False;
 end;
 
 {======================================================================================================================}
@@ -274,18 +274,25 @@ procedure TVersioned.Modified;
 {======================================================================================================================}
 begin
   inc(FVersion);
-  FTimeStamp := GetTimeUTC();
-  FHash := CreateCompactGUID();
+  TimeStamp := GetTimeUTC();
+  Hash := CreateCompactGUID();
+end;
+
+{======================================================================================================================}
+procedure TVersioned.SetHash(const Value: TCompactGUID);
+{======================================================================================================================}
+begin
+  FHash := LowerCase(Value);
+end;
+
+{======================================================================================================================}
+procedure TVersioned.SetID(const Value: TCompactGUID);
+{======================================================================================================================}
+begin
+  FID := LowerCase(Value);
 end;
 
 { TMutableItem }
-
-{======================================================================================================================}
-constructor TMutableItem.Create;
-{======================================================================================================================}
-begin
-  FID := CreateCompactGUID();
-end;
 
 {======================================================================================================================}
 procedure TMutableItem.Modified;
@@ -592,7 +599,7 @@ begin
 
   Name := DishItem.Name;
   Tag := DishItem.Tag;
-  FID := DishItem.ID;
+  ID := DishItem.ID;
 
   if DishItem.FixedMass then
     SetResultMass(DishItem.RealMass)
