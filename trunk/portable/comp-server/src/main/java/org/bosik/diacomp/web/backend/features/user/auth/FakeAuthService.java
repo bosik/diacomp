@@ -1,7 +1,11 @@
 package org.bosik.diacomp.web.backend.features.user.auth;
 
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 
+@Service
+@Profile("fake")
 public class FakeAuthService implements AuthService
 {
 	private static final String	FAKE_USERNAME	= "admin";

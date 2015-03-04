@@ -65,4 +65,9 @@
 		<exception-type>java.lang.Throwable</exception-type>
 		<location>/WEB-INF/error-500.jsp</location>
 	</error-page>
+
+	<context-param>
+		<param-name>spring.profiles.active</param-name>
+		<param-value>real</param-value>
+	</context-param>
 </web-app>
