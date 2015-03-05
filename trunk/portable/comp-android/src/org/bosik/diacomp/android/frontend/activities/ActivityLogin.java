@@ -25,32 +25,32 @@ import android.widget.TextView;
  */
 public class ActivityLogin extends AccountAuthenticatorActivity
 {
-	public static final String		EXTRA_EMAIL					= "com.example.android.authenticatordemo.extra.EMAIL";
-	public static final String		EXTRA_PASS					= "com.example.android.authenticatordemo.extra.PASS";
+	public static final String	EXTRA_EMAIL					= "com.example.android.authenticatordemo.extra.EMAIL";
+	public static final String	EXTRA_PASS					= "com.example.android.authenticatordemo.extra.PASS";
 
-	public static final String		ARG_ACCOUNT_TYPE			= "org.bosik.diacomp.activityLogin.accountType";
-	public static final String		ARG_AUTH_TYPE				= "org.bosik.diacomp.activityLogin.authType";
-	public static final String		ARG_IS_ADDING_NEW_ACCOUNT	= "org.bosik.diacomp.activityLogin.newAccount";
+	public static final String	ARG_ACCOUNT_TYPE			= "org.bosik.diacomp.activityLogin.accountType";
+	public static final String	ARG_AUTH_TYPE				= "org.bosik.diacomp.activityLogin.authType";
+	public static final String	ARG_IS_ADDING_NEW_ACCOUNT	= "org.bosik.diacomp.activityLogin.newAccount";
 
 	/**
 	 * Keep track of the login task to ensure we can cancel it if requested.
 	 */
-	private UserLoginTask			mAuthTask					= null;
+	UserLoginTask				mAuthTask					= null;
 
 	// Values for email and password at the time of the login attempt.
-	private String					mEmail;
-	private String					mPassword;
+	String						mEmail;
+	String						mPassword;
 
-	private String					mAccountType;
-	private String					mAuthTokenType;
-	private boolean					mNewAccount;
+	String						mAccountType;
+	private String				mAuthTokenType;
+	private boolean				mNewAccount;
 
 	// UI references.
-	private EditText				mEmailView;
-	private EditText				mPasswordView;
-	private View					mLoginFormView;
-	private View					mLoginStatusView;
-	private TextView				mLoginStatusMessageView;
+	private EditText			mEmailView;
+	EditText					mPasswordView;
+	View						mLoginFormView;
+	View						mLoginStatusView;
+	private TextView			mLoginStatusMessageView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -177,7 +177,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 	 * Shows the progress UI and hides the login form.
 	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-	private void showProgress(final boolean show)
+	void showProgress(final boolean show)
 	{
 		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
 		// for very easy animations. If available, use these APIs to fade-in
@@ -225,8 +225,11 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		@Override
 		protected Boolean doInBackground(Void... params)
 		{
-			WebClient client = new WebClient(12000);
-			client.setServer("http://192.168.0.100:8190/comp-server/");
+			final int connectionTimeout = Integer.parseInt(getString(R.string.server_timeout));
+			final String serverURL = getString(R.string.server_url);
+
+			WebClient client = new WebClient(connectionTimeout);
+			client.setServer(serverURL);
 			client.setUsername(mEmail);
 			client.setPassword(mPassword);
 
@@ -293,7 +296,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		}.execute();
 	}
 
-	private void finishLogin(Intent intent)
+	void finishLogin(Intent intent)
 	{
 		final AccountManager mAccountManager = AccountManager.get(this);
 
