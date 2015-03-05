@@ -6,9 +6,7 @@ import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryWebService;
 import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
-import org.bosik.diacomp.android.backend.features.dishbase.DishBaseWebService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
-import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseWebService;
 import org.bosik.diacomp.android.backend.features.search.TagLocalService;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
@@ -39,6 +37,8 @@ public class Storage
 	static final String				TAG					= Storage.class.getSimpleName();
 
 	private static final int		CONNECTION_TIMEOUT	= 12000;
+	private static final int		TIMER_DELAY			= 2 * 1000;						// ms
+	private static final int		TIMER_INTERVAL		= 10 * 60 * 1000;					// ms
 
 	private static boolean			timerSettedUp		= false;
 
@@ -49,9 +49,7 @@ public class Storage
 	static DiaryService				localDiary;
 	public static DiaryService		webDiary;
 	public static FoodBaseService	localFoodBase;
-	public static FoodBaseService	webFoodBase;
 	public static DishBaseService	localDishBase;
-	public static DishBaseService	webDishBase;
 
 	private static AnalyzeCore		analyzeCore;
 	public static KoofService		koofService;
@@ -97,17 +95,6 @@ public class Storage
 			Log.i(TAG, "Local dish base initialization...");
 			localDishBase = new DishBaseLocalService(resolver);
 		}
-		if (null == webFoodBase)
-		{
-			Log.i(TAG, "Web food base initialization...");
-
-			webFoodBase = new FoodBaseWebService(webClient);
-		}
-		if (null == webDishBase)
-		{
-			Log.i(TAG, "Web dish base initialization...");
-			webDishBase = new DishBaseWebService(webClient);
-		}
 
 		if (null == analyzeCore)
 		{
@@ -132,9 +119,7 @@ public class Storage
 
 		// this applies all preferences
 		applyPreference(preferences, null);
-
-		// runBackgrounds();
-		setupSyncTimer(10 * 60 * 1000);
+		setupBackgroundTimer();
 	}
 
 	public static void syncDiary(String guid)
@@ -158,7 +143,7 @@ public class Storage
 		}.execute(guid);
 	}
 
-	private static void setupSyncTimer(long interval)
+	private static void setupBackgroundTimer()
 	{
 		if (timerSettedUp)
 		{
@@ -190,9 +175,7 @@ public class Storage
 			}
 		};
 
-		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(task, 2000, interval);
-		timer.schedule(task, 2000);
+		new Timer().scheduleAtFixedRate(task, TIMER_DELAY, TIMER_INTERVAL);
 	}
 
 	static void relevantIndexation()
