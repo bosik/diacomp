@@ -10,7 +10,6 @@ import org.bosik.diacomp.android.backend.features.dishbase.DishBaseWebService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseWebService;
 import org.bosik.diacomp.android.backend.features.search.TagLocalService;
-import org.bosik.diacomp.android.frontend.activities.ActivityPreferences;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCoreImpl;
@@ -69,49 +68,50 @@ public class Storage
 	 */
 	public static void init(Context context, ContentResolver resolver, SharedPreferences preferences)
 	{
-		Log.v(TAG, "Storage unit initialization...");
+		Log.i(TAG, "Storage unit initialization...");
 
 		// DAO's setup
 
 		if (null == webClient)
 		{
-			Log.v(TAG, "Web client initialization...");
+			Log.i(TAG, "Web client initialization...");
 			webClient = new WebClient(CONNECTION_TIMEOUT);
 		}
 		if (null == localDiary)
 		{
-			Log.v(TAG, "Local diary initialization...");
+			Log.i(TAG, "Local diary initialization...");
 			localDiary = new DiaryLocalService(resolver);
 		}
 		if (null == webDiary)
 		{
-			Log.v(TAG, "Web diary initialization...");
+			Log.i(TAG, "Web diary initialization...");
 			webDiary = new DiaryWebService(webClient);
 		}
 		if (null == localFoodBase)
 		{
-			Log.v(TAG, "Local food base initialization...");
+			Log.i(TAG, "Local food base initialization...");
 			localFoodBase = new FoodBaseLocalService(resolver);
 		}
 		if (null == localDishBase)
 		{
-			Log.v(TAG, "Local dish base initialization...");
+			Log.i(TAG, "Local dish base initialization...");
 			localDishBase = new DishBaseLocalService(resolver);
 		}
 		if (null == webFoodBase)
 		{
-			Log.v(TAG, "Web food base initialization...");
+			Log.i(TAG, "Web food base initialization...");
 
 			webFoodBase = new FoodBaseWebService(webClient);
 		}
 		if (null == webDishBase)
 		{
-			Log.v(TAG, "Web dish base initialization...");
+			Log.i(TAG, "Web dish base initialization...");
 			webDishBase = new DishBaseWebService(webClient);
 		}
 
 		if (null == analyzeCore)
 		{
+			// TODO: hardcoded approximation factor
 			analyzeCore = new AnalyzeCoreImpl(40.0);
 			// analyzeCore = new HardcodedAnalyzeService();
 		}
@@ -124,7 +124,7 @@ public class Storage
 
 		if (null == tagService)
 		{
-			Log.v(TAG, "Local tag service initialization...");
+			Log.i(TAG, "Local tag service initialization...");
 			tagService = new TagLocalService(resolver);
 		}
 
@@ -151,7 +151,7 @@ public class Storage
 				catch (Exception e)
 				{
 					// there is nothing to do with it
-					// e.printStackTrace();
+					e.printStackTrace();
 				}
 				return null;
 			}
@@ -202,7 +202,7 @@ public class Storage
 		Log.v(TAG, String.format("Relevant indexation done in %d msec", System.currentTimeMillis() - time));
 	}
 
-	public static void analyzeKoofs()
+	static void analyzeKoofs()
 	{
 		long time = System.currentTimeMillis();
 		koofService.update();
@@ -226,23 +226,11 @@ public class Storage
 	{
 		Log.v(TAG, "applyPreferences(): key = '" + key + "'");
 
-		if (check(key, ActivityPreferences.PREF_ACCOUNT_SERVER_KEY))
-		{
-			webClient.setServer(pref.getString(ActivityPreferences.PREF_ACCOUNT_SERVER_KEY,
-					ActivityPreferences.PREF_ACCOUNT_SERVER_DEFAULT));
-		}
-
-		if (check(key, ActivityPreferences.PREF_ACCOUNT_USERNAME_KEY))
-		{
-			webClient.setUsername(pref.getString(ActivityPreferences.PREF_ACCOUNT_USERNAME_KEY,
-					ActivityPreferences.PREF_ACCOUNT_USERNAME_DEFAULT));
-		}
-
-		if (check(key, ActivityPreferences.PREF_ACCOUNT_PASSWORD_KEY))
-		{
-			webClient.setPassword(pref.getString(ActivityPreferences.PREF_ACCOUNT_PASSWORD_KEY,
-					ActivityPreferences.PREF_ACCOUNT_PASSWORD_DEFAULT));
-		}
+		// if (check(key, ActivityPreferences.PREF_ACCOUNT_SERVER_KEY))
+		// {
+		// webClient.setServer(pref.getString(ActivityPreferences.PREF_ACCOUNT_SERVER_KEY,
+		// ActivityPreferences.PREF_ACCOUNT_SERVER_DEFAULT));
+		// }
 	}
 
 	// private static void speedTest()

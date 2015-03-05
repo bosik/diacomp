@@ -19,7 +19,6 @@ import org.bosik.diacomp.core.utils.Utils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.NotificationManager;
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -50,49 +49,6 @@ public class ActivityMain extends FragmentActivity
 	/* =========================== FIELDS ================================ */
 
 	ViewPager					mViewPager;
-
-	/* =========================== CLASSES ================================ */
-
-	// TODO: вынести в отдельный модуль, отвязать
-	// TODO: refresh diary view on productive (non-trivial) sync
-
-	class AsyncTaskAnalyzeDiary extends AsyncTask<Void, Integer, Void>
-	{
-		// <Params, Progress, Result>
-		private ProgressDialog	dialog;
-
-		@Override
-		protected void onPreExecute()
-		{
-			dialog = new ProgressDialog(ActivityMain.this);
-			dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-			dialog.setCancelable(false);
-			// TODO: i18n
-			dialog.setMessage("Analyzing...");
-		}
-
-		@Override
-		protected Void doInBackground(Void... par)
-		{
-			publishProgress(50);
-			Storage.analyzeKoofs();
-			publishProgress(100);
-
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void result)
-		{
-			if (dialog.isShowing())
-			{
-				dialog.dismiss();
-			}
-
-			// TODO: i18n
-			UIUtils.showTip(ActivityMain.this, "Model updated");
-		}
-	}
 
 	/* =========================== METHODS ================================ */
 
