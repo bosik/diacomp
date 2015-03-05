@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Компенсация</string>
+
+    <string name="app_name">Компенсация</string>
     <string name="base_action_new_dish">Новое блюдо</string>
     <string name="base_action_new_food">Новый продукт</string>
     <string name="base_subinfo" formatted="false">Б %.1f\t\tЖ %.1f\t\tУ %.1f\t\tК %.1f</string>
@@ -72,10 +73,8 @@
     <string name="main_option_preferences">Настройки</string>
     <string name="main_option_test">Тест</string>
     <string name="main_title">Компенсация</string>
-    <string name="preferences_sync">Учётная запись</string>
-    <string name="preferences_sync_password">Пароль</string>
-    <string name="preferences_sync_server">Сервер</string>
-    <string name="preferences_sync_username">Логин (e-mail)</string>
+    <string name="preferences_personal">Личные</string>
+    <string name="preferences_personal_target_bs">Целевой сахар крови</string>
     <string name="preferences_title">Настройки</string>
 
     <!-- Arrays -->
