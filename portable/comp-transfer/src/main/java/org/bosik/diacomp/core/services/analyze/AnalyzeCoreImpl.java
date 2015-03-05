@@ -1,7 +1,6 @@
 package org.bosik.diacomp.core.services.analyze;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
@@ -323,11 +322,20 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	 * @param index
 	 * @return
 	 */
-	private WeightedTimePoint[] remove(WeightedTimePoint[] points, int index)
+	private static WeightedTimePoint[] remove(WeightedTimePoint[] points, int index)
 	{
-		List<WeightedTimePoint> pointsList = Arrays.asList(points);
-		pointsList.remove(index);
-		return (WeightedTimePoint[])pointsList.toArray();
+		WeightedTimePoint[] result = new WeightedTimePoint[points.length - 1];
+
+		for (int i = 0; i < index; i++)
+		{
+			result[i] = points[i];
+		}
+		for (int i = index; i < result.length; i++)
+		{
+			result[i] = points[i + 1];
+		}
+
+		return result;
 	}
 
 	/**
@@ -350,7 +358,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 			}
 		}
 
-		return (WeightedTimePoint[])result.toArray();
+		return result.toArray(new WeightedTimePoint[] {});
 	}
 
 	@Override
