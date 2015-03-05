@@ -35,11 +35,17 @@ public abstract class Parser<T>
 	 */
 	public List<T> readAll(JSONArray json) throws JSONException
 	{
+		//		long time = System.currentTimeMillis();
+
 		List<T> list = new ArrayList<T>();
 		for (int i = 0; i < json.length(); i++)
 		{
 			list.add(read(json.getJSONObject(i)));
 		}
+
+		//		time = System.currentTimeMillis() - time;
+		//		System.out.println(String.format("JSON parser: %d items read in %d ms", json.length(), time));
+
 		return list;
 	}
 
@@ -63,11 +69,17 @@ public abstract class Parser<T>
 	 */
 	public JSONArray writeAll(List<T> objects) throws JSONException
 	{
+		//		long time = System.currentTimeMillis();
+
 		JSONArray array = new JSONArray();
 		for (T object : objects)
 		{
 			array.put(write(object));
 		}
+
+		//		time = System.currentTimeMillis() - time;
+		//		System.out.println(String.format("JSON parser: %d items written in %d ms", objects.size(), time));
+
 		return array;
 	}
 }
