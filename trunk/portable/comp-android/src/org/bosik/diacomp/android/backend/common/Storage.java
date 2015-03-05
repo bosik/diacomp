@@ -146,13 +146,8 @@ public class Storage
 			@Override
 			protected Void doInBackground(Void... arg0)
 			{
-				// FIXME
-
 				long time = System.currentTimeMillis();
 
-				syncDiary();
-				syncFoodbase();
-				syncDishbase();
 				relevantIndexation();
 				analyzeKoofs();
 
@@ -214,60 +209,6 @@ public class Storage
 		Timer timer = new Timer();
 		// timer.scheduleAtFixedRate(task, 2000, interval);
 		// timer.schedule(task, 2000);
-	}
-
-	public static Integer syncDiary()
-	{
-		try
-		{
-			Log.v(TAG, "Diary sync...");
-			long time = System.currentTimeMillis();
-			int syncDiaryItemsCount = SyncUtils.synchronize_v2(localDiary, webDiary, null);
-			Log.v(TAG, String.format("Diary synced in %d msec, total tranferred: %d",
-					System.currentTimeMillis() - time, syncDiaryItemsCount));
-			return syncDiaryItemsCount;
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	public static Integer syncFoodbase()
-	{
-		try
-		{
-			Log.v(TAG, "Foodbase sync...");
-			long time = System.currentTimeMillis();
-			int syncFoodItemsCount = SyncUtils.synchronize_v2(Storage.localFoodBase, Storage.webFoodBase, null);
-			Log.v(TAG, String.format("Foodbase synced in %d msec, total tranferred: %d", System.currentTimeMillis()
-					- time, syncFoodItemsCount));
-			return syncFoodItemsCount;
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	public static Integer syncDishbase()
-	{
-		try
-		{
-			Log.v(TAG, "Dishbase sync...");
-			long time = System.currentTimeMillis();
-			int syncDishItemsCount = SyncUtils.synchronize_v2(Storage.localDishBase, Storage.webDishBase, null);
-			Log.v(TAG, String.format("Dishbase synced in %d msec, total tranferred: %d", System.currentTimeMillis()
-					- time, syncDishItemsCount));
-			return syncDishItemsCount;
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	static void relevantIndexation()
