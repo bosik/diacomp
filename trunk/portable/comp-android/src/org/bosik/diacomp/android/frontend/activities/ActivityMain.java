@@ -73,7 +73,9 @@ public class ActivityMain extends FragmentActivity
 			Account[] accounts = am.getAccountsByType("diacomp.org");
 			if (accounts.length > 0)
 			{
-				long SYNC_INTERVAL = 20; // sec
+				long SYNC_INTERVAL = 60; // sec
+				ContentResolver.setIsSyncable(accounts[0], DiaryContentProvider.AUTHORITY, 1);
+				ContentResolver.setSyncAutomatically(accounts[0], DiaryContentProvider.AUTHORITY, true);
 				ContentResolver.addPeriodicSync(accounts[0], DiaryContentProvider.AUTHORITY, Bundle.EMPTY,
 						SYNC_INTERVAL);
 			}
