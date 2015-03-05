@@ -1,7 +1,5 @@
 package org.bosik.diacomp.android.frontend.activities;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.bosik.diacomp.android.BuildConfig;
@@ -334,82 +332,6 @@ public class ActivityMain extends FragmentActivity
 					mNotifyManager.cancel(ID);
 				}
 			};
-		}.execute();
-	}
-
-	private void testSync2()
-	{
-		new AsyncTask<Void, Void, Map<String, Integer>>()
-		{
-			final String	DIARY	= "diary";
-			final String	FOOD	= "food";
-			final String	DISH	= "dish";
-
-			@Override
-			protected Map<String, Integer> doInBackground(Void... arg0)
-			{
-				Map<String, Integer> result = new HashMap<String, Integer>();
-
-				result.put(DIARY, Storage.syncDiary());
-				result.put(FOOD, Storage.syncFoodbase());
-				result.put(DISH, Storage.syncDishbase());
-
-				return result;
-			}
-
-			@Override
-			protected void onPostExecute(Map<String, Integer> result)
-			{
-				String message = "";
-
-				Integer countDiary = result.get(DIARY);
-				if (countDiary == null)
-				{
-					message += "Diary: failed\n";
-				}
-				else if (countDiary > 0)
-				{
-					message += String.format("Diary: %d\n", countDiary);
-				}
-				else
-				{
-					message += "Diary: \t\tno changes\n";
-				}
-
-				// =================================================================
-
-				Integer countFood = result.get(FOOD);
-				if (countFood == null)
-				{
-					message += "Foods: failed\n";
-				}
-				else if (countFood > 0)
-				{
-					message += String.format("Foods: %d\n", countFood);
-				}
-				else
-				{
-					message += "Foods: \tno changes\n";
-				}
-
-				// =================================================================
-
-				Integer countDish = result.get(DISH);
-				if (countDish == null)
-				{
-					message += "Dishes: failed";
-				}
-				else if (countDish > 0)
-				{
-					message += String.format("Dishes: %d", countDish);
-				}
-				else
-				{
-					message += "Dishes:\tno changes";
-				}
-
-				UIUtils.showTip(ActivityMain.this, message);
-			}
 		}.execute();
 	}
 
