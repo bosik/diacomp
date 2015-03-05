@@ -1,8 +1,15 @@
 package org.bosik.diacomp.android.backend.features.sync;
 
+import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryWebService;
+import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
+import org.bosik.diacomp.android.backend.features.dishbase.DishBaseWebService;
+import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
+import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseWebService;
+import org.bosik.diacomp.core.services.base.dish.DishBaseService;
+import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.sync.SyncUtils;
 import android.accounts.Account;
@@ -56,28 +63,42 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 		{
 			Log.i(TAG, "Sync fired");
 
-			final int CONNECTION_TIMEOUT = 30000;
+			// Preparing local services
 
-			String name = account.name;
-			String password = mAccountManager.getPassword(account);
-
-			final ContentResolver contentResolver = getContext().getContentResolver();
+			ContentResolver contentResolver = getContext().getContentResolver();
 			DiaryService localDiary = new DiaryLocalService(contentResolver);
+			FoodBaseService localFoodBase = new FoodBaseLocalService(contentResolver);
+			DishBaseService localDishBase = new DishBaseLocalService(contentResolver);
+
+			// Preparing web services
+
+			final int connectionTimeout = Integer.parseInt(getContext().getString(R.string.server_timeout));
+			final String serverURL = getContext().getString(R.string.server_url);
+			final String name = account.name;
+			final String password = mAccountManager.getPassword(account);
 
 			if (webClient == null)
 			{
-				webClient = new WebClient(CONNECTION_TIMEOUT);
+				webClient = new WebClient(connectionTimeout);
 			}
-			webClient.setServer("http://192.168.0.100:8190/");
+
+			webClient.setServer(serverURL);
 			webClient.setUsername(name);
 			webClient.setPassword(password);
+
 			DiaryService webDiary = new DiaryWebService(webClient);
+			FoodBaseService webFoodBase = new FoodBaseWebService(webClient);
+			DishBaseService webDishBase = new DishBaseWebService(webClient);
+
+			// Synchronize
 
 			/**/long time = System.currentTimeMillis();
-			int counter = SyncUtils.synchronize_v2(localDiary, webDiary, null);
+			int counterDiary = SyncUtils.synchronize_v2(localDiary, webDiary, null);
+			int counterFood = SyncUtils.synchronize_v2(localFoodBase, webFoodBase, null);
+			int counterDish = SyncUtils.synchronize_v2(localDishBase, webDishBase, null);
 			/**/time = System.currentTimeMillis() - time;
-			/**/Log.i(TAG, "SPC: synchronized in " + time + " ms, items transferred: " + counter);
-
+			/**/Log.i(TAG, String.format("SPC: synchronized in %d ms, items transferred: %d/%d/%d", time,
+					counterDiary, counterFood, counterDish));
 		}
 		catch (Exception e)
 		{
