@@ -123,6 +123,7 @@ object FormEditorBlood: TFormEditorBlood
     TabOrder = 0
     Text = 'EditValue'
     OnKeyDown = FieldKeyDown
+    OnKeyPress = EditValueKeyPress
     AcceptNegative = False
     Decimal = ','
     WarningShow = True

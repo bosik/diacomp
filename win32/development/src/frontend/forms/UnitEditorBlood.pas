@@ -24,6 +24,7 @@ type
     procedure FieldKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure ButtonOKClick(Sender: TObject);
+    procedure EditValueKeyPress(Sender: TObject; var Key: Char);
   private
     function Entity(): TBloodRecord;
   protected
@@ -214,8 +215,7 @@ begin
 end;
 
 {======================================================================================================================}
-procedure TFormEditorBlood.FieldKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TFormEditorBlood.FieldKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 {======================================================================================================================}
 begin
   if (Key = vk_Return) then
@@ -225,10 +225,18 @@ begin
     if (Sender = DatePicker) then
       EditValue.SetFocus() else
     if (Sender = EditValue) then
-      ComboFinger.SetFocus() else
+      Submit() else
     if (Sender = ComboFinger) then
       Submit();
   end;
+end;
+
+{======================================================================================================================}
+procedure TFormEditorBlood.EditValueKeyPress(Sender: TObject; var Key: Char);
+{======================================================================================================================}
+begin
+  if (Key = #13) then
+    Key := #0;
 end;
 
 end.
