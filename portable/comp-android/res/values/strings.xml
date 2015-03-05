@@ -78,10 +78,8 @@
     <string name="main_option_preferences">Preferences</string>
     <string name="main_option_test">Test</string>
     <string name="main_title">Diacomp</string>
-    <string name="preferences_sync">Account</string>
-    <string name="preferences_sync_password">Password</string>
-    <string name="preferences_sync_server">Server</string>
-    <string name="preferences_sync_username">Login (e-mail)</string>
+    <string name="preferences_personal">Personal</string>
+    <string name="preferences_personal_target_bs">Target blood sugar</string>
     <string name="preferences_title">Preferences</string>
 
     <!-- ========================================================================= -->
