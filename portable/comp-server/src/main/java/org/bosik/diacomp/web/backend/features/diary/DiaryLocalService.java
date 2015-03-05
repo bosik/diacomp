@@ -16,6 +16,7 @@ import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
+import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
@@ -360,6 +361,13 @@ public class DiaryLocalService implements DiaryService
 			for (Versioned<DiaryRecord> item : records)
 			{
 				final String id = item.getId().toLowerCase();
+
+				if (id.length() < ObjectService.ID_FULL_SIZE)
+				{
+					throw new IllegalArgumentException(String.format("Invalid ID: %s, must be %d characters long", id,
+							ObjectService.ID_FULL_SIZE));
+				}
+
 				final String content = serializer.write(item.getData());
 				final String timeCache = Utils.formatTimeUTC(item.getData().getTime());
 				final String timeStamp = Utils.formatTimeUTC(item.getTimeStamp());
