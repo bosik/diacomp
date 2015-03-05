@@ -1,8 +1,8 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.Map;
-import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.Storage;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -21,12 +21,8 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 
 	public static SharedPreferences	preferences;
 
-	public static String			PREF_ACCOUNT_PASSWORD_KEY;
-	public static String			PREF_ACCOUNT_PASSWORD_DEFAULT;
-	public static String			PREF_ACCOUNT_SERVER_KEY;
-	public static String			PREF_ACCOUNT_SERVER_DEFAULT;
-	public static String			PREF_ACCOUNT_USERNAME_KEY;
-	public static String			PREF_ACCOUNT_USERNAME_DEFAULT;
+	public static String			PREF_PERSONAL_TARGET_BS_KEY;
+	public static String			PREF_PERSONAL_TARGET_BS_DEFAULT;
 
 	/**
 	 * Initializes the preference trunk
@@ -42,12 +38,8 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 		PreferenceManager.setDefaultValues(context, R.xml.preferences, false);
 
 		// Setup constants
-		PREF_ACCOUNT_SERVER_KEY = context.getString(R.string.pref_Account_Server_Key);
-		PREF_ACCOUNT_SERVER_DEFAULT = context.getString(R.string.pref_Account_Server_Default);
-		PREF_ACCOUNT_USERNAME_KEY = context.getString(R.string.pref_Account_Username_Key);
-		PREF_ACCOUNT_USERNAME_DEFAULT = context.getString(R.string.pref_Account_Username_Default);
-		PREF_ACCOUNT_PASSWORD_KEY = context.getString(R.string.pref_Account_Password_Key);
-		PREF_ACCOUNT_PASSWORD_DEFAULT = context.getString(R.string.pref_Account_Password_Default);
+		PREF_PERSONAL_TARGET_BS_KEY = context.getString(R.string.pref_Personal_TargetBS_Key);
+		PREF_PERSONAL_TARGET_BS_DEFAULT = context.getString(R.string.pref_Personal_TargetBS_Default);
 
 		// Make singleton
 		preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -97,14 +89,7 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 		Preference p = findPreference(key);
 		if (p instanceof EditTextPreference)
 		{
-			if (!PREF_ACCOUNT_PASSWORD_KEY.equals(key))
-			{
-				p.setSummary(sharedPreferences.getString(key, ""));
-			}
-			else
-			{
-				p.setSummary("*******");
-			}
+			p.setSummary(sharedPreferences.getString(key, ""));
 		}
 	}
 }
