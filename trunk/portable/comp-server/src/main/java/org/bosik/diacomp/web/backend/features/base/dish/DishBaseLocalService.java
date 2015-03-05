@@ -16,6 +16,7 @@ import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
+import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
@@ -463,6 +464,12 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			for (Versioned<DishItem> item : items)
 			{
+				if (item.getId() == null || item.getId().length() < ObjectService.ID_FULL_SIZE)
+				{
+					throw new IllegalArgumentException(String.format("Invalid ID: %s, must be %d characters long",
+							item.getId(), ObjectService.ID_FULL_SIZE));
+				}
+
 				final String content = serializer.write(item.getData());
 				final String nameCache = item.getData().getName();
 				final String timeStamp = Utils.formatTimeUTC(item.getTimeStamp());
