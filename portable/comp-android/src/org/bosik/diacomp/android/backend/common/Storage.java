@@ -26,8 +26,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 /**
@@ -139,26 +137,6 @@ public class Storage
 		setupSyncTimer(10 * 60 * 1000);
 	}
 
-	public static void runBackgrounds()
-	{
-		new AsyncTask<Void, Void, Void>()
-		{
-			@Override
-			protected Void doInBackground(Void... arg0)
-			{
-				long time = System.currentTimeMillis();
-
-				relevantIndexation();
-				analyzeKoofs();
-
-				time = System.currentTimeMillis() - time;
-				Log.d(TAG, "Backgrounds done in " + time + " msec");
-
-				return null;
-			}
-		}.execute();
-	}
-
 	public static void syncDiary(String guid)
 	{
 		new AsyncTask<String, Void, Void>()
@@ -190,25 +168,31 @@ public class Storage
 
 		TimerTask task = new TimerTask()
 		{
-			private final Handler	mHandler	= new Handler(Looper.getMainLooper());
-
 			@Override
 			public void run()
 			{
-				mHandler.post(new Runnable()
+				new AsyncTask<Void, Void, Void>()
 				{
 					@Override
-					public void run()
+					protected Void doInBackground(Void... arg0)
 					{
-						runBackgrounds();
+						/**/long time = System.currentTimeMillis();
+
+						relevantIndexation();
+						analyzeKoofs();
+
+						/**/time = System.currentTimeMillis() - time;
+						/**/Log.d(TAG, "Backgrounds done in " + time + " ms");
+
+						return null;
 					}
-				});
+				}.execute();
 			}
 		};
 
 		Timer timer = new Timer();
-		// timer.scheduleAtFixedRate(task, 2000, interval);
-		// timer.schedule(task, 2000);
+		timer.scheduleAtFixedRate(task, 2000, interval);
+		timer.schedule(task, 2000);
 	}
 
 	static void relevantIndexation()
