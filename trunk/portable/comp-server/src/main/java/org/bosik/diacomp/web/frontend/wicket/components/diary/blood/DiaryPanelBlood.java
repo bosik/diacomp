@@ -26,6 +26,12 @@ public class DiaryPanelBlood extends Panel
 	@SpringBean
 	DiaryService					diaryService;
 
+	// TODO: i18n
+	private String[]				FINGERS_SHORT		= { "БЛ", "1Л", "2Л", "3Л", "4Л", "4П", "3П", "2П", "1П", "БП" };
+	private String[]				FINGERS_LONG		= { "Левая, большой", "Левая, указательный", "Левая, средний",
+			"Левая, безымянный", "Левая, мизинец", "Правая, мизинец", "Правая, безымянный", "Правая, средний",
+			"Правая, указательный", "Правая, большой"	};
+
 	public DiaryPanelBlood(String id, IModel<Versioned<BloodRecord>> model)
 	{
 		super(id);
@@ -38,7 +44,7 @@ public class DiaryPanelBlood extends Panel
 		super.onInitialize();
 
 		BloodRecord rec = model.getObject().getData();
-		// TODO: localization
+		// TODO: i18n
 		add(new Image("icon", Model.of("icon.png")).add(AttributeModifier.replace("title", "Замер СК")));
 		add(new Label("time", Utils.formatTimeLocalShort(rec.getTime())));
 		add(new Label("value", formatBloodValue(rec.getValue())));
@@ -98,17 +104,27 @@ public class DiaryPanelBlood extends Panel
 		return String.format("%.1f ", value) + "ммоль/л";
 	}
 
-	private static String formatBloodFinger(int index)
+	private String formatBloodFinger(int index)
 	{
-		String[] fingers = { "БЛ", "1Л", "2Л", "3Л", "4Л", "4П", "3П", "2П", "1П", "БП" };
-		return fingers[index];
+		if (index >= 0 && index < FINGERS_SHORT.length)
+		{
+			return FINGERS_SHORT[index];
+		}
+		else
+		{
+			return "";
+		}
 	}
 
-	private static String formatBloodFingerHint(int index)
+	private String formatBloodFingerHint(int index)
 	{
-		String[] fingers = { "Левая, большой", "Левая, указательный", "Левая, средний", "Левая, безымянный",
-				"Левая, мизинец", "Правая, мизинец", "Правая, безымянный", "Правая, средний", "Правая, указательный",
-				"Правая, большой" };
-		return fingers[index];
+		if (index >= 0 && index < FINGERS_SHORT.length)
+		{
+			return FINGERS_LONG[index];
+		}
+		else
+		{
+			return "";
+		}
 	}
 }
