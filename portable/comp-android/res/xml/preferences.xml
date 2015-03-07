@@ -6,6 +6,7 @@
             android:name="prefPersonalTargetBS"
             android:defaultValue="@string/pref_Personal_TargetBS_Default"
             android:key="@string/pref_Personal_TargetBS_Key"
+            android:numeric="decimal"
             android:summary=""
             android:title="@string/preferences_personal_target_bs" />
     </PreferenceCategory>
