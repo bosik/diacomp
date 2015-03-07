@@ -29,7 +29,10 @@ import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.ContentObserver;
 import android.database.Cursor;
+import android.net.Uri;
+import android.os.Handler;
 import android.util.Log;
 
 @SuppressWarnings("unchecked")
@@ -42,6 +45,30 @@ public class DiaryLocalService implements DiaryService
 	private final ContentResolver			resolver;
 	private final Parser<DiaryRecord>		parser		= new ParserDiaryRecord();
 	private final Serializer<DiaryRecord>	serializer	= new SerializerAdapter<DiaryRecord>(parser);
+
+	private MyObserver						observer;
+	static MemoryMerkleTree					hashTree;
+
+	class MyObserver extends ContentObserver
+	{
+		public MyObserver(Handler handler)
+		{
+			super(handler);
+		}
+
+		@Override
+		public void onChange(boolean selfChange)
+		{
+			this.onChange(selfChange, null);
+		}
+
+		@Override
+		public void onChange(boolean selfChange, Uri uri)
+		{
+			hashTree = null;
+			Log.i(TAG, "DB changed; cashed hash tree invalidated");
+		}
+	}
 
 	/* ============================ CONSTRUCTOR ============================ */
 
@@ -58,6 +85,17 @@ public class DiaryLocalService implements DiaryService
 			throw new IllegalArgumentException("Content Resolver is null");
 		}
 		this.resolver = resolver;
+
+		observer = new MyObserver(null);
+		resolver.registerContentObserver(DiaryContentProvider.CONTENT_DIARY_URI, true, observer);
+	}
+
+	@Override
+	protected void finalize() throws Throwable
+	{
+		// TODO: check for the memory leaks
+		resolver.unregisterContentObserver(observer);
+		super.finalize();
 	}
 
 	/* ============================ API ============================ */
@@ -369,18 +407,24 @@ public class DiaryLocalService implements DiaryService
 	{
 		/**/Profiler p = new Profiler();
 
-		SortedMap<String, String> hashes = getDataHashes();
-		/**/Log.d(TAG, "getDataHashes(): " + p.sinceLastCheck() / 1000000 + " ms");
+		MemoryMerkleTree result = hashTree;
 
-		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
-		/**/Log.d(TAG, "buildHashTree(): " + p.sinceLastCheck() / 1000000 + " ms");
+		if (result == null)
+		{
+			SortedMap<String, String> hashes = getDataHashes();
+			/**/Log.d(TAG, "getDataHashes(): " + p.sinceLastCheck() / 1000000 + " ms");
 
-		MemoryMerkleTree result = new MemoryMerkleTree();
-		result.putAll(tree); // headers (0..4 chars id)
-		result.putAll(hashes); // leafs (32 chars id)
+			SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
+			/**/Log.d(TAG, "buildHashTree(): " + p.sinceLastCheck() / 1000000 + " ms");
+
+			result = new MemoryMerkleTree();
+			result.putAll(tree); // headers (0..4 chars id)
+			result.putAll(hashes); // leafs (32 chars id)
+
+			hashTree = result;
+		}
 
 		/**/Log.d(TAG, "getHashTree() [total]: " + p.sinceStart() / 1000000 + " ms");
-
 		return result;
 	}
 
