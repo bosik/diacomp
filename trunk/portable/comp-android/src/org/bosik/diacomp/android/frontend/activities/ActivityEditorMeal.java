@@ -273,7 +273,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			else
 			{
 				// TODO: i18n
-				textMealExpectedBs.setText(String.format("%.1f %s", expectedBS, "hypoglycemia"));
+				textMealExpectedBs.setText("hypoglycemia");
 			}
 		}
 		else
