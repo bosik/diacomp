@@ -58,7 +58,8 @@
     <string name="editor_note_title">Заметка</string>
     <string name="fd_action_add">Добавить</string>
     <string name="login_action_forgot_password">Восстановить пароль</string>
-    <string name="login_action_sign_in_register"><b>Войти</b> или зарегистрироваться</string>
+    <string name="login_action_register">Создать аккаунт</string>
+    <string name="login_action_sign_in">Войти</string>
     <string name="login_action_sign_in_short">Войти</string>
     <string name="login_error_field_required">Введите значение</string>
     <string name="login_error_incorrect_password">Неверный пароль</string>
@@ -70,6 +71,7 @@
     <string name="login_title">Авторизация</string>
     <string name="main_option_bases">Базы</string>
     <string name="main_option_diary">Дневник</string>
+    <string name="main_option_login">Войти...</string>
     <string name="main_option_preferences">Настройки</string>
     <string name="main_option_test">Тест</string>
     <string name="main_title">Компенсация</string>

@@ -3,6 +3,7 @@ encoding//src/main/java=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/WicketApplication.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/WicketApplication_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/pages/login/LoginPage_ru.utf8.properties=UTF-8
+encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/pages/register/RegisterPage_ru.utf8.properties=UTF-8
 encoding//src/main/resources=UTF-8
 encoding//src/main/webapp=UTF-8
 encoding//src/test/java=UTF-8
