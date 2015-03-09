@@ -6,6 +6,7 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.android.backend.features.preferences.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorBlood;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorIns;
@@ -22,6 +23,8 @@ import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.diary.PostprandUtils;
+import org.bosik.diacomp.core.services.preferences.Preference;
+import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.content.Intent;
@@ -38,51 +41,51 @@ import android.widget.Button;
 
 public class FragmentDiaryScroller extends Fragment
 {
-	private static final String	TAG							= FragmentDiaryScroller.class.getSimpleName();
+	private static final String		TAG							= FragmentDiaryScroller.class.getSimpleName();
 
 	// Constants
-	private static final int	DIALOG_BLOOD_CREATE			= 11;
-	private static final int	DIALOG_BLOOD_MODIFY			= 12;
-	private static final int	DIALOG_INS_CREATE			= 21;
-	private static final int	DIALOG_INS_MODIFY			= 22;
-	private static final int	DIALOG_MEAL_CREATE			= 31;
-	private static final int	DIALOG_MEAL_MODIFY			= 32;
-	private static final int	DIALOG_NOTE_CREATE			= 41;
-	private static final int	DIALOG_NOTE_MODIFY			= 42;
+	private static final int		DIALOG_BLOOD_CREATE			= 11;
+	private static final int		DIALOG_BLOOD_MODIFY			= 12;
+	private static final int		DIALOG_INS_CREATE			= 21;
+	private static final int		DIALOG_INS_MODIFY			= 22;
+	private static final int		DIALOG_MEAL_CREATE			= 31;
+	private static final int		DIALOG_MEAL_MODIFY			= 32;
+	private static final int		DIALOG_NOTE_CREATE			= 41;
+	private static final int		DIALOG_NOTE_MODIFY			= 42;
 
 	// FIXME: hardcoded patient params
-	private static final long	SCAN_FOR_BLOOD_FINGER		= 5 * Utils.SecPerDay;
-	private static final int	SCAN_FOR_BLOOD_BEFORE_MEAL	= 4 * Utils.SecPerHour;
-	private static final long	SCAN_FOR_INS_AROUND_MEAL	= 3 * Utils.SecPerHour;
-	private static final Double	bloodTarget					= 5.0;
+	private static final long		SCAN_FOR_BLOOD_FINGER		= 5 * Utils.SecPerDay;
+	private static final int		SCAN_FOR_BLOOD_BEFORE_MEAL	= 4 * Utils.SecPerHour;
+	private static final long		SCAN_FOR_INS_AROUND_MEAL	= 3 * Utils.SecPerHour;
 
 	// Services
-	private DiaryService		diary;
+	private DiaryService			diary;
+	private PreferencesTypedService	preferences;
 
 	// Widgets
-	DiaryDayView				list;
-	private Button				buttonAddBlood;
-	private Button				buttonAddIns;
-	private Button				buttonAddMeal;
-	private Button				buttonAddNote;
+	DiaryDayView					list;
+	private Button					buttonAddBlood;
+	private Button					buttonAddIns;
+	private Button					buttonAddMeal;
+	private Button					buttonAddNote;
 
-	private ContentObserver		observer					= new ContentObserver(null)
-															{
-																@Override
-																public void onChange(boolean selfChange)
+	private ContentObserver			observer					= new ContentObserver(null)
 																{
-																	this.onChange(selfChange, null);
-																}
-
-																@Override
-																public void onChange(boolean selfChange, Uri uri)
-																{
-																	if (list != null)
+																	@Override
+																	public void onChange(boolean selfChange)
 																	{
-																		list.refresh();
+																		this.onChange(selfChange, null);
 																	}
-																}
-															};
+
+																	@Override
+																	public void onChange(boolean selfChange, Uri uri)
+																	{
+																		if (list != null)
+																		{
+																			list.refresh();
+																		}
+																	}
+																};
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -106,6 +109,7 @@ public class FragmentDiaryScroller extends Fragment
 
 		// services
 		diary = new DiaryLocalService(getActivity().getContentResolver());
+		preferences = new PreferencesLocalService(getActivity().getContentResolver());
 
 		// Widgets binding
 		View rootView = inflater.inflate(R.layout.fragment_diary_scroller, container, false);
@@ -257,6 +261,9 @@ public class FragmentDiaryScroller extends Fragment
 			{
 				intent.putExtra(ActivityEditorMeal.FIELD_BS_BEFORE_MEAL, bloodBeforeMeal);
 			}
+
+			Double bloodTarget = preferences.getDoubleValue(Preference.TARGET_BS);
+
 			intent.putExtra(ActivityEditorMeal.FIELD_BS_TARGET, bloodTarget);
 			intent.putExtra(ActivityEditorMeal.FIELD_INS_INJECTED, insInjected);
 			startActivityForResult(intent, createMode ? DIALOG_MEAL_CREATE : DIALOG_MEAL_MODIFY);

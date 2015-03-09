@@ -8,9 +8,12 @@ import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
 import org.bosik.diacomp.android.backend.features.dishbase.DishBaseWebService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseWebService;
+import org.bosik.diacomp.android.backend.features.preferences.PreferencesLocalService;
+import org.bosik.diacomp.android.backend.features.preferences.PreferencesWebService;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.preferences.PreferencesService;
 import org.bosik.diacomp.core.services.sync.SyncUtils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -69,6 +72,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			DiaryService localDiary = new DiaryLocalService(contentResolver);
 			FoodBaseService localFoodBase = new FoodBaseLocalService(contentResolver);
 			DishBaseService localDishBase = new DishBaseLocalService(contentResolver);
+			PreferencesService localPreferences = new PreferencesLocalService(contentResolver);
 
 			// Preparing web services
 
@@ -89,6 +93,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			DiaryService webDiary = new DiaryWebService(webClient);
 			FoodBaseService webFoodBase = new FoodBaseWebService(webClient);
 			DishBaseService webDishBase = new DishBaseWebService(webClient);
+			PreferencesService webPreferences = new PreferencesWebService(webClient);
 
 			// Synchronize
 
@@ -96,9 +101,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			int counterDiary = SyncUtils.synchronize_v2(localDiary, webDiary, null);
 			int counterFood = SyncUtils.synchronize_v2(localFoodBase, webFoodBase, null);
 			int counterDish = SyncUtils.synchronize_v2(localDishBase, webDishBase, null);
+			int countPreferences = SyncUtils.synchronizePreferences(localPreferences, webPreferences) ? 1 : 0;
+
 			/**/time = System.currentTimeMillis() - time;
-			/**/Log.i(TAG, String.format("SPC: synchronized in %d ms, items transferred: %d/%d/%d", time,
-					counterDiary, counterFood, counterDish));
+			/**/Log.i(TAG, String.format("SPC: synchronized in %d ms, items transferred: %d/%d/%d/%d", time,
+					counterDiary, counterFood, counterDish, countPreferences));
 		}
 		catch (Exception e)
 		{

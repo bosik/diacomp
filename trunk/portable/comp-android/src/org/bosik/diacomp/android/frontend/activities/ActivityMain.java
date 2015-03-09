@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -65,8 +66,8 @@ public class ActivityMain extends FragmentActivity
 				UIUtils.showTip(this, "Debug mode is on");
 			}
 
-			ActivityPreferences.init(this);
-			Storage.init(this, getContentResolver(), ActivityPreferences.preferences);
+			PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+			Storage.init(this, getContentResolver(), PreferenceManager.getDefaultSharedPreferences(this));
 
 			// Account sync
 			AccountManager am = AccountManager.get(this);
