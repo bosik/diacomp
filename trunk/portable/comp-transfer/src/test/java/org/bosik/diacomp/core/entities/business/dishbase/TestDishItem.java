@@ -1,18 +1,13 @@
 package org.bosik.diacomp.core.entities.business.dishbase;
 
-import junit.framework.TestCase;
+import static junit.framework.TestCase.assertEquals;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.utils.Utils;
+import org.junit.Test;
 
-public class TestDishItem extends TestCase
+public class TestDishItem
 {
-	private DishItem	dish;
-
-	@Override
-	protected void setUp()
-	{
-		dish = new DishItem();
-	}
+	private DishItem	dish	= new DishItem();
 
 	public void test_setName_normal_ok()
 	{
@@ -63,17 +58,10 @@ public class TestDishItem extends TestCase
 		assertEquals(20.0, dish.getRelValue(), Utils.EPS);
 	}
 
+	@Test(expected = IllegalArgumentException.class)
 	public void test_add_null_exceptionThrown()
 	{
-		try
-		{
-			dish.add(null);
-			fail("No exception was thrown");
-		}
-		catch (NullPointerException e)
-		{
-			// just as planned
-		}
+		dish.add(null);
 	}
 
 	public void test_remove_normal_ok()
