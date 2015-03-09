@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Preference keys & defaults (placed here to be accessable from preferences.xml) -->
 
-    <string name="pref_Personal_TargetBS_Key">pref_Personal_TargetBS_Key</string>
-    <string name="pref_Personal_TargetBS_Default">5.0</string>
+    <!-- Preference keys & defaults (placed here to be accessable from preferences.xml) -->
+    <!-- <string name="pref_Personal_TargetBS_Key">e6681282aa724d3fa4cd6ac5735a163f</string> -->
 
 </resources>

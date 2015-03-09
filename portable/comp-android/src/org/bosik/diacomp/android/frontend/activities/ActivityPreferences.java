@@ -1,62 +1,49 @@
 package org.bosik.diacomp.android.frontend.activities;
 
-import java.util.Map;
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.common.Storage;
-import android.content.Context;
+import org.bosik.diacomp.android.backend.features.preferences.PreferencesLocalService;
+import org.bosik.diacomp.core.services.preferences.Preference;
+import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
+import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
-import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class ActivityPreferences extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
-	/* =========================== КОНСТАНТЫ ================================ */
-
 	private static final String		TAG	= ActivityPreferences.class.getSimpleName();
 
-	public static SharedPreferences	preferences;
-
-	public static String			PREF_PERSONAL_TARGET_BS_KEY;
-	public static String			PREF_PERSONAL_TARGET_BS_DEFAULT;
-
-	/**
-	 * Initializes the preference trunk
-	 * 
-	 * @param context
-	 * @param resolver
-	 */
-	public static void init(Context context)
-	{
-		Log.v(TAG, "Preferences inititalization...");
-
-		// Initialize preferences
-		PreferenceManager.setDefaultValues(context, R.xml.preferences, false);
-
-		// Setup constants
-		PREF_PERSONAL_TARGET_BS_KEY = context.getString(R.string.pref_Personal_TargetBS_Key);
-		PREF_PERSONAL_TARGET_BS_DEFAULT = context.getString(R.string.pref_Personal_TargetBS_Default);
-
-		// Make singleton
-		preferences = PreferenceManager.getDefaultSharedPreferences(context);
-	}
+	// Services
+	private SharedPreferences		systemPreferences;
+	private PreferencesTypedService	syncablePreferences;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		Log.v(TAG, "Preferences activity created");
 
-		addPreferencesFromResource(R.xml.preferences);
+		// Initializing services
+		syncablePreferences = new PreferencesLocalService(getContentResolver());
+		systemPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-		Map<String, ?> map = preferences.getAll();
-		for (String key : map.keySet())
+		// Filling values
+		Editor editor = systemPreferences.edit();
+		for (Preference preference : Preference.values())
 		{
-			updateDescription(preferences, key);
+			editor.putString(preference.getKey(), syncablePreferences.getStringValue(preference));
+		}
+		editor.apply();
+
+		// Inflating layout
+		addPreferencesFromResource(R.xml.preferences);
+		for (String key : systemPreferences.getAll().keySet())
+		{
+			updateDescription(systemPreferences, key);
 		}
 	}
 
@@ -75,18 +62,41 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 	}
 
 	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+	public void onSharedPreferenceChanged(SharedPreferences preferences, String key)
 	{
 		Log.v(TAG, String.format("Preference '%s' changed", key));
-		updateDescription(sharedPreferences, key);
-		Storage.applyPreference(sharedPreferences, key);
+		updateDescription(preferences, key);
+		// Storage.applyPreference(sharedPreferences, key);
+
+		for (Preference preference : Preference.values())
+		{
+			if (preference.getKey().equals(key))
+			{
+				PreferenceEntry<String> entry = syncablePreferences.getString(preference);
+
+				if (entry == null)
+				{
+					entry = new PreferenceEntry<String>();
+					entry.setType(preference);
+					entry.setVersion(1);
+				}
+				else
+				{
+					entry.setVersion(entry.getVersion() + 1);
+				}
+				entry.setValue(preferences.getString(key, preference.getDefaultValue()));
+				syncablePreferences.setString(entry);
+
+				break;
+			}
+		}
 	}
 
 	private void updateDescription(SharedPreferences sharedPreferences, String key)
 	{
 		Log.v(TAG, String.format("Updating description for preference '%s'", key));
 
-		Preference p = findPreference(key);
+		android.preference.Preference p = findPreference(key);
 		if (p instanceof EditTextPreference)
 		{
 			p.setSummary(sharedPreferences.getString(key, ""));

@@ -11,79 +11,92 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.util.Log;
 
 public class DiaryContentProvider extends ContentProvider
 {
-	// private static final String TAG = DiaryContentProvider.class.getSimpleName();
+	private static final String		TAG							= DiaryContentProvider.class.getSimpleName();
 
 	// Core
 	private MyDBHelper				openHelper;
 	private static final UriMatcher	sURIMatcher;
 
 	// Database
-	private static final String		DATABASE_NAME					= "Comp.db";
-	private static final int		DATABASE_VERSION				= 1;
-	private static final String		SCHEME							= "content://";
-	public static final String		AUTHORITY						= "diacomp.provider";
+	private static final String		DATABASE_NAME				= "Comp.db";
+	private static final int		DATABASE_VERSION			= 1;
+	private static final String		SCHEME						= "content://";
+	public static final String		AUTHORITY					= "diacomp.provider";
 
 	// ======================================= Diary table =======================================
 
-	private static final String		TABLE_DIARY						= "diary";
-	public static final String		COLUMN_DIARY_GUID				= "_GUID";
-	public static final String		COLUMN_DIARY_TIMESTAMP			= "_TimeStamp";
-	public static final String		COLUMN_DIARY_HASH				= "_Hash";
-	public static final String		COLUMN_DIARY_VERSION			= "_Version";
-	public static final String		COLUMN_DIARY_DELETED			= "_Deleted";
-	public static final String		COLUMN_DIARY_CONTENT			= "_Content";
-	public static final String		COLUMN_DIARY_TIMECACHE			= "_TimeCache";
+	private static final String		TABLE_DIARY					= "diary";
+	public static final String		COLUMN_DIARY_GUID			= "_GUID";
+	public static final String		COLUMN_DIARY_TIMESTAMP		= "_TimeStamp";
+	public static final String		COLUMN_DIARY_HASH			= "_Hash";
+	public static final String		COLUMN_DIARY_VERSION		= "_Version";
+	public static final String		COLUMN_DIARY_DELETED		= "_Deleted";
+	public static final String		COLUMN_DIARY_CONTENT		= "_Content";
+	public static final String		COLUMN_DIARY_TIMECACHE		= "_TimeCache";
 
-	public static final String		CONTENT_DIARY_STRING			= SCHEME + AUTHORITY + "/" + TABLE_DIARY + "/";
-	public static final Uri			CONTENT_DIARY_URI				= Uri.parse(CONTENT_DIARY_STRING);
+	public static final String		CONTENT_DIARY_STRING		= SCHEME + AUTHORITY + "/" + TABLE_DIARY + "/";
+	public static final Uri			CONTENT_DIARY_URI			= Uri.parse(CONTENT_DIARY_STRING);
 
-	private static final int		CODE_DIARY						= 1;
+	private static final int		CODE_DIARY					= 1;
 
 	// ===================================== Foodbase table =====================================
 
-	private static final String		TABLE_FOODBASE					= "foodbase";
-	public static final String		COLUMN_FOODBASE_GUID			= "GUID";
-	public static final String		COLUMN_FOODBASE_TIMESTAMP		= "TimeStamp";
-	public static final String		COLUMN_FOODBASE_HASH			= "Hash";
-	public static final String		COLUMN_FOODBASE_VERSION			= "Version";
-	public static final String		COLUMN_FOODBASE_DELETED			= "Deleted";
-	public static final String		COLUMN_FOODBASE_DATA			= "Data";
-	public static final String		COLUMN_FOODBASE_NAMECACHE		= "NameCache";
+	private static final String		TABLE_FOODBASE				= "foodbase";
+	public static final String		COLUMN_FOODBASE_GUID		= "GUID";
+	public static final String		COLUMN_FOODBASE_TIMESTAMP	= "TimeStamp";
+	public static final String		COLUMN_FOODBASE_HASH		= "Hash";
+	public static final String		COLUMN_FOODBASE_VERSION		= "Version";
+	public static final String		COLUMN_FOODBASE_DELETED		= "Deleted";
+	public static final String		COLUMN_FOODBASE_DATA		= "Data";
+	public static final String		COLUMN_FOODBASE_NAMECACHE	= "NameCache";
 
-	public static final String		CONTENT_FOODBASE_STRING			= SCHEME + AUTHORITY + "/" + TABLE_FOODBASE + "/";
-	public static final Uri			CONTENT_FOODBASE_URI			= Uri.parse(CONTENT_FOODBASE_STRING);
+	public static final String		CONTENT_FOODBASE_STRING		= SCHEME + AUTHORITY + "/" + TABLE_FOODBASE + "/";
+	public static final Uri			CONTENT_FOODBASE_URI		= Uri.parse(CONTENT_FOODBASE_STRING);
 
-	private static final int		CODE_FOODBASE					= 2;
+	private static final int		CODE_FOODBASE				= 2;
 
 	// ===================================== Dishbase table =====================================
 
-	private static final String		TABLE_DISHBASE					= "dishbase";
-	public static final String		COLUMN_DISHBASE_GUID			= "GUID";
-	public static final String		COLUMN_DISHBASE_TIMESTAMP		= "TimeStamp";
-	public static final String		COLUMN_DISHBASE_HASH			= "Hash";
-	public static final String		COLUMN_DISHBASE_VERSION			= "Version";
-	public static final String		COLUMN_DISHBASE_DELETED			= "Deleted";
-	public static final String		COLUMN_DISHBASE_DATA			= "Data";
-	public static final String		COLUMN_DISHBASE_NAMECACHE		= "NameCache";
+	private static final String		TABLE_DISHBASE				= "dishbase";
+	public static final String		COLUMN_DISHBASE_GUID		= "GUID";
+	public static final String		COLUMN_DISHBASE_TIMESTAMP	= "TimeStamp";
+	public static final String		COLUMN_DISHBASE_HASH		= "Hash";
+	public static final String		COLUMN_DISHBASE_VERSION		= "Version";
+	public static final String		COLUMN_DISHBASE_DELETED		= "Deleted";
+	public static final String		COLUMN_DISHBASE_DATA		= "Data";
+	public static final String		COLUMN_DISHBASE_NAMECACHE	= "NameCache";
 
-	public static final String		CONTENT_DISHBASE_STRING			= SCHEME + AUTHORITY + "/" + TABLE_DISHBASE + "/";
-	public static final Uri			CONTENT_DISHBASE_URI			= Uri.parse(CONTENT_DISHBASE_STRING);
+	public static final String		CONTENT_DISHBASE_STRING		= SCHEME + AUTHORITY + "/" + TABLE_DISHBASE + "/";
+	public static final Uri			CONTENT_DISHBASE_URI		= Uri.parse(CONTENT_DISHBASE_STRING);
 
-	private static final int		CODE_DISHBASE					= 3;
+	private static final int		CODE_DISHBASE				= 3;
 
 	// ===================================== Tags table =====================================
 
-	private static final String		TABLE_TAG						= "tag";
-	public static final String		COLUMN_TAG_GUID					= "GUID";
-	public static final String		COLUMN_TAG_TAG					= "Tag";
+	private static final String		TABLE_TAG					= "tag";
+	public static final String		COLUMN_TAG_GUID				= "GUID";
+	public static final String		COLUMN_TAG_TAG				= "Tag";
 
-	public static final String		CONTENT_TAG_STRING				= SCHEME + AUTHORITY + "/" + TABLE_TAG + "/";
-	public static final Uri			CONTENT_TAG_URI					= Uri.parse(CONTENT_TAG_STRING);
+	public static final String		CONTENT_TAG_STRING			= SCHEME + AUTHORITY + "/" + TABLE_TAG + "/";
+	public static final Uri			CONTENT_TAG_URI				= Uri.parse(CONTENT_TAG_STRING);
 
-	private static final int		CODE_TAG						= 4;
+	private static final int		CODE_TAG					= 4;
+
+	// ===================================== Preferences table =====================================
+
+	private static final String		TABLE_PREFERENCES			= "preferences";
+	public static final String		COLUMN_PREFERENCES_KEY		= "Key";
+	public static final String		COLUMN_PREFERENCES_VALUE	= "Value";
+	public static final String		COLUMN_PREFERENCES_VERSION	= "Version";
+
+	public static final String		CONTENT_PREFERENCES_STRING	= SCHEME + AUTHORITY + "/" + TABLE_PREFERENCES + "/";
+	public static final Uri			CONTENT_PREFERENCES_URI		= Uri.parse(CONTENT_PREFERENCES_STRING);
+
+	private static final int		CODE_PREFERENCES			= 5;
 
 	// ==================================================================================================
 
@@ -94,6 +107,7 @@ public class DiaryContentProvider extends ContentProvider
 		sURIMatcher.addURI(AUTHORITY, TABLE_FOODBASE, CODE_FOODBASE);
 		sURIMatcher.addURI(AUTHORITY, TABLE_DISHBASE, CODE_DISHBASE);
 		sURIMatcher.addURI(AUTHORITY, TABLE_TAG, CODE_TAG);
+		sURIMatcher.addURI(AUTHORITY, TABLE_PREFERENCES, CODE_PREFERENCES);
 	}
 
 	private static final class MyDBHelper extends SQLiteOpenHelper
@@ -110,6 +124,7 @@ public class DiaryContentProvider extends ContentProvider
 		@Override
 		public void onCreate(SQLiteDatabase db)
 		{
+			Log.i(TAG, "MyDBHelper created");
 			// FIXME: THIS ERASES ALL DATA
 
 			// db.execSQL("DROP TABLE IF EXISTS " + TABLE_DIARY);
@@ -165,6 +180,15 @@ public class DiaryContentProvider extends ContentProvider
 				COLUMN_TAG_TAG + " INTEGER NOT NULL"
 			);
 			db.execSQL(SQL_CREATE_TAG);
+			
+			// preferences table
+			final String SQL_CREATE_PREFERENCES = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s)",
+				TABLE_PREFERENCES,
+				COLUMN_PREFERENCES_KEY + " TEXT PRIMARY KEY NOT NULL",
+				COLUMN_PREFERENCES_VALUE + " TEXT NOT NULL",
+				COLUMN_PREFERENCES_VERSION + " INTEGER NOT NULL"
+			);
+			db.execSQL(SQL_CREATE_PREFERENCES);
 
 			// @formatter:on
 		}
@@ -205,6 +229,10 @@ public class DiaryContentProvider extends ContentProvider
 			case CODE_TAG:
 			{
 				return "org.bosik.diacomp.tag";
+			}
+			case CODE_PREFERENCES:
+			{
+				return "org.bosik.diacomp.preferences";
 			}
 			default:
 			{
@@ -332,6 +360,25 @@ public class DiaryContentProvider extends ContentProvider
 				break;
 			}
 
+			case CODE_PREFERENCES:
+			{
+				assertDefined(values, COLUMN_PREFERENCES_KEY);
+				assertDefined(values, COLUMN_PREFERENCES_VALUE);
+				assertDefined(values, COLUMN_PREFERENCES_VERSION);
+
+				long rowId = db.insert(TABLE_PREFERENCES, null, values);
+
+				if (rowId > 0)
+				{
+					resultUri = ContentUris.withAppendedId(CONTENT_PREFERENCES_URI, rowId);
+				}
+				else
+				{
+					throw new SQLException("Failed to insert row into " + uri);
+				}
+				break;
+			}
+
 			default:
 			{
 				throw new UnknownUriException(uri);
@@ -368,6 +415,12 @@ public class DiaryContentProvider extends ContentProvider
 			case CODE_TAG:
 			{
 				qb.setTables(TABLE_TAG);
+				break;
+			}
+
+			case CODE_PREFERENCES:
+			{
+				qb.setTables(TABLE_PREFERENCES);
 				break;
 			}
 
@@ -408,6 +461,11 @@ public class DiaryContentProvider extends ContentProvider
 			case CODE_TAG:
 			{
 				affectedCount = db.update(TABLE_TAG, values, where, whereArgs);
+				break;
+			}
+			case CODE_PREFERENCES:
+			{
+				affectedCount = db.update(TABLE_PREFERENCES, values, where, whereArgs);
 				break;
 			}
 			default:
@@ -451,6 +509,11 @@ public class DiaryContentProvider extends ContentProvider
 			case CODE_TAG:
 			{
 				count = db.delete(TABLE_TAG, where, whereArgs);
+				break;
+			}
+			case CODE_PREFERENCES:
+			{
+				count = db.delete(TABLE_PREFERENCES, where, whereArgs);
 				break;
 			}
 			default:
