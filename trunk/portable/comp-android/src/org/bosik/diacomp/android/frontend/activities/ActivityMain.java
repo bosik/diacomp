@@ -50,6 +50,7 @@ public class ActivityMain extends FragmentActivity
 	/* =========================== FIELDS ================================ */
 
 	ViewPager					mViewPager;
+	private boolean				hasAccount;
 
 	/* =========================== METHODS ================================ */
 
@@ -59,6 +60,8 @@ public class ActivityMain extends FragmentActivity
 		super.onCreate(savedInstanceState);
 		try
 		{
+			setContentView(R.layout.activity_main);
+
 			// Backend
 
 			if (BuildConfig.DEBUG)
@@ -72,7 +75,7 @@ public class ActivityMain extends FragmentActivity
 			// Account sync
 			AccountManager am = AccountManager.get(this);
 			Account[] accounts = am.getAccountsByType("diacomp.org");
-			if (accounts.length > 0)
+			if (hasAccount = accounts.length > 0)
 			{
 				long SYNC_INTERVAL = 60; // sec
 				ContentResolver.setIsSyncable(accounts[0], DiaryContentProvider.AUTHORITY, 1);
@@ -86,8 +89,6 @@ public class ActivityMain extends FragmentActivity
 			}
 
 			// Frontend
-
-			setContentView(R.layout.activity_main);
 			FragmentStatePagerAdapter mDemoCollectionPagerAdapter = new FragmentStatePagerAdapter(
 					getSupportFragmentManager())
 			{
@@ -196,6 +197,12 @@ public class ActivityMain extends FragmentActivity
 		{
 			MenuInflater inflater = getMenuInflater();
 			inflater.inflate(R.menu.actions_common, menu);
+
+			if (hasAccount)
+			{
+				MenuItem item = menu.findItem(R.id.item_common_login);
+				item.setVisible(false);
+			}
 		}
 		catch (Exception e)
 		{
@@ -299,6 +306,16 @@ public class ActivityMain extends FragmentActivity
 	{
 		switch (item.getItemId())
 		{
+			case R.id.item_common_login:
+			{
+				final Intent intent = new Intent(this, ActivityLogin.class);
+				intent.putExtra(ActivityLogin.ARG_ACCOUNT_TYPE, "diacomp.org");
+				intent.putExtra(ActivityLogin.ARG_AUTH_TYPE, (String) null);
+				intent.putExtra(ActivityLogin.ARG_IS_ADDING_NEW_ACCOUNT, true);
+				// intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+				startActivity(intent);
+				return true;
+			}
 			case R.id.item_diary_preferences:
 			{
 				Intent settingsActivity = new Intent(getBaseContext(), ActivityPreferences.class);
