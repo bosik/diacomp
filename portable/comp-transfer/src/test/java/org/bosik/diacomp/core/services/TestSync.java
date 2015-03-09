@@ -1,42 +1,45 @@
 package org.bosik.diacomp.core.services;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.sync.SyncUtils;
 import org.bosik.diacomp.core.test.fakes.services.FakeObjectService;
+import org.junit.Ignore;
 import org.junit.Test;
 
 @SuppressWarnings({ "unchecked", "deprecation" })
-public class TestSync extends TestCase
+public class TestSync
 {
-	private ObjectService<String>	service1;
-	private ObjectService<String>	service2;
+	private ObjectService<String>	service1	= new FakeObjectService();
+	private ObjectService<String>	service2	= new FakeObjectService();
 
 	private static final Date		firstDate	= new Date(0);
 
-	private void assertEquals(Versioned<String> exp, Versioned<String> act)
+	private static void assertEquals(Versioned<String> exp, Versioned<String> act)
 	{
 		assertNotNull(exp);
 		assertNotNull(act);
 
-		assertEquals(exp.getId(), act.getId());
-		assertEquals(exp.getVersion(), act.getVersion());
-		assertEquals(exp.getTimeStamp(), act.getTimeStamp());
-		assertEquals(exp.isDeleted(), act.isDeleted());
+		TestCase.assertEquals(exp.getId(), act.getId());
+		TestCase.assertEquals(exp.getVersion(), act.getVersion());
+		TestCase.assertEquals(exp.getTimeStamp(), act.getTimeStamp());
+		TestCase.assertEquals(exp.isDeleted(), act.isDeleted());
 
-		assertEquals(exp.getData(), act.getData());
+		TestCase.assertEquals(exp.getData(), act.getData());
 	}
 
 	private void assertEquals(List<Versioned<String>> listExp, List<Versioned<String>> listAct)
 	{
-		assertNotNull(listExp);
-		assertNotNull(listAct);
-		assertEquals(listExp.size(), listAct.size());
+		TestCase.assertNotNull(listExp);
+		TestCase.assertNotNull(listAct);
+		TestCase.assertEquals(listExp.size(), listAct.size());
 
 		Collections.sort(listExp, Versioned.COMPARATOR_GUID);
 		Collections.sort(listAct, Versioned.COMPARATOR_GUID);
@@ -54,13 +57,6 @@ public class TestSync extends TestCase
 		List<Versioned<String>> list1 = service1.findChanged(firstDate);
 		List<Versioned<String>> list2 = service2.findChanged(firstDate);
 		assertEquals(list1, list2);
-	}
-
-	@Override
-	public void setUp()
-	{
-		service1 = new FakeObjectService();
-		service2 = new FakeObjectService();
 	}
 
 	@Test
@@ -185,6 +181,9 @@ public class TestSync extends TestCase
 		assertServicesAreSynced();
 	}
 
+	@Test
+	@Ignore
+	// This test case is obsolete; modern sync relies on hashes, not timestamps
 	public void test_sync_ContrSync_SyncedOk()
 	{
 		// create items for first storage

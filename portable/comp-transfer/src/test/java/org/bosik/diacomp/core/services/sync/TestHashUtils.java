@@ -1,13 +1,16 @@
 package org.bosik.diacomp.core.services.sync;
 
+import static junit.framework.TestCase.assertEquals;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import junit.framework.TestCase;
 import org.bosik.diacomp.core.utils.Utils;
+import org.junit.Ignore;
+import org.junit.Test;
 
 @SuppressWarnings("static-method")
-public class TestHashUtils extends TestCase
+public class TestHashUtils
 {
+	@Test
 	public void test_sumHash()
 	{
 		assertEquals("00000000000000000000000000000000",
@@ -20,6 +23,7 @@ public class TestHashUtils extends TestCase
 				HashUtils.sumHash("88888888888888888888888888888888", "88888888888888888888888888888888"));
 	}
 
+	@Test
 	public void test_subHash()
 	{
 		assertEquals("00000000000000000000000000000000",
@@ -32,6 +36,9 @@ public class TestHashUtils extends TestCase
 				HashUtils.subHash("00000000000000000000000000000000", "00000000000000000000000000000001"));
 	}
 
+	@Test
+	@Ignore
+	// This test case is for manual performance checking only
 	public void test_buildHashTree_performance()
 	{
 		long time = System.currentTimeMillis();

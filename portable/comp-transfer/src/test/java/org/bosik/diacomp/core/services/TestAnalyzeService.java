@@ -25,6 +25,7 @@ import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.test.fakes.services.FakeDiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestAnalyzeService
@@ -43,6 +44,8 @@ public class TestAnalyzeService
 	}
 
 	@Test
+	@Ignore
+	// this test case is obsolete
 	public void testDiaryAnalyze_setA_ok()
 	{
 		//===========================================================================

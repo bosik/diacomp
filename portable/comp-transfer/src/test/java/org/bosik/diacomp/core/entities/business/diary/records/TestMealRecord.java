@@ -25,7 +25,7 @@ public class TestMealRecord
 		}
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void addGet_null_exception()
 	{
 		meal.add(null);
