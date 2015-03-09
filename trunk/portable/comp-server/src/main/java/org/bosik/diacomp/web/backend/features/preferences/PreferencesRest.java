@@ -109,11 +109,15 @@ public class PreferencesRest
 	{
 		try
 		{
+			if (parData == null)
+			{
+				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: data").build();
+			}
+
 			List<PreferenceEntry<String>> entries = serializer.readAll(parData);
 			preferencesService.update(entries);
 
-			String response = "Saved OK";
-			return Response.ok(response).build();
+			return Response.ok("Saved OK").build();
 		}
 		catch (IllegalArgumentException e)
 		{

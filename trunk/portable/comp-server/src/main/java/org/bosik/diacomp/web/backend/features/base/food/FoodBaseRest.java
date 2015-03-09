@@ -96,8 +96,7 @@ public class FoodBaseRest
 		}
 		catch (TooManyItemsException e)
 		{
-			return Response.status(Status.BAD_REQUEST).entity(ResponseBuilder.buildFails("Too many items found"))
-					.build();
+			return Response.status(Status.BAD_REQUEST).entity("Too many items found").build();
 		}
 		catch (NotAuthorizedException e)
 		{
@@ -113,7 +112,8 @@ public class FoodBaseRest
 	@GET
 	@Path("all")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response findAll(@QueryParam("show_rem") String parShowRem) throws CommonServiceException
+	public Response findAll(@QueryParam("show_rem") @DefaultValue("false") String parShowRem)
+			throws CommonServiceException
 	{
 		try
 		{
@@ -141,6 +141,11 @@ public class FoodBaseRest
 	{
 		try
 		{
+			if (filter == null)
+			{
+				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: q").build();
+			}
+
 			List<Versioned<FoodItem>> items = foodbaseService.findAny(filter);
 			String response = serializer.writeAll(items);
 			return Response.ok(response).build();
@@ -163,6 +168,11 @@ public class FoodBaseRest
 	{
 		try
 		{
+			if (parTime == null)
+			{
+				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: since").build();
+			}
+
 			Date since = Utils.parseTimeUTC(parTime);
 			List<Versioned<FoodItem>> items = foodbaseService.findChanged(since);
 			String response = serializer.writeAll(items);
@@ -230,11 +240,15 @@ public class FoodBaseRest
 	{
 		try
 		{
+			if (parItems == null)
+			{
+				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: items").build();
+			}
+
 			List<Versioned<FoodItem>> items = serializer.readAll(parItems);
 			foodbaseService.save(items);
 
-			String response = "Saved OK";
-			return Response.ok(response).build();
+			return Response.ok("Saved OK").build();
 		}
 		catch (NotAuthorizedException e)
 		{

@@ -114,8 +114,7 @@ public class DiaryRest
 		}
 		catch (TooManyItemsException e)
 		{
-			return Response.status(Status.BAD_REQUEST).entity(ResponseBuilder.buildFails("Too many items found"))
-					.build();
+			return Response.status(Status.BAD_REQUEST).entity("Too many items found").build();
 		}
 		catch (Exception e)
 		{
@@ -181,6 +180,11 @@ public class DiaryRest
 	{
 		try
 		{
+			if (parTime == null)
+			{
+				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: since").build();
+			}
+
 			Date since = Utils.parseTimeUTC(parTime);
 			List<Versioned<DiaryRecord>> items = diaryService.findChanged(since);
 			String response = serializer.writeAll(items);
@@ -201,11 +205,20 @@ public class DiaryRest
 	@Path("period")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response findPeriod(@QueryParam("start_time") String parStartTime,
-			@QueryParam("end_time") String parEndTime, @QueryParam("show_rem") String parShowRem)
+			@QueryParam("end_time") String parEndTime, @QueryParam("show_rem") @DefaultValue("false") String parShowRem)
 			throws CommonServiceException
 	{
 		try
 		{
+			if (parStartTime == null)
+			{
+				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: start_time").build();
+			}
+			if (parEndTime == null)
+			{
+				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: end_time").build();
+			}
+
 			Date startTime = Utils.parseTimeUTC(parStartTime);
 			Date endTime = Utils.parseTimeUTC(parEndTime);
 			boolean includeRemoved = Boolean.valueOf(parShowRem);
@@ -217,6 +230,10 @@ public class DiaryRest
 		catch (NotAuthorizedException e)
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (TooManyItemsException e)
+		{
+			return Response.status(Status.BAD_REQUEST).entity("Too many items found").build();
 		}
 		catch (Exception e)
 		{
@@ -232,6 +249,11 @@ public class DiaryRest
 	{
 		try
 		{
+			if (parItems == null)
+			{
+				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: items").build();
+			}
+
 			List<Versioned<DiaryRecord>> items = serializer.readAll(parItems);
 			diaryService.save(items);
 
