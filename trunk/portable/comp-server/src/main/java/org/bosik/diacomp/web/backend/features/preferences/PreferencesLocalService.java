@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
-@Profile("real")
+@Profile({ "real", "fake" })
 public class PreferencesLocalService extends PreferencesTypedService
 {
 	private static final String	TABLE_PREFERENCES			= "preferences";
