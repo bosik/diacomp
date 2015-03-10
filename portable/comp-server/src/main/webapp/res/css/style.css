@@ -13,8 +13,8 @@ hr {
 }
 
 .main {
-	min-width: 550px;
-	max-width: 750px;
+	min-width: 750px;
+	max-width: 1200px;
 	background: #ffffff;
 	margin: 0 auto;
 }
@@ -199,9 +199,10 @@ th {
 #sticky {
 	position: fixed;
 	background: #fff;
-	min-width: 550px;
-	max-width: 750px;
+	min-width: 750px;
+	max-width: 1200px;
 	width: 100%;
+	z-index: 999;
 }
 
 #pageContent {
@@ -237,6 +238,17 @@ th {
 /* =========================== DIARY STYLES =========================== */
 #diary-workspace {
 	margin-left: 230px;
+	margin-right: 230px;
+	margin-bottom: 270px;
+}
+
+#diary-footer {
+	border-top: solid 2px #cfcfcf;
+	position: fixed;
+	bottom: 20px;
+	height: 250px;
+	max-width: 1200px;
+	width: 100%;
 }
 
 .date_panel {
@@ -246,13 +258,18 @@ th {
 #diary-left-panel {
 	float: left;
 	width: 230px;
-	/*background: #ff0;*/
 	margin-left: -230px;
-	position: fixed;
+}
+
+#diary-right-panel {
+	float: right;
+	width: 230px;
+	margin-right: -230px;
 }
 
 #diary-main-panel {
 	padding-left: 10px;
+	padding-right: 10px;
 }
 
 #diary_block {
