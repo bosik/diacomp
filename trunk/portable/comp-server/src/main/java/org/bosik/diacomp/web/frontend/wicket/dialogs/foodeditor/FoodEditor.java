@@ -1,12 +1,12 @@
 package org.bosik.diacomp.web.frontend.wicket.dialogs.foodeditor;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.tech.Versioned;
+import org.bosik.diacomp.web.frontend.wicket.dialogs.common.CommonEditor;
 
-public abstract class FoodEditor extends ModalWindow
+public abstract class FoodEditor extends CommonEditor<FoodItem>
 {
 	private static final long	serialVersionUID	= 1L;
 
@@ -21,7 +21,6 @@ public abstract class FoodEditor extends ModalWindow
 		setInitialHeight(350);
 
 		setTitle(getString("foodEditor.caption"));
-		setCssClassName(CSS_CLASS_GRAY);
 	}
 
 	public void show(AjaxRequestTarget target, IModel<Versioned<FoodItem>> model)
@@ -31,21 +30,17 @@ public abstract class FoodEditor extends ModalWindow
 			private static final long	serialVersionUID	= 1L;
 
 			@Override
-			void onCancel(AjaxRequestTarget target)
+			protected void onCancel(AjaxRequestTarget target)
 			{
 				FoodEditor.this.onCancel(target);
 			}
 
 			@Override
-			void onSave(AjaxRequestTarget target, IModel<Versioned<FoodItem>> model)
+			protected void onSave(AjaxRequestTarget target, IModel<Versioned<FoodItem>> model)
 			{
 				FoodEditor.this.onSave(target, model);
 			}
 		});
 		super.show(target);
 	}
-
-	public abstract void onCancel(AjaxRequestTarget target);
-
-	public abstract void onSave(AjaxRequestTarget target, IModel<Versioned<FoodItem>> model);
 }
