@@ -1,28 +1,50 @@
 <!DOCTYPE html>
 <html xmlns:wicket="http://wicket.apache.org">
-<head>
-</head>
+<wicket:head>
+	<style>
+.rightValue {
+	float: right;
+}
+</style>
+</wicket:head>
 <body>
 	<wicket:extend>
 		<div id="diary-workspace">
 			<div id="diary-left-panel">
-				<div
-					style="position: relative; top: 360px; border: solid 1px #cfcfcf; background: #fff; padding: 10px;">Left
-					panel</div>
+				<div id="diary-footer">
+					<div wicket:id="chart" style="height: 250px;"></div>
+					<div>
+						<button
+							style="width: 100%; height: 30px; margin-bottom: 5px; margin-top: 10px;">Blood
+							sugar</button>
+						<button style="width: 100%; height: 30px; margin-bottom: 5px;">Insulin
+							injection</button>
+						<button style="width: 100%; height: 30px;">Meal</button>
+					</div>
+				</div>
 			</div>
 			<div id="diary-right-panel">
 				<div
-					style="position: relative; top: 180px; border: solid 1px #cfcfcf; background: #fff; padding: 10px;">Right
-					panel</div>
+					style="position: relative; top: 1315px; background: #fff; padding: 10px; color: #cfcfcf;">
+					<div>
+						<span>Prots:</span> <span class="rightValue">127 g</span>
+					</div>
+					<div>
+						<span>Fats:</span> <span class="rightValue">98 g</span>
+					</div>
+					<div>
+						<span>Carbs:</span> <span class="rightValue">315 g</span>
+					</div>
+					<div>
+						<span>Energy:</span> <span class="rightValue">2100 kcal</span>
+					</div>
+				</div>
 			</div>
 			<div wicket:id="wrapper" id="diary-main-panel">
 				<div wicket:id="diaryDay">
 					<div wicket:id="diaryDayPanel" class="diary_page_full"></div>
 				</div>
 			</div>
-		</div>
-		<div id="diary-footer">
-			<div wicket:id="chart" style="height: 250px;"></div>
 		</div>
 	</wicket:extend>
 </body>
