@@ -5,6 +5,24 @@
 .rightValue {
 	float: right;
 }
+
+.btn-diary-new, .btn-diary-new-blood {
+	width: 100%;
+	height: 40px;
+	margin-bottom: 5px;
+	background-position: left;
+	background-color: #fff;
+	text-align: left;
+	padding-left: 55px;
+}
+
+.btn-diary-new:hover, .btn-diary-new-blood:hover {
+	background-color: #f0f0f0;
+}
+
+.btn-diary-new-blood {
+	background-image: url("../res/img/Diary_New_Blood.png");
+}
 </style>
 </wicket:head>
 <body>
@@ -12,15 +30,14 @@
 		<div id="diary-workspace">
 			<div id="diary-left-panel">
 				<div id="diary-footer">
-					<div wicket:id="chart" style="height: 250px;"></div>
-					<div>
-						<button
-							style="width: 100%; height: 30px; margin-bottom: 5px; margin-top: 10px;">Blood
-							sugar</button>
-						<button style="width: 100%; height: 30px; margin-bottom: 5px;">Insulin
-							injection</button>
-						<button style="width: 100%; height: 30px;">Meal</button>
-					</div>
+					<div wicket:id="chart" style="height: 250px; margin-bottom: 20px"></div>
+					<form wicket:id="formNew">
+						<input wicket:id="buttonAddBlood" type="button"
+							class="btn btn-diary-new-blood" value="[i18n] Blood sugar"></input>
+						<input type="button" class="btn btn-diary-new"
+							value="Insulin injection"></input> <input type="button"
+							class="btn btn-diary-new" value="Meal"></input>
+					</form>
 				</div>
 			</div>
 			<div id="diary-right-panel">
@@ -46,6 +63,7 @@
 				</div>
 			</div>
 		</div>
+		<div wicket:id="bloodEditor"></div>
 	</wicket:extend>
 </body>
 </html>

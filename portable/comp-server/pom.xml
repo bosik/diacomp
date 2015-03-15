@@ -88,6 +88,12 @@
 			<version>6.14.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.wicket</groupId>
+			<artifactId>wicket-datetime</artifactId>
+			<version>6.14.0</version>
+		</dependency>
+
 		<!-- Jersey REST -->
 
 		<!-- Jersey -->
