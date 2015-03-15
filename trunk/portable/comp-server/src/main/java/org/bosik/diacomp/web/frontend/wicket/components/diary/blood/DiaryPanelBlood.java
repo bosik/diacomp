@@ -26,12 +26,6 @@ public class DiaryPanelBlood extends Panel
 	@SpringBean
 	DiaryService					diaryService;
 
-	// TODO: i18n
-	private String[]				FINGERS_SHORT		= { "БЛ", "1Л", "2Л", "3Л", "4Л", "4П", "3П", "2П", "1П", "БП" };
-	private String[]				FINGERS_LONG		= { "Левая, большой", "Левая, указательный", "Левая, средний",
-			"Левая, безымянный", "Левая, мизинец", "Правая, мизинец", "Правая, безымянный", "Правая, средний",
-			"Правая, указательный", "Правая, большой"	};
-
 	public DiaryPanelBlood(String id, IModel<Versioned<BloodRecord>> model)
 	{
 		super(id);
@@ -106,9 +100,9 @@ public class DiaryPanelBlood extends Panel
 
 	private String formatBloodFinger(int index)
 	{
-		if (index >= 0 && index < FINGERS_SHORT.length)
+		if (index >= 0 && index < 10)
 		{
-			return FINGERS_SHORT[index];
+			return getString("finger.short." + index);
 		}
 		else
 		{
@@ -118,9 +112,9 @@ public class DiaryPanelBlood extends Panel
 
 	private String formatBloodFingerHint(int index)
 	{
-		if (index >= 0 && index < FINGERS_SHORT.length)
+		if (index >= 0 && index < 10)
 		{
-			return FINGERS_LONG[index];
+			return getString("finger.long." + index);
 		}
 		else
 		{
