@@ -19,15 +19,13 @@ public abstract class CommonEditor<T> extends ModalWindow
 	@Override
 	public void show(final AjaxRequestTarget target)
 	{
-		// FIXME: not working
 		if (!isShown())
 		{
 			final AppendingStringBuffer buffer = new AppendingStringBuffer(500);
-			buffer.append("function mwClose(ev) {\n" + "var code = ev.keyCode || ev.which;\n"
-					+ "if (code == 27) { "
+			buffer.append("function mwClose(ev) {\n" + "var code = ev.keyCode || ev.which;\n" + "if (code == 27) { "
 					+ getCloseJavacript() + "};" + "}");
 
-			buffer.append("jQuery(document).keypress(mwClose);\n");
+			buffer.append("jQuery(document).keyup(mwClose);\n");
 			target.appendJavaScript(buffer.toString());
 		}
 
