@@ -590,6 +590,9 @@ begin
   Value['AutosaveInterval'] := EditAutosaveInterval.Value;
   Value['Login'] := EditLogin.Text;
   Value['Password'] := EditPassword.Text;
+
+  if ((EditServerURL.Text <> '') and (EditServerURL.Text[Length(EditServerURL.Text)] <> '/')) then
+    EditServerURL.Text := EditServerURL.Text + '/';
   Value['ServerURL'] := EditServerURL.Text;
 
   {*}WebClient.Username := Value['Login'];
@@ -779,7 +782,7 @@ end;
 
 procedure TFormSettings.ButtonRegisterClick(Sender: TObject);
 begin
-  ShellExecute(0,'open',PChar('http://diacomp.16mb.com/reg.php'),'','',SW_SHOW);   
+  ShellExecute(0, 'open', PChar('http://diacomp.net/register/'), '', '', SW_SHOW);
 end;
 
 end.
