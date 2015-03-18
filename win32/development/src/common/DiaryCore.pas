@@ -29,6 +29,7 @@ uses
   AnalyzeInterface,
   DiaryAnalyze,
   AutoLog,
+  SettingsINI,
 
   // службы
   ThreadExecutor,
@@ -51,7 +52,7 @@ type
   { web }
   function DownloadFoodBaseSample: boolean;
   function DownloadDishBaseSample: boolean;
-  function CheckUpdates(var Date: string): TUpdateCheckResult;
+  function CheckUpdates(var LatestVersion: string): TUpdateCheckResult;
 
   function ExportKoofs(Plain: boolean): string;
 
@@ -79,9 +80,10 @@ var
 const
   { СИСТЕМНОЕ }
   ADVANCED_MODE           = True;
-  PROGRAM_VERSION         = '2.00';
-  PROGRAM_DATE            = '2015.03.05';
-  UPDATES_CHECKING_PERIOD = 7; { дней }
+  PROGRAM_VERSION         = '2.01';
+  PROGRAM_VERSION_CODE    : integer = 201;
+  PROGRAM_DATE            = '2015.03.19';
+  UPDATES_CHECKING_PERIOD = 1; { дней }
 
   { время актуальности замера и инсулина }
   BLOOD_ACTUALITY_TIME  = 120;     // minutes
@@ -91,18 +93,19 @@ const
   { Параметры подключения }
   DOWNLOAD_APP_NAME   = 'DiaryCore';
   CONNECTION_TIME_OUT = 2000;
-  SETUP_FILE          = 'Update.exe';
   MAX_FOODBASE_SIZE   = 500 * 1024; // byte
   MAX_DISHBASE_SIZE   = 500 * 1024; // byte
 
   { URL's }
-  URL_SERVER          = 'http://compensationserver.narod.ru/';
-  URL_VERINFO         = URL_SERVER + 'app/VerInfo.txt';
-  URL_UPDATE          = URL_SERVER + 'app/Update.exe';
-  URL_MATHAN          = URL_SERVER + 'app/MathAn.dll';  
-  URL_RESTART         = URL_SERVER + 'app/restart.util';
-  URL_FOODBASE_SAMPLE = URL_SERVER + 'bases/DemoFoodBase.xml';
-  URL_DISHBASE_SAMPLE = URL_SERVER + 'bases/DemoDishBase.xml';
+  URL_SERVER          = 'http://diacomp.net/api/windows/';
+  //URL_SERVER          = 'http://localhost:8190/api/windows/';
+
+  URL_VERINFO         = URL_SERVER + 'version';
+  URL_UPDATE          = URL_SERVER + 'file/compensation.exe';
+  URL_MATHAN          = URL_SERVER + 'file/mathan.dll';
+  URL_RESTART         = URL_SERVER + 'file/restart.exe';
+  URL_FOODBASE_SAMPLE = URL_SERVER + 'file/demofoodbase.xml';
+  URL_DISHBASE_SAMPLE = URL_SERVER + 'file/demodishbase.xml';
 
   { Local files }
 
@@ -195,14 +198,13 @@ begin
 end;
 
 {======================================================================================================================}
-function CheckUpdates(var Date: string): TUpdateCheckResult;
+function CheckUpdates(var LatestVersion: string): TUpdateCheckResult;
 {======================================================================================================================}
-{const
+const
   TEMP = 'TEMP.TXT';
 var
-  f: TextFile;   }
+  f: TextFile;
 begin
- { MessageDlg('Проверка обновлений отключена за неуплату', mtInformation, [mbNo], 0);
   Value['LastUpdateCheck'] := Round(GetTimeUTC());
   Result := urNoConnection;
   try
@@ -210,19 +212,17 @@ begin
     begin
       AssignFile(f, TEMP);
       Reset(f);
-      Readln(f, Date);
+      Readln(f, LatestVersion);
       CloseFile(f);
       DeleteFile(TEMP);
 
-      if length(Date) = 10 then
-      if Date > PROGRAM_DATE then
+      if (StrToInt(LatestVersion) > PROGRAM_VERSION_CODE) then
         Result := urCanUpdate
       else
         Result := urNoUpdates;
     end;
   except
-  end;  }
-  Result := urNoConnection;
+  end;
 end;
 
 {======================================================================================================================}
