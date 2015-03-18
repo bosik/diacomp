@@ -628,7 +628,7 @@ begin
     Value['LastSync'] := DateTimeToStr(GetTimeUTC());
     
     { готово }
-    Form1.StatusBar.Panels[3].Text := STATUS_RESULT_SYNC_DONE;
+    Form1.StatusBar.Panels[3].Text := STATUS_RESULT_SYNC_DONE + ' ' + Value['LastSync'];
     Application.ProcessMessages;
   except
     on E: Exception do
@@ -2659,6 +2659,7 @@ begin
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Rec.ID;
       ScrollToSelected;
+      EventDiaryChanged();
     end;
   end else
   begin
@@ -2671,6 +2672,7 @@ begin
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Rec.ID;
       ScrollToSelected;
+      EventDiaryChanged();
     end;
   end;
 end;
@@ -2699,6 +2701,7 @@ begin
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Rec.ID;
       ScrollToSelected;
+      EventDiaryChanged();
     end;
   end else
   begin
@@ -2711,6 +2714,7 @@ begin
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Rec.ID;
       ScrollToSelected;
+      EventDiaryChanged();
     end;
   end;
 end;
@@ -2742,6 +2746,7 @@ begin
 
       UpdateMealDose;
       UpdateMealStatistics;
+      EventDiaryChanged();
     end;
   end else
   begin
@@ -2760,6 +2765,7 @@ begin
       // UX features
       UpdateTimeLeft;
       ComboDiaryNew.SetFocus;
+      EventDiaryChanged();
     end;
   end;
 end;
@@ -2788,6 +2794,7 @@ begin
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Rec.ID;
       ScrollToSelected;
+      EventDiaryChanged();
     end;
   end else
   begin
@@ -2800,6 +2807,7 @@ begin
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Rec.ID;
       ScrollToSelected;
+      EventDiaryChanged();
     end;
   end;
 end;
@@ -2832,6 +2840,7 @@ begin
         DiaryView.OpenPage(Diary[Trunc(Form1.CalendarDiary.Date)], True);
         DiaryView.SelectedRecordID := Rec.ID;
         DiaryView.SelectedLine := Line;
+        EventDiaryChanged();
       end else
         ErrorMessage('Масса не может быть отрицательной');
     end;
@@ -2866,6 +2875,7 @@ begin
         DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
         DiaryView.SelectedRecordID := Rec.ID;
         DiaryView.SelectedLine := Line;
+        EventDiaryChanged();
       end else
         ErrorMessage('Новая масса не может быть отрицательной.');
     end;
@@ -4753,7 +4763,8 @@ end;
 
 procedure TForm1.EventDiaryChanged;
 begin
-  // TODO: implement
+  // TODO: i18n
+  Form1.StatusBar.Panels[3].Text := 'Изменено';
 end;
 
 procedure TForm1.EventDishbaseChanged(CountChanged, NamesChanged: boolean);
@@ -4761,6 +4772,9 @@ begin
   StartProc('EventDishbaseChanged');
 
   // TODO: make it handler for DAO-generated event; don't call it manually
+
+  // TODO: i18n
+  Form1.StatusBar.Panels[3].Text := 'Изменено';
 
   UpdateDishbaseFilter();
   UpdateDishTable(False, True, False);
@@ -4774,6 +4788,9 @@ begin
   StartProc('EventFoodbaseChenged');
 
   // TODO: make it handler for DAO-generated event; don't call it manually
+
+  // TODO: i18n
+  Form1.StatusBar.Panels[3].Text := 'Изменено';
 
   UpdateFoodbaseFilter();
   UpdateFoodTable(False, True, False);
