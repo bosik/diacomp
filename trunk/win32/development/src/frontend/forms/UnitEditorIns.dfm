@@ -24,6 +24,7 @@ object FormEditorIns: TFormEditorIns
     Width = 80
     Height = 80
     Center = True
+    Transparent = True
   end
   object LabelTime: TLabel
     Left = 104

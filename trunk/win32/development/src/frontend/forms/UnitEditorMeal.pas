@@ -6,7 +6,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Mask, StdCtrls, ExtCtrls, DiaryRoutines, Buttons, DiaryInterface,
   UnitShadow, SettingsINI, DiaryView, ComCtrls, DiaryRecords, BusinessObjects,
-  UnitEditor, JsonSerializer, uLKjson, DiaryPageSerializer, TextInterface, Math;
+  UnitEditor, JsonSerializer, uLKjson, DiaryPageSerializer, TextInterface, Math,
+  DiaryCore;
 
 type
   TFormEditorMeal = class(TFormEditor)
@@ -32,6 +33,8 @@ type
   end;
 
 implementation
+
+uses MainUnit;
 
 {$R *.dfm}
 
@@ -139,6 +142,9 @@ begin
   Image.Top := 2 * BORD;
   Image.Width := 10 * BORD;
   Image.Height := 10 * BORD;
+
+  if (FileExists(WORK_FOLDER + IMAGE_DIARY_NEW_MEAL)) then
+    Image.Picture.LoadFromFile(WORK_FOLDER + IMAGE_DIARY_NEW_MEAL);
 
   AlignTop(LabelTime);
   AlignTop(TimePicker);
