@@ -285,7 +285,7 @@ begin
       try
         FBase.SaveToFile(FBaseFileName);
         FModified := False;
-        FFirstMod := 0; // TODO: or GetTickCount() ?
+        FFirstMod := GetTickCount();
       finally
         Timer.Enabled := True;
       end;
