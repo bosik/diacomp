@@ -1,7 +1,8 @@
 program Compensation;
 
 uses
-  ShareMem,
+  FastMM4 in 'src\common\FastMM4.pas',
+  FastMM4Messages in 'src\common\FastMM4Messages.pas',
   Forms,
   Windows,
   Dialogs,
@@ -174,7 +175,6 @@ begin
   end;
 
   if not CheckFile(WORK_FOLDER + 'MathAn.dll',   URL_MATHAN,   True, False, FlagRestart, FlagModificated) then Exit;
-  if not CheckFile(WORK_FOLDER + 'borlndmm.dll', URL_BORLNDMM, True, True,  FlagRestart, FlagModificated) then Exit;
 
   if (FlagModificated) then
   begin
