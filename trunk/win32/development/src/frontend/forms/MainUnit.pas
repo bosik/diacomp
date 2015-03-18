@@ -3270,7 +3270,6 @@ end;
 procedure TForm1.ActionAddRecordExecute(Sender: TObject);
 {======================================================================================================================}
 begin
-  TrayIcon.ShowMainForm;
   PageControl1.ActivePageIndex := 0;
   case TControl(Sender).Tag of
     1: ClickBlood(True);
