@@ -84,9 +84,9 @@ const
   UPDATES_CHECKING_PERIOD = 7; { дней }
 
   { время актуальности замера и инсулина }
-  BLOOD_ACTUALITY_TIME  = 120;   // minutes
-  INS_ACTUALITY_TIME    = 4*60;  // minutes
-  SEARCH_INTERVAL       = 14; // for time left
+  BLOOD_ACTUALITY_TIME  = 120;     // minutes
+  INS_ACTUALITY_TIME    = 4 * 60;  // minutes
+  SEARCH_INTERVAL       = 14;      // for time left
 
   { Параметры подключения }
   DOWNLOAD_APP_NAME   = 'DiaryCore';
@@ -99,8 +99,7 @@ const
   URL_SERVER          = 'http://compensationserver.narod.ru/';
   URL_VERINFO         = URL_SERVER + 'app/VerInfo.txt';
   URL_UPDATE          = URL_SERVER + 'app/Update.exe';
-  URL_MATHAN          = URL_SERVER + 'app/MathAn.dll';
-  URL_BORLNDMM        = URL_SERVER + 'app/borlndmm.dll';
+  URL_MATHAN          = URL_SERVER + 'app/MathAn.dll';  
   URL_RESTART         = URL_SERVER + 'app/restart.util';
   URL_FOODBASE_SAMPLE = URL_SERVER + 'bases/DemoFoodBase.xml';
   URL_DISHBASE_SAMPLE = URL_SERVER + 'bases/DemoDishBase.xml';
