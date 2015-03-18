@@ -1,9 +1,11 @@
 object FormEditorNote: TFormEditorNote
   Left = 838
   Top = 486
-  Width = 422
-  Height = 299
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
   Caption = 'FormEditorNote'
+  ClientHeight = 267
+  ClientWidth = 414
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
