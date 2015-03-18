@@ -342,7 +342,7 @@ begin
     Add(Part_Internet, 'AutosaveInterval', rtInteger, 5);
     Add(Part_Internet, 'Login',            rtString,  '');
     Add(Part_Internet, 'Password',         rtString,  '');
-    Add(Part_Internet, 'ServerURL',        rtString,  'http://diacomp.16mb.com/');
+    Add(Part_Internet, 'ServerURL',        rtString,  'http://diacomp.net/');
     Add(Part_Internet, 'LastSync',         rtString,  '0');
 
     Add(Part_System, 'Debug', rtBoolean, False);
