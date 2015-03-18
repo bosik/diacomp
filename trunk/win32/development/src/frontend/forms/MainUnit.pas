@@ -934,40 +934,7 @@ begin
 
     { =============== ЗАГРУЗКА ОБРАЗЦОВ =============== }
 
-    // не существует файл в XML-формате
-    if (not FileExists(WORK_FOLDER + FoodBase_FileName)) then
-    begin
-      // TODO: предложить загрузить образец базы
-      // TODO: реализовать на сервере API foodbase:sample
-      // TODO: сейчас образец базы на сервере - в старом формате
-
-      {StartupInfo(STATUS_ACTION_DOWNLOADING_FOODBASE);
-      if DownloadFoodBaseSample() and
-         FileExists(WORK_FOLDER + FoodBase_FileName) then
-      begin
-        StartupInfo(STATUS_ACTION_LOADING_FOODBASE);
-        FoodBase.LoadFromFile_XML(WORK_FOLDER + FoodBase_FileName);
-      end;}
-
-      // TODO 3: RF: load foodbase samples
-    end;
-
-    // не существует файл в XML-формате
-    if (not FileExists(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name)) then
-    begin
-      // TODO: предложить загрузить образец базы
-      // TODO: реализовать на сервере API dishbase:sample
-      // TODO: сейчас образец базы на сервере - в старом формате
-
-     { StartupInfo(STATUS_ACTION_DOWNLOADING_DISHBASE);
-      if DownloadDishBaseSample() and
-         FileExists(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name) then
-      begin
-        StartupInfo(STATUS_ACTION_LOADING_DISHBASE);
-        DishBase.LoadFromFile_XML(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name);
-      end;   }
-      // TODO 3: RF: load dishbase samples
-    end;
+    // moved to Compensation.dpr
 
     { =============== ЗАГРУЗКА МОДУЛЯ АНАЛИЗА =============== }
     StartupInfo(STATUS_ACTION_LOADING_MATHAN);
@@ -1090,17 +1057,16 @@ begin
   }
 
   { проверка корректности установки обновления }
-  if Value['UpdatedVersion'] <> '' then
+  if (Value['UpdatedVersion'] <> '') then
   begin
-    if Value['UpdatedVersion'] <= PROGRAM_DATE then
+    if (StrToInt(Value['UpdatedVersion']) <= PROGRAM_VERSION_CODE) then
       ShowBalloon('Установка обновления успешно завершена', bitInfo)
     else
       ShowBalloon(
         'При установке обновления возникли ошибки'#13+
         'Ожидалась версия: ' + Value['UpdatedVersion'] + #13 +
-        'Установлена версия: ' + PROGRAM_DATE, bitError);
+        'Установлена версия: ' + IntToStr(PROGRAM_VERSION_CODE), bitError);
     Value['UpdatedVersion'] := '';
-    DeleteFile(WORK_FOLDER + SETUP_FILE);
   end else
 
   { поиск модуля анализа }
@@ -3429,7 +3395,8 @@ begin
     IN_IDLE_CheckUpdates := False;
 
     if CheckUpdates(AnExpDate) = urCanUpdate then
-      ShowBalloon(BALLOON_INFO_NEW_VERSION_AVAILABLE, bitInfo, BalloonAction_StartUpdate);
+      // ShowBalloon(BALLOON_INFO_NEW_VERSION_AVAILABLE, bitInfo, BalloonAction_StartUpdate);
+      SetupUpdate(True, AnExpDate);
 
     Done := False;
     Exit;
@@ -3975,14 +3942,16 @@ procedure SetupUpdate(UserInformed: boolean; const ExpVersion: string);
       Wait(100);
     end;
   end;
-  
+
+const
+  TEMP_APP = 'NewCompensation.exe';
 var
   BackEXE: boolean;
   BackDLL: boolean;
 begin
   // TODO: отвязать от интерфейса, перенести в DiaryCore
 
-  if (MessageDlg(MESSAGE_CONF_UPDATE[UserInformed], mtConfirmation, [mbYes,mbNo], 0) <> mrYes) then Exit;
+  //if (MessageDlg(MESSAGE_CONF_UPDATE[UserInformed], mtConfirmation, [mbYes,mbNo], 0) <> mrYes) then Exit;
 
   Application.ProcessMessages; { чтобы исчезло окно диалога }
 
@@ -3992,43 +3961,45 @@ begin
       FormProcess.SetMax(5);
 
       { ЗАГРУЗКА }
-      ShowProcess('Загрузка файла установки...');
+      //ShowProcess('Загрузка файла установки...');
 
-      if GetInetFile('Compensation', URL_UPDATE, WORK_FOLDER+SETUP_FILE, nil, CONNECTION_TIME_OUT, 1024*1024) and
-         FileExists(WORK_FOLDER+SETUP_FILE) and
-         (FileSize(WORK_FOLDER+SETUP_FILE)>50*1024) then
+      if GetInetFile('Compensation', URL_UPDATE, WORK_FOLDER + TEMP_APP, nil, CONNECTION_TIME_OUT, 10 * 1024 * 1024) and
+         FileExists(WORK_FOLDER + TEMP_APP) and
+         (FileSize(WORK_FOLDER + TEMP_APP) > 200 * 1024) then
       begin
         { УДАЛЕНИЕ СТАРЫХ КОПИЙ }
-        ShowProcess('Удаление старых резервных копий...');
-        DeleteFile(Application.ExeName+'.bak');
-        DeleteFile(WORK_FOLDER+ANALYZE_LIB_FileName+'.bak');
+        //ShowProcess('Удаление старых резервных копий...');
+        DeleteFile(Application.ExeName + '.bak');
+        //DeleteFile(WORK_FOLDER+ANALYZE_LIB_FileName+'.bak');
 
         { СОЗДАНИЕ НОВЫХ КОПИЙ }
-        ShowProcess('Создание новых резервных копий...');
-        RenameFile(Application.ExeName, Application.ExeName+'.bak');
-        RenameFile(WORK_FOLDER+ANALYZE_LIB_FileName, WORK_FOLDER+ANALYZE_LIB_FileName+'.bak');
+        //ShowProcess('Создание новых резервных копий...');
+        RenameFile(Application.ExeName, Application.ExeName + '.bak');
+        //RenameFile(WORK_FOLDER+ANALYZE_LIB_FileName, WORK_FOLDER+ANALYZE_LIB_FileName + '.bak');
 
         { УСТАНОВКА }
-        ShowProcess('Установка...');
-        ShellExecute(0,'open',PChar(WORK_FOLDER+SETUP_FILE),'','',SW_HIDE);
+        //ShowProcess('Установка...');
+        RenameFile(WORK_FOLDER + TEMP_APP, Application.ExeName);
+        //ShellExecute(0,'open',PChar(WORK_FOLDER+SETUP_FILE),'','',SW_HIDE);
         Value['UpdatedVersion'] := ExpVersion;
 
-        Wait(500);
+        //Wait(500);
 
-        BackEXE := not WaitForFile(Application.ExeName, 5000);
-        BackDLL := not WaitForFile(WORK_FOLDER+ANALYZE_LIB_FileName, 3000);
+        //BackEXE := False;//not WaitForFile(Application.ExeName, 5000);
+        //BackDLL := False;//not WaitForFile(WORK_FOLDER + ANALYZE_LIB_FileName, 3000);
 
-        if BackEXE or BackDLL then
+       { if BackEXE or BackDLL then
         begin
           MessageDlg('Ошибка установки обновления. Будет произведён частичный или полный откат.', mtError, [mbOK], 0);
           if BackEXE then
             RenameFile(Application.ExeName+'.bak', Application.ExeName);
           if BackDLL then
             RenameFile(WORK_FOLDER+ANALYZE_LIB_FileName+'.bak', WORK_FOLDER+ANALYZE_LIB_FileName);
-        end else
+        end else }
         begin
-          FormProcess.Hide;
-          MessageDlg('Все необходимые файлы обновлены. Чтобы изменения вступили в силу, перезапустите приложение.', mtInformation, [mbOK], 0);
+          //FormProcess.Hide;
+          if (not UserInformed) then
+            MessageDlg('Все необходимые файлы обновлены. Чтобы изменения вступили в силу, перезапустите приложение.', mtInformation, [mbOK], 0);
         end;
       end else
         MessageDlg('Файл установки повреждён.', mtError, [mbOK], 0);

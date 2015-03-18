@@ -615,7 +615,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.111148541670000000
+            Date = 40251.459663240740000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -2113,7 +2113,6 @@ object Form1: TForm1
     object ActionCheckUpdate: TAction
       Category = #1057#1087#1088#1072#1074#1082#1072
       Caption = #1055#1088#1086#1074#1077#1088#1080#1090#1100' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1103
-      Enabled = False
       ImageIndex = 8
       OnExecute = ActionCheckUpdateExecute
     end

@@ -157,15 +157,22 @@ begin
   {#}Log(INFO, 'No other instances founded');
   {#}Log(INFO, Format('OS Version: %d.%d, %s', [Win32MajorVersion, Win32MinorVersion, BIT64VER[IsWin64()]]));
 
+  CheckFolders; // before check file!
+
   { TODO: ПРОВЕРКА НАЛИЧИЯ ВСЕХ НЕОБХОДИМЫХ ФАЙЛОВ }
 
-  CheckFolders; // before check file!
+  if (not FileExists(WORK_FOLDER + FOLDER_BASES + '\' + FoodBase_Name)) then
+    DownloadFoodBaseSample();
+
+  if (not FileExists(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name)) then
+    DownloadDishBaseSample();
+
   DiaryCore.Initialize();
 
   { пре-исполнение (LoadSettings не использует WORK_FOLDER)}
   LoadSettings;
   try
-    LoadStringResources('strings_en.txt');
+    LoadStringResources('strings_ru.txt');
   except
     on E: Exception do
     begin
