@@ -8,6 +8,7 @@ http://www.springframework.org/schema/beans
 http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 	<http access-denied-page="/login">
 		<!-- Allow -->
+		<intercept-url pattern="/" access="ROLE_USER,ROLE_ANONYMOUS" />
 		<intercept-url pattern="/about" access="ROLE_USER,ROLE_ANONYMOUS" />
 		<intercept-url pattern="/about/" access="ROLE_USER,ROLE_ANONYMOUS" />
 		<intercept-url pattern="/login" access="ROLE_USER,ROLE_ANONYMOUS" />
