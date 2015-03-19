@@ -1,6 +1,8 @@
 package org.bosik.diacomp.web.backend.features.windows;
 
-import java.io.InputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -14,7 +16,20 @@ import org.bosik.diacomp.core.rest.ResponseBuilder;
 @SuppressWarnings("static-method")
 public class WindowsAppRest
 {
-	private static final int	LATEST_VERSION	= 201;
+	private static final String	DOWNLOAD_FOLDER	= "/download/win32/";
+	private static final String	FILE_VERSION	= "version.txt";
+
+	private List<String>		files			= new ArrayList<String>();
+	{
+		File folder = new File(DOWNLOAD_FOLDER);
+		for (final File fileEntry : folder.listFiles())
+		{
+			if (!fileEntry.isDirectory())
+			{
+				files.add(fileEntry.getName());
+			}
+		}
+	}
 
 	@GET
 	@Path("version/")
@@ -23,7 +38,8 @@ public class WindowsAppRest
 	{
 		try
 		{
-			return Response.ok(String.valueOf(LATEST_VERSION)).build();
+			File file = new File(DOWNLOAD_FOLDER + FILE_VERSION);
+			return Response.ok(file).build();
 		}
 		catch (Exception e)
 		{
@@ -44,14 +60,13 @@ public class WindowsAppRest
 				return Response.status(Status.BAD_REQUEST).entity("File name is not specified").build();
 			}
 
-			String[] files = new String[] { "compensation.exe", "mathan.dll", "restart.exe", "demofoodbase.xml",
-					"demodishbase.xml" };
-
 			for (String f : files)
 			{
 				if (f.equals(fileName))
 				{
-					return getFileFromResource(fileName);
+					System.out.println("Requested file to download: " + fileName);
+					File file = new File(DOWNLOAD_FOLDER + fileName);
+					return Response.ok(file).build();
 				}
 			}
 
@@ -62,12 +77,5 @@ public class WindowsAppRest
 			e.printStackTrace();
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
 		}
-	}
-
-	private Response getFileFromResource(String fileName)
-	{
-		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		InputStream stream = classloader.getResourceAsStream("/win32/" + fileName);
-		return Response.ok(stream).header("Content-Disposition", "attachment; filename=" + fileName).build();
 	}
 }
