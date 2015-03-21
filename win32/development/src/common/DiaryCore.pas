@@ -80,8 +80,8 @@ var
 const
   { СИСТЕМНОЕ }
   ADVANCED_MODE           = True;
-  PROGRAM_VERSION         = '2.01';
-  PROGRAM_VERSION_CODE    : integer = 201;
+  PROGRAM_VERSION         = '2.02';
+  PROGRAM_VERSION_CODE    : integer = 202;
   PROGRAM_DATE            = '2015.03.19';
   UPDATES_CHECKING_PERIOD = 1; { дней }
 
@@ -92,7 +92,7 @@ const
 
   { Параметры подключения }
   DOWNLOAD_APP_NAME   = 'DiaryCore';
-  CONNECTION_TIME_OUT = 2000;
+  CONNECTION_TIME_OUT = 10000;
   MAX_FOODBASE_SIZE   = 500 * 1024; // byte
   MAX_DISHBASE_SIZE   = 500 * 1024; // byte
 
@@ -205,23 +205,41 @@ const
 var
   f: TextFile;
 begin
+  Log(DEBUG, 'Checking for app updates...');
+
   Value['LastUpdateCheck'] := Round(GetTimeUTC());
   Result := urNoConnection;
   try
-    if GetInetFile('Compensation', URL_VERINFO, TEMP, nil, CONNECTION_TIME_OUT, 15) then
+    if GetInetFile('Compensation', URL_VERINFO, TEMP, nil, CONNECTION_TIME_OUT, 1024) then
     begin
+      Log(DEBUG, 'Server responded OK, fetching response...');
+
       AssignFile(f, TEMP);
       Reset(f);
       Readln(f, LatestVersion);
       CloseFile(f);
       DeleteFile(TEMP);
 
+      Log(DEBUG, 'Server response: ' + LatestVersion);
+
       if (StrToInt(LatestVersion) > PROGRAM_VERSION_CODE) then
-        Result := urCanUpdate
-      else
+      begin
+        Log(DEBUG, 'New update available, version ' + LatestVersion);
+        Result := urCanUpdate;
+      end else
+      begin
+        Log(DEBUG, 'App is up-to-date');
         Result := urNoUpdates;
+      end;
+    end else
+    begin
+      Log(ERROR, 'Failed to request ' + URL_VERINFO);
     end;
   except
+    on e: Exception do
+    begin
+      Log(ERROR, 'Checking failed: ' + e.Message);
+    end;
   end;
 end;
 

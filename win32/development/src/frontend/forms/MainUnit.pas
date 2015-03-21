@@ -946,6 +946,8 @@ begin
 
     ComboAnalyzers.ItemIndex := 0;
 
+    Log(DEBUG, 'Analyzers loaded: ' + IntToStr(GetAnalyzersCount), True);
+
     { ===============  Œ›‘‘»÷»≈Õ“€ =============== }
     try
       StartupInfo(STATUS_ACTION_PREPARING_KOOFS);
