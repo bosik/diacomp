@@ -24,7 +24,9 @@ uses
   DiaryPageSerializerTest in 'DiaryPageSerializerTest.pas',
   ObjectService in '..\persistence\ObjectService.pas',
   JsonSerializer in '..\persistence\serializers\JsonSerializer.pas',
-  JsonVersionedSerializer in '..\persistence\serializers\JsonVersionedSerializer.pas';
+  JsonVersionedSerializer in '..\persistence\serializers\JsonVersionedSerializer.pas',
+  HashService in '..\backend\features\sync\HashService.pas',
+  MerkleTree in '..\backend\features\sync\MerkleTree.pas';
 
 {$R *.res}
 

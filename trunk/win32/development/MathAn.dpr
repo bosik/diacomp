@@ -3,14 +3,16 @@ library MathAn;
 {$R+}
 
 uses
-  ShareMem,
+  FastMM4 in 'src\common\FastMM4.pas',
+  FastMM4Messages in 'src\common\FastMM4Messages.pas',
   Matrixes,
   Math,
   AnalyzeInterface in 'src\backend\features\analyze\AnalyzeInterface.pas',
   DiaryRecords in 'src\bo\DiaryRecords.pas',
   BusinessObjects in 'src\bo\BusinessObjects.pas',
   DiaryRoutines in 'src\common\DiaryRoutines.pas',
-  Bases in 'src\persistence\Bases.pas';
+  Bases in 'src\persistence\Bases.pas',
+  AutoLog in 'src\common\AutoLog.pas';
 
 // TODO 1: move code to some unit into src/analyze
 
