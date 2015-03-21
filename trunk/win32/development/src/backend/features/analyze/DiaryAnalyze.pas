@@ -338,11 +338,15 @@ var
   AnalFuncName: string;
   InfoFuncName: string;
 begin
+  Log(DEBUG, 'Loading analyze unit ' + FileName);
+
   if FileExists(FileName) then
   try
+    Log(DEBUG, 'Analyze unit found, loading...');
     Lib := LoadLibrary(PChar(FileName));
     if (Lib <> 0) then
     begin
+      Log(DEBUG, 'Analyze unit loaded ok');
       Index := 0;
       repeat
         AnalFuncName := AnalyzeFunctionName + IntToStr(Index);
@@ -357,6 +361,7 @@ begin
         if Result then
         begin
           Temp.Name := Temp.InfoFunc;
+          Log(INFO, 'Analyze function found: ' + Temp.Name);
 
           SetLength(Analyzer, Length(Analyzer) + 1);
           Analyzer[High(Analyzer)] := Temp;
@@ -364,12 +369,24 @@ begin
 
         inc(Index);
       until not Result;
+
+      Log(DEBUG, 'Analyze functions loading done, function found: ' + IntToStr(Index));
     end else
+    begin
+      Log(ERROR, 'Failed to load analyze unit, LoadLibrary returned 0, file name: ' + FileName);
       Result := False;
+    end;
   except
-    Result := False;
+    on e: Exception do
+    begin
+      Log(ERROR, 'Failed to load analyze unit: ' + e.Message);
+      Result := False;
+    end;
   end else
+  begin
+    Log(ERROR, 'Analyze unit not found: ' + FileName);
     Result := False
+  end;
 end;
 
 {======================================================================================================================}
