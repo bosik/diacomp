@@ -600,7 +600,7 @@ begin
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_DIARY;
     Application.ProcessMessages;
 
-    Result := SyncSources(LocalSource, WebSource, T - 1);
+    Result := SyncSources(LocalSource, WebSource, SyncProgress);
 
     if (Result > 0) then
     begin

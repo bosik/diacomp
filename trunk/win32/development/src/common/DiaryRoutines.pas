@@ -337,7 +337,8 @@ begin
   if (k > -1) then
     Result := FData[k].Value
   else
-    raise EKeyNotFoundException.CreateFmt('Key %s not found', [Key]);
+    Result := '';
+//    raise EKeyNotFoundException.CreateFmt('Key %s not found', [Key]);
 end;
 
 {======================================================================================================================}

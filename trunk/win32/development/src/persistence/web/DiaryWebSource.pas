@@ -59,6 +59,30 @@ begin
   end;
 end;
 
+{======================================================================================================================}
+function ParseStringMap(const S: string): TStringMap;
+{======================================================================================================================}
+var
+  Json: TlkJSONlist;
+  Item: TlkJSONobject;
+  Key, Value: string;
+  i: integer;
+begin
+  Json := TlkJSON.ParseText(MakeSureJsonList(S)) as TlkJSONlist;
+  try
+    Result := TStringMap.Create;
+    for i := 0 to json.Count - 1 do
+    begin
+      Item := json.Child[i] as TlkJSONobject;
+      Key := Item.getString('key');
+      Value := Item.GetString('value');
+      Result.Add(Key, Value, True);
+    end;
+  finally
+    Json.Free;
+  end;
+end;
+
 { TDiaryWebSource }
 
 {======================================================================================================================}
@@ -223,16 +247,16 @@ end;
 function TDiaryWebHash.GetHashChildren(const Prefix: string): TStringMap;
 {======================================================================================================================}
 var
+  Query: string;
   StdResp: TStdResponse;
-  Query, Resp: string;
 begin
   Query := FClient.GetApiURL() + 'diary/hashes/' + Prefix;
-  StdResp := FClient.DoGetSmart(query);
-  Resp := StdResp.Response;
-
-  // TODO: PARSE MAP
-
-  StdResp.Free;
+  try
+    StdResp := FClient.DoGetSmart(query);
+    Result := ParseStringMap(StdResp.Response);
+  finally
+    StdResp.Free;
+  end;
 end;
 
 end.
