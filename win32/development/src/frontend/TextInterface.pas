@@ -20,14 +20,6 @@ var
   MAIN_DIARY_PANEL_TIME_AFTER_INS          : string = 'После укола:';
   MAIN_DIARY_PANEL_ADD_SELECT_MEAL         : string = 'Выберите приём пищи или создайте новый';
   MAIN_DIARY_VIEW_EMPTYPAGE: string;
-  MESSAGE_CONF_FIRST_WARNING  : string = 'ВНИМАНИЕ! Автор программы '+
-    'не несет ответственности за любой ущерб, прямо или '+
-    'косвенно связанный с использованием данной программы. '+
-    'Все результаты работы программы носят '+
-    'рекомендательный характер. Не забывайте о здравом '+
-    'смысле. За Ваше здоровье ответственны только Вы сами.'#13#13+
-    'Если Вы принимаете эти условия, нажмите "Да" (Yes)'#13+
-    'Если не принимаете - нажмите "Нет" (No).';
   MESSAGE_CONF_REMOVE_DIARY_UNKNOWN   : string = 'Удалить запись?';
   MESSAGE_CONF_REMOVE_DIARY_BLOOD     : string = 'Удалить замер СК?';
   MESSAGE_CONF_REMOVE_DIARY_INS       : string = 'Удалить инъекцию?';
@@ -165,7 +157,6 @@ begin
     MAIN_DIARY_PANEL_TIME_AFTER_MEAL         := Extract('MAIN_DIARY_PANEL_TIME_AFTER_MEAL');
     MAIN_DIARY_PANEL_TIME_AFTER_INS          := Extract('MAIN_DIARY_PANEL_TIME_AFTER_INS');
     MAIN_DIARY_PANEL_ADD_SELECT_MEAL         := Extract('MAIN_DIARY_PANEL_ADD_SELECT_MEAL');
-    MESSAGE_CONF_FIRST_WARNING          := Extract('MESSAGE_CONF_FIRST_WARNING');
     MESSAGE_CONF_REMOVE_DIARY_UNKNOWN   := Extract('MESSAGE_CONF_REMOVE_DIARY_UNKNOWN');
     MESSAGE_CONF_REMOVE_DIARY_BLOOD     := Extract('MESSAGE_CONF_REMOVE_DIARY_BLOOD');
     MESSAGE_CONF_REMOVE_DIARY_INS       := Extract('MESSAGE_CONF_REMOVE_DIARY_INS');
