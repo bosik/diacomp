@@ -112,6 +112,18 @@ public class SyncUtils
 				{
 					newer2.add(p2);
 				}
+				else if (!p1.getHash().equals(p2.getHash()))
+				{
+					// We have a conflict
+					if (p1.getTimeStamp().after(p2.getTimeStamp()))
+					{
+						newer1.add(p1);
+					}
+					else
+					{
+						newer2.add(p2);
+					}
+				}
 				i++;
 				j++;
 			}
