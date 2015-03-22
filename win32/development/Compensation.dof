@@ -113,7 +113,7 @@ RootDir=
 IncludeVerInfo=1
 AutoIncBuild=0
 MajorVer=2
-MinorVer=2
+MinorVer=3
 Release=0
 Build=697
 Debug=0
@@ -126,7 +126,7 @@ CodePage=1251
 [Version Info Keys]
 CompanyName=Bosik
 FileDescription=Программа для компенсации СД
-FileVersion=2.2.0.697
+FileVersion=2.3.0.697
 InternalName=Компенсация
 LegalCopyright=Никита Босик
 LegalTrademarks=Компенсация

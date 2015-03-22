@@ -9,7 +9,8 @@ uses
   BusinessObjects, //
   HashService, //
   DiaryRoutines, //
-  SysUtils; //
+  SysUtils, //
+  MerkleTree;
 
   { возвращается количество синхронизированных объектов }
   function SyncSources(Source1, Source2: TObjectService; Since: TDateTime): integer; overload;
@@ -71,7 +72,7 @@ begin
 end;
 
 {======================================================================================================================}
-procedure Add(const Item: TVersioned; var List: TVersionedList; var CurrentSize: integer);
+procedure Add(const Item: TVersioned; var List: TVersionedList; var CurrentSize: integer); overload;
 {======================================================================================================================}
 begin
   if (CurrentSize >= Length(List)) then
@@ -79,6 +80,31 @@ begin
 
   List[CurrentSize] := Item;
   inc(CurrentSize);
+end;
+
+{======================================================================================================================}
+procedure Add(const Source: TVersionedList; var Dest: TVersionedList); overload;
+{======================================================================================================================}
+var
+  OldSize, i: integer;
+begin
+  OldSize := Length(Dest);
+  SetLength(Dest, OldSize + Length(Source));
+  for i := 0 to High(Source) do
+  begin
+    Dest[OldSize + i] := Source[i];
+  end;
+end;
+
+{======================================================================================================================}
+procedure Free(var List: TVersionedList);
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  for i := Low(List) to High(List) do
+    List[i].Free;
+  SetLength(List, 0);
 end;
 
 {======================================================================================================================}
@@ -126,7 +152,15 @@ begin
       if (items1[i].Version > items2[j].Version) then
         Add(items1[i], newer1, NewerSize1) else
       if (items1[i].Version < items2[j].Version) then
-        Add(items2[j], newer2, NewerSize2);
+        Add(items2[j], newer2, NewerSize2) else
+      if (items1[i].Hash <> items2[j].Hash) then
+      begin
+        // to fix deadlocks
+        if (items1[i].TimeStamp > items2[j].TimeStamp) then
+          Add(items1[i], newer1, NewerSize1)
+        else
+          Add(items2[j], newer2, NewerSize2);
+      end;
 
       inc(i);
       inc(j);
@@ -154,107 +188,64 @@ begin
 end;
 
 {======================================================================================================================}
-function SyncSources(Source1, Source2: TObjectService; Since: TDateTime): integer;
+procedure BlockSave(Data: TVersionedList; Source: TObjectService; MaxBlockSize: integer);
 {======================================================================================================================}
-const
-  MAX_BLOCK_SIZE = 100;
-
-  procedure BlockSave(Data: TVersionedList; Source: TObjectService);
-  var
-    Start, Count: integer;
+var
+  Start, Count: integer;
+begin
+  if (Length(Data) <= MaxBlockSize) then
+  begin
+    Source.Save(Data);
+  end else
   begin
     Start := 0;
     while (Start <= High(Data)) do
     begin
-      if (Start + MAX_BLOCK_SIZE <= High(Data)) then
-        Count := MAX_BLOCK_SIZE
+      if (Start + MaxBlockSize <= High(Data)) then
+        Count := MaxBlockSize
       else
         Count := High(Data) - Start + 1;
       Source.Save(Copy(Data, Start, Count));
-      Start := Start + MAX_BLOCK_SIZE;
+      Start := Start + MaxBlockSize;
     end;
   end;
+end;
 
+{======================================================================================================================}
+function ProcessItems(Source1, Source2: TObjectService; Items1, Items2: TVersionedList): integer;
+{======================================================================================================================}
 var
-  Items1, Items2: TVersionedList;
   Newer1, Newer2: TVersionedList;
   Only1, Only2: TVersionedList;
-  i, j: integer;
-  T1, T2: TVersioned;
-  NewerSize1, NewerSize2: integer;
+begin
+  GetOverLists(Items1, Items2, Newer1, Newer2, Only1, Only2);
+  Add(Only1, Newer1);
+  Add(Only2, Newer2);
+
+  BlockSave(Newer2, Source1, 100);
+  BlockSave(Newer1, Source2, 100);
+
+  Result := Length(Newer1) + Length(Newer2);
+end;
+
+{======================================================================================================================}
+function SyncSources(Source1, Source2: TObjectService; Since: TDateTime): integer;
+{======================================================================================================================}
+var
+  Items1, Items2: TVersionedList;
 begin
   Items1 := Source1.FindChanged(Since);
   Items2 := Source2.FindChanged(Since);
-  GetOverLists(Items1, Items2, Newer1, Newer2, Only1, Only2);
 
-  NewerSize1 := Length(Newer1);
-  NewerSize2 := Length(Newer2);
+  Result := ProcessItems(Source1, Source2, Items1, Items2);
 
-  for i := 0 to High(Only1) do
-  begin
-    T1 := Only1[i];
-    T2 := Source2.FindById(T1.ID);
-
-    if (T2 = nil) or (T2.Version < T1.Version) then
-      Add(T1, Newer1, NewerSize1) else
-    if (T2.Version > T1.Version) then
-      Add(T2, Newer2, NewerSize2);
-  end;
-
-  for j := 0 to High(Only2) do
-  begin
-    T2 := Only2[j];
-    T1 := Source1.FindById(T2.ID);
-
-    if (T1 = nil) or (T1.Version < T2.Version) then
-      Add(T2, Newer2, NewerSize2) else
-    if (T1.Version > T2.Version) then
-      Add(T1, Newer1, NewerSize1);
-  end;
-
-  SetLength(Newer1, NewerSize1);
-  SetLength(Newer2, NewerSize2);
-
-  BlockSave(Newer2, Source1);
-  BlockSave(Newer1, Source2);
-  Result := Length(Newer1) + Length(Newer2);
-
-  for i := 0 to High(Newer1) do
-    Newer1[i].Free;       
-  for i := 0 to High(Newer2) do
-    Newer2[i].Free;
-
-  // TODO: раньше здесь стояло определение минимальной даты загруженной
-  // страницы и последующее UpdatePostPrand от неё
+  Free(Items1);
+  Free(Items2);
 end;
 
 {======================================================================================================================}
 function SyncSources(Source1, Source2: TObjectService; Callback: TCallbackProgress = nil): integer;
 {======================================================================================================================}
-const
-  MAX_BLOCK_SIZE = 100;
-
-  procedure BlockSave(Data: TVersionedList; Source: TObjectService);
-  var
-    Start, Count: integer;
-  begin
-    if (Length(Data) <= MAX_BLOCK_SIZE) then
-    begin
-      Source.Save(Data);
-    end else
-    begin
-      Start := 0;
-      while (Start <= High(Data)) do
-      begin
-        if (Start + MAX_BLOCK_SIZE <= High(Data)) then
-          Count := MAX_BLOCK_SIZE
-        else
-          Count := High(Data) - Start + 1;
-        Source.Save(Copy(Data, Start, Count));
-        Start := Start + MAX_BLOCK_SIZE;
-      end;
-    end;
-  end;
 
   function CalculateProgress(const Prefix: string): integer;
 
@@ -286,7 +277,7 @@ const
     p := 0;
     d := 1;
 
-    for i := 0 to 1 do
+    for i := 0 to 2 do
     if (Length(Prefix) > i) then
     begin
       p := p * 16 + CharToInt(Prefix[i + 1]);
@@ -296,92 +287,73 @@ const
     Result := p * 100 div d;
   end;
 
-  function Sync(const Prefix: string): integer;
-  (*var
-    Hash1, Hash2: string;
-
+  function SynchronizeChildren(Source1: TObjectService; Tree1: THashTree; Source2: TObjectService; Tree2: THashTree;
+    const Prefix: string; Callback: TCallbackProgress): integer;
+  var
     Items1, Items2: TVersionedList;
-    Newer1, Newer2: TVersionedList;
-    Only1, Only2: TVersionedList;
-    i, j: integer;
-    T1, T2: TVersioned;
-    NewerSize1, NewerSize2: integer; *)
+    i: integer;
+    Hashes1, Hashes2: TStringMap;
+    Key: string;
+    Hash1, Hash2: string;
   begin
-   (* Result := 0;
-    Hash1 := Source1.GetHash(Prefix);
-    Hash2 := Source2.GetHash(Prefix);
-
-    if (Hash1 = Hash2) then
-    begin
-      Exit;
+    if (Assigned(Callback)) then
+    case Length(Prefix) of
+      0: Callback(0);
+      1: Callback(CalculateProgress(Prefix));
+      2: Callback(CalculateProgress(Prefix));
+      3: Callback(CalculateProgress(Prefix));
     end;
 
     if (Length(Prefix) < MAX_PREFIX_SIZE) then
     begin
+      Hashes1 := Tree1.GetHashChildren(Prefix);
+      Hashes2 := Tree2.GetHashChildren(Prefix);
+      Result := 0;
       for i := 0 to 15 do
       begin
-        // TODO: request bunch of 16 hashes at once
-        Result := Result + Sync(Prefix + LETTERS[i]);
+        Key := Prefix + LETTERS[i];
+        Hash1 := Hashes1[Key];
+        Hash2 := Hashes2[Key];
 
-        if (Length(Prefix) <= 2) and (Assigned(Callback)) then
-          Callback(CalculateProgress(Prefix + LETTERS[i]));
+        if (Hash1 <> Hash2) then
+        begin
+          Result := Result + SynchronizeChildren(Source1, Tree1, Source2, Tree2, Key, Callback);
+        end;
       end;
     end else
     begin
       Items1 := Source1.FindByIdPrefix(Prefix);
       Items2 := Source2.FindByIdPrefix(Prefix);
 
-      GetOverLists(Items1, Items2, Newer1, Newer2, Only1, Only2);
-      NewerSize1 := Length(Newer1);
-      NewerSize2 := Length(Newer2);
+      Result := ProcessItems(Source1, Source2, Items1, Items2);
 
-      for i := 0 to High(Only1) do
-      begin
-        T1 := Only1[i];
-        T2 := Source2.FindById(T1.ID);
-
-        if (T2 = nil) or (T2.Version < T1.Version) then
-          Add(T1, Newer1, NewerSize1) else
-        if (T2.Version > T1.Version) then
-          Add(T2, Newer2, NewerSize2);
-      end;
-
-      for j := 0 to High(Only2) do
-      begin
-        T2 := Only2[j];
-        T1 := Source1.FindById(T2.ID);
-
-        if (T1 = nil) or (T1.Version < T2.Version) then
-          Add(T2, Newer2, NewerSize2) else
-        if (T1.Version > T2.Version) then
-          Add(T1, Newer1, NewerSize1);
-      end;
-
-      SetLength(Newer1, NewerSize1);
-      SetLength(Newer2, NewerSize2);
-
-      BlockSave(Newer2, Source1);
-      BlockSave(Newer1, Source2);
-      Result := Length(Newer1) + Length(Newer2);
-
-      for i := 0 to High(Items1) do
-        Items1[i].Free;
-      for i := 0 to High(Items2) do
-        Items2[i].Free;  
-    end;       *)
+      Free(Items1);
+      Free(Items2);
+    end;
   end;
 
+var
+  Tree1, Tree2: THashTree;
+  Hash1, Hash2: string;
 begin
   if (Assigned(Callback)) then
     Callback(0);
 
-  Result := Sync('');
+  Tree1 := Source1.GetHashTree();
+  Tree2 := Source2.GetHashTree();
+
+  Hash1 := Tree1.GetHash('');
+  Hash2 := Tree2.GetHash('');
+  if (Hash1 <> Hash2) then
+  begin
+    Result := SynchronizeChildren(Source1, Tree1, Source2, Tree2, '', Callback);
+  end else
+  begin
+    Result := 0;
+  end;
 
   if (Assigned(Callback)) then
     Callback(100);
-
-  // TODO: раньше здесь стояло определение минимальной даты загруженной
-  // страницы и последующее UpdatePostPrand от неё
 end;
 
 end.

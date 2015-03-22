@@ -114,7 +114,7 @@ begin
     begin
       for i := 0 to 15 do
       if (Child.FChildren[i] <> nil) then
-        Result.Add(INT_TO_CHAR[i], Child.FChildren[i].FHash);
+        Result.Add(Prefix + INT_TO_CHAR[i], Child.FChildren[i].FHash);
     end;
   end;
 end;
