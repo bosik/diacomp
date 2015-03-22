@@ -202,10 +202,6 @@ begin
     end;
   end;
 
-  if (Value['FirstStart'] = True) and
-     (MessageDlg(MESSAGE_CONF_FIRST_WARNING, mtWarning, [mbYes, mbNo], 0) = mrNo)
-  then Exit;
-
   { общая инициализация } 
   Application.Initialize;
   Application.HintHidePause := 20000;

@@ -11,7 +11,6 @@ MAIN_DIARY_PANEL_TIME_AFTER_MEAL         = После еды:
 MAIN_DIARY_PANEL_TIME_FINGER             = Палец:
 MAIN_DIARY_PANEL_TIME_FINGER_NOT_FOUND   = Предыдущий замер СК не найден
 MAIN_DIARY_VIEW_EMPTYPAGE                = Нет данных
-MESSAGE_CONF_FIRST_WARNING          = ВНИМАНИЕ! Автор программы не несет ответственности за любой ущерб, прямо или косвенно связанный с использованием данной программы. Все результаты работы программы носят рекомендательный характер. Не забывайте о здравом смысле. За Ваше здоровье ответственны только Вы сами. Если Вы принимаете эти условия, нажмите "Да" (Yes). Если не принимаете - нажмите "Нет" (No).
 MESSAGE_CONF_REMOVE_DIARY_BLOOD     = Удалить замер СК?
 MESSAGE_CONF_REMOVE_DIARY_FOOD      = Удалить <%s> ?
 MESSAGE_CONF_REMOVE_DIARY_INS       = Удалить инъекцию?
