@@ -228,8 +228,8 @@ begin
   begin
     Value['FirstStart'] := False;
     SaveSettings;
-    Application.CreateForm(TFormFirstMan, FormFirstMan);
-    FormFirstMan.ShowModal;
+    // Application.CreateForm(TFormFirstMan, FormFirstMan);
+    // FormFirstMan.ShowModal;
   end;
 
   Form1.FullInit;
