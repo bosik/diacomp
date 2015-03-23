@@ -31,11 +31,12 @@ import android.util.Log;
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter
 {
-	private static final String		TAG	= SyncAdapter.class.getSimpleName();
+	private static final String		TAG		= SyncAdapter.class.getSimpleName();
 
 	private final ContentResolver	mContentResolver;
 	private final AccountManager	mAccountManager;
-	private static WebClient		webClient;
+	private static WebClient		webClientSingleton;
+	private static Object			lock	= new Object();
 
 	/**
 	 * Set up the sync adapter
@@ -58,6 +59,26 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 		mAccountManager = AccountManager.get(context);
 	}
 
+	private WebClient getWebClient(final String username, final String password)
+	{
+		synchronized (lock)
+		{
+			final String serverURL = getContext().getString(R.string.server_url);
+
+			if (webClientSingleton == null)
+			{
+				final int connectionTimeout = Integer.parseInt(getContext().getString(R.string.server_timeout));
+				webClientSingleton = new WebClient(connectionTimeout);
+			}
+
+			webClientSingleton.setServer(serverURL);
+			webClientSingleton.setUsername(username);
+			webClientSingleton.setPassword(password);
+
+			return webClientSingleton;
+		}
+	}
+
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
 			SyncResult syncResult)
@@ -76,19 +97,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 
 			// Preparing web services
 
-			final int connectionTimeout = Integer.parseInt(getContext().getString(R.string.server_timeout));
-			final String serverURL = getContext().getString(R.string.server_url);
-			final String name = account.name;
+			final String username = account.name;
 			final String password = mAccountManager.getPassword(account);
-
-			if (webClient == null)
-			{
-				webClient = new WebClient(connectionTimeout);
-			}
-
-			webClient.setServer(serverURL);
-			webClient.setUsername(name);
-			webClient.setPassword(password);
+			WebClient webClient = getWebClient(username, password);
 
 			DiaryService webDiary = new DiaryWebService(webClient);
 			FoodBaseService webFoodBase = new FoodBaseWebService(webClient);
