@@ -10,7 +10,7 @@ uses
 type
   TLogType = (ERROR, WARNING, INFO, DEBUG, VERBOUS);
 
-  procedure StartLogger;
+  procedure StartLogger(const Path: string);
   procedure StopLogger;
 
   procedure Log(MsgType: TLogType; const Msg: string; Save: boolean = False);
@@ -27,9 +27,6 @@ type
     Time: Cardinal;
     Name: string;
   end;
-
-const
-  FOLDER_LOGS = 'Logs';
 
 var
   LogFile: TStrings = nil;
@@ -55,7 +52,7 @@ begin
   {$IFDEF LOGGING}
 
   if (LogFile = nil) then
-    StartLogger;
+    raise Exception.CreateFmt('Failed to print "%s": logger not initialized', [Msg]);
 
   DateTimeToString(Temp, 'hh:mm:ss.zzz', GetTimeUTC());
   Temp := Temp + #9 + TYPES[MsgType] + #9 + Msg;
@@ -117,16 +114,16 @@ begin
 end;
 
 {======================================================================================================================}
-procedure StartLogger;
+procedure StartLogger(const Path: string);
 {======================================================================================================================}
 begin
   {$IFDEF LOGGING}
 
-  if not DirectoryExists(FOLDER_LOGS) then
-    CreateDirectory(PChar(FOLDER_LOGS), nil);
+  if not DirectoryExists(Path) then
+    CreateDirectory(PChar(Path), nil);
 
   DateTimeToString(FileName, 'yyyy-mm-dd_hh-mm-ss', GetTimeUTC());
-  FileName := FOLDER_LOGS + '\' + FileName + '.txt';
+  FileName := Path + '\' + FileName + '.txt';
 
   LogFile := TStringList.Create;
 

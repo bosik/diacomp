@@ -143,21 +143,22 @@ uses
 
 const
   BIT64VER: array[Boolean] of String = ('32 bit', '64 bit');
+  FOLDER_LOGS = 'Logs';
 var
   tick: cardinal;
   FlagRestart, FlagModificated: boolean;
 begin
   tick := GetTickCount;
-  AutoLog.StartLogger;
 
   { опнбепйю мюкхвхъ сфе гюосыеммнцн щйгелокъпю }
   //if CheckRunningInstance() then Exit;
 
+  CheckFolders; // before check file!
+  AutoLog.StartLogger(WORK_FOLDER + FOLDER_LOGS);
+
   {#}Log(INFO, 'Application started');
   {#}Log(INFO, 'No other instances founded');
   {#}Log(INFO, Format('OS Version: %d.%d, %s', [Win32MajorVersion, Win32MinorVersion, BIT64VER[IsWin64()]]));
-
-  CheckFolders; // before check file!
 
   { TODO: опнбепйю мюкхвхъ бяеу менаундхлшу тюикнб }
 
