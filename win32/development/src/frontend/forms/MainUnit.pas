@@ -1044,6 +1044,15 @@ begin
     DiaryMultiMap[i].Data.Free;
     DiaryMultiMap[i].Free;
   end;
+
+  for i := 0 to High(DishMultiMap) do
+  begin
+    DishMultiMap[i].Data.Free;
+    DishMultiMap[i].Free;
+  end;
+
+  BusinessObjects.Free(FoodList);
+  BusinessObjects.Free(DishList);
 end;
 
 {======================================================================================================================}
@@ -1435,6 +1444,9 @@ var
       Map[Offset + i].Tag := 0;
       Tag := 0;
     end;
+
+    BusinessObjects.Free(FoodList);
+    BusinessObjects.Free(DishList);
   end;
 
   function More(const Item1, Item2: TMealItem): boolean;
@@ -1589,6 +1601,8 @@ var
       { сортируем }
       if Length(DishMultiMap) > 0 then
         qsort(DishMultiMap, 0, High(DishMultiMap));
+
+      BusinessObjects.Free(List);
     except
       on E: Exception do
       begin
@@ -1622,7 +1636,7 @@ var
       Result := Map[i].Tag;
   end;
 
-begin
+begin                                             
   StartProc('TForm1.UpdateCombos()');
   try
     AnalyzeUsingDiary;
@@ -2953,7 +2967,7 @@ procedure TForm1.UpdateKoofs;
 var
   Par: TRealArray;
   FromDate, ToDate: TDateTime;
-begin
+begin                                         
   if (GetAnalyzersCount = 0) then
   begin
     //LabelDllInfo.Font.Color := clRed;
@@ -4016,7 +4030,17 @@ begin
       end else
         MessageDlg('Файл установки повреждён.', mtError, [mbOK], 0);
     except
-      MessageDlg('Общая ошибка установки обновления.', mtError, [mbOK], 0);
+      on e: EInOutError do
+      begin
+        Log(ERROR, e.ClassName + ' : ' + e.Message, True);
+        MessageDlg('Ошибка установки обновления: недостаточно прав.'#13+
+          e.ClassName + ' : ' + e.Message, mtError, [mbOK], 0);
+      end;
+      on e: Exception do
+      begin
+        Log(ERROR, e.ClassName + ' : ' + e.Message, True);
+        MessageDlg('Ошибка установки обновления.'#13 + e.ClassName + ' : ' + e.Message, mtError, [mbOK], 0);
+      end;
     end;
   finally
     if FormProcess.Visible then
@@ -4605,7 +4629,7 @@ var
   FoodF: boolean;
   FoodC: boolean;
   FoodV: boolean;
-begin
+begin                                              
   StartProc('UpdateFoodTable()');
 
   LabelFoodBase.Caption := Format(MAIN_BASES_FOOD_TITLE, [Length(FoodList)]);
@@ -4866,20 +4890,10 @@ end;
 {======================================================================================================================}
 procedure TForm1.UpdateFoodbaseFilter();
 {======================================================================================================================}
-
-  procedure ClearFoodList;
-  var
-    i: integer;
-  begin
-    for i := 0 to High(FoodList) do
-      FoodList[i].Free;
-    SetLength(FoodList, 0);
-  end;
-
 var
   Filter: string;
 begin
-  ClearFoodList;
+  BusinessObjects.Free(FoodList);
   
   Filter := EditBaseFoodSearch.Text;
   if (Trim(Filter) = '') then
@@ -4892,20 +4906,10 @@ begin
 end;
 
 procedure TForm1.UpdateDishbaseFilter;
-
-  procedure ClearDishList;
-  var
-    i: integer;
-  begin
-    for i := 0 to High(DishList) do
-      DishList[i].Free;
-    SetLength(DishList, 0);
-  end;
-
 var
   Filter: string;
 begin
-  ClearDishList;
+  BusinessObjects.Free(DishList);
 
   Filter := EditBaseFoodSearch.Text;
   if (Trim(Filter) = '') then

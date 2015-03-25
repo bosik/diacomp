@@ -173,6 +173,9 @@ type
   function DishItemListToVersionedList(const List: TDishItemList): TVersionedList;
   function VersionedListToDishItemList(const List: TVersionedList): TDishItemList;
 
+  procedure Free(var List: TFoodItemList); overload;
+  procedure Free(var List: TDishItemList); overload;
+
 const
   FOOD_SEP          = '|';
   FOOD_RESERVED     = ['[', FOOD_SEP, ']', ':'];
@@ -237,6 +240,28 @@ begin
   SetLength(Result, Length(List));
   for i := 0 to High(Result) do
     Result[i] := List[i] as TDishItem;
+end;
+
+{======================================================================================================================}
+procedure Free(var List: TFoodItemList);
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  for i := Low(List) to High(List) do
+    List[i].Free;
+  SetLength(List, 0);
+end;
+
+{======================================================================================================================}
+procedure Free(var List: TDishItemList);
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  for i := Low(List) to High(List) do
+    List[i].Free;
+  SetLength(List, 0);
 end;
 
 { TVersioned }
@@ -567,7 +592,7 @@ begin
   if (Length(FContent) > 0) then
   begin
     for i := 0 to High(FContent) do
-      FContent[i].Free;
+      FreeAndNil(FContent[i]);
     SetLength(FContent, 0);
 
     Modified();
