@@ -4,17 +4,109 @@
 <wicket:head>
 	<link type="text/css" rel="stylesheet" href="res/css/style.css" />
 	<style>
+.register-panel {
+	max-width: 550px;
+	margin: 0 auto;
+	margin-bottom: 20px;
+	display: table;
+}
+
+.register-row {
+	/*display: table-row;*/
+	margin-bottom: 15px;
+}
+
+.register-column-main {
+	width: 300px;
+	padding-right: 50px;
+	display: table-cell;
+	vertical-align: top;
+}
+
+.register-column-hint {
+	width: 200px;
+	display: table-cell;
+	vertical-align: top;
+}
+
+.feedbackPanel {
+	padding: 10px;
+	background-color: #fdd;
+}
+
+li.feedbackPanelERROR {
+	display: block;
+}
+
+.succeed {
+	background: #cfc;
+	padding: 15px;
+}
 </style>
+	<script src='https://www.google.com/recaptcha/api.js'></script>
 </wicket:head>
 </head>
 <body>
 	<wicket:extend xmlns:wicket="http://wicket.apache.org">
-		<p><wicket:message key="text.underConstruction"></wicket:message></p>
-		<div style="text-align: center;">
-			<p>
-				<img src="res/img/uc.png">
-			</p>
-			<p><wicket:message key="text.comingSoon"></wicket:message></p>
+		<div class="register-panel">
+			<form wicket:id="regForm" method="post">
+				<div class="register-row">
+					<div class="register-column-main">
+						<div>
+							<wicket:message key="field.username"></wicket:message>
+							<span style="color: #f00;">*</span>
+						</div>
+						<div>
+							<input wicket:id="fieldEmail" type="text" class="full_width"
+								autofocus />
+						</div>
+					</div>
+					<div class="register-column-hint hint">Адрес будет
+						использоваться только для авторизации и восстановления пароля</div>
+				</div>
+				<div class="register-row">
+					<div class="register-column-main">
+						<div>
+							<wicket:message key="field.password"></wicket:message>
+							<span style="color: #f00;">*</span>
+						</div>
+						<div>
+							<input wicket:id="fieldPassword" type=password class="full_width" />
+						</div>
+					</div>
+				</div>
+				<div class="register-row">
+					<div class="register-column-main">
+						<div class="g-recaptcha"
+							data-sitekey="6LeujAMTAAAAAO5M9R6Jg2lYSEsecbCCojK44o7Y"></div>
+					</div>
+					<div class="register-column-hint hint">Поставьте галочку</div>
+				</div>
+				<div class="register-row">
+					<div class="register-column-main">
+						<wicket:message key="text.license.agreement"></wicket:message>
+						<a wicket:id="linkLicense"><wicket:message key="text.license.link"></wicket:message></a>.
+					</div>
+				</div>
+				<div class="register-row">
+					<div class="register-column-main">
+						<button wicket:id="buttonRegister" type="submit"
+							class="btn full_width">
+							<wicket:message key="button.register"></wicket:message>
+						</button>
+					</div>
+				</div>
+			</form>
+			<div class="register-row">
+				<div wicket:id="feedbackPanel"
+					class="register-column-main invalid-credentials"></div>
+			</div>
+			<div class="register-row">
+				<div wicket:id="succeedPanel" class="register-column-main succeed">
+					<wicket:message key="text.completeRegistration"></wicket:message>
+					<b><span wicket:id="labelSendedEmail"></span></b>
+				</div>
+			</div>
 		</div>
 	</wicket:extend>
 </body>
