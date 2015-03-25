@@ -19,13 +19,23 @@ li.feedbackPanelERROR {
 		<div wicket:id="hintInvalidCredentials" class="invalid-credentials"></div>
 		<div class="login_panel">
 			<form action="j_spring_security_check" method="post">
-				<wicket:message key="field.username"></wicket:message>
-				<br /> <input type="text" id="login" name="j_username"
-					class="full_width" autofocus /> <br />
-				<wicket:message key="field.password"></wicket:message>
-				<br /> <input type="password" name="j_password" id="password"
-					class="full_width" /> <br /> <input type="hidden" name="api"
-					value="20" />
+				<div>
+					<wicket:message key="field.username"></wicket:message>
+				</div>
+				<div>
+					<input type="text" id="login" name="j_username" class="full_width"
+						autofocus />
+				</div>
+				<div>
+					<wicket:message key="field.password"></wicket:message>
+				</div>
+				<div>
+					<input type="password" name="j_password" id="password"
+						class="full_width" />
+				</div>
+				<div>
+					<input type="hidden" name="api" value="20" />
+				</div>
 				<button type="submit" class="full_width">
 					<wicket:message key="button.login"></wicket:message>
 				</button>

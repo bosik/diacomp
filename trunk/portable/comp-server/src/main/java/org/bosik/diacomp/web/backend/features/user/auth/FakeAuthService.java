@@ -37,4 +37,24 @@ public class FakeAuthService implements AuthService
 			return null;
 		}
 	}
+
+	@Override
+	public int activate(String activationKey)
+	{
+		return FAKE_USER_ID;
+	}
+
+	@Override
+	public String register(String userName, String password)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getNameById(int userId)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

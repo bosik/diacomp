@@ -1,19 +1,26 @@
 package org.bosik.diacomp.web.backend.features.user.auth;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
+import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -27,6 +34,9 @@ public class AuthRest
 
 	@Autowired
 	private AuthProvider	authProvider;
+
+	@Autowired
+	private AuthService		authService;
 
 	@POST
 	@Path("login")
@@ -103,6 +113,37 @@ public class AuthRest
 			SecurityContextHolder.clearContext();
 			String entity = "Logged out OK";
 			return Response.ok(entity).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	@GET
+	@Path("activate/{key}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response activate(@PathParam("key") String parKey)
+	{
+		try
+		{
+			int userId = authService.activate(parKey);
+			String userName = authService.getNameById(userId);
+			String userInfo = String.format("%d:%s", userId, userName);
+
+			List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+			Authentication authentication = new UsernamePasswordAuthenticationToken(userInfo, "", authorities);
+
+			SecurityContext context = SecurityContextHolder.getContext();
+			context.setAuthentication(authentication);
+
+			return Response.temporaryRedirect(new URI("/diary")).build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.NOT_FOUND).entity("Invalid key").build();
 		}
 		catch (Exception e)
 		{

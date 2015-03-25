@@ -30,6 +30,7 @@ public class SystemRest
 			JSONObject info = new JSONObject();
 			info.put("current", AuthRest.API_CURRENT);
 			info.put("support", AuthRest.API_LEGACY);
+			info.put("build", "2015-03-25 22:18");
 
 			JSONObject resp = new JSONObject();
 			resp.put(StdResponse.TAG_CODE, ResponseBuilder.CODE_OK);

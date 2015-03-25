@@ -3,6 +3,7 @@ package org.bosik.diacomp.web.backend.features.user.auth;
 import java.util.ArrayList;
 import java.util.List;
 import org.bosik.diacomp.core.services.exceptions.AuthException;
+import org.bosik.diacomp.core.services.exceptions.NotActivatedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -32,6 +33,11 @@ public class AuthProvider implements AuthenticationProvider
 			List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 			return new UsernamePasswordAuthenticationToken(userInfo, password, authorities);
+		}
+		catch (NotActivatedException e)
+		{
+			// TODO: do something specific
+			throw new BadCredentialsException("Not activated", e);
 		}
 		catch (AuthException e)
 		{
