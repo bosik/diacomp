@@ -16,30 +16,20 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Autowired
 	private AuthService			authService;
 
-	//private static final Map<String, Integer>	userMap			= new HashMap<String, Integer>();
-
 	@Override
 	public int getCurrentUserId()
 	{
-		String userName = getCurrentUserName();
-
-		// caching
-		Integer id;// = userMap.get(userName);
-		//if (id == null)
-		{
-			id = authService.getIdByName(userName);
-			if (id == null)
-			{
-				throw new NotAuthorizedException(String.format("User %s is not authorized", userName));
-			}
-			//userMap.put(userName, id);
-		}
-
-		return id;
+		String id = getUserInfo()[0];
+		return Integer.parseInt(id);
 	}
 
 	@Override
 	public String getCurrentUserName()
+	{
+		return getUserInfo()[1];
+	}
+
+	private static String[] getUserInfo()
 	{
 		SecurityContext context = SecurityContextHolder.getContext();
 		Authentication auth = context.getAuthentication();
@@ -49,12 +39,18 @@ public class UserInfoServiceImpl implements UserInfoService
 			throw new NotAuthorizedException();
 		}
 
-		String userName = auth.getName();
-		if (userName.equals(GUEST_USERNAME))
+		String userInfo = auth.getName();
+		if (userInfo.equals(GUEST_USERNAME))
 		{
 			throw new NotAuthorizedException();
 		}
 
-		return userName;
+		String[] items = userInfo.split(":");
+		if (items.length != 2)
+		{
+			throw new NotAuthorizedException("Invalid userinfo format: " + userInfo);
+		}
+
+		return items;
 	}
 }

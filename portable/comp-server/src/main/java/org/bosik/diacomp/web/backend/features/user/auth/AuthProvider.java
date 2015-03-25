@@ -26,11 +26,12 @@ public class AuthProvider implements AuthenticationProvider
 		{
 			String email = authentication.getName();
 			String password = authentication.getCredentials().toString();
-			authService.login(email, password);
+			int userId = authService.login(email, password);
+			String userInfo = String.format("%d:%s", userId, email);
 
 			List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-			return new UsernamePasswordAuthenticationToken(email, password, authorities);
+			return new UsernamePasswordAuthenticationToken(userInfo, password, authorities);
 		}
 		catch (AuthException e)
 		{
