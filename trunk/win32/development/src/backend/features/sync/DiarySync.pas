@@ -103,7 +103,7 @@ var
   i: integer;
 begin
   for i := Low(List) to High(List) do
-    List[i].Free;
+    FreeAndNil(List[i]);
   SetLength(List, 0);
 end;
 
@@ -308,17 +308,22 @@ function SyncSources(Source1, Source2: TObjectService; Callback: TCallbackProgre
     begin
       Hashes1 := Tree1.GetHashChildren(Prefix);
       Hashes2 := Tree2.GetHashChildren(Prefix);
-      Result := 0;
-      for i := 0 to 15 do
-      begin
-        Key := Prefix + LETTERS[i];
-        Hash1 := Hashes1[Key];
-        Hash2 := Hashes2[Key];
-
-        if (Hash1 <> Hash2) then
+      try
+        Result := 0;
+        for i := 0 to 15 do
         begin
-          Result := Result + SynchronizeChildren(Source1, Tree1, Source2, Tree2, Key, Callback);
+          Key := Prefix + LETTERS[i];
+          Hash1 := Hashes1[Key];
+          Hash2 := Hashes2[Key];
+
+          if (Hash1 <> Hash2) then
+          begin
+            Result := Result + SynchronizeChildren(Source1, Tree1, Source2, Tree2, Key, Callback);
+          end;
         end;
+      finally
+        FreeAndNil(Hashes1);
+        FreeAndNil(Hashes2);
       end;
     end else
     begin
@@ -342,18 +347,23 @@ begin
   Tree1 := Source1.GetHashTree();
   Tree2 := Source2.GetHashTree();
 
-  Hash1 := Tree1.GetHash('');
-  Hash2 := Tree2.GetHash('');
-  if (Hash1 <> Hash2) then
-  begin
-    Result := SynchronizeChildren(Source1, Tree1, Source2, Tree2, '', Callback);
-  end else
-  begin
-    Result := 0;
-  end;
+  try
+    Hash1 := Tree1.GetHash('');
+    Hash2 := Tree2.GetHash('');
+    if (Hash1 <> Hash2) then
+    begin
+      Result := SynchronizeChildren(Source1, Tree1, Source2, Tree2, '', Callback);
+    end else
+    begin
+      Result := 0;
+    end;
 
-  if (Assigned(Callback)) then
-    Callback(100);
+    if (Assigned(Callback)) then
+      Callback(100);
+  finally
+    FreeAndNil(Tree1);
+    FreeAndNil(Tree2);
+  end;
 end;
 
 end.

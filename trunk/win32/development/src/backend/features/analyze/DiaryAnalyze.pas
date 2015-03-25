@@ -257,6 +257,8 @@ begin
     if (List[i].FoodTime >- 1) then
       List[i].FoodTime := List[i].FoodTime - TimeShift;
   end;
+
+  FreeRecords(Items);
 end;
 
 {======================================================================================================================}

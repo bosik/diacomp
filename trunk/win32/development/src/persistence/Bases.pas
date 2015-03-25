@@ -275,7 +275,7 @@ var
   i: integer;
 begin
   for i := 0 to High(FBase) do
-    FBase[i].Free;
+    FreeAndNil(FBase[i]);
   SetLength(FBase, 0);
 end;
 
