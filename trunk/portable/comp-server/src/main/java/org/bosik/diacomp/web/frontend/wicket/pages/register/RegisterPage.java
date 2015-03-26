@@ -173,7 +173,7 @@ public class RegisterPage extends MasterPage
 		String hostAddress = Config.get("email.server");
 		String hostUsername = Config.get("email.login");
 		String hostPassword = Config.get("email.password");
-		String activationLink = Config.get("baseUrl") + "api/auth/activate/" + activationKey;
+		String activationLink = Config.get("baseUrl") + "activate?key=" + activationKey;
 		String senderName = getString("email.sender");
 		String title = getString("email.title");
 		String body = String.format(getString("email.body"), activationLink, activationLink);
