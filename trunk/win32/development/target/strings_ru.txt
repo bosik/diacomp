@@ -1,4 +1,4 @@
-APPLICATION_TITLE                   = Compensation
+APPLICATION_TITLE                   = Компенсация
 BALLOON_ERROR_ANALYZER_NOT_FOUNDED  = Ошибка: модуль анализа не загружен
 BALLOON_INFO_NEW_VERSION_AVAILABLE  = Доступна новая версия программы. Для просмотра более подробной информации нажмите на это сообщение.
 MAIN_BASES = Базы
