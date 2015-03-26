@@ -11,10 +11,4 @@ public class LicensePage extends MasterPage
 	{
 		super(parameters);
 	}
-
-	@Override
-	protected void onInitialize()
-	{
-		super.onInitialize();
-	}
 }
