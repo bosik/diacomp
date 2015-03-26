@@ -893,7 +893,7 @@ begin
         StartupInfo(STATUS_ACTION_SYNC_DIARY);
         Temp := MySyncDiary();
         {*}if (Temp <> 0) then
-           ShowBalloon('Синхронизация дневника прошла успешно, передано страниц: ' + IntToStr(Temp), bitInfo);
+           ShowBalloon('Синхронизация дневника прошла успешно, передано записей: ' + IntToStr(Temp), bitInfo);
       except
         on ConnectionError: EConnectionException do
         begin
