@@ -72,6 +72,11 @@ public class MySQLAuthService implements AuthService
 	@Override
 	public int activate(String activationKey)
 	{
+		if (activationKey == null || activationKey.isEmpty())
+		{
+			throw new IllegalArgumentException("Key is empty");
+		}
+
 		try
 		{
 			final String[] select = { COLUMN_USER_ID, COLUMN_USER_ACTIVATION_KEY };
