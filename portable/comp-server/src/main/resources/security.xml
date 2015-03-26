@@ -15,6 +15,8 @@ http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 		<intercept-url pattern="/login/" access="ROLE_USER,ROLE_ANONYMOUS" />
 		<intercept-url pattern="/register" access="ROLE_USER,ROLE_ANONYMOUS" />
 		<intercept-url pattern="/register/" access="ROLE_USER,ROLE_ANONYMOUS" />
+		<intercept-url pattern="/activate" access="ROLE_USER,ROLE_ANONYMOUS" />
+		<intercept-url pattern="/activate/" access="ROLE_USER,ROLE_ANONYMOUS" />
 		<intercept-url pattern="/license" access="ROLE_USER,ROLE_ANONYMOUS" />
 		<intercept-url pattern="/license/" access="ROLE_USER,ROLE_ANONYMOUS" />
 		<intercept-url pattern="/res/**" access="ROLE_USER,ROLE_ANONYMOUS" />
