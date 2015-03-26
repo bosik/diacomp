@@ -1,5 +1,6 @@
 package org.bosik.diacomp.web.frontend.wicket.pages.register;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.mail.MessagingException;
@@ -166,18 +167,18 @@ public class RegisterPage extends MasterPage
 		return false;
 	}
 
-	static void sendActivationEmail(final String email, String activationKey) throws MessagingException,
-			AddressException
+	void sendActivationEmail(final String email, String activationKey) throws MessagingException, AddressException,
+			UnsupportedEncodingException
 	{
 		String hostAddress = Config.get("email.server");
 		String hostUsername = Config.get("email.login");
 		String hostPassword = Config.get("email.password");
 		String activationLink = Config.get("baseUrl") + "api/auth/activate/" + activationKey;
-		String title = "Регистрация на diacomp.net";
-		String body = "Для завершения регистрации перейдите по ссылке: <br/>"
-				+ String.format("<a href=\"%s\">%s</a>", activationLink, activationLink);
+		String senderName = getString("email.sender");
+		String title = getString("email.title");
+		String body = String.format(getString("email.body"), activationLink, activationLink);
 
 		EmailSender emailSender = new SMTPEmailSender(hostAddress, hostUsername, hostPassword);
-		emailSender.send(title, body, new InternetAddress(hostUsername), new InternetAddress(email));
+		emailSender.send(title, body, new InternetAddress(hostUsername, senderName), new InternetAddress(email));
 	}
 }
