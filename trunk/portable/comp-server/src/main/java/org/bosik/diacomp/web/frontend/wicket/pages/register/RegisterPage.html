@@ -26,7 +26,7 @@
 .register-column-hint {
 	width: 200px;
 	display: table-cell;
-	vertical-align: top;
+	vertical-align: middle;
 }
 
 .feedbackPanel {
@@ -61,8 +61,9 @@ li.feedbackPanelERROR {
 								autofocus />
 						</div>
 					</div>
-					<div class="register-column-hint hint">Адрес будет
-						использоваться только для авторизации и восстановления пароля</div>
+					<div class="register-column-hint hint">
+						<wicket:message key="text.hint.email"></wicket:message>
+					</div>
 				</div>
 				<div class="register-row">
 					<div class="register-column-main">
@@ -74,18 +75,24 @@ li.feedbackPanelERROR {
 							<input wicket:id="fieldPassword" type=password class="full_width" />
 						</div>
 					</div>
+					<div class="register-column-hint hint">
+						<wicket:message key="text.hint.password"></wicket:message>
+					</div>
 				</div>
 				<div class="register-row">
 					<div class="register-column-main">
 						<div class="g-recaptcha"
 							data-sitekey="6LeujAMTAAAAAO5M9R6Jg2lYSEsecbCCojK44o7Y"></div>
 					</div>
-					<div class="register-column-hint hint">Поставьте галочку</div>
+					<div class="register-column-hint hint">
+						<wicket:message key="text.hint.captcha"></wicket:message>
+					</div>
 				</div>
 				<div class="register-row">
 					<div class="register-column-main">
 						<wicket:message key="text.license.agreement"></wicket:message>
-						<a wicket:id="linkLicense"><wicket:message key="text.license.link"></wicket:message></a>.
+						<a wicket:id="linkLicense" target="_blank"><wicket:message
+								key="text.license.link"></wicket:message></a>.
 					</div>
 				</div>
 				<div class="register-row">
