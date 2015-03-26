@@ -11,6 +11,10 @@
 li.feedbackPanelERROR {
 	display: block;
 }
+
+.row {
+	padding-bottom: 10px;
+}
 </style>
 </wicket:head>
 </head>
@@ -19,17 +23,13 @@ li.feedbackPanelERROR {
 		<div wicket:id="hintInvalidCredentials" class="invalid-credentials"></div>
 		<div class="login_panel">
 			<form action="j_spring_security_check" method="post">
-				<div>
+				<div class="row">
 					<wicket:message key="field.username"></wicket:message>
-				</div>
-				<div>
 					<input type="text" id="login" name="j_username" class="full_width"
 						autofocus />
 				</div>
-				<div>
+				<div class="row">
 					<wicket:message key="field.password"></wicket:message>
-				</div>
-				<div>
 					<input type="password" name="j_password" id="password"
 						class="full_width" />
 				</div>
@@ -40,8 +40,9 @@ li.feedbackPanelERROR {
 					<wicket:message key="button.login"></wicket:message>
 				</button>
 				<hr>
-				<wicket:message key="label.notRegistered"></wicket:message>
-				<a href="/register"><wicket:message key="label.registerNow"></wicket:message></a>.
+				<div style="text-align: center">
+					<a href="/register"><wicket:message key="label.registerNow"></wicket:message></a>
+				</div>
 			</form>
 		</div>
 	</wicket:extend>
