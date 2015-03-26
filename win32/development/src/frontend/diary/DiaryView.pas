@@ -748,6 +748,7 @@ begin
   FBitMap.Free;
   FColors.Free;
   FFont.Free;
+  FreeRecords(FItems);
   inherited;
 end;
 

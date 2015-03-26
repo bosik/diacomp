@@ -291,16 +291,20 @@ begin
   TimeFrom := TimeTo - INTERVAL;
   Recs := FSource.FindPeriod(TimeFrom, TimeTo);
 
-  for i := High(Recs) downto 0 do
-  begin
-    if (Recs[i].RecType = TBloodRecord) then
+  try
+    for i := High(Recs) downto 0 do
     begin
-      Result := TBloodRecord(Recs[i]);
-      Exit;
+      if (Recs[i].RecType = TBloodRecord) then
+      begin
+        Result := TBloodRecord(Recs[i]);
+        Exit;
+      end;
     end;
-  end;
 
-  Result := nil;
+    Result := nil;
+  finally
+    FreeRecords(Recs);
+  end;
 end;
 
 {======================================================================================================================}
