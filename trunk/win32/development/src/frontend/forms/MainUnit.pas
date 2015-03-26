@@ -1423,7 +1423,6 @@ var
     for i := 0 to High(FoodList) do
     begin
       Map[i] := TMealItem.Create;
-
       Map[i].Data := TFoodRelative.Create();
       Map[i].Data.CopyFrom(FoodList[i]);
       Map[i].Help1 := '';
@@ -1435,9 +1434,7 @@ var
     for i := 0 to High(DishList) do
     begin
       Map[Offset + i] := TMealItem.Create;
-
-      Map[Offset + i].Data := TFoodRelative.Create();
-      Map[Offset + i].Data.CopyFrom(DishList[i].AsFoodRelative());
+      Map[Offset + i].Data := DishList[i].AsFoodRelative();
       Map[Offset + i].Help1 := FormatDate(DishList[i].TimeStamp);
       Map[Offset + i].Help2 := Format('  %.1f', [DishList[i].RelCarbs]);
       Map[Offset + i].Icon := 2;
