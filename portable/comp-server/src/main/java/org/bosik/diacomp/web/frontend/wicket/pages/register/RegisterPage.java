@@ -25,6 +25,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -173,7 +174,10 @@ public class RegisterPage extends MasterPage
 		String hostAddress = Config.get("email.server");
 		String hostUsername = Config.get("email.login");
 		String hostPassword = Config.get("email.password");
-		String activationLink = Config.get("baseUrl") + "activate?key=" + activationKey;
+
+		Url context = Url.parse(getRequest().getContextPath());
+		String appURL = getRequestCycle().getUrlRenderer().renderFullUrl(context);
+		String activationLink = appURL + "/activate?key=" + activationKey;
 		String senderName = getString("email.sender");
 		String title = getString("email.title");
 		String body = String.format(getString("email.body"), activationLink, activationLink);
