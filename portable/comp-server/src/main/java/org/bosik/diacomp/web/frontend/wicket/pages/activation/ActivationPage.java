@@ -11,7 +11,6 @@ import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.time.Duration;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.features.user.auth.AuthService;
-import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -65,7 +64,7 @@ public class ActivationPage extends MasterPage
 					@Override
 					protected void onTimer(AjaxRequestTarget target)
 					{
-						ActivationPage.this.setResponsePage(DiaryPage.class);
+						ActivationPage.this.setResponsePage(getApplication().getHomePage());
 					}
 				});
 				feedbackPanel.info(getString("feedback.info.done"));
