@@ -5,17 +5,12 @@
 <body>
 	<wicket:extend>
 		<div style="padding-top: 5px">
-			<a href="app/Compensation_1.08.zip" class="button_download windows">Компенсация
-				(Windows)</a> <a href="#" class="button_download android"
-				onclick="soon()">Компенсация (Android)</a>
+			<a wicket:id="linkAppWindows" class="button_download windows"><wicket:message
+					key="label.download.windows" /></a> <a href="#"
+				class="button_download android" style="display: none"><wicket:message
+					key="label.download.android" /></a>
 		</div>
 		<link type="text/css" rel="stylesheet" href="res/css/download.css" />
-		<script type="text/javascript">
-			function soon()
-			{
-				alert("Приложение для Android находится в разработке");
-			}
-		</script>
 	</wicket:extend>
 </body>
 </html>
