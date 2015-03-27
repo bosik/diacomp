@@ -1,6 +1,5 @@
 /* =========================== MAIN STYLES =========================== */
 body {
-	/*background: #f0f0f0;*/
 	font-family: "Arial";
 	font-size: 16px;
 	margin: 0;
@@ -17,13 +16,13 @@ hr {
 	max-width: 1200px;
 	background: #ffffff;
 	margin: 0 auto;
+	padding: 10px;
 }
 
 .header {
 	margin-top: 8px;
 	padding-bottom: 10px;
 	overflow: hidden;
-	/*background: #0f0;*/
 }
 
 .header a {
