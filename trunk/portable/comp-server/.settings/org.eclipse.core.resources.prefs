@@ -5,6 +5,7 @@ encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/WicketApplication_
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/dialogs/diary/blood/DiaryEditorBloodContentPanel_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/dialogs/diary/blood/DiaryEditorBlood_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/pages/activation/ActivationPage_ru.utf8.properties=UTF-8
+encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/pages/download/DownloadPage_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/pages/login/LoginPage_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/pages/register/RegisterPage_ru.utf8.properties=UTF-8
 encoding//src/main/resources=UTF-8
