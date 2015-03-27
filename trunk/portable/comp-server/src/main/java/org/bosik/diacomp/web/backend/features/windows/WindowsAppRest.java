@@ -22,11 +22,17 @@ public class WindowsAppRest
 	private List<String>		files			= new ArrayList<String>();
 	{
 		File folder = new File(DOWNLOAD_FOLDER);
-		for (final File fileEntry : folder.listFiles())
+		File[] listFiles = folder.listFiles();
+
+		// null returned if the path is invalid
+		if (listFiles != null)
 		{
-			if (!fileEntry.isDirectory())
+			for (final File fileEntry : listFiles)
 			{
-				files.add(fileEntry.getName());
+				if (!fileEntry.isDirectory())
+				{
+					files.add(fileEntry.getName());
+				}
 			}
 		}
 	}
