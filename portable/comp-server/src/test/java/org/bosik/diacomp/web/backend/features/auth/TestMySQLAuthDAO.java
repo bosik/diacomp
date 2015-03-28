@@ -16,8 +16,8 @@ public class TestMySQLAuthDAO
 	@Test
 	public void test()
 	{
-		final String login = Config.get("login");
-		final String pass = Config.get("pass");
+		final String login = Config.get("testuser.login");
+		final String pass = Config.get("testuser.pass");
 
 		int id = authService.login(login, pass);
 		assertEquals(1, id);

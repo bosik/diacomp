@@ -36,10 +36,10 @@ public class MySQLAccess
 	{
 		PoolProperties p = new PoolProperties();
 
-		p.setUrl(Config.get("scheme"));
+		p.setUrl(Config.get("db.scheme"));
 		p.setDriverClassName(SQL_DRIVER);
-		p.setUsername(Config.get("user"));
-		p.setPassword(Config.get("password"));
+		p.setUsername(Config.get("db.user"));
+		p.setPassword(Config.get("db.password"));
 		p.setJmxEnabled(true);
 		p.setTestWhileIdle(false);
 		p.setTestOnBorrow(true);
