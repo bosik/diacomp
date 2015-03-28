@@ -178,6 +178,28 @@
 		</method>
 		<method>
 			<cat>Дневник</cat>
+			<name>Получение хэша дневника</name>
+			<url>/diary/hash/[guid, 0-4 symbols]</url>
+			<params>
+			</params>
+			<type>GET</type>
+			<returns>
+				<return>
+					<return-value>{"code":"0","resp":(hash)}</return-value>
+					<return-condition>Всё хорошо</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"4011","resp":"###",...}</return-value>
+					<return-condition>Ошибка: отсутствует авторизация</return-condition>
+				</return>
+				<return>
+					<return-value>{"code":"500","resp":"###",...}</return-value>
+					<return-condition>Внутренняя ошибка сервера</return-condition>
+				</return>
+			</returns>
+		</method>
+		<method>
+			<cat>Дневник</cat>
 			<name>Получение записи с указанным GUID</name>
 			<url>/diary/guid/[guid]</url>
 			<params>
