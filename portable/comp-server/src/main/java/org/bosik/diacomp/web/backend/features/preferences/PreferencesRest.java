@@ -54,7 +54,7 @@ public class PreferencesRest
 	@GET
 	@Path("hash")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getHash() throws CommonServiceException
+	public Response getHash()
 	{
 		try
 		{
@@ -75,7 +75,7 @@ public class PreferencesRest
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getAll() throws CommonServiceException
+	public Response getAll()
 	{
 		try
 		{
@@ -97,7 +97,7 @@ public class PreferencesRest
 	@GET
 	@Path("{key}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getPreference(@PathParam("key") String parKey) throws CommonServiceException
+	public Response getPreference(@PathParam("key") String parKey)
 	{
 		try
 		{
@@ -122,7 +122,7 @@ public class PreferencesRest
 
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response update(@FormParam("data") String parData) throws CommonServiceException
+	public Response update(@FormParam("data") String parData)
 	{
 		try
 		{
