@@ -1,2 +1,0 @@
-serviceClass: org.bosik.comp.web.Compensation.frontend.GreetingService
-path: 84C9FB0A0AFBE53A2A12D79A44078378.gwt.rpc
