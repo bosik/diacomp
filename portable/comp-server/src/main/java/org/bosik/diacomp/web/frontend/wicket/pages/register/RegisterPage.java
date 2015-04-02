@@ -1,3 +1,20 @@
+/*
+ * Diacomp - Diabetes analysis & management system
+ * Copyright (C) 2013 Nikita Bosik
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.bosik.diacomp.web.frontend.wicket.pages.register;
 
 import java.io.UnsupportedEncodingException;
@@ -20,6 +37,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxFallbackButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -65,12 +83,15 @@ public class RegisterPage extends MasterPage
 		form.setOutputMarkupId(true);
 		add(form);
 
-		final TextField<String> fieldEmail = new TextField<String>("fieldEmail", Model.of(""));
+		final TextField<String> fieldEmail = new TextField<String>("rhCyIStebK", Model.of(""));
 		fieldEmail.add(EmailAddressValidator.getInstance());
 		fieldEmail.setRequired(true);
 		form.add(fieldEmail);
 
-		final PasswordTextField fieldPassword = new PasswordTextField("fieldPassword", Model.of(""));
+		final HiddenField<String> fieldFakeEmail = new HiddenField<String>("email", Model.of(""));
+		form.add(fieldFakeEmail);
+
+		final PasswordTextField fieldPassword = new PasswordTextField("P2BohS6rUR", Model.of(""));
 		fieldPassword.setRequired(true);
 		fieldPassword.add(StringValidator.minimumLength(6));
 		form.add(fieldPassword);
@@ -93,6 +114,13 @@ public class RegisterPage extends MasterPage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
 			{
+				final String antiBot = fieldFakeEmail.getModelObject();
+				if (antiBot != null && !antiBot.isEmpty())
+				{
+					form.clearInput();
+					return;
+				}
+
 				final WebRequest request = (WebRequest)RequestCycle.get().getRequest();
 				final String challenge = request.getPostParameters().getParameterValue("g-recaptcha-response")
 						.toString();
@@ -177,7 +205,13 @@ public class RegisterPage extends MasterPage
 
 		Url context = Url.parse(getRequest().getContextPath());
 		String appURL = getRequestCycle().getUrlRenderer().renderFullUrl(context);
-		String activationLink = appURL + "/activate?key=" + activationKey;
+
+		if (!appURL.endsWith("/"))
+		{
+			appURL = appURL + "/";
+		}
+
+		String activationLink = String.format("%sactivate?key=%s", appURL, activationKey);
 		String senderName = getString("email.sender");
 		String title = getString("email.title");
 		String body = String.format(getString("email.body"), activationLink, activationLink);

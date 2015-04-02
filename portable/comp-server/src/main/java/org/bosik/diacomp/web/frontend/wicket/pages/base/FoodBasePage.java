@@ -1,3 +1,20 @@
+/*
+ * Diacomp - Diabetes analysis & management system
+ * Copyright (C) 2013 Nikita Bosik
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.bosik.diacomp.web.frontend.wicket.pages.base;
 
 import java.util.ArrayList;
@@ -21,14 +38,14 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.test.fakes.mocks.MockFoodMassed;
-import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.frontend.wicket.dialogs.disheditor.DishEditor;
 import org.bosik.diacomp.web.frontend.wicket.dialogs.foodeditor.FoodEditor;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
+import org.bosik.merklesync.HashUtils;
+import org.bosik.merklesync.Versioned;
 
 public class FoodBasePage extends MasterPage
 {
@@ -120,7 +137,7 @@ public class FoodBasePage extends MasterPage
 			{
 				super.onSubmit(target, form);
 				Versioned<FoodItem> food = new Versioned<FoodItem>(new FoodItem());
-				food.setId(Utils.generateGuid());
+				food.setId(HashUtils.generateGuid());
 				foodEditor.show(target, Model.of(food));
 			}
 		};
@@ -135,7 +152,7 @@ public class FoodBasePage extends MasterPage
 			{
 				super.onSubmit(target, form);
 				Versioned<DishItem> dish = new Versioned<DishItem>(new DishItem());
-				dish.setId(Utils.generateGuid());
+				dish.setId(HashUtils.generateGuid());
 
 				// == TEST ONLY =============================
 

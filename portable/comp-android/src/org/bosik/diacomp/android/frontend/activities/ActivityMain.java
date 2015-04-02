@@ -1,3 +1,21 @@
+/*  
+ *  Diacomp - Diabetes analysis & management system
+ *  Copyright (C) 2013 Nikita Bosik
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ */
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.SortedMap;
@@ -12,10 +30,9 @@ import org.bosik.diacomp.android.frontend.fragments.FragmentBase;
 import org.bosik.diacomp.android.frontend.fragments.FragmentDiaryScroller;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.services.diary.DiaryService;
-import org.bosik.diacomp.core.services.sync.HashUtils;
-import org.bosik.diacomp.core.services.sync.SyncUtils;
-import org.bosik.diacomp.core.services.sync.SyncUtils.ProgressCallback;
-import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.merklesync.HashUtils;
+import org.bosik.merklesync.SyncUtils;
+import org.bosik.merklesync.SyncUtils.ProgressCallback;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.NotificationManager;
@@ -217,8 +234,8 @@ public class ActivityMain extends FragmentActivity
 		SortedMap<String, String> data = new TreeMap<String, String>();
 		for (int i = 0; i < 25000; i++)
 		{
-			String id = Utils.generateGuid();
-			String hash = Utils.generateGuid();
+			String id = HashUtils.generateGuid();
+			String hash = HashUtils.generateGuid();
 			data.put(id, hash);
 		}
 		time = System.currentTimeMillis() - time;

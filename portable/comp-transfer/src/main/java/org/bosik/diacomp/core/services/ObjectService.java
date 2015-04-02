@@ -1,38 +1,30 @@
+/*
+ * Diacomp - Diabetes analysis & management system
+ * Copyright (C) 2013 Nikita Bosik
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.bosik.diacomp.core.services;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
-import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
-import org.bosik.diacomp.core.services.sync.MerkleTree;
+import org.bosik.merklesync.DataSource;
 
-public interface ObjectService<T>
+public interface ObjectService<T> extends DataSource<T>
 {
-	/**
-	 * Size of standard ID
-	 */
-	static final int	ID_FULL_SIZE	= 32;
-	/**
-	 * Size of ID prefix used in hash trees
-	 */
-	static final int	ID_PREFIX_SIZE	= 4;
-	/**
-	 * Max number of items returned
-	 */
-	static final int	MAX_ITEMS_COUNT	= 500;
-
-	/**
-	 * Calculates number of objects with specified ID prefix
-	 * 
-	 * @param prefix
-	 * @return
-	 */
-	int count(String prefix);
-
 	/**
 	 * Marks item with specified ID as deleted
 	 * 
@@ -45,45 +37,6 @@ public interface ObjectService<T>
 	void delete(String id) throws NotFoundException, AlreadyDeletedException;
 
 	/**
-	 * Returns item with the specified ID (no matter if deleted or not)
-	 * 
-	 * @param id
-	 * @return Item if found, null otherwise
-	 * @throws CommonServiceException
-	 */
-	Versioned<T> findById(String id) throws CommonServiceException;
-
-	/**
-	 * Returns list of records which id starts with specified prefix
-	 * 
-	 * @param prefix
-	 *            Must be 0..ID_PREFIX_SIZE or ID_FULL_SIZE chars long
-	 * @return
-	 * @throws TooManyItemsException
-	 *             If there are more than MAX_ITEMS_COUNT items to return
-	 * @see #getDataHashes
-	 */
-	List<Versioned<T>> findByIdPrefix(String prefix) throws TooManyItemsException;
-
-	/**
-	 * Returns list of records which were modified after the specified time (both removed or not)
-	 * 
-	 * @param since
-	 * @return
-	 * @throws CommonServiceException
-	 */
-	List<Versioned<T>> findChanged(Date since) throws CommonServiceException;
-
-	/**
-	 * 
-	 * @param prefix
-	 *            Must be 0..ID_PREFIX_SIZE chars long
-	 * @return Hash for specified ID prefix, or null if hash not found
-	 * @throws CommonServiceException
-	 */
-	String getHash(String prefix) throws CommonServiceException;
-
-	/**
 	 * Returns children for specified node
 	 * 
 	 * @param prefix
@@ -92,19 +45,4 @@ public interface ObjectService<T>
 	 * @throws CommonServiceException
 	 */
 	Map<String, String> getHashChildren(String prefix) throws CommonServiceException;
-
-	/**
-	 * Returns hash tree
-	 * 
-	 * @return
-	 */
-	MerkleTree getHashTree();
-
-	/**
-	 * Persists items (creates if not exist, updates otherwise)
-	 * 
-	 * @param items
-	 * @throws CommonServiceException
-	 */
-	void save(List<Versioned<T>> items) throws CommonServiceException;
 }

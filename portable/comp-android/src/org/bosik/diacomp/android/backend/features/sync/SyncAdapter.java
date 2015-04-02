@@ -1,3 +1,21 @@
+/*  
+ *  Diacomp - Diabetes analysis & management system
+ *  Copyright (C) 2013 Nikita Bosik
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ */
 package org.bosik.diacomp.android.backend.features.sync;
 
 import org.bosik.diacomp.android.R;
@@ -14,7 +32,8 @@ import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.preferences.PreferencesService;
-import org.bosik.diacomp.core.services.sync.SyncUtils;
+import org.bosik.diacomp.core.services.preferences.PreferencesSync;
+import org.bosik.merklesync.SyncUtils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
@@ -112,7 +131,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			int counterDiary = SyncUtils.synchronize_v2(localDiary, webDiary, null);
 			int counterFood = SyncUtils.synchronize_v2(localFoodBase, webFoodBase, null);
 			int counterDish = SyncUtils.synchronize_v2(localDishBase, webDishBase, null);
-			int countPreferences = SyncUtils.synchronizePreferences(localPreferences, webPreferences) ? 1 : 0;
+			int countPreferences = PreferencesSync.synchronizePreferences(localPreferences, webPreferences) ? 1 : 0;
 
 			/**/time = System.currentTimeMillis() - time;
 			/**/Log.i(TAG, String.format("SPC: synchronized in %d ms, items transferred: %d/%d/%d/%d", time,

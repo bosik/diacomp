@@ -1,4 +1,20 @@
-package org.bosik.diacomp.core.services.sync;
+/*
+ * MerkleSync - Data synchronization routine based on Merkle hash trees
+ * Copyright (C) 2013 Nikita Bosik
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.bosik.merklesync;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,11 +22,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.bosik.diacomp.core.entities.tech.Versioned;
-import org.bosik.diacomp.core.services.ObjectService;
-import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
-import org.bosik.diacomp.core.services.preferences.PreferencesService;
-import org.bosik.diacomp.core.utils.Utils;
 
 public class SyncUtils
 {
@@ -144,8 +155,8 @@ public class SyncUtils
 		}
 	}
 
-	private static <T> int processItems(ObjectService<T> service1, ObjectService<T> service2,
-			List<Versioned<T>> items1, List<Versioned<T>> items2)
+	private static <T> int processItems(DataSource<T> service1, DataSource<T> service2, List<Versioned<T>> items1,
+			List<Versioned<T>> items2)
 	{
 		// null checks again
 		if (null == items1)
@@ -193,7 +204,7 @@ public class SyncUtils
 	 *            only
 	 * @return Total number of transferred items
 	 */
-	public static <T> int synchronize(ObjectService<T> service1, ObjectService<T> service2, Date since)
+	public static <T> int synchronize(DataSource<T> service1, DataSource<T> service2, Date since)
 	{
 		// null checks
 		if (null == service1)
@@ -224,7 +235,7 @@ public class SyncUtils
 	 * @return
 	 */
 	@SuppressWarnings({ "null", "unchecked" })
-	public static <T> int synchronize(ObjectService<T> service1, ObjectService<T> service2, String id)
+	public static <T> int synchronize(DataSource<T> service1, DataSource<T> service2, String id)
 	{
 		// null checks
 		if (null == service1)
@@ -278,19 +289,19 @@ public class SyncUtils
 
 	/* ============================ SYNC METHODS: HASH-BASED (v1) ============================ */
 
-	private static <T> int synchronizePrefix(ObjectService<T> service1, ObjectService<T> service2, String prefix)
+	private static <T> int synchronizePrefix(DataSource<T> service1, DataSource<T> service2, String prefix)
 	{
 		String hash1 = service1.getHash(prefix);
 		String hash2 = service2.getHash(prefix);
 
 		System.out.println("Hashes for " + prefix + ": " + hash1 + " " + hash2);
 
-		if (Utils.equals(hash1, hash2))
+		if (SyncUtils.equals(hash1, hash2))
 		{
 			return 0;
 		}
 
-		if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
+		if (prefix.length() < DataSource.ID_PREFIX_SIZE)
 		{
 			int result = 0;
 
@@ -321,7 +332,7 @@ public class SyncUtils
 	 *            Second service
 	 * @return Total number of transferred items
 	 */
-	public static <T> int synchronize(ObjectService<T> service1, ObjectService<T> service2)
+	public static <T> int synchronize(DataSource<T> service1, DataSource<T> service2)
 	{
 		// null checks
 		if (null == service1)
@@ -338,7 +349,7 @@ public class SyncUtils
 
 	/* ============================ SYNC METHODS: HASH-BASED (v2) ============================ */
 
-	private static <T> int synchronizeChildren(ObjectService<T> service1, MerkleTree tree1, ObjectService<T> service2,
+	private static <T> int synchronizeChildren(DataSource<T> service1, MerkleTree tree1, DataSource<T> service2,
 			MerkleTree tree2, String prefix, ProgressCallback callback)
 	{
 		if (callback != null)
@@ -366,12 +377,12 @@ public class SyncUtils
 			}
 		}
 
-		if (prefix.length() < ObjectService.ID_PREFIX_SIZE)
+		if (prefix.length() < DataSource.ID_PREFIX_SIZE)
 		{
 			int count1 = service1.count(prefix);
 			int count2 = service2.count(prefix);
 
-			if (count1 <= ObjectService.MAX_ITEMS_COUNT && count2 <= ObjectService.MAX_ITEMS_COUNT)
+			if (count1 <= DataSource.MAX_ITEMS_COUNT && count2 <= DataSource.MAX_ITEMS_COUNT)
 			{
 				// there are not too many items, process it at once
 				List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
@@ -389,7 +400,7 @@ public class SyncUtils
 					String key = prefix + HashUtils.BYTE_TO_CHAR[i];
 					String hash1 = hashes1.get(key);
 					String hash2 = hashes2.get(key);
-					if (!Utils.equals(hash1, hash2))
+					if (!SyncUtils.equals(hash1, hash2))
 					{
 						result += synchronizeChildren(service1, tree1, service2, tree2, key, callback);
 					}
@@ -407,7 +418,7 @@ public class SyncUtils
 		}
 	}
 
-	public static <T> int synchronize_v2(ObjectService<T> service1, ObjectService<T> service2, ProgressCallback callback)
+	public static <T> int synchronize_v2(DataSource<T> service1, DataSource<T> service2, ProgressCallback callback)
 	{
 		// null checks
 		if (null == service1)
@@ -430,7 +441,7 @@ public class SyncUtils
 		String hash1 = tree1.getHash("");
 		String hash2 = tree2.getHash("");
 		int count;
-		if (!Utils.equals(hash1, hash2))
+		if (!SyncUtils.equals(hash1, hash2))
 		{
 			count = synchronizeChildren(service1, tree1, service2, tree2, "", callback);
 		}
@@ -448,74 +459,14 @@ public class SyncUtils
 	}
 
 	/**
-	 * Synchronizes only items presented in both services
+	 * Null-safe check.
 	 * 
-	 * @param preferences1
-	 * @param preferences2
-	 * @return True if any data was transferred, false otherwise (i.e. if services already had been synchronized)
+	 * @param a
+	 * @param b
+	 * @return True if both strings are null or equal
 	 */
-	public static boolean synchronizePreferences(PreferencesService preferences1, PreferencesService preferences2)
+	private static boolean equals(String a, String b)
 	{
-		String hash1 = preferences1.getHash();
-		String hash2 = preferences2.getHash();
-
-		if (hash1 != null && hash1.equals(hash2))
-		{
-			return false;
-		}
-
-		List<PreferenceEntry<String>> entries1 = preferences1.getAll();
-		List<PreferenceEntry<String>> entries2 = preferences2.getAll();
-		List<PreferenceEntry<String>> newer1 = new ArrayList<PreferenceEntry<String>>();
-		List<PreferenceEntry<String>> newer2 = new ArrayList<PreferenceEntry<String>>();
-
-		for (PreferenceEntry<String> e1 : entries1)
-		{
-			boolean found = false;
-			for (PreferenceEntry<String> e2 : entries2)
-			{
-				if (e1.getType() == e2.getType())
-				{
-					found = true;
-					if (e1.getVersion() > e2.getVersion())
-					{
-						newer1.add(e1);
-					}
-					else if (e1.getVersion() < e2.getVersion())
-					{
-						newer2.add(e2);
-					}
-					break;
-				}
-			}
-
-			if (!found)
-			{
-				newer1.add(e1);
-			}
-		}
-
-		for (PreferenceEntry<String> e2 : entries2)
-		{
-			boolean found = false;
-			for (PreferenceEntry<String> e1 : entries1)
-			{
-				if (e1.getType() == e2.getType())
-				{
-					found = true;
-					break;
-				}
-			}
-
-			if (!found)
-			{
-				newer2.add(e2);
-			}
-		}
-
-		preferences1.update(newer2);
-		preferences2.update(newer1);
-
-		return !newer1.isEmpty() || !newer2.isEmpty();
+		return a != null && a.equals(b) || a == b;
 	}
 }

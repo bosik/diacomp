@@ -1,3 +1,21 @@
+/*  
+ *  Diacomp - Diabetes analysis & management system
+ *  Copyright (C) 2013 Nikita Bosik
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ */
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.ArrayList;
@@ -241,11 +259,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		// FIXME: hardcoded timezone
 		int minutesTime = (Utils.timeToMin(entity.getData().getTime()) + 3 * 60) % Utils.MinPerDay;
 		Koof koof = Storage.koofService.getKoof(minutesTime);
-
-		Log.i(TAG, "Time: " + minutesTime);
-		Log.i(TAG, "k = " + koof.getK());
-		Log.i(TAG, "q = " + koof.getQ());
-		Log.i(TAG, "p = " + koof.getP());
 
 		double deltaBS = 0.0;
 

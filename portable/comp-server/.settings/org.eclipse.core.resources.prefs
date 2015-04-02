@@ -1,6 +1,5 @@
 eclipse.preferences.version=1
 encoding//src/main/java=UTF-8
-encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/WicketApplication.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/WicketApplication_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/components/header/HeaderPanel_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/components/mealeditor/editor/MealEditor_ru.utf8.properties=UTF-8
@@ -16,6 +15,7 @@ encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/dialogs/foodeditor
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/pages/about/AboutPage_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/pages/activation/ActivationPage_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/pages/base/FoodBasePage_ru.utf8.properties=UTF-8
+encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/pages/diary/DiaryPage_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/pages/download/DownloadPage_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/pages/login/LoginPage_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/pages/master/MasterPage_ru.utf8.properties=UTF-8

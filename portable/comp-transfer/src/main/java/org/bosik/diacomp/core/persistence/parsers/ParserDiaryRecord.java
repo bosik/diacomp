@@ -1,3 +1,20 @@
+/*
+ * Diacomp - Diabetes analysis & management system
+ * Copyright (C) 2013 Nikita Bosik
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.bosik.diacomp.core.persistence.parsers;
 
 import java.util.List;
@@ -75,20 +92,20 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 
 		if (object.getClass() == BloodRecord.class)
 		{
-			BloodRecord item = (BloodRecord) object;
+			BloodRecord item = (BloodRecord)object;
 			json.put("type", "blood");
 			json.put("value", item.getValue());
 			json.put("finger", item.getFinger());
 		}
 		else if (object.getClass() == InsRecord.class)
 		{
-			InsRecord item = (InsRecord) object;
+			InsRecord item = (InsRecord)object;
 			json.put("type", "ins");
 			json.put("value", item.getValue());
 		}
 		else if (object.getClass() == MealRecord.class)
 		{
-			MealRecord item = (MealRecord) object;
+			MealRecord item = (MealRecord)object;
 			json.put("type", "meal");
 			json.put("short", item.getShortMeal());
 
@@ -101,7 +118,7 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 		}
 		else if (object.getClass() == NoteRecord.class)
 		{
-			NoteRecord item = (NoteRecord) object;
+			NoteRecord item = (NoteRecord)object;
 			json.put("type", "note");
 			json.put("text", item.getText());
 		}

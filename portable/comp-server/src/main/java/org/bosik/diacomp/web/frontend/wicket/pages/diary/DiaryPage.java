@@ -1,5 +1,23 @@
+/*
+ * Diacomp - Diabetes analysis & management system
+ * Copyright (C) 2013 Nikita Bosik
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.bosik.diacomp.web.frontend.wicket.pages.diary;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -17,15 +35,17 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.string.StringValue;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
-import org.bosik.diacomp.core.entities.tech.Versioned;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.frontend.wicket.components.diary.day.DiaryPanelDay;
 import org.bosik.diacomp.web.frontend.wicket.components.diary.day.DiaryPanelDayModelObject;
 import org.bosik.diacomp.web.frontend.wicket.dialogs.diary.blood.DiaryEditorBlood;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
+import org.bosik.merklesync.HashUtils;
+import org.bosik.merklesync.Versioned;
 import com.googlecode.wickedcharts.highcharts.options.Axis;
 import com.googlecode.wickedcharts.highcharts.options.AxisType;
 import com.googlecode.wickedcharts.highcharts.options.ChartOptions;
@@ -72,7 +92,7 @@ class BloodOptions extends Options
 		//chartOptions.setMarginBottom(25);
 		setChartOptions(chartOptions);
 
-		Title title = new Title("Blood Sugar");
+		Title title = new Title("Сахар крови");
 		setTitle(title);
 		long start = cal.getTimeInMillis();
 		long end = start + Utils.MsecPerDay;
@@ -85,7 +105,7 @@ class BloodOptions extends Options
 		plotLines.setColor(new HexColor("#999999"));
 
 		Axis yAxis = new Axis();
-		yAxis.setTitle(new Title("mmol/l"));
+		yAxis.setTitle(new Title("ммоль/л"));
 		yAxis.setPlotLines(Collections.singletonList(plotLines));
 		yAxis.setMin(0);
 		yAxis.setMinorTickInterval(new MinorTickInterval().setInterval(1));
@@ -119,6 +139,26 @@ public class DiaryPage extends MasterPage
 	{
 		super(parameters);
 
+		//===========================================
+		Date dateFrom = Utils.today();
+		Date dateTo = Utils.shiftDate(dateFrom, +1);
+
+		try
+		{
+			StringValue parDateFrom = parameters.get("from");
+			StringValue parDateTo = parameters.get("to");
+			if (!parDateFrom.isEmpty() && !parDateTo.isEmpty())
+			{
+				dateFrom = Utils.parseDateLocal(parDateFrom.toString());
+				dateTo = Utils.parseDateLocal(parDateTo.toString());
+			}
+		}
+		catch (ParseException e)
+		{
+			// just ignore invalid parameter
+		}
+		//===================================================
+
 		final DiaryEditorBlood bloodEditor = new DiaryEditorBlood("bloodEditor")
 		{
 			private static final long	serialVersionUID	= -8842868450540695476L;
@@ -139,10 +179,10 @@ public class DiaryPage extends MasterPage
 		add(bloodEditor);
 
 		list.clear();
-		for (int i = 1; i <= 40; i++)
+		//for (int i = 1; i <= 40; i++)
 		{
-			Date dateFrom = Utils.dateLocal(2015, 3, i);
-			Date dateTo = Utils.getNextDay(dateFrom);
+			//Date dateFrom = date;//Utils.dateLocal(2015, 3, i);
+			//Date dateTo = Utils.getNextDay(dateFrom);
 			List<Versioned<DiaryRecord>> day = diaryService.findPeriod(dateFrom, dateTo, false);
 			DiaryPanelDayModelObject mo = new DiaryPanelDayModelObject(dateFrom, day);
 			list.add(Model.of(mo));
@@ -191,7 +231,7 @@ public class DiaryPage extends MasterPage
 				BloodRecord data = new BloodRecord();
 				data.setTime(new Date());
 				Versioned<BloodRecord> rec = new Versioned<BloodRecord>(data);
-				rec.setId(Utils.generateGuid());
+				rec.setId(HashUtils.generateGuid());
 				bloodEditor.show(target, Model.of(rec));
 			}
 		});

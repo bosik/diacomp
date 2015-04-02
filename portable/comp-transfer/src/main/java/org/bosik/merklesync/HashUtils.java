@@ -1,4 +1,20 @@
-package org.bosik.diacomp.core.services.sync;
+/*
+ * MerkleSync - Data synchronization routine based on Merkle hash trees
+ * Copyright (C) 2013 Nikita Bosik
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.bosik.merklesync;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,7 +22,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import org.bosik.diacomp.core.services.ObjectService;
+import java.util.UUID;
 
 public class HashUtils
 {
@@ -37,16 +53,16 @@ public class HashUtils
 	 */
 	public static String sumHash(String a, String b)
 	{
-		if (a != null && a.length() != ObjectService.ID_FULL_SIZE)
+		if (a != null && a.length() != DataSource.ID_FULL_SIZE)
 		{
 			throw new IllegalArgumentException(String.format("Invalid hash #1 ('%s'), expected: %d chars, found: %d",
-					a, ObjectService.ID_FULL_SIZE, a.length()));
+					a, DataSource.ID_FULL_SIZE, a.length()));
 		}
 
-		if (b != null && b.length() != ObjectService.ID_FULL_SIZE)
+		if (b != null && b.length() != DataSource.ID_FULL_SIZE)
 		{
 			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d",
-					b, ObjectService.ID_FULL_SIZE, b.length()));
+					b, DataSource.ID_FULL_SIZE, b.length()));
 		}
 
 		if (a == null)
@@ -61,9 +77,9 @@ public class HashUtils
 
 		char[] a_array = a.toCharArray();
 		char[] b_array = b.toCharArray();
-		char[] c_array = new char[ObjectService.ID_FULL_SIZE];
+		char[] c_array = new char[DataSource.ID_FULL_SIZE];
 
-		for (int i = 0; i < ObjectService.ID_FULL_SIZE; i++)
+		for (int i = 0; i < DataSource.ID_FULL_SIZE; i++)
 		{
 			byte b1 = CHAR_TO_BYTE[a_array[i]];
 			byte b2 = CHAR_TO_BYTE[b_array[i]];
@@ -84,16 +100,16 @@ public class HashUtils
 	 */
 	public static String subHash(String a, String b)
 	{
-		if (a != null && a.length() != ObjectService.ID_FULL_SIZE)
+		if (a != null && a.length() != DataSource.ID_FULL_SIZE)
 		{
 			throw new IllegalArgumentException(String.format("Invalid hash #1 ('%s'), expected: %d chars, found: %d",
-					a, ObjectService.ID_FULL_SIZE, a.length()));
+					a, DataSource.ID_FULL_SIZE, a.length()));
 		}
 
-		if (b != null && b.length() != ObjectService.ID_FULL_SIZE)
+		if (b != null && b.length() != DataSource.ID_FULL_SIZE)
 		{
 			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d",
-					b, ObjectService.ID_FULL_SIZE, b.length()));
+					b, DataSource.ID_FULL_SIZE, b.length()));
 		}
 
 		if (b == null)
@@ -103,9 +119,9 @@ public class HashUtils
 
 		char[] a_array = a.toCharArray();
 		char[] b_array = b.toCharArray();
-		char[] c_array = new char[ObjectService.ID_FULL_SIZE];
+		char[] c_array = new char[DataSource.ID_FULL_SIZE];
 
-		for (int i = 0; i < ObjectService.ID_FULL_SIZE; i++)
+		for (int i = 0; i < DataSource.ID_FULL_SIZE; i++)
 		{
 			byte b1 = CHAR_TO_BYTE[a_array[i]];
 			byte b2 = CHAR_TO_BYTE[b_array[i]];
@@ -167,22 +183,32 @@ public class HashUtils
 		// Validation
 		for (String key : map.keySet())
 		{
-			if (key.length() < ObjectService.ID_PREFIX_SIZE)
+			if (key.length() < DataSource.ID_PREFIX_SIZE)
 			{
 				throw new IllegalArgumentException(String.format("Invalid key '%s', must be at least %d chars long",
-						key, ObjectService.ID_PREFIX_SIZE));
+						key, DataSource.ID_PREFIX_SIZE));
 			}
 		}
 
 		// Process
 		SortedMap<String, String> result = new TreeMap<String, String>();
 
-		for (int i = ObjectService.ID_PREFIX_SIZE; i >= 0; i--)
+		for (int i = DataSource.ID_PREFIX_SIZE; i >= 0; i--)
 		{
 			map = buildParentHashes(map, i);
 			result.putAll(map);
 		}
 
 		return result;
+	}
+
+	/**
+	 * Generates pseudo-random 32-chars-long GUID
+	 * 
+	 * @return
+	 */
+	public static String generateGuid()
+	{
+		return UUID.randomUUID().toString().replace("-", "").toLowerCase();
 	}
 }

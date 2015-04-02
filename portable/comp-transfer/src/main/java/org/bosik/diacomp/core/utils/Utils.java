@@ -1,3 +1,20 @@
+/*
+ * Diacomp - Diabetes analysis & management system
+ * Copyright (C) 2013 Nikita Bosik
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.bosik.diacomp.core.utils;
 
 import java.text.DecimalFormat;
@@ -11,7 +28,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
-import java.util.UUID;
 import org.json.JSONArray;
 
 public class Utils
@@ -598,16 +614,6 @@ public class Utils
 	 */
 
 	/**
-	 * Generates pseudo-random 32-chars-long GUID
-	 * 
-	 * @return
-	 */
-	public static String generateGuid()
-	{
-		return UUID.randomUUID().toString().replace("-", "").toLowerCase();
-	}
-
-	/**
 	 * Returns random string from supplied string array
 	 * 
 	 * @param strings
@@ -780,6 +786,23 @@ public class Utils
 		return c.getTime();
 	}
 
+	/**
+	 * Constructs today's midnight date (local)
+	 * 
+	 * @return
+	 */
+	public static Date today()
+	{
+		Calendar c = Calendar.getInstance();
+		int year = c.get(Calendar.YEAR);
+		int month = c.get(Calendar.MONTH);
+		int day = c.get(Calendar.DATE);
+
+		c.clear();
+		c.set(year, month, day);
+		return c.getTime();
+	}
+
 	public static int getDayMinutes(Date date)
 	{
 		Calendar c = Calendar.getInstance();
@@ -848,18 +871,6 @@ public class Utils
 	public static boolean isNullOrEmpty(String s)
 	{
 		return (s == null) || (s.isEmpty());
-	}
-
-	/**
-	 * Null-safe check.
-	 * 
-	 * @param a
-	 * @param b
-	 * @return True if both strings are null or equal
-	 */
-	public static boolean equals(String a, String b)
-	{
-		return a != null && a.equals(b) || a == b;
 	}
 
 	// private static String formatArray(byte array[])

@@ -1,6 +1,25 @@
+/*  
+ *  Diacomp - Diabetes analysis & management system
+ *  Copyright (C) 2013 Nikita Bosik
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ */
 package org.bosik.diacomp.android.frontend.activities;
 
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
@@ -8,6 +27,7 @@ import android.accounts.AccountManager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -148,7 +168,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			focusView = mPasswordView;
 			cancel = true;
 		}
-		else if (mPassword.length() < 4)
+		else if (mPassword.length() < 6)
 		{
 			mPasswordView.setError(getString(R.string.login_error_invalid_password));
 			focusView = mPasswordView;
@@ -330,6 +350,18 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			mAccountManager.setPassword(account, accountPassword);
 		}
 		setAccountAuthenticatorResult(intent.getExtras());
+
+		// Enabling sync
+		AccountManager am = AccountManager.get(this);
+		Account[] accounts = am.getAccountsByType("diacomp.org");
+		if (accounts.length > 0)
+		{
+			long SYNC_INTERVAL = 60; // sec
+			ContentResolver.setIsSyncable(accounts[0], DiaryContentProvider.AUTHORITY, 1);
+			ContentResolver.setSyncAutomatically(accounts[0], DiaryContentProvider.AUTHORITY, true);
+			ContentResolver.addPeriodicSync(accounts[0], DiaryContentProvider.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
+		}
+
 		setResult(RESULT_OK, intent);
 		finish();
 	}
