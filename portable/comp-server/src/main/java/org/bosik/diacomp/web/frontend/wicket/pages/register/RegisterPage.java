@@ -124,7 +124,7 @@ public class RegisterPage extends MasterPage
 				final WebRequest request = (WebRequest)RequestCycle.get().getRequest();
 				final String challenge = request.getPostParameters().getParameterValue("g-recaptcha-response")
 						.toString();
-				final String secret = "6LeujAMTAAAAAKyavu-AcA11KzjteutsP1kM9sAR";
+				final String secret = Config.get("captcha.secret");
 
 				if (!validateCaptcha(secret, challenge))
 				{
