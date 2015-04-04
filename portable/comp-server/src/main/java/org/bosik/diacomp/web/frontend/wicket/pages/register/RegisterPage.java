@@ -124,7 +124,7 @@ public class RegisterPage extends MasterPage
 				final WebRequest request = (WebRequest)RequestCycle.get().getRequest();
 				final String challenge = request.getPostParameters().getParameterValue("g-recaptcha-response")
 						.toString();
-				final String secret = Config.get("captcha.secret");
+				final String secret = Config.get(Config.KEY_CAPTCHA_SECRET);
 
 				if (!validateCaptcha(secret, challenge))
 				{
@@ -199,9 +199,9 @@ public class RegisterPage extends MasterPage
 	void sendActivationEmail(final String email, String activationKey) throws MessagingException, AddressException,
 			UnsupportedEncodingException
 	{
-		String hostAddress = Config.get("email.server");
-		String hostUsername = Config.get("email.login");
-		String hostPassword = Config.get("email.password");
+		String hostAddress = Config.get(Config.KEY_EMAIL_SERVER);
+		String hostUsername = Config.get(Config.KEY_EMAIL_LOGIN);
+		String hostPassword = Config.get(Config.KEY_EMAIL_PASSWORD);
 
 		Url context = Url.parse(getRequest().getContextPath());
 		String appURL = getRequestCycle().getUrlRenderer().renderFullUrl(context);

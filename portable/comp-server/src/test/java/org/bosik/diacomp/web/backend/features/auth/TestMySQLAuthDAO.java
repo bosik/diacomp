@@ -20,6 +20,7 @@ package org.bosik.diacomp.web.backend.features.auth;
 import static org.junit.Assert.assertEquals;
 import org.bosik.diacomp.web.backend.common.Config;
 import org.bosik.diacomp.web.backend.features.user.auth.AuthService;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,10 +32,11 @@ public class TestMySQLAuthDAO
 	private AuthService	authService;
 
 	@Test
+	@Ignore
 	public void test()
 	{
-		final String login = Config.get("testuser.login");
-		final String pass = Config.get("testuser.pass");
+		final String login = Config.get(Config.KEY_TEST_LOGIN);
+		final String pass = Config.get(Config.KEY_TEST_PASSWORD);
 
 		int id = authService.login(login, pass);
 		assertEquals(1, id);
