@@ -19,6 +19,7 @@
 package org.bosik.diacomp.android.frontend.views.diary;
 
 import java.util.Locale;
+import java.util.TimeZone;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.utils.Utils;
@@ -65,7 +66,7 @@ public class DiaryRecBloodView extends LinearLayout
 		this.record = record;
 		BloodRecord data = record.getData();
 
-		textTime.setText(Utils.formatTimeLocalShort(data.getTime()));
+		textTime.setText(Utils.formatTimeLocalShort(TimeZone.getDefault(), data.getTime()));
 
 		String units = getContext().getString(R.string.common_unit_bs_mmoll);
 		String finger = data.getFinger() == -1 ? "" : String.format("(%s)", fingers[data.getFinger()]);

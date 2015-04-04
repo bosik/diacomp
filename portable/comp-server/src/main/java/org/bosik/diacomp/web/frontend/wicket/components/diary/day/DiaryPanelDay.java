@@ -20,6 +20,7 @@ package org.bosik.diacomp.web.frontend.wicket.components.diary.day;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
@@ -32,6 +33,7 @@ import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.frontend.wicket.WicketApplication;
 import org.bosik.diacomp.web.frontend.wicket.components.diary.blood.DiaryPanelBlood;
 import org.bosik.diacomp.web.frontend.wicket.components.diary.ins.DiaryPanelIns;
 import org.bosik.diacomp.web.frontend.wicket.components.diary.meal.DiaryPanelMeal;
@@ -57,7 +59,8 @@ public class DiaryPanelDay extends Panel
 
 		final DiaryPanelDayModelObject data = model.getObject();
 
-		add(new Label("caption", Utils.formatDateLocal(data.getDate())));
+		TimeZone timeZone = ((WicketApplication)getApplication()).getTimeZone();
+		add(new Label("caption", Utils.formatDateLocal(timeZone, data.getDate())));
 		add(new RefreshingView<Versioned<DiaryRecord>>("diaryRecord")
 		{
 			private static final long	serialVersionUID	= 1L;

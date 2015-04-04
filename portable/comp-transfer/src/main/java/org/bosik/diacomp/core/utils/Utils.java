@@ -41,115 +41,74 @@ public class Utils
 	/**
 	 * Value of proteins, kcal/g
 	 */
-	public static final double							KCAL_PER_PROTS				= 3.8;
+	public static final double							KCAL_PER_PROTS		= 3.8;
 	/**
 	 * Value of fats, kcal/g
 	 */
-	public static final double							KCAL_PER_FATS				= 9.3;
+	public static final double							KCAL_PER_FATS		= 9.3;
 	/**
 	 * Value of carbohydrates, kcal/g
 	 */
-	public static final double							KCAL_PER_CARBS				= 4.1;
+	public static final double							KCAL_PER_CARBS		= 4.1;
 
 	// Time
 
-	public static final int								MsecPerSec					= 1000;
-	public static final int								SecPerMin					= 60;
-	public static final int								MinPerHour					= 60;
-	public static final int								HourPerDay					= 24;
-	public static final int								SecPerHour					= SecPerMin * MinPerHour;
-	public static final int								SecPerDay					= SecPerMin * MinPerHour
-																							* HourPerDay;
-	public static final int								MinPerDay					= MinPerHour * HourPerDay;
-	public static final int								HalfMinPerDay				= (MinPerHour * HourPerDay) / 2;
-	public static final long							MsecPerMin					= MsecPerSec * SecPerMin;
-	public static final long							MsecPerDay					= MsecPerSec * SecPerMin
-																							* MinPerHour * HourPerDay;
+	public static final int								MsecPerSec			= 1000;
+	public static final int								SecPerMin			= 60;
+	public static final int								MinPerHour			= 60;
+	public static final int								HourPerDay			= 24;
+	public static final int								SecPerHour			= SecPerMin * MinPerHour;
+	public static final int								SecPerDay			= SecPerMin * MinPerHour * HourPerDay;
+	public static final int								MinPerDay			= MinPerHour * HourPerDay;
+	public static final int								HalfMinPerDay		= (MinPerHour * HourPerDay) / 2;
+	public static final long							MsecPerMin			= MsecPerSec * SecPerMin;
+	public static final long							MsecPerDay			= MsecPerSec * SecPerMin * MinPerHour
+																					* HourPerDay;
 
 	// Epsilon values
 
-	public static final double							EPS							= 0.0000001;
+	public static final double							EPS					= 0.0000001;
 
 	// Format settings
 
 	public static char									DECIMAL_DOT;
 	private static DecimalFormat						DF;
 
-	private static Random								r							= new Random();
+	private static Random								r					= new Random();
 
 	// Formatters
 
-	private static final ThreadLocal<SimpleDateFormat>	FORMATTER_DATE_LOCAL		= new ThreadLocal<SimpleDateFormat>()
-																					{
-																						@Override
-																						protected SimpleDateFormat initialValue()
-																						{
-																							SimpleDateFormat format = new SimpleDateFormat(
-																									"yyyy-MM-dd",
-																									Locale.getDefault());
-																							format.setTimeZone(TimeZone
-																									.getDefault());
-																							return format;
-																						}
-																					};
+	private static final String							FORMAT_DATE_TIME	= "yyyy-MM-dd HH:mm:ss";
+	private static final String							FORMAT_DATE			= "yyyy-MM-dd";
+	private static final String							FORMAT_TIME_SHORT	= "HH:mm";
 
-	private static final ThreadLocal<SimpleDateFormat>	FORMATTER_DATE_UTC			= new ThreadLocal<SimpleDateFormat>()
-																					{
-																						@Override
-																						protected SimpleDateFormat initialValue()
-																						{
-																							SimpleDateFormat format = new SimpleDateFormat(
-																									"yyyy-MM-dd",
-																									Locale.US);
-																							format.setTimeZone(TimeZone
-																									.getTimeZone("UTC"));
-																							return format;
-																						}
-																					};
+	static final TimeZone								TIMEZONE_UTC		= TimeZone.getTimeZone("UTC");
 
-	private static final ThreadLocal<SimpleDateFormat>	FORMATTER_TIME_LOCAL		= new ThreadLocal<SimpleDateFormat>()
-																					{
-																						@Override
-																						protected SimpleDateFormat initialValue()
-																						{
-																							SimpleDateFormat format = new SimpleDateFormat(
-																									"yyyy-MM-dd HH:mm:ss",
-																									Locale.getDefault());
-																							format.setTimeZone(TimeZone
-																									.getDefault());
-																							return format;
-																						}
-																					};
+	private static final ThreadLocal<SimpleDateFormat>	FORMATTER_DATE_UTC	= new ThreadLocal<SimpleDateFormat>()
+																			{
+																				@Override
+																				protected SimpleDateFormat initialValue()
+																				{
+																					SimpleDateFormat format = new SimpleDateFormat(
+																							FORMAT_DATE, Locale.US);
+																					format.setTimeZone(TIMEZONE_UTC);
+																					return format;
+																				}
+																			};
 
-	private static final ThreadLocal<SimpleDateFormat>	FORMATTER_TIME_LOCAL_SHORT	= new ThreadLocal<SimpleDateFormat>()
-																					{
-																						@Override
-																						protected SimpleDateFormat initialValue()
-																						{
-																							SimpleDateFormat format = new SimpleDateFormat(
-																									"HH:mm",
-																									Locale.getDefault());
-																							format.setTimeZone(TimeZone
-																									.getDefault());
-																							return format;
-																						}
-																					};
+	private static final ThreadLocal<SimpleDateFormat>	FORMATTER_TIME_UTC	= new ThreadLocal<SimpleDateFormat>()
+																			{
+																				@Override
+																				protected SimpleDateFormat initialValue()
+																				{
+																					SimpleDateFormat format = new SimpleDateFormat(
+																							FORMAT_DATE_TIME, Locale.US);
+																					format.setTimeZone(TIMEZONE_UTC);
+																					return format;
+																				}
+																			};
 
-	private static final ThreadLocal<SimpleDateFormat>	FORMATTER_TIME_UTC			= new ThreadLocal<SimpleDateFormat>()
-																					{
-																						@Override
-																						protected SimpleDateFormat initialValue()
-																						{
-																							SimpleDateFormat format = new SimpleDateFormat(
-																									"yyyy-MM-dd HH:mm:ss",
-																									Locale.US);
-																							format.setTimeZone(TimeZone
-																									.getTimeZone("UTC"));
-																							return format;
-																						}
-																					};
-
-	public static final String							ALPHANUMERIC				= "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+	public static final String							ALPHANUMERIC		= "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
 
 	static
 	{
@@ -163,6 +122,27 @@ public class Utils
 		{
 			throw new RuntimeException("Number format is not a decimal format");
 		}
+	}
+
+	private static SimpleDateFormat getFormatDateLocal(TimeZone timeZone)
+	{
+		SimpleDateFormat format = new SimpleDateFormat(FORMAT_DATE, Locale.getDefault());
+		format.setTimeZone(timeZone);
+		return format;
+	}
+
+	private static SimpleDateFormat getFormatTimeLocal(TimeZone timeZone)
+	{
+		SimpleDateFormat format = new SimpleDateFormat(FORMAT_DATE_TIME, Locale.getDefault());
+		format.setTimeZone(timeZone);
+		return format;
+	}
+
+	private static SimpleDateFormat getFormatTimeLocalShort(TimeZone timeZone)
+	{
+		SimpleDateFormat format = new SimpleDateFormat(FORMAT_TIME_SHORT, Locale.getDefault());
+		format.setTimeZone(timeZone);
+		return format;
 	}
 
 	// ===========================================================================================================
@@ -221,9 +201,9 @@ public class Utils
 		return FORMATTER_DATE_UTC.get().parse(date);
 	}
 
-	public static Date parseDateLocal(String date) throws ParseException
+	public static Date parseDateLocal(TimeZone timeZone, String date) throws ParseException
 	{
-		return FORMATTER_DATE_LOCAL.get().parse(date);
+		return getFormatDateLocal(timeZone).parse(date);
 	}
 
 	/**
@@ -418,9 +398,9 @@ public class Utils
 		return FORMATTER_DATE_UTC.get().format(date);
 	}
 
-	public static String formatDateLocal(Date date)
+	public static String formatDateLocal(TimeZone timeZone, Date date)
 	{
-		return FORMATTER_DATE_LOCAL.get().format(date);
+		return getFormatDateLocal(timeZone).format(date);
 	}
 
 	public static String formatBooleanStr(boolean x)
@@ -457,14 +437,14 @@ public class Utils
 		return FORMATTER_TIME_UTC.get().format(time);
 	}
 
-	public static String formatTimeLocal(Date time)
+	public static String formatTimeLocal(TimeZone timeZone, Date time)
 	{
-		return FORMATTER_TIME_LOCAL.get().format(time);
+		return getFormatTimeLocal(timeZone).format(time);
 	}
 
-	public static String formatTimeLocalShort(Date time)
+	public static String formatTimeLocalShort(TimeZone timeZone, Date time)
 	{
-		return FORMATTER_TIME_LOCAL_SHORT.get().format(time);
+		return getFormatTimeLocalShort(timeZone).format(time);
 	}
 
 	/**
@@ -497,7 +477,7 @@ public class Utils
 	public static int timeToMin(Date time)
 	{
 		Calendar c = Calendar.getInstance();
-		c.setTimeZone(TimeZone.getTimeZone("UTC"));
+		c.setTimeZone(TIMEZONE_UTC);
 		c.setTime(time);
 		return (c.get(Calendar.HOUR_OF_DAY) * MinPerHour) + c.get(Calendar.MINUTE);
 	}
@@ -726,7 +706,7 @@ public class Utils
 	{
 		Calendar c = Calendar.getInstance();
 		c.clear();
-		c.setTimeZone(TimeZone.getTimeZone("UTC"));
+		c.setTimeZone(TIMEZONE_UTC);
 		c.set(year, month - 1, day);
 		return c.getTime();
 	}
@@ -746,7 +726,7 @@ public class Utils
 	{
 		Calendar c = Calendar.getInstance();
 		c.clear();
-		c.setTimeZone(TimeZone.getTimeZone("UTC"));
+		c.setTimeZone(TIMEZONE_UTC);
 		c.set(year, month - 1, day, hour, min, sec);
 		return c.getTime();
 	}
@@ -759,10 +739,11 @@ public class Utils
 	 * @param day
 	 * @return
 	 */
-	public static Date dateLocal(int year, int month, int day)
+	public static Date dateLocal(TimeZone timeZone, int year, int month, int day)
 	{
 		Calendar c = Calendar.getInstance();
 		c.clear();
+		c.setTimeZone(timeZone);
 		c.set(year, month - 1, day);
 		return c.getTime();
 	}
@@ -778,10 +759,11 @@ public class Utils
 	 * @param sec
 	 * @return
 	 */
-	public static Date timeLocal(int year, int month, int day, int hour, int min, int sec)
+	public static Date timeLocal(TimeZone timeZone, int year, int month, int day, int hour, int min, int sec)
 	{
 		Calendar c = Calendar.getInstance();
 		c.clear();
+		c.setTimeZone(timeZone);
 		c.set(year, month - 1, day, hour, min, sec);
 		return c.getTime();
 	}
@@ -791,14 +773,15 @@ public class Utils
 	 * 
 	 * @return
 	 */
-	public static Date today()
+	public static Date today(TimeZone timeZone)
 	{
-		Calendar c = Calendar.getInstance();
+		Calendar c = Calendar.getInstance(timeZone);
 		int year = c.get(Calendar.YEAR);
 		int month = c.get(Calendar.MONTH);
 		int day = c.get(Calendar.DATE);
 
 		c.clear();
+		c.setTimeZone(timeZone);
 		c.set(year, month, day);
 		return c.getTime();
 	}

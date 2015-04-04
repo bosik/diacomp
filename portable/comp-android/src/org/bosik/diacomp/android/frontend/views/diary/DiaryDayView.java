@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
@@ -343,7 +344,7 @@ public class DiaryDayView extends LinearLayout
 					}
 
 					TextView textTitle = (TextView) convertView.findViewById(R.id.diaryDayHeader);
-					textTitle.setText(Utils.formatDateLocal(((ItemHeader) item).date));
+					textTitle.setText(Utils.formatDateLocal(TimeZone.getDefault(), ((ItemHeader) item).date));
 				}
 				else if (item instanceof ItemData)
 				{
@@ -528,7 +529,8 @@ public class DiaryDayView extends LinearLayout
 	// TODO: optimize and move to Utils
 	static boolean sameDate(Date date1, Date date2)
 	{
-		return Utils.formatDateLocal(date1).equals(Utils.formatDateLocal(date2));
+		return Utils.formatDateLocal(TimeZone.getDefault(), date1).equals(
+				Utils.formatDateLocal(TimeZone.getDefault(), date2));
 	}
 
 	void loadBefore(final int days)

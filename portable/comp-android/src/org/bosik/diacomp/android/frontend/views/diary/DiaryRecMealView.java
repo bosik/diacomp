@@ -18,6 +18,7 @@
  */
 package org.bosik.diacomp.android.frontend.views.diary;
 
+import java.util.TimeZone;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.views.diary.MealFormatter.FormatStyle;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
@@ -52,7 +53,7 @@ public class DiaryRecMealView extends LinearLayout
 		this.record = record;
 		MealRecord data = record.getData();
 
-		textTime.setText(Utils.formatTimeLocalShort(data.getTime()));
+		textTime.setText(Utils.formatTimeLocalShort(TimeZone.getDefault(), data.getTime()));
 		textValue.setText(MealFormatter.format(record.getData(), FormatStyle.MOST_CARBS));
 	}
 }

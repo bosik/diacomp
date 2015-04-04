@@ -17,14 +17,18 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.pages.master;
 
+import java.util.TimeZone;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.protocol.http.ClientProperties;
+import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.common.Config;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
+import org.bosik.diacomp.web.frontend.wicket.WicketApplication;
 import org.bosik.diacomp.web.frontend.wicket.components.header.HeaderPanel;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.Menu;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.MenuContent;
@@ -47,6 +51,16 @@ public class MasterPage extends WebPage
 	{
 		super(parameters);
 
+		// Store client timezone
+		getSession().getClientInfo();
+		ClientProperties properties = ((WebClientInfo)getSession().getClientInfo()).getProperties();
+		TimeZone timeZone = properties.getTimeZone();
+		if (timeZone == null)
+		{
+			timeZone = TimeZone.getDefault();
+		}
+		((WicketApplication)getApplication()).setTimeZone(timeZone);
+
 		try
 		{
 			String userName = userInfoService.getCurrentUserName();
@@ -60,7 +74,7 @@ public class MasterPage extends WebPage
 		}
 
 		add(new Label("pageTitle", getString("res.appTitle")));
-		add(new Label("textVersion", Config.get("DIACOMP_VERSION")));
+		add(new Label("textVersion", Config.get("DIACOMP_VERSION") + " / " + getTimeZone().getDisplayName()));
 	}
 
 	protected MenuContent getMenu(boolean authorized)
@@ -84,5 +98,10 @@ public class MasterPage extends WebPage
 		menuContent.setSelected(getClass());
 
 		return menuContent;
+	}
+
+	public TimeZone getTimeZone()
+	{
+		return ((WicketApplication)getApplication()).getTimeZone();
 	}
 }

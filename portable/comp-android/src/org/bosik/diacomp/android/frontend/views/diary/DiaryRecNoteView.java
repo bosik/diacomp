@@ -18,6 +18,7 @@
  */
 package org.bosik.diacomp.android.frontend.views.diary;
 
+import java.util.TimeZone;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.utils.Utils;
@@ -51,7 +52,7 @@ public class DiaryRecNoteView extends LinearLayout
 		this.record = record;
 		NoteRecord data = record.getData();
 
-		textTime.setText(Utils.formatTimeLocalShort(data.getTime()));
+		textTime.setText(Utils.formatTimeLocalShort(TimeZone.getDefault(), data.getTime()));
 		textValue.setText(data.getText());
 	}
 }

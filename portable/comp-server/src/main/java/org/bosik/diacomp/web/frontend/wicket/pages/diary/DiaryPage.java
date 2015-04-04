@@ -140,7 +140,7 @@ public class DiaryPage extends MasterPage
 		super(parameters);
 
 		//===========================================
-		Date dateFrom = Utils.today();
+		Date dateFrom = Utils.today(getTimeZone());
 		Date dateTo = Utils.shiftDate(dateFrom, +1);
 
 		try
@@ -149,8 +149,8 @@ public class DiaryPage extends MasterPage
 			StringValue parDateTo = parameters.get("to");
 			if (!parDateFrom.isEmpty() && !parDateTo.isEmpty())
 			{
-				dateFrom = Utils.parseDateLocal(parDateFrom.toString());
-				dateTo = Utils.parseDateLocal(parDateTo.toString());
+				dateFrom = Utils.parseDateLocal(getTimeZone(), parDateFrom.toString());
+				dateTo = Utils.parseDateLocal(getTimeZone(), parDateTo.toString());
 			}
 		}
 		catch (ParseException e)

@@ -19,6 +19,7 @@ package org.bosik.diacomp.web.frontend.wicket.components.diary.meal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -26,6 +27,7 @@ import org.apache.wicket.model.Model;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.frontend.wicket.WicketApplication;
 import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.editor.MealEditor;
 import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.food.FoodList;
 import org.bosik.merklesync.Versioned;
@@ -47,7 +49,8 @@ public class DiaryPanelMeal extends Panel
 	{
 		super.onInitialize();
 
-		add(new Label("time", Utils.formatTimeLocalShort(model.getObject().getData().getTime())));
+		TimeZone timeZone = ((WicketApplication)getApplication()).getTimeZone();
+		add(new Label("time", Utils.formatTimeLocalShort(timeZone, model.getObject().getData().getTime())));
 		add(new MealEditor("content", new IModel<FoodList>()
 		{
 			private static final long	serialVersionUID	= 7161066379939942868L;

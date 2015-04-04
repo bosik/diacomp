@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.web.frontend.wicket;
 
+import java.util.TimeZone;
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -33,6 +34,18 @@ import org.bosik.diacomp.web.frontend.wicket.pages.stats.StatsPage;
 
 public class WicketApplication extends WebApplication
 {
+	private TimeZone	timeZone;
+
+	public TimeZone getTimeZone()
+	{
+		return timeZone;
+	}
+
+	public void setTimeZone(TimeZone timeZone)
+	{
+		this.timeZone = timeZone;
+	}
+
 	@Override
 	public Class<? extends WebPage> getHomePage()
 	{
@@ -50,6 +63,7 @@ public class WicketApplication extends WebApplication
 	{
 		super.init();
 		getComponentInstantiationListeners().add(new SpringComponentInjector(this));
+		getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
 
 		mountPage("/about", AboutPage.class);
 		mountPage("/login", LoginPage.class);

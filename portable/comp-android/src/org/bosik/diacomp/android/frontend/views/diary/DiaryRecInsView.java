@@ -19,6 +19,7 @@
 package org.bosik.diacomp.android.frontend.views.diary;
 
 import java.util.Locale;
+import java.util.TimeZone;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.utils.Utils;
@@ -52,7 +53,7 @@ public class DiaryRecInsView extends LinearLayout
 		this.record = record;
 		InsRecord data = record.getData();
 
-		textTime.setText(Utils.formatTimeLocalShort(data.getTime()));
+		textTime.setText(Utils.formatTimeLocalShort(TimeZone.getDefault(), data.getTime()));
 
 		String units = getContext().getString(R.string.common_unit_insulin);
 		String text = String.format(Locale.US, "%.1f %s", data.getValue(), units);

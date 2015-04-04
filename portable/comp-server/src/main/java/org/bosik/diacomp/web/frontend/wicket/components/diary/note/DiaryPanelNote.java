@@ -17,12 +17,14 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.components.diary.note;
 
+import java.util.TimeZone;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.frontend.wicket.WicketApplication;
 import org.bosik.merklesync.Versioned;
 
 public class DiaryPanelNote extends Panel
@@ -43,7 +45,8 @@ public class DiaryPanelNote extends Panel
 		super.onInitialize();
 
 		NoteRecord rec = model.getObject().getData();
-		add(new Label("time", Utils.formatTimeLocalShort(rec.getTime())));
+		TimeZone timeZone = ((WicketApplication)getApplication()).getTimeZone();
+		add(new Label("time", Utils.formatTimeLocalShort(timeZone, rec.getTime())));
 		add(new Label("text", formatNoteText(rec.getText())));
 	}
 
