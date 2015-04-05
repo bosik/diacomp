@@ -10,6 +10,7 @@
 		<jettyVersion>7.2.0.v20101020</jettyVersion>
 		<jersey.version>2.5</jersey.version>
 		<spring.version>3.2.8.RELEASE</spring.version>
+		<wicket.version>6.19.0</wicket.version>
 		<spring.security.version>3.2.3.RELEASE</spring.security.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -62,7 +63,7 @@
 		<dependency>
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-core</artifactId>
-			<version>6.14.0</version>
+			<version>${wicket.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -73,7 +74,7 @@
 		<dependency>
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-extensions</artifactId>
-			<version>6.14.0</version>
+			<version>${wicket.version}</version>
 		</dependency>
 
 		<dependency>
@@ -85,13 +86,13 @@
 		<dependency>
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-spring</artifactId>
-			<version>6.14.0</version>
+			<version>${wicket.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-datetime</artifactId>
-			<version>6.14.0</version>
+			<version>${wicket.version}</version>
 		</dependency>
 
 		<!-- Jersey REST -->

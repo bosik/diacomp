@@ -47,19 +47,20 @@ public class MasterPage extends WebPage
 	@SpringBean
 	private UserInfoService		userInfoService;
 
-	public MasterPage(final PageParameters parameters)
+	/**
+	 * Shouldn't be called from browser directly
+	 * 
+	 * @param parameters
+	 */
+	protected MasterPage(PageParameters parameters)
 	{
 		super(parameters);
+	}
 
-		// Store client timezone
-		getSession().getClientInfo();
-		ClientProperties properties = ((WebClientInfo)getSession().getClientInfo()).getProperties();
-		TimeZone timeZone = properties.getTimeZone();
-		if (timeZone == null)
-		{
-			timeZone = TimeZone.getDefault();
-		}
-		((WicketApplication)getApplication()).setTimeZone(timeZone);
+	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
 
 		try
 		{
@@ -102,6 +103,24 @@ public class MasterPage extends WebPage
 
 	public TimeZone getTimeZone()
 	{
-		return ((WicketApplication)getApplication()).getTimeZone();
+		// Check if app stores timezone info
+		WicketApplication application = (WicketApplication)getApplication();
+		TimeZone timeZone = application.getTimeZone();
+
+		// If no, fetch and cache it
+		if (timeZone == null)
+		{
+			WebClientInfo webClientInfo = (WebClientInfo)getSession().getClientInfo();
+			ClientProperties properties = webClientInfo.getProperties();
+			timeZone = properties.getTimeZone();
+			if (timeZone == null)
+			{
+				timeZone = TimeZone.getDefault();
+			}
+
+			application.setTimeZone(timeZone);
+		}
+
+		return timeZone;
 	}
 }
