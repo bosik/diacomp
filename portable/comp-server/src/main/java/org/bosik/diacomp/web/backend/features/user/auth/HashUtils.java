@@ -25,6 +25,10 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+ 
+/*
+ * NOTE: the original file adopted (modified) by Nikita Bosik
+ */
 package org.bosik.diacomp.web.backend.features.user.auth;
 
 import java.math.BigInteger;
