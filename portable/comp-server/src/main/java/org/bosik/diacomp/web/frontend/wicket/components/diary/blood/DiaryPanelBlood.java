@@ -32,7 +32,7 @@ import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.frontend.wicket.WicketApplication;
+import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.bosik.merklesync.Versioned;
 
 public class DiaryPanelBlood extends Panel
@@ -59,7 +59,7 @@ public class DiaryPanelBlood extends Panel
 		BloodRecord rec = model.getObject().getData();
 		// TODO: i18n
 		add(new Image("icon", Model.of("icon.png")).add(AttributeModifier.replace("title", "Замер СК")));
-		TimeZone timeZone = ((WicketApplication)getApplication()).getTimeZone();
+		TimeZone timeZone = MasterPage.getTimeZone(this);
 		add(new Label("time", Utils.formatTimeLocalShort(timeZone, rec.getTime())));
 		add(new Label("value", formatBloodValue(rec.getValue())));
 		add(new Label("finger", formatBloodFinger(rec.getFinger())).add(AttributeModifier.replace("title",

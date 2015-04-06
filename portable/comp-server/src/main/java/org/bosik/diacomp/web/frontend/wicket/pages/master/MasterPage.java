@@ -18,6 +18,7 @@
 package org.bosik.diacomp.web.frontend.wicket.pages.master;
 
 import java.util.TimeZone;
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
@@ -28,7 +29,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.common.Config;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
-import org.bosik.diacomp.web.frontend.wicket.WicketApplication;
 import org.bosik.diacomp.web.frontend.wicket.components.header.HeaderPanel;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.Menu;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.MenuContent;
@@ -101,26 +101,20 @@ public class MasterPage extends WebPage
 		return menuContent;
 	}
 
-	public TimeZone getTimeZone()
+	public static TimeZone getTimeZone(Component component)
 	{
-		// Check if app stores timezone info
-		WicketApplication application = (WicketApplication)getApplication();
-		TimeZone timeZone = application.getTimeZone();
-
-		// If no, fetch and cache it
+		WebClientInfo webClientInfo = (WebClientInfo)component.getSession().getClientInfo();
+		ClientProperties properties = webClientInfo.getProperties();
+		TimeZone timeZone = properties.getTimeZone();
 		if (timeZone == null)
 		{
-			WebClientInfo webClientInfo = (WebClientInfo)getSession().getClientInfo();
-			ClientProperties properties = webClientInfo.getProperties();
-			timeZone = properties.getTimeZone();
-			if (timeZone == null)
-			{
-				timeZone = TimeZone.getDefault();
-			}
-
-			application.setTimeZone(timeZone);
+			timeZone = TimeZone.getDefault();
 		}
-
 		return timeZone;
+	}
+
+	public TimeZone getTimeZone()
+	{
+		return getTimeZone(this);
 	}
 }

@@ -26,7 +26,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.frontend.wicket.WicketApplication;
+import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.bosik.merklesync.Versioned;
 
 public class DiaryPanelIns extends Panel
@@ -49,7 +49,7 @@ public class DiaryPanelIns extends Panel
 		InsRecord rec = model.getObject().getData();
 		// TODO: localization
 		add(new Image("icon", Model.of("icon.png")).add(AttributeModifier.replace("title", "Инъекция")));
-		TimeZone timeZone = ((WicketApplication)getApplication()).getTimeZone();
+		TimeZone timeZone = MasterPage.getTimeZone(this);
 		add(new Label("time", Utils.formatTimeLocalShort(timeZone, rec.getTime())));
 		add(new Label("value", formatInsValue(rec.getValue())));
 	}

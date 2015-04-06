@@ -33,11 +33,11 @@ import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.frontend.wicket.WicketApplication;
 import org.bosik.diacomp.web.frontend.wicket.components.diary.blood.DiaryPanelBlood;
 import org.bosik.diacomp.web.frontend.wicket.components.diary.ins.DiaryPanelIns;
 import org.bosik.diacomp.web.frontend.wicket.components.diary.meal.DiaryPanelMeal;
 import org.bosik.diacomp.web.frontend.wicket.components.diary.note.DiaryPanelNote;
+import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.bosik.merklesync.Versioned;
 
 public class DiaryPanelDay extends Panel
@@ -59,7 +59,7 @@ public class DiaryPanelDay extends Panel
 
 		final DiaryPanelDayModelObject data = model.getObject();
 
-		TimeZone timeZone = ((WicketApplication)getApplication()).getTimeZone();
+		TimeZone timeZone = MasterPage.getTimeZone(this);
 		add(new Label("caption", Utils.formatDateLocal(timeZone, data.getDate())));
 		add(new RefreshingView<Versioned<DiaryRecord>>("diaryRecord")
 		{

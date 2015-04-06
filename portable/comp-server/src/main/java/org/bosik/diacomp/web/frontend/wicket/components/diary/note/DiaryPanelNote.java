@@ -24,7 +24,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.frontend.wicket.WicketApplication;
+import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.bosik.merklesync.Versioned;
 
 public class DiaryPanelNote extends Panel
@@ -45,7 +45,7 @@ public class DiaryPanelNote extends Panel
 		super.onInitialize();
 
 		NoteRecord rec = model.getObject().getData();
-		TimeZone timeZone = ((WicketApplication)getApplication()).getTimeZone();
+		TimeZone timeZone = MasterPage.getTimeZone(this);
 		add(new Label("time", Utils.formatTimeLocalShort(timeZone, rec.getTime())));
 		add(new Label("text", formatNoteText(rec.getText())));
 	}
