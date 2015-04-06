@@ -31,10 +31,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import org.bosik.diacomp.core.entities.business.FoodSetInfo;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.persistence.parsers.ParserFoodSetInfo;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
+import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
@@ -53,8 +56,12 @@ public class FoodBaseRest
 	@Autowired
 	private FoodBaseService							foodbaseService;
 
-	private final Serializer<Versioned<FoodItem>>	serializer		= new SerializerFoodItem();
-	private final Serializer<Map<String, String>>	serializerMap	= new SerializerMap();
+	private FoodSetService							foodSetService		= new FoodSetService();
+
+	private final Serializer<Versioned<FoodItem>>	serializer			= new SerializerFoodItem();
+	private final Serializer<FoodSetInfo>			serializerSetInfo	= new SerializerAdapter<FoodSetInfo>(
+																				new ParserFoodSetInfo());
+	private final Serializer<Map<String, String>>	serializerMap		= new SerializerMap();
 
 	@GET
 	@Path("count/{prefix: .*}")
@@ -270,6 +277,50 @@ public class FoodBaseRest
 		catch (NotAuthorizedException e)
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	@GET
+	@Path("set")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getFoodSetInfo()
+	{
+		try
+		{
+			List<FoodSetInfo> list = foodSetService.getFoodSetInfo();
+			String response = serializerSetInfo.writeAll(list);
+			return Response.ok(response).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	@GET
+	@Path("set/{id}")
+	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	public Response getFoodSet(@PathParam("id") @DefaultValue("") String parId)
+	{
+		try
+		{
+			String data = foodSetService.getFoodSet(parId);
+
+			if (data != null)
+			{
+				return Response.ok(data).build();
+			}
+			else
+			{
+				String response = String.format("Set %s not found", parId);
+				return Response.status(Status.NOT_FOUND).entity(response).build();
+			}
 		}
 		catch (Exception e)
 		{
