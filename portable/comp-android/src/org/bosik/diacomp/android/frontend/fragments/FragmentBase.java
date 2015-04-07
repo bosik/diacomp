@@ -34,6 +34,7 @@ import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorDish;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorFood;
+import org.bosik.diacomp.android.frontend.activities.ActivityFoodSet;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
@@ -712,6 +713,12 @@ public class FragmentBase extends Fragment
 				DishItem dish = new DishItem();
 				dish.setName(editSearch.getText().toString());
 				showDishEditor(new Versioned<DishItem>(dish), true);
+				return true;
+			}
+			case R.id.item_base_foodsets:
+			{
+				Intent intent = new Intent(getActivity(), ActivityFoodSet.class);
+				startActivity(intent);
 				return true;
 			}
 			default:

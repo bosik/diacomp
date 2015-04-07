@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">Diacomp</string>
+    <string name="base_action_foodsets">Food sets</string>
     <string name="base_action_new_dish">New dish</string>
     <string name="base_action_new_food">New food</string>
     <string name="base_subinfo" formatted="false">P %.1f\t\tF %.1f\t\tC %.1f\t\tV %.1f</string>
@@ -62,6 +63,14 @@
     <string name="editor_note_field_text">Text</string>
     <string name="editor_note_title">Note</string>
     <string name="fd_action_add">Add</string>
+    <string name="foodset_apply">Save</string>
+    <string name="foodset_hint">Select food sets to be included in your food base:</string>
+    <string name="foodset_tip_list_loading_failed">Unable to fetch food sets list, check your network connection</string>
+    <string name="foodset_tip_set_add_fail">Failed to install: %s</string>
+    <string name="foodset_tip_set_add_ok">Installed: %s</string>
+    <string name="foodset_tip_set_remove_fail">Failed to remove: %s</string>
+    <string name="foodset_tip_set_remove_ok">Removed: %s</string>
+    <string name="foodset_title">Food sets</string>
     <string name="login_action_forgot_password">Recover lost password</string>
     <string name="login_action_register">Create new account</string>
     <string name="login_action_sign_in">Sign in</string>
@@ -70,13 +79,13 @@
     <string name="login_error_incorrect_password">This password is incorrect</string>
     <string name="login_error_invalid_email">This email address is invalid</string>
     <string name="login_error_invalid_password">This password is too short</string>
-    <string name="login_login_progress_signing_in">Signing in&#8230;</string>
+    <string name="login_login_progress_signing_in">Signing in…</string>
     <string name="login_prompt_email">Email</string>
     <string name="login_prompt_password">Password</string>
     <string name="login_title">Sign in</string>
     <string name="main_option_bases">Bases</string>
     <string name="main_option_diary">Diary</string>
-    <string name="main_option_login">Login...</string>
+    <string name="main_option_login">Login…</string>
     <string name="main_option_preferences">Preferences</string>
     <string name="main_option_test">Test</string>
     <string name="main_title">Diacomp</string>
