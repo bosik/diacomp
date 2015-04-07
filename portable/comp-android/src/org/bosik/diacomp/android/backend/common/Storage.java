@@ -20,6 +20,7 @@ package org.bosik.diacomp.android.backend.common;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryWebService;
@@ -90,6 +91,7 @@ public class Storage
 		{
 			Log.i(TAG, "Web client initialization...");
 			webClient = new WebClient(CONNECTION_TIMEOUT);
+			webClient.setServer(context.getString(R.string.server_url));
 		}
 		if (null == localDiary)
 		{
