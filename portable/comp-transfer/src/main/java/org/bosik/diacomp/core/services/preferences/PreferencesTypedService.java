@@ -34,7 +34,7 @@ public abstract class PreferencesTypedService implements PreferencesService
 	}
 
 	/**
-	 * Returns null if preference not found
+	 * Returns default if preference not found
 	 * 
 	 * @param preference
 	 * 
@@ -50,12 +50,12 @@ public abstract class PreferencesTypedService implements PreferencesService
 		}
 		else
 		{
-			return null;
+			return preference.getDefaultValue();
 		}
 	}
 
 	/**
-	 * Returns null if preference not found
+	 * Returns default if preference not found
 	 * 
 	 * @param preference
 	 * 
@@ -63,20 +63,11 @@ public abstract class PreferencesTypedService implements PreferencesService
 	 */
 	public Float getFloatValue(Preference preference)
 	{
-		PreferenceEntry<String> entry = getString(preference);
-
-		if (entry != null)
-		{
-			return Float.parseFloat(entry.getValue());
-		}
-		else
-		{
-			return null;
-		}
+		return Float.parseFloat(getStringValue(preference));
 	}
 
 	/**
-	 * Returns null if preference not found
+	 * Returns default if preference not found
 	 * 
 	 * @param preference
 	 * 
@@ -84,25 +75,6 @@ public abstract class PreferencesTypedService implements PreferencesService
 	 */
 	public Double getDoubleValue(Preference preference)
 	{
-		PreferenceEntry<String> entry = getString(preference);
-
-		if (entry != null)
-		{
-			return Double.parseDouble(entry.getValue());
-		}
-		else
-		{
-			return null;
-		}
+		return Double.parseDouble(getStringValue(preference));
 	}
-
-	//	public void setDouble(PreferenceEntry<String> entry)
-	//	{
-	//		PreferenceEntry<String> result = new PreferenceEntry<String>();
-	//		result.setType(entry.getType());
-	//		result.setValue(String.valueOf(entry.getValue()));
-	//		result.setVersion(entry.getVersion());
-	//
-	//		setString(result);
-	//	}
 }
