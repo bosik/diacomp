@@ -16,7 +16,7 @@ hr {
 	max-width: 1200px;
 	background: #ffffff;
 	margin: 0 auto;
-	padding: 10px;
+	padding: 0px 10px 0px;
 }
 
 .header {
@@ -203,6 +203,7 @@ th {
 	max-width: 1200px;
 	width: 100%;
 	z-index: 999;
+	padding-top: 5px;
 }
 
 #pageContent {
