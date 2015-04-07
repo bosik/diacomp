@@ -25,7 +25,6 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
-import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.FragmentBase;
 import org.bosik.diacomp.android.frontend.fragments.FragmentDiaryScroller;
 import org.bosik.diacomp.android.utils.ErrorHandler;
@@ -81,10 +80,10 @@ public class ActivityMain extends FragmentActivity
 
 			// Backend
 
-			if (BuildConfig.DEBUG)
-			{
-				UIUtils.showTip(this, "Debug mode is on");
-			}
+			// if (BuildConfig.DEBUG)
+			// {
+			// UIUtils.showTip(this, "Debug mode is on");
+			// }
 
 			PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 			Storage.init(this, getContentResolver(), PreferenceManager.getDefaultSharedPreferences(this));
