@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
@@ -45,6 +46,8 @@ import org.bosik.diacomp.core.services.search.Sorter.Sort;
 import org.bosik.merklesync.Versioned;
 import android.app.Activity;
 import android.content.Intent;
+import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -97,6 +100,49 @@ public class FragmentBase extends Fragment
 	long												lastSearchTime;
 	boolean												searchScheduled		= false;
 	private static final long							SEARCH_DELAY		= 500;
+
+	private ContentObserver								observer			= new ContentObserver(null)
+																			{
+																				@Override
+																				public void onChange(boolean selfChange)
+																				{
+																					this.onChange(selfChange, null);
+																				}
+
+																				@Override
+																				public void onChange(
+																						boolean selfChange, Uri uri)
+																				{
+																					if (uri != null)
+																					{
+																						switch (DiaryContentProvider.sURIMatcher
+																								.match(uri))
+																						{
+																							case DiaryContentProvider.CODE_FOODBASE:
+																							case DiaryContentProvider.CODE_DISHBASE:
+																							{
+																								runSearch();
+																								break;
+																							}
+																						}
+																					}
+																				}
+																			};
+
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		getActivity().getContentResolver().registerContentObserver(DiaryContentProvider.CONTENT_BASE_URI, true,
+				observer);
+	};
+
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		getActivity().getContentResolver().unregisterContentObserver(observer);
+	}
 
 	@Override
 	public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)

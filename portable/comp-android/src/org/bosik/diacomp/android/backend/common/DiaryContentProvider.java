@@ -37,13 +37,14 @@ public class DiaryContentProvider extends ContentProvider
 
 	// Core
 	private MyDBHelper				openHelper;
-	private static final UriMatcher	sURIMatcher;
+	public static final UriMatcher	sURIMatcher;
 
 	// Database
 	private static final String		DATABASE_NAME				= "Comp.db";
 	private static final int		DATABASE_VERSION			= 1;
 	private static final String		SCHEME						= "content://";
 	public static final String		AUTHORITY					= "diacomp.provider";
+	public static final Uri			CONTENT_BASE_URI			= Uri.parse(SCHEME + AUTHORITY + "/");
 
 	// ======================================= Diary table =======================================
 
@@ -59,7 +60,7 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		CONTENT_DIARY_STRING		= SCHEME + AUTHORITY + "/" + TABLE_DIARY + "/";
 	public static final Uri			CONTENT_DIARY_URI			= Uri.parse(CONTENT_DIARY_STRING);
 
-	private static final int		CODE_DIARY					= 1;
+	public static final int			CODE_DIARY					= 1;
 
 	// ===================================== Foodbase table =====================================
 
@@ -75,7 +76,7 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		CONTENT_FOODBASE_STRING		= SCHEME + AUTHORITY + "/" + TABLE_FOODBASE + "/";
 	public static final Uri			CONTENT_FOODBASE_URI		= Uri.parse(CONTENT_FOODBASE_STRING);
 
-	private static final int		CODE_FOODBASE				= 2;
+	public static final int			CODE_FOODBASE				= 2;
 
 	// ===================================== Dishbase table =====================================
 
@@ -91,7 +92,7 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		CONTENT_DISHBASE_STRING		= SCHEME + AUTHORITY + "/" + TABLE_DISHBASE + "/";
 	public static final Uri			CONTENT_DISHBASE_URI		= Uri.parse(CONTENT_DISHBASE_STRING);
 
-	private static final int		CODE_DISHBASE				= 3;
+	public static final int			CODE_DISHBASE				= 3;
 
 	// ===================================== Tags table =====================================
 
@@ -102,7 +103,7 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		CONTENT_TAG_STRING			= SCHEME + AUTHORITY + "/" + TABLE_TAG + "/";
 	public static final Uri			CONTENT_TAG_URI				= Uri.parse(CONTENT_TAG_STRING);
 
-	private static final int		CODE_TAG					= 4;
+	public static final int			CODE_TAG					= 4;
 
 	// ===================================== Preferences table =====================================
 
@@ -114,7 +115,7 @@ public class DiaryContentProvider extends ContentProvider
 	public static final String		CONTENT_PREFERENCES_STRING	= SCHEME + AUTHORITY + "/" + TABLE_PREFERENCES + "/";
 	public static final Uri			CONTENT_PREFERENCES_URI		= Uri.parse(CONTENT_PREFERENCES_STRING);
 
-	private static final int		CODE_PREFERENCES			= 5;
+	public static final int			CODE_PREFERENCES			= 5;
 
 	// ==================================================================================================
 
