@@ -34,6 +34,7 @@ import org.bosik.merklesync.SyncUtils;
 import org.bosik.merklesync.SyncUtils.ProgressCallback;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -63,10 +64,13 @@ public class ActivityMain extends FragmentActivity
 	private static final int	TAB_DIARY	= 0;
 	private static final int	TAB_BASE	= 1;
 
+	private static final int	CODE_LOGIN	= 0;
+
 	/* =========================== FIELDS ================================ */
 
 	ViewPager					mViewPager;
 	private boolean				hasAccount;
+	private Menu				cachedMenu;
 
 	/* =========================== METHODS ================================ */
 
@@ -219,6 +223,8 @@ public class ActivityMain extends FragmentActivity
 				MenuItem item = menu.findItem(R.id.item_common_login);
 				item.setVisible(false);
 			}
+
+			cachedMenu = menu;
 		}
 		catch (Exception e)
 		{
@@ -329,7 +335,7 @@ public class ActivityMain extends FragmentActivity
 				intent.putExtra(ActivityLogin.ARG_AUTH_TYPE, (String) null);
 				intent.putExtra(ActivityLogin.ARG_IS_ADDING_NEW_ACCOUNT, true);
 				// intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
-				startActivity(intent);
+				startActivityForResult(intent, CODE_LOGIN);
 				return true;
 			}
 			case R.id.item_diary_preferences:
@@ -341,6 +347,28 @@ public class ActivityMain extends FragmentActivity
 			default:
 			{
 				return false;
+			}
+		}
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent intent)
+	{
+		super.onActivityResult(requestCode, resultCode, intent);
+
+		switch (requestCode)
+		{
+			case CODE_LOGIN:
+			{
+				if (resultCode == Activity.RESULT_OK)
+				{
+					if (cachedMenu != null)
+					{
+						MenuItem item = cachedMenu.findItem(R.id.item_common_login);
+						item.setVisible(false);
+					}
+				}
+				break;
 			}
 		}
 	}
