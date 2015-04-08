@@ -183,7 +183,7 @@ object Form1: TForm1
             ParentBackground = False
             TabOrder = 1
             object BevelRecRight: TBevel
-              Left = 289
+              Left = 345
               Top = 0
               Width = 2
               Height = 81
@@ -192,7 +192,7 @@ object Form1: TForm1
             object PanelAdd: TPanel
               Left = 0
               Top = 0
-              Width = 289
+              Width = 345
               Height = 81
               Align = alLeft
               BevelOuter = bvNone
@@ -231,11 +231,22 @@ object Form1: TForm1
                 ShowHint = True
                 OnClick = ActionAddRecordExecute
               end
+              object ButtonAddNote: TSpeedButton
+                Tag = 4
+                Left = 260
+                Top = 8
+                Width = 65
+                Height = 65
+                Hint = #1047#1072#1084#1077#1090#1082#1072
+                ParentShowHint = False
+                ShowHint = True
+                OnClick = ActionAddRecordExecute
+              end
             end
             object GroupBoxAdd: TGroupBox
-              Left = 291
+              Left = 347
               Top = 0
-              Width = 452
+              Width = 396
               Height = 81
               Align = alClient
               Caption = #1055#1088#1086#1076#1091#1082#1090#1099' '#1080' '#1073#1083#1102#1076#1072
@@ -250,10 +261,10 @@ object Form1: TForm1
               ParentFont = False
               TabOrder = 1
               DesignSize = (
-                452
+                396
                 81)
               object ButtonDiaryNewAddFood: TSpeedButton
-                Left = 388
+                Left = 332
                 Top = 25
                 Width = 25
                 Height = 25
@@ -268,7 +279,7 @@ object Form1: TForm1
                 Tag = 1
                 Left = 56
                 Top = 24
-                Width = 251
+                Width = 195
                 Height = 24
                 UserHint = #1053#1072#1095#1085#1080#1090#1077' '#1074#1074#1086#1076#1080#1090#1100' '#1085#1072#1079#1074#1072#1085#1080#1077
                 ShowUserHint = True
@@ -289,7 +300,7 @@ object Form1: TForm1
               end
               object EditDiaryNewMass: TEditNumb
                 Tag = 1
-                Left = 327
+                Left = 271
                 Top = 25
                 Width = 56
                 Height = 25
@@ -353,13 +364,6 @@ object Form1: TForm1
             Align = alTop
             Brush.Style = bsClear
             Pen.Style = psClear
-          end
-          object ImageNote: TImage
-            Left = 64
-            Top = 704
-            Width = 81
-            Height = 65
-            Visible = False
           end
           object GroupBoxStatistic: TGroupBox
             Left = 9
@@ -615,7 +619,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.459942094910000000
+            Date = 40251.087120231480000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -1055,7 +1059,7 @@ object Form1: TForm1
           object LabelFoodBase: TLabel
             Left = 9
             Top = 9
-            Width = 112
+            Width = 535
             Height = 16
             Align = alTop
             Caption = 'LabelFoodBase'

@@ -242,7 +242,6 @@ type
     LabelDayProtsVal: TLabel;
     LabelDayFatsVal: TLabel;
     LabelDayCarbsVal: TLabel;
-    ImageNote: TImage;
     ButtonAvgBS: TBitBtn;
     ButtonInsulinCalc: TButton;
     Shape1: TShape;
@@ -262,6 +261,7 @@ type
     GroupBasesSearch: TGroupBox;
     EditBaseFoodSearch: TEdit;
     ActionViewLogs: TAction;
+    ButtonAddNote: TSpeedButton;
 
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ButtonCreateFoodClick(Sender: TObject);
@@ -732,15 +732,20 @@ begin
 
   ButtonAddIns.Width := ADD_BUTTON_SIZE;
   ButtonAddIns.Height := ADD_BUTTON_SIZE;
-  ButtonAddIns.Left := 2*BORD+ADD_BUTTON_SIZE;
+  ButtonAddIns.Left := 2 * BORD + ADD_BUTTON_SIZE;
   ButtonAddIns.Top := BORD;
 
   ButtonAddMeal.Width := ADD_BUTTON_SIZE;
   ButtonAddMeal.Height := ADD_BUTTON_SIZE;
-  ButtonAddMeal.Left := 3*BORD+2*ADD_BUTTON_SIZE;
+  ButtonAddMeal.Left := 3 * BORD + 2 * ADD_BUTTON_SIZE;
   ButtonAddMeal.Top := BORD;
 
-  PanelAdd.Width := 3*ADD_BUTTON_SIZE+4*BORD;
+  ButtonAddNote.Width := ADD_BUTTON_SIZE;
+  ButtonAddNote.Height := ADD_BUTTON_SIZE;
+  ButtonAddNote.Left := 4 * BORD + 3 * ADD_BUTTON_SIZE;
+  ButtonAddNote.Top := BORD;
+
+  PanelAdd.Width := 4 * ADD_BUTTON_SIZE + 5 * BORD;
 
   // Панель ввода продуктов/блюд
   FoodDishBord := 2 * BORD;
@@ -1148,7 +1153,7 @@ begin
   LoadImage(WORK_FOLDER + IMAGE_DIARY_NEW_BLOOD, ButtonAddBlood.Glyph);
   LoadImage(WORK_FOLDER + IMAGE_DIARY_NEW_INS, ButtonAddIns.Glyph);
   LoadImage(WORK_FOLDER + IMAGE_DIARY_NEW_MEAL, ButtonAddMeal.Glyph);
-  LoadImage(WORK_FOLDER + IMAGE_DIARY_NEW_NOTE, ImageNote.Picture);
+  LoadImage(WORK_FOLDER + IMAGE_DIARY_NEW_NOTE, ButtonAddNote.Glyph);
 
   LoadImage(WORK_FOLDER + IMAGE_EDITOR_ADD, ButtonDiaryNewAddFood.Glyph);
   LoadImage(WORK_FOLDER + IMAGE_EDITOR_ADD, FormDish.ButtonAddFood.Glyph);
