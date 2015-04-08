@@ -1,18 +1,22 @@
 object FormEditorNote: TFormEditorNote
   Left = 838
   Top = 486
+  Width = 360
+  Height = 322
   BorderIcons = [biSystemMenu]
-  BorderStyle = bsDialog
   Caption = 'FormEditorNote'
-  ClientHeight = 267
-  ClientWidth = 414
   Color = clBtnFace
+  Constraints.MinHeight = 260
+  Constraints.MinWidth = 360
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -13
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  DesignSize = (
+    352
+    290)
   PixelsPerInch = 120
   TextHeight = 16
   object Image: TImage
@@ -39,17 +43,19 @@ object FormEditorNote: TFormEditorNote
   end
   object Bevel1: TBevel
     Left = 16
-    Top = 175
-    Width = 313
+    Top = 198
+    Width = 251
     Height = 2
+    Anchors = [akLeft, akRight, akBottom]
   end
   object ButtonOK: TBitBtn
     Left = 32
-    Top = 191
+    Top = 214
     Width = 120
     Height = 28
+    Anchors = [akLeft, akBottom]
     Caption = 'ButtonOK'
-    TabOrder = 1
+    TabOrder = 0
     OnClick = ButtonOKClick
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
@@ -71,14 +77,15 @@ object FormEditorNote: TFormEditorNote
     NumGlyphs = 2
   end
   object ButtonCancel: TBitBtn
-    Left = 213
-    Top = 191
+    Left = 223
+    Top = 214
     Width = 110
     Height = 28
+    Anchors = [akRight, akBottom]
     Cancel = True
     Caption = 'ButtonCancel'
     ModalResult = 2
-    TabOrder = 2
+    TabOrder = 1
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
       0400000000006801000000000000000000001000000000000000000000000000
@@ -106,7 +113,7 @@ object FormEditorNote: TFormEditorNote
     Date = 41777.158689432870000000
     Time = 41777.158689432870000000
     Kind = dtkTime
-    TabOrder = 3
+    TabOrder = 2
     OnKeyDown = FieldKeyDown
   end
   object DatePicker: TDateTimePicker
@@ -116,16 +123,20 @@ object FormEditorNote: TFormEditorNote
     Height = 24
     Date = 41777.159941967590000000
     Time = 41777.159941967590000000
-    TabOrder = 4
+    TabOrder = 3
     OnKeyDown = FieldKeyDown
   end
-  object EditText: TEdit
+  object EditText: TMemo
     Left = 104
     Top = 80
-    Width = 257
-    Height = 24
-    TabOrder = 0
-    Text = 'EditText'
-    OnKeyDown = FieldKeyDown
+    Width = 163
+    Height = 48
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Lines.Strings = (
+      'EditText')
+    MaxLength = 1024
+    ScrollBars = ssVertical
+    TabOrder = 4
+    WantReturns = False
   end
 end

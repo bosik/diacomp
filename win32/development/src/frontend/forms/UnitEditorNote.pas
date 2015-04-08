@@ -19,7 +19,7 @@ type
     ButtonCancel: TBitBtn;
     TimePicker: TDateTimePicker;
     DatePicker: TDateTimePicker;
-    EditText: TEdit;
+    EditText: TMemo;
   procedure FieldKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure ButtonOKClick(Sender: TObject);
@@ -164,21 +164,20 @@ begin
   AlignTop(EditText);
   BorderTop(2 * BORD);
   EditText.Width := ClientWidth - 16 * BORD;
+  EditText.Height := ClientHeight - EditText.Top - ButtonOK.Height - 3 * BORD;
 
   { * * * * * }
   BottomLine := Max(BottomLine, 14 * BORD);
 
   FormatBevel(Bevel1);
-  AlignTop(Bevel1);
-  BorderTop(2 * BORD);
+  Bevel1.Top := ClientHeight - ButtonOK.Height - 2 * BORD;
 
-  ButtonOK.Top := BottomLine;
-  AlignTop(ButtonCancel);
+  ButtonOK.Top := ClientHeight - ButtonOK.Height - BORD;
+  ButtonCancel.Top := ClientHeight - ButtonOK.Height - BORD;
 
   ButtonOK.Left := 2 * BORD;
   ButtonCancel.Left := ClientWidth - ButtonCancel.Width - 2 * BORD;
 
-  ClientHeight := BottomLine + 2 * BORD;
   {!!!}
 
   PlaceCenter(Self);
