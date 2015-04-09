@@ -33,6 +33,7 @@ import org.bosik.diacomp.web.frontend.wicket.pages.download.DownloadPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.license.LicensePage;
 import org.bosik.diacomp.web.frontend.wicket.pages.login.LoginPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.register.RegisterPage;
+import org.bosik.diacomp.web.frontend.wicket.pages.register.succeed.RegistrationSucceedPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.stats.StatsPage;
 
 public class WicketApplication extends WebApplication
@@ -59,6 +60,7 @@ public class WicketApplication extends WebApplication
 		mountPage("/about", AboutPage.class);
 		mountPage("/login", LoginPage.class);
 		mountPage("/register", RegisterPage.class);
+		mountPage("/registered", RegistrationSucceedPage.class);
 		mountPage("/activate", ActivationPage.class);
 		mountPage("/license", LicensePage.class);
 

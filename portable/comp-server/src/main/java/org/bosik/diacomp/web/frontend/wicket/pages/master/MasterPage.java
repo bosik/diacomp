@@ -47,6 +47,11 @@ public class MasterPage extends WebPage
 	@SpringBean
 	private UserInfoService		userInfoService;
 
+	protected MasterPage()
+	{
+		super();
+	}
+
 	/**
 	 * Shouldn't be called from browser directly
 	 * 

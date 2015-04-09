@@ -32,10 +32,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxFallbackButton;
-import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.form.PasswordTextField;
@@ -57,6 +56,7 @@ import org.bosik.diacomp.web.backend.features.mail.SMTPEmailSender;
 import org.bosik.diacomp.web.backend.features.user.auth.AuthService;
 import org.bosik.diacomp.web.frontend.wicket.pages.license.LicensePage;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
+import org.bosik.diacomp.web.frontend.wicket.pages.register.succeed.RegistrationSucceedPage;
 import org.json.JSONObject;
 
 public class RegisterPage extends MasterPage
@@ -98,15 +98,6 @@ public class RegisterPage extends MasterPage
 
 		form.add(new BookmarkablePageLink<Void>("linkLicense", LicensePage.class));
 
-		final WebMarkupContainer succeedPanel = new WebMarkupContainer("succeedPanel");
-		succeedPanel.setOutputMarkupId(true);
-		succeedPanel.setVisible(false);
-		add(succeedPanel);
-
-		final Label labelSendedEmail = new Label("labelSendedEmail", Model.of(""));
-		labelSendedEmail.setOutputMarkupId(true);
-		succeedPanel.add(labelSendedEmail);
-
 		form.add(new AjaxFallbackButton("buttonRegister", form)
 		{
 			private static final long	serialVersionUID	= 1L;
@@ -139,9 +130,8 @@ public class RegisterPage extends MasterPage
 						String activationKey = authService.register(email, password);
 						sendActivationEmail(email, activationKey);
 
-						form.setVisible(false);
-						labelSendedEmail.setDefaultModelObject(email);
-						succeedPanel.setVisible(true);
+						Page succeedPage = new RegistrationSucceedPage(Model.of(email));
+						setResponsePage(succeedPage);
 					}
 					catch (MessagingException e)
 					{

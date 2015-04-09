@@ -37,11 +37,6 @@
 li.feedbackPanelERROR {
 	display: block;
 }
-
-.succeed {
-	background: #cfc;
-	padding: 15px;
-}
 </style>
 	<script src='https://www.google.com/recaptcha/api.js'></script>
 </wicket:head>
@@ -104,12 +99,6 @@ li.feedbackPanelERROR {
 			<div class="register-row">
 				<div wicket:id="feedbackPanel"
 					class="register-column-main invalid-credentials"></div>
-			</div>
-			<div class="register-row">
-				<div wicket:id="succeedPanel" class="register-column-main succeed">
-					<wicket:message key="text.completeRegistration"></wicket:message>
-					<b><span wicket:id="labelSendedEmail"></span></b>
-				</div>
 			</div>
 		</div>
 	</wicket:extend>
