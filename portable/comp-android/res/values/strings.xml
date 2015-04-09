@@ -84,7 +84,7 @@
     <string name="login_prompt_email">Email</string>
     <string name="login_prompt_password">Password</string>
     <string name="login_title">Sign in</string>
-    <string name="main_option_bases">Bases</string>
+    <string name="main_option_bases">Foods</string>
     <string name="main_option_diary">Diary</string>
     <string name="main_option_login">Login…</string>
     <string name="main_option_preferences">Preferences</string>
