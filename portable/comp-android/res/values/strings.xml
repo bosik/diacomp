@@ -66,6 +66,7 @@
     <string name="foodset_apply">Save</string>
     <string name="foodset_hint">Select food sets to be included in your food base:</string>
     <string name="foodset_tip_list_loading_failed">Unable to fetch food sets list, check your network connection</string>
+    <string name="foodset_tip_loading_started">Loading started</string>
     <string name="foodset_tip_set_add_fail">Failed to install: %s</string>
     <string name="foodset_tip_set_add_ok">Installed: %s</string>
     <string name="foodset_tip_set_remove_fail">Failed to remove: %s</string>

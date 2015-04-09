@@ -334,7 +334,7 @@ public class DiaryLocalService implements DiaryService
 
 					if (exists)
 					{
-						Log.v(TAG, "Updating item " + record.getId() + ": " + content);
+						// Log.v(TAG, "Updating item " + record.getId() + ": " + content);
 
 						String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
 						String[] args = { record.getId() };
@@ -342,7 +342,7 @@ public class DiaryLocalService implements DiaryService
 					}
 					else
 					{
-						Log.v(TAG, "Inserting item " + record.getId() + ": " + content);
+						// Log.v(TAG, "Inserting item " + record.getId() + ": " + content);
 
 						newValues.put(DiaryContentProvider.COLUMN_DIARY_GUID, record.getId());
 						resolver.insert(DiaryContentProvider.CONTENT_DIARY_URI, newValues);

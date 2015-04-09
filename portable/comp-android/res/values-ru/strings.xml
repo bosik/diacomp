@@ -64,6 +64,7 @@
     <string name="foodset_apply">Сохранить</string>
     <string name="foodset_hint">Выберите наборы продуктов, которые будут включены в вашу базу:</string>
     <string name="foodset_tip_list_loading_failed">Ошибка загрузки, проверьте подключение к сети</string>
+    <string name="foodset_tip_loading_started">Загрузка началась</string>
     <string name="foodset_tip_set_add_fail">Не удалось загрузить: %s</string>
     <string name="foodset_tip_set_add_ok">Загружено: %s</string>
     <string name="foodset_tip_set_remove_fail">Не удалось удалить: %s</string>

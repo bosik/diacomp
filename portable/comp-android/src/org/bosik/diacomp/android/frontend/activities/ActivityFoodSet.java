@@ -19,17 +19,22 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.foodset.FoodSetService;
+import org.bosik.diacomp.android.backend.features.preferences.device.DevicePreferences;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.FoodSetInfo;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.merklesync.Versioned;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -49,6 +54,8 @@ public class ActivityFoodSet extends FragmentActivity
 	BaseAdapter			adapter;
 
 	List<FoodSetInfo>	data;
+	SharedPreferences	preferences;
+	Set<String>			includedFoodSets;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -154,6 +161,9 @@ public class ActivityFoodSet extends FragmentActivity
 		//
 		// list.setAdapter(adapter);
 
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		includedFoodSets = preferences.getStringSet(DevicePreferences.KEY_FOOD_SETS, new HashSet<String>());
+
 		data = new ArrayList<FoodSetInfo>();
 		adapter = new ArrayAdapter<FoodSetInfo>(this, android.R.layout.simple_list_item_checked, data)
 		{
@@ -191,7 +201,13 @@ public class ActivityFoodSet extends FragmentActivity
 				SparseBooleanArray checkList = listFoodSets.getCheckedItemPositions();
 				for (int i = 0; i < data.size(); i++)
 				{
-					updateSet(data.get(i), checkList.get(i));
+					boolean oldIncluded = includedFoodSets.contains(data.get(i).getId());
+					boolean newIncluded = checkList.get(i);
+
+					if (oldIncluded != newIncluded)
+					{
+						updateSet(data.get(i), newIncluded);
+					}
 				}
 
 				finish();
@@ -200,6 +216,9 @@ public class ActivityFoodSet extends FragmentActivity
 
 		// =================================================================================
 
+		/**
+		 * Loading food sets
+		 */
 		new AsyncTask<Void, Void, List<FoodSetInfo>>()
 		{
 			@Override
@@ -223,6 +242,13 @@ public class ActivityFoodSet extends FragmentActivity
 				{
 					ActivityFoodSet.this.data = data;
 					adapter.notifyDataSetChanged();
+
+					for (int i = 0; i < data.size(); i++)
+					{
+						String id = data.get(i).getId();
+						boolean checked = includedFoodSets.contains(id);
+						listFoodSets.setItemChecked(i, checked);
+					}
 				}
 				else
 				{
@@ -232,10 +258,22 @@ public class ActivityFoodSet extends FragmentActivity
 		}.execute();
 	}
 
+	/**
+	 * Perform asynchronous food set updating
+	 * 
+	 * @param foodSetInfo
+	 * @param include
+	 */
 	void updateSet(final FoodSetInfo foodSetInfo, final boolean include)
 	{
 		new AsyncTask<Void, Void, Boolean>()
 		{
+			@Override
+			protected void onPreExecute()
+			{
+				UIUtils.showTip(ActivityFoodSet.this, getString(R.string.foodset_tip_loading_started));
+			}
+
 			@Override
 			protected Boolean doInBackground(Void... params)
 			{
@@ -275,11 +313,24 @@ public class ActivityFoodSet extends FragmentActivity
 					if (include)
 					{
 						tip = getString(R.string.foodset_tip_set_add_ok);
+						includedFoodSets.add(foodSetInfo.getId());
 					}
 					else
 					{
 						tip = getString(R.string.foodset_tip_set_remove_ok);
+						includedFoodSets.remove(foodSetInfo.getId());
 					}
+
+					for (int i = 0; i < data.size(); i++)
+					{
+						if (data.get(i).getId().equals(foodSetInfo.getId()))
+						{
+							listFoodSets.setItemChecked(i, include);
+							break;
+						}
+					}
+
+					preferences.edit().putStringSet(DevicePreferences.KEY_FOOD_SETS, includedFoodSets).apply();
 				}
 				else
 				{

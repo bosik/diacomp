@@ -24,7 +24,7 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
-import org.bosik.diacomp.android.backend.features.preferences.PreferencesLocalService;
+import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorBlood;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorIns;

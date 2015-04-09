@@ -19,7 +19,7 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.features.preferences.PreferencesLocalService;
+import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.core.services.preferences.Preference;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
