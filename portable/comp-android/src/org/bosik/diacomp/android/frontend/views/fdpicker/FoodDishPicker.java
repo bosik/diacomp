@@ -374,8 +374,7 @@ public class FoodDishPicker extends LinearLayout
 		String name = editName.getText().toString();
 		if (name.trim().isEmpty())
 		{
-			// TODO: localize
-			UIUtils.showTip((Activity) getContext(), "Enter food/dish name");
+			UIUtils.showTip((Activity) getContext(), getContext().getString(R.string.fd_tip_empty));
 			editName.requestFocus();
 			return;
 		}
@@ -387,16 +386,14 @@ public class FoodDishPicker extends LinearLayout
 		}
 		catch (NumberFormatException e)
 		{
-			// TODO: localize
-			UIUtils.showTip((Activity) getContext(), "Enter correct mass");
+			UIUtils.showTip((Activity) getContext(), getContext().getString(R.string.fd_tip_incorrect_mass));
 			editMass.requestFocus();
 			return;
 		}
 
 		if (!FoodMassed.checkMass(mass))
 		{
-			// TODO: localize
-			UIUtils.showTip((Activity) getContext(), "Enter correct mass");
+			UIUtils.showTip((Activity) getContext(), getContext().getString(R.string.fd_tip_incorrect_mass));
 			editMass.requestFocus();
 			return;
 		}

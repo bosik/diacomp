@@ -63,6 +63,9 @@
     <string name="editor_note_field_text">Text</string>
     <string name="editor_note_title">Note</string>
     <string name="fd_action_add">Add</string>
+    <string name="fd_tip_empty">Provide food/dish name</string>
+    <string name="fd_tip_incorrect_mass">Provide correct mass</string>
+    <string name="fd_tip_item_not_found">Item not found: %s</string>
     <string name="foodset_apply">Save</string>
     <string name="foodset_hint">Select food sets to be included in your food base:</string>
     <string name="foodset_tip_list_loading_failed">Unable to fetch food sets list, check your network connection</string>
@@ -86,7 +89,7 @@
     <string name="login_title">Sign in</string>
     <string name="main_option_bases">Foods</string>
     <string name="main_option_diary">Diary</string>
-    <string name="main_option_login">Login…</string>
+    <string name="main_option_login">Login</string>
     <string name="main_option_preferences">Preferences</string>
     <string name="main_option_test">Test</string>
     <string name="main_title">Diacomp</string>

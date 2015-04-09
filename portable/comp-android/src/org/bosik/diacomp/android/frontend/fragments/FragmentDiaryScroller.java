@@ -52,6 +52,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -197,6 +199,13 @@ public class FragmentDiaryScroller extends Fragment
 		});
 
 		return rootView;
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+	{
+		inflater.inflate(R.menu.actions_diary, menu);
+		super.onCreateOptionsMenu(menu, inflater);
 	}
 
 	// handled

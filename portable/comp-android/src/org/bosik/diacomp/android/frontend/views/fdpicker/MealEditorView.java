@@ -198,7 +198,8 @@ public class MealEditorView extends LinearLayout
 						return true;
 					}
 
-					UIUtils.showTip((Activity) context, "Item not found: " + name);
+					UIUtils.showTip((Activity) context,
+							String.format(context.getString(R.string.fd_tip_item_not_found), name));
 					fdPicker.focusName();
 					return false;
 				}

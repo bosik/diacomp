@@ -61,6 +61,9 @@
     <string name="editor_note_field_text">Текст</string>
     <string name="editor_note_title">Заметка</string>
     <string name="fd_action_add">Добавить</string>
+    <string name="fd_tip_empty">Введите название продукта/блюда</string>
+    <string name="fd_tip_incorrect_mass">Введите корректную массу</string>
+    <string name="fd_tip_item_not_found">Продукт не найден: %s</string>
     <string name="foodset_apply">Сохранить</string>
     <string name="foodset_hint">Выберите наборы продуктов, которые будут включены в вашу базу:</string>
     <string name="foodset_tip_list_loading_failed">Ошибка загрузки, проверьте подключение к сети</string>
@@ -84,7 +87,7 @@
     <string name="login_title">Авторизация</string>
     <string name="main_option_bases">Продукты</string>
     <string name="main_option_diary">Дневник</string>
-    <string name="main_option_login">Войти…</string>
+    <string name="main_option_login">Вход</string>
     <string name="main_option_preferences">Настройки</string>
     <string name="main_option_test">Тест</string>
     <string name="main_title">Компенсация</string>
