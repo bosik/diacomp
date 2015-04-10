@@ -77,10 +77,10 @@ public class PreferenceEntry<T>
 	/**
 	 * Sets the preference version
 	 * 
-	 * @param timestamp
+	 * @param version
 	 */
-	public void setVersion(int timestamp)
+	public void setVersion(int version)
 	{
-		this.version = timestamp;
+		this.version = version;
 	}
 }
