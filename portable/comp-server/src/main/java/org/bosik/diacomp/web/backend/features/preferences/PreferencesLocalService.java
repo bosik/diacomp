@@ -26,7 +26,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import org.bosik.diacomp.core.services.preferences.Preference;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
-import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
+import org.bosik.diacomp.core.services.preferences.PreferencesService;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Profile({ "real", "fake" })
-public class PreferencesLocalService extends PreferencesTypedService
+public class PreferencesLocalService extends PreferencesService
 {
 	private static final String	TABLE_PREFERENCES			= "preferences";
 	private static final String	COLUMN_PREFERENCES_USER		= "_UserID";

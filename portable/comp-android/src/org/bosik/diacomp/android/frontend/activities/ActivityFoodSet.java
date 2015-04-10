@@ -67,7 +67,7 @@ public class ActivityFoodSet extends FragmentActivity
 
 		// data services setup
 
-		syncablePreferences = new PreferencesLocalService(getContentResolver());
+		syncablePreferences = new PreferencesTypedService(new PreferencesLocalService(getContentResolver()));
 		// preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		includedFoodSets = syncablePreferences.getStringSet(Preference.FOOD_SETS);
 

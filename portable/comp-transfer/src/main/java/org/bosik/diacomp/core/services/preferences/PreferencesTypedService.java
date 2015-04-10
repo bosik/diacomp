@@ -17,29 +17,55 @@
  */
 package org.bosik.diacomp.core.services.preferences;
 
+import java.util.List;
 import java.util.Set;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerSet;
 
-public abstract class PreferencesTypedService implements PreferencesService
+/**
+ * Adapter with casting methods
+ */
+public class PreferencesTypedService extends PreferencesService
 {
-	@Override
-	public String getHash()
-	{
-		final int prime = 31;
-		int hash = 1;
+	private PreferencesService	service;
 
-		for (PreferenceEntry<String> entity : getAll())
+	public PreferencesTypedService(PreferencesService service)
+	{
+		if (service == null)
 		{
-			hash = prime * hash + entity.getVersion();
+			throw new IllegalArgumentException("Service is null");
 		}
 
-		return String.valueOf(hash);
+		this.service = service;
+	}
+
+	@Override
+	public List<PreferenceEntry<String>> getAll()
+	{
+		return service.getAll();
+	}
+
+	@Override
+	public PreferenceEntry<String> getString(Preference preference)
+	{
+		return service.getString(preference);
+	}
+
+	@Override
+	public void setString(PreferenceEntry<String> entry)
+	{
+		service.setString(entry);
+	}
+
+	@Override
+	public void update(List<PreferenceEntry<String>> entries)
+	{
+		service.update(entries);
 	}
 
 	private int getNextVersion(Preference preference)
 	{
-		PreferenceEntry<String> oldPreferenceEntry = getString(preference);
+		PreferenceEntry<String> oldPreferenceEntry = service.getString(preference);
 		if (oldPreferenceEntry == null)
 		{
 			return 1;
@@ -50,6 +76,15 @@ public abstract class PreferencesTypedService implements PreferencesService
 		}
 	}
 
+	private PreferenceEntry<String> buildEntry(Preference preference, String value)
+	{
+		PreferenceEntry<String> entry = new PreferenceEntry<String>();
+		entry.setType(preference);
+		entry.setValue(value);
+		entry.setVersion(getNextVersion(preference));
+		return entry;
+	}
+
 	/**
 	 * Returns preference as string value
 	 * 
@@ -58,7 +93,7 @@ public abstract class PreferencesTypedService implements PreferencesService
 	 */
 	public String getStringValue(Preference preference)
 	{
-		PreferenceEntry<String> entry = getString(preference);
+		PreferenceEntry<String> entry = service.getString(preference);
 
 		if (entry != null)
 		{
@@ -68,6 +103,17 @@ public abstract class PreferencesTypedService implements PreferencesService
 		{
 			return preference.getDefaultValue();
 		}
+	}
+
+	/**
+	 * Updates string preference. Version is incremented automatically.
+	 * 
+	 * @param preference
+	 * @param set
+	 */
+	public void setStringValue(Preference preference, String value)
+	{
+		service.setString(buildEntry(preference, value));
 	}
 
 	/**
@@ -82,6 +128,17 @@ public abstract class PreferencesTypedService implements PreferencesService
 	}
 
 	/**
+	 * Updates float preference. Version is incremented automatically.
+	 * 
+	 * @param preference
+	 * @param set
+	 */
+	public void setFloatValue(Preference preference, Float value)
+	{
+		service.setString(buildEntry(preference, String.valueOf(value)));
+	}
+
+	/**
 	 * Returns preference as double value
 	 * 
 	 * @param preference
@@ -90,6 +147,17 @@ public abstract class PreferencesTypedService implements PreferencesService
 	public Double getDoubleValue(Preference preference)
 	{
 		return Double.parseDouble(getStringValue(preference));
+	}
+
+	/**
+	 * Updates double preference. Version is incremented automatically.
+	 * 
+	 * @param preference
+	 * @param set
+	 */
+	public void setDoubleValue(Preference preference, Float value)
+	{
+		service.setString(buildEntry(preference, String.valueOf(value)));
 	}
 
 	/**
@@ -115,12 +183,6 @@ public abstract class PreferencesTypedService implements PreferencesService
 	{
 		Serializer<Set<String>> serializer = new SerializerSet();
 		String value = serializer.write(set);
-
-		PreferenceEntry<String> entry = new PreferenceEntry<String>();
-		entry.setType(preference);
-		entry.setValue(value);
-		entry.setVersion(getNextVersion(preference));
-
-		setString(entry);
+		service.setString(buildEntry(preference, value));
 	}
 }

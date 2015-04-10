@@ -129,7 +129,7 @@ public class FragmentDiaryScroller extends Fragment
 
 		// services
 		diary = new DiaryLocalService(getActivity().getContentResolver());
-		preferences = new PreferencesLocalService(getActivity().getContentResolver());
+		preferences = new PreferencesTypedService(new PreferencesLocalService(getActivity().getContentResolver()));
 
 		// Widgets binding
 		View rootView = inflater.inflate(R.layout.fragment_diary_scroller, container, false);

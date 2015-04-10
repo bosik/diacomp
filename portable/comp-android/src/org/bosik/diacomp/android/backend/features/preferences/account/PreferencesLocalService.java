@@ -24,13 +24,13 @@ import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.preferences.Preference;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
-import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
+import org.bosik.diacomp.core.services.preferences.PreferencesService;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
-public class PreferencesLocalService extends PreferencesTypedService
+public class PreferencesLocalService extends PreferencesService
 {
 	static final String				TAG	= PreferencesLocalService.class.getSimpleName();
 

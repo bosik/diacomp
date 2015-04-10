@@ -31,9 +31,9 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.preferences.Preference;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
-import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
+import org.bosik.diacomp.core.services.preferences.PreferencesService;
 
-public class PreferencesWebService extends PreferencesTypedService
+public class PreferencesWebService extends PreferencesService
 {
 	// REST methods
 	private static final String							API_PREFERENCES			= "api/preferences/";

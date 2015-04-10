@@ -19,36 +19,52 @@ package org.bosik.diacomp.core.services.preferences;
 
 import java.util.List;
 
-public interface PreferencesService
+public abstract class PreferencesService
 {
 	/**
 	 * Returns hash
 	 * 
 	 * @return
 	 */
-	String getHash();
+	public String getHash()
+	{
+		final int prime = 31;
+		int hash = 1;
+
+		for (PreferenceEntry<String> entity : getAll())
+		{
+			hash = prime * hash + entity.getVersion();
+		}
+
+		return String.valueOf(hash);
+	}
 
 	/**
 	 * Returns all preferences
 	 * 
 	 * @return
 	 */
-	List<PreferenceEntry<String>> getAll();
+	public abstract List<PreferenceEntry<String>> getAll();
 
 	/**
-	 * Updates specified entries
+	 * Returns string preference
+	 * 
+	 * @param preference
+	 * @return Entry if preference found, null otherwise
+	 */
+	public abstract PreferenceEntry<String> getString(Preference preference);
+
+	/**
+	 * Updates single string entry
+	 * 
+	 * @param entry
+	 */
+	public abstract void setString(PreferenceEntry<String> entry);
+
+	/**
+	 * Updates multiple string entries
 	 * 
 	 * @param entries
 	 */
-	void update(List<PreferenceEntry<String>> entries);
-
-	/**
-	 * Returns null if preference not found
-	 * 
-	 * @param preference
-	 * @return
-	 */
-	PreferenceEntry<String> getString(Preference preference);
-
-	void setString(PreferenceEntry<String> entry);
+	public abstract void update(List<PreferenceEntry<String>> entries);
 }
