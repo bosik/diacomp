@@ -17,6 +17,10 @@
  */
 package org.bosik.diacomp.core.services.preferences;
 
+import java.util.Set;
+import org.bosik.diacomp.core.persistence.serializers.Serializer;
+import org.bosik.diacomp.core.persistence.serializers.SerializerSet;
+
 public abstract class PreferencesTypedService implements PreferencesService
 {
 	@Override
@@ -33,12 +37,24 @@ public abstract class PreferencesTypedService implements PreferencesService
 		return String.valueOf(hash);
 	}
 
+	private int getNextVersion(Preference preference)
+	{
+		PreferenceEntry<String> oldPreferenceEntry = getString(preference);
+		if (oldPreferenceEntry == null)
+		{
+			return 1;
+		}
+		else
+		{
+			return oldPreferenceEntry.getVersion() + 1;
+		}
+	}
+
 	/**
-	 * Returns default if preference not found
+	 * Returns preference as string value
 	 * 
 	 * @param preference
-	 * 
-	 * @return
+	 * @return Value if found, default otherwise
 	 */
 	public String getStringValue(Preference preference)
 	{
@@ -55,11 +71,10 @@ public abstract class PreferencesTypedService implements PreferencesService
 	}
 
 	/**
-	 * Returns default if preference not found
+	 * Returns preference as float value
 	 * 
 	 * @param preference
-	 * 
-	 * @return
+	 * @return Value if found, default otherwise
 	 */
 	public Float getFloatValue(Preference preference)
 	{
@@ -67,14 +82,45 @@ public abstract class PreferencesTypedService implements PreferencesService
 	}
 
 	/**
-	 * Returns default if preference not found
+	 * Returns preference as double value
 	 * 
 	 * @param preference
-	 * 
-	 * @return
+	 * @return Value if found, default otherwise
 	 */
 	public Double getDoubleValue(Preference preference)
 	{
 		return Double.parseDouble(getStringValue(preference));
+	}
+
+	/**
+	 * Returns preference as string set
+	 * 
+	 * @param preference
+	 * @return Value if found, default otherwise
+	 */
+	public Set<String> getStringSet(Preference preference)
+	{
+		Serializer<Set<String>> serializer = new SerializerSet();
+		String value = getStringValue(preference);
+		return serializer.read(value);
+	}
+
+	/**
+	 * Updates string set preference. Version is incremented automatically.
+	 * 
+	 * @param preference
+	 * @param set
+	 */
+	public void setStringSet(Preference preference, Set<String> set)
+	{
+		Serializer<Set<String>> serializer = new SerializerSet();
+		String value = serializer.write(set);
+
+		PreferenceEntry<String> entry = new PreferenceEntry<String>();
+		entry.setType(preference);
+		entry.setValue(value);
+		entry.setVersion(getNextVersion(preference));
+
+		setString(entry);
 	}
 }

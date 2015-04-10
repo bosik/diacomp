@@ -20,5 +20,5 @@ package org.bosik.diacomp.android.backend.features.preferences.device;
 
 public class DevicePreferences
 {
-	public static final String	KEY_FOOD_SETS	= "36d5580e5ad64d05a6f0003e2ee8aad1";
+	// public static final String KEY_FOOD_SETS = "36d5580e5ad64d05a6f0003e2ee8aad1";
 }

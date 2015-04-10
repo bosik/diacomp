@@ -24,7 +24,11 @@ public enum Preference {
 	/**
 	 * Target blood sugar, in mmol/l
 	 */
-	TARGET_BS("e6681282aa724d3fa4cd6ac5735a163f", "5.5");
+	TARGET_BS("e6681282aa724d3fa4cd6ac5735a163f", "5.5"),
+	/**
+	 * List of preferred food sets
+	 */
+	FOOD_SETS("1a25c92eaa3148219da83b1e66275052", "[]");
 
 	private String	key;
 	private String	defaultValue;

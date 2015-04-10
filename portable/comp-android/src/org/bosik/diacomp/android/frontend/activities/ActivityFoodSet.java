@@ -19,22 +19,21 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.foodset.FoodSetService;
-import org.bosik.diacomp.android.backend.features.preferences.device.DevicePreferences;
+import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.FoodSetInfo;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.services.preferences.Preference;
+import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.merklesync.Versioned;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -50,18 +49,29 @@ import android.widget.ListView;
 
 public class ActivityFoodSet extends FragmentActivity
 {
-	ListView			listFoodSets;
-	BaseAdapter			adapter;
+	ListView				listFoodSets;
+	BaseAdapter				adapter;
 
-	List<FoodSetInfo>	data;
-	SharedPreferences	preferences;
-	Set<String>			includedFoodSets;
+	List<FoodSetInfo>		data;
+	// SharedPreferences preferences;
+	PreferencesTypedService	syncablePreferences;
+	Set<String>				includedFoodSets;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
+		// basic setup
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_food_set);
+
+		// data services setup
+
+		syncablePreferences = new PreferencesLocalService(getContentResolver());
+		// preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		includedFoodSets = syncablePreferences.getStringSet(Preference.FOOD_SETS);
+
+		// UI setup
 
 		listFoodSets = (ListView) findViewById(R.id.listFoodSets);
 		listFoodSets.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
@@ -160,9 +170,6 @@ public class ActivityFoodSet extends FragmentActivity
 		// };
 		//
 		// list.setAdapter(adapter);
-
-		preferences = PreferenceManager.getDefaultSharedPreferences(this);
-		includedFoodSets = preferences.getStringSet(DevicePreferences.KEY_FOOD_SETS, new HashSet<String>());
 
 		data = new ArrayList<FoodSetInfo>();
 		adapter = new ArrayAdapter<FoodSetInfo>(this, android.R.layout.simple_list_item_checked, data)
@@ -330,7 +337,7 @@ public class ActivityFoodSet extends FragmentActivity
 						}
 					}
 
-					preferences.edit().putStringSet(DevicePreferences.KEY_FOOD_SETS, includedFoodSets).apply();
+					syncablePreferences.setStringSet(Preference.FOOD_SETS, includedFoodSets);
 				}
 				else
 				{
