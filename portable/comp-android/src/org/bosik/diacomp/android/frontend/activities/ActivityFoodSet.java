@@ -46,12 +46,21 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class ActivityFoodSet extends FragmentActivity
 {
-	ListView				listFoodSets;
-	BaseAdapter				adapter;
+	// UI components
 
+	TextView				labelHint;
+	ProgressBar				progressBar;
+	ListView				listFoodSets;
+	Button					buttonOk;
+
+	// Data
+
+	BaseAdapter				adapter;
 	List<FoodSetInfo>		data;
 	// SharedPreferences preferences;
 	PreferencesTypedService	syncablePreferences;
@@ -72,7 +81,8 @@ public class ActivityFoodSet extends FragmentActivity
 		includedFoodSets = syncablePreferences.getStringSet(Preference.FOOD_SETS);
 
 		// UI setup
-
+		labelHint = (TextView) findViewById(R.id.labelFoodSetsHint);
+		progressBar = (ProgressBar) findViewById(R.id.progressBarFoodSets);
 		listFoodSets = (ListView) findViewById(R.id.listFoodSets);
 		listFoodSets.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
 
@@ -199,7 +209,7 @@ public class ActivityFoodSet extends FragmentActivity
 		};
 		listFoodSets.setAdapter(adapter);
 
-		Button buttonOk = (Button) findViewById(R.id.buttonFoodSetsOk);
+		buttonOk = (Button) findViewById(R.id.buttonFoodSetsOk);
 		buttonOk.setOnClickListener(new OnClickListener()
 		{
 			@Override
@@ -229,6 +239,14 @@ public class ActivityFoodSet extends FragmentActivity
 		new AsyncTask<Void, Void, List<FoodSetInfo>>()
 		{
 			@Override
+			protected void onPreExecute()
+			{
+				labelHint.setText(getString(R.string.foodset_hint_loading));
+				progressBar.setVisibility(View.VISIBLE);
+				buttonOk.setVisibility(View.GONE);
+			};
+
+			@Override
 			protected List<FoodSetInfo> doInBackground(Void... params)
 			{
 				try
@@ -245,8 +263,12 @@ public class ActivityFoodSet extends FragmentActivity
 			@Override
 			protected void onPostExecute(List<FoodSetInfo> data)
 			{
+				progressBar.setVisibility(View.GONE);
+
 				if (data != null)
 				{
+					labelHint.setText(getString(R.string.foodset_hint_ok));
+
 					ActivityFoodSet.this.data = data;
 					adapter.notifyDataSetChanged();
 
@@ -256,10 +278,12 @@ public class ActivityFoodSet extends FragmentActivity
 						boolean checked = includedFoodSets.contains(id);
 						listFoodSets.setItemChecked(i, checked);
 					}
+
+					buttonOk.setVisibility(View.VISIBLE);
 				}
 				else
 				{
-					UIUtils.showTip(ActivityFoodSet.this, getString(R.string.foodset_tip_list_loading_failed));
+					labelHint.setText(getString(R.string.foodset_hint_failed));
 				}
 			}
 		}.execute();

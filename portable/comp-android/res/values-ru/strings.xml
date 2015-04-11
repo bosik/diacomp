@@ -65,8 +65,9 @@
     <string name="fd_tip_incorrect_mass">Введите корректную массу</string>
     <string name="fd_tip_item_not_found">Продукт не найден: %s</string>
     <string name="foodset_apply">Сохранить</string>
-    <string name="foodset_hint">Выберите наборы продуктов, которые будут включены в вашу базу:</string>
-    <string name="foodset_tip_list_loading_failed">Ошибка загрузки, проверьте подключение к сети</string>
+    <string name="foodset_hint_failed">Не удалось загрузить данные. Проверьте подключение к сети и попробуйте позже.</string>
+    <string name="foodset_hint_loading">Загрузка…</string>
+    <string name="foodset_hint_ok">Выберите наборы продуктов, которые будут включены в вашу базу:</string>
     <string name="foodset_tip_loading_started">Загрузка началась</string>
     <string name="foodset_tip_set_add_fail">Не удалось загрузить: %s</string>
     <string name="foodset_tip_set_add_ok">Загружено: %s</string>
