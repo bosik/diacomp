@@ -25,6 +25,7 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.android.backend.features.preferences.device.DevicePreferences;
 import org.bosik.diacomp.android.frontend.fragments.FragmentBase;
 import org.bosik.diacomp.android.frontend.fragments.FragmentDiaryScroller;
 import org.bosik.diacomp.android.utils.ErrorHandler;
@@ -39,6 +40,7 @@ import android.app.NotificationManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -70,6 +72,8 @@ public class ActivityMain extends FragmentActivity
 	ViewPager					mViewPager;
 	private Menu				cachedMenu;
 
+	private SharedPreferences	preferences;
+
 	/* =========================== METHODS ================================ */
 
 	// TODO: move to common service
@@ -98,7 +102,8 @@ public class ActivityMain extends FragmentActivity
 			// }
 
 			PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-			Storage.init(this, getContentResolver(), PreferenceManager.getDefaultSharedPreferences(this));
+			preferences = PreferenceManager.getDefaultSharedPreferences(this);
+			Storage.init(this, getContentResolver(), preferences);
 
 			// Account sync
 			Account[] accounts = getAccounts(this);
@@ -209,6 +214,13 @@ public class ActivityMain extends FragmentActivity
 			// CharSequence title = mDemoCollectionPagerAdapter.getPageTitle(i);
 			// actionBar.addTab(actionBar.newTab().setText(title).setTabListener(tabListener));
 			// }
+
+			boolean firstStart = preferences.getBoolean(DevicePreferences.KEY_FIRST_START, true);
+			if (firstStart)
+			{
+				preferences.edit().putBoolean(DevicePreferences.KEY_FIRST_START, false).apply();
+				// do something
+			}
 		}
 		catch (Exception e)
 		{
