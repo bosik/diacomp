@@ -217,7 +217,10 @@ public class ActivityMain extends FragmentActivity
 			if (hasAccount)
 			{
 				MenuItem item = menu.findItem(R.id.item_common_login);
-				item.setVisible(false);
+				if (item != null)
+				{
+					item.setVisible(false);
+				}
 			}
 
 			cachedMenu = menu;
