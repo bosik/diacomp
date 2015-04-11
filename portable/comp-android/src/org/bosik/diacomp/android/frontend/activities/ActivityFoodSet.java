@@ -51,19 +51,22 @@ import android.widget.TextView;
 
 public class ActivityFoodSet extends FragmentActivity
 {
+	public static final String	FIELD_FIRST_START	= "bosik.pack.firstStart";
+
 	// UI components
 
-	TextView				labelHint;
-	ProgressBar				progressBar;
-	ListView				listFoodSets;
-	Button					buttonOk;
+	TextView					labelHint;
+	ProgressBar					progressBar;
+	ListView					listFoodSets;
+	Button						buttonOk;
 
 	// Data
 
-	BaseAdapter				adapter;
-	List<FoodSetInfo>		data;
-	PreferencesTypedService	syncablePreferences;
-	Set<String>				includedFoodSets;
+	BaseAdapter					adapter;
+	List<FoodSetInfo>			data;
+	PreferencesTypedService		syncablePreferences;
+	Set<String>					includedFoodSets;
+	boolean						firstStart;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -77,6 +80,7 @@ public class ActivityFoodSet extends FragmentActivity
 
 		syncablePreferences = new PreferencesTypedService(new PreferencesLocalService(getContentResolver()));
 		includedFoodSets = syncablePreferences.getStringSet(Preference.FOOD_SETS);
+		firstStart = getIntent().getBooleanExtra(FIELD_FIRST_START, false);
 
 		// UI setup
 		labelHint = (TextView) findViewById(R.id.labelFoodSetsHint);
@@ -273,7 +277,7 @@ public class ActivityFoodSet extends FragmentActivity
 					for (int i = 0; i < data.size(); i++)
 					{
 						String id = data.get(i).getId();
-						boolean checked = includedFoodSets.contains(id);
+						boolean checked = firstStart || includedFoodSets.contains(id);
 						listFoodSets.setItemChecked(i, checked);
 					}
 

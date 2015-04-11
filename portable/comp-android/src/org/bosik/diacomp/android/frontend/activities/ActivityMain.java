@@ -219,7 +219,9 @@ public class ActivityMain extends FragmentActivity
 			if (firstStart)
 			{
 				preferences.edit().putBoolean(DevicePreferences.KEY_FIRST_START, false).apply();
-				// do something
+				Intent intent = new Intent(this, ActivityFoodSet.class);
+				intent.putExtra(ActivityFoodSet.FIELD_FIRST_START, true);
+				startActivity(intent);
 			}
 		}
 		catch (Exception e)
