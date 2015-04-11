@@ -35,6 +35,7 @@ import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorDish;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorFood;
 import org.bosik.diacomp.android.frontend.activities.ActivityFoodSet;
+import org.bosik.diacomp.android.frontend.activities.ActivityMain;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
@@ -692,8 +693,17 @@ public class FragmentBase extends Fragment
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
-		inflater.inflate(R.menu.actions_base, menu);
 		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.actions_base, menu);
+
+		if (ActivityMain.getAccounts(getActivity()).length > 0)
+		{
+			MenuItem item = menu.findItem(R.id.item_common_login);
+			if (item != null)
+			{
+				item.setVisible(false);
+			}
+		}
 	}
 
 	@Override

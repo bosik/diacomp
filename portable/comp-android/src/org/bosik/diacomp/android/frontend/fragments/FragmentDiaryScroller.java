@@ -30,6 +30,7 @@ import org.bosik.diacomp.android.frontend.activities.ActivityEditorBlood;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorIns;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorMeal;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorNote;
+import org.bosik.diacomp.android.frontend.activities.ActivityMain;
 import org.bosik.diacomp.android.frontend.views.diary.DiaryDayView;
 import org.bosik.diacomp.android.frontend.views.diary.DiaryDayView.OnRecordClickListener;
 import org.bosik.diacomp.android.utils.ErrorHandler;
@@ -54,6 +55,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -204,8 +206,17 @@ public class FragmentDiaryScroller extends Fragment
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
-		inflater.inflate(R.menu.actions_diary, menu);
 		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.actions_diary, menu);
+
+		if (ActivityMain.getAccounts(getActivity()).length > 0)
+		{
+			MenuItem item = menu.findItem(R.id.item_common_login);
+			if (item != null)
+			{
+				item.setVisible(false);
+			}
+		}
 	}
 
 	// handled

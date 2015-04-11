@@ -68,10 +68,19 @@ public class ActivityMain extends FragmentActivity
 	/* =========================== FIELDS ================================ */
 
 	ViewPager					mViewPager;
-	private boolean				hasAccount;
 	private Menu				cachedMenu;
 
 	/* =========================== METHODS ================================ */
+
+	// TODO: move to common service
+	public static Account[] getAccounts(Context context)
+	{
+		final String ACCOUNT_TYPE = "diacomp.org";
+
+		AccountManager am = AccountManager.get(context);
+		Account[] accounts = am.getAccountsByType(ACCOUNT_TYPE);
+		return accounts;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -92,9 +101,8 @@ public class ActivityMain extends FragmentActivity
 			Storage.init(this, getContentResolver(), PreferenceManager.getDefaultSharedPreferences(this));
 
 			// Account sync
-			AccountManager am = AccountManager.get(this);
-			Account[] accounts = am.getAccountsByType("diacomp.org");
-			if (hasAccount = accounts.length > 0)
+			Account[] accounts = getAccounts(this);
+			if (accounts.length > 0)
 			{
 				long SYNC_INTERVAL = 60; // sec
 				ContentResolver.setIsSyncable(accounts[0], DiaryContentProvider.AUTHORITY, 1);
@@ -214,15 +222,6 @@ public class ActivityMain extends FragmentActivity
 	{
 		try
 		{
-			if (hasAccount)
-			{
-				MenuItem item = menu.findItem(R.id.item_common_login);
-				if (item != null)
-				{
-					item.setVisible(false);
-				}
-			}
-
 			cachedMenu = menu;
 		}
 		catch (Exception e)
@@ -361,10 +360,15 @@ public class ActivityMain extends FragmentActivity
 			{
 				if (resultCode == Activity.RESULT_OK)
 				{
+					// though menu checks account every time it renders, this allows to hide login
+					// icon immediately
 					if (cachedMenu != null)
 					{
 						MenuItem item = cachedMenu.findItem(R.id.item_common_login);
-						item.setVisible(false);
+						if (item != null)
+						{
+							item.setVisible(false);
+						}
 					}
 				}
 				break;
