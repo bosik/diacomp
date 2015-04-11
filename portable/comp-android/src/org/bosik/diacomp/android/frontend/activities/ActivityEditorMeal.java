@@ -55,7 +55,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private Double				bsTarget;
 	Double						insInjected;
 
-	static boolean				correctBs				= true;
+	boolean						correctBs				= true;
 
 	// components
 	private Button				buttonTime;
@@ -180,10 +180,10 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			{
 				if ((insInjected != null) && (insInjected > Utils.EPS))
 				{
-					ActivityEditorMeal.correctBs = !ActivityEditorMeal.correctBs;
+					correctBs = !correctBs;
 					ActivityEditorMeal.this.showMealInfo();
 
-					if (ActivityEditorMeal.correctBs)
+					if (correctBs)
 					{
 						buttonCorrection.setText("\\");
 					}

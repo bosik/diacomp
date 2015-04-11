@@ -171,7 +171,9 @@
                 android:layout_width="46dp"
                 android:layout_height="46dp"
                 android:text="@string/editor_meal_button_more"
-                android:textSize="@dimen/font_datetime" />
+                android:textSize="@dimen/font_datetime"
+                android:visibility="gone" />
+
         </LinearLayout>
 
         <TextView
