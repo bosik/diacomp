@@ -5,6 +5,8 @@
     <string name="base_action_foodsets">Наборы продуктов</string>
     <string name="base_action_new_dish">Новое блюдо</string>
     <string name="base_action_new_food">Новый продукт</string>
+    <string name="base_button_foodset">Загрузить набор продуктов</string>
+    <string name="base_hint_empty_list">База пока пуста. Создайте продукт/блюдо или загрузите готовый набор.</string>
     <string name="base_subinfo" formatted="false">Б %.1f\t\tЖ %.1f\t\tУ %.1f\t\tК %.1f</string>
     <string name="base_title">Продукты и блюда</string>
     <string name="base_title_loading">Продукты и блюда (загрузка…)</string>

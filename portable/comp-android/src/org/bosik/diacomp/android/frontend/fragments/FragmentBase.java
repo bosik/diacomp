@@ -51,6 +51,7 @@ import android.content.Intent;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Binder;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -63,12 +64,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -86,8 +89,11 @@ public class FragmentBase extends Fragment
 	private static final int							LIMIT				= 100;
 
 	// Widgets
+	View												groupBaseEmpty;
+	View												groupBaseContent;
+	Button												buttonFoodSets;
 	EditText											editSearch;
-	private ListView									list;
+	ListView											list;
 
 	// Data
 	final FoodBaseService								foodBaseService		= Storage.localFoodBase;
@@ -123,6 +129,16 @@ public class FragmentBase extends Fragment
 																							case DiaryContentProvider.CODE_FOODBASE:
 																							case DiaryContentProvider.CODE_DISHBASE:
 																							{
+																								final long token = Binder
+																										.clearCallingIdentity();
+																								try
+																								{
+																									checkEmptiness();
+																								}
+																								finally
+																								{
+																									Binder.restoreCallingIdentity(token);
+																								}
 																								runSearch();
 																								break;
 																							}
@@ -154,6 +170,18 @@ public class FragmentBase extends Fragment
 		View rootView = inflater.inflate(R.layout.fragment_base, container, false);
 
 		// Widgets binding
+		groupBaseEmpty = rootView.findViewById(R.id.layoutBaseEmpty);
+		groupBaseContent = rootView.findViewById(R.id.layoutBaseContent);
+		buttonFoodSets = (Button) rootView.findViewById(R.id.buttonBaseFoodSets);
+		buttonFoodSets.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				Intent intent = new Intent(getActivity(), ActivityFoodSet.class);
+				startActivity(intent);
+			}
+		});
 		editSearch = (EditText) rootView.findViewById(R.id.editBaseEditorSearch);
 		editSearch.addTextChangedListener(new TextWatcher()
 		{
@@ -455,6 +483,7 @@ public class FragmentBase extends Fragment
 		};
 
 		list.setAdapter(adapter);
+		checkEmptiness();
 		runSearch();
 
 		return rootView;
@@ -839,5 +868,21 @@ public class FragmentBase extends Fragment
 		{
 			ErrorHandler.handle(e, getActivity());
 		}
+	}
+
+	void checkEmptiness()
+	{
+		// int total = foodBaseService.count("") + dishBaseService.count("");
+		//
+		// if (total > 0)
+		// {
+		groupBaseEmpty.setVisibility(View.GONE);
+		groupBaseContent.setVisibility(View.VISIBLE);
+		// }
+		// else
+		// {
+		// groupBaseEmpty.setVisibility(View.VISIBLE);
+		// groupBaseContent.setVisibility(View.GONE);
+		// }
 	}
 }

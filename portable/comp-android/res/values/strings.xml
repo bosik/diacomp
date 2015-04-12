@@ -5,6 +5,8 @@
     <string name="base_action_foodsets">Food sets</string>
     <string name="base_action_new_dish">New dish</string>
     <string name="base_action_new_food">New food</string>
+    <string name="base_button_foodset">Download food sets</string>
+    <string name="base_hint_empty_list">Base is currently empty. Create food/dish manually or download ready set.</string>
     <string name="base_subinfo" formatted="false">P %.1f\t\tF %.1f\t\tC %.1f\t\tV %.1f</string>
     <string name="base_title">Foods &amp; dishes</string>
     <string name="base_title_loading">Foods &amp; dishes (loading…)</string>
