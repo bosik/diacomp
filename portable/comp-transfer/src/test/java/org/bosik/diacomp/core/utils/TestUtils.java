@@ -21,6 +21,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import junit.framework.TestCase;
+import org.junit.Ignore;
 import org.junit.Test;
 
 @SuppressWarnings("static-method")
@@ -224,6 +225,7 @@ public class TestUtils extends TestCase
 		assertEquals(Utils.time(2012, 05, 01, 22, 30, 17), Utils.parseTimeUTC("2012-05-01 22:30:17"));
 	}
 
+	@Ignore
 	public void testParseTime_performance()
 	{
 		long time = System.currentTimeMillis();
