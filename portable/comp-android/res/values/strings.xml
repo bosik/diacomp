@@ -33,6 +33,7 @@
     <string name="diary_context_common_remove">Remove</string>
     <string name="diary_title">Diary</string>
     <string name="editor_blood_field_finger">Finger</string>
+    <string name="editor_blood_field_value">Value, mmol/l</string>
     <string name="editor_blood_title">Blood sugar</string>
     <string name="editor_common_field_time">Date and time</string>
     <string name="editor_common_field_value">Value</string>
@@ -54,6 +55,7 @@
     <string name="editor_food_field_value">Value, kcal</string>
     <string name="editor_food_title">Food</string>
     <string name="editor_ins_error_invalid_dosage">Invalid insulin dosage</string>
+    <string name="editor_ins_field_value">Dosage, U</string>
     <string name="editor_ins_title">Insulin</string>
     <string name="editor_meal_button_more">…</string>
     <string name="editor_meal_field_fooddish">Food/dish</string>
@@ -108,7 +110,7 @@
     <string name="main_option_test">Test</string>
     <string name="main_title">Diacomp</string>
     <string name="preferences_personal">Personal</string>
-    <string name="preferences_personal_target_bs">Target blood sugar</string>
+    <string name="preferences_personal_target_bs">Target blood sugar, mmol/l</string>
     <string name="preferences_title">Preferences</string>
 
     <!-- ========================================================================= -->

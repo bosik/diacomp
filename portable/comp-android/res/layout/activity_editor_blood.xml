@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:labelFor="@+id/editBloodValue"
             android:paddingTop="@dimen/padding_small"
-            android:text="@string/editor_common_field_value" />
+            android:text="@string/editor_blood_field_value" />
 
         <EditText
             android:id="@+id/editBloodValue"

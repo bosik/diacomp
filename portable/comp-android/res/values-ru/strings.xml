@@ -33,6 +33,7 @@
     <string name="diary_context_common_remove">Удалить</string>
     <string name="diary_title">Дневник</string>
     <string name="editor_blood_field_finger">Палец</string>
+    <string name="editor_blood_field_value">Значение, ммоль/л</string>
     <string name="editor_blood_title">Замер СК</string>
     <string name="editor_common_field_time">Дата и время</string>
     <string name="editor_common_field_value">Значение</string>
@@ -52,6 +53,7 @@
     <string name="editor_food_field_value">Калорийность, ккал</string>
     <string name="editor_food_title">Продукт</string>
     <string name="editor_ins_error_invalid_dosage">Неверная доза инсулина</string>
+    <string name="editor_ins_field_value">Доза, ед.</string>
     <string name="editor_ins_title">Инсулин</string>
     <string name="editor_meal_button_more">…</string>
     <string name="editor_meal_field_fooddish">Продукт/блюдо</string>
@@ -106,7 +108,7 @@
     <string name="main_option_test">Тест</string>
     <string name="main_title">Компенсация</string>
     <string name="preferences_personal">Личные</string>
-    <string name="preferences_personal_target_bs">Целевой сахар крови</string>
+    <string name="preferences_personal_target_bs">Целевой сахар крови, ммоль/л</string>
     <string name="preferences_title">Настройки</string>
 
     <!-- Arrays -->
