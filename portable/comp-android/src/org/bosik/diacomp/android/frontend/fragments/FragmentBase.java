@@ -261,8 +261,8 @@ public class FragmentBase extends Fragment
 				dishBaseService.save(removedDishes);
 				runSearch();
 
-				// TODO: i18n
-				String text = (removedFoods.size() + removedDishes.size()) + " items removed";
+				int count = removedFoods.size() + removedDishes.size();
+				String text = String.format(getString(R.string.base_tip_items_removed), count);
 				Toast.makeText(list.getContext(), text, Toast.LENGTH_LONG).show();
 
 				return true;
@@ -784,13 +784,11 @@ public class FragmentBase extends Fragment
 						try
 						{
 							foodBaseService.add(item);
-							// TODO: i18n
-							UIUtils.showTip(getActivity(), "Продукт создан");
+							UIUtils.showTip(getActivity(), getString(R.string.base_tip_food_create_ok));
 						}
 						catch (PersistenceException e)
 						{
-							// TODO: i18n
-							UIUtils.showTip(getActivity(), "Ошибка создания продукта");
+							UIUtils.showTip(getActivity(), getString(R.string.base_tip_food_create_fail));
 						}
 						runSearch();
 					}
@@ -805,14 +803,12 @@ public class FragmentBase extends Fragment
 								ActivityEditor.FIELD_ENTITY);
 						try
 						{
-							// TODO: i18n
 							foodBaseService.save(Arrays.<Versioned<FoodItem>> asList(item));
-							UIUtils.showTip(getActivity(), "Продукт сохранён");
+							UIUtils.showTip(getActivity(), getString(R.string.base_tip_food_edit_ok));
 						}
 						catch (PersistenceException e)
 						{
-							// TODO: i18n
-							UIUtils.showTip(getActivity(), "Ошибка сохранения продукта");
+							UIUtils.showTip(getActivity(), getString(R.string.base_tip_food_edit_fail));
 						}
 						runSearch();
 					}
@@ -828,13 +824,11 @@ public class FragmentBase extends Fragment
 						try
 						{
 							dishBaseService.add(item);
-							// TODO: i18n
-							UIUtils.showTip(getActivity(), "Блюдо создано");
+							UIUtils.showTip(getActivity(), getString(R.string.base_tip_dish_create_ok));
 						}
 						catch (PersistenceException e)
 						{
-							// TODO: i18n
-							UIUtils.showTip(getActivity(), "Ошибка создания блюда");
+							UIUtils.showTip(getActivity(), getString(R.string.base_tip_dish_create_fail));
 						}
 						runSearch();
 					}
@@ -850,13 +844,11 @@ public class FragmentBase extends Fragment
 						try
 						{
 							dishBaseService.save(Arrays.<Versioned<DishItem>> asList(item));
-							// TODO: i18n
-							UIUtils.showTip(getActivity(), "Блюдо сохранено");
+							UIUtils.showTip(getActivity(), getString(R.string.base_tip_dish_save_ok));
 						}
 						catch (PersistenceException e)
 						{
-							// TODO: i18n
-							UIUtils.showTip(getActivity(), "Ошибка сохранения блюда");
+							UIUtils.showTip(getActivity(), getString(R.string.base_tip_dish_save_fail));
 						}
 						runSearch();
 					}

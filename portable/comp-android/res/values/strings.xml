@@ -8,6 +8,15 @@
     <string name="base_button_foodset">Download food sets</string>
     <string name="base_hint_empty_list">Base is currently empty. Create food/dish manually or download ready set.</string>
     <string name="base_subinfo" formatted="false">P %.1f\t\tF %.1f\t\tC %.1f\t\tV %.1f</string>
+    <string name="base_tip_dish_create_fail">Failed to create dish</string>
+    <string name="base_tip_dish_create_ok">Dish created</string>
+    <string name="base_tip_dish_save_fail">Failed to save dish</string>
+    <string name="base_tip_dish_save_ok">Dish saved</string>
+    <string name="base_tip_food_create_fail">Failed to create food</string>
+    <string name="base_tip_food_create_ok">Food created</string>
+    <string name="base_tip_food_edit_fail">Failed to save food</string>
+    <string name="base_tip_food_edit_ok">Food saved</string>
+    <string name="base_tip_items_removed">Removed items: %d</string>
     <string name="base_title">Foods &amp; dishes</string>
     <string name="base_title_loading">Foods &amp; dishes (loading…)</string>
     <string name="common_hint_mass">Mass</string>
@@ -54,7 +63,8 @@
     <string name="editor_meal_info">Info</string>
     <string name="editor_meal_label_correction">+8 g</string>
     <string name="editor_meal_label_expected_bs">Expected BS:</string>
-    <string name="editor_meal_label_isulin_dosage">Insulin:</string>
+    <string name="editor_meal_label_expected_bs_hypoglycemia">hypoglycemia</string>
+    <string name="editor_meal_label_insulin_dosage">Insulin:</string>
     <string name="editor_meal_label_no_correction">no correction</string>
     <string name="editor_meal_label_stat" formatted="false">P 10.2</string>
     <string name="editor_meal_message_saved">Meal saved</string>
@@ -62,6 +72,7 @@
     <string name="editor_meal_parenthesis_open">(</string>
     <string name="editor_meal_short_postprandial">Short postprandial</string>
     <string name="editor_meal_title">Meal</string>
+    <string name="editor_meal_tip_meal_info" formatted="false">Prots: %.1f g\nFats: %.1f g\nCarbs: %.1f g\nValue: %.1f kcal\nMass: %.0f g</string>
     <string name="editor_note_field_text">Text</string>
     <string name="editor_note_title">Note</string>
     <string name="fd_action_add">Add</string>

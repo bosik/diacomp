@@ -215,21 +215,23 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
+		final MealRecord data = entity.getData();
+
 		switch (item.getItemId())
 		{
 			case R.id.item_meal_short:
 			{
-				boolean newValue = !entity.getData().getShortMeal();
-				entity.getData().setShortMeal(newValue);
+				boolean newValue = !data.getShortMeal();
+				data.setShortMeal(newValue);
 				modified = true;
 				item.setChecked(newValue);
 				return true;
 			}
 			case R.id.item_meal_info:
 			{
-				String info = String.format("Prots: %.1f\nFats: %.1f\nCarbs: %.1f\nValue: %.1f\nMass: %.0f", entity
-						.getData().getProts(), entity.getData().getFats(), entity.getData().getCarbs(), entity
-						.getData().getValue(), entity.getData().getMass());
+				String s = getString(R.string.editor_meal_tip_meal_info);
+				String info = String.format(s, data.getProts(), data.getFats(), data.getCarbs(), data.getValue(),
+						data.getMass());
 				UIUtils.showTip(ActivityEditorMeal.this, info);
 				return true;
 			}
@@ -285,8 +287,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			}
 			else
 			{
-				// TODO: i18n
-				textMealExpectedBs.setText("hypoglycemia");
+				textMealExpectedBs.setText(getString(R.string.editor_meal_label_expected_bs_hypoglycemia));
 			}
 		}
 		else

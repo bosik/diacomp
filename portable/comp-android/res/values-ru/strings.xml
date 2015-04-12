@@ -8,6 +8,15 @@
     <string name="base_button_foodset">Загрузить набор продуктов</string>
     <string name="base_hint_empty_list">База пока пуста. Создайте продукт/блюдо или загрузите готовый набор.</string>
     <string name="base_subinfo" formatted="false">Б %.1f\t\tЖ %.1f\t\tУ %.1f\t\tК %.1f</string>
+    <string name="base_tip_dish_create_fail">Ошибка создания блюда</string>
+    <string name="base_tip_dish_create_ok">Блюдо создано</string>
+    <string name="base_tip_dish_save_fail">Ошибка сохранения блюда</string>
+    <string name="base_tip_dish_save_ok">Блюдо сохранено</string>
+    <string name="base_tip_food_create_fail">Ошибка создания продукта</string>
+    <string name="base_tip_food_create_ok">Продукт создан</string>
+    <string name="base_tip_food_edit_fail">Ошибка сохранения продукта</string>
+    <string name="base_tip_food_edit_ok">Продукт сохранён</string>
+    <string name="base_tip_items_removed">Удалено записей: %d</string>
     <string name="base_title">Продукты и блюда</string>
     <string name="base_title_loading">Продукты и блюда (загрузка…)</string>
     <string name="common_hint_mass">Масса</string>
@@ -52,7 +61,8 @@
     <string name="editor_meal_info">Информация</string>
     <string name="editor_meal_label_correction">+8 г</string>
     <string name="editor_meal_label_expected_bs">Ожидаемый СК:</string>
-    <string name="editor_meal_label_isulin_dosage">Инсулин:</string>
+    <string name="editor_meal_label_expected_bs_hypoglycemia">гипогликемия</string>
+    <string name="editor_meal_label_insulin_dosage">Инсулин:</string>
     <string name="editor_meal_label_no_correction">без коррекции</string>
     <string name="editor_meal_label_stat">г угл.</string>
     <string name="editor_meal_message_saved">Приём пищи сохранён</string>
@@ -60,6 +70,7 @@
     <string name="editor_meal_parenthesis_open">(</string>
     <string name="editor_meal_short_postprandial">Сокращённый постпрандиал</string>
     <string name="editor_meal_title">Приём пищи</string>
+    <string name="editor_meal_tip_meal_info" formatted="false">Белки: %.1f г\nЖиры: %.1f г\nУглеводы: %.1f г\nЦенность: %.1f ккал\nМасса: %.0f г</string>
     <string name="editor_note_field_text">Текст</string>
     <string name="editor_note_title">Заметка</string>
     <string name="fd_action_add">Добавить</string>
