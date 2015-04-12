@@ -74,7 +74,7 @@ public class Versioned<T> implements Serializable
 
 	public String getId()
 	{
-		return id;
+		return id.toLowerCase();
 	}
 
 	public void setId(String id)
@@ -84,7 +84,7 @@ public class Versioned<T> implements Serializable
 			throw new IllegalArgumentException("ID is null");
 		}
 
-		this.id = id;
+		this.id = id.toLowerCase();
 	}
 
 	public Date getTimeStamp()
