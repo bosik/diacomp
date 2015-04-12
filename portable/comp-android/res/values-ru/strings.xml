@@ -100,6 +100,7 @@
     <string name="login_login_progress_signing_in">Вход…</string>
     <string name="login_prompt_email">Email</string>
     <string name="login_prompt_password">Пароль</string>
+    <string name="login_tip_sync_started">Синхронизация началась</string>
     <string name="login_title">Авторизация</string>
     <string name="main_option_bases">Продукты</string>
     <string name="main_option_diary">Дневник</string>

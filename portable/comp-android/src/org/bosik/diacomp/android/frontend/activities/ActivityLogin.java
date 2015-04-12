@@ -21,6 +21,7 @@ package org.bosik.diacomp.android.frontend.activities;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
+import org.bosik.diacomp.android.frontend.UIUtils;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
@@ -352,14 +353,15 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		setAccountAuthenticatorResult(intent.getExtras());
 
 		// Enabling sync
-		AccountManager am = AccountManager.get(this);
-		Account[] accounts = am.getAccountsByType("diacomp.org");
+		Account[] accounts = ActivityMain.getAccounts(this);
 		if (accounts.length > 0)
 		{
 			long SYNC_INTERVAL = 60; // sec
 			ContentResolver.setIsSyncable(accounts[0], DiaryContentProvider.AUTHORITY, 1);
 			ContentResolver.setSyncAutomatically(accounts[0], DiaryContentProvider.AUTHORITY, true);
 			ContentResolver.addPeriodicSync(accounts[0], DiaryContentProvider.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
+
+			UIUtils.showTip(this, getString(R.string.login_tip_sync_started));
 		}
 
 		setResult(RESULT_OK, intent);
