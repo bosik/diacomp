@@ -670,12 +670,16 @@ public class DiaryDayView extends LinearLayout
 				}
 				else if (record instanceof MealRecord)
 				{
-					long affectTime = ((MealRecord) record).getShortMeal() ? DEFAULT_AFFECT_TIME_MEAL_SHORT
-							: DEFAULT_AFFECT_TIME_MEAL_STD;
-					long curFreeTime = record.getTime().getTime() + affectTime * Utils.MsecPerMin;
-					if (curFreeTime > minFreeTime)
+					MealRecord meal = (MealRecord) record;
+					if (meal.getCarbs() > 1.0)
 					{
-						minFreeTime = curFreeTime;
+						long affectTime = meal.getShortMeal() ? DEFAULT_AFFECT_TIME_MEAL_SHORT
+								: DEFAULT_AFFECT_TIME_MEAL_STD;
+						long curFreeTime = record.getTime().getTime() + affectTime * Utils.MsecPerMin;
+						if (curFreeTime > minFreeTime)
+						{
+							minFreeTime = curFreeTime;
+						}
 					}
 				}
 				else if (record instanceof BloodRecord)

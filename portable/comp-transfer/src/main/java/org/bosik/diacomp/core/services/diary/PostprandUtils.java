@@ -62,11 +62,15 @@ public class PostprandUtils
 			}
 			else if (record instanceof MealRecord)
 			{
-				long affectTime = ((MealRecord)record).getShortMeal() ? mealShortAffectTime : mealAffectTime;
-				long curFreeTime = record.getTime().getTime() + affectTime * Utils.MsecPerMin;
-				if (curFreeTime > minFreeTime)
+				MealRecord meal = (MealRecord)record;
+				if (meal.getCarbs() > 1.0)
 				{
-					minFreeTime = curFreeTime;
+					long affectTime = meal.getShortMeal() ? mealShortAffectTime : mealAffectTime;
+					long curFreeTime = record.getTime().getTime() + affectTime * Utils.MsecPerMin;
+					if (curFreeTime > minFreeTime)
+					{
+						minFreeTime = curFreeTime;
+					}
 				}
 			}
 			else if (record instanceof BloodRecord)
