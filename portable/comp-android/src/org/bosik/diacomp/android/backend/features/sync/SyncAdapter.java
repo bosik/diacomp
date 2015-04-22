@@ -104,42 +104,87 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 	{
 		try
 		{
+			/**/long time = System.currentTimeMillis();
+
 			Log.i(TAG, "Sync fired");
 
-			// Preparing local services
+			// Preparing common services
 
 			ContentResolver contentResolver = getContext().getContentResolver();
-			DiaryService localDiary = new DiaryLocalService(contentResolver);
-			FoodBaseService localFoodBase = new FoodBaseLocalService(contentResolver);
-			DishBaseService localDishBase = new DishBaseLocalService(contentResolver);
-			PreferencesService localPreferences = new PreferencesLocalService(contentResolver);
-
-			// Preparing web services
 
 			final String username = account.name;
 			final String password = mAccountManager.getPassword(account);
 			WebClient webClient = getWebClient(username, password);
 
-			DiaryService webDiary = new DiaryWebService(webClient);
-			FoodBaseService webFoodBase = new FoodBaseWebService(webClient);
-			DishBaseService webDishBase = new DishBaseWebService(webClient);
-			PreferencesService webPreferences = new PreferencesWebService(webClient);
+			syncResult.stats.numIoExceptions = 0;
 
-			// Synchronize
+			// Sync - Diary
 
-			/**/long time = System.currentTimeMillis();
-			int counterDiary = SyncUtils.synchronize_v2(localDiary, webDiary, null);
-			int counterFood = SyncUtils.synchronize_v2(localFoodBase, webFoodBase, null);
-			int counterDish = SyncUtils.synchronize_v2(localDishBase, webDishBase, null);
-			int countPreferences = PreferencesSync.synchronizePreferences(localPreferences, webPreferences) ? 1 : 0;
+			int counterDiary = 0;
+			try
+			{
+				DiaryService localDiary = new DiaryLocalService(contentResolver);
+				DiaryService webDiary = new DiaryWebService(webClient);
+				counterDiary = SyncUtils.synchronize_v2(localDiary, webDiary, null);
+			}
+			catch (Exception e)
+			{
+				Log.e(TAG, "Sync failed: diary", e);
+				syncResult.stats.numIoExceptions++;
+			}
+
+			// Sync - Food
+
+			int counterFood = 0;
+			try
+			{
+				FoodBaseService localFoodBase = new FoodBaseLocalService(contentResolver);
+				FoodBaseService webFoodBase = new FoodBaseWebService(webClient);
+				counterFood = SyncUtils.synchronize_v2(localFoodBase, webFoodBase, null);
+			}
+			catch (Exception e)
+			{
+				Log.e(TAG, "Sync failed: food", e);
+				syncResult.stats.numIoExceptions++;
+			}
+
+			// Sync - Dish
+
+			int counterDish = 0;
+			try
+			{
+				DishBaseService localDishBase = new DishBaseLocalService(contentResolver);
+				DishBaseService webDishBase = new DishBaseWebService(webClient);
+				counterDish = SyncUtils.synchronize_v2(localDishBase, webDishBase, null);
+			}
+			catch (Exception e)
+			{
+				Log.e(TAG, "Sync failed: dish", e);
+				syncResult.stats.numIoExceptions++;
+			}
+
+			// Sync - Preferences
+
+			int countPreferences = 0;
+			try
+			{
+				PreferencesService localPreferences = new PreferencesLocalService(contentResolver);
+				PreferencesService webPreferences = new PreferencesWebService(webClient);
+				countPreferences = PreferencesSync.synchronizePreferences(localPreferences, webPreferences) ? 1 : 0;
+			}
+			catch (Exception e)
+			{
+				Log.e(TAG, "Sync failed: preferences", e);
+				syncResult.stats.numIoExceptions++;
+			}
 
 			/**/time = System.currentTimeMillis() - time;
-			/**/Log.i(TAG, String.format("SPC: synchronized in %d ms, items transferred: %d/%d/%d/%d", time,
-					counterDiary, counterFood, counterDish, countPreferences));
+			/**/Log.i(TAG, String.format("Synchronized in %d ms, items transferred: %d/%d/%d/%d", time, counterDiary,
+					counterFood, counterDish, countPreferences));
 		}
 		catch (Exception e)
 		{
-			Log.e(TAG, "Sync failed", e);
+			Log.e(TAG, "Sync failed: common", e);
 			syncResult.stats.numIoExceptions = 1;
 		}
 	}
