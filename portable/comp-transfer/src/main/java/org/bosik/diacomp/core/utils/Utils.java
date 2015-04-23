@@ -374,7 +374,7 @@ public class Utils
 	 */
 	public static String intTo00(int n)
 	{
-		return (n >= 0) && (n < 10) ? "0" + String.valueOf(n) : String.valueOf(n);
+		return String.format("%02d", n);
 	}
 
 	/**
@@ -445,6 +445,21 @@ public class Utils
 	public static String formatTimeLocalShort(TimeZone timeZone, Date time)
 	{
 		return getFormatTimeLocalShort(timeZone).format(time);
+	}
+
+	/**
+	 * Formats time as hh:mm
+	 * 
+	 * @param time
+	 *            Time in seconds
+	 * @return
+	 */
+	public static String formatTimePeriod(int time)
+	{
+		int h = time / SecPerHour;
+		time %= SecPerHour;
+		int m = time / SecPerMin;
+		return String.format("%02d:%02d", h, m);
 	}
 
 	/**

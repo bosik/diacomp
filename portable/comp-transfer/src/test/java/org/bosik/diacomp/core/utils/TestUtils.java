@@ -333,6 +333,15 @@ public class TestUtils extends TestCase
 		assertFalse(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "сыр"));
 	}
 
+	public void test_formatTimePeriod()
+	{
+		assertEquals("Fail", "00:00", Utils.formatTimePeriod(0));
+		assertEquals("Fail", "00:00", Utils.formatTimePeriod(1));
+		assertEquals("Fail", "00:01", Utils.formatTimePeriod(60));
+		assertEquals("Fail", "01:00", Utils.formatTimePeriod(3600));
+		assertEquals("Fail", "23:59", Utils.formatTimePeriod(86399));
+	}
+
 	// public void testTimeToStr()
 	// {
 	// // нормальный тест
