@@ -132,9 +132,9 @@ public class PostprandUtils
 	 * 
 	 * @param since
 	 * @param scanPeriod
-	 *            , in seconds
+	 *            in seconds
 	 * 
-	 * @return
+	 * @return Blood record if found, <code>null</code> otherwise
 	 */
 	public static BloodRecord findLastBlood(DiaryService diary, Date since, long scanPeriod, boolean skipPostprandials)
 	{
@@ -153,6 +153,66 @@ public class PostprandUtils
 				if (!skipPostprandials || !bloodRecord.isPostPrand())
 				{
 					return bloodRecord;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Find last insulin injection
+	 * 
+	 * @param diary
+	 * @param since
+	 * @param scanPeriod
+	 *            in seconds
+	 * @return Insulin injection if found, <code>null</code> otherwise
+	 */
+	public static InsRecord findLastIns(DiaryService diary, Date since, long scanPeriod)
+	{
+		Date endTime = since;
+		Date startTime = new Date(endTime.getTime() - (scanPeriod * Utils.MsecPerSec));
+
+		List<Versioned<DiaryRecord>> records = diary.findPeriod(startTime, endTime, false);
+		Collections.reverse(records);
+
+		for (Versioned<DiaryRecord> record : records)
+		{
+			if (record.getData() instanceof InsRecord)
+			{
+				return (InsRecord)record.getData();
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Find last meal (meals with short postprandial period are ignored)
+	 * 
+	 * @param diary
+	 * @param since
+	 * @param scanPeriod
+	 *            in seconds
+	 * @return Meal if found, <code>null</code> otherwise
+	 */
+	public static MealRecord findLastMeal(DiaryService diary, Date since, long scanPeriod)
+	{
+		Date endTime = since;
+		Date startTime = new Date(endTime.getTime() - (scanPeriod * Utils.MsecPerSec));
+
+		List<Versioned<DiaryRecord>> records = diary.findPeriod(startTime, endTime, false);
+		Collections.reverse(records);
+
+		for (Versioned<DiaryRecord> record : records)
+		{
+			if (record.getData() instanceof MealRecord)
+			{
+				MealRecord rec = (MealRecord)record.getData();
+				if (!rec.getShortMeal())
+				{
+					return rec;
 				}
 			}
 		}
