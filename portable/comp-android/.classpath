@@ -21,6 +21,5 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/comp-transfer/target/classes" sourcepath="/comp-transfer/src"/>
-	<classpathentry exported="true" kind="lib" path="libs/gson-2.2.4.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

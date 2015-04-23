@@ -24,7 +24,6 @@ import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import org.bosik.diacomp.core.utils.Utils;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * Note: no check (rel* < 100) is presented
@@ -34,13 +33,8 @@ public class DishItem implements NamedRelativeTagged, Serializable
 {
 	private static final long		serialVersionUID	= 1L;
 
-	@SerializedName("name")
 	private String					name;
-
-	@SerializedName("tag")
 	private int						tag;
-
-	@SerializedName("mass")
 	private Double					mass;
 
 	private final List<FoodMassed>	content				= new ArrayList<FoodMassed>();
