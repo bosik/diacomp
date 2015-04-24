@@ -18,7 +18,7 @@
 package org.bosik.diacomp.core.services.preferences;
 
 /**
- * Contains all available user preferences
+ * Contains all available account preferences (syncable)
  */
 public enum Preference {
 	/**

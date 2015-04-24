@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <!-- Every syncable preference must be presented here with the same key as declared in Preference.java -->
-
     <PreferenceCategory android:title="@string/preferences_personal" >
         <EditTextPreference
             android:name="prefPersonalTargetBS"
