@@ -44,6 +44,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -57,6 +58,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
@@ -426,6 +428,13 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 				mBuilder.setOngoing(true);
 				mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(info));
 				mBuilder.setContentText(info);
+
+				Intent resultIntent = new Intent(this, ActivityMain.class);
+				TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+				stackBuilder.addParentStack(ActivityMain.class);
+				stackBuilder.addNextIntent(resultIntent);
+				PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+				mBuilder.setContentIntent(resultPendingIntent);
 
 				NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 				mNotifyManager.notify(NOTIFICATION_ID_TIME_AFTER, mBuilder.build());
