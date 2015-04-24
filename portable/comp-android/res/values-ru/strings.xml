@@ -130,16 +130,16 @@
         <item>[Правая]: большой</item>
     </string-array>
     <string-array name="fingers_middle">
-        <item>Лев.большой</item>
-        <item>Лев.указательный</item>
-        <item>Лев.средний</item>
-        <item>Лев.безымянный</item>
-        <item>Лев.мизинец</item>
-        <item>Пр.мизинец</item>
-        <item>Пр.безымянный</item>
-        <item>Пр.средний</item>
-        <item>Пр.указательный</item>
-        <item>Пр.большой</item>
+        <item>Левая рука, большой</item>
+        <item>Левая рука, указательный</item>
+        <item>Левая рука, средний</item>
+        <item>Левая рука, безымянный</item>
+        <item>Левая рука, мизинец</item>
+        <item>Правая рука, мизинец</item>
+        <item>Правая рука, безымянный</item>
+        <item>Правая рука, средний</item>
+        <item>Правая рука, указательный</item>
+        <item>Правая рука, большой</item>
     </string-array>
     <string-array name="fingers_short">
         <item>БЛ</item>

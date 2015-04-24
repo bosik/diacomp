@@ -135,16 +135,16 @@
         <item>[Right]: thumb</item>
     </string-array>
     <string-array name="fingers_middle">
-        <item>Left thumb</item>
-        <item>Left index</item>
-        <item>Left middle</item>
-        <item>Left ring</item>
-        <item>Left little</item>
-        <item>Right little</item>
-        <item>Right ring</item>
-        <item>Right middle</item>
-        <item>Right index</item>
-        <item>Right thumb</item>
+        <item>Left hand, thumb</item>
+        <item>Left hand, index</item>
+        <item>Left hand, middle</item>
+        <item>Left hand, ring</item>
+        <item>Left hand, little</item>
+        <item>Right hand, little</item>
+        <item>Right hand, ring</item>
+        <item>Right hand, middle</item>
+        <item>Right hand, index</item>
+        <item>Right hand, thumb</item>
     </string-array>
     <string-array name="fingers_short">
         <item>TL</item>
