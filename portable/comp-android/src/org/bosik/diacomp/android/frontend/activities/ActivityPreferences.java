@@ -37,7 +37,7 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 	private static final String		TAG	= ActivityPreferences.class.getSimpleName();
 
 	// Services
-	private SharedPreferences		systemPreferences;
+	private SharedPreferences		devicePreferences;
 	private PreferencesTypedService	syncablePreferences;
 
 	@Override
@@ -47,10 +47,10 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 
 		// Initializing services
 		syncablePreferences = new PreferencesTypedService(new PreferencesLocalService(getContentResolver()));
-		systemPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		devicePreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
 		// Filling values
-		Editor editor = systemPreferences.edit();
+		Editor editor = devicePreferences.edit();
 		for (Preference preference : Preference.values())
 		{
 			editor.putString(preference.getKey(), syncablePreferences.getStringValue(preference));
@@ -59,9 +59,9 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 
 		// Inflating layout
 		addPreferencesFromResource(R.xml.preferences);
-		for (String key : systemPreferences.getAll().keySet())
+		for (String key : devicePreferences.getAll().keySet())
 		{
-			updateDescription(systemPreferences, key);
+			updateDescription(devicePreferences, key);
 		}
 	}
 
