@@ -110,6 +110,9 @@
     <string name="main_option_preferences">Preferences</string>
     <string name="main_option_test">Test</string>
     <string name="main_title">Diacomp</string>
+    <string name="notification_time_after_injection">after injection</string>
+    <string name="notification_time_after_meal">after meal</string>
+    <string name="preferences_appearance_show_time_after">Show meal/injection elapsed time</string>
     <string name="preferences_personal">Personal</string>
     <string name="preferences_personal_target_bs">Target blood sugar, mmol/l</string>
     <string name="preferences_title">Preferences</string>
@@ -132,16 +135,16 @@
         <item>[Right]: thumb</item>
     </string-array>
     <string-array name="fingers_middle">
-        <item>Left thumb</item>
-        <item>Left index</item>
-        <item>Left middle</item>
-        <item>Left ring</item>
-        <item>Left little</item>
-        <item>Right little</item>
-        <item>Right ring</item>
-        <item>Right middle</item>
-        <item>Right index</item>
-        <item>Right thumb</item>
+        <item>Left hand, thumb</item>
+        <item>Left hand, index</item>
+        <item>Left hand, middle</item>
+        <item>Left hand, ring</item>
+        <item>Left hand, little</item>
+        <item>Right hand, little</item>
+        <item>Right hand, ring</item>
+        <item>Right hand, middle</item>
+        <item>Right hand, index</item>
+        <item>Right hand, thumb</item>
     </string-array>
     <string-array name="fingers_short">
         <item>TL</item>

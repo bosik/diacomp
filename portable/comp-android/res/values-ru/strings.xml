@@ -108,6 +108,9 @@
     <string name="main_option_preferences">Настройки</string>
     <string name="main_option_test">Тест</string>
     <string name="main_title">Компенсация</string>
+    <string name="notification_time_after_injection">после инъекции</string>
+    <string name="notification_time_after_meal">после еды</string>
+    <string name="preferences_appearance_show_time_after">Показывать время после еды/инъекции</string>
     <string name="preferences_personal">Личные</string>
     <string name="preferences_personal_target_bs">Целевой сахар крови, ммоль/л</string>
     <string name="preferences_title">Настройки</string>
@@ -127,16 +130,16 @@
         <item>[Правая]: большой</item>
     </string-array>
     <string-array name="fingers_middle">
-        <item>Лев.большой</item>
-        <item>Лев.указательный</item>
-        <item>Лев.средний</item>
-        <item>Лев.безымянный</item>
-        <item>Лев.мизинец</item>
-        <item>Пр.мизинец</item>
-        <item>Пр.безымянный</item>
-        <item>Пр.средний</item>
-        <item>Пр.указательный</item>
-        <item>Пр.большой</item>
+        <item>Левая рука, большой</item>
+        <item>Левая рука, указательный</item>
+        <item>Левая рука, средний</item>
+        <item>Левая рука, безымянный</item>
+        <item>Левая рука, мизинец</item>
+        <item>Правая рука, мизинец</item>
+        <item>Правая рука, безымянный</item>
+        <item>Правая рука, средний</item>
+        <item>Правая рука, указательный</item>
+        <item>Правая рука, большой</item>
     </string-array>
     <string-array name="fingers_short">
         <item>БЛ</item>

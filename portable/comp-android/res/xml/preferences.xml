@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <!-- Every syncable preference must be presented here with the same key as declared in Preference.java -->
-
     <PreferenceCategory android:title="@string/preferences_personal" >
         <EditTextPreference
-            android:name="prefPersonalTargetBS"
             android:key="e6681282aa724d3fa4cd6ac5735a163f"
             android:numeric="decimal"
             android:summary=""
             android:title="@string/preferences_personal_target_bs" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="d5c1a902e83b4d05a51085e344bee953"
+            android:summary=""
+            android:title="@string/preferences_appearance_show_time_after" />
     </PreferenceCategory>
 
 </PreferenceScreen>

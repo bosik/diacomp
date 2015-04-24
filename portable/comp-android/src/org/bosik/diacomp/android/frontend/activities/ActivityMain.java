@@ -390,34 +390,39 @@ public class ActivityMain extends FragmentActivity
 
 	public void showTimeAfter()
 	{
-		// TODO: i18n
-		final String TEXT_NOTIFICATION_TIME = "Компенсация";
-
-		String info = "";
-
-		Integer timeAfterMeal = getTimeAfterMeal();
-		if (timeAfterMeal != null)
+		if (preferences.getBoolean(DevicePreferences.KEY_SHOW_TIME_AFTER, true))
 		{
-			info += Utils.formatTimePeriod(timeAfterMeal) + " после еды";
-		}
+			String info = "";
 
-		Integer timeAfterIns = getTimeAfterIns();
-		if (timeAfterIns != null)
-		{
-			info += (info.isEmpty() ? "" : "\n") + Utils.formatTimePeriod(timeAfterIns) + " после инъекции";
-		}
+			Integer timeAfterMeal = getTimeAfterMeal();
+			if (timeAfterMeal != null)
+			{
+				info += Utils.formatTimePeriod(timeAfterMeal) + " " + getString(R.string.notification_time_after_meal);
+			}
 
-		if (!info.isEmpty())
-		{
-			Builder mBuilder = new NotificationCompat.Builder(this);
-			mBuilder.setContentTitle(TEXT_NOTIFICATION_TIME);
-			mBuilder.setSmallIcon(R.drawable.icon);
-			mBuilder.setOngoing(true);
-			mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(info));
-			mBuilder.setContentText(info);
+			Integer timeAfterIns = getTimeAfterIns();
+			if (timeAfterIns != null)
+			{
+				info += (info.isEmpty() ? "" : ",\n") + Utils.formatTimePeriod(timeAfterIns) + " "
+						+ getString(R.string.notification_time_after_injection);
+			}
 
-			NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-			mNotifyManager.notify(NOTIFICATION_ID_TIME_AFTER, mBuilder.build());
+			if (!info.isEmpty())
+			{
+				Builder mBuilder = new NotificationCompat.Builder(this);
+				mBuilder.setContentTitle(getString(R.string.app_name));
+				mBuilder.setSmallIcon(R.drawable.icon);
+				mBuilder.setOngoing(true);
+				mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(info));
+				mBuilder.setContentText(info);
+
+				NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+				mNotifyManager.notify(NOTIFICATION_ID_TIME_AFTER, mBuilder.build());
+			}
+			else
+			{
+				hideTimeAfter();
+			}
 		}
 		else
 		{
