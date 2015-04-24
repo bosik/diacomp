@@ -83,6 +83,12 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 			public void onChange(List<FoodMassed> items)
 			{
 				modified = true;
+
+				entity.getData().clear();
+				for (FoodMassed item : editor.getData())
+				{
+					entity.getData().add(item);
+				}
 			}
 		});
 		buttonOK = (Button) findViewById(R.id.buttonDishOK);
