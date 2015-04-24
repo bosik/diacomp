@@ -112,7 +112,7 @@
     <string name="main_title">Diacomp</string>
     <string name="notification_time_after_injection">after injection</string>
     <string name="notification_time_after_meal">after meal</string>
-    <string name="preferences_appearance_show_time_after">Show meal/injection elapsed time</string>
+    <string name="preferences_appearance_show_time_after">Show elapsed time</string>
     <string name="preferences_personal">Personal</string>
     <string name="preferences_personal_target_bs">Target blood sugar, mmol/l</string>
     <string name="preferences_title">Preferences</string>
