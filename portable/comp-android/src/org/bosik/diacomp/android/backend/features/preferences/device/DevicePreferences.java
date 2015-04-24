@@ -20,5 +20,6 @@ package org.bosik.diacomp.android.backend.features.preferences.device;
 
 public class DevicePreferences
 {
-	public static final String	KEY_FIRST_START	= "8b6575e476d64becae68468500f1bc1c";
+	public static final String	KEY_FIRST_START		= "8b6575e476d64becae68468500f1bc1c";
+	public static final String	KEY_SHOW_TIME_AFTER	= "d5c1a902e83b4d05a51085e344bee953";
 }
