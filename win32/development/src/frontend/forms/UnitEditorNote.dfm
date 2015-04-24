@@ -55,7 +55,7 @@ object FormEditorNote: TFormEditorNote
     Height = 28
     Anchors = [akLeft, akBottom]
     Caption = 'ButtonOK'
-    TabOrder = 0
+    TabOrder = 1
     OnClick = ButtonOKClick
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
@@ -85,7 +85,7 @@ object FormEditorNote: TFormEditorNote
     Cancel = True
     Caption = 'ButtonCancel'
     ModalResult = 2
-    TabOrder = 1
+    TabOrder = 2
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
       0400000000006801000000000000000000001000000000000000000000000000
@@ -113,7 +113,7 @@ object FormEditorNote: TFormEditorNote
     Date = 41777.158689432870000000
     Time = 41777.158689432870000000
     Kind = dtkTime
-    TabOrder = 2
+    TabOrder = 3
     OnKeyDown = FieldKeyDown
   end
   object DatePicker: TDateTimePicker
@@ -123,7 +123,7 @@ object FormEditorNote: TFormEditorNote
     Height = 24
     Date = 41777.159941967590000000
     Time = 41777.159941967590000000
-    TabOrder = 3
+    TabOrder = 4
     OnKeyDown = FieldKeyDown
   end
   object EditText: TMemo
@@ -136,7 +136,7 @@ object FormEditorNote: TFormEditorNote
       'EditText')
     MaxLength = 1024
     ScrollBars = ssVertical
-    TabOrder = 4
+    TabOrder = 0
     WantReturns = False
   end
 end
