@@ -48,6 +48,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -61,7 +62,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class ActivityMain extends FragmentActivity
+public class ActivityMain extends FragmentActivity implements OnSharedPreferenceChangeListener
 {
 	/* =========================== CONSTANTS ================================ */
 
@@ -238,6 +239,7 @@ public class ActivityMain extends FragmentActivity
 			}
 
 			setupBackgroundTimer();
+			ActivityPreferences.registerOnSharedPreferenceChangeListener(this);
 		}
 		catch (Exception e)
 		{
@@ -258,6 +260,15 @@ public class ActivityMain extends FragmentActivity
 			ErrorHandler.handle(e, this);
 		}
 		return true;
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+	{
+		if (DevicePreferences.KEY_SHOW_TIME_AFTER.equals(key))
+		{
+			showTimeAfter();
+		}
 	}
 
 	public void testSyncPerformance()

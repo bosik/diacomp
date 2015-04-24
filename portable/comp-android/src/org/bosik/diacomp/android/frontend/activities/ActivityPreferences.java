@@ -18,6 +18,8 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.core.services.preferences.Preference;
@@ -34,11 +36,13 @@ import android.util.Log;
 
 public class ActivityPreferences extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
-	private static final String		TAG	= ActivityPreferences.class.getSimpleName();
+	private static final String								TAG			= ActivityPreferences.class.getSimpleName();
 
 	// Services
-	private SharedPreferences		devicePreferences;
-	private PreferencesTypedService	syncablePreferences;
+	private SharedPreferences								devicePreferences;
+	private PreferencesTypedService							syncablePreferences;
+
+	private static List<OnSharedPreferenceChangeListener>	listeners	= new ArrayList<OnSharedPreferenceChangeListener>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -108,6 +112,11 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 				break;
 			}
 		}
+
+		for (OnSharedPreferenceChangeListener listener : listeners)
+		{
+			listener.onSharedPreferenceChanged(preferences, key);
+		}
 	}
 
 	private void updateDescription(SharedPreferences sharedPreferences, String key)
@@ -118,6 +127,14 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 		if (p instanceof EditTextPreference)
 		{
 			p.setSummary(sharedPreferences.getString(key, ""));
+		}
+	}
+
+	public static void registerOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener)
+	{
+		if (!listeners.contains(listener))
+		{
+			listeners.add(listener);
 		}
 	}
 }
