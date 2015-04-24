@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,11 +14,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.activities;
 
+import java.util.Date;
 import java.util.SortedMap;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
 import org.bosik.diacomp.android.BuildConfig;
 import org.bosik.diacomp.android.R;
@@ -29,7 +32,11 @@ import org.bosik.diacomp.android.backend.features.preferences.device.DevicePrefe
 import org.bosik.diacomp.android.frontend.fragments.FragmentBase;
 import org.bosik.diacomp.android.frontend.fragments.FragmentDiaryScroller;
 import org.bosik.diacomp.android.utils.ErrorHandler;
+import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.diary.PostprandUtils;
+import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.SyncUtils;
 import org.bosik.merklesync.SyncUtils.ProgressCallback;
@@ -58,14 +65,16 @@ public class ActivityMain extends FragmentActivity
 {
 	/* =========================== CONSTANTS ================================ */
 
-	static final String			TAG			= ActivityMain.class.getSimpleName();
+	static final String			TAG							= ActivityMain.class.getSimpleName();
 	// private static final int RESULT_SPEECH_TO_TEXT = 620;
 
-	private static final int	TAB_COUNT	= 2;
-	private static final int	TAB_DIARY	= 0;
-	private static final int	TAB_BASE	= 1;
+	private static final int	TAB_COUNT					= 2;
+	private static final int	TAB_DIARY					= 0;
+	private static final int	TAB_BASE					= 1;
 
-	private static final int	CODE_LOGIN	= 0;
+	private static final int	CODE_LOGIN					= 0;
+
+	private static final int	NOTIFICATION_ID_TIME_AFTER	= 1;
 
 	/* =========================== FIELDS ================================ */
 
@@ -73,6 +82,9 @@ public class ActivityMain extends FragmentActivity
 	private Menu				cachedMenu;
 
 	private SharedPreferences	preferences;
+	private DiaryService		localDiary;
+
+	private static boolean		timerSettedUp				= false;
 
 	/* =========================== METHODS ================================ */
 
@@ -104,6 +116,7 @@ public class ActivityMain extends FragmentActivity
 			PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 			preferences = PreferenceManager.getDefaultSharedPreferences(this);
 			Storage.init(this, getContentResolver(), preferences);
+			localDiary = new DiaryLocalService(getContentResolver());
 
 			// Account sync
 			Account[] accounts = getAccounts(this);
@@ -223,6 +236,8 @@ public class ActivityMain extends FragmentActivity
 				intent.putExtra(ActivityFoodSet.FIELD_FIRST_START, true);
 				startActivity(intent);
 			}
+
+			setupBackgroundTimer();
 		}
 		catch (Exception e)
 		{
@@ -333,6 +348,121 @@ public class ActivityMain extends FragmentActivity
 				}
 			};
 		}.execute();
+	}
+
+	/**
+	 * 
+	 * @return Time after last meal (in seconds) if found, null otherwise
+	 */
+	private Integer getTimeAfterMeal()
+	{
+		final Date now = new Date();
+		long scanPeriod = Utils.SecPerDay;
+		MealRecord rec = PostprandUtils.findLastMeal(localDiary, now, scanPeriod);
+		if (rec != null)
+		{
+			return (int) (now.getTime() - rec.getTime().getTime()) / Utils.MsecPerSec;
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * 
+	 * @return Time after last ins (in seconds) if found, null otherwise
+	 */
+	private Integer getTimeAfterIns()
+	{
+		final Date now = new Date();
+		long scanPeriod = Utils.SecPerDay;
+		InsRecord rec = PostprandUtils.findLastIns(localDiary, now, scanPeriod);
+		if (rec != null)
+		{
+			return (int) (now.getTime() - rec.getTime().getTime()) / Utils.MsecPerSec;
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	public void showTimeAfter()
+	{
+		// TODO: i18n
+		final String TEXT_NOTIFICATION_TIME = "Компенсация";
+
+		String info = "";
+
+		Integer timeAfterMeal = getTimeAfterMeal();
+		if (timeAfterMeal != null)
+		{
+			info += Utils.formatTimePeriod(timeAfterMeal) + " после еды";
+		}
+
+		Integer timeAfterIns = getTimeAfterIns();
+		if (timeAfterIns != null)
+		{
+			info += (info.isEmpty() ? "" : "\n") + Utils.formatTimePeriod(timeAfterIns) + " после инъекции";
+		}
+
+		if (!info.isEmpty())
+		{
+			Builder mBuilder = new NotificationCompat.Builder(this);
+			mBuilder.setContentTitle(TEXT_NOTIFICATION_TIME);
+			mBuilder.setSmallIcon(R.drawable.icon);
+			mBuilder.setOngoing(true);
+			mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(info));
+			mBuilder.setContentText(info);
+
+			NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+			mNotifyManager.notify(NOTIFICATION_ID_TIME_AFTER, mBuilder.build());
+		}
+		else
+		{
+			hideTimeAfter();
+		}
+	}
+
+	public void hideTimeAfter()
+	{
+		NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		mNotifyManager.cancel(NOTIFICATION_ID_TIME_AFTER);
+	}
+
+	private void setupBackgroundTimer()
+	{
+		if (timerSettedUp)
+		{
+			return;
+		}
+		timerSettedUp = true;
+
+		TimerTask task = new TimerTask()
+		{
+			@Override
+			public void run()
+			{
+				new AsyncTask<Void, Void, Void>()
+				{
+					@Override
+					protected Void doInBackground(Void... arg0)
+					{
+						/**/long time = System.currentTimeMillis();
+
+						showTimeAfter();
+
+						/**/time = System.currentTimeMillis() - time;
+						/**/Log.d(TAG, "showTimeAfter() done in " + time + " ms");
+
+						return null;
+					}
+				}.execute();
+			}
+		};
+
+		new Timer().scheduleAtFixedRate(task, 0, Utils.MsecPerMin);
 	}
 
 	@Override
