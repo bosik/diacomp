@@ -210,7 +210,7 @@ public class PostprandUtils
 			if (record.getData() instanceof MealRecord)
 			{
 				MealRecord rec = (MealRecord)record.getData();
-				if (!rec.getShortMeal())
+				if (!rec.getShortMeal() && rec.count() > 0)
 				{
 					return rec;
 				}
