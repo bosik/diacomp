@@ -85,7 +85,7 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 	private Menu				cachedMenu;
 
 	private SharedPreferences	preferences;
-	private DiaryService		localDiary;
+	DiaryService				localDiary;
 
 	private static boolean		timerSettedUp				= false;
 
@@ -364,85 +364,108 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 	}
 
 	/**
-	 * 
-	 * @return Time after last meal (in seconds) if found, null otherwise
+	 * Async
 	 */
-	private Integer getTimeAfterMeal()
-	{
-		final Date now = new Date();
-		long scanPeriod = Utils.SecPerDay;
-		MealRecord rec = PostprandUtils.findLastMeal(localDiary, now, scanPeriod);
-		if (rec != null)
-		{
-			return (int) (now.getTime() - rec.getTime().getTime()) / Utils.MsecPerSec;
-		}
-		else
-		{
-			return null;
-		}
-	}
-
-	/**
-	 * 
-	 * @return Time after last ins (in seconds) if found, null otherwise
-	 */
-	private Integer getTimeAfterIns()
-	{
-		final Date now = new Date();
-		long scanPeriod = Utils.SecPerDay;
-		InsRecord rec = PostprandUtils.findLastIns(localDiary, now, scanPeriod);
-		if (rec != null)
-		{
-			return (int) (now.getTime() - rec.getTime().getTime()) / Utils.MsecPerSec;
-		}
-		else
-		{
-			return null;
-		}
-	}
-
 	public void showTimeAfter()
 	{
 		if (preferences.getBoolean(DevicePreferences.KEY_SHOW_TIME_AFTER, true))
 		{
-			String info = "";
-
-			Integer timeAfterMeal = getTimeAfterMeal();
-			if (timeAfterMeal != null)
+			new AsyncTask<Void, Void, String>()
 			{
-				info += Utils.formatTimePeriod(timeAfterMeal) + " " + getString(R.string.notification_time_after_meal);
-			}
+				/**
+				 * 
+				 * @return Time after last meal (in seconds) if found, null otherwise
+				 */
+				private Integer getTimeAfterMeal()
+				{
+					final Date now = new Date();
+					long scanPeriod = Utils.SecPerDay;
+					MealRecord rec = PostprandUtils.findLastMeal(localDiary, now, scanPeriod);
+					if (rec != null)
+					{
+						return (int) (now.getTime() - rec.getTime().getTime()) / Utils.MsecPerSec;
+					}
+					else
+					{
+						return null;
+					}
+				}
 
-			Integer timeAfterIns = getTimeAfterIns();
-			if (timeAfterIns != null)
-			{
-				info += (info.isEmpty() ? "" : ",\n") + Utils.formatTimePeriod(timeAfterIns) + " "
-						+ getString(R.string.notification_time_after_injection);
-			}
+				/**
+				 * 
+				 * @return Time after last ins (in seconds) if found, null otherwise
+				 */
+				private Integer getTimeAfterIns()
+				{
+					final Date now = new Date();
+					long scanPeriod = Utils.SecPerDay;
+					InsRecord rec = PostprandUtils.findLastIns(localDiary, now, scanPeriod);
+					if (rec != null)
+					{
+						return (int) (now.getTime() - rec.getTime().getTime()) / Utils.MsecPerSec;
+					}
+					else
+					{
+						return null;
+					}
+				}
 
-			if (!info.isEmpty())
-			{
-				Builder mBuilder = new NotificationCompat.Builder(this);
-				mBuilder.setContentTitle(getString(R.string.app_name));
-				mBuilder.setSmallIcon(R.drawable.icon);
-				mBuilder.setOngoing(true);
-				mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(info));
-				mBuilder.setContentText(info);
+				@Override
+				protected String doInBackground(Void... arg0)
+				{
+					/**/long time = System.currentTimeMillis();
 
-				Intent resultIntent = new Intent(this, ActivityMain.class);
-				TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-				stackBuilder.addParentStack(ActivityMain.class);
-				stackBuilder.addNextIntent(resultIntent);
-				PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-				mBuilder.setContentIntent(resultPendingIntent);
+					String info = "";
 
-				NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-				mNotifyManager.notify(NOTIFICATION_ID_TIME_AFTER, mBuilder.build());
-			}
-			else
-			{
-				hideTimeAfter();
-			}
+					Integer timeAfterMeal = getTimeAfterMeal();
+					if (timeAfterMeal != null)
+					{
+						info += Utils.formatTimePeriod(timeAfterMeal) + " "
+								+ getString(R.string.notification_time_after_meal);
+					}
+
+					Integer timeAfterIns = getTimeAfterIns();
+					if (timeAfterIns != null)
+					{
+						info += (info.isEmpty() ? "" : ",\n") + Utils.formatTimePeriod(timeAfterIns) + " "
+								+ getString(R.string.notification_time_after_injection);
+					}
+
+					/**/time = System.currentTimeMillis() - time;
+					/**/Log.d(TAG, "showTimeAfter() done in " + time + " ms");
+
+					return info;
+				}
+
+				@Override
+				protected void onPostExecute(String info)
+				{
+					if (!info.isEmpty())
+					{
+						Builder mBuilder = new NotificationCompat.Builder(ActivityMain.this);
+						mBuilder.setContentTitle(getString(R.string.app_name));
+						mBuilder.setSmallIcon(R.drawable.icon);
+						mBuilder.setOngoing(true);
+						mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(info));
+						mBuilder.setContentText(info);
+
+						Intent resultIntent = new Intent(ActivityMain.this, ActivityMain.class);
+						TaskStackBuilder stackBuilder = TaskStackBuilder.create(ActivityMain.this);
+						stackBuilder.addParentStack(ActivityMain.class);
+						stackBuilder.addNextIntent(resultIntent);
+						PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+								PendingIntent.FLAG_UPDATE_CURRENT);
+						mBuilder.setContentIntent(resultPendingIntent);
+
+						NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+						mNotifyManager.notify(NOTIFICATION_ID_TIME_AFTER, mBuilder.build());
+					}
+					else
+					{
+						hideTimeAfter();
+					}
+				};
+			}.execute();
 		}
 		else
 		{
@@ -469,21 +492,7 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 			@Override
 			public void run()
 			{
-				new AsyncTask<Void, Void, Void>()
-				{
-					@Override
-					protected Void doInBackground(Void... arg0)
-					{
-						/**/long time = System.currentTimeMillis();
-
-						showTimeAfter();
-
-						/**/time = System.currentTimeMillis() - time;
-						/**/Log.d(TAG, "showTimeAfter() done in " + time + " ms");
-
-						return null;
-					}
-				}.execute();
+				showTimeAfter();
 			}
 		};
 
