@@ -163,20 +163,11 @@ public class PostprandUtils
 	/**
 	 * Find last insulin injection
 	 * 
-	 * @param diary
-	 * @param since
-	 * @param scanPeriod
-	 *            in seconds
+	 * @param records
 	 * @return Insulin injection if found, <code>null</code> otherwise
 	 */
-	public static InsRecord findLastIns(DiaryService diary, Date since, long scanPeriod)
+	public static InsRecord findLastIns(List<Versioned<DiaryRecord>> records)
 	{
-		Date endTime = since;
-		Date startTime = new Date(endTime.getTime() - (scanPeriod * Utils.MsecPerSec));
-
-		List<Versioned<DiaryRecord>> records = diary.findPeriod(startTime, endTime, false);
-		Collections.reverse(records);
-
 		for (Versioned<DiaryRecord> record : records)
 		{
 			if (record.getData() instanceof InsRecord)
@@ -191,20 +182,11 @@ public class PostprandUtils
 	/**
 	 * Find last meal (meals with short postprandial period are ignored)
 	 * 
-	 * @param diary
-	 * @param since
-	 * @param scanPeriod
-	 *            in seconds
+	 * @param records
 	 * @return Meal if found, <code>null</code> otherwise
 	 */
-	public static MealRecord findLastMeal(DiaryService diary, Date since, long scanPeriod)
+	public static MealRecord findLastMeal(List<Versioned<DiaryRecord>> records)
 	{
-		Date endTime = since;
-		Date startTime = new Date(endTime.getTime() - (scanPeriod * Utils.MsecPerSec));
-
-		List<Versioned<DiaryRecord>> records = diary.findPeriod(startTime, endTime, false);
-		Collections.reverse(records);
-
 		for (Versioned<DiaryRecord> record : records)
 		{
 			if (record.getData() instanceof MealRecord)
@@ -218,5 +200,23 @@ public class PostprandUtils
 		}
 
 		return null;
+	}
+
+	/**
+	 * 
+	 * @param diary
+	 *            Diary source
+	 * @param since
+	 * @param scanPeriod
+	 *            in seconds
+	 * @return
+	 */
+	public static List<Versioned<DiaryRecord>> findLastRecordsReversed(DiaryService diary, Date since, long scanPeriod)
+	{
+		Date endTime = since;
+		Date startTime = new Date(endTime.getTime() - (scanPeriod * Utils.MsecPerSec));
+		List<Versioned<DiaryRecord>> records = diary.findPeriod(startTime, endTime, false);
+		Collections.reverse(records);
+		return records;
 	}
 }

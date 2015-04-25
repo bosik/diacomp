@@ -19,6 +19,7 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.Date;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -32,6 +33,7 @@ import org.bosik.diacomp.android.backend.features.preferences.device.DevicePrefe
 import org.bosik.diacomp.android.frontend.fragments.FragmentBase;
 import org.bosik.diacomp.android.frontend.fragments.FragmentDiaryScroller;
 import org.bosik.diacomp.android.utils.ErrorHandler;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.services.diary.DiaryService;
@@ -40,6 +42,7 @@ import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.SyncUtils;
 import org.bosik.merklesync.SyncUtils.ProgressCallback;
+import org.bosik.merklesync.Versioned;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -85,7 +88,7 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 	private Menu				cachedMenu;
 
 	private SharedPreferences	preferences;
-	private DiaryService		localDiary;
+	DiaryService				localDiary;
 
 	private static boolean		timerSettedUp				= false;
 
@@ -364,85 +367,109 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 	}
 
 	/**
-	 * 
-	 * @return Time after last meal (in seconds) if found, null otherwise
+	 * Async
 	 */
-	private Integer getTimeAfterMeal()
-	{
-		final Date now = new Date();
-		long scanPeriod = Utils.SecPerDay;
-		MealRecord rec = PostprandUtils.findLastMeal(localDiary, now, scanPeriod);
-		if (rec != null)
-		{
-			return (int) (now.getTime() - rec.getTime().getTime()) / Utils.MsecPerSec;
-		}
-		else
-		{
-			return null;
-		}
-	}
-
-	/**
-	 * 
-	 * @return Time after last ins (in seconds) if found, null otherwise
-	 */
-	private Integer getTimeAfterIns()
-	{
-		final Date now = new Date();
-		long scanPeriod = Utils.SecPerDay;
-		InsRecord rec = PostprandUtils.findLastIns(localDiary, now, scanPeriod);
-		if (rec != null)
-		{
-			return (int) (now.getTime() - rec.getTime().getTime()) / Utils.MsecPerSec;
-		}
-		else
-		{
-			return null;
-		}
-	}
-
 	public void showTimeAfter()
 	{
 		if (preferences.getBoolean(DevicePreferences.KEY_SHOW_TIME_AFTER, true))
 		{
-			String info = "";
-
-			Integer timeAfterMeal = getTimeAfterMeal();
-			if (timeAfterMeal != null)
+			new AsyncTask<Void, Void, String>()
 			{
-				info += Utils.formatTimePeriod(timeAfterMeal) + " " + getString(R.string.notification_time_after_meal);
-			}
+				/**
+				 * 
+				 * @return Time after last meal (in seconds) if found, null otherwise
+				 */
+				private Integer getTimeAfterMeal(List<Versioned<DiaryRecord>> records, Date now)
+				{
+					MealRecord rec = PostprandUtils.findLastMeal(records);
+					if (rec != null)
+					{
+						return (int) (now.getTime() - rec.getTime().getTime()) / Utils.MsecPerSec;
+					}
+					else
+					{
+						return null;
+					}
+				}
 
-			Integer timeAfterIns = getTimeAfterIns();
-			if (timeAfterIns != null)
-			{
-				info += (info.isEmpty() ? "" : ",\n") + Utils.formatTimePeriod(timeAfterIns) + " "
-						+ getString(R.string.notification_time_after_injection);
-			}
+				/**
+				 * 
+				 * @return Time after last ins (in seconds) if found, null otherwise
+				 */
+				private Integer getTimeAfterIns(List<Versioned<DiaryRecord>> records, Date now)
+				{
+					InsRecord rec = PostprandUtils.findLastIns(records);
+					if (rec != null)
+					{
+						return (int) (now.getTime() - rec.getTime().getTime()) / Utils.MsecPerSec;
+					}
+					else
+					{
+						return null;
+					}
+				}
 
-			if (!info.isEmpty())
-			{
-				Builder mBuilder = new NotificationCompat.Builder(this);
-				mBuilder.setContentTitle(getString(R.string.app_name));
-				mBuilder.setSmallIcon(R.drawable.icon);
-				mBuilder.setOngoing(true);
-				mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(info));
-				mBuilder.setContentText(info);
+				@Override
+				protected String doInBackground(Void... arg0)
+				{
+					/**/long time = System.currentTimeMillis();
 
-				Intent resultIntent = new Intent(this, ActivityMain.class);
-				TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-				stackBuilder.addParentStack(ActivityMain.class);
-				stackBuilder.addNextIntent(resultIntent);
-				PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-				mBuilder.setContentIntent(resultPendingIntent);
+					String info = "";
 
-				NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-				mNotifyManager.notify(NOTIFICATION_ID_TIME_AFTER, mBuilder.build());
-			}
-			else
-			{
-				hideTimeAfter();
-			}
+					final Date now = new Date();
+					long scanPeriod = Utils.SecPerDay;
+					List<Versioned<DiaryRecord>> records = PostprandUtils.findLastRecordsReversed(localDiary, now,
+							scanPeriod);
+
+					Integer timeAfterMeal = getTimeAfterMeal(records, now);
+					if (timeAfterMeal != null)
+					{
+						info += Utils.formatTimePeriod(timeAfterMeal) + " "
+								+ getString(R.string.notification_time_after_meal);
+					}
+
+					Integer timeAfterIns = getTimeAfterIns(records, now);
+					if (timeAfterIns != null)
+					{
+						info += (info.isEmpty() ? "" : ",\n") + Utils.formatTimePeriod(timeAfterIns) + " "
+								+ getString(R.string.notification_time_after_injection);
+					}
+
+					/**/time = System.currentTimeMillis() - time;
+					/**/Log.d(TAG, "showTimeAfter() done in " + time + " ms");
+
+					return info;
+				}
+
+				@Override
+				protected void onPostExecute(String info)
+				{
+					if (!info.isEmpty())
+					{
+						Builder mBuilder = new NotificationCompat.Builder(ActivityMain.this);
+						mBuilder.setContentTitle(getString(R.string.app_name));
+						mBuilder.setSmallIcon(R.drawable.icon);
+						mBuilder.setOngoing(true);
+						mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(info));
+						mBuilder.setContentText(info);
+
+						Intent resultIntent = new Intent(ActivityMain.this, ActivityMain.class);
+						TaskStackBuilder stackBuilder = TaskStackBuilder.create(ActivityMain.this);
+						stackBuilder.addParentStack(ActivityMain.class);
+						stackBuilder.addNextIntent(resultIntent);
+						PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+								PendingIntent.FLAG_UPDATE_CURRENT);
+						mBuilder.setContentIntent(resultPendingIntent);
+
+						NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+						mNotifyManager.notify(NOTIFICATION_ID_TIME_AFTER, mBuilder.build());
+					}
+					else
+					{
+						hideTimeAfter();
+					}
+				};
+			}.execute();
 		}
 		else
 		{
@@ -469,21 +496,7 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 			@Override
 			public void run()
 			{
-				new AsyncTask<Void, Void, Void>()
-				{
-					@Override
-					protected Void doInBackground(Void... arg0)
-					{
-						/**/long time = System.currentTimeMillis();
-
-						showTimeAfter();
-
-						/**/time = System.currentTimeMillis() - time;
-						/**/Log.d(TAG, "showTimeAfter() done in " + time + " ms");
-
-						return null;
-					}
-				}.execute();
+				showTimeAfter();
 			}
 		};
 
