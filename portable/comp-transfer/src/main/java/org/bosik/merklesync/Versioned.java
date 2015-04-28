@@ -74,7 +74,7 @@ public class Versioned<T> implements Serializable
 
 	public String getId()
 	{
-		return id.toLowerCase();
+		return id;
 	}
 
 	public void setId(String id)
