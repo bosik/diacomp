@@ -429,14 +429,17 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 				points = calculateKW(items, q, p); // 50
 				points = filter(points, FILTER_BYPASS);
-				k = approximate(points, false); // 72 000 (1 200)
-				koofs = copyKQP(k, q, p); // 1 440
+				if (points.length > 0)
+				{
+					k = approximate(points, false); // 72 000 (1 200)
+					koofs = copyKQP(k, q, p); // 1 440
 
-				bean.g[0] = getDispersion(k, points, funcRelative); // 50
-				bean.g[1] = 0.0;
-				bean.g[2] = getError(items, koofs, funcSqr); // 50
+					bean.g[0] = getDispersion(k, points, funcRelative); // 50
+					bean.g[1] = 0.0;
+					bean.g[2] = getError(items, koofs, funcSqr); // 50
 
-				V.add(bean); // 280
+					V.add(bean); // 280
+				}
 			}
 		}
 
@@ -495,9 +498,15 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		//			System.out.println(String.format("%d\t%.4f", point.getTime(), point.getValue()));
 		//		}
 
-		k = approximate(points, true);
-		koofs = copyKQP(k, bestQ, bestP);
-
-		return koofs;
+		if (points.length > 0)
+		{
+			k = approximate(points, true);
+			koofs = copyKQP(k, bestQ, bestP);
+			return koofs;
+		}
+		else
+		{
+			return null;
+		}
 	}
 }

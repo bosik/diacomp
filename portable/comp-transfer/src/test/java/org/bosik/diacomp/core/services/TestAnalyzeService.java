@@ -18,6 +18,7 @@
 package org.bosik.diacomp.core.services;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -180,5 +181,13 @@ public class TestAnalyzeService
 			//System.out.println(String.format("%.5f\t%.3f\t%.3f\t%.5f\t%.3f\t%.3f", koofExp.getK(), koofExp.getQ(),
 			//		koofExp.getP(), koofAct.getK(), koofAct.getQ(), koofAct.getP()));
 		}
+	}
+
+	@Test
+	public void testDiaryAnalyze_set4_ok() throws IOException
+	{
+		List<Versioned<DiaryRecord>> records = loadRecords("/analyze_set_4_input.txt");
+		KoofList koofsActual = analyzeCore.analyze(records);
+		assertNull(koofsActual);
 	}
 }
