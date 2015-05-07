@@ -81,7 +81,6 @@ begin
   ShowMessage(Format('Time: %d', [GetTickCount - tick]));
 end;
 
-
 procedure TFormMisc.Button2Click(Sender: TObject);
 var
   CurrentTime: integer;

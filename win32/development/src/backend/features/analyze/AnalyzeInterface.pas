@@ -16,7 +16,7 @@ type
   { ===== ВХОДНЫЕ ДАННЫЕ ===== }
 
   TAnalyzeRec = record
-    Prots,Fats,Carbs: real;
+    Prots, Fats, Carbs: real;
     Ins: real;
     BSIn, BSOut: real;
     Time: integer; // время привязки (в минутах)
@@ -28,7 +28,7 @@ type
   { ===== ВЫХОДНЫЕ ДАННЫЕ ===== }
 
   TKoof = record
-    k,q,p: real;
+    k, q, p: real;
   end;
 
   TKoofList = array[0..MinPerDay - 1] of TKoof;
