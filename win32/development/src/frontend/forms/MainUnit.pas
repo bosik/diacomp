@@ -478,6 +478,7 @@ var
   DiaryMultiMap: TMultimap;
   MaxDiaryTag: real;
   MaxDishTag: real;
+  AnList: TAnalyzeRecList;
   //FoodBaseMap: TIndexList;
 
   FoodList: TFoodItemList;
@@ -2997,7 +2998,7 @@ begin
   {===============================================================}
   {#}SetLength(Par, 1);
   {#}Par[PAR_ADAPTATION] := Value['Adaptation'];  { [0.5..1.0] }
-  {#}AnalyzeDiary(LocalSource, FromDate, ToDate, Par, AnalyzeCallBack);
+  {#}AnList := AnalyzeDiary(LocalSource, FromDate, ToDate, Par, AnalyzeCallBack);
   {===============================================================}
 
   ButtonUpdateKoof.Caption := 'Пересчитать';
