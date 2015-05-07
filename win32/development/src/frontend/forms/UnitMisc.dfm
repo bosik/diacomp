@@ -14,8 +14,8 @@ object FormMisc: TFormMisc
   PixelsPerInch = 120
   TextHeight = 16
   object Label1: TLabel
-    Left = 416
-    Top = 48
+    Left = 520
+    Top = 40
     Width = 41
     Height = 16
     Caption = 'Label1'
@@ -165,6 +165,24 @@ object FormMisc: TFormMisc
     Caption = 'ButtonVerifyLinear'
     TabOrder = 14
     OnClick = ButtonVerifyLinearClick
+  end
+  object ButtonExportFoodBase: TButton
+    Left = 240
+    Top = 8
+    Width = 209
+    Height = 25
+    Caption = 'Export food base into JSON'
+    TabOrder = 15
+    OnClick = ButtonExportFoodBaseClick
+  end
+  object ButtonFoodCompare: TButton
+    Left = 240
+    Top = 40
+    Width = 209
+    Height = 25
+    Caption = 'Compare food lists'
+    TabOrder = 16
+    OnClick = ButtonFoodCompareClick
   end
   object Timer1: TTimer
     Enabled = False

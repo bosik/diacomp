@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, DiaryCore, BusinessObjects, DiaryRecords,
   DiaryAnalyze {TODO: remove}, AnalyzeInterface, DiaryRoutines, FoodBaseDAO,
-  SettingsINI, Math, Statistics, ExtCtrls;
+  SettingsINI, Math, Statistics, ExtCtrls, JsonSerializer, DiaryPageSerializer, uLkJSON;
 
 type
   TFormMisc = class(TForm)
@@ -27,6 +27,8 @@ type
     Button1: TButton;
     ButtonFoodBSCorrelation: TButton;
     ButtonVerifyLinear: TButton;
+    ButtonExportFoodBase: TButton;
+    ButtonFoodCompare: TButton;
     procedure ButtonExportXmlClick(Sender: TObject);
     procedure ButtonExportJsonClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -42,6 +44,8 @@ type
     procedure Button1Click(Sender: TObject);
     procedure ButtonFoodBSCorrelationClick(Sender: TObject);
     procedure ButtonVerifyLinearClick(Sender: TObject);
+    procedure ButtonExportFoodBaseClick(Sender: TObject);
+    procedure ButtonFoodCompareClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -908,6 +912,150 @@ begin
   finally
     s.Free;
   end;
+end;
+
+procedure TFormMisc.ButtonExportFoodBaseClick(Sender: TObject);
+var
+  Foods: TFoodItemList;
+  Filtered: TFoodItemList;
+  s: string;
+  i: integer;
+begin
+  Foods := FoodBaseLocal.FindAll(True);
+  for i := 0 to High(Foods) do
+  //if ({not Foods[i].FromTable and }(pos('Теремок', Foods[i].Name) > 0)) then
+  begin
+    Foods[i].Version := 0;
+    Foods[i].TimeStamp := Now();
+    Foods[i].Tag := 0;
+
+    SetLength(Filtered, Length(Filtered) + 1);
+    Filtered[High(Filtered)] := Foods[i];
+  end;
+
+  s := JsonWrite(SerializeVersionedFoodItems(Filtered));
+  with (TStringList.Create) do
+  begin
+    //Add(IntToStr(Length(Filtered)));
+    Add(s);
+    SaveToFile('temp\food.json');
+    Free;
+  end;
+end;
+
+procedure TFormMisc.ButtonFoodCompareClick(Sender: TObject);
+type
+  TFoodItemPair = record
+    Food1: TFoodItem;
+    Food2: TFoodItem;
+  end;
+
+  TFoodItemPairList = array of TFoodItemPair;
+
+  function Find(const ID: string; List: TFoodItemList): TFoodItem; overload;
+  var
+    i: integer;
+  begin
+    for i := Low(List) to High(List) do
+    if (List[i].ID = ID) then
+    begin
+      Result := List[i];
+      Exit;
+    end;
+    Result := nil;
+  end;
+
+  function Find(const Item: TFoodItem; List: TFoodItemList): TFoodItem; overload;
+  begin
+    Result := Find(Item.ID, List);
+  end;
+
+  function Sub(A, B: TFoodItemList): TFoodItemList;
+  var
+    i: integer;
+  begin
+    SetLength(Result, 0);
+    for i := Low(A) to High(A) do
+    if (Find(A[i], B) = nil) then
+    begin
+      SetLength(Result, Length(Result) + 1);
+      Result[High(Result)] := A[i];
+    end;
+  end;
+
+  function Intersect(A, B: TFoodItemList): TFoodItemPairList;
+  var
+    i: integer;
+    Bi: TFoodItem;
+  begin
+    SetLength(Result, 0);
+    for i := Low(A) to High(A) do
+    begin
+      Bi := Find(A[i], B);
+      if (Bi <> nil) then
+      begin
+        SetLength(Result, Length(Result) + 1);
+        Result[High(Result)].Food1 := A[i];
+        Result[High(Result)].Food2 := Bi;
+      end;
+    end;
+  end;
+
+var
+  Json: TlkJSONlist;
+  Food1: TFoodItemList;
+  Food2: TFoodItemList;
+
+  Only1: TFoodItemList;
+  Only2: TFoodItemList;
+  Inter: TFoodItemPairList;
+
+  i: integer;
+begin
+  try
+    Json := TlkJSON.ParseText(MakeSureJsonList(ReadFile('temp\food1.txt'))) as TlkJSONlist;
+    Food1 := ParseVersionedFoodItems(Json);
+  finally
+    Json.Free;
+  end;
+
+   try
+    Json := TlkJSON.ParseText(MakeSureJsonList(ReadFile('temp\food2.txt'))) as TlkJSONlist;
+    Food2 := ParseVersionedFoodItems(Json);
+  finally
+    Json.Free;
+  end;
+
+  Only1 := Sub(Food1, Food2);
+  Only2 := Sub(Food2, Food1);
+  Inter := Intersect(Food1, Food2);
+
+  with (TStringList.Create) do
+  begin
+    for i := 0 to High(Only1) do
+      Add(Format('ONLY1'#9'%s'#9'%s', [Only1[i].ID, Only1[i].Name]));
+
+    for i := 0 to High(Only2) do
+      Add(Format('ONLY2'#9'%s'#9'%s', [Only2[i].ID, Only2[i].Name]));
+
+    for i := 0 to High(Inter) do
+    begin
+      if (Inter[i].Food1.Version = Inter[i].Food2.Version) then
+      begin
+        if (Inter[i].Food1.Hash = Inter[i].Food2.Hash) then
+          Add(Format('INTER_OK'#9'%s'#9'%s', [Inter[i].Food1.ID, Inter[i].Food1.Name]))
+        else
+          Add(Format('INTER_FAILHASH'#9'%s'#9'%s', [Inter[i].Food1.ID, Inter[i].Food1.Name]));
+      end else
+        Add(Format('INTER_FAILVER'#9'%s'#9'%s', [Inter[i].Food1.ID, Inter[i].Food1.Name, Inter[i].Food1.Version, Inter[i].Food2.Name, Inter[i].Food2.Version]));
+    end;
+
+    SaveToFile('temp\compare.txt');
+    Free;
+  end;
+
+  BusinessObjects.Free(Food1);
+  BusinessObjects.Free(Food2);
 end;
 
 end.
