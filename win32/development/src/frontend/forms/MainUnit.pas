@@ -478,6 +478,7 @@ var
   DiaryMultiMap: TMultimap;
   MaxDiaryTag: real;
   MaxDishTag: real;
+  AnList: TAnalyzeRecList;
   //FoodBaseMap: TIndexList;
 
   FoodList: TFoodItemList;
@@ -2969,8 +2970,9 @@ procedure TForm1.UpdateKoofs;
 {======================================================================================================================}
 var
   Par: TRealArray;
-  FromDate, ToDate: TDateTime;
-begin                                         
+  TimeFrom, TimeTo: TDateTime;
+  Items: TRecordList;
+begin
   if (GetAnalyzersCount = 0) then
   begin
     //LabelDllInfo.Font.Color := clRed;
@@ -2991,13 +2993,14 @@ begin
   ButtonUpdateKoof.Caption := 'Расчёт...';
   Application.ProcessMessages;
 
-  ToDate := GetTimeUTC();
-  FromDate := GetTimeUTC() - Value['DaysProcess'];
+  TimeTo := GetTimeUTC();
+  TimeFrom := GetTimeUTC() - Value['DaysProcess'];
 
   {===============================================================}
-  {#}SetLength(Par, 1);
-  {#}Par[PAR_ADAPTATION] := Value['Adaptation'];  { [0.5..1.0] }
-  {#}AnalyzeDiary(LocalSource, FromDate, ToDate, Par, AnalyzeCallBack);
+  SetLength(Par, 1);
+  Par[PAR_ADAPTATION] := Value['Adaptation'];  { [0.5..1.0] }
+  Items := LocalSource.FindPeriod(TimeFrom, TimeTo);
+  AnList := AnalyzeDiary(Items, Par, AnalyzeCallBack);
   {===============================================================}
 
   ButtonUpdateKoof.Caption := 'Пересчитать';

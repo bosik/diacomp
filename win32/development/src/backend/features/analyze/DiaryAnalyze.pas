@@ -38,8 +38,7 @@ type
 
   { инициализация }
   function AddAnalyzer(const FileName: string): boolean;
-  procedure AnalyzeDiary(Base: TDiaryDAO; FromDate, ToDate: TDateTime; const Par: TRealArray;
-    CallBack: TCallbackProgressProc);
+  function AnalyzeDiary(Items: TRecordList; const Par: TRealArray; CallBack: TCallbackProgressProc): TAnalyzeRecList;
 
   { использование }
   function GetAnalyzersCount: integer;
@@ -57,7 +56,6 @@ type
 
 var
   // TODO: move to DiaryCore
-  AnList: TAnalyzeRecList;
   AvgAnalyzer: TAnalyzer;
   
 const
@@ -67,7 +65,7 @@ const
 implementation
   
 var
-  Analyzer: array of TAnalyzer;
+  Analyzers: array of TAnalyzer;
 
 type
   // #dao
@@ -93,21 +91,19 @@ type
 { ПОДГОТОВКА МАТЕРИАЛА }
 
 {======================================================================================================================}
-procedure ExtractRecords(Base: TDiaryDAO; TimeFrom, TimeTo: TDateTime;
-  out List: TPrimeRecList);
+function ExtractPrimeRecords(Items: TRecordList): TPrimeRecList;
 {======================================================================================================================}
 const
   MAX_BLOCK_TIME = 12 / 24; // 12 hours
 var
   i, j: integer;
-  Items: TRecordList;
 
   PrevBloodTime: TDateTime;
   PrevBloodValue: real;
 
-  Prots,Fats,Carbs,CurCarbs,MaxCarbs: real;
-  Ins,CurIns,MaxIns: real;
-  TimeF,TimeI: TDateTime;
+  Prots, Fats, Carbs, CurCarbs, MaxCarbs: real;
+  Ins, CurIns, MaxIns: real;
+  TimeF, TimeI: TDateTime;
   TimeShift: integer;
 
   // Debug: string;
@@ -130,7 +126,7 @@ var
   end;
 
 begin
-  SetLength(List, 0);
+  SetLength(Result, 0);
 
   PrevBloodTime := -1;
   PrevBloodValue := -1;
@@ -138,7 +134,6 @@ begin
 
   { обработка }
 
-  Items := Base.FindPeriod(TimeFrom, TimeTo);
   // TODO: hardcode
   UpdatePostprand(Items, 3.5 / HourPerDay, 3.5 / HourPerDay, 20 / MinPerDay);
 
@@ -197,19 +192,19 @@ begin
            (((TimeF + 1440) mod 1440) < 840)
         then  }
         begin
-          j := length(List);
-          SetLength(List, j + 1);
-          List[j].BloodInTime := GetAbsLocalMinutes(PrevBloodTime);
-          List[j].BloodInValue := PrevBloodValue;
-          List[j].InsTime :=  GetAbsLocalMinutes(TimeI);
-          List[j].InsValue := Ins;
-          List[j].FoodTime := GetAbsLocalMinutes(TimeF);
-          List[j].Prots := Prots;
-          List[j].Fats := Fats;
-          List[j].Carbs := Carbs;
-          List[j].BloodOutTime := GetAbsLocalMinutes(Items[i].Time);
-          List[j].BloodOutValue := TBloodRecord(Items[i]).Value;
-          List[j].Date := UTCToLocal(TimeF);
+          j := length(Result);
+          SetLength(Result, j + 1);
+          Result[j].BloodInTime := GetAbsLocalMinutes(PrevBloodTime);
+          Result[j].BloodInValue := PrevBloodValue;
+          Result[j].InsTime :=  GetAbsLocalMinutes(TimeI);
+          Result[j].InsValue := Ins;
+          Result[j].FoodTime := GetAbsLocalMinutes(TimeF);
+          Result[j].Prots := Prots;
+          Result[j].Fats := Fats;
+          Result[j].Carbs := Carbs;
+          Result[j].BloodOutTime := GetAbsLocalMinutes(Items[i].Time);
+          Result[j].BloodOutValue := TBloodRecord(Items[i]).Value;
+          Result[j].Date := UTCToLocal(TimeF);
         end;
 
         { подготовка к следующему циклу }
@@ -229,41 +224,40 @@ begin
 
   { 2. Восстановление относительных времён }
 
-  for i := 0 to High(List) do
+  for i := 0 to High(Result) do
   begin
-    if (List[i].Prots > 0) or (List[i].Carbs > 0) then
+    if (Result[i].Prots > 0) or (Result[i].Carbs > 0) then
     begin
-      {TimeShift := List[i].FoodTime mod MinPerDay;
-      TimeShift := List[i].FoodTime-TimeShift;}
-      TimeShift := (List[i].FoodTime div MinPerDay);
+      {TimeShift := Result[i].FoodTime mod MinPerDay;
+      TimeShift := Result[i].FoodTime-TimeShift;}
+      TimeShift := (Result[i].FoodTime div MinPerDay);
     end else
-    if (List[i].InsValue > 0) then
+    if (Result[i].InsValue > 0) then
     begin
-      {TimeShift := List[i].InsTime mod MinPerDay;
-      TimeShift := List[i].InsTime-TimeShift; }
-      TimeShift := List[i].InsTime div MinPerDay;
+      {TimeShift := Result[i].InsTime mod MinPerDay;
+      TimeShift := Result[i].InsTime-TimeShift; }
+      TimeShift := Result[i].InsTime div MinPerDay;
     end else
-      TimeShift := ((List[i].BloodOutTime + List[i].BloodInTime) div 2) div MinPerDay;
+      TimeShift := ((Result[i].BloodOutTime + Result[i].BloodInTime) div 2) div MinPerDay;
       {ShowMessage(
-        'AnalyzeUnit/ExtractRecords/List[i]: '+
+        'AnalyzeUnit/ExtractRecords/Result[i]: '+
         'FoodTime = -1, InsTime=-1'); }
 
     TimeShift := TimeShift * MinPerDay;
 
-    List[i].BloodInTime := List[i].BloodInTime - TimeShift;
-    List[i].BloodOutTime := List[i].BloodOutTime - TimeShift;
-    if (List[i].InsTime >- 1) then
-      List[i].InsTime := List[i].InsTime - TimeShift;
-    if (List[i].FoodTime >- 1) then
-      List[i].FoodTime := List[i].FoodTime - TimeShift;
+    Result[i].BloodInTime := Result[i].BloodInTime - TimeShift;
+    Result[i].BloodOutTime := Result[i].BloodOutTime - TimeShift;
+    if (Result[i].InsTime >- 1) then
+      Result[i].InsTime := Result[i].InsTime - TimeShift;
+    if (Result[i].FoodTime >- 1) then
+      Result[i].FoodTime := Result[i].FoodTime - TimeShift;
   end;
 
   FreeRecords(Items);
 end;
 
 {======================================================================================================================}
-procedure FormatRecords(const PrimeList: TPrimeRecList; out List: TAnalyzeRecList;
-  const Adaptation: real);
+function FormatRecords(const PrimeList: TPrimeRecList; const Adaptation: real): TAnalyzeRecList;
 {======================================================================================================================}
 { Копирует основные поля и вычисляет нормальные веса }
 
@@ -276,7 +270,7 @@ procedure FormatRecords(const PrimeList: TPrimeRecList; out List: TAnalyzeRecLis
     Result := 1 + 0.5 * Adaptation * ( sin(pi * (X - 0.5) ) - 1 );
     // Result := Adaptation * X + (1 - Adaptation);
 
-    Log(DEBUG, Format('F(%.2f, %.2f) = %.4f', [X, Adaptation, Result]));
+    //Log(DEBUG, Format('F(%.2f, %.2f) = %.4f', [X, Adaptation, Result]));
   end;
 
 var
@@ -285,9 +279,9 @@ var
   Min: TDateTime;
   MinW, MaxW: real;
 begin
-  SetLength(List, Length(PrimeList));
+  SetLength(Result, Length(PrimeList));
 
-  if (Length(List) > 0) then
+  if (Length(Result) > 0) then
   begin
     CurTime := GetTimeUTC();
     Min := Trunc(CurTime);
@@ -296,16 +290,16 @@ begin
     if (PrimeList[i].Date < Min) then
       Min := PrimeList[i].Date;
 
-    for i := 0 to High(List) do
+    for i := 0 to High(Result) do
     begin
-      List[i].Prots  := PrimeList[i].Prots;
-      List[i].Fats   := PrimeList[i].Fats;
-      List[i].Carbs  := PrimeList[i].Carbs;
-      List[i].Ins    := PrimeList[i].InsValue;
-      List[i].BSIn   := PrimeList[i].BloodInValue;
-      List[i].BSOut  := PrimeList[i].BloodOutValue;
-      List[i].Time   := (MinPerDay + PrimeList[i].FoodTime) mod MinPerDay;
-      List[i].Weight := F((PrimeList[i].Date - Min) / (CurTime - Min)){ * PrimeList[i].Carbs};
+      Result[i].Prots  := PrimeList[i].Prots;
+      Result[i].Fats   := PrimeList[i].Fats;
+      Result[i].Carbs  := PrimeList[i].Carbs;
+      Result[i].Ins    := PrimeList[i].InsValue;
+      Result[i].BSIn   := PrimeList[i].BloodInValue;
+      Result[i].BSOut  := PrimeList[i].BloodOutValue;
+      Result[i].Time   := (MinPerDay + PrimeList[i].FoodTime) mod MinPerDay;
+      Result[i].Weight := F((PrimeList[i].Date - Min) / (CurTime - Min)){ * PrimeList[i].Carbs};
     end;
 
     //Log(DEBUG, 'Saved', True);
@@ -313,20 +307,20 @@ begin
     //SaveAnalyzeList(List, 'temp\denormalized_anlist.txt');
 
     { нормализация }
-    MinW := List[0].Weight;
-    MaxW := List[0].Weight;
-    for i := 1 to High(List) do
+    MinW := Result[0].Weight;
+    MaxW := Result[0].Weight;
+    for i := 1 to High(Result) do
     begin
-      MinW := Math.Min(MinW, List[i].Weight);
-      MaxW := Math.Max(MaxW, List[i].Weight);
+      MinW := Math.Min(MinW, Result[i].Weight);
+      MaxW := Math.Max(MaxW, Result[i].Weight);
     end;
 
     if abs(MinW - MaxW) > 0.0001 then
-      for i := 0 to High(List) do
-        List[i].Weight := (List[i].Weight - MinW) / (MaxW - MinW)
+      for i := 0 to High(Result) do
+        Result[i].Weight := (Result[i].Weight - MinW) / (MaxW - MinW)
     else
-      for i := 0 to High(List) do
-        List[i].Weight := 1.0;
+      for i := 0 to High(Result) do
+        Result[i].Weight := 1.0;
   end;
 end;
 
@@ -365,8 +359,8 @@ begin
           Temp.Name := Temp.InfoFunc;
           Log(INFO, 'Analyze function found: ' + Temp.Name);
 
-          SetLength(Analyzer, Length(Analyzer) + 1);
-          Analyzer[High(Analyzer)] := Temp;
+          SetLength(Analyzers, Length(Analyzers) + 1);
+          Analyzers[High(Analyzers)] := Temp;
         end;
 
         inc(Index);
@@ -392,64 +386,71 @@ begin
 end;
 
 {======================================================================================================================}
-procedure AnalyzeDiary(Base: TDiaryDAO; FromDate, ToDate: TDateTime; const Par: TRealArray; CallBack: TCallbackProgressProc);
+function AnalyzeDiary(Items: TRecordList; const Par: TRealArray; CallBack: TCallbackProgressProc): TAnalyzeRecList;
 {======================================================================================================================}
+
+  function BuildAvgAnalyzer(const Analyzer: array of TAnalyzer; AnList: TAnalyzeRecList): TAnalyzer;
+  var
+    i, Time: integer;
+  begin
+    for Time := 0 to MinPerDay - 1 do
+    begin
+      Result.KoofList[Time].k := 0;
+      Result.KoofList[Time].q := 0;
+      Result.KoofList[Time].p := 0;
+
+      for i := 0 to High(Analyzer) do
+      begin
+        Result.KoofList[Time].k := Result.KoofList[Time].k + Analyzer[i].KoofList[Time].k * Analyzer[i].Weight;
+        Result.KoofList[Time].q := Result.KoofList[Time].q + Analyzer[i].KoofList[Time].q * Analyzer[i].Weight;
+        Result.KoofList[Time].p := Result.KoofList[Time].p + Analyzer[i].KoofList[Time].p * Analyzer[i].Weight;
+      end;
+    end;
+
+    Result.Time := 0;
+    for i := 0 to High(Analyzer) do
+    begin
+      Result.Time := AvgAnalyzer.Time + Analyzer[i].Time;
+    end;
+
+    Result.Error := GetRecListError(AnList, AvgAnalyzer.KoofList, vfQuadric);
+    Result.Weight := 1.0;
+  end;
+
 var
   PrimeList: TPrimeRecList;
   StartTime: cardinal;
   SummWeight: Real;
   i, Time: integer;
 begin
-  if (Length(Analyzer) = 0) then
+  if (Length(Analyzers) = 0) then
     raise Exception.Create('No analyzers loaded');
 
   // подготовка материала
-  ExtractRecords(Base, FromDate, ToDate, PrimeList);
-  FormatRecords(PrimeList, AnList, Par[PAR_ADAPTATION]);
+  PrimeList := ExtractPrimeRecords(Items);
+  Result := FormatRecords(PrimeList, Par[PAR_ADAPTATION]);
 
   // собственно анализ
-  for i := 0 to High(Analyzer) do
+  for i := 0 to High(Analyzers) do
   begin
     StartTime := GetTickCount;
     // TODO: incapsulate as method "TAnalyzer.Analyze(AnList)"
-    Analyzer[i].AnalyzeFunc(AnList, Analyzer[i].KoofList, CallBack);
-    Analyzer[i].Error := GetRecListError(AnList, Analyzer[i].KoofList, vfQuadric);
-    Analyzer[i].Weight := Exp(-0.1 * Sqr(Analyzer[i].Error));
-    Analyzer[i].Time := GetTickCount - StartTime;
+    Analyzers[i].AnalyzeFunc(Result, Analyzers[i].KoofList, CallBack);
+    Analyzers[i].Error := GetRecListError(Result, Analyzers[i].KoofList, vfQuadric);
+    Analyzers[i].Weight := Exp(-0.1 * Sqr(Analyzers[i].Error));
+    Analyzers[i].Time := GetTickCount - StartTime;
   end;
 
   // нормализация весов
   SummWeight := 0;
-  for i := 0 to High(Analyzer) do
-    SummWeight := SummWeight + Analyzer[i].Weight;
+  for i := 0 to High(Analyzers) do
+    SummWeight := SummWeight + Analyzers[i].Weight;
 
   if (SummWeight > 0) then
-  for i := 0 to High(Analyzer) do
-    Analyzer[i].Weight := Analyzer[i].Weight / SummWeight;
+  for i := 0 to High(Analyzers) do
+    Analyzers[i].Weight := Analyzers[i].Weight / SummWeight;
 
-  // определение средних коэффицентов
-  for Time := 0 to MinPerDay - 1 do
-  begin
-    AvgAnalyzer.KoofList[Time].k := 0;
-    AvgAnalyzer.KoofList[Time].q := 0;
-    AvgAnalyzer.KoofList[Time].p := 0;
-    AvgAnalyzer.Time := 0;
-
-    for i := 0 to High(Analyzer) do
-    begin
-      AvgAnalyzer.KoofList[Time].k := AvgAnalyzer.KoofList[Time].k + Analyzer[i].KoofList[Time].k;
-      AvgAnalyzer.KoofList[Time].q := AvgAnalyzer.KoofList[Time].q + Analyzer[i].KoofList[Time].q;
-      AvgAnalyzer.KoofList[Time].p := AvgAnalyzer.KoofList[Time].p + Analyzer[i].KoofList[Time].p;
-      AvgAnalyzer.Time := AvgAnalyzer.Time + Analyzer[i].Time;
-    end;
-
-    AvgAnalyzer.KoofList[Time].k := AvgAnalyzer.KoofList[Time].k / Length(Analyzer);
-    AvgAnalyzer.KoofList[Time].q := AvgAnalyzer.KoofList[Time].q / Length(Analyzer);
-    AvgAnalyzer.KoofList[Time].p := AvgAnalyzer.KoofList[Time].p / Length(Analyzer);
-  end;
-
-  AvgAnalyzer.Error := GetRecListError(AnList, AvgAnalyzer.KoofList, vfQuadric);
-  AvgAnalyzer.Weight := 1.0;
+  AvgAnalyzer := BuildAvgAnalyzer(Analyzers, Result);
 end;
 
 {======================================================================================================================}
@@ -572,16 +573,16 @@ begin
       'Ins',
       'DBS']));
 
-    for i := 0 to High(AnList) do
+    for i := 0 to High(List) do
     begin
       S.Add(Format('%d'#9'%f'#9'%f'#9'%f'#9'%f'#9'%f'#9'%f', [
-        AnList[i].Time,
-        AnList[i].Weight,
-        AnList[i].Prots,
-        AnList[i].Fats,
-        AnList[i].Carbs,
-        AnList[i].Ins,
-        AnList[i].BSOut - AnList[i].BSIn]));
+        List[i].Time,
+        List[i].Weight,
+        List[i].Prots,
+        List[i].Fats,
+        List[i].Carbs,
+        List[i].Ins,
+        List[i].BSOut - List[i].BSIn]));
     end;
     S.SaveToFile(FileName);
   finally
@@ -593,14 +594,14 @@ end;
 function GetAnalyzersCount: integer;
 {======================================================================================================================}
 begin
-  Result := Length(Analyzer);
+  Result := Length(Analyzers);
 end;
 
 {======================================================================================================================}
 function GetAnalyzer(Index: integer): TAnalyzer;
 {======================================================================================================================}
 begin
-  Result := Analyzer[Index]
+  Result := Analyzers[Index]
 end;
 
 {======================================================================================================================}
