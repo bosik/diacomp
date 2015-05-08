@@ -14,12 +14,6 @@ uses
 type
   TStringsArray = array of TStrings;
 
-  {
-  function ParseBlood(json: TlkJSONobject): TBloodRecord;
-  function ParseIns(json: TlkJSONobject): TInsRecord;
-  function ParseFoodMassed(json: TlkJSONobject): TFoodMassed;
-  function ParseMeal(json: TlkJSONobject): TMealRecord;
-  function ParseNote(json: TlkJSONobject): TNoteRecord; }
   function ParseDiaryRecord(json: TlkJSONobject): TCustomRecord;
   
   function ParseVersionedDiaryRecord(json: TlkJSONbase): TCustomRecord;
@@ -29,11 +23,6 @@ type
   function ParseVersionedDishItem(json: TlkJSONbase): TDishItem;
   function ParseVersionedDishItems(json: TlkJSONlist): TDishItemList;
 
-  function SerializeBlood(R: TBloodRecord): TlkJSONobject;
-  function SerializeIns(R: TInsRecord): TlkJSONobject;
-  function SerializeFoodMassed(R: TFoodMassed): TlkJSONobject;
-  function SerializeMeal(R: TMealRecord): TlkJSONobject;
-  function SerializeNote(R: TNoteRecord): TlkJSONobject;
   function SerializeDiaryRecord(R: TCustomRecord): TlkJSONobject;
   function SerializeVersionedDiaryRecord(R: TCustomRecord): TlkJSONobject;
   function SerializeVersionedDiaryRecords(List: TRecordList): TlkJSONlist;
@@ -42,6 +31,10 @@ type
   function SerializeVersionedFoodItems(Items: TFoodItemList): TlkJSONlist;
   function SerializeVersionedDishItem(Item: TDishItem): TlkJSONobject;
   function SerializeVersionedDishItems(Items: TDishItemList): TlkJSONlist;
+
+  // ============================================================================================
+
+  function ReadVersionedDiaryRecords(const S: string): TRecordList;
 
 const
   REC_TYPE            = 'type';
@@ -435,6 +428,20 @@ begin
   Result := TlkJSONlist.Create;          
   for i := Low(Items) to High(Items) do
     Result.Add(SerializeVersionedDishItem(Items[i]));
+end;
+
+{======================================================================================================================}
+function ReadVersionedDiaryRecords(const S: string): TRecordList;
+{======================================================================================================================}
+var
+  Json: TlkJSONlist;
+begin
+  Json := TlkJSON.ParseText(MakeSureJsonList(S)) as TlkJSONlist;
+  try
+    Result := ParseVersionedDiaryRecords(json);
+  finally
+    Json.Free;
+  end;
 end;
 
 end.

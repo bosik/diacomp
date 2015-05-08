@@ -46,20 +46,6 @@ type
 implementation
 
 {======================================================================================================================}
-function ParseRecordList(const S: string): TRecordList;
-{======================================================================================================================}
-var
-  Json: TlkJSONlist;
-begin
-  Json := TlkJSON.ParseText(MakeSureJsonList(S)) as TlkJSONlist;
-  try
-    Result := ParseVersionedDiaryRecords(json);
-  finally
-    Json.Free;
-  end;
-end;
-
-{======================================================================================================================}
 function ParseStringMap(const S: string): TStringMap;
 {======================================================================================================================}
 var
@@ -121,7 +107,7 @@ begin
   case Response.Code of
     STATUS_OK:
       begin
-        List := ParseRecordList(Response.Response);
+        List := ReadVersionedDiaryRecords(Response.Response);
         Result := List[0];
       end;
     STATUS_NOT_FOUND:
@@ -146,7 +132,7 @@ var
 begin
   Query := FClient.GetApiURL() + 'diary/guid/' + Prefix;
   StdResp := FClient.DoGetSmart(query) ;
-  Result := RecordToVersioned(ParseRecordList(StdResp.Response));
+  Result := RecordToVersioned(ReadVersionedDiaryRecords(StdResp.Response));
   StdResp.Free;
 end;
 
@@ -160,7 +146,7 @@ begin
   Resp := FClient.DoGetSmart(query).Response;
   {#}Log(VERBOUS, 'TDiaryWebSource.FindChanged(): quered OK, Resp = "' + Resp + '"');
 
-  Result := RecordToVersioned(ParseRecordList(Resp));
+  Result := RecordToVersioned(ReadVersionedDiaryRecords(Resp));
 end;
 
 {======================================================================================================================}
@@ -178,7 +164,7 @@ begin
   Resp := FClient.DoGetSmart(query).Response;
   {#}Log(VERBOUS, 'TDiaryWebSource.FindPeriod(): quered OK, Resp = "' + Resp + '"');
 
-  Result := ParseRecordList(Resp);
+  Result := ReadVersionedDiaryRecords(Resp);
 end;
 
 {======================================================================================================================}
