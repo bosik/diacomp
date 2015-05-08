@@ -39,7 +39,7 @@ object FormMisc: TFormMisc
     TabOrder = 1
     OnClick = ButtonExportJsonClick
   end
-  object Button2: TButton
+  object ButtonBruteforce: TButton
     Left = 8
     Top = 112
     Width = 201
@@ -47,7 +47,7 @@ object FormMisc: TFormMisc
     Caption = #1041#1088#1091#1090#1092#1086#1088#1089
     Enabled = False
     TabOrder = 2
-    OnClick = Button2Click
+    OnClick = ButtonBruteforceClick
   end
   object Button5: TButton
     Left = 8

@@ -12,7 +12,7 @@ type
   TFormMisc = class(TForm)
     ButtonExportXml: TButton;
     ButtonExportJson: TButton;
-    Button2: TButton;
+    ButtonBruteforce: TButton;
     Label1: TLabel;
     Button5: TButton;
     Button4: TButton;
@@ -31,7 +31,7 @@ type
     ButtonFoodCompare: TButton;
     procedure ButtonExportXmlClick(Sender: TObject);
     procedure ButtonExportJsonClick(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
+    procedure ButtonBruteforceClick(Sender: TObject);
     procedure Button5Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -81,8 +81,8 @@ begin
   ShowMessage(Format('Time: %d', [GetTickCount - tick]));
 end;
 
-procedure TFormMisc.Button2Click(Sender: TObject);
-var
+procedure TFormMisc.ButtonBruteforceClick(Sender: TObject);
+{var
   CurrentTime: integer;
   W: array of Real;
 
@@ -91,12 +91,12 @@ var
     i: integer;
     TimeDist: integer;
   begin
-    SetLength(W, Length(AnList));
+    SetLength(W, Length(AnalyzeResult[0].AnList));
     for i := 0 to High(W) do
     begin
-      TimeDist := abs(AnList[i].Time - CurrentTime);
+      TimeDist := abs(AnalyzeResult.AnList[i].Time - CurrentTime);
       TimeDist := Min(TimeDist, 1440 - TimeDist);
-      W[i] := AnList[i].Weight * Exp(-0.000001 * TimeDist * TimeDist);
+      W[i] := AnalyzeResult.AnList[i].Weight * Exp(-0.000001 * TimeDist * TimeDist);
     end;
   end;
 
@@ -106,14 +106,14 @@ var
     Expected: Real;
   begin
     Result := 0;
-    for i := 0 to High(AnList) do
+    for i := 0 to High(AnalyzeResult.AnList) do
     begin
       Expected :=
-        AnList[i].BSIn
-        + K * AnList[i].Carbs
-        - Q * AnList[i].Ins
-        + P * AnList[i].Prots;
-      Result := Result + W[i] * Sqr(AnList[i].BSOut - Expected);
+        AnalyzeResult.AnList[i].BSIn
+        + K * AnalyzeResult.AnList[i].Carbs
+        - Q * AnalyzeResult.AnList[i].Ins
+        + P * AnalyzeResult.AnList[i].Prots;
+      Result := Result + W[i] * Sqr(AnalyzeResult.AnList[i].BSOut - Expected);
     end;
   end;
 
@@ -124,9 +124,9 @@ const
 var
   K, Q, P: real;
   Cur, Best: Real;
-  BestK, BestQ, BestP: Real;
+  BestK, BestQ, BestP: Real;      }
 begin
-  CurrentTime := GetCurrentMinutes();
+ { CurrentTime := GetCurrentMinutes();
   CalcWeights;
   Best := High(Integer);
 
@@ -161,7 +161,7 @@ begin
     Application.ProcessMessages;
   end;
 
-  ShowMessage(Format('K = %.3f'#13'Q = %.3f'#13'P = %.3f', [BestK, BestQ, BestP]));
+  ShowMessage(Format('K = %.3f'#13'Q = %.3f'#13'P = %.3f', [BestK, BestQ, BestP]));  }
 end;
 
 procedure TFormMisc.Button5Click(Sender: TObject);
@@ -538,7 +538,7 @@ begin
 end;
 
 procedure TFormMisc.ButtonCovarianceClick(Sender: TObject);
-type
+{type
   TRow = record
     Name: string;
     Data: array of Double;
@@ -548,102 +548,102 @@ type
   var
     Koof: TKoof;
   begin
-    Koof := GetKoof(AnList[i].Time);
-    Result := AnList[i].BSIn + AnList[i].Carbs * Koof.k + AnList[i].Prots * Koof.p - AnList[i].Ins * Koof.q;
+    Koof := GetKoof(AnalyzeResult.AnList[i].Time);
+    Result := AnalyzeResult.AnList[i].BSIn + AnalyzeResult.AnList[i].Carbs * Koof.k + AnalyzeResult.AnList[i].Prots * Koof.p - AnalyzeResult.AnList[i].Ins * Koof.q;
   end;
 
 var
   S: TStrings;
   Rows: array of TRow;
   i, j: integer;
-  temp: string;
+  temp: string;  }
 begin
-  S := TStringList.Create;
+ (* S := TStringList.Create;
 
   try
     SetLength(Rows, Length(Rows) + 1);
     Rows[High(Rows)].Name := 'BSIn';
-    SetLength(Rows[High(Rows)].Data, Length(AnList));
-    for i := 0 to High(AnList) do
-      Rows[High(Rows)].Data[i] := AnList[i].BSIn;
+    SetLength(Rows[High(Rows)].Data, Length(AnalyzeResult.AnList));
+    for i := 0 to High(AnalyzeResult.AnList) do
+      Rows[High(Rows)].Data[i] := AnalyzeResult.AnList[i].BSIn;
 
     SetLength(Rows, Length(Rows) + 1);
     Rows[High(Rows)].Name := 'Prots';
-    SetLength(Rows[High(Rows)].Data, Length(AnList));
-    for i := 0 to High(AnList) do
-      Rows[High(Rows)].Data[i] := AnList[i].Prots;
+    SetLength(Rows[High(Rows)].Data, Length(AnalyzeResult.AnList));
+    for i := 0 to High(AnalyzeResult.AnList) do
+      Rows[High(Rows)].Data[i] := AnalyzeResult.AnList[i].Prots;
 
     SetLength(Rows, Length(Rows) + 1);
     Rows[High(Rows)].Name := 'Fats';
-    SetLength(Rows[High(Rows)].Data, Length(AnList));
-    for i := 0 to High(AnList) do
-      Rows[High(Rows)].Data[i] := AnList[i].Fats;
+    SetLength(Rows[High(Rows)].Data, Length(AnalyzeResult.AnList));
+    for i := 0 to High(AnalyzeResult.AnList) do
+      Rows[High(Rows)].Data[i] := AnalyzeResult.AnList[i].Fats;
 
     SetLength(Rows, Length(Rows) + 1);
     Rows[High(Rows)].Name := 'Carbs';
-    SetLength(Rows[High(Rows)].Data, Length(AnList));
-    for i := 0 to High(AnList) do
-      Rows[High(Rows)].Data[i] := AnList[i].Carbs;
+    SetLength(Rows[High(Rows)].Data, Length(AnalyzeResult.AnList));
+    for i := 0 to High(AnalyzeResult.AnList) do
+      Rows[High(Rows)].Data[i] := AnalyzeResult.AnList[i].Carbs;
 
     SetLength(Rows, Length(Rows) + 1);
     Rows[High(Rows)].Name := 'Value';
-    SetLength(Rows[High(Rows)].Data, Length(AnList));
-    for i := 0 to High(AnList) do
-      Rows[High(Rows)].Data[i] := AnList[i].Prots * ENERGY_PROTS + AnList[i].Fats * ENERGY_FATS + AnList[i].Carbs * ENERGY_CARBS;
+    SetLength(Rows[High(Rows)].Data, Length(AnalyzeResult.AnList));
+    for i := 0 to High(AnalyzeResult.AnList) do
+      Rows[High(Rows)].Data[i] := AnalyzeResult.AnList[i].Prots * ENERGY_PROTS + AnalyzeResult.AnList[i].Fats * ENERGY_FATS + AnalyzeResult.AnList[i].Carbs * ENERGY_CARBS;
 
     SetLength(Rows, Length(Rows) + 1);
     Rows[High(Rows)].Name := 'Ins';
-    SetLength(Rows[High(Rows)].Data, Length(AnList));
-    for i := 0 to High(AnList) do
-      Rows[High(Rows)].Data[i] := AnList[i].Ins;
+    SetLength(Rows[High(Rows)].Data, Length(AnalyzeResult.AnList));
+    for i := 0 to High(AnalyzeResult.AnList) do
+      Rows[High(Rows)].Data[i] := AnalyzeResult.AnList[i].Ins;
 
     SetLength(Rows, Length(Rows) + 1);
     Rows[High(Rows)].Name := 'Carbs/Ins';
-    SetLength(Rows[High(Rows)].Data, Length(AnList));
-    for i := 0 to High(AnList) do
-      Rows[High(Rows)].Data[i] := AnList[i].Carbs / AnList[i].Ins;
+    SetLength(Rows[High(Rows)].Data, Length(AnalyzeResult.AnList));
+    for i := 0 to High(AnalyzeResult.AnList) do
+      Rows[High(Rows)].Data[i] := AnalyzeResult.AnList[i].Carbs / AnalyzeResult.AnList[i].Ins;
 
     SetLength(Rows, Length(Rows) + 1);
     Rows[High(Rows)].Name := 'BSOut';
-    SetLength(Rows[High(Rows)].Data, Length(AnList));
-    for i := 0 to High(AnList) do
-      Rows[High(Rows)].Data[i] := AnList[i].BSOut;
+    SetLength(Rows[High(Rows)].Data, Length(AnalyzeResult.AnList));
+    for i := 0 to High(AnalyzeResult.AnList) do
+      Rows[High(Rows)].Data[i] := AnalyzeResult.AnList[i].BSOut;
 
     SetLength(Rows, Length(Rows) + 1);
     Rows[High(Rows)].Name := 'BSDelta';
-    SetLength(Rows[High(Rows)].Data, Length(AnList));
-    for i := 0 to High(AnList) do
-      Rows[High(Rows)].Data[i] := AnList[i].BSOut - AnList[i].BSIn;
+    SetLength(Rows[High(Rows)].Data, Length(AnalyzeResult.AnList));
+    for i := 0 to High(AnalyzeResult.AnList) do
+      Rows[High(Rows)].Data[i] := AnalyzeResult.AnList[i].BSOut - AnalyzeResult.AnList[i].BSIn;
 
     SetLength(Rows, Length(Rows) + 1);
     Rows[High(Rows)].Name := 'BSExp';
-    SetLength(Rows[High(Rows)].Data, Length(AnList));
-    for i := 0 to High(AnList) do
+    SetLength(Rows[High(Rows)].Data, Length(AnalyzeResult.AnList));
+    for i := 0 to High(AnalyzeResult.AnList) do
       Rows[High(Rows)].Data[i] := ExpectedBS(i);
 
     SetLength(Rows, Length(Rows) + 1);
     Rows[High(Rows)].Name := 'BSErr';
-    SetLength(Rows[High(Rows)].Data, Length(AnList));
-    for i := 0 to High(AnList) do
-      Rows[High(Rows)].Data[i] := ExpectedBS(i) - AnList[i].BSOut;
+    SetLength(Rows[High(Rows)].Data, Length(AnalyzeResult.AnList));
+    for i := 0 to High(AnalyzeResult.AnList) do
+      Rows[High(Rows)].Data[i] := ExpectedBS(i) - AnalyzeResult.AnList[i].BSOut;
 
     SetLength(Rows, Length(Rows) + 1);
     Rows[High(Rows)].Name := 'BSErr2';
-    SetLength(Rows[High(Rows)].Data, Length(AnList));
-    for i := 0 to High(AnList) do
-      Rows[High(Rows)].Data[i] := Sqr(ExpectedBS(i) - AnList[i].BSOut);
+    SetLength(Rows[High(Rows)].Data, Length(AnalyzeResult.AnList));
+    for i := 0 to High(AnalyzeResult.AnList) do
+      Rows[High(Rows)].Data[i] := Sqr(ExpectedBS(i) - AnalyzeResult.AnList[i].BSOut);
 
     SetLength(Rows, Length(Rows) + 1);
     Rows[High(Rows)].Name := 'BSTargetErr';
-    SetLength(Rows[High(Rows)].Data, Length(AnList));
-    for i := 0 to High(AnList) do
-      Rows[High(Rows)].Data[i] := AnList[i].BSOut - Value['TargetBS'];
+    SetLength(Rows[High(Rows)].Data, Length(AnalyzeResult.AnList));
+    for i := 0 to High(AnalyzeResult.AnList) do
+      Rows[High(Rows)].Data[i] := AnalyzeResult.AnList[i].BSOut - Value['TargetBS'];
 
     SetLength(Rows, Length(Rows) + 1);
     Rows[High(Rows)].Name := 'BSTargetErr2';
-    SetLength(Rows[High(Rows)].Data, Length(AnList));
-    for i := 0 to High(AnList) do
-      Rows[High(Rows)].Data[i] := Sqr(AnList[i].BSOut - Value['TargetBS']);
+    SetLength(Rows[High(Rows)].Data, Length(AnalyzeResult.AnList));
+    for i := 0 to High(AnalyzeResult.AnList) do
+      Rows[High(Rows)].Data[i] := Sqr(AnalyzeResult.AnList[i].BSOut - Value['TargetBS']);
 
     // ===============================================================
 
@@ -680,12 +680,12 @@ begin
     S.SaveToFile('temp\covariance.txt');
   finally
     S.Free;
-  end;
+  end;  *)
 end;
 
 procedure TFormMisc.ButtonExportRawClick(Sender: TObject);
 begin
-  SaveAnalyzeList(AnList, 'temp\raw.txt');
+  //SaveAnalyzeList(AnalyzeResult.AnList, 'temp\raw.txt');
 end;
 
 procedure TFormMisc.Button1Click(Sender: TObject);
@@ -892,25 +892,25 @@ begin
 end;
 
 procedure TFormMisc.ButtonVerifyLinearClick(Sender: TObject);
-var
+{var
   s: TStrings;
-  i: integer;
+  i: integer;  }
 begin
-  s := TStringList.Create;
+ { s := TStringList.Create;
   try
     s := TStringList.Create;
 
-    for i := 0 to High(AnList) do
+    for i := 0 to High(AnalyzeResult.AnList) do
     begin
-      if (AnList[i].Ins > 1) then
+      if (AnalyzeResult.AnList[i].Ins > 1) then
       S.Add(Format('%.4f'#9'%.1f', [
-        AnList[i].Carbs / AnList[i].Ins,
-        AnList[i].BSOut - AnList[i].BSIn]));
+        AnalyzeResult.AnList[i].Carbs / AnalyzeResult.AnList[i].Ins,
+        AnalyzeResult.AnList[i].BSOut - AnalyzeResult.AnList[i].BSIn]));
     end;
     S.SaveToFile('temp\linearity.txt');
   finally
     s.Free;
-  end;
+  end;  }
 end;
 
 procedure TFormMisc.ButtonExportFoodBaseClick(Sender: TObject);
