@@ -459,7 +459,7 @@ type
 
     { анализ }
 
-    procedure UpdateKoofs;
+    procedure UpdateKoofs();
     function GetCompensationMass(const RelCarbs, RelProts: real): real;
     function GetBestMass(const RelCarbs, RelProts, CurMass: real): real;
 
@@ -478,7 +478,6 @@ var
   DiaryMultiMap: TMultimap;
   MaxDiaryTag: real;
   MaxDishTag: real;
-  AnList: TAnalyzeRecList;
   //FoodBaseMap: TIndexList;
 
   FoodList: TFoodItemList;
@@ -573,7 +572,6 @@ uses UnitMisc, UnitLogViewer;
 {$R *.dfm}
 
 { TForm1 }
-
 
 {======================================================================================================================}
 procedure SyncProgress(P: integer);
@@ -945,15 +943,16 @@ begin
 
     { =============== ЗАГРУЗКА МОДУЛЯ АНАЛИЗА =============== }
     StartupInfo(STATUS_ACTION_LOADING_MATHAN);
-    AddAnalyzer(WORK_FOLDER + ANALYZE_LIB_FileName);
+    AddAnalyzers(LoadAnalyzers(WORK_FOLDER + ANALYZE_LIB_FileName), Analyzers);
+
     // TODO: may be extended
 
-    for i := 0 to GetAnalyzersCount - 1 do
-      ComboAnalyzers.Items.Add(GetAnalyzer(i).Name);
+    for i := 0 to High(Analyzers) do
+      ComboAnalyzers.Items.Add(Analyzers[i].Name);
 
     ComboAnalyzers.ItemIndex := 0;
 
-    Log(DEBUG, 'Analyzers loaded: ' + IntToStr(GetAnalyzersCount), True);
+    Log(DEBUG, 'Analyzers loaded: ' + IntToStr(Length(Analyzers)), True);
 
     { =============== КОЭФФИЦИЕНТЫ =============== }
     try
@@ -1088,7 +1087,7 @@ begin
   end else
 
   { поиск модуля анализа }
-  if (GetAnalyzersCount = 0) then
+  if (Length(Analyzers) = 0) then
   begin
     ShowBalloon(BALLOON_ERROR_ANALYZER_NOT_FOUNDED, bitError);
   end else
@@ -1529,8 +1528,8 @@ var
     DeltaTag: real;
     DishModFactor: integer;
 
-    Food: TFoodItem;
-    Dish: TDishItem;
+    //Food: TFoodItem;
+    //Dish: TDishItem;
     Recs: TRecordList;
   begin
     StartProc('TForm1.AnalyzeUsingDiary()');
@@ -1810,7 +1809,7 @@ begin
 
   UpdateTimeLeft();
   
-  if (GetAnalyzersCount > 0) and (PageControl1.ActivePage = TabAnalyze) then
+  if (Length(Analyzers) > 0) and (PageControl1.ActivePage = TabAnalyze) then
     ComboKoofChange(nil);
 
   {StartProc('Updating TrayIcon.Hint');
@@ -2966,14 +2965,14 @@ begin
 end;
 
 {======================================================================================================================}
-procedure TForm1.UpdateKoofs;
+procedure TForm1.UpdateKoofs();
 {======================================================================================================================}
 var
   Par: TRealArray;
   TimeFrom, TimeTo: TDateTime;
   Items: TRecordList;
 begin
-  if (GetAnalyzersCount = 0) then
+  if (Length(Analyzers) = 0) then
   begin
     //LabelDllInfo.Font.Color := clRed;
     //LabelDllInfo.Caption := 'Модуль анализа не найден';
@@ -3000,7 +2999,8 @@ begin
   SetLength(Par, 1);
   Par[PAR_ADAPTATION] := Value['Adaptation'];  { [0.5..1.0] }
   Items := LocalSource.FindPeriod(TimeFrom, TimeTo);
-  AnList := AnalyzeDiary(Items, Par, AnalyzeCallBack);
+  AnalyzeResults := Analyze(Analyzers, Items, Par, AnalyzeCallBack);
+  AvgAnalyzeResult := BuildAvgAnalyzer(AnalyzeResults);
   {===============================================================}
 
   ButtonUpdateKoof.Caption := 'Пересчитать';
@@ -3009,7 +3009,7 @@ begin
     ComboKoofChange(nil);
 
   if (SelectedRecord() is TMealRecord) then
-    UpdateMealDose;
+    UpdateMealDose();
 
   TimerTimeLeft.Enabled := True;
 
@@ -3140,7 +3140,7 @@ procedure TForm1.ComboKoofChange(Sender: TObject);
 const
   GraphTypes: array[0..3] of TKoofType = (kfK, kfQ, kfP, kfX);
 var
-  Analyzer: TAnalyzer;
+  AnalyzeResult: TAnalyzeResult;
   KoofIndex: integer;
   AnalyzerIndex: integer;
   KoofList: TKoofList;
@@ -3157,16 +3157,16 @@ begin
   begin
     if (AnalyzerIndex > 0) then
     begin
-      Analyzer := GetAnalyzer(AnalyzerIndex - 1);
+      AnalyzeResult := AnalyzeResults[AnalyzerIndex - 1];
     end else
-      Analyzer := AvgAnalyzer;
+      AnalyzeResult := AvgAnalyzeResult;
 
-    KoofList := Analyzer.KoofList;
-    LabelCalcTime.Caption := Format('Время расчёта: %d мсек', [Analyzer.Time]);
-    LabelAvgDeviation.Caption := Format('Ошибка: ±%.2f ммоль/л', [Analyzer.Error]);
-    LabelWeight.Caption := Format('Вес: %.0f', [Analyzer.Weight * 100]) + '%';
+    KoofList := AnalyzeResult.KoofList;
+    LabelCalcTime.Caption := Format('Время расчёта: %d мсек', [AnalyzeResult.Time]);
+    LabelAvgDeviation.Caption := Format('Ошибка: ±%.2f ммоль/л', [AnalyzeResult.Error]);
+    LabelWeight.Caption := Format('Вес: %.0f', [AnalyzeResult.Weight * 100]) + '%';
 
-    DrawKoof(ImageLarge, KoofList, AnList, GraphTypes[KoofIndex], Value['ShowPoints']);
+    DrawKoof(ImageLarge, KoofList, AnalyzeResults[0].AnList, GraphTypes[KoofIndex], Value['ShowPoints']);
     LabelKoofDiscription.Caption := KoofDisc[KoofIndex];
   end;
 
@@ -3178,7 +3178,7 @@ procedure TForm1.ButtonUpdateKoofClick(Sender: TObject);
 {======================================================================================================================}
 begin
   ButtonUpdateKoof.Enabled := False;
-  UpdateKoofs;
+  UpdateKoofs();
   ButtonUpdateKoof.Enabled := True;
 end;
 
@@ -3581,7 +3581,6 @@ type
 
 var
   List: array of TRecItem;
-  i: integer;
   FirstDate: TDate;
   LastDate: TDate;
 
@@ -3623,11 +3622,11 @@ begin
   //if not LocalSource.GetFirstDate(FirstDate) then Exit;
   //if not LocalSource.GetLastDate(LastDate) then Exit;
 
-  FirstDate := Trunc(EncodeDate(2010, 01, 01));
+  {FirstDate := Trunc(EncodeDate(2010, 01, 01));
   LastDate := Trunc(GetTimeUTC());
   //Summ := 0;
 
-  {for i := FirstDate to LastDate do
+  for i := FirstDate to LastDate do
   begin
     SetLength(List, Length(list) + 1);
     List[High(list)].Date := i;

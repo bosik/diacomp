@@ -56,6 +56,8 @@ type
 
   function ExportKoofs(Plain: boolean): string;
 
+  function GetKoof(Time: integer): TKoof;
+
 var
   { данные }
   LocalSource: TDiaryDAO;
@@ -71,6 +73,10 @@ var
 
   DishBaseLocal: TDishBaseDAO;
   DishBaseWeb: TDishBaseDAO;
+
+  Analyzers: TAnalyzers;
+  AnalyzeResults: TAnalyzeResults;
+  AvgAnalyzeResult: TAnalyzeResult;
 
   { системное }
   Inited: boolean = False;
@@ -175,8 +181,14 @@ begin
   DishBaseLocal.Free;
   DishBaseWeb.Free;
 
-
   Expander.Free;
+end;
+
+{======================================================================================================================}
+function GetKoof(Time: integer): TKoof;
+{======================================================================================================================}
+begin
+  Result := AvgAnalyzeResult.KoofList[Time];
 end;
 
 {======================================================================================================================}

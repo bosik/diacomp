@@ -22,50 +22,49 @@ uses
 
 type
   TAnalyzer = record
-  // private
+    Name: string;
     AnalyzeFunc: TAnalyzeFunction;
     InfoFunc: TInfoFunction;
-  // public
-    Name: string;
-    KoofList: TKoofList;   // коэффициенты
-    Error: real;
-    Weight: real;
-    Time: cardinal;
   end;
+
+  TAnalyzers = array of TAnalyzer;
+
+  TAnalyzeResult = record
+    KoofList: TKoofList;
+    Error: real;
+    Time: cardinal;
+    {*} Weight: real;
+    {*} AnList: TAnalyzeRecList;
+  end;
+
+  TAnalyzeResults = array of TAnalyzeResult;
 
   TValFunction = (vfLinearAbs, vfLinearAvg, vfDistance, vfQuadric);
   TRealArray = array of Real;
 
-  { инициализация }
-  function AddAnalyzer(const FileName: string): boolean;
-  function AnalyzeDiary(Items: TRecordList; const Par: TRealArray; CallBack: TCallbackProgressProc): TAnalyzeRecList;
+  { Initialization }
+  function LoadAnalyzers(const FileName: string): TAnalyzers;
+  function AddAnalyzers(const Source: TAnalyzers; var Target: TAnalyzers): boolean;
 
-  { использование }
-  function GetAnalyzersCount: integer;
-  function GetAnalyzer(Index: integer): TAnalyzer;
-  function GetKoof(Time: integer): TKoof; overload;
-  function GetKoof(Time: integer; AnalyzerIndex: integer): TKoof; overload;
+  { Analyzing }
+  function Analyze(const Analyzer: TAnalyzer; const Items: TRecordList; const Par: TRealArray;
+    CallBack: TCallbackProgressProc): TAnalyzeResult; overload;
+  function Analyze(const Analyzers: TAnalyzers; const Items: TRecordList; const Par: TRealArray;
+    CallBack: TCallbackProgressProc): TAnalyzeResults; overload;
+  function BuildAvgAnalyzer(const AnalyzeResults: TAnalyzeResults): TAnalyzeResult;
 
-  { анализ результатов }
+  { Verifying }
   function GetRecError(const Rec: TAnalyzeRec; const KoofList: TKoofList; ValFunct: TValFunction): real;
   function GetRecListError(const List: TAnalyzeRecList; const KoofList: TKoofList; ValFunc: TValFunction): real;
 
   procedure AnalyzeBS(Base: TDiaryDAO; TimeFrom, TimeTo: TDateTime; out Mean, StdDev, Targeted, Less, More: Extended);
-
   procedure SaveAnalyzeList(const List: TAnalyzeRecList; const FileName: string);
 
-var
-  // TODO: move to DiaryCore
-  AvgAnalyzer: TAnalyzer;
-  
 const
   PAR_ADAPTATION  = 0;
   //PAR_COMPRESSION = 1;
 
 implementation
-  
-var
-  Analyzers: array of TAnalyzer;
 
 type
   // #dao
@@ -87,6 +86,80 @@ type
 
   // #dao
   TPrimeRecList = array of TPrimeRec;
+
+{======================================================================================================================}
+function LoadAnalyzers(const FileName: string): TAnalyzers;
+{======================================================================================================================}
+var
+  Lib: HModule;
+  Analyzer: TAnalyzer;
+  Index: integer;
+  AnalFuncName: string;
+  InfoFuncName: string;
+  Found: boolean;
+begin
+  Log(DEBUG, 'Loading analyze unit ' + FileName);
+  SetLength(Result, 0);
+
+  if FileExists(FileName) then
+  try
+    Log(DEBUG, 'Analyze unit found, loading...');
+    Lib := LoadLibrary(PChar(FileName));
+    if (Lib <> 0) then
+    begin
+      Log(DEBUG, 'Analyze unit loaded ok');
+      Index := 0;
+      repeat
+        AnalFuncName := AnalyzeFunctionName + IntToStr(Index);
+        InfoFuncName:= InfoFunctionName + IntToStr(Index);
+
+        @Analyzer.AnalyzeFunc := GetProcAddress(Lib, PAnsiChar(AnalFuncName));
+        @Analyzer.InfoFunc := GetProcAddress(Lib, PAnsiChar(InfoFuncName));
+        Found := (@Analyzer.AnalyzeFunc <> nil) and (@Analyzer.InfoFunc <> nil);
+
+        if Found then
+        begin
+          Analyzer.Name := Analyzer.InfoFunc();
+          Log(INFO, 'Analyze function found: ' + Analyzer.Name);
+
+          SetLength(Result, Length(Result) + 1);
+          Result[High(Result)] := Analyzer;
+        end;
+
+        inc(Index);
+      until not Found;
+
+      Log(DEBUG, 'Analyze functions loading done, function found: ' + IntToStr(Index));
+    end else
+    begin
+      Log(ERROR, 'Failed to load analyze unit, LoadLibrary returned 0, file name: ' + FileName);
+    end;
+  except
+    on e: Exception do
+    begin
+      Log(ERROR, 'Failed to load analyze unit: ' + e.Message);
+    end;
+  end else
+  begin
+    Log(ERROR, 'Analyze unit not found: ' + FileName);
+  end;
+end;
+
+{======================================================================================================================}
+function AddAnalyzers(const Source: TAnalyzers; var Target: TAnalyzers): boolean;
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  Result := (Length(Source) > 0);
+
+  if Result then
+  begin
+    SetLength(Target, Length(Target) + Length(Source));
+    for i := 0 to High(Source) do
+      Target[Length(Target) - Length(Source) + i] := Source[i];
+  end;
+end;
 
 { ПОДГОТОВКА МАТЕРИАЛА }
 
@@ -324,133 +397,82 @@ begin
   end;
 end;
 
+// TODO: incapsulate as method "TAnalyzer.Analyze(Items, Par, CallBack)"
 {======================================================================================================================}
-function AddAnalyzer(const FileName: string): boolean;
+function Analyze(const Analyzer: TAnalyzer; const Items: TRecordList; const Par: TRealArray;
+  CallBack: TCallbackProgressProc): TAnalyzeResult;
 {======================================================================================================================}
-var
-  Lib: HModule;
-  Temp: TAnalyzer;
-  Index: integer;
-  AnalFuncName: string;
-  InfoFuncName: string;
-begin
-  Log(DEBUG, 'Loading analyze unit ' + FileName);
-
-  if FileExists(FileName) then
-  try
-    Log(DEBUG, 'Analyze unit found, loading...');
-    Lib := LoadLibrary(PChar(FileName));
-    if (Lib <> 0) then
-    begin
-      Log(DEBUG, 'Analyze unit loaded ok');
-      Index := 0;
-      repeat
-        AnalFuncName := AnalyzeFunctionName + IntToStr(Index);
-        InfoFuncName:= InfoFunctionName + IntToStr(Index);
-
-        @Temp.AnalyzeFunc := GetProcAddress(Lib, PAnsiChar(AnalFuncName));
-        @Temp.InfoFunc := GetProcAddress(Lib, PAnsiChar(InfoFuncName));
-        Result :=
-          (@Temp.AnalyzeFunc <> nil) and
-          (@Temp.InfoFunc <> nil);
-
-        if Result then
-        begin
-          Temp.Name := Temp.InfoFunc;
-          Log(INFO, 'Analyze function found: ' + Temp.Name);
-
-          SetLength(Analyzers, Length(Analyzers) + 1);
-          Analyzers[High(Analyzers)] := Temp;
-        end;
-
-        inc(Index);
-      until not Result;
-
-      Log(DEBUG, 'Analyze functions loading done, function found: ' + IntToStr(Index));
-    end else
-    begin
-      Log(ERROR, 'Failed to load analyze unit, LoadLibrary returned 0, file name: ' + FileName);
-      Result := False;
-    end;
-  except
-    on e: Exception do
-    begin
-      Log(ERROR, 'Failed to load analyze unit: ' + e.Message);
-      Result := False;
-    end;
-  end else
-  begin
-    Log(ERROR, 'Analyze unit not found: ' + FileName);
-    Result := False
-  end;
-end;
-
-{======================================================================================================================}
-function AnalyzeDiary(Items: TRecordList; const Par: TRealArray; CallBack: TCallbackProgressProc): TAnalyzeRecList;
-{======================================================================================================================}
-
-  function BuildAvgAnalyzer(const Analyzer: array of TAnalyzer; AnList: TAnalyzeRecList): TAnalyzer;
-  var
-    i, Time: integer;
-  begin
-    for Time := 0 to MinPerDay - 1 do
-    begin
-      Result.KoofList[Time].k := 0;
-      Result.KoofList[Time].q := 0;
-      Result.KoofList[Time].p := 0;
-
-      for i := 0 to High(Analyzer) do
-      begin
-        Result.KoofList[Time].k := Result.KoofList[Time].k + Analyzer[i].KoofList[Time].k * Analyzer[i].Weight;
-        Result.KoofList[Time].q := Result.KoofList[Time].q + Analyzer[i].KoofList[Time].q * Analyzer[i].Weight;
-        Result.KoofList[Time].p := Result.KoofList[Time].p + Analyzer[i].KoofList[Time].p * Analyzer[i].Weight;
-      end;
-    end;
-
-    Result.Time := 0;
-    for i := 0 to High(Analyzer) do
-    begin
-      Result.Time := AvgAnalyzer.Time + Analyzer[i].Time;
-    end;
-
-    Result.Error := GetRecListError(AnList, AvgAnalyzer.KoofList, vfQuadric);
-    Result.Weight := 1.0;
-  end;
-
 var
   PrimeList: TPrimeRecList;
   StartTime: cardinal;
-  SummWeight: Real;
-  i, Time: integer;
+begin
+  PrimeList := ExtractPrimeRecords(Items);
+  Result.AnList := FormatRecords(PrimeList, Par[PAR_ADAPTATION]);
+
+  StartTime := GetTickCount();
+  Analyzer.AnalyzeFunc(Result.AnList, Result.KoofList, CallBack);
+  Result.Error := GetRecListError(Result.AnList, Result.KoofList, vfQuadric);
+  Result.Time := GetTickCount() - StartTime;
+end;
+
+{======================================================================================================================}
+function Analyze(const Analyzers: TAnalyzers; const Items: TRecordList; const Par: TRealArray;
+  CallBack: TCallbackProgressProc): TAnalyzeResults;
+{======================================================================================================================}
+var
+  i: integer;
 begin
   if (Length(Analyzers) = 0) then
     raise Exception.Create('No analyzers loaded');
 
-  // подготовка материала
-  PrimeList := ExtractPrimeRecords(Items);
-  Result := FormatRecords(PrimeList, Par[PAR_ADAPTATION]);
-
-  // собственно анализ
+  SetLength(Result, Length(Analyzers));
   for i := 0 to High(Analyzers) do
+    Result[i] := Analyze(Analyzers[i], Items, Par, Callback);
+end;
+
+{======================================================================================================================}
+function BuildAvgAnalyzer(const AnalyzeResults: TAnalyzeResults): TAnalyzeResult;
+{======================================================================================================================}
+var
+  SummWeight: Real;
+  i, Time: integer;
+begin
+  if (Length(AnalyzeResults) = 0) then
+    raise Exception.Create('No analyzers loaded');
+
+  // weights: calculation & normalization
+
+  SummWeight := 0;
+  Result.Time := 0;
+  for i := 0 to High(AnalyzeResults) do
   begin
-    StartTime := GetTickCount;
-    // TODO: incapsulate as method "TAnalyzer.Analyze(AnList)"
-    Analyzers[i].AnalyzeFunc(Result, Analyzers[i].KoofList, CallBack);
-    Analyzers[i].Error := GetRecListError(Result, Analyzers[i].KoofList, vfQuadric);
-    Analyzers[i].Weight := Exp(-0.1 * Sqr(Analyzers[i].Error));
-    Analyzers[i].Time := GetTickCount - StartTime;
+    AnalyzeResults[i].Weight := Exp(-0.1 * Sqr(AnalyzeResults[i].Error));
+    SummWeight := SummWeight + AnalyzeResults[i].Weight;
+    Result.Time := Result.Time + AnalyzeResults[i].Time;
   end;
 
-  // нормализация весов
-  SummWeight := 0;
-  for i := 0 to High(Analyzers) do
-    SummWeight := SummWeight + Analyzers[i].Weight;
-
   if (SummWeight > 0) then
-  for i := 0 to High(Analyzers) do
-    Analyzers[i].Weight := Analyzers[i].Weight / SummWeight;
+  for i := 0 to High(AnalyzeResults) do
+    AnalyzeResults[i].Weight := AnalyzeResults[i].Weight / SummWeight;
 
-  AvgAnalyzer := BuildAvgAnalyzer(Analyzers, Result);
+  // calculation average curve
+
+  for Time := 0 to MinPerDay - 1 do
+  begin
+    Result.KoofList[Time].k := 0;
+    Result.KoofList[Time].q := 0;
+    Result.KoofList[Time].p := 0;
+
+    for i := 0 to High(AnalyzeResults) do
+    begin
+      Result.KoofList[Time].k := Result.KoofList[Time].k + AnalyzeResults[i].KoofList[Time].k * AnalyzeResults[i].Weight;
+      Result.KoofList[Time].q := Result.KoofList[Time].q + AnalyzeResults[i].KoofList[Time].q * AnalyzeResults[i].Weight;
+      Result.KoofList[Time].p := Result.KoofList[Time].p + AnalyzeResults[i].KoofList[Time].p * AnalyzeResults[i].Weight;
+    end;
+  end;
+
+  Result.Error := GetRecListError(AnalyzeResults[0].AnList, Result.KoofList, vfQuadric);
+  Result.Weight := 1.0;
 end;
 
 {======================================================================================================================}
@@ -548,9 +570,12 @@ begin
   end;
 
   Math.MeanAndStdDev(List, Mean, StdDev);
-  Targeted := Targeted / Length(List);
-  Less := Less / Length(List);
-  More := More / Length(List);
+  if (Length(List) > 0) then
+  begin
+    Targeted := Targeted / Length(List);
+    Less := Less / Length(List);
+    More := More / Length(List);
+  end;
 end;
 
 {======================================================================================================================}
@@ -588,34 +613,6 @@ begin
   finally
     s.Free;
   end;
-end;
-
-{======================================================================================================================}
-function GetAnalyzersCount: integer;
-{======================================================================================================================}
-begin
-  Result := Length(Analyzers);
-end;
-
-{======================================================================================================================}
-function GetAnalyzer(Index: integer): TAnalyzer;
-{======================================================================================================================}
-begin
-  Result := Analyzers[Index]
-end;
-
-{======================================================================================================================}
-function GetKoof(Time: integer): TKoof;
-{======================================================================================================================}
-begin
-  Result := AvgAnalyzer.KoofList[Time];
-end;
-
-{======================================================================================================================}
-function GetKoof(Time: integer; AnalyzerIndex: integer): TKoof;
-{======================================================================================================================}
-begin
-  Result := GetAnalyzer(AnalyzerIndex).KoofList[Time];
 end;
 
 end.
