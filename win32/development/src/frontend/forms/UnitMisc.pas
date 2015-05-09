@@ -17,7 +17,7 @@ type
     Button5: TButton;
     Button4: TButton;
     Button3: TButton;
-    Button6: TButton;
+    ButtonAverageFoodMass: TButton;
     Button8: TButton;
     Edit1: TEdit;
     Memo1: TMemo;
@@ -29,13 +29,14 @@ type
     ButtonVerifyLinear: TButton;
     ButtonExportFoodBase: TButton;
     ButtonFoodCompare: TButton;
+    ButtonTestAnalyzer: TButton;
     procedure ButtonExportXmlClick(Sender: TObject);
     procedure ButtonExportJsonClick(Sender: TObject);
     procedure ButtonBruteforceClick(Sender: TObject);
     procedure Button5Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
-    procedure Button6Click(Sender: TObject);
+    procedure ButtonAverageFoodMassClick(Sender: TObject);
     procedure Button8Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
@@ -46,11 +47,15 @@ type
     procedure ButtonVerifyLinearClick(Sender: TObject);
     procedure ButtonExportFoodBaseClick(Sender: TObject);
     procedure ButtonFoodCompareClick(Sender: TObject);
+    procedure ButtonTestAnalyzerClick(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
   end;
+
+  procedure SaveAnalyzeList(const List: TAnalyzeRecList; const FileName: string);
+  procedure SaveKoofList(const Koofs: TKoofList; const FileName: string);
 
 var
   FormMisc: TFormMisc;
@@ -60,6 +65,74 @@ implementation
 uses MainUnit;
 
 {$R *.dfm}
+
+{======================================================================================================================}
+procedure SaveAnalyzeList(const List: TAnalyzeRecList; const FileName: string);
+{======================================================================================================================}
+var
+  s: TStrings;
+  i: integer;
+begin
+  s := TStringList.Create;
+  try
+    s := TStringList.Create;
+
+    S.Add(Format('%s'#9'%s'#9'%s'#9'%s'#9'%s'#9'%s'#9'%s', [
+      'Time',
+      'Weight',
+      'Prots',
+      'Fats',
+      'Carbs',
+      'Ins',
+      'DBS']));
+
+    for i := 0 to High(List) do
+    begin
+      S.Add(Format('%d'#9'%f'#9'%f'#9'%f'#9'%f'#9'%f'#9'%f', [
+        List[i].Time,
+        List[i].Weight,
+        List[i].Prots,
+        List[i].Fats,
+        List[i].Carbs,
+        List[i].Ins,
+        List[i].BSOut - List[i].BSIn]));
+    end;
+    S.SaveToFile(FileName);
+  finally
+    s.Free;
+  end;
+end;
+
+{======================================================================================================================}
+procedure SaveKoofList(const Koofs: TKoofList; const FileName: string);
+{======================================================================================================================}
+var
+  s: TStrings;
+  i: integer;
+begin
+  s := TStringList.Create;
+  try
+    s := TStringList.Create;
+
+    S.Add(Format('%s'#9'%s'#9'%s', [
+      'K',
+      'Q',
+      'P'
+    ]));
+
+    for i := 0 to High(Koofs) do
+    begin
+      S.Add(ReplaceAll(Format('%.4f'#9'%.4f'#9'%.4f', [
+        Koofs[i].K,
+        Koofs[i].Q,
+        Koofs[i].P
+      ]), ',', '.'));
+    end;
+    S.SaveToFile(FileName);
+  finally
+    s.Free;
+  end;
+end;
 
 procedure TFormMisc.ButtonExportXmlClick(Sender: TObject);
 var
@@ -415,7 +488,7 @@ begin
   // TODO: restore
 end;
 
-procedure TFormMisc.Button6Click(Sender: TObject);
+procedure TFormMisc.ButtonAverageFoodMassClick(Sender: TObject);
 {var
   M: array of
   record
@@ -464,9 +537,6 @@ begin
 end;
 
 procedure TFormMisc.Button8Click(Sender: TObject);
-
-  // TODO: в отправленном логе об ошибке в качестве отправителя e-mail указывать логин пользователя
-  // TODO: реализовать на сервере API для выгрузки некоторых настроек (целевой СК, нормы и т.п.)
 
  { procedure TestVersion;
   var
@@ -685,7 +755,7 @@ end;
 
 procedure TFormMisc.ButtonExportRawClick(Sender: TObject);
 begin
-  //SaveAnalyzeList(AnalyzeResult.AnList, 'temp\raw.txt');
+  SaveAnalyzeList(AnalyzeResults[0].AnList, 'temp\raw.txt');
 end;
 
 procedure TFormMisc.Button1Click(Sender: TObject);
@@ -1055,6 +1125,23 @@ begin
 
   BusinessObjects.Free(Food1);
   BusinessObjects.Free(Food2);
+end;
+
+procedure TFormMisc.ButtonTestAnalyzerClick(Sender: TObject);
+var
+  Par: TRealArray;
+  Items: TRecordList;
+  AnalyzeResult: TAnalyzeResult;
+begin
+  Items := ReadVersionedDiaryRecords(ReadFile('temp\antest.json'));
+
+  SetLength(Par, 1);
+  Par[PAR_ADAPTATION] := 0.95;//Value['Adaptation'];  { [0.5..1.0] }
+
+  AnalyzeResult := Analyze(Analyzers[0], Items, Par, nil);
+
+  SaveKoofList(AnalyzeResult.KoofList, 'temp\koofs.txt');
+  SaveAnalyzeList(AnalyzeResult.AnList, 'temp\anlist.txt');
 end;
 
 end.

@@ -1,7 +1,7 @@
 object FormMisc: TFormMisc
   Left = 465
   Top = 241
-  Width = 1305
+  Width = 621
   Height = 675
   Caption = #1054#1090#1083#1072#1076#1082#1072
   Color = clBtnFace
@@ -14,8 +14,8 @@ object FormMisc: TFormMisc
   PixelsPerInch = 120
   TextHeight = 16
   object Label1: TLabel
-    Left = 520
-    Top = 40
+    Left = 224
+    Top = 216
     Width = 41
     Height = 16
     Caption = 'Label1'
@@ -40,8 +40,8 @@ object FormMisc: TFormMisc
     OnClick = ButtonExportJsonClick
   end
   object ButtonBruteforce: TButton
-    Left = 8
-    Top = 112
+    Left = 312
+    Top = 384
     Width = 201
     Height = 25
     Caption = #1041#1088#1091#1090#1092#1086#1088#1089
@@ -50,8 +50,8 @@ object FormMisc: TFormMisc
     OnClick = ButtonBruteforceClick
   end
   object Button5: TButton
-    Left = 8
-    Top = 144
+    Left = 312
+    Top = 416
     Width = 201
     Height = 25
     Caption = #1043#1088#1072#1076#1080#1077#1085#1090
@@ -84,18 +84,18 @@ object FormMisc: TFormMisc
     TabOrder = 5
     OnClick = Button3Click
   end
-  object Button6: TButton
+  object ButtonAverageFoodMass: TButton
     Left = 8
     Top = 281
     Width = 201
     Height = 25
-    Caption = #1055#1088#1086#1076#1091#1082#1090#1099
+    Caption = #1057#1088#1077#1076#1085#1103#1103' '#1084#1072#1089#1089#1072' '#1087#1088#1086#1076#1091#1082#1090#1072
     TabOrder = 6
-    OnClick = Button6Click
+    OnClick = ButtonAverageFoodMassClick
   end
   object Button8: TButton
     Left = 8
-    Top = 328
+    Top = 312
     Width = 201
     Height = 25
     Caption = 'Test Smth'
@@ -104,8 +104,8 @@ object FormMisc: TFormMisc
     OnClick = Button8Click
   end
   object Edit1: TEdit
-    Left = 312
-    Top = 296
+    Left = 224
+    Top = 184
     Width = 377
     Height = 24
     TabOrder = 8
@@ -113,8 +113,8 @@ object FormMisc: TFormMisc
     OnChange = Edit1Change
   end
   object Memo1: TMemo
-    Left = 312
-    Top = 120
+    Left = 224
+    Top = 8
     Width = 377
     Height = 177
     Lines.Strings = (
@@ -123,8 +123,8 @@ object FormMisc: TFormMisc
   end
   object ButtonCovariance: TButton
     Left = 8
-    Top = 360
-    Width = 209
+    Top = 344
+    Width = 201
     Height = 25
     Caption = #1050#1086#1088#1088#1077#1083#1103#1094#1080#1103
     TabOrder = 10
@@ -132,17 +132,17 @@ object FormMisc: TFormMisc
   end
   object ButtonExportRaw: TButton
     Left = 8
-    Top = 72
+    Top = 104
     Width = 201
     Height = 25
-    Caption = 'ButtonExportRaw'
+    Caption = 'Export AnList'
     TabOrder = 11
     OnClick = ButtonExportRawClick
   end
   object Button1: TButton
     Left = 8
-    Top = 408
-    Width = 217
+    Top = 376
+    Width = 201
     Height = 25
     Caption = 'Average Daily BS'
     TabOrder = 12
@@ -150,7 +150,7 @@ object FormMisc: TFormMisc
   end
   object ButtonFoodBSCorrelation: TButton
     Left = 8
-    Top = 440
+    Top = 408
     Width = 201
     Height = 25
     Caption = 'ButtonFoodBSCorrelation'
@@ -158,37 +158,46 @@ object FormMisc: TFormMisc
     OnClick = ButtonFoodBSCorrelationClick
   end
   object ButtonVerifyLinear: TButton
-    Left = 16
-    Top = 472
-    Width = 193
+    Left = 8
+    Top = 440
+    Width = 201
     Height = 25
     Caption = 'ButtonVerifyLinear'
     TabOrder = 14
     OnClick = ButtonVerifyLinearClick
   end
   object ButtonExportFoodBase: TButton
-    Left = 240
-    Top = 8
-    Width = 209
+    Left = 8
+    Top = 72
+    Width = 201
     Height = 25
     Caption = 'Export food base into JSON'
     TabOrder = 15
     OnClick = ButtonExportFoodBaseClick
   end
   object ButtonFoodCompare: TButton
-    Left = 240
-    Top = 40
-    Width = 209
+    Left = 8
+    Top = 472
+    Width = 201
     Height = 25
     Caption = 'Compare food lists'
     TabOrder = 16
     OnClick = ButtonFoodCompareClick
   end
+  object ButtonTestAnalyzer: TButton
+    Left = 8
+    Top = 504
+    Width = 201
+    Height = 25
+    Caption = 'Test analyzer'
+    TabOrder = 17
+    OnClick = ButtonTestAnalyzerClick
+  end
   object Timer1: TTimer
     Enabled = False
     Interval = 500
     OnTimer = Timer1Timer
-    Left = 404
-    Top = 334
+    Left = 316
+    Top = 222
   end
 end

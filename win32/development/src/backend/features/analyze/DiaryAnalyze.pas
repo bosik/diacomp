@@ -58,7 +58,6 @@ type
   function GetRecListError(const List: TAnalyzeRecList; const KoofList: TKoofList; ValFunc: TValFunction): real;
 
   procedure AnalyzeBS(Base: TDiaryDAO; TimeFrom, TimeTo: TDateTime; out Mean, StdDev, Targeted, Less, More: Extended);
-  procedure SaveAnalyzeList(const List: TAnalyzeRecList; const FileName: string);
 
 const
   PAR_ADAPTATION  = 0;
@@ -203,7 +202,7 @@ begin
 
   PrevBloodTime := -1;
   PrevBloodValue := -1;
-  InitCounters;
+  InitCounters();
 
   { обработка }
 
@@ -213,59 +212,62 @@ begin
   //Debug := JsonWrite(SerializeVersionedDiaryRecords(Items));
   //DiaryRoutines.WriteFile('temp\analyze_input.txt', Debug);
 
+  // Debug := '';
+
   { 1. Создаём RecList, считая время в минутах от 01/01/1899 }
   for i := Low(Items) to High(Items) do
   begin
     // **** INSULIN RECORD ****
-    if (Items[i].RecType = TInsRecord) and
-       (PrevBloodTime > -1) then
+    if (Items[i].RecType = TInsRecord) then
     begin
+      // {*}Debug := Debug + Items[i].ID + #9'ins'#9;
+
       CurIns := TInsRecord(Items[i]).Value;
       Ins := Ins + CurIns;
       if (CurIns > MaxIns) then
       begin
         MaxIns := CurIns;
         TimeI := Items[i].Time;
+        // {*}Debug := Debug + 'max updated'#13;
+      end else
+      begin
+        // {*}Debug := Debug + #13;
       end;
     end else
 
     // **** MEAL RECORD ****
-    if (Items[i].RecType = TMealRecord) and
-       (PrevBloodTime > -1) then
+    if (Items[i].RecType = TMealRecord) then
     begin
+      // {*}Debug := Debug + Items[i].ID + #9'meal'#9;
+
       Prots := Prots + TMealRecord(Items[i]).Prots;
       Fats := Fats + TMealRecord(Items[i]).Fats;
-        CurCarbs := TMealRecord(Items[i]).Carbs;
+      CurCarbs := TMealRecord(Items[i]).Carbs;
       Carbs := Carbs + CurCarbs;
       if (CurCarbs > MaxCarbs) then
       begin
         MaxCarbs := CurCarbs;
         TimeF := Items[i].Time;
+        // {*}Debug := Debug + 'max updated'#13;
+      end else
+      begin
+        // {*}Debug := Debug + #13;
       end;
     end else
 
     // **** BLOOD RECORD ****
-    if (Items[i].RecType = TBloodRecord) and
-       (not TBloodRecord(Items[i]).PostPrand) then
+    if (Items[i].RecType = TBloodRecord) then
     begin
-      if (PrevBloodValue = -1) then
+      // {*}Debug := Debug + Items[i].ID + #9'blood'#9;
+      if (not TBloodRecord(Items[i]).PostPrand) then
       begin
-        PrevBloodTime := Items[i].Time;
-        PrevBloodValue := TBloodRecord(Items[i]).Value;
-        InitCounters;
-      end else
-      if ((Carbs > 0) or (Prots > 0)) and (Ins > 0) and
-         (Items[i].Time - PrevBloodTime < MAX_BLOCK_TIME)
-         then
-      //if (True) then
-      begin
-        { запись }
-
-        {if (((TimeF + 1440) mod 1440) > 780)and
-           (((TimeF + 1440) mod 1440) < 840)
-        then  }
+        if (PrevBloodValue > 0) and
+           ((Carbs > 0) or (Prots > 0)) and
+           (Ins > 0) and
+           (Items[i].Time - PrevBloodTime < MAX_BLOCK_TIME) then
         begin
-          j := length(Result);
+          { Add item }
+          j := Length(Result);
           SetLength(Result, j + 1);
           Result[j].BloodInTime := GetAbsLocalMinutes(PrevBloodTime);
           Result[j].BloodInValue := PrevBloodValue;
@@ -278,22 +280,26 @@ begin
           Result[j].BloodOutTime := GetAbsLocalMinutes(Items[i].Time);
           Result[j].BloodOutValue := TBloodRecord(Items[i]).Value;
           Result[j].Date := UTCToLocal(TimeF);
+          // {*}Debug := Debug + 'OK - new item added'#9 +
+          //   Format('%.1f'#9'%.1f'#9'%.1f'#9'%.1f'#13, [Result[j].BloodInValue, Result[j].InsValue, Result[j].Carbs,
+          //     Result[j].BloodOutValue]);
+        end else
+        begin
+          // {*}Debug := Debug + 'conditions failed - ignored'#13;
         end;
 
-        { подготовка к следующему циклу }
+        { Reset }
         PrevBloodTime := Items[i].Time;
         PrevBloodValue := TBloodRecord(Items[i]).Value;
-        InitCounters;
+        InitCounters();
       end else
       begin
-        { замер нормальный, но перед ним ни еды, ни инсулина }
-        PrevBloodTime := Items[i].Time;
-        PrevBloodValue := TBloodRecord(Items[i]).Value;
-        InitCounters;
+        // {*}Debug := Debug + 'postprandial - ignored'#13;
       end;
-    {=====================================================}
     end;
   end;
+
+  //ShowMessage(Debug);
 
   { 2. Восстановление относительных времён }
 
@@ -575,43 +581,6 @@ begin
     Targeted := Targeted / Length(List);
     Less := Less / Length(List);
     More := More / Length(List);
-  end;
-end;
-
-{======================================================================================================================}
-procedure SaveAnalyzeList(const List: TAnalyzeRecList; const FileName: string);
-{======================================================================================================================}
-var
-  s: TStrings;
-  i: integer;
-begin
-  s := TStringList.Create;
-  try
-    s := TStringList.Create;
-
-    S.Add(Format('%s'#9'%s'#9'%s'#9'%s'#9'%s'#9'%s'#9'%s', [
-      'Time',
-      'Weight',
-      'Prots',
-      'Fats',
-      'Carbs',
-      'Ins',
-      'DBS']));
-
-    for i := 0 to High(List) do
-    begin
-      S.Add(Format('%d'#9'%f'#9'%f'#9'%f'#9'%f'#9'%f'#9'%f', [
-        List[i].Time,
-        List[i].Weight,
-        List[i].Prots,
-        List[i].Fats,
-        List[i].Carbs,
-        List[i].Ins,
-        List[i].BSOut - List[i].BSIn]));
-    end;
-    S.SaveToFile(FileName);
-  finally
-    s.Free;
   end;
 end;
 
