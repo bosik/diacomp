@@ -61,7 +61,8 @@ public class AnalyzeExtracter
 		double maxCarbs = -1.0;
 		Date timeF = null;
 		Date timeI = null;
-		Date mealDate = null;
+
+		final long MAX_BLOCK_TIME = 12 * Utils.MsecPerHour;
 
 		Date prevBloodTime = null;
 		double prevBloodValue = -1;
@@ -71,16 +72,23 @@ public class AnalyzeExtracter
 			DiaryRecord record = versionedRecord.getData();
 			if (record instanceof InsRecord)
 			{
+				// System.out.print(versionedRecord.getId() + "\tins\t");
 				curIns = ((InsRecord)record).getValue();
 				ins += curIns;
 				if (curIns > maxIns)
 				{
 					maxIns = curIns;
 					timeI = record.getTime();
+					// System.out.println("max updated");
+				}
+				else
+				{
+					// System.out.println("");
 				}
 			}
 			else if (record instanceof MealRecord)
 			{
+				// System.out.print(versionedRecord.getId() + "\tmeal\t");
 				MealRecord meal = (MealRecord)record;
 				prots += meal.getProts();
 				fats += meal.getFats();
@@ -90,21 +98,22 @@ public class AnalyzeExtracter
 				{
 					maxCarbs = curCarbs;
 					timeF = record.getTime();
-					mealDate = record.getTime();
+					// System.out.println("max updated");
+				}
+				else
+				{
+					// System.out.println("");
 				}
 			}
 			else if (record instanceof BloodRecord)
 			{
 				BloodRecord blood = (BloodRecord)record;
+				// System.out.print(versionedRecord.getId() + "\tblood\t");
 
 				if (!blood.isPostPrand())
 				{
-					if (prevBloodValue < 0)
-					{
-						prevBloodTime = record.getTime();
-						prevBloodValue = blood.getValue();
-					}
-					else if (((carbs > 0) || (prots > 0)) && (ins > 0))
+					if ((prevBloodValue > 0) && ((carbs > 0) || (prots > 0)) && (ins > 0) && (prevBloodTime != null)
+							&& (record.getTime().getTime() - prevBloodTime.getTime() < MAX_BLOCK_TIME))
 					{
 						PrimeRec item = new PrimeRec();
 						item.setBloodInTime(extractMin(prevBloodTime));
@@ -117,19 +126,18 @@ public class AnalyzeExtracter
 						item.setCarbs(carbs);
 						item.setBloodOutTime(extractMin(blood.getTime()));
 						item.setBloodOutValue(blood.getValue());
-						item.setDate(mealDate);
-
+						item.setDate(timeF);
 						result.add(item);
-
-						prevBloodTime = blood.getTime();
-						prevBloodValue = blood.getValue();
+						// System.out.println(String.format("OK - new item added\t%.1f\t%.1f\t%.1f\t%.1f",
+						// 		item.getBloodInValue(), item.getInsValue(), item.getCarbs(), item.getBloodOutValue()));
 					}
 					else
-					// there is no meal nor ins before this BS measurement
 					{
-						prevBloodTime = blood.getTime();
-						prevBloodValue = blood.getValue();
+						// System.out.println("conditions failed - ignored");
 					}
+
+					prevBloodTime = blood.getTime();
+					prevBloodValue = blood.getValue();
 
 					ins = 0.0;
 					maxIns = -1.0;
@@ -139,6 +147,10 @@ public class AnalyzeExtracter
 					maxCarbs = -1.0;
 					timeF = null;
 					timeI = null;
+				}
+				else
+				{
+					// System.out.println("postprandial - ignored");
 				}
 			}
 		}
@@ -221,7 +233,8 @@ public class AnalyzeExtracter
 				item.setIns(rec.getInsValue());
 				item.setBsIn(rec.getBloodInValue());
 				item.setBsOut(rec.getBloodOutValue());
-				item.setTime((rec.getFoodTime() + 4 * 60) % Utils.MinPerDay); // FIXME
+				// FIXME: hardcoded time zone
+				item.setTime((rec.getFoodTime() + 3 * 60) % Utils.MinPerDay); // FIXME
 
 				double x = (double)(rec.getDate().getTime() - min) / (curTime - min);
 				double w = f(x, adaptation);
