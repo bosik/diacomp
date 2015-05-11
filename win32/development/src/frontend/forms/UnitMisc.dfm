@@ -40,8 +40,8 @@ object FormMisc: TFormMisc
     OnClick = ButtonExportJsonClick
   end
   object ButtonBruteforce: TButton
-    Left = 312
-    Top = 384
+    Left = 8
+    Top = 504
     Width = 201
     Height = 25
     Caption = #1041#1088#1091#1090#1092#1086#1088#1089
@@ -50,8 +50,8 @@ object FormMisc: TFormMisc
     OnClick = ButtonBruteforceClick
   end
   object Button5: TButton
-    Left = 312
-    Top = 416
+    Left = 8
+    Top = 536
     Width = 201
     Height = 25
     Caption = #1043#1088#1072#1076#1080#1077#1085#1090
@@ -186,7 +186,7 @@ object FormMisc: TFormMisc
   end
   object ButtonTestAnalyzer: TButton
     Left = 8
-    Top = 504
+    Top = 568
     Width = 201
     Height = 25
     Caption = 'Test analyzer'
