@@ -258,8 +258,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	{
 		// insulin dosage info
 
-		// FIXME: hardcoded timezone
-		int minutesTime = (Utils.timeToMin(entity.getData().getTime()) + 3 * 60) % Utils.MinPerDay;
+		int minutesTime = Utils.getDayMinutesUTC(entity.getData().getTime());
 		Koof koof = Storage.koofService.getKoof(minutesTime);
 
 		double deltaBS = 0.0;

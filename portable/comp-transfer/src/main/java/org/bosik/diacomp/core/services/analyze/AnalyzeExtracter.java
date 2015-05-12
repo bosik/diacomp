@@ -39,12 +39,6 @@ public class AnalyzeExtracter
 		LINEAR_ABS, LINEAR_AVG, DISTANCE, QUADRIC
 	}
 
-	private static int extractMin(Date date)
-	{
-		long val = date.getTime() / Utils.MsecPerMin;
-		return (int)val;
-	}
-
 	public static List<PrimeRec> extractPrimeRecords(List<Versioned<DiaryRecord>> recs)
 	{
 		List<PrimeRec> result = new LinkedList<PrimeRec>();
@@ -116,15 +110,15 @@ public class AnalyzeExtracter
 							&& (record.getTime().getTime() - prevBloodTime.getTime() < MAX_BLOCK_TIME))
 					{
 						PrimeRec item = new PrimeRec();
-						item.setBloodInTime(extractMin(prevBloodTime));
+						item.setBloodInTime(Utils.getDayMinutesUTC(prevBloodTime));
 						item.setBloodInValue(prevBloodValue);
-						item.setInsTime(extractMin(timeI));
+						item.setInsTime(Utils.getDayMinutesUTC(timeI));
 						item.setInsValue(ins);
-						item.setFoodTime(extractMin(timeF));
+						item.setFoodTime(Utils.getDayMinutesUTC(timeF));
 						item.setProts(prots);
 						item.setFats(fats);
 						item.setCarbs(carbs);
-						item.setBloodOutTime(extractMin(blood.getTime()));
+						item.setBloodOutTime(Utils.getDayMinutesUTC(blood.getTime()));
 						item.setBloodOutValue(blood.getValue());
 						item.setDate(timeF);
 						result.add(item);
@@ -156,6 +150,8 @@ public class AnalyzeExtracter
 		}
 
 		// restoring day minutes
+
+		// TODO: check if it is required
 
 		for (PrimeRec rec : result)
 		{
@@ -239,8 +235,7 @@ public class AnalyzeExtracter
 				item.setIns(rec.getInsValue());
 				item.setBsIn(rec.getBloodInValue());
 				item.setBsOut(rec.getBloodOutValue());
-				// FIXME: hardcoded time zone
-				item.setTime((rec.getFoodTime() + 3 * 60) % Utils.MinPerDay); // FIXME
+				item.setTime(rec.getFoodTime());
 
 				double x = (double)(rec.getDate().getTime() - minTime) / (maxTime - minTime);
 				double w = f(x, adaptation);

@@ -484,21 +484,6 @@ public class Utils
 	 */
 
 	/**
-	 * [tested] Преобразует время во время дневника.
-	 * 
-	 * @param time
-	 *            Время
-	 * @return Время дневника
-	 */
-	public static int timeToMin(Date time)
-	{
-		Calendar c = Calendar.getInstance();
-		c.setTimeZone(TIMEZONE_UTC);
-		c.setTime(time);
-		return (c.get(Calendar.HOUR_OF_DAY) * MinPerHour) + c.get(Calendar.MINUTE);
-	}
-
-	/**
 	 * Rounds up to specified number of digits after dot
 	 * 
 	 * @param x
@@ -805,11 +790,48 @@ public class Utils
 		return c.getTime();
 	}
 
-	public static int getDayMinutes(Date date)
+	/**
+	 * Returns number of minutes since day's beginning
+	 * 
+	 * @param time
+	 *            Time
+	 * @param timezone
+	 *            Timezone
+	 * @return
+	 */
+	private static int getDayMinutes(Date time, TimeZone timezone)
 	{
-		Calendar c = Calendar.getInstance();
-		c.setTime(date);
-		return c.get(Calendar.HOUR_OF_DAY) * MinPerHour + c.get(Calendar.MINUTE);
+		Calendar c = Calendar.getInstance(timezone);
+		c.setTime(time);
+		return (c.get(Calendar.HOUR_OF_DAY) * MinPerHour) + c.get(Calendar.MINUTE);
+	}
+
+	/**
+	 * Returns number of minutes since day's beginning (timezone: local)
+	 * 
+	 * @param time
+	 *            Time
+	 * @param timezone
+	 *            Timezone
+	 * @return
+	 */
+	public static int getDayMinutesLocal(Date time)
+	{
+		return getDayMinutes(time, TimeZone.getDefault());
+	}
+
+	/**
+	 * Returns number of minutes since day's beginning (timezone: UTC)
+	 * 
+	 * @param time
+	 *            Time
+	 * @param timezone
+	 *            Timezone
+	 * @return
+	 */
+	public static int getDayMinutesUTC(Date time)
+	{
+		return getDayMinutes(time, TIMEZONE_UTC);
 	}
 
 	/**

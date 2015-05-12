@@ -196,12 +196,12 @@ public class TestUtils extends TestCase
 
 	public void testTimeToMin()
 	{
-		assertEquals(0, Utils.timeToMin(Utils.time(2013, 01, 01, 00, 00, 00)));
-		assertEquals(0, Utils.timeToMin(Utils.time(2013, 01, 01, 00, 00, 01)));
-		assertEquals(1, Utils.timeToMin(Utils.time(2013, 01, 01, 00, 01, 00)));
-		assertEquals(60, Utils.timeToMin(Utils.time(2013, 01, 01, 01, 00, 00)));
-		assertEquals(121, Utils.timeToMin(Utils.time(2013, 01, 01, 02, 01, 00)));
-		assertEquals(1439, Utils.timeToMin(Utils.time(2013, 01, 01, 23, 59, 00)));
+		assertEquals(0, Utils.getDayMinutesUTC(Utils.time(2013, 01, 01, 00, 00, 00)));
+		assertEquals(0, Utils.getDayMinutesUTC(Utils.time(2013, 01, 01, 00, 00, 01)));
+		assertEquals(1, Utils.getDayMinutesUTC(Utils.time(2013, 01, 01, 00, 01, 00)));
+		assertEquals(60, Utils.getDayMinutesUTC(Utils.time(2013, 01, 01, 01, 00, 00)));
+		assertEquals(121, Utils.getDayMinutesUTC(Utils.time(2013, 01, 01, 02, 01, 00)));
+		assertEquals(1439, Utils.getDayMinutesUTC(Utils.time(2013, 01, 01, 23, 59, 00)));
 	}
 
 	public void testFormatDate()
