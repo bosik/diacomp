@@ -52,7 +52,7 @@ public class UIUtils
 		final EditText input = new EditText(context);
 
 		input.setText(defaultMass);
-		input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+		input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_CLASS_NUMBER);
 		builder.setTitle(title);
 		builder.setMessage(message);
 		builder.setView(input);
