@@ -282,12 +282,11 @@ public class FragmentDiaryScroller extends Fragment
 			}
 
 			BloodRecord prevBlood = PostprandUtils.findLastBlood(diary, entity.getData().getTime(),
-					SCAN_FOR_BLOOD_BEFORE_MEAL, false);
+					SCAN_FOR_BLOOD_BEFORE_MEAL, true);
 			Double bloodBeforeMeal = prevBlood == null ? null : prevBlood.getValue();
 			InsRecord insRecord = PostprandUtils.findNearestInsulin(diary, entity.getData().getTime(),
 					SCAN_FOR_INS_AROUND_MEAL);
-			Double insInjected = insRecord == null || (prevBlood != null && prevBlood.isPostPrand()) ? null : insRecord
-					.getValue();
+			Double insInjected = insRecord == null ? null : insRecord.getValue();
 
 			Log.d(TAG, insRecord == null ? "insRecord == null" : "insRecord != null");
 			Log.d(TAG, "insInjected: " + insInjected);
