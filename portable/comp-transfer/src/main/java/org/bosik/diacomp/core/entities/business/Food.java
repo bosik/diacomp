@@ -72,27 +72,28 @@ public class Food implements Serializable, Named, Relative
 
 	// ================================ THROWERS ================================
 
-	protected static void checkAndThrow(boolean check, String errorMessage)
-	{
-		if (!check)
-		{
-			throw new IllegalArgumentException(errorMessage);
-		}
-	}
-
 	protected static void checkNameThrowable(String name)
 	{
-		checkAndThrow(checkName(name), String.format("Name can't be null or empty (%s)", name));
+		if (!checkName(name))
+		{
+			throw new IllegalArgumentException(String.format("Name can't be null or empty (%s)", name));
+		}
 	}
 
 	protected static void checkRelThrowable(double value)
 	{
-		checkAndThrow(checkRelativeValue(value), String.format("Relative value (%f) is out of [0, 100] bounds", value));
+		if (!checkRelativeValue(value))
+		{
+			throw new IllegalArgumentException(String.format("Relative value (%f) is out of [0, 100] bounds", value));
+		}
 	}
 
 	protected static void checkNonNegativeThrowable(double value)
 	{
-		checkAndThrow(checkNonNegativeValue(value), String.format("Value can't be negative (%f)", value));
+		if (!checkNonNegativeValue(value))
+		{
+			throw new IllegalArgumentException(String.format("Value can't be negative (%f)", value));
+		}
 	}
 
 	// ================================ GET / SET ================================

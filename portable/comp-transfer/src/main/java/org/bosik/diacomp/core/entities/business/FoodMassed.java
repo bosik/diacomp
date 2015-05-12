@@ -53,7 +53,10 @@ public class FoodMassed extends Food
 
 	protected static void checkMassThrowable(double value)
 	{
-		checkAndThrow(checkMass(value), String.format("Mass can't be negative (%f)", value));
+		if (!checkMass(value))
+		{
+			throw new IllegalArgumentException(String.format("Mass can't be negative (%f)", value));
+		}
 	}
 
 	// ================================ GET / SET ================================
