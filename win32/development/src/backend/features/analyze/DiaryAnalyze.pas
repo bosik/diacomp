@@ -510,13 +510,18 @@ function GetRecListError(const List: TAnalyzeRecList; const KoofList: TKoofList;
 {======================================================================================================================}
 var
   i: integer;
+  SummWeight: Real;
 begin
   Result := 0;
+  SummWeight := 0;
   for i := 0 to High(List) do
-    Result := Result + GetRecError(List[i], KoofList, ValFunc);
+  begin
+    Result := Result + GetRecError(List[i], KoofList, ValFunc) * List[i].Weight;
+    SummWeight := SummWeight + List[i].Weight;
+  end;
 
-  if (Length(List) > 0) then
-    Result := Result / Length(List);
+  if (SummWeight > EPS) then
+    Result := Result / SummWeight;
 
   if (ValFunc = vfQuadric) then
     Result := Sqrt(Result);
