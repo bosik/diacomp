@@ -57,7 +57,7 @@ public class TestAnalyzeService
 	{
 		diaryService = new FakeDiaryService(false);
 		analyzeCore = new AnalyzeCoreImpl(40.0);
-		koofService = new KoofServiceImpl(diaryService, analyzeCore, 3650, 0.995);
+		koofService = new KoofServiceImpl(diaryService, analyzeCore, 3650, 0.95);
 		koofService.update();
 	}
 
@@ -189,5 +189,19 @@ public class TestAnalyzeService
 		List<Versioned<DiaryRecord>> records = loadRecords("/analyze_set_4_input.txt");
 		KoofList koofsActual = analyzeCore.analyze(records);
 		assertNull(koofsActual);
+	}
+
+	@Test
+	public void testDiaryAnalyze_set5_ok() throws IOException
+	{
+		List<Versioned<DiaryRecord>> records = loadRecords("/analyze_set_5_input.txt");
+		KoofList koofsActual = analyzeCore.analyze(records);
+
+		for (int time = 0; time < Utils.MinPerDay; time++)
+		{
+			Koof koofAct = koofsActual.getKoof(time);
+			//System.out.println(String.format("%.5f\t%.3f\t%.3f", koofAct.getK(), koofAct.getQ(), koofAct.getP())
+			//		.replace(',', '.'));
+		}
 	}
 }
