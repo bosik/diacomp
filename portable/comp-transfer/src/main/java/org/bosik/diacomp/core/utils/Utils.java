@@ -835,6 +835,25 @@ public class Utils
 	}
 
 	/**
+	 * Checks if two dates belongs to the same day (local timezone)
+	 * 
+	 * @param date1
+	 * @param date2
+	 * @return
+	 */
+	public static boolean sameDay(Date date1, Date date2)
+	{
+		Calendar c1 = Calendar.getInstance();
+		c1.setTime(date1);
+
+		Calendar c2 = Calendar.getInstance();
+		c2.setTime(date2);
+
+		return (c1.get(Calendar.DATE) == c2.get(Calendar.DATE)) && (c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH))
+				&& (c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR));
+	}
+
+	/**
 	 * MISC
 	 */
 

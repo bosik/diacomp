@@ -20,6 +20,7 @@ package org.bosik.diacomp.core.utils;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -340,6 +341,46 @@ public class TestUtils extends TestCase
 		assertEquals("Fail", "00:01", Utils.formatTimePeriod(60));
 		assertEquals("Fail", "01:00", Utils.formatTimePeriod(3600));
 		assertEquals("Fail", "23:59", Utils.formatTimePeriod(86399));
+	}
+
+	public void test_sameDay()
+	{
+		Date time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 13, 15, 29);
+		Date time2 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 13, 15, 29);
+		assertTrue(Utils.sameDay(time1, time2));
+
+		time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 00, 00, 00);
+		time2 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 23, 59, 59);
+		assertTrue(Utils.sameDay(time1, time2));
+
+		time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 00, 00, 00);
+		time2 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 5, 00, 00, 00);
+		assertFalse(Utils.sameDay(time1, time2));
+
+		time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 00, 00, 00);
+		time2 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 3, 23, 59, 59);
+		assertFalse(Utils.sameDay(time1, time2));
+	}
+
+	public void test_sameDay_performance()
+	{
+		Date time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 00, 00, 00);
+		Date time2 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 23, 59, 59);
+
+		final int count = 1000000;
+		long time = System.currentTimeMillis();
+
+		for (int i = 0; i < count; i++)
+		{
+			Utils.sameDay(time1, time2);
+		}
+
+		time = System.currentTimeMillis() - time;
+		final double itemsPerSec = (double)count / (double)time * 1000.0;
+		if (itemsPerSec < 600000)
+		{
+			fail(String.format("Speed: %.0f items/sec", itemsPerSec));
+		}
 	}
 
 	// public void testTimeToStr()

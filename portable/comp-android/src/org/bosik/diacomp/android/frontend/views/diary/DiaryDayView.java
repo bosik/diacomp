@@ -473,7 +473,7 @@ public class DiaryDayView extends LinearLayout
 		{
 			// TODO: it's time, not the date
 			result.add(new ItemHeader(curDate));
-			while (index < records.size() && sameDate(curDate, records.get(index).getData().getTime()))
+			while (index < records.size() && Utils.sameDay(curDate, records.get(index).getData().getTime()))
 			{
 				result.add(new ItemData(records.get(index)));
 				index++;
@@ -524,13 +524,6 @@ public class DiaryDayView extends LinearLayout
 				loading = false;
 			}
 		}.execute(timeFrom, timeTo);
-	}
-
-	// TODO: optimize and move to Utils
-	static boolean sameDate(Date date1, Date date2)
-	{
-		return Utils.formatDateLocal(TimeZone.getDefault(), date1).equals(
-				Utils.formatDateLocal(TimeZone.getDefault(), date2));
 	}
 
 	void loadBefore(final int days)
