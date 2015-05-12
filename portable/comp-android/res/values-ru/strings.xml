@@ -19,6 +19,8 @@
     <string name="base_tip_items_removed">Удалено записей: %d</string>
     <string name="base_title">Продукты и блюда</string>
     <string name="base_title_loading">Продукты и блюда (загрузка…)</string>
+    <string name="common_button_cancel">Отмена</string>
+    <string name="common_button_ok">ОК</string>
     <string name="common_hint_mass">Масса</string>
     <string name="common_hint_search">Поиск&#8230;</string>
     <string name="common_rectype_blood">Замер СК</string>
@@ -55,6 +57,8 @@
     <string name="editor_ins_error_invalid_dosage">Неверная доза инсулина</string>
     <string name="editor_ins_field_value">Доза, ед.</string>
     <string name="editor_ins_title">Инсулин</string>
+    <string name="editor_mass_error">Неверная масса</string>
+    <string name="editor_mass_title">Изменить массу</string>
     <string name="editor_meal_button_more">…</string>
     <string name="editor_meal_field_fooddish">Продукт/блюдо</string>
     <string name="editor_meal_field_mass">Масса, г</string>

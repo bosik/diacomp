@@ -18,6 +18,7 @@
  */
 package org.bosik.diacomp.android.frontend;
 
+import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -52,11 +53,11 @@ public class UIUtils
 
 		input.setText(defaultMass);
 		input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-		// TODO: localize
 		builder.setTitle(title);
 		builder.setMessage(message);
 		builder.setView(input);
-		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+
+		builder.setPositiveButton(context.getString(R.string.common_button_ok), new DialogInterface.OnClickListener()
 		{
 			@Override
 			public void onClick(DialogInterface dialog, int whichButton)
@@ -84,8 +85,7 @@ public class UIUtils
 				}
 				catch (NumberFormatException ex)
 				{
-					// TODO: localize
-					UIUtils.showTip((Activity) context, "Wrong mass");
+					UIUtils.showTip((Activity) context, context.getString(R.string.editor_mass_error));
 					e.onCancel();
 				}
 			}
@@ -98,14 +98,15 @@ public class UIUtils
 				e.onCancel();
 			}
 		});
-		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
-		{
-			@Override
-			public void onClick(DialogInterface dialog, int whichButton)
-			{
-				e.onCancel();
-			}
-		});
+		builder.setNegativeButton(context.getString(R.string.common_button_cancel),
+				new DialogInterface.OnClickListener()
+				{
+					@Override
+					public void onClick(DialogInterface dialog, int whichButton)
+					{
+						e.onCancel();
+					}
+				});
 		builder.show();
 	}
 }

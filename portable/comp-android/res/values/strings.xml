@@ -19,6 +19,8 @@
     <string name="base_tip_items_removed">Removed items: %d</string>
     <string name="base_title">Foods &amp; dishes</string>
     <string name="base_title_loading">Foods &amp; dishes (loading…)</string>
+    <string name="common_button_cancel">Cancel</string>
+    <string name="common_button_ok">OK</string>
     <string name="common_hint_mass">Mass</string>
     <string name="common_hint_search">Search&#8230;</string>
     <string name="common_rectype_blood">Blood sugar</string>
@@ -57,6 +59,8 @@
     <string name="editor_ins_error_invalid_dosage">Invalid insulin dosage</string>
     <string name="editor_ins_field_value">Dosage, U</string>
     <string name="editor_ins_title">Insulin</string>
+    <string name="editor_mass_error">Wrong mass</string>
+    <string name="editor_mass_title">Change mass</string>
     <string name="editor_meal_button_more">…</string>
     <string name="editor_meal_field_fooddish">Food/dish</string>
     <string name="editor_meal_field_mass">Mass, g</string>

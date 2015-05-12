@@ -105,9 +105,9 @@ public class MealEditorView extends LinearLayout
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
 				{
-					// TODO: localize
+					// TODO: i18n
 
-					final String title = "Change mass";
+					final String title = context.getString(R.string.editor_mass_title);
 					final String message = data.get(position).getName() + ", " + captionGramm;
 					final String defaultMass = Utils.formatDoubleShort(data.get(position).getMass());
 
