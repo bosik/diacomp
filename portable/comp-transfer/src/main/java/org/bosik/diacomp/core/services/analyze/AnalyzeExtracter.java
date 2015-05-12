@@ -209,16 +209,22 @@ public class AnalyzeExtracter
 
 		if (!recs.isEmpty())
 		{
-			// calculating min
+			// calculating min & max
 
-			long curTime = new Date().getTime();
-			long min = curTime;
+			long maxTime = recs.get(0).getDate().getTime();
+			long minTime = recs.get(0).getDate().getTime();
 
 			for (PrimeRec rec : recs)
 			{
-				if (rec.getDate().getTime() < min)
+				long cur = rec.getDate().getTime();
+
+				if (cur < minTime)
 				{
-					min = rec.getDate().getTime();
+					minTime = cur;
+				}
+				if (cur > maxTime)
+				{
+					maxTime = cur;
 				}
 			}
 
@@ -236,7 +242,7 @@ public class AnalyzeExtracter
 				// FIXME: hardcoded time zone
 				item.setTime((rec.getFoodTime() + 3 * 60) % Utils.MinPerDay); // FIXME
 
-				double x = (double)(rec.getDate().getTime() - min) / (curTime - min);
+				double x = (double)(rec.getDate().getTime() - minTime) / (maxTime - minTime);
 				double w = f(x, adaptation);
 				//System.out.println(String.format("f(%.2f, %.2f) = %.4f", x, adaptation, w));
 				item.setWeight(w);

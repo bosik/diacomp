@@ -354,20 +354,22 @@ function FormatRecords(const PrimeList: TPrimeRecList; const Adaptation: real): 
 
 var
   i: integer;
-  CurTime: TDateTime;
-  Min: TDateTime;
+  MinTime: TDateTime;
+  MaxTime: TDateTime;
   MinW, MaxW: real;
 begin
   SetLength(Result, Length(PrimeList));
 
   if (Length(Result) > 0) then
   begin
-    CurTime := GetTimeUTC();
-    Min := Trunc(CurTime);
+    MinTime := PrimeList[0].Date;
+    MaxTime := PrimeList[0].Date;
 
-    for i := 0 to High(PrimeList) do
-    if (PrimeList[i].Date < Min) then
-      Min := PrimeList[i].Date;
+    for i := 1 to High(PrimeList) do
+    begin
+      MinTime := Math.Min(MinTime, PrimeList[i].Date);
+      MaxTime := Math.Max(MaxTime, PrimeList[i].Date);
+    end;
 
     for i := 0 to High(Result) do
     begin
@@ -378,7 +380,7 @@ begin
       Result[i].BSIn   := PrimeList[i].BloodInValue;
       Result[i].BSOut  := PrimeList[i].BloodOutValue;
       Result[i].Time   := (MinPerDay + PrimeList[i].FoodTime) mod MinPerDay;
-      Result[i].Weight := F((PrimeList[i].Date - Min) / (CurTime - Min)){ * PrimeList[i].Carbs};
+      Result[i].Weight := F((PrimeList[i].Date - MinTime) / (MaxTime - MinTime)){ * PrimeList[i].Carbs};
     end;
 
     //Log(DEBUG, 'Saved', True);
