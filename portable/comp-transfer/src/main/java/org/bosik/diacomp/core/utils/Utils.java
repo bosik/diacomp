@@ -656,6 +656,14 @@ public class Utils
 		return c.getTime();
 	}
 
+	public static Date getPrevMonth(Date date)
+	{
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		c.add(Calendar.MONTH, -1);
+		return c.getTime();
+	}
+
 	/**
 	 * Adds specified amount of days to the date
 	 * 
