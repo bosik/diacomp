@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal" 
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:orientation="horizontal" >
 
     <ImageView
         android:id="@+id/itemIcon"
@@ -17,8 +17,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="10dp"
+        android:paddingEnd="10dp"
         android:paddingLeft="0dp"
         android:paddingRight="10dp"
+        android:paddingStart="0dp"
         android:paddingTop="10dp"
         android:text="Demo text goes here"
         android:textSize="15sp" />
