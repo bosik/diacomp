@@ -26,6 +26,7 @@ import java.util.TimerTask;
 import java.util.TreeMap;
 import org.bosik.diacomp.android.BuildConfig;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
@@ -44,7 +45,6 @@ import org.bosik.merklesync.SyncUtils;
 import org.bosik.merklesync.SyncUtils.ProgressCallback;
 import org.bosik.merklesync.Versioned;
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -94,16 +94,6 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 
 	/* =========================== METHODS ================================ */
 
-	// TODO: move to common service
-	public static Account[] getAccounts(Context context)
-	{
-		final String ACCOUNT_TYPE = "diacomp.org";
-
-		AccountManager am = AccountManager.get(context);
-		Account[] accounts = am.getAccountsByType(ACCOUNT_TYPE);
-		return accounts;
-	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -125,14 +115,14 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 			localDiary = new DiaryLocalService(getContentResolver());
 
 			// Account sync
-			Account[] accounts = getAccounts(this);
-			if (accounts.length > 0)
+			Account account = AccountUtils.getAccount(this);
+
+			if (account != null)
 			{
 				long SYNC_INTERVAL = 60; // sec
-				ContentResolver.setIsSyncable(accounts[0], DiaryContentProvider.AUTHORITY, 1);
-				ContentResolver.setSyncAutomatically(accounts[0], DiaryContentProvider.AUTHORITY, true);
-				ContentResolver.addPeriodicSync(accounts[0], DiaryContentProvider.AUTHORITY, Bundle.EMPTY,
-						SYNC_INTERVAL);
+				ContentResolver.setIsSyncable(account, DiaryContentProvider.AUTHORITY, 1);
+				ContentResolver.setSyncAutomatically(account, DiaryContentProvider.AUTHORITY, true);
+				ContentResolver.addPeriodicSync(account, DiaryContentProvider.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
 			}
 			else
 			{
