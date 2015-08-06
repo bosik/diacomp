@@ -104,33 +104,13 @@ public class MySQLAccess
 	public static <T> T select(String table, String[] columns, String where, String[] whereArgs, String order,
 			int offset, int limit, DataCallback<T> callback) throws SQLException
 	{
-		Connection connection = datasource.getConnection();
-		try
+		try (Connection connection = datasource.getConnection();
+				PreparedStatement statement = Utils.prepareSelectStatement(connection, table, columns, where,
+						whereArgs, order, offset, limit); ResultSet set = statement.executeQuery())
 		{
-			PreparedStatement statement = Utils.prepareSelectStatement(connection, table, columns, where, whereArgs,
-					order, offset, limit);
 			// TODO: debug
 			System.out.println(statement);
-			try
-			{
-				ResultSet set = statement.executeQuery();
-				try
-				{
-					return callback.onData(set);
-				}
-				finally
-				{
-					if (set != null) set.close();
-				}
-			}
-			finally
-			{
-				if (statement != null) statement.close();
-			}
-		}
-		finally
-		{
-			if (connection != null) connection.close();
+			return callback.onData(set);
 		}
 	}
 
@@ -161,47 +141,24 @@ public class MySQLAccess
 
 	public static int insert(String table, Map<String, String> values) throws SQLException
 	{
-		Connection connection = datasource.getConnection();
-		try
+		try (Connection connection = datasource.getConnection();
+				PreparedStatement statement = Utils.prepareInsertStatement(connection, table, values))
 		{
-			PreparedStatement statement = Utils.prepareInsertStatement(connection, table, values);
 			// TODO: debug
 			System.out.println(statement);
-			try
-			{
-				return statement.executeUpdate();
-			}
-			finally
-			{
-				if (statement != null) statement.close();
-			}
-		}
-		finally
-		{
-			if (connection != null) connection.close();
+			return statement.executeUpdate();
 		}
 	}
 
 	public static int update(String table, Map<String, String> set, Map<String, String> where) throws SQLException
 	{
-		Connection connection = datasource.getConnection();
-		try
+
+		try (Connection connection = datasource.getConnection();
+				PreparedStatement statement = Utils.prepareUpdateStatement(connection, table, set, where);)
 		{
-			PreparedStatement statement = Utils.prepareUpdateStatement(connection, table, set, where);
 			// TODO: debug
 			System.out.println(statement);
-			try
-			{
-				return statement.executeUpdate();
-			}
-			finally
-			{
-				if (statement != null) statement.close();
-			}
-		}
-		finally
-		{
-			if (connection != null) connection.close();
+			return statement.executeUpdate();
 		}
 	}
 }
