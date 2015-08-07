@@ -610,7 +610,7 @@ begin
     { база продуктов }
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_FOODBASE;
     Application.ProcessMessages;
-    if (SyncSources(FoodBaseLocal, FoodBaseWeb, LastSyncTime - 1) > 0) then
+    if (SyncSources(FoodBaseLocal, FoodBaseWeb, SyncProgress) > 0) then
     begin
       Form1.EventFoodbaseChanged(True);
     end;
@@ -618,7 +618,7 @@ begin
     { база блюд }
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_DISHBASE;
     Application.ProcessMessages;
-    if (SyncSources(DishBaseLocal, DishBaseWeb, LastSyncTime - 1) > 0) then
+    if (SyncSources(DishBaseLocal, DishBaseWeb, SyncProgress) > 0) then
     begin
       Form1.EventDishbaseChanged(True, True);
       // TODO: workaround
