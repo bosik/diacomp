@@ -30,6 +30,9 @@ import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
+import org.bosik.diacomp.core.services.base.dish.DishBaseService;
+import org.bosik.diacomp.core.services.base.food.FoodBaseService;
+import org.bosik.diacomp.core.services.search.TagService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 import android.app.Activity;
@@ -331,20 +334,25 @@ public class FoodDishPicker extends LinearLayout
 		// preparing storages
 
 		ContentResolver resolver = getContext().getContentResolver();
-		List<Versioned<FoodItem>> foodBase = Storage.getLocalFoodBase(resolver).findAll(false);
-		List<Versioned<DishItem>> dishBase = Storage.getLocalDishBase(resolver).findAll(false);
-		Map<String, Integer> tags = Storage.getTagService().getTags();
+		
+		final FoodBaseService foodBase = Storage.getLocalFoodBase(resolver);
+		final DishBaseService dishBase = Storage.getLocalDishBase(resolver);
+		final TagService tagService = Storage.getTagService();
+
+		List<Versioned<FoodItem>> foods = foodBase.findAll(false);
+		List<Versioned<DishItem>> dishes = dishBase.findAll(false);
+		Map<String, Integer> tags = tagService.getTags();
 
 		List<Item> data = new ArrayList<Item>();
 
-		for (Versioned<FoodItem> item : foodBase)
+		for (Versioned<FoodItem> item : foods)
 		{
 			Integer tag = tags.get(item.getId());
 			item.getData().setTag(tag != null ? tag : 0);
 			data.add(new Item(item.getData()));
 		}
 
-		for (Versioned<DishItem> item : dishBase)
+		for (Versioned<DishItem> item : dishes)
 		{
 			Integer tag = tags.get(item.getId());
 			item.getData().setTag(tag != null ? tag : 0);
