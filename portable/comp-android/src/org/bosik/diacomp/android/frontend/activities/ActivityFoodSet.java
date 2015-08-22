@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
+import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.features.foodset.FoodSetService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
@@ -253,7 +254,8 @@ public class ActivityFoodSet extends FragmentActivity
 			{
 				try
 				{
-					FoodSetService foodSetService = new FoodSetService(Storage.webClient);
+					WebClient webClient = WebClient.getInstance(ActivityFoodSet.this);
+					FoodSetService foodSetService = new FoodSetService(webClient);
 					return foodSetService.getFoodSets();
 				}
 				catch (Exception e)
@@ -312,7 +314,8 @@ public class ActivityFoodSet extends FragmentActivity
 			{
 				try
 				{
-					FoodSetService foodSetService = new FoodSetService(Storage.webClient);
+					WebClient webClient = WebClient.getInstance(ActivityFoodSet.this);
+					FoodSetService foodSetService = new FoodSetService(webClient);
 					List<Versioned<FoodItem>> foodSet = foodSetService.getFoodSet(foodSetInfo.getId());
 
 					for (Versioned<FoodItem> food : foodSet)

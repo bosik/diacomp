@@ -52,10 +52,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 {
 	private static final String		TAG		= SyncAdapter.class.getSimpleName();
 
-	private final ContentResolver	mContentResolver;
 	private final AccountManager	mAccountManager;
-	private static WebClient		webClientSingleton;
-	private static Object			lock	= new Object();
 
 	/**
 	 * Set up the sync adapter
@@ -63,7 +60,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 	public SyncAdapter(Context context, boolean autoInitialize)
 	{
 		super(context, autoInitialize);
-		mContentResolver = context.getContentResolver();
 		mAccountManager = AccountManager.get(context);
 	}
 
@@ -74,28 +70,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 	public SyncAdapter(Context context, boolean autoInitialize, boolean allowParallelSyncs)
 	{
 		super(context, autoInitialize, allowParallelSyncs);
-		mContentResolver = context.getContentResolver();
 		mAccountManager = AccountManager.get(context);
-	}
-
-	private WebClient getWebClient(final String username, final String password)
-	{
-		synchronized (lock)
-		{
-			final String serverURL = getContext().getString(R.string.server_url);
-
-			if (webClientSingleton == null)
-			{
-				final int connectionTimeout = Integer.parseInt(getContext().getString(R.string.server_timeout));
-				webClientSingleton = new WebClient(connectionTimeout);
-			}
-
-			webClientSingleton.setServer(serverURL);
-			webClientSingleton.setUsername(username);
-			webClientSingleton.setPassword(password);
-
-			return webClientSingleton;
-		}
 	}
 
 	@Override
@@ -112,9 +87,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 
 			ContentResolver contentResolver = getContext().getContentResolver();
 
+			final String serverURL = getContext().getString(R.string.server_url);
 			final String username = account.name;
 			final String password = mAccountManager.getPassword(account);
-			WebClient webClient = getWebClient(username, password);
+			String timeoutS = getContext().getString(R.string.server_timeout);
+			int connectionTimeout = Integer.parseInt(timeoutS);
+			WebClient webClient = WebClient.getInstance(serverURL, username, password, connectionTimeout);
 
 			syncResult.stats.numIoExceptions = 0;
 

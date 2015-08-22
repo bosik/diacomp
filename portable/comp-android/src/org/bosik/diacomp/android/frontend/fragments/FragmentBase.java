@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.frontend.UIUtils;
@@ -35,7 +36,6 @@ import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorDish;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorFood;
 import org.bosik.diacomp.android.frontend.activities.ActivityFoodSet;
-import org.bosik.diacomp.android.frontend.activities.ActivityMain;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
@@ -725,7 +725,7 @@ public class FragmentBase extends Fragment
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.actions_base, menu);
 
-		if (ActivityMain.getAccounts(getActivity()).length > 0)
+		if (AccountUtils.getAccounts(getActivity()).length > 0)
 		{
 			MenuItem item = menu.findItem(R.id.item_common_login);
 			if (item != null)

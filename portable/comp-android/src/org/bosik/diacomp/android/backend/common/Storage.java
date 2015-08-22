@@ -20,7 +20,6 @@ package org.bosik.diacomp.android.backend.common;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryWebService;
@@ -49,11 +48,8 @@ import android.util.Log;
  */
 public class Storage
 {
-	// FIXME: don't refer to ActivityPreferences here
-
 	static final String				TAG					= Storage.class.getSimpleName();
 
-	private static final int		CONNECTION_TIMEOUT	= 12000;
 	private static final int		TIMER_DELAY			= 2 * 1000;						// ms
 	private static final int		TIMER_INTERVAL		= 10 * 60 * 1000;					// ms
 
@@ -61,7 +57,7 @@ public class Storage
 
 	// DAO
 
-	public static WebClient			webClient;
+	private static WebClient		webClient;
 
 	static DiaryService				localDiary;
 	public static DiaryService		webDiary;
@@ -72,6 +68,7 @@ public class Storage
 	public static KoofService		koofService;
 	public static TagService		tagService;
 
+	// TODO: make it preference
 	private static int				ANALYZE_DAYS_PERIOD	= 14;								// 20;
 
 	/**
@@ -86,12 +83,10 @@ public class Storage
 		Log.i(TAG, "Storage unit initialization...");
 
 		// DAO's setup
-
 		if (null == webClient)
 		{
 			Log.i(TAG, "Web client initialization...");
-			webClient = new WebClient(CONNECTION_TIMEOUT);
-			webClient.setServer(context.getString(R.string.server_url));
+			webClient = WebClient.getInstance(context);
 		}
 		if (null == localDiary)
 		{
@@ -208,11 +203,6 @@ public class Storage
 		long time = System.currentTimeMillis();
 		koofService.update();
 		Log.v(TAG, String.format("Analyzing done in %d msec", System.currentTimeMillis() - time));
-	}
-
-	private static boolean check(String testKey, String baseKey)
-	{
-		return (testKey == null) || testKey.equals(baseKey);
 	}
 
 	/**

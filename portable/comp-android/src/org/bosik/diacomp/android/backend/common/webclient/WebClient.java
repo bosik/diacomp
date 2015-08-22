@@ -36,6 +36,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.ConnectionException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.ResponseFormatException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.TaskExecutionException;
@@ -48,6 +50,9 @@ import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.core.utils.Utils;
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.Context;
 import android.util.Log;
 
 public class WebClient
@@ -68,6 +73,8 @@ public class WebClient
 	private String				password;
 	private String				server;
 	private long				lastRequestTime		= 0;
+
+	private static WebClient	webClient;
 
 	/* ================================ ROUTINES ================================ */
 
@@ -251,13 +258,47 @@ public class WebClient
 
 	/* ================================ CONSTRUCTOR ================================ */
 
-	public WebClient(int connectionTimeout)
+	private WebClient(int connectionTimeout)
 	{
 		mHttpClient = new DefaultHttpClient();
 		final HttpParams params = mHttpClient.getParams();
 		HttpConnectionParams.setConnectionTimeout(params, connectionTimeout);
 		HttpConnectionParams.setSoTimeout(params, connectionTimeout);
 		ConnManagerParams.setTimeout(params, connectionTimeout);
+	}
+
+	public static WebClient getInstance(String serverURL, String username, String password, int connectionTimeout)
+	{
+		synchronized (WebClient.class)
+		{
+			if (webClient == null)
+			{
+				webClient = new WebClient(connectionTimeout);
+			}
+			webClient.server = serverURL;
+			webClient.username = username;
+			webClient.password = password;
+		}
+
+		return webClient;
+	}
+
+	/**
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static WebClient getInstance(Context context)
+	{
+		final String serverURL = context.getString(R.string.server_url);
+
+		Account account = AccountUtils.getAccount(context);
+		final String username = account.name;
+		final String password = AccountManager.get(context).getPassword(account);
+		String timeoutS = context.getString(R.string.server_timeout);
+		int connectionTimeout = Integer.parseInt(timeoutS);
+
+		return getInstance(serverURL, username, password, connectionTimeout);
 	}
 
 	// =========================== GET / SET ===========================

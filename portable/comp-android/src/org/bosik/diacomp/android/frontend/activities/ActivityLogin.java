@@ -19,6 +19,7 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.frontend.UIUtils;
@@ -262,10 +263,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			final int connectionTimeout = Integer.parseInt(getString(R.string.server_timeout));
 			final String serverURL = getString(R.string.server_url);
 
-			WebClient client = new WebClient(connectionTimeout);
-			client.setServer(serverURL);
-			client.setUsername(mEmail);
-			client.setPassword(mPassword);
+			WebClient client = WebClient.getInstance(serverURL, mEmail, mPassword, connectionTimeout);
 
 			try
 			{
@@ -353,7 +351,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		setAccountAuthenticatorResult(intent.getExtras());
 
 		// Enabling sync
-		Account[] accounts = ActivityMain.getAccounts(this);
+		Account[] accounts = AccountUtils.getAccounts(this);
 		if (accounts.length > 0)
 		{
 			long SYNC_INTERVAL = 60; // sec

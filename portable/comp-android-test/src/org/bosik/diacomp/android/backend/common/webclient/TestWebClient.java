@@ -43,12 +43,9 @@ public class TestWebClient extends AndroidTestCase
 			String PASSWORD = test.getContext().getString(R.string.test_password);
 			int TIMEOUT = 3000;
 
-			webClient = new WebClient(TIMEOUT);
+			webClient = WebClient.getInstance(USERNAME, PASSWORD, SERVER, TIMEOUT);
 			try
 			{
-				webClient.setUsername(USERNAME);
-				webClient.setPassword(PASSWORD);
-				webClient.setServer(SERVER);
 				webClient.login();
 			}
 			catch (WebClientException e)
