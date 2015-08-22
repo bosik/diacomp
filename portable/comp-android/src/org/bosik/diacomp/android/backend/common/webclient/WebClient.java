@@ -290,15 +290,21 @@ public class WebClient
 	 */
 	public static WebClient getInstance(Context context)
 	{
-		final String serverURL = context.getString(R.string.server_url);
-
-		Account account = AccountUtils.getAccount(context);
-		final String username = account.name;
-		final String password = AccountManager.get(context).getPassword(account);
+		String serverURL = context.getString(R.string.server_url);
 		String timeoutS = context.getString(R.string.server_timeout);
 		int connectionTimeout = Integer.parseInt(timeoutS);
 
-		return getInstance(serverURL, username, password, connectionTimeout);
+		Account account = AccountUtils.getAccount(context);
+		if (account != null)
+		{
+			String username = account.name;
+			String password = AccountManager.get(context).getPassword(account);
+			return getInstance(serverURL, username, password, connectionTimeout);
+		}
+		else
+		{
+			return getInstance(serverURL, null, null, connectionTimeout);
+		}
 	}
 
 	// =========================== GET / SET ===========================
