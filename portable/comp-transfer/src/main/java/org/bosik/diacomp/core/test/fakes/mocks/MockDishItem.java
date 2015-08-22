@@ -35,12 +35,12 @@ public class MockDishItem implements Mock<DishItem>
 		List<DishItem> samples = new ArrayList<DishItem>();
 
 		DishItem dishEmpty = new DishItem();
-		dishEmpty.setName("Empty dish");
+		dishEmpty.setName("[Test] Empty dish");
 		dishEmpty.setTag(100);
 		samples.add(dishEmpty);
 
 		DishItem dishChocolateBiscuit = new DishItem();
-		dishChocolateBiscuit.setName("Бисквит шоколадный");
+		dishChocolateBiscuit.setName("[Test] Бисквит шоколадный");
 		dishChocolateBiscuit.setTag(1);
 		dishChocolateBiscuit.setMass(413);
 		dishChocolateBiscuit.add(new FoodMassed("Яйцо", 12.7, 11.5, 0.7, 157, 200));
@@ -51,7 +51,7 @@ public class MockDishItem implements Mock<DishItem>
 		samples.add(dishChocolateBiscuit);
 
 		DishItem dishTiramisuDessert = new DishItem();
-		dishTiramisuDessert.setName("Десерт \"Тирамису\" (порция)");
+		dishTiramisuDessert.setName("[Test] Десерт \"Тирамису\" (порция)");
 		dishTiramisuDessert.setTag(1);
 		dishTiramisuDessert.setMass(null);
 		dishTiramisuDessert.add(new FoodMassed("Крем для торта \"Тирамису\"", 2.8, 25.7, 27.1, 353.6, 124));
@@ -60,14 +60,14 @@ public class MockDishItem implements Mock<DishItem>
 		samples.add(dishTiramisuDessert);
 
 		DishItem dishToastBatter = new DishItem();
-		dishToastBatter.setName("Кляр для гренок");
+		dishToastBatter.setName("[Test] Кляр для гренок");
 		dishToastBatter.setTag(42);
 		dishToastBatter.add(new FoodMassed("Яйцо", 12.7, 11.5, 0.7, 157, 54));
 		dishToastBatter.add(new FoodMassed("Молоко \"Вкуснотеево\", 3,2%", 2.8, 3.2, 4.7, 58, 172));
 		samples.add(dishToastBatter);
 
 		DishItem dishMegaSalad = new DishItem();
-		dishMegaSalad.setName("Megasalad");
+		dishMegaSalad.setName("[Test] Megasalad");
 		dishMegaSalad.setTag(100500);
 		for (FoodMassed food : mockFood.getSamples())
 		{

@@ -47,12 +47,12 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 		samples.add(new InsRecord(Utils.time(2012, 04, 18, 17, 20, 00), 16.0));
 
 		MealRecord meal1 = new MealRecord(Utils.time(2012, 04, 18, 17, 25, 59), false);
-		meal1.add(new FoodMassed("Карбонат \"Восточный\" (Черн)", 9.9, 26.3, 0, 276, 90));
-		meal1.add(new FoodMassed("Хлеб чёрный \"Премиум\"", 5.5, 0.9, 44.1, 206.3, 42));
+		meal1.add(new FoodMassed("[Test] Карбонат \"Восточный\" (Черн)", 9.9, 26.3, 0, 276, 90));
+		meal1.add(new FoodMassed("[Test] Хлеб чёрный \"Премиум\"", 5.5, 0.9, 44.1, 206.3, 42));
 		samples.add(meal1);
 
 		MealRecord meal2 = new MealRecord(Utils.time(2009, 04, 18, 23, 59, 59), true);
-		meal2.add(new FoodMassed("Сахар", 0.0, 0.0, 99.8, 379.0, 6.0));
+		meal2.add(new FoodMassed("[Test] Сахар", 0.0, 0.0, 99.8, 379.0, 6.0));
 		samples.add(meal2);
 
 		MealRecord meal3 = new MealRecord(Utils.time(2030, 04, 18, 23, 59, 59), true);
@@ -64,7 +64,8 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 
 		samples.add(new MealRecord(Utils.time(2035, 04, 18, 0, 0, 0), true));
 
-		samples.add(new NoteRecord(Utils.time(2016, 01, 01, 12, 00, 00), "Just a тестовая record with \"quotes\""));
+		samples.add(new NoteRecord(Utils.time(2016, 01, 01, 12, 00, 00),
+				"[Test] Just a тестовая record with \"quotes\""));
 
 		samples.add(new NoteRecord(Utils.time(2029, 12, 31, 23, 59, 59), ""));
 
@@ -111,8 +112,8 @@ public class MockDiaryRecord implements Mock<DiaryRecord>
 			default:
 			{
 				Date time = Utils.randomTime();
-				String text = Utils.randomString("", "Escape-test: %$\"'}{][#@!&`~/*-,.;", "Note", "Заметка",
-						"It's ok", "Feeling good", "Had a nice day");
+				String text = Utils.randomString("", "[Test] Escape-test: %$\"'}{][#@!&`~/*-,.;", "[Test] Note",
+						"[Test] Заметка", "[Test] It's ok", "[Test] Feeling good", "[Test] Had a nice day");
 				return new NoteRecord(time, text);
 			}
 		}

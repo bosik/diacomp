@@ -35,13 +35,14 @@ public class MockFood implements Mock<Food>
 	{
 		List<Food> samples = new ArrayList<Food>();
 
-		samples.add(new Food("Хлеб \"Бородино\" нарезка (JUnit test)", 5.5, 0.9, 44.1, 206.3));
-		samples.add(new Food("Абрикос", 0.9, 0.1, 9, 41));
-		samples.add(new Food("Аджика \"Кавказская\"", 0, 0, 15, 60));
-		samples.add(new Food("Активиа кефирная 3%", 2.9, 3, 4.5, 56));
-		samples.add(new Food("Батон \"К чаю\" ХЗ-2 (Золотой колос)", 7.4, 5.4, 51.2, 283));
-		samples.add(new Food("Мороженое эскимо пломбир ванильный в молочном шоколаде \"Олимпиада\"", 4, 23, 27, 340));
-		samples.add(new Food("Яйцо", 12.7, 11.5, 0.7, 157));
+		samples.add(new Food("[Test] Хлеб \"Бородино\" нарезка (JUnit test)", 5.5, 0.9, 44.1, 206.3));
+		samples.add(new Food("[Test] Абрикос", 0.9, 0.1, 9, 41));
+		samples.add(new Food("[Test] Аджика \"Кавказская\"", 0, 0, 15, 60));
+		samples.add(new Food("[Test] Активиа кефирная 3%", 2.9, 3, 4.5, 56));
+		samples.add(new Food("[Test] Батон \"К чаю\" ХЗ-2 (Золотой колос)", 7.4, 5.4, 51.2, 283));
+		samples.add(new Food("[Test] Мороженое эскимо пломбир ванильный в молочном шоколаде \"Олимпиада\"", 4, 23, 27,
+				340));
+		samples.add(new Food("[Test] Яйцо", 12.7, 11.5, 0.7, 157));
 
 		return samples;
 	}
@@ -50,11 +51,11 @@ public class MockFood implements Mock<Food>
 	public Food getSample()
 	{
 		Food food = new FoodMassed();
-		food.setName(Utils.randomString("Escape-test: %$\"'}{][#@!&`~/*-,.;", "Milk", "Абрикос",
-				"Аджика \"Кавказская\"", "Активиа кефирная 3%", "Батон \"К чаю\" ХЗ-2 (Золотой колос)", "Вода",
-				"Карбонат \"Восточный\" (Черн)",
-				"Мороженое эскимо пломбир ванильный в молочном шоколаде \"Олимпиада\"", "Сахар",
-				"Сметана \"Вкуснотеево\" 20%", "Хлеб \"Бородино\" нарезка", "Яйцо"));
+		food.setName(Utils.randomString("[Test] Escape-test: %$\"'}{][#@!&`~/*-,.;", "[Test] Milk", "[Test] Абрикос",
+				"[Test] Аджика \"Кавказская\"", "[Test] Активиа кефирная 3%",
+				"[Test] Батон \"К чаю\" ХЗ-2 (Золотой колос)", "[Test] Вода", "[Test] Карбонат \"Восточный\" (Черн)",
+				"[Test] Мороженое эскимо пломбир ванильный в молочном шоколаде \"Олимпиада\"", "[Test] Сахар",
+				"[Test] Сметана \"Вкуснотеево\" 20%", "[Test] Хлеб \"Бородино\" нарезка", "[Test] Яйцо"));
 
 		double relProts = r.nextInt(400) / 10;
 		double relFats = r.nextInt(400) / 10;
