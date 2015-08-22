@@ -286,75 +286,72 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 		Log.i(TAG, String.format("Tree with %d items build in %d ms", tree.size(), time));
 	}
 
-	private void testSync()
-	{
-		// TODO: i18n
-		String TEXT_SYNC_PROGRESS = "Synchronizing...";
-
-		final NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		final Builder mBuilder = new NotificationCompat.Builder(this);
-		mBuilder.setContentTitle(TEXT_SYNC_PROGRESS).setSmallIcon(R.drawable.button_sync).setOngoing(true);
-		final int ID = 42;
-
-		new AsyncTask<Void, Integer, String>()
-		{
-			@Override
-			protected String doInBackground(Void... par)
-			{
-				try
-				{
-					DiaryService diaryLocal = new DiaryLocalService(getContentResolver());
-					DiaryService diaryWeb = Storage.webDiary;
-
-					int count = SyncUtils.synchronize_v2(diaryLocal, diaryWeb, new ProgressCallback()
-					{
-						@SuppressWarnings("synthetic-access")
-						@Override
-						public void update(int progress, int max)
-						{
-							publishProgress(progress, max);
-						}
-					});
-
-					return String.format("Synced items: %d", count);
-				}
-				// catch (ConnectTimeoutException e)
-				// {
-				// return "Server not responding";
-				// }
-				catch (Exception e)
-				{
-					// TODO: i18n
-					return BuildConfig.DEBUG ? e.getMessage() : "Failed to sync personal data";
-				}
-			}
-
-			@Override
-			protected void onProgressUpdate(Integer... values)
-			{
-				mBuilder.setProgress(values[1], values[0], false);
-				int percentage = values[0] * 100 / values[1];
-				mBuilder.setContentText(String.format("%d %%", percentage));
-				mNotifyManager.notify(ID, mBuilder.build());
-			}
-
-			@Override
-			protected void onPostExecute(String message)
-			{
-				if (message != null)
-				{
-					mBuilder.setContentTitle("Data sync");
-					mBuilder.setContentText(message);
-					mBuilder.setOngoing(false);
-					mNotifyManager.notify(ID, mBuilder.build());
-				}
-				else
-				{
-					mNotifyManager.cancel(ID);
-				}
-			};
-		}.execute();
-	}
+	// private void testSync()
+	// {
+	// // TODO: i18n
+	// String TEXT_SYNC_PROGRESS = "Synchronizing...";
+	//
+	// final NotificationManager mNotifyManager = (NotificationManager)
+	// getSystemService(Context.NOTIFICATION_SERVICE);
+	// final Builder mBuilder = new NotificationCompat.Builder(this);
+	// mBuilder.setContentTitle(TEXT_SYNC_PROGRESS).setSmallIcon(R.drawable.button_sync).setOngoing(true);
+	// final int ID = 42;
+	//
+	// new AsyncTask<Void, Integer, String>()
+	// {
+	// @Override
+	// protected String doInBackground(Void... par)
+	// {
+	// try
+	// {
+	// DiaryService diaryLocal = new DiaryLocalService(getContentResolver());
+	// DiaryService diaryWeb = Storage.webDiary;
+	//
+	// int count = SyncUtils.synchronize_v2(diaryLocal, diaryWeb, new ProgressCallback()
+	// {
+	// @SuppressWarnings("synthetic-access")
+	// @Override
+	// public void update(int progress, int max)
+	// {
+	// publishProgress(progress, max);
+	// }
+	// });
+	//
+	// return String.format("Synced items: %d", count);
+	// }
+	// catch (Exception e)
+	// {
+	// // TODO: i18n
+	// return BuildConfig.DEBUG ? e.getMessage() : "Failed to sync personal data";
+	// }
+	// }
+	//
+	// @Override
+	// protected void onProgressUpdate(Integer... values)
+	// {
+	// mBuilder.setProgress(values[1], values[0], false);
+	// int percentage = values[0] * 100 / values[1];
+	// mBuilder.setContentText(String.format("%d %%", percentage));
+	// mNotifyManager.notify(ID, mBuilder.build());
+	// }
+	//
+	// @Override
+	// protected void onPostExecute(String message)
+	// {
+	// if (message != null)
+	// {
+	// mBuilder.setContentTitle("Data sync");
+	// mBuilder.setContentText(message);
+	// mBuilder.setOngoing(false);
+	// mNotifyManager.notify(ID, mBuilder.build());
+	// }
+	// else
+	// {
+	// mNotifyManager.cancel(ID);
+	// }
+	// };
+	// }.execute();
+	// }
 
 	/**
 	 * Async
