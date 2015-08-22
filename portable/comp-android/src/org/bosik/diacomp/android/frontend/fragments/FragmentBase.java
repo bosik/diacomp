@@ -45,6 +45,7 @@ import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.search.Sorter;
 import org.bosik.diacomp.core.services.search.Sorter.Sort;
+import org.bosik.diacomp.core.services.search.TagService;
 import org.bosik.merklesync.Versioned;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -99,7 +100,7 @@ public class FragmentBase extends Fragment
 	// Data
 	FoodBaseService										foodBaseService;
 	DishBaseService										dishBaseService;
-	private final Map<String, Integer>					tagInfo				= Storage.tagService.getTags();
+	private TagService									tagService;
 	List<Versioned<NamedRelativeTagged>>				data				= new ArrayList<Versioned<NamedRelativeTagged>>();
 	BaseAdapter											adapter;
 	private static final Sorter<NamedRelativeTagged>	sorter				= new Sorter<NamedRelativeTagged>();
@@ -157,6 +158,7 @@ public class FragmentBase extends Fragment
 		resolver.registerContentObserver(DiaryContentProvider.CONTENT_BASE_URI, true, observer);
 		foodBaseService = Storage.getLocalFoodBase(resolver);
 		dishBaseService = Storage.getLocalDishBase(resolver);
+		tagService = Storage.getTagService();
 	}
 
 	@Override
@@ -601,7 +603,8 @@ public class FragmentBase extends Fragment
 			// TODO: check the performance
 			List<Versioned<NamedRelativeTagged>> result = new ArrayList<Versioned<NamedRelativeTagged>>();
 
-			for (Entry<String, Integer> tag : tagInfo.entrySet())
+			Map<String, Integer> tags = tagService.getTags();
+			for (Entry<String, Integer> tag : tags.entrySet())
 			{
 				Versioned<? extends NamedRelativeTagged> indexItem = baseIndex.get(tag.getKey());
 				if (indexItem != null)
@@ -629,11 +632,11 @@ public class FragmentBase extends Fragment
 
 					while (result.size() < LIMIT)
 					{
-						while ((i < foodItems.size()) && (tagInfo.get(foodItems.get(i).getId()) != null))
+						while ((i < foodItems.size()) && (tags.get(foodItems.get(i).getId()) != null))
 						{
 							i++;
 						}
-						while ((j < dishItems.size()) && (tagInfo.get(dishItems.get(j).getId()) != null))
+						while ((j < dishItems.size()) && (tags.get(dishItems.get(j).getId()) != null))
 						{
 							j++;
 						}

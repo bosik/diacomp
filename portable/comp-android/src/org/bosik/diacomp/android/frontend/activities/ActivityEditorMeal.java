@@ -29,9 +29,11 @@ import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView.OnChange
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.utils.Utils;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,6 +50,8 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	public static final String	FIELD_BS_BEFORE_MEAL	= "bosik.pack.bs.beforeMeal";
 	public static final String	FIELD_BS_TARGET			= "bosik.pack.bs.target";
 	public static final String	FIELD_INS_INJECTED		= "bosik.pack.insInjected";
+
+	private KoofService			koofService;
 
 	// data
 	boolean						modified;
@@ -84,6 +88,14 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private String				captionMmol;
 
 	// ======================================================================================================
+
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+
+		koofService = Storage.getKoofService(getContentResolver());
+	}
 
 	@Override
 	protected void setupInterface()
@@ -259,7 +271,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		// insulin dosage info
 
 		int minutesTime = Utils.getDayMinutesUTC(entity.getData().getTime());
-		Koof koof = Storage.koofService.getKoof(minutesTime);
+		Koof koof = koofService.getKoof(minutesTime);
 
 		double deltaBS = 0.0;
 

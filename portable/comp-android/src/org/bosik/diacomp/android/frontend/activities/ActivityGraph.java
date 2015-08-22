@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
+import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
@@ -43,6 +44,8 @@ public class ActivityGraph extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_graph);
 
+		final KoofService koofService = Storage.getKoofService(getContentResolver());
+
 		final GraphViewSeriesStyle styleK = new GraphViewSeriesStyle(Color.rgb(255, 128, 128), 4);
 		final GraphViewSeriesStyle styleQ = new GraphViewSeriesStyle(Color.rgb(128, 128, 255), 4);
 
@@ -52,7 +55,7 @@ public class ActivityGraph extends Activity
 		List<GraphViewData> dataQ = new ArrayList<GraphViewData>();
 		for (int time = 0; time < Utils.MinPerDay; time += 10)
 		{
-			Koof koof = Storage.koofService.getKoof(time);
+			Koof koof = koofService.getKoof(time);
 			dataK.add(new GraphViewData(time, koof.getK()));
 			dataQ.add(new GraphViewData(time, koof.getQ()));
 		}

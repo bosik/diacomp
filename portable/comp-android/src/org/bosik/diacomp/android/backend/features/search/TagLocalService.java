@@ -21,7 +21,6 @@ package org.bosik.diacomp.android.backend.features.search;
 import java.util.HashMap;
 import java.util.Map;
 import org.bosik.diacomp.core.services.search.TagService;
-import android.content.ContentResolver;
 
 public class TagLocalService implements TagService
 {
@@ -29,7 +28,7 @@ public class TagLocalService implements TagService
 
 	private static final Map<String, Integer>	cache	= new HashMap<String, Integer>();
 
-	public TagLocalService(ContentResolver resolver)
+	public TagLocalService(/*ContentResolver resolver*/)
 	{
 		// if (null == resolver)
 		// {

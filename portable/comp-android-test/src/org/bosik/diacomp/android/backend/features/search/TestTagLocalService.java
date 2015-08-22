@@ -85,8 +85,7 @@ public class TestTagLocalService extends AndroidTestCase
 	public void setUp() throws Exception
 	{
 		super.setUp();
-		ContentResolver resolver = getContext().getContentResolver();
-		tagService = new TagLocalService(resolver);
+		tagService = new TagLocalService();
 	}
 
 	public void testInsertPerfomance()

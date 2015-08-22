@@ -276,7 +276,7 @@ public class FoodDishPicker extends LinearLayout
 
 	private void init(Context context)
 	{
-		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.view_fooddishpicker, this);
 
 		if (!isInEditMode())
@@ -333,20 +333,20 @@ public class FoodDishPicker extends LinearLayout
 		ContentResolver resolver = getContext().getContentResolver();
 		List<Versioned<FoodItem>> foodBase = Storage.getLocalFoodBase(resolver).findAll(false);
 		List<Versioned<DishItem>> dishBase = Storage.getLocalDishBase(resolver).findAll(false);
-		Map<String, Integer> tagInfo = Storage.tagService.getTags();
+		Map<String, Integer> tags = Storage.getTagService().getTags();
 
 		List<Item> data = new ArrayList<Item>();
 
 		for (Versioned<FoodItem> item : foodBase)
 		{
-			Integer tag = tagInfo.get(item.getId());
+			Integer tag = tags.get(item.getId());
 			item.getData().setTag(tag != null ? tag : 0);
 			data.add(new Item(item.getData()));
 		}
 
 		for (Versioned<DishItem> item : dishBase)
 		{
-			Integer tag = tagInfo.get(item.getId());
+			Integer tag = tags.get(item.getId());
 			item.getData().setTag(tag != null ? tag : 0);
 			data.add(new Item(item.getData()));
 		}

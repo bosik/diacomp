@@ -57,19 +57,19 @@ public class Storage
 
 	// DAO
 
-	private static WebClient		webClient;
+	private static WebClient		webClient;												// ok
 
 	static DiaryService				localDiary;
-	public static DiaryService		webDiary;
-	private static FoodBaseService	localFoodBase;
-	private static DishBaseService	localDishBase;
+	static DiaryService				webDiary;
+	private static FoodBaseService	localFoodBase;											// ok
+	private static DishBaseService	localDishBase;											// ok
 
-	private static AnalyzeCore		analyzeCore;
-	public static KoofService		koofService;
-	public static TagService		tagService;
+	private static AnalyzeCore		analyzeCore;											// ok
+	private static KoofService		koofService;											// ok
+	private static TagService		tagService;											// ok
 
 	// TODO: make it preference
-	private static int				ANALYZE_DAYS_PERIOD	= 14;								// 20;
+	private static int				ANALYZE_DAYS_PERIOD	= 14;
 
 	/**
 	 * Initializes the storage. Might be called sequentially
@@ -83,51 +83,57 @@ public class Storage
 		Log.i(TAG, "Storage unit initialization...");
 
 		// DAO's setup
-		if (null == webClient)
-		{
-			Log.i(TAG, "Web client initialization...");
-			webClient = WebClient.getInstance(context);
-		}
+		getWebClient(context);
 
 		// TODO: refactor Storage-internal singletone usage (e.g. see relevantIndexation())
 
 		getLocalFoodBase(resolver);
 		getLocalDishBase(resolver);
 
+		getLocalDiary(resolver);
+		getWebDiary(context);
+
+		getAnalyzeService();
+		getKoofService(resolver);
+
+		getTagService();
+
+		ErrorHandler.init(getWebClient(context));
+
+		// this applies all preferences
+		applyPreference(preferences, null);
+		setupBackgroundTimer(resolver);
+	}
+
+	public static synchronized WebClient getWebClient(Context context)
+	{
+		if (null == webClient)
+		{
+			Log.i(TAG, "Web client initialization...");
+			webClient = WebClient.getInstance(context);
+		}
+		return webClient;
+	}
+
+	public static synchronized DiaryService getWebDiary(Context context)
+	{
+		if (null == webDiary)
+		{
+			Log.i(TAG, "Web diary initialization...");
+			WebClient webClient = getWebClient(context);
+			webDiary = new DiaryWebService(webClient);
+		}
+		return webDiary;
+	}
+
+	public static synchronized DiaryService getLocalDiary(ContentResolver resolver)
+	{
 		if (null == localDiary)
 		{
 			Log.i(TAG, "Local diary initialization...");
 			localDiary = new DiaryLocalService(resolver);
 		}
-		if (null == webDiary)
-		{
-			Log.i(TAG, "Web diary initialization...");
-			webDiary = new DiaryWebService(webClient);
-		}
-		if (null == analyzeCore)
-		{
-			// TODO: hardcoded approximation factor
-			analyzeCore = new AnalyzeCoreImpl(40.0);
-			// analyzeCore = new HardcodedAnalyzeService();
-		}
-
-		if (koofService == null)
-		{
-			// TODO: hardcoded adaptation
-			koofService = new KoofServiceImpl(localDiary, analyzeCore, ANALYZE_DAYS_PERIOD, 0.995);
-		}
-
-		if (null == tagService)
-		{
-			Log.i(TAG, "Local tag service initialization...");
-			tagService = new TagLocalService(resolver);
-		}
-
-		ErrorHandler.init(webClient);
-
-		// this applies all preferences
-		applyPreference(preferences, null);
-		setupBackgroundTimer();
+		return localDiary;
 	}
 
 	public static synchronized FoodBaseService getLocalFoodBase(ContentResolver resolver)
@@ -148,6 +154,39 @@ public class Storage
 			localDishBase = new DishBaseLocalService(resolver);
 		}
 		return localDishBase;
+	}
+
+	public static synchronized AnalyzeCore getAnalyzeService()
+	{
+		if (null == analyzeCore)
+		{
+			// TODO: hardcoded approximation factor
+			analyzeCore = new AnalyzeCoreImpl(40.0);
+			// analyzeCore = new HardcodedAnalyzeService();
+		}
+		return analyzeCore;
+	}
+
+	public static synchronized KoofService getKoofService(ContentResolver resolver)
+	{
+		if (koofService == null)
+		{
+			DiaryService localDiary = getLocalDiary(resolver);
+			AnalyzeCore analyzeService = getAnalyzeService();
+			// TODO: hardcoded adaptation
+			koofService = new KoofServiceImpl(localDiary, analyzeService, ANALYZE_DAYS_PERIOD, 0.995);
+		}
+		return koofService;
+	}
+
+	public static synchronized TagService getTagService()
+	{
+		if (null == tagService)
+		{
+			Log.i(TAG, "Local tag service initialization...");
+			tagService = new TagLocalService();
+		}
+		return tagService;
 	}
 
 	public static void syncDiary(String guid)
@@ -171,7 +210,7 @@ public class Storage
 		}.execute(guid);
 	}
 
-	private static void setupBackgroundTimer()
+	private static void setupBackgroundTimer(final ContentResolver resolver)
 	{
 		if (timerSettedUp)
 		{
@@ -191,8 +230,8 @@ public class Storage
 					{
 						/**/long time = System.currentTimeMillis();
 
-						relevantIndexation();
-						analyzeKoofs();
+						relevantIndexation(resolver);
+						analyzeKoofs(resolver);
 
 						/**/time = System.currentTimeMillis() - time;
 						/**/Log.d(TAG, "Backgrounds done in " + time + " ms");
@@ -206,17 +245,26 @@ public class Storage
 		new Timer().scheduleAtFixedRate(task, TIMER_DELAY, TIMER_INTERVAL);
 	}
 
-	static void relevantIndexation()
+	static void relevantIndexation(ContentResolver resolver)
 	{
 		long time = System.currentTimeMillis();
-		RelevantIndexator.indexate(tagService, localDiary, localFoodBase, localDishBase);
+
+		final TagService tagService = getTagService();
+		final DiaryService diary = getLocalDiary(resolver);
+		final FoodBaseService foodBase = getLocalFoodBase(resolver);
+		final DishBaseService dishBase = getLocalDishBase(resolver);
+
+		RelevantIndexator.indexate(tagService, diary, foodBase, dishBase);
+
 		Log.v(TAG, String.format("Relevant indexation done in %d msec", System.currentTimeMillis() - time));
 	}
 
-	static void analyzeKoofs()
+	static void analyzeKoofs(ContentResolver resolver)
 	{
 		long time = System.currentTimeMillis();
-		koofService.update();
+
+		getKoofService(resolver).update();
+
 		Log.v(TAG, String.format("Analyzing done in %d msec", System.currentTimeMillis() - time));
 	}
 
