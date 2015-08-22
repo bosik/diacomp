@@ -29,6 +29,7 @@ import org.bosik.diacomp.android.backend.features.preferences.account.Preference
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.FoodSetInfo;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.preferences.Preference;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.merklesync.Versioned;
@@ -318,11 +319,13 @@ public class ActivityFoodSet extends FragmentActivity
 					FoodSetService foodSetService = new FoodSetService(webClient);
 					List<Versioned<FoodItem>> foodSet = foodSetService.getFoodSet(foodSetInfo.getId());
 
+					FoodBaseService localFoodBase = Storage.getLocalFoodBase(getContentResolver());
+
 					for (Versioned<FoodItem> food : foodSet)
 					{
 						food.setDeleted(!include);
 
-						Versioned<FoodItem> temp = Storage.localFoodBase.findById(food.getId());
+						Versioned<FoodItem> temp = localFoodBase.findById(food.getId());
 						if (temp != null)
 						{
 							food.updateTimeStamp();
@@ -330,7 +333,7 @@ public class ActivityFoodSet extends FragmentActivity
 						}
 					}
 
-					Storage.localFoodBase.save(foodSet);
+					localFoodBase.save(foodSet);
 					return true;
 				}
 				catch (Exception e)

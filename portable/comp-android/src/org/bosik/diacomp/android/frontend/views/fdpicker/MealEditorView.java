@@ -28,9 +28,12 @@ import org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker.OnSubmit
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.services.base.dish.DishBaseService;
+import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -146,9 +149,12 @@ public class MealEditorView extends LinearLayout
 				@Override
 				public boolean onSubmit(String name, double mass)
 				{
+					ContentResolver resolver = getContext().getContentResolver();
+
 					// try to search item in food base
 
-					Versioned<FoodItem> foodItem = Storage.localFoodBase.findOne(name);
+					FoodBaseService foodBase = Storage.getLocalFoodBase(resolver);
+					Versioned<FoodItem> foodItem = foodBase.findOne(name);
 
 					if (foodItem != null)
 					{
@@ -173,8 +179,8 @@ public class MealEditorView extends LinearLayout
 					}
 
 					// try to search item in dish base
-
-					List<Versioned<DishItem>> listDish = Storage.localDishBase.findAny(name);
+					DishBaseService dishBase = Storage.getLocalDishBase(resolver);
+					List<Versioned<DishItem>> listDish = dishBase.findAny(name);
 
 					if (!listDish.isEmpty())
 					{

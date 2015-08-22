@@ -61,8 +61,8 @@ public class Storage
 
 	static DiaryService				localDiary;
 	public static DiaryService		webDiary;
-	public static FoodBaseService	localFoodBase;
-	public static DishBaseService	localDishBase;
+	private static FoodBaseService	localFoodBase;
+	private static DishBaseService	localDishBase;
 
 	private static AnalyzeCore		analyzeCore;
 	public static KoofService		koofService;
@@ -88,6 +88,12 @@ public class Storage
 			Log.i(TAG, "Web client initialization...");
 			webClient = WebClient.getInstance(context);
 		}
+
+		// TODO: refactor Storage-internal singletone usage (e.g. see relevantIndexation())
+
+		getLocalFoodBase(resolver);
+		getLocalDishBase(resolver);
+
 		if (null == localDiary)
 		{
 			Log.i(TAG, "Local diary initialization...");
@@ -98,17 +104,6 @@ public class Storage
 			Log.i(TAG, "Web diary initialization...");
 			webDiary = new DiaryWebService(webClient);
 		}
-		if (null == localFoodBase)
-		{
-			Log.i(TAG, "Local food base initialization...");
-			localFoodBase = new FoodBaseLocalService(resolver);
-		}
-		if (null == localDishBase)
-		{
-			Log.i(TAG, "Local dish base initialization...");
-			localDishBase = new DishBaseLocalService(resolver);
-		}
-
 		if (null == analyzeCore)
 		{
 			// TODO: hardcoded approximation factor
@@ -133,6 +128,26 @@ public class Storage
 		// this applies all preferences
 		applyPreference(preferences, null);
 		setupBackgroundTimer();
+	}
+
+	public static synchronized FoodBaseService getLocalFoodBase(ContentResolver resolver)
+	{
+		if (null == localFoodBase)
+		{
+			Log.i(TAG, "Local food base initialization...");
+			localFoodBase = new FoodBaseLocalService(resolver);
+		}
+		return localFoodBase;
+	}
+
+	public static synchronized DishBaseService getLocalDishBase(ContentResolver resolver)
+	{
+		if (null == localDishBase)
+		{
+			Log.i(TAG, "Local dish base initialization...");
+			localDishBase = new DishBaseLocalService(resolver);
+		}
+		return localDishBase;
 	}
 
 	public static void syncDiary(String guid)

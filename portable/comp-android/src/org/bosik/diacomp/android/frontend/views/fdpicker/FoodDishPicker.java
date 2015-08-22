@@ -33,6 +33,7 @@ import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -328,8 +329,10 @@ public class FoodDishPicker extends LinearLayout
 	private void loadItemsList()
 	{
 		// preparing storages
-		List<Versioned<FoodItem>> foodBase = Storage.localFoodBase.findAll(false);
-		List<Versioned<DishItem>> dishBase = Storage.localDishBase.findAll(false);
+
+		ContentResolver resolver = getContext().getContentResolver();
+		List<Versioned<FoodItem>> foodBase = Storage.getLocalFoodBase(resolver).findAll(false);
+		List<Versioned<DishItem>> dishBase = Storage.getLocalDishBase(resolver).findAll(false);
 		Map<String, Integer> tagInfo = Storage.tagService.getTags();
 
 		List<Item> data = new ArrayList<Item>();

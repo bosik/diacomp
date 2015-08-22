@@ -47,6 +47,7 @@ import org.bosik.diacomp.core.services.search.Sorter;
 import org.bosik.diacomp.core.services.search.Sorter.Sort;
 import org.bosik.merklesync.Versioned;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.net.Uri;
@@ -96,8 +97,8 @@ public class FragmentBase extends Fragment
 	ListView											list;
 
 	// Data
-	final FoodBaseService								foodBaseService		= Storage.localFoodBase;
-	final DishBaseService								dishBaseService		= Storage.localDishBase;
+	FoodBaseService										foodBaseService;
+	DishBaseService										dishBaseService;
 	private final Map<String, Integer>					tagInfo				= Storage.tagService.getTags();
 	List<Versioned<NamedRelativeTagged>>				data				= new ArrayList<Versioned<NamedRelativeTagged>>();
 	BaseAdapter											adapter;
@@ -151,9 +152,12 @@ public class FragmentBase extends Fragment
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		getActivity().getContentResolver().registerContentObserver(DiaryContentProvider.CONTENT_BASE_URI, true,
-				observer);
-	};
+		ContentResolver resolver = getActivity().getContentResolver();
+
+		resolver.registerContentObserver(DiaryContentProvider.CONTENT_BASE_URI, true, observer);
+		foodBaseService = Storage.getLocalFoodBase(resolver);
+		dishBaseService = Storage.getLocalDishBase(resolver);
+	}
 
 	@Override
 	public void onDestroy()
