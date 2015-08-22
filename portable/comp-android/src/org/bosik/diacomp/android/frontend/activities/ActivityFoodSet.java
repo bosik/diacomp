@@ -20,6 +20,7 @@ package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
@@ -206,7 +207,7 @@ public class ActivityFoodSet extends FragmentActivity
 
 				FoodSetInfo foodSetInfo = data.get(position);
 				CheckedTextView textView = (CheckedTextView) convertView.findViewById(android.R.id.text1);
-				String text = String.format("%s (%d)", foodSetInfo.getDescription(), foodSetInfo.getSize());
+				String text = String.format(Locale.US, "%s (%d)", foodSetInfo.getDescription(), foodSetInfo.getSize());
 				textView.setText(text);
 				return convertView;
 			}
