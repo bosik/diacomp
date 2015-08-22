@@ -92,9 +92,9 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		super.onCreate(savedInstanceState);
-
+		// Service must be initialized before super() is called
 		koofService = Storage.getKoofService(getContentResolver());
+		super.onCreate(savedInstanceState);
 	}
 
 	@Override
