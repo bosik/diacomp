@@ -15,8 +15,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@+id/editor_food_title"
+        android:paddingEnd="@dimen/padding_tiny"
         android:paddingLeft="@dimen/padding_large"
         android:paddingRight="@dimen/padding_tiny"
+        android:paddingStart="@dimen/padding_large"
         android:src="@drawable/button_foodbase" />
 
     <LinearLayout
