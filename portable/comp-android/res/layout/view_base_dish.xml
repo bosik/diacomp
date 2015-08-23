@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/padding_tiny"
@@ -32,8 +33,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/padding_small"
             android:layout_marginRight="@dimen/padding_small"
-            android:text="Dish"
-            android:textSize="@dimen/diaryTextSizeBase" />
+            android:text="Demo dish"
+            android:textSize="@dimen/diaryTextSizeBase"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/baseItemDishInfo"
@@ -43,7 +45,8 @@
             android:layout_marginRight="@dimen/padding_small"
             android:text="P: 4.2   F: 3.2   C: 4.7   V: 42"
             android:textColor="@color/font_gray"
-            android:textSize="@dimen/diaryTextSizeSmall" />
+            android:textSize="@dimen/diaryTextSizeSmall"
+            tools:ignore="HardcodedText" />
     </LinearLayout>
 
 </LinearLayout>

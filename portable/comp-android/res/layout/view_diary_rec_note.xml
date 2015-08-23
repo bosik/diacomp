@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/padding_tiny"
@@ -25,7 +26,8 @@
             android:text="08:45"
             android:textColor="@color/diary_font"
             android:textSize="@dimen/diaryTextSizeBase"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
     </LinearLayout>
 
     <LinearLayout
@@ -43,9 +45,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:text="The note"
+            android:text="Demo note"
             android:textColor="@color/diary_font"
-            android:textSize="@dimen/diaryTextSizeBase" />
+            android:textSize="@dimen/diaryTextSizeBase"
+            tools:ignore="HardcodedText" />
     </LinearLayout>
 
 </LinearLayout>

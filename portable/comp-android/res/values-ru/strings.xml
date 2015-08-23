@@ -17,6 +17,7 @@
     <string name="base_tip_food_edit_fail">Ошибка сохранения продукта</string>
     <string name="base_tip_food_edit_ok">Продукт сохранён</string>
     <string name="base_tip_items_removed">Удалено записей: %d</string>
+    <string name="common_action_delete">Удалить</string>
     <string name="common_button_cancel">Отмена</string>
     <string name="common_button_ok">ОК</string>
     <string name="common_hint_mass">Масса</string>
