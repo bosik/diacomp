@@ -14,7 +14,6 @@
         android:completionThreshold="1"
         android:dropDownVerticalOffset="4dp"
         android:dropDownWidth="fill_parent"
-        android:ems="10"
         android:hint="@string/common_hint_search"
         android:imeOptions="actionSearch"
         android:inputType="textMultiLine"
@@ -29,12 +28,12 @@
         android:layout_width="0px"
         android:layout_height="match_parent"
         android:layout_weight="3"
-        android:ems="10"
+        android:digits="0123456789.+-"
         android:hint="@string/common_hint_mass"
         android:imeActionId="@+id/actionAddFood"
         android:imeActionLabel="@string/fd_action_add"
         android:imeOptions="actionUnspecified"
-        android:inputType="numberDecimal|text"
+        android:inputType="numberDecimal"
         android:singleLine="true" />
 
     <Button
