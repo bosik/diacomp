@@ -50,7 +50,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Filter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -138,10 +137,8 @@ class ItemAdapter extends ArrayAdapter<Item>
 			TextView itemCaption = (TextView) v.findViewById(R.id.itemDescription);
 			itemCaption.setText(item.getCaption());
 
-			ImageView itemIcon = (ImageView) v.findViewById(R.id.itemIcon);
-
 			int iconResId = FoodDishPicker.iconMap.get(item.getType());
-			itemIcon.setImageResource(iconResId);
+			itemCaption.setCompoundDrawablesWithIntrinsicBounds(iconResId, 0, 0, 0);
 		}
 		return v;
 	}
@@ -334,7 +331,7 @@ public class FoodDishPicker extends LinearLayout
 		// preparing storages
 
 		ContentResolver resolver = getContext().getContentResolver();
-		
+
 		final FoodBaseService foodBase = Storage.getLocalFoodBase(resolver);
 		final DishBaseService dishBase = Storage.getLocalDishBase(resolver);
 		final TagService tagService = Storage.getTagService();

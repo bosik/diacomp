@@ -42,6 +42,7 @@
         android:layout_width="54dip"
         android:layout_height="match_parent"
         android:drawableLeft="@drawable/button_fooddish_add"
+        android:drawableStart="@drawable/button_fooddish_add"
         android:focusable="false" />
 
 </LinearLayout>
