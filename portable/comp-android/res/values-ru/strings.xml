@@ -17,8 +17,6 @@
     <string name="base_tip_food_edit_fail">Ошибка сохранения продукта</string>
     <string name="base_tip_food_edit_ok">Продукт сохранён</string>
     <string name="base_tip_items_removed">Удалено записей: %d</string>
-    <string name="base_title">Продукты и блюда</string>
-    <string name="base_title_loading">Продукты и блюда (загрузка…)</string>
     <string name="common_button_cancel">Отмена</string>
     <string name="common_button_ok">ОК</string>
     <string name="common_hint_mass">Масса</string>
@@ -30,15 +28,10 @@
     <string name="common_unit_bs_mmoll">ммоль/л</string>
     <string name="common_unit_insulin">ед.</string>
     <string name="common_unit_mass_gramm">г</string>
-    <string name="diary_button_add">Новая запись</string>
-    <string name="diary_context_common_edit">Изменить</string>
-    <string name="diary_context_common_remove">Удалить</string>
-    <string name="diary_title">Дневник</string>
     <string name="editor_blood_field_finger">Палец</string>
     <string name="editor_blood_field_value">Значение, ммоль/л</string>
     <string name="editor_blood_title">Замер СК</string>
     <string name="editor_common_field_time">Дата и время</string>
-    <string name="editor_common_field_value">Значение</string>
     <string name="editor_common_save">Сохранить</string>
     <string name="editor_dish_error_empty_name">Введите название блюда</string>
     <string name="editor_dish_field_content">Состав</string>
@@ -60,8 +53,6 @@
     <string name="editor_mass_error">Неверная масса</string>
     <string name="editor_mass_title">Изменить массу</string>
     <string name="editor_meal_button_more">…</string>
-    <string name="editor_meal_field_fooddish">Продукт/блюдо</string>
-    <string name="editor_meal_field_mass">Масса, г</string>
     <string name="editor_meal_header_content">Состав</string>
     <string name="editor_meal_header_dosage">Расчёт</string>
     <string name="editor_meal_info">Информация</string>
@@ -93,7 +84,6 @@
     <string name="foodset_tip_set_remove_fail">Не удалось удалить: %s</string>
     <string name="foodset_tip_set_remove_ok">Удалено: %s</string>
     <string name="foodset_title">Наборы продуктов</string>
-    <string name="login_action_forgot_password">Восстановить пароль</string>
     <string name="login_action_register">Создать аккаунт</string>
     <string name="login_action_sign_in">Войти</string>
     <string name="login_action_sign_in_short">Войти</string>
@@ -110,7 +100,6 @@
     <string name="main_option_diary">Дневник</string>
     <string name="main_option_login">Вход</string>
     <string name="main_option_preferences">Настройки</string>
-    <string name="main_option_test">Тест</string>
     <string name="main_title">Компенсация</string>
     <string name="notification_time_after_injection">после инъекции</string>
     <string name="notification_time_after_meal">после еды</string>
@@ -121,18 +110,6 @@
 
     <!-- Arrays -->
 
-    <string-array name="fingers">
-        <item>[Левая]: большой</item>
-        <item>[Левая]: указательный</item>
-        <item>[Левая]: средний</item>
-        <item>[Левая]: безымянный</item>
-        <item>[Левая]: мизинец</item>
-        <item>[Правая]: мизинец</item>
-        <item>[Правая]: безымянный</item>
-        <item>[Правая]: средний</item>
-        <item>[Правая]: указательный</item>
-        <item>[Правая]: большой</item>
-    </string-array>
     <string-array name="fingers_middle">
         <item>Левая рука, большой</item>
         <item>Левая рука, указательный</item>

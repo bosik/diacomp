@@ -17,8 +17,6 @@
     <string name="base_tip_food_edit_fail">Failed to save food</string>
     <string name="base_tip_food_edit_ok">Food saved</string>
     <string name="base_tip_items_removed">Removed items: %d</string>
-    <string name="base_title">Foods &amp; dishes</string>
-    <string name="base_title_loading">Foods &amp; dishes (loading…)</string>
     <string name="common_button_cancel">Cancel</string>
     <string name="common_button_ok">OK</string>
     <string name="common_hint_mass">Mass</string>
@@ -30,15 +28,10 @@
     <string name="common_unit_bs_mmoll">mmol/l</string>
     <string name="common_unit_insulin">U</string>
     <string name="common_unit_mass_gramm">g</string>
-    <string name="diary_button_add">Add</string>
-    <string name="diary_context_common_edit">Edit</string>
-    <string name="diary_context_common_remove">Remove</string>
-    <string name="diary_title">Diary</string>
     <string name="editor_blood_field_finger">Finger</string>
     <string name="editor_blood_field_value">Value, mmol/l</string>
     <string name="editor_blood_title">Blood sugar</string>
     <string name="editor_common_field_time">Date and time</string>
-    <string name="editor_common_field_value">Value</string>
     <string name="editor_common_save">Save</string>
     <string name="editor_common_stub_date" tools:ignore="MissingTranslation">02/04/2014</string>
     <string name="editor_common_stub_time" tools:ignore="MissingTranslation">09:45</string>
@@ -62,8 +55,6 @@
     <string name="editor_mass_error">Wrong mass</string>
     <string name="editor_mass_title">Change mass</string>
     <string name="editor_meal_button_more">…</string>
-    <string name="editor_meal_field_fooddish">Food/dish</string>
-    <string name="editor_meal_field_mass">Mass, g</string>
     <string name="editor_meal_header_content">Content</string>
     <string name="editor_meal_header_dosage">Calculator</string>
     <string name="editor_meal_info">Info</string>
@@ -95,7 +86,6 @@
     <string name="foodset_tip_set_remove_fail">Failed to remove: %s</string>
     <string name="foodset_tip_set_remove_ok">Removed: %s</string>
     <string name="foodset_title">Food sets</string>
-    <string name="login_action_forgot_password">Recover lost password</string>
     <string name="login_action_register">Create new account</string>
     <string name="login_action_sign_in">Sign in</string>
     <string name="login_action_sign_in_short">Sign in</string>
@@ -112,7 +102,6 @@
     <string name="main_option_diary">Diary</string>
     <string name="main_option_login">Login</string>
     <string name="main_option_preferences">Preferences</string>
-    <string name="main_option_test">Test</string>
     <string name="main_title">Diacomp</string>
     <string name="notification_time_after_injection">after injection</string>
     <string name="notification_time_after_meal">after meal</string>
@@ -126,18 +115,6 @@
 
     <!-- Arrays -->
 
-    <string-array name="fingers">
-        <item>[Left]: thumb</item>
-        <item>[Left]: index</item>
-        <item>[Left]: middle</item>
-        <item>[Left]: ring</item>
-        <item>[Left]: little</item>
-        <item>[Right]: little</item>
-        <item>[Right]: ring</item>
-        <item>[Right]: middle</item>
-        <item>[Right]: index</item>
-        <item>[Right]: thumb</item>
-    </string-array>
     <string-array name="fingers_middle">
         <item>Left hand, thumb</item>
         <item>Left hand, index</item>

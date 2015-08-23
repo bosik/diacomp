@@ -59,7 +59,6 @@
             android:layout_weight="1"
             android:drawableTop="@drawable/diary_addnote"
             android:paddingTop="@dimen/padding_medium" />
-
     </LinearLayout>
 
 </LinearLayout>
