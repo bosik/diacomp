@@ -138,25 +138,31 @@ public class DiaryPage extends MasterPage
 	public DiaryPage(final PageParameters parameters)
 	{
 		super(parameters);
+	}
+
+	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
 
 		//===========================================
 		Date dateFrom = Utils.today(getTimeZone());
 		Date dateTo = Utils.shiftDate(dateFrom, +1);
 
-		try
-		{
-			StringValue parDateFrom = parameters.get("from");
-			StringValue parDateTo = parameters.get("to");
-			if (!parDateFrom.isEmpty() && !parDateTo.isEmpty())
-			{
-				dateFrom = Utils.parseDateLocal(getTimeZone(), parDateFrom.toString());
-				dateTo = Utils.parseDateLocal(getTimeZone(), parDateTo.toString());
-			}
-		}
-		catch (ParseException e)
-		{
-			// just ignore invalid parameter
-		}
+		//				try
+		//				{
+		//					StringValue parDateFrom = parameters.get("from");
+		//					StringValue parDateTo = parameters.get("to");
+		//					if (!parDateFrom.isEmpty() && !parDateTo.isEmpty())
+		//					{
+		//						dateFrom = Utils.parseDateLocal(getTimeZone(), parDateFrom.toString());
+		//						dateTo = Utils.parseDateLocal(getTimeZone(), parDateTo.toString());
+		//					}
+		//				}
+		//				catch (ParseException e)
+		//				{
+		//					// just ignore invalid parameter
+		//				}
 		//===================================================
 
 		final DiaryEditorBlood bloodEditor = new DiaryEditorBlood("bloodEditor")

@@ -18,16 +18,12 @@
 package org.bosik.diacomp.web.frontend.wicket;
 
 import org.apache.wicket.RuntimeConfigurationType;
-import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.request.Request;
-import org.apache.wicket.request.Response;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.bosik.diacomp.web.frontend.wicket.pages.about.AboutPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.activation.ActivationPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.base.FoodBasePage;
-import org.bosik.diacomp.web.frontend.wicket.pages.clientinfo.CustomBrowserInfoPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.download.DownloadPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.license.LicensePage;
@@ -68,13 +64,5 @@ public class WicketApplication extends WebApplication
 		mountPage("/base", FoodBasePage.class);
 		mountPage("/stats", StatsPage.class);
 		mountPage("/download", DownloadPage.class);
-
-		mountPage("/clientInfo", CustomBrowserInfoPage.class);
-	}
-
-	@Override
-	public final Session newSession(final Request request, final Response response)
-	{
-		return new CustomWebSession(request);
 	}
 }

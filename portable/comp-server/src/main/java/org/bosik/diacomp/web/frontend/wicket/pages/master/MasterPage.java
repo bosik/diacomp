@@ -19,12 +19,15 @@ package org.bosik.diacomp.web.frontend.wicket.pages.master;
 
 import java.util.TimeZone;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxClientInfoBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.settings.IRequestCycleSettings;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.common.Config;
@@ -72,6 +75,16 @@ public class MasterPage extends WebPage
 			String userName = userInfoService.getCurrentUserName();
 			add(new HeaderPanel("headerPanel", userName));
 			add(new Menu("menu", Model.of(getMenu(true))));
+			add(new AjaxClientInfoBehavior()
+			{
+				private static final long	serialVersionUID	= -4339758661303499417L;
+
+				@Override
+				protected void onClientInfo(AjaxRequestTarget target, WebClientInfo info)
+				{
+					super.onClientInfo(target, info);
+				}
+			});
 		}
 		catch (NotAuthorizedException e)
 		{
@@ -106,16 +119,36 @@ public class MasterPage extends WebPage
 		return menuContent;
 	}
 
+	private static ClientProperties getClientProperties(Component component)
+	{
+		IRequestCycleSettings requestCycleSettings = component.getApplication().getRequestCycleSettings();
+		boolean gatherExtendedBrowserInfo = requestCycleSettings.getGatherExtendedBrowserInfo();
+		ClientProperties properties = null;
+		try
+		{
+			requestCycleSettings.setGatherExtendedBrowserInfo(false);
+			WebClientInfo clientInfo = (WebClientInfo)component.getSession().getClientInfo();
+			properties = clientInfo.getProperties();
+		}
+		finally
+		{
+			requestCycleSettings.setGatherExtendedBrowserInfo(gatherExtendedBrowserInfo);
+		}
+		return properties;
+	}
+
 	public static TimeZone getTimeZone(Component component)
 	{
-		WebClientInfo webClientInfo = (WebClientInfo)component.getSession().getClientInfo();
-		ClientProperties properties = webClientInfo.getProperties();
+		ClientProperties properties = getClientProperties(component);
 		TimeZone timeZone = properties.getTimeZone();
-		if (timeZone == null)
+		if (timeZone != null)
 		{
-			timeZone = TimeZone.getDefault();
+			return timeZone;
 		}
-		return timeZone;
+		else
+		{
+			return TimeZone.getTimeZone("GMT");
+		}
 	}
 
 	public TimeZone getTimeZone()

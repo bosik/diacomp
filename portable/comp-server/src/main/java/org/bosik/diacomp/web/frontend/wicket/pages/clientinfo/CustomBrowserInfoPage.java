@@ -17,31 +17,7 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.pages.clientinfo;
 
-import javax.servlet.http.HttpServletResponse;
-import org.apache.wicket.markup.html.pages.BrowserInfoPage;
-import org.apache.wicket.request.flow.RedirectToUrlException;
-
-public class CustomBrowserInfoPage extends BrowserInfoPage
+@Deprecated
+public class CustomBrowserInfoPage
 {
-	private static final long	serialVersionUID	= 1L;
-
-	/**
-	 * Called from browser when URL typed directly; redirects to home page
-	 */
-	public CustomBrowserInfoPage()
-	{
-		CharSequence url = urlFor(getApplication().getHomePage(), null);
-		throw new RedirectToUrlException(url.toString(), HttpServletResponse.SC_MOVED_TEMPORARILY);
-	}
-
-	/**
-	 * For calling internally; argument added just to distinguish this constructor from default one
-	 * 
-	 * @param x
-	 *            Pass anything you want
-	 */
-	public CustomBrowserInfoPage(int x)
-	{
-		super();
-	}
 }

@@ -17,23 +17,7 @@
  */
 package org.bosik.diacomp.web.frontend.wicket;
 
-import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.protocol.http.WebSession;
-import org.apache.wicket.request.Request;
-import org.bosik.diacomp.web.frontend.wicket.pages.clientinfo.CustomBrowserInfoPage;
-
-public class CustomWebSession extends WebSession
+@Deprecated
+public class CustomWebSession
 {
-	private static final long	serialVersionUID	= 1L;
-
-	public CustomWebSession(Request request)
-	{
-		super(request);
-	}
-
-	@Override
-	protected WebPage newBrowserInfoPage()
-	{
-		return new CustomBrowserInfoPage(42);
-	}
 }
