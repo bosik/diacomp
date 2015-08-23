@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.text.InputType;
+import android.text.method.DigitsKeyListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -53,6 +54,7 @@ public class UIUtils
 
 		input.setText(defaultMass);
 		input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_CLASS_NUMBER);
+		input.setKeyListener(DigitsKeyListener.getInstance("0123456789.+-"));
 		builder.setTitle(title);
 		builder.setMessage(message);
 		builder.setView(input);
