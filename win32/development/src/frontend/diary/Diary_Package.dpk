@@ -35,7 +35,7 @@ requires
 contains
   ACCombo in 'ACCombo.pas',
   DiaryView in 'DiaryView.pas',
-  AutoLog in '..\src\common\AutoLog.pas',
+  AutoLog in '..\..\common\AutoLog.pas',
   DiaryRoutines in '..\..\common\DiaryRoutines.pas',
   TextInterface in '..\TextInterface.pas',
   BusinessObjects in '..\..\bo\BusinessObjects.pas',

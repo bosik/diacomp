@@ -155,8 +155,6 @@ procedure Register;
 
 implementation
 
-//uses Unit1;
-
 {$R *.dcr}
 
 procedure Register;
