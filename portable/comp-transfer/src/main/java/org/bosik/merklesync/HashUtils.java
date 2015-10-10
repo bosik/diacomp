@@ -128,6 +128,7 @@ public class HashUtils
 
 		if (!buffer.isEmpty())
 		{
+			@SuppressWarnings("null")
 			String key = prevKey.substring(0, prefixSize);
 			String value = calculateHash(buffer);
 			result.put(key, value);
