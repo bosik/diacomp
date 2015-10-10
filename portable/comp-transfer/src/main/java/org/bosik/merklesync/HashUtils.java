@@ -89,48 +89,6 @@ public class HashUtils
 		return new String(c_array);
 	}
 
-	/**
-	 * a - null = a<br/>
-	 * null - null = null<br/>
-	 * null - a = NPE
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	public static String subHash(String a, String b)
-	{
-		if (a != null && a.length() != DataSource.ID_FULL_SIZE)
-		{
-			throw new IllegalArgumentException(String.format("Invalid hash #1 ('%s'), expected: %d chars, found: %d",
-					a, DataSource.ID_FULL_SIZE, a.length()));
-		}
-
-		if (b != null && b.length() != DataSource.ID_FULL_SIZE)
-		{
-			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d",
-					b, DataSource.ID_FULL_SIZE, b.length()));
-		}
-
-		if (b == null)
-		{
-			return a;
-		}
-
-		char[] a_array = a.toCharArray();
-		char[] b_array = b.toCharArray();
-		char[] c_array = new char[DataSource.ID_FULL_SIZE];
-
-		for (int i = 0; i < DataSource.ID_FULL_SIZE; i++)
-		{
-			byte b1 = CHAR_TO_BYTE[a_array[i]];
-			byte b2 = CHAR_TO_BYTE[b_array[i]];
-			c_array[i] = BYTE_TO_CHAR[(16 + b1 - b2) % 16];
-		}
-
-		return new String(c_array);
-	}
-
 	public static String calculateHash(Collection<String> collection)
 	{
 		String result = null;
