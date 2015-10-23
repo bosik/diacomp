@@ -2242,6 +2242,19 @@ end;
 procedure TForm1.UpdateDayInfo;
 {======================================================================================================================}
 
+  procedure Demo(pa, pt, fa, ft, ca, ct: Real);
+  var
+    np, nf, nc: Real;
+    M, D: Real;
+  begin
+    np := pa / pt;
+    nf := fa / ft;
+    nc := ca / ct;
+    M := (np + nf + nc) / 3;
+    D := (Sqr(np - M) + Sqr(nf - M) + Sqr(nc - M)) / 3;
+    // Caption := Format('%.3f', [D]);
+  end;
+
   { статистика }
   procedure UpdateDayStatistics;
 
@@ -2364,6 +2377,8 @@ procedure TForm1.UpdateDayInfo;
       LabelDayValue.Caption  := Format('Ценность: %.0f ккал', [DayValue]);
       LabelDayMass.Caption   := Format('Масса: %.0f г', [DayMass]);
       LabelDayIns.Caption    := Format('Инсулин: %.1f ед', [DayIns]);
+
+      Demo(DayProts, Value['NormProts'], DayFats, Value['NormFats'], DayCarbs, Value['NormCarbs']);
     end;
   end;
 
