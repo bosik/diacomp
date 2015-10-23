@@ -157,16 +157,9 @@ begin
   AutoLog.StartLogger(WORK_FOLDER + FOLDER_LOGS);
 
   {#}Log(INFO, 'Application started');
-  {#}Log(INFO, 'No other instances founded');
   {#}Log(INFO, Format('OS Version: %d.%d, %s', [Win32MajorVersion, Win32MinorVersion, BIT64VER[IsWin64()]]));
 
   { TODO: опнбепйю мюкхвхъ бяеу менаундхлшу тюикнб }
-
-  if (not FileExists(WORK_FOLDER + FOLDER_BASES + '\' + FoodBase_Name)) then
-    DownloadFoodBaseSample();
-
-  if (not FileExists(WORK_FOLDER + FOLDER_BASES + '\' + DishBase_Name)) then
-    DownloadDishBaseSample();
 
   DiaryCore.Initialize();
 
