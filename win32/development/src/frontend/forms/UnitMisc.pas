@@ -1132,8 +1132,11 @@ var
   Par: TRealArray;
   Items: TRecordList;
   AnalyzeResult: TAnalyzeResult;
+
+  TimeFrom, TimeTo: TDateTime;
+  i, j: integer;
 begin
-  Items := ReadVersionedDiaryRecords(ReadFile('temp\antest.json'));
+(*  Items := ReadVersionedDiaryRecords(ReadFile('temp\antest.json'));
 
   SetLength(Par, 1);
   Par[PAR_ADAPTATION] := 0.95;//Value['Adaptation'];  { [0.5..1.0] }
@@ -1141,7 +1144,32 @@ begin
   AnalyzeResult := Analyze(Analyzers[0], Items, Par, nil);
 
   SaveKoofList(AnalyzeResult.KoofList, 'temp\koofs.txt');
-  SaveAnalyzeList(AnalyzeResult.AnList, 'temp\anlist.txt');
+  SaveAnalyzeList(AnalyzeResult.AnList, 'temp\anlist.txt');    *)
+
+  TimeTo := Now();
+  TimeFrom := TimeTo - 14;
+
+  SetLength(Par, 1);
+  Par[PAR_ADAPTATION] := 0.95;//Value['Adaptation'];  { [0.5..1.0] }
+
+  with TStringList.Create do
+  begin
+    for i := 0 to 30 do
+    begin
+      Items := LocalSource.FindPeriod(TimeFrom - i, TimeTo - i);
+      AnalyzeResult := Analyze(Analyzers[0], Items, Par, nil);
+      //FreeRecords(Items);
+      Add(
+        DateTimeToStr(TimeFrom - i) + #9 +
+        DateTimeToStr(TimeTo - i) + #9 +
+        FloatToStr(AnalyzeResult.Error));
+      {for j := 0 to High(AnalyzeResult.AnList) do
+        Add(#9 + RealToStr(AnalyzeResult.AnList[j].BSIn) + ' -> ' + RealToStr(AnalyzeResult.AnList[j].BSOut) + #9 +
+        FloatToStr(GetRecError(AnalyzeResult.AnList[j], AnalyzeResult.KoofList, vfLinearAvg)));  }
+    end;
+    SaveToFile('temp\accuracy.txt');
+    Free;
+  end;
 end;
 
 end.
