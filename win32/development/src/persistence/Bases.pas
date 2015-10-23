@@ -275,8 +275,6 @@ begin
   SetLength(FBase, Count + 1);
   FBase[Count - 1] := Item;
   Result := TraceLast;
-
-  Item.OnChange := ItemChangeHandler;
 end;
 
 {======================================================================================================================}
@@ -439,7 +437,6 @@ begin
     begin
       Temp := TFoodItem.Create();
       Read(Temp, S[i]);
-      Temp.OnChange := ItemChangeHandler;
       FBase[i] := Temp;
     end;
   finally
@@ -515,8 +512,6 @@ const
       Result.Tag := FoodNode.Attributes[FIELD_FOOD_TAG]
     else
       Result.Tag := 0;
-
-    Result.OnChange  := ItemChangeHandler;
   end;
 
 var
@@ -768,7 +763,6 @@ begin
       inc(n);
       SetLength(FBase, n + 1);
       FBase[n] := TDishItem.Create;
-      Items[n].OnChange := ItemChangeHandler;
       ///FBase[n].SilentMode := True;
       w := pos(':', s[i]);
       if w = 0 then
@@ -889,8 +883,6 @@ procedure TDishBase.LoadFromFile_XML(const FileName: string);
 
       Result.Add(Food);
     end;
-
-    Result.OnChange := ItemChangeHandler;
   end;
 
 const

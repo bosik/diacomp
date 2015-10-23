@@ -48,12 +48,6 @@ type
   // Уведомляет внешнюю среду о своём изменении через событие OnChange
   // TODO: DEPRECATED
   TMutableItem = class (TVersioned)
-  private
-    FOnChange: TNotifyEvent;
-  protected
-    procedure Modified; virtual;
-  public
-    property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
   // хранит: название, БЖУ
@@ -317,16 +311,6 @@ begin
   FID := LowerCase(Value);
 end;
 
-{ TMutableItem }
-
-{======================================================================================================================}
-procedure TMutableItem.Modified;
-{======================================================================================================================}
-begin
-  if (Assigned(FOnChange)) then
-    FOnChange(Self);
-end;
-
 { TFoodRelative }
 
 {======================================================================================================================}
@@ -549,8 +533,6 @@ end;
 function TDishItem.Add(Food: TFoodMassed): integer;
 {======================================================================================================================}
 begin
-  Food.OnChange := OnChange; 
-
   Result := Count;
   SetLength(FContent, Result + 1);
   FContent[Result] := Food;
@@ -670,7 +652,6 @@ end;
 destructor TDishItem.Destroy;
 {======================================================================================================================}
 begin
-  OnChange := nil; // TODO: "до Clear(), чтобы не оповещать об очистке" - обновить
   Clear;
   inherited;
 end;
