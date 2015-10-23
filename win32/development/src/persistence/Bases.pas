@@ -13,6 +13,7 @@ type
 
   TAbstractBase = class
   private
+    FBase: array of TVersioned;
     TempIndexList: TIndexList;
 
     // comparators
@@ -21,7 +22,7 @@ type
     function MoreIndName(Index1, Index2: integer): boolean;
     function MoreIndTag(Index1, Index2: integer): boolean;
 
-    procedure Swap(Index1, Index2: integer); virtual; abstract;
+    procedure Swap(Index1, Index2: integer);
     procedure SwapInd(Index1, Index2: integer);
 
     function TraceLast(): integer;
@@ -29,13 +30,22 @@ type
     function GetName(Index: integer): string; virtual; abstract;
     function GetTag(Index: integer): integer; virtual; abstract;
     procedure SetTag(Index, Value: integer); virtual; abstract;
-    function GetItem(Index: integer): TVersioned; virtual; abstract;
+    function GetItem(Index: integer): TVersioned; virtual;
   public
+    function Add(Item: TVersioned): integer; virtual;
+
+    // Remove all items
+    procedure Clear();
+
     // Returns total number of items
-    function Count(): integer; virtual; abstract;
+    function Count(): integer;
+
+    destructor Destroy; override;
 
     // Search for item with the name specified (case-insensitive). Non-deleted items are considered only
     function Find(const ItemName: string): integer;
+
+    function GetIndex(ID: TCompactGUID): integer;
 
     // Sort items by name
     procedure Sort();
@@ -46,23 +56,7 @@ type
 
 {======================================================================================================================}
 
-  TArrayBase = class(TAbstractBase)
-  private
-    FBase: array of TVersioned;
-  protected
-    function GetItem(Index: integer): TVersioned; override;
-    procedure Swap(Index1, Index2: integer); override;
-  public
-    function Add(Item: TVersioned): integer; virtual;
-    procedure Clear;
-    function Count: integer; override;
-    destructor Destroy; override;
-    function GetIndex(ID: TCompactGUID): integer; 
-  end;
-
-{======================================================================================================================}
-
-  TFoodBase = class(TArrayBase)
+  TFoodBase = class(TAbstractBase)
   private
     function GetFood(Index: integer): TFoodItem;
   protected
@@ -80,7 +74,7 @@ type
 
 {======================================================================================================================}
 
-  TDishBase = class(TArrayBase)
+  TDishBase = class(TAbstractBase)
   private
     function GetDish(Index: integer): TDishItem;
   protected
@@ -136,6 +130,44 @@ const
 { TAbstractBase }
 
 {======================================================================================================================}
+function TAbstractBase.Add(Item: TVersioned): integer;
+{======================================================================================================================}
+begin
+  if (Item = nil) then
+    raise EInvalidPointer.Create('Can''t add nil object into the list');
+
+  SetLength(FBase, Count + 1);
+  FBase[Count - 1] := Item;
+  Result := TraceLast();
+end;
+
+{======================================================================================================================}
+procedure TAbstractBase.Clear();
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  for i := 0 to High(FBase) do
+    FreeAndNil(FBase[i]);
+  SetLength(FBase, 0);
+end;
+
+{======================================================================================================================}
+function TAbstractBase.Count(): integer;
+{======================================================================================================================}
+begin
+  Result := Length(FBase);
+end;
+
+{======================================================================================================================}
+destructor TAbstractBase.Destroy;
+{======================================================================================================================}
+begin
+  Clear();
+  inherited;
+end;
+
+{======================================================================================================================}
 function TAbstractBase.Find(const ItemName: string): integer;
 {======================================================================================================================}
 
@@ -183,6 +215,31 @@ begin
 
   Result := -1;
 end; }
+
+{======================================================================================================================}
+function TAbstractBase.GetIndex(ID: TCompactGUID): integer;
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  for i := 0 to High(FBase) do
+  if (FBase[i].ID = ID) then
+  begin
+    Result := i;
+    Exit;
+  end;
+  Result := -1;
+end;
+
+{======================================================================================================================}
+function TAbstractBase.GetItem(Index: integer): TVersioned;
+{======================================================================================================================}
+begin
+  if (Index < Low(FBase)) and (Index > High(FBase)) then
+    raise ERangeError.Create(Format('TArrayBase.GetItem(): Index out of bounds (%d)', [Index]));
+
+  Result := FBase[Index];
+end;
 
 {======================================================================================================================}
 function TAbstractBase.MoreIndName(Index1, Index2: integer): boolean;
@@ -248,6 +305,22 @@ begin
 end;
 
 {======================================================================================================================}
+procedure TAbstractBase.Swap(Index1, Index2: integer);
+{======================================================================================================================}
+var
+  Temp: TVersioned;
+begin
+  if (Index1 < Low(FBase)) and (Index1 > High(FBase)) then
+    raise ERangeError.Create(Format('TArrayBase.GetItem(): Index out of bounds (%d)', [Index1]));
+  if (Index2 < Low(FBase)) and (Index2 > High(FBase)) then
+    raise ERangeError.Create(Format('TArrayBase.GetItem(): Index out of bounds (%d)', [Index2]));
+
+  Temp := FBase[Index1];
+  FBase[Index1] := FBase[Index2];
+  FBase[Index2] := Temp;
+end;
+
+{======================================================================================================================}
 procedure TAbstractBase.SwapInd(Index1, Index2: integer);
 {======================================================================================================================}
 begin
@@ -264,86 +337,6 @@ begin
     Swap(Result, Result - 1);
     dec(Result);
   end;
-end;
-
-{ TArrayBase }
-
-{======================================================================================================================}
-function TArrayBase.Add(Item: TVersioned): integer;
-{======================================================================================================================}
-begin
-  if (Item = nil) then
-    raise EInvalidPointer.Create('Can''t add nil object into the list');
-
-  SetLength(FBase, Count + 1);
-  FBase[Count - 1] := Item;
-  Result := TraceLast;
-end;
-
-{======================================================================================================================}
-procedure TArrayBase.Clear;
-{======================================================================================================================}
-var
-  i: integer;
-begin
-  for i := 0 to High(FBase) do
-    FreeAndNil(FBase[i]);
-  SetLength(FBase, 0);
-end;
-
-{======================================================================================================================}
-function TArrayBase.Count: integer;
-{======================================================================================================================}
-begin
-  Result := Length(FBase);
-end;
-
-{======================================================================================================================}
-destructor TArrayBase.Destroy;
-{======================================================================================================================}
-begin
-  Clear;
-end;
-
-{======================================================================================================================}
-function TArrayBase.GetIndex(ID: TCompactGUID): integer;
-{======================================================================================================================}
-var
-  i: integer;
-begin
-  for i := 0 to High(FBase) do
-  if (FBase[i].ID = ID) then
-  begin
-    Result := i;
-    Exit;
-  end;
-  Result := -1;
-end;
-
-{======================================================================================================================}
-function TArrayBase.GetItem(Index: integer): TVersioned;
-{======================================================================================================================}
-begin
-  if (Index < Low(FBase)) and (Index > High(FBase)) then
-    raise ERangeError.Create(Format('TArrayBase.GetItem(): Index out of bounds (%d)', [Index]));
-
-  Result := FBase[Index];
-end;
-
-{======================================================================================================================}
-procedure TArrayBase.Swap(Index1, Index2: integer);
-{======================================================================================================================}
-var
-  Temp: TVersioned;
-begin
-  if (Index1 < Low(FBase)) and (Index1 > High(FBase)) then
-    raise ERangeError.Create(Format('TArrayBase.GetItem(): Index out of bounds (%d)', [Index1]));
-  if (Index2 < Low(FBase)) and (Index2 > High(FBase)) then
-    raise ERangeError.Create(Format('TArrayBase.GetItem(): Index out of bounds (%d)', [Index2]));
-
-  Temp := FBase[Index1];
-  FBase[Index1] := FBase[Index2];
-  FBase[Index2] := Temp;
 end;
 
 { TFoodBase }
