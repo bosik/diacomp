@@ -10,7 +10,8 @@ uses
   SysUtils,
   Classes,
   Forms {ProcessMessages},
-  Windows {GetThreadLocale};
+  Windows {GetThreadLocale},
+  uLkJSON;
 
 type
   TStringArray = array of string;
@@ -68,6 +69,7 @@ type
   TGetterFunction = function(Index: integer): Variant of object;
   TCallbackProgress = procedure(Progress: integer);
 
+  function ParseStringMap(const S: string): TStringMap;
   function StringPair(const Key, Value: string): TStringPair;
 
   { פאיכמגûו }
@@ -403,6 +405,30 @@ begin
   SetLength(Result, Length(FData));
   for i := 0 to FCount - 1 do
     Result[i] := FData[i].Value;
+end;
+
+{======================================================================================================================}
+function ParseStringMap(const S: string): TStringMap;
+{======================================================================================================================}
+var
+  Json: TlkJSONlist;
+  Item: TlkJSONobject;
+  Key, Value: string;
+  i: integer;
+begin
+  Json := TlkJSON.ParseText(MakeSureJsonList(S)) as TlkJSONlist;
+  try
+    Result := TStringMap.Create;
+    for i := 0 to json.Count - 1 do
+    begin
+      Item := json.Child[i] as TlkJSONobject;
+      Key := Item.getString('key');
+      Value := Item.GetString('value');
+      Result.Add(Key, Value, True);
+    end;
+  finally
+    Json.Free;
+  end;
 end;
 
 {======================================================================================================================}

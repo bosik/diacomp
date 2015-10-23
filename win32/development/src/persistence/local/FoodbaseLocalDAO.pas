@@ -30,6 +30,7 @@ type
     procedure Modified();
     procedure OnTimer(Sender: TObject);
   public
+    function Count(Prefix: TCompactGUID): integer; override;
     constructor Create(const BaseFileName: string);
     procedure Delete(ID: TCompactGUID); override;
     destructor Destroy; override;
@@ -65,6 +66,18 @@ begin
     Modified();
   end else
     raise EDuplicateException.Create(Food);
+end;
+
+{======================================================================================================================}
+function TFoodbaseLocalDAO.Count(Prefix: TCompactGUID): integer;
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  Result := 0;
+  for i := 0 to FBase.Count - 1 do
+  if (StartsWith(FBase[i].ID, Prefix)) then
+    inc(Result);
 end;
 
 {======================================================================================================================}

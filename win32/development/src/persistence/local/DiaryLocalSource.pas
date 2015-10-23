@@ -47,6 +47,7 @@ type
     procedure SaveToFile(const FileName: string);
     function Trace(Index: integer): integer;
   public
+    function Count(Prefix: TCompactGUID): integer; override;
     constructor Create(const BaseFileName: string);
     destructor Destroy; override;
     procedure Delete(ID: TCompactGUID); override;
@@ -226,6 +227,18 @@ begin
   for i := 0 to High(FRecords) do
     FRecords[i].Free;
   SetLength(FRecords, 0);
+end;
+
+{======================================================================================================================}
+function TDiaryLocalSource.Count(Prefix: TCompactGUID): integer;
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  Result := 0;
+  for i := 0 to High(FRecords) do
+  if (StartsWith(FRecords[i].ID, Prefix)) then
+    inc(Result);
 end;
 
 {======================================================================================================================}

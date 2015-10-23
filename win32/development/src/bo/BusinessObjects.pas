@@ -284,7 +284,7 @@ begin
 end;
 
 {======================================================================================================================}
-procedure TVersioned.Modified;
+procedure TVersioned.Modified();
 {======================================================================================================================}
 begin
   inc(FVersion);
@@ -348,11 +348,7 @@ end;
 procedure TFoodRelative.SetName(const Value: string);
 {======================================================================================================================}
 begin
-  if (FName <> Value) then
-  begin
-    FName := Value;
-    Modified();
-  end;
+  FName := Value;
 end;
 
 {======================================================================================================================}
@@ -361,11 +357,7 @@ procedure TFoodRelative.SetRel(Index: integer; const Value: real);
 
   procedure MicroSet(var ARelXXX: real);
   begin
-    if (ARelXXX <> Value) then
-    begin
-      ARelXXX := Value;
-      Modified();
-    end;
+    ARelXXX := Value;
   end;
 
 begin
@@ -424,13 +416,10 @@ end;
 procedure TFoodMassed.SetMass(const Value: real);
 {======================================================================================================================}
 begin
-  if (not IsCorrectMass(Value)) then raise Exception.CreateFmt('TFoodMassed.SetMass(): illegal mass (%f)', [Value]);
+  if (not IsCorrectMass(Value)) then
+    raise Exception.CreateFmt('TFoodMassed.SetMass(): illegal mass (%f)', [Value]);
 
-  if (Mass <> Value) then
-  begin
-    FMass := Value;
-    Modified();
-  end;
+  FMass := Value;
 end;
 
 {======================================================================================================================}
@@ -515,11 +504,7 @@ end;
 procedure TFoodItem.SetFromTable(Value: boolean);
 {======================================================================================================================}
 begin
-  if (Value <> FFromTable) then
-  begin
-    FFromTable := Value;
-    Modified();
-  end;
+  FFromTable := Value;
 end;
 
 { TDish }
@@ -531,8 +516,6 @@ begin
   Result := Count;
   SetLength(FContent, Result + 1);
   FContent[Result] := Food;
-
-  Modified();
 end;
 
 {======================================================================================================================}
@@ -571,8 +554,6 @@ begin
     for i := 0 to High(FContent) do
       FreeAndNil(FContent[i]);
     SetLength(FContent, 0);
-
-    Modified();
   end;
 end;
 
@@ -639,8 +620,6 @@ begin
   for i := Index to High(FContent) - 1 do
     FContent[i] := FContent[i + 1];
   SetLength(FContent, Length(FContent) - 1);
-
-  Modified();
 end;
 
 {======================================================================================================================}
@@ -709,11 +688,7 @@ end;
 procedure TDishItem.SetName(Value: string);
 {======================================================================================================================}
 begin
-  if (Value <> FName) then
-  begin
-    FName := Value;
-    Modified();
-  end;
+  FName := Value;
 end;
 
 {======================================================================================================================}
@@ -723,14 +698,15 @@ var
   MinResultMass: Real;
 begin
   MinResultMass := Prots + Fats + Carbs;
-  if (Value <= 0) then raise Exception.CreateFmt('TDish.SetResultMass(): Value (%f) must be positive :)', [Value]);
-  if (Value < MinResultMass) then raise Exception.CreateFmt('TDish.SetResultMass(): Value (%f) must be larger than %f', [Value, MinResultMass]);
+  if (Value <= 0) then
+    raise Exception.CreateFmt('TDish.SetResultMass(): Value (%f) must be positive :)', [Value]);
+  if (Value < MinResultMass) then
+    raise Exception.CreateFmt('TDish.SetResultMass(): Value (%f) must be larger than %f', [Value, MinResultMass]);
 
   if (not FFixedMass) or (FResultMass <> Value) then
   begin
     FResultMass := Value;
     FFixedMass := True;
-    Modified();
   end;
 end;
 

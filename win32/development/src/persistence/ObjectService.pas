@@ -19,10 +19,11 @@ type
 
   TObjectService = class
   public
+    function Count(Prefix: TCompactGUID): integer; virtual; abstract;
     procedure Delete(ID: TCompactGUID); virtual; abstract;
     function FindChanged(Since: TDateTime): TVersionedList; virtual; abstract;
     function FindById(ID: TCompactGUID): TVersioned; virtual; abstract;
-    function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList;  virtual; abstract;
+    function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList; virtual; abstract;
     function GetHashTree(): THashTree; virtual; abstract;
     procedure Save(const Items: TVersionedList); overload; virtual; abstract;
 

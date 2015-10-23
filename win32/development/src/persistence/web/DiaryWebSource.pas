@@ -23,8 +23,8 @@ type
   private
     FClient: TDiacompClient;
   public
-    constructor Create(Client: TDiacompClient);
-
+    function Count(Prefix: TCompactGUID): integer; override;
+    constructor Create(Client: TDiacompClient);   
     procedure Delete(ID: TCompactGUID); override;
     function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindPeriod(TimeFrom, TimeTo: TDateTime): TRecordList; override;
@@ -45,31 +45,20 @@ type
 
 implementation
 
+{ TDiaryWebSource }
+
 {======================================================================================================================}
-function ParseStringMap(const S: string): TStringMap;
+function TDiaryWebSource.Count(Prefix: TCompactGUID): integer;
 {======================================================================================================================}
 var
-  Json: TlkJSONlist;
-  Item: TlkJSONobject;
-  Key, Value: string;
-  i: integer;
+  StdResp: TStdResponse;
+  Query: string;
 begin
-  Json := TlkJSON.ParseText(MakeSureJsonList(S)) as TlkJSONlist;
-  try
-    Result := TStringMap.Create;
-    for i := 0 to json.Count - 1 do
-    begin
-      Item := json.Child[i] as TlkJSONobject;
-      Key := Item.getString('key');
-      Value := Item.GetString('value');
-      Result.Add(Key, Value, True);
-    end;
-  finally
-    Json.Free;
-  end;
+  Query := FClient.GetApiURL() + 'diary/count/' + Prefix;
+  StdResp := FClient.DoGetSmart(query) ;
+  Result := StrToInt(StdResp.Response);
+  StdResp.Free;
 end;
-
-{ TDiaryWebSource }
 
 {======================================================================================================================}
 constructor TDiaryWebSource.Create(Client: TDiacompClient);

@@ -12,8 +12,22 @@ uses
   SysUtils, //
   MerkleTree;
 
+type
+  TAppendableVersionedList = class
+  private
+    FData: TVersionedList;
+    FSize: integer;
+  public
+    procedure Add(const Item: TVersioned);
+    function Count(): integer;
+    constructor Create();
+    destructor Destroy(); override;
+    function Get(Index: integer): TVersioned;
+    function ToArray(): TVersionedList;
+    procedure Truncate(); 
+  end;
+
   { возвращается количество синхронизированных объектов }
-  function SyncSources(Source1, Source2: TObjectService; Since: TDateTime): integer; overload;
   function SyncSources(Source1, Source2: TObjectService; Callback: TCallbackProgress = nil): integer; overload;
 
 implementation
@@ -72,94 +86,60 @@ begin
 end;
 
 {======================================================================================================================}
-procedure Add(const Item: TVersioned; var List: TVersionedList; var CurrentSize: integer); overload;
-{======================================================================================================================}
-begin
-  if (CurrentSize >= Length(List)) then
-    SetLength(List, Length(List) * 2 + 1);
-
-  List[CurrentSize] := Item;
-  inc(CurrentSize);
-end;
-
-{======================================================================================================================}
-procedure Add(const Source: TVersionedList; var Dest: TVersionedList); overload;
-{======================================================================================================================}
-var
-  OldSize, i: integer;
-begin
-  OldSize := Length(Dest);
-  SetLength(Dest, OldSize + Length(Source));
-  for i := 0 to High(Source) do
-  begin
-    Dest[OldSize + i] := Source[i];
-  end;
-end;
-
-{======================================================================================================================}
-procedure Free(var List: TVersionedList);
-{======================================================================================================================}
-var
-  i: integer;
-begin
-  for i := Low(List) to High(List) do
-    FreeAndNil(List[i]);
-  SetLength(List, 0);
-end;
-
-{======================================================================================================================}
 procedure GetOverLists(
-  var items1, items2: TVersionedList;
-  var newer1, newer2: TVersionedList;
-  var only1, only2: TVersionedList
+  var Items1, Items2: TVersionedList;
+  Newer1, Newer2, Garbage: TAppendableVersionedList
 );
 {======================================================================================================================}
 var
   i, j: integer;
-  NewerSize1, NewerSize2: integer;
-  OnlySize1, OnlySize2: integer;
 begin
-  SortVersioned(items1);
-  SortVersioned(items2);
+  SortVersioned(Items1);
+  SortVersioned(Items2);
 
-  SetLength(newer1, 16);
-  SetLength(newer2, 16);
-  SetLength(only1, 16);
-  SetLength(only2, 16);
-
-  NewerSize1 := 0;
-  NewerSize2 := 0;
-  OnlySize1 := 0;
-  OnlySize2 := 0;
-
-  i := Low(items1);
-  j := Low(items2);
+  i := Low(Items1);
+  j := Low(Items2);
 
   // parallel processing
-  while (i <= High(items1)) and (j <= High(items2)) do
+  while (i <= High(Items1)) and (j <= High(Items2)) do
   begin
-    if (items1[i].ID < items2[j].ID) then
+    if (Items1[i].ID < Items2[j].ID) then
     begin
-      Add(items1[i], only1, OnlySize1);
+      Newer1.Add(Items1[i]);
       inc(i);
     end else
-    if (items1[i].ID > items2[j].ID) then
+    if (Items1[i].ID > Items2[j].ID) then
     begin
-      Add(items2[j], only2, OnlySize2);
+      Newer2.Add(Items2[j]);
       inc(j);
     end else
     begin
-      if (items1[i].Version > items2[j].Version) then
-        Add(items1[i], newer1, NewerSize1) else
-      if (items1[i].Version < items2[j].Version) then
-        Add(items2[j], newer2, NewerSize2) else
-      if (items1[i].Hash <> items2[j].Hash) then
+      if (Items1[i].Version > Items2[j].Version) then
+      begin
+        Newer1.Add(Items1[i]);
+        Garbage.Add(Items2[j]);
+      end else
+      if (Items1[i].Version < Items2[j].Version) then
+      begin
+        Newer2.Add(Items2[j]);
+        Garbage.Add(Items1[i]);
+      end else
+      if (Items1[i].Hash <> Items2[j].Hash) then
       begin
         // to fix deadlocks
-        if (items1[i].TimeStamp > items2[j].TimeStamp) then
-          Add(items1[i], newer1, NewerSize1)
-        else
-          Add(items2[j], newer2, NewerSize2);
+        if (Items1[i].TimeStamp > Items2[j].TimeStamp) then
+        begin
+          Newer1.Add(Items1[i]);
+          Garbage.Add(Items2[j]);
+        end else
+        begin
+          Newer2.Add(Items2[j]);
+          Garbage.Add(Items1[i]);
+        end;
+      end else
+      begin
+        Garbage.Add(Items1[i]);
+        Garbage.Add(Items2[j]);
       end;
 
       inc(i);
@@ -168,79 +148,42 @@ begin
   end;
 
   // finish first list
-  while (i <= High(items1)) do
+  while (i <= High(Items1)) do
   begin
-    Add(items1[i], only1, OnlySize1);
+    Newer1.Add(Items1[i]);
     inc(i);
   end;
 
   // finish second list
-  while (j <= High(items2)) do
+  while (j <= High(Items2)) do
   begin
-    Add(items2[j], only2, OnlySize2);
+    Newer2.Add(Items2[j]);
     inc(j);
   end;
-
-  SetLength(Newer1, NewerSize1);
-  SetLength(Newer2, NewerSize2);
-  SetLength(Only1, OnlySize1);
-  SetLength(Only2, OnlySize2);
 end;
 
 {======================================================================================================================}
-procedure BlockSave(Data: TVersionedList; Source: TObjectService; MaxBlockSize: integer);
+procedure BlockSave(Data: TAppendableVersionedList; Source: TObjectService; MaxBlockSize: integer);
 {======================================================================================================================}
 var
   Start, Count: integer;
 begin
-  if (Length(Data) <= MaxBlockSize) then
+  if (Data.Count() <= MaxBlockSize) then
   begin
-    Source.Save(Data);
+    Source.Save(Data.ToArray());
   end else
   begin
     Start := 0;
-    while (Start <= High(Data)) do
+    while (Start < Data.Count()) do
     begin
-      if (Start + MaxBlockSize <= High(Data)) then
+      if (Start + MaxBlockSize < Data.Count()) then
         Count := MaxBlockSize
       else
-        Count := High(Data) - Start + 1;
-      Source.Save(Copy(Data, Start, Count));
+        Count := Data.Count() - Start;
+      Source.Save(Copy(Data.ToArray(), Start, Count));
       Start := Start + MaxBlockSize;
     end;
   end;
-end;
-
-{======================================================================================================================}
-function ProcessItems(Source1, Source2: TObjectService; Items1, Items2: TVersionedList): integer;
-{======================================================================================================================}
-var
-  Newer1, Newer2: TVersionedList;
-  Only1, Only2: TVersionedList;
-begin
-  GetOverLists(Items1, Items2, Newer1, Newer2, Only1, Only2);
-  Add(Only1, Newer1);
-  Add(Only2, Newer2);
-
-  BlockSave(Newer2, Source1, 100);
-  BlockSave(Newer1, Source2, 100);
-
-  Result := Length(Newer1) + Length(Newer2);
-end;
-
-{======================================================================================================================}
-function SyncSources(Source1, Source2: TObjectService; Since: TDateTime): integer;
-{======================================================================================================================}
-var
-  Items1, Items2: TVersionedList;
-begin
-  Items1 := Source1.FindChanged(Since);
-  Items2 := Source2.FindChanged(Since);
-
-  Result := ProcessItems(Source1, Source2, Items1, Items2);
-
-  Free(Items1);
-  Free(Items2);
 end;
 
 {======================================================================================================================}
@@ -268,6 +211,7 @@ function SyncSources(Source1, Source2: TObjectService; Callback: TCallbackProgre
         'd': Result := 13;
         'e': Result := 14;
         'f': Result := 15;
+        else raise Exception.Create('Failed to convert char to int, invalid value: ' + C);
       end;
     end;
 
@@ -287,14 +231,16 @@ function SyncSources(Source1, Source2: TObjectService; Callback: TCallbackProgre
     Result := p * 100 div d;
   end;
 
-  function SynchronizeChildren(Source1: TObjectService; Tree1: THashTree; Source2: TObjectService; Tree2: THashTree;
-    const Prefix: string; Callback: TCallbackProgress): integer;
+  procedure SynchronizeChildren(Source1: TObjectService; Tree1: THashTree; Source2: TObjectService; Tree2: THashTree;
+    const Prefix: string; var Newer1, Newer2: TAppendableVersionedList; Callback: TCallbackProgress);
   var
     Items1, Items2: TVersionedList;
+    Garbage: TAppendableVersionedList;
     i: integer;
     Hashes1, Hashes2: TStringMap;
     Key: string;
     Hash1, Hash2: string;
+    Count1, Count2: integer;
   begin
     if (Assigned(Callback)) then
     case Length(Prefix) of
@@ -304,12 +250,14 @@ function SyncSources(Source1, Source2: TObjectService; Callback: TCallbackProgre
       3: Callback(CalculateProgress(Prefix));
     end;
 
-    if (Length(Prefix) < MAX_PREFIX_SIZE) then
+    Count1 := Source1.Count(Prefix);
+    Count2 := Source2.Count(Prefix);
+
+    if (Count1 + Count2 > 500) and (Length(Prefix) < MAX_PREFIX_SIZE) then
     begin
       Hashes1 := Tree1.GetHashChildren(Prefix);
       Hashes2 := Tree2.GetHashChildren(Prefix);
       try
-        Result := 0;
         for i := 0 to 15 do
         begin
           Key := Prefix + LETTERS[i];
@@ -318,7 +266,7 @@ function SyncSources(Source1, Source2: TObjectService; Callback: TCallbackProgre
 
           if (Hash1 <> Hash2) then
           begin
-            Result := Result + SynchronizeChildren(Source1, Tree1, Source2, Tree2, Key, Callback);
+            SynchronizeChildren(Source1, Tree1, Source2, Tree2, Key, Newer1, Newer2, Callback);
           end;
         end;
       finally
@@ -330,16 +278,18 @@ function SyncSources(Source1, Source2: TObjectService; Callback: TCallbackProgre
       Items1 := Source1.FindByIdPrefix(Prefix);
       Items2 := Source2.FindByIdPrefix(Prefix);
 
-      Result := ProcessItems(Source1, Source2, Items1, Items2);
+      Garbage := TAppendableVersionedList.Create();
+      GetOverLists(Items1, Items2, Newer1, Newer2, Garbage);
 
-      Free(Items1);
-      Free(Items2);
+      Garbage.Free();
     end;
   end;
 
 var
   Tree1, Tree2: THashTree;
   Hash1, Hash2: string;
+  Newer1: TAppendableVersionedList;
+  Newer2: TAppendableVersionedList;
 begin
   if (Assigned(Callback)) then
     Callback(0);
@@ -350,9 +300,16 @@ begin
   try
     Hash1 := Tree1.GetHash('');
     Hash2 := Tree2.GetHash('');
+    Newer1 := TAppendableVersionedList.Create();
+    Newer2 := TAppendableVersionedList.Create();
+
     if (Hash1 <> Hash2) then
     begin
-      Result := SynchronizeChildren(Source1, Tree1, Source2, Tree2, '', Callback);
+      SynchronizeChildren(Source1, Tree1, Source2, Tree2, '', Newer1, Newer2, Callback);
+      Result := Newer1.Count() + Newer2.Count();
+
+      BlockSave(Newer1, Source2, 250);
+      BlockSave(Newer2, Source1, 250);
     end else
     begin
       Result := 0;
@@ -363,7 +320,72 @@ begin
   finally
     FreeAndNil(Tree1);
     FreeAndNil(Tree2);
+    Newer1.Free;
+    Newer2.Free;
   end;
+end;
+
+{ TAppendableVersionedList }
+
+{======================================================================================================================}
+procedure TAppendableVersionedList.Add(const Item: TVersioned);
+{======================================================================================================================}
+begin
+  if (FSize >= Length(FData)) then
+    SetLength(FData, Length(FData) * 2 + 1);
+
+  FData[FSize] := Item;
+  inc(FSize);
+end;
+
+{======================================================================================================================}
+function TAppendableVersionedList.Count(): integer;
+{======================================================================================================================}
+begin
+  Result := FSize;
+end;
+
+{======================================================================================================================}
+constructor TAppendableVersionedList.Create();
+{======================================================================================================================}
+begin
+  SetLength(FData, 16);
+  FSize := 0;
+end;
+
+{======================================================================================================================}
+destructor TAppendableVersionedList.Destroy();
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  for i := 0 to High(FData) do
+    FreeAndNil(FData[i]);
+  SetLength(FData, 0);
+
+  inherited;
+end;
+
+{======================================================================================================================}
+function TAppendableVersionedList.Get(Index: integer): TVersioned;
+{======================================================================================================================}
+begin
+  Result := FData[Index];
+end;
+
+{======================================================================================================================}
+function TAppendableVersionedList.ToArray(): TVersionedList;
+{======================================================================================================================}
+begin
+  Truncate();
+  Result := FData;
+end;
+
+{======================================================================================================================}
+procedure TAppendableVersionedList.Truncate();
+{======================================================================================================================}
+begin
+  SetLength(FData, FSize);
 end;
 
 end.

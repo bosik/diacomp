@@ -19,8 +19,8 @@ type
   private
     FClient: TDiacompClient;
   public
+    function Count(Prefix: TCompactGUID): integer; override;
     constructor Create(Client: TDiacompClient);
-
     procedure Delete(ID: TCompactGUID); override;
     function FindAll(ShowRemoved: boolean): TDishItemList; override;
     function FindAny(const Filter: string): TDishItemList; override;
@@ -38,7 +38,7 @@ type
   public
     constructor Create(Client: TDiacompClient);
     function GetHash(const Prefix: string): string; override;
-    function GetHashChildren(const Prefix: string): TStringMap;
+    function GetHashChildren(const Prefix: string): TStringMap; override;
   end;
 
 implementation
@@ -58,6 +58,19 @@ begin
 end;
 
 { TDishbaseWebDAO }
+
+{======================================================================================================================}
+function TDishbaseWebDAO.Count(Prefix: TCompactGUID): integer;
+{======================================================================================================================}
+var
+  StdResp: TStdResponse;
+  Query: string;
+begin
+  Query := FClient.GetApiURL() + 'dish/count/' + Prefix;
+  StdResp := FClient.DoGetSmart(query) ;
+  Result := StrToInt(StdResp.Response);
+  StdResp.Free;
+end;
 
 {======================================================================================================================}
 constructor TDishbaseWebDAO.Create(Client: TDiacompClient);
@@ -229,16 +242,16 @@ end;
 function TDishbaseWebHash.GetHashChildren(const Prefix: string): TStringMap;
 {======================================================================================================================}
 var
+  Query: string;
   StdResp: TStdResponse;
-  Query, Resp: string;
 begin
   Query := FClient.GetApiURL() + 'dish/hashes/' + Prefix;
-  StdResp := FClient.DoGetSmart(query);
-  Resp := StdResp.Response;
-
-  // TODO: PARSE MAP
-
-  StdResp.Free;
+  try
+    StdResp := FClient.DoGetSmart(query);
+    Result := ParseStringMap(StdResp.Response);
+  finally
+    StdResp.Free;
+  end;
 end;
 
 end.
