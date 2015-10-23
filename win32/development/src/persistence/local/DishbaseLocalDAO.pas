@@ -216,7 +216,7 @@ function TDishbaseLocalDAO.FindOne(const Name: string): TDishItem;
 var
   Index: integer;
 begin
-  Index := FBase.Find(Name);
+  Index := FBase.FindByName(Name);
   if (Index <> -1) then
   begin
     Result := TDishItem.Create;
@@ -229,7 +229,7 @@ end;
 function TDishbaseLocalDAO.GetIndex(Dish: TDishItem): integer;
 {======================================================================================================================}
 begin
-  Result := FBase.GetIndex(Dish.ID);
+  Result := GetIndex(Dish.ID);
 end;
 
 {======================================================================================================================}
@@ -254,7 +254,7 @@ end;
 function TDishbaseLocalDAO.GetIndex(ID: TCompactGUID): integer;
 {======================================================================================================================}
 begin
-  Result := FBase.GetIndex(ID);
+  Result := FBase.FindById(ID);
 end;
 
 {======================================================================================================================}

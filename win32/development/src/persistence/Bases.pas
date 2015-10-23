@@ -42,10 +42,11 @@ type
 
     destructor Destroy; override;
 
-    // Search for item with the name specified (case-insensitive). Non-deleted items are considered only
-    function Find(const ItemName: string): integer;
+    // Search for item with the ID specified. All items are considered
+    function FindById(ID: TCompactGUID): integer;
 
-    function GetIndex(ID: TCompactGUID): integer;
+    // Search for item with the name specified (case-insensitive). Non-deleted items are considered only
+    function FindByName(const ItemName: string): integer;
 
     // Sort items by name
     procedure Sort();
@@ -168,7 +169,22 @@ begin
 end;
 
 {======================================================================================================================}
-function TAbstractBase.Find(const ItemName: string): integer;
+function TAbstractBase.FindById(ID: TCompactGUID): integer;
+{======================================================================================================================}
+var
+  i: integer;
+begin
+  for i := 0 to High(FBase) do
+  if (FBase[i].ID = ID) then
+  begin
+    Result := i;
+    Exit;
+  end;
+  Result := -1;
+end;
+
+{======================================================================================================================}
+function TAbstractBase.FindByName(const ItemName: string): integer;
 {======================================================================================================================}
 
 // linear version
@@ -215,21 +231,6 @@ begin
 
   Result := -1;
 end; }
-
-{======================================================================================================================}
-function TAbstractBase.GetIndex(ID: TCompactGUID): integer;
-{======================================================================================================================}
-var
-  i: integer;
-begin
-  for i := 0 to High(FBase) do
-  if (FBase[i].ID = ID) then
-  begin
-    Result := i;
-    Exit;
-  end;
-  Result := -1;
-end;
 
 {======================================================================================================================}
 function TAbstractBase.GetItem(Index: integer): TVersioned;
@@ -681,7 +682,7 @@ begin
   for i := 0 to Count - 1 do
   for j := 0 to Items[i].Count - 1 do
   begin
-    n := Base.Find(Items[i].Content[j].Name);
+    n := Base.FindByName(Items[i].Content[j].Name);
     if (n <> -1) then
       Base.SetTag(n, Base.GetTag(n) + 1);
   end;
