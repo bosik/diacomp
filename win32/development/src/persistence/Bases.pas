@@ -30,11 +30,12 @@ type
     function GetName(Index: integer): string; virtual; abstract;
     function GetTag(Index: integer): integer; virtual; abstract;
     procedure SetTag(Index, Value: integer); virtual; abstract;
+    function GetItem(Index: integer): TMutableItem; virtual; abstract;
   public
     function Count: integer; virtual; abstract;
 
     // Searches for item with the name specified (case-insensitive)
-    // TODO: Non-deleted items are considered only
+    // Non-deleted items are considered only
     function Find(const ItemName: string): integer;
 
     procedure Sort(); // вызывается потомками после загрузки
@@ -45,7 +46,7 @@ type
   private
     FBase: array of TMutableItem;
   protected
-    function GetItem(Index: integer): TMutableItem;
+    function GetItem(Index: integer): TMutableItem; override;
     procedure Swap(Index1, Index2: integer); override;
   public
     function Add(Item: TMutableItem): integer; virtual;
@@ -138,7 +139,7 @@ begin
 
   for i := 0 to Count - 1 do
   if (AnsiUpperCase(GetName(i)) = UpperItemName) and
-     (true { TODO: check if item is not deleted }) then
+     (not GetItem(i).Deleted) then
   begin
     Result := i;
     Exit;
