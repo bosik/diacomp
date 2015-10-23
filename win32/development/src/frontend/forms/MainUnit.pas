@@ -4113,6 +4113,7 @@ begin
 
     Temp := TFoodItem.Create;
     Temp.CopyFrom(FoodList[n]);
+    Temp.ID := CreateCompactGUID();
     Temp.Name := NewName;
     Temp.ID := CreateCompactGUID;
     FoodBaseLocal.Save(Temp);
@@ -4146,6 +4147,7 @@ begin
 
     Temp := TDishItem.Create;
     Temp.CopyFrom(DishList[n]);
+    Temp.ID := CreateCompactGUID();
     Temp.Name := NewName;
     DishBaseLocal.Save(Temp);
 
