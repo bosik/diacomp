@@ -9,7 +9,7 @@ var
   APPLICATION_TITLE                   : string = 'Компенсация';
 
   BALLOON_INFO_NEW_VERSION_AVAILABLE  : string = 'Доступна новая версия программы. Для просмотра более подробной информации нажмите на это сообщение.';
-  BALLOON_ERROR_ANALYZER_NOT_FOUNDED  : string = 'Ошибка: модуль анализа не загружен';
+  BALLOON_ERROR_ANALYZER_NOT_FOUND    : string = 'Ошибка: модуль анализа не загружен';
   MAIN_BASES                               : string;
   MAIN_BASES_FOOD_TITLE                    : string;
   MAIN_BASES_DISH_TITLE                    : string;
@@ -136,7 +136,7 @@ var
       Result := GetValue(Map[Name]);
     except
       on EKeyNotFoundException do
-        raise Exception.Create(Format('Resource string "%s" not founded', [Name]));
+        raise Exception.Create(Format('Resource string "%s" not found', [Name]));
     end;
   end;
 
@@ -147,7 +147,7 @@ begin
 
     APPLICATION_TITLE                   := Extract('APPLICATION_TITLE');
     BALLOON_INFO_NEW_VERSION_AVAILABLE  := Extract('BALLOON_INFO_NEW_VERSION_AVAILABLE');
-    BALLOON_ERROR_ANALYZER_NOT_FOUNDED  := Extract('BALLOON_ERROR_ANALYZER_NOT_FOUNDED');
+    BALLOON_ERROR_ANALYZER_NOT_FOUND    := Extract('BALLOON_ERROR_ANALYZER_NOT_FOUND');
     MAIN_BASES                               := Extract('MAIN_BASES');
     MAIN_BASES_FOOD_TITLE                    := Extract('MAIN_BASES_FOOD_TITLE');
     MAIN_BASES_DISH_TITLE                    := Extract('MAIN_BASES_DISH_TITLE');

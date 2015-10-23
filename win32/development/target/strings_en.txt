@@ -1,5 +1,5 @@
 APPLICATION_TITLE                   = Compensation
-BALLOON_ERROR_ANALYZER_NOT_FOUNDED  = Error: failed to load analyze unit
+BALLOON_ERROR_ANALYZER_NOT_FOUND    = Error: failed to load analyze unit
 BALLOON_INFO_NEW_VERSION_AVAILABLE  = New app version available. Click this message for details.
 MAIN_BASES                               = Bases
 MAIN_BASES_FOOD_TITLE                    = Food base (%d)

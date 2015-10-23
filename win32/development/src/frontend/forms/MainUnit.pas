@@ -1089,7 +1089,7 @@ begin
   { поиск модуля анализа }
   if (Length(Analyzers) = 0) then
   begin
-    ShowBalloon(BALLOON_ERROR_ANALYZER_NOT_FOUNDED, bitError);
+    ShowBalloon(BALLOON_ERROR_ANALYZER_NOT_FOUND, bitError);
   end else
 
   {  }
@@ -4461,7 +4461,7 @@ procedure TForm1.UpdateTimeLeft;
 var
   hour,min,sec,msec: word;
   i: integer;
-  Founded: boolean;
+  Found: boolean;
   Meal: TMealRecord;
   TempTime: integer;
 
@@ -4478,7 +4478,7 @@ begin
 
   Recs := LocalSource.FindPeriod(GetTimeUTC() - SEARCH_INTERVAL, GetTimeUTC());
 
-  Founded := False;
+  Found := False;
   for i := High(Recs) downto 0 do
   begin
     if (Recs[i].RecType = TMealRecord) then
@@ -4490,20 +4490,20 @@ begin
 
         if (TempTime >= 0) then
         begin
-          Founded := True;
+          Found := True;
           Form1.LabelDiaryTimeLeftMealVal.Caption := TimeTrncSecToStr(TempTime);
           break;
         end;
       end;
     end;
-    if Founded then break;
+    if Found then break;
   end;
-  Form1.LabelDiaryTimeLeftMealVal.Font.Color := COLOR_HASDATA[Founded];
-  if not Founded then
+  Form1.LabelDiaryTimeLeftMealVal.Font.Color := COLOR_HASDATA[Found];
+  if not Found then
     Form1.LabelDiaryTimeLeftMealVal.Caption := '?';
   {=====================================================}
 
-  Founded := false;
+  Found := false;
   for i := High(Recs) downto 0 do
   begin
     if (Recs[i].RecType = TInsRecord) then
@@ -4511,15 +4511,15 @@ begin
       TempTime := Round((GetTimeUTC() - Recs[i].Time) * SecPerDay);
       if (TempTime > 0) then
       begin
-        Founded := True;
+        Found := True;
         Form1.LabelDiaryTimeLeftInsVal.Caption := TimeTrncSecToStr(TempTime);
         break;
       end;
     end;
-    if Founded then Break;
+    if Found then Break;
   end;
-  Form1.LabelDiaryTimeLeftInsVal.Font.Color := COLOR_HASDATA[Founded];
-  if not Founded then
+  Form1.LabelDiaryTimeLeftInsVal.Font.Color := COLOR_HASDATA[Found];
+  if not Found then
     Form1.LabelDiaryTimeLeftInsVal.Caption := '?';
 
   FreeRecords(Recs);
