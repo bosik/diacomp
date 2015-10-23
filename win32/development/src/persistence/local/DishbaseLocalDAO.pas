@@ -27,18 +27,18 @@ type
     function Add(Dish: TDishItem): TCompactGUID;
     function GetIndex(Dish: TDishItem): integer; overload;
     function GetIndex(ID: TCompactGUID): integer; overload;
-    procedure OnTimer(Sender: TObject);
     procedure Modified();
+    procedure OnTimer(Sender: TObject);
   public
     constructor Create(const BaseFileName: string);
-    destructor Destroy; override;
     procedure Delete(ID: TCompactGUID); override;
+    destructor Destroy; override;
     function FindAll(ShowRemoved: boolean): TDishItemList; override;
     function FindAny(const Filter: string): TDishItemList; override;
-    function FindOne(const Name: string): TDishItem; override;
-    function FindChanged(Since: TDateTime): TVersionedList; override;
     function FindById(ID: TCompactGUID): TVersioned; override;
     function FindByIdPrefix(Prefix: TCompactGUID): TVersionedList; override;
+    function FindChanged(Since: TDateTime): TVersionedList; override;
+    function FindOne(const Name: string): TDishItem; override;
     function GetHashTree(): THashTree; override;
     procedure Save(Item: TVersioned); override;
     procedure Save(const Items: TVersionedList); override;
@@ -226,13 +226,6 @@ begin
 end;
 
 {======================================================================================================================}
-function TDishbaseLocalDAO.GetIndex(Dish: TDishItem): integer;
-{======================================================================================================================}
-begin
-  Result := GetIndex(Dish.ID);
-end;
-
-{======================================================================================================================}
 function TDishbaseLocalDAO.GetHashTree(): THashTree;
 {======================================================================================================================}
 var
@@ -251,6 +244,13 @@ begin
 end;
 
 {======================================================================================================================}
+function TDishbaseLocalDAO.GetIndex(Dish: TDishItem): integer;
+{======================================================================================================================}
+begin
+  Result := GetIndex(Dish.ID);
+end;
+
+{======================================================================================================================}
 function TDishbaseLocalDAO.GetIndex(ID: TCompactGUID): integer;
 {======================================================================================================================}
 begin
@@ -258,7 +258,7 @@ begin
 end;
 
 {======================================================================================================================}
-procedure TDishbaseLocalDAO.Modified;
+procedure TDishbaseLocalDAO.Modified();
 {======================================================================================================================}
 begin
   FModified := True;
