@@ -7,23 +7,24 @@ uses
   XMLIntf, Autolog, Variants, ActiveX;
 
 type
-  // TODO 1: сделать оповещение базы (Changed()) при изменении любого поля
-
   TSortType = (stName, stTag);
 
   // Имеет методы для бинарного поиска
   // Имеет методы для сортировки
-  // Имеет номер версии и метод для её инкремента
   TAbstractBase = class
   private
     TempIndexList: TIndexList;
     procedure ItemChangeHandler(Sender: TObject);
+
+    // comparators
     function MoreName(Index1, Index2: integer): boolean;
     function MoreTag(Index1, Index2: integer): boolean;
     function MoreIndName(Index1, Index2: integer): boolean;
     function MoreIndTag(Index1, Index2: integer): boolean;
+
     procedure Swap(Index1, Index2: integer); virtual; abstract;
     procedure SwapInd(Index1, Index2: integer);
+
     function TraceLast(): integer;
   protected
     function GetName(Index: integer): string; virtual; abstract;
@@ -31,7 +32,11 @@ type
     procedure SetTag(Index, Value: integer); virtual; abstract;
   public
     function Count: integer; virtual; abstract;
+
+    // Searches for item with the name specified (case-insensitive)
+    // TODO: Non-deleted items are considered only
     function Find(const ItemName: string): integer;
+
     procedure Sort(); // вызывается потомками после загрузки
     procedure SortIndexes(IndexList: TIndexList; SortType: TSortType);
   end;
@@ -123,23 +128,28 @@ const
 function TAbstractBase.Find(const ItemName: string): integer;
 {======================================================================================================================}
 
-// поиск на полное соответствие (без учёта регистра)
+// linear version
 
-// линейный поиск
-{var
+var
   i: integer;
+  UpperItemName: string;
 begin
-  Result := -1;
-  for i := 0 to Count-1 do
-  if MatchStr(GetName(i), ItemName, True) then
+  UpperItemName := AnsiUpperCase(ItemName);
+
+  for i := 0 to Count - 1 do
+  if (AnsiUpperCase(GetName(i)) = UpperItemName) and
+     (true { TODO: check if item is not deleted }) then
   begin
     Result := i;
-    break;
+    Exit;
   end;
-end; }
 
-// бинарный поиск
-var
+  Result := -1;
+end;
+
+// binary version
+
+{var
   l,r,k: integer;
   Upper, Cur: string;
 begin
@@ -151,7 +161,7 @@ begin
   while (l <= r) do
   begin
     k := (l + r) div 2;
-    {*}Cur := AnsiUpperCase(GetName(k));
+    Cur := AnsiUpperCase(GetName(k));
     if (Cur < Upper) then l := k + 1 else
     if (Cur > Upper) then r := k - 1 else
     begin
@@ -161,7 +171,7 @@ begin
   end;
 
   Result := -1;
-end;
+end; }
 
 {======================================================================================================================}
 procedure TAbstractBase.ItemChangeHandler(Sender: TObject);
