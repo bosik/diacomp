@@ -18,58 +18,13 @@ object FormFirstMan: TFormFirstMan
   OnShow = FormShow
   PixelsPerInch = 120
   TextHeight = 16
-  object GroupBox1: TGroupBox
-    Left = 0
-    Top = 0
-    Width = 293
-    Height = 105
-    Align = alTop
-    Caption = #1043#1076#1077' '#1089#1086#1079#1076#1072#1090#1100' '#1103#1088#1083#1099#1082#1080'?'
-    TabOrder = 0
-    DesignSize = (
-      293
-      105)
-    object CheckBoxDesktop: TCheckBox
-      Left = 16
-      Top = 24
-      Width = 261
-      Height = 17
-      Anchors = [akLeft, akTop, akRight]
-      Caption = #1053#1072' '#1088#1072#1073#1086#1095#1077#1084' '#1089#1090#1086#1083#1077
-      Checked = True
-      State = cbChecked
-      TabOrder = 0
-    end
-    object CheckBoxMenu: TCheckBox
-      Left = 16
-      Top = 48
-      Width = 261
-      Height = 17
-      Anchors = [akLeft, akTop, akRight]
-      Caption = #1042' '#1084#1077#1085#1102' '#1055#1091#1089#1082'\'#1055#1088#1086#1075#1088#1072#1084#1084#1099
-      Checked = True
-      State = cbChecked
-      TabOrder = 1
-    end
-    object CheckBoxQLaunch: TCheckBox
-      Left = 16
-      Top = 72
-      Width = 261
-      Height = 17
-      Anchors = [akLeft, akTop, akRight]
-      Caption = #1053#1072' '#1087#1072#1085#1077#1083#1080' '#1073#1099#1089#1090#1088#1086#1075#1086' '#1079#1072#1087#1091#1089#1082#1072
-      Checked = True
-      State = cbChecked
-      TabOrder = 2
-    end
-  end
   object ButtonOK: TBitBtn
     Left = 96
     Top = 120
     Width = 113
     Height = 25
     Caption = #1053#1072#1095#1072#1090#1100
-    TabOrder = 1
+    TabOrder = 0
     OnClick = ButtonOKClick
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
