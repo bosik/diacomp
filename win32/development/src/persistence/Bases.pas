@@ -30,7 +30,7 @@ type
     function GetName(Index: integer): string; virtual; abstract;
     function GetTag(Index: integer): integer; virtual; abstract;
     procedure SetTag(Index, Value: integer); virtual; abstract;
-    function GetItem(Index: integer): TMutableItem; virtual; abstract;
+    function GetItem(Index: integer): TVersioned; virtual; abstract;
   public
     function Count: integer; virtual; abstract;
 
@@ -44,12 +44,12 @@ type
 
   TArrayBase = class(TAbstractBase)
   private
-    FBase: array of TMutableItem;
+    FBase: array of TVersioned;
   protected
-    function GetItem(Index: integer): TMutableItem; override;
+    function GetItem(Index: integer): TVersioned; override;
     procedure Swap(Index1, Index2: integer); override;
   public
-    function Add(Item: TMutableItem): integer; virtual;
+    function Add(Item: TVersioned): integer; virtual;
     procedure Clear;
     function Count: integer; override;
     destructor Destroy; override;
@@ -266,7 +266,7 @@ end;
 { TArrayBase }
 
 {======================================================================================================================}
-function TArrayBase.Add(Item: TMutableItem): integer;
+function TArrayBase.Add(Item: TVersioned): integer;
 {======================================================================================================================}
 begin
   if (Item = nil) then
@@ -318,7 +318,7 @@ begin
 end;
 
 {======================================================================================================================}
-function TArrayBase.GetItem(Index: integer): TMutableItem;
+function TArrayBase.GetItem(Index: integer): TVersioned;
 {======================================================================================================================}
 begin
   if (Index < Low(FBase)) and (Index > High(FBase)) then
@@ -331,7 +331,7 @@ end;
 procedure TArrayBase.Swap(Index1, Index2: integer);
 {======================================================================================================================}
 var
-  Temp: TMutableItem;
+  Temp: TVersioned;
 begin
   if (Index1 < Low(FBase)) and (Index1 > High(FBase)) then
     raise ERangeError.Create(Format('TArrayBase.GetItem(): Index out of bounds (%d)', [Index1]));

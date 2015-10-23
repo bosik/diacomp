@@ -45,14 +45,9 @@ type
 
   TVersionedList = array of TVersioned;
 
-  // Уведомляет внешнюю среду о своём изменении через событие OnChange
-  // TODO: DEPRECATED
-  TMutableItem = class (TVersioned)
-  end;
-
   // хранит: название, БЖУ
   // #entity
-  TFoodRelative = class (TMutableItem)
+  TFoodRelative = class (TVersioned)
   private
     FName: string;
     FRelProts: real;
@@ -116,7 +111,7 @@ type
   TFoodItemList = array of TFoodItem;
 
   // #entity
-  TDishItem = class (TMutableItem)
+  TDishItem = class (TVersioned)
   private
     FContent: array of TFoodMassed;
     FFixedMass: boolean;

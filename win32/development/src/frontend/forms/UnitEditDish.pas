@@ -526,7 +526,7 @@ var
   Temp: TFoodMassed;
 
   ItemType: TItemType;
-  Item: TMutableItem;
+  Item: TVersioned;
 begin
   { Food должен быть создан }
 

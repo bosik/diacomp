@@ -47,7 +47,7 @@ type
   procedure LoadExpander; deprecated;
   procedure SaveExpander; deprecated;
 
-  function IdentifyItem(const ItemName: string; out Item: TMutableItem): TItemType;
+  function IdentifyItem(const ItemName: string; out Item: TVersioned): TItemType;
 
   { web }
   function DownloadFoodBaseSample: boolean;
@@ -256,7 +256,7 @@ begin
 end;
 
 {======================================================================================================================}
-function IdentifyItem(const ItemName: string; out Item: TMutableItem): TItemType;
+function IdentifyItem(const ItemName: string; out Item: TVersioned): TItemType;
 {======================================================================================================================}
 begin
   Item := FoodBaseLocal.FindOne(ItemName);

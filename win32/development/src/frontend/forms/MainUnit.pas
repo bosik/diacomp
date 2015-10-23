@@ -1946,7 +1946,7 @@ procedure TForm1.ComboDiaryNewCloseUp(Sender: TObject);
 {======================================================================================================================}
 var
   Mass: real;
-  Item: TMutableItem;
+  Item: TVersioned;
   Temp: TFoodRelative;
 begin
   case IdentifyItem(Trim(ComboDiaryNew.Text), Item) of
@@ -1974,7 +1974,7 @@ var
   Mass: Extended;
   Rec: TCustomRecord;
   Meal: TMealRecord;
-  Item: TMutableItem;
+  Item: TVersioned;
 begin
   StartProc('TForm1.ButtonDiaryNewAddClick()');
   try
