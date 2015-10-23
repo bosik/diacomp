@@ -60,13 +60,12 @@ object Form1: TForm1
     Top = 0
     Width = 1241
     Height = 30
-    UseSystemFont = False
     ActionManager = ActionManager
     ColorMap.HighlightColor = 14410210
     ColorMap.BtnSelectedColor = clBtnFace
     ColorMap.UnusedColor = 14410210
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
+    Font.Color = clMenuText
     Font.Height = -14
     Font.Name = 'Tahoma'
     Font.Style = []
@@ -1059,7 +1058,7 @@ object Form1: TForm1
           object LabelFoodBase: TLabel
             Left = 9
             Top = 9
-            Width = 112
+            Width = 535
             Height = 16
             Align = alTop
             Caption = 'LabelFoodBase'

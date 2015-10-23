@@ -48,7 +48,7 @@ begin
   if ((Dialog.ModalResult = mrOk) and Dialog.ReadEntityFromGUI()) then
   begin
     Entity := Clone(Dialog.Entity);
-    Entity.Modified;
+    Entity.Modified();
     Result := True;
   end else
     Result := False;

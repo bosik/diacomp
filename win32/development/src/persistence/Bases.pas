@@ -972,7 +972,7 @@ begin
   if (Items[i].Content[j].Name = OldName) then
   begin
     Items[i].Content[j].Name := NewName;
-    Items[i].Modified;
+    Items[i].Modified();
     Result := True;
   end;
 end;

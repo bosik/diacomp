@@ -1134,7 +1134,7 @@ var
   AnalyzeResult: TAnalyzeResult;
 
   TimeFrom, TimeTo: TDateTime;
-  i, j: integer;
+  i: integer;
 begin
 (*  Items := ReadVersionedDiaryRecords(ReadFile('temp\antest.json'));
 

@@ -593,8 +593,6 @@ begin
   Result := 0;
 
   try
-    LastSyncTime := StrToDateTime(Value['LastSync']);
-
     { дневник }
     Form1.StatusBar.Panels[3].Text := STATUS_ACTION_SYNC_DIARY;
     Application.ProcessMessages;
@@ -1208,7 +1206,7 @@ begin
 end;
 
 {======================================================================================================================}
-procedure TForm1.CreateFood;
+procedure TForm1.CreateFood();
 {======================================================================================================================}
 var
   Item: TFoodItem;
@@ -2022,7 +2020,7 @@ begin
               itDish: Meal.Add(TDishItem(Item).AsFoodMassed(Mass));
             end;
 
-            Meal.Modified;
+            Meal.Modified();
             LocalSource.Save(Meal);
             DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
             DiaryView.SelectedRecordID := Meal.ID;
@@ -2243,16 +2241,16 @@ procedure TForm1.UpdateDayInfo;
 {======================================================================================================================}
 
   procedure Demo(pa, pt, fa, ft, ca, ct: Real);
-  var
+  {var
     np, nf, nc: Real;
-    M, D: Real;
+    M, D: Real;  }
   begin
-    np := pa / pt;
+    {np := pa / pt;
     nf := fa / ft;
     nc := ca / ct;
     M := (np + nf + nc) / 3;
     D := (Sqr(np - M) + Sqr(nf - M) + Sqr(nc - M)) / 3;
-    // Caption := Format('%.3f', [D]);
+    Caption := Format('%.3f', [D]);   }
   end;
 
   { статистика }
@@ -2865,7 +2863,7 @@ begin
       if (NewMass >= 0) then
       begin
         Meal[DiaryView.SelectedLine].Mass := NewMass;
-        Meal.Modified;
+        Meal.Modified();
         LocalSource.Save(Meal);
         UpdateMealStatistics();
         UpdateMealDose();
@@ -2900,7 +2898,7 @@ begin
       if (DiaryView.SelectedFood.Mass+DeltaMass >= 0) then
       begin
         Meal[DiaryView.SelectedLine].Mass := Meal[DiaryView.SelectedLine].Mass + DeltaMass;
-        Meal.Modified;
+        Meal.Modified();
         LocalSource.Save(Meal);
         UpdateMealStatistics();
         UpdateMealDose();
@@ -3596,8 +3594,8 @@ type
 
 var
   List: array of TRecItem;
-  FirstDate: TDate;
-  LastDate: TDate;
+  //FirstDate: TDate;
+  //LastDate: TDate;
 
   procedure qsort(l, r: integer);
   var
@@ -3928,7 +3926,7 @@ begin
     if MessageDlg(Format(MESSAGE_CONF_REMOVE_DIARY_FOOD, [Food.Name]), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
     begin
       Meal.Remove(DiaryView.SelectedLine);
-      Meal.Modified;
+      Meal.Modified();
       LocalSource.Save(Meal);
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Meal.ID;
@@ -3991,9 +3989,9 @@ procedure SetupUpdate(UserInformed: boolean; const ExpVersion: string);
 
 const
   TEMP_APP = 'NewCompensation.exe';
-var
+{var
   BackEXE: boolean;
-  BackDLL: boolean;
+  BackDLL: boolean;      }
 begin
   // TODO: отвязать от интерфейса, перенести в DiaryCore
 
@@ -4256,7 +4254,7 @@ begin
   begin
     Meal := TMealRecord(Rec);
     Meal.ShortMeal := ActionShortMeal.Checked;
-    Meal.Modified;
+    Meal.Modified();
     LocalSource.Save(Meal);
 
     // TODO: check if it is really necessary
