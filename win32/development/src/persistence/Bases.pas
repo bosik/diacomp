@@ -9,12 +9,11 @@ uses
 type
   TSortType = (stName, stTag);
 
-  // Имеет методы для бинарного поиска
-  // Имеет методы для сортировки
+{======================================================================================================================}
+
   TAbstractBase = class
   private
     TempIndexList: TIndexList;
-    procedure ItemChangeHandler(Sender: TObject);
 
     // comparators
     function MoreName(Index1, Index2: integer): boolean;
@@ -32,15 +31,20 @@ type
     procedure SetTag(Index, Value: integer); virtual; abstract;
     function GetItem(Index: integer): TVersioned; virtual; abstract;
   public
-    function Count: integer; virtual; abstract;
+    // Returns total number of items
+    function Count(): integer; virtual; abstract;
 
-    // Searches for item with the name specified (case-insensitive)
-    // Non-deleted items are considered only
+    // Search for item with the name specified (case-insensitive). Non-deleted items are considered only
     function Find(const ItemName: string): integer;
 
-    procedure Sort(); // вызывается потомками после загрузки
+    // Sort items by name
+    procedure Sort();
+
+    // Sort the specified list using specified sort type
     procedure SortIndexes(IndexList: TIndexList; SortType: TSortType);
   end;
+
+{======================================================================================================================}
 
   TArrayBase = class(TAbstractBase)
   private
@@ -55,6 +59,8 @@ type
     destructor Destroy; override;
     function GetIndex(ID: TCompactGUID): integer; 
   end;
+
+{======================================================================================================================}
 
   TFoodBase = class(TArrayBase)
   private
@@ -71,6 +77,8 @@ type
 
     property Items[Index: integer]: TFoodItem read GetFood; default;
   end;
+
+{======================================================================================================================}
 
   TDishBase = class(TArrayBase)
   private
@@ -91,6 +99,8 @@ type
 
     property Items[Index: integer]: TDishItem read GetDish; default;
   end;
+
+{======================================================================================================================}
 
 implementation
 
@@ -173,13 +183,6 @@ begin
 
   Result := -1;
 end; }
-
-{======================================================================================================================}
-procedure TAbstractBase.ItemChangeHandler(Sender: TObject);
-{======================================================================================================================}
-begin
-  // TODO: empty
-end;
 
 {======================================================================================================================}
 function TAbstractBase.MoreIndName(Index1, Index2: integer): boolean;
