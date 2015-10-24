@@ -58,7 +58,7 @@ public class SyncUtils
 	 *            Items which are presented only in the second list
 	 */
 	private static <T> void getOverLists(List<Versioned<T>> items1, List<Versioned<T>> items2,
-			List<Versioned<T>> newer1, List<Versioned<T>> newer2, List<Versioned<T>> only1, List<Versioned<T>> only2)
+			List<Versioned<T>> newer1, List<Versioned<T>> newer2)
 	{
 		// null checks
 		if (null == items1)
@@ -77,14 +77,6 @@ public class SyncUtils
 		{
 			throw new IllegalArgumentException("newer2 is null");
 		}
-		if (null == only1)
-		{
-			throw new IllegalArgumentException("only1 is null");
-		}
-		if (null == only2)
-		{
-			throw new IllegalArgumentException("only2 is null");
-		}
 
 		// preparation
 
@@ -92,8 +84,6 @@ public class SyncUtils
 		Collections.sort(items2, Versioned.COMPARATOR_GUID);
 		newer1.clear();
 		newer2.clear();
-		only1.clear();
-		only2.clear();
 		int i = 0;
 		int j = 0;
 
@@ -105,12 +95,12 @@ public class SyncUtils
 			int c = Versioned.COMPARATOR_GUID.compare(p1, p2);
 			if (c < 0)
 			{
-				only1.add(p1);
+				newer1.add(p1);
 				i++;
 			}
 			else if (c > 0)
 			{
-				only2.add(p2);
+				newer2.add(p2);
 				j++;
 			}
 			else
@@ -143,14 +133,14 @@ public class SyncUtils
 		// finish first list
 		while (i < items1.size())
 		{
-			only1.add(items1.get(i));
+			newer1.add(items1.get(i));
 			i++;
 		}
 
 		// finish second list
 		while (j < items2.size())
 		{
-			only2.add(items2.get(j));
+			newer2.add(items2.get(j));
 			j++;
 		}
 	}
@@ -171,12 +161,7 @@ public class SyncUtils
 		// calculating transferring lists
 		List<Versioned<T>> newer1 = new ArrayList<Versioned<T>>();
 		List<Versioned<T>> newer2 = new ArrayList<Versioned<T>>();
-		List<Versioned<T>> only1 = new ArrayList<Versioned<T>>();
-		List<Versioned<T>> only2 = new ArrayList<Versioned<T>>();
-		getOverLists(items1, items2, newer1, newer2, only1, only2);
-
-		newer1.addAll(only1);
-		newer2.addAll(only2);
+		getOverLists(items1, items2, newer1, newer2);
 
 		// transfer
 
@@ -377,43 +362,31 @@ public class SyncUtils
 			}
 		}
 
-		if (prefix.length() < DataSource.ID_PREFIX_SIZE)
+		if ((prefix.length() < DataSource.ID_PREFIX_SIZE) && (service1.count(prefix) > DataSource.MAX_ITEMS_COUNT
+				|| service2.count(prefix) > DataSource.MAX_ITEMS_COUNT))
 		{
-			int count1 = service1.count(prefix);
-			int count2 = service2.count(prefix);
-
-			if (count1 <= DataSource.MAX_ITEMS_COUNT && count2 <= DataSource.MAX_ITEMS_COUNT)
+			// ok, need for finer separation
+			Map<String, String> hashes1 = tree1.getHashChildren(prefix);
+			Map<String, String> hashes2 = tree2.getHashChildren(prefix);
+			int result = 0;
+			for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
 			{
-				// there are not too many items, process it at once
-				List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
-				List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
-				return processItems(service1, service2, items1, items2);
-			}
-			else
-			{
-				// ok, need for finer separation
-				Map<String, String> hashes1 = tree1.getHashChildren(prefix);
-				Map<String, String> hashes2 = tree2.getHashChildren(prefix);
-				int result = 0;
-				for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
+				String key = prefix + HashUtils.BYTE_TO_CHAR[i];
+				String hash1 = hashes1.get(key);
+				String hash2 = hashes2.get(key);
+				if (!SyncUtils.equals(hash1, hash2))
 				{
-					String key = prefix + HashUtils.BYTE_TO_CHAR[i];
-					String hash1 = hashes1.get(key);
-					String hash2 = hashes2.get(key);
-					if (!SyncUtils.equals(hash1, hash2))
-					{
-						result += synchronizeChildren(service1, tree1, service2, tree2, key, callback);
-					}
+					result += synchronizeChildren(service1, tree1, service2, tree2, key, callback);
 				}
-
-				return result;
 			}
+
+			return result;
 		}
 		else
 		{
+			// there are not too many items, process it at once
 			List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
 			List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
-
 			return processItems(service1, service2, items1, items2);
 		}
 	}
