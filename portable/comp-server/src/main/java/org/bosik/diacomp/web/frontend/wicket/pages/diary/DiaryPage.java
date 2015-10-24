@@ -17,7 +17,6 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.pages.diary;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -35,7 +34,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.string.StringValue;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.services.diary.DiaryService;
@@ -67,7 +65,7 @@ import com.googlecode.wickedcharts.wicket6.highcharts.Chart;
 
 class BloodOptions extends Options
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	public BloodOptions(IModel<DiaryPanelDayModelObject> model)
 	{
@@ -167,7 +165,7 @@ public class DiaryPage extends MasterPage
 
 		final DiaryEditorBlood bloodEditor = new DiaryEditorBlood("bloodEditor")
 		{
-			private static final long	serialVersionUID	= -8842868450540695476L;
+			private static final long serialVersionUID = -8842868450540695476L;
 
 			@Override
 			public void onSave(AjaxRequestTarget target, IModel<Versioned<BloodRecord>> model)
@@ -202,7 +200,7 @@ public class DiaryPage extends MasterPage
 
 		container.add(new RefreshingView<DiaryPanelDayModelObject>("diaryDay")
 		{
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected Iterator<IModel<DiaryPanelDayModelObject>> getItemModels()
@@ -228,7 +226,7 @@ public class DiaryPage extends MasterPage
 
 		form.add(new AjaxFallbackButton("buttonAddBlood", form)
 		{
-			private static final long	serialVersionUID	= 1417984638165989821L;
+			private static final long serialVersionUID = 1417984638165989821L;
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form)

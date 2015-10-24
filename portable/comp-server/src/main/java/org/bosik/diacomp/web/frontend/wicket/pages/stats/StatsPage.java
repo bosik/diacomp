@@ -28,21 +28,21 @@ import com.googlecode.wickedcharts.wicket6.highcharts.Chart;
 
 public class StatsPage extends MasterPage
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	public StatsPage(PageParameters parameters)
 	{
 		super(parameters);
 
-		final AverageBSChartData chartBloodSugarData = new AverageBSChartData(this, Utils.dateLocal(getTimeZone(),
-				2014, 1, 1), Interval.WEEK);
+		final AverageBSChartData chartBloodSugarData = new AverageBSChartData(this,
+				Utils.dateLocal(getTimeZone(), 2014, 1, 1), Interval.WEEK);
 		final Chart chartBloodSugar = new Chart("chart", chartBloodSugarData);
 		chartBloodSugar.setOutputMarkupId(true);
 		add(chartBloodSugar);
 
 		add(new AjaxLink<Void>("linkDay")
 		{
-			private static final long	serialVersionUID	= -7873018514549864757L;
+			private static final long serialVersionUID = -7873018514549864757L;
 
 			@Override
 			public void onClick(AjaxRequestTarget target)
@@ -54,6 +54,8 @@ public class StatsPage extends MasterPage
 
 		add(new AjaxLink<Void>("linkWeek")
 		{
+			private static final long serialVersionUID = 8421066200529747520L;
+
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
@@ -65,6 +67,8 @@ public class StatsPage extends MasterPage
 
 		add(new AjaxLink<Void>("linkMonth")
 		{
+			private static final long serialVersionUID = 1446882944661826329L;
+
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{

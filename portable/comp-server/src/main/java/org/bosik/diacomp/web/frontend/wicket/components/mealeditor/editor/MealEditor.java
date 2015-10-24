@@ -66,13 +66,15 @@ public class MealEditor extends Panel
 
 		container.add(new RefreshingView<FoodMassed>("view")
 		{
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void populateItem(final Item<FoodMassed> item)
 			{
 				item.add(new FoodMassedUpdater("food", item.getModel(), item.getIndex())
 				{
+					private static final long serialVersionUID = 9153191446566298544L;
+
 					@Override
 					protected void onDelete(AjaxRequestTarget target, int index)
 					{
@@ -116,7 +118,7 @@ public class MealEditor extends Panel
 
 		final FoodMassedInserter foodMassedInserter = new FoodMassedInserter("picker")
 		{
-			private static final long	serialVersionUID	= 6850233237789079835L;
+			private static final long serialVersionUID = 6850233237789079835L;
 
 			@Override
 			public void onSelected(AjaxRequestTarget target, IModel<FoodMassed> item)
@@ -144,6 +146,8 @@ public class MealEditor extends Panel
 
 		add(new AjaxLink<Void>("debug")
 		{
+			private static final long serialVersionUID = -3062265788028734589L;
+
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{

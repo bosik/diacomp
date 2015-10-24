@@ -90,8 +90,8 @@ public class AuthRest
 				return Response.ok(resp).build();
 			}
 
-			Authentication authentication = authProvider.authenticate(new UsernamePasswordAuthenticationToken(login,
-					pass));
+			Authentication authentication = authProvider
+					.authenticate(new UsernamePasswordAuthenticationToken(login, pass));
 			SecurityContext context = SecurityContextHolder.getContext();
 			context.setAuthentication(authentication);
 			// Do not pass any data in the body in order to store the same session-id
@@ -110,6 +110,7 @@ public class AuthRest
 		}
 	}
 
+	@SuppressWarnings("static-method")
 	@GET
 	@Path("logout")
 	@Produces(MediaType.APPLICATION_JSON)

@@ -26,7 +26,7 @@ import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.foodMa
 
 public abstract class FoodMassedInserter extends Panel
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	public FoodMassedInserter(String id)
 	{
@@ -40,6 +40,8 @@ public abstract class FoodMassedInserter extends Panel
 
 		FoodMassedPicker picker = new FoodMassedPicker("picker")
 		{
+			private static final long serialVersionUID = -5896695927537265374L;
+
 			@Override
 			public void onFoodChanged(AjaxRequestTarget target, IModel<Food> food)
 			{

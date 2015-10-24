@@ -35,14 +35,14 @@ import org.bosik.merklesync.Versioned;
 
 public abstract class FoodPicker extends Panel
 {
-	private static final long				serialVersionUID	= 1L;
+	private static final long		serialVersionUID	= 1L;
 
 	@SpringBean
-	private FoodBaseService					foodBase;
+	FoodBaseService					foodBase;
 
-	private AutoCompleteTextField<String>	field;
+	AutoCompleteTextField<String>	field;
 
-	private final IModel<String>			model;
+	private final IModel<String>	model;
 
 	public FoodPicker(String id, IModel<String> model)
 	{
@@ -60,7 +60,7 @@ public abstract class FoodPicker extends Panel
 
 		field = new AutoCompleteTextField<String>("picker", model)
 		{
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected Iterator<String> getChoices(String input)
@@ -78,7 +78,7 @@ public abstract class FoodPicker extends Panel
 		};
 		field.add(new AjaxFormSubmitBehavior(form, "onchange")
 		{
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target)

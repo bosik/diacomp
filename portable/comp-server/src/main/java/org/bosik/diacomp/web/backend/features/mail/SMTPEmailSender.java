@@ -34,8 +34,8 @@ import javax.mail.internet.MimeMessage;
 public class SMTPEmailSender extends AbstractEmailSender
 {
 	private String	hostAddress;
-	private String	hostUsername;
-	private String	hostPassword;
+	String			hostUsername;
+	String			hostPassword;
 
 	public SMTPEmailSender(String hostAddress, String hostUsername, String hostPassword)
 	{

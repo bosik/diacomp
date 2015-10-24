@@ -18,8 +18,6 @@
 package org.bosik.diacomp.web.backend.features.user.info;
 
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.web.backend.features.user.auth.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,10 +26,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserInfoServiceImpl implements UserInfoService
 {
-	private static final String	GUEST_USERNAME	= "guest";
-
-	@Autowired
-	private AuthService			authService;
+	private static final String GUEST_USERNAME = "guest";
 
 	@Override
 	public int getCurrentUserId()

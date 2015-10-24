@@ -34,6 +34,7 @@ public class FoodSetService
 	private static final String	COLUMN_FOODSET_SIZE			= "_Size";
 	private static final String	COLUMN_FOODSET_DATA			= "_Data";
 
+	@SuppressWarnings("static-method")
 	public String getFoodSet(String id)
 	{
 		try
@@ -66,6 +67,7 @@ public class FoodSetService
 		}
 	}
 
+	@SuppressWarnings("static-method")
 	public List<FoodSetInfo> getFoodSetInfo()
 	{
 		try

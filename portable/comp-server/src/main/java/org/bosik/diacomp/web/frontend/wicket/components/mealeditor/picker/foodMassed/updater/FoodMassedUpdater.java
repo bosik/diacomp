@@ -29,7 +29,7 @@ public class FoodMassedUpdater extends Panel
 {
 	private static final long	serialVersionUID	= 1L;
 	private IModel<FoodMassed>	model;
-	private int					index;
+	int							index;
 
 	public FoodMassedUpdater(String id, IModel<FoodMassed> model, int index)
 	{
@@ -48,6 +48,8 @@ public class FoodMassedUpdater extends Panel
 
 		FoodMassedPicker picker = new FoodMassedPicker("picker", model)
 		{
+			private static final long serialVersionUID = 6148168802605187364L;
+
 			@Override
 			public void onFoodChanged(AjaxRequestTarget target, IModel<Food> food)
 			{
@@ -68,6 +70,8 @@ public class FoodMassedUpdater extends Panel
 
 		AjaxFallbackLink<Void> linkDelete = new AjaxFallbackLink<Void>("delete")
 		{
+			private static final long serialVersionUID = 2748601373009109179L;
+
 			@Override
 			public void onClick(AjaxRequestTarget target)
 			{
@@ -77,14 +81,17 @@ public class FoodMassedUpdater extends Panel
 		add(linkDelete);
 	}
 
+	@SuppressWarnings("unused")
 	protected void onFoodChanged(AjaxRequestTarget target, IModel<Food> food)
 	{
 	};
 
+	@SuppressWarnings("unused")
 	protected void onMassChanged(AjaxRequestTarget target, IModel<Double> mass)
 	{
 	};
 
+	@SuppressWarnings("unused")
 	protected void onDelete(AjaxRequestTarget target, int index)
 	{
 	};
