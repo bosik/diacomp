@@ -41,11 +41,18 @@ public class MealEditor extends Panel
 	//FoodPicker					fieldFood;
 	WebMarkupContainer			container;
 	IModel<FoodList>			model;
+	boolean						readOnly;
 
-	public MealEditor(String id, final IModel<FoodList> model)
+	public MealEditor(String id, final IModel<FoodList> model, boolean readOnly)
 	{
 		super(id);
 		this.model = model;
+		this.readOnly = readOnly;
+	}
+
+	public MealEditor(String id, final IModel<FoodList> model)
+	{
+		this(id, model, false);
 	}
 
 	@Override
@@ -107,7 +114,7 @@ public class MealEditor extends Panel
 			}
 		});
 
-		add(new FoodMassedInserter("picker")
+		final FoodMassedInserter foodMassedInserter = new FoodMassedInserter("picker")
 		{
 			private static final long	serialVersionUID	= 6850233237789079835L;
 
@@ -127,7 +134,13 @@ public class MealEditor extends Panel
 					System.out.println("Null selected");
 				}
 			}
-		});
+		};
+		if (readOnly)
+		{
+			foodMassedInserter.setOutputMarkupId(true);
+			foodMassedInserter.setVisible(false);
+		}
+		add(foodMassedInserter);
 
 		add(new AjaxLink<Void>("debug")
 		{

@@ -84,6 +84,8 @@ public class DiaryPanelDay extends Panel
 				Versioned<DiaryRecord> record = item.getModelObject();
 				DiaryRecord data = record.getData();
 
+				boolean readOnly = DiaryPanelDay.this.model.getObject().isReadOnly();
+				
 				if (data instanceof BloodRecord)
 				{
 					item.add(new DiaryPanelBlood("diaryRecordPanel", Model.of(new Versioned<BloodRecord>(record))));
@@ -94,7 +96,7 @@ public class DiaryPanelDay extends Panel
 				}
 				else if (data instanceof MealRecord)
 				{
-					item.add(new DiaryPanelMeal("diaryRecordPanel", Model.of(new Versioned<MealRecord>(record))));
+					item.add(new DiaryPanelMeal("diaryRecordPanel", Model.of(new Versioned<MealRecord>(record)), readOnly));
 				}
 				else if (data instanceof NoteRecord)
 				{

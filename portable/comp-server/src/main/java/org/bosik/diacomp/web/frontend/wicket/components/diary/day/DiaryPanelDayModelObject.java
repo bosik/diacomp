@@ -29,11 +29,18 @@ public class DiaryPanelDayModelObject implements Serializable
 
 	private Date							date;
 	private List<Versioned<DiaryRecord>>	items;
+	private boolean							readOnly;
 
-	public DiaryPanelDayModelObject(Date date, List<Versioned<DiaryRecord>> items)
+	public DiaryPanelDayModelObject(Date date, List<Versioned<DiaryRecord>> items, boolean readOnly)
 	{
 		this.date = date;
 		this.items = items;
+		this.readOnly = readOnly;
+	}
+	
+	public DiaryPanelDayModelObject(Date date, List<Versioned<DiaryRecord>> items)
+	{
+		this(date, items, false);
 	}
 
 	public Date getDate()
@@ -54,5 +61,15 @@ public class DiaryPanelDayModelObject implements Serializable
 	public void setItems(List<Versioned<DiaryRecord>> items)
 	{
 		this.items = items;
+	}
+
+	public boolean isReadOnly()
+	{
+		return readOnly;
+	}
+
+	public void setReadOnly(boolean readOnly)
+	{
+		this.readOnly = readOnly;
 	}
 }

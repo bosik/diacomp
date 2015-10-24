@@ -37,11 +37,18 @@ public class DiaryPanelMeal extends Panel
 	private static final long		serialVersionUID	= 1L;
 
 	IModel<Versioned<MealRecord>>	model;
+	boolean readOnly;
 
-	public DiaryPanelMeal(String id, Model<Versioned<MealRecord>> model)
+	public DiaryPanelMeal(String id, Model<Versioned<MealRecord>> model, boolean readOnly)
 	{
 		super(id);
 		this.model = model;
+		this.readOnly = readOnly;
+	}
+	
+	public DiaryPanelMeal(String id, Model<Versioned<MealRecord>> model)
+	{
+		this(id, model, false);
 	}
 
 	@Override
@@ -90,6 +97,6 @@ public class DiaryPanelMeal extends Panel
 
 				return list;
 			}
-		}));
+		}, readOnly));
 	}
 }
