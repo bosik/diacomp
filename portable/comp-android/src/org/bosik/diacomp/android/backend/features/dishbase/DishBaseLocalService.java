@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.features.dishbase;
 
@@ -24,7 +24,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
@@ -537,7 +536,8 @@ public class DishBaseLocalService implements DishBaseService
 	private SortedMap<String, String> getDataHashes()
 	{
 		// constructing parameters
-		final String[] select = { DiaryContentProvider.COLUMN_DISHBASE_GUID, DiaryContentProvider.COLUMN_DISHBASE_HASH };
+		final String[] select = { DiaryContentProvider.COLUMN_DISHBASE_GUID,
+				DiaryContentProvider.COLUMN_DISHBASE_HASH };
 		final String where = null;
 		final String[] whereArgs = null;
 
@@ -567,13 +567,6 @@ public class DishBaseLocalService implements DishBaseService
 	{
 		MerkleTree tree = getHashTree();
 		return tree.getHash(prefix);
-	}
-
-	@Override
-	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
-	{
-		MerkleTree tree = getHashTree();
-		return tree.getHashChildren(prefix);
 	}
 
 	@Override

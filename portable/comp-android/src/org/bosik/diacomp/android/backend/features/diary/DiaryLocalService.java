@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.features.diary;
 
@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
@@ -269,9 +268,8 @@ public class DiaryLocalService implements DiaryService
 
 		time = System.currentTimeMillis() - time;
 
-		Log.d(TAG,
-				String.format("#DBF %d items found between %s and %s in %d ms", records.size(),
-						Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime), time));
+		Log.d(TAG, String.format("#DBF %d items found between %s and %s in %d ms", records.size(),
+				Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime), time));
 
 		return records;
 	}
@@ -300,13 +298,6 @@ public class DiaryLocalService implements DiaryService
 	{
 		MerkleTree tree = getHashTree();
 		return tree.getHash(prefix);
-	}
-
-	@Override
-	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
-	{
-		MerkleTree tree = getHashTree();
-		return tree.getHashChildren(prefix);
 	}
 
 	@Override
@@ -532,10 +523,11 @@ public class DiaryLocalService implements DiaryService
 
 				if (record.getData().getTime().before(start) || record.getData().getTime().after(end))
 				{
-					Log.e(TAG, String.format(
-							"Records validation failed: time of item %s (%s) is out of time range (%s -- %s)",
-							record.getId(), Utils.formatTimeUTC(record.getData().getTime()),
-							Utils.formatTimeUTC(start), Utils.formatTimeUTC(end)));
+					Log.e(TAG,
+							String.format(
+									"Records validation failed: time of item %s (%s) is out of time range (%s -- %s)",
+									record.getId(), Utils.formatTimeUTC(record.getData().getTime()),
+									Utils.formatTimeUTC(start), Utils.formatTimeUTC(end)));
 					print(records);
 					return false;
 				}

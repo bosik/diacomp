@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.features.foodbase;
 
@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
@@ -595,13 +594,6 @@ public class FoodBaseLocalService implements FoodBaseService
 	{
 		MerkleTree tree = getHashTree();
 		return tree.getHash(prefix);
-	}
-
-	@Override
-	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
-	{
-		MerkleTree tree = getHashTree();
-		return tree.getHashChildren(prefix);
 	}
 
 	@Override

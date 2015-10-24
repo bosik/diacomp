@@ -19,12 +19,11 @@ package org.bosik.diacomp.web.backend.features.diary;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
@@ -95,7 +94,7 @@ public class DiaryLocalService implements DiaryService
 			}
 		}
 
-		List<Versioned<DiaryRecord>> result = new LinkedList<Versioned<DiaryRecord>>();
+		List<Versioned<DiaryRecord>> result = new ArrayList<Versioned<DiaryRecord>>();
 
 		while (resultSet.next())
 		{
@@ -319,13 +318,6 @@ public class DiaryLocalService implements DiaryService
 	{
 		MerkleTree tree = getHashTree();
 		return tree.getHash(prefix);
-	}
-
-	@Override
-	public Map<String, String> getHashChildren(String prefix)
-	{
-		MerkleTree tree = getHashTree();
-		return tree.getHashChildren(prefix);
 	}
 
 	@Override

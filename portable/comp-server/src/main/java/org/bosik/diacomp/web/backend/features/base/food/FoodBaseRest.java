@@ -45,6 +45,7 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,7 +61,7 @@ public class FoodBaseRest
 
 	private final Serializer<Versioned<FoodItem>>	serializer			= new SerializerFoodItem();
 	private final Serializer<FoodSetInfo>			serializerSetInfo	= new SerializerAdapter<FoodSetInfo>(
-																				new ParserFoodSetInfo());
+			new ParserFoodSetInfo());
 	private final Serializer<Map<String, String>>	serializerMap		= new SerializerMap();
 
 	@GET
@@ -243,7 +244,8 @@ public class FoodBaseRest
 	{
 		try
 		{
-			Map<String, String> map = foodbaseService.getHashChildren(parPrefix);
+			MerkleTree hashTree = foodbaseService.getHashTree();
+			Map<String, String> map = hashTree.getHashChildren(parPrefix);
 			String response = serializerMap.write(map);
 			return Response.ok(response).build();
 		}

@@ -17,9 +17,7 @@
  */
 package org.bosik.diacomp.core.services;
 
-import java.util.Map;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
-import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.merklesync.DataSource;
 
@@ -35,14 +33,4 @@ public interface ObjectService<T> extends DataSource<T>
 	 *             If item is already deleted
 	 */
 	void delete(String id) throws NotFoundException, AlreadyDeletedException;
-
-	/**
-	 * Returns children for specified node
-	 * 
-	 * @param prefix
-	 *            Must be 0..ID_PREFIX_SIZE chars long
-	 * @return Map (prefix + one_char, hash) if prefix is shorter than ID_PREFIX_SIZE; (id, hash) otherwise
-	 * @throws CommonServiceException
-	 */
-	Map<String, String> getHashChildren(String prefix) throws CommonServiceException;
 }

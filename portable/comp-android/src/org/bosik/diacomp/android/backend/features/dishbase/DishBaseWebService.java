@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.features.dishbase;
 
@@ -55,9 +55,9 @@ public class DishBaseWebService implements DishBaseService
 	private static final String						API_DISH_HASHES				= "api/dish/hashes/%s";
 	private static final String						API_DISH_SAVE				= "api/dish/";
 
-	private final WebClient							webClient;
+	final WebClient									webClient;
 	private final Serializer<Versioned<DishItem>>	serializer					= new SerializerDishItem();
-	private final Serializer<Map<String, String>>	serializerMap				= new SerializerMap();
+	final Serializer<Map<String, String>>			serializerMap				= new SerializerMap();
 
 	public DishBaseWebService(WebClient webClient)
 	{
@@ -219,26 +219,6 @@ public class DishBaseWebService implements DishBaseService
 	}
 
 	@Override
-	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
-	{
-		try
-		{
-			String query = String.format(API_DISH_HASHES, prefix);
-			String resp = webClient.get(query);
-			String data = resp;
-			return serializerMap.read(data);
-		}
-		catch (CommonServiceException e)
-		{
-			throw e;
-		}
-		catch (Exception e)
-		{
-			throw new CommonServiceException(e);
-		}
-	}
-
-	@Override
 	public MerkleTree getHashTree()
 	{
 		return new MerkleTree()
@@ -252,7 +232,21 @@ public class DishBaseWebService implements DishBaseService
 			@Override
 			public Map<String, String> getHashChildren(String prefix)
 			{
-				return DishBaseWebService.this.getHashChildren(prefix);
+				try
+				{
+					String query = String.format(API_DISH_HASHES, prefix);
+					String resp = webClient.get(query);
+					String data = resp;
+					return serializerMap.read(data);
+				}
+				catch (CommonServiceException e)
+				{
+					throw e;
+				}
+				catch (Exception e)
+				{
+					throw new CommonServiceException(e);
+				}
 			}
 		};
 	}

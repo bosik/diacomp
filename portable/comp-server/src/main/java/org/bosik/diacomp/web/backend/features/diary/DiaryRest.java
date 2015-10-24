@@ -47,6 +47,7 @@ import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.UserLogger;
 import org.bosik.merklesync.DataSource;
+import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,7 @@ public class DiaryRest
 	private final Parser<DiaryRecord>					parser				= new ParserDiaryRecord();
 	private final Parser<Versioned<DiaryRecord>>		parserVersioned		= new ParserVersioned<DiaryRecord>(parser);
 	private final Serializer<Versioned<DiaryRecord>>	serializer			= new SerializerAdapter<Versioned<DiaryRecord>>(
-																					parserVersioned);
+			parserVersioned);
 	private final Serializer<Map<String, String>>		serializerMap		= new SerializerMap();
 
 	private static final int							MAX_DATETIME_SIZE	= Utils.FORMAT_DATE_TIME.length();
@@ -87,9 +88,8 @@ public class DiaryRest
 		if (originalLength > maxSize)
 		{
 			s = s.substring(0, maxSize);
-			log.getLogger().warn(
-					String.format("Parameter too long: %d chars passed, truncated down to %d: %s", originalLength,
-							maxSize, s));
+			log.getLogger().warn(String.format("Parameter too long: %d chars passed, truncated down to %d: %s",
+					originalLength, maxSize, s));
 		}
 
 		return s;
@@ -215,7 +215,8 @@ public class DiaryRest
 		{
 			parPrefix = checkSize(parPrefix, DataSource.ID_FULL_SIZE);
 
-			Map<String, String> map = diaryService.getHashChildren(parPrefix);
+			MerkleTree hashTree = diaryService.getHashTree();
+			Map<String, String> map = hashTree.getHashChildren(parPrefix);
 			String response = serializerMap.write(map);
 			return Response.ok(response).build();
 		}
@@ -273,9 +274,8 @@ public class DiaryRest
 	@GET
 	@Path("period")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response findPeriod(@QueryParam("start_time") String parStartTime,
-			@QueryParam("end_time") String parEndTime, @QueryParam("show_rem") @DefaultValue("false") String parShowRem)
-			throws CommonServiceException
+	public Response findPeriod(@QueryParam("start_time") String parStartTime, @QueryParam("end_time") String parEndTime,
+			@QueryParam("show_rem") @DefaultValue("false") String parShowRem) throws CommonServiceException
 	{
 		try
 		{

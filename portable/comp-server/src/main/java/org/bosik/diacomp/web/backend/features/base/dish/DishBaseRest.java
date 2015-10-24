@@ -42,6 +42,7 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -236,7 +237,8 @@ public class DishBaseRest
 	{
 		try
 		{
-			Map<String, String> map = dishbaseService.getHashChildren(parPrefix);
+			MerkleTree hashTree = dishbaseService.getHashTree();
+			Map<String, String> map = hashTree.getHashChildren(parPrefix);
 			String response = serializerMap.write(map);
 			return Response.ok(response).build();
 		}

@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.features.diary;
 
@@ -55,13 +55,13 @@ public class DiaryWebService implements DiaryService
 	private static final String							API_DIARY_HASHES			= "api/diary/hashes/%s";
 	private static final String							API_DIARY_SAVE				= "api/diary/";
 
-	private final WebClient								webClient;
+	final WebClient										webClient;
 	private final Parser<DiaryRecord>					parser						= new ParserDiaryRecord();
 	private final Parser<Versioned<DiaryRecord>>		parserV						= new ParserVersioned<DiaryRecord>(
-																							parser);
+			parser);
 	private final Serializer<Versioned<DiaryRecord>>	serializerV					= new SerializerAdapter<Versioned<DiaryRecord>>(
-																							parserV);
-	private final Serializer<Map<String, String>>		serializerMap				= new SerializerMap();
+			parserV);
+	final Serializer<Map<String, String>>				serializerMap				= new SerializerMap();
 
 	/* ============================ CONSTRUCTOR ============================ */
 
@@ -198,26 +198,6 @@ public class DiaryWebService implements DiaryService
 	}
 
 	@Override
-	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
-	{
-		try
-		{
-			String query = String.format(API_DIARY_HASHES, prefix);
-			String resp = webClient.get(query);
-			String data = resp;
-			return serializerMap.read(data);
-		}
-		catch (CommonServiceException e)
-		{
-			throw e;
-		}
-		catch (Exception e)
-		{
-			throw new CommonServiceException(e);
-		}
-	}
-
-	@Override
 	public MerkleTree getHashTree()
 	{
 		return new MerkleTree()
@@ -231,7 +211,21 @@ public class DiaryWebService implements DiaryService
 			@Override
 			public Map<String, String> getHashChildren(String prefix)
 			{
-				return DiaryWebService.this.getHashChildren(prefix);
+				try
+				{
+					String query = String.format(API_DIARY_HASHES, prefix);
+					String resp = webClient.get(query);
+					String data = resp;
+					return serializerMap.read(data);
+				}
+				catch (CommonServiceException e)
+				{
+					throw e;
+				}
+				catch (Exception e)
+				{
+					throw new CommonServiceException(e);
+				}
 			}
 		};
 	}

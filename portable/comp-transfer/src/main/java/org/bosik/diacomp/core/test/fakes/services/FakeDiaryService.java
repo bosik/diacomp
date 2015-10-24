@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -37,7 +36,8 @@ import org.bosik.merklesync.Versioned;
 
 public class FakeDiaryService implements DiaryService
 {
-	private final Mock<Versioned<DiaryRecord>>	mock	= new MockVersionedConverter<DiaryRecord>(new MockDiaryRecord());
+	private final Mock<Versioned<DiaryRecord>>	mock	= new MockVersionedConverter<DiaryRecord>(
+			new MockDiaryRecord());
 	private final List<Versioned<DiaryRecord>>	samples	= new ArrayList<Versioned<DiaryRecord>>();
 
 	public FakeDiaryService(boolean withSampleData)
@@ -199,12 +199,6 @@ public class FakeDiaryService implements DiaryService
 
 	@Override
 	public String getHash(String prefix) throws CommonServiceException
-	{
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
-	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}

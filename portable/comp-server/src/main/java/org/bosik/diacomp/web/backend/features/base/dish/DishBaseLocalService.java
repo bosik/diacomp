@@ -426,13 +426,6 @@ public class DishBaseLocalService implements DishBaseService
 	}
 
 	@Override
-	public Map<String, String> getHashChildren(String prefix)
-	{
-		MerkleTree tree = getHashTree();
-		return tree.getHashChildren(prefix);
-	}
-
-	@Override
 	public MerkleTree getHashTree()
 	{
 		int userId = getCurrentUserId();
@@ -464,11 +457,12 @@ public class DishBaseLocalService implements DishBaseService
 
 		result = new MemoryMerkleTree();
 		result.putAll(tree); // headers (0..4 chars id)
-		result.putAll(hashes); // leafs (32 chars id)
+		result.putAll(hashes);
+		// leafs (32 chars id)
 		/**/long timePut = System.currentTimeMillis();
 		/**/System.out.println(String.format("Tree built in %s ms (fetch: %d ms, process: %d ms, put: %d ms)",
-				System.currentTimeMillis() - timeStart, timeFetch - timeStart, timeProcess - timeFetch, timePut
-						- timeProcess));
+				System.currentTimeMillis() - timeStart, timeFetch - timeStart, timeProcess - timeFetch,
+				timePut - timeProcess));
 		return result;
 	}
 

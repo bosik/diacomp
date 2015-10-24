@@ -20,7 +20,6 @@ package org.bosik.diacomp.core.test.fakes.services;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
@@ -31,7 +30,7 @@ import org.bosik.merklesync.Versioned;
 
 public class FakeObjectService implements ObjectService<String>
 {
-	private final List<Versioned<String>>	data	= new ArrayList<Versioned<String>>();
+	private final List<Versioned<String>> data = new ArrayList<Versioned<String>>();
 
 	@Override
 	public int count(String prefix)
@@ -152,12 +151,6 @@ public class FakeObjectService implements ObjectService<String>
 
 	@Override
 	public String getHash(String prefix) throws CommonServiceException
-	{
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
-	public Map<String, String> getHashChildren(String prefix) throws CommonServiceException
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}
