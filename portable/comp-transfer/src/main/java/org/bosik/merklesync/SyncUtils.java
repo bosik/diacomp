@@ -82,8 +82,6 @@ public class SyncUtils
 
 		Collections.sort(items1, Versioned.COMPARATOR_GUID);
 		Collections.sort(items2, Versioned.COMPARATOR_GUID);
-		newer1.clear();
-		newer2.clear();
 		int i = 0;
 		int j = 0;
 
@@ -332,8 +330,9 @@ public class SyncUtils
 
 	/* ============================ SYNC METHODS: HASH-BASED (v2) ============================ */
 
-	private static <T> int synchronizeChildren(DataSource<T> service1, MerkleTree tree1, DataSource<T> service2,
-			MerkleTree tree2, String prefix, ProgressCallback callback)
+	private static <T> void synchronizeChildren(DataSource<T> service1, MerkleTree tree1, DataSource<T> service2,
+			MerkleTree tree2, String prefix, List<Versioned<T>> newer1, List<Versioned<T>> newer2,
+			ProgressCallback callback)
 	{
 		if (callback != null)
 		{
@@ -366,7 +365,7 @@ public class SyncUtils
 			// ok, need for finer separation
 			Map<String, String> hashes1 = tree1.getHashChildren(prefix);
 			Map<String, String> hashes2 = tree2.getHashChildren(prefix);
-			int result = 0;
+
 			for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
 			{
 				String key = prefix + HashUtils.BYTE_TO_CHAR[i];
@@ -374,18 +373,16 @@ public class SyncUtils
 				String hash2 = hashes2.get(key);
 				if (!SyncUtils.equals(hash1, hash2))
 				{
-					result += synchronizeChildren(service1, tree1, service2, tree2, key, callback);
+					synchronizeChildren(service1, tree1, service2, tree2, key, newer1, newer2, callback);
 				}
 			}
-
-			return result;
 		}
 		else
 		{
 			// there are not too many items, process it at once
 			List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
 			List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
-			return processItems(service1, service2, items1, items2);
+			getOverLists(items1, items2, newer1, newer2);
 		}
 	}
 
@@ -408,25 +405,35 @@ public class SyncUtils
 
 		MerkleTree tree1 = service1.getHashTree();
 		MerkleTree tree2 = service2.getHashTree();
-
 		String hash1 = tree1.getHash("");
 		String hash2 = tree2.getHash("");
-		int count;
+
+		List<Versioned<T>> newer1 = new ArrayList<Versioned<T>>();
+		List<Versioned<T>> newer2 = new ArrayList<Versioned<T>>();
+
 		if (!SyncUtils.equals(hash1, hash2))
 		{
-			count = synchronizeChildren(service1, tree1, service2, tree2, "", callback);
+			synchronizeChildren(service1, tree1, service2, tree2, "", newer1, newer2, callback);
 		}
-		else
-		{
-			count = 0;
-		}
+
+		blockSave(newer1, service2);
+		blockSave(newer2, service1);
 
 		if (callback != null)
 		{
 			callback.update(256, 256);
 		}
 
-		return count;
+		return newer1.size() + newer2.size();
+	}
+
+	private static <T> void blockSave(List<Versioned<T>> items, DataSource<T> service)
+	{
+		for (int fromIndex = 0; fromIndex < items.size(); fromIndex += DataSource.MAX_ITEMS_COUNT)
+		{
+			int toIndex = Math.min(fromIndex + DataSource.MAX_ITEMS_COUNT, items.size());
+			service.save(items.subList(fromIndex, toIndex));
+		}
 	}
 
 	/**
