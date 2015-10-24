@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.views.diary;
 
@@ -65,7 +65,7 @@ public class DiaryDayView extends LinearLayout
 
 	private static class ItemHeader extends Item
 	{
-		public Date	date;
+		public Date date;
 
 		public ItemHeader(Date date)
 		{
@@ -81,7 +81,7 @@ public class DiaryDayView extends LinearLayout
 
 	private static class ItemData extends Item
 	{
-		public Versioned<DiaryRecord>	record;
+		public Versioned<DiaryRecord> record;
 
 		public ItemData(Versioned<DiaryRecord> record)
 		{
@@ -105,27 +105,27 @@ public class DiaryDayView extends LinearLayout
 		void onHeaderClick(Date date);
 	}
 
-	static final String		TAG				= DiaryDayView.class.getSimpleName();
+	static final String				TAG				= DiaryDayView.class.getSimpleName();
 
 	// Data
-	Date					firstDate;
-	int						countOfDays;
-	List<Item>				data			= new ArrayList<Item>();
-	boolean					loading			= false;
-	boolean					loadingBefore	= false;
-	boolean					loadingAfter	= false;
-	int						offset;
+	Date							firstDate;
+	int								countOfDays;
+	List<Item>						data			= new ArrayList<Item>();
+	boolean							loading			= false;
+	boolean							loadingBefore	= false;
+	boolean							loadingAfter	= false;
+	int								offset;
 
 	// Components
-	BaseAdapter				adapter;
-	public ListView			listRecs;
+	BaseAdapter						adapter;
+	public ListView					listRecs;
 
 	// Services
-	static DiaryService		diaryService;
+	static volatile DiaryService	diaryService;
 
 	// Listeners
-	OnRecordClickListener	onRecordClickListener;
-	OnHeaderClickListener	onHeaderClickListener;
+	OnRecordClickListener			onRecordClickListener;
+	OnHeaderClickListener			onHeaderClickListener;
 
 	public DiaryDayView(final Context context)
 	{

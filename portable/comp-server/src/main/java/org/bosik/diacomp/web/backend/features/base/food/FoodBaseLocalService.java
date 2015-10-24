@@ -205,7 +205,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			if (includeRemoved)
 			{
-				where = String.format("(%s = ?)", COLUMN_FOODBASE_USER, userId);
+				where = String.format("(%s = ?)", COLUMN_FOODBASE_USER);
 				whereArgs = new String[] { String.valueOf(userId) };
 			}
 			else

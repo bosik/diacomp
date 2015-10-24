@@ -40,7 +40,7 @@ public class FoodSetService
 		try
 		{
 			final String[] select = { COLUMN_FOODSET_DATA };
-			String where = String.format("(%s = ?)", COLUMN_FOODSET_ID, id);
+			String where = String.format("(%s = ?)", COLUMN_FOODSET_ID);
 			String[] whereArgs = new String[] { id };
 			final String order = null;
 

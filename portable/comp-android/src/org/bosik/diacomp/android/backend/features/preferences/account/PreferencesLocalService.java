@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.features.preferences.account;
 
@@ -211,7 +211,10 @@ public class PreferencesLocalService extends PreferencesService
 		}
 		finally
 		{
-			cursor.close();
+			if (cursor != null)
+			{
+				cursor.close();
+			}
 		}
 	}
 }

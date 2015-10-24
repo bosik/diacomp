@@ -289,7 +289,10 @@ public class DiaryLocalService implements DiaryService
 		}
 		finally
 		{
-			cursor.close();
+			if (cursor != null)
+			{
+				cursor.close();
+			}
 		}
 	}
 
