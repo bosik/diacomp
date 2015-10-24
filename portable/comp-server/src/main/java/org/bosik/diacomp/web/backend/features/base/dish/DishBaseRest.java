@@ -36,12 +36,12 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
-import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.merklesync.DataSource;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +87,7 @@ public class DishBaseRest
 		try
 		{
 			// Prefix form
-			if (parId.length() <= ObjectService.ID_PREFIX_SIZE)
+			if (parId.length() <= DataSource.ID_PREFIX_SIZE)
 			{
 				List<Versioned<DishItem>> items = dishbaseService.findByIdPrefix(parId);
 

@@ -39,12 +39,12 @@ import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
-import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.merklesync.DataSource;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +94,7 @@ public class FoodBaseRest
 		try
 		{
 			// Prefix form
-			if (parId.length() <= ObjectService.ID_PREFIX_SIZE)
+			if (parId.length() <= DataSource.ID_PREFIX_SIZE)
 			{
 				List<Versioned<FoodItem>> items = foodbaseService.findByIdPrefix(parId);
 

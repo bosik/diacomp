@@ -31,7 +31,6 @@ import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
-import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
@@ -42,6 +41,7 @@ import org.bosik.diacomp.web.backend.common.CachedHashTree.TreeType;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
+import org.bosik.merklesync.DataSource;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MemoryMerkleTree;
 import org.bosik.merklesync.MerkleTree;
@@ -365,10 +365,10 @@ public class DiaryLocalService implements DiaryService
 			{
 				final String id = item.getId().toLowerCase();
 
-				if (id.length() < ObjectService.ID_FULL_SIZE)
+				if (id.length() < DataSource.ID_FULL_SIZE)
 				{
-					throw new IllegalArgumentException(String.format("Invalid ID: %s, must be %d characters long", id,
-							ObjectService.ID_FULL_SIZE));
+					throw new IllegalArgumentException(
+							String.format("Invalid ID: %s, must be %d characters long", id, DataSource.ID_FULL_SIZE));
 				}
 
 				final String content = serializer.write(item.getData());
