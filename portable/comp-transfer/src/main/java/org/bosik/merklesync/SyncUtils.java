@@ -162,10 +162,8 @@ public class SyncUtils
 		getOverLists(items1, items2, newer1, newer2);
 
 		// transfer
-
-		// THINK: divide into small groups?
-		service1.save(newer2);
-		service2.save(newer1);
+		blockSave(newer2, service1);
+		blockSave(newer1, service2);
 
 		// Result is number of transferred records
 		return newer1.size() + newer2.size();
