@@ -563,13 +563,6 @@ public class DishBaseLocalService implements DishBaseService
 	}
 
 	@Override
-	public String getHash(String prefix) throws CommonServiceException
-	{
-		MerkleTree tree = getHashTree();
-		return tree.getHash(prefix);
-	}
-
-	@Override
 	public MerkleTree getHashTree()
 	{
 		SortedMap<String, String> hashes = getDataHashes();

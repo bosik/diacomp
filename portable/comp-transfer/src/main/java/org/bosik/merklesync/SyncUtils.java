@@ -274,8 +274,8 @@ public class SyncUtils
 
 	private static <T> int synchronizePrefix(DataSource<T> service1, DataSource<T> service2, String prefix)
 	{
-		String hash1 = service1.getHash(prefix);
-		String hash2 = service2.getHash(prefix);
+		String hash1 = service1.getHashTree().getHash(prefix);
+		String hash2 = service2.getHashTree().getHash(prefix);
 
 		if (SyncUtils.equals(hash1, hash2))
 		{

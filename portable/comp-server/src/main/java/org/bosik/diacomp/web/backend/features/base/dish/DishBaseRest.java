@@ -214,7 +214,8 @@ public class DishBaseRest
 	{
 		try
 		{
-			String s = dishbaseService.getHash(parPrefix);
+			MerkleTree hashTree = dishbaseService.getHashTree();
+			String s = hashTree.getHash(parPrefix);
 			String response = s != null ? s : "";
 			return Response.ok(response).build();
 		}

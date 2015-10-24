@@ -419,13 +419,6 @@ public class DishBaseLocalService implements DishBaseService
 	}
 
 	@Override
-	public String getHash(String prefix)
-	{
-		MerkleTree tree = getHashTree();
-		return tree.getHash(prefix);
-	}
-
-	@Override
 	public MerkleTree getHashTree()
 	{
 		int userId = getCurrentUserId();

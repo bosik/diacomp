@@ -221,7 +221,8 @@ public class FoodBaseRest
 	{
 		try
 		{
-			String s = foodbaseService.getHash(parPrefix);
+			MerkleTree hashTree = foodbaseService.getHashTree();
+			String s = hashTree.getHash(parPrefix);
 			String response = s != null ? s : "";
 			return Response.ok(response).build();
 		}

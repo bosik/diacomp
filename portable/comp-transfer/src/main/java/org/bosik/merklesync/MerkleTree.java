@@ -24,7 +24,8 @@ public interface MerkleTree
 	 * Returns hash for the specified prefix
 	 * 
 	 * @param prefix
-	 * @return
+	 *            Must be 0..ID_PREFIX_SIZE chars long
+	 * @return Hash for specified ID prefix, or null if hash not found
 	 */
 	String getHash(String prefix);
 

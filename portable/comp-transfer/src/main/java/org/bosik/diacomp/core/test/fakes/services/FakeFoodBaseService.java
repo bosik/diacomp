@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
-import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
@@ -219,12 +218,6 @@ public class FakeFoodBaseService implements FoodBaseService
 				}
 			}
 		}
-	}
-
-	@Override
-	public String getHash(String prefix) throws CommonServiceException
-	{
-		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	@Override

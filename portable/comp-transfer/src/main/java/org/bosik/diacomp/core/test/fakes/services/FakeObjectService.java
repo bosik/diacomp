@@ -150,12 +150,6 @@ public class FakeObjectService implements ObjectService<String>
 	}
 
 	@Override
-	public String getHash(String prefix) throws CommonServiceException
-	{
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
 	public MerkleTree getHashTree()
 	{
 		throw new UnsupportedOperationException("Not implemented");

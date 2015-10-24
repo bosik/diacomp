@@ -200,25 +200,6 @@ public class DishBaseWebService implements DishBaseService
 	}
 
 	@Override
-	public String getHash(String prefix) throws CommonServiceException
-	{
-		try
-		{
-			String query = String.format(API_DISH_HASH, prefix);
-			String resp = webClient.get(query);
-			return resp;
-		}
-		catch (CommonServiceException e)
-		{
-			throw e;
-		}
-		catch (Exception e)
-		{
-			throw new CommonServiceException(e);
-		}
-	}
-
-	@Override
 	public MerkleTree getHashTree()
 	{
 		return new MerkleTree()
@@ -226,7 +207,20 @@ public class DishBaseWebService implements DishBaseService
 			@Override
 			public String getHash(String prefix)
 			{
-				return DishBaseWebService.this.getHash(prefix);
+				try
+				{
+					String query = String.format(API_DISH_HASH, prefix);
+					String resp = webClient.get(query);
+					return resp;
+				}
+				catch (CommonServiceException e)
+				{
+					throw e;
+				}
+				catch (Exception e)
+				{
+					throw new CommonServiceException(e);
+				}
 			}
 
 			@Override
@@ -236,8 +230,7 @@ public class DishBaseWebService implements DishBaseService
 				{
 					String query = String.format(API_DISH_HASHES, prefix);
 					String resp = webClient.get(query);
-					String data = resp;
-					return serializerMap.read(data);
+					return serializerMap.read(resp);
 				}
 				catch (CommonServiceException e)
 				{

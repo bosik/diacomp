@@ -294,13 +294,6 @@ public class DiaryLocalService implements DiaryService
 	}
 
 	@Override
-	public String getHash(String prefix) throws CommonServiceException
-	{
-		MerkleTree tree = getHashTree();
-		return tree.getHash(prefix);
-	}
-
-	@Override
 	public void save(List<Versioned<DiaryRecord>> records) throws CommonServiceException
 	{
 		try

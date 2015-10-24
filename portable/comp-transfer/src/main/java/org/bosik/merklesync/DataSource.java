@@ -69,14 +69,6 @@ public interface DataSource<T>
 	List<Versioned<T>> findChanged(Date since);
 
 	/**
-	 * 
-	 * @param prefix
-	 *            Must be 0..ID_PREFIX_SIZE chars long
-	 * @return Hash for specified ID prefix, or null if hash not found
-	 */
-	String getHash(String prefix);
-
-	/**
 	 * Returns hash tree
 	 * 
 	 * @return

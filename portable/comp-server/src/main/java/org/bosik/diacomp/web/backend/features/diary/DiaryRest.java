@@ -190,7 +190,8 @@ public class DiaryRest
 		{
 			parPrefix = checkSize(parPrefix, DataSource.ID_FULL_SIZE);
 
-			String s = diaryService.getHash(parPrefix);
+			MerkleTree hashTree = diaryService.getHashTree();
+			String s = hashTree.getHash(parPrefix);
 			String response = s != null ? s : "";
 			return Response.ok(response).build();
 		}
