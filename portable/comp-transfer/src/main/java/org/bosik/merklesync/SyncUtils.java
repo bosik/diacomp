@@ -279,8 +279,6 @@ public class SyncUtils
 		String hash1 = service1.getHash(prefix);
 		String hash2 = service2.getHash(prefix);
 
-		System.out.println("Hashes for " + prefix + ": " + hash1 + " " + hash2);
-
 		if (SyncUtils.equals(hash1, hash2))
 		{
 			return 0;
