@@ -24,12 +24,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import junit.framework.TestCase;
 import org.bosik.diacomp.core.test.fakes.services.FakeObjectService;
 import org.bosik.merklesync.SyncUtils;
 import org.bosik.merklesync.Versioned;
-import org.junit.Ignore;
 import org.junit.Test;
+import junit.framework.TestCase;
 
 @SuppressWarnings({ "unchecked", "deprecation" })
 public class TestSync
@@ -88,7 +87,7 @@ public class TestSync
 
 		service1.save(Arrays.<Versioned<String>> asList(item));
 
-		SyncUtils.synchronize(service1, service2, new Date(2014, 01, 01, 18, 30, 00));
+		SyncUtils.synchronize_v2(service1, service2, null);
 		assertServicesAreSynced();
 		//		Versioned<String> restored = service2.findById(item.getId());
 		//		assertEquals(item, restored);
@@ -106,7 +105,7 @@ public class TestSync
 
 		service1.save(Arrays.<Versioned<String>> asList(item));
 
-		SyncUtils.synchronize(service2, service1, new Date(2014, 01, 01, 18, 30, 00));
+		SyncUtils.synchronize_v2(service2, service1, null);
 
 		assertServicesAreSynced();
 		//		Versioned<String> restored = service2.findById(item.getId());
@@ -124,7 +123,7 @@ public class TestSync
 
 		service1.save(Arrays.<Versioned<String>> asList(item));
 
-		SyncUtils.synchronize(service1, service2, new Date(2014, 01, 01, 18, 30, 16));
+		SyncUtils.synchronize_v2(service1, service2, null);
 
 		// item check
 		Versioned<String> restored = service2.findById(item.getId());
@@ -159,7 +158,7 @@ public class TestSync
 		service1.save(Arrays.<Versioned<String>> asList(item));
 
 		// sync
-		SyncUtils.synchronize(service1, service2, new Date(2014, 01, 01, 18, 30, 00));
+		SyncUtils.synchronize_v2(service1, service2, null);
 
 		// check the result
 		assertEquals(item, service2.findById(item.getId()));
@@ -192,15 +191,13 @@ public class TestSync
 		service2.save(Arrays.<Versioned<String>> asList(item2));
 
 		// sync
-		SyncUtils.synchronize(service1, service2, new Date(2014, 01, 01, 00, 00, 00));
+		SyncUtils.synchronize_v2(service1, service2, null);
 
 		// total check
 		assertServicesAreSynced();
 	}
 
 	@Test
-	@Ignore
-	// This test case is obsolete; modern sync relies on hashes, not timestamps
 	public void test_sync_ContrSync_SyncedOk()
 	{
 		// create items for first storage
@@ -244,7 +241,7 @@ public class TestSync
 		service2.save(Arrays.<Versioned<String>> asList(a2, b2));
 
 		// sync
-		SyncUtils.synchronize(service1, service2, timeSync);
+		SyncUtils.synchronize_v2(service1, service2, null);
 
 		// total check
 		assertServicesAreSynced();
