@@ -71,10 +71,10 @@ public class BloodRecord extends DiaryRecord
 
 	public void setValue(double value)
 	{
-		if (!checkValue(value))
-		{
-			throw new IllegalArgumentException("BloodRecord: неверное значение поля Value (" + value + ")");
-		}
+		//		if (!checkValue(value))
+		//		{
+		//			throw new IllegalArgumentException("BloodRecord: неверное значение поля Value (" + value + ")");
+		//		}
 
 		this.value = value;
 	}
@@ -91,10 +91,10 @@ public class BloodRecord extends DiaryRecord
 	 */
 	public void setFinger(int value)
 	{
-		if (!checkFinger(value))
-		{
-			throw new IllegalArgumentException("BloodRecord: неверное значение поля Finger (" + value + ")");
-		}
+		//		if (!checkFinger(value))
+		//		{
+		//			throw new IllegalArgumentException("BloodRecord: неверное значение поля Finger (" + value + ")");
+		//		}
 
 		finger = value;
 	}
