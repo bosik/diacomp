@@ -215,7 +215,7 @@ public class SyncUtils
 	 * @param id
 	 * @return
 	 */
-	@SuppressWarnings({ "null", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	public static <T> int synchronize(DataSource<T> service1, DataSource<T> service2, String id)
 	{
 		// null checks
@@ -236,20 +236,22 @@ public class SyncUtils
 		Versioned<T> item1 = service1.findById(id);
 		Versioned<T> item2 = service2.findById(id);
 
-		if ((item1 == null) && (item2 == null))
+		if (item1 == null)
 		{
-			return 0; // item was not found in any sources
+			if (item2 == null)
+			{
+				return 0; // item was not found in any sources
+			}
+			else
+			{
+				service1.save(Arrays.asList(item2));
+				return 1;
+			}
 		}
 
-		if ((item1 != null) && (item2 == null))
+		if (item2 == null)
 		{
 			service2.save(Arrays.asList(item1));
-			return 1;
-		}
-
-		if ((item1 == null) && (item2 != null))
-		{
-			service1.save(Arrays.asList(item2));
 			return 1;
 		}
 
