@@ -5,14 +5,14 @@
 		<wicket:message key="diary.editor.blood.label.time"></wicket:message>
 	</h4>
 	<div class="group">
-		<input wicket:id="dateTimeField" class="input-light full_width" />
+		<div wicket:id="dateTimeField" class="full_width" />
 	</div>
 	<h4>
 		<wicket:message key="diary.editor.blood.label.value"></wicket:message>
 	</h4>
 	<div class="group">
-		<input wicket:id="inputValue" type="text"
-			class="input-light full_width" autofocus />
+		<input id="inputValue" wicket:id="inputValue" type="text" autofocus
+			class="input-light full_width" onkeypress="return onKeyPress(event)" />
 	</div>
 	<h4>
 		<wicket:message key="diary.editor.blood.label.finger"></wicket:message>
@@ -23,5 +23,31 @@
 	</div>
 	<style>
 </style>
+	<script>
+		function work()
+		{
+			var e = document.getElementById('inputValue');
+			e.focus();
+			e.select();
+		}
+
+		function onKeyPress(e)
+		{
+			if (e.keyCode == 13)
+			{
+				document.getElementById('buttonSave').click();
+				return false;
+			}
+		}
+
+		document.onkeydown = function(e)
+		{
+			e = e || window.event;
+			if (e.keyCode == 27)
+			{
+				document.getElementById('buttonCancel').click();
+			}
+		};
+	</script>
 </wicket:extend>
 </html>

@@ -65,7 +65,7 @@ public class FoodBasePage extends MasterPage
 
 		final FoodEditor foodEditor = new FoodEditor("foodEditor")
 		{
-			private static final long	serialVersionUID	= -8842868450540695476L;
+			private static final long serialVersionUID = -8842868450540695476L;
 
 			@Override
 			public void onSave(AjaxRequestTarget target, IModel<Versioned<FoodItem>> model)
@@ -89,7 +89,7 @@ public class FoodBasePage extends MasterPage
 
 		final DishEditor dishEditor = new DishEditor("dishEditor")
 		{
-			private static final long	serialVersionUID	= -2502982139788686873L;
+			private static final long serialVersionUID = -2502982139788686873L;
 
 			@Override
 			public void onSave(AjaxRequestTarget target, IModel<Versioned<DishItem>> model)
@@ -111,11 +111,14 @@ public class FoodBasePage extends MasterPage
 		};
 		add(dishEditor);
 
-		TextField<String> textSearch = new TextField<String>("inputSearchName", new PropertyModel<String>(this,
-				"search"));
+		Form<Void> form = new Form<Void>("formNew");
+		add(form);
+
+		TextField<String> textSearch = new TextField<String>("inputSearchName",
+				new PropertyModel<String>(this, "search"));
 		textSearch.add(new AjaxFormComponentUpdatingBehavior("onkeyup")
 		{
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
@@ -123,14 +126,11 @@ public class FoodBasePage extends MasterPage
 				target.add(container);
 			}
 		});
-		add(textSearch);
-
-		Form<Void> form = new Form<Void>("formNew");
-		add(form);
+		form.add(textSearch);
 
 		AjaxFallbackButton buttonNewFood = new AjaxFallbackButton("buttonNewFood", form)
 		{
-			private static final long	serialVersionUID	= 1417984638165989821L;
+			private static final long serialVersionUID = 1417984638165989821L;
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
@@ -145,7 +145,7 @@ public class FoodBasePage extends MasterPage
 
 		AjaxFallbackButton buttonNewDish = new AjaxFallbackButton("buttonNewDish", form)
 		{
-			private static final long	serialVersionUID	= 1417984638165989821L;
+			private static final long serialVersionUID = 1417984638165989821L;
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
@@ -176,7 +176,7 @@ public class FoodBasePage extends MasterPage
 
 		container.add(new RefreshingView<Versioned<FoodItem>>("view")
 		{
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected Iterator<IModel<Versioned<FoodItem>>> getItemModels()
@@ -221,7 +221,7 @@ public class FoodBasePage extends MasterPage
 
 				item.add(new AjaxEventBehavior("onclick")
 				{
-					private static final long	serialVersionUID	= 1L;
+					private static final long serialVersionUID = 1L;
 
 					@Override
 					protected void onEvent(AjaxRequestTarget target)

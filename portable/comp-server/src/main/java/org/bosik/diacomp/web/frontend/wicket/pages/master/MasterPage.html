@@ -6,10 +6,9 @@
 <link type="text/css" rel="stylesheet" href="res/css/style.css" />
 </head>
 <body>
-	<div class="main">
+	<div class="container">
+		<div wicket:id="menu" class="menu">menu here</div>
 		<div id="sticky">
-			<div wicket:id="headerPanel" id="header">header here</div>
-			<div wicket:id="menu" class="menu">menu here</div>
 			<div id="diary_block">
 				<noscript id="error_nojs">
 					<wicket:message key="error.disabledJS"></wicket:message>
@@ -19,10 +18,12 @@
 		<div id="pageContent">
 			<wicket:child />
 		</div>
-		<hr/>
+		<hr />
 		<div style="padding-bottom: 10px">
-			<span class="hint" >© <a href="http://vk.com/id42575475" target="_blank"><wicket:message key="text.copyright"></wicket:message></a>, 2015.</span>
-			<span class="hint" style="float: right" wicket:id="textVersion"></span>
+			<span class="hint">© <a href="http://vk.com/id42575475"
+				target="_blank"><wicket:message key="text.copyright"></wicket:message></a>,
+				2015.
+			</span> <span class="hint" style="float: right" wicket:id="textVersion"></span>
 		</div>
 	</div>
 </body>

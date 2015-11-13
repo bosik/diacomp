@@ -45,56 +45,58 @@ li.feedbackPanelERROR {
 	<wicket:extend xmlns:wicket="http://wicket.apache.org">
 		<div class="register-panel">
 			<form wicket:id="regForm" method="post">
-				<div class="register-row">
-					<div class="register-column-main">
-						<div>
-							<wicket:message key="field.username"></wicket:message>
-							<span style="color: #f00;">*</span>
+				<fieldset>
+					<div class="register-row">
+						<div class="register-column-main">
+							<label> <wicket:message key="field.username"></wicket:message>
+								<span style="color: #f00;">*</span>
+							</label>
+							<div>
+								<input wicket:id="rhCyIStebK" type="text"
+									class="form-control full_width" autofocus /> <input
+									wicket:id="email" type="hidden" value="" />
+							</div>
 						</div>
-						<div>
-							<input wicket:id="rhCyIStebK" type="text" class="full_width"
-								autofocus /> <input wicket:id="email" type="hidden" value="" />
-						</div>
-					</div>
-					<div class="register-column-hint hint">
-						<wicket:message key="text.hint.email"></wicket:message>
-					</div>
-				</div>
-				<div class="register-row">
-					<div class="register-column-main">
-						<div>
-							<wicket:message key="field.password"></wicket:message>
-							<span style="color: #f00;">*</span>
-						</div>
-						<div>
-							<input wicket:id="P2BohS6rUR" type=password class="full_width" />
+						<div class="register-column-hint hint">
+							<wicket:message key="text.hint.email"></wicket:message>
 						</div>
 					</div>
-					<div class="register-column-hint hint">
-						<wicket:message key="text.hint.password"></wicket:message>
+					<div class="register-row">
+						<div class="register-column-main">
+							<label> <wicket:message key="field.password"></wicket:message>
+								<span style="color: #f00;">*</span>
+							</label>
+							<div>
+								<input wicket:id="P2BohS6rUR" type=password
+									class="form-control full_width" />
+							</div>
+						</div>
+						<div class="register-column-hint hint">
+							<wicket:message key="text.hint.password"></wicket:message>
+						</div>
 					</div>
-				</div>
-				<div class="register-row">
-					<div class="register-column-main">
-						<div class="g-recaptcha"
-							data-sitekey="6LeVvAQTAAAAAK8PKhgAH8rtkT9oYTjXwVMoZcGS"></div>
+					<div class="register-row">
+						<div class="register-column-main">
+							<div class="g-recaptcha"
+								data-sitekey="6LeVvAQTAAAAAK8PKhgAH8rtkT9oYTjXwVMoZcGS"></div>
+						</div>
 					</div>
-				</div>
-				<div class="register-row">
-					<div class="register-column-main">
-						<wicket:message key="text.license.agreement"></wicket:message>
-						<a wicket:id="linkLicense" target="_blank"><wicket:message
-								key="text.license.link"></wicket:message></a>.
+					<div class="register-row">
+						<div class="register-column-main">
+							<wicket:message key="text.license.agreement"></wicket:message>
+							<a wicket:id="linkLicense" target="_blank"><wicket:message
+									key="text.license.link"></wicket:message></a>.
+						</div>
 					</div>
-				</div>
-				<div class="register-row">
-					<div class="register-column-main">
-						<button wicket:id="buttonRegister" type="submit"
-							class="btn full_width">
-							<wicket:message key="button.register"></wicket:message>
-						</button>
+					<div class="register-row">
+						<div class="register-column-main">
+							<button wicket:id="buttonRegister" type="submit"
+								class="btn btn-primary full_width">
+								<wicket:message key="button.register"></wicket:message>
+							</button>
+						</div>
 					</div>
-				</div>
+				</fieldset>
 			</form>
 			<div class="register-row">
 				<div wicket:id="feedbackPanel"

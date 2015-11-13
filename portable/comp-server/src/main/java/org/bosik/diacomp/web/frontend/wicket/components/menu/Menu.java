@@ -17,17 +17,19 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.components.menu;
 
-import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.bosik.diacomp.web.frontend.wicket.pages.about.AboutPage;
 
 public class Menu extends GenericPanel<MenuContent>
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	public Menu(String id, IModel<MenuContent> content)
 	{
@@ -39,6 +41,8 @@ public class Menu extends GenericPanel<MenuContent>
 	protected void onInitialize()
 	{
 		super.onInitialize();
+
+		add(new BookmarkablePageLink<Void>("linkAbout", AboutPage.class));
 
 		RepeatingView menu = new RepeatingView("menuItem");
 		add(menu);
@@ -55,12 +59,16 @@ public class Menu extends GenericPanel<MenuContent>
 			final String selected = getModelObject().getSelected().getName();
 			if (current.equals(selected))
 			{
-				link.add(new AttributeAppender("class", " menu_selected"));
+				itemPlace.add(new AttributeModifier("class", "active"));
 			}
 			else
 			{
-				link.add(new AttributeAppender("class", " menu_option"));
+				//link.add(new AttributeAppender("class", " menu_option"));
 			}
 		}
+
+		String userName = getModelObject().getUserName();
+		add(new ExternalLink("linkLogout", "j_spring_security_logout").setVisible(!"".equals(userName))); // TODO
+		add(new Label("infoLogin", userName));
 	}
 }

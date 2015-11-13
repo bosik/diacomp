@@ -28,6 +28,7 @@ public class MenuContent implements Serializable
 
 	private final List<MenuItem>		items				= new ArrayList<MenuItem>();
 	private Class<? extends WebPage>	selected;
+	private String						userName;
 
 	public List<MenuItem> getItems()
 	{
@@ -42,5 +43,15 @@ public class MenuContent implements Serializable
 	public void setSelected(Class<? extends WebPage> selected)
 	{
 		this.selected = selected;
+	}
+
+	public String getUserName()
+	{
+		return userName;
+	}
+
+	public void setUserName(String userName)
+	{
+		this.userName = userName;
 	}
 }

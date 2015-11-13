@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <html xmlns:wicket="http://wicket.apache.org">
 <wicket:panel>
-	<span wicket:id="menuItem"><a wicket:id="Link" class="menu_item"><span
-			wicket:id="Text"></span></a></span>
+	<div class="navbar navbar-default">
+		<div class="navbar-header">
+			<a class="navbar-brand" wicket:id="linkAbout"><img
+				src="res/img/icon.png" style="width: 26px; margin-right: 10px;">
+			<wicket:message key="res.appTitle">
+				</wicket:message></a>
+			<ul class="nav navbar-nav">
+				<li wicket:id="menuItem"><a wicket:id="Link"><span
+						wicket:id="Text"></span></a></li>
+			</ul>
+		</div>
+		<div class="login">
+			<div style="margin-top: 5px;">
+				<i class="glyphicon glyphicon-user"></i> <span wicket:id="infoLogin"
+					style="margin-top: 4px; margin-right: 10px;"></span>
+			</div>
+			<div style="margin-right: 10px;">
+				<a wicket:id="linkLogout" href="j_spring_security_logout"><wicket:message
+						key="link.logout"></wicket:message></a>
+			</div>
+		</div>
+	</div>
 </wicket:panel>
 </html>

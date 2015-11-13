@@ -32,6 +32,7 @@ import org.bosik.diacomp.web.frontend.wicket.pages.login.LoginPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.register.RegisterPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.register.succeed.RegistrationSucceedPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.stats.StatsPage;
+import de.agilecoders.wicket.core.Bootstrap;
 
 public class WicketApplication extends WebApplication
 {
@@ -66,5 +67,7 @@ public class WicketApplication extends WebApplication
 		mountPage("/base", FoodBasePage.class);
 		mountPage("/stats", StatsPage.class);
 		mountPage("/download", DownloadPage.class);
+
+		Bootstrap.install(this);
 	}
 }

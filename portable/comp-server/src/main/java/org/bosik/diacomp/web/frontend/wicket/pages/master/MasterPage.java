@@ -36,7 +36,6 @@ import org.bosik.diacomp.web.frontend.wicket.components.header.HeaderPanel;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.Menu;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.MenuContent;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.MenuItem;
-import org.bosik.diacomp.web.frontend.wicket.pages.about.AboutPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.base.FoodBasePage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.download.DownloadPage;
@@ -73,11 +72,11 @@ public class MasterPage extends WebPage
 		try
 		{
 			String userName = userInfoService.getCurrentUserName();
-			add(new HeaderPanel("headerPanel", userName));
-			add(new Menu("menu", Model.of(getMenu(true))));
+			//add(new HeaderPanel("headerPanel", userName));
+			add(new Menu("menu", Model.of(getMenu(true, userName))));
 			add(new AjaxClientInfoBehavior()
 			{
-				private static final long	serialVersionUID	= -4339758661303499417L;
+				private static final long serialVersionUID = -4339758661303499417L;
 
 				@Override
 				protected void onClientInfo(AjaxRequestTarget target, WebClientInfo info)
@@ -89,20 +88,19 @@ public class MasterPage extends WebPage
 		catch (NotAuthorizedException e)
 		{
 			add(new HeaderPanel("headerPanel"));
-			add(new Menu("menu", Model.of(getMenu(false))));
+			add(new Menu("menu", Model.of(getMenu(false, ""))));
 		}
 
 		add(new Label("pageTitle", getString("res.appTitle")));
 		add(new Label("textVersion", Config.get("DIACOMP_VERSION") + " / " + getTimeZone().getDisplayName()));
 	}
 
-	protected MenuContent getMenu(boolean authorized)
+	protected MenuContent getMenu(boolean authorized, String userName)
 	{
 		MenuContent menuContent = new MenuContent();
 
 		if (authorized)
 		{
-			menuContent.getItems().add(new MenuItem(getString("menu.about"), AboutPage.class));
 			menuContent.getItems().add(new MenuItem(getString("menu.diary"), DiaryPage.class));
 			menuContent.getItems().add(new MenuItem(getString("menu.base"), FoodBasePage.class));
 			menuContent.getItems().add(new MenuItem(getString("menu.stats"), StatsPage.class));
@@ -110,11 +108,11 @@ public class MasterPage extends WebPage
 		}
 		else
 		{
-			menuContent.getItems().add(new MenuItem(getString("menu.about"), AboutPage.class));
 			menuContent.getItems().add(new MenuItem(getString("menu.login"), LoginPage.class));
 		}
 
 		menuContent.setSelected(getClass());
+		menuContent.setUserName(userName);
 
 		return menuContent;
 	}

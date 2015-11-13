@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.apache.wicket.extensions.yui.calendar.DateTimeField;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
@@ -32,7 +34,7 @@ import org.bosik.merklesync.Versioned;
 
 public abstract class DiaryEditorBloodContentPanel extends CommonEditorContentPanel<BloodRecord>
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	public DiaryEditorBloodContentPanel(String id, IModel<Versioned<BloodRecord>> model)
 	{
@@ -61,24 +63,31 @@ public abstract class DiaryEditorBloodContentPanel extends CommonEditorContentPa
 			choices.add(i);
 		}
 
-		DropDownChoice<Integer> ddc = new DropDownChoice<Integer>("inputFinger", new PropertyModel<Integer>(model,
-				"data.finger"), choices, new IChoiceRenderer<Integer>()
-		{
-			private static final long	serialVersionUID	= 1478780792803547209L;
+		DropDownChoice<Integer> ddc = new DropDownChoice<Integer>("inputFinger",
+				new PropertyModel<Integer>(model, "data.finger"), choices, new IChoiceRenderer<Integer>()
+				{
+					private static final long serialVersionUID = 1478780792803547209L;
 
-			@Override
-			public Object getDisplayValue(Integer object)
-			{
-				return getString("finger.long." + object);
-			}
+					@Override
+					public Object getDisplayValue(Integer object)
+					{
+						return getString("finger.long." + object);
+					}
 
-			@Override
-			public String getIdValue(Integer object, int index)
-			{
-				return object.toString();
-			}
-		});
+					@Override
+					public String getIdValue(Integer object, int index)
+					{
+						return object.toString();
+					}
+				});
 
 		form.add(ddc);
+	}
+
+	@Override
+	public void renderHead(IHeaderResponse response)
+	{
+		super.renderHead(response);
+		response.render(OnDomReadyHeaderItem.forScript("setTimeout(work, 50)"));
 	}
 }

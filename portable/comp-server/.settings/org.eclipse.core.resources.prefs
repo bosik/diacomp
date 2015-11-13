@@ -5,6 +5,7 @@ encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/components/header/
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/components/mealeditor/editor/MealEditor_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/components/mealeditor/picker/food/FoodPicker_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/components/mealeditor/picker/foodMassed/common/FoodMassedPicker_ru.utf8.properties=UTF-8
+encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/components/menu/Menu_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/dialogs/common/CommonEditorContentPanel_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/dialogs/diary/blood/DiaryEditorBloodContentPanel_ru.utf8.properties=UTF-8
 encoding//src/main/java/org/bosik/diacomp/web/frontend/wicket/dialogs/diary/blood/DiaryEditorBlood_ru.utf8.properties=UTF-8

@@ -128,7 +128,7 @@ public class DiaryPage extends MasterPage
 {
 	private static final long						serialVersionUID	= 1L;
 
-	private WebMarkupContainer						container;
+	WebMarkupContainer								container;
 	@SpringBean
 	DiaryService									diaryService;
 	final List<IModel<DiaryPanelDayModelObject>>	list				= new ArrayList<IModel<DiaryPanelDayModelObject>>();
@@ -171,6 +171,7 @@ public class DiaryPage extends MasterPage
 			public void onSave(AjaxRequestTarget target, IModel<Versioned<BloodRecord>> model)
 			{
 				diaryService.save(Arrays.asList(new Versioned<DiaryRecord>(model.getObject())));
+				target.add(container);
 				close(target);
 			}
 

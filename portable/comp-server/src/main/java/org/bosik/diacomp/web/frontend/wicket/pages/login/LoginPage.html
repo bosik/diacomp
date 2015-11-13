@@ -22,27 +22,32 @@ li.feedbackPanelERROR {
 	<wicket:extend>
 		<div wicket:id="hintInvalidCredentials" class="invalid-credentials"></div>
 		<div class="login_panel">
-			<form action="j_spring_security_check" method="post">
-				<div class="row">
-					<wicket:message key="field.username"></wicket:message>
-					<input type="text" id="login" name="j_username" class="full_width"
-						autofocus />
-				</div>
-				<div class="row">
-					<wicket:message key="field.password"></wicket:message>
-					<input type="password" name="j_password" id="password"
-						class="full_width" />
-				</div>
-				<div>
+			<form action="j_spring_security_check" class="form-horizontal"
+				method="post">
+				<fieldset>
+					<div class="form-group">
+						<label class="control-label" for="login"><wicket:message
+								key="field.username"></wicket:message></label> <input type="text"
+							id="login" name="j_username" class="form-control full_width"
+							autofocus />
+					</div>
+					<div class="form-group">
+						<label class="control-label" for="password"><wicket:message
+								key="field.password"></wicket:message></label> <input type="password"
+							name="j_password" id="password" class="form-control full_width" />
+					</div>
+
 					<input type="hidden" name="api" value="20" />
-				</div>
-				<button type="submit" class="full_width">
-					<wicket:message key="button.login"></wicket:message>
-				</button>
-				<hr>
-				<div style="text-align: center">
-					<a wicket:id="linkRegister"><wicket:message key="label.registerNow"></wicket:message></a>
-				</div>
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary full_width">
+							<wicket:message key="button.login"></wicket:message>
+						</button>
+					</div>
+					<div class="form-group">
+						<a wicket:id="linkRegister" class="btn btn-link full_width"><wicket:message
+								key="label.registerNow"></wicket:message></a>
+					</div>
+				</fieldset>
 			</form>
 		</div>
 	</wicket:extend>

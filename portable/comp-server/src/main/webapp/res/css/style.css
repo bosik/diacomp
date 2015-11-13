@@ -1,14 +1,16 @@
 /* =========================== MAIN STYLES =========================== */
 body {
-	font-family: "Arial";
-	font-size: 16px;
+	/*font-family: "Arial";
+	font-size: 16px;*/
 	margin: 0;
+	/*padding-top: 55px;*/
 }
 
 hr {
-	background-color: #cccccc;
+	/*background-color: #cccccc;
 	height: 1px;
-	border: 0;
+	border: 0;*/
+	
 }
 
 .main {
@@ -26,22 +28,23 @@ hr {
 }
 
 .header a {
-	text-decoration: none;
+	/*text-decoration: none;*/
+	
 }
 
 .header a:visited {
-	color: #000000;
+	/*color: #000000;*/
+	
 }
 
-.icon {
+/*.icon {
 	vertical-align: top;
 	padding-left: 10px;
 	padding-right: 10px;
 	width: 32px;
 	float: left;
 	border: none;
-}
-
+}*/
 .title {
 	font-size: 120%;
 	font-weight: bold;
@@ -51,11 +54,11 @@ hr {
 	line-height: 32px;
 }
 
-.title,.title a:link,.title a:visited {
+.title, .title a:link, .title a:visited {
 	color: #000;
 }
 
-.login,.login a:link,.login a:visited {
+.login, .login a:link, .login a:visited {
 	float: right;
 	text-align: right;
 	/*vertical-align: middle;*/
@@ -82,24 +85,27 @@ th {
 
 /* =========================== COMMON STYLES =========================== */
 .hint {
-	font-size: 90%;
+	/*font-size: 90%;*/
+	
 }
 
-.hint,.hint a:link,.hint a:visited {
-	color: #cccccc;
+.hint, .hint a:link, .hint a:visited {
+	/*color: #cccccc;*/
+	
 }
 
 .hint a:hover {
-	color: #000000;
+	/*color: #000000;*/
+	
 }
 
-.hint a:link,.hint a:visited,.hint a:hover {
-	text-decoration: underline;
+.hint a:link, .hint a:visited, .hint a:hover {
+	/*text-decoration: underline;*/
+	
 }
 
 .full_width {
-	width: 100%;
-	font-size: 100%;
+	width: 100% !important;
 }
 
 .right {
@@ -132,50 +138,46 @@ th {
 	cursor: pointer;
 }
 
-.btn,.btn-positive,.btn-negative {
+.btn, .btn-positive, .btn-negative {
 	cursor: pointer;
 	padding: 4px;
 	min-width: 110px;
 	font-size: 100%;
-	border: solid 1px #ccc;
-	background-color: #e0e0e0;
 	background-repeat: no-repeat;
-	background-position: center center;
-	transition: background-color 80ms ease-in-out;
 }
 
 .btn:hover {
-	background-color: #ccc;
+	color: #000080;
 }
 
 .btn-positive:hover {
-	background-color: #b2e5a3;
+	color: #000080;
 }
 
 .btn-negative:hover {
-	background-color: #dbb;
+	color: #800000;
 }
 
 .input-light {
-	border-top: 0px;
-	border-left: 0px;
-	border-right: 0px;
-	border-bottom: solid 1px #eee;
-	padding-top: 0px;
-	background-color: rgba(255, 255, 255, 0.2);
+	border: solid 1px #eee;
+	padding: 5px 0px 5px 5px;
+	font-size: 120%;
+	background-color: #fff;
+	border-radius: 3px;
 }
 
 /* =========================== MENU STYLES =========================== */
 .menu {
-	margin-top: 5px;
-	margin-bottom: 5px;
+	margin-top: -3px;
+	/*margin-bottom: 5px;
 	border-top: solid 1px #e0e0e0;
-	border-bottom: solid 1px #e0e0e0;
+	border-bottom: solid 1px #e0e0e0;*/
 }
 
-.menu a:link,.menu a:visited,.menu a:active {
-	text-decoration: none;
-	color: #000000;
+.menu a:link, .menu a:visited, .menu a:active {
+	/*text-decoration: none;
+	color: #000000;*/
+	
 }
 
 .menu_item {
@@ -198,16 +200,17 @@ th {
 
 #sticky {
 	position: fixed;
-	background: #fff;
 	min-width: 750px;
-	max-width: 1200px;
+	max-width: 1140px;
 	width: 100%;
 	z-index: 999;
-	padding-top: 5px;
+	top: -7px;
 }
 
+}
 #pageContent {
-	padding: 110px 0 0 0;
+	/*padding: 110px 0 0 0;*/
+	
 }
 
 /* =========================== AUTH / REG =========================== */
