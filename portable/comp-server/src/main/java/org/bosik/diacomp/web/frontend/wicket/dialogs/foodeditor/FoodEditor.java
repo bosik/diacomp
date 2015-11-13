@@ -25,7 +25,7 @@ import org.bosik.merklesync.Versioned;
 
 public abstract class FoodEditor extends CommonEditor<FoodItem>
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	public FoodEditor(String id)
 	{
@@ -36,7 +36,12 @@ public abstract class FoodEditor extends CommonEditor<FoodItem>
 
 		setInitialWidth(350);
 		setInitialHeight(350);
+	}
 
+	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
 		setTitle(getString("foodEditor.caption"));
 	}
 
@@ -44,7 +49,7 @@ public abstract class FoodEditor extends CommonEditor<FoodItem>
 	{
 		setContent(new FoodEditorContentPanel(getContentId(), model)
 		{
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void onCancel(AjaxRequestTarget target)

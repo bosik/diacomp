@@ -25,21 +25,24 @@ import org.bosik.diacomp.web.frontend.wicket.pages.register.RegisterPage;
 
 public class LoginPage extends MasterPage
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	public LoginPage(final PageParameters parameters)
 	{
 		super(parameters);
+	}
+
+	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
 
 		add(new BookmarkablePageLink<Void>("linkRegister", RegisterPage.class));
 
 		FeedbackPanel hint = new FeedbackPanel("hintInvalidCredentials");
 		add(hint);
 
-		if (parameters.getPosition("error") == -1)
-		{
-		}
-		else
+		if (getPageParameters().getPosition("error") != -1)
 		{
 			hint.error(getString("label.invalidCredentails"));
 		}

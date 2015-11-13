@@ -25,11 +25,17 @@ import org.bosik.merklesync.Versioned;
 
 public abstract class DiaryEditorBlood extends CommonEditor<BloodRecord>
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	public DiaryEditorBlood(String id)
 	{
 		super(id);
+	}
+
+	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
 
 		setMinimalWidth(420);
 		setMinimalHeight(280);
@@ -44,7 +50,7 @@ public abstract class DiaryEditorBlood extends CommonEditor<BloodRecord>
 	{
 		setContent(new DiaryEditorBloodContentPanel(getContentId(), model)
 		{
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void onCancel(AjaxRequestTarget target)

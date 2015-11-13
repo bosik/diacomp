@@ -25,11 +25,17 @@ import org.bosik.merklesync.Versioned;
 
 public abstract class DishEditor extends CommonEditor<DishItem>
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	public DishEditor(String id)
 	{
 		super(id);
+	}
+
+	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
 
 		setMinimalWidth(480);
 		setMinimalHeight(580);
@@ -44,7 +50,7 @@ public abstract class DishEditor extends CommonEditor<DishItem>
 	{
 		setContent(new DishEditorContentPanel(getContentId(), model)
 		{
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void onCancel(AjaxRequestTarget target)

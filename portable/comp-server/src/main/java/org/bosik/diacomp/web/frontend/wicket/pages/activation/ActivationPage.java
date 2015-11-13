@@ -46,11 +46,17 @@ public class ActivationPage extends MasterPage
 	public ActivationPage(PageParameters parameters)
 	{
 		super(parameters);
+	}
+
+	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
 
 		FeedbackPanel feedbackPanel = new FeedbackPanel("feedback");
 		add(feedbackPanel);
 
-		StringValue parKey = parameters.get("key");
+		StringValue parKey = getPageParameters().get("key");
 
 		if (parKey.isEmpty())
 		{
@@ -76,7 +82,7 @@ public class ActivationPage extends MasterPage
 				// UI feedback
 				add(new AbstractAjaxTimerBehavior(Duration.seconds(2))
 				{
-					private static final long	serialVersionUID	= 5004084381865627895L;
+					private static final long serialVersionUID = 5004084381865627895L;
 
 					@Override
 					protected void onTimer(AjaxRequestTarget target)
