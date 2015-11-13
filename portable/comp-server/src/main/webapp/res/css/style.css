@@ -166,6 +166,11 @@ th {
 	border-radius: 3px;
 }
 
+.input-transparent {
+	background-color: rgba(0, 0, 0, 0);
+	border: 0;
+}
+
 /* =========================== MENU STYLES =========================== */
 .menu {
 	margin-top: -3px;
