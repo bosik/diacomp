@@ -6,7 +6,7 @@
 <link type="text/css" rel="stylesheet" href="res/css/style.css" />
 </head>
 <body>
-	<div class="container">
+	<div style="margin: 0 auto; max-width: 1000px; padding-top: 55px;">
 		<div wicket:id="menu" class="menu">menu here</div>
 		<div id="sticky">
 			<div id="diary_block">
@@ -15,11 +15,9 @@
 				</noscript>
 			</div>
 		</div>
-		<div id="pageContent">
-			<wicket:child />
-		</div>
+		<wicket:child />
 		<hr />
-		<div style="padding-bottom: 10px">
+		<div style="clear: left; padding: 0px 20px 20px 20px;">
 			<span class="hint">© <a href="http://vk.com/id42575475"
 				target="_blank"><wicket:message key="text.copyright"></wicket:message></a>,
 				2015.

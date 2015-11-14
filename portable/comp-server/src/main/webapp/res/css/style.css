@@ -173,10 +173,11 @@ th {
 
 /* =========================== MENU STYLES =========================== */
 .menu {
-	margin-top: -3px;
-	/*margin-bottom: 5px;
-	border-top: solid 1px #e0e0e0;
-	border-bottom: solid 1px #e0e0e0;*/
+	top: -3px;
+	position: fixed;
+	width: 100%;
+	max-width: 1000px;
+	z-index: 10;
 }
 
 .menu a:link, .menu a:visited, .menu a:active {
@@ -213,9 +214,8 @@ th {
 }
 
 }
-#pageContent {
-	/*padding: 110px 0 0 0;*/
-	
+.page-content {
+	padding: 0 15px 0 15px !important;
 }
 
 /* =========================== AUTH / REG =========================== */
@@ -267,19 +267,20 @@ th {
 
 #diary-left-panel {
 	float: left;
-	width: 250px;
-	margin-left: -250px;
+	width: 25%;
 }
 
 #diary-right-panel {
 	float: right;
-	width: 300px;
-	margin-right: -300px;
+	width: 25%;
 }
 
 #diary-main-panel {
 	padding-left: 10px;
 	padding-right: 10px;
+	margin-left: 25%;
+	margin-right: 25%;
+	min-height: 500px;
 }
 
 #diary_block {
@@ -478,10 +479,9 @@ th {
 }
 
 .diary-day-caption {
-	/*padding-bottom: 2px;*/
 	font-size: 110%;
 	color: #cccccc;
-	margin-top: 25px;
+	margin-top: 10px;
 	margin-bottom: 15px;
 	text-align: center;
 }
