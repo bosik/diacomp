@@ -24,7 +24,7 @@ import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -32,24 +32,22 @@ import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.food.FoodPicker;
 
-public abstract class FoodMassedPicker extends Panel
+public abstract class FoodMassedPicker extends GenericPanel<FoodMassed>
 {
-	private static final long		serialVersionUID	= 1L;
-
-	protected IModel<FoodMassed>	model;
+	private static final long	serialVersionUID	= 1L;
 
 	// values
 	//		Food						selectedItem;
-	IModel<Double>					mass;
+	IModel<Double>				mass;
 
 	// components
-	protected FoodPicker			fieldFood;
-	protected TextField<Double>		fieldMass;
+	protected FoodPicker		fieldFood;
+	protected TextField<Double>	fieldMass;
 
 	public FoodMassedPicker(String id, IModel<FoodMassed> model)
 	{
 		super(id);
-		this.model = model;
+		setModel(model);
 		mass = new PropertyModel<Double>(model, "mass");
 	}
 
@@ -63,9 +61,9 @@ public abstract class FoodMassedPicker extends Panel
 	{
 		super.onInitialize();
 
-		fieldFood = new FoodPicker("picker", Model.of(model.getObject().getName()))
+		fieldFood = new FoodPicker("picker", Model.of(getModelObject().getName()))
 		{
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void onSelected(AjaxRequestTarget target, IModel<Food> food)
@@ -74,13 +72,13 @@ public abstract class FoodMassedPicker extends Panel
 
 				Food newFood = food.getObject();
 
-				FoodMassed modelObject = model.getObject();
+				FoodMassed modelObject = getModelObject();
 				modelObject.setName(newFood.getName());
 				modelObject.setRelProts(newFood.getRelProts());
 				modelObject.setRelFats(newFood.getRelFats());
 				modelObject.setRelCarbs(newFood.getRelCarbs());
 				modelObject.setRelValue(newFood.getRelValue());
-				model.setObject(modelObject);
+				setModelObject(modelObject);
 
 				onFoodChanged(target, food);
 			}
@@ -91,7 +89,7 @@ public abstract class FoodMassedPicker extends Panel
 		fieldMass = new TextField<Double>("mass", mass);
 		fieldMass.add(new AjaxFormComponentUpdatingBehavior("keydown")
 		{
-			private static final long	serialVersionUID	= 1072515919159765189L;
+			private static final long serialVersionUID = 1072515919159765189L;
 
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
@@ -100,7 +98,7 @@ public abstract class FoodMassedPicker extends Panel
 		});
 		fieldMass.add(new AjaxFormComponentUpdatingBehavior("onblur")
 		{
-			private static final long	serialVersionUID	= 1072515919159765189L;
+			private static final long serialVersionUID = 1072515919159765189L;
 
 			@Override
 			protected void onUpdate(AjaxRequestTarget target)
@@ -109,7 +107,7 @@ public abstract class FoodMassedPicker extends Panel
 		});
 		fieldMass.add(new AjaxEventBehavior("keydown")
 		{
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void updateAjaxAttributes(AjaxRequestAttributes attributes)
@@ -118,7 +116,7 @@ public abstract class FoodMassedPicker extends Panel
 
 				attributes.getAjaxCallListeners().add(new AjaxCallListener()
 				{
-					private static final long	serialVersionUID	= -846467011322058537L;
+					private static final long serialVersionUID = -846467011322058537L;
 
 					@Override
 					public CharSequence getPrecondition(Component component)
@@ -141,9 +139,9 @@ public abstract class FoodMassedPicker extends Panel
 				{
 					// copy the mass to model
 
-					FoodMassed modelObject = model.getObject();
+					FoodMassed modelObject = getModelObject();
 					modelObject.setMass(mass.getObject());
-					model.setObject(modelObject);
+					setModelObject(modelObject);
 
 					onMassChanged(target, mass);
 				}

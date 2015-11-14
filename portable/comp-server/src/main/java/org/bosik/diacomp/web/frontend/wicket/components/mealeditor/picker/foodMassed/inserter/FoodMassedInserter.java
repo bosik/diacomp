@@ -54,11 +54,11 @@ public abstract class FoodMassedInserter extends Panel
 			{
 				// call the event
 
-				onSelected(target, model);
+				onSelected(target, getModel());
 
 				// proceed the focus and stuff
 
-				model.setObject(new FoodMassed());
+				setModelObject(new FoodMassed());
 
 				fieldFood.clear();
 				fieldMass.clearInput();

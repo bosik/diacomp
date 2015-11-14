@@ -21,9 +21,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.IModel;
@@ -33,20 +32,19 @@ import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.food.F
 import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.foodMassed.inserter.FoodMassedInserter;
 import org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.foodMassed.updater.FoodMassedUpdater;
 
-public class MealEditor extends Panel
+public class MealEditor extends GenericPanel<FoodList>
 {
 	private static final long	serialVersionUID	= 1L;
 
 	// components
 	//FoodPicker					fieldFood;
 	WebMarkupContainer			container;
-	IModel<FoodList>			model;
 	boolean						readOnly;
 
 	public MealEditor(String id, final IModel<FoodList> model, boolean readOnly)
 	{
 		super(id);
-		this.model = model;
+		setModel(model);
 		this.readOnly = readOnly;
 	}
 
@@ -78,11 +76,11 @@ public class MealEditor extends Panel
 					@Override
 					protected void onDelete(AjaxRequestTarget target, int index)
 					{
-						FoodList mo = model.getObject();
+						FoodList mo = getModelObject();
 						List<FoodMassed> content = mo.getContent();
 						content.remove(index);
 						mo.setContent(content);
-						model.setObject(mo);
+						setModelObject(mo);
 
 						target.add(container);
 					};
@@ -107,7 +105,7 @@ public class MealEditor extends Panel
 			protected Iterator<IModel<FoodMassed>> getItemModels()
 			{
 				List<IModel<FoodMassed>> list = new ArrayList<IModel<FoodMassed>>();
-				for (FoodMassed item : model.getObject().getContent())
+				for (FoodMassed item : getModelObject().getContent())
 				{
 					list.add(Model.of(item));
 				}
@@ -123,11 +121,11 @@ public class MealEditor extends Panel
 			@Override
 			public void onSelected(AjaxRequestTarget target, IModel<FoodMassed> item)
 			{
-				if (item != null)
+				if (item.getObject().getName() != null)
 				{
-					FoodList modelObject = MealEditor.this.model.getObject();
+					FoodList modelObject = getModelObject();
 					modelObject.getContent().add(item.getObject());
-					MealEditor.this.model.setObject(modelObject);
+					setModelObject(modelObject);
 
 					target.add(container);
 				}
@@ -143,19 +141,5 @@ public class MealEditor extends Panel
 			foodMassedInserter.setVisible(false);
 		}
 		add(foodMassedInserter);
-
-		add(new AjaxLink<Void>("debug")
-		{
-			private static final long serialVersionUID = -3062265788028734589L;
-
-			@Override
-			public void onClick(AjaxRequestTarget target)
-			{
-				for (FoodMassed item : model.getObject().getContent())
-				{
-					System.out.println(item);
-				}
-			}
-		});
 	}
 }
