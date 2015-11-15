@@ -37,7 +37,6 @@ import org.bosik.diacomp.web.frontend.wicket.components.menu.MenuContent;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.MenuItem;
 import org.bosik.diacomp.web.frontend.wicket.pages.base.FoodBasePage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
-import org.bosik.diacomp.web.frontend.wicket.pages.download.DownloadPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.login.LoginPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.stats.StatsPage;
 
@@ -101,7 +100,7 @@ public class MasterPage extends WebPage
 			menuContent.getItems().add(new MenuItem(getString("menu.diary"), DiaryPage.class));
 			menuContent.getItems().add(new MenuItem(getString("menu.base"), FoodBasePage.class));
 			menuContent.getItems().add(new MenuItem(getString("menu.stats"), StatsPage.class));
-			menuContent.getItems().add(new MenuItem(getString("menu.download"), DownloadPage.class));
+			//menuContent.getItems().add(new MenuItem(getString("menu.download"), DownloadPage.class));
 		}
 		else
 		{

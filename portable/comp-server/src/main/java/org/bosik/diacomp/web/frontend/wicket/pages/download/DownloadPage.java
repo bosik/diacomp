@@ -35,5 +35,7 @@ public class DownloadPage extends MasterPage
 	{
 		super.onInitialize();
 		add(new ExternalLink("linkAppWindows", "api/windows/file/compensation_setup.exe"));
+		add(new ExternalLink("linkAppAndroid",
+				"https://play.google.com/store/apps/details?id=org.bosik.diacomp.android"));
 	}
 }
