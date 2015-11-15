@@ -18,6 +18,7 @@
 package org.bosik.diacomp.web.frontend.wicket.components.menu;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -68,7 +69,9 @@ public class Menu extends GenericPanel<MenuContent>
 		}
 
 		String userName = getModelObject().getUserName();
-		add(new ExternalLink("linkLogout", "j_spring_security_logout").setVisible(!"".equals(userName))); // TODO
-		add(new Label("infoLogin", userName));
+		MarkupContainer loginInfo = new WebMarkupContainer("infoLogin");
+		add(loginInfo.setVisible(!"".equals(userName))); // TODO
+		loginInfo.add(new ExternalLink("linkLogout", "j_spring_security_logout"));
+		loginInfo.add(new Label("infoLoginUserName", userName));
 	}
 }
