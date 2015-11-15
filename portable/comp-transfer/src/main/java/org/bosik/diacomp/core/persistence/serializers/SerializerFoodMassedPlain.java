@@ -23,17 +23,15 @@ import java.util.List;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.utils.Utils;
 
-@Deprecated
 public class SerializerFoodMassedPlain implements Serializer<FoodMassed>
 {
-	// private static final String TAG = SerializerFoodMassedPlain.class.getSimpleName();
 	private static final DecimalFormat	df			= new DecimalFormat("###.#");
 	private static final char			FOOD_SEP	= '|';
 
 	@Override
 	public FoodMassed read(String data)
 	{
-		String[] t = data.split("[\\[" + FOOD_SEP + "\\]:]+"); // БОЯН :D
+		String[] t = data.split("[\\[" + FOOD_SEP + "\\]:]+");
 
 		if (t.length != 6)
 		{
