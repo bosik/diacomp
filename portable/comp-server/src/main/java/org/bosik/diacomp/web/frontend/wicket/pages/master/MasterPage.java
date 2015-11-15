@@ -32,7 +32,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.common.Config;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
-import org.bosik.diacomp.web.frontend.wicket.components.header.HeaderPanel;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.Menu;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.MenuContent;
 import org.bosik.diacomp.web.frontend.wicket.components.menu.MenuItem;
@@ -72,7 +71,6 @@ public class MasterPage extends WebPage
 		try
 		{
 			String userName = userInfoService.getCurrentUserName();
-			//add(new HeaderPanel("headerPanel", userName));
 			add(new Menu("menu", Model.of(getMenu(true, userName))));
 			add(new AjaxClientInfoBehavior()
 			{
@@ -87,7 +85,6 @@ public class MasterPage extends WebPage
 		}
 		catch (NotAuthorizedException e)
 		{
-			add(new HeaderPanel("headerPanel"));
 			add(new Menu("menu", Model.of(getMenu(false, ""))));
 		}
 
@@ -95,7 +92,7 @@ public class MasterPage extends WebPage
 		add(new Label("textVersion", Config.get("DIACOMP_VERSION") + " / " + getTimeZone().getDisplayName()));
 	}
 
-	protected MenuContent getMenu(boolean authorized, String userName)
+	private MenuContent getMenu(boolean authorized, String userName)
 	{
 		MenuContent menuContent = new MenuContent();
 
