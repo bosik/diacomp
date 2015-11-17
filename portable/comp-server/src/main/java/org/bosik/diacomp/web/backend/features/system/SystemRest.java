@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.web.backend.features.system;
 
+import java.util.Date;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -29,14 +30,16 @@ import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.features.user.auth.AuthRest;
 import org.json.JSONObject;
 
-@Path("info/")
+@Path("system/")
 @SuppressWarnings("static-method")
 public class SystemRest
 {
 	@GET
+	@Path("info")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAPIVersion()
 	{
@@ -54,6 +57,24 @@ public class SystemRest
 			resp.put(StdResponse.TAG_RESPONSE, info);
 
 			return Response.ok(resp.toString()).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			String entity = ResponseBuilder.buildFails();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(entity).build();
+		}
+	}
+
+	@GET
+	@Path("time")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response getTime()
+	{
+		try
+		{
+			String s = Utils.formatTimeUTC(new Date());
+			return Response.ok(s).build();
 		}
 		catch (Exception e)
 		{
