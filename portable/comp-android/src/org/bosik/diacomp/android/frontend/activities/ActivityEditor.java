@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.activities;
 
@@ -25,10 +25,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-public abstract class ActivityEditor<T extends Serializable> extends Activity
+// Do not make it abstract: the android.app.Fragment$InstantiationException may be caused otherwise
+public class ActivityEditor<T extends Serializable> extends Activity
 {
-	// private static final String TAG = ActivityEditor.class.getSimpleName();
-
 	// TODO: rename to FIELD_CREATE_MODE
 	public static final String	FIELD_MODE		= "bosik.pack.createMode";
 	public static final String	FIELD_ENTITY	= "bosik.pack.entity";
@@ -101,17 +100,26 @@ public abstract class ActivityEditor<T extends Serializable> extends Activity
 	/**
 	 * The subject
 	 */
-	protected abstract void setupInterface();
+	protected void setupInterface()
+	{
+	}
 
 	/**
 	 * Show data in GUI
 	 */
-	protected abstract void showValuesInGUI(boolean createMode);
+	@SuppressWarnings("unused")
+	protected void showValuesInGUI(boolean createMode)
+	{
+	}
 
 	/**
 	 * Read and validate data from GUI
 	 * 
 	 * @return True if validation succeed, false otherwise
 	 */
-	protected abstract boolean getValuesFromGUI();
+	@SuppressWarnings("static-method")
+	protected boolean getValuesFromGUI()
+	{
+		return true;
+	}
 }

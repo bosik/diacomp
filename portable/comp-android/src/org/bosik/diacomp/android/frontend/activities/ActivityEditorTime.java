@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.activities;
 
@@ -27,7 +27,8 @@ import android.app.DialogFragment;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
-public abstract class ActivityEditorTime<T extends DiaryRecord> extends ActivityEditor<T>
+// Do not make it abstract: the android.app.Fragment$InstantiationException may be caused otherwise
+public class ActivityEditorTime<T extends DiaryRecord> extends ActivityEditor<T>
 {
 	private final SimpleDateFormat	FORMAT_TIME	= new SimpleDateFormat("HH:mm", Locale.getDefault());
 	private final SimpleDateFormat	FORMAT_DATE	= new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -85,5 +86,13 @@ public abstract class ActivityEditorTime<T extends DiaryRecord> extends Activity
 		return FORMAT_TIME.format(time);
 	}
 
-	protected abstract void onDateTimeChanged(Date time);
+	/**
+	 * Called when date or time changed
+	 * 
+	 * @param time
+	 *            New date/time
+	 */
+	protected void onDateTimeChanged(Date time)
+	{
+	};
 }
