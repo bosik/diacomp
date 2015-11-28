@@ -20,7 +20,6 @@
         android:singleLine="true"
         android:textColor="@android:color/black" >
 
-        <requestFocus />
     </org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishTextView>
 
     <EditText

@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.activities;
 
@@ -286,8 +286,8 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		double carbs = entity.getData().getCarbs();
 		double prots = entity.getData().getProts();
 
-		Double expectedBS = bsBeforeMeal == null ? null : bsBeforeMeal + (carbs * koof.getK()) + (prots * koof.getP())
-				- (insInjected * koof.getQ());
+		Double expectedBS = bsBeforeMeal == null ? null
+				: bsBeforeMeal + (carbs * koof.getK()) + (prots * koof.getP()) - (insInjected * koof.getQ());
 
 		if (expectedBS != null)
 		{
@@ -360,8 +360,8 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	{
 		super.readEntity(intent);
 
-		bsBeforeMeal = intent.getExtras().containsKey(FIELD_BS_BEFORE_MEAL) ? intent.getExtras().getDouble(
-				FIELD_BS_BEFORE_MEAL) : null;
+		bsBeforeMeal = intent.getExtras().containsKey(FIELD_BS_BEFORE_MEAL)
+				? intent.getExtras().getDouble(FIELD_BS_BEFORE_MEAL) : null;
 		bsTarget = intent.getExtras().containsKey(FIELD_BS_TARGET) ? intent.getExtras().getDouble(FIELD_BS_TARGET)
 				: null;
 		insInjected = intent.getExtras().getDouble(FIELD_INS_INJECTED, 0.0);
@@ -377,6 +377,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		else
 		{
 			onDateTimeChanged(new Date());
+			mealEditor.requestFocus();
 		}
 
 		showMealContent();
