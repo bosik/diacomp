@@ -19,53 +19,39 @@ package org.bosik.diacomp.web.backend.common;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 public class Config
 {
-	private static Map<String, String>	props;
+	private static Properties	properties;
 
-	public static final String			KEY_DB_SCHEME		= "DIACOMP_DB_SCHEME";
-	public static final String			KEY_DB_USER			= "DIACOMP_DB_USER";
-	public static final String			KEY_DB_PASSWORD		= "DIACOMP_DB_PASSWORD";
-	public static final String			KEY_EMAIL_SERVER	= "DIACOMP_EMAIL_SERVER";
-	public static final String			KEY_EMAIL_LOGIN		= "DIACOMP_EMAIL_LOGIN";
-	public static final String			KEY_EMAIL_PASSWORD	= "DIACOMP_EMAIL_PASSWORD";
-	public static final String			KEY_CAPTCHA_SECRET	= "DIACOMP_CAPTCHA_SECRET";
-	public static final String			KEY_TEST_LOGIN		= "DIACOMP_TESTUSER_LOGIN";
-	public static final String			KEY_TEST_PASSWORD	= "DIACOMP_TESTUSER_PASSWORD";
+	public static final String	KEY_DB_SCHEME		= "DIACOMP_DB_SCHEME";
+	public static final String	KEY_DB_USER			= "DIACOMP_DB_USER";
+	public static final String	KEY_DB_PASSWORD		= "DIACOMP_DB_PASSWORD";
+	public static final String	KEY_EMAIL_SERVER	= "DIACOMP_EMAIL_SERVER";
+	public static final String	KEY_EMAIL_LOGIN		= "DIACOMP_EMAIL_LOGIN";
+	public static final String	KEY_EMAIL_PASSWORD	= "DIACOMP_EMAIL_PASSWORD";
+	public static final String	KEY_CAPTCHA_SECRET	= "DIACOMP_CAPTCHA_SECRET";
+	public static final String	KEY_TEST_LOGIN		= "DIACOMP_TESTUSER_LOGIN";
+	public static final String	KEY_TEST_PASSWORD	= "DIACOMP_TESTUSER_PASSWORD";
 
-	public static synchronized void init()
+	static
 	{
-		if (props == null)
+		properties = new Properties();
+
+		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+		InputStream is = classloader.getResourceAsStream("config.properties");
+		try
 		{
-			Properties properties = new Properties();
-
-			ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-			InputStream is = classloader.getResourceAsStream("config.properties");
-			try
-			{
-				properties.load(is);
-				is.close();
-
-				props = new HashMap<String, String>();
-				for (Entry<Object, Object> entry : properties.entrySet())
-				{
-					final String key = (String)entry.getKey();
-					final String value = (String)entry.getValue();
-					props.put(key, value);
-				}
-			}
-			catch (IOException e)
-			{
-				throw new RuntimeException(e);
-			}
-
-			System.out.println("Config loaded OK");
+			properties.load(is);
+			is.close();
 		}
+		catch (IOException e)
+		{
+			throw new RuntimeException(e);
+		}
+
+		System.out.println("Config loaded OK");
 	}
 
 	public static String get(String key)
@@ -76,9 +62,7 @@ public class Config
 			return value;
 		}
 
-		init();
-
-		value = props.get(key);
+		value = properties.getProperty(key);
 		if (value != null)
 		{
 			return value;
