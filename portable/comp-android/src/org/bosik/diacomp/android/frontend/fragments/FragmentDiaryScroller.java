@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.fragments;
 
@@ -23,7 +23,6 @@ import java.util.Date;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
-import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
@@ -359,11 +358,11 @@ public class FragmentDiaryScroller extends Fragment
 				{
 					if (resultCode == Activity.RESULT_OK)
 					{
-						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(
-								ActivityEditor.FIELD_ENTITY);
+						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras()
+								.getSerializable(ActivityEditor.FIELD_ENTITY);
 
 						diary.save(Arrays.<Versioned<DiaryRecord>> asList(rec));
-						Storage.syncDiary(rec.getId());
+						// Storage.syncDiary(rec.getId());
 					}
 					break;
 				}
