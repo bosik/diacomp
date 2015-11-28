@@ -24,7 +24,6 @@ import java.util.SortedMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
-import org.bosik.diacomp.android.BuildConfig;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
@@ -41,8 +40,6 @@ import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.diary.PostprandUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
-import org.bosik.merklesync.SyncUtils;
-import org.bosik.merklesync.SyncUtils.ProgressCallback;
 import org.bosik.merklesync.Versioned;
 import android.accounts.Account;
 import android.app.Activity;
@@ -119,7 +116,7 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 
 			if (account != null)
 			{
-				long SYNC_INTERVAL = 60; // sec
+				long SYNC_INTERVAL = 120; // sec
 				ContentResolver.setIsSyncable(account, DiaryContentProvider.AUTHORITY, 1);
 				ContentResolver.setSyncAutomatically(account, DiaryContentProvider.AUTHORITY, true);
 				ContentResolver.addPeriodicSync(account, DiaryContentProvider.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
@@ -448,7 +445,8 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 								PendingIntent.FLAG_UPDATE_CURRENT);
 						mBuilder.setContentIntent(resultPendingIntent);
 
-						NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+						NotificationManager mNotifyManager = (NotificationManager) getSystemService(
+								Context.NOTIFICATION_SERVICE);
 						mNotifyManager.notify(NOTIFICATION_ID_TIME_AFTER, mBuilder.build());
 					}
 					else
