@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,62 +14,41 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.common;
 
 import java.util.Timer;
 import java.util.TimerTask;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
-import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
-import org.bosik.diacomp.android.backend.features.diary.DiaryWebService;
-import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
-import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
-import org.bosik.diacomp.android.backend.features.search.TagLocalService;
-import org.bosik.diacomp.android.utils.ErrorHandler;
+import org.bosik.diacomp.android.backend.features.analyze.AnalyzeCoreInternal;
+import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
+import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
+import org.bosik.diacomp.android.backend.features.diary.WebDiary;
+import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
+import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
+import org.bosik.diacomp.android.backend.features.search.TagServiceInternal;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
-import org.bosik.diacomp.core.services.analyze.AnalyzeCoreImpl;
 import org.bosik.diacomp.core.services.analyze.KoofService;
-import org.bosik.diacomp.core.services.analyze.KoofServiceImpl;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.search.RelevantIndexator;
 import org.bosik.diacomp.core.services.search.TagService;
-import org.bosik.merklesync.SyncUtils;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
-/**
- * Stores application DAOs as singletons
- */
 public class Storage
 {
-	static final String				TAG					= Storage.class.getSimpleName();
+	static final String			TAG				= Storage.class.getSimpleName();
 
-	private static final int		TIMER_DELAY			= 2 * 1000;						// ms
-	private static final int		TIMER_INTERVAL		= 10 * 60 * 1000;					// ms
+	private static final int	TIMER_DELAY		= 2 * 1000;						// ms
+	private static final int	TIMER_INTERVAL	= 10 * 60 * 1000;				// ms
 
-	private static boolean			timerSettedUp		= false;
-
-	// DAO
-
-	private static WebClient		webClient;												// ok
-
-	static DiaryService				localDiary;
-	static DiaryService				webDiary;
-	private static FoodBaseService	localFoodBase;											// ok
-	private static DishBaseService	localDishBase;											// ok
-
-	private static AnalyzeCore		analyzeCore;											// ok
-	private static KoofService		koofService;											// ok
-	private static TagService		tagService;											// ok
-
-	// TODO: make it preference
-	private static int				ANALYZE_DAYS_PERIOD	= 14;
+	private static boolean		timerSettedUp	= false;
 
 	/**
 	 * Initializes the storage. Might be called sequentially
@@ -80,135 +59,70 @@ public class Storage
 	 */
 	public static void init(Context context, ContentResolver resolver, SharedPreferences preferences)
 	{
-		Log.i(TAG, "Storage unit initialization...");
-
-		// DAO's setup
-		getWebClient(context);
-
-		// TODO: refactor Storage-internal singletone usage (e.g. see relevantIndexation())
-
-		getLocalFoodBase(resolver);
-		getLocalDishBase(resolver);
-
-		getLocalDiary(resolver);
-		getWebDiary(context);
-
-		getAnalyzeService();
-		getKoofService(resolver);
-
-		getTagService();
-
-		ErrorHandler.init(getWebClient(context));
-
-		// this applies all preferences
-		applyPreference(preferences, null);
+		// ErrorHandler.init(getWebClient(context));
 		setupBackgroundTimer(resolver);
 	}
 
-	public static synchronized WebClient getWebClient(Context context)
+	public static WebClient getWebClient(Context context)
 	{
-		if (null == webClient)
-		{
-			Log.i(TAG, "Web client initialization...");
-			webClient = WebClient.getInstance(context);
-		}
-		return webClient;
+		return WebClient.getInstance(context);
 	}
 
-	public static synchronized DiaryService getWebDiary(Context context)
+	public static DiaryService getWebDiary(Context context)
 	{
-		if (null == webDiary)
-		{
-			Log.i(TAG, "Web diary initialization...");
-			WebClient webClient = getWebClient(context);
-			webDiary = new DiaryWebService(webClient);
-		}
-		return webDiary;
+		return WebDiary.getInstance(context);
 	}
 
-	public static synchronized DiaryService getLocalDiary(ContentResolver resolver)
+	public static DiaryService getLocalDiary(ContentResolver resolver)
 	{
-		if (null == localDiary)
-		{
-			Log.i(TAG, "Local diary initialization...");
-			localDiary = new DiaryLocalService(resolver);
-		}
-		return localDiary;
+		return LocalDiary.getInstance(resolver);
 	}
 
-	public static synchronized FoodBaseService getLocalFoodBase(ContentResolver resolver)
+	public static FoodBaseService getLocalFoodBase(ContentResolver resolver)
 	{
-		if (null == localFoodBase)
-		{
-			Log.i(TAG, "Local food base initialization...");
-			localFoodBase = new FoodBaseLocalService(resolver);
-		}
-		return localFoodBase;
+		return LocalFoodBase.getInstance(resolver);
 	}
 
-	public static synchronized DishBaseService getLocalDishBase(ContentResolver resolver)
+	public static DishBaseService getLocalDishBase(ContentResolver resolver)
 	{
-		if (null == localDishBase)
-		{
-			Log.i(TAG, "Local dish base initialization...");
-			localDishBase = new DishBaseLocalService(resolver);
-		}
-		return localDishBase;
+		return LocalDishBase.getInstance(resolver);
 	}
 
-	public static synchronized AnalyzeCore getAnalyzeService()
+	public static AnalyzeCore getAnalyzeService()
 	{
-		if (null == analyzeCore)
-		{
-			// TODO: hardcoded approximation factor
-			analyzeCore = new AnalyzeCoreImpl(40.0);
-			// analyzeCore = new HardcodedAnalyzeService();
-		}
-		return analyzeCore;
+		return AnalyzeCoreInternal.getInstance();
 	}
 
-	public static synchronized KoofService getKoofService(ContentResolver resolver)
+	public static KoofService getKoofService(ContentResolver resolver)
 	{
-		if (koofService == null)
-		{
-			DiaryService localDiary = getLocalDiary(resolver);
-			AnalyzeCore analyzeService = getAnalyzeService();
-			// TODO: hardcoded adaptation
-			koofService = new KoofServiceImpl(localDiary, analyzeService, ANALYZE_DAYS_PERIOD, 0.995);
-		}
-		return koofService;
+		return KoofServiceInternal.getInstance(resolver);
 	}
 
-	public static synchronized TagService getTagService()
+	public static TagService getTagService()
 	{
-		if (null == tagService)
-		{
-			Log.i(TAG, "Local tag service initialization...");
-			tagService = new TagLocalService();
-		}
-		return tagService;
+		return TagServiceInternal.getInstance();
 	}
 
-	public static void syncDiary(String guid)
-	{
-		new AsyncTask<String, Void, Void>()
-		{
-			@Override
-			protected Void doInBackground(String... guids)
-			{
-				try
-				{
-					SyncUtils.synchronize(localDiary, webDiary, guids[0]);
-				}
-				catch (Exception e)
-				{
-					// there is nothing to do with it
-					e.printStackTrace();
-				}
-				return null;
-			}
-		}.execute(guid);
-	}
+	// public static void syncDiary(String guid)
+	// {
+	// new AsyncTask<String, Void, Void>()
+	// {
+	// @Override
+	// protected Void doInBackground(String... guids)
+	// {
+	// try
+	// {
+	// SyncUtils.synchronize(localDiary, webDiary, guids[0]);
+	// }
+	// catch (Exception e)
+	// {
+	// // there is nothing to do with it
+	// e.printStackTrace();
+	// }
+	// return null;
+	// }
+	// }.execute(guid);
+	// }
 
 	private static void setupBackgroundTimer(final ContentResolver resolver)
 	{
@@ -266,25 +180,6 @@ public class Storage
 		getKoofService(resolver).update();
 
 		Log.v(TAG, String.format("Analyzing done in %d msec", System.currentTimeMillis() - time));
-	}
-
-	/**
-	 * Applies changed preference for specified key (if null, applies all settings)
-	 * 
-	 * @param pref
-	 *            Preference unit
-	 * @param key
-	 *            Change prefernce's key
-	 */
-	public static void applyPreference(SharedPreferences pref, String key)
-	{
-		Log.v(TAG, "applyPreferences(): key = '" + key + "'");
-
-		// if (check(key, ActivityPreferences.PREF_ACCOUNT_SERVER_KEY))
-		// {
-		// webClient.setServer(pref.getString(ActivityPreferences.PREF_ACCOUNT_SERVER_KEY,
-		// ActivityPreferences.PREF_ACCOUNT_SERVER_DEFAULT));
-		// }
 	}
 
 	// private static void speedTest()
