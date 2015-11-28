@@ -31,6 +31,7 @@ import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.backend.common.Config;
 import org.bosik.diacomp.web.backend.features.user.auth.AuthRest;
 import org.json.JSONObject;
 
@@ -50,7 +51,7 @@ public class SystemRest
 			JSONObject info = new JSONObject();
 			info.put("current", AuthRest.API_CURRENT);
 			info.put("support", AuthRest.API_LEGACY);
-			info.put("build", "2015-03-25 22:18");
+			info.put("build", Config.get(Config.KEY_BUILD_TIME));
 
 			JSONObject resp = new JSONObject();
 			resp.put(StdResponse.TAG_CODE, ResponseBuilder.CODE_OK);

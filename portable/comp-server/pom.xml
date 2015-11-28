@@ -264,7 +264,8 @@
 					</execution>
 				</executions>
 				<configuration>
-					<dateFormat>dd.MM.yyyy HH:mm z</dateFormat>
+					<dateFormat>yyyy-MM-dd HH:mm:ss</dateFormat>
+					<dateFormatTimeZone>GMT</dateFormatTimeZone>
 					<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
 				</configuration>
 			</plugin>

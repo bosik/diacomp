@@ -88,7 +88,12 @@ public class MasterPage extends WebPage
 		}
 
 		add(new Label("pageTitle", getString("res.appTitle")));
-		add(new Label("textVersion", Config.get("DIACOMP_VERSION") + " / " + getTimeZone().getDisplayName()));
+
+		String buildTime = Config.get(Config.KEY_BUILD_TIME);
+		String buildCommit = Config.get(Config.KEY_BUILD_COMMIT);
+		String timeZone = getTimeZone().getDisplayName();
+		String info = String.format("%s %s / %s", buildTime, buildCommit, timeZone);
+		add(new Label("textVersion", info));
 	}
 
 	private MenuContent getMenu(boolean authorized, String userName)
