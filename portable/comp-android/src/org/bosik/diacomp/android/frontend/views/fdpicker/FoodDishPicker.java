@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.Storage;
@@ -166,10 +167,10 @@ class ItemAdapter extends ArrayAdapter<Item>
 				List<Item> firstList = new ArrayList<Item>();
 				List<Item> secondList = new ArrayList<Item>();
 
-				String search = constraint.toString().toLowerCase();
+				String search = constraint.toString().toLowerCase(Locale.US);
 				for (Item item : itemsAll)
 				{
-					String line = item.getCaption().toLowerCase();
+					String line = item.getCaption().toLowerCase(Locale.US);
 
 					if (Utils.hasWordStartedWith(line, search))
 					{
