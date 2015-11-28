@@ -20,16 +20,11 @@ package org.bosik.diacomp.android.backend.common;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import org.bosik.diacomp.android.backend.common.webclient.WebClient;
-import org.bosik.diacomp.android.backend.features.analyze.AnalyzeCoreInternal;
 import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
-import org.bosik.diacomp.android.backend.features.diary.WebDiary;
 import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
 import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
 import org.bosik.diacomp.android.backend.features.search.TagServiceInternal;
-import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
-import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
@@ -63,68 +58,7 @@ public class Storage
 		setupBackgroundTimer(resolver);
 	}
 
-	public static WebClient getWebClient(Context context)
-	{
-		return WebClient.getInstance(context);
-	}
-
-	public static DiaryService getWebDiary(Context context)
-	{
-		return WebDiary.getInstance(context);
-	}
-
-	public static DiaryService getLocalDiary(ContentResolver resolver)
-	{
-		return LocalDiary.getInstance(resolver);
-	}
-
-	public static FoodBaseService getLocalFoodBase(ContentResolver resolver)
-	{
-		return LocalFoodBase.getInstance(resolver);
-	}
-
-	public static DishBaseService getLocalDishBase(ContentResolver resolver)
-	{
-		return LocalDishBase.getInstance(resolver);
-	}
-
-	public static AnalyzeCore getAnalyzeService()
-	{
-		return AnalyzeCoreInternal.getInstance();
-	}
-
-	public static KoofService getKoofService(ContentResolver resolver)
-	{
-		return KoofServiceInternal.getInstance(resolver);
-	}
-
-	public static TagService getTagService()
-	{
-		return TagServiceInternal.getInstance();
-	}
-
-	// public static void syncDiary(String guid)
-	// {
-	// new AsyncTask<String, Void, Void>()
-	// {
-	// @Override
-	// protected Void doInBackground(String... guids)
-	// {
-	// try
-	// {
-	// SyncUtils.synchronize(localDiary, webDiary, guids[0]);
-	// }
-	// catch (Exception e)
-	// {
-	// // there is nothing to do with it
-	// e.printStackTrace();
-	// }
-	// return null;
-	// }
-	// }.execute(guid);
-	// }
-
-	private static void setupBackgroundTimer(final ContentResolver resolver)
+	private static synchronized void setupBackgroundTimer(final ContentResolver resolver)
 	{
 		if (timerSettedUp)
 		{
@@ -147,8 +81,7 @@ public class Storage
 						relevantIndexation(resolver);
 						analyzeKoofs(resolver);
 
-						/**/time = System.currentTimeMillis() - time;
-						/**/Log.d(TAG, "Backgrounds done in " + time + " ms");
+						/**/Log.d(TAG, "Backgrounds done in " + (System.currentTimeMillis() - time) + " ms");
 
 						return null;
 					}
@@ -163,10 +96,10 @@ public class Storage
 	{
 		long time = System.currentTimeMillis();
 
-		final TagService tagService = getTagService();
-		final DiaryService diary = getLocalDiary(resolver);
-		final FoodBaseService foodBase = getLocalFoodBase(resolver);
-		final DishBaseService dishBase = getLocalDishBase(resolver);
+		final TagService tagService = TagServiceInternal.getInstance();
+		final DiaryService diary = LocalDiary.getInstance(resolver);
+		final FoodBaseService foodBase = LocalFoodBase.getInstance(resolver);
+		final DishBaseService dishBase = LocalDishBase.getInstance(resolver);
 
 		RelevantIndexator.indexate(tagService, diary, foodBase, dishBase);
 
@@ -177,10 +110,31 @@ public class Storage
 	{
 		long time = System.currentTimeMillis();
 
-		getKoofService(resolver).update();
+		KoofServiceInternal.getInstance(resolver).update();
 
 		Log.v(TAG, String.format("Analyzing done in %d msec", System.currentTimeMillis() - time));
 	}
+
+	// public static void syncDiary(String guid)
+	// {
+	// new AsyncTask<String, Void, Void>()
+	// {
+	// @Override
+	// protected Void doInBackground(String... guids)
+	// {
+	// try
+	// {
+	// SyncUtils.synchronize(localDiary, webDiary, guids[0]);
+	// }
+	// catch (Exception e)
+	// {
+	// // there is nothing to do with it
+	// e.printStackTrace();
+	// }
+	// return null;
+	// }
+	// }.execute(guid);
+	// }
 
 	// private static void speedTest()
 	// {

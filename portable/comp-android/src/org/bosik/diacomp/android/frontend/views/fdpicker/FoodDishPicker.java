@@ -25,7 +25,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.common.Storage;
+import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
+import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
+import org.bosik.diacomp.android.backend.features.search.TagServiceInternal;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
@@ -334,9 +336,9 @@ public class FoodDishPicker extends LinearLayout
 
 		ContentResolver resolver = getContext().getContentResolver();
 
-		final FoodBaseService foodBase = Storage.getLocalFoodBase(resolver);
-		final DishBaseService dishBase = Storage.getLocalDishBase(resolver);
-		final TagService tagService = Storage.getTagService();
+		final FoodBaseService foodBase = LocalFoodBase.getInstance(resolver);
+		final DishBaseService dishBase = LocalDishBase.getInstance(resolver);
+		final TagService tagService = TagServiceInternal.getInstance();
 
 		List<Versioned<FoodItem>> foods = foodBase.findAll(false);
 		List<Versioned<DishItem>> dishes = dishBase.findAll(false);

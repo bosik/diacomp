@@ -21,20 +21,20 @@ package org.bosik.diacomp.android.frontend.activities;
 import java.util.ArrayList;
 import java.util.List;
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.common.Storage;
+import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
 import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.utils.Utils;
-import android.app.Activity;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.widget.RelativeLayout;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphView.GraphViewData;
 import com.jjoe64.graphview.GraphView.LegendAlign;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
 import com.jjoe64.graphview.LineGraphView;
+import android.app.Activity;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.widget.RelativeLayout;
 
 public class ActivityGraph extends Activity
 {
@@ -44,7 +44,7 @@ public class ActivityGraph extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_graph);
 
-		final KoofService koofService = Storage.getKoofService(getContentResolver());
+		final KoofService koofService = KoofServiceInternal.getInstance(getContentResolver());
 
 		final GraphViewSeriesStyle styleK = new GraphViewSeriesStyle(Color.rgb(255, 128, 128), 4);
 		final GraphViewSeriesStyle styleQ = new GraphViewSeriesStyle(Color.rgb(128, 128, 255), 4);

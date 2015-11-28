@@ -27,7 +27,9 @@ import java.util.TimerTask;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
-import org.bosik.diacomp.android.backend.common.Storage;
+import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
+import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
+import org.bosik.diacomp.android.backend.features.search.TagServiceInternal;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorDish;
@@ -154,9 +156,9 @@ public class FragmentBase extends Fragment
 		ContentResolver resolver = getActivity().getContentResolver();
 
 		resolver.registerContentObserver(DiaryContentProvider.CONTENT_BASE_URI, true, observer);
-		foodBaseService = Storage.getLocalFoodBase(resolver);
-		dishBaseService = Storage.getLocalDishBase(resolver);
-		tagService = Storage.getTagService();
+		foodBaseService = LocalFoodBase.getInstance(resolver);
+		dishBaseService = LocalDishBase.getInstance(resolver);
+		tagService = TagServiceInternal.getInstance();
 	}
 
 	@Override

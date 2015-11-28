@@ -21,7 +21,8 @@ package org.bosik.diacomp.android.frontend.views.fdpicker;
 import java.util.ArrayList;
 import java.util.List;
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.common.Storage;
+import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
+import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.UIUtils.OnSubmit;
 import org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker.OnSubmitListener;
@@ -153,7 +154,7 @@ public class MealEditorView extends LinearLayout
 
 					// try to search item in food base
 
-					FoodBaseService foodBase = Storage.getLocalFoodBase(resolver);
+					FoodBaseService foodBase = LocalFoodBase.getInstance(resolver);
 					Versioned<FoodItem> foodItem = foodBase.findOne(name);
 
 					if (foodItem != null)
@@ -179,7 +180,7 @@ public class MealEditorView extends LinearLayout
 					}
 
 					// try to search item in dish base
-					DishBaseService dishBase = Storage.getLocalDishBase(resolver);
+					DishBaseService dishBase = LocalDishBase.getInstance(resolver);
 					List<Versioned<DishItem>> listDish = dishBase.findAny(name);
 
 					if (!listDish.isEmpty())

@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
+import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
 import org.bosik.diacomp.android.backend.features.foodset.FoodSetService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
@@ -320,7 +320,7 @@ public class ActivityFoodSet extends FragmentActivity
 					FoodSetService foodSetService = new FoodSetService(webClient);
 					List<Versioned<FoodItem>> foodSet = foodSetService.getFoodSet(foodSetInfo.getId());
 
-					FoodBaseService localFoodBase = Storage.getLocalFoodBase(getContentResolver());
+					FoodBaseService localFoodBase = LocalFoodBase.getInstance(getContentResolver());
 
 					for (Versioned<FoodItem> food : foodSet)
 					{
