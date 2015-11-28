@@ -358,11 +358,6 @@ public class FoodDishPicker extends LinearLayout
 
 		Collections.sort(data);
 
-		setData(data);
-	}
-
-	public void setData(List<Item> data)
-	{
 		ItemAdapter adapter = new ItemAdapter(getContext(), R.layout.view_iconed_line, data);
 		editName.setAdapter(adapter);
 	}

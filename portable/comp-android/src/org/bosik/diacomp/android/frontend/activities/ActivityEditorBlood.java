@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.activities;
 
@@ -41,7 +41,7 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 	private Button				buttonDate;
 	private Button				buttonOK;
 
-	// TODO: localize error messages
+	// TODO: i18n
 	private static final String	ERROR_INCORRECT_BS_VALUE		= "Введите корректное значение СК";
 	private static final String	ERROR_INCORRECT_FINGER_VALUE	= "Укажите палец, из которого бралась кровь";
 
