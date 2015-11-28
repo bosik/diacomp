@@ -22,6 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import org.bosik.diacomp.android.frontend.fragments.DatePickerFragment;
+import org.bosik.diacomp.android.frontend.fragments.TimePickerFragment;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import android.app.DialogFragment;
 import android.widget.DatePicker;
