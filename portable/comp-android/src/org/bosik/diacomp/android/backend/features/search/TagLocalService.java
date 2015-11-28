@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,212 +14,71 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.features.search;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.bosik.diacomp.core.services.search.TagService;
 
 public class TagLocalService implements TagService
 {
-	// private final ContentResolver resolver;
-
 	private static final Map<String, Integer>	cache	= new HashMap<String, Integer>();
-
-	public TagLocalService(/*ContentResolver resolver*/)
-	{
-		// if (null == resolver)
-		// {
-		// throw new IllegalArgumentException("Content resolver is null");
-		// }
-		// this.resolver = resolver;
-	}
-
-	/**
-	 * Returns tag if found, null otherwise
-	 * 
-	 * @param id
-	 * @return
-	 */
-	// private Integer readTag(String id)
-	// {
-	// try
-	// {
-	// // constructing parameters
-	// final String[] select = { DiaryContentProvider.COLUMN_TAG_TAG };
-	// final String where = DiaryContentProvider.COLUMN_TAG_GUID + " = ?";
-	// final String[] whereArgs = { id };
-	//
-	// // execute query
-	// Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_TAG_URI, select, where,
-	// whereArgs, null);
-	//
-	// // analyze response
-	// if (cursor != null)
-	// {
-	// int indexTag = 0;// cursor.getColumnIndex(DiaryContentProvider.COLUMN_TAG_TAG);
-	// Integer valueTag = null;
-	//
-	// if (cursor.moveToNext())
-	// {
-	// valueTag = cursor.getInt(indexTag);
-	// }
-	//
-	// cursor.close();
-	// return valueTag;
-	// }
-	// else
-	// {
-	// throw new IllegalArgumentException("Cursor is null");
-	// }
-	// }
-	// catch (Exception e)
-	// {
-	// throw new CommonServiceException(e);
-	// }
-	// }
-
-	// private void updateTag(String id, int tag)
-	// {
-	// try
-	// {
-	// final ContentValues newValues = new ContentValues();
-	// newValues.put(DiaryContentProvider.COLUMN_TAG_TAG, tag);
-	// final String where = DiaryContentProvider.COLUMN_TAG_GUID + " = ?";
-	// String[] whereArgs = { id };
-	// resolver.update(DiaryContentProvider.CONTENT_TAG_URI, newValues, where, whereArgs);
-	// }
-	// catch (PersistenceException e)
-	// {
-	// throw e;
-	// }
-	// catch (Exception e)
-	// {
-	// throw new PersistenceException(e);
-	// }
-	// }
-
-	// private void insertTag(String id, int tag)
-	// {
-	// try
-	// {
-	// ContentValues newValues = new ContentValues();
-	// newValues.put(DiaryContentProvider.COLUMN_TAG_GUID, id);
-	// newValues.put(DiaryContentProvider.COLUMN_TAG_TAG, tag);
-	// resolver.insert(DiaryContentProvider.CONTENT_TAG_URI, newValues);
-	// }
-	// catch (PersistenceException e)
-	// {
-	// throw e;
-	// }
-	// catch (Exception e)
-	// {
-	// throw new PersistenceException(e);
-	// }
-	// }
+	private static final ReadWriteLock			lock	= new ReentrantReadWriteLock();
 
 	@Override
-	public Map<String, Integer> getTags()
+	public Integer getTag(String id)
 	{
-		return cache;
-		// try
-		// {
-		// // constructing request (SELECT * FROM ...)
-		// final String[] select = { DiaryContentProvider.COLUMN_TAG_GUID,
-		// DiaryContentProvider.COLUMN_TAG_TAG };
-		// final String where = null;// DiaryContentProvider.COLUMN_TAG_GUID + " = ?";
-		// final String[] whereArgs = null;// { id };
-		//
-		// // execute query
-		// Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_TAG_URI, select, where,
-		// whereArgs, null);
-		//
-		// // analyze response
-		// List<TagInfo> result = new ArrayList<TagInfo>();
-		// if (cursor != null)
-		// {
-		// int columnId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_TAG_GUID);
-		// int columnTag = cursor.getColumnIndex(DiaryContentProvider.COLUMN_TAG_TAG);
-		//
-		// while (cursor.moveToNext())
-		// {
-		// String valueId = cursor.getString(columnId);
-		// int valueTag = cursor.getInt(columnTag);
-		// result.add(new TagInfo(valueId, valueTag));
-		// }
-		//
-		// cursor.close();
-		// return result;
-		// }
-		// else
-		// {
-		// throw new IllegalArgumentException("Cursor is null");
-		// }
-		// }
-		// catch (Exception e)
-		// {
-		// throw new CommonServiceException(e);
-		// }
+		lock.readLock().lock();
+
+		try
+		{
+			return cache.get(id);
+		}
+		finally
+		{
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
-	public void incTag(String id, int value)
+	public void incTag(String id, int delta)
 	{
-		// Integer tag = readTag(id);
-		// if (tag == null)
-		// {
-		// insertTag(id, value);
-		// }
-		// else
-		// {
-		// updateTag(id, tag + value);
-		// }
+		lock.writeLock().lock();
 
-		// for (TagInfo item : cache)
-		// {
-		// if (item.getId().equals(id))
-		// {
-		// item.setTag(item.getTag() + value);
-		// return;
-		// }
-		// }
-		//
-		// cache.add(new TagInfo(id, value));
-
-		synchronized (cache)
+		try
 		{
 			Integer tag = cache.get(id);
 			if (tag == null)
 			{
-				cache.put(id, value);
+				cache.put(id, delta);
 			}
 			else
 			{
-				cache.put(id, tag + value);
+				cache.put(id, tag + delta);
 			}
+		}
+		finally
+		{
+			lock.writeLock().unlock();
 		}
 	}
 
 	@Override
 	public void reset()
 	{
-		// try
-		// {
-		// resolver.delete(DiaryContentProvider.CONTENT_TAG_URI, null, null);
-		// }
-		// catch (PersistenceException e)
-		// {
-		// throw e;
-		// }
-		// catch (Exception e)
-		// {
-		// throw new PersistenceException(e);
-		// }
-		synchronized (cache)
+		lock.writeLock().lock();
+
+		try
 		{
 			cache.clear();
+		}
+		finally
+		{
+			lock.writeLock().unlock();
 		}
 	}
 }

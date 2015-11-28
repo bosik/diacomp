@@ -17,10 +17,10 @@
  */
 package org.bosik.diacomp.core.services.search;
 
-import java.util.Map;
-
 public interface TagService
 {
+	Integer getTag(String id);
+
 	/**
 	 * Removes all tag data
 	 */
@@ -33,6 +33,4 @@ public interface TagService
 	 * @param value
 	 */
 	void incTag(String id, int value);
-
-	Map<String, Integer> getTags();
 }

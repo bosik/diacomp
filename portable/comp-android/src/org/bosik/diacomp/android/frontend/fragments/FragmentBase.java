@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,17 +14,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.fragments;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.bosik.diacomp.android.R;
@@ -81,73 +78,74 @@ import android.widget.Toast;
 
 public class FragmentBase extends Fragment
 {
-	private static final String							TAG					= FragmentBase.class.getSimpleName();
+	private static final String						TAG					= FragmentBase.class.getSimpleName();
 
-	private static final int							DIALOG_FOOD_CREATE	= 11;
-	private static final int							DIALOG_FOOD_MODIFY	= 12;
-	private static final int							DIALOG_DISH_CREATE	= 21;
-	private static final int							DIALOG_DISH_MODIFY	= 22;
+	private static final int						DIALOG_FOOD_CREATE	= 11;
+	private static final int						DIALOG_FOOD_MODIFY	= 12;
+	private static final int						DIALOG_DISH_CREATE	= 21;
+	private static final int						DIALOG_DISH_MODIFY	= 22;
 
-	private static final int							LIMIT				= 100;
+	private static final int						LIMIT				= 100;
 
 	// Widgets
-	View												groupBaseEmpty;
-	View												groupBaseContent;
-	Button												buttonFoodSets;
-	EditText											editSearch;
-	ListView											list;
+	View											groupBaseEmpty;
+	View											groupBaseContent;
+	Button											buttonFoodSets;
+	EditText										editSearch;
+	ListView										list;
 
 	// Data
-	FoodBaseService										foodBaseService;
-	DishBaseService										dishBaseService;
-	private TagService									tagService;
-	List<Versioned<NamedRelativeTagged>>				data				= new ArrayList<Versioned<NamedRelativeTagged>>();
-	BaseAdapter											adapter;
-	private static final Sorter<NamedRelativeTagged>	sorter				= new Sorter<NamedRelativeTagged>();
-	String												searchFilter		= "";
-	boolean												resultCutted;
+	FoodBaseService									foodBaseService;
+	DishBaseService									dishBaseService;
+	private TagService								tagService;
+	List<Versioned<? extends NamedRelativeTagged>>	data				= new ArrayList<Versioned<? extends NamedRelativeTagged>>();
+	BaseAdapter										adapter;
+	private static final Sorter						sorter				= new Sorter();
+	String											searchFilter		= "";
+	boolean											resultCutted;
 
-	long												lastSearchTime;
-	boolean												searchScheduled		= false;
-	private static final long							SEARCH_DELAY		= 500;
+	long											lastSearchTime;
+	boolean											searchScheduled		= false;
+	private static final long						SEARCH_DELAY		= 500;
 
-	private ContentObserver								observer			= new ContentObserver(null)
+	private ContentObserver							observer			= new ContentObserver(null)
+																		{
+																			@Override
+																			public void onChange(boolean selfChange)
 																			{
-																				@Override
-																				public void onChange(boolean selfChange)
-																				{
-																					this.onChange(selfChange, null);
-																				}
+																				this.onChange(selfChange, null);
+																			}
 
-																				@Override
-																				public void onChange(
-																						boolean selfChange, Uri uri)
+																			@Override
+																			public void onChange(boolean selfChange,
+																					Uri uri)
+																			{
+																				if (uri != null)
 																				{
-																					if (uri != null)
+																					switch (DiaryContentProvider.sURIMatcher
+																							.match(uri))
 																					{
-																						switch (DiaryContentProvider.sURIMatcher
-																								.match(uri))
+																						case DiaryContentProvider.CODE_FOODBASE:
+																						case DiaryContentProvider.CODE_DISHBASE:
 																						{
-																							case DiaryContentProvider.CODE_FOODBASE:
-																							case DiaryContentProvider.CODE_DISHBASE:
+																							final long token = Binder
+																									.clearCallingIdentity();
+																							try
 																							{
-																								final long token = Binder
-																										.clearCallingIdentity();
-																								try
-																								{
-																									checkEmptiness();
-																								}
-																								finally
-																								{
-																									Binder.restoreCallingIdentity(token);
-																								}
-																								runSearch();
-																								break;
+																								checkEmptiness();
 																							}
+																							finally
+																							{
+																								Binder.restoreCallingIdentity(
+																										token);
+																							}
+																							runSearch();
+																							break;
 																						}
 																					}
 																				}
-																			};
+																			}
+																		};
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -247,7 +245,7 @@ public class FragmentBase extends Fragment
 						int index = checkList.keyAt(i);
 						if (index >= 0 && index < data.size())
 						{
-							Versioned<NamedRelativeTagged> item = data.get(index);
+							Versioned<? extends NamedRelativeTagged> item = data.get(index);
 
 							if (item.getData() instanceof FoodItem)
 							{
@@ -263,6 +261,7 @@ public class FragmentBase extends Fragment
 					}
 				}
 
+				// TODO: move outside UI thread
 				foodBaseService.save(removedFoods);
 				dishBaseService.save(removedDishes);
 				runSearch();
@@ -499,9 +498,9 @@ public class FragmentBase extends Fragment
 	 * Runs search process in the background thread, fills result list when done
 	 * 
 	 */
-	void runSearch()
+	synchronized void runSearch()
 	{
-		final AsyncTask<String, Void, List<Versioned<NamedRelativeTagged>>> asyncTask = new AsyncTask<String, Void, List<Versioned<NamedRelativeTagged>>>()
+		final AsyncTask<String, Void, List<Versioned<? extends NamedRelativeTagged>>> asyncTask = new AsyncTask<String, Void, List<Versioned<? extends NamedRelativeTagged>>>()
 		{
 			@Override
 			protected void onPreExecute()
@@ -510,19 +509,19 @@ public class FragmentBase extends Fragment
 			}
 
 			@Override
-			protected List<Versioned<NamedRelativeTagged>> doInBackground(String... params)
+			protected List<Versioned<? extends NamedRelativeTagged>> doInBackground(String... params)
 			{
 				return request(params[0]);
 			}
 
 			@Override
-			protected void onPostExecute(List<Versioned<NamedRelativeTagged>> result)
+			protected void onPostExecute(List<Versioned<? extends NamedRelativeTagged>> result)
 			{
 				// TODO: i18n
 				if (result == null)
 				{
 					UIUtils.showTip(getActivity(), "При загрузке данных произошла ошибка");
-					result = Collections.<Versioned<NamedRelativeTagged>> emptyList();
+					result = Collections.<Versioned<? extends NamedRelativeTagged>> emptyList();
 				}
 
 				synchronized (data)
@@ -564,11 +563,13 @@ public class FragmentBase extends Fragment
 	 * @param filter
 	 * @return
 	 */
-	List<Versioned<NamedRelativeTagged>> request(String filter)
+	List<Versioned<? extends NamedRelativeTagged>> request(String filter)
 	{
 		try
 		{
 			long tick = System.currentTimeMillis();
+
+			// filtering
 
 			List<Versioned<FoodItem>> foodItems;
 			List<Versioned<DishItem>> dishItems;
@@ -584,38 +585,28 @@ public class FragmentBase extends Fragment
 				dishItems = dishBaseService.findAny(filter);
 			}
 
-			// indexing
-			Map<String, Versioned<? extends NamedRelativeTagged>> baseIndex = new HashMap<String, Versioned<? extends NamedRelativeTagged>>();
+			// relevance ordering
+
+			List<Versioned<? extends NamedRelativeTagged>> result = new ArrayList<Versioned<? extends NamedRelativeTagged>>();
+
 			for (Versioned<? extends NamedRelativeTagged> item : foodItems)
 			{
-				baseIndex.put(item.getId(), item);
+				Integer tag = tagService.getTag(item.getId());
+				item.getData().setTag(tag != null ? tag : 0);
+				result.add(item);
 			}
 			for (Versioned<? extends NamedRelativeTagged> item : dishItems)
 			{
-				baseIndex.put(item.getId(), item);
+				Integer tag = tagService.getTag(item.getId());
+				item.getData().setTag(tag != null ? tag : 0);
+				result.add(item);
 			}
 
-			Log.d(TAG, String.format("Searched for '%s', founded items: %d", filter, baseIndex.size()));
-
-			// sorter.sort(temp, mode == Mode.EDIT ? Sorter.Sort.ALPHABET : Sorter.Sort.RELEVANT);
-			// sorter.sort(temp, Sorter.Sort.RELEVANT);
-
-			// TODO: check the performance
-			List<Versioned<NamedRelativeTagged>> result = new ArrayList<Versioned<NamedRelativeTagged>>();
-
-			Map<String, Integer> tags = tagService.getTags();
-			for (Entry<String, Integer> tag : tags.entrySet())
-			{
-				Versioned<? extends NamedRelativeTagged> indexItem = baseIndex.get(tag.getKey());
-				if (indexItem != null)
-				{
-					Versioned<NamedRelativeTagged> item = new Versioned<NamedRelativeTagged>(indexItem);
-					item.getData().setTag(tag.getValue());
-					result.add(item);
-				}
-			}
+			Log.d(TAG, String.format("Searched for '%s', items found: %d", filter, result.size()));
 
 			sorter.sort(result, Sort.RELEVANT);
+
+			// clipping
 
 			if (result.size() > LIMIT)
 			{
@@ -624,74 +615,11 @@ public class FragmentBase extends Fragment
 			}
 			else
 			{
-				resultCutted = true;
-				if (result.size() < LIMIT)
-				{
-					int i = 0;
-					int j = 0;
-
-					while (result.size() < LIMIT)
-					{
-						while ((i < foodItems.size()) && (tags.get(foodItems.get(i).getId()) != null))
-						{
-							i++;
-						}
-						while ((j < dishItems.size()) && (tags.get(dishItems.get(j).getId()) != null))
-						{
-							j++;
-						}
-
-						if ((i < foodItems.size()) && (j < dishItems.size()))
-						{
-							// TODO: check the more/less sign
-							if (foodItems.get(i).getData().getName().compareTo(dishItems.get(j).getData().getName()) < 0)
-							{
-								result.add(new Versioned<NamedRelativeTagged>(foodItems.get(i++)));
-							}
-							else
-							{
-								result.add(new Versioned<NamedRelativeTagged>(dishItems.get(j++)));
-							}
-						}
-						else if (i < foodItems.size())
-						{
-							result.add(new Versioned<NamedRelativeTagged>(foodItems.get(i++)));
-						}
-						else if (j < dishItems.size())
-						{
-							result.add(new Versioned<NamedRelativeTagged>(dishItems.get(j++)));
-						}
-						else
-						{
-							// no more elements are available
-							resultCutted = false;
-							break;
-						}
-					}
-
-					// for (int i = 0; i < foodItems.size(); i++)
-					// {
-					// if (tagInfo.get(foodItems.get(i).getId()) == null)
-					// {
-					// result.add(new Versioned<NamedRelativeTagged>(foodItems.get(i)));
-					// if (result.size() == LIMIT)
-					// {
-					// resultCutted = (i < foodItems.size() - 1);
-					// break;
-					// }
-					// }
-					// }
-				}
+				resultCutted = false;
 			}
 
-			// for (Versioned<FoodItem> item : temp)
-			// {
-			// // Log.d(TAG, item.getData().getName() + " [" + item.getData().getTag() + "]");
-			// result.add(new Versioned<NamedRelativeTagged>(item));
-			// }
-
 			tick = System.currentTimeMillis() - tick;
-			Log.i(TAG, String.format("Request handled in %d msec, founded items: %d", tick, result.size()));
+			Log.i(TAG, String.format("Request handled in %d msec, items found: %d", tick, result.size()));
 
 			return result;
 		}
@@ -786,8 +714,8 @@ public class FragmentBase extends Fragment
 				{
 					if (resultCode == Activity.RESULT_OK)
 					{
-						Versioned<FoodItem> item = (Versioned<FoodItem>) intent.getExtras().getSerializable(
-								ActivityEditor.FIELD_ENTITY);
+						Versioned<FoodItem> item = (Versioned<FoodItem>) intent.getExtras()
+								.getSerializable(ActivityEditor.FIELD_ENTITY);
 						try
 						{
 							foodBaseService.add(item);
@@ -806,8 +734,8 @@ public class FragmentBase extends Fragment
 				{
 					if (resultCode == Activity.RESULT_OK)
 					{
-						Versioned<FoodItem> item = (Versioned<FoodItem>) intent.getExtras().getSerializable(
-								ActivityEditor.FIELD_ENTITY);
+						Versioned<FoodItem> item = (Versioned<FoodItem>) intent.getExtras()
+								.getSerializable(ActivityEditor.FIELD_ENTITY);
 						try
 						{
 							foodBaseService.save(Arrays.<Versioned<FoodItem>> asList(item));
@@ -826,8 +754,8 @@ public class FragmentBase extends Fragment
 				{
 					if (resultCode == Activity.RESULT_OK)
 					{
-						Versioned<DishItem> item = (Versioned<DishItem>) intent.getExtras().getSerializable(
-								ActivityEditor.FIELD_ENTITY);
+						Versioned<DishItem> item = (Versioned<DishItem>) intent.getExtras()
+								.getSerializable(ActivityEditor.FIELD_ENTITY);
 						try
 						{
 							dishBaseService.add(item);
@@ -846,8 +774,8 @@ public class FragmentBase extends Fragment
 				{
 					if (resultCode == Activity.RESULT_OK)
 					{
-						Versioned<DishItem> item = (Versioned<DishItem>) intent.getExtras().getSerializable(
-								ActivityEditor.FIELD_ENTITY);
+						Versioned<DishItem> item = (Versioned<DishItem>) intent.getExtras()
+								.getSerializable(ActivityEditor.FIELD_ENTITY);
 						try
 						{
 							dishBaseService.save(Arrays.<Versioned<DishItem>> asList(item));

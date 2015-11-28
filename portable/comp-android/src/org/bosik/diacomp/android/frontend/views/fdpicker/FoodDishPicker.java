@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.views.fdpicker;
 
@@ -149,69 +149,69 @@ class ItemAdapter extends ArrayAdapter<Item>
 		return filter;
 	}
 
-	Filter	filter	= new Filter()
+	Filter filter = new Filter()
+	{
+		@Override
+		public String convertResultToString(Object resultValue)
+		{
+			String str = ((Item) resultValue).getCaption();
+			return str;
+		}
+
+		@Override
+		protected FilterResults performFiltering(CharSequence constraint)
+		{
+			if (constraint != null)
+			{
+				List<Item> firstList = new ArrayList<Item>();
+				List<Item> secondList = new ArrayList<Item>();
+
+				String search = constraint.toString().toLowerCase();
+				for (Item item : itemsAll)
+				{
+					String line = item.getCaption().toLowerCase();
+
+					if (Utils.hasWordStartedWith(line, search))
 					{
-						@Override
-						public String convertResultToString(Object resultValue)
-						{
-							String str = ((Item) resultValue).getCaption();
-							return str;
-						}
+						firstList.add(item);
+					}
+					else if (line.contains(search))
+					{
+						secondList.add(item);
+					}
+				}
 
-						@Override
-						protected FilterResults performFiltering(CharSequence constraint)
-						{
-							if (constraint != null)
-							{
-								List<Item> firstList = new ArrayList<Item>();
-								List<Item> secondList = new ArrayList<Item>();
+				suggestions.clear();
+				suggestions.addAll(firstList);
+				suggestions.addAll(secondList);
 
-								String search = constraint.toString().toLowerCase();
-								for (Item item : itemsAll)
-								{
-									String line = item.getCaption().toLowerCase();
+				FilterResults filterResults = new FilterResults();
+				filterResults.values = suggestions;
+				filterResults.count = suggestions.size();
 
-									if (Utils.hasWordStartedWith(line, search))
-									{
-										firstList.add(item);
-									}
-									else if (line.contains(search))
-									{
-										secondList.add(item);
-									}
-								}
+				return filterResults;
+			}
+			else
+			{
+				return new FilterResults();
+			}
+		}
 
-								suggestions.clear();
-								suggestions.addAll(firstList);
-								suggestions.addAll(secondList);
+		@Override
+		protected void publishResults(CharSequence constraint, FilterResults results)
+		{
+			clear();
 
-								FilterResults filterResults = new FilterResults();
-								filterResults.values = suggestions;
-								filterResults.count = suggestions.size();
+			if (results != null && results.values != null)
+			{
+				@SuppressWarnings("unchecked")
+				List<Item> filteredList = (List<Item>) results.values;
+				addAll(filteredList);
+			}
 
-								return filterResults;
-							}
-							else
-							{
-								return new FilterResults();
-							}
-						}
-
-						@Override
-						protected void publishResults(CharSequence constraint, FilterResults results)
-						{
-							clear();
-
-							if (results != null && results.values != null)
-							{
-								@SuppressWarnings("unchecked")
-								List<Item> filteredList = (List<Item>) results.values;
-								addAll(filteredList);
-							}
-
-							notifyDataSetChanged();
-						}
-					};
+			notifyDataSetChanged();
+		}
+	};
 
 }
 
@@ -246,6 +246,7 @@ public class FoodDishPicker extends LinearLayout
 	private OnSubmitListener					onSubmit;
 
 	public static final Map<ItemType, Integer>	iconMap	= new HashMap<ItemType, Integer>();
+
 	static
 	{
 		iconMap.clear();
@@ -338,20 +339,19 @@ public class FoodDishPicker extends LinearLayout
 
 		List<Versioned<FoodItem>> foods = foodBase.findAll(false);
 		List<Versioned<DishItem>> dishes = dishBase.findAll(false);
-		Map<String, Integer> tags = tagService.getTags();
 
 		List<Item> data = new ArrayList<Item>();
 
 		for (Versioned<FoodItem> item : foods)
 		{
-			Integer tag = tags.get(item.getId());
+			Integer tag = tagService.getTag(item.getId());
 			item.getData().setTag(tag != null ? tag : 0);
 			data.add(new Item(item.getData()));
 		}
 
 		for (Versioned<DishItem> item : dishes)
 		{
-			Integer tag = tags.get(item.getId());
+			Integer tag = tagService.getTag(item.getId());
 			item.getData().setTag(tag != null ? tag : 0);
 			data.add(new Item(item.getData()));
 		}
