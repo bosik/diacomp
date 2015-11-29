@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.activities;
 
@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.Set;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
+import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
 import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
 import org.bosik.diacomp.android.backend.features.foodset.FoodSetService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
@@ -256,7 +257,7 @@ public class ActivityFoodSet extends FragmentActivity
 			{
 				try
 				{
-					WebClient webClient = WebClient.getInstance(ActivityFoodSet.this);
+					WebClient webClient = WebClientInternal.getInstance(ActivityFoodSet.this);
 					FoodSetService foodSetService = new FoodSetService(webClient);
 					return foodSetService.getFoodSets();
 				}
@@ -316,7 +317,7 @@ public class ActivityFoodSet extends FragmentActivity
 			{
 				try
 				{
-					WebClient webClient = WebClient.getInstance(ActivityFoodSet.this);
+					WebClient webClient = WebClientInternal.getInstance(ActivityFoodSet.this);
 					FoodSetService foodSetService = new FoodSetService(webClient);
 					List<Versioned<FoodItem>> foodSet = foodSetService.getFoodSet(foodSetInfo.getId());
 

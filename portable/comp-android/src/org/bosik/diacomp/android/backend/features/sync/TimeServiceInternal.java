@@ -19,6 +19,7 @@
 package org.bosik.diacomp.android.backend.features.sync;
 
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
+import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
 import android.content.Context;
 import android.util.Log;
 
@@ -32,7 +33,7 @@ public class TimeServiceInternal
 		if (null == instance)
 		{
 			Log.i(TAG, "Time service initialization...");
-			WebClient webClient = WebClient.getInstance(context);
+			WebClient webClient = WebClientInternal.getInstance(context);
 			instance = new ServerTimeService(webClient);
 		}
 		return instance;

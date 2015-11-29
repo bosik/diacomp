@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,12 +14,12 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.features.sync;
 
-import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
+import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.diary.DiaryWebService;
 import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
@@ -50,7 +50,7 @@ import android.util.Log;
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter
 {
-	private static final String		TAG		= SyncAdapter.class.getSimpleName();
+	private static final String		TAG	= SyncAdapter.class.getSimpleName();
 
 	private final AccountManager	mAccountManager;
 
@@ -87,12 +87,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 
 			ContentResolver contentResolver = getContext().getContentResolver();
 
-			final String serverURL = getContext().getString(R.string.server_url);
 			final String username = account.name;
 			final String password = mAccountManager.getPassword(account);
-			String timeoutS = getContext().getString(R.string.server_timeout);
-			int connectionTimeout = Integer.parseInt(timeoutS);
-			WebClient webClient = WebClient.getInstance(serverURL, username, password, connectionTimeout);
+			WebClient webClient = WebClientInternal.getInstance(getContext(), username, password);
 
 			syncResult.stats.numIoExceptions = 0;
 

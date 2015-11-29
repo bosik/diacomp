@@ -19,6 +19,7 @@
 package org.bosik.diacomp.android.backend.features.diary;
 
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
+import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import android.content.Context;
 import android.util.Log;
@@ -33,7 +34,7 @@ public class WebDiary
 		if (null == instance)
 		{
 			Log.i(TAG, "Web diary initialization...");
-			WebClient webClient = WebClient.getInstance(context);
+			WebClient webClient = WebClientInternal.getInstance(context);
 			instance = new DiaryWebService(webClient);
 		}
 		return instance;

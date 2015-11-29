@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.activities;
 
@@ -22,6 +22,7 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
+import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
@@ -260,10 +261,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		@Override
 		protected Boolean doInBackground(Void... params)
 		{
-			final int connectionTimeout = Integer.parseInt(getString(R.string.server_timeout));
-			final String serverURL = getString(R.string.server_url);
-
-			WebClient client = WebClient.getInstance(serverURL, mEmail, mPassword, connectionTimeout);
+			WebClient client = WebClientInternal.getInstance(ActivityLogin.this, mEmail, mPassword);
 
 			try
 			{
