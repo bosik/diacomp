@@ -396,11 +396,21 @@ public class Utils
 
 	public static String formatDateUTC(Date date)
 	{
+		if (date == null)
+		{
+			throw new IllegalArgumentException("date is null");
+		}
+
 		return FORMATTER_DATE_UTC.get().format(date);
 	}
 
 	public static String formatDateLocal(TimeZone timeZone, Date date)
 	{
+		if (date == null)
+		{
+			throw new IllegalArgumentException("date is null");
+		}
+
 		return getFormatDateLocal(timeZone).format(date);
 	}
 
@@ -435,16 +445,31 @@ public class Utils
 	 */
 	public static String formatTimeUTC(Date time)
 	{
+		if (time == null)
+		{
+			throw new IllegalArgumentException("time is null");
+		}
+
 		return FORMATTER_TIME_UTC.get().format(time);
 	}
 
 	public static String formatTimeLocal(TimeZone timeZone, Date time)
 	{
+		if (time == null)
+		{
+			throw new IllegalArgumentException("time is null");
+		}
+
 		return getFormatTimeLocal(timeZone).format(time);
 	}
 
 	public static String formatTimeLocalShort(TimeZone timeZone, Date time)
 	{
+		if (time == null)
+		{
+			throw new IllegalArgumentException("time is null");
+		}
+
 		return getFormatTimeLocalShort(timeZone).format(time);
 	}
 
