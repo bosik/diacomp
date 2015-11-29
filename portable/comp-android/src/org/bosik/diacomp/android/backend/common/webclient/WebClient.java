@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.common.webclient;
 
@@ -64,7 +64,7 @@ public class WebClient
 	private static final int	API_VERSION			= 20;
 	private static final String	ENCODING_UTF8		= "UTF-8";
 	private static final String	CODE_SPACE			= "%20";
-	private static final long	MIN_REQUEST_DELAY	= 100;								// msec
+	private static final long	MIN_REQUEST_DELAY	= 100 * Utils.NsecPerMsec;			// nsec
 
 	/* ================ FIELDS ================ */
 
@@ -131,14 +131,15 @@ public class WebClient
 
 	private synchronized void checkTimeout()
 	{
-		long now = System.currentTimeMillis();
-		if ((now - lastRequestTime) < MIN_REQUEST_DELAY)
+		long now = System.nanoTime();
+
+		if (now - lastRequestTime < MIN_REQUEST_DELAY)
 		{
-			Log.i(TAG,
-					String.format("Too many requests per second, sleeping for %d msec", MIN_REQUEST_DELAY
-							- (now - lastRequestTime)));
-			Utils.sleep(MIN_REQUEST_DELAY - (now - lastRequestTime));
+			long sleep = (MIN_REQUEST_DELAY - now + lastRequestTime) / Utils.NsecPerMsec;
+			Log.i(TAG, String.format("Too many requests per second, sleeping for %d msec", sleep));
+			Utils.sleep(sleep);
 		}
+
 		lastRequestTime = now;
 	}
 
