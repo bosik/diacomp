@@ -18,6 +18,7 @@
  */
 package org.bosik.diacomp.android.backend.common;
 
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
@@ -25,40 +26,48 @@ import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
 import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
 import org.bosik.diacomp.android.backend.features.search.TagServiceInternal;
+import org.bosik.diacomp.android.backend.features.sync.TimeServiceInternal;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.search.RelevantIndexator;
 import org.bosik.diacomp.core.services.search.TagService;
+import org.bosik.diacomp.core.utils.Utils;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
 public class Storage
 {
-	static final String			TAG				= Storage.class.getSimpleName();
+	public interface ServerTimeListener
+	{
+		void onServerTime(Date serverTime, Date localTime);
+	}
 
-	private static final int	TIMER_DELAY		= 2 * 1000;						// ms
-	private static final int	TIMER_INTERVAL	= 10 * 60 * 1000;				// ms
+	static final String			TAG						= Storage.class.getSimpleName();
 
-	private static boolean		timerSettedUp	= false;
+	private static final long	TIMER_DELAY				= 2 * Utils.MsecPerSec;			// ms
+	private static final long	TIMER_INTERVAL_HEAVY	= 10 * Utils.MsecPerMin;		// ms
+	private static final long	TIMER_INTERVAL_LIGHT	= 30 * Utils.MsecPerSec;		// ms
+
+	private static Timer		timerHeavy;
+	private static Timer		timerLight;
+
+	private static boolean		timerSettedUp			= false;
+	static ServerTimeListener	listener;
 
 	/**
 	 * Initializes the storage. Might be called sequentially
 	 * 
 	 * @param context
-	 * @param resolver
-	 * @param preferences
 	 */
-	public static void init(Context context, ContentResolver resolver, SharedPreferences preferences)
+	public static void init(final Context context)
 	{
-		// ErrorHandler.init(getWebClient(context));
-		setupBackgroundTimer(resolver);
+		setupBackgroundTimer(context);
 	}
 
-	private static synchronized void setupBackgroundTimer(final ContentResolver resolver)
+	private static synchronized void setupBackgroundTimer(final Context context)
 	{
 		if (timerSettedUp)
 		{
@@ -66,7 +75,7 @@ public class Storage
 		}
 		timerSettedUp = true;
 
-		TimerTask task = new TimerTask()
+		TimerTask taskHeavy = new TimerTask()
 		{
 			@Override
 			public void run()
@@ -78,8 +87,8 @@ public class Storage
 					{
 						/**/long time = System.currentTimeMillis();
 
-						relevantIndexation(resolver);
-						analyzeKoofs(resolver);
+						relevantIndexation(context.getContentResolver());
+						analyzeKoofs(context.getContentResolver());
 
 						/**/Log.d(TAG, "Backgrounds done in " + (System.currentTimeMillis() - time) + " ms");
 
@@ -89,7 +98,50 @@ public class Storage
 			}
 		};
 
-		new Timer().scheduleAtFixedRate(task, TIMER_DELAY, TIMER_INTERVAL);
+		TimerTask taskLight = new TimerTask()
+		{
+			@Override
+			public void run()
+			{
+				new AsyncTask<Void, Void, Date>()
+				{
+					@Override
+					protected Date doInBackground(Void... arg0)
+					{
+						long time = System.currentTimeMillis();
+						final Date serverTime = TimeServiceInternal.getInstance(context).getServerTime(true);
+						Log.v(TAG, String.format("Server time checked in %d msec", System.currentTimeMillis() - time));
+
+						return serverTime;
+					}
+
+					@Override
+					protected void onPostExecute(Date result)
+					{
+						if (listener != null && result != null)
+						{
+							listener.onServerTime(result, new Date());
+						}
+					};
+				}.execute();
+			}
+		};
+
+		if (timerHeavy != null)
+		{
+			timerHeavy.cancel();
+			timerHeavy.purge();
+		}
+		timerHeavy = new Timer();
+		timerHeavy.scheduleAtFixedRate(taskHeavy, TIMER_DELAY, TIMER_INTERVAL_HEAVY);
+
+		if (timerLight != null)
+		{
+			timerLight.cancel();
+			timerLight.purge();
+		}
+		timerLight = new Timer();
+		timerLight.scheduleAtFixedRate(taskLight, TIMER_DELAY, TIMER_INTERVAL_LIGHT);
 	}
 
 	static void relevantIndexation(ContentResolver resolver)
@@ -113,6 +165,11 @@ public class Storage
 		KoofServiceInternal.getInstance(resolver).update();
 
 		Log.v(TAG, String.format("Analyzing done in %d msec", System.currentTimeMillis() - time));
+	}
+
+	public static void setServerTimeListener(ServerTimeListener listener)
+	{
+		Storage.listener = listener;
 	}
 
 	// public static void syncDiary(String guid)

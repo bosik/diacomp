@@ -85,7 +85,10 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 	private Menu				cachedMenu;
 
 	private SharedPreferences	preferences;
-	DiaryService				localDiary;
+	DiaryService				localDiary;															// FIXME:
+																									// use
+																									// singleton
+																									// instead
 
 	private static boolean		timerSettedUp				= false;
 
@@ -108,7 +111,7 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 
 			PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 			preferences = PreferenceManager.getDefaultSharedPreferences(this);
-			Storage.init(this, getContentResolver(), preferences);
+			Storage.init(this);
 			localDiary = new DiaryLocalService(getContentResolver());
 
 			// Account sync

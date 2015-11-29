@@ -110,6 +110,13 @@
     <string name="preferences_personal">Personal</string>
     <string name="preferences_personal_target_bs">Target blood sugar, mmol/l</string>
     <string name="preferences_title">Preferences</string>
+    <string name="warning_time_zone">Your device time settings seems incorrect. Try changing timezone to %s.</string>
+    <string name="warning_time_delay_ahead_0">Your device clock is %d minutes ahead</string>
+    <string name="warning_time_delay_ahead_1">Your device clock is %d minutes ahead</string>
+    <string name="warning_time_delay_ahead_2">Your device clock is %d minutes ahead</string>
+    <string name="warning_time_delay_behind_0">Your device clock is %d minutes behind</string>
+    <string name="warning_time_delay_behind_1">Your device clock is %d minutes behind</string>
+    <string name="warning_time_delay_behind_2">Your device clock is %d minutes behind</string>
 
     <!-- ========================================================================= -->
 
@@ -142,4 +149,5 @@
     </string-array>
 
     <string name="title_activity_activity_graph">ActivityGraph</string>
-</resources>
+
+</resources>

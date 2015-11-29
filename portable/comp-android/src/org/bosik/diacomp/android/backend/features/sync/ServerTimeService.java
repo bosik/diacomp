@@ -25,9 +25,13 @@ import org.bosik.diacomp.core.utils.Utils;
 public class ServerTimeService
 {
 	// REST methods
-	private static final String	API_PREFERENCES	= "api/system/time";
+	private static final String	API_PREFERENCES			= "api/system/time";
+
+	private static final long	CACHE_EXPIRATION_TIME	= Utils.NsecPerMsec * Utils.MsecPerHour;	// ns
 
 	private final WebClient		webClient;
+	private Date				cachedServerTime;
+	private long				cachedDeviceOffset;													// ns
 
 	public ServerTimeService(WebClient webClient)
 	{
@@ -39,25 +43,45 @@ public class ServerTimeService
 		this.webClient = webClient;
 	}
 
+	private Date getServerTime()
+	{
+		// time-variant actions
+		long before = System.nanoTime();
+		String resp = webClient.get(API_PREFERENCES);
+		long after = System.nanoTime();
+
+		// time-invariant actions
+		Date serverTime = new Date(Utils.parseTimeUTC(resp).getTime() + (after - before) / Utils.NsecPerMsec / 2);
+
+		cachedServerTime = serverTime;
+		cachedDeviceOffset = after;
+
+		return serverTime;
+	}
+
 	/**
 	 * <b>Thread-blocking</b>. Fetches current server's time <i>at the moment method returns</i>.
 	 * Fail-soft.
 	 *
+	 * @param cacheAllowed
+	 *            If <code>true</code>, the time might be calculated using previously fetched server
+	 *            time; otherwise the server will be contacted
 	 * @return Server's time if available, <code>null</code> otherwise.
 	 */
-	public Date getServerTime()
+	public Date getServerTime(boolean cacheAllowed)
 	{
 		try
 		{
-			// time-variant actions
-			long before = System.nanoTime();
-			String resp = webClient.get(API_PREFERENCES);
-			long after = System.nanoTime();
+			if (cacheAllowed && cachedServerTime != null)
+			{
+				long elapsedTime = System.nanoTime() - cachedDeviceOffset;
+				if (elapsedTime < CACHE_EXPIRATION_TIME)
+				{
+					return new Date(cachedServerTime.getTime() + elapsedTime / Utils.NsecPerMsec);
+				}
+			}
 
-			// time-invariant actions
-			Date serverTime = Utils.parseTimeUTC(resp);
-			long shift = (after - before) / (1000000 * 2);
-			return new Date(serverTime.getTime() + shift);
+			return getServerTime();
 		}
 		catch (Exception e)
 		{

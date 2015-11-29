@@ -20,5 +20,6 @@
     <color name="diary_note_sel">#B3FFCA</color>
     <color name="diary_border">#C0C0C0</color>
     <color name="diary_border_sel">#000000</color>
+    <color name="warning_background">#F7CCDD</color>
 
 </resources>

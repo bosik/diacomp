@@ -108,6 +108,13 @@
     <string name="preferences_personal">Личные</string>
     <string name="preferences_personal_target_bs">Целевой сахар крови, ммоль/л</string>
     <string name="preferences_title">Настройки</string>
+    <string name="warning_time_zone">На вашем устройстве некорректные настройки времени. Попробуйте сменить часовой пояс на %s.</string>
+    <string name="warning_time_delay_ahead_0">Ваши часы спешат на %d минут</string>
+    <string name="warning_time_delay_ahead_1">Ваши часы спешат на %d минуту</string>
+    <string name="warning_time_delay_ahead_2">Ваши часы спешат на %d минуты</string>
+    <string name="warning_time_delay_behind_0">Ваши часы отстают на %d минут</string>
+    <string name="warning_time_delay_behind_1">Ваши часы отстают на %d минуту</string>
+    <string name="warning_time_delay_behind_2">Ваши часы отстают на %d минуты</string>
 
     <!-- Arrays -->
 
