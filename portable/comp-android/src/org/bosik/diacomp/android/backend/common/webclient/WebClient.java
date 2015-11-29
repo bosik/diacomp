@@ -74,6 +74,7 @@ public class WebClient
 	private String				server;
 	private long				lastRequestTime		= 0;
 
+	// FIXME: separate major / singleton logic
 	private static WebClient	webClient;
 
 	/* ================================ ROUTINES ================================ */
@@ -268,18 +269,16 @@ public class WebClient
 		ConnManagerParams.setTimeout(params, connectionTimeout);
 	}
 
-	public static WebClient getInstance(String serverURL, String username, String password, int connectionTimeout)
+	public static synchronized WebClient getInstance(String serverURL, String username, String password,
+			int connectionTimeout)
 	{
-		synchronized (WebClient.class)
+		if (webClient == null)
 		{
-			if (webClient == null)
-			{
-				webClient = new WebClient(connectionTimeout);
-			}
-			webClient.server = serverURL;
-			webClient.username = username;
-			webClient.password = password;
+			webClient = new WebClient(connectionTimeout);
 		}
+		webClient.server = serverURL;
+		webClient.username = username;
+		webClient.password = password;
 
 		return webClient;
 	}
