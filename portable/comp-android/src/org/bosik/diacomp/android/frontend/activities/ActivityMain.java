@@ -28,7 +28,7 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.Storage;
-import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.android.backend.features.preferences.device.DevicePreferences;
 import org.bosik.diacomp.android.frontend.fragments.FragmentBase;
 import org.bosik.diacomp.android.frontend.fragments.FragmentDiaryScroller;
@@ -85,10 +85,6 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 	private Menu				cachedMenu;
 
 	private SharedPreferences	preferences;
-	DiaryService				localDiary;															// FIXME:
-																									// use
-																									// singleton
-																									// instead
 
 	private static boolean		timerSettedUp				= false;
 
@@ -112,7 +108,6 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 			PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 			preferences = PreferenceManager.getDefaultSharedPreferences(this);
 			Storage.init(this);
-			localDiary = new DiaryLocalService(getContentResolver());
 
 			// Account sync
 			Account account = AccountUtils.getAccount(this);
@@ -405,7 +400,8 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 
 					final Date now = new Date();
 					long scanPeriod = Utils.SecPerDay;
-					List<Versioned<DiaryRecord>> records = PostprandUtils.findLastRecordsReversed(localDiary, now,
+					final DiaryService diary = LocalDiary.getInstance(getContentResolver());
+					List<Versioned<DiaryRecord>> records = PostprandUtils.findLastRecordsReversed(diary, now,
 							scanPeriod);
 
 					Integer timeAfterMeal = getTimeAfterMeal(records, now);
