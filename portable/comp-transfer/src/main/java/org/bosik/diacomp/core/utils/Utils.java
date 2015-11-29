@@ -53,6 +53,7 @@ public class Utils
 
 	// Time
 
+	public static final int								NsecPerMsec			= 1000000;
 	public static final int								MsecPerSec			= 1000;
 	public static final int								SecPerMin			= 60;
 	public static final int								MinPerHour			= 60;
@@ -64,7 +65,7 @@ public class Utils
 	public static final long							MsecPerMin			= MsecPerSec * SecPerMin;
 	public static final long							MsecPerHour			= MsecPerSec * SecPerMin * MinPerHour;
 	public static final long							MsecPerDay			= MsecPerSec * SecPerMin * MinPerHour
-																					* HourPerDay;
+			* HourPerDay;
 
 	// Epsilon values
 
@@ -103,7 +104,8 @@ public class Utils
 																				protected SimpleDateFormat initialValue()
 																				{
 																					SimpleDateFormat format = new SimpleDateFormat(
-																							FORMAT_DATE_TIME, Locale.US);
+																							FORMAT_DATE_TIME,
+																							Locale.US);
 																					format.setTimeZone(TIMEZONE_UTC);
 																					return format;
 																				}
