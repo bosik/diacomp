@@ -56,7 +56,8 @@ public class ServerTimeService
 
 			// time-invariant actions
 			Date serverTime = Utils.parseTimeUTC(resp);
-			return new Date(serverTime.getTime() + (after - before) * (1000000 / 2));
+			long shift = (after - before) / (1000000 * 2);
+			return new Date(serverTime.getTime() + shift);
 		}
 		catch (Exception e)
 		{
