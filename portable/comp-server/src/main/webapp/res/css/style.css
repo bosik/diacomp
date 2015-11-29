@@ -233,6 +233,7 @@ th {
 #diary-right-panel {
 	float: right;
 	width: 25%;
+	display: none;
 }
 
 #diary-main-panel {
