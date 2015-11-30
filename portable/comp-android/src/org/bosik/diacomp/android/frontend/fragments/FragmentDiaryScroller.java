@@ -20,13 +20,15 @@ package org.bosik.diacomp.android.frontend.fragments;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
-import org.bosik.diacomp.android.backend.common.Storage;
-import org.bosik.diacomp.android.backend.common.Storage.ServerTimeListener;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
+import org.bosik.diacomp.android.backend.features.sync.TimeServiceInternal;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorBlood;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorIns;
@@ -51,6 +53,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -66,7 +69,7 @@ import android.widget.TextView;
 
 public class FragmentDiaryScroller extends Fragment
 {
-	private static final String		TAG							= FragmentDiaryScroller.class.getSimpleName();
+	static final String				TAG							= FragmentDiaryScroller.class.getSimpleName();
 
 	// Constants
 	private static final int		DIALOG_BLOOD_CREATE			= 11;
@@ -82,6 +85,15 @@ public class FragmentDiaryScroller extends Fragment
 	private static final long		SCAN_FOR_BLOOD_FINGER		= 5 * Utils.SecPerDay;
 	private static final int		SCAN_FOR_BLOOD_BEFORE_MEAL	= 4 * Utils.SecPerHour;
 	private static final long		SCAN_FOR_INS_AROUND_MEAL	= 3 * Utils.SecPerHour;
+
+	/**
+	 * Time error triggering time zone warning, in minutes
+	 */
+	private static final int		LIMIT_TIMEZONE				= 30;
+	/**
+	 * Time error triggering offset warning, in minutes
+	 */
+	private static final int		LIMIT_OFFSET				= 10;
 
 	// Services
 	private DiaryService			diary;
@@ -126,6 +138,99 @@ public class FragmentDiaryScroller extends Fragment
 	{
 		super.onDestroy();
 		getActivity().getContentResolver().unregisterContentObserver(observer);
+	}
+
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+
+		new Timer().schedule(new TimerTask()
+		{
+			@Override
+			public void run()
+			{
+				new AsyncTask<Void, Void, Date>()
+				{
+					@Override
+					protected Date doInBackground(Void... arg0)
+					{
+						long time = System.currentTimeMillis();
+						final Date serverTime = TimeServiceInternal
+								.getInstance(FragmentDiaryScroller.this.getActivity()).getServerTime(true);
+						Log.v(TAG, String.format("Server time checked in %d msec", System.currentTimeMillis() - time));
+
+						return serverTime;
+					}
+
+					@Override
+					protected void onPostExecute(Date result)
+					{
+						if (result != null)
+						{
+							Log.v(TAG, "Server time: " + Utils.formatTimeUTC(result));
+
+							Date serverTime = result;
+							Date localTime = new Date();
+
+							Long offset = TimeUtils.guessTimeZoneOffset(serverTime, localTime);
+							if (offset != null)
+							{
+								int errorMin = (int) ((localTime.getTime() - serverTime.getTime()) / Utils.MsecPerMin);
+								if (Math.abs(errorMin) > LIMIT_TIMEZONE)
+								{
+									long offsetMin = offset / Utils.MsecPerMin;
+									String timeZone = String.format(Locale.US, "%+02d:%02d",
+											offsetMin / Utils.MinPerHour, offsetMin % Utils.MinPerHour);
+									String msg = String
+											.format(getActivity().getString(R.string.warning_time_zone, timeZone));
+									textWarningTime.setText(msg);
+									textWarningTime.setVisibility(View.VISIBLE);
+								}
+								else
+								{
+									if (Math.abs(errorMin) > LIMIT_OFFSET)
+									{
+										String f = null;
+
+										// FIXME: Values 11..14 will not be handled properly
+										switch (Math.abs(errorMin) % 10)
+										{
+											case 0:
+											case 5:
+											case 6:
+											case 7:
+											case 8:
+											case 9:
+												f = errorMin > 0 ? getString(R.string.warning_time_delay_ahead_0)
+														: getString(R.string.warning_time_delay_behind_0);
+												break;
+											case 1:
+												f = errorMin > 0 ? getString(R.string.warning_time_delay_ahead_1)
+														: getString(R.string.warning_time_delay_behind_1);
+												break;
+											case 2:
+											case 3:
+											case 4:
+												f = errorMin > 0 ? getString(R.string.warning_time_delay_ahead_2)
+														: getString(R.string.warning_time_delay_behind_2);
+												break;
+										}
+
+										textWarningTime.setText(String.format(f, Math.abs(errorMin)));
+										textWarningTime.setVisibility(View.VISIBLE);
+									}
+									else
+									{
+										textWarningTime.setVisibility(View.GONE);
+									}
+								}
+							}
+						}
+					};
+				}.execute();
+			}
+		}, 1000);
 	}
 
 	@Override
@@ -201,75 +306,6 @@ public class FragmentDiaryScroller extends Fragment
 				else if (record.getData() instanceof NoteRecord)
 				{
 					showNoteEditor(new Versioned<NoteRecord>(record), false);
-				}
-			}
-		});
-
-		Storage.setServerTimeListener(new ServerTimeListener()
-		{
-			/**
-			 * Time error triggering time zone warning, in minutes
-			 */
-			static final int	LIMIT_TIMEZONE	= 30;
-			/**
-			 * Time error triggering offset warning, in minutes
-			 */
-			static final int	LIMIT_OFFSET	= 10;
-
-			@Override
-			public void onServerTime(Date serverTime, Date localTime)
-			{
-				Long offset = TimeUtils.guessTimeZoneOffset(serverTime, localTime);
-				if (offset != null)
-				{
-					int errorMin = (int) ((localTime.getTime() - serverTime.getTime()) / Utils.MsecPerMin);
-					if (Math.abs(errorMin) > LIMIT_TIMEZONE)
-					{
-						long offsetMin = offset / Utils.MsecPerMin;
-						String timeZone = String.format("%+02d:%02d", offsetMin / Utils.MinPerHour,
-								offsetMin % Utils.MinPerHour);
-						String msg = String.format(getString(R.string.warning_time_zone, timeZone));
-						textWarningTime.setText(msg);
-						textWarningTime.setVisibility(View.VISIBLE);
-					}
-					else
-					{
-						if (Math.abs(errorMin) > LIMIT_OFFSET)
-						{
-							String f = null;
-
-							// Values 11..14 will not be handled properly
-							switch (Math.abs(errorMin) % 10)
-							{
-								case 0:
-								case 5:
-								case 6:
-								case 7:
-								case 8:
-								case 9:
-									f = errorMin > 0 ? getString(R.string.warning_time_delay_ahead_0)
-											: getString(R.string.warning_time_delay_behind_0);
-									break;
-								case 1:
-									f = errorMin > 0 ? getString(R.string.warning_time_delay_ahead_1)
-											: getString(R.string.warning_time_delay_behind_1);
-									break;
-								case 2:
-								case 3:
-								case 4:
-									f = errorMin > 0 ? getString(R.string.warning_time_delay_ahead_2)
-											: getString(R.string.warning_time_delay_behind_2);
-									break;
-							}
-
-							textWarningTime.setText(String.format(f, Math.abs(errorMin)));
-							textWarningTime.setVisibility(View.VISIBLE);
-						}
-						else
-						{
-							textWarningTime.setVisibility(View.GONE);
-						}
-					}
 				}
 			}
 		});
