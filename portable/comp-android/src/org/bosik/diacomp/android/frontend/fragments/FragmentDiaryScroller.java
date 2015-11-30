@@ -177,7 +177,8 @@ public class FragmentDiaryScroller extends Fragment
 							if (offset != null)
 							{
 								int errorMin = (int) ((localTime.getTime() - serverTime.getTime()) / Utils.MsecPerMin);
-								if (Math.abs(errorMin) > LIMIT_TIMEZONE)
+								int absErrorMin = Math.abs(errorMin);
+								if (absErrorMin > LIMIT_TIMEZONE)
 								{
 									long offsetMin = offset / Utils.MsecPerMin;
 									String timeZone = String.format(Locale.US, "%+02d:%02d",
@@ -189,35 +190,25 @@ public class FragmentDiaryScroller extends Fragment
 								}
 								else
 								{
-									if (Math.abs(errorMin) > LIMIT_OFFSET)
+									if (absErrorMin > LIMIT_OFFSET)
 									{
-										String f = null;
-
-										// FIXME: Values 11..14 will not be handled properly
-										switch (Math.abs(errorMin) % 10)
+										String s0, s1, s2;
+										if (errorMin > 0)
 										{
-											case 0:
-											case 5:
-											case 6:
-											case 7:
-											case 8:
-											case 9:
-												f = errorMin > 0 ? getString(R.string.warning_time_delay_ahead_0)
-														: getString(R.string.warning_time_delay_behind_0);
-												break;
-											case 1:
-												f = errorMin > 0 ? getString(R.string.warning_time_delay_ahead_1)
-														: getString(R.string.warning_time_delay_behind_1);
-												break;
-											case 2:
-											case 3:
-											case 4:
-												f = errorMin > 0 ? getString(R.string.warning_time_delay_ahead_2)
-														: getString(R.string.warning_time_delay_behind_2);
-												break;
+											s0 = getString(R.string.warning_time_delay_ahead_0);
+											s1 = getString(R.string.warning_time_delay_ahead_1);
+											s2 = getString(R.string.warning_time_delay_ahead_2);
+										}
+										else
+										{
+											s0 = getString(R.string.warning_time_delay_behind_0);
+											s1 = getString(R.string.warning_time_delay_behind_1);
+											s2 = getString(R.string.warning_time_delay_behind_2);
 										}
 
-										textWarningTime.setText(String.format(f, Math.abs(errorMin)));
+										String f = Utils.getNumberName(absErrorMin, s0, s1, s2);
+
+										textWarningTime.setText(String.format(f, absErrorMin));
 										textWarningTime.setVisibility(View.VISIBLE);
 									}
 									else
@@ -227,7 +218,7 @@ public class FragmentDiaryScroller extends Fragment
 								}
 							}
 						}
-					};
+					}
 				}.execute();
 			}
 		}, 1000);

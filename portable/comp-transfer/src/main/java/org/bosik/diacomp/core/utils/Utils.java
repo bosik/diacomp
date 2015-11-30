@@ -951,6 +951,61 @@ public class Utils
 		return (s == null) || (s.isEmpty());
 	}
 
+	/**
+	 * Determines proper name for numeral
+	 * 
+	 * @param value
+	 *            Any integer value
+	 * @param s0
+	 *            Noun for zero things
+	 * @param s1
+	 *            Noun for one thing
+	 * @param s2
+	 *            Noun for two things
+	 * @return Proper noun
+	 */
+	public static String getNumberName(int value, String s0, String s1, String s2)
+	{
+		value = Math.abs(value);
+
+		switch (value % 10)
+		{
+			case 0:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+			{
+				return s0;
+			}
+			case 1:
+			{
+				if (value > 10 && value < 15)
+				{
+					return s0;
+				}
+				else
+				{
+					return s1;
+				}
+			}
+			default:
+			// case 2:
+			// case 3:
+			// case 4:
+			{
+				if (value > 10 && value < 20)
+				{
+					return s0;
+				}
+				else
+				{
+					return s2;
+				}
+			}
+		}
+	};
 	// private static String formatArray(byte array[])
 	// {
 	// StringBuilder sb = new StringBuilder("{");
