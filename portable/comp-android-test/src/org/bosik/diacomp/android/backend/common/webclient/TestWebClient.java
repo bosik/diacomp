@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.common.webclient;
 
@@ -26,7 +26,7 @@ public class TestWebClient extends AndroidTestCase
 {
 	// private static final String TAG = TestWebClient.class.getSimpleName();
 
-	private static WebClient	webClient;
+	private static WebClient webClient;
 
 	/**
 	 * Constructs authorized WebClient
@@ -41,9 +41,8 @@ public class TestWebClient extends AndroidTestCase
 			String SERVER = test.getContext().getString(R.string.test_url);
 			String USERNAME = test.getContext().getString(R.string.test_username);
 			String PASSWORD = test.getContext().getString(R.string.test_password);
-			int TIMEOUT = 3000;
 
-			webClient = WebClient.getInstance(USERNAME, PASSWORD, SERVER, TIMEOUT);
+			webClient = WebClientInternal.getInstance(test.getContext(), USERNAME, PASSWORD);
 			try
 			{
 				webClient.login();
