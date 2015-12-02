@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.activities;
 
@@ -32,7 +32,6 @@ import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 public class ActivityPreferences extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
@@ -86,7 +85,6 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences preferences, String key)
 	{
-		Log.v(TAG, String.format("Preference '%s' changed", key));
 		updateDescription(preferences, key);
 		// Storage.applyPreference(sharedPreferences, key);
 
@@ -121,8 +119,6 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 
 	private void updateDescription(SharedPreferences sharedPreferences, String key)
 	{
-		Log.v(TAG, String.format("Updating description for preference '%s'", key));
-
 		android.preference.Preference p = findPreference(key);
 		if (p instanceof EditTextPreference)
 		{

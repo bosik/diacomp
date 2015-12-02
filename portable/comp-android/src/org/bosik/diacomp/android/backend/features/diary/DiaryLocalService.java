@@ -474,8 +474,6 @@ public class DiaryLocalService implements DiaryService
 
 				result.add(item);
 
-				Log.v(TAG, String.format("#DBF Extracted item #%s: %s", id, content));
-
 				if (limit > 0 && result.size() > limit)
 				{
 					throw new TooManyItemsException("Too many items");

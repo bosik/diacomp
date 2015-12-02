@@ -34,7 +34,6 @@ import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.utils.Utils;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -173,8 +172,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			public void onChange(List<FoodMassed> items)
 			{
 				modified = true;
-				Log.i(TAG, "Content changed");
-
 				entity.getData().clear();
 				for (FoodMassed item : mealEditor.getData())
 				{
@@ -383,7 +380,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		showMealContent();
 		showMealInfo();
 		modified = false;
-		Log.i(TAG, "Mod flag reseted");
 	}
 
 	@Override

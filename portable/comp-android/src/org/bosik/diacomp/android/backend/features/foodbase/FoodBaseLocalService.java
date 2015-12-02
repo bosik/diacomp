@@ -625,14 +625,14 @@ public class FoodBaseLocalService implements FoodBaseService
 
 				if (recordExists(item.getId()))
 				{
-					Log.v(TAG, "Updating item " + item.getId() + ": " + content);
+					Log.v(TAG, "Updating item " + item.getId());
 					String clause = DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
 					String[] args = { item.getId() };
 					resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, clause, args);
 				}
 				else
 				{
-					Log.v(TAG, "Inserting item " + item.getId() + ": " + content);
+					Log.v(TAG, "Inserting item " + item.getId());
 					newValues.put(DiaryContentProvider.COLUMN_FOODBASE_GUID, item.getId());
 					resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues);
 				}
