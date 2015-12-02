@@ -145,33 +145,45 @@ public class FragmentDiaryScroller extends Fragment
 	{
 		super.onResume();
 
+		class DatePair
+		{
+			public Date	localTime;
+			public Date	serverTime;
+
+			public DatePair(Date localTime, Date serverTime)
+			{
+				this.localTime = localTime;
+				this.serverTime = serverTime;
+			}
+		}
+
 		new Timer().schedule(new TimerTask()
 		{
 			@Override
 			public void run()
 			{
-				new AsyncTask<Void, Void, Date>()
+				new AsyncTask<Void, Void, DatePair>()
 				{
 					@Override
-					protected Date doInBackground(Void... arg0)
+					protected DatePair doInBackground(Void... arg0)
 					{
 						long time = System.currentTimeMillis();
 						final Date serverTime = TimeServiceInternal
 								.getInstance(FragmentDiaryScroller.this.getActivity()).getServerTime(true);
 						Log.v(TAG, String.format("Server time checked in %d msec", System.currentTimeMillis() - time));
 
-						return serverTime;
+						return new DatePair(new Date(), serverTime);
 					}
 
 					@Override
-					protected void onPostExecute(Date result)
+					protected void onPostExecute(DatePair pair)
 					{
-						if (result != null)
+						if (pair.serverTime != null)
 						{
-							Log.v(TAG, "Server time: " + Utils.formatTimeUTC(result));
+							Date serverTime = pair.serverTime;
+							Date localTime = pair.localTime;
 
-							Date serverTime = result;
-							Date localTime = new Date();
+							Log.v(TAG, "Server time: " + Utils.formatTimeUTC(serverTime));
 
 							Long offset = TimeUtils.guessTimeZoneOffset(serverTime, localTime);
 							if (offset != null)
