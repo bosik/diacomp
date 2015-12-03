@@ -25,22 +25,30 @@ import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
 import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.utils.Utils;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.GraphView.GraphViewData;
-import com.jjoe64.graphview.GraphView.LegendAlign;
-import com.jjoe64.graphview.GraphViewSeries;
-import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
-import com.jjoe64.graphview.LineGraphView;
+import android.widget.LinearLayout;
 
 public class FragmentCharts extends Fragment
 {
+	private static double max(List<DataPoint> values)
+	{
+		double max = 0;
+		for (DataPoint point : values)
+		{
+			max = Math.max(max, point.getY());
+		}
+
+		return max * 1.2;
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -53,39 +61,57 @@ public class FragmentCharts extends Fragment
 		// Widgets binding
 		View rootView = inflater.inflate(R.layout.activity_graph, container, false);
 
-		final GraphViewSeriesStyle styleK = new GraphViewSeriesStyle(Color.rgb(255, 128, 128), 4);
-		final GraphViewSeriesStyle styleQ = new GraphViewSeriesStyle(Color.rgb(128, 128, 255), 4);
-
 		// init example series data
 
-		List<GraphViewData> dataK = new ArrayList<GraphViewData>();
-		List<GraphViewData> dataQ = new ArrayList<GraphViewData>();
-		for (int time = 0; time < Utils.MinPerDay; time += 10)
+		List<DataPoint> dataK = new ArrayList<DataPoint>();
+		List<DataPoint> dataQ = new ArrayList<DataPoint>();
+		List<DataPoint> dataX = new ArrayList<DataPoint>();
+		for (int time = 0; time < Utils.MinPerDay; time += 30)
 		{
 			Koof koof = koofService.getKoof(time);
-			dataK.add(new GraphViewData(time, koof.getK()));
-			dataQ.add(new GraphViewData(time, koof.getQ()));
+			double t = (double) time / 60;
+			dataK.add(new DataPoint(t, koof.getK() * 12));
+			dataQ.add(new DataPoint(t, koof.getQ()));
+			dataX.add(new DataPoint(t, koof.getK() * 12 / koof.getQ()));
 		}
 
-		GraphViewSeries seriesK = new GraphViewSeries("Carbohydrate koof.", styleK,
-				dataK.toArray(new GraphViewData[dataK.size()]));
-		GraphViewSeries seriesQ = new GraphViewSeries("Insulin koof.", styleQ, dataQ.toArray(new GraphViewData[dataQ
-				.size()]));
+		LineGraphSeries<DataPoint> seriesK = new LineGraphSeries<DataPoint>(dataK.toArray(new DataPoint[dataK.size()]));
+		LineGraphSeries<DataPoint> seriesQ = new LineGraphSeries<DataPoint>(dataQ.toArray(new DataPoint[dataQ.size()]));
+		LineGraphSeries<DataPoint> seriesX = new LineGraphSeries<DataPoint>(dataX.toArray(new DataPoint[dataX.size()]));
 
-		GraphView graphView = new LineGraphView(getActivity(), "Graph");
-		graphView.addSeries(seriesK);
-		graphView.addSeries(seriesQ);
-		graphView.setManualYMinBound(0);
-		// graphView.setManualYMaxBound(1.0);
-		graphView.setScalable(true);
-		graphView.setScrollable(true);
-		graphView.setShowLegend(true);
-		graphView.setShowLegend(true);
-		graphView.setLegendAlign(LegendAlign.TOP);
-		// graphView.setLegendWidth(200);
+		seriesK.setColor(Color.rgb(255, 0, 0));
+		seriesQ.setColor(Color.rgb(0, 0, 255));
+		seriesX.setColor(Color.rgb(128, 128, 128));
 
-		RelativeLayout layout = (RelativeLayout) rootView.findViewById(R.id.layoutGraph);
-		layout.addView(graphView);
+		GraphView graphX = new GraphView(getActivity());
+		graphX.addSeries(seriesX);
+		graphX.getViewport().setXAxisBoundsManual(true);
+		graphX.getViewport().setYAxisBoundsManual(true);
+		graphX.getViewport().setMinX(0);
+		graphX.getViewport().setMaxX(24);
+		graphX.getViewport().setMinY(0);
+		graphX.getViewport().setMaxY(max(dataX));
+		((LinearLayout) rootView.findViewById(R.id.chartX)).addView(graphX);
+
+		GraphView graphK = new GraphView(getActivity());
+		graphK.addSeries(seriesK);
+		graphK.getViewport().setXAxisBoundsManual(true);
+		graphK.getViewport().setYAxisBoundsManual(true);
+		graphK.getViewport().setMinX(0);
+		graphK.getViewport().setMaxX(24);
+		graphK.getViewport().setMinY(0);
+		graphK.getViewport().setMaxY(max(dataK));
+		((LinearLayout) rootView.findViewById(R.id.chartK)).addView(graphK);
+
+		GraphView graphQ = new GraphView(getActivity());
+		graphQ.addSeries(seriesQ);
+		graphQ.getViewport().setXAxisBoundsManual(true);
+		graphQ.getViewport().setYAxisBoundsManual(true);
+		graphQ.getViewport().setMinX(0);
+		graphQ.getViewport().setMaxX(24);
+		graphQ.getViewport().setMinY(0);
+		graphQ.getViewport().setMaxY(max(dataQ));
+		((LinearLayout) rootView.findViewById(R.id.chartQ)).addView(graphQ);
 
 		return rootView;
 	}

@@ -98,6 +98,7 @@
     <string name="login_tip_sync_started">Синхронизация началась</string>
     <string name="login_title">Авторизация</string>
     <string name="main_option_bases">Продукты</string>
+    <string name="main_option_charts">Анализ</string>
     <string name="main_option_diary">Дневник</string>
     <string name="main_option_login">Вход</string>
     <string name="main_option_preferences">Настройки</string>

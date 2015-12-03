@@ -31,6 +31,7 @@ import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.android.backend.features.preferences.device.DevicePreferences;
 import org.bosik.diacomp.android.frontend.fragments.FragmentBase;
+import org.bosik.diacomp.android.frontend.fragments.FragmentCharts;
 import org.bosik.diacomp.android.frontend.fragments.FragmentDiaryScroller;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
@@ -71,9 +72,10 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 	static final String			TAG							= ActivityMain.class.getSimpleName();
 	// private static final int RESULT_SPEECH_TO_TEXT = 620;
 
-	private static final int	TAB_COUNT					= 2;
+	private static final int	TAB_COUNT					= 3;
 	private static final int	TAB_DIARY					= 0;
 	private static final int	TAB_BASE					= 1;
+	private static final int	TAB_CHARTS					= 2;
 
 	private static final int	CODE_LOGIN					= 0;
 
@@ -147,6 +149,10 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 						{
 							return new FragmentBase();
 						}
+						case TAB_CHARTS:
+						{
+							return new FragmentCharts();
+						}
 						default:
 						{
 							throw new IllegalArgumentException(String.format("Index %d is out of bounds", position));
@@ -166,6 +172,10 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 						case TAB_BASE:
 						{
 							return ActivityMain.this.getString(R.string.main_option_bases);
+						}
+						case TAB_CHARTS:
+						{
+							return ActivityMain.this.getString(R.string.main_option_charts);
 						}
 						default:
 						{
