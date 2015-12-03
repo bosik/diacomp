@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,9 +14,9 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
-package org.bosik.diacomp.android.frontend.activities;
+package org.bosik.diacomp.android.frontend.fragments;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,26 +25,33 @@ import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
 import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.utils.Utils;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphView.GraphViewData;
 import com.jjoe64.graphview.GraphView.LegendAlign;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
 import com.jjoe64.graphview.LineGraphView;
-import android.app.Activity;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.widget.RelativeLayout;
 
-public class ActivityGraph extends Activity
+public class FragmentCharts extends Fragment
 {
 	@Override
-	protected void onCreate(Bundle savedInstanceState)
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_graph);
+		// TODO: check if required
+		setHasOptionsMenu(false);
 
-		final KoofService koofService = KoofServiceInternal.getInstance(getContentResolver());
+		// services
+		final KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
+
+		// Widgets binding
+		View rootView = inflater.inflate(R.layout.activity_graph, container, false);
 
 		final GraphViewSeriesStyle styleK = new GraphViewSeriesStyle(Color.rgb(255, 128, 128), 4);
 		final GraphViewSeriesStyle styleQ = new GraphViewSeriesStyle(Color.rgb(128, 128, 255), 4);
@@ -65,7 +72,7 @@ public class ActivityGraph extends Activity
 		GraphViewSeries seriesQ = new GraphViewSeries("Insulin koof.", styleQ, dataQ.toArray(new GraphViewData[dataQ
 				.size()]));
 
-		GraphView graphView = new LineGraphView(this, "Graph");
+		GraphView graphView = new LineGraphView(getActivity(), "Graph");
 		graphView.addSeries(seriesK);
 		graphView.addSeries(seriesQ);
 		graphView.setManualYMinBound(0);
@@ -77,7 +84,9 @@ public class ActivityGraph extends Activity
 		graphView.setLegendAlign(LegendAlign.TOP);
 		// graphView.setLegendWidth(200);
 
-		RelativeLayout layout = (RelativeLayout) findViewById(R.id.layoutGraph);
+		RelativeLayout layout = (RelativeLayout) rootView.findViewById(R.id.layoutGraph);
 		layout.addView(graphView);
+
+		return rootView;
 	}
 }
