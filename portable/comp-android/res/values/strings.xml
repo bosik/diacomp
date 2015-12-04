@@ -22,6 +22,9 @@
     <string name="common_button_ok">OK</string>
     <string name="common_hint_mass">Mass</string>
     <string name="common_hint_search">Search&#8230;</string>
+    <string name="common_koof_x">Carb-to-insulin ratio</string>
+    <string name="common_koof_k">Carb correction factor</string>
+    <string name="common_koof_q">Insulin correction factor</string>
     <string name="common_rectype_blood">Blood sugar</string>
     <string name="common_rectype_ins">Injection</string>
     <string name="common_rectype_meal">Meal</string>

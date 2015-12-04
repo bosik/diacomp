@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutChartScroll"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:fadingEdgeLength="5dp" >
 
     <LinearLayout
         android:id="@+id/layoutGraph"
@@ -23,7 +24,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Потребность в инсулине, ЕД/ХЕ"
+                android:text="@string/common_koof_x"
                 android:textStyle="bold" />
 
             <Button
@@ -52,7 +53,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Углеводный коэффициент, ммоль/л/ХЕ"
+                android:text="@string/common_koof_k"
                 android:textStyle="bold" />
 
             <Button
@@ -81,7 +82,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Инсулиновый коэффициент, ммоль/л/ЕД"
+                android:text="@string/common_koof_q"
                 android:textStyle="bold" />
 
             <Button
