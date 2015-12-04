@@ -68,7 +68,7 @@ public class ServerTimeService
 	 *            time; otherwise the server will be contacted
 	 * @return Server's time if available, <code>null</code> otherwise.
 	 */
-	public Date getServerTime(boolean cacheAllowed)
+	public synchronized Date getServerTime(boolean cacheAllowed)
 	{
 		try
 		{
