@@ -18,6 +18,7 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.SortedMap;
@@ -65,29 +66,27 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+interface Page
+{
+	String getTitle();
+
+	Fragment getContent();
+}
+
 public class ActivityMain extends FragmentActivity implements OnSharedPreferenceChangeListener
 {
 	/* =========================== CONSTANTS ================================ */
 
 	static final String			TAG							= ActivityMain.class.getSimpleName();
 	// private static final int RESULT_SPEECH_TO_TEXT = 620;
-
-	private static final int	TAB_COUNT					= 3;
-	private static final int	TAB_DIARY					= 0;
-	private static final int	TAB_BASE					= 1;
-	private static final int	TAB_CHARTS					= 2;
-
 	private static final int	CODE_LOGIN					= 0;
-
 	private static final int	NOTIFICATION_ID_TIME_AFTER	= 1;
 
 	/* =========================== FIELDS ================================ */
 
 	ViewPager					mViewPager;
 	private Menu				cachedMenu;
-
 	private SharedPreferences	preferences;
-
 	private static boolean		timerSettedUp				= false;
 
 	/* =========================== METHODS ================================ */
@@ -127,61 +126,70 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 			}
 
 			// Frontend
+
+			final List<Page> pages = new ArrayList<Page>();
+			pages.add(new Page()
+			{
+				@Override
+				public String getTitle()
+				{
+					return ActivityMain.this.getString(R.string.main_option_diary);
+				}
+
+				@Override
+				public Fragment getContent()
+				{
+					return new FragmentDiaryScroller();
+				}
+			});
+			pages.add(new Page()
+			{
+				@Override
+				public String getTitle()
+				{
+					return ActivityMain.this.getString(R.string.main_option_bases);
+				}
+
+				@Override
+				public Fragment getContent()
+				{
+					return new FragmentBase();
+				}
+			});
+			pages.add(new Page()
+			{
+				@Override
+				public String getTitle()
+				{
+					return ActivityMain.this.getString(R.string.main_option_charts);
+				}
+
+				@Override
+				public Fragment getContent()
+				{
+					return new FragmentCharts();
+				}
+			});
+
 			FragmentStatePagerAdapter mDemoCollectionPagerAdapter = new FragmentStatePagerAdapter(
 					getSupportFragmentManager())
 			{
 				@Override
 				public int getCount()
 				{
-					return TAB_COUNT;
+					return pages.size();
 				}
 
 				@Override
 				public Fragment getItem(int position)
 				{
-					switch (position)
-					{
-						case TAB_DIARY:
-						{
-							return new FragmentDiaryScroller();
-						}
-						case TAB_BASE:
-						{
-							return new FragmentBase();
-						}
-						case TAB_CHARTS:
-						{
-							return new FragmentCharts();
-						}
-						default:
-						{
-							throw new IllegalArgumentException(String.format("Index %d is out of bounds", position));
-						}
-					}
+					return pages.get(position).getContent();
 				}
 
 				@Override
 				public CharSequence getPageTitle(int position)
 				{
-					switch (position)
-					{
-						case TAB_DIARY:
-						{
-							return ActivityMain.this.getString(R.string.main_option_diary);
-						}
-						case TAB_BASE:
-						{
-							return ActivityMain.this.getString(R.string.main_option_bases);
-						}
-						case TAB_CHARTS:
-						{
-							return ActivityMain.this.getString(R.string.main_option_charts);
-						}
-						default:
-						{
-							throw new IllegalArgumentException(String.format("Index %d is out of bounds", position));
-						}
-					}
+					return pages.get(position).getTitle();
 				}
 			};
 			mViewPager = (ViewPager) findViewById(R.id.pager);
