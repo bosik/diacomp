@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.services.analyze.entities.AnalyzeRec;
+import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.services.analyze.entities.PrimeRec;
 import org.bosik.diacomp.core.services.analyze.entities.WeightedTimePoint;
@@ -29,6 +30,14 @@ import org.bosik.merklesync.Versioned;
 
 public class AnalyzeCoreImpl implements AnalyzeCore
 {
+	private static final double	DISC_Q	= 0.0125;
+	private static final double	MIN_Q	= 1.50;
+	private static final double	MAX_Q	= 5.00 + (DISC_Q / 2);
+
+	private static final double	DISC_P	= 0.05;
+	private static final double	MIN_P	= 0.00;
+	private static final double	MAX_P	= 0.00 + (DISC_P / 2);
+
 	private class Bean
 	{
 		public double	p;
@@ -73,7 +82,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		}
 	}
 
-	private final double	TIME_WEIGHTS[]	= new double[Utils.HalfMinPerDay + 1];
+	private final double TIME_WEIGHTS[] = new double[Utils.HalfMinPerDay + 1];
 
 	public AnalyzeCoreImpl(double approxFactor)
 	{
@@ -186,6 +195,31 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 			{
 				// TODO: optimize
 				double curWeight = points[i].getWeight() * timeWeight(time, points[i].getTime());
+				summWeight += curWeight;
+				summ += points[i].getValue() * curWeight;
+			}
+		}
+
+		if (Math.abs(summWeight) < Utils.EPS)
+		{
+			return Double.NaN;
+		}
+		else
+		{
+			return summ / summWeight;
+		}
+	}
+
+	private static double approximateFull(WeightedTimePoint[] points)
+	{
+		double summ = 0.0;
+		double summWeight = 0.0;
+		for (int i = 0; i < points.length; i++)
+		{
+			if (!Double.isNaN(points[i].getValue()))
+			{
+				// TODO: optimize
+				double curWeight = points[i].getWeight();
 				summWeight += curWeight;
 				summ += points[i].getValue() * curWeight;
 			}
@@ -402,14 +436,6 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 			//throw new IllegalArgumentException("Recs list is empty");
 			return null;
 		}
-
-		final double DISC_Q = 0.0125;
-		final double MIN_Q = 1.50;
-		final double MAX_Q = 5.00 + (DISC_Q / 2);
-
-		final double DISC_P = 0.05;
-		final double MIN_P = 0.00;
-		final double MAX_P = 0.00 + (DISC_P / 2);
 
 		KoofList koofs = new KoofList();
 		WeightedTimePoint[] points;
