@@ -530,7 +530,6 @@ public class DiaryDayView extends LinearLayout
 	{
 		if (loadingBefore)
 		{
-			Log.w(TAG, "loadBefore() ignored");
 			return;
 		}
 
@@ -581,7 +580,6 @@ public class DiaryDayView extends LinearLayout
 	{
 		if (loadingAfter)
 		{
-			Log.w(TAG, "loadAfter() ignored");
 			return;
 		}
 
@@ -639,7 +637,7 @@ public class DiaryDayView extends LinearLayout
 		onRecordClickListener = l;
 	}
 
-	private void updatePostprand()
+	void updatePostprand()
 	{
 		// TODO: move hardcode
 		final int DEFAULT_AFFECT_TIME_INSULIN = 210;
