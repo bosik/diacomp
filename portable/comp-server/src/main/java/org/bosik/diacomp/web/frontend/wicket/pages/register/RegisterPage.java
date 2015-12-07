@@ -77,6 +77,7 @@ public class RegisterPage extends MasterPage
 		super.onInitialize();
 
 		final FeedbackPanel feedbackPanel = new FeedbackPanel("feedbackPanel");
+		feedbackPanel.setOutputMarkupId(true);
 		add(feedbackPanel);
 
 		Form<Void> form = new Form<Void>("regForm");
@@ -100,7 +101,7 @@ public class RegisterPage extends MasterPage
 
 		form.add(new AjaxFallbackButton("buttonRegister", form)
 		{
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
@@ -120,6 +121,7 @@ public class RegisterPage extends MasterPage
 				if (!validateCaptcha(secret, challenge))
 				{
 					feedbackPanel.error(getString("error.captcha"));
+					target.add(feedbackPanel);
 				}
 				else
 				{
@@ -136,15 +138,18 @@ public class RegisterPage extends MasterPage
 					catch (MessagingException e)
 					{
 						feedbackPanel.error(getString("fieldEmail.EmailAddressValidator"));
+						target.add(feedbackPanel);
 					}
 					catch (DuplicateException e)
 					{
 						feedbackPanel.error(getString("error.emailInUse"));
+						target.add(feedbackPanel);
 					}
 					catch (Exception e)
 					{
 						e.printStackTrace();
 						feedbackPanel.error(getString("error.common"));
+						target.add(feedbackPanel);
 					}
 				}
 			}
@@ -186,8 +191,8 @@ public class RegisterPage extends MasterPage
 		return false;
 	}
 
-	void sendActivationEmail(final String email, String activationKey) throws MessagingException, AddressException,
-			UnsupportedEncodingException
+	void sendActivationEmail(final String email, String activationKey)
+			throws MessagingException, AddressException, UnsupportedEncodingException
 	{
 		String hostAddress = Config.get(Config.KEY_EMAIL_SERVER);
 		String hostUsername = Config.get(Config.KEY_EMAIL_LOGIN);
