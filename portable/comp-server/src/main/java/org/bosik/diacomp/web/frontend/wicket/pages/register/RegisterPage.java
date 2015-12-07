@@ -106,51 +106,50 @@ public class RegisterPage extends MasterPage
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
 			{
-				final String antiBot = fieldFakeEmail.getModelObject();
-				if (antiBot != null && !antiBot.isEmpty())
+				try
 				{
-					form.clearInput();
-					return;
+					final String antiBot = fieldFakeEmail.getModelObject();
+					if (antiBot != null && !antiBot.isEmpty())
+					{
+						form.clearInput();
+						return;
+					}
+
+					final WebRequest request = (WebRequest)RequestCycle.get().getRequest();
+					final String challenge = request.getPostParameters().getParameterValue("g-recaptcha-response")
+							.toString();
+					final String secret = Config.get(Config.KEY_CAPTCHA_SECRET);
+
+					if (!validateCaptcha(secret, challenge))
+					{
+						feedbackPanel.error(getString("error.captcha"));
+						target.add(feedbackPanel);
+						return;
+					}
+
+					final String email = fieldEmail.getModelObject();
+					final String password = fieldPassword.getModelObject();
+					String activationKey = authService.register(email, password);
+					sendActivationEmail(email, activationKey);
+
+					Page succeedPage = new RegistrationSucceedPage(Model.of(email));
+					setResponsePage(succeedPage);
 				}
-
-				final WebRequest request = (WebRequest)RequestCycle.get().getRequest();
-				final String challenge = request.getPostParameters().getParameterValue("g-recaptcha-response")
-						.toString();
-				final String secret = Config.get(Config.KEY_CAPTCHA_SECRET);
-
-				if (!validateCaptcha(secret, challenge))
+				catch (MessagingException e)
 				{
-					feedbackPanel.error(getString("error.captcha"));
+					feedbackPanel.error(getString("fieldEmail.EmailAddressValidator"));
 					target.add(feedbackPanel);
 				}
-				else
+				catch (DuplicateException e)
 				{
-					try
-					{
-						final String email = fieldEmail.getModelObject();
-						final String password = fieldPassword.getModelObject();
-						String activationKey = authService.register(email, password);
-						sendActivationEmail(email, activationKey);
-
-						Page succeedPage = new RegistrationSucceedPage(Model.of(email));
-						setResponsePage(succeedPage);
-					}
-					catch (MessagingException e)
-					{
-						feedbackPanel.error(getString("fieldEmail.EmailAddressValidator"));
-						target.add(feedbackPanel);
-					}
-					catch (DuplicateException e)
-					{
-						feedbackPanel.error(getString("error.emailInUse"));
-						target.add(feedbackPanel);
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-						feedbackPanel.error(getString("error.common"));
-						target.add(feedbackPanel);
-					}
+					feedbackPanel.error(getString("error.emailInUse"));
+					target.add(feedbackPanel);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					feedbackPanel.error(getString("error.common"));
+					target.add(feedbackPanel);
 				}
 			}
 		});
