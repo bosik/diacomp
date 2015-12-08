@@ -21,17 +21,18 @@ package org.bosik.diacomp.android.backend.features.sync;
 import java.util.Date;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.core.utils.Utils;
+import android.os.SystemClock;
 
 public class ServerTimeService
 {
 	// REST methods
 	private static final String	API_PREFERENCES			= "api/system/time";
 
-	private static final long	CACHE_EXPIRATION_TIME	= Utils.NsecPerMsec * Utils.MsecPerHour;	// ns
+	private static final long	CACHE_EXPIRATION_TIME	= Utils.MsecPerHour;	// ms
 
 	private final WebClient		webClient;
 	private Date				cachedServerTime;
-	private long				cachedDeviceOffset;													// ns
+	private long				cachedDeviceOffset;								// ms
 
 	public ServerTimeService(WebClient webClient)
 	{
@@ -46,12 +47,12 @@ public class ServerTimeService
 	private Date getServerTime()
 	{
 		// time-variant actions
-		long before = System.nanoTime();
+		long before = SystemClock.elapsedRealtime();
 		String resp = webClient.get(API_PREFERENCES);
-		long after = System.nanoTime();
+		long after = SystemClock.elapsedRealtime();
 
 		// time-invariant actions
-		Date serverTime = new Date(Utils.parseTimeUTC(resp).getTime() + (after - before) / Utils.NsecPerMsec / 2);
+		Date serverTime = new Date(Utils.parseTimeUTC(resp).getTime() + (after - before) / 2);
 
 		cachedServerTime = serverTime;
 		cachedDeviceOffset = after;
@@ -74,10 +75,10 @@ public class ServerTimeService
 		{
 			if (cacheAllowed && cachedServerTime != null)
 			{
-				long elapsedTime = System.nanoTime() - cachedDeviceOffset;
+				long elapsedTime = SystemClock.elapsedRealtime() - cachedDeviceOffset;
 				if (elapsedTime < CACHE_EXPIRATION_TIME)
 				{
-					return new Date(cachedServerTime.getTime() + elapsedTime / Utils.NsecPerMsec);
+					return new Date(cachedServerTime.getTime() + elapsedTime);
 				}
 			}
 
