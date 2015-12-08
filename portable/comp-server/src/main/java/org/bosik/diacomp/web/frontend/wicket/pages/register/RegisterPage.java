@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.pages.register;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +34,11 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.wicket.Page;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxFallbackButton;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.form.PasswordTextField;
@@ -47,6 +51,7 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.time.Duration;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
@@ -61,10 +66,16 @@ import org.json.JSONObject;
 
 public class RegisterPage extends MasterPage
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long		serialVersionUID	= 1L;
 
 	@SpringBean
-	AuthService					authService;
+	AuthService						authService;
+
+	FeedbackPanel					feedbackPanel;
+	AjaxFallbackButton				buttonRegister;
+	WebMarkupContainer				progressSpinner;
+	AjaxSelfUpdatingTimerBehavior	progressBehavior;
+	Progress						progress;
 
 	public RegisterPage(PageParameters parameters)
 	{
@@ -76,9 +87,52 @@ public class RegisterPage extends MasterPage
 	{
 		super.onInitialize();
 
-		final FeedbackPanel feedbackPanel = new FeedbackPanel("feedbackPanel");
+		feedbackPanel = new FeedbackPanel("feedbackPanel");
 		feedbackPanel.setOutputMarkupId(true);
 		add(feedbackPanel);
+
+		final WebMarkupContainer progressContainer = new WebMarkupContainer("progressContainer");
+		progressContainer.setOutputMarkupId(true);
+		add(progressContainer);
+
+		progressBehavior = new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1))
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void onPostProcessTarget(AjaxRequestTarget target)
+			{
+				if (progress.isRunning())
+				{
+					progressSpinner.setVisible(true);
+				}
+				else
+				{
+					progressSpinner.setVisible(false);
+					progressBehavior.stop(null);
+					buttonRegister.setEnabled(true);
+					target.add(buttonRegister);
+
+					if (progress.isSuccess())
+					{
+						Page succeedPage = new RegistrationSucceedPage(Model.of(progress.getMessage()));
+						setResponsePage(succeedPage);
+					}
+					else
+					{
+						feedbackPanel.error(progress.getMessage());
+						target.add(feedbackPanel);
+					}
+				}
+			}
+		};
+		progressBehavior.stop(null);
+		progressContainer.add(progressBehavior);
+
+		progressSpinner = new WebMarkupContainer("progressSpinner");
+		progressSpinner.setOutputMarkupId(true);
+		progressSpinner.setVisible(false);
+		progressContainer.add(progressSpinner);
 
 		Form<Void> form = new Form<Void>("regForm");
 		form.setOutputMarkupId(true);
@@ -99,60 +153,88 @@ public class RegisterPage extends MasterPage
 
 		form.add(new BookmarkablePageLink<Void>("linkLicense", LicensePage.class));
 
-		form.add(new AjaxFallbackButton("buttonRegister", form)
+		buttonRegister = new AjaxFallbackButton("buttonRegister", form)
 		{
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
 			{
-				try
+				final String antiBot = fieldFakeEmail.getModelObject();
+				if (antiBot != null && !antiBot.isEmpty())
 				{
-					final String antiBot = fieldFakeEmail.getModelObject();
-					if (antiBot != null && !antiBot.isEmpty())
+					form.clearInput();
+					return;
+				}
+
+				final WebRequest request = (WebRequest)RequestCycle.get().getRequest();
+				final String challenge = request.getPostParameters().getParameterValue("g-recaptcha-response")
+						.toString();
+				final String secret = Config.get(Config.KEY_CAPTCHA_SECRET);
+
+				final String MSG_ERROR_CAPTCHA = RegisterPage.this.getString("error.captcha");
+				final String MSG_ERROR_EMAIL = RegisterPage.this.getString("error.wrongEmail");
+				final String MSG_ERROR_DUPLICATION = RegisterPage.this.getString("error.emailInUse");
+				final String MSG_ERROR_COMON = RegisterPage.this.getString("error.common");
+
+				final Url context = Url.parse(getRequest().getContextPath());
+				final String appUrlRaw = getRequestCycle().getUrlRenderer().renderFullUrl(context);
+				final String appUrl = appUrlRaw.endsWith("/") ? appUrlRaw : appUrlRaw + "/";
+				final String bodyPattern = getString("email.body");
+				final String title = getString("email.title");
+				final String sender = getString("email.sender");
+
+				progressBehavior.restart(target);
+				buttonRegister.setEnabled(false);
+				progressSpinner.setVisible(true);
+				Session.get().getFeedbackMessages().clear();
+				target.add(buttonRegister, progressSpinner, feedbackPanel);
+
+				new Thread()
+				{
+					@Override
+					public void run()
 					{
-						form.clearInput();
-						return;
+						try
+						{
+							progress = new Progress();
+							progress.setRunning(true);
+
+							if (!validateCaptcha(secret, challenge))
+							{
+								progress.fail(MSG_ERROR_CAPTCHA);
+								return;
+							}
+
+							String email = fieldEmail.getModelObject();
+							String password = fieldPassword.getModelObject();
+							String activationKey = authService.register(email, password);
+
+							String activationLink = String.format("%sactivate?key=%s", appUrl, activationKey);
+							String body = String.format(bodyPattern, activationLink, activationLink);
+							sendActivationEmail(email, title, body, sender);
+
+							progress.success(email);
+						}
+						catch (MessagingException e)
+						{
+							progress.fail(MSG_ERROR_EMAIL);
+						}
+						catch (DuplicateException e)
+						{
+							progress.fail(MSG_ERROR_DUPLICATION);
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+							progress.fail(MSG_ERROR_COMON);
+						}
 					}
-
-					final WebRequest request = (WebRequest)RequestCycle.get().getRequest();
-					final String challenge = request.getPostParameters().getParameterValue("g-recaptcha-response")
-							.toString();
-					final String secret = Config.get(Config.KEY_CAPTCHA_SECRET);
-
-					if (!validateCaptcha(secret, challenge))
-					{
-						feedbackPanel.error(getString("error.captcha"));
-						target.add(feedbackPanel);
-						return;
-					}
-
-					final String email = fieldEmail.getModelObject();
-					final String password = fieldPassword.getModelObject();
-					String activationKey = authService.register(email, password);
-					sendActivationEmail(email, activationKey);
-
-					Page succeedPage = new RegistrationSucceedPage(Model.of(email));
-					setResponsePage(succeedPage);
-				}
-				catch (MessagingException e)
-				{
-					feedbackPanel.error(getString("fieldEmail.EmailAddressValidator"));
-					target.add(feedbackPanel);
-				}
-				catch (DuplicateException e)
-				{
-					feedbackPanel.error(getString("error.emailInUse"));
-					target.add(feedbackPanel);
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-					feedbackPanel.error(getString("error.common"));
-					target.add(feedbackPanel);
-				}
+				}.start();
 			}
-		});
+		};
+		buttonRegister.setOutputMarkupId(true);
+		form.add(buttonRegister);
 	}
 
 	protected static boolean validateCaptcha(String secret, String response)
@@ -186,31 +268,72 @@ public class RegisterPage extends MasterPage
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 		}
 		return false;
 	}
 
-	void sendActivationEmail(final String email, String activationKey)
+	static void sendActivationEmail(String email, String title, String body, String senderName)
 			throws MessagingException, AddressException, UnsupportedEncodingException
 	{
 		String hostAddress = Config.get(Config.KEY_EMAIL_SERVER);
 		String hostUsername = Config.get(Config.KEY_EMAIL_LOGIN);
 		String hostPassword = Config.get(Config.KEY_EMAIL_PASSWORD);
 
-		Url context = Url.parse(getRequest().getContextPath());
-		String appURL = getRequestCycle().getUrlRenderer().renderFullUrl(context);
-
-		if (!appURL.endsWith("/"))
-		{
-			appURL = appURL + "/";
-		}
-
-		String activationLink = String.format("%sactivate?key=%s", appURL, activationKey);
-		String senderName = getString("email.sender");
-		String title = getString("email.title");
-		String body = String.format(getString("email.body"), activationLink, activationLink);
-
 		EmailSender emailSender = new SMTPEmailSender(hostAddress, hostUsername, hostPassword);
 		emailSender.send(title, body, new InternetAddress(hostUsername, senderName), new InternetAddress(email));
+	}
+}
+
+class Progress implements Serializable
+{
+	private static final long	serialVersionUID	= 1L;
+
+	private boolean				running;
+	private String				message;
+	private boolean				success;
+
+	public synchronized void success(String message)
+	{
+		this.running = false;
+		this.message = message;
+		this.success = true;
+	}
+
+	public synchronized void fail(String message)
+	{
+		this.running = false;
+		this.message = message;
+		this.success = false;
+	}
+
+	public boolean isRunning()
+	{
+		return running;
+	}
+
+	public void setRunning(boolean running)
+	{
+		this.running = running;
+	}
+
+	public String getMessage()
+	{
+		return message;
+	}
+
+	public void setMessage(String message)
+	{
+		this.message = message;
+	}
+
+	public boolean isSuccess()
+	{
+		return success;
+	}
+
+	public void setSuccess(boolean success)
+	{
+		this.success = success;
 	}
 }

@@ -99,6 +99,13 @@ li.feedbackPanelERROR {
 					</div>
 				</fieldset>
 			</form>
+			<div wicket:id="progressContainer">
+				<div wicket:id="progressSpinner">
+					<img src="res/img/status-progress.gif"
+						style="width: 26px; margin-right: 10px;"> <span><wicket:message
+							key="text.processing"></wicket:message></span>
+				</div>
+			</div>
 			<div class="register-row">
 				<div wicket:id="feedbackPanel"
 					class="register-column-main invalid-credentials"></div>
