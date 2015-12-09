@@ -394,25 +394,28 @@ public class FragmentDiaryScroller extends Fragment
 				entity = new Versioned<MealRecord>(rec);
 			}
 
-			BloodRecord prevBlood = PostprandUtils.findLastBlood(diary, entity.getData().getTime(),
+			BloodRecord bloodBase = PostprandUtils.findLastBlood(diary, entity.getData().getTime(),
 					SCAN_FOR_BLOOD_BEFORE_MEAL, true);
-			Double bloodBeforeMeal = prevBlood == null ? null : prevBlood.getValue();
+			BloodRecord bloodLast = PostprandUtils.findLastBlood(diary, entity.getData().getTime(),
+					SCAN_FOR_BLOOD_BEFORE_MEAL, false);
+			Double bloodBaseValue = bloodBase == null ? null : bloodBase.getValue();
+			Double bloodLastValue = bloodLast == null ? null : bloodLast.getValue();
+			Double bloodTarget = preferences.getDoubleValue(Preference.TARGET_BS);
 			InsRecord insRecord = PostprandUtils.findNearestInsulin(diary, entity.getData().getTime(),
 					SCAN_FOR_INS_AROUND_MEAL);
 			Double insInjected = insRecord == null ? null : insRecord.getValue();
 
-			Log.d(TAG, insRecord == null ? "insRecord == null" : "insRecord != null");
-			Log.d(TAG, "insInjected: " + insInjected);
-
 			Intent intent = new Intent(getActivity(), ActivityEditorMeal.class);
 			intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
 			intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
-			if (bloodBeforeMeal != null)
+			if (bloodBaseValue != null)
 			{
-				intent.putExtra(ActivityEditorMeal.FIELD_BS_BEFORE_MEAL, bloodBeforeMeal);
+				intent.putExtra(ActivityEditorMeal.FIELD_BS_BASE, bloodBaseValue);
 			}
-
-			Double bloodTarget = preferences.getDoubleValue(Preference.TARGET_BS);
+			if (bloodLastValue != null)
+			{
+				intent.putExtra(ActivityEditorMeal.FIELD_BS_LAST, bloodLastValue);
+			}
 
 			intent.putExtra(ActivityEditorMeal.FIELD_BS_TARGET, bloodTarget);
 			intent.putExtra(ActivityEditorMeal.FIELD_INS_INJECTED, insInjected);
