@@ -33,6 +33,7 @@ import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.utils.Utils;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Menu;
@@ -57,6 +58,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 
 	// FIXME: hardcoded BS value
 	private static final double	BS_HYPOGLYCEMIA		= 3.8;
+	private static final double	CARB_COLOR_LIMIT	= 1.0;
 
 	// data
 	boolean						modified;
@@ -323,13 +325,17 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			textMealExpectedBs.setText(String.format("%.1f %s", expectedBS, captionMmol));
 
 			double shiftedCarbs = (prots * koof.getP() + deltaBS) / koof.getK() - carbs;
-			if (shiftedCarbs < 0)
+			if (shiftedCarbs < -CARB_COLOR_LIMIT)
 			{
 				textMealShiftedCarbsHypo.setTextColor(getResources().getColor(R.color.meal_correction_negative));
 			}
-			else
+			else if (shiftedCarbs > CARB_COLOR_LIMIT)
 			{
 				textMealShiftedCarbsHypo.setTextColor(getResources().getColor(R.color.meal_correction_positive));
+			}
+			else
+			{
+				textMealShiftedCarbsHypo.setTextColor(Color.BLACK);
 			}
 			textMealShiftedCarbsHypo.setText(Utils.formatDoubleSigned(shiftedCarbs) + " " + captionGramm);
 		}
@@ -359,10 +365,13 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 				if (expectedBS > BS_HYPOGLYCEMIA)
 				{
 					textMealExpectedBs.setText(String.format("%.1f %s", expectedBS, captionMmol));
+					// textMealExpectedBs.setTextColor(Color.BLACK);
 				}
 				else
 				{
 					textMealExpectedBs.setText(getString(R.string.editor_meal_label_expected_bs_hypoglycemia));
+					// TO DO create separate style for warnings
+					// textMealExpectedBs.setTextColor(getResources().getColor(R.color.meal_correction_negative));
 				}
 			}
 			else
@@ -399,13 +408,17 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 				layoutShifted.setVisibility(View.VISIBLE);
 
 				double shiftedCarbs = (insInjected * koof.getQ() - prots * koof.getP() + deltaBS) / koof.getK() - carbs;
-				if (shiftedCarbs < 0)
+				if (shiftedCarbs < -CARB_COLOR_LIMIT)
 				{
 					textMealShiftedCarbs.setTextColor(getResources().getColor(R.color.meal_correction_negative));
 				}
-				else
+				else if (shiftedCarbs > CARB_COLOR_LIMIT)
 				{
 					textMealShiftedCarbs.setTextColor(getResources().getColor(R.color.meal_correction_positive));
+				}
+				else
+				{
+					textMealShiftedCarbsHypo.setTextColor(Color.BLACK);
 				}
 				textMealShiftedCarbs.setText(Utils.formatDoubleSigned(shiftedCarbs) + " " + captionGramm);
 
