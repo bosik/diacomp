@@ -28,6 +28,7 @@ import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
+import org.bosik.diacomp.android.backend.features.sync.ServerTimeService;
 import org.bosik.diacomp.android.backend.features.sync.TimeServiceInternal;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorBlood;
@@ -56,6 +57,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -69,7 +71,7 @@ import android.widget.TextView;
 
 public class FragmentDiaryScroller extends Fragment
 {
-	static final String				TAG							= FragmentDiaryScroller.class.getSimpleName();
+	private static final String		TAG							= FragmentDiaryScroller.class.getSimpleName();
 
 	// Constants
 	private static final int		DIALOG_BLOOD_CREATE			= 11;
@@ -167,11 +169,9 @@ public class FragmentDiaryScroller extends Fragment
 					@Override
 					protected DatePair doInBackground(Void... arg0)
 					{
-						long time = System.currentTimeMillis();
-						final Date serverTime = TimeServiceInternal
-								.getInstance(FragmentDiaryScroller.this.getActivity()).getServerTime(true);
-						Log.v(TAG, String.format("Server time checked in %d msec", System.currentTimeMillis() - time));
-
+						FragmentActivity context = FragmentDiaryScroller.this.getActivity();
+						ServerTimeService service = TimeServiceInternal.getInstance(context);
+						Date serverTime = service.getServerTime(true);
 						return new DatePair(new Date(), serverTime);
 					}
 
@@ -182,8 +182,6 @@ public class FragmentDiaryScroller extends Fragment
 						{
 							Date serverTime = pair.serverTime;
 							Date localTime = pair.localTime;
-
-							Log.v(TAG, "Server time: " + Utils.formatTimeUTC(serverTime));
 
 							Long offset = TimeUtils.guessTimeZoneOffset(serverTime, localTime);
 							if (offset != null)
