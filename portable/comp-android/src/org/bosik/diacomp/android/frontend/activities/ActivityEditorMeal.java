@@ -44,21 +44,27 @@ import android.widget.TextView;
 
 public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 {
-	public static final String	TAG						= ActivityEditorMeal.class.getSimpleName();
 
-	public static final String	FIELD_BS_BEFORE_MEAL	= "bosik.pack.bs.beforeMeal";
-	public static final String	FIELD_BS_TARGET			= "bosik.pack.bs.target";
-	public static final String	FIELD_INS_INJECTED		= "bosik.pack.insInjected";
+	public static final String	TAG					= ActivityEditorMeal.class.getSimpleName();
+
+	public static final String	FIELD_BS_BASE		= "bosik.pack.bs.base";
+	public static final String	FIELD_BS_LAST		= "bosik.pack.bs.last";
+	public static final String	FIELD_BS_TARGET		= "bosik.pack.bs.target";
+	public static final String	FIELD_INS_INJECTED	= "bosik.pack.insInjected";
 
 	private KoofService			koofService;
 
+	// FIXME: hardcoded BS value
+	private static final double	BS_HYPOGLYCEMIA		= 3.8;
+
 	// data
 	boolean						modified;
-	private Double				bsBeforeMeal;
+	private Double				bsBase;
+	private Double				bsLast;
 	private Double				bsTarget;
 	Double						insInjected;
 
-	boolean						correctBs				= true;
+	boolean						correctBs			= true;
 
 	// components
 	private Button				buttonTime;
@@ -72,6 +78,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private LinearLayout		layoutShifted;
 	private TextView			textMealCurrentDosage;
 	private TextView			textMealShiftedCarbs;
+	private TextView			textMealShiftedCarbsHypo;
 	private TextView			textMealShiftedDosage;
 	private TextView			textMealExpectedBs;
 	Button						buttonCorrection;
@@ -140,6 +147,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		layoutShifted = (LinearLayout) findViewById(R.id.layoutMealShifted);
 		textMealCurrentDosage = (TextView) findViewById(R.id.textMealCurrentDosage);
 		textMealShiftedCarbs = (TextView) findViewById(R.id.textMealShiftedCarbs);
+		textMealShiftedCarbsHypo = (TextView) findViewById(R.id.textMealShiftedCarbsHypo);
 		textMealShiftedDosage = (TextView) findViewById(R.id.textMealShiftedDosage);
 		textMealExpectedBs = (TextView) findViewById(R.id.textMealExpectedBs);
 		buttonCorrection = (Button) findViewById(R.id.buttonMealCorrection);
@@ -265,91 +273,147 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 
 	void showMealInfo()
 	{
-		// insulin dosage info
+		// | Base | Last | Mod | BaseBS |
+		// |------|------|-----|--------|
+		// | ---- | ---- | Std | target | Dosage = carbs * k / q
+		// | ---- | hypo | Hyp | lastBS | Delta_carbs = (BS_target - BS_last) / k <------------
+		// | ---- | belw | Std | target | Dosage = carbs * k / q
+		// | ---- | abov | Std | target | Dosage = carbs * k / q
+		// | hypo | ---- | Std | baseBS |
+		// | hypo | hypo | Hyp | lastBS | Delta_carbs = (BS_target - BS_last) / k <------------
+		// | hypo | belw | Std | baseBS |
+		// | hypo | abov | Std | baseBS |
+		// | belw | ---- | Std | baseBS |
+		// | belw | hypo | Hyp | lastBS | Delta_carbs = (BS_target - BS_last) / k <------------
+		// | belw | belw | Std | baseBS |
+		// | belw | abov | Std | baseBS |
+		// | abov | ---- | Std | baseBS |
+		// | abov | hypo | Hyp | lastBS | Delta_carbs = (BS_target - BS_last) / k <------------
+		// | abov | belw | Std | baseBS |
+		// | abov | abov | Std | baseBS |
 
+		// Legend:
+		// B - base BS
+		// L - last BS
+		// M - mode
+		// - - no BS
+		// h - hypoglycemic BS (0..BS_HYPOGLYCEMIA)
+		// b - BS below target (BS_HYPOGLYCEMIA..BS_TARGET)
+		// a - BS above target (BS_TARGET..)
+
+		// commons
 		int minutesTime = Utils.getDayMinutesUTC(entity.getData().getTime());
 		Koof koof = koofService.getKoof(minutesTime);
-
-		double deltaBS = 0.0;
-
-		if (bsBeforeMeal != null && bsTarget != null)
-		{
-			if (correctBs)
-			{
-				deltaBS = bsTarget - bsBeforeMeal;
-			}
-		}
-
 		double carbs = entity.getData().getCarbs();
 		double prots = entity.getData().getProts();
 
-		Double expectedBS = bsBeforeMeal == null ? null
-				: bsBeforeMeal + (carbs * koof.getK()) + (prots * koof.getP()) - (insInjected * koof.getQ());
+		double deltaBS = 0.0;
 
-		if (expectedBS != null)
+		if (bsLast != null && bsLast < BS_HYPOGLYCEMIA && (bsBase == null || Math.abs(bsBase - bsLast) > Utils.EPS))
 		{
-			// FIXME: hardcoded BS value
-			if (expectedBS > 1.5)
-			{
-				textMealExpectedBs.setText(String.format("%.1f %s", expectedBS, captionMmol));
-			}
-			else
-			{
-				textMealExpectedBs.setText(getString(R.string.editor_meal_label_expected_bs_hypoglycemia));
-			}
-		}
-		else
-		{
-			textMealExpectedBs.setText("?");
-		}
+			// Hypoglygemic mode
+			findViewById(R.id.mealRowInsulin).setVisibility(View.GONE);
+			findViewById(R.id.mealRowCarbs).setVisibility(View.VISIBLE);
 
-		// textMealStatProts.setText(String.format("%s %.1f", captionProts,
-		// entity.getData().getProts()));
-		// textMealStatFats.setText(String.format("%s %.1f", captionFats,
-		// entity.getData().getFats()));
-		// textMealStatCarbs.setText(String.format("%s %.1f", captionCarbs,
-		// entity.getData().getCarbs()));
-		// textMealStatValue.setText(String.format("%s %.1f", captionValue,
-		// entity.getData().getValue()));
-		// textMealStatDosage.setText(String.format("%.1f %s", insInjected, captionDose));
+			deltaBS = bsTarget - bsLast;
 
-		// current dosage
+			Double expectedBS = bsLast + (carbs * koof.getK()) + (prots * koof.getP());
 
-		double currentDose = (-deltaBS + carbs * koof.getK() + (prots * koof.getP())) / koof.getQ();
-		textMealCurrentDosage.setText(String.format("%.1f %s", currentDose, captionDose));
+			textMealExpectedBs.setText(String.format("%.1f %s", expectedBS, captionMmol));
 
-		// shifted dosage
-
-		if (insInjected > Utils.EPS)
-		{
-			layoutShifted.setVisibility(View.VISIBLE);
-
-			double shiftedCarbs = (insInjected * koof.getQ() - prots * koof.getP() + deltaBS) / koof.getK() - carbs;
+			double shiftedCarbs = (prots * koof.getP() + deltaBS) / koof.getK() - carbs;
 			if (shiftedCarbs < 0)
 			{
-				textMealShiftedCarbs.setTextColor(getResources().getColor(R.color.meal_correction_negative));
+				textMealShiftedCarbsHypo.setTextColor(getResources().getColor(R.color.meal_correction_negative));
 			}
 			else
 			{
-				textMealShiftedCarbs.setTextColor(getResources().getColor(R.color.meal_correction_positive));
+				textMealShiftedCarbsHypo.setTextColor(getResources().getColor(R.color.meal_correction_positive));
 			}
-			textMealShiftedCarbs.setText(Utils.formatDoubleSigned(shiftedCarbs) + " " + captionGramm);
-
-			textMealShiftedDosage.setText(String.format("%.1f %s", insInjected, captionDose));
+			textMealShiftedCarbsHypo.setText(Utils.formatDoubleSigned(shiftedCarbs) + " " + captionGramm);
 		}
-		else
+		else if (bsBase != null)
 		{
-			layoutShifted.setVisibility(View.GONE);
+			// Standard mode
+			findViewById(R.id.mealRowInsulin).setVisibility(View.VISIBLE);
+			findViewById(R.id.mealRowCarbs).setVisibility(View.GONE);
+
+			deltaBS = bsTarget - bsBase;
+
+			Double expectedBS = bsBase == null ? null
+					: bsBase + (carbs * koof.getK()) + (prots * koof.getP()) - (insInjected * koof.getQ());
+
+			if (expectedBS != null)
+			{
+				if (expectedBS > BS_HYPOGLYCEMIA)
+				{
+					textMealExpectedBs.setText(String.format("%.1f %s", expectedBS, captionMmol));
+				}
+				else
+				{
+					textMealExpectedBs.setText(getString(R.string.editor_meal_label_expected_bs_hypoglycemia));
+				}
+			}
+			else
+			{
+				textMealExpectedBs.setText("?");
+			}
+
+			// textMealStatProts.setText(String.format("%s %.1f", captionProts,
+			// entity.getData().getProts()));
+			// textMealStatFats.setText(String.format("%s %.1f", captionFats,
+			// entity.getData().getFats()));
+			// textMealStatCarbs.setText(String.format("%s %.1f", captionCarbs,
+			// entity.getData().getCarbs()));
+			// textMealStatValue.setText(String.format("%s %.1f", captionValue,
+			// entity.getData().getValue()));
+			// textMealStatDosage.setText(String.format("%.1f %s", insInjected, captionDose));
+
+			// current dosage
+
+			double currentDose = (-deltaBS + carbs * koof.getK() + (prots * koof.getP())) / koof.getQ();
+			if (currentDose > 0)
+			{
+				textMealCurrentDosage.setText(String.format("%.1f %s", currentDose, captionDose));
+			}
+			else
+			{
+				textMealCurrentDosage.setText("--");
+			}
+
+			// shifted dosage
+
+			if (insInjected > Utils.EPS)
+			{
+				layoutShifted.setVisibility(View.VISIBLE);
+
+				double shiftedCarbs = (insInjected * koof.getQ() - prots * koof.getP() + deltaBS) / koof.getK() - carbs;
+				if (shiftedCarbs < 0)
+				{
+					textMealShiftedCarbs.setTextColor(getResources().getColor(R.color.meal_correction_negative));
+				}
+				else
+				{
+					textMealShiftedCarbs.setTextColor(getResources().getColor(R.color.meal_correction_positive));
+				}
+				textMealShiftedCarbs.setText(Utils.formatDoubleSigned(shiftedCarbs) + " " + captionGramm);
+
+				textMealShiftedDosage.setText(String.format("%.1f %s", insInjected, captionDose));
+			}
+			else
+			{
+				layoutShifted.setVisibility(View.GONE);
+			}
+
+			// before = null, target = null --> deltaBS = 0.0; --> dose
+			// before = null, target != null --> deltaBS = 0.0; --> dose
+			// before != null, target = null --> deltaBS = 0.0; --> dose, expectedBS
+			// before != null, target != null --> deltaBS = target - before; --> dose, expectedBS
+
+			// expectedBS = f(before, meal) // undefined, if before == null
+			// dose = g(deltaBS, meal) // deltaBS = target - before (if both are not-null) : 0.0 (if
+			// something is not defined)
 		}
-
-		// before = null, target = null --> deltaBS = 0.0; --> dose
-		// before = null, target != null --> deltaBS = 0.0; --> dose
-		// before != null, target = null --> deltaBS = 0.0; --> dose, expectedBS
-		// before != null, target != null --> deltaBS = target - before; --> dose, expectedBS
-
-		// expectedBS = f(before, meal) // undefined, if before == null
-		// dose = g(deltaBS, meal) // deltaBS = target - before (if both are not-null) : 0.0 (if
-		// something is not defined)
 	}
 
 	@Override
@@ -357,8 +421,8 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	{
 		super.readEntity(intent);
 
-		bsBeforeMeal = intent.getExtras().containsKey(FIELD_BS_BEFORE_MEAL)
-				? intent.getExtras().getDouble(FIELD_BS_BEFORE_MEAL) : null;
+		bsBase = intent.getExtras().containsKey(FIELD_BS_BASE) ? intent.getExtras().getDouble(FIELD_BS_BASE) : null;
+		bsLast = intent.getExtras().containsKey(FIELD_BS_LAST) ? intent.getExtras().getDouble(FIELD_BS_LAST) : null;
 		bsTarget = intent.getExtras().containsKey(FIELD_BS_TARGET) ? intent.getExtras().getDouble(FIELD_BS_TARGET)
 				: null;
 		insInjected = intent.getExtras().getDouble(FIELD_INS_INJECTED, 0.0);

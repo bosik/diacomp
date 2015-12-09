@@ -65,56 +65,28 @@
             android:background="#c0c0c0"
             android:divider="?android:dividerHorizontal" />
 
-        <LinearLayout
-            android:id="@+id/layoutMealCalculator"
+        <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:orientation="horizontal"
-            android:paddingBottom="@dimen/padding_small"
-            android:paddingLeft="@dimen/padding_small"
-            android:paddingRight="@dimen/padding_small"
-            android:paddingStart="@dimen/padding_small"
-            android:paddingTop="@dimen/padding_small" >
+            android:layout_height="match_parent"
+            android:padding="@dimen/padding_small" >
 
-            <LinearLayout
-                android:id="@+id/layoutMealCalculatorHeaders"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top"
-                android:orientation="vertical" >
+            <TableRow
+                android:id="@+id/mealRowInsulin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
                 <TextView
-                    android:id="@+id/textMealTitleDosage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start"
+                    android:paddingEnd="@dimen/padding_small"
+                    android:paddingRight="@dimen/padding_small"
                     android:text="@string/editor_meal_label_insulin_dosage" />
-
-                <TextView
-                    android:id="@+id/textMealTitleExpectedBS"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="start"
-                    android:text="@string/editor_meal_label_expected_bs" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layoutMealCalculatorValues"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingLeft="@dimen/padding_small"
-                android:paddingStart="@dimen/padding_small"
-                tools:ignore="RtlSymmetry" >
 
                 <LinearLayout
                     android:id="@+id/layoutMealDosage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="top"
                     android:orientation="horizontal" >
 
                     <TextView
@@ -167,22 +139,57 @@
                             android:text="@string/editor_meal_parenthesis_close" />
                     </LinearLayout>
                 </LinearLayout>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/mealRowCarbs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Углеводы:" />
+
+                <TextView
+                    android:id="@+id/textMealShiftedCarbsHypo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:paddingEnd="@dimen/padding_medium"
+                    android:paddingRight="@dimen/padding_medium"
+                    android:text="@string/editor_meal_label_correction"
+                    tools:ignore="RtlSymmetry" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/mealRowBS"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:paddingEnd="@dimen/padding_small"
+                    android:paddingRight="@dimen/padding_small"
+                    android:text="@string/editor_meal_label_expected_bs" />
 
                 <TextView
                     android:id="@+id/textMealExpectedBs"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/common_unit_bs_mmoll" />
-            </LinearLayout>
+            </TableRow>
+        </TableLayout>
 
-            <Button
-                android:id="@+id/buttonMealCorrection"
-                android:layout_width="46dp"
-                android:layout_height="46dp"
-                android:text="@string/editor_meal_button_more"
-                android:textSize="@dimen/font_datetime"
-                android:visibility="gone" />
-        </LinearLayout>
+        <Button
+            android:id="@+id/buttonMealCorrection"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:text="@string/editor_meal_button_more"
+            android:textSize="@dimen/font_datetime"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/labelMealContent"
