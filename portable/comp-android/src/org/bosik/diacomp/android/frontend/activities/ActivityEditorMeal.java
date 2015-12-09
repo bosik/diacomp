@@ -333,16 +333,26 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			}
 			textMealShiftedCarbsHypo.setText(Utils.formatDoubleSigned(shiftedCarbs) + " " + captionGramm);
 		}
-		else if (bsBase != null)
+		else
 		{
 			// Standard mode
+
 			findViewById(R.id.mealRowInsulin).setVisibility(View.VISIBLE);
 			findViewById(R.id.mealRowCarbs).setVisibility(View.GONE);
 
-			deltaBS = bsTarget - bsBase;
+			Double expectedBS;
 
-			Double expectedBS = bsBase == null ? null
-					: bsBase + (carbs * koof.getK()) + (prots * koof.getP()) - (insInjected * koof.getQ());
+			if (bsBase == null)
+			{
+				bsBase = bsTarget;
+				expectedBS = null;
+			}
+			else
+			{
+				expectedBS = bsBase + (carbs * koof.getK()) + (prots * koof.getP()) - (insInjected * koof.getQ());
+			}
+
+			deltaBS = bsTarget - bsBase;
 
 			if (expectedBS != null)
 			{
