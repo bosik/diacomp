@@ -41,7 +41,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
@@ -57,7 +56,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private KoofService			koofService;
 
 	// FIXME: hardcoded BS value
-	private static final double	BS_HYPOGLYCEMIA		= 3.8;
+	private static final double	BS_HYPOGLYCEMIA		= 4.0;
 	private static final double	CARB_COLOR_LIMIT	= 1.0;
 
 	// data
@@ -78,10 +77,8 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	// private TextView textMealStatValue;
 	// private TextView textMealStatDosage;
 
-	private LinearLayout		layoutShifted;
 	private TextView			textMealCurrentDosage;
 	private TextView			textMealShiftedCarbs;
-	private TextView			textMealShiftedCarbsHypo;
 	private TextView			textMealShiftedDosage;
 	private TextView			textMealExpectedBs;
 	Button						buttonCorrection;
@@ -147,10 +144,8 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		// textMealStatValue = (TextView) findViewById(R.id.textMealStatValue);
 		// textMealStatDosage = (TextView) findViewById(R.id.textMealStatDosage);
 
-		layoutShifted = (LinearLayout) findViewById(R.id.layoutMealShifted);
 		textMealCurrentDosage = (TextView) findViewById(R.id.textMealCurrentDosage);
 		textMealShiftedCarbs = (TextView) findViewById(R.id.textMealShiftedCarbs);
-		textMealShiftedCarbsHypo = (TextView) findViewById(R.id.textMealShiftedCarbsHypo);
 		textMealShiftedDosage = (TextView) findViewById(R.id.textMealShiftedDosage);
 		textMealExpectedBs = (TextView) findViewById(R.id.textMealExpectedBs);
 		buttonCorrection = (Button) findViewById(R.id.buttonMealCorrection);
@@ -317,6 +312,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			// Hypoglygemic mode
 			findViewById(R.id.mealRowInsulin).setVisibility(View.GONE);
 			findViewById(R.id.mealRowCarbs).setVisibility(View.VISIBLE);
+			textMealShiftedDosage.setVisibility(View.GONE);
 
 			deltaBS = bsTarget - bsLast;
 
@@ -327,24 +323,24 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			double shiftedCarbs = (prots * koof.getP() + deltaBS) / koof.getK() - carbs;
 			if (shiftedCarbs < -CARB_COLOR_LIMIT)
 			{
-				textMealShiftedCarbsHypo.setTextColor(getResources().getColor(R.color.meal_correction_negative));
+				textMealShiftedCarbs.setTextColor(getResources().getColor(R.color.meal_correction_negative));
 			}
 			else if (shiftedCarbs > CARB_COLOR_LIMIT)
 			{
-				textMealShiftedCarbsHypo.setTextColor(getResources().getColor(R.color.meal_correction_positive));
+				textMealShiftedCarbs.setTextColor(getResources().getColor(R.color.meal_correction_positive));
 			}
 			else
 			{
-				textMealShiftedCarbsHypo.setTextColor(Color.BLACK);
+				textMealShiftedCarbs.setTextColor(Color.BLACK);
 			}
-			textMealShiftedCarbsHypo.setText(Utils.formatDoubleSigned(shiftedCarbs) + " " + captionGramm);
+			textMealShiftedCarbs.setText(Utils.formatDoubleSigned(shiftedCarbs) + " " + captionGramm);
 		}
 		else
 		{
 			// Standard mode
 
 			findViewById(R.id.mealRowInsulin).setVisibility(View.VISIBLE);
-			findViewById(R.id.mealRowCarbs).setVisibility(View.GONE);
+			textMealShiftedDosage.setVisibility(View.VISIBLE);
 
 			Double expectedBS;
 
@@ -405,7 +401,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 
 			if (insInjected > Utils.EPS)
 			{
-				layoutShifted.setVisibility(View.VISIBLE);
+				findViewById(R.id.mealRowCarbs).setVisibility(View.VISIBLE);
 
 				double shiftedCarbs = (insInjected * koof.getQ() - prots * koof.getP() + deltaBS) / koof.getK() - carbs;
 				if (shiftedCarbs < -CARB_COLOR_LIMIT)
@@ -418,18 +414,18 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 				}
 				else
 				{
-					textMealShiftedCarbsHypo.setTextColor(Color.BLACK);
+					textMealShiftedCarbs.setTextColor(Color.BLACK);
 				}
 				textMealShiftedCarbs.setText(Utils.formatDoubleSigned(shiftedCarbs) + " " + captionGramm);
 
-				textMealShiftedDosage.setText(String.format("%.1f %s", insInjected, captionDose));
+				textMealShiftedDosage.setText(String.format(" → %.1f %s", insInjected, captionDose));
 
 				textMealShiftedCarbs.setTypeface(Typeface.DEFAULT_BOLD);
 				textMealCurrentDosage.setTypeface(Typeface.DEFAULT);
 			}
 			else
 			{
-				layoutShifted.setVisibility(View.GONE);
+				findViewById(R.id.mealRowCarbs).setVisibility(View.GONE);
 				textMealShiftedCarbs.setTypeface(Typeface.DEFAULT);
 				textMealCurrentDosage.setTypeface(Typeface.DEFAULT_BOLD);
 			}
