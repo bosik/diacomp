@@ -26,7 +26,7 @@ import org.json.JSONObject;
 
 public class SerializerAdapter<T> implements Serializer<T>
 {
-	private Parser<T>	parser;
+	private Parser<T> parser;
 
 	public SerializerAdapter(Parser<T> parser)
 	{
@@ -75,7 +75,7 @@ public class SerializerAdapter<T> implements Serializer<T>
 	}
 
 	@Override
-	public String writeAll(List<T> objects)
+	public String writeAll(Iterable<T> objects)
 	{
 		try
 		{

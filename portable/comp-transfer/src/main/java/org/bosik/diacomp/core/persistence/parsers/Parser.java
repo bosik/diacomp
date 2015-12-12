@@ -78,7 +78,7 @@ public abstract class Parser<T>
 	 * @return JSON array containing serialized objects
 	 * @throws JSONException
 	 */
-	public JSONArray writeAll(List<T> objects) throws JSONException
+	public JSONArray writeAll(Iterable<T> objects) throws JSONException
 	{
 		JSONArray array = new JSONArray();
 

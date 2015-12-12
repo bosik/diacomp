@@ -17,7 +17,6 @@
  */
 package org.bosik.diacomp.core.persistence.serializers;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +29,7 @@ public class SerializerMap implements Serializer<Map<String, String>>
 {
 	private Parser<Entry<String, String>>		parserEntry		= new ParserMapEntry();
 	private Serializer<Entry<String, String>>	serializerEntry	= new SerializerAdapter<Entry<String, String>>(
-																		parserEntry);
+			parserEntry);
 
 	@Override
 	public Map<String, String> read(String s)
@@ -49,9 +48,7 @@ public class SerializerMap implements Serializer<Map<String, String>>
 	@Override
 	public String write(Map<String, String> object)
 	{
-		List<Entry<String, String>> pairs = new ArrayList<Entry<String, String>>();
-		pairs.addAll(object.entrySet());
-		return serializerEntry.writeAll(pairs);
+		return serializerEntry.writeAll(object.entrySet());
 	}
 
 	@Override
@@ -61,7 +58,7 @@ public class SerializerMap implements Serializer<Map<String, String>>
 	}
 
 	@Override
-	public String writeAll(List<Map<String, String>> objects)
+	public String writeAll(Iterable<Map<String, String>> objects)
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}
