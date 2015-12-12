@@ -22,7 +22,8 @@ import java.util.List;
 /**
  * Converts <b>object(s) <—> string</b>
  * 
- * @param <T>Object type to be serialized / deserialized
+ * @param <T>Object
+ *            type to be serialized / deserialized
  */
 public interface Serializer<T>
 {
@@ -60,5 +61,5 @@ public interface Serializer<T>
 	 *            List of objects to be serialized
 	 * @return String containing serialized objects
 	 */
-	public String writeAll(List<T> objects);
+	public String writeAll(Iterable<T> objects);
 }

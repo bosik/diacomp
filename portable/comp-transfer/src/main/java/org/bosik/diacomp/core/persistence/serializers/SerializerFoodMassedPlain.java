@@ -73,7 +73,7 @@ public class SerializerFoodMassedPlain implements Serializer<FoodMassed>
 	}
 
 	@Override
-	public String writeAll(List<FoodMassed> objects)
+	public String writeAll(Iterable<FoodMassed> objects)
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}

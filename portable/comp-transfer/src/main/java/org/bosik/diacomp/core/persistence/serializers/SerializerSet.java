@@ -60,7 +60,7 @@ public class SerializerSet implements Serializer<Set<String>>
 	}
 
 	@Override
-	public String writeAll(List<Set<String>> objects)
+	public String writeAll(Iterable<Set<String>> objects)
 	{
 		throw new UnsupportedOperationException("Not implemented");
 	}
