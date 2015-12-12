@@ -393,7 +393,7 @@ public class Utils
 
 	public static String formatDoubleSigned(double x)
 	{
-		return (x > 0 ? "+" : "") + String.format("%.1f", x);
+		return String.format("%+.1f", x);
 	}
 
 	public static String formatDateUTC(Date date)

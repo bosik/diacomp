@@ -20,9 +20,10 @@ package org.bosik.diacomp.core.utils;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
-import junit.framework.TestCase;
 import org.junit.Test;
+import junit.framework.TestCase;
 
 @SuppressWarnings("static-method")
 public class TestUtils extends TestCase
@@ -216,6 +217,21 @@ public class TestUtils extends TestCase
 		assertEquals("2012-05-01 09:45:17", Utils.formatTimeUTC(Utils.time(2012, 05, 01, 9, 45, 17)));
 		assertEquals("2012-05-01 21:45:17", Utils.formatTimeUTC(Utils.time(2012, 05, 01, 21, 45, 17)));
 		assertEquals("2012-04-02 00:00:00", Utils.formatTimeUTC(Utils.time(2012, 04, 02, 00, 00, 00)));
+	}
+
+	public void testFormatDoubleSigned()
+	{
+		Locale.setDefault(Locale.US);
+
+		assertEquals("-365.3", Utils.formatDoubleSigned(-365.25));
+		assertEquals("-1.0", Utils.formatDoubleSigned(-1.01));
+		assertEquals("-0.0", Utils.formatDoubleSigned(-0.01));
+		assertEquals("+0.0", Utils.formatDoubleSigned(0.01));
+		assertEquals("+1.0", Utils.formatDoubleSigned(1.0));
+		assertEquals("+1.1", Utils.formatDoubleSigned(1.1));
+		assertEquals("+18.4", Utils.formatDoubleSigned(18.379));
+		assertEquals("+18.5", Utils.formatDoubleSigned(18.479));
+		assertEquals("+18.6", Utils.formatDoubleSigned(18.579));
 	}
 
 	public void testParseTime()
