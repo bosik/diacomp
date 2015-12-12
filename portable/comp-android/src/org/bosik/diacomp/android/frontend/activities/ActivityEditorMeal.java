@@ -45,15 +45,12 @@ import android.widget.TextView;
 
 public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 {
-
 	public static final String	TAG					= ActivityEditorMeal.class.getSimpleName();
 
 	public static final String	FIELD_BS_BASE		= "bosik.pack.bs.base";
 	public static final String	FIELD_BS_LAST		= "bosik.pack.bs.last";
 	public static final String	FIELD_BS_TARGET		= "bosik.pack.bs.target";
 	public static final String	FIELD_INS_INJECTED	= "bosik.pack.insInjected";
-
-	private KoofService			koofService;
 
 	// FIXME: hardcoded BS value
 	private static final double	BS_HYPOGLYCEMIA		= 4.0;
@@ -64,31 +61,19 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private Double				bsBase;
 	private Double				bsLast;
 	private Double				bsTarget;
-	Double						insInjected;
-
-	boolean						correctBs			= true;
+	private Double				insInjected;
 
 	// components
 	private Button				buttonTime;
 	private Button				buttonDate;
-	// private TextView textMealStatProts;
-	// private TextView textMealStatFats;
-	// private TextView textMealStatCarbs;
-	// private TextView textMealStatValue;
-	// private TextView textMealStatDosage;
 
 	private TextView			textMealCurrentDosage;
 	private TextView			textMealShiftedCarbs;
 	private TextView			textMealShiftedDosage;
 	private TextView			textMealExpectedBs;
-	Button						buttonCorrection;
 	MealEditorView				mealEditor;
 
 	// localization
-	private String				captionProts;
-	private String				captionFats;
-	private String				captionCarbs;
-	private String				captionValue;
 	private String				captionDose;
 	private String				captionGramm;
 	private String				captionMmol;
@@ -96,23 +81,10 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	// ======================================================================================================
 
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		// Service must be initialized before super() is called
-		koofService = KoofServiceInternal.getInstance(getContentResolver());
-		super.onCreate(savedInstanceState);
-	}
-
-	@Override
 	protected void setupInterface()
 	{
 		setContentView(R.layout.activity_editor_meal);
 
-		// string constants
-		captionProts = "P";
-		captionFats = "F";
-		captionCarbs = "C";
-		captionValue = "V";
 		captionDose = getString(R.string.common_unit_insulin);
 		captionGramm = getString(R.string.common_unit_mass_gramm);
 		captionMmol = getString(R.string.common_unit_bs_mmoll);
@@ -138,36 +110,12 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			}
 		});
 
-		// textMealStatProts = (TextView) findViewById(R.id.textMealStatProts);
-		// textMealStatFats = (TextView) findViewById(R.id.textMealStatFats);
-		// textMealStatCarbs = (TextView) findViewById(R.id.textMealStatCarbs);
-		// textMealStatValue = (TextView) findViewById(R.id.textMealStatValue);
-		// textMealStatDosage = (TextView) findViewById(R.id.textMealStatDosage);
-
 		textMealCurrentDosage = (TextView) findViewById(R.id.textMealCurrentDosage);
 		textMealShiftedCarbs = (TextView) findViewById(R.id.textMealShiftedCarbs);
 		textMealShiftedDosage = (TextView) findViewById(R.id.textMealShiftedDosage);
 		textMealExpectedBs = (TextView) findViewById(R.id.textMealExpectedBs);
-		buttonCorrection = (Button) findViewById(R.id.buttonMealCorrection);
 
 		mealEditor = (MealEditorView) findViewById(R.id.mealEditorMeal);
-
-		// list.setScroll
-		// list.setScrollContainer(false);
-
-		// list.setOnTouchListener(new OnTouchListener()
-		// {
-		// @Override
-		// public boolean onTouch(View v, MotionEvent event)
-		// {
-		// if (event.getAction() == MotionEvent.ACTION_MOVE)
-		// {
-		// return true; // Indicates that this has been handled by you and will not be
-		// // forwarded further.
-		// }
-		// return false;
-		// }
-		// });
 
 		// list.addHeaderView(findViewById(R.id.layoutMealParent));
 
@@ -185,28 +133,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 				}
 
 				showMealInfo();
-			}
-		});
-
-		buttonCorrection.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				if ((insInjected != null) && (insInjected > Utils.EPS))
-				{
-					correctBs = !correctBs;
-					ActivityEditorMeal.this.showMealInfo();
-
-					if (correctBs)
-					{
-						buttonCorrection.setText("\\");
-					}
-					else
-					{
-						buttonCorrection.setText("—");
-					}
-				}
 			}
 		});
 	}
@@ -236,10 +162,9 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		{
 			case R.id.item_meal_short:
 			{
-				boolean newValue = !data.getShortMeal();
-				data.setShortMeal(newValue);
+				data.setShortMeal(!data.getShortMeal());
+				item.setChecked(data.getShortMeal());
 				modified = true;
-				item.setChecked(newValue);
 				return true;
 			}
 			case R.id.item_meal_info:
@@ -300,11 +225,11 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		// a - BS above target (BS_TARGET..)
 
 		// commons
+		KoofService koofService = KoofServiceInternal.getInstance(getContentResolver());
 		int minutesTime = Utils.getDayMinutesUTC(entity.getData().getTime());
 		Koof koof = koofService.getKoof(minutesTime);
 		double carbs = entity.getData().getCarbs();
 		double prots = entity.getData().getProts();
-
 		double deltaBS = 0.0;
 
 		if (bsLast != null && bsLast < BS_HYPOGLYCEMIA && (bsBase == null || Math.abs(bsBase - bsLast) > Utils.EPS))
@@ -315,12 +240,11 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			textMealShiftedDosage.setVisibility(View.GONE);
 
 			deltaBS = bsTarget - bsLast;
-
 			Double expectedBS = bsLast + (carbs * koof.getK()) + (prots * koof.getP());
-
 			textMealExpectedBs.setText(String.format("%.1f %s", expectedBS, captionMmol));
 
 			double shiftedCarbs = (prots * koof.getP() + deltaBS) / koof.getK() - carbs;
+			textMealShiftedCarbs.setText(Utils.formatDoubleSigned(shiftedCarbs) + " " + captionGramm);
 			if (shiftedCarbs < -CARB_COLOR_LIMIT)
 			{
 				textMealShiftedCarbs.setTextColor(getResources().getColor(R.color.meal_correction_negative));
@@ -333,7 +257,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			{
 				textMealShiftedCarbs.setTextColor(Color.BLACK);
 			}
-			textMealShiftedCarbs.setText(Utils.formatDoubleSigned(shiftedCarbs) + " " + captionGramm);
 		}
 		else
 		{
@@ -375,16 +298,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 				textMealExpectedBs.setText("?");
 			}
 
-			// textMealStatProts.setText(String.format("%s %.1f", captionProts,
-			// entity.getData().getProts()));
-			// textMealStatFats.setText(String.format("%s %.1f", captionFats,
-			// entity.getData().getFats()));
-			// textMealStatCarbs.setText(String.format("%s %.1f", captionCarbs,
-			// entity.getData().getCarbs()));
-			// textMealStatValue.setText(String.format("%s %.1f", captionValue,
-			// entity.getData().getValue()));
-			// textMealStatDosage.setText(String.format("%.1f %s", insInjected, captionDose));
-
 			// current dosage
 
 			double currentDose = (-deltaBS + carbs * koof.getK() + (prots * koof.getP())) / koof.getQ();
@@ -416,11 +329,11 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 				{
 					textMealShiftedCarbs.setTextColor(Color.BLACK);
 				}
+
 				textMealShiftedCarbs.setText(Utils.formatDoubleSigned(shiftedCarbs) + " " + captionGramm);
+				textMealShiftedCarbs.setTypeface(Typeface.DEFAULT_BOLD);
 
 				textMealShiftedDosage.setText(String.format(" → %.1f %s", insInjected, captionDose));
-
-				textMealShiftedCarbs.setTypeface(Typeface.DEFAULT_BOLD);
 				textMealCurrentDosage.setTypeface(Typeface.DEFAULT);
 			}
 			else
@@ -429,15 +342,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 				textMealShiftedCarbs.setTypeface(Typeface.DEFAULT);
 				textMealCurrentDosage.setTypeface(Typeface.DEFAULT_BOLD);
 			}
-
-			// before = null, target = null --> deltaBS = 0.0; --> dose
-			// before = null, target != null --> deltaBS = 0.0; --> dose
-			// before != null, target = null --> deltaBS = 0.0; --> dose, expectedBS
-			// before != null, target != null --> deltaBS = target - before; --> dose, expectedBS
-
-			// expectedBS = f(before, meal) // undefined, if before == null
-			// dose = g(deltaBS, meal) // deltaBS = target - before (if both are not-null) : 0.0 (if
-			// something is not defined)
 		}
 	}
 
@@ -446,11 +350,12 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	{
 		super.readEntity(intent);
 
-		bsBase = intent.getExtras().containsKey(FIELD_BS_BASE) ? intent.getExtras().getDouble(FIELD_BS_BASE) : null;
-		bsLast = intent.getExtras().containsKey(FIELD_BS_LAST) ? intent.getExtras().getDouble(FIELD_BS_LAST) : null;
-		bsTarget = intent.getExtras().containsKey(FIELD_BS_TARGET) ? intent.getExtras().getDouble(FIELD_BS_TARGET)
-				: null;
-		insInjected = intent.getExtras().getDouble(FIELD_INS_INJECTED, 0.0);
+		final Bundle extras = intent.getExtras();
+
+		bsBase = extras.containsKey(FIELD_BS_BASE) ? extras.getDouble(FIELD_BS_BASE) : null;
+		bsLast = extras.containsKey(FIELD_BS_LAST) ? extras.getDouble(FIELD_BS_LAST) : null;
+		bsTarget = extras.containsKey(FIELD_BS_TARGET) ? extras.getDouble(FIELD_BS_TARGET) : null;
+		insInjected = extras.getDouble(FIELD_INS_INJECTED, 0.0);
 	}
 
 	@Override
