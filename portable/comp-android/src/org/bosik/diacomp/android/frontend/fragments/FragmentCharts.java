@@ -59,7 +59,7 @@ public class FragmentCharts extends Fragment
 		final KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
 
 		// Widgets binding
-		View rootView = inflater.inflate(R.layout.activity_graph, container, false);
+		View rootView = inflater.inflate(R.layout.fragment_charts, container, false);
 
 		// init example series data
 
