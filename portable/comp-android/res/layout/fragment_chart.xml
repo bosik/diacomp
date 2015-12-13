@@ -2,10 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="250dp"
     android:gravity="top"
     android:orientation="vertical"
-    android:padding="@dimen/padding_small" >
+    android:padding="@dimen/padding_small"
+    android:paddingBottom="@dimen/padding_large" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,12 +29,23 @@
             android:text="\?" />
     </LinearLayout>
 
-    <com.jjoe64.graphview.GraphView
-        android:id="@+id/chart"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:orientation="horizontal"
-        android:paddingBottom="@dimen/padding_large" >
-    </com.jjoe64.graphview.GraphView>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+        </com.jjoe64.graphview.GraphView>
+
+        <ProgressBar
+            android:id="@+id/progressChart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
 </LinearLayout>

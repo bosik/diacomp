@@ -14,27 +14,23 @@
         android:padding="@dimen/padding_small"
         tools:context="${packageName}.${activityClass}" >
 
-        <fragment
+        <LinearLayout
             android:id="@+id/chartX"
-            android:name="org.bosik.diacomp.android.frontend.views.Chart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:layout="@layout/fragment_chart" />
+            android:orientation="vertical" />
 
-        <fragment
+        <LinearLayout
             android:id="@+id/chartK"
-            android:name="org.bosik.diacomp.android.frontend.views.Chart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:layout="@layout/fragment_chart" />
+            android:orientation="vertical" />
 
-        <fragment
+        <LinearLayout
             android:id="@+id/chartQ"
-            android:name="org.bosik.diacomp.android.frontend.views.Chart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:layout="@layout/fragment_chart" />
-
+            android:orientation="vertical" />
     </LinearLayout>
 
 </ScrollView>

@@ -23,11 +23,13 @@ import java.util.List;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
 import org.bosik.diacomp.android.frontend.views.Chart;
+import org.bosik.diacomp.android.frontend.views.Chart.DataLoader;
 import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.utils.Utils;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.jjoe64.graphview.series.Series;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -49,91 +51,110 @@ public class FragmentCharts extends Fragment
 		return rootView;
 	}
 
-	private static double max(List<DataPoint> values)
+	static double addRoom(double max)
 	{
-		double max = 0;
-		for (DataPoint point : values)
-		{
-			max = Math.max(max, point.getY());
-		}
-
 		double factor = 0.05 * 4;
 		return ((int) (1.1 * max / factor) + 1) * factor;
 	}
 
 	private void addChartX()
 	{
-		KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
-
-		List<DataPoint> dataX = new ArrayList<DataPoint>();
-		for (int time = 0; time <= Utils.MinPerDay; time += 30)
+		Chart chartX = new Chart();
+		chartX.setDataLoader(new DataLoader()
 		{
-			Koof koof = koofService.getKoof(time);
-			double x = (double) time / 60;
-			double y = koof.getK() / koof.getQ();
-			dataX.add(new DataPoint(x, y));
-		}
-		LineGraphSeries<DataPoint> seriesX = new LineGraphSeries<DataPoint>(dataX.toArray(new DataPoint[dataX.size()]));
-		seriesX.setColor(Color.rgb(128, 128, 128));
+			@Override
+			public void beforeLoading(Chart chart)
+			{
+				chart.getTitleView().setText(getString(R.string.common_koof_x));
+			}
 
-		Chart chartX = (Chart) getActivity().getFragmentManager().findFragmentById(R.id.chartX);
-		chartX.getTitleView().setText(getString(R.string.common_koof_x));
-		chartX.getGraphView().addSeries(seriesX);
-		chartX.getGraphView().getViewport().setXAxisBoundsManual(true);
-		chartX.getGraphView().getViewport().setYAxisBoundsManual(true);
-		chartX.getGraphView().getViewport().setMinX(0);
-		chartX.getGraphView().getViewport().setMaxX(24);
-		chartX.getGraphView().getViewport().setMinY(0);
-		chartX.getGraphView().getViewport().setMaxY(max(dataX));
+			@Override
+			public Series<?> load()
+			{
+				KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
+
+				List<DataPoint> dataList = new ArrayList<DataPoint>();
+				for (int time = 0; time <= Utils.MinPerDay; time += 30)
+				{
+					Koof koof = koofService.getKoof(time);
+					double x = (double) time / 60;
+					double y = koof.getK() / koof.getQ();
+					dataList.add(new DataPoint(x, y));
+				}
+				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
+				LineGraphSeries<DataPoint> seriesX = new LineGraphSeries<DataPoint>(data);
+				seriesX.setColor(Color.rgb(128, 128, 128));
+
+				return seriesX;
+			}
+
+			@Override
+			public void afterLoading(Chart chart)
+			{
+				chart.getGraphView().getViewport().setXAxisBoundsManual(true);
+				chart.getGraphView().getViewport().setYAxisBoundsManual(true);
+				chart.getGraphView().getViewport().setMinX(0);
+				chart.getGraphView().getViewport().setMaxX(24);
+				chart.getGraphView().getViewport().setMinY(0);
+
+				double y = chart.getGraphView().getSeries().get(0).getHighestValueY();
+				chart.getGraphView().getViewport().setMaxY(addRoom(y));
+			}
+		});
+		getChildFragmentManager().beginTransaction().replace(R.id.chartX, chartX).commit();
 	}
 
 	private void addChartK()
 	{
-		KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
-
-		List<DataPoint> dataK = new ArrayList<DataPoint>();
-		for (int time = 0; time <= Utils.MinPerDay; time += 30)
-		{
-			double x = (double) time / 60;
-			double y = koofService.getKoof(time).getK();
-			dataK.add(new DataPoint(x, y));
-		}
-		LineGraphSeries<DataPoint> seriesK = new LineGraphSeries<DataPoint>(dataK.toArray(new DataPoint[dataK.size()]));
-		seriesK.setColor(Color.rgb(255, 0, 0));
-
-		Chart graphK = (Chart) getActivity().getFragmentManager().findFragmentById(R.id.chartK);
-		graphK.getTitleView().setText(getString(R.string.common_koof_k));
-		graphK.getGraphView().addSeries(seriesK);
-		graphK.getGraphView().getViewport().setXAxisBoundsManual(true);
-		graphK.getGraphView().getViewport().setYAxisBoundsManual(true);
-		graphK.getGraphView().getViewport().setMinX(0);
-		graphK.getGraphView().getViewport().setMaxX(24);
-		graphK.getGraphView().getViewport().setMinY(0);
-		graphK.getGraphView().getViewport().setMaxY(max(dataK));
+		// KoofService koofService =
+		// KoofServiceInternal.getInstance(getActivity().getContentResolver());
+		//
+		// List<DataPoint> dataK = new ArrayList<DataPoint>();
+		// for (int time = 0; time <= Utils.MinPerDay; time += 30)
+		// {
+		// double x = (double) time / 60;
+		// double y = koofService.getKoof(time).getK();
+		// dataK.add(new DataPoint(x, y));
+		// }
+		// LineGraphSeries<DataPoint> seriesK = new LineGraphSeries<DataPoint>(dataK.toArray(new
+		// DataPoint[dataK.size()]));
+		// seriesK.setColor(Color.rgb(255, 0, 0));
+		//
+		// Chart graphK = (Chart) getActivity().getFragmentManager().findFragmentById(R.id.chartK);
+		// graphK.getTitleView().setText(getString(R.string.common_koof_k));
+		// graphK.getGraphView().addSeries(seriesK);
+		// graphK.getGraphView().getViewport().setXAxisBoundsManual(true);
+		// graphK.getGraphView().getViewport().setYAxisBoundsManual(true);
+		// graphK.getGraphView().getViewport().setMinX(0);
+		// graphK.getGraphView().getViewport().setMaxX(24);
+		// graphK.getGraphView().getViewport().setMinY(0);
+		// graphK.getGraphView().getViewport().setMaxY(max(dataK));
 	}
 
 	private void addChartQ()
 	{
-		KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
-
-		List<DataPoint> dataQ = new ArrayList<DataPoint>();
-		for (int time = 0; time <= Utils.MinPerDay; time += 30)
-		{
-			double x = (double) time / 60;
-			double y = koofService.getKoof(time).getQ();
-			dataQ.add(new DataPoint(x, y));
-		}
-		LineGraphSeries<DataPoint> seriesQ = new LineGraphSeries<DataPoint>(dataQ.toArray(new DataPoint[dataQ.size()]));
-		seriesQ.setColor(Color.rgb(0, 0, 255));
-
-		Chart graphQ = (Chart) getActivity().getFragmentManager().findFragmentById(R.id.chartQ);
-		graphQ.getTitleView().setText(getString(R.string.common_koof_q));
-		graphQ.getGraphView().addSeries(seriesQ);
-		graphQ.getGraphView().getViewport().setXAxisBoundsManual(true);
-		graphQ.getGraphView().getViewport().setYAxisBoundsManual(true);
-		graphQ.getGraphView().getViewport().setMinX(0);
-		graphQ.getGraphView().getViewport().setMaxX(24);
-		graphQ.getGraphView().getViewport().setMinY(0);
-		graphQ.getGraphView().getViewport().setMaxY(max(dataQ));
+		// KoofService koofService =
+		// KoofServiceInternal.getInstance(getActivity().getContentResolver());
+		//
+		// List<DataPoint> dataQ = new ArrayList<DataPoint>();
+		// for (int time = 0; time <= Utils.MinPerDay; time += 30)
+		// {
+		// double x = (double) time / 60;
+		// double y = koofService.getKoof(time).getQ();
+		// dataQ.add(new DataPoint(x, y));
+		// }
+		// LineGraphSeries<DataPoint> seriesQ = new LineGraphSeries<DataPoint>(dataQ.toArray(new
+		// DataPoint[dataQ.size()]));
+		// seriesQ.setColor(Color.rgb(0, 0, 255));
+		//
+		// Chart graphQ = (Chart) getActivity().getFragmentManager().findFragmentById(R.id.chartQ);
+		// graphQ.getTitleView().setText(getString(R.string.common_koof_q));
+		// graphQ.getGraphView().addSeries(seriesQ);
+		// graphQ.getGraphView().getViewport().setXAxisBoundsManual(true);
+		// graphQ.getGraphView().getViewport().setYAxisBoundsManual(true);
+		// graphQ.getGraphView().getViewport().setMinX(0);
+		// graphQ.getGraphView().getViewport().setMaxX(24);
+		// graphQ.getGraphView().getViewport().setMinY(0);
+		// graphQ.getGraphView().getViewport().setMaxY(max(dataQ));
 	}
 }
