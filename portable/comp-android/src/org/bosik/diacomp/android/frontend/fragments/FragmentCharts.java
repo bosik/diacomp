@@ -46,7 +46,9 @@ public class FragmentCharts extends Fragment
 			max = Math.max(max, point.getY());
 		}
 
-		return max * 1.2;
+		double factor = 0.05 * 4;
+		return ((int) (1.1 * max / factor) + 1) * factor;
+
 	}
 
 	@Override
@@ -66,13 +68,13 @@ public class FragmentCharts extends Fragment
 		List<DataPoint> dataK = new ArrayList<DataPoint>();
 		List<DataPoint> dataQ = new ArrayList<DataPoint>();
 		List<DataPoint> dataX = new ArrayList<DataPoint>();
-		for (int time = 0; time < Utils.MinPerDay; time += 30)
+		for (int time = 0; time <= Utils.MinPerDay; time += 30)
 		{
 			Koof koof = koofService.getKoof(time);
 			double t = (double) time / 60;
-			dataK.add(new DataPoint(t, koof.getK() * 12));
+			dataK.add(new DataPoint(t, koof.getK()));
 			dataQ.add(new DataPoint(t, koof.getQ()));
-			dataX.add(new DataPoint(t, koof.getK() * 12 / koof.getQ()));
+			dataX.add(new DataPoint(t, koof.getK() / koof.getQ()));
 		}
 
 		LineGraphSeries<DataPoint> seriesK = new LineGraphSeries<DataPoint>(dataK.toArray(new DataPoint[dataK.size()]));

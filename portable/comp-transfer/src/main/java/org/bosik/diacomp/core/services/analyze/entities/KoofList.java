@@ -21,7 +21,7 @@ import org.bosik.diacomp.core.utils.Utils;
 
 public class KoofList
 {
-	private Koof[]	koofs;
+	private Koof[] koofs;
 
 	public KoofList()
 	{
@@ -34,6 +34,6 @@ public class KoofList
 
 	public Koof getKoof(int time)
 	{
-		return koofs[time];
+		return koofs[time % Utils.MinPerDay];
 	}
 }
