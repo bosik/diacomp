@@ -193,8 +193,7 @@ public class FragmentDiaryScroller extends Fragment
 									long offsetMin = offset / Utils.MsecPerMin;
 									String timeZone = String.format(Locale.US, "%+02d:%02d",
 											offsetMin / Utils.MinPerHour, offsetMin % Utils.MinPerHour);
-									String msg = String
-											.format(getActivity().getString(R.string.warning_time_zone, timeZone));
+									String msg = getActivity().getString(R.string.warning_time_zone, timeZone);
 									textWarningTime.setText(msg);
 									textWarningTime.setVisibility(View.VISIBLE);
 								}
