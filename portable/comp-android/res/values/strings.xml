@@ -58,7 +58,6 @@
     <string name="editor_ins_title">Insulin</string>
     <string name="editor_mass_error">Wrong mass</string>
     <string name="editor_mass_title">Change mass</string>
-    <string name="editor_meal_button_more">…</string>
     <string name="editor_meal_header_content">Content</string>
     <string name="editor_meal_header_dosage">Calculator</string>
     <string name="editor_meal_info">Info</string>
@@ -66,11 +65,8 @@
     <string name="editor_meal_label_expected_bs">Expected BS:</string>
     <string name="editor_meal_label_expected_bs_hypoglycemia">hypoglycemia</string>
     <string name="editor_meal_label_insulin_dosage">Insulin:</string>
-    <string name="editor_meal_label_no_correction">no correction</string>
     <string name="editor_meal_label_stat" formatted="false">P 10.2</string>
     <string name="editor_meal_message_saved">Meal saved</string>
-    <string name="editor_meal_parenthesis_close">)</string>
-    <string name="editor_meal_parenthesis_open">(</string>
     <string name="editor_meal_short_postprandial">Short postprandial</string>
     <string name="editor_meal_title">Meal</string>
     <string name="editor_meal_tip_meal_info" formatted="false" tools:ignore="StringFormatInvalid">Prots: %.1f g\nFats: %.1f g\nCarbs: %.1f g\nValue: %.1f kcal\nMass: %.0f g</string>
