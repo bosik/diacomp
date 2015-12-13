@@ -170,9 +170,17 @@ public class FragmentDiaryScroller extends Fragment
 					protected DatePair doInBackground(Void... arg0)
 					{
 						FragmentActivity context = FragmentDiaryScroller.this.getActivity();
-						ServerTimeService service = TimeServiceInternal.getInstance(context);
-						Date serverTime = service.getServerTime(true);
-						return new DatePair(new Date(), serverTime);
+						if (context != null)
+						{
+							ServerTimeService service = TimeServiceInternal.getInstance(context);
+							Date serverTime = service.getServerTime(true);
+							return new DatePair(new Date(), serverTime);
+						}
+						else
+						{
+							// activity was detached
+							return new DatePair(null, null);
+						}
 					}
 
 					@Override
