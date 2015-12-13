@@ -61,6 +61,7 @@
     <string name="editor_meal_header_content">Content</string>
     <string name="editor_meal_header_dosage">Calculator</string>
     <string name="editor_meal_info">Info</string>
+    <string name="editor_meal_label_carbs">Carbs:</string>
     <string name="editor_meal_label_correction">+8 g</string>
     <string name="editor_meal_label_expected_bs">Expected BS:</string>
     <string name="editor_meal_label_expected_bs_hypoglycemia">hypoglycemia</string>
