@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
+import org.bosik.diacomp.android.frontend.views.Chart;
 import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.utils.Utils;
-import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import android.graphics.Color;
@@ -34,7 +34,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 public class FragmentCharts extends Fragment
 {
@@ -48,15 +47,11 @@ public class FragmentCharts extends Fragment
 
 		double factor = 0.05 * 4;
 		return ((int) (1.1 * max / factor) + 1) * factor;
-
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		// TODO: check if required
-		setHasOptionsMenu(false);
-
 		// services
 		final KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
 
@@ -85,35 +80,35 @@ public class FragmentCharts extends Fragment
 		seriesQ.setColor(Color.rgb(0, 0, 255));
 		seriesX.setColor(Color.rgb(128, 128, 128));
 
-		GraphView graphX = new GraphView(getActivity());
-		graphX.addSeries(seriesX);
-		graphX.getViewport().setXAxisBoundsManual(true);
-		graphX.getViewport().setYAxisBoundsManual(true);
-		graphX.getViewport().setMinX(0);
-		graphX.getViewport().setMaxX(24);
-		graphX.getViewport().setMinY(0);
-		graphX.getViewport().setMaxY(max(dataX));
-		((LinearLayout) rootView.findViewById(R.id.chartX)).addView(graphX);
+		Chart chartX = (Chart) rootView.findViewById(R.id.chartX);
+		chartX.getTitleView().setText(getString(R.string.common_koof_x));
+		chartX.getGraphView().addSeries(seriesX);
+		chartX.getGraphView().getViewport().setXAxisBoundsManual(true);
+		chartX.getGraphView().getViewport().setYAxisBoundsManual(true);
+		chartX.getGraphView().getViewport().setMinX(0);
+		chartX.getGraphView().getViewport().setMaxX(24);
+		chartX.getGraphView().getViewport().setMinY(0);
+		chartX.getGraphView().getViewport().setMaxY(max(dataX));
 
-		GraphView graphK = new GraphView(getActivity());
-		graphK.addSeries(seriesK);
-		graphK.getViewport().setXAxisBoundsManual(true);
-		graphK.getViewport().setYAxisBoundsManual(true);
-		graphK.getViewport().setMinX(0);
-		graphK.getViewport().setMaxX(24);
-		graphK.getViewport().setMinY(0);
-		graphK.getViewport().setMaxY(max(dataK));
-		((LinearLayout) rootView.findViewById(R.id.chartK)).addView(graphK);
+		Chart graphK = (Chart) rootView.findViewById(R.id.chartK);
+		graphK.getTitleView().setText(getString(R.string.common_koof_k));
+		graphK.getGraphView().addSeries(seriesK);
+		graphK.getGraphView().getViewport().setXAxisBoundsManual(true);
+		graphK.getGraphView().getViewport().setYAxisBoundsManual(true);
+		graphK.getGraphView().getViewport().setMinX(0);
+		graphK.getGraphView().getViewport().setMaxX(24);
+		graphK.getGraphView().getViewport().setMinY(0);
+		graphK.getGraphView().getViewport().setMaxY(max(dataK));
 
-		GraphView graphQ = new GraphView(getActivity());
-		graphQ.addSeries(seriesQ);
-		graphQ.getViewport().setXAxisBoundsManual(true);
-		graphQ.getViewport().setYAxisBoundsManual(true);
-		graphQ.getViewport().setMinX(0);
-		graphQ.getViewport().setMaxX(24);
-		graphQ.getViewport().setMinY(0);
-		graphQ.getViewport().setMaxY(max(dataQ));
-		((LinearLayout) rootView.findViewById(R.id.chartQ)).addView(graphQ);
+		Chart graphQ = (Chart) rootView.findViewById(R.id.chartQ);
+		graphQ.getTitleView().setText(getString(R.string.common_koof_q));
+		graphQ.getGraphView().addSeries(seriesQ);
+		graphQ.getGraphView().getViewport().setXAxisBoundsManual(true);
+		graphQ.getGraphView().getViewport().setYAxisBoundsManual(true);
+		graphQ.getGraphView().getViewport().setMinX(0);
+		graphQ.getGraphView().getViewport().setMaxX(24);
+		graphQ.getGraphView().getViewport().setMinY(0);
+		graphQ.getGraphView().getViewport().setMaxY(max(dataQ));
 
 		return rootView;
 	}

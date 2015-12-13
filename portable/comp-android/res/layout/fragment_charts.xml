@@ -14,91 +14,20 @@
         android:padding="@dimen/padding_small"
         tools:context="${packageName}.${activityClass}" >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:id="@+id/textChartX"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/common_koof_x"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/buttonHelpChartX"
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="\?" />
-        </LinearLayout>
-
-        <LinearLayout
+        <org.bosik.diacomp.android.frontend.views.Chart
             android:id="@+id/chartX"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:orientation="horizontal"
-            android:paddingBottom="@dimen/padding_large" >
-        </LinearLayout>
+            android:layout_height="wrap_content" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:id="@+id/textChartK"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/common_koof_k"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/buttonHelpChartK"
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="\?" />
-        </LinearLayout>
-
-        <LinearLayout
+        <org.bosik.diacomp.android.frontend.views.Chart
             android:id="@+id/chartK"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:orientation="horizontal"
-            android:paddingBottom="@dimen/padding_large" >
-        </LinearLayout>
+            android:layout_height="wrap_content" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:id="@+id/textChartQ"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/common_koof_q"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/buttonHelpChartQ"
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="\?" />
-        </LinearLayout>
-
-        <LinearLayout
+        <org.bosik.diacomp.android.frontend.views.Chart
             android:id="@+id/chartQ"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:orientation="horizontal" >
-        </LinearLayout>
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 </ScrollView>
