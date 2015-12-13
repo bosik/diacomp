@@ -42,9 +42,9 @@ public class FragmentCharts extends Fragment
 	{
 		View rootView = inflater.inflate(R.layout.fragment_charts, container, false);
 
-		addChartX(rootView);
-		addChartK(rootView);
-		addChartQ(rootView);
+		addChartX();
+		addChartK();
+		addChartQ();
 
 		return rootView;
 	}
@@ -61,7 +61,7 @@ public class FragmentCharts extends Fragment
 		return ((int) (1.1 * max / factor) + 1) * factor;
 	}
 
-	private void addChartX(View rootView)
+	private void addChartX()
 	{
 		KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
 
@@ -76,7 +76,7 @@ public class FragmentCharts extends Fragment
 		LineGraphSeries<DataPoint> seriesX = new LineGraphSeries<DataPoint>(dataX.toArray(new DataPoint[dataX.size()]));
 		seriesX.setColor(Color.rgb(128, 128, 128));
 
-		Chart chartX = (Chart) rootView.findViewById(R.id.chartX);
+		Chart chartX = (Chart) getActivity().getFragmentManager().findFragmentById(R.id.chartX);
 		chartX.getTitleView().setText(getString(R.string.common_koof_x));
 		chartX.getGraphView().addSeries(seriesX);
 		chartX.getGraphView().getViewport().setXAxisBoundsManual(true);
@@ -87,7 +87,7 @@ public class FragmentCharts extends Fragment
 		chartX.getGraphView().getViewport().setMaxY(max(dataX));
 	}
 
-	private void addChartK(View rootView)
+	private void addChartK()
 	{
 		KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
 
@@ -101,7 +101,7 @@ public class FragmentCharts extends Fragment
 		LineGraphSeries<DataPoint> seriesK = new LineGraphSeries<DataPoint>(dataK.toArray(new DataPoint[dataK.size()]));
 		seriesK.setColor(Color.rgb(255, 0, 0));
 
-		Chart graphK = (Chart) rootView.findViewById(R.id.chartK);
+		Chart graphK = (Chart) getActivity().getFragmentManager().findFragmentById(R.id.chartK);
 		graphK.getTitleView().setText(getString(R.string.common_koof_k));
 		graphK.getGraphView().addSeries(seriesK);
 		graphK.getGraphView().getViewport().setXAxisBoundsManual(true);
@@ -112,7 +112,7 @@ public class FragmentCharts extends Fragment
 		graphK.getGraphView().getViewport().setMaxY(max(dataK));
 	}
 
-	private void addChartQ(View rootView)
+	private void addChartQ()
 	{
 		KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
 
@@ -126,7 +126,7 @@ public class FragmentCharts extends Fragment
 		LineGraphSeries<DataPoint> seriesQ = new LineGraphSeries<DataPoint>(dataQ.toArray(new DataPoint[dataQ.size()]));
 		seriesQ.setColor(Color.rgb(0, 0, 255));
 
-		Chart graphQ = (Chart) rootView.findViewById(R.id.chartQ);
+		Chart graphQ = (Chart) getActivity().getFragmentManager().findFragmentById(R.id.chartQ);
 		graphQ.getTitleView().setText(getString(R.string.common_koof_q));
 		graphQ.getGraphView().addSeries(seriesQ);
 		graphQ.getGraphView().getViewport().setXAxisBoundsManual(true);

@@ -20,37 +20,27 @@ package org.bosik.diacomp.android.frontend.views;
 
 import org.bosik.diacomp.android.R;
 import com.jjoe64.graphview.GraphView;
-import android.content.Context;
-import android.util.AttributeSet;
+import android.app.Fragment;
+import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.widget.LinearLayout;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class Chart extends LinearLayout
+public class Chart extends Fragment
 {
 	private TextView	titleView;
 	private GraphView	graphView;
 
-	public Chart(final Context context)
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		this(context, null);
-	}
+		View rootView = inflater.inflate(R.layout.fragment_chart, container, false);
 
-	public Chart(final Context context, AttributeSet attributes)
-	{
-		super(context, attributes);
+		titleView = (TextView) rootView.findViewById(R.id.textChartTitle);
+		graphView = (GraphView) rootView.findViewById(R.id.chart);
 
-		if (isInEditMode())
-		{
-			setMinimumHeight(200);
-			return;
-		}
-
-		final LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		inflater.inflate(R.layout.view_chart, this);
-
-		titleView = (TextView) findViewById(R.id.textChartTitle);
-		graphView = (GraphView) findViewById(R.id.chart);
+		return rootView;
 	}
 
 	public TextView getTitleView()
