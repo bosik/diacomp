@@ -37,6 +37,18 @@ import android.view.ViewGroup;
 
 public class FragmentCharts extends Fragment
 {
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
+		View rootView = inflater.inflate(R.layout.fragment_charts, container, false);
+
+		addChartX(rootView);
+		addChartK(rootView);
+		addChartQ(rootView);
+
+		return rootView;
+	}
+
 	private static double max(List<DataPoint> values)
 	{
 		double max = 0;
@@ -49,35 +61,19 @@ public class FragmentCharts extends Fragment
 		return ((int) (1.1 * max / factor) + 1) * factor;
 	}
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	private void addChartX(View rootView)
 	{
-		// services
-		final KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
+		KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
 
-		// Widgets binding
-		View rootView = inflater.inflate(R.layout.fragment_charts, container, false);
-
-		// init example series data
-
-		List<DataPoint> dataK = new ArrayList<DataPoint>();
-		List<DataPoint> dataQ = new ArrayList<DataPoint>();
 		List<DataPoint> dataX = new ArrayList<DataPoint>();
 		for (int time = 0; time <= Utils.MinPerDay; time += 30)
 		{
 			Koof koof = koofService.getKoof(time);
-			double t = (double) time / 60;
-			dataK.add(new DataPoint(t, koof.getK()));
-			dataQ.add(new DataPoint(t, koof.getQ()));
-			dataX.add(new DataPoint(t, koof.getK() / koof.getQ()));
+			double x = (double) time / 60;
+			double y = koof.getK() / koof.getQ();
+			dataX.add(new DataPoint(x, y));
 		}
-
-		LineGraphSeries<DataPoint> seriesK = new LineGraphSeries<DataPoint>(dataK.toArray(new DataPoint[dataK.size()]));
-		LineGraphSeries<DataPoint> seriesQ = new LineGraphSeries<DataPoint>(dataQ.toArray(new DataPoint[dataQ.size()]));
 		LineGraphSeries<DataPoint> seriesX = new LineGraphSeries<DataPoint>(dataX.toArray(new DataPoint[dataX.size()]));
-
-		seriesK.setColor(Color.rgb(255, 0, 0));
-		seriesQ.setColor(Color.rgb(0, 0, 255));
 		seriesX.setColor(Color.rgb(128, 128, 128));
 
 		Chart chartX = (Chart) rootView.findViewById(R.id.chartX);
@@ -89,6 +85,21 @@ public class FragmentCharts extends Fragment
 		chartX.getGraphView().getViewport().setMaxX(24);
 		chartX.getGraphView().getViewport().setMinY(0);
 		chartX.getGraphView().getViewport().setMaxY(max(dataX));
+	}
+
+	private void addChartK(View rootView)
+	{
+		KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
+
+		List<DataPoint> dataK = new ArrayList<DataPoint>();
+		for (int time = 0; time <= Utils.MinPerDay; time += 30)
+		{
+			double x = (double) time / 60;
+			double y = koofService.getKoof(time).getK();
+			dataK.add(new DataPoint(x, y));
+		}
+		LineGraphSeries<DataPoint> seriesK = new LineGraphSeries<DataPoint>(dataK.toArray(new DataPoint[dataK.size()]));
+		seriesK.setColor(Color.rgb(255, 0, 0));
 
 		Chart graphK = (Chart) rootView.findViewById(R.id.chartK);
 		graphK.getTitleView().setText(getString(R.string.common_koof_k));
@@ -99,6 +110,21 @@ public class FragmentCharts extends Fragment
 		graphK.getGraphView().getViewport().setMaxX(24);
 		graphK.getGraphView().getViewport().setMinY(0);
 		graphK.getGraphView().getViewport().setMaxY(max(dataK));
+	}
+
+	private void addChartQ(View rootView)
+	{
+		KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
+
+		List<DataPoint> dataQ = new ArrayList<DataPoint>();
+		for (int time = 0; time <= Utils.MinPerDay; time += 30)
+		{
+			double x = (double) time / 60;
+			double y = koofService.getKoof(time).getQ();
+			dataQ.add(new DataPoint(x, y));
+		}
+		LineGraphSeries<DataPoint> seriesQ = new LineGraphSeries<DataPoint>(dataQ.toArray(new DataPoint[dataQ.size()]));
+		seriesQ.setColor(Color.rgb(0, 0, 255));
 
 		Chart graphQ = (Chart) rootView.findViewById(R.id.chartQ);
 		graphQ.getTitleView().setText(getString(R.string.common_koof_q));
@@ -109,7 +135,5 @@ public class FragmentCharts extends Fragment
 		graphQ.getGraphView().getViewport().setMaxX(24);
 		graphQ.getGraphView().getViewport().setMinY(0);
 		graphQ.getGraphView().getViewport().setMaxY(max(dataQ));
-
-		return rootView;
 	}
 }
