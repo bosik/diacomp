@@ -118,10 +118,6 @@
                 android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
         </activity>
         <activity
-            android:name=".frontend.activities.ActivityGraph"
-            android:label="@string/title_activity_activity_graph" >
-        </activity>
-        <activity
             android:name=".frontend.activities.ActivityLogin"
             android:label="@string/login_title"
             android:windowSoftInputMode="adjustResize|stateVisible" >
