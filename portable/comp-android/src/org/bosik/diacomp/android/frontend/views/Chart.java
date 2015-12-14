@@ -18,110 +18,221 @@
  */
 package org.bosik.diacomp.android.frontend.views;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.frontend.views.ProgressBundle.DataLoader;
+import org.bosik.diacomp.android.frontend.views.ProgressBundle.ProgressListener;
+import org.bosik.diacomp.android.frontend.views.ProgressBundle.ProgressState;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.Series;
+import android.content.ContentResolver;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class Chart extends Fragment
+class MyAsyncTask extends AsyncTask<ContentResolver, Void, Series<?>>
 {
-	public interface DataLoader
+	private ProgressBundle bundle;
+
+	public MyAsyncTask(ProgressBundle bundle)
 	{
-		void beforeLoading(Chart chart);
+		this.bundle = bundle;
+	}
 
-		Series<?> load();
+	@Override
+	protected void onPreExecute()
+	{
+		bundle.setState(ProgressState.LOADING);
+		if (bundle.getListener() != null)
+		{
+			bundle.getListener().onLoading();
+		}
+	};
 
-		void afterLoading(Chart chart);
+	@Override
+	protected Series<?> doInBackground(ContentResolver... params)
+	{
+		if (bundle.getDataLoader() != null)
+		{
+			return bundle.getDataLoader().load(params[0]);
+		}
+		else
+		{
+			return new LineGraphSeries<DataPoint>();
+		}
+	}
+
+	@Override
+	protected void onPostExecute(Series<?> result)
+	{
+		bundle.setSeries(result);
+		bundle.setState(ProgressState.DONE);
+		if (bundle.getListener() != null)
+		{
+			bundle.getListener().onReady(result);
+		}
+	};
+}
+
+public class Chart extends Fragment implements ProgressListener
+{
+	public interface PostSetupListener
+	{
+		void onPostSetup(Chart chart);
 	}
 
 	// UI
-	private TextView	titleView;
-	GraphView			graphView;
-	ProgressBar			progress;
+	private TextView									titleView;
+	private GraphView									graphView;
+	private ProgressBar									progress;
 
 	// data
-	DataLoader			dataLoader;
+	private int											chartId;
+	private DataLoader									dataLoader;
+	private PostSetupListener							postSetupListener;
+	private String										title;
+
+	private static final String							KEY_ID		= "id";
+	private static final Map<Integer, ProgressBundle>	container	= new ConcurrentHashMap<Integer, ProgressBundle>();
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	public void onCreate(Bundle savedInstanceState)
 	{
-		View rootView = inflater.inflate(R.layout.fragment_chart, container, false);
+		super.onCreate(savedInstanceState);
 
+		if (savedInstanceState != null && savedInstanceState.containsKey(KEY_ID))
+		{
+			chartId = savedInstanceState.getInt(KEY_ID);
+		}
+		else
+		{
+			chartId = hashCode();
+		}
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		super.onSaveInstanceState(outState);
+		outState.putInt(KEY_ID, chartId);
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState)
+	{
+		View rootView = inflater.inflate(R.layout.fragment_chart, viewGroup, false);
+
+		// find components
 		titleView = (TextView) rootView.findViewById(R.id.textChartTitle);
 		graphView = (GraphView) rootView.findViewById(R.id.chart);
 		progress = (ProgressBar) rootView.findViewById(R.id.progressChart);
 
+		// initialize
+		titleView.setText(getTitle());
+		graphView.setOnClickListener(new OnClickListener()
+		{
+			// FIXME: test only
+			@Override
+			public void onClick(View v)
+			{
+				refresh();
+			}
+		});
+
+		ProgressBundle bundle = getBundle();
+		switch (bundle.getState())
+		{
+			case INITIAL:
+			{
+				refresh();
+				break;
+			}
+			case LOADING:
+			{
+				onLoading();
+				break;
+			}
+			case DONE:
+			{
+				onReady(bundle.getSeries());
+				break;
+			}
+		}
+
 		return rootView;
 	}
 
-	@Override
-	public void onResume()
+	private ProgressBundle getBundle()
 	{
-		super.onResume();
-
-		if (dataLoader != null)
+		ProgressBundle bundle = container.get(chartId);
+		if (bundle == null)
 		{
-			new AsyncTask<Void, Void, Series<?>>()
-			{
-				@Override
-				protected void onPreExecute()
-				{
-					graphView.setVisibility(View.GONE);
-					progress.setVisibility(View.VISIBLE);
+			bundle = new ProgressBundle();
+			bundle.setState(ProgressState.INITIAL);
+			bundle.setSeries(null);
+			bundle.setListener(this);
+			bundle.setDataLoader(dataLoader);
+			container.put(chartId, bundle);
+		}
+		else
+		{
+			bundle.setListener(this);
+		}
 
-					dataLoader.beforeLoading(Chart.this);
-				};
+		return bundle;
+	}
 
-				@Override
-				protected Series<?> doInBackground(Void... params)
-				{
-					return dataLoader.load();
-				}
+	@Override
+	public void onDestroyView()
+	{
+		super.onDestroyView();
+		getBundle().setListener(null);
+	}
 
-				@Override
-				protected void onPostExecute(Series<?> result)
-				{
-					graphView.setVisibility(View.VISIBLE);
-					progress.setVisibility(View.GONE);
+	@Override
+	public void onLoading()
+	{
+		graphView.setVisibility(View.GONE);
+		progress.setVisibility(View.VISIBLE);
+	}
 
-					graphView.removeAllSeries();
-					graphView.addSeries(result);
-					dataLoader.afterLoading(Chart.this);
-				};
+	@Override
+	public void onReady(Series<?> result)
+	{
+		graphView.setVisibility(View.VISIBLE);
+		progress.setVisibility(View.GONE);
+		graphView.removeAllSeries();
+		graphView.addSeries(result);
 
-			}.execute();
+		if (postSetupListener != null)
+		{
+			postSetupListener.onPostSetup(this);
 		}
 	}
 
-	// @Override
-	// public void onActivityCreated(Bundle savedInstanceState)
-	// {
-	// super.onActivityCreated(savedInstanceState);
-	//
-	// boolean executed = savedInstanceState != null && savedInstanceState.getBoolean("executed",
-	// false);
-	//
-	// if (onLoadListener != null && !executed)
-	// {
-	// onLoadListener.onLoad(this);
-	// System.out.println("Runned");
-	// if (savedInstanceState != null)
-	// {
-	// savedInstanceState.putBoolean("executed", true);
-	// }
-	// }
-	// }
-
-	public TextView getTitleView()
+	public void refresh()
 	{
-		return titleView;
+		ProgressBundle bundle = getBundle();
+
+		if (bundle.getDataLoader() != null && bundle.getState() != ProgressState.LOADING)
+		{
+			FragmentActivity activity = getActivity();
+			if (activity != null)
+			{
+				MyAsyncTask asyncTask = new MyAsyncTask(bundle);
+				asyncTask.execute(activity.getContentResolver());
+			}
+		}
 	}
 
 	public GraphView getGraphView()
@@ -132,5 +243,20 @@ public class Chart extends Fragment
 	public void setDataLoader(DataLoader dataLoader)
 	{
 		this.dataLoader = dataLoader;
+	}
+
+	public String getTitle()
+	{
+		return title;
+	}
+
+	public void setTitle(String title)
+	{
+		this.title = title;
+	}
+
+	public void setPostSetupListener(PostSetupListener postSetupListener)
+	{
+		this.postSetupListener = postSetupListener;
 	}
 }

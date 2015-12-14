@@ -23,13 +23,16 @@ import java.util.List;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
 import org.bosik.diacomp.android.frontend.views.Chart;
-import org.bosik.diacomp.android.frontend.views.Chart.DataLoader;
+import org.bosik.diacomp.android.frontend.views.Chart.PostSetupListener;
+import org.bosik.diacomp.android.frontend.views.ProgressBundle.DataLoader;
 import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.utils.Utils;
+import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.Series;
+import android.content.ContentResolver;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -59,19 +62,20 @@ public class FragmentCharts extends Fragment
 
 	private void addChartX()
 	{
-		Chart chart = new Chart();
+		Chart chart = (Chart) getChildFragmentManager().findFragmentById(R.id.chartX);
+		if (chart == null)
+		{
+			chart = new Chart();
+			getChildFragmentManager().beginTransaction().add(R.id.chartX, chart).commit();
+		}
+
+		chart.setTitle(getString(R.string.common_koof_x));
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
-			public void beforeLoading(Chart chart)
+			public Series<?> load(ContentResolver contentResolver)
 			{
-				chart.getTitleView().setText(getString(R.string.common_koof_x));
-			}
-
-			@Override
-			public Series<?> load()
-			{
-				KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
+				KoofService koofService = KoofServiceInternal.getInstance(contentResolver);
 
 				List<DataPoint> dataList = new ArrayList<DataPoint>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
@@ -87,9 +91,11 @@ public class FragmentCharts extends Fragment
 
 				return series;
 			}
-
+		});
+		chart.setPostSetupListener(new PostSetupListener()
+		{
 			@Override
-			public void afterLoading(Chart chart)
+			public void onPostSetup(Chart chart)
 			{
 				chart.getGraphView().getViewport().setXAxisBoundsManual(true);
 				chart.getGraphView().getViewport().setYAxisBoundsManual(true);
@@ -101,24 +107,24 @@ public class FragmentCharts extends Fragment
 				chart.getGraphView().getViewport().setMaxY(addRoom(y));
 			}
 		});
-		getChildFragmentManager().beginTransaction().replace(R.id.chartX, chart).commit();
 	}
 
 	private void addChartK()
 	{
-		Chart chart = new Chart();
+		Chart chart = (Chart) getChildFragmentManager().findFragmentById(R.id.chartK);
+		if (chart == null)
+		{
+			chart = new Chart();
+			getChildFragmentManager().beginTransaction().add(R.id.chartK, chart).commit();
+		}
+
+		chart.setTitle(getString(R.string.common_koof_k));
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
-			public void beforeLoading(Chart chart)
+			public Series<?> load(ContentResolver contentResolver)
 			{
-				chart.getTitleView().setText(getString(R.string.common_koof_k));
-			}
-
-			@Override
-			public Series<?> load()
-			{
-				KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
+				KoofService koofService = KoofServiceInternal.getInstance(contentResolver);
 
 				List<DataPoint> dataList = new ArrayList<DataPoint>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
@@ -133,9 +139,11 @@ public class FragmentCharts extends Fragment
 
 				return series;
 			}
-
+		});
+		chart.setPostSetupListener(new PostSetupListener()
+		{
 			@Override
-			public void afterLoading(Chart chart)
+			public void onPostSetup(Chart chart)
 			{
 				chart.getGraphView().getViewport().setXAxisBoundsManual(true);
 				chart.getGraphView().getViewport().setYAxisBoundsManual(true);
@@ -147,24 +155,24 @@ public class FragmentCharts extends Fragment
 				chart.getGraphView().getViewport().setMaxY(addRoom(y));
 			}
 		});
-		getChildFragmentManager().beginTransaction().replace(R.id.chartK, chart).commit();
 	}
 
 	private void addChartQ()
 	{
-		Chart chart = new Chart();
+		Chart chart = (Chart) getChildFragmentManager().findFragmentById(R.id.chartQ);
+		if (chart == null)
+		{
+			chart = new Chart();
+			getChildFragmentManager().beginTransaction().add(R.id.chartQ, chart).commit();
+		}
+
+		chart.setTitle(getString(R.string.common_koof_q));
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
-			public void beforeLoading(Chart chart)
+			public Series<?> load(ContentResolver contentResolver)
 			{
-				chart.getTitleView().setText(getString(R.string.common_koof_q));
-			}
-
-			@Override
-			public Series<?> load()
-			{
-				KoofService koofService = KoofServiceInternal.getInstance(getActivity().getContentResolver());
+				KoofService koofService = KoofServiceInternal.getInstance(contentResolver);
 
 				List<DataPoint> dataList = new ArrayList<DataPoint>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
@@ -179,20 +187,26 @@ public class FragmentCharts extends Fragment
 
 				return series;
 			}
-
+		});
+		chart.setPostSetupListener(new PostSetupListener()
+		{
 			@Override
-			public void afterLoading(Chart chart)
+			public void onPostSetup(Chart chart)
 			{
-				chart.getGraphView().getViewport().setXAxisBoundsManual(true);
-				chart.getGraphView().getViewport().setYAxisBoundsManual(true);
-				chart.getGraphView().getViewport().setMinX(0);
-				chart.getGraphView().getViewport().setMaxX(24);
-				chart.getGraphView().getViewport().setMinY(0);
+				final GraphView graphView = chart.getGraphView();
 
-				double y = chart.getGraphView().getSeries().get(0).getHighestValueY();
-				chart.getGraphView().getViewport().setMaxY(addRoom(y));
+				graphView.getViewport().setXAxisBoundsManual(true);
+				graphView.getViewport().setYAxisBoundsManual(true);
+				graphView.getViewport().setMinX(0);
+				graphView.getViewport().setMaxX(24);
+				graphView.getViewport().setMinY(0);
+
+				if (!graphView.getSeries().isEmpty())
+				{
+					double y = graphView.getSeries().get(0).getHighestValueY();
+					graphView.getViewport().setMaxY(addRoom(y));
+				}
 			}
 		});
-		getChildFragmentManager().beginTransaction().replace(R.id.chartQ, chart).commit();
 	}
 }
