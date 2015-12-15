@@ -31,7 +31,7 @@
     <string name="common_rectype_meal">Приём пищи</string>
     <string name="common_rectype_note">Заметка</string>
     <string name="common_unit_bs_mmoll">ммоль/л</string>
-    <string name="common_unit_insulin">ед.</string>
+    <string name="common_unit_insulin">ед</string>
     <string name="common_unit_mass_gramm">г</string>
     <string name="editor_blood_field_finger">Палец</string>
     <string name="editor_blood_field_value">Значение, ммоль/л</string>

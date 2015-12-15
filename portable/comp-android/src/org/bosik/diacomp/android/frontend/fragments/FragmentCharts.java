@@ -251,7 +251,8 @@ public class FragmentCharts extends Fragment
 			getChildFragmentManager().beginTransaction().add(R.id.chartBS, chart).commit();
 		}
 
-		chart.setTitle(getString(R.string.charts_average_bs));
+		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_bs),
+				getString(R.string.common_unit_bs_mmoll)));
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
@@ -328,7 +329,9 @@ public class FragmentCharts extends Fragment
 			getChildFragmentManager().beginTransaction().add(R.id.chartInsulin, chart).commit();
 		}
 
-		chart.setTitle(getString(R.string.common_koof_x));
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x),
+				getString(R.string.common_unit_insulin), getString(R.string.common_unit_mass_gramm)));
+
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
@@ -405,7 +408,8 @@ public class FragmentCharts extends Fragment
 			getChildFragmentManager().beginTransaction().add(R.id.chartX, chart).commit();
 		}
 
-		chart.setTitle(getString(R.string.common_koof_x));
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x),
+				getString(R.string.common_unit_insulin), getString(R.string.common_unit_mass_gramm)));
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
@@ -458,7 +462,9 @@ public class FragmentCharts extends Fragment
 			getChildFragmentManager().beginTransaction().add(R.id.chartK, chart).commit();
 		}
 
-		chart.setTitle(getString(R.string.common_koof_k));
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_k),
+				getString(R.string.common_unit_bs_mmoll), getString(R.string.common_unit_mass_gramm)));
+
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
@@ -510,7 +516,9 @@ public class FragmentCharts extends Fragment
 			getChildFragmentManager().beginTransaction().add(R.id.chartQ, chart).commit();
 		}
 
-		chart.setTitle(getString(R.string.common_koof_q));
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_q),
+				getString(R.string.common_unit_bs_mmoll), getString(R.string.common_unit_insulin)));
+
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
