@@ -253,6 +253,7 @@ public class FragmentCharts extends Fragment
 
 		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_bs),
 				getString(R.string.common_unit_bs_mmoll)));
+		chart.setDescription(getString(R.string.charts_average_bs_description));
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
@@ -331,7 +332,7 @@ public class FragmentCharts extends Fragment
 
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x),
 				getString(R.string.common_unit_insulin), getString(R.string.common_unit_mass_gramm)));
-
+		chart.setDescription(getString(R.string.charts_insulin_consumption_history_description));
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
@@ -410,6 +411,7 @@ public class FragmentCharts extends Fragment
 
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x),
 				getString(R.string.common_unit_insulin), getString(R.string.common_unit_mass_gramm)));
+		chart.setDescription(getString(R.string.charts_insulin_consumption_daily_description));
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
@@ -464,7 +466,7 @@ public class FragmentCharts extends Fragment
 
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_k),
 				getString(R.string.common_unit_bs_mmoll), getString(R.string.common_unit_mass_gramm)));
-
+		chart.setDescription(getString(R.string.charts_koof_k_daily_description));
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
@@ -518,7 +520,7 @@ public class FragmentCharts extends Fragment
 
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_q),
 				getString(R.string.common_unit_bs_mmoll), getString(R.string.common_unit_insulin)));
-
+		chart.setDescription(getString(R.string.charts_koof_q_daily_description));
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override

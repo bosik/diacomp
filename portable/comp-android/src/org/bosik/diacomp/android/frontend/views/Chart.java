@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.views.ProgressBundle.DataLoader;
 import org.bosik.diacomp.android.frontend.views.ProgressBundle.ProgressListener;
 import org.bosik.diacomp.android.frontend.views.ProgressBundle.ProgressState;
@@ -37,6 +38,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -101,6 +103,7 @@ public class Chart extends Fragment implements ProgressListener
 	private DataLoader									dataLoader;
 	private PostSetupListener							postSetupListener;
 	private String										title;
+	private String										description;
 
 	private static final String							KEY_ID		= "id";
 	private static final Map<Integer, ProgressBundle>	container	= new ConcurrentHashMap<Integer, ProgressBundle>();
@@ -136,6 +139,19 @@ public class Chart extends Fragment implements ProgressListener
 		titleView = (TextView) rootView.findViewById(R.id.textChartTitle);
 		graphView = (GraphView) rootView.findViewById(R.id.chart);
 		progress = (ProgressBar) rootView.findViewById(R.id.progressChart);
+
+		LinearLayout buttonHelp = (LinearLayout) rootView.findViewById(R.id.buttonHelpChart);
+		buttonHelp.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				if (getActivity() != null && getDescription() != null)
+				{
+					UIUtils.showTip(getActivity(), getDescription());
+				}
+			}
+		});
 
 		// initialize
 		titleView.setText(getTitle());
@@ -256,6 +272,16 @@ public class Chart extends Fragment implements ProgressListener
 	public void setTitle(String title)
 	{
 		this.title = title;
+	}
+
+	public String getDescription()
+	{
+		return description;
+	}
+
+	public void setDescription(String description)
+	{
+		this.description = description;
 	}
 
 	public void setPostSetupListener(PostSetupListener postSetupListener)
