@@ -23,6 +23,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -565,7 +566,7 @@ public class Utils
 	 * @param values
 	 * @return
 	 */
-	public static double getSumm(List<Double> values)
+	public static double getSumm(Iterable<Double> values)
 	{
 		double summ = 0.0;
 
@@ -583,7 +584,7 @@ public class Utils
 	 * @param values
 	 * @return
 	 */
-	public static double getMean(List<Double> values)
+	public static double getMean(Collection<Double> values)
 	{
 		if (values.size() > 0)
 		{
@@ -602,7 +603,7 @@ public class Utils
 	 * @param mean
 	 * @return
 	 */
-	public static double getDeviation(List<Double> values, double mean)
+	public static double getDeviation(Collection<Double> values, double mean)
 	{
 		double s = 0.0;
 
@@ -614,6 +615,7 @@ public class Utils
 			}
 			s /= values.size();
 		}
+
 		return Math.sqrt(s);
 	}
 
