@@ -11,6 +11,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="horizontal" >
 
         <TextView
@@ -21,12 +22,23 @@
             android:text="Chart title here"
             android:textStyle="bold" />
 
-        <Button
+        <LinearLayout
             android:id="@+id/buttonHelpChart"
-            style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="\?" />
+            android:clickable="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="@dimen/padding_tiny" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:contentDescription="Help"
+                android:src="@drawable/ic_info" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
