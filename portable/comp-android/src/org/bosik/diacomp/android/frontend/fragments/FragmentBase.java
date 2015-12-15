@@ -173,7 +173,7 @@ public class FragmentBase extends Fragment
 	{
 		setHasOptionsMenu(true);
 
-		View rootView = inflater.inflate(R.layout.fragment_base, container, false);
+		View rootView = inflater.inflate(R.layout.fragment_tab_base, container, false);
 
 		// Widgets binding
 		groupBaseEmpty = rootView.findViewById(R.id.layoutBaseEmpty);

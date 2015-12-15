@@ -251,7 +251,7 @@ public class FragmentDiaryScroller extends Fragment
 		preferences = new PreferencesTypedService(new PreferencesLocalService(getActivity().getContentResolver()));
 
 		// Widgets binding
-		View rootView = inflater.inflate(R.layout.fragment_diary_scroller, container, false);
+		View rootView = inflater.inflate(R.layout.fragment_tab_diary, container, false);
 
 		list = (DiaryDayView) rootView.findViewById(R.id.listDiaryDay);
 		buttonAddBlood = (Button) rootView.findViewById(R.id.buttonAddBlood);
