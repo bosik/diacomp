@@ -17,6 +17,7 @@
     <string name="base_tip_food_edit_fail">Failed to save food</string>
     <string name="base_tip_food_edit_ok">Food saved</string>
     <string name="base_tip_items_removed">Removed items: %d</string>
+    <string name="charts_average_bs">Average blood sugar</string>
     <string name="common_action_delete">Delete</string>
     <string name="common_button_cancel">Cancel</string>
     <string name="common_button_ok">OK</string>
