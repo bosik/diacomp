@@ -16,21 +16,18 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package org.bosik.diacomp.android.frontend.views;
+package org.bosik.diacomp.android.frontend.fragments.chart;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
-import org.bosik.diacomp.android.frontend.views.ProgressBundle.DataLoader;
-import org.bosik.diacomp.android.frontend.views.ProgressBundle.ProgressListener;
-import org.bosik.diacomp.android.frontend.views.ProgressBundle.ProgressState;
+import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.DataLoader;
+import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.ProgressListener;
+import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.ProgressState;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.Series;
-import android.content.ContentResolver;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -41,50 +38,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-class MyAsyncTask extends AsyncTask<ContentResolver, Void, Collection<Series<?>>>
-{
-	private ProgressBundle bundle;
-
-	public MyAsyncTask(ProgressBundle bundle)
-	{
-		this.bundle = bundle;
-	}
-
-	@Override
-	protected void onPreExecute()
-	{
-		bundle.setState(ProgressState.LOADING);
-		if (bundle.getListener() != null)
-		{
-			bundle.getListener().onLoading();
-		}
-	};
-
-	@Override
-	protected Collection<Series<?>> doInBackground(ContentResolver... params)
-	{
-		if (bundle.getDataLoader() != null)
-		{
-			return bundle.getDataLoader().load(params[0]);
-		}
-		else
-		{
-			return Collections.emptyList();
-		}
-	}
-
-	@Override
-	protected void onPostExecute(Collection<Series<?>> result)
-	{
-		bundle.setSeries(result);
-		bundle.setState(ProgressState.DONE);
-		if (bundle.getListener() != null)
-		{
-			bundle.getListener().onReady(result);
-		}
-	};
-}
 
 public class Chart extends Fragment implements ProgressListener
 {
@@ -248,8 +201,7 @@ public class Chart extends Fragment implements ProgressListener
 			FragmentActivity activity = getActivity();
 			if (activity != null)
 			{
-				MyAsyncTask asyncTask = new MyAsyncTask(bundle);
-				asyncTask.execute(activity.getContentResolver());
+				new DataLoadingTask(bundle).execute(activity.getContentResolver());
 			}
 		}
 	}

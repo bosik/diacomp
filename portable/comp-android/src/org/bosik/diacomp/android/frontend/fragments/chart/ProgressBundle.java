@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package org.bosik.diacomp.android.frontend.views;
+package org.bosik.diacomp.android.frontend.fragments.chart;
 
 import java.util.Collection;
 import com.jjoe64.graphview.series.Series;
