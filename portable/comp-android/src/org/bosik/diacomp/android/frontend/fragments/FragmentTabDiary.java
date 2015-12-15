@@ -69,9 +69,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class FragmentDiaryScroller extends Fragment
+public class FragmentTabDiary extends Fragment
 {
-	private static final String		TAG							= FragmentDiaryScroller.class.getSimpleName();
+	private static final String		TAG							= FragmentTabDiary.class.getSimpleName();
 
 	// Constants
 	private static final int		DIALOG_BLOOD_CREATE			= 11;
@@ -169,7 +169,7 @@ public class FragmentDiaryScroller extends Fragment
 					@Override
 					protected DatePair doInBackground(Void... arg0)
 					{
-						FragmentActivity context = FragmentDiaryScroller.this.getActivity();
+						FragmentActivity context = FragmentTabDiary.this.getActivity();
 						if (context != null)
 						{
 							ServerTimeService service = TimeServiceInternal.getInstance(context);

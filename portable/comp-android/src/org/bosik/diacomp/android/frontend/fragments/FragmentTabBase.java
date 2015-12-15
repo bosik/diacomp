@@ -78,9 +78,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class FragmentBase extends Fragment
+public class FragmentTabBase extends Fragment
 {
-	private static final String						TAG					= FragmentBase.class.getSimpleName();
+	private static final String						TAG					= FragmentTabBase.class.getSimpleName();
 
 	private static final int						DIALOG_FOOD_CREATE	= 11;
 	private static final int						DIALOG_FOOD_MODIFY	= 12;

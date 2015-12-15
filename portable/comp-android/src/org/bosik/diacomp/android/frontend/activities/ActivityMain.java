@@ -31,9 +31,9 @@ import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.android.backend.features.preferences.device.DevicePreferences;
-import org.bosik.diacomp.android.frontend.fragments.FragmentBase;
-import org.bosik.diacomp.android.frontend.fragments.FragmentCharts;
-import org.bosik.diacomp.android.frontend.fragments.FragmentDiaryScroller;
+import org.bosik.diacomp.android.frontend.fragments.FragmentTabBase;
+import org.bosik.diacomp.android.frontend.fragments.FragmentTabCharts;
+import org.bosik.diacomp.android.frontend.fragments.FragmentTabDiary;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -139,7 +139,7 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 				@Override
 				public Fragment getContent()
 				{
-					return new FragmentDiaryScroller();
+					return new FragmentTabDiary();
 				}
 			});
 			pages.add(new Page()
@@ -153,7 +153,7 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 				@Override
 				public Fragment getContent()
 				{
-					return new FragmentBase();
+					return new FragmentTabBase();
 				}
 			});
 			pages.add(new Page()
@@ -167,7 +167,7 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 				@Override
 				public Fragment getContent()
 				{
-					return new FragmentCharts();
+					return new FragmentTabCharts();
 				}
 			});
 

@@ -191,7 +191,7 @@ class PostSetupHistory implements PostSetupListener
 
 		if (!graphView.getSeries().isEmpty())
 		{
-			maxY = FragmentCharts.addRoom(getMaxY(graphView.getSeries()));
+			maxY = FragmentTabCharts.addRoom(getMaxY(graphView.getSeries()));
 			graphView.getViewport().setMaxY(maxY);
 			graphView.getViewport().setMinX(getMinX(graphView.getSeries()));
 			graphView.getViewport().setMaxX(getMaxX(graphView.getSeries()));
@@ -205,7 +205,7 @@ class PostSetupHistory implements PostSetupListener
 	}
 }
 
-public class FragmentCharts extends Fragment
+public class FragmentTabCharts extends Fragment
 {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
