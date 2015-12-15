@@ -18,6 +18,8 @@
  */
 package org.bosik.diacomp.android.frontend.views;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bosik.diacomp.android.R;
@@ -25,8 +27,6 @@ import org.bosik.diacomp.android.frontend.views.ProgressBundle.DataLoader;
 import org.bosik.diacomp.android.frontend.views.ProgressBundle.ProgressListener;
 import org.bosik.diacomp.android.frontend.views.ProgressBundle.ProgressState;
 import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.Series;
 import android.content.ContentResolver;
 import android.os.AsyncTask;
@@ -40,7 +40,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-class MyAsyncTask extends AsyncTask<ContentResolver, Void, Series<?>>
+class MyAsyncTask extends AsyncTask<ContentResolver, Void, Collection<Series<?>>>
 {
 	private ProgressBundle bundle;
 
@@ -60,7 +60,7 @@ class MyAsyncTask extends AsyncTask<ContentResolver, Void, Series<?>>
 	};
 
 	@Override
-	protected Series<?> doInBackground(ContentResolver... params)
+	protected Collection<Series<?>> doInBackground(ContentResolver... params)
 	{
 		if (bundle.getDataLoader() != null)
 		{
@@ -68,12 +68,12 @@ class MyAsyncTask extends AsyncTask<ContentResolver, Void, Series<?>>
 		}
 		else
 		{
-			return new LineGraphSeries<DataPoint>();
+			return Collections.emptyList();
 		}
 	}
 
 	@Override
-	protected void onPostExecute(Series<?> result)
+	protected void onPostExecute(Collection<Series<?>> result)
 	{
 		bundle.setSeries(result);
 		bundle.setState(ProgressState.DONE);
@@ -207,12 +207,15 @@ public class Chart extends Fragment implements ProgressListener
 	}
 
 	@Override
-	public void onReady(Series<?> result)
+	public void onReady(Collection<Series<?>> result)
 	{
 		graphView.setVisibility(View.VISIBLE);
 		progress.setVisibility(View.GONE);
 		graphView.removeAllSeries();
-		graphView.addSeries(result);
+		for (Series<?> s : result)
+		{
+			graphView.addSeries(s);
+		}
 
 		if (postSetupListener != null)
 		{

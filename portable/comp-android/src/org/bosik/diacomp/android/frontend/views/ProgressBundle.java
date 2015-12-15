@@ -18,6 +18,7 @@
  */
 package org.bosik.diacomp.android.frontend.views;
 
+import java.util.Collection;
 import com.jjoe64.graphview.series.Series;
 import android.content.ContentResolver;
 
@@ -25,14 +26,14 @@ public class ProgressBundle
 {
 	public interface DataLoader
 	{
-		Series<?> load(ContentResolver contentResolver);
+		Collection<Series<?>> load(ContentResolver contentResolver);
 	}
 
 	public interface ProgressListener
 	{
 		void onLoading();
 
-		void onReady(Series<?> data);
+		void onReady(Collection<Series<?>> data);
 	}
 
 	public enum ProgressState
@@ -40,17 +41,17 @@ public class ProgressBundle
 		INITIAL, LOADING, DONE
 	}
 
-	private Series<?>			series;
-	private ProgressState		state;
-	private DataLoader			dataLoader;
-	private ProgressListener	listener;
+	private Collection<Series<?>>	series;
+	private ProgressState			state;
+	private DataLoader				dataLoader;
+	private ProgressListener		listener;
 
-	public Series<?> getSeries()
+	public Collection<Series<?>> getSeries()
 	{
 		return series;
 	}
 
-	public void setSeries(Series<?> series)
+	public void setSeries(Collection<Series<?>> series)
 	{
 		this.series = series;
 	}

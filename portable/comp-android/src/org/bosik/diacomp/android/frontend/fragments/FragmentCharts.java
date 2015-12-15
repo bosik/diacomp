@@ -20,6 +20,7 @@ package org.bosik.diacomp.android.frontend.fragments;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -102,7 +103,7 @@ public class FragmentCharts extends Fragment
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
-			public Series<?> load(ContentResolver contentResolver)
+			public Collection<Series<?>> load(ContentResolver contentResolver)
 			{
 				final int WINDOW_SIZE = 7; // days
 				final int PERIOD = 30; // days
@@ -152,7 +153,7 @@ public class FragmentCharts extends Fragment
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(data);
 				series.setColor(Color.rgb(255, 0, 0));
 
-				return series;
+				return Arrays.<Series<?>> asList(series);
 			}
 		});
 		chart.setPostSetupListener(new PostSetupListener()
@@ -211,7 +212,7 @@ public class FragmentCharts extends Fragment
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
-			public Series<?> load(ContentResolver contentResolver)
+			public Collection<Series<?>> load(ContentResolver contentResolver)
 			{
 				KoofService koofService = KoofServiceInternal.getInstance(contentResolver);
 
@@ -227,7 +228,7 @@ public class FragmentCharts extends Fragment
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(data);
 				series.setColor(Color.rgb(128, 128, 128));
 
-				return series;
+				return Arrays.<Series<?>> asList(series);
 			}
 		});
 		chart.setPostSetupListener(new PostSetupListener()
@@ -260,7 +261,7 @@ public class FragmentCharts extends Fragment
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
-			public Series<?> load(ContentResolver contentResolver)
+			public Collection<Series<?>> load(ContentResolver contentResolver)
 			{
 				KoofService koofService = KoofServiceInternal.getInstance(contentResolver);
 
@@ -275,7 +276,7 @@ public class FragmentCharts extends Fragment
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(data);
 				series.setColor(Color.rgb(255, 0, 0));
 
-				return series;
+				return Arrays.<Series<?>> asList(series);
 			}
 		});
 		chart.setPostSetupListener(new PostSetupListener()
@@ -308,7 +309,7 @@ public class FragmentCharts extends Fragment
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
-			public Series<?> load(ContentResolver contentResolver)
+			public Collection<Series<?>> load(ContentResolver contentResolver)
 			{
 				KoofService koofService = KoofServiceInternal.getInstance(contentResolver);
 
@@ -323,7 +324,7 @@ public class FragmentCharts extends Fragment
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(data);
 				series.setColor(Color.rgb(0, 0, 255));
 
-				return series;
+				return Arrays.<Series<?>> asList(series);
 			}
 		});
 		chart.setPostSetupListener(new PostSetupListener()
