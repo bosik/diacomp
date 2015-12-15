@@ -35,6 +35,8 @@ import org.bosik.diacomp.android.frontend.views.Chart.PostSetupListener;
 import org.bosik.diacomp.android.frontend.views.ProgressBundle.DataLoader;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.diary.DiaryService;
@@ -54,6 +56,155 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+class HistoryLabels implements LabelFormatter
+{
+	private double maxY;
+
+	public HistoryLabels(double maxY)
+	{
+		this.maxY = maxY;
+	}
+
+	@Override
+	public String formatLabel(double value, boolean isValueX)
+	{
+		if (isValueX)
+		{
+			return new SimpleDateFormat("dd/MM", Locale.US).format(new Date((long) value));
+		}
+		else
+		{
+			if (maxY / 4 >= 1)
+			{
+				return String.format(Locale.US, "%.0f", value);
+			}
+			else if (maxY / 4 >= 0.1)
+			{
+				return String.format(Locale.US, "%.1f", value);
+			}
+			else
+			{
+				return String.format(Locale.US, "%.2f", value);
+			}
+		}
+	}
+
+	@Override
+	public void setViewport(Viewport arg0)
+	{
+	}
+}
+
+class DailyLabels implements LabelFormatter
+{
+	private double maxY;
+
+	public DailyLabels(double maxY)
+	{
+		this.maxY = maxY;
+	}
+
+	@Override
+	public String formatLabel(double value, boolean isValueX)
+	{
+		if (isValueX)
+		{
+			return String.format(Locale.US, "%.0f", value);
+		}
+		else
+		{
+			if (maxY / 4 >= 1)
+			{
+				return String.format(Locale.US, "%.0f", value);
+			}
+			else if (maxY / 4 >= 0.1)
+			{
+				return String.format(Locale.US, "%.1f", value);
+			}
+			else
+			{
+				return String.format(Locale.US, "%.2f", value);
+			}
+		}
+	}
+
+	@Override
+	public void setViewport(Viewport arg0)
+	{
+	}
+}
+
+class PostSetupHistory implements PostSetupListener
+{
+	@SuppressWarnings("rawtypes")
+	protected static double getMaxY(List<Series> series)
+	{
+		Double result = null;
+		for (Series<?> s : series)
+		{
+			if (result == null || s.getHighestValueY() > result)
+			{
+				result = s.getHighestValueY();
+			}
+		}
+		return result != null ? result : 0.0;
+	}
+
+	@SuppressWarnings("rawtypes")
+	protected static double getMinX(List<Series> series)
+	{
+		Double result = null;
+		for (Series<?> s : series)
+		{
+			if (result == null || s.getLowestValueX() < result)
+			{
+				result = s.getLowestValueX();
+			}
+		}
+		return result != null ? result : 0.0;
+	}
+
+	@SuppressWarnings("rawtypes")
+	protected static double getMaxX(List<Series> series)
+	{
+		Double result = null;
+		for (Series<?> s : series)
+		{
+			if (result == null || s.getHighestValueX() > result)
+			{
+				result = s.getHighestValueX();
+			}
+		}
+		return result != null ? result : 0.0;
+	}
+
+	@Override
+	public void onPostSetup(Chart chart)
+	{
+		final GraphView graphView = chart.getGraphView();
+
+		graphView.getViewport().setXAxisBoundsManual(true);
+		graphView.getViewport().setYAxisBoundsManual(true);
+		graphView.getViewport().setMinY(0);
+
+		double maxY;
+
+		if (!graphView.getSeries().isEmpty())
+		{
+			maxY = FragmentCharts.addRoom(getMaxY(graphView.getSeries()));
+			graphView.getViewport().setMaxY(maxY);
+			graphView.getViewport().setMinX(getMinX(graphView.getSeries()));
+			graphView.getViewport().setMaxX(getMaxX(graphView.getSeries()));
+		}
+		else
+		{
+			maxY = 1;
+		}
+
+		graphView.getGridLabelRenderer().setLabelFormatter(new HistoryLabels(maxY));
+	}
+}
+
 public class FragmentCharts extends Fragment
 {
 	@Override
@@ -62,6 +213,7 @@ public class FragmentCharts extends Fragment
 		View rootView = inflater.inflate(R.layout.fragment_charts, container, false);
 
 		addChartBS();
+		addChartInsulinConsumption();
 
 		addChartX();
 		addChartK();
@@ -70,7 +222,7 @@ public class FragmentCharts extends Fragment
 		return rootView;
 	}
 
-	static double addRoom(double max)
+	public static double addRoom(double max)
 	{
 		double top = 0.04;
 
@@ -127,7 +279,9 @@ public class FragmentCharts extends Fragment
 
 				// ANALYZE & FILL SERIES
 
-				List<DataPoint> dataList = new ArrayList<DataPoint>();
+				List<DataPoint> dataAvg = new ArrayList<DataPoint>();
+				List<DataPoint> dataMin = new ArrayList<DataPoint>();
+				List<DataPoint> dataMax = new ArrayList<DataPoint>();
 
 				for (int i = 0; i < PERIOD; i++)
 				{
@@ -140,63 +294,106 @@ public class FragmentCharts extends Fragment
 						Collection<Double> values = items.values();
 
 						double mean = Utils.getMean(values);
-						// double deviation = Utils.getDeviation(values, mean);
-						dataList.add(new DataPoint(windowEnd, mean));
-					}
-					else
-					{
-						dataList.add(new DataPoint(windowEnd, 0));
+						double deviation = Utils.getDeviation(values, mean);
+						dataAvg.add(new DataPoint(windowEnd, mean));
+						dataMin.add(new DataPoint(windowEnd, mean - deviation));
+						dataMax.add(new DataPoint(windowEnd, mean + deviation));
 					}
 				}
 
-				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
-				LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(data);
-				series.setColor(Color.rgb(255, 0, 0));
+				LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<DataPoint>(
+						dataAvg.toArray(new DataPoint[dataAvg.size()]));
+				seriesAvg.setColor(Color.rgb(255, 0, 0));
+
+				LineGraphSeries<DataPoint> seriesMin = new LineGraphSeries<DataPoint>(
+						dataMin.toArray(new DataPoint[dataMin.size()]));
+				seriesMin.setColor(Color.rgb(255, 224, 224));
+
+				LineGraphSeries<DataPoint> seriesMax = new LineGraphSeries<DataPoint>(
+						dataMax.toArray(new DataPoint[dataMax.size()]));
+				seriesMax.setColor(Color.rgb(255, 224, 224));
+
+				return Arrays.<Series<?>> asList(seriesMin, seriesAvg, seriesMax);
+			}
+		});
+		chart.setPostSetupListener(new PostSetupHistory());
+	}
+
+	private void addChartInsulinConsumption()
+	{
+		Chart chart = (Chart) getChildFragmentManager().findFragmentById(R.id.chartInsulin);
+		if (chart == null)
+		{
+			chart = new Chart();
+			getChildFragmentManager().beginTransaction().add(R.id.chartInsulin, chart).commit();
+		}
+
+		chart.setTitle(getString(R.string.common_koof_x));
+		chart.setDataLoader(new DataLoader()
+		{
+			@Override
+			public Collection<Series<?>> load(ContentResolver contentResolver)
+			{
+				final int WINDOW_SIZE = 7; // days
+				final int PERIOD = 30; // days
+
+				// PREPARE DATE TREE
+
+				DiaryService diary = LocalDiary.getInstance(contentResolver);
+				Date endTime = new Date();
+				Date startTime = Utils.shiftDate(endTime, -PERIOD - WINDOW_SIZE);
+				List<Versioned<DiaryRecord>> recs = diary.findPeriod(startTime, endTime, false);
+
+				SortedMap<Date, DiaryRecord> bs = new TreeMap<>();
+				for (Versioned<DiaryRecord> rec : recs)
+				{
+					bs.put(rec.getData().getTime(), rec.getData());
+				}
+
+				// ANALYZE & FILL SERIES
+
+				List<DataPoint> data = new ArrayList<DataPoint>();
+
+				for (int i = 0; i < PERIOD; i++)
+				{
+					Date windowStart = Utils.shiftDate(startTime, i);
+					Date windowEnd = Utils.shiftDate(startTime, i + WINDOW_SIZE);
+					SortedMap<Date, DiaryRecord> items = bs.subMap(windowStart, windowEnd);
+
+					if (!items.isEmpty())
+					{
+						Collection<DiaryRecord> values = items.values();
+
+						double summCarbs = 0.0;
+						double summInsulin = 0.0;
+
+						for (DiaryRecord rec : values)
+						{
+							if (rec instanceof MealRecord)
+							{
+								summCarbs += ((MealRecord) rec).getCarbs();
+							}
+							else if (rec instanceof InsRecord)
+							{
+								summInsulin += ((InsRecord) rec).getValue();
+							}
+						}
+
+						if (summCarbs > Utils.EPS)
+						{
+							data.add(new DataPoint(windowEnd, summInsulin / summCarbs));
+						}
+					}
+				}
+
+				LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(
+						data.toArray(new DataPoint[data.size()]));
+				series.setColor(Color.rgb(192, 192, 255));
 
 				return Arrays.<Series<?>> asList(series);
 			}
 		});
-		chart.setPostSetupListener(new PostSetupListener()
-		{
-			@Override
-			public void onPostSetup(Chart chart)
-			{
-				final GraphView graphView = chart.getGraphView();
-
-				graphView.getViewport().setXAxisBoundsManual(true);
-				graphView.getViewport().setYAxisBoundsManual(true);
-				graphView.getViewport().setMinY(0);
-
-				if (!graphView.getSeries().isEmpty())
-				{
-					Series<?> series = graphView.getSeries().get(0);
-					graphView.getViewport().setMaxY(addRoom(series.getHighestValueY()));
-					graphView.getViewport().setMinX(series.getLowestValueX());
-					graphView.getViewport().setMaxX(series.getHighestValueX());
-				}
-
-				graphView.getGridLabelRenderer().setLabelFormatter(new LabelFormatter()
-				{
-					@Override
-					public String formatLabel(double value, boolean isValueX)
-					{
-						if (isValueX)
-						{
-							return new SimpleDateFormat("dd/MM", Locale.US).format(new Date((long) value));
-						}
-						else
-						{
-							return String.format(Locale.US, "%.1f", value);
-						}
-					}
-
-					@Override
-					public void setViewport(Viewport arg0)
-					{
-					}
-				});
-			}
-		});
+		chart.setPostSetupListener(new PostSetupHistory());
 	}
 
 	private void addChartX()
@@ -226,7 +423,7 @@ public class FragmentCharts extends Fragment
 				}
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(data);
-				series.setColor(Color.rgb(128, 128, 128));
+				series.setColor(Color.rgb(192, 192, 192));
 
 				return Arrays.<Series<?>> asList(series);
 			}
@@ -242,8 +439,12 @@ public class FragmentCharts extends Fragment
 				chart.getGraphView().getViewport().setMaxX(24);
 				chart.getGraphView().getViewport().setMinY(0);
 
-				double y = chart.getGraphView().getSeries().get(0).getHighestValueY();
-				chart.getGraphView().getViewport().setMaxY(addRoom(y));
+				if (!chart.getGraphView().getSeries().isEmpty())
+				{
+					double maxY = addRoom(chart.getGraphView().getSeries().get(0).getHighestValueY());
+					chart.getGraphView().getViewport().setMaxY(maxY);
+					chart.getGraphView().getGridLabelRenderer().setLabelFormatter(new DailyLabels(maxY));
+				}
 			}
 		});
 	}
@@ -290,8 +491,12 @@ public class FragmentCharts extends Fragment
 				chart.getGraphView().getViewport().setMaxX(24);
 				chart.getGraphView().getViewport().setMinY(0);
 
-				double y = chart.getGraphView().getSeries().get(0).getHighestValueY();
-				chart.getGraphView().getViewport().setMaxY(addRoom(y));
+				if (!chart.getGraphView().getSeries().isEmpty())
+				{
+					double maxY = addRoom(chart.getGraphView().getSeries().get(0).getHighestValueY());
+					chart.getGraphView().getViewport().setMaxY(maxY);
+					chart.getGraphView().getGridLabelRenderer().setLabelFormatter(new DailyLabels(maxY));
+				}
 			}
 		});
 	}
@@ -342,8 +547,9 @@ public class FragmentCharts extends Fragment
 
 				if (!graphView.getSeries().isEmpty())
 				{
-					double y = graphView.getSeries().get(0).getHighestValueY();
-					graphView.getViewport().setMaxY(addRoom(y));
+					double maxY = addRoom(chart.getGraphView().getSeries().get(0).getHighestValueY());
+					chart.getGraphView().getViewport().setMaxY(maxY);
+					chart.getGraphView().getGridLabelRenderer().setLabelFormatter(new DailyLabels(maxY));
 				}
 			}
 		});
