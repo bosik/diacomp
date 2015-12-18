@@ -16,21 +16,22 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package org.bosik.diacomp.android.frontend.fragments;
+package org.bosik.diacomp.android.frontend.fragments.pickers;
 
 import java.util.Calendar;
 import java.util.Date;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.widget.DatePicker;
+import android.text.format.DateFormat;
+import android.widget.TimePicker;
 
-public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener
+public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener
 {
 	private final Date time;
 
-	public DatePickerFragment(Date time)
+	public TimePickerFragment(Date time)
 	{
 		this.time = time;
 	}
@@ -40,15 +41,14 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 	{
 		Calendar c = Calendar.getInstance();
 		c.setTime(time);
-		int year = c.get(Calendar.YEAR);
-		int month = c.get(Calendar.MONTH);
-		int day = c.get(Calendar.DAY_OF_MONTH);
+		int hour = c.get(Calendar.HOUR_OF_DAY);
+		int minute = c.get(Calendar.MINUTE);
 
-		return new DatePickerDialog(getActivity(), this, year, month, day);
+		return new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
 	}
 
 	@Override
-	public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
+	public void onTimeSet(TimePicker view, int hourOfDay, int minute)
 	{
 	}
 }

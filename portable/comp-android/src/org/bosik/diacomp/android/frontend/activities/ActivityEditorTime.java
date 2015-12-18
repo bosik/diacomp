@@ -22,14 +22,16 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import org.bosik.diacomp.android.frontend.fragments.DatePickerFragment;
-import org.bosik.diacomp.android.frontend.fragments.TimePickerFragment;
+import org.bosik.diacomp.android.frontend.fragments.pickers.DatePickerFragment;
+import org.bosik.diacomp.android.frontend.fragments.pickers.TimePickerFragment;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import android.annotation.SuppressLint;
 import android.app.DialogFragment;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
 // Do not make it abstract: the android.app.Fragment$InstantiationException may be caused otherwise
+@SuppressLint("Registered")
 public class ActivityEditorTime<T extends DiaryRecord> extends ActivityEditor<T>
 {
 	private final SimpleDateFormat	FORMAT_TIME	= new SimpleDateFormat("HH:mm", Locale.getDefault());
