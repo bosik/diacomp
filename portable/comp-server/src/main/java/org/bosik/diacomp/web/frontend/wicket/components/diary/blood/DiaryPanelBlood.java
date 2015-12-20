@@ -89,7 +89,7 @@ public class DiaryPanelBlood extends Panel
 					deleteHint.add(AttributeModifier.replace("title", "Удалить"));
 					target.add(DiaryPanelBlood.this, deleteHint);
 				}
-				object.updateTimeStamp();
+				object.modified();
 				diaryService.save(Arrays.<Versioned<DiaryRecord>> asList(new Versioned<DiaryRecord>(object)));
 			}
 		};

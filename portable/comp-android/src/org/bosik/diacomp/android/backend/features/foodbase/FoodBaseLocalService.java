@@ -19,6 +19,7 @@
 package org.bosik.diacomp.android.backend.features.foodbase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -396,43 +397,20 @@ public class FoodBaseLocalService implements FoodBaseService
 	@Override
 	public void delete(String id) throws NotFoundException, AlreadyDeletedException
 	{
-		try
+		Versioned<FoodItem> item = findById(id);
+
+		if (item == null)
 		{
-			Versioned<FoodItem> founded = findById(id);
-
-			if (founded == null)
-			{
-				throw new NotFoundException(id);
-			}
-
-			if (founded.isDeleted())
-			{
-				throw new AlreadyDeletedException(id);
-			}
-
-			ContentValues newValues = new ContentValues();
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, 1);
-			String[] args = { id };
-			resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues,
-					DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?", args);
-
-			for (Versioned<FoodItem> item : memoryCache)
-			{
-				if (item.getId().equals(id))
-				{
-					item.setDeleted(true);
-					break;
-				}
-			}
+			throw new NotFoundException(id);
 		}
-		catch (PersistenceException e)
+		if (item.isDeleted())
 		{
-			throw e;
+			throw new AlreadyDeletedException(id);
 		}
-		catch (Exception e)
-		{
-			throw new PersistenceException(e);
-		}
+
+		item.setDeleted(true);
+		item.modified();
+		save(Arrays.asList(item));
 	}
 
 	@Override

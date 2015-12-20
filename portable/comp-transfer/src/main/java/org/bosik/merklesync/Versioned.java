@@ -21,9 +21,8 @@ import java.util.Comparator;
 import java.util.Date;
 
 /**
- * Has ID field (random; useful for comparing)
+ * Versioned entry
  */
-
 public class Versioned<T> implements Serializable
 {
 	private static final long	serialVersionUID	= 6063993499772711799L;
@@ -48,7 +47,7 @@ public class Versioned<T> implements Serializable
 		this.version = 0;
 		this.data = data;
 		this.deleted = false;
-		updateTimeStamp();
+		modified();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -62,8 +61,7 @@ public class Versioned<T> implements Serializable
 		setData((T)object.getData());
 	}
 
-	// TODO: rename to 'modified'
-	public void updateTimeStamp()
+	public void modified()
 	{
 		version++;
 		hash = HashUtils.generateGuid();
@@ -171,13 +169,12 @@ public class Versioned<T> implements Serializable
 				getTimeStamp().toString());
 	}
 
-	public static final Comparator<Versioned<?>>	COMPARATOR_GUID	= new Comparator<Versioned<?>>()
-																	{
-																		@Override
-																		public int compare(Versioned<?> lhs,
-																				Versioned<?> rhs)
-																		{
-																			return lhs.getId().compareTo(rhs.getId());
-																		}
-																	};
+	public static final Comparator<Versioned<?>> COMPARATOR_GUID = new Comparator<Versioned<?>>()
+	{
+		@Override
+		public int compare(Versioned<?> lhs, Versioned<?> rhs)
+		{
+			return lhs.getId().compareTo(rhs.getId());
+		}
+	};
 }

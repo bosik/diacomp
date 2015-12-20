@@ -86,7 +86,7 @@ public class ActivityEditor<T extends Serializable> extends Activity
 	{
 		if (getValuesFromGUI())
 		{
-			entity.updateTimeStamp();
+			entity.modified();
 
 			Intent intent = getIntent();
 			writeEntity(intent);

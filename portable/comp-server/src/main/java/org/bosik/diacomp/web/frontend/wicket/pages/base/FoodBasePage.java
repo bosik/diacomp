@@ -72,7 +72,7 @@ public class FoodBasePage extends MasterPage
 			{
 				System.out.println("Saving: " + model.getObject().getData().getName());
 
-				model.getObject().updateTimeStamp();
+				model.getObject().modified();
 				foodService.save(Arrays.asList(model.getObject()));
 
 				target.add(container);
@@ -96,7 +96,7 @@ public class FoodBasePage extends MasterPage
 			{
 				System.out.println("Saving: " + model.getObject().getData().getName());
 
-				model.getObject().updateTimeStamp();
+				model.getObject().modified();
 				dishService.save(Arrays.asList(model.getObject()));
 
 				target.add(container);

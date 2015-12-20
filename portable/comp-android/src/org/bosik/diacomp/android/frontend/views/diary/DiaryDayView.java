@@ -193,7 +193,7 @@ public class DiaryDayView extends LinearLayout
 							{
 								ItemData itemData = (ItemData) item;
 								itemData.record.setDeleted(true);
-								itemData.record.updateTimeStamp();
+								itemData.record.modified();
 								removedRecords.add(itemData.record);
 							}
 						}

@@ -180,7 +180,7 @@ public class DiaryLocalService implements DiaryService
 		}
 
 		item.setDeleted(true);
-		item.updateTimeStamp();
+		item.modified();
 		save(Arrays.asList(item));
 	}
 

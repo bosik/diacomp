@@ -188,7 +188,7 @@ public class FoodBaseLocalService implements FoodBaseService
 		}
 
 		item.setDeleted(true);
-		item.updateTimeStamp();
+		item.modified();
 		save(Arrays.asList(item));
 	}
 

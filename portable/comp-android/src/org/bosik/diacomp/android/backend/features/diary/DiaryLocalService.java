@@ -168,8 +168,8 @@ public class DiaryLocalService implements DiaryService
 		}
 
 		item.setDeleted(true);
-		item.updateTimeStamp();
-		save(Arrays.<Versioned<DiaryRecord>> asList(item));
+		item.modified();
+		save(Arrays.asList(item));
 	}
 
 	@Override

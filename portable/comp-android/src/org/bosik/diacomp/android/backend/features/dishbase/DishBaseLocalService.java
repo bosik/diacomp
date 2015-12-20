@@ -19,6 +19,7 @@
 package org.bosik.diacomp.android.backend.features.dishbase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -396,43 +397,20 @@ public class DishBaseLocalService implements DishBaseService
 	@Override
 	public void delete(String id) throws NotFoundException, AlreadyDeletedException
 	{
-		try
+		Versioned<DishItem> item = findById(id);
+
+		if (item == null)
 		{
-			Versioned<DishItem> founded = findById(id);
-
-			if (founded == null)
-			{
-				throw new NotFoundException(id);
-			}
-
-			if (founded.isDeleted())
-			{
-				throw new AlreadyDeletedException(id);
-			}
-
-			ContentValues newValues = new ContentValues();
-			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DELETED, 1);
-			String[] args = { id };
-			resolver.update(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues,
-					DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?", args);
-
-			for (Versioned<DishItem> item : memoryCache)
-			{
-				if (item.getId().equals(id))
-				{
-					item.setDeleted(true);
-					break;
-				}
-			}
+			throw new NotFoundException(id);
 		}
-		catch (PersistenceException e)
+		if (item.isDeleted())
 		{
-			throw e;
+			throw new AlreadyDeletedException(id);
 		}
-		catch (Exception e)
-		{
-			throw new PersistenceException(e);
-		}
+
+		item.setDeleted(true);
+		item.modified();
+		save(Arrays.asList(item));
 	}
 
 	@Override

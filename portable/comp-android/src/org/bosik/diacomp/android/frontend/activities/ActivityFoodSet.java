@@ -330,7 +330,7 @@ public class ActivityFoodSet extends FragmentActivity
 						Versioned<FoodItem> temp = localFoodBase.findById(food.getId());
 						if (temp != null)
 						{
-							food.updateTimeStamp();
+							food.modified();
 							food.setVersion(temp.getVersion() + 1);
 						}
 					}

@@ -188,7 +188,7 @@ public class DishBaseLocalService implements DishBaseService
 		}
 
 		item.setDeleted(true);
-		item.updateTimeStamp();
+		item.modified();
 		save(Arrays.asList(item));
 	}
 

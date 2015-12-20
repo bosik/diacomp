@@ -252,11 +252,13 @@ public class FragmentTabBase extends Fragment
 							if (item.getData() instanceof FoodItem)
 							{
 								item.setDeleted(true);
+								item.modified();
 								removedFoods.add(new Versioned<FoodItem>(item));
 							}
 							else if (item.getData() instanceof DishItem)
 							{
 								item.setDeleted(true);
+								item.modified();
 								removedDishes.add(new Versioned<DishItem>(item));
 							}
 						}
