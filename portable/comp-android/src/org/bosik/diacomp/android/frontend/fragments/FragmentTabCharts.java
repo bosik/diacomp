@@ -258,7 +258,7 @@ class PostSetupDaily extends PostSetup
 			maxY = 1;
 		}
 
-		graphView.getGridLabelRenderer().setLabelFormatter(new HistoryLabels(maxY));
+		graphView.getGridLabelRenderer().setLabelFormatter(new DailyLabels(maxY));
 	}
 }
 
