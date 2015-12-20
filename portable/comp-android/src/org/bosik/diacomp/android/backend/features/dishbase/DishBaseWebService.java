@@ -106,7 +106,8 @@ public class DishBaseWebService implements DishBaseService
 		}
 
 		item.setDeleted(true);
-		save(Arrays.<Versioned<DishItem>> asList(item));
+		item.modified();
+		save(Arrays.asList(item));
 	}
 
 	@Override

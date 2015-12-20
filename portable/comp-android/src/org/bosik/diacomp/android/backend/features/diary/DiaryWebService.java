@@ -265,6 +265,7 @@ public class DiaryWebService implements DiaryService
 		}
 
 		item.setDeleted(true);
-		save(Arrays.<Versioned<DiaryRecord>> asList(item));
+		item.modified();
+		save(Arrays.asList(item));
 	}
 }

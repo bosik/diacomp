@@ -106,7 +106,8 @@ public class FoodBaseWebService implements FoodBaseService
 		}
 
 		item.setDeleted(true);
-		save(Arrays.<Versioned<FoodItem>> asList(item));
+		item.modified();
+		save(Arrays.asList(item));
 	}
 
 	@Override
