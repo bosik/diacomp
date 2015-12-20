@@ -18,7 +18,6 @@ package org.bosik.merklesync;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -27,424 +26,428 @@ public class SyncUtils
 {
 	/* ============================ HELPER CLASSES ============================ */
 
-	public static interface Callback
+	public interface ProgressCallback
 	{
-		public void update_max(int max);
-
-		public void update_progress(int progress);
+		void update(int progress, int max);
 	}
 
-	public static interface ProgressCallback
+	public interface Synchronizer
 	{
-		public void update(int progress, int max);
-	}
-
-	/* ============================ ROUTINES ============================ */
-
-	/**
-	 * Calculates lists for synchronization
-	 * 
-	 * @param items1
-	 *            First list
-	 * @param items2
-	 *            Second list
-	 * @param newer1
-	 *            Items which has greater version in the first list
-	 * @param newer2
-	 *            Items which has greater version in the second list
-	 * @param only1
-	 *            Items which are presented only in the first list
-	 * @param only2
-	 *            Items which are presented only in the second list
-	 */
-	private static <T> void getOverLists(List<Versioned<T>> items1, List<Versioned<T>> items2,
-			List<Versioned<T>> newer1, List<Versioned<T>> newer2)
-	{
-		// null checks
-		if (null == items1)
-		{
-			throw new IllegalArgumentException("items1 is null");
-		}
-		if (null == items2)
-		{
-			throw new IllegalArgumentException("items2 is null");
-		}
-		if (null == newer1)
-		{
-			throw new IllegalArgumentException("newer1 is null");
-		}
-		if (null == newer2)
-		{
-			throw new IllegalArgumentException("newer2 is null");
-		}
-
-		// preparation
-
-		Collections.sort(items1, Versioned.COMPARATOR_GUID);
-		Collections.sort(items2, Versioned.COMPARATOR_GUID);
-		int i = 0;
-		int j = 0;
-
-		// parallel processing
-		while ((i < items1.size()) && (j < items2.size()))
-		{
-			Versioned<T> p1 = items1.get(i);
-			Versioned<T> p2 = items2.get(j);
-			int c = Versioned.COMPARATOR_GUID.compare(p1, p2);
-			if (c < 0)
-			{
-				newer1.add(p1);
-				i++;
-			}
-			else if (c > 0)
-			{
-				newer2.add(p2);
-				j++;
-			}
-			else
-			{
-				if (p1.getVersion() > p2.getVersion())
-				{
-					newer1.add(p1);
-				}
-				else if (p1.getVersion() < p2.getVersion())
-				{
-					newer2.add(p2);
-				}
-				else if (!p1.getHash().equals(p2.getHash()))
-				{
-					// We have a conflict
-					if (p1.getTimeStamp().after(p2.getTimeStamp()))
-					{
-						newer1.add(p1);
-					}
-					else
-					{
-						newer2.add(p2);
-					}
-				}
-				i++;
-				j++;
-			}
-		}
-
-		// finish first list
-		while (i < items1.size())
-		{
-			newer1.add(items1.get(i));
-			i++;
-		}
-
-		// finish second list
-		while (j < items2.size())
-		{
-			newer2.add(items2.get(j));
-			j++;
-		}
-	}
-
-	private static <T> int processItems(DataSource<T> service1, DataSource<T> service2, List<Versioned<T>> items1,
-			List<Versioned<T>> items2)
-	{
-		// null checks again
-		if (null == items1)
-		{
-			throw new IllegalArgumentException("Service1 returned null list");
-		}
-		if (null == items2)
-		{
-			throw new IllegalArgumentException("Service2 returned null list");
-		}
-
-		// calculating transferring lists
-		List<Versioned<T>> newer1 = new ArrayList<Versioned<T>>();
-		List<Versioned<T>> newer2 = new ArrayList<Versioned<T>>();
-		getOverLists(items1, items2, newer1, newer2);
-
-		// transfer
-		blockSave(newer2, service1);
-		blockSave(newer1, service2);
-
-		// Result is number of transferred records
-		return newer1.size() + newer2.size();
+		/**
+		 * Perform synchronizing
+		 * 
+		 * @return Total number of transferred items
+		 */
+		int synchronize();
 	}
 
 	/* ============================ SYNC METHODS: NAIVE ============================ */
 
 	/**
-	 * Synchronizes two object services
-	 * 
+	 * Data synchronizer based on version comparison. The sync scope is limited by the modification time.
+	 *
 	 * @param <T>
-	 * 
-	 * @param service1
-	 *            First service
-	 * @param service2
-	 *            Second service
-	 * @param since
-	 *            Modification time limiter: items modified after this time is taking in account
-	 *            only
-	 * @return Total number of transferred items
+	 *            Type of data source objects
 	 */
-	public static <T> int synchronize(DataSource<T> service1, DataSource<T> service2, Date since)
+	public static class TimeSynchronizer<T> implements Synchronizer
 	{
-		// null checks
-		if (null == service1)
+		private DataSource<T>	service1;
+		private DataSource<T>	service2;
+		private Date			since;
+		private int				maxItemsWrite;
+
+		/**
+		 * Constructor
+		 * 
+		 * @param service1
+		 *            First service
+		 * @param service2
+		 *            Second service
+		 * @param since
+		 *            Modification time limiter: items modified after this time is taking into account only
+		 * @param maxItemsWrite
+		 *            Max number of items to be saved to service per request
+		 */
+		public TimeSynchronizer(DataSource<T> service1, DataSource<T> service2, Date since, int maxItemsWrite)
 		{
-			throw new IllegalArgumentException("service1 is null");
-		}
-		if (null == service2)
-		{
-			throw new IllegalArgumentException("service2 is null");
-		}
-		if (null == since)
-		{
-			throw new IllegalArgumentException("since date is null");
+			this.service1 = Utils.nullCheck(service1, "service1");
+			this.service2 = Utils.nullCheck(service2, "service2");
+			this.since = Utils.nullCheck(since, "since date");
+			this.maxItemsWrite = maxItemsWrite;
 		}
 
-		List<Versioned<T>> items1 = service1.findChanged(since);
-		List<Versioned<T>> items2 = service2.findChanged(since);
+		/**
+		 * Constructor
+		 * 
+		 * @param service1
+		 *            First service
+		 * @param service2
+		 *            Second service
+		 * @param since
+		 *            Modification time limiter: items modified after this time is taking into account only
+		 */
+		public TimeSynchronizer(DataSource<T> service1, DataSource<T> service2, Date since)
+		{
+			this(service1, service2, since, Integer.MAX_VALUE);
+		}
 
-		return processItems(service1, service2, items1, items2);
+		@Override
+		public int synchronize()
+		{
+			List<Versioned<T>> items1 = service1.findChanged(since);
+			List<Versioned<T>> items2 = service2.findChanged(since);
+			return Utils.processItems(service1, service2, items1, items2, maxItemsWrite);
+		}
 	}
 
 	/**
-	 * Synchronizes single item
+	 * Single item data synchronizer based on version comparison.
 	 * 
-	 * @param service1
-	 * @param service2
-	 * @param id
-	 * @return
+	 * @param <T>
+	 *            Type of data source objects
 	 */
-	@SuppressWarnings({ "unchecked" })
-	public static <T> int synchronize(DataSource<T> service1, DataSource<T> service2, String id)
+	public static class SingleSynchronizer<T> implements Synchronizer
 	{
-		// null checks
-		if (null == service1)
+		private DataSource<T>	service1;
+		private DataSource<T>	service2;
+		private String			id;
+
+		/**
+		 * Constructor
+		 * 
+		 * @param service1
+		 *            First service
+		 * @param service2
+		 *            Second service
+		 * @param id
+		 *            Object ID to sync
+		 */
+		public SingleSynchronizer(DataSource<T> service1, DataSource<T> service2, String id)
 		{
-			throw new IllegalArgumentException("service1 is null");
-		}
-		if (null == service2)
-		{
-			throw new IllegalArgumentException("service2 is null");
-		}
-		if (null == id)
-		{
-			throw new IllegalArgumentException("id is null");
+			this.service1 = Utils.nullCheck(service1, "service1");
+			this.service2 = Utils.nullCheck(service2, "service2");
+			this.id = Utils.nullCheck(id, "id");
 		}
 
-		// requesting items
-		Versioned<T> item1 = service1.findById(id);
-		Versioned<T> item2 = service2.findById(id);
-
-		if (item1 == null)
+		@SuppressWarnings("unchecked")
+		@Override
+		public int synchronize()
 		{
+			// requesting items
+			Versioned<T> item1 = service1.findById(id);
+			Versioned<T> item2 = service2.findById(id);
+
+			if (item1 == null)
+			{
+				if (item2 == null)
+				{
+					return 0; // item was not found in any sources
+				}
+				else
+				{
+					service1.save(Arrays.asList(item2));
+					return 1;
+				}
+			}
+
 			if (item2 == null)
 			{
-				return 0; // item was not found in any sources
+				service2.save(Arrays.asList(item1));
+				return 1;
 			}
-			else
+
+			if (item1.getVersion() < item2.getVersion())
 			{
 				service1.save(Arrays.asList(item2));
 				return 1;
 			}
-		}
 
-		if (item2 == null)
-		{
-			service2.save(Arrays.asList(item1));
-			return 1;
-		}
-
-		if (item1.getVersion() < item2.getVersion())
-		{
-			service1.save(Arrays.asList(item2));
-			return 1;
-		}
-
-		if (item1.getVersion() > item2.getVersion())
-		{
-			service2.save(Arrays.asList(item1));
-			return 1;
-		}
-
-		return 0;
-	}
-
-	/* ============================ SYNC METHODS: HASH-BASED (v1) ============================ */
-
-	private static <T> int synchronizePrefix(DataSource<T> service1, DataSource<T> service2, String prefix)
-	{
-		String hash1 = service1.getHashTree().getHash(prefix);
-		String hash2 = service2.getHashTree().getHash(prefix);
-
-		if (SyncUtils.equals(hash1, hash2))
-		{
-			return 0;
-		}
-
-		if (prefix.length() < DataSource.ID_PREFIX_SIZE)
-		{
-			int result = 0;
-
-			for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
+			if (item1.getVersion() > item2.getVersion())
 			{
-				result += synchronizePrefix(service1, service2, prefix + HashUtils.BYTE_TO_CHAR[i]);
+				service2.save(Arrays.asList(item1));
+				return 1;
 			}
 
-			return result;
+			return 0;
 		}
-		else
-		{
-			List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
-			List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
+	}
 
-			return processItems(service1, service2, items1, items2);
+	/* ============================ SYNC METHODS: HASH-BASED ============================ */
+
+	/**
+	 * General-purpose data source synchronizer based on tree hashes and version comparison.
+	 * 
+	 * @param <T>
+	 *            Type of data source objects
+	 *
+	 * @deprecated This implementation checks only one hash per request and doesn't support progress callbacking. Use
+	 *             {@link org.bosik.merklesync.SyncUtils.Synchronizer2 Synchronizer2} instead.
+	 */
+	@Deprecated
+	public static class Synchronizer1<T> implements Synchronizer
+	{
+		private DataSource<T>	service1;
+		private DataSource<T>	service2;
+		private MerkleTree		tree1;
+		private MerkleTree		tree2;
+		private int				maxItemsWrite;
+
+		/**
+		 * Constructor
+		 * 
+		 * @param service1
+		 *            First service
+		 * @param service2
+		 *            Second service
+		 * @param maxItemsWrite
+		 *            Max number of items to be saved to service per request
+		 */
+		public Synchronizer1(DataSource<T> service1, DataSource<T> service2, int maxItemsWrite)
+		{
+			this.service1 = Utils.nullCheck(service1, "service1");
+			this.service2 = Utils.nullCheck(service2, "service2");
+			this.maxItemsWrite = maxItemsWrite;
+		}
+
+		/**
+		 * Constructor
+		 * 
+		 * @param service1
+		 *            First service
+		 * @param service2
+		 *            Second service
+		 */
+		public Synchronizer1(DataSource<T> service1, DataSource<T> service2)
+		{
+			this(service1, service2, Integer.MAX_VALUE);
+		}
+
+		@Override
+		public int synchronize()
+		{
+			tree1 = Utils.nullCheck(service1.getHashTree(), "tree1");
+			tree2 = Utils.nullCheck(service2.getHashTree(), "tree2");
+			return synchronizePrefix("");
+		}
+
+		private int synchronizePrefix(String prefix)
+		{
+			String hash1 = tree1.getHash(prefix);
+			String hash2 = tree2.getHash(prefix);
+
+			if (Utils.equals(hash1, hash2))
+			{
+				return 0;
+			}
+
+			if (prefix.length() < DataSource.ID_PREFIX_SIZE)
+			{
+				int result = 0;
+
+				for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
+				{
+					result += synchronizePrefix(prefix + HashUtils.BYTE_TO_CHAR[i]);
+				}
+
+				return result;
+			}
+			else
+			{
+				List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
+				List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
+
+				return Utils.processItems(service1, service2, items1, items2, maxItemsWrite);
+			}
+		}
+	}
+
+	/**
+	 * General-purpose data source synchronizer based on tree hashes and version comparison.
+	 * 
+	 * @param <T>
+	 *            Type of data source objects
+	 */
+	public static class Synchronizer2<T> implements Synchronizer
+	{
+		private DataSource<T>		service1;
+		private DataSource<T>		service2;
+		private MerkleTree			tree1;
+		private MerkleTree			tree2;
+		private List<Versioned<T>>	newer1;
+		private List<Versioned<T>>	newer2;
+		private int					maxItemsRead;
+		private int					maxItemsWrite;
+		private ProgressCallback	callback;
+
+		/**
+		 * Constructor
+		 * 
+		 * @param service1
+		 *            First service
+		 * @param service2
+		 *            Second service
+		 * @param maxItemsRead
+		 *            Max number of items to be read from service per request
+		 * @param maxItemsWrite
+		 *            Max number of items to be saved to service per request
+		 * @param callback
+		 *            Callback to inform about sync progress (optional, may be <code>null<code>)
+		 */
+		public Synchronizer2(DataSource<T> service1, DataSource<T> service2, int maxItemsRead, int maxItemsWrite,
+				ProgressCallback callback)
+		{
+			this.service1 = Utils.nullCheck(service1, "service1");
+			this.service2 = Utils.nullCheck(service2, "service2");
+			this.maxItemsRead = maxItemsRead;
+			this.maxItemsWrite = maxItemsWrite;
+			this.callback = callback;
+		}
+
+		/**
+		 * Constructor
+		 * 
+		 * @param service1
+		 *            First service
+		 * @param service2
+		 *            Second service
+		 * @param maxItemsRead
+		 *            Max number of items to be read from service per request
+		 * @param maxItemsWrite
+		 *            Max number of items to be saved to service per request
+		 */
+		public Synchronizer2(DataSource<T> service1, DataSource<T> service2, int maxItemsRead, int maxItemsWrite)
+		{
+			this(service1, service2, maxItemsRead, maxItemsWrite, null);
+		}
+
+		/**
+		 * Constructor
+		 * 
+		 * @param service1
+		 *            First service
+		 * @param service2
+		 *            Second service
+		 * @param callback
+		 *            Callback to inform about sync progress (optional, may be <code>null<code>)
+		 */
+		public Synchronizer2(DataSource<T> service1, DataSource<T> service2, ProgressCallback callback)
+		{
+			this(service1, service2, Integer.MAX_VALUE, Integer.MAX_VALUE, callback);
+		}
+
+		/**
+		 * Constructor
+		 * 
+		 * @param service1
+		 *            First service
+		 * @param service2
+		 *            Second service
+		 */
+		public Synchronizer2(DataSource<T> service1, DataSource<T> service2)
+		{
+			this(service1, service2, Integer.MAX_VALUE, Integer.MAX_VALUE, null);
+		}
+
+		@Override
+		public int synchronize()
+		{
+			if (callback != null)
+			{
+				callback.update(0, 256);
+			}
+
+			newer1 = new ArrayList<Versioned<T>>();
+			newer2 = new ArrayList<Versioned<T>>();
+			tree1 = service1.getHashTree();
+			tree2 = service2.getHashTree();
+			String hash1 = tree1.getHash("");
+			String hash2 = tree2.getHash("");
+
+			if (!Utils.equals(hash1, hash2))
+			{
+				synchronizeChildren("");
+				Utils.blockSave(newer1, service2, maxItemsWrite);
+				Utils.blockSave(newer2, service1, maxItemsWrite);
+			}
+
+			if (callback != null)
+			{
+				callback.update(256, 256);
+			}
+
+			return newer1.size() + newer2.size();
+		}
+
+		private void synchronizeChildren(String prefix)
+		{
+			if (callback != null)
+			{
+				switch (prefix.length())
+				{
+					case 0:
+					{
+						callback.update(0, 256);
+						break;
+					}
+					case 1:
+					{
+						int progress = HashUtils.CHAR_TO_BYTE[prefix.charAt(0)] * 16;
+						callback.update(progress, 256);
+						break;
+					}
+					case 2:
+					{
+						int progress = HashUtils.CHAR_TO_BYTE[prefix.charAt(0)] * 16
+								+ HashUtils.CHAR_TO_BYTE[prefix.charAt(1)];
+						callback.update(progress, 256);
+						break;
+					}
+				}
+			}
+
+			if ((prefix.length() < DataSource.ID_PREFIX_SIZE)
+					&& (service1.count(prefix) > maxItemsRead || service2.count(prefix) > maxItemsRead))
+			{
+				// ok, finer separation required
+				Map<String, String> hashes1 = tree1.getHashChildren(prefix);
+				Map<String, String> hashes2 = tree2.getHashChildren(prefix);
+
+				for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
+				{
+					String key = prefix + HashUtils.BYTE_TO_CHAR[i];
+					String hash1 = hashes1.get(key);
+					String hash2 = hashes2.get(key);
+					if (!Utils.equals(hash1, hash2))
+					{
+						synchronizeChildren(key);
+					}
+				}
+			}
+			else
+			{
+				// there are not too many items, process it at once
+				List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
+				List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
+				Utils.getOverLists(items1, items2, newer1, newer2);
+			}
 		}
 	}
 
 	/**
 	 * Synchronizes two object services
 	 * 
-	 * @param <T>
-	 * 
 	 * @param service1
 	 *            First service
 	 * @param service2
 	 *            Second service
+	 * @param callback
+	 *            Callback to inform about the progress, may be <code>null</code>
 	 * @return Total number of transferred items
 	 */
-	public static <T> int synchronize(DataSource<T> service1, DataSource<T> service2)
-	{
-		// null checks
-		if (null == service1)
-		{
-			throw new IllegalArgumentException("service1 is null");
-		}
-		if (null == service2)
-		{
-			throw new IllegalArgumentException("service2 is null");
-		}
-
-		return synchronizePrefix(service1, service2, "");
-	}
-
-	/* ============================ SYNC METHODS: HASH-BASED (v2) ============================ */
-
-	private static <T> void synchronizeChildren(DataSource<T> service1, MerkleTree tree1, DataSource<T> service2,
-			MerkleTree tree2, String prefix, List<Versioned<T>> newer1, List<Versioned<T>> newer2,
-			ProgressCallback callback)
-	{
-		if (callback != null)
-		{
-			switch (prefix.length())
-			{
-				case 0:
-				{
-					callback.update(0, 256);
-					break;
-				}
-				case 1:
-				{
-					int progress = HashUtils.CHAR_TO_BYTE[prefix.charAt(0)] * 16;
-					callback.update(progress, 256);
-					break;
-				}
-				case 2:
-				{
-					int progress = HashUtils.CHAR_TO_BYTE[prefix.charAt(0)] * 16
-							+ HashUtils.CHAR_TO_BYTE[prefix.charAt(1)];
-					callback.update(progress, 256);
-					break;
-				}
-			}
-		}
-
-		if ((prefix.length() < DataSource.ID_PREFIX_SIZE) && (service1.count(prefix) > DataSource.MAX_ITEMS_COUNT
-				|| service2.count(prefix) > DataSource.MAX_ITEMS_COUNT))
-		{
-			// ok, need for finer separation
-			Map<String, String> hashes1 = tree1.getHashChildren(prefix);
-			Map<String, String> hashes2 = tree2.getHashChildren(prefix);
-
-			for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
-			{
-				String key = prefix + HashUtils.BYTE_TO_CHAR[i];
-				String hash1 = hashes1.get(key);
-				String hash2 = hashes2.get(key);
-				if (!SyncUtils.equals(hash1, hash2))
-				{
-					synchronizeChildren(service1, tree1, service2, tree2, key, newer1, newer2, callback);
-				}
-			}
-		}
-		else
-		{
-			// there are not too many items, process it at once
-			List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
-			List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
-			getOverLists(items1, items2, newer1, newer2);
-		}
-	}
-
 	public static <T> int synchronize_v2(DataSource<T> service1, DataSource<T> service2, ProgressCallback callback)
 	{
-		// null checks
-		if (null == service1)
-		{
-			throw new IllegalArgumentException("service1 is null");
-		}
-		if (null == service2)
-		{
-			throw new IllegalArgumentException("service2 is null");
-		}
-
-		if (callback != null)
-		{
-			callback.update(0, 256);
-		}
-
-		MerkleTree tree1 = service1.getHashTree();
-		MerkleTree tree2 = service2.getHashTree();
-		String hash1 = tree1.getHash("");
-		String hash2 = tree2.getHash("");
-
-		List<Versioned<T>> newer1 = new ArrayList<Versioned<T>>();
-		List<Versioned<T>> newer2 = new ArrayList<Versioned<T>>();
-
-		if (!SyncUtils.equals(hash1, hash2))
-		{
-			synchronizeChildren(service1, tree1, service2, tree2, "", newer1, newer2, callback);
-		}
-
-		blockSave(newer1, service2);
-		blockSave(newer2, service1);
-
-		if (callback != null)
-		{
-			callback.update(256, 256);
-		}
-
-		return newer1.size() + newer2.size();
-	}
-
-	private static <T> void blockSave(List<Versioned<T>> items, DataSource<T> service)
-	{
-		for (int fromIndex = 0; fromIndex < items.size(); fromIndex += DataSource.MAX_ITEMS_COUNT)
-		{
-			int toIndex = Math.min(fromIndex + DataSource.MAX_ITEMS_COUNT, items.size());
-			service.save(items.subList(fromIndex, toIndex));
-		}
-	}
-
-	/**
-	 * Null-safe check.
-	 * 
-	 * @param a
-	 * @param b
-	 * @return True if both strings are null or equal
-	 */
-	private static boolean equals(String a, String b)
-	{
-		return a != null && a.equals(b) || a == b;
+		Synchronizer2<T> sync = new Synchronizer2<T>(service1, service2, DataSource.MAX_ITEMS_COUNT,
+				DataSource.MAX_ITEMS_COUNT, callback);
+		return sync.synchronize();
 	}
 }
