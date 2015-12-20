@@ -33,6 +33,8 @@ import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.android.frontend.fragments.chart.Chart;
 import org.bosik.diacomp.android.frontend.fragments.chart.Chart.PostSetupListener;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.DataLoader;
+import org.bosik.diacomp.android.frontend.views.ExpandableView;
+import org.bosik.diacomp.android.frontend.views.ExpandableView.OnSwitchedListener;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -55,6 +57,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 class HistoryLabels implements LabelFormatter
 {
@@ -212,12 +215,34 @@ public class FragmentTabCharts extends Fragment
 	{
 		View rootView = inflater.inflate(R.layout.fragment_tab_charts, container, false);
 
-		addChartBS();
-		addChartInsulinConsumption();
+		ExpandableView groupHistory = (ExpandableView) rootView.findViewById(R.id.chartGroupHistoryTitle);
+		LinearLayout groupHistoryContent = (LinearLayout) rootView.findViewById(R.id.chartGroupHistoryContent);
+		groupHistory.setTitle(getActivity().getString(R.string.charts_group_history));
+		groupHistory.setContentPanel(groupHistoryContent);
+		groupHistory.setOnSwitchedListener(new OnSwitchedListener()
+		{
+			@Override
+			public void onExpanded()
+			{
+				addChartBS(R.id.chartBS);
+				addChartInsulinConsumption(R.id.chartInsulin);
+			}
+		});
 
-		addChartX();
-		addChartK();
-		addChartQ();
+		ExpandableView groupDaily = (ExpandableView) rootView.findViewById(R.id.chartGroupDailyTitle);
+		LinearLayout groupDailyContent = (LinearLayout) rootView.findViewById(R.id.chartGroupDailyContent);
+		groupDaily.setTitle(getActivity().getString(R.string.charts_group_daily));
+		groupDaily.setContentPanel(groupDailyContent);
+		groupDaily.setOnSwitchedListener(new OnSwitchedListener()
+		{
+			@Override
+			public void onExpanded()
+			{
+				addChartX(R.id.chartX);
+				addChartK(R.id.chartK);
+				addChartQ(R.id.chartQ);
+			}
+		});
 
 		return rootView;
 	}
@@ -242,13 +267,14 @@ public class FragmentTabCharts extends Fragment
 		return top;
 	}
 
-	private void addChartBS()
+	void addChartBS(int viewId)
 	{
-		Chart chart = (Chart) getChildFragmentManager().findFragmentById(R.id.chartBS);
+		Chart chart = (Chart) getChildFragmentManager().findFragmentById(viewId);
+
 		if (chart == null)
 		{
 			chart = new Chart();
-			getChildFragmentManager().beginTransaction().add(R.id.chartBS, chart).commit();
+			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
 		}
 
 		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_bs),
@@ -321,13 +347,13 @@ public class FragmentTabCharts extends Fragment
 		chart.setPostSetupListener(new PostSetupHistory());
 	}
 
-	private void addChartInsulinConsumption()
+	void addChartInsulinConsumption(int viewId)
 	{
-		Chart chart = (Chart) getChildFragmentManager().findFragmentById(R.id.chartInsulin);
+		Chart chart = (Chart) getChildFragmentManager().findFragmentById(viewId);
 		if (chart == null)
 		{
 			chart = new Chart();
-			getChildFragmentManager().beginTransaction().add(R.id.chartInsulin, chart).commit();
+			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
 		}
 
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x),
@@ -400,13 +426,13 @@ public class FragmentTabCharts extends Fragment
 		chart.setPostSetupListener(new PostSetupHistory());
 	}
 
-	private void addChartX()
+	void addChartX(int viewId)
 	{
-		Chart chart = (Chart) getChildFragmentManager().findFragmentById(R.id.chartX);
+		Chart chart = (Chart) getChildFragmentManager().findFragmentById(viewId);
 		if (chart == null)
 		{
 			chart = new Chart();
-			getChildFragmentManager().beginTransaction().add(R.id.chartX, chart).commit();
+			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
 		}
 
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x),
@@ -455,13 +481,13 @@ public class FragmentTabCharts extends Fragment
 		});
 	}
 
-	private void addChartK()
+	void addChartK(int viewId)
 	{
-		Chart chart = (Chart) getChildFragmentManager().findFragmentById(R.id.chartK);
+		Chart chart = (Chart) getChildFragmentManager().findFragmentById(viewId);
 		if (chart == null)
 		{
 			chart = new Chart();
-			getChildFragmentManager().beginTransaction().add(R.id.chartK, chart).commit();
+			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
 		}
 
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_k),
@@ -509,13 +535,13 @@ public class FragmentTabCharts extends Fragment
 		});
 	}
 
-	private void addChartQ()
+	void addChartQ(int viewId)
 	{
-		Chart chart = (Chart) getChildFragmentManager().findFragmentById(R.id.chartQ);
+		Chart chart = (Chart) getChildFragmentManager().findFragmentById(viewId);
 		if (chart == null)
 		{
 			chart = new Chart();
-			getChildFragmentManager().beginTransaction().add(R.id.chartQ, chart).commit();
+			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
 		}
 
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_q),

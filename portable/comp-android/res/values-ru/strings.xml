@@ -19,6 +19,8 @@
     <string name="base_tip_items_removed">Удалено записей: %d</string>
     <string name="charts_average_bs">Средний сахар крови</string>
     <string name="charts_average_bs_description">Средний сахар крови по всем замерам. График отражает динамику за выбранный период времени.</string>
+    <string name="charts_group_daily">Суточные коэффициенты</string>
+    <string name="charts_group_history">История</string>
     <string name="charts_insulin_consumption_daily_description">Показывает, сколько инсулина необходимо для усвоения одной единицы углеводов. График отражает динамику в течение суток.</string>
     <string name="charts_insulin_consumption_history_description">Показывает, сколько инсулина необходимо для усвоения одной единицы углеводов. График отражает динамику за выбранный период времени.</string>
     <string name="charts_koof_k_daily_description">Показывает, насколько увеличится сахар крови при усвоении одной единицы углеводов. График отражает динамику в течение суток.</string>
