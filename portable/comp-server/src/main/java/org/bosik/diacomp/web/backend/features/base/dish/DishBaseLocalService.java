@@ -33,7 +33,9 @@ import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
+import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
@@ -174,23 +176,20 @@ public class DishBaseLocalService implements DishBaseService
 	@Override
 	public void delete(String id)
 	{
-		try
+		Versioned<DishItem> item = findById(id);
+
+		if (item == null)
 		{
-			int userId = getCurrentUserId();
-
-			Map<String, String> set = new HashMap<String, String>();
-			set.put(COLUMN_DISHBASE_DELETED, Utils.formatBooleanInt(true));
-
-			Map<String, String> where = new HashMap<String, String>();
-			where.put(COLUMN_DISHBASE_GUID, id);
-			where.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
-
-			MySQLAccess.update(TABLE_DISHBASE, set, where);
+			throw new NotFoundException(id);
 		}
-		catch (SQLException e)
+		if (item.isDeleted())
 		{
-			throw new RuntimeException(e);
+			throw new AlreadyDeletedException(id);
 		}
+
+		item.setDeleted(true);
+		item.updateTimeStamp();
+		save(Arrays.asList(item));
 	}
 
 	@Override

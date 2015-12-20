@@ -33,7 +33,9 @@ import org.bosik.diacomp.core.persistence.parsers.ParserFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
+import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
@@ -174,23 +176,20 @@ public class FoodBaseLocalService implements FoodBaseService
 	@Override
 	public void delete(String id)
 	{
-		try
+		Versioned<FoodItem> item = findById(id);
+
+		if (item == null)
 		{
-			int userId = getCurrentUserId();
-
-			Map<String, String> set = new HashMap<String, String>();
-			set.put(COLUMN_FOODBASE_DELETED, Utils.formatBooleanInt(true));
-
-			Map<String, String> where = new HashMap<String, String>();
-			where.put(COLUMN_FOODBASE_GUID, id);
-			where.put(COLUMN_FOODBASE_USER, String.valueOf(userId));
-
-			MySQLAccess.update(TABLE_FOODBASE, set, where);
+			throw new NotFoundException(id);
 		}
-		catch (SQLException e)
+		if (item.isDeleted())
 		{
-			throw new RuntimeException(e);
+			throw new AlreadyDeletedException(id);
 		}
+
+		item.setDeleted(true);
+		item.updateTimeStamp();
+		save(Arrays.asList(item));
 	}
 
 	@Override
