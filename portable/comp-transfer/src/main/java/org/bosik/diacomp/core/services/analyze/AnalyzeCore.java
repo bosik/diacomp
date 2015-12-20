@@ -19,6 +19,7 @@ package org.bosik.diacomp.core.services.analyze;
 
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.merklesync.Versioned;
 
@@ -31,4 +32,12 @@ public interface AnalyzeCore
 	 * @return
 	 */
 	KoofList analyze(List<Versioned<DiaryRecord>> records);
+
+	/**
+	 * Returns null if the list is empty
+	 * 
+	 * @param records
+	 * @return
+	 */
+	Koof analyzeAverage(List<Versioned<DiaryRecord>> records);
 }

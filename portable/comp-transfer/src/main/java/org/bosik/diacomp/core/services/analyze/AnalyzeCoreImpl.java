@@ -535,4 +535,39 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 			return null;
 		}
 	}
+
+	@Override
+	public Koof analyzeAverage(List<Versioned<DiaryRecord>> records)
+	{
+		/*
+		 * First implementation: naive, slow
+		 */
+
+		KoofList koofs = analyze(records);
+
+		if (koofs != null)
+		{
+			double k = 0;
+			double q = 0;
+			double p = 0;
+
+			for (int i = 0; i < Utils.MinPerDay; i++)
+			{
+				k += koofs.getKoof(i).getK();
+				q += koofs.getKoof(i).getQ();
+				p += koofs.getKoof(i).getP();
+			}
+
+			Koof koof = new Koof();
+			koof.setK(k / Utils.MinPerDay);
+			koof.setQ(q / Utils.MinPerDay);
+			koof.setP(p / Utils.MinPerDay);
+
+			return koof;
+		}
+		else
+		{
+			return null;
+		}
+	}
 }

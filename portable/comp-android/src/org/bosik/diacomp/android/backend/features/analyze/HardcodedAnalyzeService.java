@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,19 +14,21 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.features.analyze;
 
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
+import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.merklesync.Versioned;
 
 public class HardcodedAnalyzeService implements AnalyzeCore
 {
-	private static KoofList	koofs;
+	private static KoofList koofs;
+
 	static
 	{
 		koofs = new KoofList();
@@ -4356,5 +4358,11 @@ public class HardcodedAnalyzeService implements AnalyzeCore
 	public KoofList analyze(List<Versioned<DiaryRecord>> records)
 	{
 		return koofs;
+	}
+
+	@Override
+	public Koof analyzeAverage(List<Versioned<DiaryRecord>> records)
+	{
+		return koofs.getKoof(0);
 	}
 }
