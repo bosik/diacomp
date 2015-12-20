@@ -62,6 +62,10 @@ public class Chart extends Fragment implements ProgressListener
 	private static final String							KEY_ID			= "chart.Id";
 	private static final String							KEY_TITLE		= "chart.title";
 	private static final String							KEY_DESCRIPTION	= "chart.description";
+	private static final String							KEY_MIN_X		= "chart.minX";
+	private static final String							KEY_MAX_X		= "chart.maxX";
+	private static final String							KEY_MIN_Y		= "chart.minY";
+	private static final String							KEY_MAX_Y		= "chart.maxY";
 
 	private static final Map<Integer, ProgressBundle>	container		= new ConcurrentHashMap<Integer, ProgressBundle>();
 
@@ -79,14 +83,17 @@ public class Chart extends Fragment implements ProgressListener
 			chartId = hashCode();
 		}
 
-		if (savedInstanceState != null && savedInstanceState.containsKey(KEY_TITLE))
+		if (savedInstanceState != null)
 		{
-			title = savedInstanceState.getString(KEY_TITLE);
-		}
+			if (savedInstanceState.containsKey(KEY_TITLE))
+			{
+				title = savedInstanceState.getString(KEY_TITLE);
+			}
 
-		if (savedInstanceState != null && savedInstanceState.containsKey(KEY_DESCRIPTION))
-		{
-			description = savedInstanceState.getString(KEY_DESCRIPTION);
+			if (savedInstanceState.containsKey(KEY_DESCRIPTION))
+			{
+				description = savedInstanceState.getString(KEY_DESCRIPTION);
+			}
 		}
 	}
 
@@ -97,6 +104,13 @@ public class Chart extends Fragment implements ProgressListener
 		outState.putInt(KEY_ID, chartId);
 		outState.putString(KEY_TITLE, title);
 		outState.putString(KEY_DESCRIPTION, description);
+		if (graphView != null)
+		{
+			outState.putDouble(KEY_MIN_X, graphView.getViewport().getMinX(false));
+			outState.putDouble(KEY_MAX_X, graphView.getViewport().getMaxX(false));
+			outState.putDouble(KEY_MIN_Y, graphView.getViewport().getMinY(false));
+			outState.putDouble(KEY_MAX_Y, graphView.getViewport().getMaxY(false));
+		}
 	}
 
 	@Override
@@ -133,6 +147,30 @@ public class Chart extends Fragment implements ProgressListener
 				refresh();
 			}
 		});
+
+		if (savedInstanceState != null)
+		{
+			if (savedInstanceState.containsKey(KEY_MIN_X))
+			{
+				graphView.getViewport().setMinX(savedInstanceState.getDouble(KEY_MIN_X));
+				graphView.getViewport().setXAxisBoundsManual(true);
+			}
+			if (savedInstanceState.containsKey(KEY_MAX_X))
+			{
+				graphView.getViewport().setMaxX(savedInstanceState.getDouble(KEY_MAX_X));
+				graphView.getViewport().setXAxisBoundsManual(true);
+			}
+			if (savedInstanceState.containsKey(KEY_MIN_Y))
+			{
+				graphView.getViewport().setMinY(savedInstanceState.getDouble(KEY_MIN_Y));
+				graphView.getViewport().setYAxisBoundsManual(true);
+			}
+			if (savedInstanceState.containsKey(KEY_MAX_Y))
+			{
+				graphView.getViewport().setMaxY(savedInstanceState.getDouble(KEY_MAX_Y));
+				graphView.getViewport().setYAxisBoundsManual(true);
+			}
+		}
 
 		ProgressBundle bundle = getBundle();
 		switch (bundle.getState())
