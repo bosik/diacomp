@@ -28,7 +28,7 @@ public class HashUtils
 {
 	public static final int		PATTERN_SIZE	= 16;
 	public static final char[]	BYTE_TO_CHAR	= new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a',
-			'b', 'c', 'd', 'e', 'f'			};
+			'b', 'c', 'd', 'e', 'f' };
 	public static final byte[]	CHAR_TO_BYTE	= new byte[65536];
 
 	static
@@ -55,14 +55,14 @@ public class HashUtils
 	{
 		if (a != null && a.length() != DataSource.ID_FULL_SIZE)
 		{
-			throw new IllegalArgumentException(String.format("Invalid hash #1 ('%s'), expected: %d chars, found: %d",
-					a, DataSource.ID_FULL_SIZE, a.length()));
+			throw new IllegalArgumentException(String.format("Invalid hash #1 ('%s'), expected: %d chars, found: %d", a,
+					DataSource.ID_FULL_SIZE, a.length()));
 		}
 
 		if (b != null && b.length() != DataSource.ID_FULL_SIZE)
 		{
-			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d",
-					b, DataSource.ID_FULL_SIZE, b.length()));
+			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d", b,
+					DataSource.ID_FULL_SIZE, b.length()));
 		}
 
 		if (a == null)
@@ -111,8 +111,8 @@ public class HashUtils
 		{
 			if (entry.getKey().length() < prefixSize)
 			{
-				throw new IllegalArgumentException(String.format("Invalid key '%s', must be at least %d chars long",
-						entry.getKey(), prefixSize));
+				throw new IllegalArgumentException(
+						String.format("Invalid key '%s', must be at least %d chars long", entry.getKey(), prefixSize));
 			}
 
 			if (prevKey != null && !prevKey.regionMatches(0, entry.getKey(), 0, prefixSize))
@@ -158,6 +158,21 @@ public class HashUtils
 			result.putAll(map);
 		}
 
+		return result;
+	}
+
+	/**
+	 * Create in-memory Merkle tree
+	 * 
+	 * @param hashes
+	 *            Map (id -> hash) for all data items
+	 * @return {@link org.bosik.merklesync.MemoryMerkleTree MemoryMerkleTree}
+	 */
+	public static MerkleTree buildMerkleTree(SortedMap<String, String> hashes)
+	{
+		MemoryMerkleTree result = new MemoryMerkleTree();
+		result.putAll(hashes);
+		result.putAll(buildHashTree(hashes)); // headers (0..4 chars id)
 		return result;
 	}
 

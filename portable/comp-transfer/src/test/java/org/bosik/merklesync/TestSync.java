@@ -1,21 +1,20 @@
 /*
- * Diacomp - Diabetes analysis & management system
+ * MerkleSync - Data synchronization routine based on Merkle hash trees
  * Copyright (C) 2013 Nikita Bosik
  * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-package org.bosik.diacomp.core.services;
+package org.bosik.merklesync;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -24,22 +23,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import org.bosik.diacomp.core.test.fakes.services.FakeObjectService;
-import org.bosik.merklesync.SyncUtils;
-import org.bosik.merklesync.Versioned;
-import org.junit.Ignore;
 import org.junit.Test;
 import junit.framework.TestCase;
 
-@SuppressWarnings({ "unchecked", "deprecation" })
-@Ignore
-// TODO
+@SuppressWarnings({ "unchecked", "deprecation", "static-method" })
 public class TestSync
 {
-	private ObjectService<String>	service1	= new FakeObjectService();
-	private ObjectService<String>	service2	= new FakeObjectService();
-
-	private static final Date		firstDate	= new Date(0);
+	private static final Date ZERO_DATE = new Date(0);
 
 	private static void assertEquals(Versioned<String> exp, Versioned<String> act)
 	{
@@ -54,7 +44,7 @@ public class TestSync
 		TestCase.assertEquals(exp.getData(), act.getData());
 	}
 
-	private void assertEquals(List<Versioned<String>> listExp, List<Versioned<String>> listAct)
+	private static void assertEquals(List<Versioned<String>> listExp, List<Versioned<String>> listAct)
 	{
 		TestCase.assertNotNull(listExp);
 		TestCase.assertNotNull(listAct);
@@ -71,16 +61,19 @@ public class TestSync
 		}
 	}
 
-	private void assertServicesAreSynced()
+	private static void assertServicesAreSynced(DataSource<String> service1, DataSource<String> service2)
 	{
-		List<Versioned<String>> list1 = service1.findChanged(firstDate);
-		List<Versioned<String>> list2 = service2.findChanged(firstDate);
+		List<Versioned<String>> list1 = service1.findChanged(ZERO_DATE);
+		List<Versioned<String>> list2 = service2.findChanged(ZERO_DATE);
 		assertEquals(list1, list2);
 	}
 
 	@Test
 	public void test_sync_SingleAdd_SyncedOk()
 	{
+		DataSource<String> service1 = new FakeObjectService();
+		DataSource<String> service2 = new FakeObjectService();
+
 		Versioned<String> item = new Versioned<String>();
 		item.setData("Test");
 		item.setDeleted(true);
@@ -91,14 +84,15 @@ public class TestSync
 		service1.save(Arrays.<Versioned<String>> asList(item));
 
 		SyncUtils.synchronize_v2(service1, service2, null);
-		assertServicesAreSynced();
-		//		Versioned<String> restored = service2.findById(item.getId());
-		//		assertEquals(item, restored);
+		assertServicesAreSynced(service1, service2);
 	}
 
 	@Test
 	public void test_sync_SingleAddReverse_SyncedOk()
 	{
+		DataSource<String> service1 = new FakeObjectService();
+		DataSource<String> service2 = new FakeObjectService();
+
 		Versioned<String> item = new Versioned<String>();
 		item.setData("Test");
 		item.setDeleted(true);
@@ -110,13 +104,14 @@ public class TestSync
 
 		SyncUtils.synchronize_v2(service2, service1, null);
 
-		assertServicesAreSynced();
-		//		Versioned<String> restored = service2.findById(item.getId());
-		//		assertEquals(item, restored);
+		assertServicesAreSynced(service1, service2);
 	}
 
 	public void test_sync_SingleOldAdd_NotSynced()
 	{
+		DataSource<String> service1 = new FakeObjectService();
+		DataSource<String> service2 = new FakeObjectService();
+
 		Versioned<String> item = new Versioned<String>();
 		item.setData("Test");
 		item.setDeleted(true);
@@ -133,13 +128,16 @@ public class TestSync
 		assertNull(restored);
 
 		// total check
-		List<Versioned<String>> list2 = service2.findChanged(firstDate);
+		List<Versioned<String>> list2 = service2.findChanged(ZERO_DATE);
 		assertTrue(list2.isEmpty());
 	}
 
 	public void test_sync_SingleChanged_SyncedOk()
 	{
 		// create item and save it in both sources
+
+		DataSource<String> service1 = new FakeObjectService();
+		DataSource<String> service2 = new FakeObjectService();
 
 		Versioned<String> item = new Versioned<String>();
 		item.setData("Test");
@@ -167,11 +165,14 @@ public class TestSync
 		assertEquals(item, service2.findById(item.getId()));
 
 		// total check
-		assertServicesAreSynced();
+		assertServicesAreSynced(service1, service2);
 	}
 
 	public void test_sync_SingleCrossSync_SyncedOk()
 	{
+		DataSource<String> service1 = new FakeObjectService();
+		DataSource<String> service2 = new FakeObjectService();
+
 		// create item1 and save it in first storage
 
 		Versioned<String> item1 = new Versioned<String>();
@@ -197,29 +198,31 @@ public class TestSync
 		SyncUtils.synchronize_v2(service1, service2, null);
 
 		// total check
-		assertServicesAreSynced();
+		assertServicesAreSynced(service1, service2);
 	}
 
 	@Test
 	public void test_sync_ContrSync_SyncedOk()
 	{
+		DataSource<String> service1 = new FakeObjectService();
+		DataSource<String> service2 = new FakeObjectService();
+
 		// create items for first storage
 
 		Date timeLess = new Date(2014, 01, 01, 10, 00, 00);
-		Date timeSync = new Date(2014, 01, 01, 12, 00, 00);
 		Date timeMore = new Date(2014, 01, 01, 14, 00, 00);
 
 		Versioned<String> a1 = new Versioned<String>();
 		a1.setData("a1 data");
 		a1.setDeleted(false);
-		a1.setId("a");
+		a1.setId("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8");
 		a1.setTimeStamp(timeMore);
 		a1.setVersion(5);
 
 		Versioned<String> b1 = new Versioned<String>();
 		b1.setData("b1 data");
 		b1.setDeleted(false);
-		b1.setId("b");
+		b1.setId("b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8a1");
 		b1.setTimeStamp(timeLess);
 		b1.setVersion(20);
 
@@ -230,14 +233,14 @@ public class TestSync
 		Versioned<String> a2 = new Versioned<String>();
 		a2.setData("a2 data");
 		a2.setDeleted(true);
-		a2.setId("a");
+		a2.setId("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8");
 		a2.setTimeStamp(timeLess);
 		a2.setVersion(8);
 
 		Versioned<String> b2 = new Versioned<String>();
 		b2.setData("b2 data");
 		b2.setDeleted(true);
-		b2.setId("b");
+		b2.setId("b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8a1");
 		b2.setTimeStamp(timeMore);
 		b2.setVersion(19);
 
@@ -247,12 +250,12 @@ public class TestSync
 		SyncUtils.synchronize_v2(service1, service2, null);
 
 		// total check
-		assertServicesAreSynced();
+		assertServicesAreSynced(service1, service2);
 
 		// accurate check
-		assertEquals(a2, service1.findById("a"));
-		assertEquals(a2, service2.findById("a"));
-		assertEquals(b1, service1.findById("b"));
-		assertEquals(b1, service2.findById("b"));
+		assertEquals(a2, service1.findById("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8"));
+		assertEquals(a2, service2.findById("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8"));
+		assertEquals(b1, service1.findById("b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8a1"));
+		assertEquals(b1, service2.findById("b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8a1"));
 	}
 }
