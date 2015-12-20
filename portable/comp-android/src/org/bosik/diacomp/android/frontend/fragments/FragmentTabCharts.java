@@ -137,7 +137,7 @@ class DailyLabels implements LabelFormatter
 	}
 }
 
-class PostSetupHistory implements PostSetupListener
+abstract class PostSetup implements PostSetupListener
 {
 	@SuppressWarnings("rawtypes")
 	protected static double getMaxY(List<Series> series)
@@ -181,6 +181,29 @@ class PostSetupHistory implements PostSetupListener
 		return result != null ? result : 0.0;
 	}
 
+	protected static double addRoom(double max)
+	{
+		double top = 0.04;
+
+		while (top < max)
+		{
+			if (top * 2 > max)
+			{
+				return top * 2;
+			}
+			if (top * 5 > max)
+			{
+				return top * 5;
+			}
+			top *= 10;
+		}
+
+		return top;
+	}
+}
+
+class PostSetupHistory extends PostSetup
+{
 	@Override
 	public void onPostSetup(Chart chart)
 	{
@@ -194,7 +217,38 @@ class PostSetupHistory implements PostSetupListener
 
 		if (!graphView.getSeries().isEmpty())
 		{
-			maxY = FragmentTabCharts.addRoom(getMaxY(graphView.getSeries()));
+			maxY = addRoom(getMaxY(graphView.getSeries()));
+			graphView.getViewport().setMaxY(maxY);
+			graphView.getViewport().setMinX(getMinX(graphView.getSeries()));
+			graphView.getViewport().setMaxX(getMaxX(graphView.getSeries()));
+		}
+		else
+		{
+			maxY = 1;
+		}
+
+		graphView.getGridLabelRenderer().setLabelFormatter(new HistoryLabels(maxY));
+	}
+}
+
+class PostSetupDaily extends PostSetup
+{
+	@Override
+	public void onPostSetup(Chart chart)
+	{
+		final GraphView graphView = chart.getGraphView();
+
+		graphView.getViewport().setXAxisBoundsManual(true);
+		graphView.getViewport().setYAxisBoundsManual(true);
+		graphView.getViewport().setMinX(0);
+		graphView.getViewport().setMaxX(24);
+		graphView.getViewport().setMinY(0);
+
+		double maxY;
+
+		if (!graphView.getSeries().isEmpty())
+		{
+			maxY = addRoom(getMaxY(graphView.getSeries()));
 			graphView.getViewport().setMaxY(maxY);
 			graphView.getViewport().setMinX(getMinX(graphView.getSeries()));
 			graphView.getViewport().setMaxX(getMaxX(graphView.getSeries()));
@@ -245,26 +299,6 @@ public class FragmentTabCharts extends Fragment
 		});
 
 		return rootView;
-	}
-
-	public static double addRoom(double max)
-	{
-		double top = 0.04;
-
-		while (top < max)
-		{
-			if (top * 2 > max)
-			{
-				return top * 2;
-			}
-			if (top * 5 > max)
-			{
-				return top * 5;
-			}
-			top *= 10;
-		}
-
-		return top;
 	}
 
 	void addChartBS(int viewId)
@@ -460,25 +494,7 @@ public class FragmentTabCharts extends Fragment
 				return Arrays.<Series<?>> asList(series);
 			}
 		});
-		chart.setPostSetupListener(new PostSetupListener()
-		{
-			@Override
-			public void onPostSetup(Chart chart)
-			{
-				chart.getGraphView().getViewport().setXAxisBoundsManual(true);
-				chart.getGraphView().getViewport().setYAxisBoundsManual(true);
-				chart.getGraphView().getViewport().setMinX(0);
-				chart.getGraphView().getViewport().setMaxX(24);
-				chart.getGraphView().getViewport().setMinY(0);
-
-				if (!chart.getGraphView().getSeries().isEmpty())
-				{
-					double maxY = addRoom(chart.getGraphView().getSeries().get(0).getHighestValueY());
-					chart.getGraphView().getViewport().setMaxY(maxY);
-					chart.getGraphView().getGridLabelRenderer().setLabelFormatter(new DailyLabels(maxY));
-				}
-			}
-		});
+		chart.setPostSetupListener(new PostSetupDaily());
 	}
 
 	void addChartK(int viewId)
@@ -514,25 +530,7 @@ public class FragmentTabCharts extends Fragment
 				return Arrays.<Series<?>> asList(series);
 			}
 		});
-		chart.setPostSetupListener(new PostSetupListener()
-		{
-			@Override
-			public void onPostSetup(Chart chart)
-			{
-				chart.getGraphView().getViewport().setXAxisBoundsManual(true);
-				chart.getGraphView().getViewport().setYAxisBoundsManual(true);
-				chart.getGraphView().getViewport().setMinX(0);
-				chart.getGraphView().getViewport().setMaxX(24);
-				chart.getGraphView().getViewport().setMinY(0);
-
-				if (!chart.getGraphView().getSeries().isEmpty())
-				{
-					double maxY = addRoom(chart.getGraphView().getSeries().get(0).getHighestValueY());
-					chart.getGraphView().getViewport().setMaxY(maxY);
-					chart.getGraphView().getGridLabelRenderer().setLabelFormatter(new DailyLabels(maxY));
-				}
-			}
-		});
+		chart.setPostSetupListener(new PostSetupDaily());
 	}
 
 	void addChartQ(int viewId)
@@ -568,26 +566,6 @@ public class FragmentTabCharts extends Fragment
 				return Arrays.<Series<?>> asList(series);
 			}
 		});
-		chart.setPostSetupListener(new PostSetupListener()
-		{
-			@Override
-			public void onPostSetup(Chart chart)
-			{
-				final GraphView graphView = chart.getGraphView();
-
-				graphView.getViewport().setXAxisBoundsManual(true);
-				graphView.getViewport().setYAxisBoundsManual(true);
-				graphView.getViewport().setMinX(0);
-				graphView.getViewport().setMaxX(24);
-				graphView.getViewport().setMinY(0);
-
-				if (!graphView.getSeries().isEmpty())
-				{
-					double maxY = addRoom(chart.getGraphView().getSeries().get(0).getHighestValueY());
-					chart.getGraphView().getViewport().setMaxY(maxY);
-					chart.getGraphView().getGridLabelRenderer().setLabelFormatter(new DailyLabels(maxY));
-				}
-			}
-		});
+		chart.setPostSetupListener(new PostSetupDaily());
 	}
 }
