@@ -43,7 +43,6 @@ import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.merklesync.DataSource;
 import org.bosik.merklesync.HashUtils;
-import org.bosik.merklesync.MemoryMerkleTree;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -323,7 +322,7 @@ public class DiaryLocalService implements DiaryService
 		MerkleTree tree = cachedHashTree.getTree(userId, TreeType.DIARY);
 		if (tree == null)
 		{
-			tree = rebuildHashTree(userId);
+			tree = HashUtils.buildMerkleTree(getDataHashes(userId));
 			cachedHashTree.setTree(userId, TreeType.DIARY, tree);
 		}
 		else
@@ -332,28 +331,6 @@ public class DiaryLocalService implements DiaryService
 		}
 
 		return tree;
-	}
-
-	private MerkleTree rebuildHashTree(int userId)
-	{
-		MemoryMerkleTree result = new MemoryMerkleTree();
-		/**/long timeStart = System.currentTimeMillis();
-
-		SortedMap<String, String> hashes = getDataHashes(userId);
-		/**/long timeFetch = System.currentTimeMillis();
-
-		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
-		/**/long timeProcess = System.currentTimeMillis();
-
-		result = new MemoryMerkleTree();
-		result.putAll(tree); // headers (0..4 chars id)
-		result.putAll(hashes);
-		// leafs (32 chars id)
-		/**/long timePut = System.currentTimeMillis();
-		/**/System.out.println(String.format("Tree built in %s ms (fetch: %d ms, process: %d ms, put: %d ms)",
-				System.currentTimeMillis() - timeStart, timeFetch - timeStart, timeProcess - timeFetch,
-				timePut - timeProcess));
-		return result;
 	}
 
 	@Override

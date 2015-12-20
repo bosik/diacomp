@@ -44,7 +44,6 @@ import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.merklesync.DataSource;
 import org.bosik.merklesync.HashUtils;
-import org.bosik.merklesync.MemoryMerkleTree;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -428,7 +427,7 @@ public class FoodBaseLocalService implements FoodBaseService
 		MerkleTree tree = cachedHashTree.getTree(userId, TreeType.FOODBASE);
 		if (tree == null)
 		{
-			tree = rebuildHashTree(userId);
+			tree = HashUtils.buildMerkleTree(getDataHashes(userId));
 			cachedHashTree.setTree(userId, TreeType.FOODBASE, tree);
 		}
 		else
@@ -437,29 +436,6 @@ public class FoodBaseLocalService implements FoodBaseService
 		}
 
 		return tree;
-	}
-
-	private MerkleTree rebuildHashTree(int userId)
-	{
-		MemoryMerkleTree result = new MemoryMerkleTree();
-		/**/long timeStart = System.currentTimeMillis();
-
-		SortedMap<String, String> hashes = getDataHashes(userId);
-		/**/long timeFetch = System.currentTimeMillis();
-
-		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
-		/**/long timeProcess = System.currentTimeMillis();
-
-		// TODO: don't create tree twice (here and in other services)
-		result = new MemoryMerkleTree();
-		result.putAll(tree); // headers (0..4 chars id)
-		result.putAll(hashes);
-		// leafs (32 chars id)
-		/**/long timePut = System.currentTimeMillis();
-		/**/System.out.println(String.format("Tree built in %s ms (fetch: %d ms, process: %d ms, put: %d ms)",
-				System.currentTimeMillis() - timeStart, timeFetch - timeStart, timeProcess - timeFetch,
-				timePut - timeProcess));
-		return result;
 	}
 
 	@Override
