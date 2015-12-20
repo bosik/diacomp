@@ -36,8 +36,10 @@ import org.bosik.merklesync.Versioned;
 
 public class FakeDishBaseService implements DishBaseService
 {
-	private final Mock<Versioned<DishItem>>	mock	= new MockVersionedConverter<DishItem>(new MockDishItem());
-	private final List<Versioned<DishItem>>	samples	= mock.getSamples();
+	private final Mock<Versioned<DishItem>>	mock			= new MockVersionedConverter<DishItem>(new MockDishItem());
+	private final List<Versioned<DishItem>>	samples			= mock.getSamples();
+
+	private static final int				MAX_READ_ITEMS	= 500;
 
 	private static void sort(List<Versioned<DishItem>> items)
 	{
@@ -153,7 +155,7 @@ public class FakeDishBaseService implements DishBaseService
 				result.add(new Versioned<DishItem>(rec));
 			}
 
-			if (result.size() > MAX_ITEMS_COUNT)
+			if (result.size() > MAX_READ_ITEMS)
 			{
 				throw new TooManyItemsException("Too many items");
 			}

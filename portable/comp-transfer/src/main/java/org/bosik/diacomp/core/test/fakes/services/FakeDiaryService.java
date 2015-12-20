@@ -36,9 +36,11 @@ import org.bosik.merklesync.Versioned;
 
 public class FakeDiaryService implements DiaryService
 {
-	private final Mock<Versioned<DiaryRecord>>	mock	= new MockVersionedConverter<DiaryRecord>(
+	private final Mock<Versioned<DiaryRecord>>	mock			= new MockVersionedConverter<DiaryRecord>(
 			new MockDiaryRecord());
-	private final List<Versioned<DiaryRecord>>	samples	= new ArrayList<Versioned<DiaryRecord>>();
+	private final List<Versioned<DiaryRecord>>	samples			= new ArrayList<Versioned<DiaryRecord>>();
+
+	private static final int					MAX_READ_ITEMS	= 500;
 
 	public FakeDiaryService(boolean withSampleData)
 	{
@@ -122,7 +124,7 @@ public class FakeDiaryService implements DiaryService
 				result.add(new Versioned<DiaryRecord>(rec));
 			}
 
-			if (result.size() > MAX_ITEMS_COUNT)
+			if (result.size() > MAX_READ_ITEMS)
 			{
 				throw new TooManyItemsException("Too many items");
 			}

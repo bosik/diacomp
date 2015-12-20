@@ -66,6 +66,8 @@ public class DishBaseLocalService implements DishBaseService
 	private static final String					COLUMN_DISHBASE_CONTENT		= "_Content";
 	private static final String					COLUMN_DISHBASE_NAMECACHE	= "_NameCache";
 
+	private static final int					MAX_READ_ITEMS				= 500;
+
 	private static final Parser<DishItem>		parser						= new ParserDishItem();
 	private static final Serializer<DishItem>	serializer					= new SerializerAdapter<DishItem>(parser);
 
@@ -308,7 +310,7 @@ public class DishBaseLocalService implements DishBaseService
 						@Override
 						public List<Versioned<DishItem>> onData(ResultSet set) throws SQLException
 						{
-							return parseItems(set, MAX_ITEMS_COUNT);
+							return parseItems(set, MAX_READ_ITEMS);
 						}
 					});
 		}

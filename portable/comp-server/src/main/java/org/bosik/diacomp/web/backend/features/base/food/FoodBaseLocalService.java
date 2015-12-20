@@ -66,6 +66,8 @@ public class FoodBaseLocalService implements FoodBaseService
 	private static final String					COLUMN_FOODBASE_CONTENT		= "_Content";
 	private static final String					COLUMN_FOODBASE_NAMECACHE	= "_NameCache";
 
+	private static final int					MAX_READ_ITEMS				= 500;
+
 	private static final Parser<FoodItem>		parser						= new ParserFoodItem();
 	private static final Serializer<FoodItem>	serializer					= new SerializerAdapter<FoodItem>(parser);
 
@@ -308,7 +310,7 @@ public class FoodBaseLocalService implements FoodBaseService
 						@Override
 						public List<Versioned<FoodItem>> onData(ResultSet set) throws SQLException
 						{
-							return parseItems(set, MAX_ITEMS_COUNT);
+							return parseItems(set, MAX_READ_ITEMS);
 						}
 					});
 		}
@@ -448,6 +450,7 @@ public class FoodBaseLocalService implements FoodBaseService
 		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
 		/**/long timeProcess = System.currentTimeMillis();
 
+		// TODO: don't create tree twice (here and in other services)
 		result = new MemoryMerkleTree();
 		result.putAll(tree); // headers (0..4 chars id)
 		result.putAll(hashes);

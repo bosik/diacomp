@@ -65,6 +65,8 @@ public class DiaryLocalService implements DiaryService
 	private static final String				COLUMN_DIARY_CONTENT	= "_Content";
 	private static final String				COLUMN_DIARY_TIMECACHE	= "_TimeCache";
 
+	private static final int				MAX_READ_ITEMS			= 500;
+
 	private final Parser<DiaryRecord>		parser					= new ParserDiaryRecord();
 	private final Serializer<DiaryRecord>	serializer				= new SerializerAdapter<DiaryRecord>(parser);
 
@@ -230,7 +232,7 @@ public class DiaryLocalService implements DiaryService
 						@Override
 						public List<Versioned<DiaryRecord>> onData(ResultSet set) throws SQLException
 						{
-							return parseItems(set, MAX_ITEMS_COUNT);
+							return parseItems(set, MAX_READ_ITEMS);
 						}
 					});
 		}
@@ -303,7 +305,7 @@ public class DiaryLocalService implements DiaryService
 						@Override
 						public List<Versioned<DiaryRecord>> onData(ResultSet set) throws SQLException
 						{
-							return parseItems(set, MAX_ITEMS_COUNT);
+							return parseItems(set, MAX_READ_ITEMS);
 						}
 					});
 		}

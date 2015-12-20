@@ -52,16 +52,17 @@ import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
-@SuppressWarnings("unchecked")
 public class DiaryLocalService implements DiaryService
 {
-	static final String						TAG			= DiaryLocalService.class.getSimpleName();
+	static final String						TAG				= DiaryLocalService.class.getSimpleName();
+
+	private static final int				MAX_READ_ITEMS	= 500;
 
 	/* ============================ FIELDS ============================ */
 
 	private final ContentResolver			resolver;
-	private final Parser<DiaryRecord>		parser		= new ParserDiaryRecord();
-	private final Serializer<DiaryRecord>	serializer	= new SerializerAdapter<DiaryRecord>(parser);
+	private final Parser<DiaryRecord>		parser			= new ParserDiaryRecord();
+	private final Serializer<DiaryRecord>	serializer		= new SerializerAdapter<DiaryRecord>(parser);
 
 	private MyObserver						observer;
 	static MemoryMerkleTree					hashTree;
@@ -202,7 +203,7 @@ public class DiaryLocalService implements DiaryService
 		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
 				sortOrder);
 
-		return extractRecords(cursor, MAX_ITEMS_COUNT);
+		return extractRecords(cursor, MAX_READ_ITEMS);
 	}
 
 	@Override
@@ -217,7 +218,7 @@ public class DiaryLocalService implements DiaryService
 		// execute
 		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DIARY_URI, projection, clause, clauseArgs,
 				sortOrder);
-		return extractRecords(cursor, MAX_ITEMS_COUNT);
+		return extractRecords(cursor, MAX_READ_ITEMS);
 	}
 
 	@Override

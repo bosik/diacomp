@@ -29,10 +29,6 @@ public interface DataSource<T>
 	 * Size of ID prefix used in hash trees
 	 */
 	static final int	ID_PREFIX_SIZE	= 4;
-	/**
-	 * Max number of items returned
-	 */
-	static final int	MAX_ITEMS_COUNT	= 500;
 
 	/**
 	 * Calculates number of objects with specified ID prefix

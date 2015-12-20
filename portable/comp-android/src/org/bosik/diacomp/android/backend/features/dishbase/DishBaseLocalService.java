@@ -51,7 +51,9 @@ import android.util.Log;
 
 public class DishBaseLocalService implements DishBaseService
 {
-	private static final String				TAG	= DishBaseLocalService.class.getSimpleName();
+	private static final String				TAG				= DishBaseLocalService.class.getSimpleName();
+
+	private static final int				MAX_READ_ITEMS	= 500;
 
 	private final ContentResolver			resolver;
 	private final Serializer<DishItem>		serializer;
@@ -514,7 +516,7 @@ public class DishBaseLocalService implements DishBaseService
 	public List<Versioned<DishItem>> findByIdPrefix(String prefix) throws CommonServiceException
 	{
 		List<Versioned<DishItem>> items = find(prefix, null, true, null);
-		if (items.size() <= MAX_ITEMS_COUNT)
+		if (items.size() <= MAX_READ_ITEMS)
 		{
 			return items;
 		}

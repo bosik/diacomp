@@ -36,8 +36,10 @@ import org.bosik.merklesync.Versioned;
 
 public class FakeFoodBaseService implements FoodBaseService
 {
-	private final Mock<Versioned<FoodItem>>	mock	= new MockVersionedConverter<FoodItem>(new MockFoodItem());
-	private final List<Versioned<FoodItem>>	samples	= mock.getSamples();
+	private final Mock<Versioned<FoodItem>>	mock			= new MockVersionedConverter<FoodItem>(new MockFoodItem());
+	private final List<Versioned<FoodItem>>	samples			= mock.getSamples();
+
+	private static final int				MAX_READ_ITEMS	= 500;
 
 	private static void sort(List<Versioned<FoodItem>> items)
 	{
@@ -153,7 +155,7 @@ public class FakeFoodBaseService implements FoodBaseService
 				result.add(new Versioned<FoodItem>(rec));
 			}
 
-			if (result.size() > MAX_ITEMS_COUNT)
+			if (result.size() > MAX_READ_ITEMS)
 			{
 				throw new TooManyItemsException("Too many items");
 			}
