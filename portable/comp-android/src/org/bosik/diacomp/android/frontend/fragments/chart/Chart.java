@@ -58,8 +58,12 @@ public class Chart extends Fragment implements ProgressListener
 	private String										title;
 	private String										description;
 
-	private static final String							KEY_ID		= "id";
-	private static final Map<Integer, ProgressBundle>	container	= new ConcurrentHashMap<Integer, ProgressBundle>();
+	// bundle keys
+	private static final String							KEY_ID			= "chart.Id";
+	private static final String							KEY_TITLE		= "chart.title";
+	private static final String							KEY_DESCRIPTION	= "chart.description";
+
+	private static final Map<Integer, ProgressBundle>	container		= new ConcurrentHashMap<Integer, ProgressBundle>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -74,6 +78,16 @@ public class Chart extends Fragment implements ProgressListener
 		{
 			chartId = hashCode();
 		}
+
+		if (savedInstanceState != null && savedInstanceState.containsKey(KEY_TITLE))
+		{
+			title = savedInstanceState.getString(KEY_TITLE);
+		}
+
+		if (savedInstanceState != null && savedInstanceState.containsKey(KEY_DESCRIPTION))
+		{
+			description = savedInstanceState.getString(KEY_DESCRIPTION);
+		}
 	}
 
 	@Override
@@ -81,6 +95,8 @@ public class Chart extends Fragment implements ProgressListener
 	{
 		super.onSaveInstanceState(outState);
 		outState.putInt(KEY_ID, chartId);
+		outState.putString(KEY_TITLE, title);
+		outState.putString(KEY_DESCRIPTION, description);
 	}
 
 	@Override
