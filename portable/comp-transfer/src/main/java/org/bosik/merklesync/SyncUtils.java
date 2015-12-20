@@ -432,22 +432,4 @@ public class SyncUtils
 			}
 		}
 	}
-
-	/**
-	 * Synchronizes two object services
-	 * 
-	 * @param service1
-	 *            First service
-	 * @param service2
-	 *            Second service
-	 * @param callback
-	 *            Callback to inform about the progress, may be <code>null</code>
-	 * @return Total number of transferred items
-	 */
-	public static <T> int synchronize_v2(DataSource<T> service1, DataSource<T> service2, ProgressCallback callback)
-	{
-		Synchronizer2<T> sync = new Synchronizer2<T>(service1, service2, DataSource.MAX_ITEMS_COUNT,
-				DataSource.MAX_ITEMS_COUNT, callback);
-		return sync.synchronize();
-	}
 }

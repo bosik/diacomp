@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import org.bosik.merklesync.SyncUtils.Synchronizer2;
 import org.junit.Test;
 import junit.framework.TestCase;
 
@@ -83,7 +84,7 @@ public class TestSync
 
 		service1.save(Arrays.<Versioned<String>> asList(item));
 
-		SyncUtils.synchronize_v2(service1, service2, null);
+		synchronize_v2(service1, service2);
 		assertServicesAreSynced(service1, service2);
 	}
 
@@ -102,7 +103,7 @@ public class TestSync
 
 		service1.save(Arrays.<Versioned<String>> asList(item));
 
-		SyncUtils.synchronize_v2(service2, service1, null);
+		synchronize_v2(service2, service1);
 
 		assertServicesAreSynced(service1, service2);
 	}
@@ -121,7 +122,7 @@ public class TestSync
 
 		service1.save(Arrays.<Versioned<String>> asList(item));
 
-		SyncUtils.synchronize_v2(service1, service2, null);
+		synchronize_v2(service1, service2);
 
 		// item check
 		Versioned<String> restored = service2.findById(item.getId());
@@ -159,7 +160,7 @@ public class TestSync
 		service1.save(Arrays.<Versioned<String>> asList(item));
 
 		// sync
-		SyncUtils.synchronize_v2(service1, service2, null);
+		synchronize_v2(service1, service2);
 
 		// check the result
 		assertEquals(item, service2.findById(item.getId()));
@@ -195,7 +196,7 @@ public class TestSync
 		service2.save(Arrays.<Versioned<String>> asList(item2));
 
 		// sync
-		SyncUtils.synchronize_v2(service1, service2, null);
+		synchronize_v2(service1, service2);
 
 		// total check
 		assertServicesAreSynced(service1, service2);
@@ -247,7 +248,7 @@ public class TestSync
 		service2.save(Arrays.<Versioned<String>> asList(a2, b2));
 
 		// sync
-		SyncUtils.synchronize_v2(service1, service2, null);
+		synchronize_v2(service1, service2);
 
 		// total check
 		assertServicesAreSynced(service1, service2);
@@ -257,5 +258,10 @@ public class TestSync
 		assertEquals(a2, service2.findById("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8"));
 		assertEquals(b1, service1.findById("b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8a1"));
 		assertEquals(b1, service2.findById("b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8a1"));
+	}
+
+	public static <T> int synchronize_v2(DataSource<T> service1, DataSource<T> service2)
+	{
+		return new Synchronizer2<T>(service1, service2).synchronize();
 	}
 }

@@ -28,12 +28,15 @@ import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseWebService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesWebService;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.preferences.PreferencesService;
 import org.bosik.diacomp.core.services.preferences.PreferencesSync;
-import org.bosik.merklesync.SyncUtils;
+import org.bosik.merklesync.SyncUtils.Synchronizer2;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
@@ -50,7 +53,14 @@ import android.util.Log;
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter
 {
-	private static final String		TAG	= SyncAdapter.class.getSimpleName();
+	private static final String		TAG				= SyncAdapter.class.getSimpleName();
+
+	private static final int		MAX_DIARY_READ	= 500;
+	private static final int		MAX_DIARY_WRITE	= 500;
+	private static final int		MAX_FOOD_READ	= 500;
+	private static final int		MAX_FOOD_WRITE	= 500;
+	private static final int		MAX_DISH_READ	= 500;
+	private static final int		MAX_DISH_WRITE	= 500;
 
 	private final AccountManager	mAccountManager;
 
@@ -100,7 +110,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			{
 				DiaryService localDiary = new DiaryLocalService(contentResolver);
 				DiaryService webDiary = new DiaryWebService(webClient);
-				counterDiary = SyncUtils.synchronize_v2(localDiary, webDiary, null);
+				counterDiary = new Synchronizer2<DiaryRecord>(localDiary, webDiary, MAX_DIARY_READ, MAX_DIARY_WRITE)
+						.synchronize();
 			}
 			catch (Exception e)
 			{
@@ -115,7 +126,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			{
 				FoodBaseService localFoodBase = new FoodBaseLocalService(contentResolver);
 				FoodBaseService webFoodBase = new FoodBaseWebService(webClient);
-				counterFood = SyncUtils.synchronize_v2(localFoodBase, webFoodBase, null);
+				counterFood = new Synchronizer2<FoodItem>(localFoodBase, webFoodBase, MAX_FOOD_READ, MAX_FOOD_WRITE)
+						.synchronize();
 			}
 			catch (Exception e)
 			{
@@ -130,7 +142,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			{
 				DishBaseService localDishBase = new DishBaseLocalService(contentResolver);
 				DishBaseService webDishBase = new DishBaseWebService(webClient);
-				counterDish = SyncUtils.synchronize_v2(localDishBase, webDishBase, null);
+				counterDish = new Synchronizer2<DishItem>(localDishBase, webDishBase, MAX_DISH_READ, MAX_DISH_WRITE)
+						.synchronize();
 			}
 			catch (Exception e)
 			{
