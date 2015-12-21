@@ -18,12 +18,11 @@ package org.bosik.merklesync;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NavigableMap;
 import java.util.TreeMap;
 
 public class MemoryMerkleTree extends TreeMap<String, String> implements MerkleTree
 {
-	private static final long	serialVersionUID	= 4901379605259573068L;
+	private static final long serialVersionUID = 4901379605259573068L;
 
 	@Override
 	public String getHash(String prefix)
@@ -32,19 +31,27 @@ public class MemoryMerkleTree extends TreeMap<String, String> implements MerkleT
 	}
 
 	@Override
-	public Map<String, String> getHashChildren(String prefix)
+	public Map<String, String> getHashChildren(final String prefix)
 	{
-		NavigableMap<String, String> allChildren = subMap(prefix + "0", true, prefix + "f", true);
-		Map<String, String> directChildren = new HashMap<String, String>();
-
-		for (java.util.Map.Entry<String, String> entry : allChildren.entrySet())
+		if (prefix.length() < DataSource.ID_PREFIX_SIZE)
 		{
-			if (prefix.length() >= DataSource.ID_PREFIX_SIZE || entry.getKey().length() == prefix.length() + 1)
-			{
-				directChildren.put(entry.getKey(), entry.getValue());
-			}
-		}
+			Map<String, String> directChildren = new HashMap<String, String>();
 
-		return directChildren;
+			for (char c : HashUtils.BYTE_TO_CHAR)
+			{
+				String key = prefix + c;
+				String value = get(key);
+				if (value != null)
+				{
+					directChildren.put(key, value);
+				}
+			}
+
+			return directChildren;
+		}
+		else
+		{
+			return subMap(prefix + "0", true, prefix + "f", true);
+		}
 	}
 }

@@ -47,7 +47,7 @@ public interface DataSource<T>
 
 	/**
 	 * @param prefix
-	 *            Must be 0..ID_PREFIX_SIZE or ID_FULL_SIZE chars long
+	 *            Must be 0..ID_PREFIX_SIZE chars long
 	 * @return List of items having ID started with the specified prefix
 	 */
 	List<Versioned<T>> findByIdPrefix(String prefix);
