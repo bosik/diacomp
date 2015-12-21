@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
@@ -30,7 +31,6 @@ import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
-import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
@@ -41,7 +41,6 @@ import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Profiler;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
-import org.bosik.merklesync.MemoryMerkleTree;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import android.app.Activity;
@@ -66,7 +65,7 @@ public class DiaryLocalService implements DiaryService
 	private final Serializer<DiaryRecord>	serializer		= new SerializerAdapter<DiaryRecord>(parser);
 
 	private MyObserver						observer;
-	static MemoryMerkleTree					hashTree;
+	static MerkleTree						hashTree;
 
 	class MyObserver extends ContentObserver
 	{
@@ -376,9 +375,9 @@ public class DiaryLocalService implements DiaryService
 
 	private static boolean verify(Versioned<DiaryRecord> record)
 	{
-		if (record != null && record.getId() != null && record.getId().length() == ObjectService.ID_FULL_SIZE)
+		if (record != null && record.getId() != null && record.getId().length() == ID_FULL_SIZE)
 		{
-			record.setId(record.getId().toLowerCase());
+			record.setId(record.getId().toLowerCase(Locale.US));
 			return true;
 		}
 		else
@@ -427,7 +426,7 @@ public class DiaryLocalService implements DiaryService
 			String id = cursor.getString(indexId);
 			String hash = cursor.getString(indexHash);
 
-			if (id == null || id.length() < ObjectService.ID_PREFIX_SIZE)
+			if (id == null || id.length() < ID_PREFIX_SIZE)
 			{
 				Log.w(TAG, String.format("Invalid hash ignored: %s = %s", id, hash));
 			}
@@ -447,25 +446,17 @@ public class DiaryLocalService implements DiaryService
 	{
 		/**/Profiler p = new Profiler();
 
-		MemoryMerkleTree result = hashTree;
-
-		if (result == null)
+		if (hashTree == null)
 		{
 			SortedMap<String, String> hashes = getDataHashes();
 			/**/Log.d(TAG, "getDataHashes(): " + p.sinceLastCheck() / 1000000 + " ms");
 
-			SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
+			hashTree = HashUtils.buildMerkleTree(hashes);
 			/**/Log.d(TAG, "buildHashTree(): " + p.sinceLastCheck() / 1000000 + " ms");
-
-			result = new MemoryMerkleTree();
-			result.putAll(tree); // headers (0..4 chars id)
-			result.putAll(hashes); // leafs (32 chars id)
-
-			hashTree = result;
 		}
 
 		/**/Log.d(TAG, "getHashTree() [total]: " + p.sinceStart() / 1000000 + " ms");
-		return result;
+		return hashTree;
 	}
 
 	/* ======================= ROUTINES ========================= */
