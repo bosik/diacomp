@@ -40,6 +40,7 @@ import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
+import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
@@ -103,7 +104,7 @@ public class DiaryRest
 		long time = System.currentTimeMillis();
 		try
 		{
-			parPrefix = checkSize(parPrefix, DataSource.ID_FULL_SIZE);
+			parPrefix = checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
 			int count = diaryService.count(parPrefix);
 			String response = String.valueOf(count);
@@ -133,7 +134,7 @@ public class DiaryRest
 		long time = System.currentTimeMillis();
 		try
 		{
-			parId = checkSize(parId, DataSource.ID_FULL_SIZE);
+			parId = checkSize(parId, ObjectService.ID_FULL_SIZE);
 
 			// Prefix form
 			if (parId.length() <= DataSource.ID_PREFIX_SIZE)
@@ -188,7 +189,7 @@ public class DiaryRest
 	{
 		try
 		{
-			parPrefix = checkSize(parPrefix, DataSource.ID_FULL_SIZE);
+			parPrefix = checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
 			MerkleTree hashTree = diaryService.getHashTree();
 			String s = hashTree.getHash(parPrefix);
@@ -214,7 +215,7 @@ public class DiaryRest
 	{
 		try
 		{
-			parPrefix = checkSize(parPrefix, DataSource.ID_FULL_SIZE);
+			parPrefix = checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
 			MerkleTree hashTree = diaryService.getHashTree();
 			Map<String, String> map = hashTree.getHashChildren(parPrefix);

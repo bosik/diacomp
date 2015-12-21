@@ -53,16 +53,16 @@ public class HashUtils
 	 */
 	public static String sumHash(String a, String b)
 	{
-		if (a != null && a.length() != DataSource.ID_FULL_SIZE)
+		if (a != null && a.length() != DataSource.HASH_SIZE)
 		{
 			throw new IllegalArgumentException(String.format("Invalid hash #1 ('%s'), expected: %d chars, found: %d", a,
-					DataSource.ID_FULL_SIZE, a.length()));
+					DataSource.HASH_SIZE, a.length()));
 		}
 
-		if (b != null && b.length() != DataSource.ID_FULL_SIZE)
+		if (b != null && b.length() != DataSource.HASH_SIZE)
 		{
 			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d", b,
-					DataSource.ID_FULL_SIZE, b.length()));
+					DataSource.HASH_SIZE, b.length()));
 		}
 
 		if (a == null)
@@ -77,9 +77,9 @@ public class HashUtils
 
 		char[] a_array = a.toCharArray();
 		char[] b_array = b.toCharArray();
-		char[] c_array = new char[DataSource.ID_FULL_SIZE];
+		char[] c_array = new char[DataSource.HASH_SIZE];
 
-		for (int i = 0; i < DataSource.ID_FULL_SIZE; i++)
+		for (int i = 0; i < DataSource.HASH_SIZE; i++)
 		{
 			byte b1 = CHAR_TO_BYTE[a_array[i]];
 			byte b2 = CHAR_TO_BYTE[b_array[i]];

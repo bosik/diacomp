@@ -22,19 +22,18 @@ import java.util.List;
 public interface DataSource<T>
 {
 	/**
-	 * Size of standard ID
+	 * Size of hash (chars)
 	 */
-	static final int	ID_FULL_SIZE	= 32;
+	int	HASH_SIZE		= 32;
 	/**
-	 * Size of ID prefix used in hash trees
+	 * Size of ID prefix used in hash trees (chars)
 	 */
-	static final int	ID_PREFIX_SIZE	= 4;
+	int	ID_PREFIX_SIZE	= 4;
 
 	/**
-	 * Calculates number of objects with specified ID prefix
-	 * 
 	 * @param prefix
-	 * @return
+	 *            Must be 0..ID_PREFIX_SIZE chars long
+	 * @return Number of items having ID started with prefix
 	 */
 	int count(String prefix);
 
@@ -42,32 +41,25 @@ public interface DataSource<T>
 	 * Returns item with the specified ID (no matter if deleted or not)
 	 * 
 	 * @param id
-	 * @return Item if found, null otherwise
+	 * @return Item if found, <code>null</code> otherwise
 	 */
 	Versioned<T> findById(String id);
 
 	/**
-	 * Returns list of records which id starts with specified prefix
-	 * 
 	 * @param prefix
 	 *            Must be 0..ID_PREFIX_SIZE or ID_FULL_SIZE chars long
-	 * @return
-	 * @see #getDataHashes
+	 * @return List of items having ID started with the specified prefix
 	 */
 	List<Versioned<T>> findByIdPrefix(String prefix);
 
 	/**
-	 * Returns list of records which were modified after the specified time (both removed or not)
-	 * 
 	 * @param since
-	 * @return
+	 * @return List of items modified after the <code>since</code> time (both deleted or not)
 	 */
 	List<Versioned<T>> findChanged(Date since);
 
 	/**
-	 * Returns hash tree
-	 * 
-	 * @return
+	 * @return Hash tree
 	 */
 	MerkleTree getHashTree();
 

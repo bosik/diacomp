@@ -32,6 +32,7 @@ import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
+import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
@@ -44,7 +45,6 @@ import org.bosik.diacomp.web.backend.common.CachedHashTree.TreeType;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
-import org.bosik.merklesync.DataSource;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
@@ -446,10 +446,10 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			for (Versioned<DishItem> item : items)
 			{
-				if (item.getId() == null || item.getId().length() < DataSource.ID_FULL_SIZE)
+				if (item.getId() == null || item.getId().length() < ObjectService.ID_FULL_SIZE)
 				{
 					throw new IllegalArgumentException(String.format("Invalid ID: %s, must be %d characters long",
-							item.getId(), DataSource.ID_FULL_SIZE));
+							item.getId(), ObjectService.ID_FULL_SIZE));
 				}
 
 				final String content = serializer.write(item.getData());

@@ -26,6 +26,11 @@ import org.bosik.merklesync.Versioned;
 public interface ObjectService<T> extends DataSource<T>
 {
 	/**
+	 * Size of ID (chars)
+	 */
+	int	ID_FULL_SIZE	= 32;
+
+	/**
 	 * Adds item
 	 * 
 	 * @param item
