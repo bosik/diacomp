@@ -34,6 +34,7 @@ import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
@@ -116,7 +117,60 @@ public class DiaryLocalService implements DiaryService
 		super.finalize();
 	}
 
+	/* ============================ DB ============================ */
+
+	private void insert(Versioned<DiaryRecord> record)
+	{
+		ContentValues newValues = new ContentValues();
+
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_GUID, record.getId());
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(record.getTimeStamp()));
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH, record.getHash());
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_VERSION, record.getVersion());
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_DELETED, record.isDeleted());
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_CONTENT, serializer.write(record.getData()));
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMECACHE, Utils.formatTimeUTC(record.getData().getTime()));
+
+		resolver.insert(DiaryContentProvider.CONTENT_DIARY_URI, newValues);
+	}
+
+	private void update(Versioned<DiaryRecord> record)
+	{
+		ContentValues newValues = new ContentValues();
+
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(record.getTimeStamp()));
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH, record.getHash());
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_VERSION, record.getVersion());
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_DELETED, record.isDeleted());
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_CONTENT, serializer.write(record.getData()));
+		newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMECACHE, Utils.formatTimeUTC(record.getData().getTime()));
+
+		String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
+		String[] args = { record.getId() };
+		resolver.update(DiaryContentProvider.CONTENT_DIARY_URI, newValues, clause, args);
+	}
+
 	/* ============================ API ============================ */
+
+	@Override
+	public void add(Versioned<DiaryRecord> item) throws DuplicateException
+	{
+		if (verify(item))
+		{
+			if (!recordExists(item.getId()))
+			{
+				insert(item);
+			}
+			else
+			{
+				throw new DuplicateException(item.getId());
+			}
+		}
+		else
+		{
+			Log.e(TAG, "Invalid record: " + item);
+		}
+	}
 
 	@Override
 	public int count(String prefix)
@@ -300,57 +354,37 @@ public class DiaryLocalService implements DiaryService
 	@Override
 	public void save(List<Versioned<DiaryRecord>> records) throws CommonServiceException
 	{
-		try
+		for (Versioned<DiaryRecord> record : records)
 		{
-			for (Versioned<DiaryRecord> record : records)
+			if (verify(record))
 			{
-				if (verify(record))
+				if (recordExists(record.getId()))
 				{
-					String content = serializer.write(record.getData());
-					boolean exists = recordExists(record.getId());
-
-					ContentValues newValues = new ContentValues();
-
-					newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMESTAMP,
-							Utils.formatTimeUTC(record.getTimeStamp()));
-					newValues.put(DiaryContentProvider.COLUMN_DIARY_HASH, record.getHash());
-					newValues.put(DiaryContentProvider.COLUMN_DIARY_VERSION, record.getVersion());
-					newValues.put(DiaryContentProvider.COLUMN_DIARY_DELETED, record.isDeleted());
-					newValues.put(DiaryContentProvider.COLUMN_DIARY_CONTENT, content);
-					newValues.put(DiaryContentProvider.COLUMN_DIARY_TIMECACHE,
-							Utils.formatTimeUTC(record.getData().getTime()));
-
-					if (exists)
-					{
-						// Log.v(TAG, "Updating item " + record.getId() + ": " + content);
-
-						String clause = DiaryContentProvider.COLUMN_DIARY_GUID + " = ?";
-						String[] args = { record.getId() };
-						resolver.update(DiaryContentProvider.CONTENT_DIARY_URI, newValues, clause, args);
-					}
-					else
-					{
-						// Log.v(TAG, "Inserting item " + record.getId() + ": " + content);
-
-						newValues.put(DiaryContentProvider.COLUMN_DIARY_GUID, record.getId());
-						resolver.insert(DiaryContentProvider.CONTENT_DIARY_URI, newValues);
-					}
+					update(record);
 				}
 				else
 				{
-					Log.e(TAG, "Invalid record: " + record);
+					insert(record);
 				}
 			}
-		}
-		catch (Exception e)
-		{
-			throw new PersistenceException(e);
+			else
+			{
+				Log.e(TAG, "Invalid record: " + record);
+			}
 		}
 	}
 
 	private static boolean verify(Versioned<DiaryRecord> record)
 	{
-		return (record != null && record.getId() != null && record.getId().length() == ObjectService.ID_FULL_SIZE);
+		if (record != null && record.getId() != null && record.getId().length() == ObjectService.ID_FULL_SIZE)
+		{
+			record.setId(record.getId().toLowerCase());
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	public void deletePermanently(String id) throws CommonServiceException
@@ -553,4 +587,5 @@ public class DiaryLocalService implements DiaryService
 			}
 		}
 	}
+
 }

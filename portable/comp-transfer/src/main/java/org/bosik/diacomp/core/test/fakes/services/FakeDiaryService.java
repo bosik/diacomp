@@ -18,6 +18,7 @@
 package org.bosik.diacomp.core.test.fakes.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -26,6 +27,7 @@ import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.test.fakes.mocks.Mock;
@@ -62,6 +64,31 @@ public class FakeDiaryService implements DiaryService
 				return t1.compareTo(t2);
 			}
 		});
+	}
+
+	public boolean itemExists(String id)
+	{
+		for (Versioned<DiaryRecord> item : samples)
+		{
+			if (item.getId().equals(id))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public void add(Versioned<DiaryRecord> item) throws DuplicateException
+	{
+		if (!itemExists(item.getId()))
+		{
+			save(Arrays.asList(item));
+		}
+		else
+		{
+			throw new DuplicateException(item.getId());
+		}
 	}
 
 	@Override
@@ -180,7 +207,7 @@ public class FakeDiaryService implements DiaryService
 
 			for (Versioned<DiaryRecord> x : samples)
 			{
-				if (x.getId().equals(item.getId()))
+				if (x.equals(item))
 				{
 					x.setTimeStamp(item.getTimeStamp());
 					x.setVersion(item.getVersion());

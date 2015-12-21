@@ -36,6 +36,7 @@ import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.MerkleTree;
@@ -76,6 +77,13 @@ public class DiaryWebService implements DiaryService
 	}
 
 	/* ============================ API ============================ */
+
+	@Override
+	public void add(Versioned<DiaryRecord> item) throws DuplicateException
+	{
+		// TODO: current implementation doesn't fail for duplicates
+		save(Arrays.asList(item));
+	}
 
 	@Override
 	public int count(String prefix)

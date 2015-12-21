@@ -18,11 +18,22 @@
 package org.bosik.diacomp.core.services;
 
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
+import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.merklesync.DataSource;
+import org.bosik.merklesync.Versioned;
 
 public interface ObjectService<T> extends DataSource<T>
 {
+	/**
+	 * Adds item
+	 * 
+	 * @param item
+	 * @throws DuplicateException
+	 *             If item already presented
+	 */
+	void add(Versioned<T> item) throws DuplicateException;
+
 	/**
 	 * Marks item with specified ID as deleted
 	 * 

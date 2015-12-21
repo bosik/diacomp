@@ -19,24 +19,10 @@ package org.bosik.diacomp.core.services.base;
 
 import java.util.List;
 import org.bosik.diacomp.core.services.ObjectService;
-import org.bosik.diacomp.core.services.exceptions.DuplicateException;
-import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.merklesync.Versioned;
 
 public interface BaseService<Item> extends ObjectService<Item>
 {
-	/**
-	 * Adds item
-	 * 
-	 * @param item
-	 * @throws DuplicateException
-	 *             If item already presented
-	 * @throws PersistenceException
-	 *             Common inserting failure
-	 */
-	// TODO: move to ObjectService
-	void add(Versioned<Item> item) throws DuplicateException, PersistenceException;
-
 	/**
 	 * Returns all items
 	 * 

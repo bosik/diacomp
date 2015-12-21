@@ -31,9 +31,12 @@ import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
+import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
+import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
+import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.CachedHashTree;
@@ -41,7 +44,6 @@ import org.bosik.diacomp.web.backend.common.CachedHashTree.TreeType;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
-import org.bosik.merklesync.DataSource;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
@@ -123,6 +125,46 @@ public class DiaryLocalService implements DiaryService
 	List<Versioned<DiaryRecord>> parseItems(ResultSet resultSet) throws SQLException
 	{
 		return parseItems(resultSet, 0);
+	}
+
+	private static boolean verify(Versioned<DiaryRecord> record)
+	{
+		if (record != null && record.getId() != null && record.getId().length() == ObjectService.ID_FULL_SIZE)
+		{
+			record.setId(record.getId().toLowerCase());
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	@Override
+	public void add(Versioned<DiaryRecord> item) throws DuplicateException, PersistenceException
+	{
+		int userId = getCurrentUserId();
+
+		try
+		{
+			if (!verify(item))
+			{
+				throw new IllegalArgumentException("Invalid record: " + item);
+			}
+
+			if (!recordExists(userId, item.getId()))
+			{
+				insert(userId, item);
+			}
+			else
+			{
+				throw new DuplicateException(item.getId());
+			}
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -342,63 +384,62 @@ public class DiaryLocalService implements DiaryService
 		{
 			for (Versioned<DiaryRecord> item : records)
 			{
-				final String id = item.getId().toLowerCase();
-
-				if (id.length() < DataSource.ID_FULL_SIZE)
+				if (!verify(item))
 				{
-					throw new IllegalArgumentException(
-							String.format("Invalid ID: %s, must be %d characters long", id, DataSource.ID_FULL_SIZE));
+					throw new IllegalArgumentException("Invalid record: " + item);
 				}
-
-				final String content = serializer.write(item.getData());
-				final String timeCache = Utils.formatTimeUTC(item.getData().getTime());
-				final String timeStamp = Utils.formatTimeUTC(item.getTimeStamp());
-				final String hash = item.getHash();
-				final String version = String.valueOf(item.getVersion());
-				final String deleted = Utils.formatBooleanInt(item.isDeleted());
 
 				if (recordExists(userId, item.getId()))
 				{
-					// presented, update
-
-					SortedMap<String, String> set = new TreeMap<String, String>();
-					set.put(COLUMN_DIARY_TIMESTAMP, timeStamp);
-					set.put(COLUMN_DIARY_HASH, hash);
-					set.put(COLUMN_DIARY_VERSION, version);
-					set.put(COLUMN_DIARY_DELETED, deleted);
-					set.put(COLUMN_DIARY_CONTENT, content);
-					set.put(COLUMN_DIARY_TIMECACHE, timeCache);
-
-					SortedMap<String, String> where = new TreeMap<String, String>();
-					where.put(COLUMN_DIARY_GUID, id);
-					where.put(COLUMN_DIARY_USER, String.valueOf(userId));
-
-					MySQLAccess.update(TABLE_DIARY, set, where);
+					update(userId, item);
 				}
 				else
 				{
-					// not presented, insert
-
-					LinkedHashMap<String, String> set = new LinkedHashMap<String, String>();
-					set.put(COLUMN_DIARY_GUID, id);
-					set.put(COLUMN_DIARY_USER, String.valueOf(userId));
-					set.put(COLUMN_DIARY_TIMESTAMP, timeStamp);
-					set.put(COLUMN_DIARY_HASH, hash);
-					set.put(COLUMN_DIARY_VERSION, version);
-					set.put(COLUMN_DIARY_DELETED, deleted);
-					set.put(COLUMN_DIARY_CONTENT, content);
-					set.put(COLUMN_DIARY_TIMECACHE, timeCache);
-
-					MySQLAccess.insert(TABLE_DIARY, set);
+					insert(userId, item);
 				}
 
-				cachedHashTree.setTree(userId, TreeType.DIARY, null);
 			}
 		}
 		catch (SQLException e)
 		{
 			throw new RuntimeException(e);
 		}
+	}
+
+	private void insert(int userId, Versioned<DiaryRecord> item) throws SQLException
+	{
+		LinkedHashMap<String, String> set = new LinkedHashMap<String, String>();
+		set.put(COLUMN_DIARY_GUID, item.getId());
+		set.put(COLUMN_DIARY_USER, String.valueOf(userId));
+		set.put(COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+		set.put(COLUMN_DIARY_HASH, item.getHash());
+		set.put(COLUMN_DIARY_VERSION, String.valueOf(item.getVersion()));
+		set.put(COLUMN_DIARY_DELETED, Utils.formatBooleanInt(item.isDeleted()));
+		set.put(COLUMN_DIARY_CONTENT, serializer.write(item.getData()));
+		set.put(COLUMN_DIARY_TIMECACHE, Utils.formatTimeUTC(item.getData().getTime()));
+
+		MySQLAccess.insert(TABLE_DIARY, set);
+
+		cachedHashTree.setTree(userId, TreeType.DIARY, null);
+	}
+
+	private void update(int userId, Versioned<DiaryRecord> item) throws SQLException
+	{
+		SortedMap<String, String> set = new TreeMap<String, String>();
+		set.put(COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+		set.put(COLUMN_DIARY_HASH, item.getHash());
+		set.put(COLUMN_DIARY_VERSION, String.valueOf(item.getVersion()));
+		set.put(COLUMN_DIARY_DELETED, Utils.formatBooleanInt(item.isDeleted()));
+		set.put(COLUMN_DIARY_CONTENT, serializer.write(item.getData()));
+		set.put(COLUMN_DIARY_TIMECACHE, Utils.formatTimeUTC(item.getData().getTime()));
+
+		SortedMap<String, String> where = new TreeMap<String, String>();
+		where.put(COLUMN_DIARY_GUID, item.getId());
+		where.put(COLUMN_DIARY_USER, String.valueOf(userId));
+
+		MySQLAccess.update(TABLE_DIARY, set, where);
+
+		cachedHashTree.setTree(userId, TreeType.DIARY, null);
 	}
 
 	/**
