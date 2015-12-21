@@ -253,9 +253,9 @@ public class SyncUtils
 			{
 				int result = 0;
 
-				for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
+				for (char c : HashUtils.BYTE_TO_CHAR)
 				{
-					result += synchronizePrefix(prefix + HashUtils.BYTE_TO_CHAR[i]);
+					result += synchronizePrefix(prefix + c);
 				}
 
 				return result;
@@ -421,9 +421,9 @@ public class SyncUtils
 				Map<String, String> hashes1 = tree1.getHashChildren(prefix);
 				Map<String, String> hashes2 = tree2.getHashChildren(prefix);
 
-				for (int i = 0; i < HashUtils.PATTERN_SIZE; i++)
+				for (char c : HashUtils.BYTE_TO_CHAR)
 				{
-					String key = prefix + HashUtils.BYTE_TO_CHAR[i];
+					String key = prefix + c;
 					String hash1 = hashes1.get(key);
 					String hash2 = hashes2.get(key);
 					if (!Utils.equals(hash1, hash2))

@@ -26,20 +26,19 @@ import java.util.UUID;
 
 public class HashUtils
 {
-	public static final int		PATTERN_SIZE	= 16;
 	public static final char[]	BYTE_TO_CHAR	= new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a',
 			'b', 'c', 'd', 'e', 'f' };
 	public static final byte[]	CHAR_TO_BYTE	= new byte[65536];
 
 	static
 	{
-		for (int i = 0; i < PATTERN_SIZE; i++)
+		for (byte i = 0; i < BYTE_TO_CHAR.length; i++)
 		{
 			char c_lower = BYTE_TO_CHAR[i];
 			char c_upper = ("" + c_lower).toUpperCase().charAt(0);
 
-			CHAR_TO_BYTE[c_lower] = (byte)i;
-			CHAR_TO_BYTE[c_upper] = (byte)i;
+			CHAR_TO_BYTE[c_lower] = i;
+			CHAR_TO_BYTE[c_upper] = i;
 		}
 	}
 
