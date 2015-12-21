@@ -28,7 +28,16 @@ public class SyncUtils
 
 	public interface ProgressCallback
 	{
-		void update(int progress, int max);
+		/**
+		 * Called on progress change. The percentage value may be calculated as
+		 * <code>progress * 100 / max</code>
+		 * 
+		 * @param progress
+		 *            Current progress value
+		 * @param max
+		 *            Out-of value
+		 */
+		void onProgress(int progress, int max);
 	}
 
 	public interface Synchronizer
@@ -353,7 +362,7 @@ public class SyncUtils
 		{
 			if (callback != null)
 			{
-				callback.update(0, 256);
+				callback.onProgress(0, 256);
 			}
 
 			newer1 = new ArrayList<Versioned<T>>();
@@ -372,7 +381,7 @@ public class SyncUtils
 
 			if (callback != null)
 			{
-				callback.update(256, 256);
+				callback.onProgress(256, 256);
 			}
 
 			return newer1.size() + newer2.size();
@@ -386,20 +395,20 @@ public class SyncUtils
 				{
 					case 0:
 					{
-						callback.update(0, 256);
+						callback.onProgress(0, 256);
 						break;
 					}
 					case 1:
 					{
 						int progress = HashUtils.CHAR_TO_BYTE[prefix.charAt(0)] * 16;
-						callback.update(progress, 256);
+						callback.onProgress(progress, 256);
 						break;
 					}
 					case 2:
 					{
 						int progress = HashUtils.CHAR_TO_BYTE[prefix.charAt(0)] * 16
 								+ HashUtils.CHAR_TO_BYTE[prefix.charAt(1)];
-						callback.update(progress, 256);
+						callback.onProgress(progress, 256);
 						break;
 					}
 				}
