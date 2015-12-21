@@ -19,7 +19,6 @@
 package org.bosik.diacomp.android.backend.features.foodbase;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -34,22 +33,20 @@ import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
-import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
-import org.bosik.merklesync.MemoryMerkleTree;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Log;
 
 public class FoodBaseLocalService implements FoodBaseService
 {
@@ -130,10 +127,11 @@ public class FoodBaseLocalService implements FoodBaseService
 				result.add(versioned);
 			}
 
-			Log.i(TAG, result.size() + " json's parsed in " + jsonTime + " msec");
-			Log.i(TAG, result.size() + " items parsed in " + (System.currentTimeMillis() - time) + " msec");
-
+			// Log.i(TAG, result.size() + " json's parsed in " + jsonTime + " msec");
+			// Log.i(TAG, result.size() + " items parsed in " + (System.currentTimeMillis() - time)
+			// + " msec");
 			cursor.close();
+
 			return result;
 		}
 		else
@@ -167,7 +165,7 @@ public class FoodBaseLocalService implements FoodBaseService
 	// }
 	// }
 
-	private List<Versioned<FoodItem>> find(String id, String name, boolean includeDeleted, Date modAfter)
+	private static List<Versioned<FoodItem>> find(String id, String name, boolean includeDeleted, Date modAfter)
 	{
 		return findInCache(id, name, includeDeleted, modAfter);
 	}
@@ -186,7 +184,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			if (id != null)
 			{
-				if (id.length() == ObjectService.ID_PREFIX_SIZE)
+				if (id.length() == ID_PREFIX_SIZE)
 				{
 					where += where.isEmpty() ? "" : " AND ";
 					where += DiaryContentProvider.COLUMN_FOODBASE_GUID + " LIKE ?";
@@ -229,7 +227,8 @@ public class FoodBaseLocalService implements FoodBaseService
 
 			final List<Versioned<FoodItem>> result = parseItems(cursor);
 
-			Log.i(TAG, "Search (database) done in " + (System.currentTimeMillis() - time) + " msec");
+			// Log.i(TAG, "Search (database) done in " + (System.currentTimeMillis() - time) + "
+			// msec");
 			return result;
 		}
 		catch (Exception e)
@@ -238,7 +237,7 @@ public class FoodBaseLocalService implements FoodBaseService
 		}
 	}
 
-	private List<Versioned<FoodItem>> findInCache(String id, String name, boolean includeDeleted, Date modAfter)
+	private static List<Versioned<FoodItem>> findInCache(String id, String name, boolean includeDeleted, Date modAfter)
 	{
 		long time = System.currentTimeMillis();
 
@@ -302,6 +301,61 @@ public class FoodBaseLocalService implements FoodBaseService
 		}
 	}
 
+	private void insert(Versioned<FoodItem> item)
+	{
+		ContentValues newValues = new ContentValues();
+		newValues.put(DiaryContentProvider.COLUMN_FOODBASE_GUID, item.getId());
+		newValues.put(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+		newValues.put(DiaryContentProvider.COLUMN_FOODBASE_HASH, item.getHash());
+		newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
+		newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, item.isDeleted());
+		newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
+		newValues.put(DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE, item.getData().getName());
+
+		resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues);
+		updateCacheItem(item);
+	}
+
+	private void update(Versioned<FoodItem> item)
+	{
+		ContentValues newValues = new ContentValues();
+		newValues.put(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+		newValues.put(DiaryContentProvider.COLUMN_FOODBASE_HASH, item.getHash());
+		newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
+		newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, item.isDeleted());
+		newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
+		newValues.put(DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE, item.getData().getName());
+
+		String clause = DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
+		String[] args = { item.getId() };
+
+		resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, clause, args);
+		updateCacheItem(item);
+	}
+
+	private static void updateCacheItem(Versioned<FoodItem> item)
+	{
+		boolean found = false;
+
+		for (Versioned<FoodItem> x : memoryCache)
+		{
+			if (x.getId().equals(item.getId()))
+			{
+				x.setTimeStamp(item.getTimeStamp());
+				x.setVersion(item.getVersion());
+				x.setDeleted(item.isDeleted());
+				x.setData(item.getData()); // FIXME: may be problem
+				found = true;
+				break;
+			}
+		}
+
+		if (!found)
+		{
+			memoryCache.add(new Versioned<FoodItem>(item));
+		}
+	}
+
 	// private List<SearchResult> loadHeadersFromDB(String name)
 	// {
 	// long time = System.currentTimeMillis();
@@ -347,30 +401,15 @@ public class FoodBaseLocalService implements FoodBaseService
 	// }
 
 	@Override
-	public void add(Versioned<FoodItem> item) throws PersistenceException
+	public void add(Versioned<FoodItem> item) throws DuplicateException
 	{
-		try
+		if (!recordExists(item.getId()))
 		{
-			ContentValues newValues = new ContentValues();
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_GUID, item.getId());
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_HASH, item.getHash());
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, item.isDeleted());
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE, item.getData().getName());
-			newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, serializer.write(item.getData()));
-
-			resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues);
-
-			memoryCache.add(new Versioned<FoodItem>(item));
+			insert(item);
 		}
-		catch (PersistenceException e)
+		else
 		{
-			throw e;
-		}
-		catch (Exception e)
-		{
-			throw new PersistenceException(e);
+			throw new DuplicateException(item.getId());
 		}
 	}
 
@@ -410,7 +449,7 @@ public class FoodBaseLocalService implements FoodBaseService
 
 		item.setDeleted(true);
 		item.modified();
-		save(Arrays.asList(item));
+		update(item);
 	}
 
 	@Override
@@ -531,16 +570,13 @@ public class FoodBaseLocalService implements FoodBaseService
 	 * 
 	 * @return
 	 */
-	private SortedMap<String, String> getDataHashes()
+	private static SortedMap<String, String> getDataHashes()
 	{
 		SortedMap<String, String> result = new TreeMap<String, String>();
 
 		for (Versioned<FoodItem> item : memoryCache)
 		{
-			String id = item.getId();
-			String hash = item.getHash();
-			// THINK: probably storing entries is unnecessary, so we should process it as we go
-			result.put(id, hash);
+			result.put(item.getId(), item.getHash());
 		}
 
 		// =============================================================
@@ -575,79 +611,26 @@ public class FoodBaseLocalService implements FoodBaseService
 	@Override
 	public MerkleTree getHashTree()
 	{
-		SortedMap<String, String> hashes = getDataHashes();
-		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
-
-		MemoryMerkleTree result = new MemoryMerkleTree();
-		result.putAll(tree); // headers (0..4 chars id)
-		result.putAll(hashes); // leafs (32 chars id)
-		return result;
+		return HashUtils.buildMerkleTree(getDataHashes());
 	}
 
 	@Override
 	public void save(List<Versioned<FoodItem>> items) throws PersistenceException
 	{
-		try
+		for (Versioned<FoodItem> item : items)
 		{
-			for (Versioned<FoodItem> item : items)
+			// TODO: DB has new row, cache still doesn't
+			// Thus app tries to insert row and ends up with PK constraint violation
+
+			if (recordExists(item.getId()))
 			{
-				ContentValues newValues = new ContentValues();
-				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
-				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_HASH, item.getHash());
-				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_VERSION, item.getVersion());
-				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DELETED, item.isDeleted());
-				String content = serializer.write(item.getData());
-				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_DATA, content);
-				newValues.put(DiaryContentProvider.COLUMN_FOODBASE_NAMECACHE, item.getData().getName());
-
-				// TODO: DB has new row, cache still doesn't
-				// Thus app tries to insert row and ends up with PK constraint violation
-
-				if (recordExists(item.getId()))
-				{
-					Log.v(TAG, "Updating item " + item.getId());
-					String clause = DiaryContentProvider.COLUMN_FOODBASE_GUID + " = ?";
-					String[] args = { item.getId() };
-					resolver.update(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues, clause, args);
-				}
-				else
-				{
-					Log.v(TAG, "Inserting item " + item.getId());
-					newValues.put(DiaryContentProvider.COLUMN_FOODBASE_GUID, item.getId());
-					resolver.insert(DiaryContentProvider.CONTENT_FOODBASE_URI, newValues);
-				}
+				update(item);
+			}
+			else
+			{
+				insert(item);
 			}
 
-			for (Versioned<FoodItem> item : items)
-			{
-				boolean found = false;
-
-				for (Versioned<FoodItem> x : memoryCache)
-				{
-					if (x.getId().equals(item.getId()))
-					{
-						x.setTimeStamp(item.getTimeStamp());
-						x.setVersion(item.getVersion());
-						x.setDeleted(item.isDeleted());
-						x.setData(item.getData()); // FIXME: may be problem
-						found = true;
-						break;
-					}
-				}
-
-				if (!found)
-				{
-					memoryCache.add(new Versioned<FoodItem>(item));
-				}
-			}
-		}
-		catch (PersistenceException e)
-		{
-			throw e;
-		}
-		catch (Exception e)
-		{
-			throw new PersistenceException(e);
 		}
 	}
 }

@@ -19,7 +19,6 @@
 package org.bosik.diacomp.android.backend.features.dishbase;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -33,22 +32,19 @@ import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
-import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
+import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
-import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
-import org.bosik.merklesync.MemoryMerkleTree;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Log;
 
 public class DishBaseLocalService implements DishBaseService
 {
@@ -142,32 +138,7 @@ public class DishBaseLocalService implements DishBaseService
 		}
 	}
 
-	// private List<SearchResult> parseHeaders(Cursor cursor)
-	// {
-	// // analyze response
-	// if (cursor != null)
-	// {
-	// List<SearchResult> result = new LinkedList<SearchResult>();
-	//
-	// int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_GUID);
-	// int indexName = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE);
-	//
-	// while (cursor.moveToNext())
-	// {
-	// String valueId = cursor.getString(indexId);
-	// String valueName = cursor.getString(indexName);
-	// result.add(new SearchResult(valueId, valueName));
-	// }
-	//
-	// return result;
-	// }
-	// else
-	// {
-	// throw new IllegalArgumentException("Cursor is null");
-	// }
-	// }
-
-	private List<Versioned<DishItem>> find(String id, String name, boolean includeDeleted, Date modAfter)
+	private static List<Versioned<DishItem>> find(String id, String name, boolean includeDeleted, Date modAfter)
 	{
 		return findInCache(id, name, includeDeleted, modAfter);
 	}
@@ -186,7 +157,7 @@ public class DishBaseLocalService implements DishBaseService
 
 			if (id != null)
 			{
-				if (id.length() == ObjectService.ID_PREFIX_SIZE)
+				if (id.length() == ID_PREFIX_SIZE)
 				{
 					where += where.isEmpty() ? "" : " AND ";
 					where += DiaryContentProvider.COLUMN_DISHBASE_GUID + " LIKE ?";
@@ -238,7 +209,7 @@ public class DishBaseLocalService implements DishBaseService
 		}
 	}
 
-	private List<Versioned<DishItem>> findInCache(String id, String name, boolean includeDeleted, Date modAfter)
+	private static List<Versioned<DishItem>> findInCache(String id, String name, boolean includeDeleted, Date modAfter)
 	{
 		long time = System.currentTimeMillis();
 
@@ -302,6 +273,61 @@ public class DishBaseLocalService implements DishBaseService
 		}
 	}
 
+	private void insert(Versioned<DishItem> item)
+	{
+		ContentValues newValues = new ContentValues();
+		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_GUID, item.getId());
+		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_HASH, item.getHash());
+		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_VERSION, item.getVersion());
+		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DELETED, item.isDeleted());
+		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE, item.getData().getName());
+		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DATA, serializer.write(item.getData()));
+
+		resolver.insert(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues);
+		updateCacheItem(item);
+	}
+
+	private void update(Versioned<DishItem> item)
+	{
+		ContentValues newValues = new ContentValues();
+		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_HASH, item.getHash());
+		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_VERSION, item.getVersion());
+		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DELETED, item.isDeleted());
+		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE, item.getData().getName());
+		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DATA, serializer.write(item.getData()));
+
+		String clause = DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?";
+		String[] args = { item.getId() };
+
+		resolver.update(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues, clause, args);
+		updateCacheItem(item);
+	}
+
+	private static void updateCacheItem(Versioned<DishItem> item)
+	{
+		boolean found = false;
+
+		for (Versioned<DishItem> x : memoryCache)
+		{
+			if (x.equals(item))
+			{
+				x.setTimeStamp(item.getTimeStamp());
+				x.setVersion(item.getVersion());
+				x.setDeleted(item.isDeleted());
+				x.setData(item.getData()); // FIXME: may be problem
+				found = true;
+				break;
+			}
+		}
+
+		if (!found)
+		{
+			memoryCache.add(new Versioned<DishItem>(item));
+		}
+	}
+
 	// private List<SearchResult> loadHeadersFromDB(String name)
 	// {
 	// long time = System.currentTimeMillis();
@@ -347,30 +373,15 @@ public class DishBaseLocalService implements DishBaseService
 	// }
 
 	@Override
-	public void add(Versioned<DishItem> item) throws PersistenceException
+	public void add(Versioned<DishItem> item) throws DuplicateException
 	{
-		try
+		if (!recordExists(item.getId()))
 		{
-			ContentValues newValues = new ContentValues();
-			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_GUID, item.getId());
-			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
-			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_HASH, item.getHash());
-			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_VERSION, item.getVersion());
-			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DELETED, item.isDeleted());
-			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE, item.getData().getName());
-			newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DATA, serializer.write(item.getData()));
-
-			resolver.insert(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues);
-
-			memoryCache.add(new Versioned<DishItem>(item));
+			insert(item);
 		}
-		catch (PersistenceException e)
+		else
 		{
-			throw e;
-		}
-		catch (Exception e)
-		{
-			throw new PersistenceException(e);
+			throw new DuplicateException(item.getId());
 		}
 	}
 
@@ -410,7 +421,7 @@ public class DishBaseLocalService implements DishBaseService
 
 		item.setDeleted(true);
 		item.modified();
-		save(Arrays.asList(item));
+		update(item);
 	}
 
 	@Override
@@ -516,108 +527,62 @@ public class DishBaseLocalService implements DishBaseService
 	 * 
 	 * @return
 	 */
-	private SortedMap<String, String> getDataHashes()
+	private static SortedMap<String, String> getDataHashes()
 	{
-		// constructing parameters
-		final String[] select = { DiaryContentProvider.COLUMN_DISHBASE_GUID,
-				DiaryContentProvider.COLUMN_DISHBASE_HASH };
-		final String where = null;
-		final String[] whereArgs = null;
-
-		// execute query
-		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DISHBASE_URI, select, where, whereArgs, null);
-
-		// analyze response
-		int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_GUID);
-		int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_HASH);
-
 		SortedMap<String, String> result = new TreeMap<String, String>();
 
-		while (cursor.moveToNext())
+		for (Versioned<DishItem> item : memoryCache)
 		{
-			String id = cursor.getString(indexId);
-			String hash = cursor.getString(indexHash);
-			// THINK: probably storing entries is unnecessary, so we should process it as we go
-			result.put(id, hash);
+			result.put(item.getId(), item.getHash());
 		}
 
-		cursor.close();
+		// // constructing parameters
+		// final String[] select = { DiaryContentProvider.COLUMN_DISHBASE_GUID,
+		// DiaryContentProvider.COLUMN_DISHBASE_HASH };
+		// final String where = null;
+		// final String[] whereArgs = null;
+		//
+		// // execute query
+		// Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DISHBASE_URI, select, where,
+		// whereArgs, null);
+		//
+		// // analyze response
+		// int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_GUID);
+		// int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_HASH);
+		//
+		// SortedMap<String, String> result = new TreeMap<String, String>();
+		//
+		// while (cursor.moveToNext())
+		// {
+		// String id = cursor.getString(indexId);
+		// String hash = cursor.getString(indexHash);
+		// // THINK: probably storing entries is unnecessary, so we should process it as we go
+		// result.put(id, hash);
+		// }
+		//
+		// cursor.close();
 		return result;
 	}
 
 	@Override
 	public MerkleTree getHashTree()
 	{
-		SortedMap<String, String> hashes = getDataHashes();
-		SortedMap<String, String> tree = HashUtils.buildHashTree(hashes);
-
-		MemoryMerkleTree result = new MemoryMerkleTree();
-		result.putAll(tree); // headers (0..4 chars id)
-		result.putAll(hashes); // leafs (32 chars id)
-		return result;
+		return HashUtils.buildMerkleTree(getDataHashes());
 	}
 
 	@Override
-	public void save(List<Versioned<DishItem>> items) throws PersistenceException
+	public void save(List<Versioned<DishItem>> items)
 	{
-		try
+		for (Versioned<DishItem> item : items)
 		{
-			for (Versioned<DishItem> item : items)
+			if (recordExists(item.getId()))
 			{
-				ContentValues newValues = new ContentValues();
-				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
-				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_HASH, item.getHash());
-				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_VERSION, item.getVersion());
-				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DELETED, item.isDeleted());
-				String content = serializer.write(item.getData());
-				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DATA, content);
-				newValues.put(DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE, item.getData().getName());
-
-				if (recordExists(item.getId()))
-				{
-					Log.v(TAG, "Updating item " + item.getId());
-					String clause = DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?";
-					String[] args = { item.getId() };
-					resolver.update(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues, clause, args);
-				}
-				else
-				{
-					Log.v(TAG, "Inserting item " + item.getId());
-					newValues.put(DiaryContentProvider.COLUMN_DISHBASE_GUID, item.getId());
-					resolver.insert(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues);
-				}
+				update(item);
 			}
-
-			for (Versioned<DishItem> item : items)
+			else
 			{
-				boolean found = false;
-
-				for (Versioned<DishItem> x : memoryCache)
-				{
-					if (x.getId().equals(item.getId()))
-					{
-						x.setTimeStamp(item.getTimeStamp());
-						x.setVersion(item.getVersion());
-						x.setDeleted(item.isDeleted());
-						x.setData(item.getData()); // FIXME: may be problem
-						found = true;
-						break;
-					}
-				}
-
-				if (!found)
-				{
-					memoryCache.add(new Versioned<DishItem>(item));
-				}
+				insert(item);
 			}
-		}
-		catch (PersistenceException e)
-		{
-			throw e;
-		}
-		catch (Exception e)
-		{
-			throw new PersistenceException(e);
 		}
 	}
 }
