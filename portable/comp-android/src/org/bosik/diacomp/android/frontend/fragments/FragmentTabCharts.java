@@ -93,6 +93,9 @@ public class FragmentTabCharts extends Fragment
 		return rootView;
 	}
 
+	private static final int	WINDOW_SIZE	= 3;	// days
+	private static final int	PERIOD		= 30;	// days
+
 	void addChartBS(int viewId)
 	{
 		Chart chart = (Chart) getChildFragmentManager().findFragmentById(viewId);
@@ -112,9 +115,6 @@ public class FragmentTabCharts extends Fragment
 			@Override
 			public Collection<Series<?>> load(ContentResolver contentResolver)
 			{
-				final int WINDOW_SIZE = 7; // days
-				final int PERIOD = 30; // days
-
 				// PREPARE DATE TREE
 
 				DiaryService diary = LocalDiary.getInstance(contentResolver);
@@ -191,9 +191,6 @@ public class FragmentTabCharts extends Fragment
 			@Override
 			public Collection<Series<?>> load(ContentResolver contentResolver)
 			{
-				final int WINDOW_SIZE = 7; // days
-				final int PERIOD = 30; // days
-
 				// PREPARE DATE TREE
 
 				DiaryService diary = LocalDiary.getInstance(contentResolver);
