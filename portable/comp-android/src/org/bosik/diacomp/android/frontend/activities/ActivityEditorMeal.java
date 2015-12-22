@@ -172,7 +172,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 				String s = getString(R.string.editor_meal_tip_meal_info);
 				String info = String.format(s, data.getProts(), data.getFats(), data.getCarbs(), data.getValue(),
 						data.getMass());
-				UIUtils.showTip(ActivityEditorMeal.this, info);
+				UIUtils.showLongTip(ActivityEditorMeal.this, info);
 				return true;
 			}
 			default:
