@@ -44,7 +44,7 @@ public class RelevantIndexator
 		final Date max = new Date(new Date().getTime() + Utils.MsecPerDay);
 		final Date min = new Date(max.getTime() - (PERIOD * Utils.MsecPerDay));
 
-		System.out.println("Inits: " + p.sinceLastCheck());
+		//		System.out.println("Inits: " + p.sinceLastCheck());
 
 		// search for base items
 
@@ -53,7 +53,7 @@ public class RelevantIndexator
 		// T.C.: O(|dishItems|) FIXME
 		List<Versioned<DishItem>> dishItems = dishBase.findAll(false);
 
-		System.out.println("Search for base items: " + p.sinceLastCheck());
+		//		System.out.println("Search for base items: " + p.sinceLastCheck());
 
 		// clear tags
 		tagService.reset();
@@ -63,14 +63,14 @@ public class RelevantIndexator
 		// T.C.: O(|dishItems|)
 		//clearTags(dishItems);
 
-		System.out.println("Clearing tags: " + p.sinceLastCheck());
+		//		System.out.println("Clearing tags: " + p.sinceLastCheck());
 
 		// search for diary items
 
 		// T.C.: const (let M)
 		List<Versioned<DiaryRecord>> items = diary.findPeriod(min, max, false);
 
-		System.out.println("Search for diary items: " + p.sinceLastCheck());
+		//		System.out.println("Search for diary items: " + p.sinceLastCheck());
 
 		// T.C.: O(M * (|foodbase| + |dishbase|))
 
@@ -88,7 +88,7 @@ public class RelevantIndexator
 				}
 			}
 		}
-		System.out.println("Processing items: " + p.sinceLastCheck());
+		//		System.out.println("Processing items: " + p.sinceLastCheck());
 
 		// T.C.: O(|foodItems|), NOTE: very slow JSON serialization
 		//foodBase.save(foodItems);
@@ -96,8 +96,8 @@ public class RelevantIndexator
 		// T.C.: O(|dishItems|), NOTE: very slow JSON serialization
 		//dishBase.save(dishItems);
 
-		System.out.println("Saving tags: " + p.sinceLastCheck());
-		System.out.println("Total indexing time: " + p.sinceStart());
+		//		System.out.println("Saving tags: " + p.sinceLastCheck());
+		//		System.out.println("Total indexing time: " + p.sinceStart());
 	}
 
 	/**
