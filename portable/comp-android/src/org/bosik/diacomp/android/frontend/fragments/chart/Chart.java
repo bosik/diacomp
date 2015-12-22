@@ -26,6 +26,8 @@ import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.DataLoader;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.ProgressListener;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.ProgressState;
+import org.bosik.diacomp.android.frontend.fragments.chart.daily.PostSetupDaily;
+import org.bosik.diacomp.android.frontend.fragments.chart.history.PostSetupHistory;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.Series;
 import android.os.Bundle;
@@ -46,6 +48,11 @@ public class Chart extends Fragment implements ProgressListener
 		void onPostSetup(Chart chart);
 	}
 
+	public enum ChartType
+	{
+		HISTORY, DAILY;
+	}
+
 	// UI
 	private TextView									titleView;
 	private GraphView									graphView;
@@ -57,9 +64,11 @@ public class Chart extends Fragment implements ProgressListener
 	private PostSetupListener							postSetupListener;
 	private String										title;
 	private String										description;
+	private ChartType									chartType;
 
 	// bundle keys
 	private static final String							KEY_ID			= "chart.Id";
+	private static final String							KEY_CHART_TYPE	= "chart.type";
 	private static final String							KEY_TITLE		= "chart.title";
 	private static final String							KEY_DESCRIPTION	= "chart.description";
 	private static final String							KEY_MIN_X		= "chart.minX";
@@ -104,6 +113,10 @@ public class Chart extends Fragment implements ProgressListener
 		outState.putInt(KEY_ID, chartId);
 		outState.putString(KEY_TITLE, title);
 		outState.putString(KEY_DESCRIPTION, description);
+		if (chartType != null)
+		{
+			outState.putInt(KEY_CHART_TYPE, chartType.ordinal());
+		}
 		if (graphView != null)
 		{
 			outState.putDouble(KEY_MIN_X, graphView.getViewport().getMinX(false));
@@ -150,6 +163,11 @@ public class Chart extends Fragment implements ProgressListener
 
 		if (savedInstanceState != null)
 		{
+			if (savedInstanceState.containsKey(KEY_CHART_TYPE))
+			{
+				int index = savedInstanceState.getInt(KEY_CHART_TYPE);
+				setChartType(ChartType.values()[index]);
+			}
 			if (savedInstanceState.containsKey(KEY_MIN_X))
 			{
 				graphView.getViewport().setMinX(savedInstanceState.getDouble(KEY_MIN_X));
@@ -290,8 +308,32 @@ public class Chart extends Fragment implements ProgressListener
 		this.description = description;
 	}
 
-	public void setPostSetupListener(PostSetupListener postSetupListener)
+	public ChartType getChartType()
 	{
-		this.postSetupListener = postSetupListener;
+		return chartType;
+	}
+
+	public void setChartType(ChartType chartType)
+	{
+		this.chartType = chartType;
+
+		switch (chartType)
+		{
+			case DAILY:
+			{
+				postSetupListener = new PostSetupDaily();
+				break;
+			}
+			case HISTORY:
+			{
+				postSetupListener = new PostSetupHistory();
+				break;
+			}
+			default:
+			{
+				// ignore
+				break;
+			}
+		}
 	}
 }

@@ -18,20 +18,18 @@
  */
 package org.bosik.diacomp.android.frontend.fragments;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.android.frontend.fragments.chart.Chart;
-import org.bosik.diacomp.android.frontend.fragments.chart.Chart.PostSetupListener;
+import org.bosik.diacomp.android.frontend.fragments.chart.Chart.ChartType;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.DataLoader;
 import org.bosik.diacomp.android.frontend.views.ExpandableView;
 import org.bosik.diacomp.android.frontend.views.ExpandableView.OnSwitchedListener;
@@ -44,9 +42,6 @@ import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.LabelFormatter;
-import com.jjoe64.graphview.Viewport;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.Series;
@@ -58,209 +53,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
-class HistoryLabels implements LabelFormatter
-{
-	private double maxY;
-
-	public HistoryLabels(double maxY)
-	{
-		this.maxY = maxY;
-	}
-
-	@Override
-	public String formatLabel(double value, boolean isValueX)
-	{
-		if (isValueX)
-		{
-			return new SimpleDateFormat("dd/MM", Locale.US).format(new Date((long) value));
-		}
-		else
-		{
-			if (maxY / 4 >= 1)
-			{
-				return String.format(Locale.US, "%.0f", value);
-			}
-			else if (maxY / 4 >= 0.1)
-			{
-				return String.format(Locale.US, "%.1f", value);
-			}
-			else
-			{
-				return String.format(Locale.US, "%.2f", value);
-			}
-		}
-	}
-
-	@Override
-	public void setViewport(Viewport arg0)
-	{
-	}
-}
-
-class DailyLabels implements LabelFormatter
-{
-	private double maxY;
-
-	public DailyLabels(double maxY)
-	{
-		this.maxY = maxY;
-	}
-
-	@Override
-	public String formatLabel(double value, boolean isValueX)
-	{
-		if (isValueX)
-		{
-			return String.format(Locale.US, "%.0f", value);
-		}
-		else
-		{
-			if (maxY / 4 >= 1)
-			{
-				return String.format(Locale.US, "%.0f", value);
-			}
-			else if (maxY / 4 >= 0.1)
-			{
-				return String.format(Locale.US, "%.1f", value);
-			}
-			else
-			{
-				return String.format(Locale.US, "%.2f", value);
-			}
-		}
-	}
-
-	@Override
-	public void setViewport(Viewport arg0)
-	{
-	}
-}
-
-abstract class PostSetup implements PostSetupListener
-{
-	@SuppressWarnings("rawtypes")
-	protected static double getMaxY(List<Series> series)
-	{
-		Double result = null;
-		for (Series<?> s : series)
-		{
-			if (result == null || s.getHighestValueY() > result)
-			{
-				result = s.getHighestValueY();
-			}
-		}
-		return result != null ? result : 0.0;
-	}
-
-	@SuppressWarnings("rawtypes")
-	protected static double getMinX(List<Series> series)
-	{
-		Double result = null;
-		for (Series<?> s : series)
-		{
-			if (result == null || s.getLowestValueX() < result)
-			{
-				result = s.getLowestValueX();
-			}
-		}
-		return result != null ? result : 0.0;
-	}
-
-	@SuppressWarnings("rawtypes")
-	protected static double getMaxX(List<Series> series)
-	{
-		Double result = null;
-		for (Series<?> s : series)
-		{
-			if (result == null || s.getHighestValueX() > result)
-			{
-				result = s.getHighestValueX();
-			}
-		}
-		return result != null ? result : 0.0;
-	}
-
-	protected static double addRoom(double max)
-	{
-		double top = 0.04;
-
-		while (top < max)
-		{
-			if (top * 2 > max)
-			{
-				return top * 2;
-			}
-			if (top * 5 > max)
-			{
-				return top * 5;
-			}
-			top *= 10;
-		}
-
-		return top;
-	}
-}
-
-class PostSetupHistory extends PostSetup
-{
-	@Override
-	public void onPostSetup(Chart chart)
-	{
-		final GraphView graphView = chart.getGraphView();
-
-		graphView.getViewport().setXAxisBoundsManual(true);
-		graphView.getViewport().setYAxisBoundsManual(true);
-		graphView.getViewport().setMinY(0);
-
-		double maxY;
-
-		if (!graphView.getSeries().isEmpty())
-		{
-			maxY = addRoom(getMaxY(graphView.getSeries()));
-			graphView.getViewport().setMaxY(maxY);
-			graphView.getViewport().setMinX(getMinX(graphView.getSeries()));
-			graphView.getViewport().setMaxX(getMaxX(graphView.getSeries()));
-		}
-		else
-		{
-			maxY = 1;
-		}
-
-		graphView.getGridLabelRenderer().setLabelFormatter(new HistoryLabels(maxY));
-	}
-}
-
-class PostSetupDaily extends PostSetup
-{
-	@Override
-	public void onPostSetup(Chart chart)
-	{
-		final GraphView graphView = chart.getGraphView();
-
-		graphView.getViewport().setXAxisBoundsManual(true);
-		graphView.getViewport().setYAxisBoundsManual(true);
-		graphView.getViewport().setMinX(0);
-		graphView.getViewport().setMaxX(24);
-		graphView.getViewport().setMinY(0);
-
-		double maxY;
-
-		if (!graphView.getSeries().isEmpty())
-		{
-			maxY = addRoom(getMaxY(graphView.getSeries()));
-			graphView.getViewport().setMaxY(maxY);
-			graphView.getViewport().setMinX(getMinX(graphView.getSeries()));
-			graphView.getViewport().setMaxX(getMaxX(graphView.getSeries()));
-		}
-		else
-		{
-			maxY = 1;
-		}
-
-		graphView.getGridLabelRenderer().setLabelFormatter(new DailyLabels(maxY));
-	}
-}
 
 public class FragmentTabCharts extends Fragment
 {
@@ -311,6 +103,7 @@ public class FragmentTabCharts extends Fragment
 			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
 		}
 
+		chart.setChartType(ChartType.HISTORY);
 		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_bs),
 				getString(R.string.common_unit_bs_mmoll)));
 		chart.setDescription(getString(R.string.charts_average_bs_description));
@@ -378,7 +171,6 @@ public class FragmentTabCharts extends Fragment
 				return Arrays.<Series<?>> asList(seriesMin, seriesAvg, seriesMax);
 			}
 		});
-		chart.setPostSetupListener(new PostSetupHistory());
 	}
 
 	void addChartInsulinConsumption(int viewId)
@@ -390,6 +182,7 @@ public class FragmentTabCharts extends Fragment
 			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
 		}
 
+		chart.setChartType(ChartType.HISTORY);
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x),
 				getString(R.string.common_unit_insulin), getString(R.string.common_unit_mass_gramm)));
 		chart.setDescription(getString(R.string.charts_insulin_consumption_history_description));
@@ -457,7 +250,6 @@ public class FragmentTabCharts extends Fragment
 				return Arrays.<Series<?>> asList(series);
 			}
 		});
-		chart.setPostSetupListener(new PostSetupHistory());
 	}
 
 	void addChartX(int viewId)
@@ -469,6 +261,7 @@ public class FragmentTabCharts extends Fragment
 			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
 		}
 
+		chart.setChartType(ChartType.DAILY);
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x),
 				getString(R.string.common_unit_insulin), getString(R.string.common_unit_mass_gramm)));
 		chart.setDescription(getString(R.string.charts_insulin_consumption_daily_description));
@@ -494,7 +287,6 @@ public class FragmentTabCharts extends Fragment
 				return Arrays.<Series<?>> asList(series);
 			}
 		});
-		chart.setPostSetupListener(new PostSetupDaily());
 	}
 
 	void addChartK(int viewId)
@@ -506,6 +298,7 @@ public class FragmentTabCharts extends Fragment
 			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
 		}
 
+		chart.setChartType(ChartType.DAILY);
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_k),
 				getString(R.string.common_unit_bs_mmoll), getString(R.string.common_unit_mass_gramm)));
 		chart.setDescription(getString(R.string.charts_koof_k_daily_description));
@@ -530,7 +323,6 @@ public class FragmentTabCharts extends Fragment
 				return Arrays.<Series<?>> asList(series);
 			}
 		});
-		chart.setPostSetupListener(new PostSetupDaily());
 	}
 
 	void addChartQ(int viewId)
@@ -542,6 +334,7 @@ public class FragmentTabCharts extends Fragment
 			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
 		}
 
+		chart.setChartType(ChartType.DAILY);
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_q),
 				getString(R.string.common_unit_bs_mmoll), getString(R.string.common_unit_insulin)));
 		chart.setDescription(getString(R.string.charts_koof_q_daily_description));
@@ -566,6 +359,5 @@ public class FragmentTabCharts extends Fragment
 				return Arrays.<Series<?>> asList(series);
 			}
 		});
-		chart.setPostSetupListener(new PostSetupDaily());
 	}
 }
