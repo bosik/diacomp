@@ -142,6 +142,7 @@ public class FragmentTabCharts extends Fragment
 				for (int i = 0; i < PERIOD; i++)
 				{
 					Date windowStart = Utils.shiftDate(startTime, i);
+					Date windowMiddle = Utils.shiftDate(startTime, i + WINDOW_SIZE / 2);
 					Date windowEnd = Utils.shiftDate(startTime, i + WINDOW_SIZE);
 					SortedMap<Date, Double> items = bs.subMap(windowStart, windowEnd);
 
@@ -151,9 +152,9 @@ public class FragmentTabCharts extends Fragment
 
 						double mean = Utils.getMean(values);
 						double deviation = Utils.getDeviation(values, mean);
-						dataAvg.add(new DataPoint(windowEnd, mean));
-						dataMin.add(new DataPoint(windowEnd, mean - deviation));
-						dataMax.add(new DataPoint(windowEnd, mean + deviation));
+						dataAvg.add(new DataPoint(windowMiddle, mean));
+						dataMin.add(new DataPoint(windowMiddle, mean - deviation));
+						dataMax.add(new DataPoint(windowMiddle, mean + deviation));
 					}
 				}
 
@@ -212,6 +213,7 @@ public class FragmentTabCharts extends Fragment
 				for (int i = 0; i < PERIOD; i++)
 				{
 					Date windowStart = Utils.shiftDate(startTime, i);
+					Date windowMiddle = Utils.shiftDate(startTime, i + WINDOW_SIZE / 2);
 					Date windowEnd = Utils.shiftDate(startTime, i + WINDOW_SIZE);
 					SortedMap<Date, DiaryRecord> items = bs.subMap(windowStart, windowEnd);
 
@@ -236,7 +238,7 @@ public class FragmentTabCharts extends Fragment
 
 						if (summCarbs > Utils.EPS)
 						{
-							data.add(new DataPoint(windowEnd, summInsulin / summCarbs));
+							data.add(new DataPoint(windowMiddle, summInsulin / summCarbs));
 						}
 					}
 				}
