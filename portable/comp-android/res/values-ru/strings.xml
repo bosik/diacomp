@@ -26,6 +26,7 @@
     <string name="charts_koof_k_daily_description">Показывает, насколько увеличится сахар крови при усвоении одной единицы углеводов. График отражает динамику в течение суток.</string>
     <string name="charts_koof_q_daily_description">Показывает, насколько уменьшится сахар крови от одной единицы инсулина. График отражает динамику в течение суток.</string>
     <string name="common_action_delete">Удалить</string>
+    <string name="common_action_help">Справка</string>
     <string name="common_button_cancel">Отмена</string>
     <string name="common_button_ok">ОК</string>
     <string name="common_hint_mass">Масса</string>
@@ -61,6 +62,7 @@
     <string name="editor_food_title">Продукт</string>
     <string name="editor_ins_error_invalid_dosage">Неверная доза инсулина</string>
     <string name="editor_ins_field_value">Доза, ед.</string>
+    <string name="editor_ins_tip">В дневник необходимо записывать только болюсный инсулин (Хумалог®, Актрапид® и т.п.). Предполагается, что базальный инсулин уже подобран.</string>
     <string name="editor_ins_title">Инсулин</string>
     <string name="editor_mass_error">Неверная масса</string>
     <string name="editor_mass_title">Изменить массу</string>

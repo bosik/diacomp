@@ -26,6 +26,7 @@
     <string name="charts_koof_k_daily_description">A CCF is how many points your blood sugar will increase with one unit of carbs. The chart shows it\'s variation across the day.</string>
     <string name="charts_koof_q_daily_description">An ICF is how many points your blood sugar will drop with one unit of insulin. The chart shows it\'s variation across the day.</string>
     <string name="common_action_delete">Delete</string>
+    <string name="common_action_help">Help</string>
     <string name="common_button_cancel">Cancel</string>
     <string name="common_button_ok">OK</string>
     <string name="common_hint_mass">Mass</string>
@@ -63,6 +64,7 @@
     <string name="editor_food_title">Food</string>
     <string name="editor_ins_error_invalid_dosage">Invalid insulin dosage</string>
     <string name="editor_ins_field_value">Dosage, U</string>
+    <string name="editor_ins_tip">You should record bolus insulin only (like Humalog® or Actrapid®). It\'s assumed your basal insulin dosage is already well-tuned.</string>
     <string name="editor_ins_title">Insulin</string>
     <string name="editor_mass_error">Wrong mass</string>
     <string name="editor_mass_title">Change mass</string>
