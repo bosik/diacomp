@@ -12,6 +12,8 @@
         android:layout_height="0dp"
         android:layout_weight="0.42"
         android:drawSelectorOnTop="false"
+        android:fadingEdgeLength="5dp"
+        android:requiresFadingEdge="vertical"
         android:scrollbars="vertical" >
     </ListView>
 
