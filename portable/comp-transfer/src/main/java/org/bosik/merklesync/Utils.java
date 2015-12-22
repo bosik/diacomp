@@ -157,10 +157,17 @@ public class Utils
 	 */
 	public static <T> void blockSave(List<Versioned<T>> items, DataSource<T> service, int blockSize)
 	{
-		for (int fromIndex = 0; fromIndex < items.size(); fromIndex += blockSize)
+		if (blockSize < Integer.MAX_VALUE)
 		{
-			int toIndex = Math.min(fromIndex + blockSize, items.size());
-			service.save(items.subList(fromIndex, toIndex));
+			for (int fromIndex = 0; fromIndex < items.size(); fromIndex += blockSize)
+			{
+				int toIndex = Math.min(fromIndex + blockSize, items.size());
+				service.save(items.subList(fromIndex, toIndex));
+			}
+		}
+		else
+		{
+			service.save(items);
 		}
 	}
 
