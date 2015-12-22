@@ -56,8 +56,8 @@
             android:id="@+id/editInsValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="text|numberDecimal"
+            android:digits="0123456789.+-"
+            android:inputType="numberDecimal"
             android:singleLine="true" >
 
             <requestFocus />

@@ -22,6 +22,7 @@ import java.util.Date;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
+import org.bosik.diacomp.core.utils.Utils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -117,7 +118,7 @@ public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 
 		try
 		{
-			entity.getData().setValue(Double.parseDouble(editValue.getText().toString()));
+			entity.getData().setValue(Utils.parseExpression(editValue.getText().toString()));
 		}
 		catch (NumberFormatException e)
 		{
