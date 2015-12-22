@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.DataLoader;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.ProgressListener;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.ProgressState;
@@ -39,7 +40,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class Chart extends Fragment implements ProgressListener
 {
@@ -144,7 +144,7 @@ public class Chart extends Fragment implements ProgressListener
 			{
 				if (getActivity() != null && getDescription() != null)
 				{
-					Toast.makeText(getActivity().getApplicationContext(), getDescription(), Toast.LENGTH_LONG).show();
+					UIUtils.showLongTip(getActivity(), getDescription());
 				}
 			}
 		});

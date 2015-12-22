@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend;
 
@@ -33,9 +33,14 @@ import android.widget.Toast;
 
 public class UIUtils
 {
-	public static void showTip(Activity activity, String Msg)
+	public static void showTip(Activity activity, String msg)
 	{
-		Toast.makeText(activity.getApplicationContext(), Msg, Toast.LENGTH_SHORT).show();
+		Toast.makeText(activity.getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+	}
+
+	public static void showLongTip(Activity activity, String msg)
+	{
+		Toast.makeText(activity.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
 	}
 
 	public interface OnSubmit
