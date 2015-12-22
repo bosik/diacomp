@@ -29,7 +29,7 @@
     <string name="common_action_help">Справка</string>
     <string name="common_button_cancel">Отмена</string>
     <string name="common_button_ok">ОК</string>
-    <string name="common_hint_mass">Масса</string>
+    <string name="common_hint_mass">Масса, г</string>
     <string name="common_hint_search">Поиск&#8230;</string>
     <string name="common_koof_x">Потребность в инсулине</string>
     <string name="common_koof_k">Углеводный коэффициент</string>

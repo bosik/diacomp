@@ -15,6 +15,12 @@
         android:scrollbars="vertical" >
     </ListView>
 
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="#c0c0c0"
+        android:divider="?android:dividerHorizontal" />
+
     <org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker
         android:id="@+id/mealEditorPicker"
         android:layout_width="match_parent"

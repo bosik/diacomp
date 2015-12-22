@@ -50,7 +50,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.LinearLayout;
@@ -244,7 +243,7 @@ public class FoodDishPicker extends LinearLayout
 
 	FoodDishTextView							editName;
 	EditText									editMass;
-	Button										buttonSubmit;
+	LinearLayout								buttonSubmit;
 
 	private OnSubmitListener					onSubmit;
 
@@ -286,9 +285,6 @@ public class FoodDishPicker extends LinearLayout
 		if (!isInEditMode())
 		{
 			editName = (FoodDishTextView) findViewById(R.id.fdPickerAutocomplete);
-			editMass = (EditText) findViewById(R.id.fdPickerMass);
-			buttonSubmit = (Button) findViewById(R.id.fdPickerSubmit);
-
 			editName.setOnItemClickListener(new OnItemClickListener()
 			{
 				@Override
@@ -297,6 +293,8 @@ public class FoodDishPicker extends LinearLayout
 					editMass.requestFocus();
 				}
 			});
+
+			editMass = (EditText) findViewById(R.id.fdPickerMass);
 			editMass.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 			editMass.setOnEditorActionListener(new TextView.OnEditorActionListener()
 			{
@@ -312,6 +310,8 @@ public class FoodDishPicker extends LinearLayout
 					return false;
 				}
 			});
+
+			buttonSubmit = (LinearLayout) findViewById(R.id.fdPickerSubmit);
 			buttonSubmit.setOnClickListener(new OnClickListener()
 			{
 				@Override
