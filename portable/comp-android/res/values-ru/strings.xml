@@ -19,6 +19,8 @@
     <string name="base_tip_items_removed">Удалено записей: %d</string>
     <string name="charts_average_bs">Средний сахар крови</string>
     <string name="charts_average_bs_description">Средний сахар крови и границы разброса значений (чем ближе, тем лучше). График отражает динамику за выбранный период времени.</string>
+    <string name="charts_average_calories">Средняя калорийность за день</string>
+    <string name="charts_average_calories_description">Средняя калорийность за день. График отражает динамику за выбранный период времени.</string>
     <string name="charts_group_daily">Суточные коэффициенты</string>
     <string name="charts_group_history">История</string>
     <string name="charts_insulin_consumption_daily_description">Показывает, сколько инсулина необходимо для усвоения одной единицы углеводов. График отражает динамику в течение суток.</string>
@@ -41,6 +43,7 @@
     <string name="common_unit_bs_mmoll">ммоль/л</string>
     <string name="common_unit_insulin">ед</string>
     <string name="common_unit_mass_gramm">г</string>
+    <string name="common_unit_value_kcal">ккал</string>
     <string name="editor_blood_field_finger">Палец</string>
     <string name="editor_blood_field_value">Значение, ммоль/л</string>
     <string name="editor_blood_title">Замер СК</string>

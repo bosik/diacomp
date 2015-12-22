@@ -18,7 +18,9 @@
     <string name="base_tip_food_edit_ok">Food saved</string>
     <string name="base_tip_items_removed">Removed items: %d</string>
     <string name="charts_average_bs">Average blood sugar</string>
-    <string name="charts_average_bs_description">Average blood sugar and standard deviation limits (the closer the better). The chart shows it\'s variation across the specified time period.</string>
+    <string name="charts_average_bs_description">Average blood sugar and standard deviation limits (the closer the better). The chart shows variation across the specified time period.</string>
+    <string name="charts_average_calories">Average daily calories</string>
+    <string name="charts_average_calories_description">Average daily calories. The chart shows variation across the specified time period.</string>
     <string name="charts_group_daily">Daily</string>
     <string name="charts_group_history">History</string>
     <string name="charts_insulin_consumption_daily_description">The insulin consumption is how much insulin you need to digest one unit of carbs. The chart shows it\'s variation across the day.</string>
@@ -41,6 +43,7 @@
     <string name="common_unit_bs_mmoll">mmol/l</string>
     <string name="common_unit_insulin">U</string>
     <string name="common_unit_mass_gramm">g</string>
+    <string name="common_unit_value_kcal">kcal</string>
     <string name="editor_blood_field_finger">Finger</string>
     <string name="editor_blood_field_value">Value, mmol/l</string>
     <string name="editor_blood_title">Blood sugar</string>

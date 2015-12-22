@@ -72,6 +72,7 @@ public class FragmentTabCharts extends Fragment
 			{
 				addChartBS(R.id.chartBS);
 				addChartInsulinConsumption(R.id.chartInsulin);
+				addChartCalories(R.id.chartCalories);
 			}
 		});
 
@@ -245,6 +246,70 @@ public class FragmentTabCharts extends Fragment
 				series.setColor(Color.rgb(192, 192, 255));
 
 				return Arrays.<Series<?>> asList(series);
+			}
+		});
+	}
+
+	void addChartCalories(int viewId)
+	{
+		Chart chart = (Chart) getChildFragmentManager().findFragmentById(viewId);
+
+		if (chart == null)
+		{
+			chart = new Chart();
+			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
+		}
+
+		chart.setChartType(ChartType.HISTORY);
+		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_calories),
+				getString(R.string.common_unit_value_kcal)));
+		chart.setDescription(getString(R.string.charts_average_calories_description));
+		chart.setDataLoader(new DataLoader()
+		{
+			@Override
+			public Collection<Series<?>> load(ContentResolver contentResolver)
+			{
+				// PREPARE DATE TREE
+
+				DiaryService diary = LocalDiary.getInstance(contentResolver);
+				Date endTime = new Date();
+				Date startTime = Utils.shiftDate(endTime, -PERIOD - WINDOW_SIZE);
+				List<Versioned<DiaryRecord>> recs = diary.findPeriod(startTime, endTime, false);
+
+				SortedMap<Date, Double> bs = new TreeMap<>();
+				for (Versioned<DiaryRecord> rec : recs)
+				{
+					if (rec.getData() instanceof MealRecord)
+					{
+						MealRecord meal = (MealRecord) rec.getData();
+						bs.put(meal.getTime(), meal.getValue());
+					}
+				}
+
+				// ANALYZE & FILL SERIES
+
+				List<DataPoint> dataAvg = new ArrayList<DataPoint>();
+
+				for (int i = 0; i < PERIOD; i++)
+				{
+					Date windowStart = Utils.shiftDate(startTime, i);
+					Date windowMiddle = Utils.shiftDate(startTime, i + WINDOW_SIZE / 2);
+					Date windowEnd = Utils.shiftDate(startTime, i + WINDOW_SIZE);
+					SortedMap<Date, Double> items = bs.subMap(windowStart, windowEnd);
+
+					if (!items.isEmpty())
+					{
+						Collection<Double> values = items.values();
+						double summ = Utils.getSumm(values);
+						dataAvg.add(new DataPoint(windowMiddle, summ / WINDOW_SIZE));
+					}
+				}
+
+				LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<DataPoint>(
+						dataAvg.toArray(new DataPoint[dataAvg.size()]));
+				seriesAvg.setColor(Color.rgb(192, 192, 0));
+
+				return Arrays.<Series<?>> asList(seriesAvg);
 			}
 		});
 	}
