@@ -18,8 +18,10 @@
  */
 package org.bosik.diacomp.android.frontend.fragments.chart.history;
 
+import java.util.Date;
 import org.bosik.diacomp.android.frontend.fragments.chart.Chart;
 import org.bosik.diacomp.android.frontend.fragments.chart.PostSetup;
+import org.bosik.diacomp.core.utils.Utils;
 import com.jjoe64.graphview.GraphView;
 
 public class PostSetupHistory extends PostSetup
@@ -29,23 +31,30 @@ public class PostSetupHistory extends PostSetup
 	{
 		final GraphView graphView = chart.getGraphView();
 
-		graphView.getViewport().setXAxisBoundsManual(true);
-		graphView.getViewport().setYAxisBoundsManual(true);
-		graphView.getViewport().setMinY(0);
+		Double minX = getMinX(graphView.getSeries());
+		Double maxX = getMaxX(graphView.getSeries());
+		Double maxY = getMaxY(graphView.getSeries());
 
-		double maxY;
-
-		if (!graphView.getSeries().isEmpty())
+		if (minX != null && maxX != null && maxY != null)
 		{
-			maxY = addRoom(getMaxY(graphView.getSeries()));
-			graphView.getViewport().setMaxY(maxY);
-			graphView.getViewport().setMinX(getMinX(graphView.getSeries()));
-			graphView.getViewport().setMaxX(getMaxX(graphView.getSeries()));
+			maxY = addRoom(maxY);
 		}
 		else
 		{
-			maxY = 1;
+			Date maxDate = new Date();
+			Date minDate = Utils.shiftDate(maxDate, -30);
+			minX = (double) minDate.getTime();
+			maxX = (double) maxDate.getTime();
+			maxY = 1.0;
 		}
+
+		graphView.getViewport().setXAxisBoundsManual(true);
+		graphView.getViewport().setYAxisBoundsManual(true);
+
+		graphView.getViewport().setMinX(minX);
+		graphView.getViewport().setMaxX(maxX);
+		graphView.getViewport().setMinY(0);
+		graphView.getViewport().setMaxY(maxY);
 
 		graphView.getGridLabelRenderer().setLabelFormatter(new HistoryLabels(maxY));
 	}

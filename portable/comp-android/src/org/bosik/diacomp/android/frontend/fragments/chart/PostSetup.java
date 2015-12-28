@@ -25,45 +25,54 @@ import com.jjoe64.graphview.series.Series;
 public abstract class PostSetup implements PostSetupListener
 {
 	@SuppressWarnings("rawtypes")
-	protected static double getMaxY(List<Series> series)
+	protected static Double getMaxY(List<Series> series)
 	{
 		Double result = null;
 		for (Series<?> s : series)
 		{
-			if (result == null || s.getHighestValueY() > result)
+			if (!s.isEmpty())
 			{
-				result = s.getHighestValueY();
+				if (result == null || s.getHighestValueY() > result)
+				{
+					result = s.getHighestValueY();
+				}
 			}
 		}
-		return result != null ? result : 0.0;
+		return result;
 	}
 
 	@SuppressWarnings("rawtypes")
-	protected static double getMinX(List<Series> series)
+	protected static Double getMinX(List<Series> series)
 	{
 		Double result = null;
 		for (Series<?> s : series)
 		{
-			if (result == null || s.getLowestValueX() < result)
+			if (!s.isEmpty())
 			{
-				result = s.getLowestValueX();
+				if (result == null || s.getLowestValueX() < result)
+				{
+					result = s.getLowestValueX();
+				}
 			}
 		}
-		return result != null ? result : 0.0;
+		return result;
 	}
 
 	@SuppressWarnings("rawtypes")
-	protected static double getMaxX(List<Series> series)
+	protected static Double getMaxX(List<Series> series)
 	{
 		Double result = null;
 		for (Series<?> s : series)
 		{
-			if (result == null || s.getHighestValueX() > result)
+			if (!s.isEmpty())
 			{
-				result = s.getHighestValueX();
+				if (result == null || s.getHighestValueX() > result)
+				{
+					result = s.getHighestValueX();
+				}
 			}
 		}
-		return result != null ? result : 0.0;
+		return result;
 	}
 
 	protected static double addRoom(double max)

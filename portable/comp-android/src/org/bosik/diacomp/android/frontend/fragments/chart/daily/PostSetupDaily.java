@@ -29,25 +29,26 @@ public class PostSetupDaily extends PostSetup
 	{
 		final GraphView graphView = chart.getGraphView();
 
-		graphView.getViewport().setXAxisBoundsManual(true);
-		graphView.getViewport().setYAxisBoundsManual(true);
-		graphView.getViewport().setMinX(0);
-		graphView.getViewport().setMaxX(24);
-		graphView.getViewport().setMinY(0);
+		Double minX = 0.0;
+		Double maxX = 24.0;
+		Double maxY = getMaxY(graphView.getSeries());
 
-		double maxY;
-
-		if (!graphView.getSeries().isEmpty())
+		if (maxY != null)
 		{
-			maxY = addRoom(getMaxY(graphView.getSeries()));
-			graphView.getViewport().setMaxY(maxY);
-			graphView.getViewport().setMinX(getMinX(graphView.getSeries()));
-			graphView.getViewport().setMaxX(getMaxX(graphView.getSeries()));
+			maxY = addRoom(maxY);
 		}
 		else
 		{
-			maxY = 1;
+			maxY = 1.0;
 		}
+
+		graphView.getViewport().setXAxisBoundsManual(true);
+		graphView.getViewport().setYAxisBoundsManual(true);
+
+		graphView.getViewport().setMinX(minX);
+		graphView.getViewport().setMaxX(maxX);
+		graphView.getViewport().setMinY(0);
+		graphView.getViewport().setMaxY(maxY);
 
 		graphView.getGridLabelRenderer().setLabelFormatter(new DailyLabels(maxY));
 	}
