@@ -57,6 +57,7 @@ public class Chart extends Fragment implements ProgressListener
 	private TextView									titleView;
 	private GraphView									graphView;
 	private ProgressBar									progress;
+	private TextView									textNoData;
 
 	// data
 	private int											chartId;
@@ -135,6 +136,7 @@ public class Chart extends Fragment implements ProgressListener
 		titleView = (TextView) rootView.findViewById(R.id.textChartTitle);
 		graphView = (GraphView) rootView.findViewById(R.id.chart);
 		progress = (ProgressBar) rootView.findViewById(R.id.progressChart);
+		textNoData = (TextView) rootView.findViewById(R.id.noDataChart);
 
 		LinearLayout buttonHelp = (LinearLayout) rootView.findViewById(R.id.buttonHelpChart);
 		buttonHelp.setOnClickListener(new OnClickListener()
@@ -151,15 +153,17 @@ public class Chart extends Fragment implements ProgressListener
 
 		// initialize
 		titleView.setText(getTitle());
-		graphView.setOnClickListener(new OnClickListener()
+		final OnClickListener listenerRefresh = new OnClickListener()
 		{
-			// FIXME: test only
 			@Override
 			public void onClick(View v)
 			{
 				refresh();
 			}
-		});
+		};
+		graphView.setOnClickListener(listenerRefresh);
+		textNoData.setOnClickListener(listenerRefresh);
+		rootView.findViewById(R.id.chartBackLayout).setOnClickListener(listenerRefresh);
 
 		if (savedInstanceState != null)
 		{
@@ -244,23 +248,34 @@ public class Chart extends Fragment implements ProgressListener
 	public void onLoading()
 	{
 		graphView.setVisibility(View.GONE);
+		textNoData.setVisibility(View.GONE);
 		progress.setVisibility(View.VISIBLE);
 	}
 
 	@Override
 	public void onReady(Collection<Series<?>> result)
 	{
-		graphView.setVisibility(View.VISIBLE);
 		progress.setVisibility(View.GONE);
 		graphView.removeAllSeries();
+
+		boolean hasData = false;
 		for (Series<?> s : result)
 		{
 			graphView.addSeries(s);
+			hasData = hasData || !s.isEmpty();
 		}
 
-		if (postSetupListener != null)
+		if (hasData)
 		{
-			postSetupListener.onPostSetup(this);
+			graphView.setVisibility(View.VISIBLE);
+			if (postSetupListener != null)
+			{
+				postSetupListener.onPostSetup(this);
+			}
+		}
+		else
+		{
+			textNoData.setVisibility(View.VISIBLE);
 		}
 	}
 

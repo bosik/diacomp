@@ -27,6 +27,7 @@
     <string name="charts_insulin_consumption_history_description">The insulin consumption is how much insulin you need to digest one unit of carbs. The chart shows it\'s variation across the specified time period.</string>
     <string name="charts_koof_k_daily_description">A CCF is how many points your blood sugar will increase with one unit of carbs. The chart shows it\'s variation across the day.</string>
     <string name="charts_koof_q_daily_description">An ICF is how many points your blood sugar will drop with one unit of insulin. The chart shows it\'s variation across the day.</string>
+    <string name="charts_no_data">No data</string>
     <string name="common_action_delete">Delete</string>
     <string name="common_action_help">Help</string>
     <string name="common_button_cancel">Cancel</string>
