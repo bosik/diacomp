@@ -268,6 +268,7 @@ public class Chart extends Fragment implements ProgressListener
 		if (hasData)
 		{
 			graphView.setVisibility(View.VISIBLE);
+			textNoData.setVisibility(View.GONE);
 			if (postSetupListener != null)
 			{
 				postSetupListener.onPostSetup(this);
@@ -275,6 +276,7 @@ public class Chart extends Fragment implements ProgressListener
 		}
 		else
 		{
+			graphView.setVisibility(View.GONE);
 			textNoData.setVisibility(View.VISIBLE);
 		}
 	}
