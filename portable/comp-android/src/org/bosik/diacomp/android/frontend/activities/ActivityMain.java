@@ -94,6 +94,8 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 		super.onCreate(savedInstanceState);
 		try
 		{
+			// StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
+
 			setContentView(R.layout.activity_main);
 
 			// Backend
