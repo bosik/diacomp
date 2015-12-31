@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.utils;
 
@@ -24,7 +24,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import android.content.Context;
-import android.util.Log;
 
 public class FileWorker
 {
@@ -58,8 +57,6 @@ public class FileWorker
 	 */
 	public String readFromFile(String fileName) throws IOException
 	{
-		/**/long time = System.currentTimeMillis();
-
 		FileInputStream stream = context.openFileInput(fileName);
 		InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
 		StringBuilder sb = new StringBuilder();
@@ -79,10 +76,6 @@ public class FileWorker
 			stream.close();
 		}
 
-		/**/Log.v(
-				TAG,
-				String.format("File '%s' read in %d msec (%d bytes)", fileName, System.currentTimeMillis() - time,
-						sb.length()));
 		return sb.toString();
 	}
 
@@ -97,8 +90,6 @@ public class FileWorker
 	 */
 	public void writeToFile(String fileName, String data) throws IOException
 	{
-		/**/long time = System.currentTimeMillis();
-
 		FileOutputStream outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
 		try
 		{
@@ -108,8 +99,5 @@ public class FileWorker
 		{
 			outputStream.close();
 		}
-
-		/**/Log.v(TAG, String.format("File '%s' written in %d msec (%d bytes)", fileName, System.currentTimeMillis()
-				- time, data.length()));
 	}
 }

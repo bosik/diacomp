@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.activities;
 
@@ -22,7 +22,6 @@ import java.util.Date;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -48,17 +47,12 @@ public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 
 	public ActivityEditorNote()
 	{
-		Log.d("PRFM", "ActivityEditorNote() constructing");
 	}
 
 	@Override
 	protected void setupInterface()
 	{
-		Log.d("PRFM", "setupInterface() started");
-
 		setContentView(R.layout.activity_editor_note);
-
-		Log.d("PRFM", "setupInterface() content view setted");
 
 		buttonTime = (Button) findViewById(R.id.buttonNoteTime);
 		buttonTime.setOnClickListener(new OnClickListener()
@@ -79,8 +73,6 @@ public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 			}
 		});
 
-		Log.d("PRFM", "setupInterface() date/time components are ready");
-
 		editText = (EditText) findViewById(R.id.editNoteText);
 		buttonOK = (Button) findViewById(R.id.buttonNoteOK);
 		buttonOK.setOnClickListener(new OnClickListener()
@@ -91,14 +83,11 @@ public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 				ActivityEditorNote.this.submit();
 			}
 		});
-
-		Log.d("PRFM", "setupInterface() finished");
 	}
 
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
-		Log.d("PRFM", "showValuesInGUI() started");
 		if (!createMode)
 		{
 			onDateTimeChanged(entity.getData().getTime());
@@ -109,7 +98,6 @@ public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 			onDateTimeChanged(new Date());
 			editText.setText("");
 		}
-		Log.d("PRFM", "showValuesInGUI() finished");
 	}
 
 	@Override

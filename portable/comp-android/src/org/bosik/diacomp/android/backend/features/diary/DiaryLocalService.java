@@ -38,7 +38,6 @@ import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
-import org.bosik.diacomp.core.utils.Profiler;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
@@ -84,7 +83,6 @@ public class DiaryLocalService implements DiaryService
 		public void onChange(boolean selfChange, Uri uri)
 		{
 			hashTree = null;
-			Log.i(TAG, "DB changed; cashed hash tree invalidated");
 		}
 	}
 
@@ -278,7 +276,7 @@ public class DiaryLocalService implements DiaryService
 	public synchronized List<Versioned<DiaryRecord>> findPeriod(Date startTime, Date endTime, boolean includeRemoved)
 			throws CommonServiceException
 	{
-		long time = System.currentTimeMillis();
+		// long time = System.currentTimeMillis();
 
 		if (startTime == null)
 		{
@@ -320,10 +318,10 @@ public class DiaryLocalService implements DiaryService
 		// detailed logging inside
 		Verifier.verifyRecords(records, startTime, endTime);
 
-		time = System.currentTimeMillis() - time;
-
-		Log.d(TAG, String.format("#DBF %d items found between %s and %s in %d ms", records.size(),
-				Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime), time));
+		// time = System.currentTimeMillis() - time;
+		// Log.d(TAG, String.format("#DBF %d items found between %s and %s in %d ms",
+		// records.size(),
+		// Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime), time));
 
 		return records;
 	}
@@ -444,18 +442,18 @@ public class DiaryLocalService implements DiaryService
 	@Override
 	public MerkleTree getHashTree()
 	{
-		/**/Profiler p = new Profiler();
+		// /**/Profiler p = new Profiler();
 
 		if (hashTree == null)
 		{
 			SortedMap<String, String> hashes = getDataHashes();
-			/**/Log.d(TAG, "getDataHashes(): " + p.sinceLastCheck() / 1000000 + " ms");
+			// /**/Log.d(TAG, "getDataHashes(): " + p.sinceLastCheck() / 1000000 + " ms");
 
 			hashTree = HashUtils.buildMerkleTree(hashes);
-			/**/Log.d(TAG, "buildHashTree(): " + p.sinceLastCheck() / 1000000 + " ms");
+			// /**/Log.d(TAG, "buildHashTree(): " + p.sinceLastCheck() / 1000000 + " ms");
 		}
 
-		/**/Log.d(TAG, "getHashTree() [total]: " + p.sinceStart() / 1000000 + " ms");
+		// /**/Log.d(TAG, "getHashTree() [total]: " + p.sinceStart() / 1000000 + " ms");
 		return hashTree;
 	}
 
@@ -566,7 +564,6 @@ public class DiaryLocalService implements DiaryService
 				}
 			}
 
-			Log.i(TAG, "Diary records successfully verified");
 			return true;
 		}
 

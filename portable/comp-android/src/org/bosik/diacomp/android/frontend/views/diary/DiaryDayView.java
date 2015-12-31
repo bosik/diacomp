@@ -36,7 +36,6 @@ import org.bosik.merklesync.Versioned;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -143,10 +142,12 @@ public class DiaryDayView extends LinearLayout
 		final LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.view_diary_day, this);
 
+		// TODO
+		// diaryService = LocalDiary.getInstance(getContext().getContentResolver());
+
 		if (diaryService == null)
 		{
 			diaryService = new DiaryLocalService(getContext().getContentResolver());
-			Log.i(TAG, "Diary service created");
 		}
 
 		listRecs = (ListView) findViewById(R.id.listRecs);
@@ -456,7 +457,6 @@ public class DiaryDayView extends LinearLayout
 	{
 		synchronized (data)
 		{
-			Log.d(TAG, "Refreshing: setting date = " + date);
 			firstDate = date;
 			countOfDays = 1;
 			refresh();
@@ -507,7 +507,6 @@ public class DiaryDayView extends LinearLayout
 			{
 				Date timeFrom = params[0];
 				Date timeTo = params[1];
-				Log.d(TAG, String.format("load(): %s - %s", timeFrom, timeTo));
 				List<Versioned<DiaryRecord>> records = request(timeFrom, timeTo);
 				return groupItems(records, timeFrom, days);
 			}
@@ -549,7 +548,6 @@ public class DiaryDayView extends LinearLayout
 			{
 				Date timeFrom = params[0];
 				Date timeTo = params[1];
-				Log.d(TAG, String.format("loadBefore(): %s - %s", timeFrom, timeTo));
 				final List<Versioned<DiaryRecord>> records = request(timeFrom, timeTo);
 				return groupItems(records, timeFrom, days);
 			}
@@ -563,7 +561,6 @@ public class DiaryDayView extends LinearLayout
 					updatePostprand();
 				}
 				int delta = items.size();
-				Log.i(TAG, String.format("loadBefore(): %d new items loaded", delta));
 
 				firstDate = timeFrom;
 				countOfDays += days;
@@ -599,7 +596,6 @@ public class DiaryDayView extends LinearLayout
 			{
 				Date timeFrom = params[0];
 				Date timeTo = params[1];
-				Log.d(TAG, String.format("loadAfter(): %s and %s", timeFrom, timeTo));
 				final List<Versioned<DiaryRecord>> records = request(timeFrom, timeTo);
 				return groupItems(records, timeFrom, days);
 			}

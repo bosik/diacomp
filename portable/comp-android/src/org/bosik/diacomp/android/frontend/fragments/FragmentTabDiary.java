@@ -58,7 +58,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -437,7 +436,6 @@ public class FragmentTabDiary extends Fragment
 	{
 		try
 		{
-			Log.d("PRFM", "showNoteEditor() started");
 			if (createMode)
 			{
 				NoteRecord rec = new NoteRecord();
@@ -449,7 +447,6 @@ public class FragmentTabDiary extends Fragment
 			intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
 			intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
 			startActivityForResult(intent, createMode ? DIALOG_NOTE_CREATE : DIALOG_NOTE_MODIFY);
-			Log.d("PRFM", "showNoteEditor() finished");
 		}
 		catch (Exception e)
 		{

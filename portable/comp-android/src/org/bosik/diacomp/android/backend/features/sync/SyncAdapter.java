@@ -89,9 +89,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 	{
 		try
 		{
-			/**/long time = System.currentTimeMillis();
+			// /**/long time = System.currentTimeMillis();
 
-			Log.i(TAG, "Sync fired");
+			// Log.i(TAG, "Sync fired");
 
 			// Preparing common services
 
@@ -166,9 +166,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 				syncResult.stats.numIoExceptions++;
 			}
 
-			/**/time = System.currentTimeMillis() - time;
-			/**/Log.i(TAG, String.format("Synchronized in %d ms, items transferred: %d/%d/%d/%d", time, counterDiary,
-					counterFood, counterDish, countPreferences));
+			// /**/time = System.currentTimeMillis() - time;
+			// /**/Log.i(TAG, String.format("Synchronized in %d ms, items transferred: %d/%d/%d/%d",
+			// time, counterDiary,
+			// counterFood, counterDish, countPreferences));
 		}
 		catch (Exception e)
 		{

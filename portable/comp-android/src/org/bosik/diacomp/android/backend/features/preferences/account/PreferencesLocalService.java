@@ -175,16 +175,12 @@ public class PreferencesLocalService extends PreferencesService
 
 			if (exists)
 			{
-				Log.v(TAG, "Updating item " + key + ": " + entry.getValue());
-
 				String clause = DiaryContentProvider.COLUMN_PREFERENCES_KEY + " = ?";
 				String[] args = { key };
 				resolver.update(DiaryContentProvider.CONTENT_PREFERENCES_URI, newValues, clause, args);
 			}
 			else
 			{
-				Log.v(TAG, "Inserting item " + key + ": " + entry.getValue());
-
 				newValues.put(DiaryContentProvider.COLUMN_PREFERENCES_KEY, key);
 				resolver.insert(DiaryContentProvider.CONTENT_PREFERENCES_URI, newValues);
 			}

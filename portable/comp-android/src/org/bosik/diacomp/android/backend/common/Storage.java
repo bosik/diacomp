@@ -34,7 +34,6 @@ import org.bosik.diacomp.core.utils.Utils;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 public class Storage
 {
@@ -75,13 +74,8 @@ public class Storage
 					@Override
 					protected Void doInBackground(Void... arg0)
 					{
-						/**/long time = System.currentTimeMillis();
-
 						relevantIndexation(context.getContentResolver());
 						analyzeKoofs(context.getContentResolver());
-
-						/**/Log.d(TAG, "Backgrounds done in " + (System.currentTimeMillis() - time) + " ms");
-
 						return null;
 					}
 				}.execute();
@@ -100,7 +94,7 @@ public class Storage
 
 	static void relevantIndexation(ContentResolver resolver)
 	{
-		long time = System.currentTimeMillis();
+		// long time = System.currentTimeMillis();
 
 		final TagService tagService = TagServiceInternal.getInstance();
 		final DiaryService diary = LocalDiary.getInstance(resolver);
@@ -109,16 +103,18 @@ public class Storage
 
 		RelevantIndexator.indexate(tagService, diary, foodBase, dishBase);
 
-		Log.v(TAG, String.format("Relevant indexation done in %d msec", System.currentTimeMillis() - time));
+		// Log.v(TAG, String.format("Relevant indexation done in %d msec",
+		// System.currentTimeMillis() - time));
 	}
 
 	static void analyzeKoofs(ContentResolver resolver)
 	{
-		long time = System.currentTimeMillis();
+		// long time = System.currentTimeMillis();
 
 		KoofServiceInternal.getInstance(resolver).update();
 
-		Log.v(TAG, String.format("Analyzing done in %d msec", System.currentTimeMillis() - time));
+		// Log.v(TAG, String.format("Analyzing done in %d msec", System.currentTimeMillis() -
+		// time));
 	}
 
 	// public static void syncDiary(String guid)

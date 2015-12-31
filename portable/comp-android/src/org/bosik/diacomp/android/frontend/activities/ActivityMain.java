@@ -21,10 +21,8 @@ package org.bosik.diacomp.android.frontend.activities;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.SortedMap;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.TreeMap;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
@@ -41,7 +39,6 @@ import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.diary.PostprandUtils;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.Versioned;
 import android.accounts.Account;
 import android.app.Activity;
@@ -279,26 +276,6 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 		}
 	}
 
-	public void testSyncPerformance()
-	{
-		long time = System.currentTimeMillis();
-		SortedMap<String, String> data = new TreeMap<String, String>();
-		for (int i = 0; i < 25000; i++)
-		{
-			String id = HashUtils.generateGuid();
-			String hash = HashUtils.generateGuid();
-			data.put(id, hash);
-		}
-		time = System.currentTimeMillis() - time;
-		Log.i(TAG, String.format("%d items prepared in %d ms", data.size(), time));
-
-		time = System.currentTimeMillis();
-		SortedMap<String, String> tree = HashUtils.buildHashTree(data);
-		time = System.currentTimeMillis() - time;
-
-		Log.i(TAG, String.format("Tree with %d items build in %d ms", tree.size(), time));
-	}
-
 	// private void testSync()
 	// {
 	// // TODO: i18n
@@ -412,8 +389,6 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 				@Override
 				protected String doInBackground(Void... arg0)
 				{
-					/**/long time = System.currentTimeMillis();
-
 					String info = "";
 
 					final Date now = new Date();
@@ -435,9 +410,6 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 						info += (info.isEmpty() ? "" : ",\n") + Utils.formatTimePeriod(timeAfterIns) + " "
 								+ getString(R.string.notification_time_after_injection);
 					}
-
-					/**/time = System.currentTimeMillis() - time;
-					/**/Log.d(TAG, "showTimeAfter() done in " + time + " ms");
 
 					return info;
 				}

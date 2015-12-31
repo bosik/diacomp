@@ -57,7 +57,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -571,8 +570,6 @@ public class FragmentTabBase extends Fragment
 	{
 		try
 		{
-			long tick = System.currentTimeMillis();
-
 			// filtering
 
 			List<Versioned<FoodItem>> foodItems;
@@ -606,8 +603,6 @@ public class FragmentTabBase extends Fragment
 				result.add(item);
 			}
 
-			Log.d(TAG, String.format("Searched for '%s', items found: %d", filter, result.size()));
-
 			sorter.sort(result, Sort.RELEVANT);
 
 			// clipping
@@ -621,9 +616,6 @@ public class FragmentTabBase extends Fragment
 			{
 				resultCutted = false;
 			}
-
-			tick = System.currentTimeMillis() - tick;
-			Log.i(TAG, String.format("Request handled in %d msec, items found: %d", tick, result.size()));
 
 			return result;
 		}

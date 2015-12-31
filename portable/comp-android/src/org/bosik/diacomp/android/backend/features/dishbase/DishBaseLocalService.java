@@ -89,8 +89,6 @@ public class DishBaseLocalService implements DishBaseService
 		// analyze response
 		if (cursor != null)
 		{
-			long time = System.currentTimeMillis();
-
 			List<Versioned<DishItem>> result = new ArrayList<Versioned<DishItem>>();
 
 			int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_GUID);
@@ -99,8 +97,6 @@ public class DishBaseLocalService implements DishBaseService
 			int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_VERSION);
 			int indexData = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_DATA);
 			int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_DELETED);
-
-			long jsonTime = 0;
 
 			while (cursor.moveToNext())
 			{
@@ -113,7 +109,6 @@ public class DishBaseLocalService implements DishBaseService
 
 				long temp = System.currentTimeMillis();
 				DishItem item = serializer.read(valueData);
-				jsonTime += System.currentTimeMillis() - temp;
 
 				Versioned<DishItem> versioned = new Versioned<DishItem>(item);
 				versioned.setId(valueId);
@@ -125,9 +120,6 @@ public class DishBaseLocalService implements DishBaseService
 				result.add(versioned);
 			}
 
-			// Log.i(TAG, result.size() + " json's parsed in " + jsonTime + " msec");
-			// Log.i(TAG, result.size() + " items parsed in " + (System.currentTimeMillis() - time)
-			// + " msec");
 			cursor.close();
 
 			return result;

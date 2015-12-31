@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.common;
 
@@ -29,7 +29,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.util.Log;
 
 public class DiaryContentProvider extends ContentProvider
 {
@@ -143,7 +142,6 @@ public class DiaryContentProvider extends ContentProvider
 		@Override
 		public void onCreate(SQLiteDatabase db)
 		{
-			Log.i(TAG, "MyDBHelper created");
 			// FIXME: THIS ERASES ALL DATA
 
 			// db.execSQL("DROP TABLE IF EXISTS " + TABLE_DIARY);
@@ -220,7 +218,7 @@ public class DiaryContentProvider extends ContentProvider
 
 	private static final class UnknownUriException extends IllegalArgumentException
 	{
-		private static final long	serialVersionUID	= 1L;
+		private static final long serialVersionUID = 1L;
 
 		public UnknownUriException(Uri uri)
 		{
