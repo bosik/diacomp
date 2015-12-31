@@ -21,11 +21,13 @@ package org.bosik.diacomp.android.frontend.activities;
 import java.io.Serializable;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.Versioned;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
 // Do not make it abstract: the android.app.Fragment$InstantiationException may be caused otherwise
+@SuppressLint("Registered")
 public class ActivityEditor<T extends Serializable> extends Activity
 {
 	// TODO: rename to FIELD_CREATE_MODE
