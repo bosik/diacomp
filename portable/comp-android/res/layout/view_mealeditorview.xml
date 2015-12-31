@@ -11,6 +11,7 @@
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="0.42"
+        android:background="@color/diary_meal"
         android:drawSelectorOnTop="false"
         android:fadingEdgeLength="5dp"
         android:requiresFadingEdge="vertical"
