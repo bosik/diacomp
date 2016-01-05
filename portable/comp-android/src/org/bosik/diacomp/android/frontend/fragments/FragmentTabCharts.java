@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.android.frontend.fragments.chart.Chart;
@@ -50,6 +51,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -59,6 +63,8 @@ public class FragmentTabCharts extends Fragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
+		setHasOptionsMenu(true);
+
 		View rootView = inflater.inflate(R.layout.fragment_tab_charts, container, false);
 
 		ExpandableView groupHistory = (ExpandableView) rootView.findViewById(R.id.chartGroupHistoryTitle);
@@ -92,6 +98,22 @@ public class FragmentTabCharts extends Fragment
 		});
 
 		return rootView;
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+	{
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.actions_charts, menu);
+
+		if (AccountUtils.getAccounts(getActivity()).length > 0)
+		{
+			MenuItem item = menu.findItem(R.id.item_common_login);
+			if (item != null)
+			{
+				item.setVisible(false);
+			}
+		}
 	}
 
 	private static final int	WINDOW_SIZE	= 3;	// days
