@@ -59,7 +59,7 @@ public class UIUtils
 
 		input.setText(defaultMass);
 		input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_CLASS_NUMBER);
-		input.setKeyListener(DigitsKeyListener.getInstance("0123456789.+-"));
+		input.setKeyListener(DigitsKeyListener.getInstance("0123456789.,+-"));
 		builder.setTitle(title);
 		builder.setMessage(message);
 		builder.setView(input);
