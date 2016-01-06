@@ -58,11 +58,19 @@ public class TestUtils extends TestCase
 
 	public void test_formatDoubleShort()
 	{
+		Locale.setDefault(Locale.US);
+
 		assertEquals("0", Utils.formatDoubleShort(0.0));
 		assertEquals("1", Utils.formatDoubleShort(1.0));
 		assertEquals("-1", Utils.formatDoubleShort(-1.0));
 		assertEquals("10", Utils.formatDoubleShort(10.0));
+
 		assertEquals("10.1", Utils.formatDoubleShort(10.1));
+
+		assertEquals("10", Utils.formatDoubleShort(10.01));
+		assertEquals("1.4", Utils.formatDoubleShort(1.41));
+		assertEquals("1.4", Utils.formatDoubleShort(1.4000000000000004));
+		assertEquals("1.4", Utils.formatDoubleShort(10.5 - 9.1));
 	}
 
 	public void testCheckTime()

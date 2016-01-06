@@ -256,8 +256,7 @@ public class Utils
 
 		try
 		{
-			s = s.replaceAll("\\.", String.valueOf(DECIMAL_DOT));
-			s = s.replaceAll("\\,", String.valueOf(DECIMAL_DOT));
+			s = checkDot(s);
 			return Double.parseDouble(s);
 		}
 		catch (NumberFormatException e)
@@ -389,7 +388,14 @@ public class Utils
 	 */
 	public static String formatDoubleShort(double x)
 	{
-		return (x % 1 == 0) ? String.valueOf((int)x) : String.valueOf(x);
+		String s = String.format("%.1f", x);
+
+		if (s.endsWith(DECIMAL_DOT + "0"))
+		{
+			s = s.substring(0, s.length() - 2);
+		}
+
+		return s;
 	}
 
 	public static String formatDoubleSigned(double x)
