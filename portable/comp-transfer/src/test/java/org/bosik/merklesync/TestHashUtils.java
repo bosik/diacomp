@@ -39,8 +39,7 @@ public class TestHashUtils
 	}
 
 	@Test
-	@Ignore
-	// This test case is for manual performance check only
+	@Ignore("This test case is for manual performance check only")
 	public void test_buildHashTree_performance()
 	{
 		long time = System.currentTimeMillis();

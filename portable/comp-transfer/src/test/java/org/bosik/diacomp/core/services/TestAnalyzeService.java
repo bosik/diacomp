@@ -62,8 +62,7 @@ public class TestAnalyzeService
 	}
 
 	@Test
-	@Ignore
-	// this test case is obsolete
+	@Ignore("this test case is obsolete")
 	public void testDiaryAnalyze_setA_ok()
 	{
 		//===========================================================================
