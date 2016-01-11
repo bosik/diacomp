@@ -82,7 +82,7 @@
     <string name="editor_meal_message_saved">Приём пищи сохранён</string>
     <string name="editor_meal_short_postprandial">Сокращённый постпрандиал</string>
     <string name="editor_meal_title">Приём пищи</string>
-    <string name="editor_meal_tip_meal_info" formatted="false">Белки: %.1f г\nЖиры: %.1f г\nУглеводы: %.1f г\nЦенность: %.1f ккал\nМасса: %.0f г</string>
+    <string name="editor_meal_tip_meal_info" formatted="false">Белки: %.0f г\nЖиры: %.0f г\nУглеводы: %.0f г\nЦенность: %.0f ккал\nМасса: %.0f г</string>
     <string name="editor_note_field_text">Текст</string>
     <string name="editor_note_title">Заметка</string>
     <string name="fd_action_add">Добавить</string>
