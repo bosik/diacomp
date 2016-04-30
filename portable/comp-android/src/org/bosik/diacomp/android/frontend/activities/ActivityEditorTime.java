@@ -27,6 +27,7 @@ import org.bosik.diacomp.android.frontend.fragments.pickers.TimePickerFragment;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import android.annotation.SuppressLint;
 import android.app.DialogFragment;
+import android.os.Bundle;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
@@ -36,6 +37,32 @@ public class ActivityEditorTime<T extends DiaryRecord> extends ActivityEditor<T>
 {
 	private final SimpleDateFormat	FORMAT_TIME	= new SimpleDateFormat("HH:mm", Locale.getDefault());
 	private final SimpleDateFormat	FORMAT_DATE	= new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+	private static final String		KEY_TIME	= "time";
+
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		if (savedInstanceState != null)
+		{
+			if (savedInstanceState.containsKey(KEY_TIME))
+			{
+				long time = savedInstanceState.getLong(KEY_TIME);
+				entity.getData().setTime(new Date(time));
+				onDateTimeChanged(entity.getData().getTime());
+			}
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState)
+	{
+		super.onSaveInstanceState(outState);
+		if (outState != null)
+		{
+			outState.putLong(KEY_TIME, entity.getData().getTime().getTime());
+		}
+	}
 
 	/* =========================== PROTECTED METHODS ================================ */
 
