@@ -18,6 +18,14 @@
  */
 package org.bosik.diacomp.android.backend.common;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bosik.diacomp.android.backend.common.db.Column;
+import org.bosik.diacomp.android.backend.common.db.Table;
+import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
+import org.bosik.diacomp.android.backend.common.db.tables.TableKoofs;
+
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -32,100 +40,99 @@ import android.net.Uri;
 
 public class DiaryContentProvider extends ContentProvider
 {
-	private static final String		TAG							= DiaryContentProvider.class.getSimpleName();
+	private static final String			TAG							= DiaryContentProvider.class.getSimpleName();
 
 	// Core
-	private MyDBHelper				openHelper;
-	public static final UriMatcher	sURIMatcher;
+	private MyDBHelper					openHelper;
+	public static final UriMatcher		sURIMatcher;
 
 	// Database
-	private static final String		DATABASE_NAME				= "Comp.db";
-	private static final int		DATABASE_VERSION			= 1;
-	private static final String		SCHEME						= "content://";
-	public static final String		AUTHORITY					= "diacomp.provider";
-	public static final Uri			CONTENT_BASE_URI			= Uri.parse(SCHEME + AUTHORITY + "/");
-
-	// ======================================= Diary table =======================================
-
-	private static final String		TABLE_DIARY					= "diary";
-	public static final String		COLUMN_DIARY_GUID			= "_GUID";
-	public static final String		COLUMN_DIARY_TIMESTAMP		= "_TimeStamp";
-	public static final String		COLUMN_DIARY_HASH			= "_Hash";
-	public static final String		COLUMN_DIARY_VERSION		= "_Version";
-	public static final String		COLUMN_DIARY_DELETED		= "_Deleted";
-	public static final String		COLUMN_DIARY_CONTENT		= "_Content";
-	public static final String		COLUMN_DIARY_TIMECACHE		= "_TimeCache";
-
-	public static final String		CONTENT_DIARY_STRING		= SCHEME + AUTHORITY + "/" + TABLE_DIARY + "/";
-	public static final Uri			CONTENT_DIARY_URI			= Uri.parse(CONTENT_DIARY_STRING);
-
-	public static final int			CODE_DIARY					= 1;
+	private static final String			DATABASE_NAME				= "Comp.db";
+	private static final int			DATABASE_VERSION			= 1;
+	private static final String			SCHEME						= "content://";
+	public static final String			AUTHORITY					= "diacomp.provider";
+	public static final Uri				CONTENT_BASE_URI			= Uri.parse(SCHEME + AUTHORITY + "/");
 
 	// ===================================== Foodbase table =====================================
 
-	private static final String		TABLE_FOODBASE				= "foodbase";
-	public static final String		COLUMN_FOODBASE_GUID		= "GUID";
-	public static final String		COLUMN_FOODBASE_TIMESTAMP	= "TimeStamp";
-	public static final String		COLUMN_FOODBASE_HASH		= "Hash";
-	public static final String		COLUMN_FOODBASE_VERSION		= "Version";
-	public static final String		COLUMN_FOODBASE_DELETED		= "Deleted";
-	public static final String		COLUMN_FOODBASE_DATA		= "Data";
-	public static final String		COLUMN_FOODBASE_NAMECACHE	= "NameCache";
+	private static final String			TABLE_FOODBASE				= "foodbase";
+	public static final String			COLUMN_FOODBASE_GUID		= "GUID";
+	public static final String			COLUMN_FOODBASE_TIMESTAMP	= "TimeStamp";
+	public static final String			COLUMN_FOODBASE_HASH		= "Hash";
+	public static final String			COLUMN_FOODBASE_VERSION		= "Version";
+	public static final String			COLUMN_FOODBASE_DELETED		= "Deleted";
+	public static final String			COLUMN_FOODBASE_DATA		= "Data";
+	public static final String			COLUMN_FOODBASE_NAMECACHE	= "NameCache";
 
-	public static final String		CONTENT_FOODBASE_STRING		= SCHEME + AUTHORITY + "/" + TABLE_FOODBASE + "/";
-	public static final Uri			CONTENT_FOODBASE_URI		= Uri.parse(CONTENT_FOODBASE_STRING);
-
-	public static final int			CODE_FOODBASE				= 2;
+	public static final Uri				CONTENT_FOODBASE_URI		= Uri.parse(SCHEME + AUTHORITY + "/" + TABLE_FOODBASE + "/");
+	public static final int				CODE_FOODBASE				= 2;
 
 	// ===================================== Dishbase table =====================================
 
-	private static final String		TABLE_DISHBASE				= "dishbase";
-	public static final String		COLUMN_DISHBASE_GUID		= "GUID";
-	public static final String		COLUMN_DISHBASE_TIMESTAMP	= "TimeStamp";
-	public static final String		COLUMN_DISHBASE_HASH		= "Hash";
-	public static final String		COLUMN_DISHBASE_VERSION		= "Version";
-	public static final String		COLUMN_DISHBASE_DELETED		= "Deleted";
-	public static final String		COLUMN_DISHBASE_DATA		= "Data";
-	public static final String		COLUMN_DISHBASE_NAMECACHE	= "NameCache";
+	private static final String			TABLE_DISHBASE				= "dishbase";
+	public static final String			COLUMN_DISHBASE_GUID		= "GUID";
+	public static final String			COLUMN_DISHBASE_TIMESTAMP	= "TimeStamp";
+	public static final String			COLUMN_DISHBASE_HASH		= "Hash";
+	public static final String			COLUMN_DISHBASE_VERSION		= "Version";
+	public static final String			COLUMN_DISHBASE_DELETED		= "Deleted";
+	public static final String			COLUMN_DISHBASE_DATA		= "Data";
+	public static final String			COLUMN_DISHBASE_NAMECACHE	= "NameCache";
 
-	public static final String		CONTENT_DISHBASE_STRING		= SCHEME + AUTHORITY + "/" + TABLE_DISHBASE + "/";
-	public static final Uri			CONTENT_DISHBASE_URI		= Uri.parse(CONTENT_DISHBASE_STRING);
-
-	public static final int			CODE_DISHBASE				= 3;
+	public static final Uri				CONTENT_DISHBASE_URI		= Uri.parse(SCHEME + AUTHORITY + "/" + TABLE_DISHBASE + "/");
+	public static final int				CODE_DISHBASE				= 3;
 
 	// ===================================== Tags table =====================================
 
-	private static final String		TABLE_TAG					= "tag";
-	public static final String		COLUMN_TAG_GUID				= "GUID";
-	public static final String		COLUMN_TAG_TAG				= "Tag";
+	private static final String			TABLE_TAG					= "tag";
+	public static final String			COLUMN_TAG_GUID				= "GUID";
+	public static final String			COLUMN_TAG_TAG				= "Tag";
 
-	public static final String		CONTENT_TAG_STRING			= SCHEME + AUTHORITY + "/" + TABLE_TAG + "/";
-	public static final Uri			CONTENT_TAG_URI				= Uri.parse(CONTENT_TAG_STRING);
-
-	public static final int			CODE_TAG					= 4;
+	public static final Uri				CONTENT_TAG_URI				= Uri.parse(SCHEME + AUTHORITY + "/" + TABLE_TAG + "/");
+	private static final int			CODE_TAG					= 4;
 
 	// ===================================== Preferences table =====================================
 
-	private static final String		TABLE_PREFERENCES			= "preferences";
-	public static final String		COLUMN_PREFERENCES_KEY		= "Key";
-	public static final String		COLUMN_PREFERENCES_VALUE	= "Value";
-	public static final String		COLUMN_PREFERENCES_VERSION	= "Version";
+	private static final String			TABLE_PREFERENCES			= "preferences";
+	public static final String			COLUMN_PREFERENCES_KEY		= "Key";
+	public static final String			COLUMN_PREFERENCES_VALUE	= "Value";
+	public static final String			COLUMN_PREFERENCES_VERSION	= "Version";
 
-	public static final String		CONTENT_PREFERENCES_STRING	= SCHEME + AUTHORITY + "/" + TABLE_PREFERENCES + "/";
-	public static final Uri			CONTENT_PREFERENCES_URI		= Uri.parse(CONTENT_PREFERENCES_STRING);
-
-	public static final int			CODE_PREFERENCES			= 5;
+	public static final Uri				CONTENT_PREFERENCES_URI		= Uri.parse(SCHEME + AUTHORITY + "/" + TABLE_PREFERENCES + "/");
+	private static final int			CODE_PREFERENCES			= 5;
 
 	// ==================================================================================================
 
+	private static final List<Table>	tables						= new ArrayList<>();
+
 	static
 	{
+		tables.add(new TableDiary()
+		{
+			@Override
+			public int getCode()
+			{
+				return 1;
+			}
+		});
+		tables.add(new TableKoofs()
+		{
+			@Override
+			public int getCode()
+			{
+				return 6;
+			}
+		});
+
 		sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		sURIMatcher.addURI(AUTHORITY, TABLE_DIARY, CODE_DIARY);
 		sURIMatcher.addURI(AUTHORITY, TABLE_FOODBASE, CODE_FOODBASE);
 		sURIMatcher.addURI(AUTHORITY, TABLE_DISHBASE, CODE_DISHBASE);
 		sURIMatcher.addURI(AUTHORITY, TABLE_TAG, CODE_TAG);
 		sURIMatcher.addURI(AUTHORITY, TABLE_PREFERENCES, CODE_PREFERENCES);
+
+		for (int i = 0 ; i < tables.size(); i++)
+		{
+			sURIMatcher.addURI(AUTHORITY, tables.get(i).getName(), tables.get(i).getCode());
+		}
 	}
 
 	private static final class MyDBHelper extends SQLiteOpenHelper
@@ -152,17 +159,17 @@ public class DiaryContentProvider extends ContentProvider
 			// @formatter:off
 
 			// diary table
-			final String SQL_CREATE_DIARY = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s,%s,  %s, %s, %s, %s)",
-				TABLE_DIARY,
-				COLUMN_DIARY_GUID + " TEXT PRIMARY KEY NOT NULL",
-				COLUMN_DIARY_TIMESTAMP + " TEXT NOT NULL",
-				COLUMN_DIARY_HASH + " TEXT NOT NULL",
-				COLUMN_DIARY_VERSION + " INTEGER",
-				COLUMN_DIARY_DELETED + " INTEGER",
-				COLUMN_DIARY_CONTENT + " BLOB",
-				COLUMN_DIARY_TIMECACHE + " TEXT NOT NULL"
-			);
-			db.execSQL(SQL_CREATE_DIARY);
+//			final String SQL_CREATE_DIARY = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s,%s,  %s, %s, %s, %s)",
+//				TABLE_DIARY,
+//				COLUMN_DIARY_GUID + " TEXT PRIMARY KEY NOT NULL",
+//				COLUMN_DIARY_TIMESTAMP + " TEXT NOT NULL",
+//				COLUMN_DIARY_HASH + " TEXT NOT NULL",
+//				COLUMN_DIARY_VERSION + " INTEGER",
+//				COLUMN_DIARY_DELETED + " INTEGER",
+//				COLUMN_DIARY_CONTENT + " BLOB",
+//				COLUMN_DIARY_TIMECACHE + " TEXT NOT NULL"
+//			);
+//			db.execSQL(SQL_CREATE_DIARY);
 
 			// foodbase table
 			final String SQL_CREATE_FOODBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s, %s, %s)",
@@ -208,6 +215,35 @@ public class DiaryContentProvider extends ContentProvider
 			db.execSQL(SQL_CREATE_PREFERENCES);
 
 			// @formatter:on
+
+			for (Table table : tables)
+			{
+				StringBuilder s = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
+				s.append(table.getName()).append(" (");
+
+				if (!table.getColumns().isEmpty())
+				{
+					for (Column c : table.getColumns())
+					{
+						s.append(c.getName()).append(" ");
+						s.append(c.getType()).append(" ");
+						if (c.isPrimary())
+						{
+							s.append("PRIMARY KEY ");
+						}
+						if (!c.isNullable())
+						{
+							s.append("NOT NULL ");
+						}
+						s.append(", ");
+					}
+					s.delete(s.length() - 2, s.length());
+				}
+				
+				s.append(")");
+
+				db.execSQL(s.toString());
+			}
 		}
 
 		@Override
@@ -229,12 +265,18 @@ public class DiaryContentProvider extends ContentProvider
 	@Override
 	public String getType(Uri uri)
 	{
-		switch (sURIMatcher.match(uri))
+		int code = sURIMatcher.match(uri);
+
+		for (Table table : tables)
 		{
-			case CODE_DIARY:
+			if (code == table.getCode())
 			{
-				return "org.bosik.diacomp.diary";
+				return table.getContentType();
 			}
+		}
+
+		switch (code)
+		{
 			case CODE_FOODBASE:
 			{
 				return "org.bosik.diacomp.food";
@@ -281,6 +323,11 @@ public class DiaryContentProvider extends ContentProvider
 		}
 	}
 
+	public static Uri buildUri(Table table)
+	{
+		return Uri.parse(SCHEME + AUTHORITY + "/" + table.getName() + "/");
+	}
+	
 	// =================================== CRUD ===================================
 
 	@Override
@@ -292,30 +339,59 @@ public class DiaryContentProvider extends ContentProvider
 		SQLiteDatabase db = openHelper.getWritableDatabase();
 		Uri resultUri;
 
-		switch (sURIMatcher.match(uri))
+		int code = sURIMatcher.match(uri);
+		
+		for (Table table : tables)
 		{
-			case CODE_DIARY:
+			if (code == table.getCode())
 			{
-				assertDefined(values, COLUMN_DIARY_GUID);
-				assertDefined(values, COLUMN_DIARY_TIMESTAMP);
-				assertDefined(values, COLUMN_DIARY_HASH);
-				assertDefined(values, COLUMN_DIARY_VERSION);
-				assertDefined(values, COLUMN_DIARY_DELETED);
-				assertDefined(values, COLUMN_DIARY_CONTENT);
-				assertDefined(values, COLUMN_DIARY_TIMECACHE);
+				for (Column column : table.getColumns())
+				{
+					if (!column.isNullable())
+					{
+						assertDefined(values, column.getName());
+					}
+				}
 
-				long rowId = db.insert(TABLE_DIARY, null, values);
+				long rowId = db.insert(table.getName(), null, values);
 
 				if (rowId > 0)
 				{
-					resultUri = ContentUris.withAppendedId(CONTENT_DIARY_URI, rowId);
+					resultUri = ContentUris.withAppendedId(buildUri(table), rowId);
+					getContext().getContentResolver().notifyChange(resultUri, null);
+					return resultUri;
 				}
 				else
 				{
 					throw new SQLException("Failed to insert row into " + uri);
 				}
-				break;
 			}
+		}
+		
+		switch (code)
+		{
+//			case CODE_DIARY:
+//			{
+//				assertDefined(values, COLUMN_DIARY_GUID);
+//				assertDefined(values, COLUMN_DIARY_TIMESTAMP);
+//				assertDefined(values, COLUMN_DIARY_HASH);
+//				assertDefined(values, COLUMN_DIARY_VERSION);
+//				assertDefined(values, COLUMN_DIARY_DELETED);
+//				assertDefined(values, COLUMN_DIARY_CONTENT);
+//				assertDefined(values, COLUMN_DIARY_TIMECACHE);
+//
+//				long rowId = db.insert(TABLE_DIARY, null, values);
+//
+//				if (rowId > 0)
+//				{
+//					resultUri = ContentUris.withAppendedId(CONTENT_DIARY_URI, rowId);
+//				}
+//				else
+//				{
+//					throw new SQLException("Failed to insert row into " + uri);
+//				}
+//				break;
+//			}
 
 			case CODE_FOODBASE:
 			{
@@ -412,13 +488,26 @@ public class DiaryContentProvider extends ContentProvider
 		SQLiteDatabase db = openHelper.getReadableDatabase();
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
-		switch (sURIMatcher.match(uri))
+		int code = sURIMatcher.match(uri);
+		
+		for (Table table : tables)
 		{
-			case CODE_DIARY:
+			if (code == table.getCode())
 			{
-				qb.setTables(TABLE_DIARY);
-				break;
+				qb.setTables(table.getName());
+				Cursor cursor = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+				cursor.setNotificationUri(getContext().getContentResolver(), uri);
+				return cursor;
 			}
+		}
+		
+		switch (code)
+		{
+//			case CODE_DIARY:
+//			{
+//				qb.setTables(TABLE_DIARY);
+//				break;
+//			}
 			case CODE_FOODBASE:
 			{
 				qb.setTables(TABLE_FOODBASE);
@@ -458,13 +547,25 @@ public class DiaryContentProvider extends ContentProvider
 		SQLiteDatabase db = openHelper.getWritableDatabase();
 		int affectedCount;
 
-		switch (sURIMatcher.match(uri))
+		int code = sURIMatcher.match(uri);
+		
+		for (Table table : tables)
 		{
-			case CODE_DIARY:
+			if (code == table.getCode())
 			{
-				affectedCount = db.update(TABLE_DIARY, values, where, whereArgs);
-				break;
+				affectedCount = db.update(table.getName(), values, where, whereArgs);
+				getContext().getContentResolver().notifyChange(uri, null);
+				return affectedCount;
 			}
+		}
+		
+		switch (code)
+		{
+//			case CODE_DIARY:
+//			{
+//				affectedCount = db.update(TABLE_DIARY, values, where, whereArgs);
+//				break;
+//			}
 			case CODE_FOODBASE:
 			{
 				affectedCount = db.update(TABLE_FOODBASE, values, where, whereArgs);
@@ -506,13 +607,25 @@ public class DiaryContentProvider extends ContentProvider
 		SQLiteDatabase db = openHelper.getWritableDatabase();
 		int count;
 
-		switch (sURIMatcher.match(uri))
+		int code = sURIMatcher.match(uri);
+		
+		for (Table table : tables)
 		{
-			case CODE_DIARY:
+			if (code == table.getCode())
 			{
-				count = db.delete(TABLE_DIARY, where, whereArgs);
-				break;
+				count = db.delete(table.getName(), where, whereArgs);
+				getContext().getContentResolver().notifyChange(uri, null);
+				return count;
 			}
+		}
+		
+		switch (code)
+		{
+//			case CODE_DIARY:
+//			{
+//				count = db.delete(TABLE_DIARY, where, whereArgs);
+//				break;
+//			}
 			case CODE_FOODBASE:
 			{
 				count = db.delete(TABLE_FOODBASE, where, whereArgs);

@@ -25,7 +25,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
-import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
+import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.backend.features.sync.ServerTimeService;
@@ -130,7 +130,7 @@ public class FragmentTabDiary extends Fragment
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		getActivity().getContentResolver().registerContentObserver(DiaryContentProvider.CONTENT_DIARY_URI, true,
+		getActivity().getContentResolver().registerContentObserver(TableDiary.CONTENT_URI, true,
 				observer);
 	};
 
