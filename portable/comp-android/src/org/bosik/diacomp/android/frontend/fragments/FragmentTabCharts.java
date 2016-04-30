@@ -356,7 +356,7 @@ public class FragmentTabCharts extends Fragment
 			@Override
 			public Collection<Series<?>> load(ContentResolver contentResolver)
 			{
-				KoofService koofService = KoofServiceInternal.getInstance(contentResolver);
+				KoofService koofService = KoofServiceInternal.getInstance(getActivity());
 
 				List<DataPoint> dataList = new ArrayList<DataPoint>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
@@ -393,7 +393,7 @@ public class FragmentTabCharts extends Fragment
 			@Override
 			public Collection<Series<?>> load(ContentResolver contentResolver)
 			{
-				KoofService koofService = KoofServiceInternal.getInstance(contentResolver);
+				KoofService koofService = KoofServiceInternal.getInstance(getActivity());
 
 				List<DataPoint> dataList = new ArrayList<DataPoint>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
@@ -429,7 +429,7 @@ public class FragmentTabCharts extends Fragment
 			@Override
 			public Collection<Series<?>> load(ContentResolver contentResolver)
 			{
-				KoofService koofService = KoofServiceInternal.getInstance(contentResolver);
+				KoofService koofService = KoofServiceInternal.getInstance(getActivity());
 
 				List<DataPoint> dataList = new ArrayList<DataPoint>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)

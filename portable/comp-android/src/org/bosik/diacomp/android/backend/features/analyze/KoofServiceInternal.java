@@ -24,6 +24,7 @@ import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.util.Log;
 
 public class KoofServiceInternal
@@ -33,15 +34,15 @@ public class KoofServiceInternal
 	// TODO: make it preference
 	private static int			ANALYZE_DAYS_PERIOD	= 14;
 
-	public static synchronized KoofService getInstance(ContentResolver resolver)
+	public static synchronized KoofService getInstance(Context context)
 	{
 		if (null == instance)
 		{
 			Log.i(TAG, "Koof service initialization...");
-			DiaryService localDiary = LocalDiary.getInstance(resolver);
+			DiaryService localDiary = LocalDiary.getInstance(context.getContentResolver());
 			AnalyzeCore analyzeService = AnalyzeCoreInternal.getInstance();
 			// TODO: hardcoded adaptation
-			instance = new KoofServiceImpl(resolver, localDiary, analyzeService, ANALYZE_DAYS_PERIOD, 0.995);
+			instance = new KoofServiceImpl(context, localDiary, analyzeService, ANALYZE_DAYS_PERIOD, 0.995);
 		}
 		return instance;
 	}

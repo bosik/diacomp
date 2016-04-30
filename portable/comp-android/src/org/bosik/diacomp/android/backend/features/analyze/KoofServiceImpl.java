@@ -29,10 +29,12 @@ import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
-import android.content.ContentResolver;
+import android.content.Context;
 
 public class KoofServiceImpl implements KoofService
 {
+	private static final String	TAG			= KoofServiceImpl.class.getSimpleName();
+
 	private final DiaryService	diaryService;
 	private final AnalyzeCore	analyzeCore;
 	private final KoofDao		koofDao;
@@ -50,11 +52,11 @@ public class KoofServiceImpl implements KoofService
 	 * @param adaptation
 	 *            [0 .. 0.1]
 	 */
-	public KoofServiceImpl(ContentResolver resolver, DiaryService diaryService, AnalyzeCore analyzeCore, int analyzePeriod, double adaptation)
+	public KoofServiceImpl(Context context, DiaryService diaryService, AnalyzeCore analyzeCore, int analyzePeriod, double adaptation)
 	{
 		this.diaryService = diaryService;
 		this.analyzeCore = analyzeCore;
-		this.koofDao = new KoofDao(resolver);
+		this.koofDao = new KoofDao(context);
 		this.analyzePeriod = analyzePeriod;
 		this.adaptation = adaptation;
 	}
@@ -69,10 +71,7 @@ public class KoofServiceImpl implements KoofService
 
 		if (koofs != null) // null in case i.g. there are no diary records
 		{
-			for (int time = 0; time < Utils.MinPerDay; time++)
-			{
-				koofDao.save(time, koofs.getKoof(time));
-			}
+			koofDao.save(koofs);
 		}
 	}
 

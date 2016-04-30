@@ -46,7 +46,7 @@ public class DiaryContentProvider extends ContentProvider
 {
 	// Basic properties
 	private static final String			DATABASE_NAME		= "Comp.db";
-	private static final int			DATABASE_VERSION	= 1;
+	private static final int			DATABASE_VERSION	= 2;
 	private static final String			SCHEME				= "content://";
 	public static final String			AUTHORITY			= "diacomp.provider";
 	public static final Uri				CONTENT_BASE_URI	= Uri.parse(SCHEME + AUTHORITY + "/");
@@ -105,11 +105,44 @@ public class DiaryContentProvider extends ContentProvider
 		}
 	}
 
-	private static final class MyDBHelper extends SQLiteOpenHelper
+	public static final class MyDBHelper extends SQLiteOpenHelper
 	{
 		public MyDBHelper(Context context)
 		{
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		}
+
+		private String buildCreateTableStatement(Table table)
+		{
+			StringBuilder s = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
+			s.append(table.getName()).append(" (");
+
+			if (!table.getColumns().isEmpty())
+			{
+				for (Column c : table.getColumns())
+				{
+					s.append(c.getName()).append(" ");
+					s.append(c.getType()).append(" ");
+					if (c.isPrimary())
+					{
+						s.append("PRIMARY KEY ");
+					}
+					if (!c.isNullable())
+					{
+						s.append("NOT NULL ");
+					}
+					s.append(", ");
+				}
+				s.delete(s.length() - 2, s.length());
+			}
+
+			s.append(")");
+			return s.toString();
+		}
+
+		private String buildDropTableStatement(Table table)
+		{
+			return "DROP TABLE IF EXISTS " + table.getName();
 		}
 
 		@Override
@@ -124,37 +157,36 @@ public class DiaryContentProvider extends ContentProvider
 
 			for (Table table : tables)
 			{
-				StringBuilder s = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
-				s.append(table.getName()).append(" (");
-
-				if (!table.getColumns().isEmpty())
-				{
-					for (Column c : table.getColumns())
-					{
-						s.append(c.getName()).append(" ");
-						s.append(c.getType()).append(" ");
-						if (c.isPrimary())
-						{
-							s.append("PRIMARY KEY ");
-						}
-						if (!c.isNullable())
-						{
-							s.append("NOT NULL ");
-						}
-						s.append(", ");
-					}
-					s.delete(s.length() - 2, s.length());
-				}
-
-				s.append(")");
-
-				db.execSQL(s.toString());
+				String s = buildCreateTableStatement(table);
+				db.execSQL(s);
 			}
 		}
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
 		{
+			for (int version = oldVersion; version < newVersion; version++)
+			{
+				upgradeNext(db, version);
+			}
+		}
+
+		private void upgradeNext(SQLiteDatabase db, int oldVersion)
+		{
+			switch (oldVersion)
+			{
+			case 1: // --> 2
+			{
+				TableKoofs tableKoofs = new TableKoofs();
+
+				String s = buildDropTableStatement(tableKoofs);
+				db.execSQL(s);
+
+				s = buildCreateTableStatement(tableKoofs);
+				db.execSQL(s);
+				break;
+			}
+			}
 		}
 	}
 
@@ -248,7 +280,7 @@ public class DiaryContentProvider extends ContentProvider
 			SQLiteDatabase db = openHelper.getWritableDatabase();
 			long rowId = db.insert(table.getName(), null, values);
 
-			if (rowId > 0)
+			if (rowId != -1)
 			{
 				Uri resultUri = ContentUris.withAppendedId(buildUri(table), rowId);
 				getContext().getContentResolver().notifyChange(resultUri, null);

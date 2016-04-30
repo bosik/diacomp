@@ -17,68 +17,64 @@
  */
 package org.bosik.diacomp.android.backend.features.analyze;
 
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
+import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableKoofs;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
+import org.bosik.diacomp.core.services.analyze.entities.KoofList;
+import org.bosik.diacomp.core.utils.Utils;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 public class KoofDao
 {
-	private ContentResolver resolver;
+	private ContentResolver	resolver;
+	private Context			context;
 
-	public KoofDao(ContentResolver resolver)
+	public KoofDao(Context context)
 	{
-		if (null == resolver)
+		if (null == context)
 		{
-			throw new IllegalArgumentException("Content Resolver is null");
+			throw new IllegalArgumentException("Context is null");
 		}
-		this.resolver = resolver;
-	}
-
-	/* ======================= ROUTINES ========================= */
-
-	private void insert(int time, Koof record)
-	{
-		ContentValues newValues = new ContentValues();
-
-		newValues.put(TableKoofs.COLUMN_TIME, time);
-		newValues.put(TableKoofs.COLUMN_VALUE_K, record.getK());
-		newValues.put(TableKoofs.COLUMN_VALUE_Q, record.getQ());
-		newValues.put(TableKoofs.COLUMN_VALUE_P, record.getP());
-
-		resolver.insert(TableKoofs.CONTENT_URI, newValues);
-	}
-
-	private void update(int time, Koof record)
-	{
-		ContentValues newValues = new ContentValues();
-
-		newValues.put(TableKoofs.COLUMN_VALUE_K, record.getK());
-		newValues.put(TableKoofs.COLUMN_VALUE_Q, record.getQ());
-		newValues.put(TableKoofs.COLUMN_VALUE_P, record.getP());
-
-		String clause = TableKoofs.COLUMN_TIME + " = ?";
-		String[] args = { String.valueOf(time) };
-
-		resolver.update(TableKoofs.CONTENT_URI, newValues, clause, args);
-	}
-
-	private boolean exists(int time)
-	{
-		// construct parameters
-		String[] projection = null; // all
-		String clause = TableKoofs.COLUMN_TIME + " = ?";
-		String[] clauseArgs = { String.valueOf(time) };
-		String sortOrder = null;
-
-		// execute
-		Cursor cursor = resolver.query(TableKoofs.CONTENT_URI, projection, clause, clauseArgs, sortOrder);
-		return cursor != null && cursor.moveToNext();
+		this.context = context;
+		this.resolver = context.getContentResolver();
 	}
 
 	/* ======================= API ========================= */
+
+	public void save(KoofList koofs)
+	{
+		SQLiteDatabase db = new MyDBHelper(context).getWritableDatabase();
+		db.beginTransaction();
+		try
+		{
+			Table table = new TableKoofs();
+			for (int i = 0; i < Utils.MinPerDay; i++)
+			{
+				ContentValues values = new ContentValues();
+				values.put(TableKoofs.COLUMN_VALUE_K, koofs.getKoof(i).getK());
+				values.put(TableKoofs.COLUMN_VALUE_Q, koofs.getKoof(i).getQ());
+				values.put(TableKoofs.COLUMN_VALUE_P, koofs.getKoof(i).getP());
+
+				if (db.update(table.getName(), values, TableKoofs.COLUMN_TIME + " = ?", new String[] { String.valueOf(i) }) == 0)
+				{
+					values.put(TableKoofs.COLUMN_TIME, i);
+					db.insert(table.getName(), null, values);
+				}
+			}
+			db.setTransactionSuccessful();
+		}
+		finally
+		{
+			db.endTransaction();
+			db.close();
+		}
+	}
 
 	public Koof find(int time)
 	{
@@ -93,33 +89,27 @@ public class KoofDao
 
 		if (cursor != null)
 		{
-			int indexK = cursor.getColumnIndexOrThrow(TableKoofs.COLUMN_VALUE_K);
-			int indexQ = cursor.getColumnIndexOrThrow(TableKoofs.COLUMN_VALUE_Q);
-			int indexP = cursor.getColumnIndexOrThrow(TableKoofs.COLUMN_VALUE_P);
-
-			if (cursor.moveToNext())
+			try
 			{
-				double k = cursor.getDouble(indexK);
-				double q = cursor.getDouble(indexQ);
-				double p = cursor.getDouble(indexP);
+				int indexK = cursor.getColumnIndexOrThrow(TableKoofs.COLUMN_VALUE_K);
+				int indexQ = cursor.getColumnIndexOrThrow(TableKoofs.COLUMN_VALUE_Q);
+				int indexP = cursor.getColumnIndexOrThrow(TableKoofs.COLUMN_VALUE_P);
 
-				return new Koof(k, q, p);
+				if (cursor.moveToNext())
+				{
+					double k = cursor.getDouble(indexK);
+					double q = cursor.getDouble(indexQ);
+					double p = cursor.getDouble(indexP);
+
+					return new Koof(k, q, p);
+				}
+			}
+			finally
+			{
+				cursor.close();
 			}
 		}
 
 		return null;
-	}
-
-	public void save(int time, Koof record)
-	{
-		// TODO: optimize with bulk insert
-		if (exists(time))
-		{
-			update(time, record);
-		}
-		else
-		{
-			insert(time, record);
-		}
 	}
 }

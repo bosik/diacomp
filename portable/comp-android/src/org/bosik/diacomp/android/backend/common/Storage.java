@@ -75,7 +75,7 @@ public class Storage
 					protected Void doInBackground(Void... arg0)
 					{
 						relevantIndexation(context.getContentResolver());
-						analyzeKoofs(context.getContentResolver());
+						analyzeKoofs(context);
 						return null;
 					}
 				}.execute();
@@ -107,11 +107,11 @@ public class Storage
 		// System.currentTimeMillis() - time));
 	}
 
-	static void analyzeKoofs(ContentResolver resolver)
+	static void analyzeKoofs(Context context)
 	{
 		// long time = System.currentTimeMillis();
 
-		KoofServiceInternal.getInstance(resolver).update();
+		KoofServiceInternal.getInstance(context).update();
 
 		// Log.v(TAG, String.format("Analyzing done in %d msec", System.currentTimeMillis() -
 		// time));

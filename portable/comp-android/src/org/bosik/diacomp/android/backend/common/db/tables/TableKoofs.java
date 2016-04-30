@@ -27,10 +27,10 @@ import android.net.Uri;
 
 public class TableKoofs extends Table
 {
-	public static final String	COLUMN_TIME		= "Time";
-	public static final String	COLUMN_VALUE_K	= "K";
-	public static final String	COLUMN_VALUE_Q	= "Q";
-	public static final String	COLUMN_VALUE_P	= "P";
+	public static final String	COLUMN_TIME		= "_Time";
+	public static final String	COLUMN_VALUE_K	= "_K";
+	public static final String	COLUMN_VALUE_Q	= "_Q";
+	public static final String	COLUMN_VALUE_P	= "_P";
 
 	public static final Uri		CONTENT_URI		= new TableKoofs().getUri();
 

@@ -225,7 +225,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		// a - BS above target (BS_TARGET..)
 
 		// commons
-		KoofService koofService = KoofServiceInternal.getInstance(getContentResolver());
+		KoofService koofService = KoofServiceInternal.getInstance(this);
 		int minutesTime = Utils.getDayMinutesUTC(entity.getData().getTime());
 		Koof koof = koofService.getKoof(minutesTime);
 		double carbs = entity.getData().getCarbs();
