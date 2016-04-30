@@ -35,12 +35,14 @@ public class KoofServiceImpl implements KoofService
 
 	private KoofList			koofs;
 
-	private static final Koof	STD_KOOF	= new Koof();
-	{
-		STD_KOOF.setK(0.25);
-		STD_KOOF.setQ(2.5);
-		STD_KOOF.setP(0.0);
-	}
+	private static final Koof	STD_KOOF	= new Koof()
+											{
+												{
+													setK(0.25);
+													setQ(2.5);
+													setP(0.0);
+												}
+											};
 
 	/**
 	 * 
