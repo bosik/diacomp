@@ -26,7 +26,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
+
+import org.bosik.diacomp.android.backend.common.db.tables.TableDishbase;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
@@ -91,12 +92,12 @@ public class DishBaseLocalService implements DishBaseService
 		{
 			List<Versioned<DishItem>> result = new ArrayList<Versioned<DishItem>>();
 
-			int indexId = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_GUID);
-			int indexTimeStamp = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP);
-			int indexHash = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_HASH);
-			int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_VERSION);
-			int indexData = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_DATA);
-			int indexDeleted = cursor.getColumnIndex(DiaryContentProvider.COLUMN_DISHBASE_DELETED);
+			int indexId = cursor.getColumnIndex(TableDishbase.COLUMN_ID);
+			int indexTimeStamp = cursor.getColumnIndex(TableDishbase.COLUMN_TIMESTAMP);
+			int indexHash = cursor.getColumnIndex(TableDishbase.COLUMN_HASH);
+			int indexVersion = cursor.getColumnIndex(TableDishbase.COLUMN_VERSION);
+			int indexData = cursor.getColumnIndex(TableDishbase.COLUMN_DATA);
+			int indexDeleted = cursor.getColumnIndex(TableDishbase.COLUMN_DELETED);
 
 			while (cursor.moveToNext())
 			{
@@ -152,13 +153,13 @@ public class DishBaseLocalService implements DishBaseService
 				if (id.length() == ID_PREFIX_SIZE)
 				{
 					where += where.isEmpty() ? "" : " AND ";
-					where += DiaryContentProvider.COLUMN_DISHBASE_GUID + " LIKE ?";
+					where += TableDishbase.COLUMN_ID + " LIKE ?";
 					whereArgs.add(id + "%");
 				}
 				else
 				{
 					where += where.isEmpty() ? "" : " AND ";
-					where += DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?";
+					where += TableDishbase.COLUMN_ID + " = ?";
 					whereArgs.add(id);
 				}
 			}
@@ -166,28 +167,28 @@ public class DishBaseLocalService implements DishBaseService
 			if (name != null)
 			{
 				where += where.isEmpty() ? "" : " AND ";
-				where += DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE + " LIKE ?";
+				where += TableDishbase.COLUMN_NAMECACHE + " LIKE ?";
 				whereArgs.add("%" + name + "%");
 			}
 
 			if (modAfter != null)
 			{
 				where += where.isEmpty() ? "" : " AND ";
-				where += DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP + " > ?";
+				where += TableDishbase.COLUMN_TIMESTAMP + " > ?";
 				whereArgs.add(Utils.formatTimeUTC(modAfter));
 			}
 
 			if (!includeDeleted)
 			{
 				where += where.isEmpty() ? "" : " AND ";
-				where += DiaryContentProvider.COLUMN_DISHBASE_DELETED + " = 0";
+				where += TableDishbase.COLUMN_DELETED + " = 0";
 			}
 
 			String[] mSelectionArgs = whereArgs.toArray(new String[] {});
-			String mSortOrder = DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE;
+			String mSortOrder = TableDishbase.COLUMN_NAMECACHE;
 
 			// execute query
-			Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DISHBASE_URI, columns, where, mSelectionArgs,
+			Cursor cursor = resolver.query(TableDishbase.CONTENT_URI, columns, where, mSelectionArgs,
 					mSortOrder);
 
 			final List<Versioned<DishItem>> result = parseItems(cursor);
@@ -245,12 +246,12 @@ public class DishBaseLocalService implements DishBaseService
 
 	private boolean recordExists(String id)
 	{
-		final String[] select = { DiaryContentProvider.COLUMN_DISHBASE_GUID };
-		final String where = String.format("%s = ?", DiaryContentProvider.COLUMN_DISHBASE_GUID);
+		final String[] select = { TableDishbase.COLUMN_ID };
+		final String where = String.format("%s = ?", TableDishbase.COLUMN_ID);
 		final String[] whereArgs = { id };
 		final String sortOrder = null;
 
-		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DISHBASE_URI, select, where, whereArgs, sortOrder);
+		Cursor cursor = resolver.query(TableDishbase.CONTENT_URI, select, where, whereArgs, sortOrder);
 
 		try
 		{
@@ -268,32 +269,32 @@ public class DishBaseLocalService implements DishBaseService
 	private void insert(Versioned<DishItem> item)
 	{
 		ContentValues newValues = new ContentValues();
-		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_GUID, item.getId());
-		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
-		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_HASH, item.getHash());
-		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_VERSION, item.getVersion());
-		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DELETED, item.isDeleted());
-		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE, item.getData().getName());
-		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DATA, serializer.write(item.getData()));
+		newValues.put(TableDishbase.COLUMN_ID, item.getId());
+		newValues.put(TableDishbase.COLUMN_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+		newValues.put(TableDishbase.COLUMN_HASH, item.getHash());
+		newValues.put(TableDishbase.COLUMN_VERSION, item.getVersion());
+		newValues.put(TableDishbase.COLUMN_DELETED, item.isDeleted());
+		newValues.put(TableDishbase.COLUMN_NAMECACHE, item.getData().getName());
+		newValues.put(TableDishbase.COLUMN_DATA, serializer.write(item.getData()));
 
-		resolver.insert(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues);
+		resolver.insert(TableDishbase.CONTENT_URI, newValues);
 		updateCacheItem(item);
 	}
 
 	private void update(Versioned<DishItem> item)
 	{
 		ContentValues newValues = new ContentValues();
-		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
-		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_HASH, item.getHash());
-		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_VERSION, item.getVersion());
-		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DELETED, item.isDeleted());
-		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_NAMECACHE, item.getData().getName());
-		newValues.put(DiaryContentProvider.COLUMN_DISHBASE_DATA, serializer.write(item.getData()));
+		newValues.put(TableDishbase.COLUMN_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+		newValues.put(TableDishbase.COLUMN_HASH, item.getHash());
+		newValues.put(TableDishbase.COLUMN_VERSION, item.getVersion());
+		newValues.put(TableDishbase.COLUMN_DELETED, item.isDeleted());
+		newValues.put(TableDishbase.COLUMN_NAMECACHE, item.getData().getName());
+		newValues.put(TableDishbase.COLUMN_DATA, serializer.write(item.getData()));
 
-		String clause = DiaryContentProvider.COLUMN_DISHBASE_GUID + " = ?";
+		String clause = TableDishbase.COLUMN_ID + " = ?";
 		String[] args = { item.getId() };
 
-		resolver.update(DiaryContentProvider.CONTENT_DISHBASE_URI, newValues, clause, args);
+		resolver.update(TableDishbase.CONTENT_URI, newValues, clause, args);
 		updateCacheItem(item);
 	}
 
@@ -386,10 +387,10 @@ public class DishBaseLocalService implements DishBaseService
 		}
 
 		String[] projection = new String[] { "count(*) AS count" };
-		String clause = String.format("%s LIKE ?", DiaryContentProvider.COLUMN_DISHBASE_GUID);
+		String clause = String.format("%s LIKE ?", TableDishbase.COLUMN_ID);
 		String[] clauseArgs = { prefix + "%" };
 
-		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_DISHBASE_URI, projection, clause, clauseArgs, null);
+		Cursor cursor = resolver.query(TableDishbase.CONTENT_URI, projection, clause, clauseArgs, null);
 		cursor.moveToFirst();
 		int count = cursor.getInt(0);
 		cursor.close();
