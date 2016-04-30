@@ -18,9 +18,13 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
+import java.text.ParseException;
+
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.utils.Utils;
+
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -95,9 +99,9 @@ public class ActivityEditorFood extends ActivityEditor<FoodItem>
 	{
 		try
 		{
-			setter.set(Double.parseDouble(editor.getText().toString()));
+			setter.set(Utils.parseDouble(editor.getText().toString()));
 		}
-		catch (NumberFormatException e)
+		catch (ParseException e)
 		{
 			UIUtils.showTip(this, MSG_INCORRECT_VALUE);
 			editor.requestFocus();

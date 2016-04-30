@@ -44,6 +44,7 @@
             android:id="@+id/editFoodProts"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:digits="0123456789.,"
             android:inputType="numberDecimal" >
         </EditText>
 
@@ -59,6 +60,7 @@
             android:id="@+id/editFoodFats"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:digits="0123456789.,"
             android:inputType="numberDecimal" >
         </EditText>
 
@@ -74,6 +76,7 @@
             android:id="@+id/editFoodCarbs"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:digits="0123456789.,"
             android:inputType="numberDecimal" >
         </EditText>
 
@@ -89,6 +92,7 @@
             android:id="@+id/editFoodValue"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:digits="0123456789.,"
             android:inputType="numberDecimal" >
         </EditText>
 
