@@ -23,6 +23,17 @@ public class Koof
 	private double	q;
 	private double	p;
 
+	public Koof(double k, double q, double p)
+	{
+		this.k = k;
+		this.q = q;
+		this.p = p;
+	}
+
+	public Koof()
+	{
+	}
+
 	public double getK()
 	{
 		return k;

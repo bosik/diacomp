@@ -21,8 +21,8 @@ package org.bosik.diacomp.android.backend.features.analyze;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
 import org.bosik.diacomp.core.services.analyze.KoofService;
-import org.bosik.diacomp.core.services.analyze.KoofServiceImpl;
 import org.bosik.diacomp.core.services.diary.DiaryService;
+
 import android.content.ContentResolver;
 import android.util.Log;
 
@@ -41,7 +41,7 @@ public class KoofServiceInternal
 			DiaryService localDiary = LocalDiary.getInstance(resolver);
 			AnalyzeCore analyzeService = AnalyzeCoreInternal.getInstance();
 			// TODO: hardcoded adaptation
-			instance = new KoofServiceImpl(localDiary, analyzeService, ANALYZE_DAYS_PERIOD, 0.995);
+			instance = new KoofServiceImpl(resolver, localDiary, analyzeService, ANALYZE_DAYS_PERIOD, 0.995);
 		}
 		return instance;
 	}

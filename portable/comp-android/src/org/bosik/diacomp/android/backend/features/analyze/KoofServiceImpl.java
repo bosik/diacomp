@@ -15,34 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bosik.diacomp.core.services.analyze;
+package org.bosik.diacomp.android.backend.features.analyze;
 
 import java.util.Date;
 import java.util.List;
+
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
+import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
+import android.content.ContentResolver;
+
 public class KoofServiceImpl implements KoofService
 {
 	private final DiaryService	diaryService;
 	private final AnalyzeCore	analyzeCore;
+	private final KoofDao		koofDao;
 	private final int			analyzePeriod;
 	private final double		adaptation;
 
-	private KoofList			koofs;
-
-	private static final Koof	STD_KOOF	= new Koof()
-											{
-												{
-													setK(0.25);
-													setQ(2.5);
-													setP(0.0);
-												}
-											};
+	private static final Koof	STD_KOOF	= new Koof(0.25, 2.5, 0.0);
 
 	/**
 	 * 
@@ -53,10 +50,11 @@ public class KoofServiceImpl implements KoofService
 	 * @param adaptation
 	 *            [0 .. 0.1]
 	 */
-	public KoofServiceImpl(DiaryService diaryService, AnalyzeCore analyzeCore, int analyzePeriod, double adaptation)
+	public KoofServiceImpl(ContentResolver resolver, DiaryService diaryService, AnalyzeCore analyzeCore, int analyzePeriod, double adaptation)
 	{
 		this.diaryService = diaryService;
 		this.analyzeCore = analyzeCore;
+		this.koofDao = new KoofDao(resolver);
 		this.analyzePeriod = analyzePeriod;
 		this.adaptation = adaptation;
 	}
@@ -67,23 +65,21 @@ public class KoofServiceImpl implements KoofService
 		Date timeTo = new Date();
 		Date timeFrom = new Date(timeTo.getTime() - (analyzePeriod * Utils.MsecPerDay));
 		List<Versioned<DiaryRecord>> recs = diaryService.findPeriod(timeFrom, timeTo, false);
-		koofs = analyzeCore.analyze(recs);
+		KoofList koofs = analyzeCore.analyze(recs);
+
+		if (koofs != null) // null in case i.g. there are no diary records
+		{
+			for (int time = 0; time < Utils.MinPerDay; time++)
+			{
+				koofDao.save(time, koofs.getKoof(time));
+			}
+		}
 	}
 
 	@Override
 	public Koof getKoof(int time)
 	{
-		if (koofs == null)
-		{
-			update();
-		}
-
-		// that means analyzing failed (f.e. if no diary records found)
-		if (koofs == null)
-		{
-			return STD_KOOF;
-		}
-
-		return koofs.getKoof(time);
+		Koof koof = koofDao.find(time);
+		return koof != null ? koof : STD_KOOF;
 	}
 }
