@@ -27,6 +27,7 @@ import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDishbase;
 import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
 import org.bosik.diacomp.android.backend.common.db.tables.TableKoofs;
+import org.bosik.diacomp.android.backend.common.db.tables.TableTags;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -62,15 +63,6 @@ public class DiaryContentProvider extends ContentProvider
 	// ===================================== Dishbase table =====================================
 
 	public static final int				CODE_DISHBASE				= 3;
-
-	// ===================================== Tags table =====================================
-
-	private static final String			TABLE_TAG					= "tag";
-	public static final String			COLUMN_TAG_GUID				= "GUID";
-	public static final String			COLUMN_TAG_TAG				= "Tag";
-
-	public static final Uri				CONTENT_TAG_URI				= Uri.parse(SCHEME + AUTHORITY + "/" + TABLE_TAG + "/");
-	private static final int			CODE_TAG					= 4;
 
 	// ===================================== Preferences table =====================================
 
@@ -112,6 +104,14 @@ public class DiaryContentProvider extends ContentProvider
 				return CODE_DISHBASE;
 			}
 		});
+		tables.add(new TableTags()
+		{
+			@Override
+			public int getCode()
+			{
+				return 4;
+			}
+		});
 		tables.add(new TableKoofs()
 		{
 			@Override
@@ -122,7 +122,6 @@ public class DiaryContentProvider extends ContentProvider
 		});
 
 		sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		sURIMatcher.addURI(AUTHORITY, TABLE_TAG, CODE_TAG);
 		sURIMatcher.addURI(AUTHORITY, TABLE_PREFERENCES, CODE_PREFERENCES);
 
 		for (int i = 0 ; i < tables.size(); i++)
@@ -194,13 +193,13 @@ public class DiaryContentProvider extends ContentProvider
 //			db.execSQL(SQL_CREATE_DISHBASE);
 			
 			// tag table
-			final String SQL_CREATE_TAG = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s)",
-				TABLE_TAG,
-				COLUMN_TAG_GUID + " TEXT PRIMARY KEY NOT NULL",
-				COLUMN_TAG_TAG + " INTEGER NOT NULL"
-			);
-			db.execSQL(SQL_CREATE_TAG);
-			
+//			final String SQL_CREATE_TAG = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s)",
+//				TABLE_TAG,
+//				TableTags.COLUMN_TAG_GUID + " TEXT PRIMARY KEY NOT NULL",
+//				TableTags.COLUMN_TAG_TAG + " INTEGER NOT NULL"
+//			);
+//			db.execSQL(SQL_CREATE_TAG);
+//			
 			// preferences table
 			final String SQL_CREATE_PREFERENCES = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s)",
 				TABLE_PREFERENCES,
@@ -273,10 +272,6 @@ public class DiaryContentProvider extends ContentProvider
 
 		switch (code)
 		{
-			case CODE_TAG:
-			{
-				return "org.bosik.diacomp.tag";
-			}
 			case CODE_PREFERENCES:
 			{
 				return "org.bosik.diacomp.preferences";
@@ -422,24 +417,24 @@ public class DiaryContentProvider extends ContentProvider
 //				}
 //				break;
 //			}
-
-			case CODE_TAG:
-			{
-				assertDefined(values, COLUMN_TAG_GUID);
-				assertDefined(values, COLUMN_TAG_TAG);
-
-				long rowId = db.insert(TABLE_TAG, null, values);
-
-				if (rowId > 0)
-				{
-					resultUri = ContentUris.withAppendedId(CONTENT_TAG_URI, rowId);
-				}
-				else
-				{
-					throw new SQLException("Failed to insert row into " + uri);
-				}
-				break;
-			}
+//
+//			case CODE_TAG:
+//			{
+//				assertDefined(values, TableTags.COLUMN_GUID);
+//				assertDefined(values, TableTags.COLUMN_TAG);
+//
+//				long rowId = db.insert(TABLE_TAG, null, values);
+//
+//				if (rowId > 0)
+//				{
+//					resultUri = ContentUris.withAppendedId(TableTags.CONTENT_TAG_URI, rowId);
+//				}
+//				else
+//				{
+//					throw new SQLException("Failed to insert row into " + uri);
+//				}
+//				break;
+//			}
 
 			case CODE_PREFERENCES:
 			{
@@ -506,11 +501,11 @@ public class DiaryContentProvider extends ContentProvider
 //				qb.setTables(TABLE_DISHBASE);
 //				break;
 //			}
-			case CODE_TAG:
-			{
-				qb.setTables(TABLE_TAG);
-				break;
-			}
+//			case CODE_TAG:
+//			{
+//				qb.setTables(TABLE_TAG);
+//				break;
+//			}
 
 			case CODE_PREFERENCES:
 			{
@@ -564,11 +559,11 @@ public class DiaryContentProvider extends ContentProvider
 //				affectedCount = db.update(TABLE_DISHBASE, values, where, whereArgs);
 //				break;
 //			}
-			case CODE_TAG:
-			{
-				affectedCount = db.update(TABLE_TAG, values, where, whereArgs);
-				break;
-			}
+//			case CODE_TAG:
+//			{
+//				affectedCount = db.update(TABLE_TAG, values, where, whereArgs);
+//				break;
+//			}
 			case CODE_PREFERENCES:
 			{
 				affectedCount = db.update(TABLE_PREFERENCES, values, where, whereArgs);
@@ -624,11 +619,11 @@ public class DiaryContentProvider extends ContentProvider
 //				count = db.delete(TABLE_DISHBASE, where, whereArgs);
 //				break;
 //			}
-			case CODE_TAG:
-			{
-				count = db.delete(TABLE_TAG, where, whereArgs);
-				break;
-			}
+//			case CODE_TAG:
+//			{
+//				count = db.delete(TABLE_TAG, where, whereArgs);
+//				break;
+//			}
 			case CODE_PREFERENCES:
 			{
 				count = db.delete(TABLE_PREFERENCES, where, whereArgs);
