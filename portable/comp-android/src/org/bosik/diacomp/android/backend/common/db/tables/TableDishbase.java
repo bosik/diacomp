@@ -19,11 +19,18 @@ public class TableDishbase extends Table
 	public static final String	COLUMN_NAMECACHE	= "NameCache";
 
 	public static final Uri		CONTENT_URI			= new TableDishbase().getUri();
+	public static final int		CODE				= 3;
 
 	@Override
 	public String getName()
 	{
 		return "dishbase";
+	}
+
+	@Override
+	public int getCode()
+	{
+		return CODE;
 	}
 
 	@Override

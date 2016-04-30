@@ -19,11 +19,18 @@ public class TableFoodbase extends Table
 	public static final String	COLUMN_NAMECACHE	= "NameCache";
 
 	public static final Uri		CONTENT_URI			= new TableFoodbase().getUri();
+	public static final int		CODE				= 2;
 
 	@Override
 	public String getName()
 	{
 		return "foodbase";
+	}
+	
+	@Override
+	public int getCode()
+	{
+		return CODE;
 	}
 
 	@Override

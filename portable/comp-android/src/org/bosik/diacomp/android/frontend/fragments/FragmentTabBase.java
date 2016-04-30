@@ -27,6 +27,9 @@ import java.util.TimerTask;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
+import org.bosik.diacomp.android.backend.common.db.Table;
+import org.bosik.diacomp.android.backend.common.db.tables.TableDishbase;
+import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
 import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
 import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
 import org.bosik.diacomp.android.backend.features.search.TagServiceInternal;
@@ -123,11 +126,13 @@ public class FragmentTabBase extends Fragment
 																			{
 																				if (uri != null)
 																				{
-																					switch (DiaryContentProvider.sURIMatcher
-																							.match(uri))
+																					Table table = DiaryContentProvider.getTable(uri);
+
+																					if (table != null)
+																					switch (table.getCode())
 																					{
-																						case DiaryContentProvider.CODE_FOODBASE:
-																						case DiaryContentProvider.CODE_DISHBASE:
+																						case TableFoodbase.CODE:
+																						case TableDishbase.CODE:
 																						{
 																							final long token = Binder
 																									.clearCallingIdentity();
