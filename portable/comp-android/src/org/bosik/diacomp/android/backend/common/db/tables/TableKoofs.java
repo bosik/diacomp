@@ -6,12 +6,16 @@ import java.util.List;
 import org.bosik.diacomp.android.backend.common.db.Column;
 import org.bosik.diacomp.android.backend.common.db.Table;
 
+import android.net.Uri;
+
 public class TableKoofs extends Table
 {
 	public static final String	COLUMN_TIME		= "Time";
 	public static final String	COLUMN_VALUE_K	= "K";
 	public static final String	COLUMN_VALUE_Q	= "Q";
 	public static final String	COLUMN_VALUE_P	= "P";
+
+	public static final Uri		CONTENT_URI		= new TableKoofs().getUri();
 
 	@Override
 	public String getName()
