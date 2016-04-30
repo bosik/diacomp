@@ -24,6 +24,7 @@ import java.util.List;
 import org.bosik.diacomp.android.backend.common.db.Column;
 import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
+import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
 import org.bosik.diacomp.android.backend.common.db.tables.TableKoofs;
 
 import android.content.ContentProvider;
@@ -55,16 +56,6 @@ public class DiaryContentProvider extends ContentProvider
 
 	// ===================================== Foodbase table =====================================
 
-	private static final String			TABLE_FOODBASE				= "foodbase";
-	public static final String			COLUMN_FOODBASE_GUID		= "GUID";
-	public static final String			COLUMN_FOODBASE_TIMESTAMP	= "TimeStamp";
-	public static final String			COLUMN_FOODBASE_HASH		= "Hash";
-	public static final String			COLUMN_FOODBASE_VERSION		= "Version";
-	public static final String			COLUMN_FOODBASE_DELETED		= "Deleted";
-	public static final String			COLUMN_FOODBASE_DATA		= "Data";
-	public static final String			COLUMN_FOODBASE_NAMECACHE	= "NameCache";
-
-	public static final Uri				CONTENT_FOODBASE_URI		= Uri.parse(SCHEME + AUTHORITY + "/" + TABLE_FOODBASE + "/");
 	public static final int				CODE_FOODBASE				= 2;
 
 	// ===================================== Dishbase table =====================================
@@ -114,6 +105,14 @@ public class DiaryContentProvider extends ContentProvider
 				return 1;
 			}
 		});
+		tables.add(new TableFoodbase()
+		{
+			@Override
+			public int getCode()
+			{
+				return 2;
+			}
+		});
 		tables.add(new TableKoofs()
 		{
 			@Override
@@ -124,7 +123,6 @@ public class DiaryContentProvider extends ContentProvider
 		});
 
 		sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		sURIMatcher.addURI(AUTHORITY, TABLE_FOODBASE, CODE_FOODBASE);
 		sURIMatcher.addURI(AUTHORITY, TABLE_DISHBASE, CODE_DISHBASE);
 		sURIMatcher.addURI(AUTHORITY, TABLE_TAG, CODE_TAG);
 		sURIMatcher.addURI(AUTHORITY, TABLE_PREFERENCES, CODE_PREFERENCES);
@@ -172,17 +170,17 @@ public class DiaryContentProvider extends ContentProvider
 //			db.execSQL(SQL_CREATE_DIARY);
 
 			// foodbase table
-			final String SQL_CREATE_FOODBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s, %s, %s)",
-				TABLE_FOODBASE,
-				COLUMN_FOODBASE_GUID + " TEXT PRIMARY KEY NOT NULL",
-				COLUMN_FOODBASE_TIMESTAMP + " TEXT",
-				COLUMN_FOODBASE_HASH + " TEXT NOT NULL",
-				COLUMN_FOODBASE_VERSION + " INTEGER",
-				COLUMN_FOODBASE_DELETED + " INTEGER", // 0 or 1
-				COLUMN_FOODBASE_NAMECACHE + " TEXT",
-				COLUMN_FOODBASE_DATA + " TEXT"
-			);
-			db.execSQL(SQL_CREATE_FOODBASE);
+//			final String SQL_CREATE_FOODBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s, %s, %s)",
+//				TABLE_FOODBASE,
+//				TableFoodbase.COLUMN_ID + " TEXT PRIMARY KEY NOT NULL",
+//				TableFoodbase.COLUMN_TIMESTAMP + " TEXT",
+//				TableFoodbase.COLUMN_HASH + " TEXT NOT NULL",
+//				TableFoodbase.COLUMN_VERSION + " INTEGER",
+//				TableFoodbase.COLUMN_DELETED + " INTEGER", // 0 or 1
+//				TableFoodbase.COLUMN_NAMECACHE + " TEXT",
+//				TableFoodbase.COLUMN_DATA + " TEXT"
+//			);
+//			db.execSQL(SQL_CREATE_FOODBASE);
 
 			// dishbase table
 			final String SQL_CREATE_DISHBASE = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s, %s, %s, %s, %s)",
@@ -277,10 +275,6 @@ public class DiaryContentProvider extends ContentProvider
 
 		switch (code)
 		{
-			case CODE_FOODBASE:
-			{
-				return "org.bosik.diacomp.food";
-			}
 			case CODE_DISHBASE:
 			{
 				return "org.bosik.diacomp.dish";
@@ -392,27 +386,27 @@ public class DiaryContentProvider extends ContentProvider
 //				}
 //				break;
 //			}
-
-			case CODE_FOODBASE:
-			{
-				assertDefined(values, COLUMN_FOODBASE_GUID);
-				assertDefined(values, COLUMN_FOODBASE_TIMESTAMP);
-				assertDefined(values, COLUMN_FOODBASE_HASH);
-				assertDefined(values, COLUMN_FOODBASE_VERSION);
-				assertDefined(values, COLUMN_FOODBASE_DATA);
-
-				long rowId = db.insert(TABLE_FOODBASE, null, values);
-
-				if (rowId > 0)
-				{
-					resultUri = ContentUris.withAppendedId(CONTENT_FOODBASE_URI, rowId);
-				}
-				else
-				{
-					throw new SQLException("Failed to insert row into " + uri);
-				}
-				break;
-			}
+//
+//			case CODE_FOODBASE:
+//			{
+//				assertDefined(values, TableFoodbase.COLUMN_ID);
+//				assertDefined(values, TableFoodbase.COLUMN_TIMESTAMP);
+//				assertDefined(values, TableFoodbase.COLUMN_HASH);
+//				assertDefined(values, TableFoodbase.COLUMN_VERSION);
+//				assertDefined(values, TableFoodbase.COLUMN_DATA);
+//
+//				long rowId = db.insert(TABLE_FOODBASE, null, values);
+//
+//				if (rowId > 0)
+//				{
+//					resultUri = ContentUris.withAppendedId(TableFoodbase.CONTENT_URI, rowId);
+//				}
+//				else
+//				{
+//					throw new SQLException("Failed to insert row into " + uri);
+//				}
+//				break;
+//			}
 
 			case CODE_DISHBASE:
 			{
@@ -508,11 +502,11 @@ public class DiaryContentProvider extends ContentProvider
 //				qb.setTables(TABLE_DIARY);
 //				break;
 //			}
-			case CODE_FOODBASE:
-			{
-				qb.setTables(TABLE_FOODBASE);
-				break;
-			}
+//			case CODE_FOODBASE:
+//			{
+//				qb.setTables(TABLE_FOODBASE);
+//				break;
+//			}
 			case CODE_DISHBASE:
 			{
 				qb.setTables(TABLE_DISHBASE);
@@ -566,11 +560,11 @@ public class DiaryContentProvider extends ContentProvider
 //				affectedCount = db.update(TABLE_DIARY, values, where, whereArgs);
 //				break;
 //			}
-			case CODE_FOODBASE:
-			{
-				affectedCount = db.update(TABLE_FOODBASE, values, where, whereArgs);
-				break;
-			}
+//			case CODE_FOODBASE:
+//			{
+//				affectedCount = db.update(TABLE_FOODBASE, values, where, whereArgs);
+//				break;
+//			}
 			case CODE_DISHBASE:
 			{
 				affectedCount = db.update(TABLE_DISHBASE, values, where, whereArgs);
@@ -626,11 +620,11 @@ public class DiaryContentProvider extends ContentProvider
 //				count = db.delete(TABLE_DIARY, where, whereArgs);
 //				break;
 //			}
-			case CODE_FOODBASE:
-			{
-				count = db.delete(TABLE_FOODBASE, where, whereArgs);
-				break;
-			}
+//			case CODE_FOODBASE:
+//			{
+//				count = db.delete(TABLE_FOODBASE, where, whereArgs);
+//				break;
+//			}
 			case CODE_DISHBASE:
 			{
 				count = db.delete(TABLE_DISHBASE, where, whereArgs);
