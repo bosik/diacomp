@@ -20,7 +20,8 @@ package org.bosik.diacomp.android.backend.features.preferences.account;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
+
+import org.bosik.diacomp.android.backend.common.db.tables.TablePreferences;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.preferences.Preference;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
@@ -55,7 +56,7 @@ public class PreferencesLocalService extends PreferencesService
 		String sortOrder = null;
 
 		// execute
-		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_PREFERENCES_URI, projection, clause, clauseArgs,
+		Cursor cursor = resolver.query(TablePreferences.CONTENT_URI, projection, clause, clauseArgs,
 				sortOrder);
 
 		try
@@ -66,9 +67,9 @@ public class PreferencesLocalService extends PreferencesService
 
 				while (cursor.moveToNext())
 				{
-					int indexKey = cursor.getColumnIndex(DiaryContentProvider.COLUMN_PREFERENCES_KEY);
-					int indexValue = cursor.getColumnIndex(DiaryContentProvider.COLUMN_PREFERENCES_VALUE);
-					int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_PREFERENCES_VERSION);
+					int indexKey = cursor.getColumnIndex(TablePreferences.COLUMN_KEY);
+					int indexValue = cursor.getColumnIndex(TablePreferences.COLUMN_VALUE);
+					int indexVersion = cursor.getColumnIndex(TablePreferences.COLUMN_VERSION);
 
 					try
 					{
@@ -116,12 +117,12 @@ public class PreferencesLocalService extends PreferencesService
 	{
 		// construct parameters
 		String[] projection = null; // all
-		String clause = DiaryContentProvider.COLUMN_PREFERENCES_KEY + " = ?";
+		String clause = TablePreferences.COLUMN_KEY + " = ?";
 		String[] clauseArgs = { preference.getKey() };
 		String sortOrder = null;
 
 		// execute
-		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_PREFERENCES_URI, projection, clause, clauseArgs,
+		Cursor cursor = resolver.query(TablePreferences.CONTENT_URI, projection, clause, clauseArgs,
 				sortOrder);
 
 		try
@@ -130,9 +131,9 @@ public class PreferencesLocalService extends PreferencesService
 			{
 				if (cursor.moveToFirst())
 				{
-					int indexKey = cursor.getColumnIndex(DiaryContentProvider.COLUMN_PREFERENCES_KEY);
-					int indexValue = cursor.getColumnIndex(DiaryContentProvider.COLUMN_PREFERENCES_VALUE);
-					int indexVersion = cursor.getColumnIndex(DiaryContentProvider.COLUMN_PREFERENCES_VERSION);
+					int indexKey = cursor.getColumnIndex(TablePreferences.COLUMN_KEY);
+					int indexValue = cursor.getColumnIndex(TablePreferences.COLUMN_VALUE);
+					int indexVersion = cursor.getColumnIndex(TablePreferences.COLUMN_VERSION);
 
 					PreferenceEntry<String> entry = new PreferenceEntry<String>();
 					entry.setType(Preference.parse(cursor.getString(indexKey)));
@@ -170,19 +171,19 @@ public class PreferencesLocalService extends PreferencesService
 
 			ContentValues newValues = new ContentValues();
 
-			newValues.put(DiaryContentProvider.COLUMN_PREFERENCES_VALUE, entry.getValue());
-			newValues.put(DiaryContentProvider.COLUMN_PREFERENCES_VERSION, entry.getVersion());
+			newValues.put(TablePreferences.COLUMN_VALUE, entry.getValue());
+			newValues.put(TablePreferences.COLUMN_VERSION, entry.getVersion());
 
 			if (exists)
 			{
-				String clause = DiaryContentProvider.COLUMN_PREFERENCES_KEY + " = ?";
+				String clause = TablePreferences.COLUMN_KEY + " = ?";
 				String[] args = { key };
-				resolver.update(DiaryContentProvider.CONTENT_PREFERENCES_URI, newValues, clause, args);
+				resolver.update(TablePreferences.CONTENT_URI, newValues, clause, args);
 			}
 			else
 			{
-				newValues.put(DiaryContentProvider.COLUMN_PREFERENCES_KEY, key);
-				resolver.insert(DiaryContentProvider.CONTENT_PREFERENCES_URI, newValues);
+				newValues.put(TablePreferences.COLUMN_KEY, key);
+				resolver.insert(TablePreferences.CONTENT_URI, newValues);
 			}
 		}
 		catch (Exception e)
@@ -193,12 +194,12 @@ public class PreferencesLocalService extends PreferencesService
 
 	private boolean entryExists(String key)
 	{
-		final String[] select = { DiaryContentProvider.COLUMN_PREFERENCES_VERSION };
-		final String where = String.format("%s = ?", DiaryContentProvider.COLUMN_PREFERENCES_KEY);
+		final String[] select = { TablePreferences.COLUMN_VERSION };
+		final String where = String.format("%s = ?", TablePreferences.COLUMN_KEY);
 		final String[] whereArgs = { key };
 		final String sortOrder = null;
 
-		Cursor cursor = resolver.query(DiaryContentProvider.CONTENT_PREFERENCES_URI, select, where, whereArgs,
+		Cursor cursor = resolver.query(TablePreferences.CONTENT_URI, select, where, whereArgs,
 				sortOrder);
 
 		try

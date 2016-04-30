@@ -27,6 +27,7 @@ import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDishbase;
 import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
 import org.bosik.diacomp.android.backend.common.db.tables.TableKoofs;
+import org.bosik.diacomp.android.backend.common.db.tables.TablePreferences;
 import org.bosik.diacomp.android.backend.common.db.tables.TableTags;
 
 import android.content.ContentProvider;
@@ -63,16 +64,6 @@ public class DiaryContentProvider extends ContentProvider
 	// ===================================== Dishbase table =====================================
 
 	public static final int				CODE_DISHBASE				= 3;
-
-	// ===================================== Preferences table =====================================
-
-	private static final String			TABLE_PREFERENCES			= "preferences";
-	public static final String			COLUMN_PREFERENCES_KEY		= "Key";
-	public static final String			COLUMN_PREFERENCES_VALUE	= "Value";
-	public static final String			COLUMN_PREFERENCES_VERSION	= "Version";
-
-	public static final Uri				CONTENT_PREFERENCES_URI		= Uri.parse(SCHEME + AUTHORITY + "/" + TABLE_PREFERENCES + "/");
-	private static final int			CODE_PREFERENCES			= 5;
 
 	// ==================================================================================================
 
@@ -112,6 +103,14 @@ public class DiaryContentProvider extends ContentProvider
 				return 4;
 			}
 		});
+		tables.add(new TablePreferences()
+		{
+			@Override
+			public int getCode()
+			{
+				return 5;
+			}
+		});
 		tables.add(new TableKoofs()
 		{
 			@Override
@@ -122,7 +121,6 @@ public class DiaryContentProvider extends ContentProvider
 		});
 
 		sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		sURIMatcher.addURI(AUTHORITY, TABLE_PREFERENCES, CODE_PREFERENCES);
 
 		for (int i = 0 ; i < tables.size(); i++)
 		{
@@ -201,13 +199,13 @@ public class DiaryContentProvider extends ContentProvider
 //			db.execSQL(SQL_CREATE_TAG);
 //			
 			// preferences table
-			final String SQL_CREATE_PREFERENCES = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s)",
-				TABLE_PREFERENCES,
-				COLUMN_PREFERENCES_KEY + " TEXT PRIMARY KEY NOT NULL",
-				COLUMN_PREFERENCES_VALUE + " TEXT NOT NULL",
-				COLUMN_PREFERENCES_VERSION + " INTEGER NOT NULL"
-			);
-			db.execSQL(SQL_CREATE_PREFERENCES);
+//			final String SQL_CREATE_PREFERENCES = String.format("CREATE TABLE IF NOT EXISTS %s (%s, %s, %s)",
+//				TABLE_PREFERENCES,
+//				TablePreferences.COLUMN_PREFERENCES_KEY + " TEXT PRIMARY KEY NOT NULL",
+//				TablePreferences.COLUMN_PREFERENCES_VALUE + " TEXT NOT NULL",
+//				TablePreferences.COLUMN_PREFERENCES_VERSION + " INTEGER NOT NULL"
+//			);
+//			db.execSQL(SQL_CREATE_PREFERENCES);
 
 			// @formatter:on
 
@@ -270,17 +268,7 @@ public class DiaryContentProvider extends ContentProvider
 			}
 		}
 
-		switch (code)
-		{
-			case CODE_PREFERENCES:
-			{
-				return "org.bosik.diacomp.preferences";
-			}
-			default:
-			{
-				return "UNKNOWN";
-			}
-		}
+		return "UNKNOWN";
 	}
 
 	@Override
@@ -436,33 +424,30 @@ public class DiaryContentProvider extends ContentProvider
 //				break;
 //			}
 
-			case CODE_PREFERENCES:
-			{
-				assertDefined(values, COLUMN_PREFERENCES_KEY);
-				assertDefined(values, COLUMN_PREFERENCES_VALUE);
-				assertDefined(values, COLUMN_PREFERENCES_VERSION);
-
-				long rowId = db.insert(TABLE_PREFERENCES, null, values);
-
-				if (rowId > 0)
-				{
-					resultUri = ContentUris.withAppendedId(CONTENT_PREFERENCES_URI, rowId);
-				}
-				else
-				{
-					throw new SQLException("Failed to insert row into " + uri);
-				}
-				break;
-			}
+//			case CODE_PREFERENCES:
+//			{
+//				assertDefined(values, TablePreferences.COLUMN_PREFERENCES_KEY);
+//				assertDefined(values, TablePreferences.COLUMN_PREFERENCES_VALUE);
+//				assertDefined(values, TablePreferences.COLUMN_PREFERENCES_VERSION);
+//
+//				long rowId = db.insert(TABLE_PREFERENCES, null, values);
+//
+//				if (rowId > 0)
+//				{
+//					resultUri = ContentUris.withAppendedId(TablePreferences.CONTENT_PREFERENCES_URI, rowId);
+//				}
+//				else
+//				{
+//					throw new SQLException("Failed to insert row into " + uri);
+//				}
+//				break;
+//			}
 
 			default:
 			{
 				throw new UnknownUriException(uri);
 			}
 		}
-
-		getContext().getContentResolver().notifyChange(resultUri, null);
-		return resultUri;
 	}
 
 	@Override
@@ -506,22 +491,18 @@ public class DiaryContentProvider extends ContentProvider
 //				qb.setTables(TABLE_TAG);
 //				break;
 //			}
-
-			case CODE_PREFERENCES:
-			{
-				qb.setTables(TABLE_PREFERENCES);
-				break;
-			}
+//
+//			case CODE_PREFERENCES:
+//			{
+//				qb.setTables(TABLE_PREFERENCES);
+//				break;
+//			}
 
 			default:
 			{
 				throw new UnknownUriException(uri);
 			}
 		}
-
-		Cursor cursor = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
-		cursor.setNotificationUri(getContext().getContentResolver(), uri);
-		return cursor;
 	}
 
 	@Override
@@ -564,19 +545,16 @@ public class DiaryContentProvider extends ContentProvider
 //				affectedCount = db.update(TABLE_TAG, values, where, whereArgs);
 //				break;
 //			}
-			case CODE_PREFERENCES:
-			{
-				affectedCount = db.update(TABLE_PREFERENCES, values, where, whereArgs);
-				break;
-			}
+//			case CODE_PREFERENCES:
+//			{
+//				affectedCount = db.update(TABLE_PREFERENCES, values, where, whereArgs);
+//				break;
+//			}
 			default:
 			{
 				throw new UnknownUriException(uri);
 			}
 		}
-
-		getContext().getContentResolver().notifyChange(uri, null);
-		return affectedCount;
 	}
 
 	@Override
@@ -624,18 +602,15 @@ public class DiaryContentProvider extends ContentProvider
 //				count = db.delete(TABLE_TAG, where, whereArgs);
 //				break;
 //			}
-			case CODE_PREFERENCES:
-			{
-				count = db.delete(TABLE_PREFERENCES, where, whereArgs);
-				break;
-			}
+//			case CODE_PREFERENCES:
+//			{
+//				count = db.delete(TABLE_PREFERENCES, where, whereArgs);
+//				break;
+//			}
 			default:
 			{
 				throw new UnknownUriException(uri);
 			}
 		}
-
-		getContext().getContentResolver().notifyChange(uri, null);
-		return count;
 	}
 }
