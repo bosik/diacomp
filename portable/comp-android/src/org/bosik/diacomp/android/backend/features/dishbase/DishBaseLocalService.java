@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
 import org.bosik.diacomp.android.backend.common.db.tables.TableDishbase;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
@@ -188,8 +187,7 @@ public class DishBaseLocalService implements DishBaseService
 			String mSortOrder = TableDishbase.COLUMN_NAMECACHE;
 
 			// execute query
-			Cursor cursor = resolver.query(TableDishbase.CONTENT_URI, columns, where, mSelectionArgs,
-					mSortOrder);
+			Cursor cursor = resolver.query(TableDishbase.CONTENT_URI, columns, where, mSelectionArgs, mSortOrder);
 
 			final List<Versioned<DishItem>> result = parseItems(cursor);
 
@@ -307,6 +305,7 @@ public class DishBaseLocalService implements DishBaseService
 			if (x.equals(item))
 			{
 				x.setTimeStamp(item.getTimeStamp());
+				x.setHash(item.getHash());
 				x.setVersion(item.getVersion());
 				x.setDeleted(item.isDeleted());
 				x.setData(item.getData()); // FIXME: may be problem

@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
 import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
@@ -223,8 +222,7 @@ public class FoodBaseLocalService implements FoodBaseService
 			String mSortOrder = TableFoodbase.COLUMN_NAMECACHE;
 
 			// execute query
-			Cursor cursor = resolver.query(TableFoodbase.CONTENT_URI, columns, where, mSelectionArgs,
-					mSortOrder);
+			Cursor cursor = resolver.query(TableFoodbase.CONTENT_URI, columns, where, mSelectionArgs, mSortOrder);
 
 			final List<Versioned<FoodItem>> result = parseItems(cursor);
 
@@ -340,9 +338,10 @@ public class FoodBaseLocalService implements FoodBaseService
 
 		for (Versioned<FoodItem> x : memoryCache)
 		{
-			if (x.getId().equals(item.getId()))
+			if (x.equals(item))
 			{
 				x.setTimeStamp(item.getTimeStamp());
+				x.setHash(item.getHash());
 				x.setVersion(item.getVersion());
 				x.setDeleted(item.isDeleted());
 				x.setData(item.getData()); // FIXME: may be problem
