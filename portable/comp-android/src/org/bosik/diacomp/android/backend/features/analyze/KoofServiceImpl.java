@@ -19,7 +19,6 @@ package org.bosik.diacomp.android.backend.features.analyze;
 
 import java.util.Date;
 import java.util.List;
-
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
 import org.bosik.diacomp.core.services.analyze.KoofService;
@@ -28,7 +27,6 @@ import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
-
 import android.content.Context;
 
 public class KoofServiceImpl implements KoofService
@@ -52,7 +50,8 @@ public class KoofServiceImpl implements KoofService
 	 * @param adaptation
 	 *            [0 .. 0.1]
 	 */
-	public KoofServiceImpl(Context context, DiaryService diaryService, AnalyzeCore analyzeCore, int analyzePeriod, double adaptation)
+	public KoofServiceImpl(Context context, DiaryService diaryService, AnalyzeCore analyzeCore, int analyzePeriod,
+			double adaptation)
 	{
 		this.diaryService = diaryService;
 		this.analyzeCore = analyzeCore;
@@ -78,7 +77,7 @@ public class KoofServiceImpl implements KoofService
 	@Override
 	public Koof getKoof(int time)
 	{
-		Koof koof = koofDao.find(time);
+		Koof koof = koofDao.find(time % Utils.MinPerDay);
 		return koof != null ? koof : STD_KOOF;
 	}
 }
