@@ -6,4 +6,5 @@
 **/gen/**
 **/bin
 **/bin/**
-
+**/.classpath
+**/.project
