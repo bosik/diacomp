@@ -22,8 +22,6 @@ import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
 import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
-
-import android.content.ContentResolver;
 import android.content.Context;
 import android.util.Log;
 
