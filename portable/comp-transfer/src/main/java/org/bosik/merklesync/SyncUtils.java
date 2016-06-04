@@ -438,6 +438,17 @@ public class SyncUtils
 				List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
 				List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
 				Utils.getOverLists(items1, items2, newer1, newer2);
+
+				if (newer1.size() > maxItemsWrite * 4)
+				{
+					Utils.blockSave(newer1, service2, maxItemsWrite);
+					newer1.clear();
+				}
+				if (newer2.size() > maxItemsWrite * 4)
+				{
+					Utils.blockSave(newer2, service1, maxItemsWrite);
+					newer2.clear();
+				}
 			}
 		}
 	}
