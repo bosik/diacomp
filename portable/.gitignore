@@ -1,9 +1,9 @@
-/.settings
-/.settings/**
-/target/**
-/target
-/gen
-/gen/**
-/bin
-/bin/**
+**/.settings
+**/.settings/**
+**/target/**
+**/target
+**/gen
+**/gen/**
+**/bin
+**/bin/**
 
