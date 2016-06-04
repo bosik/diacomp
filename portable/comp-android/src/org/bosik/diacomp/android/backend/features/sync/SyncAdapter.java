@@ -55,12 +55,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 {
 	private static final String		TAG				= SyncAdapter.class.getSimpleName();
 
-	private static final int		MAX_DIARY_READ	= 500;
-	private static final int		MAX_DIARY_WRITE	= 500;
-	private static final int		MAX_FOOD_READ	= 500;
-	private static final int		MAX_FOOD_WRITE	= 500;
-	private static final int		MAX_DISH_READ	= 500;
-	private static final int		MAX_DISH_WRITE	= 500;
+	private static final int		MAX_DIARY_READ	= 100;
+	private static final int		MAX_DIARY_WRITE	= 100;
+	private static final int		MAX_FOOD_READ	= 50;
+	private static final int		MAX_FOOD_WRITE	= 50;
+	private static final int		MAX_DISH_READ	= 10;
+	private static final int		MAX_DISH_WRITE	= 10;
 
 	private final AccountManager	mAccountManager;
 
