@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,19 +14,21 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.features.dishbase;
 
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.dish.TestDishbaseService;
 import org.bosik.diacomp.core.services.base.dish.TestDishbaseServiceCommon;
+import org.junit.Ignore;
 import android.content.ContentResolver;
 import android.test.AndroidTestCase;
 
+@Ignore
 public class TestDishBaseLocalService extends AndroidTestCase implements TestDishbaseService
 {
-	private TestDishbaseServiceCommon	tester;
+	private TestDishbaseServiceCommon tester;
 
 	@Override
 	public void setUp() throws Exception

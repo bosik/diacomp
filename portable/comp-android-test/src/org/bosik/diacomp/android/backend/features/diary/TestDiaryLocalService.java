@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,19 +14,21 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.features.diary;
 
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.diary.TestDiaryService;
 import org.bosik.diacomp.core.services.diary.TestDiaryServiceCommon;
+import org.junit.Ignore;
 import android.content.ContentResolver;
 import android.test.AndroidTestCase;
 
+@Ignore
 public class TestDiaryLocalService extends AndroidTestCase implements TestDiaryService
 {
-	private static TestDiaryServiceCommon	test;
+	private static TestDiaryServiceCommon test;
 
 	@Override
 	protected void setUp() throws Exception
