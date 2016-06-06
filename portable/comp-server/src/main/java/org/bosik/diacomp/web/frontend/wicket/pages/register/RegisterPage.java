@@ -46,7 +46,6 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -167,7 +166,7 @@ public class RegisterPage extends MasterPage
 					return;
 				}
 
-				final WebRequest request = (WebRequest)RequestCycle.get().getRequest();
+				final WebRequest request = (WebRequest) RequestCycle.get().getRequest();
 				final String challenge = request.getPostParameters().getParameterValue("g-recaptcha-response")
 						.toString();
 				final String secret = Config.get(Config.KEY_CAPTCHA_SECRET);
@@ -176,9 +175,7 @@ public class RegisterPage extends MasterPage
 				final String MSG_ERROR_EMAIL = RegisterPage.this.getString("error.wrongEmail");
 				final String MSG_ERROR_DUPLICATION = RegisterPage.this.getString("error.emailInUse");
 				final String MSG_ERROR_COMON = RegisterPage.this.getString("error.common");
-
-				final Url context = Url.parse(getRequest().getContextPath());
-				final String appUrlRaw = getRequestCycle().getUrlRenderer().renderFullUrl(context);
+				final String appUrlRaw = Config.get(Config.KEY_APP_URL);
 				final String appUrl = appUrlRaw.endsWith("/") ? appUrlRaw : appUrlRaw + "/";
 				final String bodyPattern = getString("email.body");
 				final String title = getString("email.title");

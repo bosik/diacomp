@@ -25,6 +25,7 @@ public class Config
 {
 	private static Properties	properties;
 
+	public static final String	KEY_APP_URL			= "DIACOMP_APP_URL";
 	public static final String	KEY_DB_SCHEME		= "DIACOMP_DB_SCHEME";
 	public static final String	KEY_DB_USER			= "DIACOMP_DB_USER";
 	public static final String	KEY_DB_PASSWORD		= "DIACOMP_DB_PASSWORD";
