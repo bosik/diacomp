@@ -44,7 +44,7 @@ public class ActivityEditor<T extends Serializable> extends Activity
 	/* =========================== MAIN METHODS ================================ */
 
 	@Override
-	public void onCreate(Bundle savedInstanceState)
+	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setupInterface();
