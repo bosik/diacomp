@@ -126,29 +126,30 @@ public class FragmentTabBase extends Fragment
 																			{
 																				if (uri != null)
 																				{
-																					Table table = DiaryContentProvider.getTable(uri);
+																					Table table = DiaryContentProvider
+																							.getTable(uri);
 
 																					if (table != null)
-																					switch (table.getCode())
-																					{
-																						case TableFoodbase.CODE:
-																						case TableDishbase.CODE:
+																						switch (table.getCode())
 																						{
-																							final long token = Binder
-																									.clearCallingIdentity();
-																							try
+																							case TableFoodbase.CODE:
+																							case TableDishbase.CODE:
 																							{
-																								checkEmptiness();
+																								final long token = Binder
+																										.clearCallingIdentity();
+																								try
+																								{
+																									checkEmptiness();
+																								}
+																								finally
+																								{
+																									Binder.restoreCallingIdentity(
+																											token);
+																								}
+																								runSearch();
+																								break;
 																							}
-																							finally
-																							{
-																								Binder.restoreCallingIdentity(
-																										token);
-																							}
-																							runSearch();
-																							break;
 																						}
-																					}
 																				}
 																			}
 																		};
@@ -595,18 +596,23 @@ public class FragmentTabBase extends Fragment
 
 			List<Versioned<? extends NamedRelativeTagged>> result = new ArrayList<Versioned<? extends NamedRelativeTagged>>();
 
-			for (Versioned<? extends NamedRelativeTagged> item : foodItems)
-			{
-				Integer tag = tagService.getTag(item.getId());
-				item.getData().setTag(tag != null ? tag : 0);
-				result.add(item);
-			}
-			for (Versioned<? extends NamedRelativeTagged> item : dishItems)
-			{
-				Integer tag = tagService.getTag(item.getId());
-				item.getData().setTag(tag != null ? tag : 0);
-				result.add(item);
-			}
+			// for (Versioned<? extends NamedRelativeTagged> item : foodItems)
+			// {
+			// //Integer tag = tagService.getTag(item.getId());
+			// //item.getData().setTag(tag != null ? tag : 0);
+			// result.add(item);
+			// }
+
+			result.addAll(foodItems);
+
+			// for (Versioned<? extends NamedRelativeTagged> item : dishItems)
+			// {
+			//// Integer tag = tagService.getTag(item.getId());
+			//// item.getData().setTag(tag != null ? tag : 0);
+			// result.add(item);
+			// }
+
+			result.addAll(dishItems);
 
 			sorter.sort(result, Sort.RELEVANT);
 

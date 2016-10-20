@@ -27,7 +27,6 @@ import java.util.Map;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
 import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
-import org.bosik.diacomp.android.backend.features.search.TagServiceInternal;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
@@ -35,7 +34,6 @@ import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
-import org.bosik.diacomp.core.services.search.TagService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 import android.app.Activity;
@@ -338,7 +336,7 @@ public class FoodDishPicker extends LinearLayout
 
 		final FoodBaseService foodBase = LocalFoodBase.getInstance(resolver);
 		final DishBaseService dishBase = LocalDishBase.getInstance(resolver);
-		final TagService tagService = TagServiceInternal.getInstance();
+		// final TagService tagService = TagServiceInternal.getInstance();
 
 		List<Versioned<FoodItem>> foods = foodBase.findAll(false);
 		List<Versioned<DishItem>> dishes = dishBase.findAll(false);
@@ -347,15 +345,15 @@ public class FoodDishPicker extends LinearLayout
 
 		for (Versioned<FoodItem> item : foods)
 		{
-			Integer tag = tagService.getTag(item.getId());
-			item.getData().setTag(tag != null ? tag : 0);
+			// Integer tag = tagService.getTag(item.getId());
+			// item.getData().setTag(tag != null ? tag : 0);
 			data.add(new Item(item.getData()));
 		}
 
 		for (Versioned<DishItem> item : dishes)
 		{
-			Integer tag = tagService.getTag(item.getId());
-			item.getData().setTag(tag != null ? tag : 0);
+			// Integer tag = tagService.getTag(item.getId());
+			// item.getData().setTag(tag != null ? tag : 0);
 			data.add(new Item(item.getData()));
 		}
 
