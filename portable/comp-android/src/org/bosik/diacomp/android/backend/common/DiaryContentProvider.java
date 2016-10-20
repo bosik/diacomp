@@ -20,7 +20,6 @@ package org.bosik.diacomp.android.backend.common;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bosik.diacomp.android.backend.common.db.Column;
 import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
@@ -29,7 +28,6 @@ import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
 import org.bosik.diacomp.android.backend.common.db.tables.TableKoofs;
 import org.bosik.diacomp.android.backend.common.db.tables.TablePreferences;
 import org.bosik.diacomp.android.backend.common.db.tables.TableTags;
-
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -175,17 +173,17 @@ public class DiaryContentProvider extends ContentProvider
 		{
 			switch (oldVersion)
 			{
-			case 1: // --> 2
-			{
-				TableKoofs tableKoofs = new TableKoofs();
+				case 1: // --> 2
+				{
+					TableKoofs tableKoofs = new TableKoofs();
 
-				String s = buildDropTableStatement(tableKoofs);
-				db.execSQL(s);
+					String s = buildDropTableStatement(tableKoofs);
+					db.execSQL(s);
 
-				s = buildCreateTableStatement(tableKoofs);
-				db.execSQL(s);
-				break;
-			}
+					s = buildCreateTableStatement(tableKoofs);
+					db.execSQL(s);
+					break;
+				}
 			}
 		}
 	}
@@ -339,7 +337,8 @@ public class DiaryContentProvider extends ContentProvider
 	public int delete(final Uri uri, String where, String[] whereArgs)
 	{
 		/**
-		 * NOTE: This method actually removes data from DB. Service should just mark rows deleted instead (using update method)
+		 * NOTE: This method actually removes data from DB. Service should just mark rows deleted
+		 * instead (using update method)
 		 */
 		Table table = getTable(uri);
 
