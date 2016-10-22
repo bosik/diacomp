@@ -39,9 +39,9 @@ public class Food implements Serializable, Named, Relative
 
 	}
 
-	public Food(Food food)
+	public <T extends Named & Relative> Food(T src)
 	{
-		this(food.getName(), food.getRelProts(), food.getRelFats(), food.getRelCarbs(), food.getRelValue());
+		this(src.getName(), src.getRelProts(), src.getRelFats(), src.getRelCarbs(), src.getRelValue());
 	}
 
 	public Food(String name, double relProts, double relFats, double relCarbs, double relValue)

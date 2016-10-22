@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.views.fdpicker;
 
@@ -155,21 +155,12 @@ public class MealEditorView extends LinearLayout
 					// try to search item in food base
 
 					FoodBaseService foodBase = LocalFoodBase.getInstance(resolver);
-					Versioned<FoodItem> foodItem = foodBase.findOne(name);
+					Versioned<FoodItem> food = foodBase.findOne(name);
 
-					if (foodItem != null)
+					if (food != null)
 					{
-						FoodItem food = foodItem.getData();
+						data.add(new FoodMassed(food.getData(), mass));
 
-						FoodMassed item = new FoodMassed();
-						item.setName(food.getName());
-						item.setRelProts(food.getRelProts());
-						item.setRelFats(food.getRelFats());
-						item.setRelCarbs(food.getRelCarbs());
-						item.setRelValue(food.getRelValue());
-						item.setMass(mass);
-
-						data.add(item);
 						if (onChange != null)
 						{
 							onChange.onChange(data);
@@ -180,22 +171,14 @@ public class MealEditorView extends LinearLayout
 					}
 
 					// try to search item in dish base
+
 					DishBaseService dishBase = LocalDishBase.getInstance(resolver);
-					List<Versioned<DishItem>> listDish = dishBase.findAny(name);
+					Versioned<DishItem> dish = dishBase.findOne(name);
 
-					if (!listDish.isEmpty())
+					if (dish != null)
 					{
-						DishItem dish = listDish.get(0).getData();
+						data.add(new FoodMassed(dish.getData(), mass));
 
-						FoodMassed item = new FoodMassed();
-						item.setName(dish.getName());
-						item.setRelProts(dish.getRelProts());
-						item.setRelFats(dish.getRelFats());
-						item.setRelCarbs(dish.getRelCarbs());
-						item.setRelValue(dish.getRelValue());
-						item.setMass(mass);
-
-						data.add(item);
 						if (onChange != null)
 						{
 							onChange.onChange(data);

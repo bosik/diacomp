@@ -17,10 +17,14 @@
  */
 package org.bosik.diacomp.core.entities.business;
 
+import org.bosik.diacomp.core.entities.business.interfaces.Massed;
+import org.bosik.diacomp.core.entities.business.interfaces.Named;
+import org.bosik.diacomp.core.entities.business.interfaces.Relative;
+
 /**
  * Stores food's name, relative parameters (PFCV on 100g) and mass.
  */
-public class FoodMassed extends Food
+public class FoodMassed extends Food implements Massed
 {
 	private static final long	serialVersionUID	= -204761623726950977L;
 
@@ -36,10 +40,16 @@ public class FoodMassed extends Food
 		setMass(mass);
 	}
 
-	public FoodMassed(Food food, double mass)
+	public <T extends Named & Relative> FoodMassed(T src, double mass)
 	{
-		super(food);
+		super(src);
 		setMass(mass);
+	}
+
+	public <T extends Named & Relative & Massed> FoodMassed(T src)
+	{
+		super(src);
+		setMass(src.getMass());
 	}
 
 	// ================================ VALIDATORS ================================
@@ -61,6 +71,7 @@ public class FoodMassed extends Food
 
 	// ================================ GET / SET ================================
 
+	@Override
 	public double getMass()
 	{
 		return mass;
