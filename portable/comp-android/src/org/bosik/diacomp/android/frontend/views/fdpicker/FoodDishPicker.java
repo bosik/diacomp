@@ -37,7 +37,6 @@ import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -114,8 +113,7 @@ class ItemAdapter extends ArrayAdapter<Item>
 	{
 		super(context, viewResourceId, items);
 
-		this.itemsAll = new ArrayList<Item>();
-		itemsAll.addAll(items);
+		this.itemsAll = new ArrayList<Item>(items);
 		this.suggestions = new ArrayList<Item>();
 		this.viewResourceId = viewResourceId;
 	}
@@ -212,7 +210,6 @@ class ItemAdapter extends ArrayAdapter<Item>
 			notifyDataSetChanged();
 		}
 	};
-
 }
 
 /**
@@ -330,37 +327,30 @@ public class FoodDishPicker extends LinearLayout
 
 	private void loadItemsList()
 	{
-		// preparing storages
+		// prepare sources
 
-		ContentResolver resolver = getContext().getContentResolver();
+		FoodBaseService foodBase = LocalFoodBase.getInstance(getContext().getContentResolver());
+		DishBaseService dishBase = LocalDishBase.getInstance(getContext().getContentResolver());
 
-		final FoodBaseService foodBase = LocalFoodBase.getInstance(resolver);
-		final DishBaseService dishBase = LocalDishBase.getInstance(resolver);
-		// final TagService tagService = TagServiceInternal.getInstance();
-
-		List<Versioned<FoodItem>> foods = foodBase.findAll(false);
-		List<Versioned<DishItem>> dishes = dishBase.findAll(false);
+		// build lists
 
 		List<Item> data = new ArrayList<Item>();
 
-		for (Versioned<FoodItem> item : foods)
+		for (Versioned<FoodItem> item : foodBase.findAll(false))
 		{
-			// Integer tag = tagService.getTag(item.getId());
-			// item.getData().setTag(tag != null ? tag : 0);
 			data.add(new Item(item.getData()));
 		}
 
-		for (Versioned<DishItem> item : dishes)
+		for (Versioned<DishItem> item : dishBase.findAll(false))
 		{
-			// Integer tag = tagService.getTag(item.getId());
-			// item.getData().setTag(tag != null ? tag : 0);
 			data.add(new Item(item.getData()));
 		}
+
+		// sort
 
 		Collections.sort(data);
 
-		ItemAdapter adapter = new ItemAdapter(getContext(), R.layout.view_iconed_line, data);
-		editName.setAdapter(adapter);
+		editName.setAdapter(new ItemAdapter(getContext(), R.layout.view_iconed_line, data));
 	}
 
 	public void focusName()
