@@ -476,7 +476,18 @@ public class DishBaseLocalService implements DishBaseService
 	@Override
 	public Versioned<DishItem> findOne(String exactName)
 	{
-		throw new UnsupportedOperationException();
+		exactName = exactName.trim();
+		List<Versioned<DishItem>> all = find(null, exactName, false, null);
+
+		for (Versioned<DishItem> item : all)
+		{
+			if (item.getData().getName().trim().equals(exactName))
+			{
+				return item;
+			}
+		}
+
+		return null;
 	}
 
 	@Override
