@@ -24,12 +24,10 @@ import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
 import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
-import org.bosik.diacomp.android.backend.features.search.TagServiceInternal;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.search.RelevantIndexator;
-import org.bosik.diacomp.core.services.search.TagService;
 import org.bosik.diacomp.core.utils.Utils;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -96,12 +94,11 @@ public class Storage
 	{
 		// long time = System.currentTimeMillis();
 
-		final TagService tagService = TagServiceInternal.getInstance();
 		final DiaryService diary = LocalDiary.getInstance(resolver);
 		final FoodBaseService foodBase = LocalFoodBase.getInstance(resolver);
 		final DishBaseService dishBase = LocalDishBase.getInstance(resolver);
 
-		RelevantIndexator.indexate(tagService, diary, foodBase, dishBase);
+		RelevantIndexator.indexate(diary, foodBase, dishBase);
 
 		// Log.v(TAG, String.format("Relevant indexation done in %d msec",
 		// System.currentTimeMillis() - time));

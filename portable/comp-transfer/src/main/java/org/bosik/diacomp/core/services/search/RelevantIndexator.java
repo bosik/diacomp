@@ -25,20 +25,20 @@ import java.util.Map;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
-import org.bosik.diacomp.core.utils.Profiler;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
 public class RelevantIndexator
 {
-	public static void indexate(TagService tagService_unused, DiaryService diary, FoodBaseService foodBase,
-			DishBaseService dishBase)
+	public static void indexate(DiaryService diary, FoodBaseService foodBase, DishBaseService dishBase)
 	{
-		Profiler p = new Profiler();
+		//		Profiler p = new Profiler();
 
 		// constructing dates range
 		final long PERIOD = 30; // days
@@ -47,13 +47,20 @@ public class RelevantIndexator
 
 		// analyze diary; collect names & relevance
 
+		List<Versioned<DiaryRecord>> records = diary.findPeriod(min, max, false);
+		//		System.out.printf("Fetching diary records (%d total items): %.1f ms%n", records.size(),
+		//				0.000001 * p.sinceLastCheck());
+
+		//		int meals = 0;
+
 		Map<String, Integer> names = new HashMap<String, Integer>();
-		for (Versioned<DiaryRecord> item : diary.findPeriod(min, max, false))
+		for (Versioned<DiaryRecord> item : records)
 		{
 			DiaryRecord rec = item.getData();
 			if (rec instanceof MealRecord)
 			{
-				MealRecord meal = (MealRecord) rec;
+				//				meals++;
+				MealRecord meal = (MealRecord)rec;
 				for (int j = 0; j < meal.count(); j++)
 				{
 					FoodMassed food = meal.get(j);
@@ -71,12 +78,24 @@ public class RelevantIndexator
 			}
 		}
 
+		//		System.out.printf("Diary analyzing (%d meals, %d names): %.1f ms%n", meals, names.size(),
+		//				0.000001 * p.sinceLastCheck());
+
 		// update tags
 
-		foodBase.save(updateItems(foodBase.findAll(false), names));
-		dishBase.save(updateItems(dishBase.findAll(false), names));
+		List<Versioned<FoodItem>> foods = updateItems(foodBase.findAll(false), names);
+		//		System.out.printf("Updating foods (%d): %.1f ms%n", foods.size(), 0.000001 * p.sinceLastCheck());
 
-		// System.out.println("Total indexing time: " + p.sinceStart());
+		foodBase.save(foods);
+		//		System.out.printf("Saving foods: %.1f ms%n", 0.000001 * p.sinceLastCheck());
+
+		List<Versioned<DishItem>> dishes = updateItems(dishBase.findAll(false), names);
+		//		System.out.printf("Updating dishes (%d): %.1f ms%n", foods.size(), 0.000001 * p.sinceLastCheck());
+
+		dishBase.save(dishes);
+		//		System.out.printf("Saving dishes: %.1f ms%n", 0.000001 * p.sinceLastCheck());
+
+		//		System.out.printf("Total indexing time: %.1f ms%n", 0.000001 * p.sinceStart());
 	}
 
 	private static <T extends NamedRelativeTagged> List<Versioned<T>> updateItems(List<Versioned<T>> items,
@@ -113,7 +132,7 @@ public class RelevantIndexator
 	 */
 	private static int f(Date curDate, Date minDate, Date maxDate)
 	{
-		int delta = (int) ((100 * (curDate.getTime() - minDate.getTime())) / (maxDate.getTime() - minDate.getTime()));
+		int delta = (int)((100 * (curDate.getTime() - minDate.getTime())) / (maxDate.getTime() - minDate.getTime()));
 		return delta * delta;
 	}
 }

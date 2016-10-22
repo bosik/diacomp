@@ -32,7 +32,6 @@ import org.bosik.diacomp.android.backend.common.db.tables.TableDishbase;
 import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
 import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
 import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
-import org.bosik.diacomp.android.backend.features.search.TagServiceInternal;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorDish;
@@ -47,7 +46,6 @@ import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.search.Sorter;
 import org.bosik.diacomp.core.services.search.Sorter.Sort;
-import org.bosik.diacomp.core.services.search.TagService;
 import org.bosik.merklesync.Versioned;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -101,7 +99,6 @@ public class FragmentTabBase extends Fragment
 	// Data
 	FoodBaseService									foodBaseService;
 	DishBaseService									dishBaseService;
-	private TagService								tagService;
 	List<Versioned<? extends NamedRelativeTagged>>	data				= new ArrayList<Versioned<? extends NamedRelativeTagged>>();
 	BaseAdapter										adapter;
 	private static final Sorter						sorter				= new Sorter();
@@ -163,7 +160,6 @@ public class FragmentTabBase extends Fragment
 		resolver.registerContentObserver(DiaryContentProvider.CONTENT_BASE_URI, true, observer);
 		foodBaseService = LocalFoodBase.getInstance(resolver);
 		dishBaseService = LocalDishBase.getInstance(resolver);
-		tagService = TagServiceInternal.getInstance();
 	}
 
 	@Override
