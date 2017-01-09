@@ -20,6 +20,7 @@ package org.bosik.diacomp.android.backend.common.webclient;
 
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.WebClientException;
 import org.bosik.diacomp.android.test.R;
+import android.content.Context;
 import android.test.AndroidTestCase;
 
 public class TestWebClient extends AndroidTestCase
@@ -33,16 +34,16 @@ public class TestWebClient extends AndroidTestCase
 	 * 
 	 * @return
 	 */
-	public static synchronized WebClient getWebClient()
+	public static synchronized WebClient getWebClient(Context context)
 	{
 		if (webClient == null)
 		{
-			TestWebClient test = new TestWebClient();
-			String SERVER = test.getContext().getString(R.string.test_url);
-			String USERNAME = test.getContext().getString(R.string.test_username);
-			String PASSWORD = test.getContext().getString(R.string.test_password);
+			String SERVER = context.getString(R.string.test_url);
+			String USERNAME = context.getString(R.string.test_username);
+			String PASSWORD = context.getString(R.string.test_password);
 
-			webClient = WebClientInternal.getInstance(test.getContext(), USERNAME, PASSWORD);
+			webClient = WebClientInternal.getInstance(context, USERNAME, PASSWORD);
+			webClient.setServer(SERVER);
 			try
 			{
 				webClient.login();
@@ -58,6 +59,6 @@ public class TestWebClient extends AndroidTestCase
 
 	public void testLogin()
 	{
-		getWebClient();
+		getWebClient(getContext());
 	}
 }
