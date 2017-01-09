@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,20 +14,22 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.features.foodbase;
 
 import org.bosik.diacomp.android.backend.common.webclient.TestWebClient;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.base.food.TestFoodbaseServiceCommon;
+import org.junit.Ignore;
 
+@Ignore
 public class TestFoodBaseWebService extends TestFoodbaseServiceCommon
 {
 	@Override
 	protected FoodBaseService getService()
 	{
 		// DO NOT MAKE IT STATIC - IT CAUSES android.os.NetworkOnMainThreadException
-		return new FoodBaseWebService(TestWebClient.getWebClient());
+		return new FoodBaseWebService(TestWebClient.getWebClient(null));
 	}
 }

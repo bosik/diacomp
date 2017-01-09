@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,20 +14,22 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.features.dishbase;
 
 import org.bosik.diacomp.android.backend.common.webclient.TestWebClient;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.dish.TestDishbaseServiceCommon;
+import org.junit.Ignore;
 
+@Ignore
 public class TestDishBaseWebService extends TestDishbaseServiceCommon
 {
 	@Override
 	protected DishBaseService getService()
 	{
 		// DO NOT MAKE IT STATIC - IT CAUSES android.os.NetworkOnMainThreadException
-		return new DishBaseWebService(TestWebClient.getWebClient());
+		return new DishBaseWebService(TestWebClient.getWebClient(null));
 	}
 }
