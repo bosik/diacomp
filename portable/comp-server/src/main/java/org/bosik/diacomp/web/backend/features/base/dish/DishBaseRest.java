@@ -37,7 +37,6 @@ import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
-import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
@@ -60,7 +59,7 @@ public class DishBaseRest
 	@GET
 	@Path("count/{prefix: .*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response count(@PathParam("prefix") @DefaultValue("") String parPrefix) throws CommonServiceException
+	public Response count(@PathParam("prefix") @DefaultValue("") String parPrefix)
 	{
 		try
 		{
@@ -82,7 +81,7 @@ public class DishBaseRest
 	@GET
 	@Path("guid/{guid: .*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response findById(@PathParam("guid") String parId) throws CommonServiceException
+	public Response findById(@PathParam("guid") String parId)
 	{
 		try
 		{
@@ -131,7 +130,6 @@ public class DishBaseRest
 	@Path("all")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response findAll(@QueryParam("show_rem") @DefaultValue("false") String parShowRem)
-			throws CommonServiceException
 	{
 		try
 		{
@@ -155,7 +153,7 @@ public class DishBaseRest
 	@GET
 	@Path("search")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response findAny(@QueryParam("q") String filter) throws CommonServiceException
+	public Response findAny(@QueryParam("q") String filter)
 	{
 		try
 		{
@@ -182,7 +180,7 @@ public class DishBaseRest
 	@GET
 	@Path("changes")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response findChanged(@QueryParam("since") String parTime) throws CommonServiceException
+	public Response findChanged(@QueryParam("since") String parTime)
 	{
 		try
 		{
@@ -210,7 +208,7 @@ public class DishBaseRest
 	@GET
 	@Path("hash/{prefix: .*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getHash(@PathParam("prefix") @DefaultValue("") String parPrefix) throws CommonServiceException
+	public Response getHash(@PathParam("prefix") @DefaultValue("") String parPrefix)
 	{
 		try
 		{
@@ -234,7 +232,6 @@ public class DishBaseRest
 	@Path("hashes/{prefix: .*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response getHashChildren(@PathParam("prefix") @DefaultValue("") String parPrefix)
-			throws CommonServiceException
 	{
 		try
 		{
@@ -256,7 +253,7 @@ public class DishBaseRest
 
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response save(@FormParam("items") String parItems) throws CommonServiceException
+	public Response save(@FormParam("items") String parItems)
 	{
 		try
 		{

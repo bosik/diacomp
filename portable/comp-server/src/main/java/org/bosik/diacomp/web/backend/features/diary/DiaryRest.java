@@ -42,7 +42,6 @@ import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
-import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
@@ -99,7 +98,7 @@ public class DiaryRest
 	@GET
 	@Path("count/{prefix: .*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response count(@PathParam("prefix") @DefaultValue("") String parPrefix) throws CommonServiceException
+	public Response count(@PathParam("prefix") @DefaultValue("") String parPrefix)
 	{
 		long time = System.currentTimeMillis();
 		try
@@ -129,7 +128,7 @@ public class DiaryRest
 	@GET
 	@Path("guid/{guid: .*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response findById(@PathParam("guid") String parId) throws CommonServiceException
+	public Response findById(@PathParam("guid") String parId)
 	{
 		long time = System.currentTimeMillis();
 		try
@@ -185,7 +184,7 @@ public class DiaryRest
 	@GET
 	@Path("hash/{prefix: .*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getHash(@PathParam("prefix") @DefaultValue("") String parPrefix) throws CommonServiceException
+	public Response getHash(@PathParam("prefix") @DefaultValue("") String parPrefix)
 	{
 		try
 		{
@@ -211,7 +210,6 @@ public class DiaryRest
 	@Path("hashes/{prefix: .*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response getHashChildren(@PathParam("prefix") @DefaultValue("") String parPrefix)
-			throws CommonServiceException
 	{
 		try
 		{
@@ -236,7 +234,7 @@ public class DiaryRest
 	@GET
 	@Path("changes")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response findChanged(@QueryParam("since") String parTime) throws CommonServiceException
+	public Response findChanged(@QueryParam("since") String parTime)
 	{
 		try
 		{
@@ -277,7 +275,7 @@ public class DiaryRest
 	@Path("period")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response findPeriod(@QueryParam("start_time") String parStartTime, @QueryParam("end_time") String parEndTime,
-			@QueryParam("show_rem") @DefaultValue("false") String parShowRem) throws CommonServiceException
+			@QueryParam("show_rem") @DefaultValue("false") String parShowRem)
 	{
 		try
 		{
@@ -341,7 +339,7 @@ public class DiaryRest
 	@PUT
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response save(@FormParam("items") String parItems) throws CommonServiceException
+	public Response save(@FormParam("items") String parItems)
 	{
 		try
 		{
