@@ -40,13 +40,8 @@ import org.bosik.diacomp.android.backend.common.webclient.exceptions.ConnectionE
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.ResponseFormatException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.TaskExecutionException;
 import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFieldException;
-import org.bosik.diacomp.core.rest.ResponseBuilder;
-import org.bosik.diacomp.core.rest.StdResponse;
-import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
-import org.bosik.diacomp.core.services.exceptions.DeprecatedAPIException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
-import org.bosik.diacomp.core.services.exceptions.UnsupportedAPIException;
 import org.bosik.diacomp.core.utils.Utils;
 import android.util.Log;
 
@@ -93,32 +88,36 @@ public class WebClient
 				throw new ResponseFormatException("Bad response, response is null");
 			}
 
-			final int statusCode = response.getStatusLine().getStatusCode();
-
-			switch (statusCode)
-			{
-				case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-				{
-					throw new TaskExecutionException(42, s);
-				}
-				case HttpStatus.SC_NOT_FOUND:
-				{
-					throw new NotFoundException(s);
-				}
-				case HttpStatus.SC_UNAUTHORIZED:
-				{
-					throw new NotAuthorizedException(s);
-				}
-				case HttpStatus.SC_OK:
-				default:
-				{
-					return s;
-				}
-			}
+			checkResponseCode(response.getStatusLine().getStatusCode(), s);
+			return s;
 		}
 		catch (IOException e)
 		{
 			throw new ResponseFormatException(e);
+		}
+	}
+
+	private static void checkResponseCode(final int code, String msg)
+	{
+		switch (code)
+		{
+			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+			{
+				throw new TaskExecutionException(code, msg);
+			}
+			case HttpStatus.SC_NOT_FOUND:
+			{
+				throw new NotFoundException(msg);
+			}
+			case HttpStatus.SC_UNAUTHORIZED:
+			{
+				throw new NotAuthorizedException(msg);
+			}
+			case HttpStatus.SC_OK:
+			default:
+			{
+				break;
+			}
 		}
 	}
 
@@ -153,9 +152,8 @@ public class WebClient
 		{
 			// TODO: check if %20 replacement is necessary
 			HttpResponse resp = mHttpClient.execute(new HttpGet(url.replace(" ", CODE_SPACE)));
-			String responseContent = formatResponse(resp, encoding);
 
-			return responseContent;
+			return formatResponse(resp, encoding);
 		}
 		catch (IOException e)
 		{
@@ -221,32 +219,6 @@ public class WebClient
 		catch (IOException e)
 		{
 			throw new ConnectionException("Failed to PUT " + url, e);
-		}
-	}
-
-	/**
-	 * Checks the response code and throws exception if need
-	 * 
-	 * @param resp
-	 */
-	private static void checkResponse(StdResponse resp)
-	{
-		switch (resp.getCode())
-		{
-			case ResponseBuilder.CODE_OK:
-				return;
-			case ResponseBuilder.CODE_NOTFOUND:
-				throw new NotFoundException(null);
-			case ResponseBuilder.CODE_UNAUTHORIZED:
-				throw new NotAuthorizedException(resp.getResponse());
-			case ResponseBuilder.CODE_BADCREDENTIALS:
-				throw new NotAuthorizedException(resp.getResponse());
-			case ResponseBuilder.CODE_UNSUPPORTED_API:
-				throw new UnsupportedAPIException(resp.getResponse());
-			case ResponseBuilder.CODE_DEPRECATED_API:
-				throw new DeprecatedAPIException(resp.getResponse());
-			default: // case ResponseBuilder.CODE_FAIL:
-				throw new CommonServiceException("#" + resp.getCode() + ": " + resp.getResponse());
 		}
 	}
 
