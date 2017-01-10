@@ -82,7 +82,7 @@ public final class ZipUtils
 						bufout.write(buffer, 0, read);
 					}
 
-					return new String(bufout.toByteArray());
+					return bufout.toString();
 				}
 				finally
 				{

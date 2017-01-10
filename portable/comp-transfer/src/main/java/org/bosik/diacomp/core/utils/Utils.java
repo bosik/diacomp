@@ -17,6 +17,14 @@
  */
 package org.bosik.diacomp.core.utils;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -1013,7 +1021,44 @@ public class Utils
 				}
 			}
 		}
-	};
+	}
+
+	public static void saveStreamToFile(InputStream inputStream, String fileName) throws IOException
+	{
+		OutputStream outputStream = new FileOutputStream(new File(fileName));
+		try
+		{
+			copy(inputStream, outputStream);
+		}
+		finally
+		{
+			outputStream.close();
+		}
+	}
+
+	public static void saveStringToFile(String data, String fileName) throws IOException
+	{
+		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8"));
+		try
+		{
+			out.write(data);
+		}
+		finally
+		{
+			out.close();
+		}
+	}
+
+	public static void copy(InputStream input, OutputStream output) throws IOException
+	{
+		int read = 0;
+		byte[] bytes = new byte[16 * 1024];
+
+		while ((read = input.read(bytes)) != -1)
+		{
+			output.write(bytes, 0, read);
+		}
+	}
 	// private static String formatArray(byte array[])
 	// {
 	// StringBuilder sb = new StringBuilder("{");
