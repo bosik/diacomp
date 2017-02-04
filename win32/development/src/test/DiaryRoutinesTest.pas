@@ -67,6 +67,9 @@ begin
   end;
 end;
 
+const
+  LOCAL_TIME_ZONE = +3; // UTC+3
+
 {==============================================================================}
 procedure TDiaryRoutinesTest.TestUTCDateTime;
 {==============================================================================}
@@ -77,7 +80,7 @@ begin
   LocalTime := Now();
   UTCTime := GetTimeUTC();
   CheckEquals(
-    DateTimeToStr(LocalTime - 4/HourPerDay),
+    DateTimeToStr(LocalTime - LOCAL_TIME_ZONE/HourPerDay),
     DateTimeToStr(UTCTime)
   );
 end;
@@ -92,7 +95,7 @@ begin
   UTCTime := EncodeDateTime(2006, 05, 28, 14, 40, 32, 5);
   LocalTime := UTCToLocal(UTCTime);
   CheckEquals(
-    DateTimeToStr(UTCTime + 4/HourPerDay),
+    DateTimeToStr(UTCTime + LOCAL_TIME_ZONE/HourPerDay),
     DateTimeToStr(LocalTime)
   );
 end;
@@ -107,7 +110,7 @@ begin
   LocalTime := EncodeDateTime(2006, 05, 28, 18, 40, 32, 5);
   UTCTime := LocalToUTC(LocalTime);
   CheckEquals(
-    DateTimeToStr(LocalTime - 4/HourPerDay),
+    DateTimeToStr(LocalTime - LOCAL_TIME_ZONE/HourPerDay),
     DateTimeToStr(UTCTime)
   );
 end;

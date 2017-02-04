@@ -7,6 +7,7 @@ uses
   SysUtils,
   DateUtils,
   TestFrameWork,
+  AutoLog,
   DiaryDAO,
   DiaryPage,
   DiaryRecords,
@@ -274,4 +275,9 @@ begin
   CheckEquals(0, Length(RestoredRecs));
 end;
 
+initialization
+  AutoLog.StartLogger('TestLogs');
+finalization
+  AutoLog.StopLogger();
+  SysUtils.RemoveDir('TestLogs');
 end.
