@@ -1,14 +1,14 @@
 program Compensation;
 
 uses
-  FastMM4 in 'src\common\FastMM4.pas',
-  FastMM4Messages in 'src\common\FastMM4Messages.pas',
+  FastMM4 in 'src\lib\FastMM4.pas',
+  FastMM4Messages in 'src\lib\FastMM4Messages.pas',
   Forms,
   Windows,
   Dialogs,
   Controls,
   SysUtils,
-  InetDownload,
+  InetDownload in 'src\ext\lib\InetDownload.pas',
   ShellAPI,
   Classes,
   DiaryInterface in 'src\frontend\DiaryInterface.pas',
