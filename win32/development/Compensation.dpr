@@ -1,8 +1,6 @@
 program Compensation;
 
 uses
-  FastMM4 in 'src\lib\FastMM4.pas',
-  FastMM4Messages in 'src\lib\FastMM4Messages.pas',
   Forms,
   Windows,
   Dialogs,
@@ -62,7 +60,9 @@ uses
   UnitLogViewer in 'src\frontend\forms\UnitLogViewer.pas' {FormLogViewer},
   JsonVersionedSerializer in 'src\persistence\serializers\JsonVersionedSerializer.pas',
   HashService in 'src\backend\features\sync\HashService.pas',
-  MerkleTree in 'src\backend\features\sync\MerkleTree.pas';
+  MerkleTree in 'src\backend\features\sync\MerkleTree.pas',
+  Analyzer in 'src\backend\features\analyze\Analyzer.pas',
+  AnalyzeUtils in 'src\backend\features\analyze\AnalyzeUtils.pas';
 
 {$R *.res}
 
@@ -174,8 +174,6 @@ begin
       ErrorMessage('Ќекоторые строковые ресурсы отсутствуют');
     end;
   end;
-
-  if not CheckFile(WORK_FOLDER + 'MathAn.dll',   URL_MATHAN,   True, False, FlagRestart, FlagModificated) then Exit;
 
   if (FlagModificated) then
   begin

@@ -5,9 +5,9 @@ interface
 uses
   SysUtils,
   Windows,
-  Classes,
   Math,
   AnalyzeInterface,
+  Analyzer,
   DiaryRoutines,
   DiaryRecords,
   DiaryDatabase,
@@ -21,12 +21,6 @@ uses
   AutoLog;
 
 type
-  TAnalyzer = record
-    Name: string;
-    AnalyzeFunc: TAnalyzeFunction;
-    InfoFunc: TInfoFunction;
-  end;
-
   TAnalyzers = array of TAnalyzer;
 
   TAnalyzeResult = record
@@ -43,7 +37,7 @@ type
   TRealArray = array of Real;
 
   { Initialization }
-  function LoadAnalyzers(const FileName: string): TAnalyzers;
+  function LoadAnalyzers(): TAnalyzers;
   function AddAnalyzers(const Source: TAnalyzers; var Target: TAnalyzers): boolean;
 
   { Analyzing }
@@ -87,61 +81,17 @@ type
   TPrimeRecList = array of TPrimeRec;
 
 {======================================================================================================================}
-function LoadAnalyzers(const FileName: string): TAnalyzers;
+function LoadAnalyzers(): TAnalyzers;
 {======================================================================================================================}
 var
-  Lib: HModule;
-  Analyzer: TAnalyzer;
-  Index: integer;
-  AnalFuncName: string;
-  InfoFuncName: string;
-  Found: boolean;
+  A: TAnalyzer;
 begin
-  Log(DEBUG, 'Loading analyze unit ' + FileName);
   SetLength(Result, 0);
 
-  if FileExists(FileName) then
-  try
-    Log(DEBUG, 'Analyze unit found, loading...');
-    Lib := LoadLibrary(PChar(FileName));
-    if (Lib <> 0) then
-    begin
-      Log(DEBUG, 'Analyze unit loaded ok');
-      Index := 0;
-      repeat
-        AnalFuncName := AnalyzeFunctionName + IntToStr(Index);
-        InfoFuncName:= InfoFunctionName + IntToStr(Index);
-
-        @Analyzer.AnalyzeFunc := GetProcAddress(Lib, PAnsiChar(AnalFuncName));
-        @Analyzer.InfoFunc := GetProcAddress(Lib, PAnsiChar(InfoFuncName));
-        Found := (@Analyzer.AnalyzeFunc <> nil) and (@Analyzer.InfoFunc <> nil);
-
-        if Found then
-        begin
-          Analyzer.Name := Analyzer.InfoFunc();
-          Log(INFO, 'Analyze function found: ' + Analyzer.Name);
-
-          SetLength(Result, Length(Result) + 1);
-          Result[High(Result)] := Analyzer;
-        end;
-
-        inc(Index);
-      until not Found;
-
-      Log(DEBUG, 'Analyze functions loading done, function found: ' + IntToStr(Index));
-    end else
-    begin
-      Log(ERROR, 'Failed to load analyze unit, LoadLibrary returned 0, file name: ' + FileName);
-    end;
-  except
-    on e: Exception do
-    begin
-      Log(ERROR, 'Failed to load analyze unit: ' + e.Message);
-    end;
-  end else
-  begin
-    Log(ERROR, 'Analyze unit not found: ' + FileName);
-  end;
+  A := TAnalyzerBruteforceQP.Create;
+  Log(INFO, 'Analyze function found: ' + A.GetName());
+  SetLength(Result, Length(Result) + 1);
+  Result[High(Result)] := A;
 end;
 
 {======================================================================================================================}
@@ -418,7 +368,7 @@ begin
   Result.AnList := FormatRecords(PrimeList, Par[PAR_ADAPTATION]);
 
   StartTime := GetTickCount();
-  Analyzer.AnalyzeFunc(Result.AnList, Result.KoofList, CallBack);
+  Analyzer.Analyze(Result.AnList, Result.KoofList, CallBack);
   Result.Error := GetRecListError(Result.AnList, Result.KoofList, vfQuadric);
   Result.Time := GetTickCount() - StartTime;
 end;

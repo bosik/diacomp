@@ -9,15 +9,12 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = Compensation.exe MathAn.dll CompensationTest.exe
+PROJECTS = Compensation.exe CompensationTest.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
 
 Compensation.exe: Compensation.dpr
-  $(DCC)
-
-MathAn.dll: MathAn.dpr
   $(DCC)
 
 CompensationTest.exe: src\test\CompensationTest.dpr

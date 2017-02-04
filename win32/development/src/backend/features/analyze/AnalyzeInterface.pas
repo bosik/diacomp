@@ -36,12 +36,11 @@ type
   { ===== ‘”Õ ÷»» ===== }
 
   TCallbackProgressProc = procedure(Progress: integer);
-  TInfoFunction = function(): PChar;
-  TAnalyzeFunction = function(const RecList: TAnalyzeRecList; var KoofList: TKoofList; CallBack: TCallbackProgressProc): boolean; StdCall;
 
-const
-  AnalyzeFunctionName = 'Analyze';
-  InfoFunctionName    = 'Info';
+  TAnalyzer = class
+    function Analyze(const RecList: TAnalyzeRecList; out KoofList: TKoofList; CallBack: TCallbackProgressProc): boolean; virtual; abstract;
+    function GetName(): PChar; virtual; abstract;
+  end;
   
 implementation
 

@@ -32,7 +32,6 @@ uses
   SettingsINI,
 
   // службы
-  ThreadExecutor,
   InetDownload;
 
 type
@@ -108,14 +107,11 @@ const
 
   URL_VERINFO         = URL_SERVER + 'version';
   URL_UPDATE          = URL_SERVER + 'file/compensation.exe';
-  URL_MATHAN          = URL_SERVER + 'file/mathan.dll';
   URL_RESTART         = URL_SERVER + 'file/restart.exe';
   URL_FOODBASE_SAMPLE = URL_SERVER + 'file/demofoodbase.xml';
   URL_DISHBASE_SAMPLE = URL_SERVER + 'file/demodishbase.xml';
 
   { Local files }
-
-  ANALYZE_LIB_FileName = 'MathAn.dll';
 
   // TODO: refactor constants' names
 

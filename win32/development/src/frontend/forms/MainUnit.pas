@@ -941,12 +941,12 @@ begin
 
     { =============== «¿√–”« ¿ ÃŒƒ”Àﬂ ¿Õ¿À»«¿ =============== }
     StartupInfo(STATUS_ACTION_LOADING_MATHAN);
-    AddAnalyzers(LoadAnalyzers(WORK_FOLDER + ANALYZE_LIB_FileName), Analyzers);
+    AddAnalyzers(LoadAnalyzers(), Analyzers);
 
     // TODO: may be extended
 
     for i := 0 to High(Analyzers) do
-      ComboAnalyzers.Items.Add(Analyzers[i].Name);
+      ComboAnalyzers.Items.Add(Analyzers[i].GetName());
 
     ComboAnalyzers.ItemIndex := 0;
 
