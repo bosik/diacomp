@@ -51,7 +51,6 @@ object Form1: TForm1
         Width = 220
       end
       item
-        Text = #1057#1077#1088#1074#1077#1088
         Width = 50
       end>
   end
@@ -60,12 +59,13 @@ object Form1: TForm1
     Top = 0
     Width = 1241
     Height = 30
+    UseSystemFont = False
     ActionManager = ActionManager
     ColorMap.HighlightColor = 14410210
     ColorMap.BtnSelectedColor = clBtnFace
     ColorMap.UnusedColor = 14410210
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clMenuText
+    Font.Color = clWindowText
     Font.Height = -14
     Font.Name = 'Tahoma'
     Font.Style = []
@@ -618,7 +618,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.980255486110000000
+            Date = 40251.131661388890000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15

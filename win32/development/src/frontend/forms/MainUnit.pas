@@ -984,7 +984,6 @@ begin
     PanelDevelopment.Visible := Value['Debug'];
     ActionViewLogs.Visible := Value['Debug'];
     TabStat.TabVisible := Value['Debug'];
-    StatusBar.Panels[3].Text := '';
     CalendarDiary.Date := Now();  
     ImagePreview.Align := alNone;
     ImagePreview.Width := GroupBoxGraph.Width - 3;

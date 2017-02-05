@@ -465,8 +465,11 @@ begin
   CheckResponse(Response);
 
   if (Response.Code = STATUS_OK) then
+  begin
     {#}Log(VERBOUS, 'TDiacompClient.Login(): logged OK');
-
+    FOnline := True;
+  end;
+  
   {#}Log(VERBOUS, 'TDiacompClient.Login(): done');
 end;
 
