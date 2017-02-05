@@ -827,7 +827,7 @@ begin
     {*}WebClient.Username := Value['Login'];
     {*}WebClient.Password := Value['Password'];
     {*}WebClient.Server := Value['ServerURL'];
-    {*}WebClient.SetTimeout(12000);
+    {*}WebClient.SetTimeout(5000);
 
     { =============== Õ¿—“–Œ… ¿ ƒÕ≈¬Õ» ¿ =============== }
     {*}StartupInfo(STATUS_ACTION_LOADING_DIARY);

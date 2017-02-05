@@ -48,6 +48,8 @@ type
     FOnline: boolean;
     FTimeShift: double;
 
+    procedure InitHttp();
+
     function DoGet(URL: string; Autocheck: boolean = True): TStdResponse;
     function DoPost(URL: string; const Par: TStringArray; Autocheck: boolean = True): TStdResponse;
     function DoPut(URL: string; const Par: TStringArray; Autocheck: boolean = True): TStdResponse;
@@ -209,18 +211,25 @@ constructor TDiacompClient.Create;
 begin
   FOnline := False;
   FTimeShift := 0;
-  FHTTP := TIdHTTP.Create(nil);
-  FHTTP.HandleRedirects := True;
-  FHTTP.ProtocolVersion := pv1_1;
-  FHTTP.Request.ContentEncoding := 'UTF-8';
+  InitHttp();
   // {#}PrintProtocolVersion('TDiacompClient.Create: ');
 end;
 
 {======================================================================================================================}
-destructor TDiacompClient.Destroy;
+destructor TDiacompClient.Destroy();
 {======================================================================================================================}
 begin
   FHTTP.Free;
+end;
+
+{======================================================================================================================}
+procedure TDiacompClient.InitHttp();
+{======================================================================================================================}
+begin
+  FHTTP := TIdHTTP.Create(nil);
+  FHTTP.HandleRedirects := True;
+  FHTTP.ProtocolVersion := pv1_1;
+  FHTTP.Request.ContentEncoding := 'UTF-8';
 end;
 
 {======================================================================================================================}
@@ -255,6 +264,20 @@ begin
   try
     S := FHTTP.Get(URL);
   except
+    on e: EIdSocketError do
+    begin
+      try
+        (**)Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '") failed, trying again...');
+        FHTTP.Free;
+        InitHttp();
+        S := FHTTP.Get(URL);
+      except
+        on e: Exception do
+          Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '") still failing: ' + e.Message);
+      end;
+    end;
+
+    on e: Exception do;
     // Error handling is done via response code
   end;
 
