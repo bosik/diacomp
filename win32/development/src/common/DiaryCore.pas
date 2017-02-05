@@ -85,9 +85,9 @@ var
 const
   { СИСТЕМНОЕ }
   ADVANCED_MODE           = True;
-  PROGRAM_VERSION         = '2.05';
+  PROGRAM_VERSION         = '2.06';
   PROGRAM_VERSION_CODE    : integer = 205;
-  PROGRAM_DATE            = '2015.03.26';
+  PROGRAM_DATE            = '2017.02.05';
   UPDATES_CHECKING_PERIOD = 1; { дней }
 
   { время актуальности замера и инсулина }
