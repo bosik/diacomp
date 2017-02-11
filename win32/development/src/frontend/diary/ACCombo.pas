@@ -32,7 +32,8 @@ type
   { процедура проверки строки }
   TCheckStringEvent = procedure(Sender: TObject; const EditText, S: String; var AddString: Boolean) of object;
 
-type
+  TIntegerArray = array of integer;
+
   { Комбо-бокс с выпадающем окном автозавершения }
   TACComboBox = class(TCustomComboBox)
   private
@@ -41,7 +42,7 @@ type
     FOldFormWndProc, FNewFormWndProc: Pointer; // Используется для подмены оконной процедуры родительской формы
     FParentFormWnd: hWnd; // Handle родительской формы
     FOnCheckString: TCheckStringEvent;
-    FShowedIndexes: array of integer;
+    FShowedIndexes: TIntegerArray;
     FUserHint: string;
     FUserHintColor: TColor;
     FShowUserHint: boolean;
@@ -69,9 +70,6 @@ type
 
     { заполнение списка автозавершения }
     procedure PrepareACStrings({const} AText: String); virtual;
-    function CheckStringSimple(Sender: TObject; const EditText, S: String): boolean;
-    function CheckStringSubString(Sender: TObject; const EditText, S: String): boolean;
-    function CheckStringWord(Sender: TObject; {const} EditText, S: String): boolean;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -250,20 +248,17 @@ end;
 
 { TACComboBox }
 
-function TACComboBox.CheckStringSimple(Sender: TObject; const EditText,
-  S: String): boolean;
+function CheckStringSimple(const EditText, S: String): boolean;
 begin
   Result := AnsiUpperCase(copy(S, 1, Length(EditText))) = AnsiUpperCase(EditText);
 end;
 
-function TACComboBox.CheckStringSubString(Sender: TObject; const EditText,
-  S: String): boolean;
+function CheckStringSubString(const EditText, S: String): boolean;
 begin
   Result := pos(AnsiUpperCase(EditText), AnsiUpperCase(S))<>0;
 end;
 
-function TACComboBox.CheckStringWord(Sender: TObject; {const} EditText,
-  S: String): boolean;
+function CheckStringWord({const} EditText, S: String): boolean;
 const
   RUSSIAN = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И',
              'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т',
@@ -540,52 +535,60 @@ end;
 // В параметре AText передается введенный в поле редактирования комбобокса текст.
 procedure TACComboBox.PrepareACStrings({const }AText: String);
 var
-  i: Integer;
+  i, k: integer;
+
+  FirstList: TStrings;
   SecondList: TStrings;
 
-  Buffer: TStringList;
-  SecondIndexes: array of integer;
-  CountFirst, CountSecond: integer;
+  Buffer: TStrings;
+  Indexes: TIntegerArray;
 begin
   AText := Trim(AText);
 
+  FirstList := TStringList.Create;
   SecondList := TStringList.Create;
   Buffer := TStringList.Create;
-
-  // выделяем максимум памяти под оба массива
-  CountFirst := 0;
-  CountSecond := 0;
-  SetLength(FShowedIndexes, FACItems.Count);
-  SetLength(SecondIndexes, FACItems.Count);
-
-  // заполняем   
-  for i := 0 to FACItems.Count - 1 do
-  begin
-    if CheckStringWord(Self, AText, FACItems[i]) then
+  try
+    // fill
+    for i := 0 to FACItems.Count - 1 do
     begin
-      Buffer.Add(FACItems[i]);
-      FShowedIndexes[CountFirst] := i;
-      inc(CountFirst);
-    end else
-    if CheckStringSubString(Self, AText, FACItems[i]) then
-    begin
-      SecondList.Add(FACItems[i]);
-      SecondIndexes[CountSecond] := i;
-      inc(CountSecond);
+      if CheckStringWord(AText, FACItems[i]) then
+      begin
+        FirstList.AddObject(FACItems[i], TObject(i));
+      end else
+      if CheckStringSubString(AText, FACItems[i]) then
+      begin
+        SecondList.AddObject(FACItems[i], TObject(i));
+      end;
     end;
+
+    // copy items
+    Buffer.AddStrings(FirstList);
+    Buffer.AddStrings(SecondList);
+
+    // copy indexes
+    SetLength(Indexes, FirstList.Count + SecondList.Count);
+    k := 0;
+    for i := 0 to FirstList.Count - 1 do
+    begin
+      Indexes[k] := Integer(FirstList.Objects[i]);
+      inc(k);
+    end;
+
+    for i := 0 to SecondList.Count - 1 do
+    begin
+      Indexes[k] := Integer(SecondList.Objects[i]);
+      inc(k);
+    end;
+
+    FShowedIndexes := Indexes;
+    (*** For some reason, if assigning buffer is done before assigning indexes, search work incorrectly ***)
+    FDropDown.Items.Assign(Buffer);
+  finally
+    FirstList.Free;
+    SecondList.Free;
+    Buffer.Free;
   end;
-
-  Buffer.AddStrings(SecondList);
-
-  // копируем, обрезаем
-  for i := 0 to CountSecond-1 do
-    FShowedIndexes[CountFirst + i] := SecondIndexes[i];
-  SetLength(FShowedIndexes, CountFirst + CountSecond);
-
-  FDropDown.Items.Assign(Buffer);
-
-  SecondList.Free;
-  Buffer.Free;
 end;
 
 procedure TACComboBox.SetACItems(const Value: TStrings);
