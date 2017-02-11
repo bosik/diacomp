@@ -258,6 +258,31 @@ begin
   Result := pos(AnsiUpperCase(EditText), AnsiUpperCase(S))<>0;
 end;
 
+const
+  CHARS_EN = 'qwertyuiop[]asdfghjkl;''zxcvbnm,./QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?';
+  CHARS_RU = 'éöóêåíãøùçõúôûâàïðîëäæýÿ÷ñìèòüáþ.ÉÖÓÊÅÍÃØÙÇÕÚÔÛÂÀÏÐÎËÄÆÝß×ÑÌÈÒÜÁÞ.';
+
+function SwitchLanguage(s: String): String;
+var
+  i, k: integer;
+begin
+  Result := '';
+
+  for i := 1 to Length(S) do
+  begin
+    k := pos(S[i], CHARS_EN);
+    if (k > 0) then
+      Result := Result + CHARS_RU[k] else
+    begin
+      k := pos(S[i], CHARS_RU);
+      if (k > 0) then
+        Result := Result + CHARS_EN[k]
+      else
+        Result := Result + S[i];
+    end;
+  end;
+end;
+
 function CheckStringWord({const} EditText, S: String): boolean;
 const
   RUSSIAN = ['À', 'Á', 'Â', 'Ã', 'Ä', 'Å', '¨', 'Æ', 'Ç', 'È',
@@ -542,6 +567,24 @@ var
 
   Buffer: TStrings;
   Indexes: TIntegerArray;
+
+  procedure Search(q: String);
+  var
+    i: integer;
+  begin
+    for i := 0 to FACItems.Count - 1 do
+    begin
+      if CheckStringWord(q, FACItems[i]) then
+      begin
+        FirstList.AddObject(FACItems[i], TObject(i));
+      end else
+      if CheckStringSubString(q, FACItems[i]) then
+      begin
+        SecondList.AddObject(FACItems[i], TObject(i));
+      end;
+    end;
+  end;
+
 begin
   AText := Trim(AText);
 
@@ -550,16 +593,11 @@ begin
   Buffer := TStringList.Create;
   try
     // fill
-    for i := 0 to FACItems.Count - 1 do
+    Search(AText);
+
+    if (FirstList.Count = 0) and (SecondList.Count = 0) then
     begin
-      if CheckStringWord(AText, FACItems[i]) then
-      begin
-        FirstList.AddObject(FACItems[i], TObject(i));
-      end else
-      if CheckStringSubString(AText, FACItems[i]) then
-      begin
-        SecondList.AddObject(FACItems[i], TObject(i));
-      end;
+       Search(SwitchLanguage(AText));
     end;
 
     // copy items
