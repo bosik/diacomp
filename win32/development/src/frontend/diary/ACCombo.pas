@@ -32,8 +32,6 @@ type
   { процедура проверки строки }
   TCheckStringEvent = procedure(Sender: TObject; const EditText, S: String; var AddString: Boolean) of object;
 
-  TIntegerArray = array of integer;
-
   { Комбо-бокс с выпадающем окном автозавершения }
   TACComboBox = class(TCustomComboBox)
   private
@@ -42,7 +40,6 @@ type
     FOldFormWndProc, FNewFormWndProc: Pointer; // Используется для подмены оконной процедуры родительской формы
     FParentFormWnd: hWnd; // Handle родительской формы
     FOnCheckString: TCheckStringEvent;
-    FShowedIndexes: TIntegerArray;
     FUserHint: string;
     FUserHintColor: TColor;
     FShowUserHint: boolean;
@@ -430,7 +427,7 @@ end;
 
 function TACComboBox.GetShowedIndex(Index: integer): integer;
 begin
-  Result := FShowedIndexes[Index];
+  Result := Integer(FDropDown.Items.Objects[Index]);
 end;
 
 function TACComboBox.GetShowedItem(Index: integer): string;
@@ -560,13 +557,9 @@ end;
 // В параметре AText передается введенный в поле редактирования комбобокса текст.
 procedure TACComboBox.PrepareACStrings({const }AText: String);
 var
-  i, k: integer;
-
   FirstList: TStrings;
   SecondList: TStrings;
-
   Buffer: TStrings;
-  Indexes: TIntegerArray;
 
   procedure Search(q: String);
   var
@@ -575,13 +568,9 @@ var
     for i := 0 to FACItems.Count - 1 do
     begin
       if CheckStringWord(q, FACItems[i]) then
-      begin
-        FirstList.AddObject(FACItems[i], TObject(i));
-      end else
+        FirstList.AddObject(FACItems[i], TObject(i)) else
       if CheckStringSubString(q, FACItems[i]) then
-      begin
         SecondList.AddObject(FACItems[i], TObject(i));
-      end;
     end;
   end;
 
@@ -597,30 +586,12 @@ begin
 
     if (FirstList.Count = 0) and (SecondList.Count = 0) then
     begin
-       Search(SwitchLanguage(AText));
+      Search(SwitchLanguage(AText));
     end;
 
     // copy items
     Buffer.AddStrings(FirstList);
     Buffer.AddStrings(SecondList);
-
-    // copy indexes
-    SetLength(Indexes, FirstList.Count + SecondList.Count);
-    k := 0;
-    for i := 0 to FirstList.Count - 1 do
-    begin
-      Indexes[k] := Integer(FirstList.Objects[i]);
-      inc(k);
-    end;
-
-    for i := 0 to SecondList.Count - 1 do
-    begin
-      Indexes[k] := Integer(SecondList.Objects[i]);
-      inc(k);
-    end;
-
-    FShowedIndexes := Indexes;
-    (*** For some reason, if assigning buffer is done before assigning indexes, search work incorrectly ***)
     FDropDown.Items.Assign(Buffer);
   finally
     FirstList.Free;
