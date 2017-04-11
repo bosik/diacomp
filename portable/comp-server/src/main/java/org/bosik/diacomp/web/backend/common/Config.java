@@ -26,15 +26,16 @@ public class Config
 	private static Properties	properties;
 
 	public static final String	KEY_APP_URL			= "DIACOMP_APP_URL";
+	public static final String	KEY_BUILD_COMMIT	= "DIACOMP_BUILD_COMMIT";
+	public static final String	KEY_BUILD_TIME		= "DIACOMP_BUILD_TIME";
+	public static final String	KEY_CAPTCHA_SECRET	= "DIACOMP_CAPTCHA_SECRET";
+	public static final String	KEY_DB_PASSWORD		= "DIACOMP_DB_PASSWORD";
 	public static final String	KEY_DB_SCHEME		= "DIACOMP_DB_SCHEME";
 	public static final String	KEY_DB_USER			= "DIACOMP_DB_USER";
-	public static final String	KEY_DB_PASSWORD		= "DIACOMP_DB_PASSWORD";
-	public static final String	KEY_BUILD_TIME		= "DIACOMP_BUILD_TIME";
-	public static final String	KEY_BUILD_COMMIT	= "DIACOMP_BUILD_COMMIT";
-	public static final String	KEY_EMAIL_SERVER	= "DIACOMP_EMAIL_SERVER";
 	public static final String	KEY_EMAIL_LOGIN		= "DIACOMP_EMAIL_LOGIN";
 	public static final String	KEY_EMAIL_PASSWORD	= "DIACOMP_EMAIL_PASSWORD";
-	public static final String	KEY_CAPTCHA_SECRET	= "DIACOMP_CAPTCHA_SECRET";
+	public static final String	KEY_EMAIL_SERVER	= "DIACOMP_EMAIL_SERVER";
+	public static final String	KEY_SUPPORT_EMAIL	= "DIACOMP_SUPPORT_EMAIL";
 	public static final String	KEY_TEST_LOGIN		= "DIACOMP_TESTUSER_LOGIN";
 	public static final String	KEY_TEST_PASSWORD	= "DIACOMP_TESTUSER_PASSWORD";
 

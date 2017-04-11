@@ -58,7 +58,7 @@ import org.bosik.diacomp.web.backend.common.Config;
 import org.bosik.diacomp.web.backend.features.mail.EmailSender;
 import org.bosik.diacomp.web.backend.features.mail.SMTPEmailSender;
 import org.bosik.diacomp.web.backend.features.user.auth.AuthService;
-import org.bosik.diacomp.web.frontend.wicket.pages.license.LicensePage;
+import org.bosik.diacomp.web.frontend.wicket.pages.license.eula.EulaPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.register.succeed.RegistrationSucceedPage;
 import org.json.JSONObject;
@@ -150,7 +150,7 @@ public class RegisterPage extends MasterPage
 		fieldPassword.add(StringValidator.minimumLength(6));
 		form.add(fieldPassword);
 
-		form.add(new BookmarkablePageLink<Void>("linkLicense", LicensePage.class));
+		form.add(new BookmarkablePageLink<Void>("linkLicense", EulaPage.class));
 
 		buttonRegister = new AjaxFallbackButton("buttonRegister", form)
 		{

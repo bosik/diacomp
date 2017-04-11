@@ -27,7 +27,8 @@ import org.bosik.diacomp.web.frontend.wicket.pages.base.FoodBasePage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.preview.DiaryPreviewPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.download.DownloadPage;
-import org.bosik.diacomp.web.frontend.wicket.pages.license.LicensePage;
+import org.bosik.diacomp.web.frontend.wicket.pages.license.eula.EulaPage;
+import org.bosik.diacomp.web.frontend.wicket.pages.license.privacy.PrivacyPolicyPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.login.LoginPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.register.RegisterPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.register.succeed.RegistrationSucceedPage;
@@ -60,7 +61,8 @@ public class WicketApplication extends WebApplication
 		mountPage("/register", RegisterPage.class);
 		mountPage("/registered", RegistrationSucceedPage.class);
 		mountPage("/activate", ActivationPage.class);
-		mountPage("/license", LicensePage.class);
+		mountPage("/legal/eula", EulaPage.class);
+		mountPage("/legal/privacy", PrivacyPolicyPage.class);
 
 		mountPage("/diary", DiaryPage.class);
 		mountPage("/diary/printable", DiaryPreviewPage.class);
