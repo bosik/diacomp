@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+<link rel="shortcut icon" href="favicon.ico" />
+<title wicket:id="pageTitle"></title>
+<link type="text/css" rel="stylesheet" href="res/css/style.css" />
+</head>
+<body>
+	<div style="margin: 0 auto; max-width: 1000px; padding-top: 50px;">
+		<div wicket:id="menu" class="menu">menu here</div>
+		<div id="sticky">
+			<div id="diary_block">
+				<noscript id="error_nojs">
+					<wicket:message key="error.disabledJS"></wicket:message>
+				</noscript>
+			</div>
+		</div>
+		<wicket:child />
+		<hr />
+		<div style="clear: left; padding: 0px 20px 20px 20px;">
+			<span class="hint">© <a href="http://vk.com/id42575475"
+				target="_blank"><wicket:message key="text.copyright"></wicket:message></a>,
+				2015.
+			</span> <span class="hint" style="float: right" wicket:id="textVersion"></span>
+		</div>
+	</div>
+</body>
+</html>
