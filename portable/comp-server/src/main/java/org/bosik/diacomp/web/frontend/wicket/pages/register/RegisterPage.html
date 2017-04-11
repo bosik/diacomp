@@ -13,12 +13,11 @@
 }
 
 .register-row {
-	/*display: table-row;*/
 	margin-bottom: 15px;
 }
 
 .register-column-main {
-	width: 300px;
+	width: 355px;
 	padding-right: 50px;
 	display: table-cell;
 	vertical-align: top;
@@ -84,9 +83,10 @@ li.feedbackPanelERROR {
 					</div>
 					<div class="register-row">
 						<div class="register-column-main">
-							<wicket:message key="text.license.agreement"></wicket:message>
-							<a wicket:id="linkLicense" target="_blank"><wicket:message
-									key="text.license.link"></wicket:message></a>.
+							<wicket:message key="text.legal.agreement" />
+							<a wicket:id="linkEula" target="_blank"><wicket:message key="text.legal.link.eula" /></a>
+							<wicket:message key="text.legal.and" />
+							<a wicket:id="linkPrivacy" target="_blank"><wicket:message key="text.legal.link.privacy" /></a>.
 						</div>
 					</div>
 					<div class="register-row">
