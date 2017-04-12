@@ -21,7 +21,6 @@ package org.bosik.diacomp.android.frontend.views;
 import org.bosik.diacomp.android.R;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -42,35 +41,10 @@ public class ExpandableView extends LinearLayout
 		};
 	}
 
-	private static class SavedState extends BaseSavedState
-	{
-		boolean expanded;
-
-		public SavedState(Parcelable state)
-		{
-			super(state);
-		}
-
-		public SavedState(Parcel in)
-		{
-			super(in);
-			expanded = (in.readByte() == 1);
-		}
-
-		@Override
-		public void writeToParcel(Parcel dest, int flags)
-		{
-			super.writeToParcel(dest, flags);
-			dest.writeByte((byte) (expanded ? 1 : 0));
-		}
-	}
-
 	Button						groupSwitch;
 	private View				contentPanel;
 	private OnSwitchedListener	onSwitchedListener;
 	private boolean				expanded;
-
-	private static final String	KEY_EXPANDED	= "KEY_EXPANDED";
 
 	@Override
 	protected Parcelable onSaveInstanceState()
