@@ -13,11 +13,11 @@
         android:gravity="top"
         android:orientation="vertical" >
 
-        <org.bosik.diacomp.android.frontend.views.expandable.ExpandableView
+        <org.bosik.diacomp.android.frontend.views.ExpandableView
             android:id="@+id/chartGroupHistoryTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
-        </org.bosik.diacomp.android.frontend.views.expandable.ExpandableView>
+        </org.bosik.diacomp.android.frontend.views.ExpandableView>
 
         <LinearLayout
             android:id="@+id/chartGroupHistoryContent"
@@ -45,11 +45,11 @@
                 android:orientation="vertical" />
         </LinearLayout>
 
-        <org.bosik.diacomp.android.frontend.views.expandable.ExpandableView
+        <org.bosik.diacomp.android.frontend.views.ExpandableView
             android:id="@+id/chartGroupDailyTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
-        </org.bosik.diacomp.android.frontend.views.expandable.ExpandableView>
+        </org.bosik.diacomp.android.frontend.views.ExpandableView>
 
         <LinearLayout
             android:id="@+id/chartGroupDailyContent"
