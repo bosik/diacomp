@@ -89,7 +89,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		// pre-calculation
 		for (int i = 0; i < TIME_WEIGHTS.length; i++)
 		{
-			TIME_WEIGHTS[i] = Math.exp(-approxFactor * Math.pow((double)i / Utils.HalfMinPerDay, 2));
+			TIME_WEIGHTS[i] = Math.exp(-approxFactor * Math.pow((double) i / Utils.HalfMinPerDay, 2));
 		}
 	}
 
@@ -243,42 +243,49 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	 */
 	private double[] approximate(WeightedTimePoint[] points, boolean highResolution)
 	{
+		if (points.length == 0)
+		{
+			return null;
+		}
+
 		double[] result = new double[Utils.MinPerDay];
 
-		// TODO: improve handling
-		if (points.length == 0)
+		if (highResolution)
 		{
 			for (int i = 0; i < Utils.MinPerDay; i++)
 			{
-				result[i] = Double.NaN;
+				result[i] = approximatePoint(points, i);
+
+				// fail-fast shortcut
+				if (Double.isNaN(result[i]))
+				{
+					return null;
+				}
 			}
 		}
 		else
 		{
-			if (highResolution)
+			for (int i = 0; i < Utils.MinPerDay / Utils.MinPerHour; i++)
 			{
-				for (int i = 0; i < Utils.MinPerDay; i++)
+				result[i * Utils.MinPerHour] = approximatePoint(points, i * Utils.MinPerHour);
+
+				// fail-fast shortcut
+				if (Double.isNaN(result[i * Utils.MinPerHour]))
 				{
-					result[i] = approximatePoint(points, i);
+					return null;
 				}
 			}
-			else
+
+			// linear interpolation
+			for (int left = 0; left < Utils.MinPerDay; left += Utils.MinPerHour) // 0, 60, 120, ...,
+																					// 1380
 			{
-				for (int i = 0; i < Utils.MinPerDay / Utils.MinPerHour; i++)
-				{
-					result[i * Utils.MinPerHour] = approximatePoint(points, i * Utils.MinPerHour);
-				}
+				int right = (left + Utils.MinPerHour) % Utils.MinPerDay;
 
-				// linear interpolation
-				for (int left = 0; left < Utils.MinPerDay; left += Utils.MinPerHour) //0, 60, 120, ..., 1380
+				for (int m = 1; m < Utils.MinPerHour; m++) // 1..59
 				{
-					int right = (left + Utils.MinPerHour) % Utils.MinPerDay;
-
-					for (int m = 1; m < Utils.MinPerHour; m++) // 1..59
-					{
-						double w = (double)m / Utils.MinPerHour;
-						result[left + m] = (1 - w) * result[left] + w * result[right];
-					}
+					double w = (double) m / Utils.MinPerHour;
+					result[left + m] = (1 - w) * result[left] + w * result[right];
 				}
 			}
 		}
@@ -425,15 +432,9 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		List<PrimeRec> prime = AnalyzeExtracter.extractPrimeRecords(records);
 		List<AnalyzeRec> items = AnalyzeExtracter.formatRecords(prime, ADPTATION_FACTOR);
 
-		//		for (AnalyzeRec item : items)
-		//		{
-		//			System.out.println(String.format("%d\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f", item.getTime(), item.getWeight(),
-		//					item.getProts(), item.getFats(), item.getCarbs(), item.getIns(), item.getBsOut() - item.getBsIn()));
-		//		}
-
 		if (items.isEmpty())
 		{
-			//throw new IllegalArgumentException("Recs list is empty");
+			// throw new IllegalArgumentException("Recs list is empty");
 			return null;
 		}
 
@@ -458,13 +459,16 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 				if (points.length > 0)
 				{
 					k = approximate(points, false); // 72 000 (1 200)
-					koofs = copyKQP(k, q, p); // 1 440
+					if (k != null)
+					{
+						koofs = copyKQP(k, q, p); // 1 440
 
-					bean.g[0] = getDispersion(k, points, funcRelative); // 50
-					bean.g[1] = 0.0;
-					bean.g[2] = getError(items, koofs, funcSqr); // 50
+						bean.g[0] = getDispersion(k, points, funcRelative); // 50
+						bean.g[1] = 0.0;
+						bean.g[2] = getError(items, koofs, funcSqr); // 50
 
-					V.add(bean); // 280
+						V.add(bean); // 280
+					}
 				}
 			}
 		}
@@ -519,21 +523,17 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		points = calculateKW(items, bestQ, bestP);
 		points = filter(points, FILTER_BYPASS);
 
-		//		for (WeightedTimePoint point : points)
-		//		{
-		//			System.out.println(String.format("%d\t%.4f", point.getTime(), point.getValue()));
-		//		}
-
 		if (points.length > 0)
 		{
 			k = approximate(points, true);
-			koofs = copyKQP(k, bestQ, bestP);
-			return koofs;
+			if (k != null)
+			{
+				koofs = copyKQP(k, bestQ, bestP);
+				return koofs;
+			}
 		}
-		else
-		{
-			return null;
-		}
+
+		return null;
 	}
 
 	@Override

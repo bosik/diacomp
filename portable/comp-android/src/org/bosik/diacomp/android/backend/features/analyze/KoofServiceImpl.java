@@ -68,10 +68,31 @@ public class KoofServiceImpl implements KoofService
 		List<Versioned<DiaryRecord>> recs = diaryService.findPeriod(timeFrom, timeTo, false);
 		KoofList koofs = analyzeCore.analyze(recs);
 
-		if (koofs != null) // null in case i.g. there are no diary records
+		// So if koofs are not calculated properly, the latest successful version will be used
+		// instead -- great
+		if (validate(koofs))
 		{
 			koofDao.save(koofs);
 		}
+	}
+
+	private static boolean validate(KoofList koofs)
+	{
+		if (koofs == null)
+		{
+			return false;
+		}
+
+		for (int i = 0; i < Utils.MinPerDay; i++)
+		{
+			Koof koof = koofs.getKoof(i);
+			if (Double.isNaN(koof.getK()) || Double.isNaN(koof.getQ()) || Double.isNaN(koof.getP()))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	@Override
