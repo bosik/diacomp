@@ -53,7 +53,8 @@
 
         <activity
             android:name=".frontend.activities.ActivityMain"
-            android:label="@string/main_title" >
+            android:label="@string/main_title"
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -63,38 +64,22 @@
         <activity
             android:name=".frontend.activities.ActivityEditorBlood"
             android:icon="@drawable/diary_addblood"
-            android:label="@string/editor_blood_title"
-            android:parentActivityName=".frontend.activities.ActivityMain" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
+            android:label="@string/editor_blood_title" >
         </activity>
         <activity
             android:name=".frontend.activities.ActivityEditorIns"
             android:icon="@drawable/diary_addins"
-            android:label="@string/editor_ins_title"
-            android:parentActivityName=".frontend.activities.ActivityMain" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
+            android:label="@string/editor_ins_title">
         </activity>
         <activity
             android:name=".frontend.activities.ActivityEditorMeal"
             android:icon="@drawable/diary_addmeal"
-            android:label="@string/editor_meal_title"
-            android:parentActivityName=".frontend.activities.ActivityMain" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
+            android:label="@string/editor_meal_title">
         </activity>
         <activity
             android:name=".frontend.activities.ActivityEditorNote"
             android:icon="@drawable/diary_addnote"
-            android:label="@string/editor_note_title"
-            android:parentActivityName=".frontend.activities.ActivityMain" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
+            android:label="@string/editor_note_title" >
         </activity>
         <activity
             android:name=".frontend.activities.ActivityPreferences"
@@ -107,20 +92,12 @@
         <activity
             android:name=".frontend.activities.ActivityEditorFood"
             android:icon="@drawable/button_foodbase"
-            android:label="@string/editor_food_title"
-            android:parentActivityName=".frontend.activities.ActivityMain" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
+            android:label="@string/editor_food_title" >
         </activity>
         <activity
             android:name=".frontend.activities.ActivityEditorDish"
             android:icon="@drawable/button_dishbase"
-            android:label="@string/editor_dish_title"
-            android:parentActivityName=".frontend.activities.ActivityMain" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.bosik.diacomp.android.face.activities.ActivityMain" />
+            android:label="@string/editor_dish_title" >
         </activity>
         <activity
             android:name=".frontend.activities.ActivityLogin"
