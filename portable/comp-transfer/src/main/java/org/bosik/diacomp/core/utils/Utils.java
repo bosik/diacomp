@@ -716,7 +716,10 @@ public class Utils
 	 */
 	public static Date shiftDate(Date date, int days)
 	{
-		return new Date(date.getTime() + MsecPerDay * days);
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		c.add(Calendar.DATE, days);
+		return c.getTime();
 	}
 
 	/**
