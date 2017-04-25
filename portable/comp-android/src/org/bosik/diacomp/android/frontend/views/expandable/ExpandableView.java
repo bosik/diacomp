@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package org.bosik.diacomp.android.frontend.views;
+package org.bosik.diacomp.android.frontend.views.expandable;
 
 import org.bosik.diacomp.android.R;
 import android.content.Context;
@@ -30,18 +30,7 @@ import android.widget.LinearLayout;
 
 public class ExpandableView extends LinearLayout
 {
-	public static class OnSwitchedListener
-	{
-		protected void onExpanded()
-		{
-		};
-
-		protected void onCollapsed()
-		{
-		};
-	}
-
-	Button						groupSwitch;
+	private Button				groupSwitch;
 	private View				contentPanel;
 	private OnSwitchedListener	onSwitchedListener;
 	private boolean				expanded;
@@ -50,18 +39,18 @@ public class ExpandableView extends LinearLayout
 	protected Parcelable onSaveInstanceState()
 	{
 		Parcelable superState = super.onSaveInstanceState();
-		SavedState state = new SavedState(superState);
-		state.expanded = isExpanded();
+		BooleanState state = new BooleanState(superState);
+		state.setValue(isExpanded());
 		return state;
 	}
 
 	@Override
 	protected void onRestoreInstanceState(Parcelable state)
 	{
-		SavedState ss = (SavedState) state;
+		BooleanState ss = (BooleanState) state;
 		super.onRestoreInstanceState(ss.getSuperState());
 
-		setExpanded(ss.expanded);
+		setExpanded(ss.getValue());
 	}
 
 	public ExpandableView(final Context context, AttributeSet attributes)

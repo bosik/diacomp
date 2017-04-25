@@ -16,31 +16,41 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package org.bosik.diacomp.android.frontend.views;
+package org.bosik.diacomp.android.frontend.views.expandable;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.Preference.BaseSavedState;
 
-public class SavedState extends BaseSavedState
+public class BooleanState extends BaseSavedState
 {
-	boolean expanded;
+	private boolean value;
 
-	public SavedState(Parcelable state)
+	public BooleanState(Parcelable state)
 	{
 		super(state);
 	}
 
-	public SavedState(Parcel in)
+	public BooleanState(Parcel in)
 	{
 		super(in);
-		expanded = (in.readByte() == 1);
+		value = (in.readByte() == 1);
 	}
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags)
 	{
 		super.writeToParcel(dest, flags);
-		dest.writeByte((byte) (expanded ? 1 : 0));
+		dest.writeByte((byte) (value ? 1 : 0));
+	}
+
+	public boolean getValue()
+	{
+		return value;
+	}
+
+	public void setValue(boolean value)
+	{
+		this.value = value;
 	}
 }
