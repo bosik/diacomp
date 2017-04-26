@@ -306,12 +306,6 @@ public class FragmentTabBase extends Fragment
 				new AsyncTask<String, Void, Versioned<? extends NamedRelativeTagged>>()
 				{
 					@Override
-					protected void onPreExecute()
-					{
-						// setTitle(getString(R.string.base_title_loading));
-					}
-
-					@Override
 					protected Versioned<? extends NamedRelativeTagged> doInBackground(String... params)
 					{
 						Versioned<? extends NamedRelativeTagged> food = foodBaseService.findById(id);
