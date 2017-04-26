@@ -19,22 +19,28 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
+import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView;
 import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView.OnChangeListener;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
+import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.merklesync.Versioned;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,8 +62,9 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private static final double	BS_HYPOGLYCEMIA		= 4.0;
 	private static final double	CARB_COLOR_LIMIT	= 1.0;
 
+	DiaryService				diary;
+
 	// data
-	boolean						modified;
 	private Double				bsBase;
 	private Double				bsLast;
 	private Double				bsTarget;
@@ -79,6 +86,14 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private String				captionMmol;
 
 	// ======================================================================================================
+
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+
+		diary = new DiaryLocalService(getContentResolver());
+	}
 
 	@Override
 	protected void setupInterface()
@@ -125,13 +140,13 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			@Override
 			public void onChange(List<FoodMassed> items)
 			{
-				modified = true;
 				entity.getData().clear();
 				for (FoodMassed item : mealEditor.getData())
 				{
 					entity.getData().add(item);
 				}
 
+				modified();
 				showMealInfo();
 			}
 		});
@@ -164,7 +179,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			{
 				data.setShortMeal(!data.getShortMeal());
 				item.setChecked(data.getShortMeal());
-				modified = true;
+				modified();
 				return true;
 			}
 			case R.id.item_meal_info:
@@ -377,19 +392,18 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
-		if (!createMode)
+		if (createMode)
 		{
-			onDateTimeChanged(entity.getData().getTime());
-		}
-		else
-		{
-			onDateTimeChanged(new Date());
+			entity.getData().setTime(new Date());
 			mealEditor.requestFocus();
 		}
 
+		Date time = entity.getData().getTime();
+		buttonTime.setText(formatTime(time));
+		buttonDate.setText(formatDate(time));
+
 		showMealContent();
 		showMealInfo();
-		modified = false;
 	}
 
 	@Override
@@ -399,25 +413,26 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	}
 
 	@Override
-	public void onBackPressed()
-	{
-		if (modified)
-		{
-			submit();
-			UIUtils.showTip(this, getString(R.string.editor_meal_message_saved));
-		}
-		else
-		{
-			super.onBackPressed();
-		}
-	}
-
-	@Override
 	protected void onDateTimeChanged(Date time)
 	{
 		buttonTime.setText(formatTime(time));
 		buttonDate.setText(formatDate(time));
-		modified = true;
+		modified();
 		showMealInfo();
+	}
+
+	void modified()
+	{
+		entity.modified();
+
+		new AsyncTask<Void, Void, Void>()
+		{
+			@Override
+			protected Void doInBackground(Void... params)
+			{
+				diary.save(Arrays.asList(new Versioned<DiaryRecord>(entity)));
+				return null;
+			}
+		}.execute();
 	}
 }

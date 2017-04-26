@@ -130,8 +130,7 @@ public class FragmentTabDiary extends Fragment
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		getActivity().getContentResolver().registerContentObserver(TableDiary.CONTENT_URI, true,
-				observer);
+		getActivity().getContentResolver().registerContentObserver(TableDiary.CONTENT_URI, true, observer);
 	};
 
 	@Override
@@ -467,12 +466,12 @@ public class FragmentTabDiary extends Fragment
 			{
 				case DIALOG_BLOOD_CREATE:
 				case DIALOG_INS_CREATE:
-				case DIALOG_MEAL_CREATE:
+					// case DIALOG_MEAL_CREATE:
 				case DIALOG_NOTE_CREATE:
 
 				case DIALOG_BLOOD_MODIFY:
 				case DIALOG_INS_MODIFY:
-				case DIALOG_MEAL_MODIFY:
+					// case DIALOG_MEAL_MODIFY:
 				case DIALOG_NOTE_MODIFY:
 				{
 					if (resultCode == Activity.RESULT_OK)
@@ -481,7 +480,6 @@ public class FragmentTabDiary extends Fragment
 								.getSerializable(ActivityEditor.FIELD_ENTITY);
 
 						diary.save(Arrays.<Versioned<DiaryRecord>> asList(rec));
-						// Storage.syncDiary(rec.getId());
 					}
 					break;
 				}
