@@ -102,7 +102,7 @@ public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 		if (!createMode)
 		{
 			onDateTimeChanged(entity.getData().getTime());
-			editValue.setText(String.valueOf(entity.getData().getValue()));
+			editValue.setText(Utils.formatDoubleShort(entity.getData().getValue()));
 		}
 		else
 		{

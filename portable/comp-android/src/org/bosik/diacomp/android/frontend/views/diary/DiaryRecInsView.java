@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,11 +14,10 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.views.diary;
 
-import java.util.Locale;
 import java.util.TimeZone;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -31,12 +30,8 @@ import android.widget.TextView;
 
 public class DiaryRecInsView extends LinearLayout
 {
-	// Data
-	private Versioned<InsRecord>	record;
-
-	// Components
-	private TextView				textTime;
-	private TextView				textValue;
+	private TextView	textTime;
+	private TextView	textValue;
 
 	public DiaryRecInsView(Context context)
 	{
@@ -50,13 +45,12 @@ public class DiaryRecInsView extends LinearLayout
 
 	public void setData(Versioned<InsRecord> record)
 	{
-		this.record = record;
 		InsRecord data = record.getData();
 
 		textTime.setText(Utils.formatTimeLocalShort(TimeZone.getDefault(), data.getTime()));
 
 		String units = getContext().getString(R.string.common_unit_insulin);
-		String text = String.format(Locale.US, "%.1f %s", data.getValue(), units);
+		String text = Utils.formatDoubleShort(data.getValue()) + " " + units;
 
 		textValue.setText(text);
 	}
