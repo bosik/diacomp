@@ -18,6 +18,7 @@
  */
 package org.bosik.diacomp.android.frontend;
 
+import java.util.Date;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
@@ -27,6 +28,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.text.InputType;
+import android.text.format.DateFormat;
 import android.text.method.DigitsKeyListener;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -115,5 +117,39 @@ public class UIUtils
 					}
 				});
 		builder.show();
+	}
+
+	/**
+	 * Formats date using local device format
+	 * 
+	 * @param context
+	 * @param date
+	 * @return
+	 */
+	public static String formatDateLocalDevice(Context context, Date date)
+	{
+		if (date == null)
+		{
+			throw new IllegalArgumentException("date is null");
+		}
+
+		return DateFormat.getMediumDateFormat(context).format(date);
+	}
+
+	/**
+	 * Formats time using local device format
+	 * 
+	 * @param context
+	 * @param time
+	 * @return
+	 */
+	public static String formatTimeLocalDevice(Context context, Date time)
+	{
+		if (time == null)
+		{
+			throw new IllegalArgumentException("time is null");
+		}
+
+		return DateFormat.getTimeFormat(context).format(time);
 	}
 }

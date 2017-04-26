@@ -22,9 +22,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -345,7 +345,8 @@ public class DiaryDayView extends LinearLayout
 					}
 
 					TextView textTitle = (TextView) convertView.findViewById(R.id.diaryDayHeader);
-					textTitle.setText(Utils.formatDateLocal(TimeZone.getDefault(), ((ItemHeader) item).date));
+					textTitle.setText(
+							UIUtils.formatDateLocalDevice(DiaryDayView.this.getContext(), ((ItemHeader) item).date));
 				}
 				else if (item instanceof ItemData)
 				{

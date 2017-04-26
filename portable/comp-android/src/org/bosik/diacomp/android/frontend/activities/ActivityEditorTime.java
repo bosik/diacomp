@@ -18,10 +18,9 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
+import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.pickers.DatePickerFragment;
 import org.bosik.diacomp.android.frontend.fragments.pickers.TimePickerFragment;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
@@ -35,9 +34,7 @@ import android.widget.TimePicker;
 @SuppressLint("Registered")
 public class ActivityEditorTime<T extends DiaryRecord> extends ActivityEditor<T>
 {
-	private final SimpleDateFormat	FORMAT_TIME	= new SimpleDateFormat("HH:mm", Locale.getDefault());
-	private final SimpleDateFormat	FORMAT_DATE	= new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-	private static final String		KEY_TIME	= "time";
+	private static final String KEY_TIME = "time";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -109,12 +106,12 @@ public class ActivityEditorTime<T extends DiaryRecord> extends ActivityEditor<T>
 
 	protected String formatDate(Date date)
 	{
-		return FORMAT_DATE.format(date);
+		return UIUtils.formatDateLocalDevice(this, date);
 	}
 
 	protected String formatTime(Date time)
 	{
-		return FORMAT_TIME.format(time);
+		return UIUtils.formatTimeLocalDevice(this, time);
 	}
 
 	/**
