@@ -116,8 +116,8 @@ public class FragmentTabCharts extends Fragment
 		}
 	}
 
-	private static final int	WINDOW_SIZE	= 3;	// days
-	private static final int	PERIOD		= 30;	// days
+	private static final int	HALF_WINDOW_SIZE	= 2;	// days
+	private static final int	PERIOD				= 30;	// days
 
 	void addChartBS(int viewId)
 	{
@@ -141,9 +141,10 @@ public class FragmentTabCharts extends Fragment
 				// PREPARE DATE TREE
 
 				DiaryService diary = LocalDiary.getInstance(contentResolver);
-				Date endTime = new Date();
-				Date startTime = Utils.shiftDate(endTime, -PERIOD - WINDOW_SIZE);
-				List<Versioned<DiaryRecord>> recs = diary.findPeriod(startTime, endTime, false);
+				Date startTime = Utils.shiftDate(new Date(), -PERIOD - HALF_WINDOW_SIZE);
+				Date endTime = Utils.shiftDate(new Date(), -HALF_WINDOW_SIZE);
+				List<Versioned<DiaryRecord>> recs = diary.findPeriod(Utils.shiftDate(startTime, -HALF_WINDOW_SIZE),
+						Utils.shiftDate(endTime, HALF_WINDOW_SIZE), false);
 
 				SortedMap<Date, Double> bs = new TreeMap<>();
 				for (Versioned<DiaryRecord> rec : recs)
@@ -161,11 +162,11 @@ public class FragmentTabCharts extends Fragment
 				List<DataPoint> dataMin = new ArrayList<DataPoint>();
 				List<DataPoint> dataMax = new ArrayList<DataPoint>();
 
-				for (int i = 0; i < PERIOD; i++)
+				for (int i = 0; i <= PERIOD; i++)
 				{
-					Date windowStart = Utils.shiftDate(startTime, i);
-					Date windowMiddle = Utils.shiftDate(startTime, i + WINDOW_SIZE / 2);
-					Date windowEnd = Utils.shiftDate(startTime, i + WINDOW_SIZE);
+					Date windowStart = Utils.shiftDate(startTime, i - HALF_WINDOW_SIZE);
+					Date windowMiddle = Utils.shiftDate(startTime, i);
+					Date windowEnd = Utils.shiftDate(startTime, i + HALF_WINDOW_SIZE);
 					SortedMap<Date, Double> items = bs.subMap(windowStart, windowEnd);
 
 					if (!items.isEmpty())
@@ -218,9 +219,10 @@ public class FragmentTabCharts extends Fragment
 				// PREPARE DATE TREE
 
 				DiaryService diary = LocalDiary.getInstance(contentResolver);
-				Date endTime = new Date();
-				Date startTime = Utils.shiftDate(endTime, -PERIOD - WINDOW_SIZE);
-				List<Versioned<DiaryRecord>> recs = diary.findPeriod(startTime, endTime, false);
+				Date startTime = Utils.shiftDate(new Date(), -PERIOD - HALF_WINDOW_SIZE);
+				Date endTime = Utils.shiftDate(new Date(), -HALF_WINDOW_SIZE);
+				List<Versioned<DiaryRecord>> recs = diary.findPeriod(Utils.shiftDate(startTime, -HALF_WINDOW_SIZE),
+						Utils.shiftDate(endTime, HALF_WINDOW_SIZE), false);
 
 				SortedMap<Date, DiaryRecord> bs = new TreeMap<>();
 				for (Versioned<DiaryRecord> rec : recs)
@@ -232,11 +234,11 @@ public class FragmentTabCharts extends Fragment
 
 				List<DataPoint> data = new ArrayList<DataPoint>();
 
-				for (int i = 0; i < PERIOD; i++)
+				for (int i = 0; i <= PERIOD; i++)
 				{
-					Date windowStart = Utils.shiftDate(startTime, i);
-					Date windowMiddle = Utils.shiftDate(startTime, i + WINDOW_SIZE / 2);
-					Date windowEnd = Utils.shiftDate(startTime, i + WINDOW_SIZE);
+					Date windowStart = Utils.shiftDate(startTime, i - HALF_WINDOW_SIZE);
+					Date windowMiddle = Utils.shiftDate(startTime, i);
+					Date windowEnd = Utils.shiftDate(startTime, i + HALF_WINDOW_SIZE);
 					SortedMap<Date, DiaryRecord> items = bs.subMap(windowStart, windowEnd);
 
 					if (!items.isEmpty())
@@ -296,9 +298,10 @@ public class FragmentTabCharts extends Fragment
 				// PREPARE DATE TREE
 
 				DiaryService diary = LocalDiary.getInstance(contentResolver);
-				Date endTime = new Date();
-				Date startTime = Utils.shiftDate(endTime, -PERIOD - WINDOW_SIZE);
-				List<Versioned<DiaryRecord>> recs = diary.findPeriod(startTime, endTime, false);
+				Date startTime = Utils.shiftDate(new Date(), -PERIOD - HALF_WINDOW_SIZE);
+				Date endTime = Utils.shiftDate(new Date(), -HALF_WINDOW_SIZE);
+				List<Versioned<DiaryRecord>> recs = diary.findPeriod(Utils.shiftDate(startTime, -HALF_WINDOW_SIZE),
+						Utils.shiftDate(endTime, HALF_WINDOW_SIZE), false);
 
 				SortedMap<Date, Double> bs = new TreeMap<>();
 				for (Versioned<DiaryRecord> rec : recs)
@@ -314,18 +317,18 @@ public class FragmentTabCharts extends Fragment
 
 				List<DataPoint> dataAvg = new ArrayList<DataPoint>();
 
-				for (int i = 0; i < PERIOD; i++)
+				for (int i = 0; i <= PERIOD; i++)
 				{
-					Date windowStart = Utils.shiftDate(startTime, i);
-					Date windowMiddle = Utils.shiftDate(startTime, i + WINDOW_SIZE / 2);
-					Date windowEnd = Utils.shiftDate(startTime, i + WINDOW_SIZE);
+					Date windowStart = Utils.shiftDate(startTime, i - HALF_WINDOW_SIZE);
+					Date windowMiddle = Utils.shiftDate(startTime, i);
+					Date windowEnd = Utils.shiftDate(startTime, i + HALF_WINDOW_SIZE);
 					SortedMap<Date, Double> items = bs.subMap(windowStart, windowEnd);
 
 					if (!items.isEmpty())
 					{
 						Collection<Double> values = items.values();
 						double summ = Utils.getSumm(values);
-						dataAvg.add(new DataPoint(windowMiddle, summ / WINDOW_SIZE));
+						dataAvg.add(new DataPoint(windowMiddle, summ / (HALF_WINDOW_SIZE * 2)));
 					}
 				}
 
