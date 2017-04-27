@@ -70,8 +70,6 @@ import android.widget.TextView;
 
 public class FragmentTabDiary extends Fragment
 {
-	private static final String		TAG							= FragmentTabDiary.class.getSimpleName();
-
 	// Constants
 	private static final int		DIALOG_BLOOD_CREATE			= 11;
 	private static final int		DIALOG_BLOOD_MODIFY			= 12;
@@ -131,7 +129,7 @@ public class FragmentTabDiary extends Fragment
 	{
 		super.onCreate(savedInstanceState);
 		getActivity().getContentResolver().registerContentObserver(TableDiary.CONTENT_URI, true, observer);
-	};
+	}
 
 	@Override
 	public void onDestroy()
@@ -480,6 +478,9 @@ public class FragmentTabDiary extends Fragment
 								.getSerializable(ActivityEditor.FIELD_ENTITY);
 
 						diary.save(Arrays.<Versioned<DiaryRecord>> asList(rec));
+
+						// do it manually in case observer is broken
+						list.refresh();
 					}
 					break;
 				}
