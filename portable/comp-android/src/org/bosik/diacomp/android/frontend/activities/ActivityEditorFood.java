@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,17 +14,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.activities;
-
-import java.text.ParseException;
 
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.utils.Utils;
-
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -76,10 +73,10 @@ public class ActivityEditorFood extends ActivityEditor<FoodItem>
 
 		if (!createMode)
 		{
-			editProts.setText(String.valueOf(entity.getData().getRelProts()));
-			editFats.setText(String.valueOf(entity.getData().getRelFats()));
-			editCarbs.setText(String.valueOf(entity.getData().getRelCarbs()));
-			editValue.setText(String.valueOf(entity.getData().getRelValue()));
+			editProts.setText(Utils.formatDoubleShort(entity.getData().getRelProts()));
+			editFats.setText(Utils.formatDoubleShort(entity.getData().getRelFats()));
+			editCarbs.setText(Utils.formatDoubleShort(entity.getData().getRelCarbs()));
+			editValue.setText(Utils.formatDoubleShort(entity.getData().getRelValue()));
 		}
 		else
 		{
@@ -99,9 +96,9 @@ public class ActivityEditorFood extends ActivityEditor<FoodItem>
 	{
 		try
 		{
-			setter.set(Utils.parseDouble(editor.getText().toString()));
+			setter.set(Utils.parseExpression(editor.getText().toString()));
 		}
-		catch (ParseException e)
+		catch (NumberFormatException e)
 		{
 			UIUtils.showTip(this, MSG_INCORRECT_VALUE);
 			editor.requestFocus();
