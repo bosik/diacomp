@@ -46,6 +46,7 @@ import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.search.Sorter;
 import org.bosik.diacomp.core.services.search.Sorter.Sort;
+import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -628,11 +629,18 @@ public class FragmentTabBase extends Fragment
 
 	String getInfo(NamedRelativeTagged item)
 	{
-		String fmt = getString(R.string.base_subinfo, item.getRelProts(), item.getRelFats(), item.getRelCarbs(),
-				item.getRelValue());
-		// fmt = fmt.replaceAll(" / ", "\t\t");
-		// fmt = fmt + "\t\tTAG=" + item.getTag();
-		return fmt;
+		String labelProts = getString(R.string.base_subinfo_prots);
+		String labelFats = getString(R.string.base_subinfo_fats);
+		String labelCarbs = getString(R.string.base_subinfo_carbs);
+		String labelValue = getString(R.string.base_subinfo_value);
+
+		StringBuilder s = new StringBuilder();
+		s.append(labelProts).append(' ').append(Utils.formatDoubleShort(item.getRelProts())).append("\t\t");
+		s.append(labelFats).append(' ').append(Utils.formatDoubleShort(item.getRelFats())).append("\t\t");
+		s.append(labelCarbs).append(' ').append(Utils.formatDoubleShort(item.getRelCarbs())).append("\t\t");
+		s.append(labelValue).append(' ').append(Utils.formatDoubleShort(item.getRelValue()));
+
+		return s.toString();
 	}
 
 	void showFoodEditor(Versioned<FoodItem> food, boolean createMode)

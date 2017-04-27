@@ -7,7 +7,10 @@
     <string name="base_action_new_food">New food</string>
     <string name="base_button_foodset">Download food sets</string>
     <string name="base_hint_empty_list">Base is currently empty. Create food/dish manually or download ready set.</string>
-    <string name="base_subinfo" formatted="false">P %.1f\t\tF %.1f\t\tC %.1f\t\tV %.1f</string>
+    <string name="base_subinfo_carbs">C</string>
+    <string name="base_subinfo_fats">F</string>
+    <string name="base_subinfo_prots">P</string>
+    <string name="base_subinfo_value">V</string>
     <string name="base_tip_dish_create_fail">Failed to create dish</string>
     <string name="base_tip_dish_create_ok">Dish created</string>
     <string name="base_tip_dish_save_fail">Failed to save dish</string>

@@ -7,7 +7,10 @@
     <string name="base_action_new_food">Новый продукт</string>
     <string name="base_button_foodset">Загрузить набор продуктов</string>
     <string name="base_hint_empty_list">База пока пуста. Создайте продукт/блюдо или загрузите готовый набор.</string>
-    <string name="base_subinfo" formatted="false">Б %.1f\t\tЖ %.1f\t\tУ %.1f\t\tК %.1f</string>
+    <string name="base_subinfo_carbs">У</string>
+    <string name="base_subinfo_fats">Ж</string>
+    <string name="base_subinfo_prots">Б</string>
+    <string name="base_subinfo_value">К</string>
     <string name="base_tip_dish_create_fail">Ошибка создания блюда</string>
     <string name="base_tip_dish_create_ok">Блюдо создано</string>
     <string name="base_tip_dish_save_fail">Ошибка сохранения блюда</string>
