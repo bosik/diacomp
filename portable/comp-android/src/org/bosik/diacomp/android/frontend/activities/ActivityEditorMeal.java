@@ -91,8 +91,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
-		diary = new DiaryLocalService(getContentResolver());
 	}
 
 	@Override
@@ -417,8 +415,11 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	{
 		buttonTime.setText(formatTime(time));
 		buttonDate.setText(formatDate(time));
-		modified();
-		showMealInfo();
+		if (time.compareTo(entity.getTimeStamp()) != 0)
+		{
+			modified();
+			showMealInfo();
+		}
 	}
 
 	void modified()
@@ -430,6 +431,10 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			@Override
 			protected Void doInBackground(Void... params)
 			{
+				if (diary == null)
+				{
+					diary = new DiaryLocalService(getContentResolver());
+				}
 				diary.save(Arrays.asList(new Versioned<DiaryRecord>(entity)));
 				return null;
 			}
