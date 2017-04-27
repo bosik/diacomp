@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.frontend.activities;
 
@@ -62,7 +62,10 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 			@Override
 			public void afterTextChanged(Editable s)
 			{
-				modified = true;
+				if (!s.toString().equals(entity.getData().getName()))
+				{
+					modified = true;
+				}
 			}
 
 			@Override
