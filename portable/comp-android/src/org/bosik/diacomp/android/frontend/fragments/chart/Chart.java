@@ -313,6 +313,11 @@ public class Chart extends Fragment implements ProgressListener
 	public void setTitle(String title)
 	{
 		this.title = title;
+
+		if (titleView != null)
+		{
+			titleView.setText(getTitle());
+		}
 	}
 
 	public String getDescription()
