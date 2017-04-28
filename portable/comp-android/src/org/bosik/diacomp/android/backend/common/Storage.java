@@ -92,93 +92,15 @@ public class Storage
 
 	static void relevantIndexation(ContentResolver resolver)
 	{
-		// long time = System.currentTimeMillis();
-
 		final DiaryService diary = LocalDiary.getInstance(resolver);
 		final FoodBaseService foodBase = LocalFoodBase.getInstance(resolver);
 		final DishBaseService dishBase = LocalDishBase.getInstance(resolver);
 
 		RelevantIndexator.indexate(diary, foodBase, dishBase);
-
-		// Log.v(TAG, String.format("Relevant indexation done in %d msec",
-		// System.currentTimeMillis() - time));
 	}
 
 	static void analyzeKoofs(Context context)
 	{
-		// long time = System.currentTimeMillis();
-
 		KoofServiceInternal.getInstance(context).update();
-
-		// Log.v(TAG, String.format("Analyzing done in %d msec", System.currentTimeMillis() -
-		// time));
 	}
-
-	// public static void syncDiary(String guid)
-	// {
-	// new AsyncTask<String, Void, Void>()
-	// {
-	// @Override
-	// protected Void doInBackground(String... guids)
-	// {
-	// try
-	// {
-	// SyncUtils.synchronize(localDiary, webDiary, guids[0]);
-	// }
-	// catch (Exception e)
-	// {
-	// // there is nothing to do with it
-	// e.printStackTrace();
-	// }
-	// return null;
-	// }
-	// }.execute(guid);
-	// }
-
-	// private static void speedTest()
-	// {
-	// Serializer<Versioned<FoodItem>> serializer = new SerializerFoodItem();
-	// List<Versioned<FoodItem>> items = localFoodBase.findAll(true);
-	//
-	// long time = System.currentTimeMillis();
-	// String s = serializer.writeAll(items);
-	// Log.e(TAG,
-	// String.format("%d items serialized withing %d msec", items.size(), System.currentTimeMillis()
-	// - time));
-	//
-	// time = System.currentTimeMillis();
-	// serializer.readAll(s);
-	// Log.e(TAG, String.format("%d items de-serialized withing %d msec", items.size(),
-	// System.currentTimeMillis()
-	// - time));
-	// }
-
-	// private static String pair(String name, double value)
-	// {
-	// return String.format(Locale.US, "%s=\"%.1f\"", name, value).replace(",", ".");
-	// }
-	//
-	// private static String pair(String name, String value)
-	// {
-	// return String.format("%s=\"%s\"", name, value.replace("\"", "&quot;"));
-	// }
-	//
-	// private static void buildFoodList()
-	// {
-	// String result = "";
-	//
-	// List<Versioned<FoodItem>> foods = localFoodBase.findAll(false);
-	// for (Versioned<FoodItem> item : foods)
-	// {
-	// FoodItem food = item.getData();
-	// if (food.getName().contains("Теремок"))
-	// {
-	// result = String.format("\t<food %s %s %s %s %s %s table=\"True\" tag=\"0\"/>",
-	// pair("id", Utils.generateGuid().toUpperCase()), pair("name", food.getName()),
-	// pair("prots", food.getRelProts()), pair("fats", food.getRelFats()),
-	// pair("carbs", food.getRelCarbs()), pair("val", food.getRelValue()));
-	// Log.e(TAG, result);
-	// }
-	// }
-	// }
 }
