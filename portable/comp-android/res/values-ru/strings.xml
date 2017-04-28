@@ -65,7 +65,7 @@
     <string name="editor_food_field_fats">Жиры, г</string>
     <string name="editor_food_field_name">Название</string>
     <string name="editor_food_field_prots">Белки, г</string>
-    <string name="editor_food_field_value">Калорийность, ккал</string>
+    <string name="editor_food_field_value">Энергетическая ценность, ккал</string>
     <string name="editor_food_title">Продукт</string>
     <string name="editor_ins_error_invalid_dosage">Неверная доза инсулина</string>
     <string name="editor_ins_field_value">Доза, ед.</string>

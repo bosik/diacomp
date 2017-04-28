@@ -63,11 +63,11 @@
     <string name="editor_dish_rm_hint">Enter mass:</string>
     <string name="editor_dish_rm_title">Dish mass</string>
     <string name="editor_dish_title">Dish</string>
-    <string name="editor_food_field_carbs">Carbs, g</string>
-    <string name="editor_food_field_fats">Fats, g</string>
+    <string name="editor_food_field_carbs">Carbohydrate, g</string>
+    <string name="editor_food_field_fats">Fat, g</string>
     <string name="editor_food_field_name">Name</string>
-    <string name="editor_food_field_prots">Prots, g</string>
-    <string name="editor_food_field_value">Value, kcal</string>
+    <string name="editor_food_field_prots">Protein, g</string>
+    <string name="editor_food_field_value">Energy value, kcal</string>
     <string name="editor_food_title">Food</string>
     <string name="editor_ins_error_invalid_dosage">Invalid insulin dosage</string>
     <string name="editor_ins_field_value">Dosage, U</string>
