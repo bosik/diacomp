@@ -19,45 +19,28 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.Storage;
-import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
+import org.bosik.diacomp.android.backend.features.notifications.NotificationService;
 import org.bosik.diacomp.android.backend.features.preferences.device.DevicePreferences;
 import org.bosik.diacomp.android.frontend.fragments.FragmentTabBase;
 import org.bosik.diacomp.android.frontend.fragments.FragmentTabCharts;
 import org.bosik.diacomp.android.frontend.fragments.FragmentTabDiary;
 import org.bosik.diacomp.android.utils.ErrorHandler;
-import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
-import org.bosik.diacomp.core.services.diary.DiaryService;
-import org.bosik.diacomp.core.services.diary.PostprandUtils;
-import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.merklesync.Versioned;
 import android.accounts.Account;
 import android.app.Activity;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationCompat.Builder;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
@@ -74,17 +57,15 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 {
 	/* =========================== CONSTANTS ================================ */
 
-	static final String			TAG							= ActivityMain.class.getSimpleName();
+	static final String			TAG			= ActivityMain.class.getSimpleName();
 	// private static final int RESULT_SPEECH_TO_TEXT = 620;
-	private static final int	CODE_LOGIN					= 0;
-	private static final int	NOTIFICATION_ID_TIME_AFTER	= 1;
+	private static final int	CODE_LOGIN	= 0;
 
 	/* =========================== FIELDS ================================ */
 
 	ViewPager					mViewPager;
 	private Menu				cachedMenu;
 	private SharedPreferences	preferences;
-	private static boolean		timerSettedUp				= false;
 
 	/* =========================== METHODS ================================ */
 
@@ -94,16 +75,9 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 		super.onCreate(savedInstanceState);
 		try
 		{
-			// StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
-
 			setContentView(R.layout.activity_main);
 
 			// Backend
-
-			// if (BuildConfig.DEBUG)
-			// {
-			// UIUtils.showTip(this, "Debug mode is on");
-			// }
 
 			PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 			preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -245,8 +219,8 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 				startActivity(intent);
 			}
 
-			setupBackgroundTimer();
 			ActivityPreferences.registerOnSharedPreferenceChangeListener(this);
+			startService(new Intent(this, NotificationService.class));
 		}
 		catch (Exception e)
 		{
@@ -274,7 +248,14 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 	{
 		if (DevicePreferences.KEY_SHOW_TIME_AFTER.equals(key))
 		{
-			showTimeAfter();
+			if (preferences.getBoolean(DevicePreferences.KEY_SHOW_TIME_AFTER, true))
+			{
+				startService(new Intent(this, NotificationService.class));
+			}
+			else
+			{
+				stopService(new Intent(this, NotificationService.class));
+			}
 		}
 	}
 
@@ -344,140 +325,6 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 	// };
 	// }.execute();
 	// }
-
-	/**
-	 * Async
-	 */
-	public void showTimeAfter()
-	{
-		if (preferences.getBoolean(DevicePreferences.KEY_SHOW_TIME_AFTER, true))
-		{
-			new AsyncTask<Void, Void, String>()
-			{
-				/**
-				 * 
-				 * @return Time after last meal (in seconds) if found, null otherwise
-				 */
-				private Integer getTimeAfterMeal(List<Versioned<DiaryRecord>> records, Date now)
-				{
-					MealRecord rec = PostprandUtils.findLastMeal(records);
-					if (rec != null)
-					{
-						return (int) (now.getTime() - rec.getTime().getTime()) / Utils.MsecPerSec;
-					}
-					else
-					{
-						return null;
-					}
-				}
-
-				/**
-				 * 
-				 * @return Time after last ins (in seconds) if found, null otherwise
-				 */
-				private Integer getTimeAfterIns(List<Versioned<DiaryRecord>> records, Date now)
-				{
-					InsRecord rec = PostprandUtils.findLastIns(records);
-					if (rec != null)
-					{
-						return (int) (now.getTime() - rec.getTime().getTime()) / Utils.MsecPerSec;
-					}
-					else
-					{
-						return null;
-					}
-				}
-
-				@Override
-				protected String doInBackground(Void... arg0)
-				{
-					String info = "";
-
-					final Date now = new Date();
-					long scanPeriod = Utils.SecPerDay;
-					final DiaryService diary = LocalDiary.getInstance(getContentResolver());
-					List<Versioned<DiaryRecord>> records = PostprandUtils.findLastRecordsReversed(diary, now,
-							scanPeriod);
-
-					Integer timeAfterMeal = getTimeAfterMeal(records, now);
-					if (timeAfterMeal != null)
-					{
-						info += Utils.formatTimePeriod(timeAfterMeal) + " "
-								+ getString(R.string.notification_time_after_meal);
-					}
-
-					Integer timeAfterIns = getTimeAfterIns(records, now);
-					if (timeAfterIns != null)
-					{
-						info += (info.isEmpty() ? "" : ",\n") + Utils.formatTimePeriod(timeAfterIns) + " "
-								+ getString(R.string.notification_time_after_injection);
-					}
-
-					return info;
-				}
-
-				@Override
-				protected void onPostExecute(String info)
-				{
-					if (!info.isEmpty())
-					{
-						Builder mBuilder = new NotificationCompat.Builder(ActivityMain.this);
-						mBuilder.setContentTitle(getString(R.string.app_name));
-						mBuilder.setSmallIcon(R.drawable.icon);
-						mBuilder.setOngoing(true);
-						mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(info));
-						mBuilder.setContentText(info);
-
-						Intent resultIntent = new Intent(ActivityMain.this, ActivityMain.class);
-						TaskStackBuilder stackBuilder = TaskStackBuilder.create(ActivityMain.this);
-						stackBuilder.addParentStack(ActivityMain.class);
-						stackBuilder.addNextIntent(resultIntent);
-						PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
-								PendingIntent.FLAG_UPDATE_CURRENT);
-						mBuilder.setContentIntent(resultPendingIntent);
-
-						NotificationManager mNotifyManager = (NotificationManager) getSystemService(
-								Context.NOTIFICATION_SERVICE);
-						mNotifyManager.notify(NOTIFICATION_ID_TIME_AFTER, mBuilder.build());
-					}
-					else
-					{
-						hideTimeAfter();
-					}
-				};
-			}.execute();
-		}
-		else
-		{
-			hideTimeAfter();
-		}
-	}
-
-	public void hideTimeAfter()
-	{
-		NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotifyManager.cancel(NOTIFICATION_ID_TIME_AFTER);
-	}
-
-	private void setupBackgroundTimer()
-	{
-		if (timerSettedUp)
-		{
-			return;
-		}
-		timerSettedUp = true;
-
-		TimerTask task = new TimerTask()
-		{
-			@Override
-			public void run()
-			{
-				showTimeAfter();
-			}
-		};
-
-		new Timer().scheduleAtFixedRate(task, 0, Utils.MsecPerMin);
-	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
