@@ -22,20 +22,55 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public final class ZipUtils
 {
-	public static final String ENTRY_FILE_NAME = "data.json";
+	public static final String ENTRY_FILE_NAME = "data";
 
 	private ZipUtils()
 	{
 		// to prevent instantiation
 	}
 
-	public static InputStream zipString(final String s) throws IOException
+	public static class Entry
+	{
+		private String	name;
+		private String	content;
+
+		public Entry(String name, String content)
+		{
+			this.name = name;
+			this.content = content;
+		}
+
+		public String getName()
+		{
+			return name;
+		}
+
+		public void setName(String name)
+		{
+			this.name = name;
+		}
+
+		public String getContent()
+		{
+			return content;
+		}
+
+		public void setContent(String content)
+		{
+			this.content = content;
+		}
+	}
+
+	public static InputStream zip(final List<Entry> entries) throws IOException
 	{
 		final PipedOutputStream sink = new PipedOutputStream();
 		PipedInputStream source = new PipedInputStream(sink);
@@ -48,9 +83,14 @@ public final class ZipUtils
 				try
 				{
 					ZipOutputStream zip = new ZipOutputStream(sink);
-					zip.putNextEntry(new ZipEntry(ENTRY_FILE_NAME));
-					zip.write(s.getBytes());
-					zip.closeEntry();
+
+					for (Entry entry : entries)
+					{
+						zip.putNextEntry(new ZipEntry(entry.getName()));
+						zip.write(entry.getContent().getBytes());
+						zip.closeEntry();
+					}
+
 					zip.close();
 				}
 				catch (IOException e)
@@ -63,14 +103,16 @@ public final class ZipUtils
 		return source;
 	}
 
-	public static String unzipString(InputStream stream) throws IOException
+	public static List<Entry> unzip(InputStream stream) throws IOException
 	{
+		List<Entry> result = new ArrayList<Entry>();
+
 		ZipInputStream zipStream = new ZipInputStream(stream);
 
 		try
 		{
 			ZipEntry entry = zipStream.getNextEntry();
-			if (entry != null)
+			while (entry != null)
 			{
 				ByteArrayOutputStream bufout = new ByteArrayOutputStream();
 				try
@@ -82,13 +124,15 @@ public final class ZipUtils
 						bufout.write(buffer, 0, read);
 					}
 
-					return bufout.toString();
+					result.add(new Entry(entry.getName(), bufout.toString()));
 				}
 				finally
 				{
 					zipStream.closeEntry();
 					bufout.close();
 				}
+
+				entry = zipStream.getNextEntry();
 			}
 		}
 		finally
@@ -96,6 +140,17 @@ public final class ZipUtils
 			zipStream.close();
 		}
 
-		return null;
+		return result;
+	}
+
+	public static InputStream zipString(final String s) throws IOException
+	{
+		return zip(Arrays.asList(new Entry(ENTRY_FILE_NAME, s)));
+	}
+
+	public static String unzipString(InputStream stream) throws IOException
+	{
+		List<Entry> entries = unzip(stream);
+		return entries.isEmpty() ? null : entries.get(0).getContent();
 	}
 }
