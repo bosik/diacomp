@@ -18,31 +18,11 @@
  */
 package org.bosik.diacomp.android.backend.common;
 
-import java.util.Timer;
-import java.util.TimerTask;
-import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
-import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
-import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
-import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
-import org.bosik.diacomp.core.services.base.dish.DishBaseService;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
-import org.bosik.diacomp.core.services.diary.DiaryService;
-import org.bosik.diacomp.core.services.search.RelevantIndexator;
-import org.bosik.diacomp.core.utils.Utils;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.os.AsyncTask;
 
 public class Storage
 {
-	static final String			TAG						= Storage.class.getSimpleName();
-
-	private static final long	TIMER_DELAY				= 2 * Utils.MsecPerSec;			// ms
-	private static final long	TIMER_INTERVAL_HEAVY	= 10 * Utils.MsecPerMin;		// ms
-
-	private static Timer		timerHeavy;
-
-	private static boolean		timerSettedUp			= false;
+	static final String TAG = Storage.class.getSimpleName();
 
 	/**
 	 * Initializes the storage. Might be called sequentially
@@ -51,56 +31,5 @@ public class Storage
 	 */
 	public static void init(final Context context)
 	{
-		setupBackgroundTimer(context);
-	}
-
-	private static synchronized void setupBackgroundTimer(final Context context)
-	{
-		if (timerSettedUp)
-		{
-			return;
-		}
-		timerSettedUp = true;
-
-		TimerTask taskHeavy = new TimerTask()
-		{
-			@Override
-			public void run()
-			{
-				new AsyncTask<Void, Void, Void>()
-				{
-					@Override
-					protected Void doInBackground(Void... arg0)
-					{
-						relevantIndexation(context.getContentResolver());
-						analyzeKoofs(context);
-						return null;
-					}
-				}.execute();
-			}
-		};
-
-		if (timerHeavy != null)
-		{
-			timerHeavy.cancel();
-			timerHeavy.purge();
-		}
-		timerHeavy = new Timer();
-		timerHeavy.scheduleAtFixedRate(taskHeavy, TIMER_DELAY, TIMER_INTERVAL_HEAVY);
-
-	}
-
-	static void relevantIndexation(ContentResolver resolver)
-	{
-		final DiaryService diary = LocalDiary.getInstance(resolver);
-		final FoodBaseService foodBase = LocalFoodBase.getInstance(resolver);
-		final DishBaseService dishBase = LocalDishBase.getInstance(resolver);
-
-		RelevantIndexator.indexate(diary, foodBase, dishBase);
-	}
-
-	static void analyzeKoofs(Context context)
-	{
-		KoofServiceInternal.getInstance(context).update();
 	}
 }

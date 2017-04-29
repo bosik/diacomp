@@ -24,6 +24,7 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.Storage;
+import org.bosik.diacomp.android.backend.features.analyze.BackgroundService;
 import org.bosik.diacomp.android.backend.features.notifications.NotificationService;
 import org.bosik.diacomp.android.backend.features.preferences.device.DevicePreferences;
 import org.bosik.diacomp.android.frontend.fragments.FragmentTabBase;
@@ -220,7 +221,9 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 			}
 
 			ActivityPreferences.registerOnSharedPreferenceChangeListener(this);
+
 			startService(new Intent(this, NotificationService.class));
+			startService(new Intent(this, BackgroundService.class));
 		}
 		catch (Exception e)
 		{
