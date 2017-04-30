@@ -22,30 +22,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import org.junit.Test;
 import junit.framework.TestCase;
 
 @SuppressWarnings("static-method")
 public class TestUtils extends TestCase
 {
-	// private static String formatArray(byte array[])
-	// {
-	// StringBuilder sb = new StringBuilder("{");
-	//
-	// for (int i = 0; i < array.length; i++)
-	// {
-	// sb.append(array[i]);
-	// if (i < (array.length - 1))
-	// {
-	// sb.append(", ");
-	// }
-	// }
-	//
-	// sb.append("}");
-	// return sb.toString();
-	// }
-
-	@Test
 	public void testIntTo00()
 	{
 		assertEquals("-10", Utils.intTo00(-10));
@@ -94,13 +75,13 @@ public class TestUtils extends TestCase
 
 	public void testCheckTime()
 	{
-		// корректное время
+		// good cases
 		assertTrue(Utils.checkTime(0, 0));
 		assertTrue(Utils.checkTime(20, 59));
 		assertTrue(Utils.checkTime(23, 30));
 		assertTrue(Utils.checkTime(23, 59));
 
-		// некорректное время
+		// bad cases
 		assertFalse(Utils.checkTime(0, -1));
 		assertFalse(Utils.checkTime(-1, 0));
 		assertFalse(Utils.checkTime(24, 0));
@@ -111,7 +92,7 @@ public class TestUtils extends TestCase
 
 	public void testStrToTime()
 	{
-		// нормальный тест
+		// good cases
 		assertEquals(0, Utils.parseMinuteTime("00:00"));
 		assertEquals(1, Utils.parseMinuteTime("00:01"));
 		assertEquals(59, Utils.parseMinuteTime("00:59"));
@@ -119,109 +100,30 @@ public class TestUtils extends TestCase
 		assertEquals(630, Utils.parseMinuteTime("10:30"));
 		assertEquals(1439, Utils.parseMinuteTime("23:59"));
 
-		// краш-тест
-		try
-		{
-			Utils.parseMinuteTime(null);
-			fail();
-		}
-		catch (Exception e)
-		{
-		}
-		try
-		{
-			Utils.parseMinuteTime("");
-			fail();
-		}
-		catch (Exception e)
-		{
-		}
-		try
-		{
-			Utils.parseMinuteTime("gArBAgE");
-			fail();
-		}
-		catch (Exception e)
-		{
-		}
-		try
-		{
-			Utils.parseMinuteTime(":");
-			fail();
-		}
-		catch (Exception e)
-		{
-		}
-		try
-		{
-			Utils.parseMinuteTime("xx:yy");
-			fail();
-		}
-		catch (Exception e)
-		{
-		}
-		try
-		{
-			Utils.parseMinuteTime("10:60");
-			fail();
-		}
-		catch (Exception e)
-		{
-		}
-		try
-		{
-			Utils.parseMinuteTime("24:00");
-			fail();
-		}
-		catch (Exception e)
-		{
-		}
-		try
-		{
-			Utils.parseMinuteTime("00:-1");
-			fail();
-		}
-		catch (Exception e)
-		{
-		}
-		try
-		{
-			Utils.parseMinuteTime("-1:00");
-			fail();
-		}
-		catch (Exception e)
-		{
-		}
+		// bad cases
+		parseMinuteTimeMustFail(null);
+		parseMinuteTimeMustFail("");
+		parseMinuteTimeMustFail("gArBAgE");
+		parseMinuteTimeMustFail(":");
+		parseMinuteTimeMustFail("xx:yy");
+		parseMinuteTimeMustFail("10:60");
+		parseMinuteTimeMustFail("24:00");
+		parseMinuteTimeMustFail("00:-1");
+		parseMinuteTimeMustFail("-1:00");
 	}
 
-	// public void testTimeToStr()
-	// {
-	// // нормальный тест
-	// assertEquals("00:00", Utils.timeToStr(0));
-	// assertEquals("00:01", Utils.timeToStr(1));
-	// assertEquals("00:59", Utils.timeToStr(59));
-	// assertEquals("01:00", Utils.timeToStr(60));
-	// assertEquals("10:30", Utils.timeToStr(630));
-	// assertEquals("23:59", Utils.timeToStr(1439));
-	//
-	// // краш-тест
-	// try
-	// {
-	// Utils.timeToStr(1440);
-	// fail();
-	// }
-	// catch (Exception e)
-	// {
-	// }
-	// try
-	// {
-	// Utils.timeToStr(-1);
-	// fail();
-	// }
-	// catch (Exception e)
-	// {
-	// }
-	// }
+	private static void parseMinuteTimeMustFail(String s)
+	{
+		try
+		{
+			Utils.parseMinuteTime(s);
+			fail();
+		}
+		catch (Exception e)
+		{
+			// ok, that's expected
+		}
+	}
 
 	public void testTimeToMin()
 	{
@@ -279,8 +181,8 @@ public class TestUtils extends TestCase
 		}
 
 		time = System.currentTimeMillis() - time;
-		final double itemsPerSec = (double)count / (double)time * 1000.0;
-		if (itemsPerSec < 500000)
+		final double itemsPerSec = (double) count / (double) time * 1000.0;
+		if (itemsPerSec < 400000)
 		{
 			fail(String.format("Speed: %.0f items/sec", itemsPerSec));
 		}
@@ -361,7 +263,7 @@ public class TestUtils extends TestCase
 
 		assertEquals(0.5, Utils.parseExpression("1 / 2"), Utils.EPS);
 		assertEquals(-0.5, Utils.parseExpression("-1/2"), Utils.EPS);
-		//		assertEquals(0.5, Utils.calculate("-1/-2"), Utils.EPS);
+		// assertEquals(0.5, Utils.calculate("-1/-2"), Utils.EPS);
 		assertEquals(3.0, Utils.parseExpression("1+12/6"), Utils.EPS);
 		assertEquals(3.5, Utils.parseExpression("3/2+8/4"), Utils.EPS);
 		assertEquals(-16.0, Utils.parseExpression("2*3+4*5-6*7"), Utils.EPS);
@@ -419,40 +321,10 @@ public class TestUtils extends TestCase
 		}
 
 		time = System.currentTimeMillis() - time;
-		final double itemsPerSec = (double)count / (double)time * 1000.0;
-		if (itemsPerSec < 600000)
+		final double itemsPerSec = (double) count / (double) time * 1000.0;
+		if (itemsPerSec < 500000)
 		{
 			fail(String.format("Speed: %.0f items/sec", itemsPerSec));
 		}
 	}
-
-	// public void testTimeToStr()
-	// {
-	// // нормальный тест
-	// assertEquals("00:00", AndroidUtils.timeToStr(0));
-	// assertEquals("00:01", AndroidUtils.timeToStr(1));
-	// assertEquals("00:59", AndroidUtils.timeToStr(59));
-	// assertEquals("01:00", AndroidUtils.timeToStr(60));
-	// assertEquals("10:30", AndroidUtils.timeToStr(630));
-	// assertEquals("23:59", AndroidUtils.timeToStr(1439));
-	//
-	// // краш-тест
-	// try
-	// {
-	// AndroidUtils.timeToStr(1440);
-	// fail();
-	// }
-	// catch (Exception e)
-	// {
-	// }
-	// try
-	// {
-	// AndroidUtils.timeToStr(-1);
-	// fail();
-	// }
-	// catch (Exception e)
-	// {
-	// }
-	// }
-
 }
