@@ -18,9 +18,12 @@
 package org.bosik.diacomp.core.utils;
 
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 import junit.framework.TestCase;
 
@@ -326,5 +329,44 @@ public class TestUtils extends TestCase
 		{
 			fail(String.format("Speed: %.0f items/sec", itemsPerSec));
 		}
+	}
+
+	private static <T> Set<T> set(T... values)
+	{
+		return new HashSet<T>(Arrays.asList(values));
+	}
+
+	private static <T> void assertEquals(Set<T> expected, Set<T> actual)
+	{
+		if (!expected.containsAll(actual) || !actual.containsAll(expected))
+		{
+			failNotEquals("Sets are not equal", expected, actual);
+		}
+	}
+
+	public void testIntersection()
+	{
+		assertEquals(set(), Utils.intersection(new HashSet<Integer>(), new HashSet<Integer>()));
+		assertEquals(set(), Utils.intersection(set(1), new HashSet<Integer>()));
+		assertEquals(set(), Utils.intersection(new HashSet<Integer>(), set(1)));
+
+		assertEquals(set(), Utils.intersection(set(1), set(2)));
+		assertEquals(set(2), Utils.intersection(set(1, 2), set(2, 3)));
+		assertEquals(set(2, 3), Utils.intersection(set(1, 2, 3), set(2, 3)));
+		assertEquals(set(1, 2), Utils.intersection(set(1, 2), set(1, 2, 3)));
+		assertEquals(set(1, 2, 3), Utils.intersection(set(1, 2, 3), set(1, 2, 3)));
+	}
+
+	public void testDifference()
+	{
+		assertEquals(set(), Utils.difference(new HashSet<Integer>(), new HashSet<Integer>()));
+		assertEquals(set(1), Utils.difference(set(1), new HashSet<Integer>()));
+		assertEquals(set(), Utils.difference(new HashSet<Integer>(), set(1)));
+
+		assertEquals(set(1), Utils.difference(set(1), set(2)));
+		assertEquals(set(1), Utils.difference(set(1, 2), set(2, 3)));
+		assertEquals(set(1), Utils.difference(set(1, 2, 3), set(2, 3)));
+		assertEquals(set(), Utils.difference(set(1, 2), set(1, 2, 3)));
+		assertEquals(set(), Utils.difference(set(1, 2, 3), set(1, 2, 3)));
 	}
 }

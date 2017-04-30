@@ -33,9 +33,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.Set;
 import java.util.TimeZone;
 import org.json.JSONArray;
 
@@ -1062,20 +1064,29 @@ public class Utils
 			output.write(bytes, 0, read);
 		}
 	}
-	// private static String formatArray(byte array[])
-	// {
-	// StringBuilder sb = new StringBuilder("{");
-	//
-	// for (int i = 0; i < array.length; i++)
-	// {
-	// sb.append(array[i]);
-	// if (i < (array.length - 1))
-	// {
-	// sb.append(", ");
-	// }
-	// }
-	//
-	// sb.append("}");
-	// return sb.toString();
-	// }
+
+	/**
+	 * @param a
+	 * @param b
+	 * @return Intersections of two sets: A ∩ B
+	 */
+	public static <T> Set<T> intersection(Set<T> a, Set<T> b)
+	{
+		Set<T> result = new HashSet<T>(a);
+		result.retainAll(b);
+		return result;
+	}
+
+	/**
+	 * 
+	 * @param a
+	 * @param b
+	 * @return Difference A\B
+	 */
+	public static <T> Set<T> difference(Set<T> a, Set<T> b)
+	{
+		Set<T> result = new HashSet<T>(a);
+		result.removeAll(b);
+		return result;
+	}
 }
