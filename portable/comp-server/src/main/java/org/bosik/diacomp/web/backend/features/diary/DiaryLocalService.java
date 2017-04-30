@@ -38,6 +38,7 @@ import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
+import org.bosik.diacomp.core.services.transfer.ExportService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.CachedHashTree;
 import org.bosik.diacomp.web.backend.common.CachedHashTree.TreeType;
@@ -48,12 +49,11 @@ import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
-@Profile("real")
-public class DiaryLocalService implements DiaryService
+// @Profile("real")
+public class DiaryLocalService implements DiaryService, ExportService
 {
 	// Diary table
 	private static final String				TABLE_DIARY				= "diary2";
@@ -66,7 +66,7 @@ public class DiaryLocalService implements DiaryService
 	private static final String				COLUMN_DIARY_CONTENT	= "_Content";
 	private static final String				COLUMN_DIARY_TIMECACHE	= "_TimeCache";
 
-	private static final int				MAX_READ_ITEMS			= 500;
+	private static final int				MAX_READ_ITEMS			= 0;
 
 	private final Parser<DiaryRecord>		parser					= new ParserDiaryRecord();
 	private final Serializer<DiaryRecord>	serializer				= new SerializerAdapter<DiaryRecord>(parser);
@@ -369,7 +369,7 @@ public class DiaryLocalService implements DiaryService
 		}
 		else
 		{
-			///**/System.out.println("Returning cached hash tree");
+			/// **/System.out.println("Returning cached hash tree");
 		}
 
 		return tree;
@@ -469,7 +469,8 @@ public class DiaryLocalService implements DiaryService
 							{
 								String id = set.getString(COLUMN_DIARY_GUID);
 								String hash = set.getString(COLUMN_DIARY_HASH);
-								// THINK: probably storing entries is unnecessary, so we should process it as we go
+								// THINK: probably storing entries is unnecessary, so we should
+								// process it as we go
 								result.put(id, hash);
 							}
 
@@ -499,5 +500,60 @@ public class DiaryLocalService implements DiaryService
 				return set.first();
 			}
 		});
+	}
+
+	@Override
+	public String exportData()
+	{
+		try
+		{
+			int userId = getCurrentUserId();
+
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?)", COLUMN_DIARY_USER);
+			final String[] whereArgs = { String.valueOf(userId) };
+			final String order = COLUMN_DIARY_TIMECACHE;
+
+			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order, new DataCallback<String>()
+			{
+				@Override
+				public String onData(ResultSet resultSet) throws SQLException
+				{
+					StringBuilder s = new StringBuilder();
+					s.append("[");
+
+					while (resultSet.next())
+					{
+						String id = resultSet.getString(COLUMN_DIARY_GUID);
+						String timeStamp = Utils.formatTimeUTC(resultSet.getTimestamp(COLUMN_DIARY_TIMESTAMP));
+						String hash = resultSet.getString(COLUMN_DIARY_HASH);
+						int version = resultSet.getInt(COLUMN_DIARY_VERSION);
+						boolean deleted = (resultSet.getInt(COLUMN_DIARY_DELETED) == 1);
+						String content = resultSet.getString(COLUMN_DIARY_CONTENT);
+
+						if (!resultSet.isFirst())
+						{
+							s.append(",");
+						}
+
+						s.append("{");
+						s.append("\"id\":\"").append(id).append("\",");
+						s.append("\"stamp\":\"").append(timeStamp).append("\",");
+						s.append("\"hash\":\"").append(hash).append("\",");
+						s.append("\"version\":").append(version).append(",");
+						s.append("\"deleted\":").append(deleted).append(",");
+						s.append("\"content\":").append(content);
+						s.append("}");
+					}
+
+					s.append("]");
+					return s.toString();
+				}
+			});
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 }

@@ -27,16 +27,16 @@ import java.util.TreeMap;
 import org.bosik.diacomp.core.services.preferences.Preference;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.bosik.diacomp.core.services.preferences.PreferencesService;
+import org.bosik.diacomp.core.services.transfer.ExportService;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
-@Profile({ "real", "fake" })
-public class PreferencesLocalService extends PreferencesService
+// @Profile({ "real", "fake" })
+public class PreferencesLocalService extends PreferencesService implements ExportService
 {
 	private static final String	TABLE_PREFERENCES			= "preferences";
 	private static final String	COLUMN_PREFERENCES_USER		= "_UserID";
@@ -115,8 +115,8 @@ public class PreferencesLocalService extends PreferencesService
 		try
 		{
 			final String[] select = { COLUMN_PREFERENCES_VALUE, COLUMN_PREFERENCES_VERSION };
-			final String where = String
-					.format("(%s = ?) AND (%s = ?)", COLUMN_PREFERENCES_USER, COLUMN_PREFERENCES_KEY);
+			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_PREFERENCES_USER,
+					COLUMN_PREFERENCES_KEY);
 			final String[] whereArgs = { String.valueOf(userId), preference.getKey() };
 			final String order = null;
 
@@ -215,5 +215,54 @@ public class PreferencesLocalService extends PreferencesService
 				}
 			}
 		});
+	}
+
+	@Override
+	public String exportData()
+	{
+		try
+		{
+			int userId = userInfoService.getCurrentUserId();
+
+			final String[] select = { COLUMN_PREFERENCES_KEY, COLUMN_PREFERENCES_VALUE, COLUMN_PREFERENCES_VERSION };
+			final String where = String.format("(%s = ?)", COLUMN_PREFERENCES_USER);
+			final String[] whereArgs = { String.valueOf(userId) };
+			final String order = null;
+
+			return MySQLAccess.select(TABLE_PREFERENCES, select, where, whereArgs, order, new DataCallback<String>()
+			{
+				@Override
+				public String onData(ResultSet resultSet) throws SQLException
+				{
+					StringBuilder s = new StringBuilder();
+					s.append("[");
+
+					while (resultSet.next())
+					{
+						String key = resultSet.getString(COLUMN_PREFERENCES_KEY);
+						String value = resultSet.getString(COLUMN_PREFERENCES_VALUE);
+						int version = resultSet.getInt(COLUMN_PREFERENCES_VERSION);
+
+						if (!resultSet.isFirst())
+						{
+							s.append(",");
+						}
+
+						s.append("{");
+						s.append("\"key\":\"").append(key).append("\",");
+						s.append("\"value\":").append(value).append(",");
+						s.append("\"version\":").append(version);
+						s.append("}");
+					}
+
+					s.append("]");
+					return s.toString();
+				}
+			});
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 }

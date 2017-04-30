@@ -39,6 +39,7 @@ import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
+import org.bosik.diacomp.core.services.transfer.ExportService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.CachedHashTree;
 import org.bosik.diacomp.web.backend.common.CachedHashTree.TreeType;
@@ -49,12 +50,11 @@ import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
-@Profile("real")
-public class DishBaseLocalService implements DishBaseService
+// @Profile("real")
+public class DishBaseLocalService implements DishBaseService, ExportService
 {
 	// Dishbase table
 	private static final String					TABLE_DISHBASE				= "dishbase2";
@@ -404,7 +404,8 @@ public class DishBaseLocalService implements DishBaseService
 							{
 								String id = set.getString(COLUMN_DISHBASE_GUID);
 								String hash = set.getString(COLUMN_DISHBASE_HASH);
-								// THINK: probably storing entries is unnecessary, so we should process it as we go
+								// THINK: probably storing entries is unnecessary, so we should
+								// process it as we go
 								result.put(id, hash);
 							}
 
@@ -431,7 +432,7 @@ public class DishBaseLocalService implements DishBaseService
 		}
 		else
 		{
-			///**/System.out.println("Returning cached hash tree");
+			/// **/System.out.println("Returning cached hash tree");
 		}
 
 		return tree;
@@ -519,5 +520,60 @@ public class DishBaseLocalService implements DishBaseService
 				return set.first();
 			}
 		});
+	}
+
+	@Override
+	public String exportData()
+	{
+		try
+		{
+			int userId = getCurrentUserId();
+
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?)", COLUMN_DISHBASE_USER);
+			final String[] whereArgs = { String.valueOf(userId) };
+			final String order = COLUMN_DISHBASE_NAMECACHE;
+
+			return MySQLAccess.select(TABLE_DISHBASE, select, where, whereArgs, order, new DataCallback<String>()
+			{
+				@Override
+				public String onData(ResultSet resultSet) throws SQLException
+				{
+					StringBuilder s = new StringBuilder();
+					s.append("[");
+
+					while (resultSet.next())
+					{
+						String id = resultSet.getString(COLUMN_DISHBASE_GUID);
+						String timeStamp = Utils.formatTimeUTC(resultSet.getTimestamp(COLUMN_DISHBASE_TIMESTAMP));
+						String hash = resultSet.getString(COLUMN_DISHBASE_HASH);
+						int version = resultSet.getInt(COLUMN_DISHBASE_VERSION);
+						boolean deleted = (resultSet.getInt(COLUMN_DISHBASE_DELETED) == 1);
+						String content = resultSet.getString(COLUMN_DISHBASE_CONTENT);
+
+						if (!resultSet.isFirst())
+						{
+							s.append(",");
+						}
+
+						s.append("{");
+						s.append("\"id\":\"").append(id).append("\",");
+						s.append("\"stamp\":\"").append(timeStamp).append("\",");
+						s.append("\"hash\":\"").append(hash).append("\",");
+						s.append("\"version\":").append(version).append(",");
+						s.append("\"deleted\":").append(deleted).append(",");
+						s.append("\"content\":").append(content);
+						s.append("}");
+					}
+
+					s.append("]");
+					return s.toString();
+				}
+			});
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 }
