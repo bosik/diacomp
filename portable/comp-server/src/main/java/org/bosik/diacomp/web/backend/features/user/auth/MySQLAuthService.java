@@ -28,11 +28,9 @@ import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
-@Profile("real")
 public class MySQLAuthService implements AuthService
 {
 	private static final String	TABLE_USER					= "user";
