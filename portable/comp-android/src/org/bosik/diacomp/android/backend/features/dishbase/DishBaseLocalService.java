@@ -31,6 +31,7 @@ import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
+import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -38,6 +39,7 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
+import org.bosik.diacomp.core.services.transfer.ImportService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
@@ -46,18 +48,21 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-public class DishBaseLocalService implements DishBaseService
+public class DishBaseLocalService implements DishBaseService, ImportService
 {
-	private static final String				TAG				= DishBaseLocalService.class.getSimpleName();
+	private static final String						TAG				= DishBaseLocalService.class.getSimpleName();
 
-	private static final int				MAX_READ_ITEMS	= 500;
+	private static final int						MAX_READ_ITEMS	= 500;
 
-	private final ContentResolver			resolver;
-	private final Serializer<DishItem>		serializer;
+	private final ContentResolver					resolver;
+	private final Parser<DishItem>					parser			= new ParserDishItem();
+	private final Serializer<DishItem>				serializer		= new SerializerAdapter<DishItem>(parser);
+	private final Serializer<Versioned<DishItem>>	serializerV		= new SerializerAdapter<Versioned<DishItem>>(
+			new ParserVersioned<DishItem>(parser));
 
 	// caching
 	// NOTE: this suppose DB can't be changed outside app
-	public static List<Versioned<DishItem>>	memoryCache;
+	public static List<Versioned<DishItem>>			memoryCache;
 
 	// ====================================================================================
 
@@ -69,8 +74,6 @@ public class DishBaseLocalService implements DishBaseService
 		}
 		this.resolver = resolver;
 
-		Parser<DishItem> s = new ParserDishItem();
-		serializer = new SerializerAdapter<DishItem>(s);
 		if (memoryCache == null)
 		{
 			memoryCache = findInDB(null, null, true, null);
@@ -587,5 +590,13 @@ public class DishBaseLocalService implements DishBaseService
 				insert(item);
 			}
 		}
+	}
+
+	@Override
+	public void importData(String data)
+	{
+		// naive slow implementation
+		List<Versioned<DishItem>> items = serializerV.readAll(data);
+		save(items);
 	}
 }

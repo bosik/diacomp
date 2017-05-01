@@ -32,6 +32,7 @@ import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
+import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -40,6 +41,7 @@ import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
+import org.bosik.diacomp.core.services.transfer.ImportService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
@@ -48,18 +50,21 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-public class FoodBaseLocalService implements FoodBaseService
+public class FoodBaseLocalService implements FoodBaseService, ImportService
 {
-	private static final String				TAG				= FoodBaseLocalService.class.getSimpleName();
+	private static final String						TAG				= FoodBaseLocalService.class.getSimpleName();
 
-	private static final int				MAX_READ_ITEMS	= 500;
+	private static final int						MAX_READ_ITEMS	= 500;
 
-	private final ContentResolver			resolver;
-	private final Serializer<FoodItem>		serializer;
+	private final ContentResolver					resolver;
+	private final Parser<FoodItem>					parser			= new ParserFoodItem();
+	private final Serializer<FoodItem>				serializer		= new SerializerAdapter<FoodItem>(parser);
+	private final Serializer<Versioned<FoodItem>>	serializerV		= new SerializerAdapter<Versioned<FoodItem>>(
+			new ParserVersioned<FoodItem>(parser));
 
 	// caching
 	// NOTE: this suppose DB can't be changed outside app
-	public static List<Versioned<FoodItem>>	memoryCache;
+	public static List<Versioned<FoodItem>>			memoryCache;
 
 	// ====================================================================================
 
@@ -69,10 +74,9 @@ public class FoodBaseLocalService implements FoodBaseService
 		{
 			throw new IllegalArgumentException("Content resolver is null");
 		}
+
 		this.resolver = resolver;
 
-		Parser<FoodItem> s = new ParserFoodItem();
-		serializer = new SerializerAdapter<FoodItem>(s);
 		if (memoryCache == null)
 		{
 			memoryCache = findInDB(null, null, true, null);
@@ -632,5 +636,13 @@ public class FoodBaseLocalService implements FoodBaseService
 			}
 
 		}
+	}
+
+	@Override
+	public void importData(String data)
+	{
+		// naive slow implementation
+		List<Versioned<FoodItem>> items = serializerV.readAll(data);
+		save(items);
 	}
 }

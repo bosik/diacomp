@@ -19,6 +19,7 @@
 package org.bosik.diacomp.android.backend.common.webclient;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.HttpEntity;
@@ -222,6 +223,38 @@ public class WebClient
 		}
 	}
 
+	private InputStream doLoadStream(String url)
+	{
+		checkTimeout();
+
+		url = server + url;
+		Log.d(TAG, "GET " + url);
+
+		try
+		{
+			// TODO: check if %20 replacement is necessary
+			HttpResponse resp = mHttpClient.execute(new HttpGet(url.replace(" ", CODE_SPACE)));
+
+			if (null == resp.getEntity())
+			{
+				throw new ResponseFormatException("Bad response, getEntity() is null");
+			}
+
+			InputStream stream = resp.getEntity().getContent();
+			if (stream == null)
+			{
+				throw new ResponseFormatException("Bad response, stream is null");
+			}
+
+			checkResponseCode(resp.getStatusLine().getStatusCode(), null);
+			return stream;
+		}
+		catch (IOException e)
+		{
+			throw new ConnectionException("Failed to GET " + url, e);
+		}
+	}
+
 	/* ================================ CONSTRUCTOR ================================ */
 
 	public WebClient(int connectionTimeout)
@@ -373,6 +406,19 @@ public class WebClient
 	public String put(String URL, List<NameValuePair> params)
 	{
 		return put(URL, params, ENCODING_UTF8);
+	}
+
+	public InputStream loadStream(String url)
+	{
+		try
+		{
+			return doLoadStream(url);
+		}
+		catch (NotAuthorizedException e)
+		{
+			login();
+			return doLoadStream(url);
+		}
 	}
 
 	public void login()

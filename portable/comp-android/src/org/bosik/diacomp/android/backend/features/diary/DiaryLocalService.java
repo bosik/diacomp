@@ -25,12 +25,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
 import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
+import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -39,6 +39,7 @@ import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
+import org.bosik.diacomp.core.services.transfer.ImportService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
@@ -52,20 +53,22 @@ import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
-public class DiaryLocalService implements DiaryService
+public class DiaryLocalService implements DiaryService, ImportService
 {
-	static final String						TAG				= DiaryLocalService.class.getSimpleName();
+	static final String									TAG				= DiaryLocalService.class.getSimpleName();
 
-	private static final int				MAX_READ_ITEMS	= 500;
+	private static final int							MAX_READ_ITEMS	= 500;
 
 	/* ============================ FIELDS ============================ */
 
-	private final ContentResolver			resolver;
-	private final Parser<DiaryRecord>		parser			= new ParserDiaryRecord();
-	private final Serializer<DiaryRecord>	serializer		= new SerializerAdapter<DiaryRecord>(parser);
+	private final ContentResolver						resolver;
+	private final Parser<DiaryRecord>					parser			= new ParserDiaryRecord();
+	private final Serializer<DiaryRecord>				serializer		= new SerializerAdapter<DiaryRecord>(parser);
+	private final Serializer<Versioned<DiaryRecord>>	serializerV		= new SerializerAdapter<Versioned<DiaryRecord>>(
+			new ParserVersioned<DiaryRecord>(parser));
 
-	private MyObserver						observer;
-	static MerkleTree						hashTree;
+	private MyObserver									observer;
+	static MerkleTree									hashTree;
 
 	class MyObserver extends ContentObserver
 	{
@@ -234,8 +237,7 @@ public class DiaryLocalService implements DiaryService
 		String sortOrder = null;
 
 		// execute
-		Cursor cursor = resolver.query(TableDiary.CONTENT_URI, projection, clause, clauseArgs,
-				sortOrder);
+		Cursor cursor = resolver.query(TableDiary.CONTENT_URI, projection, clause, clauseArgs, sortOrder);
 
 		List<Versioned<DiaryRecord>> recs = extractRecords(cursor);
 
@@ -252,8 +254,7 @@ public class DiaryLocalService implements DiaryService
 		String sortOrder = TableDiary.COLUMN_TIMECACHE + " ASC";
 
 		// execute
-		Cursor cursor = resolver.query(TableDiary.CONTENT_URI, projection, clause, clauseArgs,
-				sortOrder);
+		Cursor cursor = resolver.query(TableDiary.CONTENT_URI, projection, clause, clauseArgs, sortOrder);
 
 		return extractRecords(cursor, MAX_READ_ITEMS);
 	}
@@ -268,8 +269,7 @@ public class DiaryLocalService implements DiaryService
 		String sortOrder = TableDiary.COLUMN_TIMECACHE + " ASC";
 
 		// execute
-		Cursor cursor = resolver.query(TableDiary.CONTENT_URI, projection, clause, clauseArgs,
-				sortOrder);
+		Cursor cursor = resolver.query(TableDiary.CONTENT_URI, projection, clause, clauseArgs, sortOrder);
 		return extractRecords(cursor, MAX_READ_ITEMS);
 	}
 
@@ -297,8 +297,7 @@ public class DiaryLocalService implements DiaryService
 
 		if (includeRemoved)
 		{
-			clause = String.format("(%s >= ?) AND (%s < ?)", TableDiary.COLUMN_TIMECACHE,
-					TableDiary.COLUMN_TIMECACHE);
+			clause = String.format("(%s >= ?) AND (%s < ?)", TableDiary.COLUMN_TIMECACHE, TableDiary.COLUMN_TIMECACHE);
 			clauseArgs = new String[] { Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime) };
 		}
 		else
@@ -311,8 +310,7 @@ public class DiaryLocalService implements DiaryService
 		String sortOrder = TableDiary.COLUMN_TIMECACHE + " ASC";
 
 		// execute
-		Cursor cursor = resolver.query(TableDiary.CONTENT_URI, projection, clause, clauseArgs,
-				sortOrder);
+		Cursor cursor = resolver.query(TableDiary.CONTENT_URI, projection, clause, clauseArgs, sortOrder);
 
 		List<Versioned<DiaryRecord>> records = extractRecords(cursor);
 
@@ -577,4 +575,11 @@ public class DiaryLocalService implements DiaryService
 		}
 	}
 
+	@Override
+	public void importData(String data)
+	{
+		// naive slow implementation
+		List<Versioned<DiaryRecord>> items = serializerV.readAll(data);
+		save(items);
+	}
 }

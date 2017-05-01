@@ -20,22 +20,30 @@ package org.bosik.diacomp.android.backend.features.preferences.account;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bosik.diacomp.android.backend.common.db.tables.TablePreferences;
+import org.bosik.diacomp.core.persistence.parsers.Parser;
+import org.bosik.diacomp.core.persistence.parsers.ParserPreferenceEntry;
+import org.bosik.diacomp.core.persistence.serializers.Serializer;
+import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.preferences.Preference;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.bosik.diacomp.core.services.preferences.PreferencesService;
+import org.bosik.diacomp.core.services.transfer.ImportService;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
-public class PreferencesLocalService extends PreferencesService
+public class PreferencesLocalService extends PreferencesService implements ImportService
 {
-	static final String				TAG	= PreferencesLocalService.class.getSimpleName();
+	static final String									TAG			= PreferencesLocalService.class.getSimpleName();
 
-	private final ContentResolver	resolver;
+	private final ContentResolver						resolver;
+
+	private final Parser<PreferenceEntry<String>>		parser		= new ParserPreferenceEntry();
+	private final Serializer<PreferenceEntry<String>>	serializer	= new SerializerAdapter<PreferenceEntry<String>>(
+			parser);
 
 	public PreferencesLocalService(ContentResolver resolver)
 	{
@@ -56,8 +64,7 @@ public class PreferencesLocalService extends PreferencesService
 		String sortOrder = null;
 
 		// execute
-		Cursor cursor = resolver.query(TablePreferences.CONTENT_URI, projection, clause, clauseArgs,
-				sortOrder);
+		Cursor cursor = resolver.query(TablePreferences.CONTENT_URI, projection, clause, clauseArgs, sortOrder);
 
 		try
 		{
@@ -122,8 +129,7 @@ public class PreferencesLocalService extends PreferencesService
 		String sortOrder = null;
 
 		// execute
-		Cursor cursor = resolver.query(TablePreferences.CONTENT_URI, projection, clause, clauseArgs,
-				sortOrder);
+		Cursor cursor = resolver.query(TablePreferences.CONTENT_URI, projection, clause, clauseArgs, sortOrder);
 
 		try
 		{
@@ -199,8 +205,7 @@ public class PreferencesLocalService extends PreferencesService
 		final String[] whereArgs = { key };
 		final String sortOrder = null;
 
-		Cursor cursor = resolver.query(TablePreferences.CONTENT_URI, select, where, whereArgs,
-				sortOrder);
+		Cursor cursor = resolver.query(TablePreferences.CONTENT_URI, select, where, whereArgs, sortOrder);
 
 		try
 		{
@@ -213,5 +218,12 @@ public class PreferencesLocalService extends PreferencesService
 				cursor.close();
 			}
 		}
+	}
+
+	@Override
+	public void importData(String data)
+	{
+		List<PreferenceEntry<String>> entries = serializer.readAll(data);
+		update(entries);
 	}
 }
