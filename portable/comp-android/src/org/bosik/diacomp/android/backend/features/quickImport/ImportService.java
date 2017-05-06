@@ -44,29 +44,31 @@ public class ImportService
 			{
 				if (entry.getName() != null)
 				{
+					String data = new String(entry.getContent(), "UTF-8");
+
 					switch (entry.getName())
 					{
 						case ENTRY_DIARY:
 						{
-							diaryService.importData(entry.getContent());
+							diaryService.importData(data);
 							break;
 						}
 
 						case ENTRY_FOODBASE:
 						{
-							foodbaseService.importData(entry.getContent());
+							foodbaseService.importData(data);
 							break;
 						}
 
 						case ENTRY_DISHBASE:
 						{
-							dishbaseService.importData(entry.getContent());
+							dishbaseService.importData(data);
 							break;
 						}
 
 						case ENTRY_PREFERENCES:
 						{
-							preferencesService.importData(entry.getContent());
+							preferencesService.importData(data);
 							break;
 						}
 					}

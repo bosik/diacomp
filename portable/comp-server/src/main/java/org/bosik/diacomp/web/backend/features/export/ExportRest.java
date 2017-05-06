@@ -75,10 +75,10 @@ public class ExportRest
 		try
 		{
 			List<Entry> entries = new ArrayList<Entry>();
-			entries.add(new Entry(ENTRY_DIARY, diaryService.exportData()));
-			entries.add(new Entry(ENTRY_FOODBASE, foodbaseService.exportData()));
-			entries.add(new Entry(ENTRY_DISHBASE, dishbaseService.exportData()));
-			entries.add(new Entry(ENTRY_PREFERENCES, preferencesService.exportData()));
+			entries.add(new Entry(ENTRY_DIARY, diaryService.exportData().getBytes("UTF-8")));
+			entries.add(new Entry(ENTRY_FOODBASE, foodbaseService.exportData().getBytes("UTF-8")));
+			entries.add(new Entry(ENTRY_DISHBASE, dishbaseService.exportData().getBytes("UTF-8")));
+			entries.add(new Entry(ENTRY_PREFERENCES, preferencesService.exportData().getBytes("UTF-8")));
 
 			return Response.ok(ZipUtils.zip(entries)).header("Content-Disposition", "attachment; filename=\"data.zip\"")
 					.build();
@@ -102,7 +102,7 @@ public class ExportRest
 		try
 		{
 			List<Entry> entries = new ArrayList<Entry>();
-			entries.add(new Entry("Diary.txt", exportDiaryForWindows()));
+			entries.add(new Entry("Diary.txt", exportDiaryForWindows().getBytes("UTF-8")));
 
 			return Response.ok(ZipUtils.zip(entries)).header("Content-Disposition", "attachment; filename=\"data.zip\"")
 					.build();

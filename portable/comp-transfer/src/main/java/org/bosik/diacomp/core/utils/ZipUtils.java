@@ -41,9 +41,9 @@ public final class ZipUtils
 	public static class Entry
 	{
 		private String	name;
-		private String	content;
+		private byte[]	content;
 
-		public Entry(String name, String content)
+		public Entry(String name, byte[] content)
 		{
 			this.name = name;
 			this.content = content;
@@ -59,12 +59,12 @@ public final class ZipUtils
 			this.name = name;
 		}
 
-		public String getContent()
+		public byte[] getContent()
 		{
 			return content;
 		}
 
-		public void setContent(String content)
+		public void setContent(byte[] content)
 		{
 			this.content = content;
 		}
@@ -87,7 +87,7 @@ public final class ZipUtils
 					for (Entry entry : entries)
 					{
 						zip.putNextEntry(new ZipEntry(entry.getName()));
-						zip.write(entry.getContent().getBytes());
+						zip.write(entry.getContent());
 						zip.closeEntry();
 					}
 
@@ -124,7 +124,7 @@ public final class ZipUtils
 						bufout.write(buffer, 0, read);
 					}
 
-					result.add(new Entry(entry.getName(), bufout.toString()));
+					result.add(new Entry(entry.getName(), bufout.toByteArray()));
 				}
 				finally
 				{
@@ -145,12 +145,12 @@ public final class ZipUtils
 
 	public static InputStream zipString(final String s) throws IOException
 	{
-		return zip(Arrays.asList(new Entry(ENTRY_FILE_NAME, s)));
+		return zip(Arrays.asList(new Entry(ENTRY_FILE_NAME, s.getBytes())));
 	}
 
 	public static String unzipString(InputStream stream) throws IOException
 	{
 		List<Entry> entries = unzip(stream);
-		return entries.isEmpty() ? null : entries.get(0).getContent();
+		return entries.isEmpty() ? null : new String(entries.get(0).getContent(), "UTF-8");
 	}
 }
