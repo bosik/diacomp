@@ -34,7 +34,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -258,7 +257,6 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		protected void onPostExecute(final Boolean success)
 		{
 			mAuthTask = null;
-			showProgress(false);
 
 			if (success)
 			{
@@ -266,6 +264,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			}
 			else
 			{
+				showProgress(false);
 				textPassword.setError(getString(R.string.login_error_incorrect_password));
 				textPassword.requestFocus();
 			}
@@ -301,43 +300,12 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			@Override
 			protected void onPostExecute(Intent intent)
 			{
-				finishLogin(intent);
+				importData(intent);
 			}
 		}.execute();
 	}
 
-	void finishLogin(Intent intent)
-	{
-		String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-		String accountPassword = intent.getStringExtra(EXTRA_PASS);
-		String accountType = intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE);
-		addAccount(accountName, accountPassword, accountType);
-
-		setAccountAuthenticatorResult(intent.getExtras());
-
-		importData(this, intent);
-	}
-
-	private void addAccount(String accountName, String accountPassword, String accountType)
-	{
-		AccountManager mAccountManager = AccountManager.get(this);
-		Account account = new Account(accountName, accountType);
-		if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false))
-		{
-			// String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
-			// Creating the account on the device and setting the auth token we got
-			// (Not setting the auth token will cause another call to the server to authenticate the
-			// user)
-			mAccountManager.addAccountExplicitly(account, accountPassword, null);
-			// mAccountManager.setAuthToken(account, mAuthTokenType, authtoken);
-		}
-		else
-		{
-			mAccountManager.setPassword(account, accountPassword);
-		}
-	}
-
-	private void importData(final Context context, final Intent intent)
+	void importData(final Intent intent)
 	{
 		new AsyncTask<Void, Void, Boolean>()
 		{
@@ -355,7 +323,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			{
 				try
 				{
-					ImportService.importData(context);
+					ImportService.importData(ActivityLogin.this);
 					return true;
 				}
 				catch (Exception e)
@@ -379,12 +347,38 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 					UIUtils.showTip(ActivityLogin.this, "User data imported OK");
 				}
 
-				enableAutosync();
+				 addAccount(intent);
+				 enableAutosync();
+				 setResult(RESULT_OK, intent);
 
-				setResult(RESULT_OK, intent);
 				finish();
 			}
 		}.execute();
+	}
+
+	void addAccount(Intent intent)
+	{
+		String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+		String accountPassword = intent.getStringExtra(EXTRA_PASS);
+		String accountType = intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE);
+
+		AccountManager mAccountManager = AccountManager.get(this);
+		Account account = new Account(accountName, accountType);
+		if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false))
+		{
+			// String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
+			// Creating the account on the device and setting the auth token we got
+			// (Not setting the auth token will cause another call to the server to authenticate the
+			// user)
+			mAccountManager.addAccountExplicitly(account, accountPassword, null);
+			// mAccountManager.setAuthToken(account, mAuthTokenType, authtoken);
+		}
+		else
+		{
+			mAccountManager.setPassword(account, accountPassword);
+		}
+
+		setAccountAuthenticatorResult(intent.getExtras());
 	}
 
 	void enableAutosync()
