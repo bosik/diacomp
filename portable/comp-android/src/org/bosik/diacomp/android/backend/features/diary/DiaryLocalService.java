@@ -18,6 +18,7 @@
  */
 package org.bosik.diacomp.android.backend.features.diary;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -576,10 +577,10 @@ public class DiaryLocalService implements DiaryService, ImportService
 	}
 
 	@Override
-	public void importData(String data)
+	public void importData(InputStream stream)
 	{
 		// naive slow implementation
-		List<Versioned<DiaryRecord>> items = serializerV.readAll(data);
-		save(items);
+		// List<Versioned<DiaryRecord>> items = serializerV.readAll(data);
+		// save(items);
 	}
 }

@@ -1,5 +1,6 @@
 package org.bosik.diacomp.android.backend.features.quickImport;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -34,45 +35,59 @@ public class ImportService
 			PreferencesLocalService preferencesService = new PreferencesLocalService(context.getContentResolver());
 
 			// download data
-
 			InputStream stream = client.loadStream("api/export");
-			List<Entry> entries = ZipUtils.unzip(stream);
 
-			// install
-
-			for (Entry entry : entries)
+			try
 			{
-				if (entry.getName() != null)
+				List<Entry> entries = ZipUtils.unzip(stream);
+
+				// install
+
+				for (Entry entry : entries)
 				{
-					String data = new String(entry.getContent(), "UTF-8");
-
-					switch (entry.getName())
+					if (entry.getName() != null)
 					{
-						case ENTRY_DIARY:
-						{
-							diaryService.importData(data);
-							break;
-						}
+						InputStream data = new ByteArrayInputStream(entry.getContent());
 
-						case ENTRY_FOODBASE:
+						try
 						{
-							foodbaseService.importData(data);
-							break;
-						}
+							switch (entry.getName())
+							{
+								case ENTRY_DIARY:
+								{
+									diaryService.importData(data);
+									break;
+								}
 
-						case ENTRY_DISHBASE:
-						{
-							dishbaseService.importData(data);
-							break;
-						}
+								case ENTRY_FOODBASE:
+								{
+									foodbaseService.importData(data);
+									break;
+								}
 
-						case ENTRY_PREFERENCES:
+								case ENTRY_DISHBASE:
+								{
+									dishbaseService.importData(data);
+									break;
+								}
+
+								case ENTRY_PREFERENCES:
+								{
+									preferencesService.importData(data);
+									break;
+								}
+							}
+						}
+						finally
 						{
-							preferencesService.importData(data);
-							break;
+							data.close();
 						}
 					}
 				}
+			}
+			finally
+			{
+				stream.close();
 			}
 		}
 		catch (IOException e)

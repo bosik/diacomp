@@ -18,6 +18,7 @@
  */
 package org.bosik.diacomp.android.backend.features.preferences.account;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.bosik.diacomp.android.backend.common.db.tables.TablePreferences;
@@ -221,9 +222,9 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 	}
 
 	@Override
-	public void importData(String data)
+	public void importData(InputStream stream)
 	{
-		List<PreferenceEntry<String>> entries = serializer.readAll(data);
-		update(entries);
+		// List<PreferenceEntry<String>> entries = serializer.readAll(data);
+		// update(entries);
 	}
 }

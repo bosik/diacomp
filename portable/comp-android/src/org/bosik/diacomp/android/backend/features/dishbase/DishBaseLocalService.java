@@ -18,6 +18,7 @@
  */
 package org.bosik.diacomp.android.backend.features.dishbase;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -593,10 +594,10 @@ public class DishBaseLocalService implements DishBaseService, ImportService
 	}
 
 	@Override
-	public void importData(String data)
+	public void importData(InputStream stream)
 	{
 		// naive slow implementation
-		List<Versioned<DishItem>> items = serializerV.readAll(data);
-		save(items);
+		// List<Versioned<DishItem>> items = serializerV.readAll(data);
+		// save(items);
 	}
 }

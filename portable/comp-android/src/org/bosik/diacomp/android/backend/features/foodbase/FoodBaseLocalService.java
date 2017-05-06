@@ -18,6 +18,7 @@
  */
 package org.bosik.diacomp.android.backend.features.foodbase;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -639,10 +640,10 @@ public class FoodBaseLocalService implements FoodBaseService, ImportService
 	}
 
 	@Override
-	public void importData(String data)
+	public void importData(InputStream stream)
 	{
 		// naive slow implementation
-		List<Versioned<FoodItem>> items = serializerV.readAll(data);
-		save(items);
+		// List<Versioned<FoodItem>> items = serializerV.readAll(data);
+		// save(items);
 	}
 }
