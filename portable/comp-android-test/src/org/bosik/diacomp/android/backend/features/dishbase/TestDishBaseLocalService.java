@@ -22,7 +22,6 @@ import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.dish.TestDishbaseService;
 import org.bosik.diacomp.core.services.base.dish.TestDishbaseServiceCommon;
 import org.junit.Ignore;
-import android.content.ContentResolver;
 import android.test.AndroidTestCase;
 
 @Ignore
@@ -48,8 +47,7 @@ public class TestDishBaseLocalService extends AndroidTestCase implements TestDis
 	public DishBaseService getService()
 	{
 		assertNotNull("Context is null", getContext());
-		ContentResolver resolver = getContext().getContentResolver();
-		return new DishBaseLocalService(resolver);
+		return new DishBaseLocalService(getContext());
 	}
 
 	@Override

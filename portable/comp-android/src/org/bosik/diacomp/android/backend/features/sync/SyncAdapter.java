@@ -140,7 +140,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			int counterDish = 0;
 			try
 			{
-				DishBaseService localDishBase = new DishBaseLocalService(contentResolver);
+				DishBaseService localDishBase = new DishBaseLocalService(getContext());
 				DishBaseService webDishBase = new DishBaseWebService(webClient);
 				counterDish = new Synchronizer2<DishItem>(localDishBase, webDishBase, MAX_DISH_READ, MAX_DISH_WRITE)
 						.synchronize();

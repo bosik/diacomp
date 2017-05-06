@@ -172,7 +172,7 @@ public class MealEditorView extends LinearLayout
 
 					// try to search item in dish base
 
-					DishBaseService dishBase = LocalDishBase.getInstance(resolver);
+					DishBaseService dishBase = LocalDishBase.getInstance(getContext());
 					Versioned<DishItem> dish = dishBase.findOne(name);
 
 					if (dish != null)

@@ -330,7 +330,7 @@ public class FoodDishPicker extends LinearLayout
 		// prepare sources
 
 		FoodBaseService foodBase = LocalFoodBase.getInstance(getContext());
-		DishBaseService dishBase = LocalDishBase.getInstance(getContext().getContentResolver());
+		DishBaseService dishBase = LocalDishBase.getInstance(getContext());
 
 		// build lists
 

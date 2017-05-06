@@ -18,7 +18,9 @@
  */
 package org.bosik.diacomp.android.backend.features.dishbase;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,12 +29,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
+import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDishbase;
+import org.bosik.diacomp.android.backend.common.stream.StreamReader;
+import org.bosik.diacomp.android.backend.common.stream.versioned.DishItemVersionedReader;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
-import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -47,33 +52,36 @@ import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.JsonReader;
 
 public class DishBaseLocalService implements DishBaseService, ImportService
 {
-	private static final String						TAG				= DishBaseLocalService.class.getSimpleName();
+	private static final String				TAG				= DishBaseLocalService.class.getSimpleName();
 
-	private static final int						MAX_READ_ITEMS	= 500;
+	private static final int				MAX_READ_ITEMS	= 500;
 
-	private final ContentResolver					resolver;
-	private final Parser<DishItem>					parser			= new ParserDishItem();
-	private final Serializer<DishItem>				serializer		= new SerializerAdapter<DishItem>(parser);
-	private final Serializer<Versioned<DishItem>>	serializerV		= new SerializerAdapter<Versioned<DishItem>>(
-			new ParserVersioned<DishItem>(parser));
+	private final Context					context;
+	private final ContentResolver			resolver;
+	private final Parser<DishItem>			parser			= new ParserDishItem();
+	private final Serializer<DishItem>		serializer		= new SerializerAdapter<DishItem>(parser);
 
 	// caching
 	// NOTE: this suppose DB can't be changed outside app
-	public static List<Versioned<DishItem>>			memoryCache;
+	public static List<Versioned<DishItem>>	memoryCache;
 
 	// ====================================================================================
 
-	public DishBaseLocalService(ContentResolver resolver)
+	public DishBaseLocalService(Context context)
 	{
-		if (null == resolver)
+		if (context == null)
 		{
-			throw new IllegalArgumentException("Content resolver is null");
+			throw new IllegalArgumentException("context is null");
 		}
-		this.resolver = resolver;
+		this.context = context;
+		this.resolver = context.getContentResolver();
 
 		if (memoryCache == null)
 		{
@@ -594,10 +602,61 @@ public class DishBaseLocalService implements DishBaseService, ImportService
 	}
 
 	@Override
-	public void importData(InputStream stream)
+	public void importData(InputStream stream) throws IOException
 	{
-		// naive slow implementation
-		// List<Versioned<DishItem>> items = serializerV.readAll(data);
-		// save(items);
+		StreamReader<Versioned<DishItem>> reader = new DishItemVersionedReader();
+
+		JsonReader json = new JsonReader(new InputStreamReader(stream, "UTF-8"));
+		try
+		{
+			Table table = new TableDishbase();
+
+			SQLiteDatabase db = new MyDBHelper(context).getWritableDatabase();
+			db.beginTransaction();
+			try
+			{
+				json.beginArray();
+
+				ContentValues newValues = new ContentValues();
+				int count = 0;
+
+				while (json.hasNext())
+				{
+					Versioned<DishItem> record = reader.read(json);
+
+					newValues.clear();
+					newValues.put(TableDishbase.COLUMN_ID, record.getId());
+					newValues.put(TableDishbase.COLUMN_TIMESTAMP, Utils.formatTimeUTC(record.getTimeStamp()));
+					newValues.put(TableDishbase.COLUMN_HASH, record.getHash());
+					newValues.put(TableDishbase.COLUMN_VERSION, record.getVersion());
+					newValues.put(TableDishbase.COLUMN_DELETED, record.isDeleted());
+					newValues.put(TableDishbase.COLUMN_DATA, serializer.write(record.getData()));
+					newValues.put(TableDishbase.COLUMN_NAMECACHE, record.getData().getName());
+
+					db.insertWithOnConflict(table.getName(), null, newValues, SQLiteDatabase.CONFLICT_IGNORE);
+
+					if (++count % 1000 == 0)
+					{
+						db.setTransactionSuccessful();
+						db.endTransaction();
+						db.beginTransaction();
+					}
+				}
+				json.endArray();
+
+				db.setTransactionSuccessful();
+			}
+			finally
+			{
+				db.endTransaction();
+				db.close();
+				resolver.notifyChange(TableDishbase.CONTENT_URI, null);
+				memoryCache = findInDB(null, null, true, null);
+			}
+		}
+		finally
+		{
+			json.close();
+		}
 	}
 }

@@ -19,7 +19,7 @@
 package org.bosik.diacomp.android.backend.features.dishbase;
 
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
-import android.content.ContentResolver;
+import android.content.Context;
 import android.util.Log;
 
 public class LocalDishBase
@@ -27,12 +27,12 @@ public class LocalDishBase
 	private static final String		TAG	= LocalDishBase.class.getSimpleName();
 	private static DishBaseService	instance;
 
-	public static synchronized DishBaseService getInstance(ContentResolver resolver)
+	public static synchronized DishBaseService getInstance(Context context)
 	{
 		if (null == instance)
 		{
 			Log.i(TAG, "Local dish base initialization...");
-			instance = new DishBaseLocalService(resolver);
+			instance = new DishBaseLocalService(context);
 		}
 		return instance;
 	}

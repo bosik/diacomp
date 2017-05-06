@@ -160,7 +160,7 @@ public class FragmentTabBase extends Fragment
 
 		resolver.registerContentObserver(DiaryContentProvider.CONTENT_BASE_URI, true, observer);
 		foodBaseService = LocalFoodBase.getInstance(getActivity());
-		dishBaseService = LocalDishBase.getInstance(resolver);
+		dishBaseService = LocalDishBase.getInstance(getActivity());
 	}
 
 	@Override
