@@ -18,7 +18,9 @@
  */
 package org.bosik.diacomp.android.backend.features.diary;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -27,6 +29,8 @@ import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
+import org.bosik.diacomp.android.backend.common.stream.StreamReader;
+import org.bosik.diacomp.android.backend.common.stream.versioned.DiaryRecordVersionedReader;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
@@ -52,6 +56,7 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
+import android.util.JsonReader;
 import android.util.Log;
 
 public class DiaryLocalService implements DiaryService, ImportService
@@ -577,10 +582,30 @@ public class DiaryLocalService implements DiaryService, ImportService
 	}
 
 	@Override
-	public void importData(InputStream stream)
+	public void importData(InputStream stream) throws IOException
 	{
-		// naive slow implementation
-		// List<Versioned<DiaryRecord>> items = serializerV.readAll(data);
-		// save(items);
+		StreamReader<Versioned<DiaryRecord>> reader = new DiaryRecordVersionedReader();
+
+		JsonReader json = new JsonReader(new InputStreamReader(stream, "UTF-8"));
+		try
+		{
+			// Solution 1: slower, consumes less memory
+
+			json.beginArray();
+			while (json.hasNext())
+			{
+				add(reader.read(json));
+			}
+			json.endArray();
+
+			// Solution 2: faster (when done in single transaction), but consumes more memory
+
+			// List<Versioned<DiaryRecord>> items = versionedDiaryRecordReader.readAll(reader);
+			// service.save(items);
+		}
+		finally
+		{
+			json.close();
+		}
 	}
 }
