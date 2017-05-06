@@ -154,7 +154,7 @@ public class MealEditorView extends LinearLayout
 
 					// try to search item in food base
 
-					FoodBaseService foodBase = LocalFoodBase.getInstance(resolver);
+					FoodBaseService foodBase = LocalFoodBase.getInstance(getContext());
 					Versioned<FoodItem> food = foodBase.findOne(name);
 
 					if (food != null)

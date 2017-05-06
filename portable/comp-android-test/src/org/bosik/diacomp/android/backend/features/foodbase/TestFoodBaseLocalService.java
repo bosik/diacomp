@@ -22,7 +22,6 @@ import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.base.food.TestFoodbaseService;
 import org.bosik.diacomp.core.services.base.food.TestFoodbaseServiceCommon;
 import org.junit.Ignore;
-import android.content.ContentResolver;
 import android.test.AndroidTestCase;
 
 @Ignore
@@ -48,8 +47,7 @@ public class TestFoodBaseLocalService extends AndroidTestCase implements TestFoo
 	public FoodBaseService getService()
 	{
 		assertNotNull("Context is null", getContext());
-		ContentResolver resolver = getContext().getContentResolver();
-		return new FoodBaseLocalService(resolver);
+		return new FoodBaseLocalService(getContext());
 	}
 
 	@Override

@@ -226,7 +226,7 @@ public class ActivityFoodSet extends FragmentActivity
 					FoodSetService foodSetService = new FoodSetService(webClient);
 					List<Versioned<FoodItem>> foodSet = foodSetService.getFoodSet(foodSetInfo.getId());
 
-					FoodBaseService localFoodBase = LocalFoodBase.getInstance(getContentResolver());
+					FoodBaseService localFoodBase = LocalFoodBase.getInstance(ActivityFoodSet.this);
 
 					for (Versioned<FoodItem> food : foodSet)
 					{

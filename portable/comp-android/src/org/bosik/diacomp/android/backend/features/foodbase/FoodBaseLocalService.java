@@ -18,7 +18,9 @@
  */
 package org.bosik.diacomp.android.backend.features.foodbase;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,12 +30,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
+import org.bosik.diacomp.android.backend.common.db.Table;
+import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
 import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
+import org.bosik.diacomp.android.backend.common.stream.StreamReader;
+import org.bosik.diacomp.android.backend.common.stream.versioned.FoodItemVersionedReader;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
-import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -49,34 +55,36 @@ import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.JsonReader;
 
 public class FoodBaseLocalService implements FoodBaseService, ImportService
 {
-	private static final String						TAG				= FoodBaseLocalService.class.getSimpleName();
+	private static final String				TAG				= FoodBaseLocalService.class.getSimpleName();
 
-	private static final int						MAX_READ_ITEMS	= 500;
+	private static final int				MAX_READ_ITEMS	= 500;
 
-	private final ContentResolver					resolver;
-	private final Parser<FoodItem>					parser			= new ParserFoodItem();
-	private final Serializer<FoodItem>				serializer		= new SerializerAdapter<FoodItem>(parser);
-	private final Serializer<Versioned<FoodItem>>	serializerV		= new SerializerAdapter<Versioned<FoodItem>>(
-			new ParserVersioned<FoodItem>(parser));
+	private final Context					context;
+	private final ContentResolver			resolver;
+	private final Parser<FoodItem>			parser			= new ParserFoodItem();
+	private final Serializer<FoodItem>		serializer		= new SerializerAdapter<FoodItem>(parser);
 
 	// caching
 	// NOTE: this suppose DB can't be changed outside app
-	public static List<Versioned<FoodItem>>			memoryCache;
+	public static List<Versioned<FoodItem>>	memoryCache;
 
 	// ====================================================================================
 
-	public FoodBaseLocalService(ContentResolver resolver)
+	public FoodBaseLocalService(Context context)
 	{
-		if (null == resolver)
+		if (context == null)
 		{
-			throw new IllegalArgumentException("Content resolver is null");
+			throw new IllegalArgumentException("context is null");
 		}
-
-		this.resolver = resolver;
+		this.context = context;
+		this.resolver = context.getContentResolver();
 
 		if (memoryCache == null)
 		{
@@ -640,10 +648,61 @@ public class FoodBaseLocalService implements FoodBaseService, ImportService
 	}
 
 	@Override
-	public void importData(InputStream stream)
+	public void importData(InputStream stream) throws IOException
 	{
-		// naive slow implementation
-		// List<Versioned<FoodItem>> items = serializerV.readAll(data);
-		// save(items);
+		StreamReader<Versioned<FoodItem>> reader = new FoodItemVersionedReader();
+
+		JsonReader json = new JsonReader(new InputStreamReader(stream, "UTF-8"));
+		try
+		{
+			Table table = new TableFoodbase();
+
+			SQLiteDatabase db = new MyDBHelper(context).getWritableDatabase();
+			db.beginTransaction();
+			try
+			{
+				json.beginArray();
+
+				ContentValues newValues = new ContentValues();
+				int count = 0;
+
+				while (json.hasNext())
+				{
+					Versioned<FoodItem> record = reader.read(json);
+
+					newValues.clear();
+					newValues.put(TableFoodbase.COLUMN_ID, record.getId());
+					newValues.put(TableFoodbase.COLUMN_TIMESTAMP, Utils.formatTimeUTC(record.getTimeStamp()));
+					newValues.put(TableFoodbase.COLUMN_HASH, record.getHash());
+					newValues.put(TableFoodbase.COLUMN_VERSION, record.getVersion());
+					newValues.put(TableFoodbase.COLUMN_DELETED, record.isDeleted());
+					newValues.put(TableFoodbase.COLUMN_DATA, serializer.write(record.getData()));
+					newValues.put(TableFoodbase.COLUMN_NAMECACHE, record.getData().getName());
+
+					db.insertWithOnConflict(table.getName(), null, newValues, SQLiteDatabase.CONFLICT_IGNORE);
+
+					if (++count % 1000 == 0)
+					{
+						db.setTransactionSuccessful();
+						db.endTransaction();
+						db.beginTransaction();
+					}
+				}
+				json.endArray();
+
+				db.setTransactionSuccessful();
+			}
+			finally
+			{
+				db.endTransaction();
+				db.close();
+				resolver.notifyChange(TableDiary.CONTENT_URI, null);
+				memoryCache = findInDB(null, null, true, null);
+			}
+		}
+		finally
+		{
+			json.close();
+		}
 	}
 }

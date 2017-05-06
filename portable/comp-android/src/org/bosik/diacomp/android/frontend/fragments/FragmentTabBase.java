@@ -159,7 +159,7 @@ public class FragmentTabBase extends Fragment
 		ContentResolver resolver = getActivity().getContentResolver();
 
 		resolver.registerContentObserver(DiaryContentProvider.CONTENT_BASE_URI, true, observer);
-		foodBaseService = LocalFoodBase.getInstance(resolver);
+		foodBaseService = LocalFoodBase.getInstance(getActivity());
 		dishBaseService = LocalDishBase.getInstance(resolver);
 	}
 

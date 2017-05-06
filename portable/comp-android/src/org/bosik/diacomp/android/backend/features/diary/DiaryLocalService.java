@@ -111,7 +111,7 @@ public class DiaryLocalService implements DiaryService, ImportService
 	 */
 	public DiaryLocalService(Context context)
 	{
-		if (null == context)
+		if (context == null)
 		{
 			throw new IllegalArgumentException("context is null");
 		}
@@ -611,6 +611,7 @@ public class DiaryLocalService implements DiaryService, ImportService
 					Versioned<DiaryRecord> record = reader.read(json);
 
 					newValues.clear();
+					newValues.put(TableDiary.COLUMN_ID, record.getId());
 					newValues.put(TableDiary.COLUMN_TIMESTAMP, Utils.formatTimeUTC(record.getTimeStamp()));
 					newValues.put(TableDiary.COLUMN_HASH, record.getHash());
 					newValues.put(TableDiary.COLUMN_VERSION, record.getVersion());
@@ -618,7 +619,6 @@ public class DiaryLocalService implements DiaryService, ImportService
 					newValues.put(TableDiary.COLUMN_CONTENT, serializer.write(record.getData()));
 					newValues.put(TableDiary.COLUMN_TIMECACHE, Utils.formatTimeUTC(record.getData().getTime()));
 
-					newValues.put(TableDiary.COLUMN_ID, record.getId());
 					db.insertWithOnConflict(table.getName(), null, newValues, SQLiteDatabase.CONFLICT_IGNORE);
 
 					if (++count % 1000 == 0)

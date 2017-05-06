@@ -19,7 +19,7 @@
 package org.bosik.diacomp.android.backend.features.foodbase;
 
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
-import android.content.ContentResolver;
+import android.content.Context;
 import android.util.Log;
 
 public class LocalFoodBase
@@ -27,12 +27,12 @@ public class LocalFoodBase
 	private static final String		TAG	= LocalFoodBase.class.getSimpleName();
 	private static FoodBaseService	instance;
 
-	public static synchronized FoodBaseService getInstance(ContentResolver resolver)
+	public static synchronized FoodBaseService getInstance(Context context)
 	{
 		if (null == instance)
 		{
 			Log.i(TAG, "Local food base initialization...");
-			instance = new FoodBaseLocalService(resolver);
+			instance = new FoodBaseLocalService(context);
 		}
 		return instance;
 	}

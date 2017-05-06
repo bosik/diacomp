@@ -30,7 +30,7 @@ public class ImportService
 
 			WebClient client = WebClientInternal.getInstance(context);
 			DiaryLocalService diaryService = new DiaryLocalService(context);
-			FoodBaseLocalService foodbaseService = new FoodBaseLocalService(context.getContentResolver());
+			FoodBaseLocalService foodbaseService = new FoodBaseLocalService(context);
 			DishBaseLocalService dishbaseService = new DishBaseLocalService(context.getContentResolver());
 			PreferencesLocalService preferencesService = new PreferencesLocalService(context.getContentResolver());
 

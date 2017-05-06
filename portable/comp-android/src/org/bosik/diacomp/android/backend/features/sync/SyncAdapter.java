@@ -124,7 +124,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			int counterFood = 0;
 			try
 			{
-				FoodBaseService localFoodBase = new FoodBaseLocalService(contentResolver);
+				FoodBaseService localFoodBase = new FoodBaseLocalService(getContext());
 				FoodBaseService webFoodBase = new FoodBaseWebService(webClient);
 				counterFood = new Synchronizer2<FoodItem>(localFoodBase, webFoodBase, MAX_FOOD_READ, MAX_FOOD_WRITE)
 						.synchronize();
