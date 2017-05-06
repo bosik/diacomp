@@ -211,19 +211,18 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 			// actionBar.addTab(actionBar.newTab().setText(title).setTabListener(tabListener));
 			// }
 
-			boolean firstStart = preferences.getBoolean(DevicePreferences.KEY_FIRST_START, true);
-			if (firstStart)
-			{
-				preferences.edit().putBoolean(DevicePreferences.KEY_FIRST_START, false).apply();
-				Intent intent = new Intent(this, ActivityFoodSet.class);
-				intent.putExtra(ActivityFoodSet.FIELD_FIRST_START, true);
-				startActivity(intent);
-			}
-
 			ActivityPreferences.registerOnSharedPreferenceChangeListener(this);
 
 			startService(new Intent(this, NotificationService.class));
 			startService(new Intent(this, BackgroundService.class));
+
+			boolean firstStart = preferences.getBoolean(DevicePreferences.KEY_FIRST_START, true);
+			if (firstStart)
+			{
+				preferences.edit().putBoolean(DevicePreferences.KEY_FIRST_START, false).apply();
+				startActivity(new Intent(this, ActivityWelcome.class));
+				finish();
+			}
 		}
 		catch (Exception e)
 		{
