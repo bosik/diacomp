@@ -28,7 +28,6 @@ public class ImportService
 			// building services
 
 			WebClient client = WebClientInternal.getInstance(context);
-			// client.setServer("http://192.168.100.5:8190/comp-server/");
 			DiaryLocalService diaryService = new DiaryLocalService(context.getContentResolver());
 			FoodBaseLocalService foodbaseService = new FoodBaseLocalService(context.getContentResolver());
 			DishBaseLocalService dishbaseService = new DishBaseLocalService(context.getContentResolver());
