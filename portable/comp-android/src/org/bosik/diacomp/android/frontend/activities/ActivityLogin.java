@@ -25,6 +25,7 @@ import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
+import org.bosik.diacomp.android.backend.features.quickImport.ImportService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
@@ -33,12 +34,14 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -49,6 +52,9 @@ import android.widget.TextView;
 
 public class ActivityLogin extends AccountAuthenticatorActivity
 {
+	static final String			TAG							= ActivityLogin.class.getSimpleName();
+	public static final String	DEFAULT_ACCOUNT_TYPE		= "diacomp.org";
+
 	public static final String	EXTRA_EMAIL					= "com.example.android.authenticatordemo.extra.EMAIL";
 	public static final String	EXTRA_PASS					= "com.example.android.authenticatordemo.extra.PASS";
 
@@ -75,7 +81,6 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		super.onCreate(savedInstanceState);
 
 		// read extras
-		String email = getIntent().getStringExtra(EXTRA_EMAIL);
 		mAccountType = getIntent().getStringExtra(ARG_ACCOUNT_TYPE);
 		mAuthTokenType = getIntent().getStringExtra(ARG_AUTH_TYPE);
 		mNewAccount = getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false);
@@ -84,8 +89,6 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		setContentView(R.layout.activity_login);
 
 		textEmail = (EditText) findViewById(R.id.accountName);
-		textEmail.setText(email);
-
 		textPassword = (EditText) findViewById(R.id.accountPassword);
 		textPassword.setOnEditorActionListener(new TextView.OnEditorActionListener()
 		{
@@ -305,11 +308,20 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 
 	void finishLogin(Intent intent)
 	{
-		final AccountManager mAccountManager = AccountManager.get(this);
-
 		String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
 		String accountPassword = intent.getStringExtra(EXTRA_PASS);
-		final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
+		String accountType = intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE);
+		addAccount(accountName, accountPassword, accountType);
+
+		setAccountAuthenticatorResult(intent.getExtras());
+
+		importData(this, intent);
+	}
+
+	private void addAccount(String accountName, String accountPassword, String accountType)
+	{
+		AccountManager mAccountManager = AccountManager.get(this);
+		Account account = new Account(accountName, accountType);
 		if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false))
 		{
 			// String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
@@ -323,9 +335,60 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		{
 			mAccountManager.setPassword(account, accountPassword);
 		}
-		setAccountAuthenticatorResult(intent.getExtras());
+	}
 
-		// Enabling sync
+	private void importData(final Context context, final Intent intent)
+	{
+		new AsyncTask<Void, Void, Boolean>()
+		{
+			@Override
+			protected void onPreExecute()
+			{
+				// TODO: i18n
+				// mLoginStatusMessageView.setText(getString(R.string.login_tip_sync_started));
+				showProgress(true);
+				mLoginStatusMessageView.setText("Importing user data...");
+			}
+
+			@Override
+			protected Boolean doInBackground(Void... params)
+			{
+				try
+				{
+					ImportService.importData(context);
+					return true;
+				}
+				catch (Exception e)
+				{
+					Log.e(TAG, e.getMessage(), e);
+					return false;
+				}
+			}
+
+			@Override
+			protected void onPostExecute(Boolean result)
+			{
+				if (result == null || !result)
+				{
+					// TODO: i18n
+					UIUtils.showTip(ActivityLogin.this, "Failed to import user data");
+				}
+				else
+				{
+					// TODO: i18n
+					UIUtils.showTip(ActivityLogin.this, "User data imported OK");
+				}
+
+				enableAutosync();
+
+				setResult(RESULT_OK, intent);
+				finish();
+			}
+		}.execute();
+	}
+
+	void enableAutosync()
+	{
 		Account[] accounts = AccountUtils.getAccounts(this);
 		if (accounts.length > 0)
 		{
@@ -336,8 +399,5 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 
 			UIUtils.showTip(this, getString(R.string.login_tip_sync_started));
 		}
-
-		setResult(RESULT_OK, intent);
-		finish();
 	}
 }
