@@ -23,6 +23,9 @@ public class ActivityWelcome extends Activity
 			public void onClick(View v)
 			{
 				Intent intent = new Intent(ActivityWelcome.this, ActivityLogin.class);
+				intent.putExtra(ActivityLogin.ARG_ACCOUNT_TYPE, ActivityLogin.DEFAULT_ACCOUNT_TYPE);
+				intent.putExtra(ActivityLogin.ARG_AUTH_TYPE, (String) null);
+				intent.putExtra(ActivityLogin.ARG_IS_ADDING_NEW_ACCOUNT, true);
 				startActivity(intent);
 			}
 		});

@@ -336,7 +336,7 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 			case R.id.item_common_login:
 			{
 				final Intent intent = new Intent(this, ActivityLogin.class);
-				intent.putExtra(ActivityLogin.ARG_ACCOUNT_TYPE, "diacomp.org");
+				intent.putExtra(ActivityLogin.ARG_ACCOUNT_TYPE, ActivityLogin.DEFAULT_ACCOUNT_TYPE);
 				intent.putExtra(ActivityLogin.ARG_AUTH_TYPE, (String) null);
 				intent.putExtra(ActivityLogin.ARG_IS_ADDING_NEW_ACCOUNT, true);
 				// intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
