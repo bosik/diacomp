@@ -32,7 +32,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
 import org.bosik.diacomp.android.backend.common.db.Table;
-import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
 import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
 import org.bosik.diacomp.android.backend.common.stream.StreamReader;
 import org.bosik.diacomp.android.backend.common.stream.versioned.FoodItemVersionedReader;
@@ -696,7 +695,7 @@ public class FoodBaseLocalService implements FoodBaseService, ImportService
 			{
 				db.endTransaction();
 				db.close();
-				resolver.notifyChange(TableDiary.CONTENT_URI, null);
+				resolver.notifyChange(TableFoodbase.CONTENT_URI, null);
 				memoryCache = findInDB(null, null, true, null);
 			}
 		}
