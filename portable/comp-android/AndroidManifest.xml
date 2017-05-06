@@ -126,6 +126,11 @@
             android:name=".frontend.activities.ActivityFoodSet"
             android:label="@string/foodset_title" >
         </activity>
+        <activity
+            android:name="org.bosik.diacomp.android.frontend.activities.ActivityWelcome"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
+        </activity>
     </application>
 
 </manifest>

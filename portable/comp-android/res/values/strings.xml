@@ -134,7 +134,11 @@
     <string name="warning_time_delay_behind_0">Your device clock is %d minutes behind</string>
     <string name="warning_time_delay_behind_1">Your device clock is %d minutes behind</string>
     <string name="warning_time_delay_behind_2">Your device clock is %d minutes behind</string>
-
+    <string name="welcome_login_button">Sign in</string>
+    <string name="welcome_login_hint">Already have an account? Just sign in – all your data will be synced automatically.</string>
+    <string name="welcome_setup_button">Quick setup</string>
+    <string name="welcome_setup_hint">Meet Diacomp first time and want to look around?</string>
+    <string name="welcome_subtitle">Welcome!</string>
     <!-- ========================================================================= -->
 
 
@@ -164,5 +168,4 @@
         <item>1R</item>
         <item>TR</item>
     </string-array>
-
 </resources>

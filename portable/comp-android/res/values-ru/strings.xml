@@ -132,6 +132,11 @@
     <string name="warning_time_delay_behind_0">Ваши часы отстают на %d минут</string>
     <string name="warning_time_delay_behind_1">Ваши часы отстают на %d минуту</string>
     <string name="warning_time_delay_behind_2">Ваши часы отстают на %d минуты</string>
+    <string name="welcome_login_button">Войти</string>
+    <string name="welcome_login_hint">У вас уже есть учётная запись? Просто войдите – все данные и настройки синхронизируются автоматически.</string>
+    <string name="welcome_setup_button">Быстрая настройка</string>
+    <string name="welcome_setup_hint">Используете Компенсацию впервые и хотите оценить её возможности?</string>
+    <string name="welcome_subtitle">Добро пожаловать!</string>
 
     <!-- Arrays -->
 
