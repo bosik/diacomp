@@ -347,10 +347,12 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 					UIUtils.showTip(ActivityLogin.this, "User data imported OK");
 				}
 
-				 addAccount(intent);
-				 enableAutosync();
-				 setResult(RESULT_OK, intent);
+				addAccount(intent);
+				enableAutosync();
+				setResult(RESULT_OK, intent);
 
+				// TODO: don't do this if activity is started from main activity
+				startActivity(new Intent(ActivityLogin.this, ActivityMain.class));
 				finish();
 			}
 		}.execute();
