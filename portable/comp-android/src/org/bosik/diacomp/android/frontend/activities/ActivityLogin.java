@@ -45,9 +45,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
-/**
- * Activity which displays a login screen to the user, offering registration as well.
- */
 public class ActivityLogin extends AccountAuthenticatorActivity
 {
 	public static final String	EXTRA_EMAIL					= "com.example.android.authenticatordemo.extra.EMAIL";
@@ -57,12 +54,8 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 	public static final String	ARG_AUTH_TYPE				= "org.bosik.diacomp.activityLogin.authType";
 	public static final String	ARG_IS_ADDING_NEW_ACCOUNT	= "org.bosik.diacomp.activityLogin.newAccount";
 
-	/**
-	 * Keep track of the login task to ensure we can cancel it if requested.
-	 */
 	UserLoginTask				mAuthTask					= null;
 
-	// Values for email and password at the time of the login attempt.
 	String						mEmail;
 	String						mPassword;
 
@@ -70,7 +63,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 	private String				mAuthTokenType;
 	private boolean				mNewAccount;
 
-	// UI references.
+	// UI
 	private EditText			mEmailView;
 	EditText					mPasswordView;
 	View						mLoginFormView;
@@ -253,9 +246,6 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		}
 	}
 
-	/**
-	 * Represents an asynchronous login/registration task used to authenticate the user.
-	 */
 	public class UserLoginTask extends AsyncTask<Void, Void, Boolean>
 	{
 		@Override
