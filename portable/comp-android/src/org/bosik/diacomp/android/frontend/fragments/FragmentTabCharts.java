@@ -140,7 +140,7 @@ public class FragmentTabCharts extends Fragment
 			{
 				// PREPARE DATE TREE
 
-				DiaryService diary = LocalDiary.getInstance(contentResolver);
+				DiaryService diary = LocalDiary.getInstance(FragmentTabCharts.this.getActivity());
 				Date startTime = Utils.shiftDate(new Date(), -PERIOD - HALF_WINDOW_SIZE);
 				Date endTime = Utils.shiftDate(new Date(), -HALF_WINDOW_SIZE);
 				List<Versioned<DiaryRecord>> recs = diary.findPeriod(Utils.shiftDate(startTime, -HALF_WINDOW_SIZE),
@@ -218,7 +218,7 @@ public class FragmentTabCharts extends Fragment
 			{
 				// PREPARE DATE TREE
 
-				DiaryService diary = LocalDiary.getInstance(contentResolver);
+				DiaryService diary = LocalDiary.getInstance(FragmentTabCharts.this.getActivity());
 				Date startTime = Utils.shiftDate(new Date(), -PERIOD - HALF_WINDOW_SIZE);
 				Date endTime = Utils.shiftDate(new Date(), -HALF_WINDOW_SIZE);
 				List<Versioned<DiaryRecord>> recs = diary.findPeriod(Utils.shiftDate(startTime, -HALF_WINDOW_SIZE),
@@ -297,7 +297,7 @@ public class FragmentTabCharts extends Fragment
 			{
 				// PREPARE DATE TREE
 
-				DiaryService diary = LocalDiary.getInstance(contentResolver);
+				DiaryService diary = LocalDiary.getInstance(FragmentTabCharts.this.getActivity());
 				Date startTime = Utils.shiftDate(new Date(), -PERIOD - HALF_WINDOW_SIZE);
 				Date endTime = Utils.shiftDate(new Date(), -HALF_WINDOW_SIZE);
 				List<Versioned<DiaryRecord>> recs = diary.findPeriod(Utils.shiftDate(startTime, -HALF_WINDOW_SIZE),

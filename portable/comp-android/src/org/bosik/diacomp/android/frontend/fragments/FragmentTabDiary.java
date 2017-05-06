@@ -243,7 +243,7 @@ public class FragmentTabDiary extends Fragment
 		setHasOptionsMenu(true);
 
 		// services
-		diary = new DiaryLocalService(getActivity().getContentResolver());
+		diary = new DiaryLocalService(getActivity());
 		preferences = new PreferencesTypedService(new PreferencesLocalService(getActivity().getContentResolver()));
 
 		// Widgets binding

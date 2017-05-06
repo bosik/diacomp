@@ -433,7 +433,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			{
 				if (diary == null)
 				{
-					diary = new DiaryLocalService(getContentResolver());
+					diary = new DiaryLocalService(ActivityEditorMeal.this);
 				}
 				diary.save(Arrays.asList(new Versioned<DiaryRecord>(entity)));
 				return null;

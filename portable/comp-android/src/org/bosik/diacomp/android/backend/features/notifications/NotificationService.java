@@ -115,7 +115,7 @@ public class NotificationService extends Service
 
 				final Date now = new Date();
 				long scanPeriod = Utils.SecPerDay;
-				final DiaryService diary = LocalDiary.getInstance(getContentResolver());
+				final DiaryService diary = LocalDiary.getInstance(NotificationService.this);
 				List<Versioned<DiaryRecord>> records = PostprandUtils.findLastRecordsReversed(diary, now, scanPeriod);
 
 				Integer timeAfterMeal = getTimeAfterMeal(records, now);

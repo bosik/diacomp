@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
+import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
 import org.bosik.diacomp.android.backend.common.stream.StreamReader;
 import org.bosik.diacomp.android.backend.common.stream.versioned.DiaryRecordVersionedReader;
@@ -52,8 +54,10 @@ import org.bosik.merklesync.Versioned;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.JsonReader;
@@ -67,6 +71,7 @@ public class DiaryLocalService implements DiaryService, ImportService
 
 	/* ============================ FIELDS ============================ */
 
+	private final Context								context;
 	private final ContentResolver						resolver;
 	private final Parser<DiaryRecord>					parser			= new ParserDiaryRecord();
 	private final Serializer<DiaryRecord>				serializer		= new SerializerAdapter<DiaryRecord>(parser);
@@ -104,13 +109,14 @@ public class DiaryLocalService implements DiaryService, ImportService
 	 * @param resolver
 	 *            Content resolver; might be accessed by {@link Activity#getContentResolver()}
 	 */
-	public DiaryLocalService(ContentResolver resolver)
+	public DiaryLocalService(Context context)
 	{
-		if (null == resolver)
+		if (null == context)
 		{
-			throw new IllegalArgumentException("Content Resolver is null");
+			throw new IllegalArgumentException("context is null");
 		}
-		this.resolver = resolver;
+		this.context = context;
+		this.resolver = context.getContentResolver();
 
 		observer = new MyObserver(null);
 		resolver.registerContentObserver(TableDiary.CONTENT_URI, true, observer);
@@ -589,19 +595,49 @@ public class DiaryLocalService implements DiaryService, ImportService
 		JsonReader json = new JsonReader(new InputStreamReader(stream, "UTF-8"));
 		try
 		{
-			// Solution 1: slower, consumes less memory
+			Table table = new TableDiary();
 
-			json.beginArray();
-			while (json.hasNext())
+			SQLiteDatabase db = new MyDBHelper(context).getWritableDatabase();
+			db.beginTransaction();
+			try
 			{
-				add(reader.read(json));
+				json.beginArray();
+
+				ContentValues newValues = new ContentValues();
+				int count = 0;
+
+				while (json.hasNext())
+				{
+					Versioned<DiaryRecord> record = reader.read(json);
+
+					newValues.clear();
+					newValues.put(TableDiary.COLUMN_TIMESTAMP, Utils.formatTimeUTC(record.getTimeStamp()));
+					newValues.put(TableDiary.COLUMN_HASH, record.getHash());
+					newValues.put(TableDiary.COLUMN_VERSION, record.getVersion());
+					newValues.put(TableDiary.COLUMN_DELETED, record.isDeleted());
+					newValues.put(TableDiary.COLUMN_CONTENT, serializer.write(record.getData()));
+					newValues.put(TableDiary.COLUMN_TIMECACHE, Utils.formatTimeUTC(record.getData().getTime()));
+
+					newValues.put(TableDiary.COLUMN_ID, record.getId());
+					db.insertWithOnConflict(table.getName(), null, newValues, SQLiteDatabase.CONFLICT_IGNORE);
+
+					if (++count % 1000 == 0)
+					{
+						db.setTransactionSuccessful();
+						db.endTransaction();
+						db.beginTransaction();
+					}
+				}
+				json.endArray();
+
+				db.setTransactionSuccessful();
 			}
-			json.endArray();
-
-			// Solution 2: faster (when done in single transaction), but consumes more memory
-
-			// List<Versioned<DiaryRecord>> items = versionedDiaryRecordReader.readAll(reader);
-			// service.save(items);
+			finally
+			{
+				db.endTransaction();
+				db.close();
+				resolver.notifyChange(TableDiary.CONTENT_URI, null);
+			}
 		}
 		finally
 		{

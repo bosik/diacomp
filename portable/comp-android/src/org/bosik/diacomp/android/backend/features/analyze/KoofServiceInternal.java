@@ -37,7 +37,7 @@ public class KoofServiceInternal
 		if (null == instance)
 		{
 			Log.i(TAG, "Koof service initialization...");
-			DiaryService localDiary = LocalDiary.getInstance(context.getContentResolver());
+			DiaryService localDiary = LocalDiary.getInstance(context);
 			AnalyzeCore analyzeService = AnalyzeCoreInternal.getInstance();
 			// TODO: hardcoded adaptation
 			instance = new KoofServiceImpl(context, localDiary, analyzeService, ANALYZE_DAYS_PERIOD, 0.995);

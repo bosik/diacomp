@@ -54,7 +54,7 @@ public class BackgroundService extends Service
 
 					void relevantIndexation(ContentResolver resolver)
 					{
-						final DiaryService diary = LocalDiary.getInstance(resolver);
+						final DiaryService diary = LocalDiary.getInstance(BackgroundService.this);
 						final FoodBaseService foodBase = LocalFoodBase.getInstance(resolver);
 						final DishBaseService dishBase = LocalDishBase.getInstance(resolver);
 

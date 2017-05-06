@@ -108,7 +108,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			int counterDiary = 0;
 			try
 			{
-				DiaryService localDiary = new DiaryLocalService(contentResolver);
+				DiaryService localDiary = new DiaryLocalService(getContext());
 				DiaryService webDiary = new DiaryWebService(webClient);
 				counterDiary = new Synchronizer2<DiaryRecord>(localDiary, webDiary, MAX_DIARY_READ, MAX_DIARY_WRITE)
 						.synchronize();

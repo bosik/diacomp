@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ * 
  */
 package org.bosik.diacomp.android.backend.features.diary;
 
@@ -24,7 +24,6 @@ import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
-import android.content.ContentResolver;
 import android.test.AndroidTestCase;
 
 public class TestDiaryLocalServicePerformance extends AndroidTestCase
@@ -32,8 +31,7 @@ public class TestDiaryLocalServicePerformance extends AndroidTestCase
 	public void test_PerfomanceOnSelect()
 	{
 		assertNotNull(getContext());
-		ContentResolver resolver = getContext().getContentResolver();
-		final DiaryService service = new DiaryLocalService(resolver);
+		final DiaryService service = new DiaryLocalService(getContext());
 
 		long start = System.currentTimeMillis();
 
@@ -47,13 +45,13 @@ public class TestDiaryLocalServicePerformance extends AndroidTestCase
 			if (time > 0)
 			{
 				double speed = (double) items.size() / time * 1000;
-				System.out.println(String.format("%d items parsed in %d msec (%.2f items/sec)", items.size(), time,
-						speed));
+				System.out.println(
+						String.format("%d items parsed in %d msec (%.2f items/sec)", items.size(), time, speed));
 			}
 			else
 			{
-				System.out.println(String.format("%d items parsed in %d msec (speed in not available)", items.size(),
-						time));
+				System.out.println(
+						String.format("%d items parsed in %d msec (speed in not available)", items.size(), time));
 			}
 		}
 		else

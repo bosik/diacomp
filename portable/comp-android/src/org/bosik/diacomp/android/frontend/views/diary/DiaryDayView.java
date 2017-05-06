@@ -147,7 +147,7 @@ public class DiaryDayView extends LinearLayout
 
 		if (diaryService == null)
 		{
-			diaryService = new DiaryLocalService(getContext().getContentResolver());
+			diaryService = new DiaryLocalService(getContext());
 		}
 
 		listRecs = (ListView) findViewById(R.id.listRecs);

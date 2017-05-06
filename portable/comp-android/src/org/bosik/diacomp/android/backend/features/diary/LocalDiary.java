@@ -19,7 +19,7 @@
 package org.bosik.diacomp.android.backend.features.diary;
 
 import org.bosik.diacomp.core.services.diary.DiaryService;
-import android.content.ContentResolver;
+import android.content.Context;
 import android.util.Log;
 
 public class LocalDiary
@@ -27,12 +27,12 @@ public class LocalDiary
 	private static final String	TAG	= LocalDiary.class.getSimpleName();
 	private static DiaryService	instance;
 
-	public static synchronized DiaryService getInstance(ContentResolver resolver)
+	public static synchronized DiaryService getInstance(Context context)
 	{
 		if (null == instance)
 		{
 			Log.i(TAG, "Local diary initialization...");
-			instance = new DiaryLocalService(resolver);
+			instance = new DiaryLocalService(context);
 		}
 		return instance;
 	}
