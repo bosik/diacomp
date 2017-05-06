@@ -45,7 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@Path("export/")
+@Path("export")
 public class ExportRest
 {
 	// PART OF PUBLIC API
