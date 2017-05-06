@@ -103,7 +103,7 @@ public class DiaryRecordReader extends StreamReader<DiaryRecord>
 				}
 				default:
 				{
-					json.skipValue();
+					throw new IllegalArgumentException("Unexpected property: " + name);
 				}
 			}
 		}

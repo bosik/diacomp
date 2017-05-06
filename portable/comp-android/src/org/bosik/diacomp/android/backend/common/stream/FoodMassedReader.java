@@ -68,7 +68,7 @@ public class FoodMassedReader extends StreamReader<FoodMassed>
 				}
 				default:
 				{
-					json.skipValue();
+					throw new IllegalArgumentException("Unexpected property: " + name);
 				}
 			}
 		}

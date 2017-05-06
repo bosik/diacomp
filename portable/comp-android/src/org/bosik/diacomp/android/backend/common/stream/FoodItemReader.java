@@ -73,7 +73,7 @@ public class FoodItemReader extends StreamReader<FoodItem>
 				}
 				default:
 				{
-					json.skipValue();
+					throw new IllegalArgumentException("Unexpected property: " + name);
 				}
 			}
 		}

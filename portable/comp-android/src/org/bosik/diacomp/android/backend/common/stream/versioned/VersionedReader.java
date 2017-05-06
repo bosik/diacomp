@@ -41,7 +41,9 @@ public class VersionedReader<T> extends StreamReader<Versioned<T>>
 		json.beginObject();
 		while (json.hasNext())
 		{
-			switch (json.nextName())
+			String name = json.nextName();
+
+			switch (name)
 			{
 				case "id":
 				{
@@ -75,7 +77,7 @@ public class VersionedReader<T> extends StreamReader<Versioned<T>>
 				}
 				default:
 				{
-					json.skipValue();
+					throw new IllegalArgumentException("Unexpected property: " + name);
 				}
 			}
 		}
