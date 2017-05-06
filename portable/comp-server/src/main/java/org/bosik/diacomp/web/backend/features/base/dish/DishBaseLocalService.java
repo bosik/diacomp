@@ -562,7 +562,7 @@ public class DishBaseLocalService implements DishBaseService, ExportService
 						s.append("\"hash\":\"").append(hash).append("\",");
 						s.append("\"version\":").append(version).append(",");
 						s.append("\"deleted\":").append(deleted).append(",");
-						s.append("\"content\":").append(content);
+						s.append("\"data\":").append(content);
 						s.append("}");
 					}
 
