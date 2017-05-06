@@ -64,10 +64,10 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 	private boolean				mNewAccount;
 
 	// UI
-	private EditText			mEmailView;
-	EditText					mPasswordView;
-	View						mLoginFormView;
-	View						mLoginStatusView;
+	private EditText			textEmail;
+	private EditText			textPassword;
+	private View				mLoginFormView;
+	private View				mLoginStatusView;
 	private TextView			mLoginStatusMessageView;
 
 	@Override
@@ -83,11 +83,11 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 
 		// Set up the login form.
 		mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
-		mEmailView = (EditText) findViewById(R.id.accountName);
-		mEmailView.setText(mEmail);
+		textEmail = (EditText) findViewById(R.id.accountName);
+		textEmail.setText(mEmail);
 
-		mPasswordView = (EditText) findViewById(R.id.accountPassword);
-		mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener()
+		textPassword = (EditText) findViewById(R.id.accountPassword);
+		textPassword.setOnEditorActionListener(new TextView.OnEditorActionListener()
 		{
 			@Override
 			public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent)
@@ -147,12 +147,12 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		}
 
 		// Reset errors.
-		mEmailView.setError(null);
-		mPasswordView.setError(null);
+		textEmail.setError(null);
+		textPassword.setError(null);
 
 		// Store values at the time of the login attempt.
-		mEmail = mEmailView.getText().toString();
-		mPassword = mPasswordView.getText().toString();
+		mEmail = textEmail.getText().toString();
+		mPassword = textPassword.getText().toString();
 
 		boolean cancel = false;
 		View focusView = null;
@@ -160,28 +160,28 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		// Check for a valid password.
 		if (TextUtils.isEmpty(mPassword))
 		{
-			mPasswordView.setError(getString(R.string.login_error_field_required));
-			focusView = mPasswordView;
+			textPassword.setError(getString(R.string.login_error_field_required));
+			focusView = textPassword;
 			cancel = true;
 		}
 		else if (mPassword.length() < 6)
 		{
-			mPasswordView.setError(getString(R.string.login_error_invalid_password));
-			focusView = mPasswordView;
+			textPassword.setError(getString(R.string.login_error_invalid_password));
+			focusView = textPassword;
 			cancel = true;
 		}
 
 		// Check for a valid email address.
 		if (TextUtils.isEmpty(mEmail))
 		{
-			mEmailView.setError(getString(R.string.login_error_field_required));
-			focusView = mEmailView;
+			textEmail.setError(getString(R.string.login_error_field_required));
+			focusView = textEmail;
 			cancel = true;
 		}
 		else if (!mEmail.contains("@"))
 		{
-			mEmailView.setError(getString(R.string.login_error_invalid_email));
-			focusView = mEmailView;
+			textEmail.setError(getString(R.string.login_error_invalid_email));
+			focusView = textEmail;
 			cancel = true;
 		}
 
@@ -276,8 +276,8 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			}
 			else
 			{
-				mPasswordView.setError(getString(R.string.login_error_incorrect_password));
-				mPasswordView.requestFocus();
+				textPassword.setError(getString(R.string.login_error_incorrect_password));
+				textPassword.requestFocus();
 			}
 		}
 
