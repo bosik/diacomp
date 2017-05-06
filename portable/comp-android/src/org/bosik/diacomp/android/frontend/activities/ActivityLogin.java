@@ -18,6 +18,8 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
@@ -56,9 +58,6 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 
 	UserLoginTask				mAuthTask					= null;
 
-	String						mEmail;
-	String						mPassword;
-
 	String						mAccountType;
 	private String				mAuthTokenType;
 	private boolean				mNewAccount;
@@ -75,16 +74,17 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 	{
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.activity_login);
-
+		// read extras
+		String email = getIntent().getStringExtra(EXTRA_EMAIL);
 		mAccountType = getIntent().getStringExtra(ARG_ACCOUNT_TYPE);
 		mAuthTokenType = getIntent().getStringExtra(ARG_AUTH_TYPE);
 		mNewAccount = getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false);
 
-		// Set up the login form.
-		mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
+		// build UI
+		setContentView(R.layout.activity_login);
+
 		textEmail = (EditText) findViewById(R.id.accountName);
-		textEmail.setText(mEmail);
+		textEmail.setText(email);
 
 		textPassword = (EditText) findViewById(R.id.accountPassword);
 		textPassword.setOnEditorActionListener(new TextView.OnEditorActionListener()
@@ -146,59 +146,48 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			return;
 		}
 
-		// Reset errors.
+		List<View> errorFields = new ArrayList<View>();
 		textEmail.setError(null);
 		textPassword.setError(null);
 
-		// Store values at the time of the login attempt.
-		mEmail = textEmail.getText().toString();
-		mPassword = textPassword.getText().toString();
+		String email = textEmail.getText().toString();
+		String password = textPassword.getText().toString();
 
-		boolean cancel = false;
-		View focusView = null;
-
-		// Check for a valid password.
-		if (TextUtils.isEmpty(mPassword))
-		{
-			textPassword.setError(getString(R.string.login_error_field_required));
-			focusView = textPassword;
-			cancel = true;
-		}
-		else if (mPassword.length() < 6)
-		{
-			textPassword.setError(getString(R.string.login_error_invalid_password));
-			focusView = textPassword;
-			cancel = true;
-		}
-
-		// Check for a valid email address.
-		if (TextUtils.isEmpty(mEmail))
+		// Check email address
+		if (TextUtils.isEmpty(email))
 		{
 			textEmail.setError(getString(R.string.login_error_field_required));
-			focusView = textEmail;
-			cancel = true;
+			errorFields.add(textEmail);
 		}
-		else if (!mEmail.contains("@"))
+		else if (!email.contains("@"))
 		{
 			textEmail.setError(getString(R.string.login_error_invalid_email));
-			focusView = textEmail;
-			cancel = true;
+			errorFields.add(textEmail);
 		}
 
-		if (cancel)
+		// Check password
+		if (TextUtils.isEmpty(password))
 		{
-			// There was an error; don't attempt login and focus the first
-			// form field with an error.
-			focusView.requestFocus();
+			textPassword.setError(getString(R.string.login_error_field_required));
+			errorFields.add(textPassword);
+		}
+		else if (password.length() < 6)
+		{
+			textPassword.setError(getString(R.string.login_error_invalid_password));
+			errorFields.add(textPassword);
+		}
+
+		if (errorFields.isEmpty())
+		{
+			mLoginStatusMessageView.setText(R.string.login_login_progress_signing_in);
+			showProgress(true);
+
+			mAuthTask = new UserLoginTask();
+			mAuthTask.execute(email, password);
 		}
 		else
 		{
-			// Show a progress spinner, and kick off a background task to
-			// perform the user login attempt.
-			mLoginStatusMessageView.setText(R.string.login_login_progress_signing_in);
-			showProgress(true);
-			mAuthTask = new UserLoginTask();
-			mAuthTask.execute((Void) null);
+			errorFields.get(0).requestFocus();
 		}
 	}
 
@@ -246,12 +235,15 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		}
 	}
 
-	public class UserLoginTask extends AsyncTask<Void, Void, Boolean>
+	public class UserLoginTask extends AsyncTask<String, Void, Boolean>
 	{
 		@Override
-		protected Boolean doInBackground(Void... params)
+		protected Boolean doInBackground(String... params)
 		{
-			WebClient client = WebClientInternal.getInstance(ActivityLogin.this, mEmail, mPassword);
+			String email = params[0];
+			String password = params[1];
+
+			WebClient client = WebClientInternal.getInstance(ActivityLogin.this, email, password);
 
 			try
 			{
