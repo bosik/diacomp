@@ -134,11 +134,6 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		return true;
 	}
 
-	/**
-	 * Attempts to sign in or register the account specified by the login form. If there are form
-	 * errors (invalid email, missing fields, etc.), the errors are presented and no actual login
-	 * attempt is made.
-	 */
 	public void attemptLogin()
 	{
 		if (mAuthTask != null)
@@ -281,7 +276,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		}
 	}
 
-	public void submit()
+	void submit()
 	{
 		final String userName = ((TextView) findViewById(R.id.accountName)).getText().toString();
 		final String userPass = ((TextView) findViewById(R.id.accountPassword)).getText().toString();
