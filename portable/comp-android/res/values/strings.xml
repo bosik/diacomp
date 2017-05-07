@@ -109,7 +109,7 @@
     <string name="login_error_field_required">This field is required</string>
     <string name="login_error_incorrect_password">This password is incorrect</string>
     <string name="login_error_invalid_email">This email address is invalid</string>
-    <string name="login_error_invalid_password">This password is too short</string>
+    <string name="login_error_invalid_password">At least 6 characters</string>
     <string name="login_login_progress_signing_in">Signing in…</string>
     <string name="login_prompt_email">Email</string>
     <string name="login_prompt_password">Password</string>

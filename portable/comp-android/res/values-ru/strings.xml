@@ -107,7 +107,7 @@
     <string name="login_error_field_required">Введите значение</string>
     <string name="login_error_incorrect_password">Неверный пароль</string>
     <string name="login_error_invalid_email">Неверный адрес электронной почты</string>
-    <string name="login_error_invalid_password">Слишком короткий пароль</string>
+    <string name="login_error_invalid_password">Не менее 6 символов</string>
     <string name="login_login_progress_signing_in">Вход…</string>
     <string name="login_prompt_email">Email</string>
     <string name="login_prompt_password">Пароль</string>
