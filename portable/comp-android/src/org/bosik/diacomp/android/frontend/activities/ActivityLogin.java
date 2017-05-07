@@ -34,6 +34,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -46,6 +47,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -194,6 +196,17 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	void showProgress(final boolean show)
 	{
+		if (show)
+		{
+			View view = getCurrentFocus();
+			if (view != null)
+			{
+				// hide keyboard
+				InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+			}
+		}
+
 		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
 		// for very easy animations. If available, use these APIs to fade-in
 		// the progress spinner.
