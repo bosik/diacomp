@@ -156,7 +156,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			int countPreferences = 0;
 			try
 			{
-				PreferencesService localPreferences = new PreferencesLocalService(contentResolver);
+				PreferencesService localPreferences = new PreferencesLocalService(getContext());
 				PreferencesService webPreferences = new PreferencesWebService(webClient);
 				countPreferences = PreferencesSync.synchronizePreferences(localPreferences, webPreferences) ? 1 : 0;
 			}

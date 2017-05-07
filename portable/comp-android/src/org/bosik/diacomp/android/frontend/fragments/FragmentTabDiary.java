@@ -244,7 +244,7 @@ public class FragmentTabDiary extends Fragment
 
 		// services
 		diary = new DiaryLocalService(getActivity());
-		preferences = new PreferencesTypedService(new PreferencesLocalService(getActivity().getContentResolver()));
+		preferences = new PreferencesTypedService(new PreferencesLocalService(getActivity()));
 
 		// Widgets binding
 		View rootView = inflater.inflate(R.layout.fragment_tab_diary, container, false);

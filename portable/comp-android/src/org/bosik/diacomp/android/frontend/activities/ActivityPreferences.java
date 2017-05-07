@@ -49,7 +49,7 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 		super.onCreate(savedInstanceState);
 
 		// Initializing services
-		syncablePreferences = new PreferencesTypedService(new PreferencesLocalService(getContentResolver()));
+		syncablePreferences = new PreferencesTypedService(new PreferencesLocalService(this));
 		devicePreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
 		// Filling values
