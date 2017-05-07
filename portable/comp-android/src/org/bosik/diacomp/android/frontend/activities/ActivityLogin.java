@@ -25,9 +25,9 @@ import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
-import org.bosik.diacomp.android.backend.features.quickImport.ImportService;
-import org.bosik.diacomp.android.backend.features.quickImport.ImportService.Progress;
-import org.bosik.diacomp.android.backend.features.quickImport.ImportService.ProgressCallback;
+import org.bosik.diacomp.android.backend.features.quickImport.ImportHelper;
+import org.bosik.diacomp.android.backend.features.quickImport.ImportHelper.Progress;
+import org.bosik.diacomp.android.backend.features.quickImport.ImportHelper.ProgressCallback;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
@@ -360,7 +360,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			{
 				try
 				{
-					ImportService.importData(ActivityLogin.this, new ProgressCallback()
+					ImportHelper.importData(ActivityLogin.this, new ProgressCallback()
 					{
 						@SuppressWarnings("synthetic-access")
 						@Override

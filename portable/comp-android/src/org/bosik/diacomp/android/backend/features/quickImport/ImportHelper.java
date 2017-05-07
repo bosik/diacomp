@@ -16,9 +16,9 @@ import org.bosik.diacomp.core.utils.ZipUtils.Entry;
 import android.content.Context;
 import android.util.Log;
 
-public class ImportService
+public class ImportHelper
 {
-	private static final String	TAG					= ImportService.class.getSimpleName();
+	private static final String	TAG					= ImportHelper.class.getSimpleName();
 
 	// PART OF PUBLIC API
 	public static final String	ENTRY_DIARY			= "diary.json";
