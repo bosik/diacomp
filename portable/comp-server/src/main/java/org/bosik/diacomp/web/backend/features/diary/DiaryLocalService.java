@@ -38,7 +38,7 @@ import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
-import org.bosik.diacomp.core.services.transfer.ExportService;
+import org.bosik.diacomp.core.services.transfer.Exportable;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.CachedHashTree;
 import org.bosik.diacomp.web.backend.common.CachedHashTree.TreeType;
@@ -53,7 +53,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 // @Profile("real")
-public class DiaryLocalService implements DiaryService, ExportService
+public class DiaryLocalService implements DiaryService, Exportable
 {
 	// Diary table
 	private static final String				TABLE_DIARY				= "diary2";

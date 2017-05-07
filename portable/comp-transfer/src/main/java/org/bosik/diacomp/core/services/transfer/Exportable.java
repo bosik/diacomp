@@ -1,6 +1,6 @@
 package org.bosik.diacomp.core.services.transfer;
 
-public interface ExportService
+public interface Exportable
 {
 	String exportData();
 }

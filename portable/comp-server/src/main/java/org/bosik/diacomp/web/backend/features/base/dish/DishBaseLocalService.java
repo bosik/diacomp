@@ -39,7 +39,7 @@ import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
-import org.bosik.diacomp.core.services.transfer.ExportService;
+import org.bosik.diacomp.core.services.transfer.Exportable;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.CachedHashTree;
 import org.bosik.diacomp.web.backend.common.CachedHashTree.TreeType;
@@ -54,7 +54,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 // @Profile("real")
-public class DishBaseLocalService implements DishBaseService, ExportService
+public class DishBaseLocalService implements DishBaseService, Exportable
 {
 	// Dishbase table
 	private static final String					TABLE_DISHBASE				= "dishbase2";
