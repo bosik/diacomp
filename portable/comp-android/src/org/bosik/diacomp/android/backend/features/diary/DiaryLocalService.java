@@ -46,7 +46,7 @@ import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
-import org.bosik.diacomp.core.services.transfer.ImportService;
+import org.bosik.diacomp.core.services.transfer.Importable;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
@@ -63,7 +63,7 @@ import android.os.Handler;
 import android.util.JsonReader;
 import android.util.Log;
 
-public class DiaryLocalService implements DiaryService, ImportService
+public class DiaryLocalService implements DiaryService, Importable
 {
 	static final String									TAG				= DiaryLocalService.class.getSimpleName();
 

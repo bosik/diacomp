@@ -45,7 +45,7 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
-import org.bosik.diacomp.core.services.transfer.ImportService;
+import org.bosik.diacomp.core.services.transfer.Importable;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
@@ -57,7 +57,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.JsonReader;
 
-public class DishBaseLocalService implements DishBaseService, ImportService
+public class DishBaseLocalService implements DishBaseService, Importable
 {
 	private static final String				TAG				= DishBaseLocalService.class.getSimpleName();
 

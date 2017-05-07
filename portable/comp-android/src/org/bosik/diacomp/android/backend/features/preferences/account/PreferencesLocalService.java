@@ -31,7 +31,7 @@ import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.preferences.Preference;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.bosik.diacomp.core.services.preferences.PreferencesService;
-import org.bosik.diacomp.core.services.transfer.ImportService;
+import org.bosik.diacomp.core.services.transfer.Importable;
 import org.bosik.diacomp.core.utils.Utils;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -39,7 +39,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
-public class PreferencesLocalService extends PreferencesService implements ImportService
+public class PreferencesLocalService extends PreferencesService implements Importable
 {
 	static final String									TAG			= PreferencesLocalService.class.getSimpleName();
 
