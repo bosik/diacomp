@@ -669,7 +669,6 @@ public class FoodBaseLocalService implements FoodBaseService, ImportService
 				{
 					Versioned<FoodItem> record = reader.read(json);
 
-					newValues.clear();
 					newValues.put(TableFoodbase.COLUMN_ID, record.getId());
 					newValues.put(TableFoodbase.COLUMN_TIMESTAMP, Utils.formatTimeUTC(record.getTimeStamp()));
 					newValues.put(TableFoodbase.COLUMN_HASH, record.getHash());

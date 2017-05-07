@@ -624,7 +624,6 @@ public class DishBaseLocalService implements DishBaseService, ImportService
 				{
 					Versioned<DishItem> record = reader.read(json);
 
-					newValues.clear();
 					newValues.put(TableDishbase.COLUMN_ID, record.getId());
 					newValues.put(TableDishbase.COLUMN_TIMESTAMP, Utils.formatTimeUTC(record.getTimeStamp()));
 					newValues.put(TableDishbase.COLUMN_HASH, record.getHash());

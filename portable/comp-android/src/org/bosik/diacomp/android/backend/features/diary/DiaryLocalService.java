@@ -610,7 +610,6 @@ public class DiaryLocalService implements DiaryService, ImportService
 				{
 					Versioned<DiaryRecord> record = reader.read(json);
 
-					newValues.clear();
 					newValues.put(TableDiary.COLUMN_ID, record.getId());
 					newValues.put(TableDiary.COLUMN_TIMESTAMP, Utils.formatTimeUTC(record.getTimeStamp()));
 					newValues.put(TableDiary.COLUMN_HASH, record.getHash());
