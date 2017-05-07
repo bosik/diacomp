@@ -20,33 +20,35 @@ package org.bosik.diacomp.android.backend.features.preferences.account;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
-import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TablePreferences;
-import org.bosik.diacomp.android.backend.common.stream.PreferenceReader;
-import org.bosik.diacomp.android.backend.common.stream.StreamReader;
+import org.bosik.diacomp.core.persistence.parsers.Parser;
+import org.bosik.diacomp.core.persistence.parsers.ParserPreferenceEntry;
+import org.bosik.diacomp.core.persistence.serializers.Serializer;
+import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.preferences.Preference;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.bosik.diacomp.core.services.preferences.PreferencesService;
 import org.bosik.diacomp.core.services.transfer.ImportService;
+import org.bosik.diacomp.core.utils.Utils;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.JsonReader;
 import android.util.Log;
 
 public class PreferencesLocalService extends PreferencesService implements ImportService
 {
-	static final String				TAG	= PreferencesLocalService.class.getSimpleName();
+	static final String									TAG			= PreferencesLocalService.class.getSimpleName();
 
-	private final Context			context;
-	private final ContentResolver	resolver;
+	private final Context								context;
+	private final ContentResolver						resolver;
+
+	private final Parser<PreferenceEntry<String>>		parser		= new ParserPreferenceEntry();
+	private final Serializer<PreferenceEntry<String>>	serializer	= new SerializerAdapter<PreferenceEntry<String>>(
+			parser);
 
 	public PreferencesLocalService(Context context)
 	{
@@ -228,44 +230,35 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 	@Override
 	public void importData(InputStream stream) throws IOException
 	{
-		StreamReader<PreferenceEntry<String>> reader = new PreferenceReader();
+		String s = Utils.readStream(stream);
+		List<PreferenceEntry<String>> items = serializer.readAll(s);
+		update(items);
 
-		JsonReader json = new JsonReader(new InputStreamReader(stream, "UTF-8"));
-		try
-		{
-			Table table = new TablePreferences();
-
-			SQLiteDatabase db = new MyDBHelper(context).getWritableDatabase();
-			db.beginTransaction();
-			try
-			{
-				json.beginArray();
-				ContentValues newValues = new ContentValues();
-
-				while (json.hasNext())
-				{
-					PreferenceEntry<String> record = reader.read(json);
-
-					newValues.put(TablePreferences.COLUMN_KEY, record.getType().getKey());
-					newValues.put(TablePreferences.COLUMN_VALUE, record.getValue());
-					newValues.put(TablePreferences.COLUMN_VERSION, record.getVersion());
-
-					db.insertWithOnConflict(table.getName(), null, newValues, SQLiteDatabase.CONFLICT_IGNORE);
-				}
-
-				json.endArray();
-				db.setTransactionSuccessful();
-			}
-			finally
-			{
-				db.endTransaction();
-				db.close();
-				resolver.notifyChange(TablePreferences.CONTENT_URI, null);
-			}
-		}
-		finally
-		{
-			json.close();
-		}
+		// Table table = new TablePreferences();
+		//
+		// SQLiteDatabase db = new MyDBHelper(context).getWritableDatabase();
+		// db.beginTransaction();
+		// try
+		// {
+		// ContentValues newValues = new ContentValues();
+		//
+		// for (PreferenceEntry<String> item : items)
+		// {
+		// newValues.put(TablePreferences.COLUMN_KEY, item.getType().getKey());
+		// newValues.put(TablePreferences.COLUMN_VALUE, item.getValue());
+		// newValues.put(TablePreferences.COLUMN_VERSION, item.getVersion());
+		//
+		// db.insertWithOnConflict(table.getName(), null, newValues,
+		// SQLiteDatabase.CONFLICT_IGNORE);
+		// }
+		//
+		// db.setTransactionSuccessful();
+		// }
+		// finally
+		// {
+		// db.endTransaction();
+		// db.close();
+		// resolver.notifyChange(TablePreferences.CONTENT_URI, null);
+		// }
 	}
 }
