@@ -42,6 +42,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -72,11 +73,11 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 	private boolean				mNewAccount;
 
 	// UI
-	private EditText			textEmail;
-	private EditText			textPassword;
-	private View				mLoginFormView;
-	private View				mLoginStatusView;
-	private TextView			mLoginStatusMessageView;
+	EditText					textEmail;
+	EditText					textPassword;
+	View						mLoginFormView;
+	View						mLoginStatusView;
+	TextView					mLoginStatusMessageView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -110,6 +111,22 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		mLoginFormView = findViewById(R.id.login_form);
 		mLoginStatusView = findViewById(R.id.login_status);
 		mLoginStatusMessageView = (TextView) findViewById(R.id.login_status_message);
+
+		findViewById(R.id.buttonLoginShowPassword).setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				if (textPassword.getInputType() == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD)
+				{
+					textPassword.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_CLASS_TEXT);
+				}
+				else
+				{
+					textPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+				}
+			}
+		});
 
 		findViewById(R.id.buttonLoginSignIn).setOnClickListener(new View.OnClickListener()
 		{
@@ -345,6 +362,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 				{
 					ImportService.importData(ActivityLogin.this, new ProgressCallback()
 					{
+						@SuppressWarnings("synthetic-access")
 						@Override
 						public void onProgress(Progress step, int done, int total)
 						{
