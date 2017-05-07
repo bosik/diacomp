@@ -17,28 +17,27 @@
  */
 package org.bosik.diacomp.web.backend.features.auth;
 
-import static org.junit.Assert.assertEquals;
-import org.bosik.diacomp.web.backend.common.Config;
-import org.bosik.diacomp.web.backend.features.user.auth.AuthService;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.runner.RunWith;
 import org.springframework.stereotype.Service;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @Service
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "/applicationContext.xml" })
 public class TestMySQLAuthDAO
 {
-	@Autowired
-	private AuthService	authService;
-
-	@Test
-	@Ignore
-	public void test()
-	{
-		final String login = Config.get(Config.KEY_TEST_LOGIN);
-		final String pass = Config.get(Config.KEY_TEST_PASSWORD);
-
-		int id = authService.login(login, pass);
-		assertEquals(1, id);
-	}
+	// @Autowired
+	// private AuthService authService;
+	//
+	// @Test
+	// @Ignore
+	// public void test()
+	// {
+	// final String login = Config.get(Config.KEY_TEST_LOGIN);
+	// final String pass = Config.get(Config.KEY_TEST_PASSWORD);
+	//
+	// int id = authService.login(login, pass);
+	// assertEquals(1, id);
+	// }
 }

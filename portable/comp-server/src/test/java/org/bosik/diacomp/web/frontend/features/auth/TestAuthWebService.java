@@ -17,71 +17,82 @@
  */
 package org.bosik.diacomp.web.frontend.features.auth;
 
+import org.bosik.diacomp.web.backend.common.Config;
+
 public class TestAuthWebService
 {
 	// TODO: implement REST testing
 
-	//	public static final String	TEST_LOGIN					= Config.getTestLogin();
-	//	public static final String	TEST_PASSWORD				= Config.getTestPassword();
-	//	public static final int		TEST_API_VERSION_CURRENT	= Config.getAPICurrent();
-	//	public static final int		TEST_API_VERSION_SUPPORTED	= Config.getAPISupported();
-	//
-	//	private AuthService			authService					= new AuthRestClient();
-	//
-	//	@Test
-	//	public void testLogin_correct()
-	//	{
-	//		authService.login(TEST_LOGIN, TEST_PASSWORD, TEST_API_VERSION_CURRENT);
-	//	}
-	//
-	//	@Test(expected = NotAuthorizedException.class)
-	//	public void testLogin_wrongPass()
-	//	{
-	//		authService.login(TEST_LOGIN, TEST_PASSWORD + "#:&%$'\"/\\", TEST_API_VERSION_CURRENT);
-	//	}
-	//
-	//	@Test(expected = NotAuthorizedException.class)
-	//	public void testLogin_wrongLogin()
-	//	{
-	//		authService.login(TEST_LOGIN + "#:&%$'\"/\\", TEST_PASSWORD, TEST_API_VERSION_CURRENT);
-	//	}
-	//
-	//	@Test(expected = UnsupportedAPIException.class)
-	//	public void testLogin_unsupportedApi()
-	//	{
-	//		authService.login(TEST_LOGIN, TEST_PASSWORD, TEST_API_VERSION_SUPPORTED - 1);
-	//	}
-	//
-	//	@Test(expected = DeprecatedAPIException.class)
-	//	public void testLogin_deprecatedApi()
-	//	{
-	//		authService.login(TEST_LOGIN, TEST_PASSWORD, TEST_API_VERSION_SUPPORTED);
-	//	}
-	//
-	//	@Test
-	//	public void testLogout()
-	//	{
-	//		authService.logout();
-	//	}
+	public static final String	TEST_LOGIN					= Config.get(Config.KEY_TEST_LOGIN);
+	public static final String	TEST_PASSWORD				= Config.get(Config.KEY_TEST_PASSWORD);
+	public static final int		TEST_API_VERSION_CURRENT	= 20;									// Config.get(Config.KEY_)
+	public static final int		TEST_API_VERSION_SUPPORTED	= 20;									// Config.getAPISupported();
 
-	//	@Test(expected = NotAuthorizedException.class)
-	//	public void getRecordsViaGuids_Unauth_Exception()
-	//	{
-	//		authService.logout();
-	//		diaryService.getRecords(Collections.<String> emptyList());
-	//	}
+	// private AuthService authService = new AuthRestClient();
 	//
-	//	@Test(expected = NotAuthorizedException.class)
-	//	public void getRecordsNew_Unauth_Exception()
-	//	{
-	//		authService.logout();
-	//		diaryService.getRecords(new Date(), true);
-	//	}
+	// {
+	// HttpClientBuilder.create().build().
+	// HttpClient mHttpClient = new DefaultHttpClient();
+	// final HttpParams params = mHttpClient.getParams();
+	// HttpConnectionParams.setConnectionTimeout(params, connectionTimeout);
+	// HttpConnectionParams.setSoTimeout(params, connectionTimeout);
+	// ConnManagerParams.setTimeout(params, connectionTimeout);
+	// }
 	//
-	//	@Test(expected = NotAuthorizedException.class)
-	//	public void getRecordsPeriod_Unauth_Exception()
-	//	{
-	//		authService.logout();
-	//		diaryService.getRecords(new Date(), new Date(), true);
-	//	}
+	// @Test
+	// public void testLogin_correct()
+	// {
+	// authService.login(TEST_LOGIN, TEST_PASSWORD, TEST_API_VERSION_CURRENT);
+	// }
+	//
+	// @Test(expected = NotAuthorizedException.class)
+	// public void testLogin_wrongPass()
+	// {
+	// authService.login(TEST_LOGIN, TEST_PASSWORD + "#:&%$'\"/\\", TEST_API_VERSION_CURRENT);
+	// }
+	//
+	// @Test(expected = NotAuthorizedException.class)
+	// public void testLogin_wrongLogin()
+	// {
+	// authService.login(TEST_LOGIN + "#:&%$'\"/\\", TEST_PASSWORD, TEST_API_VERSION_CURRENT);
+	// }
+	//
+	// @Test(expected = UnsupportedAPIException.class)
+	// public void testLogin_unsupportedApi()
+	// {
+	// authService.login(TEST_LOGIN, TEST_PASSWORD, TEST_API_VERSION_SUPPORTED - 1);
+	// }
+	//
+	// @Test(expected = DeprecatedAPIException.class)
+	// public void testLogin_deprecatedApi()
+	// {
+	// authService.login(TEST_LOGIN, TEST_PASSWORD, TEST_API_VERSION_SUPPORTED);
+	// }
+	//
+	// @Test
+	// public void testLogout()
+	// {
+	// authService.logout();
+	// }
+	//
+	// @Test(expected = NotAuthorizedException.class)
+	// public void getRecordsViaGuids_Unauth_Exception()
+	// {
+	// authService.logout();
+	// diaryService.getRecords(Collections.<String> emptyList());
+	// }
+	//
+	// @Test(expected = NotAuthorizedException.class)
+	// public void getRecordsNew_Unauth_Exception()
+	// {
+	// authService.logout();
+	// diaryService.getRecords(new Date(), true);
+	// }
+	//
+	// @Test(expected = NotAuthorizedException.class)
+	// public void getRecordsPeriod_Unauth_Exception()
+	// {
+	// authService.logout();
+	// diaryService.getRecords(new Date(), new Date(), true);
+	// }
 }
