@@ -18,6 +18,7 @@
 package org.bosik.diacomp.core.utils;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -129,7 +130,7 @@ public class Utils
 		NumberFormat f = NumberFormat.getInstance(Locale.US);
 		if (f instanceof DecimalFormat)
 		{
-			DF = (DecimalFormat)f;
+			DF = (DecimalFormat) f;
 			DECIMAL_DOT = DF.getDecimalFormatSymbols().getDecimalSeparator();
 		}
 		else
@@ -249,8 +250,9 @@ public class Utils
 	}
 
 	/**
-	 * Calculates value of simple math expression. Four operations supported: +, -, *, /.
-	 * Correct processing of negative values is not guaranteed (f.e., calculate(-1/-2) = -3 instead of expected 0.5)
+	 * Calculates value of simple math expression. Four operations supported: +, -, *, /. Correct
+	 * processing of negative values is not guaranteed (f.e., calculate(-1/-2) = -3 instead of
+	 * expected 0.5)
 	 * 
 	 * @param s
 	 *            String to calculate (f.e., "2+3*4", "-10*2")
@@ -356,22 +358,22 @@ public class Utils
 
 		throw new NumberFormatException("Can't parse expression: " + s);
 
-		//		if (s.isEmpty())
-		//		{
-		//			return 0.0;
-		//		}
+		// if (s.isEmpty())
+		// {
+		// return 0.0;
+		// }
 		//
-		//		s = s.replaceAll("\\.", String.valueOf(DECIMAL_DOT));
-		//		s = s.replaceAll("\\,", String.valueOf(DECIMAL_DOT));
+		// s = s.replaceAll("\\.", String.valueOf(DECIMAL_DOT));
+		// s = s.replaceAll("\\,", String.valueOf(DECIMAL_DOT));
 		//
-		//		try
-		//		{
-		//			return (Double)engine.eval(s);
-		//		}
-		//		catch (ScriptException e)
-		//		{
-		//			throw new RuntimeException(e);
-		//		}
+		// try
+		// {
+		// return (Double)engine.eval(s);
+		// }
+		// catch (ScriptException e)
+		// {
+		// throw new RuntimeException(e);
+		// }
 	}
 
 	/**
@@ -379,7 +381,8 @@ public class Utils
 	 */
 
 	/**
-	 * [tested] Converts integer into string; non-negative single-digit numbers get one leading zero. Negative values are returning as-is.
+	 * [tested] Converts integer into string; non-negative single-digit numbers get one leading
+	 * zero. Negative values are returning as-is.
 	 * 
 	 * @param Integer
 	 *            number
@@ -651,7 +654,8 @@ public class Utils
 	}
 
 	/**
-	 * Returns random date of period [2000-01-01 00:00:00, 2029-12-28 23:59:59]. Day of month is always in [1, 28] interval.
+	 * Returns random date of period [2000-01-01 00:00:00, 2029-12-28 23:59:59]. Day of month is
+	 * always in [1, 28] interval.
 	 */
 	public static Date randomTime()
 	{
@@ -1063,6 +1067,30 @@ public class Utils
 		{
 			output.write(bytes, 0, read);
 		}
+	}
+
+	public static String readStream(InputStream stream) throws IOException
+	{
+		// Scanner s = new Scanner(stream);
+		// try
+		// {
+		// s.useDelimiter("\\A");
+		// return s.hasNext() ? s.next() : "";
+		// }
+		// finally
+		// {
+		// s.close();
+		// }
+
+		ByteArrayOutputStream result = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
+		int length;
+		while ((length = stream.read(buffer)) != -1)
+		{
+			result.write(buffer, 0, length);
+		}
+
+		return result.toString("UTF-8");
 	}
 
 	/**
