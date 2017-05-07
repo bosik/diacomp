@@ -26,6 +26,8 @@ import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
 import org.bosik.diacomp.android.backend.features.quickImport.ImportService;
+import org.bosik.diacomp.android.backend.features.quickImport.ImportService.Progress;
+import org.bosik.diacomp.android.backend.features.quickImport.ImportService.ProgressCallback;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
@@ -318,31 +320,93 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		}.execute();
 	}
 
+	class ProgressBundle
+	{
+		Progress	step;
+		int			done;
+		int			total;
+
+		public ProgressBundle(Progress step, int done, int total)
+		{
+			this.step = step;
+			this.done = done;
+			this.total = total;
+		}
+	}
+
 	void importData(final Intent intent)
 	{
-		new AsyncTask<Void, Void, Boolean>()
+		new AsyncTask<Void, ProgressBundle, Boolean>()
 		{
-			@Override
-			protected void onPreExecute()
-			{
-				// TODO: i18n
-				// mLoginStatusMessageView.setText(getString(R.string.login_tip_sync_started));
-				showProgress(true);
-				mLoginStatusMessageView.setText("Importing user data...");
-			}
-
 			@Override
 			protected Boolean doInBackground(Void... params)
 			{
 				try
 				{
-					ImportService.importData(ActivityLogin.this);
+					ImportService.importData(ActivityLogin.this, new ProgressCallback()
+					{
+						@Override
+						public void onProgress(Progress step, int done, int total)
+						{
+							publishProgress(new ProgressBundle(step, done, total));
+						}
+					});
 					return true;
 				}
 				catch (Exception e)
 				{
 					Log.e(TAG, e.getMessage(), e);
 					return false;
+				}
+			}
+
+			@Override
+			protected void onProgressUpdate(ProgressBundle... progress)
+			{
+				// TODO: i18n
+				switch (progress[0].step)
+				{
+					case INITIALIZATION:
+					{
+						mLoginStatusMessageView.setText("Initializaion...");
+						break;
+					}
+
+					case LOADING:
+					{
+						mLoginStatusMessageView.setText("Downloading...");
+						break;
+					}
+
+					case UNZIPPING:
+					{
+						mLoginStatusMessageView.setText("Unzipping...");
+						break;
+					}
+
+					case INSTALL_DIARY:
+					{
+						mLoginStatusMessageView.setText("Diary setup...");
+						break;
+					}
+
+					case INSTALL_FOODBASE:
+					{
+						mLoginStatusMessageView.setText("Food base setup...");
+						break;
+					}
+
+					case INSTALL_DISHBASE:
+					{
+						mLoginStatusMessageView.setText("Dish base setup...");
+						break;
+					}
+
+					case INSTALL_PREFERENCES:
+					{
+						mLoginStatusMessageView.setText("Preferences setup...");
+						break;
+					}
 				}
 			}
 
