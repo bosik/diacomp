@@ -35,9 +35,14 @@ import android.widget.Toast;
 
 public class UIUtils
 {
+	public static void showTip(Context context, String msg)
+	{
+		Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+	}
+
 	public static void showTip(Activity activity, String msg)
 	{
-		Toast.makeText(activity.getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+		showTip(activity.getApplicationContext(), msg);
 	}
 
 	public static void showLongTip(Activity activity, String msg)
