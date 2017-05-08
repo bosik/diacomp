@@ -59,6 +59,10 @@
             android:name=".backend.features.analyze.BackgroundService"
             android:exported="false" >
         </service>
+        <service
+            android:name=".backend.features.quickImport.ImportService"
+            android:exported="false" >
+        </service>
 
         <receiver
             android:name=".backend.features.notifications.BootCompletedIntentReceiver"

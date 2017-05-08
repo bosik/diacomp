@@ -25,9 +25,8 @@ import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
-import org.bosik.diacomp.android.backend.features.quickImport.ImportHelper;
 import org.bosik.diacomp.android.backend.features.quickImport.ImportHelper.Progress;
-import org.bosik.diacomp.android.backend.features.quickImport.ImportHelper.ProgressCallback;
+import org.bosik.diacomp.android.backend.features.quickImport.ImportService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
@@ -35,21 +34,20 @@ import android.accounts.AccountManager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -59,9 +57,8 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 	static final String			TAG							= ActivityLogin.class.getSimpleName();
 	public static final String	DEFAULT_ACCOUNT_TYPE		= "diacomp.org";
 
-	public static final String	EXTRA_EMAIL					= "com.example.android.authenticatordemo.extra.EMAIL";
-	public static final String	EXTRA_PASS					= "com.example.android.authenticatordemo.extra.PASS";
-
+	public static final String	EXTRA_EMAIL					= "org.bosik.diacomp.activityLogin.emal";
+	public static final String	EXTRA_PASS					= "org.bosik.diacomp.activityLogin.password";
 	public static final String	ARG_ACCOUNT_TYPE			= "org.bosik.diacomp.activityLogin.accountType";
 	public static final String	ARG_AUTH_TYPE				= "org.bosik.diacomp.activityLogin.authType";
 	public static final String	ARG_IS_ADDING_NEW_ACCOUNT	= "org.bosik.diacomp.activityLogin.newAccount";
@@ -79,6 +76,29 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 	View						mLoginStatusView;
 	TextView					mLoginStatusMessageView;
 
+	private BroadcastReceiver	receiver					= new BroadcastReceiver()
+															{
+																@Override
+																public void onReceive(Context context, Intent intent)
+																{
+																	ActivityLogin.this.onReceive(context, intent);
+																}
+															};
+
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+		registerReceiver(receiver, new IntentFilter(ImportService.SERVICE_CALLBACK_ID));
+	}
+
+	@Override
+	protected void onPause()
+	{
+		super.onPause();
+		unregisterReceiver(receiver);
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -94,19 +114,19 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 
 		textEmail = (EditText) findViewById(R.id.accountName);
 		textPassword = (EditText) findViewById(R.id.accountPassword);
-		textPassword.setOnEditorActionListener(new TextView.OnEditorActionListener()
-		{
-			@Override
-			public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent)
-			{
-				if (id == R.id.login || id == EditorInfo.IME_NULL)
-				{
-					attemptLogin();
-					return true;
-				}
-				return false;
-			}
-		});
+		// textPassword.setOnEditorActionListener(new TextView.OnEditorActionListener()
+		// {
+		// @Override
+		// public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent)
+		// {
+		// if (id == R.id.login || id == EditorInfo.IME_NULL)
+		// {
+		// attemptLogin();
+		// return true;
+		// }
+		// return false;
+		// }
+		// });
 
 		mLoginFormView = findViewById(R.id.login_form);
 		mLoginStatusView = findViewById(R.id.login_status);
@@ -157,13 +177,8 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		return true;
 	}
 
-	public void attemptLogin()
+	private boolean validate()
 	{
-		if (mAuthTask != null)
-		{
-			return;
-		}
-
 		List<View> errorFields = new ArrayList<View>();
 		textEmail.setError(null);
 		textPassword.setError(null);
@@ -197,21 +212,29 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 
 		if (errorFields.isEmpty())
 		{
-			mLoginStatusMessageView.setText(R.string.login_login_progress_signing_in);
-			showProgress(true);
-
-			mAuthTask = new UserLoginTask();
-			mAuthTask.execute(email, password);
+			return true;
 		}
 		else
 		{
 			errorFields.get(0).requestFocus();
+			return false;
 		}
 	}
 
-	/**
-	 * Shows the progress UI and hides the login form.
-	 */
+	public void attemptLogin()
+	{
+		if (validate())
+		{
+			if (mAuthTask != null)
+			{
+				return;
+			}
+
+			mAuthTask = new UserLoginTask();
+			mAuthTask.execute(textEmail.getText().toString(), textPassword.getText().toString());
+		}
+	}
+
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	void showProgress(final boolean show)
 	{
@@ -267,6 +290,13 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 	public class UserLoginTask extends AsyncTask<String, Void, Boolean>
 	{
 		@Override
+		protected void onPreExecute()
+		{
+			mLoginStatusMessageView.setText(R.string.login_login_progress_signing_in);
+			showProgress(true);
+		}
+
+		@Override
 		protected Boolean doInBackground(String... params)
 		{
 			String email = params[0];
@@ -312,152 +342,99 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 
 	void submit()
 	{
-		final String userName = ((TextView) findViewById(R.id.accountName)).getText().toString();
-		final String userPass = ((TextView) findViewById(R.id.accountPassword)).getText().toString();
-		new AsyncTask<Void, Void, Intent>()
-		{
-			@Override
-			protected Intent doInBackground(Void... params)
-			{
-				String authtoken = "token-goes-here";// sServerAuthenticate.userSignIn(userName,
-														// userPass, mAuthTokenType);
-				final Intent res = new Intent();
-				res.putExtra(AccountManager.KEY_ACCOUNT_NAME, userName);
-				res.putExtra(AccountManager.KEY_ACCOUNT_TYPE, mAccountType);
-				res.putExtra(AccountManager.KEY_AUTHTOKEN, authtoken);
-				res.putExtra(EXTRA_PASS, userPass);
-				return res;
-			}
-
-			@Override
-			protected void onPostExecute(Intent intent)
-			{
-				importData(intent);
-			}
-		}.execute();
+		startService(new Intent(ActivityLogin.this, ImportService.class));
 	}
 
-	class ProgressBundle
+	void onReceive(Context context, Intent intent)
 	{
-		Progress	step;
-		int			done;
-		int			total;
-
-		public ProgressBundle(Progress step, int done, int total)
+		Bundle bundle = intent.getExtras();
+		if (bundle != null)
 		{
-			this.step = step;
-			this.done = done;
-			this.total = total;
+			Progress step = (Progress) bundle.getSerializable(ImportService.KEY_RESULT);
+
+			// TODO: i18n
+			switch (step)
+			{
+				case INITIALIZATION:
+				{
+					mLoginStatusMessageView.setText("Initializaion...");
+					break;
+				}
+
+				case LOADING:
+				{
+					mLoginStatusMessageView.setText("Downloading...");
+					break;
+				}
+
+				case UNZIPPING:
+				{
+					mLoginStatusMessageView.setText("Unzipping...");
+					break;
+				}
+
+				case INSTALL_DIARY:
+				{
+					mLoginStatusMessageView.setText("Diary setup...");
+					break;
+				}
+
+				case INSTALL_FOODBASE:
+				{
+					mLoginStatusMessageView.setText("Food base setup...");
+					break;
+				}
+
+				case INSTALL_DISHBASE:
+				{
+					mLoginStatusMessageView.setText("Dish base setup...");
+					break;
+				}
+
+				case INSTALL_PREFERENCES:
+				{
+					mLoginStatusMessageView.setText("Preferences setup...");
+					break;
+				}
+
+				case DONE_OK:
+				case DONE_FAIL:
+				{
+					// TODO: i18n
+					if (step == Progress.DONE_OK)
+					{
+						UIUtils.showTip(ActivityLogin.this, "User data imported OK");
+					}
+					else
+					{
+						UIUtils.showTip(ActivityLogin.this, "Failed to import user data");
+					}
+
+					addAccount();
+					enableAutosync();
+
+					// TODO: don't do this if activity is started from main activity
+					startActivity(new Intent(ActivityLogin.this, ActivityMain.class));
+					finish();
+					break;
+				}
+			}
 		}
 	}
 
-	void importData(final Intent intent)
+	void addAccount()
 	{
-		new AsyncTask<Void, ProgressBundle, Boolean>()
-		{
-			@Override
-			protected Boolean doInBackground(Void... params)
-			{
-				try
-				{
-					ImportHelper.importData(ActivityLogin.this, new ProgressCallback()
-					{
-						@SuppressWarnings("synthetic-access")
-						@Override
-						public void onProgress(Progress step, int done, int total)
-						{
-							publishProgress(new ProgressBundle(step, done, total));
-						}
-					});
-					return true;
-				}
-				catch (Exception e)
-				{
-					Log.e(TAG, e.getMessage(), e);
-					return false;
-				}
-			}
+		String accountName = textEmail.getText().toString();
+		String accountPassword = textPassword.getText().toString();
+		String accountType = mAccountType;
 
-			@Override
-			protected void onProgressUpdate(ProgressBundle... progress)
-			{
-				// TODO: i18n
-				switch (progress[0].step)
-				{
-					case INITIALIZATION:
-					{
-						mLoginStatusMessageView.setText("Initializaion...");
-						break;
-					}
+		Intent intent = new Intent();
+		intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, accountName);
+		intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, accountType);
+		intent.putExtra(AccountManager.KEY_AUTHTOKEN, "token-goes-here");
 
-					case LOADING:
-					{
-						mLoginStatusMessageView.setText("Downloading...");
-						break;
-					}
-
-					case UNZIPPING:
-					{
-						mLoginStatusMessageView.setText("Unzipping...");
-						break;
-					}
-
-					case INSTALL_DIARY:
-					{
-						mLoginStatusMessageView.setText("Diary setup...");
-						break;
-					}
-
-					case INSTALL_FOODBASE:
-					{
-						mLoginStatusMessageView.setText("Food base setup...");
-						break;
-					}
-
-					case INSTALL_DISHBASE:
-					{
-						mLoginStatusMessageView.setText("Dish base setup...");
-						break;
-					}
-
-					case INSTALL_PREFERENCES:
-					{
-						mLoginStatusMessageView.setText("Preferences setup...");
-						break;
-					}
-				}
-			}
-
-			@Override
-			protected void onPostExecute(Boolean result)
-			{
-				if (result == null || !result)
-				{
-					// TODO: i18n
-					UIUtils.showTip(ActivityLogin.this, "Failed to import user data");
-				}
-				else
-				{
-					// TODO: i18n
-					UIUtils.showTip(ActivityLogin.this, "User data imported OK");
-				}
-
-				addAccount(intent);
-				enableAutosync();
-				setResult(RESULT_OK, intent);
-
-				// TODO: don't do this if activity is started from main activity
-				startActivity(new Intent(ActivityLogin.this, ActivityMain.class));
-				finish();
-			}
-		}.execute();
-	}
-
-	void addAccount(Intent intent)
-	{
-		String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-		String accountPassword = intent.getStringExtra(EXTRA_PASS);
-		String accountType = intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE);
+		setAccountAuthenticatorResult(intent.getExtras());
+		setResult(RESULT_OK, intent);
 
 		AccountManager mAccountManager = AccountManager.get(this);
 		Account account = new Account(accountName, accountType);
@@ -474,8 +451,6 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		{
 			mAccountManager.setPassword(account, accountPassword);
 		}
-
-		setAccountAuthenticatorResult(intent.getExtras());
 	}
 
 	void enableAutosync()
@@ -487,8 +462,6 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			ContentResolver.setIsSyncable(accounts[0], DiaryContentProvider.AUTHORITY, 1);
 			ContentResolver.setSyncAutomatically(accounts[0], DiaryContentProvider.AUTHORITY, true);
 			ContentResolver.addPeriodicSync(accounts[0], DiaryContentProvider.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
-
-			UIUtils.showTip(this, getString(R.string.login_tip_sync_started));
 		}
 	}
 }
