@@ -72,10 +72,10 @@ public class ExportRest
 		try
 		{
 			List<Entry> entries = new ArrayList<Entry>();
-			entries.add(new Entry(ExportAPI.ANDROID_JSON_DIARY, diaryService.exportData().getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.ANDROID_JSON_FOODBASE, foodbaseService.exportData().getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.ANDROID_JSON_DISHBASE, dishbaseService.exportData().getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.ANDROID_JSON_PREFERENCES, prefService.exportData().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.JSON_DIARY, diaryService.exportData().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.JSON_FOODBASE, foodbaseService.exportData().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.JSON_DISHBASE, dishbaseService.exportData().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.JSON_PREFERENCES, prefService.exportData().getBytes("UTF-8")));
 
 			return Response.ok(ZipUtils.zip(entries)).header("Content-Disposition", "attachment; filename=\"data.zip\"")
 					.build();
@@ -99,10 +99,10 @@ public class ExportRest
 		try
 		{
 			List<Entry> entries = new ArrayList<Entry>();
-			entries.add(new Entry(ExportAPI.ANDROID_PLAIN_DIARY, exportPlainDiary().getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.ANDROID_PLAIN_FOODBASE, exportPlainFoodbase().getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.ANDROID_PLAIN_DISHBASE, exportPlainDishbase().getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.ANDROID_PLAIN_PREFERENCES, exportPlainPreferences().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.PLAIN_DIARY, exportPlainDiary().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.PLAIN_FOODBASE, exportPlainFoodbase().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.PLAIN_DISHBASE, exportPlainDishbase().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.PLAIN_PREFERENCES, exportPlainPreferences().getBytes("UTF-8")));
 
 			return Response.ok(ZipUtils.zip(entries)).header("Content-Disposition", "attachment; filename=\"data.zip\"")
 					.build();

@@ -112,7 +112,7 @@ public class ImportHelper
 						{
 							switch (entry.getName())
 							{
-								case ExportAPI.ANDROID_JSON_DIARY:
+								case ExportAPI.JSON_DIARY:
 								{
 									progress(callback, Progress.INSTALL_DIARY);
 									diaryService.importData(data);
@@ -120,7 +120,7 @@ public class ImportHelper
 									break;
 								}
 
-								case ExportAPI.ANDROID_JSON_FOODBASE:
+								case ExportAPI.JSON_FOODBASE:
 								{
 									progress(callback, Progress.INSTALL_FOODBASE);
 									foodbaseService.importData(data);
@@ -128,7 +128,7 @@ public class ImportHelper
 									break;
 								}
 
-								case ExportAPI.ANDROID_JSON_DISHBASE:
+								case ExportAPI.JSON_DISHBASE:
 								{
 									progress(callback, Progress.INSTALL_DISHBASE);
 									dishbaseService.importData(data);
@@ -136,7 +136,7 @@ public class ImportHelper
 									break;
 								}
 
-								case ExportAPI.ANDROID_JSON_PREFERENCES:
+								case ExportAPI.JSON_PREFERENCES:
 								{
 									progress(callback, Progress.INSTALL_PREFERENCES);
 									preferencesService.importData(data);

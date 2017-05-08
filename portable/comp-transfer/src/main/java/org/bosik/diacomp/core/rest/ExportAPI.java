@@ -19,15 +19,15 @@ package org.bosik.diacomp.core.rest;
 
 public final class ExportAPI
 {
-	public static final String	ANDROID_JSON_DIARY			= "diary.json";
-	public static final String	ANDROID_JSON_FOODBASE		= "foodbase.json";
-	public static final String	ANDROID_JSON_DISHBASE		= "dishbase.json";
-	public static final String	ANDROID_JSON_PREFERENCES	= "preferences.json";
+	public static final String	JSON_DIARY			= "diary.json";
+	public static final String	JSON_FOODBASE		= "foodbase.json";
+	public static final String	JSON_DISHBASE		= "dishbase.json";
+	public static final String	JSON_PREFERENCES	= "preferences.json";
 
-	public static final String	ANDROID_PLAIN_DIARY			= "diary.txt";
-	public static final String	ANDROID_PLAIN_FOODBASE		= "foodbase.txt";
-	public static final String	ANDROID_PLAIN_DISHBASE		= "dishbase.txt";
-	public static final String	ANDROID_PLAIN_PREFERENCES	= "preferences.txt";
+	public static final String	PLAIN_DIARY			= "diary.txt";
+	public static final String	PLAIN_FOODBASE		= "foodbase.txt";
+	public static final String	PLAIN_DISHBASE		= "dishbase.txt";
+	public static final String	PLAIN_PREFERENCES	= "preferences.txt";
 
 	private ExportAPI()
 	{
