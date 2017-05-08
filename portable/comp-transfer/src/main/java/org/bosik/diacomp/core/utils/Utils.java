@@ -925,7 +925,6 @@ public class Utils
 		}
 		catch (InterruptedException e)
 		{
-			throw new RuntimeException(e);
 		}
 	}
 
