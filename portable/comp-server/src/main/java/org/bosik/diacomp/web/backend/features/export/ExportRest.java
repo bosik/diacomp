@@ -23,16 +23,20 @@ import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
-import org.bosik.diacomp.core.persistence.parsers.Parser;
+import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
+import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
+import org.bosik.diacomp.core.persistence.parsers.ParserFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
+import org.bosik.diacomp.core.rest.ExportAPI;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
+import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.core.utils.ZipUtils;
 import org.bosik.diacomp.core.utils.ZipUtils.Entry;
@@ -48,37 +52,30 @@ import org.springframework.stereotype.Service;
 @Path("export")
 public class ExportRest
 {
-	// PART OF PUBLIC API
-	public static final String			ENTRY_DIARY			= "diary.json";
-	public static final String			ENTRY_FOODBASE		= "foodbase.json";
-	public static final String			ENTRY_DISHBASE		= "dishbase.json";
-	public static final String			ENTRY_PREFERENCES	= "preferences.json";
+	@Autowired
+	private DiaryLocalService		diaryService;
 
 	@Autowired
-	private DiaryLocalService			diaryService;
+	private FoodBaseLocalService	foodbaseService;
 
 	@Autowired
-	private FoodBaseLocalService		foodbaseService;
+	private DishBaseLocalService	dishbaseService;
 
 	@Autowired
-	private DishBaseLocalService		dishbaseService;
-
-	@Autowired
-	private PreferencesLocalService		preferencesService;
-
-	private final Parser<DiaryRecord>	parser				= new ParserDiaryRecord();
+	private PreferencesLocalService	prefService;
 
 	@GET
+	@Path("/android")
 	@Produces("application/zip")
-	public Response export()
+	public Response exportAndroid()
 	{
 		try
 		{
 			List<Entry> entries = new ArrayList<Entry>();
-			entries.add(new Entry(ENTRY_DIARY, diaryService.exportData().getBytes("UTF-8")));
-			entries.add(new Entry(ENTRY_FOODBASE, foodbaseService.exportData().getBytes("UTF-8")));
-			entries.add(new Entry(ENTRY_DISHBASE, dishbaseService.exportData().getBytes("UTF-8")));
-			entries.add(new Entry(ENTRY_PREFERENCES, preferencesService.exportData().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.ANDROID_JSON_DIARY, diaryService.exportData().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.ANDROID_JSON_FOODBASE, foodbaseService.exportData().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.ANDROID_JSON_DISHBASE, dishbaseService.exportData().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.ANDROID_JSON_PREFERENCES, prefService.exportData().getBytes("UTF-8")));
 
 			return Response.ok(ZipUtils.zip(entries)).header("Content-Disposition", "attachment; filename=\"data.zip\"")
 					.build();
@@ -95,14 +92,17 @@ public class ExportRest
 	}
 
 	@GET
-	@Path("windows")
-	@Produces(MediaType.TEXT_PLAIN + ";charset=utf-8")
-	public Response exportForDesktop()
+	@Path("/android/plain")
+	@Produces("application/zip")
+	public Response exportAndroidPlain()
 	{
 		try
 		{
 			List<Entry> entries = new ArrayList<Entry>();
-			entries.add(new Entry("Diary.txt", exportDiaryForWindows().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.ANDROID_PLAIN_DIARY, exportPlainDiary().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.ANDROID_PLAIN_FOODBASE, exportPlainFoodbase().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.ANDROID_PLAIN_DISHBASE, exportPlainDishbase().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.ANDROID_PLAIN_PREFERENCES, exportPlainPreferences().getBytes("UTF-8")));
 
 			return Response.ok(ZipUtils.zip(entries)).header("Content-Disposition", "attachment; filename=\"data.zip\"")
 					.build();
@@ -118,9 +118,33 @@ public class ExportRest
 		}
 	}
 
-	private String exportDiaryForWindows()
+	@GET
+	@Path("/windows")
+	@Produces("application/zip")
+	public Response exportWindows()
 	{
-		Serializer<DiaryRecord> serializer = new SerializerAdapter<DiaryRecord>(parser);
+		try
+		{
+			List<Entry> entries = new ArrayList<Entry>();
+			entries.add(new Entry("Diary.txt", exportPlainDiary().getBytes("UTF-8")));
+
+			return Response.ok(ZipUtils.zip(entries)).header("Content-Disposition", "attachment; filename=\"data.zip\"")
+					.build();
+		}
+		catch (NotAuthorizedException e)
+		{
+			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	private String exportPlainDiary()
+	{
+		Serializer<DiaryRecord> serializer = new SerializerAdapter<DiaryRecord>(new ParserDiaryRecord());
 
 		List<Versioned<DiaryRecord>> items = diaryService.findPeriod(new Date(0, 0, 1), new Date(200, 0, 1), true);
 
@@ -138,7 +162,68 @@ public class ExportRest
 			s.append(serializer.write(item.getData())).append('\n');
 		}
 
-		String data = s.toString();
-		return data;
+		return s.toString();
+	}
+
+	private String exportPlainFoodbase()
+	{
+		Serializer<FoodItem> serializer = new SerializerAdapter<FoodItem>(new ParserFoodItem());
+
+		StringBuilder s = new StringBuilder();
+
+		s.append("VERSION=1\n");
+		for (Versioned<FoodItem> item : foodbaseService.findAll(true))
+		{
+			s.append(removeTabs(item.getData().getName())).append('\t');
+			s.append(item.getId()).append('\t');
+			s.append(Utils.formatTimeUTC(item.getTimeStamp())).append('\t');
+			s.append(item.getHash()).append('\t');
+			s.append(item.getVersion()).append('\t');
+			s.append(item.isDeleted() ? "true" : "false").append('\t');
+			s.append(serializer.write(item.getData())).append('\n');
+		}
+
+		return s.toString();
+	}
+
+	private String exportPlainDishbase()
+	{
+		Serializer<DishItem> serializer = new SerializerAdapter<DishItem>(new ParserDishItem());
+
+		StringBuilder s = new StringBuilder();
+
+		s.append("VERSION=1\n");
+		for (Versioned<DishItem> item : dishbaseService.findAll(true))
+		{
+			s.append(removeTabs(item.getData().getName())).append('\t');
+			s.append(item.getId()).append('\t');
+			s.append(Utils.formatTimeUTC(item.getTimeStamp())).append('\t');
+			s.append(item.getHash()).append('\t');
+			s.append(item.getVersion()).append('\t');
+			s.append(item.isDeleted() ? "true" : "false").append('\t');
+			s.append(serializer.write(item.getData())).append('\n');
+		}
+
+		return s.toString();
+	}
+
+	private String exportPlainPreferences()
+	{
+		StringBuilder s = new StringBuilder();
+
+		s.append("VERSION=1\n");
+		for (PreferenceEntry<String> item : prefService.getAll())
+		{
+			s.append(item.getType().getKey()).append('\t');
+			s.append(item.getVersion()).append('\t');
+			s.append(item.getValue()).append('\n');
+		}
+
+		return s.toString();
+	}
+
+	private static String removeTabs(String name)
+	{
+		return name.replaceAll("\t", "");
 	}
 }

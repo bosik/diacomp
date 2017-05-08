@@ -28,6 +28,7 @@ import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
+import org.bosik.diacomp.core.rest.ExportAPI;
 import org.bosik.diacomp.core.utils.Profiler;
 import org.bosik.diacomp.core.utils.ZipUtils;
 import org.bosik.diacomp.core.utils.ZipUtils.Entry;
@@ -36,16 +37,11 @@ import android.util.Log;
 
 public class ImportHelper
 {
-	private static final String	TAG					= ImportHelper.class.getSimpleName();
+	private static final String	TAG				= ImportHelper.class.getSimpleName();
 
 	// PART OF PUBLIC API
 
-	private static final String	URL_EXPORT			= "api/export/android";
-
-	public static final String	ENTRY_DIARY			= "diary.json";
-	public static final String	ENTRY_FOODBASE		= "foodbase.json";
-	public static final String	ENTRY_DISHBASE		= "dishbase.json";
-	public static final String	ENTRY_PREFERENCES	= "preferences.json";
+	private static final String	URL_EXPORT_JSON	= "api/export/android";
 
 	public static enum Progress
 	{
@@ -95,7 +91,7 @@ public class ImportHelper
 
 			// download data
 			progress(callback, Progress.LOADING);
-			InputStream stream = client.loadStream(URL_EXPORT);
+			InputStream stream = client.loadStream(URL_EXPORT_JSON);
 			Log.i(TAG, "Loaded in " + (p.sinceLastCheck() / 1000000) + " ms");
 
 			try
@@ -116,7 +112,7 @@ public class ImportHelper
 						{
 							switch (entry.getName())
 							{
-								case ENTRY_DIARY:
+								case ExportAPI.ANDROID_JSON_DIARY:
 								{
 									progress(callback, Progress.INSTALL_DIARY);
 									diaryService.importData(data);
@@ -124,7 +120,7 @@ public class ImportHelper
 									break;
 								}
 
-								case ENTRY_FOODBASE:
+								case ExportAPI.ANDROID_JSON_FOODBASE:
 								{
 									progress(callback, Progress.INSTALL_FOODBASE);
 									foodbaseService.importData(data);
@@ -132,7 +128,7 @@ public class ImportHelper
 									break;
 								}
 
-								case ENTRY_DISHBASE:
+								case ExportAPI.ANDROID_JSON_DISHBASE:
 								{
 									progress(callback, Progress.INSTALL_DISHBASE);
 									dishbaseService.importData(data);
@@ -140,7 +136,7 @@ public class ImportHelper
 									break;
 								}
 
-								case ENTRY_PREFERENCES:
+								case ExportAPI.ANDROID_JSON_PREFERENCES:
 								{
 									progress(callback, Progress.INSTALL_PREFERENCES);
 									preferencesService.importData(data);
