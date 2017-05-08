@@ -39,6 +39,9 @@ public class ImportHelper
 	private static final String	TAG					= ImportHelper.class.getSimpleName();
 
 	// PART OF PUBLIC API
+
+	private static final String	URL_EXPORT			= "api/export/android";
+
 	public static final String	ENTRY_DIARY			= "diary.json";
 	public static final String	ENTRY_FOODBASE		= "foodbase.json";
 	public static final String	ENTRY_DISHBASE		= "dishbase.json";
@@ -92,7 +95,7 @@ public class ImportHelper
 
 			// download data
 			progress(callback, Progress.LOADING);
-			InputStream stream = client.loadStream("api/export");
+			InputStream stream = client.loadStream(URL_EXPORT);
 			Log.i(TAG, "Loaded in " + (p.sinceLastCheck() / 1000000) + " ms");
 
 			try
