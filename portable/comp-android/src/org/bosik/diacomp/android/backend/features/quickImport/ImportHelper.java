@@ -41,7 +41,7 @@ public class ImportHelper
 
 	// PART OF PUBLIC API
 
-	private static final String	URL_EXPORT_JSON	= "api/export/android";
+	private static final String	URL_EXPORT_JSON	= "api/export/json";
 
 	public static enum Progress
 	{

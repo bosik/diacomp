@@ -65,9 +65,9 @@ public class ExportRest
 	private PreferencesLocalService	prefService;
 
 	@GET
-	@Path("/android")
+	@Path("/json")
 	@Produces("application/zip")
-	public Response exportAndroid()
+	public Response exportJson()
 	{
 		try
 		{
@@ -92,9 +92,9 @@ public class ExportRest
 	}
 
 	@GET
-	@Path("/android/plain")
+	@Path("/plain")
 	@Produces("application/zip")
-	public Response exportAndroidPlain()
+	public Response exportPlain()
 	{
 		try
 		{
