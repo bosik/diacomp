@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -35,6 +36,7 @@ import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
 import org.bosik.diacomp.android.backend.common.stream.StreamReader;
 import org.bosik.diacomp.android.backend.common.stream.versioned.FoodItemVersionedReader;
+import org.bosik.diacomp.android.backend.features.quickImport.PlainDataImporter;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserFoodItem;
@@ -702,5 +704,28 @@ public class FoodBaseLocalService implements FoodBaseService, Importable
 		{
 			json.close();
 		}
+	}
+
+	public void importPlain(InputStream stream) throws IOException
+	{
+		new PlainDataImporter(context, new TableFoodbase(), "1")
+		{
+			@Override
+			protected void parseEntry(String[] items, ContentValues newValues)
+			{
+				if (items.length != 7)
+				{
+					throw new IllegalArgumentException("Invalid entry: " + Arrays.toString(items));
+				}
+
+				newValues.put(TableFoodbase.COLUMN_NAMECACHE, items[0]);
+				newValues.put(TableFoodbase.COLUMN_ID, items[1]);
+				newValues.put(TableFoodbase.COLUMN_TIMESTAMP, items[2]);
+				newValues.put(TableFoodbase.COLUMN_HASH, items[3]);
+				newValues.put(TableFoodbase.COLUMN_VERSION, Integer.parseInt(items[4]));
+				newValues.put(TableFoodbase.COLUMN_DELETED, Boolean.parseBoolean(items[5]));
+				newValues.put(TableFoodbase.COLUMN_DATA, items[6]);
+			}
+		}.importPlain(stream);
 	}
 }

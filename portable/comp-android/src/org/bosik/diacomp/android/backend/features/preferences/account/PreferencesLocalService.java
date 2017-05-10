@@ -21,8 +21,12 @@ package org.bosik.diacomp.android.backend.features.preferences.account;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
+import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TablePreferences;
+import org.bosik.diacomp.android.backend.features.quickImport.PlainDataImporter;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserPreferenceEntry;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
@@ -37,6 +41,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 public class PreferencesLocalService extends PreferencesService implements Importable
@@ -232,33 +237,50 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 	{
 		String s = Utils.readStream(stream);
 		List<PreferenceEntry<String>> items = serializer.readAll(s);
-		update(items);
 
-		// Table table = new TablePreferences();
-		//
-		// SQLiteDatabase db = new MyDBHelper(context).getWritableDatabase();
-		// db.beginTransaction();
-		// try
-		// {
-		// ContentValues newValues = new ContentValues();
-		//
-		// for (PreferenceEntry<String> item : items)
-		// {
-		// newValues.put(TablePreferences.COLUMN_KEY, item.getType().getKey());
-		// newValues.put(TablePreferences.COLUMN_VALUE, item.getValue());
-		// newValues.put(TablePreferences.COLUMN_VERSION, item.getVersion());
-		//
-		// db.insertWithOnConflict(table.getName(), null, newValues,
-		// SQLiteDatabase.CONFLICT_IGNORE);
-		// }
-		//
-		// db.setTransactionSuccessful();
-		// }
-		// finally
-		// {
-		// db.endTransaction();
-		// db.close();
-		// resolver.notifyChange(TablePreferences.CONTENT_URI, null);
-		// }
+		Table table = new TablePreferences();
+
+		SQLiteDatabase db = new MyDBHelper(context).getWritableDatabase();
+		db.beginTransaction();
+		try
+		{
+			ContentValues newValues = new ContentValues();
+
+			for (PreferenceEntry<String> item : items)
+			{
+				newValues.put(TablePreferences.COLUMN_KEY, item.getType().getKey());
+				newValues.put(TablePreferences.COLUMN_VALUE, item.getValue());
+				newValues.put(TablePreferences.COLUMN_VERSION, item.getVersion());
+
+				db.insertWithOnConflict(table.getName(), null, newValues, SQLiteDatabase.CONFLICT_IGNORE);
+			}
+
+			db.setTransactionSuccessful();
+		}
+		finally
+		{
+			db.endTransaction();
+			db.close();
+			resolver.notifyChange(TablePreferences.CONTENT_URI, null);
+		}
+	}
+
+	public void importPlain(InputStream stream) throws IOException
+	{
+		new PlainDataImporter(context, new TablePreferences(), "1")
+		{
+			@Override
+			protected void parseEntry(String[] items, ContentValues newValues)
+			{
+				if (items.length != 3)
+				{
+					throw new IllegalArgumentException("Invalid entry: " + Arrays.toString(items));
+				}
+
+				newValues.put(TablePreferences.COLUMN_KEY, items[0]);
+				newValues.put(TablePreferences.COLUMN_VERSION, Integer.parseInt(items[1]));
+				newValues.put(TablePreferences.COLUMN_VALUE, items[2]);
+			}
+		}.importPlain(stream);
 	}
 }

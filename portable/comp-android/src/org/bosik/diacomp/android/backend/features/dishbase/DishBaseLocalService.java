@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -34,6 +35,7 @@ import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDishbase;
 import org.bosik.diacomp.android.backend.common.stream.StreamReader;
 import org.bosik.diacomp.android.backend.common.stream.versioned.DishItemVersionedReader;
+import org.bosik.diacomp.android.backend.features.quickImport.PlainDataImporter;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
@@ -657,5 +659,28 @@ public class DishBaseLocalService implements DishBaseService, Importable
 		{
 			json.close();
 		}
+	}
+
+	public void importPlain(InputStream stream) throws IOException
+	{
+		new PlainDataImporter(context, new TableDishbase(), "1")
+		{
+			@Override
+			protected void parseEntry(String[] items, ContentValues newValues)
+			{
+				if (items.length != 7)
+				{
+					throw new IllegalArgumentException("Invalid entry: " + Arrays.toString(items));
+				}
+
+				newValues.put(TableDishbase.COLUMN_NAMECACHE, items[0]);
+				newValues.put(TableDishbase.COLUMN_ID, items[1]);
+				newValues.put(TableDishbase.COLUMN_TIMESTAMP, items[2]);
+				newValues.put(TableDishbase.COLUMN_HASH, items[3]);
+				newValues.put(TableDishbase.COLUMN_VERSION, Integer.parseInt(items[4]));
+				newValues.put(TableDishbase.COLUMN_DELETED, Boolean.parseBoolean(items[5]));
+				newValues.put(TableDishbase.COLUMN_DATA, items[6]);
+			}
+		}.importPlain(stream);
 	}
 }

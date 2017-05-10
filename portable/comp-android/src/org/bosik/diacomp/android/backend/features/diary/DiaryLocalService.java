@@ -33,6 +33,7 @@ import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
 import org.bosik.diacomp.android.backend.common.stream.StreamReader;
 import org.bosik.diacomp.android.backend.common.stream.versioned.DiaryRecordVersionedReader;
+import org.bosik.diacomp.android.backend.features.quickImport.PlainDataImporter;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
@@ -642,5 +643,28 @@ public class DiaryLocalService implements DiaryService, Importable
 		{
 			json.close();
 		}
+	}
+
+	public void importPlain(InputStream stream) throws IOException
+	{
+		new PlainDataImporter(context, new TableDiary(), "5")
+		{
+			@Override
+			protected void parseEntry(String[] items, ContentValues newValues)
+			{
+				if (items.length != 7)
+				{
+					throw new IllegalArgumentException("Invalid entry: " + Arrays.toString(items));
+				}
+
+				newValues.put(TableDiary.COLUMN_TIMECACHE, items[0]);
+				newValues.put(TableDiary.COLUMN_TIMESTAMP, items[1]);
+				newValues.put(TableDiary.COLUMN_HASH, items[2]);
+				newValues.put(TableDiary.COLUMN_ID, items[3]);
+				newValues.put(TableDiary.COLUMN_VERSION, Integer.parseInt(items[4]));
+				newValues.put(TableDiary.COLUMN_DELETED, Boolean.parseBoolean(items[5]));
+				newValues.put(TableDiary.COLUMN_CONTENT, items[6]);
+			}
+		}.importPlain(stream);
 	}
 }

@@ -41,7 +41,7 @@ public class ImportHelper
 
 	// PART OF PUBLIC API
 
-	private static final String	URL_EXPORT_JSON	= "api/export/json";
+	private static final String	URL_EXPORT_JSON	= "api/export/plain";
 
 	public static enum Progress
 	{
@@ -112,34 +112,34 @@ public class ImportHelper
 						{
 							switch (entry.getName())
 							{
-								case ExportAPI.JSON_DIARY:
+								case ExportAPI.PLAIN_DIARY:
 								{
 									progress(callback, Progress.INSTALL_DIARY);
-									diaryService.importData(data);
+									diaryService.importPlain(data);
 									Log.i(TAG, "Diary installed in " + (p.sinceLastCheck() / 1000000) + " ms");
 									break;
 								}
 
-								case ExportAPI.JSON_FOODBASE:
+								case ExportAPI.PLAIN_FOODBASE:
 								{
 									progress(callback, Progress.INSTALL_FOODBASE);
-									foodbaseService.importData(data);
+									foodbaseService.importPlain(data);
 									Log.i(TAG, "Foodbase installed in " + (p.sinceLastCheck() / 1000000) + " ms");
 									break;
 								}
 
-								case ExportAPI.JSON_DISHBASE:
+								case ExportAPI.PLAIN_DISHBASE:
 								{
 									progress(callback, Progress.INSTALL_DISHBASE);
-									dishbaseService.importData(data);
+									dishbaseService.importPlain(data);
 									Log.i(TAG, "Dishbase installed in " + (p.sinceLastCheck() / 1000000) + " ms");
 									break;
 								}
 
-								case ExportAPI.JSON_PREFERENCES:
+								case ExportAPI.PLAIN_PREFERENCES:
 								{
 									progress(callback, Progress.INSTALL_PREFERENCES);
-									preferencesService.importData(data);
+									preferencesService.importPlain(data);
 									Log.i(TAG, "Preferences installed in " + (p.sinceLastCheck() / 1000000) + " ms");
 									break;
 								}
