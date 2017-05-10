@@ -576,4 +576,52 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 			throw new RuntimeException(e);
 		}
 	}
+
+	public String exportPlain()
+	{
+		try
+		{
+			int userId = getCurrentUserId();
+
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?)", COLUMN_DISHBASE_USER);
+			final String[] whereArgs = { String.valueOf(userId) };
+			final String order = COLUMN_DISHBASE_NAMECACHE;
+
+			return MySQLAccess.select(TABLE_DISHBASE, select, where, whereArgs, order, new DataCallback<String>()
+			{
+				@Override
+				public String onData(ResultSet resultSet) throws SQLException
+				{
+					StringBuilder s = new StringBuilder();
+
+					s.append("VERSION=1\n");
+					while (resultSet.next())
+					{
+						String name = resultSet.getString(COLUMN_DISHBASE_NAMECACHE);
+						String id = resultSet.getString(COLUMN_DISHBASE_GUID);
+						String timeStamp = Utils.formatTimeUTC(resultSet.getTimestamp(COLUMN_DISHBASE_TIMESTAMP));
+						String hash = resultSet.getString(COLUMN_DISHBASE_HASH);
+						int version = resultSet.getInt(COLUMN_DISHBASE_VERSION);
+						boolean deleted = (resultSet.getInt(COLUMN_DISHBASE_DELETED) == 1);
+						String content = resultSet.getString(COLUMN_DISHBASE_CONTENT);
+
+						s.append(Utils.removeTabs(name)).append('\t');
+						s.append(id).append('\t');
+						s.append(timeStamp).append('\t');
+						s.append(hash).append('\t');
+						s.append(version).append('\t');
+						s.append(deleted ? "true" : "false").append('\t');
+						s.append(content).append('\n');
+					}
+
+					return s.toString();
+				}
+			});
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
 }

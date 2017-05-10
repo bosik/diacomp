@@ -917,6 +917,11 @@ public class Utils
 	 * MISC
 	 */
 
+	public static String removeTabs(String s)
+	{
+		return s.replaceAll("\t", "");
+	}
+
 	public static void sleep(long time)
 	{
 		try

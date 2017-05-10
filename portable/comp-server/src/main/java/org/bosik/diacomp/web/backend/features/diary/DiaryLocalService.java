@@ -556,4 +556,52 @@ public class DiaryLocalService implements DiaryService, Exportable
 			throw new RuntimeException(e);
 		}
 	}
+
+	public String exportPlain()
+	{
+		try
+		{
+			int userId = getCurrentUserId();
+
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?)", COLUMN_DIARY_USER);
+			final String[] whereArgs = { String.valueOf(userId) };
+			final String order = COLUMN_DIARY_TIMECACHE;
+
+			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order, new DataCallback<String>()
+			{
+				@Override
+				public String onData(ResultSet resultSet) throws SQLException
+				{
+					StringBuilder s = new StringBuilder();
+
+					s.append("VERSION=5\n");
+					while (resultSet.next())
+					{
+						String id = resultSet.getString(COLUMN_DIARY_GUID);
+						String timeStamp = Utils.formatTimeUTC(resultSet.getTimestamp(COLUMN_DIARY_TIMESTAMP));
+						String time = resultSet.getString(COLUMN_DIARY_TIMECACHE);
+						String hash = resultSet.getString(COLUMN_DIARY_HASH);
+						int version = resultSet.getInt(COLUMN_DIARY_VERSION);
+						boolean deleted = (resultSet.getInt(COLUMN_DIARY_DELETED) == 1);
+						String content = resultSet.getString(COLUMN_DIARY_CONTENT);
+
+						s.append(time).append('\t');
+						s.append(timeStamp).append('\t');
+						s.append(hash).append('\t');
+						s.append(id).append('\t');
+						s.append(version).append('\t');
+						s.append(deleted ? "true" : "false").append('\t');
+						s.append(Utils.removeTabs(content)).append('\n');
+					}
+
+					return s.toString();
+				}
+			});
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
 }

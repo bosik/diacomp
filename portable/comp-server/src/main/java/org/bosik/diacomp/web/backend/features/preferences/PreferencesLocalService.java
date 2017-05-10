@@ -265,4 +265,44 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 			throw new RuntimeException(e);
 		}
 	}
+
+	public String exportPlain()
+	{
+		try
+		{
+			int userId = userInfoService.getCurrentUserId();
+
+			final String[] select = { COLUMN_PREFERENCES_KEY, COLUMN_PREFERENCES_VALUE, COLUMN_PREFERENCES_VERSION };
+			final String where = String.format("(%s = ?)", COLUMN_PREFERENCES_USER);
+			final String[] whereArgs = { String.valueOf(userId) };
+			final String order = null;
+
+			return MySQLAccess.select(TABLE_PREFERENCES, select, where, whereArgs, order, new DataCallback<String>()
+			{
+				@Override
+				public String onData(ResultSet resultSet) throws SQLException
+				{
+					StringBuilder s = new StringBuilder();
+					s.append("VERSION=1\n");
+
+					while (resultSet.next())
+					{
+						String key = resultSet.getString(COLUMN_PREFERENCES_KEY);
+						int version = resultSet.getInt(COLUMN_PREFERENCES_VERSION);
+						String value = resultSet.getString(COLUMN_PREFERENCES_VALUE);
+
+						s.append(key).append('\t');
+						s.append(version).append('\t');
+						s.append(value).append('\n');
+					}
+
+					return s.toString();
+				}
+			});
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
 }
