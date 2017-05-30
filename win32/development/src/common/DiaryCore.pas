@@ -185,6 +185,7 @@ function DownloadDishBaseSample(): boolean;
 {======================================================================================================================}
 begin
   Result := GetInetFile(URL_DISHBASE_SAMPLE, WORK_FOLDER + DishBase_FileName, MAX_DISHBASE_SIZE);
+  raise Exception.Create('Not implemented: regenerate all IDs');
 end;
 
 {======================================================================================================================}
@@ -192,6 +193,7 @@ function DownloadFoodBaseSample(): boolean;
 {======================================================================================================================}
 begin
   Result := GetInetFile(URL_FOODBASE_SAMPLE, WORK_FOLDER + FoodBase_FileName, MAX_FOODBASE_SIZE);
+  raise Exception.Create('Not implemented: regenerate all IDs');
 end;
 
 {======================================================================================================================}
