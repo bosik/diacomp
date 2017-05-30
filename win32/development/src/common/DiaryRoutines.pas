@@ -75,6 +75,7 @@ type
   { файловые }
   function ReadFile(const FileName: string): string;
   procedure WriteFile(const FileName: string; const Content: string = '');
+  function FileSize(const FileName: string): Int64;
 
   { форматирование строк : общее }
   function CheckDot(const S: string): string;
@@ -463,6 +464,21 @@ begin
     Text := Content;
     SaveToFile(FileName);
     Free;
+  end;
+end;
+
+{======================================================================================================================}
+function FileSize(const FileName: string): Int64;
+{======================================================================================================================}
+var
+  f: TFileStream;
+begin
+  try
+    f := TFileStream.Create(FileName, fmOpenRead);
+    Result := f.Size;
+    f.Free;
+  except
+    Result := 0;
   end;
 end;
 
