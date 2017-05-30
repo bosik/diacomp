@@ -286,7 +286,6 @@ object FormDish: TFormDish
       Top = 24
       Width = 605
       Height = 24
-      TabStop = False
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 0
       Text = 'EditName'
