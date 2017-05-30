@@ -20,6 +20,12 @@ type
   procedure FinishProc;
   function GetCurrentLog(): TStrings;
 
+  function LevelToIndex(Level: TLogType): integer;
+  function IndexToLevel(i: integer): TLogType;
+
+var
+  LogLevel: TLogType = INFO;
+  
 implementation
 
 type
@@ -32,12 +38,47 @@ var
   LogFile: TStrings = nil;
   Stack: array of TStackNode;
   StackSize: integer = 0;
-  FileName: string;  
+  FileName: string;
 
   function GetCurrentLog(): TStrings;
   begin
     Result := LogFile;
   end;
+
+{======================================================================================================================}
+function LevelToIndex(Level: TLogType): integer;
+{======================================================================================================================}
+begin
+  case Level of
+    ERROR:   Result := 0;
+    WARNING: Result := 1;
+    INFO:    Result := 2;
+    DEBUG:   Result := 3;
+    VERBOUS: Result := 4;
+  end;
+end;
+
+{======================================================================================================================}
+function IndexToLevel(i: integer): TLogType;
+{======================================================================================================================}
+begin
+  case i of
+    0: Result := ERROR;
+    1: Result := WARNING;
+    2: Result := INFO;
+    3: Result := DEBUG;
+    4: Result := VERBOUS;
+  end;
+end;
+
+{======================================================================================================================}
+function CheckLevel(Level: TLogType): boolean;
+{======================================================================================================================}
+const
+  WEIGHT: array[0..4] of integer = (5, 4, 3, 2, 1);
+begin
+  Result := (WEIGHT[LevelToIndex(Level)] >= WEIGHT[LevelToIndex(LogLevel)]);
+end;
 
 {======================================================================================================================}
 procedure Log(MsgType: TLogType; const Msg: string; Save: boolean = False);
@@ -54,13 +95,16 @@ begin
   if (LogFile = nil) then
     raise Exception.CreateFmt('Failed to print "%s": logger not initialized', [Msg]);
 
-  DateTimeToString(Temp, 'hh:mm:ss.zzz', GetTimeUTC());
-  Temp := Temp + #9 + TYPES[MsgType] + #9 + Msg;
+  if (CheckLevel(MsgType)) then
+  begin
+    DateTimeToString(Temp, 'yyyy-MM-dd hh:mm:ss.zzz', GetTimeUTC());
+    Temp := Temp + #9 + TYPES[MsgType] + #9 + Msg;
 
-  LogFile.Add(Temp);
+    LogFile.Add(Temp);
 
-  if (Save or (MsgType = ERROR)) then
-    LogFile.SaveToFile(FileName);
+    if (Save or (MsgType = ERROR)) then
+      LogFile.SaveToFile(FileName);
+  end;
 
   {$ENDIF}
 end;

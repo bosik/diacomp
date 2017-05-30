@@ -823,6 +823,8 @@ begin
   { ======= яхярелмше мюярпнийх, гюцпсгйю ======= }
 
   try
+    AutoLog.LogLevel := IndexToLevel(Value['LogLevel']);
+
     { =============== беа-йнмянкэ =============== }
     {*}StartupInfo(STATUS_ACTION_WEB_SETUP);
     {*}WebClient.Username := Value['Login'];

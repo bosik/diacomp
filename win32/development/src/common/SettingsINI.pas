@@ -345,7 +345,8 @@ begin
     Add(Part_Internet, 'ServerURL',        rtString,  'http://diacomp.net/');
     Add(Part_Internet, 'LastSync',         rtString,  '0');
 
-    Add(Part_System, 'Debug', rtBoolean, False);
+    Add(Part_System, 'Debug',    rtBoolean, False);
+    Add(Part_System, 'LogLevel', rtInteger, 2);
 
     //Add(Part_, '', rt, );
   end;

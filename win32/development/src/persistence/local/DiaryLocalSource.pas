@@ -575,7 +575,7 @@ begin
     Result[High(Result)] := FRecords[i].Deserialize;
   end;
 
-  Log(DEBUG, Format('Extracting diary records between %s and %s; %d items found', [
+  Log(VERBOUS, Format('Extracting diary records between %s and %s; %d items found', [
     DateTimeToStr(TimeFrom, STD_DATETIME_FMT),
     DateTimeToStr(TimeTo, STD_DATETIME_FMT),
     Length(Result)]));

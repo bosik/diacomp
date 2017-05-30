@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 449
-  Top = 37
+  Left = 944
+  Top = 77
   Width = 1249
   Height = 959
   Caption = #1053#1072#1079#1074#1072#1085#1080#1077
@@ -618,7 +618,7 @@ object Form1: TForm1
             Width = 204
             Height = 183
             Align = alTop
-            Date = 40251.131661388890000000
+            Date = 40251.511348240740000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -15
@@ -1838,16 +1838,11 @@ object Form1: TForm1
                     Action = ActionExportFood
                   end
                   item
+                    Visible = False
                     Action = ActionExportKoofs
                   end>
                 Caption = #1069#1082#1089#1087#1086#1088#1090
                 UsageCount = 1
-              end
-              item
-                Visible = False
-                Action = ActionPrint
-                ImageIndex = 1
-                ShortCut = 16464
               end
               item
                 Action = ActionSync
@@ -1857,11 +1852,6 @@ object Form1: TForm1
                 Action = ActionSettings
                 ImageIndex = 3
                 ShortCut = 121
-              end
-              item
-                Action = ActionViewLogs
-                Caption = '&View logs'
-                ShortCut = 16460
               end
               item
                 Caption = '-'
@@ -2025,6 +2015,7 @@ object Form1: TForm1
     object ActionExportKoofs: TAction
       Category = #1069#1082#1089#1087#1086#1088#1090
       Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
+      Visible = False
       OnExecute = ActionExportKoofsExecute
     end
     object ActionBalanceOnOff: TAction
@@ -2138,7 +2129,7 @@ object Form1: TForm1
       OnExecute = ActionShortMealExecute
     end
     object ActionViewLogs: TAction
-      Category = 'Debug'
+      Category = #1054#1090#1083#1072#1076#1082#1072
       Caption = 'View logs'
       ShortCut = 16460
       OnExecute = ActionViewLogsExecute
