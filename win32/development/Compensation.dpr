@@ -62,7 +62,8 @@ uses
   HashService in 'src\backend\features\sync\HashService.pas',
   MerkleTree in 'src\backend\features\sync\MerkleTree.pas',
   Analyzer in 'src\backend\features\analyze\Analyzer.pas',
-  AnalyzeUtils in 'src\backend\features\analyze\AnalyzeUtils.pas';
+  AnalyzeUtils in 'src\backend\features\analyze\AnalyzeUtils.pas',
+  SelfUpdate in 'src\backend\features\selfUpdate\SelfUpdate.pas';
 
 {$R *.res}
 
@@ -80,7 +81,7 @@ uses
 
     if (not FileExists(LocalFileName)) then
     begin
-      if (GetInetFile('Compensation', URL, LocalFileName, nil, 5000, 1024 * 1024)) and
+      if (GetInetFile(URL, LocalFileName, 1024 * 1024)) and
          (FileExists(LocalFileName)) then
       begin
         FlagModificated := True;

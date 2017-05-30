@@ -35,7 +35,6 @@ uses
   InetDownload;
 
 type
-  TUpdateCheckResult = (urNoConnection, urNoUpdates, urCanUpdate);
   TItemType = (itUnknown, itFood, itDish);
   TSyncResult = (srEqual, srFirstUpdated, srSecondUpdated);
 
@@ -51,10 +50,8 @@ type
   { web }
   function DownloadFoodBaseSample: boolean;
   function DownloadDishBaseSample: boolean;
-  function CheckUpdates(var LatestVersion: string): TUpdateCheckResult;
 
   function ExportKoofs(Plain: boolean): string;
-
   function GetKoof(Time: integer): TKoof;
 
 var
@@ -84,11 +81,11 @@ var
 
 const
   { СИСТЕМНОЕ }
-  ADVANCED_MODE           = True;
-  PROGRAM_VERSION         = '2.06';
-  PROGRAM_VERSION_CODE    : integer = 205;
-  PROGRAM_DATE            = '2017.02.05';
-  UPDATES_CHECKING_PERIOD = 1; { дней }
+  ADVANCED_MODE                  = True;
+  PROGRAM_VERSION                = '2.06';
+  PROGRAM_VERSION_CODE : integer = 206;
+  PROGRAM_DATE                   = '2017.05.30';
+  UPDATES_CHECKING_PERIOD        = 1; { дней }
 
   { время актуальности замера и инсулина }
   BLOOD_ACTUALITY_TIME  = 120;     // minutes
@@ -96,16 +93,12 @@ const
   SEARCH_INTERVAL       = 14;      // for time left
 
   { Параметры подключения }
-  DOWNLOAD_APP_NAME   = 'DiaryCore';
-  CONNECTION_TIME_OUT = 10000;
   MAX_FOODBASE_SIZE   = 500 * 1024; // byte
   MAX_DISHBASE_SIZE   = 500 * 1024; // byte
 
   { URL's }
   URL_SERVER          = 'http://diacomp.net/api/windows/';
-  //URL_SERVER          = 'http://localhost:8190/api/windows/';
 
-  URL_VERINFO         = URL_SERVER + 'version';
   URL_UPDATE          = URL_SERVER + 'file/compensation.exe';
   URL_RESTART         = URL_SERVER + 'file/restart.exe';
   URL_FOODBASE_SAMPLE = URL_SERVER + 'file/demofoodbase.xml';
@@ -191,64 +184,14 @@ end;
 function DownloadDishBaseSample(): boolean;
 {======================================================================================================================}
 begin
-  Result := GetInetFile(
-    DOWNLOAD_APP_NAME, URL_DISHBASE_SAMPLE,
-    WORK_FOLDER + DishBase_FileName, nil, CONNECTION_TIME_OUT, MAX_DISHBASE_SIZE);
+  Result := GetInetFile(URL_DISHBASE_SAMPLE, WORK_FOLDER + DishBase_FileName, MAX_DISHBASE_SIZE);
 end;
 
 {======================================================================================================================}
 function DownloadFoodBaseSample(): boolean;
 {======================================================================================================================}
 begin
-  Result := GetInetFile(
-    DOWNLOAD_APP_NAME, URL_FOODBASE_SAMPLE,
-    WORK_FOLDER + FoodBase_FileName, nil, CONNECTION_TIME_OUT, MAX_FOODBASE_SIZE);
-end;
-
-{======================================================================================================================}
-function CheckUpdates(var LatestVersion: string): TUpdateCheckResult;
-{======================================================================================================================}
-const
-  TEMP = 'TEMP.TXT';
-var
-  f: TextFile;
-begin
-  Log(DEBUG, 'Checking for app updates...');
-
-  Value['LastUpdateCheck'] := Round(GetTimeUTC());
-  Result := urNoConnection;
-  try
-    if GetInetFile('Compensation', URL_VERINFO, TEMP, nil, CONNECTION_TIME_OUT, 1024) then
-    begin
-      Log(DEBUG, 'Server responded OK, fetching response...');
-
-      AssignFile(f, TEMP);
-      Reset(f);
-      Readln(f, LatestVersion);
-      CloseFile(f);
-      DeleteFile(TEMP);
-
-      Log(DEBUG, 'Server response: ' + LatestVersion);
-
-      if (StrToInt(LatestVersion) > PROGRAM_VERSION_CODE) then
-      begin
-        Log(DEBUG, 'New update available, version ' + LatestVersion);
-        Result := urCanUpdate;
-      end else
-      begin
-        Log(DEBUG, 'App is up-to-date');
-        Result := urNoUpdates;
-      end;
-    end else
-    begin
-      Log(ERROR, 'Failed to request ' + URL_VERINFO);
-    end;
-  except
-    on e: Exception do
-    begin
-      Log(ERROR, 'Checking failed: ' + e.Message);
-    end;
-  end;
+  Result := GetInetFile(URL_FOODBASE_SAMPLE, WORK_FOLDER + FoodBase_FileName, MAX_FOODBASE_SIZE);
 end;
 
 {======================================================================================================================}

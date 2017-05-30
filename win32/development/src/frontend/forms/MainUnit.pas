@@ -65,6 +65,7 @@ uses
   DiaryAnalyze,
   AnalyzeGraphic,
   AnalyzeInterface,
+  SelfUpdate,
 
   // прочее
   ThreadExecutor;
@@ -467,7 +468,7 @@ type
   end;
 
   { обновление }
-  procedure SetupUpdate(UserInformed: boolean; const ExpVersion: string);
+  procedure SetupUpdate(UserInformed: boolean; const ExpectedVersion: integer);
 
 var
   { ========================== И Н Т Е Р Ф Е Й С ============================= }
@@ -2026,6 +2027,7 @@ begin
             DiaryView.SelectedLine := Meal.Count - 1;
             UpdateMealStatistics;
             UpdateMealDose;
+            EventDiaryChanged();
 
             ComboDiaryNew.Text := '';
             EditDiaryNewMass.Text := '';
@@ -3356,6 +3358,8 @@ end;
 {======================================================================================================================}
 procedure TForm1.MyIdle(Sender: TObject; var Done: Boolean);
 {======================================================================================================================}
+var
+  Version: integer;
 begin
   Done := True;
 
@@ -3438,9 +3442,10 @@ begin
   begin
     IN_IDLE_CheckUpdates := False;
 
-    if CheckUpdates(AnExpDate) = urCanUpdate then
+    Version := GetLatestVersion(Value['ServerURL']);
+    if Version > PROGRAM_VERSION_CODE then
       // ShowBalloon(BALLOON_INFO_NEW_VERSION_AVAILABLE, bitInfo, BalloonAction_StartUpdate);
-      SetupUpdate(True, AnExpDate);
+      SetupUpdate(True, Version);
 
     Done := False;
     Exit;
@@ -3697,7 +3702,7 @@ end;
 procedure TForm1.BalloonAction_StartUpdate;
 {======================================================================================================================}
 begin
-  SetupUpdate(True, AnExpDate);
+  //SetupUpdate(True, AnExpDate);
 end;
 
 {======================================================================================================================}
@@ -3929,6 +3934,7 @@ begin
       LocalSource.Save(Meal);
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Meal.ID;
+      EventDiaryChanged();
     end;
   end;
 end;
@@ -3957,130 +3963,32 @@ begin
 end;
 
 {======================================================================================================================}
-procedure SetupUpdate(UserInformed: boolean; const ExpVersion: string);
+procedure SetupUpdate(UserInformed: boolean; const ExpectedVersion: integer);
 {======================================================================================================================}
-
-  function FileSize(const FileName: string): Int64;
-  var
-    f: TFileStream;
-  begin
-    try
-      f := TFileStream.Create(FileName, fmOpenRead);
-      Result := f.Size;
-      f.Free;
-    except
-      Result := 0;
-    end;
-  end;
-
-  function WaitForFile(const FileName: string; Time: cardinal): boolean;
-  var
-    StartTime: cardinal;
-  begin
-    Result := FileExists(FileName);
-    StartTime := GetTickCount;
-    while (not Result) and (GetTickCount-StartTime < Time) do
-    begin
-      Result := FileExists(FileName);
-      Wait(100);
-    end;
-  end;
-
-const
-  TEMP_APP = 'NewCompensation.exe';
-{var
-  BackEXE: boolean;
-  BackDLL: boolean;      }
 begin
-  // TODO: отвязать от интерфейса, перенести в DiaryCore
-
-  //if (MessageDlg(MESSAGE_CONF_UPDATE[UserInformed], mtConfirmation, [mbYes,mbNo], 0) <> mrYes) then Exit;
-
-  Application.ProcessMessages; { чтобы исчезло окно диалога }
-
-  try
-    try
-      FormProcess.Show;
-      FormProcess.SetMax(5);
-
-      { ЗАГРУЗКА }
-      //ShowProcess('Загрузка файла установки...');
-
-      if GetInetFile('Compensation', URL_UPDATE, WORK_FOLDER + TEMP_APP, nil, CONNECTION_TIME_OUT, 10 * 1024 * 1024) and
-         FileExists(WORK_FOLDER + TEMP_APP) and
-         (FileSize(WORK_FOLDER + TEMP_APP) > 200 * 1024) then
-      begin
-        { УДАЛЕНИЕ СТАРЫХ КОПИЙ }
-        //ShowProcess('Удаление старых резервных копий...');
-        DeleteFile(Application.ExeName + '.bak');
-        //DeleteFile(WORK_FOLDER+ANALYZE_LIB_FileName+'.bak');
-
-        { СОЗДАНИЕ НОВЫХ КОПИЙ }
-        //ShowProcess('Создание новых резервных копий...');
-        RenameFile(Application.ExeName, Application.ExeName + '.bak');
-        //RenameFile(WORK_FOLDER+ANALYZE_LIB_FileName, WORK_FOLDER+ANALYZE_LIB_FileName + '.bak');
-
-        { УСТАНОВКА }
-        //ShowProcess('Установка...');
-        RenameFile(WORK_FOLDER + TEMP_APP, Application.ExeName);
-        //ShellExecute(0,'open',PChar(WORK_FOLDER+SETUP_FILE),'','',SW_HIDE);
-        Value['UpdatedVersion'] := ExpVersion;
-
-        //Wait(500);
-
-        //BackEXE := False;//not WaitForFile(Application.ExeName, 5000);
-        //BackDLL := False;//not WaitForFile(WORK_FOLDER + ANALYZE_LIB_FileName, 3000);
-
-       { if BackEXE or BackDLL then
-        begin
-          MessageDlg('Ошибка установки обновления. Будет произведён частичный или полный откат.', mtError, [mbOK], 0);
-          if BackEXE then
-            RenameFile(Application.ExeName+'.bak', Application.ExeName);
-          if BackDLL then
-            RenameFile(WORK_FOLDER+ANALYZE_LIB_FileName+'.bak', WORK_FOLDER+ANALYZE_LIB_FileName);
-        end else }
-        begin
-          //FormProcess.Hide;
-          if (not UserInformed) then
-            MessageDlg('Все необходимые файлы обновлены. Чтобы изменения вступили в силу, перезапустите приложение.', mtInformation, [mbOK], 0);
-        end;
-      end else
-        MessageDlg('Файл установки повреждён.', mtError, [mbOK], 0);
-    except
-      on e: EInOutError do
-      begin
-        Log(ERROR, e.ClassName + ' : ' + e.Message, True);
-        MessageDlg('Ошибка установки обновления: недостаточно прав.'#13+
-          e.ClassName + ' : ' + e.Message, mtError, [mbOK], 0);
-      end;
-      on e: Exception do
-      begin
-        Log(ERROR, e.ClassName + ' : ' + e.Message, True);
-        MessageDlg('Ошибка установки обновления.'#13 + e.ClassName + ' : ' + e.Message, mtError, [mbOK], 0);
-      end;
-    end;
-  finally
-    if FormProcess.Visible then
-      FormProcess.Hide;
-  end;
+  Value['UpdatedVersion'] := ExpectedVersion;
+  DownloadAndRunUpdater();
 end;
 
 {======================================================================================================================}
 procedure TForm1.ActionCheckUpdateExecute(Sender: TObject);
 {======================================================================================================================}
 var
-  Date: string;
+  Version: integer;
 begin
-  case CheckUpdates(Date) of
-    urNoUpdates:
-      InfoMessage(MESSAGE_INFO_NO_UPDATES);
+  Version := GetLatestVersion(Value['ServerURL']);
 
-   urNoConnection:
-      ErrorMessage(MESSAGE_ERROR_NO_INTERNET);
-
-    urCanUpdate:
-      SetupUpdate(False, Date);
-  end;
+  if (Version = -1) then
+    ErrorMessage(MESSAGE_ERROR_NO_INTERNET) else
+  if (Version = PROGRAM_VERSION_CODE) then
+    InfoMessage(MESSAGE_INFO_NO_UPDATES) else
+  if (Version > PROGRAM_VERSION_CODE) then
+  begin
+    // i18n
+    if (MessageDlg('Найдена новая версия: '+ IntToStr(Version) + #13'Установить сейчас?', mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+      SetupUpdate(False, Version);
+  end else
+    ShowMessage('Dev Mode!');
 end;
 
 {======================================================================================================================}
