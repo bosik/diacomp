@@ -7,7 +7,8 @@ uses
   Controls,
   BusinessObjects,
   DiaryRoutines,
-  DiaryInterface;
+  DiaryInterface,
+  AutoLog;
 
 type
   TFormEditor = class(TAutosetupForm)
@@ -36,18 +37,27 @@ class function TFormEditor.ShowEditor(var Entity: TVersioned; CreateMode: boolea
 var
   Dialog: TFormEditor;
 begin
+  Log(DEBUG, 'ShowEditor()');
   Dialog := CreateEditorForm(CreateMode);
 
+  Log(VERBOUS, 'Clonning data');
   Dialog.Entity := Clone(Entity);
+
   if (CreateMode) then
     Dialog.Entity.ID := CreateCompactGUID();
 
+  Log(VERBOUS, 'Showing data in GUI');
   Dialog.ShowEntityInGUI(CreateMode);
+
+  Log(VERBOUS, 'Showing dialog');
   Dialog.ShowModal;
+  Log(VERBOUS, 'Dialog closed');
 
   if ((Dialog.ModalResult = mrOk) and Dialog.ReadEntityFromGUI()) then
   begin
+    Log(VERBOUS, 'Clonning data');
     Entity := Clone(Dialog.Entity);
+
     Entity.Modified();
     Result := True;
   end else

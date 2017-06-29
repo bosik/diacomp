@@ -16,7 +16,8 @@ uses
   XMLIntf,
   BusinessObjects,
   DiaryPage,
-  DiaryPageSerializer;
+  DiaryPageSerializer,
+  AutoLog;
 
 type
   TSearchDirection = (sdBack, sdForward, sdAround);
@@ -409,11 +410,19 @@ function TDiary.GetNextFinger: integer;
 var
   Blood: TBloodRecord;
 begin
+  Log(VERBOUS, 'Checking next finger');
+
   Blood := GetLastBloodRecord();
+
   if (Blood <> nil) then
-    Result := (Blood.Finger + 1) mod 10
-  else
+  begin
+    Log(VERBOUS, 'Blood record found');
+    Result := (Blood.Finger + 1) mod 10;
+  end else
+  begin
+    Log(VERBOUS, 'Blood record not found, returning -1');
     Result := -1;
+  end;
 end;
 
 initialization
