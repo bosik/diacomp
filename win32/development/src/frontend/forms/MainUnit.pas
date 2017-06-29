@@ -3882,6 +3882,8 @@ procedure TForm1.ActionCalcMassExecute(Sender: TObject);
 var
   NewMass: real;
   Cant: boolean;
+  meal: TMealRecord;
+  Line: integer;
 begin
   if not DiaryView.IsFoodSelected then Exit;
 
@@ -3902,8 +3904,18 @@ begin
   begin
     if Cant then InfoMessage(MESSAGE_INFO_CANT_BALANCE);
 
-    DiaryView.SelectedFood.Mass := Round(NewMass);
-    //DiaryView.EditFoodMass(Round(NewMass));
+    Meal := TMealRecord(SelectedRecord());
+    Meal[DiaryView.SelectedLine].Mass := Round(NewMass);
+    Meal.Modified();
+    LocalSource.Save(Meal);
+    UpdateMealStatistics();
+    UpdateMealDose();
+
+    Line := DiaryView.SelectedLine;
+    DiaryView.OpenPage(Diary[Trunc(Form1.CalendarDiary.Date)], True);
+    DiaryView.SelectedRecordID := Meal.ID;
+    DiaryView.SelectedLine := Line;
+    EventDiaryChanged();
   end;
 end;
 
@@ -4166,8 +4178,8 @@ begin
     Meal.Modified();
     LocalSource.Save(Meal);
 
-    // TODO: check if it is really necessary
-    UpdateTimeLeft;
+    UpdateTimeLeft();
+    EventDiaryChanged();
   end;
 end;
 
