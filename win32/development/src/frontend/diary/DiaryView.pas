@@ -1413,7 +1413,7 @@ begin
     Result := TMealRecord(CurrentPage[GetSelectedRecordIndex()]).Food[FSelLine]
   else
     //Result := nil;
-    raise Exception.Create('SelectedFood: not such record selected');
+    raise Exception.Create('SelectedFood: no such record selected');
 end;
 
 {======================================================================================================================}
