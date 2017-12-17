@@ -45,10 +45,6 @@ public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 
 	/* =========================== МЕТОДЫ ================================ */
 
-	public ActivityEditorNote()
-	{
-	}
-
 	@Override
 	protected void setupInterface()
 	{
@@ -88,16 +84,9 @@ public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
-		if (!createMode)
-		{
-			onDateTimeChanged(entity.getData().getTime());
-			editText.setText(entity.getData().getText());
-		}
-		else
-		{
-			onDateTimeChanged(new Date());
-			editText.setText("");
-		}
+		buttonTime.setText(formatTime(entity.getData().getTime()));
+		buttonDate.setText(formatDate(entity.getData().getTime()));
+		editText.setText(entity.getData().getText());
 	}
 
 	@Override

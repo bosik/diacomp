@@ -18,10 +18,17 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
@@ -37,61 +44,49 @@ import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 {
-	public static final String	TAG					= ActivityEditorMeal.class.getSimpleName();
+	public static final String TAG = ActivityEditorMeal.class.getSimpleName();
 
-	public static final String	FIELD_BS_BASE		= "bosik.pack.bs.base";
-	public static final String	FIELD_BS_LAST		= "bosik.pack.bs.last";
-	public static final String	FIELD_BS_TARGET		= "bosik.pack.bs.target";
-	public static final String	FIELD_INS_INJECTED	= "bosik.pack.insInjected";
+	public static final String FIELD_BS_BASE      = "bosik.pack.bs.base";
+	public static final String FIELD_BS_LAST      = "bosik.pack.bs.last";
+	public static final String FIELD_BS_TARGET    = "bosik.pack.bs.target";
+	public static final String FIELD_INS_INJECTED = "bosik.pack.insInjected";
 
 	// FIXME: hardcoded BS value
-	private static final double	BS_HYPOGLYCEMIA		= 4.0;
-	private static final double	CARB_COLOR_LIMIT	= 1.0;
+	private static final double BS_HYPOGLYCEMIA  = 4.0;
+	private static final double CARB_COLOR_LIMIT = 1.0;
 
-	DiaryService				diary;
+	DiaryService diary;
 
 	// data
-	private Double				bsBase;
-	private Double				bsLast;
-	private Double				bsTarget;
-	private double				insInjected;
+	private Double bsBase;
+	private Double bsLast;
+	private Double bsTarget;
+	private double insInjected;
 
 	// components
-	private Button				buttonTime;
-	private Button				buttonDate;
+	private Button buttonTime;
+	private Button buttonDate;
 
-	private TextView			textMealCurrentDosage;
-	private TextView			textMealShiftedCarbs;
-	private TextView			textMealShiftedDosage;
-	private TextView			textMealExpectedBs;
-	MealEditorView				mealEditor;
+	private TextView textMealCurrentDosage;
+	private TextView textMealShiftedCarbs;
+	private TextView textMealShiftedDosage;
+	private TextView textMealExpectedBs;
+	MealEditorView mealEditor;
 
 	// localization
-	private String				captionDose;
-	private String				captionGramm;
-	private String				captionMmol;
+	private String captionDose;
+	private String captionGramm;
+	private String captionMmol;
 
 	// ======================================================================================================
-
-	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-	}
 
 	@Override
 	protected void setupInterface()
@@ -183,8 +178,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			case R.id.item_meal_info:
 			{
 				String s = getString(R.string.editor_meal_tip_meal_info);
-				String info = String.format(s, data.getProts(), data.getFats(), data.getCarbs(), data.getValue(),
-						data.getMass());
+				String info = String.format(s, data.getProts(), data.getFats(), data.getCarbs(), data.getValue(), data.getMass());
 				UIUtils.showLongTip(ActivityEditorMeal.this, info);
 				return true;
 			}
@@ -283,8 +277,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		findViewById(R.id.mealRowInsulin).setVisibility(View.GONE);
 	}
 
-	private void showInsulinDosage(Double inputBS, Double targetBS, boolean insulinInjected, double carbs, double prots,
-			Koof koof)
+	private void showInsulinDosage(Double inputBS, Double targetBS, boolean insulinInjected, double carbs, double prots, Koof koof)
 	{
 		findViewById(R.id.mealRowInsulin).setVisibility(View.VISIBLE);
 
@@ -390,18 +383,16 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
-		if (createMode)
-		{
-			entity.getData().setTime(new Date());
-			mealEditor.requestFocus();
-		}
-
-		Date time = entity.getData().getTime();
-		buttonTime.setText(formatTime(time));
-		buttonDate.setText(formatDate(time));
+		buttonTime.setText(formatTime(entity.getData().getTime()));
+		buttonDate.setText(formatDate(entity.getData().getTime()));
 
 		showMealContent();
 		showMealInfo();
+
+		if (createMode)
+		{
+			mealEditor.requestFocus();
+		}
 	}
 
 	@Override
@@ -415,11 +406,8 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	{
 		buttonTime.setText(formatTime(time));
 		buttonDate.setText(formatDate(time));
-		if (time.compareTo(entity.getTimeStamp()) != 0)
-		{
-			modified();
-			showMealInfo();
-		}
+		modified();
+		showMealInfo();
 	}
 
 	void modified()

@@ -92,20 +92,23 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
-		spinnerFinger.setSelection(entity.getData().getFinger());
+		buttonDate.setText(formatDate(entity.getData().getTime()));
+		buttonTime.setText(formatTime(entity.getData().getTime()));
 
-		if (!createMode)
+		if (entity.getData().getValue() == 0)
 		{
-			onDateTimeChanged(entity.getData().getTime());
-			editValue.setText(String.valueOf(entity.getData().getValue()));
+			editValue.setText("");
 		}
 		else
 		{
-			onDateTimeChanged(new Date());
-			editValue.setText("");
+			editValue.setText(String.valueOf(entity.getData().getValue()));
 		}
 
-		if (!askFinger)
+		if (askFinger)
+		{
+			spinnerFinger.setSelection(entity.getData().getFinger());
+		}
+		else
 		{
 			spinnerFinger.setVisibility(View.GONE);
 			labelBloodFinger.setVisibility(View.GONE);

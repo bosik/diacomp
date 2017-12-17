@@ -18,25 +18,26 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
-import java.util.Date;
-import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.frontend.UIUtils;
-import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
-import org.bosik.diacomp.core.utils.Utils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
+import org.bosik.diacomp.core.utils.Utils;
+
+import java.util.Date;
 
 public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 {
 	// components
-	private Button		buttonTime;
-	private Button		buttonDate;
-	private EditText	editValue;
-	private Button		buttonOK;
+	private Button   buttonTime;
+	private Button   buttonDate;
+	private EditText editValue;
+	private Button   buttonOK;
 
 	@Override
 	protected void setupInterface()
@@ -99,15 +100,16 @@ public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
-		if (!createMode)
+		buttonDate.setText(formatDate(entity.getData().getTime()));
+		buttonTime.setText(formatTime(entity.getData().getTime()));
+
+		if (entity.getData().getValue() == 0)
 		{
-			onDateTimeChanged(entity.getData().getTime());
-			editValue.setText(Utils.formatDoubleShort(entity.getData().getValue()));
+			editValue.setText("");
 		}
 		else
 		{
-			onDateTimeChanged(new Date());
-			editValue.setText("");
+			editValue.setText(Utils.formatDoubleShort(entity.getData().getValue()));
 		}
 	}
 

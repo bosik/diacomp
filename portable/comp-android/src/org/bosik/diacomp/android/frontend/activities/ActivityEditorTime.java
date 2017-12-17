@@ -18,49 +18,22 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
-import java.util.Calendar;
-import java.util.Date;
+import android.annotation.SuppressLint;
+import android.app.DialogFragment;
+import android.widget.DatePicker;
+import android.widget.TimePicker;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.pickers.DatePickerFragment;
 import org.bosik.diacomp.android.frontend.fragments.pickers.TimePickerFragment;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
-import android.annotation.SuppressLint;
-import android.app.DialogFragment;
-import android.os.Bundle;
-import android.widget.DatePicker;
-import android.widget.TimePicker;
+
+import java.util.Calendar;
+import java.util.Date;
 
 // Do not make it abstract: the android.app.Fragment$InstantiationException may be caused otherwise
 @SuppressLint("Registered")
 public class ActivityEditorTime<T extends DiaryRecord> extends ActivityEditor<T>
 {
-	private static final String KEY_TIME = "time";
-
-	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		if (savedInstanceState != null)
-		{
-			if (savedInstanceState.containsKey(KEY_TIME))
-			{
-				long time = savedInstanceState.getLong(KEY_TIME);
-				entity.getData().setTime(new Date(time));
-				onDateTimeChanged(entity.getData().getTime());
-			}
-		}
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState)
-	{
-		super.onSaveInstanceState(outState);
-		if (outState != null)
-		{
-			outState.putLong(KEY_TIME, entity.getData().getTime().getTime());
-		}
-	}
-
 	/* =========================== PROTECTED METHODS ================================ */
 
 	protected void showTimePickerDialog()
@@ -116,11 +89,10 @@ public class ActivityEditorTime<T extends DiaryRecord> extends ActivityEditor<T>
 
 	/**
 	 * Called when date or time changed
-	 * 
-	 * @param time
-	 *            New date/time
+	 *
+	 * @param time New date/time
 	 */
 	protected void onDateTimeChanged(Date time)
 	{
-	};
+	}
 }
