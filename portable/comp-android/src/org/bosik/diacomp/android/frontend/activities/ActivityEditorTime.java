@@ -19,62 +19,40 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import android.annotation.SuppressLint;
-import android.app.DialogFragment;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.os.Bundle;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.pickers.DatePickerFragment;
 import org.bosik.diacomp.android.frontend.fragments.pickers.TimePickerFragment;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.utils.Utils;
 
-import java.util.Calendar;
 import java.util.Date;
 
 // Do not make it abstract: the android.app.Fragment$InstantiationException may be caused otherwise
 @SuppressLint("Registered")
 public class ActivityEditorTime<T extends DiaryRecord> extends ActivityEditor<T>
+		implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener
 {
-	/* =========================== PROTECTED METHODS ================================ */
+	protected void showDatePickerDialog()
+	{
+		DatePickerFragment newFragment = new DatePickerFragment();
+		Bundle args = new Bundle();
+		args.putLong(DatePickerFragment.KEY, entity.getData().getTime().getTime());
+		newFragment.setArguments(args);
+		newFragment.show(getFragmentManager(), "datePicker");
+	}
 
 	protected void showTimePickerDialog()
 	{
-		DialogFragment newFragment = new TimePickerFragment(entity.getData().getTime())
-		{
-			@Override
-			public void onTimeSet(TimePicker view, int hourOfDay, int minute)
-			{
-				Calendar c = Calendar.getInstance();
-				c.setTime(entity.getData().getTime());
-
-				c.set(Calendar.HOUR_OF_DAY, hourOfDay);
-				c.set(Calendar.MINUTE, minute);
-
-				entity.getData().setTime(c.getTime());
-				onDateTimeChanged(c.getTime());
-			}
-		};
+		TimePickerFragment newFragment = new TimePickerFragment();
+		Bundle args = new Bundle();
+		args.putLong(TimePickerFragment.KEY, entity.getData().getTime().getTime());
+		newFragment.setArguments(args);
 		newFragment.show(getFragmentManager(), "timePicker");
-	}
-
-	protected void showDatePickerDialog()
-	{
-		DialogFragment newFragment = new DatePickerFragment(entity.getData().getTime())
-		{
-			@Override
-			public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
-			{
-				Calendar c = Calendar.getInstance();
-				c.setTime(entity.getData().getTime());
-
-				c.set(Calendar.YEAR, year);
-				c.set(Calendar.MONTH, monthOfYear);
-				c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-				entity.getData().setTime(c.getTime());
-				onDateTimeChanged(c.getTime());
-			}
-		};
-		newFragment.show(getFragmentManager(), "datePicker");
 	}
 
 	protected String formatDate(Date date)
@@ -85,6 +63,22 @@ public class ActivityEditorTime<T extends DiaryRecord> extends ActivityEditor<T>
 	protected String formatTime(Date time)
 	{
 		return UIUtils.formatTimeLocalDevice(this, time);
+	}
+
+	@Override
+	public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
+	{
+		Date time = Utils.setDate(entity.getData().getTime(), year, monthOfYear, dayOfMonth);
+		entity.getData().setTime(time);
+		onDateTimeChanged(time);
+	}
+
+	@Override
+	public void onTimeSet(TimePicker view, int hourOfDay, int minute)
+	{
+		Date time = Utils.setTime(entity.getData().getTime(), hourOfDay, minute);
+		entity.getData().setTime(time);
+		onDateTimeChanged(time);
 	}
 
 	/**

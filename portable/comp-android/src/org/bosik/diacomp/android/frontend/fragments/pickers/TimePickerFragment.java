@@ -18,37 +18,40 @@
  */
 package org.bosik.diacomp.android.frontend.fragments.pickers;
 
-import java.util.Calendar;
-import java.util.Date;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.widget.TimePicker;
 
-public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener
+import java.util.Calendar;
+import java.util.Date;
+
+public class TimePickerFragment extends DialogFragment
 {
-	private final Date time;
-
-	public TimePickerFragment(Date time)
-	{
-		this.time = time;
-	}
+	public static final String KEY = "time";
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState)
 	{
+		super.onCreate(savedInstanceState);
+
+		Date time;
+		if (getArguments().containsKey(KEY))
+		{
+			time = new Date(getArguments().getLong(KEY));
+		}
+		else
+		{
+			time = new Date();
+		}
+
 		Calendar c = Calendar.getInstance();
 		c.setTime(time);
 		int hour = c.get(Calendar.HOUR_OF_DAY);
 		int minute = c.get(Calendar.MINUTE);
 
-		return new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
-	}
-
-	@Override
-	public void onTimeSet(TimePicker view, int hourOfDay, int minute)
-	{
+		return new TimePickerDialog(getActivity(), (TimePickerDialog.OnTimeSetListener) getActivity(), hour, minute,
+				DateFormat.is24HourFormat(getActivity()));
 	}
 }
