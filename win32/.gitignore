@@ -1,5 +1,7 @@
+*.cfg
 *.dcu
+*.ddp
 *.dll
+*.dof
 *.dsk
 *.exe
-*.ddp
