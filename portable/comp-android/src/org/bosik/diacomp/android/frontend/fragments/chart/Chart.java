@@ -19,6 +19,7 @@
 package org.bosik.diacomp.android.frontend.fragments.chart;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bosik.diacomp.android.R;
@@ -262,7 +263,8 @@ public class Chart extends Fragment implements ProgressListener
 		for (Series<?> s : result)
 		{
 			graphView.addSeries(s);
-			hasData = hasData || !s.isEmpty();
+			int size = count(s.getValues(s.getLowestValueX() - 1, s.getHighestValueX() + 1));
+			hasData = hasData || size > 1;
 		}
 
 		if (hasData)
@@ -279,6 +281,18 @@ public class Chart extends Fragment implements ProgressListener
 			graphView.setVisibility(View.GONE);
 			textNoData.setVisibility(View.VISIBLE);
 		}
+	}
+
+	private static int count(Iterator<?> values)
+	{
+		int result = 0;
+		while (values.hasNext())
+		{
+			result++;
+			values.next();
+		}
+
+		return result;
 	}
 
 	public void refresh()
