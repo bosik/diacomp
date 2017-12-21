@@ -23,7 +23,7 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerSet;
 
 /**
- * Adapter with casting methods
+ * Decorator with casting methods
  */
 public class PreferencesTypedService extends PreferencesService
 {
@@ -109,7 +109,7 @@ public class PreferencesTypedService extends PreferencesService
 	 * Updates string preference. Version is incremented automatically.
 	 * 
 	 * @param preference
-	 * @param set
+	 * @param value
 	 */
 	public void setStringValue(Preference preference, String value)
 	{
@@ -131,7 +131,7 @@ public class PreferencesTypedService extends PreferencesService
 	 * Updates float preference. Version is incremented automatically.
 	 * 
 	 * @param preference
-	 * @param set
+	 * @param value
 	 */
 	public void setFloatValue(Preference preference, Float value)
 	{
@@ -153,7 +153,7 @@ public class PreferencesTypedService extends PreferencesService
 	 * Updates double preference. Version is incremented automatically.
 	 * 
 	 * @param preference
-	 * @param set
+	 * @param value
 	 */
 	public void setDoubleValue(Preference preference, Float value)
 	{
