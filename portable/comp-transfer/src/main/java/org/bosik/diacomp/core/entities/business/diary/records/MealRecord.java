@@ -17,18 +17,19 @@
  */
 package org.bosik.diacomp.core.entities.business.diary.records;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 public class MealRecord extends DiaryRecord
 {
-	private static final long		serialVersionUID	= -4920269773372985893L;
+	private static final long serialVersionUID = -4920269773372985893L;
 
-	private final List<FoodMassed>	items				= new ArrayList<FoodMassed>();
-	private boolean					shortMeal;
+	private final List<FoodMassed> items = new ArrayList<FoodMassed>();
+	private boolean shortMeal;
 
 	public MealRecord(Date time, boolean shortMeal)
 	{
@@ -137,5 +138,18 @@ public class MealRecord extends DiaryRecord
 	public void remove(int index)
 	{
 		items.remove(index);
+	}
+
+	@Override
+	public String toString()
+	{
+		StringBuilder s = new StringBuilder();
+		s.append("Time: " + getTime()).append('\n');
+		s.append("Short postprand: " + getShortMeal()).append('\n');
+		for (FoodMassed item : items)
+		{
+			s.append(item).append('\n');
+		}
+		return s.toString();
 	}
 }

@@ -108,4 +108,10 @@ public class BloodRecord extends DiaryRecord
 	{
 		this.postPrand = postPrand;
 	}
+
+	@Override
+	public String toString()
+	{
+		return String.format("Time: %s, Value: %.1f, Finger: %d", getTime(), getValue(), getFinger());
+	}
 }

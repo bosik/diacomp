@@ -165,8 +165,8 @@ public class Versioned<T> implements Serializable
 	@Override
 	public String toString()
 	{
-		return String.format("(ID=%s, Hash=%s, Version=%d, Timestamp=%s)", getId(), getHash(), getVersion(),
-				getTimeStamp().toString());
+		return String.format("(ID=%s, Hash=%s, Version=%d, Timestamp=%s, Data=%s)", getId(), getHash(), getVersion(),
+				getTimeStamp().toString(), getData());
 	}
 
 	public static final Comparator<Versioned<?>> COMPARATOR_GUID = new Comparator<Versioned<?>>()
