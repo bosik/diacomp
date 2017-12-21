@@ -102,7 +102,7 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 					}
 					catch (IllegalArgumentException e)
 					{
-						Log.w("Failed to parse preference", e);
+						Log.e(TAG, e.getMessage(), e);
 					}
 				}
 
