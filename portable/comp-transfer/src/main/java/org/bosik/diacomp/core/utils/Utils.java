@@ -17,6 +17,8 @@
  */
 package org.bosik.diacomp.core.utils;
 
+import org.json.JSONArray;
+
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -40,7 +42,6 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 import java.util.TimeZone;
-import org.json.JSONArray;
 
 public class Utils
 {
@@ -53,77 +54,73 @@ public class Utils
 	/**
 	 * Value of proteins, kcal/g
 	 */
-	public static final double							KCAL_PER_PROTS		= 3.8;
+	public static final double KCAL_PER_PROTS = 3.8;
 	/**
 	 * Value of fats, kcal/g
 	 */
-	public static final double							KCAL_PER_FATS		= 9.3;
+	public static final double KCAL_PER_FATS  = 9.3;
 	/**
 	 * Value of carbohydrates, kcal/g
 	 */
-	public static final double							KCAL_PER_CARBS		= 4.1;
+	public static final double KCAL_PER_CARBS = 4.1;
 
 	// Time
 
-	public static final int								NsecPerMsec			= 1000000;
-	public static final int								MsecPerSec			= 1000;
-	public static final int								SecPerMin			= 60;
-	public static final int								MinPerHour			= 60;
-	public static final int								HourPerDay			= 24;
-	public static final int								SecPerHour			= SecPerMin * MinPerHour;
-	public static final int								SecPerDay			= SecPerMin * MinPerHour * HourPerDay;
-	public static final int								MinPerDay			= MinPerHour * HourPerDay;
-	public static final int								HalfMinPerDay		= (MinPerHour * HourPerDay) / 2;
-	public static final long							MsecPerMin			= MsecPerSec * SecPerMin;
-	public static final long							MsecPerHour			= MsecPerSec * SecPerMin * MinPerHour;
-	public static final long							MsecPerDay			= MsecPerSec * SecPerMin * MinPerHour
-			* HourPerDay;
+	public static final int  NsecPerMsec   = 1000000;
+	public static final int  MsecPerSec    = 1000;
+	public static final int  SecPerMin     = 60;
+	public static final int  MinPerHour    = 60;
+	public static final int  HourPerDay    = 24;
+	public static final int  SecPerHour    = SecPerMin * MinPerHour;
+	public static final int  SecPerDay     = SecPerMin * MinPerHour * HourPerDay;
+	public static final int  MinPerDay     = MinPerHour * HourPerDay;
+	public static final int  HalfMinPerDay = (MinPerHour * HourPerDay) / 2;
+	public static final long MsecPerMin    = MsecPerSec * SecPerMin;
+	public static final long MsecPerHour   = MsecPerSec * SecPerMin * MinPerHour;
+	public static final long MsecPerDay    = MsecPerSec * SecPerMin * MinPerHour * HourPerDay;
 
 	// Epsilon values
 
-	public static final double							EPS					= 0.00000001;
+	public static final double EPS = 0.00000001;
 
 	// Format settings
 
-	public static char									DECIMAL_DOT;
-	private static DecimalFormat						DF;
+	public static  char          DECIMAL_DOT;
+	private static DecimalFormat DF;
 
-	private static Random								r					= new Random();
+	private static Random r = new Random();
 
 	// Formatters
 
-	public static final String							FORMAT_DATE_TIME	= "yyyy-MM-dd HH:mm:ss";
-	public static final String							FORMAT_DATE			= "yyyy-MM-dd";
-	public static final String							FORMAT_TIME_SHORT	= "HH:mm";
+	public static final String FORMAT_DATE_TIME  = "yyyy-MM-dd HH:mm:ss";
+	public static final String FORMAT_DATE       = "yyyy-MM-dd";
+	public static final String FORMAT_TIME_SHORT = "HH:mm";
 
-	static final TimeZone								TIMEZONE_UTC		= TimeZone.getTimeZone("UTC");
+	static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
 
-	private static final ThreadLocal<SimpleDateFormat>	FORMATTER_DATE_UTC	= new ThreadLocal<SimpleDateFormat>()
-																			{
-																				@Override
-																				protected SimpleDateFormat initialValue()
-																				{
-																					SimpleDateFormat format = new SimpleDateFormat(
-																							FORMAT_DATE, Locale.US);
-																					format.setTimeZone(TIMEZONE_UTC);
-																					return format;
-																				}
-																			};
+	private static final ThreadLocal<SimpleDateFormat> FORMATTER_DATE_UTC = new ThreadLocal<SimpleDateFormat>()
+	{
+		@Override
+		protected SimpleDateFormat initialValue()
+		{
+			SimpleDateFormat format = new SimpleDateFormat(FORMAT_DATE, Locale.US);
+			format.setTimeZone(TIMEZONE_UTC);
+			return format;
+		}
+	};
 
-	private static final ThreadLocal<SimpleDateFormat>	FORMATTER_TIME_UTC	= new ThreadLocal<SimpleDateFormat>()
-																			{
-																				@Override
-																				protected SimpleDateFormat initialValue()
-																				{
-																					SimpleDateFormat format = new SimpleDateFormat(
-																							FORMAT_DATE_TIME,
-																							Locale.US);
-																					format.setTimeZone(TIMEZONE_UTC);
-																					return format;
-																				}
-																			};
+	private static final ThreadLocal<SimpleDateFormat> FORMATTER_TIME_UTC = new ThreadLocal<SimpleDateFormat>()
+	{
+		@Override
+		protected SimpleDateFormat initialValue()
+		{
+			SimpleDateFormat format = new SimpleDateFormat(FORMAT_DATE_TIME, Locale.US);
+			format.setTimeZone(TIMEZONE_UTC);
+			return format;
+		}
+	};
 
-	public static final String							ALPHANUMERIC		= "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+	public static final String ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
 
 	static
 	{
@@ -168,7 +165,7 @@ public class Utils
 
 	/**
 	 * Replaces all . and , with actual locale decimal separator (DECIMAL_DOT)
-	 * 
+	 *
 	 * @param s
 	 * @return
 	 */
@@ -179,7 +176,7 @@ public class Utils
 
 	/**
 	 * Parses double value, replacing ./, decimal separator if need
-	 * 
+	 *
 	 * @param s
 	 * @return
 	 * @throws ParseException
@@ -191,9 +188,8 @@ public class Utils
 
 	/**
 	 * [tested] Parses minute-time
-	 * 
-	 * @param S
-	 *            Time in format "hh:mm"
+	 *
+	 * @param S Time in format "hh:mm"
 	 * @return Minute time (number of minutes since midnight)
 	 */
 	public static int parseMinuteTime(String S)
@@ -223,9 +219,8 @@ public class Utils
 
 	/**
 	 * [tested] Читает время из строки формата STD_FORMAT_TIME_UTC
-	 * 
-	 * @param time
-	 *            Строка, хранящая время
+	 *
+	 * @param time Строка, хранящая время
 	 * @return Время
 	 * @throws ParseException
 	 */
@@ -253,9 +248,8 @@ public class Utils
 	 * Calculates value of simple math expression. Four operations supported: +, -, *, /. Correct
 	 * processing of negative values is not guaranteed (f.e., calculate(-1/-2) = -3 instead of
 	 * expected 0.5)
-	 * 
-	 * @param s
-	 *            String to calculate (f.e., "2+3*4", "-10*2")
+	 *
+	 * @param s String to calculate (f.e., "2+3*4", "-10*2")
 	 */
 	public static double parseExpression(String s) throws NumberFormatException
 	{
@@ -383,9 +377,8 @@ public class Utils
 	/**
 	 * [tested] Converts integer into string; non-negative single-digit numbers get one leading
 	 * zero. Negative values are returning as-is.
-	 * 
-	 * @param Integer
-	 *            number
+	 *
+	 * @param n number
 	 * @return
 	 */
 	public static String intTo00(int n)
@@ -395,7 +388,7 @@ public class Utils
 
 	/**
 	 * Converts double value into string dismissing ".0" part if the value is integer.
-	 * 
+	 *
 	 * @param x
 	 * @return
 	 */
@@ -460,9 +453,8 @@ public class Utils
 
 	/**
 	 * [tested] Преобразует время в формат сервера STD_FORMAT_TIME_UTC
-	 * 
-	 * @param time
-	 *            Время
+	 *
+	 * @param time Время
 	 * @return Строка
 	 */
 	public static String formatTimeUTC(Date time)
@@ -497,9 +489,8 @@ public class Utils
 
 	/**
 	 * Formats time as hh:mm
-	 * 
-	 * @param time
-	 *            Time in seconds
+	 *
+	 * @param time Time in seconds
 	 * @return
 	 */
 	public static String formatTimePeriod(int time)
@@ -516,7 +507,7 @@ public class Utils
 
 	/**
 	 * [tested] Validates the (hour,minute) pair
-	 * 
+	 *
 	 * @param hour
 	 * @param min
 	 * @return True if pair is correct, false otherwise
@@ -532,7 +523,7 @@ public class Utils
 
 	/**
 	 * Rounds up to specified number of digits after dot
-	 * 
+	 *
 	 * @param x
 	 * @param digits
 	 * @return
@@ -570,7 +561,7 @@ public class Utils
 
 	/**
 	 * Rounds up to 2 digits after dot
-	 * 
+	 *
 	 * @param x
 	 * @return
 	 */
@@ -581,7 +572,7 @@ public class Utils
 
 	/**
 	 * Calculates summ
-	 * 
+	 *
 	 * @param values
 	 * @return
 	 */
@@ -599,7 +590,7 @@ public class Utils
 
 	/**
 	 * Calculates mean value
-	 * 
+	 *
 	 * @param values
 	 * @return
 	 */
@@ -617,7 +608,7 @@ public class Utils
 
 	/**
 	 * Calculates standard deviation using pre-calculated mean
-	 * 
+	 *
 	 * @param values
 	 * @param mean
 	 * @return
@@ -644,7 +635,7 @@ public class Utils
 
 	/**
 	 * Returns random string from supplied string array
-	 * 
+	 *
 	 * @param strings
 	 * @return
 	 */
@@ -675,9 +666,8 @@ public class Utils
 
 	/**
 	 * [tested] Получает предыдущую дату по отношению к указанной
-	 * 
-	 * @param date
-	 *            Дата
+	 *
+	 * @param date Дата
 	 * @return Предыдущая дата
 	 */
 	public static Date getPrevDay(Date date)
@@ -687,9 +677,8 @@ public class Utils
 
 	/**
 	 * [tested] Получает следующую дату по отношению к указанной
-	 * 
-	 * @param date
-	 *            Дата
+	 *
+	 * @param date Дата
 	 * @return Следующая дата
 	 */
 	public static Date getNextDay(Date date)
@@ -715,7 +704,7 @@ public class Utils
 
 	/**
 	 * Adds specified amount of days to the date
-	 * 
+	 *
 	 * @param date
 	 * @param days
 	 * @return
@@ -728,13 +717,34 @@ public class Utils
 		return c.getTime();
 	}
 
+	public static Date setDate(Date dateTime, int year, int monthOfYear, int dayOfMonth)
+	{
+		Calendar c = Calendar.getInstance();
+		c.setTime(dateTime);
+		c.set(Calendar.YEAR, year);
+		c.set(Calendar.MONTH, monthOfYear);
+		c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+		return c.getTime();
+	}
+
+	public static Date setTime(Date dateTime, int hourOfDay, int minute)
+	{
+		Calendar c = Calendar.getInstance();
+		c.setTime(dateTime);
+		c.set(Calendar.HOUR_OF_DAY, hourOfDay);
+		c.set(Calendar.MINUTE, minute);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+
+		return c.getTime();
+	}
+
 	/**
 	 * [tested] Returns sorted dates list (lastDate-period+1 ... lastDate)
-	 * 
-	 * @param lastDate
-	 *            Current date
-	 * @param period
-	 *            Days
+	 *
+	 * @param lastDate Current date
+	 * @param period   Days
 	 * @return
 	 */
 	public static List<Date> getPeriodDates(Date lastDate, int period)
@@ -757,7 +767,7 @@ public class Utils
 
 	/**
 	 * Constructs date (UTC)
-	 * 
+	 *
 	 * @param year
 	 * @param month
 	 * @param day
@@ -774,7 +784,7 @@ public class Utils
 
 	/**
 	 * Constructs time (UTC)
-	 * 
+	 *
 	 * @param year
 	 * @param month
 	 * @param day
@@ -794,7 +804,7 @@ public class Utils
 
 	/**
 	 * Constructs date (local)
-	 * 
+	 *
 	 * @param timeZone
 	 * @param year
 	 * @param month
@@ -812,7 +822,7 @@ public class Utils
 
 	/**
 	 * Constructs time (local)
-	 * 
+	 *
 	 * @param timeZone
 	 * @param year
 	 * @param month
@@ -833,7 +843,7 @@ public class Utils
 
 	/**
 	 * Constructs today's midnight date (local)
-	 * 
+	 *
 	 * @param timeZone
 	 * @return
 	 */
@@ -852,11 +862,9 @@ public class Utils
 
 	/**
 	 * Returns number of minutes since day's beginning
-	 * 
-	 * @param time
-	 *            Time
-	 * @param timezone
-	 *            Timezone
+	 *
+	 * @param time     Time
+	 * @param timezone Timezone
 	 * @return
 	 */
 	private static int getDayMinutes(Date time, TimeZone timezone)
@@ -868,11 +876,9 @@ public class Utils
 
 	/**
 	 * Returns number of minutes since day's beginning (timezone: local)
-	 * 
-	 * @param time
-	 *            Time
-	 * @param timezone
-	 *            Timezone
+	 *
+	 * @param time     Time
+	 * @param timezone Timezone
 	 * @return
 	 */
 	public static int getDayMinutesLocal(Date time)
@@ -882,11 +888,9 @@ public class Utils
 
 	/**
 	 * Returns number of minutes since day's beginning (timezone: UTC)
-	 * 
-	 * @param time
-	 *            Time
-	 * @param timezone
-	 *            Timezone
+	 *
+	 * @param time     Time
+	 * @param timezone Timezone
 	 * @return
 	 */
 	public static int getDayMinutesUTC(Date time)
@@ -896,7 +900,7 @@ public class Utils
 
 	/**
 	 * Checks if two dates belongs to the same day (local timezone)
-	 * 
+	 *
 	 * @param date1
 	 * @param date2
 	 * @return
@@ -909,8 +913,8 @@ public class Utils
 		Calendar c2 = Calendar.getInstance();
 		c2.setTime(date2);
 
-		return (c1.get(Calendar.DATE) == c2.get(Calendar.DATE)) && (c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH))
-				&& (c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR));
+		return (c1.get(Calendar.DATE) == c2.get(Calendar.DATE)) && (c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH)) && (
+				c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR));
 	}
 
 	/**
@@ -982,15 +986,11 @@ public class Utils
 
 	/**
 	 * Determines proper name for numeral
-	 * 
-	 * @param value
-	 *            Any integer value
-	 * @param s0
-	 *            Noun for zero things
-	 * @param s1
-	 *            Noun for one thing
-	 * @param s2
-	 *            Noun for two things
+	 *
+	 * @param value Any integer value
+	 * @param s0    Noun for zero things
+	 * @param s1    Noun for one thing
+	 * @param s2    Noun for two things
 	 * @return Proper noun
 	 */
 	public static String getNumberName(int value, String s0, String s1, String s2)
@@ -1020,9 +1020,9 @@ public class Utils
 				}
 			}
 			default:
-			// case 2:
-			// case 3:
-			// case 4:
+				// case 2:
+				// case 3:
+				// case 4:
 			{
 				if (value > 10 && value < 20)
 				{
@@ -1110,7 +1110,6 @@ public class Utils
 	}
 
 	/**
-	 * 
 	 * @param a
 	 * @param b
 	 * @return Difference A\B
