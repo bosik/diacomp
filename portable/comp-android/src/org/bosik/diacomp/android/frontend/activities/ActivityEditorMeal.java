@@ -65,12 +65,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 
 	DiaryService diary;
 
-	// data
-	private Double bsBase;
-	private Double bsLast;
-	private Double bsTarget;
-	private double insInjected;
-
 	// components
 	private Button buttonTime;
 	private Button buttonDate;
@@ -238,6 +232,11 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		double carbs = entity.getData().getCarbs();
 		double prots = entity.getData().getProts();
 
+		Double bsBase = getBsBase();
+		Double bsLast = getBsLast();
+		Double bsTarget = getBsTarget();
+		double insInjected = getInsInjected();
+
 		if (bsLast != null && bsLast < BS_HYPOGLYCEMIA && (bsBase == null || Math.abs(bsBase - bsLast) > Utils.EPS))
 		{
 			// Line 1: Insulin
@@ -334,7 +333,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			if (insDosage != null)
 			{
 				textMealShiftedDosage.setVisibility(View.VISIBLE);
-				textMealShiftedDosage.setText(String.format(" → %.1f %s", insInjected, captionDose));
+				textMealShiftedDosage.setText(String.format(" → %.1f %s", getInsInjected(), captionDose));
 			}
 			else
 			{
@@ -367,17 +366,28 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		}
 	}
 
-	@Override
-	protected void readEntity(Intent intent)
+	private double getInsInjected()
 	{
-		super.readEntity(intent);
+		Bundle extras = getIntent().getExtras();
+		return extras.getDouble(FIELD_INS_INJECTED, 0.0);
+	}
 
-		final Bundle extras = intent.getExtras();
+	private Double getBsTarget()
+	{
+		Bundle extras = getIntent().getExtras();
+		return extras.containsKey(FIELD_BS_TARGET) ? extras.getDouble(FIELD_BS_TARGET) : null;
+	}
 
-		bsBase = extras.containsKey(FIELD_BS_BASE) ? extras.getDouble(FIELD_BS_BASE) : null;
-		bsLast = extras.containsKey(FIELD_BS_LAST) ? extras.getDouble(FIELD_BS_LAST) : null;
-		bsTarget = extras.containsKey(FIELD_BS_TARGET) ? extras.getDouble(FIELD_BS_TARGET) : null;
-		insInjected = extras.getDouble(FIELD_INS_INJECTED, 0.0);
+	private Double getBsLast()
+	{
+		Bundle extras = getIntent().getExtras();
+		return extras.containsKey(FIELD_BS_LAST) ? extras.getDouble(FIELD_BS_LAST) : null;
+	}
+
+	private Double getBsBase()
+	{
+		Bundle extras = getIntent().getExtras();
+		return extras.containsKey(FIELD_BS_BASE) ? extras.getDouble(FIELD_BS_BASE) : null;
 	}
 
 	@Override
