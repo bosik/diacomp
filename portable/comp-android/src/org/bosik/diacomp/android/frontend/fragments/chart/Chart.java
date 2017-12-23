@@ -295,7 +295,7 @@ public class Chart extends Fragment implements ProgressListener
 		return result;
 	}
 
-	public void refresh()
+	private void refresh()
 	{
 		ProgressBundle bundle = getBundle();
 

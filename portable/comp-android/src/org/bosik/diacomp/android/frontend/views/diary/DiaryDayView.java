@@ -453,7 +453,7 @@ public class DiaryDayView extends LinearLayout
 		});
 	}
 
-	public void setDate(Date date)
+	private void setDate(Date date)
 	{
 		synchronized (data)
 		{
@@ -463,7 +463,7 @@ public class DiaryDayView extends LinearLayout
 		}
 	}
 
-	List<Item> groupItems(List<Versioned<DiaryRecord>> records, Date firstDate, int countOfDays)
+	private List<Item> groupItems(List<Versioned<DiaryRecord>> records, Date firstDate, int countOfDays)
 	{
 		List<Item> result = new ArrayList<>();
 
@@ -526,7 +526,7 @@ public class DiaryDayView extends LinearLayout
 		}.execute(timeFrom, timeTo);
 	}
 
-	void loadBefore(final int days)
+	private void loadBefore(final int days)
 	{
 		if (loadingBefore)
 		{
@@ -574,7 +574,7 @@ public class DiaryDayView extends LinearLayout
 		}.execute(timeFrom, timeTo);
 	}
 
-	void loadAfter(final int days)
+	private void loadAfter(final int days)
 	{
 		if (loadingAfter)
 		{
@@ -617,7 +617,7 @@ public class DiaryDayView extends LinearLayout
 		}.execute(timeFrom, timeTo);
 	}
 
-	static List<Versioned<DiaryRecord>> request(Date startTime, Date endTime)
+	private static List<Versioned<DiaryRecord>> request(Date startTime, Date endTime)
 	{
 		List<Versioned<DiaryRecord>> result = new ArrayList<>();
 		result.addAll(diaryService.findPeriod(startTime, endTime, false));
@@ -634,7 +634,7 @@ public class DiaryDayView extends LinearLayout
 		onRecordClickListener = l;
 	}
 
-	void updatePostprand()
+	private void updatePostprand()
 	{
 		// TODO: move hardcode
 		final int DEFAULT_AFFECT_TIME_INSULIN = 210;

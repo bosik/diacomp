@@ -222,7 +222,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		}
 	}
 
-	public void attemptLogin()
+	private void attemptLogin()
 	{
 		if (validate())
 		{

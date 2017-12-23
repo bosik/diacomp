@@ -1,74 +1,73 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="bottom|fill"
-    android:orientation="vertical"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin" >
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="bottom|fill"
+              android:orientation="vertical"
+              android:paddingLeft="@dimen/activity_horizontal_margin"
+              android:paddingRight="@dimen/activity_horizontal_margin"
+              android:paddingTop="@dimen/activity_vertical_margin">
 
     <TextView
-        android:id="@+id/textWarningTime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/padding_medium"
-        android:background="@color/warning_background"
-        android:padding="@dimen/padding_medium"
-        android:text="@string/warning_time_zone"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:visibility="gone" />
+            android:id="@+id/textWarningTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/padding_medium"
+            android:background="@color/warning_background"
+            android:padding="@dimen/padding_medium"
+            android:text="@string/warning_time_zone"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:visibility="gone"/>
 
     <org.bosik.diacomp.android.frontend.views.diary.DiaryDayView
-        android:id="@+id/listDiaryDay"
-        android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1"
-        android:divider="@null" >
+            android:id="@+id/listDiaryDay"
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:divider="@null">
     </org.bosik.diacomp.android.frontend.views.diary.DiaryDayView>
 
     <LinearLayout
-        style="?android:attr/buttonBarStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="top"
-        android:orientation="horizontal" >
-
-        <Button
-            android:id="@+id/buttonAddBlood"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/diary_addblood"
-            android:paddingTop="@dimen/padding_medium" />
+            android:gravity="top"
+            android:orientation="horizontal">
 
         <Button
-            android:id="@+id/buttonAddIns"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/diary_addins"
-            android:paddingTop="@dimen/padding_medium" />
+                android:id="@+id/buttonAddBlood"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/diary_addblood"
+                android:paddingTop="@dimen/padding_medium"/>
 
         <Button
-            android:id="@+id/buttonAddMeal"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/diary_addmeal"
-            android:paddingTop="@dimen/padding_medium" />
+                android:id="@+id/buttonAddIns"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/diary_addins"
+                android:paddingTop="@dimen/padding_medium"/>
 
         <Button
-            android:id="@+id/buttonAddNote"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/diary_addnote"
-            android:paddingTop="@dimen/padding_medium" />
+                android:id="@+id/buttonAddMeal"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/diary_addmeal"
+                android:paddingTop="@dimen/padding_medium"/>
+
+        <Button
+                android:id="@+id/buttonAddNote"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/diary_addnote"
+                android:paddingTop="@dimen/padding_medium"/>
     </LinearLayout>
 
 </LinearLayout>

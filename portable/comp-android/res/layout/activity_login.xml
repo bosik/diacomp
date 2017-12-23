@@ -83,8 +83,7 @@
                         android:layout_alignParentTop="true"
                         android:drawableLeft="@drawable/ic_eye"
                         android:drawableStart="@drawable/ic_eye"
-                        android:paddingLeft="6dp"
-                        android:paddingStart="6dp"/>
+                        android:paddingLeft="6dp"/>
             </RelativeLayout>
 
             <Button

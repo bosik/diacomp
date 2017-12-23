@@ -74,7 +74,6 @@ import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
@@ -101,7 +100,7 @@ public class FragmentTabBase extends Fragment
 	// Data
 	private FoodBaseService foodBaseService;
 	private DishBaseService dishBaseService;
-	private List<Versioned<? extends NamedRelativeTagged>> data = new ArrayList<>();
+	private final List<Versioned<? extends NamedRelativeTagged>> data = new ArrayList<>();
 	private BaseAdapter adapter;
 	private static final Sorter sorter       = new Sorter();
 	private              String searchFilter = "";
@@ -521,7 +520,8 @@ public class FragmentTabBase extends Fragment
 
 				synchronized (data)
 				{
-					data = result;
+					data.clear();
+					data.addAll(result);
 				}
 				adapter.notifyDataSetChanged();
 				searchScheduled = false;

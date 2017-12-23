@@ -23,10 +23,10 @@ package org.bosik.diacomp.android.backend.common.webclient.exceptions;
  */
 public class UndefinedFieldException extends IllegalArgumentException
 {
-	private static final long	serialVersionUID	= 3716509470386883692L;
-	public boolean				undefServer			= false;
-	public boolean				undefLogin			= false;
-	public boolean				undefPassword		= false;
+	private static final long    serialVersionUID = 3716509470386883692L;
+	private              boolean undefServer      = false;
+	private              boolean undefLogin       = false;
+	private              boolean undefPassword    = false;
 
 	public UndefinedFieldException(boolean undefServer, boolean undefLogin, boolean undefPassword)
 	{

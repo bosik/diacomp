@@ -1,80 +1,79 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layoutTabCharts"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fadingEdgeLength="5dp"
-    android:padding="@dimen/padding_medium">
+            android:id="@+id/layoutTabCharts"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fadingEdgeLength="5dp"
+            android:padding="@dimen/padding_medium">
 
     <LinearLayout
-        android:id="@+id/layoutGraph"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="top"
-        android:orientation="vertical" >
+            android:id="@+id/layoutGraph"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:orientation="vertical">
 
         <org.bosik.diacomp.android.frontend.views.expandable.ExpandableView
-            android:id="@+id/chartGroupHistoryTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+                android:id="@+id/chartGroupHistoryTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
         </org.bosik.diacomp.android.frontend.views.expandable.ExpandableView>
 
         <LinearLayout
-            android:id="@+id/chartGroupHistoryContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone" >
+                android:id="@+id/chartGroupHistoryContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
 
             <LinearLayout
-                android:id="@+id/chartBS"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                    android:id="@+id/chartBS"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
 
             <LinearLayout
-                android:id="@+id/chartInsulin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-            
+                    android:id="@+id/chartInsulin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
+
             <LinearLayout
-                android:id="@+id/chartCalories"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                    android:id="@+id/chartCalories"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
         </LinearLayout>
 
         <org.bosik.diacomp.android.frontend.views.expandable.ExpandableView
-            android:id="@+id/chartGroupDailyTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+                android:id="@+id/chartGroupDailyTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
         </org.bosik.diacomp.android.frontend.views.expandable.ExpandableView>
 
         <LinearLayout
-            android:id="@+id/chartGroupDailyContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone" >
-
-            <LinearLayout
-                android:id="@+id/chartX"
+                android:id="@+id/chartGroupDailyContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                android:orientation="vertical"
+                android:visibility="gone">
 
             <LinearLayout
-                android:id="@+id/chartK"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                    android:id="@+id/chartX"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
 
             <LinearLayout
-                android:id="@+id/chartQ"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                    android:id="@+id/chartK"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
+
+            <LinearLayout
+                    android:id="@+id/chartQ"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
         </LinearLayout>
     </LinearLayout>
 

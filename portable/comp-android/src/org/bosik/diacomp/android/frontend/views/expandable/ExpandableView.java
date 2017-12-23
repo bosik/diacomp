@@ -76,7 +76,7 @@ public class ExpandableView extends LinearLayout
 		});
 	}
 
-	public View getContentPanel()
+	private View getContentPanel()
 	{
 		return contentPanel;
 	}
@@ -86,7 +86,7 @@ public class ExpandableView extends LinearLayout
 		this.contentPanel = contentPanel;
 	}
 
-	public OnSwitchedListener getOnSwitchedListener()
+	private OnSwitchedListener getOnSwitchedListener()
 	{
 		return onSwitchedListener;
 	}
@@ -126,7 +126,7 @@ public class ExpandableView extends LinearLayout
 		}
 	}
 
-	public void expand()
+	private void expand()
 	{
 		expanded = true;
 		Drawable icon = getResources().getDrawable(R.drawable.ic_group_expanded);
@@ -143,7 +143,7 @@ public class ExpandableView extends LinearLayout
 		}
 	}
 
-	public void collapse()
+	private void collapse()
 	{
 		expanded = false;
 		Drawable icon = getResources().getDrawable(R.drawable.ic_group_collapsed);

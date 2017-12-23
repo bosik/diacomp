@@ -38,7 +38,6 @@ import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
