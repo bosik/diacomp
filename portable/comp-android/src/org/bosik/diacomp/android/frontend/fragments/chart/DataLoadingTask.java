@@ -42,7 +42,7 @@ class DataLoadingTask extends AsyncTask<ContentResolver, Void, Collection<Series
 		{
 			bundle.getListener().onLoading();
 		}
-	};
+	}
 
 	@Override
 	protected Collection<Series<?>> doInBackground(ContentResolver... params)
@@ -66,5 +66,5 @@ class DataLoadingTask extends AsyncTask<ContentResolver, Void, Collection<Series
 		{
 			bundle.getListener().onReady(result);
 		}
-	};
+	}
 }

@@ -51,7 +51,7 @@ public class Chart extends Fragment implements ProgressListener
 
 	public enum ChartType
 	{
-		HISTORY, DAILY;
+		HISTORY, DAILY
 	}
 
 	// UI

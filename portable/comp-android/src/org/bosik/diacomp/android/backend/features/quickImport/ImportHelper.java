@@ -43,9 +43,9 @@ public class ImportHelper
 
 	private static final String	URL_EXPORT_JSON	= "api/export/plain";
 
-	public static enum Progress
+	public enum Progress
 	{
-		INITIALIZATION, LOADING, UNZIPPING, INSTALL_DIARY, INSTALL_FOODBASE, INSTALL_DISHBASE, INSTALL_PREFERENCES, DONE_OK, DONE_FAIL;
+		INITIALIZATION, LOADING, UNZIPPING, INSTALL_DIARY, INSTALL_FOODBASE, INSTALL_DISHBASE, INSTALL_PREFERENCES, DONE_OK, DONE_FAIL
 	}
 
 	public interface ProgressCallback

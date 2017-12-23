@@ -68,7 +68,7 @@ public class DishBaseWebService implements DishBaseService
 	public void add(Versioned<DishItem> item) throws PersistenceException
 	{
 		// TODO: current implementation doesn't fail for duplicates
-		save(Arrays.<Versioned<DishItem>> asList(item));
+		save(Arrays.asList(item));
 	}
 
 	@Override
@@ -246,7 +246,7 @@ public class DishBaseWebService implements DishBaseService
 	}
 
 	@Override
-	public void save(List<Versioned<DishItem>> items) throws NotFoundException, PersistenceException
+	public void save(List<Versioned<DishItem>> items) throws PersistenceException
 	{
 		if (items.isEmpty())
 		{

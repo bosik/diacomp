@@ -94,12 +94,12 @@ public class DiaryDayView extends LinearLayout
 		}
 	}
 
-	public static interface OnRecordClickListener
+	public interface OnRecordClickListener
 	{
 		void onRecordClick(Versioned<DiaryRecord> record);
 	}
 
-	public static interface OnHeaderClickListener
+	public interface OnHeaderClickListener
 	{
 		void onHeaderClick(Date date);
 	}

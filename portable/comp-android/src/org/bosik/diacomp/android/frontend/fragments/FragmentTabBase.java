@@ -521,7 +521,7 @@ public class FragmentTabBase extends Fragment
 				if (result == null)
 				{
 					UIUtils.showTip(getActivity(), "При загрузке данных произошла ошибка");
-					result = Collections.<Versioned<? extends NamedRelativeTagged>> emptyList();
+					result = Collections.emptyList();
 				}
 
 				synchronized (data)
@@ -743,7 +743,7 @@ public class FragmentTabBase extends Fragment
 								.getSerializable(ActivityEditor.FIELD_ENTITY);
 						try
 						{
-							foodBaseService.save(Arrays.<Versioned<FoodItem>> asList(item));
+							foodBaseService.save(Arrays.asList(item));
 							UIUtils.showTip(getActivity(), getString(R.string.base_tip_food_edit_ok));
 						}
 						catch (PersistenceException e)
@@ -783,7 +783,7 @@ public class FragmentTabBase extends Fragment
 								.getSerializable(ActivityEditor.FIELD_ENTITY);
 						try
 						{
-							dishBaseService.save(Arrays.<Versioned<DishItem>> asList(item));
+							dishBaseService.save(Arrays.asList(item));
 							UIUtils.showTip(getActivity(), getString(R.string.base_tip_dish_save_ok));
 						}
 						catch (PersistenceException e)

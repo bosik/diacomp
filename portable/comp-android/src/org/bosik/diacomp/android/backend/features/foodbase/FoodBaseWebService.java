@@ -68,7 +68,7 @@ public class FoodBaseWebService implements FoodBaseService
 	public void add(Versioned<FoodItem> item) throws PersistenceException
 	{
 		// TODO: current implementation doesn't fail for duplicates
-		save(Arrays.<Versioned<FoodItem>> asList(item));
+		save(Arrays.asList(item));
 	}
 
 	@Override
@@ -246,7 +246,7 @@ public class FoodBaseWebService implements FoodBaseService
 	}
 
 	@Override
-	public void save(List<Versioned<FoodItem>> items) throws NotFoundException, PersistenceException
+	public void save(List<Versioned<FoodItem>> items) throws PersistenceException
 	{
 		if (items.isEmpty())
 		{

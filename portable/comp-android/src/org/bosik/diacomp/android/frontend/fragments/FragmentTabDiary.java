@@ -477,7 +477,7 @@ public class FragmentTabDiary extends Fragment
 						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras()
 								.getSerializable(ActivityEditor.FIELD_ENTITY);
 
-						diary.save(Arrays.<Versioned<DiaryRecord>> asList(rec));
+						diary.save(Arrays.asList(rec));
 
 						// do it manually in case observer is broken
 						list.refresh();

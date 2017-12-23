@@ -155,7 +155,7 @@ public class ActivityFoodSet extends FragmentActivity
 				labelHint.setText(getString(R.string.foodset_hint_loading));
 				progressBar.setVisibility(View.VISIBLE);
 				buttonOk.setVisibility(View.GONE);
-			};
+			}
 
 			@Override
 			protected List<FoodSetInfo> doInBackground(Void... params)

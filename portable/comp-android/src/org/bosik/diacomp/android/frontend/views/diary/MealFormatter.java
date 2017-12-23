@@ -25,7 +25,7 @@ public class MealFormatter
 	/**
 	 * Виды сортировок продуктов в приёме пищи
 	 */
-	public static enum FormatStyle
+	public enum FormatStyle
 	{
 		/**
 		 * Только первое блюдо в приёме
@@ -42,7 +42,7 @@ public class MealFormatter
 		/**
 		 * Все блюда в порядке убывания углеводности через запятую (не реализовано)
 		 */
-		LIST_CARBS; // TODO: реализовать
+		LIST_CARBS // TODO: реализовать
 	}
 
 	/**
