@@ -118,6 +118,28 @@ public class PreferencesTypedService extends PreferencesService
 	}
 
 	/**
+	 * Returns preference as boolean value
+	 *
+	 * @param preferenceID
+	 * @return Value if found, default otherwise
+	 */
+	public Boolean getBooleanValue(PreferenceID preferenceID)
+	{
+		return Boolean.parseBoolean(getStringValue(preferenceID));
+	}
+
+	/**
+	 * Updates boolean preference. Version is incremented automatically.
+	 *
+	 * @param preferenceID
+	 * @param value
+	 */
+	public void setBooleanValue(PreferenceID preferenceID, Boolean value)
+	{
+		service.setString(buildEntry(preferenceID, String.valueOf(value)));
+	}
+
+	/**
 	 * Returns preference as float value
 	 *
 	 * @param preferenceID
