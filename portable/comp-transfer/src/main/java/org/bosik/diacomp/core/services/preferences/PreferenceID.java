@@ -29,12 +29,16 @@ public enum PreferenceID
 	/**
 	 * List of preferred food sets
 	 */
-	FOOD_SETS("1a25c92eaa3148219da83b1e66275052", "[]");
+	FOOD_SETS("1a25c92eaa3148219da83b1e66275052", "[]"),
+
+	ANDROID_FIRST_START("8b6575e476d64becae68468500f1bc1c", "true"),
+
+	ANDROID_SHOW_TIME_AFTER("d5c1a902e83b4d05a51085e344bee953", "true");
 
 	private String  key;
 	private String  defaultValue;
 
-	private PreferenceID(String key, String defaultValue)
+	PreferenceID(String key, String defaultValue)
 	{
 		this.key = key;
 		this.defaultValue = defaultValue;

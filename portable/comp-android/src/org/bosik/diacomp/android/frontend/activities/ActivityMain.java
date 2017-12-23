@@ -18,25 +18,11 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.common.AccountUtils;
-import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
-import org.bosik.diacomp.android.backend.common.Storage;
-import org.bosik.diacomp.android.backend.features.analyze.BackgroundService;
-import org.bosik.diacomp.android.backend.features.notifications.NotificationService;
-import org.bosik.diacomp.android.backend.features.preferences.device.DevicePreferences;
-import org.bosik.diacomp.android.frontend.fragments.FragmentTabBase;
-import org.bosik.diacomp.android.frontend.fragments.FragmentTabCharts;
-import org.bosik.diacomp.android.frontend.fragments.FragmentTabDiary;
-import org.bosik.diacomp.android.utils.ErrorHandler;
 import android.accounts.Account;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -46,6 +32,20 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.AccountUtils;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
+import org.bosik.diacomp.android.backend.common.Storage;
+import org.bosik.diacomp.android.backend.features.analyze.BackgroundService;
+import org.bosik.diacomp.android.backend.features.notifications.NotificationService;
+import org.bosik.diacomp.android.frontend.fragments.FragmentTabBase;
+import org.bosik.diacomp.android.frontend.fragments.FragmentTabCharts;
+import org.bosik.diacomp.android.frontend.fragments.FragmentTabDiary;
+import org.bosik.diacomp.android.utils.ErrorHandler;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
+
+import java.util.ArrayList;
+import java.util.List;
 
 interface Page
 {
@@ -54,19 +54,19 @@ interface Page
 	Fragment getContent();
 }
 
-public class ActivityMain extends FragmentActivity implements OnSharedPreferenceChangeListener
+public class ActivityMain extends FragmentActivity implements SharedPreferences.OnSharedPreferenceChangeListener
 {
 	/* =========================== CONSTANTS ================================ */
 
-	static final String			TAG			= ActivityMain.class.getSimpleName();
+	static final         String TAG        = ActivityMain.class.getSimpleName();
 	// private static final int RESULT_SPEECH_TO_TEXT = 620;
-	private static final int	CODE_LOGIN	= 0;
+	private static final int    CODE_LOGIN = 0;
 
 	/* =========================== FIELDS ================================ */
 
-	ViewPager					mViewPager;
-	private Menu				cachedMenu;
-	private SharedPreferences	preferences;
+	ViewPager mViewPager;
+	private Menu              cachedMenu;
+	private SharedPreferences preferences;
 
 	/* =========================== METHODS ================================ */
 
@@ -145,8 +145,7 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 				}
 			});
 
-			FragmentStatePagerAdapter mDemoCollectionPagerAdapter = new FragmentStatePagerAdapter(
-					getSupportFragmentManager())
+			FragmentStatePagerAdapter mDemoCollectionPagerAdapter = new FragmentStatePagerAdapter(getSupportFragmentManager())
 			{
 				@Override
 				public int getCount()
@@ -216,10 +215,10 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 			startService(new Intent(this, NotificationService.class));
 			startService(new Intent(this, BackgroundService.class));
 
-			boolean firstStart = preferences.getBoolean(DevicePreferences.KEY_FIRST_START, true);
+			boolean firstStart = preferences.getBoolean(PreferenceID.ANDROID_FIRST_START.getKey(), true);
 			if (firstStart)
 			{
-				preferences.edit().putBoolean(DevicePreferences.KEY_FIRST_START, false).apply();
+				preferences.edit().putBoolean(PreferenceID.ANDROID_FIRST_START.getKey(), false).apply();
 				startActivity(new Intent(this, ActivityWelcome.class));
 				finish();
 			}
@@ -248,9 +247,9 @@ public class ActivityMain extends FragmentActivity implements OnSharedPreference
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
 	{
-		if (DevicePreferences.KEY_SHOW_TIME_AFTER.equals(key))
+		if (PreferenceID.ANDROID_SHOW_TIME_AFTER.getKey().equals(key))
 		{
-			if (preferences.getBoolean(DevicePreferences.KEY_SHOW_TIME_AFTER, true))
+			if (preferences.getBoolean(PreferenceID.ANDROID_SHOW_TIME_AFTER.getKey(), true))
 			{
 				startService(new Intent(this, NotificationService.class));
 			}

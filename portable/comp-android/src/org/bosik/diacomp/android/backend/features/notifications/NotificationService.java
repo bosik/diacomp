@@ -1,20 +1,5 @@
 package org.bosik.diacomp.android.backend.features.notifications;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
-import org.bosik.diacomp.android.backend.features.preferences.device.DevicePreferences;
-import org.bosik.diacomp.android.frontend.activities.ActivityMain;
-import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
-import org.bosik.diacomp.core.services.diary.DiaryService;
-import org.bosik.diacomp.core.services.diary.PostprandUtils;
-import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.merklesync.Versioned;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -26,14 +11,30 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
 import android.support.v4.app.TaskStackBuilder;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
+import org.bosik.diacomp.android.frontend.activities.ActivityMain;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.diary.PostprandUtils;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
+import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.merklesync.Versioned;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class NotificationService extends Service
 {
-	private static final int	NOTIFICATION_ID_TIME_AFTER	= 1;
+	private static final int NOTIFICATION_ID_TIME_AFTER = 1;
 
-	NotificationManager			notificationManager;
-	SharedPreferences			preferences;
-	private Timer				timer						= new Timer();
+	NotificationManager notificationManager;
+	SharedPreferences   preferences;
+	private Timer timer = new Timer();
 
 	@Override
 	public IBinder onBind(Intent intent)
@@ -53,7 +54,7 @@ public class NotificationService extends Service
 			@Override
 			public void run()
 			{
-				if (preferences.getBoolean(DevicePreferences.KEY_SHOW_TIME_AFTER, true))
+				if (preferences.getBoolean(PreferenceID.ANDROID_SHOW_TIME_AFTER.getKey(), true))
 				{
 					showElapsedTime();
 				}
@@ -121,15 +122,14 @@ public class NotificationService extends Service
 				Integer timeAfterMeal = getTimeAfterMeal(records, now);
 				if (timeAfterMeal != null)
 				{
-					info += Utils.formatTimePeriod(timeAfterMeal) + " "
-							+ getString(R.string.notification_time_after_meal);
+					info += Utils.formatTimePeriod(timeAfterMeal) + " " + getString(R.string.notification_time_after_meal);
 				}
 
 				Integer timeAfterIns = getTimeAfterIns(records, now);
 				if (timeAfterIns != null)
 				{
-					info += (info.isEmpty() ? "" : ",\n") + Utils.formatTimePeriod(timeAfterIns) + " "
-							+ getString(R.string.notification_time_after_injection);
+					info += (info.isEmpty() ? "" : ",\n") + Utils.formatTimePeriod(timeAfterIns) + " " + getString(
+							R.string.notification_time_after_injection);
 				}
 
 				return info;
@@ -151,8 +151,7 @@ public class NotificationService extends Service
 					TaskStackBuilder stackBuilder = TaskStackBuilder.create(NotificationService.this);
 					stackBuilder.addParentStack(ActivityMain.class);
 					stackBuilder.addNextIntent(resultIntent);
-					PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
-							PendingIntent.FLAG_UPDATE_CURRENT);
+					PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 					mBuilder.setContentIntent(resultPendingIntent);
 					notificationManager.notify(NOTIFICATION_ID_TIME_AFTER, mBuilder.build());
 				}
@@ -160,7 +159,7 @@ public class NotificationService extends Service
 				{
 					hideTimeAfter();
 				}
-			};
+			}
 		}.execute();
 	}
 
