@@ -349,7 +349,7 @@ public class FragmentTabDiary extends Fragment
 
 			Intent intent = new Intent(getActivity(), ActivityEditorBlood.class);
 			intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
-			intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
+			intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
 
 			startActivityForResult(intent, createMode ? DIALOG_BLOOD_CREATE : DIALOG_BLOOD_MODIFY);
 		}
@@ -373,7 +373,7 @@ public class FragmentTabDiary extends Fragment
 
 			Intent intent = new Intent(getActivity(), ActivityEditorIns.class);
 			intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
-			intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
+			intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
 
 			startActivityForResult(intent, createMode ? DIALOG_INS_CREATE : DIALOG_INS_MODIFY);
 		}
@@ -408,7 +408,7 @@ public class FragmentTabDiary extends Fragment
 
 			Intent intent = new Intent(getActivity(), ActivityEditorMeal.class);
 			intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
-			intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
+			intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
 			if (bloodBaseValue != null)
 			{
 				intent.putExtra(ActivityEditorMeal.FIELD_BS_BASE, bloodBaseValue);
@@ -442,7 +442,7 @@ public class FragmentTabDiary extends Fragment
 
 			Intent intent = new Intent(getActivity(), ActivityEditorNote.class);
 			intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
-			intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
+			intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
 			startActivityForResult(intent, createMode ? DIALOG_NOTE_CREATE : DIALOG_NOTE_MODIFY);
 		}
 		catch (Exception e)

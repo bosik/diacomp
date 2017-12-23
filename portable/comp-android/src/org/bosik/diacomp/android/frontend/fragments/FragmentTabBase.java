@@ -647,7 +647,7 @@ public class FragmentTabBase extends Fragment
 	{
 		Intent intent = new Intent(getActivity(), ActivityEditorFood.class);
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, food);
-		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
+		intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
 		startActivityForResult(intent, createMode ? DIALOG_FOOD_CREATE : DIALOG_FOOD_MODIFY);
 	}
 
@@ -655,7 +655,7 @@ public class FragmentTabBase extends Fragment
 	{
 		Intent intent = new Intent(getActivity(), ActivityEditorDish.class);
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, dish);
-		intent.putExtra(ActivityEditor.FIELD_MODE, createMode);
+		intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
 		startActivityForResult(intent, createMode ? DIALOG_DISH_CREATE : DIALOG_DISH_MODIFY);
 	}
 

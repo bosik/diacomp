@@ -22,7 +22,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.Versioned;
 
@@ -32,9 +31,8 @@ import java.io.Serializable;
 @SuppressLint("Registered")
 public class ActivityEditor<T extends Serializable> extends Activity
 {
-	// TODO: rename to FIELD_CREATE_MODE
-	public static final String FIELD_MODE   = "bosik.pack.createMode";
-	public static final String FIELD_ENTITY = "bosik.pack.entity";
+	public static final String FIELD_CREATE_MODE = "org.bosik.diacomp.createMode";
+	public static final String FIELD_ENTITY      = "org.bosik.diacomp.entity";
 
 	private static final String BUNDLE_ENTITY = "entity";
 
@@ -63,7 +61,7 @@ public class ActivityEditor<T extends Serializable> extends Activity
 
 		setupInterface();
 
-		boolean createMode = getIntent().getBooleanExtra(FIELD_MODE, true);
+		boolean createMode = getIntent().getBooleanExtra(FIELD_CREATE_MODE, true);
 		showValuesInGUI(createMode);
 
 		if (createMode)
