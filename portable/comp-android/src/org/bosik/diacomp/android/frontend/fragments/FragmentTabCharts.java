@@ -119,7 +119,7 @@ public class FragmentTabCharts extends Fragment
 	private static final int	HALF_WINDOW_SIZE	= 2;	// days
 	private static final int	PERIOD				= 30;	// days
 
-	void addChartBS(int viewId)
+	private void addChartBS(int viewId)
 	{
 		Chart chart = (Chart) getChildFragmentManager().findFragmentById(viewId);
 
@@ -158,9 +158,9 @@ public class FragmentTabCharts extends Fragment
 
 				// ANALYZE & FILL SERIES
 
-				List<DataPoint> dataAvg = new ArrayList<DataPoint>();
-				List<DataPoint> dataMin = new ArrayList<DataPoint>();
-				List<DataPoint> dataMax = new ArrayList<DataPoint>();
+				List<DataPoint> dataAvg = new ArrayList<>();
+				List<DataPoint> dataMin = new ArrayList<>();
+				List<DataPoint> dataMax = new ArrayList<>();
 
 				for (int i = 0; i <= PERIOD; i++)
 				{
@@ -181,16 +181,13 @@ public class FragmentTabCharts extends Fragment
 					}
 				}
 
-				LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<DataPoint>(
-						dataAvg.toArray(new DataPoint[dataAvg.size()]));
+				LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<>(dataAvg.toArray(new DataPoint[dataAvg.size()]));
 				seriesAvg.setColor(Color.rgb(255, 0, 0));
 
-				LineGraphSeries<DataPoint> seriesMin = new LineGraphSeries<DataPoint>(
-						dataMin.toArray(new DataPoint[dataMin.size()]));
+				LineGraphSeries<DataPoint> seriesMin = new LineGraphSeries<>(dataMin.toArray(new DataPoint[dataMin.size()]));
 				seriesMin.setColor(Color.rgb(255, 224, 224));
 
-				LineGraphSeries<DataPoint> seriesMax = new LineGraphSeries<DataPoint>(
-						dataMax.toArray(new DataPoint[dataMax.size()]));
+				LineGraphSeries<DataPoint> seriesMax = new LineGraphSeries<>(dataMax.toArray(new DataPoint[dataMax.size()]));
 				seriesMax.setColor(Color.rgb(255, 224, 224));
 
 				return Arrays.<Series<?>> asList(seriesMin, seriesAvg, seriesMax);
@@ -198,7 +195,7 @@ public class FragmentTabCharts extends Fragment
 		});
 	}
 
-	void addChartInsulinConsumption(int viewId)
+	private void addChartInsulinConsumption(int viewId)
 	{
 		Chart chart = (Chart) getChildFragmentManager().findFragmentById(viewId);
 		if (chart == null)
@@ -232,7 +229,7 @@ public class FragmentTabCharts extends Fragment
 
 				// ANALYZE & FILL SERIES
 
-				List<DataPoint> data = new ArrayList<DataPoint>();
+				List<DataPoint> data = new ArrayList<>();
 
 				for (int i = 0; i <= PERIOD; i++)
 				{
@@ -267,8 +264,7 @@ public class FragmentTabCharts extends Fragment
 					}
 				}
 
-				LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(
-						data.toArray(new DataPoint[data.size()]));
+				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data.toArray(new DataPoint[data.size()]));
 				series.setColor(Color.rgb(192, 192, 255));
 
 				return Arrays.<Series<?>> asList(series);
@@ -276,7 +272,7 @@ public class FragmentTabCharts extends Fragment
 		});
 	}
 
-	void addChartCalories(int viewId)
+	private void addChartCalories(int viewId)
 	{
 		Chart chart = (Chart) getChildFragmentManager().findFragmentById(viewId);
 
@@ -315,7 +311,7 @@ public class FragmentTabCharts extends Fragment
 
 				// ANALYZE & FILL SERIES
 
-				List<DataPoint> dataAvg = new ArrayList<DataPoint>();
+				List<DataPoint> dataAvg = new ArrayList<>();
 
 				for (int i = 0; i <= PERIOD; i++)
 				{
@@ -332,8 +328,7 @@ public class FragmentTabCharts extends Fragment
 					}
 				}
 
-				LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<DataPoint>(
-						dataAvg.toArray(new DataPoint[dataAvg.size()]));
+				LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<>(dataAvg.toArray(new DataPoint[dataAvg.size()]));
 				seriesAvg.setColor(Color.rgb(192, 192, 0));
 
 				return Arrays.<Series<?>> asList(seriesAvg);
@@ -341,7 +336,7 @@ public class FragmentTabCharts extends Fragment
 		});
 	}
 
-	void addChartX(int viewId)
+	private void addChartX(int viewId)
 	{
 		Chart chart = (Chart) getChildFragmentManager().findFragmentById(viewId);
 		if (chart == null)
@@ -361,7 +356,7 @@ public class FragmentTabCharts extends Fragment
 			{
 				KoofService koofService = KoofServiceInternal.getInstance(getActivity());
 
-				List<DataPoint> dataList = new ArrayList<DataPoint>();
+				List<DataPoint> dataList = new ArrayList<>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
 				{
 					Koof koof = koofService.getKoof(time);
@@ -370,7 +365,7 @@ public class FragmentTabCharts extends Fragment
 					dataList.add(new DataPoint(x, y));
 				}
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
-				LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(data);
+				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
 				series.setColor(Color.rgb(192, 192, 192));
 
 				return Arrays.<Series<?>> asList(series);
@@ -378,7 +373,7 @@ public class FragmentTabCharts extends Fragment
 		});
 	}
 
-	void addChartK(int viewId)
+	private void addChartK(int viewId)
 	{
 		Chart chart = (Chart) getChildFragmentManager().findFragmentById(viewId);
 		if (chart == null)
@@ -398,7 +393,7 @@ public class FragmentTabCharts extends Fragment
 			{
 				KoofService koofService = KoofServiceInternal.getInstance(getActivity());
 
-				List<DataPoint> dataList = new ArrayList<DataPoint>();
+				List<DataPoint> dataList = new ArrayList<>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
 				{
 					double x = (double) time / 60;
@@ -406,7 +401,7 @@ public class FragmentTabCharts extends Fragment
 					dataList.add(new DataPoint(x, y));
 				}
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
-				LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(data);
+				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
 				series.setColor(Color.rgb(255, 0, 0));
 
 				return Arrays.<Series<?>> asList(series);
@@ -414,7 +409,7 @@ public class FragmentTabCharts extends Fragment
 		});
 	}
 
-	void addChartQ(int viewId)
+	private void addChartQ(int viewId)
 	{
 		Chart chart = (Chart) getChildFragmentManager().findFragmentById(viewId);
 		if (chart == null)
@@ -434,7 +429,7 @@ public class FragmentTabCharts extends Fragment
 			{
 				KoofService koofService = KoofServiceInternal.getInstance(getActivity());
 
-				List<DataPoint> dataList = new ArrayList<DataPoint>();
+				List<DataPoint> dataList = new ArrayList<>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
 				{
 					double x = (double) time / 60;
@@ -442,7 +437,7 @@ public class FragmentTabCharts extends Fragment
 					dataList.add(new DataPoint(x, y));
 				}
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
-				LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(data);
+				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
 				series.setColor(Color.rgb(0, 0, 255));
 
 				return Arrays.<Series<?>> asList(series);

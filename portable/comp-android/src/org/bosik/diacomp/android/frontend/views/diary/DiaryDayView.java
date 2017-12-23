@@ -179,7 +179,7 @@ public class DiaryDayView extends LinearLayout
 			@Override
 			public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem)
 			{
-				List<Versioned<DiaryRecord>> removedRecords = new ArrayList<Versioned<DiaryRecord>>();
+				List<Versioned<DiaryRecord>> removedRecords = new ArrayList<>();
 
 				SparseBooleanArray sparseBooleanArray = listRecs.getCheckedItemPositions();
 				for (int i = 0; i < sparseBooleanArray.size(); i++)
@@ -465,7 +465,7 @@ public class DiaryDayView extends LinearLayout
 
 	List<Item> groupItems(List<Versioned<DiaryRecord>> records, Date firstDate, int countOfDays)
 	{
-		List<Item> result = new ArrayList<Item>();
+		List<Item> result = new ArrayList<>();
 
 		Date curDate = firstDate;
 		int index = 0;
@@ -619,7 +619,7 @@ public class DiaryDayView extends LinearLayout
 
 	static List<Versioned<DiaryRecord>> request(Date startTime, Date endTime)
 	{
-		List<Versioned<DiaryRecord>> result = new ArrayList<Versioned<DiaryRecord>>();
+		List<Versioned<DiaryRecord>> result = new ArrayList<>();
 		result.addAll(diaryService.findPeriod(startTime, endTime, false));
 		return result;
 	}

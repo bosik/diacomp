@@ -69,7 +69,7 @@ public class DishBaseLocalService implements DishBaseService, Importable
 	private final Context         context;
 	private final ContentResolver resolver;
 	private final Parser<DishItem>     parser     = new ParserDishItem();
-	private final Serializer<DishItem> serializer = new SerializerAdapter<DishItem>(parser);
+	private final Serializer<DishItem> serializer = new SerializerAdapter<>(parser);
 
 	// caching
 	// NOTE: this suppose DB can't be changed outside app
@@ -104,7 +104,7 @@ public class DishBaseLocalService implements DishBaseService, Importable
 		// analyze response
 		if (cursor != null)
 		{
-			List<Versioned<DishItem>> result = new ArrayList<Versioned<DishItem>>();
+			List<Versioned<DishItem>> result = new ArrayList<>();
 
 			int indexId = cursor.getColumnIndex(TableDishbase.COLUMN_ID);
 			int indexTimeStamp = cursor.getColumnIndex(TableDishbase.COLUMN_TIMESTAMP);
@@ -125,7 +125,7 @@ public class DishBaseLocalService implements DishBaseService, Importable
 				long temp = System.currentTimeMillis();
 				DishItem item = serializer.read(valueData);
 
-				Versioned<DishItem> versioned = new Versioned<DishItem>(item);
+				Versioned<DishItem> versioned = new Versioned<>(item);
 				versioned.setId(valueId);
 				versioned.setTimeStamp(valueTimeStamp);
 				versioned.setHash(valueHash);
@@ -160,7 +160,7 @@ public class DishBaseLocalService implements DishBaseService, Importable
 			String[] columns = null; // all
 
 			String where = "";
-			List<String> whereArgs = new ArrayList<String>();
+			List<String> whereArgs = new ArrayList<>();
 
 			if (id != null)
 			{
@@ -219,7 +219,7 @@ public class DishBaseLocalService implements DishBaseService, Importable
 
 		try
 		{
-			List<Versioned<DishItem>> result = new ArrayList<Versioned<DishItem>>();
+			List<Versioned<DishItem>> result = new ArrayList<>();
 			if (name != null)
 			{
 				name = name.toLowerCase(Locale.US);
@@ -544,7 +544,7 @@ public class DishBaseLocalService implements DishBaseService, Importable
 	 */
 	private static SortedMap<String, String> getDataHashes()
 	{
-		SortedMap<String, String> result = new TreeMap<String, String>();
+		SortedMap<String, String> result = new TreeMap<>();
 
 		for (Versioned<DishItem> item : memoryCache)
 		{

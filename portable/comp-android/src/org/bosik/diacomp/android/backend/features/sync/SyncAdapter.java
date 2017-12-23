@@ -110,7 +110,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			{
 				DiaryService localDiary = new DiaryLocalService(getContext());
 				DiaryService webDiary = new DiaryWebService(webClient);
-				counterDiary = new Synchronizer2<DiaryRecord>(localDiary, webDiary, MAX_DIARY_READ, MAX_DIARY_WRITE)
+				counterDiary = new Synchronizer2<>(localDiary, webDiary, MAX_DIARY_READ, MAX_DIARY_WRITE)
 						.synchronize();
 			}
 			catch (Exception e)
@@ -126,7 +126,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			{
 				FoodBaseService localFoodBase = new FoodBaseLocalService(getContext());
 				FoodBaseService webFoodBase = new FoodBaseWebService(webClient);
-				counterFood = new Synchronizer2<FoodItem>(localFoodBase, webFoodBase, MAX_FOOD_READ, MAX_FOOD_WRITE)
+				counterFood = new Synchronizer2<>(localFoodBase, webFoodBase, MAX_FOOD_READ, MAX_FOOD_WRITE)
 						.synchronize();
 			}
 			catch (Exception e)
@@ -142,7 +142,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			{
 				DishBaseService localDishBase = new DishBaseLocalService(getContext());
 				DishBaseService webDishBase = new DishBaseWebService(webClient);
-				counterDish = new Synchronizer2<DishItem>(localDishBase, webDishBase, MAX_DISH_READ, MAX_DISH_WRITE)
+				counterDish = new Synchronizer2<>(localDishBase, webDishBase, MAX_DISH_READ, MAX_DISH_WRITE)
 						.synchronize();
 			}
 			catch (Exception e)

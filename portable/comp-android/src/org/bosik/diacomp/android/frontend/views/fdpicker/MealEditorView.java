@@ -18,21 +18,6 @@
  */
 package org.bosik.diacomp.android.frontend.views.fdpicker;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
-import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
-import org.bosik.diacomp.android.frontend.UIUtils;
-import org.bosik.diacomp.android.frontend.UIUtils.OnSubmit;
-import org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker.OnSubmitListener;
-import org.bosik.diacomp.core.entities.business.FoodMassed;
-import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
-import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.services.base.dish.DishBaseService;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
-import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.merklesync.Versioned;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -46,6 +31,22 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
+import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
+import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.android.frontend.UIUtils.OnSubmit;
+import org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker.OnSubmitListener;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.services.base.dish.DishBaseService;
+import org.bosik.diacomp.core.services.base.food.FoodBaseService;
+import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.merklesync.Versioned;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MealEditorView extends LinearLayout
 {
@@ -56,19 +57,19 @@ public class MealEditorView extends LinearLayout
 	}
 
 	// components
-	ListView			list;
-	FoodDishPicker		fdPicker;
+	private ListView       list;
+	private FoodDishPicker fdPicker;
 
 	// localization
-	String				captionCarbs;
-	String				captionDose;
-	String				captionGramm;
+	private String captionCarbs;
+	private String captionDose;
+	private String captionGramm;
 
 	// listeners
-	OnChangeListener	onChange;
+	private OnChangeListener onChange;
 
 	// data
-	List<FoodMassed>	data	= new ArrayList<FoodMassed>();
+	private List<FoodMassed> data = new ArrayList<>();
 
 	public MealEditorView(Context context)
 	{
@@ -188,8 +189,7 @@ public class MealEditorView extends LinearLayout
 						return true;
 					}
 
-					UIUtils.showTip((Activity) context,
-							String.format(context.getString(R.string.fd_tip_item_not_found), name));
+					UIUtils.showTip((Activity) context, String.format(context.getString(R.string.fd_tip_item_not_found), name));
 					fdPicker.focusName();
 					return false;
 				}
@@ -197,7 +197,7 @@ public class MealEditorView extends LinearLayout
 		}
 	}
 
-	void showData()
+	private void showData()
 	{
 		final String[] temp = new String[data.size()];
 		for (int i = 0; i < data.size(); i++)
@@ -205,8 +205,7 @@ public class MealEditorView extends LinearLayout
 			temp[i] = "stub";
 		}
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.view_meal_item,
-				android.R.id.text1, temp)
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.view_meal_item, android.R.id.text1, temp)
 		{
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent)

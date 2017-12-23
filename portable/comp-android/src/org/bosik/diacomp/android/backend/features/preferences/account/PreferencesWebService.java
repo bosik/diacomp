@@ -42,8 +42,7 @@ public class PreferencesWebService extends PreferencesService
 
 	private final WebClient								webClient;
 	private final Parser<PreferenceEntry<String>>		parser					= new ParserPreferenceEntry();
-	private final Serializer<PreferenceEntry<String>>	serializer				= new SerializerAdapter<PreferenceEntry<String>>(
-																						parser);
+	private final Serializer<PreferenceEntry<String>>	serializer				= new SerializerAdapter<>(parser);
 
 	public PreferencesWebService(WebClient webClient)
 	{
@@ -96,7 +95,7 @@ public class PreferencesWebService extends PreferencesService
 
 		try
 		{
-			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			List<NameValuePair> params = new ArrayList<>();
 			params.add(new BasicNameValuePair("data", serializer.writeAll(entries)));
 			webClient.put(API_PREFERENCES, params);
 		}

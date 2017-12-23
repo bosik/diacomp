@@ -37,8 +37,7 @@ public class FoodSetService
 
 	private final WebClient							webClient;
 	private final Serializer<Versioned<FoodItem>>	serializer			= new SerializerFoodItem();
-	private final Serializer<FoodSetInfo>			serializerSetInfo	= new SerializerAdapter<FoodSetInfo>(
-																				new ParserFoodSetInfo());
+	private final Serializer<FoodSetInfo>			serializerSetInfo	= new SerializerAdapter<>(new ParserFoodSetInfo());
 
 	public FoodSetService(WebClient webClient)
 	{

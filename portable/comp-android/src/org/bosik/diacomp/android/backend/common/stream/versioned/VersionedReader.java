@@ -36,7 +36,7 @@ public class VersionedReader<T> extends StreamReader<Versioned<T>>
 	@Override
 	public Versioned<T> read(JsonReader json) throws IOException
 	{
-		Versioned<T> versioned = new Versioned<T>();
+		Versioned<T> versioned = new Versioned<>();
 
 		json.beginObject();
 		while (json.hasNext())

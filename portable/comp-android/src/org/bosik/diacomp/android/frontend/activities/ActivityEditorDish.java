@@ -169,7 +169,7 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 
 	private void showDish()
 	{
-		List<FoodMassed> items = new ArrayList<FoodMassed>();
+		List<FoodMassed> items = new ArrayList<>();
 
 		for (int i = 0; i < entity.getData().count(); i++)
 		{

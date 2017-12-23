@@ -47,7 +47,7 @@ import java.util.List;
 
 public class PreferencesLocalService extends PreferencesService implements Importable
 {
-	static final String TAG = PreferencesLocalService.class.getSimpleName();
+	private static final String TAG = PreferencesLocalService.class.getSimpleName();
 
 	private final Context         context;
 	private final ContentResolver resolver;
@@ -82,7 +82,7 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 		{
 			if (cursor != null)
 			{
-				List<PreferenceEntry<String>> result = new ArrayList<PreferenceEntry<String>>();
+				List<PreferenceEntry<String>> result = new ArrayList<>();
 
 				while (cursor.moveToNext())
 				{
@@ -92,7 +92,7 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 
 					try
 					{
-						PreferenceEntry<String> entry = new PreferenceEntry<String>();
+						PreferenceEntry<String> entry = new PreferenceEntry<>();
 
 						entry.setId(PreferenceID.parse(cursor.getString(indexKey)));
 						entry.setValue(cursor.getString(indexValue));
@@ -153,7 +153,7 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 					int indexValue = cursor.getColumnIndex(TablePreferences.COLUMN_VALUE);
 					int indexVersion = cursor.getColumnIndex(TablePreferences.COLUMN_VERSION);
 
-					PreferenceEntry<String> entry = new PreferenceEntry<String>();
+					PreferenceEntry<String> entry = new PreferenceEntry<>();
 					entry.setId(PreferenceID.parse(cursor.getString(indexKey)));
 					entry.setValue(cursor.getString(indexValue));
 					entry.setVersion(cursor.getInt(indexVersion));

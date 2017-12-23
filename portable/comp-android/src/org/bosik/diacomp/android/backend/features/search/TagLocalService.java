@@ -26,7 +26,7 @@ import org.bosik.diacomp.core.services.search.TagService;
 
 public class TagLocalService implements TagService
 {
-	private static final Map<String, Integer>	cache	= new HashMap<String, Integer>();
+	private static final Map<String, Integer>	cache	= new HashMap<>();
 	private static final ReadWriteLock			lock	= new ReentrantReadWriteLock();
 
 	@Override

@@ -17,20 +17,19 @@
  */
 package org.bosik.diacomp.android.backend.common.db.tables;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import android.net.Uri;
 import org.bosik.diacomp.android.backend.common.db.Column;
 import org.bosik.diacomp.android.backend.common.db.Table;
 
-import android.net.Uri;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TableTags extends Table
 {
-	public static final String	COLUMN_ID	= "GUID";
-	public static final String	COLUMN_TAG	= "Tag";
+	private static final String COLUMN_ID  = "GUID";
+	private static final String COLUMN_TAG = "Tag";
 
-	public static final Uri		CONTENT_URI	= new TableTags().getUri();
+	public static final Uri CONTENT_URI = new TableTags().getUri();
 
 	@Override
 	public String getName()

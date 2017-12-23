@@ -77,7 +77,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 	private View     mLoginStatusView;
 	private TextView mLoginStatusMessageView;
 
-	private BroadcastReceiver receiver = new BroadcastReceiver()
+	private final BroadcastReceiver receiver = new BroadcastReceiver()
 	{
 		@Override
 		public void onReceive(Context context, Intent intent)
@@ -180,7 +180,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 
 	private boolean validate()
 	{
-		List<View> errorFields = new ArrayList<View>();
+		List<View> errorFields = new ArrayList<>();
 		textEmail.setError(null);
 		textPassword.setError(null);
 

@@ -19,15 +19,15 @@ package org.bosik.diacomp.android.backend.common.db;
 
 public class Column
 {
-	public static String	TYPE_INTEGER	= "INTEGER";
-	public static String	TYPE_REAL		= "REAL";
-	public static String	TYPE_TEXT		= "TEXT";
-	public static String	TYPE_BLOB		= "BLOB";
+	public static final String TYPE_INTEGER = "INTEGER";
+	public static final String TYPE_REAL    = "REAL";
+	public static final String TYPE_TEXT    = "TEXT";
+	public static final String TYPE_BLOB    = "BLOB";
 
-	private String			name;
-	private String			type;
-	private boolean			nullable;
-	private boolean			primary;
+	private String  name;
+	private String  type;
+	private boolean nullable;
+	private boolean primary;
 
 	public Column(String name, String type, boolean primary, boolean nullable)
 	{

@@ -97,9 +97,9 @@ public class DiaryContentProvider extends ContentProvider
 
 		sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-		for (int i = 0; i < tables.size(); i++)
+		for (Table table : tables)
 		{
-			sURIMatcher.addURI(AUTHORITY, tables.get(i).getName(), tables.get(i).getCode());
+			sURIMatcher.addURI(AUTHORITY, table.getName(), table.getCode());
 		}
 	}
 

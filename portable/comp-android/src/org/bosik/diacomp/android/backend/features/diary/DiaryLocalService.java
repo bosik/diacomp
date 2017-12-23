@@ -427,7 +427,7 @@ public class DiaryLocalService implements DiaryService, Importable
 		int indexId = cursor.getColumnIndex(TableDiary.COLUMN_ID);
 		int indexHash = cursor.getColumnIndex(TableDiary.COLUMN_HASH);
 
-		SortedMap<String, String> result = new TreeMap<String, String>();
+		SortedMap<String, String> result = new TreeMap<>();
 
 		while (cursor.moveToNext())
 		{
@@ -487,7 +487,7 @@ public class DiaryLocalService implements DiaryService, Importable
 			int indexDeleted = cursor.getColumnIndex(TableDiary.COLUMN_DELETED);
 			int indexContent = cursor.getColumnIndex(TableDiary.COLUMN_CONTENT);
 
-			List<Versioned<DiaryRecord>> result = new ArrayList<Versioned<DiaryRecord>>();
+			List<Versioned<DiaryRecord>> result = new ArrayList<>();
 
 			while (cursor.moveToNext())
 			{
@@ -499,7 +499,7 @@ public class DiaryLocalService implements DiaryService, Importable
 				String content = cursor.getString(indexContent);
 				DiaryRecord record = serializer.read(content);
 
-				Versioned<DiaryRecord> item = new Versioned<DiaryRecord>(record);
+				Versioned<DiaryRecord> item = new Versioned<>(record);
 				item.setId(id);
 				item.setTimeStamp(timestamp);
 				item.setHash(hash);

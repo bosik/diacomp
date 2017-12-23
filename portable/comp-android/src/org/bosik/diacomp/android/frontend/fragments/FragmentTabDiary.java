@@ -18,11 +18,23 @@
  */
 package org.bosik.diacomp.android.frontend.fragments;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
+import android.app.Activity;
+import android.content.Intent;
+import android.database.ContentObserver;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
@@ -50,79 +62,68 @@ import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.diacomp.core.utils.TimeUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
-import android.app.Activity;
-import android.content.Intent;
-import android.database.ContentObserver;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class FragmentTabDiary extends Fragment
 {
 	// Constants
-	private static final int		DIALOG_BLOOD_CREATE			= 11;
-	private static final int		DIALOG_BLOOD_MODIFY			= 12;
-	private static final int		DIALOG_INS_CREATE			= 21;
-	private static final int		DIALOG_INS_MODIFY			= 22;
-	private static final int		DIALOG_MEAL_CREATE			= 31;
-	private static final int		DIALOG_MEAL_MODIFY			= 32;
-	private static final int		DIALOG_NOTE_CREATE			= 41;
-	private static final int		DIALOG_NOTE_MODIFY			= 42;
+	private static final int DIALOG_BLOOD_CREATE = 11;
+	private static final int DIALOG_BLOOD_MODIFY = 12;
+	private static final int DIALOG_INS_CREATE   = 21;
+	private static final int DIALOG_INS_MODIFY   = 22;
+	private static final int DIALOG_MEAL_CREATE  = 31;
+	private static final int DIALOG_MEAL_MODIFY  = 32;
+	private static final int DIALOG_NOTE_CREATE  = 41;
+	private static final int DIALOG_NOTE_MODIFY  = 42;
 
 	// FIXME: hardcoded patient params
-	private static final long		SCAN_FOR_BLOOD_FINGER		= 5 * Utils.SecPerDay;
-	private static final int		SCAN_FOR_BLOOD_BEFORE_MEAL	= 4 * Utils.SecPerHour;
-	private static final long		SCAN_FOR_INS_AROUND_MEAL	= 3 * Utils.SecPerHour;
+	private static final long SCAN_FOR_BLOOD_FINGER      = 5 * Utils.SecPerDay;
+	private static final int  SCAN_FOR_BLOOD_BEFORE_MEAL = 4 * Utils.SecPerHour;
+	private static final long SCAN_FOR_INS_AROUND_MEAL   = 3 * Utils.SecPerHour;
 
 	/**
 	 * Time error triggering time zone warning, in minutes
 	 */
-	private static final int		LIMIT_TIMEZONE				= 30;
+	private static final int LIMIT_TIMEZONE = 30;
 	/**
 	 * Time error triggering offset warning, in minutes
 	 */
-	private static final int		LIMIT_OFFSET				= 10;
+	private static final int LIMIT_OFFSET   = 10;
 
 	// Services
-	private DiaryService			diary;
-	private PreferencesTypedService	preferences;
+	private DiaryService            diary;
+	private PreferencesTypedService preferences;
 
 	// Widgets
-	TextView						textWarningTime;
-	DiaryDayView					list;
-	private Button					buttonAddBlood;
-	private Button					buttonAddIns;
-	private Button					buttonAddMeal;
-	private Button					buttonAddNote;
+	private TextView     textWarningTime;
+	private DiaryDayView list;
+	private Button       buttonAddBlood;
+	private Button       buttonAddIns;
+	private Button       buttonAddMeal;
+	private Button       buttonAddNote;
 
-	private ContentObserver			observer					= new ContentObserver(null)
-																{
-																	@Override
-																	public void onChange(boolean selfChange)
-																	{
-																		this.onChange(selfChange, null);
-																	}
+	private final ContentObserver observer = new ContentObserver(null)
+	{
+		@Override
+		public void onChange(boolean selfChange)
+		{
+			this.onChange(selfChange, null);
+		}
 
-																	@Override
-																	public void onChange(boolean selfChange, Uri uri)
-																	{
-																		if (list != null)
-																		{
-																			list.refresh();
-																		}
-																	}
-																};
+		@Override
+		public void onChange(boolean selfChange, Uri uri)
+		{
+			if (list != null)
+			{
+				list.refresh();
+			}
+		}
+	};
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -145,8 +146,8 @@ public class FragmentTabDiary extends Fragment
 
 		class DatePair
 		{
-			public Date	localTime;
-			public Date	serverTime;
+			public Date localTime;
+			public Date serverTime;
 
 			public DatePair(Date localTime, Date serverTime)
 			{
@@ -195,8 +196,8 @@ public class FragmentTabDiary extends Fragment
 								if (absErrorMin > LIMIT_TIMEZONE)
 								{
 									long offsetMin = offset / Utils.MsecPerMin;
-									String timeZone = String.format(Locale.US, "%+02d:%02d",
-											offsetMin / Utils.MinPerHour, offsetMin % Utils.MinPerHour);
+									String timeZone = String
+											.format(Locale.US, "%+02d:%02d", offsetMin / Utils.MinPerHour, offsetMin % Utils.MinPerHour);
 									String msg = getActivity().getString(R.string.warning_time_zone, timeZone);
 									textWarningTime.setText(msg);
 									textWarningTime.setVisibility(View.VISIBLE);
@@ -334,7 +335,7 @@ public class FragmentTabDiary extends Fragment
 	}
 
 	// handled
-	void showBloodEditor(Versioned<BloodRecord> entity, boolean createMode)
+	private void showBloodEditor(Versioned<BloodRecord> entity, boolean createMode)
 	{
 		try
 		{
@@ -344,7 +345,7 @@ public class FragmentTabDiary extends Fragment
 				BloodRecord rec = new BloodRecord();
 				rec.setTime(new Date());
 				rec.setFinger(((prev == null) || (prev.getFinger() == -1)) ? -1 : ((prev.getFinger() + 1) % 10));
-				entity = new Versioned<BloodRecord>(rec);
+				entity = new Versioned<>(rec);
 			}
 
 			Intent intent = new Intent(getActivity(), ActivityEditorBlood.class);
@@ -360,7 +361,7 @@ public class FragmentTabDiary extends Fragment
 	}
 
 	// handled
-	void showInsEditor(Versioned<InsRecord> entity, boolean createMode)
+	private void showInsEditor(Versioned<InsRecord> entity, boolean createMode)
 	{
 		try
 		{
@@ -368,7 +369,7 @@ public class FragmentTabDiary extends Fragment
 			{
 				InsRecord rec = new InsRecord();
 				rec.setTime(new Date());
-				entity = new Versioned<InsRecord>(rec);
+				entity = new Versioned<>(rec);
 			}
 
 			Intent intent = new Intent(getActivity(), ActivityEditorIns.class);
@@ -384,7 +385,7 @@ public class FragmentTabDiary extends Fragment
 	}
 
 	// handled
-	void showMealEditor(Versioned<MealRecord> entity, boolean createMode)
+	private void showMealEditor(Versioned<MealRecord> entity, boolean createMode)
 	{
 		try
 		{
@@ -392,18 +393,15 @@ public class FragmentTabDiary extends Fragment
 			{
 				MealRecord rec = new MealRecord();
 				rec.setTime(new Date());
-				entity = new Versioned<MealRecord>(rec);
+				entity = new Versioned<>(rec);
 			}
 
-			BloodRecord bloodBase = PostprandUtils.findLastBlood(diary, entity.getData().getTime(),
-					SCAN_FOR_BLOOD_BEFORE_MEAL, true);
-			BloodRecord bloodLast = PostprandUtils.findLastBlood(diary, entity.getData().getTime(),
-					SCAN_FOR_BLOOD_BEFORE_MEAL, false);
+			BloodRecord bloodBase = PostprandUtils.findLastBlood(diary, entity.getData().getTime(), SCAN_FOR_BLOOD_BEFORE_MEAL, true);
+			BloodRecord bloodLast = PostprandUtils.findLastBlood(diary, entity.getData().getTime(), SCAN_FOR_BLOOD_BEFORE_MEAL, false);
 			Double bloodBaseValue = bloodBase == null ? null : bloodBase.getValue();
 			Double bloodLastValue = bloodLast == null ? null : bloodLast.getValue();
 			Double bloodTarget = preferences.getDoubleValue(PreferenceID.TARGET_BS);
-			InsRecord insRecord = PostprandUtils.findNearestInsulin(diary, entity.getData().getTime(),
-					SCAN_FOR_INS_AROUND_MEAL);
+			InsRecord insRecord = PostprandUtils.findNearestInsulin(diary, entity.getData().getTime(), SCAN_FOR_INS_AROUND_MEAL);
 			Double insInjected = insRecord == null ? null : insRecord.getValue();
 
 			Intent intent = new Intent(getActivity(), ActivityEditorMeal.class);
@@ -429,7 +427,7 @@ public class FragmentTabDiary extends Fragment
 	}
 
 	// handled
-	void showNoteEditor(Versioned<NoteRecord> entity, boolean createMode)
+	private void showNoteEditor(Versioned<NoteRecord> entity, boolean createMode)
 	{
 		try
 		{
@@ -437,7 +435,7 @@ public class FragmentTabDiary extends Fragment
 			{
 				NoteRecord rec = new NoteRecord();
 				rec.setTime(new Date());
-				entity = new Versioned<NoteRecord>(rec);
+				entity = new Versioned<>(rec);
 			}
 
 			Intent intent = new Intent(getActivity(), ActivityEditorNote.class);

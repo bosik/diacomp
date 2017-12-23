@@ -123,12 +123,6 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 		{
 			entity.getData().setValue(Utils.parseExpression(editValue.getText().toString()));
 		}
-		catch (NumberFormatException e)
-		{
-			UIUtils.showTip(this, ERROR_INCORRECT_BS_VALUE);
-			editValue.requestFocus();
-			return false;
-		}
 		catch (IllegalArgumentException e)
 		{
 			UIUtils.showTip(this, ERROR_INCORRECT_BS_VALUE);

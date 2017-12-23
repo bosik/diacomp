@@ -105,16 +105,16 @@ class Item implements Comparable<Item>
 
 class ItemAdapter extends ArrayAdapter<Item>
 {
-	List<Item>	itemsAll;
-	List<Item>	suggestions;
-	private int	viewResourceId;
+	private List<Item> itemsAll;
+	private List<Item> suggestions;
+	private int        viewResourceId;
 
 	public ItemAdapter(Context context, int viewResourceId, List<Item> items)
 	{
 		super(context, viewResourceId, items);
 
-		this.itemsAll = new ArrayList<Item>(items);
-		this.suggestions = new ArrayList<Item>();
+		this.itemsAll = new ArrayList<>(items);
+		this.suggestions = new ArrayList<>();
 		this.viewResourceId = viewResourceId;
 	}
 
@@ -147,7 +147,7 @@ class ItemAdapter extends ArrayAdapter<Item>
 		return filter;
 	}
 
-	Filter filter = new Filter()
+	private Filter filter = new Filter()
 	{
 		@Override
 		public String convertResultToString(Object resultValue)
@@ -160,8 +160,8 @@ class ItemAdapter extends ArrayAdapter<Item>
 		{
 			if (constraint != null)
 			{
-				List<Item> firstList = new ArrayList<Item>();
-				List<Item> secondList = new ArrayList<Item>();
+				List<Item> firstList = new ArrayList<>();
+				List<Item> secondList = new ArrayList<>();
 
 				String search = constraint.toString().toLowerCase(Locale.US);
 				for (Item item : itemsAll)
@@ -235,13 +235,13 @@ public class FoodDishPicker extends LinearLayout
 
 	// ===================================== FIELDS ======================================
 
-	FoodDishTextView							editName;
-	EditText									editMass;
-	LinearLayout								buttonSubmit;
+	private FoodDishTextView editName;
+	private EditText         editMass;
+	private LinearLayout     buttonSubmit;
 
 	private OnSubmitListener					onSubmit;
 
-	public static final Map<ItemType, Integer>	iconMap	= new HashMap<ItemType, Integer>();
+	public static final Map<ItemType, Integer>	iconMap	= new HashMap<>();
 
 	static
 	{
@@ -333,7 +333,7 @@ public class FoodDishPicker extends LinearLayout
 
 		// build lists
 
-		List<Item> data = new ArrayList<Item>();
+		List<Item> data = new ArrayList<>();
 
 		for (Versioned<FoodItem> item : foodBase.findAll(false))
 		{
@@ -362,7 +362,7 @@ public class FoodDishPicker extends LinearLayout
 		editMass.requestFocus();
 	}
 
-	void submit()
+	private void submit()
 	{
 		String name = editName.getText().toString();
 		if (name.trim().isEmpty())

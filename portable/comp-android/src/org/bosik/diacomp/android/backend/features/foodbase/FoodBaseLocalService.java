@@ -71,7 +71,7 @@ public class FoodBaseLocalService implements FoodBaseService, Importable
 	private final Context         context;
 	private final ContentResolver resolver;
 	private final Parser<FoodItem>     parser     = new ParserFoodItem();
-	private final Serializer<FoodItem> serializer = new SerializerAdapter<FoodItem>(parser);
+	private final Serializer<FoodItem> serializer = new SerializerAdapter<>(parser);
 
 	// caching
 	// NOTE: this suppose DB can't be changed outside app
@@ -108,7 +108,7 @@ public class FoodBaseLocalService implements FoodBaseService, Importable
 		{
 			long time = System.currentTimeMillis();
 
-			List<Versioned<FoodItem>> result = new ArrayList<Versioned<FoodItem>>();
+			List<Versioned<FoodItem>> result = new ArrayList<>();
 
 			int indexId = cursor.getColumnIndex(TableFoodbase.COLUMN_ID);
 			int indexTimeStamp = cursor.getColumnIndex(TableFoodbase.COLUMN_TIMESTAMP);
@@ -132,7 +132,7 @@ public class FoodBaseLocalService implements FoodBaseService, Importable
 				FoodItem item = serializer.read(valueData);
 				jsonTime += System.currentTimeMillis() - temp;
 
-				Versioned<FoodItem> versioned = new Versioned<FoodItem>(item);
+				Versioned<FoodItem> versioned = new Versioned<>(item);
 				versioned.setId(valueId);
 				versioned.setTimeStamp(valueTimeStamp);
 				versioned.setHash(valueHash);
@@ -195,7 +195,7 @@ public class FoodBaseLocalService implements FoodBaseService, Importable
 			String[] columns = null; // all
 
 			String where = "";
-			List<String> whereArgs = new LinkedList<String>();
+			List<String> whereArgs = new LinkedList<>();
 
 			if (id != null)
 			{
@@ -255,7 +255,7 @@ public class FoodBaseLocalService implements FoodBaseService, Importable
 
 		try
 		{
-			List<Versioned<FoodItem>> result = new ArrayList<Versioned<FoodItem>>();
+			List<Versioned<FoodItem>> result = new ArrayList<>();
 			if (name != null)
 			{
 				name = name.toLowerCase(Locale.US);
@@ -584,7 +584,7 @@ public class FoodBaseLocalService implements FoodBaseService, Importable
 	 */
 	private static SortedMap<String, String> getDataHashes()
 	{
-		SortedMap<String, String> result = new TreeMap<String, String>();
+		SortedMap<String, String> result = new TreeMap<>();
 
 		for (Versioned<FoodItem> item : memoryCache)
 		{

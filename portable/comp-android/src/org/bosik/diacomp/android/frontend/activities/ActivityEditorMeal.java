@@ -185,7 +185,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 
 	private void showMealContent()
 	{
-		List<FoodMassed> items = new ArrayList<FoodMassed>();
+		List<FoodMassed> items = new ArrayList<>();
 
 		for (int i = 0; i < entity.getData().count(); i++)
 		{

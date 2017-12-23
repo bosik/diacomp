@@ -256,7 +256,7 @@ public class FoodBaseWebService implements FoodBaseService
 
 		try
 		{
-			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			List<NameValuePair> params = new ArrayList<>();
 			params.add(new BasicNameValuePair("items", serializer.writeAll(items)));
 			webClient.put(API_FOOD_SAVE, params);
 		}

@@ -18,10 +18,7 @@
  */
 package org.bosik.diacomp.android.backend.common.webclient;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import android.util.Log;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -44,34 +41,37 @@ import org.bosik.diacomp.android.backend.common.webclient.exceptions.UndefinedFi
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.utils.Utils;
-import android.util.Log;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WebClient
 {
-	private static String		TAG					= WebClient.class.getSimpleName();
+	private static final String TAG = WebClient.class.getSimpleName();
 
 	/* ================ CONSTS ================ */
 
-	private static final int	API_VERSION			= 20;
-	private static final String	ENCODING_UTF8		= "UTF-8";
-	private static final String	CODE_SPACE			= "%20";
-	private static final long	MIN_REQUEST_DELAY	= 100 * Utils.NsecPerMsec;			// nsec
+	private static final int    API_VERSION       = 20;
+	private static final String ENCODING_UTF8     = "UTF-8";
+	private static final String CODE_SPACE        = "%20";
+	private static final long   MIN_REQUEST_DELAY = 100 * Utils.NsecPerMsec;            // nsec
 
 	/* ================ FIELDS ================ */
 
-	private final HttpClient	mHttpClient;
-	private String				username;
-	private String				password;
-	private String				server;
-	private long				lastRequestTime		= 0;
+	private final HttpClient mHttpClient;
+	private       String     username;
+	private       String     password;
+	private       String     server;
+	private long lastRequestTime = 0;
 
 	/* ================================ ROUTINES ================================ */
 
 	/**
 	 * Converts server's response into String
-	 * 
-	 * @param response
-	 *            Server's response
+	 *
+	 * @param response Server's response
 	 * @return String
 	 */
 	private static String formatResponse(HttpResponse response, String encoding)
@@ -138,7 +138,7 @@ public class WebClient
 
 	/**
 	 * Performs GET request
-	 * 
+	 *
 	 * @param url
 	 * @return
 	 */
@@ -164,7 +164,7 @@ public class WebClient
 
 	/**
 	 * Performs POST request
-	 * 
+	 *
 	 * @param url
 	 * @param params
 	 * @return
@@ -194,7 +194,7 @@ public class WebClient
 
 	/**
 	 * Performs PUT request
-	 * 
+	 *
 	 * @param url
 	 * @param params
 	 * @param encoding
@@ -268,29 +268,14 @@ public class WebClient
 
 	// =========================== GET / SET ===========================
 
-	public String getUsername()
-	{
-		return username;
-	}
-
 	public void setUsername(String username)
 	{
 		this.username = username;
 	}
 
-	public String getPassword()
-	{
-		return password;
-	}
-
 	public void setPassword(String password)
 	{
 		this.password = password;
-	}
-
-	public String getServer()
-	{
-		return server;
 	}
 
 	public void setServer(String server)
@@ -307,7 +292,7 @@ public class WebClient
 
 	/**
 	 * Performs authenticated GET request
-	 * 
+	 *
 	 * @param url
 	 * @param encoding
 	 * @return
@@ -327,7 +312,7 @@ public class WebClient
 
 	/**
 	 * Performs authenticated GET request. Uses default UTF-8 encoding
-	 * 
+	 *
 	 * @param URL
 	 * @return
 	 */
@@ -338,7 +323,7 @@ public class WebClient
 
 	/**
 	 * Performs authenticated POST request
-	 * 
+	 *
 	 * @param URL
 	 * @param params
 	 * @param encoding
@@ -359,7 +344,7 @@ public class WebClient
 
 	/**
 	 * Performs authenticated POST request. Uses default UTF-8 encoding
-	 * 
+	 *
 	 * @param URL
 	 * @param params
 	 * @return
@@ -371,7 +356,7 @@ public class WebClient
 
 	/**
 	 * Performs authenticated PUT request
-	 * 
+	 *
 	 * @param URL
 	 * @param params
 	 * @param encoding
@@ -392,10 +377,9 @@ public class WebClient
 
 	/**
 	 * Performs authenticated PUT request. Uses default UTF-8 encoding
-	 * 
+	 *
 	 * @param URL
 	 * @param params
-	 * @param codePage
 	 * @return
 	 */
 	public String put(String URL, List<NameValuePair> params)
@@ -431,7 +415,7 @@ public class WebClient
 
 		// building request
 
-		List<NameValuePair> p = new ArrayList<NameValuePair>();
+		List<NameValuePair> p = new ArrayList<>();
 		p.add(new BasicNameValuePair("login", username));
 		p.add(new BasicNameValuePair("pass", password));
 		p.add(new BasicNameValuePair("api", String.valueOf(API_VERSION)));

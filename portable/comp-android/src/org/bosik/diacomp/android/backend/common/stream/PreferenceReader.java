@@ -28,7 +28,7 @@ public class PreferenceReader extends StreamReader<PreferenceEntry<String>>
 	@Override
 	public PreferenceEntry<String> read(JsonReader json) throws IOException
 	{
-		PreferenceEntry<String> item = new PreferenceEntry<String>();
+		PreferenceEntry<String> item = new PreferenceEntry<>();
 
 		json.beginObject();
 		while (json.hasNext())

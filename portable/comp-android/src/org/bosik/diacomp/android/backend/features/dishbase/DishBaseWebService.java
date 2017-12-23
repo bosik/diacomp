@@ -255,7 +255,7 @@ public class DishBaseWebService implements DishBaseService
 
 		try
 		{
-			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			List<NameValuePair> params = new ArrayList<>();
 			params.add(new BasicNameValuePair("items", serializer.writeAll(items)));
 			webClient.put(API_DISH_SAVE, params);
 		}

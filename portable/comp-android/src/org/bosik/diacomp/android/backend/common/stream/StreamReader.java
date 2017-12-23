@@ -29,7 +29,7 @@ public abstract class StreamReader<T>
 
 	public List<T> readAll(JsonReader json) throws IOException
 	{
-		List<T> result = new ArrayList<T>();
+		List<T> result = new ArrayList<>();
 
 		json.beginArray();
 		while (json.hasNext())

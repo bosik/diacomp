@@ -78,7 +78,7 @@ public class Chart extends Fragment implements ProgressListener
 	private static final String							KEY_MIN_Y		= "chart.minY";
 	private static final String							KEY_MAX_Y		= "chart.maxY";
 
-	private static final Map<Integer, ProgressBundle>	container		= new ConcurrentHashMap<Integer, ProgressBundle>();
+	private static final Map<Integer, ProgressBundle>	container		= new ConcurrentHashMap<>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)

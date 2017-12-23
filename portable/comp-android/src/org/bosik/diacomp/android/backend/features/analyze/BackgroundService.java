@@ -1,7 +1,10 @@
 package org.bosik.diacomp.android.backend.features.analyze;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.IBinder;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
 import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
@@ -10,20 +13,16 @@ import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.search.RelevantIndexator;
 import org.bosik.diacomp.core.utils.Utils;
-import android.app.Service;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.IBinder;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class BackgroundService extends Service
 {
-	private static final long	TIMER_DELAY		= 2 * Utils.MsecPerSec;	// ms
-	private static final long	TIMER_INTERVAL	= 10 * Utils.MsecPerMin;
+	private static final long TIMER_DELAY    = 2 * Utils.MsecPerSec;    // ms
+	private static final long TIMER_INTERVAL = 10 * Utils.MsecPerMin;
 
-	private Timer				timer			= new Timer();
-	// SharedPreferences preferences;
+	private final Timer timer = new Timer();
 
 	@Override
 	public IBinder onBind(Intent intent)
@@ -35,7 +34,6 @@ public class BackgroundService extends Service
 	public void onCreate()
 	{
 		super.onCreate();
-		// preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
 		timer.scheduleAtFixedRate(new TimerTask()
 		{
@@ -47,12 +45,12 @@ public class BackgroundService extends Service
 					@Override
 					protected Void doInBackground(Void... arg0)
 					{
-						relevantIndexation(getContentResolver());
+						relevantIndexation();
 						analyzeKoofs(BackgroundService.this);
 						return null;
 					}
 
-					void relevantIndexation(ContentResolver resolver)
+					void relevantIndexation()
 					{
 						final DiaryService diary = LocalDiary.getInstance(BackgroundService.this);
 						final FoodBaseService foodBase = LocalFoodBase.getInstance(BackgroundService.this);

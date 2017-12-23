@@ -122,12 +122,6 @@ public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 		{
 			entity.getData().setValue(Utils.parseExpression(editValue.getText().toString()));
 		}
-		catch (NumberFormatException e)
-		{
-			UIUtils.showTip(this, ERROR_INCORECT_INS_VALUE);
-			editValue.requestFocus();
-			return false;
-		}
 		catch (IllegalArgumentException e)
 		{
 			UIUtils.showTip(this, ERROR_INCORECT_INS_VALUE);

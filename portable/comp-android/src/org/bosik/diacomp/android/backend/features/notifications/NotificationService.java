@@ -32,7 +32,7 @@ public class NotificationService extends Service
 {
 	private static final int NOTIFICATION_ID_TIME_AFTER = 1;
 
-	NotificationManager notificationManager;
+	private NotificationManager notificationManager;
 	private Timer timer = new Timer();
 
 	@Override
@@ -73,7 +73,7 @@ public class NotificationService extends Service
 		timer.cancel();
 	}
 
-	void showElapsedTime()
+	private void showElapsedTime()
 	{
 		new AsyncTask<Void, Void, String>()
 		{
@@ -163,7 +163,7 @@ public class NotificationService extends Service
 		}.execute();
 	}
 
-	void hideTimeAfter()
+	private void hideTimeAfter()
 	{
 		notificationManager.cancel(NOTIFICATION_ID_TIME_AFTER);
 	}

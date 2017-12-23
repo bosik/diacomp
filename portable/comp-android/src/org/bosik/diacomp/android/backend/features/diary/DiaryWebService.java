@@ -60,8 +60,8 @@ public class DiaryWebService implements DiaryService
 
 	private final WebClient webClient;
 	private final Parser<DiaryRecord>                parser        = new ParserDiaryRecord();
-	private final Parser<Versioned<DiaryRecord>>     parserV       = new ParserVersioned<DiaryRecord>(parser);
-	private final Serializer<Versioned<DiaryRecord>> serializerV   = new SerializerAdapter<Versioned<DiaryRecord>>(parserV);
+	private final Parser<Versioned<DiaryRecord>>     parserV       = new ParserVersioned<>(parser);
+	private final Serializer<Versioned<DiaryRecord>> serializerV   = new SerializerAdapter<>(parserV);
 	private final Serializer<Map<String, String>>    serializerMap = new SerializerMap();
 
 	/* ============================ CONSTRUCTOR ============================ */
@@ -240,7 +240,7 @@ public class DiaryWebService implements DiaryService
 		{
 			String items = serializerV.writeAll(records);
 
-			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			List<NameValuePair> params = new ArrayList<>();
 			params.add(new BasicNameValuePair("items", items));
 
 			webClient.put(API_DIARY_SAVE, params);

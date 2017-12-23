@@ -98,12 +98,6 @@ public class ActivityEditorFood extends ActivityEditor<FoodItem>
 		{
 			setter.set(Utils.parseExpression(editor.getText().toString()));
 		}
-		catch (NumberFormatException e)
-		{
-			UIUtils.showTip(this, MSG_INCORRECT_VALUE);
-			editor.requestFocus();
-			return false;
-		}
 		catch (IllegalArgumentException e)
 		{
 			UIUtils.showTip(this, MSG_INCORRECT_VALUE);

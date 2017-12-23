@@ -18,16 +18,17 @@
  */
 package org.bosik.diacomp.android.backend.features.analyze;
 
-import java.util.List;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.merklesync.Versioned;
 
+import java.util.List;
+
 public class HardcodedAnalyzeService implements AnalyzeCore
 {
-	private static KoofList koofs;
+	private static final KoofList koofs;
 
 	static
 	{
