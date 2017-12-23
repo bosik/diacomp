@@ -31,9 +31,6 @@ import android.widget.TextView;
 
 public class DiaryRecMealView extends LinearLayout
 {
-	// Data
-	private Versioned<MealRecord>	record;
-
 	// Components
 	private TextView				textTime;
 	private TextView				textValue;
@@ -50,7 +47,6 @@ public class DiaryRecMealView extends LinearLayout
 
 	public void setData(Versioned<MealRecord> record)
 	{
-		this.record = record;
 		MealRecord data = record.getData();
 
 		textTime.setText(Utils.formatTimeLocalShort(TimeZone.getDefault(), data.getTime()));

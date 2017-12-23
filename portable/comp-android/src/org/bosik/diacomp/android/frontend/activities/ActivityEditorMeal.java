@@ -18,7 +18,6 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -49,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 {
@@ -286,7 +286,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			double currentDosage = (-deltaBS + carbs * koof.getK() + (prots * koof.getP())) / koof.getQ();
 			if (currentDosage > 0)
 			{
-				textMealCurrentDosage.setText(String.format("%.1f %s", currentDosage, captionDose));
+				textMealCurrentDosage.setText(String.format(Locale.US, "%.1f %s", currentDosage, captionDose));
 				if (insulinInjected)
 				{
 					textMealCurrentDosage.setTypeface(Typeface.DEFAULT);
@@ -333,7 +333,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			if (insDosage != null)
 			{
 				textMealShiftedDosage.setVisibility(View.VISIBLE);
-				textMealShiftedDosage.setText(String.format(" → %.1f %s", getInsInjected(), captionDose));
+				textMealShiftedDosage.setText(String.format(Locale.US, " → %.1f %s", getInsInjected(), captionDose));
 			}
 			else
 			{
@@ -353,7 +353,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			double expectedBS = inputBS + (carbs * koof.getK()) + (prots * koof.getP()) - (insulinDosage * koof.getQ());
 			if (expectedBS > BS_HYPOGLYCEMIA)
 			{
-				textMealExpectedBs.setText(String.format("%.1f %s", expectedBS, captionMmol));
+				textMealExpectedBs.setText(String.format(Locale.US, "%.1f %s", expectedBS, captionMmol));
 			}
 			else
 			{

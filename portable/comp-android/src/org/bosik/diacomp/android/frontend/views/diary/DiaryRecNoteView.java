@@ -30,9 +30,6 @@ import android.widget.TextView;
 
 public class DiaryRecNoteView extends LinearLayout
 {
-	// Data
-	private Versioned<NoteRecord>	record;
-
 	// Components
 	private TextView				textTime;
 	private TextView				textValue;
@@ -49,7 +46,6 @@ public class DiaryRecNoteView extends LinearLayout
 
 	public void setData(Versioned<NoteRecord> record)
 	{
-		this.record = record;
 		NoteRecord data = record.getData();
 
 		textTime.setText(Utils.formatTimeLocalShort(TimeZone.getDefault(), data.getTime()));

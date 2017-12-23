@@ -31,9 +31,6 @@ import android.widget.TextView;
 
 public class DiaryRecBloodView extends LinearLayout
 {
-	// Data
-	private Versioned<BloodRecord>	record;
-
 	// Components
 	private final TextView			textTime;
 	private final TextView			textValue;
@@ -63,7 +60,6 @@ public class DiaryRecBloodView extends LinearLayout
 
 	public void setData(Versioned<BloodRecord> record)
 	{
-		this.record = record;
 		BloodRecord data = record.getData();
 
 		textTime.setText(Utils.formatTimeLocalShort(TimeZone.getDefault(), data.getTime()));
