@@ -22,9 +22,7 @@ import android.accounts.Account;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -35,7 +33,6 @@ import android.view.MenuItem;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
-import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.analyze.BackgroundService;
 import org.bosik.diacomp.android.backend.features.notifications.NotificationService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
@@ -81,9 +78,9 @@ public class ActivityMain extends FragmentActivity
 
 			// Backend
 
-			Storage.init(this);
+			startService(new Intent(this, NotificationService.class));
+			startService(new Intent(this, BackgroundService.class));
 
-			// Account sync
 			Account account = AccountUtils.getAccount(this);
 
 			if (account != null)
@@ -100,7 +97,7 @@ public class ActivityMain extends FragmentActivity
 
 			// Frontend
 
-			final List<Page> pages = new ArrayList<Page>();
+			final List<Page> pages = new ArrayList<>();
 			pages.add(new Page()
 			{
 				@Override
@@ -208,9 +205,6 @@ public class ActivityMain extends FragmentActivity
 			// CharSequence title = mDemoCollectionPagerAdapter.getPageTitle(i);
 			// actionBar.addTab(actionBar.newTab().setText(title).setTabListener(tabListener));
 			// }
-
-			startService(new Intent(this, NotificationService.class));
-			startService(new Intent(this, BackgroundService.class));
 
 			PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
 
