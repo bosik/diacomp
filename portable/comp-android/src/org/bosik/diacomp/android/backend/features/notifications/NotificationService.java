@@ -4,15 +4,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
 import android.support.v4.app.TaskStackBuilder;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
+import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.activities.ActivityMain;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -20,6 +19,7 @@ import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.diary.PostprandUtils;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
+import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
@@ -33,7 +33,6 @@ public class NotificationService extends Service
 	private static final int NOTIFICATION_ID_TIME_AFTER = 1;
 
 	NotificationManager notificationManager;
-	SharedPreferences   preferences;
 	private Timer timer = new Timer();
 
 	@Override
@@ -46,7 +45,8 @@ public class NotificationService extends Service
 	public void onCreate()
 	{
 		super.onCreate();
-		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+		final PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
 		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
 		timer.scheduleAtFixedRate(new TimerTask()
@@ -54,7 +54,7 @@ public class NotificationService extends Service
 			@Override
 			public void run()
 			{
-				if (preferences.getBoolean(PreferenceID.ANDROID_SHOW_TIME_AFTER.getKey(), true))
+				if (preferences.getBooleanValue(PreferenceID.ANDROID_SHOW_TIME_AFTER))
 				{
 					showElapsedTime();
 				}

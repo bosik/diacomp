@@ -38,11 +38,13 @@ import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.Storage;
 import org.bosik.diacomp.android.backend.features.analyze.BackgroundService;
 import org.bosik.diacomp.android.backend.features.notifications.NotificationService;
+import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.fragments.FragmentTabBase;
 import org.bosik.diacomp.android.frontend.fragments.FragmentTabCharts;
 import org.bosik.diacomp.android.frontend.fragments.FragmentTabDiary;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
+import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,8 +67,7 @@ public class ActivityMain extends FragmentActivity
 	/* =========================== FIELDS ================================ */
 
 	ViewPager mViewPager;
-	private Menu              cachedMenu;
-	private SharedPreferences preferences;
+	private Menu cachedMenu;
 
 	/* =========================== METHODS ================================ */
 
@@ -80,8 +81,6 @@ public class ActivityMain extends FragmentActivity
 
 			// Backend
 
-			PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-			preferences = PreferenceManager.getDefaultSharedPreferences(this);
 			Storage.init(this);
 
 			// Account sync
@@ -213,10 +212,12 @@ public class ActivityMain extends FragmentActivity
 			startService(new Intent(this, NotificationService.class));
 			startService(new Intent(this, BackgroundService.class));
 
-			boolean firstStart = preferences.getBoolean(PreferenceID.ANDROID_FIRST_START.getKey(), true);
+			PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
+
+			boolean firstStart = preferences.getBooleanValue(PreferenceID.ANDROID_FIRST_START);
 			if (firstStart)
 			{
-				preferences.edit().putBoolean(PreferenceID.ANDROID_FIRST_START.getKey(), false).apply();
+				preferences.setBooleanValue(PreferenceID.ANDROID_FIRST_START, false);
 				startActivity(new Intent(this, ActivityWelcome.class));
 				finish();
 			}
