@@ -32,7 +32,7 @@ import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.FoodSetInfo;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
-import org.bosik.diacomp.core.services.preferences.Preference;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.merklesync.Versioned;
 import android.content.Context;
@@ -83,7 +83,7 @@ public class ActivityFoodSet extends FragmentActivity
 		// data services setup
 
 		syncablePreferences = new PreferencesTypedService(new PreferencesLocalService(this));
-		includedFoodSets = syncablePreferences.getStringSet(Preference.FOOD_SETS);
+		includedFoodSets = syncablePreferences.getStringSet(PreferenceID.FOOD_SETS);
 		firstStart = getIntent().getBooleanExtra(FIELD_FIRST_START, false);
 
 		// UI setup
@@ -277,7 +277,7 @@ public class ActivityFoodSet extends FragmentActivity
 						}
 					}
 
-					syncablePreferences.setStringSet(Preference.FOOD_SETS, includedFoodSets);
+					syncablePreferences.setStringSet(PreferenceID.FOOD_SETS, includedFoodSets);
 				}
 				else
 				{

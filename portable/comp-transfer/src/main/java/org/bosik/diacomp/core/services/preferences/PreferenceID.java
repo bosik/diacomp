@@ -20,7 +20,8 @@ package org.bosik.diacomp.core.services.preferences;
 /**
  * Contains all available account preferences (syncable)
  */
-public enum Preference {
+public enum PreferenceID
+{
 	/**
 	 * Target blood sugar, in mmol/l
 	 */
@@ -30,10 +31,10 @@ public enum Preference {
 	 */
 	FOOD_SETS("1a25c92eaa3148219da83b1e66275052", "[]");
 
-	private String	key;
-	private String	defaultValue;
+	private String  key;
+	private String  defaultValue;
 
-	private Preference(String key, String defaultValue)
+	private PreferenceID(String key, String defaultValue)
 	{
 		this.key = key;
 		this.defaultValue = defaultValue;
@@ -49,9 +50,9 @@ public enum Preference {
 		return defaultValue;
 	}
 
-	public static Preference parse(String key)
+	public static PreferenceID parse(String key)
 	{
-		for (Preference value : values())
+		for (PreferenceID value : values())
 		{
 			if (value.getKey().equals(key))
 			{

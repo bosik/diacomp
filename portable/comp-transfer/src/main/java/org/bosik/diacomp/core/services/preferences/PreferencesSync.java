@@ -17,21 +17,22 @@
  */
 package org.bosik.diacomp.core.services.preferences;
 
+import org.bosik.diacomp.core.utils.Utils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.bosik.diacomp.core.utils.Utils;
 
 public class PreferencesSync
 {
 	/**
 	 * Synchronizes two preference providers
-	 * 
+	 *
 	 * @param preferences1
 	 * @param preferences2
 	 * @return True if any data was transferred, false otherwise (i.e. if services already had been
-	 *         synchronized)
+	 * synchronized)
 	 */
 	public static boolean synchronizePreferences(PreferencesService preferences1, PreferencesService preferences2)
 	{
@@ -45,25 +46,25 @@ public class PreferencesSync
 
 		// build maps
 
-		Map<Preference, PreferenceEntry<String>> map1 = indexate(preferences1.getAll());
-		Map<Preference, PreferenceEntry<String>> map2 = indexate(preferences2.getAll());
+		Map<PreferenceID, PreferenceEntry<String>> map1 = indexate(preferences1.getAll());
+		Map<PreferenceID, PreferenceEntry<String>> map2 = indexate(preferences2.getAll());
 
 		// build diff lists
 
 		List<PreferenceEntry<String>> newer1 = new ArrayList<PreferenceEntry<String>>();
 		List<PreferenceEntry<String>> newer2 = new ArrayList<PreferenceEntry<String>>();
 
-		for (Preference key : Utils.difference(map1.keySet(), map2.keySet()))
+		for (PreferenceID key : Utils.difference(map1.keySet(), map2.keySet()))
 		{
 			newer1.add(map1.get(key));
 		}
 
-		for (Preference key : Utils.difference(map2.keySet(), map1.keySet()))
+		for (PreferenceID key : Utils.difference(map2.keySet(), map1.keySet()))
 		{
 			newer2.add(map2.get(key));
 		}
 
-		for (Preference key : Utils.intersection(map1.keySet(), map2.keySet()))
+		for (PreferenceID key : Utils.intersection(map1.keySet(), map2.keySet()))
 		{
 			PreferenceEntry<String> e1 = map1.get(key);
 			PreferenceEntry<String> e2 = map2.get(key);
@@ -101,13 +102,13 @@ public class PreferencesSync
 		}
 	}
 
-	private static Map<Preference, PreferenceEntry<String>> indexate(List<PreferenceEntry<String>> entries)
+	private static Map<PreferenceID, PreferenceEntry<String>> indexate(List<PreferenceEntry<String>> entries)
 	{
-		Map<Preference, PreferenceEntry<String>> map = new HashMap<Preference, PreferenceEntry<String>>();
+		Map<PreferenceID, PreferenceEntry<String>> map = new HashMap<PreferenceID, PreferenceEntry<String>>();
 
 		for (PreferenceEntry<String> entry : entries)
 		{
-			map.put(entry.getType(), entry);
+			map.put(entry.getId(), entry);
 		}
 
 		return map;

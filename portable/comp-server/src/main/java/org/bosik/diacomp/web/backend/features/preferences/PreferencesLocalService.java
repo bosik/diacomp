@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import org.bosik.diacomp.core.services.preferences.Preference;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.bosik.diacomp.core.services.preferences.PreferencesService;
 import org.bosik.diacomp.core.services.transfer.Exportable;
@@ -76,7 +76,7 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 								try
 								{
 									PreferenceEntry<String> item = new PreferenceEntry<String>();
-									item.setType(Preference.parse(key)); // TODO
+									item.setId(PreferenceID.parse(key)); // TODO
 									item.setValue(value);
 									item.setVersion(version);
 									result.add(item);
@@ -108,7 +108,7 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 	}
 
 	@Override
-	public PreferenceEntry<String> getString(final Preference preference)
+	public PreferenceEntry<String> getString(final PreferenceID id)
 	{
 		int userId = userInfoService.getCurrentUserId();
 
@@ -117,7 +117,7 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 			final String[] select = { COLUMN_PREFERENCES_VALUE, COLUMN_PREFERENCES_VERSION };
 			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_PREFERENCES_USER,
 					COLUMN_PREFERENCES_KEY);
-			final String[] whereArgs = { String.valueOf(userId), preference.getKey() };
+			final String[] whereArgs = { String.valueOf(userId), id.getKey() };
 			final String order = null;
 
 			return MySQLAccess.select(TABLE_PREFERENCES, select, where, whereArgs, order,
@@ -129,7 +129,7 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 							if (set.next())
 							{
 								PreferenceEntry<String> item = new PreferenceEntry<String>();
-								item.setType(preference);
+								item.setId(id);
 								item.setValue(set.getString(COLUMN_PREFERENCES_VALUE));
 								item.setVersion(set.getInt(COLUMN_PREFERENCES_VERSION));
 
@@ -155,7 +155,7 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 
 		try
 		{
-			final String key = entry.getType().getKey();
+			final String key = entry.getId().getKey();
 			final String value = entry.getValue();
 			final String version = String.valueOf(entry.getVersion());
 

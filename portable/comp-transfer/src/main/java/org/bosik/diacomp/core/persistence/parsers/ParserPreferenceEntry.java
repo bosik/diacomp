@@ -17,7 +17,7 @@
  */
 package org.bosik.diacomp.core.persistence.parsers;
 
-import org.bosik.diacomp.core.services.preferences.Preference;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +36,7 @@ public class ParserPreferenceEntry extends Parser<PreferenceEntry<String>>
 		int version = json.getInt(FIELD_VERSION);
 
 		PreferenceEntry<String> entry = new PreferenceEntry<String>();
-		entry.setType(Preference.parse(key));
+		entry.setId(PreferenceID.parse(key));
 		entry.setValue(value);
 		entry.setVersion(version);
 
@@ -47,7 +47,7 @@ public class ParserPreferenceEntry extends Parser<PreferenceEntry<String>>
 	public JSONObject write(PreferenceEntry<String> object) throws JSONException
 	{
 		JSONObject json = new JSONObject();
-		json.put(FIELD_KEY, object.getType().getKey());
+		json.put(FIELD_KEY, object.getId().getKey());
 		json.put(FIELD_VALUE, object.getValue());
 		json.put(FIELD_VERSION, object.getVersion());
 		return json;

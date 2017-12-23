@@ -23,7 +23,7 @@ public abstract class PreferencesService
 {
 	/**
 	 * Returns hash
-	 * 
+	 *
 	 * @return
 	 */
 	public String getHash()
@@ -44,29 +44,29 @@ public abstract class PreferencesService
 
 	/**
 	 * Returns all preferences
-	 * 
+	 *
 	 * @return
 	 */
 	public abstract List<PreferenceEntry<String>> getAll();
 
 	/**
 	 * Returns string preference
-	 * 
-	 * @param preference
+	 *
+	 * @param id
 	 * @return Entry if preference found, null otherwise
 	 */
-	public abstract PreferenceEntry<String> getString(Preference preference);
+	public abstract PreferenceEntry<String> getString(PreferenceID id);
 
 	/**
 	 * Updates single string entry
-	 * 
+	 *
 	 * @param entry
 	 */
 	public abstract void setString(PreferenceEntry<String> entry);
 
 	/**
 	 * Updates multiple string entries
-	 * 
+	 *
 	 * @param entries
 	 */
 	public abstract void update(List<PreferenceEntry<String>> entries);

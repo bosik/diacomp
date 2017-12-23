@@ -29,7 +29,7 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
-import org.bosik.diacomp.core.services.preferences.Preference;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.bosik.diacomp.core.services.preferences.PreferencesService;
 
@@ -110,11 +110,11 @@ public class PreferencesWebService extends PreferencesService
 	}
 
 	@Override
-	public PreferenceEntry<String> getString(Preference preference)
+	public PreferenceEntry<String> getString(PreferenceID id)
 	{
 		try
 		{
-			String url = String.format(API_PREFERENCES_KEY, preference.getKey());
+			String url = String.format(API_PREFERENCES_KEY, id.getKey());
 			String resp = webClient.get(url);
 			return serializer.read(resp);
 		}

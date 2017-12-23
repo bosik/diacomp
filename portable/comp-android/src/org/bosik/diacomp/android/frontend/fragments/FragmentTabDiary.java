@@ -45,7 +45,7 @@ import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.diary.PostprandUtils;
-import org.bosik.diacomp.core.services.preferences.Preference;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.diacomp.core.utils.TimeUtils;
 import org.bosik.diacomp.core.utils.Utils;
@@ -401,7 +401,7 @@ public class FragmentTabDiary extends Fragment
 					SCAN_FOR_BLOOD_BEFORE_MEAL, false);
 			Double bloodBaseValue = bloodBase == null ? null : bloodBase.getValue();
 			Double bloodLastValue = bloodLast == null ? null : bloodLast.getValue();
-			Double bloodTarget = preferences.getDoubleValue(Preference.TARGET_BS);
+			Double bloodTarget = preferences.getDoubleValue(PreferenceID.TARGET_BS);
 			InsRecord insRecord = PostprandUtils.findNearestInsulin(diary, entity.getData().getTime(),
 					SCAN_FOR_INS_AROUND_MEAL);
 			Double insInjected = insRecord == null ? null : insRecord.getValue();

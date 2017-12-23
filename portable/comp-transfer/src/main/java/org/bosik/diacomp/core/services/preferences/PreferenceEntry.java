@@ -25,23 +25,23 @@ package org.bosik.diacomp.core.services.preferences;
  */
 public class PreferenceEntry<T>
 {
-	private Preference	type;
-	private T			value;
-	private int			version;
+	private PreferenceID id;
+	private T            value;
+	private int          version;
 
 	/**
 	 * Return preference type
 	 * 
 	 * @return
 	 */
-	public Preference getType()
+	public PreferenceID getId()
 	{
-		return type;
+		return id;
 	}
 
-	public void setType(Preference type)
+	public void setId(PreferenceID id)
 	{
-		this.type = type;
+		this.id = id;
 	}
 
 	/**

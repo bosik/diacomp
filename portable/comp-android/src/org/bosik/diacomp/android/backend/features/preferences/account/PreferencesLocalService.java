@@ -18,11 +18,12 @@
  */
 package org.bosik.diacomp.android.backend.features.preferences.account;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
 import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TablePreferences;
@@ -32,28 +33,27 @@ import org.bosik.diacomp.core.persistence.parsers.ParserPreferenceEntry;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
-import org.bosik.diacomp.core.services.preferences.Preference;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesService;
 import org.bosik.diacomp.core.services.transfer.Importable;
 import org.bosik.diacomp.core.utils.Utils;
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class PreferencesLocalService extends PreferencesService implements Importable
 {
-	static final String									TAG			= PreferencesLocalService.class.getSimpleName();
+	static final String TAG = PreferencesLocalService.class.getSimpleName();
 
-	private final Context								context;
-	private final ContentResolver						resolver;
+	private final Context         context;
+	private final ContentResolver resolver;
 
-	private final Parser<PreferenceEntry<String>>		parser		= new ParserPreferenceEntry();
-	private final Serializer<PreferenceEntry<String>>	serializer	= new SerializerAdapter<PreferenceEntry<String>>(
-			parser);
+	private final Parser<PreferenceEntry<String>>     parser     = new ParserPreferenceEntry();
+	private final Serializer<PreferenceEntry<String>> serializer = new SerializerAdapter<>(parser);
 
 	public PreferencesLocalService(Context context)
 	{
@@ -94,7 +94,7 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 					{
 						PreferenceEntry<String> entry = new PreferenceEntry<String>();
 
-						entry.setType(Preference.parse(cursor.getString(indexKey)));
+						entry.setId(PreferenceID.parse(cursor.getString(indexKey)));
 						entry.setValue(cursor.getString(indexValue));
 						entry.setVersion(cursor.getInt(indexVersion));
 
@@ -132,12 +132,12 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 	}
 
 	@Override
-	public PreferenceEntry<String> getString(Preference preference)
+	public PreferenceEntry<String> getString(PreferenceID id)
 	{
 		// construct parameters
 		String[] projection = null; // all
 		String clause = TablePreferences.COLUMN_KEY + " = ?";
-		String[] clauseArgs = { preference.getKey() };
+		String[] clauseArgs = { id.getKey() };
 		String sortOrder = null;
 
 		// execute
@@ -154,7 +154,7 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 					int indexVersion = cursor.getColumnIndex(TablePreferences.COLUMN_VERSION);
 
 					PreferenceEntry<String> entry = new PreferenceEntry<String>();
-					entry.setType(Preference.parse(cursor.getString(indexKey)));
+					entry.setId(PreferenceID.parse(cursor.getString(indexKey)));
 					entry.setValue(cursor.getString(indexValue));
 					entry.setVersion(cursor.getInt(indexVersion));
 
@@ -184,7 +184,7 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 	{
 		try
 		{
-			String key = entry.getType().getKey();
+			String key = entry.getId().getKey();
 			boolean exists = entryExists(key);
 
 			ContentValues newValues = new ContentValues();
@@ -248,7 +248,7 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 
 			for (PreferenceEntry<String> item : items)
 			{
-				newValues.put(TablePreferences.COLUMN_KEY, item.getType().getKey());
+				newValues.put(TablePreferences.COLUMN_KEY, item.getId().getKey());
 				newValues.put(TablePreferences.COLUMN_VALUE, item.getValue());
 				newValues.put(TablePreferences.COLUMN_VERSION, item.getVersion());
 

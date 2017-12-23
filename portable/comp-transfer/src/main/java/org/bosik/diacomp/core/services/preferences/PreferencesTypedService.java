@@ -17,17 +17,18 @@
  */
 package org.bosik.diacomp.core.services.preferences;
 
-import java.util.List;
-import java.util.Set;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerSet;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * Decorator with casting methods
  */
 public class PreferencesTypedService extends PreferencesService
 {
-	private PreferencesService	service;
+	private PreferencesService service;
 
 	public PreferencesTypedService(PreferencesService service)
 	{
@@ -46,9 +47,9 @@ public class PreferencesTypedService extends PreferencesService
 	}
 
 	@Override
-	public PreferenceEntry<String> getString(Preference preference)
+	public PreferenceEntry<String> getString(PreferenceID id)
 	{
-		return service.getString(preference);
+		return service.getString(id);
 	}
 
 	@Override
@@ -63,9 +64,9 @@ public class PreferencesTypedService extends PreferencesService
 		service.update(entries);
 	}
 
-	private int getNextVersion(Preference preference)
+	private int getNextVersion(PreferenceID preferenceID)
 	{
-		PreferenceEntry<String> oldPreferenceEntry = service.getString(preference);
+		PreferenceEntry<String> oldPreferenceEntry = service.getString(preferenceID);
 		if (oldPreferenceEntry == null)
 		{
 			return 1;
@@ -76,24 +77,24 @@ public class PreferencesTypedService extends PreferencesService
 		}
 	}
 
-	private PreferenceEntry<String> buildEntry(Preference preference, String value)
+	private PreferenceEntry<String> buildEntry(PreferenceID preferenceID, String value)
 	{
 		PreferenceEntry<String> entry = new PreferenceEntry<String>();
-		entry.setType(preference);
+		entry.setId(preferenceID);
 		entry.setValue(value);
-		entry.setVersion(getNextVersion(preference));
+		entry.setVersion(getNextVersion(preferenceID));
 		return entry;
 	}
 
 	/**
 	 * Returns preference as string value
-	 * 
-	 * @param preference
+	 *
+	 * @param preferenceID
 	 * @return Value if found, default otherwise
 	 */
-	public String getStringValue(Preference preference)
+	public String getStringValue(PreferenceID preferenceID)
 	{
-		PreferenceEntry<String> entry = service.getString(preference);
+		PreferenceEntry<String> entry = service.getString(preferenceID);
 
 		if (entry != null)
 		{
@@ -101,88 +102,88 @@ public class PreferencesTypedService extends PreferencesService
 		}
 		else
 		{
-			return preference.getDefaultValue();
+			return preferenceID.getDefaultValue();
 		}
 	}
 
 	/**
 	 * Updates string preference. Version is incremented automatically.
-	 * 
-	 * @param preference
+	 *
+	 * @param preferenceID
 	 * @param value
 	 */
-	public void setStringValue(Preference preference, String value)
+	public void setStringValue(PreferenceID preferenceID, String value)
 	{
-		service.setString(buildEntry(preference, value));
+		service.setString(buildEntry(preferenceID, value));
 	}
 
 	/**
 	 * Returns preference as float value
-	 * 
-	 * @param preference
+	 *
+	 * @param preferenceID
 	 * @return Value if found, default otherwise
 	 */
-	public Float getFloatValue(Preference preference)
+	public Float getFloatValue(PreferenceID preferenceID)
 	{
-		return Float.parseFloat(getStringValue(preference));
+		return Float.parseFloat(getStringValue(preferenceID));
 	}
 
 	/**
 	 * Updates float preference. Version is incremented automatically.
-	 * 
-	 * @param preference
+	 *
+	 * @param preferenceID
 	 * @param value
 	 */
-	public void setFloatValue(Preference preference, Float value)
+	public void setFloatValue(PreferenceID preferenceID, Float value)
 	{
-		service.setString(buildEntry(preference, String.valueOf(value)));
+		service.setString(buildEntry(preferenceID, String.valueOf(value)));
 	}
 
 	/**
 	 * Returns preference as double value
-	 * 
-	 * @param preference
+	 *
+	 * @param preferenceID
 	 * @return Value if found, default otherwise
 	 */
-	public Double getDoubleValue(Preference preference)
+	public Double getDoubleValue(PreferenceID preferenceID)
 	{
-		return Double.parseDouble(getStringValue(preference));
+		return Double.parseDouble(getStringValue(preferenceID));
 	}
 
 	/**
 	 * Updates double preference. Version is incremented automatically.
-	 * 
-	 * @param preference
+	 *
+	 * @param preferenceID
 	 * @param value
 	 */
-	public void setDoubleValue(Preference preference, Float value)
+	public void setDoubleValue(PreferenceID preferenceID, Float value)
 	{
-		service.setString(buildEntry(preference, String.valueOf(value)));
+		service.setString(buildEntry(preferenceID, String.valueOf(value)));
 	}
 
 	/**
 	 * Returns preference as string set
-	 * 
-	 * @param preference
+	 *
+	 * @param preferenceID
 	 * @return Value if found, default otherwise
 	 */
-	public Set<String> getStringSet(Preference preference)
+	public Set<String> getStringSet(PreferenceID preferenceID)
 	{
 		Serializer<Set<String>> serializer = new SerializerSet();
-		String value = getStringValue(preference);
+		String value = getStringValue(preferenceID);
 		return serializer.read(value);
 	}
 
 	/**
 	 * Updates string set preference. Version is incremented automatically.
-	 * 
-	 * @param preference
+	 *
+	 * @param preferenceID
 	 * @param set
 	 */
-	public void setStringSet(Preference preference, Set<String> set)
+	public void setStringSet(PreferenceID preferenceID, Set<String> set)
 	{
 		Serializer<Set<String>> serializer = new SerializerSet();
 		String value = serializer.write(set);
-		service.setString(buildEntry(preference, value));
+		service.setString(buildEntry(preferenceID, value));
 	}
 }

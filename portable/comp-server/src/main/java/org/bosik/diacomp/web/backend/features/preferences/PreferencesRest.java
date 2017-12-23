@@ -33,7 +33,7 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.core.services.preferences.Preference;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.bosik.diacomp.core.services.preferences.PreferencesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,7 +100,7 @@ public class PreferencesRest
 	{
 		try
 		{
-			PreferenceEntry<String> entity = preferencesService.getString(Preference.parse(parKey));
+			PreferenceEntry<String> entity = preferencesService.getString(PreferenceID.parse(parKey));
 			String response = serializer.write(entity);
 			return Response.ok(response).build();
 		}

@@ -19,7 +19,7 @@
 package org.bosik.diacomp.android.backend.common.stream;
 
 import java.io.IOException;
-import org.bosik.diacomp.core.services.preferences.Preference;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import android.util.JsonReader;
 
@@ -39,7 +39,7 @@ public class PreferenceReader extends StreamReader<PreferenceEntry<String>>
 			{
 				case "key":
 				{
-					item.setType(Preference.parse(json.nextString()));
+					item.setId(PreferenceID.parse(json.nextString()));
 					break;
 				}
 				case "value":

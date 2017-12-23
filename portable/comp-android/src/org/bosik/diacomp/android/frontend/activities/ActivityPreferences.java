@@ -18,13 +18,6 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
-import org.bosik.diacomp.core.services.preferences.Preference;
-import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
-import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -32,6 +25,14 @@ import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
+import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
+import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ActivityPreferences extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
@@ -54,9 +55,9 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 
 		// Filling values
 		Editor editor = devicePreferences.edit();
-		for (Preference preference : Preference.values())
+		for (PreferenceID id : PreferenceID.values())
 		{
-			editor.putString(preference.getKey(), syncablePreferences.getStringValue(preference));
+			editor.putString(id.getKey(), syncablePreferences.getStringValue(id));
 		}
 		editor.apply();
 
@@ -88,23 +89,23 @@ public class ActivityPreferences extends PreferenceActivity implements OnSharedP
 		updateDescription(preferences, key);
 		// Storage.applyPreference(sharedPreferences, key);
 
-		for (Preference preference : Preference.values())
+		for (PreferenceID id : PreferenceID.values())
 		{
-			if (preference.getKey().equals(key))
+			if (id.getKey().equals(key))
 			{
-				PreferenceEntry<String> entry = syncablePreferences.getString(preference);
+				PreferenceEntry<String> entry = syncablePreferences.getString(id);
 
 				if (entry == null)
 				{
 					entry = new PreferenceEntry<String>();
-					entry.setType(preference);
+					entry.setId(id);
 					entry.setVersion(1);
 				}
 				else
 				{
 					entry.setVersion(entry.getVersion() + 1);
 				}
-				entry.setValue(preferences.getString(key, preference.getDefaultValue()));
+				entry.setValue(preferences.getString(key, id.getDefaultValue()));
 				syncablePreferences.setString(entry);
 
 				break;
