@@ -108,7 +108,10 @@ public class PreferencesSync
 
 		for (PreferenceEntry<String> entry : entries)
 		{
-			map.put(entry.getId(), entry);
+			if (entry.getId().isSyncable())
+			{
+				map.put(entry.getId(), entry);
+			}
 		}
 
 		return map;

@@ -25,23 +25,27 @@ public enum PreferenceID
 	/**
 	 * Target blood sugar, in mmol/l
 	 */
-	TARGET_BS("e6681282aa724d3fa4cd6ac5735a163f", "5.5"),
+	TARGET_BS("e6681282aa724d3fa4cd6ac5735a163f", Type.FLOAT, "5.5", true),
 	/**
 	 * List of preferred food sets
 	 */
-	FOOD_SETS("1a25c92eaa3148219da83b1e66275052", "[]"),
+	FOOD_SETS("1a25c92eaa3148219da83b1e66275052", Type.STRING, "[]", true),
 
-	ANDROID_FIRST_START("8b6575e476d64becae68468500f1bc1c", "true"),
+	ANDROID_FIRST_START("8b6575e476d64becae68468500f1bc1c", Type.BOOLEAN, "true", false),
 
-	ANDROID_SHOW_TIME_AFTER("d5c1a902e83b4d05a51085e344bee953", "true");
+	ANDROID_SHOW_TIME_AFTER("d5c1a902e83b4d05a51085e344bee953", Type.BOOLEAN, "true", true);
 
 	private String  key;
+	private Type    type;
 	private String  defaultValue;
+	private boolean syncable;
 
-	PreferenceID(String key, String defaultValue)
+	PreferenceID(String key, Type type, String defaultValue, boolean syncable)
 	{
 		this.key = key;
+		this.type = type;
 		this.defaultValue = defaultValue;
+		this.syncable = syncable;
 	}
 
 	public String getKey()
@@ -49,9 +53,19 @@ public enum PreferenceID
 		return key;
 	}
 
+	public Type getType()
+	{
+		return type;
+	}
+
 	public String getDefaultValue()
 	{
 		return defaultValue;
+	}
+
+	public boolean isSyncable()
+	{
+		return syncable;
 	}
 
 	public static PreferenceID parse(String key)
@@ -65,5 +79,18 @@ public enum PreferenceID
 		}
 
 		throw new IllegalArgumentException("Unknown key: " + key);
+	}
+
+	public static PreferenceID parseSafely(String key)
+	{
+		for (PreferenceID value : values())
+		{
+			if (value.getKey().equals(key))
+			{
+				return value;
+			}
+		}
+
+		return null;
 	}
 }

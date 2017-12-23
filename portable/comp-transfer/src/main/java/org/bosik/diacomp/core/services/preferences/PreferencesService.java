@@ -33,10 +33,11 @@ public abstract class PreferencesService
 
 		for (PreferenceEntry<String> entity : getAll())
 		{
-			hash = prime * hash + entity.getVersion();
-
-			// It's a public API and can't be changed
-			// hash = prime * hash + entity.hashCode();
+			if (entity.getId().isSyncable())
+			{
+				// It's a public API and can't be changed
+				hash = prime * hash + entity.getVersion();
+			}
 		}
 
 		return String.valueOf(hash);
