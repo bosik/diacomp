@@ -54,7 +54,7 @@ interface Page
 	Fragment getContent();
 }
 
-public class ActivityMain extends FragmentActivity implements SharedPreferences.OnSharedPreferenceChangeListener
+public class ActivityMain extends FragmentActivity
 {
 	/* =========================== CONSTANTS ================================ */
 
@@ -210,8 +210,6 @@ public class ActivityMain extends FragmentActivity implements SharedPreferences.
 			// actionBar.addTab(actionBar.newTab().setText(title).setTabListener(tabListener));
 			// }
 
-			ActivityPreferences.registerOnSharedPreferenceChangeListener(this);
-
 			startService(new Intent(this, NotificationService.class));
 			startService(new Intent(this, BackgroundService.class));
 
@@ -242,22 +240,6 @@ public class ActivityMain extends FragmentActivity implements SharedPreferences.
 			ErrorHandler.handle(e, this);
 		}
 		return true;
-	}
-
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
-	{
-		if (PreferenceID.ANDROID_SHOW_TIME_AFTER.getKey().equals(key))
-		{
-			if (preferences.getBoolean(PreferenceID.ANDROID_SHOW_TIME_AFTER.getKey(), true))
-			{
-				startService(new Intent(this, NotificationService.class));
-			}
-			else
-			{
-				stopService(new Intent(this, NotificationService.class));
-			}
-		}
 	}
 
 	// private void testSync()
