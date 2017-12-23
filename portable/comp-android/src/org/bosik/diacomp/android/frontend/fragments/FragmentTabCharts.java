@@ -18,13 +18,20 @@
  */
 package org.bosik.diacomp.android.frontend.fragments;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import android.content.ContentResolver;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
+import com.jjoe64.graphview.series.Series;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
@@ -43,20 +50,15 @@ import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
-import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
-import com.jjoe64.graphview.series.Series;
-import android.content.ContentResolver;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class FragmentTabCharts extends Fragment
 {
@@ -116,8 +118,8 @@ public class FragmentTabCharts extends Fragment
 		}
 	}
 
-	private static final int	HALF_WINDOW_SIZE	= 2;	// days
-	private static final int	PERIOD				= 30;	// days
+	private static final int HALF_WINDOW_SIZE = 2;    // days
+	private static final int PERIOD           = 30;    // days
 
 	private void addChartBS(int viewId)
 	{
@@ -130,8 +132,7 @@ public class FragmentTabCharts extends Fragment
 		}
 
 		chart.setChartType(ChartType.HISTORY);
-		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_bs),
-				getString(R.string.common_unit_bs_mmoll)));
+		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_bs), getString(R.string.common_unit_bs_mmoll)));
 		chart.setDescription(getString(R.string.charts_average_bs_description));
 		chart.setDataLoader(new DataLoader()
 		{
@@ -143,8 +144,8 @@ public class FragmentTabCharts extends Fragment
 				DiaryService diary = LocalDiary.getInstance(FragmentTabCharts.this.getActivity());
 				Date startTime = Utils.shiftDate(new Date(), -PERIOD - HALF_WINDOW_SIZE);
 				Date endTime = Utils.shiftDate(new Date(), -HALF_WINDOW_SIZE);
-				List<Versioned<DiaryRecord>> recs = diary.findPeriod(Utils.shiftDate(startTime, -HALF_WINDOW_SIZE),
-						Utils.shiftDate(endTime, HALF_WINDOW_SIZE), false);
+				List<Versioned<DiaryRecord>> recs = diary
+						.findPeriod(Utils.shiftDate(startTime, -HALF_WINDOW_SIZE), Utils.shiftDate(endTime, HALF_WINDOW_SIZE), false);
 
 				SortedMap<Date, Double> bs = new TreeMap<>();
 				for (Versioned<DiaryRecord> rec : recs)
@@ -190,7 +191,7 @@ public class FragmentTabCharts extends Fragment
 				LineGraphSeries<DataPoint> seriesMax = new LineGraphSeries<>(dataMax.toArray(new DataPoint[dataMax.size()]));
 				seriesMax.setColor(Color.rgb(255, 224, 224));
 
-				return Arrays.<Series<?>> asList(seriesMin, seriesAvg, seriesMax);
+				return Arrays.<Series<?>>asList(seriesMin, seriesAvg, seriesMax);
 			}
 		});
 	}
@@ -205,8 +206,8 @@ public class FragmentTabCharts extends Fragment
 		}
 
 		chart.setChartType(ChartType.HISTORY);
-		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x),
-				getString(R.string.common_unit_insulin), getString(R.string.common_unit_mass_gramm)));
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x), getString(R.string.common_unit_insulin),
+				getString(R.string.common_unit_mass_gramm)));
 		chart.setDescription(getString(R.string.charts_insulin_consumption_history_description));
 		chart.setDataLoader(new DataLoader()
 		{
@@ -218,8 +219,8 @@ public class FragmentTabCharts extends Fragment
 				DiaryService diary = LocalDiary.getInstance(FragmentTabCharts.this.getActivity());
 				Date startTime = Utils.shiftDate(new Date(), -PERIOD - HALF_WINDOW_SIZE);
 				Date endTime = Utils.shiftDate(new Date(), -HALF_WINDOW_SIZE);
-				List<Versioned<DiaryRecord>> recs = diary.findPeriod(Utils.shiftDate(startTime, -HALF_WINDOW_SIZE),
-						Utils.shiftDate(endTime, HALF_WINDOW_SIZE), false);
+				List<Versioned<DiaryRecord>> recs = diary
+						.findPeriod(Utils.shiftDate(startTime, -HALF_WINDOW_SIZE), Utils.shiftDate(endTime, HALF_WINDOW_SIZE), false);
 
 				SortedMap<Date, DiaryRecord> bs = new TreeMap<>();
 				for (Versioned<DiaryRecord> rec : recs)
@@ -267,7 +268,7 @@ public class FragmentTabCharts extends Fragment
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data.toArray(new DataPoint[data.size()]));
 				series.setColor(Color.rgb(192, 192, 255));
 
-				return Arrays.<Series<?>> asList(series);
+				return Collections.<Series<?>>singletonList(series);
 			}
 		});
 	}
@@ -283,8 +284,7 @@ public class FragmentTabCharts extends Fragment
 		}
 
 		chart.setChartType(ChartType.HISTORY);
-		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_calories),
-				getString(R.string.common_unit_value_kcal)));
+		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_calories), getString(R.string.common_unit_value_kcal)));
 		chart.setDescription(getString(R.string.charts_average_calories_description));
 		chart.setDataLoader(new DataLoader()
 		{
@@ -296,8 +296,8 @@ public class FragmentTabCharts extends Fragment
 				DiaryService diary = LocalDiary.getInstance(FragmentTabCharts.this.getActivity());
 				Date startTime = Utils.shiftDate(new Date(), -PERIOD - HALF_WINDOW_SIZE);
 				Date endTime = Utils.shiftDate(new Date(), -HALF_WINDOW_SIZE);
-				List<Versioned<DiaryRecord>> recs = diary.findPeriod(Utils.shiftDate(startTime, -HALF_WINDOW_SIZE),
-						Utils.shiftDate(endTime, HALF_WINDOW_SIZE), false);
+				List<Versioned<DiaryRecord>> recs = diary
+						.findPeriod(Utils.shiftDate(startTime, -HALF_WINDOW_SIZE), Utils.shiftDate(endTime, HALF_WINDOW_SIZE), false);
 
 				SortedMap<Date, Double> bs = new TreeMap<>();
 				for (Versioned<DiaryRecord> rec : recs)
@@ -331,7 +331,7 @@ public class FragmentTabCharts extends Fragment
 				LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<>(dataAvg.toArray(new DataPoint[dataAvg.size()]));
 				seriesAvg.setColor(Color.rgb(192, 192, 0));
 
-				return Arrays.<Series<?>> asList(seriesAvg);
+				return Collections.<Series<?>>singletonList(seriesAvg);
 			}
 		});
 	}
@@ -346,8 +346,8 @@ public class FragmentTabCharts extends Fragment
 		}
 
 		chart.setChartType(ChartType.DAILY);
-		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x),
-				getString(R.string.common_unit_insulin), getString(R.string.common_unit_mass_gramm)));
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x), getString(R.string.common_unit_insulin),
+				getString(R.string.common_unit_mass_gramm)));
 		chart.setDescription(getString(R.string.charts_insulin_consumption_daily_description));
 		chart.setDataLoader(new DataLoader()
 		{
@@ -368,7 +368,7 @@ public class FragmentTabCharts extends Fragment
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
 				series.setColor(Color.rgb(192, 192, 192));
 
-				return Arrays.<Series<?>> asList(series);
+				return Collections.<Series<?>>singletonList(series);
 			}
 		});
 	}
@@ -383,8 +383,8 @@ public class FragmentTabCharts extends Fragment
 		}
 
 		chart.setChartType(ChartType.DAILY);
-		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_k),
-				getString(R.string.common_unit_bs_mmoll), getString(R.string.common_unit_mass_gramm)));
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_k), getString(R.string.common_unit_bs_mmoll),
+				getString(R.string.common_unit_mass_gramm)));
 		chart.setDescription(getString(R.string.charts_koof_k_daily_description));
 		chart.setDataLoader(new DataLoader()
 		{
@@ -404,7 +404,7 @@ public class FragmentTabCharts extends Fragment
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
 				series.setColor(Color.rgb(255, 0, 0));
 
-				return Arrays.<Series<?>> asList(series);
+				return Collections.<Series<?>>singletonList(series);
 			}
 		});
 	}
@@ -419,8 +419,8 @@ public class FragmentTabCharts extends Fragment
 		}
 
 		chart.setChartType(ChartType.DAILY);
-		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_q),
-				getString(R.string.common_unit_bs_mmoll), getString(R.string.common_unit_insulin)));
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_q), getString(R.string.common_unit_bs_mmoll),
+				getString(R.string.common_unit_insulin)));
 		chart.setDescription(getString(R.string.charts_koof_q_daily_description));
 		chart.setDataLoader(new DataLoader()
 		{
@@ -440,7 +440,7 @@ public class FragmentTabCharts extends Fragment
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
 				series.setColor(Color.rgb(0, 0, 255));
 
-				return Arrays.<Series<?>> asList(series);
+				return Collections.<Series<?>>singletonList(series);
 			}
 		});
 	}

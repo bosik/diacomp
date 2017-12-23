@@ -18,7 +18,6 @@
  */
 package org.bosik.diacomp.android.backend.features.diary;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -39,7 +38,6 @@ import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
-import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -59,6 +57,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -75,8 +74,8 @@ public class DiaryLocalService implements DiaryService, Importable
 
 	private final Context         context;
 	private final ContentResolver resolver;
-	private final Parser<DiaryRecord>                parser      = new ParserDiaryRecord();
-	private final Serializer<DiaryRecord>            serializer  = new SerializerAdapter<>(parser);
+	private final Parser<DiaryRecord>     parser     = new ParserDiaryRecord();
+	private final Serializer<DiaryRecord> serializer = new SerializerAdapter<>(parser);
 
 	private        MyObserver observer;
 	private static MerkleTree hashTree;
@@ -106,7 +105,7 @@ public class DiaryLocalService implements DiaryService, Importable
 	/**
 	 * Constructor
 	 *
-	 * @param resolver Content resolver; might be accessed by {@link Activity#getContentResolver()}
+	 * @param context
 	 */
 	public DiaryLocalService(Context context)
 	{
@@ -235,7 +234,7 @@ public class DiaryLocalService implements DiaryService, Importable
 
 		item.setDeleted(true);
 		item.modified();
-		save(Arrays.asList(item));
+		save(Collections.singletonList(item));
 	}
 
 	@Override

@@ -98,7 +98,6 @@ public class FoodBaseLocalService implements FoodBaseService, Importable
 	 * Automatically closes cursor after read
 	 *
 	 * @param cursor
-	 * @param limit
 	 * @return
 	 */
 	private List<Versioned<FoodItem>> parseItems(Cursor cursor)

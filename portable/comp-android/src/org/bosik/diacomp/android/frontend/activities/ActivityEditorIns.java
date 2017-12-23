@@ -116,7 +116,7 @@ public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 	@Override
 	protected boolean getValuesFromGUI()
 	{
-		final String ERROR_INCORECT_INS_VALUE = getString(R.string.editor_ins_error_invalid_dosage);
+		final String ERROR_INCORRECT_INS_VALUE = getString(R.string.editor_ins_error_invalid_dosage);
 
 		try
 		{
@@ -124,7 +124,7 @@ public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(this, ERROR_INCORECT_INS_VALUE);
+			UIUtils.showTip(this, ERROR_INCORRECT_INS_VALUE);
 			editValue.requestFocus();
 			return false;
 		}

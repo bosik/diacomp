@@ -84,7 +84,7 @@ public class FileWorker
 	 * 
 	 * @param fileName
 	 *            Имя файла
-	 * @param base
+	 * @param data
 	 *            Строка
 	 * @throws IOException
 	 */

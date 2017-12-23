@@ -271,6 +271,6 @@ public class DiaryWebService implements DiaryService
 
 		item.setDeleted(true);
 		item.modified();
-		save(Arrays.asList(item));
+		save(Collections.singletonList(item));
 	}
 }

@@ -46,6 +46,7 @@ import org.bosik.merklesync.Versioned;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -372,10 +373,10 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		return extras.getDouble(FIELD_INS_INJECTED, 0.0);
 	}
 
-	private Double getBsTarget()
+	private double getBsTarget()
 	{
 		Bundle extras = getIntent().getExtras();
-		return extras.containsKey(FIELD_BS_TARGET) ? extras.getDouble(FIELD_BS_TARGET) : null;
+		return extras.getDouble(FIELD_BS_TARGET);
 	}
 
 	private Double getBsLast()
@@ -433,7 +434,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 				{
 					diary = new DiaryLocalService(ActivityEditorMeal.this);
 				}
-				diary.save(Arrays.asList(new Versioned<DiaryRecord>(entity)));
+				diary.save(Collections.singletonList(new Versioned<DiaryRecord>(entity)));
 				return null;
 			}
 		}.execute();

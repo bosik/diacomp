@@ -64,6 +64,7 @@ import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
@@ -475,7 +476,7 @@ public class FragmentTabDiary extends Fragment
 						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras()
 								.getSerializable(ActivityEditor.FIELD_ENTITY);
 
-						diary.save(Arrays.asList(rec));
+						diary.save(Collections.singletonList(rec));
 
 						// do it manually in case observer is broken
 						list.refresh();

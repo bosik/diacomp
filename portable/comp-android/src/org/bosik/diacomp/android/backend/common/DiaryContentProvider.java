@@ -336,7 +336,7 @@ public class DiaryContentProvider extends ContentProvider
 	@Override
 	public int delete(final Uri uri, String where, String[] whereArgs)
 	{
-		/**
+		/*
 		 * NOTE: This method actually removes data from DB. Service should just mark rows deleted
 		 * instead (using update method)
 		 */

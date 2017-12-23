@@ -58,7 +58,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 	static final        String TAG                  = ActivityLogin.class.getSimpleName();
 	public static final String DEFAULT_ACCOUNT_TYPE = "diacomp.org";
 
-	public static final String EXTRA_EMAIL               = "org.bosik.diacomp.activityLogin.emal";
+	public static final String EXTRA_EMAIL               = "org.bosik.diacomp.activityLogin.email";
 	public static final String EXTRA_PASS                = "org.bosik.diacomp.activityLogin.password";
 	public static final String ARG_ACCOUNT_TYPE          = "org.bosik.diacomp.activityLogin.accountType";
 	public static final String ARG_AUTH_TYPE             = "org.bosik.diacomp.activityLogin.authType";
@@ -356,7 +356,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			{
 				case INITIALIZATION:
 				{
-					mLoginStatusMessageView.setText("Initializaion...");
+					mLoginStatusMessageView.setText("Initialization...");
 					break;
 				}
 

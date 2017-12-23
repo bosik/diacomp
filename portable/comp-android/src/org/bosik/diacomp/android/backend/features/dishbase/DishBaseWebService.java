@@ -36,6 +36,7 @@ import org.bosik.merklesync.Versioned;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +70,7 @@ public class DishBaseWebService implements DishBaseService
 	public void add(Versioned<DishItem> item) throws PersistenceException
 	{
 		// TODO: current implementation doesn't fail for duplicates
-		save(Arrays.asList(item));
+		save(Collections.singletonList(item));
 	}
 
 	@Override
@@ -108,7 +109,7 @@ public class DishBaseWebService implements DishBaseService
 
 		item.setDeleted(true);
 		item.modified();
-		save(Arrays.asList(item));
+		save(Collections.singletonList(item));
 	}
 
 	@Override

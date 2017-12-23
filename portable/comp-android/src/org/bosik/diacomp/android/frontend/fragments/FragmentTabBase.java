@@ -731,7 +731,7 @@ public class FragmentTabBase extends Fragment
 						Versioned<FoodItem> item = (Versioned<FoodItem>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
 						try
 						{
-							foodBaseService.save(Arrays.asList(item));
+							foodBaseService.save(Collections.singletonList(item));
 							UIUtils.showTip(getActivity(), getString(R.string.base_tip_food_edit_ok));
 						}
 						catch (PersistenceException e)
@@ -769,7 +769,7 @@ public class FragmentTabBase extends Fragment
 						Versioned<DishItem> item = (Versioned<DishItem>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
 						try
 						{
-							dishBaseService.save(Arrays.asList(item));
+							dishBaseService.save(Collections.singletonList(item));
 							UIUtils.showTip(getActivity(), getString(R.string.base_tip_dish_save_ok));
 						}
 						catch (PersistenceException e)

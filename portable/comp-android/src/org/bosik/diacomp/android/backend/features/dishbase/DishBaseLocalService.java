@@ -96,7 +96,6 @@ public class DishBaseLocalService implements DishBaseService, Importable
 	 * Automatically closes cursor after read
 	 *
 	 * @param cursor
-	 * @param limit
 	 * @return
 	 */
 	private List<Versioned<DishItem>> parseItems(Cursor cursor)

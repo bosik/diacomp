@@ -43,7 +43,7 @@ public class ActivityEditorFood extends ActivityEditor<FoodItem>
 	private EditText			editValue;
 	private Button				buttonOK;
 
-	/* =========================== OVERRIDEN METHODS ================================ */
+	/* =========================== OVERRIDDEN METHODS ================================ */
 
 	@Override
 	protected void setupInterface()

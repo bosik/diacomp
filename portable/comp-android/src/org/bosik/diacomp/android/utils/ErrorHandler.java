@@ -18,26 +18,26 @@
  */
 package org.bosik.diacomp.android.utils;
 
+import android.app.Activity;
+import org.bosik.diacomp.android.backend.common.webclient.WebClient;
+
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-import org.bosik.diacomp.android.backend.common.webclient.WebClient;
-import android.app.Activity;
 
 public class ErrorHandler
 {
-	private static final String				TAG						= ErrorHandler.class.getSimpleName();
-	private static WebClient				webClient;
+	private static final String TAG = ErrorHandler.class.getSimpleName();
+	private static WebClient webClient;
 
 	// Messages
-	private static final String				TIP_ERROR_OCCURED		= "Произошла ошибка";
-	private static final String				TIP_REPORT_SENDED		= "Отчёт с технической информацией отправлен разработчику";
-	private static final String				TIP_REPORT_FAILED		= "Отправить отчёт не удалось";
-	private static final String				TIP_REPORT_FAILED_NULL	= "Отправить отчёт не удалось (webClient == null)";
-	private static final String				TIP_HANDLING_FAILED		= "Во время обработки ошибки произошла ещё одна ошибка :(";
+	private static final String TIP_ERROR_OCURRED      = "Произошла ошибка";
+	private static final String TIP_REPORT_SENT        = "Отчёт с технической информацией отправлен разработчику";
+	private static final String TIP_REPORT_FAILED      = "Отправить отчёт не удалось";
+	private static final String TIP_REPORT_FAILED_NULL = "Отправить отчёт не удалось (webClient == null)";
+	private static final String TIP_HANDLING_FAILED    = "Во время обработки ошибки произошла ещё одна ошибка :(";
 
 	// Formats
-	private static final SimpleDateFormat	DATE_FORMAT				= new SimpleDateFormat("dd.MM.yyyy HH:mm:ss",
-																			Locale.US);
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.US);
 
 	public static void init(WebClient webClient)
 	{

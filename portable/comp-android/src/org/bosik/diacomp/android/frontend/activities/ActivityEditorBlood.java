@@ -49,7 +49,7 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 	// parameters
 	private final boolean		askFinger						= true;
 
-	/* =========================== OVERRIDEN METHODS ================================ */
+	/* =========================== OVERRIDDEN METHODS ================================ */
 
 	@Override
 	protected void setupInterface()
