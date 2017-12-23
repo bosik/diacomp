@@ -58,7 +58,6 @@ public class ActivityMain extends FragmentActivity
 	/* =========================== CONSTANTS ================================ */
 
 	static final         String TAG        = ActivityMain.class.getSimpleName();
-	// private static final int RESULT_SPEECH_TO_TEXT = 620;
 	private static final int    CODE_LOGIN = 0;
 
 	/* =========================== FIELDS ================================ */
@@ -141,7 +140,7 @@ public class ActivityMain extends FragmentActivity
 				}
 			});
 
-			FragmentStatePagerAdapter mDemoCollectionPagerAdapter = new FragmentStatePagerAdapter(getSupportFragmentManager())
+			FragmentStatePagerAdapter adapter = new FragmentStatePagerAdapter(getSupportFragmentManager())
 			{
 				@Override
 				public int getCount()
@@ -162,49 +161,7 @@ public class ActivityMain extends FragmentActivity
 				}
 			};
 			mViewPager = (ViewPager) findViewById(R.id.pager);
-			mViewPager.setAdapter(mDemoCollectionPagerAdapter);
-			// mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener()
-			// {
-			// @Override
-			// public void onPageSelected(int position)
-			// {
-			// getActionBar().setSelectedNavigationItem(position);
-			// }
-			// });
-
-			// final ActionBar actionBar = getActionBar();
-
-			// Specify that tabs should be displayed in the action bar.
-			// actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-			// Create a tab listener that is called when the user changes tabs.
-			// ActionBar.TabListener tabListener = new ActionBar.TabListener()
-			// {
-			// @Override
-			// public void onTabSelected(Tab tab, FragmentTransaction ft)
-			// {
-			// mViewPager.setCurrentItem(tab.getPosition());
-			// }
-			//
-			// @Override
-			// public void onTabUnselected(Tab tab, FragmentTransaction ft)
-			// {
-			// // TODO Auto-generated method stub
-			// }
-			//
-			// @Override
-			// public void onTabReselected(Tab tab, FragmentTransaction ft)
-			// {
-			// // TODO Auto-generated method stub
-			// }
-			// };
-			//
-			// // Add 3 tabs, specifying the tab's text and TabListener
-			// for (int i = 0; i < mDemoCollectionPagerAdapter.getCount(); i++)
-			// {
-			// CharSequence title = mDemoCollectionPagerAdapter.getPageTitle(i);
-			// actionBar.addTab(actionBar.newTab().setText(title).setTabListener(tabListener));
-			// }
+			mViewPager.setAdapter(adapter);
 
 			PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
 
