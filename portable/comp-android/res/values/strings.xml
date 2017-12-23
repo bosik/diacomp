@@ -37,9 +37,9 @@
     <string name="common_button_ok">OK</string>
     <string name="common_hint_mass">Mass, g</string>
     <string name="common_hint_search">Search&#8230;</string>
-    <string name="common_koof_x">Insulin-to-carb ratio</string>
     <string name="common_koof_k">Carb correction factor</string>
     <string name="common_koof_q">Insulin correction factor</string>
+    <string name="common_koof_x">Insulin-to-carb ratio</string>
     <string name="common_rectype_blood">Blood sugar</string>
     <string name="common_rectype_ins">Injection</string>
     <string name="common_rectype_meal">Meal</string>
@@ -53,8 +53,8 @@
     <string name="editor_blood_title">Blood sugar</string>
     <string name="editor_common_field_time">Date and time</string>
     <string name="editor_common_save">Save</string>
-    <string name="editor_common_stub_date" tools:ignore="MissingTranslation">02/04/2014</string>
-    <string name="editor_common_stub_time" tools:ignore="MissingTranslation">09:45</string>
+    <string name="editor_common_stub_date" translatable="false">02/04/2014</string>
+    <string name="editor_common_stub_time" translatable="false">09:45</string>
     <string name="editor_dish_error_empty_name">Enter a dish name</string>
     <string name="editor_dish_field_content">Content</string>
     <string name="editor_dish_field_mass">Result mass</string>
@@ -85,8 +85,8 @@
     <string name="editor_meal_label_insulin_dosage">Insulin:</string>
     <string name="editor_meal_label_stat" formatted="false">P 10.2</string>
     <string name="editor_meal_short_postprandial">Short postprandial</string>
-    <string name="editor_meal_title">Meal</string>
     <string name="editor_meal_tip_meal_info" formatted="false" tools:ignore="StringFormatInvalid">Prots: %.0f g\nFats: %.0f g\nCarbs: %.0f g\nValue: %.0f kcal\nMass: %.0f g</string>
+    <string name="editor_meal_title">Meal</string>
     <string name="editor_note_field_text">Text</string>
     <string name="editor_note_title">Note</string>
     <string name="fd_action_add">Add</string>
@@ -127,19 +127,18 @@
     <string name="preferences_personal">Personal</string>
     <string name="preferences_personal_target_bs">Target blood sugar, mmol/l</string>
     <string name="preferences_title">Preferences</string>
-    <string name="warning_time_zone">Your device time settings seems incorrect. Try changing timezone to %s.</string>
     <string name="warning_time_delay_ahead_0">Your device clock is %d minutes ahead</string>
     <string name="warning_time_delay_ahead_1">Your device clock is %d minutes ahead</string>
     <string name="warning_time_delay_ahead_2">Your device clock is %d minutes ahead</string>
     <string name="warning_time_delay_behind_0">Your device clock is %d minutes behind</string>
     <string name="warning_time_delay_behind_1">Your device clock is %d minutes behind</string>
     <string name="warning_time_delay_behind_2">Your device clock is %d minutes behind</string>
+    <string name="warning_time_zone">Your device time settings seems incorrect. Try changing timezone to %s.</string>
     <string name="welcome_login_button">Sign in</string>
     <string name="welcome_login_hint">Already have an account? Just sign in – all your data will be synced automatically.</string>
     <string name="welcome_setup_button">Quick setup</string>
     <string name="welcome_setup_hint">Meet Diacomp first time and want to look around?</string>
     <string name="welcome_subtitle">Welcome!</string>
-    <!-- ========================================================================= -->
 
 
     <!-- Arrays -->

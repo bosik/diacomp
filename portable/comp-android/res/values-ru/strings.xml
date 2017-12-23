@@ -37,9 +37,9 @@
     <string name="common_button_ok">ОК</string>
     <string name="common_hint_mass">Масса, г</string>
     <string name="common_hint_search">Поиск&#8230;</string>
-    <string name="common_koof_x">Потребность в инсулине</string>
     <string name="common_koof_k">Углеводный коэффициент</string>
     <string name="common_koof_q">Фактор чувствительности к инсулину (ЦЕИ)</string>
+    <string name="common_koof_x">Потребность в инсулине</string>
     <string name="common_rectype_blood">Замер СК</string>
     <string name="common_rectype_ins">Инъекция</string>
     <string name="common_rectype_meal">Приём пищи</string>
@@ -83,8 +83,8 @@
     <string name="editor_meal_label_insulin_dosage">Инсулин:</string>
     <string name="editor_meal_label_stat">г угл.</string>
     <string name="editor_meal_short_postprandial">Сокращённый постпрандиал</string>
-    <string name="editor_meal_title">Приём пищи</string>
     <string name="editor_meal_tip_meal_info" formatted="false">Белки: %.0f г\nЖиры: %.0f г\nУглеводы: %.0f г\nЦенность: %.0f ккал\nМасса: %.0f г</string>
+    <string name="editor_meal_title">Приём пищи</string>
     <string name="editor_note_field_text">Текст</string>
     <string name="editor_note_title">Заметка</string>
     <string name="fd_action_add">Добавить</string>
@@ -125,13 +125,13 @@
     <string name="preferences_personal">Личные</string>
     <string name="preferences_personal_target_bs">Целевой сахар крови, ммоль/л</string>
     <string name="preferences_title">Настройки</string>
-    <string name="warning_time_zone">На вашем устройстве некорректные настройки времени. Попробуйте сменить часовой пояс на %s.</string>
     <string name="warning_time_delay_ahead_0">Ваши часы спешат на %d минут</string>
     <string name="warning_time_delay_ahead_1">Ваши часы спешат на %d минуту</string>
     <string name="warning_time_delay_ahead_2">Ваши часы спешат на %d минуты</string>
     <string name="warning_time_delay_behind_0">Ваши часы отстают на %d минут</string>
     <string name="warning_time_delay_behind_1">Ваши часы отстают на %d минуту</string>
     <string name="warning_time_delay_behind_2">Ваши часы отстают на %d минуты</string>
+    <string name="warning_time_zone">На вашем устройстве некорректные настройки времени. Попробуйте сменить часовой пояс на %s.</string>
     <string name="welcome_login_button">Войти</string>
     <string name="welcome_login_hint">У вас уже есть учётная запись? Просто войдите – все данные и настройки синхронизируются автоматически.</string>
     <string name="welcome_setup_button">Быстрая настройка</string>
