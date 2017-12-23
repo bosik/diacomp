@@ -124,7 +124,11 @@
     <string name="preferences_appearance_show_time_after">Показывать прошедшее время</string>
     <string name="preferences_personal">Личные</string>
     <string name="preferences_personal_target_bs">Целевой сахар крови, ммоль/л</string>
+    <string name="preferences_rates">Коэффициенты</string>
+    <string name="preferences_rates_auto">Вычислять автоматически</string>
+    <string name="preferences_rates_edit">Изменить коэффициенты…</string>
     <string name="preferences_title">Настройки</string>
+    <string name="rates_title">Коэффициенты</string>
     <string name="warning_time_delay_ahead_0">Ваши часы спешат на %d минут</string>
     <string name="warning_time_delay_ahead_1">Ваши часы спешат на %d минуту</string>
     <string name="warning_time_delay_ahead_2">Ваши часы спешат на %d минуты</string>

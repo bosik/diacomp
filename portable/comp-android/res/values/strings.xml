@@ -126,7 +126,11 @@
     <string name="preferences_appearance_show_time_after">Show elapsed time</string>
     <string name="preferences_personal">Personal</string>
     <string name="preferences_personal_target_bs">Target blood sugar, mmol/l</string>
+    <string name="preferences_rates">Correction factors</string>
+    <string name="preferences_rates_auto">Calculate automatically</string>
+    <string name="preferences_rates_edit">Edit correction factors…</string>
     <string name="preferences_title">Preferences</string>
+    <string name="rates_title">Correction factors</string>
     <string name="warning_time_delay_ahead_0">Your device clock is %d minutes ahead</string>
     <string name="warning_time_delay_ahead_1">Your device clock is %d minutes ahead</string>
     <string name="warning_time_delay_ahead_2">Your device clock is %d minutes ahead</string>

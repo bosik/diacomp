@@ -84,6 +84,8 @@ public class FragmentPreferences extends PreferenceFragment implements SharedPre
 		{
 			updateDescription(devicePreferences, key);
 		}
+
+		updateEnabledDisabled();
 	}
 
 	@Override
@@ -146,6 +148,7 @@ public class FragmentPreferences extends PreferenceFragment implements SharedPre
 			}
 
 			syncablePreferences.setString(entry);
+			updateEnabledDisabled();
 		}
 
 		if (PreferenceID.ANDROID_SHOW_TIME_AFTER.getKey().equals(key))
@@ -159,6 +162,11 @@ public class FragmentPreferences extends PreferenceFragment implements SharedPre
 				getActivity().stopService(new Intent(getActivity(), NotificationService.class));
 			}
 		}
+	}
+
+	private void updateEnabledDisabled()
+	{
+		findPreference("pref-edit-rates").setEnabled(!syncablePreferences.getBooleanValue(PreferenceID.RATES_AUTO));
 	}
 
 	private void updateDescription(SharedPreferences sharedPreferences, String key)

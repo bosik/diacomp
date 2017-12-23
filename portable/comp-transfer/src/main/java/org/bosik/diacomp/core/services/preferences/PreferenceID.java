@@ -30,6 +30,10 @@ public enum PreferenceID
 	 * List of preferred food sets
 	 */
 	FOOD_SETS("1a25c92eaa3148219da83b1e66275052", Type.STRING, "[]", true),
+	/**
+	 * Calculate rates automatically
+	 */
+	RATES_AUTO("e92b955f48fa434d960fdc4a541490de", Type.BOOLEAN, "true", true),
 
 	ANDROID_FIRST_START("8b6575e476d64becae68468500f1bc1c", Type.BOOLEAN, "true", false),
 

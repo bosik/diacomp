@@ -1,18 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="@string/preferences_personal" >
+    <PreferenceCategory android:title="@string/preferences_personal">
         <EditTextPreference
-            android:key="e6681282aa724d3fa4cd6ac5735a163f"
-            android:numeric="decimal"
-            android:summary=""
-            android:title="@string/preferences_personal_target_bs" />
+                android:key="e6681282aa724d3fa4cd6ac5735a163f"
+                android:inputType="numberDecimal"
+                android:numeric="decimal"
+                android:summary=""
+                android:title="@string/preferences_personal_target_bs"/>
 
         <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="d5c1a902e83b4d05a51085e344bee953"
-            android:summary=""
-            android:title="@string/preferences_appearance_show_time_after" />
+                android:defaultValue="true"
+                android:key="d5c1a902e83b4d05a51085e344bee953"
+                android:summary=""
+                android:title="@string/preferences_appearance_show_time_after"/>
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/preferences_rates">
+        <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="e92b955f48fa434d960fdc4a541490de"
+                android:summary=""
+                android:title="@string/preferences_rates_auto"/>
+    </PreferenceCategory>
+
+    <Preference android:title="@string/preferences_rates_edit"
+                android:id="@+id/preferenceEditRates"
+                android:key="pref-edit-rates">
+        <intent android:action=".frontend.activities.ActivityRates"/>
+    </Preference>
 
 </PreferenceScreen>
