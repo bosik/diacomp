@@ -18,21 +18,6 @@
  */
 package org.bosik.diacomp.android.frontend.views.diary;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
-import org.bosik.diacomp.android.frontend.UIUtils;
-import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
-import org.bosik.diacomp.core.services.diary.DiaryService;
-import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.merklesync.Versioned;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.AttributeSet;
@@ -54,6 +39,22 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
+import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.merklesync.Versioned;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class DiaryDayView extends LinearLayout
 {
@@ -104,34 +105,34 @@ public class DiaryDayView extends LinearLayout
 		void onHeaderClick(Date date);
 	}
 
-	static final String				TAG				= DiaryDayView.class.getSimpleName();
+	static final String TAG = DiaryDayView.class.getSimpleName();
 
 	// Data
-	Date							firstDate;
-	int								countOfDays;
-	List<Item>						data			= new ArrayList<Item>();
-	boolean							loading			= false;
-	boolean							loadingBefore	= false;
-	boolean							loadingAfter	= false;
-	int								offset;
+	private Date firstDate;
+	private int  countOfDays;
+	private final List<Item> data          = new ArrayList<>();
+	private       boolean    loading       = false;
+	private       boolean    loadingBefore = false;
+	private       boolean    loadingAfter  = false;
+	private int offset;
 
 	// Components
-	BaseAdapter						adapter;
-	public ListView					listRecs;
+	private BaseAdapter adapter;
+	private ListView    listRecs;
 
 	// Services
-	static volatile DiaryService	diaryService;
+	private static volatile DiaryService diaryService;
 
 	// Listeners
-	OnRecordClickListener			onRecordClickListener;
-	OnHeaderClickListener			onHeaderClickListener;
+	private OnRecordClickListener onRecordClickListener;
+	private OnHeaderClickListener onHeaderClickListener;
 
 	public DiaryDayView(final Context context)
 	{
 		this(context, null);
 	}
 
-	int positionToIndex(int position)
+	private int positionToIndex(int position)
 	{
 		return position - offset;
 	}
@@ -241,10 +242,10 @@ public class DiaryDayView extends LinearLayout
 
 		adapter = new BaseAdapter()
 		{
-			static final int	TYPE_HEADER		= 1;
-			static final int	TYPE_DATA		= 2;
-			static final int	TYPE_PROGRESS	= 3;
-			static final int	UNKNOWN			= -17;
+			static final int TYPE_HEADER = 1;
+			static final int TYPE_DATA = 2;
+			static final int TYPE_PROGRESS = 3;
+			static final int UNKNOWN = -17;
 
 			@Override
 			public int getViewTypeCount()
@@ -345,8 +346,7 @@ public class DiaryDayView extends LinearLayout
 					}
 
 					TextView textTitle = (TextView) convertView.findViewById(R.id.diaryDayHeader);
-					textTitle.setText(
-							UIUtils.formatDateLocalDevice(DiaryDayView.this.getContext(), ((ItemHeader) item).date));
+					textTitle.setText(UIUtils.formatDateLocalDevice(DiaryDayView.this.getContext(), ((ItemHeader) item).date));
 				}
 				else if (item instanceof ItemData)
 				{
@@ -354,8 +354,7 @@ public class DiaryDayView extends LinearLayout
 					DiaryRecord data = record.getData();
 					if (data instanceof BloodRecord)
 					{
-						DiaryRecBloodView rec = new DiaryRecBloodView(context, (Versioned<BloodRecord>) record);
-						convertView = rec;
+						convertView = new DiaryRecBloodView(context, (Versioned<BloodRecord>) record);
 					}
 					else if (data instanceof InsRecord)
 					{
@@ -517,7 +516,8 @@ public class DiaryDayView extends LinearLayout
 			{
 				synchronized (data)
 				{
-					data = items;
+					data.clear();
+					data.addAll(items);
 					updatePostprand();
 				}
 				adapter.notifyDataSetChanged();
@@ -661,8 +661,7 @@ public class DiaryDayView extends LinearLayout
 					MealRecord meal = (MealRecord) record;
 					if (meal.getCarbs() > 1.0)
 					{
-						long affectTime = meal.getShortMeal() ? DEFAULT_AFFECT_TIME_MEAL_SHORT
-								: DEFAULT_AFFECT_TIME_MEAL_STD;
+						long affectTime = meal.getShortMeal() ? DEFAULT_AFFECT_TIME_MEAL_SHORT : DEFAULT_AFFECT_TIME_MEAL_STD;
 						long curFreeTime = record.getTime().getTime() + affectTime * Utils.MsecPerMin;
 						if (curFreeTime > minFreeTime)
 						{

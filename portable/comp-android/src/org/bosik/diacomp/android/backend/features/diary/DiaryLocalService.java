@@ -18,16 +18,17 @@
  */
 package org.bosik.diacomp.android.backend.features.diary;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.ContentObserver;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.os.Handler;
+import android.util.JsonReader;
+import android.util.Log;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
 import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
@@ -52,35 +53,33 @@ import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
-import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.ContentObserver;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.os.Handler;
-import android.util.JsonReader;
-import android.util.Log;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class DiaryLocalService implements DiaryService, Importable
 {
-	static final String									TAG				= DiaryLocalService.class.getSimpleName();
+	private static final String TAG = DiaryLocalService.class.getSimpleName();
 
-	private static final int							MAX_READ_ITEMS	= 500;
+	private static final int MAX_READ_ITEMS = 500;
 
 	/* ============================ FIELDS ============================ */
 
-	private final Context								context;
-	private final ContentResolver						resolver;
-	private final Parser<DiaryRecord>					parser			= new ParserDiaryRecord();
-	private final Serializer<DiaryRecord>				serializer		= new SerializerAdapter<DiaryRecord>(parser);
-	private final Serializer<Versioned<DiaryRecord>>	serializerV		= new SerializerAdapter<Versioned<DiaryRecord>>(
-			new ParserVersioned<DiaryRecord>(parser));
+	private final Context         context;
+	private final ContentResolver resolver;
+	private final Parser<DiaryRecord>                parser      = new ParserDiaryRecord();
+	private final Serializer<DiaryRecord>            serializer  = new SerializerAdapter<>(parser);
 
-	private MyObserver									observer;
-	static MerkleTree									hashTree;
+	private        MyObserver observer;
+	private static MerkleTree hashTree;
 
 	class MyObserver extends ContentObserver
 	{
@@ -106,9 +105,8 @@ public class DiaryLocalService implements DiaryService, Importable
 
 	/**
 	 * Constructor
-	 * 
-	 * @param resolver
-	 *            Content resolver; might be accessed by {@link Activity#getContentResolver()}
+	 *
+	 * @param resolver Content resolver; might be accessed by {@link Activity#getContentResolver()}
 	 */
 	public DiaryLocalService(Context context)
 	{
@@ -315,8 +313,8 @@ public class DiaryLocalService implements DiaryService, Importable
 		}
 		else
 		{
-			clause = String.format("(%s >= ?) AND (%s < ?) AND (%s = 0)", TableDiary.COLUMN_TIMECACHE,
-					TableDiary.COLUMN_TIMECACHE, TableDiary.COLUMN_DELETED);
+			clause = String.format("(%s >= ?) AND (%s < ?) AND (%s = 0)", TableDiary.COLUMN_TIMECACHE, TableDiary.COLUMN_TIMECACHE,
+					TableDiary.COLUMN_DELETED);
 			clauseArgs = new String[] { Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime) };
 		}
 
@@ -412,7 +410,7 @@ public class DiaryLocalService implements DiaryService, Importable
 
 	/**
 	 * Returns sorted map (ID, Hash) for all items
-	 * 
+	 *
 	 * @return
 	 */
 	private SortedMap<String, String> getDataHashes()
@@ -473,7 +471,7 @@ public class DiaryLocalService implements DiaryService, Importable
 
 	/**
 	 * Automatically closes cursor after read
-	 * 
+	 *
 	 * @param cursor
 	 * @param limit
 	 * @return
@@ -554,10 +552,8 @@ public class DiaryLocalService implements DiaryService, Importable
 				if (record.getData().getTime().before(start) || record.getData().getTime().after(end))
 				{
 					Log.e(TAG,
-							String.format(
-									"Records validation failed: time of item %s (%s) is out of time range (%s -- %s)",
-									record.getId(), Utils.formatTimeUTC(record.getData().getTime()),
-									Utils.formatTimeUTC(start), Utils.formatTimeUTC(end)));
+							String.format("Records validation failed: time of item %s (%s) is out of time range (%s -- %s)", record.getId(),
+									Utils.formatTimeUTC(record.getData().getTime()), Utils.formatTimeUTC(start), Utils.formatTimeUTC(end)));
 					print(records);
 					return false;
 				}

@@ -18,11 +18,6 @@
  */
 package org.bosik.diacomp.android.backend.features.diary;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
@@ -42,27 +37,32 @@ import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 public class DiaryWebService implements DiaryService
 {
 	// private static final String TAG = DiaryWebService.class.getSimpleName();
 
 	// REST methods
-	private static final String							API_DIARY_COUNT				= "api/diary/count/%s";
-	private static final String							API_DIARY_FIND_BY_ID		= "api/diary/guid/%s";
-	private static final String							API_DIARY_FIND_BY_ID_PREFIX	= "api/diary/guid/%s";
-	private static final String							API_DIARY_FIND_CHANGES		= "api/diary/changes/?since=%s";
-	private static final String							API_DIARY_FIND_PERIOD		= "api/diary/period/?start_time=%s&end_time=%s&show_rem=%s";
-	private static final String							API_DIARY_HASH				= "api/diary/hash/%s";
-	private static final String							API_DIARY_HASHES			= "api/diary/hashes/%s";
-	private static final String							API_DIARY_SAVE				= "api/diary/";
+	private static final String API_DIARY_COUNT             = "api/diary/count/%s";
+	private static final String API_DIARY_FIND_BY_ID        = "api/diary/guid/%s";
+	private static final String API_DIARY_FIND_BY_ID_PREFIX = "api/diary/guid/%s";
+	private static final String API_DIARY_FIND_CHANGES      = "api/diary/changes/?since=%s";
+	private static final String API_DIARY_FIND_PERIOD       = "api/diary/period/?start_time=%s&end_time=%s&show_rem=%s";
+	private static final String API_DIARY_HASH              = "api/diary/hash/%s";
+	private static final String API_DIARY_HASHES            = "api/diary/hashes/%s";
+	private static final String API_DIARY_SAVE              = "api/diary/";
 
-	final WebClient										webClient;
-	private final Parser<DiaryRecord>					parser						= new ParserDiaryRecord();
-	private final Parser<Versioned<DiaryRecord>>		parserV						= new ParserVersioned<DiaryRecord>(
-			parser);
-	private final Serializer<Versioned<DiaryRecord>>	serializerV					= new SerializerAdapter<Versioned<DiaryRecord>>(
-			parserV);
-	final Serializer<Map<String, String>>				serializerMap				= new SerializerMap();
+	private final WebClient webClient;
+	private final Parser<DiaryRecord>                parser        = new ParserDiaryRecord();
+	private final Parser<Versioned<DiaryRecord>>     parserV       = new ParserVersioned<DiaryRecord>(parser);
+	private final Serializer<Versioned<DiaryRecord>> serializerV   = new SerializerAdapter<Versioned<DiaryRecord>>(parserV);
+	private final Serializer<Map<String, String>>    serializerMap = new SerializerMap();
 
 	/* ============================ CONSTRUCTOR ============================ */
 
@@ -82,7 +82,7 @@ public class DiaryWebService implements DiaryService
 	public void add(Versioned<DiaryRecord> item) throws DuplicateException
 	{
 		// TODO: current implementation doesn't fail for duplicates
-		save(Arrays.asList(item));
+		save(Collections.singletonList(item));
 	}
 
 	@Override
@@ -166,13 +166,12 @@ public class DiaryWebService implements DiaryService
 	}
 
 	@Override
-	public List<Versioned<DiaryRecord>> findPeriod(Date startTime, Date endTime, boolean includeRemoved)
-			throws CommonServiceException
+	public List<Versioned<DiaryRecord>> findPeriod(Date startTime, Date endTime, boolean includeRemoved) throws CommonServiceException
 	{
 		try
 		{
-			String query = String.format(API_DIARY_FIND_PERIOD, Utils.formatTimeUTC(startTime),
-					Utils.formatTimeUTC(endTime), Utils.formatBooleanStr(includeRemoved));
+			String query = String.format(API_DIARY_FIND_PERIOD, Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime),
+					Utils.formatBooleanStr(includeRemoved));
 			String resp = webClient.get(query);
 			return serializerV.readAll(resp);
 		}
@@ -197,8 +196,7 @@ public class DiaryWebService implements DiaryService
 				try
 				{
 					String query = String.format(API_DIARY_HASH, prefix);
-					String resp = webClient.get(query);
-					return resp;
+					return webClient.get(query);
 				}
 				catch (CommonServiceException e)
 				{
@@ -216,8 +214,7 @@ public class DiaryWebService implements DiaryService
 				try
 				{
 					String query = String.format(API_DIARY_HASHES, prefix);
-					String resp = webClient.get(query);
-					return serializerMap.read(resp);
+					return serializerMap.read(webClient.get(query));
 				}
 				catch (CommonServiceException e)
 				{

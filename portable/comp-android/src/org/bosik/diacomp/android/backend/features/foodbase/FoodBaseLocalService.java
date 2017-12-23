@@ -18,19 +18,12 @@
  */
 package org.bosik.diacomp.android.backend.features.foodbase;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.JsonReader;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
 import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
@@ -54,27 +47,35 @@ import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.JsonReader;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class FoodBaseLocalService implements FoodBaseService, Importable
 {
-	private static final String				TAG				= FoodBaseLocalService.class.getSimpleName();
+	private static final String TAG = FoodBaseLocalService.class.getSimpleName();
 
-	private static final int				MAX_READ_ITEMS	= 500;
+	private static final int MAX_READ_ITEMS = 500;
 
-	private final Context					context;
-	private final ContentResolver			resolver;
-	private final Parser<FoodItem>			parser			= new ParserFoodItem();
-	private final Serializer<FoodItem>		serializer		= new SerializerAdapter<FoodItem>(parser);
+	private final Context         context;
+	private final ContentResolver resolver;
+	private final Parser<FoodItem>     parser     = new ParserFoodItem();
+	private final Serializer<FoodItem> serializer = new SerializerAdapter<FoodItem>(parser);
 
 	// caching
 	// NOTE: this suppose DB can't be changed outside app
-	public static List<Versioned<FoodItem>>	memoryCache;
+	private static List<Versioned<FoodItem>> memoryCache;
 
 	// ====================================================================================
 
@@ -95,7 +96,7 @@ public class FoodBaseLocalService implements FoodBaseService, Importable
 
 	/**
 	 * Automatically closes cursor after read
-	 * 
+	 *
 	 * @param cursor
 	 * @param limit
 	 * @return
@@ -238,11 +239,9 @@ public class FoodBaseLocalService implements FoodBaseService, Importable
 			// execute query
 			Cursor cursor = resolver.query(TableFoodbase.CONTENT_URI, columns, where, mSelectionArgs, mSortOrder);
 
-			final List<Versioned<FoodItem>> result = parseItems(cursor);
-
 			// Log.i(TAG, "Search (database) done in " + (System.currentTimeMillis() - time) + "
 			// msec");
-			return result;
+			return parseItems(cursor);
 		}
 		catch (Exception e)
 		{
@@ -264,10 +263,9 @@ public class FoodBaseLocalService implements FoodBaseService, Importable
 
 			for (Versioned<FoodItem> item : memoryCache)
 			{
-				if (((id == null) || item.getId().startsWith(id))
-						&& ((name == null) || item.getData().getName().toLowerCase(Locale.US).contains(name))
-						&& (includeDeleted || !item.isDeleted())
-						&& ((modAfter == null) || item.getTimeStamp().after(modAfter)))
+				if (((id == null) || item.getId().startsWith(id)) && ((name == null) || item.getData().getName().toLowerCase(Locale.US)
+						.contains(name)) && (includeDeleted || !item.isDeleted()) && ((modAfter == null) || item.getTimeStamp()
+						.after(modAfter)))
 				{
 					result.add(new Versioned<FoodItem>(item));
 				}
@@ -581,7 +579,7 @@ public class FoodBaseLocalService implements FoodBaseService, Importable
 
 	/**
 	 * Returns sorted map (ID, Hash) for all items
-	 * 
+	 *
 	 * @return
 	 */
 	private static SortedMap<String, String> getDataHashes()

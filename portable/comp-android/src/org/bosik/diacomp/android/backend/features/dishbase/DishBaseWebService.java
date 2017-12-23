@@ -18,11 +18,6 @@
  */
 package org.bosik.diacomp.android.backend.features.dishbase;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
@@ -39,25 +34,31 @@ import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 @SuppressWarnings("unchecked")
 public class DishBaseWebService implements DishBaseService
 {
 	// private static final String TAG = DishBaseWebService.class.getSimpleName();
 
 	// REST methods
-	private static final String						API_DISH_COUNT				= "api/dish/count/%s";
-	private static final String						API_DISH_FIND_ALL			= "api/dish/all/?show_rem=%s";
-	private static final String						API_DISH_FIND_ANY			= "api/dish/search/?q=%s";
-	private static final String						API_DISH_FIND_BY_ID			= "api/dish/guid/%s";
-	private static final String						API_DISH_FIND_BY_ID_PREFIX	= "api/dish/guid/%s";
-	private static final String						API_DISH_FIND_CHANGES		= "api/dish/changes/?since=%s";
-	private static final String						API_DISH_HASH				= "api/dish/hash/%s";
-	private static final String						API_DISH_HASHES				= "api/dish/hashes/%s";
-	private static final String						API_DISH_SAVE				= "api/dish/";
+	private static final String API_DISH_COUNT             = "api/dish/count/%s";
+	private static final String API_DISH_FIND_ALL          = "api/dish/all/?show_rem=%s";
+	private static final String API_DISH_FIND_ANY          = "api/dish/search/?q=%s";
+	private static final String API_DISH_FIND_BY_ID        = "api/dish/guid/%s";
+	private static final String API_DISH_FIND_BY_ID_PREFIX = "api/dish/guid/%s";
+	private static final String API_DISH_FIND_CHANGES      = "api/dish/changes/?since=%s";
+	private static final String API_DISH_HASH              = "api/dish/hash/%s";
+	private static final String API_DISH_HASHES            = "api/dish/hashes/%s";
+	private static final String API_DISH_SAVE              = "api/dish/";
 
-	final WebClient									webClient;
-	private final Serializer<Versioned<DishItem>>	serializer					= new SerializerDishItem();
-	final Serializer<Map<String, String>>			serializerMap				= new SerializerMap();
+	private final WebClient webClient;
+	private final Serializer<Versioned<DishItem>> serializer    = new SerializerDishItem();
+	private final Serializer<Map<String, String>> serializerMap = new SerializerMap();
 
 	public DishBaseWebService(WebClient webClient)
 	{
@@ -211,8 +212,7 @@ public class DishBaseWebService implements DishBaseService
 				try
 				{
 					String query = String.format(API_DISH_HASH, prefix);
-					String resp = webClient.get(query);
-					return resp;
+					return webClient.get(query);
 				}
 				catch (CommonServiceException e)
 				{

@@ -57,13 +57,13 @@ public class ActivityMain extends FragmentActivity
 {
 	/* =========================== CONSTANTS ================================ */
 
-	static final         String TAG        = ActivityMain.class.getSimpleName();
+	private static final String TAG        = ActivityMain.class.getSimpleName();
 	private static final int    CODE_LOGIN = 0;
 
 	/* =========================== FIELDS ================================ */
 
-	ViewPager mViewPager;
-	private Menu cachedMenu;
+	private ViewPager mViewPager;
+	private Menu      cachedMenu;
 
 	/* =========================== METHODS ================================ */
 

@@ -152,8 +152,7 @@ class ItemAdapter extends ArrayAdapter<Item>
 		@Override
 		public String convertResultToString(Object resultValue)
 		{
-			String str = ((Item) resultValue).getCaption();
-			return str;
+			return ((Item) resultValue).getCaption();
 		}
 
 		@Override

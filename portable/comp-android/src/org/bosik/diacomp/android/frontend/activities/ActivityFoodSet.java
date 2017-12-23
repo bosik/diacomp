@@ -18,23 +18,6 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.common.webclient.WebClient;
-import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
-import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
-import org.bosik.diacomp.android.backend.features.foodset.FoodSetService;
-import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
-import org.bosik.diacomp.android.frontend.UIUtils;
-import org.bosik.diacomp.core.entities.business.FoodSetInfo;
-import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
-import org.bosik.diacomp.core.services.preferences.PreferenceID;
-import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
-import org.bosik.merklesync.Versioned;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -52,25 +35,43 @@ import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.webclient.WebClient;
+import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
+import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
+import org.bosik.diacomp.android.backend.features.foodset.FoodSetService;
+import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
+import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.core.entities.business.FoodSetInfo;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.services.base.food.FoodBaseService;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
+import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
+import org.bosik.merklesync.Versioned;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 public class ActivityFoodSet extends FragmentActivity
 {
-	public static final String	FIELD_FIRST_START	= "bosik.pack.firstStart";
+	public static final String FIELD_FIRST_START = "org.bosik.diacomp.firstStart";
 
 	// UI components
 
-	TextView					labelHint;
-	ProgressBar					progressBar;
-	ListView					listFoodSets;
-	Button						buttonOk;
+	private TextView    labelHint;
+	private ProgressBar progressBar;
+	private ListView    listFoodSets;
+	private Button      buttonOk;
 
 	// Data
 
-	BaseAdapter					adapter;
-	List<FoodSetInfo>			data;
-	PreferencesTypedService		syncablePreferences;
-	Set<String>					includedFoodSets;
-	boolean						firstStart;
+	private BaseAdapter             adapter;
+	private List<FoodSetInfo>       data;
+	private PreferencesTypedService syncablePreferences;
+	private Set<String>             includedFoodSets;
+	private boolean                 firstStart;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -92,7 +93,7 @@ public class ActivityFoodSet extends FragmentActivity
 		listFoodSets = (ListView) findViewById(R.id.listFoodSets);
 		listFoodSets.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
 
-		data = new ArrayList<FoodSetInfo>();
+		data = new ArrayList<>();
 		adapter = new ArrayAdapter<FoodSetInfo>(this, android.R.layout.simple_list_item_checked, data)
 		{
 			@Override
@@ -106,8 +107,7 @@ public class ActivityFoodSet extends FragmentActivity
 			{
 				if (convertView == null)
 				{
-					LayoutInflater inflater = (LayoutInflater) ActivityFoodSet.this
-							.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+					LayoutInflater inflater = (LayoutInflater) ActivityFoodSet.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					convertView = inflater.inflate(android.R.layout.simple_list_item_checked, parent, false);
 				}
 
@@ -144,9 +144,7 @@ public class ActivityFoodSet extends FragmentActivity
 
 		// =================================================================================
 
-		/**
-		 * Loading food sets
-		 */
+		// Loading food sets
 		new AsyncTask<Void, Void, List<FoodSetInfo>>()
 		{
 			@Override
@@ -203,11 +201,11 @@ public class ActivityFoodSet extends FragmentActivity
 
 	/**
 	 * Perform asynchronous food set updating
-	 * 
-	 * @param foodSetInfo
-	 * @param include
+	 *
+	 * @param foodSetInfo Food set descriptor
+	 * @param include     If {@code true}, set will be included, otherwise excluded
 	 */
-	void updateSet(final FoodSetInfo foodSetInfo, final boolean include)
+	private void updateSet(final FoodSetInfo foodSetInfo, final boolean include)
 	{
 		new AsyncTask<Void, Void, Boolean>()
 		{

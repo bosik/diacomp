@@ -63,17 +63,17 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private static final double BS_HYPOGLYCEMIA  = 4.0;
 	private static final double CARB_COLOR_LIMIT = 1.0;
 
-	DiaryService diary;
+	private DiaryService diary;
 
 	// components
 	private Button buttonTime;
 	private Button buttonDate;
 
-	private TextView textMealCurrentDosage;
-	private TextView textMealShiftedCarbs;
-	private TextView textMealShiftedDosage;
-	private TextView textMealExpectedBs;
-	MealEditorView mealEditor;
+	private TextView       textMealCurrentDosage;
+	private TextView       textMealShiftedCarbs;
+	private TextView       textMealShiftedDosage;
+	private TextView       textMealExpectedBs;
+	private MealEditorView mealEditor;
 
 	// localization
 	private String captionDose;
@@ -183,7 +183,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		}
 	}
 
-	void showMealContent()
+	private void showMealContent()
 	{
 		List<FoodMassed> items = new ArrayList<FoodMassed>();
 
@@ -195,7 +195,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		mealEditor.setData(items);
 	}
 
-	void showMealInfo()
+	private void showMealInfo()
 	{
 		// | Base | Last | Mod | BaseBS |
 		// |------|------|-----|--------|
@@ -309,7 +309,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		}
 	}
 
-	void showCorrection(Double shiftedCarbs, Double insDosage)
+	private void showCorrection(Double shiftedCarbs, Double insDosage)
 	{
 		if (shiftedCarbs != null)
 		{
@@ -420,7 +420,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		showMealInfo();
 	}
 
-	void modified()
+	private void modified()
 	{
 		entity.modified();
 

@@ -60,9 +60,7 @@ public class PreferencesWebService extends PreferencesService
 	{
 		try
 		{
-			String query = API_PREFERENCES_HASH;
-			String resp = webClient.get(query);
-			return resp;
+			return webClient.get(API_PREFERENCES_HASH);
 		}
 		catch (CommonServiceException e)
 		{
@@ -79,8 +77,7 @@ public class PreferencesWebService extends PreferencesService
 	{
 		try
 		{
-			String url = API_PREFERENCES;
-			String resp = webClient.get(url);
+			String resp = webClient.get(API_PREFERENCES);
 			return serializer.readAll(resp);
 		}
 		catch (Exception e)

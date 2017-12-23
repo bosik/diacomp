@@ -45,6 +45,7 @@ public class ActivityEditor<T extends Serializable> extends Activity
 
 	/* =========================== MAIN METHODS ================================ */
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -89,7 +90,7 @@ public class ActivityEditor<T extends Serializable> extends Activity
 	 * @param intent
 	 */
 	@SuppressWarnings("unchecked")
-	protected void readEntity(Intent intent)
+	private void readEntity(Intent intent)
 	{
 		entity = (Versioned<T>) intent.getExtras().getSerializable(FIELD_ENTITY);
 	}
@@ -99,7 +100,7 @@ public class ActivityEditor<T extends Serializable> extends Activity
 	 *
 	 * @param intent
 	 */
-	protected void writeEntity(Intent intent)
+	private void writeEntity(Intent intent)
 	{
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
 	}

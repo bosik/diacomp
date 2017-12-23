@@ -18,16 +18,6 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.common.AccountUtils;
-import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
-import org.bosik.diacomp.android.backend.common.webclient.WebClient;
-import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
-import org.bosik.diacomp.android.backend.features.quickImport.ImportHelper.Progress;
-import org.bosik.diacomp.android.backend.features.quickImport.ImportService;
-import org.bosik.diacomp.android.frontend.UIUtils;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
@@ -51,39 +41,50 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.AccountUtils;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
+import org.bosik.diacomp.android.backend.common.webclient.WebClient;
+import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
+import org.bosik.diacomp.android.backend.features.quickImport.ImportHelper.Progress;
+import org.bosik.diacomp.android.backend.features.quickImport.ImportService;
+import org.bosik.diacomp.android.frontend.UIUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ActivityLogin extends AccountAuthenticatorActivity
 {
-	static final String			TAG							= ActivityLogin.class.getSimpleName();
-	public static final String	DEFAULT_ACCOUNT_TYPE		= "diacomp.org";
+	static final        String TAG                  = ActivityLogin.class.getSimpleName();
+	public static final String DEFAULT_ACCOUNT_TYPE = "diacomp.org";
 
-	public static final String	EXTRA_EMAIL					= "org.bosik.diacomp.activityLogin.emal";
-	public static final String	EXTRA_PASS					= "org.bosik.diacomp.activityLogin.password";
-	public static final String	ARG_ACCOUNT_TYPE			= "org.bosik.diacomp.activityLogin.accountType";
-	public static final String	ARG_AUTH_TYPE				= "org.bosik.diacomp.activityLogin.authType";
-	public static final String	ARG_IS_ADDING_NEW_ACCOUNT	= "org.bosik.diacomp.activityLogin.newAccount";
+	public static final String EXTRA_EMAIL               = "org.bosik.diacomp.activityLogin.emal";
+	public static final String EXTRA_PASS                = "org.bosik.diacomp.activityLogin.password";
+	public static final String ARG_ACCOUNT_TYPE          = "org.bosik.diacomp.activityLogin.accountType";
+	public static final String ARG_AUTH_TYPE             = "org.bosik.diacomp.activityLogin.authType";
+	public static final String ARG_IS_ADDING_NEW_ACCOUNT = "org.bosik.diacomp.activityLogin.newAccount";
 
-	UserLoginTask				mAuthTask					= null;
+	private UserLoginTask mAuthTask = null;
 
-	String						mAccountType;
-	private String				mAuthTokenType;
-	private boolean				mNewAccount;
+	private String  mAccountType;
+	private String  mAuthTokenType;
+	private boolean mNewAccount;
 
 	// UI
-	EditText					textEmail;
-	EditText					textPassword;
-	View						mLoginFormView;
-	View						mLoginStatusView;
-	TextView					mLoginStatusMessageView;
+	private EditText textEmail;
+	private EditText textPassword;
+	private View     mLoginFormView;
+	private View     mLoginStatusView;
+	private TextView mLoginStatusMessageView;
 
-	private BroadcastReceiver	receiver					= new BroadcastReceiver()
-															{
-																@Override
-																public void onReceive(Context context, Intent intent)
-																{
-																	ActivityLogin.this.onReceive(context, intent);
-																}
-															};
+	private BroadcastReceiver receiver = new BroadcastReceiver()
+	{
+		@Override
+		public void onReceive(Context context, Intent intent)
+		{
+			ActivityLogin.this.onReceive(context, intent);
+		}
+	};
 
 	@Override
 	protected void onResume()
@@ -236,7 +237,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-	void showProgress(final boolean show)
+	private void showProgress(final boolean show)
 	{
 		if (show)
 		{
@@ -257,26 +258,24 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
 			mLoginStatusView.setVisibility(View.VISIBLE);
-			mLoginStatusView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0)
-					.setListener(new AnimatorListenerAdapter()
-					{
-						@Override
-						public void onAnimationEnd(Animator animation)
-						{
-							mLoginStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
-						}
-					});
+			mLoginStatusView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter()
+			{
+				@Override
+				public void onAnimationEnd(Animator animation)
+				{
+					mLoginStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
+				}
+			});
 
 			mLoginFormView.setVisibility(View.VISIBLE);
-			mLoginFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1)
-					.setListener(new AnimatorListenerAdapter()
-					{
-						@Override
-						public void onAnimationEnd(Animator animation)
-						{
-							mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-						}
-					});
+			mLoginFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(new AnimatorListenerAdapter()
+			{
+				@Override
+				public void onAnimationEnd(Animator animation)
+				{
+					mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+				}
+			});
 		}
 		else
 		{
@@ -340,12 +339,12 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		}
 	}
 
-	void submit()
+	private void submit()
 	{
 		startService(new Intent(ActivityLogin.this, ImportService.class));
 	}
 
-	void onReceive(Context context, Intent intent)
+	private void onReceive(Context context, Intent intent)
 	{
 		Bundle bundle = intent.getExtras();
 		if (bundle != null)
@@ -422,7 +421,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		}
 	}
 
-	void addAccount()
+	private void addAccount()
 	{
 		String accountName = textEmail.getText().toString();
 		String accountPassword = textPassword.getText().toString();
@@ -453,7 +452,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		}
 	}
 
-	void enableAutosync()
+	private void enableAutosync()
 	{
 		Account[] accounts = AccountUtils.getAccounts(this);
 		if (accounts.length > 0)

@@ -18,18 +18,12 @@
  */
 package org.bosik.diacomp.android.backend.features.dishbase;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.JsonReader;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
 import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDishbase;
@@ -52,27 +46,34 @@ import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.JsonReader;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class DishBaseLocalService implements DishBaseService, Importable
 {
-	private static final String				TAG				= DishBaseLocalService.class.getSimpleName();
+	private static final String TAG = DishBaseLocalService.class.getSimpleName();
 
-	private static final int				MAX_READ_ITEMS	= 500;
+	private static final int MAX_READ_ITEMS = 500;
 
-	private final Context					context;
-	private final ContentResolver			resolver;
-	private final Parser<DishItem>			parser			= new ParserDishItem();
-	private final Serializer<DishItem>		serializer		= new SerializerAdapter<DishItem>(parser);
+	private final Context         context;
+	private final ContentResolver resolver;
+	private final Parser<DishItem>     parser     = new ParserDishItem();
+	private final Serializer<DishItem> serializer = new SerializerAdapter<DishItem>(parser);
 
 	// caching
 	// NOTE: this suppose DB can't be changed outside app
-	public static List<Versioned<DishItem>>	memoryCache;
+	private static List<Versioned<DishItem>> memoryCache;
 
 	// ====================================================================================
 
@@ -93,7 +94,7 @@ public class DishBaseLocalService implements DishBaseService, Importable
 
 	/**
 	 * Automatically closes cursor after read
-	 * 
+	 *
 	 * @param cursor
 	 * @param limit
 	 * @return
@@ -203,10 +204,8 @@ public class DishBaseLocalService implements DishBaseService, Importable
 			// execute query
 			Cursor cursor = resolver.query(TableDishbase.CONTENT_URI, columns, where, mSelectionArgs, mSortOrder);
 
-			final List<Versioned<DishItem>> result = parseItems(cursor);
-
 			// Log.i(TAG, "Search done in " + (System.currentTimeMillis() - time) + " msec");
-			return result;
+			return parseItems(cursor);
 		}
 		catch (Exception e)
 		{
@@ -228,10 +227,9 @@ public class DishBaseLocalService implements DishBaseService, Importable
 
 			for (Versioned<DishItem> item : memoryCache)
 			{
-				if (((id == null) || item.getId().startsWith(id))
-						&& ((name == null) || item.getData().getName().toLowerCase(Locale.US).contains(name))
-						&& (includeDeleted || !item.isDeleted())
-						&& ((modAfter == null) || item.getTimeStamp().after(modAfter)))
+				if (((id == null) || item.getId().startsWith(id)) && ((name == null) || item.getData().getName().toLowerCase(Locale.US)
+						.contains(name)) && (includeDeleted || !item.isDeleted()) && ((modAfter == null) || item.getTimeStamp()
+						.after(modAfter)))
 				{
 					result.add(new Versioned<DishItem>(item));
 				}
@@ -541,7 +539,7 @@ public class DishBaseLocalService implements DishBaseService, Importable
 
 	/**
 	 * Returns sorted map (ID, Hash) for all items
-	 * 
+	 *
 	 * @return
 	 */
 	private static SortedMap<String, String> getDataHashes()

@@ -18,11 +18,6 @@
  */
 package org.bosik.diacomp.android.backend.features.foodbase;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
@@ -39,25 +34,32 @@ import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 @SuppressWarnings("unchecked")
 public class FoodBaseWebService implements FoodBaseService
 {
 	// private static final String TAG = FoodBaseWebService.class.getSimpleName();
 
 	// REST methods
-	private static final String						API_FOOD_COUNT				= "api/food/count/%s";
-	private static final String						API_FOOD_FIND_ALL			= "api/food/all/?show_rem=%s";
-	private static final String						API_FOOD_FIND_ANY			= "api/food/search/?q=%s";
-	private static final String						API_FOOD_FIND_BY_ID			= "api/food/guid/%s";
-	private static final String						API_FOOD_FIND_BY_ID_PREFIX	= "api/food/guid/%s";
-	private static final String						API_FOOD_FIND_CHANGES		= "api/food/changes/?since=%s";
-	private static final String						API_FOOD_HASH				= "api/food/hash/%s";
-	private static final String						API_FOOD_HASHES				= "api/food/hashes/%s";
-	private static final String						API_FOOD_SAVE				= "api/food/";
+	private static final String API_FOOD_COUNT             = "api/food/count/%s";
+	private static final String API_FOOD_FIND_ALL          = "api/food/all/?show_rem=%s";
+	private static final String API_FOOD_FIND_ANY          = "api/food/search/?q=%s";
+	private static final String API_FOOD_FIND_BY_ID        = "api/food/guid/%s";
+	private static final String API_FOOD_FIND_BY_ID_PREFIX = "api/food/guid/%s";
+	private static final String API_FOOD_FIND_CHANGES      = "api/food/changes/?since=%s";
+	private static final String API_FOOD_HASH              = "api/food/hash/%s";
+	private static final String API_FOOD_HASHES            = "api/food/hashes/%s";
+	private static final String API_FOOD_SAVE              = "api/food/";
 
-	final WebClient									webClient;
-	private final Serializer<Versioned<FoodItem>>	serializer					= new SerializerFoodItem();
-	final Serializer<Map<String, String>>			serializerMap				= new SerializerMap();
+	private final WebClient webClient;
+	private final Serializer<Versioned<FoodItem>> serializer    = new SerializerFoodItem();
+	private final Serializer<Map<String, String>> serializerMap = new SerializerMap();
 
 	public FoodBaseWebService(WebClient webClient)
 	{
@@ -68,7 +70,7 @@ public class FoodBaseWebService implements FoodBaseService
 	public void add(Versioned<FoodItem> item) throws PersistenceException
 	{
 		// TODO: current implementation doesn't fail for duplicates
-		save(Arrays.asList(item));
+		save(Collections.singletonList(item));
 	}
 
 	@Override
@@ -107,7 +109,7 @@ public class FoodBaseWebService implements FoodBaseService
 
 		item.setDeleted(true);
 		item.modified();
-		save(Arrays.asList(item));
+		save(Collections.singletonList(item));
 	}
 
 	@Override
@@ -211,8 +213,7 @@ public class FoodBaseWebService implements FoodBaseService
 				try
 				{
 					String query = String.format(API_FOOD_HASH, prefix);
-					String resp = webClient.get(query);
-					return resp;
+					return webClient.get(query);
 				}
 				catch (CommonServiceException e)
 				{

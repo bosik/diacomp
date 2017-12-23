@@ -49,8 +49,7 @@ public class FoodSetService
 	{
 		try
 		{
-			String query = API_FOODSET_ALL;
-			String resp = webClient.get(query);
+			String resp = webClient.get(API_FOODSET_ALL);
 			return serializerSetInfo.readAll(resp);
 		}
 		catch (CommonServiceException e)

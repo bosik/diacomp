@@ -18,8 +18,13 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ToggleButton;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.UIUtils.OnSubmit;
@@ -28,25 +33,21 @@ import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView.OnChange
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.utils.Utils;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ToggleButton;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ActivityEditorDish extends ActivityEditor<DishItem>
 {
 	// data
-	boolean					modified;
+	private boolean modified;
 
 	// components
-	private EditText		editName;
-	private ToggleButton	buttonMass;
-	private MealEditorView	editor;
+	private EditText       editName;
+	private ToggleButton   buttonMass;
+	private MealEditorView editor;
 	// TODO: this button is hidden
-	private Button			buttonOK;
+	private Button         buttonOK;
 
 	// ======================================================================================================
 
@@ -142,19 +143,19 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 		});
 	}
 
-	void showMassOn(double mass)
+	private void showMassOn(double mass)
 	{
 		buttonMass.setChecked(true);
 		buttonMass.setText(Utils.formatDoubleShort(mass) + " " + getString(R.string.common_unit_mass_gramm));
 	}
 
-	void showMassOff()
+	private void showMassOff()
 	{
 		buttonMass.setChecked(false);
 		buttonMass.setText(getString(R.string.editor_dish_rm_empty));
 	}
 
-	void showMass()
+	private void showMass()
 	{
 		if (entity.getData().getMass() == null)
 		{
