@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.web.frontend.wicket;
 
+import com.googlecode.wickedcharts.wicket6.JavaScriptResourceRegistry;
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -71,5 +72,8 @@ public class WicketApplication extends WebApplication
 		mountPage("/download", DownloadPage.class);
 
 		Bootstrap.install(this);
+
+		JavaScriptResourceRegistry.getInstance().setHighchartsReference("https://code.highcharts.com/3.0.2/highcharts.js");
+		JavaScriptResourceRegistry.getInstance().setHighchartsExportingReference("https://code.highcharts.com/3.0.2/modules/exporting.js");
 	}
 }
