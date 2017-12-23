@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -499,6 +500,33 @@ public class Utils
 		time %= SecPerHour;
 		int m = time / SecPerMin;
 		return String.format("%02d:%02d", h, m);
+	}
+
+	public static String compactDecimal(String s)
+	{
+		if (s == null || s.length() == 0)
+		{
+			return s;
+		}
+
+		DecimalFormat f = new DecimalFormat();
+		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+		symbols.setDecimalSeparator('.');
+		f.setDecimalFormatSymbols(symbols);
+		f.setMinimumFractionDigits(1);
+		f.setMaximumFractionDigits(1);
+
+		try
+		{
+			Number number = f.parse(s.replace(',', '.'));
+			s = f.format(number);
+		}
+		catch (ParseException e)
+		{
+			e.printStackTrace();
+		}
+
+		return s;
 	}
 
 	/**

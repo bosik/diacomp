@@ -166,6 +166,22 @@ public class TestUtils extends TestCase
 		assertEquals("+18.6", Utils.formatDoubleSigned(18.579));
 	}
 
+	public void testCompactDecimal()
+	{
+		assertEquals(null, Utils.compactDecimal(null));
+		assertEquals("", Utils.compactDecimal(""));
+
+		assertEquals("5.0", Utils.compactDecimal("5.0"));
+		assertEquals("5.0", Utils.compactDecimal("5.00"));
+		assertEquals("5.0", Utils.compactDecimal("5"));
+		assertEquals("5.0", Utils.compactDecimal("05"));
+		assertEquals("5.0", Utils.compactDecimal("05.0"));
+
+		assertEquals("5.0", Utils.compactDecimal("5,0"));
+		assertEquals("5.0", Utils.compactDecimal("5,00"));
+		assertEquals("5.0", Utils.compactDecimal("05,0"));
+	}
+
 	public void testParseTime()
 	{
 		assertEquals(Utils.time(2012, 04, 02, 00, 00, 00), Utils.parseTimeUTC("2012-04-02 00:00:00"));
