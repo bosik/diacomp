@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
 import junit.framework.TestCase;
+import org.junit.Ignore;
 
 @SuppressWarnings("static-method")
 public class TestUtils extends TestCase
@@ -189,6 +190,7 @@ public class TestUtils extends TestCase
 		assertEquals(Utils.time(2012, 05, 01, 22, 30, 17), Utils.parseTimeUTC("2012-05-01 22:30:17"));
 	}
 
+	@Ignore
 	public void testParseTime_performance()
 	{
 		long time = System.currentTimeMillis();
@@ -326,6 +328,7 @@ public class TestUtils extends TestCase
 		assertFalse(Utils.sameDay(time1, time2));
 	}
 
+	@Ignore
 	public void test_sameDay_performance()
 	{
 		Date time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 00, 00, 00);
