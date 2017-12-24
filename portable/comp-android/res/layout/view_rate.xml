@@ -12,7 +12,7 @@
             android:id="@+id/ratesItemTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/padding_small"
+            android:layout_marginLeft="@dimen/padding_large"
             android:layout_marginRight="@dimen/padding_large"
             android:text="09:45"
             android:textSize="@dimen/diaryTextSizeBase"
