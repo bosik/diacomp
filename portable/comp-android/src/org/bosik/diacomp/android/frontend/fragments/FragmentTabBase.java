@@ -102,12 +102,12 @@ public class FragmentTabBase extends Fragment
 	private DishBaseService dishBaseService;
 	private final List<Versioned<? extends NamedRelativeTagged>> data = new ArrayList<>();
 	private BaseAdapter adapter;
-	private static final Sorter sorter       = new Sorter();
-	private              String searchFilter = "";
-
+	private String searchFilter = "";
 	private long lastSearchTime;
-	private              boolean searchScheduled = false;
-	private static final long    SEARCH_DELAY    = 500;
+	private boolean searchScheduled = false;
+
+	private static final Sorter sorter       = new Sorter();
+	private static final long   SEARCH_DELAY = 500;
 
 	private final ContentObserver observer = new ContentObserver(null)
 	{
