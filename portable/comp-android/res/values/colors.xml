@@ -6,6 +6,7 @@
     <color name="base_selected">#E0E0E0</color>
     <color name="meal_correction_positive">#00CC00</color>
     <color name="meal_correction_negative">#CC0000</color>
+    <color name="font_black">#000000</color>
     <color name="font_gray">#A0A0A0</color>
     <color name="diary_font">#000000</color>
     <color name="diary_blood_std">#E6EEFF</color>

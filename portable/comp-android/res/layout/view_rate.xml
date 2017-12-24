@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_margin="@dimen/padding_tiny"
+              android:gravity="center_vertical"
+              android:minHeight="?android:attr/listPreferredItemHeight"
+              android:orientation="horizontal">
+
+    <TextView
+            android:id="@+id/ratesItemTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/padding_small"
+            android:layout_marginRight="@dimen/padding_large"
+            android:text="09:45"
+            android:textSize="@dimen/diaryTextSizeBase"
+            tools:ignore="HardcodedText"/>
+
+    <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="*">
+
+        <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <TextView
+                    android:id="@+id/ratesItemK"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="K: 0.25"
+                    android:textSize="@dimen/diaryTextSizeSmall"
+                    tools:ignore="HardcodedText"/>
+            <TextView
+                    android:id="@+id/ratesItemQ"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Q: 4.2"
+                    android:textSize="@dimen/diaryTextSizeSmall"
+                    tools:ignore="HardcodedText"/>
+            <TextView
+                    android:id="@+id/ratesItemX"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="X: 0.060"
+                    android:textSize="@dimen/diaryTextSizeSmall"
+                    tools:ignore="HardcodedText"/>
+        </TableRow>
+        <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            <TextView
+                    android:id="@+id/ratesItemKUnit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ммоль/л/г"
+                    android:textColor="@color/font_gray"
+                    android:textSize="@dimen/diaryTextSizeSmall"
+                    tools:ignore="HardcodedText"/>
+            <TextView
+                    android:id="@+id/ratesItemQUnit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ммоль/л/ед"
+                    android:textColor="@color/font_gray"
+                    android:textSize="@dimen/diaryTextSizeSmall"
+                    tools:ignore="HardcodedText"/>
+            <TextView
+                    android:id="@+id/ratesItemXUnit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ед/г"
+                    android:textColor="@color/font_gray"
+                    android:textSize="@dimen/diaryTextSizeSmall"
+                    tools:ignore="HardcodedText"/>
+        </TableRow>
+    </TableLayout>
+</LinearLayout>

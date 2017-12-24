@@ -64,6 +64,7 @@ public class Utils
 	 * Value of carbohydrates, kcal/g
 	 */
 	public static final double KCAL_PER_CARBS = 4.1;
+	public static final int    CARB_PER_BU    = 12; // g/BU
 
 	// Time
 
@@ -384,7 +385,7 @@ public class Utils
 	 */
 	public static String intTo00(int n)
 	{
-		return String.format("%02d", n);
+		return String.format(Locale.US, "%02d", n);
 	}
 
 	/**
@@ -407,7 +408,7 @@ public class Utils
 
 	public static String formatDoubleSigned(double x)
 	{
-		return String.format("%+.1f", x);
+		return String.format(Locale.US, "%+.1f", x);
 	}
 
 	public static String formatDateUTC(Date date)
@@ -500,6 +501,48 @@ public class Utils
 		time %= SecPerHour;
 		int m = time / SecPerMin;
 		return String.format("%02d:%02d", h, m);
+	}
+
+	/**
+	 * Formats time as hh:mm
+	 *
+	 * @param time Time in minutes
+	 * @return
+	 */
+	public static String formatTimeMin(int time)
+	{
+		int h = time / MinPerHour;
+		int m = time % MinPerHour;
+		return String.format("%02d:%02d", h, m);
+	}
+
+	public static String formatK(double k, boolean BU)
+	{
+		if (BU)
+		{
+			return String.format(Locale.US, "%.1f", k * CARB_PER_BU);
+		}
+		else
+		{
+			return String.format(Locale.US, "%.2f", k);
+		}
+	}
+
+	public static String formatQ(double q)
+	{
+		return String.format(Locale.US, "%.1f", q);
+	}
+
+	public static String formatX(double x, boolean BU)
+	{
+		if (BU)
+		{
+			return String.format(Locale.US, "%.2f", x * CARB_PER_BU);
+		}
+		else
+		{
+			return String.format(Locale.US, "%.3f", x);
+		}
 	}
 
 	public static String compactDecimal(String s)

@@ -140,6 +140,10 @@
             </intent-filter>
         </activity>
         <activity
+                android:name=".frontend.activities.ActivityEditorRate"
+                android:label="@string/editor_rate">
+        </activity>
+        <activity
                 android:name="org.bosik.diacomp.android.frontend.activities.ActivityWelcome"
                 android:label="@string/app_name"
                 android:theme="@android:style/Theme.Holo.Light.NoActionBar">

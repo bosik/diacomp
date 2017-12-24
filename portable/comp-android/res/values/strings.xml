@@ -89,6 +89,8 @@
     <string name="editor_meal_title">Meal</string>
     <string name="editor_note_field_text">Text</string>
     <string name="editor_note_title">Note</string>
+    <string name="editor_rate">Rate</string>
+    <string name="editor_rate_field_time">Time</string>
     <string name="fd_action_add">Add</string>
     <string name="fd_tip_empty">Provide food/dish name</string>
     <string name="fd_tip_incorrect_mass">Provide correct mass</string>

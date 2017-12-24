@@ -87,6 +87,8 @@
     <string name="editor_meal_title">Приём пищи</string>
     <string name="editor_note_field_text">Текст</string>
     <string name="editor_note_title">Заметка</string>
+    <string name="editor_rate">Коэффициенты</string>
+    <string name="editor_rate_field_time">Время</string>
     <string name="fd_action_add">Добавить</string>
     <string name="fd_tip_empty">Введите название продукта/блюда</string>
     <string name="fd_tip_incorrect_mass">Введите корректную массу</string>

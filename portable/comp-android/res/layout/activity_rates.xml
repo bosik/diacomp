@@ -1,6 +1,13 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:scrollbars="vertical">
+    <ListView
+            android:id="@+id/listRates"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:scrollbars="vertical">
-
-</ScrollView>
+            android:layout_weight="1"
+            android:fadingEdgeLength="5dp"
+            android:requiresFadingEdge="vertical">
+    </ListView>
+</LinearLayout>
