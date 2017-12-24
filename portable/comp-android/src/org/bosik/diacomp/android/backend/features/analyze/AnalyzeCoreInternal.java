@@ -34,7 +34,6 @@ public class AnalyzeCoreInternal
 			Log.i(TAG, "Analyze core initialization...");
 			// TODO: hardcoded approximation factor
 			instance = new AnalyzeCoreImpl(40.0);
-			// analyzeCore = new HardcodedAnalyzeService();
 		}
 		return instance;
 	}
