@@ -281,15 +281,7 @@ public class FragmentTabBase extends Fragment
 
 			private void setSubtitle(ActionMode mode, int selectedCount)
 			{
-				switch (selectedCount)
-				{
-					case 0:
-						mode.setSubtitle(null);
-						break;
-					default:
-						mode.setTitle(String.valueOf(selectedCount));
-						break;
-				}
+				mode.setSubtitle(selectedCount == 0 ? null : String.valueOf(selectedCount));
 			}
 		});
 		list.setOnItemClickListener(new OnItemClickListener()

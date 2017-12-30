@@ -278,8 +278,7 @@ public class ActivityMain extends FragmentActivity
 			}
 			case R.id.item_diary_preferences:
 			{
-				Intent settingsActivity = new Intent(getBaseContext(), ActivityPreferences.class);
-				startActivity(settingsActivity);
+				startActivity(new Intent(getBaseContext(), ActivityPreferences.class));
 				return true;
 			}
 			default:
