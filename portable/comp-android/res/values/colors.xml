@@ -4,23 +4,23 @@
     <color name="app_background">#F9F9F9</color>
     <color name="base_highlighted">#F0F0F0</color>
     <color name="base_selected">#E0E0E0</color>
-    <color name="meal_correction_positive">#00CC00</color>
-    <color name="meal_correction_negative">#CC0000</color>
-    <color name="font_black">#000000</color>
-    <color name="font_gray">#A0A0A0</color>
-    <color name="diary_font">#000000</color>
-    <color name="diary_blood_std">#E6EEFF</color>
-    <color name="diary_blood_std_sel">#CCDDF7</color>
     <color name="diary_blood_postprand">#F0E4F8</color>
     <color name="diary_blood_postprand_sel">#E6CEF2</color>
+    <color name="diary_blood_std">#E6EEFF</color>
+    <color name="diary_blood_std_sel">#CCDDF7</color>
+    <color name="diary_border">#C0C0C0</color>
+    <color name="diary_border_sel">#000000</color>
+    <color name="diary_font">#000000</color>
     <color name="diary_ins">#FFFFFF</color>
     <color name="diary_ins_sel">#F0F0F0</color>
     <color name="diary_meal">#FFFFDD</color>
     <color name="diary_meal_sel">#FFFF99</color>
     <color name="diary_note">#D8FFE4</color>
     <color name="diary_note_sel">#B3FFCA</color>
-    <color name="diary_border">#C0C0C0</color>
-    <color name="diary_border_sel">#000000</color>
+    <color name="font_black">#000000</color>
+    <color name="font_gray">#A0A0A0</color>
+    <color name="meal_correction_negative">#CC0000</color>
+    <color name="meal_correction_positive">#00CC00</color>
     <color name="warning_background">#F7CCDD</color>
 
 </resources>
