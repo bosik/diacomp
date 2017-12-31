@@ -4,6 +4,13 @@
     <color name="app_background">#F9F9F9</color>
     <color name="base_highlighted">#F0F0F0</color>
     <color name="base_selected">#E0E0E0</color>
+    <color name="charts_bs_average">#FF0000</color>
+    <color name="charts_bs_dispersion">#FFE0E0</color>
+    <color name="charts_insulin_consumption">#C0C0FF</color>
+    <color name="charts_k">#FF0000</color>
+    <color name="charts_q">#0000FF</color>
+    <color name="charts_value">#C0C000</color>
+    <color name="charts_x">#C0C0C0</color>
     <color name="diary_blood_postprand">#F0E4F8</color>
     <color name="diary_blood_postprand_sel">#E6CEF2</color>
     <color name="diary_blood_std">#E6EEFF</color>

@@ -19,7 +19,6 @@
 package org.bosik.diacomp.android.frontend.fragments;
 
 import android.content.ContentResolver;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -183,13 +182,13 @@ public class FragmentTabCharts extends Fragment
 				}
 
 				LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<>(dataAvg.toArray(new DataPoint[dataAvg.size()]));
-				seriesAvg.setColor(Color.rgb(255, 0, 0));
+				seriesAvg.setColor(getResources().getColor(R.color.charts_bs_average));
 
 				LineGraphSeries<DataPoint> seriesMin = new LineGraphSeries<>(dataMin.toArray(new DataPoint[dataMin.size()]));
-				seriesMin.setColor(Color.rgb(255, 224, 224));
+				seriesMin.setColor(getResources().getColor(R.color.charts_bs_dispersion));
 
 				LineGraphSeries<DataPoint> seriesMax = new LineGraphSeries<>(dataMax.toArray(new DataPoint[dataMax.size()]));
-				seriesMax.setColor(Color.rgb(255, 224, 224));
+				seriesMax.setColor(getResources().getColor(R.color.charts_bs_dispersion));
 
 				return Arrays.<Series<?>>asList(seriesMin, seriesAvg, seriesMax);
 			}
@@ -266,7 +265,7 @@ public class FragmentTabCharts extends Fragment
 				}
 
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data.toArray(new DataPoint[data.size()]));
-				series.setColor(Color.rgb(192, 192, 255));
+				series.setColor(getResources().getColor(R.color.charts_insulin_consumption));
 
 				return Collections.<Series<?>>singletonList(series);
 			}
@@ -329,7 +328,7 @@ public class FragmentTabCharts extends Fragment
 				}
 
 				LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<>(dataAvg.toArray(new DataPoint[dataAvg.size()]));
-				seriesAvg.setColor(Color.rgb(192, 192, 0));
+				seriesAvg.setColor(getResources().getColor(R.color.charts_value));
 
 				return Collections.<Series<?>>singletonList(seriesAvg);
 			}
@@ -366,7 +365,7 @@ public class FragmentTabCharts extends Fragment
 				}
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
-				series.setColor(Color.rgb(192, 192, 192));
+				series.setColor(getResources().getColor(R.color.charts_x));
 
 				return Collections.<Series<?>>singletonList(series);
 			}
@@ -402,7 +401,7 @@ public class FragmentTabCharts extends Fragment
 				}
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
-				series.setColor(Color.rgb(255, 0, 0));
+				series.setColor(getResources().getColor(R.color.charts_k));
 
 				return Collections.<Series<?>>singletonList(series);
 			}
@@ -438,7 +437,7 @@ public class FragmentTabCharts extends Fragment
 				}
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
-				series.setColor(Color.rgb(0, 0, 255));
+				series.setColor(getResources().getColor(R.color.charts_q));
 
 				return Collections.<Series<?>>singletonList(series);
 			}
