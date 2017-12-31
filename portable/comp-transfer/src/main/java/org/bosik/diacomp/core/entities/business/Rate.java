@@ -18,6 +18,7 @@
  */
 package org.bosik.diacomp.core.entities.business;
 
+import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,6 +33,18 @@ public class Rate implements Serializable
 	private double k;
 	private double q;
 	private double p;
+
+	public Rate()
+	{
+	}
+
+	public Rate(int time, Koof c)
+	{
+		this.time = time;
+		this.k = c.getK();
+		this.q = c.getQ();
+		this.p = c.getP();
+	}
 
 	public int getTime()
 	{
