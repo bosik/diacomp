@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+            android:id="@+id/itemRatesAdd"
+            android:icon="@drawable/ic_action_new"
+            android:showAsAction="ifRoom"
+            android:title="@string/common_action_add">
+    </item>
+
+    <item
+            android:id="@+id/itemRatesUndo"
+            android:icon="@drawable/ic_undo"
+            android:showAsAction="never"
+            android:title="@string/common_action_undo">
+    </item>
+
+    <item
+            android:id="@+id/itemRatesRedo"
+            android:icon="@drawable/ic_redo"
+            android:showAsAction="never"
+            android:title="@string/common_action_redo">
+    </item>
+
+    <item
+            android:id="@+id/itemRatesReplaceWithAuto"
+            android:showAsAction="never"
+            android:title="@string/rates_actions_replace_with_auto"/>
+
+    <item
+            android:id="@+id/itemRatesClear"
+            android:showAsAction="never"
+            android:title="@string/rates_actions_remove_all"/>
+
+</menu>

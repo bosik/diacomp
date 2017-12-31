@@ -18,21 +18,26 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
+import android.app.TimePickerDialog;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TimePicker;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.android.frontend.fragments.pickers.TimePickerFragment;
 import org.bosik.diacomp.core.entities.business.Rate;
 import org.bosik.diacomp.core.utils.Utils;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.LinkedHashSet;
 
-public class ActivityEditorRate extends ActivityEditor<Rate>
+public class ActivityEditorRate extends ActivityEditor<Rate> implements TimePickerDialog.OnTimeSetListener
 {
 	// TODO: i18n
 	private static final String MSG_INCORRECT_VALUE = "Введите корректное значение";
@@ -67,7 +72,18 @@ public class ActivityEditorRate extends ActivityEditor<Rate>
 			@Override
 			public void onClick(View v)
 			{
-				// showTimePickerDialog();
+				TimePickerFragment newFragment = new TimePickerFragment();
+				Bundle args = new Bundle();
+
+				Calendar c = Calendar.getInstance();
+				c.set(Calendar.HOUR_OF_DAY, entity.getData().getTime() / Utils.MinPerHour);
+				c.set(Calendar.MINUTE, entity.getData().getTime() % Utils.MinPerHour);
+				c.set(Calendar.SECOND, 0);
+				c.set(Calendar.MILLISECOND, 0);
+
+				args.putLong(TimePickerFragment.KEY, c.getTimeInMillis());
+				newFragment.setArguments(args);
+				newFragment.show(getFragmentManager(), "timePicker");
 			}
 		});
 
@@ -130,6 +146,13 @@ public class ActivityEditorRate extends ActivityEditor<Rate>
 	protected boolean getValuesFromGUI()
 	{
 		return readDouble(editK) && readDouble(editQ) && readDouble(editX);
+	}
+
+	@Override
+	public void onTimeSet(TimePicker view, int hourOfDay, int minute)
+	{
+		entity.getData().setTime(hourOfDay * Utils.MinPerHour + minute);
+		buttonTime.setText(Utils.formatTimeMin(entity.getData().getTime()));
 	}
 
 	private class MyTextWatcher implements TextWatcher

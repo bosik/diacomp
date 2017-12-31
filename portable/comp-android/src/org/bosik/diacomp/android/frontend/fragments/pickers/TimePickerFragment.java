@@ -27,6 +27,9 @@ import android.text.format.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * Parent activity must implement TimePickerDialog.OnTimeSetListener
+ */
 public class TimePickerFragment extends DialogFragment
 {
 	public static final String KEY = "time";

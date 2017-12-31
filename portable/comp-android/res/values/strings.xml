@@ -31,8 +31,11 @@
     <string name="charts_koof_k_daily_description">A CCF is how many points your blood sugar will increase with one unit of carbs. The chart shows it\'s variation across the day.</string>
     <string name="charts_koof_q_daily_description">An ICF is how many points your blood sugar will drop with one unit of insulin. The chart shows it\'s variation across the day.</string>
     <string name="charts_no_data">No data</string>
+    <string name="common_action_add">Add</string>
     <string name="common_action_delete">Delete</string>
     <string name="common_action_help">Help</string>
+    <string name="common_action_redo">Redo</string>
+    <string name="common_action_undo">Undo</string>
     <string name="common_button_cancel">Cancel</string>
     <string name="common_button_ok">OK</string>
     <string name="common_hint_mass">Mass, g</string>
@@ -132,6 +135,8 @@
     <string name="preferences_rates_auto">Calculate automatically</string>
     <string name="preferences_rates_edit">Edit correction factors…</string>
     <string name="preferences_title">Preferences</string>
+    <string name="rates_actions_remove_all">Remove all</string>
+    <string name="rates_actions_replace_with_auto">Replace with auto-values</string>
     <string name="rates_title">Correction factors</string>
     <string name="warning_time_delay_ahead_0">Your device clock is %d minutes ahead</string>
     <string name="warning_time_delay_ahead_1">Your device clock is %d minutes ahead</string>

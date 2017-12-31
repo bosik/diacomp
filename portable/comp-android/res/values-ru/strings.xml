@@ -31,8 +31,11 @@
     <string name="charts_koof_k_daily_description">Показывает, насколько увеличится сахар крови при усвоении одной единицы углеводов. График отражает динамику в течение суток.</string>
     <string name="charts_koof_q_daily_description">Показывает, насколько уменьшится сахар крови от одной единицы инсулина. График отражает динамику в течение суток.</string>
     <string name="charts_no_data">Нет данных</string>
+    <string name="common_action_add">Добавить</string>
     <string name="common_action_delete">Удалить</string>
     <string name="common_action_help">Справка</string>
+    <string name="common_action_redo">Повторить</string>
+    <string name="common_action_undo">Отменить</string>
     <string name="common_button_cancel">Отмена</string>
     <string name="common_button_ok">ОК</string>
     <string name="common_hint_mass">Масса, г</string>
@@ -130,6 +133,8 @@
     <string name="preferences_rates_auto">Вычислять автоматически</string>
     <string name="preferences_rates_edit">Изменить коэффициенты…</string>
     <string name="preferences_title">Настройки</string>
+    <string name="rates_actions_remove_all">Удалить все</string>
+    <string name="rates_actions_replace_with_auto">Заменить подобранными</string>
     <string name="rates_title">Коэффициенты</string>
     <string name="warning_time_delay_ahead_0">Ваши часы спешат на %d минут</string>
     <string name="warning_time_delay_ahead_1">Ваши часы спешат на %d минуту</string>

@@ -19,19 +19,33 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
+import com.jjoe64.graphview.series.Series;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.android.frontend.fragments.chart.Chart;
+import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.Rate;
 import org.bosik.diacomp.core.services.analyze.KoofService;
@@ -44,11 +58,15 @@ import org.bosik.merklesync.Versioned;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
-public class ActivityRates extends Activity
+public class ActivityRates extends FragmentActivity
 {
 	// Constants
 	private static final String TAG                = ActivityRates.class.getSimpleName();
@@ -60,7 +78,9 @@ public class ActivityRates extends Activity
 	private BaseAdapter adapter;
 
 	// data
-	private List<Versioned<Rate>> rates; // TODO: save/restore on activity re-creation
+	private List<Versioned<Rate>>       rates; // TODO: save/restore on activity re-creation
+	private List<List<Versioned<Rate>>> history;
+	private int                         historyIndex;
 	private boolean BU = true;
 
 	@Override
@@ -72,16 +92,92 @@ public class ActivityRates extends Activity
 		PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
 		String data = preferences.getStringValue(PreferenceID.RATES_DATA);
 		rates = readRatesSafely(data);
-		//rates = copyRealRates();
+
+		history = new ArrayList<>();
+		history.add(new ArrayList<>(rates));
+		historyIndex = 0;
 
 		list = (ListView) findViewById(R.id.listRates);
-
+		list.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener()
 		{
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long itemIndex)
 			{
 				showRateEditor(rates.get(position), false);
+			}
+		});
+		list.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener()
+		{
+			@Override
+			public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b)
+			{
+				int selectedCount = list.getCheckedItemCount();
+				setSubtitle(actionMode, selectedCount);
+			}
+
+			@Override
+			public boolean onCreateActionMode(ActionMode actionMode, Menu menu)
+			{
+				MenuInflater inflater = actionMode.getMenuInflater();
+				inflater.inflate(R.menu.actions_rates_context, menu);
+				return true;
+			}
+
+			@Override
+			public boolean onPrepareActionMode(ActionMode actionMode, Menu menu)
+			{
+				return false;
+			}
+
+			@Override
+			public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem)
+			{
+				SparseBooleanArray checkList = list.getCheckedItemPositions();
+				Set<String> ids = new HashSet<>();
+				for (int i = 0; i < checkList.size(); i++)
+				{
+					if (checkList.valueAt(i))
+					{
+						int index = checkList.keyAt(i);
+						if (index >= 0 && index < rates.size())
+						{
+							ids.add(rates.get(index).getId());
+						}
+					}
+				}
+
+				if (!ids.isEmpty())
+				{
+					int count = 0;
+					for (Iterator<Versioned<Rate>> i = rates.iterator(); i.hasNext(); )
+					{
+						if (ids.contains(i.next().getId()))
+						{
+							i.remove();
+							count++;
+						}
+					}
+
+					save(rates);
+					saveStateToHistory();
+					adapter.notifyDataSetChanged();
+
+					String text = String.format(getString(R.string.base_tip_items_removed), count); // FIXME
+					Toast.makeText(list.getContext(), text, Toast.LENGTH_LONG).show();
+				}
+
+				return true;
+			}
+
+			@Override
+			public void onDestroyActionMode(ActionMode actionMode)
+			{
+			}
+
+			private void setSubtitle(ActionMode mode, int selectedCount)
+			{
+				mode.setSubtitle(selectedCount == 0 ? null : String.valueOf(selectedCount));
 			}
 		});
 
@@ -153,9 +249,172 @@ public class ActivityRates extends Activity
 				view.setBackgroundDrawable(getResources().getDrawable(R.drawable.background_base_item));
 				return view;
 			}
+
+			@Override
+			public void notifyDataSetChanged()
+			{
+				super.notifyDataSetChanged();
+				invalidateOptionsMenu();
+			}
 		};
 
 		list.setAdapter(adapter);
+
+		// Check that the activity is using the layout version with
+		// the fragment_container FrameLayout
+		if (findViewById(R.id.ratesChart) != null)
+		{
+			// However, if we're being restored from a previous state,
+			// then we don't need to do anything and should return or else
+			// we could end up with overlapping fragments.
+			if (savedInstanceState != null)
+			{
+				return;
+			}
+
+			// Create a new Fragment to be placed in the activity layout
+			Chart chart = new Chart();
+
+			chart.setChartType(Chart.ChartType.DAILY);
+			chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x), getString(R.string.common_unit_insulin),
+					getString(R.string.common_unit_mass_gramm))); // FIXME
+			chart.setDescription(getString(R.string.charts_insulin_consumption_daily_description));
+			chart.setDataLoader(new ProgressBundle.DataLoader()
+			{
+				@Override
+				public Collection<Series<?>> load(ContentResolver contentResolver)
+				{
+					// TODO: Probably it's better to reload rates here
+
+					List<DataPoint> dataAvg = new ArrayList<>();
+					for (Versioned<Rate> rate : rates)
+					{
+						Rate r = rate.getData();
+						dataAvg.add(new DataPoint((double) r.getTime() / Utils.MinPerHour, r.getK() / r.getQ()));
+					}
+
+					LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<>(dataAvg.toArray(new DataPoint[dataAvg.size()]));
+					seriesAvg.setColor(getResources().getColor(R.color.charts_x));
+
+					return Collections.<Series<?>>singletonList(seriesAvg);
+				}
+			});
+
+			// In case this activity was started with special instructions from an
+			// Intent, pass the Intent's extras to the fragment as arguments
+			//chart.setArguments(getIntent().getExtras());
+
+			// Add the fragment to the 'fragment_container' FrameLayout
+			getSupportFragmentManager().beginTransaction().add(R.id.ratesChart, chart).commit();
+		}
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu)
+	{
+		menu.findItem(R.id.itemRatesUndo).setEnabled(historyIndex > 0);
+		menu.findItem(R.id.itemRatesRedo).setEnabled(historyIndex < history.size() - 1);
+		menu.findItem(R.id.itemRatesClear).setEnabled(!rates.isEmpty());
+		return true;
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		super.onCreateOptionsMenu(menu);
+		getMenuInflater().inflate(R.menu.actions_rates, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+			case R.id.itemRatesAdd:
+			{
+				showRateEditor(null, true);
+				return true;
+			}
+
+			case R.id.itemRatesUndo:
+			{
+				historyUndo();
+
+				save(rates);
+				adapter.notifyDataSetChanged();
+				return true;
+			}
+
+			case R.id.itemRatesRedo:
+			{
+				historyRedo();
+
+				save(rates);
+				adapter.notifyDataSetChanged();
+				return true;
+			}
+
+			case R.id.itemRatesReplaceWithAuto:
+			{
+				KoofService service = KoofServiceInternal.getInstance(this);
+
+				rates.clear();
+				for (int time = 0; time < Utils.MinPerDay; time += 2 * Utils.MinPerHour)
+				{
+					Koof c = service.getKoof(time);
+					Versioned<Rate> versioned = new Versioned<>(new Rate(time, c));
+					versioned.setId(HashUtils.generateGuid());
+					rates.add(versioned);
+				}
+
+				save(rates);
+				saveStateToHistory();
+				adapter.notifyDataSetChanged();
+				return true;
+			}
+
+			case R.id.itemRatesClear:
+			{
+				if (!rates.isEmpty())
+				{
+					rates.clear();
+					save(rates);
+					saveStateToHistory();
+					adapter.notifyDataSetChanged();
+				}
+				return true;
+			}
+
+			default:
+			{
+				return false;// super.onOptionsItemSelected(item);
+			}
+		}
+	}
+
+	private void saveStateToHistory()
+	{
+		history.add(new ArrayList<>(rates));
+		historyIndex = history.size() - 1;
+	}
+
+	private void historyUndo()
+	{
+		if (historyIndex > 0)
+		{
+			historyIndex--;
+			rates = new ArrayList<>(history.get(historyIndex));
+		}
+	}
+
+	private void historyRedo()
+	{
+		if (historyIndex < history.size() - 1)
+		{
+			historyIndex++;
+			rates = new ArrayList<>(history.get(historyIndex));
+		}
 	}
 
 	// handled
@@ -221,27 +480,6 @@ public class ActivityRates extends Activity
 		return unitDosage + "/" + unitMass;
 	}
 
-	private List<Rate> copyRealRates()
-	{
-		List<Rate> rates = new ArrayList<>();
-
-		KoofService service = KoofServiceInternal.getInstance(this);
-		for (int time = 0; time < 1440; time += 120)
-		{
-			Koof c = service.getKoof(time);
-
-			Rate rate = new Rate();
-			rate.setTime(time);
-			rate.setK(c.getK());
-			rate.setQ(c.getQ());
-			rate.setP(c.getP());
-
-			rates.add(rate);
-		}
-
-		return rates;
-	}
-
 	private List<Versioned<Rate>> readRatesSafely(String data)
 	{
 		try
@@ -275,11 +513,11 @@ public class ActivityRates extends Activity
 				{
 					if (resultCode == Activity.RESULT_OK)
 					{
-						Versioned<Rate> rec = (Versioned<Rate>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
-						rates.add(rec);
+						rates.add((Versioned<Rate>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY));
 
 						sortByTime(rates);
 						save(rates);
+						saveStateToHistory();
 						adapter.notifyDataSetChanged();
 					}
 					break;
@@ -290,12 +528,12 @@ public class ActivityRates extends Activity
 					if (resultCode == Activity.RESULT_OK)
 					{
 						Versioned<Rate> rec = (Versioned<Rate>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
-
 						rates.remove(rec);
 						rates.add(rec);
 
 						sortByTime(rates);
 						save(rates);
+						saveStateToHistory();
 						adapter.notifyDataSetChanged();
 					}
 					break;
