@@ -18,9 +18,10 @@
  */
 package org.bosik.diacomp.android.frontend.fragments.chart.daily;
 
-import java.util.Locale;
 import com.jjoe64.graphview.LabelFormatter;
 import com.jjoe64.graphview.Viewport;
+
+import java.util.Locale;
 
 class DailyLabels implements LabelFormatter
 {
@@ -40,19 +41,32 @@ class DailyLabels implements LabelFormatter
 		}
 		else
 		{
-			if (maxY / 4 >= 1)
-			{
-				return String.format(Locale.US, "%.0f", value);
-			}
-			else if (maxY / 4 >= 0.1)
-			{
-				return String.format(Locale.US, "%.1f", value);
-			}
-			else
-			{
-				return String.format(Locale.US, "%.2f", value);
-			}
+			return formatYValue(value, maxY / 4);
 		}
+	}
+
+	private static String formatYValue(double value, double section)
+	{
+		int digits;
+
+		if (section >= 1)
+		{
+			digits = 0;
+		}
+		else if (section >= 0.1)
+		{
+			digits = 1;
+		}
+		else if (section >= 0.01)
+		{
+			digits = 2;
+		}
+		else
+		{
+			digits = 3;
+		}
+
+		return String.format(Locale.US, "%." + digits + "f", value);
 	}
 
 	@Override

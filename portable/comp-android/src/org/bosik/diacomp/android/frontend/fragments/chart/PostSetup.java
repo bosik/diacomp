@@ -77,7 +77,7 @@ public abstract class PostSetup implements PostSetupListener
 
 	protected static double addRoom(double max)
 	{
-		double top = 0.04;
+		double top = 0.004;
 
 		while (top < max)
 		{
