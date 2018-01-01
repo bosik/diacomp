@@ -137,6 +137,8 @@
     <string name="rates_actions_remove_all">Удалить все</string>
     <string name="rates_actions_replace_with_auto">Заменить подобранными</string>
     <string name="rates_title">Коэффициенты</string>
+    <string name="unit_mass_action">Единица измерения массы…</string>
+    <string name="unit_mass_title">Единица измерения массы</string>
     <string name="warning_time_delay_ahead_0">Ваши часы спешат на %d минут</string>
     <string name="warning_time_delay_ahead_1">Ваши часы спешат на %d минуту</string>
     <string name="warning_time_delay_ahead_2">Ваши часы спешат на %d минуты</string>

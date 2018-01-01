@@ -28,6 +28,11 @@
             android:title="@string/rates_actions_replace_with_auto"/>
 
     <item
+            android:id="@+id/itemRatesUnitMass"
+            android:showAsAction="never"
+            android:title="@string/unit_mass_action"/>
+
+    <item
             android:id="@+id/itemRatesClear"
             android:showAsAction="never"
             android:title="@string/rates_actions_remove_all"/>

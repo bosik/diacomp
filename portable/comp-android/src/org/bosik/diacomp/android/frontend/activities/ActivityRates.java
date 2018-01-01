@@ -20,6 +20,7 @@ package org.bosik.diacomp.android.frontend.activities;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -44,6 +45,7 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.android.frontend.fragments.FragmentMassUnitDialog;
 import org.bosik.diacomp.android.frontend.fragments.chart.Chart;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle;
 import org.bosik.diacomp.android.utils.ErrorHandler;
@@ -67,7 +69,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-public class ActivityRates extends FragmentActivity
+public class ActivityRates extends FragmentActivity implements DialogInterface.OnClickListener
 {
 	// Constants
 	private static final String TAG                = ActivityRates.class.getSimpleName();
@@ -75,6 +77,7 @@ public class ActivityRates extends FragmentActivity
 	private static final int    DIALOG_RATE_MODIFY = 12;
 
 	// components
+	private Chart       chart;
 	private ListView    list;
 	private BaseAdapter adapter;
 
@@ -82,7 +85,7 @@ public class ActivityRates extends FragmentActivity
 	private List<Versioned<Rate>>       rates; // TODO: save/restore on activity re-creation
 	private List<List<Versioned<Rate>>> history;
 	private int                         historyIndex;
-	private boolean BU = true;
+	private boolean BU = true; // TODO: persist
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -256,6 +259,10 @@ public class ActivityRates extends FragmentActivity
 			{
 				super.notifyDataSetChanged();
 				invalidateOptionsMenu();
+				if (chart != null)
+				{
+					chart.refresh();
+				}
 			}
 		};
 
@@ -274,11 +281,9 @@ public class ActivityRates extends FragmentActivity
 			}
 
 			// Create a new Fragment to be placed in the activity layout
-			Chart chart = new Chart();
-
+			chart = new Chart();
 			chart.setChartType(Chart.ChartType.DAILY);
-			chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x), getString(R.string.common_unit_insulin),
-					BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm))); // FIXME
+			updateChartTitle();
 			chart.setDescription(getString(R.string.charts_insulin_consumption_daily_description));
 			chart.setDataLoader(new ProgressBundle.DataLoader()
 			{
@@ -314,6 +319,12 @@ public class ActivityRates extends FragmentActivity
 			// Add the fragment to the 'fragment_container' FrameLayout
 			getSupportFragmentManager().beginTransaction().add(R.id.ratesChart, chart).commit();
 		}
+	}
+
+	private void updateChartTitle()
+	{
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x), getString(R.string.common_unit_insulin),
+				BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm)));
 	}
 
 	private static KoofList buildCoefficients(List<Versioned<Rate>> rates)
@@ -475,6 +486,16 @@ public class ActivityRates extends FragmentActivity
 				return true;
 			}
 
+			case R.id.itemRatesUnitMass:
+			{
+				FragmentMassUnitDialog newFragment = new FragmentMassUnitDialog();
+				Bundle args = new Bundle();
+				args.putBoolean(FragmentMassUnitDialog.KEY_BU, BU);
+				newFragment.setArguments(args);
+				newFragment.show(getFragmentManager(), "unitMassPicker");
+				return true;
+			}
+
 			case R.id.itemRatesClear:
 			{
 				if (!rates.isEmpty())
@@ -492,6 +513,16 @@ public class ActivityRates extends FragmentActivity
 				return false;// super.onOptionsItemSelected(item);
 			}
 		}
+	}
+
+	@Override
+	public void onClick(DialogInterface dialog, int which)
+	{
+		System.out.println("Selected: " + which);
+		BU = getString(R.string.common_unit_mass_bu).equals(getResources().getStringArray(R.array.unit_mass_options)[which]);
+
+		adapter.notifyDataSetChanged();
+		updateChartTitle();
 	}
 
 	private void saveStateToHistory()
@@ -551,8 +582,7 @@ public class ActivityRates extends FragmentActivity
 	private String formatKUnit(boolean BU)
 	{
 		String unitBS = getString(R.string.common_unit_bs_mmoll);
-		// TODO: i18n
-		String unitMass = BU ? "ХЕ" : getString(R.string.common_unit_mass_gramm);
+		String unitMass = BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm);
 		return unitBS + "/" + unitMass;
 	}
 
@@ -576,8 +606,7 @@ public class ActivityRates extends FragmentActivity
 	private String formatXUnit(boolean BU)
 	{
 		String unitDosage = getString(R.string.common_unit_insulin);
-		// TODO: i18n
-		String unitMass = BU ? "ХЕ" : getString(R.string.common_unit_mass_gramm);
+		String unitMass = BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm);
 		return unitDosage + "/" + unitMass;
 	}
 

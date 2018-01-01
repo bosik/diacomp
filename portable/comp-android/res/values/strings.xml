@@ -139,6 +139,8 @@
     <string name="rates_actions_remove_all">Remove all</string>
     <string name="rates_actions_replace_with_auto">Replace with auto-values</string>
     <string name="rates_title">Correction factors</string>
+    <string name="unit_mass_action">Mass unit of measure…</string>
+    <string name="unit_mass_title">Mass unit of measure</string>
     <string name="warning_time_delay_ahead_0">Your device clock is %d minutes ahead</string>
     <string name="warning_time_delay_ahead_1">Your device clock is %d minutes ahead</string>
     <string name="warning_time_delay_ahead_2">Your device clock is %d minutes ahead</string>
@@ -178,5 +180,10 @@
         <item>2R</item>
         <item>1R</item>
         <item>TR</item>
+    </string-array>
+
+    <string-array name="unit_mass_options">
+        <item>@string/common_unit_mass_gramm</item>
+        <item>@string/common_unit_mass_bu</item>
     </string-array>
 </resources>
