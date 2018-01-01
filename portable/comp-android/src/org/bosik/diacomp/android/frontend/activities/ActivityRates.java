@@ -278,7 +278,7 @@ public class ActivityRates extends FragmentActivity
 
 			chart.setChartType(Chart.ChartType.DAILY);
 			chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x), getString(R.string.common_unit_insulin),
-					getString(R.string.common_unit_mass_gramm))); // FIXME
+					BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm))); // FIXME
 			chart.setDescription(getString(R.string.charts_insulin_consumption_daily_description));
 			chart.setDataLoader(new ProgressBundle.DataLoader()
 			{
@@ -295,7 +295,8 @@ public class ActivityRates extends FragmentActivity
 						for (int time = 0; time < Utils.MinPerDay; time += 5)
 						{
 							Koof c = coefficients.getKoof(time);
-							dataAvg.add(new DataPoint((double) time / Utils.MinPerHour, c.getK() / c.getQ()));
+							double value = BU ? c.getK() / c.getQ() * Utils.CARB_PER_BU : c.getK() / c.getQ();
+							dataAvg.add(new DataPoint((double) time / Utils.MinPerHour, value));
 						}
 					}
 

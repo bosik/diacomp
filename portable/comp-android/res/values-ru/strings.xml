@@ -49,6 +49,7 @@
     <string name="common_rectype_note">Заметка</string>
     <string name="common_unit_bs_mmoll">ммоль/л</string>
     <string name="common_unit_insulin">ед</string>
+    <string name="common_unit_mass_bu">ХЕ</string>
     <string name="common_unit_mass_gramm">г</string>
     <string name="common_unit_value_kcal">ккал</string>
     <string name="editor_blood_field_finger">Палец</string>

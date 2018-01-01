@@ -49,6 +49,7 @@
     <string name="common_rectype_note">Note</string>
     <string name="common_unit_bs_mmoll">mmol/l</string>
     <string name="common_unit_insulin">U</string>
+    <string name="common_unit_mass_bu">BU</string>
     <string name="common_unit_mass_gramm">g</string>
     <string name="common_unit_value_kcal">kcal</string>
     <string name="editor_blood_field_finger">Finger</string>

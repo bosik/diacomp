@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
@@ -86,6 +87,16 @@ public class ActivityEditorRate extends ActivityEditor<Rate> implements TimePick
 				newFragment.show(getFragmentManager(), "timePicker");
 			}
 		});
+
+		((TextView) findViewById(R.id.labelRateK)).setText(
+				String.format("%s, %s/%s", getString(R.string.common_koof_k), getString(R.string.common_unit_bs_mmoll),
+						BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm)));
+		((TextView) findViewById(R.id.labelRateQ)).setText(
+				String.format("%s, %s/%s", getString(R.string.common_koof_q), getString(R.string.common_unit_bs_mmoll),
+						getString(R.string.common_unit_insulin)));
+		((TextView) findViewById(R.id.labelRateX)).setText(
+				String.format("%s, %s/%s", getString(R.string.common_koof_x), getString(R.string.common_unit_insulin),
+						BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm)));
 
 		editK = (EditText) findViewById(R.id.editRateK);
 		editQ = (EditText) findViewById(R.id.editRateQ);
