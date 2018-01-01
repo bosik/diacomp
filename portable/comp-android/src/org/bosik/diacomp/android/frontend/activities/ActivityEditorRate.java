@@ -129,17 +129,23 @@ public class ActivityEditorRate extends ActivityEditor<Rate> implements TimePick
 
 	private boolean readDouble(EditText editor)
 	{
+		boolean correct;
 		try
 		{
-			Utils.parseExpression(editor.getText().toString());
-			return true;
+			correct = (Utils.parseExpression(editor.getText().toString()) > 0);
 		}
 		catch (IllegalArgumentException e)
 		{
+			correct = false;
+		}
+
+		if (!correct)
+		{
 			UIUtils.showTip(this, MSG_INCORRECT_VALUE);
 			editor.requestFocus();
-			return false;
 		}
+
+		return correct;
 	}
 
 	@Override
