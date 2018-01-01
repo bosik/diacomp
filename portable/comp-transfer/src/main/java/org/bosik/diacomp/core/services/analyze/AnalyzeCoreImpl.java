@@ -438,7 +438,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 			return null;
 		}
 
-		KoofList koofs = new KoofList();
+		KoofList koofs;
 		WeightedTimePoint[] points;
 		List<Bean> V = new ArrayList<Bean>();
 		double k[];
