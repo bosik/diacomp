@@ -50,6 +50,7 @@ import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.Rate;
 import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
+import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.diacomp.core.utils.Utils;
@@ -286,11 +287,16 @@ public class ActivityRates extends FragmentActivity
 				{
 					// TODO: Probably it's better to reload rates here
 
+					KoofList coefficients = buildCoefficients(rates);
+
 					List<DataPoint> dataAvg = new ArrayList<>();
-					for (Versioned<Rate> rate : rates)
+					if (coefficients != null)
 					{
-						Rate r = rate.getData();
-						dataAvg.add(new DataPoint((double) r.getTime() / Utils.MinPerHour, r.getK() / r.getQ()));
+						for (int time = 0; time < Utils.MinPerDay; time += 5)
+						{
+							Koof c = coefficients.getKoof(time);
+							dataAvg.add(new DataPoint((double) time / Utils.MinPerHour, c.getK() / c.getQ()));
+						}
 					}
 
 					LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<>(dataAvg.toArray(new DataPoint[dataAvg.size()]));
@@ -307,6 +313,100 @@ public class ActivityRates extends FragmentActivity
 			// Add the fragment to the 'fragment_container' FrameLayout
 			getSupportFragmentManager().beginTransaction().add(R.id.ratesChart, chart).commit();
 		}
+	}
+
+	private static KoofList buildCoefficients(List<Versioned<Rate>> rates)
+	{
+		if (rates == null || rates.isEmpty())
+		{
+			return null;
+		}
+
+		KoofList list = new KoofList();
+
+		for (int i = -1; i < rates.size(); i++)
+		{
+			int iPreStart = i - 1;
+			int iStart = i;
+			int iEnd = i + 1;
+			int iAfterEnd = i + 2;
+
+			int nPreStart = (iPreStart + rates.size()) % rates.size();
+			int nStart = (iStart + rates.size()) % rates.size();
+			int nEnd = iEnd % rates.size();
+			int nAfterEnd = iAfterEnd % rates.size();
+
+			final Rate ratePreStart = rates.get(nPreStart).getData();
+			final Rate rateStart = rates.get(nStart).getData();
+			final Rate rateEnd = rates.get(nEnd).getData();
+			final Rate rateAfterEnd = rates.get(nAfterEnd).getData();
+
+			double tPreStart = (iPreStart >= 0) ? ratePreStart.getTime() : ratePreStart.getTime() - Utils.MinPerDay;
+			double tStart = (iStart >= 0) ? rateStart.getTime() : rateStart.getTime() - Utils.MinPerDay;
+			double tEnd = (iEnd < rates.size()) ? rateEnd.getTime() : rateEnd.getTime() + Utils.MinPerDay;
+			double tAfterEnd = (iAfterEnd < rates.size()) ? rateAfterEnd.getTime() : rateAfterEnd.getTime() + Utils.MinPerDay;
+
+			// (tPreStart, rates.get(nPreStart).getData().get_())
+			// (tStart, rates.get(nStart).getData().get_())
+			// (tEnd, rates.get(nEnd).getData().get_())
+			// (tAfterEnd, rates.get(nAfterEnd).getData().get_())
+
+			int tFrom = ((int) tStart >= 0) ? (int) tStart : 0;
+			int tTo = ((int) tEnd < Utils.MinPerDay) ? (int) tEnd : Utils.MinPerDay - 1;
+
+			Function<Double, Double> fK = cubeInterpolation(tPreStart, ratePreStart.getK(), tStart, rateStart.getK(), tEnd, rateEnd.getK(),
+					tAfterEnd, rateAfterEnd.getK());
+
+			for (int t = tFrom; t < tTo; t++)
+			{
+				list.getKoof(t).setK(fK.apply((double) t));
+			}
+
+			Function<Double, Double> fQ = cubeInterpolation(tPreStart, ratePreStart.getQ(), tStart, rateStart.getQ(), tEnd, rateEnd.getQ(),
+					tAfterEnd, rateAfterEnd.getQ());
+
+			for (int t = tFrom; t < tTo; t++)
+			{
+				list.getKoof(t).setQ(fQ.apply((double) t));
+			}
+
+			for (int t = tFrom; t < tTo; t++)
+			{
+				list.getKoof(t).setP(0.0);
+			}
+		}
+
+		return list;
+	}
+
+	private interface Function<Input, Output>
+	{
+		Output apply(Input value);
+	}
+
+	public static Function<Double, Double> cubeInterpolation(double x1, double y1, double x2, double y2, double dy1, double dy2)
+	{
+		final double a = (dy1 + dy2) / (x2 - x1) / (x2 - x1) - 2 * (y2 - y1) / (x2 - x1) / (x2 - x1) / (x2 - x1);
+		final double b = (y2 - y1) / (x2 - x1) / (x2 - x1) - (dy1 + a * (x2 * x2 + x1 * x2 - 2 * x1 * x1)) / (x2 - x1);
+		final double c = dy1 - 3 * x1 * x1 * a - 2 * x1 * b;
+		final double d = y1 - x1 * x1 * x1 * a - x1 * x1 * b - x1 * c;
+
+		return new Function<Double, Double>()
+		{
+			@Override
+			public Double apply(Double x)
+			{
+				return a * x * x * x + b * x * x + c * x + d;
+			}
+		};
+	}
+
+	public static Function<Double, Double> cubeInterpolation(double x0, double y0, double x1, double y1, double x2, double y2, double x3,
+			double y3)
+	{
+		double dy1 = (y2 - y0) / (x2 - x0);
+		double dy2 = (y3 - y1) / (x3 - x1);
+		return cubeInterpolation(x1, y1, x2, y2, dy1, dy2);
 	}
 
 	@Override
