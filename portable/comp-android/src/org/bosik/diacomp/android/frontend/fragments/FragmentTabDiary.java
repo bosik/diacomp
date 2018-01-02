@@ -298,19 +298,19 @@ public class FragmentTabDiary extends Fragment
 			{
 				if (record.getData() instanceof BloodRecord)
 				{
-					showBloodEditor(new Versioned<BloodRecord>(record), false);
+					showBloodEditor(record.castTo(BloodRecord.class), false);
 				}
 				else if (record.getData() instanceof InsRecord)
 				{
-					showInsEditor(new Versioned<InsRecord>(record), false);
+					showInsEditor(record.castTo(InsRecord.class), false);
 				}
 				else if (record.getData() instanceof MealRecord)
 				{
-					showMealEditor(new Versioned<MealRecord>(record), false);
+					showMealEditor(record.castTo(MealRecord.class), false);
 				}
 				else if (record.getData() instanceof NoteRecord)
 				{
-					showNoteEditor(new Versioned<NoteRecord>(record), false);
+					showNoteEditor(record.castTo(NoteRecord.class), false);
 				}
 			}
 		});

@@ -17,29 +17,42 @@
 package org.bosik.merklesync;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Versioned entry
  */
 public class Versioned<T> implements Serializable
 {
-	private static final long	serialVersionUID	= 6063993499772711799L;
+	private static final long serialVersionUID = 6063993499772711799L;
 
-	private String				id;
-	private Date				timeStamp;
-	private String				hash;
-	private int					version;
-	private boolean				deleted;
+	private String  id;
+	private Date    timeStamp;
+	private String  hash;
+	private int     version;
+	private boolean deleted;
 
-	private T					data;
+	private T data;
 
-	// ================================ MAIN ================================
+	// ================================ UTILS ================================
+
+	public static final Comparator<Versioned<?>> COMPARATOR_GUID = new Comparator<Versioned<?>>()
+	{
+		@Override
+		public int compare(Versioned<?> lhs, Versioned<?> rhs)
+		{
+			return lhs.getId().compareTo(rhs.getId());
+		}
+	};
+
+	// ================================ METHODS ================================
 
 	public Versioned()
 	{
-		this((T)null);
+		this((T) null);
 	}
 
 	public Versioned(T data)
@@ -50,15 +63,10 @@ public class Versioned<T> implements Serializable
 		modified();
 	}
 
-	@SuppressWarnings("unchecked")
-	public Versioned(Versioned<?> object)
+	public Versioned(Versioned<? extends T> object)
 	{
-		setId(object.getId());
-		setTimeStamp(object.getTimeStamp());
-		setHash(object.getHash());
-		setVersion(object.getVersion());
-		setDeleted(object.isDeleted());
-		setData((T)object.getData());
+		copyMetadata(object);
+		setData(object.getData());
 	}
 
 	public void modified()
@@ -150,31 +158,84 @@ public class Versioned<T> implements Serializable
 	@SuppressWarnings("unchecked")
 	public boolean equals(Object obj)
 	{
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
-		Versioned<T> other = (Versioned<T>)obj;
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Versioned<T> other = (Versioned<T>) obj;
 		if (id == null)
 		{
-			if (other.id != null) return false;
+			if (other.id != null)
+				return false;
 		}
-		else if (!id.equals(other.id)) return false;
+		else if (!id.equals(other.id))
+			return false;
 		return true;
 	}
 
 	@Override
 	public String toString()
 	{
-		return String.format("(ID=%s, Hash=%s, Version=%d, Timestamp=%s, Data=%s)", getId(), getHash(), getVersion(),
-				getTimeStamp().toString(), getData());
+		return String
+				.format("(ID=%s, Hash=%s, Version=%d, Timestamp=%s, Data=%s)", getId(), getHash(), getVersion(), getTimeStamp().toString(),
+						getData());
 	}
 
-	public static final Comparator<Versioned<?>> COMPARATOR_GUID = new Comparator<Versioned<?>>()
+	public static <T> List<Versioned<T>> wrap(Iterable<T> items)
 	{
-		@Override
-		public int compare(Versioned<?> lhs, Versioned<?> rhs)
+		List<Versioned<T>> result = new ArrayList<Versioned<T>>();
+
+		for (T item : items)
 		{
-			return lhs.getId().compareTo(rhs.getId());
+			result.add(new Versioned<T>(item));
 		}
-	};
+
+		return result;
+	}
+
+	public static <T> List<T> unwrap(Iterable<Versioned<T>> items)
+	{
+		List<T> result = new ArrayList<T>();
+
+		for (Versioned<T> item : items)
+		{
+			result.add(item.getData());
+		}
+
+		return result;
+	}
+
+	public static <T> void regenerateIds(Iterable<Versioned<T>> items)
+	{
+		for (Versioned<T> item : items)
+		{
+			item.setId(HashUtils.generateGuid());
+		}
+	}
+
+	public static void copyMetadata(Versioned<?> source, Versioned<?> destination)
+	{
+		destination.setId(source.getId());
+		destination.setTimeStamp(source.getTimeStamp());
+		destination.setHash(source.getHash());
+		destination.setVersion(source.getVersion());
+		destination.setDeleted(source.isDeleted());
+	}
+
+	public void copyMetadata(Versioned<?> source)
+	{
+		copyMetadata(source, this);
+	}
+
+	public <X> Versioned<X> castTo(Class<X> cls)
+	{
+		Versioned<X> result = new Versioned<X>();
+
+		result.copyMetadata(this);
+		result.setData((X) getData());
+
+		return result;
+	}
 }

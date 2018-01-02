@@ -17,10 +17,6 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.components.diary.day;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.TimeZone;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
@@ -40,11 +36,16 @@ import org.bosik.diacomp.web.frontend.wicket.components.diary.note.DiaryPanelNot
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.bosik.merklesync.Versioned;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TimeZone;
+
 public class DiaryPanelDay extends Panel
 {
-	private static final long			serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	IModel<DiaryPanelDayModelObject>	model;
+	IModel<DiaryPanelDayModelObject> model;
 
 	public DiaryPanelDay(String id, IModel<DiaryPanelDayModelObject> model)
 	{
@@ -63,7 +64,7 @@ public class DiaryPanelDay extends Panel
 		add(new Label("caption", Utils.formatDateLocal(timeZone, data.getDate())));
 		add(new RefreshingView<Versioned<DiaryRecord>>("diaryRecord")
 		{
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected Iterator<IModel<Versioned<DiaryRecord>>> getItemModels()
@@ -72,7 +73,7 @@ public class DiaryPanelDay extends Panel
 
 				for (Versioned<DiaryRecord> item : data.getItems())
 				{
-					list.add(Model.<Versioned<DiaryRecord>> of(item));
+					list.add(Model.<Versioned<DiaryRecord>>of(item));
 				}
 
 				return list.iterator();
@@ -85,22 +86,22 @@ public class DiaryPanelDay extends Panel
 				DiaryRecord data = record.getData();
 
 				boolean readOnly = DiaryPanelDay.this.model.getObject().isReadOnly();
-				
+
 				if (data instanceof BloodRecord)
 				{
-					item.add(new DiaryPanelBlood("diaryRecordPanel", Model.of(new Versioned<BloodRecord>(record))));
+					item.add(new DiaryPanelBlood("diaryRecordPanel", Model.of(record.castTo(BloodRecord.class))));
 				}
 				else if (data instanceof InsRecord)
 				{
-					item.add(new DiaryPanelIns("diaryRecordPanel", Model.of(new Versioned<InsRecord>(record))));
+					item.add(new DiaryPanelIns("diaryRecordPanel", Model.of(record.castTo(InsRecord.class))));
 				}
 				else if (data instanceof MealRecord)
 				{
-					item.add(new DiaryPanelMeal("diaryRecordPanel", Model.of(new Versioned<MealRecord>(record)), readOnly));
+					item.add(new DiaryPanelMeal("diaryRecordPanel", Model.of(record.castTo(MealRecord.class)), readOnly));
 				}
 				else if (data instanceof NoteRecord)
 				{
-					item.add(new DiaryPanelNote("diaryRecordPanel", Model.of(new Versioned<NoteRecord>(record))));
+					item.add(new DiaryPanelNote("diaryRecordPanel", Model.of(record.castTo(NoteRecord.class))));
 				}
 				else
 				{
