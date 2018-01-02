@@ -80,7 +80,7 @@
                 <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="8.8 ммоль/л" android:id="@+id/textMealExpectedBs"/>
+                        android:text="x.x mmol/l" android:id="@+id/textMealExpectedBs"/>
             </TableRow>
             <TableRow
                     android:layout_width="match_parent"
@@ -101,12 +101,12 @@
                     <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="+1.7 ед"
+                            android:text="+x.x U"
                             android:textStyle="bold"
                             tools:ignore="RtlSymmetry" android:layout_weight="1" android:paddingRight="@dimen/padding_medium"
                             android:id="@+id/textMealInsulinCorrection"/>
                     <TextView
-                            android:text="(16.7 ед)"
+                            android:text="(xx.x U)"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" android:layout_weight="1" android:textColor="@color/font_gray"
                             android:id="@+id/textMealInsulinResult"/>
@@ -123,6 +123,7 @@
                         android:text="Коррекция (углеводы):" android:paddingRight="@dimen/padding_medium"/>
 
                 <LinearLayout
+                        android:id="@+id/layoutMealShifted"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
@@ -134,7 +135,7 @@
                             android:gravity="start"
                             android:paddingEnd="@dimen/padding_medium"
                             android:paddingRight="@dimen/padding_medium"
-                            android:text="-11 г"
+                            android:text="-xx g"
                             android:textStyle="bold"
                             tools:ignore="RtlSymmetry" android:textColor="@color/meal_correction_negative"/>
 
@@ -143,7 +144,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="start"
-                            android:text="(85 г)" android:textColor="@color/font_gray"/>
+                            android:text="(xx g)" android:textColor="@color/font_gray"/>
                 </LinearLayout>
 
             </TableRow>
