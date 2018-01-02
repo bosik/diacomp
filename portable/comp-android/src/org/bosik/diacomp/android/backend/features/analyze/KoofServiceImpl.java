@@ -17,8 +17,7 @@
  */
 package org.bosik.diacomp.android.backend.features.analyze;
 
-import java.util.Date;
-import java.util.List;
+import android.content.Context;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
 import org.bosik.diacomp.core.services.analyze.KoofService;
@@ -27,31 +26,27 @@ import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
-import android.content.Context;
+
+import java.util.Date;
+import java.util.List;
 
 public class KoofServiceImpl implements KoofService
 {
-	private static final String	TAG			= KoofServiceImpl.class.getSimpleName();
+	private final Koof STD_COEFFICIENT = new Koof(0.25, 2.5, 0.0);
 
-	private final DiaryService	diaryService;
-	private final AnalyzeCore	analyzeCore;
-	private final KoofDao		koofDao;
-	private final int			analyzePeriod;
-	private final double		adaptation;
-
-	private static final Koof	STD_KOOF	= new Koof(0.25, 2.5, 0.0);
+	private final DiaryService diaryService;
+	private final AnalyzeCore  analyzeCore;
+	private final KoofDao      koofDao;
+	private final int          analyzePeriod;
+	private final double       adaptation;
 
 	/**
-	 * 
 	 * @param diaryService
 	 * @param analyzeCore
-	 * @param analyzePeriod
-	 *            In days
-	 * @param adaptation
-	 *            [0 .. 0.1]
+	 * @param analyzePeriod In days
+	 * @param adaptation    [0 .. 0.1]
 	 */
-	public KoofServiceImpl(Context context, DiaryService diaryService, AnalyzeCore analyzeCore, int analyzePeriod,
-			double adaptation)
+	public KoofServiceImpl(Context context, DiaryService diaryService, AnalyzeCore analyzeCore, int analyzePeriod, double adaptation)
 	{
 		this.diaryService = diaryService;
 		this.analyzeCore = analyzeCore;
@@ -99,6 +94,6 @@ public class KoofServiceImpl implements KoofService
 	public Koof getKoof(int time)
 	{
 		Koof koof = koofDao.find(time % Utils.MinPerDay);
-		return koof != null ? koof : STD_KOOF;
+		return koof != null ? koof : STD_COEFFICIENT;
 	}
 }
