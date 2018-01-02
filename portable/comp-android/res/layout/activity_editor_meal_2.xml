@@ -1,0 +1,213 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:gravity="bottom|fill"
+              android:orientation="vertical"
+              android:padding="@dimen/padding_small">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:gravity="top"
+            android:orientation="vertical"
+            android:visibility="visible"
+            tools:context=".ActivityEditorMeal">
+
+        <TextView
+                android:id="@+id/labelMealTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/editor_common_field_time" android:textAllCaps="false"/>
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#c0c0c0"
+                android:divider="?android:dividerHorizontal"/>
+
+        <LinearLayout
+                android:id="@+id/layoutMealDateTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="@dimen/padding_small">
+
+            <Button
+                    android:id="@+id/buttonMealDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="@string/editor_common_stub_date"
+                    android:textSize="@dimen/font_datetime"/>
+
+            <Button
+                    android:id="@+id/buttonMealTime"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/editor_common_stub_time"
+                    android:textSize="@dimen/font_datetime"/>
+        </LinearLayout>
+
+        <TextView
+                android:id="@+id/labelMealCalculation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/editor_meal_header_dosage"/>
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#c0c0c0"
+                android:divider="?android:dividerHorizontal"/>
+
+        <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/padding_small">
+
+            <TableRow
+                    android:id="@+id/mealRowActual"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:paddingEnd="@dimen/padding_small"
+                        android:paddingRight="@dimen/padding_small"
+                        android:text="@string/editor_meal_label_insulin_dosage" tools:text="96 г"/>
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="+"
+                        tools:ignore="RtlSymmetry" android:paddingLeft="@dimen/padding_medium"
+                        android:paddingRight="@dimen/padding_medium"/>
+                <TextView
+                        android:text="15 ед"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                <TextView
+                        android:text="="
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:paddingLeft="@dimen/padding_medium"
+                        android:paddingRight="@dimen/padding_medium"/>
+                <TextView
+                        android:text="8.8 ммоль/л"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/textView3" android:textStyle="normal|bold"
+                        android:textAllCaps="false"/>
+            </TableRow>
+
+            <TableRow
+                    android:id="@+id/mealRowCarbs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="85 г" android:textColor="@color/font_gray" android:layout_weight="1"/>
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="[-11]" android:textColor="@color/meal_correction_negative" android:layout_weight="1"
+                            android:id="@+id/textView16" android:paddingLeft="@dimen/padding_medium" android:textStyle="normal|bold"
+                            android:textAllCaps="false"/>
+                </LinearLayout>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="+"
+                        tools:ignore="RtlSymmetry" android:id="@+id/textView4" android:paddingLeft="@dimen/padding_medium"
+                        android:paddingRight="@dimen/padding_medium" android:textColor="@color/font_gray"/>
+                <TextView
+                        android:text="15 ед"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/textView5" android:textColor="@color/font_gray"/>
+                <TextView
+                        android:text="="
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:paddingLeft="@dimen/padding_medium"
+                        android:paddingRight="@dimen/padding_medium" android:id="@+id/textView13" android:textColor="@color/font_gray"/>
+                <TextView
+                        android:text="5.0 ммоль/л"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/textView7" android:textColor="@color/font_gray"/>
+
+            </TableRow>
+
+            <TableRow
+                    android:id="@+id/mealRowBS"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:paddingEnd="@dimen/padding_small"
+                        android:paddingRight="@dimen/padding_small"
+                        android:text="@string/editor_meal_label_insulin_dosage" tools:text="96 г" android:id="@+id/textView8"
+                        android:textColor="@color/font_gray"/>
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="+"
+                        tools:ignore="RtlSymmetry" android:id="@+id/textView9" android:paddingLeft="@dimen/padding_medium"
+                        android:paddingRight="@dimen/padding_medium" android:textColor="@color/font_gray"/>
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    <TextView
+                            android:text="16.7 ед"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:id="@+id/textView17" android:textColor="@color/font_gray"
+                            android:layout_weight="1"/>
+                    <TextView
+                            android:text="[+1.7]"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:id="@+id/textView10" android:textColor="@color/font_gray"
+                            android:layout_weight="1" android:paddingLeft="@dimen/padding_medium" android:textStyle="normal|bold"/>
+                </LinearLayout>
+                <TextView
+                        android:text="="
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:paddingLeft="@dimen/padding_medium"
+                        android:paddingRight="@dimen/padding_medium" android:id="@+id/textView14" android:textColor="@color/font_gray"/>
+                <TextView
+                        android:text="5.0 ммоль/л"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/textView12" android:textColor="@color/font_gray"/>
+
+            </TableRow>
+        </TableLayout>
+
+        <TextView
+                android:id="@+id/labelMealContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/editor_meal_header_content"/>
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#c0c0c0"
+                android:divider="?android:dividerHorizontal"/>
+    </LinearLayout>
+
+    <org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView
+            android:id="@+id/mealEditorMeal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+</LinearLayout>

@@ -1,0 +1,160 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:gravity="bottom|fill"
+              android:orientation="vertical"
+              android:padding="@dimen/padding_small">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:gravity="top"
+            android:orientation="vertical"
+            android:visibility="visible"
+            tools:context=".ActivityEditorMeal">
+
+        <TextView
+                android:id="@+id/labelMealTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/editor_common_field_time"/>
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#c0c0c0"
+                android:divider="?android:dividerHorizontal"/>
+
+        <LinearLayout
+                android:id="@+id/layoutMealDateTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="@dimen/padding_small">
+
+            <Button
+                    android:id="@+id/buttonMealDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="@string/editor_common_stub_date"
+                    android:textSize="@dimen/font_datetime"/>
+
+            <Button
+                    android:id="@+id/buttonMealTime"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/editor_common_stub_time"
+                    android:textSize="@dimen/font_datetime"/>
+        </LinearLayout>
+
+        <TextView
+                android:id="@+id/labelMealCalculation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/editor_meal_header_dosage"/>
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#c0c0c0"
+                android:divider="?android:dividerHorizontal"/>
+
+        <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:stretchColumns="1"
+                android:padding="@dimen/padding_small">
+
+            <TableRow android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView
+                        android:text="Углеводы"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/textView"/>
+                <ProgressBar
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:progressDrawable="@android:drawable/progress_horizontal"
+                        android:progress="75"
+                        android:indeterminate="false"
+                        android:indeterminateOnly="false"
+                        android:paddingTop="@dimen/padding_tiny"
+                        android:paddingBottom="@dimen/padding_tiny"
+                        android:paddingLeft="@dimen/padding_large"
+                        android:paddingRight="@dimen/padding_large"/>
+                <TextView
+                        android:text="+28 г"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/textView2"
+                        android:textColor="@color/meal_correction_positive"/>
+                <TextView
+                        android:id="@+id/textMealShiftedDosage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:text="(85 г)" android:textColor="@color/font_gray" android:paddingLeft="@dimen/padding_medium"
+                        android:visibility="gone"/>
+            </TableRow>
+            <TableRow android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView
+                        android:text="Инсулин"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/textView6"/>
+                <ProgressBar
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingTop="@dimen/padding_tiny"
+                        android:paddingBottom="@dimen/padding_tiny"
+                        android:paddingLeft="@dimen/padding_large"
+                        android:paddingRight="@dimen/padding_large"
+                        android:progressDrawable="@android:drawable/progress_horizontal"
+                        android:progress="100"
+                        android:indeterminate="false"
+                        android:indeterminateOnly="false"/>
+                <TextView
+                        android:text="-14 ед"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/textView11" android:textColor="@color/font_gray"/>
+                <TextView
+                        android:text="(16.7 ед)"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:layout_weight="1" android:textColor="@color/font_gray"
+                        android:paddingLeft="@dimen/padding_medium" android:visibility="gone"/>
+            </TableRow>
+            <TableRow android:layout_width="match_parent" android:layout_height="match_parent">
+                <TextView
+                        android:text="Ожидаемый СК:"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/textView15"/>
+                <TextView
+                        android:text="8.8 ммоль/л"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/textView18"
+                        android:paddingLeft="@dimen/padding_large"
+                        android:paddingRight="@dimen/padding_large"/>
+            </TableRow>
+        </TableLayout>
+        <TextView
+                android:id="@+id/labelMealContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/editor_meal_header_content"/>
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#c0c0c0"
+                android:divider="?android:dividerHorizontal"/>
+    </LinearLayout>
+
+    <org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView
+            android:id="@+id/mealEditorMeal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+</LinearLayout>

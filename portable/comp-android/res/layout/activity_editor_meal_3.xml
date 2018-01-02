@@ -1,0 +1,170 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:gravity="bottom|fill"
+              android:orientation="vertical"
+              android:padding="@dimen/padding_small">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:gravity="top"
+            android:orientation="vertical"
+            android:visibility="visible"
+            tools:context=".ActivityEditorMeal">
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/editor_common_field_time"/>
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#c0c0c0"
+                android:divider="?android:dividerHorizontal"/>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="@dimen/padding_small">
+
+            <Button
+                    android:id="@+id/buttonMealDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="@string/editor_common_stub_date"
+                    android:textSize="@dimen/font_datetime"/>
+
+            <Button
+                    android:id="@+id/buttonMealTime"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/editor_common_stub_time"
+                    android:textSize="@dimen/font_datetime"/>
+        </LinearLayout>
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/editor_meal_header_dosage"/>
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#c0c0c0"
+                android:divider="?android:dividerHorizontal"/>
+
+        <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/padding_small">
+
+            <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:paddingBottom="@dimen/padding_tiny">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:paddingEnd="@dimen/padding_small"
+                        android:paddingRight="@dimen/padding_medium"
+                        android:text="СК без коррекции:"/>
+
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="8.8 ммоль/л" android:id="@+id/textMealExpectedBs"/>
+            </TableRow>
+            <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:paddingEnd="@dimen/padding_small"
+                        android:paddingRight="@dimen/padding_medium"
+                        android:text="Коррекция (инсулин):"/>
+
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="+1.7 ед"
+                            android:textStyle="bold"
+                            tools:ignore="RtlSymmetry" android:layout_weight="1" android:paddingRight="@dimen/padding_medium"
+                            android:id="@+id/textMealInsulinCorrection"/>
+                    <TextView
+                            android:text="(16.7 ед)"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:layout_weight="1" android:textColor="@color/font_gray"
+                            android:id="@+id/textMealInsulinResult"/>
+                </LinearLayout>
+            </TableRow>
+
+            <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Коррекция (углеводы):" android:paddingRight="@dimen/padding_medium"/>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                    <TextView
+                            android:id="@+id/textMealCarbsCorrection"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:paddingEnd="@dimen/padding_medium"
+                            android:paddingRight="@dimen/padding_medium"
+                            android:text="-11 г"
+                            android:textStyle="bold"
+                            tools:ignore="RtlSymmetry" android:textColor="@color/meal_correction_negative"/>
+
+                    <TextView
+                            android:id="@+id/textMealCarbsResult"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:text="(85 г)" android:textColor="@color/font_gray"/>
+                </LinearLayout>
+
+            </TableRow>
+
+        </TableLayout>
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/editor_meal_header_content"/>
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#c0c0c0"
+                android:divider="?android:dividerHorizontal"/>
+    </LinearLayout>
+
+    <org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView
+            android:id="@+id/mealEditorMeal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+</LinearLayout>
