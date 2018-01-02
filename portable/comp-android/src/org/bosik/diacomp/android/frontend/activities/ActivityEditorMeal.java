@@ -38,7 +38,7 @@ import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
-import org.bosik.diacomp.core.services.analyze.KoofService;
+import org.bosik.diacomp.core.services.analyze.RateService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
@@ -226,9 +226,9 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		// a - BS above target (BS_TARGET..)
 
 		// commons
-		KoofService koofService = KoofServiceInternal.getInstance(this);
 		int minutesTime = Utils.getDayMinutesUTC(entity.getData().getTime());
-		Koof koof = koofService.getKoof(minutesTime);
+		RateService rateService = KoofServiceInternal.getInstance(this);
+		Koof koof = rateService.getKoof(minutesTime);
 		double carbs = entity.getData().getCarbs();
 		double prots = entity.getData().getProts();
 

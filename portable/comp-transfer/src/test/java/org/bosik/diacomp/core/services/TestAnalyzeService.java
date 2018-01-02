@@ -24,7 +24,7 @@ public class TestAnalyzeService
 {
 	//	private DiaryService	diaryService;
 	//	private AnalyzeCore		analyzeCore;
-	//	private KoofService		koofService;
+	//	private RateService		koofService;
 	//
 	//	@Before
 	//	public void setUp()

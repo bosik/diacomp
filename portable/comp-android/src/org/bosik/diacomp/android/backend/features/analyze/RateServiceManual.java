@@ -21,7 +21,7 @@ import android.content.Context;
 import android.util.Log;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.core.entities.business.Rate;
-import org.bosik.diacomp.core.services.analyze.KoofService;
+import org.bosik.diacomp.core.services.analyze.RateService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
@@ -34,14 +34,14 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KoofServiceManual implements KoofService
+public class RateServiceManual implements RateService
 {
-	private static final String TAG = KoofServiceManual.class.getSimpleName();
+	private static final String TAG = RateServiceManual.class.getSimpleName();
 
 	private Context  context;
 	private KoofList coefficients;
 
-	public KoofServiceManual(Context context)
+	public RateServiceManual(Context context)
 	{
 		this.context = context;
 		update();

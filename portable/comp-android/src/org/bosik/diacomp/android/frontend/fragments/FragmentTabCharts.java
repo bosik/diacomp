@@ -44,7 +44,7 @@ import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
-import org.bosik.diacomp.core.services.analyze.KoofService;
+import org.bosik.diacomp.core.services.analyze.RateService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
@@ -353,12 +353,12 @@ public class FragmentTabCharts extends Fragment
 			@Override
 			public Collection<Series<?>> load(ContentResolver contentResolver)
 			{
-				KoofService koofService = KoofServiceInternal.getInstance(getActivity());
+				RateService rateService = KoofServiceInternal.getInstance(getActivity());
 
 				List<DataPoint> dataList = new ArrayList<>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
 				{
-					Koof koof = koofService.getKoof(time);
+					Koof koof = rateService.getKoof(time);
 					double x = (double) time / 60;
 					double y = koof.getK() / koof.getQ();
 					dataList.add(new DataPoint(x, y));
@@ -390,13 +390,13 @@ public class FragmentTabCharts extends Fragment
 			@Override
 			public Collection<Series<?>> load(ContentResolver contentResolver)
 			{
-				KoofService koofService = KoofServiceInternal.getInstance(getActivity());
+				RateService rateService = KoofServiceInternal.getInstance(getActivity());
 
 				List<DataPoint> dataList = new ArrayList<>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
 				{
 					double x = (double) time / 60;
-					double y = koofService.getKoof(time).getK();
+					double y = rateService.getKoof(time).getK();
 					dataList.add(new DataPoint(x, y));
 				}
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
@@ -426,13 +426,13 @@ public class FragmentTabCharts extends Fragment
 			@Override
 			public Collection<Series<?>> load(ContentResolver contentResolver)
 			{
-				KoofService koofService = KoofServiceInternal.getInstance(getActivity());
+				RateService rateService = KoofServiceInternal.getInstance(getActivity());
 
 				List<DataPoint> dataList = new ArrayList<>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
 				{
 					double x = (double) time / 60;
-					double y = koofService.getKoof(time).getQ();
+					double y = rateService.getKoof(time).getQ();
 					dataList.add(new DataPoint(x, y));
 				}
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);

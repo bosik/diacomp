@@ -42,7 +42,7 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.Series;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
-import org.bosik.diacomp.android.backend.features.analyze.KoofServiceManual;
+import org.bosik.diacomp.android.backend.features.analyze.RateServiceManual;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.FragmentMassUnitDialog;
@@ -50,7 +50,7 @@ import org.bosik.diacomp.android.frontend.fragments.chart.Chart;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.Rate;
-import org.bosik.diacomp.core.services.analyze.KoofService;
+import org.bosik.diacomp.core.services.analyze.RateService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
@@ -94,9 +94,9 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 
 		// THINK: double loading occurs here
 
-		final KoofService ratesService = new KoofServiceManual(this);
+		final RateService ratesService = new RateServiceManual(this);
 
-		List<Versioned<Rate>> versioned = Versioned.wrap(KoofServiceManual.loadRates(this));
+		List<Versioned<Rate>> versioned = Versioned.wrap(RateServiceManual.loadRates(this));
 		Versioned.regenerateIds(versioned);
 		rates = versioned;
 
@@ -370,7 +370,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 
 			case R.id.itemRatesReplaceWithAuto:
 			{
-				KoofService service = KoofServiceInternal.getInstance(this);
+				RateService service = KoofServiceInternal.getInstance(this);
 
 				rates.clear();
 				for (int time = 0; time < Utils.MinPerDay; time += 2 * Utils.MinPerHour)

@@ -18,29 +18,29 @@
  */
 package org.bosik.diacomp.android.backend.features.analyze;
 
-import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
-import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
-import org.bosik.diacomp.core.services.analyze.KoofService;
-import org.bosik.diacomp.core.services.diary.DiaryService;
 import android.content.Context;
 import android.util.Log;
+import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
+import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
+import org.bosik.diacomp.core.services.analyze.RateService;
+import org.bosik.diacomp.core.services.diary.DiaryService;
 
 public class KoofServiceInternal
 {
-	private static final String	TAG					= KoofServiceInternal.class.getSimpleName();
-	private static KoofService	instance;
-	// TODO: make it preference
-	private static int			ANALYZE_DAYS_PERIOD	= 14;
+	private static final String TAG                 = KoofServiceInternal.class.getSimpleName();
+	private static final int    ANALYZE_DAYS_PERIOD = 14; // TODO: make it preference
+	private static final double ANALYZE_ADAPTATION  = 0.995; // TODO: make it preference
 
-	public static synchronized KoofService getInstance(Context context)
+	private static RateService instance;
+
+	public static synchronized RateService getInstance(Context context)
 	{
 		if (null == instance)
 		{
-			Log.i(TAG, "Koof service initialization...");
+			Log.i(TAG, "Rates service initialization...");
 			DiaryService localDiary = LocalDiary.getInstance(context);
 			AnalyzeCore analyzeService = AnalyzeCoreInternal.getInstance();
-			// TODO: hardcoded adaptation
-			instance = new KoofServiceImpl(context, localDiary, analyzeService, ANALYZE_DAYS_PERIOD, 0.995);
+			instance = new RateServiceImpl(context, localDiary, analyzeService, ANALYZE_DAYS_PERIOD, ANALYZE_ADAPTATION);
 		}
 		return instance;
 	}
