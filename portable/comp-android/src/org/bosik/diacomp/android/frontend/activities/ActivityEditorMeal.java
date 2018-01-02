@@ -172,7 +172,9 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			case R.id.item_meal_info:
 			{
 				String s = getString(R.string.editor_meal_tip_meal_info);
-				String info = String.format(s, data.getProts(), data.getFats(), data.getCarbs(), data.getValue(), data.getMass());
+				String info = String
+						.format(s, data.getProts(), data.getFats(), data.getCarbs(), data.getCarbs() / Utils.CARB_PER_BU, data.getValue(),
+								data.getMass());
 				UIUtils.showLongTip(ActivityEditorMeal.this, info);
 				return true;
 			}

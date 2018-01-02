@@ -89,7 +89,7 @@
     <string name="editor_meal_label_insulin_dosage">Insulin:</string>
     <string name="editor_meal_label_stat" formatted="false">P 10.2</string>
     <string name="editor_meal_short_postprandial">Short postprandial</string>
-    <string name="editor_meal_tip_meal_info" formatted="false" tools:ignore="StringFormatInvalid">Prots: %.0f g\nFats: %.0f g\nCarbs: %.0f g\nValue: %.0f kcal\nMass: %.0f g</string>
+    <string name="editor_meal_tip_meal_info" formatted="false" tools:ignore="StringFormatInvalid">Prots: %.0f g\nFats: %.0f g\nCarbs: %.0f g (%.0f BU)\nValue: %.0f kcal\nMass: %.0f g</string>
     <string name="editor_meal_title">Meal</string>
     <string name="editor_note_field_text">Text</string>
     <string name="editor_note_title">Note</string>
