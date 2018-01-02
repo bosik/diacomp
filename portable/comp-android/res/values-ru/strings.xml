@@ -87,7 +87,7 @@
     <string name="editor_meal_label_insulin_dosage">Инсулин:</string>
     <string name="editor_meal_label_stat">г угл.</string>
     <string name="editor_meal_short_postprandial">Сокращённый постпрандиал</string>
-    <string name="editor_meal_tip_meal_info" formatted="false">Белки: %.0f г\nЖиры: %.0f г\nУглеводы: %.0f г (%.0f ХЕ)\nЦенность: %.0f ккал\nМасса: %.0f г</string>
+    <string name="editor_meal_tip_meal_info" formatted="false">Белки: %.0f г\nЖиры: %.0f г\nУглеводы: %.0f г (%.1f ХЕ)\nЦенность: %.0f ккал\nМасса: %.0f г</string>
     <string name="editor_meal_title">Приём пищи</string>
     <string name="editor_note_field_text">Текст</string>
     <string name="editor_note_title">Заметка</string>
