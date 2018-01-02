@@ -61,7 +61,8 @@ public class BackgroundService extends Service
 
 					void analyzeKoofs(Context context)
 					{
-						KoofServiceInternal.getInstance(context).update();
+						KoofServiceInternal.getInstanceAuto(context).update();
+						KoofServiceInternal.getInstanceManual(context).update();
 					}
 				}.execute();
 			}

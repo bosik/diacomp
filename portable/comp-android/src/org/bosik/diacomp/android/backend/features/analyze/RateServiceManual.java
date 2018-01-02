@@ -44,7 +44,6 @@ public class RateServiceManual implements RateService
 	public RateServiceManual(Context context)
 	{
 		this.context = context;
-		update();
 	}
 
 	@Override
@@ -56,6 +55,11 @@ public class RateServiceManual implements RateService
 	@Override
 	public Koof getKoof(int time)
 	{
+		if (coefficients == null)
+		{
+			update();
+		}
+
 		if (coefficients != null)
 		{
 			return coefficients.getKoof(time);

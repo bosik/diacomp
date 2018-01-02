@@ -21,9 +21,12 @@ package org.bosik.diacomp.android.backend.features.analyze;
 import android.content.Context;
 import android.util.Log;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
+import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
 import org.bosik.diacomp.core.services.analyze.RateService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
+import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 
 public class KoofServiceInternal
 {
@@ -31,17 +34,36 @@ public class KoofServiceInternal
 	private static final int    ANALYZE_DAYS_PERIOD = 14; // TODO: make it preference
 	private static final double ANALYZE_ADAPTATION  = 0.995; // TODO: make it preference
 
-	private static RateService instance;
+	private static RateService instanceAuto;
+	private static RateService instanceManual;
+
+	public static synchronized RateService getInstanceAuto(Context context)
+	{
+		if (instanceAuto == null)
+		{
+			Log.i(TAG, "Rates service (auto) initialization...");
+			DiaryService localDiary = LocalDiary.getInstance(context);
+			AnalyzeCore analyzeService = AnalyzeCoreInternal.getInstance();
+			instanceAuto = new RateServiceAuto(context, localDiary, analyzeService, ANALYZE_DAYS_PERIOD, ANALYZE_ADAPTATION);
+		}
+		return instanceAuto;
+	}
+
+	public static synchronized RateService getInstanceManual(Context context)
+	{
+		// if (instanceManual == null)
+		{
+			Log.i(TAG, "Rates service (manual) initialization...");
+			instanceManual = new RateServiceManual(context);
+		}
+		return instanceManual;
+	}
 
 	public static synchronized RateService getInstance(Context context)
 	{
-		if (null == instance)
-		{
-			Log.i(TAG, "Rates service initialization...");
-			DiaryService localDiary = LocalDiary.getInstance(context);
-			AnalyzeCore analyzeService = AnalyzeCoreInternal.getInstance();
-			instance = new RateServiceImpl(context, localDiary, analyzeService, ANALYZE_DAYS_PERIOD, ANALYZE_ADAPTATION);
-		}
-		return instance;
+		PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(context));
+		boolean autoRates = preferences.getBooleanValue(PreferenceID.RATES_AUTO);
+
+		return autoRates ? getInstanceAuto(context) : getInstanceManual(context);
 	}
 }

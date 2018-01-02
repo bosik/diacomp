@@ -243,8 +243,15 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			hideInsulinDosage();
 
 			// Line 2: Correction
-			double shiftedCarbs = (prots * koof.getP() + (bsTarget - bsLast)) / koof.getK() - carbs;
-			showCorrection(shiftedCarbs, null);
+			if (koof != null)
+			{
+				double shiftedCarbs = (prots * koof.getP() + (bsTarget - bsLast)) / koof.getK() - carbs;
+				showCorrection(shiftedCarbs, null);
+			}
+			else
+			{
+				showCorrection(null, null);
+			}
 
 			// Line 3: Expected BS
 			showExpectedBs(bsLast, 0, carbs, prots, koof);
@@ -255,7 +262,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			showInsulinDosage(bsBase, bsTarget, (insInjected > 0), carbs, prots, koof);
 
 			// Line 2: Correction
-			if (insInjected > 0)
+			if (insInjected > 0 && koof != null)
 			{
 				double deltaBS = (bsBase == null ? 0.0 : bsTarget - bsBase);
 				double shiftedCarbs = (insInjected * koof.getQ() - prots * koof.getP() + deltaBS) / koof.getK() - carbs;
@@ -280,10 +287,10 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	{
 		findViewById(R.id.mealRowInsulin).setVisibility(View.VISIBLE);
 
-		if (targetBS != null)
+		if (targetBS != null && koof != null && koof.getQ() > Utils.EPS)
 		{
 			double deltaBS = (inputBS == null ? 0.0 : targetBS - inputBS);
-			double currentDosage = (-deltaBS + carbs * koof.getK() + (prots * koof.getP())) / koof.getQ();
+			double currentDosage = (-deltaBS + carbs * koof.getK() + prots * koof.getP()) / koof.getQ();
 			if (currentDosage > 0)
 			{
 				textMealCurrentDosage.setText(String.format(Locale.US, "%.1f %s", currentDosage, captionDose));
@@ -348,9 +355,9 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 
 	private void showExpectedBs(Double inputBS, double insulinDosage, double carbs, double prots, Koof koof)
 	{
-		if (inputBS != null)
+		if (inputBS != null && koof != null)
 		{
-			double expectedBS = inputBS + (carbs * koof.getK()) + (prots * koof.getP()) - (insulinDosage * koof.getQ());
+			double expectedBS = inputBS + carbs * koof.getK() + prots * koof.getP() - insulinDosage * koof.getQ();
 			if (expectedBS > BS_HYPOGLYCEMIA)
 			{
 				textMealExpectedBs.setText(String.format(Locale.US, "%.1f %s", expectedBS, captionMmol));

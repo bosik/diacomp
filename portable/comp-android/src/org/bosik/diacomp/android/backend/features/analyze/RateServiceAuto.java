@@ -30,7 +30,7 @@ import org.bosik.merklesync.Versioned;
 import java.util.Date;
 import java.util.List;
 
-public class RateServiceImpl implements RateService
+public class RateServiceAuto implements RateService
 {
 	private final Koof STD_COEFFICIENT = new Koof(0.25, 2.5, 0.0);
 
@@ -46,7 +46,7 @@ public class RateServiceImpl implements RateService
 	 * @param analyzePeriod In days
 	 * @param adaptation    [0 .. 0.1]
 	 */
-	public RateServiceImpl(Context context, DiaryService diaryService, AnalyzeCore analyzeCore, int analyzePeriod, double adaptation)
+	public RateServiceAuto(Context context, DiaryService diaryService, AnalyzeCore analyzeCore, int analyzePeriod, double adaptation)
 	{
 		this.diaryService = diaryService;
 		this.analyzeCore = analyzeCore;

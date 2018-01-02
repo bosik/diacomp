@@ -370,7 +370,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 
 			case R.id.itemRatesReplaceWithAuto:
 			{
-				RateService service = KoofServiceInternal.getInstance(this);
+				RateService service = KoofServiceInternal.getInstanceAuto(this);
 
 				rates.clear();
 				for (int time = 0; time < Utils.MinPerDay; time += 2 * Utils.MinPerHour)
