@@ -17,31 +17,35 @@
  */
 package org.bosik.diacomp.web.backend.common;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.bosik.merklesync.MerkleTree;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 //@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CachedHashTree
 {
-	public enum TreeType {
-		DIARY, FOODBASE, DISHBASE
+	public enum TreeType
+	{
+		DIARY,
+		FOODBASE,
+		DISHBASE
 	}
 
 	private class UserTree
 	{
-		public UserTree()
+		UserTree()
 		{
 		}
 
-		MerkleTree	diaryTree;
-		MerkleTree	foodTree;
-		MerkleTree	dishTree;
+		MerkleTree diaryTree;
+		MerkleTree foodTree;
+		MerkleTree dishTree;
 	}
 
-	private Map<Integer, UserTree>	trees	= new HashMap<Integer, UserTree>();
+	private final Map<Integer, UserTree> trees = new HashMap<>();
 
 	public MerkleTree getTree(int userId, TreeType type)
 	{

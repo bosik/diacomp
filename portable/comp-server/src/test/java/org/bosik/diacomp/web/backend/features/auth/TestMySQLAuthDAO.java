@@ -17,6 +17,8 @@
  */
 package org.bosik.diacomp.web.backend.features.auth;
 
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.ContextConfiguration;
@@ -30,14 +32,14 @@ public class TestMySQLAuthDAO
 	// @Autowired
 	// private AuthService authService;
 	//
-	// @Test
-	// @Ignore
-	// public void test()
-	// {
-	// final String login = Config.get(Config.KEY_TEST_LOGIN);
-	// final String pass = Config.get(Config.KEY_TEST_PASSWORD);
-	//
-	// int id = authService.login(login, pass);
-	// assertEquals(1, id);
-	// }
+	@Test
+	@Ignore
+	public void test()
+	{
+		//	 final String login = Config.get(Config.KEY_TEST_LOGIN);
+		//	 final String pass = Config.get(Config.KEY_TEST_PASSWORD);
+		//
+		//	 int id = authService.login(login, pass);
+		//	 assertEquals(1, id);
+	}
 }
