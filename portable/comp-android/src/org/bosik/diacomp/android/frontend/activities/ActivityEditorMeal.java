@@ -60,8 +60,8 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	public static final String FIELD_INS_INJECTED = "bosik.pack.insInjected";
 
 	// FIXME: hardcoded BS value
-	private static final double BS_HYPOGLYCEMIA  = 4.0;
-	private static final double CARB_COLOR_LIMIT = 1.0;
+	private static final double BS_HYPOGLYCEMIA  = 3.7;
+	private static final double CARB_COLOR_LIMIT = 1.5;
 
 	private DiaryService diary;
 
@@ -69,9 +69,10 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private Button buttonTime;
 	private Button buttonDate;
 
-	private TextView       textMealCurrentDosage;
-	private TextView       textMealShiftedCarbs;
-	private TextView       textMealShiftedDosage;
+	private TextView       textMealInsulinCorrection;
+	private TextView       textMealInsulinResult;
+	private TextView       textMealCarbsCorrection;
+	private TextView       textMealCarbsResult;
 	private TextView       textMealExpectedBs;
 	private MealEditorView mealEditor;
 
@@ -85,7 +86,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	@Override
 	protected void setupInterface()
 	{
-		setContentView(R.layout.activity_editor_meal);
+		setContentView(R.layout.activity_editor_meal_3);
 
 		captionDose = getString(R.string.common_unit_insulin);
 		captionGramm = getString(R.string.common_unit_mass_gramm);
@@ -112,9 +113,10 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			}
 		});
 
-		textMealCurrentDosage = (TextView) findViewById(R.id.textMealCurrentDosage);
-		textMealShiftedCarbs = (TextView) findViewById(R.id.textMealShiftedCarbs);
-		textMealShiftedDosage = (TextView) findViewById(R.id.textMealShiftedDosage);
+		textMealInsulinCorrection = (TextView) findViewById(R.id.textMealInsulinCorrection);
+		textMealInsulinResult = (TextView) findViewById(R.id.textMealInsulinResult);
+		textMealCarbsCorrection = (TextView) findViewById(R.id.textMealCarbsCorrection);
+		textMealCarbsResult = (TextView) findViewById(R.id.textMealCarbsResult);
 		textMealExpectedBs = (TextView) findViewById(R.id.textMealExpectedBs);
 
 		mealEditor = (MealEditorView) findViewById(R.id.mealEditorMeal);
@@ -173,8 +175,8 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			{
 				String s = getString(R.string.editor_meal_tip_meal_info);
 				String info = String
-						.format(s, data.getProts(), data.getFats(), data.getCarbs(), data.getCarbs() / Utils.CARB_PER_BU, data.getValue(),
-								data.getMass());
+						.format(Locale.US, s, data.getProts(), data.getFats(), data.getCarbs(), data.getCarbs() / Utils.CARB_PER_BU,
+								data.getValue(), data.getMass());
 				UIUtils.showLongTip(ActivityEditorMeal.this, info);
 				return true;
 			}
@@ -239,134 +241,131 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		Double bsTarget = getBsTarget();
 		double insInjected = getInsInjected();
 
-		if (bsLast != null && bsLast < BS_HYPOGLYCEMIA && (bsBase == null || Math.abs(bsBase - bsLast) > Utils.EPS))
+//		if (bsLast != null && bsLast < BS_HYPOGLYCEMIA && (bsBase == null || Math.abs(bsBase - bsLast) > Utils.EPS))
+//		{
+//			if (koof != null)
+//			{
+//				double shiftedCarbs = (prots * koof.getP() + (bsTarget - bsLast)) / koof.getK() - carbs;
+//				showCarbsCorrection(shiftedCarbs);
+//			}
+//			else
+//			{
+//				showCarbsCorrection(null);
+//			}
+//
+//			showInsulinCorrection(bsBase, bsTarget, carbs, prots, koof);
+//			showExpectedBs(bsLast, 0, carbs, prots, koof);
+//		}
+//		else
 		{
-			// Line 1: Insulin
-			hideInsulinDosage();
+			showInsulinCorrection(bsBase, bsTarget, carbs, prots, koof);
 
-			// Line 2: Correction
 			if (koof != null)
-			{
-				double shiftedCarbs = (prots * koof.getP() + (bsTarget - bsLast)) / koof.getK() - carbs;
-				showCorrection(shiftedCarbs, null);
-			}
-			else
-			{
-				showCorrection(null, null);
-			}
-
-			// Line 3: Expected BS
-			showExpectedBs(bsLast, 0, carbs, prots, koof);
-		}
-		else
-		{
-			// Line 1: Insulin
-			showInsulinDosage(bsBase, bsTarget, (insInjected > 0), carbs, prots, koof);
-
-			// Line 2: Correction
-			if (insInjected > 0 && koof != null)
 			{
 				double deltaBS = (bsBase == null ? 0.0 : bsTarget - bsBase);
 				double shiftedCarbs = (insInjected * koof.getQ() - prots * koof.getP() + deltaBS) / koof.getK() - carbs;
-				showCorrection(shiftedCarbs, insInjected);
+				showCarbsCorrection(shiftedCarbs);
 			}
 			else
 			{
-				showCorrection(null, null);
+				showCarbsCorrection(null);
 			}
 
-			// Line 3: Expected BS
 			showExpectedBs(bsBase, insInjected, carbs, prots, koof);
 		}
 	}
 
-	private void hideInsulinDosage()
+	private void showInsulinCorrection(Double inputBS, Double targetBS, double carbs, double prots, Koof koof)
 	{
-		findViewById(R.id.mealRowInsulin).setVisibility(View.GONE);
-	}
-
-	private void showInsulinDosage(Double inputBS, Double targetBS, boolean insulinInjected, double carbs, double prots, Koof koof)
-	{
-		findViewById(R.id.mealRowInsulin).setVisibility(View.VISIBLE);
-
 		if (targetBS != null && koof != null && koof.getQ() > Utils.EPS)
 		{
 			double deltaBS = (inputBS == null ? 0.0 : targetBS - inputBS);
-			double currentDosage = (-deltaBS + carbs * koof.getK() + prots * koof.getP()) / koof.getQ();
-			if (currentDosage > 0)
+			double dosageRequired = (-deltaBS + carbs * koof.getK() + prots * koof.getP()) / koof.getQ();
+
+			double dosageCorrection = dosageRequired - getInsInjected();
+			textMealInsulinCorrection.setText(String.format(Locale.US, "%+.1f %s", dosageCorrection, captionDose));
+			if (dosageCorrection > 0)
 			{
-				textMealCurrentDosage.setText(String.format(Locale.US, "%.1f %s", currentDosage, captionDose));
-				if (insulinInjected)
-				{
-					textMealCurrentDosage.setTypeface(Typeface.DEFAULT);
-				}
-				else
-				{
-					textMealCurrentDosage.setTypeface(Typeface.DEFAULT_BOLD);
-				}
+				textMealInsulinCorrection.setTypeface(Typeface.DEFAULT_BOLD);
 			}
 			else
 			{
-				textMealCurrentDosage.setTypeface(Typeface.DEFAULT);
-				textMealCurrentDosage.setText("--");
+				textMealInsulinCorrection.setTypeface(Typeface.DEFAULT);
+			}
+
+			if (dosageRequired > 0)
+			{
+				textMealInsulinResult.setText(String.format(Locale.US, "(%.1f %s)", dosageRequired, captionDose));
+			}
+			else
+			{
+				textMealInsulinResult.setText("");
 			}
 		}
 		else
 		{
-			textMealCurrentDosage.setTypeface(Typeface.DEFAULT);
-			textMealCurrentDosage.setText("?");
+			textMealInsulinCorrection.setTypeface(Typeface.DEFAULT);
+			textMealInsulinCorrection.setText("?");
+			textMealInsulinResult.setText("");
 		}
 	}
 
-	private void showCorrection(Double shiftedCarbs, Double insDosage)
+	private void showCarbsCorrection(Double shiftedCarbs)
 	{
 		if (shiftedCarbs != null)
 		{
-			findViewById(R.id.mealRowCarbs).setVisibility(View.VISIBLE);
+			textMealCarbsCorrection.setText(String.format(Locale.US, "%+.0f %s", shiftedCarbs, captionGramm));
 
-			textMealShiftedCarbs.setText(Utils.formatDoubleSigned(shiftedCarbs) + " " + captionGramm);
-			textMealShiftedCarbs.setTypeface(Typeface.DEFAULT_BOLD);
 			if (shiftedCarbs < -CARB_COLOR_LIMIT)
 			{
-				textMealShiftedCarbs.setTextColor(getResources().getColor(R.color.meal_correction_negative));
+				textMealCarbsCorrection.setTextColor(getResources().getColor(R.color.meal_correction_negative));
 			}
 			else if (shiftedCarbs > CARB_COLOR_LIMIT)
 			{
-				textMealShiftedCarbs.setTextColor(getResources().getColor(R.color.meal_correction_positive));
+				textMealCarbsCorrection.setTextColor(getResources().getColor(R.color.meal_correction_positive));
 			}
 			else
 			{
-				textMealShiftedCarbs.setTextColor(Color.BLACK);
+				textMealCarbsCorrection.setTextColor(Color.BLACK);
 			}
 
-			if (insDosage != null)
+			double carbsResult = entity.getData().getCarbs() + shiftedCarbs;
+			if (carbsResult >= 0)
 			{
-				textMealShiftedDosage.setVisibility(View.VISIBLE);
-				textMealShiftedDosage.setText(String.format(Locale.US, " → %.1f %s", getInsInjected(), captionDose));
+				textMealCarbsResult.setText(String.format(Locale.US, "(%.0f %s)", carbsResult, captionGramm));
 			}
 			else
 			{
-				textMealShiftedDosage.setVisibility(View.GONE);
+				textMealCarbsResult.setText("");
 			}
 		}
 		else
 		{
-			findViewById(R.id.mealRowCarbs).setVisibility(View.GONE);
+			textMealCarbsCorrection.setText("?");
+			textMealCarbsResult.setText("");
 		}
 	}
 
 	private void showExpectedBs(Double inputBS, double insulinDosage, double carbs, double prots, Koof koof)
 	{
-		if (inputBS != null && koof != null)
+		if (koof != null)
 		{
-			double expectedBS = inputBS + carbs * koof.getK() + prots * koof.getP() - insulinDosage * koof.getQ();
-			if (expectedBS > BS_HYPOGLYCEMIA)
+			if (inputBS != null)
 			{
-				textMealExpectedBs.setText(String.format(Locale.US, "%.1f %s", expectedBS, captionMmol));
+				double expectedBS = inputBS + carbs * koof.getK() + prots * koof.getP() - insulinDosage * koof.getQ();
+				if (expectedBS > BS_HYPOGLYCEMIA)
+				{
+					textMealExpectedBs.setText(String.format(Locale.US, "%.1f %s", expectedBS, captionMmol));
+				}
+				else
+				{
+					textMealExpectedBs.setText(getString(R.string.editor_meal_label_expected_bs_hypoglycemia));
+				}
 			}
 			else
 			{
-				textMealExpectedBs.setText(getString(R.string.editor_meal_label_expected_bs_hypoglycemia));
+				double deltaBS = carbs * koof.getK() + prots * koof.getP() - insulinDosage * koof.getQ();
+				textMealExpectedBs.setText(String.format(Locale.US, "...%+.1f %s", deltaBS, captionMmol));
 			}
 		}
 		else
