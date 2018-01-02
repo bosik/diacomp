@@ -35,13 +35,7 @@ public enum PreferenceID
 	 */
 	RATES_AUTO("e92b955f48fa434d960fdc4a541490de", Type.BOOLEAN, "true", true),
 
-	RATES_DATA("7648a35d3fbe4b4ca8fab12876abb1b6", Type.STRING,
-			"["+
-					"{\"time\": 480, \"k\": 0.2333, \"q\": 3.0, \"p\": 0.0},"+
-					"{\"time\": 960, \"k\": 0.2333, \"q\": 4.4, \"p\": 0.0},"+
-					"{\"time\": 1200, \"k\": 0.2333, \"q\": 4.2, \"p\": 0.0}"+
-			"]",
-			true),
+	RATES_DATA("7648a35d3fbe4b4ca8fab12876abb1b6", Type.STRING, "[]", true),
 
 	ANDROID_FIRST_START("8b6575e476d64becae68468500f1bc1c", Type.BOOLEAN, "true", false),
 
