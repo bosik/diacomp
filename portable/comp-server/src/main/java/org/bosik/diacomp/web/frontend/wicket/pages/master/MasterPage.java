@@ -17,6 +17,8 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.pages.master;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.TimeZone;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxClientInfoBehavior;
@@ -94,6 +96,7 @@ public class MasterPage extends WebPage
 		String timeZone = getTimeZone().getDisplayName();
 		String info = String.format("%s %s / %s", buildTime, buildCommit, timeZone);
 		add(new Label("textVersion", info));
+		add(new Label("textYear", new SimpleDateFormat("yyyy").format(new Date()) + "."));
 	}
 
 	private MenuContent getMenu(boolean authorized, String userName)
