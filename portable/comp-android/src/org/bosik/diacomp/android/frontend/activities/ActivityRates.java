@@ -52,7 +52,6 @@ import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.Rate;
 import org.bosik.diacomp.core.services.analyze.KoofService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
-import org.bosik.diacomp.core.services.analyze.entities.KoofList;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.diacomp.core.utils.Utils;
@@ -85,7 +84,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 	private List<Versioned<Rate>>       rates; // TODO: save/restore on activity re-creation
 	private List<List<Versioned<Rate>>> history;
 	private int                         historyIndex;
-	private boolean BU = true; // TODO: persist
+	private boolean BU = false; // TODO: persist
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -93,7 +92,13 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_rates);
 
-		rates = loadRatesAsVersioned();
+		// THINK: double loading occurs here
+
+		final KoofService ratesService = new KoofServiceManual(this);
+
+		List<Versioned<Rate>> versioned = Versioned.wrap(KoofServiceManual.loadRates(this));
+		Versioned.regenerateIds(versioned);
+		rates = versioned;
 
 		history = new ArrayList<>();
 		history.add(new ArrayList<>(rates));
@@ -288,16 +293,13 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 				@Override
 				public Collection<Series<?>> load(ContentResolver contentResolver)
 				{
-					// TODO: Probably it's better to reload rates here
-
-					KoofList coefficients = KoofServiceManual.buildCoefficients(Versioned.unwrap(rates));
-
+					ratesService.update();
 					List<DataPoint> dataAvg = new ArrayList<>();
-					if (coefficients != null)
+					for (int time = 0; time < Utils.MinPerDay; time += 5)
 					{
-						for (int time = 0; time < Utils.MinPerDay; time += 5)
+						Koof c = ratesService.getKoof(time);
+						if (c != null)
 						{
-							Koof c = coefficients.getKoof(time);
 							double value = BU ? c.getK() / c.getQ() * Utils.CARB_PER_BU : c.getK() / c.getQ();
 							dataAvg.add(new DataPoint((double) time / Utils.MinPerHour, value));
 						}
@@ -310,20 +312,8 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 				}
 			});
 
-			// In case this activity was started with special instructions from an
-			// Intent, pass the Intent's extras to the fragment as arguments
-			//chart.setArguments(getIntent().getExtras());
-
-			// Add the fragment to the 'fragment_container' FrameLayout
 			getSupportFragmentManager().beginTransaction().add(R.id.ratesChart, chart).commit();
 		}
-	}
-
-	private List<Versioned<Rate>> loadRatesAsVersioned()
-	{
-		List<Versioned<Rate>> versioned = Versioned.wrap(KoofServiceManual.loadRates(this));
-		Versioned.regenerateIds(versioned);
-		return versioned;
 	}
 
 	private void updateChartTitle()

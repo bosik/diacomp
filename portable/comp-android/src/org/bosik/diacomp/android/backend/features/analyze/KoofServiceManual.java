@@ -37,18 +37,33 @@ import java.util.List;
 public class KoofServiceManual implements KoofService
 {
 	private static final String TAG = KoofServiceManual.class.getSimpleName();
-	private static KoofList coefficients;
+
+	private Context  context;
+	private KoofList coefficients;
 
 	public KoofServiceManual(Context context)
 	{
-		List<Rate> rates = loadRates(context);
-		coefficients = buildCoefficients(rates);
+		this.context = context;
+		update();
 	}
 
 	@Override
 	public void update()
 	{
-		// coefficients = null;
+		coefficients = buildCoefficients(loadRates(context));
+	}
+
+	@Override
+	public Koof getKoof(int time)
+	{
+		if (coefficients != null)
+		{
+			return coefficients.getKoof(time);
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	public static List<Rate> loadRates(Context context)
@@ -67,13 +82,7 @@ public class KoofServiceManual implements KoofService
 		}
 	}
 
-	@Override
-	public Koof getKoof(int time)
-	{
-		return coefficients.getKoof(time);
-	}
-
-	public static KoofList buildCoefficients(List<Rate> rates)
+	private static KoofList buildCoefficients(List<Rate> rates)
 	{
 		if (rates == null || rates.isEmpty())
 		{
@@ -136,5 +145,4 @@ public class KoofServiceManual implements KoofService
 
 		return list;
 	}
-
 }
