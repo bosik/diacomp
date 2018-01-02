@@ -24,7 +24,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -43,6 +42,7 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.Series;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
+import org.bosik.diacomp.android.backend.features.analyze.KoofServiceManual;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.FragmentMassUnitDialog;
@@ -93,9 +93,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_rates);
 
-		PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
-		String data = preferences.getStringValue(PreferenceID.RATES_DATA);
-		rates = readRatesSafely(data);
+		rates = loadRatesAsVersioned();
 
 		history = new ArrayList<>();
 		history.add(new ArrayList<>(rates));
@@ -292,7 +290,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 				{
 					// TODO: Probably it's better to reload rates here
 
-					KoofList coefficients = buildCoefficients(rates);
+					KoofList coefficients = KoofServiceManual.buildCoefficients(Versioned.unwrap(rates));
 
 					List<DataPoint> dataAvg = new ArrayList<>();
 					if (coefficients != null)
@@ -321,104 +319,17 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		}
 	}
 
+	private List<Versioned<Rate>> loadRatesAsVersioned()
+	{
+		List<Versioned<Rate>> versioned = Versioned.wrap(KoofServiceManual.loadRates(this));
+		Versioned.regenerateIds(versioned);
+		return versioned;
+	}
+
 	private void updateChartTitle()
 	{
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x), getString(R.string.common_unit_insulin),
 				BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm)));
-	}
-
-	private static KoofList buildCoefficients(List<Versioned<Rate>> rates)
-	{
-		if (rates == null || rates.isEmpty())
-		{
-			return null;
-		}
-
-		KoofList list = new KoofList();
-
-		for (int i = -1; i < rates.size(); i++)
-		{
-			int iPreStart = i - 1;
-			int iStart = i;
-			int iEnd = i + 1;
-			int iAfterEnd = i + 2;
-
-			int nPreStart = (iPreStart + rates.size()) % rates.size();
-			int nStart = (iStart + rates.size()) % rates.size();
-			int nEnd = iEnd % rates.size();
-			int nAfterEnd = iAfterEnd % rates.size();
-
-			final Rate ratePreStart = rates.get(nPreStart).getData();
-			final Rate rateStart = rates.get(nStart).getData();
-			final Rate rateEnd = rates.get(nEnd).getData();
-			final Rate rateAfterEnd = rates.get(nAfterEnd).getData();
-
-			double tPreStart = (iPreStart >= 0) ? ratePreStart.getTime() : ratePreStart.getTime() - Utils.MinPerDay;
-			double tStart = (iStart >= 0) ? rateStart.getTime() : rateStart.getTime() - Utils.MinPerDay;
-			double tEnd = (iEnd < rates.size()) ? rateEnd.getTime() : rateEnd.getTime() + Utils.MinPerDay;
-			double tAfterEnd = (iAfterEnd < rates.size()) ? rateAfterEnd.getTime() : rateAfterEnd.getTime() + Utils.MinPerDay;
-
-			// (tPreStart, rates.get(nPreStart).getData().get_())
-			// (tStart, rates.get(nStart).getData().get_())
-			// (tEnd, rates.get(nEnd).getData().get_())
-			// (tAfterEnd, rates.get(nAfterEnd).getData().get_())
-
-			int tFrom = ((int) tStart >= 0) ? (int) tStart : 0;
-			int tTo = ((int) tEnd < Utils.MinPerDay) ? (int) tEnd : Utils.MinPerDay - 1;
-
-			Function<Double, Double> fK = cubeInterpolation(tPreStart, ratePreStart.getK(), tStart, rateStart.getK(), tEnd, rateEnd.getK(),
-					tAfterEnd, rateAfterEnd.getK());
-
-			for (int t = tFrom; t < tTo; t++)
-			{
-				list.getKoof(t).setK(fK.apply((double) t));
-			}
-
-			Function<Double, Double> fQ = cubeInterpolation(tPreStart, ratePreStart.getQ(), tStart, rateStart.getQ(), tEnd, rateEnd.getQ(),
-					tAfterEnd, rateAfterEnd.getQ());
-
-			for (int t = tFrom; t < tTo; t++)
-			{
-				list.getKoof(t).setQ(fQ.apply((double) t));
-			}
-
-			for (int t = tFrom; t < tTo; t++)
-			{
-				list.getKoof(t).setP(0.0);
-			}
-		}
-
-		return list;
-	}
-
-	private interface Function<Input, Output>
-	{
-		Output apply(Input value);
-	}
-
-	public static Function<Double, Double> cubeInterpolation(double x1, double y1, double x2, double y2, double dy1, double dy2)
-	{
-		final double a = (dy1 + dy2) / (x2 - x1) / (x2 - x1) - 2 * (y2 - y1) / (x2 - x1) / (x2 - x1) / (x2 - x1);
-		final double b = (y2 - y1) / (x2 - x1) / (x2 - x1) - (dy1 + a * (x2 * x2 + x1 * x2 - 2 * x1 * x1)) / (x2 - x1);
-		final double c = dy1 - 3 * x1 * x1 * a - 2 * x1 * b;
-		final double d = y1 - x1 * x1 * x1 * a - x1 * x1 * b - x1 * c;
-
-		return new Function<Double, Double>()
-		{
-			@Override
-			public Double apply(Double x)
-			{
-				return a * x * x * x + b * x * x + c * x + d;
-			}
-		};
-	}
-
-	public static Function<Double, Double> cubeInterpolation(double x0, double y0, double x1, double y1, double x2, double y2, double x3,
-			double y3)
-	{
-		double dy1 = (y2 - y0) / (x2 - x0);
-		double dy2 = (y3 - y1) / (x3 - x1);
-		return cubeInterpolation(x1, y1, x2, y2, dy1, dy2);
 	}
 
 	@Override
@@ -608,26 +519,6 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		String unitDosage = getString(R.string.common_unit_insulin);
 		String unitMass = BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm);
 		return unitDosage + "/" + unitMass;
-	}
-
-	private List<Versioned<Rate>> readRatesSafely(String data)
-	{
-		try
-		{
-			List<Versioned<Rate>> versioned = new ArrayList<>();
-			for (Rate rate : Rate.readList(data))
-			{
-				Versioned<Rate> item = new Versioned<>(rate);
-				item.setId(HashUtils.generateGuid());
-				versioned.add(item);
-			}
-			return versioned;
-		}
-		catch (JSONException e)
-		{
-			Log.e(TAG, "Failed to read rates JSON: " + data, e);
-			return new ArrayList<>();
-		}
 	}
 
 	@Override
