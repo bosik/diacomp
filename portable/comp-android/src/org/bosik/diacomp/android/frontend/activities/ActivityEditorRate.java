@@ -159,31 +159,86 @@ public class ActivityEditorRate extends ActivityEditor<Rate> implements TimePick
 		}
 	}
 
-	private boolean readDouble(EditText editor)
+	private double readDouble(EditText editor)
 	{
-		boolean correct;
 		try
 		{
-			correct = (Utils.parseExpression(editor.getText().toString()) > 0);
+			return Utils.parseExpression(editor.getText().toString());
 		}
 		catch (IllegalArgumentException e)
 		{
-			correct = false;
+			complain(editor);
+			throw e;
 		}
+	}
 
-		if (!correct)
-		{
-			UIUtils.showTip(this, getString(R.string.editor_rate_error_invalid_value));
-			editor.requestFocus();
-		}
-
-		return correct;
+	private void complain(EditText editor)
+	{
+		UIUtils.showTip(this, getString(R.string.editor_rate_error_invalid_value));
+		editor.requestFocus();
 	}
 
 	@Override
 	protected boolean getValuesFromGUI()
 	{
-		return readDouble(editK) && readDouble(editQ) && readDouble(editX);
+		try
+		{
+			double valueK = readDouble(editK);
+			double valueQ = readDouble(editQ);
+			double valueX = readDouble(editX);
+
+			int zeros = 0;
+			zeros += (valueK < Utils.EPS) ? 1 : 0;
+			zeros += (valueQ < Utils.EPS) ? 1 : 0;
+			zeros += (valueX < Utils.EPS) ? 1 : 0;
+
+			if (zeros == 0)
+			{
+				return true;
+			}
+			else if (zeros == 1)
+			{
+				if (valueK < Utils.EPS)
+				{
+					valueK = valueX * valueQ;
+				}
+				else if (valueQ < Utils.EPS)
+				{
+					valueQ = valueK / valueX;
+				}
+				else
+				{
+					valueX = valueK / valueQ;
+				}
+
+				entity.getData().setK(valueK);
+				entity.getData().setQ(valueQ);
+				entity.getData().setP(0.0);
+
+				return true;
+			}
+			else
+			{
+				if (valueK < Utils.EPS)
+				{
+					complain(editK);
+				}
+				else if (valueQ < Utils.EPS)
+				{
+					complain(editQ);
+				}
+				else
+				{
+					// this will never happen
+					complain(editX);
+				}
+				return false;
+			}
+		}
+		catch (IllegalArgumentException e)
+		{
+			return false;
+		}
 	}
 
 	@Override
