@@ -53,7 +53,7 @@ begin
   try
     Result := ParseVersionedFoodItems(json);
   finally
-    Json.Free;
+    FreeAndNil(Json);
   end;
 end;
 
@@ -68,8 +68,11 @@ var
 begin
   Query := FClient.GetApiURL() + 'food/count/' + Prefix;
   StdResp := FClient.DoGetSmart(query) ;
-  Result := StrToInt(StdResp.Response);
-  StdResp.Free;
+  try
+    Result := StrToInt(StdResp.Response);
+  finally
+    FreeAndNil(StdResp);
+  end;
 end;
 
 {======================================================================================================================}
@@ -103,7 +106,11 @@ var
   Response: TStdResponse;
 begin
   Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/all/?show_rem=' + IntToStr(byte(ShowRemoved)));
-  Result := ParseFoodItemsResponse(Response.Response);
+  try
+    Result := ParseFoodItemsResponse(Response.Response);
+  finally
+    FreeAndNil(Response);
+  end;
 end;
 
 {======================================================================================================================}
@@ -113,7 +120,11 @@ var
   Response: TStdResponse;
 begin
   Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/search/?q=' + Filter);
-  Result := ParseFoodItemsResponse(Response.Response);
+  try
+    Result := ParseFoodItemsResponse(Response.Response);
+  finally
+    FreeAndNil(Response);
+  end;
 end;
 
 {======================================================================================================================}
@@ -124,19 +135,23 @@ var
   List: TFoodItemList;
 begin
   Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/guid/' + ID);
-  List := nil; // for compiler
-  // TODO: constants
-  case Response.Code of
-    0:   begin
-           List := ParseFoodItemsResponse(Response.Response);
-           Result := List[0];
-         end;
-    404: Result := nil;
-    else
-    begin
-      Result := nil;
-      FClient.CheckResponse(Response);
+  try
+    List := nil; // for compiler
+    // TODO: constants
+    case Response.Code of
+      0:   begin
+             List := ParseFoodItemsResponse(Response.Response);
+             Result := List[0];
+           end;
+      404: Result := nil;
+      else
+      begin
+        Result := nil;
+        FClient.CheckResponse(Response);
+      end;
     end;
+  finally
+    FreeAndNil(Response);
   end;
 end;
 
@@ -147,7 +162,11 @@ var
   Response: TStdResponse;
 begin
   Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/guid/' + Prefix);
-  Result := FoodItemListToVersionedList(ParseFoodItemsResponse(Response.Response));
+  try
+    Result := FoodItemListToVersionedList(ParseFoodItemsResponse(Response.Response));
+  finally
+    FreeAndNil(Response);
+  end;
 end;
 
 {======================================================================================================================}
@@ -157,7 +176,11 @@ var
   Response: TStdResponse;
 begin
   Response := FClient.DoGetSmart(FClient.GetApiURL() + 'food/changes/?since=' + DateTimeToStr(Since, STD_DATETIME_FMT));
-  Result := FoodItemListToVersionedList(ParseFoodItemsResponse(Response.Response));
+  try
+    Result := FoodItemListToVersionedList(ParseFoodItemsResponse(Response.Response));
+  finally
+    FreeAndNil(Response);
+  end;
 end;
 
 {======================================================================================================================}
@@ -180,7 +203,7 @@ begin
 end;
 
 {======================================================================================================================}
-function TFoodbaseWebDAO.GetHashTree: THashTree;
+function TFoodbaseWebDAO.GetHashTree(): THashTree;
 {======================================================================================================================}
 begin
   Result := TFoodbaseWebHash.Create(FClient);
@@ -230,27 +253,26 @@ function TFoodbaseWebHash.GetHash(const Prefix: string): string;
 {======================================================================================================================}
 var
   StdResp: TStdResponse;
-  Query: string;
 begin
-  Query := FClient.GetApiURL() + 'food/hash/' + Prefix;
-  StdResp := FClient.DoGetSmart(query);
-  Result := StdResp.Response;
-  StdResp.Free;
+  StdResp := FClient.DoGetSmart(FClient.GetApiURL() + 'food/hash/' + Prefix);
+  try
+    Result := StdResp.Response;
+  finally
+    FreeAndNil(StdResp);
+  end;
 end;
 
 {======================================================================================================================}
 function TFoodbaseWebHash.GetHashChildren(const Prefix: string): TStringMap;
 {======================================================================================================================}
 var
-  Query: string;
   StdResp: TStdResponse;
 begin
-  Query := FClient.GetApiURL() + 'food/hashes/' + Prefix;
+  StdResp := FClient.DoGetSmart(FClient.GetApiURL() + 'food/hashes/' + Prefix);
   try
-    StdResp := FClient.DoGetSmart(query);
     Result := ParseStringMap(StdResp.Response);
   finally
-    StdResp.Free;
+    FreeAndNil(StdResp);
   end;
 end;
 

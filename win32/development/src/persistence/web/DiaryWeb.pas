@@ -267,7 +267,20 @@ begin
     on e: EIdSocketError do
     begin
       try
-        (**)Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '") failed, trying again...');
+        (**)Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '") failed due to socket error, trying again...');
+        FHTTP.Free;
+        InitHttp();
+        S := FHTTP.Get(URL);
+      except
+        on e: Exception do
+          Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '") still failing: ' + e.Message);
+      end;
+    end;
+
+    on e: EIdReadTimeout do
+    begin
+      try
+        (**)Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '") failed due to timeout, trying again...');
         FHTTP.Free;
         InitHttp();
         S := FHTTP.Get(URL);
@@ -376,6 +389,10 @@ begin
       Log(INFO, 'TDiacompClient.DoGetSmart(): Session expired, re-login');
       Login();
       Result := DoGet(URL); // здесь не ловим возможное исключение отсутствия авторизации
+    end else
+    if (Result.Code = STATUS_SERVER_ERROR) then
+    begin
+      raise Exception.Create('500 Server Error');
     end;
   except
     //on E: ENotAuthorizedException do

@@ -53,7 +53,7 @@ begin
   try
     Result := ParseVersionedDishItems(json);
   finally
-    Json.Free;
+    FreeAndNil(Json);
   end;
 end;
 
@@ -68,8 +68,11 @@ var
 begin
   Query := FClient.GetApiURL() + 'dish/count/' + Prefix;
   StdResp := FClient.DoGetSmart(query) ;
-  Result := StrToInt(StdResp.Response);
-  StdResp.Free;
+  try
+    Result := StrToInt(StdResp.Response);
+  finally
+    FreeAndNil(StdResp);
+  end;
 end;
 
 {======================================================================================================================}
@@ -103,7 +106,11 @@ var
   Response: TStdResponse;
 begin
   Response := FClient.DoGetSmart(FClient.GetApiURL() + 'dish/all/?show_rem=' + IntToStr(byte(ShowRemoved)));
-  Result := ParseDishItemsResponse(Response.Response);
+  try
+    Result := ParseDishItemsResponse(Response.Response);
+  finally
+    FreeAndNil(Response);
+  end;
 end;
 
 {======================================================================================================================}
@@ -113,7 +120,11 @@ var
   Response: TStdResponse;
 begin
   Response := FClient.DoGetSmart(FClient.GetApiURL() + 'dish/search/?q=' + Filter);
-  Result := ParseDishItemsResponse(Response.Response);
+  try
+    Result := ParseDishItemsResponse(Response.Response);
+  finally
+    FreeAndNil(Response);
+  end;
 end;
 
 {======================================================================================================================}
@@ -124,19 +135,23 @@ var
   List: TDishItemList;
 begin
   Response := FClient.DoGetSmart(FClient.GetApiURL() + 'dish/guid/' + ID);
-  List := nil; // for compiler
-  // TODO: constants
-  case Response.Code of
-    0:   begin
-           List := ParseDishItemsResponse(Response.Response);
-           Result := List[0];
-         end;
-    404: Result := nil;
-    else
-    begin
-      Result := nil;
-      FClient.CheckResponse(Response);
+  try
+    List := nil; // for compiler
+    // TODO: constants
+    case Response.Code of
+      0:   begin
+             List := ParseDishItemsResponse(Response.Response);
+             Result := List[0];
+           end;
+      404: Result := nil;
+      else
+      begin
+        Result := nil;
+        FClient.CheckResponse(Response);
+      end;
     end;
+  finally
+    FreeAndNil(Response);
   end;
 end;
 
@@ -147,7 +162,11 @@ var
   Response: TStdResponse;
 begin
   Response := FClient.DoGetSmart(FClient.GetApiURL() + 'dish/guid/' + Prefix);
-  Result := DishItemListToVersionedList(ParseDishItemsResponse(Response.Response));
+  try
+    Result := DishItemListToVersionedList(ParseDishItemsResponse(Response.Response));
+  finally
+    FreeAndNil(Response);
+  end;
 end;
 
 {======================================================================================================================}
@@ -157,7 +176,11 @@ var
   Response: TStdResponse;
 begin
   Response := FClient.DoGetSmart(FClient.GetApiURL() + 'dish/changes/?since=' + DateTimeToStr(Since, STD_DATETIME_FMT));
-  Result := DishItemListToVersionedList(ParseDishItemsResponse(Response.Response));
+  try
+    Result := DishItemListToVersionedList(ParseDishItemsResponse(Response.Response));
+  finally
+    FreeAndNil(Response);
+  end;
 end;
 
 {======================================================================================================================}
@@ -180,7 +203,7 @@ begin
 end;
 
 {======================================================================================================================}
-function TDishbaseWebDAO.GetHashTree: THashTree;
+function TDishbaseWebDAO.GetHashTree(): THashTree;
 {======================================================================================================================}
 begin
   Result := TDishbaseWebHash.Create(FClient);
@@ -230,24 +253,23 @@ function TDishbaseWebHash.GetHash(const Prefix: string): string;
 {======================================================================================================================}
 var
   StdResp: TStdResponse;
-  Query: string;
 begin
-  Query := FClient.GetApiURL() + 'dish/hash/' + Prefix;
-  StdResp := FClient.DoGetSmart(query);
-  Result := StdResp.Response;
-  StdResp.Free;
+  StdResp := FClient.DoGetSmart(FClient.GetApiURL() + 'dish/hash/' + Prefix);
+  try
+    Result := StdResp.Response;
+  finally
+    FreeAndNil(StdResp);
+  end;
 end;
 
 {======================================================================================================================}
 function TDishbaseWebHash.GetHashChildren(const Prefix: string): TStringMap;
 {======================================================================================================================}
 var
-  Query: string;
   StdResp: TStdResponse;
 begin
-  Query := FClient.GetApiURL() + 'dish/hashes/' + Prefix;
+  StdResp := FClient.DoGetSmart(FClient.GetApiURL() + 'dish/hashes/' + Prefix);
   try
-    StdResp := FClient.DoGetSmart(query);
     Result := ParseStringMap(StdResp.Response);
   finally
     StdResp.Free;
