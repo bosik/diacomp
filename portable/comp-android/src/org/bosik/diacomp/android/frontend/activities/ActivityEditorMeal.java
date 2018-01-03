@@ -66,9 +66,8 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	private DiaryService diary;
 
 	// components
-	private Button buttonTime;
-	private Button buttonDate;
-
+	private Button         buttonTime;
+	private Button         buttonDate;
 	private TextView       textMealInsulinCorrection;
 	private TextView       textMealInsulinResult;
 	private TextView       textMealCarbsCorrection;
@@ -241,22 +240,22 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		Double bsTarget = getBsTarget();
 		double insInjected = getInsInjected();
 
-//		if (bsLast != null && bsLast < BS_HYPOGLYCEMIA && (bsBase == null || Math.abs(bsBase - bsLast) > Utils.EPS))
-//		{
-//			if (koof != null)
-//			{
-//				double shiftedCarbs = (prots * koof.getP() + (bsTarget - bsLast)) / koof.getK() - carbs;
-//				showCarbsCorrection(shiftedCarbs);
-//			}
-//			else
-//			{
-//				showCarbsCorrection(null);
-//			}
-//
-//			showInsulinCorrection(bsBase, bsTarget, carbs, prots, koof);
-//			showExpectedBs(bsLast, 0, carbs, prots, koof);
-//		}
-//		else
+		//		if (bsLast != null && bsLast < BS_HYPOGLYCEMIA && (bsBase == null || Math.abs(bsBase - bsLast) > Utils.EPS))
+		//		{
+		//			if (koof != null)
+		//			{
+		//				double shiftedCarbs = (prots * koof.getP() + (bsTarget - bsLast)) / koof.getK() - carbs;
+		//				showCarbsCorrection(shiftedCarbs);
+		//			}
+		//			else
+		//			{
+		//				showCarbsCorrection(null);
+		//			}
+		//
+		//			showInsulinCorrection(bsBase, bsTarget, carbs, prots, koof);
+		//			showExpectedBs(bsLast, 0, carbs, prots, koof);
+		//		}
+		//		else
 		{
 			showInsulinCorrection(bsBase, bsTarget, carbs, prots, koof);
 
@@ -264,11 +263,11 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			{
 				double deltaBS = (bsBase == null ? 0.0 : bsTarget - bsBase);
 				double shiftedCarbs = (insInjected * koof.getQ() - prots * koof.getP() + deltaBS) / koof.getK() - carbs;
-				showCarbsCorrection(shiftedCarbs);
+				showCarbsCorrection(shiftedCarbs, insInjected);
 			}
 			else
 			{
-				showCarbsCorrection(null);
+				showCarbsCorrection(null, 0);
 			}
 
 			showExpectedBs(bsBase, insInjected, carbs, prots, koof);
@@ -310,7 +309,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		}
 	}
 
-	private void showCarbsCorrection(Double shiftedCarbs)
+	private void showCarbsCorrection(Double shiftedCarbs, double insInjected)
 	{
 		if (shiftedCarbs != null)
 		{
@@ -327,6 +326,15 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			else
 			{
 				textMealCarbsCorrection.setTextColor(Color.BLACK);
+			}
+
+			if (insInjected < Utils.EPS && shiftedCarbs < 0)
+			{
+				textMealCarbsCorrection.setTypeface(Typeface.DEFAULT);
+			}
+			else
+			{
+				textMealCarbsCorrection.setTypeface(Typeface.DEFAULT_BOLD);
 			}
 
 			double carbsResult = entity.getData().getCarbs() + shiftedCarbs;
