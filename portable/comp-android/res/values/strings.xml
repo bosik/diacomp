@@ -85,7 +85,9 @@
     <string name="editor_meal_info">Info</string>
     <string name="editor_meal_label_carbs">Carbs:</string>
     <string name="editor_meal_label_correction">+8 g</string>
-    <string name="editor_meal_label_expected_bs">Expected BS:</string>
+    <string name="editor_meal_label_correction_carbs">Correction (carbs):</string>
+    <string name="editor_meal_label_correction_insulin">Correction (insulin):</string>
+    <string name="editor_meal_label_expected_bs">BS without correction:</string>
     <string name="editor_meal_label_expected_bs_hypoglycemia">hypoglycemia</string>
     <string name="editor_meal_label_insulin_dosage">Insulin:</string>
     <string name="editor_meal_label_stat" formatted="false">P 10.2</string>

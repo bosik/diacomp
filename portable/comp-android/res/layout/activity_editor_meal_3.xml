@@ -75,7 +75,7 @@
                         android:gravity="start"
                         android:paddingEnd="@dimen/padding_small"
                         android:paddingRight="@dimen/padding_medium"
-                        android:text="СК без коррекции:"/>
+                        android:text="@string/editor_meal_label_expected_bs"/>
 
                 <TextView
                         android:layout_width="match_parent"
@@ -92,7 +92,7 @@
                         android:gravity="start"
                         android:paddingEnd="@dimen/padding_small"
                         android:paddingRight="@dimen/padding_medium"
-                        android:text="Коррекция (инсулин):"/>
+                        android:text="@string/editor_meal_label_correction_insulin"/>
 
                 <LinearLayout
                         android:orientation="horizontal"
@@ -120,7 +120,7 @@
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Коррекция (углеводы):" android:paddingRight="@dimen/padding_medium"/>
+                        android:text="@string/editor_meal_label_correction_carbs" android:paddingRight="@dimen/padding_medium"/>
 
                 <LinearLayout
                         android:id="@+id/layoutMealShifted"

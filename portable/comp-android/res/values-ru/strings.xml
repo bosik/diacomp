@@ -83,7 +83,9 @@
     <string name="editor_meal_info">Информация</string>
     <string name="editor_meal_label_carbs">Углеводы:</string>
     <string name="editor_meal_label_correction">+8 г</string>
-    <string name="editor_meal_label_expected_bs">Ожидаемый СК:</string>
+    <string name="editor_meal_label_correction_carbs">Коррекция (углеводы):</string>
+    <string name="editor_meal_label_correction_insulin">Коррекция (инсулин):</string>
+    <string name="editor_meal_label_expected_bs">СК без коррекции</string>
     <string name="editor_meal_label_expected_bs_hypoglycemia">гипогликемия</string>
     <string name="editor_meal_label_insulin_dosage">Инсулин:</string>
     <string name="editor_meal_label_stat">г угл.</string>
