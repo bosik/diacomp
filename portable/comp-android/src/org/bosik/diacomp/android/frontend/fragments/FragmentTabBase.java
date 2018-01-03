@@ -502,10 +502,9 @@ public class FragmentTabBase extends Fragment
 			@Override
 			protected void onPostExecute(List<Versioned<? extends NamedRelativeTagged>> result)
 			{
-				// TODO: i18n
 				if (result == null)
 				{
-					UIUtils.showTip(getActivity(), "При загрузке данных произошла ошибка");
+					UIUtils.showTip(getActivity(), getString(R.string.base_tip_search_failed));
 					result = Collections.emptyList();
 				}
 

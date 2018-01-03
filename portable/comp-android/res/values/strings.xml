@@ -21,6 +21,7 @@
     <string name="base_tip_food_edit_ok">Food saved</string>
     <string name="base_tip_item_not_found">Item not found, probably it was deleted meanwhile</string>
     <string name="base_tip_items_removed">Removed items: %d</string>
+    <string name="base_tip_search_failed">Failed to load data</string>
     <string name="charts_average_bs">Average blood sugar</string>
     <string name="charts_average_bs_description">Average blood sugar and standard deviation limits (the closer the better)</string>
     <string name="charts_average_calories">Average daily calories</string>
@@ -49,6 +50,7 @@
     <string name="common_rectype_ins">Injection</string>
     <string name="common_rectype_meal">Meal</string>
     <string name="common_rectype_note">Note</string>
+    <string name="common_tip_deleted">Items removed: %d</string>
     <string name="common_unit_bs_mmoll">mmol/l</string>
     <string name="common_unit_insulin">U</string>
     <string name="common_unit_mass_bu">BU</string>
@@ -91,7 +93,6 @@
     <string name="editor_meal_label_expected_bs">BS without correction:</string>
     <string name="editor_meal_label_expected_bs_hypoglycemia">hypoglycemia</string>
     <string name="editor_meal_label_insulin_dosage">Insulin:</string>
-    <string name="editor_meal_label_stat" formatted="false">P 10.2</string>
     <string name="editor_meal_short_postprandial">Short postprandial</string>
     <string name="editor_meal_tip_meal_info" formatted="false" tools:ignore="StringFormatInvalid">Prots: %.0f g\nFats: %.0f g\nCarbs: %.0f g (%.1f BU)\nValue: %.0f kcal\nMass: %.0f g</string>
     <string name="editor_meal_title">Meal</string>

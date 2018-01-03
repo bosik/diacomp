@@ -60,11 +60,6 @@ public class MealEditorView extends LinearLayout
 	private ListView       list;
 	private FoodDishPicker fdPicker;
 
-	// localization
-	private String captionCarbs;
-	private String captionDose;
-	private String captionGramm;
-
 	// listeners
 	private OnChangeListener onChange;
 
@@ -96,11 +91,6 @@ public class MealEditorView extends LinearLayout
 
 		if (!isInEditMode())
 		{
-			// string constants
-			captionCarbs = context.getString(R.string.editor_meal_label_stat);
-			captionDose = context.getString(R.string.common_unit_insulin);
-			captionGramm = context.getString(R.string.common_unit_mass_gramm);
-
 			// components
 			list = (ListView) findViewById(R.id.mealEditorList);
 			fdPicker = (FoodDishPicker) findViewById(R.id.mealEditorPicker);
@@ -110,10 +100,8 @@ public class MealEditorView extends LinearLayout
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
 				{
-					// TODO: i18n
-
 					final String title = context.getString(R.string.editor_mass_title);
-					final String message = data.get(position).getName() + ", " + captionGramm;
+					final String message = data.get(position).getName() + ", " + context.getString(R.string.common_unit_mass_gramm);
 					final String defaultMass = Utils.formatDoubleShort(data.get(position).getMass());
 
 					UIUtils.requestMass(context, title, message, defaultMass, new OnSubmit()
@@ -215,7 +203,8 @@ public class MealEditorView extends LinearLayout
 				TextView text2 = (TextView) view.findViewById(android.R.id.text2);
 
 				text1.setText(data.get(position).getName());
-				text2.setText(Utils.formatDoubleShort(data.get(position).getMass()) + " " + captionGramm);
+				text2.setText(Utils.formatDoubleShort(data.get(position).getMass()) + " " + getContext()
+						.getString(R.string.common_unit_mass_gramm));
 				return view;
 			}
 		};

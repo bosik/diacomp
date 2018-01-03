@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DiaryDayView extends LinearLayout
 {
@@ -204,8 +205,7 @@ public class DiaryDayView extends LinearLayout
 
 				diaryService.save(removedRecords);
 
-				// TODO: i18n
-				String text = removedRecords.size() + " items removed";
+				String text = String.format(Locale.US, getContext().getString(R.string.common_tip_deleted), removedRecords.size());
 				Toast.makeText(listRecs.getContext(), text, Toast.LENGTH_LONG).show();
 
 				return true;
