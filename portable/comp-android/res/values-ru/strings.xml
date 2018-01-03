@@ -56,6 +56,7 @@
     <string name="common_unit_mass_bu">ХЕ</string>
     <string name="common_unit_mass_gramm">г</string>
     <string name="common_unit_value_kcal">ккал</string>
+    <string name="editor_blood_error_invalid_bs">Введите корректное значение СК</string>
     <string name="editor_blood_field_finger">Палец</string>
     <string name="editor_blood_field_value">Значение, ммоль/л</string>
     <string name="editor_blood_title">Замер СК</string>
@@ -97,6 +98,7 @@
     <string name="editor_note_field_text">Текст</string>
     <string name="editor_note_title">Заметка</string>
     <string name="editor_rate">Коэффициенты</string>
+    <string name="editor_rate_error_invalid_value">Введите корректное значение</string>
     <string name="editor_rate_field_time">Время</string>
     <string name="fd_action_add">Добавить</string>
     <string name="fd_tip_empty">Введите название продукта/блюда</string>

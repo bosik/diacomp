@@ -18,36 +18,33 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
-import java.util.Date;
-import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.frontend.UIUtils;
-import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
-import org.bosik.diacomp.core.utils.Utils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
+import org.bosik.diacomp.core.utils.Utils;
+
+import java.util.Date;
 
 public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 {
-	// private static final String TAG = ActivityEditorBlood.class.getSimpleName();
-
 	// components
-	private EditText			editValue;
-	private TextView			labelBloodFinger;
-	private Spinner				spinnerFinger;
-	private Button				buttonTime;
-	private Button				buttonDate;
-	private Button				buttonOK;
+	private EditText editValue;
+	private TextView labelBloodFinger;
+	private Spinner  spinnerFinger;
+	private Button   buttonTime;
+	private Button   buttonDate;
 
 	// TODO: i18n
-	private static final String	ERROR_INCORRECT_BS_VALUE		= "Введите корректное значение СК";
-	private static final String	ERROR_INCORRECT_FINGER_VALUE	= "Укажите палец, из которого бралась кровь";
+	private static final String ERROR_INCORRECT_FINGER_VALUE = "Укажите палец, из которого бралась кровь";
 
 	// parameters
-	private final boolean		askFinger						= true;
+	private final boolean askFinger = true;
 
 	/* =========================== OVERRIDDEN METHODS ================================ */
 
@@ -78,8 +75,7 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 			}
 		});
 
-		buttonOK = (Button) findViewById(R.id.buttonBloodOK);
-		buttonOK.setOnClickListener(new OnClickListener()
+		findViewById(R.id.buttonBloodOK).setOnClickListener(new OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
@@ -121,11 +117,17 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 		// value
 		try
 		{
-			entity.getData().setValue(Utils.parseExpression(editValue.getText().toString()));
+			double value = Utils.parseExpression(editValue.getText().toString());
+			if (value <= 0)
+			{
+				throw new IllegalArgumentException();
+			}
+
+			entity.getData().setValue(value);
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(this, ERROR_INCORRECT_BS_VALUE);
+			UIUtils.showTip(this, getString(R.string.editor_blood_error_invalid_bs));
 			editValue.requestFocus();
 			return false;
 		}

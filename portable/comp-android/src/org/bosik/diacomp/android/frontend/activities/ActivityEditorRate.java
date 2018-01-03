@@ -26,7 +26,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import org.bosik.diacomp.android.R;
@@ -41,9 +40,7 @@ import java.util.LinkedHashSet;
 
 public class ActivityEditorRate extends ActivityEditor<Rate> implements TimePickerDialog.OnTimeSetListener
 {
-	// TODO: i18n
-	private static final String MSG_INCORRECT_VALUE = "Введите корректное значение";
-	public static final  String KEY_INTENT_USE_BU   = "org.bosik.diacomp.useBU";
+	public static final String KEY_INTENT_USE_BU = "org.bosik.diacomp.useBU";
 
 	private static final int INDEX_K = 1;
 	private static final int INDEX_Q = 2;
@@ -54,7 +51,6 @@ public class ActivityEditorRate extends ActivityEditor<Rate> implements TimePick
 	private EditText editK;
 	private EditText editQ;
 	private EditText editX;
-	private Button   buttonOK;
 
 	private boolean BU;
 	private boolean ignoreUpdates = false;
@@ -133,8 +129,7 @@ public class ActivityEditorRate extends ActivityEditor<Rate> implements TimePick
 			}
 		});
 
-		buttonOK = (Button) findViewById(R.id.buttonRateOK);
-		buttonOK.setOnClickListener(new OnClickListener()
+		findViewById(R.id.buttonRateOK).setOnClickListener(new OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
@@ -178,7 +173,7 @@ public class ActivityEditorRate extends ActivityEditor<Rate> implements TimePick
 
 		if (!correct)
 		{
-			UIUtils.showTip(this, MSG_INCORRECT_VALUE);
+			UIUtils.showTip(this, getString(R.string.editor_rate_error_invalid_value));
 			editor.requestFocus();
 		}
 
@@ -203,7 +198,7 @@ public class ActivityEditorRate extends ActivityEditor<Rate> implements TimePick
 		private final LinkedHashSet<Integer> indexes;
 		private final int                    index;
 
-		public MyTextWatcher(LinkedHashSet<Integer> indexes, int index)
+		MyTextWatcher(LinkedHashSet<Integer> indexes, int index)
 		{
 			this.indexes = indexes;
 			this.index = index;
