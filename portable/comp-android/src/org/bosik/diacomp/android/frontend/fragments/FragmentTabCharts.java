@@ -132,7 +132,7 @@ public class FragmentTabCharts extends Fragment
 
 		chart.setChartType(ChartType.HISTORY);
 		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_bs), getString(R.string.common_unit_bs_mmoll)));
-		chart.setDescription(getString(R.string.charts_average_bs_description));
+		chart.setDescription(getString(R.string.charts_average_bs_description) + ". " + getString(R.string.charts_type_history) + ".");
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
@@ -207,7 +207,7 @@ public class FragmentTabCharts extends Fragment
 		chart.setChartType(ChartType.HISTORY);
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x), getString(R.string.common_unit_insulin),
 				getString(R.string.common_unit_mass_gramm)));
-		chart.setDescription(getString(R.string.charts_insulin_consumption_history_description));
+		chart.setDescription(getString(R.string.common_rate_x_description) + ". " + getString(R.string.charts_type_history) + ".");
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
@@ -284,7 +284,8 @@ public class FragmentTabCharts extends Fragment
 
 		chart.setChartType(ChartType.HISTORY);
 		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_calories), getString(R.string.common_unit_value_kcal)));
-		chart.setDescription(getString(R.string.charts_average_calories_description));
+		chart.setDescription(
+				getString(R.string.charts_average_calories_description) + ". " + getString(R.string.charts_type_history) + ".");
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
@@ -347,7 +348,7 @@ public class FragmentTabCharts extends Fragment
 		chart.setChartType(ChartType.DAILY);
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x), getString(R.string.common_unit_insulin),
 				getString(R.string.common_unit_mass_gramm)));
-		chart.setDescription(getString(R.string.charts_insulin_consumption_daily_description));
+		chart.setDescription(getString(R.string.common_rate_x_description) + ". " + getString(R.string.charts_type_daily) + ".");
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
@@ -384,7 +385,7 @@ public class FragmentTabCharts extends Fragment
 		chart.setChartType(ChartType.DAILY);
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_k), getString(R.string.common_unit_bs_mmoll),
 				getString(R.string.common_unit_mass_gramm)));
-		chart.setDescription(getString(R.string.charts_koof_k_daily_description));
+		chart.setDescription(getString(R.string.common_rate_k_description) + ". " + getString(R.string.charts_type_daily) + ".");
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
@@ -420,7 +421,7 @@ public class FragmentTabCharts extends Fragment
 		chart.setChartType(ChartType.DAILY);
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_q), getString(R.string.common_unit_bs_mmoll),
 				getString(R.string.common_unit_insulin)));
-		chart.setDescription(getString(R.string.charts_koof_q_daily_description));
+		chart.setDescription(getString(R.string.common_rate_q_description) + ". " + getString(R.string.charts_type_daily) + ".");
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override

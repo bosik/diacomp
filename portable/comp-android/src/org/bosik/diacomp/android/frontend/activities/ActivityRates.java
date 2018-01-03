@@ -287,7 +287,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 			chart = new Chart();
 			chart.setChartType(Chart.ChartType.DAILY);
 			updateChartTitle();
-			chart.setDescription(getString(R.string.charts_insulin_consumption_daily_description));
+			chart.setDescription(getString(R.string.common_rate_x_description) + ". " + getString(R.string.charts_type_daily) + ".");
 			chart.setDataLoader(new ProgressBundle.DataLoader()
 			{
 				@Override

@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import org.bosik.diacomp.android.R;
@@ -106,6 +107,31 @@ public class ActivityEditorRate extends ActivityEditor<Rate> implements TimePick
 		editK.addTextChangedListener(new MyTextWatcher(indexes, INDEX_K));
 		editQ.addTextChangedListener(new MyTextWatcher(indexes, INDEX_Q));
 		editX.addTextChangedListener(new MyTextWatcher(indexes, INDEX_X));
+
+		findViewById(R.id.buttonHelpK).setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				UIUtils.showLongTip(ActivityEditorRate.this, getString(R.string.common_rate_k_description));
+			}
+		});
+		findViewById(R.id.buttonHelpQ).setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				UIUtils.showLongTip(ActivityEditorRate.this, getString(R.string.common_rate_q_description));
+			}
+		});
+		findViewById(R.id.buttonHelpX).setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				UIUtils.showLongTip(ActivityEditorRate.this, getString(R.string.common_rate_x_description));
+			}
+		});
 
 		buttonOK = (Button) findViewById(R.id.buttonRateOK);
 		buttonOK.setOnClickListener(new OnClickListener()
