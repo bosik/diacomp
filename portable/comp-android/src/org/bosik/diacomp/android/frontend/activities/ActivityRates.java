@@ -44,7 +44,6 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
 import org.bosik.diacomp.android.backend.features.analyze.RateServiceManual;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
-import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.FragmentMassUnitDialog;
 import org.bosik.diacomp.android.frontend.fragments.chart.Chart;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle;
@@ -573,8 +572,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		}
 		catch (JSONException e)
 		{
-			UIUtils.showTip(this, "Failed to save rates"); // TODO: i18n
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 

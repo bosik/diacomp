@@ -19,6 +19,7 @@
     <string name="base_tip_food_create_ok">Food created</string>
     <string name="base_tip_food_edit_fail">Failed to save food</string>
     <string name="base_tip_food_edit_ok">Food saved</string>
+    <string name="base_tip_item_not_found">Item not found, probably it was deleted meanwhile</string>
     <string name="base_tip_items_removed">Removed items: %d</string>
     <string name="charts_average_bs">Average blood sugar</string>
     <string name="charts_average_bs_description">Average blood sugar and standard deviation limits (the closer the better)</string>

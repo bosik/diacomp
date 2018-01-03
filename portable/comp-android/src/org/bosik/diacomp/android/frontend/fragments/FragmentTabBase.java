@@ -327,14 +327,13 @@ public class FragmentTabBase extends Fragment
 							}
 							else
 							{
-								// TODO: i18n
-								UIUtils.showTip(getActivity(), String.format("Unknown record type (ID: %s)", id));
+								throw new IllegalArgumentException("Unknown record type '" + item.getData().getClass().getName()+"', id " + id);
 							}
 						}
 						else
 						{
-							// TODO: i18n
-							UIUtils.showTip(getActivity(), String.format("Item %s not found", id));
+							UIUtils.showTip(getActivity(), getString(R.string.base_tip_item_not_found));
+							adapter.notifyDataSetChanged();
 						}
 					}
 				}.execute(id);

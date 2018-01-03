@@ -19,6 +19,7 @@
     <string name="base_tip_food_create_ok">Продукт создан</string>
     <string name="base_tip_food_edit_fail">Ошибка сохранения продукта</string>
     <string name="base_tip_food_edit_ok">Продукт сохранён</string>
+    <string name="base_tip_item_not_found">Запись не найдена. Возможно, она была удалена.</string>
     <string name="base_tip_items_removed">Удалено записей: %d</string>
     <string name="charts_average_bs">Средний сахар крови</string>
     <string name="charts_average_bs_description">Средний сахар крови и границы разброса значений (чем ближе, тем лучше)</string>
