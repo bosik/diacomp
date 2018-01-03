@@ -64,7 +64,7 @@ public class BackgroundService extends Service
 					protected Void doInBackground(Void... arg0)
 					{
 						relevantIndexation();
-						analyzeKoofs(BackgroundService.this);
+						rebuildRates(BackgroundService.this);
 						return null;
 					}
 
@@ -77,10 +77,10 @@ public class BackgroundService extends Service
 						RelevantIndexator.indexate(diary, foodBase, dishBase);
 					}
 
-					void analyzeKoofs(Context context)
+					void rebuildRates(Context context)
 					{
-						KoofServiceInternal.getInstanceAuto(context).update();
-						KoofServiceInternal.getInstanceManual(context).update();
+						RateServiceInternal.getInstanceAuto(context).update();
+						RateServiceInternal.getInstanceManual(context).update();
 					}
 				}.execute();
 			}

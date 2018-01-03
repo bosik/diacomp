@@ -29,7 +29,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
+import org.bosik.diacomp.android.backend.features.analyze.RateServiceInternal;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView;
@@ -39,7 +39,7 @@ import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.services.analyze.RateService;
-import org.bosik.diacomp.core.services.analyze.entities.Koof;
+import org.bosik.diacomp.core.services.analyze.entities.Rate;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
@@ -230,8 +230,8 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 
 		// commons
 		int minutesTime = Utils.getDayMinutesUTC(entity.getData().getTime());
-		RateService rateService = KoofServiceInternal.getInstance(this);
-		Koof koof = rateService.getKoof(minutesTime);
+		RateService rateService = RateServiceInternal.getInstance(this);
+		Rate rate = rateService.getRate(minutesTime);
 		double carbs = entity.getData().getCarbs();
 		double prots = entity.getData().getProts();
 
@@ -242,9 +242,9 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 
 		//		if (bsLast != null && bsLast < BS_HYPOGLYCEMIA && (bsBase == null || Math.abs(bsBase - bsLast) > Utils.EPS))
 		//		{
-		//			if (koof != null)
+		//			if (rate != null)
 		//			{
-		//				double shiftedCarbs = (prots * koof.getP() + (bsTarget - bsLast)) / koof.getK() - carbs;
+		//				double shiftedCarbs = (prots * rate.getP() + (bsTarget - bsLast)) / rate.getK() - carbs;
 		//				showCarbsCorrection(shiftedCarbs);
 		//			}
 		//			else
@@ -252,17 +252,17 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		//				showCarbsCorrection(null);
 		//			}
 		//
-		//			showInsulinCorrection(bsBase, bsTarget, carbs, prots, koof);
-		//			showExpectedBs(bsLast, 0, carbs, prots, koof);
+		//			showInsulinCorrection(bsBase, bsTarget, carbs, prots, rate);
+		//			showExpectedBs(bsLast, 0, carbs, prots, rate);
 		//		}
 		//		else
 		{
-			showInsulinCorrection(bsBase, bsTarget, carbs, prots, koof);
+			showInsulinCorrection(bsBase, bsTarget, carbs, prots, rate);
 
-			if (koof != null)
+			if (rate != null)
 			{
 				double deltaBS = (bsBase == null ? 0.0 : bsTarget - bsBase);
-				double shiftedCarbs = (insInjected * koof.getQ() - prots * koof.getP() + deltaBS) / koof.getK() - carbs;
+				double shiftedCarbs = (insInjected * rate.getQ() - prots * rate.getP() + deltaBS) / rate.getK() - carbs;
 				showCarbsCorrection(shiftedCarbs, insInjected);
 			}
 			else
@@ -270,16 +270,16 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 				showCarbsCorrection(null, 0);
 			}
 
-			showExpectedBs(bsBase, insInjected, carbs, prots, koof);
+			showExpectedBs(bsBase, insInjected, carbs, prots, rate);
 		}
 	}
 
-	private void showInsulinCorrection(Double inputBS, Double targetBS, double carbs, double prots, Koof koof)
+	private void showInsulinCorrection(Double inputBS, Double targetBS, double carbs, double prots, Rate rate)
 	{
-		if (targetBS != null && koof != null && koof.getQ() > Utils.EPS)
+		if (targetBS != null && rate != null && rate.getQ() > Utils.EPS)
 		{
 			double deltaBS = (inputBS == null ? 0.0 : targetBS - inputBS);
-			double dosageRequired = (-deltaBS + carbs * koof.getK() + prots * koof.getP()) / koof.getQ();
+			double dosageRequired = (-deltaBS + carbs * rate.getK() + prots * rate.getP()) / rate.getQ();
 
 			double dosageCorrection = dosageRequired - getInsInjected();
 			textMealInsulinCorrection.setText(String.format(Locale.US, "%+.1f %s", dosageCorrection, captionDose));
@@ -354,13 +354,13 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		}
 	}
 
-	private void showExpectedBs(Double inputBS, double insulinDosage, double carbs, double prots, Koof koof)
+	private void showExpectedBs(Double inputBS, double insulinDosage, double carbs, double prots, Rate rate)
 	{
-		if (koof != null)
+		if (rate != null)
 		{
 			if (inputBS != null)
 			{
-				double expectedBS = inputBS + carbs * koof.getK() + prots * koof.getP() - insulinDosage * koof.getQ();
+				double expectedBS = inputBS + carbs * rate.getK() + prots * rate.getP() - insulinDosage * rate.getQ();
 				if (expectedBS > BS_HYPOGLYCEMIA)
 				{
 					textMealExpectedBs.setText(String.format(Locale.US, "%.1f %s", expectedBS, captionMmol));
@@ -372,7 +372,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			}
 			else
 			{
-				double deltaBS = carbs * koof.getK() + prots * koof.getP() - insulinDosage * koof.getQ();
+				double deltaBS = carbs * rate.getK() + prots * rate.getP() - insulinDosage * rate.getQ();
 				textMealExpectedBs.setText(String.format(Locale.US, "...%+.1f %s", deltaBS, captionMmol));
 			}
 		}

@@ -72,7 +72,7 @@ public class TestAnalyzeService
 	//
 	//		diaryService.save(records);
 	//
-	//		Koof koof = koofService.getKoof((10 * 60) + 40);
+	//		Rate koof = koofService.getRate((10 * 60) + 40);
 	//		double act_x = koof.getK() / koof.getQ();
 	//		double exp_x = valueIns / valueCarbs;
 	//
@@ -110,18 +110,18 @@ public class TestAnalyzeService
 	//		return serializer.readAll(content);
 	//	}
 	//
-	//	private KoofList loadKoofs(String fileName) throws IOException
+	//	private RateList loadKoofs(String fileName) throws IOException
 	//	{
 	//		String content = readFile(fileName);
-	//		KoofList koofs = new KoofList();
+	//		RateList koofs = new RateList();
 	//
 	//		String[] lines = content.split("\n");
 	//		for (int time = 0; time < Utils.MinPerDay; time++)
 	//		{
 	//			String[] values = lines[time].split("\t");
-	//			koofs.getKoof(time).setK(Double.parseDouble(values[0]));
-	//			koofs.getKoof(time).setQ(Double.parseDouble(values[1]));
-	//			koofs.getKoof(time).setP(Double.parseDouble(values[2]));
+	//			koofs.getRate(time).setK(Double.parseDouble(values[0]));
+	//			koofs.getRate(time).setQ(Double.parseDouble(values[1]));
+	//			koofs.getRate(time).setP(Double.parseDouble(values[2]));
 	//		}
 	//
 	//		return koofs;
@@ -131,11 +131,11 @@ public class TestAnalyzeService
 	//	public void testDiaryAnalyze_setB_ok() throws IOException
 	//	{
 	//		List<Versioned<DiaryRecord>> records = loadRecords("/analyze_set_1_input.txt");
-	//		KoofList koofs = analyzeCore.analyze(records);
+	//		RateList koofs = analyzeCore.analyze(records);
 	//
 	//		for (int time = 0; time < Utils.MinPerDay; time++)
 	//		{
-	//			Koof koof = koofs.getKoof(time);
+	//			Rate koof = koofs.getRate(time);
 	//			//System.out.println(String.format("%.5f\t%.3f\t%.3f", koof.getK(), koof.getQ(), koof.getP()));
 	//		}
 	//	}
@@ -144,13 +144,13 @@ public class TestAnalyzeService
 	//	public void testDiaryAnalyze_set2_ok() throws IOException
 	//	{
 	//		List<Versioned<DiaryRecord>> records = loadRecords("/analyze_set_2_input.txt");
-	//		KoofList koofsExpected = loadKoofs("/analyze_set_2_output.txt");
-	//		KoofList koofsActual = analyzeCore.analyze(records);
+	//		RateList koofsExpected = loadKoofs("/analyze_set_2_output.txt");
+	//		RateList koofsActual = analyzeCore.analyze(records);
 	//
 	//		for (int time = 0; time < Utils.MinPerDay; time++)
 	//		{
-	//			Koof koofExp = koofsExpected.getKoof(time);
-	//			Koof koofAct = koofsActual.getKoof(time);
+	//			Rate koofExp = koofsExpected.getRate(time);
+	//			Rate koofAct = koofsActual.getRate(time);
 	//			//System.out.println(String.format("%.5f\t%.3f\t%.3f\t%.5f\t%.3f\t%.3f", koofExp.getK(), koofExp.getQ(),
 	//			//		koofExp.getP(), koofAct.getK(), koofAct.getQ(), koofAct.getP()));
 	//		}
@@ -160,7 +160,7 @@ public class TestAnalyzeService
 	//	public void testDiaryAnalyze_set4_ok() throws IOException
 	//	{
 	//		List<Versioned<DiaryRecord>> records = loadRecords("/analyze_set_4_input.txt");
-	//		KoofList koofsActual = analyzeCore.analyze(records);
+	//		RateList koofsActual = analyzeCore.analyze(records);
 	//		assertNull(koofsActual);
 	//	}
 	//
@@ -168,11 +168,11 @@ public class TestAnalyzeService
 	//	public void testDiaryAnalyze_set5_ok() throws IOException
 	//	{
 	//		List<Versioned<DiaryRecord>> records = loadRecords("/analyze_set_5_input.txt");
-	//		KoofList koofsActual = analyzeCore.analyze(records);
+	//		RateList koofsActual = analyzeCore.analyze(records);
 	//
 	//		for (int time = 0; time < Utils.MinPerDay; time++)
 	//		{
-	//			Koof koofAct = koofsActual.getKoof(time);
+	//			Rate koofAct = koofsActual.getRate(time);
 	//			//System.out.println(String.format("%.5f\t%.3f\t%.3f", koofAct.getK(), koofAct.getQ(), koofAct.getP())
 	//			//		.replace(',', '.'));
 	//		}

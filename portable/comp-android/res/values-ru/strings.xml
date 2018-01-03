@@ -40,11 +40,11 @@
     <string name="common_button_ok">ОК</string>
     <string name="common_hint_mass">Масса, г</string>
     <string name="common_hint_search">Поиск&#8230;</string>
-    <string name="common_koof_k">Углеводный коэффициент</string>
-    <string name="common_koof_q">Фактор чувствительности к инсулину (ЦЕИ)</string>
-    <string name="common_koof_x">Потребность в инсулине</string>
+    <string name="common_rate_k">Углеводный коэффициент</string>
     <string name="common_rate_k_description">Показывает, насколько увеличится сахар крови при усвоении одной единицы углеводов</string>
+    <string name="common_rate_q">Фактор чувствительности к инсулину (ЦЕИ)</string>
     <string name="common_rate_q_description">Показывает, насколько уменьшится сахар крови от одной единицы инсулина</string>
+    <string name="common_rate_x">Потребность в инсулине</string>
     <string name="common_rate_x_description">Показывает, сколько инсулина необходимо для усвоения одной единицы углеводов</string>
     <string name="common_rectype_blood">Замер СК</string>
     <string name="common_rectype_ins">Инъекция</string>

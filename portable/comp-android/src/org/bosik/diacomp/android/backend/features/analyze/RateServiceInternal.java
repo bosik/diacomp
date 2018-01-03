@@ -28,9 +28,9 @@ import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 
-public class KoofServiceInternal
+public class RateServiceInternal
 {
-	private static final String TAG                 = KoofServiceInternal.class.getSimpleName();
+	private static final String TAG                 = RateServiceInternal.class.getSimpleName();
 	private static final int    ANALYZE_DAYS_PERIOD = 14; // TODO: make it preference
 	private static final double ANALYZE_ADAPTATION  = 0.995; // TODO: make it preference
 

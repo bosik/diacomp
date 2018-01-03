@@ -41,7 +41,7 @@ import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.Series;
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
+import org.bosik.diacomp.android.backend.features.analyze.RateServiceInternal;
 import org.bosik.diacomp.android.backend.features.analyze.RateServiceManual;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.fragments.FragmentMassUnitDialog;
@@ -50,7 +50,7 @@ import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle;
 import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.TimedRate;
 import org.bosik.diacomp.core.services.analyze.RateService;
-import org.bosik.diacomp.core.services.analyze.entities.Koof;
+import org.bosik.diacomp.core.services.analyze.entities.Rate;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.diacomp.core.utils.Utils;
@@ -296,7 +296,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 					List<DataPoint> dataAvg = new ArrayList<>();
 					for (int time = 0; time < Utils.MinPerDay; time += 5)
 					{
-						Koof c = ratesService.getKoof(time);
+						Rate c = ratesService.getRate(time);
 						if (c != null)
 						{
 							double value = BU ? c.getK() / c.getQ() * Utils.CARB_PER_BU : c.getK() / c.getQ();
@@ -317,7 +317,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 
 	private void updateChartTitle()
 	{
-		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x), getString(R.string.common_unit_insulin),
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_x), getString(R.string.common_unit_insulin),
 				BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm)));
 	}
 
@@ -369,12 +369,12 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 
 			case R.id.itemRatesReplaceWithAuto:
 			{
-				RateService service = KoofServiceInternal.getInstanceAuto(this);
+				RateService service = RateServiceInternal.getInstanceAuto(this);
 
 				rates.clear();
 				for (int time = 0; time < Utils.MinPerDay; time += 2 * Utils.MinPerHour)
 				{
-					Koof c = service.getKoof(time);
+					Rate c = service.getRate(time);
 					Versioned<TimedRate> versioned = new Versioned<>(new TimedRate(time, c));
 					versioned.setId(HashUtils.generateGuid());
 					rates.add(versioned);

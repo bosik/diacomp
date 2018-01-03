@@ -86,13 +86,13 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 		});
 
 		((TextView) findViewById(R.id.labelRateK)).setText(
-				String.format("%s, %s/%s", getString(R.string.common_koof_k), getString(R.string.common_unit_bs_mmoll),
+				String.format("%s, %s/%s", getString(R.string.common_rate_k), getString(R.string.common_unit_bs_mmoll),
 						BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm)));
 		((TextView) findViewById(R.id.labelRateQ)).setText(
-				String.format("%s, %s/%s", getString(R.string.common_koof_q), getString(R.string.common_unit_bs_mmoll),
+				String.format("%s, %s/%s", getString(R.string.common_rate_q), getString(R.string.common_unit_bs_mmoll),
 						getString(R.string.common_unit_insulin)));
 		((TextView) findViewById(R.id.labelRateX)).setText(
-				String.format("%s, %s/%s", getString(R.string.common_koof_x), getString(R.string.common_unit_insulin),
+				String.format("%s, %s/%s", getString(R.string.common_rate_x), getString(R.string.common_unit_insulin),
 						BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm)));
 
 		editK = (EditText) findViewById(R.id.editRateK);

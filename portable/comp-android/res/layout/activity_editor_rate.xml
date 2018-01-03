@@ -44,7 +44,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:labelFor="@+id/editRateK"
-                    android:text="@string/common_koof_k"/>
+                    android:text="@string/common_rate_k"/>
 
             <LinearLayout
                     android:id="@+id/buttonHelpK"
@@ -84,7 +84,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:labelFor="@+id/editRateQ"
-                    android:text="@string/common_koof_q"/>
+                    android:text="@string/common_rate_q"/>
 
             <LinearLayout
                     android:id="@+id/buttonHelpQ"
@@ -124,7 +124,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:labelFor="@+id/editRateX"
-                    android:text="@string/common_koof_x"/>
+                    android:text="@string/common_rate_x"/>
 
             <LinearLayout
                     android:id="@+id/buttonHelpX"

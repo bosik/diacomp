@@ -15,29 +15,52 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bosik.diacomp.core.services.analyze;
+package org.bosik.diacomp.core.services.analyze.entities;
 
-import java.util.List;
-import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
-import org.bosik.diacomp.core.services.analyze.entities.Rate;
-import org.bosik.diacomp.core.services.analyze.entities.RateList;
-import org.bosik.merklesync.Versioned;
-
-public interface AnalyzeCore
+public class Rate
 {
-	/**
-	 * Returns null if the list is empty
-	 * 
-	 * @param records
-	 * @return
-	 */
-	RateList analyze(List<Versioned<DiaryRecord>> records);
+	private double	k;
+	private double	q;
+	private double	p;
 
-	/**
-	 * Returns null if the list is empty
-	 * 
-	 * @param records
-	 * @return
-	 */
-	Rate analyzeAverage(List<Versioned<DiaryRecord>> records);
+	public Rate(double k, double q, double p)
+	{
+		this.k = k;
+		this.q = q;
+		this.p = p;
+	}
+
+	public Rate()
+	{
+	}
+
+	public double getK()
+	{
+		return k;
+	}
+
+	public void setK(double k)
+	{
+		this.k = k;
+	}
+
+	public double getQ()
+	{
+		return q;
+	}
+
+	public void setQ(double q)
+	{
+		this.q = q;
+	}
+
+	public double getP()
+	{
+		return p;
+	}
+
+	public void setP(double p)
+	{
+		this.p = p;
+	}
 }

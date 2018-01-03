@@ -18,7 +18,7 @@
  */
 package org.bosik.diacomp.core.entities.business;
 
-import org.bosik.diacomp.core.services.analyze.entities.Koof;
+import org.bosik.diacomp.core.services.analyze.entities.Rate;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,7 +38,7 @@ public class TimedRate implements Serializable
 	{
 	}
 
-	public TimedRate(int time, Koof c)
+	public TimedRate(int time, Rate c)
 	{
 		this.time = time;
 		this.k = c.getK();

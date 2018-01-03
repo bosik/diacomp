@@ -25,7 +25,7 @@ import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDishbase;
 import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
-import org.bosik.diacomp.android.backend.common.db.tables.TableKoofs;
+import org.bosik.diacomp.android.backend.common.db.tables.TableRates;
 import org.bosik.diacomp.android.backend.common.db.tables.TablePreferences;
 import org.bosik.diacomp.android.backend.common.db.tables.TableTags;
 import android.content.ContentProvider;
@@ -86,7 +86,7 @@ public class DiaryContentProvider extends ContentProvider
 				return 5;
 			}
 		});
-		tables.add(new TableKoofs()
+		tables.add(new TableRates()
 		{
 			@Override
 			public int getCode()
@@ -175,12 +175,12 @@ public class DiaryContentProvider extends ContentProvider
 			{
 				case 1: // --> 2
 				{
-					TableKoofs tableKoofs = new TableKoofs();
+					TableRates tableRates = new TableRates();
 
-					String s = buildDropTableStatement(tableKoofs);
+					String s = buildDropTableStatement(tableRates);
 					db.execSQL(s);
 
-					s = buildCreateTableStatement(tableKoofs);
+					s = buildCreateTableStatement(tableRates);
 					db.execSQL(s);
 					break;
 				}

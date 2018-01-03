@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.services.analyze.entities.AnalyzeRec;
-import org.bosik.diacomp.core.services.analyze.entities.Koof;
-import org.bosik.diacomp.core.services.analyze.entities.KoofList;
+import org.bosik.diacomp.core.services.analyze.entities.Rate;
+import org.bosik.diacomp.core.services.analyze.entities.RateList;
 import org.bosik.diacomp.core.services.analyze.entities.PrimeRec;
 import org.bosik.diacomp.core.services.analyze.entities.WeightedTimePoint;
 import org.bosik.diacomp.core.utils.Utils;
@@ -324,19 +324,19 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	 * O(N) (~50)
 	 * 
 	 * @param recs
-	 * @param koofs
+	 * @param rateList
 	 * @param func
 	 * @return
 	 */
-	private static double getError(List<AnalyzeRec> recs, KoofList koofs, DevFunction func)
+	private static double getError(List<AnalyzeRec> recs, RateList rateList, DevFunction func)
 	{
 		double result = 0.0;
 		int n = 0;
 		for (AnalyzeRec rec : recs)
 		{
-			double k = koofs.getKoof(rec.getTime()).getK();
-			double q = koofs.getKoof(rec.getTime()).getQ();
-			double p = koofs.getKoof(rec.getTime()).getP();
+			double k = rateList.getRate(rec.getTime()).getK();
+			double q = rateList.getRate(rec.getTime()).getQ();
+			double p = rateList.getRate(rec.getTime()).getP();
 
 			double expBs = rec.getBsIn() + k * rec.getCarbs() + p * rec.getProts() - q * rec.getIns();
 			double actBs = rec.getBsOut();
@@ -361,14 +361,14 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	 * @param p
 	 * @return
 	 */
-	private static KoofList copyKQP(double[] ks, double q, double p)
+	private static RateList copyKQP(double[] ks, double q, double p)
 	{
-		KoofList result = new KoofList();
+		RateList result = new RateList();
 		for (int i = 0; i < Utils.MinPerDay; i++)
 		{
-			result.getKoof(i).setK(ks[i]);
-			result.getKoof(i).setQ(q);
-			result.getKoof(i).setP(p);
+			result.getRate(i).setK(ks[i]);
+			result.getRate(i).setQ(q);
+			result.getRate(i).setP(p);
 		}
 		return result;
 	}
@@ -420,10 +420,10 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	}
 
 	@Override
-	public KoofList analyze(List<Versioned<DiaryRecord>> records)
+	public RateList analyze(List<Versioned<DiaryRecord>> records)
 	{
 		/**
-		 * This method assumes the Q and P koofs are fixed and K is floating within the day
+		 * This method assumes the Q and P rates are fixed and K is floating within the day
 		 */
 
 		final double ADPTATION_FACTOR = 0.95;
@@ -438,7 +438,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 			return null;
 		}
 
-		KoofList koofs;
+		RateList rateList;
 		WeightedTimePoint[] points;
 		List<Bean> V = new ArrayList<Bean>();
 		double k[];
@@ -461,11 +461,11 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 					k = approximate(points, false); // 72 000 (1 200)
 					if (k != null)
 					{
-						koofs = copyKQP(k, q, p); // 1 440
+						rateList = copyKQP(k, q, p); // 1 440
 
 						bean.g[0] = getDispersion(k, points, funcRelative); // 50
 						bean.g[1] = 0.0;
-						bean.g[2] = getError(items, koofs, funcSqr); // 50
+						bean.g[2] = getError(items, rateList, funcSqr); // 50
 
 						V.add(bean); // 280
 					}
@@ -528,8 +528,8 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 			k = approximate(points, true);
 			if (k != null)
 			{
-				koofs = copyKQP(k, bestQ, bestP);
-				return koofs;
+				rateList = copyKQP(k, bestQ, bestP);
+				return rateList;
 			}
 		}
 
@@ -537,15 +537,15 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	}
 
 	@Override
-	public Koof analyzeAverage(List<Versioned<DiaryRecord>> records)
+	public Rate analyzeAverage(List<Versioned<DiaryRecord>> records)
 	{
 		/*
 		 * First implementation: naive, slow
 		 */
 
-		KoofList koofs = analyze(records);
+		RateList rateList = analyze(records);
 
-		if (koofs != null)
+		if (rateList != null)
 		{
 			double k = 0;
 			double q = 0;
@@ -553,17 +553,17 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 			for (int i = 0; i < Utils.MinPerDay; i++)
 			{
-				k += koofs.getKoof(i).getK();
-				q += koofs.getKoof(i).getQ();
-				p += koofs.getKoof(i).getP();
+				k += rateList.getRate(i).getK();
+				q += rateList.getRate(i).getQ();
+				p += rateList.getRate(i).getP();
 			}
 
-			Koof koof = new Koof();
-			koof.setK(k / Utils.MinPerDay);
-			koof.setQ(q / Utils.MinPerDay);
-			koof.setP(p / Utils.MinPerDay);
+			Rate rate = new Rate();
+			rate.setK(k / Utils.MinPerDay);
+			rate.setQ(q / Utils.MinPerDay);
+			rate.setP(p / Utils.MinPerDay);
 
-			return koof;
+			return rate;
 		}
 		else
 		{

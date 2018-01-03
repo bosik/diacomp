@@ -19,21 +19,21 @@ package org.bosik.diacomp.core.services.analyze.entities;
 
 import org.bosik.diacomp.core.utils.Utils;
 
-public class KoofList
+public class RateList
 {
-	private Koof[] koofs;
+	private Rate[] rates;
 
-	public KoofList()
+	public RateList()
 	{
-		koofs = new Koof[Utils.MinPerDay];
+		rates = new Rate[Utils.MinPerDay];
 		for (int i = 0; i < Utils.MinPerDay; i++)
 		{
-			koofs[i] = new Koof();
+			rates[i] = new Rate();
 		}
 	}
 
-	public Koof getKoof(int time)
+	public Rate getRate(int time)
 	{
-		return koofs[time % Utils.MinPerDay];
+		return rates[time % Utils.MinPerDay];
 	}
 }

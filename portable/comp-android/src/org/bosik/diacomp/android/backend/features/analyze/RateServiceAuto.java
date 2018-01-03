@@ -21,8 +21,8 @@ import android.content.Context;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
 import org.bosik.diacomp.core.services.analyze.RateService;
-import org.bosik.diacomp.core.services.analyze.entities.Koof;
-import org.bosik.diacomp.core.services.analyze.entities.KoofList;
+import org.bosik.diacomp.core.services.analyze.entities.Rate;
+import org.bosik.diacomp.core.services.analyze.entities.RateList;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
@@ -32,11 +32,11 @@ import java.util.List;
 
 public class RateServiceAuto implements RateService
 {
-	private final Koof STD_COEFFICIENT = new Koof(0.25, 2.5, 0.0);
+	private final Rate STD_COEFFICIENT = new Rate(0.25, 2.5, 0.0);
 
 	private final DiaryService diaryService;
 	private final AnalyzeCore  analyzeCore;
-	private final KoofDao      koofDao;
+	private final RatesDao     ratesDao;
 	private final int          analyzePeriod;
 	private final double       adaptation;
 
@@ -50,7 +50,7 @@ public class RateServiceAuto implements RateService
 	{
 		this.diaryService = diaryService;
 		this.analyzeCore = analyzeCore;
-		this.koofDao = new KoofDao(context);
+		this.ratesDao = new RatesDao(context);
 		this.analyzePeriod = analyzePeriod;
 		this.adaptation = adaptation;
 	}
@@ -61,27 +61,27 @@ public class RateServiceAuto implements RateService
 		Date timeTo = new Date();
 		Date timeFrom = new Date(timeTo.getTime() - (analyzePeriod * Utils.MsecPerDay));
 		List<Versioned<DiaryRecord>> recs = diaryService.findPeriod(timeFrom, timeTo, false);
-		KoofList koofs = analyzeCore.analyze(recs);
+		RateList rateList = analyzeCore.analyze(recs);
 
-		// So if koofs are not calculated properly, the latest successful version will be used
+		// So if rates are not calculated properly, the latest successful version will be used
 		// instead -- great
-		if (validate(koofs))
+		if (validate(rateList))
 		{
-			koofDao.save(koofs);
+			ratesDao.save(rateList);
 		}
 	}
 
-	private static boolean validate(KoofList koofs)
+	private static boolean validate(RateList rateList)
 	{
-		if (koofs == null)
+		if (rateList == null)
 		{
 			return false;
 		}
 
 		for (int i = 0; i < Utils.MinPerDay; i++)
 		{
-			Koof koof = koofs.getKoof(i);
-			if (Double.isNaN(koof.getK()) || Double.isNaN(koof.getQ()) || Double.isNaN(koof.getP()))
+			Rate rate = rateList.getRate(i);
+			if (Double.isNaN(rate.getK()) || Double.isNaN(rate.getQ()) || Double.isNaN(rate.getP()))
 			{
 				return false;
 			}
@@ -91,9 +91,9 @@ public class RateServiceAuto implements RateService
 	}
 
 	@Override
-	public Koof getKoof(int time)
+	public Rate getRate(int time)
 	{
-		Koof koof = koofDao.find(time % Utils.MinPerDay);
-		return koof != null ? koof : STD_COEFFICIENT;
+		Rate rate = ratesDao.find(time % Utils.MinPerDay);
+		return rate != null ? rate : STD_COEFFICIENT;
 	}
 }

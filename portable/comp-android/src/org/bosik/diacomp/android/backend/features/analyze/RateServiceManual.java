@@ -22,8 +22,8 @@ import android.util.Log;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.core.entities.business.TimedRate;
 import org.bosik.diacomp.core.services.analyze.RateService;
-import org.bosik.diacomp.core.services.analyze.entities.Koof;
-import org.bosik.diacomp.core.services.analyze.entities.KoofList;
+import org.bosik.diacomp.core.services.analyze.entities.Rate;
+import org.bosik.diacomp.core.services.analyze.entities.RateList;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.diacomp.core.utils.Utils;
@@ -39,7 +39,7 @@ public class RateServiceManual implements RateService
 	private static final String TAG = RateServiceManual.class.getSimpleName();
 
 	private Context  context;
-	private KoofList coefficients;
+	private RateList coefficients;
 
 	public RateServiceManual(Context context)
 	{
@@ -53,7 +53,7 @@ public class RateServiceManual implements RateService
 	}
 
 	@Override
-	public Koof getKoof(int time)
+	public Rate getRate(int time)
 	{
 		if (coefficients == null)
 		{
@@ -62,7 +62,7 @@ public class RateServiceManual implements RateService
 
 		if (coefficients != null)
 		{
-			return coefficients.getKoof(time);
+			return coefficients.getRate(time);
 		}
 		else
 		{
@@ -86,14 +86,14 @@ public class RateServiceManual implements RateService
 		}
 	}
 
-	private static KoofList buildCoefficients(List<TimedRate> timedRates)
+	private static RateList buildCoefficients(List<TimedRate> timedRates)
 	{
 		if (timedRates == null || timedRates.isEmpty())
 		{
 			return null;
 		}
 
-		KoofList list = new KoofList();
+		RateList list = new RateList();
 
 		for (int i = -1; i < timedRates.size(); i++)
 		{
@@ -130,7 +130,7 @@ public class RateServiceManual implements RateService
 
 			for (int t = tFrom; t < tTo; t++)
 			{
-				list.getKoof(t).setK(fK.apply((double) t));
+				list.getRate(t).setK(fK.apply((double) t));
 			}
 
 			Function<Double, Double> fQ = Interpolation
@@ -138,12 +138,12 @@ public class RateServiceManual implements RateService
 
 			for (int t = tFrom; t < tTo; t++)
 			{
-				list.getKoof(t).setQ(fQ.apply((double) t));
+				list.getRate(t).setQ(fQ.apply((double) t));
 			}
 
 			for (int t = tFrom; t < tTo; t++)
 			{
-				list.getKoof(t).setP(0.0);
+				list.getRate(t).setP(0.0);
 			}
 		}
 

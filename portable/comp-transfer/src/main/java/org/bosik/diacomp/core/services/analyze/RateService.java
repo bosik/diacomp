@@ -17,11 +17,11 @@
  */
 package org.bosik.diacomp.core.services.analyze;
 
-import org.bosik.diacomp.core.services.analyze.entities.Koof;
+import org.bosik.diacomp.core.services.analyze.entities.Rate;
 
 public interface RateService
 {
 	void update();
 
-	Koof getKoof(int time);
+	Rate getRate(int time);
 }

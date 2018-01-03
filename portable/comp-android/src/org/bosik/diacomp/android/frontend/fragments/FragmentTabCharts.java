@@ -33,7 +33,7 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.Series;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
-import org.bosik.diacomp.android.backend.features.analyze.KoofServiceInternal;
+import org.bosik.diacomp.android.backend.features.analyze.RateServiceInternal;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.android.frontend.fragments.chart.Chart;
 import org.bosik.diacomp.android.frontend.fragments.chart.Chart.ChartType;
@@ -45,7 +45,7 @@ import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.services.analyze.RateService;
-import org.bosik.diacomp.core.services.analyze.entities.Koof;
+import org.bosik.diacomp.core.services.analyze.entities.Rate;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
@@ -205,7 +205,7 @@ public class FragmentTabCharts extends Fragment
 		}
 
 		chart.setChartType(ChartType.HISTORY);
-		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x), getString(R.string.common_unit_insulin),
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_x), getString(R.string.common_unit_insulin),
 				getString(R.string.common_unit_mass_gramm)));
 		chart.setDescription(getString(R.string.common_rate_x_description) + ". " + getString(R.string.charts_type_history) + ".");
 		chart.setDataLoader(new DataLoader()
@@ -346,7 +346,7 @@ public class FragmentTabCharts extends Fragment
 		}
 
 		chart.setChartType(ChartType.DAILY);
-		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_x), getString(R.string.common_unit_insulin),
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_x), getString(R.string.common_unit_insulin),
 				getString(R.string.common_unit_mass_gramm)));
 		chart.setDescription(getString(R.string.common_rate_x_description) + ". " + getString(R.string.charts_type_daily) + ".");
 		chart.setDataLoader(new DataLoader()
@@ -354,14 +354,14 @@ public class FragmentTabCharts extends Fragment
 			@Override
 			public Collection<Series<?>> load(ContentResolver contentResolver)
 			{
-				RateService rateService = KoofServiceInternal.getInstance(getActivity());
+				RateService rateService = RateServiceInternal.getInstance(getActivity());
 
 				List<DataPoint> dataList = new ArrayList<>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
 				{
-					Koof koof = rateService.getKoof(time);
+					Rate rate = rateService.getRate(time);
 					double x = (double) time / 60;
-					double y = koof.getK() / koof.getQ();
+					double y = rate.getK() / rate.getQ();
 					dataList.add(new DataPoint(x, y));
 				}
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
@@ -383,7 +383,7 @@ public class FragmentTabCharts extends Fragment
 		}
 
 		chart.setChartType(ChartType.DAILY);
-		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_k), getString(R.string.common_unit_bs_mmoll),
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_k), getString(R.string.common_unit_bs_mmoll),
 				getString(R.string.common_unit_mass_gramm)));
 		chart.setDescription(getString(R.string.common_rate_k_description) + ". " + getString(R.string.charts_type_daily) + ".");
 		chart.setDataLoader(new DataLoader()
@@ -391,13 +391,13 @@ public class FragmentTabCharts extends Fragment
 			@Override
 			public Collection<Series<?>> load(ContentResolver contentResolver)
 			{
-				RateService rateService = KoofServiceInternal.getInstance(getActivity());
+				RateService rateService = RateServiceInternal.getInstance(getActivity());
 
 				List<DataPoint> dataList = new ArrayList<>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
 				{
 					double x = (double) time / 60;
-					double y = rateService.getKoof(time).getK();
+					double y = rateService.getRate(time).getK();
 					dataList.add(new DataPoint(x, y));
 				}
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
@@ -419,7 +419,7 @@ public class FragmentTabCharts extends Fragment
 		}
 
 		chart.setChartType(ChartType.DAILY);
-		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_koof_q), getString(R.string.common_unit_bs_mmoll),
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_q), getString(R.string.common_unit_bs_mmoll),
 				getString(R.string.common_unit_insulin)));
 		chart.setDescription(getString(R.string.common_rate_q_description) + ". " + getString(R.string.charts_type_daily) + ".");
 		chart.setDataLoader(new DataLoader()
@@ -427,13 +427,13 @@ public class FragmentTabCharts extends Fragment
 			@Override
 			public Collection<Series<?>> load(ContentResolver contentResolver)
 			{
-				RateService rateService = KoofServiceInternal.getInstance(getActivity());
+				RateService rateService = RateServiceInternal.getInstance(getActivity());
 
 				List<DataPoint> dataList = new ArrayList<>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
 				{
 					double x = (double) time / 60;
-					double y = rateService.getKoof(time).getQ();
+					double y = rateService.getRate(time).getQ();
 					dataList.add(new DataPoint(x, y));
 				}
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);

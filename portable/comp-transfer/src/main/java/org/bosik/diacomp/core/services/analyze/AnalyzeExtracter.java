@@ -26,8 +26,8 @@ import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.services.analyze.entities.AnalyzeRec;
-import org.bosik.diacomp.core.services.analyze.entities.Koof;
-import org.bosik.diacomp.core.services.analyze.entities.KoofList;
+import org.bosik.diacomp.core.services.analyze.entities.Rate;
+import org.bosik.diacomp.core.services.analyze.entities.RateList;
 import org.bosik.diacomp.core.services.analyze.entities.PrimeRec;
 import org.bosik.diacomp.core.services.diary.PostprandUtils;
 import org.bosik.diacomp.core.utils.Utils;
@@ -275,11 +275,11 @@ public class AnalyzeExtracter
 		return result;
 	}
 
-	public static double getRecError(AnalyzeRec rec, KoofList koofs, ValueFunction analyzeMethod)
+	public static double getRecError(AnalyzeRec rec, RateList rateList, ValueFunction analyzeMethod)
 	{
-		Koof koof = koofs.getKoof(rec.getTime());
-		double err = (rec.getBsIn() + (rec.getCarbs() * koof.getK()) + (rec.getProts() * koof.getP()))
-				- (rec.getIns() * koof.getQ()) - rec.getBsOut();
+		Rate rate = rateList.getRate(rec.getTime());
+		double err = (rec.getBsIn() + (rec.getCarbs() * rate.getK()) + (rec.getProts() * rate.getP()))
+				- (rec.getIns() * rate.getQ()) - rec.getBsOut();
 
 		switch (analyzeMethod)
 		{
@@ -301,12 +301,12 @@ public class AnalyzeExtracter
 		}
 	}
 
-	public static double getRecListError(List<AnalyzeRec> recs, KoofList koofs, ValueFunction analyzeMethod)
+	public static double getRecListError(List<AnalyzeRec> recs, RateList rateList, ValueFunction analyzeMethod)
 	{
 		double result = 0.0;
 		for (AnalyzeRec rec : recs)
 		{
-			result += getRecError(rec, koofs, analyzeMethod);
+			result += getRecError(rec, rateList, analyzeMethod);
 		}
 
 		if (!recs.isEmpty())
