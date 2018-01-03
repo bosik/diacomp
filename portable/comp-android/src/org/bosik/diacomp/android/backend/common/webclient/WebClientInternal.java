@@ -32,8 +32,6 @@ public class WebClientInternal
 
 	public static synchronized WebClient getInstance(Context context, String username, String password)
 	{
-		Log.i(TAG, "Web client initialization...");
-
 		// reading parameters
 
 		String serverURL = context.getString(R.string.server_url);
@@ -44,6 +42,7 @@ public class WebClientInternal
 
 		if (instance == null)
 		{
+			Log.i(TAG, "Web client initialization...");
 			instance = new WebClient(connectionTimeout);
 		}
 

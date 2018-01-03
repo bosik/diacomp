@@ -17,13 +17,6 @@
  */
 package org.bosik.diacomp.web.backend.features.export;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.rest.ExportAPI;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
@@ -36,21 +29,29 @@ import org.bosik.diacomp.web.backend.features.preferences.PreferencesLocalServic
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @Path("export")
 public class ExportRest
 {
 	@Autowired
-	private DiaryLocalService		diaryService;
+	private DiaryLocalService diaryService;
 
 	@Autowired
-	private FoodBaseLocalService	foodbaseService;
+	private FoodBaseLocalService foodbaseService;
 
 	@Autowired
-	private DishBaseLocalService	dishbaseService;
+	private DishBaseLocalService dishbaseService;
 
 	@Autowired
-	private PreferencesLocalService	prefService;
+	private PreferencesLocalService prefService;
 
 	@GET
 	@Path("/json")
@@ -59,14 +60,13 @@ public class ExportRest
 	{
 		try
 		{
-			List<Entry> entries = new ArrayList<Entry>();
+			List<Entry> entries = new ArrayList<>();
 			entries.add(new Entry(ExportAPI.JSON_DIARY, diaryService.exportData().getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.JSON_FOODBASE, foodbaseService.exportData().getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.JSON_DISHBASE, dishbaseService.exportData().getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.JSON_PREFERENCES, prefService.exportData().getBytes("UTF-8")));
 
-			return Response.ok(ZipUtils.zip(entries)).header("Content-Disposition", "attachment; filename=\"data.zip\"")
-					.build();
+			return Response.ok(ZipUtils.zip(entries)).header("Content-Disposition", "attachment; filename=\"data.zip\"").build();
 		}
 		catch (NotAuthorizedException e)
 		{
@@ -86,38 +86,13 @@ public class ExportRest
 	{
 		try
 		{
-			List<Entry> entries = new ArrayList<Entry>();
+			List<Entry> entries = new ArrayList<>();
 			entries.add(new Entry(ExportAPI.PLAIN_DIARY, diaryService.exportPlain().getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.PLAIN_FOODBASE, foodbaseService.exportPlain().getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.PLAIN_DISHBASE, dishbaseService.exportPlain().getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.PLAIN_PREFERENCES, prefService.exportPlain().getBytes("UTF-8")));
 
-			return Response.ok(ZipUtils.zip(entries)).header("Content-Disposition", "attachment; filename=\"data.zip\"")
-					.build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
-	}
-
-	@GET
-	@Path("/windows")
-	@Produces("application/zip")
-	public Response exportWindows()
-	{
-		try
-		{
-			List<Entry> entries = new ArrayList<Entry>();
-			entries.add(new Entry("Diary.txt", diaryService.exportPlain().getBytes("UTF-8")));
-
-			return Response.ok(ZipUtils.zip(entries)).header("Content-Disposition", "attachment; filename=\"data.zip\"")
-					.build();
+			return Response.ok(ZipUtils.zip(entries)).header("Content-Disposition", "attachment; filename=\"data.zip\"").build();
 		}
 		catch (NotAuthorizedException e)
 		{
