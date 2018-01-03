@@ -18,6 +18,14 @@
  */
 package org.bosik.diacomp.android.backend.features.sync;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.AbstractThreadedSyncAdapter;
+import android.content.ContentProviderClient;
+import android.content.Context;
+import android.content.SyncResult;
+import android.os.Bundle;
+import android.util.Log;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
@@ -34,46 +42,32 @@ import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.preferences.PreferencesService;
 import org.bosik.diacomp.core.services.preferences.PreferencesSync;
 import org.bosik.merklesync.SyncUtils.Synchronizer2;
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.content.AbstractThreadedSyncAdapter;
-import android.content.ContentProviderClient;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.SyncResult;
-import android.os.Bundle;
-import android.util.Log;
 
-/**
- * Handle the transfer of data between a server and an app, using the Android sync adapter
- * framework.
- */
 public class SyncAdapter extends AbstractThreadedSyncAdapter
 {
-	private static final String		TAG				= SyncAdapter.class.getSimpleName();
+	private static final String TAG = SyncAdapter.class.getSimpleName();
 
-	private static final int		MAX_DIARY_READ	= 100;
-	private static final int		MAX_DIARY_WRITE	= 100;
-	private static final int		MAX_FOOD_READ	= 50;
-	private static final int		MAX_FOOD_WRITE	= 50;
-	private static final int		MAX_DISH_READ	= 10;
-	private static final int		MAX_DISH_WRITE	= 10;
+	// Average diary entry size: 177.8 bytes
+	// Average food entry size: 128.6 bytes
+	// Average dish entry size: 466.1 bytes
+	// (2018-01-03)
 
-	private final AccountManager	mAccountManager;
+	// Tuned to transfer 32 Kb per block
+	private static final int MAX_DIARY_READ  = 184;
+	private static final int MAX_DIARY_WRITE = 184;
+	private static final int MAX_FOOD_READ   = 255;
+	private static final int MAX_FOOD_WRITE  = 255;
+	private static final int MAX_DISH_READ   = 70;
+	private static final int MAX_DISH_WRITE  = 70;
 
-	/**
-	 * Set up the sync adapter
-	 */
+	private final AccountManager mAccountManager;
+
 	public SyncAdapter(Context context, boolean autoInitialize)
 	{
 		super(context, autoInitialize);
 		mAccountManager = AccountManager.get(context);
 	}
 
-	/**
-	 * Set up the sync adapter. This form of the constructor maintains compatibility with Android
-	 * 3.0 and later platform versions
-	 */
 	public SyncAdapter(Context context, boolean autoInitialize, boolean allowParallelSyncs)
 	{
 		super(context, autoInitialize, allowParallelSyncs);
@@ -81,24 +75,18 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 	}
 
 	@Override
-	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
-			SyncResult syncResult)
+	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult)
 	{
 		try
 		{
 			// /**/long time = System.currentTimeMillis();
 
-			// Log.i(TAG, "Sync fired");
-
 			// Preparing common services
 
-			ContentResolver contentResolver = getContext().getContentResolver();
-
+			syncResult.stats.numIoExceptions = 0;
 			final String username = account.name;
 			final String password = mAccountManager.getPassword(account);
 			WebClient webClient = WebClientInternal.getInstance(getContext(), username, password);
-
-			syncResult.stats.numIoExceptions = 0;
 
 			// Sync - Diary
 
@@ -107,8 +95,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			{
 				DiaryService localDiary = new DiaryLocalService(getContext());
 				DiaryService webDiary = new DiaryWebService(webClient);
-				counterDiary = new Synchronizer2<>(localDiary, webDiary, MAX_DIARY_READ, MAX_DIARY_WRITE)
-						.synchronize();
+				counterDiary = new Synchronizer2<>(localDiary, webDiary, MAX_DIARY_READ, MAX_DIARY_WRITE).synchronize();
 			}
 			catch (Exception e)
 			{
@@ -123,8 +110,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			{
 				FoodBaseService localFoodBase = new FoodBaseLocalService(getContext());
 				FoodBaseService webFoodBase = new FoodBaseWebService(webClient);
-				counterFood = new Synchronizer2<>(localFoodBase, webFoodBase, MAX_FOOD_READ, MAX_FOOD_WRITE)
-						.synchronize();
+				counterFood = new Synchronizer2<>(localFoodBase, webFoodBase, MAX_FOOD_READ, MAX_FOOD_WRITE).synchronize();
 			}
 			catch (Exception e)
 			{
@@ -139,8 +125,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			{
 				DishBaseService localDishBase = new DishBaseLocalService(getContext());
 				DishBaseService webDishBase = new DishBaseWebService(webClient);
-				counterDish = new Synchronizer2<>(localDishBase, webDishBase, MAX_DISH_READ, MAX_DISH_WRITE)
-						.synchronize();
+				counterDish = new Synchronizer2<>(localDishBase, webDishBase, MAX_DISH_READ, MAX_DISH_WRITE).synchronize();
 			}
 			catch (Exception e)
 			{
@@ -150,12 +135,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 
 			// Sync - Preferences
 
-			int countPreferences = 0;
+			int counterPreferences = 0;
 			try
 			{
 				PreferencesService localPreferences = new PreferencesLocalService(getContext());
 				PreferencesService webPreferences = new PreferencesWebService(webClient);
-				countPreferences = PreferencesSync.synchronizePreferences(localPreferences, webPreferences) ? 1 : 0;
+				counterPreferences = PreferencesSync.synchronizePreferences(localPreferences, webPreferences) ? 1 : 0;
 			}
 			catch (Exception e)
 			{
@@ -166,12 +151,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			// /**/time = System.currentTimeMillis() - time;
 			// /**/Log.i(TAG, String.format("Synchronized in %d ms, items transferred: %d/%d/%d/%d",
 			// time, counterDiary,
-			// counterFood, counterDish, countPreferences));
+			// counterFood, counterDish, counterPreferences));
 		}
 		catch (Exception e)
 		{
 			Log.e(TAG, "Sync failed: common", e);
-			syncResult.stats.numIoExceptions = 1;
+			syncResult.stats.numIoExceptions++;
 		}
 	}
 }
