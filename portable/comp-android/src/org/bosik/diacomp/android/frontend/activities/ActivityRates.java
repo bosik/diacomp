@@ -48,7 +48,7 @@ import org.bosik.diacomp.android.frontend.fragments.FragmentMassUnitDialog;
 import org.bosik.diacomp.android.frontend.fragments.chart.Chart;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle;
 import org.bosik.diacomp.android.utils.ErrorHandler;
-import org.bosik.diacomp.core.entities.business.Rate;
+import org.bosik.diacomp.core.entities.business.TimedRate;
 import org.bosik.diacomp.core.services.analyze.RateService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
@@ -80,9 +80,9 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 	private BaseAdapter adapter;
 
 	// data
-	private List<Versioned<Rate>>       rates; // TODO: save/restore on activity re-creation
-	private List<List<Versioned<Rate>>> history;
-	private int                         historyIndex;
+	private List<Versioned<TimedRate>>       rates; // TODO: save/restore on activity re-creation
+	private List<List<Versioned<TimedRate>>> history;
+	private int                              historyIndex;
 	private boolean BU = false; // TODO: persist
 
 	@Override
@@ -95,7 +95,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 
 		final RateService ratesService = new RateServiceManual(this);
 
-		List<Versioned<Rate>> versioned = Versioned.wrap(RateServiceManual.loadRates(this));
+		List<Versioned<TimedRate>> versioned = Versioned.wrap(RateServiceManual.loadRates(this));
 		Versioned.regenerateIds(versioned);
 		rates = versioned;
 
@@ -156,7 +156,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 				if (!ids.isEmpty())
 				{
 					int count = 0;
-					for (Iterator<Versioned<Rate>> i = rates.iterator(); i.hasNext(); )
+					for (Iterator<Versioned<TimedRate>> i = rates.iterator(); i.hasNext(); )
 					{
 						if (ids.contains(i.next().getId()))
 						{
@@ -220,7 +220,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 				Object item = getItem(position);
 				if (item != null)
 				{
-					return ((Versioned<Rate>) item).getData().getTime();
+					return ((Versioned<TimedRate>) item).getData().getTime();
 				}
 				else
 				{
@@ -231,7 +231,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 			@Override
 			public View getView(int position, View view, ViewGroup parent)
 			{
-				Versioned<Rate> rate = (Versioned<Rate>) getItem(position);
+				Versioned<TimedRate> rate = (Versioned<TimedRate>) getItem(position);
 
 				if (rate != null)
 				{
@@ -375,7 +375,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 				for (int time = 0; time < Utils.MinPerDay; time += 2 * Utils.MinPerHour)
 				{
 					Koof c = service.getKoof(time);
-					Versioned<Rate> versioned = new Versioned<>(new Rate(time, c));
+					Versioned<TimedRate> versioned = new Versioned<>(new TimedRate(time, c));
 					versioned.setId(HashUtils.generateGuid());
 					rates.add(versioned);
 				}
@@ -450,13 +450,13 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 	}
 
 	// handled
-	private void showRateEditor(Versioned<Rate> entity, boolean createMode)
+	private void showRateEditor(Versioned<TimedRate> entity, boolean createMode)
 	{
 		try
 		{
 			if (createMode)
 			{
-				Rate rec = new Rate();
+				TimedRate rec = new TimedRate();
 				rec.setTime(0); // FIXME
 				entity = new Versioned<>(rec);
 			}
@@ -474,9 +474,9 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		}
 	}
 
-	private String formatK(Rate rate, boolean BU)
+	private String formatK(TimedRate timedRate, boolean BU)
 	{
-		return "K: " + Utils.formatK(rate.getK(), BU);
+		return "K: " + Utils.formatK(timedRate.getK(), BU);
 	}
 
 	private String formatKUnit(boolean BU)
@@ -486,9 +486,9 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		return unitBS + "/" + unitMass;
 	}
 
-	private String formatQ(Rate rate)
+	private String formatQ(TimedRate timedRate)
 	{
-		return "Q: " + Utils.formatQ(rate.getQ());
+		return "Q: " + Utils.formatQ(timedRate.getQ());
 	}
 
 	private String formatQUnit()
@@ -498,9 +498,9 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		return unitBS + "/" + unitDosage;
 	}
 
-	private String formatX(Rate rate, boolean BU)
+	private String formatX(TimedRate timedRate, boolean BU)
 	{
-		return "X: " + Utils.formatX(rate.getK() / rate.getQ(), BU);
+		return "X: " + Utils.formatX(timedRate.getK() / timedRate.getQ(), BU);
 	}
 
 	private String formatXUnit(boolean BU)
@@ -523,7 +523,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 				{
 					if (resultCode == Activity.RESULT_OK)
 					{
-						rates.add((Versioned<Rate>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY));
+						rates.add((Versioned<TimedRate>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY));
 
 						sortByTime(rates);
 						save(rates);
@@ -537,7 +537,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 				{
 					if (resultCode == Activity.RESULT_OK)
 					{
-						Versioned<Rate> rec = (Versioned<Rate>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
+						Versioned<TimedRate> rec = (Versioned<TimedRate>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
 						rates.remove(rec);
 						rates.add(rec);
 
@@ -556,18 +556,18 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		}
 	}
 
-	private void save(List<Versioned<Rate>> versioned)
+	private void save(List<Versioned<TimedRate>> versioned)
 	{
-		List<Rate> rates = new ArrayList<>();
-		for (Versioned<Rate> item : versioned)
+		List<TimedRate> timedRates = new ArrayList<>();
+		for (Versioned<TimedRate> item : versioned)
 		{
-			rates.add(item.getData());
+			timedRates.add(item.getData());
 		}
 
 		try
 		{
 			PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
-			String json = Rate.writeList(rates);
+			String json = TimedRate.writeList(timedRates);
 			preferences.setStringValue(PreferenceID.RATES_DATA, json);
 		}
 		catch (JSONException e)
@@ -576,12 +576,12 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		}
 	}
 
-	private void sortByTime(List<Versioned<Rate>> rates)
+	private void sortByTime(List<Versioned<TimedRate>> rates)
 	{
-		Collections.sort(rates, new Comparator<Versioned<Rate>>()
+		Collections.sort(rates, new Comparator<Versioned<TimedRate>>()
 		{
 			@Override
-			public int compare(Versioned<Rate> lhs, Versioned<Rate> rhs)
+			public int compare(Versioned<TimedRate> lhs, Versioned<TimedRate> rhs)
 			{
 				return lhs.getData().getTime() - rhs.getData().getTime();
 			}

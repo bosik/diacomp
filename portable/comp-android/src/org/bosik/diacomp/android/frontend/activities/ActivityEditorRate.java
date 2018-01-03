@@ -31,14 +31,14 @@ import android.widget.TimePicker;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.pickers.TimePickerFragment;
-import org.bosik.diacomp.core.entities.business.Rate;
+import org.bosik.diacomp.core.entities.business.TimedRate;
 import org.bosik.diacomp.core.utils.Utils;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedHashSet;
 
-public class ActivityEditorRate extends ActivityEditor<Rate> implements TimePickerDialog.OnTimeSetListener
+public class ActivityEditorRate extends ActivityEditor<TimedRate> implements TimePickerDialog.OnTimeSetListener
 {
 	public static final String KEY_INTENT_USE_BU = "org.bosik.diacomp.useBU";
 

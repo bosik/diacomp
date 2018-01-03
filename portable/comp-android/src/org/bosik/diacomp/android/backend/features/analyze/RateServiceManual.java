@@ -20,7 +20,7 @@ package org.bosik.diacomp.android.backend.features.analyze;
 import android.content.Context;
 import android.util.Log;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
-import org.bosik.diacomp.core.entities.business.Rate;
+import org.bosik.diacomp.core.entities.business.TimedRate;
 import org.bosik.diacomp.core.services.analyze.RateService;
 import org.bosik.diacomp.core.services.analyze.entities.Koof;
 import org.bosik.diacomp.core.services.analyze.entities.KoofList;
@@ -70,14 +70,14 @@ public class RateServiceManual implements RateService
 		}
 	}
 
-	public static List<Rate> loadRates(Context context)
+	public static List<TimedRate> loadRates(Context context)
 	{
 		PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(context));
 		String data = preferences.getStringValue(PreferenceID.RATES_DATA);
 
 		try
 		{
-			return Rate.readList(data);
+			return TimedRate.readList(data);
 		}
 		catch (JSONException e)
 		{
@@ -86,36 +86,36 @@ public class RateServiceManual implements RateService
 		}
 	}
 
-	private static KoofList buildCoefficients(List<Rate> rates)
+	private static KoofList buildCoefficients(List<TimedRate> timedRates)
 	{
-		if (rates == null || rates.isEmpty())
+		if (timedRates == null || timedRates.isEmpty())
 		{
 			return null;
 		}
 
 		KoofList list = new KoofList();
 
-		for (int i = -1; i < rates.size(); i++)
+		for (int i = -1; i < timedRates.size(); i++)
 		{
 			int iPreStart = i - 1;
 			int iStart = i;
 			int iEnd = i + 1;
 			int iAfterEnd = i + 2;
 
-			int nPreStart = (iPreStart + rates.size()) % rates.size();
-			int nStart = (iStart + rates.size()) % rates.size();
-			int nEnd = iEnd % rates.size();
-			int nAfterEnd = iAfterEnd % rates.size();
+			int nPreStart = (iPreStart + timedRates.size()) % timedRates.size();
+			int nStart = (iStart + timedRates.size()) % timedRates.size();
+			int nEnd = iEnd % timedRates.size();
+			int nAfterEnd = iAfterEnd % timedRates.size();
 
-			final Rate ratePreStart = rates.get(nPreStart);
-			final Rate rateStart = rates.get(nStart);
-			final Rate rateEnd = rates.get(nEnd);
-			final Rate rateAfterEnd = rates.get(nAfterEnd);
+			final TimedRate ratePreStart = timedRates.get(nPreStart);
+			final TimedRate rateStart = timedRates.get(nStart);
+			final TimedRate rateEnd = timedRates.get(nEnd);
+			final TimedRate rateAfterEnd = timedRates.get(nAfterEnd);
 
 			double tPreStart = (iPreStart >= 0) ? ratePreStart.getTime() : ratePreStart.getTime() - Utils.MinPerDay;
 			double tStart = (iStart >= 0) ? rateStart.getTime() : rateStart.getTime() - Utils.MinPerDay;
-			double tEnd = (iEnd < rates.size()) ? rateEnd.getTime() : rateEnd.getTime() + Utils.MinPerDay;
-			double tAfterEnd = (iAfterEnd < rates.size()) ? rateAfterEnd.getTime() : rateAfterEnd.getTime() + Utils.MinPerDay;
+			double tEnd = (iEnd < timedRates.size()) ? rateEnd.getTime() : rateEnd.getTime() + Utils.MinPerDay;
+			double tAfterEnd = (iAfterEnd < timedRates.size()) ? rateAfterEnd.getTime() : rateAfterEnd.getTime() + Utils.MinPerDay;
 
 			// (tPreStart, rates.get(nPreStart).getData().get_())
 			// (tStart, rates.get(nStart).getData().get_())

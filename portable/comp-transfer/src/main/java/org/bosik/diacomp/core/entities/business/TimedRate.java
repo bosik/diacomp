@@ -27,18 +27,18 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Rate implements Serializable
+public class TimedRate implements Serializable
 {
 	private int    time;
 	private double k;
 	private double q;
 	private double p;
 
-	public Rate()
+	public TimedRate()
 	{
 	}
 
-	public Rate(int time, Koof c)
+	public TimedRate(int time, Koof c)
 	{
 		this.time = time;
 		this.k = c.getK();
@@ -86,40 +86,40 @@ public class Rate implements Serializable
 		this.p = p;
 	}
 
-	public static List<Rate> readList(String s) throws JSONException
+	public static List<TimedRate> readList(String s) throws JSONException
 	{
-		List<Rate> rates = new ArrayList<Rate>();
+		List<TimedRate> timedRates = new ArrayList<TimedRate>();
 		JSONArray json = new JSONArray(s);
 
 		for (int i = 0; i < json.length(); i++)
 		{
 			JSONObject item = json.getJSONObject(i);
 
-			Rate rate = new Rate();
+			TimedRate timedRate = new TimedRate();
 
-			rate.setTime(item.getInt("time"));
-			rate.setK(item.getDouble("k"));
-			rate.setQ(item.getDouble("q"));
-			rate.setP(item.getDouble("p"));
+			timedRate.setTime(item.getInt("time"));
+			timedRate.setK(item.getDouble("k"));
+			timedRate.setQ(item.getDouble("q"));
+			timedRate.setP(item.getDouble("p"));
 
-			rates.add(rate);
+			timedRates.add(timedRate);
 		}
 
-		return rates;
+		return timedRates;
 	}
 
-	public static String writeList(List<Rate> rates) throws JSONException
+	public static String writeList(List<TimedRate> timedRates) throws JSONException
 	{
 		JSONArray json = new JSONArray();
 
-		for (Rate rate : rates)
+		for (TimedRate timedRate : timedRates)
 		{
 			JSONObject item = new JSONObject();
 
-			item.put("time", rate.getTime());
-			item.put("k", rate.getK());
-			item.put("q", rate.getQ());
-			item.put("p", rate.getP());
+			item.put("time", timedRate.getTime());
+			item.put("k", timedRate.getK());
+			item.put("q", timedRate.getQ());
+			item.put("p", timedRate.getP());
 
 			json.put(item);
 		}
