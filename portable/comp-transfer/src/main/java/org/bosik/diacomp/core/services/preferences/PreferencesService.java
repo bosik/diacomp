@@ -17,6 +17,8 @@
  */
 package org.bosik.diacomp.core.services.preferences;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public abstract class PreferencesService
@@ -31,7 +33,17 @@ public abstract class PreferencesService
 		final int prime = 31;
 		int hash = 1;
 
-		for (PreferenceEntry<String> entity : getAll())
+		List<PreferenceEntry<String>> items = getAll();
+		Collections.sort(items, new Comparator<PreferenceEntry<String>>()
+		{
+			@Override
+			public int compare(PreferenceEntry<String> o1, PreferenceEntry<String> o2)
+			{
+				return o1.getId().getKey().compareTo(o2.getId().getKey());
+			}
+		});
+
+		for (PreferenceEntry<String> entity : items)
 		{
 			if (entity.getId().isSyncable())
 			{
