@@ -1191,4 +1191,15 @@ public class Utils
 		result.removeAll(b);
 		return result;
 	}
+
+	/**
+	 * Checks if string ends with slash. For {@code null} input, {@code null} returned
+	 *
+	 * @param s
+	 * @return
+	 */
+	public static String makeSureEndsWithSlash(String s)
+	{
+		return (s == null || s.endsWith("/")) ? s : (s + "/");
+	}
 }

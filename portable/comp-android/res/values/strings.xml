@@ -119,6 +119,15 @@
     <string name="login_error_incorrect_password">This password is incorrect</string>
     <string name="login_error_invalid_email">This email address is invalid</string>
     <string name="login_error_invalid_password">At least 6 characters</string>
+    <string name="login_import_result_done">User data imported OK</string>
+    <string name="login_import_result_fail">Failed to import user data</string>
+    <string name="login_import_step_diary">Diary setup…</string>
+    <string name="login_import_step_dish">Dish base setup…</string>
+    <string name="login_import_step_downloading">Downloading…</string>
+    <string name="login_import_step_food">Food base setup…</string>
+    <string name="login_import_step_initialization">Initialization…</string>
+    <string name="login_import_step_preferences">Preferences setup…</string>
+    <string name="login_import_step_unzipping">Unzipping…</string>
     <string name="login_login_progress_signing_in">Signing in…</string>
     <string name="login_prompt_email">Email</string>
     <string name="login_prompt_password">Password</string>

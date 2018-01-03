@@ -49,15 +49,14 @@ import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
 import org.bosik.diacomp.android.backend.features.quickImport.ImportHelper.Progress;
 import org.bosik.diacomp.android.backend.features.quickImport.ImportService;
 import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.core.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ActivityLogin extends AccountAuthenticatorActivity
 {
-	static final        String TAG                  = ActivityLogin.class.getSimpleName();
-	public static final String DEFAULT_ACCOUNT_TYPE = "diacomp.org";
-
+	public static final String DEFAULT_ACCOUNT_TYPE      = "diacomp.org";
 	public static final String EXTRA_EMAIL               = "org.bosik.diacomp.activityLogin.email";
 	public static final String EXTRA_PASS                = "org.bosik.diacomp.activityLogin.password";
 	public static final String ARG_ACCOUNT_TYPE          = "org.bosik.diacomp.activityLogin.accountType";
@@ -82,7 +81,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-			ActivityLogin.this.onReceive(context, intent);
+			ActivityLogin.this.onReceive(intent);
 		}
 	};
 
@@ -163,7 +162,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			@Override
 			public void onClick(View v)
 			{
-				String url = getString(R.string.server_url) + "register/";
+				String url = Utils.makeSureEndsWithSlash(getString(R.string.server_url)) + "register/";
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 				startActivity(browserIntent);
 			}
@@ -344,69 +343,67 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		startService(new Intent(ActivityLogin.this, ImportService.class));
 	}
 
-	private void onReceive(Context context, Intent intent)
+	private void onReceive(Intent intent)
 	{
 		Bundle bundle = intent.getExtras();
 		if (bundle != null)
 		{
 			Progress step = (Progress) bundle.getSerializable(ImportService.KEY_RESULT);
 
-			// TODO: i18n
 			switch (step)
 			{
 				case INITIALIZATION:
 				{
-					mLoginStatusMessageView.setText("Initialization...");
+					mLoginStatusMessageView.setText(getString(R.string.login_import_step_initialization));
 					break;
 				}
 
 				case LOADING:
 				{
-					mLoginStatusMessageView.setText("Downloading...");
+					mLoginStatusMessageView.setText(getString(R.string.login_import_step_downloading));
 					break;
 				}
 
 				case UNZIPPING:
 				{
-					mLoginStatusMessageView.setText("Unzipping...");
+					mLoginStatusMessageView.setText(getString(R.string.login_import_step_unzipping));
 					break;
 				}
 
 				case INSTALL_DIARY:
 				{
-					mLoginStatusMessageView.setText("Diary setup...");
+					mLoginStatusMessageView.setText(getString(R.string.login_import_step_diary));
 					break;
 				}
 
 				case INSTALL_FOODBASE:
 				{
-					mLoginStatusMessageView.setText("Food base setup...");
+					mLoginStatusMessageView.setText(getString(R.string.login_import_step_food));
 					break;
 				}
 
 				case INSTALL_DISHBASE:
 				{
-					mLoginStatusMessageView.setText("Dish base setup...");
+					mLoginStatusMessageView.setText(getString(R.string.login_import_step_dish));
 					break;
 				}
 
 				case INSTALL_PREFERENCES:
 				{
-					mLoginStatusMessageView.setText("Preferences setup...");
+					mLoginStatusMessageView.setText(getString(R.string.login_import_step_preferences));
 					break;
 				}
 
 				case DONE_OK:
 				case DONE_FAIL:
 				{
-					// TODO: i18n
 					if (step == Progress.DONE_OK)
 					{
-						UIUtils.showTip(ActivityLogin.this, "User data imported OK");
+						UIUtils.showTip(ActivityLogin.this, getString(R.string.login_import_result_done));
 					}
 					else
 					{
-						UIUtils.showTip(ActivityLogin.this, "Failed to import user data");
+						UIUtils.showTip(ActivityLogin.this, getString(R.string.login_import_result_fail));
 					}
 
 					addAccount();
