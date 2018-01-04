@@ -56,7 +56,7 @@ public class HashUtils
 	/**
 	 * null + a = a<br/>
 	 * null + null = null
-	 * 
+	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -149,18 +149,7 @@ public class HashUtils
 
 	public static SortedMap<String, String> buildHashTree(SortedMap<String, String> map)
 	{
-		// Validation
-		for (String key : map.keySet())
-		{
-			if (key.length() < DataSource.ID_PREFIX_SIZE)
-			{
-				throw new IllegalArgumentException(String.format("Invalid key '%s', must be at least %d chars long",
-						key, DataSource.ID_PREFIX_SIZE));
-			}
-		}
-
-		// Process
-		SortedMap<String, String> result = new TreeMap<String, String>();
+		SortedMap<String, String> result = new TreeMap<>();
 
 		for (int i = DataSource.ID_PREFIX_SIZE; i >= 0; i--)
 		{
@@ -188,7 +177,7 @@ public class HashUtils
 
 	/**
 	 * Generates pseudo-random 32-chars-long GUID
-	 * 
+	 *
 	 * @return
 	 */
 	public static String generateGuid()
