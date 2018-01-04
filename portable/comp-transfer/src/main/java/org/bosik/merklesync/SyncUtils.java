@@ -434,7 +434,7 @@ public class SyncUtils
 			}
 			else
 			{
-				// there are not too many items, process it at once
+				// we can't granulate anymore / there are not too many items, so we can process it at once
 				List<Versioned<T>> items1 = service1.findByIdPrefix(prefix);
 				List<Versioned<T>> items2 = service2.findByIdPrefix(prefix);
 				Utils.getOverLists(items1, items2, newer1, newer2);
