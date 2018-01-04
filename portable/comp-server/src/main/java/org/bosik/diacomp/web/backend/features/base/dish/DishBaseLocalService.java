@@ -17,16 +17,6 @@
  */
 package org.bosik.diacomp.web.backend.features.base.dish;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
@@ -42,7 +32,6 @@ import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.transfer.Exportable;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.CachedHashTree;
-import org.bosik.diacomp.web.backend.common.CachedHashTree.TreeType;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
@@ -51,6 +40,17 @@ import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 @Service
 // @Profile("real")
@@ -424,11 +424,11 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 	{
 		int userId = getCurrentUserId();
 
-		MerkleTree tree = cachedHashTree.getTree(userId, TreeType.DISHBASE);
+		MerkleTree tree = cachedHashTree.getDishTree(userId);
 		if (tree == null)
 		{
 			tree = HashUtils.buildMerkleTree(getDataHashes(userId));
-			cachedHashTree.setTree(userId, TreeType.DISHBASE, tree);
+			cachedHashTree.setDishTree(userId, tree);
 		}
 		else
 		{
@@ -495,7 +495,7 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 					MySQLAccess.insert(TABLE_DISHBASE, set);
 				}
 
-				cachedHashTree.setTree(userId, TreeType.DISHBASE, null);
+				cachedHashTree.setDishTree(userId, null);
 			}
 		}
 		catch (SQLException e)

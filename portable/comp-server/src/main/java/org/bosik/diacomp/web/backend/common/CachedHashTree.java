@@ -20,84 +20,48 @@ package org.bosik.diacomp.web.backend.common;
 import org.bosik.merklesync.MerkleTree;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * We can't use session scope here, otherwise e.g. parallel syncing desktop + mobile clients will not work (each will use it's own cache copy)
+ */
 
 @Service
 //@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CachedHashTree
 {
-	public enum TreeType
+	private final Map<Integer, MerkleTree> mapDiaryTree = new ConcurrentHashMap<>();
+	private final Map<Integer, MerkleTree> mapFoodTree  = new ConcurrentHashMap<>();
+	private final Map<Integer, MerkleTree> mapDishTree  = new ConcurrentHashMap<>();
+
+	public MerkleTree getDiaryTree(int userId)
 	{
-		DIARY,
-		FOODBASE,
-		DISHBASE
+		return mapDiaryTree.get(userId);
 	}
 
-	private class UserTree
+	public void setDiaryTree(int userId, MerkleTree diaryTree)
 	{
-		UserTree()
-		{
-		}
-
-		MerkleTree diaryTree;
-		MerkleTree foodTree;
-		MerkleTree dishTree;
+		mapDiaryTree.put(userId, diaryTree);
 	}
 
-	private final Map<Integer, UserTree> trees = new HashMap<>();
-
-	public MerkleTree getTree(int userId, TreeType type)
+	public MerkleTree getFoodTree(int userId)
 	{
-		synchronized (trees)
-		{
-			UserTree userTree = trees.get(userId);
-			if (userTree == null)
-			{
-				return null;
-			}
-			else
-			{
-				switch (type)
-				{
-					case DIARY:
-						return userTree.diaryTree;
-					case FOODBASE:
-						return userTree.foodTree;
-					case DISHBASE:
-						return userTree.dishTree;
-					default:
-						throw new IllegalArgumentException("Invalid tree type: " + type);
-				}
-			}
-		}
+		return mapFoodTree.get(userId);
 	}
 
-	public void setTree(int userId, TreeType type, MerkleTree tree)
+	public void setFoodTree(int userId, MerkleTree foodTree)
 	{
-		synchronized (trees)
-		{
-			UserTree userTree = trees.get(userId);
-			if (userTree == null)
-			{
-				userTree = new UserTree();
-				trees.put(userId, userTree);
-			}
+		mapFoodTree.put(userId, foodTree);
+	}
 
-			switch (type)
-			{
-				case DIARY:
-					userTree.diaryTree = tree;
-					break;
-				case FOODBASE:
-					userTree.foodTree = tree;
-					break;
-				case DISHBASE:
-					userTree.dishTree = tree;
-					break;
-				default:
-					throw new IllegalArgumentException("Invalid tree type: " + type);
-			}
-		}
+	public MerkleTree getDishTree(int userId)
+	{
+		return mapDishTree.get(userId);
+	}
+
+	public void setDishTree(int userId, MerkleTree dishTree)
+	{
+		mapDishTree.put(userId, dishTree);
 	}
 }

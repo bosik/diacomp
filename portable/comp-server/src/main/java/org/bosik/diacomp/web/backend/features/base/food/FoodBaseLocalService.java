@@ -17,16 +17,6 @@
  */
 package org.bosik.diacomp.web.backend.features.base.food;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserFoodItem;
@@ -42,7 +32,6 @@ import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.transfer.Exportable;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.CachedHashTree;
-import org.bosik.diacomp.web.backend.common.CachedHashTree.TreeType;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
@@ -51,6 +40,17 @@ import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 @Service
 // @Profile("real")
@@ -424,11 +424,11 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 	{
 		int userId = getCurrentUserId();
 
-		MerkleTree tree = cachedHashTree.getTree(userId, TreeType.FOODBASE);
+		MerkleTree tree = cachedHashTree.getFoodTree(userId);
 		if (tree == null)
 		{
 			tree = HashUtils.buildMerkleTree(getDataHashes(userId));
-			cachedHashTree.setTree(userId, TreeType.FOODBASE, tree);
+			cachedHashTree.setFoodTree(userId, tree);
 		}
 		else
 		{
@@ -495,7 +495,7 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 					MySQLAccess.insert(TABLE_FOODBASE, set);
 				}
 
-				cachedHashTree.setTree(userId, TreeType.FOODBASE, null);
+				cachedHashTree.setFoodTree(userId, null);
 			}
 		}
 		catch (SQLException e)

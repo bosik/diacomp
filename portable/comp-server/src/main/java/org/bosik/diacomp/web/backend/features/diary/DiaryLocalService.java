@@ -17,15 +17,6 @@
  */
 package org.bosik.diacomp.web.backend.features.diary;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
@@ -41,7 +32,6 @@ import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.services.transfer.Exportable;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.CachedHashTree;
-import org.bosik.diacomp.web.backend.common.CachedHashTree.TreeType;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
@@ -50,6 +40,16 @@ import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 @Service
 // @Profile("real")
@@ -361,11 +361,11 @@ public class DiaryLocalService implements DiaryService, Exportable
 	{
 		int userId = getCurrentUserId();
 
-		MerkleTree tree = cachedHashTree.getTree(userId, TreeType.DIARY);
+		MerkleTree tree = cachedHashTree.getDiaryTree(userId);
 		if (tree == null)
 		{
 			tree = HashUtils.buildMerkleTree(getDataHashes(userId));
-			cachedHashTree.setTree(userId, TreeType.DIARY, tree);
+			cachedHashTree.setDiaryTree(userId, tree);
 		}
 		else
 		{
@@ -420,7 +420,7 @@ public class DiaryLocalService implements DiaryService, Exportable
 
 		MySQLAccess.insert(TABLE_DIARY, set);
 
-		cachedHashTree.setTree(userId, TreeType.DIARY, null);
+		cachedHashTree.setDiaryTree(userId, null);
 	}
 
 	private void update(int userId, Versioned<DiaryRecord> item) throws SQLException
@@ -439,7 +439,7 @@ public class DiaryLocalService implements DiaryService, Exportable
 
 		MySQLAccess.update(TABLE_DIARY, set, where);
 
-		cachedHashTree.setTree(userId, TreeType.DIARY, null);
+		cachedHashTree.setDiaryTree(userId, null);
 	}
 
 	/**
