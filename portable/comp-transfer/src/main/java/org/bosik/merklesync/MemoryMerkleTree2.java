@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Immutable
+ * String-array-based Merkle tree. Immutable.
  */
 public class MemoryMerkleTree2 implements MerkleTree
 {

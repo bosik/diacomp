@@ -164,12 +164,12 @@ public class HashUtils
 	 * Create in-memory Merkle tree
 	 *
 	 * @param hashes Map (id -> hash) for all data items; id's max length is DataSource.ID_PREFIX_SIZE
-	 * @return {@link org.bosik.merklesync.MemoryMerkleTree MemoryMerkleTree}
+	 * @return
 	 */
 	public static MerkleTree buildMerkleTree(SortedMap<String, String> hashes)
 	{
 		// headers (0..4 chars id)
-		return new MemoryMerkleTree(buildHashTree(hashes));
+		return new MemoryMerkleTree2(buildHashTree(hashes));
 	}
 
 	/**

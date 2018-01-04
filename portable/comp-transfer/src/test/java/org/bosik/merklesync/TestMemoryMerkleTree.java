@@ -30,9 +30,9 @@ import java.util.TreeMap;
 @SuppressWarnings("static-method")
 public class TestMemoryMerkleTree
 {
-	private static final Map<String, String> MAX_MAP      = buildCompleteHashes();
-	private static final MerkleTree          MAX_TREE_OLD = HashUtils.buildMerkleTree(buildDataHashes());
-	private static final MerkleTree          MAX_TREE     = new MemoryMerkleTree2(MAX_MAP);
+	private static final Map<String, String> MAX_MAP           = buildCompleteHashes();
+	private static final MerkleTree          MAX_MERKLE_TREE   = new MemoryMerkleTree(MAX_MAP);
+	private static final MerkleTree          MAX_MERKLE_TREE_2 = new MemoryMerkleTree2(MAX_MAP);
 
 	private static SortedMap<String, String> buildDataHashes()
 	{
@@ -90,8 +90,8 @@ public class TestMemoryMerkleTree
 		}
 
 		System.out.println("Map size, bytes:         \t" + ObjectSizeCalculator.getObjectSize(MAX_MAP));
-		System.out.println("Tree size (old), bytes:  \t" + ObjectSizeCalculator.getObjectSize(MAX_TREE_OLD));
-		System.out.println("Tree size (new), bytes:  \t" + ObjectSizeCalculator.getObjectSize(MAX_TREE));
+		System.out.println("Tree size (old), bytes:  \t" + ObjectSizeCalculator.getObjectSize(MAX_MERKLE_TREE));
+		System.out.println("Tree size (new), bytes:  \t" + ObjectSizeCalculator.getObjectSize(MAX_MERKLE_TREE_2));
 		System.out.println("String array size, bytes:\t" + ObjectSizeCalculator.getObjectSize(arrayString));
 		System.out.println("Byte array size, bytes:  \t" + ObjectSizeCalculator.getObjectSize(arrayByte));
 	}
@@ -101,7 +101,7 @@ public class TestMemoryMerkleTree
 	{
 		for (Map.Entry<String, String> entry : MAX_MAP.entrySet())
 		{
-			Assert.assertEquals(entry.getValue(), MAX_TREE.getHash(entry.getKey()));
+			Assert.assertEquals(entry.getValue(), MAX_MERKLE_TREE_2.getHash(entry.getKey()));
 		}
 	}
 
@@ -119,7 +119,7 @@ public class TestMemoryMerkleTree
 					key = '0' + key;
 				}
 
-				Map<String, String> children = MAX_TREE.getHashChildren(key);
+				Map<String, String> children = MAX_MERKLE_TREE_2.getHashChildren(key);
 
 				for (int k = 0; k < 16; k++)
 				{

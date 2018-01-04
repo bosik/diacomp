@@ -20,6 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * Deprecated. Use {@link MemoryMerkleTree2} instead.<br/>
+ * TreeMap-based Merkle tree.
+ */
+@Deprecated
 public class MemoryMerkleTree extends TreeMap<String, String> implements MerkleTree
 {
 	private static final long serialVersionUID = 4901379605259573068L;
@@ -45,7 +50,7 @@ public class MemoryMerkleTree extends TreeMap<String, String> implements MerkleT
 	{
 		if (prefix.length() < DataSource.ID_PREFIX_SIZE)
 		{
-			Map<String, String> directChildren = new HashMap<String, String>();
+			Map<String, String> directChildren = new HashMap<>();
 
 			for (char c : HashUtils.BYTE_TO_CHAR)
 			{
