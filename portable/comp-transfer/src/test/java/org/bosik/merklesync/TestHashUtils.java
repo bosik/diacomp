@@ -16,9 +16,13 @@
  */
 package org.bosik.merklesync;
 
+import org.bosik.diacomp.core.utils.Profiler;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -39,6 +43,32 @@ public class TestHashUtils
 		assertEquals(250, HashUtils.toInt("fa"));
 		assertEquals(4085, HashUtils.toInt("ff5"));
 		assertEquals(65535, HashUtils.toInt("ffff"));
+	}
+
+	@Test
+	@Ignore
+	public void test_toInt_speed()
+	{
+		final List<String> values = new ArrayList<>();
+
+		for (int i = 0; i < 65536; i++)
+		{
+			values.add(Integer.toHexString(i).toLowerCase());
+		}
+
+		double time = Profiler.measureInMsec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				for (String value : values)
+				{
+					HashUtils.toInt(value);
+				}
+			}
+		}, 10000);
+
+		System.out.printf(Locale.US, "HashUtils.toInt(): %.3f ms%n", time);
 	}
 
 	@Test

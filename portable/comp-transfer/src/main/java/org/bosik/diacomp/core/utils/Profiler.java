@@ -44,4 +44,27 @@ public class Profiler
 		lastCheckTime = System.nanoTime();
 		return result;
 	}
+
+	/**
+	 *
+	 * @param r
+	 * @param executionCount
+	 * @return Evergae execution time, in nanoseconds
+	 */
+	public static long measure(Runnable r, int executionCount)
+	{
+		long start = System.nanoTime();
+
+		for (int i = 0; i < executionCount; i++)
+		{
+			r.run();
+		}
+
+		return (System.nanoTime() - start) / executionCount;
+	}
+
+	public static double measureInMsec(Runnable r, int executionCount)
+	{
+		return (double) measure(r, executionCount) / 1000000;
+	}
 }

@@ -17,11 +17,13 @@
 package org.bosik.merklesync;
 
 import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
+import org.bosik.diacomp.core.utils.Profiler;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.SortedMap;
@@ -71,32 +73,6 @@ public class TestMemoryMerkleTree
 	}
 
 	@Test
-	@Ignore
-	public void test_size()
-	{
-		String[] arrayString = new String[MAX_MAP.size()];
-		for (int i = 0; i < arrayString.length; i++)
-		{
-			arrayString[i] = HashUtils.generateGuid();
-		}
-
-		byte[][] arrayByte = new byte[MAX_MAP.size()][16];
-		for (byte[] anArrayByte : arrayByte)
-		{
-			for (int j = 0; j < 16; j++)
-			{
-				new Random().nextBytes(anArrayByte);
-			}
-		}
-
-		System.out.println("Map size, bytes:         \t" + ObjectSizeCalculator.getObjectSize(MAX_MAP));
-		System.out.println("Tree size (old), bytes:  \t" + ObjectSizeCalculator.getObjectSize(MAX_MERKLE_TREE));
-		System.out.println("Tree size (new), bytes:  \t" + ObjectSizeCalculator.getObjectSize(MAX_MERKLE_TREE_2));
-		System.out.println("String array size, bytes:\t" + ObjectSizeCalculator.getObjectSize(arrayString));
-		System.out.println("Byte array size, bytes:  \t" + ObjectSizeCalculator.getObjectSize(arrayByte));
-	}
-
-	@Test
 	public void test_getHash()
 	{
 		for (Map.Entry<String, String> entry : MAX_MAP.entrySet())
@@ -130,5 +106,63 @@ public class TestMemoryMerkleTree
 				}
 			}
 		}
+	}
+
+	@Test
+	@Ignore
+	public void test_memory()
+	{
+		String[] arrayString = new String[MAX_MAP.size()];
+		for (int i = 0; i < arrayString.length; i++)
+		{
+			arrayString[i] = HashUtils.generateGuid();
+		}
+
+		byte[][] arrayByte = new byte[MAX_MAP.size()][16];
+		for (byte[] anArrayByte : arrayByte)
+		{
+			for (int j = 0; j < 16; j++)
+			{
+				new Random().nextBytes(anArrayByte);
+			}
+		}
+
+		System.out.println("SIZE (byes)");
+		System.out.printf("%-25s\t%10d%n", "HashMap", ObjectSizeCalculator.getObjectSize(MAX_MAP));
+		System.out.printf("%-25s\t%10d%n", MemoryMerkleTree.class.getSimpleName(), ObjectSizeCalculator.getObjectSize(MAX_MERKLE_TREE));
+		System.out.printf("%-25s\t%10d%n", MemoryMerkleTree2.class.getSimpleName(), ObjectSizeCalculator.getObjectSize(MAX_MERKLE_TREE_2));
+		System.out.printf("%-25s\t%10d%n", "String array", ObjectSizeCalculator.getObjectSize(arrayString));
+		System.out.printf("%-25s\t%10d%n", "Byte array", ObjectSizeCalculator.getObjectSize(arrayByte));
+	}
+
+	@Test
+	@Ignore
+	public void test_speed()
+	{
+		final int COUNT = 50;
+
+		System.out.printf(Locale.US, MemoryMerkleTree.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				for (String key : MAX_MAP.keySet())
+				{
+					MAX_MERKLE_TREE.getHash(key);
+				}
+			}
+		}, COUNT));
+
+		System.out.printf(Locale.US, MemoryMerkleTree2.class.getSimpleName() + ": %.3f ms%n", Profiler.measureInMsec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				for (String key : MAX_MAP.keySet())
+				{
+					MAX_MERKLE_TREE_2.getHash(key);
+				}
+			}
+		}, COUNT));
 	}
 }
