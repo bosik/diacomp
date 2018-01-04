@@ -16,15 +16,31 @@
  */
 package org.bosik.merklesync;
 
-import static junit.framework.TestCase.assertEquals;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import static junit.framework.TestCase.assertEquals;
 
 @SuppressWarnings("static-method")
 public class TestHashUtils
 {
+	@Test
+	public void test_toInt()
+	{
+		assertEquals(0, HashUtils.toInt(""));
+		assertEquals(0, HashUtils.toInt("0"));
+		assertEquals(1, HashUtils.toInt("1"));
+		assertEquals(15, HashUtils.toInt("f"));
+		assertEquals(16, HashUtils.toInt("10"));
+		assertEquals(17, HashUtils.toInt("11"));
+		assertEquals(250, HashUtils.toInt("fa"));
+		assertEquals(4085, HashUtils.toInt("ff5"));
+		assertEquals(65535, HashUtils.toInt("ffff"));
+	}
+
 	@Test
 	public void test_sumHash()
 	{

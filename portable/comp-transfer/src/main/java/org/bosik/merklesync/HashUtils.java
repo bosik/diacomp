@@ -42,6 +42,17 @@ public class HashUtils
 		}
 	}
 
+	public static int toInt(String key)
+	{
+		int value = 0;
+		for (int i = 0; i < key.length(); i++)
+		{
+			value *= 16;
+			value += CHAR_TO_BYTE[key.charAt(i)];
+		}
+		return value;
+	}
+
 	/**
 	 * null + a = a<br/>
 	 * null + null = null
