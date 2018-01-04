@@ -24,6 +24,16 @@ public class MemoryMerkleTree extends TreeMap<String, String> implements MerkleT
 {
 	private static final long serialVersionUID = 4901379605259573068L;
 
+	public MemoryMerkleTree()
+	{
+
+	}
+
+	public MemoryMerkleTree(Map<String, String> map)
+	{
+		putAll(map);
+	}
+
 	@Override
 	public String getHash(String prefix)
 	{
