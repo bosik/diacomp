@@ -45,6 +45,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -56,33 +57,33 @@ import java.util.TreeMap;
 public class DiaryLocalService implements DiaryService, Exportable
 {
 	// Diary table
-	private static final String				TABLE_DIARY				= "diary2";
-	private static final String				COLUMN_DIARY_USER		= "_UserID";
-	private static final String				COLUMN_DIARY_GUID		= "_GUID";
-	private static final String				COLUMN_DIARY_TIMESTAMP	= "_TimeStamp";
-	private static final String				COLUMN_DIARY_HASH		= "_Hash";
-	private static final String				COLUMN_DIARY_VERSION	= "_Version";
-	private static final String				COLUMN_DIARY_DELETED	= "_Deleted";
-	private static final String				COLUMN_DIARY_CONTENT	= "_Content";
-	private static final String				COLUMN_DIARY_TIMECACHE	= "_TimeCache";
+	private static final String TABLE_DIARY            = "diary2";
+	private static final String COLUMN_DIARY_USER      = "_UserID";
+	private static final String COLUMN_DIARY_GUID      = "_GUID";
+	private static final String COLUMN_DIARY_TIMESTAMP = "_TimeStamp";
+	private static final String COLUMN_DIARY_HASH      = "_Hash";
+	private static final String COLUMN_DIARY_VERSION   = "_Version";
+	private static final String COLUMN_DIARY_DELETED   = "_Deleted";
+	private static final String COLUMN_DIARY_CONTENT   = "_Content";
+	private static final String COLUMN_DIARY_TIMECACHE = "_TimeCache";
 
-	private static final int				MAX_READ_ITEMS			= 0;
+	private static final int MAX_READ_ITEMS = 0;
 
-	private final Parser<DiaryRecord>		parser					= new ParserDiaryRecord();
-	private final Serializer<DiaryRecord>	serializer				= new SerializerAdapter<DiaryRecord>(parser);
-
-	@Autowired
-	private UserInfoService					userInfoService;
+	private final Parser<DiaryRecord>     parser     = new ParserDiaryRecord();
+	private final Serializer<DiaryRecord> serializer = new SerializerAdapter<DiaryRecord>(parser);
 
 	@Autowired
-	private CachedHashTree					cachedHashTree;
+	private UserInfoService userInfoService;
+
+	@Autowired
+	private CachedHashTree cachedHashTree;
 
 	private int getCurrentUserId()
 	{
 		return userInfoService.getCurrentUserId();
 	}
 
-	List<Versioned<DiaryRecord>> parseItems(ResultSet resultSet, int limit) throws SQLException
+	private List<Versioned<DiaryRecord>> parseItems(ResultSet resultSet, int limit) throws SQLException
 	{
 		if (limit > 0)
 		{
@@ -97,7 +98,7 @@ public class DiaryLocalService implements DiaryService, Exportable
 			}
 		}
 
-		List<Versioned<DiaryRecord>> result = new ArrayList<Versioned<DiaryRecord>>();
+		List<Versioned<DiaryRecord>> result = new ArrayList<>();
 
 		while (resultSet.next())
 		{
@@ -108,7 +109,7 @@ public class DiaryLocalService implements DiaryService, Exportable
 			boolean deleted = (resultSet.getInt(COLUMN_DIARY_DELETED) == 1);
 			String content = resultSet.getString(COLUMN_DIARY_CONTENT);
 
-			Versioned<DiaryRecord> item = new Versioned<DiaryRecord>();
+			Versioned<DiaryRecord> item = new Versioned<>();
 			item.setId(id.toLowerCase());
 			item.setTimeStamp(timeStamp);
 			item.setHash(hash);
@@ -122,7 +123,7 @@ public class DiaryLocalService implements DiaryService, Exportable
 		return result;
 	}
 
-	List<Versioned<DiaryRecord>> parseItems(ResultSet resultSet) throws SQLException
+	private List<Versioned<DiaryRecord>> parseItems(ResultSet resultSet) throws SQLException
 	{
 		return parseItems(resultSet, 0);
 	}
@@ -216,6 +217,7 @@ public class DiaryLocalService implements DiaryService, Exportable
 		{
 			throw new NotFoundException(id);
 		}
+
 		if (item.isDeleted())
 		{
 			throw new AlreadyDeletedException(id);
@@ -223,7 +225,7 @@ public class DiaryLocalService implements DiaryService, Exportable
 
 		item.setDeleted(true);
 		item.modified();
-		save(Arrays.asList(item));
+		save(Collections.singletonList(item));
 	}
 
 	@Override
@@ -238,16 +240,15 @@ public class DiaryLocalService implements DiaryService, Exportable
 			final String[] whereArgs = { String.valueOf(userId), id };
 			final String order = null;
 
-			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order,
-					new DataCallback<Versioned<DiaryRecord>>()
-					{
-						@Override
-						public Versioned<DiaryRecord> onData(ResultSet set) throws SQLException
-						{
-							List<Versioned<DiaryRecord>> result = parseItems(set);
-							return result.isEmpty() ? null : result.get(0);
-						}
-					});
+			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order, new DataCallback<Versioned<DiaryRecord>>()
+			{
+				@Override
+				public Versioned<DiaryRecord> onData(ResultSet set) throws SQLException
+				{
+					List<Versioned<DiaryRecord>> result = parseItems(set);
+					return result.isEmpty() ? null : result.get(0);
+				}
+			});
 		}
 		catch (SQLException e)
 		{
@@ -267,15 +268,14 @@ public class DiaryLocalService implements DiaryService, Exportable
 			final String[] whereArgs = { String.valueOf(userId), prefix + "%" };
 			final String order = COLUMN_DIARY_TIMECACHE;
 
-			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order,
-					new DataCallback<List<Versioned<DiaryRecord>>>()
-					{
-						@Override
-						public List<Versioned<DiaryRecord>> onData(ResultSet set) throws SQLException
-						{
-							return parseItems(set, MAX_READ_ITEMS);
-						}
-					});
+			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order, new DataCallback<List<Versioned<DiaryRecord>>>()
+			{
+				@Override
+				public List<Versioned<DiaryRecord>> onData(ResultSet set) throws SQLException
+				{
+					return parseItems(set, MAX_READ_ITEMS);
+				}
+			});
 		}
 		catch (SQLException e)
 		{
@@ -295,15 +295,14 @@ public class DiaryLocalService implements DiaryService, Exportable
 			final String[] whereArgs = { String.valueOf(userId), Utils.formatTimeUTC(time) };
 			final String order = COLUMN_DIARY_TIMECACHE;
 
-			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order,
-					new DataCallback<List<Versioned<DiaryRecord>>>()
-					{
-						@Override
-						public List<Versioned<DiaryRecord>> onData(ResultSet set) throws SQLException
-						{
-							return parseItems(set, 0);
-						}
-					});
+			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order, new DataCallback<List<Versioned<DiaryRecord>>>()
+			{
+				@Override
+				public List<Versioned<DiaryRecord>> onData(ResultSet set) throws SQLException
+				{
+					return parseItems(set, 0);
+				}
+			});
 		}
 		catch (SQLException e)
 		{
@@ -325,30 +324,28 @@ public class DiaryLocalService implements DiaryService, Exportable
 
 			if (includeRemoved)
 			{
-				where = String.format("(%s = ?) AND (%s >= ?) AND (%s < ?)", COLUMN_DIARY_USER, COLUMN_DIARY_TIMECACHE,
-						COLUMN_DIARY_TIMECACHE);
-				whereArgs = new String[] { String.valueOf(userId), Utils.formatTimeUTC(startTime),
-						Utils.formatTimeUTC(endTime) };
+				where = String
+						.format("(%s = ?) AND (%s >= ?) AND (%s < ?)", COLUMN_DIARY_USER, COLUMN_DIARY_TIMECACHE, COLUMN_DIARY_TIMECACHE);
+				whereArgs = new String[] { String.valueOf(userId), Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime) };
 			}
 			else
 			{
-				where = String.format("(%s = ?) AND (%s >= ?) AND (%s < ?) AND (%s = ?)", COLUMN_DIARY_USER,
-						COLUMN_DIARY_TIMECACHE, COLUMN_DIARY_TIMECACHE, COLUMN_DIARY_DELETED);
-				whereArgs = new String[] { String.valueOf(userId), Utils.formatTimeUTC(startTime),
-						Utils.formatTimeUTC(endTime), Utils.formatBooleanInt(false) };
+				where = String.format("(%s = ?) AND (%s >= ?) AND (%s < ?) AND (%s = ?)", COLUMN_DIARY_USER, COLUMN_DIARY_TIMECACHE,
+						COLUMN_DIARY_TIMECACHE, COLUMN_DIARY_DELETED);
+				whereArgs = new String[] { String.valueOf(userId), Utils.formatTimeUTC(startTime), Utils.formatTimeUTC(endTime),
+						Utils.formatBooleanInt(false) };
 			}
 
 			final String order = COLUMN_DIARY_TIMECACHE;
 
-			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order,
-					new DataCallback<List<Versioned<DiaryRecord>>>()
-					{
-						@Override
-						public List<Versioned<DiaryRecord>> onData(ResultSet set) throws SQLException
-						{
-							return parseItems(set, MAX_READ_ITEMS);
-						}
-					});
+			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order, new DataCallback<List<Versioned<DiaryRecord>>>()
+			{
+				@Override
+				public List<Versioned<DiaryRecord>> onData(ResultSet set) throws SQLException
+				{
+					return parseItems(set, MAX_READ_ITEMS);
+				}
+			});
 		}
 		catch (SQLException e)
 		{
@@ -366,10 +363,6 @@ public class DiaryLocalService implements DiaryService, Exportable
 		{
 			tree = HashUtils.buildMerkleTree(getDataHashes(userId));
 			cachedHashTree.setDiaryTree(userId, tree);
-		}
-		else
-		{
-			/// **/System.out.println("Returning cached hash tree");
 		}
 
 		return tree;
@@ -408,7 +401,7 @@ public class DiaryLocalService implements DiaryService, Exportable
 
 	private void insert(int userId, Versioned<DiaryRecord> item) throws SQLException
 	{
-		LinkedHashMap<String, String> set = new LinkedHashMap<String, String>();
+		LinkedHashMap<String, String> set = new LinkedHashMap<>();
 		set.put(COLUMN_DIARY_GUID, item.getId());
 		set.put(COLUMN_DIARY_USER, String.valueOf(userId));
 		set.put(COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
@@ -425,7 +418,7 @@ public class DiaryLocalService implements DiaryService, Exportable
 
 	private void update(int userId, Versioned<DiaryRecord> item) throws SQLException
 	{
-		SortedMap<String, String> set = new TreeMap<String, String>();
+		SortedMap<String, String> set = new TreeMap<>();
 		set.put(COLUMN_DIARY_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
 		set.put(COLUMN_DIARY_HASH, item.getHash());
 		set.put(COLUMN_DIARY_VERSION, String.valueOf(item.getVersion()));
@@ -433,7 +426,7 @@ public class DiaryLocalService implements DiaryService, Exportable
 		set.put(COLUMN_DIARY_CONTENT, serializer.write(item.getData()));
 		set.put(COLUMN_DIARY_TIMECACHE, Utils.formatTimeUTC(item.getData().getTime()));
 
-		SortedMap<String, String> where = new TreeMap<String, String>();
+		SortedMap<String, String> where = new TreeMap<>();
 		where.put(COLUMN_DIARY_GUID, item.getId());
 		where.put(COLUMN_DIARY_USER, String.valueOf(userId));
 
@@ -444,7 +437,7 @@ public class DiaryLocalService implements DiaryService, Exportable
 
 	/**
 	 * Returns sorted map (ID, Hash) for all items
-	 * 
+	 *
 	 * @return
 	 */
 	@SuppressWarnings("static-method")
@@ -457,26 +450,25 @@ public class DiaryLocalService implements DiaryService, Exportable
 			final String[] whereArgs = { String.valueOf(userId) };
 			final String order = null;
 
-			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order,
-					new DataCallback<SortedMap<String, String>>()
+			return MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order, new DataCallback<SortedMap<String, String>>()
+			{
+				@Override
+				public SortedMap<String, String> onData(ResultSet set) throws SQLException
+				{
+					SortedMap<String, String> result = new TreeMap<String, String>();
+
+					while (set.next())
 					{
-						@Override
-						public SortedMap<String, String> onData(ResultSet set) throws SQLException
-						{
-							SortedMap<String, String> result = new TreeMap<String, String>();
+						String id = set.getString(COLUMN_DIARY_GUID);
+						String hash = set.getString(COLUMN_DIARY_HASH);
+						// THINK: probably storing entries is unnecessary, so we should
+						// process it as we go
+						result.put(id, hash);
+					}
 
-							while (set.next())
-							{
-								String id = set.getString(COLUMN_DIARY_GUID);
-								String hash = set.getString(COLUMN_DIARY_HASH);
-								// THINK: probably storing entries is unnecessary, so we should
-								// process it as we go
-								result.put(id, hash);
-							}
-
-							return result;
-						}
-					});
+					return result;
+				}
+			});
 		}
 		catch (SQLException e)
 		{

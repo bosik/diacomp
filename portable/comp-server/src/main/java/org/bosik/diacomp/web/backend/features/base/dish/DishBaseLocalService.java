@@ -44,10 +44,11 @@ import org.springframework.stereotype.Service;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -57,33 +58,33 @@ import java.util.TreeMap;
 public class DishBaseLocalService implements DishBaseService, Exportable
 {
 	// Dishbase table
-	private static final String					TABLE_DISHBASE				= "dishbase2";
-	private static final String					COLUMN_DISHBASE_GUID		= "_GUID";
-	private static final String					COLUMN_DISHBASE_USER		= "_UserID";
-	private static final String					COLUMN_DISHBASE_TIMESTAMP	= "_TimeStamp";
-	private static final String					COLUMN_DISHBASE_HASH		= "_Hash";
-	private static final String					COLUMN_DISHBASE_VERSION		= "_Version";
-	private static final String					COLUMN_DISHBASE_DELETED		= "_Deleted";
-	private static final String					COLUMN_DISHBASE_CONTENT		= "_Content";
-	private static final String					COLUMN_DISHBASE_NAMECACHE	= "_NameCache";
+	private static final String TABLE_DISHBASE            = "dishbase2";
+	private static final String COLUMN_DISHBASE_GUID      = "_GUID";
+	private static final String COLUMN_DISHBASE_USER      = "_UserID";
+	private static final String COLUMN_DISHBASE_TIMESTAMP = "_TimeStamp";
+	private static final String COLUMN_DISHBASE_HASH      = "_Hash";
+	private static final String COLUMN_DISHBASE_VERSION   = "_Version";
+	private static final String COLUMN_DISHBASE_DELETED   = "_Deleted";
+	private static final String COLUMN_DISHBASE_CONTENT   = "_Content";
+	private static final String COLUMN_DISHBASE_NAMECACHE = "_NameCache";
 
-	private static final int					MAX_READ_ITEMS				= 500;
+	private static final int MAX_READ_ITEMS = 500;
 
-	private static final Parser<DishItem>		parser						= new ParserDishItem();
-	private static final Serializer<DishItem>	serializer					= new SerializerAdapter<DishItem>(parser);
-
-	@Autowired
-	private UserInfoService						userInfoService;
+	private static final Parser<DishItem>     parser     = new ParserDishItem();
+	private static final Serializer<DishItem> serializer = new SerializerAdapter<>(parser);
 
 	@Autowired
-	private CachedHashTree						cachedHashTree;
+	private UserInfoService userInfoService;
+
+	@Autowired
+	private CachedHashTree cachedHashTree;
 
 	private int getCurrentUserId()
 	{
 		return userInfoService.getCurrentUserId();
 	}
 
-	static List<Versioned<DishItem>> parseItems(ResultSet resultSet, int limit) throws SQLException
+	private static List<Versioned<DishItem>> parseItems(ResultSet resultSet, int limit) throws SQLException
 	{
 		if (limit > 0)
 		{
@@ -98,7 +99,7 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 			}
 		}
 
-		List<Versioned<DishItem>> result = new ArrayList<Versioned<DishItem>>();
+		List<Versioned<DishItem>> result = new ArrayList<>();
 
 		while (resultSet.next())
 		{
@@ -109,7 +110,7 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 			boolean deleted = (resultSet.getInt(COLUMN_DISHBASE_DELETED) == 1);
 			String content = resultSet.getString(COLUMN_DISHBASE_CONTENT);
 
-			Versioned<DishItem> item = new Versioned<DishItem>();
+			Versioned<DishItem> item = new Versioned<>();
 			item.setId(id);
 			item.setTimeStamp(timeStamp);
 			item.setHash(hash);
@@ -123,7 +124,7 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 		return result;
 	}
 
-	static List<Versioned<DishItem>> parseItems(ResultSet resultSet) throws SQLException
+	private static List<Versioned<DishItem>> parseItems(ResultSet resultSet) throws SQLException
 	{
 		return parseItems(resultSet, 0);
 	}
@@ -131,7 +132,7 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 	@Override
 	public void add(Versioned<DishItem> item) throws DuplicateException, PersistenceException
 	{
-		save(Arrays.<Versioned<DishItem>> asList(item));
+		save(Collections.singletonList(item));
 	}
 
 	@Override
@@ -182,6 +183,7 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 		{
 			throw new NotFoundException(id);
 		}
+
 		if (item.isDeleted())
 		{
 			throw new AlreadyDeletedException(id);
@@ -189,7 +191,7 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 
 		item.setDeleted(true);
 		item.modified();
-		save(Arrays.asList(item));
+		save(Collections.singletonList(item));
 	}
 
 	@Override
@@ -216,15 +218,14 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 
 			final String order = null;
 
-			return MySQLAccess.select(TABLE_DISHBASE, select, where, whereArgs, order,
-					new DataCallback<List<Versioned<DishItem>>>()
-					{
-						@Override
-						public List<Versioned<DishItem>> onData(ResultSet set) throws SQLException
-						{
-							return parseItems(set);
-						}
-					});
+			return MySQLAccess.select(TABLE_DISHBASE, select, where, whereArgs, order, new DataCallback<List<Versioned<DishItem>>>()
+			{
+				@Override
+				public List<Versioned<DishItem>> onData(ResultSet set) throws SQLException
+				{
+					return parseItems(set);
+				}
+			});
 		}
 		catch (SQLException e)
 		{
@@ -240,20 +241,19 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 			int userId = getCurrentUserId();
 
 			final String[] select = null; // all
-			final String where = String.format("(%s = ?) AND (%s = ?) AND (%s LIKE ?)", COLUMN_DISHBASE_USER,
-					COLUMN_DISHBASE_DELETED, COLUMN_DISHBASE_NAMECACHE);
+			final String where = String.format("(%s = ?) AND (%s = ?) AND (%s LIKE ?)", COLUMN_DISHBASE_USER, COLUMN_DISHBASE_DELETED,
+					COLUMN_DISHBASE_NAMECACHE);
 			final String[] whereArgs = { String.valueOf(userId), Utils.formatBooleanInt(false), "%" + filter + "%" };
 			final String order = COLUMN_DISHBASE_NAMECACHE;
 
-			return MySQLAccess.select(TABLE_DISHBASE, select, where, whereArgs, order,
-					new DataCallback<List<Versioned<DishItem>>>()
-					{
-						@Override
-						public List<Versioned<DishItem>> onData(ResultSet set) throws SQLException
-						{
-							return parseItems(set);
-						}
-					});
+			return MySQLAccess.select(TABLE_DISHBASE, select, where, whereArgs, order, new DataCallback<List<Versioned<DishItem>>>()
+			{
+				@Override
+				public List<Versioned<DishItem>> onData(ResultSet set) throws SQLException
+				{
+					return parseItems(set);
+				}
+			});
 		}
 		catch (SQLException e)
 		{
@@ -273,16 +273,15 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 			final String[] whereArgs = { String.valueOf(userId), id };
 			final String order = null;
 
-			return MySQLAccess.select(TABLE_DISHBASE, select, where, whereArgs, order,
-					new DataCallback<Versioned<DishItem>>()
-					{
-						@Override
-						public Versioned<DishItem> onData(ResultSet set) throws SQLException
-						{
-							List<Versioned<DishItem>> result = parseItems(set);
-							return result.isEmpty() ? null : result.get(0);
-						}
-					});
+			return MySQLAccess.select(TABLE_DISHBASE, select, where, whereArgs, order, new DataCallback<Versioned<DishItem>>()
+			{
+				@Override
+				public Versioned<DishItem> onData(ResultSet set) throws SQLException
+				{
+					List<Versioned<DishItem>> result = parseItems(set);
+					return result.isEmpty() ? null : result.get(0);
+				}
+			});
 		}
 		catch (SQLException e)
 		{
@@ -302,15 +301,14 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 			final String[] whereArgs = { String.valueOf(userId), prefix + "%" };
 			final String order = COLUMN_DISHBASE_NAMECACHE;
 
-			return MySQLAccess.select(TABLE_DISHBASE, select, where, whereArgs, order,
-					new DataCallback<List<Versioned<DishItem>>>()
-					{
-						@Override
-						public List<Versioned<DishItem>> onData(ResultSet set) throws SQLException
-						{
-							return parseItems(set, MAX_READ_ITEMS);
-						}
-					});
+			return MySQLAccess.select(TABLE_DISHBASE, select, where, whereArgs, order, new DataCallback<List<Versioned<DishItem>>>()
+			{
+				@Override
+				public List<Versioned<DishItem>> onData(ResultSet set) throws SQLException
+				{
+					return parseItems(set, MAX_READ_ITEMS);
+				}
+			});
 		}
 		catch (SQLException e)
 		{
@@ -326,20 +324,18 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 			int userId = getCurrentUserId();
 
 			final String[] select = null; // all
-			final String where = String.format("(%s = ?) AND (%s >= ?)", COLUMN_DISHBASE_USER,
-					COLUMN_DISHBASE_TIMESTAMP);
+			final String where = String.format("(%s = ?) AND (%s >= ?)", COLUMN_DISHBASE_USER, COLUMN_DISHBASE_TIMESTAMP);
 			final String[] whereArgs = { String.valueOf(userId), Utils.formatTimeUTC(since) };
 			final String order = COLUMN_DISHBASE_NAMECACHE;
 
-			return MySQLAccess.select(TABLE_DISHBASE, select, where, whereArgs, order,
-					new DataCallback<List<Versioned<DishItem>>>()
-					{
-						@Override
-						public List<Versioned<DishItem>> onData(ResultSet set) throws SQLException
-						{
-							return parseItems(set, 0);
-						}
-					});
+			return MySQLAccess.select(TABLE_DISHBASE, select, where, whereArgs, order, new DataCallback<List<Versioned<DishItem>>>()
+			{
+				@Override
+				public List<Versioned<DishItem>> onData(ResultSet set) throws SQLException
+				{
+					return parseItems(set, 0);
+				}
+			});
 		}
 		catch (SQLException e)
 		{
@@ -355,21 +351,20 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 			int userId = getCurrentUserId();
 
 			final String[] select = null; // all
-			final String where = String.format("(%s = ?) AND (%s = ?) AND (%s = ?)", COLUMN_DISHBASE_USER,
-					COLUMN_DISHBASE_DELETED, COLUMN_DISHBASE_NAMECACHE);
+			final String where = String
+					.format("(%s = ?) AND (%s = ?) AND (%s = ?)", COLUMN_DISHBASE_USER, COLUMN_DISHBASE_DELETED, COLUMN_DISHBASE_NAMECACHE);
 			final String[] whereArgs = { String.valueOf(userId), Utils.formatBooleanInt(false), exactName };
 			final String order = null;
 
-			return MySQLAccess.select(TABLE_DISHBASE, select, where, whereArgs, order,
-					new DataCallback<Versioned<DishItem>>()
-					{
-						@Override
-						public Versioned<DishItem> onData(ResultSet set) throws SQLException
-						{
-							List<Versioned<DishItem>> result = parseItems(set);
-							return result.isEmpty() ? null : result.get(0);
-						}
-					});
+			return MySQLAccess.select(TABLE_DISHBASE, select, where, whereArgs, order, new DataCallback<Versioned<DishItem>>()
+			{
+				@Override
+				public Versioned<DishItem> onData(ResultSet set) throws SQLException
+				{
+					List<Versioned<DishItem>> result = parseItems(set);
+					return result.isEmpty() ? null : result.get(0);
+				}
+			});
 		}
 		catch (SQLException e)
 		{
@@ -379,7 +374,7 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 
 	/**
 	 * Returns sorted map (ID, Hash) for all items
-	 * 
+	 *
 	 * @return
 	 */
 	@SuppressWarnings("static-method")
@@ -392,26 +387,25 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 			final String[] whereArgs = { String.valueOf(userId) };
 			final String order = null;
 
-			return MySQLAccess.select(TABLE_DISHBASE, select, where, whereArgs, order,
-					new DataCallback<SortedMap<String, String>>()
+			return MySQLAccess.select(TABLE_DISHBASE, select, where, whereArgs, order, new DataCallback<SortedMap<String, String>>()
+			{
+				@Override
+				public SortedMap<String, String> onData(ResultSet set) throws SQLException
+				{
+					SortedMap<String, String> result = new TreeMap<String, String>();
+
+					while (set.next())
 					{
-						@Override
-						public SortedMap<String, String> onData(ResultSet set) throws SQLException
-						{
-							SortedMap<String, String> result = new TreeMap<String, String>();
+						String id = set.getString(COLUMN_DISHBASE_GUID);
+						String hash = set.getString(COLUMN_DISHBASE_HASH);
+						// THINK: probably storing entries is unnecessary, so we should
+						// process it as we go
+						result.put(id, hash);
+					}
 
-							while (set.next())
-							{
-								String id = set.getString(COLUMN_DISHBASE_GUID);
-								String hash = set.getString(COLUMN_DISHBASE_HASH);
-								// THINK: probably storing entries is unnecessary, so we should
-								// process it as we go
-								result.put(id, hash);
-							}
-
-							return result;
-						}
-					});
+					return result;
+				}
+			});
 		}
 		catch (SQLException e)
 		{
@@ -430,10 +424,6 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 			tree = HashUtils.buildMerkleTree(getDataHashes(userId));
 			cachedHashTree.setDishTree(userId, tree);
 		}
-		else
-		{
-			/// **/System.out.println("Returning cached hash tree");
-		}
 
 		return tree;
 	}
@@ -449,30 +439,24 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 			{
 				if (item.getId() == null || item.getId().length() < ObjectService.ID_FULL_SIZE)
 				{
-					throw new IllegalArgumentException(String.format("Invalid ID: %s, must be %d characters long",
-							item.getId(), ObjectService.ID_FULL_SIZE));
+					throw new IllegalArgumentException(String.format(Locale.US, "Invalid ID: %s, must be %d characters long", item.getId(),
+							ObjectService.ID_FULL_SIZE));
 				}
 
-				final String content = serializer.write(item.getData());
-				final String nameCache = item.getData().getName();
-				final String timeStamp = Utils.formatTimeUTC(item.getTimeStamp());
-				final String hash = item.getHash();
-				final String version = String.valueOf(item.getVersion());
-				final String deleted = Utils.formatBooleanInt(item.isDeleted());
+				Map<String, String> set = new HashMap<>();
+
+				set.put(COLUMN_DISHBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
+				set.put(COLUMN_DISHBASE_HASH, item.getHash());
+				set.put(COLUMN_DISHBASE_VERSION, String.valueOf(item.getVersion()));
+				set.put(COLUMN_DISHBASE_DELETED, Utils.formatBooleanInt(item.isDeleted()));
+				set.put(COLUMN_DISHBASE_CONTENT, serializer.write(item.getData()));
+				set.put(COLUMN_DISHBASE_NAMECACHE, item.getData().getName());
 
 				if (recordExists(userId, item.getId()))
 				{
 					// presented, update
 
-					Map<String, String> set = new HashMap<String, String>();
-					set.put(COLUMN_DISHBASE_TIMESTAMP, timeStamp);
-					set.put(COLUMN_DISHBASE_HASH, hash);
-					set.put(COLUMN_DISHBASE_VERSION, version);
-					set.put(COLUMN_DISHBASE_DELETED, deleted);
-					set.put(COLUMN_DISHBASE_CONTENT, content);
-					set.put(COLUMN_DISHBASE_NAMECACHE, nameCache);
-
-					Map<String, String> where = new HashMap<String, String>();
+					Map<String, String> where = new HashMap<>();
 					where.put(COLUMN_DISHBASE_GUID, item.getId());
 					where.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
 
@@ -482,15 +466,8 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 				{
 					// not presented, insert
 
-					Map<String, String> set = new HashMap<String, String>();
 					set.put(COLUMN_DISHBASE_GUID, item.getId());
 					set.put(COLUMN_DISHBASE_USER, String.valueOf(userId));
-					set.put(COLUMN_DISHBASE_TIMESTAMP, timeStamp);
-					set.put(COLUMN_DISHBASE_HASH, hash);
-					set.put(COLUMN_DISHBASE_VERSION, version);
-					set.put(COLUMN_DISHBASE_DELETED, deleted);
-					set.put(COLUMN_DISHBASE_CONTENT, content);
-					set.put(COLUMN_DISHBASE_NAMECACHE, nameCache);
 
 					MySQLAccess.insert(TABLE_DISHBASE, set);
 				}
