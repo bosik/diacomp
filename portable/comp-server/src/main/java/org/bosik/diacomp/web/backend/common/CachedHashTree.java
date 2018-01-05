@@ -40,9 +40,9 @@ public class CachedHashTree
 		return mapDiaryTree.get(userId);
 	}
 
-	public void setDiaryTree(int userId, MerkleTree diaryTree)
+	public void setDiaryTree(int userId, MerkleTree tree)
 	{
-		mapDiaryTree.put(userId, diaryTree);
+		put(mapDiaryTree, userId, tree);
 	}
 
 	public MerkleTree getFoodTree(int userId)
@@ -50,9 +50,9 @@ public class CachedHashTree
 		return mapFoodTree.get(userId);
 	}
 
-	public void setFoodTree(int userId, MerkleTree foodTree)
+	public void setFoodTree(int userId, MerkleTree tree)
 	{
-		mapFoodTree.put(userId, foodTree);
+		put(mapFoodTree, userId, tree);
 	}
 
 	public MerkleTree getDishTree(int userId)
@@ -60,8 +60,20 @@ public class CachedHashTree
 		return mapDishTree.get(userId);
 	}
 
-	public void setDishTree(int userId, MerkleTree dishTree)
+	public void setDishTree(int userId, MerkleTree tree)
 	{
-		mapDishTree.put(userId, dishTree);
+		put(mapDishTree, userId, tree);
+	}
+
+	private static <K, V> void put(Map<K, V> map, K key, V value)
+	{
+		if (value != null)
+		{
+			map.put(key, value);
+		}
+		else
+		{
+			map.remove(key);
+		}
 	}
 }
