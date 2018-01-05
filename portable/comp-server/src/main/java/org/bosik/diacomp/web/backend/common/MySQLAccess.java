@@ -108,8 +108,6 @@ public class MySQLAccess
 				PreparedStatement statement = Utils.prepareSelectStatement(connection, table, columns, where,
 						whereArgs, order, offset, limit); ResultSet set = statement.executeQuery())
 		{
-			// TODO: debug
-			System.out.println(statement);
 			return callback.onData(set);
 		}
 	}
@@ -144,8 +142,6 @@ public class MySQLAccess
 		try (Connection connection = datasource.getConnection();
 				PreparedStatement statement = Utils.prepareInsertStatement(connection, table, values))
 		{
-			// TODO: debug
-			System.out.println(statement);
 			return statement.executeUpdate();
 		}
 	}
@@ -156,8 +152,6 @@ public class MySQLAccess
 		try (Connection connection = datasource.getConnection();
 				PreparedStatement statement = Utils.prepareUpdateStatement(connection, table, set, where);)
 		{
-			// TODO: debug
-			System.out.println(statement);
 			return statement.executeUpdate();
 		}
 	}

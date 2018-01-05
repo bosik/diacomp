@@ -35,12 +35,28 @@ import org.bosik.diacomp.web.backend.common.Config;
 import org.bosik.diacomp.web.backend.features.user.auth.AuthRest;
 import org.json.JSONObject;
 
-@Path("system/")
 @SuppressWarnings("static-method")
+@Path("")
 public class SystemRest
 {
 	@GET
-	@Path("info")
+	@Path("")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response welcome()
+	{
+		try
+		{
+			return Response.ok("Diacomp REST API is up").build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	@GET
+	@Path("system/info")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAPIVersion()
 	{
@@ -68,7 +84,7 @@ public class SystemRest
 	}
 
 	@GET
-	@Path("time")
+	@Path("system/time")
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response getTime()
 	{
@@ -82,24 +98,6 @@ public class SystemRest
 			e.printStackTrace();
 			String entity = ResponseBuilder.buildFails();
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(entity).build();
-		}
-	}
-
-	@PUT
-	@Path("test")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response testPut(@FormParam("items") String parX) throws CommonServiceException
-	{
-		try
-		{
-			String response = ResponseBuilder.buildDone("OK, X=" + parX);
-			return Response.ok(response).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
 		}
 	}
 }
