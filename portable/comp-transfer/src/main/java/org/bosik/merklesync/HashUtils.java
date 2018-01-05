@@ -19,6 +19,7 @@ package org.bosik.merklesync;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -26,9 +27,8 @@ import java.util.UUID;
 
 public class HashUtils
 {
-	public static final char[]	BYTE_TO_CHAR	= new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a',
-			'b', 'c', 'd', 'e', 'f' };
-	public static final byte[]	CHAR_TO_BYTE	= new byte[65536];
+	public static final char[] BYTE_TO_CHAR = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+	public static final byte[] CHAR_TO_BYTE = new byte[65536];
 
 	static
 	{
@@ -42,6 +42,20 @@ public class HashUtils
 		}
 	}
 
+	private static final char[] BYTE_HIGH = new char[256];
+	private static final char[] BYTE_LOW  = new char[256];
+
+	static
+	{
+		for (int i = 0; i < 256; i++)
+		{
+			BYTE_HIGH[i] = BYTE_TO_CHAR[i >> 4];
+			BYTE_LOW[i] = BYTE_TO_CHAR[i % 16];
+		}
+	}
+
+	// --------------------------------------------------------------------------------------
+
 	public static int toInt(String key)
 	{
 		int value = 0;
@@ -51,6 +65,43 @@ public class HashUtils
 			value += CHAR_TO_BYTE[key.charAt(i)];
 		}
 		return value;
+	}
+
+	public static byte[] strToByte(String value)
+	{
+		if (value == null)
+		{
+			return null;
+		}
+
+		byte[] result = new byte[value.length() >> 1];
+		for (int i = 0; i < result.length; i++)
+		{
+			result[i] = (byte) ((CHAR_TO_BYTE[value.charAt(i << 1)] << 4) + CHAR_TO_BYTE[value.charAt((i << 1) + 1)] - 128);
+		}
+
+		return result;
+	}
+
+	public static String byteToStr(byte[] bytes)
+	{
+		if (bytes == null)
+		{
+			return null;
+		}
+
+		char[] chars = new char[bytes.length << 1];
+		int i = 0;
+		for (int b : bytes)
+		{
+			int n = b + 128;
+			//			chars[i++] = BYTE_TO_CHAR[n >> 4];
+			//			chars[i++] = BYTE_TO_CHAR[n % 16];
+			chars[i++] = BYTE_HIGH[n];
+			chars[i++] = BYTE_LOW[n];
+		}
+
+		return new String(chars);
 	}
 
 	/**
@@ -65,14 +116,14 @@ public class HashUtils
 	{
 		if (a != null && a.length() != DataSource.HASH_SIZE)
 		{
-			throw new IllegalArgumentException(String.format("Invalid hash #1 ('%s'), expected: %d chars, found: %d", a,
-					DataSource.HASH_SIZE, a.length()));
+			throw new IllegalArgumentException(
+					String.format(Locale.US, "Invalid hash #1 ('%s'), expected: %d chars, found: %d", a, DataSource.HASH_SIZE, a.length()));
 		}
 
 		if (b != null && b.length() != DataSource.HASH_SIZE)
 		{
-			throw new IllegalArgumentException(String.format("Invalid hash #2 ('%s'), expected: %d chars, found: %d", b,
-					DataSource.HASH_SIZE, b.length()));
+			throw new IllegalArgumentException(
+					String.format(Locale.US, "Invalid hash #2 ('%s'), expected: %d chars, found: %d", b, DataSource.HASH_SIZE, b.length()));
 		}
 
 		if (a == null)
@@ -113,16 +164,16 @@ public class HashUtils
 
 	public static SortedMap<String, String> buildParentHashes(SortedMap<String, String> map, int prefixSize)
 	{
-		SortedMap<String, String> result = new TreeMap<String, String>();
+		SortedMap<String, String> result = new TreeMap<>();
 
-		List<String> buffer = new ArrayList<String>();
+		List<String> buffer = new ArrayList<>();
 		String prevKey = null;
 		for (Entry<String, String> entry : map.entrySet())
 		{
 			if (entry.getKey().length() < prefixSize)
 			{
 				throw new IllegalArgumentException(
-						String.format("Invalid key '%s', must be at least %d chars long", entry.getKey(), prefixSize));
+						String.format(Locale.US, "Invalid key '%s', must be at least %d chars long", entry.getKey(), prefixSize));
 			}
 
 			if (prevKey != null && !prevKey.regionMatches(0, entry.getKey(), 0, prefixSize))
@@ -138,8 +189,7 @@ public class HashUtils
 
 		if (!buffer.isEmpty())
 		{
-			@SuppressWarnings("null")
-			String key = prevKey.substring(0, prefixSize);
+			@SuppressWarnings("null") String key = prevKey.substring(0, prefixSize);
 			String value = calculateHash(buffer);
 			result.put(key, value);
 		}
@@ -169,7 +219,7 @@ public class HashUtils
 	public static MerkleTree buildMerkleTree(SortedMap<String, String> hashes)
 	{
 		// headers (0..4 chars id)
-		return new MemoryMerkleTree2(buildHashTree(hashes));
+		return new MemoryMerkleTree3(buildHashTree(hashes));
 	}
 
 	/**

@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import static junit.framework.Assert.fail;
 import static junit.framework.TestCase.assertEquals;
 
 @SuppressWarnings("static-method")
@@ -45,6 +46,108 @@ public class TestHashUtils
 		assertEquals(65535, HashUtils.toInt("ffff"));
 	}
 
+	private static void assertArraysEquals(byte[] expected, byte[] actual)
+	{
+		String complaint = "Expected: " + format(expected) + "\nActual: " + format(actual);
+
+		if (expected == null ^ actual == null)
+		{
+			fail(complaint);
+		}
+		else if (expected != null)
+		{
+			if (expected.length != actual.length)
+			{
+				fail(complaint);
+			}
+			else
+			{
+				for (int i = 0; i < expected.length; i++)
+				{
+					if (expected[i] != actual[i])
+					{
+						fail(complaint);
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	private static String format(byte[] b)
+	{
+		if (b == null)
+		{
+			return null;
+		}
+
+		StringBuilder s = new StringBuilder();
+		s.append('[');
+		for (int i = 0; i < b.length; i++)
+		{
+			s.append(b[i]);
+			if (i < b.length - 1)
+			{
+				s.append(", ");
+			}
+		}
+		s.append(']');
+
+		return s.toString();
+	}
+
+	@Test
+	public void test_strToByte()
+	{
+		assertArraysEquals(null, HashUtils.strToByte(null));
+		assertArraysEquals(new byte[] {}, HashUtils.strToByte(""));
+		assertArraysEquals(new byte[] { 0 - 128 }, HashUtils.strToByte("00"));
+		assertArraysEquals(new byte[] { 16 - 128 }, HashUtils.strToByte("10"));
+		assertArraysEquals(new byte[] { 255 - 128 }, HashUtils.strToByte("ff"));
+		assertArraysEquals(new byte[] { 171 - 128, 205 - 128 }, HashUtils.strToByte("abcd"));
+	}
+
+	@Test
+	public void test_byteToStr()
+	{
+		assertEquals(null, HashUtils.byteToStr(null));
+		assertEquals("", HashUtils.byteToStr(new byte[] {}));
+		assertEquals("00", HashUtils.byteToStr(new byte[] { 0 - 128 }));
+		assertEquals("10", HashUtils.byteToStr(new byte[] { 16 - 128 }));
+		assertEquals("ff", HashUtils.byteToStr(new byte[] { 255 - 128 }));
+		assertEquals("abcd", HashUtils.byteToStr(new byte[] { 171 - 128, 205 - 128 }));
+	}
+
+	@Test
+	public void test_strToByteToStr()
+	{
+		String s = HashUtils.generateGuid();
+		assertEquals(s, HashUtils.byteToStr(HashUtils.strToByte(s)));
+	}
+
+	@Test
+	@Ignore
+	public void test_byteToStr_speed()
+	{
+		final List<byte[]> bytes = new ArrayList<>();
+		for (int i = 0; i < 1000000; i++)
+		{
+			bytes.add(HashUtils.strToByte(HashUtils.generateGuid()));
+		}
+
+		System.out.printf(Locale.US, "HashUtils.byteToStr(): %.3f ms%n", Profiler.measureInMsec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				for (byte[] b : bytes)
+				{
+					HashUtils.byteToStr(b);
+				}
+			}
+		}, 100));
+	}
+
 	@Test
 	@Ignore
 	public void test_toInt_speed()
@@ -56,7 +159,7 @@ public class TestHashUtils
 			values.add(Integer.toHexString(i).toLowerCase());
 		}
 
-		double time = Profiler.measureInMsec(new Runnable()
+		System.out.printf(Locale.US, "HashUtils.toInt(): %.3f ms%n", Profiler.measureInMsec(new Runnable()
 		{
 			@Override
 			public void run()
@@ -66,9 +169,7 @@ public class TestHashUtils
 					HashUtils.toInt(value);
 				}
 			}
-		}, 10000);
-
-		System.out.printf(Locale.US, "HashUtils.toInt(): %.3f ms%n", time);
+		}, 10000));
 	}
 
 	@Test

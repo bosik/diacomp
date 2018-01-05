@@ -25,9 +25,11 @@ import java.util.TreeMap;
  * TreeMap-based Merkle tree.
  */
 @Deprecated
-public class MemoryMerkleTree extends TreeMap<String, String> implements MerkleTree
+public class MemoryMerkleTree implements MerkleTree
 {
 	private static final long serialVersionUID = 4901379605259573068L;
+
+	private final Map<String, String> map = new HashMap<>();
 
 	public MemoryMerkleTree()
 	{
@@ -36,13 +38,13 @@ public class MemoryMerkleTree extends TreeMap<String, String> implements MerkleT
 
 	public MemoryMerkleTree(Map<String, String> map)
 	{
-		putAll(map);
+		this.map.putAll(map);
 	}
 
 	@Override
 	public String getHash(String prefix)
 	{
-		return get(prefix);
+		return map.get(prefix);
 	}
 
 	@Override
@@ -55,7 +57,7 @@ public class MemoryMerkleTree extends TreeMap<String, String> implements MerkleT
 			for (char c : HashUtils.BYTE_TO_CHAR)
 			{
 				String key = prefix + c;
-				String value = get(key);
+				String value = map.get(key);
 				if (value != null)
 				{
 					directChildren.put(key, value);
@@ -66,7 +68,7 @@ public class MemoryMerkleTree extends TreeMap<String, String> implements MerkleT
 		}
 		else
 		{
-			return subMap(prefix + "0", true, prefix + "f", true);
+			throw new IllegalArgumentException("Too long key '" + prefix + "': max " + (DataSource.ID_PREFIX_SIZE - 1) + " chars allowed");
 		}
 	}
 }
