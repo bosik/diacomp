@@ -130,6 +130,10 @@ public class FragmentTabCharts extends Fragment
 			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
 		}
 
+		// don't call getResources() on background thread
+		final int COLOR_AVERAGE = getResources().getColor(R.color.charts_bs_average);
+		final int COLOR_DISPERSION = getResources().getColor(R.color.charts_bs_dispersion);
+
 		chart.setChartType(ChartType.HISTORY);
 		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_bs), getString(R.string.common_unit_bs_mmoll)));
 		chart.setDescription(getString(R.string.charts_average_bs_description) + ". " + getString(R.string.charts_type_history) + ".");
@@ -182,13 +186,13 @@ public class FragmentTabCharts extends Fragment
 				}
 
 				LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<>(dataAvg.toArray(new DataPoint[dataAvg.size()]));
-				seriesAvg.setColor(getResources().getColor(R.color.charts_bs_average));
+				seriesAvg.setColor(COLOR_AVERAGE);
 
 				LineGraphSeries<DataPoint> seriesMin = new LineGraphSeries<>(dataMin.toArray(new DataPoint[dataMin.size()]));
-				seriesMin.setColor(getResources().getColor(R.color.charts_bs_dispersion));
+				seriesMin.setColor(COLOR_DISPERSION);
 
 				LineGraphSeries<DataPoint> seriesMax = new LineGraphSeries<>(dataMax.toArray(new DataPoint[dataMax.size()]));
-				seriesMax.setColor(getResources().getColor(R.color.charts_bs_dispersion));
+				seriesMax.setColor(COLOR_DISPERSION);
 
 				return Arrays.<Series<?>>asList(seriesMin, seriesAvg, seriesMax);
 			}
@@ -203,6 +207,9 @@ public class FragmentTabCharts extends Fragment
 			chart = new Chart();
 			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
 		}
+
+		// don't call getResources() on background thread
+		final int COLOR = getResources().getColor(R.color.charts_insulin_consumption);
 
 		chart.setChartType(ChartType.HISTORY);
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_x), getString(R.string.common_unit_insulin),
@@ -242,30 +249,30 @@ public class FragmentTabCharts extends Fragment
 					{
 						Collection<DiaryRecord> values = items.values();
 
-						double summCarbs = 0.0;
-						double summInsulin = 0.0;
+						double sumCarbs = 0.0;
+						double sumInsulin = 0.0;
 
 						for (DiaryRecord rec : values)
 						{
 							if (rec instanceof MealRecord)
 							{
-								summCarbs += ((MealRecord) rec).getCarbs();
+								sumCarbs += ((MealRecord) rec).getCarbs();
 							}
 							else if (rec instanceof InsRecord)
 							{
-								summInsulin += ((InsRecord) rec).getValue();
+								sumInsulin += ((InsRecord) rec).getValue();
 							}
 						}
 
-						if (summCarbs > Utils.EPS)
+						if (sumCarbs > Utils.EPS)
 						{
-							data.add(new DataPoint(windowMiddle, summInsulin / summCarbs));
+							data.add(new DataPoint(windowMiddle, sumInsulin / sumCarbs));
 						}
 					}
 				}
 
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data.toArray(new DataPoint[data.size()]));
-				series.setColor(getResources().getColor(R.color.charts_insulin_consumption));
+				series.setColor(COLOR);
 
 				return Collections.<Series<?>>singletonList(series);
 			}
@@ -281,6 +288,9 @@ public class FragmentTabCharts extends Fragment
 			chart = new Chart();
 			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
 		}
+
+		// don't call getResources() on background thread
+		final int COLOR = getResources().getColor(R.color.charts_value);
 
 		chart.setChartType(ChartType.HISTORY);
 		chart.setTitle(String.format("%s, %s", getString(R.string.charts_average_calories), getString(R.string.common_unit_value_kcal)));
@@ -329,7 +339,7 @@ public class FragmentTabCharts extends Fragment
 				}
 
 				LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<>(dataAvg.toArray(new DataPoint[dataAvg.size()]));
-				seriesAvg.setColor(getResources().getColor(R.color.charts_value));
+				seriesAvg.setColor(COLOR);
 
 				return Collections.<Series<?>>singletonList(seriesAvg);
 			}
@@ -344,6 +354,9 @@ public class FragmentTabCharts extends Fragment
 			chart = new Chart();
 			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
 		}
+
+		// don't call getResources() on background thread
+		final int COLOR = getResources().getColor(R.color.charts_x);
 
 		chart.setChartType(ChartType.DAILY);
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_x), getString(R.string.common_unit_insulin),
@@ -364,9 +377,10 @@ public class FragmentTabCharts extends Fragment
 					double y = rate.getK() / rate.getQ();
 					dataList.add(new DataPoint(x, y));
 				}
+
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
-				series.setColor(getResources().getColor(R.color.charts_x));
+				series.setColor(COLOR);
 
 				return Collections.<Series<?>>singletonList(series);
 			}
@@ -381,6 +395,9 @@ public class FragmentTabCharts extends Fragment
 			chart = new Chart();
 			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
 		}
+
+		// don't call getResources() on background thread
+		final int COLOR = getResources().getColor(R.color.charts_k);
 
 		chart.setChartType(ChartType.DAILY);
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_k), getString(R.string.common_unit_bs_mmoll),
@@ -400,9 +417,10 @@ public class FragmentTabCharts extends Fragment
 					double y = rateService.getRate(time).getK();
 					dataList.add(new DataPoint(x, y));
 				}
+
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
-				series.setColor(getResources().getColor(R.color.charts_k));
+				series.setColor(COLOR);
 
 				return Collections.<Series<?>>singletonList(series);
 			}
@@ -417,6 +435,9 @@ public class FragmentTabCharts extends Fragment
 			chart = new Chart();
 			getChildFragmentManager().beginTransaction().add(viewId, chart).commit();
 		}
+
+		// don't call getResources() on background thread
+		final int COLOR = getResources().getColor(R.color.charts_q);
 
 		chart.setChartType(ChartType.DAILY);
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_q), getString(R.string.common_unit_bs_mmoll),
@@ -436,9 +457,10 @@ public class FragmentTabCharts extends Fragment
 					double y = rateService.getRate(time).getQ();
 					dataList.add(new DataPoint(x, y));
 				}
+
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
-				series.setColor(getResources().getColor(R.color.charts_q));
+				series.setColor(COLOR);
 
 				return Collections.<Series<?>>singletonList(series);
 			}

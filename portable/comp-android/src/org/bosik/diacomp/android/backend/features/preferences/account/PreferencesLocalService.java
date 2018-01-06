@@ -57,11 +57,6 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 
 	public PreferencesLocalService(Context context)
 	{
-		if (context == null)
-		{
-			throw new IllegalArgumentException("Context is null");
-		}
-
 		this.context = context;
 		this.resolver = context.getContentResolver();
 	}
@@ -235,6 +230,11 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 	@Override
 	public void importData(InputStream stream) throws IOException
 	{
+		if (context == null)
+		{
+			throw new IllegalArgumentException("Context is null");
+		}
+
 		new PlainDataImporter(context, new TablePreferences(), "1")
 		{
 			@Override
