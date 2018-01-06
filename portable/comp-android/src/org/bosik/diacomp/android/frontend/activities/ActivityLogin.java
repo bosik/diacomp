@@ -56,12 +56,14 @@ import java.util.List;
 
 public class ActivityLogin extends AccountAuthenticatorActivity
 {
-	public static final String DEFAULT_ACCOUNT_TYPE      = "diacomp.org";
-	public static final String EXTRA_EMAIL               = "org.bosik.diacomp.activityLogin.email";
-	public static final String EXTRA_PASS                = "org.bosik.diacomp.activityLogin.password";
-	public static final String ARG_ACCOUNT_TYPE          = "org.bosik.diacomp.activityLogin.accountType";
-	public static final String ARG_AUTH_TYPE             = "org.bosik.diacomp.activityLogin.authType";
-	public static final String ARG_IS_ADDING_NEW_ACCOUNT = "org.bosik.diacomp.activityLogin.newAccount";
+	public static final  String DEFAULT_ACCOUNT_TYPE      = "diacomp.org";
+	public static final  String EXTRA_EMAIL               = "org.bosik.diacomp.activityLogin.email";
+	public static final  String EXTRA_PASS                = "org.bosik.diacomp.activityLogin.password";
+	public static final  String ARG_ACCOUNT_TYPE          = "org.bosik.diacomp.activityLogin.accountType";
+	public static final  String ARG_AUTH_TYPE             = "org.bosik.diacomp.activityLogin.authType";
+	public static final  String ARG_IS_ADDING_NEW_ACCOUNT = "org.bosik.diacomp.activityLogin.newAccount";
+	private static final String KEY_IN_PROGRESS           = "org.bosik.diacomp.activityLogin.inProgress";
+	private static final String KEY_STATUS                = "org.bosik.diacomp.activityLogin.status";
 
 	private UserLoginTask mAuthTask = null;
 
@@ -75,15 +77,6 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 	private View     mLoginFormView;
 	private View     mLoginStatusView;
 	private TextView mLoginStatusMessageView;
-
-	private final BroadcastReceiver receiver = new BroadcastReceiver()
-	{
-		@Override
-		public void onReceive(Context context, Intent intent)
-		{
-			ActivityLogin.this.onReceive(intent);
-		}
-	};
 
 	@Override
 	protected void onResume()
@@ -104,13 +97,13 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 	{
 		super.onCreate(savedInstanceState);
 
+		// build UI
+		setContentView(R.layout.activity_login);
+
 		// read extras
 		mAccountType = getIntent().getStringExtra(ARG_ACCOUNT_TYPE);
 		mAuthTokenType = getIntent().getStringExtra(ARG_AUTH_TYPE);
 		mNewAccount = getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false);
-
-		// build UI
-		setContentView(R.layout.activity_login);
 
 		textEmail = (EditText) findViewById(R.id.accountName);
 		textPassword = (EditText) findViewById(R.id.accountPassword);
@@ -163,10 +156,34 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			public void onClick(View v)
 			{
 				String url = Utils.makeSureEndsWithSlash(getString(R.string.server_url)) + "register/";
-				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-				startActivity(browserIntent);
+				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
 			}
 		});
+
+		if (savedInstanceState != null)
+		{
+			if (savedInstanceState.containsKey(KEY_IN_PROGRESS))
+			{
+				showProgress(savedInstanceState.getBoolean(KEY_IN_PROGRESS));
+			}
+
+			if (savedInstanceState.containsKey(KEY_STATUS))
+			{
+				mLoginStatusMessageView.setText(savedInstanceState.getString(KEY_STATUS));
+			}
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState)
+	{
+		super.onSaveInstanceState(outState);
+
+		if (outState != null)
+		{
+			outState.putBoolean(KEY_IN_PROGRESS, mLoginStatusView.getVisibility() == View.VISIBLE);
+			outState.putString(KEY_STATUS, (String) mLoginStatusMessageView.getText());
+		}
 	}
 
 	@Override
@@ -320,7 +337,8 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 
 			if (success)
 			{
-				submit();
+				addAccount();
+				startService(new Intent(ActivityLogin.this, ImportService.class));
 			}
 			else
 			{
@@ -335,86 +353,6 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		{
 			mAuthTask = null;
 			showProgress(false);
-		}
-	}
-
-	private void submit()
-	{
-		startService(new Intent(ActivityLogin.this, ImportService.class));
-	}
-
-	private void onReceive(Intent intent)
-	{
-		Bundle bundle = intent.getExtras();
-		if (bundle != null)
-		{
-			Progress step = (Progress) bundle.getSerializable(ImportService.KEY_RESULT);
-
-			switch (step)
-			{
-				case INITIALIZATION:
-				{
-					mLoginStatusMessageView.setText(getString(R.string.login_import_step_initialization));
-					break;
-				}
-
-				case LOADING:
-				{
-					mLoginStatusMessageView.setText(getString(R.string.login_import_step_downloading));
-					break;
-				}
-
-				case UNZIPPING:
-				{
-					mLoginStatusMessageView.setText(getString(R.string.login_import_step_unzipping));
-					break;
-				}
-
-				case INSTALL_DIARY:
-				{
-					mLoginStatusMessageView.setText(getString(R.string.login_import_step_diary));
-					break;
-				}
-
-				case INSTALL_FOODBASE:
-				{
-					mLoginStatusMessageView.setText(getString(R.string.login_import_step_food));
-					break;
-				}
-
-				case INSTALL_DISHBASE:
-				{
-					mLoginStatusMessageView.setText(getString(R.string.login_import_step_dish));
-					break;
-				}
-
-				case INSTALL_PREFERENCES:
-				{
-					mLoginStatusMessageView.setText(getString(R.string.login_import_step_preferences));
-					break;
-				}
-
-				case DONE_OK:
-				case DONE_FAIL:
-				{
-					if (step == Progress.DONE_OK)
-					{
-						UIUtils.showTip(ActivityLogin.this, getString(R.string.login_import_result_done));
-					}
-					else
-					{
-						UIUtils.showTip(ActivityLogin.this, getString(R.string.login_import_result_fail));
-					}
-
-					addAccount();
-					enableAutosync();
-
-					// TODO: don't do this if activity is started from main activity
-					startActivity(new Intent(ActivityLogin.this, ActivityMain.class));
-					finish();
-					break;
-				}
-			}
 		}
 	}
 
@@ -449,12 +387,90 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		}
 	}
 
+	private final BroadcastReceiver receiver = new BroadcastReceiver()
+	{
+		@Override
+		public void onReceive(Context context, Intent intent)
+		{
+			Bundle bundle = intent.getExtras();
+			if (bundle != null)
+			{
+				Progress step = (Progress) bundle.getSerializable(ImportService.KEY_RESULT);
+
+				switch (step)
+				{
+					case INITIALIZATION:
+					{
+						mLoginStatusMessageView.setText(getString(R.string.login_import_step_initialization));
+						break;
+					}
+
+					case LOADING:
+					{
+						mLoginStatusMessageView.setText(getString(R.string.login_import_step_downloading));
+						break;
+					}
+
+					case UNZIPPING:
+					{
+						mLoginStatusMessageView.setText(getString(R.string.login_import_step_unzipping));
+						break;
+					}
+
+					case INSTALL_DIARY:
+					{
+						mLoginStatusMessageView.setText(getString(R.string.login_import_step_diary));
+						break;
+					}
+
+					case INSTALL_FOODBASE:
+					{
+						mLoginStatusMessageView.setText(getString(R.string.login_import_step_food));
+						break;
+					}
+
+					case INSTALL_DISHBASE:
+					{
+						mLoginStatusMessageView.setText(getString(R.string.login_import_step_dish));
+						break;
+					}
+
+					case INSTALL_PREFERENCES:
+					{
+						mLoginStatusMessageView.setText(getString(R.string.login_import_step_preferences));
+						break;
+					}
+
+					case DONE_OK:
+					case DONE_FAIL:
+					{
+						if (step == Progress.DONE_OK)
+						{
+							UIUtils.showTip(ActivityLogin.this, getString(R.string.login_import_result_done));
+						}
+						else
+						{
+							UIUtils.showTip(ActivityLogin.this, getString(R.string.login_import_result_fail));
+						}
+
+						enableAutosync();
+
+						// TODO: don't do this if activity is started from main activity
+						startActivity(new Intent(ActivityLogin.this, ActivityMain.class));
+						finish();
+						break;
+					}
+				}
+			}
+		}
+	};
+
 	private void enableAutosync()
 	{
 		Account[] accounts = AccountUtils.getAccounts(this);
 		if (accounts.length > 0)
 		{
-			long SYNC_INTERVAL = 60; // sec
+			long SYNC_INTERVAL = 120; // sec
 			ContentResolver.setIsSyncable(accounts[0], DiaryContentProvider.AUTHORITY, 1);
 			ContentResolver.setSyncAutomatically(accounts[0], DiaryContentProvider.AUTHORITY, true);
 			ContentResolver.addPeriodicSync(accounts[0], DiaryContentProvider.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
