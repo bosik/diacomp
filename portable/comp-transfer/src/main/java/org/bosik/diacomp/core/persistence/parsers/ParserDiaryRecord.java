@@ -17,7 +17,6 @@
  */
 package org.bosik.diacomp.core.persistence.parsers;
 
-import java.util.List;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
@@ -29,102 +28,123 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class ParserDiaryRecord extends Parser<DiaryRecord>
 {
-	private Parser<FoodMassed>	parserFoodMassed	= new ParserFoodMassed();
+	private static final String FIELD_TYPE = "type";
+	private static final String FIELD_TIME = "time";
+
+	private static final String TYPE_BLOOD = "blood";
+	private static final String TYPE_INS   = "ins";
+	private static final String TYPE_MEAL  = "meal";
+	private static final String TYPE_NOTE  = "note";
+
+	private static final String FIELD_BLOOD_VALUE  = "value";
+	private static final String FIELD_BLOOD_FINGER = "finger";
+	private static final String FIELD_INS_VALUE    = "value";
+	private static final String FIELD_MEAL_SHORT   = "short";
+	private static final String FIELD_MEAL_CONTENT = "content";
+	private static final String FIELD_NOTE_TEXT    = "text";
+
+	private final Parser<FoodMassed> parserFoodMassed = new ParserFoodMassed();
 
 	@Override
 	public DiaryRecord read(JSONObject json) throws JSONException
 	{
-		String type = json.getString("type");
+		String type = json.getString(FIELD_TYPE);
 
-		if (type.equals("blood"))
+		switch (type)
 		{
-			BloodRecord item = new BloodRecord();
-			item.setTime(Utils.parseTimeUTC(json.getString("time")));
-			item.setValue(json.getDouble("value"));
-			item.setFinger(json.getInt("finger"));
-			return item;
-		}
-		else if (type.equals("ins"))
-		{
-			InsRecord item = new InsRecord();
-			item.setTime(Utils.parseTimeUTC(json.getString("time")));
-			item.setValue(json.getDouble("value"));
-			return item;
-		}
-		else if (type.equals("meal"))
-		{
-			MealRecord item = new MealRecord();
-			item.setTime(Utils.parseTimeUTC(json.getString("time")));
-			item.setShortMeal(json.getBoolean("short"));
-			List<FoodMassed> items = parserFoodMassed.readAll(json.getJSONArray("content"));
-
-			for (FoodMassed f : items)
+			case TYPE_BLOOD:
 			{
-				item.add(f);
+				BloodRecord item = new BloodRecord();
+				item.setTime(Utils.parseTimeUTC(json.getString(FIELD_TIME)));
+				item.setValue(json.getDouble(FIELD_BLOOD_VALUE));
+				item.setFinger(json.getInt(FIELD_BLOOD_FINGER));
+				return item;
 			}
 
-			return item;
-		}
-		else if (type.equals("note"))
-		{
-			NoteRecord item = new NoteRecord();
-			item.setTime(Utils.parseTimeUTC(json.getString("time")));
-			item.setText(json.getString("text"));
-			return item;
-		}
-		else
-		{
-			throw new UnsupportedOperationException("Unknown record type: '" + type + "'");
+			case TYPE_INS:
+			{
+				InsRecord item = new InsRecord();
+				item.setTime(Utils.parseTimeUTC(json.getString(FIELD_TIME)));
+				item.setValue(json.getDouble(FIELD_INS_VALUE));
+				return item;
+			}
+
+			case TYPE_MEAL:
+			{
+				MealRecord item = new MealRecord();
+				item.setTime(Utils.parseTimeUTC(json.getString(FIELD_TIME)));
+				item.setShortMeal(json.getBoolean(FIELD_MEAL_SHORT));
+				List<FoodMassed> items = parserFoodMassed.readAll(json.getJSONArray(FIELD_MEAL_CONTENT));
+
+				for (FoodMassed f : items)
+				{
+					item.add(f);
+				}
+
+				return item;
+			}
+
+			case TYPE_NOTE:
+			{
+				NoteRecord item = new NoteRecord();
+				item.setTime(Utils.parseTimeUTC(json.getString(FIELD_TIME)));
+				item.setText(json.getString(FIELD_NOTE_TEXT));
+				return item;
+			}
+
+			default:
+			{
+				throw new UnsupportedOperationException("Unknown record type: '" + type + "'");
+			}
 		}
 	}
 
 	@Override
 	public JSONObject write(DiaryRecord object) throws JSONException
 	{
-		// Gson g = new Gson();
-		// String jsonStr = g.toJson(object);
-
 		JSONObject json = new JSONObject();
 
-		json.put("time", Utils.formatTimeUTC(object.getTime()));
+		json.put(FIELD_TIME, Utils.formatTimeUTC(object.getTime()));
 
 		if (object.getClass() == BloodRecord.class)
 		{
-			BloodRecord item = (BloodRecord)object;
-			json.put("type", "blood");
-			json.put("value", item.getValue());
-			json.put("finger", item.getFinger());
+			BloodRecord item = (BloodRecord) object;
+			json.put(FIELD_TYPE, TYPE_BLOOD);
+			json.put(FIELD_BLOOD_VALUE, item.getValue());
+			json.put(FIELD_BLOOD_FINGER, item.getFinger());
 		}
 		else if (object.getClass() == InsRecord.class)
 		{
-			InsRecord item = (InsRecord)object;
-			json.put("type", "ins");
-			json.put("value", item.getValue());
+			InsRecord item = (InsRecord) object;
+			json.put(FIELD_TYPE, TYPE_INS);
+			json.put(FIELD_INS_VALUE, item.getValue());
 		}
 		else if (object.getClass() == MealRecord.class)
 		{
-			MealRecord item = (MealRecord)object;
-			json.put("type", "meal");
-			json.put("short", item.getShortMeal());
+			MealRecord item = (MealRecord) object;
+			json.put(FIELD_TYPE, TYPE_MEAL);
+			json.put(FIELD_MEAL_SHORT, item.getShortMeal());
 
 			JSONArray foods = new JSONArray();
 			for (int i = 0; i < item.count(); i++)
 			{
 				foods.put(parserFoodMassed.write(item.get(i)));
 			}
-			json.put("content", foods);
+			json.put(FIELD_MEAL_CONTENT, foods);
 		}
 		else if (object.getClass() == NoteRecord.class)
 		{
-			NoteRecord item = (NoteRecord)object;
-			json.put("type", "note");
-			json.put("text", item.getText());
+			NoteRecord item = (NoteRecord) object;
+			json.put(FIELD_TYPE, TYPE_NOTE);
+			json.put(FIELD_NOTE_TEXT, item.getText());
 		}
 		else
 		{
-			throw new UnsupportedOperationException("Unknown record type: " + object.getClass().getCanonicalName());
+			throw new UnsupportedOperationException("Unknown record type: " + object.getClass().getName());
 		}
 
 		return json;
