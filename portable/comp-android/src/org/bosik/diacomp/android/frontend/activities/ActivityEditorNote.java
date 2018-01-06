@@ -18,32 +18,23 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
-import java.util.Date;
-import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.frontend.UIUtils;
-import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
+import org.bosik.diacomp.core.utils.Utils;
+
+import java.util.Date;
 
 public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 {
-	/* =========================== КОНСТАНТЫ ================================ */
-	// private static final String TAG = "ActivityEditorNote";
-
-	/* =========================== ПОЛЯ ================================ */
-
-	// компоненты
-	private Button				buttonTime;
-	private Button				buttonDate;
-	private EditText			editText;
-	private Button				buttonOK;
-
-	// TODO: localize error message
-	private static final String	ERROR_INCORRECT_NOTE_VALUE	= "Ошибка: неверный текст";
-
-	/* =========================== МЕТОДЫ ================================ */
+	// UI
+	private Button   buttonTime;
+	private Button   buttonDate;
+	private EditText editText;
 
 	@Override
 	protected void setupInterface()
@@ -70,8 +61,7 @@ public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 		});
 
 		editText = (EditText) findViewById(R.id.editNoteText);
-		buttonOK = (Button) findViewById(R.id.buttonNoteOK);
-		buttonOK.setOnClickListener(new OnClickListener()
+		findViewById(R.id.buttonNoteOK).setOnClickListener(new OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
@@ -92,19 +82,24 @@ public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 	@Override
 	protected boolean getValuesFromGUI()
 	{
-		// text
-		try
+		String text = editText.getText().toString();
+
+		if (text != null)
 		{
-			entity.getData().setText(editText.getText().toString());
+			String cleared = Utils.removeNonUtf8(text);
+			if (!text.equals(cleared))
+			{
+				UIUtils.showTip(this, getString(R.string.common_tip_unsupported_chars_removed));
+			}
+
+			entity.getData().setText(cleared);
+			return true;
 		}
-		catch (IllegalArgumentException e)
+		else
 		{
-			UIUtils.showTip(ActivityEditorNote.this, ERROR_INCORRECT_NOTE_VALUE);
-			editText.requestFocus();
+			UIUtils.showTip(this, getString(R.string.editor_note_error_text));
 			return false;
 		}
-
-		return true;
 	}
 
 	@Override
