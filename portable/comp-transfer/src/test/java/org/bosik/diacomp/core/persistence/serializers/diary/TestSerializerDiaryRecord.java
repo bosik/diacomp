@@ -31,7 +31,7 @@ public class TestSerializerDiaryRecord extends TestSerializer<Versioned<DiaryRec
 	@Override
 	protected Mock<Versioned<DiaryRecord>> getMock()
 	{
-		return new MockVersionedConverter<DiaryRecord>(new MockDiaryRecord());
+		return new MockVersionedConverter<>(new MockDiaryRecord());
 	}
 
 	@Override

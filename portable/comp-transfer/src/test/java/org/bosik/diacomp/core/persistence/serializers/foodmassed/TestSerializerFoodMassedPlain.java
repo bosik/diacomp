@@ -23,7 +23,7 @@ import org.bosik.diacomp.core.persistence.serializers.SerializerFoodMassedPlain;
 
 public class TestSerializerFoodMassedPlain extends TestCase
 {
-	private final SerializerFoodMassedPlain	serializer	= new SerializerFoodMassedPlain();
+	private final SerializerFoodMassedPlain serializer = new SerializerFoodMassedPlain();
 
 	public void test_read_normalDots_Ok()
 	{

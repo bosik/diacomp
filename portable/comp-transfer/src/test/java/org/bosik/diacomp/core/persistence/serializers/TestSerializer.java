@@ -17,12 +17,14 @@
  */
 package org.bosik.diacomp.core.persistence.serializers;
 
-import java.util.List;
 import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
 import org.bosik.diacomp.core.test.fakes.mocks.Mock;
+import org.junit.Assert;
+import org.junit.Test;
 
-public abstract class TestSerializer<T> extends TestCase
+import java.util.List;
+
+public abstract class TestSerializer<T>
 {
 	protected abstract Serializer<T> getSerializer();
 
@@ -45,11 +47,12 @@ public abstract class TestSerializer<T> extends TestCase
 		}
 	}
 
+	@Test
 	public void testPersistenceSingle()
 	{
 		Serializer<T> serializer = getSerializer();
 		List<T> samples = getMock().getSamples();
-		assertTrue(samples.size() > 0);
+		Assert.assertTrue(samples.size() > 0);
 
 		for (T sample : samples)
 		{
@@ -57,14 +60,15 @@ public abstract class TestSerializer<T> extends TestCase
 		}
 	}
 
+	@Test
 	public void testPersistenceMultiple()
 	{
 		Serializer<T> serializer = getSerializer();
 		List<T> samples = getMock().getSamples();
-		assertTrue(samples.size() > 1);
+		Assert.assertTrue(samples.size() > 1);
 
 		List<T> restored = serializer.readAll(serializer.writeAll(samples));
-		assertEquals(samples.size(), restored.size());
+		Assert.assertEquals(samples.size(), restored.size());
 		for (int i = 0; i < samples.size(); i++)
 		{
 			compareInformative(samples.get(i), restored.get(i));

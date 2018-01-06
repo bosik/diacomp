@@ -17,22 +17,22 @@
  */
 package org.bosik.diacomp.core.utils;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.io.InputStream;
-import org.junit.Test;
-import junit.framework.TestCase;
 
-@SuppressWarnings("static-method")
-public class ZipUtilsTest extends TestCase
+public class ZipUtilsTest
 {
 	@Test
 	public void testZipUnzipString() throws IOException
 	{
-		final String s = "some secret string";
+		final String input = "some secret string";
 
-		InputStream stream = ZipUtils.zipString(s);
-		String result = ZipUtils.unzipString(stream);
+		InputStream stream = ZipUtils.zipString(input);
+		String output = ZipUtils.unzipString(stream);
 
-		assertEquals(s, result);
+		Assert.assertEquals(input, output);
 	}
 }

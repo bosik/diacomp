@@ -31,7 +31,7 @@ public class TestSerializerDishItem extends TestSerializer<Versioned<DishItem>>
 	@Override
 	protected Mock<Versioned<DishItem>> getMock()
 	{
-		return new MockVersionedConverter<DishItem>(new MockDishItem());
+		return new MockVersionedConverter<>(new MockDishItem());
 	}
 
 	@Override
