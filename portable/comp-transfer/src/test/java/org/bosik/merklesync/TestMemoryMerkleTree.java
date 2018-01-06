@@ -22,6 +22,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -78,6 +79,21 @@ public class TestMemoryMerkleTree
 	}
 
 	@Test
+	public void test_getHash_empty()
+	{
+		MerkleTree m1 = new MemoryMerkleTree(new HashMap<String, String>());
+		MerkleTree m2 = new MemoryMerkleTree2(new HashMap<String, String>());
+		MerkleTree m3 = new MemoryMerkleTree3(new HashMap<String, String>());
+
+		for (Map.Entry<String, String> entry : MAX_MAP.entrySet())
+		{
+			Assert.assertEquals(null, m1.getHash(entry.getKey()));
+			Assert.assertEquals(null, m2.getHash(entry.getKey()));
+			Assert.assertEquals(null, m3.getHash(entry.getKey()));
+		}
+	}
+
+	@Test
 	public void test_getHash()
 	{
 		for (Map.Entry<String, String> entry : MAX_MAP.entrySet())
@@ -85,6 +101,21 @@ public class TestMemoryMerkleTree
 			Assert.assertEquals(entry.getValue(), MAX_MERKLE_TREE.getHash(entry.getKey()));
 			Assert.assertEquals(entry.getValue(), MAX_MERKLE_TREE_2.getHash(entry.getKey()));
 			Assert.assertEquals(entry.getValue(), MAX_MERKLE_TREE_3.getHash(entry.getKey()));
+		}
+	}
+
+	@Test
+	public void test_getHashChildren_empty()
+	{
+		MerkleTree m1 = new MemoryMerkleTree(new HashMap<String, String>());
+		MerkleTree m2 = new MemoryMerkleTree2(new HashMap<String, String>());
+		MerkleTree m3 = new MemoryMerkleTree3(new HashMap<String, String>());
+
+		for (String key : SHORT_KEYS)
+		{
+			Assert.assertEquals(Collections.emptyMap(), m1.getHashChildren(key));
+			Assert.assertEquals(Collections.emptyMap(), m2.getHashChildren(key));
+			Assert.assertEquals(Collections.emptyMap(), m3.getHashChildren(key));
 		}
 	}
 
