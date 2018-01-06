@@ -31,6 +31,7 @@ import org.bosik.diacomp.core.services.transfer.Exportable;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -65,7 +66,7 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 						@Override
 						public List<PreferenceEntry<String>> onData(ResultSet set) throws SQLException
 						{
-							List<PreferenceEntry<String>> result = new LinkedList<PreferenceEntry<String>>();
+							List<PreferenceEntry<String>> result = new LinkedList<>();
 
 							while (set.next())
 							{
@@ -75,7 +76,7 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 
 								try
 								{
-									PreferenceEntry<String> item = new PreferenceEntry<String>();
+									PreferenceEntry<String> item = new PreferenceEntry<>();
 									item.setId(PreferenceID.parse(key)); // TODO
 									item.setValue(value);
 									item.setVersion(version);
@@ -128,7 +129,7 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 						{
 							if (set.next())
 							{
-								PreferenceEntry<String> item = new PreferenceEntry<String>();
+								PreferenceEntry<String> item = new PreferenceEntry<>();
 								item.setId(id);
 								item.setValue(set.getString(COLUMN_PREFERENCES_VALUE));
 								item.setVersion(set.getInt(COLUMN_PREFERENCES_VERSION));
@@ -163,11 +164,11 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 			{
 				// presented, update
 
-				SortedMap<String, String> set = new TreeMap<String, String>();
+				SortedMap<String, String> set = new TreeMap<>();
 				set.put(COLUMN_PREFERENCES_VALUE, value);
 				set.put(COLUMN_PREFERENCES_VERSION, version);
 
-				SortedMap<String, String> where = new TreeMap<String, String>();
+				SortedMap<String, String> where = new TreeMap<>();
 				where.put(COLUMN_PREFERENCES_KEY, key);
 				where.put(COLUMN_PREFERENCES_USER, String.valueOf(userId));
 
@@ -177,7 +178,7 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 			{
 				// not presented, insert
 
-				LinkedHashMap<String, String> set = new LinkedHashMap<String, String>();
+				LinkedHashMap<String, String> set = new LinkedHashMap<>();
 				set.put(COLUMN_PREFERENCES_USER, String.valueOf(userId));
 				set.put(COLUMN_PREFERENCES_KEY, key);
 				set.put(COLUMN_PREFERENCES_VALUE, value);
@@ -239,20 +240,23 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 
 					while (resultSet.next())
 					{
-						String key = resultSet.getString(COLUMN_PREFERENCES_KEY);
-						String value = resultSet.getString(COLUMN_PREFERENCES_VALUE);
-						int version = resultSet.getInt(COLUMN_PREFERENCES_VERSION);
+						final String key = resultSet.getString(COLUMN_PREFERENCES_KEY);
+						final String value = resultSet.getString(COLUMN_PREFERENCES_VALUE);
+						final int version = resultSet.getInt(COLUMN_PREFERENCES_VERSION);
 
 						if (!resultSet.isFirst())
 						{
 							s.append(",");
 						}
 
-						s.append("{");
-						s.append("\"key\":\"").append(key).append("\",");
-						s.append("\"value\":").append(value).append(",");
-						s.append("\"version\":").append(version);
-						s.append("}");
+						s.append(new JSONObject()
+						{
+							{
+								put("key", key);
+								put("value", value);
+								put("version", version);
+							}
+						}.toString());
 					}
 
 					s.append("]");
