@@ -80,20 +80,6 @@ public class ActivityMain extends FragmentActivity
 			startService(new Intent(this, NotificationService.class));
 			startService(new Intent(this, BackgroundService.class));
 
-			Account account = AccountUtils.getAccount(this);
-
-			if (account != null)
-			{
-				long SYNC_INTERVAL = 120; // sec
-				ContentResolver.setIsSyncable(account, DiaryContentProvider.AUTHORITY, 1);
-				ContentResolver.setSyncAutomatically(account, DiaryContentProvider.AUTHORITY, true);
-				ContentResolver.addPeriodicSync(account, DiaryContentProvider.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
-			}
-			else
-			{
-				Log.w(TAG, "No account found");
-			}
-
 			// Frontend
 
 			final List<Page> pages = new ArrayList<>();
@@ -168,7 +154,6 @@ public class ActivityMain extends FragmentActivity
 			boolean firstStart = preferences.getBooleanValue(PreferenceID.ANDROID_FIRST_START);
 			if (firstStart)
 			{
-				preferences.setBooleanValue(PreferenceID.ANDROID_FIRST_START, false);
 				startActivity(new Intent(this, ActivityWelcome.class));
 				finish();
 			}
