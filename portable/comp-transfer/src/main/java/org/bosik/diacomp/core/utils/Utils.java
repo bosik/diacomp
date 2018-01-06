@@ -572,7 +572,7 @@ public class Utils
 		return s;
 	}
 
-	/**
+	/*
 	 * VALIDATORS
 	 */
 
@@ -588,8 +588,15 @@ public class Utils
 		return (hour >= 0) && (hour < HourPerDay) && (min >= 0) && (min < MinPerHour);
 	}
 
-	/**
-	 * CONVERTORS
+	public static String removeNonUtf8(String s)
+	{
+		final String regex = "[^\u0000-\uFFFF]";
+
+		return (s != null) ? s.replaceAll(regex, "").replaceAll(regex, "") : null;
+	}
+
+	/*
+	 * CONVERTERS
 	 */
 
 	/**

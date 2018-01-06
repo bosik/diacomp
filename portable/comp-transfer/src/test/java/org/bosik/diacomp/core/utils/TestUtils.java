@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.core.utils;
 
+import org.bosik.merklesync.HashUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,6 +33,41 @@ import java.util.TimeZone;
 
 public class TestUtils
 {
+	@Test
+	public void test_removeNonUtf8()
+	{
+		Assert.assertEquals(null, Utils.removeNonUtf8(null));
+		Assert.assertEquals("", Utils.removeNonUtf8(""));
+
+		Assert.assertEquals("Normal string", Utils.removeNonUtf8("Normal string"));
+		Assert.assertEquals("\n\r\t\f\b", Utils.removeNonUtf8("\n\r\t\f\b"));
+		Assert.assertEquals("Ümläötẞß", Utils.removeNonUtf8("Ümläötẞß"));
+
+		Assert.assertEquals("Goodchars", Utils.removeNonUtf8("Good\uD83D\uDC7D\uD83D\uDC94chars"));
+		Assert.assertEquals("Goodchars", Utils.removeNonUtf8("Good\uD800\uD800\uDC00\uDC00chars"));
+	}
+
+	@Test
+	@Ignore
+	public void test_removeNonUtf8_performance()
+	{
+		StringBuilder sb = new StringBuilder();
+		while (sb.length() < 1024)
+		{
+			sb.append(HashUtils.generateGuid());
+		}
+		final String s = sb.toString();
+
+		System.out.printf(Locale.US, "%.6f ms%n", Profiler.measureInMsec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Utils.removeNonUtf8(s);
+			}
+		}, 1000000));
+	}
+
 	@Test
 	public void test_intTo00()
 	{
