@@ -18,6 +18,7 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -39,6 +40,8 @@ import java.util.List;
 
 public class ActivityEditorDish extends ActivityEditor<DishItem>
 {
+	private static final String KEY_MODIFIED = "org.bosik.diacomp.editor.dish.modified";
+
 	// data
 	private boolean modified;
 
@@ -46,10 +49,33 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 	private EditText       editName;
 	private ToggleButton   buttonMass;
 	private MealEditorView editor;
-	// TODO: this button is hidden
-	private Button         buttonOK;
 
 	// ======================================================================================================
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+
+		if (savedInstanceState != null)
+		{
+			if (savedInstanceState.containsKey(KEY_MODIFIED))
+			{
+				modified = savedInstanceState.getBoolean(KEY_MODIFIED);
+			}
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState)
+	{
+		super.onSaveInstanceState(outState);
+
+		if (outState != null)
+		{
+			outState.putBoolean(KEY_MODIFIED, modified);
+		}
+	}
 
 	@Override
 	protected void setupInterface()
@@ -93,15 +119,6 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 				{
 					entity.getData().add(item);
 				}
-			}
-		});
-		buttonOK = (Button) findViewById(R.id.buttonDishOK);
-		buttonOK.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				ActivityEditorDish.this.submit();
 			}
 		});
 		buttonMass = (ToggleButton) findViewById(R.id.buttonDishMass);
