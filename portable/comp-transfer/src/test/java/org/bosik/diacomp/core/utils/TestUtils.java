@@ -69,6 +69,52 @@ public class TestUtils
 	}
 
 	@Test
+	public void test_checkSize_normal()
+	{
+		Utils.checkSize(null, 5);
+		Utils.checkSize(null, -1);
+		Utils.checkSize("", 5);
+		Utils.checkSize("12345", 5);
+	}
+
+	@Test
+	public void test_checkSize_long()
+	{
+		String longString = HashUtils.generateGuid();
+		while (longString.length() < 128 * 1024 * 1024)
+		{
+			longString += longString;
+		}
+
+		try
+		{
+			Utils.checkSize(longString, 5);
+			Assert.fail(IllegalArgumentException.class.getSimpleName() + " must be thrown");
+		}
+		catch (IllegalArgumentException e)
+		{
+			Assert.assertTrue(e.getMessage().length() < longString.length());
+		}
+	}
+
+	@Test
+	public void test_checkNotNull()
+	{
+		Utils.checkNotNull("", "Message");
+		Utils.checkNotNull("text", "Message");
+
+		try
+		{
+			Utils.checkNotNull(null, "Message");
+			Assert.fail(IllegalArgumentException.class.getSimpleName() + " must be thrown");
+		}
+		catch (IllegalArgumentException e)
+		{
+			Assert.assertEquals("Message", e.getMessage());
+		}
+	}
+
+	@Test
 	public void test_intTo00()
 	{
 		Assert.assertEquals("-10", Utils.intTo00(-10));

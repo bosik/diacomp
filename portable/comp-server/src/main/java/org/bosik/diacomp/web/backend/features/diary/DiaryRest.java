@@ -51,7 +51,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -71,22 +70,6 @@ public class DiaryRest
 
 	private static final int MAX_DATETIME_SIZE = Utils.FORMAT_DATE_TIME.length();
 
-	/**
-	 * Checks if the string value fits the maximum size. Null-safe.
-	 *
-	 * @param s       String to check
-	 * @param maxSize Max size allowed
-	 * @throws IllegalArgumentException If max size exceed
-	 */
-	public static void checkSize(String s, int maxSize) throws IllegalArgumentException
-	{
-		if (s != null && s.length() > maxSize)
-		{
-			throw new IllegalArgumentException(
-					String.format(Locale.US, "String too long: %d chars passed, but at most %d are allowed", s.length(), maxSize));
-		}
-	}
-
 	@GET
 	@Path("count/{prefix: .*}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -94,7 +77,8 @@ public class DiaryRest
 	{
 		try
 		{
-			checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
+			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../count/1ef0)");
+			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
 			int count = diaryService.count(parPrefix);
 			String response = String.valueOf(count);
@@ -122,7 +106,8 @@ public class DiaryRest
 	{
 		try
 		{
-			checkSize(parId, ObjectService.ID_FULL_SIZE);
+			Utils.checkNotNull(parId, "ID expected (e.g. ../guid/1ef0)");
+			Utils.checkSize(parId, ObjectService.ID_FULL_SIZE);
 
 			// Prefix form
 			if (parId.length() <= DataSource.ID_PREFIX_SIZE)
@@ -132,9 +117,8 @@ public class DiaryRest
 				String response = serializer.writeAll(items);
 				return Response.ok(response).build();
 			}
-
-			// Full form
 			else
+			// Full form
 			{
 				Versioned<DiaryRecord> item = diaryService.findById(parId);
 
@@ -176,7 +160,8 @@ public class DiaryRest
 	{
 		try
 		{
-			checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
+			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../hash/1ef0)");
+			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
 			MerkleTree hashTree = diaryService.getHashTree();
 			String s = hashTree.getHash(parPrefix);
@@ -205,7 +190,8 @@ public class DiaryRest
 	{
 		try
 		{
-			checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
+			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../hashes/1ef0)");
+			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
 			MerkleTree hashTree = diaryService.getHashTree();
 			Map<String, String> map = hashTree.getHashChildren(parPrefix);
@@ -234,12 +220,8 @@ public class DiaryRest
 	{
 		try
 		{
-			if (parTime == null)
-			{
-				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: since").build();
-			}
-
-			checkSize(parTime, MAX_DATETIME_SIZE);
+			Utils.checkNotNull(parTime, "Missing parameter: since");
+			Utils.checkSize(parTime, MAX_DATETIME_SIZE);
 
 			Date since;
 			try
@@ -279,17 +261,10 @@ public class DiaryRest
 	{
 		try
 		{
-			if (parStartTime == null)
-			{
-				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: start_time").build();
-			}
-			if (parEndTime == null)
-			{
-				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: end_time").build();
-			}
-
-			checkSize(parStartTime, MAX_DATETIME_SIZE);
-			checkSize(parEndTime, MAX_DATETIME_SIZE);
+			Utils.checkNotNull(parStartTime, "Missing parameter: start_time");
+			Utils.checkNotNull(parEndTime, "Missing parameter: end_time");
+			Utils.checkSize(parStartTime, MAX_DATETIME_SIZE);
+			Utils.checkSize(parEndTime, MAX_DATETIME_SIZE);
 
 			Date startTime;
 			try
@@ -345,13 +320,9 @@ public class DiaryRest
 	{
 		try
 		{
-			if (parItems == null)
-			{
-				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: items").build();
-			}
+			Utils.checkNotNull(parItems, "Missing parameter: items");
 
 			// FIXME: limit the maximum data size
-
 			List<Versioned<DiaryRecord>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
 			diaryService.save(items);
 
@@ -360,6 +331,10 @@ public class DiaryRest
 		catch (NotAuthorizedException e)
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (IllegalArgumentException e)
+		{
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 		catch (Exception e)
 		{

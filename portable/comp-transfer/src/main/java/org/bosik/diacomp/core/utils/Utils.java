@@ -588,10 +588,47 @@ public class Utils
 		return (hour >= 0) && (hour < HourPerDay) && (min >= 0) && (min < MinPerHour);
 	}
 
+	/**
+	 * Checks if the string value fits the maximum size. Null-safe.
+	 *
+	 * @param s       String to check
+	 * @param maxSize Max size allowed
+	 * @throws IllegalArgumentException If max size exceed
+	 */
+	public static void checkSize(String s, int maxSize) throws IllegalArgumentException
+	{
+		if (s != null && s.length() > maxSize)
+		{
+			throw new IllegalArgumentException(
+					String.format(Locale.US, "String too long: %d chars passed, but at most %d are allowed", s.length(), maxSize));
+		}
+	}
+
+	/**
+	 * If string is {@code null}, IllegalArgumentException with specified message will be thrown
+	 *
+	 * @param s       String to check
+	 * @param message Message to throw if the string is {@code null}
+	 * @throws IllegalArgumentException If the string is {@code null}
+	 */
+	public static void checkNotNull(String s, String message) throws IllegalArgumentException
+	{
+		if (s == null)
+		{
+			throw new IllegalArgumentException(message);
+		}
+	}
+
+	/**
+	 * Removes all non-BMP (Basic Multilingual Plane) chars
+	 *
+	 * @param s String to process
+	 * @return Cleared string
+	 */
 	public static String removeNonUtf8(String s)
 	{
+		// do twice to handle surrogate artifacts
 		final String regex = "[^\u0000-\uFFFF]";
-
 		return (s != null) ? s.replaceAll(regex, "").replaceAll(regex, "") : null;
 	}
 

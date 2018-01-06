@@ -17,9 +17,22 @@
  */
 package org.bosik.diacomp.web.backend.features.base.dish;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
+import org.bosik.diacomp.core.persistence.serializers.Serializer;
+import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
+import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
+import org.bosik.diacomp.core.rest.ResponseBuilder;
+import org.bosik.diacomp.core.services.ObjectService;
+import org.bosik.diacomp.core.services.base.dish.DishBaseService;
+import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
+import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
+import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.merklesync.DataSource;
+import org.bosik.merklesync.MerkleTree;
+import org.bosik.merklesync.Versioned;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -31,30 +44,19 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
-import org.bosik.diacomp.core.persistence.serializers.Serializer;
-import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
-import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
-import org.bosik.diacomp.core.rest.ResponseBuilder;
-import org.bosik.diacomp.core.services.base.dish.DishBaseService;
-import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
-import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.merklesync.DataSource;
-import org.bosik.merklesync.MerkleTree;
-import org.bosik.merklesync.Versioned;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Path("dish/")
 public class DishBaseRest
 {
 	@Autowired
-	private DishBaseService							dishbaseService;
+	private DishBaseService dishbaseService;
 
-	private final Serializer<Versioned<DishItem>>	serializer		= new SerializerDishItem();
-	private final Serializer<Map<String, String>>	serializerMap	= new SerializerMap();
+	private final Serializer<Versioned<DishItem>> serializer    = new SerializerDishItem();
+	private final Serializer<Map<String, String>> serializerMap = new SerializerMap();
 
 	@GET
 	@Path("count/{prefix: .*}")
@@ -63,6 +65,9 @@ public class DishBaseRest
 	{
 		try
 		{
+			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../count/1ef0)");
+			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
+
 			int count = dishbaseService.count(parPrefix);
 			String response = String.valueOf(count);
 			return Response.ok(response).build();
@@ -70,6 +75,10 @@ public class DishBaseRest
 		catch (NotAuthorizedException e)
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (IllegalArgumentException e)
+		{
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 		catch (Exception e)
 		{
@@ -85,6 +94,9 @@ public class DishBaseRest
 	{
 		try
 		{
+			Utils.checkNotNull(parId, "ID expected (e.g. ../guid/1ef0)");
+			Utils.checkSize(parId, ObjectService.ID_FULL_SIZE);
+
 			// Prefix form
 			if (parId.length() <= DataSource.ID_PREFIX_SIZE)
 			{
@@ -93,9 +105,8 @@ public class DishBaseRest
 				String response = serializer.writeAll(items);
 				return Response.ok(response).build();
 			}
-
-			// Full form
 			else
+			// Full form
 			{
 				Versioned<DishItem> item = dishbaseService.findById(parId);
 
@@ -119,6 +130,10 @@ public class DishBaseRest
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
+		catch (IllegalArgumentException e)
+		{
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
+		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
@@ -133,6 +148,8 @@ public class DishBaseRest
 	{
 		try
 		{
+			Utils.checkSize(parShowRem, 5); // "false".length
+
 			boolean includeRemoved = Boolean.valueOf(parShowRem);
 
 			List<Versioned<DishItem>> items = dishbaseService.findAll(includeRemoved);
@@ -142,6 +159,10 @@ public class DishBaseRest
 		catch (NotAuthorizedException e)
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (IllegalArgumentException e)
+		{
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 		catch (Exception e)
 		{
@@ -157,10 +178,8 @@ public class DishBaseRest
 	{
 		try
 		{
-			if (filter == null)
-			{
-				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: q").build();
-			}
+			Utils.checkNotNull(filter, "Missing parameter: q");
+			Utils.checkSize(filter, 256);
 
 			List<Versioned<DishItem>> items = dishbaseService.findAny(filter);
 			String response = serializer.writeAll(items);
@@ -169,6 +188,10 @@ public class DishBaseRest
 		catch (NotAuthorizedException e)
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (IllegalArgumentException e)
+		{
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 		catch (Exception e)
 		{
@@ -184,10 +207,8 @@ public class DishBaseRest
 	{
 		try
 		{
-			if (parTime == null)
-			{
-				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: since").build();
-			}
+			Utils.checkNotNull(parTime, "Missing parameter: since");
+			Utils.checkSize(parTime, Utils.FORMAT_DATE_TIME.length());
 
 			Date since = Utils.parseTimeUTC(parTime);
 			List<Versioned<DishItem>> items = dishbaseService.findChanged(since);
@@ -197,6 +218,10 @@ public class DishBaseRest
 		catch (NotAuthorizedException e)
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (IllegalArgumentException e)
+		{
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 		catch (Exception e)
 		{
@@ -212,14 +237,20 @@ public class DishBaseRest
 	{
 		try
 		{
+			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../hash/1ef0)");
+			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
+
 			MerkleTree hashTree = dishbaseService.getHashTree();
 			String s = hashTree.getHash(parPrefix);
-			String response = s != null ? s : "";
-			return Response.ok(response).build();
+			return Response.ok(s != null ? s : "").build();
 		}
 		catch (NotAuthorizedException e)
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (IllegalArgumentException e)
+		{
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 		catch (Exception e)
 		{
@@ -235,6 +266,9 @@ public class DishBaseRest
 	{
 		try
 		{
+			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../hashes/1ef0)");
+			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
+
 			MerkleTree hashTree = dishbaseService.getHashTree();
 			Map<String, String> map = hashTree.getHashChildren(parPrefix);
 			String response = serializerMap.write(map);
@@ -243,6 +277,10 @@ public class DishBaseRest
 		catch (NotAuthorizedException e)
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (IllegalArgumentException e)
+		{
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 		catch (Exception e)
 		{
@@ -257,10 +295,7 @@ public class DishBaseRest
 	{
 		try
 		{
-			if (parItems == null)
-			{
-				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: items").build();
-			}
+			Utils.checkNotNull(parItems, "Missing parameter: items");
 
 			List<Versioned<DishItem>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
 			dishbaseService.save(items);
@@ -270,6 +305,10 @@ public class DishBaseRest
 		catch (NotAuthorizedException e)
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (IllegalArgumentException e)
+		{
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 		catch (Exception e)
 		{
