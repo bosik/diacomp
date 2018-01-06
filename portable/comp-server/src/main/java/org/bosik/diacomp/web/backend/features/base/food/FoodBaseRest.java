@@ -269,7 +269,7 @@ public class FoodBaseRest
 				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: items").build();
 			}
 
-			List<Versioned<FoodItem>> items = serializer.readAll(parItems);
+			List<Versioned<FoodItem>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
 			foodbaseService.save(items);
 
 			return Response.ok("Saved OK").build();

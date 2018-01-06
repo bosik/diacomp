@@ -350,7 +350,7 @@ public class DiaryRest
 
 			// FIXME: limit the maximum data size
 
-			List<Versioned<DiaryRecord>> items = serializer.readAll(parItems);
+			List<Versioned<DiaryRecord>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
 			diaryService.save(items);
 
 			String response = "Saved OK";

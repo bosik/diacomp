@@ -262,7 +262,7 @@ public class DishBaseRest
 				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: items").build();
 			}
 
-			List<Versioned<DishItem>> items = serializer.readAll(parItems);
+			List<Versioned<DishItem>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
 			dishbaseService.save(items);
 
 			return Response.ok("Saved OK").build();
