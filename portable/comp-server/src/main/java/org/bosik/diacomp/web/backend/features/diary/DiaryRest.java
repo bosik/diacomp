@@ -17,21 +17,6 @@
  */
 package org.bosik.diacomp.web.backend.features.diary;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
@@ -52,47 +37,54 @@ import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 @Service
 @Path("diary/")
 public class DiaryRest
 {
 	@Autowired
-	private DiaryService								diaryService;
+	private DiaryService diaryService;
 
 	@Autowired
-	private UserLogger									log;
+	private UserLogger log;
 
-	private final Parser<DiaryRecord>					parser				= new ParserDiaryRecord();
-	private final Parser<Versioned<DiaryRecord>>		parserVersioned		= new ParserVersioned<DiaryRecord>(parser);
-	private final Serializer<Versioned<DiaryRecord>>	serializer			= new SerializerAdapter<Versioned<DiaryRecord>>(
-			parserVersioned);
-	private final Serializer<Map<String, String>>		serializerMap		= new SerializerMap();
+	private final Parser<DiaryRecord>                parser          = new ParserDiaryRecord();
+	private final Parser<Versioned<DiaryRecord>>     parserVersioned = new ParserVersioned<>(parser);
+	private final Serializer<Versioned<DiaryRecord>> serializer      = new SerializerAdapter<>(parserVersioned);
+	private final Serializer<Map<String, String>>    serializerMap   = new SerializerMap();
 
-	private static final int							MAX_DATETIME_SIZE	= Utils.FORMAT_DATE_TIME.length();
+	private static final int MAX_DATETIME_SIZE = Utils.FORMAT_DATE_TIME.length();
 
 	/**
 	 * Checks if the string value fits the maximum size. Null-safe.
-	 * 
-	 * @param s
-	 * @param maxSize
-	 * @return
+	 *
+	 * @param s       String to check
+	 * @param maxSize Max size allowed
+	 * @throws IllegalArgumentException If max size exceed
 	 */
-	private String checkSize(String s, int maxSize)
+	public static void checkSize(String s, int maxSize) throws IllegalArgumentException
 	{
-		if (s == null)
+		if (s != null && s.length() > maxSize)
 		{
-			return null;
+			throw new IllegalArgumentException(
+					String.format(Locale.US, "String too long: %d chars passed, but at most %d are allowed", s.length(), maxSize));
 		}
-
-		final int originalLength = s.length();
-		if (originalLength > maxSize)
-		{
-			s = s.substring(0, maxSize);
-			log.getLogger().warn(String.format("Parameter too long: %d chars passed, truncated down to %d: %s",
-					originalLength, maxSize, s));
-		}
-
-		return s;
 	}
 
 	@GET
@@ -100,10 +92,9 @@ public class DiaryRest
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response count(@PathParam("prefix") @DefaultValue("") String parPrefix)
 	{
-		long time = System.currentTimeMillis();
 		try
 		{
-			parPrefix = checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
+			checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
 			int count = diaryService.count(parPrefix);
 			String response = String.valueOf(count);
@@ -113,15 +104,14 @@ public class DiaryRest
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
 		}
+		catch (IllegalArgumentException e)
+		{
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
+		}
 		catch (Exception e)
 		{
 			log.getLogger().error(String.format("count(%s) failed", parPrefix), e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
-		finally
-		{
-			time = System.currentTimeMillis() - time;
-			System.out.println(String.format("count(%s) performed in %d msec", parPrefix, time));
 		}
 	}
 
@@ -130,10 +120,9 @@ public class DiaryRest
 	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 	public Response findById(@PathParam("guid") String parId)
 	{
-		long time = System.currentTimeMillis();
 		try
 		{
-			parId = checkSize(parId, ObjectService.ID_FULL_SIZE);
+			checkSize(parId, ObjectService.ID_FULL_SIZE);
 
 			// Prefix form
 			if (parId.length() <= DataSource.ID_PREFIX_SIZE)
@@ -169,15 +158,14 @@ public class DiaryRest
 		{
 			return Response.status(Status.BAD_REQUEST).entity("Too many items found").build();
 		}
+		catch (IllegalArgumentException e)
+		{
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
+		}
 		catch (Exception e)
 		{
 			log.getLogger().error(String.format("findById(%s) failed", parId), e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
-		finally
-		{
-			time = System.currentTimeMillis() - time;
-			System.out.println(String.format("findById(%s) performed in %d msec", parId, time));
 		}
 	}
 
@@ -188,7 +176,7 @@ public class DiaryRest
 	{
 		try
 		{
-			parPrefix = checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
+			checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
 			MerkleTree hashTree = diaryService.getHashTree();
 			String s = hashTree.getHash(parPrefix);
@@ -198,6 +186,10 @@ public class DiaryRest
 		catch (NotAuthorizedException e)
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (IllegalArgumentException e)
+		{
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 		catch (Exception e)
 		{
@@ -213,7 +205,7 @@ public class DiaryRest
 	{
 		try
 		{
-			parPrefix = checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
+			checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
 			MerkleTree hashTree = diaryService.getHashTree();
 			Map<String, String> map = hashTree.getHashChildren(parPrefix);
@@ -223,6 +215,10 @@ public class DiaryRest
 		catch (NotAuthorizedException e)
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (IllegalArgumentException e)
+		{
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 		catch (Exception e)
 		{
@@ -243,7 +239,7 @@ public class DiaryRest
 				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: since").build();
 			}
 
-			parTime = checkSize(parTime, MAX_DATETIME_SIZE);
+			checkSize(parTime, MAX_DATETIME_SIZE);
 
 			Date since;
 			try
@@ -263,6 +259,10 @@ public class DiaryRest
 		catch (NotAuthorizedException e)
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (IllegalArgumentException e)
+		{
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 		catch (Exception e)
 		{
@@ -288,8 +288,8 @@ public class DiaryRest
 				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: end_time").build();
 			}
 
-			parStartTime = checkSize(parStartTime, MAX_DATETIME_SIZE);
-			parEndTime = checkSize(parEndTime, MAX_DATETIME_SIZE);
+			checkSize(parStartTime, MAX_DATETIME_SIZE);
+			checkSize(parEndTime, MAX_DATETIME_SIZE);
 
 			Date startTime;
 			try
@@ -298,8 +298,7 @@ public class DiaryRest
 			}
 			catch (Exception e) // FIXME: catch ParseException
 			{
-				String msg = String.format("Invalid start time: %s%nExpected format: %s", parStartTime,
-						Utils.FORMAT_DATE_TIME);
+				String msg = String.format("Invalid start time: %s%nExpected format: %s", parStartTime, Utils.FORMAT_DATE_TIME);
 				return Response.status(Status.BAD_REQUEST).entity(msg).build();
 			}
 
@@ -310,8 +309,7 @@ public class DiaryRest
 			}
 			catch (Exception e) // FIXME: catch ParseException
 			{
-				String msg = String.format("Invalid end time: %s%nExpected format: %s", parEndTime,
-						Utils.FORMAT_DATE_TIME);
+				String msg = String.format("Invalid end time: %s%nExpected format: %s", parEndTime, Utils.FORMAT_DATE_TIME);
 				return Response.status(Status.BAD_REQUEST).entity(msg).build();
 			}
 
@@ -324,6 +322,10 @@ public class DiaryRest
 		catch (NotAuthorizedException e)
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
+		}
+		catch (IllegalArgumentException e)
+		{
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 		catch (TooManyItemsException e)
 		{
@@ -353,8 +355,7 @@ public class DiaryRest
 			List<Versioned<DiaryRecord>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
 			diaryService.save(items);
 
-			String response = "Saved OK";
-			return Response.ok(response).build();
+			return Response.ok("Saved OK").build();
 		}
 		catch (NotAuthorizedException e)
 		{
@@ -362,7 +363,7 @@ public class DiaryRest
 		}
 		catch (Exception e)
 		{
-			log.getLogger().error(String.format("save() failed"), e);
+			log.getLogger().error("save() failed", e);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
 		}
 	}
