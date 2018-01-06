@@ -117,8 +117,9 @@ public class ActivityEditorFood extends ActivityEditor<FoodItem>
 
 		if (nameCleared.isEmpty())
 		{
-			UIUtils.showTip(this, getString(R.string.editor_food_error_empty_name));
+			editName.setText(nameCleared);
 			editName.requestFocus();
+			UIUtils.showTip(this, getString(R.string.editor_food_error_empty_name));
 			return false;
 		}
 

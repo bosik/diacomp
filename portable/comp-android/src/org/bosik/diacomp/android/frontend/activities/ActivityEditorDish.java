@@ -222,14 +222,32 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 	@Override
 	protected boolean getValuesFromGUI()
 	{
-		final String name = editName.getText().toString();
-		if (name == null || name.trim().isEmpty())
+		String name = editName.getText().toString();
+		if (name == null)
 		{
 			UIUtils.showTip(this, getString(R.string.editor_dish_error_empty_name));
 			editName.requestFocus();
 			return false;
 		}
-		entity.getData().setName(name);
+
+		name = name.trim();
+		String nameCleared = Utils.removeNonUtf8(name).trim();
+
+		if (!name.equals(nameCleared))
+		{
+			UIUtils.showTip(this, getString(R.string.common_tip_unsupported_chars_removed));
+			editName.setText(nameCleared);
+		}
+
+		if (nameCleared.isEmpty())
+		{
+			editName.setText(nameCleared);
+			editName.requestFocus();
+			UIUtils.showTip(this, getString(R.string.editor_dish_error_empty_name));
+			return false;
+		}
+
+		entity.getData().setName(nameCleared);
 
 		// =============================================================
 
