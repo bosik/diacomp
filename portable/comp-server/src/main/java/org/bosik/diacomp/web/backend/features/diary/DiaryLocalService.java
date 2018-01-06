@@ -572,7 +572,7 @@ public class DiaryLocalService implements DiaryService, Exportable
 					{
 						String id = resultSet.getString(COLUMN_DIARY_GUID);
 						String timeStamp = Utils.formatTimeUTC(resultSet.getTimestamp(COLUMN_DIARY_TIMESTAMP));
-						String time = resultSet.getString(COLUMN_DIARY_TIMECACHE);
+						String time = Utils.formatTimeUTC(resultSet.getTimestamp(COLUMN_DIARY_TIMECACHE));
 						String hash = resultSet.getString(COLUMN_DIARY_HASH);
 						int version = resultSet.getInt(COLUMN_DIARY_VERSION);
 						boolean deleted = (resultSet.getInt(COLUMN_DIARY_DELETED) == 1);

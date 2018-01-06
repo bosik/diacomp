@@ -18,10 +18,8 @@
  */
 package org.bosik.diacomp.android.backend.features.quickImport;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
+import android.content.Context;
+import android.util.Log;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
@@ -32,20 +30,32 @@ import org.bosik.diacomp.core.rest.ExportAPI;
 import org.bosik.diacomp.core.utils.Profiler;
 import org.bosik.diacomp.core.utils.ZipUtils;
 import org.bosik.diacomp.core.utils.ZipUtils.Entry;
-import android.content.Context;
-import android.util.Log;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 public class ImportHelper
 {
-	private static final String	TAG				= ImportHelper.class.getSimpleName();
+	private static final String TAG = ImportHelper.class.getSimpleName();
 
 	// PART OF PUBLIC API
+	// TODO: Move to public API definition
 
-	private static final String	URL_EXPORT_JSON	= "api/export/plain";
+	private static final String URL_EXPORT_PLAIN = "api/export/plain";
 
 	public enum Progress
 	{
-		INITIALIZATION, LOADING, UNZIPPING, INSTALL_DIARY, INSTALL_FOODBASE, INSTALL_DISHBASE, INSTALL_PREFERENCES, DONE_OK, DONE_FAIL
+		INITIALIZATION,
+		LOADING,
+		UNZIPPING,
+		INSTALL_DIARY,
+		INSTALL_FOODBASE,
+		INSTALL_DISHBASE,
+		INSTALL_PREFERENCES,
+		DONE_OK,
+		DONE_FAIL
 	}
 
 	public interface ProgressCallback
@@ -91,7 +101,7 @@ public class ImportHelper
 
 			// download data
 			progress(callback, Progress.LOADING);
-			InputStream stream = client.loadStream(URL_EXPORT_JSON);
+			InputStream stream = client.loadStream(URL_EXPORT_PLAIN);
 			Log.i(TAG, "Loaded in " + (p.sinceLastCheck() / 1000000) + " ms");
 
 			try
