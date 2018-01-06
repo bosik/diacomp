@@ -31,7 +31,7 @@ public class MemoryMerkleTree3 implements MerkleTree
 		table = new byte[DataSource.ID_PREFIX_SIZE + 1][][];
 		for (int i = 0; i <= DataSource.ID_PREFIX_SIZE; i++)
 		{
-			table[i] = new byte[1 << 4 * i][16];
+			table[i] = new byte[1 << 4 * i][];
 		}
 
 		for (Map.Entry<String, String> entry : map.entrySet())
