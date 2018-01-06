@@ -18,32 +18,22 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.EditText;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.utils.Utils;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
 
 public class ActivityEditorFood extends ActivityEditor<FoodItem>
 {
-	// private static final String TAG = ActivityEditorFood.class.getSimpleName();
-
-	// TODO: localize error messages
-	private static final String	MSG_INCORRECT_VALUE	= "Введите корректное значение";
-	private static final String	MSG_EMPTY_NAME		= "Введите название";
-
-	// components
-	private EditText			editName;
-	private EditText			editProts;
-	private EditText			editFats;
-	private EditText			editCarbs;
-	private EditText			editValue;
-	private Button				buttonOK;
-
-	/* =========================== OVERRIDDEN METHODS ================================ */
+	// ui
+	private EditText editName;
+	private EditText editProts;
+	private EditText editFats;
+	private EditText editCarbs;
+	private EditText editValue;
 
 	@Override
 	protected void setupInterface()
@@ -55,8 +45,7 @@ public class ActivityEditorFood extends ActivityEditor<FoodItem>
 		editCarbs = (EditText) findViewById(R.id.editFoodCarbs);
 		editValue = (EditText) findViewById(R.id.editFoodValue);
 
-		buttonOK = (Button) findViewById(R.id.buttonFoodOK);
-		buttonOK.setOnClickListener(new OnClickListener()
+		findViewById(R.id.buttonFoodOK).setOnClickListener(new OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
@@ -92,7 +81,7 @@ public class ActivityEditorFood extends ActivityEditor<FoodItem>
 		void set(double value);
 	}
 
-	private boolean readDouble(EditText editor, Setter setter)
+	private void readDouble(EditText editor, Setter setter)
 	{
 		try
 		{
@@ -100,84 +89,82 @@ public class ActivityEditorFood extends ActivityEditor<FoodItem>
 		}
 		catch (IllegalArgumentException e)
 		{
-			UIUtils.showTip(this, MSG_INCORRECT_VALUE);
 			editor.requestFocus();
-			return false;
+			UIUtils.showTip(this, getString(R.string.common_tip_error_invalid_decimal));
+			throw e;
 		}
-
-		return true;
 	}
 
 	@Override
 	protected boolean getValuesFromGUI()
 	{
-		final String name = editName.getText().toString();
-		if (name == null || name.trim().isEmpty())
+		String name = editName.getText().toString();
+		if (name == null)
 		{
-			UIUtils.showTip(this, MSG_EMPTY_NAME);
+			UIUtils.showTip(this, getString(R.string.editor_food_error_empty_name));
 			editName.requestFocus();
 			return false;
 		}
-		entity.getData().setName(name);
 
-		// =============================================================
+		name = name.trim();
+		String nameCleared = Utils.removeNonUtf8(name).trim();
 
-		if (!readDouble(editProts, new Setter()
+		if (!name.equals(nameCleared))
 		{
-			@Override
-			public void set(double value)
-			{
-				entity.getData().setRelProts(value);
-			}
-		}))
+			editName.setText(nameCleared);
+			UIUtils.showTip(this, getString(R.string.common_tip_unsupported_chars_removed));
+		}
+
+		if (nameCleared.isEmpty())
 		{
+			UIUtils.showTip(this, getString(R.string.editor_food_error_empty_name));
+			editName.requestFocus();
 			return false;
 		}
 
+		entity.getData().setName(nameCleared);
+
 		// =============================================================
 
-		if (!readDouble(editFats, new Setter()
+		try
 		{
-			@Override
-			public void set(double value)
+			readDouble(editProts, new Setter()
 			{
-				entity.getData().setRelFats(value);
-			}
-		}))
+				@Override
+				public void set(double value)
+				{
+					entity.getData().setRelProts(value);
+				}
+			});
+			readDouble(editFats, new Setter()
+			{
+				@Override
+				public void set(double value)
+				{
+					entity.getData().setRelFats(value);
+				}
+			});
+			readDouble(editCarbs, new Setter()
+			{
+				@Override
+				public void set(double value)
+				{
+					entity.getData().setRelCarbs(value);
+				}
+			});
+			readDouble(editValue, new Setter()
+			{
+				@Override
+				public void set(double value)
+				{
+					entity.getData().setRelValue(value);
+				}
+			});
+			return true;
+		}
+		catch (IllegalArgumentException e)
 		{
 			return false;
 		}
-
-		// =============================================================
-
-		if (!readDouble(editCarbs, new Setter()
-		{
-			@Override
-			public void set(double value)
-			{
-				entity.getData().setRelCarbs(value);
-			}
-		}))
-		{
-			return false;
-		}
-
-		// =============================================================
-
-		if (!readDouble(editValue, new Setter()
-		{
-			@Override
-			public void set(double value)
-			{
-				entity.getData().setRelValue(value);
-			}
-		}))
-		{
-			return false;
-		}
-
-		// =============================================================
-
-		return true;
 	}
 }

@@ -51,6 +51,7 @@
     <string name="common_rectype_meal">Meal</string>
     <string name="common_rectype_note">Note</string>
     <string name="common_tip_deleted">Items removed: %d</string>
+    <string name="common_tip_error_invalid_decimal">Please provide valid decimal number</string>
     <string name="common_tip_unsupported_chars_removed">Some invalid characters were removed</string>
     <string name="common_unit_bs_mmoll">mmol/l</string>
     <string name="common_unit_insulin">U</string>
@@ -73,6 +74,7 @@
     <string name="editor_dish_rm_hint">Enter mass:</string>
     <string name="editor_dish_rm_title">Dish mass</string>
     <string name="editor_dish_title">Dish</string>
+    <string name="editor_food_error_empty_name">Please provide food name</string>
     <string name="editor_food_field_carbs">Carbohydrate, g</string>
     <string name="editor_food_field_fats">Fat, g</string>
     <string name="editor_food_field_name">Name</string>
