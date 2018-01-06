@@ -333,7 +333,7 @@ public class FragmentTabCharts extends Fragment
 					if (!items.isEmpty())
 					{
 						Collection<Double> values = items.values();
-						double summ = Utils.getSumm(values);
+						double summ = Utils.getSum(values);
 						dataAvg.add(new DataPoint(windowMiddle, summ / (HALF_WINDOW_SIZE * 2)));
 					}
 				}

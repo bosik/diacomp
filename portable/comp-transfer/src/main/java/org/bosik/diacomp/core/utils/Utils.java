@@ -46,9 +46,9 @@ import java.util.TimeZone;
 
 public class Utils
 {
-	/**
+	/* =========================================================================================
 	 * CONSTANTS
-	 */
+	 * =========================================================================================/
 
 	// Energy values
 
@@ -87,7 +87,7 @@ public class Utils
 
 	// Format settings
 
-	public static  char          DECIMAL_DOT;
+	private static char          DECIMAL_DOT;
 	private static DecimalFormat DF;
 
 	private static Random r = new Random();
@@ -98,7 +98,7 @@ public class Utils
 	public static final String FORMAT_DATE       = "yyyy-MM-dd";
 	public static final String FORMAT_TIME_SHORT = "HH:mm";
 
-	static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
+	private static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
 
 	private static final ThreadLocal<SimpleDateFormat> FORMATTER_DATE_UTC = new ThreadLocal<SimpleDateFormat>()
 	{
@@ -159,11 +159,9 @@ public class Utils
 		return format;
 	}
 
-	// ===========================================================================================================
-
-	/**
+	/* =========================================================================================
 	 * PARSERS
-	 */
+	 * =========================================================================================/
 
 	/**
 	 * Replaces all . and , with actual locale decimal separator (DECIMAL_DOT)
@@ -220,11 +218,10 @@ public class Utils
 	}
 
 	/**
-	 * [tested] Читает время из строки формата STD_FORMAT_TIME_UTC
+	 * Parses time using STD_FORMAT_TIME_UTC format
 	 *
-	 * @param time Строка, хранящая время
-	 * @return Время
-	 * @throws ParseException
+	 * @param time String to parse
+	 * @return Date
 	 */
 	public static Date parseTimeUTC(String time)
 	{
@@ -372,12 +369,12 @@ public class Utils
 		// }
 	}
 
-	/**
+	/* =========================================================================================
 	 * FORMATTERS
-	 */
+	 * =========================================================================================/
 
 	/**
-	 * [tested] Converts integer into string; non-negative single-digit numbers get one leading
+	 * Converts integer into string; non-negative single-digit numbers get one leading
 	 * zero. Negative values are returning as-is.
 	 *
 	 * @param n number
@@ -454,10 +451,10 @@ public class Utils
 	}
 
 	/**
-	 * [tested] Преобразует время в формат сервера STD_FORMAT_TIME_UTC
+	 * Formats time as STD_FORMAT_TIME_UTC
 	 *
-	 * @param time Время
-	 * @return Строка
+	 * @param time Time
+	 * @return Time string
 	 */
 	public static String formatTimeUTC(Date time)
 	{
@@ -493,27 +490,27 @@ public class Utils
 	 * Formats time as hh:mm
 	 *
 	 * @param time Time in seconds
-	 * @return
+	 * @return Time string
 	 */
 	public static String formatTimePeriod(int time)
 	{
 		int h = time / SecPerHour;
 		time %= SecPerHour;
 		int m = time / SecPerMin;
-		return String.format("%02d:%02d", h, m);
+		return String.format(Locale.US, "%02d:%02d", h, m);
 	}
 
 	/**
 	 * Formats time as hh:mm
 	 *
 	 * @param time Time in minutes
-	 * @return
+	 * @return Time string
 	 */
 	public static String formatTimeMin(int time)
 	{
 		int h = time / MinPerHour;
 		int m = time % MinPerHour;
-		return String.format("%02d:%02d", h, m);
+		return String.format(Locale.US, "%02d:%02d", h, m);
 	}
 
 	public static String formatK(double k, boolean BU)
@@ -572,9 +569,9 @@ public class Utils
 		return s;
 	}
 
-	/*
+	/* =========================================================================================
 	 * VALIDATORS
-	 */
+	 * =========================================================================================/
 
 	/**
 	 * [tested] Validates the (hour,minute) pair
@@ -632,9 +629,9 @@ public class Utils
 		return (s != null) ? s.replaceAll(regex, "").replaceAll(regex, "") : null;
 	}
 
-	/*
+	/* =========================================================================================
 	 * CONVERTERS
-	 */
+	 * =========================================================================================/
 
 	/**
 	 * Rounds up to specified number of digits after dot
@@ -686,34 +683,34 @@ public class Utils
 	}
 
 	/**
-	 * Calculates summ
+	 * Calculates sum
 	 *
-	 * @param values
-	 * @return
+	 * @param values Values to process
+	 * @return Sum
 	 */
-	public static double getSumm(Iterable<Double> values)
+	public static double getSum(Iterable<Double> values)
 	{
-		double summ = 0.0;
+		double sum = 0.0;
 
 		for (Double x : values)
 		{
-			summ += x;
+			sum += x;
 		}
 
-		return summ;
+		return sum;
 	}
 
 	/**
 	 * Calculates mean value
 	 *
-	 * @param values
-	 * @return
+	 * @param values Values to process
+	 * @return Mean value
 	 */
 	public static double getMean(Collection<Double> values)
 	{
 		if (values.size() > 0)
 		{
-			return getSumm(values) / values.size();
+			return getSum(values) / values.size();
 		}
 		else
 		{
@@ -724,9 +721,9 @@ public class Utils
 	/**
 	 * Calculates standard deviation using pre-calculated mean
 	 *
-	 * @param values
-	 * @param mean
-	 * @return
+	 * @param values Values to process
+	 * @param mean   Mean values
+	 * @return Standard deviation
 	 */
 	public static double getDeviation(Collection<Double> values, double mean)
 	{
@@ -744,15 +741,15 @@ public class Utils
 		return Math.sqrt(s);
 	}
 
-	/**
+	/* =========================================================================================
 	 * RANDOM
-	 */
+	 * =========================================================================================/
 
 	/**
 	 * Returns random string from supplied string array
 	 *
 	 * @param strings
-	 * @return
+	 * @return Random string
 	 */
 	public static String randomString(String... strings)
 	{
@@ -775,15 +772,15 @@ public class Utils
 		return time(year, month, day, hour, min, sec);
 	}
 
-	/**
+	/* =========================================================================================
 	 * DATE UTILS
-	 */
+	 * =========================================================================================/
 
 	/**
-	 * [tested] Получает предыдущую дату по отношению к указанной
+	 * Calculates date the day before specified one
 	 *
-	 * @param date Дата
-	 * @return Предыдущая дата
+	 * @param date Date
+	 * @return One day before
 	 */
 	public static Date getPrevDay(Date date)
 	{
@@ -791,10 +788,10 @@ public class Utils
 	}
 
 	/**
-	 * [tested] Получает следующую дату по отношению к указанной
+	 * Calculates date the day after specified one
 	 *
-	 * @param date Дата
-	 * @return Следующая дата
+	 * @param date Date
+	 * @return One day later
 	 */
 	public static Date getNextDay(Date date)
 	{
@@ -1153,27 +1150,17 @@ public class Utils
 
 	public static void saveStreamToFile(InputStream inputStream, String fileName) throws IOException
 	{
-		OutputStream outputStream = new FileOutputStream(new File(fileName));
-		try
+		try (OutputStream outputStream = new FileOutputStream(new File(fileName)))
 		{
 			copy(inputStream, outputStream);
-		}
-		finally
-		{
-			outputStream.close();
 		}
 	}
 
 	public static void saveStringToFile(String data, String fileName) throws IOException
 	{
-		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8"));
-		try
+		try (Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8")))
 		{
 			out.write(data);
-		}
-		finally
-		{
-			out.close();
 		}
 	}
 
@@ -1213,8 +1200,8 @@ public class Utils
 	}
 
 	/**
-	 * @param a
-	 * @param b
+	 * @param a Set
+	 * @param b Set
 	 * @return Intersections of two sets: A ∩ B
 	 */
 	public static <T> Set<T> intersection(Set<T> a, Set<T> b)
@@ -1225,8 +1212,8 @@ public class Utils
 	}
 
 	/**
-	 * @param a
-	 * @param b
+	 * @param a Set
+	 * @param b Set
 	 * @return Difference A\B
 	 */
 	public static <T> Set<T> difference(Set<T> a, Set<T> b)
@@ -1239,8 +1226,8 @@ public class Utils
 	/**
 	 * Checks if string ends with slash. For {@code null} input, {@code null} returned
 	 *
-	 * @param s
-	 * @return
+	 * @param s String to handle
+	 * @return String with appended slash if required
 	 */
 	public static String makeSureEndsWithSlash(String s)
 	{
