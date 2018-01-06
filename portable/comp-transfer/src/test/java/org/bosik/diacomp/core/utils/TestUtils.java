@@ -17,6 +17,10 @@
  */
 package org.bosik.diacomp.core.utils;
 
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
@@ -25,84 +29,86 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
-import junit.framework.TestCase;
-import org.junit.Ignore;
 
-@SuppressWarnings("static-method")
-public class TestUtils extends TestCase
+public class TestUtils
 {
-	public void testIntTo00()
+	@Test
+	public void test_intTo00()
 	{
-		assertEquals("-10", Utils.intTo00(-10));
-		assertEquals("-1", Utils.intTo00(-1));
-		assertEquals("00", Utils.intTo00(0));
-		assertEquals("01", Utils.intTo00(1));
-		assertEquals("09", Utils.intTo00(9));
-		assertEquals("10", Utils.intTo00(10));
+		Assert.assertEquals("-10", Utils.intTo00(-10));
+		Assert.assertEquals("-1", Utils.intTo00(-1));
+		Assert.assertEquals("00", Utils.intTo00(0));
+		Assert.assertEquals("01", Utils.intTo00(1));
+		Assert.assertEquals("09", Utils.intTo00(9));
+		Assert.assertEquals("10", Utils.intTo00(10));
 	}
 
+	@Test
 	public void test_formatDoubleShort()
 	{
 		Locale.setDefault(Locale.US);
 
-		assertEquals("0", Utils.formatDoubleShort(0.0));
-		assertEquals("1", Utils.formatDoubleShort(1.0));
-		assertEquals("-1", Utils.formatDoubleShort(-1.0));
-		assertEquals("10", Utils.formatDoubleShort(10.0));
+		Assert.assertEquals("0", Utils.formatDoubleShort(0.0));
+		Assert.assertEquals("1", Utils.formatDoubleShort(1.0));
+		Assert.assertEquals("-1", Utils.formatDoubleShort(-1.0));
+		Assert.assertEquals("10", Utils.formatDoubleShort(10.0));
 
-		assertEquals("10.1", Utils.formatDoubleShort(10.1));
+		Assert.assertEquals("10.1", Utils.formatDoubleShort(10.1));
 
-		assertEquals("10", Utils.formatDoubleShort(10.01));
-		assertEquals("1.4", Utils.formatDoubleShort(1.41));
-		assertEquals("1.4", Utils.formatDoubleShort(1.4000000000000004));
-		assertEquals("1.4", Utils.formatDoubleShort(10.5 - 9.1));
+		Assert.assertEquals("10", Utils.formatDoubleShort(10.01));
+		Assert.assertEquals("1.4", Utils.formatDoubleShort(1.41));
+		Assert.assertEquals("1.4", Utils.formatDoubleShort(1.4000000000000004));
+		Assert.assertEquals("1.4", Utils.formatDoubleShort(10.5 - 9.1));
 	}
 
+	@Test
 	public void test_formatDoubleShort_locales()
 	{
 		Locale.setDefault(Locale.US);
 
-		assertEquals("0", Utils.formatDoubleShort(0.0));
-		assertEquals("1", Utils.formatDoubleShort(1.0));
-		assertEquals("-1", Utils.formatDoubleShort(-1.0));
-		assertEquals("10", Utils.formatDoubleShort(10.0));
+		Assert.assertEquals("0", Utils.formatDoubleShort(0.0));
+		Assert.assertEquals("1", Utils.formatDoubleShort(1.0));
+		Assert.assertEquals("-1", Utils.formatDoubleShort(-1.0));
+		Assert.assertEquals("10", Utils.formatDoubleShort(10.0));
 
 		Locale.setDefault(new Locale("ru"));
 
-		assertEquals("10,1", Utils.formatDoubleShort(10.1));
+		Assert.assertEquals("10,1", Utils.formatDoubleShort(10.1));
 
-		assertEquals("10", Utils.formatDoubleShort(10.01));
-		assertEquals("1,4", Utils.formatDoubleShort(1.41));
-		assertEquals("1,4", Utils.formatDoubleShort(1.4000000000000004));
-		assertEquals("1,4", Utils.formatDoubleShort(10.5 - 9.1));
+		Assert.assertEquals("10", Utils.formatDoubleShort(10.01));
+		Assert.assertEquals("1,4", Utils.formatDoubleShort(1.41));
+		Assert.assertEquals("1,4", Utils.formatDoubleShort(1.4000000000000004));
+		Assert.assertEquals("1,4", Utils.formatDoubleShort(10.5 - 9.1));
 	}
 
-	public void testCheckTime()
+	@Test
+	public void test_checkTime()
 	{
 		// good cases
-		assertTrue(Utils.checkTime(0, 0));
-		assertTrue(Utils.checkTime(20, 59));
-		assertTrue(Utils.checkTime(23, 30));
-		assertTrue(Utils.checkTime(23, 59));
+		Assert.assertTrue(Utils.checkTime(0, 0));
+		Assert.assertTrue(Utils.checkTime(20, 59));
+		Assert.assertTrue(Utils.checkTime(23, 30));
+		Assert.assertTrue(Utils.checkTime(23, 59));
 
 		// bad cases
-		assertFalse(Utils.checkTime(0, -1));
-		assertFalse(Utils.checkTime(-1, 0));
-		assertFalse(Utils.checkTime(24, 0));
-		assertFalse(Utils.checkTime(0, 60));
-		assertFalse(Utils.checkTime(24, 70));
-		assertFalse(Utils.checkTime(-100, 100));
+		Assert.assertFalse(Utils.checkTime(0, -1));
+		Assert.assertFalse(Utils.checkTime(-1, 0));
+		Assert.assertFalse(Utils.checkTime(24, 0));
+		Assert.assertFalse(Utils.checkTime(0, 60));
+		Assert.assertFalse(Utils.checkTime(24, 70));
+		Assert.assertFalse(Utils.checkTime(-100, 100));
 	}
 
-	public void testStrToTime()
+	@Test
+	public void test_parseMinuteTime()
 	{
 		// good cases
-		assertEquals(0, Utils.parseMinuteTime("00:00"));
-		assertEquals(1, Utils.parseMinuteTime("00:01"));
-		assertEquals(59, Utils.parseMinuteTime("00:59"));
-		assertEquals(60, Utils.parseMinuteTime("01:00"));
-		assertEquals(630, Utils.parseMinuteTime("10:30"));
-		assertEquals(1439, Utils.parseMinuteTime("23:59"));
+		Assert.assertEquals(0, Utils.parseMinuteTime("00:00"));
+		Assert.assertEquals(1, Utils.parseMinuteTime("00:01"));
+		Assert.assertEquals(59, Utils.parseMinuteTime("00:59"));
+		Assert.assertEquals(60, Utils.parseMinuteTime("01:00"));
+		Assert.assertEquals(630, Utils.parseMinuteTime("10:30"));
+		Assert.assertEquals(1439, Utils.parseMinuteTime("23:59"));
 
 		// bad cases
 		parseMinuteTimeMustFail(null);
@@ -121,7 +127,7 @@ public class TestUtils extends TestCase
 		try
 		{
 			Utils.parseMinuteTime(s);
-			fail();
+			Assert.fail();
 		}
 		catch (Exception e)
 		{
@@ -129,263 +135,263 @@ public class TestUtils extends TestCase
 		}
 	}
 
-	public void testTimeToMin()
+	@Test
+	public void test_getDayMinutesUTC()
 	{
-		assertEquals(0, Utils.getDayMinutesUTC(Utils.time(2013, 01, 01, 00, 00, 00)));
-		assertEquals(0, Utils.getDayMinutesUTC(Utils.time(2013, 01, 01, 00, 00, 01)));
-		assertEquals(1, Utils.getDayMinutesUTC(Utils.time(2013, 01, 01, 00, 01, 00)));
-		assertEquals(60, Utils.getDayMinutesUTC(Utils.time(2013, 01, 01, 01, 00, 00)));
-		assertEquals(121, Utils.getDayMinutesUTC(Utils.time(2013, 01, 01, 02, 01, 00)));
-		assertEquals(1439, Utils.getDayMinutesUTC(Utils.time(2013, 01, 01, 23, 59, 00)));
+		Assert.assertEquals(0, Utils.getDayMinutesUTC(Utils.time(2013, 1, 1, 0, 0, 0)));
+		Assert.assertEquals(0, Utils.getDayMinutesUTC(Utils.time(2013, 1, 1, 0, 0, 1)));
+		Assert.assertEquals(1, Utils.getDayMinutesUTC(Utils.time(2013, 1, 1, 0, 1, 0)));
+		Assert.assertEquals(60, Utils.getDayMinutesUTC(Utils.time(2013, 1, 1, 1, 0, 0)));
+		Assert.assertEquals(121, Utils.getDayMinutesUTC(Utils.time(2013, 1, 1, 2, 1, 0)));
+		Assert.assertEquals(1439, Utils.getDayMinutesUTC(Utils.time(2013, 1, 1, 23, 59, 0)));
 	}
 
-	public void testFormatDate()
+	@Test
+	public void test_formatDateUTC()
 	{
-		assertEquals("2012-04-02", Utils.formatDateUTC(Utils.date(2012, 04, 02)));
-		assertEquals("2012-05-01", Utils.formatDateUTC(Utils.date(2012, 05, 01)));
+		Assert.assertEquals("2012-04-02", Utils.formatDateUTC(Utils.date(2012, 4, 2)));
+		Assert.assertEquals("2012-05-01", Utils.formatDateUTC(Utils.date(2012, 5, 1)));
 	}
 
-	public void testFormatTime()
+	@Test
+	public void test_formatTimeUTC()
 	{
-		assertEquals("2012-05-01 09:45:17", Utils.formatTimeUTC(Utils.time(2012, 05, 01, 9, 45, 17)));
-		assertEquals("2012-05-01 21:45:17", Utils.formatTimeUTC(Utils.time(2012, 05, 01, 21, 45, 17)));
-		assertEquals("2012-04-02 00:00:00", Utils.formatTimeUTC(Utils.time(2012, 04, 02, 00, 00, 00)));
+		Assert.assertEquals("2012-05-01 09:45:17", Utils.formatTimeUTC(Utils.time(2012, 5, 1, 9, 45, 17)));
+		Assert.assertEquals("2012-05-01 21:45:17", Utils.formatTimeUTC(Utils.time(2012, 5, 1, 21, 45, 17)));
+		Assert.assertEquals("2012-04-02 00:00:00", Utils.formatTimeUTC(Utils.time(2012, 4, 2, 0, 0, 0)));
 	}
 
-	public void testFormatDoubleSigned()
+	@Test
+	public void test_formatDoubleSigned()
 	{
 		Locale.setDefault(Locale.US);
 
-		assertEquals("-365.3", Utils.formatDoubleSigned(-365.25));
-		assertEquals("-1.0", Utils.formatDoubleSigned(-1.01));
-		assertEquals("-0.0", Utils.formatDoubleSigned(-0.01));
-		assertEquals("+0.0", Utils.formatDoubleSigned(0.01));
-		assertEquals("+1.0", Utils.formatDoubleSigned(1.0));
-		assertEquals("+1.1", Utils.formatDoubleSigned(1.1));
-		assertEquals("+18.4", Utils.formatDoubleSigned(18.379));
-		assertEquals("+18.5", Utils.formatDoubleSigned(18.479));
-		assertEquals("+18.6", Utils.formatDoubleSigned(18.579));
+		Assert.assertEquals("-365.3", Utils.formatDoubleSigned(-365.25));
+		Assert.assertEquals("-1.0", Utils.formatDoubleSigned(-1.01));
+		Assert.assertEquals("-0.0", Utils.formatDoubleSigned(-0.01));
+		Assert.assertEquals("+0.0", Utils.formatDoubleSigned(0.01));
+		Assert.assertEquals("+1.0", Utils.formatDoubleSigned(1.0));
+		Assert.assertEquals("+1.1", Utils.formatDoubleSigned(1.1));
+		Assert.assertEquals("+18.4", Utils.formatDoubleSigned(18.379));
+		Assert.assertEquals("+18.5", Utils.formatDoubleSigned(18.479));
+		Assert.assertEquals("+18.6", Utils.formatDoubleSigned(18.579));
 	}
 
-	public void testCompactDecimal()
+	@Test
+	public void test_compactDecimal()
 	{
-		assertEquals(null, Utils.compactDecimal(null));
-		assertEquals("", Utils.compactDecimal(""));
+		Assert.assertEquals(null, Utils.compactDecimal(null));
+		Assert.assertEquals("", Utils.compactDecimal(""));
 
-		assertEquals("5.0", Utils.compactDecimal("5.0"));
-		assertEquals("5.0", Utils.compactDecimal("5.00"));
-		assertEquals("5.0", Utils.compactDecimal("5"));
-		assertEquals("5.0", Utils.compactDecimal("05"));
-		assertEquals("5.0", Utils.compactDecimal("05.0"));
+		Assert.assertEquals("5.0", Utils.compactDecimal("5.0"));
+		Assert.assertEquals("5.0", Utils.compactDecimal("5.00"));
+		Assert.assertEquals("5.0", Utils.compactDecimal("5"));
+		Assert.assertEquals("5.0", Utils.compactDecimal("05"));
+		Assert.assertEquals("5.0", Utils.compactDecimal("05.0"));
 
-		assertEquals("5.0", Utils.compactDecimal("5,0"));
-		assertEquals("5.0", Utils.compactDecimal("5,00"));
-		assertEquals("5.0", Utils.compactDecimal("05,0"));
+		Assert.assertEquals("5.0", Utils.compactDecimal("5,0"));
+		Assert.assertEquals("5.0", Utils.compactDecimal("5,00"));
+		Assert.assertEquals("5.0", Utils.compactDecimal("05,0"));
 	}
 
-	public void testParseTime()
+	@Test
+	public void test_parseTimeUTC()
 	{
-		assertEquals(Utils.time(2012, 04, 02, 00, 00, 00), Utils.parseTimeUTC("2012-04-02 00:00:00"));
-		assertEquals(Utils.time(2012, 05, 01, 9, 45, 17), Utils.parseTimeUTC("2012-05-01 09:45:17"));
-		assertEquals(Utils.time(2012, 05, 01, 22, 30, 17), Utils.parseTimeUTC("2012-05-01 22:30:17"));
+		Assert.assertEquals(Utils.time(2012, 4, 2, 0, 0, 0), Utils.parseTimeUTC("2012-04-02 00:00:00"));
+		Assert.assertEquals(Utils.time(2012, 5, 1, 9, 45, 17), Utils.parseTimeUTC("2012-05-01 09:45:17"));
+		Assert.assertEquals(Utils.time(2012, 5, 1, 22, 30, 17), Utils.parseTimeUTC("2012-05-01 22:30:17"));
 	}
 
+	@Test
 	@Ignore
-	public void testParseTime_performance()
+	public void test_parseTimeUTC_performance()
 	{
-		long time = System.currentTimeMillis();
-		final int count = 1000000;
-
-		for (int i = 0; i < count; i++)
+		System.out.printf(Locale.US, "%.6f ms/item%n", Profiler.measureInMsec(new Runnable()
 		{
-			Utils.parseTimeUTC("2012-04-02 00:00:00");
-		}
-
-		time = System.currentTimeMillis() - time;
-		final double itemsPerSec = (double) count / (double) time * 1000.0;
-		if (itemsPerSec < 400000)
-		{
-			fail(String.format("Speed: %.0f items/sec", itemsPerSec));
-		}
+			@Override
+			public void run()
+			{
+				Utils.parseTimeUTC("2012-04-02 00:00:00");
+			}
+		}, 1000000));
 	}
 
-	public void testParseDate() throws ParseException
+	@Test
+	public void test_parseDateUTC() throws ParseException
 	{
-		assertEquals(Utils.date(2012, 04, 02), Utils.parseDateUTC("2012-04-02"));
-		assertEquals(Utils.date(2012, 05, 01), Utils.parseDateUTC("2012-05-01"));
+		Assert.assertEquals(Utils.date(2012, 4, 2), Utils.parseDateUTC("2012-04-02"));
+		Assert.assertEquals(Utils.date(2012, 5, 1), Utils.parseDateUTC("2012-05-01"));
 	}
 
-	public void testGetPrevDay()
+	@Test
+	public void test_getPrevDay()
 	{
-		assertEquals(Utils.date(2011, 12, 31), Utils.getPrevDay(Utils.date(2012, 01, 01)));
-		assertEquals(Utils.date(2012, 04, 01), Utils.getPrevDay(Utils.date(2012, 04, 02)));
-		assertEquals(Utils.date(2012, 02, 29), Utils.getPrevDay(Utils.date(2012, 03, 01))); // leap
+		Assert.assertEquals(Utils.date(2011, 12, 31), Utils.getPrevDay(Utils.date(2012, 1, 1)));
+		Assert.assertEquals(Utils.date(2012, 4, 1), Utils.getPrevDay(Utils.date(2012, 4, 2)));
+		Assert.assertEquals(Utils.date(2012, 2, 29), Utils.getPrevDay(Utils.date(2012, 3, 1))); // leap
 	}
 
-	public void testGetNextDay()
+	@Test
+	public void test_getNextDay()
 	{
-		assertEquals(Utils.date(2012, 01, 01), Utils.getNextDay(Utils.date(2011, 12, 31)));
-		assertEquals(Utils.date(2012, 04, 02), Utils.getNextDay(Utils.date(2012, 04, 01)));
-		assertEquals(Utils.date(2012, 02, 29), Utils.getNextDay(Utils.date(2012, 02, 28))); // leap
+		Assert.assertEquals(Utils.date(2012, 1, 1), Utils.getNextDay(Utils.date(2011, 12, 31)));
+		Assert.assertEquals(Utils.date(2012, 4, 2), Utils.getNextDay(Utils.date(2012, 4, 1)));
+		Assert.assertEquals(Utils.date(2012, 2, 29), Utils.getNextDay(Utils.date(2012, 2, 28))); // leap
 	}
 
-	public void testGetPeriodDates_empty()
+	@Test
+	public void test_getPeriodDates_empty()
 	{
 		List<Date> dates = Utils.getPeriodDates(Utils.date(2013, 8, 4), 0);
 
-		assertEquals(0, dates.size());
+		Assert.assertEquals(0, dates.size());
 	}
 
-	public void testGetPeriodDates_one()
+	@Test
+	public void test_getPeriodDates_one()
 	{
 		List<Date> dates = Utils.getPeriodDates(Utils.date(2013, 8, 4), 1);
 
-		assertEquals(1, dates.size());
-		assertEquals(Utils.date(2013, 8, 4).getTime(), dates.get(0).getTime());
+		Assert.assertEquals(1, dates.size());
+		Assert.assertEquals(Utils.date(2013, 8, 4).getTime(), dates.get(0).getTime());
 	}
 
-	public void testGetPeriodDates_many()
+	@Test
+	public void test_getPeriodDates_many()
 	{
 		List<Date> dates = Utils.getPeriodDates(Utils.date(2013, 8, 4), 4);
 
-		assertEquals(4, dates.size());
-		assertEquals(Utils.date(2013, 8, 1).getTime(), dates.get(0).getTime());
-		assertEquals(Utils.date(2013, 8, 2).getTime(), dates.get(1).getTime());
-		assertEquals(Utils.date(2013, 8, 3).getTime(), dates.get(2).getTime());
-		assertEquals(Utils.date(2013, 8, 4).getTime(), dates.get(3).getTime());
+		Assert.assertEquals(4, dates.size());
+		Assert.assertEquals(Utils.date(2013, 8, 1).getTime(), dates.get(0).getTime());
+		Assert.assertEquals(Utils.date(2013, 8, 2).getTime(), dates.get(1).getTime());
+		Assert.assertEquals(Utils.date(2013, 8, 3).getTime(), dates.get(2).getTime());
+		Assert.assertEquals(Utils.date(2013, 8, 4).getTime(), dates.get(3).getTime());
 	}
 
-	public void test_Calculate()
+	@Test
+	public void test_parseExpression()
 	{
-		assertEquals(0.0, Utils.parseExpression(""), Utils.EPS);
-		assertEquals(1.0, Utils.parseExpression("1"), Utils.EPS);
-		assertEquals(2.0, Utils.parseExpression("2.0"), Utils.EPS);
-		assertEquals(3.0, Utils.parseExpression("3,0"), Utils.EPS);
+		Assert.assertEquals(0.0, Utils.parseExpression(""), Utils.EPS);
+		Assert.assertEquals(1.0, Utils.parseExpression("1"), Utils.EPS);
+		Assert.assertEquals(2.0, Utils.parseExpression("2.0"), Utils.EPS);
+		Assert.assertEquals(3.0, Utils.parseExpression("3,0"), Utils.EPS);
 
-		assertEquals(9.0, Utils.parseExpression("4+5"), Utils.EPS);
-		assertEquals(4.0, Utils.parseExpression("4+"), Utils.EPS);
-		assertEquals(4.0, Utils.parseExpression("+4"), Utils.EPS);
-		assertEquals(13.0, Utils.parseExpression("6.0+7.0"), Utils.EPS);
-		assertEquals(17.3, Utils.parseExpression("  8.1 + 9.2 "), Utils.EPS);
-		assertEquals(15.0, Utils.parseExpression("1+2+3+4+5"), Utils.EPS);
+		Assert.assertEquals(9.0, Utils.parseExpression("4+5"), Utils.EPS);
+		Assert.assertEquals(4.0, Utils.parseExpression("4+"), Utils.EPS);
+		Assert.assertEquals(4.0, Utils.parseExpression("+4"), Utils.EPS);
+		Assert.assertEquals(13.0, Utils.parseExpression("6.0+7.0"), Utils.EPS);
+		Assert.assertEquals(17.3, Utils.parseExpression("  8.1 + 9.2 "), Utils.EPS);
+		Assert.assertEquals(15.0, Utils.parseExpression("1+2+3+4+5"), Utils.EPS);
 
-		assertEquals(11.0, Utils.parseExpression("11-"), Utils.EPS);
-		assertEquals(1.0, Utils.parseExpression("11-10"), Utils.EPS);
-		assertEquals(9.0, Utils.parseExpression("12-1-2"), Utils.EPS);
-		assertEquals(14.0, Utils.parseExpression("13-14+15"), Utils.EPS);
+		Assert.assertEquals(11.0, Utils.parseExpression("11-"), Utils.EPS);
+		Assert.assertEquals(1.0, Utils.parseExpression("11-10"), Utils.EPS);
+		Assert.assertEquals(9.0, Utils.parseExpression("12-1-2"), Utils.EPS);
+		Assert.assertEquals(14.0, Utils.parseExpression("13-14+15"), Utils.EPS);
 
-		assertEquals(14.0, Utils.parseExpression("2+3*4"), Utils.EPS);
-		assertEquals(10.0, Utils.parseExpression("2*3+4"), Utils.EPS);
-		assertEquals(2.0, Utils.parseExpression("2*3-4"), Utils.EPS);
-		assertEquals(-10.0, Utils.parseExpression("2-3*4"), Utils.EPS);
-		assertEquals(120.0, Utils.parseExpression("2*3*4*5"), Utils.EPS);
-		assertEquals(234.0, Utils.parseExpression("2*3*4+5*6*7"), Utils.EPS);
-		assertEquals(-186.0, Utils.parseExpression("2*3*4-5*6*7"), Utils.EPS);
+		Assert.assertEquals(14.0, Utils.parseExpression("2+3*4"), Utils.EPS);
+		Assert.assertEquals(10.0, Utils.parseExpression("2*3+4"), Utils.EPS);
+		Assert.assertEquals(2.0, Utils.parseExpression("2*3-4"), Utils.EPS);
+		Assert.assertEquals(-10.0, Utils.parseExpression("2-3*4"), Utils.EPS);
+		Assert.assertEquals(120.0, Utils.parseExpression("2*3*4*5"), Utils.EPS);
+		Assert.assertEquals(234.0, Utils.parseExpression("2*3*4+5*6*7"), Utils.EPS);
+		Assert.assertEquals(-186.0, Utils.parseExpression("2*3*4-5*6*7"), Utils.EPS);
 
-		assertEquals(0.5, Utils.parseExpression("1 / 2"), Utils.EPS);
-		assertEquals(-0.5, Utils.parseExpression("-1/2"), Utils.EPS);
-		// assertEquals(0.5, Utils.calculate("-1/-2"), Utils.EPS);
-		assertEquals(3.0, Utils.parseExpression("1+12/6"), Utils.EPS);
-		assertEquals(3.5, Utils.parseExpression("3/2+8/4"), Utils.EPS);
-		assertEquals(-16.0, Utils.parseExpression("2*3+4*5-6*7"), Utils.EPS);
+		Assert.assertEquals(0.5, Utils.parseExpression("1 / 2"), Utils.EPS);
+		Assert.assertEquals(-0.5, Utils.parseExpression("-1/2"), Utils.EPS);
+		// Assert.assertEquals(0.5, Utils.calculate("-1/-2"), Utils.EPS);
+		Assert.assertEquals(3.0, Utils.parseExpression("1+12/6"), Utils.EPS);
+		Assert.assertEquals(3.5, Utils.parseExpression("3/2+8/4"), Utils.EPS);
+		Assert.assertEquals(-16.0, Utils.parseExpression("2*3+4*5-6*7"), Utils.EPS);
 	}
 
+	@Test
 	public void test_hasWordStartedWith()
 	{
-		assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", ""));
-		assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "в"));
-		assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "вкус"));
-		assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "вкусНоТеЕвО"));
-		assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "моло"));
-		assertFalse(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "сыр"));
+		Assert.assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", ""));
+		Assert.assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "в"));
+		Assert.assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "вкус"));
+		Assert.assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "вкусНоТеЕвО"));
+		Assert.assertTrue(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "моло"));
+		Assert.assertFalse(Utils.hasWordStartedWith("Молоко \"Вкуснотеево\" 3.2%", "сыр"));
 	}
 
+	@Test
 	public void test_formatTimePeriod()
 	{
-		assertEquals("Fail", "00:00", Utils.formatTimePeriod(0));
-		assertEquals("Fail", "00:00", Utils.formatTimePeriod(1));
-		assertEquals("Fail", "00:01", Utils.formatTimePeriod(60));
-		assertEquals("Fail", "01:00", Utils.formatTimePeriod(3600));
-		assertEquals("Fail", "23:59", Utils.formatTimePeriod(86399));
+		Assert.assertEquals("Fail", "00:00", Utils.formatTimePeriod(0));
+		Assert.assertEquals("Fail", "00:00", Utils.formatTimePeriod(1));
+		Assert.assertEquals("Fail", "00:01", Utils.formatTimePeriod(60));
+		Assert.assertEquals("Fail", "01:00", Utils.formatTimePeriod(3600));
+		Assert.assertEquals("Fail", "23:59", Utils.formatTimePeriod(86399));
 	}
 
+	@Test
 	public void test_sameDay()
 	{
 		Date time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 13, 15, 29);
 		Date time2 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 13, 15, 29);
-		assertTrue(Utils.sameDay(time1, time2));
+		Assert.assertTrue(Utils.sameDay(time1, time2));
 
-		time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 00, 00, 00);
+		time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 0, 0, 0);
 		time2 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 23, 59, 59);
-		assertTrue(Utils.sameDay(time1, time2));
+		Assert.assertTrue(Utils.sameDay(time1, time2));
 
-		time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 00, 00, 00);
-		time2 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 5, 00, 00, 00);
-		assertFalse(Utils.sameDay(time1, time2));
+		time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 0, 0, 0);
+		time2 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 5, 0, 0, 0);
+		Assert.assertFalse(Utils.sameDay(time1, time2));
 
-		time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 00, 00, 00);
+		time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 0, 0, 0);
 		time2 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 3, 23, 59, 59);
-		assertFalse(Utils.sameDay(time1, time2));
+		Assert.assertFalse(Utils.sameDay(time1, time2));
 	}
 
+	@Test
 	@Ignore
 	public void test_sameDay_performance()
 	{
-		Date time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 00, 00, 00);
-		Date time2 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 23, 59, 59);
+		final Date time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 0, 0, 0);
+		final Date time2 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 23, 59, 59);
 
-		final int count = 1000000;
-		long time = System.currentTimeMillis();
-
-		for (int i = 0; i < count; i++)
+		System.out.printf(Locale.US, "%.6f ms/item%n", Profiler.measureInMsec(new Runnable()
 		{
-			Utils.sameDay(time1, time2);
-		}
-
-		time = System.currentTimeMillis() - time;
-		final double itemsPerSec = (double) count / (double) time * 1000.0;
-		if (itemsPerSec < 500000)
-		{
-			fail(String.format("Speed: %.0f items/sec", itemsPerSec));
-		}
+			@Override
+			public void run()
+			{
+				Utils.sameDay(time1, time2);
+			}
+		}, 1000000));
 	}
 
 	private static <T> Set<T> set(T... values)
 	{
-		return new HashSet<T>(Arrays.asList(values));
+		return new HashSet<>(Arrays.asList(values));
 	}
 
-	private static <T> void assertEquals(Set<T> expected, Set<T> actual)
+	@Test
+	public void test_intersection()
 	{
-		if (!expected.containsAll(actual) || !actual.containsAll(expected))
-		{
-			failNotEquals("Sets are not equal", expected, actual);
-		}
+		Assert.assertEquals(set(), Utils.intersection(new HashSet<Integer>(), new HashSet<Integer>()));
+		Assert.assertEquals(set(), Utils.intersection(set(1), new HashSet<Integer>()));
+		Assert.assertEquals(set(), Utils.intersection(new HashSet<Integer>(), set(1)));
+
+		Assert.assertEquals(set(), Utils.intersection(set(1), set(2)));
+		Assert.assertEquals(set(2), Utils.intersection(set(1, 2), set(2, 3)));
+		Assert.assertEquals(set(2, 3), Utils.intersection(set(1, 2, 3), set(2, 3)));
+		Assert.assertEquals(set(1, 2), Utils.intersection(set(1, 2), set(1, 2, 3)));
+		Assert.assertEquals(set(1, 2, 3), Utils.intersection(set(1, 2, 3), set(1, 2, 3)));
 	}
 
-	public void testIntersection()
+	@Test
+	public void test_difference()
 	{
-		assertEquals(set(), Utils.intersection(new HashSet<Integer>(), new HashSet<Integer>()));
-		assertEquals(set(), Utils.intersection(set(1), new HashSet<Integer>()));
-		assertEquals(set(), Utils.intersection(new HashSet<Integer>(), set(1)));
+		Assert.assertEquals(set(), Utils.difference(new HashSet<Integer>(), new HashSet<Integer>()));
+		Assert.assertEquals(set(1), Utils.difference(set(1), new HashSet<Integer>()));
+		Assert.assertEquals(set(), Utils.difference(new HashSet<Integer>(), set(1)));
 
-		assertEquals(set(), Utils.intersection(set(1), set(2)));
-		assertEquals(set(2), Utils.intersection(set(1, 2), set(2, 3)));
-		assertEquals(set(2, 3), Utils.intersection(set(1, 2, 3), set(2, 3)));
-		assertEquals(set(1, 2), Utils.intersection(set(1, 2), set(1, 2, 3)));
-		assertEquals(set(1, 2, 3), Utils.intersection(set(1, 2, 3), set(1, 2, 3)));
-	}
-
-	public void testDifference()
-	{
-		assertEquals(set(), Utils.difference(new HashSet<Integer>(), new HashSet<Integer>()));
-		assertEquals(set(1), Utils.difference(set(1), new HashSet<Integer>()));
-		assertEquals(set(), Utils.difference(new HashSet<Integer>(), set(1)));
-
-		assertEquals(set(1), Utils.difference(set(1), set(2)));
-		assertEquals(set(1), Utils.difference(set(1, 2), set(2, 3)));
-		assertEquals(set(1), Utils.difference(set(1, 2, 3), set(2, 3)));
-		assertEquals(set(), Utils.difference(set(1, 2), set(1, 2, 3)));
-		assertEquals(set(), Utils.difference(set(1, 2, 3), set(1, 2, 3)));
+		Assert.assertEquals(set(1), Utils.difference(set(1), set(2)));
+		Assert.assertEquals(set(1), Utils.difference(set(1, 2), set(2, 3)));
+		Assert.assertEquals(set(1), Utils.difference(set(1, 2, 3), set(2, 3)));
+		Assert.assertEquals(set(), Utils.difference(set(1, 2), set(1, 2, 3)));
+		Assert.assertEquals(set(), Utils.difference(set(1, 2, 3), set(1, 2, 3)));
 	}
 }
