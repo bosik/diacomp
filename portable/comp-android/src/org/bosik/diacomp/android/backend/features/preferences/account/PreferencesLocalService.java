@@ -235,6 +235,30 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 	@Override
 	public void importData(InputStream stream) throws IOException
 	{
+		new PlainDataImporter(context, new TablePreferences(), "1")
+		{
+			@Override
+			protected void parseEntry(String[] items, ContentValues newValues)
+			{
+				if (items.length != 3)
+				{
+					throw new IllegalArgumentException("Invalid entry: " + Arrays.toString(items));
+				}
+
+				newValues.put(TablePreferences.COLUMN_KEY, items[0]);
+				newValues.put(TablePreferences.COLUMN_VERSION, Integer.parseInt(items[1]));
+				newValues.put(TablePreferences.COLUMN_VALUE, items[2]);
+			}
+		}.importPlain(stream);
+	}
+
+	private void importFromJson(InputStream stream) throws IOException
+	{
+		if (context == null)
+		{
+			throw new IllegalArgumentException("Context is null");
+		}
+
 		String s = Utils.readStream(stream);
 		List<PreferenceEntry<String>> items = serializer.readAll(s);
 
@@ -263,24 +287,5 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 			db.close();
 			resolver.notifyChange(TablePreferences.CONTENT_URI, null);
 		}
-	}
-
-	public void importPlain(InputStream stream) throws IOException
-	{
-		new PlainDataImporter(context, new TablePreferences(), "1")
-		{
-			@Override
-			protected void parseEntry(String[] items, ContentValues newValues)
-			{
-				if (items.length != 3)
-				{
-					throw new IllegalArgumentException("Invalid entry: " + Arrays.toString(items));
-				}
-
-				newValues.put(TablePreferences.COLUMN_KEY, items[0]);
-				newValues.put(TablePreferences.COLUMN_VERSION, Integer.parseInt(items[1]));
-				newValues.put(TablePreferences.COLUMN_VALUE, items[2]);
-			}
-		}.importPlain(stream);
 	}
 }

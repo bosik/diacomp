@@ -90,8 +90,13 @@ public class FoodBaseLocalService implements FoodBaseService, Importable
 
 		if (memoryCache == null)
 		{
-			memoryCache = findInDB(null, null, true, null);
+			rebuildCache();
 		}
+	}
+
+	private void rebuildCache()
+	{
+		memoryCache = findInDB(null, null, true, null);
 	}
 
 	/**
@@ -648,6 +653,31 @@ public class FoodBaseLocalService implements FoodBaseService, Importable
 	@Override
 	public void importData(InputStream stream) throws IOException
 	{
+		new PlainDataImporter(context, new TableFoodbase(), "1")
+		{
+			@Override
+			protected void parseEntry(String[] items, ContentValues newValues)
+			{
+				if (items.length != 7)
+				{
+					throw new IllegalArgumentException("Invalid entry: " + Arrays.toString(items));
+				}
+
+				newValues.put(TableFoodbase.COLUMN_NAMECACHE, items[0]);
+				newValues.put(TableFoodbase.COLUMN_ID, items[1]);
+				newValues.put(TableFoodbase.COLUMN_TIMESTAMP, items[2]);
+				newValues.put(TableFoodbase.COLUMN_HASH, items[3]);
+				newValues.put(TableFoodbase.COLUMN_VERSION, Integer.parseInt(items[4]));
+				newValues.put(TableFoodbase.COLUMN_DELETED, Boolean.parseBoolean(items[5]));
+				newValues.put(TableFoodbase.COLUMN_DATA, items[6]);
+			}
+		}.importPlain(stream);
+
+		rebuildCache();
+	}
+
+	private void importFromJson(InputStream stream) throws IOException
+	{
 		StreamReader<Versioned<FoodItem>> reader = new FoodItemVersionedReader();
 
 		JsonReader json = new JsonReader(new InputStreamReader(stream, "UTF-8"));
@@ -694,35 +724,12 @@ public class FoodBaseLocalService implements FoodBaseService, Importable
 				db.endTransaction();
 				db.close();
 				resolver.notifyChange(TableFoodbase.CONTENT_URI, null);
-				memoryCache = findInDB(null, null, true, null);
+				rebuildCache();
 			}
 		}
 		finally
 		{
 			json.close();
 		}
-	}
-
-	public void importPlain(InputStream stream) throws IOException
-	{
-		new PlainDataImporter(context, new TableFoodbase(), "1")
-		{
-			@Override
-			protected void parseEntry(String[] items, ContentValues newValues)
-			{
-				if (items.length != 7)
-				{
-					throw new IllegalArgumentException("Invalid entry: " + Arrays.toString(items));
-				}
-
-				newValues.put(TableFoodbase.COLUMN_NAMECACHE, items[0]);
-				newValues.put(TableFoodbase.COLUMN_ID, items[1]);
-				newValues.put(TableFoodbase.COLUMN_TIMESTAMP, items[2]);
-				newValues.put(TableFoodbase.COLUMN_HASH, items[3]);
-				newValues.put(TableFoodbase.COLUMN_VERSION, Integer.parseInt(items[4]));
-				newValues.put(TableFoodbase.COLUMN_DELETED, Boolean.parseBoolean(items[5]));
-				newValues.put(TableFoodbase.COLUMN_DATA, items[6]);
-			}
-		}.importPlain(stream);
 	}
 }

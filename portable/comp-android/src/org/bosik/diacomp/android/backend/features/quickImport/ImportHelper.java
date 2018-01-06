@@ -27,6 +27,7 @@ import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.core.rest.ExportAPI;
+import org.bosik.diacomp.core.services.transfer.Importable;
 import org.bosik.diacomp.core.utils.Profiler;
 import org.bosik.diacomp.core.utils.ZipUtils;
 import org.bosik.diacomp.core.utils.ZipUtils.Entry;
@@ -94,10 +95,10 @@ public class ImportHelper
 
 			progress(callback, Progress.INITIALIZATION);
 			WebClient client = WebClientInternal.getInstance(context);
-			DiaryLocalService diaryService = new DiaryLocalService(context);
-			FoodBaseLocalService foodbaseService = new FoodBaseLocalService(context);
-			DishBaseLocalService dishbaseService = new DishBaseLocalService(context);
-			PreferencesLocalService preferencesService = new PreferencesLocalService(context);
+			Importable diaryService = new DiaryLocalService(context);
+			Importable foodbaseService = new FoodBaseLocalService(context);
+			Importable dishbaseService = new DishBaseLocalService(context);
+			Importable preferencesService = new PreferencesLocalService(context);
 
 			// download data
 			progress(callback, Progress.LOADING);
@@ -125,7 +126,7 @@ public class ImportHelper
 								case ExportAPI.PLAIN_DIARY:
 								{
 									progress(callback, Progress.INSTALL_DIARY);
-									diaryService.importPlain(data);
+									diaryService.importData(data);
 									Log.i(TAG, "Diary installed in " + (p.sinceLastCheck() / 1000000) + " ms");
 									break;
 								}
@@ -133,7 +134,7 @@ public class ImportHelper
 								case ExportAPI.PLAIN_FOODBASE:
 								{
 									progress(callback, Progress.INSTALL_FOODBASE);
-									foodbaseService.importPlain(data);
+									foodbaseService.importData(data);
 									Log.i(TAG, "Foodbase installed in " + (p.sinceLastCheck() / 1000000) + " ms");
 									break;
 								}
@@ -141,7 +142,7 @@ public class ImportHelper
 								case ExportAPI.PLAIN_DISHBASE:
 								{
 									progress(callback, Progress.INSTALL_DISHBASE);
-									dishbaseService.importPlain(data);
+									dishbaseService.importData(data);
 									Log.i(TAG, "Dishbase installed in " + (p.sinceLastCheck() / 1000000) + " ms");
 									break;
 								}
@@ -149,7 +150,7 @@ public class ImportHelper
 								case ExportAPI.PLAIN_PREFERENCES:
 								{
 									progress(callback, Progress.INSTALL_PREFERENCES);
-									preferencesService.importPlain(data);
+									preferencesService.importData(data);
 									Log.i(TAG, "Preferences installed in " + (p.sinceLastCheck() / 1000000) + " ms");
 									break;
 								}

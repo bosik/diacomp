@@ -586,6 +586,29 @@ public class DiaryLocalService implements DiaryService, Importable
 	@Override
 	public void importData(InputStream stream) throws IOException
 	{
+		new PlainDataImporter(context, new TableDiary(), "5")
+		{
+			@Override
+			protected void parseEntry(String[] items, ContentValues newValues)
+			{
+				if (items.length != 7)
+				{
+					throw new IllegalArgumentException("Invalid entry: " + Arrays.toString(items));
+				}
+
+				newValues.put(TableDiary.COLUMN_TIMECACHE, items[0]);
+				newValues.put(TableDiary.COLUMN_TIMESTAMP, items[1]);
+				newValues.put(TableDiary.COLUMN_HASH, items[2]);
+				newValues.put(TableDiary.COLUMN_ID, items[3]);
+				newValues.put(TableDiary.COLUMN_VERSION, Integer.parseInt(items[4]));
+				newValues.put(TableDiary.COLUMN_DELETED, Boolean.parseBoolean(items[5]));
+				newValues.put(TableDiary.COLUMN_CONTENT, items[6]);
+			}
+		}.importPlain(stream);
+	}
+
+	private void importFromJson(InputStream stream) throws IOException
+	{
 		StreamReader<Versioned<DiaryRecord>> reader = new DiaryRecordVersionedReader();
 
 		JsonReader json = new JsonReader(new InputStreamReader(stream, "UTF-8"));
@@ -638,28 +661,5 @@ public class DiaryLocalService implements DiaryService, Importable
 		{
 			json.close();
 		}
-	}
-
-	public void importPlain(InputStream stream) throws IOException
-	{
-		new PlainDataImporter(context, new TableDiary(), "5")
-		{
-			@Override
-			protected void parseEntry(String[] items, ContentValues newValues)
-			{
-				if (items.length != 7)
-				{
-					throw new IllegalArgumentException("Invalid entry: " + Arrays.toString(items));
-				}
-
-				newValues.put(TableDiary.COLUMN_TIMECACHE, items[0]);
-				newValues.put(TableDiary.COLUMN_TIMESTAMP, items[1]);
-				newValues.put(TableDiary.COLUMN_HASH, items[2]);
-				newValues.put(TableDiary.COLUMN_ID, items[3]);
-				newValues.put(TableDiary.COLUMN_VERSION, Integer.parseInt(items[4]));
-				newValues.put(TableDiary.COLUMN_DELETED, Boolean.parseBoolean(items[5]));
-				newValues.put(TableDiary.COLUMN_CONTENT, items[6]);
-			}
-		}.importPlain(stream);
 	}
 }
