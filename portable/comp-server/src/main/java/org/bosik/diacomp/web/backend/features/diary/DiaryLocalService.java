@@ -38,6 +38,7 @@ import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -588,6 +589,47 @@ public class DiaryLocalService implements DiaryService, Exportable
 					}
 
 					return s.toString();
+				}
+			});
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void validate()
+	{
+		try
+		{
+			final String[] select = null; // all
+			final String where = "1=1";
+			final String[] whereArgs = {};
+			final String order = null;
+
+			MySQLAccess.select(TABLE_DIARY, select, where, whereArgs, order, new DataCallback<String>()
+			{
+				@Override
+				public String onData(ResultSet resultSet) throws SQLException
+				{
+					while (resultSet.next())
+					{
+						String id = resultSet.getString(COLUMN_DIARY_GUID);
+						String userId = resultSet.getString(COLUMN_DIARY_USER);
+						String time = Utils.formatTimeLocal(TimeZone.getDefault(), resultSet.getTimestamp(COLUMN_DIARY_TIMECACHE));
+						String content = resultSet.getString(COLUMN_DIARY_CONTENT);
+
+						try
+						{
+							new JSONObject(content);
+						}
+						catch (Exception e)
+						{
+							System.out.println(id + "\t" + userId + "\t" + time + "\t" + content);
+						}
+					}
+
+					return null;
 				}
 			});
 		}

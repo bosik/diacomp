@@ -38,6 +38,7 @@ import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -594,6 +595,46 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 					}
 
 					return s.toString();
+				}
+			});
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void validate()
+	{
+		try
+		{
+			final String[] select = null; // all
+			final String where = "1=1";
+			final String[] whereArgs = {};
+			final String order = null;
+
+			MySQLAccess.select(TABLE_FOODBASE, select, where, whereArgs, order, new DataCallback<String>()
+			{
+				@Override
+				public String onData(ResultSet resultSet) throws SQLException
+				{
+					while (resultSet.next())
+					{
+						String id = resultSet.getString(COLUMN_FOODBASE_GUID);
+						String userId = resultSet.getString(COLUMN_FOODBASE_USER);
+						String content = resultSet.getString(COLUMN_FOODBASE_CONTENT);
+
+						try
+						{
+							new JSONObject(content);
+						}
+						catch (Exception e)
+						{
+							System.out.println(id + "\t" + userId + "\t" + content);
+						}
+					}
+
+					return null;
 				}
 			});
 		}
