@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 @Service
@@ -577,7 +578,7 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 					{
 						String name = resultSet.getString(COLUMN_FOODBASE_NAMECACHE);
 						String id = resultSet.getString(COLUMN_FOODBASE_GUID);
-						String timeStamp = Utils.formatTimeUTC(resultSet.getTimestamp(COLUMN_FOODBASE_TIMESTAMP));
+						String timeStamp = Utils.formatTimeLocal(TimeZone.getDefault(), resultSet.getTimestamp(COLUMN_FOODBASE_TIMESTAMP));
 						String hash = resultSet.getString(COLUMN_FOODBASE_HASH);
 						int version = resultSet.getInt(COLUMN_FOODBASE_VERSION);
 						boolean deleted = (resultSet.getInt(COLUMN_FOODBASE_DELETED) == 1);

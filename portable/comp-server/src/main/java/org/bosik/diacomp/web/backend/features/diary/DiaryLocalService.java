@@ -44,12 +44,12 @@ import org.springframework.stereotype.Service;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.SortedMap;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 @Service
@@ -70,7 +70,7 @@ public class DiaryLocalService implements DiaryService, Exportable
 	private static final int MAX_READ_ITEMS = 0;
 
 	private final Parser<DiaryRecord>     parser     = new ParserDiaryRecord();
-	private final Serializer<DiaryRecord> serializer = new SerializerAdapter<DiaryRecord>(parser);
+	private final Serializer<DiaryRecord> serializer = new SerializerAdapter<>(parser);
 
 	@Autowired
 	private UserInfoService userInfoService;
@@ -571,8 +571,8 @@ public class DiaryLocalService implements DiaryService, Exportable
 					while (resultSet.next())
 					{
 						String id = resultSet.getString(COLUMN_DIARY_GUID);
-						String timeStamp = Utils.formatTimeUTC(resultSet.getTimestamp(COLUMN_DIARY_TIMESTAMP));
-						String time = Utils.formatTimeUTC(resultSet.getTimestamp(COLUMN_DIARY_TIMECACHE));
+						String timeStamp = Utils.formatTimeLocal(TimeZone.getDefault(), resultSet.getTimestamp(COLUMN_DIARY_TIMESTAMP));
+						String time = Utils.formatTimeLocal(TimeZone.getDefault(), resultSet.getTimestamp(COLUMN_DIARY_TIMECACHE));
 						String hash = resultSet.getString(COLUMN_DIARY_HASH);
 						int version = resultSet.getInt(COLUMN_DIARY_VERSION);
 						boolean deleted = (resultSet.getInt(COLUMN_DIARY_DELETED) == 1);

@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 @Service
@@ -522,7 +523,7 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 					while (resultSet.next())
 					{
 						String id = resultSet.getString(COLUMN_DISHBASE_GUID);
-						String timeStamp = Utils.formatTimeUTC(resultSet.getTimestamp(COLUMN_DISHBASE_TIMESTAMP));
+						String timeStamp = Utils.formatTimeLocal(TimeZone.getDefault(), resultSet.getTimestamp(COLUMN_DISHBASE_TIMESTAMP));
 						String hash = resultSet.getString(COLUMN_DISHBASE_HASH);
 						int version = resultSet.getInt(COLUMN_DISHBASE_VERSION);
 						boolean deleted = (resultSet.getInt(COLUMN_DISHBASE_DELETED) == 1);
