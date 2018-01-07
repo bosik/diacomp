@@ -586,7 +586,7 @@ public class DiaryLocalService implements DiaryService, Importable
 	@Override
 	public void importData(InputStream stream) throws IOException
 	{
-		new PlainDataImporter(context, new TableDiary(), "5")
+		new PlainDataImporter(context, new TableDiary(), "6")
 		{
 			@Override
 			protected void parseEntry(String[] items, ContentValues newValues)
@@ -597,9 +597,9 @@ public class DiaryLocalService implements DiaryService, Importable
 				}
 
 				newValues.put(TableDiary.COLUMN_TIMECACHE, items[0]);
-				newValues.put(TableDiary.COLUMN_TIMESTAMP, items[1]);
-				newValues.put(TableDiary.COLUMN_HASH, items[2]);
-				newValues.put(TableDiary.COLUMN_ID, items[3]);
+				newValues.put(TableDiary.COLUMN_ID, items[1]);
+				newValues.put(TableDiary.COLUMN_TIMESTAMP, items[2]);
+				newValues.put(TableDiary.COLUMN_HASH, items[3]);
 				newValues.put(TableDiary.COLUMN_VERSION, Integer.parseInt(items[4]));
 				newValues.put(TableDiary.COLUMN_DELETED, Boolean.parseBoolean(items[5]));
 				newValues.put(TableDiary.COLUMN_CONTENT, items[6]);

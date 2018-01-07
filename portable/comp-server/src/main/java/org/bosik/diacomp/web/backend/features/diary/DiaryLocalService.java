@@ -568,7 +568,7 @@ public class DiaryLocalService implements DiaryService, Exportable
 				{
 					StringBuilder s = new StringBuilder();
 
-					s.append("VERSION=5\n");
+					s.append("VERSION=6\n");
 					while (resultSet.next())
 					{
 						String id = resultSet.getString(COLUMN_DIARY_GUID);
@@ -580,9 +580,9 @@ public class DiaryLocalService implements DiaryService, Exportable
 						String content = resultSet.getString(COLUMN_DIARY_CONTENT);
 
 						s.append(time).append('\t');
+						s.append(id).append('\t');
 						s.append(timeStamp).append('\t');
 						s.append(hash).append('\t');
-						s.append(id).append('\t');
 						s.append(version).append('\t');
 						s.append(deleted ? "true" : "false").append('\t');
 						s.append(Utils.removeTabs(content)).append('\n');
