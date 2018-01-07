@@ -61,7 +61,7 @@ th {
 
 /* =========================== COMMON STYLES =========================== */
 .hint {
-	
+	color: #cccccc;
 }
 
 .hint, .hint a:link, .hint a:visited {
