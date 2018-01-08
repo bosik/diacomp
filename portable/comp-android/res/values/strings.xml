@@ -79,7 +79,8 @@
     <string name="editor_food_field_fats">Fat, g</string>
     <string name="editor_food_field_name">Name</string>
     <string name="editor_food_field_prots">Protein, g</string>
-    <string name="editor_food_field_value">Energy value, kcal</string>
+    <string name="editor_food_field_value">Energy, kcal</string>
+    <string name="editor_food_nutrition">Nutrition (per 100 g):</string>
     <string name="editor_food_title">Food</string>
     <string name="editor_ins_error_invalid_dosage">Please enter correct insulin dosage</string>
     <string name="editor_ins_field_value">Dosage, U</string>
