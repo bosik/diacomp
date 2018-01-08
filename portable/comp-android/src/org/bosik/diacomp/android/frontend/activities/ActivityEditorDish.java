@@ -23,7 +23,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ToggleButton;
 import org.bosik.diacomp.android.R;
@@ -105,6 +104,9 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 			{
 			}
 		});
+
+		editName.setMaxLines(Integer.MAX_VALUE);
+		editName.setHorizontallyScrolling(false);
 
 		editor = (MealEditorView) findViewById(R.id.dishEditor);
 		editor.setOnChangeListener(new OnChangeListener()

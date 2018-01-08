@@ -45,6 +45,9 @@ public class ActivityEditorFood extends ActivityEditor<FoodItem>
 		editCarbs = (EditText) findViewById(R.id.editFoodCarbs);
 		editValue = (EditText) findViewById(R.id.editFoodValue);
 
+		editName.setMaxLines(Integer.MAX_VALUE);
+		editName.setHorizontallyScrolling(false);
+
 		findViewById(R.id.buttonFoodOK).setOnClickListener(new OnClickListener()
 		{
 			@Override
