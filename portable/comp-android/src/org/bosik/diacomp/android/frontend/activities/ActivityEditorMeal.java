@@ -280,9 +280,34 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		{
 			double deltaBS = (inputBS == null ? 0.0 : targetBS - inputBS);
 			double dosageRequired = (-deltaBS + carbs * rate.getK() + prots * rate.getP()) / rate.getQ();
-
 			double dosageCorrection = dosageRequired - getInsInjected();
-			textMealInsulinCorrection.setText(String.format(Locale.US, "%+.1f %s", dosageCorrection, captionDose));
+
+			if (getInsInjected() > Utils.EPS)
+			{
+				textMealInsulinCorrection.setText(String.format(Locale.US, "%+.1f %s", dosageCorrection, captionDose));
+				if (dosageRequired > Utils.EPS)
+				{
+					textMealInsulinResult.setText(String.format(Locale.US, "(%.1f %s)", dosageRequired, captionDose));
+				}
+				else
+				{
+					textMealInsulinResult.setText("");
+				}
+			}
+			else
+			{
+				if (dosageRequired > Utils.EPS)
+				{
+					textMealInsulinCorrection.setText(String.format(Locale.US, "%+.1f %s", dosageCorrection, captionDose));
+					textMealInsulinResult.setText(String.format(Locale.US, "(%.1f %s)", dosageRequired, captionDose));
+				}
+				else
+				{
+					textMealInsulinCorrection.setText("–");
+					textMealInsulinResult.setText("");
+				}
+			}
+
 			if (dosageCorrection > 0)
 			{
 				textMealInsulinCorrection.setTypeface(Typeface.DEFAULT_BOLD);
@@ -290,15 +315,6 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			else
 			{
 				textMealInsulinCorrection.setTypeface(Typeface.DEFAULT);
-			}
-
-			if (dosageRequired > 0)
-			{
-				textMealInsulinResult.setText(String.format(Locale.US, "(%.1f %s)", dosageRequired, captionDose));
-			}
-			else
-			{
-				textMealInsulinResult.setText("");
 			}
 		}
 		else
