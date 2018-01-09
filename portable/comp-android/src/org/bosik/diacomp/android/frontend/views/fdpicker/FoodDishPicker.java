@@ -297,13 +297,12 @@ public class FoodDishPicker extends LinearLayout
 			editName.setHorizontallyScrolling(false);
 
 			editMass = (EditText) findViewById(R.id.fdPickerMass);
-			editMass.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 			editMass.setOnEditorActionListener(new TextView.OnEditorActionListener()
 			{
 				@Override
 				public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
 				{
-					if (actionId == R.id.actionAddFood || actionId == EditorInfo.IME_NULL)
+					if (actionId == EditorInfo.IME_ACTION_DONE)
 					{
 						submit();
 						return true;
