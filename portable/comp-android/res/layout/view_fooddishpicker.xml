@@ -17,10 +17,8 @@
             android:dropDownVerticalOffset="4dp"
             android:dropDownWidth="fill_parent"
             android:hint="@string/common_hint_search"
-            android:imeOptions="actionSearch"
-            android:inputType="textMultiLine"
-            android:maxLines="1">
-
+            android:imeOptions="actionNext"
+            android:inputType="text">
     </org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishTextView>
 
     <EditText

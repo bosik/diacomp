@@ -293,6 +293,9 @@ public class FoodDishPicker extends LinearLayout
 				}
 			});
 
+			editName.setMaxLines(Integer.MAX_VALUE);
+			editName.setHorizontallyScrolling(false);
+
 			editMass = (EditText) findViewById(R.id.fdPickerMass);
 			editMass.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 			editMass.setOnEditorActionListener(new TextView.OnEditorActionListener()
