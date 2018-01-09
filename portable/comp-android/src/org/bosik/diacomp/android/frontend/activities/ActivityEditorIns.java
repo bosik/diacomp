@@ -18,12 +18,15 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -37,12 +40,12 @@ public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 	private Button   buttonTime;
 	private Button   buttonDate;
 	private EditText editValue;
-	private Button   buttonOK;
 
 	@Override
 	protected void setupInterface()
 	{
 		setContentView(R.layout.activity_editor_ins);
+
 		buttonTime = (Button) findViewById(R.id.buttonInsTime);
 		buttonTime.setOnClickListener(new OnClickListener()
 		{
@@ -61,9 +64,23 @@ public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 				showDatePickerDialog();
 			}
 		});
+
 		editValue = (EditText) findViewById(R.id.editInsValue);
-		buttonOK = (Button) findViewById(R.id.buttonInsOK);
-		buttonOK.setOnClickListener(new OnClickListener()
+		editValue.setOnEditorActionListener(new TextView.OnEditorActionListener()
+		{
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+			{
+				if (actionId == EditorInfo.IME_ACTION_DONE)
+				{
+					submit();
+					return true;
+				}
+				return false;
+			}
+		});
+
+		findViewById(R.id.buttonInsOK).setOnClickListener(new OnClickListener()
 		{
 			@Override
 			public void onClick(View v)

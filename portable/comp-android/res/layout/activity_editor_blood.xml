@@ -57,7 +57,7 @@
                 android:digits="0123456789.,"
                 android:inputType="numberDecimal"
                 android:maxLines="1"
-                android:textSize="@dimen/font_datetime">
+                android:imeOptions="actionDone">
 
             <requestFocus/>
         </EditText>

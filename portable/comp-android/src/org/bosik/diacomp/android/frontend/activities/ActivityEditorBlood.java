@@ -18,8 +18,10 @@
  */
 package org.bosik.diacomp.android.frontend.activities;
 
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -72,6 +74,20 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 			public void onClick(View v)
 			{
 				showDatePickerDialog();
+			}
+		});
+
+		editValue.setOnEditorActionListener(new TextView.OnEditorActionListener()
+		{
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+			{
+				if (actionId == EditorInfo.IME_ACTION_DONE)
+				{
+					submit();
+					return true;
+				}
+				return false;
 			}
 		});
 
