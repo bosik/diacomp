@@ -18,24 +18,6 @@
  */
 package org.bosik.diacomp.android.frontend.views.fdpicker;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
-import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
-import org.bosik.diacomp.android.frontend.UIUtils;
-import org.bosik.diacomp.core.entities.business.FoodMassed;
-import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
-import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
-import org.bosik.diacomp.core.services.base.dish.DishBaseService;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
-import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.merklesync.Versioned;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -51,16 +33,34 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
+import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
+import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
+import org.bosik.diacomp.core.services.base.dish.DishBaseService;
+import org.bosik.diacomp.core.services.base.food.FoodBaseService;
+import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.merklesync.Versioned;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 enum ItemType
 {
-	FOOD, DISH
+	FOOD,
+	DISH
 }
 
 class Item implements Comparable<Item>
 {
-	private final ItemType				type;
-	private final NamedRelativeTagged	data;
+	private final ItemType            type;
+	private final NamedRelativeTagged data;
 
 	public Item(FoodItem food)
 	{
@@ -135,9 +135,26 @@ class ItemAdapter extends ArrayAdapter<Item>
 			TextView itemCaption = (TextView) v.findViewById(R.id.itemDescription);
 			itemCaption.setText(item.getCaption());
 
-			int iconResId = FoodDishPicker.iconMap.get(item.getType());
-			itemCaption.setCompoundDrawablesWithIntrinsicBounds(iconResId, 0, 0, 0);
+			switch (item.getType())
+			{
+				// FIXME: use separated resources
+				case FOOD:
+				{
+					itemCaption.setCompoundDrawablesWithIntrinsicBounds(R.drawable.button_foodbase, 0, 0, 0);
+					break;
+				}
+				case DISH:
+				{
+					itemCaption.setCompoundDrawablesWithIntrinsicBounds(R.drawable.button_dishbase, 0, 0, 0);
+					break;
+				}
+				default:
+				{
+					throw new IllegalArgumentException("Invalid item type: " + item.getType());
+				}
+			}
 		}
+
 		return v;
 	}
 
@@ -201,8 +218,7 @@ class ItemAdapter extends ArrayAdapter<Item>
 
 			if (results != null && results.values != null)
 			{
-				@SuppressWarnings("unchecked")
-				List<Item> filteredList = (List<Item>) results.values;
+				@SuppressWarnings("unchecked") List<Item> filteredList = (List<Item>) results.values;
 				addAll(filteredList);
 			}
 
@@ -222,7 +238,7 @@ public class FoodDishPicker extends LinearLayout
 	{
 		/**
 		 * Called when user submits massed item by clicking submit button
-		 * 
+		 *
 		 * @param text
 		 * @param mass
 		 * @return Whether the data is successfully validated & accepted
@@ -237,19 +253,8 @@ public class FoodDishPicker extends LinearLayout
 
 	private FoodDishTextView editName;
 	private EditText         editMass;
-	private LinearLayout     buttonSubmit;
 
-	private OnSubmitListener					onSubmit;
-
-	public static final Map<ItemType, Integer>	iconMap	= new HashMap<>();
-
-	static
-	{
-		iconMap.clear();
-		// FIXME: use separated resources
-		iconMap.put(ItemType.FOOD, R.drawable.button_foodbase);
-		iconMap.put(ItemType.DISH, R.drawable.button_dishbase);
-	}
+	private OnSubmitListener onSubmit;
 
 	// ===================================== METHODS ======================================
 
@@ -305,8 +310,7 @@ public class FoodDishPicker extends LinearLayout
 				}
 			});
 
-			buttonSubmit = (LinearLayout) findViewById(R.id.fdPickerSubmit);
-			buttonSubmit.setOnClickListener(new OnClickListener()
+			findViewById(R.id.fdPickerSubmit).setOnClickListener(new OnClickListener()
 			{
 				@Override
 				public void onClick(View v)
