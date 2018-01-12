@@ -12,8 +12,6 @@ type
     LabelTitle: TLabel;
     ImageLogo: TImage;
     LabelContactsTitle: TLabel;
-    EditICQ: TEdit;
-    ImageICQ: TImage;
     ImageVK: TImage;
     EditGroup: TEdit;
     Bevel1: TBevel;
@@ -63,24 +61,12 @@ const
   W: array[1..28] of single =
   (168.73, 31.86, 205.15, 232.27, 234.17, 231.84, 241.73, 223.86, 31.97, 192.79,
   238.26, 240.82, 231.98, 233.71, 44.3, 31.82, 50.22, 48.38, 48.99, 48.3, 
-  32.26, 44.62, 31.71, 49.71, 48, 48.62, 55.41, 45.6);
+  32.26, 44.62, 31.71, 49.71, 48, 48.62, 55.51, 45.6);
 var
   i: integer;
 begin
   Result := '';
   for i := 1 to 28 do
-    Result := Result + Char(Round(W[i]));
-end;
-
-function MyICQ: string;
-const
-  W: array[1..9] of single =
-  (49.6, 52.62, 49.29, 53.76, 54.82, 48.14, 55.85, 53.73, 53.9);
-var
-  i: integer;
-begin
-  Result := '';
-  for i := 1 to 9 do
     Result := Result + Char(Round(W[i]));
 end;
 
@@ -109,7 +95,6 @@ begin
   LabelTitle.Caption := ProductName + ' ' + PROGRAM_VERSION;
   LabelDate.Caption := 'Дата выпуска: ' + PROGRAM_DATE;
   LabelCopyright.Caption := MyCopyright;
-  EditICQ.Text := MyICQ;
   EditGroup.Text := MyGroup;
 
   LabelThanks.Caption :=
@@ -146,22 +131,17 @@ begin
   LabelContactsTitle.Left := 2 * BORD;
   LabelContactsTitle.Top := LabelThanks.Height + 19 * BORD;
 
-  ImageICQ.Left := 2 * BORD;
-  ImageICQ.Top := LabelThanks.Height + 22 * BORD;
-  EditICQ.Top := LabelThanks.Height + 22 * BORD;
-  EditICQ.Left := 5 * BORD;
-
   ImageVK.Left := 2 * BORD;
-  ImageVK.Top := LabelThanks.Height + 25 * BORD;
-  EditGroup.Top := LabelThanks.Height + 25 * BORD;
+  ImageVK.Top := LabelThanks.Height + 22 * BORD;
+  EditGroup.Top := LabelThanks.Height + 22 * BORD;
   EditGroup.Left := 5 * BORD;
 
-  Bevel2.Top := LabelThanks.Height + 29 * BORD;
+  Bevel2.Top := LabelThanks.Height + 27 * BORD;
 
-  ButtonOK.Top := LabelThanks.Height + 31 * BORD;
+  ButtonOK.Top := LabelThanks.Height + 29 * BORD;
   ButtonOK.Height := 3 * BORD;
   ButtonOK.Left := (ClientWidth - ButtonOK.Width) div 2;
-  Self.Height := LabelThanks.Height + 40 * BORD;
+  Self.Height := LabelThanks.Height + 38 * BORD;
 
   FormatBevel(Bevel1);
   FormatBevel(Bevel2);

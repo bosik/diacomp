@@ -4,37 +4,37 @@ object FormAbout: TFormAbout
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
-  ClientHeight = 424
-  ClientWidth = 358
+  ClientHeight = 318
+  ClientWidth = 269
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -13
+  Font.Height = -10
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
   OnShow = FormShow
   DesignSize = (
-    358
-    424)
-  PixelsPerInch = 120
-  TextHeight = 16
+    269
+    318)
+  PixelsPerInch = 96
+  TextHeight = 12
   object LabelTitle: TLabel
-    Left = 104
-    Top = 16
-    Width = 75
-    Height = 18
+    Left = 78
+    Top = 12
+    Width = 55
+    Height = 13
     Caption = 'LabelTitle'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -15
+    Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     ParentFont = False
   end
   object ImageLogo: TImage
-    Left = 16
-    Top = 16
+    Left = 12
+    Top = 12
     Width = 64
     Height = 64
     AutoSize = True
@@ -430,59 +430,21 @@ object FormAbout: TFormAbout
     Transparent = True
   end
   object LabelContactsTitle: TLabel
-    Left = 16
-    Top = 252
-    Width = 122
-    Height = 18
+    Left = 12
+    Top = 189
+    Width = 93
+    Height = 13
     Caption = #1054#1073#1088#1072#1090#1085#1072#1103' '#1089#1074#1103#1079#1100
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -15
+    Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     ParentFont = False
   end
-  object ImageICQ: TImage
-    Left = 20
-    Top = 283
-    Width = 16
-    Height = 16
-    Hint = 'ICQ'
-    AutoSize = True
-    ParentShowHint = False
-    Picture.Data = {
-      07544269746D617036030000424D360300000000000036000000280000001000
-      0000100000000100180000000000000300007412000074120000000000000000
-      0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF487D
-      40487D40487D40FFFFFF487D40487D40487D40FFFFFFFFFFFFFFFFFFFFFFFFFF
-      FFFFFFFFFFFFFFFFFFFFFF487D4077CA6F77CA6F77CA6F487D4077CA6F77CA6F
-      77CA6F487D40FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF487D4099E9
-      8080E07077CA6F487D4099E98080E07077CA6F487D40FFFFFFFFFFFFFFFFFFFF
-      FFFFFFFFFF487D40487D40487D4099E98080E07077CA6F487D4099E98080E070
-      77CA6F487D40487D40487D40FFFFFFFFFFFF487D4077CA6F77CA6F77CA6F487D
-      4099E98077CA6F487D4099E98099E980487D4077CA6F77CA6F77CA6F487D40FF
-      FFFF487D4099E98080E07080E07077CA6F487D4077CA6F487D4099E980487D40
-      99E98080E07080E07077CA6F487D40FFFFFF487D4099E98099E98099E98099E9
-      8077CA6F487D4000FFFF487D4099E98099E98099E98099E98077CA6F487D40FF
-      FFFFFFFFFF487D40487D40487D40487D40487D4000FFFF00FFFF00FFFF487D40
-      487D40487D40487D40487D40FFFFFFFFFFFF487D4077CA6F77CA6F77CA6F77CA
-      6F77CA6F487D4000FFFF487D4077CA6F77CA6F77CA6F77CA6F77CA6F487D40FF
-      FFFF487D4080E07080E07080E07080E070487D4077CA6F487D4077CA6F487D40
-      99E98080E07080E07077CA6F487D40FFFFFF487D4099E98099E98099E980487D
-      4080E07077CA6F487D4099E98077CA6F487D4099E98099E98077CA6F487D40FF
-      FFFFFFFFFF487D40487D40487D4099E98080E07077CA6F487D4099E98080E070
-      77CA6F487D40487D40487D40FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF487D4099E9
-      8080E07077CA6F487D4099E98080E07077CA6F487D40FFFFFFFFFFFFFFFFFFFF
-      FFFFFFFFFFFFFFFFFFFFFF487D4099E98099E98077CA6F487D4099E98099E980
-      77CA6F487D40FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF487D
-      40487D40487D40FFFFFF487D40487D40487D40FFFFFFFFFFFFFFFFFFFFFFFFFF
-      FFFF}
-    ShowHint = True
-  end
   object ImageVK: TImage
-    Left = 20
-    Top = 307
+    Left = 15
+    Top = 230
     Width = 16
     Height = 16
     Cursor = crHandPoint
@@ -521,88 +483,74 @@ object FormAbout: TFormAbout
     OnClick = ImageVKClick
   end
   object Bevel1: TBevel
-    Left = 100
-    Top = 96
-    Width = 199
+    Left = 75
+    Top = 72
+    Width = 149
     Height = 2
     Anchors = [akLeft, akTop, akRight]
   end
   object LabelDate: TLabel
-    Left = 106
-    Top = 64
-    Width = 86
-    Height = 16
+    Left = 80
+    Top = 48
+    Width = 70
+    Height = 12
     Caption = #1044#1072#1090#1072' '#1074#1099#1087#1091#1089#1082#1072':'
   end
   object Bevel2: TBevel
-    Left = 52
-    Top = 346
-    Width = 199
-    Height = 2
+    Left = 39
+    Top = 260
+    Width = 149
+    Height = 1
     Anchors = [akLeft, akTop, akRight]
   end
   object LabelCopyright: TLabel
-    Left = 106
-    Top = 40
-    Width = 84
-    Height = 16
+    Left = 80
+    Top = 30
+    Width = 69
+    Height = 12
     Caption = 'LabelCopyright'
   end
   object LabelThanksTitle: TLabel
-    Left = 16
-    Top = 112
-    Width = 63
-    Height = 18
+    Left = 12
+    Top = 84
+    Width = 47
+    Height = 13
     Caption = #1057#1087#1072#1089#1080#1073#1086
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -15
+    Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     ParentFont = False
   end
   object LabelThanks: TLabel
-    Left = 16
-    Top = 136
-    Width = 305
-    Height = 105
+    Left = 12
+    Top = 102
+    Width = 229
+    Height = 79
     AutoSize = False
     Caption = 'LabelThanks'
     WordWrap = True
   end
-  object EditICQ: TEdit
-    Left = 82
-    Top = 282
-    Width = 199
-    Height = 16
+  object EditGroup: TEdit
+    Left = 61
+    Top = 230
+    Width = 149
+    Height = 12
     TabStop = False
     Anchors = [akLeft, akTop, akRight]
     BorderStyle = bsNone
     ParentColor = True
     ReadOnly = True
     TabOrder = 1
-    Text = 'EditICQ'
-    OnClick = EditClick
-  end
-  object EditGroup: TEdit
-    Left = 81
-    Top = 306
-    Width = 199
-    Height = 16
-    TabStop = False
-    Anchors = [akLeft, akTop, akRight]
-    BorderStyle = bsNone
-    ParentColor = True
-    ReadOnly = True
-    TabOrder = 2
     Text = 'EditGroup'
     OnClick = EditClick
   end
   object ButtonOK: TBitBtn
-    Left = 218
-    Top = 382
-    Width = 120
-    Height = 24
+    Left = 164
+    Top = 287
+    Width = 90
+    Height = 18
     Cancel = True
     Caption = #1047#1072#1082#1088#1099#1090#1100
     Default = True
