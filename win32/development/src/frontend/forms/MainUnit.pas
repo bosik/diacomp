@@ -1897,6 +1897,7 @@ var
   Today: TDateTime;
   Recs: TRecordList;
 begin
+  ComboKoof.ItemIndex := -1;
   PageControl1.ActivePage := TabAnalyze;
 
   Today := LocalToUTC(Trunc(CalendarDiary.Date));
