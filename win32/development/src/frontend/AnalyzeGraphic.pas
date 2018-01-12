@@ -124,12 +124,15 @@ var
   end;
 
 var
-  i, k: integer;
+  i: integer;
   cx, cy: integer;
   Data: TBSPointList;
+
+  x1, y1, x2, y2, dy1, dy2: Real;
+  a, b, c, d: Real;
 begin
   Data := FetchBloodRecords(Recs);
-  max := FindMax(Data, 8.0);
+  max := FindMax(Data, 8.0) * 1.2;
 
   BS_PREPRAND_LOW   := Value['BS1'];
   BS_PREPRAND_HIGH  := Value['BS2'];
@@ -268,13 +271,40 @@ begin
 
     Pen.Color := COLOR_BS_CURVE;
 
-    { первая точка }
-    MoveTo(CalcX(Data[0].Time), CalcY(Data[0].Value));
-
     { основная линия }
-    for i := k + 1 to High(Data) do
+    for i := 0 to High(Data) - 1 do
     begin
-      LineTo(CalcX(Data[i].Time), CalcY(Data[i].Value));
+      x1 := Data[i].Time;
+      y1 := Data[i].Value;
+      x2 := Data[i + 1].Time;
+      y2 := Data[i + 1].Value;
+
+      if (i > 0) then
+        dy1 := (Data[i + 1].Value - Data[i - 1].Value)  / (Data[i + 1].Time - Data[i - 1].Time)
+      else
+        dy1 := 0;
+
+      if (i < High(Data) - 1) then
+        dy2 := (Data[i + 2].Value - Data[i].Value)  / (Data[i + 2].Time - Data[i].Time)
+      else
+        dy2 := 0;
+
+      a := (dy1 + dy2) / (x2 - x1) / (x2 - x1) - 2 * (y2 - y1) / (x2 - x1) / (x2 - x1) / (x2 - x1);
+		  b := (y2 - y1) / (x2 - x1) / (x2 - x1) - (dy1 + a * (x2 * x2 + x1 * x2 - 2 * x1 * x1)) / (x2 - x1);
+		  c := dy1 - 3 * x1 * x1 * a - 2 * x1 * b;
+		  d := y1 - x1 * x1 * x1 * a - x1 * x1 * b - x1 * c;
+
+      MoveTo(CalcX(Data[i].Time), CalcY(Data[i].Value));
+
+      while (x1 < x2) do
+      begin
+        y1 := a * x1 * x1 * x1 + b * x1 * x1 + c * x1 + d;
+        LineTo(CalcX(x1), CalcY(y1));
+        x1 := x1 + 0.2;
+      end;
+
+      LineTo(CalcX(Data[i + 1].Time), CalcY(Data[i + 1].Value));
+
     end;
 
     { точки }
