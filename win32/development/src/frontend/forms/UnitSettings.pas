@@ -269,7 +269,7 @@ begin
     break;
   end;
   PanelTabs.Width := BUTTON_WIDTH + 2*BORD;
-  Height := Min(
+  Height := Max(
     7 * (BUTTON_HEIGHT+BORD) + PanelButtons.Height + 2*BORD,
     Round(1.2 * Width)
   );

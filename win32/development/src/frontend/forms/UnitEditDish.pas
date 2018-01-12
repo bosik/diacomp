@@ -806,12 +806,14 @@ end;
 {======================================================================================================================}
 procedure TFormDish.Designer;
 {======================================================================================================================}
+var
+  W: integer;
 begin
   BorderWidth := BORD;
   PanelTable.BorderWidth := BORD;
 
   EditName.Left := Bord;
-  EditName.Top := 3*Bord; // need it
+  EditName.Top := 3 * Bord; // need it
   EditName.Width := GroupBoxName.Width-2*Bord;
 
   //CheckFixedMass.Left := Bord;
@@ -819,9 +821,22 @@ begin
   //EditResultMass.Top := CheckFixedMass.Top+CheckFixedMass.Height+Bord;
   //EditResultMass.Left := 4*Bord;
   //EditResultMass.Width := MASS_EDIT_WIDTH;
-  GroupBoxName.Height := EditName.Top+EditName.Height+BORD; //EditResultMass.Top + EditResultMass.Height + BORD;
+  GroupBoxName.Height := EditName.Top+EditName.Height + BORD; //EditResultMass.Top + EditResultMass.Height + BORD;
   //ButtonRunCalc.Left := GroupBoxName.Width - ButtonRunCalc.Width - BORD;
   //ButtonRunCalc.Top := EditResultMass.Top;
+
+  W := ButtonSave.Height;
+  ButtonRealMass.Left := BORD;
+  ButtonRealMass.Top := 3 * BORD;
+  ButtonRealMass.Width := GroupBoxMass.Width - 3 * BORD - W;
+  ButtonRealMass.Height := W;
+
+  ButtonSimpleMass.Left := GroupBoxMass.Width - BORD - W;
+  ButtonSimpleMass.Top := 3 * BORD;
+  ButtonSimpleMass.Width := W;
+  ButtonSimpleMass.Height := W;
+
+  GroupBoxMass.Height := 4 * BORD + W;
 
   GroupFood.Height := ComboFood.Height + 3*BORD;
   ButtonAddFood.Left := GroupFood.Width - ButtonAddFood.Width - BORD;
