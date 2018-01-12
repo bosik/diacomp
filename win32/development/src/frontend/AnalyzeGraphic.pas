@@ -28,8 +28,6 @@ type
     Weight: Real;
   end;
 
-  procedure PrepareBS(Image: TImage; Max: real; Mini: boolean;
-    var kx,ky: real; var Border: integer);
   procedure DrawBS(Recs: TRecordList; BaseDate: TDateTime; Image: TImage; Mini: boolean);
   procedure DrawBS_Int(const Base: TDiary; FromDay, ToDay: integer; Image: TImage);
 
@@ -65,115 +63,33 @@ implementation
 uses SettingsINI;
 
 {======================================================================================================================}
-procedure PrepareBS(Image: TImage; Max: real; Mini: boolean;
-  var kx, ky: real; var Border: integer);
+procedure DrawBS(Recs: TRecordList; BaseDate: TDateTime; Image: TImage; Mini: boolean);
 {======================================================================================================================}
+const
+  TX: array[0..6] of integer = (1, 2, 3, 4, 6, 12, 24);
 var
+  MarginLeft, MarginTop, MarginRight, MarginBottom: integer;
+  GraphWidth, GraphHeight: integer;
+  TextMarginX, TextMarginY: integer;
+
   w, h: integer;
-  i: integer;
-  x1, y1, x2, y2: integer;
+  max: real;
+  TrottleX: integer;
+  TrottleY: integer;
 
   BS_PREPRAND_LOW: Real;
   BS_PREPRAND_HIGH: Real;
   BS_POSTPRAND_HIGH: Real;
 
-  procedure CalcXY(Time: integer; Value: real; var x, y: integer);
+  function CalcX(x: Real): integer;
   begin
-    x := Round(Border + kx / MinPerHour * Time);
-    y := Round(h - Border - ky * Value);
+    Result := MarginLeft + Round(x / HourPerDay * GraphWidth);
   end;
 
-begin
-  BS_PREPRAND_LOW   := Value['BS1'];
-  BS_PREPRAND_HIGH  := Value['BS2'];
-  BS_POSTPRAND_HIGH := Value['BS3'];
-
-  with Image.Canvas do
+  function CalcY(y: Real): integer;
   begin
-    w := Image.Width;
-    h := Image.Height;
-    Image.Picture.Bitmap.Width := w;
-    Image.Picture.Bitmap.Height := h;
-
-    { очистка }
-    Brush.Color := COLOR_BACK;
-    FillRect(Image.ClientRect);
-
-    {if Mini then
-      Border := Round(1.00*BRD)
-    else
-      Border := BRD; }
-    Border := 3 * TextHeight('123') div 2;
-    ky := (h - 2 * Border) / Max;
-    kx := (w - 2 * Border) / HourPerDay;
-
-    { зелЄна€ зона }
-    Brush.Color := COLOR_BS_NORMAL;
-    CalcXY(0, BS_PREPRAND_LOW, x1, y1);
-    CalcXY(MinPerDay, BS_PREPRAND_HIGH, x2, y2);
-    FillRect(Rect(x1, y1, x2, y2));
-
-    { красна€ зона }
-    Brush.Color := COLOR_BS_HIGH;
-    CalcXY(0, BS_PREPRAND_HIGH, x1, y1);
-    CalcXY(MinPerDay, BS_POSTPRAND_HIGH, x2, y2);
-    FillRect(Rect(x1, y1, x2, y2));
-
-    { Ўкала }
-    Brush.Color := COLOR_BACK;
-    Pen.Color := COLOR_AXIS_SUB;
-    Pen.Width := 1;
-    Font.Style := [];
-    Font.Color := COLOR_TITLES;
-
-    if Mini then
-    begin
-      Pen.Style := psSolid;
-      Font.Size := 5;
-    end else
-    begin
-      Pen.Style := psDot;
-      Font.Size := 8;
-    end;
-
-    { Ўкала Y }
-    for i := 1 to Round(Max) do
-    begin
-      MoveTo(Border - 3, Round(h - Border - ky * i));
-      LineTo(w - Border, Round(h - Border - ky * i));
-      if (not mini) or ((i mod 2) = 0) then
-        TextOut(
-          Border - 15,
-          h - Border - Round(ky * i) - (TextHeight('0') div 2),
-          IntToStr(i)
-        );
-    end;
-
-    { Ўкала X }
-    for i := 0 to HourPerDay do
-    if (not mini) or ((i mod 3) = 0) then
-    begin
-      MoveTo(Border + Round(i * kx), Border);
-      LineTo(Border + Round(i * kx), h - Border + 2);
-      TextOut(
-        Border + Round(i * kx) - (TextWidth(IntToStr(i)) div 2),
-        h - Border + 4,
-        IntToStr(i)
-      );
-    end;
-
-    { оси }
-    Pen.Style := psSolid;
-    Pen.Color := COLOR_AXIS_MAIN;
-    MoveTo(Border,Border);
-    LineTo(Border, h - Border);
-    LineTo(w - Border, h - Border);
+    Result := MarginTop + GraphHeight - Round(y / max * GraphHeight);
   end;
-end;
-
-{======================================================================================================================}
-procedure DrawBS(Recs: TRecordList; BaseDate: TDateTime; Image: TImage; Mini: boolean);
-{======================================================================================================================}
 
   function FindMax: real;
   const
@@ -203,36 +119,142 @@ procedure DrawBS(Recs: TRecordList; BaseDate: TDateTime; Image: TImage; Mini: bo
   end;
 
 var
-  h: integer;
-  kx, ky: real;
-  max: real;
   i, k: integer;
   cx, cy: integer;
   TempBlood: TBloodRecord;
-  Border: integer;
-
-  procedure CalcXY(Time: TDateTime; Value: real; var x, y: integer);
-  begin
-    x := Round(Border + kx * (Time - BaseDate) * HourPerDay);
-    y := Round(h - Border - ky * Value);
-  end;
 
 begin
   max := FindMax();
-  PrepareBS(Image, Max, Mini, kx, ky, Border);
-  Image.Picture.Bitmap.Width := Image.Width;
-  Image.Picture.Bitmap.Height := Image.Height;
 
-  k := FindFirstBS();
-  if (k = -1) then
+  BS_PREPRAND_LOW   := Value['BS1'];
+  BS_PREPRAND_HIGH  := Value['BS2'];
+  BS_POSTPRAND_HIGH := Value['BS3'];
+
+  with Image.Picture.Bitmap.Canvas do
   begin
-    Exit;
-  end;
+    w := Image.Width;
+    h := Image.Height;
+    Image.Picture.Bitmap.Width := w;
+    Image.Picture.Bitmap.Height := h;
 
-  h := Image.Height;
+    { очистка }
+    Brush.Color := COLOR_BACK;
+    FillRect(Image.ClientRect);
 
-  with Image.Canvas do
-  begin
+    if (Mini) then
+    begin
+      MarginTop := 5;
+      MarginRight := 10;
+      TextMarginX := 5;
+      TextMarginY := 5;
+    end else
+    begin
+      MarginTop := 20;
+      MarginRight := 20;
+      TextMarginX := 10;
+      TextMarginY := 10;
+    end;
+
+    MarginLeft := 2 * TextMarginX + TextWidth(IntToStr(Round(Max)));
+    MarginBottom := 2 * TextMarginY + TextHeight('123');
+
+    GraphWidth := w - MarginLeft - MarginRight;
+    GraphHeight := h - MarginTop - MarginBottom;
+
+    { зелЄна€ зона }
+    Brush.Color := COLOR_BS_NORMAL;
+    FillRect(Rect(CalcX(0), CalcY(BS_PREPRAND_LOW), CalcX(HourPerDay), CalcY(BS_PREPRAND_HIGH)));
+
+    { красна€ зона }
+    Brush.Color := COLOR_BS_HIGH;
+    FillRect(Rect(CalcX(0), CalcY(BS_PREPRAND_HIGH), CalcX(HourPerDay), CalcY(BS_POSTPRAND_HIGH)));
+
+    { Ўкала }
+    Brush.Color := COLOR_BACK;
+    Pen.Color := COLOR_AXIS_SUB;
+    Pen.Width := 1;
+    Font.Style := [];
+    Font.Color := COLOR_TITLES;
+
+    if Mini then
+    begin
+      Pen.Style := psSolid;
+      Font.Size := 5;
+    end else
+    begin
+      Pen.Style := psDot;
+      Font.Size := 8;
+    end;
+
+    for i := 0 to High(TX) do
+    begin
+      TrottleX := TX[i];
+
+      if (CalcX(TrottleX) - CalcX(0) >= 1.5 * TextWidth('24')) then
+        break;
+    end;
+
+    TrottleY := 1;
+    while ((abs(CalcY(0) - CalcY(TrottleY)) < TextHeight('123')) or (Max / TrottleY > 20)) do
+    begin
+      if ((abs(CalcY(0) - CalcY(TrottleY * 2))  >= TextHeight('123')) and (Max / (TrottleY * 2) <= 20)) then
+      begin
+        TrottleY := TrottleY * 2;
+        break;
+      end;
+
+      if ((abs(CalcY(0) - CalcY(TrottleY * 5)) >= TextHeight('123')) and (Max / (TrottleY * 5) <= 20)) then
+      begin
+        TrottleY := TrottleY * 5;
+        break;
+      end;
+
+      TrottleY := TrottleY * 10;
+    end;
+
+    { Ўкала Y }
+    for i := 1 to Round(Max) do
+    begin
+      if ((i mod TrottleY) = 0) then
+      begin
+        MoveTo(CalcX(0), CalcY(i));
+        LineTo(CalcX(HourPerDay), CalcY(i));
+
+        TextOut(
+          MarginLeft - TextMarginX - TextWidth(IntToStr(i)),
+          CalcY(i) - (TextHeight('0') div 2),
+          IntToStr(i)
+        );
+      end;  
+    end;
+
+    { Ўкала X }
+    for i := 0 to HourPerDay do
+    if ((i mod TrottleX) = 0) then
+    begin
+      MoveTo(CalcX(i), CalcY(0));
+      LineTo(CalcX(i), CalcY(Max));
+
+      TextOut(
+        CalcX(i) - (TextHeight(IntToStr(i)) div 2),
+        MarginTop + GraphHeight + TextMarginY,
+        IntToStr(i)
+      );
+    end;
+
+    { оси }
+    Pen.Style := psSolid;
+    Pen.Color := COLOR_AXIS_MAIN;
+    MoveTo(CalcX(0), CalcY(Max));
+    LineTo(CalcX(0), CalcY(0));
+    LineTo(CalcX(HourPerDay), CalcY(0));
+
+    k := FindFirstBS();
+    if (k = -1) then
+    begin
+      Exit;
+    end;
+
     { крива€ }
     Pen.Width := 1;
     if Mini then
@@ -245,16 +267,14 @@ begin
     { перва€ точка }
 
     TempBlood := TBloodRecord(Recs[k]);
-    CalcXY(TempBlood.Time, TempBlood.Value, cx, cy);
-    MoveTo(cx, cy);
+    MoveTo(CalcX((TempBlood.Time - BaseDate) * HourPerDay), CalcY(TempBlood.Value));
 
     { основна€ лини€ }
     for i := k + 1 to High(Recs) do
     if (Recs[i].RecType = TBloodRecord) then
     begin
       TempBlood := TBloodRecord(Recs[i]);
-      CalcXY(TempBlood.Time, TempBlood.Value, cx, cy);
-      LineTo(cx, cy);
+      LineTo(CalcX((TempBlood.Time - BaseDate) * HourPerDay), CalcY(TempBlood.Value));
     end;
 
     { точки }
@@ -266,7 +286,8 @@ begin
       if (Recs[i].RecType = TBloodRecord) then
       begin
         TempBlood := TBloodRecord(Recs[i]);
-        CalcXY(TempBlood.Time, TempBlood.Value, cx, cy);
+        cx := CalcX((TempBlood.Time - BaseDate) * HourPerDay);
+        cy := CalcY(TempBlood.Value);
 
         if (TempBlood.PostPrand) then
           Brush.Color := COLOR_BACK

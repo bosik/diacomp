@@ -189,8 +189,8 @@ end;
 procedure TAutosetupForm.DoShow;
 {======================================================================================================================}
 begin
-  inherited;   
   SetupInterface;
+  inherited;
 end;
 
 { Misc }

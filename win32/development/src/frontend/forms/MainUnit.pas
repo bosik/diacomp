@@ -385,6 +385,7 @@ type
     procedure ListFoodData(Sender: TObject; Item: TListItem);
     procedure ListDishData(Sender: TObject; Item: TListItem);
     procedure ActionViewLogsExecute(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   protected
     // определяет расположение компонентов интерфейса
     procedure Designer; override;
@@ -683,6 +684,13 @@ begin
   PanelAnManagment.BorderWidth := BORD;
 
   { ================ ЛЕВАЯ ЧАСТЬ ================ }
+
+  CalendarDiary.Left := 0;
+  CalendarDiary.Top := 0;
+  CalendarDiary.Show;
+  CalendarDiary.Align := alNone;
+  PanelDiaryTopLeft.Width := CalendarDiary.Width + 2 * BORD;
+  CalendarDiary.Align := alTop;
 
   // кнопки свёртывания
   ImageMinMaxStat.Left := GroupBoxStatistic.Width - ImageMinMaxStat.Width-(ImageMinMaxStat.Height div 2);
@@ -988,8 +996,6 @@ begin
     ActionViewLogs.Visible := Value['Debug'];
     TabStat.TabVisible := Value['Debug'];
     CalendarDiary.Date := Now();  
-    ImagePreview.Align := alNone;
-    ImagePreview.Width := GroupBoxGraph.Width - 3;
     PageControl1.ActivePageIndex := 0;
     Width := (Screen.Width * 3) div 4;
     Height := (Screen.Height * 3) div 4;
@@ -1003,7 +1009,6 @@ begin
     UpdateMealDose;
     //ProcessMealSelected(False);
     UpdateNextFinger();
-    DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
 
     { =============== ВКЛЮЧЕНИЕ IDLE-ЗАДАЧ =============== }
 
@@ -1866,7 +1871,7 @@ begin
     GroupBoxGraph,ImageMinMaxGraph, DataInterface.Image_MinMax,
     Value['AnimatePanels'],
     Round(ImagePreview.Width * 0.8),
-    ImageMinMaxGraph.Height + 3,PANEL_OPEN_TIME, PANEL_CLOSE_TIME);
+    ImageMinMaxGraph.Height + 3, PANEL_OPEN_TIME, PANEL_CLOSE_TIME);
 
   if ImageMinMaxGraph.Tag = 0 then
     ImagePreview.Hide;
@@ -5013,6 +5018,11 @@ end;
 procedure TForm1.ActionViewLogsExecute(Sender: TObject);
 begin
   FormLogViewer.ShowModal;
+end;
+
+procedure TForm1.FormShow(Sender: TObject);
+begin
+  DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
 end;
 
 end.
