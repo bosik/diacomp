@@ -17,16 +17,13 @@
  */
 package org.bosik.diacomp.web.backend.features.diary;
 
-import org.bosik.diacomp.core.test.fakes.services.FakeDiaryService;
+import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
 @Profile("fake")
-public class FakeDiarySpringService extends FakeDiaryService
+public abstract class FakeDiarySpringService implements DiaryService
 {
-	public FakeDiarySpringService()
-	{
-		super(true);
-	}
+	// TODO: implement if needed
 }

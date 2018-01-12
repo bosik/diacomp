@@ -17,10 +17,6 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.pages.base;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -40,12 +36,16 @@ import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
-import org.bosik.diacomp.core.test.fakes.mocks.MockFoodMassed;
 import org.bosik.diacomp.web.frontend.wicket.dialogs.disheditor.DishEditor;
 import org.bosik.diacomp.web.frontend.wicket.dialogs.foodeditor.FoodEditor;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.Versioned;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 public class FoodBasePage extends MasterPage
 {
@@ -156,12 +156,12 @@ public class FoodBasePage extends MasterPage
 
 				// == TEST ONLY =============================
 
-				MockFoodMassed mock = new MockFoodMassed();
-
-				dish.getData().add(mock.getSample());
-				dish.getData().add(mock.getSample());
-				dish.getData().add(mock.getSample());
-				dish.getData().add(mock.getSample());
+				//				MockFoodMassed mock = new MockFoodMassed();
+				//
+				//				dish.getData().add(mock.getSample());
+				//				dish.getData().add(mock.getSample());
+				//				dish.getData().add(mock.getSample());
+				//				dish.getData().add(mock.getSample());
 
 				// == TEST ONLY =============================
 

@@ -17,13 +17,13 @@
  */
 package org.bosik.diacomp.web.backend.features.base.dish;
 
-import org.bosik.diacomp.core.test.fakes.services.FakeDishBaseService;
+import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
 @Profile("fake")
-public class FakeDishSpringService extends FakeDishBaseService
+public abstract class FakeDishSpringService implements DishBaseService
 {
-
+	// TODO: implement if needed
 }
