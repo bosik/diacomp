@@ -28,6 +28,12 @@ type
     Weight: Real;
   end;
 
+  TBSPoint = record
+    Time, Value: Real;
+  end;
+
+  TBSPointList = array of TBSPoint;
+
   procedure DrawBS(Recs: TRecordList; BaseDate: TDateTime; Image: TImage; Mini: boolean);
   procedure DrawBS_Int(const Base: TDiary; FromDay, ToDay: integer; Image: TImage);
 
@@ -91,40 +97,39 @@ var
     Result := MarginTop + GraphHeight - Round(y / max * GraphHeight);
   end;
 
-  function FindMax: real;
-  const
-    InitMax = 8;
+  function FetchBloodRecords(Recs: TRecordList): TBSPointList;
+  var
+    i: integer;
+  begin
+    SetLength(Result, 0);
+
+    for i := 0 to High(Recs) do
+    if (recs[i].RecType = TBloodRecord) then
+    begin
+      SetLength(Result, Length(Result) + 1);
+      Result[High(Result)].Time := (Recs[i].Time - BaseDate) * HoursPerDay;
+      Result[High(Result)].Value := (Recs[i] as TBloodRecord).Value;
+    end;
+  end;
+
+  function FindMax(Data: TBSPointList; InitMax: Real = 0.0): real;
   var
     i: integer;
   begin
     Result := InitMax;
 
-    for i := 0 to High(Recs) do
-    if (Recs[i].RecType = TBloodRecord) and
-       (TBloodRecord(Recs[i]).Value > Result) then
-      Result := TBloodRecord(Recs[i]).Value;
-  end;
-
-  function FindFirstBS(): integer;
-  var
-    i: integer;
-  begin
-    for i := Low(Recs) to High(Recs) do
-    if (recs[i].RecType = TBloodRecord) then
-    begin
-      Result := i;
-      Exit;
-    end;
-    Result := -1;
+    for i := 0 to High(Data) do
+    if (Data[i].Value > Result) then
+      Result := Data[i].Value;
   end;
 
 var
   i, k: integer;
   cx, cy: integer;
-  TempBlood: TBloodRecord;
-
+  Data: TBSPointList;
 begin
-  max := FindMax();
+  Data := FetchBloodRecords(Recs);
+  max := FindMax(Data, 8.0);
 
   BS_PREPRAND_LOW   := Value['BS1'];
   BS_PREPRAND_HIGH  := Value['BS2'];
@@ -249,8 +254,7 @@ begin
     LineTo(CalcX(0), CalcY(0));
     LineTo(CalcX(HourPerDay), CalcY(0));
 
-    k := FindFirstBS();
-    if (k = -1) then
+    if (Length(Data) = 0) then
     begin
       Exit;
     end;
@@ -265,35 +269,24 @@ begin
     Pen.Color := COLOR_BS_CURVE;
 
     { первая точка }
-
-    TempBlood := TBloodRecord(Recs[k]);
-    MoveTo(CalcX((TempBlood.Time - BaseDate) * HourPerDay), CalcY(TempBlood.Value));
+    MoveTo(CalcX(Data[0].Time), CalcY(Data[0].Value));
 
     { основная линия }
-    for i := k + 1 to High(Recs) do
-    if (Recs[i].RecType = TBloodRecord) then
+    for i := k + 1 to High(Data) do
     begin
-      TempBlood := TBloodRecord(Recs[i]);
-      LineTo(CalcX((TempBlood.Time - BaseDate) * HourPerDay), CalcY(TempBlood.Value));
+      LineTo(CalcX(Data[i].Time), CalcY(Data[i].Value));
     end;
 
     { точки }
     if (not mini) then
-    begin   
+    begin
+      Brush.Color := COLOR_BS_CURVE;
       Pen.Color := COLOR_BS_CURVE;
       Pen.Style := psSolid;
-      for i := Low(Recs) to High(Recs) do
-      if (Recs[i].RecType = TBloodRecord) then
+      for i := Low(Data) to High(Data) do
       begin
-        TempBlood := TBloodRecord(Recs[i]);
-        cx := CalcX((TempBlood.Time - BaseDate) * HourPerDay);
-        cy := CalcY(TempBlood.Value);
-
-        if (TempBlood.PostPrand) then
-          Brush.Color := COLOR_BACK
-        else
-          Brush.Color := COLOR_BS_CURVE;
-
+        cx := CalcX(Data[i].Time);
+        cy := CalcY(Data[i].Value);
         Ellipse(cx - eSize, cy - eSize, cx + eSize, cy + eSize);
       end;
     end;
