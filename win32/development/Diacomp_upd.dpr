@@ -28,6 +28,8 @@ const
   procedure Error(const msg: String);
   begin
     writeln('[ERROR] ' + msg);
+    writeln('');
+    writeln('Press [Enter] to exit ...');
     readln;
     halt;
   end;
@@ -96,12 +98,9 @@ begin
     end;
 
     // Remove itself
-    // Path := ParamStr(0);
-    // writeln('Deleting ' + Path);
-    // DeleteFile(Path);
-
-    // DEBUG ONLY
-    readln;
+    Path := ParamStr(0);
+    writeln('Deleting ' + Path);
+    DeleteFile(Path);
   except
     on e: EInOutError do
     begin

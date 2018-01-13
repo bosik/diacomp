@@ -56,14 +56,13 @@ end;
 procedure DownloadAndRunUpdater();
 {======================================================================================================================}
 const
-  FILE_UPDATER = 'Diacomp_upd.exe';
+  FILE_UPDATER = 'diacomp-update.exe';
 begin
-  if// GetInetFile(URL_UPDATER, WORK_FOLDER + FILE_UPDATER, 10 * 1024 * 1024) and
-     //FileExists(WORK_FOLDER + FILE_UPDATER) and
+  if GetInetFile(URL_UPDATER, WORK_FOLDER + FILE_UPDATER, 10 * 1024 * 1024) and
+     FileExists(WORK_FOLDER + FILE_UPDATER) and
      (FileSize(WORK_FOLDER + FILE_UPDATER) > 10 * 1024) then
   begin
     ShellExecute(0, 'runas', PChar(WORK_FOLDER + FILE_UPDATER), nil, nil, SW_SHOW);
-    //ShellExecute(0, 'runas', PChar(WORK_FOLDER + 'CompensationTest.exe'), nil, PChar(WORK_FOLDER), SW_RESTORE);
   end else
     MessageDlg('Файл установки повреждён.', mtError, [mbOK], 0); // i18n
 end;
