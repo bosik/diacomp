@@ -22,8 +22,8 @@ import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import java.util.Date;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
-import org.bosik.diacomp.core.test.fakes.mocks.Mock;
-import org.bosik.diacomp.core.test.fakes.mocks.MockFoodMassed;
+import org.bosik.diacomp.core.mocks.Mock;
+import org.bosik.diacomp.core.mocks.MockFoodMassed;
 import org.junit.Test;
 
 public class TestMealRecord

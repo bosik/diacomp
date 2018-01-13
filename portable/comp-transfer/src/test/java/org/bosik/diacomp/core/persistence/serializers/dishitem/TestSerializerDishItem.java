@@ -21,9 +21,9 @@ import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
 import org.bosik.diacomp.core.persistence.serializers.TestSerializer;
-import org.bosik.diacomp.core.test.fakes.mocks.Mock;
-import org.bosik.diacomp.core.test.fakes.mocks.MockDishItem;
-import org.bosik.diacomp.core.test.fakes.mocks.MockVersionedConverter;
+import org.bosik.diacomp.core.mocks.Mock;
+import org.bosik.diacomp.core.mocks.MockDishItem;
+import org.bosik.diacomp.core.mocks.MockVersionedConverter;
 import org.bosik.merklesync.Versioned;
 
 public class TestSerializerDishItem extends TestSerializer<Versioned<DishItem>>

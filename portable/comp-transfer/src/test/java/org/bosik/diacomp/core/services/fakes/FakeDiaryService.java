@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bosik.diacomp.core.test.fakes.services;
+package org.bosik.diacomp.core.services.fakes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,9 +30,9 @@ import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
-import org.bosik.diacomp.core.test.fakes.mocks.Mock;
-import org.bosik.diacomp.core.test.fakes.mocks.MockDiaryRecord;
-import org.bosik.diacomp.core.test.fakes.mocks.MockVersionedConverter;
+import org.bosik.diacomp.core.mocks.Mock;
+import org.bosik.diacomp.core.mocks.MockDiaryRecord;
+import org.bosik.diacomp.core.mocks.MockVersionedConverter;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 

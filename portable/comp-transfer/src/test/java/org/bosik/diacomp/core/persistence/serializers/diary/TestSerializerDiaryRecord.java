@@ -21,9 +21,9 @@ import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.TestSerializer;
-import org.bosik.diacomp.core.test.fakes.mocks.Mock;
-import org.bosik.diacomp.core.test.fakes.mocks.MockDiaryRecord;
-import org.bosik.diacomp.core.test.fakes.mocks.MockVersionedConverter;
+import org.bosik.diacomp.core.mocks.Mock;
+import org.bosik.diacomp.core.mocks.MockDiaryRecord;
+import org.bosik.diacomp.core.mocks.MockVersionedConverter;
 import org.bosik.merklesync.Versioned;
 
 public class TestSerializerDiaryRecord extends TestSerializer<Versioned<DiaryRecord>>

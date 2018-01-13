@@ -18,7 +18,7 @@
 package org.bosik.diacomp.core.persistence.serializers;
 
 import junit.framework.AssertionFailedError;
-import org.bosik.diacomp.core.test.fakes.mocks.Mock;
+import org.bosik.diacomp.core.mocks.Mock;
 import org.junit.Assert;
 import org.junit.Test;
 
