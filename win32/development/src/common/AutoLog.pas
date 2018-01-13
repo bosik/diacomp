@@ -179,7 +179,7 @@ procedure StopLogger;
 {======================================================================================================================}
 begin
   {$IFDEF LOGGING}
-  FreeAndNil(LogFile);
+  // FreeAndNil(LogFile);
   {$ENDIF}
 end;
 
