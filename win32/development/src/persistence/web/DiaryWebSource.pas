@@ -212,6 +212,8 @@ var
   StdResp: TStdResponse;
   Query: string;
 begin
+  StdResp := nil;
+
   Query := FClient.GetApiURL() + 'diary/hash/' + Prefix;
   StdResp := FClient.DoGetSmart(query);
   Result := StdResp.Response;

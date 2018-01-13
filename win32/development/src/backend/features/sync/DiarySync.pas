@@ -318,8 +318,8 @@ begin
     if (Assigned(Callback)) then
       Callback(100);
   finally
-    FreeAndNil(Tree1);
-    FreeAndNil(Tree2);
+    Tree1.Free;
+    Tree2.Free;
     Newer1.Free;
     Newer2.Free;
   end;
