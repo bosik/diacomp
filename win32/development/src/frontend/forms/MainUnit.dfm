@@ -7,7 +7,7 @@ object Form1: TForm1
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -10
+  Font.Height = -13
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   Menu = MenuHidden
@@ -15,28 +15,28 @@ object Form1: TForm1
   OnClose = FormClose
   OnResize = FormResize
   OnShow = FormShow
-  PixelsPerInch = 96
-  TextHeight = 13
+  PixelsPerInch = 120
+  TextHeight = 16
   object BevelTop: TBevel
     Left = 0
-    Top = 27
-    Width = 991
-    Height = 2
+    Top = 31
+    Width = 989
+    Height = 3
     Align = alTop
   end
   object ShapeTop: TShape
     Left = 0
-    Top = 29
-    Width = 991
-    Height = 4
+    Top = 34
+    Width = 989
+    Height = 5
     Align = alTop
     Brush.Style = bsClear
     Pen.Style = psClear
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 515
-    Width = 991
+    Top = 508
+    Width = 989
     Height = 19
     Panels = <
       item
@@ -58,8 +58,8 @@ object Form1: TForm1
   object MainMenu: TActionMainMenuBar
     Left = 0
     Top = 0
-    Width = 991
-    Height = 27
+    Width = 989
+    Height = 31
     UseSystemFont = False
     ActionManager = ActionManager
     ColorMap.HighlightColor = 14410210
@@ -67,7 +67,7 @@ object Form1: TForm1
     ColorMap.UnusedColor = 14410210
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -12
+    Font.Height = -15
     Font.Name = 'Tahoma'
     Font.Style = []
     HorzMargin = 2
@@ -76,22 +76,22 @@ object Form1: TForm1
   end
   object PanelMain: TPanel
     Left = 0
-    Top = 33
-    Width = 991
-    Height = 482
+    Top = 39
+    Width = 989
+    Height = 469
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
     object PageControl1: TPageControl
       Left = 0
       Top = 0
-      Width = 991
-      Height = 482
+      Width = 989
+      Height = 469
       ActivePage = TabDiary
       Align = alClient
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -12
+      Font.Height = -15
       Font.Name = 'MS Sans Serif'
       Font.Style = []
       HotTrack = True
@@ -108,19 +108,19 @@ object Form1: TForm1
         ParentShowHint = False
         ShowHint = False
         object Splitter4: TSplitter
-          Left = 765
+          Left = 713
           Top = 0
-          Height = 450
+          Height = 435
           Align = alRight
           Color = clSkyBlue
           ParentColor = False
           OnMoved = Splitter4Moved
         end
         object PanelDiaryTop: TPanel
-          Left = 225
+          Left = 277
           Top = 0
-          Width = 540
-          Height = 450
+          Width = 436
+          Height = 435
           Align = alClient
           BevelOuter = bvNone
           ParentBackground = True
@@ -128,8 +128,8 @@ object Form1: TForm1
           object ScrollBoxDiary: TScrollBox
             Left = 0
             Top = 0
-            Width = 540
-            Height = 384
+            Width = 436
+            Height = 354
             VertScrollBar.Increment = 40
             VertScrollBar.Tracking = True
             Align = alClient
@@ -138,7 +138,7 @@ object Form1: TForm1
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
-            Font.Height = -12
+            Font.Height = -15
             Font.Name = 'MS Sans Serif'
             Font.Style = []
             ParentColor = False
@@ -149,8 +149,8 @@ object Form1: TForm1
             object DiaryView: TDiaryView
               Left = 0
               Top = 0
-              Width = 536
-              Height = 105
+              Width = 432
+              Height = 117
               Align = alTop
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clBlack
@@ -175,9 +175,9 @@ object Form1: TForm1
           end
           object PanelDiaryBottom: TPanel
             Left = 0
-            Top = 384
-            Width = 540
-            Height = 66
+            Top = 354
+            Width = 436
+            Height = 81
             Align = alBottom
             BevelOuter = bvNone
             ParentBackground = False
@@ -185,18 +185,18 @@ object Form1: TForm1
             object PanelAdd: TPanel
               Left = 0
               Top = 0
-              Width = 280
-              Height = 66
+              Width = 345
+              Height = 81
               Align = alLeft
               BevelOuter = bvNone
               ParentBackground = True
               TabOrder = 0
               object ButtonAddBlood: TSpeedButton
                 Tag = 1
-                Left = 8
-                Top = 7
-                Width = 53
-                Height = 52
+                Left = 10
+                Top = 9
+                Width = 65
+                Height = 64
                 Hint = #1047#1072#1084#1077#1088' '#1057#1050
                 ParentShowHint = False
                 ShowHint = True
@@ -204,10 +204,10 @@ object Form1: TForm1
               end
               object ButtonAddIns: TSpeedButton
                 Tag = 2
-                Left = 72
-                Top = 7
-                Width = 52
-                Height = 52
+                Left = 89
+                Top = 9
+                Width = 64
+                Height = 64
                 Hint = #1048#1098#1077#1082#1094#1080#1103
                 ParentShowHint = False
                 ShowHint = True
@@ -215,10 +215,10 @@ object Form1: TForm1
               end
               object ButtonAddMeal: TSpeedButton
                 Tag = 3
-                Left = 140
-                Top = 7
-                Width = 53
-                Height = 52
+                Left = 172
+                Top = 9
+                Width = 66
+                Height = 64
                 Hint = #1055#1088#1080#1105#1084' '#1087#1080#1097#1080
                 ParentShowHint = False
                 ShowHint = True
@@ -226,10 +226,10 @@ object Form1: TForm1
               end
               object ButtonAddNote: TSpeedButton
                 Tag = 4
-                Left = 211
-                Top = 7
-                Width = 53
-                Height = 52
+                Left = 260
+                Top = 9
+                Width = 65
+                Height = 64
                 Hint = #1047#1072#1084#1077#1090#1082#1072
                 ParentShowHint = False
                 ShowHint = True
@@ -237,16 +237,16 @@ object Form1: TForm1
               end
             end
             object GroupBoxAdd: TGroupBox
-              Left = 280
+              Left = 345
               Top = 0
-              Width = 260
-              Height = 66
+              Width = 91
+              Height = 81
               Align = alClient
               Caption = #1055#1088#1086#1076#1091#1082#1090#1099' '#1080' '#1073#1083#1102#1076#1072
               Color = clBtnFace
               Font.Charset = RUSSIAN_CHARSET
               Font.Color = clBlue
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentBackground = False
@@ -254,13 +254,13 @@ object Form1: TForm1
               ParentFont = False
               TabOrder = 1
               DesignSize = (
-                260
-                66)
+                91
+                81)
               object ButtonDiaryNewAddFood: TSpeedButton
-                Left = 227
-                Top = 20
-                Width = 20
-                Height = 21
+                Left = 279
+                Top = 25
+                Width = 25
+                Height = 25
                 Hint = #1044#1086#1073#1072#1074#1080#1090#1100' (Enter)'
                 Anchors = [akTop, akRight]
                 NumGlyphs = 2
@@ -270,10 +270,10 @@ object Form1: TForm1
               end
               object ComboDiaryNew: TACComboBox
                 Tag = 1
-                Left = 46
-                Top = 20
-                Width = 115
-                Height = 21
+                Left = 57
+                Top = 25
+                Width = 141
+                Height = 25
                 UserHint = #1053#1072#1095#1085#1080#1090#1077' '#1074#1074#1086#1076#1080#1090#1100' '#1085#1072#1079#1074#1072#1085#1080#1077
                 ShowUserHint = True
                 Style = csSimple
@@ -281,10 +281,10 @@ object Form1: TForm1
                 DropDownCount = 14
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clWindowText
-                Font.Height = -12
+                Font.Height = -15
                 Font.Name = 'MS Sans Serif'
                 Font.Style = []
-                ItemHeight = 13
+                ItemHeight = 16
                 ParentFont = False
                 TabOrder = 1
                 OnCloseUp = ComboDiaryNewCloseUp
@@ -293,9 +293,9 @@ object Form1: TForm1
               end
               object EditDiaryNewMass: TEditNumb
                 Tag = 1
-                Left = 177
-                Top = 20
-                Width = 46
+                Left = 218
+                Top = 25
+                Width = 56
                 Height = 24
                 Hint = #1052#1072#1089#1089#1072' ('#1075')'
                 TabStop = False
@@ -303,7 +303,7 @@ object Form1: TForm1
                 Enabled = False
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clWindowText
-                Font.Height = -12
+                Font.Height = -15
                 Font.Name = 'Courier New'
                 Font.Style = [fsBold]
                 ParentFont = False
@@ -321,8 +321,8 @@ object Form1: TForm1
         object PanelDiaryTopLeft: TPanel
           Left = 0
           Top = 0
-          Width = 225
-          Height = 450
+          Width = 277
+          Height = 435
           Align = alLeft
           BevelOuter = bvLowered
           BorderWidth = 8
@@ -333,36 +333,36 @@ object Form1: TForm1
           OnDblClick = PanelDiaryTopLeftDblClick
           object ShapeLeft1: TShape
             Left = 9
-            Top = 162
-            Width = 207
-            Height = 8
+            Top = 192
+            Width = 259
+            Height = 10
             Align = alTop
             Brush.Style = bsClear
             Pen.Style = psClear
           end
           object ShapeLeft2: TShape
             Left = 9
-            Top = 287
-            Width = 207
-            Height = 8
+            Top = 346
+            Width = 259
+            Height = 10
             Align = alTop
             Brush.Style = bsClear
             Pen.Style = psClear
           end
           object ShapeDivImageBS: TShape
             Left = 9
-            Top = 424
-            Width = 207
-            Height = 9
+            Top = 515
+            Width = 259
+            Height = 11
             Align = alTop
             Brush.Style = bsClear
             Pen.Style = psClear
           end
           object GroupBoxStatistic: TGroupBox
             Left = 9
-            Top = 170
-            Width = 207
-            Height = 117
+            Top = 202
+            Width = 259
+            Height = 144
             Align = alTop
             Caption = #1057#1090#1072#1090#1080#1089#1090#1080#1082#1072
             Color = clWhite
@@ -370,7 +370,7 @@ object Form1: TForm1
             DragKind = dkDock
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlue
-            Font.Height = -12
+            Font.Height = -15
             Font.Name = 'MS Sans Serif'
             Font.Style = []
             ParentBackground = False
@@ -380,73 +380,73 @@ object Form1: TForm1
             PopupMenu = DataInterface.PopupConfigNorms
             TabOrder = 0
             DesignSize = (
-              207
-              117)
+              259
+              144)
             object LabelDayMass: TLabel
-              Left = 13
-              Top = 78
-              Width = 70
-              Height = 13
+              Left = 16
+              Top = 96
+              Width = 92
+              Height = 16
               Caption = 'LabelDayMass'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clBlack
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
               PopupMenu = DataInterface.PopupConfigNorms
             end
             object LabelDayValue: TLabel
-              Left = 13
-              Top = 65
-              Width = 72
-              Height = 13
+              Left = 16
+              Top = 80
+              Width = 94
+              Height = 16
               Caption = 'LabelDayValue'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clBlack
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
               PopupMenu = DataInterface.PopupConfigNorms
             end
             object LabelDayCarbs_: TLabel
-              Left = 59
-              Top = 46
-              Width = 78
-              Height = 13
+              Left = 73
+              Top = 57
+              Width = 102
+              Height = 16
               Caption = 'LabelDayCarbs_'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clBlack
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
               PopupMenu = DataInterface.PopupConfigNorms
             end
             object LabelDayFats_: TLabel
-              Left = 59
-              Top = 33
-              Width = 71
-              Height = 13
+              Left = 73
+              Top = 41
+              Width = 92
+              Height = 16
               Caption = 'LabelDayFats_'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clBlack
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
               PopupMenu = DataInterface.PopupConfigNorms
             end
             object LabelDayProts_: TLabel
-              Left = 59
-              Top = 20
-              Width = 75
-              Height = 13
+              Left = 73
+              Top = 25
+              Width = 97
+              Height = 16
               Caption = 'LabelDayProts_'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clBlack
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
@@ -454,10 +454,10 @@ object Form1: TForm1
             end
             object ImageMinMaxStat: TImage
               Tag = 1
-              Left = 183
+              Left = 225
               Top = 0
-              Width = 19
-              Height = 13
+              Width = 24
+              Height = 16
               Hint = #1057#1074#1077#1088#1085#1091#1090#1100
               Anchors = [akTop, akRight]
               AutoSize = True
@@ -467,24 +467,24 @@ object Form1: TForm1
               OnMouseDown = ImageMinMaxStatMouseDown
             end
             object LabelDayIns: TLabel
-              Left = 13
-              Top = 98
-              Width = 59
-              Height = 13
+              Left = 16
+              Top = 121
+              Width = 76
+              Height = 16
               Caption = 'LabelDayIns'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clBlack
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
               PopupMenu = DataInterface.PopupConfigNorms
             end
             object StatProgProts: TStatProgress
-              Left = 13
-              Top = 20
-              Width = 41
-              Height = 12
+              Left = 16
+              Top = 25
+              Width = 50
+              Height = 14
               ColorFill = 13369035
               ColorOver = clRed
               Progress = 100
@@ -492,10 +492,10 @@ object Form1: TForm1
               Volume = 50
             end
             object StatProgFats: TStatProgress
-              Left = 13
-              Top = 33
-              Width = 41
-              Height = 12
+              Left = 16
+              Top = 41
+              Width = 50
+              Height = 14
               ColorFill = 9371109
               ColorOver = clRed
               Progress = 100
@@ -503,10 +503,10 @@ object Form1: TForm1
               Volume = 50
             end
             object StatProgCarbs: TStatProgress
-              Left = 13
-              Top = 46
-              Width = 41
-              Height = 12
+              Left = 16
+              Top = 57
+              Width = 50
+              Height = 14
               ColorFill = 16684798
               ColorOver = clRed
               Progress = 100
@@ -514,45 +514,45 @@ object Form1: TForm1
               Volume = 50
             end
             object LabelDayProtsVal: TLabel
-              Left = 189
-              Top = 20
-              Width = 14
-              Height = 13
+              Left = 233
+              Top = 25
+              Width = 16
+              Height = 16
               Anchors = [akTop, akRight]
               Caption = 'XX'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clBlack
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
               PopupMenu = DataInterface.PopupConfigNorms
             end
             object LabelDayFatsVal: TLabel
-              Left = 189
-              Top = 33
-              Width = 14
-              Height = 13
+              Left = 233
+              Top = 41
+              Width = 16
+              Height = 16
               Anchors = [akTop, akRight]
               Caption = 'XX'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clBlack
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
               PopupMenu = DataInterface.PopupConfigNorms
             end
             object LabelDayCarbsVal: TLabel
-              Left = 189
-              Top = 46
-              Width = 14
-              Height = 13
+              Left = 233
+              Top = 57
+              Width = 16
+              Height = 16
               Anchors = [akTop, akRight]
               Caption = 'XX'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clBlack
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
@@ -561,16 +561,16 @@ object Form1: TForm1
           end
           object GroupBoxGraph: TGroupBox
             Left = 9
-            Top = 295
-            Width = 207
-            Height = 129
+            Top = 356
+            Width = 259
+            Height = 159
             Align = alTop
             Caption = #1043#1088#1072#1092#1080#1082' '#1057#1050
             Color = clWhite
             DragKind = dkDock
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlue
-            Font.Height = -12
+            Font.Height = -15
             Font.Name = 'MS Sans Serif'
             Font.Style = []
             ParentBackground = False
@@ -578,14 +578,14 @@ object Form1: TForm1
             ParentFont = False
             TabOrder = 1
             DesignSize = (
-              207
-              129)
+              259
+              159)
             object ImageMinMaxGraph: TImage
               Tag = 1
-              Left = 181
+              Left = 223
               Top = 0
-              Width = 20
-              Height = 13
+              Width = 24
+              Height = 16
               Hint = #1057#1074#1077#1088#1085#1091#1090#1100
               Anchors = [akTop, akRight]
               AutoSize = True
@@ -596,9 +596,9 @@ object Form1: TForm1
             end
             object ImagePreview: TImage
               Left = 2
-              Top = 15
-              Width = 203
-              Height = 112
+              Top = 18
+              Width = 255
+              Height = 139
               Hint = #1050#1083#1080#1082#1085#1080#1090#1077' '#1076#1074#1072' '#1088#1072#1079#1072' '#1076#1083#1103' '#1087#1077#1088#1077#1093#1086#1076#1072' '#1082' '#1073#1086#1083#1100#1096#1086#1084#1091' '#1075#1088#1072#1092#1080#1082#1091
               Align = alClient
               ParentShowHint = False
@@ -608,15 +608,15 @@ object Form1: TForm1
           end
           object GroupBoxTimeLeft: TGroupBox
             Left = 9
-            Top = 433
-            Width = 207
-            Height = 78
+            Top = 526
+            Width = 259
+            Height = 96
             Align = alTop
             Caption = #1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1086
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlue
-            Font.Height = -12
+            Font.Height = -15
             Font.Name = 'MS Sans Serif'
             Font.Style = []
             ParentBackground = False
@@ -624,13 +624,13 @@ object Form1: TForm1
             ParentFont = False
             TabOrder = 2
             DesignSize = (
-              207
-              78)
+              259
+              96)
             object LabelDiaryTimeLeftInsVal: TLabel
-              Left = 176
-              Top = 20
-              Width = 33
-              Height = 13
+              Left = 220
+              Top = 25
+              Width = 37
+              Height = 16
               Align = alCustom
               Alignment = taRightJustify
               Anchors = [akTop, akRight]
@@ -638,17 +638,17 @@ object Form1: TForm1
               Caption = '00:00'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = [fsBold]
               ParentBiDiMode = False
               ParentFont = False
             end
             object LabelDiaryTimeLeftMealVal: TLabel
-              Left = 176
-              Top = 33
-              Width = 33
-              Height = 13
+              Left = 220
+              Top = 41
+              Width = 37
+              Height = 16
               Align = alCustom
               Alignment = taRightJustify
               Anchors = [akTop, akRight]
@@ -656,7 +656,7 @@ object Form1: TForm1
               Caption = '00:00'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = [fsBold]
               ParentBiDiMode = False
@@ -664,15 +664,15 @@ object Form1: TForm1
             end
             object LabelDiaryTimeLeftMeal: TLabel
               Left = 2
-              Top = 33
-              Width = 114
-              Height = 13
+              Top = 41
+              Width = 148
+              Height = 16
               Align = alCustom
               BiDiMode = bdLeftToRight
               Caption = 'LabelDiaryTimeLeftMeal'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentBiDiMode = False
@@ -680,15 +680,15 @@ object Form1: TForm1
             end
             object LabelDiaryTimeLeftIns: TLabel
               Left = 2
-              Top = 20
-              Width = 105
-              Height = 13
+              Top = 25
+              Width = 135
+              Height = 16
               Align = alCustom
               BiDiMode = bdLeftToRight
               Caption = 'LabelDiaryTimeLeftIns'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentBiDiMode = False
@@ -696,29 +696,29 @@ object Form1: TForm1
             end
             object LabelDiaryFinger: TLabel
               Left = 0
-              Top = 46
-              Width = 79
-              Height = 13
+              Top = 57
+              Width = 104
+              Height = 16
               Caption = 'LabelDiaryFinger'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
             end
             object LabelDiaryFingerVal: TLabel
-              Left = 197
-              Top = 46
-              Width = 17
-              Height = 13
+              Left = 244
+              Top = 57
+              Width = 19
+              Height = 16
               Cursor = crHelp
               Alignment = taRightJustify
               Anchors = [akTop, akRight]
               Caption = 'XX'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = [fsBold]
               ParentFont = False
@@ -727,10 +727,10 @@ object Form1: TForm1
             end
             object ImageMinMaxTimes: TImage
               Tag = 1
-              Left = 181
+              Left = 223
               Top = 0
-              Width = 20
-              Height = 13
+              Width = 24
+              Height = 16
               Hint = #1057#1074#1077#1088#1085#1091#1090#1100
               Anchors = [akTop, akRight]
               AutoSize = True
@@ -741,15 +741,15 @@ object Form1: TForm1
             end
           end
           object PanelDevelopment: TPanel
-            Left = 13
-            Top = 533
-            Width = 157
-            Height = 59
+            Left = 16
+            Top = 656
+            Width = 193
+            Height = 73
             Caption = 'DEV'
             Color = clBlack
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clRed
-            Font.Height = -21
+            Font.Height = -27
             Font.Name = 'Tahoma'
             Font.Style = [fsBold]
             ParentBackground = False
@@ -760,15 +760,15 @@ object Form1: TForm1
           object CalendarDiary: TMonthCalendar
             Left = 9
             Top = 9
-            Width = 207
-            Height = 153
+            Width = 259
+            Height = 183
             Align = alTop
             AutoSize = True
             CalColors.TrailingTextColor = clGradientInactiveCaption
-            Date = 40251.125162060180000000
+            Date = 40251.174188981480000000
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
-            Font.Height = -12
+            Font.Height = -15
             Font.Name = 'MS Sans Serif'
             Font.Style = []
             ParentFont = False
@@ -778,10 +778,10 @@ object Form1: TForm1
           end
         end
         object PanelDiaryDish: TPanel
-          Left = 768
+          Left = 716
           Top = 0
-          Width = 215
-          Height = 450
+          Width = 265
+          Height = 435
           Align = alRight
           BevelOuter = bvLowered
           BorderWidth = 10
@@ -790,18 +790,18 @@ object Form1: TForm1
           TabOrder = 2
           object ShapeRight3: TShape
             Left = 11
-            Top = 191
-            Width = 193
-            Height = 8
+            Top = 232
+            Width = 243
+            Height = 10
             Align = alTop
             Brush.Style = bsClear
             Pen.Style = psClear
           end
           object ShapeRight2: TShape
             Left = 11
-            Top = 116
-            Width = 193
-            Height = 8
+            Top = 140
+            Width = 243
+            Height = 10
             Align = alTop
             Brush.Style = bsClear
             Pen.Style = psClear
@@ -809,80 +809,80 @@ object Form1: TForm1
           object GroupBoxMeal: TGroupBox
             Left = 11
             Top = 11
-            Width = 193
-            Height = 105
+            Width = 243
+            Height = 129
             Align = alTop
             Caption = #1055#1088#1080#1105#1084' '#1087#1080#1097#1080
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlue
-            Font.Height = -12
+            Font.Height = -15
             Font.Name = 'MS Sans Serif'
             Font.Style = []
             ParentColor = False
             ParentFont = False
             TabOrder = 0
             object LabelDiaryMealProts: TLabel
-              Left = 13
-              Top = 20
-              Width = 97
-              Height = 13
+              Left = 16
+              Top = 25
+              Width = 127
+              Height = 16
               Caption = 'LabelDiaryMealProts'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
             end
             object LabelDiaryMealCarbs: TLabel
-              Left = 13
-              Top = 46
-              Width = 100
-              Height = 13
+              Left = 16
+              Top = 57
+              Width = 132
+              Height = 16
               Caption = 'LabelDiaryMealCarbs'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
             end
             object LabelDiaryMealFats: TLabel
-              Left = 13
-              Top = 33
-              Width = 93
-              Height = 13
+              Left = 16
+              Top = 41
+              Width = 122
+              Height = 16
               Caption = 'LabelDiaryMealFats'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
             end
             object LabelDiaryMealValue: TLabel
-              Left = 13
-              Top = 65
-              Width = 100
-              Height = 13
+              Left = 16
+              Top = 80
+              Width = 131
+              Height = 16
               Caption = 'LabelDiaryMealValue'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
             end
             object LabelDiaryMealMass: TLabel
-              Left = 13
-              Top = 78
-              Width = 98
-              Height = 13
+              Left = 16
+              Top = 96
+              Width = 129
+              Height = 16
               Caption = 'LabelDiaryMealMass'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
@@ -890,15 +890,15 @@ object Form1: TForm1
           end
           object CorrectCarbs: TGroupBox
             Left = 11
-            Top = 199
-            Width = 193
-            Height = 240
+            Top = 242
+            Width = 243
+            Height = 182
             Align = alClient
             Caption = #1055#1086#1076#1073#1086#1088' '#1091#1075#1083#1077#1074#1086#1076#1086#1074
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlue
-            Font.Height = -12
+            Font.Height = -15
             Font.Name = 'MS Sans Serif'
             Font.Style = []
             ParentColor = False
@@ -906,9 +906,9 @@ object Form1: TForm1
             TabOrder = 1
             object PanelCorrect: TPanel
               Left = 2
-              Top = 15
-              Width = 189
-              Height = 223
+              Top = 18
+              Width = 239
+              Height = 162
               Align = alClient
               BevelOuter = bvNone
               BorderWidth = 8
@@ -917,28 +917,29 @@ object Form1: TForm1
               object LabelCorrectionEmpty: TLabel
                 Left = 8
                 Top = 8
-                Width = 173
-                Height = 13
+                Width = 223
+                Height = 16
                 Align = alTop
                 Caption = 'LabelCorrectionEmpty'
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clWindowText
-                Font.Height = -12
+                Font.Height = -15
                 Font.Name = 'MS Sans Serif'
                 Font.Style = []
                 ParentFont = False
               end
               object ListCorrectCarbs: TListView
                 Left = 8
-                Top = 21
-                Width = 173
-                Height = 194
+                Top = 24
+                Width = 223
+                Height = 130
                 Align = alClient
                 BorderStyle = bsNone
                 Columns = <
                   item
                     Caption = #1044#1086#1079#1072
                     MinWidth = 50
+                    Width = 62
                   end
                   item
                     AutoSize = True
@@ -947,11 +948,11 @@ object Form1: TForm1
                   end
                   item
                     Caption = #1048#1090#1086#1075#1086
-                    Width = 45
+                    Width = 55
                   end>
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clWindowText
-                Font.Height = -12
+                Font.Height = -15
                 Font.Name = 'MS Sans Serif'
                 Font.Style = []
                 HideSelection = False
@@ -967,56 +968,56 @@ object Form1: TForm1
           end
           object GroupBoxDose: TGroupBox
             Left = 11
-            Top = 124
-            Width = 193
-            Height = 67
+            Top = 150
+            Width = 243
+            Height = 82
             Align = alTop
             Caption = #1048#1085#1089#1091#1083#1080#1085
             Color = clWhite
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlue
-            Font.Height = -12
+            Font.Height = -15
             Font.Name = 'MS Sans Serif'
             Font.Style = []
             ParentColor = False
             ParentFont = False
             TabOrder = 2
             object LabelDiaryMealDose: TLabel
-              Left = 13
-              Top = 20
-              Width = 117
-              Height = 13
+              Left = 16
+              Top = 25
+              Width = 148
+              Height = 16
               Caption = 'LabelDiaryMealDose'
               Font.Charset = RUSSIAN_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = [fsBold]
               ParentFont = False
             end
             object LabelDiaryCorrection: TLabel
-              Left = 13
-              Top = 33
-              Width = 98
-              Height = 13
+              Left = 16
+              Top = 41
+              Width = 127
+              Height = 16
               Hint = #1053#1077' '#1088#1077#1082#1086#1084#1077#1085#1076#1091#1077#1090#1089#1103' '#1080#1079#1084#1077#1085#1103#1090#1100' '#1057#1050' '#1090#1072#1082' '#1088#1077#1079#1082#1086
               Caption = 'LabelDiaryCorrection'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clGray
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
             end
             object LabelDiaryMealExpectedBS: TLabel
-              Left = 13
-              Top = 46
-              Width = 132
-              Height = 13
+              Left = 16
+              Top = 57
+              Width = 171
+              Height = 16
               Caption = 'LabelDiaryMealExpectedBS'
               Font.Charset = RUSSIAN_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
@@ -1031,9 +1032,9 @@ object Form1: TForm1
         ParentShowHint = False
         ShowHint = False
         object SplitterBase: TSplitter
-          Left = 449
-          Top = 53
-          Height = 397
+          Left = 553
+          Top = 65
+          Height = 489
           Color = clSkyBlue
           ParentColor = False
           OnCanResize = SplitterBaseCanResize
@@ -1041,9 +1042,9 @@ object Form1: TForm1
         end
         object PanelBaseFood: TPanel
           Left = 0
-          Top = 53
-          Width = 449
-          Height = 397
+          Top = 65
+          Width = 553
+          Height = 489
           Align = alLeft
           BevelOuter = bvLowered
           BorderWidth = 8
@@ -1052,35 +1053,35 @@ object Form1: TForm1
           ParentBackground = False
           TabOrder = 0
           object LabelFoodBase: TLabel
-            Left = 9
-            Top = 9
-            Width = 431
-            Height = 13
+            Left = 11
+            Top = 11
+            Width = 112
+            Height = 16
             Align = alTop
             Caption = 'LabelFoodBase'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
-            Font.Height = -12
+            Font.Height = -15
             Font.Name = 'MS Sans Serif'
             Font.Style = [fsBold]
             ParentFont = False
             Transparent = False
           end
           object Shape2: TShape
-            Left = 9
-            Top = 22
-            Width = 431
-            Height = 6
+            Left = 11
+            Top = 27
+            Width = 531
+            Height = 7
             Align = alTop
             Brush.Style = bsClear
             Pen.Style = psClear
           end
           object ListFood: TListView
             Tag = 1
-            Left = 9
-            Top = 28
-            Width = 431
-            Height = 313
+            Left = 11
+            Top = 34
+            Width = 531
+            Height = 386
             Align = alClient
             Columns = <
               item
@@ -1092,26 +1093,31 @@ object Form1: TForm1
                 Caption = #1041
                 MaxWidth = 100
                 MinWidth = 50
+                Width = 62
               end
               item
                 Caption = #1046
                 MaxWidth = 100
                 MinWidth = 50
+                Width = 62
               end
               item
                 Caption = #1059
                 MaxWidth = 100
                 MinWidth = 50
+                Width = 62
               end
               item
                 Caption = #1082#1082#1072#1083
                 MaxWidth = 100
                 MinWidth = 50
+                Width = 62
               end
               item
                 Caption = #1043#1048
                 MaxWidth = 100
                 MinWidth = 50
+                Width = 62
               end>
             GridLines = True
             HideSelection = False
@@ -1130,24 +1136,24 @@ object Form1: TForm1
           end
           object PanelFoodButtons: TPanel
             Left = 9
-            Top = 341
-            Width = 431
-            Height = 47
+            Top = 303
+            Width = 535
+            Height = 58
             Align = alBottom
             BevelOuter = bvNone
             ParentColor = True
             TabOrder = 1
             object ButtonCreateFood: TSpeedButton
               Left = 0
-              Top = 10
-              Width = 130
-              Height = 32
+              Top = 12
+              Width = 160
+              Height = 40
               Hint = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1099#1081' '#1087#1088#1086#1076#1091#1082#1090
               Caption = #1053#1086#1074#1099#1081' '#1087#1088#1086#1076#1091#1082#1090
               Flat = True
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
@@ -1158,10 +1164,10 @@ object Form1: TForm1
           end
         end
         object PanelBaseDish: TPanel
-          Left = 452
-          Top = 53
-          Width = 531
-          Height = 397
+          Left = 556
+          Top = 65
+          Width = 425
+          Height = 370
           Align = alClient
           BevelOuter = bvLowered
           BorderWidth = 8
@@ -1169,19 +1175,19 @@ object Form1: TForm1
           ParentBackground = False
           TabOrder = 1
           object Shape11: TShape
-            Left = 9
-            Top = 22
-            Width = 513
-            Height = 6
+            Left = 11
+            Top = 27
+            Width = 631
+            Height = 7
             Align = alTop
             Brush.Style = bsClear
             Pen.Style = psClear
           end
           object PanelDishHeader: TPanel
-            Left = 9
-            Top = 9
-            Width = 513
-            Height = 13
+            Left = 11
+            Top = 11
+            Width = 631
+            Height = 16
             Align = alTop
             AutoSize = True
             BevelOuter = bvNone
@@ -1190,12 +1196,12 @@ object Form1: TForm1
             object LabelDishBase: TLabel
               Left = 0
               Top = 0
-              Width = 85
-              Height = 13
+              Width = 107
+              Height = 16
               Caption = 'LabelDishBase'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = [fsBold]
               ParentFont = False
@@ -1204,10 +1210,10 @@ object Form1: TForm1
           end
           object ListDish: TListView
             Tag = 2
-            Left = 9
-            Top = 28
-            Width = 513
-            Height = 313
+            Left = 11
+            Top = 34
+            Width = 631
+            Height = 386
             Align = alClient
             Color = clWhite
             Columns = <
@@ -1220,31 +1226,34 @@ object Form1: TForm1
                 Caption = #1052#1072#1089#1089#1072
                 MaxWidth = 100
                 MinWidth = 60
-                Width = 60
+                Width = 74
               end
               item
                 Caption = #1041
                 MaxWidth = 100
                 MinWidth = 50
+                Width = 62
               end
               item
                 Caption = #1046
                 MaxWidth = 100
                 MinWidth = 50
+                Width = 62
               end
               item
                 Caption = #1059
                 MaxWidth = 100
                 MinWidth = 50
+                Width = 62
               end
               item
                 Caption = #1082#1082#1072#1083
                 MaxWidth = 100
                 MinWidth = 50
+                Width = 62
               end
               item
                 Caption = #1044#1072#1090#1072
-                Width = 41
               end>
             GridLines = True
             HideSelection = False
@@ -1263,24 +1272,24 @@ object Form1: TForm1
           end
           object PanelDishButtons: TPanel
             Left = 9
-            Top = 341
-            Width = 513
-            Height = 47
+            Top = 303
+            Width = 407
+            Height = 58
             Align = alBottom
             BevelOuter = bvNone
             ParentColor = True
             TabOrder = 2
             object ButtonCreateDish: TSpeedButton
               Left = 0
-              Top = 10
-              Width = 130
-              Height = 34
+              Top = 12
+              Width = 160
+              Height = 42
               Hint = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1086#1077' '#1073#1083#1102#1076#1086
               Caption = #1053#1086#1074#1086#1077' '#1073#1083#1102#1076#1086
               Flat = True
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
@@ -1293,25 +1302,25 @@ object Form1: TForm1
         object GroupBasesSearch: TGroupBox
           Left = 0
           Top = 0
-          Width = 983
-          Height = 53
+          Width = 981
+          Height = 65
           Align = alTop
           Caption = #1055#1086#1080#1089#1082
           Color = clBtnFace
           ParentColor = False
           TabOrder = 2
           DesignSize = (
-            983
-            53)
+            981
+            65)
           object EditBaseFoodSearch: TEdit
-            Left = 13
-            Top = 20
-            Width = 957
+            Left = 16
+            Top = 25
+            Width = 949
             Height = 21
             Anchors = [akLeft, akTop, akRight]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
-            Font.Height = -12
+            Font.Height = -15
             Font.Name = 'MS Sans Serif'
             Font.Style = []
             ParentFont = False
@@ -1331,8 +1340,8 @@ object Form1: TForm1
         object PanelAnManagment: TPanel
           Left = 0
           Top = 0
-          Width = 202
-          Height = 450
+          Width = 249
+          Height = 435
           Align = alLeft
           BevelOuter = bvLowered
           BorderWidth = 8
@@ -1341,66 +1350,66 @@ object Form1: TForm1
           TabOrder = 0
           object ShapeAn1: TShape
             Left = 9
-            Top = 302
-            Width = 184
-            Height = 6
+            Top = 370
+            Width = 231
+            Height = 7
             Align = alTop
             Brush.Style = bsClear
             Pen.Style = psClear
           end
           object Shape1: TShape
             Left = 9
-            Top = 217
-            Width = 184
-            Height = 6
+            Top = 265
+            Width = 231
+            Height = 7
             Align = alTop
             Brush.Style = bsClear
             Pen.Style = psClear
           end
           object TheKoofsGroupBox: TGroupBox
             Left = 9
-            Top = 223
-            Width = 184
-            Height = 79
+            Top = 272
+            Width = 231
+            Height = 98
             Align = alTop
             Caption = #1044#1077#1081#1089#1090#1074#1080#1103
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlue
-            Font.Height = -12
+            Font.Height = -15
             Font.Name = 'MS Sans Serif'
             Font.Style = []
             ParentFont = False
             TabOrder = 0
             DesignSize = (
-              184
-              79)
+              231
+              98)
             object LabelAnCompValue: TLabel
-              Left = 7
-              Top = 33
+              Left = 9
+              Top = 41
               Width = 39
-              Height = 13
+              Height = 16
               Caption = '             '
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clGreen
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
             end
             object ButtonConfigKoof: TButton
-              Left = 7
-              Top = 46
-              Width = 169
-              Height = 19
+              Left = 9
+              Top = 57
+              Width = 208
+              Height = 23
               Action = ActionSettingsAnalyze
               Anchors = [akLeft, akTop, akRight]
               TabOrder = 0
             end
             object ButtonUpdateKoof: TButton
-              Left = 7
-              Top = 20
-              Width = 169
-              Height = 19
+              Left = 9
+              Top = 25
+              Width = 208
+              Height = 23
               Anchors = [akLeft, akTop, akRight]
               Caption = #1055#1077#1088#1077#1089#1095#1080#1090#1072#1090#1100
               TabOrder = 1
@@ -1410,116 +1419,116 @@ object Form1: TForm1
           object GroupBoxInfo: TGroupBox
             Left = 9
             Top = 9
-            Width = 184
-            Height = 208
+            Width = 231
+            Height = 256
             Align = alTop
             Caption = #1055#1088#1086#1089#1084#1086#1090#1088
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlue
-            Font.Height = -12
+            Font.Height = -15
             Font.Name = 'MS Sans Serif'
             Font.Style = []
             ParentBackground = False
             ParentFont = False
             TabOrder = 1
             DesignSize = (
-              184
-              208)
+              231
+              256)
             object LabelKoofDiscription: TLabel
-              Left = 7
-              Top = 144
-              Width = 174
-              Height = 52
+              Left = 9
+              Top = 177
+              Width = 214
+              Height = 64
               Anchors = [akLeft, akTop, akRight]
               AutoSize = False
               Caption = #1042#1099#1073#1077#1088#1080#1090#1077' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clGrayText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
               WordWrap = True
             end
             object Label2: TLabel
-              Left = 7
-              Top = 20
-              Width = 77
-              Height = 13
+              Left = 9
+              Top = 25
+              Width = 101
+              Height = 16
               Caption = #1052#1077#1090#1086#1076' '#1072#1085#1072#1083#1080#1079#1072
               Color = clWindow
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentColor = False
               ParentFont = False
             end
             object Label3: TLabel
-              Left = 7
-              Top = 104
-              Width = 70
-              Height = 13
+              Left = 9
+              Top = 128
+              Width = 93
+              Height = 16
               Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090
               Color = clWindow
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentColor = False
               ParentFont = False
             end
             object LabelCalcTime: TLabel
-              Left = 7
-              Top = 59
-              Width = 70
-              Height = 13
+              Left = 9
+              Top = 73
+              Width = 92
+              Height = 16
               Caption = 'LabelCalcTime'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clGrayText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
             end
             object LabelAvgDeviation: TLabel
-              Left = 7
-              Top = 72
-              Width = 90
-              Height = 13
+              Left = 9
+              Top = 89
+              Width = 115
+              Height = 16
               Caption = 'LabelAvgDeviation'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clGrayText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
             end
             object LabelWeight: TLabel
-              Left = 7
-              Top = 85
-              Width = 60
-              Height = 13
+              Left = 9
+              Top = 105
+              Width = 76
+              Height = 16
               Caption = 'LabelWeight'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clGrayText
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = []
               ParentFont = False
             end
             object ComboAnalyzers: TComboBox
-              Left = 7
-              Top = 33
-              Width = 168
+              Left = 9
+              Top = 41
+              Width = 206
               Height = 22
               Style = csOwnerDrawFixed
               Anchors = [akLeft, akTop, akRight]
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clBlack
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = [fsBold]
               ItemHeight = 16
@@ -1530,15 +1539,15 @@ object Form1: TForm1
                 #1050#1086#1084#1073#1080#1085#1080#1088#1086#1074#1072#1085#1085#1099#1081)
             end
             object ComboKoof: TComboBox
-              Left = 7
-              Top = 118
-              Width = 168
+              Left = 9
+              Top = 145
+              Width = 206
               Height = 22
               Style = csOwnerDrawFixed
               Anchors = [akLeft, akTop, akRight]
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clBlack
-              Font.Height = -12
+              Font.Height = -15
               Font.Name = 'MS Sans Serif'
               Font.Style = [fsBold]
               ItemHeight = 16
@@ -1554,16 +1563,16 @@ object Form1: TForm1
           end
         end
         object PanelImageLarge: TPanel
-          Left = 202
+          Left = 249
           Top = 0
-          Width = 781
-          Height = 450
+          Width = 732
+          Height = 435
           Align = alClient
           BevelOuter = bvLowered
           Caption = #1053#1077#1090' '#1075#1088#1072#1092#1080#1082#1072
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
-          Font.Height = -16
+          Font.Height = -20
           Font.Name = 'MS Sans Serif'
           Font.Style = []
           ParentFont = False
@@ -1571,8 +1580,8 @@ object Form1: TForm1
           object ImageLarge: TImage
             Left = 1
             Top = 1
-            Width = 798
-            Height = 678
+            Width = 982
+            Height = 835
             Align = alClient
           end
         end
@@ -1581,7 +1590,7 @@ object Form1: TForm1
         Caption = #1057#1090#1072#1090#1080#1089#1090#1080#1082#1072
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
-        Font.Height = -12
+        Font.Height = -15
         Font.Name = 'MS Sans Serif'
         Font.Style = []
         ImageIndex = 5
@@ -1589,42 +1598,42 @@ object Form1: TForm1
         object GroupBoxBSHistory: TGroupBox
           Left = 0
           Top = 0
-          Width = 183
-          Height = 450
+          Width = 225
+          Height = 435
           Align = alLeft
           Caption = #1056#1077#1082#1086#1088#1076#1099' '#1057#1050
           TabOrder = 0
           DesignSize = (
-            183
-            450)
+            225
+            435)
           object ButtonBSHistory: TButton
-            Left = 7
-            Top = 20
-            Width = 169
-            Height = 20
+            Left = 9
+            Top = 25
+            Width = 208
+            Height = 24
             Caption = #1055#1086#1089#1090#1088#1086#1080#1090#1100' '#1089#1087#1080#1089#1086#1082
             TabOrder = 0
             OnClick = ButtonBSHistoryClick
           end
           object ButtonBSList: TButton
-            Left = 7
-            Top = 46
-            Width = 169
-            Height = 20
+            Left = 9
+            Top = 57
+            Width = 208
+            Height = 24
             Caption = #1055#1086#1089#1090#1088#1086#1080#1090#1100' '#1088#1072#1089#1087#1088#1077#1076#1077#1083#1077#1085#1080#1077
             TabOrder = 1
             OnClick = ButtonBSListClick
           end
           object ListBS: TListBox
             Left = 2
-            Top = 36
-            Width = 179
-            Height = 412
+            Top = -76
+            Width = 221
+            Height = 509
             Align = alBottom
             Anchors = [akLeft, akTop, akRight, akBottom]
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
-            Font.Height = -12
+            Font.Height = -15
             Font.Name = 'Courier New'
             Font.Style = []
             ItemHeight = 15
@@ -1633,38 +1642,38 @@ object Form1: TForm1
             OnDblClick = ListBSDblClick
           end
           object ButtonAvgBSDynamic: TButton
-            Left = 7
-            Top = 72
-            Width = 169
-            Height = 20
+            Left = 9
+            Top = 89
+            Width = 208
+            Height = 24
             Anchors = [akLeft, akTop, akRight]
             Caption = 'ButtonAvgBSDynamic'
             TabOrder = 3
             OnClick = ButtonAvgBSDynamicClick
           end
           object ButtonInsList: TButton
-            Left = 7
-            Top = 111
-            Width = 169
-            Height = 20
+            Left = 9
+            Top = 137
+            Width = 208
+            Height = 24
             Caption = #1048#1085#1089#1091#1083#1080#1085#1086#1087#1086#1090#1088#1077#1073#1085#1086#1089#1090#1100
             TabOrder = 4
             OnClick = ButtonInsListClick
           end
           object ButtonAnList: TButton
-            Left = 7
-            Top = 137
-            Width = 169
-            Height = 20
+            Left = 9
+            Top = 169
+            Width = 208
+            Height = 24
             Caption = 'AnList'
             TabOrder = 5
             OnClick = ButtonAnListClick
           end
           object ButtonAvgBS: TBitBtn
-            Left = 7
-            Top = 161
-            Width = 169
-            Height = 19
+            Left = 9
+            Top = 198
+            Width = 208
+            Height = 24
             Caption = #1057#1088#1077#1076#1085#1080#1081' '#1057#1050' ('#1084#1077#1089#1103#1094')'
             TabOrder = 6
             TabStop = False
@@ -1672,14 +1681,14 @@ object Form1: TForm1
             OnExit = ResetTabStop
           end
           object ButtonInsulinCalc: TButton
-            Left = 7
-            Top = 189
-            Width = 169
-            Height = 20
+            Left = 9
+            Top = 233
+            Width = 208
+            Height = 24
             Caption = #1056#1072#1089#1093#1086#1076' '#1080#1085#1089#1091#1083#1080#1085#1072
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
-            Font.Height = -12
+            Font.Height = -15
             Font.Name = 'MS Sans Serif'
             Font.Style = []
             ParentFont = False
@@ -1688,28 +1697,28 @@ object Form1: TForm1
           end
         end
         object GroupBoxCarbsHistory: TGroupBox
-          Left = 183
+          Left = 225
           Top = 0
-          Width = 183
-          Height = 450
+          Width = 225
+          Height = 435
           Align = alLeft
           Caption = #1056#1077#1082#1086#1088#1076#1099' '#1041#1046#1059
           TabOrder = 1
           DesignSize = (
-            183
-            450)
+            225
+            435)
           object ListCB: TListBox
             Left = 2
-            Top = -159
-            Width = 179
-            Height = 607
+            Top = -316
+            Width = 221
+            Height = 749
             Hint = #1050#1083#1080#1082#1085#1080#1090#1077' '#1076#1074#1072' '#1088#1072#1079#1072' '#1076#1083#1103' '#1087#1077#1088#1077#1093#1086#1076#1072
             Style = lbOwnerDrawFixed
             Align = alBottom
             Anchors = [akLeft, akTop, akRight, akBottom]
             Font.Charset = RUSSIAN_CHARSET
             Font.Color = clWindowText
-            Font.Height = -12
+            Font.Height = -15
             Font.Name = 'Courier New'
             Font.Style = []
             ItemHeight = 17
@@ -1720,13 +1729,13 @@ object Form1: TForm1
             OnDblClick = ListBSDblClick
           end
           object ComboValue: TComboBox
-            Left = 13
-            Top = 20
-            Width = 157
-            Height = 21
+            Left = 16
+            Top = 25
+            Width = 193
+            Height = 24
             Style = csDropDownList
             Anchors = [akLeft, akTop, akRight]
-            ItemHeight = 13
+            ItemHeight = 16
             TabOrder = 1
             OnChange = ComboValueChange
             Items.Strings = (
