@@ -686,7 +686,7 @@ begin
   CalendarDiary.Top := 0;
   CalendarDiary.Show;
   CalendarDiary.Align := alNone;
-  PanelDiaryTopLeft.Width := CalendarDiary.Width + 2 * BORD;
+  PanelDiaryTopLeft.Width := CalendarDiary.Width + 4 * BORD;
   CalendarDiary.Align := alTop;
 
   // кнопки свёртывания
