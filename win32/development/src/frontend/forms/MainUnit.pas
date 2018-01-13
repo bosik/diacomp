@@ -107,7 +107,6 @@ type
     ScrollBoxDiary: TScrollBox;
     DiaryView: TDiaryView;
     PanelDiaryBottom: TPanel;
-    BevelRecRight: TBevel;
     PanelAdd: TPanel;
     ButtonAddBlood: TSpeedButton;
     ButtonAddIns: TSpeedButton;
@@ -663,8 +662,6 @@ var
   t: integer;
   FoodDishBord: integer;
 begin
-  StartProc('Designer');
-
   DGroup := LabelDayProts_.Height div 2;
 
   // разделители
@@ -794,12 +791,8 @@ begin
   PanelFoodButtons.Height := BASE_BUTTON_HEIGHT + BORD; // no 2*
   PanelDishButtons.Height := BASE_BUTTON_HEIGHT + BORD; // no 2*
 
-  BevelRecRight.Width := 2;
-
   { АНАЛИЗ }
   // TODO: написать
-
-  FinishProc;
 end;
 
 {======================================================================================================================}
@@ -1795,6 +1788,7 @@ procedure TForm1.FormResize(Sender: TObject);
 {======================================================================================================================}
 begin
   PanelBaseFood.Width := Round(Width * Value['PanelBaseFood.Width']);
+  Designer();
 end;
 
 {======================================================================================================================}
