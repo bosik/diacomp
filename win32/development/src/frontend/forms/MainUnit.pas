@@ -495,6 +495,8 @@ var
   //ON_IDLE_UpdateKoofs:  boolean = False;
   IN_IDLE_CheckUpdates: boolean = False;
 
+  LatestVersion:      integer;
+
 const
   { Интерфейс }
   PANEL_OPEN_TIME    = 250;
@@ -3367,8 +3369,6 @@ end;
 {======================================================================================================================}
 procedure TForm1.MyIdle(Sender: TObject; var Done: Boolean);
 {======================================================================================================================}
-var
-  Version: integer;
 begin
   Done := True;
 
@@ -3380,8 +3380,6 @@ begin
 
   //StartProc('MyIdle');
   try
-
-
   { ================ Общие ==================== }
 
   case PageControl1.ActivePageIndex of
@@ -3451,10 +3449,11 @@ begin
   begin
     IN_IDLE_CheckUpdates := False;
 
-    Version := GetLatestVersion(Value['ServerURL']);
-    if Version > PROGRAM_VERSION_CODE then
-      // ShowBalloon(BALLOON_INFO_NEW_VERSION_AVAILABLE, bitInfo, BalloonAction_StartUpdate);
-      SetupUpdate(True, Version);
+    LatestVersion := GetLatestVersion(Value['ServerURL']);
+    if LatestVersion > PROGRAM_VERSION_CODE then
+    begin
+      ShowBalloon(BALLOON_INFO_NEW_VERSION_AVAILABLE, bitInfo, BalloonAction_StartUpdate);
+    end;
 
     Done := False;
     Exit;
@@ -3711,7 +3710,7 @@ end;
 procedure TForm1.BalloonAction_StartUpdate;
 {======================================================================================================================}
 begin
-  //SetupUpdate(True, AnExpDate);
+  SetupUpdate(True, LatestVersion);
 end;
 
 {======================================================================================================================}

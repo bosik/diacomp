@@ -1,6 +1,6 @@
-APPLICATION_TITLE                   = Compensation
+APPLICATION_TITLE                   = Diacomp
 BALLOON_ERROR_ANALYZER_NOT_FOUND    = Error: failed to load analyze unit
-BALLOON_INFO_NEW_VERSION_AVAILABLE  = New app version available. Click this message for details.
+BALLOON_INFO_NEW_VERSION_AVAILABLE  = New app version available. Click this message to install.
 MAIN_BASES                               = Bases
 MAIN_BASES_FOOD_TITLE                    = Food base (%d)
 MAIN_BASES_DISH_TITLE                    = Dish base (%d)

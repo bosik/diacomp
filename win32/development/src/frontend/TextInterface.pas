@@ -8,7 +8,7 @@ uses
 var
   APPLICATION_TITLE                   : string = 'Компенсация';
 
-  BALLOON_INFO_NEW_VERSION_AVAILABLE  : string = 'Доступна новая версия программы. Для просмотра более подробной информации нажмите на это сообщение.';
+  BALLOON_INFO_NEW_VERSION_AVAILABLE  : string = 'Доступна новая версия программы. Для установки нажмите на это сообщение.';
   BALLOON_ERROR_ANALYZER_NOT_FOUND    : string = 'Ошибка: модуль анализа не загружен';
   MAIN_BASES                               : string;
   MAIN_BASES_FOOD_TITLE                    : string;
