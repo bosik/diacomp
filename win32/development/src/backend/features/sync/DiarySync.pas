@@ -303,25 +303,28 @@ begin
     Newer1 := TAppendableVersionedList.Create();
     Newer2 := TAppendableVersionedList.Create();
 
-    if (Hash1 <> Hash2) then
-    begin
-      SynchronizeChildren(Source1, Tree1, Source2, Tree2, '', Newer1, Newer2, Callback);
-      Result := Newer1.Count() + Newer2.Count();
+    try
+      if (Hash1 <> Hash2) then
+      begin
+        SynchronizeChildren(Source1, Tree1, Source2, Tree2, '', Newer1, Newer2, Callback);
+        Result := Newer1.Count() + Newer2.Count();
 
-      BlockSave(Newer1, Source2, 250);
-      BlockSave(Newer2, Source1, 250);
-    end else
-    begin
-      Result := 0;
+        BlockSave(Newer1, Source2, 250);
+        BlockSave(Newer2, Source1, 250);
+      end else
+      begin
+        Result := 0;
+      end;
+
+      if (Assigned(Callback)) then
+        Callback(100);
+    finally
+      Newer1.Free;
+      Newer2.Free;
     end;
-
-    if (Assigned(Callback)) then
-      Callback(100);
   finally
     Tree1.Free;
     Tree2.Free;
-    Newer1.Free;
-    Newer2.Free;
   end;
 end;
 

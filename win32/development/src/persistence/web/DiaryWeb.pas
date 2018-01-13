@@ -230,6 +230,7 @@ begin
   FHTTP.HandleRedirects := True;
   FHTTP.ProtocolVersion := pv1_1;
   FHTTP.Request.ContentEncoding := 'UTF-8';
+  FHTTP.Request.BasicAuthentication := True; // this prevents AV somehow
 end;
 
 {======================================================================================================================}
@@ -479,15 +480,19 @@ begin
   Response := DoPost(Query, par);
   {#}Log(VERBOUS, 'TDiacompClient.Login(): quered OK, resp = "' + Response.Encode() + '"');
 
-  CheckResponse(Response);
+  try
+    CheckResponse(Response);
 
-  if (Response.Code = STATUS_OK) then
-  begin
-    {#}Log(VERBOUS, 'TDiacompClient.Login(): logged OK');
-    FOnline := True;
+    if (Response.Code = STATUS_OK) then
+    begin
+      {#}Log(VERBOUS, 'TDiacompClient.Login(): logged OK');
+      FOnline := True;
+    end;
+
+    {#}Log(VERBOUS, 'TDiacompClient.Login(): done');
+  finally
+    Response.Free;
   end;
-  
-  {#}Log(VERBOUS, 'TDiacompClient.Login(): done');
 end;
 
 {======================================================================================================================}

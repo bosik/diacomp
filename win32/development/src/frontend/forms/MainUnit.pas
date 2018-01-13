@@ -630,6 +630,14 @@ begin
     Form1.StatusBar.Panels[3].Text := STATUS_RESULT_SYNC_DONE + ' ' + DateTimeToStr(UTCToLocal(LastSyncTime));
     Application.ProcessMessages;
   except
+    on E: ENotAuthorizedException do
+    begin
+      Log(ERROR, 'ENotAuthorizedException in MySyncDiary(): ' + E.Message, True);
+      Form1.StatusBar.Panels[3].Text := 'Неверный логин / пароль';
+      Application.ProcessMessages;
+      Form1.ShowBalloon('Неверный логин / пароль', bitError);
+    end;
+
     on E: Exception do
     begin
       Log(ERROR, 'Exception in MySyncDiary(): ' + E.Message, True);
