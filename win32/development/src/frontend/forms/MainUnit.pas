@@ -436,6 +436,8 @@ type
     procedure ProcessMealSelected(Value: boolean);
     procedure ScrollToSelected;
 
+    procedure WarnBadCredentials();
+
     { Информационные компоненты }
     procedure UpdateDayInfo;
     procedure UpdateTimeLeft;
@@ -583,7 +585,6 @@ begin
   Application.ProcessMessages;
 end;
 
-
 {======================================================================================================================}
 function MySyncDiary(Terminated: TBooleanFunction = nil): integer;
 {======================================================================================================================}
@@ -633,9 +634,7 @@ begin
     on E: ENotAuthorizedException do
     begin
       Log(ERROR, 'ENotAuthorizedException in MySyncDiary(): ' + E.Message, True);
-      Form1.StatusBar.Panels[3].Text := 'Неверный логин / пароль';
-      Application.ProcessMessages;
-      Form1.ShowBalloon('Неверный логин / пароль', bitError);
+      Form1.WarnBadCredentials();
     end;
 
     on E: Exception do
@@ -918,7 +917,7 @@ begin
         on AuthError: ENotAuthorizedException do
         begin
           Log(ERROR, 'Form1.FullInit(): ошибка при синхронизации дневника: ' + AuthError.Message);
-          ShowBalloon('Авторизация не удалась [неверный логин/пароль]. Щёлкните это сообщение, чтобы открыть настройки.', bitError, BalloonAction_ShowInternetSettings);
+          WarnBadCredentials();
         end;
 
         on APIError: EAPIException do
@@ -5032,6 +5031,16 @@ procedure TForm1.FormShow(Sender: TObject);
 {======================================================================================================================}
 begin
   DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
+end;
+
+{======================================================================================================================}
+procedure TForm1.WarnBadCredentials();
+{======================================================================================================================}
+begin
+  ShowBalloon('Авторизация не удалась [неверный логин/пароль]. Щёлкните это сообщение, чтобы открыть настройки.', bitError, Form1.BalloonAction_ShowInternetSettings);
+
+  StatusBar.Panels[3].Text := 'Неверный логин / пароль';
+  Application.ProcessMessages;
 end;
 
 end.
