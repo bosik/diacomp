@@ -152,7 +152,7 @@ begin
   tick := GetTickCount;
 
   { опнбепйю мюкхвхъ сфе гюосыеммнцн щйгелокъпю }
-  //if CheckRunningInstance() then Exit;
+  if CheckRunningInstance() then Exit;
 
   CheckFolders; // before check file!
   AutoLog.StartLogger(WORK_FOLDER + FOLDER_LOGS);
