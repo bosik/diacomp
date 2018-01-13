@@ -526,19 +526,27 @@ procedure DrawACItem(Control: TControl; Rect: TRect; const Item: TMealItem;
   MaxTag: real; Selected: Boolean; ShowHelpInfo: boolean);
 {======================================================================================================================}
 
-  procedure GetColors(Tag: Real; Selected: Boolean; out FontColor, BrushColor: TColor);
+  procedure GetColors(Tag: Real; Selected: Boolean; out FontColorMain, FontColorHelp, BrushColor: TColor);
   var
     FC: integer;
+    t: integer;
   begin
     FC := Round(190 / IntPower(Tag + 1, 5) - 190 / IntPower(MaxTag + 1, 5));
 
     if (Selected) then
     begin
-      FontColor := RGB(255 - FC div 4, 255 - FC div 4, 255 - FC div 4); //clHighlightText;
+      t := 255 - FC div 4;
+      FontColorMain := RGB(t, t, t); //clHighlightText;
+
+      t := 3 * t div 4;
+      FontColorHelp := RGB(t, t, t);
+
       BrushColor := RGB(FC div 2, FC div 2, FC div 2); //clMenuHighlight;
     end else
     begin
-      FontColor := RGB(FC, FC, FC); //clWindowText;
+      FontColorMain := RGB(FC, FC, FC); //clWindowText;
+      t := (255 + FC) div 2;
+      FontColorHelp := RGB(t, t, t);
       BrushColor := clWindow;
     end;
   end;
@@ -546,9 +554,9 @@ procedure DrawACItem(Control: TControl; Rect: TRect; const Item: TMealItem;
 var
   Caption, Help1, Help2: string;
   IconIndex: integer;
-  FontColor, BrushColor: TColor;
+  FontColorMain, FontColorHelp, BrushColor: TColor;
 begin
-  GetColors(Item.Tag, Selected, FontColor, BrushColor);
+  GetColors(Item.Tag, Selected, FontColorMain, FontColorHelp, BrushColor);
 
   Caption := Item.Data.Name;
   IconIndex := Item.Icon;
@@ -574,12 +582,17 @@ begin
   with TListBox(Control).Canvas do
   begin
     Brush.Color := BrushColor;
-    Font.Color := FontColor;
+
     Font.Charset := BEST_CHARSET;
     Windows.FillRect(Handle, Rect, Brush.Handle);
-    TextOut(17 + Rect.Left, Rect.Top, Caption);
+
+    Font.Color := FontColorHelp;
     TextOut(Control.ClientWidth - TextWidth(Help2) - 5,   Rect.Top, Help2);
-    TextOut(Control.ClientWidth - 160, Rect.Top, Help1);
+    TextOut(Control.ClientWidth - 2 * TextWidth('2018-01-01'), Rect.Top, Help1);
+
+    Font.Color := FontColorMain;
+    TextOut(17 + Rect.Left, Rect.Top, Caption);
+
     DataInterface.Images_BaseContent.Draw(TListBox(Control).Canvas, Rect.Left, Rect.Top, IconIndex);
   end;
 end;
