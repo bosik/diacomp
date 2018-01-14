@@ -19,4 +19,7 @@
 #   public *;
 #}
 
--dontwarn android.test.**
+-dontwarn android.**
+
+#-keep class org.apache.http.** { *; }
+-dontwarn org.apache.http.**

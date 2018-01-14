@@ -4,53 +4,79 @@
     <groupId>diacomp</groupId>
     <artifactId>comp-android</artifactId>
     <version>1.0</version>
+    <packaging>apk</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <build>
-        <sourceDirectory>src</sourceDirectory>
-        <resources>
-            <resource>
-                <directory>res</directory>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
+                <groupId>com.simpligility.maven.plugins</groupId>
+                <artifactId>android-maven-plugin</artifactId>
+                <version>4.5.0</version>
+                <configuration>
+                    <!--<sdk>
+                        <platform>19</platform>
+                    </sdk>-->
+                    <undeployBeforeDeploy>true</undeployBeforeDeploy>
+
+                    <!-- FIXME: Re-organize project structure and get rid of this -->
+                    <androidManifestFile>AndroidManifest.xml</androidManifestFile>
+                    <resourceDirectory>res</resourceDirectory>
+                    <assetsDirectory>assets</assetsDirectory>
+                    <nativeLibrariesDirectory>libs</nativeLibrariesDirectory>
+
+                </configuration>
+                <extensions>true</extensions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.7.0</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>gen</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20131018</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jjoe64</groupId>
+            <artifactId>graphview</artifactId>
+            <version>4.2.1</version>
+            <type>aar</type>
+
+            <!--<exclusions>
+                <exclusion>
+                    <groupId>com.android.support</groupId>
+                    <artifactId>support-v4</artifactId>
+                </exclusion>
+            </exclusions>-->
+        </dependency>
+
         <dependency>
             <groupId>diacomp</groupId>
             <artifactId>comp-transfer</artifactId>
             <version>0.2.0-SNAPSHOT</version>
+
+            <exclusions>
+                <exclusion>
+                    <groupId>org.json</groupId>
+                    <artifactId>json</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -58,16 +84,29 @@
             <artifactId>android</artifactId>
             <version>4.1.1.4</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20131018</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jjoe64</groupId>
-            <artifactId>graphview</artifactId>
-            <version>4.0.1</version>
+
+            <exclusions>
+                <exclusion>
+                    <groupId>org.json</groupId>
+                    <artifactId>json</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.khronos</groupId>
+                    <artifactId>opengl-api</artifactId>
+                </exclusion>
+               <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xmlParserAPIs</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+                <!--<exclusion>
+                    <groupId>xpp3</groupId>
+                    <artifactId>xpp3</artifactId>
+                </exclusion>-->
+            </exclusions>
         </dependency>
     </dependencies>
 </project>

@@ -1,0 +1,3 @@
+*.apk
+/gen-external-apklibs
+/proguard_logs
