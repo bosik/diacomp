@@ -456,7 +456,10 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 						enableAutosync();
 
 						// TODO: don't do this if activity is started from main activity
-						startActivity(new Intent(ActivityLogin.this, ActivityMain.class));
+						Intent intentR = new Intent(ActivityLogin.this, ActivityMain.class);
+						intentR.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+						startActivity(intentR);
+
 						finish();
 						break;
 					}

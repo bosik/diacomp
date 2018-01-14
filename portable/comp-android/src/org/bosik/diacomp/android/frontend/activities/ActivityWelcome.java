@@ -41,7 +41,7 @@ public class ActivityWelcome extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				// TODO
+				// TODO: implement proper survey
 				Intent intent = new Intent(ActivityWelcome.this, ActivityFoodSet.class);
 				intent.putExtra(ActivityFoodSet.FIELD_FIRST_START, true);
 				startActivity(intent);

@@ -19,6 +19,7 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -136,6 +137,14 @@ public class ActivityFoodSet extends FragmentActivity
 					{
 						updateSet(data.get(i), newIncluded);
 					}
+				}
+
+				if (firstStart)
+				{
+					// clear back stack
+					Intent intent = new Intent(ActivityFoodSet.this, ActivityMain.class);
+					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+					startActivity(intent);
 				}
 
 				finish();
