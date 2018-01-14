@@ -22,13 +22,6 @@
                         <platform>19</platform>
                     </sdk>-->
                     <undeployBeforeDeploy>true</undeployBeforeDeploy>
-
-                    <!-- FIXME: Re-organize project structure and get rid of this -->
-                    <androidManifestFile>AndroidManifest.xml</androidManifestFile>
-                    <resourceDirectory>res</resourceDirectory>
-                    <assetsDirectory>assets</assetsDirectory>
-                    <nativeLibrariesDirectory>libs</nativeLibrariesDirectory>
-
                 </configuration>
                 <extensions>true</extensions>
             </plugin>
