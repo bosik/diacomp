@@ -10,4 +10,5 @@
 **/gen/**
 **/target
 **/target/**
+/captures
 /out

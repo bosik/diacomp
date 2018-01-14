@@ -21,7 +21,16 @@ import org.bosik.diacomp.core.services.analyze.entities.Rate;
 
 public interface RateService
 {
+	/**
+	 * Refreshes rates. This operation may be time/memory consuming.
+	 */
 	void update();
 
+	/**
+	 * Fetches rate for specified time of day
+	 *
+	 * @param time Time in minutes
+	 * @return Rate if found, {code null} otherwise
+	 */
 	Rate getRate(int time);
 }

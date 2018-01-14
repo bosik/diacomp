@@ -373,9 +373,12 @@ public class FragmentTabCharts extends Fragment
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
 				{
 					Rate rate = rateService.getRate(time);
-					double x = (double) time / 60;
-					double y = rate.getK() / rate.getQ();
-					dataList.add(new DataPoint(x, y));
+					if (rate != null)
+					{
+						double x = (double) time / 60;
+						double y = rate.getK() / rate.getQ();
+						dataList.add(new DataPoint(x, y));
+					}
 				}
 
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
@@ -413,9 +416,13 @@ public class FragmentTabCharts extends Fragment
 				List<DataPoint> dataList = new ArrayList<>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
 				{
-					double x = (double) time / 60;
-					double y = rateService.getRate(time).getK();
-					dataList.add(new DataPoint(x, y));
+					Rate rate = rateService.getRate(time);
+					if (rate != null)
+					{
+						double x = (double) time / 60;
+						double y = rate.getK();
+						dataList.add(new DataPoint(x, y));
+					}
 				}
 
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
@@ -453,9 +460,13 @@ public class FragmentTabCharts extends Fragment
 				List<DataPoint> dataList = new ArrayList<>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
 				{
-					double x = (double) time / 60;
-					double y = rateService.getRate(time).getQ();
-					dataList.add(new DataPoint(x, y));
+					Rate rate = rateService.getRate(time);
+					if (rate != null)
+					{
+						double x = (double) time / 60;
+						double y = rate.getQ();
+						dataList.add(new DataPoint(x, y));
+					}
 				}
 
 				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);

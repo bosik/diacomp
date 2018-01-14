@@ -296,10 +296,10 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 					List<DataPoint> dataAvg = new ArrayList<>();
 					for (int time = 0; time < Utils.MinPerDay; time += 5)
 					{
-						Rate c = ratesService.getRate(time);
-						if (c != null)
+						Rate rate = ratesService.getRate(time);
+						if (rate != null)
 						{
-							double value = BU ? c.getK() / c.getQ() * Utils.CARB_PER_BU : c.getK() / c.getQ();
+							double value = BU ? rate.getK() / rate.getQ() * Utils.CARB_PER_BU : rate.getK() / rate.getQ();
 							dataAvg.add(new DataPoint((double) time / Utils.MinPerHour, value));
 						}
 					}
@@ -374,10 +374,13 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 				rates.clear();
 				for (int time = 0; time < Utils.MinPerDay; time += 2 * Utils.MinPerHour)
 				{
-					Rate c = service.getRate(time);
-					Versioned<TimedRate> versioned = new Versioned<>(new TimedRate(time, c));
-					versioned.setId(HashUtils.generateGuid());
-					rates.add(versioned);
+					Rate rate = service.getRate(time);
+					if (rate != null)
+					{
+						Versioned<TimedRate> versioned = new Versioned<>(new TimedRate(time, rate));
+						versioned.setId(HashUtils.generateGuid());
+						rates.add(versioned);
+					}
 				}
 
 				save(rates);
