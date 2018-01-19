@@ -10,6 +10,7 @@
 		<module>comp-android</module>
 		<module>comp-android-test</module>
 		<module>comp-server</module>
+		<module>comp-server-rest</module>
 		<module>comp-transfer</module>
 	</modules>
 </project>
