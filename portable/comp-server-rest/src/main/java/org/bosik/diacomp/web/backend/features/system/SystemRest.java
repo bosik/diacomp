@@ -17,30 +17,26 @@
  */
 package org.bosik.diacomp.web.backend.features.system;
 
-import java.util.Date;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
-import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.Config;
 import org.bosik.diacomp.web.backend.features.user.auth.AuthRest;
 import org.json.JSONObject;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.Date;
+
 @SuppressWarnings("static-method")
-@Path("")
+@Path("/")
 public class SystemRest
 {
 	@GET
-	@Path("")
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response welcome()
 	{

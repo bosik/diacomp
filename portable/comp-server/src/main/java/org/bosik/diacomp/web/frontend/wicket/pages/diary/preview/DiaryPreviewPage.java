@@ -17,29 +17,6 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.pages.diary.preview;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.RefreshingView;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.string.StringValue;
-import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
-import org.bosik.diacomp.core.services.diary.DiaryService;
-import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.frontend.wicket.components.diary.day.DiaryPanelDay;
-import org.bosik.diacomp.web.frontend.wicket.components.diary.day.DiaryPanelDayModelObject;
-import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
-import org.bosik.merklesync.Versioned;
 import com.googlecode.wickedcharts.highcharts.options.Axis;
 import com.googlecode.wickedcharts.highcharts.options.AxisType;
 import com.googlecode.wickedcharts.highcharts.options.ChartOptions;
@@ -57,10 +34,34 @@ import com.googlecode.wickedcharts.highcharts.options.color.RgbaColor;
 import com.googlecode.wickedcharts.highcharts.options.series.Coordinate;
 import com.googlecode.wickedcharts.highcharts.options.series.CoordinatesSeries;
 import com.googlecode.wickedcharts.highcharts.options.series.Series;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.RefreshingView;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.string.StringValue;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
+import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.frontend.wicket.components.diary.day.DiaryPanelDay;
+import org.bosik.diacomp.web.frontend.wicket.components.diary.day.DiaryPanelDayModelObject;
+import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
+import org.bosik.merklesync.Versioned;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 class BloodOptions extends Options
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	public BloodOptions(IModel<DiaryPanelDayModelObject> model)
 	{
@@ -70,8 +71,8 @@ class BloodOptions extends Options
 		{
 			if (item.getData() instanceof BloodRecord)
 			{
-				double x = ((BloodRecord)item.getData()).getTime().getTime();
-				double y = ((BloodRecord)item.getData()).getValue();
+				double x = ((BloodRecord) item.getData()).getTime().getTime();
+				double y = ((BloodRecord) item.getData()).getValue();
 				s1.add(new Coordinate<Number, Number>(x, y));
 			}
 		}
@@ -121,12 +122,11 @@ class BloodOptions extends Options
 
 public class DiaryPreviewPage extends MasterPage
 {
-	private static final long						serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	private WebMarkupContainer						container;
 	@SpringBean
-	DiaryService									diaryService;
-	final List<IModel<DiaryPanelDayModelObject>>	list				= new ArrayList<IModel<DiaryPanelDayModelObject>>();
+	private DiaryService diaryService;
+	private final List<IModel<DiaryPanelDayModelObject>> list = new ArrayList<>();
 
 	public DiaryPreviewPage(final PageParameters parameters)
 	{
@@ -165,14 +165,20 @@ public class DiaryPreviewPage extends MasterPage
 
 			start = end;
 		}
+	}
 
-		container = new WebMarkupContainer("wrapper");
+	@Override
+	protected void onInitialize()
+	{
+		super.onInitialize();
+
+		WebMarkupContainer container = new WebMarkupContainer("wrapper");
 		container.setOutputMarkupId(true);
 		add(container);
 
 		container.add(new RefreshingView<DiaryPanelDayModelObject>("diaryDay")
 		{
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected Iterator<IModel<DiaryPanelDayModelObject>> getItemModels()
