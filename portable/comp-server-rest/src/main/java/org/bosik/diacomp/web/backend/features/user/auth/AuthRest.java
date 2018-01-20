@@ -17,6 +17,18 @@
  */
 package org.bosik.diacomp.web.backend.features.user.auth;
 
+import org.bosik.diacomp.core.rest.ResponseBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -26,24 +38,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.bosik.diacomp.core.rest.ResponseBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
 
 @Service
 @Path("auth/")
 public class AuthRest
 {
-	public static final int	API_CURRENT	= 20;
-	public static final int	API_LEGACY	= 19;
+	public static final int API_CURRENT = 20;
+	public static final int API_LEGACY  = 19;
 
 	@Autowired
-	private AuthProvider	authProvider;
+	private AuthProvider authProvider;
 
 	@POST
 	@Path("login")
@@ -75,25 +79,27 @@ public class AuthRest
 
 			if (apiVersion < API_LEGACY)
 			{
-				String msg = String.format("API %d is unsupported. The latest API: %d. Legacy API: %d.", apiVersion,
-						API_CURRENT, API_LEGACY);
+				String msg = String
+						.format("API %d is unsupported. The latest API: %d. Legacy API: %d.", apiVersion, API_CURRENT, API_LEGACY);
 				String resp = ResponseBuilder.build(ResponseBuilder.CODE_UNSUPPORTED_API, msg);
 				return Response.ok(resp).build();
 			}
 
 			if (apiVersion < API_CURRENT)
 			{
-				String msg = String.format(
-						"API %d is still supported, but deprecated. The latest API: %d. Legacy API: %d.", apiVersion,
-						API_CURRENT, API_LEGACY);
+				String msg = String
+						.format("API %d is still supported, but deprecated. The latest API: %d. Legacy API: %d.", apiVersion, API_CURRENT,
+								API_LEGACY);
 				String resp = ResponseBuilder.build(ResponseBuilder.CODE_DEPRECATED_API, msg);
 				return Response.ok(resp).build();
 			}
 
-			Authentication authentication = authProvider
-					.authenticate(new UsernamePasswordAuthenticationToken(login, pass));
+			Authentication authentication = authProvider.authenticate(new UsernamePasswordAuthenticationToken(login, pass));
 			SecurityContext context = SecurityContextHolder.getContext();
 			context.setAuthentication(authentication);
+
+			getSession().setAttribute("Login", authentication.getPrincipal()); // for Tomcat to show in "Guessed User name" nicely
+
 			// Do not pass any data in the body in order to store the same session-id
 			return Response.ok().build();
 		}
@@ -108,6 +114,12 @@ public class AuthRest
 			e.printStackTrace();
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
 		}
+	}
+
+	private static HttpSession getSession()
+	{
+		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+		return attr.getRequest().getSession(true);
 	}
 
 	@SuppressWarnings("static-method")
