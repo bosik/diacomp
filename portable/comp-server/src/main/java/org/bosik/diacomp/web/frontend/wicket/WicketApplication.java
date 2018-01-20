@@ -18,6 +18,7 @@
 package org.bosik.diacomp.web.frontend.wicket;
 
 import com.googlecode.wickedcharts.wicket6.JavaScriptResourceRegistry;
+import de.agilecoders.wicket.core.Bootstrap;
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -27,14 +28,12 @@ import org.bosik.diacomp.web.frontend.wicket.pages.activation.ActivationPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.base.FoodBasePage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.preview.DiaryPreviewPage;
-import org.bosik.diacomp.web.frontend.wicket.pages.download.DownloadPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.license.eula.EulaPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.license.privacy.PrivacyPolicyPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.login.LoginPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.register.RegisterPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.register.succeed.RegistrationSucceedPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.stats.StatsPage;
-import de.agilecoders.wicket.core.Bootstrap;
 
 public class WicketApplication extends WebApplication
 {
@@ -69,7 +68,6 @@ public class WicketApplication extends WebApplication
 		mountPage("/diary/printable", DiaryPreviewPage.class);
 		mountPage("/base", FoodBasePage.class);
 		mountPage("/stats", StatsPage.class);
-		mountPage("/download", DownloadPage.class);
 
 		Bootstrap.install(this);
 
