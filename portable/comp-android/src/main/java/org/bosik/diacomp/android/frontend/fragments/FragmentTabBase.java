@@ -61,7 +61,6 @@ import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorDish;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorFood;
 import org.bosik.diacomp.android.frontend.activities.ActivityFoodSet;
-import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
@@ -327,7 +326,8 @@ public class FragmentTabBase extends Fragment
 							}
 							else
 							{
-								throw new IllegalArgumentException("Unknown record type '" + item.getData().getClass().getName()+"', id " + id);
+								throw new IllegalArgumentException(
+										"Unknown record type '" + item.getData().getClass().getName() + "', id " + id);
 							}
 						}
 						else
@@ -691,90 +691,83 @@ public class FragmentTabBase extends Fragment
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent intent)
 	{
-		try
+		switch (requestCode)
 		{
-			switch (requestCode)
+			case DIALOG_FOOD_CREATE:
 			{
-				case DIALOG_FOOD_CREATE:
+				if (resultCode == Activity.RESULT_OK)
 				{
-					if (resultCode == Activity.RESULT_OK)
+					Versioned<FoodItem> item = (Versioned<FoodItem>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
+					try
 					{
-						Versioned<FoodItem> item = (Versioned<FoodItem>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
-						try
-						{
-							foodBaseService.add(item);
-							UIUtils.showTip(getActivity(), getString(R.string.base_tip_food_create_ok));
-						}
-						catch (PersistenceException e)
-						{
-							UIUtils.showTip(getActivity(), getString(R.string.base_tip_food_create_fail));
-						}
-						runSearch();
+						foodBaseService.add(item);
+						UIUtils.showTip(getActivity(), getString(R.string.base_tip_food_create_ok));
 					}
-					break;
-				}
-
-				case DIALOG_FOOD_MODIFY:
-				{
-					if (resultCode == Activity.RESULT_OK)
+					catch (PersistenceException e)
 					{
-						Versioned<FoodItem> item = (Versioned<FoodItem>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
-						try
-						{
-							foodBaseService.save(Collections.singletonList(item));
-							UIUtils.showTip(getActivity(), getString(R.string.base_tip_food_edit_ok));
-						}
-						catch (PersistenceException e)
-						{
-							UIUtils.showTip(getActivity(), getString(R.string.base_tip_food_edit_fail));
-						}
-						runSearch();
+						UIUtils.showTip(getActivity(), getString(R.string.base_tip_food_create_fail));
 					}
-					break;
+					runSearch();
 				}
-
-				case DIALOG_DISH_CREATE:
-				{
-					if (resultCode == Activity.RESULT_OK)
-					{
-						Versioned<DishItem> item = (Versioned<DishItem>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
-						try
-						{
-							dishBaseService.add(item);
-							UIUtils.showTip(getActivity(), getString(R.string.base_tip_dish_create_ok));
-						}
-						catch (PersistenceException e)
-						{
-							UIUtils.showTip(getActivity(), getString(R.string.base_tip_dish_create_fail));
-						}
-						runSearch();
-					}
-					break;
-				}
-
-				case DIALOG_DISH_MODIFY:
-				{
-					if (resultCode == Activity.RESULT_OK)
-					{
-						Versioned<DishItem> item = (Versioned<DishItem>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
-						try
-						{
-							dishBaseService.save(Collections.singletonList(item));
-							UIUtils.showTip(getActivity(), getString(R.string.base_tip_dish_save_ok));
-						}
-						catch (PersistenceException e)
-						{
-							UIUtils.showTip(getActivity(), getString(R.string.base_tip_dish_save_fail));
-						}
-						runSearch();
-					}
-					break;
-				}
+				break;
 			}
-		}
-		catch (Exception e)
-		{
-			ErrorHandler.handle(e, getActivity());
+
+			case DIALOG_FOOD_MODIFY:
+			{
+				if (resultCode == Activity.RESULT_OK)
+				{
+					Versioned<FoodItem> item = (Versioned<FoodItem>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
+					try
+					{
+						foodBaseService.save(Collections.singletonList(item));
+						UIUtils.showTip(getActivity(), getString(R.string.base_tip_food_edit_ok));
+					}
+					catch (PersistenceException e)
+					{
+						UIUtils.showTip(getActivity(), getString(R.string.base_tip_food_edit_fail));
+					}
+					runSearch();
+				}
+				break;
+			}
+
+			case DIALOG_DISH_CREATE:
+			{
+				if (resultCode == Activity.RESULT_OK)
+				{
+					Versioned<DishItem> item = (Versioned<DishItem>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
+					try
+					{
+						dishBaseService.add(item);
+						UIUtils.showTip(getActivity(), getString(R.string.base_tip_dish_create_ok));
+					}
+					catch (PersistenceException e)
+					{
+						UIUtils.showTip(getActivity(), getString(R.string.base_tip_dish_create_fail));
+					}
+					runSearch();
+				}
+				break;
+			}
+
+			case DIALOG_DISH_MODIFY:
+			{
+				if (resultCode == Activity.RESULT_OK)
+				{
+					Versioned<DishItem> item = (Versioned<DishItem>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
+					try
+					{
+						dishBaseService.save(Collections.singletonList(item));
+						UIUtils.showTip(getActivity(), getString(R.string.base_tip_dish_save_ok));
+					}
+					catch (PersistenceException e)
+					{
+						UIUtils.showTip(getActivity(), getString(R.string.base_tip_dish_save_fail));
+					}
+					runSearch();
+				}
+				break;
+			}
 		}
 	}
 

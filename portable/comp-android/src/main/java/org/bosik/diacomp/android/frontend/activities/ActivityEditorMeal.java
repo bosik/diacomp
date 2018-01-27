@@ -34,7 +34,6 @@ import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView;
 import org.bosik.diacomp.android.frontend.views.fdpicker.MealEditorView.OnChangeListener;
-import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
@@ -143,16 +142,9 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		try
-		{
-			getMenuInflater().inflate(R.menu.actions_meal, menu);
-			MenuItem itemShort = menu.findItem(R.id.item_meal_short);
-			itemShort.setChecked(entity.getData().getShortMeal());
-		}
-		catch (Exception e)
-		{
-			ErrorHandler.handle(e, this);
-		}
+		getMenuInflater().inflate(R.menu.actions_meal, menu);
+		MenuItem itemShort = menu.findItem(R.id.item_meal_short);
+		itemShort.setChecked(entity.getData().getShortMeal());
 		return true;
 	}
 

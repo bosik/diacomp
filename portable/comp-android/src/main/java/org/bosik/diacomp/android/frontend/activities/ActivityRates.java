@@ -19,7 +19,6 @@
 package org.bosik.diacomp.android.frontend.activities;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -48,7 +47,6 @@ import org.bosik.diacomp.android.backend.features.preferences.account.Preference
 import org.bosik.diacomp.android.frontend.fragments.FragmentMassUnitDialog;
 import org.bosik.diacomp.android.frontend.fragments.chart.Chart;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle;
-import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.TimedRate;
 import org.bosik.diacomp.core.services.analyze.RateService;
 import org.bosik.diacomp.core.services.analyze.entities.Rate;
@@ -453,29 +451,21 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		}
 	}
 
-	// handled
 	private void showRateEditor(Versioned<TimedRate> entity, boolean createMode)
 	{
-		try
+		if (createMode)
 		{
-			if (createMode)
-			{
-				TimedRate rec = new TimedRate();
-				rec.setTime(0); // FIXME
-				entity = new Versioned<>(rec);
-			}
-
-			Intent intent = new Intent(this, ActivityEditorRate.class);
-			intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
-			intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
-			intent.putExtra(ActivityEditorRate.KEY_INTENT_USE_BU, BU);
-
-			startActivityForResult(intent, createMode ? DIALOG_RATE_CREATE : DIALOG_RATE_MODIFY);
+			TimedRate rec = new TimedRate();
+			rec.setTime(0); // FIXME
+			entity = new Versioned<>(rec);
 		}
-		catch (Exception e)
-		{
-			ErrorHandler.handle(e, this);
-		}
+
+		Intent intent = new Intent(this, ActivityEditorRate.class);
+		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
+		intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
+		intent.putExtra(ActivityEditorRate.KEY_INTENT_USE_BU, BU);
+
+		startActivityForResult(intent, createMode ? DIALOG_RATE_CREATE : DIALOG_RATE_MODIFY);
 	}
 
 	private String formatK(TimedRate timedRate, boolean BU)
@@ -519,44 +509,37 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 	{
 		super.onActivityResult(requestCode, resultCode, intent);
 
-		try
+		switch (requestCode)
 		{
-			switch (requestCode)
+			case DIALOG_RATE_CREATE:
 			{
-				case DIALOG_RATE_CREATE:
+				if (resultCode == Activity.RESULT_OK)
 				{
-					if (resultCode == Activity.RESULT_OK)
-					{
-						rates.add((Versioned<TimedRate>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY));
+					rates.add((Versioned<TimedRate>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY));
 
-						sortByTime(rates);
-						save(rates);
-						saveStateToHistory();
-						adapter.notifyDataSetChanged();
-					}
-					break;
+					sortByTime(rates);
+					save(rates);
+					saveStateToHistory();
+					adapter.notifyDataSetChanged();
 				}
-
-				case DIALOG_RATE_MODIFY:
-				{
-					if (resultCode == Activity.RESULT_OK)
-					{
-						Versioned<TimedRate> rec = (Versioned<TimedRate>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
-						rates.remove(rec);
-						rates.add(rec);
-
-						sortByTime(rates);
-						save(rates);
-						saveStateToHistory();
-						adapter.notifyDataSetChanged();
-					}
-					break;
-				}
+				break;
 			}
-		}
-		catch (Exception e)
-		{
-			ErrorHandler.handle(e, this);
+
+			case DIALOG_RATE_MODIFY:
+			{
+				if (resultCode == Activity.RESULT_OK)
+				{
+					Versioned<TimedRate> rec = (Versioned<TimedRate>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
+					rates.remove(rec);
+					rates.add(rec);
+
+					sortByTime(rates);
+					save(rates);
+					saveStateToHistory();
+					adapter.notifyDataSetChanged();
+				}
+				break;
+			}
 		}
 	}
 

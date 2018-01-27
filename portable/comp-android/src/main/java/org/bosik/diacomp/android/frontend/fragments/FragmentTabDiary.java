@@ -49,7 +49,6 @@ import org.bosik.diacomp.android.frontend.activities.ActivityEditorMeal;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorNote;
 import org.bosik.diacomp.android.frontend.views.diary.DiaryDayView;
 import org.bosik.diacomp.android.frontend.views.diary.DiaryDayView.OnRecordClickListener;
-import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -334,159 +333,118 @@ public class FragmentTabDiary extends Fragment
 		}
 	}
 
-	// handled
 	private void showBloodEditor(Versioned<BloodRecord> entity, boolean createMode)
 	{
-		try
+		if (createMode)
 		{
-			if (createMode)
-			{
-				BloodRecord prev = PostprandUtils.findLastBlood(diary, new Date(), SCAN_FOR_BLOOD_FINGER, false);
-				BloodRecord rec = new BloodRecord();
-				rec.setTime(new Date());
-				rec.setFinger(((prev == null) || (prev.getFinger() == -1)) ? -1 : ((prev.getFinger() + 1) % 10));
-				entity = new Versioned<>(rec);
-			}
-
-			Intent intent = new Intent(getActivity(), ActivityEditorBlood.class);
-			intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
-			intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
-
-			startActivityForResult(intent, createMode ? DIALOG_BLOOD_CREATE : DIALOG_BLOOD_MODIFY);
+			BloodRecord prev = PostprandUtils.findLastBlood(diary, new Date(), SCAN_FOR_BLOOD_FINGER, false);
+			BloodRecord rec = new BloodRecord();
+			rec.setTime(new Date());
+			rec.setFinger(((prev == null) || (prev.getFinger() == -1)) ? -1 : ((prev.getFinger() + 1) % 10));
+			entity = new Versioned<>(rec);
 		}
-		catch (Exception e)
-		{
-			ErrorHandler.handle(e, getActivity());
-		}
+
+		Intent intent = new Intent(getActivity(), ActivityEditorBlood.class);
+		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
+		intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
+
+		startActivityForResult(intent, createMode ? DIALOG_BLOOD_CREATE : DIALOG_BLOOD_MODIFY);
 	}
 
-	// handled
 	private void showInsEditor(Versioned<InsRecord> entity, boolean createMode)
 	{
-		try
+		if (createMode)
 		{
-			if (createMode)
-			{
-				InsRecord rec = new InsRecord();
-				rec.setTime(new Date());
-				entity = new Versioned<>(rec);
-			}
-
-			Intent intent = new Intent(getActivity(), ActivityEditorIns.class);
-			intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
-			intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
-
-			startActivityForResult(intent, createMode ? DIALOG_INS_CREATE : DIALOG_INS_MODIFY);
+			InsRecord rec = new InsRecord();
+			rec.setTime(new Date());
+			entity = new Versioned<>(rec);
 		}
-		catch (Exception e)
-		{
-			ErrorHandler.handle(e, getActivity());
-		}
+
+		Intent intent = new Intent(getActivity(), ActivityEditorIns.class);
+		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
+		intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
+
+		startActivityForResult(intent, createMode ? DIALOG_INS_CREATE : DIALOG_INS_MODIFY);
 	}
 
-	// handled
 	private void showMealEditor(Versioned<MealRecord> entity, boolean createMode)
 	{
-		try
+		if (createMode)
 		{
-			if (createMode)
-			{
-				MealRecord rec = new MealRecord();
-				rec.setTime(new Date());
-				entity = new Versioned<>(rec);
-			}
-
-			BloodRecord bloodBase = PostprandUtils.findLastBlood(diary, entity.getData().getTime(), SCAN_FOR_BLOOD_BEFORE_MEAL, true);
-			BloodRecord bloodLast = PostprandUtils.findLastBlood(diary, entity.getData().getTime(), SCAN_FOR_BLOOD_BEFORE_MEAL, false);
-			Double bloodBaseValue = bloodBase == null ? null : bloodBase.getValue();
-			Double bloodLastValue = bloodLast == null ? null : bloodLast.getValue();
-			Double bloodTarget = preferences.getDoubleValue(PreferenceID.TARGET_BS);
-			InsRecord insRecord = PostprandUtils.findNearestInsulin(diary, entity.getData().getTime(), SCAN_FOR_INS_AROUND_MEAL);
-			Double insInjected = insRecord == null ? null : insRecord.getValue();
-
-			Intent intent = new Intent(getActivity(), ActivityEditorMeal.class);
-			intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
-			intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
-			if (bloodBaseValue != null)
-			{
-				intent.putExtra(ActivityEditorMeal.FIELD_BS_BASE, bloodBaseValue);
-			}
-			if (bloodLastValue != null)
-			{
-				intent.putExtra(ActivityEditorMeal.FIELD_BS_LAST, bloodLastValue);
-			}
-
-			intent.putExtra(ActivityEditorMeal.FIELD_BS_TARGET, bloodTarget);
-			intent.putExtra(ActivityEditorMeal.FIELD_INS_INJECTED, insInjected);
-			startActivityForResult(intent, createMode ? DIALOG_MEAL_CREATE : DIALOG_MEAL_MODIFY);
+			MealRecord rec = new MealRecord();
+			rec.setTime(new Date());
+			entity = new Versioned<>(rec);
 		}
-		catch (Exception e)
+
+		BloodRecord bloodBase = PostprandUtils.findLastBlood(diary, entity.getData().getTime(), SCAN_FOR_BLOOD_BEFORE_MEAL, true);
+		BloodRecord bloodLast = PostprandUtils.findLastBlood(diary, entity.getData().getTime(), SCAN_FOR_BLOOD_BEFORE_MEAL, false);
+		Double bloodBaseValue = bloodBase == null ? null : bloodBase.getValue();
+		Double bloodLastValue = bloodLast == null ? null : bloodLast.getValue();
+		Double bloodTarget = preferences.getDoubleValue(PreferenceID.TARGET_BS);
+		InsRecord insRecord = PostprandUtils.findNearestInsulin(diary, entity.getData().getTime(), SCAN_FOR_INS_AROUND_MEAL);
+		Double insInjected = insRecord == null ? null : insRecord.getValue();
+
+		Intent intent = new Intent(getActivity(), ActivityEditorMeal.class);
+		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
+		intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
+		if (bloodBaseValue != null)
 		{
-			ErrorHandler.handle(e, getActivity());
+			intent.putExtra(ActivityEditorMeal.FIELD_BS_BASE, bloodBaseValue);
 		}
+		if (bloodLastValue != null)
+		{
+			intent.putExtra(ActivityEditorMeal.FIELD_BS_LAST, bloodLastValue);
+		}
+
+		intent.putExtra(ActivityEditorMeal.FIELD_BS_TARGET, bloodTarget);
+		intent.putExtra(ActivityEditorMeal.FIELD_INS_INJECTED, insInjected);
+		startActivityForResult(intent, createMode ? DIALOG_MEAL_CREATE : DIALOG_MEAL_MODIFY);
 	}
 
-	// handled
 	private void showNoteEditor(Versioned<NoteRecord> entity, boolean createMode)
 	{
-		try
+		if (createMode)
 		{
-			if (createMode)
-			{
-				NoteRecord rec = new NoteRecord();
-				rec.setTime(new Date());
-				entity = new Versioned<>(rec);
-			}
+			NoteRecord rec = new NoteRecord();
+			rec.setTime(new Date());
+			entity = new Versioned<>(rec);
+		}
 
-			Intent intent = new Intent(getActivity(), ActivityEditorNote.class);
-			intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
-			intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
-			startActivityForResult(intent, createMode ? DIALOG_NOTE_CREATE : DIALOG_NOTE_MODIFY);
-		}
-		catch (Exception e)
-		{
-			ErrorHandler.handle(e, getActivity());
-		}
+		Intent intent = new Intent(getActivity(), ActivityEditorNote.class);
+		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
+		intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
+		startActivityForResult(intent, createMode ? DIALOG_NOTE_CREATE : DIALOG_NOTE_MODIFY);
 	}
 
-	// handled
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent intent)
 	{
 		super.onActivityResult(requestCode, resultCode, intent);
 
-		try
+		switch (requestCode)
 		{
-			switch (requestCode)
+			case DIALOG_BLOOD_CREATE:
+			case DIALOG_INS_CREATE:
+				// case DIALOG_MEAL_CREATE:
+			case DIALOG_NOTE_CREATE:
+
+			case DIALOG_BLOOD_MODIFY:
+			case DIALOG_INS_MODIFY:
+				// case DIALOG_MEAL_MODIFY:
+			case DIALOG_NOTE_MODIFY:
 			{
-				case DIALOG_BLOOD_CREATE:
-				case DIALOG_INS_CREATE:
-					// case DIALOG_MEAL_CREATE:
-				case DIALOG_NOTE_CREATE:
-
-				case DIALOG_BLOOD_MODIFY:
-				case DIALOG_INS_MODIFY:
-					// case DIALOG_MEAL_MODIFY:
-				case DIALOG_NOTE_MODIFY:
+				if (resultCode == Activity.RESULT_OK)
 				{
-					if (resultCode == Activity.RESULT_OK)
-					{
-						Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras()
-								.getSerializable(ActivityEditor.FIELD_ENTITY);
+					Versioned<DiaryRecord> rec = (Versioned<DiaryRecord>) intent.getExtras().getSerializable(ActivityEditor.FIELD_ENTITY);
 
-						diary.save(Collections.singletonList(rec));
+					diary.save(Collections.singletonList(rec));
 
-						// do it manually in case observer is broken
-						list.refresh();
-					}
-					break;
+					// do it manually in case observer is broken
+					list.refresh();
 				}
+				break;
 			}
-		}
-		catch (Exception e)
-		{
-			ErrorHandler.handle(e, getActivity());
 		}
 	}
 }

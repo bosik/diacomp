@@ -35,7 +35,6 @@ import org.bosik.diacomp.android.backend.features.preferences.account.Preference
 import org.bosik.diacomp.android.frontend.fragments.FragmentTabBase;
 import org.bosik.diacomp.android.frontend.fragments.FragmentTabCharts;
 import org.bosik.diacomp.android.frontend.fragments.FragmentTabDiary;
-import org.bosik.diacomp.android.utils.ErrorHandler;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 
@@ -67,111 +66,97 @@ public class ActivityMain extends FragmentActivity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		try
+
+		setContentView(R.layout.activity_main);
+
+		// Backend
+
+		startService(new Intent(this, NotificationService.class));
+		startService(new Intent(this, BackgroundService.class));
+
+		// Frontend
+
+		final List<Page> pages = new ArrayList<>();
+		pages.add(new Page()
 		{
-			setContentView(R.layout.activity_main);
-
-			// Backend
-
-			startService(new Intent(this, NotificationService.class));
-			startService(new Intent(this, BackgroundService.class));
-
-			// Frontend
-
-			final List<Page> pages = new ArrayList<>();
-			pages.add(new Page()
+			@Override
+			public String getTitle()
 			{
-				@Override
-				public String getTitle()
-				{
-					return ActivityMain.this.getString(R.string.main_option_diary);
-				}
-
-				@Override
-				public Fragment getContent()
-				{
-					return new FragmentTabDiary();
-				}
-			});
-			pages.add(new Page()
-			{
-				@Override
-				public String getTitle()
-				{
-					return ActivityMain.this.getString(R.string.main_option_bases);
-				}
-
-				@Override
-				public Fragment getContent()
-				{
-					return new FragmentTabBase();
-				}
-			});
-			pages.add(new Page()
-			{
-				@Override
-				public String getTitle()
-				{
-					return ActivityMain.this.getString(R.string.main_option_charts);
-				}
-
-				@Override
-				public Fragment getContent()
-				{
-					return new FragmentTabCharts();
-				}
-			});
-
-			PagerAdapter adapter = new FragmentStatePagerAdapter(getSupportFragmentManager())
-			{
-				@Override
-				public int getCount()
-				{
-					return pages.size();
-				}
-
-				@Override
-				public Fragment getItem(int position)
-				{
-					return pages.get(position).getContent();
-				}
-
-				@Override
-				public CharSequence getPageTitle(int position)
-				{
-					return pages.get(position).getTitle();
-				}
-			};
-			mViewPager = (ViewPager) findViewById(R.id.pager);
-			mViewPager.setAdapter(adapter);
-
-			PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
-
-			boolean firstStart = preferences.getBooleanValue(PreferenceID.ANDROID_FIRST_START);
-			if (firstStart)
-			{
-				startActivity(new Intent(this, ActivityWelcome.class));
-				finish();
+				return ActivityMain.this.getString(R.string.main_option_diary);
 			}
-		}
-		catch (Exception e)
+
+			@Override
+			public Fragment getContent()
+			{
+				return new FragmentTabDiary();
+			}
+		});
+		pages.add(new Page()
 		{
-			ErrorHandler.handle(e, this);
+			@Override
+			public String getTitle()
+			{
+				return ActivityMain.this.getString(R.string.main_option_bases);
+			}
+
+			@Override
+			public Fragment getContent()
+			{
+				return new FragmentTabBase();
+			}
+		});
+		pages.add(new Page()
+		{
+			@Override
+			public String getTitle()
+			{
+				return ActivityMain.this.getString(R.string.main_option_charts);
+			}
+
+			@Override
+			public Fragment getContent()
+			{
+				return new FragmentTabCharts();
+			}
+		});
+
+		PagerAdapter adapter = new FragmentStatePagerAdapter(getSupportFragmentManager())
+		{
+			@Override
+			public int getCount()
+			{
+				return pages.size();
+			}
+
+			@Override
+			public Fragment getItem(int position)
+			{
+				return pages.get(position).getContent();
+			}
+
+			@Override
+			public CharSequence getPageTitle(int position)
+			{
+				return pages.get(position).getTitle();
+			}
+		};
+		mViewPager = (ViewPager) findViewById(R.id.pager);
+		mViewPager.setAdapter(adapter);
+
+		PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
+
+		boolean firstStart = preferences.getBooleanValue(PreferenceID.ANDROID_FIRST_START);
+		if (firstStart)
+		{
+			startActivity(new Intent(this, ActivityWelcome.class));
+			finish();
 		}
 	}
 
-	// handled
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		try
-		{
-			cachedMenu = menu;
-		}
-		catch (Exception e)
-		{
-			ErrorHandler.handle(e, this);
-		}
+		cachedMenu = menu;
 		return true;
 	}
 
