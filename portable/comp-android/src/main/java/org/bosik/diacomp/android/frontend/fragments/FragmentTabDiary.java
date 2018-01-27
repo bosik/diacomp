@@ -146,10 +146,10 @@ public class FragmentTabDiary extends Fragment
 
 		class DatePair
 		{
-			public Date localTime;
-			public Date serverTime;
+			Date localTime;
+			Date serverTime;
 
-			public DatePair(Date localTime, Date serverTime)
+			DatePair(Date localTime, Date serverTime)
 			{
 				this.localTime = localTime;
 				this.serverTime = serverTime;
@@ -198,7 +198,7 @@ public class FragmentTabDiary extends Fragment
 									long offsetMin = offset / Utils.MsecPerMin;
 									String timeZone = String
 											.format(Locale.US, "%+02d:%02d", offsetMin / Utils.MinPerHour, offsetMin % Utils.MinPerHour);
-									String msg = getActivity().getString(R.string.warning_time_zone, timeZone);
+									String msg = getString(R.string.warning_time_zone, timeZone);
 									textWarningTime.setText(msg);
 									textWarningTime.setVisibility(View.VISIBLE);
 								}
