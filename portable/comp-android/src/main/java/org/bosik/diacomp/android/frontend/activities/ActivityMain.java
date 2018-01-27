@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -121,7 +122,7 @@ public class ActivityMain extends FragmentActivity
 				}
 			});
 
-			FragmentStatePagerAdapter adapter = new FragmentStatePagerAdapter(getSupportFragmentManager())
+			PagerAdapter adapter = new FragmentStatePagerAdapter(getSupportFragmentManager())
 			{
 				@Override
 				public int getCount()
