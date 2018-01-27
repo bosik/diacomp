@@ -18,20 +18,18 @@
  */
 package org.bosik.diacomp.android.backend.features.quickImport;
 
-import org.bosik.diacomp.android.backend.features.quickImport.ImportHelper.Progress;
-import org.bosik.diacomp.android.backend.features.quickImport.ImportHelper.ProgressCallback;
 import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
+import org.bosik.diacomp.android.backend.features.analyze.BackgroundService;
+import org.bosik.diacomp.android.backend.features.quickImport.ImportHelper.Progress;
+import org.bosik.diacomp.android.backend.features.quickImport.ImportHelper.ProgressCallback;
 
 public class ImportService extends IntentService
 {
-	private static final String	TAG					= ImportService.class.getSimpleName();
-	public static final String	SERVICE_CALLBACK_ID	= "org.bosik.diacomp.android:ImportService";
-
-	public static final String	KEY_RESULT			= "result";
-
-	// NotificationManager notificationManager;
+	private static final String TAG                 = ImportService.class.getSimpleName();
+	public static final  String SERVICE_CALLBACK_ID = "org.bosik.diacomp.android:ImportService";
+	public static final  String KEY_RESULT          = "result";
 
 	public ImportService()
 	{
@@ -52,6 +50,7 @@ public class ImportService extends IntentService
 					publishResults(step);
 				}
 			});
+			BackgroundService.forceRun(ImportService.this);
 
 			publishResults(Progress.DONE_OK);
 		}

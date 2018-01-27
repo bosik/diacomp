@@ -37,10 +37,12 @@ import java.util.TimerTask;
 
 public class BackgroundService extends Service
 {
-	private static final long TIMER_DELAY    = 2 * Utils.MsecPerSec;    // ms
-	private static final long TIMER_INTERVAL = 10 * Utils.MsecPerMin;
+	private static final String ACTION_FORCE_RUN = "runRightNow";
+	private static final long   TIMER_DELAY      = 2 * Utils.MsecPerSec;    // ms
+	private static final long   TIMER_INTERVAL   = 10 * Utils.MsecPerMin;
 
-	private final Timer timer = new Timer();
+	private final Timer timer          = new Timer();
+	private       long  lastForcedTime = 0L;
 
 	@Override
 	public IBinder onBind(Intent intent)
@@ -58,33 +60,52 @@ public class BackgroundService extends Service
 			@Override
 			public void run()
 			{
-				new AsyncTask<Void, Void, Void>()
-				{
-					@Override
-					protected Void doInBackground(Void... arg0)
-					{
-						relevantIndexation();
-						rebuildRates(BackgroundService.this);
-						return null;
-					}
-
-					void relevantIndexation()
-					{
-						final DiaryService diary = LocalDiary.getInstance(BackgroundService.this);
-						final FoodBaseService foodBase = LocalFoodBase.getInstance(BackgroundService.this);
-						final DishBaseService dishBase = LocalDishBase.getInstance(BackgroundService.this);
-
-						RelevantIndexator.indexate(diary, foodBase, dishBase);
-					}
-
-					void rebuildRates(Context context)
-					{
-						RateServiceInternal.getInstanceAuto(context).update();
-						RateServiceInternal.getInstanceManual(context).update();
-					}
-				}.execute();
+				perfromUpdateAsync();
 			}
 		}, TIMER_DELAY, TIMER_INTERVAL);
+	}
+
+	private void perfromUpdateAsync()
+	{
+		new AsyncTask<Void, Void, Void>()
+		{
+			@Override
+			protected Void doInBackground(Void... arg0)
+			{
+				performUpdate(BackgroundService.this);
+				return null;
+			}
+
+			private void performUpdate(Context context)
+			{
+				// Relevant indexation
+				DiaryService diary = LocalDiary.getInstance(context);
+				FoodBaseService foodBase = LocalFoodBase.getInstance(context);
+				DishBaseService dishBase = LocalDishBase.getInstance(context);
+				RelevantIndexator.indexate(diary, foodBase, dishBase);
+
+				// Rates
+				RateServiceInternal.getInstanceAuto(context).update();
+				RateServiceInternal.getInstanceManual(context).update();
+			}
+		}.execute();
+	}
+
+	public static void forceRun(Context context)
+	{
+		context.startService(new Intent(ACTION_FORCE_RUN, null, context, BackgroundService.class));
+	}
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId)
+	{
+		if (intent != null && ACTION_FORCE_RUN.equals(intent.getAction()) && (System.nanoTime() - lastForcedTime) > TIMER_INTERVAL * 1000000L)
+		{
+			lastForcedTime = System.nanoTime();
+			perfromUpdateAsync();
+		}
+
+		return super.onStartCommand(intent, flags, startId);
 	}
 
 	@Override

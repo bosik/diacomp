@@ -25,6 +25,7 @@ import android.preference.EditTextPreference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.features.analyze.BackgroundService;
 import org.bosik.diacomp.android.backend.features.notifications.NotificationService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
@@ -149,17 +150,27 @@ public class FragmentPreferences extends PreferenceFragment implements SharedPre
 
 			syncablePreferences.setString(entry);
 			updateEnabledDisabled();
-		}
 
-		if (PreferenceID.ANDROID_SHOW_TIME_AFTER.getKey().equals(key))
-		{
-			if (preferences.getBoolean(key, true))
+			switch (id)
 			{
-				getActivity().startService(new Intent(getActivity(), NotificationService.class));
-			}
-			else
-			{
-				getActivity().stopService(new Intent(getActivity(), NotificationService.class));
+				case ANDROID_SHOW_TIME_AFTER:
+				{
+					if (preferences.getBoolean(key, true))
+					{
+						getActivity().startService(new Intent(getActivity(), NotificationService.class));
+					}
+					else
+					{
+						getActivity().stopService(new Intent(getActivity(), NotificationService.class));
+					}
+					break;
+				}
+
+				case RATES_AUTO:
+				{
+					BackgroundService.forceRun(getActivity());
+					break;
+				}
 			}
 		}
 	}
