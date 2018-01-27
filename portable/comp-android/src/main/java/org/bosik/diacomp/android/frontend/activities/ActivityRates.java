@@ -20,6 +20,7 @@ package org.bosik.diacomp.android.frontend.activities;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -290,7 +291,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 			chart.setDataLoader(new ProgressBundle.DataLoader()
 			{
 				@Override
-				public Collection<Series<?>> load(ContentResolver contentResolver)
+				public Collection<Series<?>> load(Context context)
 				{
 					ratesService.update();
 					List<DataPoint> dataAvg = new ArrayList<>();

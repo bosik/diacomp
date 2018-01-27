@@ -20,12 +20,14 @@ package org.bosik.diacomp.android.frontend.fragments.chart;
 
 import java.util.Collection;
 import java.util.Collections;
+
+import android.content.Context;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.ProgressState;
 import com.jjoe64.graphview.series.Series;
 import android.content.ContentResolver;
 import android.os.AsyncTask;
 
-class DataLoadingTask extends AsyncTask<ContentResolver, Void, Collection<Series<?>>>
+class DataLoadingTask extends AsyncTask<Context, Void, Collection<Series<?>>>
 {
 	private ProgressBundle bundle;
 
@@ -45,7 +47,7 @@ class DataLoadingTask extends AsyncTask<ContentResolver, Void, Collection<Series
 	}
 
 	@Override
-	protected Collection<Series<?>> doInBackground(ContentResolver... params)
+	protected Collection<Series<?>> doInBackground(Context... params)
 	{
 		if (bundle.getDataLoader() != null)
 		{

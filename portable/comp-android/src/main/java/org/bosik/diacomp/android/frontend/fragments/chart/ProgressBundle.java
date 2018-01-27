@@ -19,6 +19,8 @@
 package org.bosik.diacomp.android.frontend.fragments.chart;
 
 import java.util.Collection;
+
+import android.content.Context;
 import com.jjoe64.graphview.series.Series;
 import android.content.ContentResolver;
 
@@ -26,7 +28,7 @@ public class ProgressBundle
 {
 	public interface DataLoader
 	{
-		Collection<Series<?>> load(ContentResolver contentResolver);
+		Collection<Series<?>> load(Context context);
 	}
 
 	public interface ProgressListener

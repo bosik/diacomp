@@ -18,7 +18,7 @@
  */
 package org.bosik.diacomp.android.frontend.fragments;
 
-import android.content.ContentResolver;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -140,11 +140,11 @@ public class FragmentTabCharts extends Fragment
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
-			public Collection<Series<?>> load(ContentResolver contentResolver)
+			public Collection<Series<?>> load(Context context)
 			{
 				// PREPARE DATE TREE
 
-				DiaryService diary = LocalDiary.getInstance(FragmentTabCharts.this.getActivity());
+				DiaryService diary = LocalDiary.getInstance(context);
 				Date startTime = Utils.shiftDate(new Date(), -PERIOD - HALF_WINDOW_SIZE);
 				Date endTime = Utils.shiftDate(new Date(), -HALF_WINDOW_SIZE);
 				List<Versioned<DiaryRecord>> recs = diary
@@ -218,11 +218,11 @@ public class FragmentTabCharts extends Fragment
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
-			public Collection<Series<?>> load(ContentResolver contentResolver)
+			public Collection<Series<?>> load(Context context)
 			{
 				// PREPARE DATE TREE
 
-				DiaryService diary = LocalDiary.getInstance(FragmentTabCharts.this.getActivity());
+				DiaryService diary = LocalDiary.getInstance(context);
 				Date startTime = Utils.shiftDate(new Date(), -PERIOD - HALF_WINDOW_SIZE);
 				Date endTime = Utils.shiftDate(new Date(), -HALF_WINDOW_SIZE);
 				List<Versioned<DiaryRecord>> recs = diary
@@ -299,11 +299,11 @@ public class FragmentTabCharts extends Fragment
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
-			public Collection<Series<?>> load(ContentResolver contentResolver)
+			public Collection<Series<?>> load(Context context)
 			{
 				// PREPARE DATE TREE
 
-				DiaryService diary = LocalDiary.getInstance(FragmentTabCharts.this.getActivity());
+				DiaryService diary = LocalDiary.getInstance(context);
 				Date startTime = Utils.shiftDate(new Date(), -PERIOD - HALF_WINDOW_SIZE);
 				Date endTime = Utils.shiftDate(new Date(), -HALF_WINDOW_SIZE);
 				List<Versioned<DiaryRecord>> recs = diary
@@ -364,9 +364,9 @@ public class FragmentTabCharts extends Fragment
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
-			public Collection<Series<?>> load(ContentResolver contentResolver)
+			public Collection<Series<?>> load(Context context)
 			{
-				RateService rateService = RateServiceInternal.getInstance(getActivity());
+				RateService rateService = RateServiceInternal.getInstance(context);
 
 				List<DataPoint> dataList = new ArrayList<>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
@@ -408,9 +408,9 @@ public class FragmentTabCharts extends Fragment
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
-			public Collection<Series<?>> load(ContentResolver contentResolver)
+			public Collection<Series<?>> load(Context context)
 			{
-				RateService rateService = RateServiceInternal.getInstance(getActivity());
+				RateService rateService = RateServiceInternal.getInstance(context);
 
 				List<DataPoint> dataList = new ArrayList<>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)
@@ -452,9 +452,9 @@ public class FragmentTabCharts extends Fragment
 		chart.setDataLoader(new DataLoader()
 		{
 			@Override
-			public Collection<Series<?>> load(ContentResolver contentResolver)
+			public Collection<Series<?>> load(Context context)
 			{
-				RateService rateService = RateServiceInternal.getInstance(getActivity());
+				RateService rateService = RateServiceInternal.getInstance(context);
 
 				List<DataPoint> dataList = new ArrayList<>();
 				for (int time = 0; time <= Utils.MinPerDay; time += 30)

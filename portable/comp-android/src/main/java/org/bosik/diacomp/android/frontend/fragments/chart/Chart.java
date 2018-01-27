@@ -304,7 +304,7 @@ public class Chart extends Fragment implements ProgressListener
 			FragmentActivity activity = getActivity();
 			if (activity != null)
 			{
-				new DataLoadingTask(bundle).execute(activity.getContentResolver());
+				new DataLoadingTask(bundle).execute(activity);
 			}
 		}
 	}
