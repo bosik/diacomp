@@ -19,7 +19,9 @@ package org.bosik.diacomp.core.services.preferences;
 
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerSet;
+import org.bosik.diacomp.core.utils.Utils;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
 
@@ -145,9 +147,10 @@ public class PreferencesTypedService extends PreferencesService
 	 * @param preferenceID
 	 * @return Value if found, default otherwise
 	 */
-	public Float getFloatValue(PreferenceID preferenceID)
+	public Float getFloatValue(PreferenceID preferenceID) throws ParseException
 	{
-		return Float.parseFloat(getStringValue(preferenceID));
+		String value = getStringValue(preferenceID);
+		return (float) Utils.parseDouble(value);
 	}
 
 	/**
@@ -167,9 +170,10 @@ public class PreferencesTypedService extends PreferencesService
 	 * @param preferenceID
 	 * @return Value if found, default otherwise
 	 */
-	public Double getDoubleValue(PreferenceID preferenceID)
+	public Double getDoubleValue(PreferenceID preferenceID) throws ParseException
 	{
-		return Double.parseDouble(getStringValue(preferenceID));
+		String value = getStringValue(preferenceID);
+		return Utils.parseDouble(value);
 	}
 
 	/**
