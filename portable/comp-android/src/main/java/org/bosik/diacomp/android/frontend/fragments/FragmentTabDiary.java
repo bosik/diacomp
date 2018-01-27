@@ -42,6 +42,7 @@ import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.backend.features.sync.ServerTimeService;
 import org.bosik.diacomp.android.backend.features.sync.TimeServiceInternal;
+import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorBlood;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorIns;
@@ -62,6 +63,7 @@ import org.bosik.diacomp.core.utils.TimeUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
@@ -380,7 +382,29 @@ public class FragmentTabDiary extends Fragment
 		BloodRecord bloodLast = PostprandUtils.findLastBlood(diary, entity.getData().getTime(), SCAN_FOR_BLOOD_BEFORE_MEAL, false);
 		Double bloodBaseValue = bloodBase == null ? null : bloodBase.getValue();
 		Double bloodLastValue = bloodLast == null ? null : bloodLast.getValue();
-		Double bloodTarget = preferences.getDoubleValue(PreferenceID.TARGET_BS);
+		Double bloodTarget;
+		try
+		{
+			bloodTarget = preferences.getDoubleValue(PreferenceID.TARGET_BS);
+		}
+		catch (ParseException e)
+		{
+			try
+			{
+				String parameterName = getString(R.string.preferences_personal_target_bs);
+				String tipFormat = getString(R.string.common_tip_error_invalid_preference);
+				String tip = String.format(Locale.US, tipFormat, parameterName, PreferenceID.TARGET_BS.getDefaultValue());
+				UIUtils.showLongTip(getActivity(), tip);
+
+				bloodTarget = Utils.parseDouble(PreferenceID.TARGET_BS.getDefaultValue());
+			}
+			catch (ParseException e1)
+			{
+				throw new RuntimeException(
+						"Preference " + PreferenceID.TARGET_BS + " has invalid default value " + PreferenceID.TARGET_BS.getDefaultValue(),
+						e);
+			}
+		}
 		InsRecord insRecord = PostprandUtils.findNearestInsulin(diary, entity.getData().getTime(), SCAN_FOR_INS_AROUND_MEAL);
 		Double insInjected = insRecord == null ? null : insRecord.getValue();
 

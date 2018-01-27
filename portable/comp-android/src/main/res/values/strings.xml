@@ -52,6 +52,7 @@
     <string name="common_rectype_note">Note</string>
     <string name="common_tip_deleted">Items removed: %d</string>
     <string name="common_tip_error_invalid_decimal">Please provide valid decimal number</string>
+    <string name="common_tip_error_invalid_preference" formatted="false">Preference \'%s\' has incorrect value, default value \'%s\' will be used instead</string>
     <string name="common_tip_unsupported_chars_removed">Some invalid characters were removed</string>
     <string name="common_unit_bs_mmoll">mmol/l</string>
     <string name="common_unit_insulin">U</string>
