@@ -130,7 +130,7 @@
     <string name="login_import_result_fail">Ошибка импорта данных</string>
     <string name="login_import_step_diary">Импорт дневника…</string>
     <string name="login_import_step_dish">Импорт базы блюд…</string>
-    <string name="login_import_step_downloading">Скачивание…</string>
+    <string name="login_import_step_downloading">Загрузка…</string>
     <string name="login_import_step_food">Импорт базы продуктов…</string>
     <string name="login_import_step_initialization">Инициализация…</string>
     <string name="login_import_step_preferences">Импорт настроек…</string>
