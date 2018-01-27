@@ -194,8 +194,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 				return rates.size();
 			}
 
-			@Override
-			public Object getItem(int position)
+			private Versioned<TimedRate> getItemCasted(int position)
 			{
 				if (position >= 0 && position < rates.size())
 				{
@@ -208,6 +207,12 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 			}
 
 			@Override
+			public Object getItem(int position)
+			{
+				return getItemCasted(position);
+			}
+
+			@Override
 			public boolean hasStableIds()
 			{
 				return true;
@@ -216,10 +221,10 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 			@Override
 			public long getItemId(int position)
 			{
-				Object item = getItem(position);
+				Versioned<TimedRate> item = getItemCasted(position);
 				if (item != null)
 				{
-					return ((Versioned<TimedRate>) item).getData().getTime();
+					return item.getData().getTime();
 				}
 				else
 				{
@@ -230,7 +235,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 			@Override
 			public View getView(int position, View view, ViewGroup parent)
 			{
-				Versioned<TimedRate> rate = (Versioned<TimedRate>) getItem(position);
+				Versioned<TimedRate> rate = getItemCasted(position);
 
 				if (rate != null)
 				{
