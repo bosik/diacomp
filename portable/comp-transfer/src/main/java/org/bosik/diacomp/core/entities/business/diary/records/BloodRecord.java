@@ -17,16 +17,18 @@
  */
 package org.bosik.diacomp.core.entities.business.diary.records;
 
-import java.util.Date;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+
+import java.util.Date;
+import java.util.Locale;
 
 public class BloodRecord extends DiaryRecord
 {
-	private static final long	serialVersionUID	= -1621097859834950338L;
+	private static final long serialVersionUID = -1621097859834950338L;
 
-	private double				value;
-	private int					finger;
-	private transient boolean	postPrand;
+	private double  value;
+	private int     finger;
+	private boolean postPrand;
 
 	public BloodRecord()
 	{
@@ -35,13 +37,10 @@ public class BloodRecord extends DiaryRecord
 
 	/**
 	 * Constructor
-	 * 
-	 * @param time
-	 *            Time of blood sugar level measurement
-	 * @param value
-	 *            Blood sugar level. Valid values: positive
-	 * @param finger
-	 *            Number of finger. Valid values are [0...9]
+	 *
+	 * @param time   Time of blood sugar level measurement
+	 * @param value  Blood sugar level. Valid values: positive
+	 * @param finger Number of finger. Valid values are [0...9]
 	 */
 	public BloodRecord(Date time, double value, int finger)
 	{
@@ -50,11 +49,11 @@ public class BloodRecord extends DiaryRecord
 		setFinger(finger);
 	}
 
-	// ================================ ВАЛИДАТОРЫ ================================
+	// ================================ VALIDATORS ================================
 
 	public static boolean checkValue(double value)
 	{
-		return (value > 0); /* ограничение сверху отсутствует */
+		return (value > 0); /* no max limit */
 	}
 
 	public static boolean checkFinger(int finger)
@@ -86,7 +85,7 @@ public class BloodRecord extends DiaryRecord
 
 	/**
 	 * Number of finger. Valid values are [0...9]
-	 * 
+	 *
 	 * @param value
 	 */
 	public void setFinger(int value)
@@ -112,6 +111,6 @@ public class BloodRecord extends DiaryRecord
 	@Override
 	public String toString()
 	{
-		return String.format("Time: %s, Value: %.1f, Finger: %d", getTime(), getValue(), getFinger());
+		return String.format(Locale.US, "Time: %s, Value: %.1f, Finger: %d", getTime(), getValue(), getFinger());
 	}
 }
