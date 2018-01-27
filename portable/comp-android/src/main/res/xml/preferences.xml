@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="@string/preferences_personal">
-        <EditTextPreference
+        <org.bosik.diacomp.android.frontend.views.MandatoryDecimalPreference
                 android:key="e6681282aa724d3fa4cd6ac5735a163f"
                 android:inputType="numberDecimal"
                 android:numeric="decimal"

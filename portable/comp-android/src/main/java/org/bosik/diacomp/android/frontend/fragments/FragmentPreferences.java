@@ -106,8 +106,6 @@ public class FragmentPreferences extends PreferenceFragment implements SharedPre
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences preferences, String key)
 	{
-		updateDescription(preferences, key);
-
 		PreferenceID id = PreferenceID.parseSafely(key);
 
 		if (id != null) // if it is a syncable preference
@@ -150,6 +148,7 @@ public class FragmentPreferences extends PreferenceFragment implements SharedPre
 
 			syncablePreferences.setString(entry);
 			updateEnabledDisabled();
+			updateDescription(preferences, key);
 
 			switch (id)
 			{
@@ -195,7 +194,15 @@ public class FragmentPreferences extends PreferenceFragment implements SharedPre
 			{
 				if (value instanceof String)
 				{
-					p.setSummary((String) value);
+					PreferenceID id = PreferenceID.parseSafely(key);
+					if (id != null)
+					{
+						p.setSummary(syncablePreferences.getStringValue(id));
+					}
+					else
+					{
+						p.setSummary((String) value);
+					}
 				}
 				else
 				{
