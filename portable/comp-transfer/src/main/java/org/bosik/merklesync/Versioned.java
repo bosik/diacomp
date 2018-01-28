@@ -65,6 +65,8 @@ public class Versioned<T> implements Serializable
 
 	public Versioned(Versioned<? extends T> object)
 	{
+		Utils.nullCheck(object, "object");
+
 		copyMetadata(object);
 		setData(object.getData());
 	}

@@ -17,16 +17,17 @@
  */
 package org.bosik.diacomp.core.persistence.utils;
 
-import java.util.List;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class SerializerAdapter<T> implements Serializer<T>
 {
-	private Parser<T> parser;
+	private final Parser<T> parser;
 
 	public SerializerAdapter(Parser<T> parser)
 	{
