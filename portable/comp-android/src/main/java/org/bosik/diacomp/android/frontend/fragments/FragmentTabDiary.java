@@ -66,6 +66,7 @@ import org.bosik.merklesync.Versioned;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -339,7 +340,11 @@ public class FragmentTabDiary extends Fragment
 	{
 		if (createMode)
 		{
-			BloodRecord prev = PostprandUtils.findLastBlood(diary, new Date(), SCAN_FOR_BLOOD_FINGER, false);
+			Date endTime = new Date();
+			Date startTime = new Date(endTime.getTime() - SCAN_FOR_BLOOD_FINGER * Utils.MsecPerSec);
+			List<Versioned<DiaryRecord>> records = PostprandUtils.fetchDiaryData(diary, startTime, endTime);
+
+			BloodRecord prev = PostprandUtils.findLastBlood(records, endTime, false);
 			BloodRecord rec = new BloodRecord();
 			rec.setTime(new Date());
 			rec.setFinger(((prev == null) || (prev.getFinger() == -1)) ? -1 : ((prev.getFinger() + 1) % 10));
@@ -378,8 +383,21 @@ public class FragmentTabDiary extends Fragment
 			entity = new Versioned<>(rec);
 		}
 
-		BloodRecord bloodBase = PostprandUtils.findLastBlood(diary, entity.getData().getTime(), SCAN_FOR_BLOOD_BEFORE_MEAL, true);
-		BloodRecord bloodLast = PostprandUtils.findLastBlood(diary, entity.getData().getTime(), SCAN_FOR_BLOOD_BEFORE_MEAL, false);
+		long startTime = entity.getData().getTime().getTime();
+		long endTime = entity.getData().getTime().getTime();
+
+		// searching for blood record
+		startTime = Math.min(startTime, entity.getData().getTime().getTime() - (SCAN_FOR_BLOOD_BEFORE_MEAL * Utils.MsecPerSec));
+		endTime = Math.max(endTime, entity.getData().getTime().getTime());
+
+		// searching for insulin record
+		startTime = Math.min(startTime, entity.getData().getTime().getTime() - (SCAN_FOR_INS_AROUND_MEAL * Utils.MsecPerSec));
+		endTime = Math.max(endTime, entity.getData().getTime().getTime() + (SCAN_FOR_INS_AROUND_MEAL * Utils.MsecPerSec));
+
+		List<Versioned<DiaryRecord>> records = PostprandUtils.fetchDiaryData(diary, new Date(startTime), new Date(endTime));
+
+		BloodRecord bloodBase = PostprandUtils.findLastBlood(records, entity.getData().getTime(), true);
+		BloodRecord bloodLast = PostprandUtils.findLastBlood(records, entity.getData().getTime(), false);
 		Double bloodBaseValue = bloodBase == null ? null : bloodBase.getValue();
 		Double bloodLastValue = bloodLast == null ? null : bloodLast.getValue();
 		Double bloodTarget;
@@ -405,7 +423,8 @@ public class FragmentTabDiary extends Fragment
 						e);
 			}
 		}
-		InsRecord insRecord = PostprandUtils.findNearestInsulin(diary, entity.getData().getTime(), SCAN_FOR_INS_AROUND_MEAL);
+
+		InsRecord insRecord = PostprandUtils.findNearestInsulin(records, entity.getData().getTime(), SCAN_FOR_INS_AROUND_MEAL);
 		Double insInjected = insRecord == null ? null : insRecord.getValue();
 
 		Intent intent = new Intent(getActivity(), ActivityEditorMeal.class);

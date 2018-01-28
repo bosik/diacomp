@@ -17,9 +17,6 @@
  */
 package org.bosik.diacomp.core.services.diary;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
@@ -27,22 +24,22 @@ import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
 public class PostprandUtils
 {
 	// TODO: move hardcode
-	private static final int	DEFAULT_AFFECT_TIME_INSULIN		= 210;
-	private static final int	DEFAULT_AFFECT_TIME_MEAL_STD	= 210;
-	private static final int	DEFAULT_AFFECT_TIME_MEAL_SHORT	= 20;
+	private static final int DEFAULT_AFFECT_TIME_INSULIN    = 210;
+	private static final int DEFAULT_AFFECT_TIME_MEAL_STD   = 210;
+	private static final int DEFAULT_AFFECT_TIME_MEAL_SHORT = 20;
 
 	/**
-	 * 
 	 * @param records
-	 * @param insulinAffectTime
-	 *            (minutes)
-	 * @param mealAffectTime
-	 *            (minutes)
-	 * @param mealShortAffectTime
-	 *            (minutes)
+	 * @param insulinAffectTime   (minutes)
+	 * @param mealAffectTime      (minutes)
+	 * @param mealShortAffectTime (minutes)
 	 */
 	public static void updatePostprand(List<Versioned<DiaryRecord>> records, int insulinAffectTime, int mealAffectTime,
 			int mealShortAffectTime)
@@ -62,7 +59,7 @@ public class PostprandUtils
 			}
 			else if (record instanceof MealRecord)
 			{
-				MealRecord meal = (MealRecord)record;
+				MealRecord meal = (MealRecord) record;
 				if (meal.getCarbs() > 1.0)
 				{
 					long affectTime = meal.getShortMeal() ? mealShortAffectTime : mealAffectTime;
@@ -75,47 +72,40 @@ public class PostprandUtils
 			}
 			else if (record instanceof BloodRecord)
 			{
-				((BloodRecord)record).setPostPrand(record.getTime().getTime() < minFreeTime);
+				((BloodRecord) record).setPostPrand(record.getTime().getTime() < minFreeTime);
 			}
 		}
 	}
 
 	/**
 	 * Deprecated. Use {@link #updatePostprand(List, int, int, int)} instead and pass the params directly.
-	 * 
+	 *
 	 * @param records
 	 */
 	@Deprecated
 	public static void updatePostprand(List<Versioned<DiaryRecord>> records)
 	{
-		updatePostprand(records, DEFAULT_AFFECT_TIME_INSULIN, DEFAULT_AFFECT_TIME_MEAL_STD,
-				DEFAULT_AFFECT_TIME_MEAL_SHORT);
+		updatePostprand(records, DEFAULT_AFFECT_TIME_INSULIN, DEFAULT_AFFECT_TIME_MEAL_STD, DEFAULT_AFFECT_TIME_MEAL_SHORT);
 	}
 
 	/**
 	 * Searches for the insulin injection nearest to the specified time
-	 * 
-	 * @param near
-	 *            Time to search around
-	 * @param scanPeriod
-	 *            , in seconds
-	 * @return
+	 *
+	 * @param time       Time to search around
+	 * @param scanPeriod , in seconds
+	 * @return Insulin record if found, {@code null} otherwise
 	 */
-	public static InsRecord findNearestInsulin(DiaryService diary, Date near, long scanPeriod)
+	public static InsRecord findNearestInsulin(List<Versioned<DiaryRecord>> records, Date time, long scanPeriod)
 	{
-		Date startTime = new Date(near.getTime() - (scanPeriod * Utils.MsecPerSec));
-		Date endTime = new Date(near.getTime() + (scanPeriod * Utils.MsecPerSec));
-		List<Versioned<DiaryRecord>> records = diary.findPeriod(startTime, endTime, false);
-
-		long min = scanPeriod * Utils.MsecPerSec * 2;
+		long min = scanPeriod * Utils.MsecPerSec;
 		InsRecord nearestIns = null;
 
 		for (Versioned<DiaryRecord> record : records)
 		{
 			if (record.getData() instanceof InsRecord)
 			{
-				InsRecord currentIns = (InsRecord)record.getData();
-				long currentDist = Math.abs(currentIns.getTime().getTime() - near.getTime());
+				InsRecord currentIns = (InsRecord) record.getData();
+				long currentDist = Math.abs(currentIns.getTime().getTime() - time.getTime());
 				if (currentDist < min)
 				{
 					nearestIns = currentIns;
@@ -128,31 +118,28 @@ public class PostprandUtils
 	}
 
 	/**
-	 * Searches for the last BS record in period [since - scanPeriod, since]
-	 * 
-	 * @param since
-	 * @param scanPeriod
-	 *            in seconds
-	 * 
-	 * @return Blood record if found, <code>null</code> otherwise
+	 * Searches for the last BS record until {@code tillMoment}
+	 *
+	 * @param records           Records to scan
+	 * @param tillMoment        Moment to search to
+	 * @param skipPostprandials Ignore postprandial BS records
+	 * @return BS record if found, {@code null} otherwise
 	 */
-	public static BloodRecord findLastBlood(DiaryService diary, Date since, long scanPeriod, boolean skipPostprandials)
+	public static BloodRecord findLastBlood(List<Versioned<DiaryRecord>> records, Date tillMoment, boolean skipPostprandials)
 	{
-		Date endTime = since;
-		Date startTime = new Date(endTime.getTime() - (scanPeriod * Utils.MsecPerSec));
-
-		List<Versioned<DiaryRecord>> records = diary.findPeriod(startTime, endTime, false);
-		updatePostprand(records);
-		Collections.reverse(records);
-
-		for (Versioned<DiaryRecord> record : records)
+		for (int i = records.size() - 1; i >= 0; i--)
 		{
-			if (record.getData() instanceof BloodRecord)
+			Versioned<DiaryRecord> record = records.get(i);
+
+			if (record.getData().getTime().before(tillMoment))
 			{
-				BloodRecord bloodRecord = (BloodRecord)record.getData();
-				if (!skipPostprandials || !bloodRecord.isPostPrand())
+				if (record.getData() instanceof BloodRecord)
 				{
-					return bloodRecord;
+					BloodRecord bloodRecord = (BloodRecord) record.getData();
+					if (!skipPostprandials || !bloodRecord.isPostPrand())
+					{
+						return bloodRecord;
+					}
 				}
 			}
 		}
@@ -160,9 +147,24 @@ public class PostprandUtils
 		return null;
 	}
 
+	public static List<Versioned<DiaryRecord>> fetchDiaryData(DiaryService diary, Date startTime, Date endTime)
+	{
+		long time = System.nanoTime();
+		try
+		{
+			List<Versioned<DiaryRecord>> records = diary.findPeriod(startTime, endTime, false);
+			updatePostprand(records);
+			return records;
+		}
+		finally
+		{
+			System.out.println("fetchDiaryData(): " + (System.nanoTime() - time) / 1000000 + " ms");
+		}
+	}
+
 	/**
 	 * Find last insulin injection
-	 * 
+	 *
 	 * @param records
 	 * @return Insulin injection if found, <code>null</code> otherwise
 	 */
@@ -172,7 +174,7 @@ public class PostprandUtils
 		{
 			if (record.getData() instanceof InsRecord)
 			{
-				return (InsRecord)record.getData();
+				return (InsRecord) record.getData();
 			}
 		}
 
@@ -181,7 +183,7 @@ public class PostprandUtils
 
 	/**
 	 * Find last meal (meals with short postprandial period are ignored)
-	 * 
+	 *
 	 * @param records
 	 * @return Meal if found, <code>null</code> otherwise
 	 */
@@ -191,7 +193,7 @@ public class PostprandUtils
 		{
 			if (record.getData() instanceof MealRecord)
 			{
-				MealRecord rec = (MealRecord)record.getData();
+				MealRecord rec = (MealRecord) record.getData();
 				if (!rec.getShortMeal() && rec.count() > 0)
 				{
 					return rec;
@@ -203,12 +205,9 @@ public class PostprandUtils
 	}
 
 	/**
-	 * 
-	 * @param diary
-	 *            Diary source
+	 * @param diary      Diary source
 	 * @param since
-	 * @param scanPeriod
-	 *            in seconds
+	 * @param scanPeriod in seconds
 	 * @return
 	 */
 	public static List<Versioned<DiaryRecord>> findLastRecordsReversed(DiaryService diary, Date since, long scanPeriod)
