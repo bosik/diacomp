@@ -18,9 +18,9 @@
  */
 package org.bosik.diacomp.android.frontend.fragments.chart.daily;
 
+import com.jjoe64.graphview.GraphView;
 import org.bosik.diacomp.android.frontend.fragments.chart.Chart;
 import org.bosik.diacomp.android.frontend.fragments.chart.PostSetup;
-import com.jjoe64.graphview.GraphView;
 
 public class PostSetupDaily extends PostSetup
 {
@@ -51,5 +51,10 @@ public class PostSetupDaily extends PostSetup
 		graphView.getViewport().setMaxY(maxY);
 
 		graphView.getGridLabelRenderer().setLabelFormatter(new DailyLabels(maxY));
+
+		// For the latest GraphView version, these adjustments may be required:
+		//		graphView.getViewport().setXAxisBoundsStatus(Viewport.AxisBoundsStatus.FIX);
+		//		graphView.getViewport().setYAxisBoundsStatus(Viewport.AxisBoundsStatus.FIX);
+		//		graphView.getGridLabelRenderer().setHumanRounding(false);
 	}
 }
