@@ -18,11 +18,9 @@
  */
 package org.bosik.diacomp.android.frontend.views;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.util.AttributeSet;
@@ -35,11 +33,11 @@ import java.text.ParseException;
 
 public class MandatoryDecimalPreference extends EditTextPreference
 {
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	public MandatoryDecimalPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes)
-	{
-		super(context, attrs, defStyleAttr, defStyleRes);
-	}
+	//	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	//	public MandatoryDecimalPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes)
+	//	{
+	//		super(context, attrs, defStyleAttr, defStyleRes);
+	//	}
 
 	public MandatoryDecimalPreference(Context context, AttributeSet attrs, int defStyleAttr)
 	{
