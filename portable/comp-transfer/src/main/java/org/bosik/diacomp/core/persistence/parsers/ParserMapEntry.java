@@ -32,7 +32,7 @@ public class ParserMapEntry extends Parser<Entry<String, String>>
 	{
 		String key = json.getString(FIELD_KEY);
 		String value = json.getString(FIELD_VALUE);
-		return new AbstractMap.SimpleEntry<String, String>(key, value);
+		return new AbstractMap.SimpleEntry<>(key, value);
 	}
 
 	@Override

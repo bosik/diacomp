@@ -42,7 +42,7 @@ public abstract class TestSerializer<T>
 		{
 			System.err.println("Comparison error:");
 			System.err.println("\t" + exp.toString());
-			System.err.println("\t" + exp.toString());
+			System.err.println("\t" + act.toString());
 			throw e;
 		}
 	}

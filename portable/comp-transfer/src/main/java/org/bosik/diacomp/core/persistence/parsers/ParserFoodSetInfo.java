@@ -23,14 +23,18 @@ import org.json.JSONObject;
 
 public class ParserFoodSetInfo extends Parser<FoodSetInfo>
 {
+	private static final String FIELD_ID          = "id";
+	private static final String FIELD_DESCRIPTION = "description";
+	private static final String FIELD_SIZE        = "size";
+
 	@Override
 	public FoodSetInfo read(JSONObject json) throws JSONException
 	{
 		FoodSetInfo item = new FoodSetInfo();
 
-		item.setId(json.getString("id"));
-		item.setDescription(json.getString("description"));
-		item.setSize(json.getInt("size"));
+		item.setId(json.getString(FIELD_ID));
+		item.setDescription(json.getString(FIELD_DESCRIPTION));
+		item.setSize(json.getInt(FIELD_SIZE));
 
 		return item;
 	}
@@ -40,9 +44,9 @@ public class ParserFoodSetInfo extends Parser<FoodSetInfo>
 	{
 		JSONObject json = new JSONObject();
 
-		json.put("id", object.getId());
-		json.put("description", object.getDescription());
-		json.put("size", object.getSize());
+		json.put(FIELD_ID, object.getId());
+		json.put(FIELD_DESCRIPTION, object.getDescription());
+		json.put(FIELD_SIZE, object.getSize());
 
 		return json;
 	}

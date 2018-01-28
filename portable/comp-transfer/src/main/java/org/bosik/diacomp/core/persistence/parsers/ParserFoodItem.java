@@ -23,20 +23,26 @@ import org.json.JSONObject;
 
 public class ParserFoodItem extends Parser<FoodItem>
 {
+	private static final String FIELD_NAME  = "name";
+	private static final String FIELD_PROTS = "prots";
+	private static final String FIELD_FATS  = "fats";
+	private static final String FIELD_CARBS = "carbs";
+	private static final String FIELD_VALUE = "value";
+	private static final String FIELD_TAG   = "tag";
+	private static final String FIELD_TABLE = "table";
+
 	@Override
 	public FoodItem read(JSONObject json) throws JSONException
 	{
-		//return new Gson().fromJson(json.toString(), FoodItem.class);
-
 		FoodItem item = new FoodItem();
 
-		item.setName(json.getString("name"));
-		item.setRelProts(json.getDouble("prots"));
-		item.setRelFats(json.getDouble("fats"));
-		item.setRelCarbs(json.getDouble("carbs"));
-		item.setRelValue(json.getDouble("value"));
-		item.setTag(json.getInt("tag"));
-		item.setFromTable(json.getBoolean("table"));
+		item.setName(json.getString(FIELD_NAME));
+		item.setRelProts(json.getDouble(FIELD_PROTS));
+		item.setRelFats(json.getDouble(FIELD_FATS));
+		item.setRelCarbs(json.getDouble(FIELD_CARBS));
+		item.setRelValue(json.getDouble(FIELD_VALUE));
+		item.setTag(json.getInt(FIELD_TAG));
+		item.setFromTable(json.getBoolean(FIELD_TABLE));
 
 		return item;
 	}
@@ -44,17 +50,15 @@ public class ParserFoodItem extends Parser<FoodItem>
 	@Override
 	public JSONObject write(FoodItem object) throws JSONException
 	{
-		//return new JSONObject(new Gson().toJson(item));
-
 		JSONObject json = new JSONObject();
 
-		json.put("name", object.getName());
-		json.put("prots", object.getRelProts());
-		json.put("fats", object.getRelFats());
-		json.put("carbs", object.getRelCarbs());
-		json.put("value", object.getRelValue());
-		json.put("tag", object.getTag());
-		json.put("table", object.getFromTable());
+		json.put(FIELD_NAME, object.getName());
+		json.put(FIELD_PROTS, object.getRelProts());
+		json.put(FIELD_FATS, object.getRelFats());
+		json.put(FIELD_CARBS, object.getRelCarbs());
+		json.put(FIELD_VALUE, object.getRelValue());
+		json.put(FIELD_TAG, object.getTag());
+		json.put(FIELD_TABLE, object.getFromTable());
 
 		return json;
 	}

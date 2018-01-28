@@ -25,27 +25,32 @@ import org.json.JSONObject;
 
 public class ParserDishItem extends Parser<DishItem>
 {
-	private static Parser<FoodMassed>	parserFoodMassed	= new ParserFoodMassed();
+	private static final String FIELD_NAME    = "name";
+	private static final String FIELD_TAG     = "tag";
+	private static final String FIELD_MASS    = "mass";
+	private static final String FIELD_CONTENT = "content";
+
+	private final Parser<FoodMassed> parserFoodMassed = new ParserFoodMassed();
 
 	@Override
 	public DishItem read(JSONObject json) throws JSONException
 	{
 		DishItem dish = new DishItem();
-		dish.setName(json.getString("name"));
-		dish.setTag(json.getInt("tag"));
+		dish.setName(json.getString(FIELD_NAME));
+		dish.setTag(json.getInt(FIELD_TAG));
 
-		if (json.has("mass"))
+		if (json.has(FIELD_MASS))
 		{
-			dish.setMass(json.getDouble("mass"));
+			dish.setMass(json.getDouble(FIELD_MASS));
 		}
 		else
 		{
 			dish.setMass(null);
 		}
 
-		if (json.has("content"))
+		if (json.has(FIELD_CONTENT))
 		{
-			JSONArray content = json.getJSONArray("content");
+			JSONArray content = json.getJSONArray(FIELD_CONTENT);
 			for (int i = 0; i < content.length(); i++)
 			{
 				JSONObject item = content.getJSONObject(i);
@@ -62,11 +67,12 @@ public class ParserDishItem extends Parser<DishItem>
 	{
 		JSONObject json = new JSONObject();
 
-		json.put("name", item.getName());
-		json.put("tag", item.getTag());
+		json.put(FIELD_NAME, item.getName());
+		json.put(FIELD_TAG, item.getTag());
+
 		if (item.getMass() != null)
 		{
-			json.put("mass", item.getMass());
+			json.put(FIELD_MASS, item.getMass());
 		}
 
 		JSONArray content = new JSONArray();
@@ -75,7 +81,7 @@ public class ParserDishItem extends Parser<DishItem>
 			content.put(parserFoodMassed.write(item.get(i)));
 		}
 
-		json.put("content", content);
+		json.put(FIELD_CONTENT, content);
 
 		return json;
 	}

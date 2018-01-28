@@ -24,17 +24,24 @@ import org.json.JSONObject;
 
 public class ParserFoodMassed extends Parser<FoodMassed>
 {
+	private static final String FIELD_NAME  = "name";
+	private static final String FIELD_PROTS = "prots";
+	private static final String FIELD_FATS  = "fats";
+	private static final String FIELD_CARBS = "carbs";
+	private static final String FIELD_VALUE = "value";
+	private static final String FIELD_MASS  = "mass";
+
 	@Override
 	public FoodMassed read(JSONObject json) throws JSONException
 	{
 		FoodMassed item = new FoodMassed();
 
-		item.setName(json.getString("name"));
-		item.setRelProts(json.getDouble("prots"));
-		item.setRelFats(json.getDouble("fats"));
-		item.setRelCarbs(json.getDouble("carbs"));
-		item.setRelValue(json.getDouble("value"));
-		item.setMass(json.getDouble("mass"));
+		item.setName(json.getString(FIELD_NAME));
+		item.setRelProts(json.getDouble(FIELD_PROTS));
+		item.setRelFats(json.getDouble(FIELD_FATS));
+		item.setRelCarbs(json.getDouble(FIELD_CARBS));
+		item.setRelValue(json.getDouble(FIELD_VALUE));
+		item.setMass(json.getDouble(FIELD_MASS));
 
 		return item;
 	}
@@ -44,12 +51,12 @@ public class ParserFoodMassed extends Parser<FoodMassed>
 	{
 		JSONObject json = new JSONObject();
 
-		json.put("name", object.getName());
-		json.put("prots", Utils.round2(object.getRelProts()));
-		json.put("fats", Utils.round2(object.getRelFats()));
-		json.put("carbs", Utils.round2(object.getRelCarbs()));
-		json.put("value", Utils.round2(object.getRelValue()));
-		json.put("mass", Utils.round2(object.getMass()));
+		json.put(FIELD_NAME, object.getName());
+		json.put(FIELD_PROTS, Utils.round2(object.getRelProts()));
+		json.put(FIELD_FATS, Utils.round2(object.getRelFats()));
+		json.put(FIELD_CARBS, Utils.round2(object.getRelCarbs()));
+		json.put(FIELD_VALUE, Utils.round2(object.getRelValue()));
+		json.put(FIELD_MASS, Utils.round2(object.getMass()));
 
 		return json;
 	}

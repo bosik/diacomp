@@ -35,7 +35,7 @@ public class ParserPreferenceEntry extends Parser<PreferenceEntry<String>>
 		String value = json.getString(FIELD_VALUE);
 		int version = json.getInt(FIELD_VERSION);
 
-		PreferenceEntry<String> entry = new PreferenceEntry<String>();
+		PreferenceEntry<String> entry = new PreferenceEntry<>();
 		entry.setId(PreferenceID.parse(key));
 		entry.setValue(value);
 		entry.setVersion(version);
