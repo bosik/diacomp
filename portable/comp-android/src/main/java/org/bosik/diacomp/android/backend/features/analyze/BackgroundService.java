@@ -24,10 +24,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
-import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
-import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
-import org.bosik.diacomp.core.services.base.dish.DishBaseService;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.search.RelevantIndexator;
 import org.bosik.diacomp.core.utils.Utils;
@@ -80,9 +76,7 @@ public class BackgroundService extends Service
 			{
 				// Relevant indexation
 				DiaryService diary = LocalDiary.getInstance(context);
-				FoodBaseService foodBase = FoodBaseLocalService.getInstance(context);
-				DishBaseService dishBase = DishBaseLocalService.getInstance(context);
-				RelevantIndexator.indexate(diary, foodBase, dishBase);
+				RelevantIndexator.index(diary);
 
 				// Rates
 				RateServiceInternal.getInstanceAuto(context).update();
