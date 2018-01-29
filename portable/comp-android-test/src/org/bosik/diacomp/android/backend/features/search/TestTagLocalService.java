@@ -18,44 +18,43 @@
  */
 package org.bosik.diacomp.android.backend.features.search;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import android.test.AndroidTestCase;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import org.bosik.diacomp.core.services.search.Sorter;
-import org.bosik.diacomp.core.services.search.Sorter.Sort;
 import org.bosik.diacomp.core.services.search.TagService;
-import org.bosik.diacomp.core.test.fakes.mocks.Mock;
+import org.bosik.diacomp.core.mocks.Mock;
 import org.bosik.diacomp.core.test.fakes.mocks.MockFoodItem;
 import org.bosik.diacomp.core.test.fakes.mocks.MockVersionedConverter;
 import org.bosik.diacomp.core.utils.Profiler;
 import org.bosik.merklesync.Versioned;
-import android.test.AndroidTestCase;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class TestTagLocalService extends AndroidTestCase
 {
-	private TagService												tagService;
-	private final Mock<FoodItem>									mockFood		= new MockFoodItem();
-	private final Mock<Versioned<FoodItem>>							mockVersioned	= new MockVersionedConverter<FoodItem>(
-			mockFood);
-	private final Sorter											sorterFood		= new Sorter();
+	private TagService tagService;
+	private final        Mock<FoodItem>            mockFood      = new MockFoodItem();
+	private final        Mock<Versioned<FoodItem>> mockVersioned = new MockVersionedConverter<FoodItem>(mockFood);
 	/**
 	 * Size of (food+dish) base
 	 */
-	private static final int										N_TOTAL			= 10000;
+	private static final int                       N_TOTAL       = 10000;
 	/**
 	 * Count of unique items in the diary
 	 */
-	private static final int										N_USED			= 291;
+	private static final int                       N_USED        = 291;
 	/**
 	 * Average count of each unique item in the diary
 	 */
-	private static final int										N_DUP			= 24;
-	private static List<Versioned<? extends NamedRelativeTagged>>	foodBase;
-	private static Map<String, Versioned<FoodItem>>					foodBaseIndex;
+	private static final int                       N_DUP         = 24;
+	private static List<Versioned<? extends NamedRelativeTagged>> foodBase;
+	private static Map<String, Versioned<FoodItem>>               foodBaseIndex;
 
 	{
 		synchronized (this)
@@ -75,7 +74,7 @@ public class TestTagLocalService extends AndroidTestCase
 					foodBaseIndex.put(item.getId(), item);
 				}
 
-				sorterFood.sort(foodBase, Sort.ALPHABET);
+				Collections.sort(foodBase, Sorter.versionedAlphabet());
 
 				System.err.println("Foodbase inited in " + (p.sinceStart() / 1000000) + " ms");
 			}
@@ -89,7 +88,7 @@ public class TestTagLocalService extends AndroidTestCase
 		tagService = new TagLocalService();
 	}
 
-	public void testInsertPerfomance()
+	public void testInsertPerformance()
 	{
 		final long limitTime = 500000000; // 500 ms
 
@@ -115,7 +114,7 @@ public class TestTagLocalService extends AndroidTestCase
 		}
 	}
 
-	public void testSelectPerfomance()
+	public void testSelectPerformance()
 	{
 		final long limitTime = 100000000; // 100 ms
 
@@ -141,7 +140,7 @@ public class TestTagLocalService extends AndroidTestCase
 			favourite.add(item);
 		}
 
-		sorterFood.sort(favourite, Sort.RELEVANT);
+		Collections.sort(favourite, Sorter.versionedRelevance());
 
 		final int LIMIT = 100;
 

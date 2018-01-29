@@ -17,107 +17,69 @@
  */
 package org.bosik.diacomp.core.services.search;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import org.bosik.merklesync.Versioned;
 
+import java.util.Comparator;
+
 public class Sorter
 {
-	public enum Sort {
-		ALPHABET, RELEVANT
+	public static Comparator<NamedRelativeTagged> alphabet()
+	{
+		return new Comparator<NamedRelativeTagged>()
+		{
+			@Override
+			public int compare(NamedRelativeTagged lhs, NamedRelativeTagged rhs)
+			{
+				return lhs.getName().compareTo(rhs.getName());
+			}
+		};
 	}
 
-	final Comparator<NamedRelativeTagged>						COMPARATOR_ALPHABET				= new Comparator<NamedRelativeTagged>()
-																								{
-																									@Override
-																									public int compare(
-																											NamedRelativeTagged lhs,
-																											NamedRelativeTagged rhs)
-																									{
-																										return lhs
-																												.getName()
-																												.compareTo(
-																														rhs.getName());
-																									}
-																								};
-	final Comparator<NamedRelativeTagged>						COMPARATOR_RELEVANT				= new Comparator<NamedRelativeTagged>()
-																								{
-																									@Override
-																									public int compare(
-																											NamedRelativeTagged lhs,
-																											NamedRelativeTagged rhs)
-																									{
-																										if (lhs.getTag() == rhs
-																												.getTag())
-																										{
-																											return COMPARATOR_ALPHABET
-																													.compare(
-																															lhs,
-																															rhs);
-																										}
-																										else
-																										{
-																											return rhs
-																													.getTag()
-																													- lhs.getTag();
-																										}
-																									}
-																								};
-
-	final Comparator<Versioned<? extends NamedRelativeTagged>>	COMPARATOR_VERSIONED_ALPHABET	= new Comparator<Versioned<? extends NamedRelativeTagged>>()
-																								{
-																									@Override
-																									public int compare(
-																											Versioned<? extends NamedRelativeTagged> lhs,
-																											Versioned<? extends NamedRelativeTagged> rhs)
-																									{
-																										return COMPARATOR_ALPHABET
-																												.compare(
-																														lhs.getData(),
-																														rhs.getData());
-																									}
-																								};
-	final Comparator<Versioned<? extends NamedRelativeTagged>>	COMPARATOR_VERSIONED_RELEVANT	= new Comparator<Versioned<? extends NamedRelativeTagged>>()
-																								{
-																									@Override
-																									public int compare(
-																											Versioned<? extends NamedRelativeTagged> lhs,
-																											Versioned<? extends NamedRelativeTagged> rhs)
-																									{
-																										return COMPARATOR_RELEVANT
-																												.compare(
-																														lhs.getData(),
-																														rhs.getData());
-																									}
-																								};
-
-	// TODO: rename this methods
-
-	public void sortData(List<? extends NamedRelativeTagged> list, Sort order)
+	public static Comparator<NamedRelativeTagged> relevance()
 	{
-		switch (order)
+		return new Comparator<NamedRelativeTagged>()
 		{
-			case ALPHABET:
-				Collections.sort(list, COMPARATOR_ALPHABET);
-				break;
-			case RELEVANT:
-				Collections.sort(list, COMPARATOR_RELEVANT);
-				break;
-		}
+			private final Comparator<NamedRelativeTagged> compAlphabet = alphabet();
+
+			@Override
+			public int compare(NamedRelativeTagged lhs, NamedRelativeTagged rhs)
+			{
+				if (lhs.getTag() == rhs.getTag())
+				{
+					return compAlphabet.compare(lhs, rhs);
+				}
+				else
+				{
+					return rhs.getTag() - lhs.getTag();
+				}
+			}
+		};
 	}
 
-	public void sort(List<Versioned<? extends NamedRelativeTagged>> list, Sort order)
+	public static Comparator<Versioned<? extends NamedRelativeTagged>> versionedAlphabet()
 	{
-		switch (order)
+		return new Comparator<Versioned<? extends NamedRelativeTagged>>()
 		{
-			case ALPHABET:
-				Collections.sort(list, COMPARATOR_VERSIONED_ALPHABET);
-				break;
-			case RELEVANT:
-				Collections.sort(list, COMPARATOR_VERSIONED_RELEVANT);
-				break;
-		}
+			private final Comparator<NamedRelativeTagged> compAlphabet = alphabet();
+
+			@Override
+			public int compare(Versioned<? extends NamedRelativeTagged> lhs, Versioned<? extends NamedRelativeTagged> rhs)
+			{
+				return compAlphabet.compare(lhs.getData(), rhs.getData());
+			}
+		};
+	}
+
+	public static Comparator<Versioned<? extends NamedRelativeTagged>> versionedRelevance()
+	{
+		return new Comparator<Versioned<? extends NamedRelativeTagged>>()
+		{
+			@Override
+			public int compare(Versioned<? extends NamedRelativeTagged> lhs, Versioned<? extends NamedRelativeTagged> rhs)
+			{
+				return relevance().compare(lhs.getData(), rhs.getData());
+			}
+		};
 	}
 }

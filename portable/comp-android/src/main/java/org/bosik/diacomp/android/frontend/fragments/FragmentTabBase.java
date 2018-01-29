@@ -68,7 +68,6 @@ import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.search.Sorter;
-import org.bosik.diacomp.core.services.search.Sorter.Sort;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
@@ -105,8 +104,7 @@ public class FragmentTabBase extends Fragment
 	private long lastSearchTime;
 	private boolean searchScheduled = false;
 
-	private final        Sorter sorter       = new Sorter();
-	private static final long   SEARCH_DELAY = 500;
+	private static final long SEARCH_DELAY = 500;
 
 	private final ContentObserver observer = new ContentObserver(null)
 	{
@@ -589,8 +587,7 @@ public class FragmentTabBase extends Fragment
 			// }
 
 			result.addAll(dishItems);
-
-			sorter.sort(result, Sort.RELEVANT);
+			Collections.sort(result, Sorter.versionedRelevance());
 
 			// clipping
 
