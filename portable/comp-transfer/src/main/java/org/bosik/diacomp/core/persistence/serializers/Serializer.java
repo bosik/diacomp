@@ -34,7 +34,7 @@ public interface Serializer<T>
 	 *            String with serialized object
 	 * @return Deserialized object (may be null if no data supplied)
 	 */
-	public T read(String s);
+	T read(String s);
 
 	/**
 	 * Deserializes arbitrary amount of objects from string
@@ -43,7 +43,7 @@ public interface Serializer<T>
 	 *            String with serialized objects
 	 * @return List of deserialized objects (may be empty if not data supplied)
 	 */
-	public List<T> readAll(String s);
+	List<T> readAll(String s);
 
 	/**
 	 * Serializes object into string
@@ -52,7 +52,7 @@ public interface Serializer<T>
 	 *            The object to be serialized
 	 * @return String containing serialized object
 	 */
-	public String write(T object);
+	String write(T object);
 
 	/**
 	 * Serializes arbitrary amount of objects into string
@@ -61,5 +61,5 @@ public interface Serializer<T>
 	 *            List of objects to be serialized
 	 * @return String containing serialized objects
 	 */
-	public String writeAll(Iterable<T> objects);
+	String writeAll(Iterable<T> objects);
 }
