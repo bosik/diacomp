@@ -112,7 +112,7 @@ public class RelevantIndexator
 				value = 0;
 			}
 
-			if (item.getData().getTag() != value)
+			if (!value.equals(item.getData().getTag()))
 			{
 				item.getData().setTag(value);
 				changed.add(item);
