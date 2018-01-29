@@ -34,8 +34,8 @@ import android.widget.Filter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
-import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
+import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
+import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
@@ -334,8 +334,8 @@ public class FoodDishPicker extends LinearLayout
 	{
 		// prepare sources
 
-		FoodBaseService foodBase = LocalFoodBase.getInstance(getContext());
-		DishBaseService dishBase = LocalDishBase.getInstance(getContext());
+		FoodBaseService foodBase = FoodBaseLocalService.getInstance(getContext());
+		DishBaseService dishBase = DishBaseLocalService.getInstance(getContext());
 
 		// build lists
 

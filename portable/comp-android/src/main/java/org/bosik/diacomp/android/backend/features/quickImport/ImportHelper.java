@@ -96,8 +96,8 @@ public class ImportHelper
 			progress(callback, Progress.INITIALIZATION);
 			WebClient client = WebClientInternal.getInstance(context);
 			Importable diaryService = new DiaryLocalService(context);
-			Importable foodbaseService = new FoodBaseLocalService(context);
-			Importable dishbaseService = new DishBaseLocalService(context);
+			Importable foodbaseService = (Importable) FoodBaseLocalService.getInstance(context);
+			Importable dishbaseService = (Importable) DishBaseLocalService.getInstance(context);
 			Importable preferencesService = new PreferencesLocalService(context);
 
 			// download data

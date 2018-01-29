@@ -39,7 +39,7 @@ import android.widget.TextView;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
-import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
+import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.backend.features.foodset.FoodSetService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
@@ -233,7 +233,7 @@ public class ActivityFoodSet extends FragmentActivity
 					FoodSetService foodSetService = new FoodSetService(webClient);
 					List<Versioned<FoodItem>> foodSet = foodSetService.getFoodSet(foodSetInfo.getId());
 
-					FoodBaseService localFoodBase = LocalFoodBase.getInstance(ActivityFoodSet.this);
+					FoodBaseService localFoodBase = FoodBaseLocalService.getInstance(ActivityFoodSet.this);
 
 					for (Versioned<FoodItem> food : foodSet)
 					{

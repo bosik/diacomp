@@ -54,8 +54,8 @@ import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.db.Table;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDishbase;
 import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
-import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
-import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
+import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
+import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditor;
 import org.bosik.diacomp.android.frontend.activities.ActivityEditorDish;
@@ -105,7 +105,7 @@ public class FragmentTabBase extends Fragment
 	private long lastSearchTime;
 	private boolean searchScheduled = false;
 
-	private static final Sorter sorter       = new Sorter();
+	private final        Sorter sorter       = new Sorter();
 	private static final long   SEARCH_DELAY = 500;
 
 	private final ContentObserver observer = new ContentObserver(null)
@@ -153,8 +153,8 @@ public class FragmentTabBase extends Fragment
 		ContentResolver resolver = getActivity().getContentResolver();
 
 		resolver.registerContentObserver(DiaryContentProvider.CONTENT_BASE_URI, true, observer);
-		foodBaseService = LocalFoodBase.getInstance(getActivity());
-		dishBaseService = LocalDishBase.getInstance(getActivity());
+		foodBaseService = FoodBaseLocalService.getInstance(getActivity());
+		dishBaseService = DishBaseLocalService.getInstance(getActivity());
 	}
 
 	@Override

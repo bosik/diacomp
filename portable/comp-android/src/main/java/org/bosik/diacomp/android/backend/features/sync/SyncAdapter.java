@@ -108,7 +108,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			int counterFood = 0;
 			try
 			{
-				FoodBaseService localFoodBase = new FoodBaseLocalService(getContext());
+				FoodBaseService localFoodBase = FoodBaseLocalService.getInstance(getContext());
 				FoodBaseService webFoodBase = new FoodBaseWebService(webClient);
 				counterFood = new Synchronizer2<>(localFoodBase, webFoodBase, MAX_FOOD_READ, MAX_FOOD_WRITE).synchronize();
 			}
@@ -123,7 +123,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
 			int counterDish = 0;
 			try
 			{
-				DishBaseService localDishBase = new DishBaseLocalService(getContext());
+				DishBaseService localDishBase = DishBaseLocalService.getInstance(getContext());
 				DishBaseService webDishBase = new DishBaseWebService(webClient);
 				counterDish = new Synchronizer2<>(localDishBase, webDishBase, MAX_DISH_READ, MAX_DISH_WRITE).synchronize();
 			}

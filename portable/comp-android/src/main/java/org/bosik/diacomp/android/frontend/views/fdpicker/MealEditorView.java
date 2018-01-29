@@ -32,8 +32,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.features.dishbase.LocalDishBase;
-import org.bosik.diacomp.android.backend.features.foodbase.LocalFoodBase;
+import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
+import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.UIUtils.OnSubmit;
 import org.bosik.diacomp.android.frontend.views.fdpicker.FoodDishPicker.OnSubmitListener;
@@ -143,7 +143,7 @@ public class MealEditorView extends LinearLayout
 
 					// try to search item in food base
 
-					FoodBaseService foodBase = LocalFoodBase.getInstance(getContext());
+					FoodBaseService foodBase = FoodBaseLocalService.getInstance(getContext());
 					Versioned<FoodItem> food = foodBase.findOne(name);
 
 					if (food != null)
@@ -161,7 +161,7 @@ public class MealEditorView extends LinearLayout
 
 					// try to search item in dish base
 
-					DishBaseService dishBase = LocalDishBase.getInstance(getContext());
+					DishBaseService dishBase = DishBaseLocalService.getInstance(getContext());
 					Versioned<DishItem> dish = dishBase.findOne(name);
 
 					if (dish != null)
