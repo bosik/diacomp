@@ -60,15 +60,22 @@ public class ActivityEditor<T extends Serializable> extends Activity
 			readEntity(getIntent());
 		}
 
-		setupInterface();
-
 		boolean createMode = getIntent().getBooleanExtra(FIELD_CREATE_MODE, true);
-		showValuesInGUI(createMode);
 
-		if (createMode)
+		if (entity.getId() == null)
 		{
-			entity.setId(HashUtils.generateGuid());
+			if (createMode)
+			{
+				entity.setId(HashUtils.generateGuid());
+			}
+			else
+			{
+				throw new IllegalArgumentException("Can't edit object with null ID");
+			}
 		}
+
+		setupInterface();
+		showValuesInGUI(createMode);
 	}
 
 	@Override
