@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Versioned entry
@@ -181,8 +182,8 @@ public class Versioned<T> implements Serializable
 	public String toString()
 	{
 		return String
-				.format("(ID=%s, Hash=%s, Version=%d, Timestamp=%s, Data=%s)", getId(), getHash(), getVersion(), getTimeStamp().toString(),
-						getData());
+				.format(Locale.US, "(ID=%s, Timestamp=%s, Hash=%s, Version=%d, Deleted=%s, Data=%s)", getId(), getTimeStamp(), getHash(),
+						getVersion(), isDeleted(), getData());
 	}
 
 	public static <T> List<Versioned<T>> wrap(Iterable<T> items)

@@ -550,16 +550,10 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 
 	private void save(List<Versioned<TimedRate>> versioned)
 	{
-		List<TimedRate> timedRates = new ArrayList<>();
-		for (Versioned<TimedRate> item : versioned)
-		{
-			timedRates.add(item.getData());
-		}
-
 		try
 		{
 			PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
-			String json = TimedRate.writeList(timedRates);
+			String json = TimedRate.writeList(Versioned.unwrap(versioned));
 			preferences.setStringValue(PreferenceID.RATES_DATA, json);
 		}
 		catch (JSONException e)
