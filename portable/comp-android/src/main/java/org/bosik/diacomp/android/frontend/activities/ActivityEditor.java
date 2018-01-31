@@ -119,7 +119,7 @@ public class ActivityEditor<T extends Serializable> extends Activity
 	{
 		if (getValuesFromGUI())
 		{
-			entity.modified();
+			entity.modified(); // required to populate hash and timestamp
 
 			Intent intent = getIntent();
 			writeEntity(intent);

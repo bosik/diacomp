@@ -60,6 +60,7 @@ public class MockVersionedConverter<T> implements Mock<Versioned<T>>
 		// long timeDelta = ((long)r.nextInt(315360000)) * 1000;
 		// item.setTimeStamp(new Date(timeBase + timeDelta));
 		item.setTimeStamp(Utils.randomTime());
+		item.setHash(HashUtils.generateGuid());
 		item.setVersion(r.nextInt(100));
 		item.setDeleted(r.nextBoolean());
 
