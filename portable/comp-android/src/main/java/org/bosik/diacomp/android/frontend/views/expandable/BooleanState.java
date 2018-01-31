@@ -38,11 +38,30 @@ public class BooleanState extends BaseSavedState
 	}
 
 	@Override
+	public int describeContents()
+	{
+		return 0;
+	}
+
+	@Override
 	public void writeToParcel(Parcel dest, int flags)
 	{
 		super.writeToParcel(dest, flags);
 		dest.writeByte((byte) (value ? 1 : 0));
 	}
+
+	public static final Parcelable.Creator<BooleanState> CREATOR = new Parcelable.Creator<BooleanState>()
+	{
+		public BooleanState createFromParcel(Parcel in)
+		{
+			return new BooleanState(in);
+		}
+
+		public BooleanState[] newArray(int size)
+		{
+			return new BooleanState[size];
+		}
+	};
 
 	public boolean getValue()
 	{

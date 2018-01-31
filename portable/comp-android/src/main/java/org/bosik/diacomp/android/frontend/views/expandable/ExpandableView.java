@@ -18,7 +18,6 @@
  */
 package org.bosik.diacomp.android.frontend.views.expandable;
 
-import org.bosik.diacomp.android.R;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
@@ -27,13 +26,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import org.bosik.diacomp.android.R;
 
 public class ExpandableView extends LinearLayout
 {
-	private Button				groupSwitch;
-	private View				contentPanel;
-	private OnSwitchedListener	onSwitchedListener;
-	private boolean				expanded;
+	private Button             groupSwitch;
+	private View               contentPanel;
+	private OnSwitchedListener onSwitchedListener;
+	private boolean            expanded;
 
 	@Override
 	protected Parcelable onSaveInstanceState()
@@ -47,6 +47,12 @@ public class ExpandableView extends LinearLayout
 	@Override
 	protected void onRestoreInstanceState(Parcelable state)
 	{
+		if (!(state instanceof BooleanState))
+		{
+			super.onRestoreInstanceState(state);
+			return;
+		}
+
 		BooleanState ss = (BooleanState) state;
 		super.onRestoreInstanceState(ss.getSuperState());
 
