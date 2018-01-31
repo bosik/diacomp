@@ -38,16 +38,14 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
-import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
@@ -106,8 +104,6 @@ public class DiaryDayView extends LinearLayout
 		void onHeaderClick(Date date);
 	}
 
-	static final String TAG = DiaryDayView.class.getSimpleName();
-
 	// Data
 	private Date firstDate;
 	private int  countOfDays;
@@ -120,9 +116,6 @@ public class DiaryDayView extends LinearLayout
 	// Components
 	private BaseAdapter adapter;
 	private ListView    listRecs;
-
-	// Services
-	private static volatile DiaryService diaryService;
 
 	// Listeners
 	private OnRecordClickListener onRecordClickListener;
@@ -143,14 +136,6 @@ public class DiaryDayView extends LinearLayout
 		super(context, attributes);
 		final LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.view_diary_day, this);
-
-		// TODO
-		// diaryService = LocalDiary.getInstance(getContext().getContentResolver());
-
-		if (diaryService == null)
-		{
-			diaryService = new DiaryLocalService(getContext());
-		}
 
 		listRecs = (ListView) findViewById(R.id.listRecs);
 		listRecs.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -203,10 +188,10 @@ public class DiaryDayView extends LinearLayout
 					}
 				}
 
-				diaryService.save(removedRecords);
+				LocalDiary.getInstance(getContext()).save(removedRecords);
 
 				String text = String.format(Locale.US, getContext().getString(R.string.common_tip_deleted), removedRecords.size());
-				Toast.makeText(listRecs.getContext(), text, Toast.LENGTH_LONG).show();
+				UIUtils.showTipLong(listRecs.getContext(), text);
 
 				return true;
 			}
@@ -507,7 +492,7 @@ public class DiaryDayView extends LinearLayout
 			{
 				Date timeFrom = params[0];
 				Date timeTo = params[1];
-				List<Versioned<DiaryRecord>> records = request(timeFrom, timeTo);
+				List<Versioned<DiaryRecord>> records = loadData(timeFrom, timeTo);
 				return groupItems(records, timeFrom, days);
 			}
 
@@ -549,7 +534,7 @@ public class DiaryDayView extends LinearLayout
 			{
 				Date timeFrom = params[0];
 				Date timeTo = params[1];
-				final List<Versioned<DiaryRecord>> records = request(timeFrom, timeTo);
+				final List<Versioned<DiaryRecord>> records = loadData(timeFrom, timeTo);
 				return groupItems(records, timeFrom, days);
 			}
 
@@ -597,7 +582,7 @@ public class DiaryDayView extends LinearLayout
 			{
 				Date timeFrom = params[0];
 				Date timeTo = params[1];
-				final List<Versioned<DiaryRecord>> records = request(timeFrom, timeTo);
+				final List<Versioned<DiaryRecord>> records = loadData(timeFrom, timeTo);
 				return groupItems(records, timeFrom, days);
 			}
 
@@ -609,19 +594,17 @@ public class DiaryDayView extends LinearLayout
 					data.addAll(items);
 					updatePostprand();
 				}
-				countOfDays += days;
 
+				countOfDays += days;
 				loadingAfter = false;
 				adapter.notifyDataSetChanged();
 			}
 		}.execute(timeFrom, timeTo);
 	}
 
-	private static List<Versioned<DiaryRecord>> request(Date startTime, Date endTime)
+	private List<Versioned<DiaryRecord>> loadData(Date timeFrom, Date timeTo)
 	{
-		List<Versioned<DiaryRecord>> result = new ArrayList<>();
-		result.addAll(diaryService.findPeriod(startTime, endTime, false));
-		return result;
+		return LocalDiary.getInstance(getContext()).findPeriod(timeFrom, timeTo, false);
 	}
 
 	public void setOnHeaderClickListener(OnHeaderClickListener l)

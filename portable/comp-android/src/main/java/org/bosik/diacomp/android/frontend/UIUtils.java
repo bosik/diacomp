@@ -45,9 +45,14 @@ public class UIUtils
 		showTip(activity.getApplicationContext(), msg);
 	}
 
+	public static void showTipLong(Context context, String msg)
+	{
+		Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+	}
+
 	public static void showLongTip(Activity activity, String msg)
 	{
-		Toast.makeText(activity.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+		showTipLong(activity.getApplicationContext(), msg);
 	}
 
 	public interface OnSubmit
