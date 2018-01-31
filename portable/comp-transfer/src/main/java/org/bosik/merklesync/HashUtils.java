@@ -173,7 +173,21 @@ public class HashUtils
 			if (entry.getKey().length() < prefixSize)
 			{
 				throw new IllegalArgumentException(
-						String.format(Locale.US, "Invalid key '%s', must be at least %d chars long", entry.getKey(), prefixSize));
+						String.format(Locale.US, "Invalid entry ('%s'='%s'): key must be at least %d chars long", entry.getKey(),
+								entry.getValue(), prefixSize));
+			}
+
+			if (entry.getValue() == null)
+			{
+				throw new IllegalArgumentException(
+						String.format(Locale.US, "Invalid entry ('%s'='%s'): value is null", entry.getKey(), entry.getValue()));
+			}
+
+			if (entry.getValue().length() < DataSource.HASH_SIZE)
+			{
+				throw new IllegalArgumentException(
+						String.format(Locale.US, "Invalid entry ('%s'='%s'): value is too short, at least %d chars expected", entry.getKey(),
+								entry.getValue(), DataSource.HASH_SIZE));
 			}
 
 			if (prevKey != null && !prevKey.regionMatches(0, entry.getKey(), 0, prefixSize))
