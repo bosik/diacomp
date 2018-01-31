@@ -108,10 +108,11 @@ public class FakeObjectService implements DataSource<String>
 				{
 					if (x.getId().equals(item.getId()))
 					{
-						x.setData(item.getData());
-						x.setDeleted(item.isDeleted());
 						x.setTimeStamp(item.getTimeStamp());
+						x.setHash(item.getHash());
 						x.setVersion(item.getVersion());
+						x.setDeleted(item.isDeleted());
+						x.setData(item.getData());
 						break;
 					}
 				}

@@ -16,16 +16,18 @@
  */
 package org.bosik.merklesync;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import junit.framework.TestCase;
+import org.bosik.merklesync.SyncUtils.Synchronizer2;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import org.bosik.merklesync.SyncUtils.Synchronizer2;
-import org.junit.Test;
-import junit.framework.TestCase;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings({ "unchecked", "deprecation", "static-method" })
 public class TestSync
@@ -78,6 +80,7 @@ public class TestSync
 		Versioned<String> item = new Versioned<>();
 		item.setId("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8");
 		item.setTimeStamp(new Date(2014, 01, 01, 18, 30, 15));
+		item.setHash(HashUtils.generateGuid());
 		item.setVersion(42);
 		item.setDeleted(true);
 		item.setData("Test");
@@ -97,6 +100,7 @@ public class TestSync
 		Versioned<String> item = new Versioned<>();
 		item.setId("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8");
 		item.setTimeStamp(new Date(2014, 01, 01, 18, 30, 15));
+		item.setHash(HashUtils.generateGuid());
 		item.setVersion(42);
 		item.setDeleted(true);
 		item.setData("Test");
@@ -104,35 +108,10 @@ public class TestSync
 		service1.save(Collections.singletonList(item));
 
 		synchronize_v2(service2, service1);
-
 		assertServicesAreSynced(service1, service2);
 	}
 
-	public void test_sync_SingleOldAdd_NotSynced()
-	{
-		DataSource<String> service1 = new FakeObjectService();
-		DataSource<String> service2 = new FakeObjectService();
-
-		Versioned<String> item = new Versioned<>();
-		item.setData("Test");
-		item.setDeleted(true);
-		item.setId("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8");
-		item.setTimeStamp(new Date(2014, 01, 01, 18, 30, 15));
-		item.setVersion(42);
-
-		service1.save(Collections.singletonList(item));
-
-		synchronize_v2(service1, service2);
-
-		// item check
-		Versioned<String> restored = service2.findById(item.getId());
-		assertNull(restored);
-
-		// total check
-		List<Versioned<String>> list2 = service2.findChanged(ZERO_DATE);
-		assertTrue(list2.isEmpty());
-	}
-
+	@Test
 	public void test_sync_SingleChanged_SyncedOk()
 	{
 		// create item and save it in both sources
@@ -141,11 +120,12 @@ public class TestSync
 		DataSource<String> service2 = new FakeObjectService();
 
 		Versioned<String> item = new Versioned<>();
-		item.setData("Test");
-		item.setDeleted(false);
 		item.setId("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8");
 		item.setTimeStamp(new Date(2014, 01, 01, 18, 30, 15));
+		item.setHash(HashUtils.generateGuid());
 		item.setVersion(42);
+		item.setDeleted(false);
+		item.setData("Test");
 
 		service1.save(Collections.singletonList(item));
 		service2.save(Collections.singletonList(item));
@@ -153,8 +133,7 @@ public class TestSync
 		// modify item
 		item.setData("Updated");
 		item.setDeleted(true);
-		item.setTimeStamp(new Date(2014, 01, 01, 19, 00, 00));
-		item.setVersion(43);
+		item.modified();
 
 		// save it only in first source
 		service1.save(Collections.singletonList(item));
@@ -169,6 +148,7 @@ public class TestSync
 		assertServicesAreSynced(service1, service2);
 	}
 
+	@Test
 	public void test_sync_SingleCrossSync_SyncedOk()
 	{
 		DataSource<String> service1 = new FakeObjectService();
@@ -177,22 +157,25 @@ public class TestSync
 		// create item1 and save it in first storage
 
 		Versioned<String> item1 = new Versioned<>();
-		item1.setData("Test 1");
-		item1.setDeleted(false);
 		item1.setId("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8");
 		item1.setTimeStamp(new Date(2014, 01, 01, 18, 30, 15));
+		item1.setHash(HashUtils.generateGuid());
 		item1.setVersion(6);
+		item1.setDeleted(false);
+		item1.setData("Test 1");
 
 		service1.save(Collections.singletonList(item1));
 
 		// create item2 and save it in second storage
 
 		Versioned<String> item2 = new Versioned<>();
-		item2.setData("Test 2");
-		item2.setDeleted(true);
 		item2.setId("b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8a1");
 		item2.setTimeStamp(new Date(2014, 01, 01, 19, 42, 57));
+		item2.setHash(HashUtils.generateGuid());
 		item2.setVersion(2);
+		item2.setDeleted(true);
+		item2.setData("Test 2");
+
 		service2.save(Collections.singletonList(item2));
 
 		// sync
@@ -218,6 +201,7 @@ public class TestSync
 		Versioned<String> a1 = new Versioned<>();
 		a1.setId(ID_1);
 		a1.setTimeStamp(timeMore);
+		a1.setHash(HashUtils.generateGuid());
 		a1.setVersion(5);
 		a1.setDeleted(false);
 		a1.setData("a1 data");
@@ -225,6 +209,7 @@ public class TestSync
 		Versioned<String> b1 = new Versioned<>();
 		b1.setId(ID_2);
 		b1.setTimeStamp(timeLess);
+		b1.setHash(HashUtils.generateGuid());
 		b1.setVersion(20);
 		b1.setDeleted(false);
 		b1.setData("b1 data");
@@ -236,6 +221,7 @@ public class TestSync
 		Versioned<String> a2 = new Versioned<>();
 		a2.setId(ID_1);
 		a2.setTimeStamp(timeLess);
+		a2.setHash(HashUtils.generateGuid());
 		a2.setVersion(8);
 		a2.setDeleted(true);
 		a2.setData("a2 data");
@@ -243,6 +229,7 @@ public class TestSync
 		Versioned<String> b2 = new Versioned<>();
 		b2.setId(ID_2);
 		b2.setTimeStamp(timeMore);
+		b2.setHash(HashUtils.generateGuid());
 		b2.setVersion(19);
 		b2.setDeleted(true);
 		b2.setData("b2 data");
@@ -262,7 +249,7 @@ public class TestSync
 		assertEquals(b1, service2.findById(ID_2));
 	}
 
-	public static <T> int synchronize_v2(DataSource<T> service1, DataSource<T> service2)
+	private static <T> int synchronize_v2(DataSource<T> service1, DataSource<T> service2)
 	{
 		return new Synchronizer2<>(service1, service2).synchronize();
 	}
