@@ -75,14 +75,14 @@ public class TestSync
 		DataSource<String> service1 = new FakeObjectService();
 		DataSource<String> service2 = new FakeObjectService();
 
-		Versioned<String> item = new Versioned<String>();
-		item.setData("Test");
-		item.setDeleted(true);
+		Versioned<String> item = new Versioned<>();
 		item.setId("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8");
 		item.setTimeStamp(new Date(2014, 01, 01, 18, 30, 15));
 		item.setVersion(42);
+		item.setDeleted(true);
+		item.setData("Test");
 
-		service1.save(Arrays.<Versioned<String>> asList(item));
+		service1.save(Collections.singletonList(item));
 
 		synchronize_v2(service1, service2);
 		assertServicesAreSynced(service1, service2);
@@ -94,14 +94,14 @@ public class TestSync
 		DataSource<String> service1 = new FakeObjectService();
 		DataSource<String> service2 = new FakeObjectService();
 
-		Versioned<String> item = new Versioned<String>();
-		item.setData("Test");
-		item.setDeleted(true);
+		Versioned<String> item = new Versioned<>();
 		item.setId("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8");
 		item.setTimeStamp(new Date(2014, 01, 01, 18, 30, 15));
 		item.setVersion(42);
+		item.setDeleted(true);
+		item.setData("Test");
 
-		service1.save(Arrays.<Versioned<String>> asList(item));
+		service1.save(Collections.singletonList(item));
 
 		synchronize_v2(service2, service1);
 
@@ -113,14 +113,14 @@ public class TestSync
 		DataSource<String> service1 = new FakeObjectService();
 		DataSource<String> service2 = new FakeObjectService();
 
-		Versioned<String> item = new Versioned<String>();
+		Versioned<String> item = new Versioned<>();
 		item.setData("Test");
 		item.setDeleted(true);
 		item.setId("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8");
 		item.setTimeStamp(new Date(2014, 01, 01, 18, 30, 15));
 		item.setVersion(42);
 
-		service1.save(Arrays.<Versioned<String>> asList(item));
+		service1.save(Collections.singletonList(item));
 
 		synchronize_v2(service1, service2);
 
@@ -140,15 +140,15 @@ public class TestSync
 		DataSource<String> service1 = new FakeObjectService();
 		DataSource<String> service2 = new FakeObjectService();
 
-		Versioned<String> item = new Versioned<String>();
+		Versioned<String> item = new Versioned<>();
 		item.setData("Test");
 		item.setDeleted(false);
 		item.setId("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8");
 		item.setTimeStamp(new Date(2014, 01, 01, 18, 30, 15));
 		item.setVersion(42);
 
-		service1.save(Arrays.<Versioned<String>> asList(item));
-		service2.save(Arrays.<Versioned<String>> asList(item));
+		service1.save(Collections.singletonList(item));
+		service2.save(Collections.singletonList(item));
 
 		// modify item
 		item.setData("Updated");
@@ -157,7 +157,7 @@ public class TestSync
 		item.setVersion(43);
 
 		// save it only in first source
-		service1.save(Arrays.<Versioned<String>> asList(item));
+		service1.save(Collections.singletonList(item));
 
 		// sync
 		synchronize_v2(service1, service2);
@@ -176,24 +176,24 @@ public class TestSync
 
 		// create item1 and save it in first storage
 
-		Versioned<String> item1 = new Versioned<String>();
+		Versioned<String> item1 = new Versioned<>();
 		item1.setData("Test 1");
 		item1.setDeleted(false);
 		item1.setId("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8");
 		item1.setTimeStamp(new Date(2014, 01, 01, 18, 30, 15));
 		item1.setVersion(6);
 
-		service1.save(Arrays.<Versioned<String>> asList(item1));
+		service1.save(Collections.singletonList(item1));
 
 		// create item2 and save it in second storage
 
-		Versioned<String> item2 = new Versioned<String>();
+		Versioned<String> item2 = new Versioned<>();
 		item2.setData("Test 2");
 		item2.setDeleted(true);
 		item2.setId("b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8a1");
 		item2.setTimeStamp(new Date(2014, 01, 01, 19, 42, 57));
 		item2.setVersion(2);
-		service2.save(Arrays.<Versioned<String>> asList(item2));
+		service2.save(Collections.singletonList(item2));
 
 		// sync
 		synchronize_v2(service1, service2);
@@ -210,42 +210,44 @@ public class TestSync
 
 		// create items for first storage
 
-		Date timeLess = new Date(2014, 01, 01, 10, 00, 00);
-		Date timeMore = new Date(2014, 01, 01, 14, 00, 00);
+		final String ID_1 = "a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8";
+		final String ID_2 = "b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8a1";
+		final Date timeLess = new Date(2014, 01, 01, 10, 00, 00);
+		final Date timeMore = new Date(2014, 01, 01, 14, 00, 00);
 
-		Versioned<String> a1 = new Versioned<String>();
-		a1.setData("a1 data");
-		a1.setDeleted(false);
-		a1.setId("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8");
+		Versioned<String> a1 = new Versioned<>();
+		a1.setId(ID_1);
 		a1.setTimeStamp(timeMore);
 		a1.setVersion(5);
+		a1.setDeleted(false);
+		a1.setData("a1 data");
 
-		Versioned<String> b1 = new Versioned<String>();
-		b1.setData("b1 data");
-		b1.setDeleted(false);
-		b1.setId("b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8a1");
+		Versioned<String> b1 = new Versioned<>();
+		b1.setId(ID_2);
 		b1.setTimeStamp(timeLess);
 		b1.setVersion(20);
+		b1.setDeleted(false);
+		b1.setData("b1 data");
 
-		service1.save(Arrays.<Versioned<String>> asList(a1, b1));
+		service1.save(Arrays.asList(a1, b1));
 
 		// create items for second storage
 
-		Versioned<String> a2 = new Versioned<String>();
-		a2.setData("a2 data");
-		a2.setDeleted(true);
-		a2.setId("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8");
+		Versioned<String> a2 = new Versioned<>();
+		a2.setId(ID_1);
 		a2.setTimeStamp(timeLess);
 		a2.setVersion(8);
+		a2.setDeleted(true);
+		a2.setData("a2 data");
 
-		Versioned<String> b2 = new Versioned<String>();
-		b2.setData("b2 data");
-		b2.setDeleted(true);
-		b2.setId("b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8a1");
+		Versioned<String> b2 = new Versioned<>();
+		b2.setId(ID_2);
 		b2.setTimeStamp(timeMore);
 		b2.setVersion(19);
+		b2.setDeleted(true);
+		b2.setData("b2 data");
 
-		service2.save(Arrays.<Versioned<String>> asList(a2, b2));
+		service2.save(Arrays.asList(a2, b2));
 
 		// sync
 		synchronize_v2(service1, service2);
@@ -254,14 +256,14 @@ public class TestSync
 		assertServicesAreSynced(service1, service2);
 
 		// accurate check
-		assertEquals(a2, service1.findById("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8"));
-		assertEquals(a2, service2.findById("a1b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8"));
-		assertEquals(b1, service1.findById("b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8a1"));
-		assertEquals(b1, service2.findById("b2c3d4e5f6d7c8a1b2c3d4e5f6d7c8a1"));
+		assertEquals(a2, service1.findById(ID_1));
+		assertEquals(a2, service2.findById(ID_1));
+		assertEquals(b1, service1.findById(ID_2));
+		assertEquals(b1, service2.findById(ID_2));
 	}
 
 	public static <T> int synchronize_v2(DataSource<T> service1, DataSource<T> service2)
 	{
-		return new Synchronizer2<T>(service1, service2).synchronize();
+		return new Synchronizer2<>(service1, service2).synchronize();
 	}
 }
