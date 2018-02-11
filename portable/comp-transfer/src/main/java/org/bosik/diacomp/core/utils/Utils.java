@@ -17,6 +17,8 @@
  */
 package org.bosik.diacomp.core.utils;
 
+import org.bosik.diacomp.core.entities.business.Units;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.json.JSONArray;
 
 import java.io.BufferedWriter;
@@ -55,16 +57,17 @@ public class Utils
 	/**
 	 * Value of proteins, kcal/g
 	 */
-	public static final double KCAL_PER_PROTS = 3.8;
+	public static final double      KCAL_PER_PROTS    = 3.8;
 	/**
 	 * Value of fats, kcal/g
 	 */
-	public static final double KCAL_PER_FATS  = 9.3;
+	public static final double      KCAL_PER_FATS     = 9.3;
 	/**
 	 * Value of carbohydrates, kcal/g
 	 */
-	public static final double KCAL_PER_CARBS = 4.1;
-	public static final int    CARB_PER_BU    = 12; // g/BU
+	public static final double      KCAL_PER_CARBS    = 4.1;
+	public static final int         CARB_PER_BU       = 12; // g/BU
+	public static final Units.Mass DEFAULT_MASS_UNIT = CodedUtils.parse(Units.Mass.class, PreferenceID.RATES_MASS_UNITS.getDefaultValue());
 
 	// Time
 
@@ -513,15 +516,24 @@ public class Utils
 		return String.format(Locale.US, "%02d:%02d", h, m);
 	}
 
-	public static String formatK(double k, boolean BU)
+	public static String formatK(double k, Units.Mass unit)
 	{
-		if (BU)
+		switch (unit)
 		{
-			return String.format(Locale.US, "%.1f", k * CARB_PER_BU);
-		}
-		else
-		{
-			return String.format(Locale.US, "%.2f", k);
+			case G:
+			{
+				return String.format(Locale.US, "%.2f", k);
+			}
+
+			case BU:
+			{
+				return String.format(Locale.US, "%.1f", k * CARB_PER_BU);
+			}
+
+			default:
+			{
+				throw new IllegalArgumentException("Unsupported unit of mass: " + unit);
+			}
 		}
 	}
 
@@ -530,15 +542,24 @@ public class Utils
 		return String.format(Locale.US, "%.1f", q);
 	}
 
-	public static String formatX(double x, boolean BU)
+	public static String formatX(double x, Units.Mass unit)
 	{
-		if (BU)
+		switch (unit)
 		{
-			return String.format(Locale.US, "%.2f", x * CARB_PER_BU);
-		}
-		else
-		{
-			return String.format(Locale.US, "%.3f", x);
+			case G:
+			{
+				return String.format(Locale.US, "%.3f", x);
+			}
+
+			case BU:
+			{
+				return String.format(Locale.US, "%.2f", x * CARB_PER_BU);
+			}
+
+			default:
+			{
+				throw new IllegalArgumentException("Unsupported unit of mass: " + unit);
+			}
 		}
 	}
 

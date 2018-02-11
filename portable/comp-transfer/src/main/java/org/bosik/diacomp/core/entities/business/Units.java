@@ -18,6 +18,7 @@
 package org.bosik.diacomp.core.entities.business;
 
 import org.bosik.diacomp.core.entities.tech.Coded;
+import org.bosik.diacomp.core.utils.Utils;
 
 public final class Units
 {
@@ -43,6 +44,60 @@ public final class Units
 		public String getCode()
 		{
 			return code;
+		}
+
+		public static double convert(double value, Mass unitFrom, Mass unitTo)
+		{
+			if (unitFrom == unitTo)
+			{
+				return value;
+			}
+			else
+			{
+				return convertFromStandard(convertToStandard(value, unitFrom), unitTo);
+			}
+		}
+
+		private static double convertToStandard(double value, Mass unitFrom)
+		{
+			switch (unitFrom)
+			{
+				case G:
+				{
+					return value;
+				}
+
+				case BU:
+				{
+					return value / Utils.CARB_PER_BU;
+				}
+
+				default:
+				{
+					throw new IllegalArgumentException("Unsupported unit of mass: " + unitFrom);
+				}
+			}
+		}
+
+		private static double convertFromStandard(double value, Mass unitTo)
+		{
+			switch (unitTo)
+			{
+				case G:
+				{
+					return value;
+				}
+
+				case BU:
+				{
+					return value * Utils.CARB_PER_BU;
+				}
+
+				default:
+				{
+					throw new IllegalArgumentException("Unsupported unit of mass: " + unitTo);
+				}
+			}
 		}
 	}
 

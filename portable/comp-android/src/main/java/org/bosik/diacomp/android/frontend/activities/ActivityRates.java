@@ -73,8 +73,6 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 	// Constants
 	private static final int        DIALOG_RATE_CREATE = 11;
 	private static final int        DIALOG_RATE_MODIFY = 12;
-	private static final Units.Mass DEFAULT_MASS_UNIT  = CodedUtils
-			.parse(Units.Mass.class, PreferenceID.RATES_MASS_UNITS.getDefaultValue());
 
 	// components
 	private Chart       chart;
@@ -249,19 +247,18 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 					}
 
 					String preferenceValue = preferences.getStringValue(PreferenceID.RATES_MASS_UNITS);
-					Units.Mass unit = CodedUtils.parse(Units.Mass.class, preferenceValue, DEFAULT_MASS_UNIT);
-					boolean BU = (unit == Units.Mass.BU);
+					Units.Mass unit = CodedUtils.parse(Units.Mass.class, preferenceValue, Utils.DEFAULT_MASS_UNIT);
 
 					((TextView) view.findViewById(R.id.ratesItemTime)).setText(Utils.formatTimeMin(rate.getData().getTime()));
 
-					((TextView) view.findViewById(R.id.ratesItemK)).setText(formatK(rate.getData(), BU));
-					((TextView) view.findViewById(R.id.ratesItemKUnit)).setText(formatKUnit(BU));
+					((TextView) view.findViewById(R.id.ratesItemK)).setText(formatK(rate.getData(), unit));
+					((TextView) view.findViewById(R.id.ratesItemKUnit)).setText(formatKUnit(unit));
 
 					((TextView) view.findViewById(R.id.ratesItemQ)).setText(formatQ(rate.getData()));
 					((TextView) view.findViewById(R.id.ratesItemQUnit)).setText(formatQUnit());
 
-					((TextView) view.findViewById(R.id.ratesItemX)).setText(formatX(rate.getData(), BU));
-					((TextView) view.findViewById(R.id.ratesItemXUnit)).setText(formatXUnit(BU));
+					((TextView) view.findViewById(R.id.ratesItemX)).setText(formatX(rate.getData(), unit));
+					((TextView) view.findViewById(R.id.ratesItemXUnit)).setText(formatXUnit(unit));
 				}
 
 				view.setBackgroundDrawable(getResources().getDrawable(R.drawable.background_base_item));
@@ -299,15 +296,16 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 			public Collection<Series<?>> load(Context context)
 			{
 				ratesService.update();
-				final boolean BU = getBU();
+				Units.Mass unitOfMass = getMassUnit();
 				List<DataPoint> dataAvg = new ArrayList<>();
 				for (int time = 0; time < Utils.MinPerDay; time += 5)
 				{
 					Rate rate = ratesService.getRate(time);
 					if (rate != null)
 					{
-						double value = BU ? rate.getK() / rate.getQ() * Utils.CARB_PER_BU : rate.getK() / rate.getQ();
-						dataAvg.add(new DataPoint((double) time / Utils.MinPerHour, value));
+						double valueOriginal = rate.getK() / rate.getQ();
+						double valueConverted = Units.Mass.convert(valueOriginal, Units.Mass.G, unitOfMass);
+						dataAvg.add(new DataPoint((double) time / Utils.MinPerHour, valueConverted));
 					}
 				}
 
@@ -321,8 +319,8 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 
 	private void updateChartTitle()
 	{
-		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_x), getString(R.string.common_unit_insulin),
-				getBU() ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm)));
+		String unitName = convertUnitToTitle(getMassUnit());
+		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_x), getString(R.string.common_unit_insulin), unitName));
 	}
 
 	@Override
@@ -397,7 +395,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 			{
 				FragmentMassUnitDialog newFragment = new FragmentMassUnitDialog();
 				Bundle args = new Bundle();
-				args.putBoolean(FragmentMassUnitDialog.KEY_BU, getBU());
+				args.putString(FragmentMassUnitDialog.KEY_UNIT_OF_MASS, getMassUnit().getCode());
 				newFragment.setArguments(args);
 				newFragment.show(getFragmentManager(), "unitMassPicker");
 				return true;
@@ -422,18 +420,16 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		}
 	}
 
-	private boolean getBU()
+	private Units.Mass getMassUnit()
 	{
 		final PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
 		String value = preferences.getStringValue(PreferenceID.RATES_MASS_UNITS);
-		Units.Mass unit = CodedUtils.parse(Units.Mass.class, value, DEFAULT_MASS_UNIT);
-		return unit == Units.Mass.BU;
+		return CodedUtils.parse(Units.Mass.class, value, Utils.DEFAULT_MASS_UNIT);
 	}
 
-	private void setBU(boolean value)
+	private void setMassUnit(Units.Mass unit)
 	{
 		final PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
-		Units.Mass unit = value ? Units.Mass.BU : Units.Mass.G;
 		preferences.setStringValue(PreferenceID.RATES_MASS_UNITS, unit.getCode());
 	}
 
@@ -441,7 +437,8 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 	public void onClick(DialogInterface dialog, int which)
 	{
 		String selectedLabel = getResources().getStringArray(R.array.unit_mass_options)[which];
-		setBU(getString(R.string.common_unit_mass_bu).equals(selectedLabel));
+		Units.Mass unit = convertTitleToUnit(selectedLabel);
+		setMassUnit(unit);
 		adapter.notifyDataSetChanged();
 		updateChartTitle();
 	}
@@ -482,20 +479,20 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		Intent intent = new Intent(this, ActivityEditorRate.class);
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
 		intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
-		intent.putExtra(ActivityEditorRate.KEY_INTENT_USE_BU, getBU());
+		intent.putExtra(ActivityEditorRate.KEY_UNIT_OF_MASS, getMassUnit().getCode());
 
 		startActivityForResult(intent, createMode ? DIALOG_RATE_CREATE : DIALOG_RATE_MODIFY);
 	}
 
-	private String formatK(TimedRate timedRate, boolean BU)
+	private String formatK(TimedRate timedRate, Units.Mass unitOfMass)
 	{
-		return "K: " + Utils.formatK(timedRate.getK(), BU);
+		return "K: " + Utils.formatK(timedRate.getK(), unitOfMass);
 	}
 
-	private String formatKUnit(boolean BU)
+	private String formatKUnit(Units.Mass unitOfMass)
 	{
 		String unitBS = getString(R.string.common_unit_bs_mmoll);
-		String unitMass = BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm);
+		String unitMass = convertUnitToTitle(unitOfMass);
 		return unitBS + "/" + unitMass;
 	}
 
@@ -511,15 +508,15 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		return unitBS + "/" + unitDosage;
 	}
 
-	private String formatX(TimedRate timedRate, boolean BU)
+	private String formatX(TimedRate timedRate, Units.Mass unitOfMass)
 	{
-		return "X: " + Utils.formatX(timedRate.getK() / timedRate.getQ(), BU);
+		return "X: " + Utils.formatX(timedRate.getK() / timedRate.getQ(), unitOfMass);
 	}
 
-	private String formatXUnit(boolean BU)
+	private String formatXUnit(Units.Mass unitOfMass)
 	{
 		String unitDosage = getString(R.string.common_unit_insulin);
-		String unitMass = BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm);
+		String unitMass = convertUnitToTitle(unitOfMass);
 		return unitDosage + "/" + unitMass;
 	}
 
@@ -586,5 +583,42 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 				return lhs.getData().getTime() - rhs.getData().getTime();
 			}
 		});
+	}
+
+	private String convertUnitToTitle(Units.Mass unit)
+	{
+		switch (unit)
+		{
+			case G:
+			{
+				return getString(R.string.common_unit_mass_gramm);
+			}
+
+			case BU:
+			{
+				return getString(R.string.common_unit_mass_bu);
+			}
+
+			default:
+			{
+				throw new IllegalArgumentException("Unsupported unit of mass: " + unit);
+			}
+		}
+	}
+
+	private Units.Mass convertTitleToUnit(String title)
+	{
+		if (getString(R.string.common_unit_mass_bu).equals(title))
+		{
+			return Units.Mass.BU;
+		}
+		else if (getString(R.string.common_unit_mass_gramm).equals(title))
+		{
+			return Units.Mass.G;
+		}
+		else
+		{
+			throw new IllegalArgumentException("Unknown unit of mass: " + title);
+		}
 	}
 }

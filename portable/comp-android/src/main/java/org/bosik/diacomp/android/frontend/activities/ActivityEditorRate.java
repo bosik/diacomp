@@ -32,6 +32,8 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.android.frontend.fragments.pickers.TimePickerFragment;
 import org.bosik.diacomp.core.entities.business.TimedRate;
+import org.bosik.diacomp.core.entities.business.Units;
+import org.bosik.diacomp.core.utils.CodedUtils;
 import org.bosik.diacomp.core.utils.Utils;
 
 import java.util.Arrays;
@@ -40,7 +42,7 @@ import java.util.LinkedHashSet;
 
 public class ActivityEditorRate extends ActivityEditor<TimedRate> implements TimePickerDialog.OnTimeSetListener
 {
-	public static final String KEY_INTENT_USE_BU = "org.bosik.diacomp.useBU";
+	public static final String KEY_UNIT_OF_MASS = "org.bosik.diacomp.unitOfMass";
 
 	private static final int INDEX_K = 1;
 	private static final int INDEX_Q = 2;
@@ -52,7 +54,7 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 	private EditText editQ;
 	private EditText editX;
 
-	private boolean BU;
+	//private boolean BU;
 	private boolean ignoreUpdates = false;
 
 	/* =========================== OVERRIDDEN METHODS ================================ */
@@ -62,7 +64,7 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 	{
 		setContentView(R.layout.activity_editor_rate);
 
-		BU = getIntent().getExtras().getBoolean(KEY_INTENT_USE_BU, false);
+		Units.Mass unit = getUnitOfMass();
 
 		buttonTime = (Button) findViewById(R.id.buttonRateTime);
 		buttonTime.setOnClickListener(new OnClickListener()
@@ -85,15 +87,15 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 			}
 		});
 
+		String unitTitle = convertUnitToTitle(unit);
+
 		((TextView) findViewById(R.id.labelRateK)).setText(
-				String.format("%s, %s/%s", getString(R.string.common_rate_k), getString(R.string.common_unit_bs_mmoll),
-						BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm)));
+				String.format("%s, %s/%s", getString(R.string.common_rate_k), getString(R.string.common_unit_bs_mmoll), unitTitle));
 		((TextView) findViewById(R.id.labelRateQ)).setText(
 				String.format("%s, %s/%s", getString(R.string.common_rate_q), getString(R.string.common_unit_bs_mmoll),
 						getString(R.string.common_unit_insulin)));
-		((TextView) findViewById(R.id.labelRateX)).setText(
-				String.format("%s, %s/%s", getString(R.string.common_rate_x), getString(R.string.common_unit_insulin),
-						BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm)));
+		((TextView) findViewById(R.id.labelRateX))
+				.setText(String.format("%s, %s/%s", getString(R.string.common_rate_x), getString(R.string.common_unit_insulin), unitTitle));
 
 		editK = (EditText) findViewById(R.id.editRateK);
 		editQ = (EditText) findViewById(R.id.editRateQ);
@@ -139,6 +141,33 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 		});
 	}
 
+	private Units.Mass getUnitOfMass()
+	{
+		String unitCode = getIntent().getExtras().getString(KEY_UNIT_OF_MASS);
+		return CodedUtils.parse(Units.Mass.class, unitCode, Utils.DEFAULT_MASS_UNIT);
+	}
+
+	private String convertUnitToTitle(Units.Mass unit)
+	{
+		switch (unit)
+		{
+			case G:
+			{
+				return getString(R.string.common_unit_mass_gramm);
+			}
+
+			case BU:
+			{
+				return getString(R.string.common_unit_mass_bu);
+			}
+
+			default:
+			{
+				throw new IllegalArgumentException("Unsupported unit of mass: " + unit);
+			}
+		}
+	}
+
 	@Override
 	protected void showValuesInGUI(boolean createMode)
 	{
@@ -146,10 +175,12 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 
 		if (!createMode)
 		{
+			Units.Mass unit = getUnitOfMass();
+
 			// sic: reversed
-			editX.setText(Utils.formatX(entity.getData().getK() / entity.getData().getQ(), BU));
+			editX.setText(Utils.formatX(entity.getData().getK() / entity.getData().getQ(), unit));
 			editQ.setText(Utils.formatQ(entity.getData().getQ()));
-			editK.setText(Utils.formatK(entity.getData().getK(), BU));
+			editK.setText(Utils.formatK(entity.getData().getK(), unit));
 		}
 		else
 		{
@@ -285,11 +316,13 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 						double q = entity.getData().getQ();
 						double x = entity.getData().getK() / entity.getData().getQ();
 
+						Units.Mass unit = getUnitOfMass();
+
 						switch (index)
 						{
 							case INDEX_K:
 							{
-								k = (BU ? value / Utils.CARB_PER_BU : value);
+								k = Units.Mass.convert(value, unit, Units.Mass.G);
 								editK.setTextColor(getResources().getColor(R.color.font_black));
 								break;
 							}
@@ -301,7 +334,7 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 							}
 							case INDEX_X:
 							{
-								x = (BU ? value / Utils.CARB_PER_BU : value);
+								x = Units.Mass.convert(value, unit, Units.Mass.G);
 								editX.setTextColor(getResources().getColor(R.color.font_black));
 								break;
 							}
@@ -313,7 +346,7 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 							case INDEX_K:
 							{
 								k = x * q;
-								editK.setText(Utils.formatK(k, BU));
+								editK.setText(Utils.formatK(k, unit));
 								editK.setTextColor(getResources().getColor(R.color.font_gray));
 								break;
 							}
@@ -327,7 +360,7 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 							case INDEX_X:
 							{
 								x = k / q;
-								editX.setText(Utils.formatX(x, BU));
+								editX.setText(Utils.formatX(x, unit));
 								editX.setTextColor(getResources().getColor(R.color.font_gray));
 								break;
 							}

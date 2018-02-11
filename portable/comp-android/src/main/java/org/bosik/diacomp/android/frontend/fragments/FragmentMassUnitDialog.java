@@ -24,18 +24,41 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.core.entities.business.Units;
+import org.bosik.diacomp.core.utils.CodedUtils;
 
 public class FragmentMassUnitDialog extends DialogFragment
 {
-	public static final String KEY_BU = "field.bu";
+	public static final String KEY_UNIT_OF_MASS = "field.unitOfMass";
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState)
 	{
 		int index;
-		if (getArguments().containsKey(KEY_BU))
+		if (getArguments().containsKey(KEY_UNIT_OF_MASS))
 		{
-			index = getArguments().getBoolean(KEY_BU) ? 1 : 0;
+			String code = getArguments().getString(KEY_UNIT_OF_MASS);
+			Units.Mass unit = CodedUtils.parse(Units.Mass.class, code);
+
+			switch (unit)
+			{
+				case G:
+				{
+					index = 0;
+					break;
+				}
+
+				case BU:
+				{
+					index = 1;
+					break;
+				}
+
+				default:
+				{
+					throw new IllegalArgumentException("Unsupported unit of mass: " + unit);
+				}
+			}
 		}
 		else
 		{
