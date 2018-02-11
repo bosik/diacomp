@@ -18,7 +18,7 @@
 package org.bosik.diacomp.core.services.preferences;
 
 /**
- * Contains all available account preferences (syncable)
+ * Contains all available account preferences
  */
 public enum PreferenceID
 {
@@ -34,11 +34,17 @@ public enum PreferenceID
 	 * Calculate rates automatically
 	 */
 	RATES_AUTO("e92b955f48fa434d960fdc4a541490de", Type.BOOLEAN, "true", true),
-
+	/**
+	 * Manually specified rates (as JSON array)
+	 */
 	RATES_DATA("7648a35d3fbe4b4ca8fab12876abb1b6", Type.STRING, "[]", true),
-
+	/**
+	 * If it's first start on Android device. TODO: move it?
+	 */
 	ANDROID_FIRST_START("8b6575e476d64becae68468500f1bc1c", Type.BOOLEAN, "true", false),
-
+	/**
+	 * Show notification about time elapsed after meal/injection
+	 */
 	ANDROID_SHOW_TIME_AFTER("d5c1a902e83b4d05a51085e344bee953", Type.BOOLEAN, "true", true);
 
 	private String  key;
