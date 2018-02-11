@@ -26,8 +26,10 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.analyze.BackgroundService;
 import org.bosik.diacomp.android.backend.features.notifications.NotificationService;
@@ -38,6 +40,7 @@ import org.bosik.diacomp.android.frontend.fragments.FragmentTabDiary;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,8 +60,7 @@ public class ActivityMain extends FragmentActivity
 
 	/* =========================== FIELDS ================================ */
 
-	private ViewPager mViewPager;
-	private Menu      cachedMenu;
+	private Menu cachedMenu;
 
 	/* =========================== METHODS ================================ */
 
@@ -123,6 +125,28 @@ public class ActivityMain extends FragmentActivity
 		PagerAdapter adapter = new FragmentStatePagerAdapter(getSupportFragmentManager())
 		{
 			@Override
+			public Object instantiateItem(ViewGroup container, int position)
+			{
+				final Object fragment = super.instantiateItem(container, position);
+				try
+				{
+					final Field saveFragmentStateField = Fragment.class.getDeclaredField("mSavedFragmentState");
+					saveFragmentStateField.setAccessible(true);
+					final Bundle savedFragmentState = (Bundle) saveFragmentStateField.get(fragment);
+					if (savedFragmentState != null)
+					{
+						savedFragmentState.setClassLoader(Fragment.class.getClassLoader());
+					}
+				}
+				catch (Exception e)
+				{
+					Log.w("FragmentPagerAdapter", "Could not get mSavedFragmentState field", e);
+				}
+
+				return fragment;
+			}
+
+			@Override
 			public int getCount()
 			{
 				return pages.size();
@@ -140,7 +164,8 @@ public class ActivityMain extends FragmentActivity
 				return pages.get(position).getTitle();
 			}
 		};
-		mViewPager = (ViewPager) findViewById(R.id.pager);
+
+		ViewPager mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(adapter);
 
 		PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
