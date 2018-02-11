@@ -17,6 +17,8 @@
  */
 package org.bosik.diacomp.core.services.preferences;
 
+import org.bosik.diacomp.core.entities.business.Units;
+
 /**
  * Contains all available account preferences
  */
@@ -38,6 +40,10 @@ public enum PreferenceID
 	 * Manually specified rates (as JSON array)
 	 */
 	RATES_DATA("7648a35d3fbe4b4ca8fab12876abb1b6", Type.STRING, "[]", true),
+	/**
+	 * Units of mass to use in manual rates, options are {@link Units.Mass}'s codes
+	 */
+	RATES_MASS_UNITS("589985b443c243d6844209964b2b1e8e", Type.STRING, Units.Mass.G.getCode(), true),
 	/**
 	 * If it's first start on Android device. TODO: move it?
 	 */

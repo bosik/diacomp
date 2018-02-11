@@ -48,10 +48,12 @@ import org.bosik.diacomp.android.frontend.fragments.FragmentMassUnitDialog;
 import org.bosik.diacomp.android.frontend.fragments.chart.Chart;
 import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle;
 import org.bosik.diacomp.core.entities.business.TimedRate;
+import org.bosik.diacomp.core.entities.business.Units;
 import org.bosik.diacomp.core.services.analyze.RateService;
 import org.bosik.diacomp.core.services.analyze.entities.Rate;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
+import org.bosik.diacomp.core.utils.CodedUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.Versioned;
@@ -69,9 +71,10 @@ import java.util.Set;
 public class ActivityRates extends FragmentActivity implements DialogInterface.OnClickListener
 {
 	// Constants
-	private static final String TAG                = ActivityRates.class.getSimpleName();
-	private static final int    DIALOG_RATE_CREATE = 11;
-	private static final int    DIALOG_RATE_MODIFY = 12;
+	private static final int        DIALOG_RATE_CREATE = 11;
+	private static final int        DIALOG_RATE_MODIFY = 12;
+	private static final Units.Mass DEFAULT_MASS_UNIT  = CodedUtils
+			.parse(Units.Mass.class, PreferenceID.RATES_MASS_UNITS.getDefaultValue());
 
 	// components
 	private Chart       chart;
@@ -82,7 +85,6 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 	private List<Versioned<TimedRate>>       rates; // TODO: save/restore on activity re-creation
 	private List<List<Versioned<TimedRate>>> history;
 	private int                              historyIndex;
-	private boolean BU = false; // TODO: persist
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -186,6 +188,8 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 			}
 		});
 
+		final PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
+
 		adapter = new BaseAdapter()
 		{
 			@Override
@@ -244,6 +248,10 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 						view = getLayoutInflater().inflate(R.layout.view_rate, null);
 					}
 
+					String preferenceValue = preferences.getStringValue(PreferenceID.RATES_MASS_UNITS);
+					Units.Mass unit = CodedUtils.parse(Units.Mass.class, preferenceValue, DEFAULT_MASS_UNIT);
+					boolean BU = (unit == Units.Mass.BU);
+
 					((TextView) view.findViewById(R.id.ratesItemTime)).setText(Utils.formatTimeMin(rate.getData().getTime()));
 
 					((TextView) view.findViewById(R.id.ratesItemK)).setText(formatK(rate.getData(), BU));
@@ -274,55 +282,47 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 
 		list.setAdapter(adapter);
 
-		// Check that the activity is using the layout version with
-		// the fragment_container FrameLayout
-		if (findViewById(R.id.ratesChart) != null)
+		chart = (Chart) getSupportFragmentManager().findFragmentById(R.id.ratesChart);
+
+		if (chart == null)
 		{
-			// However, if we're being restored from a previous state,
-			// then we don't need to do anything and should return or else
-			// we could end up with overlapping fragments.
-			if (savedInstanceState != null)
-			{
-				return;
-			}
-
-			// Create a new Fragment to be placed in the activity layout
 			chart = new Chart();
-			chart.setChartType(Chart.ChartType.DAILY);
-			updateChartTitle();
-			chart.setDescription(getString(R.string.common_rate_x_description) + ". " + getString(R.string.charts_type_daily) + ".");
-			chart.setDataLoader(new ProgressBundle.DataLoader()
-			{
-				@Override
-				public Collection<Series<?>> load(Context context)
-				{
-					ratesService.update();
-					List<DataPoint> dataAvg = new ArrayList<>();
-					for (int time = 0; time < Utils.MinPerDay; time += 5)
-					{
-						Rate rate = ratesService.getRate(time);
-						if (rate != null)
-						{
-							double value = BU ? rate.getK() / rate.getQ() * Utils.CARB_PER_BU : rate.getK() / rate.getQ();
-							dataAvg.add(new DataPoint((double) time / Utils.MinPerHour, value));
-						}
-					}
-
-					LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<>(dataAvg.toArray(new DataPoint[dataAvg.size()]));
-					seriesAvg.setColor(getResources().getColor(R.color.charts_x));
-
-					return Collections.<Series<?>>singletonList(seriesAvg);
-				}
-			});
-
 			getSupportFragmentManager().beginTransaction().add(R.id.ratesChart, chart).commit();
 		}
+
+		chart.setChartType(Chart.ChartType.DAILY);
+		updateChartTitle();
+		chart.setDescription(getString(R.string.common_rate_x_description) + ". " + getString(R.string.charts_type_daily) + ".");
+		chart.setDataLoader(new ProgressBundle.DataLoader()
+		{
+			@Override
+			public Collection<Series<?>> load(Context context)
+			{
+				ratesService.update();
+				final boolean BU = getBU();
+				List<DataPoint> dataAvg = new ArrayList<>();
+				for (int time = 0; time < Utils.MinPerDay; time += 5)
+				{
+					Rate rate = ratesService.getRate(time);
+					if (rate != null)
+					{
+						double value = BU ? rate.getK() / rate.getQ() * Utils.CARB_PER_BU : rate.getK() / rate.getQ();
+						dataAvg.add(new DataPoint((double) time / Utils.MinPerHour, value));
+					}
+				}
+
+				LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<>(dataAvg.toArray(new DataPoint[dataAvg.size()]));
+				seriesAvg.setColor(getResources().getColor(R.color.charts_x));
+
+				return Collections.<Series<?>>singletonList(seriesAvg);
+			}
+		});
 	}
 
 	private void updateChartTitle()
 	{
 		chart.setTitle(String.format("%s, %s/%s", getString(R.string.common_rate_x), getString(R.string.common_unit_insulin),
-				BU ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm)));
+				getBU() ? getString(R.string.common_unit_mass_bu) : getString(R.string.common_unit_mass_gramm)));
 	}
 
 	@Override
@@ -397,7 +397,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 			{
 				FragmentMassUnitDialog newFragment = new FragmentMassUnitDialog();
 				Bundle args = new Bundle();
-				args.putBoolean(FragmentMassUnitDialog.KEY_BU, BU);
+				args.putBoolean(FragmentMassUnitDialog.KEY_BU, getBU());
 				newFragment.setArguments(args);
 				newFragment.show(getFragmentManager(), "unitMassPicker");
 				return true;
@@ -422,12 +422,26 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		}
 	}
 
+	private boolean getBU()
+	{
+		final PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
+		String value = preferences.getStringValue(PreferenceID.RATES_MASS_UNITS);
+		Units.Mass unit = CodedUtils.parse(Units.Mass.class, value, DEFAULT_MASS_UNIT);
+		return unit == Units.Mass.BU;
+	}
+
+	private void setBU(boolean value)
+	{
+		final PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
+		Units.Mass unit = value ? Units.Mass.BU : Units.Mass.G;
+		preferences.setStringValue(PreferenceID.RATES_MASS_UNITS, unit.getCode());
+	}
+
 	@Override
 	public void onClick(DialogInterface dialog, int which)
 	{
-		System.out.println("Selected: " + which);
-		BU = getString(R.string.common_unit_mass_bu).equals(getResources().getStringArray(R.array.unit_mass_options)[which]);
-
+		String selectedLabel = getResources().getStringArray(R.array.unit_mass_options)[which];
+		setBU(getString(R.string.common_unit_mass_bu).equals(selectedLabel));
 		adapter.notifyDataSetChanged();
 		updateChartTitle();
 	}
@@ -468,7 +482,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		Intent intent = new Intent(this, ActivityEditorRate.class);
 		intent.putExtra(ActivityEditor.FIELD_ENTITY, entity);
 		intent.putExtra(ActivityEditor.FIELD_CREATE_MODE, createMode);
-		intent.putExtra(ActivityEditorRate.KEY_INTENT_USE_BU, BU);
+		intent.putExtra(ActivityEditorRate.KEY_INTENT_USE_BU, getBU());
 
 		startActivityForResult(intent, createMode ? DIALOG_RATE_CREATE : DIALOG_RATE_MODIFY);
 	}
