@@ -54,7 +54,6 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 	private EditText editQ;
 	private EditText editX;
 
-	//private boolean BU;
 	private boolean ignoreUpdates = false;
 
 	/* =========================== OVERRIDDEN METHODS ================================ */
@@ -190,19 +189,6 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 		}
 	}
 
-	private double readDouble(EditText editor)
-	{
-		try
-		{
-			return Utils.parseExpression(editor.getText().toString());
-		}
-		catch (IllegalArgumentException e)
-		{
-			complain(editor);
-			throw e;
-		}
-	}
-
 	private void complain(EditText editor)
 	{
 		UIUtils.showTip(this, getString(R.string.editor_rate_error_invalid_value));
@@ -214,14 +200,11 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 	{
 		try
 		{
-			double valueK = readDouble(editK);
-			double valueQ = readDouble(editQ);
-			double valueX = readDouble(editX);
+			double valueK = readK();
+			double valueQ = readQ();
+			double valueX = readX();
 
-			int zeros = 0;
-			zeros += (valueK < Utils.EPS) ? 1 : 0;
-			zeros += (valueQ < Utils.EPS) ? 1 : 0;
-			zeros += (valueX < Utils.EPS) ? 1 : 0;
+			int zeros = countZeros(valueK, valueQ, valueX);
 
 			if (zeros == 0)
 			{
@@ -272,6 +255,49 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 		}
 	}
 
+	private double readDouble(EditText editor)
+	{
+		try
+		{
+			return Utils.parseExpression(editor.getText().toString());
+		}
+		catch (IllegalArgumentException e)
+		{
+			complain(editor);
+			throw e;
+		}
+	}
+
+	private double readK()
+	{
+		return Units.Mass.convert(readDouble(editK), getUnitOfMass(), Units.Mass.G);
+	}
+
+	private double readQ()
+	{
+		return readDouble(editQ);
+	}
+
+	private double readX()
+	{
+		return Units.Mass.convert(readDouble(editX), getUnitOfMass(), Units.Mass.G);
+	}
+
+	private static int countZeros(double... values)
+	{
+		int zeros = 0;
+
+		for (double value : values)
+		{
+			if (value < Utils.EPS)
+			{
+				zeros++;
+			}
+		}
+
+		return zeros;
+	}
+
 	@Override
 	public void onTimeSet(TimePicker view, int hourOfDay, int minute)
 	{
@@ -314,7 +340,7 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 					{
 						double k = entity.getData().getK();
 						double q = entity.getData().getQ();
-						double x = entity.getData().getK() / entity.getData().getQ();
+						double x = entity.getData().getQ() > Utils.EPS ? entity.getData().getK() / entity.getData().getQ() : 0.0;
 
 						Units.Mass unit = getUnitOfMass();
 
@@ -341,28 +367,32 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 						}
 
 						moveToEnd(indexes, index);
-						switch (indexes.iterator().next())
+
+						if (countZeros(k, q, x) < 2)
 						{
-							case INDEX_K:
+							switch (indexes.iterator().next())
 							{
-								k = x * q;
-								editK.setText(Utils.formatK(k, unit));
-								editK.setTextColor(getResources().getColor(R.color.font_gray));
-								break;
-							}
-							case INDEX_Q:
-							{
-								q = k / x;
-								editQ.setText(Utils.formatQ(q));
-								editQ.setTextColor(getResources().getColor(R.color.font_gray));
-								break;
-							}
-							case INDEX_X:
-							{
-								x = k / q;
-								editX.setText(Utils.formatX(x, unit));
-								editX.setTextColor(getResources().getColor(R.color.font_gray));
-								break;
+								case INDEX_K:
+								{
+									k = x * q;
+									editK.setText(Utils.formatK(k, unit));
+									editK.setTextColor(getResources().getColor(R.color.font_gray));
+									break;
+								}
+								case INDEX_Q:
+								{
+									q = k / x;
+									editQ.setText(Utils.formatQ(q));
+									editQ.setTextColor(getResources().getColor(R.color.font_gray));
+									break;
+								}
+								case INDEX_X:
+								{
+									x = k / q;
+									editX.setText(Utils.formatX(x, unit));
+									editX.setTextColor(getResources().getColor(R.color.font_gray));
+									break;
+								}
 							}
 						}
 
