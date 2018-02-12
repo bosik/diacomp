@@ -71,8 +71,9 @@ import java.util.Set;
 public class ActivityRates extends FragmentActivity implements DialogInterface.OnClickListener
 {
 	// Constants
-	private static final int        DIALOG_RATE_CREATE = 11;
-	private static final int        DIALOG_RATE_MODIFY = 12;
+	private static final int    DIALOG_RATE_CREATE = 11;
+	private static final int    DIALOG_RATE_MODIFY = 12;
+	private static final String KEY_RATES          = "org.bosik.diacomp.android.frontend.activities.RATES";
 
 	// components
 	private Chart       chart;
@@ -80,7 +81,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 	private BaseAdapter adapter;
 
 	// data
-	private List<Versioned<TimedRate>>       rates; // TODO: save/restore on activity re-creation
+	private ArrayList<Versioned<TimedRate>>  rates; // must be serializable
 	private List<List<Versioned<TimedRate>>> history;
 	private int                              historyIndex;
 
@@ -94,9 +95,16 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 
 		final RateService ratesService = new RateServiceManual(this);
 
-		List<Versioned<TimedRate>> versioned = Versioned.wrap(RateServiceManual.loadRates(this));
-		Versioned.regenerateIds(versioned);
-		rates = versioned;
+		if (savedInstanceState != null && savedInstanceState.containsKey(KEY_RATES))
+		{
+			rates = (ArrayList<Versioned<TimedRate>>) savedInstanceState.getSerializable(KEY_RATES);
+		}
+		else
+		{
+			List<Versioned<TimedRate>> versioned = Versioned.wrap(RateServiceManual.loadRates(this));
+			Versioned.regenerateIds(versioned);
+			rates = new ArrayList<>(versioned);
+		}
 
 		history = new ArrayList<>();
 		history.add(new ArrayList<>(rates));
@@ -315,6 +323,17 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 				return Collections.<Series<?>>singletonList(seriesAvg);
 			}
 		});
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState)
+	{
+		super.onSaveInstanceState(outState);
+
+		if (outState != null)
+		{
+			outState.putSerializable(KEY_RATES, rates);
+		}
 	}
 
 	private void updateChartTitle()
