@@ -32,8 +32,6 @@ import java.util.List;
 
 public class RateServiceAuto implements RateService
 {
-	private final Rate STD_COEFFICIENT = new Rate(0.25, 2.5, 0.0);
-
 	private final DiaryService diaryService;
 	private final AnalyzeCore  analyzeCore;
 	private final RatesDao     ratesDao;
@@ -94,6 +92,6 @@ public class RateServiceAuto implements RateService
 	public Rate getRate(int time)
 	{
 		Rate rate = ratesDao.find(time % Utils.MinPerDay);
-		return rate != null ? rate : STD_COEFFICIENT;
+		return rate != null ? rate : Utils.STD_COEFFICIENT;
 	}
 }

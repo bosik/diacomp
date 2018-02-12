@@ -18,6 +18,7 @@
 package org.bosik.diacomp.core.utils;
 
 import org.bosik.diacomp.core.entities.business.Units;
+import org.bosik.diacomp.core.services.analyze.entities.Rate;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.json.JSONArray;
 
@@ -57,17 +58,18 @@ public class Utils
 	/**
 	 * Value of proteins, kcal/g
 	 */
-	public static final double      KCAL_PER_PROTS    = 3.8;
+	public static final double     KCAL_PER_PROTS    = 3.8;
 	/**
 	 * Value of fats, kcal/g
 	 */
-	public static final double      KCAL_PER_FATS     = 9.3;
+	public static final double     KCAL_PER_FATS     = 9.3;
 	/**
 	 * Value of carbohydrates, kcal/g
 	 */
-	public static final double      KCAL_PER_CARBS    = 4.1;
-	public static final int         CARB_PER_BU       = 12; // g/BU
+	public static final double     KCAL_PER_CARBS    = 4.1;
+	public static final int        CARB_PER_BU       = 12; // g/BU
 	public static final Units.Mass DEFAULT_MASS_UNIT = CodedUtils.parse(Units.Mass.class, PreferenceID.RATES_MASS_UNITS.getDefaultValue());
+	public static final Rate       STD_COEFFICIENT   = new Rate(0.25, 2.5, 0.0);
 
 	// Time
 
