@@ -74,6 +74,8 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 	private static final int    DIALOG_RATE_CREATE = 11;
 	private static final int    DIALOG_RATE_MODIFY = 12;
 	private static final String KEY_RATES          = "org.bosik.diacomp.android.frontend.activities.RATES";
+	private static final String KEY_HISTORY        = "org.bosik.diacomp.android.frontend.activities.HISTORY";
+	private static final String KEY_HISTORY_INDEX  = "org.bosik.diacomp.android.frontend.activities.HISTORY_INDEX";
 
 	// components
 	private Chart       chart;
@@ -81,9 +83,9 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 	private BaseAdapter adapter;
 
 	// data
-	private ArrayList<Versioned<TimedRate>>  rates; // must be serializable
-	private List<List<Versioned<TimedRate>>> history;
-	private int                              historyIndex;
+	private ArrayList<Versioned<TimedRate>>       rates; // must be serializable
+	private ArrayList<List<Versioned<TimedRate>>> history; // must be serializable
+	private int                                   historyIndex;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -106,9 +108,24 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 			rates = new ArrayList<>(versioned);
 		}
 
-		history = new ArrayList<>();
-		history.add(new ArrayList<>(rates));
-		historyIndex = 0;
+		if (savedInstanceState != null && savedInstanceState.containsKey(KEY_HISTORY))
+		{
+			history = (ArrayList<List<Versioned<TimedRate>>>) savedInstanceState.getSerializable(KEY_HISTORY);
+		}
+		else
+		{
+			history = new ArrayList<>();
+			history.add(new ArrayList<>(rates));
+		}
+
+		if (savedInstanceState != null && savedInstanceState.containsKey(KEY_HISTORY_INDEX))
+		{
+			historyIndex = savedInstanceState.getInt(KEY_HISTORY_INDEX);
+		}
+		else
+		{
+			historyIndex = 0;
+		}
 
 		list = (ListView) findViewById(R.id.listRates);
 		list.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -333,6 +350,8 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 		if (outState != null)
 		{
 			outState.putSerializable(KEY_RATES, rates);
+			outState.putSerializable(KEY_HISTORY, history);
+			outState.putInt(KEY_HISTORY_INDEX, historyIndex);
 		}
 	}
 
