@@ -110,7 +110,7 @@ public class FragmentTabBase extends Fragment
 	private long lastSearchTime;
 	private boolean searchScheduled = false;
 
-	private static final long SEARCH_DELAY = 500;
+	private static final long SEARCH_DELAY = 500 * 1000000; // ns
 
 	private final ContentObserver observer = new ContentObserver(null)
 	{
@@ -532,9 +532,11 @@ public class FragmentTabBase extends Fragment
 			}
 		};
 
-		if ((System.currentTimeMillis() - lastSearchTime) >= SEARCH_DELAY)
+		long timeElapsed = System.nanoTime() - lastSearchTime;
+
+		if (timeElapsed >= SEARCH_DELAY)
 		{
-			lastSearchTime = System.currentTimeMillis();
+			lastSearchTime = System.nanoTime();
 			task.run();
 		}
 		else
@@ -542,7 +544,7 @@ public class FragmentTabBase extends Fragment
 			if (!searchScheduled)
 			{
 				searchScheduled = true;
-				new Timer().schedule(task, SEARCH_DELAY - (System.currentTimeMillis() - lastSearchTime));
+				new Timer().schedule(task, SEARCH_DELAY - timeElapsed);
 			}
 		}
 	}
