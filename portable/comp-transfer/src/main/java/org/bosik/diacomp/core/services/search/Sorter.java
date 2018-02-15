@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.core.services.search;
 
+import org.bosik.diacomp.core.entities.business.interfaces.Named;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
 import org.bosik.merklesync.Versioned;
 
@@ -24,23 +25,23 @@ import java.util.Comparator;
 
 public class Sorter
 {
-	public static Comparator<NamedRelativeTagged> alphabet()
+	public static Comparator<Named> alphabet()
 	{
-		return new Comparator<NamedRelativeTagged>()
+		return new Comparator<Named>()
 		{
 			@Override
-			public int compare(NamedRelativeTagged lhs, NamedRelativeTagged rhs)
+			public int compare(Named lhs, Named rhs)
 			{
 				return lhs.getName().compareTo(rhs.getName());
 			}
 		};
 	}
 
-	public static Comparator<NamedRelativeTagged> relevance()
+	private static Comparator<NamedRelativeTagged> relevance()
 	{
 		return new Comparator<NamedRelativeTagged>()
 		{
-			private final Comparator<NamedRelativeTagged> compAlphabet = alphabet();
+			private final Comparator<Named> compAlphabet = alphabet();
 
 			@Override
 			public int compare(NamedRelativeTagged lhs, NamedRelativeTagged rhs)
@@ -57,14 +58,14 @@ public class Sorter
 		};
 	}
 
-	public static Comparator<Versioned<? extends NamedRelativeTagged>> versionedAlphabet()
+	public static Comparator<Versioned<? extends Named>> versionedAlphabet()
 	{
-		return new Comparator<Versioned<? extends NamedRelativeTagged>>()
+		return new Comparator<Versioned<? extends Named>>()
 		{
-			private final Comparator<NamedRelativeTagged> compAlphabet = alphabet();
+			private final Comparator<Named> compAlphabet = alphabet();
 
 			@Override
-			public int compare(Versioned<? extends NamedRelativeTagged> lhs, Versioned<? extends NamedRelativeTagged> rhs)
+			public int compare(Versioned<? extends Named> lhs, Versioned<? extends Named> rhs)
 			{
 				return compAlphabet.compare(lhs.getData(), rhs.getData());
 			}

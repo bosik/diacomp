@@ -70,15 +70,12 @@ import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.search.RelevantIndexator;
-import org.bosik.diacomp.core.services.search.Sorter;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -597,40 +594,7 @@ public class FragmentTabBase extends Fragment
 
 			result.addAll(dishItems);
 
-			final Map<String, Integer> usages = RelevantIndexator.getUsages(diaryService);
-
-			Collections.sort(result, new Comparator<Versioned<? extends NamedRelativeTagged>>()
-			{
-				private final Comparator<NamedRelativeTagged> compAlphabet = Sorter.alphabet();
-
-				@Override
-				public int compare(Versioned<? extends NamedRelativeTagged> lhs, Versioned<? extends NamedRelativeTagged> rhs)
-				{
-					NamedRelativeTagged data1 = lhs.getData();
-					NamedRelativeTagged data2 = rhs.getData();
-
-					Integer tag1 = usages.get(data1.getName());
-					if (tag1 == null)
-					{
-						tag1 = 0;
-					}
-
-					Integer tag2 = usages.get(data2.getName());
-					if (tag2 == null)
-					{
-						tag2 = 0;
-					}
-
-					if (tag1.equals(tag2))
-					{
-						return compAlphabet.compare(data1, data2);
-					}
-					else
-					{
-						return tag2 - tag1;
-					}
-				}
-			});
+			RelevantIndexator.sort(result, diaryService);
 
 			// clipping
 

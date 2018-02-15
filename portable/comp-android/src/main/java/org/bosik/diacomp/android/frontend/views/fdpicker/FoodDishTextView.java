@@ -21,10 +21,11 @@ package org.bosik.diacomp.android.frontend.views.fdpicker;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.AutoCompleteTextView;
+import org.bosik.diacomp.core.entities.business.interfaces.Named;
+import org.bosik.merklesync.Versioned;
 
 /**
  * Autocomplete box with icons
- * 
  */
 public class FoodDishTextView extends AutoCompleteTextView
 {
@@ -36,6 +37,6 @@ public class FoodDishTextView extends AutoCompleteTextView
 	@Override
 	protected CharSequence convertSelectionToString(Object selectedItem)
 	{
-		return ((Item) selectedItem).getCaption();
+		return ((Versioned<? extends Named>) selectedItem).getData().getName();
 	}
 }

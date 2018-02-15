@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.core.services.search;
 
+@Deprecated
 public interface TagService
 {
 	Integer getTag(String id);

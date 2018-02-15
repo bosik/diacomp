@@ -20,10 +20,13 @@ package org.bosik.diacomp.core.services.search;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.entities.business.interfaces.Named;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -102,5 +105,43 @@ public class RelevantIndexator
 	{
 		int delta = (int) ((100 * (curDate.getTime() - minDate.getTime())) / (maxDate.getTime() - minDate.getTime()));
 		return delta * delta;
+	}
+
+	public static <T extends Named> void sort(List<Versioned<? extends T>> items, DiaryService diaryService)
+	{
+		final Map<String, Integer> usages = getUsages(diaryService);
+
+		Collections.sort(items, new Comparator<Versioned<? extends Named>>()
+		{
+			private final Comparator<Named> compAlphabet = Sorter.alphabet();
+
+			@Override
+			public int compare(Versioned<? extends Named> lhs, Versioned<? extends Named> rhs)
+			{
+				Named data1 = lhs.getData();
+				Named data2 = rhs.getData();
+
+				Integer tag1 = usages.get(data1.getName());
+				if (tag1 == null)
+				{
+					tag1 = 0;
+				}
+
+				Integer tag2 = usages.get(data2.getName());
+				if (tag2 == null)
+				{
+					tag2 = 0;
+				}
+
+				if (tag1.equals(tag2))
+				{
+					return compAlphabet.compare(data1, data2);
+				}
+				else
+				{
+					return tag2 - tag1;
+				}
+			}
+		});
 	}
 }

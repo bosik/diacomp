@@ -34,82 +34,32 @@ import android.widget.Filter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
 import org.bosik.diacomp.android.backend.features.dishbase.DishBaseLocalService;
 import org.bosik.diacomp.android.backend.features.foodbase.FoodBaseLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
+import org.bosik.diacomp.core.entities.business.interfaces.Named;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
+import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.search.RelevantIndexator;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-enum ItemType
+class ItemAdapter extends ArrayAdapter<Versioned<? extends Named>>
 {
-	FOOD,
-	DISH
-}
+	private List<Versioned<? extends Named>> itemsAll;
+	private List<Versioned<? extends Named>> suggestions;
+	private int                              viewResourceId;
 
-class Item implements Comparable<Item>
-{
-	private final ItemType            type;
-	private final NamedRelativeTagged data;
-
-	public Item(FoodItem food)
-	{
-		this.type = ItemType.FOOD;
-		this.data = food;
-	}
-
-	public Item(DishItem dish)
-	{
-		this.type = ItemType.DISH;
-		this.data = dish;
-	}
-
-	public ItemType getType()
-	{
-		return type;
-	}
-
-	public String getCaption()
-	{
-		return data.getName();
-	}
-
-	public NamedRelativeTagged getData()
-	{
-		return data;
-	}
-
-	@Override
-	public int compareTo(Item rhs)
-	{
-		if (getData().getTag() == rhs.getData().getTag())
-		{
-			return getData().getName().compareTo(rhs.getData().getName());
-		}
-		else
-		{
-			return rhs.getData().getTag() - getData().getTag();
-		}
-	}
-}
-
-class ItemAdapter extends ArrayAdapter<Item>
-{
-	private List<Item> itemsAll;
-	private List<Item> suggestions;
-	private int        viewResourceId;
-
-	public ItemAdapter(Context context, int viewResourceId, List<Item> items)
+	public ItemAdapter(Context context, int viewResourceId, List<Versioned<? extends Named>> items)
 	{
 		super(context, viewResourceId, items);
 
@@ -130,28 +80,23 @@ class ItemAdapter extends ArrayAdapter<Item>
 
 		if (position < suggestions.size())
 		{
-			Item item = suggestions.get(position);
+			Versioned<? extends Named> item = suggestions.get(position);
 
 			TextView itemCaption = (TextView) v.findViewById(R.id.itemDescription);
-			itemCaption.setText(item.getCaption());
+			itemCaption.setText(item.getData().getName());
 
-			switch (item.getType())
+			// FIXME: use separated resources (not button's)
+			if (item.getData() instanceof FoodItem)
 			{
-				// FIXME: use separated resources
-				case FOOD:
-				{
-					itemCaption.setCompoundDrawablesWithIntrinsicBounds(R.drawable.button_foodbase, 0, 0, 0);
-					break;
-				}
-				case DISH:
-				{
-					itemCaption.setCompoundDrawablesWithIntrinsicBounds(R.drawable.button_dishbase, 0, 0, 0);
-					break;
-				}
-				default:
-				{
-					throw new IllegalArgumentException("Invalid item type: " + item.getType());
-				}
+				itemCaption.setCompoundDrawablesWithIntrinsicBounds(R.drawable.button_foodbase, 0, 0, 0);
+			}
+			else if (item.getData() instanceof DishItem)
+			{
+				itemCaption.setCompoundDrawablesWithIntrinsicBounds(R.drawable.button_dishbase, 0, 0, 0);
+			}
+			else
+			{
+				throw new IllegalArgumentException("Invalid item type: " + item.getClass().getName());
 			}
 		}
 
@@ -169,7 +114,7 @@ class ItemAdapter extends ArrayAdapter<Item>
 		@Override
 		public String convertResultToString(Object resultValue)
 		{
-			return ((Item) resultValue).getCaption();
+			return ((Named) resultValue).getName();
 		}
 
 		@Override
@@ -177,13 +122,13 @@ class ItemAdapter extends ArrayAdapter<Item>
 		{
 			if (constraint != null)
 			{
-				List<Item> firstList = new ArrayList<>();
-				List<Item> secondList = new ArrayList<>();
+				List<Versioned<? extends Named>> firstList = new ArrayList<>();
+				List<Versioned<? extends Named>> secondList = new ArrayList<>();
 
 				String search = constraint.toString().toLowerCase(Locale.US);
-				for (Item item : itemsAll)
+				for (Versioned<? extends Named> item : itemsAll)
 				{
-					String line = item.getCaption().toLowerCase(Locale.US);
+					String line = item.getData().getName().toLowerCase(Locale.US);
 
 					if (Utils.hasWordStartedWith(line, search))
 					{
@@ -218,7 +163,7 @@ class ItemAdapter extends ArrayAdapter<Item>
 
 			if (results != null && results.values != null)
 			{
-				@SuppressWarnings("unchecked") List<Item> filteredList = (List<Item>) results.values;
+				@SuppressWarnings("unchecked") List<Versioned<? extends Named>> filteredList = (List<Versioned<? extends Named>>) results.values;
 				addAll(filteredList);
 			}
 
@@ -334,27 +279,19 @@ public class FoodDishPicker extends LinearLayout
 	{
 		// prepare sources
 
+		DiaryService diaryService = LocalDiary.getInstance(getContext());
 		FoodBaseService foodBase = FoodBaseLocalService.getInstance(getContext());
 		DishBaseService dishBase = DishBaseLocalService.getInstance(getContext());
 
 		// build lists
 
-		List<Item> data = new ArrayList<>();
-
-		for (Versioned<FoodItem> item : foodBase.findAll(false))
-		{
-			data.add(new Item(item.getData()));
-		}
-
-		for (Versioned<DishItem> item : dishBase.findAll(false))
-		{
-			data.add(new Item(item.getData()));
-		}
+		List<Versioned<? extends Named>> data = new ArrayList<>();
+		data.addAll(foodBase.findAll(false));
+		data.addAll(dishBase.findAll(false));
 
 		// sort
 
-		Collections.sort(data);
-
+		RelevantIndexator.sort(data, diaryService);
 		editName.setAdapter(new ItemAdapter(getContext(), R.layout.view_iconed_line, data));
 	}
 
