@@ -17,27 +17,28 @@
  */
 package org.bosik.diacomp.core.entities.business.foodbase;
 
-import java.util.Locale;
 import org.bosik.diacomp.core.entities.business.Food;
-import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
+import org.bosik.diacomp.core.entities.business.interfaces.NamedRelative;
+import org.bosik.diacomp.core.entities.business.interfaces.Tagged;
+
+import java.util.Locale;
 
 /**
  * Food item for food base
  */
-public class FoodItem extends Food implements NamedRelativeTagged
+public class FoodItem extends Food implements NamedRelative, Tagged
 {
-	private static final long	serialVersionUID	= 1789285539891342521L;
+	private static final long serialVersionUID = 1789285539891342521L;
 
-	private int					tag;
-	private boolean				fromTable;
+	private int     tag;
+	private boolean fromTable;
 
 	public FoodItem()
 	{
 
 	}
 
-	public FoodItem(String name, double relProts, double relFats, double relCarbs, double relValue, int tag,
-			boolean fromTable)
+	public FoodItem(String name, double relProts, double relFats, double relCarbs, double relValue, int tag, boolean fromTable)
 	{
 		super(name, relProts, relFats, relCarbs, relValue);
 		setTag(tag);
@@ -80,7 +81,7 @@ public class FoodItem extends Food implements NamedRelativeTagged
 	@Override
 	public String toString()
 	{
-		return String.format(Locale.US, "%s[%.1f|%.1f|%.1f|%.1f]:%s", getName(), getRelProts(), getRelFats(),
-				getRelCarbs(), getRelValue(), getFromTable());
+		return String.format(Locale.US, "%s[%.1f|%.1f|%.1f|%.1f]:%s", getName(), getRelProts(), getRelFats(), getRelCarbs(), getRelValue(),
+				getFromTable());
 	}
 }

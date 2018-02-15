@@ -64,7 +64,7 @@ import org.bosik.diacomp.android.frontend.activities.ActivityEditorFood;
 import org.bosik.diacomp.android.frontend.activities.ActivityFoodSet;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
+import org.bosik.diacomp.core.entities.business.interfaces.NamedRelative;
 import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.diary.DiaryService;
@@ -101,7 +101,7 @@ public class FragmentTabBase extends Fragment
 	private FoodBaseService foodBaseService;
 	private DishBaseService dishBaseService;
 	private DiaryService    diaryService;
-	private final List<Versioned<? extends NamedRelativeTagged>> data = new ArrayList<>();
+	private final List<Versioned<? extends NamedRelative>> data = new ArrayList<>();
 	private BaseAdapter adapter;
 	private String searchFilter = "";
 	private long lastSearchTime;
@@ -245,7 +245,7 @@ public class FragmentTabBase extends Fragment
 						int index = checkList.keyAt(i);
 						if (index >= 0 && index < data.size())
 						{
-							Versioned<? extends NamedRelativeTagged> item = data.get(index);
+							Versioned<? extends NamedRelative> item = data.get(index);
 
 							if (item.getData() instanceof FoodItem)
 							{
@@ -292,18 +292,18 @@ public class FragmentTabBase extends Fragment
 			{
 				final String id = data.get(position).getId();
 
-				new AsyncTask<String, Void, Versioned<? extends NamedRelativeTagged>>()
+				new AsyncTask<String, Void, Versioned<? extends NamedRelative>>()
 				{
 					@Override
-					protected Versioned<? extends NamedRelativeTagged> doInBackground(String... params)
+					protected Versioned<? extends NamedRelative> doInBackground(String... params)
 					{
-						Versioned<? extends NamedRelativeTagged> food = foodBaseService.findById(id);
+						Versioned<? extends NamedRelative> food = foodBaseService.findById(id);
 						if (food != null)
 						{
 							return food;
 						}
 
-						Versioned<? extends NamedRelativeTagged> dish = dishBaseService.findById(id);
+						Versioned<? extends NamedRelative> dish = dishBaseService.findById(id);
 						if (dish != null)
 						{
 							return dish;
@@ -314,7 +314,7 @@ public class FragmentTabBase extends Fragment
 
 					@SuppressWarnings("unchecked")
 					@Override
-					protected void onPostExecute(Versioned<? extends NamedRelativeTagged> item)
+					protected void onPostExecute(Versioned<? extends NamedRelative> item)
 					{
 						if (item != null)
 						{
@@ -487,7 +487,7 @@ public class FragmentTabBase extends Fragment
 	 */
 	private synchronized void runSearch()
 	{
-		final AsyncTask<String, Void, List<Versioned<? extends NamedRelativeTagged>>> asyncTask = new AsyncTask<String, Void, List<Versioned<? extends NamedRelativeTagged>>>()
+		final AsyncTask<String, Void, List<Versioned<? extends NamedRelative>>> asyncTask = new AsyncTask<String, Void, List<Versioned<? extends NamedRelative>>>()
 		{
 			@Override
 			protected void onPreExecute()
@@ -496,13 +496,13 @@ public class FragmentTabBase extends Fragment
 			}
 
 			@Override
-			protected List<Versioned<? extends NamedRelativeTagged>> doInBackground(String... params)
+			protected List<Versioned<? extends NamedRelative>> doInBackground(String... params)
 			{
 				return request(params[0]);
 			}
 
 			@Override
-			protected void onPostExecute(List<Versioned<? extends NamedRelativeTagged>> result)
+			protected void onPostExecute(List<Versioned<? extends NamedRelative>> result)
 			{
 				if (result == null)
 				{
@@ -552,7 +552,7 @@ public class FragmentTabBase extends Fragment
 	 * @param filter
 	 * @return
 	 */
-	private List<Versioned<? extends NamedRelativeTagged>> request(String filter)
+	private List<Versioned<? extends NamedRelative>> request(String filter)
 	{
 		try
 		{
@@ -574,24 +574,8 @@ public class FragmentTabBase extends Fragment
 
 			// relevance ordering
 
-			List<Versioned<? extends NamedRelativeTagged>> result = new ArrayList<>();
-
-			// for (Versioned<? extends NamedRelativeTagged> item : foodItems)
-			// {
-			// //Integer tag = tagService.getTag(item.getId());
-			// //item.getData().setTag(tag != null ? tag : 0);
-			// result.add(item);
-			// }
-
+			List<Versioned<? extends NamedRelative>> result = new ArrayList<>();
 			result.addAll(foodItems);
-
-			// for (Versioned<? extends NamedRelativeTagged> item : dishItems)
-			// {
-			//// Integer tag = tagService.getTag(item.getId());
-			//// item.getData().setTag(tag != null ? tag : 0);
-			// result.add(item);
-			// }
-
 			result.addAll(dishItems);
 
 			RelevantIndexator.sort(result, diaryService);
@@ -611,7 +595,7 @@ public class FragmentTabBase extends Fragment
 		}
 	}
 
-	private String getInfo(NamedRelativeTagged item)
+	private String getInfo(NamedRelative item)
 	{
 		String labelProts = getString(R.string.base_subinfo_prots);
 		String labelFats = getString(R.string.base_subinfo_fats);

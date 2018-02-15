@@ -17,27 +17,29 @@
  */
 package org.bosik.diacomp.core.entities.business.dishbase;
 
+import org.bosik.diacomp.core.entities.business.FoodMassed;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.entities.business.interfaces.NamedRelative;
+import org.bosik.diacomp.core.entities.business.interfaces.Tagged;
+import org.bosik.diacomp.core.utils.Utils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import org.bosik.diacomp.core.entities.business.FoodMassed;
-import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.entities.business.interfaces.NamedRelativeTagged;
-import org.bosik.diacomp.core.utils.Utils;
 
 /**
  * Note: no check (rel* < 100) is presented
  */
 
-public class DishItem implements NamedRelativeTagged, Serializable
+public class DishItem implements NamedRelative, Tagged, Serializable
 {
-	private static final long		serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	private String					name;
-	private int						tag;
-	private Double					mass;
+	private String name;
+	private int    tag;
+	private Double mass;
 
-	private final List<FoodMassed>	content				= new ArrayList<FoodMassed>();
+	private final List<FoodMassed> content = new ArrayList<FoodMassed>();
 
 	// ================================ GET / SET ================================
 
@@ -69,7 +71,7 @@ public class DishItem implements NamedRelativeTagged, Serializable
 		}
 		else
 		{
-			setMass((double)mass);
+			setMass((double) mass);
 		}
 	}
 

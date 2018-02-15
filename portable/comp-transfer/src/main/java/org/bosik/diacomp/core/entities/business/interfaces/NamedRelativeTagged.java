@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.core.entities.business.interfaces;
 
+@Deprecated
 public interface NamedRelativeTagged extends Named, Relative, Tagged
 {
 

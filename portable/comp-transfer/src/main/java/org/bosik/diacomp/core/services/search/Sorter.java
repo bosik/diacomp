@@ -37,6 +37,7 @@ public class Sorter
 		};
 	}
 
+	@Deprecated
 	private static Comparator<NamedRelativeTagged> relevance()
 	{
 		return new Comparator<NamedRelativeTagged>()
@@ -72,6 +73,7 @@ public class Sorter
 		};
 	}
 
+	@Deprecated
 	public static Comparator<Versioned<? extends NamedRelativeTagged>> versionedRelevance()
 	{
 		return new Comparator<Versioned<? extends NamedRelativeTagged>>()
