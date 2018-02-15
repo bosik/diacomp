@@ -20,18 +20,18 @@ package org.bosik.diacomp.core.entities.business.dishbase;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelative;
-import org.bosik.diacomp.core.entities.business.interfaces.Tagged;
 import org.bosik.diacomp.core.utils.Utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Note: no check (rel* < 100) is presented
  */
 
-public class DishItem implements NamedRelative, Tagged, Serializable
+public class DishItem implements NamedRelative, Serializable
 {
 	private static final long serialVersionUID = 1L;
 
@@ -83,7 +83,7 @@ public class DishItem implements NamedRelative, Tagged, Serializable
 		}
 		else
 		{
-			throw new IllegalArgumentException(String.format("Incorrect mass: %f", mass));
+			throw new IllegalArgumentException(String.format(Locale.US, "Incorrect mass: %f", mass));
 		}
 	}
 
@@ -98,13 +98,13 @@ public class DishItem implements NamedRelative, Tagged, Serializable
 		this.name = name;
 	}
 
-	@Override
+	@Deprecated
 	public int getTag()
 	{
 		return tag;
 	}
 
-	@Override
+	@Deprecated
 	public void setTag(int tag)
 	{
 		this.tag = tag;

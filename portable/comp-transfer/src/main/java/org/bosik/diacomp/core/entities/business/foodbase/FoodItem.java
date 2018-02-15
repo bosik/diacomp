@@ -19,14 +19,13 @@ package org.bosik.diacomp.core.entities.business.foodbase;
 
 import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelative;
-import org.bosik.diacomp.core.entities.business.interfaces.Tagged;
 
 import java.util.Locale;
 
 /**
  * Food item for food base
  */
-public class FoodItem extends Food implements NamedRelative, Tagged
+public class FoodItem extends Food implements NamedRelative
 {
 	private static final long serialVersionUID = 1789285539891342521L;
 
@@ -54,13 +53,13 @@ public class FoodItem extends Food implements NamedRelative, Tagged
 
 	// ================================ GET / SET ================================
 
-	@Override
+	@Deprecated
 	public int getTag()
 	{
 		return tag;
 	}
 
-	@Override
+	@Deprecated
 	public void setTag(int tag)
 	{
 		this.tag = tag;

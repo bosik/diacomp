@@ -38,7 +38,8 @@ public class RelevantIndexator
 
 	public static void index(DiaryService diary)
 	{
-		usagesMap = findUsages(diary, 30);
+		final Map<String, Integer> temp = findUsages(diary, 30);
+		usagesMap = temp;
 	}
 
 	public static synchronized Map<String, Integer> getUsages(DiaryService diary)
@@ -113,8 +114,6 @@ public class RelevantIndexator
 
 		Collections.sort(items, new Comparator<Versioned<? extends Named>>()
 		{
-			private final Comparator<Named> compAlphabet = Sorter.alphabet();
-
 			@Override
 			public int compare(Versioned<? extends Named> lhs, Versioned<? extends Named> rhs)
 			{
@@ -135,7 +134,7 @@ public class RelevantIndexator
 
 				if (tag1.equals(tag2))
 				{
-					return compAlphabet.compare(data1, data2);
+					return data1.getName().compareTo(data2.getName());
 				}
 				else
 				{
