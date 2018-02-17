@@ -42,7 +42,14 @@ public class SystemRest
 	{
 		try
 		{
-			return Response.ok("Diacomp REST API is up").build();
+			String buildTime = Config.get(Config.KEY_BUILD_TIME);
+			String buildCommit = Config.get(Config.KEY_BUILD_COMMIT);
+
+			StringBuilder s = new StringBuilder();
+			s.append("Diacomp REST API is up\n");
+			s.append("Built ").append(buildTime).append(" / ").append(buildCommit);
+
+			return Response.ok(s.toString()).build();
 		}
 		catch (Exception e)
 		{
