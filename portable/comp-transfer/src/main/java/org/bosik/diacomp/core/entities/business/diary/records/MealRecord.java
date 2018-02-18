@@ -58,51 +58,56 @@ public class MealRecord extends DiaryRecord
 
 	public double getProts()
 	{
-		double res = 0;
-		for (int i = 0; i < items.size(); i++)
+		double res = 0.0;
+		for (FoodMassed item : items)
 		{
-			res += items.get(i).getProts();
+			res += item.getProts();
 		}
+
 		return res;
 	}
 
 	public double getFats()
 	{
-		double res = 0;
-		for (int i = 0; i < items.size(); i++)
+		double res = 0.0;
+		for (FoodMassed item : items)
 		{
-			res += items.get(i).getFats();
+			res += item.getFats();
 		}
+
 		return res;
 	}
 
 	public double getCarbs()
 	{
-		double res = 0;
-		for (int i = 0; i < items.size(); i++)
+		double res = 0.0;
+		for (FoodMassed item : items)
 		{
-			res += items.get(i).getCarbs();
+			res += item.getCarbs();
 		}
+
 		return res;
 	}
 
 	public double getValue()
 	{
-		double res = 0;
-		for (int i = 0; i < items.size(); i++)
+		double res = 0.0;
+		for (FoodMassed item : items)
 		{
-			res += items.get(i).getValue();
+			res += item.getValue();
 		}
+
 		return res;
 	}
 
 	public double getMass()
 	{
-		double res = 0;
-		for (int i = 0; i < items.size(); i++)
+		double res = 0.0;
+		for (FoodMassed item : items)
 		{
-			res += items.get(i).getMass();
+			res += item.getMass();
 		}
+
 		return res;
 	}
 
@@ -116,6 +121,7 @@ public class MealRecord extends DiaryRecord
 		{
 			throw new IllegalArgumentException("FoodItem item is null");
 		}
+
 		items.add(item);
 		return items.size() - 1;
 	}
@@ -150,6 +156,7 @@ public class MealRecord extends DiaryRecord
 		{
 			s.append(item).append('\n');
 		}
+
 		return s.toString();
 	}
 }
