@@ -48,8 +48,8 @@ public class TestUtils
 	}
 
 	@Test
-	@Ignore
-	public void test_removeNonUtf8_performance()
+	@Ignore("This test case is for manual performance check only")
+	public void test_performance_removeNonUtf8()
 	{
 		StringBuilder sb = new StringBuilder();
 		while (sb.length() < 1024)
@@ -285,8 +285,8 @@ public class TestUtils
 	}
 
 	@Test
-	@Ignore
-	public void test_parseTimeUTC_performance()
+	@Ignore("This test case is for manual performance check only")
+	public void test_performance_parseTimeUTC()
 	{
 		System.out.printf(Locale.US, "%.6f ms/item%n", Profiler.measureInMsec(new Runnable()
 		{
@@ -428,8 +428,8 @@ public class TestUtils
 	}
 
 	@Test
-	@Ignore
-	public void test_sameDay_performance()
+	@Ignore("This test case is for manual performance check only")
+	public void test_performance_sameDay()
 	{
 		final Date time1 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 0, 0, 0);
 		final Date time2 = Utils.timeLocal(TimeZone.getDefault(), 2013, 8, 4, 23, 59, 59);

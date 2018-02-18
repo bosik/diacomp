@@ -151,8 +151,8 @@ public class TestMemoryMerkleTree
 	}
 
 	@Test
-	@Ignore
-	public void test_memory()
+	@Ignore("This test case is for manual performance check only")
+	public void test_performance_memory()
 	{
 		//		MemoryMerkleTree         	  13 386 880 (bytes)
 		//		MemoryMerkleTree2        	   7 549 880 (bytes)
@@ -183,8 +183,8 @@ public class TestMemoryMerkleTree
 	}
 
 	@Test
-	@Ignore
-	public void test_speed_getHash()
+	@Ignore("This test case is for manual performance check only")
+	public void test_performance_getHash()
 	{
 		final int COUNT = 800;
 
@@ -231,8 +231,8 @@ public class TestMemoryMerkleTree
 	}
 
 	@Test
-	@Ignore
-	public void test_speed_getHashChildren()
+	@Ignore("This test case is for manual performance check only")
+	public void test_performance_getHashChildren()
 	{
 		final int COUNT = 500;
 

@@ -126,8 +126,8 @@ public class TestHashUtils
 	}
 
 	@Test
-	@Ignore
-	public void test_byteToStr_speed()
+	@Ignore("This test case is for manual performance check only")
+	public void test_performance_byteToStr()
 	{
 		final List<byte[]> bytes = new ArrayList<>();
 		for (int i = 0; i < 1000000; i++)
@@ -149,8 +149,8 @@ public class TestHashUtils
 	}
 
 	@Test
-	@Ignore
-	public void test_toInt_speed()
+	@Ignore("This test case is for manual performance check only")
+	public void test_performance_toInt()
 	{
 		final List<String> values = new ArrayList<>();
 
@@ -187,7 +187,7 @@ public class TestHashUtils
 
 	@Test
 	@Ignore("This test case is for manual performance check only")
-	public void test_buildHashTree_performance()
+	public void test_performance_buildHashTree()
 	{
 		long time = System.currentTimeMillis();
 		SortedMap<String, String> data = new TreeMap<String, String>();
