@@ -29,8 +29,8 @@ public class PreferencesSync
 	/**
 	 * Synchronizes two preference providers
 	 *
-	 * @param preferences1
-	 * @param preferences2
+	 * @param preferences1 Preference service to sync
+	 * @param preferences2 Preference service to sync
 	 * @return True if any data was transferred, false otherwise (i.e. if services already had been
 	 * synchronized)
 	 */
@@ -46,13 +46,13 @@ public class PreferencesSync
 
 		// build maps
 
-		Map<PreferenceID, PreferenceEntry<String>> map1 = indexate(preferences1.getAll());
-		Map<PreferenceID, PreferenceEntry<String>> map2 = indexate(preferences2.getAll());
+		Map<PreferenceID, PreferenceEntry<String>> map1 = index(preferences1.getAll());
+		Map<PreferenceID, PreferenceEntry<String>> map2 = index(preferences2.getAll());
 
 		// build diff lists
 
-		List<PreferenceEntry<String>> newer1 = new ArrayList<PreferenceEntry<String>>();
-		List<PreferenceEntry<String>> newer2 = new ArrayList<PreferenceEntry<String>>();
+		List<PreferenceEntry<String>> newer1 = new ArrayList<>();
+		List<PreferenceEntry<String>> newer2 = new ArrayList<>();
 
 		for (PreferenceID key : Utils.difference(map1.keySet(), map2.keySet()))
 		{
@@ -102,9 +102,9 @@ public class PreferencesSync
 		}
 	}
 
-	private static Map<PreferenceID, PreferenceEntry<String>> indexate(List<PreferenceEntry<String>> entries)
+	private static Map<PreferenceID, PreferenceEntry<String>> index(List<PreferenceEntry<String>> entries)
 	{
-		Map<PreferenceID, PreferenceEntry<String>> map = new HashMap<PreferenceID, PreferenceEntry<String>>();
+		Map<PreferenceID, PreferenceEntry<String>> map = new HashMap<>();
 
 		for (PreferenceEntry<String> entry : entries)
 		{
