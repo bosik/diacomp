@@ -45,7 +45,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:text="Demo meal"
+                android:text="Demomealcontainingveryextralongwordtoshowcaseellipsis"
+                android:scrollHorizontally="true"
+                android:ellipsize="end"
                 android:textColor="@color/diary_font"
                 android:textSize="@dimen/diaryTextSizeBase"
                 tools:ignore="HardcodedText"/>
