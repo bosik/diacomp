@@ -476,4 +476,42 @@ public class TestUtils
 		Assert.assertEquals(set(), Utils.difference(set(1, 2), set(1, 2, 3)));
 		Assert.assertEquals(set(), Utils.difference(set(1, 2, 3), set(1, 2, 3)));
 	}
+
+	@Test
+	public void test_uppercaseFirstLetter()
+	{
+		// empty
+		Assert.assertEquals(null, Utils.uppercaseFirstLetter(null));
+		Assert.assertEquals("", Utils.uppercaseFirstLetter(""));
+
+		// normal
+		Assert.assertEquals("A", Utils.uppercaseFirstLetter("a"));
+		Assert.assertEquals("Test", Utils.uppercaseFirstLetter("test"));
+		Assert.assertEquals("Русский", Utils.uppercaseFirstLetter("русский"));
+		Assert.assertEquals("Ärztin", Utils.uppercaseFirstLetter("ärztin"));
+
+		// nothing to uppercase
+		Assert.assertEquals(" ", Utils.uppercaseFirstLetter(" "));
+		Assert.assertEquals(" another", Utils.uppercaseFirstLetter(" another"));
+		Assert.assertEquals("☺", Utils.uppercaseFirstLetter("☺"));
+	}
+
+	@Test
+	public void test_lowercaseFirstLetter()
+	{
+		// empty
+		Assert.assertEquals(null, Utils.lowercaseFirstLetter(null));
+		Assert.assertEquals("", Utils.lowercaseFirstLetter(""));
+
+		// normal
+		Assert.assertEquals("a", Utils.lowercaseFirstLetter("A"));
+		Assert.assertEquals("test", Utils.lowercaseFirstLetter("Test"));
+		Assert.assertEquals("русский", Utils.lowercaseFirstLetter("Русский"));
+		Assert.assertEquals("ärztin", Utils.lowercaseFirstLetter("Ärztin"));
+
+		// nothing to lowercase
+		Assert.assertEquals(" ", Utils.lowercaseFirstLetter(" "));
+		Assert.assertEquals(" another", Utils.lowercaseFirstLetter(" another"));
+		Assert.assertEquals("☺", Utils.lowercaseFirstLetter("☺"));
+	}
 }
