@@ -18,12 +18,13 @@
 package org.bosik.diacomp.core.services.preferences;
 
 import org.bosik.diacomp.core.entities.business.Units;
+import org.bosik.diacomp.core.entities.tech.Coded;
 import org.bosik.diacomp.core.services.diary.MealFormat;
 
 /**
  * Contains all available account preferences
  */
-public enum PreferenceID
+public enum PreferenceID implements Coded
 {
 	/**
 	 * Target blood sugar, in mmol/l
@@ -71,7 +72,8 @@ public enum PreferenceID
 		this.syncable = syncable;
 	}
 
-	public String getKey()
+	@Override
+	public String getCode()
 	{
 		return key;
 	}
@@ -95,7 +97,7 @@ public enum PreferenceID
 	{
 		for (PreferenceID value : values())
 		{
-			if (value.getKey().equals(key))
+			if (value.getCode().equals(key))
 			{
 				return value;
 			}
@@ -108,7 +110,7 @@ public enum PreferenceID
 	{
 		for (PreferenceID value : values())
 		{
-			if (value.getKey().equals(key))
+			if (value.getCode().equals(key))
 			{
 				return value;
 			}

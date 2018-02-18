@@ -47,7 +47,7 @@ public class ParserPreferenceEntry extends Parser<PreferenceEntry<String>>
 	public JSONObject write(PreferenceEntry<String> object) throws JSONException
 	{
 		JSONObject json = new JSONObject();
-		json.put(FIELD_KEY, object.getId().getKey());
+		json.put(FIELD_KEY, object.getId().getCode());
 		json.put(FIELD_VALUE, object.getValue());
 		json.put(FIELD_VERSION, object.getVersion());
 		return json;

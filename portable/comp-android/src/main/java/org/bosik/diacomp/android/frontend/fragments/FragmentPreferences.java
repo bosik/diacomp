@@ -57,18 +57,18 @@ public class FragmentPreferences extends PreferenceFragment implements SharedPre
 			{
 				case STRING:
 				{
-					editor.putString(id.getKey(), syncablePreferences.getStringValue(id));
+					editor.putString(id.getCode(), syncablePreferences.getStringValue(id));
 					break;
 				}
 				case FLOAT:
 				{
 					// EditTextPreference supposed preference is String
-					editor.putString(id.getKey(), Utils.compactDecimal(syncablePreferences.getStringValue(id)));
+					editor.putString(id.getCode(), Utils.compactDecimal(syncablePreferences.getStringValue(id)));
 					break;
 				}
 				case BOOLEAN:
 				{
-					editor.putBoolean(id.getKey(), syncablePreferences.getBooleanValue(id));
+					editor.putBoolean(id.getCode(), syncablePreferences.getBooleanValue(id));
 					break;
 				}
 				default:
@@ -128,17 +128,17 @@ public class FragmentPreferences extends PreferenceFragment implements SharedPre
 			{
 				case STRING:
 				{
-					entry.setValue(preferences.getString(id.getKey(), id.getDefaultValue()));
+					entry.setValue(preferences.getString(id.getCode(), id.getDefaultValue()));
 					break;
 				}
 				case FLOAT: // EditTextPreference supposed preference is String
 				{
-					entry.setValue(Utils.compactDecimal(preferences.getString(id.getKey(), id.getDefaultValue())));
+					entry.setValue(Utils.compactDecimal(preferences.getString(id.getCode(), id.getDefaultValue())));
 					break;
 				}
 				case BOOLEAN:
 				{
-					entry.setValue(String.valueOf(preferences.getBoolean(id.getKey(), Boolean.parseBoolean(id.getDefaultValue()))));
+					entry.setValue(String.valueOf(preferences.getBoolean(id.getCode(), Boolean.parseBoolean(id.getDefaultValue()))));
 					break;
 				}
 				default:

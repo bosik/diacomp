@@ -110,7 +110,7 @@ public class PreferencesWebService extends PreferencesService
 	{
 		try
 		{
-			String url = String.format(API_PREFERENCES_KEY, id.getKey());
+			String url = String.format(API_PREFERENCES_KEY, id.getCode());
 			String resp = webClient.get(url);
 			return serializer.read(resp);
 		}

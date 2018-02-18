@@ -132,7 +132,7 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 		// construct parameters
 		String[] projection = null; // all
 		String clause = TablePreferences.COLUMN_KEY + " = ?";
-		String[] clauseArgs = { id.getKey() };
+		String[] clauseArgs = { id.getCode() };
 		String sortOrder = null;
 
 		// execute
@@ -179,7 +179,7 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 	{
 		try
 		{
-			String key = entry.getId().getKey();
+			String key = entry.getId().getCode();
 			boolean exists = entryExists(key);
 
 			ContentValues newValues = new ContentValues();
@@ -272,7 +272,7 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 
 			for (PreferenceEntry<String> item : items)
 			{
-				newValues.put(TablePreferences.COLUMN_KEY, item.getId().getKey());
+				newValues.put(TablePreferences.COLUMN_KEY, item.getId().getCode());
 				newValues.put(TablePreferences.COLUMN_VALUE, item.getValue());
 				newValues.put(TablePreferences.COLUMN_VERSION, item.getVersion());
 

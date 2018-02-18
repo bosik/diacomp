@@ -39,7 +39,7 @@ public abstract class PreferencesService
 			@Override
 			public int compare(PreferenceEntry<String> o1, PreferenceEntry<String> o2)
 			{
-				return o1.getId().getKey().compareTo(o2.getId().getKey());
+				return o1.getId().getCode().compareTo(o2.getId().getCode());
 			}
 		});
 

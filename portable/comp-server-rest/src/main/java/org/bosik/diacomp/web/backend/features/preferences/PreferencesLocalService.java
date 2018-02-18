@@ -118,7 +118,7 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 			final String[] select = { COLUMN_PREFERENCES_VALUE, COLUMN_PREFERENCES_VERSION };
 			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_PREFERENCES_USER,
 					COLUMN_PREFERENCES_KEY);
-			final String[] whereArgs = { String.valueOf(userId), id.getKey() };
+			final String[] whereArgs = { String.valueOf(userId), id.getCode() };
 			final String order = null;
 
 			return MySQLAccess.select(TABLE_PREFERENCES, select, where, whereArgs, order,
@@ -156,7 +156,7 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 
 		try
 		{
-			final String key = entry.getId().getKey();
+			final String key = entry.getId().getCode();
 			final String value = entry.getValue();
 			final String version = String.valueOf(entry.getVersion());
 
