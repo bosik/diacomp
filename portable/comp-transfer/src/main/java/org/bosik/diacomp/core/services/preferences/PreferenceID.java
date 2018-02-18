@@ -18,6 +18,7 @@
 package org.bosik.diacomp.core.services.preferences;
 
 import org.bosik.diacomp.core.entities.business.Units;
+import org.bosik.diacomp.core.services.diary.MealFormat;
 
 /**
  * Contains all available account preferences
@@ -51,7 +52,11 @@ public enum PreferenceID
 	/**
 	 * Show notification about time elapsed after meal/injection
 	 */
-	ANDROID_SHOW_TIME_AFTER("d5c1a902e83b4d05a51085e344bee953", Type.BOOLEAN, "true", true);
+	ANDROID_SHOW_TIME_AFTER("d5c1a902e83b4d05a51085e344bee953", Type.BOOLEAN, "true", true),
+	/**
+	 * How to display meals in diary
+	 */
+	ANDROID_MEAL_FORMAT("f3f54f8f02a3411faf48f90aadf0ca2d", Type.STRING, MealFormat.SINGLE_MOST_CARBS.getCode(), true);
 
 	private String  key;
 	private Type    type;

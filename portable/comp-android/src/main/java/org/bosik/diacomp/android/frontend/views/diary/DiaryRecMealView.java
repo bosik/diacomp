@@ -18,22 +18,30 @@
  */
 package org.bosik.diacomp.android.frontend.views.diary;
 
-import java.util.TimeZone;
-import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.frontend.views.diary.MealFormatter.FormatStyle;
-import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
-import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.merklesync.Versioned;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
+import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.services.diary.MealFormat;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
+import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
+import org.bosik.diacomp.core.utils.CodedUtils;
+import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.merklesync.Versioned;
+
+import java.util.TimeZone;
 
 public class DiaryRecMealView extends LinearLayout
 {
-	// Components
-	private TextView				textTime;
-	private TextView				textValue;
+	private static final MealFormat DEFAULT_FORMAT = CodedUtils.parse(MealFormat.class, PreferenceID.ANDROID_MEAL_FORMAT.getDefaultValue());
+
+	private TextView textTime;
+	private TextView textValue;
+
+	private PreferencesTypedService preferences;
 
 	public DiaryRecMealView(Context context)
 	{
@@ -43,13 +51,19 @@ public class DiaryRecMealView extends LinearLayout
 
 		textTime = (TextView) findViewById(R.id.textMealTime);
 		textValue = (TextView) findViewById(R.id.textMealValue);
+
+		preferences = new PreferencesTypedService(new PreferencesLocalService(context));
 	}
 
 	public void setData(Versioned<MealRecord> record)
 	{
-		MealRecord data = record.getData();
+		String s = preferences.getStringValue(PreferenceID.ANDROID_MEAL_FORMAT);
+		final MealFormat mealFormat = CodedUtils.parse(MealFormat.class, s, DEFAULT_FORMAT);
 
+		MealRecord data = record.getData();
 		textTime.setText(Utils.formatTimeLocalShort(TimeZone.getDefault(), data.getTime()));
-		textValue.setText(MealFormatter.format(record.getData(), FormatStyle.MOST_CARBS));
+		final String tmp = MealFormatter.format(data, getContext(), mealFormat);
+		System.out.println(tmp);
+		textValue.setText(tmp);
 	}
 }

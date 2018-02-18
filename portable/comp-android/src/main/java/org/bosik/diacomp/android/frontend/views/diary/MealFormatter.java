@@ -18,67 +18,26 @@
  */
 package org.bosik.diacomp.android.frontend.views.diary;
 
+import android.content.Context;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.services.diary.MealFormat;
+import org.bosik.diacomp.core.utils.Utils;
 
-public class MealFormatter
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+
+public final class MealFormatter
 {
-	/**
-	 * Виды сортировок продуктов в приёме пищи
-	 */
-	public enum FormatStyle
-	{
-		/**
-		 * Только первое блюдо в приёме
-		 */
-		FIRST,
-		/**
-		 * Только последнее блюдо в приёме
-		 */
-		LAST,
-		/**
-		 * Только самое углеводное блюдо
-		 */
-		MOST_CARBS,
-		/**
-		 * Все блюда в порядке убывания углеводности через запятую (не реализовано)
-		 */
-		LIST_CARBS // TODO: реализовать
-	}
-
-	/**
-	 * Получает текстовое представление приёма пищи в указанном режиме
-	 * 
-	 * @param style
-	 *            Режим
-	 * @return Текстовое представление
-	 */
-	public static String format(MealRecord meal, FormatStyle style)
+	public static String format(MealRecord meal, Context context, MealFormat style)
 	{
 		switch (style)
 		{
-			case FIRST:
-			{
-				if (meal.count() == 0)
-				{
-					return "";
-				}
-				else
-				{
-					return meal.get(0).getName();
-				}
-			}
-			case LAST:
-			{
-				if (meal.count() == 0)
-				{
-					return "";
-				}
-				else
-				{
-					return meal.get(meal.count() - 1).getName();
-				}
-			}
-			case MOST_CARBS:
+			case SINGLE_MOST_CARBS:
 			{
 				double max = -1;
 				String name = "";
@@ -90,13 +49,109 @@ public class MealFormatter
 						name = meal.get(i).getName();
 					}
 				}
+
 				return name;
 			}
-			/*
-			 * case LIST_CARBS: { // TODO: реализовать }
-			 */
+
+			case TOTAL_CARBS:
+			{
+				final double sumCarbs = meal.getCarbs();
+				final String unitGram = context.getString(R.string.common_unit_mass_gramm);
+				return String.format(Locale.US, "%.0f %s", sumCarbs, unitGram);
+			}
+
+			case TOTAL_BU:
+			{
+				final double sumCarbs = meal.getCarbs();
+				final double sumBu = sumCarbs / Utils.CARB_PER_BU;
+				final String unitBU = context.getString(R.string.common_unit_mass_bu);
+				return String.format(Locale.US, "%.1f %s", sumBu, unitBU);
+			}
+
+			case TOTAL_CARBS_BU:
+			{
+				final double sumCarbs = meal.getCarbs();
+				final double sumBu = sumCarbs / Utils.CARB_PER_BU;
+				final String unitGram = context.getString(R.string.common_unit_mass_gramm);
+				final String unitBU = context.getString(R.string.common_unit_mass_bu);
+				return String.format(Locale.US, "%.0f %s (%.1f %s)", sumCarbs, unitGram, sumBu, unitBU);
+			}
+
+			case LIST_AS_IS:
+			{
+				StringBuilder s = new StringBuilder();
+
+				for (int i = 0; i < meal.count(); i++)
+				{
+					if (s.length() > 0)
+					{
+						s.append(", ");
+						s.append(Utils.lowercaseFirstLetter(meal.get(i).getName()));
+					}
+					else
+					{
+						s.append(meal.get(i).getName());
+					}
+				}
+
+				return s.toString();
+			}
+
+			case LIST_SORTED_BY_CARBS:
+			{
+				List<FoodMassed> items = new ArrayList<>();
+				for (int i = 0; i < meal.count(); i++)
+				{
+					items.add(meal.get(i));
+				}
+
+				Collections.sort(items, new Comparator<FoodMassed>()
+				{
+					@Override
+					public int compare(FoodMassed lhs, FoodMassed rhs)
+					{
+						if (lhs.getCarbs() > rhs.getCarbs())
+						{
+							return -1;
+						}
+						else if (lhs.getCarbs() < rhs.getCarbs())
+						{
+							return +1;
+						}
+						else
+						{
+							return 0;
+						}
+					}
+				});
+
+				StringBuilder s = new StringBuilder();
+
+				for (FoodMassed item : items)
+				{
+					if (s.length() > 0)
+					{
+						s.append(", ");
+						s.append(Utils.lowercaseFirstLetter(item.getName()));
+					}
+					else
+					{
+						s.append(item.getName());
+					}
+				}
+
+				return s.toString();
+			}
+
 			default:
-				throw new UnsupportedOperationException("Style " + style + " is not supported yet");
+			{
+				throw new IllegalArgumentException("Unknown style: " + style.name());
+			}
 		}
+	}
+
+	private MealFormatter()
+	{
+		throw new RuntimeException("Don't instantiate");
 	}
 }

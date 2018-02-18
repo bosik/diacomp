@@ -14,6 +14,13 @@
                 android:key="d5c1a902e83b4d05a51085e344bee953"
                 android:summary=""
                 android:title="@string/preferences_appearance_show_time_after"/>
+
+        <ListPreference
+                android:key="f3f54f8f02a3411faf48f90aadf0ca2d"
+                android:title="@string/preferences_diary_meal_format"
+                android:summary=""
+                android:entries="@array/meal_format_titles"
+                android:entryValues="@array/meal_format_keys"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/preferences_rates">

@@ -150,6 +150,7 @@
     <string name="notification_time_after_injection">после инъекции</string>
     <string name="notification_time_after_meal">после еды</string>
     <string name="preferences_appearance_show_time_after">Показывать прошедшее время</string>
+    <string name="preferences_diary_meal_format">Формат приёма пищи</string>
     <string name="preferences_personal">Личные</string>
     <string name="preferences_personal_target_bs">Целевой сахар крови, ммоль/л</string>
     <string name="preferences_rates">Коэффициенты</string>
@@ -201,4 +202,12 @@
         <item>БП</item>
     </string-array>
 
+    <string-array name="meal_format_titles">
+        <item>Самый углеводный продукт</item>
+        <item>Углеводы</item>
+        <item>ХЕ</item>
+        <item>Углеводы и ХЕ</item>
+        <item>Полный список</item>
+        <item>Полный список (по углеводности)</item>
+    </string-array>
 </resources>

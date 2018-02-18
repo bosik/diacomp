@@ -152,6 +152,7 @@
     <string name="notification_time_after_injection">after injection</string>
     <string name="notification_time_after_meal">after meal</string>
     <string name="preferences_appearance_show_time_after">Show elapsed time</string>
+    <string name="preferences_diary_meal_format">Meal format</string>
     <string name="preferences_personal">Personal</string>
     <string name="preferences_personal_target_bs">Target blood sugar, mmol/l</string>
     <string name="preferences_rates">Correction factors</string>
@@ -206,5 +207,23 @@
     <string-array name="unit_mass_options">
         <item>@string/common_unit_mass_gramm</item>
         <item>@string/common_unit_mass_bu</item>
+    </string-array>
+
+    <string-array name="meal_format_keys">
+        <item>9daabf78ed994e268f2e8c905564c82d</item>
+        <item>7a0c32c15c6e4ac6bf2b2b0d350810df</item>
+        <item>d3e249c5fb7f4d40872d4a1538be495f</item>
+        <item>076499f9c70740be8dd8f227e579bc9f</item>
+        <item>2bae9dbcb7f9421ead21eaf576a03229</item>
+        <item>f2dbaeeafffb487496d953c619e9479e</item>
+    </string-array>
+
+    <string-array name="meal_format_titles">
+        <item>Top carbohydrated</item>
+        <item>Total carbohydrates, g</item>
+        <item>Total BU</item>
+        <item>Total carbohydrates and BU</item>
+        <item>List</item>
+        <item>List (by carbohydrates)</item>
     </string-array>
 </resources>

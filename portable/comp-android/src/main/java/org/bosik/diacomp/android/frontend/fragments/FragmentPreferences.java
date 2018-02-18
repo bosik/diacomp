@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
+import android.preference.ListPreference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import org.bosik.diacomp.android.R;
@@ -208,6 +209,11 @@ public class FragmentPreferences extends PreferenceFragment implements SharedPre
 				{
 					throw new IllegalArgumentException("Unsupported type: " + value.getClass().getName());
 				}
+			}
+			else if (p instanceof ListPreference)
+			{
+				ListPreference lp = (ListPreference) p;
+				lp.setSummary(lp.getEntry());
 			}
 		}
 	}
