@@ -15,11 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bosik.diacomp.core.entities.business;
+package org.bosik.diacomp.core.utils;
 
 import org.bosik.diacomp.core.entities.tech.Coded;
-import org.bosik.diacomp.core.utils.CodedUtils;
-import org.bosik.diacomp.core.utils.Utils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -29,45 +27,27 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class TestUnits extends AbstractTestCoded
-{
-	@Test
-	public void test_mass()
-	{
-		test_all(Units.Mass.class, new HashMap<Units.Mass, String>()
-		{
-			{
-				put(Units.Mass.G, "38be712c8ef74b70b4dba793cc7b349f");
-				put(Units.Mass.BU, "56ce855fac9846698a78edf2cacf4cfe");
-			}
-		});
-	}
-
-	@Test
-	public void test_bloodsugar()
-	{
-		test_all(Units.BloodSugar.class, new HashMap<Units.BloodSugar, String>()
-		{
-			{
-				put(Units.BloodSugar.MMOL_L, "ff9e76dd8e144d0d9ab90d15160e9f3b");
-				put(Units.BloodSugar.MG_DL, "88101cf56630428aada7fe82388b4b99");
-			}
-		});
-	}
-}
-
-abstract class AbstractTestCoded
+public abstract class AbstractTestCoded<T extends Enum<T> & Coded>
 {
 	private static final int EXPECTED_CODE_SIZE = 32;
+
+	@Test
+	public void test()
+	{
+		test_all(getEntityClass(), getPublishedCodes());
+	}
+
+	protected abstract Class<T> getEntityClass();
+
+	protected abstract HashMap<T, String> getPublishedCodes();
 
 	/**
 	 * Performs complete testing of coded enum
 	 *
 	 * @param entityClass
 	 * @param registeredCodes
-	 * @param <T>
 	 */
-	protected <T extends Enum<T> & Coded> void test_all(Class<T> entityClass, Map<T, String> registeredCodes)
+	protected void test_all(Class<T> entityClass, Map<T, String> registeredCodes)
 	{
 		test_codes(entityClass);
 		test_parsing(entityClass, registeredCodes);
@@ -86,9 +66,8 @@ abstract class AbstractTestCoded
 	 *
 	 * @param entityClass
 	 * @param registeredCodes
-	 * @param <T>
 	 */
-	protected <T extends Enum<T> & Coded> void test_parsing(Class<T> entityClass, Map<T, String> registeredCodes)
+	protected void test_parsing(Class<T> entityClass, Map<T, String> registeredCodes)
 	{
 		Assert.assertTrue(entityClass.getName() + " must be enum", entityClass.isEnum());
 
@@ -137,9 +116,8 @@ abstract class AbstractTestCoded
 	 * </ul>
 	 *
 	 * @param entityClass
-	 * @param <T>
 	 */
-	protected <T extends Enum<T> & Coded> void test_parsing_default(Class<T> entityClass)
+	protected void test_parsing_default(Class<T> entityClass)
 	{
 		Assert.assertTrue(entityClass.getName() + " must be enum", entityClass.isEnum());
 
@@ -160,9 +138,8 @@ abstract class AbstractTestCoded
 	 * </ul>
 	 *
 	 * @param entityClass
-	 * @param <T>
 	 */
-	protected <T extends Enum<T> & Coded> void test_codes(Class<T> entityClass)
+	protected void test_codes(Class<T> entityClass)
 	{
 		Assert.assertTrue(entityClass.getName() + " must be enum", entityClass.isEnum());
 
@@ -175,12 +152,12 @@ abstract class AbstractTestCoded
 		}
 	}
 
-	private <T extends Enum<T> & Coded> void checkCodeSize(T entity)
+	private void checkCodeSize(T entity)
 	{
 		checkCodeSize(entity, entity.getCode());
 	}
 
-	private <T extends Enum<T> & Coded> void checkCodeSize(T entity, String code)
+	private void checkCodeSize(T entity, String code)
 	{
 		Assert.assertNotNull(code);
 		Assert.assertEquals(entity.getClass().getName() + "." + entity + " code (" + code + ") has invalid size", EXPECTED_CODE_SIZE,
