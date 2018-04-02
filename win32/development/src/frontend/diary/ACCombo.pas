@@ -256,8 +256,8 @@ begin
 end;
 
 const
-  CHARS_EN = 'qwertyuiop[]asdfghjkl;''zxcvbnm,./QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?';
-  CHARS_RU = 'יצףךוםדרשחץתפûגאןנמכהז‎ÿקסלטעüב‏.ÉÖÓÊÅÍÃØÙÇÕÚÔÛÂÀÏÐÎËÄÆÝ‗×ÑÌÈÒÜÁÞ.';
+  CHARS_EN = 'f,dult`;pbqrkvyjghcnea[wxio]sm''.zF<DULT~:PBQRKVYJGHCNEA{WXIO}SM">Z';
+  CHARS_RU = 'אבגדהו¸זחטיךכלםמןנסעףפץצקרשתûü‎‏ÿÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞ‗';
 
 function SwitchLanguage(s: String): String;
 var
