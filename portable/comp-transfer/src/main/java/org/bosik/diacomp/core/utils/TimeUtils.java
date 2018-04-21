@@ -85,7 +85,7 @@ public class TimeUtils
 			//				System.out.printf("%s/%s %n", zone.getDisplayName(), id);
 			//			}
 
-			List<String> zones = new ArrayList<String>();
+			List<String> zones = new ArrayList<>();
 
 			for (TimeZone zone : getTimeZones(offset.intValue()))
 			{
