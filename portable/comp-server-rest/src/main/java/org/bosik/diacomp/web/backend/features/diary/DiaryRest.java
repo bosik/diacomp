@@ -317,7 +317,7 @@ public class DiaryRest extends UserRest
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Produces(TYPE_JSON_UTF8)
 	public Response save(@FormParam("items") String parItems)
 	{
 		try

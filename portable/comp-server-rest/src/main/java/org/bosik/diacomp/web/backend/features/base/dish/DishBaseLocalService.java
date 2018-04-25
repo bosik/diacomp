@@ -23,18 +23,15 @@ import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.ObjectService;
-import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
-import org.bosik.diacomp.core.services.transfer.Exportable;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.CachedHashTree;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
-import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
@@ -57,7 +54,7 @@ import java.util.TreeMap;
 
 @Service
 // @Profile("real")
-public class DishBaseLocalService implements DishBaseService, Exportable
+public class DishBaseLocalService
 {
 	// Dishbase table
 	private static final String TABLE_DISHBASE            = "dishbase2";
@@ -76,15 +73,7 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 	private static final Serializer<DishItem> serializer = new SerializerAdapter<>(parser);
 
 	@Autowired
-	private UserInfoService userInfoService;
-
-	@Autowired
 	private CachedHashTree cachedHashTree;
-
-	private int getCurrentUserId()
-	{
-		return userInfoService.getCurrentUserId();
-	}
 
 	private static List<Versioned<DishItem>> parseItems(ResultSet resultSet, int limit) throws SQLException
 	{
@@ -131,17 +120,13 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 		return parseItems(resultSet, 0);
 	}
 
-	@Override
-	public void add(Versioned<DishItem> item) throws DuplicateException, PersistenceException
+	public void add(int userId, Versioned<DishItem> item) throws DuplicateException, PersistenceException
 	{
-		save(Collections.singletonList(item));
+		save(userId, Collections.singletonList(item));
 	}
 
-	@Override
-	public int count(String prefix)
+	public int count(int userId, String prefix)
 	{
-		int userId = getCurrentUserId();
-
 		if (prefix == null)
 		{
 			throw new IllegalArgumentException("ID prefix is null");
@@ -176,10 +161,9 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 		}
 	}
 
-	@Override
-	public void delete(String id)
+	public void delete(int userId, String id)
 	{
-		Versioned<DishItem> item = findById(id);
+		Versioned<DishItem> item = findById(userId, id);
 
 		if (item == null)
 		{
@@ -193,16 +177,13 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 
 		item.setDeleted(true);
 		item.modified();
-		save(Collections.singletonList(item));
+		save(userId, Collections.singletonList(item));
 	}
 
-	@Override
-	public List<Versioned<DishItem>> findAll(boolean includeRemoved)
+	public List<Versioned<DishItem>> findAll(int userId, boolean includeRemoved)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			String where;
 			String[] whereArgs;
@@ -235,13 +216,10 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 		}
 	}
 
-	@Override
-	public List<Versioned<DishItem>> findAny(String filter)
+	public List<Versioned<DishItem>> findAny(int userId, String filter)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?) AND (%s = ?) AND (%s LIKE ?)", COLUMN_DISHBASE_USER, COLUMN_DISHBASE_DELETED,
 					COLUMN_DISHBASE_NAMECACHE);
@@ -263,13 +241,10 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 		}
 	}
 
-	@Override
-	public Versioned<DishItem> findById(String id)
+	public Versioned<DishItem> findById(int userId, String id)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_DISHBASE_USER, COLUMN_DISHBASE_GUID);
 			final String[] whereArgs = { String.valueOf(userId), id };
@@ -291,11 +266,8 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 		}
 	}
 
-	@Override
-	public List<Versioned<DishItem>> findByIdPrefix(String prefix)
+	public List<Versioned<DishItem>> findByIdPrefix(int userId, String prefix)
 	{
-		int userId = getCurrentUserId();
-
 		try
 		{
 			final String[] select = null; // all
@@ -318,13 +290,10 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 		}
 	}
 
-	@Override
-	public List<Versioned<DishItem>> findChanged(Date since)
+	public List<Versioned<DishItem>> findChanged(int userId, Date since)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?) AND (%s >= ?)", COLUMN_DISHBASE_USER, COLUMN_DISHBASE_TIMESTAMP);
 			final String[] whereArgs = { String.valueOf(userId), Utils.formatTimeUTC(since) };
@@ -345,13 +314,10 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 		}
 	}
 
-	@Override
-	public Versioned<DishItem> findOne(String exactName)
+	public Versioned<DishItem> findOne(int userId, String exactName)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			final String where = String
 					.format("(%s = ?) AND (%s = ?) AND (%s = ?)", COLUMN_DISHBASE_USER, COLUMN_DISHBASE_DELETED, COLUMN_DISHBASE_NAMECACHE);
@@ -415,11 +381,8 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 		}
 	}
 
-	@Override
-	public MerkleTree getHashTree()
+	public MerkleTree getHashTree(int userId)
 	{
-		int userId = getCurrentUserId();
-
 		MerkleTree tree = cachedHashTree.getDishTree(userId);
 		if (tree == null)
 		{
@@ -430,11 +393,8 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 		return tree;
 	}
 
-	@Override
-	public void save(List<Versioned<DishItem>> items)
+	public void save(int userId, List<Versioned<DishItem>> items)
 	{
-		int userId = getCurrentUserId();
-
 		try
 		{
 			for (Versioned<DishItem> item : items)
@@ -501,13 +461,10 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 		});
 	}
 
-	@Override
-	public String exportData()
+	public String exportData(int userId)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?)", COLUMN_DISHBASE_USER);
 			final String[] whereArgs = { String.valueOf(userId) };
@@ -556,12 +513,10 @@ public class DishBaseLocalService implements DishBaseService, Exportable
 		}
 	}
 
-	public String exportPlain()
+	public String exportPlain(int userId)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?)", COLUMN_DISHBASE_USER);
 			final String[] whereArgs = { String.valueOf(userId) };

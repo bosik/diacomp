@@ -24,7 +24,9 @@ import java.util.List;
 import org.bosik.diacomp.core.entities.business.FoodSetInfo;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
+import org.springframework.stereotype.Service;
 
+@Service
 public class FoodSetService
 {
 	// Foodbase table

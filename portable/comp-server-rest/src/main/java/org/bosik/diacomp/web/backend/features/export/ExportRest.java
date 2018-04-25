@@ -65,8 +65,8 @@ public class ExportRest extends UserRest
 
 			List<Entry> entries = new ArrayList<>();
 			entries.add(new Entry(ExportAPI.JSON_DIARY, diaryService.exportData(userId).getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.JSON_FOODBASE, foodbaseService.exportData().getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.JSON_DISHBASE, dishbaseService.exportData().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.JSON_FOODBASE, foodbaseService.exportData(userId).getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.JSON_DISHBASE, dishbaseService.exportData(userId).getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.JSON_PREFERENCES, prefService.exportData().getBytes("UTF-8")));
 
 			return Response.ok(ZipUtils.zip(entries)).header("Content-Disposition", "attachment; filename=\"data.zip\"").build();
@@ -93,8 +93,8 @@ public class ExportRest extends UserRest
 
 			List<Entry> entries = new ArrayList<>();
 			entries.add(new Entry(ExportAPI.PLAIN_DIARY, diaryService.exportPlain(userId).getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.PLAIN_FOODBASE, foodbaseService.exportPlain().getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.PLAIN_DISHBASE, dishbaseService.exportPlain().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.PLAIN_FOODBASE, foodbaseService.exportPlain(userId).getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.PLAIN_DISHBASE, dishbaseService.exportPlain(userId).getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.PLAIN_PREFERENCES, prefService.exportPlain().getBytes("UTF-8")));
 
 			return Response.ok(ZipUtils.zip(entries)).header("Content-Disposition", "attachment; filename=\"data.zip\"").build();

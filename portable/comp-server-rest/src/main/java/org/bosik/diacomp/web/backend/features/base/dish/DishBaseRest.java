@@ -23,10 +23,10 @@ import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.ObjectService;
-import org.bosik.diacomp.core.services.base.dish.DishBaseService;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.backend.features.user.auth.UserRest;
 import org.bosik.merklesync.DataSource;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
@@ -50,17 +50,19 @@ import java.util.Map;
 
 @Service
 @Path("dish/")
-public class DishBaseRest
+public class DishBaseRest extends UserRest
 {
+	private static final String TYPE_JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=utf-8";
+
 	@Autowired
-	private DishBaseService dishbaseService;
+	private DishBaseLocalService dishbaseService;
 
 	private final Serializer<Versioned<DishItem>> serializer    = new SerializerDishItem();
 	private final Serializer<Map<String, String>> serializerMap = new SerializerMap();
 
 	@GET
 	@Path("count/{prefix: .*}")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Produces(TYPE_JSON_UTF8)
 	public Response count(@PathParam("prefix") @DefaultValue("") String parPrefix)
 	{
 		try
@@ -68,7 +70,7 @@ public class DishBaseRest
 			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../count/1ef0)");
 			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
-			int count = dishbaseService.count(parPrefix);
+			int count = dishbaseService.count(getUserId(), parPrefix);
 			String response = String.valueOf(count);
 			return Response.ok(response).build();
 		}
@@ -89,7 +91,7 @@ public class DishBaseRest
 
 	@GET
 	@Path("guid/{guid: .*}")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Produces(TYPE_JSON_UTF8)
 	public Response findById(@PathParam("guid") String parId)
 	{
 		try
@@ -100,7 +102,7 @@ public class DishBaseRest
 			// Prefix form
 			if (parId.length() <= DataSource.ID_PREFIX_SIZE)
 			{
-				List<Versioned<DishItem>> items = dishbaseService.findByIdPrefix(parId);
+				List<Versioned<DishItem>> items = dishbaseService.findByIdPrefix(getUserId(), parId);
 
 				String response = serializer.writeAll(items);
 				return Response.ok(response).build();
@@ -108,7 +110,7 @@ public class DishBaseRest
 			else
 			// Full form
 			{
-				Versioned<DishItem> item = dishbaseService.findById(parId);
+				Versioned<DishItem> item = dishbaseService.findById(getUserId(), parId);
 
 				if (item != null)
 				{
@@ -143,7 +145,7 @@ public class DishBaseRest
 
 	@GET
 	@Path("all")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Produces(TYPE_JSON_UTF8)
 	public Response findAll(@QueryParam("show_rem") @DefaultValue("false") String parShowRem)
 	{
 		try
@@ -152,7 +154,7 @@ public class DishBaseRest
 
 			boolean includeRemoved = Boolean.valueOf(parShowRem);
 
-			List<Versioned<DishItem>> items = dishbaseService.findAll(includeRemoved);
+			List<Versioned<DishItem>> items = dishbaseService.findAll(getUserId(), includeRemoved);
 			String response = serializer.writeAll(items);
 			return Response.ok(response).build();
 		}
@@ -173,7 +175,7 @@ public class DishBaseRest
 
 	@GET
 	@Path("search")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Produces(TYPE_JSON_UTF8)
 	public Response findAny(@QueryParam("q") String filter)
 	{
 		try
@@ -181,7 +183,7 @@ public class DishBaseRest
 			Utils.checkNotNull(filter, "Missing parameter: q");
 			Utils.checkSize(filter, 256);
 
-			List<Versioned<DishItem>> items = dishbaseService.findAny(filter);
+			List<Versioned<DishItem>> items = dishbaseService.findAny(getUserId(), filter);
 			String response = serializer.writeAll(items);
 			return Response.ok(response).build();
 		}
@@ -202,7 +204,7 @@ public class DishBaseRest
 
 	@GET
 	@Path("changes")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Produces(TYPE_JSON_UTF8)
 	public Response findChanged(@QueryParam("since") String parTime)
 	{
 		try
@@ -211,7 +213,7 @@ public class DishBaseRest
 			Utils.checkSize(parTime, Utils.FORMAT_DATE_TIME.length());
 
 			Date since = Utils.parseTimeUTC(parTime);
-			List<Versioned<DishItem>> items = dishbaseService.findChanged(since);
+			List<Versioned<DishItem>> items = dishbaseService.findChanged(getUserId(), since);
 			String response = serializer.writeAll(items);
 			return Response.ok(response).build();
 		}
@@ -232,7 +234,7 @@ public class DishBaseRest
 
 	@GET
 	@Path("hash/{prefix: .*}")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Produces(TYPE_JSON_UTF8)
 	public Response getHash(@PathParam("prefix") @DefaultValue("") String parPrefix)
 	{
 		try
@@ -240,7 +242,7 @@ public class DishBaseRest
 			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../hash/1ef0)");
 			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
-			MerkleTree hashTree = dishbaseService.getHashTree();
+			MerkleTree hashTree = dishbaseService.getHashTree(getUserId());
 			String s = hashTree.getHash(parPrefix);
 			return Response.ok(s != null ? s : "").build();
 		}
@@ -261,7 +263,7 @@ public class DishBaseRest
 
 	@GET
 	@Path("hashes/{prefix: .*}")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Produces(TYPE_JSON_UTF8)
 	public Response getHashChildren(@PathParam("prefix") @DefaultValue("") String parPrefix)
 	{
 		try
@@ -269,7 +271,7 @@ public class DishBaseRest
 			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../hashes/1ef0)");
 			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
-			MerkleTree hashTree = dishbaseService.getHashTree();
+			MerkleTree hashTree = dishbaseService.getHashTree(getUserId());
 			Map<String, String> map = hashTree.getHashChildren(parPrefix);
 			String response = serializerMap.write(map);
 			return Response.ok(response).build();
@@ -290,7 +292,7 @@ public class DishBaseRest
 	}
 
 	@PUT
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Produces(TYPE_JSON_UTF8)
 	public Response save(@FormParam("items") String parItems)
 	{
 		try
@@ -298,7 +300,7 @@ public class DishBaseRest
 			Utils.checkNotNull(parItems, "Missing parameter: items");
 
 			List<Versioned<DishItem>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
-			dishbaseService.save(items);
+			dishbaseService.save(getUserId(), items);
 
 			return Response.ok("Saved OK").build();
 		}

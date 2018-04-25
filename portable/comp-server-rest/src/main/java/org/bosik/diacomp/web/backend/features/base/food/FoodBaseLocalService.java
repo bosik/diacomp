@@ -57,7 +57,7 @@ import java.util.TreeMap;
 
 @Service
 // @Profile("real")
-public class FoodBaseLocalService implements FoodBaseService, Exportable
+public class FoodBaseLocalService
 {
 	// Foodbase table
 	private static final String TABLE_FOODBASE            = "foodbase2";
@@ -76,15 +76,7 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 	private static final Serializer<FoodItem> serializer = new SerializerAdapter<>(parser);
 
 	@Autowired
-	private UserInfoService userInfoService;
-
-	@Autowired
 	private CachedHashTree cachedHashTree;
-
-	private int getCurrentUserId()
-	{
-		return userInfoService.getCurrentUserId();
-	}
 
 	private static List<Versioned<FoodItem>> parseItems(ResultSet resultSet, int limit) throws SQLException
 	{
@@ -131,17 +123,13 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 		return parseItems(resultSet, 0);
 	}
 
-	@Override
-	public void add(Versioned<FoodItem> item) throws DuplicateException, PersistenceException
+	public void add(int userId, Versioned<FoodItem> item) throws DuplicateException, PersistenceException
 	{
-		save(Collections.singletonList(item));
+		save(userId, Collections.singletonList(item));
 	}
 
-	@Override
-	public int count(String prefix)
+	public int count(int userId, String prefix)
 	{
-		int userId = getCurrentUserId();
-
 		if (prefix == null)
 		{
 			throw new IllegalArgumentException("ID prefix is null");
@@ -176,10 +164,9 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 		}
 	}
 
-	@Override
-	public void delete(String id)
+	public void delete(int userId, String id)
 	{
-		Versioned<FoodItem> item = findById(id);
+		Versioned<FoodItem> item = findById(userId, id);
 
 		if (item == null)
 		{
@@ -193,16 +180,13 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 
 		item.setDeleted(true);
 		item.modified();
-		save(Collections.singletonList(item));
+		save(userId, Collections.singletonList(item));
 	}
 
-	@Override
-	public List<Versioned<FoodItem>> findAll(boolean includeRemoved)
+	public List<Versioned<FoodItem>> findAll(int userId, boolean includeRemoved)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			String where;
 			String[] whereArgs;
@@ -235,13 +219,10 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 		}
 	}
 
-	@Override
-	public List<Versioned<FoodItem>> findAny(String filter)
+	public List<Versioned<FoodItem>> findAny(int userId, String filter)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?) AND (%s = ?) AND (%s LIKE ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_DELETED,
 					COLUMN_FOODBASE_NAMECACHE);
@@ -263,13 +244,10 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 		}
 	}
 
-	@Override
-	public Versioned<FoodItem> findById(String id)
+	public Versioned<FoodItem> findById(int userId, String id)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_GUID);
 			final String[] whereArgs = { String.valueOf(userId), id };
@@ -291,11 +269,8 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 		}
 	}
 
-	@Override
-	public List<Versioned<FoodItem>> findByIdPrefix(String prefix)
+	public List<Versioned<FoodItem>> findByIdPrefix(int userId, String prefix)
 	{
-		int userId = getCurrentUserId();
-
 		try
 		{
 			final String[] select = null; // all
@@ -318,13 +293,10 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 		}
 	}
 
-	@Override
-	public List<Versioned<FoodItem>> findChanged(Date since)
+	public List<Versioned<FoodItem>> findChanged(int userId, Date since)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?) AND (%s >= ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_TIMESTAMP);
 			final String[] whereArgs = { String.valueOf(userId), Utils.formatTimeUTC(since) };
@@ -345,13 +317,10 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 		}
 	}
 
-	@Override
-	public Versioned<FoodItem> findOne(String exactName)
+	public Versioned<FoodItem> findOne(int userId, String exactName)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			final String where = String
 					.format("(%s = ?) AND (%s = ?) AND (%s = ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_DELETED, COLUMN_FOODBASE_NAMECACHE);
@@ -415,11 +384,8 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 		}
 	}
 
-	@Override
-	public MerkleTree getHashTree()
+	public MerkleTree getHashTree(int userId)
 	{
-		int userId = getCurrentUserId();
-
 		MerkleTree tree = cachedHashTree.getFoodTree(userId);
 		if (tree == null)
 		{
@@ -430,11 +396,8 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 		return tree;
 	}
 
-	@Override
-	public void save(List<Versioned<FoodItem>> items)
+	public void save(int userId, List<Versioned<FoodItem>> items)
 	{
-		int userId = getCurrentUserId();
-
 		try
 		{
 			for (Versioned<FoodItem> item : items)
@@ -501,13 +464,10 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 		});
 	}
 
-	@Override
-	public String exportData()
+	public String exportData(int userId)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?)", COLUMN_FOODBASE_USER);
 			final String[] whereArgs = { String.valueOf(userId) };
@@ -556,12 +516,10 @@ public class FoodBaseLocalService implements FoodBaseService, Exportable
 		}
 	}
 
-	public String exportPlain()
+	public String exportPlain(int userId)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?)", COLUMN_FOODBASE_USER);
 			final String[] whereArgs = { String.valueOf(userId) };
