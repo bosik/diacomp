@@ -34,6 +34,29 @@ type
 
   TBSPointList = array of TBSPoint;
 
+  TColoredPoint = record
+    Time, Value: Real;
+    Color: TColor;
+  end;
+
+  TChartData = record
+    // inputs
+
+    Curve: TBSPointList;
+    CurveColor: TColor;
+    Points: array of TColoredPoint;
+
+    MarginTop: integer;
+    MarginRight: integer;
+    TextMarginX, TextMarginY: integer;
+    Width, Height: integer;
+
+    // devirates
+    MarginBottom: integer;
+    MarginLeft: integer;
+    MaxValue: real;
+  end;
+
   procedure DrawBS(Recs: TRecordList; BaseDate: TDateTime; Image: TImage; Mini: boolean);
   procedure DrawBS_Int(const Base: TDiary; FromDay, ToDay: integer; Image: TImage);
 
@@ -68,210 +91,38 @@ implementation
 
 uses SettingsINI;
 
-{======================================================================================================================}
-procedure DrawBS(Recs: TRecordList; BaseDate: TDateTime; Image: TImage; Mini: boolean);
-{======================================================================================================================}
-const
-  TX: array[0..6] of integer = (1, 2, 3, 4, 6, 12, 24);
-var
-  MarginLeft, MarginTop, MarginRight, MarginBottom: integer;
-  GraphWidth, GraphHeight: integer;
-  TextMarginX, TextMarginY: integer;
-
-  w, h: integer;
-  max: real;
-  TrottleX: integer;
-  TrottleY: integer;
-
-  BS_PREPRAND_LOW: Real;
-  BS_PREPRAND_HIGH: Real;
-  BS_POSTPRAND_HIGH: Real;
-
-  function CalcX(x: Real): integer;
+  function CalcX(Chart: TChartData; x: Real): integer;
   begin
-    Result := MarginLeft + Round(x / HourPerDay * GraphWidth);
+    Result := Chart.MarginLeft + Round(x / HourPerDay * (Chart.Width - Chart.MarginLeft - Chart.MarginRight));
   end;
 
-  function CalcY(y: Real): integer;
+  function CalcY(Chart: TChartData; y: Real): integer;
   begin
-    Result := MarginTop + GraphHeight - Round(y / max * GraphHeight);
+    Result := Chart.MarginTop + Round((1 - y / Chart.MaxValue) * (Chart.Height - Chart.MarginTop - Chart.MarginBottom));
   end;
 
-  function FetchBloodRecords(Recs: TRecordList): TBSPointList;
+  function InterpolateQubic(Data: TBSPointList; DeltaX: Real): TBSPointList;
+
+    procedure Add(var List: TBSPointList; Time, Value: Real);
+    begin
+      SetLength(List, Length(List) + 1);
+      List[High(List)].Time := Time;
+      List[High(List)].Value := Value;
+    end;
+
   var
     i: integer;
+    x1, y1, x2, y2, dy1, dy2: Real;
+    a, b, c, d: Real;
   begin
-    SetLength(Result, 0);
-
-    for i := 0 to High(Recs) do
-    if (recs[i].RecType = TBloodRecord) then
+    if (Length(Data) < 2) then
     begin
-      SetLength(Result, Length(Result) + 1);
-      Result[High(Result)].Time := (Recs[i].Time - BaseDate) * HoursPerDay;
-      Result[High(Result)].Value := (Recs[i] as TBloodRecord).Value;
-    end;
-  end;
-
-  function FindMax(Data: TBSPointList; InitMax: Real = 0.0): real;
-  var
-    i: integer;
-  begin
-    Result := InitMax;
-
-    for i := 0 to High(Data) do
-    if (Data[i].Value > Result) then
-      Result := Data[i].Value;
-  end;
-
-var
-  i: integer;
-  cx, cy: integer;
-  Data: TBSPointList;
-
-  x1, y1, x2, y2, dy1, dy2: Real;
-  a, b, c, d: Real;
-begin
-  Data := FetchBloodRecords(Recs);
-  max := FindMax(Data, 8.0) * 1.2;
-
-  BS_PREPRAND_LOW   := Value['BS1'];
-  BS_PREPRAND_HIGH  := Value['BS2'];
-  BS_POSTPRAND_HIGH := Value['BS3'];
-
-  with Image.Picture.Bitmap.Canvas do
-  begin
-    w := Image.Width;
-    h := Image.Height;
-    Image.Picture.Bitmap.Width := w;
-    Image.Picture.Bitmap.Height := h;
-
-    { очистка }
-    Brush.Color := COLOR_BACK;
-    FillRect(Image.ClientRect);
-
-    if (Mini) then
-    begin
-      MarginTop := 5;
-      MarginRight := 10;
-      TextMarginX := 5;
-      TextMarginY := 5;
-    end else
-    begin
-      MarginTop := 20;
-      MarginRight := 20;
-      TextMarginX := 10;
-      TextMarginY := 10;
-    end;
-
-    MarginLeft := 2 * TextMarginX + TextWidth(IntToStr(Round(Max)));
-    MarginBottom := 2 * TextMarginY + TextHeight('123');
-
-    GraphWidth := w - MarginLeft - MarginRight;
-    GraphHeight := h - MarginTop - MarginBottom;
-
-    { зелёная зона }
-    Brush.Color := COLOR_BS_NORMAL;
-    FillRect(Rect(CalcX(0), CalcY(BS_PREPRAND_LOW), CalcX(HourPerDay), CalcY(BS_PREPRAND_HIGH)));
-
-    { красная зона }
-    Brush.Color := COLOR_BS_HIGH;
-    FillRect(Rect(CalcX(0), CalcY(BS_PREPRAND_HIGH), CalcX(HourPerDay), CalcY(BS_POSTPRAND_HIGH)));
-
-    { Шкала }
-    Brush.Color := COLOR_BACK;
-    Pen.Color := COLOR_AXIS_SUB;
-    Pen.Width := 1;
-    Font.Style := [];
-    Font.Color := COLOR_TITLES;
-
-    if Mini then
-    begin
-      Pen.Style := psSolid;
-      Font.Size := 5;
-    end else
-    begin
-      Pen.Style := psDot;
-      Font.Size := 8;
-    end;
-
-    for i := 0 to High(TX) do
-    begin
-      TrottleX := TX[i];
-
-      if (CalcX(TrottleX) - CalcX(0) >= 1.5 * TextWidth('24')) then
-        break;
-    end;
-
-    TrottleY := 1;
-    while ((abs(CalcY(0) - CalcY(TrottleY)) < TextHeight('123')) or (Max / TrottleY > 20)) do
-    begin
-      if ((abs(CalcY(0) - CalcY(TrottleY * 2))  >= TextHeight('123')) and (Max / (TrottleY * 2) <= 20)) then
-      begin
-        TrottleY := TrottleY * 2;
-        break;
-      end;
-
-      if ((abs(CalcY(0) - CalcY(TrottleY * 5)) >= TextHeight('123')) and (Max / (TrottleY * 5) <= 20)) then
-      begin
-        TrottleY := TrottleY * 5;
-        break;
-      end;
-
-      TrottleY := TrottleY * 10;
-    end;
-
-    { Шкала Y }
-    for i := 1 to Round(Max) do
-    begin
-      if ((i mod TrottleY) = 0) then
-      begin
-        MoveTo(CalcX(0), CalcY(i));
-        LineTo(CalcX(HourPerDay), CalcY(i));
-
-        TextOut(
-          MarginLeft - TextMarginX - TextWidth(IntToStr(i)),
-          CalcY(i) - (TextHeight('0') div 2),
-          IntToStr(i)
-        );
-      end;  
-    end;
-
-    { Шкала X }
-    for i := 0 to HourPerDay do
-    if ((i mod TrottleX) = 0) then
-    begin
-      MoveTo(CalcX(i), CalcY(0));
-      LineTo(CalcX(i), CalcY(Max));
-
-      TextOut(
-        CalcX(i) - (TextHeight(IntToStr(i)) div 2),
-        MarginTop + GraphHeight + TextMarginY,
-        IntToStr(i)
-      );
-    end;
-
-    { оси }
-    Pen.Style := psSolid;
-    Pen.Color := COLOR_AXIS_MAIN;
-    MoveTo(CalcX(0), CalcY(Max));
-    LineTo(CalcX(0), CalcY(0));
-    LineTo(CalcX(HourPerDay), CalcY(0));
-
-    if (Length(Data) = 0) then
-    begin
+      Result := Data;
       Exit;
     end;
 
-    { кривая }
-    Pen.Width := 1;
-    if Mini then
-      Pen.Style := psSolid
-    else
-      Pen.Style := psDot;
+    SetLength(Result, 0);
 
-    Pen.Color := COLOR_BS_CURVE;
-
-    { основная линия }
     for i := 0 to High(Data) - 1 do
     begin
       x1 := Data[i].Time;
@@ -294,33 +145,251 @@ begin
 		  c := dy1 - 3 * x1 * x1 * a - 2 * x1 * b;
 		  d := y1 - x1 * x1 * x1 * a - x1 * x1 * b - x1 * c;
 
-      MoveTo(CalcX(Data[i].Time), CalcY(Data[i].Value));
+      Add(Result, Data[i].Time, Data[i].Value);
 
       while (x1 < x2) do
       begin
         y1 := a * x1 * x1 * x1 + b * x1 * x1 + c * x1 + d;
-        LineTo(CalcX(x1), CalcY(y1));
+        Add(Result, x1, y1);
         x1 := x1 + 0.2;
       end;
 
-      LineTo(CalcX(Data[i + 1].Time), CalcY(Data[i + 1].Value));
+      Add(Result, Data[i + 1].Time, Data[i + 1].Value);
+    end;
+  end;
 
+  function FindMax(Data: TBSPointList; InitMax: Real = 0.0): real;
+  var
+    i: integer;
+  begin
+    Result := InitMax;
+
+    for i := 0 to High(Data) do
+    if (Data[i].Value > Result) then
+      Result := Data[i].Value;
+  end;
+
+procedure DrawChart(Image: TImage; Chart: TChartData; Mini: boolean);
+const
+  TX: array[0..6] of integer = (1, 2, 3, 4, 6, 12, 24);
+  MAX_Y_LABELS = 20;
+var
+  LabelWidth, LabelHeight: integer;
+  ExtendedLabelWidth, ExtendedLabelHeight: Real;
+  TrottleX: integer;
+  TrottleY: integer;
+
+  BS_PREPRAND_LOW: Real;
+  BS_PREPRAND_HIGH: Real;
+  BS_POSTPRAND_HIGH: Real;
+
+  cx, cy: integer;
+  i: integer;
+begin
+  Chart.MaxValue := FindMax(Chart.Curve, 8.0) * 1.2;
+  
+  BS_PREPRAND_LOW   := Value['BS1'];
+  BS_PREPRAND_HIGH  := Value['BS2'];
+  BS_POSTPRAND_HIGH := Value['BS3'];
+
+  with Image.Picture.Bitmap.Canvas do
+  begin
+    Image.Picture.Bitmap.Width := Chart.Width;
+    Image.Picture.Bitmap.Height := Chart.Height;
+
+    { очистка }
+    Brush.Color := COLOR_BACK;
+    FillRect(Image.ClientRect);
+
+    Chart.MarginLeft := 2 * Chart.TextMarginX + TextWidth(IntToStr(Round(Chart.MaxValue)));
+    Chart.MarginBottom := 2 * Chart.TextMarginY + TextHeight('123');
+
+    { зелёная зона }
+    Brush.Color := COLOR_BS_NORMAL;
+    FillRect(Rect(CalcX(Chart, 0), CalcY(Chart, BS_PREPRAND_LOW), CalcX(Chart, HourPerDay), CalcY(Chart, BS_PREPRAND_HIGH)));
+
+    { красная зона }
+    Brush.Color := COLOR_BS_HIGH;
+    FillRect(Rect(CalcX(Chart, 0), CalcY(Chart, BS_PREPRAND_HIGH), CalcX(Chart, HourPerDay), CalcY(Chart, BS_POSTPRAND_HIGH)));
+
+    { Scale }
+
+    Brush.Color := COLOR_BACK;
+    Pen.Color := COLOR_AXIS_SUB;
+    Pen.Width := 1;
+    Font.Style := [];
+    Font.Color := COLOR_TITLES;
+
+    if Mini then
+    begin
+      Pen.Style := psSolid;
+      Font.Size := 5;
+    end else
+    begin
+      Pen.Style := psDot;
+      Font.Size := 8;
+    end;
+
+    LabelWidth := TextWidth('24');
+    ExtendedLabelWidth := 1.5 * LabelWidth;
+    LabelHeight := TextHeight('123');
+    ExtendedLabelHeight := LabelHeight;
+
+    for i := 0 to High(TX) do
+    begin
+      TrottleX := TX[i];
+
+      if (CalcX(Chart, TrottleX) - CalcX(Chart, 0) >= ExtendedLabelWidth) then
+        break;
+    end;
+
+    TrottleY := 1;
+    while ((abs(CalcY(Chart, 0) - CalcY(Chart, TrottleY)) < ExtendedLabelHeight) or (Chart.MaxValue / TrottleY > MAX_Y_LABELS)) do
+    begin
+      if ((abs(CalcY(Chart, 0) - CalcY(Chart, TrottleY * 2))  >= ExtendedLabelHeight) and (Chart.MaxValue / (TrottleY * 2) <= MAX_Y_LABELS)) then
+      begin
+        TrottleY := TrottleY * 2;
+        break;
+      end;
+
+      if ((abs(CalcY(Chart, 0) - CalcY(Chart, TrottleY * 5)) >= ExtendedLabelHeight) and (Chart.MaxValue / (TrottleY * 5) <= MAX_Y_LABELS)) then
+      begin
+        TrottleY := TrottleY * 5;
+        break;
+      end;
+
+      TrottleY := TrottleY * 10;
+    end;
+
+    { Шкала Y }
+    for i := 1 to Round(Chart.MaxValue) do
+    begin
+      if ((i mod TrottleY) = 0) then
+      begin
+        MoveTo(CalcX(Chart, 0), CalcY(Chart, i));
+        LineTo(CalcX(Chart, HourPerDay), CalcY(Chart, i));
+
+        TextOut(
+          Chart.MarginLeft - Chart.TextMarginX - TextWidth(IntToStr(i)),
+          CalcY(Chart, i) - (LabelHeight div 2),
+          IntToStr(i)
+        );
+      end;  
+    end;
+
+    { Шкала X }
+    for i := 0 to HourPerDay do
+    if ((i mod TrottleX) = 0) then
+    begin
+      MoveTo(CalcX(Chart, i), CalcY(Chart, 0));
+      LineTo(CalcX(Chart, i), CalcY(Chart, Chart.MaxValue));
+
+      TextOut(
+        CalcX(Chart, i) - (TextHeight(IntToStr(i)) div 2),
+        Chart.MarginTop + (Chart.Height - Chart.MarginTop - Chart.MarginBottom) + Chart.TextMarginY,
+        IntToStr(i)
+      );
+    end;
+
+    { оси }
+    Pen.Style := psSolid;
+    Pen.Color := COLOR_AXIS_MAIN;
+    MoveTo(CalcX(Chart, 0), CalcY(Chart, Chart.MaxValue));
+    LineTo(CalcX(Chart, 0), CalcY(Chart, 0));
+    LineTo(CalcX(Chart, HourPerDay), CalcY(Chart, 0));
+
+    if (Length(Chart.Curve) > 0) then
+    begin
+      { кривая }
+      Pen.Width := 1;
+      if Mini then
+        Pen.Style := psSolid
+      else
+        Pen.Style := psDot;
+
+      Pen.Color := COLOR_BS_CURVE;
+
+      { основная линия }
+
+      MoveTo(CalcX(Chart, Chart.Curve[0].Time), CalcY(Chart, Chart.Curve[0].Value));
+      for i := 0 to High(Chart.Curve) do
+      begin
+        LineTo(CalcX(Chart, Chart.Curve[i].Time), CalcY(Chart, Chart.Curve[i].Value));
+      end;
     end;
 
     { точки }
     if (not mini) then
     begin
-      Brush.Color := COLOR_BS_CURVE;
-      Pen.Color := COLOR_BS_CURVE;
       Pen.Style := psSolid;
-      for i := Low(Data) to High(Data) do
+
+      for i := 0 to High(Chart.Points) do
       begin
-        cx := CalcX(Data[i].Time);
-        cy := CalcY(Data[i].Value);
+        Brush.Color := Chart.Points[i].Color;
+        Pen.Color := Chart.Points[i].Color;
+
+        cx := CalcX(Chart, Chart.Points[i].Time);
+        cy := CalcY(Chart, Chart.Points[i].Value);
         Ellipse(cx - eSize, cy - eSize, cx + eSize, cy + eSize);
       end;
     end;
   end;
+end;
+
+{======================================================================================================================}
+procedure DrawBS(Recs: TRecordList; BaseDate: TDateTime; Image: TImage; Mini: boolean);
+{======================================================================================================================}
+
+  function FetchBloodRecords(Recs: TRecordList; BaseDate: TDateTime): TBSPointList;
+  var
+    i: integer;
+  begin
+    SetLength(Result, 0);
+
+    for i := 0 to High(Recs) do
+    if (recs[i].RecType = TBloodRecord) then
+    begin
+      SetLength(Result, Length(Result) + 1);
+      Result[High(Result)].Time := (Recs[i].Time - BaseDate) * HoursPerDay;
+      Result[High(Result)].Value := (Recs[i] as TBloodRecord).Value;
+    end;
+  end;
+
+var
+  Chart: TChartData;
+  Data: TBSPointList;
+
+  i: integer;
+begin
+  Data := FetchBloodRecords(Recs, BaseDate);
+
+  Chart.Curve := InterpolateQubic(Data, 0.2);
+  Chart.Width := Image.Width;
+  Chart.Height := Image.Height;
+
+  SetLength(Chart.Points, Length(Data));
+  for i := 0 to High(Data) do
+  begin
+    Chart.Points[i].Time := Data[i].Time;
+    Chart.Points[i].Value := Data[i].Value;
+    Chart.Points[i].Color := COLOR_BS_CURVE;
+  end;
+
+  if (Mini) then
+  begin
+    Chart.MarginTop := 5;
+    Chart.MarginRight := 10;
+    Chart.TextMarginX := 5;
+    Chart.TextMarginY := 5;
+  end else
+  begin
+    Chart.MarginTop := 20;
+    Chart.MarginRight := 20;
+    Chart.TextMarginX := 10;
+    Chart.TextMarginY := 10;
+  end;
+
+  DrawChart(Image, Chart, Mini);
 end;
 
 {======================================================================================================================}
@@ -781,7 +850,7 @@ var
     Acc := 1;
     Wd := 0;
     for n := High(FAcc) downto 1 do
-    if Trunc(Max / FAcc[n]) * LabelHeight <= Image.Height - 2 * TopBord then
+    if Trunc(Max / FAcc[n]) * LabelHeight * 2 <= Image.Height - 2 * TopBord then
     begin
       Acc := FAcc[n];
       Wd := FWd[n];
@@ -858,8 +927,7 @@ begin
       LineTo(Image.Width - LeftBord, Image.Height - TopBord - Round(i * Acc * ky));
       TextOut(
         4,
-        Image.Height - TopBord - Round(i * Acc * ky)-
-        (TextHeight('123') div 2),
+        Image.Height - TopBord - Round(i * Acc * ky) - (TextHeight('123') div 2),
         Format('%.' + IntToStr(Wd) + 'f', [i * Acc])
       );
     end;
