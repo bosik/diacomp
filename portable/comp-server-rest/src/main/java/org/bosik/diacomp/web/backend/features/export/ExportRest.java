@@ -26,6 +26,7 @@ import org.bosik.diacomp.web.backend.features.base.dish.DishBaseLocalService;
 import org.bosik.diacomp.web.backend.features.base.food.FoodBaseLocalService;
 import org.bosik.diacomp.web.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.web.backend.features.preferences.PreferencesLocalService;
+import org.bosik.diacomp.web.backend.features.user.auth.UserRest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +40,7 @@ import java.util.List;
 
 @Service
 @Path("export")
-public class ExportRest
+public class ExportRest extends UserRest
 {
 	@Autowired
 	private DiaryLocalService diaryService;
@@ -60,8 +61,10 @@ public class ExportRest
 	{
 		try
 		{
+			final int userId = getUserId();
+
 			List<Entry> entries = new ArrayList<>();
-			entries.add(new Entry(ExportAPI.JSON_DIARY, diaryService.exportData().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.JSON_DIARY, diaryService.exportData(userId).getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.JSON_FOODBASE, foodbaseService.exportData().getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.JSON_DISHBASE, dishbaseService.exportData().getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.JSON_PREFERENCES, prefService.exportData().getBytes("UTF-8")));
@@ -86,8 +89,10 @@ public class ExportRest
 	{
 		try
 		{
+			final int userId = getUserId();
+
 			List<Entry> entries = new ArrayList<>();
-			entries.add(new Entry(ExportAPI.PLAIN_DIARY, diaryService.exportPlain().getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.PLAIN_DIARY, diaryService.exportPlain(userId).getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.PLAIN_FOODBASE, foodbaseService.exportPlain().getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.PLAIN_DISHBASE, dishbaseService.exportPlain().getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.PLAIN_PREFERENCES, prefService.exportPlain().getBytes("UTF-8")));

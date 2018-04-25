@@ -23,18 +23,15 @@ import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.ObjectService;
-import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
-import org.bosik.diacomp.core.services.transfer.Exportable;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.CachedHashTree;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
-import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
@@ -55,7 +52,7 @@ import java.util.TreeMap;
 
 @Service
 // @Profile("real")
-public class DiaryLocalService implements DiaryService, Exportable
+public class DiaryLocalService
 {
 	// Diary table
 	private static final String TABLE_DIARY            = "diary2";
@@ -74,15 +71,7 @@ public class DiaryLocalService implements DiaryService, Exportable
 	private final Serializer<DiaryRecord> serializer = new SerializerAdapter<>(parser);
 
 	@Autowired
-	private UserInfoService userInfoService;
-
-	@Autowired
 	private CachedHashTree cachedHashTree;
-
-	private int getCurrentUserId()
-	{
-		return userInfoService.getCurrentUserId();
-	}
 
 	private List<Versioned<DiaryRecord>> parseItems(ResultSet resultSet, int limit) throws SQLException
 	{
@@ -142,11 +131,8 @@ public class DiaryLocalService implements DiaryService, Exportable
 		}
 	}
 
-	@Override
-	public void add(Versioned<DiaryRecord> item) throws DuplicateException, PersistenceException
+	public void add(int userId, Versioned<DiaryRecord> item) throws DuplicateException, PersistenceException
 	{
-		int userId = getCurrentUserId();
-
 		try
 		{
 			if (!verify(item))
@@ -169,11 +155,8 @@ public class DiaryLocalService implements DiaryService, Exportable
 		}
 	}
 
-	@Override
-	public int count(String prefix)
+	public int count(int userId, String prefix)
 	{
-		int userId = getCurrentUserId();
-
 		if (prefix == null)
 		{
 			throw new IllegalArgumentException("ID prefix is null");
@@ -209,10 +192,9 @@ public class DiaryLocalService implements DiaryService, Exportable
 		}
 	}
 
-	@Override
-	public void delete(String id)
+	public void delete(int userId, String id)
 	{
-		Versioned<DiaryRecord> item = findById(id);
+		Versioned<DiaryRecord> item = findById(userId, id);
 
 		if (item == null)
 		{
@@ -226,14 +208,11 @@ public class DiaryLocalService implements DiaryService, Exportable
 
 		item.setDeleted(true);
 		item.modified();
-		save(Collections.singletonList(item));
+		save(userId, Collections.singletonList(item));
 	}
 
-	@Override
-	public Versioned<DiaryRecord> findById(String id)
+	public Versioned<DiaryRecord> findById(int userId, String id)
 	{
-		int userId = getCurrentUserId();
-
 		try
 		{
 			final String[] select = null; // all
@@ -257,11 +236,8 @@ public class DiaryLocalService implements DiaryService, Exportable
 		}
 	}
 
-	@Override
-	public List<Versioned<DiaryRecord>> findByIdPrefix(String prefix)
+	public List<Versioned<DiaryRecord>> findByIdPrefix(int userId, String prefix)
 	{
-		int userId = getCurrentUserId();
-
 		try
 		{
 			final String[] select = null; // all
@@ -284,13 +260,10 @@ public class DiaryLocalService implements DiaryService, Exportable
 		}
 	}
 
-	@Override
-	public List<Versioned<DiaryRecord>> findChanged(Date time)
+	public List<Versioned<DiaryRecord>> findChanged(int userId, Date time)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?) AND (%s >= ?)", COLUMN_DIARY_USER, COLUMN_DIARY_TIMESTAMP);
 			final String[] whereArgs = { String.valueOf(userId), Utils.formatTimeUTC(time) };
@@ -311,13 +284,10 @@ public class DiaryLocalService implements DiaryService, Exportable
 		}
 	}
 
-	@Override
-	public List<Versioned<DiaryRecord>> findPeriod(Date startTime, Date endTime, boolean includeRemoved)
+	public List<Versioned<DiaryRecord>> findPeriod(int userId, Date startTime, Date endTime, boolean includeRemoved)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 
 			String where;
@@ -354,11 +324,8 @@ public class DiaryLocalService implements DiaryService, Exportable
 		}
 	}
 
-	@Override
-	public MerkleTree getHashTree()
+	public MerkleTree getHashTree(int userId)
 	{
-		int userId = getCurrentUserId();
-
 		MerkleTree tree = cachedHashTree.getDiaryTree(userId);
 		if (tree == null)
 		{
@@ -369,11 +336,8 @@ public class DiaryLocalService implements DiaryService, Exportable
 		return tree;
 	}
 
-	@Override
-	public void save(List<Versioned<DiaryRecord>> records)
+	public void save(int userId, List<Versioned<DiaryRecord>> records)
 	{
-		int userId = getCurrentUserId();
-
 		try
 		{
 			for (Versioned<DiaryRecord> item : records)
@@ -495,13 +459,10 @@ public class DiaryLocalService implements DiaryService, Exportable
 		});
 	}
 
-	@Override
-	public String exportData()
+	public String exportData(int userId)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?)", COLUMN_DIARY_USER);
 			final String[] whereArgs = { String.valueOf(userId) };
@@ -550,12 +511,10 @@ public class DiaryLocalService implements DiaryService, Exportable
 		}
 	}
 
-	public String exportPlain()
+	public String exportPlain(int userId)
 	{
 		try
 		{
-			int userId = getCurrentUserId();
-
 			final String[] select = null; // all
 			final String where = String.format("(%s = ?)", COLUMN_DIARY_USER);
 			final String[] whereArgs = { String.valueOf(userId) };

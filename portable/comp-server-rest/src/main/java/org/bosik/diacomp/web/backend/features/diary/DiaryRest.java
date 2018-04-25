@@ -26,11 +26,11 @@ import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.ObjectService;
-import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.UserLogger;
+import org.bosik.diacomp.web.backend.features.user.auth.UserRest;
 import org.bosik.merklesync.DataSource;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
@@ -55,10 +55,13 @@ import java.util.Map;
 
 @Service
 @Path("diary/")
-public class DiaryRest
+public class DiaryRest extends UserRest
 {
+	private static final String TYPE_JSON_UTF8    = MediaType.APPLICATION_JSON + ";charset=utf-8";
+	private static final int    MAX_DATETIME_SIZE = Utils.FORMAT_DATE_TIME.length();
+
 	@Autowired
-	private DiaryService diaryService;
+	private DiaryLocalService diaryService;
 
 	@Autowired
 	private UserLogger log;
@@ -68,11 +71,9 @@ public class DiaryRest
 	private final Serializer<Versioned<DiaryRecord>> serializer      = new SerializerAdapter<>(parserVersioned);
 	private final Serializer<Map<String, String>>    serializerMap   = new SerializerMap();
 
-	private static final int MAX_DATETIME_SIZE = Utils.FORMAT_DATE_TIME.length();
-
 	@GET
 	@Path("count/{prefix: .*}")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Produces(TYPE_JSON_UTF8)
 	public Response count(@PathParam("prefix") @DefaultValue("") String parPrefix)
 	{
 		try
@@ -80,7 +81,7 @@ public class DiaryRest
 			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../count/1ef0)");
 			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
-			int count = diaryService.count(parPrefix);
+			int count = diaryService.count(getUserId(), parPrefix);
 			String response = String.valueOf(count);
 			return Response.ok(response).build();
 		}
@@ -112,7 +113,7 @@ public class DiaryRest
 			// Prefix form
 			if (parId.length() <= DataSource.ID_PREFIX_SIZE)
 			{
-				List<Versioned<DiaryRecord>> items = diaryService.findByIdPrefix(parId);
+				List<Versioned<DiaryRecord>> items = diaryService.findByIdPrefix(getUserId(), parId);
 
 				String response = serializer.writeAll(items);
 				return Response.ok(response).build();
@@ -120,7 +121,7 @@ public class DiaryRest
 			else
 			// Full form
 			{
-				Versioned<DiaryRecord> item = diaryService.findById(parId);
+				Versioned<DiaryRecord> item = diaryService.findById(getUserId(), parId);
 
 				if (item != null)
 				{
@@ -163,9 +164,9 @@ public class DiaryRest
 			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../hash/1ef0)");
 			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
-			MerkleTree hashTree = diaryService.getHashTree();
+			MerkleTree hashTree = diaryService.getHashTree(getUserId());
 			String s = hashTree.getHash(parPrefix);
-			String response = s != null ? s : "";
+			String response = (s != null) ? s : "";
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)
@@ -193,7 +194,7 @@ public class DiaryRest
 			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../hashes/1ef0)");
 			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
-			MerkleTree hashTree = diaryService.getHashTree();
+			MerkleTree hashTree = diaryService.getHashTree(getUserId());
 			Map<String, String> map = hashTree.getHashChildren(parPrefix);
 			String response = serializerMap.write(map);
 			return Response.ok(response).build();
@@ -234,7 +235,7 @@ public class DiaryRest
 				return Response.status(Status.BAD_REQUEST).entity(msg).build();
 			}
 
-			List<Versioned<DiaryRecord>> items = diaryService.findChanged(since);
+			List<Versioned<DiaryRecord>> items = diaryService.findChanged(getUserId(), since);
 			String response = serializer.writeAll(items);
 			return Response.ok(response).build();
 		}
@@ -255,7 +256,7 @@ public class DiaryRest
 
 	@GET
 	@Path("period")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+	@Produces(TYPE_JSON_UTF8)
 	public Response findPeriod(@QueryParam("start_time") String parStartTime, @QueryParam("end_time") String parEndTime,
 			@QueryParam("show_rem") @DefaultValue("false") String parShowRem)
 	{
@@ -290,8 +291,9 @@ public class DiaryRest
 
 			boolean includeRemoved = Boolean.valueOf(parShowRem);
 
-			List<Versioned<DiaryRecord>> items = diaryService.findPeriod(startTime, endTime, includeRemoved);
+			List<Versioned<DiaryRecord>> items = diaryService.findPeriod(getUserId(), startTime, endTime, includeRemoved);
 			String response = serializer.writeAll(items);
+
 			return Response.ok(response).build();
 		}
 		catch (NotAuthorizedException e)
@@ -324,7 +326,7 @@ public class DiaryRest
 
 			// FIXME: limit the maximum data size
 			List<Versioned<DiaryRecord>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
-			diaryService.save(items);
+			diaryService.save(getUserId(), items);
 
 			return Response.ok("Saved OK").build();
 		}

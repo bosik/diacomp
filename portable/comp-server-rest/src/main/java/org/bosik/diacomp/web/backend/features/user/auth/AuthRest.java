@@ -18,6 +18,8 @@
 package org.bosik.diacomp.web.backend.features.user.auth;
 
 import org.bosik.diacomp.core.rest.ResponseBuilder;
+import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -41,7 +43,7 @@ import javax.ws.rs.core.Response.Status;
 
 @Service
 @Path("auth/")
-public class AuthRest
+public class AuthRest extends UserRest
 {
 	public static final int API_CURRENT = 20;
 	public static final int API_LEGACY  = 19;
@@ -116,6 +118,125 @@ public class AuthRest
 		}
 	}
 
+	@POST
+	@Path("login/json")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response loginJsonCookie(String data)
+	{
+		try
+		{
+			// check if all params are presented
+
+			if (data == null || data.isEmpty())
+			{
+				return Response.status(Status.BAD_REQUEST).entity("Provide JSON body with credentials info").build();
+			}
+
+			if (data.length() > 512)
+			{
+				return Response.status(Status.BAD_REQUEST).entity("Credentials object is too big").build();
+			}
+
+			JSONObject json = new JSONObject(data);
+
+			final String KEY_USERNAME = "username";
+			final String KEY_PASSWORD = "password";
+
+			if (!json.has(KEY_USERNAME))
+			{
+				return Response.status(Status.BAD_REQUEST).entity("Credentials: missing field '" + KEY_USERNAME + "'").build();
+			}
+
+			if (!json.has(KEY_PASSWORD))
+			{
+				return Response.status(Status.BAD_REQUEST).entity("Credentials: missing field '" + KEY_PASSWORD + "'").build();
+			}
+
+			String username = json.getString(KEY_USERNAME);
+			String password = json.getString(KEY_PASSWORD);
+
+			// check credentials
+			Authentication authentication = authProvider.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+			SecurityContext context = SecurityContextHolder.getContext();
+			context.setAuthentication(authentication);
+
+			getSession().setAttribute("Login", authentication.getPrincipal()); // for Tomcat to show in "Guessed User name" nicely
+
+			// Do not pass any data in the body in order to store the same session-id
+			return Response.ok().build();
+		}
+		catch (AuthenticationException e)
+		{
+			// Do not reset session flag here: anyone can reset your session otherwise
+			String entity = ResponseBuilder.build(ResponseBuilder.CODE_BADCREDENTIALS, "Bad username/password");
+			return Response.status(Status.UNAUTHORIZED).entity(entity).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	//	@POST
+	//	@Path("login/json/token")
+	//	@Produces(MediaType.APPLICATION_JSON)
+	//	public Response loginJsonToken(String data)
+	//	{
+	//		try
+	//		{
+	//			// check if all params are presented
+	//
+	//			if (data == null || data.isEmpty())
+	//			{
+	//				return Response.status(Status.BAD_REQUEST).entity("Provide body with credentials info").build();
+	//			}
+	//
+	//			if (data.length() > 512)
+	//			{
+	//				return Response.status(Status.BAD_REQUEST).entity("Credentials object is too big").build();
+	//			}
+	//
+	//			JSONObject json = new JSONObject(data);
+	//
+	//			final String KEY_USERNAME = "username";
+	//			final String KEY_PASSWORD = "password";
+	//
+	//			if (!json.has(KEY_USERNAME))
+	//			{
+	//				return Response.status(Status.BAD_REQUEST).entity("Credentials: missing field 'username'").build();
+	//			}
+	//
+	//			if (!json.has(KEY_PASSWORD))
+	//			{
+	//				return Response.status(Status.BAD_REQUEST).entity("Credentials: missing field 'password'").build();
+	//			}
+	//
+	//			String username = json.getString(KEY_USERNAME);
+	//			String password = json.getString(KEY_PASSWORD);
+	//
+	//			// check credentials
+	//			String token = tokenService.createToken(username, password);
+	//
+	//			// build token
+	//			JSONObject response = new JSONObject();
+	//			response.put("token", token);
+	//
+	//			return Response.ok(response.toString()).build();
+	//		}
+	//		catch (AuthenticationException e)
+	//		{
+	//			// Do not reset session flag here: anyone can reset your session otherwise
+	//			String entity = ResponseBuilder.build(ResponseBuilder.CODE_BADCREDENTIALS, "Bad username/password");
+	//			return Response.status(Status.UNAUTHORIZED).entity(entity).build();
+	//		}
+	//		catch (Exception e)
+	//		{
+	//			e.printStackTrace();
+	//			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+	//		}
+	//	}
+
 	private static HttpSession getSession()
 	{
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
@@ -133,6 +254,27 @@ public class AuthRest
 			SecurityContextHolder.clearContext();
 			String entity = "Logged out OK";
 			return Response.ok(entity).build();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+		}
+	}
+
+	@GET
+	@Path("check")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response check()
+	{
+		try
+		{
+			getUserId();
+			return Response.ok("Authorized").build();
+		}
+		catch (AuthenticationException | NotAuthorizedException e)
+		{
+			return Response.status(Status.UNAUTHORIZED).entity("Unauthorized").build();
 		}
 		catch (Exception e)
 		{
