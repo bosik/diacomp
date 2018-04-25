@@ -36,6 +36,7 @@ import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesService;
+import org.bosik.diacomp.core.services.preferences.PreferencesServiceContract;
 import org.bosik.diacomp.core.services.transfer.Importable;
 import org.bosik.diacomp.core.utils.Utils;
 
@@ -45,7 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class PreferencesLocalService extends PreferencesService implements Importable
+public class PreferencesLocalService implements PreferencesService, Importable
 {
 	private static final String TAG = PreferencesLocalService.class.getSimpleName();
 
@@ -59,6 +60,12 @@ public class PreferencesLocalService extends PreferencesService implements Impor
 	{
 		this.context = context;
 		this.resolver = context.getContentResolver();
+	}
+
+	@Override
+	public String getHash()
+	{
+		return PreferencesServiceContract.getHash(getAll());
 	}
 
 	@Override

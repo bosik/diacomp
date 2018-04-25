@@ -18,8 +18,6 @@
  */
 package org.bosik.diacomp.android.backend.features.preferences.account;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
@@ -29,20 +27,23 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
-import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesService;
 
-public class PreferencesWebService extends PreferencesService
+import java.util.ArrayList;
+import java.util.List;
+
+public class PreferencesWebService implements PreferencesService
 {
 	// REST methods
-	private static final String							API_PREFERENCES			= "api/preferences/";
-	private static final String							API_PREFERENCES_HASH	= "api/preferences/hash";
-	private static final String							API_PREFERENCES_KEY		= "api/preferences/%s";
+	private static final String API_PREFERENCES      = "api/preferences/";
+	private static final String API_PREFERENCES_HASH = "api/preferences/hash";
+	private static final String API_PREFERENCES_KEY  = "api/preferences/%s";
 
-	private final WebClient								webClient;
-	private final Parser<PreferenceEntry<String>>		parser					= new ParserPreferenceEntry();
-	private final Serializer<PreferenceEntry<String>>	serializer				= new SerializerAdapter<>(parser);
+	private final WebClient webClient;
+	private final Parser<PreferenceEntry<String>>     parser     = new ParserPreferenceEntry();
+	private final Serializer<PreferenceEntry<String>> serializer = new SerializerAdapter<>(parser);
 
 	public PreferencesWebService(WebClient webClient)
 	{

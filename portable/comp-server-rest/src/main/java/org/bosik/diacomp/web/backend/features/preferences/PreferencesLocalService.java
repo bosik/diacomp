@@ -17,42 +17,42 @@
  */
 package org.bosik.diacomp.web.backend.features.preferences;
 
+import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
+import org.bosik.diacomp.core.services.preferences.PreferencesService;
+import org.bosik.diacomp.core.services.preferences.PreferencesServiceContract;
+import org.bosik.diacomp.web.backend.common.MySQLAccess;
+import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
+import org.json.JSONObject;
+import org.springframework.stereotype.Service;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import org.bosik.diacomp.core.services.preferences.PreferenceID;
-import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
-import org.bosik.diacomp.core.services.preferences.PreferencesService;
-import org.bosik.diacomp.core.services.transfer.Exportable;
-import org.bosik.diacomp.web.backend.common.MySQLAccess;
-import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
-import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 // @Profile({ "real", "fake" })
-public class PreferencesLocalService extends PreferencesService implements Exportable
+public class PreferencesLocalService
 {
-	private static final String	TABLE_PREFERENCES			= "preferences";
-	private static final String	COLUMN_PREFERENCES_USER		= "_UserID";
-	private static final String	COLUMN_PREFERENCES_KEY		= "_Key";
-	private static final String	COLUMN_PREFERENCES_VALUE	= "_Value";
-	private static final String	COLUMN_PREFERENCES_VERSION	= "_Version";
+	private static final String TABLE_PREFERENCES          = "preferences";
+	private static final String COLUMN_PREFERENCES_USER    = "_UserID";
+	private static final String COLUMN_PREFERENCES_KEY     = "_Key";
+	private static final String COLUMN_PREFERENCES_VALUE   = "_Value";
+	private static final String COLUMN_PREFERENCES_VERSION = "_Version";
 
-	@Autowired
-	private UserInfoService		userInfoService;
-
-	@Override
-	public List<PreferenceEntry<String>> getAll()
+	public String getHash(int userId)
 	{
-		int userId = userInfoService.getCurrentUserId();
+		return PreferencesServiceContract.getHash(getAll(userId));
+	}
 
+	public List<PreferenceEntry<String>> getAll(int userId)
+	{
 		try
 		{
 			final String[] select = { COLUMN_PREFERENCES_KEY, COLUMN_PREFERENCES_VALUE, COLUMN_PREFERENCES_VERSION };
@@ -60,38 +60,39 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 			final String[] whereArgs = { String.valueOf(userId) };
 			final String order = null;
 
-			return MySQLAccess.select(TABLE_PREFERENCES, select, where, whereArgs, order,
-					new DataCallback<List<PreferenceEntry<String>>>()
+			return MySQLAccess.select(TABLE_PREFERENCES, select, where, whereArgs, order, new DataCallback<List<PreferenceEntry<String>>>()
+			{
+				@Override
+				public List<PreferenceEntry<String>> onData(ResultSet set) throws SQLException
+				{
+					List<PreferenceEntry<String>> result = new LinkedList<>();
+
+					while (set.next())
 					{
-						@Override
-						public List<PreferenceEntry<String>> onData(ResultSet set) throws SQLException
+						String key = set.getString(COLUMN_PREFERENCES_KEY);
+						String value = set.getString(COLUMN_PREFERENCES_VALUE);
+						int version = set.getInt(COLUMN_PREFERENCES_VERSION);
+
+						try
 						{
-							List<PreferenceEntry<String>> result = new LinkedList<>();
-
-							while (set.next())
-							{
-								String key = set.getString(COLUMN_PREFERENCES_KEY);
-								String value = set.getString(COLUMN_PREFERENCES_VALUE);
-								int version = set.getInt(COLUMN_PREFERENCES_VERSION);
-
-								try
-								{
-									PreferenceEntry<String> item = new PreferenceEntry<>();
-									item.setId(PreferenceID.parse(key)); // TODO
-									item.setValue(value);
-									item.setVersion(version);
-									result.add(item);
-								}
-								catch (IllegalArgumentException e)
-								{
-									/**/System.out.println("Failed to parse preference type: " + key);
-									/**/e.printStackTrace();
-								}
-							}
-
-							return result;
+							PreferenceEntry<String> item = new PreferenceEntry<>();
+							item.setId(PreferenceID.parse(key)); // TODO
+							item.setValue(value);
+							item.setVersion(version);
+							result.add(item);
 						}
-					});
+						catch (IllegalArgumentException e)
+						{
+									/**/
+							System.out.println("Failed to parse preference type: " + key);
+									/**/
+							e.printStackTrace();
+						}
+					}
+
+					return result;
+				}
+			});
 		}
 		catch (SQLException e)
 		{
@@ -99,49 +100,43 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 		}
 	}
 
-	@Override
-	public void update(List<PreferenceEntry<String>> entries)
+	public void update(int userId, List<PreferenceEntry<String>> entries)
 	{
 		for (PreferenceEntry<String> entry : entries)
 		{
-			setString(entry);
+			setString(userId, entry);
 		}
 	}
 
-	@Override
-	public PreferenceEntry<String> getString(final PreferenceID id)
+	public PreferenceEntry<String> getString(int userId, final PreferenceID id)
 	{
-		int userId = userInfoService.getCurrentUserId();
-
 		try
 		{
 			final String[] select = { COLUMN_PREFERENCES_VALUE, COLUMN_PREFERENCES_VERSION };
-			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_PREFERENCES_USER,
-					COLUMN_PREFERENCES_KEY);
+			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_PREFERENCES_USER, COLUMN_PREFERENCES_KEY);
 			final String[] whereArgs = { String.valueOf(userId), id.getCode() };
 			final String order = null;
 
-			return MySQLAccess.select(TABLE_PREFERENCES, select, where, whereArgs, order,
-					new DataCallback<PreferenceEntry<String>>()
+			return MySQLAccess.select(TABLE_PREFERENCES, select, where, whereArgs, order, new DataCallback<PreferenceEntry<String>>()
+			{
+				@Override
+				public PreferenceEntry<String> onData(ResultSet set) throws SQLException
+				{
+					if (set.next())
 					{
-						@Override
-						public PreferenceEntry<String> onData(ResultSet set) throws SQLException
-						{
-							if (set.next())
-							{
-								PreferenceEntry<String> item = new PreferenceEntry<>();
-								item.setId(id);
-								item.setValue(set.getString(COLUMN_PREFERENCES_VALUE));
-								item.setVersion(set.getInt(COLUMN_PREFERENCES_VERSION));
+						PreferenceEntry<String> item = new PreferenceEntry<>();
+						item.setId(id);
+						item.setValue(set.getString(COLUMN_PREFERENCES_VALUE));
+						item.setVersion(set.getInt(COLUMN_PREFERENCES_VERSION));
 
-								return item;
-							}
-							else
-							{
-								return null;
-							}
-						}
-					});
+						return item;
+					}
+					else
+					{
+						return null;
+					}
+				}
+			});
 		}
 		catch (SQLException e)
 		{
@@ -149,11 +144,8 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 		}
 	}
 
-	@Override
-	public void setString(PreferenceEntry<String> entry)
+	public void setString(int userId, PreferenceEntry<String> entry)
 	{
-		int userId = userInfoService.getCurrentUserId();
-
 		try
 		{
 			final String key = entry.getId().getCode();
@@ -218,13 +210,10 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 		});
 	}
 
-	@Override
-	public String exportData()
+	public String exportData(int userId)
 	{
 		try
 		{
-			int userId = userInfoService.getCurrentUserId();
-
 			final String[] select = { COLUMN_PREFERENCES_KEY, COLUMN_PREFERENCES_VALUE, COLUMN_PREFERENCES_VERSION };
 			final String where = String.format("(%s = ?)", COLUMN_PREFERENCES_USER);
 			final String[] whereArgs = { String.valueOf(userId) };
@@ -270,12 +259,10 @@ public class PreferencesLocalService extends PreferencesService implements Expor
 		}
 	}
 
-	public String exportPlain()
+	public String exportPlain(int userId)
 	{
 		try
 		{
-			int userId = userInfoService.getCurrentUserId();
-
 			final String[] select = { COLUMN_PREFERENCES_KEY, COLUMN_PREFERENCES_VALUE, COLUMN_PREFERENCES_VERSION };
 			final String where = String.format("(%s = ?)", COLUMN_PREFERENCES_USER);
 			final String[] whereArgs = { String.valueOf(userId) };

@@ -17,43 +17,46 @@
  */
 package org.bosik.diacomp.core.services.preferences;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
-public interface PreferencesService
+public final class PreferencesServiceContract
 {
 	/**
-	 * Returns total preferences hash for quick comparison
+	 * Builds total hash for the list of preference items
 	 *
+	 * @param items
 	 * @return
 	 */
-	String getHash();
+	public static String getHash(List<PreferenceEntry<String>> items)
+	{
+		final int prime = 31;
+		int hash = 1;
 
-	/**
-	 * Returns all preferences
-	 *
-	 * @return
-	 */
-	List<PreferenceEntry<String>> getAll();
+		Collections.sort(items, new Comparator<PreferenceEntry<String>>()
+		{
+			@Override
+			public int compare(PreferenceEntry<String> o1, PreferenceEntry<String> o2)
+			{
+				return o1.getId().getCode().compareTo(o2.getId().getCode());
+			}
+		});
 
-	/**
-	 * Returns string preference
-	 *
-	 * @param id
-	 * @return Entry if preference found, null otherwise
-	 */
-	PreferenceEntry<String> getString(PreferenceID id);
+		for (PreferenceEntry<String> entity : items)
+		{
+			if (entity.getId().isSyncable())
+			{
+				// It's a public API and can't be changed
+				hash = prime * hash + entity.getVersion();
+			}
+		}
 
-	/**
-	 * Updates single string entry
-	 *
-	 * @param entry
-	 */
-	void setString(PreferenceEntry<String> entry);
+		return String.valueOf(hash);
+	}
 
-	/**
-	 * Updates multiple string entries
-	 *
-	 * @param entries
-	 */
-	void update(List<PreferenceEntry<String>> entries);
+	private PreferencesServiceContract()
+	{
+		throw new UnsupportedOperationException();
+	}
 }

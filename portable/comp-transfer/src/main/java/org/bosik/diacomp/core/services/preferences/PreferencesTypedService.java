@@ -28,7 +28,7 @@ import java.util.Set;
 /**
  * Decorator with casting methods
  */
-public class PreferencesTypedService extends PreferencesService
+public class PreferencesTypedService implements PreferencesService
 {
 	private PreferencesService service;
 
@@ -40,6 +40,12 @@ public class PreferencesTypedService extends PreferencesService
 		}
 
 		this.service = service;
+	}
+
+	@Override
+	public String getHash()
+	{
+		return service.getHash();
 	}
 
 	@Override
@@ -81,7 +87,7 @@ public class PreferencesTypedService extends PreferencesService
 
 	private PreferenceEntry<String> buildEntry(PreferenceID preferenceID, String value)
 	{
-		PreferenceEntry<String> entry = new PreferenceEntry<String>();
+		PreferenceEntry<String> entry = new PreferenceEntry<>();
 		entry.setId(preferenceID);
 		entry.setValue(value);
 		entry.setVersion(getNextVersion(preferenceID));
