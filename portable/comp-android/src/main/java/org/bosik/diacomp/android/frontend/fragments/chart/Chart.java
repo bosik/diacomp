@@ -226,14 +226,11 @@ public class Chart extends Fragment implements ProgressListener
 			bundle = new ProgressBundle();
 			bundle.setState(ProgressState.INITIAL);
 			bundle.setSeries(null);
-			bundle.setListener(this);
-			bundle.setDataLoader(dataLoader);
 			container.put(chartId, bundle);
 		}
-		else
-		{
-			bundle.setListener(this);
-		}
+
+		bundle.setListener(this);
+		bundle.setDataLoader(dataLoader); // required
 
 		return bundle;
 	}
