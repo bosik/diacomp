@@ -27,6 +27,6 @@ public class SerializerFoodItem extends SerializerAdapter<Versioned<FoodItem>>
 {
 	public SerializerFoodItem()
 	{
-		super(new ParserVersioned<FoodItem>(new ParserFoodItem()));
+		super(new ParserVersioned<>(new ParserFoodItem()));
 	}
 }
