@@ -17,16 +17,11 @@
  */
 package org.bosik.diacomp.web.backend.features.base.food.common;
 
-import org.bosik.diacomp.core.entities.business.FoodSetInfo;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodCommon;
-import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerFoodCommon;
-import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.features.base.food.FoodSetService;
-import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,42 +42,42 @@ public class FoodCommonRest
 	private static final String TYPE_JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=utf-8";
 
 	@Autowired
-	private FoodCommonLocalService commonFoodService;
+	private FoodCommonLocalService foodCommonService;
 
-	@Autowired
-	private FoodSetService foodSetService;
+	//	@Autowired
+	//	private FoodSetService foodSetService;
 
-	private final Serializer<Versioned<FoodItem>> serializerFoodItem   = new SerializerFoodItem();
-	private final Serializer<FoodCommon>          serializerFoodCommon = new SerializerFoodCommon();
+	//	private final Serializer<Versioned<FoodItem>> serializerFoodItem   = new SerializerFoodItem();
+	private final Serializer<FoodCommon> serializerFoodCommon = new SerializerFoodCommon();
 
-//	@GET
-//	@Path("init")
-//	@Produces(TYPE_JSON_UTF8)
-//	public Response prepare()
-//	{
-//		try
-//		{
-//			List<FoodSetInfo> sets = foodSetService.getFoodSetInfo();
-//			for (FoodSetInfo set : sets)
-//			{
-//				String data = foodSetService.getFoodSet(set.getId());
-//				List<Versioned<FoodItem>> items = serializerFoodItem.readAll(data);
-//
-//				commonFoodService.upload(set.getDescription(), items);
-//			}
-//
-//			return Response.ok("Uploaded OK").build();
-//		}
-//		catch (IllegalArgumentException e)
-//		{
-//			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-//		}
-//		catch (Exception e)
-//		{
-//			e.printStackTrace();
-//			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-//		}
-//	}
+	//	@GET
+	//	@Path("init")
+	//	@Produces(TYPE_JSON_UTF8)
+	//	public Response prepare()
+	//	{
+	//		try
+	//		{
+	//			List<FoodSetInfo> sets = foodSetService.getFoodSetInfo();
+	//			for (FoodSetInfo set : sets)
+	//			{
+	//				String data = foodSetService.getFoodSet(set.getId());
+	//				List<Versioned<FoodItem>> items = serializerFoodItem.readAll(data);
+	//
+	//				foodCommonService.upload(set.getDescription(), items);
+	//			}
+	//
+	//			return Response.ok("Uploaded OK").build();
+	//		}
+	//		catch (IllegalArgumentException e)
+	//		{
+	//			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
+	//		}
+	//		catch (Exception e)
+	//		{
+	//			e.printStackTrace();
+	//			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+	//		}
+	//	}
 
 	@GET
 	@Produces(TYPE_JSON_UTF8)
@@ -95,13 +90,13 @@ public class FoodCommonRest
 				Utils.checkSize(parTime, Utils.FORMAT_DATE_TIME.length());
 				Date lastModified = Utils.parseTimeUTC(parTime);
 
-				List<FoodCommon> foods = commonFoodService.find(lastModified);
+				List<FoodCommon> foods = foodCommonService.find(lastModified);
 				String data = serializerFoodCommon.writeAll(foods);
 				return Response.ok(data).build();
 			}
 			else
 			{
-				List<FoodCommon> foods = commonFoodService.find();
+				List<FoodCommon> foods = foodCommonService.find();
 				String data = serializerFoodCommon.writeAll(foods);
 				return Response.ok(data).build();
 			}

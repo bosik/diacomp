@@ -15,21 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bosik.diacomp.web.backend.features.base.food;
+package org.bosik.diacomp.web.backend.features.base.food.user;
 
-import org.bosik.diacomp.core.entities.business.FoodSetInfo;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.persistence.parsers.ParserFoodSetInfo;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
-import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService;
 import org.bosik.diacomp.web.backend.features.user.auth.UserRest;
 import org.bosik.merklesync.DataSource;
 import org.bosik.merklesync.MerkleTree;
@@ -53,20 +49,16 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@Path("food/")
-public class FoodBaseRest extends UserRest
+@Path("food/user/")
+public class FoodUserRest extends UserRest
 {
 	private static final String TYPE_JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=utf-8";
 
 	@Autowired
 	private FoodUserLocalService foodUserService;
 
-	@Autowired
-	private FoodSetService foodSetService;
-
-	private final Serializer<Versioned<FoodItem>> serializer        = new SerializerFoodItem();
-	private final Serializer<FoodSetInfo>         serializerSetInfo = new SerializerAdapter<>(new ParserFoodSetInfo());
-	private final Serializer<Map<String, String>> serializerMap     = new SerializerMap();
+	private final Serializer<Versioned<FoodItem>> serializer    = new SerializerFoodItem();
+	private final Serializer<Map<String, String>> serializerMap = new SerializerMap();
 
 	@GET
 	@Path("count/{prefix: .*}")
@@ -315,61 +307,6 @@ public class FoodBaseRest extends UserRest
 		catch (NotAuthorizedException e)
 		{
 			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
-	}
-
-	@GET
-	@Path("set")
-	@Produces(TYPE_JSON_UTF8)
-	public Response getFoodSetInfo()
-	{
-		try
-		{
-			List<FoodSetInfo> list = foodSetService.getFoodSetInfo();
-			String response = serializerSetInfo.writeAll(list);
-			return Response.ok(response).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
-	}
-
-	@GET
-	@Path("set/{id}")
-	@Produces(TYPE_JSON_UTF8)
-	public Response getFoodSet(@PathParam("id") @DefaultValue("") String parId)
-	{
-		try
-		{
-			Utils.checkNotNull(parId, "ID expected (e.g. ../set/1ef0)");
-			Utils.checkSize(parId, ObjectService.ID_FULL_SIZE);
-
-			String data = foodSetService.getFoodSet(parId);
-
-			if (data != null)
-			{
-				return Response.ok(data).build();
-			}
-			else
-			{
-				String response = String.format("Set %s not found", parId);
-				return Response.status(Status.NOT_FOUND).entity(response).build();
-			}
 		}
 		catch (IllegalArgumentException e)
 		{

@@ -23,7 +23,7 @@ import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.utils.ZipUtils;
 import org.bosik.diacomp.core.utils.ZipUtils.Entry;
 import org.bosik.diacomp.web.backend.features.base.dish.DishBaseLocalService;
-import org.bosik.diacomp.web.backend.features.base.food.FoodBaseLocalService;
+import org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService;
 import org.bosik.diacomp.web.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.web.backend.features.preferences.PreferencesLocalService;
 import org.bosik.diacomp.web.backend.features.user.auth.UserRest;
@@ -46,7 +46,7 @@ public class ExportRest extends UserRest
 	private DiaryLocalService diaryService;
 
 	@Autowired
-	private FoodBaseLocalService foodbaseService;
+	private FoodUserLocalService foodbaseService;
 
 	@Autowired
 	private DishBaseLocalService dishbaseService;
