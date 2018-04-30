@@ -15,26 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bosik.diacomp.web.backend.features.base.food;
+package org.bosik.diacomp.web.backend.features.base.food.set;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import org.bosik.diacomp.core.entities.business.FoodSetInfo;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.springframework.stereotype.Service;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class FoodSetService
 {
 	// Foodbase table
-	private static final String	TABLE_FOODSET				= "foodset";
-	private static final String	COLUMN_FOODSET_ID			= "_ID";
-	private static final String	COLUMN_FOODSET_DESCRIPTION	= "_Description";
-	private static final String	COLUMN_FOODSET_SIZE			= "_Size";
-	private static final String	COLUMN_FOODSET_DATA			= "_Data";
+	private static final String TABLE_FOODSET              = "foodset";
+	private static final String COLUMN_FOODSET_ID          = "_ID";
+	private static final String COLUMN_FOODSET_DESCRIPTION = "_Description";
+	private static final String COLUMN_FOODSET_SIZE        = "_Size";
+	private static final String COLUMN_FOODSET_DATA        = "_Data";
 
 	@SuppressWarnings("static-method")
 	public String getFoodSet(String id)
@@ -80,31 +81,30 @@ public class FoodSetService
 			String[] whereArgs = {};
 			final String order = null;
 
-			return MySQLAccess.select(TABLE_FOODSET, select, where, whereArgs, order,
-					new DataCallback<List<FoodSetInfo>>()
+			return MySQLAccess.select(TABLE_FOODSET, select, where, whereArgs, order, new DataCallback<List<FoodSetInfo>>()
+			{
+				@Override
+				public List<FoodSetInfo> onData(ResultSet set) throws SQLException
+				{
+					List<FoodSetInfo> list = new ArrayList<FoodSetInfo>();
+
+					while (set.next())
 					{
-						@Override
-						public List<FoodSetInfo> onData(ResultSet set) throws SQLException
-						{
-							List<FoodSetInfo> list = new ArrayList<FoodSetInfo>();
+						String id = set.getString(COLUMN_FOODSET_ID);
+						String description = set.getString(COLUMN_FOODSET_DESCRIPTION);
+						int size = set.getInt(COLUMN_FOODSET_SIZE);
 
-							while (set.next())
-							{
-								String id = set.getString(COLUMN_FOODSET_ID);
-								String description = set.getString(COLUMN_FOODSET_DESCRIPTION);
-								int size = set.getInt(COLUMN_FOODSET_SIZE);
+						FoodSetInfo info = new FoodSetInfo();
+						info.setId(id);
+						info.setDescription(description);
+						info.setSize(size);
 
-								FoodSetInfo info = new FoodSetInfo();
-								info.setId(id);
-								info.setDescription(description);
-								info.setSize(size);
+						list.add(info);
+					}
 
-								list.add(info);
-							}
-
-							return list;
-						}
-					});
+					return list;
+				}
+			});
 		}
 		catch (SQLException e)
 		{
