@@ -21,7 +21,10 @@ import org.bosik.merklesync.MerkleTree;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.bosik.diacomp.core.utils.Utils.MsecPerHour;
 
 /**
  * We can't use session scope here, otherwise e.g. parallel syncing desktop + mobile clients will not work (each will use it's own cache copy)
@@ -31,13 +34,33 @@ import java.util.concurrent.ConcurrentHashMap;
 //@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CachedHashTree
 {
-	private final Map<Integer, MerkleTree> mapDiaryTree = new ConcurrentHashMap<>();
-	private final Map<Integer, MerkleTree> mapFoodTree  = new ConcurrentHashMap<>();
-	private final Map<Integer, MerkleTree> mapDishTree  = new ConcurrentHashMap<>();
+	private static class CacheEntry<T>
+	{
+		private T    data;
+		private long expirationTime;
+
+		public CacheEntry(T data, long expirationTime)
+		{
+			this.data = data;
+			this.expirationTime = expirationTime;
+		}
+
+		public T getData()
+		{
+			return (System.nanoTime() < expirationTime) ? data : null;
+		}
+	}
+
+	private static final long MIN_TTL = 1 * MsecPerHour;
+	private static final long MAX_TTL = 3 * MsecPerHour;
+
+	private final Map<Integer, CacheEntry<MerkleTree>> mapDiaryTree = new ConcurrentHashMap<>();
+	private final Map<Integer, CacheEntry<MerkleTree>> mapFoodTree  = new ConcurrentHashMap<>();
+	private final Map<Integer, CacheEntry<MerkleTree>> mapDishTree  = new ConcurrentHashMap<>();
 
 	public MerkleTree getDiaryTree(int userId)
 	{
-		return mapDiaryTree.get(userId);
+		return get(mapDiaryTree, userId);
 	}
 
 	public void setDiaryTree(int userId, MerkleTree tree)
@@ -47,7 +70,7 @@ public class CachedHashTree
 
 	public MerkleTree getFoodTree(int userId)
 	{
-		return mapFoodTree.get(userId);
+		return get(mapFoodTree, userId);
 	}
 
 	public void setFoodTree(int userId, MerkleTree tree)
@@ -57,7 +80,7 @@ public class CachedHashTree
 
 	public MerkleTree getDishTree(int userId)
 	{
-		return mapDishTree.get(userId);
+		return get(mapDishTree, userId);
 	}
 
 	public void setDishTree(int userId, MerkleTree tree)
@@ -65,11 +88,18 @@ public class CachedHashTree
 		put(mapDishTree, userId, tree);
 	}
 
-	private static <K, V> void put(Map<K, V> map, K key, V value)
+	private static MerkleTree get(Map<Integer, CacheEntry<MerkleTree>> tree, int userId)
 	{
-		if (value != null)
+		final CacheEntry<MerkleTree> entry = tree.get(userId);
+		return (entry != null) ? entry.getData() : null;
+	}
+
+	private static void put(Map<Integer, CacheEntry<MerkleTree>> map, Integer key, MerkleTree tree)
+	{
+		if (tree != null)
 		{
-			map.put(key, value);
+			final long ttl = MIN_TTL + new Random().nextInt((int) (MAX_TTL - MIN_TTL)); // ms
+			map.put(key, new CacheEntry<>(tree, System.nanoTime() + ttl * 1_000_000L));
 		}
 		else
 		{
