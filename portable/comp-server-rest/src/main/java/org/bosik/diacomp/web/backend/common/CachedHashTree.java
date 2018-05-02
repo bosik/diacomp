@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.bosik.diacomp.core.utils.Utils.MsecPerHour;
+import static org.bosik.diacomp.core.utils.Utils.MsecPerMin;
 
 public class CachedHashTree
 {
@@ -44,8 +44,9 @@ public class CachedHashTree
 		}
 	}
 
-	private static final long MIN_TTL = 1 * MsecPerHour;
-	private static final long MAX_TTL = 3 * MsecPerHour;
+	// FIXME
+	private static final long MIN_TTL = 1 * MsecPerMin; // 1 * MsecPerHour;
+	private static final long MAX_TTL = 3 * MsecPerMin; // 3 * MsecPerHour;
 
 	private final Map<Integer, CacheEntry<MerkleTree>> cache = new ConcurrentHashMap<>();
 
