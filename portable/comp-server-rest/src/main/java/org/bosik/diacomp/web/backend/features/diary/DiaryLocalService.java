@@ -29,7 +29,6 @@ import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.common.CachedHashTree;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.bosik.merklesync.HashUtils;
@@ -71,7 +70,7 @@ public class DiaryLocalService
 	private final Serializer<DiaryRecord> serializer = new SerializerAdapter<>(parser);
 
 	@Autowired
-	private CachedHashTree cachedHashTree;
+	private CachedDiaryHashTree cachedHashTree;
 
 	private List<Versioned<DiaryRecord>> parseItems(ResultSet resultSet, int limit) throws SQLException
 	{
@@ -326,11 +325,11 @@ public class DiaryLocalService
 
 	public MerkleTree getHashTree(int userId)
 	{
-		MerkleTree tree = cachedHashTree.getDiaryTree(userId);
+		MerkleTree tree = cachedHashTree.get(userId);
 		if (tree == null)
 		{
 			tree = HashUtils.buildMerkleTree(getDataHashes(userId));
-			cachedHashTree.setDiaryTree(userId, tree);
+			cachedHashTree.set(userId, tree);
 		}
 
 		return tree;
@@ -378,7 +377,7 @@ public class DiaryLocalService
 
 		MySQLAccess.insert(TABLE_DIARY, set);
 
-		cachedHashTree.setDiaryTree(userId, null);
+		cachedHashTree.set(userId, null);
 	}
 
 	private void update(int userId, Versioned<DiaryRecord> item) throws SQLException
@@ -397,7 +396,7 @@ public class DiaryLocalService
 
 		MySQLAccess.update(TABLE_DIARY, set, where);
 
-		cachedHashTree.setDiaryTree(userId, null);
+		cachedHashTree.set(userId, null);
 	}
 
 	/**

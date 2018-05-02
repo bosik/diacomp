@@ -23,18 +23,14 @@ import org.bosik.diacomp.core.persistence.parsers.ParserFoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.ObjectService;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
-import org.bosik.diacomp.core.services.transfer.Exportable;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.common.CachedHashTree;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
-import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
@@ -76,7 +72,7 @@ public class FoodUserLocalService
 	private static final Serializer<FoodItem> serializer = new SerializerAdapter<>(parser);
 
 	@Autowired
-	private CachedHashTree cachedHashTree;
+	private CachedFoodUserHashTree cachedHashTree;
 
 	private static List<Versioned<FoodItem>> parseItems(ResultSet resultSet, int limit) throws SQLException
 	{
@@ -349,7 +345,7 @@ public class FoodUserLocalService
 	 * @return
 	 */
 	@SuppressWarnings("static-method")
-	private SortedMap<String, String> getDataHashes(int userId)
+	public SortedMap<String, String> getDataHashes(int userId)
 	{
 		try
 		{
@@ -386,11 +382,11 @@ public class FoodUserLocalService
 
 	public MerkleTree getHashTree(int userId)
 	{
-		MerkleTree tree = cachedHashTree.getFoodTree(userId);
+		MerkleTree tree = cachedHashTree.get(userId);
 		if (tree == null)
 		{
 			tree = HashUtils.buildMerkleTree(getDataHashes(userId));
-			cachedHashTree.setFoodTree(userId, tree);
+			cachedHashTree.set(userId, tree);
 		}
 
 		return tree;
@@ -437,7 +433,7 @@ public class FoodUserLocalService
 					MySQLAccess.insert(TABLE_FOODBASE, set);
 				}
 
-				cachedHashTree.setFoodTree(userId, null);
+				cachedHashTree.set(userId, null);
 			}
 		}
 		catch (SQLException e)

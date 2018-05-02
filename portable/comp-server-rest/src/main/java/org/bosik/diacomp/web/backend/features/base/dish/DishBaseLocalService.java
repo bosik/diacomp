@@ -29,7 +29,6 @@ import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.common.CachedHashTree;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.bosik.merklesync.HashUtils;
@@ -73,7 +72,7 @@ public class DishBaseLocalService
 	private static final Serializer<DishItem> serializer = new SerializerAdapter<>(parser);
 
 	@Autowired
-	private CachedHashTree cachedHashTree;
+	private CachedDishHashTree cachedHashTree;
 
 	private static List<Versioned<DishItem>> parseItems(ResultSet resultSet, int limit) throws SQLException
 	{
@@ -383,11 +382,11 @@ public class DishBaseLocalService
 
 	public MerkleTree getHashTree(int userId)
 	{
-		MerkleTree tree = cachedHashTree.getDishTree(userId);
+		MerkleTree tree = cachedHashTree.get(userId);
 		if (tree == null)
 		{
 			tree = HashUtils.buildMerkleTree(getDataHashes(userId));
-			cachedHashTree.setDishTree(userId, tree);
+			cachedHashTree.set(userId, tree);
 		}
 
 		return tree;
@@ -434,7 +433,7 @@ public class DishBaseLocalService
 					MySQLAccess.insert(TABLE_DISHBASE, set);
 				}
 
-				cachedHashTree.setDishTree(userId, null);
+				cachedHashTree.set(userId, null);
 			}
 		}
 		catch (SQLException e)

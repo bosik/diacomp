@@ -37,81 +37,85 @@ public class TestCachedHashTree
 		return new MemoryMerkleTree3(new HashMap<String, String>());
 	}
 
-	private static void set(CachedHashTree cache, int userId, MerkleTree treeDiary, MerkleTree treeFood, MerkleTree treeDish)
-	{
-		cache.setDiaryTree(userId, treeDiary);
-		cache.setFoodTree(userId, treeFood);
-		cache.setDishTree(userId, treeDish);
-	}
-
-	private static void check(CachedHashTree cache, int userId, MerkleTree treeDiary, MerkleTree treeFood, MerkleTree treeDish)
-	{
-		Assert.assertEquals("Diary tree expectation failure, user " + userId, treeDiary, cache.getDiaryTree(userId));
-		Assert.assertEquals("Food tree expectation failure, user " + userId, treeFood, cache.getFoodTree(userId));
-		Assert.assertEquals("Dish tree expectation failure, user " + userId, treeDish, cache.getDishTree(userId));
-	}
-
 	// ------------------------------------------------------------------------------
 
 	@Test
 	public void test_initialized_with_null()
 	{
-		CachedHashTree cache = new CachedHashTree();
-
 		int userId = buildUserId();
-		check(cache, userId, null, null, null);
+
+		CachedHashTree cache = new CachedHashTree();
+		Assert.assertEquals("Hash tree expectation failure, user " + userId, null, cache.get(userId));
 	}
 
 	@Test
 	public void test_can_store()
 	{
-		CachedHashTree cache = new CachedHashTree();
-
-		MerkleTree treeDiary = buildTree();
-		MerkleTree treeFood = buildTree();
-		MerkleTree treeDish = buildTree();
-
 		int userId = buildUserId();
-		set(cache, userId, treeDiary, treeFood, treeDish);
-		check(cache, userId, treeDiary, treeFood, treeDish);
+
+		CachedHashTree cache = new CachedHashTree();
+		MerkleTree tree = buildTree();
+		cache.set(userId, tree);
+		Assert.assertEquals("Hash tree expectation failure, user " + userId, tree, cache.get(userId));
 	}
 
 	@Test
 	public void test_can_clear()
 	{
-		CachedHashTree cache = new CachedHashTree();
-
 		int userId = buildUserId();
-		set(cache, userId, buildTree(), buildTree(), buildTree());
-		set(cache, userId, null, null, null);
-		check(cache, userId, null, null, null);
+
+		CachedHashTree cache = new CachedHashTree();
+		cache.set(userId, buildTree());
+		cache.set(userId, null);
+		Assert.assertEquals("Hash tree expectation failure, user " + userId, null, cache.get(userId));
 	}
 
 	@Test
-	public void test_independence()
+	public void test_independence_by_instance()
+	{
+		CachedHashTree cache1 = new CachedHashTree();
+		CachedHashTree cache2 = new CachedHashTree();
+
+		MerkleTree tree1 = buildTree();
+		MerkleTree tree2 = buildTree();
+
+		int userId = buildUserId();
+
+		// ----------------------------------------
+
+		cache1.set(userId, tree1);
+		Assert.assertEquals("Hash tree expectation failure, user " + userId, tree1, cache1.get(userId));
+		Assert.assertEquals("Hash tree expectation failure, user " + userId, null, cache2.get(userId));
+
+		cache2.set(userId, tree2);
+		Assert.assertEquals("Hash tree expectation failure, user " + userId, tree1, cache1.get(userId));
+		Assert.assertEquals("Hash tree expectation failure, user " + userId, tree2, cache2.get(userId));
+
+		cache1.set(userId, null);
+		Assert.assertEquals("Hash tree expectation failure, user " + userId, null, cache1.get(userId));
+		Assert.assertEquals("Hash tree expectation failure, user " + userId, tree2, cache2.get(userId));
+	}
+
+	@Test
+	public void test_independence_by_user()
 	{
 		CachedHashTree cache = new CachedHashTree();
 
-		MerkleTree treeDiary1 = buildTree();
-		MerkleTree treeFood1 = buildTree();
-		MerkleTree treeDish1 = buildTree();
-
-		MerkleTree treeDiary2 = buildTree();
-		MerkleTree treeFood2 = buildTree();
-		MerkleTree treeDish2 = buildTree();
+		MerkleTree tree1 = buildTree();
+		MerkleTree tree2 = buildTree();
 
 		int userId1 = buildUserId() % 100000;
 		int userId2 = userId1 + 1;
 
 		// ----------------------------------------
 
-		set(cache, userId1, treeDiary1, treeFood1, treeDish1);
-		check(cache, userId2, null, null, null);
+		cache.set(userId1, tree1);
+		Assert.assertEquals("Hash tree expectation failure, user " + userId2, null, cache.get(userId2));
 
-		set(cache, userId2, treeDiary2, treeFood2, treeDish2);
-		check(cache, userId1, treeDiary1, treeFood1, treeDish1);
+		cache.set(userId2, tree2);
+		Assert.assertEquals("Hash tree expectation failure, user " + userId1, tree1, cache.get(userId1));
 
-		set(cache, userId2, null, null, null);
-		check(cache, userId1, treeDiary1, treeFood1, treeDish1);
+		cache.set(userId2, null);
+		Assert.assertEquals("Hash tree expectation failure, user " + userId1, tree1, cache.get(userId1));
 	}
 }
