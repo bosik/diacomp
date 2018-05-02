@@ -17,7 +17,6 @@
  */
 package org.bosik.diacomp.web.backend.features.base.food.common;
 
-import org.bosik.diacomp.core.entities.business.foodbase.FoodCommon;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
@@ -32,42 +31,53 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 @Service
 public class FoodCommonLocalService
 {
 	// DB
-	private static final String TABLE_FOOD_COMMON                = "food_common";
-	private static final String COLUMN_FOOD_COMMON_ID            = "ID";
-	private static final String COLUMN_FOOD_COMMON_NAME          = "Name";
-	private static final String COLUMN_FOOD_COMMON_PROTS         = "Prots";
-	private static final String COLUMN_FOOD_COMMON_FATS          = "Fats";
-	private static final String COLUMN_FOOD_COMMON_CARBS         = "Carbs";
-	private static final String COLUMN_FOOD_COMMON_VALUE         = "Value";
-	private static final String COLUMN_FOOD_COMMON_DELETED       = "Deleted";
-	private static final String COLUMN_FOOD_COMMON_LAST_MODIFIED = "LastModified";
-	private static final String COLUMN_FOOD_COMMON_TAG           = "Tag";
+	public static final String TABLE_FOOD_COMMON                = "food_common";
+	public static final String COLUMN_FOOD_COMMON_ID            = "ID";
+	public static final String COLUMN_FOOD_COMMON_NAME          = "Name";
+	public static final String COLUMN_FOOD_COMMON_PROTS         = "Prots";
+	public static final String COLUMN_FOOD_COMMON_FATS          = "Fats";
+	public static final String COLUMN_FOOD_COMMON_CARBS         = "Carbs";
+	public static final String COLUMN_FOOD_COMMON_VALUE         = "Value";
+	public static final String COLUMN_FOOD_COMMON_FROM_TABLE    = "FromTable"; // *
+	public static final String COLUMN_FOOD_COMMON_DELETED       = "Deleted";
+	public static final String COLUMN_FOOD_COMMON_LAST_MODIFIED = "LastModified";
+	public static final String COLUMN_FOOD_COMMON_HASH          = "Hash"; // *
+	public static final String COLUMN_FOOD_COMMON_VERSION       = "Version"; // *
+	public static final String COLUMN_FOOD_COMMON_TAG           = "Tag"; // *
 
-	private static List<FoodCommon> parseItems(ResultSet set) throws SQLException
+	private static List<Versioned<FoodItem>> parseItems(ResultSet set) throws SQLException
 	{
-		List<FoodCommon> list = new ArrayList<>();
+		List<Versioned<FoodItem>> list = new ArrayList<>();
 
 		while (set.next())
 		{
-			FoodCommon food = new FoodCommon();
+			FoodItem food = new FoodItem();
 
-			food.setId(set.getString(COLUMN_FOOD_COMMON_ID));
 			food.setName(set.getString(COLUMN_FOOD_COMMON_NAME));
 			food.setRelProts(set.getDouble(COLUMN_FOOD_COMMON_PROTS));
 			food.setRelFats(set.getDouble(COLUMN_FOOD_COMMON_FATS));
 			food.setRelCarbs(set.getDouble(COLUMN_FOOD_COMMON_CARBS));
 			food.setRelValue(set.getDouble(COLUMN_FOOD_COMMON_VALUE));
+			food.setFromTable(set.getBoolean(COLUMN_FOOD_COMMON_FROM_TABLE)); // TODO: test it
 
-			food.setDeleted(set.getInt(COLUMN_FOOD_COMMON_DELETED) == 1);
-			food.setLastModified(Utils.parseTimeUTC(set.getString(COLUMN_FOOD_COMMON_LAST_MODIFIED)));
-			food.setTag(set.getString(COLUMN_FOOD_COMMON_TAG));
+			Versioned<FoodItem> item = new Versioned<>();
 
-			list.add(food);
+			item.setId(set.getString(COLUMN_FOOD_COMMON_ID));
+			item.setData(food);
+			item.setDeleted(set.getInt(COLUMN_FOOD_COMMON_DELETED) == 1);
+			item.setTimeStamp(Utils.parseTimeUTC(set.getString(COLUMN_FOOD_COMMON_LAST_MODIFIED)));
+			item.setHash(set.getString(COLUMN_FOOD_COMMON_HASH));
+			item.setVersion(set.getInt(COLUMN_FOOD_COMMON_VERSION));
+			// item.setTag(set.getString(COLUMN_FOOD_COMMON_TAG));
+
+			list.add(item);
 		}
 
 		return list;
@@ -110,26 +120,55 @@ public class FoodCommonLocalService
 		}
 	}
 
-	public List<FoodCommon> find()
+	public List<Versioned<FoodItem>> find()
 	{
 		try
 		{
-			final String[] select = { COLUMN_FOOD_COMMON_ID, COLUMN_FOOD_COMMON_NAME, COLUMN_FOOD_COMMON_PROTS, COLUMN_FOOD_COMMON_FATS,
-					COLUMN_FOOD_COMMON_CARBS, COLUMN_FOOD_COMMON_VALUE, COLUMN_FOOD_COMMON_DELETED, COLUMN_FOOD_COMMON_LAST_MODIFIED,
-					COLUMN_FOOD_COMMON_TAG };
+			final String[] select = null; // all
 			// TODO: support empty WHERE clauses
 			String where = "1=1";
 			String[] whereArgs = {};
 			final String order = null;
 
-			return MySQLAccess.select(TABLE_FOOD_COMMON, select, where, whereArgs, order, new MySQLAccess.DataCallback<List<FoodCommon>>()
-			{
-				@Override
-				public List<FoodCommon> onData(ResultSet set) throws SQLException
-				{
-					return parseItems(set);
-				}
-			});
+			return MySQLAccess
+					.select(TABLE_FOOD_COMMON, select, where, whereArgs, order, new MySQLAccess.DataCallback<List<Versioned<FoodItem>>>()
+					{
+						@Override
+						public List<Versioned<FoodItem>> onData(ResultSet set) throws SQLException
+						{
+							return parseItems(set);
+						}
+					});
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<Versioned<FoodItem>> find(boolean includeRemoved)
+	{
+		if (includeRemoved)
+		{
+			return find();
+		}
+
+		try
+		{
+			final String[] select = null; // all
+			String where = String.format("%s = ?", COLUMN_FOOD_COMMON_DELETED);
+			String[] whereArgs = { Utils.formatBooleanInt(false) };
+			final String order = null;
+
+			return MySQLAccess
+					.select(TABLE_FOOD_COMMON, select, where, whereArgs, order, new MySQLAccess.DataCallback<List<Versioned<FoodItem>>>()
+					{
+						@Override
+						public List<Versioned<FoodItem>> onData(ResultSet set) throws SQLException
+						{
+							return parseItems(set);
+						}
+					});
 		}
 		catch (SQLException e)
 		{
@@ -143,25 +182,162 @@ public class FoodCommonLocalService
 	 * @param lastModified
 	 * @return
 	 */
-	public List<FoodCommon> find(Date lastModified)
+	public List<Versioned<FoodItem>> findChanged(Date lastModified)
 	{
 		try
 		{
-			final String[] select = { COLUMN_FOOD_COMMON_ID, COLUMN_FOOD_COMMON_NAME, COLUMN_FOOD_COMMON_PROTS, COLUMN_FOOD_COMMON_FATS,
-					COLUMN_FOOD_COMMON_CARBS, COLUMN_FOOD_COMMON_VALUE, COLUMN_FOOD_COMMON_DELETED, COLUMN_FOOD_COMMON_LAST_MODIFIED,
-					COLUMN_FOOD_COMMON_TAG };
+			final String[] select = null; // all
 			final String where = String.format("(%s > ?)", COLUMN_FOOD_COMMON_LAST_MODIFIED);
 			final String[] whereArgs = { Utils.formatTimeUTC(lastModified) };
 			final String order = null;
 
-			return MySQLAccess.select(TABLE_FOOD_COMMON, select, where, whereArgs, order, new MySQLAccess.DataCallback<List<FoodCommon>>()
-			{
-				@Override
-				public List<FoodCommon> onData(ResultSet set) throws SQLException
-				{
-					return parseItems(set);
-				}
-			});
+			return MySQLAccess
+					.select(TABLE_FOOD_COMMON, select, where, whereArgs, order, new MySQLAccess.DataCallback<List<Versioned<FoodItem>>>()
+					{
+						@Override
+						public List<Versioned<FoodItem>> onData(ResultSet set) throws SQLException
+						{
+							return parseItems(set);
+						}
+					});
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<Versioned<FoodItem>> findAny(String filter)
+	{
+		try
+		{
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_FOOD_COMMON_DELETED, COLUMN_FOOD_COMMON_NAME);
+			final String[] whereArgs = { Utils.formatBooleanInt(false), "%" + filter + "%" };
+			final String order = COLUMN_FOOD_COMMON_NAME;
+
+			return MySQLAccess
+					.select(TABLE_FOOD_COMMON, select, where, whereArgs, order, new MySQLAccess.DataCallback<List<Versioned<FoodItem>>>()
+					{
+						@Override
+						public List<Versioned<FoodItem>> onData(ResultSet set) throws SQLException
+						{
+							return parseItems(set);
+						}
+					});
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	public Versioned<FoodItem> findById(String id)
+	{
+		try
+		{
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?)", COLUMN_FOOD_COMMON_ID);
+			final String[] whereArgs = { id };
+			final String order = null;
+
+			return MySQLAccess
+					.select(TABLE_FOOD_COMMON, select, where, whereArgs, order, new MySQLAccess.DataCallback<Versioned<FoodItem>>()
+					{
+						@Override
+						public Versioned<FoodItem> onData(ResultSet set) throws SQLException
+						{
+							List<Versioned<FoodItem>> result = parseItems(set);
+							return result.isEmpty() ? null : result.get(0);
+						}
+					});
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<Versioned<FoodItem>> findByIdPrefix(String prefix)
+	{
+		try
+		{
+			final String[] select = null; // all
+			final String where = String.format("(%s LIKE ?)", COLUMN_FOOD_COMMON_ID);
+			final String[] whereArgs = { prefix + "%" };
+			final String order = COLUMN_FOOD_COMMON_NAME;
+
+			return MySQLAccess
+					.select(TABLE_FOOD_COMMON, select, where, whereArgs, order, new MySQLAccess.DataCallback<List<Versioned<FoodItem>>>()
+					{
+						@Override
+						public List<Versioned<FoodItem>> onData(ResultSet set) throws SQLException
+						{
+							return parseItems(set);
+						}
+					});
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	public Versioned<FoodItem> findOne(String exactName)
+	{
+		try
+		{
+			final String[] select = null; // all
+			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_FOOD_COMMON_DELETED, COLUMN_FOOD_COMMON_NAME);
+			final String[] whereArgs = { Utils.formatBooleanInt(false), exactName };
+			final String order = null;
+
+			return MySQLAccess
+					.select(TABLE_FOOD_COMMON, select, where, whereArgs, order, new MySQLAccess.DataCallback<Versioned<FoodItem>>()
+					{
+						@Override
+						public Versioned<FoodItem> onData(ResultSet set) throws SQLException
+						{
+							List<Versioned<FoodItem>> result = parseItems(set);
+							return result.isEmpty() ? null : result.get(0);
+						}
+					});
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	public SortedMap<String, String> getDataHashes()
+	{
+		try
+		{
+			final String[] select = { COLUMN_FOOD_COMMON_ID, COLUMN_FOOD_COMMON_HASH };
+			final String where = "1 = 1"; // TODO: support empty WHERE clauses
+			final String[] whereArgs = {};
+			final String order = null;
+
+			return MySQLAccess
+					.select(TABLE_FOOD_COMMON, select, where, whereArgs, order, new MySQLAccess.DataCallback<SortedMap<String, String>>()
+					{
+						@Override
+						public SortedMap<String, String> onData(ResultSet set) throws SQLException
+						{
+							SortedMap<String, String> result = new TreeMap<String, String>();
+
+							while (set.next())
+							{
+								String id = set.getString(COLUMN_FOOD_COMMON_ID);
+								String hash = set.getString(COLUMN_FOOD_COMMON_HASH);
+								// THINK: probably storing entries is unnecessary, so we should
+								// process it as we go
+								result.put(id, hash);
+							}
+
+							return result;
+						}
+					});
 		}
 		catch (SQLException e)
 		{

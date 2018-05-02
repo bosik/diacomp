@@ -56,15 +56,15 @@ import java.util.TreeMap;
 public class FoodUserLocalService
 {
 	// Foodbase table
-	private static final String TABLE_FOODBASE            = "foodbase2";
-	private static final String COLUMN_FOODBASE_GUID      = "_GUID";
-	private static final String COLUMN_FOODBASE_USER      = "_UserID";
-	private static final String COLUMN_FOODBASE_TIMESTAMP = "_TimeStamp";
-	private static final String COLUMN_FOODBASE_HASH      = "_Hash";
-	private static final String COLUMN_FOODBASE_VERSION   = "_Version";
-	private static final String COLUMN_FOODBASE_DELETED   = "_Deleted";
-	private static final String COLUMN_FOODBASE_CONTENT   = "_Content";
-	private static final String COLUMN_FOODBASE_NAMECACHE = "_NameCache";
+	public static final String TABLE_FOODBASE            = "foodbase2";
+	public static final String COLUMN_FOODBASE_GUID      = "_GUID";
+	public static final String COLUMN_FOODBASE_USER      = "_UserID";
+	public static final String COLUMN_FOODBASE_TIMESTAMP = "_TimeStamp";
+	public static final String COLUMN_FOODBASE_HASH      = "_Hash";
+	public static final String COLUMN_FOODBASE_VERSION   = "_Version";
+	public static final String COLUMN_FOODBASE_DELETED   = "_Deleted";
+	public static final String COLUMN_FOODBASE_CONTENT   = "_Content";
+	public static final String COLUMN_FOODBASE_NAMECACHE = "_NameCache";
 
 	private static final int MAX_READ_ITEMS = 500;
 

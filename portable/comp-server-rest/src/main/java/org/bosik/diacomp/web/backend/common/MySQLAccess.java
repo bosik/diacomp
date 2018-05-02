@@ -17,6 +17,9 @@
  */
 package org.bosik.diacomp.web.backend.common;
 
+import org.apache.tomcat.jdbc.pool.DataSource;
+import org.apache.tomcat.jdbc.pool.PoolProperties;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,8 +27,6 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.apache.tomcat.jdbc.pool.DataSource;
-import org.apache.tomcat.jdbc.pool.PoolProperties;
 
 public class MySQLAccess
 {
@@ -34,8 +35,8 @@ public class MySQLAccess
 		T onData(ResultSet set) throws SQLException;
 	}
 
-	private static final String		SQL_DRIVER	= "com.mysql.jdbc.Driver";
-	private static final DataSource	datasource;
+	private static final String SQL_DRIVER = "com.mysql.jdbc.Driver";
+	private static final DataSource datasource;
 
 	public MySQLAccess()
 	{
@@ -73,64 +74,62 @@ public class MySQLAccess
 		p.setMaxIdle(20);
 		p.setLogAbandoned(true);
 		p.setRemoveAbandoned(true);
-		p.setJdbcInterceptors("org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;"
-				+ "org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer");
+		p.setJdbcInterceptors(
+				"org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;" + "org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer");
 
 		datasource = new DataSource();
 		datasource.setPoolProperties(p);
 	}
 
-	/**
-	 * 
-	 * @param table
-	 *            Table name
-	 * @param columns
-	 *            A list of which columns to return. Passing null will return all columns, which is inefficient.
-	 * @param where
-	 *            Selection clause
-	 * @param whereArgs
-	 *            Arguments for clause
-	 * @param order
-	 *            Name of column to be ordered by
-	 * @param offset
-	 *            Index of first row to select
-	 * @param limit
-	 *            Max number of rows to be selected
-	 * @param callback
-	 *            What to do with the data
-	 * @return
-	 * @throws SQLException
-	 */
-	public static <T> T select(String table, String[] columns, String where, String[] whereArgs, String order,
-			int offset, int limit, DataCallback<T> callback) throws SQLException
+	public static Connection getConnection() throws SQLException
 	{
-		try (Connection connection = datasource.getConnection();
-				PreparedStatement statement = Utils.prepareSelectStatement(connection, table, columns, where,
-						whereArgs, order, offset, limit); ResultSet set = statement.executeQuery())
+		return datasource.getConnection();
+	}
+
+	public static <T> T select(Connection connection, PreparedStatement statement, DataCallback<T> callback) throws SQLException
+	{
+		try (Connection c = connection; PreparedStatement s = statement; ResultSet set = s.executeQuery())
 		{
 			return callback.onData(set);
 		}
 	}
 
 	/**
-	 * 
-	 * @param table
-	 *            Table name
-	 * @param columns
-	 *            A list of which columns to return. Passing null will return all columns, which is inefficient.
-	 * @param where
-	 *            Selection clause
-	 * @param whereArgs
-	 *            Arguments for clause
-	 * @param order
-	 *            Name of column to be ordered by
-	 * @param callback
-	 *            What to do with the data
+	 * @param table     Table name
+	 * @param columns   A list of which columns to return. Passing null will return all columns, which is inefficient.
+	 * @param where     Selection clause
+	 * @param whereArgs Arguments for clause
+	 * @param order     Name of column to be ordered by
+	 * @param offset    Index of first row to select
+	 * @param limit     Max number of rows to be selected
+	 * @param callback  What to do with the data
 	 * @return
 	 * @throws SQLException
 	 */
-	public static <T> T select(String table, String[] columns, String where, String[] whereArgs, String order,
+	public static <T> T select(String table, String[] columns, String where, String[] whereArgs, String order, int offset, int limit,
 			DataCallback<T> callback) throws SQLException
+	{
+		try (Connection connection = datasource.getConnection();
+				PreparedStatement statement = Utils
+						.prepareSelectStatement(connection, table, columns, where, whereArgs, order, offset, limit);
+				ResultSet set = statement.executeQuery())
+		{
+			return callback.onData(set);
+		}
+	}
+
+	/**
+	 * @param table     Table name
+	 * @param columns   A list of which columns to return. Passing null will return all columns, which is inefficient.
+	 * @param where     Selection clause
+	 * @param whereArgs Arguments for clause
+	 * @param order     Name of column to be ordered by
+	 * @param callback  What to do with the data
+	 * @return
+	 * @throws SQLException
+	 */
+	public static <T> T select(String table, String[] columns, String where, String[] whereArgs, String order, DataCallback<T> callback)
+			throws SQLException
 	{
 		final int offset = -1;
 		final int limit = -1;
@@ -235,8 +234,8 @@ class Utils
 		return sb;
 	}
 
-	public static PreparedStatement prepareSelectStatement(Connection connection, String table, String[] columns,
-			String where, String[] whereArgs, String order, int offset, int limit) throws SQLException
+	public static PreparedStatement prepareSelectStatement(Connection connection, String table, String[] columns, String where,
+			String[] whereArgs, String order, int offset, int limit) throws SQLException
 	{
 		String projection = columns == null ? "*" : Utils.commaSeparated(columns).toString();
 
@@ -260,8 +259,8 @@ class Utils
 		return statement;
 	}
 
-	public static PreparedStatement prepareInsertStatement(Connection connection, String table,
-			Map<String, String> values) throws SQLException
+	public static PreparedStatement prepareInsertStatement(Connection connection, String table, Map<String, String> values)
+			throws SQLException
 	{
 		// making wildcarded string
 		StringBuilder sb = new StringBuilder();
@@ -282,8 +281,8 @@ class Utils
 		return statement;
 	}
 
-	public static PreparedStatement prepareUpdateStatement(Connection connection, String table,
-			Map<String, String> set, Map<String, String> where) throws SQLException
+	public static PreparedStatement prepareUpdateStatement(Connection connection, String table, Map<String, String> set,
+			Map<String, String> where) throws SQLException
 	{
 		/**
 		 * THINK Requires set.keySet().iterator() and set.entrySet().iterator() return items in the same order

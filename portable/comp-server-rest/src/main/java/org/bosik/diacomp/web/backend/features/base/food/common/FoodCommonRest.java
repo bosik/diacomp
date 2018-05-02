@@ -17,11 +17,12 @@
  */
 package org.bosik.diacomp.web.backend.features.base.food.common;
 
-import org.bosik.diacomp.core.entities.business.foodbase.FoodCommon;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
-import org.bosik.diacomp.core.persistence.serializers.SerializerFoodCommon;
+import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,8 +48,8 @@ public class FoodCommonRest
 	//	@Autowired
 	//	private FoodSetService foodSetService;
 
-	//	private final Serializer<Versioned<FoodItem>> serializerFoodItem   = new SerializerFoodItem();
-	private final Serializer<FoodCommon> serializerFoodCommon = new SerializerFoodCommon();
+	private final Serializer<Versioned<FoodItem>> serializer = new SerializerFoodItem();
+	//	private final Serializer<FoodCommon> serializer = new SerializerFoodCommon();
 
 	//	@GET
 	//	@Path("init")
@@ -61,7 +62,7 @@ public class FoodCommonRest
 	//			for (FoodSetInfo set : sets)
 	//			{
 	//				String data = foodSetService.getFoodSet(set.getId());
-	//				List<Versioned<FoodItem>> items = serializerFoodItem.readAll(data);
+	//				List<Versioned<FoodItem>> items = serializer.readAll(data);
 	//
 	//				foodCommonService.upload(set.getDescription(), items);
 	//			}
@@ -90,14 +91,14 @@ public class FoodCommonRest
 				Utils.checkSize(parTime, Utils.FORMAT_DATE_TIME.length());
 				Date lastModified = Utils.parseTimeUTC(parTime);
 
-				List<FoodCommon> foods = foodCommonService.find(lastModified);
-				String data = serializerFoodCommon.writeAll(foods);
+				List<Versioned<FoodItem>> foods = foodCommonService.findChanged(lastModified);
+				String data = serializer.writeAll(foods);
 				return Response.ok(data).build();
 			}
 			else
 			{
-				List<FoodCommon> foods = foodCommonService.find();
-				String data = serializerFoodCommon.writeAll(foods);
+				List<Versioned<FoodItem>> foods = foodCommonService.find();
+				String data = serializer.writeAll(foods);
 				return Response.ok(data).build();
 			}
 		}

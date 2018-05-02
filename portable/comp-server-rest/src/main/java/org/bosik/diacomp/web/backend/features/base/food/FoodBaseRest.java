@@ -26,7 +26,7 @@ import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService;
+import org.bosik.diacomp.web.backend.features.base.food.combo.FoodComboLocalService;
 import org.bosik.diacomp.web.backend.features.user.auth.UserRest;
 import org.bosik.merklesync.DataSource;
 import org.bosik.merklesync.MerkleTree;
@@ -49,6 +49,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Legacy service, mostly for Windows clients
+ */
 @Service
 @Path("food/")
 public class FoodBaseRest extends UserRest
@@ -56,7 +59,7 @@ public class FoodBaseRest extends UserRest
 	private static final String TYPE_JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=utf-8";
 
 	@Autowired
-	private FoodUserLocalService foodUserService;
+	private FoodComboLocalService foodComboService;
 
 	private final Serializer<Versioned<FoodItem>> serializer    = new SerializerFoodItem();
 	private final Serializer<Map<String, String>> serializerMap = new SerializerMap();
@@ -71,7 +74,7 @@ public class FoodBaseRest extends UserRest
 			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../count/1ef0)");
 			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
-			int count = foodUserService.count(getUserId(), parPrefix);
+			int count = foodComboService.count(getUserId(), parPrefix);
 			String response = String.valueOf(count);
 			return Response.ok(response).build();
 		}
@@ -103,7 +106,7 @@ public class FoodBaseRest extends UserRest
 			// Prefix form
 			if (parId.length() <= DataSource.ID_PREFIX_SIZE)
 			{
-				List<Versioned<FoodItem>> items = foodUserService.findByIdPrefix(getUserId(), parId);
+				List<Versioned<FoodItem>> items = foodComboService.findByIdPrefix(getUserId(), parId);
 
 				String response = serializer.writeAll(items);
 				return Response.ok(response).build();
@@ -111,7 +114,7 @@ public class FoodBaseRest extends UserRest
 			else
 			// Full form
 			{
-				Versioned<FoodItem> item = foodUserService.findById(getUserId(), parId);
+				Versioned<FoodItem> item = foodComboService.findById(getUserId(), parId);
 
 				if (item != null)
 				{
@@ -155,7 +158,7 @@ public class FoodBaseRest extends UserRest
 
 			boolean includeRemoved = Boolean.valueOf(parShowRem);
 
-			List<Versioned<FoodItem>> items = foodUserService.findAll(getUserId(), includeRemoved);
+			List<Versioned<FoodItem>> items = foodComboService.findAll(getUserId(), includeRemoved);
 			String response = serializer.writeAll(items);
 			return Response.ok(response).build();
 		}
@@ -184,7 +187,7 @@ public class FoodBaseRest extends UserRest
 			Utils.checkNotNull(filter, "Missing parameter: q");
 			Utils.checkSize(filter, 256);
 
-			List<Versioned<FoodItem>> items = foodUserService.findAny(getUserId(), filter);
+			List<Versioned<FoodItem>> items = foodComboService.findAny(getUserId(), filter);
 			String response = serializer.writeAll(items);
 			return Response.ok(response).build();
 		}
@@ -214,7 +217,7 @@ public class FoodBaseRest extends UserRest
 			Utils.checkSize(parTime, Utils.FORMAT_DATE_TIME.length());
 
 			Date since = Utils.parseTimeUTC(parTime);
-			List<Versioned<FoodItem>> items = foodUserService.findChanged(getUserId(), since);
+			List<Versioned<FoodItem>> items = foodComboService.findChanged(getUserId(), since);
 			String response = serializer.writeAll(items);
 			return Response.ok(response).build();
 		}
@@ -243,7 +246,7 @@ public class FoodBaseRest extends UserRest
 			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../hash/1ef0)");
 			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
-			MerkleTree hashTree = foodUserService.getHashTree(getUserId());
+			MerkleTree hashTree = foodComboService.getHashTree(getUserId());
 			String s = hashTree.getHash(parPrefix);
 			return Response.ok(s != null ? s : "").build();
 		}
@@ -272,7 +275,7 @@ public class FoodBaseRest extends UserRest
 			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../hashes/1ef0)");
 			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
 
-			MerkleTree hashTree = foodUserService.getHashTree(getUserId());
+			MerkleTree hashTree = foodComboService.getHashTree(getUserId());
 			Map<String, String> map = hashTree.getHashChildren(parPrefix);
 			String response = serializerMap.write(map);
 			return Response.ok(response).build();
@@ -301,7 +304,7 @@ public class FoodBaseRest extends UserRest
 			Utils.checkNotNull(parItems, "Missing parameter: items");
 
 			List<Versioned<FoodItem>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
-			foodUserService.save(getUserId(), items);
+			foodComboService.save(getUserId(), items);
 
 			return Response.ok("Saved OK").build();
 		}

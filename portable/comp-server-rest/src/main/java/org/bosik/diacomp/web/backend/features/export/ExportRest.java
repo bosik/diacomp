@@ -23,7 +23,7 @@ import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.utils.ZipUtils;
 import org.bosik.diacomp.core.utils.ZipUtils.Entry;
 import org.bosik.diacomp.web.backend.features.base.dish.DishBaseLocalService;
-import org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService;
+import org.bosik.diacomp.web.backend.features.base.food.combo.FoodComboLocalService;
 import org.bosik.diacomp.web.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.web.backend.features.preferences.PreferencesLocalService;
 import org.bosik.diacomp.web.backend.features.user.auth.UserRest;
@@ -46,7 +46,7 @@ public class ExportRest extends UserRest
 	private DiaryLocalService diaryService;
 
 	@Autowired
-	private FoodUserLocalService foodbaseService;
+	private FoodComboLocalService foodComboLocalService;
 
 	@Autowired
 	private DishBaseLocalService dishbaseService;
@@ -65,7 +65,7 @@ public class ExportRest extends UserRest
 
 			List<Entry> entries = new ArrayList<>();
 			entries.add(new Entry(ExportAPI.JSON_DIARY, diaryService.exportData(userId).getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.JSON_FOODBASE, foodbaseService.exportData(userId).getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.JSON_FOODBASE, foodComboLocalService.exportData(userId).getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.JSON_DISHBASE, dishbaseService.exportData(userId).getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.JSON_PREFERENCES, prefService.exportData(userId).getBytes("UTF-8")));
 
@@ -93,7 +93,7 @@ public class ExportRest extends UserRest
 
 			List<Entry> entries = new ArrayList<>();
 			entries.add(new Entry(ExportAPI.PLAIN_DIARY, diaryService.exportPlain(userId).getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.PLAIN_FOODBASE, foodbaseService.exportPlain(userId).getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.PLAIN_FOODBASE, foodComboLocalService.exportPlain(userId).getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.PLAIN_DISHBASE, dishbaseService.exportPlain(userId).getBytes("UTF-8")));
 			entries.add(new Entry(ExportAPI.PLAIN_PREFERENCES, prefService.exportPlain(userId).getBytes("UTF-8")));
 
