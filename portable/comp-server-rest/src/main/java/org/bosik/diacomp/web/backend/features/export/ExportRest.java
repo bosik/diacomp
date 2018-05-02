@@ -35,6 +35,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +55,11 @@ public class ExportRest extends UserRest
 	@Autowired
 	private PreferencesLocalService prefService;
 
+	private static byte[] getBytes(String s) throws UnsupportedEncodingException
+	{
+		return s.getBytes("UTF-8");
+	}
+
 	@GET
 	@Path("/json")
 	@Produces("application/zip")
@@ -64,10 +70,10 @@ public class ExportRest extends UserRest
 			final int userId = getUserId();
 
 			List<Entry> entries = new ArrayList<>();
-			entries.add(new Entry(ExportAPI.JSON_DIARY, diaryService.exportData(userId).getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.JSON_FOODBASE, foodComboLocalService.exportData(userId).getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.JSON_DISHBASE, dishbaseService.exportData(userId).getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.JSON_PREFERENCES, prefService.exportData(userId).getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.JSON_DIARY, getBytes(diaryService.exportJson(userId))));
+			entries.add(new Entry(ExportAPI.JSON_FOODBASE, getBytes(foodComboLocalService.exportJson(userId))));
+			entries.add(new Entry(ExportAPI.JSON_DISHBASE, getBytes(dishbaseService.exportJson(userId))));
+			entries.add(new Entry(ExportAPI.JSON_PREFERENCES, getBytes(prefService.exportJson(userId))));
 
 			return Response.ok(ZipUtils.zip(entries)).header("Content-Disposition", "attachment; filename=\"data.zip\"").build();
 		}
@@ -92,10 +98,10 @@ public class ExportRest extends UserRest
 			final int userId = getUserId();
 
 			List<Entry> entries = new ArrayList<>();
-			entries.add(new Entry(ExportAPI.PLAIN_DIARY, diaryService.exportPlain(userId).getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.PLAIN_FOODBASE, foodComboLocalService.exportPlain(userId).getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.PLAIN_DISHBASE, dishbaseService.exportPlain(userId).getBytes("UTF-8")));
-			entries.add(new Entry(ExportAPI.PLAIN_PREFERENCES, prefService.exportPlain(userId).getBytes("UTF-8")));
+			entries.add(new Entry(ExportAPI.PLAIN_DIARY, getBytes(diaryService.exportPlain(userId))));
+			entries.add(new Entry(ExportAPI.PLAIN_FOODBASE, getBytes(foodComboLocalService.exportPlain(userId))));
+			entries.add(new Entry(ExportAPI.PLAIN_DISHBASE, getBytes(dishbaseService.exportPlain(userId))));
+			entries.add(new Entry(ExportAPI.PLAIN_PREFERENCES, getBytes(prefService.exportPlain(userId))));
 
 			return Response.ok(ZipUtils.zip(entries)).header("Content-Disposition", "attachment; filename=\"data.zip\"").build();
 		}

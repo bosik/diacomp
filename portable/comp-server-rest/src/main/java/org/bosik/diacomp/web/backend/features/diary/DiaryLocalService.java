@@ -458,7 +458,7 @@ public class DiaryLocalService
 		});
 	}
 
-	public String exportData(int userId)
+	public String exportJson(int userId)
 	{
 		try
 		{

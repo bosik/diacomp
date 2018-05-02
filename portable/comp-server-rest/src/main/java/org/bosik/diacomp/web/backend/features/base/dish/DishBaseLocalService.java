@@ -460,7 +460,7 @@ public class DishBaseLocalService
 		});
 	}
 
-	public String exportData(int userId)
+	public String exportJson(int userId)
 	{
 		try
 		{
