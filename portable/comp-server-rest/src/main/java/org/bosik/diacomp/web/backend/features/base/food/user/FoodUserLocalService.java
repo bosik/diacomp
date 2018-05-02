@@ -34,7 +34,6 @@ import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,23 +47,36 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
-import java.util.TimeZone;
 import java.util.TreeMap;
 
 @Service
 // @Profile("real")
 public class FoodUserLocalService
 {
+	// Foodbase table (legacy)
+	private static final String TABLE_FOODBASE            = "foodbase2";
+	private static final String COLUMN_FOODBASE_GUID      = "_GUID";
+	private static final String COLUMN_FOODBASE_USER      = "_UserID";
+	private static final String COLUMN_FOODBASE_TIMESTAMP = "_TimeStamp";
+	private static final String COLUMN_FOODBASE_HASH      = "_Hash";
+	private static final String COLUMN_FOODBASE_VERSION   = "_Version";
+	private static final String COLUMN_FOODBASE_DELETED   = "_Deleted";
+	private static final String COLUMN_FOODBASE_CONTENT   = "_Content";
+
 	// Foodbase table
-	public static final String TABLE_FOODBASE            = "foodbase2";
-	public static final String COLUMN_FOODBASE_GUID      = "_GUID";
-	public static final String COLUMN_FOODBASE_USER      = "_UserID";
-	public static final String COLUMN_FOODBASE_TIMESTAMP = "_TimeStamp";
-	public static final String COLUMN_FOODBASE_HASH      = "_Hash";
-	public static final String COLUMN_FOODBASE_VERSION   = "_Version";
-	public static final String COLUMN_FOODBASE_DELETED   = "_Deleted";
-	public static final String COLUMN_FOODBASE_CONTENT   = "_Content";
-	public static final String COLUMN_FOODBASE_NAMECACHE = "_NameCache";
+	public static final String TABLE_FOOD_USER                = "food_user";
+	public static final String COLUMN_FOOD_USER_ID            = "ID";
+	public static final String COLUMN_FOOD_USER_USER_ID       = "UserID";
+	public static final String COLUMN_FOOD_USER_NAME          = "Name";
+	public static final String COLUMN_FOOD_USER_PROTS         = "Prots";
+	public static final String COLUMN_FOOD_USER_FATS          = "Fats";
+	public static final String COLUMN_FOOD_USER_CARBS         = "Carbs";
+	public static final String COLUMN_FOOD_USER_VALUE         = "Value";
+	public static final String COLUMN_FOOD_USER_FROM_TABLE    = "FromTable"; // *
+	public static final String COLUMN_FOOD_USER_DELETED       = "Deleted";
+	public static final String COLUMN_FOOD_USER_LAST_MODIFIED = "LastModified";
+	public static final String COLUMN_FOOD_USER_HASH          = "Hash"; // *
+	public static final String COLUMN_FOOD_USER_VERSION       = "Version"; // *
 
 	private static final int MAX_READ_ITEMS = 500;
 
@@ -73,6 +85,27 @@ public class FoodUserLocalService
 
 	@Autowired
 	private CachedFoodUserHashTree cachedHashTree;
+
+	private static Versioned<FoodItem> parseItem(ResultSet resultSet) throws SQLException
+	{
+		final FoodItem food = new FoodItem();
+		food.setName(resultSet.getString(COLUMN_FOOD_USER_NAME));
+		food.setRelProts(resultSet.getDouble(COLUMN_FOOD_USER_PROTS));
+		food.setRelFats(resultSet.getDouble(COLUMN_FOOD_USER_FATS));
+		food.setRelCarbs(resultSet.getDouble(COLUMN_FOOD_USER_CARBS));
+		food.setRelValue(resultSet.getDouble(COLUMN_FOOD_USER_VALUE));
+		food.setFromTable(resultSet.getBoolean(COLUMN_FOOD_USER_FROM_TABLE));
+
+		Versioned<FoodItem> item = new Versioned<>();
+		item.setId(resultSet.getString(COLUMN_FOOD_USER_ID));
+		item.setTimeStamp(Utils.parseTimeUTC(resultSet.getString(COLUMN_FOOD_USER_LAST_MODIFIED)));
+		item.setHash(resultSet.getString(COLUMN_FOOD_USER_HASH));
+		item.setVersion(resultSet.getInt(COLUMN_FOOD_USER_VERSION));
+		item.setDeleted(resultSet.getBoolean(COLUMN_FOOD_USER_DELETED));
+		item.setData(food);
+
+		return item;
+	}
 
 	private static List<Versioned<FoodItem>> parseItems(ResultSet resultSet, int limit) throws SQLException
 	{
@@ -93,22 +126,7 @@ public class FoodUserLocalService
 
 		while (resultSet.next())
 		{
-			String id = resultSet.getString(COLUMN_FOODBASE_GUID);
-			Date timeStamp = Utils.parseTimeUTC(resultSet.getString(COLUMN_FOODBASE_TIMESTAMP));
-			String hash = resultSet.getString(COLUMN_FOODBASE_HASH);
-			int version = resultSet.getInt(COLUMN_FOODBASE_VERSION);
-			boolean deleted = (resultSet.getInt(COLUMN_FOODBASE_DELETED) == 1);
-			String content = resultSet.getString(COLUMN_FOODBASE_CONTENT);
-
-			Versioned<FoodItem> item = new Versioned<>();
-			item.setId(id);
-			item.setTimeStamp(timeStamp);
-			item.setHash(hash);
-			item.setVersion(version);
-			item.setDeleted(deleted);
-			item.setData(serializer.read(content));
-
-			result.add(item);
+			result.add(parseItem(resultSet));
 		}
 
 		return result;
@@ -134,11 +152,11 @@ public class FoodUserLocalService
 		try
 		{
 			final String[] select = { "COUNT(*)" };
-			final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_GUID);
+			final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_FOOD_USER_USER_ID, COLUMN_FOOD_USER_ID);
 			final String[] whereArgs = { String.valueOf(userId), prefix + "%" };
 			final String order = null;
 
-			return MySQLAccess.select(TABLE_FOODBASE, select, where, whereArgs, order, new DataCallback<Integer>()
+			return MySQLAccess.select(TABLE_FOOD_USER, select, where, whereArgs, order, new DataCallback<Integer>()
 			{
 				@Override
 				public Integer onData(ResultSet set) throws SQLException
@@ -189,18 +207,18 @@ public class FoodUserLocalService
 
 			if (includeRemoved)
 			{
-				where = String.format("(%s = ?)", COLUMN_FOODBASE_USER);
+				where = String.format("(%s = ?)", COLUMN_FOOD_USER_USER_ID);
 				whereArgs = new String[] { String.valueOf(userId) };
 			}
 			else
 			{
-				where = String.format("(%s = ?) AND (%s = ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_DELETED);
+				where = String.format("(%s = ?) AND (%s = ?)", COLUMN_FOOD_USER_USER_ID, COLUMN_FOOD_USER_DELETED);
 				whereArgs = new String[] { String.valueOf(userId), Utils.formatBooleanInt(false) };
 			}
 
 			final String order = null;
 
-			return MySQLAccess.select(TABLE_FOODBASE, select, where, whereArgs, order, new DataCallback<List<Versioned<FoodItem>>>()
+			return MySQLAccess.select(TABLE_FOOD_USER, select, where, whereArgs, order, new DataCallback<List<Versioned<FoodItem>>>()
 			{
 				@Override
 				public List<Versioned<FoodItem>> onData(ResultSet set) throws SQLException
@@ -220,12 +238,12 @@ public class FoodUserLocalService
 		try
 		{
 			final String[] select = null; // all
-			final String where = String.format("(%s = ?) AND (%s = ?) AND (%s LIKE ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_DELETED,
-					COLUMN_FOODBASE_NAMECACHE);
+			final String where = String.format("(%s = ?) AND (%s = ?) AND (%s LIKE ?)", COLUMN_FOOD_USER_USER_ID, COLUMN_FOOD_USER_DELETED,
+					COLUMN_FOOD_USER_NAME);
 			final String[] whereArgs = { String.valueOf(userId), Utils.formatBooleanInt(false), "%" + filter + "%" };
-			final String order = COLUMN_FOODBASE_NAMECACHE;
+			final String order = COLUMN_FOOD_USER_NAME;
 
-			return MySQLAccess.select(TABLE_FOODBASE, select, where, whereArgs, order, new DataCallback<List<Versioned<FoodItem>>>()
+			return MySQLAccess.select(TABLE_FOOD_USER, select, where, whereArgs, order, new DataCallback<List<Versioned<FoodItem>>>()
 			{
 				@Override
 				public List<Versioned<FoodItem>> onData(ResultSet set) throws SQLException
@@ -245,11 +263,11 @@ public class FoodUserLocalService
 		try
 		{
 			final String[] select = null; // all
-			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_GUID);
+			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_FOOD_USER_USER_ID, COLUMN_FOOD_USER_ID);
 			final String[] whereArgs = { String.valueOf(userId), id };
 			final String order = null;
 
-			return MySQLAccess.select(TABLE_FOODBASE, select, where, whereArgs, order, new DataCallback<Versioned<FoodItem>>()
+			return MySQLAccess.select(TABLE_FOOD_USER, select, where, whereArgs, order, new DataCallback<Versioned<FoodItem>>()
 			{
 				@Override
 				public Versioned<FoodItem> onData(ResultSet set) throws SQLException
@@ -270,11 +288,11 @@ public class FoodUserLocalService
 		try
 		{
 			final String[] select = null; // all
-			final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_GUID);
+			final String where = String.format("(%s = ?) AND (%s LIKE ?)", COLUMN_FOOD_USER_USER_ID, COLUMN_FOOD_USER_ID);
 			final String[] whereArgs = { String.valueOf(userId), prefix + "%" };
-			final String order = COLUMN_FOODBASE_NAMECACHE;
+			final String order = COLUMN_FOOD_USER_NAME;
 
-			return MySQLAccess.select(TABLE_FOODBASE, select, where, whereArgs, order, new DataCallback<List<Versioned<FoodItem>>>()
+			return MySQLAccess.select(TABLE_FOOD_USER, select, where, whereArgs, order, new DataCallback<List<Versioned<FoodItem>>>()
 			{
 				@Override
 				public List<Versioned<FoodItem>> onData(ResultSet set) throws SQLException
@@ -294,11 +312,11 @@ public class FoodUserLocalService
 		try
 		{
 			final String[] select = null; // all
-			final String where = String.format("(%s = ?) AND (%s >= ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_TIMESTAMP);
+			final String where = String.format("(%s = ?) AND (%s >= ?)", COLUMN_FOOD_USER_USER_ID, COLUMN_FOOD_USER_LAST_MODIFIED);
 			final String[] whereArgs = { String.valueOf(userId), Utils.formatTimeUTC(since) };
-			final String order = COLUMN_FOODBASE_NAMECACHE;
+			final String order = COLUMN_FOOD_USER_NAME;
 
-			return MySQLAccess.select(TABLE_FOODBASE, select, where, whereArgs, order, new DataCallback<List<Versioned<FoodItem>>>()
+			return MySQLAccess.select(TABLE_FOOD_USER, select, where, whereArgs, order, new DataCallback<List<Versioned<FoodItem>>>()
 			{
 				@Override
 				public List<Versioned<FoodItem>> onData(ResultSet set) throws SQLException
@@ -318,12 +336,12 @@ public class FoodUserLocalService
 		try
 		{
 			final String[] select = null; // all
-			final String where = String
-					.format("(%s = ?) AND (%s = ?) AND (%s = ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_DELETED, COLUMN_FOODBASE_NAMECACHE);
+			final String where = String.format("(%s = ?) AND (%s = ?) AND (%s = ?)", COLUMN_FOOD_USER_USER_ID, COLUMN_FOOD_USER_DELETED,
+					COLUMN_FOOD_USER_NAME);
 			final String[] whereArgs = { String.valueOf(userId), Utils.formatBooleanInt(false), exactName };
 			final String order = null;
 
-			return MySQLAccess.select(TABLE_FOODBASE, select, where, whereArgs, order, new DataCallback<Versioned<FoodItem>>()
+			return MySQLAccess.select(TABLE_FOOD_USER, select, where, whereArgs, order, new DataCallback<Versioned<FoodItem>>()
 			{
 				@Override
 				public Versioned<FoodItem> onData(ResultSet set) throws SQLException
@@ -349,12 +367,12 @@ public class FoodUserLocalService
 	{
 		try
 		{
-			final String[] select = { COLUMN_FOODBASE_GUID, COLUMN_FOODBASE_HASH };
-			final String where = String.format("(%s = ?)", COLUMN_FOODBASE_USER);
+			final String[] select = { COLUMN_FOOD_USER_ID, COLUMN_FOOD_USER_HASH };
+			final String where = String.format("(%s = ?)", COLUMN_FOOD_USER_USER_ID);
 			final String[] whereArgs = { String.valueOf(userId) };
 			final String order = null;
 
-			return MySQLAccess.select(TABLE_FOODBASE, select, where, whereArgs, order, new DataCallback<SortedMap<String, String>>()
+			return MySQLAccess.select(TABLE_FOOD_USER, select, where, whereArgs, order, new DataCallback<SortedMap<String, String>>()
 			{
 				@Override
 				public SortedMap<String, String> onData(ResultSet set) throws SQLException
@@ -363,8 +381,8 @@ public class FoodUserLocalService
 
 					while (set.next())
 					{
-						String id = set.getString(COLUMN_FOODBASE_GUID);
-						String hash = set.getString(COLUMN_FOODBASE_HASH);
+						String id = set.getString(COLUMN_FOOD_USER_ID);
+						String hash = set.getString(COLUMN_FOOD_USER_HASH);
 						// THINK: probably storing entries is unnecessary, so we should
 						// process it as we go
 						result.put(id, hash);
@@ -404,33 +422,38 @@ public class FoodUserLocalService
 							ObjectService.ID_FULL_SIZE));
 				}
 
-				Map<String, String> set = new HashMap<>();
+				Map<String, Object> set = new HashMap<>();
 
-				set.put(COLUMN_FOODBASE_TIMESTAMP, Utils.formatTimeUTC(item.getTimeStamp()));
-				set.put(COLUMN_FOODBASE_HASH, item.getHash());
-				set.put(COLUMN_FOODBASE_VERSION, String.valueOf(item.getVersion()));
-				set.put(COLUMN_FOODBASE_DELETED, Utils.formatBooleanInt(item.isDeleted()));
-				set.put(COLUMN_FOODBASE_CONTENT, serializer.write(item.getData()));
-				set.put(COLUMN_FOODBASE_NAMECACHE, item.getData().getName());
+				set.put(COLUMN_FOOD_USER_NAME, item.getData().getName());
+				set.put(COLUMN_FOOD_USER_PROTS, item.getData().getRelProts());
+				set.put(COLUMN_FOOD_USER_FATS, item.getData().getRelFats());
+				set.put(COLUMN_FOOD_USER_CARBS, item.getData().getRelCarbs());
+				set.put(COLUMN_FOOD_USER_VALUE, item.getData().getRelValue());
+				set.put(COLUMN_FOOD_USER_FROM_TABLE, item.getData().getFromTable());
+
+				set.put(COLUMN_FOOD_USER_DELETED, item.isDeleted());
+				set.put(COLUMN_FOOD_USER_LAST_MODIFIED, Utils.formatTimeUTC(item.getTimeStamp()));
+				set.put(COLUMN_FOOD_USER_HASH, item.getHash());
+				set.put(COLUMN_FOOD_USER_VERSION, item.getVersion());
 
 				if (recordExists(userId, item.getId()))
 				{
 					// presented, update
 
 					Map<String, String> where = new HashMap<>();
-					where.put(COLUMN_FOODBASE_GUID, item.getId());
-					where.put(COLUMN_FOODBASE_USER, String.valueOf(userId));
+					where.put(COLUMN_FOOD_USER_ID, item.getId());
+					where.put(COLUMN_FOOD_USER_USER_ID, String.valueOf(userId));
 
-					MySQLAccess.update(TABLE_FOODBASE, set, where);
+					MySQLAccess.update(TABLE_FOOD_USER, set, where);
 				}
 				else
 				{
 					// not presented, insert
 
-					set.put(COLUMN_FOODBASE_GUID, item.getId());
-					set.put(COLUMN_FOODBASE_USER, String.valueOf(userId));
+					set.put(COLUMN_FOOD_USER_ID, item.getId());
+					set.put(COLUMN_FOOD_USER_USER_ID, String.valueOf(userId));
 
-					MySQLAccess.insert(TABLE_FOODBASE, set);
+					MySQLAccess.insert(TABLE_FOOD_USER, set);
 				}
 
 				cachedHashTree.set(userId, null);
@@ -445,12 +468,12 @@ public class FoodUserLocalService
 	@SuppressWarnings("static-method")
 	private boolean recordExists(int userId, String id) throws SQLException
 	{
-		final String[] select = { COLUMN_FOODBASE_GUID };
-		final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_FOODBASE_USER, COLUMN_FOODBASE_GUID);
+		final String[] select = { COLUMN_FOOD_USER_ID };
+		final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_FOOD_USER_USER_ID, COLUMN_FOOD_USER_ID);
 		final String[] whereArgs = { String.valueOf(userId), id };
 		final String order = null;
 
-		return MySQLAccess.select(TABLE_FOODBASE, select, where, whereArgs, order, new DataCallback<Boolean>()
+		return MySQLAccess.select(TABLE_FOOD_USER, select, where, whereArgs, order, new DataCallback<Boolean>()
 		{
 			@Override
 			public Boolean onData(ResultSet set) throws SQLException
@@ -465,11 +488,11 @@ public class FoodUserLocalService
 		try
 		{
 			final String[] select = null; // all
-			final String where = String.format("(%s = ?)", COLUMN_FOODBASE_USER);
+			final String where = String.format("(%s = ?)", COLUMN_FOOD_USER_USER_ID);
 			final String[] whereArgs = { String.valueOf(userId) };
-			final String order = COLUMN_FOODBASE_NAMECACHE;
+			final String order = COLUMN_FOOD_USER_NAME;
 
-			return MySQLAccess.select(TABLE_FOODBASE, select, where, whereArgs, order, new DataCallback<String>()
+			return MySQLAccess.select(TABLE_FOOD_USER, select, where, whereArgs, order, new DataCallback<String>()
 			{
 				@Override
 				public String onData(ResultSet resultSet) throws SQLException
@@ -479,12 +502,7 @@ public class FoodUserLocalService
 
 					while (resultSet.next())
 					{
-						String id = resultSet.getString(COLUMN_FOODBASE_GUID);
-						String timeStamp = Utils.formatTimeUTC(resultSet.getTimestamp(COLUMN_FOODBASE_TIMESTAMP));
-						String hash = resultSet.getString(COLUMN_FOODBASE_HASH);
-						int version = resultSet.getInt(COLUMN_FOODBASE_VERSION);
-						boolean deleted = (resultSet.getInt(COLUMN_FOODBASE_DELETED) == 1);
-						String content = resultSet.getString(COLUMN_FOODBASE_CONTENT);
+						Versioned<FoodItem> item = parseItem(resultSet);
 
 						if (!resultSet.isFirst())
 						{
@@ -492,12 +510,12 @@ public class FoodUserLocalService
 						}
 
 						s.append("{");
-						s.append("\"id\":\"").append(id).append("\",");
-						s.append("\"stamp\":\"").append(timeStamp).append("\",");
-						s.append("\"hash\":\"").append(hash).append("\",");
-						s.append("\"version\":").append(version).append(",");
-						s.append("\"deleted\":").append(deleted).append(",");
-						s.append("\"data\":").append(content);
+						s.append("\"id\":\"").append(item.getId()).append("\",");
+						s.append("\"stamp\":\"").append(Utils.formatTimeUTC(item.getTimeStamp())).append("\",");
+						s.append("\"hash\":\"").append(item.getHash()).append("\",");
+						s.append("\"version\":").append(item.getVersion()).append(",");
+						s.append("\"deleted\":").append(item.isDeleted()).append(",");
+						s.append("\"data\":").append(serializer.write(item.getData()));
 						s.append("}");
 					}
 
@@ -517,11 +535,11 @@ public class FoodUserLocalService
 		try
 		{
 			final String[] select = null; // all
-			final String where = String.format("(%s = ?)", COLUMN_FOODBASE_USER);
+			final String where = String.format("(%s = ?)", COLUMN_FOOD_USER_USER_ID);
 			final String[] whereArgs = { String.valueOf(userId) };
-			final String order = COLUMN_FOODBASE_NAMECACHE;
+			final String order = COLUMN_FOOD_USER_NAME;
 
-			return MySQLAccess.select(TABLE_FOODBASE, select, where, whereArgs, order, new DataCallback<String>()
+			return MySQLAccess.select(TABLE_FOOD_USER, select, where, whereArgs, order, new DataCallback<String>()
 			{
 				@Override
 				public String onData(ResultSet resultSet) throws SQLException
@@ -531,64 +549,18 @@ public class FoodUserLocalService
 					s.append("VERSION=1\n");
 					while (resultSet.next())
 					{
-						String name = resultSet.getString(COLUMN_FOODBASE_NAMECACHE);
-						String id = resultSet.getString(COLUMN_FOODBASE_GUID);
-						String timeStamp = Utils.formatTimeLocal(TimeZone.getDefault(), resultSet.getTimestamp(COLUMN_FOODBASE_TIMESTAMP));
-						String hash = resultSet.getString(COLUMN_FOODBASE_HASH);
-						int version = resultSet.getInt(COLUMN_FOODBASE_VERSION);
-						boolean deleted = (resultSet.getInt(COLUMN_FOODBASE_DELETED) == 1);
-						String content = resultSet.getString(COLUMN_FOODBASE_CONTENT);
+						Versioned<FoodItem> item = parseItem(resultSet);
 
-						s.append(Utils.removeTabs(name)).append('\t');
-						s.append(id).append('\t');
-						s.append(timeStamp).append('\t');
-						s.append(hash).append('\t');
-						s.append(version).append('\t');
-						s.append(deleted ? "true" : "false").append('\t');
-						s.append(content).append('\n');
+						s.append(Utils.removeTabs(item.getData().getName())).append('\t');
+						s.append(item.getId()).append('\t');
+						s.append(Utils.formatTimeUTC(item.getTimeStamp())).append('\t');
+						s.append(item.getHash()).append('\t');
+						s.append(item.getVersion()).append('\t');
+						s.append(item.isDeleted()).append('\t');
+						s.append(serializer.write(item.getData())).append('\n');
 					}
 
 					return s.toString();
-				}
-			});
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
-	public void validate()
-	{
-		try
-		{
-			final String[] select = null; // all
-			final String where = "1=1";
-			final String[] whereArgs = {};
-			final String order = null;
-
-			MySQLAccess.select(TABLE_FOODBASE, select, where, whereArgs, order, new DataCallback<String>()
-			{
-				@Override
-				public String onData(ResultSet resultSet) throws SQLException
-				{
-					while (resultSet.next())
-					{
-						String id = resultSet.getString(COLUMN_FOODBASE_GUID);
-						String userId = resultSet.getString(COLUMN_FOODBASE_USER);
-						String content = resultSet.getString(COLUMN_FOODBASE_CONTENT);
-
-						try
-						{
-							new JSONObject(content);
-						}
-						catch (Exception e)
-						{
-							System.out.println(id + "\t" + userId + "\t" + content);
-						}
-					}
-
-					return null;
 				}
 			});
 		}

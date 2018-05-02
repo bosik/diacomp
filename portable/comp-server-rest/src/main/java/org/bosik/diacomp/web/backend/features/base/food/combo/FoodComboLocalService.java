@@ -61,15 +61,19 @@ import static org.bosik.diacomp.web.backend.features.base.food.common.FoodCommon
 import static org.bosik.diacomp.web.backend.features.base.food.common.FoodCommonLocalService.COLUMN_FOOD_COMMON_VALUE;
 import static org.bosik.diacomp.web.backend.features.base.food.common.FoodCommonLocalService.COLUMN_FOOD_COMMON_VERSION;
 import static org.bosik.diacomp.web.backend.features.base.food.common.FoodCommonLocalService.TABLE_FOOD_COMMON;
-import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOODBASE_CONTENT;
-import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOODBASE_DELETED;
-import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOODBASE_GUID;
-import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOODBASE_HASH;
-import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOODBASE_NAMECACHE;
-import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOODBASE_TIMESTAMP;
-import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOODBASE_USER;
-import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOODBASE_VERSION;
-import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.TABLE_FOODBASE;
+import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOOD_USER_CARBS;
+import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOOD_USER_DELETED;
+import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOOD_USER_FATS;
+import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOOD_USER_FROM_TABLE;
+import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOOD_USER_HASH;
+import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOOD_USER_ID;
+import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOOD_USER_LAST_MODIFIED;
+import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOOD_USER_NAME;
+import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOOD_USER_PROTS;
+import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOOD_USER_USER_ID;
+import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOOD_USER_VALUE;
+import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.COLUMN_FOOD_USER_VERSION;
+import static org.bosik.diacomp.web.backend.features.base.food.user.FoodUserLocalService.TABLE_FOOD_USER;
 
 @Service
 // @Profile("real")
@@ -122,8 +126,8 @@ public class FoodComboLocalService
 			Connection c = MySQLAccess.getConnection();
 			PreparedStatement statement = c.prepareStatement(
 					"SELECT COUNT(*) FROM (SELECT " + COLUMN_FOOD_COMMON_ID + " FROM " + TABLE_FOOD_COMMON + " WHERE "
-							+ COLUMN_FOOD_COMMON_ID + " LIKE ? UNION SELECT " + COLUMN_FOODBASE_GUID + " FROM " + TABLE_FOODBASE + " WHERE "
-							+ COLUMN_FOODBASE_GUID + " LIKE ? AND " + COLUMN_FOODBASE_USER + " = ?) AS T");
+							+ COLUMN_FOOD_COMMON_ID + " LIKE ? UNION SELECT " + COLUMN_FOOD_USER_ID + " FROM " + TABLE_FOOD_USER + " WHERE "
+							+ COLUMN_FOOD_USER_ID + " LIKE ? AND " + COLUMN_FOOD_USER_USER_ID + " = ?) AS T");
 
 			statement.setString(1, prefix + "%");
 			statement.setString(2, prefix + "%");
@@ -272,8 +276,8 @@ public class FoodComboLocalService
 
 			Connection c = MySQLAccess.getConnection();
 			PreparedStatement statement = c.prepareStatement(
-					"SELECT * FROM " + TABLE_FOOD_COMMON + " WHERE " + COLUMN_FOOD_COMMON_ID + " NOT IN (SELECT " + COLUMN_FOODBASE_GUID
-							+ " FROM " + TABLE_FOODBASE + " WHERE " + COLUMN_FOODBASE_USER + " = ?)");
+					"SELECT * FROM " + TABLE_FOOD_COMMON + " WHERE " + COLUMN_FOOD_COMMON_ID + " NOT IN (SELECT " + COLUMN_FOOD_USER_ID
+							+ " FROM " + TABLE_FOOD_USER + " WHERE " + COLUMN_FOOD_USER_USER_ID + " = ?)");
 
 			statement.setInt(1, userId);
 
@@ -323,23 +327,33 @@ public class FoodComboLocalService
 			// fetch user food
 
 			final String[] select = null; // all
-			final String where = String.format("(%s = ?)", COLUMN_FOODBASE_USER);
+			final String where = String.format("(%s = ?)", COLUMN_FOOD_USER_USER_ID);
 			final String[] whereArgs = { String.valueOf(userId) };
-			final String order = COLUMN_FOODBASE_NAMECACHE;
+			final String order = COLUMN_FOOD_USER_NAME;
 
-			MySQLAccess.select(TABLE_FOODBASE, select, where, whereArgs, order, new DataCallback<Void>()
+			MySQLAccess.select(TABLE_FOOD_USER, select, where, whereArgs, order, new DataCallback<Void>()
 			{
 				@Override
 				public Void onData(ResultSet resultSet) throws SQLException
 				{
 					while (resultSet.next())
 					{
-						String id = resultSet.getString(COLUMN_FOODBASE_GUID);
-						String timeStamp = Utils.formatTimeUTC(resultSet.getTimestamp(COLUMN_FOODBASE_TIMESTAMP));
-						String hash = resultSet.getString(COLUMN_FOODBASE_HASH);
-						int version = resultSet.getInt(COLUMN_FOODBASE_VERSION);
-						boolean deleted = resultSet.getBoolean(COLUMN_FOODBASE_DELETED);
-						String content = resultSet.getString(COLUMN_FOODBASE_CONTENT);
+						String id = resultSet.getString(COLUMN_FOOD_USER_ID);
+						String timeStamp = Utils.formatTimeUTC(resultSet.getTimestamp(COLUMN_FOOD_USER_LAST_MODIFIED));
+						String hash = resultSet.getString(COLUMN_FOOD_USER_HASH);
+						int version = resultSet.getInt(COLUMN_FOOD_USER_VERSION);
+						boolean deleted = resultSet.getBoolean(COLUMN_FOOD_USER_DELETED);
+
+						FoodItem food = new FoodItem();
+
+						food.setName(resultSet.getString(COLUMN_FOOD_USER_NAME));
+						food.setRelProts(resultSet.getDouble(COLUMN_FOOD_USER_PROTS));
+						food.setRelFats(resultSet.getDouble(COLUMN_FOOD_USER_FATS));
+						food.setRelCarbs(resultSet.getDouble(COLUMN_FOOD_USER_CARBS));
+						food.setRelValue(resultSet.getDouble(COLUMN_FOOD_USER_VALUE));
+						food.setFromTable(resultSet.getBoolean(COLUMN_FOOD_USER_FROM_TABLE));
+
+						String content = serializer.write(food);
 
 						if (s.length() > 1)
 						{
@@ -382,8 +396,8 @@ public class FoodComboLocalService
 
 			Connection c = MySQLAccess.getConnection();
 			PreparedStatement statement = c.prepareStatement(
-					"SELECT * FROM " + TABLE_FOOD_COMMON + " WHERE " + COLUMN_FOOD_COMMON_ID + " NOT IN (SELECT " + COLUMN_FOODBASE_GUID
-							+ " FROM " + TABLE_FOODBASE + " WHERE " + COLUMN_FOODBASE_USER + " = ?)");
+					"SELECT * FROM " + TABLE_FOOD_COMMON + " WHERE " + COLUMN_FOOD_COMMON_ID + " NOT IN (SELECT " + COLUMN_FOOD_USER_ID
+							+ " FROM " + TABLE_FOOD_USER + " WHERE " + COLUMN_FOOD_USER_USER_ID + " = ?)");
 
 			statement.setInt(1, userId);
 
@@ -416,7 +430,7 @@ public class FoodComboLocalService
 						s.append(timeStamp).append('\t');
 						s.append(hash).append('\t');
 						s.append(version).append('\t');
-						s.append(deleted ? "true" : "false").append('\t');
+						s.append(deleted).append('\t');
 						s.append(content).append('\n');
 					}
 
@@ -427,31 +441,42 @@ public class FoodComboLocalService
 			// fetch user food
 
 			final String[] select = null; // all
-			final String where = String.format("(%s = ?)", COLUMN_FOODBASE_USER);
+			final String where = String.format("(%s = ?)", COLUMN_FOOD_USER_USER_ID);
 			final String[] whereArgs = { String.valueOf(userId) };
-			final String order = COLUMN_FOODBASE_NAMECACHE;
+			final String order = COLUMN_FOOD_USER_NAME;
 
-			MySQLAccess.select(TABLE_FOODBASE, select, where, whereArgs, order, new DataCallback<Void>()
+			MySQLAccess.select(TABLE_FOOD_USER, select, where, whereArgs, order, new DataCallback<Void>()
 			{
 				@Override
 				public Void onData(ResultSet resultSet) throws SQLException
 				{
 					while (resultSet.next())
 					{
-						String name = resultSet.getString(COLUMN_FOODBASE_NAMECACHE);
-						String id = resultSet.getString(COLUMN_FOODBASE_GUID);
-						String timeStamp = Utils.formatTimeLocal(TimeZone.getDefault(), resultSet.getTimestamp(COLUMN_FOODBASE_TIMESTAMP));
-						String hash = resultSet.getString(COLUMN_FOODBASE_HASH);
-						int version = resultSet.getInt(COLUMN_FOODBASE_VERSION);
-						boolean deleted = resultSet.getBoolean(COLUMN_FOODBASE_DELETED);
-						String content = resultSet.getString(COLUMN_FOODBASE_CONTENT);
+						String name = resultSet.getString(COLUMN_FOOD_USER_NAME);
+						String id = resultSet.getString(COLUMN_FOOD_USER_ID);
+						String timeStamp = Utils
+								.formatTimeLocal(TimeZone.getDefault(), resultSet.getTimestamp(COLUMN_FOOD_USER_LAST_MODIFIED));
+						String hash = resultSet.getString(COLUMN_FOOD_USER_HASH);
+						int version = resultSet.getInt(COLUMN_FOOD_USER_VERSION);
+						boolean deleted = resultSet.getBoolean(COLUMN_FOOD_USER_DELETED);
+
+						FoodItem food = new FoodItem();
+
+						food.setName(resultSet.getString(COLUMN_FOOD_USER_NAME));
+						food.setRelProts(resultSet.getDouble(COLUMN_FOOD_USER_PROTS));
+						food.setRelFats(resultSet.getDouble(COLUMN_FOOD_USER_FATS));
+						food.setRelCarbs(resultSet.getDouble(COLUMN_FOOD_USER_CARBS));
+						food.setRelValue(resultSet.getDouble(COLUMN_FOOD_USER_VALUE));
+						food.setFromTable(resultSet.getBoolean(COLUMN_FOOD_USER_FROM_TABLE));
+
+						String content = serializer.write(food);
 
 						s.append(Utils.removeTabs(name)).append('\t');
 						s.append(id).append('\t');
 						s.append(timeStamp).append('\t');
 						s.append(hash).append('\t');
 						s.append(version).append('\t');
-						s.append(deleted ? "true" : "false").append('\t');
+						s.append(deleted).append('\t');
 						s.append(content).append('\n');
 					}
 
