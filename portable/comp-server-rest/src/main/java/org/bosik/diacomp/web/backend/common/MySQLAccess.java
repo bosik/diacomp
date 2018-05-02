@@ -136,7 +136,15 @@ public class MySQLAccess
 		return select(table, columns, where, whereArgs, order, offset, limit, callback);
 	}
 
-	public static int insert(String table, Map<String, String> values) throws SQLException
+	//	public static int insert(Connection connection, String table, Map<String, ? super String> values) throws SQLException
+	//	{
+	//		try (PreparedStatement statement = Utils.prepareInsertStatement(connection, table, values))
+	//		{
+	//			return statement.executeUpdate();
+	//		}
+	//	}
+
+	public static int insert(String table, Map<String, ? super String> values) throws SQLException
 	{
 		try (Connection connection = datasource.getConnection();
 				PreparedStatement statement = Utils.prepareInsertStatement(connection, table, values))
@@ -145,7 +153,7 @@ public class MySQLAccess
 		}
 	}
 
-	public static int update(String table, Map<String, String> set, Map<String, String> where) throws SQLException
+	public static int update(String table, Map<String, ? super String> set, Map<String, String> where) throws SQLException
 	{
 
 		try (Connection connection = datasource.getConnection();
@@ -259,7 +267,7 @@ class Utils
 		return statement;
 	}
 
-	public static PreparedStatement prepareInsertStatement(Connection connection, String table, Map<String, String> values)
+	public static PreparedStatement prepareInsertStatement(Connection connection, String table, Map<String, ? super String> values)
 			throws SQLException
 	{
 		// making wildcarded string
@@ -274,14 +282,14 @@ class Utils
 
 		// filling wildcards
 		int i = 1;
-		for (Entry<String, String> entry : values.entrySet())
+		for (Entry<String, ? super String> entry : values.entrySet())
 		{
-			statement.setString(i++, entry.getValue());
+			statement.setObject(i++, entry.getValue());
 		}
 		return statement;
 	}
 
-	public static PreparedStatement prepareUpdateStatement(Connection connection, String table, Map<String, String> set,
+	public static PreparedStatement prepareUpdateStatement(Connection connection, String table, Map<String, ? super String> set,
 			Map<String, String> where) throws SQLException
 	{
 		/**
@@ -299,9 +307,9 @@ class Utils
 
 		// filling wildcards
 		int i = 1;
-		for (Entry<String, String> entry : set.entrySet())
+		for (Entry<String, ? super String> entry : set.entrySet())
 		{
-			statement.setString(i++, entry.getValue());
+			statement.setObject(i++, entry.getValue());
 		}
 
 		for (Entry<String, String> entry : where.entrySet())
