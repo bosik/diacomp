@@ -259,9 +259,12 @@ class Utils
 		}
 
 		PreparedStatement statement = connection.prepareStatement(sql);
-		for (int i = 0; i < whereArgs.length; i++)
+		if (whereArgs != null)
 		{
-			statement.setString(i + 1, whereArgs[i]);
+			for (int i = 0; i < whereArgs.length; i++)
+			{
+				statement.setString(i + 1, whereArgs[i]);
+			}
 		}
 
 		return statement;
