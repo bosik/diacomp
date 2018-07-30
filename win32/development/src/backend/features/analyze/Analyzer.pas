@@ -7,6 +7,7 @@ interface
 uses
   Matrixes,
   Math,
+  SysUtils,
   AnalyzeInterface,
   DiaryRecords,
   BusinessObjects,
@@ -540,11 +541,11 @@ begin
           KoofList[n].p := X[0, 0];
           KoofList[n].k := X[1, 0];
           KoofList[n].q := X[2, 0];
-          X.Free;
+          FreeAndNil(X);
         finally
-          WA.Free;
-          WF.Free;
-          At.Free;
+          FreeAndNil(WA);
+          FreeAndNil(WF);
+          FreeAndNil(At);
         end;
       except
         on E: EMatrixException do
@@ -560,9 +561,9 @@ begin
 
     Result := True;
   finally
-    A.Free;
-    F.Free;
-    W.Free;
+    FreeAndNil(A);
+    FreeAndNil(F);
+    FreeAndNil(W);
   end;
   //ShowMessage(IntToStr(GetTIckCount - tick));
 end;

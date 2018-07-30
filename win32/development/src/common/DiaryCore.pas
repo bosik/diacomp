@@ -160,17 +160,17 @@ end;
 procedure Finalize();
 {======================================================================================================================}
 begin
-  Diary.Free; // before sources finalization
-  LocalSource.Free;
-  WebSource.Free; // before WebClient
-  WebClient.Free;
+  FreeAndNil(Diary); // before sources finalization
+  FreeAndNil(LocalSource);
+  FreeAndNil(WebSource); // before WebClient
+  FreeAndNil(WebClient);
 
-  FoodBaseLocal.Free;
-  FoodBaseWeb.Free;
-  DishBaseLocal.Free;
-  DishBaseWeb.Free;
+  FreeAndNil(FoodBaseLocal);
+  FreeAndNil(FoodBaseWeb);
+  FreeAndNil(DishBaseLocal);
+  FreeAndNil(DishBaseWeb);
 
-  Expander.Free;
+  FreeAndNil(Expander);
 end;
 
 {======================================================================================================================}

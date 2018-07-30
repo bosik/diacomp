@@ -1054,14 +1054,12 @@ var
 begin
   for i := 0 to High(DiaryMultiMap) do
   begin
-    DiaryMultiMap[i].Data.Free;
-    DiaryMultiMap[i].Free;
+    FreeAndNil(DiaryMultiMap[i]);
   end;
 
   for i := 0 to High(DishMultiMap) do
   begin
-    DishMultiMap[i].Data.Free;
-    DishMultiMap[i].Free;
+    FreeAndNil(DishMultiMap[i]);
   end;
 
   BusinessObjects.Free(FoodList);
@@ -2693,16 +2691,26 @@ begin
   if New then
   begin
     // определение пальца
+    Log(VERBOUS, 'TForm1.ClickBlood: Creating new temp record...');
     Rec := TBloodRecord.Create();
+
+    Log(VERBOUS, 'TForm1.ClickBlood: Searching for the next finger...');
     Rec.Finger := Diary.GetNextFinger();
 
+    Log(VERBOUS, 'TForm1.ClickBlood: Showing the editor in modal mode...');
     if ShowBloodEditor(Rec, New) then
     begin
+      Log(VERBOUS, 'TForm1.ClickBlood: Editor OK, saving record...');
       LocalSource.Add(Rec);
+
+      Log(VERBOUS, 'TForm1.ClickBlood: Reloading diary page...');
       DiaryView.OpenPage(Diary[Trunc(CalendarDiary.Date)], True);
       DiaryView.SelectedRecordID := Rec.ID;
       ScrollToSelected;
       EventDiaryChanged();
+    end else
+    begin
+      Log(VERBOUS, 'TForm1.ClickBlood: Editor cancelled');
     end;
   end else
   begin
@@ -2718,6 +2726,8 @@ begin
       EventDiaryChanged();
     end;
   end;
+
+  Log(DEBUG, 'TForm1.ClickBlood: finished');
 end;
 
 {======================================================================================================================}

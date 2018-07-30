@@ -34,6 +34,7 @@ type
     FHelp2: string;
     FTag: Real;
   public
+    destructor Destroy; override;
     property Data: TFoodRelative read FData write FData;
     property Help1: string read FHelp1 write FHelp1;
     property Help2: string read FHelp2 write FHelp2;
@@ -604,6 +605,14 @@ begin
   h := CreateEvent(nil, True, False, 'cmp');
   WaitForSingleObject(h, Time);
   CloseHandle(h);
+end;
+
+{ TMealItem }
+
+destructor TMealItem.Destroy;
+begin
+  FreeAndNil(FData);
+  inherited;
 end;
 
 end.

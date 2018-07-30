@@ -94,7 +94,7 @@ var
   i: integer;
 begin
   for i := 0 to High(FData) do
-    FData[i].Free;
+    FreeAndNil(FData[i]);
   SetLength(FData, 0);
 end;
 
@@ -376,5 +376,5 @@ initialization
   Value := TSettings.Create;
   Setup;
 finalization
-  Value.Free;
+  FreeAndNil(Value);
 end.

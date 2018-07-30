@@ -238,7 +238,7 @@ var
   i: integer;
 begin
   for i := Low(List) to High(List) do
-    List[i].Free;
+    FreeAndNil(List[i]);
   SetLength(List, 0);
 end;
 
@@ -249,7 +249,7 @@ var
   i: integer;
 begin
   for i := Low(List) to High(List) do
-    List[i].Free;
+    FreeAndNil(List[i]);
   SetLength(List, 0);
 end;
 
@@ -615,7 +615,7 @@ begin
   if (Index < 0) or (Index > High(FContent)) then
     raise ERangeError.CreateFmt('TDish().Delete(): index out of bounds (%d)', [Index]);
 
-  FContent[Index].Free;
+  FreeAndNil(FContent[Index]);
 
   for i := Index to High(FContent) - 1 do
     FContent[i] := FContent[i + 1];

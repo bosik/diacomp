@@ -189,7 +189,7 @@ begin
   end;
 
   Log(DEBUG, 'ADish.Free() in progress...');
-  ADish.Free;
+  FreeAndNil(ADish);
   Log(DEBUG, 'ADish.Free() done');
 end;
 

@@ -219,7 +219,7 @@ end;
 destructor TDiacompClient.Destroy();
 {======================================================================================================================}
 begin
-  FHTTP.Free;
+  FreeAndNil(FHTTP);
 end;
 
 {======================================================================================================================}
@@ -269,7 +269,7 @@ begin
     begin
       try
         (**)Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '") failed due to socket error, trying again...');
-        FHTTP.Free;
+        FreeAndNil(FHTTP);
         InitHttp();
         S := FHTTP.Get(URL);
       except
@@ -282,7 +282,7 @@ begin
     begin
       try
         (**)Log(VERBOUS, 'TDiacompClient.DoGet("' + URL + '") failed due to timeout, trying again...');
-        FHTTP.Free;
+        FreeAndNil(FHTTP);
         InitHttp();
         S := FHTTP.Get(URL);
       except

@@ -142,7 +142,7 @@ var
   i: integer;
 begin
   for i := 0 to High(FRecs) do
-    FRecs[i].Free;
+    FreeAndNil(FRecs[i]);
   SetLength(FRecs, 0);
 
   //{#}Changed(nil);
@@ -335,7 +335,7 @@ begin
   T := TClassCustomRecord(FRecs[Index].ClassType);
 
   if AutoFree then
-    FRecs[Index].Free;
+    FreeAndNil(FRecs[Index]);
 
   for i := Index to High(FRecs) - 1 do
     FRecs[i] := FRecs[i + 1];

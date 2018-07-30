@@ -183,7 +183,7 @@ var
   i: integer;
 begin
   for i := 0 to High(States) do
-    States[i].Free;
+    FreeAndNil(States[i]);
   SetLength(States,0);
 end;
 

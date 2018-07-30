@@ -263,7 +263,7 @@ begin
   if Length(FFood) > 0 then
   begin
     for i := 0 to High(FFood) do
-      FFood[i].Free;
+      FreeAndNil(FFood[i]);
     SetLength(FFood, 0);
   end;
 end;
@@ -346,7 +346,7 @@ var
   i: integer;
 begin
   CheckIndex(Index);
-  FFood[Index].Free;
+  FreeAndNil(FFood[Index]);
   for i := Index to High(FFood) - 1 do
     FFood[i] := FFood[i + 1];
   SetLength(FFood, Length(FFood) - 1);

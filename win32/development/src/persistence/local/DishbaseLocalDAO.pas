@@ -125,8 +125,8 @@ begin
     FModified := False;
   end;
 
-  FBase.Free;
-  Timer.Free;
+  FreeAndNil(FBase);
+  FreeAndNil(Timer);
   inherited;
 end;
 

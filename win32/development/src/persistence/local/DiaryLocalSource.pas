@@ -225,7 +225,7 @@ begin
     FModified := True;
 
   for i := 0 to High(FRecords) do
-    FRecords[i].Free;
+    FreeAndNil(FRecords[i]);
   SetLength(FRecords, 0);
 end;
 
