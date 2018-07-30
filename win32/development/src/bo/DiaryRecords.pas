@@ -410,7 +410,7 @@ begin
     TotalValue := TotalValue + TMealRecord(R[i]).Value;
     TotalMass := TotalMass + TMealRecord(R[i]).Mass;
   end else
-  if (R[i].REcType = TInsRecord) then
+  if (R[i].RecType = TInsRecord) then
   begin
     TotalIns := TotalIns + TInsRecord(R[i]).Value;
   end;
@@ -458,7 +458,7 @@ var
   i: integer;
 begin
   for i := Low(Recs) to High(Recs) do
-    Recs[i].Free;
+    FreeAndNil(Recs[i]);
   SetLength(Recs, 0);
 end;
 

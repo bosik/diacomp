@@ -297,7 +297,10 @@ begin
     begin
       if (Recs[i].RecType = TBloodRecord) then
       begin
-        Result := TBloodRecord(Recs[i]);
+        Result := TBloodRecord.Create(
+          Recs[i].Time,
+          TBloodRecord(Recs[i]).Value,
+          TBloodRecord(Recs[i]).Finger);
         Exit;
       end;
     end;
@@ -418,6 +421,7 @@ begin
   begin
     Log(VERBOUS, 'Blood record found');
     Result := (Blood.Finger + 1) mod 10;
+    FreeAndNil(Blood);
   end else
   begin
     Log(VERBOUS, 'Blood record not found, returning -1');
