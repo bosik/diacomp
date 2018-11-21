@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -176,9 +177,24 @@ public class FoodComboLocalService
 
 	public List<Versioned<FoodItem>> findAll(int userId, boolean includeRemoved)
 	{
-		List<Versioned<FoodItem>> foodCommon = foodCommonLocalService.find(includeRemoved);
-		List<Versioned<FoodItem>> foodUser = foodUserLocalService.findAll(userId, includeRemoved);
-		return merge(foodCommon, foodUser);
+		List<Versioned<FoodItem>> foodCommon = foodCommonLocalService.find(true);
+		List<Versioned<FoodItem>> foodUser = foodUserLocalService.findAll(userId, true);
+		List<Versioned<FoodItem>> result = merge(foodCommon, foodUser);
+
+		if (!includeRemoved)
+		{
+			// result = result.stream().filter(f -> !f.isDeleted()).collect(Collectors.toList());
+
+			for (Iterator<Versioned<FoodItem>> i = result.iterator(); i.hasNext(); )
+			{
+				if (i.next().isDeleted())
+				{
+					i.remove();
+				}
+			}
+		}
+
+		return result;
 	}
 
 	public List<Versioned<FoodItem>> findAny(int userId, String filter)
