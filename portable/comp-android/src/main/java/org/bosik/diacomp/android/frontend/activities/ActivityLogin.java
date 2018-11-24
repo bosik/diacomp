@@ -46,9 +46,12 @@ import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
+import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.backend.features.quickImport.ImportHelper.Progress;
 import org.bosik.diacomp.android.backend.features.quickImport.ImportService;
 import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
+import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.diacomp.core.utils.Utils;
 
 import java.util.ArrayList;
@@ -337,6 +340,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 
 			if (success)
 			{
+				clearFirstStart();
 				addAccount();
 				startService(new Intent(ActivityLogin.this, ImportService.class));
 			}
@@ -354,6 +358,12 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 			mAuthTask = null;
 			showProgress(false);
 		}
+	}
+
+	private void clearFirstStart()
+	{
+		PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
+		preferences.setBooleanValue(PreferenceID.ANDROID_FIRST_START, false);
 	}
 
 	private void addAccount()

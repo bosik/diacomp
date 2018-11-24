@@ -31,7 +31,7 @@ public class ActivityWelcome extends Activity
 				intent.putExtra(ActivityLogin.ARG_IS_ADDING_NEW_ACCOUNT, true);
 				startActivity(intent);
 
-				clearFirstStart();
+				// don't clear first start here (e.g. user can return back from ActivityLogin without logging)
 			}
 		});
 
