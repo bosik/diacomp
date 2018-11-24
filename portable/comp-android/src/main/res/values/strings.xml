@@ -2,11 +2,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="app_name">Diacomp</string>
-    <string name="base_action_foodsets">Food sets</string>
     <string name="base_action_new_dish">New dish</string>
     <string name="base_action_new_food">New food</string>
-    <string name="base_button_foodset">Download food sets</string>
-    <string name="base_hint_empty_list">Base is currently empty. Create food/dish manually or download ready set.</string>
     <string name="base_subinfo_carbs">C</string>
     <string name="base_subinfo_fats">F</string>
     <string name="base_subinfo_prots">P</string>
@@ -112,16 +109,6 @@
     <string name="fd_tip_empty">Provide food/dish name</string>
     <string name="fd_tip_incorrect_mass">Provide correct mass</string>
     <string name="fd_tip_item_not_found">Item not found: %s</string>
-    <string name="foodset_apply">Save</string>
-    <string name="foodset_hint_failed">Can\'t load the data. Check your connection and try again later.</string>
-    <string name="foodset_hint_loading">Loading…</string>
-    <string name="foodset_hint_ok">Select food sets to be included in your food base:</string>
-    <string name="foodset_tip_loading_started">Loading started</string>
-    <string name="foodset_tip_set_add_fail">Failed to install: %s</string>
-    <string name="foodset_tip_set_add_ok">Installed: %s</string>
-    <string name="foodset_tip_set_remove_fail">Failed to remove: %s</string>
-    <string name="foodset_tip_set_remove_ok">Removed: %s</string>
-    <string name="foodset_title">Food sets</string>
     <string name="login_action_register">Create new account</string>
     <string name="login_action_sign_in">Sign in</string>
     <string name="login_action_sign_in_short">Sign in</string>

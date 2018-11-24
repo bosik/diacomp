@@ -127,10 +127,6 @@
                 android:windowSoftInputMode="adjustResize|stateVisible">
         </activity>
         <activity
-                android:name=".frontend.activities.ActivityFoodSet"
-                android:label="@string/foodset_title">
-        </activity>
-        <activity
                 android:name=".frontend.activities.ActivityRates"
                 android:parentActivityName=".frontend.activities.ActivityPreferences"
                 android:label="@string/rates_title">

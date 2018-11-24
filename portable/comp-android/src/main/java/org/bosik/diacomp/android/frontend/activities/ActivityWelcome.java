@@ -42,11 +42,9 @@ public class ActivityWelcome extends Activity
 			public void onClick(View v)
 			{
 				// TODO: implement proper survey
-				Intent intent = new Intent(ActivityWelcome.this, ActivityFoodSet.class);
-				intent.putExtra(ActivityFoodSet.FIELD_FIRST_START, true);
-				startActivity(intent);
 
 				clearFirstStart();
+				startActivity(new Intent(ActivityWelcome.this, ActivityMain.class));
 			}
 		});
 	}

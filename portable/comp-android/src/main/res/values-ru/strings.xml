@@ -2,11 +2,8 @@
 <resources>
 
     <string name="app_name">Компенсация</string>
-    <string name="base_action_foodsets">Наборы продуктов</string>
     <string name="base_action_new_dish">Новое блюдо</string>
     <string name="base_action_new_food">Новый продукт</string>
-    <string name="base_button_foodset">Загрузить набор продуктов</string>
-    <string name="base_hint_empty_list">База пока пуста. Создайте продукт/блюдо или загрузите готовый набор.</string>
     <string name="base_subinfo_carbs">У</string>
     <string name="base_subinfo_fats">Ж</string>
     <string name="base_subinfo_prots">Б</string>
@@ -110,16 +107,6 @@
     <string name="fd_tip_empty">Введите название продукта/блюда</string>
     <string name="fd_tip_incorrect_mass">Введите корректную массу</string>
     <string name="fd_tip_item_not_found">Продукт не найден: %s</string>
-    <string name="foodset_apply">Сохранить</string>
-    <string name="foodset_hint_failed">Не удалось загрузить данные. Проверьте подключение к сети и попробуйте позже.</string>
-    <string name="foodset_hint_loading">Загрузка…</string>
-    <string name="foodset_hint_ok">Выберите наборы продуктов, которые будут включены в вашу базу:</string>
-    <string name="foodset_tip_loading_started">Загрузка началась</string>
-    <string name="foodset_tip_set_add_fail">Не удалось загрузить: %s</string>
-    <string name="foodset_tip_set_add_ok">Загружено: %s</string>
-    <string name="foodset_tip_set_remove_fail">Не удалось удалить: %s</string>
-    <string name="foodset_tip_set_remove_ok">Удалено: %s</string>
-    <string name="foodset_title">Наборы продуктов</string>
     <string name="login_action_register">Создать аккаунт</string>
     <string name="login_action_sign_in">Войти</string>
     <string name="login_action_sign_in_short">Войти</string>
