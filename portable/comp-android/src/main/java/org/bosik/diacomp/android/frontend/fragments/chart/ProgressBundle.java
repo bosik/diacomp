@@ -18,11 +18,10 @@
  */
 package org.bosik.diacomp.android.frontend.fragments.chart;
 
-import java.util.Collection;
-
 import android.content.Context;
 import com.jjoe64.graphview.series.Series;
-import android.content.ContentResolver;
+
+import java.util.Collection;
 
 public class ProgressBundle
 {
@@ -40,13 +39,15 @@ public class ProgressBundle
 
 	public enum ProgressState
 	{
-		INITIAL, LOADING, DONE
+		INITIAL,
+		LOADING,
+		DONE
 	}
 
-	private Collection<Series<?>>	series;
-	private ProgressState			state;
-	private DataLoader				dataLoader;
-	private ProgressListener		listener;
+	private Collection<Series<?>> series;
+	private ProgressState         state;
+	private DataLoader            dataLoader;
+	private ProgressListener      listener;
 
 	public Collection<Series<?>> getSeries()
 	{

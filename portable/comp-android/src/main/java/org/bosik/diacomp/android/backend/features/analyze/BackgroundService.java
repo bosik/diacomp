@@ -56,12 +56,12 @@ public class BackgroundService extends Service
 			@Override
 			public void run()
 			{
-				perfromUpdateAsync();
+				performUpdateAsync();
 			}
 		}, TIMER_DELAY, TIMER_INTERVAL);
 	}
 
-	private void perfromUpdateAsync()
+	private void performUpdateAsync()
 	{
 		new AsyncTask<Void, Void, Void>()
 		{
@@ -96,7 +96,7 @@ public class BackgroundService extends Service
 		if (intent != null && ACTION_FORCE_RUN.equals(intent.getAction()) && (System.nanoTime() - lastForcedTime) > TIMER_INTERVAL * 1000000L)
 		{
 			lastForcedTime = System.nanoTime();
-			perfromUpdateAsync();
+			performUpdateAsync();
 		}
 
 		return super.onStartCommand(intent, flags, startId);

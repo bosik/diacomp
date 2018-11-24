@@ -18,14 +18,13 @@
  */
 package org.bosik.diacomp.android.frontend.fragments.chart;
 
+import android.content.Context;
+import android.os.AsyncTask;
+import com.jjoe64.graphview.series.Series;
+import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.ProgressState;
+
 import java.util.Collection;
 import java.util.Collections;
-
-import android.content.Context;
-import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.ProgressState;
-import com.jjoe64.graphview.series.Series;
-import android.content.ContentResolver;
-import android.os.AsyncTask;
 
 class DataLoadingTask extends AsyncTask<Context, Void, Collection<Series<?>>>
 {
