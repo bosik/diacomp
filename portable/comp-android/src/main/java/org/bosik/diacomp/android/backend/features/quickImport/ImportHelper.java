@@ -102,11 +102,10 @@ public class ImportHelper
 
 			// download data
 			progress(callback, Progress.LOADING);
-			InputStream stream = client.loadStream(URL_EXPORT_PLAIN);
-			Log.i(TAG, "Loaded in " + (p.sinceLastCheck() / 1000000) + " ms");
-
-			try
+			try (InputStream stream = client.loadStream(URL_EXPORT_PLAIN))
 			{
+				Log.i(TAG, "Loaded in " + (p.sinceLastCheck() / 1000000) + " ms");
+
 				progress(callback, Progress.UNZIPPING);
 				List<Entry> entries = ZipUtils.unzip(stream);
 				Log.i(TAG, "Unzipped in " + (p.sinceLastCheck() / 1000000) + " ms");
@@ -117,9 +116,7 @@ public class ImportHelper
 				{
 					if (entry.getName() != null)
 					{
-						InputStream data = new ByteArrayInputStream(entry.getContent());
-
-						try
+						try (InputStream data = new ByteArrayInputStream(entry.getContent()))
 						{
 							switch (entry.getName())
 							{
@@ -154,18 +151,16 @@ public class ImportHelper
 									Log.i(TAG, "Preferences installed in " + (p.sinceLastCheck() / 1000000) + " ms");
 									break;
 								}
+
+								default:
+								{
+									Log.w(TAG, "Ignoring unknown entry: " + entry.getName());
+									break;
+								}
 							}
-						}
-						finally
-						{
-							data.close();
 						}
 					}
 				}
-			}
-			finally
-			{
-				stream.close();
 			}
 		}
 		catch (IOException e)
