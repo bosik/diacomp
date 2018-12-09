@@ -98,11 +98,6 @@ public abstract class CachedBaseService<T extends Named> implements BaseService<
 		memoryCache = index(loadAllFromDb());
 	}
 
-	private boolean recordExists(String id)
-	{
-		return memoryCache.containsKey(id);
-	}
-
 	private void insert(Versioned<T> item)
 	{
 		memoryCache.put(item.getId(), clone(item));
@@ -113,6 +108,13 @@ public abstract class CachedBaseService<T extends Named> implements BaseService<
 	{
 		memoryCache.put(item.getId(), clone(item));
 		updateDb(item);
+	}
+
+	// SEMI-PUBLIC API
+
+	public boolean recordExists(String id)
+	{
+		return memoryCache.containsKey(id);
 	}
 
 	// PUBLIC API
