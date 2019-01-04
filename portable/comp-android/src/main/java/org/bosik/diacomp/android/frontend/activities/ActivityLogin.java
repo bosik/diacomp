@@ -480,13 +480,13 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 
 	private void enableAutosync()
 	{
-		Account[] accounts = AccountUtils.getAccounts(this);
-		if (accounts.length > 0)
+		Account account = AccountUtils.getAccount(this);
+		if (account != null)
 		{
 			long SYNC_INTERVAL = 120; // sec
-			ContentResolver.setIsSyncable(accounts[0], DiaryContentProvider.AUTHORITY, 1);
-			ContentResolver.setSyncAutomatically(accounts[0], DiaryContentProvider.AUTHORITY, true);
-			ContentResolver.addPeriodicSync(accounts[0], DiaryContentProvider.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
+			ContentResolver.setIsSyncable(account, DiaryContentProvider.AUTHORITY, 1);
+			ContentResolver.setSyncAutomatically(account, DiaryContentProvider.AUTHORITY, true);
+			ContentResolver.addPeriodicSync(account, DiaryContentProvider.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
 		}
 	}
 }
