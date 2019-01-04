@@ -326,7 +326,7 @@ public class FragmentTabDiary extends Fragment
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.actions_diary, menu);
 
-		if (AccountUtils.getAccounts(getActivity()).length > 0)
+		if (AccountUtils.hasAccount(getActivity()))
 		{
 			MenuItem item = menu.findItem(R.id.item_common_login);
 			if (item != null)

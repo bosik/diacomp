@@ -9,15 +9,20 @@ public class AccountUtils
 	public static Account[] getAccounts(Context context)
 	{
 		final String ACCOUNT_TYPE = "diacomp.org";
-	
-		AccountManager am = AccountManager.get(context);
-		Account[] accounts = am.getAccountsByType(ACCOUNT_TYPE);
-		return accounts;
+
+		final AccountManager am = AccountManager.get(context);
+		return am.getAccountsByType(ACCOUNT_TYPE);
 	}
 
 	public static Account getAccount(Context context)
 	{
-		Account[] accounts = getAccounts(context);
+		final Account[] accounts = getAccounts(context);
 		return accounts.length > 0 ? accounts[0] : null;
+	}
+
+	public static boolean hasAccount(Context context)
+	{
+		final Account[] accounts = getAccounts(context);
+		return accounts.length > 0;
 	}
 }
