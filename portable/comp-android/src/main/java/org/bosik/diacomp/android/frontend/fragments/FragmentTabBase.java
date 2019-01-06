@@ -96,8 +96,7 @@ public class FragmentTabBase extends Fragment
 	private DiaryService    diaryService;
 	private final List<Versioned<? extends NamedRelative>> data = new ArrayList<>();
 	private BaseAdapter adapter;
-	private String searchFilter = "";
-	private long lastSearchTime;
+	private long        lastSearchTime;
 	private boolean searchScheduled = false;
 
 	private static final long SEARCH_DELAY = 500 * 1000000; // ns
@@ -174,7 +173,6 @@ public class FragmentTabBase extends Fragment
 			@Override
 			public void afterTextChanged(Editable s)
 			{
-				searchFilter = s.toString();
 				runSearch();
 			}
 		});
@@ -496,6 +494,7 @@ public class FragmentTabBase extends Fragment
 			@Override
 			public void run()
 			{
+				final String searchFilter = editSearch.getText().toString();
 				asyncTask.execute(searchFilter);
 			}
 		};
