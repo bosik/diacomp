@@ -72,8 +72,6 @@ import org.bosik.merklesync.Versioned;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class FragmentTabBase extends Fragment
 {
@@ -84,7 +82,8 @@ public class FragmentTabBase extends Fragment
 	private static final int DIALOG_DISH_CREATE = 21;
 	private static final int DIALOG_DISH_MODIFY = 22;
 
-	private static final int LIMIT = 100;
+	private static final int  LIMIT          = 100;
+	private static final long SEARCH_TIMEOUT = 10 * 1000 * 1000000L; // ns
 
 	// Widgets
 	private EditText editSearch;
@@ -97,9 +96,7 @@ public class FragmentTabBase extends Fragment
 	private final List<Versioned<? extends NamedRelative>> data = new ArrayList<>();
 	private BaseAdapter adapter;
 	private long        lastSearchTime;
-	private volatile boolean searchScheduled = false;
-
-	private static final long SEARCH_DELAY = 500 * 1000000; // ns
+	private volatile boolean searchInProgress = false;
 
 	private final ContentObserver observer = new ContentObserver(null)
 	{
@@ -456,113 +453,9 @@ public class FragmentTabBase extends Fragment
 	 */
 	private synchronized void runSearch()
 	{
-		final AsyncTask<String, Void, List<Versioned<? extends NamedRelative>>> asyncTask = new AsyncTask<String, Void, List<Versioned<? extends NamedRelative>>>()
+		if (!searchInProgress || System.nanoTime() - lastSearchTime > SEARCH_TIMEOUT)
 		{
-			@Override
-			protected void onPreExecute()
-			{
-				// getActivity().setTitle(getString(R.string.base_title_loading));
-			}
-
-			@Override
-			protected List<Versioned<? extends NamedRelative>> doInBackground(String... params)
-			{
-				return request(params[0]);
-			}
-
-			@Override
-			protected void onPostExecute(List<Versioned<? extends NamedRelative>> result)
-			{
-				if (result == null)
-				{
-					UIUtils.showTip(getActivity(), getString(R.string.base_tip_search_failed));
-					result = Collections.emptyList();
-				}
-
-				synchronized (data)
-				{
-					data.clear();
-					data.addAll(result);
-				}
-				adapter.notifyDataSetChanged();
-				searchScheduled = false;
-			}
-		};
-
-		TimerTask task = new TimerTask()
-		{
-			@Override
-			public void run()
-			{
-				final String searchFilter = editSearch.getText().toString();
-				asyncTask.execute(searchFilter);
-			}
-		};
-
-		long timeElapsed = System.nanoTime() - lastSearchTime;
-
-		if (timeElapsed >= SEARCH_DELAY)
-		{
-			lastSearchTime = System.nanoTime();
-			searchScheduled = false;
-			task.run();
-		}
-		else
-		{
-			if (!searchScheduled)
-			{
-				searchScheduled = true;
-				new Timer().schedule(task, (SEARCH_DELAY - timeElapsed) / 1000000);
-			}
-		}
-	}
-
-	/**
-	 * Searches for the specified filter and returns result list
-	 *
-	 * @param filter
-	 * @return
-	 */
-	private List<Versioned<? extends NamedRelative>> request(String filter)
-	{
-		try
-		{
-			// filtering
-
-			List<Versioned<FoodItem>> foodItems;
-			List<Versioned<DishItem>> dishItems;
-
-			if (filter.trim().isEmpty())
-			{
-				foodItems = foodBaseService.findAll(false);
-				dishItems = dishBaseService.findAll(false);
-			}
-			else
-			{
-				foodItems = foodBaseService.findAny(filter);
-				dishItems = dishBaseService.findAny(filter);
-			}
-
-			// relevance ordering
-
-			List<Versioned<? extends NamedRelative>> result = new ArrayList<>();
-			result.addAll(foodItems);
-			result.addAll(dishItems);
-
-			RelevantIndexator.sort(result, diaryService);
-
-			// clipping
-
-			if (result.size() > LIMIT)
-			{
-				result = result.subList(0, LIMIT);
-			}
-
-			return result;
-		}
-		catch (Exception e)
-		{
-			return null;
+			new SearchTask().execute();
 		}
 	}
 
@@ -720,6 +613,87 @@ public class FragmentTabBase extends Fragment
 					runSearch();
 				}
 				break;
+			}
+		}
+	}
+
+	private class SearchTask extends AsyncTask<Void, Void, List<Versioned<? extends NamedRelative>>>
+	{
+		private String searchText;
+
+		@Override
+		protected void onPreExecute()
+		{
+			searchInProgress = true;
+			lastSearchTime = System.nanoTime();
+			searchText = editSearch.getText().toString();
+		}
+
+		@Override
+		protected List<Versioned<? extends NamedRelative>> doInBackground(Void... params)
+		{
+			try
+			{
+				// filtering
+				List<Versioned<FoodItem>> foodItems;
+				List<Versioned<DishItem>> dishItems;
+
+				if (searchText.trim().isEmpty())
+				{
+					foodItems = foodBaseService.findAll(false);
+					dishItems = dishBaseService.findAll(false);
+				}
+				else
+				{
+					foodItems = foodBaseService.findAny(searchText);
+					dishItems = dishBaseService.findAny(searchText);
+				}
+
+				// relevance ordering
+				List<Versioned<? extends NamedRelative>> result = new ArrayList<>();
+				result.addAll(foodItems);
+				result.addAll(dishItems);
+
+				RelevantIndexator.sort(result, diaryService);
+
+				// clipping
+				if (result.size() > LIMIT)
+				{
+					result = result.subList(0, LIMIT);
+				}
+
+				return result;
+			}
+			catch (Exception e)
+			{
+				return null;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(List<Versioned<? extends NamedRelative>> result)
+		{
+			if (result == null)
+			{
+				UIUtils.showTip(getActivity(), getString(R.string.base_tip_search_failed));
+				result = Collections.emptyList();
+			}
+
+			synchronized (data)
+			{
+				data.clear();
+				data.addAll(result);
+			}
+
+			adapter.notifyDataSetChanged();
+
+			if (searchText.equals(editSearch.getText().toString()))
+			{
+				searchInProgress = false;
+			}
+			else
+			{
+				new SearchTask().execute();
 			}
 		}
 	}
