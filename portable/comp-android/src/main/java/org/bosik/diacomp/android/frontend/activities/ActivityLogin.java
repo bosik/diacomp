@@ -467,7 +467,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 
 						// TODO: don't do this if activity is started from main activity
 						Intent intentR = new Intent(ActivityLogin.this, ActivityMain.class);
-						intentR.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+						intentR.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 						startActivity(intentR);
 
 						finish();
