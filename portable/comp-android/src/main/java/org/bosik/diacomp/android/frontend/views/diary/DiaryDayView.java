@@ -46,6 +46,7 @@ import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
+import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
@@ -470,7 +471,7 @@ public class DiaryDayView extends LinearLayout
 
 	public void refresh()
 	{
-		if (loading)
+		if (loading || loadingBefore || loadingAfter)
 		{
 			return;
 		}
@@ -513,7 +514,7 @@ public class DiaryDayView extends LinearLayout
 
 	private void loadBefore(final int days)
 	{
-		if (loadingBefore)
+		if (loading || loadingBefore || loadingAfter)
 		{
 			return;
 		}
@@ -561,7 +562,7 @@ public class DiaryDayView extends LinearLayout
 
 	private void loadAfter(final int days)
 	{
-		if (loadingAfter)
+		if (loading || loadingBefore || loadingAfter)
 		{
 			return;
 		}
@@ -604,7 +605,8 @@ public class DiaryDayView extends LinearLayout
 
 	private List<Versioned<DiaryRecord>> loadData(Date timeFrom, Date timeTo)
 	{
-		return LocalDiary.getInstance(getContext()).findPeriod(timeFrom, timeTo, false);
+		final DiaryService diaryService = LocalDiary.getInstance(getContext());
+		return diaryService.findPeriod(timeFrom, timeTo, false);
 	}
 
 	public void setOnHeaderClickListener(OnHeaderClickListener l)
