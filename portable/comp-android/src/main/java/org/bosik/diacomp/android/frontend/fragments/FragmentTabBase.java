@@ -97,7 +97,7 @@ public class FragmentTabBase extends Fragment
 	private final List<Versioned<? extends NamedRelative>> data = new ArrayList<>();
 	private BaseAdapter adapter;
 	private long        lastSearchTime;
-	private boolean searchScheduled = false;
+	private volatile boolean searchScheduled = false;
 
 	private static final long SEARCH_DELAY = 500 * 1000000; // ns
 
@@ -504,6 +504,7 @@ public class FragmentTabBase extends Fragment
 		if (timeElapsed >= SEARCH_DELAY)
 		{
 			lastSearchTime = System.nanoTime();
+			searchScheduled = false;
 			task.run();
 		}
 		else
@@ -511,7 +512,7 @@ public class FragmentTabBase extends Fragment
 			if (!searchScheduled)
 			{
 				searchScheduled = true;
-				new Timer().schedule(task, SEARCH_DELAY - timeElapsed);
+				new Timer().schedule(task, (SEARCH_DELAY - timeElapsed) / 1000000);
 			}
 		}
 	}
