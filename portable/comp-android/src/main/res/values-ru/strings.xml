@@ -134,6 +134,7 @@
     <string name="main_option_login">Вход</string>
     <string name="main_option_preferences">Настройки</string>
     <string name="main_title">Компенсация</string>
+    <string name="notification_loading_foodbase">Загрузка базы продуктов…</string>
     <string name="notification_time_after_injection">после инъекции</string>
     <string name="notification_time_after_meal">после еды</string>
     <string name="preferences_appearance_show_time_after">Показывать прошедшее время</string>

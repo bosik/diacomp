@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.features.foodbase.FoodCommonDownloadService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
 import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
@@ -42,9 +43,11 @@ public class ActivityWelcome extends Activity
 			public void onClick(View v)
 			{
 				// TODO: implement proper survey
+				startService(new Intent(ActivityWelcome.this, FoodCommonDownloadService.class));
 
 				clearFirstStart();
 				startActivity(new Intent(ActivityWelcome.this, ActivityMain.class));
+				finish();
 			}
 		});
 	}
