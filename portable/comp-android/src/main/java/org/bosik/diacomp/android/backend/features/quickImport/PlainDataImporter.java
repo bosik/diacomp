@@ -18,21 +18,22 @@
  */
 package org.bosik.diacomp.android.backend.features.quickImport;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
+import org.bosik.diacomp.android.backend.common.db.Table;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import org.bosik.diacomp.android.backend.common.DiaryContentProvider.MyDBHelper;
-import org.bosik.diacomp.android.backend.common.db.Table;
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 
 public abstract class PlainDataImporter
 {
-	private Context	context;
-	private Table	table;
-	private String	version;
+	private Context context;
+	private Table   table;
+	private String  version;
 
 	public PlainDataImporter(Context context, Table table, String version)
 	{
@@ -77,6 +78,8 @@ public abstract class PlainDataImporter
 			while ((line = r.readLine()) != null)
 			{
 				parseEntry(line.split("\t"), newValues);
+
+				// conflicted data (food items mostly) remains untouched to be precisely synced later
 				db.insertWithOnConflict(table.getName(), null, newValues, SQLiteDatabase.CONFLICT_IGNORE);
 
 				if (++count % 1000 == 0)
