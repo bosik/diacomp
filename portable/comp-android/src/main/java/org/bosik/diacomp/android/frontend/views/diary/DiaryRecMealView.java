@@ -63,7 +63,6 @@ public class DiaryRecMealView extends LinearLayout
 		MealRecord data = record.getData();
 		textTime.setText(Utils.formatTimeLocalShort(TimeZone.getDefault(), data.getTime()));
 		final String tmp = MealFormatter.format(data, getContext(), mealFormat);
-		System.out.println(tmp);
 		textValue.setText(tmp);
 	}
 }
