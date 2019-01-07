@@ -87,7 +87,7 @@
                     <groupId>org.khronos</groupId>
                     <artifactId>opengl-api</artifactId>
                 </exclusion>
-               <exclusion>
+                <exclusion>
                     <groupId>xerces</groupId>
                     <artifactId>xmlParserAPIs</artifactId>
                 </exclusion>
