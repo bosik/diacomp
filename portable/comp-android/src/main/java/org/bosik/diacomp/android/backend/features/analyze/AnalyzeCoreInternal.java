@@ -18,9 +18,9 @@
  */
 package org.bosik.diacomp.android.backend.features.analyze;
 
+import android.util.Log;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCore;
 import org.bosik.diacomp.core.services.analyze.AnalyzeCoreImpl;
-import android.util.Log;
 
 public class AnalyzeCoreInternal
 {

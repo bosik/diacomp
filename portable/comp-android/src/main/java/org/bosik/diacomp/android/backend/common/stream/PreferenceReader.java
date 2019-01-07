@@ -18,10 +18,11 @@
  */
 package org.bosik.diacomp.android.backend.common.stream;
 
-import java.io.IOException;
-import org.bosik.diacomp.core.services.preferences.PreferenceID;
-import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import android.util.JsonReader;
+import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
+
+import java.io.IOException;
 
 public class PreferenceReader extends StreamReader<PreferenceEntry<String>>
 {

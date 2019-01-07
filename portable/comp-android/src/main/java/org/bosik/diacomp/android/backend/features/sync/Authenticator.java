@@ -18,7 +18,6 @@
  */
 package org.bosik.diacomp.android.backend.features.sync;
 
-import org.bosik.diacomp.android.frontend.activities.ActivityLogin;
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
@@ -28,6 +27,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import org.bosik.diacomp.android.frontend.activities.ActivityLogin;
 
 public class Authenticator extends AbstractAccountAuthenticator
 {

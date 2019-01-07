@@ -18,12 +18,12 @@
  */
 package org.bosik.diacomp.android.backend.common.webclient;
 
-import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.backend.common.AccountUtils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
 import android.util.Log;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.backend.common.AccountUtils;
 
 public class WebClientInternal
 {

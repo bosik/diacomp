@@ -18,9 +18,9 @@
  */
 package org.bosik.diacomp.android.backend.features.diary;
 
-import org.bosik.diacomp.core.services.diary.DiaryService;
 import android.content.Context;
 import android.util.Log;
+import org.bosik.diacomp.core.services.diary.DiaryService;
 
 public class LocalDiary
 {

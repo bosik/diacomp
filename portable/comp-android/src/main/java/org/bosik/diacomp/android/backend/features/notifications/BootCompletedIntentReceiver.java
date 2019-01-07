@@ -18,10 +18,10 @@
  */
 package org.bosik.diacomp.android.backend.features.notifications;
 
-import org.bosik.diacomp.android.backend.features.analyze.BackgroundService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import org.bosik.diacomp.android.backend.features.analyze.BackgroundService;
 
 public class BootCompletedIntentReceiver extends BroadcastReceiver
 {

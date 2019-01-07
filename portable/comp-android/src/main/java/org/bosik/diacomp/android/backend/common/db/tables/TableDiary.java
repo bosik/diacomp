@@ -17,13 +17,12 @@
  */
 package org.bosik.diacomp.android.backend.common.db.tables;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import android.net.Uri;
 import org.bosik.diacomp.android.backend.common.db.Column;
 import org.bosik.diacomp.android.backend.common.db.Table;
 
-import android.net.Uri;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TableDiary extends Table
 {

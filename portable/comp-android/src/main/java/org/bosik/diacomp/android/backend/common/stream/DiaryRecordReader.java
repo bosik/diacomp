@@ -18,9 +18,7 @@
  */
 package org.bosik.diacomp.android.backend.common.stream;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
+import android.util.JsonReader;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
@@ -28,7 +26,10 @@ import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.utils.Utils;
-import android.util.JsonReader;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 public class DiaryRecordReader extends StreamReader<DiaryRecord>
 {

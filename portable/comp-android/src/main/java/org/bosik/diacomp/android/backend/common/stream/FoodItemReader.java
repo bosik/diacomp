@@ -18,9 +18,10 @@
  */
 package org.bosik.diacomp.android.backend.common.stream;
 
-import java.io.IOException;
-import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import android.util.JsonReader;
+import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+
+import java.io.IOException;
 
 public class FoodItemReader extends StreamReader<FoodItem>
 {

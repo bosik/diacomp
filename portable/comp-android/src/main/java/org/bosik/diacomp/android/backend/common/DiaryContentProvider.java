@@ -18,16 +18,6 @@
  */
 package org.bosik.diacomp.android.backend.common;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.bosik.diacomp.android.backend.common.db.Column;
-import org.bosik.diacomp.android.backend.common.db.Table;
-import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
-import org.bosik.diacomp.android.backend.common.db.tables.TableDishbase;
-import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
-import org.bosik.diacomp.android.backend.common.db.tables.TableRates;
-import org.bosik.diacomp.android.backend.common.db.tables.TablePreferences;
-import org.bosik.diacomp.android.backend.common.db.tables.TableTags;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -39,6 +29,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import org.bosik.diacomp.android.backend.common.db.Column;
+import org.bosik.diacomp.android.backend.common.db.Table;
+import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
+import org.bosik.diacomp.android.backend.common.db.tables.TableDishbase;
+import org.bosik.diacomp.android.backend.common.db.tables.TableFoodbase;
+import org.bosik.diacomp.android.backend.common.db.tables.TablePreferences;
+import org.bosik.diacomp.android.backend.common.db.tables.TableRates;
+import org.bosik.diacomp.android.backend.common.db.tables.TableTags;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DiaryContentProvider extends ContentProvider
 {

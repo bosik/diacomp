@@ -18,10 +18,11 @@
  */
 package org.bosik.diacomp.android.backend.features.sync;
 
-import java.util.Date;
+import android.os.SystemClock;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.core.utils.Utils;
-import android.os.SystemClock;
+
+import java.util.Date;
 
 public class ServerTimeService
 {

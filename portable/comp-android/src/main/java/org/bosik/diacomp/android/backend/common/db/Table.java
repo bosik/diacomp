@@ -17,11 +17,10 @@
  */
 package org.bosik.diacomp.android.backend.common.db;
 
-import java.util.List;
-
+import android.net.Uri;
 import org.bosik.diacomp.android.backend.common.DiaryContentProvider;
 
-import android.net.Uri;
+import java.util.List;
 
 public abstract class Table
 {

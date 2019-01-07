@@ -18,19 +18,6 @@
  */
 package org.bosik.diacomp.android.frontend.fragments.chart;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.android.frontend.UIUtils;
-import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.DataLoader;
-import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.ProgressListener;
-import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.ProgressState;
-import org.bosik.diacomp.android.frontend.fragments.chart.daily.PostSetupDaily;
-import org.bosik.diacomp.android.frontend.fragments.chart.history.PostSetupHistory;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.series.Series;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -41,6 +28,20 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.Series;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.android.frontend.UIUtils;
+import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.DataLoader;
+import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.ProgressListener;
+import org.bosik.diacomp.android.frontend.fragments.chart.ProgressBundle.ProgressState;
+import org.bosik.diacomp.android.frontend.fragments.chart.daily.PostSetupDaily;
+import org.bosik.diacomp.android.frontend.fragments.chart.history.PostSetupHistory;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Chart extends Fragment implements ProgressListener
 {

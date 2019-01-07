@@ -18,15 +18,16 @@
  */
 package org.bosik.diacomp.android.frontend.views.diary;
 
-import java.util.TimeZone;
-import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
-import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.merklesync.Versioned;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
+import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.merklesync.Versioned;
+
+import java.util.TimeZone;
 
 public class DiaryRecInsView extends LinearLayout
 {

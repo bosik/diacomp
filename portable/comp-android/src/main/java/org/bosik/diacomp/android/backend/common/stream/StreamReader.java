@@ -18,10 +18,11 @@
  */
 package org.bosik.diacomp.android.backend.common.stream;
 
+import android.util.JsonReader;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import android.util.JsonReader;
 
 public abstract class StreamReader<T>
 {

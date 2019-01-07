@@ -18,9 +18,6 @@
  */
 package org.bosik.diacomp.android.frontend;
 
-import java.util.Date;
-import org.bosik.diacomp.android.R;
-import org.bosik.diacomp.core.utils.Utils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -32,6 +29,10 @@ import android.text.format.DateFormat;
 import android.text.method.DigitsKeyListener;
 import android.widget.EditText;
 import android.widget.Toast;
+import org.bosik.diacomp.android.R;
+import org.bosik.diacomp.core.utils.Utils;
+
+import java.util.Date;
 
 public class UIUtils
 {

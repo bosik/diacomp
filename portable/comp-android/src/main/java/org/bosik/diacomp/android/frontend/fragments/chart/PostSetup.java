@@ -18,9 +18,10 @@
  */
 package org.bosik.diacomp.android.frontend.fragments.chart;
 
-import java.util.List;
-import org.bosik.diacomp.android.frontend.fragments.chart.Chart.PostSetupListener;
 import com.jjoe64.graphview.series.Series;
+import org.bosik.diacomp.android.frontend.fragments.chart.Chart.PostSetupListener;
+
+import java.util.List;
 
 public abstract class PostSetup implements PostSetupListener
 {

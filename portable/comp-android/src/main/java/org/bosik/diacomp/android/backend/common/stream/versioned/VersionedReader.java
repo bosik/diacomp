@@ -18,11 +18,12 @@
  */
 package org.bosik.diacomp.android.backend.common.stream.versioned;
 
-import java.io.IOException;
+import android.util.JsonReader;
 import org.bosik.diacomp.android.backend.common.stream.StreamReader;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
-import android.util.JsonReader;
+
+import java.io.IOException;
 
 public class VersionedReader<T> extends StreamReader<Versioned<T>>
 {

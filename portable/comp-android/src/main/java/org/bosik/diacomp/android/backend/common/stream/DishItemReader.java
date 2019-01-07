@@ -18,11 +18,12 @@
  */
 package org.bosik.diacomp.android.backend.common.stream;
 
-import java.io.IOException;
-import java.util.List;
+import android.util.JsonReader;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
-import android.util.JsonReader;
+
+import java.io.IOException;
+import java.util.List;
 
 public class DishItemReader extends StreamReader<DishItem>
 {

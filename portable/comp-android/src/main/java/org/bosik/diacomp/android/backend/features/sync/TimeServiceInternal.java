@@ -18,10 +18,10 @@
  */
 package org.bosik.diacomp.android.backend.features.sync;
 
-import org.bosik.diacomp.android.backend.common.webclient.WebClient;
-import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
 import android.content.Context;
 import android.util.Log;
+import org.bosik.diacomp.android.backend.common.webclient.WebClient;
+import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
 
 public class TimeServiceInternal
 {
