@@ -84,7 +84,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 	@Override
 	protected void setupInterface()
 	{
-		setContentView(R.layout.activity_editor_meal_3);
+		setContentView(R.layout.activity_editor_meal);
 
 		captionDose = getString(R.string.common_unit_insulin);
 		captionGramm = getString(R.string.common_unit_mass_gramm);
