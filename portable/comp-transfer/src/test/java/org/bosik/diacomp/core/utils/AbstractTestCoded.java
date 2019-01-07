@@ -22,7 +22,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -39,7 +38,7 @@ public abstract class AbstractTestCoded<T extends Enum<T> & Coded>
 
 	protected abstract Class<T> getEntityClass();
 
-	protected abstract HashMap<T, String> getPublishedCodes();
+	protected abstract Map<T, String> getPublishedCodes();
 
 	/**
 	 * Performs complete testing of coded enum
