@@ -46,6 +46,7 @@ public class TestPreferenceID extends AbstractTestCoded<PreferenceID>
 				add("8b6575e476d64becae68468500f1bc1c", PreferenceID.ANDROID_FIRST_START);
 				add("d5c1a902e83b4d05a51085e344bee953", PreferenceID.ANDROID_SHOW_TIME_AFTER);
 				add("f3f54f8f02a3411faf48f90aadf0ca2d", PreferenceID.ANDROID_MEAL_FORMAT);
+				add("ba9c6c26873e4bc19b96b8838901ed7a", PreferenceID.ANDROID_DIARY_USE_SEPARATOR);
 			}
 
 			private void add(String code, PreferenceID entry)
@@ -69,6 +70,7 @@ public class TestPreferenceID extends AbstractTestCoded<PreferenceID>
 				put(PreferenceID.ANDROID_FIRST_START, Type.BOOLEAN);
 				put(PreferenceID.ANDROID_SHOW_TIME_AFTER, Type.BOOLEAN);
 				put(PreferenceID.ANDROID_MEAL_FORMAT, Type.STRING);
+				put(PreferenceID.ANDROID_DIARY_USE_SEPARATOR, Type.BOOLEAN);
 			}
 		};
 
@@ -84,7 +86,7 @@ public class TestPreferenceID extends AbstractTestCoded<PreferenceID>
 		// check types are not changed
 		for (Map.Entry<PreferenceID, Type> entry : types.entrySet())
 		{
-			Assert.assertEquals(entry.getValue(), entry.getKey().getType());
+			Assert.assertEquals("Type of entry " + entry.getKey() + " changed", entry.getValue(), entry.getKey().getType());
 		}
 	}
 }

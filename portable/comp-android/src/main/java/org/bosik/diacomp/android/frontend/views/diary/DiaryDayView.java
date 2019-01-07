@@ -40,6 +40,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
+import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.frontend.UIUtils;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
@@ -48,6 +49,8 @@ import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.services.diary.PostprandUtils;
+import org.bosik.diacomp.core.services.preferences.PreferenceID;
+import org.bosik.diacomp.core.services.preferences.PreferencesTypedService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
@@ -60,6 +63,8 @@ import java.util.Locale;
 public class DiaryDayView extends LinearLayout
 {
 	private static final long SEPARATOR_TIMEOUT = PostprandUtils.DEFAULT_AFFECT_TIME_MAX * Utils.MsecPerMin;
+
+	private final PreferencesTypedService preferences;
 
 	private static abstract class Item
 	{
@@ -156,6 +161,8 @@ public class DiaryDayView extends LinearLayout
 		super(context, attributes);
 		final LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.view_diary_day, this);
+
+		preferences = new PreferencesTypedService(new PreferencesLocalService(context));
 
 		listRecs = (ListView) findViewById(R.id.listRecs);
 		listRecs.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -479,8 +486,10 @@ public class DiaryDayView extends LinearLayout
 	{
 		List<Item> result = new ArrayList<>();
 
+		final boolean useSeparator = preferences.getBooleanValue(PreferenceID.ANDROID_DIARY_USE_SEPARATOR);
 		Date curDate = firstDate;
 		int index = 0;
+
 		for (int i = 1; i <= countOfDays; i++, curDate = Utils.getNextDay(curDate))
 		{
 			// TODO: it's time, not the date
@@ -488,7 +497,7 @@ public class DiaryDayView extends LinearLayout
 			boolean firstRecordOfDay = true;
 			while (index < records.size() && Utils.sameDay(curDate, records.get(index).getData().getTime()))
 			{
-				if (index > 0 && !firstRecordOfDay)
+				if (useSeparator && index > 0 && !firstRecordOfDay)
 				{
 					final long timeA = records.get(index - 1).getData().getTime().getTime();
 					final long timeB = records.get(index).getData().getTime().getTime();

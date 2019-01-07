@@ -33,7 +33,7 @@ public enum PreferenceID implements Coded
 	/**
 	 * List of preferred food sets
 	 */
-	FOOD_SETS("1a25c92eaa3148219da83b1e66275052", Type.STRING, "[]", true),
+	@Deprecated FOOD_SETS("1a25c92eaa3148219da83b1e66275052", Type.STRING, "[]", true),
 	/**
 	 * Calculate rates automatically
 	 */
@@ -57,7 +57,11 @@ public enum PreferenceID implements Coded
 	/**
 	 * How to display meals in diary
 	 */
-	ANDROID_MEAL_FORMAT("f3f54f8f02a3411faf48f90aadf0ca2d", Type.STRING, MealFormat.SINGLE_MOST_CARBS.getCode(), true);
+	ANDROID_MEAL_FORMAT("f3f54f8f02a3411faf48f90aadf0ca2d", Type.STRING, MealFormat.SINGLE_MOST_CARBS.getCode(), true),
+	/**
+	 * Display records separator in diary
+	 */
+	ANDROID_DIARY_USE_SEPARATOR("ba9c6c26873e4bc19b96b8838901ed7a", Type.BOOLEAN, "true", true);
 
 	private String  key;
 	private Type    type;

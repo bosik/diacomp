@@ -131,7 +131,7 @@ public class PreferencesTypedService implements PreferencesService
 	 * @param preferenceID
 	 * @return Value if found, default otherwise
 	 */
-	public Boolean getBooleanValue(PreferenceID preferenceID)
+	public boolean getBooleanValue(PreferenceID preferenceID)
 	{
 		return Boolean.parseBoolean(getStringValue(preferenceID));
 	}

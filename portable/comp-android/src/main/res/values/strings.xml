@@ -141,6 +141,7 @@
     <string name="notification_time_after_meal">after meal</string>
     <string name="preferences_appearance_show_time_after">Show elapsed time</string>
     <string name="preferences_diary_meal_format">Meal format</string>
+    <string name="preferences_diary_use_separator">Use diary records separator</string>
     <string name="preferences_personal">Personal</string>
     <string name="preferences_personal_target_bs">Target blood sugar, mmol/l</string>
     <string name="preferences_rates">Correction factors</string>

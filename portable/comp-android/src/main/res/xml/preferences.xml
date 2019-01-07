@@ -15,6 +15,12 @@
                 android:summary=""
                 android:title="@string/preferences_appearance_show_time_after"/>
 
+        <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="ba9c6c26873e4bc19b96b8838901ed7a"
+                android:summary=""
+                android:title="@string/preferences_diary_use_separator"/>
+
         <ListPreference
                 android:key="f3f54f8f02a3411faf48f90aadf0ca2d"
                 android:title="@string/preferences_diary_meal_format"
