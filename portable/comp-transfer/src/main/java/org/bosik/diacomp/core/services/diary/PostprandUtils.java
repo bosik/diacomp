@@ -31,9 +31,11 @@ import java.util.List;
 public class PostprandUtils
 {
 	// TODO: move hardcode
-	private static final int DEFAULT_AFFECT_TIME_INSULIN    = 210;
-	private static final int DEFAULT_AFFECT_TIME_MEAL_STD   = 210;
-	private static final int DEFAULT_AFFECT_TIME_MEAL_SHORT = 20;
+	// in minutes
+	public static final int DEFAULT_AFFECT_TIME_INSULIN    = 210;
+	public static final int DEFAULT_AFFECT_TIME_MEAL_STD   = 210;
+	public static final int DEFAULT_AFFECT_TIME_MEAL_SHORT = 20;
+	public static final int DEFAULT_AFFECT_TIME_MAX = Math.max(DEFAULT_AFFECT_TIME_INSULIN, DEFAULT_AFFECT_TIME_MEAL_STD);
 
 	/**
 	 * @param records

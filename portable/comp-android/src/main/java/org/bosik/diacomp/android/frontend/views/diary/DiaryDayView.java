@@ -47,6 +47,7 @@ import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.services.diary.DiaryService;
+import org.bosik.diacomp.core.services.diary.PostprandUtils;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
@@ -58,6 +59,8 @@ import java.util.Locale;
 
 public class DiaryDayView extends LinearLayout
 {
+	private static final long SEPARATOR_TIMEOUT = PostprandUtils.DEFAULT_AFFECT_TIME_MAX * Utils.MsecPerMin;
+
 	private static abstract class Item
 	{
 		public abstract Date extractDate();
@@ -92,6 +95,22 @@ public class DiaryDayView extends LinearLayout
 		public Date extractDate()
 		{
 			return record.getData().getTime();
+		}
+	}
+
+	private static class ItemSeparator extends Item
+	{
+		private final Date date;
+
+		public ItemSeparator(Date date)
+		{
+			this.date = date;
+		}
+
+		@Override
+		public Date extractDate()
+		{
+			return date;
 		}
 	}
 
@@ -365,6 +384,13 @@ public class DiaryDayView extends LinearLayout
 						throw new RuntimeException("Unsupported data type: " + data.getClass().getSimpleName());
 					}
 				}
+				else if (item instanceof ItemSeparator)
+				{
+					if (convertView == null)
+					{
+						convertView = inflater.inflate(R.layout.view_diary_rec_separator, null);
+					}
+				}
 				else
 				{
 					throw new RuntimeException("Invalid data type: " + item);
@@ -459,10 +485,22 @@ public class DiaryDayView extends LinearLayout
 		{
 			// TODO: it's time, not the date
 			result.add(new ItemHeader(curDate));
+			boolean firstRecordOfDay = true;
 			while (index < records.size() && Utils.sameDay(curDate, records.get(index).getData().getTime()))
 			{
+				if (index > 0 && !firstRecordOfDay)
+				{
+					final long timeA = records.get(index - 1).getData().getTime().getTime();
+					final long timeB = records.get(index).getData().getTime().getTime();
+					if (timeB - timeA > SEPARATOR_TIMEOUT)
+					{
+						final Date date = new Date((timeA + timeB) / 2);
+						result.add(new ItemSeparator(date));
+					}
+				}
 				result.add(new ItemData(records.get(index)));
 				index++;
+				firstRecordOfDay = false;
 			}
 		}
 
@@ -493,7 +531,7 @@ public class DiaryDayView extends LinearLayout
 			{
 				Date timeFrom = params[0];
 				Date timeTo = params[1];
-				List<Versioned<DiaryRecord>> records = loadData(timeFrom, timeTo);
+				final List<Versioned<DiaryRecord>> records = loadData(timeFrom, timeTo);
 				return groupItems(records, timeFrom, days);
 			}
 
