@@ -102,7 +102,8 @@ public class ImportHelper
 
 			// download data
 			progress(callback, Progress.LOADING);
-			try (InputStream stream = client.loadStream(URL_EXPORT_PLAIN))
+			final InputStream stream = client.loadStream(URL_EXPORT_PLAIN);
+			try
 			{
 				Log.i(TAG, "Loaded in " + (p.sinceLastCheck() / 1000000) + " ms");
 
@@ -116,7 +117,8 @@ public class ImportHelper
 				{
 					if (entry.getName() != null)
 					{
-						try (InputStream data = new ByteArrayInputStream(entry.getContent()))
+						final InputStream data = new ByteArrayInputStream(entry.getContent());
+						try
 						{
 							switch (entry.getName())
 							{
@@ -159,8 +161,16 @@ public class ImportHelper
 								}
 							}
 						}
+						finally
+						{
+							data.close();
+						}
 					}
 				}
+			}
+			finally
+			{
+				stream.close();
 			}
 		}
 		catch (IOException e)

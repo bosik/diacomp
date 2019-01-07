@@ -198,7 +198,7 @@
         <item>@string/common_unit_mass_bu</item>
     </string-array>
 
-    <string-array name="meal_format_keys">
+    <string-array name="meal_format_keys" tools:ignore="MissingTranslation">
         <item>9daabf78ed994e268f2e8c905564c82d</item>
         <item>7a0c32c15c6e4ac6bf2b2b0d350810df</item>
         <item>d3e249c5fb7f4d40872d4a1538be495f</item>

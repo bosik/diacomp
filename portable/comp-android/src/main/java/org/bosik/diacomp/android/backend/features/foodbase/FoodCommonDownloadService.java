@@ -36,7 +36,6 @@ import org.bosik.merklesync.Versioned;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -98,7 +97,12 @@ public class FoodCommonDownloadService extends Service
 
 		public FoodLoadingTask(Context context, long retryTime, long maxRetryTime)
 		{
-			this.context = Objects.requireNonNull(context);
+			if (context == null)
+			{
+				throw new NullPointerException("Context is null");
+			}
+
+			this.context = context;
 			this.retryTimeout = retryTime;
 			this.maxRetryTimeout = maxRetryTime;
 			this.notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
