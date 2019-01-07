@@ -501,7 +501,7 @@ public class DiaryDayView extends LinearLayout
 				{
 					final long timeA = records.get(index - 1).getData().getTime().getTime();
 					final long timeB = records.get(index).getData().getTime().getTime();
-					if (timeB - timeA > SEPARATOR_TIMEOUT)
+					if (timeB - timeA >= SEPARATOR_TIMEOUT)
 					{
 						final Date date = new Date((timeA + timeB) / 2);
 						result.add(new ItemSeparator(date));
