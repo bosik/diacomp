@@ -14,5 +14,5 @@ Diabetes Diary & Analytical System
   * <a href="https://github.com/bosik/diacomp/tree/master/win32">Windows (Delphi)</a>
 
 <b>Links:</b>
-  * <a href="http://diacomp.net/">Official site</a>
+  * <a href="https://diacomp.net/">Official site</a>
   * <a href="https://play.google.com/store/apps/details?id=org.bosik.diacomp.android">Google Play</a>
