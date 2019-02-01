@@ -3,7 +3,7 @@ unit ACCombo;
 interface
 
 uses
-  SysUtils, Windows, Messages, Classes, Controls, StdCtrls, Graphics, Forms;
+  SysUtils, Windows, Messages, Classes, Controls, StdCtrls, Math, Graphics, Forms;
 
 type
   { Класс, реализующий выпадающее окно автозавершения }
@@ -439,8 +439,6 @@ procedure TACComboBox.HideAC(ApplySelection: Boolean);
 var
   i: Integer;
 begin
-  //windows.beep(100, 100);
-
   ShowWindow(FDropDown.Handle, SW_HIDE); // прячем список автозавершения
 
   // если ApplySelection=True, то помещаем в поле редактирования комбо-бокса
@@ -455,6 +453,7 @@ begin
     end;
     CloseUp;
   end;
+
   FDropped := False;
 end;
 
@@ -543,8 +542,12 @@ procedure TACComboBox.ParentFormWndProc(var Message: TMessage);
 
 begin
   case Message.Msg of // при изменении положения родительской формы прячем окно автозавершения
-    //WM_WINDOWPOSCHANGING: HideAC(False);
-    WM_WINDOWPOSCHANGED: HideAC(False);
+    WM_WINDOWPOSCHANGING,
+    WM_WINDOWPOSCHANGED:
+    begin
+      if (FDropped) then
+        HideAC(False);
+    end;
   end; // case
   Default;
 end;
@@ -634,75 +637,37 @@ end;
 
 procedure TACComboBox.ShowAC;
 var
-  P: TPoint; Cnt: Integer;
+  P: TPoint;
+  DisplayCount, DisplayHeight: Integer;
+  Control: TWinControl;
 begin
-  //windows.beep(500, 100);
-
   FDropDown.BlockMouseOnce := True;
-  PrepareACStrings(Text); // заполняем список автозаверения вариантами, соответствующими введенному тексту
-  Cnt := FDropDown.Items.Count;
-
-  // задаем высоту окна автозавершения таким образом, чтобы в нем помещалось не более DropDownCount строк;
-  // если вариантов заверешения более DropDownCount, будет показана вертикальная полоса прокрутки
-  if Cnt > DropDownCount then Cnt := DropDownCount;
-  FDropped := True;
+  PrepareACStrings(Text);
 
   SendMessage(Handle, CB_SHOWDROPDOWN, 0, 0); // прячем "родное" выпадающее окно комбобокса
+  Control := TWinControl(Owner);
 
-  // показываем окно автозавершения под комбобоксом
-  //if ClientToScreen(Point(1, Height-1)).Y + Cnt*FDropDown.ItemHeight+2 < Screen.Height then
-  if ClientToScreen(Point(1, Height-1)).Y + Cnt*FDropDown.ItemHeight+2 < TWinControl(Owner).ClientOrigin.Y + TWinControl(Owner).ClientHeight then
-  begin
-    P.X := Left;
-    P.Y := Top + Height - 1;
-    P := ClientToScreen(P);
+  DisplayCount := Min(FDropDown.Items.Count, DropDownCount);
+  DisplayHeight := DisplayCount * FDropDown.ItemHeight;
 
-    P.X := P.X - TWincontrol(Owner).ClientOrigin.X - Left;
-    P.Y := P.Y - TWincontrol(Owner).ClientOrigin.Y - Top;
+  //if ClientToScreen(Point(1, Height-1)).Y + DisplayCount*FDropDown.ItemHeight+2 < Screen.Height then
+  if ClientToScreen(Point(1, Height - 1)).Y + DisplayHeight + 2 < Control.ClientOrigin.Y + Control.ClientHeight then
+    P := Point(Left, Top + Height - 1)
+  else
+    P := Point(Left, Top - DisplayHeight - 1);
 
-    MoveWindow(
-      FDropDown.Handle,
-      P.X, P.Y, Width, Cnt*FDropDown.ItemHeight+2, True);
-    ShowWindow(FDropDown.Handle, SW_SHOW);
+  P := ClientToScreen(P);
+  P.X := P.X - Control.ClientOrigin.X - Left;
+  P.Y := P.Y - Control.ClientOrigin.Y - Top;
 
-    {SetWindowPos(
-      FDropDown.Handle, HWND_TOPMOST,
-      P.X, P.Y, Width,
-      Cnt*FDropDown.ItemHeight+2,
-      SWP_SHOWWINDOW);  }
-  end else
-  begin
-    P.X := Left;
-    P.Y := Top - Cnt*FDropDown.ItemHeight - 1;
-    P := ClientToScreen(P);
+  MoveWindow(
+    FDropDown.Handle,
+    P.X, P.Y, Width, DisplayHeight + 2, True);
+  ShowWindow(FDropDown.Handle, SW_SHOW);
 
-    P.X := P.X - TWincontrol(Owner).ClientOrigin.X - Left;
-    P.Y := P.Y - TWincontrol(Owner).ClientOrigin.Y - Top;
+  FDropped := True;
 
-    MoveWindow(
-      FDropDown.Handle,
-      P.X, P.Y, Width, Cnt*FDropDown.ItemHeight+2, True);
-    ShowWindow(FDropDown.Handle, SW_SHOW);
-
-    {SetWindowPos(
-      FDropDown.Handle, HWND_TOPMOST,
-      P.X, P.Y, Width,
-      Cnt*FDropDown.ItemHeight+2,
-      SWP_SHOWWINDOW);  }
-  end;
-
-  //FDropDown.Refresh;
-
-{  MoveWindow(
-      FDropDown.Handle,
-      100,100, 150, 100, True);   }
-
-  {
-  В оригинальном ComboBox выпадающее окно имеет полную ширину,
-  поэтому вычет GetSystemMetrics(SM_CXVSCROLL) закомментирован
-  }
-
-  if (FDropDown.ItemIndex = -1)and(FDropDown.Items.Count>0) then
+  if (FDropDown.ItemIndex = -1) and (FDropDown.Items.Count > 0) then
     FDropDown.ItemIndex := 0;
 end;
 
