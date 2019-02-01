@@ -9,7 +9,7 @@ object FormDish: TFormDish
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -10
+  Font.Height = -13
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   Icon.Data = {
@@ -28,42 +28,42 @@ object FormDish: TFormDish
   OnCloseQuery = FormCloseQuery
   OnResize = FormResize
   OnShow = FormShow
-  PixelsPerInch = 96
-  TextHeight = 13
+  PixelsPerInch = 120
+  TextHeight = 16
   object Shape1: TShape
     Left = 0
-    Top = 53
-    Width = 630
-    Height = 6
+    Top = 65
+    Width = 628
+    Height = 8
     Align = alTop
     Brush.Style = bsClear
     Pen.Style = psClear
   end
   object Shape4: TShape
     Left = 0
-    Top = 111
-    Width = 630
-    Height = 7
+    Top = 137
+    Width = 628
+    Height = 8
     Align = alTop
     Brush.Style = bsClear
     Pen.Style = psClear
   end
   object Panel1: TPanel
     Left = 0
-    Top = 603
-    Width = 630
-    Height = 38
+    Top = 587
+    Width = 628
+    Height = 47
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 2
     DesignSize = (
-      630
-      38)
+      628
+      47)
     object ButtonCancel: TBitBtn
-      Left = 401
-      Top = 10
-      Width = 112
-      Height = 27
+      Left = 494
+      Top = 12
+      Width = 137
+      Height = 34
       Hint = 'Esc'
       Anchors = [akRight, akBottom]
       Cancel = True
@@ -95,10 +95,10 @@ object FormDish: TFormDish
       NumGlyphs = 2
     end
     object ButtonSave: TBitBtn
-      Left = 7
-      Top = 10
-      Width = 112
-      Height = 27
+      Left = 9
+      Top = 12
+      Width = 137
+      Height = 34
       Hint = 'Alt+S'
       Anchors = [akLeft, akBottom]
       Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
@@ -130,35 +130,35 @@ object FormDish: TFormDish
   end
   object GroupContent: TGroupBox
     Left = 0
-    Top = 118
-    Width = 630
-    Height = 485
+    Top = 145
+    Width = 628
+    Height = 442
     Align = alClient
     Caption = #1057#1086#1089#1090#1072#1074
     TabOrder = 0
     object PanelTable: TPanel
       Left = 2
-      Top = 15
-      Width = 626
-      Height = 468
+      Top = 18
+      Width = 624
+      Height = 422
       Align = alClient
       BevelOuter = bvNone
       BorderWidth = 8
       TabOrder = 0
       object Shape2: TShape
         Left = 8
-        Top = 403
-        Width = 610
-        Height = 7
+        Top = 344
+        Width = 608
+        Height = 9
         Align = alBottom
         Brush.Style = bsClear
         Pen.Style = psClear
       end
       object Shape3: TShape
         Left = 8
-        Top = 453
-        Width = 610
-        Height = 7
+        Top = 406
+        Width = 608
+        Height = 8
         Align = alBottom
         Brush.Style = bsClear
         Pen.Style = psClear
@@ -167,8 +167,8 @@ object FormDish: TFormDish
       object TableDishContent: TListView
         Left = 8
         Top = 8
-        Width = 610
-        Height = 395
+        Width = 608
+        Height = 336
         Align = alClient
         Columns = <
           item
@@ -180,13 +180,13 @@ object FormDish: TFormDish
             Caption = #1041
             MaxWidth = 60
             MinWidth = 40
-            Width = 40
+            Width = 49
           end
           item
             Caption = #1052#1072#1089#1089#1072
             MaxWidth = 60
             MinWidth = 40
-            Width = 49
+            Width = 60
           end>
         FullDrag = True
         GridLines = True
@@ -204,20 +204,20 @@ object FormDish: TFormDish
       end
       object GroupFood: TGroupBox
         Left = 8
-        Top = 410
-        Width = 610
-        Height = 43
+        Top = 353
+        Width = 608
+        Height = 53
         Align = alBottom
         Caption = #1055#1088#1086#1076#1091#1082#1090#1099' '#1080' '#1073#1083#1102#1076#1072
         TabOrder = 1
         DesignSize = (
-          610
-          43)
+          608
+          53)
         object ButtonAddFood: TSpeedButton
-          Left = 456
-          Top = 27
-          Width = 20
-          Height = 20
+          Left = 561
+          Top = 33
+          Width = 25
+          Height = 25
           Hint = #1044#1086#1073#1072#1074#1080#1090#1100' (Enter)'
           Anchors = [akTop, akRight]
           NumGlyphs = 2
@@ -228,15 +228,15 @@ object FormDish: TFormDish
         end
         object EditFoodMass: TEditNumb
           Tag = 1
-          Left = 366
-          Top = 13
-          Width = 47
-          Height = 24
+          Left = 450
+          Top = 16
+          Width = 58
+          Height = 25
           Hint = #1052#1072#1089#1089#1072' ('#1075')'
           Anchors = [akTop, akRight]
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
-          Font.Height = -11
+          Font.Height = -15
           Font.Name = 'Courier New'
           Font.Style = []
           ParentFont = False
@@ -252,16 +252,16 @@ object FormDish: TFormDish
         end
         object ComboFood: TACComboBox
           Tag = 1
-          Left = 40
-          Top = 21
-          Width = 295
-          Height = 20
+          Left = 49
+          Top = 26
+          Width = 363
+          Height = 24
           UserHint = #1053#1072#1095#1085#1080#1090#1077' '#1074#1074#1086#1076#1080#1090#1100' '#1085#1072#1079#1074#1072#1085#1080#1077
           ShowUserHint = True
           Style = csSimple
           Anchors = [akLeft, akTop, akRight]
           DropDownCount = 14
-          ItemHeight = 13
+          ItemHeight = 16
           TabOrder = 0
           OnCloseUp = ComboFoodCloseUp
           OnDrawItem = ComboFoodDrawItem
@@ -273,18 +273,18 @@ object FormDish: TFormDish
   object GroupBoxName: TGroupBox
     Left = 0
     Top = 0
-    Width = 630
-    Height = 53
+    Width = 628
+    Height = 65
     Align = alTop
     Caption = #1053#1072#1079#1074#1072#1085#1080#1077
     TabOrder = 1
     DesignSize = (
-      630
-      53)
+      628
+      65)
     object EditName: TEdit
-      Left = 13
-      Top = 20
-      Width = 492
+      Left = 16
+      Top = 25
+      Width = 606
       Height = 24
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 0
@@ -295,10 +295,10 @@ object FormDish: TFormDish
       OnKeyPress = EditNameKeyPress
     end
     object CheckFixedMass_: TCheckBox
-      Left = 15
-      Top = 53
-      Width = 490
-      Height = 13
+      Left = 18
+      Top = 65
+      Width = 604
+      Height = 16
       Cursor = crHelp
       TabStop = False
       Anchors = [akLeft, akTop, akRight]
@@ -312,20 +312,20 @@ object FormDish: TFormDish
   end
   object GroupBoxMass: TGroupBox
     Left = 0
-    Top = 59
-    Width = 630
-    Height = 52
+    Top = 73
+    Width = 628
+    Height = 64
     Align = alTop
     Caption = #1052#1072#1089#1089#1072
     TabOrder = 3
     DesignSize = (
-      630
-      52)
+      628
+      64)
     object ButtonRealMass: TSpeedButton
-      Left = 13
-      Top = 20
-      Width = 470
-      Height = 20
+      Left = 16
+      Top = 25
+      Width = 578
+      Height = 24
       AllowAllUp = True
       Anchors = [akLeft, akTop, akRight]
       GroupIndex = 1
@@ -335,10 +335,10 @@ object FormDish: TFormDish
       OnClick = ButtonRealMassClick
     end
     object ButtonRunCalc: TSpeedButton
-      Left = 172
-      Top = 26
-      Width = 21
-      Height = 20
+      Left = 212
+      Top = 32
+      Width = 26
+      Height = 25
       Hint = #1050#1072#1083#1100#1082#1091#1083#1103#1090#1086#1088
       Anchors = [akTop, akRight]
       Flat = True
@@ -349,10 +349,10 @@ object FormDish: TFormDish
       OnClick = ButtonRunCalcClick
     end
     object ButtonSimpleMass: TSpeedButton
-      Left = 488
-      Top = 20
-      Width = 21
-      Height = 20
+      Left = 601
+      Top = 25
+      Width = 25
+      Height = 24
       AllowAllUp = True
       Anchors = [akTop, akRight]
       Flat = True
