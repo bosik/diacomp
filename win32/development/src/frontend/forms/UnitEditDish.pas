@@ -67,7 +67,6 @@ type
     procedure Shortcut_ShowDishMassClick(Sender: TObject);
     procedure Item_SaveClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure ResetTabStop(Sender: TObject);
     procedure Item_RemoveClick(Sender: TObject);
     procedure Item_ChangeMassClick(Sender: TObject);
     procedure TableDishContentMouseDown(Sender: TObject;
@@ -738,13 +737,6 @@ begin
     ShowKoof;
     Modified := true;
   end;
-end;
-
-{======================================================================================================================}
-procedure TFormDish.ResetTabStop(Sender: TObject);
-{======================================================================================================================}
-begin
-  TWinControl(Sender).TabStop := false;
 end;
 
 {======================================================================================================================}

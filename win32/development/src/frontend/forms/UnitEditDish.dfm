@@ -74,7 +74,6 @@ object FormDish: TFormDish
       TabOrder = 0
       TabStop = False
       OnClick = ButtonCancelClick
-      OnEnter = ResetTabStop
       Glyph.Data = {
         DE010000424DDE01000000000000760000002800000024000000120000000100
         0400000000006801000000000000000000001000000000000000000000000000
@@ -107,7 +106,6 @@ object FormDish: TFormDish
       TabOrder = 1
       TabStop = False
       OnClick = ButtonSaveClick
-      OnEnter = ResetTabStop
       Glyph.Data = {
         DE010000424DDE01000000000000760000002800000024000000120000000100
         0400000000006801000000000000000000001000000000000000000000000000
@@ -198,7 +196,6 @@ object FormDish: TFormDish
         TabStop = False
         ViewStyle = vsReport
         OnDblClick = TableDishContentDblClick
-        OnEnter = ResetTabStop
         OnKeyDown = TableDishContentKeyDown
         OnMouseDown = TableDishContentMouseDown
       end
@@ -244,7 +241,6 @@ object FormDish: TFormDish
           ShowHint = True
           TabOrder = 1
           Text = 'EditFoodMass'
-          OnEnter = ResetTabStop
           OnKeyDown = EditMassKeyDown
           OnKeyPress = EditFoodMassKeyPress
           Decimal = ','
@@ -290,7 +286,6 @@ object FormDish: TFormDish
       TabOrder = 0
       Text = 'EditName'
       OnChange = EditNameChange
-      OnEnter = ResetTabStop
       OnKeyDown = EditNameKeyDown
       OnKeyPress = EditNameKeyPress
     end
@@ -307,7 +302,6 @@ object FormDish: TFormDish
       ShowHint = True
       TabOrder = 1
       OnClick = CheckFixedMass_Click
-      OnEnter = ResetTabStop
     end
   end
   object GroupBoxMass: TGroupBox
