@@ -1,23 +1,23 @@
 /* =========================== MAIN STYLES =========================== */
 body {
-	margin: 0;
+    margin: 0;
 }
 
 hr {
 }
 
 .main {
-	min-width: 750px;
-	max-width: 1200px;
-	background: #ffffff;
-	margin: 0 auto;
-	padding: 0px 10px 0px;
+    min-width: 750px;
+    max-width: 1200px;
+    background: #ffffff;
+    margin: 0 auto;
+    padding: 0px 10px 0px;
 }
 
 .header {
-	margin-top: 8px;
-	padding-bottom: 10px;
-	overflow: hidden;
+    margin-top: 8px;
+    padding-bottom: 10px;
+    overflow: hidden;
 }
 
 .header a {
@@ -27,496 +27,496 @@ hr {
 }
 
 .title {
-	font-size: 120%;
-	font-weight: bold;
-	float: left;
-	line-height: 32px;
+    font-size: 120%;
+    font-weight: bold;
+    float: left;
+    line-height: 32px;
 }
 
 .title, .title a:link, .title a:visited {
-	color: #000;
+    color: #000;
 }
 
 .login, .login a:link, .login a:visited {
-	float: right;
-	text-align: right;
+    float: right;
+    text-align: right;
 }
 
 th {
-	text-align: left;
+    text-align: left;
 }
 
 #error_nojs {
-	width: 22em;
-	position: absolute;
-	left: 11em;
-	top: 200px;
-	color: #f00;
-	background-color: #fff;
-	border: 5px solid #f00;
-	padding: 20px;
-	font-family: sans-serif;
-	text-align: center;
+    width: 22em;
+    position: absolute;
+    left: 11em;
+    top: 200px;
+    color: #f00;
+    background-color: #fff;
+    border: 5px solid #f00;
+    padding: 20px;
+    font-family: sans-serif;
+    text-align: center;
 }
 
 /* =========================== COMMON STYLES =========================== */
 .hint {
-	color: #cccccc;
+    color: #cccccc;
 }
 
 .hint, .hint a:link, .hint a:visited {
-	
+
 }
 
 .hint a:hover {
-	
+
 }
 
 .hint a:link, .hint a:visited, .hint a:hover {
-	
+
 }
 
 .full_width {
-	width: 100% !important;
+    width: 100% !important;
 }
 
 .right {
-	text-align: right;
+    text-align: right;
 }
 
 .wrapper_table {
-	display: table;
-	width: 100%;
+    display: table;
+    width: 100%;
 }
 
 .wrapper_cell {
-	display: table-cell;
-	width: 100%;
-	/*padding: 0px 1px;*/
+    display: table-cell;
+    width: 100%;
+    /*padding: 0px 1px;*/
 }
 
 .hoverable:hover {
-	text-decoration: underline;
-	cursor: pointer;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .hoverableRow:hover {
-	outline: thin solid #e0e0e0;
-	background: #f0f0f0;
-	cursor: pointer;
+    outline: thin solid #e0e0e0;
+    background: #f0f0f0;
+    cursor: pointer;
 }
 
 .btn, .btn-positive, .btn-negative {
-	cursor: pointer;
-	padding: 4px;
-	min-width: 110px;
-	font-size: 100%;
-	background-repeat: no-repeat;
+    cursor: pointer;
+    padding: 4px;
+    min-width: 110px;
+    font-size: 100%;
+    background-repeat: no-repeat;
 }
 
 .btn:hover {
-	color: #000080;
+    color: #000080;
 }
 
 .btn-positive:hover {
-	color: #000080;
+    color: #000080;
 }
 
 .btn-negative:hover {
-	color: #800000;
+    color: #800000;
 }
 
 .input-light {
-	border: solid 1px #eee;
-	padding: 5px 0px 5px 5px;
-	font-size: 120%;
-	background-color: #fff;
-	border-radius: 3px;
+    border: solid 1px #eee;
+    padding: 5px 0px 5px 5px;
+    font-size: 120%;
+    background-color: #fff;
+    border-radius: 3px;
 }
 
 .input-transparent {
-	background-color: rgba(0, 0, 0, 0);
-	border: 0;
+    background-color: rgba(0, 0, 0, 0);
+    border: 0;
 }
 
 .lowercase {
-	text-transform: lowercase;
+    text-transform: lowercase;
 }
 
 .feedbackPanel {
-	padding: 10px;
-	background-color: #fcc;
+    padding: 10px;
+    background-color: #fcc;
 }
 
 li.feedbackPanelERROR {
-	display: block;
+    display: block;
 }
 
 .feedback-good {
-	background: #cfc;
-	padding: 10px;
+    background: #cfc;
+    padding: 10px;
 }
 
 /* =========================== MENU STYLES =========================== */
 .menu {
-	top: -3px;
-	position: fixed;
-	width: 100%;
-	max-width: 1000px;
-	z-index: 10;
+    top: -3px;
+    position: fixed;
+    width: 100%;
+    max-width: 1000px;
+    z-index: 10;
 }
 
 .menu a:link, .menu a:visited, .menu a:active {
-	
+
 }
 
 .menu_item {
-	padding: 10px;
-	margin: 0px -2px 0px;
-	text-align: center;
-	width: 100px;
-	display: inline-block;
-	cursor: pointer;
+    padding: 10px;
+    margin: 0px -2px 0px;
+    text-align: center;
+    width: 100px;
+    display: inline-block;
+    cursor: pointer;
 }
 
 .menu_selected {
-	font-weight: bold;
-	background: #e0e0e0;
+    font-weight: bold;
+    background: #e0e0e0;
 }
 
 .menu_option:hover {
-	background: #f0f0f0;
+    background: #f0f0f0;
 }
 
 #sticky {
-	position: fixed;
-	min-width: 750px;
-	max-width: 1140px;
-	width: 100%;
-	z-index: 999;
-	top: -7px;
+    position: fixed;
+    min-width: 750px;
+    max-width: 1140px;
+    width: 100%;
+    z-index: 999;
+    top: -7px;
 }
 
 .page-content {
-	padding: 0 15px 0 15px !important;
+    padding: 0 15px 0 15px !important;
 }
 
 /* =========================== AUTH / REG =========================== */
 .login_panel {
-	max-width: 200px;
-	padding: 0px 0px 0px 0px;
-	margin: 0 auto;
-	font-size: 100%;
+    max-width: 200px;
+    padding: 0px 0px 0px 0px;
+    margin: 0 auto;
+    font-size: 100%;
 }
 
 .error_login {
-	font-weight: bold;
-	padding: 5px;
-	margin: 10px 0 10px;
-	background: #ffcfcf;
-	text-align: center;
+    font-weight: bold;
+    padding: 5px;
+    margin: 10px 0 10px;
+    background: #ffcfcf;
+    text-align: center;
 }
 
 .reg_success {
-	font-weight: bold;
-	padding: 5px;
-	margin: 10px 0 10px;
-	background: #cfffcf;
-	text-align: center;
+    font-weight: bold;
+    padding: 5px;
+    margin: 10px 0 10px;
+    background: #cfffcf;
+    text-align: center;
 }
 
 /* =========================== DIARY STYLES =========================== */
 #diary-workspace {
-	margin-left: 250px;
-	margin-right: 300px;
+    margin-left: 250px;
+    margin-right: 300px;
 }
 
 #diary-footer {
-	position: fixed;
-	top: 100px;
-	height: 250px;
-	max-width: 250px;
-	width: 100%;
+    position: fixed;
+    top: 100px;
+    height: 250px;
+    max-width: 250px;
+    width: 100%;
 }
 
 .date_panel {
-	padding-bottom: 10px;
+    padding-bottom: 10px;
 }
 
 #diary-left-panel {
-	float: left;
-	width: 25%;
+    float: left;
+    width: 25%;
 }
 
 #diary-right-panel {
-	float: right;
-	width: 25%;
-	display: none;
+    float: right;
+    width: 25%;
+    display: none;
 }
 
 #diary-main-panel {
-	padding-left: 10px;
-	padding-right: 10px;
-	margin-left: 25%;
-	margin-right: 25%;
-	min-height: 500px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 25%;
+    margin-right: 25%;
+    min-height: 500px;
 }
 
 #diary_block {
-	
+
 }
 
 .diary_page_full {
-	overflow: hidden;
+    overflow: hidden;
 }
 
 .diary_page_empty {
-	font-size: 120%;
-	text-align: center;
-	color: #cccccc;
+    font-size: 120%;
+    text-align: center;
+    color: #cccccc;
 }
 
 .rec {
-	padding-top: 5px;
-	padding-bottom: 5px;
-	padding-left: 5px;
-	margin-bottom: 5px;
-	border: solid 1px #d8d8d8;
-	overflow: hidden;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    margin-bottom: 5px;
+    border: solid 1px #d8d8d8;
+    overflow: hidden;
 }
 
 .diary-icon {
-	float: left;
-	padding: 2px 0px 0px 6px;
+    float: left;
+    padding: 2px 0px 0px 6px;
 }
 
 .time {
-	display: inline-block;
-	float: left;
-	font-weight: bold;
-	width: 45px;
-	cursor: pointer;
-	padding: 2px 2px 0px;
+    display: inline-block;
+    float: left;
+    font-weight: bold;
+    width: 45px;
+    cursor: pointer;
+    padding: 2px 2px 0px;
 }
 
 .item {
-	padding-left: 5px;
-	overflow: hidden;
-	cursor: default;
+    padding-left: 5px;
+    overflow: hidden;
+    cursor: default;
 }
 
 .blood {
-	background: #E6EEFF;
+    background: #E6EEFF;
 }
 
 .meal {
-	background: #FFFFDD;
+    background: #FFFFDD;
 }
 
 .short_meal {
-	background: #FFFFDD;
-	color: #B00000;
+    background: #FFFFDD;
+    color: #B00000;
 }
 
 .meal_input {
-	border: 0px;
-	margin-top: 8px;
+    border: 0px;
+    margin-top: 8px;
 }
 
 .note {
-	background: #D8FFD4;
+    background: #D8FFD4;
 }
 
 .food {
-	border-bottom: thin dotted #e8e8e8;
+    border-bottom: thin dotted #e8e8e8;
 }
 
 .food:hover {
-	background: #fcfca0;
+    background: #fcfca0;
 }
 
 .delete {
-	color: #ffcccc;
-	width: 10px;
-	height: 10px;
-	display: inline;
-	cursor: pointer;
-	margin-left: 10px;
+    color: #ffcccc;
+    width: 10px;
+    height: 10px;
+    display: inline;
+    cursor: pointer;
+    margin-left: 10px;
 }
 
 .delete:hover {
-	color: #ff0000;
+    color: #ff0000;
 }
 
 .bold {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 #diary_info_column {
-	float: right;
-	width: 33%;
-	background: #ffffff;
-	overflow: hidden;
+    float: right;
+    width: 33%;
+    background: #ffffff;
+    overflow: hidden;
 }
 
 #diary_info {
-	background: #fcfcfc;
-	margin-left: 10px;
-	margin-bottom: 10px;
-	padding: 10px;
-	border: solid 1px #cccccc;
-	overflow: hidden;
-	cursor: default;
+    background: #fcfcfc;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: solid 1px #cccccc;
+    overflow: hidden;
+    cursor: default;
 }
 
 #info_block_correct_table {
-	display: none;
+    display: none;
 }
 
 #diary_main {
-	overflow: hidden;
-	border: solid 1px #cccccc;
+    overflow: hidden;
+    border: solid 1px #cccccc;
 }
 
 .positive {
-	color: limegreen;
+    color: limegreen;
 }
 
 .negative {
-	color: crimson;
+    color: crimson;
 }
 
 .meal_add {
-	background: #fcfcfc;
-	background-position: center;
-	background-image: url("../img/meal-add.png");
-	background-repeat: no-repeat;
-	width: 24px;
-	height: 24px;
-	border-radius: 4px;
+    background: #fcfcfc;
+    background-position: center;
+    background-image: url("../img/meal-add.png");
+    background-repeat: no-repeat;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
 }
 
 .meal_add:hover {
-	background: #f0f0f0;
-	background-position: center;
-	background-image: url("../img/meal-add.png");
-	background-repeat: no-repeat;
+    background: #f0f0f0;
+    background-position: center;
+    background-image: url("../img/meal-add.png");
+    background-repeat: no-repeat;
 }
 
 .meal_table {
-	cellpadding: 0;
-	border-collapse: collapse;
+    cellpadding: 0;
+    border-collapse: collapse;
 }
 
 .meal_adder {
-	/*border-top: thin dotted #e8e8e8;*/
-	
+    /*border-top: thin dotted #e8e8e8;*/
+
 }
 
 .ui-autocomplete {
-	max-height: 260px;
-	max-width: 317px;
-	overflow-y: scroll;
-	overflow-x: hidden;
+    max-height: 260px;
+    max-width: 317px;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .ui-autocomplete {
-	
+
 }
 
 .ui-menu .ui-menu-item a {
-	font-family: "Arial";
-	font-size: 16px;
-	line-height: 1.3;
+    font-family: "Arial";
+    font-size: 16px;
+    line-height: 1.3;
 }
 
 .ui-menu:hover .ui-menu-item:hover {
-	/*background:red;*/
-	
+    /*background:red;*/
+
 }
 
 .ui-autocomplete a.ui-state-hover {
-	background: red;
+    background: red;
 }
 
 .diary-day-caption {
-	font-size: 110%;
-	color: #cccccc;
-	margin-top: 15px;
-	margin-bottom: 15px;
-	text-align: center;
+    font-size: 110%;
+    color: #cccccc;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    text-align: center;
 }
 
 /* =========================== TABLE =========================== */
 .col_item {
-	width: 99%;
-	/*cursor: pointer;*/
+    width: 99%;
+    /*cursor: pointer;*/
 }
 
 .col_info {
-	min-width: 70px;
-	padding-right: 12px;
-	text-align: right;
+    min-width: 70px;
+    padding-right: 12px;
+    text-align: right;
 }
 
 .col_delete {
-	min-width: 30px;
-	cursor: pointer;
-	color: #808080;
-	font-weight: bold;
-	text-align: center;
+    min-width: 30px;
+    cursor: pointer;
+    color: #808080;
+    font-weight: bold;
+    text-align: center;
 }
 
 .col_delete:hover {
-	color: #ff0000;
+    color: #ff0000;
 }
 
 /* =========================== EDITORS =========================== */
 .image-editor-food {
-	background-image: url("../img/editor-food.png");
-	background-position: center center;
-	background-repeat: no-repeat;
-	width: 96px;
-	height: 96px;
-	float: left;
+    background-image: url("../img/editor-food.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+    width: 96px;
+    height: 96px;
+    float: left;
 }
 
 /* =========================== ETC =========================== */
 .welcome_info {
-	padding: 0px 20px 0 20px;
-	
+    padding: 0px 20px 0 20px;
+
 }
 
 .button_new_rec {
-	background-position: left;
-	background-repeat: no-repeat;
-	background-color: #fff;
-	border: 1px solid #c0c0c0;
-	padding: 10px 0px 10px 55px;
-	margin-bottom: 5px;
-	cursor: pointer;
+    background-position: left;
+    background-repeat: no-repeat;
+    background-color: #fff;
+    border: 1px solid #c0c0c0;
+    padding: 10px 0px 10px 55px;
+    margin-bottom: 5px;
+    cursor: pointer;
 }
 
 .button_new_rec:hover {
-	background-color: #f0f0f0;
+    background-color: #f0f0f0;
 }
 
 .button_new_blood {
-	background-image: url("../img/Diary_New_Blood.png");
+    background-image: url("../img/Diary_New_Blood.png");
 }
 
 .button_new_ins {
-	background-image: url("../img/Diary_New_Ins.png");
+    background-image: url("../img/Diary_New_Ins.png");
 }
 
 .button_new_meal {
-	background-image: url("../img/Diary_New_Meal.png");
+    background-image: url("../img/Diary_New_Meal.png");
 }
 
 .button_new_note {
-	background-image: url("../img/Diary_New_Note.png");
+    background-image: url("../img/Diary_New_Note.png");
 }
 
 div.wicket-mask-dark {
-	opacity: 0.4;
+    opacity: 0.4;
 }
