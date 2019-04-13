@@ -24,7 +24,6 @@ import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxFallbackButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
@@ -164,14 +163,15 @@ public class RestorePage extends MasterPage
 							progress = new ProgressBundle();
 							progress.setRunning(true);
 
-							String email = fieldEmail.getModelObject();
-							Validator.validateUserName(email);
-
 							if (!Utils.validateCaptcha(secret, challenge))
 							{
 								progress.fail(MSG_ERROR_CAPTCHA);
 								return;
 							}
+
+							String email = fieldEmail.getModelObject();
+							Validator.validateUserName(email);
+							email = email.toLowerCase();
 
 							String restoreKey = authService.buildRestoreKey(email);
 

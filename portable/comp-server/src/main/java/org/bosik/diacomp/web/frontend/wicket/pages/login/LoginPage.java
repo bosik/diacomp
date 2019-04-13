@@ -115,6 +115,8 @@ public class LoginPage extends MasterPage
 						return;
 					}
 
+					userName = userName.toLowerCase();
+
 					Authentication auth = authService.authenticate(new UsernamePasswordAuthenticationToken(userName, password));
 					SecurityContext context = SecurityContextHolder.getContext();
 					context.setAuthentication(auth);

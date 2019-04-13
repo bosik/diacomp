@@ -121,6 +121,7 @@ public class ChangePasswordPage extends MasterPage
 		add(form);
 
 		final PasswordTextField fieldPassword = new PasswordTextField("82IGBs83hF", Model.of(""));
+		fieldPassword.setRequired(false); // to handle it manually
 		form.add(fieldPassword);
 
 		buttonSave = new AjaxFallbackButton("buttonChangePassword", form)

@@ -51,6 +51,7 @@ import org.bosik.diacomp.web.frontend.wicket.pages.license.eula.EulaPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.license.privacy.PrivacyPolicyPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.register.sent.RegistrationSentPage;
+import org.springframework.util.StringUtils;
 
 import javax.mail.MessagingException;
 
@@ -200,25 +201,18 @@ public class RegisterPage extends MasterPage
 
 							String email = fieldEmail.getModelObject();
 							String password = fieldPassword.getModelObject();
-							String activationKey = authService.register(email, password);
 
+							if (!StringUtils.isEmpty(email))
+							{
+								email = email.toLowerCase();
+							}
+
+							String activationKey = authService.register(email, password);
 							String activationLink = String.format("%sregister/activate?key=%s", appUrl, activationKey);
 							String body = String.format(bodyPattern, activationLink, activationLink);
 							Utils.sendEmail(email, title, body, sender);
 
 							progress.success(email);
-						}
-						catch (PasswordIsEmptyException e)
-						{
-							progress.fail(MSG_ERROR_PASSWORD_IS_EMPTY);
-						}
-						catch (PasswordTooShortException e)
-						{
-							progress.fail(MSG_ERROR_PASSWORD_TOO_SHORT);
-						}
-						catch (PasswordTooLongException e)
-						{
-							progress.fail(MSG_ERROR_PASSWORD_TOO_LONG);
 						}
 						catch (UserNameIsEmptyException e)
 						{
@@ -231,6 +225,18 @@ public class RegisterPage extends MasterPage
 						catch (UserNameTooLongException e)
 						{
 							progress.fail(MSG_ERROR_USERNAME_TOO_LONG);
+						}
+						catch (PasswordIsEmptyException e)
+						{
+							progress.fail(MSG_ERROR_PASSWORD_IS_EMPTY);
+						}
+						catch (PasswordTooShortException e)
+						{
+							progress.fail(MSG_ERROR_PASSWORD_TOO_SHORT);
+						}
+						catch (PasswordTooLongException e)
+						{
+							progress.fail(MSG_ERROR_PASSWORD_TOO_LONG);
 						}
 						catch (MessagingException e)
 						{

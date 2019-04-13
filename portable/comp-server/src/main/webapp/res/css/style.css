@@ -139,6 +139,10 @@ th {
 	border: 0;
 }
 
+.lowercase {
+	text-transform: lowercase;
+}
+
 /* =========================== MENU STYLES =========================== */
 .menu {
 	top: -3px;
