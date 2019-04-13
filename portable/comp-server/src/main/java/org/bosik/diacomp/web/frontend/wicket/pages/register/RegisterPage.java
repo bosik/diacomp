@@ -137,6 +137,7 @@ public class RegisterPage extends MasterPage
 		form.add(fieldFakeEmail);
 
 		final PasswordTextField fieldPassword = new PasswordTextField("P2BohS6rUR", Model.of(""));
+		fieldPassword.setRequired(false); // to handle it manually
 		form.add(fieldPassword);
 
 		form.add(new BookmarkablePageLink<Void>("linkEula", EulaPage.class));

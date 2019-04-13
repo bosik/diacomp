@@ -143,6 +143,20 @@ th {
 	text-transform: lowercase;
 }
 
+.feedbackPanel {
+	padding: 10px;
+	background-color: #fcc;
+}
+
+li.feedbackPanelERROR {
+	display: block;
+}
+
+.feedback-good {
+	background: #cfc;
+	padding: 10px;
+}
+
 /* =========================== MENU STYLES =========================== */
 .menu {
 	top: -3px;

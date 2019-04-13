@@ -1,116 +1,113 @@
 <!DOCTYPE html>
 <html xmlns:wicket="http://wicket.apache.org">
 <head>
-<wicket:head>
-	<link type="text/css" rel="stylesheet" href="res/css/style.css" />
-	<style>
-.register-panel {
-	max-width: 550px;
-	margin: 0 auto;
-	margin-top: 20px;
-	margin-bottom: 20px;
-	display: table;
-}
+    <wicket:head>
+        <link type="text/css" rel="stylesheet" href="res/css/style.css"/>
+        <style>
+            .register-panel {
+                max-width: 550px;
+                margin: 0 auto;
+                margin-top: 20px;
+                margin-bottom: 20px;
+                display: table;
+            }
 
-.register-row {
-	margin-bottom: 15px;
-}
+            .register-row {
+                margin-bottom: 15px;
+            }
 
-.register-column-main {
-	width: 355px;
-	padding-right: 50px;
-	display: table-cell;
-	vertical-align: top;
-}
+            .register-column-main {
+                width: 355px;
+                padding-right: 50px;
+                display: table-cell;
+                vertical-align: top;
+            }
 
-.register-column-hint {
-	width: 200px;
-	display: table-cell;
-	vertical-align: middle;
-}
-
-.feedbackPanel {
-	padding: 10px;
-	background-color: #fdd;
-}
-
-li.feedbackPanelERROR {
-	display: block;
-}
-</style>
-	<script src='https://www.google.com/recaptcha/api.js'></script>
-</wicket:head>
+            .register-column-hint {
+                width: 200px;
+                display: table-cell;
+                vertical-align: middle;
+            }
+        </style>
+        <script src='https://www.google.com/recaptcha/api.js'></script>
+    </wicket:head>
 </head>
 <body>
-	<wicket:extend xmlns:wicket="http://wicket.apache.org">
-		<div class="register-panel">
-			<form wicket:id="regForm" method="post">
-				<fieldset>
-					<div class="register-row">
-						<div class="register-column-main">
-							<label> <wicket:message key="field.username"></wicket:message>
-								<span style="color: #f00;">*</span>
-							</label>
-							<div>
-								<input wicket:id="rhCyIStebK" type="text"
-									class="form-control full_width lowercase" autofocus /> <input
-									wicket:id="email" type="hidden" value="" />
-							</div>
-						</div>
-						<div class="register-column-hint hint">
-							<wicket:message key="text.hint.email"></wicket:message>
-						</div>
-					</div>
-					<div class="register-row">
-						<div class="register-column-main">
-							<label> <wicket:message key="field.password"></wicket:message>
-								<span style="color: #f00;">*</span>
-							</label>
-							<div>
-								<input wicket:id="P2BohS6rUR" type=password
-									class="form-control full_width" />
-							</div>
-						</div>
-						<div class="register-column-hint hint">
-							<wicket:message key="text.hint.password"></wicket:message>
-						</div>
-					</div>
-					<div class="register-row">
-						<div class="register-column-main">
-							<div class="g-recaptcha"
-								data-sitekey="6LeVvAQTAAAAAK8PKhgAH8rtkT9oYTjXwVMoZcGS"></div>
-						</div>
-					</div>
-					<div class="register-row">
-						<div class="register-column-main">
-							<wicket:message key="text.legal.agreement" />
-							<a wicket:id="linkEula" target="_blank"><wicket:message key="text.legal.link.eula" /></a>
-							<wicket:message key="text.legal.and" />
-							<a wicket:id="linkPrivacy" target="_blank"><wicket:message key="text.legal.link.privacy" /></a>.
-						</div>
-					</div>
-					<div class="register-row">
-						<div class="register-column-main">
-							<button wicket:id="buttonRegister" type="submit"
-								class="btn btn-primary full_width">
-								<wicket:message key="button.register"></wicket:message>
-							</button>
-						</div>
-					</div>
-				</fieldset>
-			</form>
-			<div wicket:id="progressContainer">
-				<div wicket:id="progressSpinner">
-					<img src="res/img/status-progress.gif"
-						style="width: 26px; margin-right: 10px;"> <span><wicket:message
-							key="text.processing"></wicket:message></span>
-				</div>
-			</div>
-			<div class="register-row">
-				<div wicket:id="feedbackPanel"
-					class="register-column-main invalid-credentials"></div>
-			</div>
-		</div>
-	</wicket:extend>
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+    <div class="register-panel">
+        <form wicket:id="regForm" method="post">
+            <fieldset>
+                <div class="register-row">
+                    <div class="register-column-main">
+                        <label>
+                            <wicket:message key="field.username"></wicket:message>
+                            <span style="color: #f00;">*</span>
+                        </label>
+                        <div>
+                            <input wicket:id="rhCyIStebK" type="text"
+                                   class="form-control full_width lowercase" autofocus/> <input
+                                wicket:id="email" type="hidden" value=""/>
+                        </div>
+                    </div>
+                    <div class="register-column-hint hint">
+                        <wicket:message key="text.hint.email"></wicket:message>
+                    </div>
+                </div>
+                <div class="register-row">
+                    <div class="register-column-main">
+                        <label>
+                            <wicket:message key="field.password"></wicket:message>
+                            <span style="color: #f00;">*</span>
+                        </label>
+                        <div>
+                            <input wicket:id="P2BohS6rUR" type=password
+                                   class="form-control full_width"/>
+                        </div>
+                    </div>
+                    <div class="register-column-hint hint">
+                        <wicket:message key="text.hint.password"></wicket:message>
+                    </div>
+                </div>
+                <div class="register-row">
+                    <div class="register-column-main">
+                        <div class="g-recaptcha"
+                             data-sitekey="6LeVvAQTAAAAAK8PKhgAH8rtkT9oYTjXwVMoZcGS"></div>
+                    </div>
+                </div>
+                <div class="register-row">
+                    <div class="register-column-main">
+                        <wicket:message key="text.legal.agreement"/>
+                        <a wicket:id="linkEula" target="_blank">
+                            <wicket:message key="text.legal.link.eula"/>
+                        </a>
+                        <wicket:message key="text.legal.and"/>
+                        <a wicket:id="linkPrivacy" target="_blank">
+                            <wicket:message key="text.legal.link.privacy"/>
+                        </a>.
+                    </div>
+                </div>
+                <div class="register-row">
+                    <div class="register-column-main">
+                        <button wicket:id="buttonRegister" type="submit"
+                                class="btn btn-primary full_width">
+                            <wicket:message key="button.register"></wicket:message>
+                        </button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+        <div wicket:id="progressContainer">
+            <div wicket:id="progressSpinner">
+                <img src="res/img/status-progress.gif"
+                     style="width: 26px; margin-right: 10px;"> <span><wicket:message
+                    key="text.processing"></wicket:message></span>
+            </div>
+        </div>
+        <div class="register-row">
+            <div wicket:id="feedbackPanel"
+                 class="register-column-main invalid-credentials"></div>
+        </div>
+    </div>
+</wicket:extend>
 </body>
 </html>

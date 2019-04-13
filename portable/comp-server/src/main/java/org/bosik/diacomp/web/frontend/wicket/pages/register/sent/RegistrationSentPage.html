@@ -1,36 +1,31 @@
 <!DOCTYPE html>
 <html xmlns:wicket="http://wicket.apache.org">
 <head>
-<wicket:head>
-	<link type="text/css" rel="stylesheet" href="res/css/style.css" />
-	<style>
-.register-panel {
-	max-width: 550px;
-	margin: 0 auto;
-	margin-top: 20px;
-	margin-bottom: 20px;
-	display: table;
-}
+    <wicket:head>
+        <link type="text/css" rel="stylesheet" href="res/css/style.css"/>
+        <style>
+            .register-panel {
+                max-width: 550px;
+                margin: 0 auto;
+                margin-top: 20px;
+                margin-bottom: 20px;
+                display: table;
+            }
 
-.register-column-main {
-	width: 320px;
-}
-
-.succeed {
-	background: #cfc;
-	padding: 15px;
-}
-</style>
-</wicket:head>
+            .register-column-main {
+                width: 320px;
+            }
+        </style>
+    </wicket:head>
 </head>
 <body>
-	<wicket:extend xmlns:wicket="http://wicket.apache.org">
-		<div class="register-panel">
-			<div class="register-column-main succeed">
-				<wicket:message key="text.completeRegistration"></wicket:message>
-				<b><span wicket:id="labelSentEmail"></span></b>
-			</div>
-		</div>
-	</wicket:extend>
+<wicket:extend xmlns:wicket="http://wicket.apache.org">
+    <div class="register-panel">
+        <div class="register-column-main feedback-good">
+            <wicket:message key="text.completeRegistration"></wicket:message>
+            <b><span wicket:id="labelSentEmail"></span></b>
+        </div>
+    </div>
+</wicket:extend>
 </body>
 </html>
