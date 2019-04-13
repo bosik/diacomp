@@ -17,22 +17,27 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.pages.base;
 
-import java.util.Iterator;
-import java.util.List;
 import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
+import org.bosik.diacomp.web.backend.features.base.food.combo.FoodComboLocalService;
+import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.merklesync.Versioned;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class FoodDataProvider implements IDataProvider<Versioned<FoodItem>>
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	@SpringBean
-	public FoodBaseService		foodService;
+	private UserInfoService userInfoService;
+
+	@SpringBean
+	private FoodComboLocalService foodService;
 
 	@Override
 	public void detach()
@@ -42,27 +47,19 @@ public class FoodDataProvider implements IDataProvider<Versioned<FoodItem>>
 	@Override
 	public Iterator<? extends Versioned<FoodItem>> iterator(long first, long count)
 	{
-		List<Versioned<FoodItem>> items = foodService.findAll(false);
+		int userId = userInfoService.getCurrentUserId();
+		List<Versioned<FoodItem>> items = foodService.findAll(userId, false);
 
-		int iFirst = (int)first;
-		int iLast = (int)(first + count);
-
-		if (first < 0)
-		{
-			first = 0;
-		}
-		if (iLast > items.size())
-		{
-			iLast = items.size();
-		}
-
+		int iFirst = Math.max((int) first, 0);
+		int iLast = Math.min((int) (iFirst + count), items.size());
 		return items.subList(iFirst, iLast).iterator();
 	}
 
 	@Override
 	public long size()
 	{
-		return foodService.findAll(false).size();
+		int userId = userInfoService.getCurrentUserId();
+		return foodService.findAll(userId, false).size();
 	}
 
 	@Override

@@ -17,9 +17,6 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.components.mealeditor.picker.food;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
@@ -30,21 +27,29 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
+import org.bosik.diacomp.web.backend.features.base.food.combo.FoodComboLocalService;
+import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.merklesync.Versioned;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public abstract class FoodPicker extends Panel
 {
-	private static final long		serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	@SpringBean
-	FoodBaseService					foodBase;
+	private UserInfoService userInfoService;
 
-	AutoCompleteTextField<String>	field;
+	@SpringBean
+	private FoodComboLocalService foodService;
 
-	private final IModel<String>	model;
+	private AutoCompleteTextField<String> field;
 
-	public FoodPicker(String id, IModel<String> model)
+	private final IModel<String> model;
+
+	protected FoodPicker(String id, IModel<String> model)
 	{
 		super(id);
 		this.model = model;
@@ -55,7 +60,7 @@ public abstract class FoodPicker extends Panel
 	{
 		super.onInitialize();
 
-		Form<Void> form = new Form<Void>("form");
+		Form<Void> form = new Form<>("form");
 		add(form);
 
 		field = new AutoCompleteTextField<String>("picker", model)
@@ -65,8 +70,9 @@ public abstract class FoodPicker extends Panel
 			@Override
 			protected Iterator<String> getChoices(String input)
 			{
-				List<String> choices = new ArrayList<String>();
-				List<Versioned<FoodItem>> list = foodBase.findAny(input);
+				List<String> choices = new ArrayList<>();
+				int userId = userInfoService.getCurrentUserId();
+				List<Versioned<FoodItem>> list = foodService.findAny(userId, input);
 
 				for (final Versioned<FoodItem> item : list)
 				{
@@ -84,7 +90,8 @@ public abstract class FoodPicker extends Panel
 			protected void onSubmit(AjaxRequestTarget target)
 			{
 				String name = field.getModelObject();
-				Versioned<FoodItem> food = foodBase.findOne(name);
+				int userId = userInfoService.getCurrentUserId();
+				Versioned<FoodItem> food = foodService.findOne(userId, name);
 				if (food != null)
 				{
 					Food item = food.getData();

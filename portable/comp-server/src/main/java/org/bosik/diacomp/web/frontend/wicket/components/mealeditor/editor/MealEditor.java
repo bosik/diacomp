@@ -83,7 +83,7 @@ public class MealEditor extends GenericPanel<FoodList>
 						setModelObject(mo);
 
 						target.add(container);
-					};
+					}
 				});
 
 				//				item.add(new AjaxEventBehavior("onclick")
