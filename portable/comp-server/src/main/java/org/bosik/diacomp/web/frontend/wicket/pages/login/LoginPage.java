@@ -20,19 +20,35 @@ package org.bosik.diacomp.web.frontend.wicket.pages.login;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxFallbackButton;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.bosik.diacomp.web.backend.features.user.auth.AuthProvider;
+import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.register.RegisterPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.restore.RestorePage;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 
 public class LoginPage extends MasterPage
 {
+	@SpringBean
+	private AuthProvider authService;
+
 	private static final long   serialVersionUID = 1L;
 	private              String userName         = "";
+	private              String password         = "";
 
 	public LoginPage(final PageParameters parameters)
 	{
@@ -44,20 +60,21 @@ public class LoginPage extends MasterPage
 	{
 		super.onInitialize();
 
-		final TextField<String> fieldEmail = new TextField<>("userName", new PropertyModel<String>(this, "userName"));
-		fieldEmail.add(new AjaxFormComponentUpdatingBehavior("onblur")
-		{
-			private static final long serialVersionUID = 1072515919159765189L;
+		Form<Void> form = new Form<>("formLogin");
+		form.setOutputMarkupId(true);
+		add(form);
 
-			@Override
-			protected void onUpdate(AjaxRequestTarget target)
-			{
-			}
-		});
-		add(fieldEmail);
+		final TextField<String> fieldEmail = new TextField<>("fieldUserName", new PropertyModel<String>(this, "userName"));
+		fieldEmail.add(new UpdateOnBlurBehavior());
+		form.add(fieldEmail);
 
-		add(new BookmarkablePageLink<Void>("linkRegister", RegisterPage.class));
-		add(new AjaxFallbackLink<Void>("linkRestore")
+		final PasswordTextField fieldPassword = new PasswordTextField("fieldPassword", new PropertyModel<String>(this, "password"));
+		fieldPassword.add(new UpdateOnBlurBehavior());
+		fieldPassword.setRequired(false); // to handle it manually
+		form.add(fieldPassword);
+
+		form.add(new BookmarkablePageLink<Void>("linkRegister", RegisterPage.class));
+		form.add(new AjaxFallbackLink<Void>("linkRestore")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget ajaxRequestTarget)
@@ -68,12 +85,74 @@ public class LoginPage extends MasterPage
 			}
 		});
 
-		FeedbackPanel hint = new FeedbackPanel("hintInvalidCredentials");
+		final FeedbackPanel hint = new FeedbackPanel("hintInvalidCredentials");
+		hint.setOutputMarkupId(true);
 		add(hint);
 
-		if (getPageParameters().getPosition("error") != -1)
+		AjaxFallbackButton buttonRegister = new AjaxFallbackButton("buttonLogin", form)
 		{
-			hint.error(getString("label.invalidCredentials"));
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
+			{
+				final String MSG_ERROR_USERNAME_IS_EMPTY = getString("error.userName.empty");
+				final String MSG_ERROR_PASSWORD_IS_EMPTY = getString("error.password.empty");
+				final String MSG_ERROR_COMMON = getString("error.common");
+				final String MSG_ERROR_CREDENTIALS = getString("error.badCredentials");
+
+				try
+				{
+					if (StringUtils.isEmpty(userName))
+					{
+						showError(target, MSG_ERROR_USERNAME_IS_EMPTY);
+						return;
+					}
+
+					if (StringUtils.isEmpty(password))
+					{
+						showError(target, MSG_ERROR_PASSWORD_IS_EMPTY);
+						return;
+					}
+
+					Authentication auth = authService.authenticate(new UsernamePasswordAuthenticationToken(userName, password));
+					SecurityContext context = SecurityContextHolder.getContext();
+					context.setAuthentication(auth);
+					LoginPage.this.setResponsePage(DiaryPage.class);
+				}
+				catch (BadCredentialsException e)
+				{
+					showError(target, MSG_ERROR_CREDENTIALS);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					showError(target, MSG_ERROR_COMMON);
+				}
+			}
+
+			private void showError(AjaxRequestTarget target, String msg)
+			{
+				error(msg);
+				target.add(hint);
+			}
+		};
+		buttonRegister.setOutputMarkupId(true);
+		form.add(buttonRegister);
+	}
+
+	private static class UpdateOnBlurBehavior extends AjaxFormComponentUpdatingBehavior
+	{
+		private static final long serialVersionUID = 1072515919159765189L;
+
+		public UpdateOnBlurBehavior()
+		{
+			super("onblur");
+		}
+
+		@Override
+		protected void onUpdate(AjaxRequestTarget target)
+		{
 		}
 	}
 }

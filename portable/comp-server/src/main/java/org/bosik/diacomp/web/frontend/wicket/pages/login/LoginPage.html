@@ -1,59 +1,61 @@
 <!DOCTYPE html>
 <html xmlns:wicket="http://wicket.apache.org">
 <head>
-<wicket:head>
-	<style>
-.feedbackPanel {
-	padding: 10px;
-	background-color: #fdd;
-}
+    <wicket:head>
+        <style>
+            .feedbackPanel {
+                padding: 10px;
+                background-color: #fdd;
+            }
 
-li.feedbackPanelERROR {
-	display: block;
-}
+            li.feedbackPanelERROR {
+                display: block;
+            }
 
-.row {
-	padding-bottom: 10px;
-}
-</style>
-</wicket:head>
+            .row {
+                padding-bottom: 10px;
+            }
+        </style>
+    </wicket:head>
 </head>
 <body>
-	<wicket:extend>
-		<div wicket:id="hintInvalidCredentials" class="invalid-credentials"></div>
-		<div class="login_panel">
-			<form action="j_spring_security_check" class="form-horizontal"
-				method="post">
-				<fieldset>
-					<div class="form-group">
-						<label class="control-label" for="login"><wicket:message
-								key="field.username"></wicket:message></label> <input type="text"
-							id="login" name="j_username" wicket:id="userName" class="form-control full_width"
-							autofocus />
-					</div>
-					<div class="form-group">
-						<label class="control-label" for="password"><wicket:message
-								key="field.password"></wicket:message></label> <input type="password"
-							name="j_password" id="password" class="form-control full_width" />
-					</div>
+<wicket:extend>
+    <div wicket:id="hintInvalidCredentials" class="invalid-credentials"></div>
+    <div class="login_panel">
+        <form wicket:id="formLogin" class="form-horizontal" method="post">
+            <fieldset>
+                <div class="form-group">
+                    <label class="control-label" for="login">
+                        <wicket:message key="field.username"></wicket:message>
+                    </label>
+                    <input wicket:id="fieldUserName" id="login" type="text" class="form-control full_width" autofocus/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="password">
+                        <wicket:message key="field.password"></wicket:message>
+                    </label>
+                    <input wicket:id="fieldPassword" id="password" type="password" class="form-control full_width"/>
+                </div>
 
-					<input type="hidden" name="api" value="20" />
-					<div class="form-group">
-						<button type="submit" class="btn btn-primary full_width">
-							<wicket:message key="button.login"></wicket:message>
-						</button>
-					</div>
-					<div class="form-group">
-						<a wicket:id="linkRegister" class="btn btn-link full_width"><wicket:message
-								key="label.registerNow"></wicket:message></a>
-					</div>
-					<div class="form-group">
-						<a wicket:id="linkRestore" class="btn btn-link full_width"><wicket:message
-								key="label.restore"></wicket:message></a>
-					</div>
-				</fieldset>
-			</form>
-		</div>
-	</wicket:extend>
+                <input type="hidden" name="api" value="20"/>
+                <div class="form-group">
+                    <button wicket:id="buttonLogin" type="submit" class="btn btn-primary full_width">
+                        <wicket:message key="button.login"></wicket:message>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <a wicket:id="linkRegister" class="btn btn-link full_width">
+                        <wicket:message key="button.signUp"></wicket:message>
+                    </a>
+                </div>
+                <div class="form-group">
+                    <a wicket:id="linkRestore" class="btn btn-link full_width">
+                        <wicket:message key="button.restorePassword"></wicket:message>
+                    </a>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</wicket:extend>
 </body>
 </html>
