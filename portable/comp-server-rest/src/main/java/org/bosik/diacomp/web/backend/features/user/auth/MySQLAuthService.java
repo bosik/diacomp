@@ -17,44 +17,40 @@
  */
 package org.bosik.diacomp.web.backend.features.user.auth;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import org.bosik.diacomp.core.services.exceptions.DuplicateException;
 import org.bosik.diacomp.core.services.exceptions.NotActivatedException;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.MySQLAccess;
 import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
+import org.bosik.diacomp.web.backend.features.user.auth.validation.Validator;
 import org.springframework.stereotype.Service;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import static org.bosik.merklesync.HashUtils.generateGuid;
 
 @Service
 public class MySQLAuthService implements AuthService
 {
-	private static final String	TABLE_USER					= "user";
-	private static final String	COLUMN_USER_ID				= "ID";
-	private static final String	COLUMN_USER_NAME			= "Login";
-	private static final String	COLUMN_USER_HASHPASS		= "HashPass";
-	private static final String	COLUMN_USER_ACTIVATION_KEY	= "ActivationKey";
-	private static final String	COLUMN_USER_DATE_REG		= "DateReg";
-	private static final String	COLUMN_USER_DATE_LOGIN		= "DateLogin";
-
-	public static final int		PASSWORD_MIN_SIZE			= 6;
+	private static final String TABLE_USER                 = "user";
+	private static final String COLUMN_USER_ID             = "ID";
+	private static final String COLUMN_USER_NAME           = "Login";
+	private static final String COLUMN_USER_HASHPASS       = "HashPass";
+	private static final String COLUMN_USER_ACTIVATION_KEY = "ActivationKey";
+	private static final String COLUMN_USER_RESTORE_KEY    = "RestoreKey";
+	private static final String COLUMN_USER_DATE_REG       = "DateReg";
+	private static final String COLUMN_USER_DATE_LOGIN     = "DateLogin";
 
 	@Override
 	public String register(String userName, String password)
 	{
-		if (userName == null || userName.trim().isEmpty())
-		{
-			throw new IllegalArgumentException("User name is empty");
-		}
-
-		if (password == null || password.trim().length() < PASSWORD_MIN_SIZE)
-		{
-			throw new IllegalArgumentException("Password is too short: " + password);
-		}
+		Validator.validateUserName(userName);
+		Validator.validatePassword(password);
 
 		if (getIdByName(userName) != null)
 		{
@@ -63,12 +59,12 @@ public class MySQLAuthService implements AuthService
 		}
 
 		String hashPass = HashUtils.createHash(password);
-		String activationCode = org.bosik.merklesync.HashUtils.generateGuid() + org.bosik.merklesync.HashUtils.generateGuid();
+		String activationCode = generateGuid() + generateGuid();
 		String dateReg = Utils.formatTimeUTC(new Date());
 
 		try
 		{
-			SortedMap<String, String> set = new TreeMap<String, String>();
+			SortedMap<String, String> set = new TreeMap<>();
 			set.put(COLUMN_USER_NAME, userName);
 			set.put(COLUMN_USER_HASHPASS, hashPass);
 			set.put(COLUMN_USER_ACTIVATION_KEY, activationCode);
@@ -128,10 +124,10 @@ public class MySQLAuthService implements AuthService
 	{
 		try
 		{
-			SortedMap<String, String> set = new TreeMap<String, String>();
+			SortedMap<String, String> set = new TreeMap<>();
 			set.put(COLUMN_USER_ACTIVATION_KEY, null);
 
-			SortedMap<String, String> where = new TreeMap<String, String>();
+			SortedMap<String, String> where = new TreeMap<>();
 			where.put(COLUMN_USER_ID, String.valueOf(userId));
 
 			MySQLAccess.update(TABLE_USER, set, where);
@@ -143,13 +139,16 @@ public class MySQLAuthService implements AuthService
 	}
 
 	@Override
-	public int login(String login, final String password)
+	public int login(String userName, final String password)
 	{
+		//		Validator.validateUserName(userName);
+		//		Validator.validatePassword(password);
+
 		try
 		{
 			final String[] select = { COLUMN_USER_ID, COLUMN_USER_HASHPASS, COLUMN_USER_ACTIVATION_KEY };
 			final String where = String.format("(%s = ?)", COLUMN_USER_NAME);
-			final String[] whereArgs = { login };
+			final String[] whereArgs = { userName };
 
 			int userId = MySQLAccess.select(TABLE_USER, select, where, whereArgs, null, new DataCallback<Integer>()
 			{
@@ -191,14 +190,14 @@ public class MySQLAuthService implements AuthService
 		}
 	}
 
-	static void updateLoginTimestamp(int userId)
+	private static void updateLoginTimestamp(int userId)
 	{
 		try
 		{
-			SortedMap<String, String> set = new TreeMap<String, String>();
+			SortedMap<String, String> set = new TreeMap<>();
 			set.put(COLUMN_USER_DATE_LOGIN, Utils.formatTimeUTC(new Date()));
 
-			SortedMap<String, String> where = new TreeMap<String, String>();
+			SortedMap<String, String> where = new TreeMap<>();
 			where.put(COLUMN_USER_ID, String.valueOf(userId));
 
 			MySQLAccess.update(TABLE_USER, set, where);
@@ -212,6 +211,8 @@ public class MySQLAuthService implements AuthService
 	@Override
 	public Integer getIdByName(String userName)
 	{
+		Validator.validateUserName(userName);
+
 		try
 		{
 			final String[] select = { COLUMN_USER_ID };
@@ -264,6 +265,86 @@ public class MySQLAuthService implements AuthService
 					}
 				}
 			});
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public String buildRestoreKey(final String userName)
+	{
+		Validator.validateUserName(userName);
+
+		try
+		{
+			final String restoreKey = generateGuid() + generateGuid();
+
+			final SortedMap<String, String> set = new TreeMap<String, String>()
+			{{
+				put(COLUMN_USER_RESTORE_KEY, restoreKey);
+			}};
+			final SortedMap<String, String> where = new TreeMap<String, String>()
+			{{
+				put(COLUMN_USER_NAME, userName);
+			}};
+
+			int result = MySQLAccess.update(TABLE_USER, set, where);
+			return result == 1 ? restoreKey : null;
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void changePassword(String restoreKey, String newPassword)
+	{
+		if (restoreKey == null || restoreKey.isEmpty() || restoreKey.length() != 2 * 32)
+		{
+			throw new IllegalArgumentException("Key is empty or wrong size");
+		}
+
+		try
+		{
+			final String[] select = { COLUMN_USER_ID };
+			final String where = String.format("(%s = ?)", COLUMN_USER_RESTORE_KEY);
+			final String[] whereArgs = { restoreKey };
+
+			final int userId = MySQLAccess.select(TABLE_USER, select, where, whereArgs, null, new DataCallback<Integer>()
+			{
+				@Override
+				public Integer onData(ResultSet set) throws SQLException
+				{
+					if (set.next())
+					{
+						return set.getInt(COLUMN_USER_ID);
+					}
+					else
+					{
+						throw new IllegalArgumentException("Wrong key");
+					}
+				}
+			});
+
+			Validator.validatePassword(newPassword);
+			final String hashPass = HashUtils.createHash(newPassword);
+
+			SortedMap<String, String> set = new TreeMap<String, String>()
+			{{
+				put(COLUMN_USER_HASHPASS, hashPass);
+				put(COLUMN_USER_RESTORE_KEY, null);
+				put(COLUMN_USER_ACTIVATION_KEY, null);
+			}};
+
+			SortedMap<String, String> sWhere = new TreeMap<String, String>()
+			{{
+				put(COLUMN_USER_ID, String.valueOf(userId));
+			}};
+
+			MySQLAccess.update(TABLE_USER, set, sWhere);
 		}
 		catch (SQLException e)
 		{

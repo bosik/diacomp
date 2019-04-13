@@ -64,4 +64,8 @@ public interface AuthService
 	 * @return User name if found, null otherwise
 	 */
 	String getNameById(int userId);
+
+	String buildRestoreKey(String userName);
+
+	void changePassword(String restoreKey, String newPassword);
 }

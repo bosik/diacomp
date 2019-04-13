@@ -179,5 +179,12 @@
             <version>1.2</version>
         </dependency>
 
+        <!-- Testing -->
+        <dependency>
+            <groupId>pl.pragmatists</groupId>
+            <artifactId>JUnitParams</artifactId>
+            <version>1.1.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

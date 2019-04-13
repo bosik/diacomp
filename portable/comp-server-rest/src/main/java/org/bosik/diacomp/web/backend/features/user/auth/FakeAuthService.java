@@ -25,9 +25,9 @@ import org.springframework.stereotype.Service;
 @Profile("fake")
 public class FakeAuthService implements AuthService
 {
-	private static final String	FAKE_USERNAME	= "admin";
-	private static final String	FAKE_PASSWORD	= "password";
-	private static final int	FAKE_USER_ID	= 1;
+	private static final String FAKE_USERNAME = "admin";
+	private static final String FAKE_PASSWORD = "password";
+	private static final int    FAKE_USER_ID  = 1;
 
 	@Override
 	public int login(String login, String pass)
@@ -73,5 +73,17 @@ public class FakeAuthService implements AuthService
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String buildRestoreKey(String userName)
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void changePassword(String restoreKey, String newPassword)
+	{
+		throw new UnsupportedOperationException();
 	}
 }
