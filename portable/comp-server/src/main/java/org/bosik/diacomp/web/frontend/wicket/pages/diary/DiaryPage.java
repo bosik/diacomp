@@ -17,33 +17,6 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.pages.diary;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxFallbackButton;
-import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.RefreshingView;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
-import org.bosik.diacomp.core.services.diary.DiaryService;
-import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.frontend.wicket.components.diary.day.DiaryPanelDay;
-import org.bosik.diacomp.web.frontend.wicket.components.diary.day.DiaryPanelDayModelObject;
-import org.bosik.diacomp.web.frontend.wicket.dialogs.diary.blood.DiaryEditorBlood;
-import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
-import org.bosik.merklesync.HashUtils;
-import org.bosik.merklesync.Versioned;
 import com.googlecode.wickedcharts.highcharts.options.Axis;
 import com.googlecode.wickedcharts.highcharts.options.AxisType;
 import com.googlecode.wickedcharts.highcharts.options.ChartOptions;
@@ -62,21 +35,50 @@ import com.googlecode.wickedcharts.highcharts.options.series.Coordinate;
 import com.googlecode.wickedcharts.highcharts.options.series.CoordinatesSeries;
 import com.googlecode.wickedcharts.highcharts.options.series.Series;
 import com.googlecode.wickedcharts.wicket6.highcharts.Chart;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxFallbackButton;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.RefreshingView;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
+import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
+import org.bosik.diacomp.web.frontend.wicket.components.diary.day.DiaryPanelDay;
+import org.bosik.diacomp.web.frontend.wicket.components.diary.day.DiaryPanelDayModelObject;
+import org.bosik.diacomp.web.frontend.wicket.dialogs.diary.blood.DiaryEditorBlood;
+import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
+import org.bosik.merklesync.HashUtils;
+import org.bosik.merklesync.Versioned;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import static java.util.Collections.singletonList;
 
 class BloodOptions extends Options
 {
 	private static final long serialVersionUID = 1L;
 
-	public BloodOptions(IModel<DiaryPanelDayModelObject> model)
+	BloodOptions(IModel<DiaryPanelDayModelObject> model)
 	{
-		List<Coordinate<Number, Number>> s1 = new ArrayList<Coordinate<Number, Number>>();
+		List<Coordinate<Number, Number>> s1 = new ArrayList<>();
 
 		for (Versioned<DiaryRecord> item : model.getObject().getItems())
 		{
 			if (item.getData() instanceof BloodRecord)
 			{
-				double x = ((BloodRecord)item.getData()).getTime().getTime();
-				double y = ((BloodRecord)item.getData()).getValue();
+				double x = ((BloodRecord) item.getData()).getTime().getTime();
+				double y = ((BloodRecord) item.getData()).getValue();
 				s1.add(new Coordinate<Number, Number>(x, y));
 			}
 		}
@@ -104,7 +106,7 @@ class BloodOptions extends Options
 
 		Axis yAxis = new Axis();
 		yAxis.setTitle(new Title("ммоль/л"));
-		yAxis.setPlotLines(Collections.singletonList(plotLines));
+		yAxis.setPlotLines(singletonList(plotLines));
 		yAxis.setMin(0);
 		yAxis.setMinorTickInterval(new MinorTickInterval().setInterval(1));
 		setyAxis(yAxis);
@@ -126,12 +128,17 @@ class BloodOptions extends Options
 
 public class DiaryPage extends MasterPage
 {
-	private static final long						serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	WebMarkupContainer								container;
+	private WebMarkupContainer container;
+
 	@SpringBean
-	DiaryService									diaryService;
-	final List<IModel<DiaryPanelDayModelObject>>	list				= new ArrayList<IModel<DiaryPanelDayModelObject>>();
+	private UserInfoService userInfoService;
+
+	@SpringBean
+	private DiaryLocalService diaryService;
+
+	private final List<IModel<DiaryPanelDayModelObject>> list = new ArrayList<>();
 
 	public DiaryPage(final PageParameters parameters)
 	{
@@ -170,7 +177,8 @@ public class DiaryPage extends MasterPage
 			@Override
 			public void onSave(AjaxRequestTarget target, IModel<Versioned<BloodRecord>> model)
 			{
-				diaryService.save(Arrays.asList(new Versioned<DiaryRecord>(model.getObject())));
+				int userId = userInfoService.getCurrentUserId();
+				diaryService.save(userId, singletonList(new Versioned<DiaryRecord>(model.getObject())));
 				target.add(container);
 				close(target);
 			}
@@ -188,7 +196,8 @@ public class DiaryPage extends MasterPage
 		{
 			//Date dateFrom = date;//Utils.dateLocal(2015, 3, i);
 			//Date dateTo = Utils.getNextDay(dateFrom);
-			List<Versioned<DiaryRecord>> day = diaryService.findPeriod(dateFrom, dateTo, false);
+			int userId = userInfoService.getCurrentUserId();
+			List<Versioned<DiaryRecord>> day = diaryService.findPeriod(userId, dateFrom, dateTo, false);
 			DiaryPanelDayModelObject mo = new DiaryPanelDayModelObject(dateFrom, day);
 			list.add(Model.of(mo));
 		}
@@ -222,7 +231,7 @@ public class DiaryPage extends MasterPage
 			}
 		});
 
-		Form<Void> form = new Form<Void>("formNew");
+		Form<Void> form = new Form<>("formNew");
 		add(form);
 
 		form.add(new AjaxFallbackButton("buttonAddBlood", form)
@@ -235,7 +244,7 @@ public class DiaryPage extends MasterPage
 				super.onSubmit(target, form);
 				BloodRecord data = new BloodRecord();
 				data.setTime(new Date());
-				Versioned<BloodRecord> rec = new Versioned<BloodRecord>(data);
+				Versioned<BloodRecord> rec = new Versioned<>(data);
 				rec.setId(HashUtils.generateGuid());
 				bloodEditor.show(target, Model.of(rec));
 			}

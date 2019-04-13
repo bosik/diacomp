@@ -44,8 +44,9 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.StringValue;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
-import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.diacomp.web.frontend.wicket.components.diary.day.DiaryPanelDay;
 import org.bosik.diacomp.web.frontend.wicket.components.diary.day.DiaryPanelDayModelObject;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
@@ -125,7 +126,11 @@ public class DiaryPreviewPage extends MasterPage
 	private static final long serialVersionUID = 1L;
 
 	@SpringBean
-	private DiaryService diaryService;
+	private UserInfoService userInfoService;
+
+	@SpringBean
+	private DiaryLocalService diaryService;
+
 	private final List<IModel<DiaryPanelDayModelObject>> list = new ArrayList<>();
 
 	public DiaryPreviewPage(final PageParameters parameters)
@@ -154,12 +159,14 @@ public class DiaryPreviewPage extends MasterPage
 
 		list.clear();
 
+		int userId = userInfoService.getCurrentUserId();
+
 		Date start = dateFrom;
 		while (start.getTime() < dateTo.getTime())
 		{
 			Date end = Utils.getNextDay(start);
 
-			List<Versioned<DiaryRecord>> data = diaryService.findPeriod(start, end, false);
+			List<Versioned<DiaryRecord>> data = diaryService.findPeriod(userId, start, end, false);
 			DiaryPanelDayModelObject mo = new DiaryPanelDayModelObject(start, data, true);
 			list.add(Model.of(mo));
 

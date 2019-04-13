@@ -28,7 +28,7 @@ li.feedbackPanelERROR {
 					<div class="form-group">
 						<label class="control-label" for="login"><wicket:message
 								key="field.username"></wicket:message></label> <input type="text"
-							id="login" name="j_username" class="form-control full_width"
+							id="login" name="j_username" wicket:id="userName" class="form-control full_width"
 							autofocus />
 					</div>
 					<div class="form-group">
@@ -46,6 +46,10 @@ li.feedbackPanelERROR {
 					<div class="form-group">
 						<a wicket:id="linkRegister" class="btn btn-link full_width"><wicket:message
 								key="label.registerNow"></wicket:message></a>
+					</div>
+					<div class="form-group">
+						<a wicket:id="linkRestore" class="btn btn-link full_width"><wicket:message
+								key="label.restore"></wicket:message></a>
 					</div>
 				</fieldset>
 			</form>

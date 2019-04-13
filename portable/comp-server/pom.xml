@@ -43,7 +43,6 @@
             <groupId>diacomp</groupId>
             <artifactId>comp-server-rest</artifactId>
             <version>0.0.2-SNAPSHOT</version>
-            <classifier>classes</classifier>
         </dependency>
 
         <!-- Wicket -->

@@ -34,8 +34,9 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
-import org.bosik.diacomp.core.services.base.dish.DishBaseService;
-import org.bosik.diacomp.core.services.base.food.FoodBaseService;
+import org.bosik.diacomp.web.backend.features.base.dish.DishBaseLocalService;
+import org.bosik.diacomp.web.backend.features.base.food.combo.FoodComboLocalService;
+import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.diacomp.web.frontend.wicket.dialogs.disheditor.DishEditor;
 import org.bosik.diacomp.web.frontend.wicket.dialogs.foodeditor.FoodEditor;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
@@ -43,21 +44,26 @@ import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.Versioned;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 public class FoodBasePage extends MasterPage
 {
-	private static final long	serialVersionUID	= 3940559525543830406L;
+	private static final long serialVersionUID = 3940559525543830406L;
 
-	WebMarkupContainer			container;
+	private WebMarkupContainer container;
 
 	@SpringBean
-	FoodBaseService				foodService;
+	private UserInfoService userInfoService;
+
 	@SpringBean
-	DishBaseService				dishService;
-	String						search;
+	private FoodComboLocalService foodService;
+
+	@SpringBean
+	private DishBaseLocalService dishService;
+
+	private String search;
 
 	public FoodBasePage(PageParameters parameters)
 	{
@@ -73,7 +79,8 @@ public class FoodBasePage extends MasterPage
 				System.out.println("Saving: " + model.getObject().getData().getName());
 
 				model.getObject().modified();
-				foodService.save(Arrays.asList(model.getObject()));
+				int userId = userInfoService.getCurrentUserId();
+				foodService.save(userId, Collections.singletonList(model.getObject()));
 
 				target.add(container);
 				close(target);
@@ -97,7 +104,8 @@ public class FoodBasePage extends MasterPage
 				System.out.println("Saving: " + model.getObject().getData().getName());
 
 				model.getObject().modified();
-				dishService.save(Arrays.asList(model.getObject()));
+				int userId = userInfoService.getCurrentUserId();
+				dishService.save(userId, Collections.singletonList(model.getObject()));
 
 				target.add(container);
 				close(target);
@@ -114,8 +122,7 @@ public class FoodBasePage extends MasterPage
 		Form<Void> form = new Form<Void>("formNew");
 		add(form);
 
-		TextField<String> textSearch = new TextField<String>("inputSearchName",
-				new PropertyModel<String>(this, "search"));
+		TextField<String> textSearch = new TextField<String>("inputSearchName", new PropertyModel<String>(this, "search"));
 		textSearch.add(new AjaxFormComponentUpdatingBehavior("onkeyup")
 		{
 			private static final long serialVersionUID = 1L;
@@ -195,7 +202,8 @@ public class FoodBasePage extends MasterPage
 					search = "";
 				}
 
-				List<Versioned<FoodItem>> foods = foodService.findAny(search);
+				int userId = userInfoService.getCurrentUserId();
+				List<Versioned<FoodItem>> foods = foodService.findAny(userId, search);
 				if (foods.size() > 20)
 				{
 					foods = foods.subList(0, 20);

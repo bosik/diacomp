@@ -15,10 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bosik.diacomp.web.frontend.wicket.pages.activation;
+package org.bosik.diacomp.web.frontend.wicket.pages.register.activate;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -36,12 +34,15 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ActivationPage extends MasterPage
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	@SpringBean
-	private AuthService			authService;
+	private AuthService authService;
 
 	public ActivationPage(PageParameters parameters)
 	{
@@ -73,7 +74,7 @@ public class ActivationPage extends MasterPage
 				// authentication
 				String userName = authService.getNameById(userId);
 				String userInfo = String.format("%d:%s", userId, userName);
-				List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+				List<GrantedAuthority> authorities = new ArrayList<>();
 				authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 				Authentication authentication = new UsernamePasswordAuthenticationToken(userInfo, "", authorities);
 				SecurityContext context = SecurityContextHolder.getContext();

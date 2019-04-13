@@ -17,20 +17,6 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.pages.stats.charts;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import org.apache.wicket.Component;
-import org.apache.wicket.injection.Injector;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
-import org.bosik.diacomp.core.services.diary.DiaryService;
-import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.merklesync.Versioned;
 import com.googlecode.wickedcharts.highcharts.options.Axis;
 import com.googlecode.wickedcharts.highcharts.options.ChartOptions;
 import com.googlecode.wickedcharts.highcharts.options.HorizontalAlignment;
@@ -49,20 +35,42 @@ import com.googlecode.wickedcharts.highcharts.options.color.HexColor;
 import com.googlecode.wickedcharts.highcharts.options.color.RgbaColor;
 import com.googlecode.wickedcharts.highcharts.options.series.Series;
 import com.googlecode.wickedcharts.highcharts.options.series.SimpleSeries;
+import org.apache.wicket.Component;
+import org.apache.wicket.injection.Injector;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
+import org.bosik.merklesync.Versioned;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 public class AverageBSChartData extends Options
 {
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
 	@SpringBean
-	private DiaryService		diaryService;
+	private UserInfoService userInfoService;
 
-	private Component			context;
-	private Date				firstDate;
-	private Interval			interval;
+	@SpringBean
+	private DiaryLocalService diaryService;
 
-	public enum Interval {
-		DAY, WEEK, MONTH
+	private Component context;
+	private Date      firstDate;
+	private Interval  interval;
+
+	public enum Interval
+	{
+		DAY,
+		WEEK,
+		MONTH
 	}
 
 	public AverageBSChartData(Component context, Date firstDate, Interval interval)
@@ -99,41 +107,42 @@ public class AverageBSChartData extends Options
 
 	private void update()
 	{
-		List<Number> s1 = new ArrayList<Number>();
-		List<Number> s2 = new ArrayList<Number>();
-		List<Number> s3 = new ArrayList<Number>();
-		List<Number> s4 = new ArrayList<Number>();
+		List<Number> s1 = new ArrayList<>();
+		List<Number> s2 = new ArrayList<>();
+		List<Number> s3 = new ArrayList<>();
+		List<Number> s4 = new ArrayList<>();
 
 		Date dateFrom = firstDate;
 		Date dateTo = shiftDateForward(dateFrom, interval);
 
-		final List<String> legendX = new ArrayList<String>();//Arrays.asList(new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" });
+		final List<String> legendX = new ArrayList<>();//Arrays.asList(new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" });
+		final int userId = userInfoService.getCurrentUserId();
 
 		for (int i = 0; i < 12; i++)
 		{
 			legendX.add(Utils.formatDateUTC(dateFrom));
 
-			List<Versioned<DiaryRecord>> recs = diaryService.findPeriod(dateFrom, dateTo, false);
+			List<Versioned<DiaryRecord>> recs = diaryService.findPeriod(userId, dateFrom, dateTo, false);
 			dateFrom = dateTo;
 			dateTo = shiftDateForward(dateTo, interval);
 
 			double summIns = 0;
 			double summCarbs = 0;
 
-			List<Double> val = new ArrayList<Double>();
+			List<Double> val = new ArrayList<>();
 			for (Versioned<DiaryRecord> rec : recs)
 			{
 				if (rec.getData() instanceof BloodRecord)
 				{
-					val.add(((BloodRecord)rec.getData()).getValue());
+					val.add(((BloodRecord) rec.getData()).getValue());
 				}
 				else if (rec.getData() instanceof InsRecord)
 				{
-					summIns += ((InsRecord)rec.getData()).getValue();
+					summIns += ((InsRecord) rec.getData()).getValue();
 				}
 				else if (rec.getData() instanceof MealRecord)
 				{
-					summCarbs += ((MealRecord)rec.getData()).getCarbs();
+					summCarbs += ((MealRecord) rec.getData()).getCarbs();
 				}
 			}
 
@@ -185,8 +194,8 @@ public class AverageBSChartData extends Options
 		legend.setBorderWidth(0);
 		setLegend(legend);
 
-		setPlotOptions(new PlotOptionsChoice().setArea(new PlotOptions().setStacking(Stacking.NORMAL)
-				.setLineColor(new HexColor("#666666")).setLineWidth(1)));
+		setPlotOptions(new PlotOptionsChoice()
+				.setArea(new PlotOptions().setStacking(Stacking.NORMAL).setLineColor(new HexColor("#666666")).setLineWidth(1)));
 
 		clearSeries();
 

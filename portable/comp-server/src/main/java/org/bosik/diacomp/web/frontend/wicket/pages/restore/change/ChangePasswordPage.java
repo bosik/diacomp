@@ -15,46 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bosik.diacomp.web.frontend.wicket.pages.register;
+package org.bosik.diacomp.web.frontend.wicket.pages.restore.change;
 
-import org.apache.wicket.Page;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxFallbackButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.form.PasswordTextField;
-import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.time.Duration;
-import org.apache.wicket.validation.validator.EmailAddressValidator;
-import org.bosik.diacomp.core.services.exceptions.DuplicateException;
-import org.bosik.diacomp.web.backend.common.Config;
 import org.bosik.diacomp.web.backend.features.user.auth.AuthService;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.PasswordIsEmptyException;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.PasswordTooLongException;
 import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.PasswordTooShortException;
-import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.UserNameIsEmptyException;
-import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.UserNameTooLongException;
-import org.bosik.diacomp.web.backend.features.user.auth.validation.exceptions.UserNameTooShortException;
 import org.bosik.diacomp.web.frontend.wicket.ProgressBundle;
-import org.bosik.diacomp.web.frontend.wicket.Utils;
-import org.bosik.diacomp.web.frontend.wicket.pages.license.eula.EulaPage;
-import org.bosik.diacomp.web.frontend.wicket.pages.license.privacy.PrivacyPolicyPage;
+import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
+import org.bosik.diacomp.web.frontend.wicket.pages.login.LoginPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
-import org.bosik.diacomp.web.frontend.wicket.pages.register.sent.RegistrationSentPage;
 
-import javax.mail.MessagingException;
-
-public class RegisterPage extends MasterPage
+public class ChangePasswordPage extends MasterPage
 {
 	private static final long serialVersionUID = 1L;
 
@@ -62,12 +47,12 @@ public class RegisterPage extends MasterPage
 	private AuthService authService;
 
 	private FeedbackPanel                 feedbackPanel;
-	private AjaxFallbackButton            buttonRegister;
+	private AjaxFallbackButton            buttonSave;
 	private WebMarkupContainer            progressSpinner;
 	private AjaxSelfUpdatingTimerBehavior progressBehavior;
 	private ProgressBundle                progress;
 
-	public RegisterPage(PageParameters parameters)
+	public ChangePasswordPage(PageParameters parameters)
 	{
 		super(parameters);
 	}
@@ -76,6 +61,14 @@ public class RegisterPage extends MasterPage
 	protected void onInitialize()
 	{
 		super.onInitialize();
+
+		StringValue parKey = getPageParameters().get("key");
+		if (parKey.isEmpty())
+		{
+			setResponsePage(getApplication().getHomePage());
+		}
+
+		final String key = parKey.toString();
 
 		feedbackPanel = new FeedbackPanel("feedbackPanel");
 		feedbackPanel.setOutputMarkupId(true);
@@ -100,13 +93,12 @@ public class RegisterPage extends MasterPage
 				{
 					progressSpinner.setVisible(false);
 					progressBehavior.stop(null);
-					buttonRegister.setEnabled(true);
-					target.add(buttonRegister);
+					buttonSave.setEnabled(true);
+					target.add(buttonSave);
 
 					if (progress.isSuccess())
 					{
-						Page succeedPage = new RegistrationSentPage(Model.of(progress.getMessage()));
-						setResponsePage(succeedPage);
+						setResponsePage(LoginPage.class);
 					}
 					else
 					{
@@ -124,63 +116,31 @@ public class RegisterPage extends MasterPage
 		progressSpinner.setVisible(false);
 		progressContainer.add(progressSpinner);
 
-		Form<Void> form = new Form<>("regForm");
+		Form<Void> form = new Form<>("resetForm");
 		form.setOutputMarkupId(true);
 		add(form);
 
-		final TextField<String> fieldEmail = new TextField<>("rhCyIStebK", Model.of(""));
-		fieldEmail.add(EmailAddressValidator.getInstance());
-		form.add(fieldEmail);
-
-		final HiddenField<String> fieldFakeEmail = new HiddenField<>("email", Model.of(""));
-		form.add(fieldFakeEmail);
-
-		final PasswordTextField fieldPassword = new PasswordTextField("P2BohS6rUR", Model.of(""));
+		final PasswordTextField fieldPassword = new PasswordTextField("82IGBs83hF", Model.of(""));
 		form.add(fieldPassword);
 
-		form.add(new BookmarkablePageLink<Void>("linkEula", EulaPage.class));
-		form.add(new BookmarkablePageLink<Void>("linkPrivacy", PrivacyPolicyPage.class));
-
-		buttonRegister = new AjaxFallbackButton("buttonRegister", form)
+		buttonSave = new AjaxFallbackButton("buttonChangePassword", form)
 		{
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
 			{
-				final String antiBot = fieldFakeEmail.getModelObject();
-				if (antiBot != null && !antiBot.isEmpty())
-				{
-					form.clearInput();
-					return;
-				}
-
-				final WebRequest request = (WebRequest) RequestCycle.get().getRequest();
-				final String challenge = request.getPostParameters().getParameterValue("g-recaptcha-response").toString();
-				final String secret = Config.get(Config.KEY_CAPTCHA_SECRET);
-
-				final String MSG_ERROR_CAPTCHA = getString("error.captcha");
-				final String MSG_ERROR_EMAIL = getString("error.wrongEmail");
-				final String MSG_ERROR_DUPLICATION = getString("error.emailInUse");
+				final String MSG_ERROR_COMMON = getString("error.common");
+				final String MSG_ERROR_WRONG_KEY = getString("error.key.wrong");
 				final String MSG_ERROR_PASSWORD_IS_EMPTY = getString("error.password.empty");
 				final String MSG_ERROR_PASSWORD_TOO_SHORT = getString("error.password.tooShort");
 				final String MSG_ERROR_PASSWORD_TOO_LONG = getString("error.password.tooLong");
-				final String MSG_ERROR_USERNAME_IS_EMPTY = getString("error.userName.empty");
-				final String MSG_ERROR_USERNAME_TOO_SHORT = getString("error.userName.tooShort");
-				final String MSG_ERROR_USERNAME_TOO_LONG = getString("error.userName.tooLong");
-				final String MSG_ERROR_COMMON = getString("error.common");
-
-				final String appUrlRaw = Config.get(Config.KEY_APP_URL);
-				final String appUrl = appUrlRaw.endsWith("/") ? appUrlRaw : appUrlRaw + "/";
-				final String bodyPattern = getString("email.body");
-				final String title = getString("email.title");
-				final String sender = getString("email.sender");
 
 				progressBehavior.restart(target);
-				buttonRegister.setEnabled(false);
+				buttonSave.setEnabled(false);
 				progressSpinner.setVisible(true);
 				Session.get().getFeedbackMessages().clear();
-				target.add(buttonRegister, progressSpinner, feedbackPanel);
+				target.add(buttonSave, progressSpinner, feedbackPanel);
 
 				new Thread()
 				{
@@ -192,21 +152,10 @@ public class RegisterPage extends MasterPage
 							progress = new ProgressBundle();
 							progress.setRunning(true);
 
-							if (!Utils.validateCaptcha(secret, challenge))
-							{
-								progress.fail(MSG_ERROR_CAPTCHA);
-								return;
-							}
-
-							String email = fieldEmail.getModelObject();
 							String password = fieldPassword.getModelObject();
-							String activationKey = authService.register(email, password);
+							authService.changePassword(key, password);
 
-							String activationLink = String.format("%sregister/activate?key=%s", appUrl, activationKey);
-							String body = String.format(bodyPattern, activationLink, activationLink);
-							Utils.sendEmail(email, title, body, sender);
-
-							progress.success(email);
+							progress.success("");
 						}
 						catch (PasswordIsEmptyException e)
 						{
@@ -220,25 +169,9 @@ public class RegisterPage extends MasterPage
 						{
 							progress.fail(MSG_ERROR_PASSWORD_TOO_LONG);
 						}
-						catch (UserNameIsEmptyException e)
+						catch (IllegalArgumentException e)
 						{
-							progress.fail(MSG_ERROR_USERNAME_IS_EMPTY);
-						}
-						catch (UserNameTooShortException e)
-						{
-							progress.fail(MSG_ERROR_USERNAME_TOO_SHORT);
-						}
-						catch (UserNameTooLongException e)
-						{
-							progress.fail(MSG_ERROR_USERNAME_TOO_LONG);
-						}
-						catch (MessagingException e)
-						{
-							progress.fail(MSG_ERROR_EMAIL);
-						}
-						catch (DuplicateException e)
-						{
-							progress.fail(MSG_ERROR_DUPLICATION);
+							progress.fail(MSG_ERROR_WRONG_KEY);
 						}
 						catch (Exception e)
 						{
@@ -249,7 +182,7 @@ public class RegisterPage extends MasterPage
 				}.start();
 			}
 		};
-		buttonRegister.setOutputMarkupId(true);
-		form.add(buttonRegister);
+		buttonSave.setOutputMarkupId(true);
+		form.add(buttonSave);
 	}
 }

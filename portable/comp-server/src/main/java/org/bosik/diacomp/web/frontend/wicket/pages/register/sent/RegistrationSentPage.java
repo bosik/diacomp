@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bosik.diacomp.web.frontend.wicket.pages.register.succeed;
+package org.bosik.diacomp.web.frontend.wicket.pages.register.sent;
 
 import javax.servlet.http.HttpServletResponse;
 import org.apache.wicket.markup.html.basic.Label;
@@ -23,7 +23,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.flow.RedirectToUrlException;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 
-public class RegistrationSucceedPage extends MasterPage
+public class RegistrationSentPage extends MasterPage
 {
 	private static final long	serialVersionUID	= 1L;
 
@@ -32,14 +32,14 @@ public class RegistrationSucceedPage extends MasterPage
 	/**
 	 * Called from browser when URL typed directly; redirects to home page
 	 */
-	public RegistrationSucceedPage()
+	public RegistrationSentPage()
 	{
 		super();
 		CharSequence url = urlFor(getApplication().getHomePage(), null);
 		throw new RedirectToUrlException(url.toString(), HttpServletResponse.SC_MOVED_TEMPORARILY);
 	}
 
-	public RegistrationSucceedPage(IModel<String> model)
+	public RegistrationSentPage(IModel<String> model)
 	{
 		this.model = model;
 	}
@@ -48,6 +48,6 @@ public class RegistrationSucceedPage extends MasterPage
 	protected void onInitialize()
 	{
 		super.onInitialize();
-		add(new Label("labelSendedEmail", model));
+		add(new Label("labelSentEmail", model));
 	}
 }

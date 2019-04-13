@@ -17,15 +17,22 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.pages.login;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.register.RegisterPage;
+import org.bosik.diacomp.web.frontend.wicket.pages.restore.RestorePage;
 
 public class LoginPage extends MasterPage
 {
-	private static final long serialVersionUID = 1L;
+	private static final long   serialVersionUID = 1L;
+	private              String userName         = "";
 
 	public LoginPage(final PageParameters parameters)
 	{
@@ -37,14 +44,36 @@ public class LoginPage extends MasterPage
 	{
 		super.onInitialize();
 
+		final TextField<String> fieldEmail = new TextField<>("userName", new PropertyModel<String>(this, "userName"));
+		fieldEmail.add(new AjaxFormComponentUpdatingBehavior("onblur")
+		{
+			private static final long serialVersionUID = 1072515919159765189L;
+
+			@Override
+			protected void onUpdate(AjaxRequestTarget target)
+			{
+			}
+		});
+		add(fieldEmail);
+
 		add(new BookmarkablePageLink<Void>("linkRegister", RegisterPage.class));
+		add(new AjaxFallbackLink<Void>("linkRestore")
+		{
+			@Override
+			public void onClick(AjaxRequestTarget ajaxRequestTarget)
+			{
+				PageParameters params = new PageParameters();
+				params.set("email", userName);
+				setResponsePage(new RestorePage(params));
+			}
+		});
 
 		FeedbackPanel hint = new FeedbackPanel("hintInvalidCredentials");
 		add(hint);
 
 		if (getPageParameters().getPosition("error") != -1)
 		{
-			hint.error(getString("label.invalidCredentails"));
+			hint.error(getString("label.invalidCredentials"));
 		}
 	}
 }

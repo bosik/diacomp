@@ -17,8 +17,6 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.components.diary.blood;
 
-import java.util.Arrays;
-import java.util.TimeZone;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
@@ -30,20 +28,27 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
-import org.bosik.diacomp.core.services.diary.DiaryService;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.bosik.merklesync.Versioned;
 
+import java.util.Collections;
+import java.util.TimeZone;
+
 public class DiaryPanelBlood extends Panel
 {
-	private static final long		serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	IModel<Versioned<BloodRecord>>	model;
-	Label							deleteHint;
+	private IModel<Versioned<BloodRecord>> model;
+	private Label                          deleteHint;
 
 	@SpringBean
-	DiaryService					diaryService;
+	private UserInfoService userInfoService;
+
+	@SpringBean
+	private DiaryLocalService diaryService;
 
 	public DiaryPanelBlood(String id, IModel<Versioned<BloodRecord>> model)
 	{
@@ -62,12 +67,12 @@ public class DiaryPanelBlood extends Panel
 		TimeZone timeZone = MasterPage.getTimeZone(this);
 		add(new Label("time", Utils.formatTimeLocalShort(timeZone, rec.getTime())));
 		add(new Label("value", formatBloodValue(rec.getValue())));
-		add(new Label("finger", formatBloodFinger(rec.getFinger())).add(AttributeModifier.replace("title",
-				formatBloodFingerHint(rec.getFinger()))));
+		add(new Label("finger", formatBloodFinger(rec.getFinger()))
+				.add(AttributeModifier.replace("title", formatBloodFingerHint(rec.getFinger()))));
 
 		AjaxFallbackLink<Void> linkDelete = new AjaxFallbackLink<Void>("delete")
 		{
-			private static final long	serialVersionUID	= -3995475639165455772L;
+			private static final long serialVersionUID = -3995475639165455772L;
 
 			@Override
 			public void onClick(AjaxRequestTarget target)
@@ -90,14 +95,15 @@ public class DiaryPanelBlood extends Panel
 					target.add(DiaryPanelBlood.this, deleteHint);
 				}
 				object.modified();
-				diaryService.save(Arrays.<Versioned<DiaryRecord>> asList(new Versioned<DiaryRecord>(object)));
+				int userId = userInfoService.getCurrentUserId();
+				diaryService.save(userId, Collections.singletonList(new Versioned<DiaryRecord>(object)));
 			}
 		};
 		add(linkDelete);
 
 		deleteHint = new Label("deleteText", new Model<String>()
 		{
-			private static final long	serialVersionUID	= 3936985834863628353L;
+			private static final long serialVersionUID = 3936985834863628353L;
 
 			@Override
 			public String getObject()
