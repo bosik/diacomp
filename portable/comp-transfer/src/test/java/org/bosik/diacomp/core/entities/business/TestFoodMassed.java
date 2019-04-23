@@ -17,13 +17,17 @@
  */
 package org.bosik.diacomp.core.entities.business;
 
-import junit.framework.TestCase;
 import org.bosik.diacomp.core.utils.Utils;
+import org.junit.Test;
 
-public class TestFoodMassed extends TestCase
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+public class TestFoodMassed
 {
-	private final FoodMassed	food	= new FoodMassed();
+	private final FoodMassed food = new FoodMassed();
 
+	@Test
 	public void testMass()
 	{
 		// normal test
@@ -55,6 +59,7 @@ public class TestFoodMassed extends TestCase
 		}
 	}
 
+	@Test
 	public void testGetAbs()
 	{
 		// normal test
@@ -144,5 +149,23 @@ public class TestFoodMassed extends TestCase
 		catch (IllegalArgumentException e)
 		{
 		}
+	}
+
+	@Test
+	public void equal()
+	{
+		FoodMassed food1 = new FoodMassed()
+		{{
+			setName("Apple");
+			setRelProts(0.2);
+			setRelFats(0.1);
+			setRelCarbs(11.2);
+			setRelValue(40);
+			setMass(2000);
+		}};
+		FoodMassed food2 = new FoodMassed("Apple", 0.2, 0.1, 11.2, 40, 2000);
+
+		assertEquals(food1, food2);
+		assertEquals(food2, food1);
 	}
 }

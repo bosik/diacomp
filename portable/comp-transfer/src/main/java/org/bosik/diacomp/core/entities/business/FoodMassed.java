@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.core.entities.business;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.bosik.diacomp.core.entities.business.interfaces.Massed;
 import org.bosik.diacomp.core.entities.business.interfaces.Named;
 import org.bosik.diacomp.core.entities.business.interfaces.Relative;
@@ -83,24 +84,48 @@ public class FoodMassed extends Food implements Massed
 		this.mass = mass;
 	}
 
+	@JsonIgnore
 	public double getProts()
 	{
 		return (getRelProts() / 100.0) * mass;
 	}
 
+	@JsonIgnore
 	public double getFats()
 	{
 		return (getRelFats() / 100.0) * mass;
 	}
 
+	@JsonIgnore
 	public double getCarbs()
 	{
 		return (getRelCarbs() / 100.0) * mass;
 	}
 
+	@JsonIgnore
 	public double getValue()
 	{
 		return (getRelValue() / 100.0) * mass;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+			return true;
+		if (!(o instanceof FoodMassed))
+			return false;
+
+		FoodMassed that = (FoodMassed) o;
+
+		return Double.compare(that.mass, mass) == 0;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		long temp = Double.doubleToLongBits(mass);
+		return (int) (temp ^ (temp >>> 32));
 	}
 
 	@Override

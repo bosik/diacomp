@@ -16,6 +16,9 @@
  */
 package org.bosik.merklesync;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,6 +34,8 @@ public class Versioned<T> implements Serializable
 	private static final long serialVersionUID = 6063993499772711799L;
 
 	private String  id;
+	@JsonProperty("stamp")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date    timeStamp;
 	private String  hash;
 	private int     version;
@@ -162,9 +167,7 @@ public class Versioned<T> implements Serializable
 	{
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof Versioned))
 			return false;
 		Versioned<T> other = (Versioned<T>) obj;
 		if (id == null)

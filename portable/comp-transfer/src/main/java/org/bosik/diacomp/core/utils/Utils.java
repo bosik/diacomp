@@ -1280,4 +1280,9 @@ public class Utils
 	{
 		return (s == null || s.endsWith("/")) ? s : (s + "/");
 	}
+
+	public static String nullToEmpty(String s)
+	{
+		return (s == null) ? "" : s;
+	}
 }

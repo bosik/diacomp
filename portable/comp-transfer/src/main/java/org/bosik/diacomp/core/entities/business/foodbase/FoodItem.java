@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.core.entities.business.foodbase;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bosik.diacomp.core.entities.business.Food;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelative;
 
@@ -30,6 +31,8 @@ public class FoodItem extends Food implements NamedRelative
 	private static final long serialVersionUID = 1789285539891342521L;
 
 	private int     tag;
+
+	@JsonProperty("table")
 	private boolean fromTable;
 
 	public FoodItem()
