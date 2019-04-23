@@ -47,7 +47,7 @@ public class AuthProvider implements AuthenticationProvider
 			int userId = authService.login(email, password);
 			String userInfo = String.format("%d:%s", userId, email);
 
-			List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+			List<GrantedAuthority> authorities = new ArrayList<>();
 			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 			return new UsernamePasswordAuthenticationToken(userInfo, password, authorities);
 		}
