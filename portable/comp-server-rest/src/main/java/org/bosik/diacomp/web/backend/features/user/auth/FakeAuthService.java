@@ -43,19 +43,6 @@ public class FakeAuthService implements AuthService
 	}
 
 	@Override
-	public Integer getIdByName(String userName)
-	{
-		if (FAKE_USERNAME.equals(userName))
-		{
-			return FAKE_USER_ID;
-		}
-		else
-		{
-			return null;
-		}
-	}
-
-	@Override
 	public int activate(String activationKey)
 	{
 		return FAKE_USER_ID;
