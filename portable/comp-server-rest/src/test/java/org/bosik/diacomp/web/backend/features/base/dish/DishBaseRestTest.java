@@ -70,6 +70,7 @@ public class DishBaseRestTest
 	private static final String URL = "/dish";
 
 	private final Serializer<Map<String, String>> serializerMap = new SerializerMap();
+	private final Serializer<Versioned<DishItem>> serializer    = new SerializerDishItem();
 
 	@Autowired
 	private MockMvc mvc;
@@ -79,8 +80,6 @@ public class DishBaseRestTest
 
 	@MockBean
 	private UserInfoService userInfoService;
-
-	private final Serializer<Versioned<DishItem>> serializer = new SerializerDishItem();
 
 	@Test
 	public void count_findAll() throws Exception
@@ -227,7 +226,7 @@ public class DishBaseRestTest
 	public void findAll_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(URL + "/all").param("show_rem", buildString(6)));
+		ResultActions request = mvc.perform(get(URL + "/all").param("show_rem", Utils.buildString(6)));
 
 		// then
 		request.andExpect(status().isBadRequest());
@@ -267,7 +266,7 @@ public class DishBaseRestTest
 	public void findAny_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(URL + "/search").param("q", buildString(257)));
+		ResultActions request = mvc.perform(get(URL + "/search").param("q", Utils.buildString(257)));
 
 		// then
 		request.andExpect(status().isBadRequest());
@@ -304,7 +303,7 @@ public class DishBaseRestTest
 	public void findChanged_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(URL + "/changes").param("since", buildString(20)));
+		ResultActions request = mvc.perform(get(URL + "/changes").param("since", Utils.buildString(20)));
 
 		// then
 		request.andExpect(status().isBadRequest());
@@ -359,7 +358,7 @@ public class DishBaseRestTest
 	public void getHash_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(URL + "/hash/" + buildString(33)));
+		ResultActions request = mvc.perform(get(URL + "/hash/" + Utils.buildString(33)));
 
 		// then
 		request.andExpect(status().isBadRequest());
@@ -402,7 +401,7 @@ public class DishBaseRestTest
 		when(dishBaseLocalService.getHashTree(eq(userId))).thenReturn(new MemoryMerkleTree3(new HashMap<>()));
 
 		// when
-		ResultActions request = mvc.perform(get(URL + "/hashes/" + buildString(4)));
+		ResultActions request = mvc.perform(get(URL + "/hashes/" + Utils.buildString(4)));
 
 		// then
 		request.andExpect(status().isBadRequest());
@@ -502,13 +501,4 @@ public class DishBaseRestTest
 		}};
 	}
 
-	private static String buildString(int size)
-	{
-		final StringBuilder s = new StringBuilder(size);
-		for (int i = 0; i < size; i++)
-		{
-			s.append("*");
-		}
-		return s.toString();
-	}
 }

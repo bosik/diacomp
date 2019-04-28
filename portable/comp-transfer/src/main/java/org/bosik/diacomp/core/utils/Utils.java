@@ -1285,4 +1285,14 @@ public class Utils
 	{
 		return (s == null) ? "" : s;
 	}
+
+	public static String buildString(int size)
+	{
+		final StringBuilder s = new StringBuilder(size);
+		for (int i = 0; i < size; i++)
+		{
+			s.append("*");
+		}
+		return s.toString();
+	}
 }
