@@ -122,25 +122,37 @@ public class DishBaseRest extends UserRest
 		return dishbaseService.findChanged(getUserId(), since);
 	}
 
-	@GetMapping(path = { "/hash", "/hash/{prefix}" }, produces = TYPE_JSON_UTF8)
-	public String getHash(@PathVariable(name = "prefix", required = false) String parPrefix)
+	@GetMapping(path =  "/hash" , produces = TYPE_JSON_UTF8)
+	public String getHash()
 	{
-		parPrefix = Utils.nullToEmpty(parPrefix);
-		Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
-
 		MerkleTree hashTree = dishbaseService.getHashTree(getUserId());
-		String s = hashTree.getHash(parPrefix);
-		return Utils.nullToEmpty(s);
+		return Utils.nullToEmpty(hashTree.getHash(""));
 	}
 
-	@GetMapping(path = { "/hashes", "/hashes/{prefix}" }, produces = TYPE_JSON_UTF8)
-	public String getHashChildren(@PathVariable(name = "prefix", required = false) String parPrefix)
+	@GetMapping(path =  "/hash/{prefix}" , produces = TYPE_JSON_UTF8)
+	public String getHash(@PathVariable(name = "prefix") String prefix)
 	{
-		parPrefix = Utils.nullToEmpty(parPrefix);
-		Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
+		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
+		
+		MerkleTree hashTree = dishbaseService.getHashTree(getUserId());
+		return Utils.nullToEmpty(hashTree.getHash(prefix));
+	}
+
+	@GetMapping(path =  "/hashes", produces = TYPE_JSON_UTF8)
+	public String getHashChildren()
+	{
+		MerkleTree hashTree = dishbaseService.getHashTree(getUserId());
+		Map<String, String> map = hashTree.getHashChildren("");
+		return serializerMap.write(map);
+	}
+
+	@GetMapping(path = "/hashes/{prefix}" , produces = TYPE_JSON_UTF8)
+	public String getHashChildren(@PathVariable(name = "prefix") String prefix)
+	{
+		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
 		MerkleTree hashTree = dishbaseService.getHashTree(getUserId());
-		Map<String, String> map = hashTree.getHashChildren(parPrefix);
+		Map<String, String> map = hashTree.getHashChildren(prefix);
 		return serializerMap.write(map);
 	}
 
