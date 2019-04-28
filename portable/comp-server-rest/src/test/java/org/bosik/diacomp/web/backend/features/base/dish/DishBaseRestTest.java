@@ -37,6 +37,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -67,7 +68,55 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser(roles = "USER")
 public class DishBaseRestTest
 {
-	private static final String URL = "/dish";
+	public static class Api
+	{
+		public static final String BASE_URL = "/dish";
+
+		public static class Count
+		{
+			public static final String URL = BASE_URL + "/count";
+		}
+
+		public static class FindById
+		{
+			public static final String URL = BASE_URL + "/guid";
+		}
+
+		public static class FindAny
+		{
+			public static final String URL          = BASE_URL + "/search";
+			public static final String PARAM_FILTER = "q";
+		}
+
+		public static class FindAll
+		{
+			public static final String URL                   = BASE_URL + "/all";
+			public static final String PARAM_INCLUDE_REMOVED = "show_rem";
+		}
+
+		public static class FindChanged
+		{
+			public static final String URL         = BASE_URL + "/changes";
+			public static final String PARAM_SINCE = "since";
+		}
+
+		public static class Hash
+		{
+			public static final String URL = BASE_URL + "/hash";
+		}
+
+		public static class Hashes
+		{
+			public static final String URL = BASE_URL + "/hashes";
+		}
+
+		public static class Save
+		{
+			public static final String URL         = BASE_URL;
+			public static final String PARAM_DATA  = "items";
+			public static final String RESPONSE_OK = "Saved OK";
+		}
+	}
 
 	private final Serializer<Map<String, String>> serializerMap = new SerializerMap();
 	private final Serializer<Versioned<DishItem>> serializer    = new SerializerDishItem();
@@ -88,7 +137,7 @@ public class DishBaseRestTest
 		when(dishBaseLocalService.count(anyInt())).thenReturn(42);
 
 		// when
-		ResultActions request = mvc.perform(get(URL + "/count"));
+		ResultActions request = mvc.perform(get(Api.Count.URL));
 
 		// then
 		request.andExpect(status().isOk()).andExpect(content().string("42"));
@@ -101,7 +150,7 @@ public class DishBaseRestTest
 		when(dishBaseLocalService.count(anyInt(), eq("ea"))).thenReturn(12);
 
 		// when
-		ResultActions request = mvc.perform(get(URL + "/count/ea"));
+		ResultActions request = mvc.perform(get(Api.Count.URL + "/ea"));
 
 		// then
 		request.andExpect(status().isOk()).andExpect(content().string("12"));
@@ -111,7 +160,7 @@ public class DishBaseRestTest
 	public void count_badRequest() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(URL + "/count/542a8a10ef1a41ecb9338dbeb4a931faa"));
+		ResultActions request = mvc.perform(get(Api.Count.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa"));
 
 		// then
 		request.andExpect(status().isBadRequest())
@@ -126,7 +175,7 @@ public class DishBaseRestTest
 		when(dishBaseLocalService.findAll(anyInt(), eq(true))).thenReturn(data);
 
 		// when
-		ResultActions request = mvc.perform(get(URL + "/guid"));
+		ResultActions request = mvc.perform(get(Api.FindById.URL));
 
 		// then
 		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -142,7 +191,7 @@ public class DishBaseRestTest
 		when(dishBaseLocalService.findByIdPrefix(anyInt(), eq("ff"))).thenReturn(data);
 
 		// when
-		ResultActions request = mvc.perform(get(URL + "/guid/ff"));
+		ResultActions request = mvc.perform(get(Api.FindById.URL + "/ff"));
 
 		// then
 		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -158,7 +207,7 @@ public class DishBaseRestTest
 		when(dishBaseLocalService.findById(anyInt(), eq("542a8a10ef1a41ecb9338dbeb4a931fa"))).thenReturn(data);
 
 		// when
-		ResultActions request = mvc.perform(get(URL + "/guid/542a8a10ef1a41ecb9338dbeb4a931fa"));
+		ResultActions request = mvc.perform(get(Api.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931fa"));
 
 		// then
 		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -173,17 +222,17 @@ public class DishBaseRestTest
 		when(dishBaseLocalService.findById(anyInt(), eq("542a8a10ef1a41ecb9338dbeb4a931fa"))).thenReturn(null);
 
 		// when
-		ResultActions request = mvc.perform(get(URL + "/guid/542a8a10ef1a41ecb9338dbeb4a931fa"));
+		ResultActions request = mvc.perform(get(Api.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931fa"));
 
 		// then
-		request.andExpect(status().isNotFound()).andExpect(content().string("Item 542a8a10ef1a41ecb9338dbeb4a931fa not found"));
+		request.andExpect(status().isNotFound()).andExpect(content().string("Item '542a8a10ef1a41ecb9338dbeb4a931fa' not found"));
 	}
 
 	@Test
 	public void findById_badRequest() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(URL + "/guid/542a8a10ef1a41ecb9338dbeb4a931faa"));
+		ResultActions request = mvc.perform(get(Api.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa"));
 
 		// then
 		request.andExpect(status().isBadRequest())
@@ -198,7 +247,7 @@ public class DishBaseRestTest
 		when(dishBaseLocalService.findAll(anyInt(), eq(false))).thenReturn(data);
 
 		// when
-		ResultActions request = mvc.perform(get(URL + "/all"));
+		ResultActions request = mvc.perform(get(Api.FindAll.URL));
 
 		// then
 		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -214,7 +263,9 @@ public class DishBaseRestTest
 		when(dishBaseLocalService.findAll(anyInt(), eq(true))).thenReturn(data);
 
 		// when
-		ResultActions request = mvc.perform(get(URL + "/all").param("show_rem", "true"));
+		MockHttpServletRequestBuilder r = get(Api.FindAll.URL);
+		r.param(Api.FindAll.PARAM_INCLUDE_REMOVED, "true");
+		ResultActions request = mvc.perform(r);
 
 		// then
 		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -226,7 +277,9 @@ public class DishBaseRestTest
 	public void findAll_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(URL + "/all").param("show_rem", Utils.buildString(6)));
+		MockHttpServletRequestBuilder r = get(Api.FindAll.URL);
+		r.param(Api.FindAll.PARAM_INCLUDE_REMOVED, Utils.buildString(6));
+		ResultActions request = mvc.perform(r);
 
 		// then
 		request.andExpect(status().isBadRequest());
@@ -244,7 +297,9 @@ public class DishBaseRestTest
 		when(dishBaseLocalService.findAny(anyInt(), eq(query))).thenReturn(data);
 
 		// when
-		ResultActions request = mvc.perform(get(URL + "/search").param("q", query));
+		MockHttpServletRequestBuilder r = get(Api.FindAny.URL);
+		r.param(Api.FindAny.PARAM_FILTER, query);
+		ResultActions request = mvc.perform(r);
 
 		// then
 		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -256,7 +311,7 @@ public class DishBaseRestTest
 	public void findAny_badRequest_missing() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(URL + "/search"));
+		ResultActions request = mvc.perform(get(Api.FindAny.URL));
 
 		// then
 		request.andExpect(status().isBadRequest());
@@ -266,7 +321,9 @@ public class DishBaseRestTest
 	public void findAny_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(URL + "/search").param("q", Utils.buildString(257)));
+		MockHttpServletRequestBuilder r = get(Api.FindAny.URL);
+		r.param(Api.FindAny.PARAM_FILTER, Utils.buildString(257));
+		ResultActions request = mvc.perform(r);
 
 		// then
 		request.andExpect(status().isBadRequest());
@@ -281,7 +338,9 @@ public class DishBaseRestTest
 		when(dishBaseLocalService.findChanged(anyInt(), any())).thenReturn(data);
 
 		// when
-		ResultActions request = mvc.perform(get(URL + "/changes").param("since", Utils.formatDateUTC(since)));
+		MockHttpServletRequestBuilder r = get(Api.FindChanged.URL);
+		r.param(Api.FindChanged.PARAM_SINCE, Utils.formatDateUTC(since));
+		ResultActions request = mvc.perform(r);
 
 		// then
 		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -293,7 +352,7 @@ public class DishBaseRestTest
 	public void findChanged_badRequest_missing() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(URL + "/changes"));
+		ResultActions request = mvc.perform(get(Api.FindChanged.URL));
 
 		// then
 		request.andExpect(status().isBadRequest());
@@ -303,7 +362,9 @@ public class DishBaseRestTest
 	public void findChanged_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(URL + "/changes").param("since", Utils.buildString(20)));
+		MockHttpServletRequestBuilder r = get(Api.FindChanged.URL);
+		r.param(Api.FindChanged.PARAM_SINCE, Utils.buildString(20));
+		ResultActions request = mvc.perform(r);
 
 		// then
 		request.andExpect(status().isBadRequest());
@@ -325,7 +386,7 @@ public class DishBaseRestTest
 		when(dishBaseLocalService.getHashTree(eq(userId))).thenReturn(hashTree);
 
 		// when
-		ResultActions request = mvc.perform(get(URL + "/hash"));
+		ResultActions request = mvc.perform(get(Api.Hash.URL));
 
 		// then
 		request.andExpect(status().isOk()).andExpect(content().string(hash));
@@ -348,7 +409,7 @@ public class DishBaseRestTest
 		when(dishBaseLocalService.getHashTree(eq(userId))).thenReturn(hashTree);
 
 		// when
-		ResultActions request = mvc.perform(get(URL + "/hash/" + prefix));
+		ResultActions request = mvc.perform(get(Api.Hash.URL + "/" + prefix));
 
 		// then
 		request.andExpect(status().isOk()).andExpect(content().string(hash));
@@ -358,7 +419,7 @@ public class DishBaseRestTest
 	public void getHash_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(URL + "/hash/" + Utils.buildString(33)));
+		ResultActions request = mvc.perform(get(Api.Hash.URL + "/" + Utils.buildString(33)));
 
 		// then
 		request.andExpect(status().isBadRequest());
@@ -384,7 +445,7 @@ public class DishBaseRestTest
 		when(dishBaseLocalService.getHashTree(eq(userId))).thenReturn(hashTree);
 
 		// when
-		ResultActions request = mvc.perform(get(URL + "/hashes/" + prefix));
+		ResultActions request = mvc.perform(get(Api.Hashes.URL + "/" + prefix));
 
 		// then
 		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -401,7 +462,7 @@ public class DishBaseRestTest
 		when(dishBaseLocalService.getHashTree(eq(userId))).thenReturn(new MemoryMerkleTree3(new HashMap<>()));
 
 		// when
-		ResultActions request = mvc.perform(get(URL + "/hashes/" + Utils.buildString(4)));
+		ResultActions request = mvc.perform(get(Api.Hashes.URL + "/" + Utils.buildString(4)));
 
 		// then
 		request.andExpect(status().isBadRequest());
@@ -416,11 +477,14 @@ public class DishBaseRestTest
 		List<Versioned<DishItem>> data = buildDemoData();
 
 		// when
-		ResultActions request = mvc.perform(
-				put(URL).contentType(MediaType.APPLICATION_FORM_URLENCODED).with(csrf()).param("items", serializer.writeAll(data)));
+		MockHttpServletRequestBuilder r = put(Api.Save.URL);
+		r.contentType(MediaType.APPLICATION_FORM_URLENCODED);
+		r.with(csrf());
+		r.param(Api.Save.PARAM_DATA, serializer.writeAll(data));
+		ResultActions request = mvc.perform(r);
 
 		// then
-		request.andExpect(status().isOk()).andExpect(content().string("Saved OK"));
+		request.andExpect(status().isOk()).andExpect(content().string(Api.Save.RESPONSE_OK));
 		verify(dishBaseLocalService).save(eq(userId), any());
 	}
 
@@ -452,7 +516,7 @@ public class DishBaseRestTest
 	public void save_badRequest_missing() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(put(URL).contentType(MediaType.APPLICATION_FORM_URLENCODED).with(csrf()));
+		ResultActions request = mvc.perform(put(Api.Save.URL).contentType(MediaType.APPLICATION_FORM_URLENCODED).with(csrf()));
 
 		// then
 		request.andExpect(status().isBadRequest());
@@ -500,5 +564,4 @@ public class DishBaseRestTest
 			}});
 		}};
 	}
-
 }

@@ -22,15 +22,13 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.services.ObjectService;
-import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.features.user.auth.UserRest;
 import org.bosik.merklesync.DataSource;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -55,59 +53,46 @@ public class DishBaseRest extends UserRest
 
 	private final Serializer<Versioned<DishItem>> serializer = new SerializerDishItem();
 
-	@GetMapping(path = { "/count", "/count/{prefix}" })
-	public Integer count(@PathVariable(name = "prefix", required = false) String parPrefix)
+	@GetMapping("/count")
+	public Integer count()
 	{
-		Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
+		return dishbaseService.count(getUserId());
+	}
 
-		if (parPrefix != null)
+	@GetMapping("/count/{prefix}")
+	public Integer count(@PathVariable(name = "prefix") String prefix)
+	{
+		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
+		return dishbaseService.count(getUserId(), prefix);
+	}
+
+	@GetMapping(path = "/guid", produces = TYPE_JSON_UTF8)
+	public List<Versioned<DishItem>> findById()
+	{
+		return dishbaseService.findAll(getUserId(), true);
+	}
+
+	@GetMapping(path = "/guid/{prefix}", produces = TYPE_JSON_UTF8)
+	public Object findById(@PathVariable(name = "prefix") String prefix)
+	{
+		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
+
+		if (prefix.length() <= DataSource.ID_PREFIX_SIZE)
 		{
-			return dishbaseService.count(getUserId(), parPrefix);
+			return dishbaseService.findByIdPrefix(getUserId(), prefix);
 		}
 		else
 		{
-			return dishbaseService.count(getUserId());
-		}
-	}
+			Versioned<DishItem> item = dishbaseService.findById(getUserId(), prefix);
 
-	@GetMapping(path = { "/guid", "/guid/{prefix}" }, produces = TYPE_JSON_UTF8)
-	public ResponseEntity findById(@PathVariable(name = "prefix", required = false) String prefix)
-	{
-		try
-		{
-			if (prefix != null)
+			if (item != null)
 			{
-				Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
-
-				if (prefix.length() <= DataSource.ID_PREFIX_SIZE)
-				{
-					List<Versioned<DishItem>> items = dishbaseService.findByIdPrefix(getUserId(), prefix);
-					return ResponseEntity.ok(items);
-				}
-				else
-				{
-					Versioned<DishItem> item = dishbaseService.findById(getUserId(), prefix);
-
-					if (item != null)
-					{
-						return ResponseEntity.ok(item);
-					}
-					else
-					{
-						String response = String.format("Item %s not found", prefix);
-						return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-					}
-				}
+				return item;
 			}
 			else
 			{
-				List<Versioned<DishItem>> items = dishbaseService.findAll(getUserId(), true);
-				return ResponseEntity.ok(items);
+				throw new NotFoundException(prefix);
 			}
-		}
-		catch (TooManyItemsException e)
-		{
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Too many items found");
 		}
 	}
 
