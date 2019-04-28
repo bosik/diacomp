@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
-import java.util.TimeZone;
 import java.util.TreeMap;
 
 import static java.util.stream.Collectors.toList;
@@ -164,7 +163,8 @@ public class DishBaseLocalService
 
 	public Versioned<DishItem> findOne(int userId, String exactName)
 	{
-		return convert(repository.findByUserIdAndNameCache(userId, exactName));
+		List<DishEntity> entities = repository.findByUserIdAndDeletedIsFalseAndNameCacheOrderByNameCache(userId, exactName);
+		return entities.isEmpty() ? null : convert(entities.get(0));
 	}
 
 	/**
@@ -202,20 +202,16 @@ public class DishBaseLocalService
 
 			DishEntity entity = repository.findByUserIdAndId(userId, item.getId());
 
-			if (entity != null)
-			{
-				copyData(item, entity);
-			}
-			else
+			if (entity == null)
 			{
 				entity = new DishEntity();
 				entity.setUserId(userId);
 				entity.setId(item.getId());
-				copyData(item, entity);
 			}
 
+			copyData(item, entity);
 			repository.save(entity);
-			cachedHashTree.set(userId, null);
+			cachedHashTree.set(userId, null); // done in loop to reduce inconsistency window
 		}
 	}
 

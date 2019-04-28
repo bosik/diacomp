@@ -34,11 +34,12 @@ public interface DishEntityRepository extends CrudRepository<DishEntity, String>
 
 	List<DishEntity> findByUserIdAndDeletedIsFalseAndNameCacheContainingOrderByNameCache(int userId, String filter);
 
+	List<DishEntity> findByUserIdAndDeletedIsFalseAndNameCacheOrderByNameCache(int userId, String exactName);
+
 	DishEntity findByUserIdAndId(int userId, String id);
 
 	List<DishEntity> findByUserIdAndIdStartingWith(int userId, String idPrefix);
 
 	List<DishEntity> findByUserIdAndTimeStampAfter(int userId, Date since);
 
-	DishEntity findByUserIdAndNameCache(int userId, String exactName);
 }
