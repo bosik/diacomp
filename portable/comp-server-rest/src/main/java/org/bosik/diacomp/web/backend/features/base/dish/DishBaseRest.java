@@ -45,13 +45,13 @@ import java.util.Map;
 @RequestMapping("/dish")
 public class DishBaseRest extends UserRest
 {
-	private static final String                          TYPE_JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=utf-8";
-	private final        Serializer<Map<String, String>> serializerMap  = new SerializerMap();
+	private static final String TYPE_JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=utf-8";
+
+	private final Serializer<Map<String, String>> serializerMap = new SerializerMap();
+	private final Serializer<Versioned<DishItem>> serializer    = new SerializerDishItem();
 
 	@Autowired
 	private DishBaseLocalService dishbaseService;
-
-	private final Serializer<Versioned<DishItem>> serializer = new SerializerDishItem();
 
 	@GetMapping("/count")
 	public Integer count()
@@ -122,23 +122,23 @@ public class DishBaseRest extends UserRest
 		return dishbaseService.findChanged(getUserId(), since);
 	}
 
-	@GetMapping(path =  "/hash" , produces = TYPE_JSON_UTF8)
+	@GetMapping(path = "/hash")
 	public String getHash()
 	{
 		MerkleTree hashTree = dishbaseService.getHashTree(getUserId());
 		return Utils.nullToEmpty(hashTree.getHash(""));
 	}
 
-	@GetMapping(path =  "/hash/{prefix}" , produces = TYPE_JSON_UTF8)
+	@GetMapping(path = "/hash/{prefix}")
 	public String getHash(@PathVariable(name = "prefix") String prefix)
 	{
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
-		
+
 		MerkleTree hashTree = dishbaseService.getHashTree(getUserId());
 		return Utils.nullToEmpty(hashTree.getHash(prefix));
 	}
 
-	@GetMapping(path =  "/hashes", produces = TYPE_JSON_UTF8)
+	@GetMapping(path = "/hashes", produces = TYPE_JSON_UTF8)
 	public String getHashChildren()
 	{
 		MerkleTree hashTree = dishbaseService.getHashTree(getUserId());
@@ -146,7 +146,7 @@ public class DishBaseRest extends UserRest
 		return serializerMap.write(map);
 	}
 
-	@GetMapping(path = "/hashes/{prefix}" , produces = TYPE_JSON_UTF8)
+	@GetMapping(path = "/hashes/{prefix}", produces = TYPE_JSON_UTF8)
 	public String getHashChildren(@PathVariable(name = "prefix") String prefix)
 	{
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
@@ -156,7 +156,7 @@ public class DishBaseRest extends UserRest
 		return serializerMap.write(map);
 	}
 
-	@PutMapping(produces = TYPE_JSON_UTF8)
+	@PutMapping
 	public String save(@RequestParam(name = "items") String parItems)
 	{
 		List<Versioned<DishItem>> items = serializer.readAll(Utils.removeNonUtf8(parItems));

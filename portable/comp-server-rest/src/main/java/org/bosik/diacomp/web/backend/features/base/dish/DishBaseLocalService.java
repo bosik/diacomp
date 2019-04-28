@@ -23,10 +23,8 @@ import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.ObjectService;
-import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
-import org.bosik.diacomp.core.services.exceptions.NotFoundException;
-import org.bosik.diacomp.core.services.exceptions.PersistenceException;
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.backend.common.UserDataService;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
@@ -46,7 +44,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 @Service
-public class DishBaseLocalService
+public class DishBaseLocalService implements UserDataService<DishItem>
 {
 	private static final Parser<DishItem>     parser     = new ParserDishItem();
 	private static final Serializer<DishItem> serializer = new SerializerAdapter<>(parser);
@@ -91,16 +89,13 @@ public class DishBaseLocalService
 		destination.setNameCache(source.getData().getName());
 	}
 
-	public void add(int userId, Versioned<DishItem> item) throws PersistenceException
-	{
-		save(userId, Collections.singletonList(item));
-	}
-
+	@Override
 	public int count(int userId)
 	{
 		return repository.countByUserId(userId);
 	}
 
+	@Override
 	public int count(int userId, String prefix)
 	{
 		return repository.countByUserIdAndIdStartingWith(userId, prefix);
@@ -110,24 +105,16 @@ public class DishBaseLocalService
 	{
 		final DishEntity entity = repository.findByUserIdAndId(userId, id);
 
-		if (entity == null)
+		if (entity != null && !entity.isDeleted())
 		{
-			throw new NotFoundException(id);
+			final Versioned<DishItem> item = convert(entity);
+			item.setDeleted(true);
+			item.modified();
+			save(userId, Collections.singletonList(item));
 		}
-
-		if (entity.isDeleted())
-		{
-			throw new AlreadyDeletedException(id);
-		}
-
-		final Versioned<DishItem> item = convert(entity);
-
-		item.setDeleted(true);
-		item.modified();
-
-		save(userId, Collections.singletonList(item));
 	}
 
+	@Override
 	public List<Versioned<DishItem>> findAll(int userId, boolean includeRemoved)
 	{
 		if (includeRemoved)
@@ -146,25 +133,22 @@ public class DishBaseLocalService
 		return convert(repository.findByUserIdAndDeletedIsFalseAndNameCacheContainingOrderByNameCache(userId, filter));
 	}
 
+	@Override
 	public Versioned<DishItem> findById(int userId, String id)
 	{
 		return convert(repository.findByUserIdAndId(userId, id));
 	}
 
+	@Override
 	public List<Versioned<DishItem>> findByIdPrefix(int userId, String prefix)
 	{
 		return convert(repository.findByUserIdAndIdStartingWith(userId, prefix));
 	}
 
+	@Override
 	public List<Versioned<DishItem>> findChanged(int userId, Date since)
 	{
 		return convert(repository.findByUserIdAndTimeStampAfter(userId, since));
-	}
-
-	public Versioned<DishItem> findOne(int userId, String exactName)
-	{
-		List<DishEntity> entities = repository.findByUserIdAndDeletedIsFalseAndNameCacheOrderByNameCache(userId, exactName);
-		return entities.isEmpty() ? null : convert(entities.get(0));
 	}
 
 	/**
@@ -178,6 +162,7 @@ public class DishBaseLocalService
 		return new TreeMap<>(result);
 	}
 
+	@Override
 	public MerkleTree getHashTree(int userId)
 	{
 		MerkleTree tree = cachedHashTree.get(userId);
@@ -190,6 +175,7 @@ public class DishBaseLocalService
 		return tree;
 	}
 
+	@Override
 	public void save(int userId, List<Versioned<DishItem>> items)
 	{
 		for (Versioned<DishItem> item : items)

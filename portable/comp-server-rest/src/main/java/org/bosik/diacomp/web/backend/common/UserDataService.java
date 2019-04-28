@@ -15,29 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bosik.diacomp.web.backend.features.base.dish;
+package org.bosik.diacomp.web.backend.common;
 
-import org.springframework.data.repository.CrudRepository;
+import org.bosik.merklesync.MerkleTree;
+import org.bosik.merklesync.Versioned;
 
 import java.util.Date;
 import java.util.List;
 
-public interface DishEntityRepository extends CrudRepository<DishEntity, String>
+public interface UserDataService<T>
 {
-	int countByUserId(int userId);
+	int count(int userId);
 
-	int countByUserIdAndIdStartingWith(int userId, String idPrefix);
+	int count(int userId, String prefix);
 
-	List<DishEntity> findByUserId(int userId);
+	List<Versioned<T>> findAll(int userId, boolean includeRemoved);
 
-	List<DishEntity> findByUserIdAndDeletedIsFalse(int userId);
+	Versioned<T> findById(int userId, String id);
 
-	List<DishEntity> findByUserIdAndDeletedIsFalseAndNameCacheContainingOrderByNameCache(int userId, String filter);
+	List<Versioned<T>> findByIdPrefix(int userId, String prefix);
 
-	DishEntity findByUserIdAndId(int userId, String id);
+	List<Versioned<T>> findChanged(int userId, Date since);
 
-	List<DishEntity> findByUserIdAndIdStartingWith(int userId, String idPrefix);
+	MerkleTree getHashTree(int userId);
 
-	List<DishEntity> findByUserIdAndTimeStampAfter(int userId, Date since);
-
+	void save(int userId, List<Versioned<T>> items);
 }
