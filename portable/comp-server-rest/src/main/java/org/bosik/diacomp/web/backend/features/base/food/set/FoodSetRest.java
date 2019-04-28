@@ -39,6 +39,7 @@ import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
 @Service
+@Deprecated
 @Path("food/set/")
 public class FoodSetRest extends UserRest
 {
