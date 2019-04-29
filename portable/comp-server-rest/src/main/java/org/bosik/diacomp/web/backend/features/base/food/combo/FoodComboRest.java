@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bosik.diacomp.web.backend.features.base.food;
+package org.bosik.diacomp.web.backend.features.base.food.combo;
 
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
