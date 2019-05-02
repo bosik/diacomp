@@ -19,32 +19,47 @@ package org.bosik.diacomp.web.backend.features.preferences;
 
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
-import org.bosik.diacomp.core.services.preferences.PreferencesService;
 import org.bosik.diacomp.core.services.preferences.PreferencesServiceContract;
-import org.bosik.diacomp.web.backend.common.MySQLAccess;
-import org.bosik.diacomp.web.backend.common.MySQLAccess.DataCallback;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
-// @Profile({ "real", "fake" })
 public class PreferencesLocalService
 {
-	private static final String TABLE_PREFERENCES          = "preferences";
-	private static final String COLUMN_PREFERENCES_USER    = "_UserID";
-	private static final String COLUMN_PREFERENCES_KEY     = "_Key";
-	private static final String COLUMN_PREFERENCES_VALUE   = "_Value";
-	private static final String COLUMN_PREFERENCES_VERSION = "_Version";
+	@Autowired
+	private PreferenceEntityRepository repository;
+
+	private static PreferenceEntry<String> convert(PreferenceEntity e)
+	{
+		if (e == null)
+		{
+			return null;
+		}
+
+		final PreferenceEntry<String> result = new PreferenceEntry<>();
+
+		result.setId(PreferenceID.parse(e.getId().getKey()));
+		result.setValue(e.getValue());
+		result.setVersion(e.getVersion());
+
+		return result;
+	}
+
+	private static List<PreferenceEntry<String>> convert(List<PreferenceEntity> entities)
+	{
+		return entities.stream().map(PreferencesLocalService::convert).collect(toList());
+	}
+
+	private static void copyData(PreferenceEntry<String> source, PreferenceEntity destination)
+	{
+		destination.setValue(source.getValue());
+		destination.setVersion(source.getVersion());
+	}
 
 	public String getHash(int userId)
 	{
@@ -53,51 +68,7 @@ public class PreferencesLocalService
 
 	public List<PreferenceEntry<String>> getAll(int userId)
 	{
-		try
-		{
-			final String[] select = { COLUMN_PREFERENCES_KEY, COLUMN_PREFERENCES_VALUE, COLUMN_PREFERENCES_VERSION };
-			final String where = String.format("(%s = ?)", COLUMN_PREFERENCES_USER);
-			final String[] whereArgs = { String.valueOf(userId) };
-			final String order = null;
-
-			return MySQLAccess.select(TABLE_PREFERENCES, select, where, whereArgs, order, new DataCallback<List<PreferenceEntry<String>>>()
-			{
-				@Override
-				public List<PreferenceEntry<String>> onData(ResultSet set) throws SQLException
-				{
-					List<PreferenceEntry<String>> result = new LinkedList<>();
-
-					while (set.next())
-					{
-						String key = set.getString(COLUMN_PREFERENCES_KEY);
-						String value = set.getString(COLUMN_PREFERENCES_VALUE);
-						int version = set.getInt(COLUMN_PREFERENCES_VERSION);
-
-						try
-						{
-							PreferenceEntry<String> item = new PreferenceEntry<>();
-							item.setId(PreferenceID.parse(key)); // TODO
-							item.setValue(value);
-							item.setVersion(version);
-							result.add(item);
-						}
-						catch (IllegalArgumentException e)
-						{
-									/**/
-							System.out.println("Failed to parse preference type: " + key);
-									/**/
-							e.printStackTrace();
-						}
-					}
-
-					return result;
-				}
-			});
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		return convert(repository.findByIdUserId(userId));
 	}
 
 	public void update(int userId, List<PreferenceEntry<String>> entries)
@@ -110,190 +81,66 @@ public class PreferencesLocalService
 
 	public PreferenceEntry<String> getString(int userId, final PreferenceID id)
 	{
-		try
-		{
-			final String[] select = { COLUMN_PREFERENCES_VALUE, COLUMN_PREFERENCES_VERSION };
-			final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_PREFERENCES_USER, COLUMN_PREFERENCES_KEY);
-			final String[] whereArgs = { String.valueOf(userId), id.getCode() };
-			final String order = null;
-
-			return MySQLAccess.select(TABLE_PREFERENCES, select, where, whereArgs, order, new DataCallback<PreferenceEntry<String>>()
-			{
-				@Override
-				public PreferenceEntry<String> onData(ResultSet set) throws SQLException
-				{
-					if (set.next())
-					{
-						PreferenceEntry<String> item = new PreferenceEntry<>();
-						item.setId(id);
-						item.setValue(set.getString(COLUMN_PREFERENCES_VALUE));
-						item.setVersion(set.getInt(COLUMN_PREFERENCES_VERSION));
-
-						return item;
-					}
-					else
-					{
-						return null;
-					}
-				}
-			});
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		return convert(repository.findById(new PreferenceEntityPK(userId, id.getCode())).orElse(null));
 	}
 
-	public void setString(int userId, PreferenceEntry<String> entry)
+	private void setString(int userId, PreferenceEntry<String> entry)
 	{
-		try
+		PreferenceEntityPK pk = new PreferenceEntityPK(userId, entry.getId().getCode());
+		PreferenceEntity entity = repository.findById(pk).orElse(null);
+
+		if (entity == null)
 		{
-			final String key = entry.getId().getCode();
-			final String value = entry.getValue();
-			final String version = String.valueOf(entry.getVersion());
-
-			if (recordExists(userId, key))
-			{
-				// presented, update
-
-				SortedMap<String, String> set = new TreeMap<>();
-				set.put(COLUMN_PREFERENCES_VALUE, value);
-				set.put(COLUMN_PREFERENCES_VERSION, version);
-
-				SortedMap<String, String> where = new TreeMap<>();
-				where.put(COLUMN_PREFERENCES_KEY, key);
-				where.put(COLUMN_PREFERENCES_USER, String.valueOf(userId));
-
-				MySQLAccess.update(TABLE_PREFERENCES, set, where);
-			}
-			else
-			{
-				// not presented, insert
-
-				LinkedHashMap<String, String> set = new LinkedHashMap<>();
-				set.put(COLUMN_PREFERENCES_USER, String.valueOf(userId));
-				set.put(COLUMN_PREFERENCES_KEY, key);
-				set.put(COLUMN_PREFERENCES_VALUE, value);
-				set.put(COLUMN_PREFERENCES_VERSION, version);
-
-				MySQLAccess.insert(TABLE_PREFERENCES, set);
-			}
+			entity = new PreferenceEntity();
+			entity.setId(pk);
 		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
 
-	@SuppressWarnings("static-method")
-	private boolean recordExists(int userId, String key) throws SQLException
-	{
-		final String[] select = { "COUNT(*)" };
-		final String where = String.format("(%s = ?) AND (%s = ?)", COLUMN_PREFERENCES_USER, COLUMN_PREFERENCES_KEY);
-		final String[] whereArgs = { String.valueOf(userId), key };
-		final String order = null;
-
-		return MySQLAccess.select(TABLE_PREFERENCES, select, where, whereArgs, order, new DataCallback<Boolean>()
-		{
-			@Override
-			public Boolean onData(ResultSet set) throws SQLException
-			{
-				if (set.next())
-				{
-					return set.getInt(1) > 0;
-				}
-				else
-				{
-					throw new IllegalStateException("Failed to request SQL database");
-				}
-			}
-		});
+		copyData(entry, entity);
+		repository.save(entity);
 	}
 
 	public String exportJson(int userId)
 	{
-		try
-		{
-			final String[] select = { COLUMN_PREFERENCES_KEY, COLUMN_PREFERENCES_VALUE, COLUMN_PREFERENCES_VERSION };
-			final String where = String.format("(%s = ?)", COLUMN_PREFERENCES_USER);
-			final String[] whereArgs = { String.valueOf(userId) };
-			final String order = null;
+		List<PreferenceEntity> entities = repository.findByIdUserId(userId);
 
-			return MySQLAccess.select(TABLE_PREFERENCES, select, where, whereArgs, order, new DataCallback<String>()
+		StringBuilder s = new StringBuilder();
+		s.append("[");
+
+		for (PreferenceEntity entity : entities)
+		{
+			if (s.length() > 1)
 			{
-				@Override
-				public String onData(ResultSet resultSet) throws SQLException
+				s.append(",");
+			}
+
+			s.append(new JSONObject()
+			{
 				{
-					StringBuilder s = new StringBuilder();
-					s.append("[");
-
-					while (resultSet.next())
-					{
-						final String key = resultSet.getString(COLUMN_PREFERENCES_KEY);
-						final String value = resultSet.getString(COLUMN_PREFERENCES_VALUE);
-						final int version = resultSet.getInt(COLUMN_PREFERENCES_VERSION);
-
-						if (!resultSet.isFirst())
-						{
-							s.append(",");
-						}
-
-						s.append(new JSONObject()
-						{
-							{
-								put("key", key);
-								put("value", value);
-								put("version", version);
-							}
-						}.toString());
-					}
-
-					s.append("]");
-					return s.toString();
+					put("key", entity.getId().getKey());
+					put("value", entity.getValue());
+					put("version", entity.getVersion());
 				}
-			});
+			}.toString());
 		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+
+		s.append("]");
+		return s.toString();
 	}
 
 	public String exportPlain(int userId)
 	{
-		try
+		List<PreferenceEntity> entities = repository.findByIdUserId(userId);
+
+		StringBuilder s = new StringBuilder();
+		s.append("VERSION=1\n");
+
+		for (PreferenceEntity entity : entities)
 		{
-			final String[] select = { COLUMN_PREFERENCES_KEY, COLUMN_PREFERENCES_VALUE, COLUMN_PREFERENCES_VERSION };
-			final String where = String.format("(%s = ?)", COLUMN_PREFERENCES_USER);
-			final String[] whereArgs = { String.valueOf(userId) };
-			final String order = null;
-
-			return MySQLAccess.select(TABLE_PREFERENCES, select, where, whereArgs, order, new DataCallback<String>()
-			{
-				@Override
-				public String onData(ResultSet resultSet) throws SQLException
-				{
-					StringBuilder s = new StringBuilder();
-					s.append("VERSION=1\n");
-
-					while (resultSet.next())
-					{
-						String key = resultSet.getString(COLUMN_PREFERENCES_KEY);
-						int version = resultSet.getInt(COLUMN_PREFERENCES_VERSION);
-						String value = resultSet.getString(COLUMN_PREFERENCES_VALUE);
-
-						s.append(key).append('\t');
-						s.append(version).append('\t');
-						s.append(value).append('\n');
-					}
-
-					return s.toString();
-				}
-			});
+			s.append(entity.getId().getKey()).append('\t');
+			s.append(entity.getVersion()).append('\t');
+			s.append(entity.getValue()).append('\n');
 		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+
+		return s.toString();
 	}
 }
