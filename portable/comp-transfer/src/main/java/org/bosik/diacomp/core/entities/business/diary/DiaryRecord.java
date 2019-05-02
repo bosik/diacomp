@@ -17,6 +17,8 @@
  */
 package org.bosik.diacomp.core.entities.business.diary;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -38,7 +40,8 @@ public abstract class DiaryRecord implements Serializable
 {
 	private static final long	serialVersionUID	= 1L;
 
-	private Date				time;
+	@JsonProperty("time")
+	private Date time;
 
 	// ================================ VALIDATORS ================================
 
@@ -63,4 +66,7 @@ public abstract class DiaryRecord implements Serializable
 
 		this.time = time;
 	}
+
+	@JsonProperty("type")
+	public abstract String getType();
 }

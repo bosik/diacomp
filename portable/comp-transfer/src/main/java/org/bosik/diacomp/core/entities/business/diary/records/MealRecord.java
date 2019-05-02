@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.core.entities.business.diary.records;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 
@@ -28,7 +29,12 @@ public class MealRecord extends DiaryRecord
 {
 	private static final long serialVersionUID = -4920269773372985893L;
 
-	private final List<FoodMassed> items = new ArrayList<FoodMassed>();
+	public static final String TYPE = "meal";
+
+	@JsonProperty("content")
+	private final List<FoodMassed> items = new ArrayList<>();
+
+	@JsonProperty("short")
 	private boolean shortMeal;
 
 	public MealRecord(Date time, boolean shortMeal)
@@ -42,6 +48,12 @@ public class MealRecord extends DiaryRecord
 	}
 
 	// ================================ GET / SET ================================
+
+	@Override
+	public String getType()
+	{
+		return TYPE;
+	}
 
 	public boolean getShortMeal()
 	{
