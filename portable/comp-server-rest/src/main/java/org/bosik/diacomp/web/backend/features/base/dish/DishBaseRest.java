@@ -60,7 +60,7 @@ public class DishBaseRest extends UserRest
 	}
 
 	@GetMapping("/count/{prefix}")
-	public Integer count(@PathVariable(name = "prefix") String prefix)
+	public Integer count(@PathVariable("prefix") String prefix)
 	{
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 		return dishbaseService.count(getUserId(), prefix);
@@ -73,7 +73,7 @@ public class DishBaseRest extends UserRest
 	}
 
 	@GetMapping(path = "/guid/{prefix}", produces = TYPE_JSON_UTF8)
-	public Object findById(@PathVariable(name = "prefix") String prefix)
+	public Object findById(@PathVariable("prefix") String prefix)
 	{
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
@@ -130,7 +130,7 @@ public class DishBaseRest extends UserRest
 	}
 
 	@GetMapping(path = "/hash/{prefix}")
-	public String getHash(@PathVariable(name = "prefix") String prefix)
+	public String getHash(@PathVariable("prefix") String prefix)
 	{
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
@@ -147,7 +147,7 @@ public class DishBaseRest extends UserRest
 	}
 
 	@GetMapping(path = "/hashes/{prefix}", produces = TYPE_JSON_UTF8)
-	public String getHashChildren(@PathVariable(name = "prefix") String prefix)
+	public String getHashChildren(@PathVariable("prefix") String prefix)
 	{
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
@@ -157,7 +157,7 @@ public class DishBaseRest extends UserRest
 	}
 
 	@PutMapping
-	public String save(@RequestParam(name = "items") String parItems)
+	public String save(@RequestParam("items") String parItems)
 	{
 		List<Versioned<DishItem>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
 		dishbaseService.save(getUserId(), items);

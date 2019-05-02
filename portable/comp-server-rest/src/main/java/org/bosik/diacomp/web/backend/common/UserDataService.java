@@ -35,7 +35,7 @@ public interface UserDataService<T>
 
 	List<Versioned<T>> findByIdPrefix(int userId, String prefix);
 
-	List<Versioned<T>> findChanged(int userId, Date since);
+	List<Versioned<T>> findChanged(int userId, Date time);
 
 	MerkleTree getHashTree(int userId);
 
