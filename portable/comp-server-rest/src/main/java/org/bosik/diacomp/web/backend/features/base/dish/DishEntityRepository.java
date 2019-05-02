@@ -38,6 +38,6 @@ public interface DishEntityRepository extends CrudRepository<DishEntity, String>
 
 	List<DishEntity> findByUserIdAndIdStartingWith(int userId, String idPrefix);
 
-	List<DishEntity> findByUserIdAndTimeStampAfter(int userId, Date since);
+	List<DishEntity> findByUserIdAndTimeStampIsGreaterThanEqual(int userId, Date since);
 
 }

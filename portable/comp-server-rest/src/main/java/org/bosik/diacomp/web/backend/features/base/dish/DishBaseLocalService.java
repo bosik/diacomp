@@ -146,9 +146,9 @@ public class DishBaseLocalService implements UserDataService<DishItem>
 	}
 
 	@Override
-	public List<Versioned<DishItem>> findChanged(int userId, Date since)
+	public List<Versioned<DishItem>> findChanged(int userId, Date time)
 	{
-		return convert(repository.findByUserIdAndTimeStampAfter(userId, since));
+		return convert(repository.findByUserIdAndTimeStampIsGreaterThanEqual(userId, time));
 	}
 
 	/**

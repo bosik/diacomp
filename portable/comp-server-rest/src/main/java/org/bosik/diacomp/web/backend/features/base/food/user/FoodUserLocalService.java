@@ -165,9 +165,9 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 	}
 
 	@Override
-	public List<Versioned<FoodItem>> findChanged(int userId, Date since)
+	public List<Versioned<FoodItem>> findChanged(int userId, Date time)
 	{
-		return convert(repository.findByUserIdAndLastModifiedAfter(userId, since));
+		return convert(repository.findByUserIdAndLastModifiedIsGreaterThanEqual(userId, time));
 	}
 
 	public Versioned<FoodItem> findOne(int userId, String exactName)

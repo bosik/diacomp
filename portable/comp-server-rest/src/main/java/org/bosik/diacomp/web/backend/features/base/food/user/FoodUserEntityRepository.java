@@ -42,7 +42,7 @@ public interface FoodUserEntityRepository extends CrudRepository<FoodUserEntity,
 
 	List<FoodUserEntity> findByUserIdAndIdStartingWith(int userId, String prefix);
 
-	List<FoodUserEntity> findByUserIdAndLastModifiedAfter(int userId, Date since);
+	List<FoodUserEntity> findByUserIdAndLastModifiedIsGreaterThanEqual(int userId, Date since);
 
 	@Query(value = "SELECT COUNT(1) FROM (SELECT id FROM food_common WHERE id LIKE :prefix% " + "UNION "
 			+ "SELECT id FROM food_user WHERE id LIKE :prefix% AND userid = :userId) AS T", nativeQuery = true)
