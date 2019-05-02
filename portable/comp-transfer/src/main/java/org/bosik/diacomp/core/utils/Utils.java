@@ -243,7 +243,7 @@ public class Utils
 			catch (ParseException e2)
 			{
 				// TODO: don't wrap (or wrap time parser too)
-				throw new RuntimeException(e2);
+				throw new IllegalArgumentException(e2);
 			}
 		}
 	}

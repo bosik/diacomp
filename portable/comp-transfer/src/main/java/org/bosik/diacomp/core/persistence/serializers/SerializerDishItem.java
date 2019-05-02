@@ -27,6 +27,6 @@ public class SerializerDishItem extends SerializerAdapter<Versioned<DishItem>>
 {
 	public SerializerDishItem()
 	{
-		super(new ParserVersioned<DishItem>(new ParserDishItem()));
+		super(new ParserVersioned<>(new ParserDishItem()));
 	}
 }
