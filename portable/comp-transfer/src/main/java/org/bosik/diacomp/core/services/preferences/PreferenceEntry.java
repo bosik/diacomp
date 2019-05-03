@@ -17,21 +17,28 @@
  */
 package org.bosik.diacomp.core.services.preferences;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The base class for preferences
- * 
- * @param <T>
- *            Type of preference value
+ *
+ * @param <T> Type of preference value
  */
 public class PreferenceEntry<T>
 {
+	@JsonIgnore
 	private PreferenceID id;
-	private T            value;
-	private int          version;
+
+	@JsonProperty("value")
+	private T value;
+
+	@JsonProperty("version")
+	private int version;
 
 	/**
 	 * Return preference type
-	 * 
+	 *
 	 * @return
 	 */
 	public PreferenceID getId()
@@ -46,7 +53,7 @@ public class PreferenceEntry<T>
 
 	/**
 	 * Returns preference value
-	 * 
+	 *
 	 * @return
 	 */
 	public T getValue()
@@ -56,7 +63,7 @@ public class PreferenceEntry<T>
 
 	/**
 	 * Sets preference value
-	 * 
+	 *
 	 * @param value
 	 */
 	public void setValue(T value)
@@ -66,7 +73,7 @@ public class PreferenceEntry<T>
 
 	/**
 	 * Returns preference version, which is increased by one every time the preference is changed
-	 * 
+	 *
 	 * @return
 	 */
 	public int getVersion()
@@ -76,11 +83,43 @@ public class PreferenceEntry<T>
 
 	/**
 	 * Sets the preference version
-	 * 
+	 *
 	 * @param version
 	 */
 	public void setVersion(int version)
 	{
 		this.version = version;
+	}
+
+	@JsonProperty("key")
+	public String getKey()
+	{
+		return getId().getCode();
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+			return true;
+		if (!(o instanceof PreferenceEntry))
+			return false;
+
+		PreferenceEntry<?> that = (PreferenceEntry<?>) o;
+
+		if (version != that.version)
+			return false;
+		if (id != that.id)
+			return false;
+		return value != null ? value.equals(that.value) : that.value == null;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		int result = id != null ? id.hashCode() : 0;
+		result = 31 * result + (value != null ? value.hashCode() : 0);
+		result = 31 * result + version;
+		return result;
 	}
 }
