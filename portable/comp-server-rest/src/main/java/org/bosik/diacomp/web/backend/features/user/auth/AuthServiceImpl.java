@@ -29,7 +29,7 @@ import java.util.Date;
 import static org.bosik.merklesync.HashUtils.generateGuid;
 
 @Service
-public class MySQLAuthService implements AuthService
+public class AuthServiceImpl implements AuthService
 {
 	@Autowired
 	private UserEntityRepository userEntityRepository;
