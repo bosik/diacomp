@@ -17,12 +17,7 @@
  */
 package org.bosik.diacomp.web.backend.features.diary;
 
-import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.InsRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
-import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
@@ -45,18 +40,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import static java.net.URLEncoder.encode;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -74,52 +63,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser(roles = "USER")
 public class DiaryRestTest
 {
-	public static class Api
-	{
-		public static final String BASE_URL = "/diary";
-
-		public static class Count
-		{
-			public static final String URL = BASE_URL + "/count";
-		}
-
-		public static class FindById
-		{
-			public static final String URL = BASE_URL + "/guid";
-		}
-
-		public static class FindPeriod
-		{
-			public static final String URL                   = BASE_URL + "/period";
-			public static final String PARAM_FROM            = "start_time";
-			public static final String PARAM_TO              = "end_time";
-			public static final String PARAM_INCLUDE_REMOVED = "show_rem";
-		}
-
-		public static class FindChanged
-		{
-			public static final String URL         = BASE_URL + "/changes";
-			public static final String PARAM_SINCE = "since";
-		}
-
-		public static class Hash
-		{
-			public static final String URL = BASE_URL + "/hash";
-		}
-
-		public static class Hashes
-		{
-			public static final String URL = BASE_URL + "/hashes";
-		}
-
-		public static class Save
-		{
-			public static final String URL         = BASE_URL;
-			public static final String PARAM_DATA  = "items";
-			public static final String RESPONSE_OK = "Saved OK";
-		}
-	}
-
 	private final Serializer<Map<String, String>>    serializerMap = new SerializerMap();
 	private final Serializer<Versioned<DiaryRecord>> serializer    = new SerializerAdapter<>(
 			new ParserVersioned<>(new ParserDiaryRecord()));
@@ -174,7 +117,7 @@ public class DiaryRestTest
 	public void findById_all() throws Exception
 	{
 		// given
-		List<Versioned<DiaryRecord>> data = buildDemoData();
+		List<Versioned<DiaryRecord>> data = DiaryDataUtil.buildDemoData();
 		when(diaryLocalService.findAll(anyInt(), eq(true))).thenReturn(data);
 
 		// when
@@ -190,7 +133,7 @@ public class DiaryRestTest
 	public void findById_prefix() throws Exception
 	{
 		// given
-		List<Versioned<DiaryRecord>> data = buildDemoData();
+		List<Versioned<DiaryRecord>> data = DiaryDataUtil.buildDemoData();
 		when(diaryLocalService.findByIdPrefix(anyInt(), eq("ff"))).thenReturn(data);
 
 		// when
@@ -206,7 +149,7 @@ public class DiaryRestTest
 	public void findById_single() throws Exception
 	{
 		// given
-		Versioned<DiaryRecord> data = buildDemoData().get(0);
+		Versioned<DiaryRecord> data = DiaryDataUtil.buildDemoData().get(0);
 		when(diaryLocalService.findById(anyInt(), eq("542a8a10ef1a41ecb9338dbeb4a931fa"))).thenReturn(data);
 
 		// when
@@ -248,7 +191,7 @@ public class DiaryRestTest
 		// given
 		String from = "2019-04-01 21:00:00";
 		String to = "2019-04-02 21:00:00";
-		List<Versioned<DiaryRecord>> data = buildDemoData();
+		List<Versioned<DiaryRecord>> data = DiaryDataUtil.buildDemoData();
 		when(diaryLocalService.findPeriod(anyInt(), any(), any(), eq(false))).thenReturn(data);
 
 		// when
@@ -290,7 +233,7 @@ public class DiaryRestTest
 	{
 		// given
 		Date since = new Date();
-		List<Versioned<DiaryRecord>> data = buildDemoData();
+		List<Versioned<DiaryRecord>> data = DiaryDataUtil.buildDemoData();
 		when(diaryLocalService.findChanged(anyInt(), any())).thenReturn(data);
 
 		// when
@@ -430,7 +373,7 @@ public class DiaryRestTest
 		// given
 		final int userId = 17;
 		when(userInfoService.getCurrentUserId()).thenReturn(userId);
-		List<Versioned<DiaryRecord>> data = buildDemoData();
+		List<Versioned<DiaryRecord>> data = DiaryDataUtil.buildDemoData();
 
 		// when
 		MockHttpServletRequestBuilder r = put(Api.Save.URL);
@@ -453,75 +396,5 @@ public class DiaryRestTest
 		// then
 		request.andExpect(status().isBadRequest());
 		verify(diaryLocalService, times(0)).save(anyInt(), any());
-	}
-
-	private static List<Versioned<DiaryRecord>> buildDemoData()
-	{
-		// TODO: improve type bounds
-		return new ArrayList<Versioned<DiaryRecord>>()
-		{{
-			add((Versioned) new Versioned<BloodRecord>()
-			{{
-				setId("1");
-				setTimeStamp(new Date());
-				setHash("hash");
-				setVersion(13);
-				setDeleted(false);
-				setData(new BloodRecord()
-				{{
-					setTime(new Date());
-					setValue(5.2);
-					setFinger(2);
-				}});
-			}});
-			add((Versioned) new Versioned<InsRecord>()
-			{{
-				setId("2");
-				setTimeStamp(new Date());
-				setHash("hash");
-				setVersion(13);
-				setDeleted(false);
-				setData(new InsRecord()
-				{{
-					setTime(new Date());
-					setValue(15.5);
-				}});
-			}});
-			add((Versioned) new Versioned<MealRecord>()
-			{{
-				setId("3");
-				setTimeStamp(new Date());
-				setHash("hash");
-				setVersion(13);
-				setDeleted(false);
-				setData(new MealRecord()
-				{{
-					setTime(new Date());
-					setShortMeal(true);
-					add(new FoodMassed()
-					{{
-						setName("Milk");
-						setRelProts(2.8);
-						setRelFats(3.2);
-						setRelCarbs(4.7);
-						setRelValue(58);
-						setMass(120.5);
-					}});
-				}});
-			}});
-			add((Versioned) new Versioned<NoteRecord>()
-			{{
-				setId("4");
-				setTimeStamp(new Date());
-				setHash("hash");
-				setVersion(13);
-				setDeleted(true);
-				setData(new NoteRecord()
-				{{
-					setTime(new Date());
-					setText("It works :)");
-				}});
-			}});
-		}};
 	}
 }
