@@ -54,7 +54,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -476,7 +475,6 @@ public class FoodUserRestTest
 		// when
 		MockHttpServletRequestBuilder r = put(Api.Save.URL);
 		r.contentType(MediaType.APPLICATION_FORM_URLENCODED);
-		r.with(csrf());
 		r.param(Api.Save.PARAM_DATA, serializer.writeAll(data));
 		ResultActions request = mvc.perform(r);
 
@@ -489,7 +487,7 @@ public class FoodUserRestTest
 	public void save_badRequest_missing() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(put(Api.Save.URL).contentType(MediaType.APPLICATION_FORM_URLENCODED).with(csrf()));
+		ResultActions request = mvc.perform(put(Api.Save.URL).contentType(MediaType.APPLICATION_FORM_URLENCODED));
 
 		// then
 		request.andExpect(status().isBadRequest());
