@@ -41,8 +41,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static org.bosik.diacomp.core.utils.Utils.nullToEmpty;
-
 /**
  * Legacy service, mostly for Windows clients
  */
@@ -64,7 +62,7 @@ public class FoodComboRest extends UserRest
 		return foodComboService.count(getUserId());
 	}
 
-	@GetMapping(path =  "/count/{prefix}" )
+	@GetMapping(path = "/count/{prefix}")
 	public Integer count(@PathVariable(name = "prefix") String prefix)
 	{
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
