@@ -21,18 +21,21 @@ import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -41,8 +44,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-@Service
-@Path("auth/")
+@RestController
+@RequestMapping("/auth")
 public class AuthRest extends UserRest
 {
 	public static final int API_CURRENT = 20;
@@ -51,40 +54,24 @@ public class AuthRest extends UserRest
 	@Autowired
 	private AuthProvider authProvider;
 
-	@POST
-	@Path("login")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response login(@FormParam("login") String login, @FormParam("pass") String pass,
-			@FormParam("api") @DefaultValue("-1") int apiVersion)
+	@PostMapping(path = "/login"
+			//, consumes = MediaType.APPLICATION_FORM_URLENCODED
+			//, produces = MediaType.APPLICATION_JSON
+	)
+	public ResponseEntity login(
+			@RequestParam("login") String login,
+			@RequestParam("pass") String pass,
+			@RequestParam("api") int apiVersion)
 	{
 		try
 		{
-			// check if all params are presented
-
-			if (login == null)
-			{
-				String resp = ResponseBuilder.build(ResponseBuilder.CODE_FAIL, "Parameter 'login' is missing");
-				return Response.status(Status.BAD_REQUEST).entity(resp).build();
-			}
-			if (pass == null)
-			{
-				String resp = ResponseBuilder.build(ResponseBuilder.CODE_FAIL, "Parameter 'pass' is missing");
-				return Response.status(Status.BAD_REQUEST).entity(resp).build();
-			}
-			if (apiVersion == -1)
-			{
-				String resp = ResponseBuilder.build(ResponseBuilder.CODE_FAIL, "Parameter 'api' is missing");
-				return Response.status(Status.BAD_REQUEST).entity(resp).build();
-			}
-
 			// check the values
-
 			if (apiVersion < API_LEGACY)
 			{
 				String msg = String
 						.format("API %d is unsupported. The latest API: %d. Legacy API: %d.", apiVersion, API_CURRENT, API_LEGACY);
 				String resp = ResponseBuilder.build(ResponseBuilder.CODE_UNSUPPORTED_API, msg);
-				return Response.ok(resp).build();
+				return ResponseEntity.ok(resp);
 			}
 
 			if (apiVersion < API_CURRENT)
@@ -93,28 +80,25 @@ public class AuthRest extends UserRest
 						.format("API %d is still supported, but deprecated. The latest API: %d. Legacy API: %d.", apiVersion, API_CURRENT,
 								API_LEGACY);
 				String resp = ResponseBuilder.build(ResponseBuilder.CODE_DEPRECATED_API, msg);
-				return Response.ok(resp).build();
+				return ResponseEntity.ok(resp);
 			}
 
+			// authentication
 			Authentication authentication = authProvider.authenticate(new UsernamePasswordAuthenticationToken(login, pass));
+
+			// setting context
 			SecurityContext context = SecurityContextHolder.getContext();
 			context.setAuthentication(authentication);
-
 			getSession().setAttribute("Login", authentication.getPrincipal()); // for Tomcat to show in "Guessed User name" nicely
 
 			// Do not pass any data in the body in order to store the same session-id
-			return Response.ok().build();
+			return ResponseEntity.ok().build();
 		}
 		catch (AuthenticationException e)
 		{
 			// Do not reset session flag here: anyone can reset your session otherwise
 			String entity = ResponseBuilder.build(ResponseBuilder.CODE_BADCREDENTIALS, "Bad username/password");
-			return Response.status(Status.UNAUTHORIZED).entity(entity).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(entity);
 		}
 	}
 
