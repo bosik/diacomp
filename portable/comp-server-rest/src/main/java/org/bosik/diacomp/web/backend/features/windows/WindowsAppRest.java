@@ -43,7 +43,7 @@ public class WindowsAppRest
 	@GetMapping(path = "/version", produces = MediaType.TEXT_PLAIN)
 	public String getVersion() throws IOException
 	{
-		return service.getVersionInfo();
+		return String.valueOf(service.getVersionCode());
 	}
 
 	@GetMapping(path = "/file/{fileName}", produces = MediaType.APPLICATION_OCTET_STREAM)

@@ -65,14 +65,14 @@ public class WindowsAppRestTest
 	public void getVersion() throws Exception
 	{
 		// given
-		final String version = "test_version";
-		when(service.getVersionInfo()).thenReturn(version);
+		final int version = 42;
+		when(service.getVersionCode()).thenReturn(version);
 
 		// when
 		ResultActions request = mvc.perform(get(Api.Version.URL));
 
 		// then
-		request.andExpect(status().isOk()).andExpect(content().string(version));
+		request.andExpect(status().isOk()).andExpect(content().string(String.valueOf(version)));
 	}
 
 	@Test

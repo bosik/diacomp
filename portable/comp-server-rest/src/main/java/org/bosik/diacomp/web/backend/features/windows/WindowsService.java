@@ -55,9 +55,10 @@ public class WindowsService
 		}
 	}
 
-	public String getVersionInfo() throws IOException
+	public int getVersionCode() throws IOException
 	{
-		return new String(Files.readAllBytes(Paths.get(DOWNLOAD_FOLDER, FILE_VERSION)));
+		final String content = new String(Files.readAllBytes(Paths.get(DOWNLOAD_FOLDER, FILE_VERSION)));
+		return Integer.parseInt(content);
 	}
 
 	public InputStream getFileStream(String fileName) throws FileNotFoundException
