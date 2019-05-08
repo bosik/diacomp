@@ -17,88 +17,51 @@
  */
 package org.bosik.diacomp.web.backend.features.windows;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import org.bosik.diacomp.core.rest.ResponseBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Path("windows/")
-@SuppressWarnings("static-method")
+import javax.ws.rs.core.MediaType;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
+@RestController
+@RequestMapping("/windows")
 public class WindowsAppRest
 {
-	private static final String	DOWNLOAD_FOLDER	= "/download/win32/";
-	private static final String	FILE_VERSION	= "version.txt";
+	private static final int MAX_FILE_NAME_LENGTH = 64;
 
-	private List<String>		files			= new ArrayList<String>();
+	@Autowired
+	private WindowsService service;
+
+	@GetMapping(path = "/version", produces = MediaType.TEXT_PLAIN)
+	public String getVersion() throws IOException
 	{
-		File folder = new File(DOWNLOAD_FOLDER);
-		File[] listFiles = folder.listFiles();
-
-		// null returned if the path is invalid
-		if (listFiles != null)
-		{
-			for (final File fileEntry : listFiles)
-			{
-				if (!fileEntry.isDirectory())
-				{
-					files.add(fileEntry.getName());
-				}
-			}
-		}
+		return service.getVersionInfo();
 	}
 
-	@GET
-	@Path("version/")
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response getVersion()
+	@GetMapping(path = "/file/{fileName}", produces = MediaType.APPLICATION_OCTET_STREAM)
+	public ResponseEntity<?> getFile(@PathVariable("fileName") String fileName) throws FileNotFoundException
 	{
+		if (fileName.length() > MAX_FILE_NAME_LENGTH)
+		{
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File name too long");
+		}
+
 		try
 		{
-			File file = new File(DOWNLOAD_FOLDER + FILE_VERSION);
-			return Response.ok(file).build();
+			final InputStream inputStream = service.getFileStream(fileName);
+			return ResponseEntity.ok(new InputStreamResource(inputStream));
 		}
-		catch (Exception e)
+		catch (FileNotFoundException e)
 		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
-	}
-
-	@GET
-	@Path("file/{fileName}")
-	@Produces(MediaType.APPLICATION_OCTET_STREAM)
-	public Response getFile(@PathParam("fileName") String fileName)
-	{
-		try
-		{
-			if (fileName == null)
-			{
-				return Response.status(Status.BAD_REQUEST).entity("File name is not specified").build();
-			}
-
-			for (String f : files)
-			{
-				if (f.equals(fileName))
-				{
-					System.out.println("Requested file to download: " + fileName);
-					File file = new File(DOWNLOAD_FOLDER + fileName);
-					return Response.ok(file).build();
-				}
-			}
-
-			return Response.status(Status.NOT_FOUND).entity("File not found: " + fileName).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found: " + fileName);
 		}
 	}
 }

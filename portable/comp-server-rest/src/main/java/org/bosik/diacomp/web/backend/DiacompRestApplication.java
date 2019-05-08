@@ -22,7 +22,7 @@ public class DiacompRestApplication
 		{
 			// @formatter:off
 			http.authorizeRequests()
-				.antMatchers("/system/**", "/auth/**", "/").permitAll()
+				.antMatchers("/system/**", "/auth/**", "/windows/**", "/").permitAll()
 				.anyRequest().authenticated().and()
 				.csrf().disable()
 				.httpBasic();
