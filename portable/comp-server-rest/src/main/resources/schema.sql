@@ -62,9 +62,11 @@ CREATE TABLE `user` (
   `Login` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `HashPass` char(70) NOT NULL,
   `ActivationKey` char(64) DEFAULT NULL,
+  `RestoreKey` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
   `DateReg` datetime NOT NULL,
   `DateLogin` datetime DEFAULT NULL,
   PRIMARY KEY (`ID`),
-  UNIQUE KEY `ActivationKey_UNIQUE` (`ActivationKey`)
+  UNIQUE KEY `Login_UNIQUE` (`Login`),
+  UNIQUE KEY `ActivationKey_UNIQUE` (`ActivationKey`),
+  UNIQUE KEY `RestoreKey_UNIQUE` (`RestoreKey`)
 ) ENGINE=InnoDB AUTO_INCREMENT=790 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci$$
-
