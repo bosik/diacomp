@@ -17,7 +17,6 @@
  */
 package org.bosik.diacomp.web.backend.features.base.dish;
 
-import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
@@ -41,7 +40,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +47,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.net.URLEncoder.encode;
+import static org.bosik.diacomp.web.backend.features.base.dish.DishBaseDataUtil.buildDemoData;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -67,56 +66,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser(roles = "USER")
 public class DishBaseRestTest
 {
-	public static class Api
-	{
-		public static final String BASE_URL = "/dish";
-
-		public static class Count
-		{
-			public static final String URL = BASE_URL + "/count";
-		}
-
-		public static class FindById
-		{
-			public static final String URL = BASE_URL + "/guid";
-		}
-
-		public static class FindAny
-		{
-			public static final String URL          = BASE_URL + "/search";
-			public static final String PARAM_FILTER = "q";
-		}
-
-		public static class FindAll
-		{
-			public static final String URL                   = BASE_URL + "/all";
-			public static final String PARAM_INCLUDE_REMOVED = "show_rem";
-		}
-
-		public static class FindChanged
-		{
-			public static final String URL         = BASE_URL + "/changes";
-			public static final String PARAM_SINCE = "since";
-		}
-
-		public static class Hash
-		{
-			public static final String URL = BASE_URL + "/hash";
-		}
-
-		public static class Hashes
-		{
-			public static final String URL = BASE_URL + "/hashes";
-		}
-
-		public static class Save
-		{
-			public static final String URL         = BASE_URL;
-			public static final String PARAM_DATA  = "items";
-			public static final String RESPONSE_OK = "Saved OK";
-		}
-	}
-
 	private final Serializer<Map<String, String>> serializerMap = new SerializerMap();
 	private final Serializer<Versioned<DishItem>> serializer    = new SerializerDishItem();
 
@@ -521,45 +470,4 @@ public class DishBaseRestTest
 		verify(dishBaseLocalService, times(0)).save(anyInt(), any());
 	}
 
-	private static List<Versioned<DishItem>> buildDemoData()
-	{
-		return new ArrayList<Versioned<DishItem>>()
-		{{
-			add(new Versioned<DishItem>()
-			{{
-				setId("1");
-				setTimeStamp(new Date());
-				setHash("hash");
-				setVersion(13);
-				setDeleted(false);
-				setData(new DishItem()
-				{{
-					setName("Apple pie");
-					setMass(165);
-					getContent().add(new FoodMassed()
-					{{
-						setName("Apple");
-						setRelProts(0.2);
-						setRelFats(0.1);
-						setRelCarbs(11.2);
-						setRelValue(40);
-						setMass(2000);
-					}});
-				}});
-			}});
-			add(new Versioned<DishItem>()
-			{{
-				setId("2");
-				setTimeStamp(new Date());
-				setHash("hash");
-				setVersion(13);
-				setDeleted(false);
-				setData(new DishItem()
-				{{
-					setName("Banana");
-					setMass(120);
-				}});
-			}});
-		}};
-	}
 }

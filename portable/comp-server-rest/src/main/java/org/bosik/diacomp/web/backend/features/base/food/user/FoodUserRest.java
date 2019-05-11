@@ -36,13 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -62,34 +56,41 @@ public class FoodUserRest extends UserRest
 	@GetMapping("/count")
 	public int count()
 	{
-		return foodUserService.count(getUserId());
+		final int userId = getUserId();
+
+		return foodUserService.count(userId);
 	}
 
 	@GetMapping("/count/{prefix}")
 	public int count(@PathVariable(name = "prefix") String prefix)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
-		return foodUserService.count(getUserId(), prefix);
+
+		return foodUserService.count(userId, prefix);
 	}
 
 	@GetMapping(path = "/guid", produces = TYPE_JSON_UTF8)
 	public List<Versioned<FoodItem>> findById()
 	{
-		return foodUserService.findAll(getUserId(), true);
+		final int userId = getUserId();
+
+		return foodUserService.findAll(userId, true);
 	}
 
 	@GetMapping(path = "/guid/{prefix}", produces = TYPE_JSON_UTF8)
 	public Object findById(@PathVariable(name = "prefix") String prefix)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
 		if (prefix.length() <= DataSource.ID_PREFIX_SIZE)
 		{
-			return foodUserService.findByIdPrefix(getUserId(), prefix);
+			return foodUserService.findByIdPrefix(userId, prefix);
 		}
 		else
 		{
-			Versioned<FoodItem> item = foodUserService.findById(getUserId(), prefix);
+			Versioned<FoodItem> item = foodUserService.findById(userId, prefix);
 
 			if (item != null)
 			{
@@ -105,49 +106,57 @@ public class FoodUserRest extends UserRest
 	@GetMapping(path = "/all", produces = TYPE_JSON_UTF8)
 	public List<Versioned<FoodItem>> findAll(@RequestParam(value = "show_rem", defaultValue = "false") String parShowRem)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(parShowRem, 5); // "false".length
-
 		boolean includeRemoved = Boolean.valueOf(parShowRem);
-		return foodUserService.findAll(getUserId(), includeRemoved);
+
+		return foodUserService.findAll(userId, includeRemoved);
 	}
 
 	@GetMapping(path = "/search", produces = TYPE_JSON_UTF8)
 	public List<Versioned<FoodItem>> findAny(@RequestParam("q") String filter)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(filter, 256);
 
-		return foodUserService.findAny(getUserId(), filter);
+		return foodUserService.findAny(userId, filter);
 	}
 
 	@GetMapping(path = "/changes", produces = TYPE_JSON_UTF8)
 	public List<Versioned<FoodItem>> findChanged(@RequestParam("since") String parTime)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(parTime, Utils.FORMAT_DATE_TIME.length());
-
 		Date since = Utils.parseTimeUTC(parTime);
-		return foodUserService.findChanged(getUserId(), since);
+
+		return foodUserService.findChanged(userId, since);
 	}
 
 	@GetMapping(path = "/hash")
 	public String getHash()
 	{
-		MerkleTree hashTree = foodUserService.getHashTree(getUserId());
+		final int userId = getUserId();
+
+		MerkleTree hashTree = foodUserService.getHashTree(userId);
 		return Utils.nullToEmpty(hashTree.getHash(""));
 	}
 
 	@GetMapping(path = "/hash/{prefix}")
 	public String getHash(@PathVariable(name = "prefix") String prefix)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
-		MerkleTree hashTree = foodUserService.getHashTree(getUserId());
+		MerkleTree hashTree = foodUserService.getHashTree(userId);
 		return Utils.nullToEmpty(hashTree.getHash(prefix));
 	}
 
 	@GetMapping(path = "/hashes", produces = TYPE_JSON_UTF8)
 	public String getHashChildren()
 	{
-		MerkleTree hashTree = foodUserService.getHashTree(getUserId());
+		final int userId = getUserId();
+
+		MerkleTree hashTree = foodUserService.getHashTree(userId);
 		Map<String, String> map = hashTree.getHashChildren("");
 		return serializerMap.write(map);
 	}
@@ -155,9 +164,10 @@ public class FoodUserRest extends UserRest
 	@GetMapping(path = "/hashes/{prefix}", produces = TYPE_JSON_UTF8)
 	public String getHashChildren(@PathVariable(name = "prefix") String prefix)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
-		MerkleTree hashTree = foodUserService.getHashTree(getUserId());
+		MerkleTree hashTree = foodUserService.getHashTree(userId);
 		Map<String, String> map = hashTree.getHashChildren(prefix);
 		return serializerMap.write(map);
 	}
@@ -165,8 +175,10 @@ public class FoodUserRest extends UserRest
 	@PutMapping
 	public String save(@RequestParam(name = "items") String parItems)
 	{
+		final int userId = getUserId();
 		List<Versioned<FoodItem>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
-		foodUserService.save(getUserId(), items);
+
+		foodUserService.save(userId, items);
 		return "Saved OK";
 	}
 }

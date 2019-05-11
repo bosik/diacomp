@@ -27,16 +27,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.bosik.diacomp.web.backend.features.base.food.FoodItemDataUtil.buildDemoData;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -45,11 +43,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(FoodCommonRest.class)
-@WithMockUser(roles = "USER")
 public class FoodCommonRestTest
 {
-	private static final String URL                      = "/food/common";
-	private static final String PARAM_FIND_LAST_MODIFIED = "lastModified";
 
 	private final Serializer<Versioned<FoodItem>> serializer = new SerializerFoodItem();
 
@@ -67,7 +62,7 @@ public class FoodCommonRestTest
 		when(foodCommonService.find()).thenReturn(data);
 
 		// when
-		ResultActions request = mvc.perform(get(URL));
+		ResultActions request = mvc.perform(get(Api.URL));
 
 		// then
 		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -84,7 +79,7 @@ public class FoodCommonRestTest
 		when(foodCommonService.findChanged(any())).thenReturn(data);
 
 		// when
-		ResultActions request = mvc.perform(get(URL).param(PARAM_FIND_LAST_MODIFIED, Utils.formatTimeUTC(time)));
+		ResultActions request = mvc.perform(get(Api.URL).param(Api.PARAM_FIND_LAST_MODIFIED, Utils.formatTimeUTC(time)));
 
 		// then
 		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -101,7 +96,7 @@ public class FoodCommonRestTest
 		when(foodCommonService.find()).thenReturn(data);
 
 		// when
-		ResultActions request = mvc.perform(get(URL).param(PARAM_FIND_LAST_MODIFIED, Utils.buildString(20)));
+		ResultActions request = mvc.perform(get(Api.URL).param(Api.PARAM_FIND_LAST_MODIFIED, Utils.buildString(20)));
 
 		// then
 		request.andExpect(status().isBadRequest());
@@ -115,48 +110,9 @@ public class FoodCommonRestTest
 		when(foodCommonService.find()).thenReturn(data);
 
 		// when
-		ResultActions request = mvc.perform(get(URL).param(PARAM_FIND_LAST_MODIFIED, Utils.buildString(10 * 1024 * 1024)));
+		ResultActions request = mvc.perform(get(Api.URL).param(Api.PARAM_FIND_LAST_MODIFIED, Utils.buildString(10 * 1024 * 1024)));
 
 		// then
 		request.andExpect(status().isBadRequest());
-	}
-
-	private static List<Versioned<FoodItem>> buildDemoData() throws ParseException
-	{
-		return new ArrayList<Versioned<FoodItem>>()
-		{{
-			add(new Versioned<FoodItem>()
-			{{
-				setId("1");
-				setTimeStamp(new Date());
-				setHash("hash");
-				setVersion(13);
-				setDeleted(false);
-				setData(new FoodItem()
-				{{
-					setName("Apple");
-					setRelProts(0.2);
-					setRelFats(0.1);
-					setRelCarbs(11.2);
-					setRelValue(40);
-				}});
-			}});
-			add(new Versioned<FoodItem>()
-			{{
-				setId("2");
-				setTimeStamp(new Date());
-				setHash("hash");
-				setVersion(13);
-				setDeleted(false);
-				setData(new FoodItem()
-				{{
-					setName("Banana");
-					setRelProts(0.2);
-					setRelFats(0.1);
-					setRelCarbs(11.2);
-					setRelValue(40);
-				}});
-			}});
-		}};
 	}
 }

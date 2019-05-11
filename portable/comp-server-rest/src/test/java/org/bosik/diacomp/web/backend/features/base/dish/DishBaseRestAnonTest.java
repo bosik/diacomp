@@ -15,15 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bosik.diacomp.web.backend.features.diary;
+package org.bosik.diacomp.web.backend.features.base.dish;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
-import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
+import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
-import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
-import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
+import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.merklesync.Versioned;
@@ -44,14 +42,15 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.util.List;
 
+import static org.bosik.diacomp.web.backend.features.base.dish.DishBaseDataUtil.buildDemoData;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(DiaryRest.class)
+@WebMvcTest(DishBaseRest.class)
 @RunWith(JUnitParamsRunner.class)
-public class DiaryRestAnonTest
+public class DishBaseRestAnonTest
 {
 	@ClassRule
 	public static final SpringClassRule SPRING_CLASS_RULE = new SpringClassRule();
@@ -59,16 +58,16 @@ public class DiaryRestAnonTest
 	@Rule
 	public final SpringMethodRule springMethodRule = new SpringMethodRule();
 
-	private final Serializer<Versioned<DiaryRecord>> serializer = new SerializerAdapter<>(new ParserVersioned<>(new ParserDiaryRecord()));
+	private final Serializer<Versioned<DishItem>> serializer = new SerializerDishItem();
 
 	@Autowired
 	private MockMvc mvc;
 
 	@MockBean
-	private UserInfoService userInfoService;
+	private DishBaseLocalService dishBaseLocalService;
 
 	@MockBean
-	private DiaryLocalService diaryLocalService;
+	private UserInfoService userInfoService;
 
 	@Before
 	public void init()
@@ -85,10 +84,9 @@ public class DiaryRestAnonTest
 			Api.FindById.URL + "/ff", //
 			Api.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931fa", //
 			Api.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
-			Api.FindPeriod.URL + "?" + Api.FindPeriod.PARAM_FROM + "=2019-04-01 21:00:00&" + Api.FindPeriod.PARAM_TO
-					+ "=2019-04-02 21:00:00", //
-			Api.FindPeriod.URL + "?" + Api.FindPeriod.PARAM_FROM + "=2019-04-98 21:00:00&" + Api.FindPeriod.PARAM_TO
-					+ "=2019-04-98 21:00:00", //
+			Api.FindAny.URL + "?" + Api.FindAny.PARAM_FILTER + "=tes", //
+			Api.FindAll.URL, //
+			Api.FindAll.URL + "?" + Api.FindAll.PARAM_INCLUDE_REMOVED + "true", //
 			Api.FindChanged.URL + "?" + Api.FindChanged.PARAM_SINCE + "=2019-04-16 20:10:32", //
 			Api.FindChanged.URL + "?" + Api.FindChanged.PARAM_SINCE + "=2019-04-16 20:10:320", //
 			Api.Hash.URL, //
@@ -110,7 +108,7 @@ public class DiaryRestAnonTest
 	public void shouldBeSecured_save() throws Exception
 	{
 		// given
-		List<Versioned<DiaryRecord>> data = DiaryDataUtil.buildDemoData();
+		List<Versioned<DishItem>> data = buildDemoData();
 
 		// when
 		MockHttpServletRequestBuilder r = put(Api.Save.URL);

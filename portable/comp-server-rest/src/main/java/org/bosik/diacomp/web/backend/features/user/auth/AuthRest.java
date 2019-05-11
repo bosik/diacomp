@@ -54,8 +54,8 @@ public class AuthRest extends UserRest
 	@Autowired
 	private AuthProvider authProvider;
 
-	@PostMapping(path = "/login"
-			//, consumes = MediaType.APPLICATION_FORM_URLENCODED
+	@PostMapping(path = "/login",
+			consumes = MediaType.APPLICATION_FORM_URLENCODED
 			//, produces = MediaType.APPLICATION_JSON
 	)
 	public ResponseEntity login(

@@ -23,9 +23,11 @@ public class DiacompRestApplication
 			// @formatter:off
 			http.authorizeRequests()
 				.antMatchers("/system/**", "/auth/**", "/windows/**", "/").permitAll()
-				.anyRequest().authenticated().and()
+				//.anyRequest().authenticated() // not compatible with Windows client
+				.and()
 				.csrf().disable()
-				.httpBasic();
+				//.httpBasic() // not compatible with Windows client
+			;
 			// @formatter:on
 		}
 	}

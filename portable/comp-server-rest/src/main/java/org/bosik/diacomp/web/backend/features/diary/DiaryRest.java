@@ -60,34 +60,39 @@ public class DiaryRest extends UserRest
 	@GetMapping("/count")
 	public Integer count()
 	{
-		return diaryService.count(getUserId());
+		final int userId = getUserId();
+		return diaryService.count(userId);
 	}
 
 	@GetMapping("/count/{prefix}")
 	public Integer count(@PathVariable(name = "prefix") String prefix)
 	{
+		final int userId = getUserId();
+
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
-		return diaryService.count(getUserId(), prefix);
+		return diaryService.count(userId, prefix);
 	}
 
 	@GetMapping(path = "/guid", produces = TYPE_JSON_UTF8)
 	public List<Versioned<DiaryRecord>> findById()
 	{
-		return diaryService.findAll(getUserId(), true);
+		final int userId = getUserId();
+		return diaryService.findAll(userId, true);
 	}
 
 	@GetMapping(path = "/guid/{prefix}", produces = TYPE_JSON_UTF8)
 	public Object findById(@PathVariable(name = "prefix") String prefix)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
 		if (prefix.length() <= DataSource.ID_PREFIX_SIZE)
 		{
-			return diaryService.findByIdPrefix(getUserId(), prefix);
+			return diaryService.findByIdPrefix(userId, prefix);
 		}
 		else
 		{
-			Versioned<DiaryRecord> item = diaryService.findById(getUserId(), prefix);
+			Versioned<DiaryRecord> item = diaryService.findById(userId, prefix);
 
 			if (item != null)
 			{
@@ -103,10 +108,11 @@ public class DiaryRest extends UserRest
 	@GetMapping(path = "/changes", produces = TYPE_JSON_UTF8)
 	public List<Versioned<DiaryRecord>> findChanged(@RequestParam("since") String parTime)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(parTime, Utils.FORMAT_DATE_TIME.length());
 
 		Date since = Utils.parseTimeUTC(parTime);
-		return diaryService.findChanged(getUserId(), since);
+		return diaryService.findChanged(userId, since);
 	}
 
 	@GetMapping(path = "/period", produces = TYPE_JSON_UTF8)
@@ -114,35 +120,39 @@ public class DiaryRest extends UserRest
 			@RequestParam(name = "end_time") String parEndTime,
 			@RequestParam(name = "show_rem", defaultValue = "false") boolean includeRemoved)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(parStartTime, MAX_DATETIME_SIZE);
 		Utils.checkSize(parEndTime, MAX_DATETIME_SIZE);
 
 		Date startTime = Utils.parseTimeUTC(parStartTime);
 		Date endTime = Utils.parseTimeUTC(parEndTime);
 
-		return diaryService.findPeriod(getUserId(), startTime, endTime, includeRemoved);
+		return diaryService.findPeriod(userId, startTime, endTime, includeRemoved);
 	}
 
 	@GetMapping(path = "/hash")
 	public String getHash()
 	{
-		MerkleTree hashTree = diaryService.getHashTree(getUserId());
+		final int userId = getUserId();
+		MerkleTree hashTree = diaryService.getHashTree(userId);
 		return Utils.nullToEmpty(hashTree.getHash(""));
 	}
 
 	@GetMapping(path = "/hash/{prefix}")
 	public String getHash(@PathVariable(name = "prefix") String prefix)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
-		MerkleTree hashTree = diaryService.getHashTree(getUserId());
+		MerkleTree hashTree = diaryService.getHashTree(userId);
 		return Utils.nullToEmpty(hashTree.getHash(prefix));
 	}
 
 	@GetMapping(path = "/hashes", produces = TYPE_JSON_UTF8)
 	public String getHashChildren()
 	{
-		MerkleTree hashTree = diaryService.getHashTree(getUserId());
+		final int userId = getUserId();
+		MerkleTree hashTree = diaryService.getHashTree(userId);
 		Map<String, String> map = hashTree.getHashChildren("");
 		return serializerMap.write(map);
 	}
@@ -150,9 +160,10 @@ public class DiaryRest extends UserRest
 	@GetMapping(path = "/hashes/{prefix}", produces = TYPE_JSON_UTF8)
 	public String getHashChildren(@PathVariable(name = "prefix") String prefix)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
-		MerkleTree hashTree = diaryService.getHashTree(getUserId());
+		MerkleTree hashTree = diaryService.getHashTree(userId);
 		Map<String, String> map = hashTree.getHashChildren(prefix);
 		return serializerMap.write(map);
 	}
@@ -160,9 +171,11 @@ public class DiaryRest extends UserRest
 	@PutMapping
 	public String save(@RequestParam("items") String parItems)
 	{
+		final int userId = getUserId();
+
 		// FIXME: limit the maximum data size
 		List<Versioned<DiaryRecord>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
-		diaryService.save(getUserId(), items);
+		diaryService.save(userId, items);
 		return "Saved OK";
 	}
 }

@@ -19,11 +19,13 @@ package org.bosik.diacomp.web.backend.features.export;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.features.base.dish.DishBaseLocalService;
 import org.bosik.diacomp.web.backend.features.base.food.combo.FoodComboLocalService;
 import org.bosik.diacomp.web.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.web.backend.features.preferences.PreferencesLocalService;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,6 +38,7 @@ import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -66,6 +69,12 @@ public class ExportRestAnonTest
 
 	@MockBean
 	private PreferencesLocalService preferencesLocalService;
+
+	@Before
+	public void init()
+	{
+		when(userInfoService.getCurrentUserId()).thenThrow(new NotAuthorizedException());
+	}
 
 	@Test
 	@Parameters(value = {//

@@ -62,28 +62,33 @@ public class DishBaseRest extends UserRest
 	@GetMapping("/count/{prefix}")
 	public Integer count(@PathVariable("prefix") String prefix)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
-		return dishbaseService.count(getUserId(), prefix);
+
+		return dishbaseService.count(userId, prefix);
 	}
 
 	@GetMapping(path = "/guid", produces = TYPE_JSON_UTF8)
 	public List<Versioned<DishItem>> findById()
 	{
-		return dishbaseService.findAll(getUserId(), true);
+		final int userId = getUserId();
+
+		return dishbaseService.findAll(userId, true);
 	}
 
 	@GetMapping(path = "/guid/{prefix}", produces = TYPE_JSON_UTF8)
 	public Object findById(@PathVariable("prefix") String prefix)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
 		if (prefix.length() <= DataSource.ID_PREFIX_SIZE)
 		{
-			return dishbaseService.findByIdPrefix(getUserId(), prefix);
+			return dishbaseService.findByIdPrefix(userId, prefix);
 		}
 		else
 		{
-			Versioned<DishItem> item = dishbaseService.findById(getUserId(), prefix);
+			Versioned<DishItem> item = dishbaseService.findById(userId, prefix);
 
 			if (item != null)
 			{
@@ -99,49 +104,57 @@ public class DishBaseRest extends UserRest
 	@GetMapping(path = "/all", produces = TYPE_JSON_UTF8)
 	public List<Versioned<DishItem>> findAll(@RequestParam(value = "show_rem", defaultValue = "false") String parShowRem)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(parShowRem, 5); // "false".length
-
 		boolean includeRemoved = Boolean.valueOf(parShowRem);
-		return dishbaseService.findAll(getUserId(), includeRemoved);
+
+		return dishbaseService.findAll(userId, includeRemoved);
 	}
 
 	@GetMapping(path = "/search", produces = TYPE_JSON_UTF8)
 	public List<Versioned<DishItem>> findAny(@RequestParam("q") String filter)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(filter, 256);
 
-		return dishbaseService.findAny(getUserId(), filter);
+		return dishbaseService.findAny(userId, filter);
 	}
 
 	@GetMapping(path = "/changes", produces = TYPE_JSON_UTF8)
 	public List<Versioned<DishItem>> findChanged(@RequestParam("since") String parTime)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(parTime, Utils.FORMAT_DATE_TIME.length());
-
 		Date since = Utils.parseTimeUTC(parTime);
-		return dishbaseService.findChanged(getUserId(), since);
+
+		return dishbaseService.findChanged(userId, since);
 	}
 
 	@GetMapping(path = "/hash")
 	public String getHash()
 	{
-		MerkleTree hashTree = dishbaseService.getHashTree(getUserId());
+		final int userId = getUserId();
+
+		final MerkleTree hashTree = dishbaseService.getHashTree(userId);
 		return Utils.nullToEmpty(hashTree.getHash(""));
 	}
 
 	@GetMapping(path = "/hash/{prefix}")
 	public String getHash(@PathVariable("prefix") String prefix)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
-		MerkleTree hashTree = dishbaseService.getHashTree(getUserId());
+		MerkleTree hashTree = dishbaseService.getHashTree(userId);
 		return Utils.nullToEmpty(hashTree.getHash(prefix));
 	}
 
 	@GetMapping(path = "/hashes", produces = TYPE_JSON_UTF8)
 	public String getHashChildren()
 	{
-		MerkleTree hashTree = dishbaseService.getHashTree(getUserId());
+		final int userId = getUserId();
+
+		MerkleTree hashTree = dishbaseService.getHashTree(userId);
 		Map<String, String> map = hashTree.getHashChildren("");
 		return serializerMap.write(map);
 	}
@@ -149,9 +162,10 @@ public class DishBaseRest extends UserRest
 	@GetMapping(path = "/hashes/{prefix}", produces = TYPE_JSON_UTF8)
 	public String getHashChildren(@PathVariable("prefix") String prefix)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
-		MerkleTree hashTree = dishbaseService.getHashTree(getUserId());
+		MerkleTree hashTree = dishbaseService.getHashTree(userId);
 		Map<String, String> map = hashTree.getHashChildren(prefix);
 		return serializerMap.write(map);
 	}
@@ -159,8 +173,10 @@ public class DishBaseRest extends UserRest
 	@PutMapping
 	public String save(@RequestParam("items") String parItems)
 	{
+		final int userId = getUserId();
+
 		List<Versioned<DishItem>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
-		dishbaseService.save(getUserId(), items);
+		dishbaseService.save(userId, items);
 		return "Saved OK";
 	}
 }

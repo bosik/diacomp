@@ -38,14 +38,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.bosik.diacomp.web.backend.features.base.food.FoodItemDataUtil.buildDemoData;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,56 +63,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser(roles = "USER")
 public class FoodUserRestTest
 {
-	public static class Api
-	{
-		public static final String BASE_URL = "/food/user";
-
-		public static class Count
-		{
-			public static final String URL = BASE_URL + "/count";
-		}
-
-		public static class FindById
-		{
-			public static final String URL = BASE_URL + "/guid";
-		}
-
-		public static class FindAny
-		{
-			public static final String URL          = BASE_URL + "/search";
-			public static final String PARAM_FILTER = "q";
-		}
-
-		public static class FindAll
-		{
-			public static final String URL                   = BASE_URL + "/all";
-			public static final String PARAM_INCLUDE_REMOVED = "show_rem";
-		}
-
-		public static class FindChanged
-		{
-			public static final String URL         = BASE_URL + "/changes";
-			public static final String PARAM_SINCE = "since";
-		}
-
-		public static class Hash
-		{
-			public static final String URL = BASE_URL + "/hash";
-		}
-
-		public static class Hashes
-		{
-			public static final String URL = BASE_URL + "/hashes";
-		}
-
-		public static class Save
-		{
-			public static final String URL         = BASE_URL;
-			public static final String PARAM_DATA  = "items";
-			public static final String RESPONSE_OK = "Saved OK";
-		}
-	}
-
 	private final Serializer<Map<String, String>> serializerMap = new SerializerMap();
 	private final Serializer<Versioned<FoodItem>> serializer    = new SerializerFoodItem();
 
@@ -492,44 +441,5 @@ public class FoodUserRestTest
 		// then
 		request.andExpect(status().isBadRequest());
 		verify(userLocalService, times(0)).save(anyInt(), any());
-	}
-
-	private static List<Versioned<FoodItem>> buildDemoData() throws ParseException
-	{
-		return new ArrayList<Versioned<FoodItem>>()
-		{{
-			add(new Versioned<FoodItem>()
-			{{
-				setId("1");
-				setTimeStamp(new Date());
-				setHash("hash");
-				setVersion(13);
-				setDeleted(false);
-				setData(new FoodItem()
-				{{
-					setName("Apple");
-					setRelProts(0.2);
-					setRelFats(0.1);
-					setRelCarbs(11.2);
-					setRelValue(40);
-				}});
-			}});
-			add(new Versioned<FoodItem>()
-			{{
-				setId("2");
-				setTimeStamp(new Date());
-				setHash("hash");
-				setVersion(13);
-				setDeleted(false);
-				setData(new FoodItem()
-				{{
-					setName("Banana");
-					setRelProts(0.2);
-					setRelFats(0.1);
-					setRelCarbs(11.2);
-					setRelValue(40);
-				}});
-			}});
-		}};
 	}
 }

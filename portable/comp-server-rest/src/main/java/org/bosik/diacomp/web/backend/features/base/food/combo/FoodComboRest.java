@@ -59,34 +59,41 @@ public class FoodComboRest extends UserRest
 	@GetMapping(path = "/count")
 	public Integer count()
 	{
-		return foodComboService.count(getUserId());
+		final int userId = getUserId();
+
+		return foodComboService.count(userId);
 	}
 
 	@GetMapping(path = "/count/{prefix}")
 	public Integer count(@PathVariable(name = "prefix") String prefix)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
-		return foodComboService.count(getUserId(), prefix);
+
+		return foodComboService.count(userId, prefix);
 	}
 
 	@GetMapping(path = "/guid", produces = TYPE_JSON_UTF8)
 	public List<Versioned<FoodItem>> findById()
 	{
-		return foodComboService.findAll(getUserId(), true);
+		final int userId = getUserId();
+
+		return foodComboService.findAll(userId, true);
 	}
 
 	@GetMapping(path = "/guid/{prefix}", produces = TYPE_JSON_UTF8)
 	public Object findById(@PathVariable(name = "prefix") String prefix)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
 		if (prefix.length() <= DataSource.ID_PREFIX_SIZE)
 		{
-			return foodComboService.findByIdPrefix(getUserId(), prefix);
+			return foodComboService.findByIdPrefix(userId, prefix);
 		}
 		else
 		{
-			Versioned<FoodItem> item = foodComboService.findById(getUserId(), prefix);
+			Versioned<FoodItem> item = foodComboService.findById(userId, prefix);
 
 			if (item != null)
 			{
@@ -102,49 +109,57 @@ public class FoodComboRest extends UserRest
 	@GetMapping(path = "/all", produces = TYPE_JSON_UTF8)
 	public List<Versioned<FoodItem>> findAll(@RequestParam(value = "show_rem", defaultValue = "false") String parShowRem)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(parShowRem, 5); // "false".length
 
 		boolean includeRemoved = Boolean.valueOf(parShowRem);
-		return foodComboService.findAll(getUserId(), includeRemoved);
+		return foodComboService.findAll(userId, includeRemoved);
 	}
 
 	@GetMapping(path = "/search", produces = TYPE_JSON_UTF8)
 	public List<Versioned<FoodItem>> findAny(@RequestParam("q") String filter)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(filter, 256);
 
-		return foodComboService.findAny(getUserId(), filter);
+		return foodComboService.findAny(userId, filter);
 	}
 
 	@GetMapping(path = "/changes", produces = TYPE_JSON_UTF8)
 	public List<Versioned<FoodItem>> findChanged(@RequestParam("since") String parTime)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(parTime, Utils.FORMAT_DATE_TIME.length());
-
 		Date since = Utils.parseTimeUTC(parTime);
-		return foodComboService.findChanged(getUserId(), since);
+
+		return foodComboService.findChanged(userId, since);
 	}
 
 	@GetMapping(path = "/hash")
 	public String getHash()
 	{
-		MerkleTree hashTree = foodComboService.getHashTree(getUserId());
+		final int userId = getUserId();
+
+		MerkleTree hashTree = foodComboService.getHashTree(userId);
 		return Utils.nullToEmpty(hashTree.getHash(""));
 	}
 
 	@GetMapping(path = "/hash/{prefix}")
 	public String getHash(@PathVariable(name = "prefix") String prefix)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
-		MerkleTree hashTree = foodComboService.getHashTree(getUserId());
+		MerkleTree hashTree = foodComboService.getHashTree(userId);
 		return Utils.nullToEmpty(hashTree.getHash(prefix));
 	}
 
 	@GetMapping(path = "/hashes", produces = TYPE_JSON_UTF8)
 	public String getHashChildren()
 	{
-		MerkleTree hashTree = foodComboService.getHashTree(getUserId());
+		final int userId = getUserId();
+
+		MerkleTree hashTree = foodComboService.getHashTree(userId);
 		Map<String, String> map = hashTree.getHashChildren("");
 		return serializerMap.write(map);
 	}
@@ -152,9 +167,10 @@ public class FoodComboRest extends UserRest
 	@GetMapping(path = "/hashes/{prefix}", produces = TYPE_JSON_UTF8)
 	public String getHashChildren(@PathVariable(name = "prefix") String prefix)
 	{
+		final int userId = getUserId();
 		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
-		MerkleTree hashTree = foodComboService.getHashTree(getUserId());
+		MerkleTree hashTree = foodComboService.getHashTree(userId);
 		Map<String, String> map = hashTree.getHashChildren(prefix);
 		return serializerMap.write(map);
 	}
@@ -162,8 +178,10 @@ public class FoodComboRest extends UserRest
 	@PutMapping
 	public String save(@RequestParam(name = "items") String parItems)
 	{
+		final int userId = getUserId();
 		List<Versioned<FoodItem>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
-		foodComboService.save(getUserId(), items);
+
+		foodComboService.save(userId, items);
 		return "Saved OK";
 	}
 }
