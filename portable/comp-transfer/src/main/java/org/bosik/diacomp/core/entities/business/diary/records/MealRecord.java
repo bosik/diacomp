@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.core.entities.business.diary.records;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
@@ -68,6 +69,7 @@ public class MealRecord extends DiaryRecord
 	// работа с характеристиками
 	// TODO: написать тесты
 
+	@JsonIgnore
 	public double getProts()
 	{
 		double res = 0.0;
@@ -79,6 +81,7 @@ public class MealRecord extends DiaryRecord
 		return res;
 	}
 
+	@JsonIgnore
 	public double getFats()
 	{
 		double res = 0.0;
@@ -90,6 +93,7 @@ public class MealRecord extends DiaryRecord
 		return res;
 	}
 
+	@JsonIgnore
 	public double getCarbs()
 	{
 		double res = 0.0;
@@ -101,6 +105,7 @@ public class MealRecord extends DiaryRecord
 		return res;
 	}
 
+	@JsonIgnore
 	public double getValue()
 	{
 		double res = 0.0;
@@ -112,6 +117,7 @@ public class MealRecord extends DiaryRecord
 		return res;
 	}
 
+	@JsonIgnore
 	public double getMass()
 	{
 		double res = 0.0;

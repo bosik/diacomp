@@ -35,7 +35,7 @@ public class Versioned<T> implements Serializable
 
 	private String  id;
 	@JsonProperty("stamp")
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date    timeStamp;
 	private String  hash;
 	private int     version;
