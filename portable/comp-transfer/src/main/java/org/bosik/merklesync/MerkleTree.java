@@ -33,8 +33,8 @@ public interface MerkleTree
 	 * Returns key-values pairs for direct children
 	 * 
 	 * @param prefix
-	 *            Must be 0..ID_PREFIX_SIZE chars long
-	 * @return Map (prefix + one_char, hash) if prefix is shorter than ID_PREFIX_SIZE; (id, hash) otherwise
+	 *            Must be less than ID_PREFIX_SIZE chars long
+	 * @return Map (prefix + one_char, hash)
 	 */
 	Map<String, String> getHashChildren(String prefix);
 }

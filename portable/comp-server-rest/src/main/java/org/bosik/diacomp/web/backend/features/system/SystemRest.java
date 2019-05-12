@@ -17,90 +17,123 @@
  */
 package org.bosik.diacomp.web.backend.features.system;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.rest.StdResponse;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.Config;
 import org.bosik.diacomp.web.backend.features.user.auth.AuthRest;
-import org.json.JSONObject;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import java.util.Date;
 
-@SuppressWarnings("static-method")
-@Path("/")
+@RestController
 public class SystemRest
 {
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response welcome()
+	@GetMapping(path = "", produces = MediaType.TEXT_PLAIN)
+	public String welcome()
 	{
-		try
+		String buildTime = Config.get(Config.KEY_BUILD_TIME);
+		String buildCommit = Config.get(Config.KEY_BUILD_COMMIT);
+
+		StringBuilder s = new StringBuilder();
+		s.append("Diacomp REST API is up\n");
+		s.append("Built ").append(buildTime).append(" / ").append(buildCommit);
+
+		return s.toString();
+	}
+
+	@GetMapping(path = "/system/info", produces = MediaType.APPLICATION_JSON)
+	public ApiInfo getAPIVersion()
+	{
+		return new ApiInfo()
+		{{
+			setCode(ResponseBuilder.CODE_OK);
+			setInfo(new ApiVersionInfo()
+			{{
+				setCurrentVersion(AuthRest.API_CURRENT);
+				setSupportedVersion(AuthRest.API_LEGACY);
+				setBuild(Config.get(Config.KEY_BUILD_TIME));
+			}});
+		}};
+	}
+
+	@GetMapping(path = "/system/time", produces = MediaType.TEXT_PLAIN)
+	public String getTime()
+	{
+		return Utils.formatTimeUTC(new Date());
+	}
+
+	private static class ApiInfo
+	{
+		@JsonProperty(StdResponse.TAG_CODE)
+		private int code;
+
+		@JsonProperty(StdResponse.TAG_RESPONSE)
+		private ApiVersionInfo info;
+
+		public int getCode()
 		{
-			String buildTime = Config.get(Config.KEY_BUILD_TIME);
-			String buildCommit = Config.get(Config.KEY_BUILD_COMMIT);
-
-			StringBuilder s = new StringBuilder();
-			s.append("Diacomp REST API is up\n");
-			s.append("Built ").append(buildTime).append(" / ").append(buildCommit);
-
-			return Response.ok(s.toString()).build();
+			return code;
 		}
-		catch (Exception e)
+
+		public void setCode(int code)
 		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+			this.code = code;
+		}
+
+		public ApiVersionInfo getInfo()
+		{
+			return info;
+		}
+
+		public void setInfo(ApiVersionInfo info)
+		{
+			this.info = info;
 		}
 	}
 
-	@GET
-	@Path("system/info")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getAPIVersion()
+	private static class ApiVersionInfo
 	{
-		try
+		@JsonProperty("current")
+		private int currentVersion;
+
+		@JsonProperty("support")
+		private int supportedVersion;
+
+		@JsonProperty("build")
+		private String build;
+
+		public int getCurrentVersion()
 		{
-			// Can't use StdResponse as far as response is JSON, not regular escaped string
-
-			JSONObject info = new JSONObject();
-			info.put("current", AuthRest.API_CURRENT);
-			info.put("support", AuthRest.API_LEGACY);
-			info.put("build", Config.get(Config.KEY_BUILD_TIME));
-
-			JSONObject resp = new JSONObject();
-			resp.put(StdResponse.TAG_CODE, ResponseBuilder.CODE_OK);
-			resp.put(StdResponse.TAG_RESPONSE, info);
-
-			return Response.ok(resp.toString()).build();
+			return currentVersion;
 		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			String entity = ResponseBuilder.buildFails();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(entity).build();
-		}
-	}
 
-	@GET
-	@Path("system/time")
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response getTime()
-	{
-		try
+		public void setCurrentVersion(int currentVersion)
 		{
-			String s = Utils.formatTimeUTC(new Date());
-			return Response.ok(s).build();
+			this.currentVersion = currentVersion;
 		}
-		catch (Exception e)
+
+		public int getSupportedVersion()
 		{
-			e.printStackTrace();
-			String entity = ResponseBuilder.buildFails();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(entity).build();
+			return supportedVersion;
+		}
+
+		public void setSupportedVersion(int supportedVersion)
+		{
+			this.supportedVersion = supportedVersion;
+		}
+
+		public String getBuild()
+		{
+			return build;
+		}
+
+		public void setBuild(String build)
+		{
+			this.build = build;
 		}
 	}
 }

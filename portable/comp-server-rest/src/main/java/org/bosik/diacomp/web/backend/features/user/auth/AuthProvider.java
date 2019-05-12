@@ -17,8 +17,6 @@
  */
 package org.bosik.diacomp.web.backend.features.user.auth;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.bosik.diacomp.core.services.exceptions.AuthException;
 import org.bosik.diacomp.core.services.exceptions.NotActivatedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +27,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
 public class AuthProvider implements AuthenticationProvider
 {
 	@Autowired
 	private AuthService	authService;
+
+	public AuthProvider(AuthService authService)
+	{
+		this.authService = authService;
+	}
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException
@@ -47,7 +53,7 @@ public class AuthProvider implements AuthenticationProvider
 			int userId = authService.login(email, password);
 			String userInfo = String.format("%d:%s", userId, email);
 
-			List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+			List<GrantedAuthority> authorities = new ArrayList<>();
 			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 			return new UsernamePasswordAuthenticationToken(userInfo, password, authorities);
 		}

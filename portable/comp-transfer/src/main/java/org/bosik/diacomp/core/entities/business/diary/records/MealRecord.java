@@ -17,6 +17,8 @@
  */
 package org.bosik.diacomp.core.entities.business.diary.records;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 
@@ -28,7 +30,12 @@ public class MealRecord extends DiaryRecord
 {
 	private static final long serialVersionUID = -4920269773372985893L;
 
-	private final List<FoodMassed> items = new ArrayList<FoodMassed>();
+	public static final String TYPE = "meal";
+
+	@JsonProperty("content")
+	private final List<FoodMassed> items = new ArrayList<>();
+
+	@JsonProperty("short")
 	private boolean shortMeal;
 
 	public MealRecord(Date time, boolean shortMeal)
@@ -43,6 +50,12 @@ public class MealRecord extends DiaryRecord
 
 	// ================================ GET / SET ================================
 
+	@Override
+	public String getType()
+	{
+		return TYPE;
+	}
+
 	public boolean getShortMeal()
 	{
 		return shortMeal;
@@ -56,6 +69,7 @@ public class MealRecord extends DiaryRecord
 	// работа с характеристиками
 	// TODO: написать тесты
 
+	@JsonIgnore
 	public double getProts()
 	{
 		double res = 0.0;
@@ -67,6 +81,7 @@ public class MealRecord extends DiaryRecord
 		return res;
 	}
 
+	@JsonIgnore
 	public double getFats()
 	{
 		double res = 0.0;
@@ -78,6 +93,7 @@ public class MealRecord extends DiaryRecord
 		return res;
 	}
 
+	@JsonIgnore
 	public double getCarbs()
 	{
 		double res = 0.0;
@@ -89,6 +105,7 @@ public class MealRecord extends DiaryRecord
 		return res;
 	}
 
+	@JsonIgnore
 	public double getValue()
 	{
 		double res = 0.0;
@@ -100,6 +117,7 @@ public class MealRecord extends DiaryRecord
 		return res;
 	}
 
+	@JsonIgnore
 	public double getMass()
 	{
 		double res = 0.0;

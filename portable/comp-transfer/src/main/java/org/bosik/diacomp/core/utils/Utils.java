@@ -243,7 +243,7 @@ public class Utils
 			catch (ParseException e2)
 			{
 				// TODO: don't wrap (or wrap time parser too)
-				throw new RuntimeException(e2);
+				throw new IllegalArgumentException(e2);
 			}
 		}
 	}
@@ -1279,5 +1279,20 @@ public class Utils
 	public static String makeSureEndsWithSlash(String s)
 	{
 		return (s == null || s.endsWith("/")) ? s : (s + "/");
+	}
+
+	public static String nullToEmpty(String s)
+	{
+		return (s == null) ? "" : s;
+	}
+
+	public static String buildString(int size)
+	{
+		final StringBuilder s = new StringBuilder(size);
+		for (int i = 0; i < size; i++)
+		{
+			s.append("*");
+		}
+		return s.toString();
 	}
 }

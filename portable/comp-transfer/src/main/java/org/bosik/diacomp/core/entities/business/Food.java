@@ -17,22 +17,33 @@
  */
 package org.bosik.diacomp.core.entities.business;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bosik.diacomp.core.entities.business.interfaces.Named;
 import org.bosik.diacomp.core.entities.business.interfaces.Relative;
+
+import java.io.Serializable;
 
 /**
  * Stores food's name and relative parameters (PFCV on 100g)
  */
 public class Food implements Serializable, Named, Relative
 {
-	private static final long	serialVersionUID	= -659635365362405228L;
+	private static final long serialVersionUID = -659635365362405228L;
 
-	private String				name;
-	private double				relProts;
-	private double				relFats;
-	private double				relCarbs;
-	private double				relValue;
+	@JsonProperty("name")
+	private String name;
+
+	@JsonProperty("prots")
+	private double relProts;
+
+	@JsonProperty("fats")
+	private double relFats;
+
+	@JsonProperty("carbs")
+	private double relCarbs;
+
+	@JsonProperty("value")
+	private double relValue;
 
 	public Food()
 	{

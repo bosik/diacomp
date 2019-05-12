@@ -17,6 +17,9 @@
  */
 package org.bosik.diacomp.core.entities.business.dishbase;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.entities.business.interfaces.NamedRelative;
@@ -30,16 +33,22 @@ import java.util.Locale;
 /**
  * Note: no check (rel* < 100) is presented
  */
-
 public class DishItem implements NamedRelative, Serializable
 {
 	private static final long serialVersionUID = 1L;
 
+	@JsonProperty("name")
 	private String name;
+
+	@JsonProperty("tag")
 	private int    tag;
+
+	@JsonProperty("mass")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Double mass;
 
-	private final List<FoodMassed> content = new ArrayList<FoodMassed>();
+	@JsonProperty("content")
+	private List<FoodMassed> content = new ArrayList<>();
 
 	// ================================ GET / SET ================================
 
@@ -124,6 +133,7 @@ public class DishItem implements NamedRelative, Serializable
 	}
 
 	@Override
+	@JsonIgnore
 	public double getRelProts()
 	{
 		double total = 0.0;
@@ -136,6 +146,7 @@ public class DishItem implements NamedRelative, Serializable
 	}
 
 	@Override
+	@JsonIgnore
 	public double getRelFats()
 	{
 		double result = 0.0;
@@ -148,6 +159,7 @@ public class DishItem implements NamedRelative, Serializable
 	}
 
 	@Override
+	@JsonIgnore
 	public double getRelCarbs()
 	{
 		double total = 0.0;
@@ -160,6 +172,7 @@ public class DishItem implements NamedRelative, Serializable
 	}
 
 	@Override
+	@JsonIgnore
 	public double getRelValue()
 	{
 		double total = 0.0;
@@ -169,6 +182,11 @@ public class DishItem implements NamedRelative, Serializable
 		}
 
 		return getRel(total);
+	}
+
+	public List<FoodMassed> getContent()
+	{
+		return content;
 	}
 
 	// =================================== LIST METHODS ===================================
@@ -221,4 +239,34 @@ public class DishItem implements NamedRelative, Serializable
 
 		return food;
 	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+			return true;
+		if (!(o instanceof DishItem))
+			return false;
+
+		DishItem dishItem = (DishItem) o;
+
+		if (tag != dishItem.tag)
+			return false;
+		if (name != null ? !name.equals(dishItem.name) : dishItem.name != null)
+			return false;
+		if (mass != null ? !mass.equals(dishItem.mass) : dishItem.mass != null)
+			return false;
+		return content != null ? content.equals(dishItem.content) : dishItem.content == null;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		int result = name != null ? name.hashCode() : 0;
+		result = 31 * result + tag;
+		result = 31 * result + (mass != null ? mass.hashCode() : 0);
+		result = 31 * result + (content != null ? content.hashCode() : 0);
+		return result;
+	}
 }
+

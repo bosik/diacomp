@@ -18,330 +18,164 @@
 package org.bosik.diacomp.web.backend.features.diary;
 
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
-import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
-import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.ObjectService;
-import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.common.UserLogger;
 import org.bosik.diacomp.web.backend.features.user.auth.UserRest;
 import org.bosik.merklesync.DataSource;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@Service
-@Path("diary/")
+@RestController
+@RequestMapping("/diary")
 public class DiaryRest extends UserRest
 {
 	private static final String TYPE_JSON_UTF8    = MediaType.APPLICATION_JSON + ";charset=utf-8";
 	private static final int    MAX_DATETIME_SIZE = Utils.FORMAT_DATE_TIME.length();
 
+	private final Serializer<Versioned<DiaryRecord>> serializer    = new SerializerAdapter<>(
+			new ParserVersioned<>(new ParserDiaryRecord()));
+	private final Serializer<Map<String, String>>    serializerMap = new SerializerMap();
+
 	@Autowired
 	private DiaryLocalService diaryService;
 
-	@Autowired
-	private UserLogger log;
-
-	private final Parser<DiaryRecord>                parser          = new ParserDiaryRecord();
-	private final Parser<Versioned<DiaryRecord>>     parserVersioned = new ParserVersioned<>(parser);
-	private final Serializer<Versioned<DiaryRecord>> serializer      = new SerializerAdapter<>(parserVersioned);
-	private final Serializer<Map<String, String>>    serializerMap   = new SerializerMap();
-
-	@GET
-	@Path("count/{prefix: .*}")
-	@Produces(TYPE_JSON_UTF8)
-	public Response count(@PathParam("prefix") @DefaultValue("") String parPrefix)
+	@GetMapping("/count")
+	public Integer count()
 	{
-		try
-		{
-			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../count/1ef0)");
-			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
-
-			int count = diaryService.count(getUserId(), parPrefix);
-			String response = String.valueOf(count);
-			return Response.ok(response).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (Exception e)
-		{
-			log.getLogger().error(String.format("count(%s) failed", parPrefix), e);
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		final int userId = getUserId();
+		return diaryService.count(userId);
 	}
 
-	@GET
-	@Path("guid/{guid: .*}")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response findById(@PathParam("guid") String parId)
+	@GetMapping("/count/{prefix}")
+	public Integer count(@PathVariable(name = "prefix") String prefix)
 	{
-		try
+		final int userId = getUserId();
+
+		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
+		return diaryService.count(userId, prefix);
+	}
+
+	@GetMapping(path = "/guid", produces = TYPE_JSON_UTF8)
+	public List<Versioned<DiaryRecord>> findById()
+	{
+		final int userId = getUserId();
+		return diaryService.findAll(userId, true);
+	}
+
+	@GetMapping(path = "/guid/{prefix}", produces = TYPE_JSON_UTF8)
+	public Object findById(@PathVariable(name = "prefix") String prefix)
+	{
+		final int userId = getUserId();
+		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
+
+		if (prefix.length() <= DataSource.ID_PREFIX_SIZE)
 		{
-			Utils.checkNotNull(parId, "ID expected (e.g. ../guid/1ef0)");
-			Utils.checkSize(parId, ObjectService.ID_FULL_SIZE);
+			return diaryService.findByIdPrefix(userId, prefix);
+		}
+		else
+		{
+			Versioned<DiaryRecord> item = diaryService.findById(userId, prefix);
 
-			// Prefix form
-			if (parId.length() <= DataSource.ID_PREFIX_SIZE)
+			if (item != null)
 			{
-				List<Versioned<DiaryRecord>> items = diaryService.findByIdPrefix(getUserId(), parId);
-
-				String response = serializer.writeAll(items);
-				return Response.ok(response).build();
+				return item;
 			}
 			else
-			// Full form
 			{
-				Versioned<DiaryRecord> item = diaryService.findById(getUserId(), parId);
-
-				if (item != null)
-				{
-					String response = serializer.write(item);
-					return Response.ok(response).build();
-				}
-				else
-				{
-					String response = String.format("Item %s not found", parId);
-					return Response.status(Status.NOT_FOUND).entity(response).build();
-				}
+				throw new NotFoundException(prefix);
 			}
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (TooManyItemsException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity("Too many items found").build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (Exception e)
-		{
-			log.getLogger().error(String.format("findById(%s) failed", parId), e);
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
 		}
 	}
 
-	@GET
-	@Path("hash/{prefix: .*}")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getHash(@PathParam("prefix") @DefaultValue("") String parPrefix)
+	@GetMapping(path = "/changes", produces = TYPE_JSON_UTF8)
+	public List<Versioned<DiaryRecord>> findChanged(@RequestParam("since") String parTime)
 	{
-		try
-		{
-			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../hash/1ef0)");
-			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
+		final int userId = getUserId();
+		Utils.checkSize(parTime, Utils.FORMAT_DATE_TIME.length());
 
-			MerkleTree hashTree = diaryService.getHashTree(getUserId());
-			String s = hashTree.getHash(parPrefix);
-			String response = (s != null) ? s : "";
-			return Response.ok(response).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (Exception e)
-		{
-			log.getLogger().error(String.format("hash(%s) failed", parPrefix), e);
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		Date since = Utils.parseTimeUTC(parTime);
+		return diaryService.findChanged(userId, since);
 	}
 
-	@GET
-	@Path("hashes/{prefix: .*}")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response getHashChildren(@PathParam("prefix") @DefaultValue("") String parPrefix)
+	@GetMapping(path = "/period", produces = TYPE_JSON_UTF8)
+	public List<Versioned<DiaryRecord>> findPeriod(@RequestParam(name = "start_time") String parStartTime,
+			@RequestParam(name = "end_time") String parEndTime,
+			@RequestParam(name = "show_rem", defaultValue = "false") boolean includeRemoved)
 	{
-		try
-		{
-			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../hashes/1ef0)");
-			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
+		final int userId = getUserId();
+		Utils.checkSize(parStartTime, MAX_DATETIME_SIZE);
+		Utils.checkSize(parEndTime, MAX_DATETIME_SIZE);
 
-			MerkleTree hashTree = diaryService.getHashTree(getUserId());
-			Map<String, String> map = hashTree.getHashChildren(parPrefix);
-			String response = serializerMap.write(map);
-			return Response.ok(response).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (Exception e)
-		{
-			log.getLogger().error(String.format("hashes(%s) failed", parPrefix), e);
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		Date startTime = Utils.parseTimeUTC(parStartTime);
+		Date endTime = Utils.parseTimeUTC(parEndTime);
+
+		return diaryService.findPeriod(userId, startTime, endTime, includeRemoved);
 	}
 
-	@GET
-	@Path("changes")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-	public Response findChanged(@QueryParam("since") String parTime)
+	@GetMapping(path = "/hash")
+	public String getHash()
 	{
-		try
-		{
-			Utils.checkNotNull(parTime, "Missing parameter: since");
-			Utils.checkSize(parTime, MAX_DATETIME_SIZE);
-
-			Date since;
-			try
-			{
-				since = Utils.parseTimeUTC(parTime);
-			}
-			catch (Exception e) // FIXME: catch ParseException
-			{
-				String msg = String.format("Invalid time: %s%nExpected format: %s", parTime, Utils.FORMAT_DATE_TIME);
-				return Response.status(Status.BAD_REQUEST).entity(msg).build();
-			}
-
-			List<Versioned<DiaryRecord>> items = diaryService.findChanged(getUserId(), since);
-			String response = serializer.writeAll(items);
-			return Response.ok(response).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (Exception e)
-		{
-			log.getLogger().error(String.format("changes(%s) failed", parTime), e);
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		final int userId = getUserId();
+		MerkleTree hashTree = diaryService.getHashTree(userId);
+		return Utils.nullToEmpty(hashTree.getHash(""));
 	}
 
-	@GET
-	@Path("period")
-	@Produces(TYPE_JSON_UTF8)
-	public Response findPeriod(@QueryParam("start_time") String parStartTime, @QueryParam("end_time") String parEndTime,
-			@QueryParam("show_rem") @DefaultValue("false") String parShowRem)
+	@GetMapping(path = "/hash/{prefix}")
+	public String getHash(@PathVariable(name = "prefix") String prefix)
 	{
-		try
-		{
-			Utils.checkNotNull(parStartTime, "Missing parameter: start_time");
-			Utils.checkNotNull(parEndTime, "Missing parameter: end_time");
-			Utils.checkSize(parStartTime, MAX_DATETIME_SIZE);
-			Utils.checkSize(parEndTime, MAX_DATETIME_SIZE);
+		final int userId = getUserId();
+		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
-			Date startTime;
-			try
-			{
-				startTime = Utils.parseTimeUTC(parStartTime);
-			}
-			catch (Exception e) // FIXME: catch ParseException
-			{
-				String msg = String.format("Invalid start time: %s%nExpected format: %s", parStartTime, Utils.FORMAT_DATE_TIME);
-				return Response.status(Status.BAD_REQUEST).entity(msg).build();
-			}
-
-			Date endTime;
-			try
-			{
-				endTime = Utils.parseTimeUTC(parEndTime);
-			}
-			catch (Exception e) // FIXME: catch ParseException
-			{
-				String msg = String.format("Invalid end time: %s%nExpected format: %s", parEndTime, Utils.FORMAT_DATE_TIME);
-				return Response.status(Status.BAD_REQUEST).entity(msg).build();
-			}
-
-			boolean includeRemoved = Boolean.valueOf(parShowRem);
-
-			List<Versioned<DiaryRecord>> items = diaryService.findPeriod(getUserId(), startTime, endTime, includeRemoved);
-			String response = serializer.writeAll(items);
-
-			return Response.ok(response).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (TooManyItemsException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity("Too many items found").build();
-		}
-		catch (Exception e)
-		{
-			log.getLogger().error(String.format("period(%s, %s) failed", parStartTime, parEndTime), e);
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		MerkleTree hashTree = diaryService.getHashTree(userId);
+		return Utils.nullToEmpty(hashTree.getHash(prefix));
 	}
 
-	@PUT
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Produces(TYPE_JSON_UTF8)
-	public Response save(@FormParam("items") String parItems)
+	@GetMapping(path = "/hashes", produces = TYPE_JSON_UTF8)
+	public String getHashChildren()
 	{
-		try
-		{
-			Utils.checkNotNull(parItems, "Missing parameter: items");
+		final int userId = getUserId();
+		MerkleTree hashTree = diaryService.getHashTree(userId);
+		Map<String, String> map = hashTree.getHashChildren("");
+		return serializerMap.write(map);
+	}
 
-			// FIXME: limit the maximum data size
-			List<Versioned<DiaryRecord>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
-			diaryService.save(getUserId(), items);
+	@GetMapping(path = "/hashes/{prefix}", produces = TYPE_JSON_UTF8)
+	public String getHashChildren(@PathVariable(name = "prefix") String prefix)
+	{
+		final int userId = getUserId();
+		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
-			return Response.ok("Saved OK").build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (Exception e)
-		{
-			log.getLogger().error("save() failed", e);
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		MerkleTree hashTree = diaryService.getHashTree(userId);
+		Map<String, String> map = hashTree.getHashChildren(prefix);
+		return serializerMap.write(map);
+	}
+
+	@PutMapping
+	public String save(@RequestParam("items") String parItems)
+	{
+		final int userId = getUserId();
+
+		// FIXME: limit the maximum data size
+		List<Versioned<DiaryRecord>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
+		diaryService.save(userId, items);
+		return "Saved OK";
 	}
 }

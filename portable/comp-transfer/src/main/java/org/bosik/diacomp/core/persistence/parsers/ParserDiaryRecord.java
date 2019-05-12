@@ -110,41 +110,57 @@ public class ParserDiaryRecord extends Parser<DiaryRecord>
 
 		json.put(FIELD_TIME, Utils.formatTimeUTC(object.getTime()));
 
-		if (object.getClass() == BloodRecord.class)
+		if (object.getType() == null)
 		{
-			BloodRecord item = (BloodRecord) object;
-			json.put(FIELD_TYPE, TYPE_BLOOD);
-			json.put(FIELD_BLOOD_VALUE, item.getValue());
-			json.put(FIELD_BLOOD_FINGER, item.getFinger());
+			throw new IllegalArgumentException("Diary record type can't be null");
 		}
-		else if (object.getClass() == InsRecord.class)
-		{
-			InsRecord item = (InsRecord) object;
-			json.put(FIELD_TYPE, TYPE_INS);
-			json.put(FIELD_INS_VALUE, item.getValue());
-		}
-		else if (object.getClass() == MealRecord.class)
-		{
-			MealRecord item = (MealRecord) object;
-			json.put(FIELD_TYPE, TYPE_MEAL);
-			json.put(FIELD_MEAL_SHORT, item.getShortMeal());
 
-			JSONArray foods = new JSONArray();
-			for (int i = 0; i < item.count(); i++)
+		switch (object.getType())
+		{
+			case BloodRecord.TYPE:
 			{
-				foods.put(parserFoodMassed.write(item.get(i)));
+				BloodRecord item = (BloodRecord) object;
+				json.put(FIELD_TYPE, TYPE_BLOOD);
+				json.put(FIELD_BLOOD_VALUE, item.getValue());
+				json.put(FIELD_BLOOD_FINGER, item.getFinger());
+				break;
 			}
-			json.put(FIELD_MEAL_CONTENT, foods);
-		}
-		else if (object.getClass() == NoteRecord.class)
-		{
-			NoteRecord item = (NoteRecord) object;
-			json.put(FIELD_TYPE, TYPE_NOTE);
-			json.put(FIELD_NOTE_TEXT, item.getText());
-		}
-		else
-		{
-			throw new UnsupportedOperationException("Unknown record type: " + object.getClass().getName());
+
+			case InsRecord.TYPE:
+			{
+				InsRecord item = (InsRecord) object;
+				json.put(FIELD_TYPE, TYPE_INS);
+				json.put(FIELD_INS_VALUE, item.getValue());
+				break;
+			}
+
+			case MealRecord.TYPE:
+			{
+				MealRecord item = (MealRecord) object;
+				json.put(FIELD_TYPE, TYPE_MEAL);
+				json.put(FIELD_MEAL_SHORT, item.getShortMeal());
+
+				JSONArray foods = new JSONArray();
+				for (int i = 0; i < item.count(); i++)
+				{
+					foods.put(parserFoodMassed.write(item.get(i)));
+				}
+				json.put(FIELD_MEAL_CONTENT, foods);
+				break;
+			}
+
+			case NoteRecord.TYPE:
+			{
+				NoteRecord item = (NoteRecord) object;
+				json.put(FIELD_TYPE, TYPE_NOTE);
+				json.put(FIELD_NOTE_TEXT, item.getText());
+				break;
+			}
+
+			default:
+			{
+				throw new UnsupportedOperationException("Unknown record type: " + object.getType() + " @ " + object.getClass());
+			}
 		}
 
 		return json;

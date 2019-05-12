@@ -50,14 +50,6 @@ public interface AuthService
 	int login(String userName, String password) throws AuthException;
 
 	/**
-	 * Converts user name to user ID
-	 * 
-	 * @param userName
-	 * @return ID if user found, null otherwise
-	 */
-	Integer getIdByName(String userName);
-
-	/**
 	 * Converts user ID to user name
 	 * 
 	 * @param userId

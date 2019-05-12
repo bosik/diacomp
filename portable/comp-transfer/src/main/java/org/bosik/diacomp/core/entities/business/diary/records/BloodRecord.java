@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.core.entities.business.diary.records;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 
 import java.util.Date;
@@ -26,13 +27,18 @@ public class BloodRecord extends DiaryRecord
 {
 	private static final long serialVersionUID = -1621097859834950338L;
 
-	private double  value;
-	private int     finger;
-	private boolean postPrand;
+	public static final String TYPE = "blood";
+
+	@JsonProperty("value")
+	private double value;
+
+	@JsonProperty("finger")
+	private int finger;
+
+	private transient boolean postPrand; // TODO: test carefully
 
 	public BloodRecord()
 	{
-
 	}
 
 	/**
@@ -62,6 +68,12 @@ public class BloodRecord extends DiaryRecord
 	}
 
 	// ================================ GET / SET ================================
+
+	@Override
+	public String getType()
+	{
+		return TYPE;
+	}
 
 	public double getValue()
 	{

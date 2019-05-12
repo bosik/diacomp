@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="org.bosik.diacomp.android">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+    <application
+            android:allowBackup="true"
+            android:icon="@drawable/icon"
+            android:label="@string/app_name"
+            android:supportsRtl="false"
+            android:theme="@android:style/Theme.Holo.Light">
+        <provider
+                android:name=".backend.common.DiaryContentProvider"
+                android:authorities="diacomp.provider"
+                android:exported="false">
+            <grant-uri-permission android:pathPattern=".*"/>
+        </provider>
+
+        <service
+                android:name=".backend.features.sync.AuthenticatorService"
+                android:exported="false">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"/>
+            </intent-filter>
+
+            <meta-data
+                    android:name="android.accounts.AccountAuthenticator"
+                    android:resource="@xml/authenticator"/>
+        </service>
+        <service
+                android:name=".backend.features.sync.SyncService"
+                android:exported="false">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+
+            <meta-data
+                    android:name="android.content.SyncAdapter"
+                    android:resource="@xml/sync_adapter"/>
+        </service>
+        <service
+                android:name=".backend.features.notifications.NotificationService"
+                android:exported="false">
+        </service>
+        <service
+                android:name=".backend.features.analyze.BackgroundService"
+                android:exported="false">
+        </service>
+        <service
+                android:name=".backend.features.quickImport.ImportService"
+                android:exported="false">
+        </service>
+        <service
+                android:name=".backend.features.foodbase.FoodCommonDownloadService"
+                android:exported="false">
+        </service>
+
+        <receiver
+                android:name=".backend.features.notifications.BootCompletedIntentReceiver"
+                android:enabled="true"
+                android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
+        <activity
+                android:name=".frontend.activities.ActivityMain"
+                android:label="@string/main_title"
+                android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+                android:name=".frontend.activities.ActivityEditorBlood"
+                android:icon="@drawable/diary_addblood"
+                android:label="@string/editor_blood_title">
+        </activity>
+        <activity
+                android:name=".frontend.activities.ActivityEditorIns"
+                android:icon="@drawable/diary_addins"
+                android:label="@string/editor_ins_title">
+        </activity>
+        <activity
+                android:name=".frontend.activities.ActivityEditorMeal"
+                android:icon="@drawable/diary_addmeal"
+                android:label="@string/editor_meal_title">
+        </activity>
+        <activity
+                android:name=".frontend.activities.ActivityEditorNote"
+                android:icon="@drawable/diary_addnote"
+                android:label="@string/editor_note_title">
+        </activity>
+        <activity
+                android:name=".frontend.activities.ActivityPreferences"
+                android:label="@string/preferences_title"
+                android:parentActivityName=".frontend.activities.ActivityMain">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="org.bosik.diacomp.android.frontend.activities.ActivityMain"/>
+        </activity>
+        <activity
+                android:name=".frontend.activities.ActivityEditorFood"
+                android:icon="@drawable/button_foodbase"
+                android:label="@string/editor_food_title">
+        </activity>
+        <activity
+                android:name=".frontend.activities.ActivityEditorDish"
+                android:icon="@drawable/button_dishbase"
+                android:label="@string/editor_dish_title">
+        </activity>
+        <activity
+                android:name=".frontend.activities.ActivityLogin"
+                android:label="@string/login_title"
+                android:windowSoftInputMode="adjustResize|stateVisible">
+        </activity>
+        <activity
+                android:name=".frontend.activities.ActivityRates"
+                android:parentActivityName=".frontend.activities.ActivityPreferences"
+                android:label="@string/rates_title">
+            <intent-filter>
+                <action android:name=".frontend.activities.ActivityRates"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity
+                android:name=".frontend.activities.ActivityEditorRate"
+                android:label="@string/editor_rate">
+        </activity>
+        <activity
+                android:name="org.bosik.diacomp.android.frontend.activities.ActivityWelcome"
+                android:label="@string/app_name"
+                android:theme="@android:style/Theme.Holo.Light.NoActionBar">
+        </activity>
+    </application>
+
+</manifest>

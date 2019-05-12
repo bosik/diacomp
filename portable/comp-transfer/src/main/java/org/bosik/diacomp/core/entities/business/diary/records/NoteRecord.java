@@ -17,18 +17,22 @@
  */
 package org.bosik.diacomp.core.entities.business.diary.records;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+
+import java.util.Date;
 
 public class NoteRecord extends DiaryRecord
 {
 	private static final long	serialVersionUID	= 7394847492375407284L;
 
-	private String				text;
+	public static final String TYPE = "note";
+
+	@JsonProperty("text")
+	private String text;
 
 	public NoteRecord()
 	{
-
 	}
 
 	public NoteRecord(Date time, String value)
@@ -45,6 +49,12 @@ public class NoteRecord extends DiaryRecord
 	}
 
 	// ================================ GET / SET ================================
+
+	@Override
+	public String getType()
+	{
+		return TYPE;
+	}
 
 	public String getText()
 	{

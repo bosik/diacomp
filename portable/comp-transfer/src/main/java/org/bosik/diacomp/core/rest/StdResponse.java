@@ -129,21 +129,28 @@ public class StdResponse
 
 	public static String encode(StdResponse resp)
 	{
-		JSONObject json = new JSONObject();
-		json.put(TAG_CODE, resp.getCode());
+		try
+		{
+			JSONObject json = new JSONObject();
+			json.put(TAG_CODE, resp.getCode());
 
-		if (isValidJsonObject(resp.getResponse()))
-		{
-			json.put(TAG_RESPONSE, new JSONObject(resp.getResponse()));
+			if (isValidJsonObject(resp.getResponse()))
+			{
+				json.put(TAG_RESPONSE, new JSONObject(resp.getResponse()));
+			}
+			else if (isValidJsonArray(resp.getResponse()))
+			{
+				json.put(TAG_RESPONSE, new JSONArray(resp.getResponse()));
+			}
+			else
+			{
+				json.put(TAG_RESPONSE, resp.getResponse());
+			}
+			return json.toString();
 		}
-		else if (isValidJsonArray(resp.getResponse()))
+		catch (JSONException e)
 		{
-			json.put(TAG_RESPONSE, new JSONArray(resp.getResponse()));
+			throw new RuntimeException("Can't serialize", e);
 		}
-		else
-		{
-			json.put(TAG_RESPONSE, resp.getResponse());
-		}
-		return json.toString();
 	}
 }

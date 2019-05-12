@@ -21,301 +21,162 @@ import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
-import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.ObjectService;
-import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
-import org.bosik.diacomp.core.services.exceptions.TooManyItemsException;
+import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.features.user.auth.UserRest;
 import org.bosik.merklesync.DataSource;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@Service
-@Path("dish/")
+@RestController
+@RequestMapping("/dish")
 public class DishBaseRest extends UserRest
 {
 	private static final String TYPE_JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=utf-8";
 
+	private final Serializer<Map<String, String>> serializerMap = new SerializerMap();
+	private final Serializer<Versioned<DishItem>> serializer    = new SerializerDishItem();
+
 	@Autowired
 	private DishBaseLocalService dishbaseService;
 
-	private final Serializer<Versioned<DishItem>> serializer    = new SerializerDishItem();
-	private final Serializer<Map<String, String>> serializerMap = new SerializerMap();
-
-	@GET
-	@Path("count/{prefix: .*}")
-	@Produces(TYPE_JSON_UTF8)
-	public Response count(@PathParam("prefix") @DefaultValue("") String parPrefix)
+	@GetMapping("/count")
+	public Integer count()
 	{
-		try
-		{
-			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../count/1ef0)");
-			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
-
-			int count = dishbaseService.count(getUserId(), parPrefix);
-			String response = String.valueOf(count);
-			return Response.ok(response).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		return dishbaseService.count(getUserId());
 	}
 
-	@GET
-	@Path("guid/{guid: .*}")
-	@Produces(TYPE_JSON_UTF8)
-	public Response findById(@PathParam("guid") String parId)
+	@GetMapping("/count/{prefix}")
+	public Integer count(@PathVariable("prefix") String prefix)
 	{
-		try
+		final int userId = getUserId();
+		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
+
+		return dishbaseService.count(userId, prefix);
+	}
+
+	@GetMapping(path = "/guid", produces = TYPE_JSON_UTF8)
+	public List<Versioned<DishItem>> findById()
+	{
+		final int userId = getUserId();
+
+		return dishbaseService.findAll(userId, true);
+	}
+
+	@GetMapping(path = "/guid/{prefix}", produces = TYPE_JSON_UTF8)
+	public Object findById(@PathVariable("prefix") String prefix)
+	{
+		final int userId = getUserId();
+		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
+
+		if (prefix.length() <= DataSource.ID_PREFIX_SIZE)
 		{
-			Utils.checkNotNull(parId, "ID expected (e.g. ../guid/1ef0)");
-			Utils.checkSize(parId, ObjectService.ID_FULL_SIZE);
+			return dishbaseService.findByIdPrefix(userId, prefix);
+		}
+		else
+		{
+			Versioned<DishItem> item = dishbaseService.findById(userId, prefix);
 
-			// Prefix form
-			if (parId.length() <= DataSource.ID_PREFIX_SIZE)
+			if (item != null)
 			{
-				List<Versioned<DishItem>> items = dishbaseService.findByIdPrefix(getUserId(), parId);
-
-				String response = serializer.writeAll(items);
-				return Response.ok(response).build();
+				return item;
 			}
 			else
-			// Full form
 			{
-				Versioned<DishItem> item = dishbaseService.findById(getUserId(), parId);
-
-				if (item != null)
-				{
-					String response = serializer.write(item);
-					return Response.ok(response).build();
-				}
-				else
-				{
-					String response = String.format("Item %s not found", parId);
-					return Response.status(Status.NOT_FOUND).entity(response).build();
-				}
+				throw new NotFoundException(prefix);
 			}
 		}
-		catch (TooManyItemsException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity("Too many items found").build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
 	}
 
-	@GET
-	@Path("all")
-	@Produces(TYPE_JSON_UTF8)
-	public Response findAll(@QueryParam("show_rem") @DefaultValue("false") String parShowRem)
+	@GetMapping(path = "/all", produces = TYPE_JSON_UTF8)
+	public List<Versioned<DishItem>> findAll(@RequestParam(value = "show_rem", defaultValue = "false") String parShowRem)
 	{
-		try
-		{
-			Utils.checkSize(parShowRem, 5); // "false".length
+		final int userId = getUserId();
+		Utils.checkSize(parShowRem, 5); // "false".length
+		boolean includeRemoved = Boolean.valueOf(parShowRem);
 
-			boolean includeRemoved = Boolean.valueOf(parShowRem);
-
-			List<Versioned<DishItem>> items = dishbaseService.findAll(getUserId(), includeRemoved);
-			String response = serializer.writeAll(items);
-			return Response.ok(response).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		return dishbaseService.findAll(userId, includeRemoved);
 	}
 
-	@GET
-	@Path("search")
-	@Produces(TYPE_JSON_UTF8)
-	public Response findAny(@QueryParam("q") String filter)
+	@GetMapping(path = "/search", produces = TYPE_JSON_UTF8)
+	public List<Versioned<DishItem>> findAny(@RequestParam("q") String filter)
 	{
-		try
-		{
-			Utils.checkNotNull(filter, "Missing parameter: q");
-			Utils.checkSize(filter, 256);
+		final int userId = getUserId();
+		Utils.checkSize(filter, 256);
 
-			List<Versioned<DishItem>> items = dishbaseService.findAny(getUserId(), filter);
-			String response = serializer.writeAll(items);
-			return Response.ok(response).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		return dishbaseService.findAny(userId, filter);
 	}
 
-	@GET
-	@Path("changes")
-	@Produces(TYPE_JSON_UTF8)
-	public Response findChanged(@QueryParam("since") String parTime)
+	@GetMapping(path = "/changes", produces = TYPE_JSON_UTF8)
+	public List<Versioned<DishItem>> findChanged(@RequestParam("since") String parTime)
 	{
-		try
-		{
-			Utils.checkNotNull(parTime, "Missing parameter: since");
-			Utils.checkSize(parTime, Utils.FORMAT_DATE_TIME.length());
+		final int userId = getUserId();
+		Utils.checkSize(parTime, Utils.FORMAT_DATE_TIME.length());
+		Date since = Utils.parseTimeUTC(parTime);
 
-			Date since = Utils.parseTimeUTC(parTime);
-			List<Versioned<DishItem>> items = dishbaseService.findChanged(getUserId(), since);
-			String response = serializer.writeAll(items);
-			return Response.ok(response).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		return dishbaseService.findChanged(userId, since);
 	}
 
-	@GET
-	@Path("hash/{prefix: .*}")
-	@Produces(TYPE_JSON_UTF8)
-	public Response getHash(@PathParam("prefix") @DefaultValue("") String parPrefix)
+	@GetMapping(path = "/hash")
+	public String getHash()
 	{
-		try
-		{
-			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../hash/1ef0)");
-			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
+		final int userId = getUserId();
 
-			MerkleTree hashTree = dishbaseService.getHashTree(getUserId());
-			String s = hashTree.getHash(parPrefix);
-			return Response.ok(s != null ? s : "").build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		final MerkleTree hashTree = dishbaseService.getHashTree(userId);
+		return Utils.nullToEmpty(hashTree.getHash(""));
 	}
 
-	@GET
-	@Path("hashes/{prefix: .*}")
-	@Produces(TYPE_JSON_UTF8)
-	public Response getHashChildren(@PathParam("prefix") @DefaultValue("") String parPrefix)
+	@GetMapping(path = "/hash/{prefix}")
+	public String getHash(@PathVariable("prefix") String prefix)
 	{
-		try
-		{
-			Utils.checkNotNull(parPrefix, "ID prefix expected (e.g. ../hashes/1ef0)");
-			Utils.checkSize(parPrefix, ObjectService.ID_FULL_SIZE);
+		final int userId = getUserId();
+		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
 
-			MerkleTree hashTree = dishbaseService.getHashTree(getUserId());
-			Map<String, String> map = hashTree.getHashChildren(parPrefix);
-			String response = serializerMap.write(map);
-			return Response.ok(response).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		MerkleTree hashTree = dishbaseService.getHashTree(userId);
+		return Utils.nullToEmpty(hashTree.getHash(prefix));
 	}
 
-	@PUT
-	@Produces(TYPE_JSON_UTF8)
-	public Response save(@FormParam("items") String parItems)
+	@GetMapping(path = "/hashes", produces = TYPE_JSON_UTF8)
+	public String getHashChildren()
 	{
-		try
-		{
-			Utils.checkNotNull(parItems, "Missing parameter: items");
+		final int userId = getUserId();
 
-			List<Versioned<DishItem>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
-			dishbaseService.save(getUserId(), items);
+		MerkleTree hashTree = dishbaseService.getHashTree(userId);
+		Map<String, String> map = hashTree.getHashChildren("");
+		return serializerMap.write(map);
+	}
 
-			return Response.ok("Saved OK").build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+	@GetMapping(path = "/hashes/{prefix}", produces = TYPE_JSON_UTF8)
+	public String getHashChildren(@PathVariable("prefix") String prefix)
+	{
+		final int userId = getUserId();
+		Utils.checkSize(prefix, ObjectService.ID_FULL_SIZE);
+
+		MerkleTree hashTree = dishbaseService.getHashTree(userId);
+		Map<String, String> map = hashTree.getHashChildren(prefix);
+		return serializerMap.write(map);
+	}
+
+	@PutMapping
+	public String save(@RequestParam("items") String parItems)
+	{
+		final int userId = getUserId();
+
+		List<Versioned<DishItem>> items = serializer.readAll(Utils.removeNonUtf8(parItems));
+		dishbaseService.save(userId, items);
+		return "Saved OK";
 	}
 }

@@ -17,138 +17,58 @@
  */
 package org.bosik.diacomp.web.backend.features.preferences;
 
-import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserPreferenceEntry;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
-import org.bosik.diacomp.core.rest.ResponseBuilder;
-import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
+import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.features.user.auth.UserRest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
-@Service
-@Path("preferences/")
+@RestController
+@RequestMapping("/preferences")
 public class PreferencesRest extends UserRest
 {
 	private static final String TYPE_JSON_UTF8 = MediaType.APPLICATION_JSON + ";charset=utf-8";
 
+	private final Serializer<PreferenceEntry<String>> serializer = new SerializerAdapter<>(new ParserPreferenceEntry());
+
 	@Autowired
 	private PreferencesLocalService preferencesService;
 
-	private final Parser<PreferenceEntry<String>>     parser     = new ParserPreferenceEntry();
-	private final Serializer<PreferenceEntry<String>> serializer = new SerializerAdapter<>(parser);
-
-	@GET
-	@Path("hash")
-	@Produces(TYPE_JSON_UTF8)
-	public Response getHash()
+	@GetMapping(produces = TYPE_JSON_UTF8)
+	public List<PreferenceEntry<String>> getAll()
 	{
-		try
-		{
-			String s = preferencesService.getHash(getUserId());
-			String response = (s != null) ? s : "";
-			return Response.ok(response).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		return preferencesService.getAll(getUserId());
 	}
 
-	@GET
-	@Produces(TYPE_JSON_UTF8)
-	public Response getAll()
+	@GetMapping(path = "/{key}", produces = TYPE_JSON_UTF8)
+	public PreferenceEntry<String> getPreference(@PathVariable(name = "key") String parKey)
 	{
-		try
-		{
-			List<PreferenceEntry<String>> item = preferencesService.getAll(getUserId());
-			String response = serializer.writeAll(item);
-			return Response.ok(response).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		return preferencesService.getString(getUserId(), PreferenceID.parse(parKey));
 	}
 
-	@GET
-	@Path("{key}")
-	@Produces(TYPE_JSON_UTF8)
-	public Response getPreference(@PathParam("key") String parKey)
+	@GetMapping(path = "/hash")
+	public String getHash()
 	{
-		try
-		{
-			PreferenceEntry<String> entity = preferencesService.getString(getUserId(), PreferenceID.parse(parKey));
-			String response = serializer.write(entity);
-			return Response.ok(response).build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.NOT_FOUND).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		return Utils.nullToEmpty(preferencesService.getHash(getUserId()));
 	}
 
-	@PUT
-	@Produces(TYPE_JSON_UTF8)
-	public Response update(@FormParam("data") String parData)
+	@PutMapping
+	public String update(@RequestParam(name = "data") String parData)
 	{
-		try
-		{
-			if (parData == null)
-			{
-				return Response.status(Status.BAD_REQUEST).entity("Missing parameter: data").build();
-			}
-
-			List<PreferenceEntry<String>> entries = serializer.readAll(parData);
-			preferencesService.update(getUserId(), entries);
-
-			return Response.ok("Saved OK").build();
-		}
-		catch (IllegalArgumentException e)
-		{
-			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-		}
-		catch (NotAuthorizedException e)
-		{
-			return Response.status(Status.UNAUTHORIZED).entity(ResponseBuilder.buildNotAuthorized()).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		List<PreferenceEntry<String>> entries = serializer.readAll(parData);
+		preferencesService.update(getUserId(), entries);
+		return "Saved OK";
 	}
 }
