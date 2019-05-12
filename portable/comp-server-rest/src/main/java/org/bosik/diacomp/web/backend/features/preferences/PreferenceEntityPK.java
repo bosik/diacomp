@@ -59,4 +59,27 @@ public class PreferenceEntityPK implements Serializable
 	{
 		this.key = key;
 	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+			return true;
+		if (!(o instanceof PreferenceEntityPK))
+			return false;
+
+		PreferenceEntityPK that = (PreferenceEntityPK) o;
+
+		if (userId != that.userId)
+			return false;
+		return key.equals(that.key);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		int result = userId;
+		result = 31 * result + key.hashCode();
+		return result;
+	}
 }
