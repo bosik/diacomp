@@ -49,11 +49,15 @@ public class DiaryLocalService implements UserDataService<DiaryRecord>
 	private static final Parser<DiaryRecord>     parser     = new ParserDiaryRecord();
 	private static final Serializer<DiaryRecord> serializer = new SerializerAdapter<>(parser);
 
-	@Autowired
-	private CachedDiaryHashTree cachedHashTree;
+	private final DiaryEntityRepository repository;
+	private final CachedDiaryHashTree   cachedHashTree;
 
 	@Autowired
-	private DiaryEntityRepository repository;
+	public DiaryLocalService(DiaryEntityRepository repository, CachedDiaryHashTree cachedHashTree)
+	{
+		this.repository = repository;
+		this.cachedHashTree = cachedHashTree;
+	}
 
 	private static Versioned<DiaryRecord> convert(DiaryEntity e)
 	{
@@ -254,9 +258,9 @@ public class DiaryLocalService implements UserDataService<DiaryRecord>
 		// TODO: check performance
 		repository.findByUserId(userId).forEach(entity ->
 		{
-			s.append(Utils.formatTimeLocal(TimeZone.getDefault(), entity.getTimeCache())).append('\t');
+			s.append(Utils.formatTimeUTC(entity.getTimeCache())).append('\t');
 			s.append(entity.getId()).append('\t');
-			s.append(Utils.formatTimeLocal(TimeZone.getDefault(), entity.getTimeStamp())).append('\t');
+			s.append(Utils.formatTimeUTC(entity.getTimeStamp())).append('\t');
 			s.append(entity.getHash()).append('\t');
 			s.append(entity.getVersion()).append('\t');
 			s.append(entity.isDeleted() ? "true" : "false").append('\t');
