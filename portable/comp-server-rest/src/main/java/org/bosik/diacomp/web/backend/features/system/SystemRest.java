@@ -32,7 +32,7 @@ import java.util.Date;
 @RestController
 public class SystemRest
 {
-	@GetMapping(produces = MediaType.TEXT_PLAIN)
+	@GetMapping(path = "", produces = MediaType.TEXT_PLAIN)
 	public String welcome()
 	{
 		String buildTime = Config.get(Config.KEY_BUILD_TIME);

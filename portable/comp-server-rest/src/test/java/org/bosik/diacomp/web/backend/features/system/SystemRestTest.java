@@ -89,4 +89,15 @@ public class SystemRestTest
 		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 		Utils.parseTimeUTC(response);
 	}
+
+	@Test
+	public void missing() throws Exception
+	{
+		// given / when
+		ResultActions request = mvc.perform(get("/bad"));
+
+		// then
+		request.andExpect(status().isNotFound());
+		//.andExpect(content().string("Not Found"));
+	}
 }
