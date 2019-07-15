@@ -88,7 +88,7 @@ public class TimedRate implements Serializable
 
 	public static List<TimedRate> readList(String s) throws JSONException
 	{
-		List<TimedRate> timedRates = new ArrayList<TimedRate>();
+		List<TimedRate> timedRates = new ArrayList<>();
 		JSONArray json = new JSONArray(s);
 
 		for (int i = 0; i < json.length(); i++)

@@ -28,13 +28,13 @@ import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 public class SerializerMap implements Serializer<Map<String, String>>
 {
 	private Parser<Entry<String, String>>		parserEntry		= new ParserMapEntry();
-	private Serializer<Entry<String, String>>	serializerEntry	= new SerializerAdapter<Entry<String, String>>(
+	private Serializer<Entry<String, String>>	serializerEntry	= new SerializerAdapter<>(
 			parserEntry);
 
 	@Override
 	public Map<String, String> read(String s)
 	{
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 
 		List<Entry<String, String>> pairs = serializerEntry.readAll(s);
 		for (Entry<String, String> pair : pairs)

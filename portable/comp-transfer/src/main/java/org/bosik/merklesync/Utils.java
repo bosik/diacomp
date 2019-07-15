@@ -176,8 +176,8 @@ public class Utils
 		nullCheck(items2, "items2");
 
 		// calculating transferring lists
-		List<Versioned<T>> newer1 = new ArrayList<Versioned<T>>();
-		List<Versioned<T>> newer2 = new ArrayList<Versioned<T>>();
+		List<Versioned<T>> newer1 = new ArrayList<>();
+		List<Versioned<T>> newer2 = new ArrayList<>();
 		getOverLists(items1, items2, newer1, newer2);
 
 		// transfer

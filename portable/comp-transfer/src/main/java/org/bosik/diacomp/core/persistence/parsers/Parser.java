@@ -50,7 +50,7 @@ public abstract class Parser<T>
 	 */
 	public List<T> readAll(JSONArray json) throws JSONException
 	{
-		List<T> list = new ArrayList<T>();
+		List<T> list = new ArrayList<>();
 
 		for (int i = 0; i < json.length(); i++)
 		{

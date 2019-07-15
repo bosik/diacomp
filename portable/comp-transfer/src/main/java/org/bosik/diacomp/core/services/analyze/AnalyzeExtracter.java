@@ -41,7 +41,7 @@ public class AnalyzeExtracter
 
 	public static List<PrimeRec> extractPrimeRecords(List<Versioned<DiaryRecord>> recs)
 	{
-		List<PrimeRec> result = new LinkedList<PrimeRec>();
+		List<PrimeRec> result = new LinkedList<>();
 
 		PostprandUtils.updatePostprand(recs);
 
@@ -201,7 +201,7 @@ public class AnalyzeExtracter
 	 */
 	public static List<AnalyzeRec> formatRecords(List<PrimeRec> recs, double adaptation)
 	{
-		List<AnalyzeRec> result = new ArrayList<AnalyzeRec>();
+		List<AnalyzeRec> result = new ArrayList<>();
 
 		if (!recs.isEmpty())
 		{

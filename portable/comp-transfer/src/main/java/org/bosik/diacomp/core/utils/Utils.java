@@ -908,7 +908,7 @@ public class Utils
 	 */
 	public static List<Date> getPeriodDates(Date lastDate, int period)
 	{
-		List<Date> dates = new ArrayList<Date>();
+		List<Date> dates = new ArrayList<>();
 
 		Calendar c = Calendar.getInstance();
 		c.setTime(lastDate);
@@ -1251,7 +1251,7 @@ public class Utils
 	 */
 	public static <T> Set<T> intersection(Set<T> a, Set<T> b)
 	{
-		Set<T> result = new HashSet<T>(a);
+		Set<T> result = new HashSet<>(a);
 		result.retainAll(b);
 		return result;
 	}
@@ -1263,7 +1263,7 @@ public class Utils
 	 */
 	public static <T> Set<T> difference(Set<T> a, Set<T> b)
 	{
-		Set<T> result = new HashSet<T>(a);
+		Set<T> result = new HashSet<>(a);
 		result.removeAll(b);
 		return result;
 	}

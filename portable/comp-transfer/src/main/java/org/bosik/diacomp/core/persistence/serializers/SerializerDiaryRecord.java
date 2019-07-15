@@ -27,6 +27,6 @@ public class SerializerDiaryRecord extends SerializerAdapter<Versioned<DiaryReco
 {
 	public SerializerDiaryRecord()
 	{
-		super(new ParserVersioned<DiaryRecord>(new ParserDiaryRecord()));
+		super(new ParserVersioned<>(new ParserDiaryRecord()));
 	}
 }

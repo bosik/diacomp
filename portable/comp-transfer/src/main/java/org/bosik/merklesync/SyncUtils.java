@@ -365,8 +365,8 @@ public class SyncUtils
 				callback.onProgress(0, 256);
 			}
 
-			newer1 = new ArrayList<Versioned<T>>();
-			newer2 = new ArrayList<Versioned<T>>();
+			newer1 = new ArrayList<>();
+			newer2 = new ArrayList<>();
 			tree1 = service1.getHashTree();
 			tree2 = service2.getHashTree();
 			String hash1 = tree1.getHash("");

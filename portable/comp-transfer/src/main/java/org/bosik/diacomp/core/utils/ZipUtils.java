@@ -105,7 +105,7 @@ public final class ZipUtils
 
 	public static List<Entry> unzip(InputStream stream) throws IOException
 	{
-		List<Entry> result = new ArrayList<Entry>();
+		List<Entry> result = new ArrayList<>();
 
 		ZipInputStream zipStream = new ZipInputStream(stream);
 

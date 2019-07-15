@@ -45,7 +45,7 @@ public class ParserVersioned<T> extends Parser<Versioned<T>>
 	@Override
 	public Versioned<T> read(JSONObject json) throws JSONException
 	{
-		Versioned<T> item = new Versioned<T>();
+		Versioned<T> item = new Versioned<>();
 
 		item.setId(json.getString(FIELD_ID));
 		item.setTimeStamp(Utils.parseTimeUTC(json.getString(FIELD_TIMESTAMP)));

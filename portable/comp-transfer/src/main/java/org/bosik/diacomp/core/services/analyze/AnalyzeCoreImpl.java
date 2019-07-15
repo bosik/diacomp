@@ -405,7 +405,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	 */
 	private WeightedTimePoint[] filter(WeightedTimePoint[] points, double bypass)
 	{
-		List<WeightedTimePoint> result = new ArrayList<WeightedTimePoint>(points.length);
+		List<WeightedTimePoint> result = new ArrayList<>(points.length);
 
 		for (int i = 0; i < points.length; i++)
 		{
@@ -440,7 +440,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 		RateList rateList;
 		WeightedTimePoint[] points;
-		List<Bean> V = new ArrayList<Bean>();
+		List<Bean> V = new ArrayList<>();
 		double[] k;
 		DevFunction funcRelative = new RelDev();
 		DevFunction funcSqr = new SqrDev();
