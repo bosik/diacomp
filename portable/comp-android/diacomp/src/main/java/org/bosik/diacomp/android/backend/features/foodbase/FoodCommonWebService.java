@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.backend.features.foodbase;
 
@@ -23,7 +23,6 @@ import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
 import org.bosik.diacomp.core.services.base.food.FoodCommonService;
-import org.bosik.diacomp.core.services.exceptions.CommonServiceException;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
@@ -33,13 +32,11 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class FoodCommonWebService implements FoodCommonService
 {
-	// private static final String TAG = FoodCommonWebService.class.getSimpleName();
-
 	// REST methods
 	private static final String API_FOOD_COMMON_FIND_ALL     = "api/food/common/";
 	private static final String API_FOOD_COMMON_FIND_CHANGED = "api/food/common/?lastModified=%s";
 
-	private final WebClient webClient;
+	private final WebClient                       webClient;
 	private final Serializer<Versioned<FoodItem>> serializer = new SerializerFoodItem();
 
 	public FoodCommonWebService(WebClient webClient)
@@ -50,30 +47,16 @@ public class FoodCommonWebService implements FoodCommonService
 	@Override
 	public List<Versioned<FoodItem>> findAll()
 	{
-		try
-		{
-			String url = API_FOOD_COMMON_FIND_ALL;
-			String resp = webClient.get(url);
-			return serializer.readAll(resp);
-		}
-		catch (Exception e)
-		{
-			throw new CommonServiceException(e);
-		}
+		String url = API_FOOD_COMMON_FIND_ALL;
+		String resp = webClient.get(url);
+		return serializer.readAll(resp);
 	}
 
 	@Override
 	public List<Versioned<FoodItem>> findChanged(Date since)
 	{
-		try
-		{
-			String url = String.format(API_FOOD_COMMON_FIND_CHANGED, Utils.formatTimeUTC(since));
-			String resp = webClient.get(url);
-			return serializer.readAll(resp);
-		}
-		catch (Exception e)
-		{
-			throw new CommonServiceException(e);
-		}
+		String url = String.format(API_FOOD_COMMON_FIND_CHANGED, Utils.formatTimeUTC(since));
+		String resp = webClient.get(url);
+		return serializer.readAll(resp);
 	}
 }

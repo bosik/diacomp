@@ -18,14 +18,19 @@
  */
 package org.bosik.diacomp.android.backend.features.notifications;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.features.diary.LocalDiary;
@@ -48,9 +53,9 @@ import java.util.TimerTask;
 
 public class NotificationService extends Service
 {
-	private static final int NOTIFICATION_ID_TIME_AFTER = 1;
+	private static final String NOTIFICATION_CHANNEL_ID      = "org.bosik.diacomp.notifications.elapsedTime";
+	private static final int    NOTIFICATION_ID_ELAPSED_TIME = 1671918884;
 
-	private NotificationManager notificationManager;
 	private Timer timer = new Timer();
 
 	@Override
@@ -64,8 +69,8 @@ public class NotificationService extends Service
 	{
 		super.onCreate();
 
+		createNotificationChannel();
 		final PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));
-		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
 		timer.scheduleAtFixedRate(new TimerTask()
 		{
@@ -74,24 +79,41 @@ public class NotificationService extends Service
 			{
 				if (preferences.getBooleanValue(PreferenceID.ANDROID_SHOW_TIME_AFTER))
 				{
-					showElapsedTime();
+					showElapsedTime(NotificationService.this);
 				}
 				else
 				{
-					hideTimeAfter();
+					hideElapsedTime(NotificationService.this);
 				}
 			}
 		}, 0, Utils.MsecPerMin);
 	}
 
+	private void createNotificationChannel()
+	{
+		// Create the NotificationChannel, but only on API 26+ because the NotificationChannel class is new
+		// and not in the support library
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+		{
+			NotificationChannel channel = new NotificationChannel(
+					NOTIFICATION_CHANNEL_ID,
+					getString(R.string.notification_elapsed_time_channel_name),
+					NotificationManager.IMPORTANCE_DEFAULT);
+			channel.setDescription(getString(R.string.notification_elapsed_time_channel_description));
+			channel.setSound(null, null);
+
+			getSystemService(NotificationManager.class).createNotificationChannel(channel);
+		}
+	}
+
 	@Override
 	public void onDestroy()
 	{
-		hideTimeAfter();
+		hideElapsedTime(this);
 		timer.cancel();
 	}
 
-	private void showElapsedTime()
+	private static void showElapsedTime(final Context context)
 	{
 		new AsyncTask<Void, Void, String>()
 		{
@@ -130,27 +152,35 @@ public class NotificationService extends Service
 			@Override
 			protected String doInBackground(Void... arg0)
 			{
-				String info = "";
+				final StringBuilder info = new StringBuilder();
 
 				final Date now = new Date();
-				long scanPeriod = Utils.SecPerDay;
-				final DiaryService diary = LocalDiary.getInstance(NotificationService.this);
-				List<Versioned<DiaryRecord>> records = PostprandUtils.findLastRecordsReversed(diary, now, scanPeriod);
+				final long scanPeriod = Utils.SecPerDay;
+				final DiaryService diary = LocalDiary.getInstance(context);
+				final List<Versioned<DiaryRecord>> records = PostprandUtils.findLastRecordsReversed(diary, now, scanPeriod);
 
-				Integer timeAfterMeal = getTimeAfterMeal(records, now);
+				final Integer timeAfterMeal = getTimeAfterMeal(records, now);
 				if (timeAfterMeal != null)
 				{
-					info += Utils.formatTimePeriod(timeAfterMeal) + " " + getString(R.string.notification_time_after_meal);
+					info.append(Utils.formatTimePeriod(timeAfterMeal));
+					info.append(" ");
+					info.append(context.getString(R.string.notification_elapsed_time_meal));
 				}
 
-				Integer timeAfterIns = getTimeAfterIns(records, now);
+				final Integer timeAfterIns = getTimeAfterIns(records, now);
 				if (timeAfterIns != null)
 				{
-					info += (info.isEmpty() ? "" : ",\n") + Utils.formatTimePeriod(timeAfterIns) + " " + getString(
-							R.string.notification_time_after_injection);
+					if (info.length() > 0)
+					{
+						info.append(",\n");
+					}
+
+					info.append(Utils.formatTimePeriod(timeAfterIns));
+					info.append(" ");
+					info.append(context.getString(R.string.notification_elapsed_time_injection));
 				}
 
-				return info;
+				return info.toString();
 			}
 
 			@Override
@@ -158,31 +188,35 @@ public class NotificationService extends Service
 			{
 				if (!info.isEmpty())
 				{
-					Builder mBuilder = new NotificationCompat.Builder(NotificationService.this);
-					mBuilder.setContentTitle(getString(R.string.app_name));
-					mBuilder.setSmallIcon(R.drawable.icon);
-					mBuilder.setOngoing(true);
-					mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(info));
-					mBuilder.setContentText(info);
-
-					Intent resultIntent = new Intent(NotificationService.this, ActivityMain.class);
-					TaskStackBuilder stackBuilder = TaskStackBuilder.create(NotificationService.this);
+					Intent resultIntent = new Intent(context, ActivityMain.class);
+					TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
 					stackBuilder.addParentStack(ActivityMain.class);
 					stackBuilder.addNextIntent(resultIntent);
 					PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-					mBuilder.setContentIntent(resultPendingIntent);
-					notificationManager.notify(NOTIFICATION_ID_TIME_AFTER, mBuilder.build());
+
+					Notification notification = new Builder(context, NOTIFICATION_CHANNEL_ID)
+							.setContentTitle(context.getString(R.string.app_name))
+							.setSmallIcon(R.drawable.icon)
+							.setOngoing(true)
+							.setStyle(new NotificationCompat.BigTextStyle().bigText(info))
+							.setContentText(info)
+							.setPriority(NotificationCompat.PRIORITY_DEFAULT)
+							.setOnlyAlertOnce(true)
+							.setContentIntent(resultPendingIntent)
+							.build();
+
+					NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_ELAPSED_TIME, notification);
 				}
 				else
 				{
-					hideTimeAfter();
+					hideElapsedTime(context);
 				}
 			}
 		}.execute();
 	}
 
-	private void hideTimeAfter()
+	private static void hideElapsedTime(Context context)
 	{
-		notificationManager.cancel(NOTIFICATION_ID_TIME_AFTER);
+		NotificationManagerCompat.from(context).cancel(NOTIFICATION_ID_ELAPSED_TIME);
 	}
 }
