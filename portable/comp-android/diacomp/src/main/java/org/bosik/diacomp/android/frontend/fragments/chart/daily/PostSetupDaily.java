@@ -29,8 +29,8 @@ public class PostSetupDaily extends PostSetup
 	{
 		final GraphView graphView = chart.getGraphView();
 
-		Double minX = 0.0;
-		Double maxX = 24.0;
+		double minX = 0.0;
+		double maxX = 24.0;
 		Double maxY = getMaxY(graphView.getSeries());
 
 		if (maxY != null)

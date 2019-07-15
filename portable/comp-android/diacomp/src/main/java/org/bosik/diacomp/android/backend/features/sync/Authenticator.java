@@ -47,7 +47,7 @@ public class Authenticator extends AbstractAccountAuthenticator
 
 	@Override
 	public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType,
-			String[] requiredFeatures, Bundle options) throws NetworkErrorException
+			String[] requiredFeatures, Bundle options)
 	{
 		final Intent intent = new Intent(mContext, ActivityLogin.class);
 		intent.putExtra(ActivityLogin.ARG_ACCOUNT_TYPE, accountType);
@@ -62,7 +62,6 @@ public class Authenticator extends AbstractAccountAuthenticator
 	// Ignore attempts to confirm credentials
 	@Override
 	public Bundle confirmCredentials(AccountAuthenticatorResponse r, Account account, Bundle bundle)
-			throws NetworkErrorException
 	{
 		return null;
 	}
@@ -70,7 +69,7 @@ public class Authenticator extends AbstractAccountAuthenticator
 	// Getting an authentication token is not supported
 	@Override
 	public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType,
-			Bundle options) throws NetworkErrorException
+			Bundle options)
 	{
 		// Extract the username and password from the Account Manager, and ask
 		// the server for an appropriate AuthToken.
@@ -121,7 +120,6 @@ public class Authenticator extends AbstractAccountAuthenticator
 	// Updating user credentials is not supported
 	@Override
 	public Bundle updateCredentials(AccountAuthenticatorResponse r, Account account, String s, Bundle bundle)
-			throws NetworkErrorException
 	{
 		throw new UnsupportedOperationException();
 	}
@@ -129,7 +127,6 @@ public class Authenticator extends AbstractAccountAuthenticator
 	// Checking features for the account is not supported
 	@Override
 	public Bundle hasFeatures(AccountAuthenticatorResponse r, Account account, String[] strings)
-			throws NetworkErrorException
 	{
 		throw new UnsupportedOperationException();
 	}
