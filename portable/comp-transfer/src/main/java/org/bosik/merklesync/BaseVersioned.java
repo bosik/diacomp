@@ -16,10 +16,7 @@
  */
 package org.bosik.merklesync;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 
 public class BaseVersioned<T> extends AbstractVersioned<T>
 {

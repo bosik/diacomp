@@ -19,5 +19,5 @@ package org.bosik.diacomp.core.services.preferences;
 
 public enum Type
 {
-	STRING, BOOLEAN, FLOAT;
+	STRING, BOOLEAN, FLOAT
 }

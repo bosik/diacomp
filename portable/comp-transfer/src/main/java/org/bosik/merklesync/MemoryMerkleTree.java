@@ -18,7 +18,6 @@ package org.bosik.merklesync;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Deprecated. Use {@link MemoryMerkleTree2} instead.<br/>

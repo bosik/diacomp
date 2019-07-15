@@ -40,9 +40,9 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 	private class Bean
 	{
-		public double	p;
-		public double	q;
-		public double	g[]	= new double[3];
+		public double   p;
+		public double   q;
+		public double[] g = new double[3];
 
 		public Bean()
 		{
@@ -82,7 +82,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		}
 	}
 
-	private final double TIME_WEIGHTS[] = new double[Utils.HalfMinPerDay + 1];
+	private final double[] TIME_WEIGHTS = new double[Utils.HalfMinPerDay + 1];
 
 	public AnalyzeCoreImpl(double approxFactor)
 	{
@@ -441,7 +441,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		RateList rateList;
 		WeightedTimePoint[] points;
 		List<Bean> V = new ArrayList<Bean>();
-		double k[];
+		double[] k;
 		DevFunction funcRelative = new RelDev();
 		DevFunction funcSqr = new SqrDev();
 
