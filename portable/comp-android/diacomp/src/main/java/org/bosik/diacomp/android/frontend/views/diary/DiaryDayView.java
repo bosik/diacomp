@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.frontend.views.diary;
 
@@ -130,13 +130,13 @@ public class DiaryDayView extends LinearLayout
 	}
 
 	// Data
-	private Date firstDate;
-	private int  countOfDays;
+	private       Date       firstDate;
+	private       int        countOfDays;
 	private final List<Item> data          = new ArrayList<>();
 	private       boolean    loading       = false;
 	private       boolean    loadingBefore = false;
 	private       boolean    loadingAfter  = false;
-	private int offset;
+	private       int        offset;
 
 	// Components
 	private BaseAdapter adapter;
@@ -482,11 +482,10 @@ public class DiaryDayView extends LinearLayout
 		}
 	}
 
-	private List<Item> groupItems(List<Versioned<DiaryRecord>> records, Date firstDate, int countOfDays)
+	private static List<Item> groupItems(List<Versioned<DiaryRecord>> records, Date firstDate, int countOfDays, boolean useSeparator)
 	{
 		List<Item> result = new ArrayList<>();
 
-		final boolean useSeparator = preferences.getBooleanValue(PreferenceID.ANDROID_DIARY_USE_SEPARATOR);
 		Date curDate = firstDate;
 		int index = 0;
 
@@ -526,6 +525,8 @@ public class DiaryDayView extends LinearLayout
 		final Date timeFrom = firstDate;
 		final Date timeTo = Utils.shiftDate(firstDate, countOfDays);
 		final int days = countOfDays;
+		final boolean useSeparator = preferences.getBooleanValue(PreferenceID.ANDROID_DIARY_USE_SEPARATOR);
+		final DiaryService diaryService = LocalDiary.getInstance(getContext());
 
 		new AsyncTask<Date, Void, List<Item>>()
 		{
@@ -540,8 +541,8 @@ public class DiaryDayView extends LinearLayout
 			{
 				Date timeFrom = params[0];
 				Date timeTo = params[1];
-				final List<Versioned<DiaryRecord>> records = loadData(timeFrom, timeTo);
-				return groupItems(records, timeFrom, days);
+				final List<Versioned<DiaryRecord>> records = diaryService.findPeriod(timeFrom, timeTo, false);
+				return groupItems(records, timeFrom, days, useSeparator);
 			}
 
 			@Override
@@ -568,6 +569,8 @@ public class DiaryDayView extends LinearLayout
 
 		final Date timeFrom = Utils.shiftDate(firstDate, -days);
 		final Date timeTo = firstDate;
+		final boolean useSeparator = preferences.getBooleanValue(PreferenceID.ANDROID_DIARY_USE_SEPARATOR);
+		final DiaryService diaryService = LocalDiary.getInstance(getContext());
 
 		new AsyncTask<Date, Void, List<Item>>()
 		{
@@ -582,8 +585,8 @@ public class DiaryDayView extends LinearLayout
 			{
 				Date timeFrom = params[0];
 				Date timeTo = params[1];
-				final List<Versioned<DiaryRecord>> records = loadData(timeFrom, timeTo);
-				return groupItems(records, timeFrom, days);
+				final List<Versioned<DiaryRecord>> records = diaryService.findPeriod(timeFrom, timeTo, false);
+				return groupItems(records, timeFrom, days, useSeparator);
 			}
 
 			@Override
@@ -616,6 +619,8 @@ public class DiaryDayView extends LinearLayout
 
 		final Date timeFrom = Utils.shiftDate(firstDate, countOfDays);
 		final Date timeTo = Utils.shiftDate(firstDate, countOfDays + days);
+		final boolean useSeparator = preferences.getBooleanValue(PreferenceID.ANDROID_DIARY_USE_SEPARATOR);
+		final DiaryService diaryService = LocalDiary.getInstance(getContext());
 
 		new AsyncTask<Date, Void, List<Item>>()
 		{
@@ -630,8 +635,8 @@ public class DiaryDayView extends LinearLayout
 			{
 				Date timeFrom = params[0];
 				Date timeTo = params[1];
-				final List<Versioned<DiaryRecord>> records = loadData(timeFrom, timeTo);
-				return groupItems(records, timeFrom, days);
+				final List<Versioned<DiaryRecord>> records = diaryService.findPeriod(timeFrom, timeTo, false);
+				return groupItems(records, timeFrom, days, useSeparator);
 			}
 
 			@Override
@@ -648,12 +653,6 @@ public class DiaryDayView extends LinearLayout
 				adapter.notifyDataSetChanged();
 			}
 		}.execute(timeFrom, timeTo);
-	}
-
-	private List<Versioned<DiaryRecord>> loadData(Date timeFrom, Date timeTo)
-	{
-		final DiaryService diaryService = LocalDiary.getInstance(getContext());
-		return diaryService.findPeriod(timeFrom, timeTo, false);
 	}
 
 	public void setOnHeaderClickListener(OnHeaderClickListener l)
