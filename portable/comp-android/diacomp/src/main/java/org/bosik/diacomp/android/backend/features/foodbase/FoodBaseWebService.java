@@ -40,7 +40,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unchecked")
 public class FoodBaseWebService implements FoodBaseService
 {
 	// private static final String TAG = FoodBaseWebService.class.getSimpleName();

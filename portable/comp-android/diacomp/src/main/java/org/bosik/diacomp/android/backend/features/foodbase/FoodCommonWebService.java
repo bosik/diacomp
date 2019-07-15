@@ -29,7 +29,6 @@ import org.bosik.merklesync.Versioned;
 import java.util.Date;
 import java.util.List;
 
-@SuppressWarnings("unchecked")
 public class FoodCommonWebService implements FoodCommonService
 {
 	// REST methods

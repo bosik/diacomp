@@ -138,7 +138,6 @@ public class SyncUtils
 			this.id = Utils.nullCheck(id, "id");
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public int synchronize()
 		{

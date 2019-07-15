@@ -40,7 +40,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unchecked")
 public class DishBaseWebService implements DishBaseService
 {
 	// private static final String TAG = DishBaseWebService.class.getSimpleName();
