@@ -154,7 +154,7 @@ public class FragmentTabBase extends Fragment
 		View rootView = inflater.inflate(R.layout.fragment_tab_base, container, false);
 
 		// Widgets binding
-		editSearch = (EditText) rootView.findViewById(R.id.editBaseEditorSearch);
+		editSearch = rootView.findViewById(R.id.editBaseEditorSearch);
 		editSearch.addTextChangedListener(new TextWatcher()
 		{
 			@Override
@@ -173,7 +173,7 @@ public class FragmentTabBase extends Fragment
 				runSearch();
 			}
 		});
-		list = (ListView) rootView.findViewById(R.id.listBaseEditorSearchResults);
+		list = rootView.findViewById(R.id.listBaseEditorSearchResults);
 		list.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
 		list.setMultiChoiceModeListener(new MultiChoiceModeListener()
 		{
@@ -409,9 +409,9 @@ public class FragmentTabBase extends Fragment
 
 							final FoodItem food = (FoodItem) item.getData();
 
-							TextView textName = (TextView) convertView.findViewById(R.id.baseItemFoodName);
+							TextView textName = convertView.findViewById(R.id.baseItemFoodName);
 							textName.setText(food.getName());
-							TextView textInfo = (TextView) convertView.findViewById(R.id.baseItemFoodInfo);
+							TextView textInfo = convertView.findViewById(R.id.baseItemFoodInfo);
 							textInfo.setText(getInfo(food));
 							break;
 						}
@@ -424,9 +424,9 @@ public class FragmentTabBase extends Fragment
 
 							final DishItem dish = (DishItem) item.getData();
 
-							TextView textName = (TextView) convertView.findViewById(R.id.baseItemDishName);
+							TextView textName = convertView.findViewById(R.id.baseItemDishName);
 							textName.setText(dish.getName());
-							TextView textInfo = (TextView) convertView.findViewById(R.id.baseItemDishInfo);
+							TextView textInfo = convertView.findViewById(R.id.baseItemDishInfo);
 							textInfo.setText(getInfo(dish));
 							break;
 						}

@@ -68,8 +68,8 @@ public class FragmentTabCharts extends Fragment
 
 		View rootView = inflater.inflate(R.layout.fragment_tab_charts, container, false);
 
-		ExpandableView groupHistory = (ExpandableView) rootView.findViewById(R.id.chartGroupHistoryTitle);
-		LinearLayout groupHistoryContent = (LinearLayout) rootView.findViewById(R.id.chartGroupHistoryContent);
+		ExpandableView groupHistory = rootView.findViewById(R.id.chartGroupHistoryTitle);
+		LinearLayout groupHistoryContent = rootView.findViewById(R.id.chartGroupHistoryContent);
 		groupHistory.setTitle(getActivity().getString(R.string.charts_group_history));
 		groupHistory.setContentPanel(groupHistoryContent);
 		groupHistory.setOnSwitchedListener(new OnSwitchedListener()
@@ -83,8 +83,8 @@ public class FragmentTabCharts extends Fragment
 			}
 		});
 
-		ExpandableView groupDaily = (ExpandableView) rootView.findViewById(R.id.chartGroupDailyTitle);
-		LinearLayout groupDailyContent = (LinearLayout) rootView.findViewById(R.id.chartGroupDailyContent);
+		ExpandableView groupDaily = rootView.findViewById(R.id.chartGroupDailyTitle);
+		LinearLayout groupDailyContent = rootView.findViewById(R.id.chartGroupDailyContent);
 		groupDaily.setTitle(getActivity().getString(R.string.charts_group_daily));
 		groupDaily.setContentPanel(groupDailyContent);
 		groupDaily.setOnSwitchedListener(new OnSwitchedListener()

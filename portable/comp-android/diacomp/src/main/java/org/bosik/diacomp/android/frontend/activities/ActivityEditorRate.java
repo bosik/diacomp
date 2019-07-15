@@ -65,7 +65,7 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 
 		Units.Mass unit = getUnitOfMass();
 
-		buttonTime = (Button) findViewById(R.id.buttonRateTime);
+		buttonTime = findViewById(R.id.buttonRateTime);
 		buttonTime.setOnClickListener(new OnClickListener()
 		{
 			@Override
@@ -96,9 +96,9 @@ public class ActivityEditorRate extends ActivityEditor<TimedRate> implements Tim
 		((TextView) findViewById(R.id.labelRateX))
 				.setText(String.format("%s, %s/%s", getString(R.string.common_rate_x), getString(R.string.common_unit_insulin), unitTitle));
 
-		editK = (EditText) findViewById(R.id.editRateK);
-		editQ = (EditText) findViewById(R.id.editRateQ);
-		editX = (EditText) findViewById(R.id.editRateX);
+		editK = findViewById(R.id.editRateK);
+		editQ = findViewById(R.id.editRateQ);
+		editX = findViewById(R.id.editRateX);
 
 		LinkedHashSet<Integer> indexes = new LinkedHashSet<>(Arrays.asList(INDEX_X, INDEX_Q, INDEX_K));
 		editK.addTextChangedListener(new MyTextWatcher(indexes, INDEX_K));

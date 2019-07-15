@@ -50,8 +50,8 @@ public class DiaryRecBloodView extends LinearLayout
 			inflater.inflate(R.layout.view_diary_rec_blood_std, this);
 		}
 
-		textTime = (TextView) findViewById(R.id.textBloodTime);
-		textValue = (TextView) findViewById(R.id.textBloodValue);
+		textTime = findViewById(R.id.textBloodTime);
+		textValue = findViewById(R.id.textBloodValue);
 
 		setData(record);
 	}

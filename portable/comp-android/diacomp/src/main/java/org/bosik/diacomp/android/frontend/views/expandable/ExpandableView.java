@@ -71,7 +71,7 @@ public class ExpandableView extends LinearLayout
 			return;
 		}
 
-		groupSwitch = (Button) findViewById(R.id.buttonGroupSwitch);
+		groupSwitch = findViewById(R.id.buttonGroupSwitch);
 		groupSwitch.setOnClickListener(new OnClickListener()
 		{
 			@Override

@@ -82,7 +82,7 @@ class ItemAdapter extends ArrayAdapter<Versioned<? extends Named>>
 		{
 			Versioned<? extends Named> item = suggestions.get(position);
 
-			TextView itemCaption = (TextView) v.findViewById(R.id.itemDescription);
+			TextView itemCaption = v.findViewById(R.id.itemDescription);
 			itemCaption.setText(item.getData().getName());
 
 			// FIXME: use separated resources (not button's)
@@ -228,7 +228,7 @@ public class FoodDishPicker extends LinearLayout
 
 		if (!isInEditMode())
 		{
-			editName = (FoodDishTextView) findViewById(R.id.fdPickerAutocomplete);
+			editName = findViewById(R.id.fdPickerAutocomplete);
 			editName.setOnItemClickListener(new OnItemClickListener()
 			{
 				@Override
@@ -241,7 +241,7 @@ public class FoodDishPicker extends LinearLayout
 			editName.setMaxLines(Integer.MAX_VALUE);
 			editName.setHorizontallyScrolling(false);
 
-			editMass = (EditText) findViewById(R.id.fdPickerMass);
+			editMass = findViewById(R.id.fdPickerMass);
 			editMass.setOnEditorActionListener(new TextView.OnEditorActionListener()
 			{
 				@Override

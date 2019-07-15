@@ -41,8 +41,8 @@ public class DiaryRecNoteView extends LinearLayout
 		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.view_diary_rec_note, this);
 
-		textTime = (TextView) findViewById(R.id.textNoteTime);
-		textValue = (TextView) findViewById(R.id.textNoteValue);
+		textTime = findViewById(R.id.textNoteTime);
+		textValue = findViewById(R.id.textNoteValue);
 	}
 
 	public void setData(Versioned<NoteRecord> record)

@@ -82,7 +82,7 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 		setContentView(R.layout.activity_editor_dish);
 
 		// components
-		editName = (EditText) findViewById(R.id.editDishName);
+		editName = findViewById(R.id.editDishName);
 		editName.addTextChangedListener(new TextWatcher()
 		{
 			@Override
@@ -108,7 +108,7 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 		editName.setMaxLines(Integer.MAX_VALUE);
 		editName.setHorizontallyScrolling(false);
 
-		editor = (MealEditorView) findViewById(R.id.dishEditor);
+		editor = findViewById(R.id.dishEditor);
 		editor.setOnChangeListener(new OnChangeListener()
 		{
 			@Override
@@ -123,7 +123,7 @@ public class ActivityEditorDish extends ActivityEditor<DishItem>
 				}
 			}
 		});
-		buttonMass = (ToggleButton) findViewById(R.id.buttonDishMass);
+		buttonMass = findViewById(R.id.buttonDishMass);
 		buttonMass.setOnClickListener(new OnClickListener()
 		{
 			@Override

@@ -54,11 +54,11 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 	protected void setupInterface()
 	{
 		setContentView(R.layout.activity_editor_blood);
-		editValue = (EditText) findViewById(R.id.editBloodValue);
-		labelBloodFinger = (TextView) findViewById(R.id.labelBloodFinger);
-		spinnerFinger = (Spinner) findViewById(R.id.spinnerBloodFinger);
+		editValue = findViewById(R.id.editBloodValue);
+		labelBloodFinger = findViewById(R.id.labelBloodFinger);
+		spinnerFinger = findViewById(R.id.spinnerBloodFinger);
 
-		buttonTime = (Button) findViewById(R.id.buttonBloodTime);
+		buttonTime = findViewById(R.id.buttonBloodTime);
 		buttonTime.setOnClickListener(new OnClickListener()
 		{
 			@Override
@@ -67,7 +67,7 @@ public class ActivityEditorBlood extends ActivityEditorTime<BloodRecord>
 				showTimePickerDialog();
 			}
 		});
-		buttonDate = (Button) findViewById(R.id.buttonBloodDate);
+		buttonDate = findViewById(R.id.buttonBloodDate);
 		buttonDate.setOnClickListener(new OnClickListener()
 		{
 			@Override

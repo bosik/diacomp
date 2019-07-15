@@ -165,7 +165,7 @@ public class ActivityMain extends FragmentActivity
 			}
 		};
 
-		ViewPager mViewPager = (ViewPager) findViewById(R.id.pager);
+		ViewPager mViewPager = findViewById(R.id.pager);
 		mViewPager.setAdapter(adapter);
 
 		PreferencesTypedService preferences = new PreferencesTypedService(new PreferencesLocalService(this));

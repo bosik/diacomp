@@ -135,12 +135,12 @@ public class Chart extends Fragment implements ProgressListener
 		View rootView = inflater.inflate(R.layout.fragment_chart, viewGroup, false);
 
 		// find components
-		titleView = (TextView) rootView.findViewById(R.id.textChartTitle);
-		graphView = (GraphView) rootView.findViewById(R.id.chart);
-		progress = (ProgressBar) rootView.findViewById(R.id.progressChart);
-		textNoData = (TextView) rootView.findViewById(R.id.noDataChart);
+		titleView = rootView.findViewById(R.id.textChartTitle);
+		graphView = rootView.findViewById(R.id.chart);
+		progress = rootView.findViewById(R.id.progressChart);
+		textNoData = rootView.findViewById(R.id.noDataChart);
 
-		LinearLayout buttonHelp = (LinearLayout) rootView.findViewById(R.id.buttonHelpChart);
+		LinearLayout buttonHelp = rootView.findViewById(R.id.buttonHelpChart);
 		buttonHelp.setOnClickListener(new OnClickListener()
 		{
 			@Override

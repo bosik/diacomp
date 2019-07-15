@@ -39,11 +39,11 @@ public class ActivityEditorFood extends ActivityEditor<FoodItem>
 	protected void setupInterface()
 	{
 		setContentView(R.layout.activity_editor_food);
-		editName = (EditText) findViewById(R.id.editFoodName);
-		editProts = (EditText) findViewById(R.id.editFoodProts);
-		editFats = (EditText) findViewById(R.id.editFoodFats);
-		editCarbs = (EditText) findViewById(R.id.editFoodCarbs);
-		editValue = (EditText) findViewById(R.id.editFoodValue);
+		editName = findViewById(R.id.editFoodName);
+		editProts = findViewById(R.id.editFoodProts);
+		editFats = findViewById(R.id.editFoodFats);
+		editCarbs = findViewById(R.id.editFoodCarbs);
+		editValue = findViewById(R.id.editFoodValue);
 
 		editName.setMaxLines(Integer.MAX_VALUE);
 		editName.setHorizontallyScrolling(false);

@@ -49,8 +49,8 @@ public class DiaryRecMealView extends LinearLayout
 		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.view_diary_rec_meal, this);
 
-		textTime = (TextView) findViewById(R.id.textMealTime);
-		textValue = (TextView) findViewById(R.id.textMealValue);
+		textTime = findViewById(R.id.textMealTime);
+		textValue = findViewById(R.id.textMealValue);
 
 		preferences = new PreferencesTypedService(new PreferencesLocalService(context));
 	}

@@ -41,7 +41,7 @@ public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 	{
 		setContentView(R.layout.activity_editor_note);
 
-		buttonTime = (Button) findViewById(R.id.buttonNoteTime);
+		buttonTime = findViewById(R.id.buttonNoteTime);
 		buttonTime.setOnClickListener(new OnClickListener()
 		{
 			@Override
@@ -50,7 +50,7 @@ public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 				showTimePickerDialog();
 			}
 		});
-		buttonDate = (Button) findViewById(R.id.buttonNoteDate);
+		buttonDate = findViewById(R.id.buttonNoteDate);
 		buttonDate.setOnClickListener(new OnClickListener()
 		{
 			@Override
@@ -60,7 +60,7 @@ public class ActivityEditorNote extends ActivityEditorTime<NoteRecord>
 			}
 		});
 
-		editText = (EditText) findViewById(R.id.editNoteText);
+		editText = findViewById(R.id.editNoteText);
 		findViewById(R.id.buttonNoteOK).setOnClickListener(new OnClickListener()
 		{
 			@Override

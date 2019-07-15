@@ -92,8 +92,8 @@ public class MealEditorView extends LinearLayout
 		if (!isInEditMode())
 		{
 			// components
-			list = (ListView) findViewById(R.id.mealEditorList);
-			fdPicker = (FoodDishPicker) findViewById(R.id.mealEditorPicker);
+			list = findViewById(R.id.mealEditorList);
+			fdPicker = findViewById(R.id.mealEditorPicker);
 
 			list.setOnItemClickListener(new OnItemClickListener()
 			{
@@ -199,8 +199,8 @@ public class MealEditorView extends LinearLayout
 			public View getView(int position, View convertView, ViewGroup parent)
 			{
 				View view = super.getView(position, convertView, parent);
-				TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-				TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+				TextView text1 = view.findViewById(android.R.id.text1);
+				TextView text2 = view.findViewById(android.R.id.text2);
 
 				text1.setText(data.get(position).getName());
 				text2.setText(Utils.formatDoubleShort(data.get(position).getMass()) + " " + getContext()

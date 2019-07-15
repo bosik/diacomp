@@ -164,7 +164,7 @@ public class DiaryDayView extends LinearLayout
 
 		preferences = new PreferencesTypedService(new PreferencesLocalService(context));
 
-		listRecs = (ListView) findViewById(R.id.listRecs);
+		listRecs = findViewById(R.id.listRecs);
 		listRecs.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
 		listRecs.setMultiChoiceModeListener(new MultiChoiceModeListener()
 		{
@@ -357,7 +357,7 @@ public class DiaryDayView extends LinearLayout
 						convertView = inflater.inflate(R.layout.view_diary_rec_header, null);
 					}
 
-					TextView textTitle = (TextView) convertView.findViewById(R.id.diaryDayHeader);
+					TextView textTitle = convertView.findViewById(R.id.diaryDayHeader);
 					textTitle.setText(UIUtils.formatDateLocalDevice(DiaryDayView.this.getContext(), ((ItemHeader) item).date));
 				}
 				else if (item instanceof ItemData)

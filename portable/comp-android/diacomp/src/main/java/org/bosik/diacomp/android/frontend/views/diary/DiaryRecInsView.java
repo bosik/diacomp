@@ -40,8 +40,8 @@ public class DiaryRecInsView extends LinearLayout
 		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.view_diary_rec_ins, this);
 
-		textTime = (TextView) findViewById(R.id.textInsTime);
-		textValue = (TextView) findViewById(R.id.textInsValue);
+		textTime = findViewById(R.id.textInsTime);
+		textValue = findViewById(R.id.textInsValue);
 	}
 
 	public void setData(Versioned<InsRecord> record)

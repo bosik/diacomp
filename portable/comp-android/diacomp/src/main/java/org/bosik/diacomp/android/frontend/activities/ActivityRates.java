@@ -127,7 +127,7 @@ public class ActivityRates extends FragmentActivity implements DialogInterface.O
 			historyIndex = 0;
 		}
 
-		list = (ListView) findViewById(R.id.listRates);
+		list = findViewById(R.id.listRates);
 		list.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener()
 		{

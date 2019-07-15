@@ -252,12 +252,12 @@ public class FragmentTabDiary extends Fragment
 		// Widgets binding
 		View rootView = inflater.inflate(R.layout.fragment_tab_diary, container, false);
 
-		list = (DiaryDayView) rootView.findViewById(R.id.listDiaryDay);
-		buttonAddBlood = (Button) rootView.findViewById(R.id.buttonAddBlood);
-		buttonAddIns = (Button) rootView.findViewById(R.id.buttonAddIns);
-		buttonAddMeal = (Button) rootView.findViewById(R.id.buttonAddMeal);
-		buttonAddNote = (Button) rootView.findViewById(R.id.buttonAddNote);
-		textWarningTime = (TextView) rootView.findViewById(R.id.textWarningTime);
+		list = rootView.findViewById(R.id.listDiaryDay);
+		buttonAddBlood = rootView.findViewById(R.id.buttonAddBlood);
+		buttonAddIns = rootView.findViewById(R.id.buttonAddIns);
+		buttonAddMeal = rootView.findViewById(R.id.buttonAddMeal);
+		buttonAddNote = rootView.findViewById(R.id.buttonAddNote);
+		textWarningTime = rootView.findViewById(R.id.textWarningTime);
 
 		// Events
 		buttonAddBlood.setOnClickListener(new OnClickListener()

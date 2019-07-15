@@ -20,7 +20,7 @@ public class ActivityWelcome extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_welcome);
 
-		Button buttonSignIn = (Button) findViewById(R.id.buttonWelcomeSignIn);
+		Button buttonSignIn = findViewById(R.id.buttonWelcomeSignIn);
 		buttonSignIn.setOnClickListener(new OnClickListener()
 		{
 			@Override
@@ -36,7 +36,7 @@ public class ActivityWelcome extends Activity
 			}
 		});
 
-		Button buttonSetup = (Button) findViewById(R.id.buttonWelcomeSetup);
+		Button buttonSetup = findViewById(R.id.buttonWelcomeSetup);
 		buttonSetup.setOnClickListener(new OnClickListener()
 		{
 			@Override

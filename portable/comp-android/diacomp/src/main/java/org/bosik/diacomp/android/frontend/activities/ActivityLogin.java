@@ -108,8 +108,8 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 		mAuthTokenType = getIntent().getStringExtra(ARG_AUTH_TYPE);
 		mNewAccount = getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false);
 
-		textEmail = (EditText) findViewById(R.id.accountName);
-		textPassword = (EditText) findViewById(R.id.accountPassword);
+		textEmail = findViewById(R.id.accountName);
+		textPassword = findViewById(R.id.accountPassword);
 		// textPassword.setOnEditorActionListener(new TextView.OnEditorActionListener()
 		// {
 		// @Override
@@ -126,7 +126,7 @@ public class ActivityLogin extends AccountAuthenticatorActivity
 
 		mLoginFormView = findViewById(R.id.login_form);
 		mLoginStatusView = findViewById(R.id.login_status);
-		mLoginStatusMessageView = (TextView) findViewById(R.id.login_status_message);
+		mLoginStatusMessageView = findViewById(R.id.login_status_message);
 
 		findViewById(R.id.buttonLoginShowPassword).setOnClickListener(new View.OnClickListener()
 		{

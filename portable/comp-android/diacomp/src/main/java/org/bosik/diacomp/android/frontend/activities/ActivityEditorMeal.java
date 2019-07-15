@@ -92,7 +92,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 
 		// components
 
-		buttonTime = (Button) findViewById(R.id.buttonMealTime);
+		buttonTime = findViewById(R.id.buttonMealTime);
 		buttonTime.setOnClickListener(new OnClickListener()
 		{
 			@Override
@@ -101,7 +101,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 				showTimePickerDialog();
 			}
 		});
-		buttonDate = (Button) findViewById(R.id.buttonMealDate);
+		buttonDate = findViewById(R.id.buttonMealDate);
 		buttonDate.setOnClickListener(new OnClickListener()
 		{
 			@Override
@@ -111,13 +111,13 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 			}
 		});
 
-		textMealInsulinCorrection = (TextView) findViewById(R.id.textMealInsulinCorrection);
-		textMealInsulinResult = (TextView) findViewById(R.id.textMealInsulinResult);
-		textMealCarbsCorrection = (TextView) findViewById(R.id.textMealCarbsCorrection);
-		textMealCarbsResult = (TextView) findViewById(R.id.textMealCarbsResult);
-		textMealExpectedBs = (TextView) findViewById(R.id.textMealExpectedBs);
+		textMealInsulinCorrection = findViewById(R.id.textMealInsulinCorrection);
+		textMealInsulinResult = findViewById(R.id.textMealInsulinResult);
+		textMealCarbsCorrection = findViewById(R.id.textMealCarbsCorrection);
+		textMealCarbsResult = findViewById(R.id.textMealCarbsResult);
+		textMealExpectedBs = findViewById(R.id.textMealExpectedBs);
 
-		mealEditor = (MealEditorView) findViewById(R.id.mealEditorMeal);
+		mealEditor = findViewById(R.id.mealEditorMeal);
 
 		// list.addHeaderView(findViewById(R.id.layoutMealParent));
 

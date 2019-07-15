@@ -46,7 +46,7 @@ public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 	{
 		setContentView(R.layout.activity_editor_ins);
 
-		buttonTime = (Button) findViewById(R.id.buttonInsTime);
+		buttonTime = findViewById(R.id.buttonInsTime);
 		buttonTime.setOnClickListener(new OnClickListener()
 		{
 			@Override
@@ -55,7 +55,7 @@ public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 				showTimePickerDialog();
 			}
 		});
-		buttonDate = (Button) findViewById(R.id.buttonInsDate);
+		buttonDate = findViewById(R.id.buttonInsDate);
 		buttonDate.setOnClickListener(new OnClickListener()
 		{
 			@Override
@@ -65,7 +65,7 @@ public class ActivityEditorIns extends ActivityEditorTime<InsRecord>
 			}
 		});
 
-		editValue = (EditText) findViewById(R.id.editInsValue);
+		editValue = findViewById(R.id.editInsValue);
 		editValue.setOnEditorActionListener(new TextView.OnEditorActionListener()
 		{
 			@Override
