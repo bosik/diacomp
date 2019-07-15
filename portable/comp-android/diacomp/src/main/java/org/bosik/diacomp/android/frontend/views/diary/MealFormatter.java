@@ -110,18 +110,7 @@ public final class MealFormatter
 					@Override
 					public int compare(FoodMassed lhs, FoodMassed rhs)
 					{
-						if (lhs.getCarbs() > rhs.getCarbs())
-						{
-							return -1;
-						}
-						else if (lhs.getCarbs() < rhs.getCarbs())
-						{
-							return +1;
-						}
-						else
-						{
-							return 0;
-						}
+						return Double.compare(rhs.getCarbs(), lhs.getCarbs());
 					}
 				});
 

@@ -422,7 +422,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	@Override
 	public RateList analyze(List<Versioned<DiaryRecord>> records)
 	{
-		/**
+		/*
 		 * This method assumes the Q and P rates are fixed and K is floating within the day
 		 */
 

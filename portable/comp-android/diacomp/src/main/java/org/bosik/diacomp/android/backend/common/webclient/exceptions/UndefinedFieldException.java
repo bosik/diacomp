@@ -1,4 +1,4 @@
-/*  
+/*
  *  Diacomp - Diabetes analysis & management system
  *  Copyright (C) 2013 Nikita Bosik
  *
@@ -14,19 +14,19 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  */
 package org.bosik.diacomp.android.backend.common.webclient.exceptions;
 
 /**
- * States one of mandatory fields in empty
+ * States one of mandatory fields is empty
  */
 public class UndefinedFieldException extends IllegalArgumentException
 {
 	private static final long    serialVersionUID = 3716509470386883692L;
-	private              boolean undefServer      = false;
-	private              boolean undefLogin       = false;
-	private              boolean undefPassword    = false;
+	private              boolean undefServer;
+	private              boolean undefLogin;
+	private              boolean undefPassword;
 
 	public UndefinedFieldException(boolean undefServer, boolean undefLogin, boolean undefPassword)
 	{
@@ -37,7 +37,4 @@ public class UndefinedFieldException extends IllegalArgumentException
 		this.undefLogin = undefLogin;
 		this.undefPassword = undefPassword;
 	}
-	// public UndefinedFieldException(Throwable throwable) { super(throwable); }
-	// public UndefinedFieldException(String detailMessage, Throwable throwable) {
-	// super(detailMessage, throwable); }
 }
