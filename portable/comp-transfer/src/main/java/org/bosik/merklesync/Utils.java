@@ -68,10 +68,6 @@ public class Utils
 	 *            Items which has greater version in the first list
 	 * @param newer2
 	 *            Items which has greater version in the second list
-	 * @param only1
-	 *            Items which are presented only in the first list
-	 * @param only2
-	 *            Items which are presented only in the second list
 	 */
 	public static <T> void getOverLists(List<Versioned<T>> items1, List<Versioned<T>> items2, List<Versioned<T>> newer1,
 			List<Versioned<T>> newer2)

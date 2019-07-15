@@ -1037,7 +1037,6 @@ public class Utils
 	 * Returns number of minutes since day's beginning (timezone: local)
 	 *
 	 * @param time     Time
-	 * @param timezone Timezone
 	 * @return
 	 */
 	public static int getDayMinutesLocal(Date time)
@@ -1049,7 +1048,6 @@ public class Utils
 	 * Returns number of minutes since day's beginning (timezone: UTC)
 	 *
 	 * @param time     Time
-	 * @param timezone Timezone
 	 * @return
 	 */
 	public static int getDayMinutesUTC(Date time)
