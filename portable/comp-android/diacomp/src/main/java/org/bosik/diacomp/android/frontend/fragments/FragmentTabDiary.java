@@ -24,6 +24,7 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
@@ -109,7 +110,7 @@ public class FragmentTabDiary extends Fragment
 	private Button       buttonAddMeal;
 	private Button       buttonAddNote;
 
-	private final ContentObserver observer = new ContentObserver(null)
+	private final ContentObserver observer = new ContentObserver(new Handler())
 	{
 		@Override
 		public void onChange(boolean selfChange)
