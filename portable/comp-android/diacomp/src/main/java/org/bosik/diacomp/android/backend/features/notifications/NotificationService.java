@@ -123,7 +123,7 @@ public class NotificationService extends Service
 		timer.cancel();
 	}
 
-	private static void showElapsedTime(final Context context)
+	private static void showElapsedTime(final NotificationService context)
 	{
 		new AsyncTask<Void, Void, String>()
 		{
@@ -216,6 +216,7 @@ public class NotificationService extends Service
 							.build();
 
 					NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_ELAPSED_TIME, notification);
+					context.startForeground(NOTIFICATION_ID_ELAPSED_TIME, notification);
 				}
 				else
 				{
