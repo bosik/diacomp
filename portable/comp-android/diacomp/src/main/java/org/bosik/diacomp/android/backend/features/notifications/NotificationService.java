@@ -58,6 +58,16 @@ public class NotificationService extends Service
 
 	private Timer timer = new Timer();
 
+	public static void start(Context context)
+	{
+		context.startService(new Intent(context, NotificationService.class));
+	}
+
+	public static void stop(Context context)
+	{
+		context.stopService(new Intent(context, NotificationService.class));
+	}
+
 	@Override
 	public IBinder onBind(Intent intent)
 	{

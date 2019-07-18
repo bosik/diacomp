@@ -40,6 +40,16 @@ public class BackgroundService extends Service
 	private final Timer timer          = new Timer();
 	private       long  lastForcedTime = 0L;
 
+	public static void start(Context context)
+	{
+		context.startService(new Intent(context, BackgroundService.class));
+	}
+
+	public static void forceRun(Context context)
+	{
+		context.startService(new Intent(ACTION_FORCE_RUN, null, context, BackgroundService.class));
+	}
+
 	@Override
 	public IBinder onBind(Intent intent)
 	{
@@ -83,11 +93,6 @@ public class BackgroundService extends Service
 				RateServiceInternal.getInstanceManual(context).update();
 			}
 		}.execute();
-	}
-
-	public static void forceRun(Context context)
-	{
-		context.startService(new Intent(ACTION_FORCE_RUN, null, context, BackgroundService.class));
 	}
 
 	@Override

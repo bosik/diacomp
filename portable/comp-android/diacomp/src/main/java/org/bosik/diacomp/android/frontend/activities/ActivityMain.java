@@ -73,8 +73,8 @@ public class ActivityMain extends FragmentActivity
 
 		// Backend
 
-		startService(new Intent(this, NotificationService.class));
-		startService(new Intent(this, BackgroundService.class));
+		NotificationService.start(this);
+		BackgroundService.start(this);
 
 		// Frontend
 

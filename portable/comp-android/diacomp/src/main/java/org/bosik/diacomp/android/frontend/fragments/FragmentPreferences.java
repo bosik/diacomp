@@ -18,7 +18,6 @@
  */
 package org.bosik.diacomp.android.frontend.fragments;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
@@ -157,11 +156,11 @@ public class FragmentPreferences extends PreferenceFragment implements SharedPre
 				{
 					if (preferences.getBoolean(key, true))
 					{
-						getActivity().startService(new Intent(getActivity(), NotificationService.class));
+						NotificationService.start(getActivity());
 					}
 					else
 					{
-						getActivity().stopService(new Intent(getActivity(), NotificationService.class));
+						NotificationService.stop(getActivity());
 					}
 					break;
 				}
