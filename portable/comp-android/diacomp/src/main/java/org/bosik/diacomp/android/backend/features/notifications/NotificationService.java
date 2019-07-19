@@ -48,6 +48,7 @@ import org.bosik.merklesync.Versioned;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -57,7 +58,8 @@ public class NotificationService extends Service
 	private static final int    NOTIFICATION_ID_ELAPSED_TIME = 1671918884;
 	private static final String ACTION_FORCE_RUN             = "runRightNow";
 
-	private Timer timer = new Timer();
+	private Timer  timer = new Timer();
+	private String oldMessageText;
 
 	public static void start(Context context)
 	{
@@ -222,33 +224,38 @@ public class NotificationService extends Service
 		@Override
 		protected void onPostExecute(ElapsedTimeInfo info)
 		{
-			String messageText = buildMessage(info, new Date());
+			final String messageText = buildMessage(info, new Date());
 
-			if (!messageText.isEmpty())
+			if (!Objects.equals(messageText, context.oldMessageText))
 			{
-				Intent resultIntent = new Intent(context, ActivityMain.class);
-				TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-				stackBuilder.addParentStack(ActivityMain.class);
-				stackBuilder.addNextIntent(resultIntent);
-				PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+				if (!messageText.isEmpty())
+				{
+					Intent resultIntent = new Intent(context, ActivityMain.class);
+					TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+					stackBuilder.addParentStack(ActivityMain.class);
+					stackBuilder.addNextIntent(resultIntent);
+					PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-				Notification notification = new Builder(context, NOTIFICATION_CHANNEL_ID)
-						.setContentTitle(context.getString(R.string.app_name))
-						.setSmallIcon(R.drawable.icon)
-						.setOngoing(true)
-						.setStyle(new NotificationCompat.BigTextStyle().bigText(messageText))
-						.setContentText(messageText)
-						.setPriority(NotificationCompat.PRIORITY_DEFAULT)
-						.setOnlyAlertOnce(true)
-						.setContentIntent(resultPendingIntent)
-						.build();
+					Notification notification = new Builder(context, NOTIFICATION_CHANNEL_ID)
+							.setContentTitle(context.getString(R.string.app_name))
+							.setSmallIcon(R.drawable.icon)
+							.setOngoing(true)
+							.setStyle(new NotificationCompat.BigTextStyle().bigText(messageText))
+							.setContentText(messageText)
+							.setPriority(NotificationCompat.PRIORITY_DEFAULT)
+							.setOnlyAlertOnce(true)
+							.setContentIntent(resultPendingIntent)
+							.build();
 
-				NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_ELAPSED_TIME, notification);
-				context.startForeground(NOTIFICATION_ID_ELAPSED_TIME, notification);
-			}
-			else
-			{
-				hideElapsedTime(context);
+					NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_ELAPSED_TIME, notification);
+					context.startForeground(NOTIFICATION_ID_ELAPSED_TIME, notification);
+				}
+				else
+				{
+					hideElapsedTime(context);
+				}
+
+				context.oldMessageText = messageText;
 			}
 		}
 	}
