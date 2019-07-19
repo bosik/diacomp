@@ -55,6 +55,7 @@ public class NotificationService extends Service
 {
 	private static final String NOTIFICATION_CHANNEL_ID      = "org.bosik.diacomp.notifications.elapsedTime";
 	private static final int    NOTIFICATION_ID_ELAPSED_TIME = 1671918884;
+	private static final String ACTION_FORCE_RUN             = "runRightNow";
 
 	private Timer timer = new Timer();
 
@@ -66,6 +67,11 @@ public class NotificationService extends Service
 	public static void stop(Context context)
 	{
 		context.stopService(new Intent(context, NotificationService.class));
+	}
+
+	public static void forceRun(Context context)
+	{
+		context.startService(new Intent(ACTION_FORCE_RUN, null, context, NotificationService.class));
 	}
 
 	@Override
@@ -97,6 +103,17 @@ public class NotificationService extends Service
 				}
 			}
 		}, 0, Utils.MsecPerMin);
+	}
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId)
+	{
+		if (intent != null && ACTION_FORCE_RUN.equals(intent.getAction()))
+		{
+			showElapsedTime(this);
+		}
+
+		return super.onStartCommand(intent, flags, startId);
 	}
 
 	private void createNotificationChannel()
