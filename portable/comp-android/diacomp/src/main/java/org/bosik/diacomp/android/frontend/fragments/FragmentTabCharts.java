@@ -185,13 +185,13 @@ public class FragmentTabCharts extends Fragment
 					}
 				}
 
-				LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<>(dataAvg.toArray(new DataPoint[dataAvg.size()]));
+				LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<>(dataAvg.toArray(new DataPoint[0]));
 				seriesAvg.setColor(COLOR_AVERAGE);
 
-				LineGraphSeries<DataPoint> seriesMin = new LineGraphSeries<>(dataMin.toArray(new DataPoint[dataMin.size()]));
+				LineGraphSeries<DataPoint> seriesMin = new LineGraphSeries<>(dataMin.toArray(new DataPoint[0]));
 				seriesMin.setColor(COLOR_DISPERSION);
 
-				LineGraphSeries<DataPoint> seriesMax = new LineGraphSeries<>(dataMax.toArray(new DataPoint[dataMax.size()]));
+				LineGraphSeries<DataPoint> seriesMax = new LineGraphSeries<>(dataMax.toArray(new DataPoint[0]));
 				seriesMax.setColor(COLOR_DISPERSION);
 
 				return Arrays.<Series<?>>asList(seriesMin, seriesAvg, seriesMax);
@@ -271,7 +271,7 @@ public class FragmentTabCharts extends Fragment
 					}
 				}
 
-				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data.toArray(new DataPoint[data.size()]));
+				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data.toArray(new DataPoint[0]));
 				series.setColor(COLOR);
 
 				return Collections.<Series<?>>singletonList(series);
@@ -337,7 +337,7 @@ public class FragmentTabCharts extends Fragment
 					}
 				}
 
-				LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<>(dataAvg.toArray(new DataPoint[dataAvg.size()]));
+				LineGraphSeries<DataPoint> seriesAvg = new LineGraphSeries<>(dataAvg.toArray(new DataPoint[0]));
 				seriesAvg.setColor(COLOR);
 
 				return Collections.<Series<?>>singletonList(seriesAvg);
@@ -380,7 +380,7 @@ public class FragmentTabCharts extends Fragment
 					}
 				}
 
-				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
+				DataPoint[] data = dataList.toArray(new DataPoint[0]);
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
 				series.setColor(COLOR);
 
@@ -424,7 +424,7 @@ public class FragmentTabCharts extends Fragment
 					}
 				}
 
-				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
+				DataPoint[] data = dataList.toArray(new DataPoint[0]);
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
 				series.setColor(COLOR);
 
@@ -468,7 +468,7 @@ public class FragmentTabCharts extends Fragment
 					}
 				}
 
-				DataPoint[] data = dataList.toArray(new DataPoint[dataList.size()]);
+				DataPoint[] data = dataList.toArray(new DataPoint[0]);
 				LineGraphSeries<DataPoint> series = new LineGraphSeries<>(data);
 				series.setColor(COLOR);
 

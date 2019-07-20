@@ -1,17 +1,17 @@
 /*
  * Diacomp - Diabetes analysis & management system
  * Copyright (C) 2013 Nikita Bosik
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -398,14 +398,11 @@ public class Utils
 	 */
 	public static String formatDoubleShort(double x)
 	{
-		String s = String.format("%.1f", x);
+		final String s = String.format(Locale.US, "%.1f", x);
 
-		if (s.endsWith(".0") || s.endsWith(",0"))
-		{
-			s = s.substring(0, s.length() - 2);
-		}
-
-		return s;
+		return (s.endsWith(".0") || s.endsWith(",0"))
+				? s.substring(0, s.length() - 2)
+				: s;
 	}
 
 	public static String formatDoubleSigned(double x)
@@ -1036,7 +1033,7 @@ public class Utils
 	/**
 	 * Returns number of minutes since day's beginning (timezone: local)
 	 *
-	 * @param time     Time
+	 * @param time Time
 	 * @return
 	 */
 	public static int getDayMinutesLocal(Date time)
@@ -1047,7 +1044,7 @@ public class Utils
 	/**
 	 * Returns number of minutes since day's beginning (timezone: UTC)
 	 *
-	 * @param time     Time
+	 * @param time Time
 	 * @return
 	 */
 	public static int getDayMinutesUTC(Date time)
@@ -1091,6 +1088,7 @@ public class Utils
 		}
 		catch (InterruptedException e)
 		{
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -1217,7 +1215,7 @@ public class Utils
 
 	public static void copy(InputStream input, OutputStream output) throws IOException
 	{
-		int read = 0;
+		int read;
 		byte[] bytes = new byte[16 * 1024];
 
 		while ((read = input.read(bytes)) != -1)
@@ -1288,6 +1286,11 @@ public class Utils
 	public static String nullToEmpty(String s)
 	{
 		return (s == null) ? "" : s;
+	}
+
+	public static int nullToZero(Integer n)
+	{
+		return n != null ? n : 0;
 	}
 
 	public static String buildString(int size)

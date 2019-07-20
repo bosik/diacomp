@@ -129,7 +129,7 @@ public class WebClient
 		if (now - lastRequestTime < MIN_REQUEST_DELAY)
 		{
 			long sleep = (MIN_REQUEST_DELAY - now + lastRequestTime) / Utils.NsecPerMsec;
-			Log.i(TAG, String.format("Too many requests per second, sleeping for %d msec", sleep));
+			Log.i(TAG, String.format("Too many requests per second, sleeping for %d ms", sleep));
 			Utils.sleep(sleep);
 		}
 

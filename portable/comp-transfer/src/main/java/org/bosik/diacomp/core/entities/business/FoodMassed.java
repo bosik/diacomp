@@ -1,17 +1,17 @@
 /*
  * Diacomp - Diabetes analysis & management system
  * Copyright (C) 2013 Nikita Bosik
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -22,14 +22,16 @@ import org.bosik.diacomp.core.entities.business.interfaces.Massed;
 import org.bosik.diacomp.core.entities.business.interfaces.Named;
 import org.bosik.diacomp.core.entities.business.interfaces.Relative;
 
+import java.util.Locale;
+
 /**
  * Stores food's name, relative parameters (PFCV on 100g) and mass.
  */
 public class FoodMassed extends Food implements Massed
 {
-	private static final long	serialVersionUID	= -204761623726950977L;
+	private static final long serialVersionUID = -204761623726950977L;
 
-	private double				mass;
+	private double mass;
 
 	public FoodMassed()
 	{
@@ -131,7 +133,7 @@ public class FoodMassed extends Food implements Massed
 	@Override
 	public String toString()
 	{
-		return String.format("%s [%.1f|%.1f|%.1f|%.1f]:%.1f", getName(), getRelProts(), getRelFats(), getRelCarbs(),
+		return String.format(Locale.US, "%s [%.1f|%.1f|%.1f|%.1f]:%.1f", getName(), getRelProts(), getRelFats(), getRelCarbs(),
 				getRelValue(), getMass());
 	}
 }

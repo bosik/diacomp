@@ -75,10 +75,6 @@ public class AnalyzeExtracter
 					timeI = record.getTime();
 					// System.out.println("max updated");
 				}
-				else
-				{
-					// System.out.println("");
-				}
 			}
 			else if (record instanceof MealRecord)
 			{
@@ -93,10 +89,6 @@ public class AnalyzeExtracter
 					maxCarbs = curCarbs;
 					timeF = record.getTime();
 					// System.out.println("max updated");
-				}
-				else
-				{
-					// System.out.println("");
 				}
 			}
 			else if (record instanceof BloodRecord)
@@ -125,10 +117,6 @@ public class AnalyzeExtracter
 						// System.out.println(String.format("OK - new item added\t%.1f\t%.1f\t%.1f\t%.1f",
 						// 		item.getBloodInValue(), item.getInsValue(), item.getCarbs(), item.getBloodOutValue()));
 					}
-					else
-					{
-						// System.out.println("conditions failed - ignored");
-					}
 
 					prevBloodTime = blood.getTime();
 					prevBloodValue = blood.getValue();
@@ -141,10 +129,6 @@ public class AnalyzeExtracter
 					maxCarbs = -1.0;
 					timeF = null;
 					timeI = null;
-				}
-				else
-				{
-					// System.out.println("postprandial - ignored");
 				}
 			}
 		}
