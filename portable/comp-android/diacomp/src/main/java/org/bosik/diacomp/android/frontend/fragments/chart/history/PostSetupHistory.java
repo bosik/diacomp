@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.frontend.fragments.chart.history;
 
@@ -58,10 +58,6 @@ public class PostSetupHistory extends PostSetup
 		graphView.getViewport().setMaxY(maxY);
 
 		graphView.getGridLabelRenderer().setLabelFormatter(new HistoryLabels(maxY));
-
-		// For the latest GraphView version, these adjustments may be required:
-		//		graphView.getViewport().setXAxisBoundsStatus(Viewport.AxisBoundsStatus.FIX);
-		//		graphView.getViewport().setYAxisBoundsStatus(Viewport.AxisBoundsStatus.FIX);
-		//		graphView.getGridLabelRenderer().setHumanRounding(false);
+		graphView.getGridLabelRenderer().setHumanRounding(false);
 	}
 }
