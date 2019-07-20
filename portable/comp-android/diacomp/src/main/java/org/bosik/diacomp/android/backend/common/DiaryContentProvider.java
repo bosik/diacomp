@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.backend.common;
 
@@ -44,16 +44,16 @@ import java.util.List;
 public class DiaryContentProvider extends ContentProvider
 {
 	// Basic properties
-	private static final String			DATABASE_NAME		= "Comp.db";
-	private static final int			DATABASE_VERSION	= 2;
-	private static final String			SCHEME				= "content://";
-	public static final String			AUTHORITY			= "diacomp.provider";
-	public static final Uri				CONTENT_BASE_URI	= Uri.parse(SCHEME + AUTHORITY + "/");
+	private static final String DATABASE_NAME    = "Comp.db";
+	private static final int    DATABASE_VERSION = 2;
+	private static final String SCHEME           = "content://";
+	public static final  String AUTHORITY        = "diacomp.provider";
+	public static final  Uri    CONTENT_BASE_URI = Uri.parse(SCHEME + AUTHORITY + "/");
 
 	// Core
-	private MyDBHelper					openHelper;
-	private static final UriMatcher		sURIMatcher;
-	private static final List<Table>	tables;
+	private              MyDBHelper  openHelper;
+	private static final UriMatcher  sURIMatcher;
+	private static final List<Table> tables;
 
 	// ==================================================================================================
 
@@ -147,17 +147,9 @@ public class DiaryContentProvider extends ContentProvider
 		@Override
 		public void onCreate(SQLiteDatabase db)
 		{
-			// FIXME: THIS ERASES ALL DATA
-
-			// db.execSQL("DROP TABLE IF EXISTS " + TABLE_DIARY);
-			// db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOODBASE);
-			// db.execSQL("DROP TABLE IF EXISTS " + TABLE_DISHBASE);
-			// db.execSQL("DROP TABLE IF EXISTS " + TABLE_TAG);
-
 			for (Table table : tables)
 			{
-				String s = buildCreateTableStatement(table);
-				db.execSQL(s);
+				db.execSQL(buildCreateTableStatement(table));
 			}
 		}
 
@@ -178,11 +170,8 @@ public class DiaryContentProvider extends ContentProvider
 				{
 					TableRates tableRates = new TableRates();
 
-					String s = buildDropTableStatement(tableRates);
-					db.execSQL(s);
-
-					s = buildCreateTableStatement(tableRates);
-					db.execSQL(s);
+					db.execSQL(buildDropTableStatement(tableRates));
+					db.execSQL(buildCreateTableStatement(tableRates));
 					break;
 				}
 			}
@@ -281,7 +270,7 @@ public class DiaryContentProvider extends ContentProvider
 
 			if (rowId != -1)
 			{
-				Uri resultUri = ContentUris.withAppendedId(buildUri(table), rowId);
+				Uri resultUri = ContentUris.withAppendedId(table.getUri(), rowId);
 				getContext().getContentResolver().notifyChange(resultUri, null);
 				return resultUri;
 			}
