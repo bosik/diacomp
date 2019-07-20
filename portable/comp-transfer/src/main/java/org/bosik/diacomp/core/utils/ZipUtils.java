@@ -24,6 +24,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -145,7 +146,7 @@ public final class ZipUtils
 
 	public static InputStream zipString(final String s) throws IOException
 	{
-		return zip(Arrays.asList(new Entry(ENTRY_FILE_NAME, s.getBytes())));
+		return zip(Collections.singletonList(new Entry(ENTRY_FILE_NAME, s.getBytes())));
 	}
 
 	public static String unzipString(InputStream stream) throws IOException

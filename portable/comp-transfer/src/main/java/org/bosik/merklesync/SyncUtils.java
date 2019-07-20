@@ -18,6 +18,7 @@ package org.bosik.merklesync;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -153,26 +154,26 @@ public class SyncUtils
 				}
 				else
 				{
-					service1.save(Arrays.asList(item2));
+					service1.save(Collections.singletonList(item2));
 					return 1;
 				}
 			}
 
 			if (item2 == null)
 			{
-				service2.save(Arrays.asList(item1));
+				service2.save(Collections.singletonList(item1));
 				return 1;
 			}
 
 			if (item1.getVersion() < item2.getVersion())
 			{
-				service1.save(Arrays.asList(item2));
+				service1.save(Collections.singletonList(item2));
 				return 1;
 			}
 
 			if (item1.getVersion() > item2.getVersion())
 			{
-				service2.save(Arrays.asList(item1));
+				service2.save(Collections.singletonList(item1));
 				return 1;
 			}
 

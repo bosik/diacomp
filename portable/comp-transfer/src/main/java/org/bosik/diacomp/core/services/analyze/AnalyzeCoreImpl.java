@@ -1,17 +1,17 @@
 /*
  * Diacomp - Diabetes analysis & management system
  * Copyright (C) 2013 Nikita Bosik
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -19,6 +19,7 @@ package org.bosik.diacomp.core.services.analyze;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.services.analyze.entities.AnalyzeRec;
 import org.bosik.diacomp.core.services.analyze.entities.Rate;
@@ -30,13 +31,13 @@ import org.bosik.merklesync.Versioned;
 
 public class AnalyzeCoreImpl implements AnalyzeCore
 {
-	private static final double	DISC_Q	= 0.0125;
-	private static final double	MIN_Q	= 1.50;
-	private static final double	MAX_Q	= 5.00 + (DISC_Q / 2);
+	private static final double DISC_Q = 0.0125;
+	private static final double MIN_Q  = 1.50;
+	private static final double MAX_Q  = 5.00 + (DISC_Q / 2);
 
-	private static final double	DISC_P	= 0.05;
-	private static final double	MIN_P	= 0.00;
-	private static final double	MAX_P	= 0.00 + (DISC_P / 2);
+	private static final double DISC_P = 0.05;
+	private static final double MIN_P  = 0.00;
+	private static final double MAX_P  = 0.00 + (DISC_P / 2);
 
 	private class Bean
 	{
@@ -95,7 +96,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 	/**
 	 * O(1)
-	 * 
+	 *
 	 * @param rec
 	 * @param q
 	 * @param p
@@ -115,7 +116,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 	/**
 	 * O(1)
-	 * 
+	 *
 	 * @param rec
 	 * @return
 	 */
@@ -126,7 +127,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 	/**
 	 * O(N) (~50)
-	 * 
+	 *
 	 * @param recs
 	 * @param q
 	 * @param p
@@ -149,7 +150,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 	/**
 	 * O(1)
-	 * 
+	 *
 	 * @param time1
 	 * @param time2
 	 * @return
@@ -166,7 +167,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 	/**
 	 * O(1)
-	 * 
+	 *
 	 * @param time1
 	 * @param time2
 	 * @return
@@ -180,7 +181,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 	/**
 	 * O(N) (~50)
-	 * 
+	 *
 	 * @param points
 	 * @param time
 	 * @return
@@ -189,55 +190,47 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	{
 		double summ = 0.0;
 		double summWeight = 0.0;
-		for (int i = 0; i < points.length; i++)
+
+		for (WeightedTimePoint point : points)
 		{
-			if (!Double.isNaN(points[i].getValue()))
+			if (!Double.isNaN(point.getValue()))
 			{
 				// TODO: optimize
-				double curWeight = points[i].getWeight() * timeWeight(time, points[i].getTime());
+				double curWeight = point.getWeight() * timeWeight(time, point.getTime());
 				summWeight += curWeight;
-				summ += points[i].getValue() * curWeight;
+				summ += point.getValue() * curWeight;
 			}
 		}
 
-		if (Math.abs(summWeight) < Utils.EPS)
-		{
-			return Double.NaN;
-		}
-		else
-		{
-			return summ / summWeight;
-		}
+		return Math.abs(summWeight) > Utils.EPS
+				? summ / summWeight
+				: Double.NaN;
 	}
 
 	private static double approximateFull(WeightedTimePoint[] points)
 	{
 		double summ = 0.0;
 		double summWeight = 0.0;
-		for (int i = 0; i < points.length; i++)
+
+		for (WeightedTimePoint point : points)
 		{
-			if (!Double.isNaN(points[i].getValue()))
+			if (!Double.isNaN(point.getValue()))
 			{
 				// TODO: optimize
-				double curWeight = points[i].getWeight();
+				double curWeight = point.getWeight();
 				summWeight += curWeight;
-				summ += points[i].getValue() * curWeight;
+				summ += point.getValue() * curWeight;
 			}
 		}
 
-		if (Math.abs(summWeight) < Utils.EPS)
-		{
-			return Double.NaN;
-		}
-		else
-		{
-			return summ / summWeight;
-		}
+		return Math.abs(summWeight) > Utils.EPS
+				? summ / summWeight
+				: Double.NaN;
 	}
 
 	/**
 	 * O(N * M) (~72000) (~1200)
-	 * 
+	 *
 	 * @param points
 	 * @return
 	 */
@@ -278,7 +271,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 			// linear interpolation
 			for (int left = 0; left < Utils.MinPerDay; left += Utils.MinPerHour) // 0, 60, 120, ...,
-																					// 1380
+			// 1380
 			{
 				int right = (left + Utils.MinPerHour) % Utils.MinPerDay;
 
@@ -295,7 +288,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 	/**
 	 * O(N) (~50)
-	 * 
+	 *
 	 * @param recs
 	 * @param points
 	 * @param func
@@ -305,24 +298,23 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 	{
 		double result = 0.0;
 		int n = 0;
-		for (int i = 0; i < points.length; i++)
-			if (!Double.isNaN(points[i].getValue()))
+		for (WeightedTimePoint point : points)
+		{
+			if (!Double.isNaN(point.getValue()))
 			{
-				result += func.calculate(recs[points[i].getTime()], points[i].getValue());
+				result += func.calculate(recs[point.getTime()], point.getValue());
 				n++;
 			}
-
-		if (n > 0)
-		{
-			result /= n;
 		}
 
-		return result;
+		return (n > 0)
+				? result / n
+				: 0.0;
 	}
 
 	/**
 	 * O(N) (~50)
-	 * 
+	 *
 	 * @param recs
 	 * @param rateList
 	 * @param func
@@ -345,17 +337,14 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 			n++;
 		}
 
-		if (n > 0)
-		{
-			result /= n;
-		}
-
-		return result;
+		return (n > 0)
+				? result / n
+				: 0.0;
 	}
 
 	/**
 	 * O(M) (~1440)
-	 * 
+	 *
 	 * @param ks
 	 * @param q
 	 * @param p
@@ -375,30 +364,28 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 
 	/**
 	 * O(N) (~50)
-	 * 
+	 *
 	 * @param points
 	 * @param index
 	 * @return
 	 */
 	private static WeightedTimePoint[] remove(WeightedTimePoint[] points, int index)
 	{
-		WeightedTimePoint[] result = new WeightedTimePoint[points.length - 1];
+		if (index < 0 || index >= points.length)
+		{
+			throw new IllegalArgumentException("Index out of bounds: " + index);
+		}
 
-		for (int i = 0; i < index; i++)
-		{
-			result[i] = points[i];
-		}
-		for (int i = index; i < result.length; i++)
-		{
-			result[i] = points[i + 1];
-		}
+		WeightedTimePoint[] result = new WeightedTimePoint[points.length - 1];
+		System.arraycopy(points, 0, result, 0, index);
+		System.arraycopy(points, index + 1, result, index, result.length - index);
 
 		return result;
 	}
 
 	/**
 	 * O(N^2) (~2500)
-	 * 
+	 *
 	 * @param points
 	 * @param bypass
 	 * @return
@@ -426,11 +413,11 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		 * This method assumes the Q and P rates are fixed and K is floating within the day
 		 */
 
-		final double ADPTATION_FACTOR = 0.95;
+		final double ADAPTATION_FACTOR = 0.95;
 		final double FILTER_BYPASS = 0.5;
 
 		List<PrimeRec> prime = AnalyzeExtracter.extractPrimeRecords(records);
-		List<AnalyzeRec> items = AnalyzeExtracter.formatRecords(prime, ADPTATION_FACTOR);
+		List<AnalyzeRec> items = AnalyzeExtracter.formatRecords(prime, ADAPTATION_FACTOR);
 
 		if (items.isEmpty())
 		{
@@ -439,7 +426,6 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		}
 
 		RateList rateList;
-		WeightedTimePoint[] points;
 		List<Bean> V = new ArrayList<>();
 		double[] k;
 		DevFunction funcRelative = new RelDev();
@@ -454,8 +440,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 				bean.q = q;
 				bean.p = p;
 
-				points = calculateKW(items, q, p); // 50
-				points = filter(points, FILTER_BYPASS);
+				final WeightedTimePoint[] points = filter(calculateKW(items, q, p), FILTER_BYPASS);
 				if (points.length > 0)
 				{
 					k = approximate(points, false); // 72 000 (1 200)
@@ -520,8 +505,7 @@ public class AnalyzeCoreImpl implements AnalyzeCore
 		}
 
 		// restore
-		points = calculateKW(items, bestQ, bestP);
-		points = filter(points, FILTER_BYPASS);
+		final WeightedTimePoint[] points = filter(calculateKW(items, bestQ, bestP), FILTER_BYPASS);
 
 		if (points.length > 0)
 		{
