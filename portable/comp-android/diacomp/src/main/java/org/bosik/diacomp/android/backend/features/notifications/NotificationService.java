@@ -48,7 +48,6 @@ import org.bosik.merklesync.Versioned;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -226,7 +225,7 @@ public class NotificationService extends Service
 		{
 			final String messageText = buildMessage(info, new Date());
 
-			if (!Objects.equals(messageText, context.oldMessageText))
+			if (!Utils.isEqual(messageText, context.oldMessageText))
 			{
 				if (!messageText.isEmpty())
 				{

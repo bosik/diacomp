@@ -1141,6 +1141,12 @@ public class Utils
 		return (s == null) || (s.isEmpty());
 	}
 
+	public static boolean isEqual(Object a, Object b)
+	{
+		// Objects.equals() call requires API level 19
+		return (a == b) || (a != null && a.equals(b));
+	}
+
 	/**
 	 * Determines proper name for numeral
 	 *
