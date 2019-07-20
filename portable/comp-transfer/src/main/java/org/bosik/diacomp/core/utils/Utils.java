@@ -398,14 +398,11 @@ public class Utils
 	 */
 	public static String formatDoubleShort(double x)
 	{
-		String s = String.format("%.1f", x);
+		final String s = String.format(Locale.US, "%.1f", x);
 
-		if (s.endsWith(".0") || s.endsWith(",0"))
-		{
-			s = s.substring(0, s.length() - 2);
-		}
-
-		return s;
+		return (s.endsWith(".0") || s.endsWith(",0"))
+				? s.substring(0, s.length() - 2)
+				: s;
 	}
 
 	public static String formatDoubleSigned(double x)
