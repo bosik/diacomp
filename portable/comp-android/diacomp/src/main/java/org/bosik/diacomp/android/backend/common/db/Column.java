@@ -24,10 +24,10 @@ public class Column
 	public static final String TYPE_TEXT    = "TEXT";
 	public static final String TYPE_BLOB    = "BLOB";
 
-	private String  name;
-	private String  type;
-	private boolean nullable;
-	private boolean primary;
+	private final String  name;
+	private final String  type;
+	private final boolean nullable;
+	private final boolean primary;
 
 	public Column(String name, String type, boolean primary, boolean nullable)
 	{
@@ -42,19 +42,9 @@ public class Column
 		return name;
 	}
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-
 	public String getType()
 	{
 		return type;
-	}
-
-	public void setType(String type)
-	{
-		this.type = type;
 	}
 
 	public boolean isPrimary()
@@ -62,18 +52,8 @@ public class Column
 		return primary;
 	}
 
-	public void setPrimary(boolean primary)
-	{
-		this.primary = primary;
-	}
-
 	public boolean isNullable()
 	{
 		return nullable;
-	}
-
-	public void setNullable(boolean nullable)
-	{
-		this.nullable = nullable;
 	}
 }

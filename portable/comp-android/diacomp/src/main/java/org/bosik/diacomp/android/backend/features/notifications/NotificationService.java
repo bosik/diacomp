@@ -236,7 +236,6 @@ public class NotificationService extends Service
 					PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
 					Notification notification = new Builder(context, NOTIFICATION_CHANNEL_ID)
-							.setContentTitle(context.getString(R.string.app_name))
 							.setSmallIcon(R.drawable.icon)
 							.setOngoing(true)
 							.setStyle(new NotificationCompat.BigTextStyle().bigText(messageText))

@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.backend.common;
 
@@ -44,16 +44,16 @@ import java.util.List;
 public class DiaryContentProvider extends ContentProvider
 {
 	// Basic properties
-	private static final String			DATABASE_NAME		= "Comp.db";
-	private static final int			DATABASE_VERSION	= 2;
-	private static final String			SCHEME				= "content://";
-	public static final String			AUTHORITY			= "diacomp.provider";
-	public static final Uri				CONTENT_BASE_URI	= Uri.parse(SCHEME + AUTHORITY + "/");
+	private static final String DATABASE_NAME    = "Comp.db";
+	private static final int    DATABASE_VERSION = 2;
+	private static final String SCHEME           = "content://";
+	public static final  String AUTHORITY        = "diacomp.provider";
+	public static final  Uri    CONTENT_BASE_URI = Uri.parse(SCHEME + AUTHORITY + "/");
 
 	// Core
-	private MyDBHelper					openHelper;
-	private static final UriMatcher		sURIMatcher;
-	private static final List<Table>	tables;
+	private              MyDBHelper  openHelper;
+	private static final UriMatcher  sURIMatcher;
+	private static final List<Table> tables;
 
 	// ==================================================================================================
 
@@ -61,46 +61,17 @@ public class DiaryContentProvider extends ContentProvider
 	{
 		tables = new ArrayList<>();
 
-		tables.add(new TableDiary()
-		{
-			@Override
-			public int getCode()
-			{
-				return 1;
-			}
-		});
+		tables.add(new TableDiary());
 		tables.add(new TableFoodbase());
 		tables.add(new TableDishbase());
-		tables.add(new TableTags()
-		{
-			@Override
-			public int getCode()
-			{
-				return 4;
-			}
-		});
-		tables.add(new TablePreferences()
-		{
-			@Override
-			public int getCode()
-			{
-				return 5;
-			}
-		});
-		tables.add(new TableRates()
-		{
-			@Override
-			public int getCode()
-			{
-				return 6;
-			}
-		});
+		tables.add(new TableTags());
+		tables.add(new TablePreferences());
+		tables.add(new TableRates());
 
 		sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-
-		for (Table table : tables)
+		for (int i = 0; i < tables.size(); i++)
 		{
-			sURIMatcher.addURI(AUTHORITY, table.getName(), table.getCode());
+			sURIMatcher.addURI(AUTHORITY, tables.get(i).getName(), i);
 		}
 	}
 
@@ -147,17 +118,9 @@ public class DiaryContentProvider extends ContentProvider
 		@Override
 		public void onCreate(SQLiteDatabase db)
 		{
-			// FIXME: THIS ERASES ALL DATA
-
-			// db.execSQL("DROP TABLE IF EXISTS " + TABLE_DIARY);
-			// db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOODBASE);
-			// db.execSQL("DROP TABLE IF EXISTS " + TABLE_DISHBASE);
-			// db.execSQL("DROP TABLE IF EXISTS " + TABLE_TAG);
-
 			for (Table table : tables)
 			{
-				String s = buildCreateTableStatement(table);
-				db.execSQL(s);
+				db.execSQL(buildCreateTableStatement(table));
 			}
 		}
 
@@ -178,11 +141,8 @@ public class DiaryContentProvider extends ContentProvider
 				{
 					TableRates tableRates = new TableRates();
 
-					String s = buildDropTableStatement(tableRates);
-					db.execSQL(s);
-
-					s = buildCreateTableStatement(tableRates);
-					db.execSQL(s);
+					db.execSQL(buildDropTableStatement(tableRates));
+					db.execSQL(buildCreateTableStatement(tableRates));
 					break;
 				}
 			}
@@ -202,30 +162,18 @@ public class DiaryContentProvider extends ContentProvider
 	public static Table getTable(Uri uri)
 	{
 		int code = sURIMatcher.match(uri);
-		for (Table table : tables)
-		{
-			if (code == table.getCode())
-			{
-				return table;
-			}
-		}
-
-		return null;
+		return (code >= 0 && code < tables.size())
+				? tables.get(code)
+				: null;
 	}
 
 	@Override
 	public String getType(Uri uri)
 	{
 		Table table = getTable(uri);
-
-		if (table != null)
-		{
-			return table.getContentType();
-		}
-		else
-		{
-			return "UNKNOWN";
-		}
+		return (table != null)
+				? "org.bosik.diacomp." + table.getName()
+				: "UNKNOWN";
 	}
 
 	@Override
@@ -281,7 +229,7 @@ public class DiaryContentProvider extends ContentProvider
 
 			if (rowId != -1)
 			{
-				Uri resultUri = ContentUris.withAppendedId(buildUri(table), rowId);
+				Uri resultUri = ContentUris.withAppendedId(table.getUri(), rowId);
 				getContext().getContentResolver().notifyChange(resultUri, null);
 				return resultUri;
 			}

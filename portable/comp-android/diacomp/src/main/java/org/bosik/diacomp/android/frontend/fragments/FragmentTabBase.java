@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package org.bosik.diacomp.android.frontend.fragments;
 
@@ -90,13 +90,13 @@ public class FragmentTabBase extends Fragment
 	private ListView list;
 
 	// Data
-	private FoodBaseService foodBaseService;
-	private DishBaseService dishBaseService;
-	private DiaryService    diaryService;
-	private final List<Versioned<? extends NamedRelative>> data = new ArrayList<>();
-	private BaseAdapter adapter;
-	private long        lastSearchTime;
-	private volatile boolean searchInProgress = false;
+	private          FoodBaseService                          foodBaseService;
+	private          DishBaseService                          dishBaseService;
+	private          DiaryService                             diaryService;
+	private final    List<Versioned<? extends NamedRelative>> data             = new ArrayList<>();
+	private          BaseAdapter                              adapter;
+	private          long                                     lastSearchTime;
+	private volatile boolean                                  searchInProgress = false;
 
 	private final ContentObserver observer = new ContentObserver(null)
 	{
@@ -114,15 +114,12 @@ public class FragmentTabBase extends Fragment
 				Table table = DiaryContentProvider.getTable(uri);
 
 				if (table != null)
-					switch (table.getCode())
+				{
+					if (table instanceof TableFoodbase || table instanceof TableDishbase)
 					{
-						case TableFoodbase.CODE:
-						case TableDishbase.CODE:
-						{
-							runSearch();
-							break;
-						}
+						runSearch();
 					}
+				}
 			}
 		}
 	};
