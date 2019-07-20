@@ -26,14 +26,6 @@ public abstract class Table
 {
 	public abstract String getName();
 
-	@Deprecated
-	public int getCode()
-	{
-		throw new UnsupportedOperationException();
-	}
-	
-	public abstract String getContentType();
-
 	public abstract List<Column> getColumns();
 	
 	public Uri getUri()

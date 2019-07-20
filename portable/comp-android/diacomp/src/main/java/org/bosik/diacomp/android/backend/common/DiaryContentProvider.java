@@ -61,46 +61,17 @@ public class DiaryContentProvider extends ContentProvider
 	{
 		tables = new ArrayList<>();
 
-		tables.add(new TableDiary()
-		{
-			@Override
-			public int getCode()
-			{
-				return 1;
-			}
-		});
+		tables.add(new TableDiary());
 		tables.add(new TableFoodbase());
 		tables.add(new TableDishbase());
-		tables.add(new TableTags()
-		{
-			@Override
-			public int getCode()
-			{
-				return 4;
-			}
-		});
-		tables.add(new TablePreferences()
-		{
-			@Override
-			public int getCode()
-			{
-				return 5;
-			}
-		});
-		tables.add(new TableRates()
-		{
-			@Override
-			public int getCode()
-			{
-				return 6;
-			}
-		});
+		tables.add(new TableTags());
+		tables.add(new TablePreferences());
+		tables.add(new TableRates());
 
 		sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-
-		for (Table table : tables)
+		for (int i = 0; i < tables.size(); i++)
 		{
-			sURIMatcher.addURI(AUTHORITY, table.getName(), table.getCode());
+			sURIMatcher.addURI(AUTHORITY, tables.get(i).getName(), i);
 		}
 	}
 
@@ -191,30 +162,18 @@ public class DiaryContentProvider extends ContentProvider
 	public static Table getTable(Uri uri)
 	{
 		int code = sURIMatcher.match(uri);
-		for (Table table : tables)
-		{
-			if (code == table.getCode())
-			{
-				return table;
-			}
-		}
-
-		return null;
+		return (code >= 0 && code < tables.size())
+				? tables.get(code)
+				: null;
 	}
 
 	@Override
 	public String getType(Uri uri)
 	{
 		Table table = getTable(uri);
-
-		if (table != null)
-		{
-			return table.getContentType();
-		}
-		else
-		{
-			return "UNKNOWN";
-		}
+		return (table != null)
+				? "org.bosik.diacomp." + table.getName()
+				: "UNKNOWN";
 	}
 
 	@Override
