@@ -119,7 +119,7 @@ public final class ZipUtils
 				try
 				{
 					byte[] buffer = new byte[16 * 1024];
-					int read = 0;
+					int read;
 					while ((read = zipStream.read(buffer)) != -1)
 					{
 						bufout.write(buffer, 0, read);

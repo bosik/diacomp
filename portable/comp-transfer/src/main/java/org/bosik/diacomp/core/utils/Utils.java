@@ -1215,7 +1215,7 @@ public class Utils
 
 	public static void copy(InputStream input, OutputStream output) throws IOException
 	{
-		int read = 0;
+		int read;
 		byte[] bytes = new byte[16 * 1024];
 
 		while ((read = input.read(bytes)) != -1)
