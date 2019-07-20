@@ -55,8 +55,10 @@ public class NotificationService extends Service
 {
 	private static final String NOTIFICATION_CHANNEL_ID      = "org.bosik.diacomp.notifications.elapsedTime";
 	private static final int    NOTIFICATION_ID_ELAPSED_TIME = 1671918884;
+	private static final String ACTION_FORCE_RUN             = "runRightNow";
 
-	private Timer timer = new Timer();
+	private Timer  timer = new Timer();
+	private String oldMessageText;
 
 	public static void start(Context context)
 	{
@@ -66,6 +68,11 @@ public class NotificationService extends Service
 	public static void stop(Context context)
 	{
 		context.stopService(new Intent(context, NotificationService.class));
+	}
+
+	public static void forceRun(Context context)
+	{
+		context.startService(new Intent(ACTION_FORCE_RUN, null, context, NotificationService.class));
 	}
 
 	@Override
@@ -99,6 +106,17 @@ public class NotificationService extends Service
 		}, 0, Utils.MsecPerMin);
 	}
 
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId)
+	{
+		if (intent != null && ACTION_FORCE_RUN.equals(intent.getAction()))
+		{
+			showElapsedTime(this);
+		}
+
+		return super.onStartCommand(intent, flags, startId);
+	}
+
 	private void createNotificationChannel()
 	{
 		// Create the NotificationChannel, but only on API 26+ because the NotificationChannel class is new
@@ -125,78 +143,91 @@ public class NotificationService extends Service
 
 	private static void showElapsedTime(final NotificationService context)
 	{
-		new AsyncTask<Void, Void, String>()
+		new UpdateNotificationTask(context).execute();
+	}
+
+	private static void hideElapsedTime(Context context)
+	{
+		NotificationManagerCompat.from(context).cancel(NOTIFICATION_ID_ELAPSED_TIME);
+	}
+
+	private static class UpdateNotificationTask extends AsyncTask<Void, Void, ElapsedTimeInfo>
+	{
+		private final NotificationService context;
+
+		UpdateNotificationTask(NotificationService context)
 		{
-			/**
-			 * @return Time after last meal (in seconds) if found, null otherwise
-			 */
-			private Integer getTimeAfterMeal(List<Versioned<DiaryRecord>> records, Date now)
+			this.context = context;
+		}
+
+		private Date getLastMealTime(List<Versioned<DiaryRecord>> records)
+		{
+			MealRecord rec = PostprandUtils.findLastMeal(records);
+			return (rec != null)
+					? rec.getTime()
+					: null;
+		}
+
+		private Date getLastInsTime(List<Versioned<DiaryRecord>> records)
+		{
+			InsRecord rec = PostprandUtils.findLastIns(records);
+			return rec != null
+					? rec.getTime()
+					: null;
+		}
+
+		@Override
+		protected ElapsedTimeInfo doInBackground(Void... arg0)
+		{
+			final DiaryService diary = LocalDiary.getInstance(context);
+			final List<Versioned<DiaryRecord>> records = PostprandUtils.findLastRecordsReversed(diary, new Date(),
+					(long) Utils.SecPerDay);
+
+			final ElapsedTimeInfo info = new ElapsedTimeInfo();
+			info.setLastMealTime(getLastMealTime(records));
+			info.setLastInsTime(getLastInsTime(records));
+
+			return info;
+		}
+
+		private String buildMessage(ElapsedTimeInfo info, Date now)
+		{
+			final StringBuilder msg = new StringBuilder();
+
+			if (info.getLastMealTime() != null)
 			{
-				MealRecord rec = PostprandUtils.findLastMeal(records);
-				if (rec != null)
-				{
-					return (int) (now.getTime() - rec.getTime().getTime()) / Utils.MsecPerSec;
-				}
-				else
-				{
-					return null;
-				}
+				int timeInSeconds = (int) (now.getTime() - info.getLastMealTime().getTime()) / Utils.MsecPerSec;
+
+				msg.append(Utils.formatTimePeriod(timeInSeconds));
+				msg.append(" ");
+				msg.append(context.getString(R.string.notification_elapsed_time_meal));
 			}
 
-			/**
-			 * @return Time after last ins (in seconds) if found, null otherwise
-			 */
-			private Integer getTimeAfterIns(List<Versioned<DiaryRecord>> records, Date now)
+			if (info.getLastInsTime() != null)
 			{
-				InsRecord rec = PostprandUtils.findLastIns(records);
-				if (rec != null)
+				int timeInSeconds = (int) (now.getTime() - info.getLastInsTime().getTime()) / Utils.MsecPerSec;
+
+				if (msg.length() > 0)
 				{
-					return (int) (now.getTime() - rec.getTime().getTime()) / Utils.MsecPerSec;
+					msg.append(",\n");
 				}
-				else
-				{
-					return null;
-				}
+
+				msg.append(Utils.formatTimePeriod(timeInSeconds));
+				msg.append(" ");
+				msg.append(context.getString(R.string.notification_elapsed_time_injection));
 			}
 
-			@Override
-			protected String doInBackground(Void... arg0)
+			return msg.toString();
+		}
+
+		@Override
+		protected void onPostExecute(ElapsedTimeInfo info)
+		{
+			final String messageText = buildMessage(info, new Date());
+
+			if (!Utils.isEqual(messageText, context.oldMessageText))
 			{
-				final StringBuilder info = new StringBuilder();
-
-				final Date now = new Date();
-				final long scanPeriod = Utils.SecPerDay;
-				final DiaryService diary = LocalDiary.getInstance(context);
-				final List<Versioned<DiaryRecord>> records = PostprandUtils.findLastRecordsReversed(diary, now, scanPeriod);
-
-				final Integer timeAfterMeal = getTimeAfterMeal(records, now);
-				if (timeAfterMeal != null)
-				{
-					info.append(Utils.formatTimePeriod(timeAfterMeal));
-					info.append(" ");
-					info.append(context.getString(R.string.notification_elapsed_time_meal));
-				}
-
-				final Integer timeAfterIns = getTimeAfterIns(records, now);
-				if (timeAfterIns != null)
-				{
-					if (info.length() > 0)
-					{
-						info.append(",\n");
-					}
-
-					info.append(Utils.formatTimePeriod(timeAfterIns));
-					info.append(" ");
-					info.append(context.getString(R.string.notification_elapsed_time_injection));
-				}
-
-				return info.toString();
-			}
-
-			@Override
-			protected void onPostExecute(String info)
-			{
-				if (!info.isEmpty())
+				if (!messageText.isEmpty())
 				{
 					Intent resultIntent = new Intent(context, ActivityMain.class);
 					TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
@@ -208,8 +239,8 @@ public class NotificationService extends Service
 							.setContentTitle(context.getString(R.string.app_name))
 							.setSmallIcon(R.drawable.icon)
 							.setOngoing(true)
-							.setStyle(new NotificationCompat.BigTextStyle().bigText(info))
-							.setContentText(info)
+							.setStyle(new NotificationCompat.BigTextStyle().bigText(messageText))
+							.setContentText(messageText)
 							.setPriority(NotificationCompat.PRIORITY_DEFAULT)
 							.setOnlyAlertOnce(true)
 							.setContentIntent(resultPendingIntent)
@@ -222,12 +253,35 @@ public class NotificationService extends Service
 				{
 					hideElapsedTime(context);
 				}
+
+				context.oldMessageText = messageText;
 			}
-		}.execute();
+		}
 	}
 
-	private static void hideElapsedTime(Context context)
+	private static class ElapsedTimeInfo
 	{
-		NotificationManagerCompat.from(context).cancel(NOTIFICATION_ID_ELAPSED_TIME);
+		private Date lastMealTime;
+		private Date lastInsTime;
+
+		Date getLastMealTime()
+		{
+			return lastMealTime;
+		}
+
+		void setLastMealTime(Date lastMealTime)
+		{
+			this.lastMealTime = lastMealTime;
+		}
+
+		Date getLastInsTime()
+		{
+			return lastInsTime;
+		}
+
+		void setLastInsTime(Date lastInsTime)
+		{
+			this.lastInsTime = lastInsTime;
+		}
 	}
 }
