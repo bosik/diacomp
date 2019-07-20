@@ -1288,6 +1288,11 @@ public class Utils
 		return (s == null) ? "" : s;
 	}
 
+	public static int nullToZero(Integer n)
+	{
+		return n != null ? n : 0;
+	}
+
 	public static String buildString(int size)
 	{
 		final StringBuilder s = new StringBuilder(size);

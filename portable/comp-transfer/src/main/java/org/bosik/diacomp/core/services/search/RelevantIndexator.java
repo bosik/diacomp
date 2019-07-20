@@ -1,17 +1,17 @@
 /*
  * Diacomp - Diabetes analysis & management system
  * Copyright (C) 2013 Nikita Bosik
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -79,13 +79,7 @@ public class RelevantIndexator
 				{
 					FoodMassed food = meal.get(j);
 					int delta = f(rec.getTime(), min, max);
-
-					Integer value = names.get(food.getName());
-
-					if (value == null)
-					{
-						value = 0;
-					}
+					int value = Utils.nullToZero(names.get(food.getName()));
 
 					names.put(food.getName(), value + delta);
 				}
@@ -117,29 +111,18 @@ public class RelevantIndexator
 			@Override
 			public int compare(Versioned<? extends Named> lhs, Versioned<? extends Named> rhs)
 			{
-				Named data1 = lhs.getData();
-				Named data2 = rhs.getData();
+				final String name1 = lhs.getData().getName();
+				final String name2 = rhs.getData().getName();
 
-				Integer tag1 = usages.get(data1.getName());
-				if (tag1 == null)
-				{
-					tag1 = 0;
-				}
+				int tag1 = Utils.nullToZero(usages.get(name1));
+				int tag2 = Utils.nullToZero(usages.get(name2));
 
-				Integer tag2 = usages.get(data2.getName());
-				if (tag2 == null)
-				{
-					tag2 = 0;
-				}
-
-				if (tag1.equals(tag2))
-				{
-					return data1.getName().compareTo(data2.getName());
-				}
-				else
+				if (tag1 != tag2)
 				{
 					return tag2 - tag1;
 				}
+
+				return name1.compareTo(name2);
 			}
 		});
 	}
