@@ -40,6 +40,7 @@ import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.AccountUtils;
 import org.bosik.diacomp.android.backend.common.db.tables.TableDiary;
 import org.bosik.diacomp.android.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.android.backend.features.notifications.NotificationService;
 import org.bosik.diacomp.android.backend.features.preferences.account.PreferencesLocalService;
 import org.bosik.diacomp.android.backend.features.sync.ServerTimeService;
 import org.bosik.diacomp.android.backend.features.sync.TimeServiceInternal;
@@ -125,6 +126,8 @@ public class FragmentTabDiary extends Fragment
 			{
 				list.refresh();
 			}
+
+			NotificationService.forceRun(FragmentTabDiary.this.getActivity());
 		}
 	};
 
