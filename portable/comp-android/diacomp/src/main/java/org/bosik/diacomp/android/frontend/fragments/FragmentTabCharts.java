@@ -145,8 +145,9 @@ public class FragmentTabCharts extends Fragment
 				// PREPARE DATE TREE
 
 				DiaryService diary = LocalDiary.getInstance(context);
-				Date startTime = Utils.shiftDate(new Date(), -PERIOD - HALF_WINDOW_SIZE);
-				Date endTime = Utils.shiftDate(new Date(), -HALF_WINDOW_SIZE);
+				final Date todayMidnight = Utils.startOfDay(new Date());
+				final Date startTime = Utils.shiftDate(todayMidnight, -PERIOD - HALF_WINDOW_SIZE);
+				final Date endTime = Utils.shiftDate(todayMidnight, -HALF_WINDOW_SIZE);
 				List<Versioned<DiaryRecord>> recs = diary
 						.findPeriod(Utils.shiftDate(startTime, -HALF_WINDOW_SIZE), Utils.shiftDate(endTime, HALF_WINDOW_SIZE), false);
 
@@ -223,8 +224,9 @@ public class FragmentTabCharts extends Fragment
 				// PREPARE DATE TREE
 
 				DiaryService diary = LocalDiary.getInstance(context);
-				Date startTime = Utils.shiftDate(new Date(), -PERIOD - HALF_WINDOW_SIZE);
-				Date endTime = Utils.shiftDate(new Date(), -HALF_WINDOW_SIZE);
+				final Date todayMidnight = Utils.startOfDay(new Date());
+				final Date startTime = Utils.shiftDate(todayMidnight, -PERIOD - HALF_WINDOW_SIZE);
+				final Date endTime = Utils.shiftDate(todayMidnight, -HALF_WINDOW_SIZE);
 				List<Versioned<DiaryRecord>> recs = diary
 						.findPeriod(Utils.shiftDate(startTime, -HALF_WINDOW_SIZE), Utils.shiftDate(endTime, HALF_WINDOW_SIZE), false);
 
@@ -304,8 +306,9 @@ public class FragmentTabCharts extends Fragment
 				// PREPARE DATE TREE
 
 				DiaryService diary = LocalDiary.getInstance(context);
-				Date startTime = Utils.shiftDate(new Date(), -PERIOD - HALF_WINDOW_SIZE);
-				Date endTime = Utils.shiftDate(new Date(), -HALF_WINDOW_SIZE);
+				final Date todayMidnight = Utils.startOfDay(new Date());
+				final Date startTime = Utils.shiftDate(todayMidnight, -PERIOD - HALF_WINDOW_SIZE);
+				final Date endTime = Utils.shiftDate(todayMidnight, -HALF_WINDOW_SIZE);
 				List<Versioned<DiaryRecord>> recs = diary
 						.findPeriod(Utils.shiftDate(startTime, -HALF_WINDOW_SIZE), Utils.shiftDate(endTime, HALF_WINDOW_SIZE), false);
 
