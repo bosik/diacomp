@@ -51,8 +51,6 @@ import java.util.Locale;
 
 public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 {
-	public static final String TAG = ActivityEditorMeal.class.getSimpleName();
-
 	public static final String FIELD_BS_BASE      = "bosik.pack.bs.base";
 	public static final String FIELD_BS_LAST      = "bosik.pack.bs.last";
 	public static final String FIELD_BS_TARGET    = "bosik.pack.bs.target";
