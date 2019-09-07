@@ -102,15 +102,15 @@ public class AnalyzeExtracter
 							&& (record.getTime().getTime() - prevBloodTime.getTime() < MAX_BLOCK_TIME))
 					{
 						PrimeRec item = new PrimeRec();
-						item.setBloodInTime(Utils.getDayMinutesUTC(prevBloodTime));
+						item.setBloodInTime(Utils.getDayMinutesLocal(prevBloodTime));
 						item.setBloodInValue(prevBloodValue);
-						item.setInsTime(Utils.getDayMinutesUTC(timeI));
+						item.setInsTime(Utils.getDayMinutesLocal(timeI));
 						item.setInsValue(ins);
-						item.setFoodTime(Utils.getDayMinutesUTC(timeF));
+						item.setFoodTime(Utils.getDayMinutesLocal(timeF));
 						item.setProts(prots);
 						item.setFats(fats);
 						item.setCarbs(carbs);
-						item.setBloodOutTime(Utils.getDayMinutesUTC(blood.getTime()));
+						item.setBloodOutTime(Utils.getDayMinutesLocal(blood.getTime()));
 						item.setBloodOutValue(blood.getValue());
 						item.setDate(timeF);
 						result.add(item);

@@ -219,7 +219,7 @@ public class ActivityEditorMeal extends ActivityEditorTime<MealRecord>
 		// a - BS above target (BS_TARGET..)
 
 		// commons
-		int minutesTime = Utils.getDayMinutesUTC(entity.getData().getTime());
+		int minutesTime = Utils.getDayMinutesLocal(entity.getData().getTime());
 		RateService rateService = RateServiceInternal.getInstance(this);
 		Rate rate = rateService.getRate(minutesTime);
 		double carbs = entity.getData().getCarbs();
