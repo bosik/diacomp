@@ -2,6 +2,7 @@ package org.bosik.diacomp.android.frontend.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,7 +44,14 @@ public class ActivityWelcome extends Activity
 			public void onClick(View v)
 			{
 				// TODO: implement proper survey
-				startService(new Intent(ActivityWelcome.this, FoodCommonDownloadService.class));
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+				{
+					startForegroundService(new Intent(ActivityWelcome.this, FoodCommonDownloadService.class));
+				}
+				else
+				{
+					startService(new Intent(ActivityWelcome.this, FoodCommonDownloadService.class));
+				}
 
 				clearFirstStart();
 				startActivity(new Intent(ActivityWelcome.this, ActivityMain.class));

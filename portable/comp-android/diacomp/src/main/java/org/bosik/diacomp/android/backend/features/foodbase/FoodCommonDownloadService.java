@@ -18,6 +18,7 @@
  */
 package org.bosik.diacomp.android.backend.features.foodbase;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
@@ -119,18 +120,19 @@ public class FoodCommonDownloadService extends Service
 		return START_STICKY;
 	}
 
-	private static class FoodLoadingTask extends AsyncTask<Void, Progress, Progress>
+	private class FoodLoadingTask extends AsyncTask<Void, Progress, Progress>
 	{
-		private static final AtomicBoolean inProgress = new AtomicBoolean(false);
+		private final AtomicBoolean inProgress = new AtomicBoolean(false);
 
 		private final Context                context;
 		private final long                   retryTimeout;
 		private final long                   maxRetryTimeout;
 		private final NotificationManager    notificationManager;
 		private final boolean                skipExecution;
+		private final String                 notificationTitle;
 		private final Map<Progress, Message> messages;
 
-		public FoodLoadingTask(Context context, long retryTime, long maxRetryTime)
+		FoodLoadingTask(Context context, long retryTime, long maxRetryTime)
 		{
 			if (context == null)
 			{
@@ -141,6 +143,7 @@ public class FoodCommonDownloadService extends Service
 			this.retryTimeout = retryTime;
 			this.maxRetryTimeout = maxRetryTime;
 			this.notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+			this.notificationTitle = context.getString(R.string.notification_download_foodbase);
 
 			messages = new HashMap<>();
 			messages.put(Progress.INITIALIZATION,
@@ -237,7 +240,7 @@ public class FoodCommonDownloadService extends Service
 			String text;
 			int    progress;
 
-			public Message(String text, int progress)
+			Message(String text, int progress)
 			{
 				this.text = text;
 				this.progress = progress;
@@ -293,7 +296,7 @@ public class FoodCommonDownloadService extends Service
 		{
 			Builder builder = new Builder(context, NOTIFICATION_CHANNEL_ID)
 					.setSmallIcon(R.drawable.icon)
-					.setContentTitle(context.getString(R.string.notification_download_foodbase))
+					.setContentTitle(notificationTitle)
 					.setContentText(message.text)
 					.setPriority(NotificationCompat.PRIORITY_DEFAULT)
 					.setOnlyAlertOnce(true);
@@ -304,7 +307,10 @@ public class FoodCommonDownloadService extends Service
 				builder.setProgress(100, message.progress, false);
 			}
 
-			NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_FOOD_COMMON_LOADING, builder.build());
+			final Notification notification = builder.build();
+
+			NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_FOOD_COMMON_LOADING, notification);
+			startForeground(NOTIFICATION_ID_FOOD_COMMON_LOADING, notification);
 		}
 	}
 }
