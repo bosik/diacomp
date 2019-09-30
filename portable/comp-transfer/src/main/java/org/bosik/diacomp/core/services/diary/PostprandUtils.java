@@ -151,17 +151,9 @@ public class PostprandUtils
 
 	public static List<Versioned<DiaryRecord>> fetchDiaryData(DiaryService diary, Date startTime, Date endTime)
 	{
-		long time = System.nanoTime();
-		try
-		{
-			List<Versioned<DiaryRecord>> records = diary.findPeriod(startTime, endTime, false);
-			updatePostprand(records);
-			return records;
-		}
-		finally
-		{
-			System.out.println("fetchDiaryData(): " + (System.nanoTime() - time) / 1000000 + " ms");
-		}
+		List<Versioned<DiaryRecord>> records = diary.findPeriod(startTime, endTime, false);
+		updatePostprand(records);
+		return records;
 	}
 
 	/**
