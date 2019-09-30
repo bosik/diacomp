@@ -31,6 +31,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
+
 import org.bosik.diacomp.android.R;
 import org.bosik.diacomp.android.backend.common.webclient.WebClient;
 import org.bosik.diacomp.android.backend.common.webclient.WebClientInternal;
@@ -53,8 +54,8 @@ public class FoodCommonDownloadService extends Service
 	private static final String TAG                                 = FoodCommonDownloadService.class.getSimpleName();
 	private static final String NOTIFICATION_CHANNEL_ID             = "org.bosik.diacomp.notifications.downloads";
 	private static final int    NOTIFICATION_ID_FOOD_COMMON_LOADING = 795419308;
-	public static final  String SERVICE_CALLBACK_ID                 = "org.bosik.diacomp.android:FoodCommonDownloadService";
-	public static final  String KEY_RESULT                          = "result";
+	private static final String SERVICE_CALLBACK_ID                 = "org.bosik.diacomp.android:FoodCommonDownloadService";
+	private static final String KEY_RESULT                          = "result";
 
 	private static final long TIMEOUT_INITIAL = 15 * Utils.MsecPerSec;
 	private static final long TIMEOUT_MAX     = 5 * Utils.MsecPerHour;
@@ -120,14 +121,13 @@ public class FoodCommonDownloadService extends Service
 		return START_STICKY;
 	}
 
+	private static final AtomicBoolean inProgress = new AtomicBoolean(false);
+
 	private class FoodLoadingTask extends AsyncTask<Void, Progress, Progress>
 	{
-		private final AtomicBoolean inProgress = new AtomicBoolean(false);
-
 		private final Context                context;
 		private final long                   retryTimeout;
 		private final long                   maxRetryTimeout;
-		private final NotificationManager    notificationManager;
 		private final boolean                skipExecution;
 		private final String                 notificationTitle;
 		private final Map<Progress, Message> messages;
@@ -142,7 +142,6 @@ public class FoodCommonDownloadService extends Service
 			this.context = context;
 			this.retryTimeout = retryTime;
 			this.maxRetryTimeout = maxRetryTime;
-			this.notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 			this.notificationTitle = context.getString(R.string.notification_download_foodbase);
 
 			messages = new HashMap<>();
@@ -231,7 +230,10 @@ public class FoodCommonDownloadService extends Service
 			}
 			finally
 			{
-				inProgress.set(false);
+				synchronized (inProgress)
+				{
+					inProgress.set(false);
+				}
 			}
 		}
 
@@ -271,12 +273,11 @@ public class FoodCommonDownloadService extends Service
 				return;
 			}
 
-			if (result != Progress.DONE_FAIL_NO_INTERNET)
+			if (result == Progress.DONE_OK)
 			{
-				notificationManager.cancel(NOTIFICATION_ID_FOOD_COMMON_LOADING);
+				FoodCommonDownloadService.this.stopForeground(true);
 			}
-
-			if (result != Progress.DONE_OK)
+			else
 			{
 				// re-schedule
 				final long timeout = (retryTimeout * 2 < maxRetryTimeout) ? (retryTimeout * 2) : maxRetryTimeout;
