@@ -1,10 +1,6 @@
 name: Android build
 
-on:
-  push:
-    paths:
-    - 'portable/comp-android/**'
-
+on: [push]
 
 jobs:
   build:
