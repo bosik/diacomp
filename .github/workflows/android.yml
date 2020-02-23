@@ -3,7 +3,7 @@ name: Android build
 on:
   push:
     paths:
-    - "portable/comp-android/**"
+    - 'portable/comp-android/**'
 
 
 jobs:
