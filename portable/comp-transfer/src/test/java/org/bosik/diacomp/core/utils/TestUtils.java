@@ -155,12 +155,12 @@ public class TestUtils
 
 		Locale.setDefault(new Locale("ru"));
 
-		Assert.assertEquals("10,1", Utils.formatDoubleShort(10.1));
+		Assert.assertEquals("10.1", Utils.formatDoubleShort(10.1));
 
 		Assert.assertEquals("10", Utils.formatDoubleShort(10.01));
-		Assert.assertEquals("1,4", Utils.formatDoubleShort(1.41));
-		Assert.assertEquals("1,4", Utils.formatDoubleShort(1.4000000000000004));
-		Assert.assertEquals("1,4", Utils.formatDoubleShort(10.5 - 9.1));
+		Assert.assertEquals("1.4", Utils.formatDoubleShort(1.41));
+		Assert.assertEquals("1.4", Utils.formatDoubleShort(1.4000000000000004));
+		Assert.assertEquals("1.4", Utils.formatDoubleShort(10.5 - 9.1));
 	}
 
 	@Test
