@@ -19,8 +19,18 @@ package org.bosik.diacomp.core.services.analyze.entities;
 
 public class TimePoint
 {
-	private int		time;
-	private double	value;
+	private int    time;
+	private double value;
+
+	public TimePoint()
+	{
+	}
+
+	public TimePoint(int time, double value)
+	{
+		this.time = time;
+		this.value = value;
+	}
 
 	public int getTime()
 	{
