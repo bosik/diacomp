@@ -38,7 +38,7 @@ public interface DiaryEntityRepository extends CrudRepository<DiaryEntity, Strin
 
 	List<DiaryEntity> findByUserIdAndTimeStampIsGreaterThanEqual(int userId, Date time);
 
-	List<DiaryEntity> findByUserIdAndTimeStampBetweenOrderByTimeCache(int userId, Date from, Date to);
+	List<DiaryEntity> findByUserIdAndTimeCacheBetweenOrderByTimeCache(int userId, Date from, Date to);
 
-	List<DiaryEntity> findByUserIdAndTimeStampBetweenAndDeletedIsFalseOrderByTimeCache(int userId, Date from, Date to);
+	List<DiaryEntity> findByUserIdAndTimeCacheBetweenAndDeletedIsFalseOrderByTimeCache(int userId, Date from, Date to);
 }
