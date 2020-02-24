@@ -28,7 +28,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,13 +38,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 @RestController
 @RequestMapping("/auth")
@@ -54,14 +50,10 @@ public class AuthRest extends UserRest
 	@Autowired
 	private AuthProvider authProvider;
 
-	@PostMapping(path = "/login",
-			consumes = MediaType.APPLICATION_FORM_URLENCODED
+	@PostMapping(path = "/login", consumes = MediaType.APPLICATION_FORM_URLENCODED
 			//, produces = MediaType.APPLICATION_JSON
 	)
-	public ResponseEntity login(
-			@RequestParam("login") String login,
-			@RequestParam("pass") String pass,
-			@RequestParam("api") int apiVersion)
+	public ResponseEntity login(@RequestParam("login") String login, @RequestParam("pass") String pass, @RequestParam("api") int apiVersion)
 	{
 		try
 		{
@@ -102,10 +94,8 @@ public class AuthRest extends UserRest
 		}
 	}
 
-	@POST
-	@Path("login/json")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response loginJsonCookie(String data)
+	@PostMapping(value = "/login/json", produces = MediaType.APPLICATION_JSON)
+	public ResponseEntity<String> loginJsonCookie(@RequestBody String data)
 	{
 		try
 		{
@@ -113,12 +103,12 @@ public class AuthRest extends UserRest
 
 			if (data == null || data.isEmpty())
 			{
-				return Response.status(Status.BAD_REQUEST).entity("Provide JSON body with credentials info").build();
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Provide JSON body with credentials info");
 			}
 
 			if (data.length() > 512)
 			{
-				return Response.status(Status.BAD_REQUEST).entity("Credentials object is too big").build();
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Credentials object is too big");
 			}
 
 			JSONObject json = new JSONObject(data);
@@ -128,12 +118,12 @@ public class AuthRest extends UserRest
 
 			if (!json.has(KEY_USERNAME))
 			{
-				return Response.status(Status.BAD_REQUEST).entity("Credentials: missing field '" + KEY_USERNAME + "'").build();
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Credentials: missing field '" + KEY_USERNAME + "'");
 			}
 
 			if (!json.has(KEY_PASSWORD))
 			{
-				return Response.status(Status.BAD_REQUEST).entity("Credentials: missing field '" + KEY_PASSWORD + "'").build();
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Credentials: missing field '" + KEY_PASSWORD + "'");
 			}
 
 			String username = json.getString(KEY_USERNAME);
@@ -147,18 +137,18 @@ public class AuthRest extends UserRest
 			getSession().setAttribute("Login", authentication.getPrincipal()); // for Tomcat to show in "Guessed User name" nicely
 
 			// Do not pass any data in the body in order to store the same session-id
-			return Response.ok().build();
+			return ResponseEntity.ok("");
 		}
 		catch (AuthenticationException e)
 		{
 			// Do not reset session flag here: anyone can reset your session otherwise
 			String entity = ResponseBuilder.build(ResponseBuilder.CODE_BADCREDENTIALS, "Bad username/password");
-			return Response.status(Status.UNAUTHORIZED).entity(entity).build();
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(entity);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseBuilder.buildFails());
 		}
 	}
 
@@ -228,42 +218,24 @@ public class AuthRest extends UserRest
 	}
 
 	@SuppressWarnings("static-method")
-	@GET
-	@Path("logout")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response logout()
+	@GetMapping(path = "/logout", produces = MediaType.APPLICATION_JSON)
+	public String logout()
 	{
-		try
-		{
-			SecurityContextHolder.clearContext();
-			String entity = "Logged out OK";
-			return Response.ok(entity).build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
-		}
+		SecurityContextHolder.clearContext();
+		return "Logged out OK";
 	}
 
-	@GET
-	@Path("check")
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response check()
+	@GetMapping(path = "/check", produces = MediaType.TEXT_PLAIN)
+	public ResponseEntity<String> check()
 	{
 		try
 		{
 			getUserId();
-			return Response.ok("Authorized").build();
+			return ResponseEntity.ok("Authorized");
 		}
 		catch (AuthenticationException | NotAuthorizedException e)
 		{
-			return Response.status(Status.UNAUTHORIZED).entity("Unauthorized").build();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ResponseBuilder.buildFails()).build();
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
 		}
 	}
 }
