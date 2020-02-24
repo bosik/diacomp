@@ -3,6 +3,8 @@ Diabetes Diary & Analytical System
 
 ![Maven build](https://github.com/bosik/diacomp/workflows/Maven%20build/badge.svg)
 
+![Android build](https://github.com/bosik/diacomp/workflows/Android%20build/badge.svg)
+
 <b>Features:</b>
   * Tracking patient data (BS measurements, meal, insulin dosage etc.)
   * Making sophisticated adaptive math model
