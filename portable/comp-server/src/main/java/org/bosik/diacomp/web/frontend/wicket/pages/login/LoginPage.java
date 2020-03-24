@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.web.frontend.wicket.pages.login;
 
+import lombok.NoArgsConstructor;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
@@ -41,6 +42,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 
+@NoArgsConstructor
 public class LoginPage extends MasterPage
 {
 	@SpringBean

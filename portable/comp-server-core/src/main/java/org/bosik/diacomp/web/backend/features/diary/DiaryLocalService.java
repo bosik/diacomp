@@ -17,6 +17,8 @@
  */
 package org.bosik.diacomp.web.backend.features.diary;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
@@ -44,20 +46,18 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 @Service
+@NoArgsConstructor
+@AllArgsConstructor
 public class DiaryLocalService implements UserDataService<DiaryRecord>
 {
 	private static final Parser<DiaryRecord>     parser     = new ParserDiaryRecord();
 	private static final Serializer<DiaryRecord> serializer = new SerializerAdapter<>(parser);
 
-	private final DiaryEntityRepository repository;
-	private final CachedDiaryHashTree   cachedHashTree;
+	@Autowired
+	private DiaryEntityRepository repository;
 
 	@Autowired
-	public DiaryLocalService(DiaryEntityRepository repository, CachedDiaryHashTree cachedHashTree)
-	{
-		this.repository = repository;
-		this.cachedHashTree = cachedHashTree;
-	}
+	private CachedDiaryHashTree   cachedHashTree;
 
 	private static Versioned<DiaryRecord> convert(DiaryEntity e)
 	{

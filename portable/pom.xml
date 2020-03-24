@@ -7,8 +7,9 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>comp-transfer</module>
+		<module>comp-server-core</module>
 		<module>comp-server</module>
 		<module>comp-server-rest</module>
-		<module>comp-transfer</module>
 	</modules>
 </project>

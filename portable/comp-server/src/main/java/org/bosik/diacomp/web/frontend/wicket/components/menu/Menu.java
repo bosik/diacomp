@@ -71,7 +71,7 @@ public class Menu extends GenericPanel<MenuContent>
 		String userName = getModelObject().getUserName();
 		MarkupContainer loginInfo = new WebMarkupContainer("infoLogin");
 		add(loginInfo.setVisible(!"".equals(userName))); // TODO
-		loginInfo.add(new ExternalLink("linkLogout", "j_spring_security_logout"));
+		loginInfo.add(new ExternalLink("linkLogout", "/logout"));
 		loginInfo.add(new Label("infoLoginUserName", userName));
 	}
 }

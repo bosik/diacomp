@@ -28,7 +28,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.bosik.diacomp.web.backend.common.Config;
 import org.bosik.diacomp.web.backend.features.mail.EmailSender;
-import org.bosik.diacomp.web.backend.features.mail.FakeEmailSender;
 import org.bosik.diacomp.web.backend.features.mail.SMTPEmailSender;
 import org.json.JSONObject;
 
