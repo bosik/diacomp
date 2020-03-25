@@ -134,6 +134,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <addResources>false</addResources>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -151,6 +154,7 @@
                     <dateFormat>yyyy-MM-dd HH:mm:ss</dateFormat>
                     <dateFormatTimeZone>GMT</dateFormatTimeZone>
                     <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+                    <generateGitPropertiesFile>false</generateGitPropertiesFile>
                 </configuration>
             </plugin>
         </plugins>
