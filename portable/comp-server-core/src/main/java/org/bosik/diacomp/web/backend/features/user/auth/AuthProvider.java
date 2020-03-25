@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.web.backend.features.user.auth;
 
+import lombok.NoArgsConstructor;
 import org.bosik.diacomp.core.services.exceptions.AuthException;
 import org.bosik.diacomp.core.services.exceptions.NotActivatedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +34,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@NoArgsConstructor
 public class AuthProvider implements AuthenticationProvider
 {
 	@Autowired
-	private AuthService	authService;
+	private AuthService authService;
 
 	public AuthProvider(AuthService authService)
 	{
