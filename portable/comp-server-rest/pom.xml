@@ -110,13 +110,6 @@
             <version>3.6.1</version>
         </dependency>
 
-        <!-- CUSTOM LOGGING -->
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
-
         <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
