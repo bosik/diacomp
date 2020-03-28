@@ -69,7 +69,7 @@ import java.util.TimeZone;
 public class ReportBuilder
 {
 	// style
-	private static final String      FONT_RESOURCE_NAME      = "Arial.ttf";
+	private static final String      FONT_RESOURCE_NAME      = "fonts/arial.ttf";
 	private static final float       FONT_SIZE_DEFAULT       = 8f;
 	private static final float       FONT_SIZE_HEADER        = 14f;
 	private static final Color       COLOR_HEADER_BACKGROUND = new DeviceRgb(238, 238, 238);
