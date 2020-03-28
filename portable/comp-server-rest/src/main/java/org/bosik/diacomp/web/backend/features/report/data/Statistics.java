@@ -24,9 +24,11 @@ import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.merklesync.Versioned;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalDouble;
 import java.util.TimeZone;
 import java.util.function.Function;
 
@@ -42,11 +44,12 @@ public class Statistics
 	private final AverageBS                                 averageBS;
 	private final double                                    targetMinBS;
 	private final double                                    targetMaxBS;
-	private final double                                    targetAchievement; // 0..1
+	private final OptionalDouble                            targetAchievement; // 0..1
 	private final String                                    dateStart;
 	private final String                                    dateEnd;
 
-	public Statistics(List<Versioned<DiaryRecord>> records, double targetMinBS, double targetMaxBS)
+	public Statistics(List<Versioned<DiaryRecord>> records, Date fromDate, Date toDate, double targetMinBS,
+			double targetMaxBS)
 	{
 		this.records = records;
 		this.recordsPerDay = groupByDate(records);
@@ -56,8 +59,8 @@ public class Statistics
 		this.targetMinBS = targetMinBS;
 		this.targetMaxBS = targetMaxBS;
 		this.targetAchievement = calculateTargetAchievement(records, targetMinBS, targetMaxBS);
-		this.dateStart = records.stream().map(Statistics::getDate).min(String::compareTo).get();
-		this.dateEnd = records.stream().map(Statistics::getDate).max(String::compareTo).get();
+		this.dateStart = formatDate(records.stream().map(e -> e.getData().getTime()).min(Date::compareTo).orElse(fromDate));
+		this.dateEnd = formatDate(records.stream().map(e -> e.getData().getTime()).max(Date::compareTo).orElse(toDate));
 	}
 
 	private static Map<String, List<Versioned<DiaryRecord>>> groupByDate(List<Versioned<DiaryRecord>> records)
@@ -80,9 +83,14 @@ public class Statistics
 		return metricsMap;
 	}
 
-	private double calculateTargetAchievement(List<Versioned<DiaryRecord>> records, double targetMinBS, double targetMaxBS)
+	private OptionalDouble calculateTargetAchievement(List<Versioned<DiaryRecord>> records, double targetMinBS, double targetMaxBS)
 	{
 		final List<BloodRecord> bloodRecords = filterRecords(records, BloodRecord.class);
+
+		if (bloodRecords.isEmpty())
+		{
+			return OptionalDouble.empty();
+		}
 
 		double timeTotal = 0.0;
 		double timeTarget = 0.0;
@@ -98,7 +106,7 @@ public class Statistics
 			timeTarget += getIntersectionPeriod(t1, v1, t2, v2, targetMinBS, targetMaxBS);
 		}
 
-		return timeTarget / timeTotal;
+		return OptionalDouble.of(timeTarget / timeTotal);
 	}
 
 	/**
@@ -204,7 +212,12 @@ public class Statistics
 
 	public static String getDate(Versioned<DiaryRecord> item)
 	{
-		return Utils.formatDateLocal(TimeZone.getDefault(), item.getData().getTime());
+		return formatDate(item.getData().getTime());
+	}
+
+	private static String formatDate(Date date)
+	{
+		return Utils.formatDateLocal(TimeZone.getDefault(), date);
 	}
 
 	public static <T> double weightedAverage(Iterable<T> data, Function<T, Double> valueFunction, Function<T, Double> weightFunction)

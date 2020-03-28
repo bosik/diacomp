@@ -104,4 +104,9 @@ public class AverageBS
 		deltaTime = Math.min(deltaTime, Utils.MinPerDay - deltaTime);
 		return Math.exp(-0.00005 * deltaTime * deltaTime);
 	}
+
+	public boolean isEmpty()
+	{
+		return means == null || deviations == null;
+	}
 }

@@ -46,7 +46,7 @@ public class ReportService
 		// FIXME
 		final double minBs = 3.7;
 		final double maxBs = 7.8;
-		final Statistics statistics = new Statistics(records, minBs, maxBs);
+		final Statistics statistics = new Statistics(records, fromDate, toDate, minBs, maxBs);
 
 		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try (final Document doc = new Document(new PdfDocument(new PdfWriter(outputStream))))

@@ -51,7 +51,11 @@ import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.style.markers.None;
 
+import javax.imageio.ImageIO;
 import java.awt.BasicStroke;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,13 +69,15 @@ import java.util.TimeZone;
 public class ReportBuilder
 {
 	// style
-	private static final String      FONT                    = "./comp-server-rest/src/main/resources/Arial.ttf";
+	private static final String      FONT_RESOURCE_NAME      = "Arial.ttf";
 	private static final float       FONT_SIZE_DEFAULT       = 8f;
 	private static final float       FONT_SIZE_HEADER        = 14f;
 	private static final Color       COLOR_HEADER_BACKGROUND = new DeviceRgb(238, 238, 238);
 	private static final Color       COLOR_HEADER            = new DeviceRgb(136, 136, 136);
 	private static final Color       COLOR_BORDER            = new DeviceRgb(221, 221, 221);
 	private static final SolidBorder TABLE_BORDER            = new SolidBorder(COLOR_BORDER, 0.5f);
+	private static final float       PADDING_MEDIUM          = 10f;
+	private static final float       PADDING_SMALL           = 5f;
 	private static final float       MIN_WIDTH_BLOOD_SUGAR   = 50f;
 	private static final float       MIN_WIDTH_MEAL          = 35f;
 	private static final float       MIN_WIDTH_STAT          = 120f;
@@ -79,19 +85,28 @@ public class ReportBuilder
 	public static void exportData(Document doc, Statistics statistics) throws IOException
 	{
 		final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		final InputStream is = classloader.getResourceAsStream("Arial.ttf");
-
+		final InputStream is = classloader.getResourceAsStream(FONT_RESOURCE_NAME);
 		final byte[] bytes = IOUtils.toByteArray(is);
-		//				final PdfFont font = PdfFontFactory.createFont(bytes, PdfEncodings.IDENTITY_H);
-		final PdfFont font = PdfFontFactory.createFont(FONT, PdfEncodings.IDENTITY_H);
+		final PdfFont font = PdfFontFactory.createFont(bytes, PdfEncodings.IDENTITY_H);
 
 		doc.setFont(font);
 		doc.setFontSize(FONT_SIZE_DEFAULT);
 
 		exportGeneralInfo(doc, statistics);
-		exportBloodSugar(doc, statistics);
-		exportDailyStat(doc, statistics);
-		exportDiary(doc, statistics);
+
+		if (!statistics.getRecords().isEmpty())
+		{
+			exportBloodSugar(doc, statistics);
+			exportDailyStat(doc, statistics);
+			exportDiary(doc, statistics);
+		}
+		else
+		{
+			doc.add(new Paragraph("Данные отсутствуют")
+					.setPaddingTop(PADDING_MEDIUM)
+					.setFontColor(COLOR_HEADER)
+			);
+		}
 	}
 
 	private static void exportGeneralInfo(Document doc, Statistics statistics)
@@ -122,9 +137,11 @@ public class ReportBuilder
 				statistics.getTargetMaxBS())));
 
 		table.addCell(buildCellBorderless("Нахождение в целевом интервале:"));
-		table.addCell(buildCellBorderless(String.format(Locale.US, "%.1f %%",
-				statistics.getTargetAchievement() * 100)));
-
+		table.addCell(buildCellBorderless(
+				statistics.getTargetAchievement().isPresent()
+						? String.format(Locale.US, "%.1f %%", statistics.getTargetAchievement().getAsDouble() * 100)
+						: "–"
+		));
 		doc.add(table);
 	}
 
@@ -143,9 +160,23 @@ public class ReportBuilder
 
 	private static Image buildImageHistoryBs(Statistics statistics) throws IOException
 	{
+		final int CHART_WIDTH = 800;
+		final int CHART_HEIGHT = 320;
+
+		final List<BloodRecord> bloodRecords = Statistics.filterRecords(statistics.getRecords(), BloodRecord.class);
+
+		if (bloodRecords.isEmpty())
+		{
+			try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
+			{
+				writeNoDataImage(CHART_WIDTH, CHART_HEIGHT, stream);
+				return new Image(ImageDataFactory.create(stream.toByteArray()));
+			}
+		}
+
 		final XYChart chart = new XYChartBuilder()
-				.width(800)
-				.height(320)
+				.width(CHART_WIDTH)
+				.height(CHART_HEIGHT)
 				.xAxisTitle("Дата")
 				.yAxisTitle("СК, ммоль/л")
 				.build();
@@ -171,7 +202,7 @@ public class ReportBuilder
 		//			}
 		//		});
 
-		Statistics.filterRecords(statistics.getRecords(), BloodRecord.class).forEach(r ->
+		bloodRecords.forEach(r ->
 		{
 			axisX.add(r.getTime());
 			axisY.add(r.getValue());
@@ -192,9 +223,21 @@ public class ReportBuilder
 
 	private static Image buildImageAverageBs(AverageBS bs) throws IOException
 	{
+		final int CHART_WIDTH = 800;
+		final int CHART_HEIGHT = 320;
+
+		if (bs.isEmpty())
+		{
+			try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
+			{
+				writeNoDataImage(CHART_WIDTH, CHART_HEIGHT, stream);
+				return new Image(ImageDataFactory.create(stream.toByteArray()));
+			}
+		}
+
 		final XYChart chart = new XYChartBuilder()
-				.width(800)
-				.height(320)
+				.width(CHART_WIDTH)
+				.height(CHART_HEIGHT)
 				.xAxisTitle("Время, ч")
 				.yAxisTitle("СК, ммоль/л")
 				.build();
@@ -251,9 +294,21 @@ public class ReportBuilder
 
 	private static Image buildImageDailyBs(List<Versioned<DiaryRecord>> records, double maxBs) throws IOException
 	{
+		final int CHART_WIDTH = 200;
+		final int CHART_HEIGHT = 150;
+
+		if (records.isEmpty())
+		{
+			try (ByteArrayOutputStream stream = new ByteArrayOutputStream())
+			{
+				writeNoDataImage(CHART_WIDTH, CHART_HEIGHT, stream);
+				return new Image(ImageDataFactory.create(stream.toByteArray()));
+			}
+		}
+
 		final XYChart chart = new XYChartBuilder()
-				.width(200)
-				.height(150)
+				.width(CHART_WIDTH)
+				.height(CHART_HEIGHT)
 				.build();
 
 		chart.getStyler()
@@ -295,6 +350,27 @@ public class ReportBuilder
 			BitmapEncoder.saveBitmap(chart, stream, BitmapEncoder.BitmapFormat.PNG);
 			return new Image(ImageDataFactory.create(stream.toByteArray()));
 		}
+	}
+
+	private static void writeNoDataImage(int width, int height, ByteArrayOutputStream outputStream) throws IOException
+	{
+		final String text = "Нет данных";
+		final BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		final Graphics graphics = bufferedImage.getGraphics();
+
+		graphics.setColor(java.awt.Color.WHITE);
+		graphics.fillRect(0, 0, width, height);
+
+		graphics.setColor(new java.awt.Color(
+				COLOR_HEADER.getColorValue()[0],
+				COLOR_HEADER.getColorValue()[1],
+				COLOR_HEADER.getColorValue()[2]));
+		final FontMetrics metrics = graphics.getFontMetrics(graphics.getFont());
+		final int x = (width - metrics.stringWidth(text)) / 2;
+		final int y = ((height - metrics.getHeight()) / 2) + metrics.getAscent();
+		graphics.drawString(text, x, y);
+
+		ImageIO.write(bufferedImage, "png", outputStream);
 	}
 
 	private static void exportDailyStat(Document doc, Statistics statistics)
@@ -510,8 +586,8 @@ public class ReportBuilder
 				.setFontColor(COLOR_HEADER)
 				.setFontSize(FONT_SIZE_HEADER)
 				.setBold()
-				.setPaddingTop(10f)
-				.setPaddingBottom(5f);
+				.setPaddingTop(PADDING_MEDIUM)
+				.setPaddingBottom(PADDING_SMALL);
 	}
 
 	private static Cell buildCellEmpty()
