@@ -24,10 +24,10 @@ import java.io.Serializable;
 @Embeddable
 public class PreferenceEntityPK implements Serializable
 {
-	@Column(name = "_userid")
+	@Column(name = "user_id")
 	private int userId;
 
-	@Column(name = "_key", columnDefinition = "CHAR(32)")
+	@Column(name = "key", columnDefinition = "CHAR(32)")
 	private String key;
 
 	public PreferenceEntityPK()

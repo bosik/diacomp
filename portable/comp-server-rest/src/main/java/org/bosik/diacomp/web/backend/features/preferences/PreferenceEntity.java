@@ -30,10 +30,10 @@ public class PreferenceEntity implements Serializable
 	@EmbeddedId
 	private PreferenceEntityPK id;
 
-	@Column(name = "_value")
+	@Column(name = "value")
 	private String value;
 
-	@Column(name = "_version")
+	@Column(name = "version")
 	private int version;
 
 	public PreferenceEntityPK getId()

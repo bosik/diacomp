@@ -28,34 +28,34 @@ import java.util.Date;
 public class FoodUserEntity
 {
 	@Id
-	@Column(name = "ID", columnDefinition = "CHAR(32)")
+	@Column(name = "id", columnDefinition = "CHAR(32)")
 	private String id;
 
-	@Column(name = "userid")
+	@Column(name = "user_id")
 	private int userId;
 
-	@Column(name = "Name")
+	@Column(name = "name")
 	private String name;
 
-	@Column(name = "Prots", columnDefinition = "DECIMAL")
+	@Column(name = "prots", columnDefinition = "DECIMAL")
 	private double prots;
 
-	@Column(name = "Fats", columnDefinition = "DECIMAL")
+	@Column(name = "fats", columnDefinition = "DECIMAL")
 	private double fats;
 
-	@Column(name = "Carbs", columnDefinition = "DECIMAL")
+	@Column(name = "carbs", columnDefinition = "DECIMAL")
 	private double carbs;
 
-	@Column(name = "Value", columnDefinition = "DECIMAL")
+	@Column(name = "value", columnDefinition = "DECIMAL")
 	private double value;
 
-	@Column(name = "fromtable")
+	@Column(name = "from_table")
 	private boolean fromTable;
 
 	@Column(name = "deleted")
 	private boolean deleted;
 
-	@Column(name = "lastmodified")
+	@Column(name = "last_modified")
 	private Date lastModified;
 
 	@Column(name = "hash", columnDefinition = "CHAR(32)")

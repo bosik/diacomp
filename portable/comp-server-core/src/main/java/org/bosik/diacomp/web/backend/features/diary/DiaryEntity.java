@@ -24,32 +24,32 @@ import javax.persistence.Table;
 import java.util.Date;
 
 @Entity
-@Table(name = "diary2")
+@Table(name = "diary")
 public class DiaryEntity
 {
 	@Id
-	@Column(name = "_GUID", columnDefinition = "CHAR(32)")
+	@Column(name = "id", columnDefinition = "CHAR(32)")
 	private String id;
 
-	@Column(name = "_userid")
+	@Column(name = "user_id")
 	private int userId;
 
-	@Column(name = "_timestamp")
+	@Column(name = "time_stamp")
 	private Date timeStamp;
 
-	@Column(name = "_hash", columnDefinition = "CHAR(32)")
+	@Column(name = "hash", columnDefinition = "CHAR(32)")
 	private String hash;
 
-	@Column(name = "_version")
+	@Column(name = "version")
 	private int version;
 
-	@Column(name = "_deleted")
+	@Column(name = "deleted")
 	private boolean deleted;
 
-	@Column(name = "_content", columnDefinition = "TEXT")
+	@Column(name = "content", columnDefinition = "TEXT")
 	private String content;
 
-	@Column(name = "_timecache")
+	@Column(name = "time_cache")
 	private Date timeCache;
 
 	public String getId()

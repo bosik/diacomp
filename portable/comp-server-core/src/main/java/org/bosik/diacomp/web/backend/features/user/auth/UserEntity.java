@@ -28,25 +28,25 @@ import java.util.Date;
 public class UserEntity
 {
 	@Id
-	@Column(name = "ID")
+	@Column(name = "id")
 	private int id;
 
-	@Column(name = "Login")
+	@Column(name = "login")
 	private String name;
 
-	@Column(name = "hashpass", columnDefinition = "CHAR")
+	@Column(name = "hash_pass", columnDefinition = "CHAR")
 	private String hashPass;
 
-	@Column(name = "activationkey", columnDefinition = "CHAR(64)")
+	@Column(name = "activation_key", columnDefinition = "CHAR(64)")
 	private String activationKey;
 
-	@Column(name = "restorekey", columnDefinition = "CHAR(64)")
+	@Column(name = "restore_key", columnDefinition = "CHAR(64)")
 	private String restoreKey;
 
-	@Column(name = "datereg")
+	@Column(name = "date_sign_up")
 	private Date registrationDate;
 
-	@Column(name = "datelogin")
+	@Column(name = "date_sign_in")
 	private Date loginDate;
 
 	public int getId()
