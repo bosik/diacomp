@@ -59,6 +59,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -292,7 +293,9 @@ public class ReportBuilder
 		}
 	}
 
-	private static Image buildImageDailyBs(List<Versioned<DiaryRecord>> records, double maxBs, TimeZone timeZone) throws IOException
+	private static Image buildImageDailyBs(List<Versioned<DiaryRecord>> records,
+			BloodRecord prevBloodRecord, BloodRecord nextBloodRecord, double maxBs,
+			TimeZone timeZone) throws IOException
 	{
 		final int CHART_WIDTH = 200;
 		final int CHART_HEIGHT = 150;
@@ -327,18 +330,32 @@ public class ReportBuilder
 
 		if (!bloodRecords.isEmpty())
 		{
-			final double[] axisX = new double[bloodRecords.size()];
-			final double[] axisY = new double[bloodRecords.size()];
+			final List<Double> axisX = new ArrayList<>();
+			final List<Double> axisY = new ArrayList<>();
 
-			for (int i = 0; i < bloodRecords.size(); i++)
+			if (prevBloodRecord != null)
 			{
-				final int time = Utils.getDayMinutes(bloodRecords.get(i).getTime(), timeZone);
-				axisX[i] = (double) time / Utils.MinPerHour;
-				axisY[i] = bloodRecords.get(i).getValue();
+				final int time = Utils.getDayMinutes(prevBloodRecord.getTime(), timeZone) - Utils.MinPerDay;
+				axisX.add((double) time / Utils.MinPerHour);
+				axisY.add(prevBloodRecord.getValue());
+			}
+
+			for (BloodRecord bloodRecord : bloodRecords)
+			{
+				final int time = Utils.getDayMinutes(bloodRecord.getTime(), timeZone);
+				axisX.add((double) time / Utils.MinPerHour);
+				axisY.add(bloodRecord.getValue());
+			}
+
+			if (nextBloodRecord != null)
+			{
+				final int time = Utils.getDayMinutes(nextBloodRecord.getTime(), timeZone) + Utils.MinPerDay;
+				axisX.add((double) time / Utils.MinPerHour);
+				axisY.add(nextBloodRecord.getValue());
 			}
 
 			// Series
-			final XYSeries series = chart.addSeries("СК", axisX, axisY);
+			final XYSeries series = chart.addSeries("СК", toArray(axisX), toArray(axisY));
 			series.setMarker(new None());
 			series.setLineColor(java.awt.Color.RED);
 			series.setSmooth(true);
@@ -350,6 +367,16 @@ public class ReportBuilder
 			BitmapEncoder.saveBitmap(chart, stream, BitmapEncoder.BitmapFormat.PNG);
 			return new Image(ImageDataFactory.create(stream.toByteArray()));
 		}
+	}
+
+	private static double[] toArray(List<Double> list)
+	{
+		final double[] array = new double[list.size()];
+		for (int i = 0; i < array.length; i++)
+		{
+			array[i] = list.get(i);
+		}
+		return array;
 	}
 
 	private static void writeNoDataImage(int width, int height, ByteArrayOutputStream outputStream) throws IOException
@@ -493,8 +520,13 @@ public class ReportBuilder
 				.max()
 				.orElse(12.0);
 
-		for (Map.Entry<String, List<Versioned<DiaryRecord>>> entry : statistics.getRecordsPerDay().entrySet())
+		final List<Map.Entry<String, List<Versioned<DiaryRecord>>>> list = new ArrayList<>(
+				statistics.getRecordsPerDay().entrySet());
+
+		for (int i = 0; i < list.size(); i++)
 		{
+			final Map.Entry<String, List<Versioned<DiaryRecord>>> entry = list.get(i);
+
 			final String date = entry.getKey();
 			final List<Versioned<DiaryRecord>> records = entry.getValue();
 
@@ -535,13 +567,59 @@ public class ReportBuilder
 
 				if (firstRecord)
 				{
-					table.addCell(buildCellStats(records.size(), buildImageDailyBs(records, maxBs, statistics.getTimeZone())));
+					final BloodRecord prevBloodRecord = getPrevBloodRecord(list, i);
+					final BloodRecord nextBloodRecord = getNextBloodRecord(list, i);
+
+					final Image chart = buildImageDailyBs(records, prevBloodRecord, nextBloodRecord, maxBs, statistics.getTimeZone());
+					table.addCell(buildCellStats(records.size(), chart));
 					firstRecord = false;
 				}
 			}
 		}
 
 		doc.add(table);
+	}
+
+	private static BloodRecord getPrevBloodRecord(List<Map.Entry<String, List<Versioned<DiaryRecord>>>> list, int i)
+	{
+		final Map.Entry<String, List<Versioned<DiaryRecord>>> entry = list.get(i);
+		final LocalDate currentDate = LocalDate.parse(entry.getKey());
+
+		if (i > 0)
+		{
+			final LocalDate prevDate = LocalDate.parse(list.get(i - 1).getKey());
+			if (currentDate.minusDays(1).equals(prevDate))
+			{
+				final List<BloodRecord> bloodRecords = Statistics.filterRecords(list.get(i - 1).getValue(), BloodRecord.class);
+				if (!bloodRecords.isEmpty())
+				{
+					return bloodRecords.get(bloodRecords.size() - 1);
+				}
+			}
+		}
+
+		return null;
+	}
+
+	private static BloodRecord getNextBloodRecord(List<Map.Entry<String, List<Versioned<DiaryRecord>>>> list, int i)
+	{
+		final Map.Entry<String, List<Versioned<DiaryRecord>>> entry = list.get(i);
+		final LocalDate currentDate = LocalDate.parse(entry.getKey());
+
+		if (i < list.size() - 1)
+		{
+			final LocalDate nextDate = LocalDate.parse(list.get(i + 1).getKey());
+			if (currentDate.plusDays(1).equals(nextDate))
+			{
+				final List<BloodRecord> bloodRecords = Statistics.filterRecords(list.get(i + 1).getValue(), BloodRecord.class);
+				if (!bloodRecords.isEmpty())
+				{
+					return bloodRecords.get(0);
+				}
+			}
+		}
+
+		return null;
 	}
 
 	private static void addRecordBlood(Table table, String time, String value)
