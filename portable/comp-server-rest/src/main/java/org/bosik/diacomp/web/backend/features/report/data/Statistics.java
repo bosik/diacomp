@@ -47,28 +47,30 @@ public class Statistics
 	private final OptionalDouble                            targetAchievement; // 0..1
 	private final String                                    dateStart;
 	private final String                                    dateEnd;
+	private final TimeZone                                  timeZone;
 
 	public Statistics(List<Versioned<DiaryRecord>> records, Date fromDate, Date toDate, double targetMinBS,
-			double targetMaxBS)
+			double targetMaxBS, TimeZone timeZone)
 	{
 		this.records = records;
-		this.recordsPerDay = groupByDate(records);
-		this.metrics = buildMetrics(recordsPerDay);
-		this.totalMetrics = new Metrics(records);
+		this.recordsPerDay = groupByDate(records, timeZone);
+		this.metrics = buildMetrics(recordsPerDay, timeZone);
+		this.totalMetrics = new Metrics(records, timeZone);
 		this.averageBS = new AverageBS(records, 20);
 		this.targetMinBS = targetMinBS;
 		this.targetMaxBS = targetMaxBS;
 		this.targetAchievement = calculateTargetAchievement(records, targetMinBS, targetMaxBS);
-		this.dateStart = formatDate(records.stream().map(e -> e.getData().getTime()).min(Date::compareTo).orElse(fromDate));
-		this.dateEnd = formatDate(records.stream().map(e -> e.getData().getTime()).max(Date::compareTo).orElse(toDate));
+		this.dateStart = formatDate(records.stream().map(e -> e.getData().getTime()).min(Date::compareTo).orElse(fromDate), timeZone);
+		this.dateEnd = formatDate(records.stream().map(e -> e.getData().getTime()).max(Date::compareTo).orElse(toDate), timeZone);
+		this.timeZone = timeZone;
 	}
 
-	private static Map<String, List<Versioned<DiaryRecord>>> groupByDate(List<Versioned<DiaryRecord>> records)
+	private static Map<String, List<Versioned<DiaryRecord>>> groupByDate(List<Versioned<DiaryRecord>> records, TimeZone timeZone)
 	{
 		final Map<String, List<Versioned<DiaryRecord>>> paged = new LinkedHashMap<>();
 		for (Versioned<DiaryRecord> item : records)
 		{
-			final String date = getDate(item);
+			final String date = getDate(item, timeZone);
 			paged.putIfAbsent(date, new ArrayList<>());
 			paged.get(date).add(item);
 		}
@@ -76,10 +78,10 @@ public class Statistics
 		return paged;
 	}
 
-	private static Map<String, Metrics> buildMetrics(Map<String, List<Versioned<DiaryRecord>>> diary)
+	private static Map<String, Metrics> buildMetrics(Map<String, List<Versioned<DiaryRecord>>> diary, TimeZone timeZone)
 	{
 		final Map<String, Metrics> metricsMap = new LinkedHashMap<>();
-		diary.forEach((date, records) -> metricsMap.put(date, new Metrics(records)));
+		diary.forEach((date, records) -> metricsMap.put(date, new Metrics(records, timeZone)));
 		return metricsMap;
 	}
 
@@ -210,14 +212,14 @@ public class Statistics
 				.collect(toList());
 	}
 
-	public static String getDate(Versioned<DiaryRecord> item)
+	public static String getDate(Versioned<DiaryRecord> item, TimeZone timeZone)
 	{
-		return formatDate(item.getData().getTime());
+		return formatDate(item.getData().getTime(), timeZone);
 	}
 
-	private static String formatDate(Date date)
+	private static String formatDate(Date date, TimeZone timeZone)
 	{
-		return Utils.formatDateLocal(TimeZone.getDefault(), date);
+		return Utils.formatDateLocal(timeZone, date);
 	}
 
 	public static <T> double weightedAverage(Iterable<T> data, Function<T, Double> valueFunction, Function<T, Double> weightFunction)

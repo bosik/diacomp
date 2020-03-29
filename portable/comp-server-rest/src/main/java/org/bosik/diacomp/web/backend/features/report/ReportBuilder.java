@@ -292,7 +292,7 @@ public class ReportBuilder
 		}
 	}
 
-	private static Image buildImageDailyBs(List<Versioned<DiaryRecord>> records, double maxBs) throws IOException
+	private static Image buildImageDailyBs(List<Versioned<DiaryRecord>> records, double maxBs, TimeZone timeZone) throws IOException
 	{
 		final int CHART_WIDTH = 200;
 		final int CHART_HEIGHT = 150;
@@ -332,7 +332,7 @@ public class ReportBuilder
 
 			for (int i = 0; i < bloodRecords.size(); i++)
 			{
-				final int time = Utils.getDayMinutesLocal(bloodRecords.get(i).getTime());
+				final int time = Utils.getDayMinutes(bloodRecords.get(i).getTime(), timeZone);
 				axisX[i] = (double) time / Utils.MinPerHour;
 				axisY[i] = bloodRecords.get(i).getValue();
 			}
@@ -505,7 +505,7 @@ public class ReportBuilder
 			// print records
 			for (Versioned<DiaryRecord> record : records)
 			{
-				final String time = Utils.formatTimeLocalShort(TimeZone.getDefault(), record.getData().getTime());
+				final String time = Utils.formatTimeLocalShort(statistics.getTimeZone(), record.getData().getTime());
 
 				if (record.getData() instanceof BloodRecord)
 				{
@@ -535,7 +535,7 @@ public class ReportBuilder
 
 				if (firstRecord)
 				{
-					table.addCell(buildCellStats(records.size(), buildImageDailyBs(records, maxBs)));
+					table.addCell(buildCellStats(records.size(), buildImageDailyBs(records, maxBs, statistics.getTimeZone())));
 					firstRecord = false;
 				}
 			}

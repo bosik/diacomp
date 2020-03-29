@@ -32,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @Service
 @RequiredArgsConstructor
@@ -39,14 +40,14 @@ public class ReportService
 {
 	private final DiaryLocalService diaryService;
 
-	public Report exportReport(int userId, Date fromDate, Date toDate) throws IOException
+	public Report exportReport(int userId, Date fromDate, Date toDate, TimeZone timeZone) throws IOException
 	{
 		final List<Versioned<DiaryRecord>> records = diaryService.findPeriod(userId, fromDate, toDate, false);
 
 		// FIXME
 		final double minBs = 3.7;
 		final double maxBs = 7.8;
-		final Statistics statistics = new Statistics(records, fromDate, toDate, minBs, maxBs);
+		final Statistics statistics = new Statistics(records, fromDate, toDate, minBs, maxBs, timeZone);
 
 		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try (final Document doc = new Document(new PdfDocument(new PdfWriter(outputStream))))

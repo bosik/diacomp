@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 import java.util.Date;
+import java.util.TimeZone;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,20 +37,23 @@ import java.util.Date;
 public class ReportRest extends UserRest
 {
 	private static final int MAX_DATETIME_SIZE = Utils.FORMAT_DATE_TIME.length();
+	private static final int MAX_TIMEZONE_SIZE = "GMT+00:00".length();
 
 	private final ReportService reportService;
 
 	@GetMapping(path = "/pdf", produces = "application/pdf")
 	public ResponseEntity<byte[]> exportPdfReport(
 			@RequestParam("from") String parFromDate,
-			@RequestParam("to") String parToDate
+			@RequestParam("to") String parToDate,
+			@RequestParam("timeZone") String parTimeZone
 	) throws IOException
 	{
 		final int userId = getUserId();
 		final Date fromDate = safeParseTimeUTC(parFromDate);
 		final Date toDate = safeParseTimeUTC(parToDate);
+		final TimeZone timeZone = safeParseTimeZone(parTimeZone);
 
-		final ReportService.Report report = reportService.exportReport(userId, fromDate, toDate);
+		final ReportService.Report report = reportService.exportReport(userId, fromDate, toDate, timeZone);
 
 		return ResponseEntity.ok()
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + report.getFileName() + "\"")
@@ -60,5 +64,11 @@ public class ReportRest extends UserRest
 	{
 		Utils.checkSize(s, MAX_DATETIME_SIZE);
 		return Utils.parseTimeUTC(s);
+	}
+
+	private static TimeZone safeParseTimeZone(String s)
+	{
+		Utils.checkSize(s, MAX_TIMEZONE_SIZE);
+		return TimeZone.getTimeZone(s);
 	}
 }

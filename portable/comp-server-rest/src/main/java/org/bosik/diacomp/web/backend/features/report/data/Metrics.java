@@ -26,6 +26,7 @@ import org.bosik.merklesync.Versioned;
 
 import java.util.List;
 import java.util.OptionalDouble;
+import java.util.TimeZone;
 
 @Value
 public class Metrics
@@ -45,13 +46,13 @@ public class Metrics
 	private OptionalDouble averageBs;
 	private OptionalDouble deviationBs;
 
-	public Metrics(List<Versioned<DiaryRecord>> records)
+	public Metrics(List<Versioned<DiaryRecord>> records, TimeZone timeZone)
 	{
 		final List<BloodRecord> bloodRecords = Statistics.filterRecords(records, BloodRecord.class);
 		final List<InsRecord> insRecords = Statistics.filterRecords(records, InsRecord.class);
 		final List<MealRecord> meals = Statistics.filterRecords(records, MealRecord.class);
 
-		this.count = countDistinctDays(records);
+		this.count = countDistinctDays(records, timeZone);
 		this.totalBsCount = bloodRecords.size();
 		this.averageBs = bloodRecords.stream().mapToDouble(BloodRecord::getValue).average();
 		this.deviationBs = bloodRecords.size() > 0
@@ -76,10 +77,10 @@ public class Metrics
 		this.averageValue = count > 0 ? OptionalDouble.of(totalValue / count) : OptionalDouble.empty();
 	}
 
-	private int countDistinctDays(List<Versioned<DiaryRecord>> records)
+	private int countDistinctDays(List<Versioned<DiaryRecord>> records, TimeZone timeZone)
 	{
 		return (int) records.stream()
-				.map(Statistics::getDate)
+				.map(e -> Statistics.getDate(e, timeZone))
 				.distinct()
 				.count();
 	}

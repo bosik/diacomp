@@ -1023,7 +1023,7 @@ public class Utils
 	 * @param timezone Timezone
 	 * @return
 	 */
-	private static int getDayMinutes(Date time, TimeZone timezone)
+	public static int getDayMinutes(Date time, TimeZone timezone)
 	{
 		Calendar c = Calendar.getInstance(timezone);
 		c.setTime(time);
