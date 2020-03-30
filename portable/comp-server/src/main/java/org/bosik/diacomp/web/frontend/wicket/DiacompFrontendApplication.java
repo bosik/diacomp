@@ -46,8 +46,8 @@ public class DiacompFrontendApplication extends SpringBootServletInitializer
 						"/api/**", // managed by REST service
 						"/about",
 						"/login**",
-						"/register**",
-						"/restore",
+						"/register/**",
+						"/restore/**",
 						"/legal/**",
 						"/wicket/resource/**",
 						"/res/**",
