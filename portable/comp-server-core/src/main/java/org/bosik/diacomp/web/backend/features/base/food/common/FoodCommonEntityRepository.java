@@ -28,7 +28,7 @@ public interface FoodCommonEntityRepository extends CrudRepository<FoodCommonEnt
 {
 	List<FoodCommonEntity> findAll();
 
-	@Query(value = "SELECT * FROM food_common WHERE id NOT IN (SELECT id FROM food_user WHERE UserID = :userId)", nativeQuery = true)
+	@Query(value = "SELECT * FROM food_common WHERE id NOT IN (SELECT id FROM food_user WHERE user_id = :userId)", nativeQuery = true)
 	List<FoodCommonEntity> findNotOverridden(@Param("userId") int userId);
 
 	List<FoodCommonEntity> findByDeletedIsFalse();

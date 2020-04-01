@@ -45,11 +45,10 @@ public interface FoodUserEntityRepository extends CrudRepository<FoodUserEntity,
 	List<FoodUserEntity> findByUserIdAndLastModifiedIsGreaterThanEqual(int userId, Date since);
 
 	@Query(value = "SELECT COUNT(1) FROM (SELECT id FROM food_common WHERE id LIKE :prefix% " + "UNION "
-			+ "SELECT id FROM food_user WHERE id LIKE :prefix% AND userid = :userId) AS T", nativeQuery = true)
+			+ "SELECT id FROM food_user WHERE id LIKE :prefix% AND user_id = :userId) AS T", nativeQuery = true)
 	int countCombo(@Param("userId") int userId, @Param("prefix") String prefix);
 
 	@Query(value = "SELECT COUNT(1) FROM (SELECT id FROM food_common " + "UNION "
-			+ "SELECT id FROM food_user WHERE userid = :userId) AS T", nativeQuery = true)
+			+ "SELECT id FROM food_user WHERE user_id = :userId) AS T", nativeQuery = true)
 	int countCombo(@Param("userId") int userId);
-
 }
