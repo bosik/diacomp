@@ -50,9 +50,7 @@ public class AuthRest extends UserRest
 	@Autowired
 	private AuthProvider authProvider;
 
-	@PostMapping(path = "/login", consumes = MediaType.APPLICATION_FORM_URLENCODED
-			//, produces = MediaType.APPLICATION_JSON
-	)
+	@PostMapping(path = "/login", consumes = MediaType.APPLICATION_FORM_URLENCODED)
 	public ResponseEntity login(@RequestParam("login") String login, @RequestParam("pass") String pass, @RequestParam("api") int apiVersion)
 	{
 		try
@@ -137,7 +135,7 @@ public class AuthRest extends UserRest
 			getSession().setAttribute("Login", authentication.getPrincipal()); // for Tomcat to show in "Guessed User name" nicely
 
 			// Do not pass any data in the body in order to store the same session-id
-			return ResponseEntity.ok("");
+			return ResponseEntity.ok().build();
 		}
 		catch (AuthenticationException e)
 		{
@@ -218,7 +216,7 @@ public class AuthRest extends UserRest
 	}
 
 	@SuppressWarnings("static-method")
-	@GetMapping(path = "/logout", produces = MediaType.APPLICATION_JSON)
+	@GetMapping(path = "/logout", produces = MediaType.TEXT_PLAIN)
 	public String logout()
 	{
 		SecurityContextHolder.clearContext();
