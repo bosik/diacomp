@@ -21,6 +21,8 @@ import junit.framework.TestCase;
 import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.persistence.serializers.SerializerFoodMassedPlain;
 
+import java.text.DecimalFormatSymbols;
+
 public class TestSerializerFoodMassedPlain extends TestCase
 {
 	private final SerializerFoodMassedPlain serializer = new SerializerFoodMassedPlain();
@@ -64,7 +66,9 @@ public class TestSerializerFoodMassedPlain extends TestCase
 
 	public void test_write_normal_Ok()
 	{
-		FoodMassed food = new FoodMassed();
+		final char sep = new DecimalFormatSymbols().getDecimalSeparator();
+
+		final FoodMassed food = new FoodMassed();
 		food.setName("Колбаса");
 		food.setRelProts(12.7);
 		food.setRelFats(19.1);
@@ -72,6 +76,7 @@ public class TestSerializerFoodMassedPlain extends TestCase
 		food.setRelValue(270);
 		food.setMass(40);
 
-		assertEquals("Колбаса[12,7|19,1|0|270]:40", serializer.write(food));
+		final String expected = String.format("Колбаса[12%s7|19%s1|0|270]:40", sep, sep);
+		assertEquals(expected, serializer.write(food));
 	}
 }
