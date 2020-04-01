@@ -18,8 +18,8 @@
 package org.bosik.diacomp.web.backend.features.base.food.user;
 
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -27,12 +27,8 @@ import java.util.Date;
 @Table(name = "food_user")
 public class FoodUserEntity
 {
-	@Id
-	@Column(name = "id", columnDefinition = "CHAR(32)")
-	private String id;
-
-	@Column(name = "user_id")
-	private int userId;
+	@EmbeddedId
+	private FoodUserEntityPK id;
 
 	@Column(name = "name")
 	private String name;
@@ -64,24 +60,14 @@ public class FoodUserEntity
 	@Column(name = "version")
 	private int version;
 
-	public String getId()
+	public FoodUserEntityPK getId()
 	{
 		return id;
 	}
 
-	public void setId(String id)
+	public void setId(FoodUserEntityPK id)
 	{
 		this.id = id;
-	}
-
-	public int getUserId()
-	{
-		return userId;
-	}
-
-	public void setUserId(int userId)
-	{
-		this.userId = userId;
 	}
 
 	public String getName()

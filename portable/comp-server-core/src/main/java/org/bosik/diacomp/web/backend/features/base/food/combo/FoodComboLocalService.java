@@ -242,7 +242,7 @@ public class FoodComboLocalService
 		}
 
 		// fetch user food
-		List<FoodUserEntity> foodUser = foodUserEntityRepository.findByUserId(userId);
+		List<FoodUserEntity> foodUser = foodUserEntityRepository.findByIdUserId(userId);
 		for (FoodUserEntity f : foodUser)
 		{
 			if (s.length() > 1)
@@ -283,7 +283,7 @@ public class FoodComboLocalService
 		}
 
 		// fetch user food
-		List<FoodUserEntity> foodUser = foodUserEntityRepository.findByUserId(userId);
+		List<FoodUserEntity> foodUser = foodUserEntityRepository.findByIdUserId(userId);
 		for (FoodUserEntity f : foodUser)
 		{
 			s.append(Utils.removeTabs(f.getName())).append('\t');

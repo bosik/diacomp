@@ -64,7 +64,7 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 		food.setFromTable(e.isFromTable());
 
 		final Versioned<FoodItem> item = new Versioned<>();
-		item.setId(e.getId());
+		item.setId(e.getId().getId());
 		item.setTimeStamp(e.getLastModified());
 		item.setHash(e.getHash());
 		item.setVersion(e.getVersion());
@@ -97,7 +97,7 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 	@Override
 	public int count(int userId)
 	{
-		return repository.countByUserId(userId);
+		return repository.countByIdUserId(userId);
 	}
 
 	@Override
@@ -108,12 +108,12 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 			throw new IllegalArgumentException("ID prefix is null");
 		}
 
-		return repository.countByUserIdAndIdStartingWith(userId, prefix);
+		return repository.countByIdUserIdAndIdIdStartingWith(userId, prefix);
 	}
 
 	public void delete(int userId, String id)
 	{
-		final FoodUserEntity entity = repository.findByUserIdAndId(userId, id);
+		final FoodUserEntity entity = repository.findByIdUserIdAndIdId(userId, id);
 
 		if (entity == null)
 		{
@@ -138,41 +138,41 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 	{
 		if (includeRemoved)
 		{
-			return convert(repository.findByUserId(userId));
+			return convert(repository.findByIdUserId(userId));
 		}
 		else
 		{
-			return convert(repository.findByUserIdAndDeletedIsFalse(userId));
+			return convert(repository.findByIdUserIdAndDeletedIsFalse(userId));
 		}
 	}
 
 	public List<Versioned<FoodItem>> findAny(int userId, String filter)
 	{
 		// TODO: do we need this sorting?
-		return convert(repository.findByUserIdAndDeletedIsFalseAndNameContainingOrderByName(userId, filter));
+		return convert(repository.findByIdUserIdAndDeletedIsFalseAndNameContainingOrderByName(userId, filter));
 	}
 
 	@Override
 	public Versioned<FoodItem> findById(int userId, String id)
 	{
-		return convert(repository.findByUserIdAndId(userId, id));
+		return convert(repository.findByIdUserIdAndIdId(userId, id));
 	}
 
 	@Override
 	public List<Versioned<FoodItem>> findByIdPrefix(int userId, String prefix)
 	{
-		return convert(repository.findByUserIdAndIdStartingWith(userId, prefix));
+		return convert(repository.findByIdUserIdAndIdIdStartingWith(userId, prefix));
 	}
 
 	@Override
 	public List<Versioned<FoodItem>> findChanged(int userId, Date time)
 	{
-		return convert(repository.findByUserIdAndLastModifiedIsGreaterThanEqual(userId, time));
+		return convert(repository.findByIdUserIdAndLastModifiedIsGreaterThanEqual(userId, time));
 	}
 
 	public Versioned<FoodItem> findOne(int userId, String exactName)
 	{
-		List<FoodUserEntity> entities = repository.findByUserIdAndDeletedIsFalseAndNameOrderByName(userId, exactName);
+		List<FoodUserEntity> entities = repository.findByIdUserIdAndDeletedIsFalseAndNameOrderByName(userId, exactName);
 		return entities.isEmpty() ? null : convert(entities.get(0));
 	}
 
@@ -183,8 +183,8 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 	{
 		// TODO: check why Sorted is required
 		// TODO: check performance
-		Map<String, String> result = repository.findByUserId(userId).stream()
-											   .collect(toMap(FoodUserEntity::getId, FoodUserEntity::getHash));
+		Map<String, String> result = repository.findByIdUserId(userId).stream()
+				.collect(toMap(e -> e.getId().getId(), FoodUserEntity::getHash));
 		return new TreeMap<>(result);
 	}
 
@@ -212,13 +212,16 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 						String.format(Locale.US, "Invalid ID: %s, must be %d characters long", item.getId(), ObjectService.ID_FULL_SIZE));
 			}
 
-			FoodUserEntity entity = repository.findByUserIdAndId(userId, item.getId());
+			FoodUserEntity entity = repository.findByIdUserIdAndIdId(userId, item.getId());
 
 			if (entity == null)
 			{
+				final FoodUserEntityPK id = new FoodUserEntityPK();
+				id.setUserId(userId);
+				id.setId(item.getId());
+
 				entity = new FoodUserEntity();
-				entity.setUserId(userId);
-				entity.setId(item.getId());
+				entity.setId(id);
 			}
 
 			copyData(item, entity);

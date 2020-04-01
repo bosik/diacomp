@@ -26,23 +26,23 @@ import java.util.List;
 
 public interface FoodUserEntityRepository extends CrudRepository<FoodUserEntity, String>
 {
-	int countByUserId(int userId);
+	int countByIdUserId(int userId);
 
-	int countByUserIdAndIdStartingWith(int userId, String prefix);
+	int countByIdUserIdAndIdIdStartingWith(int userId, String prefix);
 
-	List<FoodUserEntity> findByUserId(int userId);
+	List<FoodUserEntity> findByIdUserId(int userId);
 
-	List<FoodUserEntity> findByUserIdAndDeletedIsFalse(int userId);
+	List<FoodUserEntity> findByIdUserIdAndDeletedIsFalse(int userId);
 
-	List<FoodUserEntity> findByUserIdAndDeletedIsFalseAndNameContainingOrderByName(int userId, String filter);
+	List<FoodUserEntity> findByIdUserIdAndDeletedIsFalseAndNameContainingOrderByName(int userId, String filter);
 
-	List<FoodUserEntity> findByUserIdAndDeletedIsFalseAndNameOrderByName(int userId, String exactName);
+	List<FoodUserEntity> findByIdUserIdAndDeletedIsFalseAndNameOrderByName(int userId, String exactName);
 
-	FoodUserEntity findByUserIdAndId(int userId, String id);
+	FoodUserEntity findByIdUserIdAndIdId(int userId, String id);
 
-	List<FoodUserEntity> findByUserIdAndIdStartingWith(int userId, String prefix);
+	List<FoodUserEntity> findByIdUserIdAndIdIdStartingWith(int userId, String prefix);
 
-	List<FoodUserEntity> findByUserIdAndLastModifiedIsGreaterThanEqual(int userId, Date since);
+	List<FoodUserEntity> findByIdUserIdAndLastModifiedIsGreaterThanEqual(int userId, Date since);
 
 	@Query(value = "SELECT COUNT(1) FROM (SELECT id FROM food_common WHERE id LIKE :prefix% " + "UNION "
 			+ "SELECT id FROM food_user WHERE id LIKE :prefix% AND user_id = :userId) AS T", nativeQuery = true)
