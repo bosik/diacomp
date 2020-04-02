@@ -17,7 +17,7 @@ public class AuthRestIntegrationTest extends IntegrationTest
 
 		// given
 		webClient
-				.get().uri("/api/food/user/hash")
+				.get().uri(URL_ROOT + Api.Auth.Check.URL)
 				.exchange()
 				.expectStatus().isUnauthorized();
 
@@ -29,7 +29,7 @@ public class AuthRestIntegrationTest extends IntegrationTest
 		assertThat(dateSignIn).isCloseTo(new Date(), 1000L);
 
 		webClient
-				.get().uri("/api/food/user/hash")
+				.get().uri(URL_ROOT + Api.Auth.Check.URL)
 				.cookies(c -> c.addAll(cookies))
 				.exchange()
 				.expectStatus().isOk();
@@ -38,14 +38,14 @@ public class AuthRestIntegrationTest extends IntegrationTest
 
 		// given / when
 		webClient
-				.get().uri("/api/auth/logout")
+				.get().uri(URL_ROOT + Api.Auth.Logout.URL)
 				.cookies(c -> c.addAll(cookies))
 				.exchange()
 				.expectStatus().isOk();
 
 		// then
 		webClient
-				.get().uri("/api/food/user/hash")
+				.get().uri(URL_ROOT + Api.Auth.Check.URL)
 				.exchange()
 				.expectStatus().isUnauthorized();
 	}

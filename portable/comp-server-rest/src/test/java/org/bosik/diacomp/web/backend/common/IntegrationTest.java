@@ -19,6 +19,7 @@ package org.bosik.diacomp.web.backend.common;
 
 import junitparams.JUnitParamsRunner;
 import org.bosik.diacomp.web.backend.DiacompRestApplication;
+import org.bosik.diacomp.web.backend.features.user.auth.Api;
 import org.bosik.diacomp.web.backend.features.user.auth.HashUtils;
 import org.bosik.diacomp.web.backend.features.user.auth.UserEntity;
 import org.bosik.diacomp.web.backend.features.user.auth.UserEntityRepository;
@@ -56,10 +57,8 @@ public abstract class IntegrationTest
 	@ClassRule
 	public static final SpringClassRule SPRING_CLASS_RULE = new SpringClassRule();
 
-	private static final String AUTH_FIELD_LOGIN       = "login";
-	private static final String AUTH_FIELD_PASSWORD    = "pass";
-	private static final String AUTH_FIELD_API_VERSION = "api";
-	private static final String API_VERSION            = "20";
+	protected static final String URL_ROOT    = "/api";
+	private static final   String API_VERSION = "20";
 
 	@Rule
 	public final SpringMethodRule springMethodRule = new SpringMethodRule();
@@ -88,9 +87,9 @@ public abstract class IntegrationTest
 	private MultiValueMap<String, String> signIn(String userName, String password)
 	{
 		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(AUTH_FIELD_LOGIN, userName);
-		params.add(AUTH_FIELD_PASSWORD, password);
-		params.add(AUTH_FIELD_API_VERSION, API_VERSION);
+		params.add(Api.Auth.Login.PARAM_USERNAME, userName);
+		params.add(Api.Auth.Login.PARAM_PASSWORD, password);
+		params.add(Api.Auth.Login.PARAM_API_VERSION, API_VERSION);
 
 		final MultiValueMap<String, ResponseCookie> responseCookies = webClient
 				.post().uri("/api/auth/login")
@@ -114,9 +113,9 @@ public abstract class IntegrationTest
 	protected void signInInvalid(String userName, String password)
 	{
 		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(AUTH_FIELD_LOGIN, userName);
-		params.add(AUTH_FIELD_PASSWORD, password);
-		params.add(AUTH_FIELD_API_VERSION, API_VERSION);
+		params.add(Api.Auth.Login.PARAM_USERNAME, userName);
+		params.add(Api.Auth.Login.PARAM_PASSWORD, password);
+		params.add(Api.Auth.Login.PARAM_API_VERSION, API_VERSION);
 
 		webClient
 				.post().uri("/api/auth/login")
