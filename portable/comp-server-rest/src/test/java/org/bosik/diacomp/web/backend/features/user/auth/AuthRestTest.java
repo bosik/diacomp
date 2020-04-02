@@ -41,20 +41,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 public class AuthRestTest
 {
-	private static class Api
-	{
-		public static final String BASE_URL = "/auth";
-
-		public static class Login
-		{
-			public static final String URL = BASE_URL + "/login";
-
-			public static final String PARAM_USERNAME    = "login";
-			public static final String PARAM_PASSWORD    = "pass";
-			public static final String PARAM_API_VERSION = "api";
-		}
-	}
-
 	private static final int    USER_ID     = 17;
 	private static final String USERNAME    = "root@example.com";
 	private static final String PASSWORD    = "qwerty";
@@ -67,12 +53,11 @@ public class AuthRestTest
 	public void login_ok() throws Exception
 	{
 		// given / when
-		MockHttpServletRequestBuilder r = post(Api.Login.URL);
-		r.contentType(MediaType.APPLICATION_FORM_URLENCODED);
-		r.param(Api.Login.PARAM_USERNAME, USERNAME);
-		r.param(Api.Login.PARAM_PASSWORD, PASSWORD);
-		r.param(Api.Login.PARAM_API_VERSION, API_VERSION);
-		ResultActions request = mvc.perform(r);
+		ResultActions request = mvc.perform(post(Api.Auth.Login.URL)
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.param(Api.Auth.Login.PARAM_USERNAME, USERNAME)
+				.param(Api.Auth.Login.PARAM_PASSWORD, PASSWORD)
+				.param(Api.Auth.Login.PARAM_API_VERSION, API_VERSION));
 
 		// then
 		request.andExpect(status().isOk());
@@ -82,12 +67,11 @@ public class AuthRestTest
 	public void login_wrong() throws Exception
 	{
 		// given / when
-		MockHttpServletRequestBuilder r = post(Api.Login.URL);
-		r.contentType(MediaType.APPLICATION_FORM_URLENCODED);
-		r.param(Api.Login.PARAM_USERNAME, USERNAME);
-		r.param(Api.Login.PARAM_PASSWORD, "wrong");
-		r.param(Api.Login.PARAM_API_VERSION, API_VERSION);
-		ResultActions request = mvc.perform(r);
+		ResultActions request = mvc.perform(post(Api.Auth.Login.URL)
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.param(Api.Auth.Login.PARAM_USERNAME, USERNAME)
+				.param(Api.Auth.Login.PARAM_PASSWORD, "wrong")
+				.param(Api.Auth.Login.PARAM_API_VERSION, API_VERSION));
 
 		// then
 		request.andExpect(status().isUnauthorized());
