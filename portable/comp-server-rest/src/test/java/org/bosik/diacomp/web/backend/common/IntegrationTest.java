@@ -92,7 +92,7 @@ public abstract class IntegrationTest
 		params.add(Api.Auth.Login.PARAM_API_VERSION, API_VERSION);
 
 		final MultiValueMap<String, ResponseCookie> responseCookies = webClient
-				.post().uri("/api/auth/login")
+				.post().uri(URL_ROOT + Api.Auth.Login.URL)
 				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 				.body(BodyInserters.fromFormData(params))
 				.exchange()
@@ -118,7 +118,7 @@ public abstract class IntegrationTest
 		params.add(Api.Auth.Login.PARAM_API_VERSION, API_VERSION);
 
 		webClient
-				.post().uri("/api/auth/login")
+				.post().uri(URL_ROOT + Api.Auth.Login.URL)
 				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 				.body(BodyInserters.fromFormData(params))
 				.exchange()
