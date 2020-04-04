@@ -41,7 +41,7 @@ public class ParserFoodItem extends Parser<FoodItem>
 		item.setRelFats(json.getDouble(FIELD_FATS));
 		item.setRelCarbs(json.getDouble(FIELD_CARBS));
 		item.setRelValue(json.getDouble(FIELD_VALUE));
-		item.setTag(json.getInt(FIELD_TAG));
+		item.setTag(json.has(FIELD_TAG) ? json.getInt(FIELD_TAG) : 0);
 		item.setFromTable(json.getBoolean(FIELD_TABLE));
 
 		return item;
