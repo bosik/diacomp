@@ -52,7 +52,7 @@ public class DishItem implements NamedRelative, Serializable
 
 	// ================================ GET / SET ================================
 
-	private double getRealMass()
+	public double getRealMass()
 	{
 		if (mass != null)
 		{

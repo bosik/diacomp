@@ -19,7 +19,10 @@ package org.bosik.diacomp.web.backend.features.diary;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.MealRecord;
+import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
@@ -27,6 +30,8 @@ import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.utils.Utils;
 import org.bosik.diacomp.web.backend.common.UserDataService;
+import org.bosik.diacomp.web.backend.features.base.dish.DishBaseLocalService;
+import org.bosik.diacomp.web.backend.features.base.dish.DishEntityRepository;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
@@ -36,8 +41,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -57,7 +64,10 @@ public class DiaryLocalService implements UserDataService<DiaryRecord>
 	private DiaryEntityRepository repository;
 
 	@Autowired
-	private CachedDiaryHashTree   cachedHashTree;
+	private DishEntityRepository dishEntityRepository;
+
+	@Autowired
+	private CachedDiaryHashTree cachedHashTree;
 
 	private static Versioned<DiaryRecord> convert(DiaryEntity e)
 	{
@@ -142,6 +152,50 @@ public class DiaryLocalService implements UserDataService<DiaryRecord>
 		{
 			return convert(repository.findByUserIdAndDeletedIsFalse(userId));
 		}
+	}
+
+	public Map<String, Double> getFoodStatistics(int userId, Date from, Date to)
+	{
+		final List<DiaryEntity> entities = repository.findByUserIdAndTimeCacheBetweenAndDeletedIsFalseOrderByTimeCache(
+				userId, from, to);
+		final List<FoodMassed> diaryFood = convert(entities).stream()
+				.filter(v -> v.getData() instanceof MealRecord)
+				.flatMap(v -> ((MealRecord) v.getData()).getItems().stream())
+				.collect(toList());
+
+		final List<Versioned<DishItem>> dishes = DishBaseLocalService.convert(
+				dishEntityRepository.findByUserIdAndDeletedIsFalse(userId));
+
+		final Map<String, Double> stat = new HashMap<>();
+
+		for (FoodMassed food : diaryFood)
+		{
+			final Optional<Versioned<DishItem>> dish = dishes.stream()
+					.filter(d -> d.getData().getName().equals(food.getName()))
+					.findFirst();
+
+			if (dish.isPresent())
+			{
+				for (FoodMassed dishItem : dish.get().getData().getContent())
+				{
+					final String name = dishItem.getName();
+					double mass = food.getMass() / dish.get().getData().getRealMass() * dishItem.getMass();
+
+					stat.putIfAbsent(name, 0.0);
+					stat.put(name, stat.getOrDefault(name, 0.0) + mass);
+				}
+			}
+			else
+			{
+				final String name = food.getName();
+				double mass = food.getMass();
+
+				stat.putIfAbsent(name, 0.0);
+				stat.put(name, stat.getOrDefault(name, 0.0) + mass);
+			}
+		}
+
+		return stat;
 	}
 
 	@Override
