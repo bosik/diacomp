@@ -516,6 +516,33 @@ public class DishBaseRestTest extends IntegrationTest
 	public void getHashChildren() throws Exception
 	{
 		// given
+		final Map<String, String> expected = new HashMap<String, String>()
+		{{
+			put("5", "821818e3ef4f41e3bcb3893364b38835");
+			put("f", "42b7225c5d4c862c475570308c5fbb68");
+		}};
+
+		// when
+		final WebTestClient.ResponseSpec result = webClient
+				.get().uri(URL_ROOT + Api.Dish.Hashes.URL)
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
+
+		// then
+		final String response = result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
+
+		final Map<String, String> actual = serializerMap.read(response);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void getHashChildren_prefix() throws Exception
+	{
+		// given
 		final String prefix = "f9";
 		final Map<String, String> expected = new HashMap<String, String>()
 		{{
