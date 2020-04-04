@@ -55,7 +55,7 @@ public class DishBaseLocalService implements UserDataService<DishItem>
 	@Autowired
 	private DishEntityRepository repository;
 
-	private static Versioned<DishItem> convert(DishEntity e)
+	public static Versioned<DishItem> convert(DishEntity e)
 	{
 		if (e == null)
 		{
@@ -74,7 +74,7 @@ public class DishBaseLocalService implements UserDataService<DishItem>
 		return result;
 	}
 
-	private static List<Versioned<DishItem>> convert(List<DishEntity> list)
+	public static List<Versioned<DishItem>> convert(List<DishEntity> list)
 	{
 		return list.stream().map(DishBaseLocalService::convert).collect(toList());
 	}

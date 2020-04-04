@@ -124,4 +124,9 @@ public abstract class IntegrationTest
 				.exchange()
 				.expectStatus().isUnauthorized();
 	}
+
+	protected int getUserId()
+	{
+		return userEntityRepository.findByName(USER_NAME).getId();
+	}
 }

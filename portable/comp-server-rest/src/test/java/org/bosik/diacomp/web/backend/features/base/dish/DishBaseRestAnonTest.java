@@ -77,23 +77,23 @@ public class DishBaseRestAnonTest
 
 	@Test
 	@Parameters(value = {//
-			Api.Count.URL, //
-			Api.Count.URL + "/ea", //
-			Api.Count.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
-			Api.FindById.URL, //
-			Api.FindById.URL + "/ff", //
-			Api.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931fa", //
-			Api.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
-			Api.FindAny.URL + "?" + Api.FindAny.PARAM_FILTER + "=tes", //
-			Api.FindAll.URL, //
-			Api.FindAll.URL + "?" + Api.FindAll.PARAM_INCLUDE_REMOVED + "true", //
-			Api.FindChanged.URL + "?" + Api.FindChanged.PARAM_SINCE + "=2019-04-16 20:10:32", //
-			Api.FindChanged.URL + "?" + Api.FindChanged.PARAM_SINCE + "=2019-04-16 20:10:320", //
-			Api.Hash.URL, //
-			Api.Hash.URL + "/f2", //
-			Api.Hash.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
-			Api.Hashes.URL + "/f", //
-			Api.Hashes.URL + "/abcd" //
+			Api.Dish.Count.URL, //
+			Api.Dish.Count.URL + "/ea", //
+			Api.Dish.Count.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
+			Api.Dish.FindById.URL, //
+			Api.Dish.FindById.URL + "/ff", //
+			Api.Dish.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931fa", //
+			Api.Dish.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
+			Api.Dish.FindAny.URL + "?" + Api.Dish.FindAny.PARAM_FILTER + "=tes", //
+			Api.Dish.FindAll.URL, //
+			Api.Dish.FindAll.URL + "?" + Api.Dish.FindAll.PARAM_INCLUDE_REMOVED + "true", //
+			Api.Dish.FindChanged.URL + "?" + Api.Dish.FindChanged.PARAM_SINCE + "=2019-04-16 20:10:32", //
+			Api.Dish.FindChanged.URL + "?" + Api.Dish.FindChanged.PARAM_SINCE + "=2019-04-16 20:10:320", //
+			Api.Dish.Hash.URL, //
+			Api.Dish.Hash.URL + "/f2", //
+			Api.Dish.Hash.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
+			Api.Dish.Hashes.URL + "/f", //
+			Api.Dish.Hashes.URL + "/abcd" //
 	})
 	public void shouldBeSecured(String url) throws Exception
 	{
@@ -111,9 +111,9 @@ public class DishBaseRestAnonTest
 		List<Versioned<DishItem>> data = buildDemoData();
 
 		// when
-		MockHttpServletRequestBuilder r = put(Api.Save.URL);
+		MockHttpServletRequestBuilder r = put(Api.Dish.Save.URL);
 		r.contentType(MediaType.APPLICATION_FORM_URLENCODED);
-		r.param(Api.Save.PARAM_DATA, serializer.writeAll(data));
+		r.param(Api.Dish.Save.PARAM_DATA, serializer.writeAll(data));
 		ResultActions request = mvc.perform(r);
 
 		// then
