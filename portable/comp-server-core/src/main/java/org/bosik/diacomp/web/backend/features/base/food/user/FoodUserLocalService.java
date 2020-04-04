@@ -48,7 +48,7 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 	@Autowired
 	private FoodUserEntityRepository repository;
 
-	private static Versioned<FoodItem> convert(FoodUserEntity e)
+	public static Versioned<FoodItem> convert(FoodUserEntity e)
 	{
 		if (e == null)
 		{
@@ -74,7 +74,7 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 		return item;
 	}
 
-	private static List<Versioned<FoodItem>> convert(List<FoodUserEntity> list)
+	public static List<Versioned<FoodItem>> convert(List<FoodUserEntity> list)
 	{
 		return list.stream().map(FoodUserLocalService::convert).collect(toList());
 	}

@@ -17,13 +17,19 @@
  */
 package org.bosik.diacomp.web.backend.features.base.food.user;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Embeddable
 public class FoodUserEntityPK implements Serializable
 {
