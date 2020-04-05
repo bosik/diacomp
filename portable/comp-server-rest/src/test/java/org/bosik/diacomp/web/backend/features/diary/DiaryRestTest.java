@@ -31,7 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -114,7 +114,7 @@ public class DiaryRestTest extends IntegrationTest
 	public void count_findAll() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Diary.Count.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -130,7 +130,7 @@ public class DiaryRestTest extends IntegrationTest
 	public void count_findByPrefix() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Diary.Count.URL + "/5e")
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -146,7 +146,7 @@ public class DiaryRestTest extends IntegrationTest
 	public void count_badRequest() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get()
 				.uri(URL_ROOT + Api.Diary.Count.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa")
 				.cookies(c -> c.addAll(signIn()))
@@ -168,7 +168,7 @@ public class DiaryRestTest extends IntegrationTest
 				diaryEntityRepository.findByUserId(userId));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Diary.FindById.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -193,7 +193,7 @@ public class DiaryRestTest extends IntegrationTest
 				diaryEntityRepository.findByUserIdAndIdStartingWith(userId, "5e"));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Diary.FindById.URL + "/5e")
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -218,7 +218,7 @@ public class DiaryRestTest extends IntegrationTest
 				diaryEntityRepository.findByUserIdAndId(userId, "f906b4341cc54a59acf23ed0108164f0"));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get()
 				.uri(URL_ROOT + Api.Diary.FindById.URL + "/f906b4341cc54a59acf23ed0108164f0")
 				.cookies(c -> c.addAll(signIn()))
@@ -239,7 +239,7 @@ public class DiaryRestTest extends IntegrationTest
 	public void findById_single_notFound() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get()
 				.uri(URL_ROOT + Api.Diary.FindById.URL + "/0d869e560e474f0bb5fcc46824313a62")
 				.cookies(c -> c.addAll(signIn()))
@@ -256,7 +256,7 @@ public class DiaryRestTest extends IntegrationTest
 	public void findById_badRequest() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get()
 				.uri(URL_ROOT + Api.Diary.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa")
 				.cookies(c -> c.addAll(signIn()))
@@ -286,7 +286,7 @@ public class DiaryRestTest extends IntegrationTest
 		assertTrue("Data must contain at least one element", !expected.isEmpty());
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Diary.FindPeriod.URL)
 						.queryParam(Api.Diary.FindPeriod.PARAM_FROM, from)
 						.queryParam(Api.Diary.FindPeriod.PARAM_TO, to)
@@ -310,7 +310,7 @@ public class DiaryRestTest extends IntegrationTest
 	public void findPeriod_badRequest_missing() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Diary.FindPeriod.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -323,7 +323,7 @@ public class DiaryRestTest extends IntegrationTest
 	public void findPeriod_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Diary.FindPeriod.URL)
 						.queryParam(Api.Diary.FindPeriod.PARAM_FROM, Utils.buildString(20))
 						.queryParam(Api.Diary.FindPeriod.PARAM_TO, Utils.buildString(20))
@@ -346,7 +346,7 @@ public class DiaryRestTest extends IntegrationTest
 				diaryEntityRepository.findByUserIdAndTimeStampIsGreaterThanEqual(userId, since));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Diary.FindChanged.URL)
 						.queryParam(Api.Diary.FindChanged.PARAM_SINCE, Utils.formatDateUTC(since))
 						.build()
@@ -369,7 +369,7 @@ public class DiaryRestTest extends IntegrationTest
 	public void findChanged_badRequest_missing() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Diary.FindChanged.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -382,7 +382,7 @@ public class DiaryRestTest extends IntegrationTest
 	public void findChanged_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Diary.FindChanged.URL)
 						.queryParam(Api.Diary.FindChanged.PARAM_SINCE, Utils.buildString(20))
 						.build()
@@ -398,7 +398,7 @@ public class DiaryRestTest extends IntegrationTest
 	public void getHash_root() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Diary.Hash.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -414,7 +414,7 @@ public class DiaryRestTest extends IntegrationTest
 	public void getHash_prefix() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Diary.Hash.URL + "/f9")
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -430,7 +430,7 @@ public class DiaryRestTest extends IntegrationTest
 	public void getHash_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get()
 				.uri(URL_ROOT + Api.Diary.Hash.URL + "/" + Utils.buildString(33))
 				.cookies(c -> c.addAll(signIn()))
@@ -451,7 +451,7 @@ public class DiaryRestTest extends IntegrationTest
 		}};
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Diary.Hashes.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -479,7 +479,7 @@ public class DiaryRestTest extends IntegrationTest
 		}};
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Diary.Hashes.URL + "/" + prefix)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -499,7 +499,7 @@ public class DiaryRestTest extends IntegrationTest
 	public void getHashChildren_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get()
 				.uri(URL_ROOT + Api.Diary.Hashes.URL + "/" + Utils.buildString(4))
 				.cookies(c -> c.addAll(signIn()))
@@ -534,7 +534,7 @@ public class DiaryRestTest extends IntegrationTest
 		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Api.Diary.Save.PARAM_DATA, serializer.writeAll(data));
 
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.put().uri(URL_ROOT + Api.Diary.Save.URL)
 				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 				.body(BodyInserters.fromFormData(params))
@@ -558,7 +558,7 @@ public class DiaryRestTest extends IntegrationTest
 		// given / when
 		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.post().uri(URL_ROOT + Api.Diary.Save.URL)
 				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 				.body(BodyInserters.fromFormData(params))

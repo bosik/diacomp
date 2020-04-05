@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -114,7 +114,7 @@ public class FoodCommonRestTest extends IntegrationTest
 		final List<Versioned<FoodItem>> expected = FoodCommonLocalService.convert(foodCommonEntityRepository.findAll());
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Food.Common.FindChanged.URL)
 				.exchange();
 
@@ -138,7 +138,7 @@ public class FoodCommonRestTest extends IntegrationTest
 				foodCommonEntityRepository.findByLastModifiedIsGreaterThanEqual(time));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Food.Common.FindChanged.URL)
 						.queryParam(Api.Food.Common.FindChanged.PARAM_FIND_LAST_MODIFIED, Utils.formatTimeUTC(time))
 						.build()
@@ -160,7 +160,7 @@ public class FoodCommonRestTest extends IntegrationTest
 	public void find_changed_tooLong() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Food.Common.FindChanged.URL)
 						.queryParam(Api.Food.Common.FindChanged.PARAM_FIND_LAST_MODIFIED, Utils.buildString(20))
 						.build()
@@ -176,7 +176,7 @@ public class FoodCommonRestTest extends IntegrationTest
 	public void find_changed_wayTooLong() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Food.Common.FindChanged.URL)
 						.queryParam(Api.Food.Common.FindChanged.PARAM_FIND_LAST_MODIFIED, Utils.buildString(10 * 1024 * 1024))
 						.build()

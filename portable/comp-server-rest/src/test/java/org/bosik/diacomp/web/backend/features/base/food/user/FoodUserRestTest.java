@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -138,7 +138,7 @@ public class FoodUserRestTest extends IntegrationTest
 	public void count_findAll() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Food.User.Count.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -154,7 +154,7 @@ public class FoodUserRestTest extends IntegrationTest
 	public void count_findByPrefix() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Food.User.Count.URL + "/5e")
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -170,7 +170,7 @@ public class FoodUserRestTest extends IntegrationTest
 	public void count_badRequest() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get()
 				.uri(URL_ROOT + Api.Food.User.Count.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa")
 				.cookies(c -> c.addAll(signIn()))
@@ -191,7 +191,7 @@ public class FoodUserRestTest extends IntegrationTest
 		final List<Versioned<FoodItem>> expected = FoodUserLocalService.convert(foodUserEntityRepository.findByIdUserId(userId));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Food.User.FindById.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -216,7 +216,7 @@ public class FoodUserRestTest extends IntegrationTest
 				foodUserEntityRepository.findByIdUserIdAndIdIdStartingWith(userId, "5e"));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Food.User.FindById.URL + "/5e")
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -241,7 +241,7 @@ public class FoodUserRestTest extends IntegrationTest
 				foodUserEntityRepository.findByIdUserIdAndIdId(userId, "f906b4341cc54a59acf23ed0108164f0"));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get()
 				.uri(URL_ROOT + Api.Food.User.FindById.URL + "/f906b4341cc54a59acf23ed0108164f0")
 				.cookies(c -> c.addAll(signIn()))
@@ -262,7 +262,7 @@ public class FoodUserRestTest extends IntegrationTest
 	public void findById_single_notFound() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get()
 				.uri(URL_ROOT + Api.Food.User.FindById.URL + "/0d869e560e474f0bb5fcc46824313a62")
 				.cookies(c -> c.addAll(signIn()))
@@ -279,7 +279,7 @@ public class FoodUserRestTest extends IntegrationTest
 	public void findById_badRequest() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get()
 				.uri(URL_ROOT + Api.Food.User.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa")
 				.cookies(c -> c.addAll(signIn()))
@@ -301,7 +301,7 @@ public class FoodUserRestTest extends IntegrationTest
 				foodUserEntityRepository.findByIdUserIdAndDeletedIsFalse(userId));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Food.User.FindAll.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -326,7 +326,7 @@ public class FoodUserRestTest extends IntegrationTest
 				foodUserEntityRepository.findByIdUserId(userId));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Food.User.FindAll.URL)
 						.queryParam(Api.Food.User.FindAll.PARAM_INCLUDE_REMOVED, "true")
 						.build()
@@ -349,7 +349,7 @@ public class FoodUserRestTest extends IntegrationTest
 	public void findAll_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Food.User.FindAll.URL)
 						.queryParam(Api.Food.User.FindAll.PARAM_INCLUDE_REMOVED,
 								Utils.buildString(6))
@@ -376,7 +376,7 @@ public class FoodUserRestTest extends IntegrationTest
 		assertTrue("Data must contain at least one element", !expected.isEmpty());
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Food.User.FindAny.URL)
 						.queryParam(Api.Food.User.FindAny.PARAM_FILTER, query)
 						.build()
@@ -399,7 +399,7 @@ public class FoodUserRestTest extends IntegrationTest
 	public void findAny_badRequest_missing() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Food.User.FindAny.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -412,7 +412,7 @@ public class FoodUserRestTest extends IntegrationTest
 	public void findAny_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Food.User.FindAny.URL)
 						.queryParam(Api.Food.User.FindAny.PARAM_FILTER, Utils.buildString(257))
 						.build()
@@ -434,7 +434,7 @@ public class FoodUserRestTest extends IntegrationTest
 				foodUserEntityRepository.findByIdUserIdAndLastModifiedIsGreaterThanEqual(userId, since));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Food.User.FindChanged.URL)
 						.queryParam(Api.Food.User.FindChanged.PARAM_SINCE,
 								Utils.formatDateUTC(since))
@@ -458,7 +458,7 @@ public class FoodUserRestTest extends IntegrationTest
 	public void findChanged_badRequest_missing() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Food.User.FindChanged.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -471,7 +471,7 @@ public class FoodUserRestTest extends IntegrationTest
 	public void findChanged_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Food.User.FindChanged.URL)
 						.queryParam(Api.Food.User.FindChanged.PARAM_SINCE,
 								Utils.buildString(20))
@@ -488,7 +488,7 @@ public class FoodUserRestTest extends IntegrationTest
 	public void getHash_root() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Food.User.Hash.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -504,7 +504,7 @@ public class FoodUserRestTest extends IntegrationTest
 	public void getHash_prefix() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Food.User.Hash.URL + "/f9")
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -520,7 +520,7 @@ public class FoodUserRestTest extends IntegrationTest
 	public void getHash_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Food.User.Hash.URL + "/" + Utils.buildString(33))
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -540,7 +540,7 @@ public class FoodUserRestTest extends IntegrationTest
 		}};
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Food.User.Hashes.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -568,7 +568,7 @@ public class FoodUserRestTest extends IntegrationTest
 		}};
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Food.User.Hashes.URL + "/" + prefix)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -588,7 +588,7 @@ public class FoodUserRestTest extends IntegrationTest
 	public void getHashChildren_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Food.User.Hashes.URL + "/" + Utils.buildString(4))
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -625,7 +625,7 @@ public class FoodUserRestTest extends IntegrationTest
 		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Api.Food.User.Save.PARAM_DATA, serializer.writeAll(data));
 
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.put().uri(URL_ROOT + Api.Food.User.Save.URL)
 				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 				.body(BodyInserters.fromFormData(params))
@@ -649,7 +649,7 @@ public class FoodUserRestTest extends IntegrationTest
 		// given / when
 		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.post().uri(URL_ROOT + Api.Food.User.Save.URL)
 				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 				.body(BodyInserters.fromFormData(params))

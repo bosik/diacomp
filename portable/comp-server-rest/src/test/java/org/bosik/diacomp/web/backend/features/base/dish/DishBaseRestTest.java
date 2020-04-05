@@ -29,7 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -111,7 +111,7 @@ public class DishBaseRestTest extends IntegrationTest
 	public void count_findAll() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.Count.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -127,7 +127,7 @@ public class DishBaseRestTest extends IntegrationTest
 	public void count_findByPrefix() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.Count.URL + "/5e")
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -143,7 +143,7 @@ public class DishBaseRestTest extends IntegrationTest
 	public void count_badRequest() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.Count.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa")
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -163,7 +163,7 @@ public class DishBaseRestTest extends IntegrationTest
 		final List<Versioned<DishItem>> expected = DishBaseLocalService.convert(dishEntityRepository.findByUserId(userId));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.FindById.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -188,7 +188,7 @@ public class DishBaseRestTest extends IntegrationTest
 				dishEntityRepository.findByUserIdAndIdStartingWith(userId, "5e"));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.FindById.URL + "/5e")
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -213,7 +213,7 @@ public class DishBaseRestTest extends IntegrationTest
 				dishEntityRepository.findByUserIdAndId(userId, "f906b4341cc54a59acf23ed0108164f0"));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.FindById.URL + "/f906b4341cc54a59acf23ed0108164f0")
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -233,7 +233,7 @@ public class DishBaseRestTest extends IntegrationTest
 	public void findById_single_notFound() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.FindById.URL + "/0d869e560e474f0bb5fcc46824313a62")
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -249,7 +249,7 @@ public class DishBaseRestTest extends IntegrationTest
 	public void findById_badRequest() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa")
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -270,7 +270,7 @@ public class DishBaseRestTest extends IntegrationTest
 				dishEntityRepository.findByUserIdAndDeletedIsFalse(userId));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.FindAll.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -295,7 +295,7 @@ public class DishBaseRestTest extends IntegrationTest
 				dishEntityRepository.findByUserId(userId));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Dish.FindAll.URL)
 						.queryParam(Api.Dish.FindAll.PARAM_INCLUDE_REMOVED, "true")
 						.build()
@@ -318,7 +318,7 @@ public class DishBaseRestTest extends IntegrationTest
 	public void findAll_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Dish.FindAll.URL)
 						.queryParam(Api.Dish.FindAll.PARAM_INCLUDE_REMOVED, Utils.buildString(6))
 						.build()
@@ -344,7 +344,7 @@ public class DishBaseRestTest extends IntegrationTest
 		assertTrue("Data must contain at least one element", !expected.isEmpty());
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Dish.FindAny.URL)
 						.queryParam(Api.Dish.FindAny.PARAM_FILTER, query)
 						.build()
@@ -367,7 +367,7 @@ public class DishBaseRestTest extends IntegrationTest
 	public void findAny_badRequest_missing() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.FindAny.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -380,7 +380,7 @@ public class DishBaseRestTest extends IntegrationTest
 	public void findAny_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Dish.FindAny.URL)
 						.queryParam(Api.Dish.FindAny.PARAM_FILTER, Utils.buildString(257))
 						.build()
@@ -402,7 +402,7 @@ public class DishBaseRestTest extends IntegrationTest
 				dishEntityRepository.findByUserIdAndTimeStampIsGreaterThanEqual(userId, since));
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Dish.FindChanged.URL)
 						.queryParam(Api.Dish.FindChanged.PARAM_SINCE, Utils.formatDateUTC(since))
 						.build()
@@ -425,7 +425,7 @@ public class DishBaseRestTest extends IntegrationTest
 	public void findChanged_badRequest_missing() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.FindChanged.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -438,7 +438,7 @@ public class DishBaseRestTest extends IntegrationTest
 	public void findChanged_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(u -> u.path(URL_ROOT + Api.Dish.FindChanged.URL)
 						.queryParam(Api.Dish.FindChanged.PARAM_SINCE, Utils.buildString(20))
 						.build()
@@ -454,7 +454,7 @@ public class DishBaseRestTest extends IntegrationTest
 	public void getHash_root() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.Hash.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -470,7 +470,7 @@ public class DishBaseRestTest extends IntegrationTest
 	public void getHash_prefix() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.Hash.URL + "/f9")
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -486,7 +486,7 @@ public class DishBaseRestTest extends IntegrationTest
 	public void getHash_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.Hash.URL + "/" + Utils.buildString(33))
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -506,7 +506,7 @@ public class DishBaseRestTest extends IntegrationTest
 		}};
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.Hashes.URL)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -534,7 +534,7 @@ public class DishBaseRestTest extends IntegrationTest
 		}};
 
 		// when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.Hashes.URL + "/" + prefix)
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -554,7 +554,7 @@ public class DishBaseRestTest extends IntegrationTest
 	public void getHashChildren_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.get().uri(URL_ROOT + Api.Dish.Hashes.URL + "/" + Utils.buildString(4))
 				.cookies(c -> c.addAll(signIn()))
 				.exchange();
@@ -597,7 +597,7 @@ public class DishBaseRestTest extends IntegrationTest
 		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Api.Dish.Save.PARAM_DATA, serializer.writeAll(data));
 
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.put().uri(URL_ROOT + Api.Dish.Save.URL)
 				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 				.body(BodyInserters.fromFormData(params))
@@ -620,7 +620,7 @@ public class DishBaseRestTest extends IntegrationTest
 		// given / when
 		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
-		final WebTestClient.ResponseSpec result = webClient
+		final ResponseSpec result = webClient
 				.post().uri(URL_ROOT + Api.Dish.Save.URL)
 				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 				.body(BodyInserters.fromFormData(params))
