@@ -18,6 +18,7 @@
 package org.bosik.diacomp.web.backend.features.base.food.common;
 
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
+import org.bosik.diacomp.core.services.base.food.FoodCommonService;
 import org.bosik.merklesync.Versioned;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 @Service
-public class FoodCommonLocalService
+public class FoodCommonLocalService implements FoodCommonService
 {
 	@Autowired
 	private FoodCommonEntityRepository repository;
@@ -68,16 +69,17 @@ public class FoodCommonLocalService
 		return list.stream().map(FoodCommonLocalService::convert).collect(toList());
 	}
 
-	public List<Versioned<FoodItem>> find()
+	@Override
+	public List<Versioned<FoodItem>> findAll()
 	{
 		return convert(repository.findAll());
 	}
 
-	public List<Versioned<FoodItem>> find(boolean includeRemoved)
+	public List<Versioned<FoodItem>> findAll(boolean includeRemoved)
 	{
 		if (includeRemoved)
 		{
-			return find();
+			return findAll();
 		}
 		else
 		{
@@ -85,6 +87,7 @@ public class FoodCommonLocalService
 		}
 	}
 
+	@Override
 	public List<Versioned<FoodItem>> findChanged(Date lastModified)
 	{
 		return convert(repository.findByLastModifiedIsGreaterThanEqual(lastModified));
