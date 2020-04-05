@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.web.backend.common;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+@Slf4j
 @ControllerAdvice
 public class RestExceptionAdvice
 {
@@ -76,7 +78,7 @@ public class RestExceptionAdvice
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public String handlerException(Exception e)
 	{
-		e.printStackTrace(); // FIXME: Use proper logger
+		log.error(e.getMessage(), e);
 		return ResponseBuilder.buildFails();
 	}
 }
