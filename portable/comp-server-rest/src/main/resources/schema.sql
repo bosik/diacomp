@@ -70,3 +70,15 @@ CREATE TABLE `user` (
   UNIQUE KEY `ActivationKey_UNIQUE` (`ActivationKey`),
   UNIQUE KEY `RestoreKey_UNIQUE` (`RestoreKey`)
 ) ENGINE=InnoDB AUTO_INCREMENT=790 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci$$
+
+CREATE TABLE `log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `time` datetime NOT NULL,
+  `remote_user` varchar(255) DEFAULT NULL,
+  `remote_address` varchar(255) DEFAULT NULL,
+  `request_url` varchar(255) NOT NULL,
+  `request_params` text,
+  `error_message` varchar(255) DEFAULT NULL,
+  `stacktrace` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8$$
