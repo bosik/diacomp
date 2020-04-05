@@ -18,381 +18,554 @@
 package org.bosik.diacomp.web.backend.features.diary;
 
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
+import org.bosik.diacomp.core.entities.business.diary.records.NoteRecord;
 import org.bosik.diacomp.core.persistence.parsers.ParserDiaryRecord;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerMap;
 import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.utils.Utils;
-import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
-import org.bosik.merklesync.MemoryMerkleTree3;
-import org.bosik.merklesync.MerkleTree;
+import org.bosik.diacomp.web.backend.common.IntegrationTest;
 import org.bosik.merklesync.Versioned;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.BodyInserters;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.Assert.assertTrue;
 
-@RunWith(SpringRunner.class)
-@WebMvcTest(DiaryRest.class)
-@WithMockUser(roles = "USER")
-public class DiaryRestTest
+public class DiaryRestTest extends IntegrationTest
 {
 	private final Serializer<Map<String, String>>    serializerMap = new SerializerMap();
 	private final Serializer<Versioned<DiaryRecord>> serializer    = new SerializerAdapter<>(
 			new ParserVersioned<>(new ParserDiaryRecord()));
 
 	@Autowired
-	private MockMvc mvc;
+	private DiaryEntityRepository diaryEntityRepository;
 
-	@MockBean
-	private DiaryLocalService diaryLocalService;
+	@Before
+	public void onBefore()
+	{
+		super.onBefore();
 
-	@MockBean
-	private UserInfoService userInfoService;
+		diaryEntityRepository.deleteAll();
+		diaryEntityRepository.saveAll(buildData(getUserId()));
+	}
+
+	private static List<DiaryEntity> buildData(int userId)
+	{
+		return Arrays.asList(
+				DiaryEntity.builder()
+						.id("f906b4341cc54a59acf23ed0108164f0")
+						.userId(userId)
+						.timeStamp(new Date())
+						.hash("7c47e50757a14528a2b0b6896cb03432")
+						.version(1)
+						.deleted(false)
+						.content("{\"finger\":7,\"time\":\"2020-04-01 08:41:34\",\"type\":\"blood\",\"value\":5.6}")
+						.timeCache(Utils.parseTimeUTC("2020-04-01 08:41:34"))
+						.build(),
+				DiaryEntity.builder()
+						.id("5e2d537c5110494d90d7f5277f4367ca")
+						.userId(userId)
+						.timeStamp(new Date())
+						.hash("821818e3ef4f41e3bcb3893364b38835")
+						.version(1)
+						.deleted(false)
+						.content("{\"time\":\"2020-04-01 09:00:36\",\"type\":\"ins\",\"value\":12}")
+						.timeCache(Utils.parseTimeUTC("2020-04-01 09:00:36"))
+						.build(),
+				DiaryEntity.builder()
+						.id("f9455692ef294608a85c1d7d52fb6956")
+						.userId(userId)
+						.timeStamp(new Date())
+						.hash("d6704d5506ab4104a5a5cab720af8736")
+						.version(2)
+						.deleted(true)
+						.content("{\"time\":\"2020-03-30 01:15:40\",\"type\":\"ins\",\"value\":7}")
+						.timeCache(Utils.parseTimeUTC("2020-03-30 01:15:40"))
+						.build(),
+				DiaryEntity.builder()
+						.id("5e20de21655447ce849e42a1c51db615")
+						.userId(userId + 1) // another user
+						.timeStamp(new Date())
+						.hash("684ad8d6363b4c1bbdb9e74b9472adc6")
+						.version(1)
+						.deleted(false)
+						.content("{\"time\":\"2020-03-26 21:47:00\",\"text\":\"test\",\"type\":\"note\"}")
+						.timeCache(Utils.parseTimeUTC("2020-03-26 21:47:00"))
+						.build()
+		);
+	}
 
 	@Test
 	public void count_findAll() throws Exception
 	{
-		// given
-		when(diaryLocalService.count(anyInt())).thenReturn(42);
-
-		// when
-		ResultActions request = mvc.perform(get(Api.Count.URL));
+		// given / when
+		final WebTestClient.ResponseSpec result = webClient
+				.get().uri(URL_ROOT + Api.Diary.Count.URL)
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isOk()).andExpect(content().string("42"));
+		result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.isEqualTo("3");
 	}
 
 	@Test
 	public void count_findByPrefix() throws Exception
 	{
-		// given
-		when(diaryLocalService.count(anyInt(), eq("ea"))).thenReturn(12);
-
-		// when
-		ResultActions request = mvc.perform(get(Api.Count.URL + "/ea"));
+		// given / when
+		final WebTestClient.ResponseSpec result = webClient
+				.get().uri(URL_ROOT + Api.Diary.Count.URL + "/5e")
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isOk()).andExpect(content().string("12"));
+		result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.isEqualTo("1");
 	}
 
 	@Test
 	public void count_badRequest() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(Api.Count.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa"));
+		final WebTestClient.ResponseSpec result = webClient
+				.get()
+				.uri(URL_ROOT + Api.Diary.Count.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa")
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isBadRequest())
-			   .andExpect(content().string("String too long: 33 chars passed, but at most 32 are allowed"));
+		result
+				.expectStatus().isBadRequest()
+				.expectBody(String.class)
+				.isEqualTo("String too long: 33 chars passed, but at most 32 are allowed");
 	}
 
 	@Test
 	public void findById_all() throws Exception
 	{
 		// given
-		List<Versioned<DiaryRecord>> data = DiaryDataUtil.buildDemoData();
-		when(diaryLocalService.findAll(anyInt(), eq(true))).thenReturn(data);
+		final int userId = getUserId();
+		final List<Versioned<DiaryRecord>> expected = DiaryLocalService.convert(
+				diaryEntityRepository.findByUserId(userId));
 
 		// when
-		ResultActions request = mvc.perform(get(Api.FindById.URL));
+		final WebTestClient.ResponseSpec result = webClient
+				.get().uri(URL_ROOT + Api.Diary.FindById.URL)
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-		List<Versioned<DiaryRecord>> actual = serializer.readAll(response);
-		assertEquals(data, actual);
+		final String response = result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
+
+		final List<Versioned<DiaryRecord>> actual = serializer.readAll(response);
+		assertEqualsSorted(expected, actual);
 	}
 
 	@Test
 	public void findById_prefix() throws Exception
 	{
 		// given
-		List<Versioned<DiaryRecord>> data = DiaryDataUtil.buildDemoData();
-		when(diaryLocalService.findByIdPrefix(anyInt(), eq("ff"))).thenReturn(data);
+		final int userId = getUserId();
+		final List<Versioned<DiaryRecord>> expected = DiaryLocalService.convert(
+				diaryEntityRepository.findByUserIdAndIdStartingWith(userId, "5e"));
 
 		// when
-		ResultActions request = mvc.perform(get(Api.FindById.URL + "/ff"));
+		final WebTestClient.ResponseSpec result = webClient
+				.get().uri(URL_ROOT + Api.Diary.FindById.URL + "/5e")
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-		List<Versioned<DiaryRecord>> actual = serializer.readAll(response);
-		assertEquals(data, actual);
+		final String response = result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
+
+		final List<Versioned<DiaryRecord>> actual = serializer.readAll(response);
+		assertEqualsSorted(expected, actual);
 	}
 
 	@Test
 	public void findById_single() throws Exception
 	{
 		// given
-		Versioned<DiaryRecord> data = DiaryDataUtil.buildDemoData().get(0);
-		when(diaryLocalService.findById(anyInt(), eq("542a8a10ef1a41ecb9338dbeb4a931fa"))).thenReturn(data);
+		final int userId = getUserId();
+		final Versioned<DiaryRecord> expected = DiaryLocalService.convert(
+				diaryEntityRepository.findByUserIdAndId(userId, "f906b4341cc54a59acf23ed0108164f0"));
 
 		// when
-		ResultActions request = mvc.perform(get(Api.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931fa"));
+		final WebTestClient.ResponseSpec result = webClient
+				.get()
+				.uri(URL_ROOT + Api.Diary.FindById.URL + "/f906b4341cc54a59acf23ed0108164f0")
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-		Versioned<DiaryRecord> actual = serializer.read(response);
-		assertEquals(data, actual);
+		final String response = result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
+
+		final Versioned<DiaryRecord> actual = serializer.read(response);
+		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void findById_single_notFound() throws Exception
 	{
-		// given
-		when(diaryLocalService.findById(anyInt(), eq("542a8a10ef1a41ecb9338dbeb4a931fa"))).thenReturn(null);
-
-		// when
-		ResultActions request = mvc.perform(get(Api.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931fa"));
+		// given / when
+		final WebTestClient.ResponseSpec result = webClient
+				.get()
+				.uri(URL_ROOT + Api.Diary.FindById.URL + "/0d869e560e474f0bb5fcc46824313a62")
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isNotFound()).andExpect(content().string("Item '542a8a10ef1a41ecb9338dbeb4a931fa' not found"));
+		result
+				.expectStatus().isNotFound()
+				.expectBody(String.class)
+				.isEqualTo("Item '0d869e560e474f0bb5fcc46824313a62' not found");
 	}
 
 	@Test
 	public void findById_badRequest() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(Api.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa"));
+		final WebTestClient.ResponseSpec result = webClient
+				.get()
+				.uri(URL_ROOT + Api.Diary.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa")
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isBadRequest())
-			   .andExpect(content().string("String too long: 33 chars passed, but at most 32 are allowed"));
+		result
+				.expectStatus().isBadRequest()
+				.expectBody(String.class)
+				.isEqualTo("String too long: 33 chars passed, but at most 32 are allowed");
 	}
 
 	@Test
 	public void findPeriod() throws Exception
 	{
 		// given
-		String from = "2019-04-01 21:00:00";
-		String to = "2019-04-02 21:00:00";
-		List<Versioned<DiaryRecord>> data = DiaryDataUtil.buildDemoData();
-		when(diaryLocalService.findPeriod(anyInt(), any(), any(), eq(false))).thenReturn(data);
+		final int userId = getUserId();
+		final String from = "2020-03-30 21:00:00";
+		final String to = "2020-04-02 21:00:00";
+
+		final List<Versioned<DiaryRecord>> expected = DiaryLocalService.convert(
+				diaryEntityRepository.findByUserIdAndTimeCacheBetweenAndDeletedIsFalseOrderByTimeCache(
+						userId,
+						Utils.parseDateUTC(from),
+						Utils.parseDateUTC(to)));
+
+		assertTrue("Data must contain at least one element", !expected.isEmpty());
 
 		// when
-		MockHttpServletRequestBuilder r = get(Api.FindPeriod.URL);
-		r.param(Api.FindPeriod.PARAM_FROM, from);
-		r.param(Api.FindPeriod.PARAM_TO, to);
-		ResultActions request = mvc.perform(r);
+		final WebTestClient.ResponseSpec result = webClient
+				.get().uri(u -> u.path(URL_ROOT + Api.Diary.FindPeriod.URL)
+						.queryParam(Api.Diary.FindPeriod.PARAM_FROM, from)
+						.queryParam(Api.Diary.FindPeriod.PARAM_TO, to)
+						.build()
+				)
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-		List<Versioned<DiaryRecord>> actual = serializer.readAll(response);
-		assertEquals(data, actual);
+		final String response = result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
+
+		final List<Versioned<DiaryRecord>> actual = serializer.readAll(response);
+		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void findAny_badRequest_missing() throws Exception
+	public void findPeriod_badRequest_missing() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(Api.FindPeriod.URL));
+		final WebTestClient.ResponseSpec result = webClient
+				.get().uri(URL_ROOT + Api.Diary.FindPeriod.URL)
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isBadRequest());
+		result.expectStatus().isBadRequest();
 	}
 
 	@Test
-	public void findAny_badRequest_tooLong() throws Exception
+	public void findPeriod_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		MockHttpServletRequestBuilder r = get(Api.FindPeriod.URL);
-		r.param(Api.FindPeriod.PARAM_FROM, Utils.buildString(20));
-		ResultActions request = mvc.perform(r);
+		final WebTestClient.ResponseSpec result = webClient
+				.get().uri(u -> u.path(URL_ROOT + Api.Diary.FindPeriod.URL)
+						.queryParam(Api.Diary.FindPeriod.PARAM_FROM, Utils.buildString(20))
+						.queryParam(Api.Diary.FindPeriod.PARAM_TO, Utils.buildString(20))
+						.build()
+				)
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isBadRequest());
+		result.expectStatus().isBadRequest();
 	}
 
 	@Test
 	public void findChanged() throws Exception
 	{
 		// given
-		Date since = new Date();
-		List<Versioned<DiaryRecord>> data = DiaryDataUtil.buildDemoData();
-		when(diaryLocalService.findChanged(anyInt(), any())).thenReturn(data);
+		final int userId = getUserId();
+		final Date since = new Date(0);
+		final List<Versioned<DiaryRecord>> expected = DiaryLocalService.convert(
+				diaryEntityRepository.findByUserIdAndTimeStampIsGreaterThanEqual(userId, since));
 
 		// when
-		MockHttpServletRequestBuilder r = get(Api.FindChanged.URL);
-		r.param(Api.FindChanged.PARAM_SINCE, Utils.formatDateUTC(since));
-		ResultActions request = mvc.perform(r);
+		final WebTestClient.ResponseSpec result = webClient
+				.get().uri(u -> u.path(URL_ROOT + Api.Diary.FindChanged.URL)
+						.queryParam(Api.Diary.FindChanged.PARAM_SINCE, Utils.formatDateUTC(since))
+						.build()
+				)
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-		List<Versioned<DiaryRecord>> actual = serializer.readAll(response);
-		assertEquals(data, actual);
+		final String response = result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
+
+		final List<Versioned<DiaryRecord>> actual = serializer.readAll(response);
+		assertEqualsSorted(expected, actual);
 	}
 
 	@Test
 	public void findChanged_badRequest_missing() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(Api.FindChanged.URL));
+		final WebTestClient.ResponseSpec result = webClient
+				.get().uri(URL_ROOT + Api.Diary.FindChanged.URL)
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isBadRequest());
+		result.expectStatus().isBadRequest();
 	}
 
 	@Test
 	public void findChanged_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		MockHttpServletRequestBuilder r = get(Api.FindChanged.URL);
-		r.param(Api.FindChanged.PARAM_SINCE, Utils.buildString(20));
-		ResultActions request = mvc.perform(r);
+		final WebTestClient.ResponseSpec result = webClient
+				.get().uri(u -> u.path(URL_ROOT + Api.Diary.FindChanged.URL)
+						.queryParam(Api.Diary.FindChanged.PARAM_SINCE, Utils.buildString(20))
+						.build()
+				)
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isBadRequest());
+		result.expectStatus().isBadRequest();
 	}
 
 	@Test
 	public void getHash_root() throws Exception
 	{
-		// given
-		final int userId = 19;
-		final String hash = "ec082942e2bd40f4a9e8cb0093531a89";
-
-		MerkleTree hashTree = new MemoryMerkleTree3(new HashMap<String, String>()
-		{{
-			put("", hash);
-		}});
-
-		when(userInfoService.getCurrentUserId()).thenReturn(userId);
-		when(diaryLocalService.getHashTree(eq(userId))).thenReturn(hashTree);
-
-		// when
-		ResultActions request = mvc.perform(get(Api.Hash.URL));
+		// given / when
+		final WebTestClient.ResponseSpec result = webClient
+				.get().uri(URL_ROOT + Api.Diary.Hash.URL)
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isOk()).andExpect(content().string(hash));
+		result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.isEqualTo("c4cf3a3f3c8bc70ff308f963e002339d");
 	}
 
 	@Test
 	public void getHash_prefix() throws Exception
 	{
-		// given
-		final int userId = 17;
-		final String prefix = "f2";
-		final String hash = "ec082942e2bd40f4a9e8cb0093531a89";
-
-		MerkleTree hashTree = new MemoryMerkleTree3(new HashMap<String, String>()
-		{{
-			put(prefix, hash);
-		}});
-
-		when(userInfoService.getCurrentUserId()).thenReturn(userId);
-		when(diaryLocalService.getHashTree(eq(userId))).thenReturn(hashTree);
-
-		// when
-		ResultActions request = mvc.perform(get(Api.Hash.URL + "/" + prefix));
+		// given / when
+		final WebTestClient.ResponseSpec result = webClient
+				.get().uri(URL_ROOT + Api.Diary.Hash.URL + "/f9")
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isOk()).andExpect(content().string(hash));
+		result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.isEqualTo("42b7225c5d4c862c475570308c5fbb68");
 	}
 
 	@Test
 	public void getHash_badRequest_tooLong() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(Api.Hash.URL + "/" + Utils.buildString(33)));
+		final WebTestClient.ResponseSpec result = webClient
+				.get()
+				.uri(URL_ROOT + Api.Diary.Hash.URL + "/" + Utils.buildString(33))
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isBadRequest());
+		result.expectStatus().isBadRequest();
 	}
 
 	@Test
 	public void getHashChildren() throws Exception
 	{
 		// given
-		final int userId = 17;
-		final String prefix = "f";
-
-		Map<String, String> data = new HashMap<String, String>()
+		final Map<String, String> expected = new HashMap<String, String>()
 		{{
-			put(prefix + "0", "ec082942e2bd40f4a9e8cb0093531a89");
-			put(prefix + "1", "2e1b142e395e4631bb5101ebc64a1367");
-			put(prefix + "2", "77a5079709454aefa01da4a3674386b9");
-			put(prefix + "3", "9395885d8c3742ff9890299c0367c789");
+			put("5", "821818e3ef4f41e3bcb3893364b38835");
+			put("f", "42b7225c5d4c862c475570308c5fbb68");
 		}};
-		MerkleTree hashTree = new MemoryMerkleTree3(data);
-
-		when(userInfoService.getCurrentUserId()).thenReturn(userId);
-		when(diaryLocalService.getHashTree(eq(userId))).thenReturn(hashTree);
 
 		// when
-		ResultActions request = mvc.perform(get(Api.Hashes.URL + "/" + prefix));
+		final WebTestClient.ResponseSpec result = webClient
+				.get().uri(URL_ROOT + Api.Diary.Hashes.URL)
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-		Map<String, String> actual = serializerMap.read(response);
-		assertEquals(data, actual);
+		final String response = result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
+
+		final Map<String, String> actual = serializerMap.read(response);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void getHashChildren_prefix() throws Exception
+	{
+		// given
+		final String prefix = "f9";
+		final Map<String, String> expected = new HashMap<String, String>()
+		{{
+			put(prefix + "0", "7c47e50757a14528a2b0b6896cb03432");
+			put(prefix + "4", "d6704d5506ab4104a5a5cab720af8736");
+		}};
+
+		// when
+		final WebTestClient.ResponseSpec result = webClient
+				.get().uri(URL_ROOT + Api.Diary.Hashes.URL + "/" + prefix)
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
+
+		// then
+		final String response = result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
+
+		final Map<String, String> actual = serializerMap.read(response);
+		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void getHashChildren_badRequest_tooLong() throws Exception
 	{
-		// given
-		final int userId = 17;
-		when(userInfoService.getCurrentUserId()).thenReturn(userId);
-		when(diaryLocalService.getHashTree(eq(userId))).thenReturn(new MemoryMerkleTree3(new HashMap<>()));
-
-		// when
-		ResultActions request = mvc.perform(get(Api.Hashes.URL + "/" + Utils.buildString(4)));
+		// given / when
+		final WebTestClient.ResponseSpec result = webClient
+				.get()
+				.uri(URL_ROOT + Api.Diary.Hashes.URL + "/" + Utils.buildString(4))
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isBadRequest());
+		result.expectStatus().isBadRequest();
 	}
 
 	@Test
 	public void save() throws Exception
 	{
 		// given
-		final int userId = 17;
-		when(userInfoService.getCurrentUserId()).thenReturn(userId);
-		List<Versioned<DiaryRecord>> data = DiaryDataUtil.buildDemoData();
+		final int userId = getUserId();
+		final String itemId = "4ff091c13bf540fdaaa25b46c470e713";
+		final Versioned<DiaryRecord> item = new Versioned<DiaryRecord>()
+		{{
+			setId(itemId);
+			setTimeStamp(new Date());
+			setHash("0f027e975c2944f083a038f0c4d283ec");
+			setVersion(13);
+			setDeleted(false);
+			setData(new NoteRecord()
+			{{
+				setTime(new Date());
+				setText("Apple");
+			}});
+		}};
+		final List<Versioned<DiaryRecord>> data = Collections.singletonList(item);
 
 		// when
-		MockHttpServletRequestBuilder r = put(Api.Save.URL);
-		r.contentType(MediaType.APPLICATION_FORM_URLENCODED);
-		r.param(Api.Save.PARAM_DATA, serializer.writeAll(data));
-		ResultActions request = mvc.perform(r);
+		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Api.Diary.Save.PARAM_DATA, serializer.writeAll(data));
+
+		final WebTestClient.ResponseSpec result = webClient
+				.put().uri(URL_ROOT + Api.Diary.Save.URL)
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.body(BodyInserters.fromFormData(params))
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isOk()).andExpect(content().string(Api.Save.RESPONSE_OK));
-		verify(diaryLocalService).save(eq(userId), any());
+		result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.isEqualTo(Api.Diary.Save.RESPONSE_OK);
+
+		final Versioned<DiaryRecord> actual = DiaryLocalService.convert(
+				diaryEntityRepository.findByUserIdAndId(userId, itemId));
+		assertEquals(item, actual);
 	}
 
 	@Test
 	public void save_badRequest_missing() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(put(Api.Save.URL).contentType(MediaType.APPLICATION_FORM_URLENCODED));
+		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+
+		final WebTestClient.ResponseSpec result = webClient
+				.post().uri(URL_ROOT + Api.Diary.Save.URL)
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.body(BodyInserters.fromFormData(params))
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isBadRequest());
-		verify(diaryLocalService, times(0)).save(anyInt(), any());
+		result.expectStatus().isBadRequest();
 	}
 }

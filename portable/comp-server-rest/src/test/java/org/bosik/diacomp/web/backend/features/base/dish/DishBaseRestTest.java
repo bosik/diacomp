@@ -117,13 +117,10 @@ public class DishBaseRestTest extends IntegrationTest
 				.exchange();
 
 		// then
-		final String response = result
+		result
 				.expectStatus().isOk()
 				.expectBody(String.class)
-				.returnResult()
-				.getResponseBody();
-
-		assertEquals("3", response);
+				.isEqualTo("3");
 	}
 
 	@Test
@@ -136,13 +133,10 @@ public class DishBaseRestTest extends IntegrationTest
 				.exchange();
 
 		// then
-		final String response = result
+		result
 				.expectStatus().isOk()
 				.expectBody(String.class)
-				.returnResult()
-				.getResponseBody();
-
-		assertEquals("1", response);
+				.isEqualTo("1");
 	}
 
 	@Test
@@ -155,13 +149,10 @@ public class DishBaseRestTest extends IntegrationTest
 				.exchange();
 
 		// then
-		final String response = result
+		result
 				.expectStatus().isBadRequest()
 				.expectBody(String.class)
-				.returnResult()
-				.getResponseBody();
-
-		assertEquals("String too long: 33 chars passed, but at most 32 are allowed", response);
+				.isEqualTo("String too long: 33 chars passed, but at most 32 are allowed");
 	}
 
 	@Test
@@ -248,13 +239,10 @@ public class DishBaseRestTest extends IntegrationTest
 				.exchange();
 
 		// then
-		final String response = result
+		result
 				.expectStatus().isNotFound()
 				.expectBody(String.class)
-				.returnResult()
-				.getResponseBody();
-
-		assertEquals("Item '0d869e560e474f0bb5fcc46824313a62' not found", response);
+				.isEqualTo("Item '0d869e560e474f0bb5fcc46824313a62' not found");
 	}
 
 	@Test
@@ -267,13 +255,10 @@ public class DishBaseRestTest extends IntegrationTest
 				.exchange();
 
 		// then
-		final String response = result
+		result
 				.expectStatus().isBadRequest()
 				.expectBody(String.class)
-				.returnResult()
-				.getResponseBody();
-
-		assertEquals("String too long: 33 chars passed, but at most 32 are allowed", response);
+				.isEqualTo("String too long: 33 chars passed, but at most 32 are allowed");
 	}
 
 	@Test
@@ -475,13 +460,10 @@ public class DishBaseRestTest extends IntegrationTest
 				.exchange();
 
 		// then
-		final String response = result
+		result
 				.expectStatus().isOk()
 				.expectBody(String.class)
-				.returnResult()
-				.getResponseBody();
-
-		assertEquals("c4cf3a3f3c8bc70ff308f963e002339d", response);
+				.isEqualTo("c4cf3a3f3c8bc70ff308f963e002339d");
 	}
 
 	@Test
@@ -494,13 +476,10 @@ public class DishBaseRestTest extends IntegrationTest
 				.exchange();
 
 		// then
-		final String response = result
+		result
 				.expectStatus().isOk()
 				.expectBody(String.class)
-				.returnResult()
-				.getResponseBody();
-
-		assertEquals("42b7225c5d4c862c475570308c5fbb68", response);
+				.isEqualTo("42b7225c5d4c862c475570308c5fbb68");
 	}
 
 	@Test
@@ -626,13 +605,10 @@ public class DishBaseRestTest extends IntegrationTest
 				.exchange();
 
 		// then
-		final String response = result
+		result
 				.expectStatus().isOk()
 				.expectBody(String.class)
-				.returnResult()
-				.getResponseBody();
-
-		assertEquals(Api.Dish.Save.RESPONSE_OK, response);
+				.isEqualTo(Api.Dish.Save.RESPONSE_OK);
 
 		final Versioned<DishItem> actual = DishBaseLocalService.convert(dishEntityRepository.findByUserIdAndId(userId, itemId));
 		assertEquals(item, actual);

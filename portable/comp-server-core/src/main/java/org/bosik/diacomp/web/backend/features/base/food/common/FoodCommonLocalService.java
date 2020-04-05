@@ -63,7 +63,7 @@ public class FoodCommonLocalService
 		return item;
 	}
 
-	private static List<Versioned<FoodItem>> convert(List<FoodCommonEntity> list)
+	public static List<Versioned<FoodItem>> convert(List<FoodCommonEntity> list)
 	{
 		return list.stream().map(FoodCommonLocalService::convert).collect(toList());
 	}
