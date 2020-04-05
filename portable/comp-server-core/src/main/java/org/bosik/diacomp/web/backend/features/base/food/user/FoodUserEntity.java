@@ -17,6 +17,10 @@
  */
 package org.bosik.diacomp.web.backend.features.base.food.user;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -24,6 +28,9 @@ import javax.persistence.Table;
 import java.util.Date;
 
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "food_user")
 public class FoodUserEntity
 {

@@ -59,7 +59,7 @@ public class DiaryLocalService implements UserDataService<DiaryRecord>
 	@Autowired
 	private CachedDiaryHashTree   cachedHashTree;
 
-	private static Versioned<DiaryRecord> convert(DiaryEntity e)
+	public static Versioned<DiaryRecord> convert(DiaryEntity e)
 	{
 		if (e == null)
 		{
@@ -78,7 +78,7 @@ public class DiaryLocalService implements UserDataService<DiaryRecord>
 		return result;
 	}
 
-	private static List<Versioned<DiaryRecord>> convert(List<DiaryEntity> list)
+	public static List<Versioned<DiaryRecord>> convert(List<DiaryEntity> list)
 	{
 		return list.stream().map(DiaryLocalService::convert).collect(toList());
 	}

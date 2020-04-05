@@ -19,6 +19,18 @@ package org.bosik.diacomp.web.backend.features.base.food.common;
 
 public class Api
 {
-	public static final String URL                      = "/food/common";
-	public static final String PARAM_FIND_LAST_MODIFIED = "lastModified";
+	public static class Food
+	{
+		public static class Common
+		{
+			public static final String BASE_URL = "/food/common";
+
+			public static class FindChanged
+			{
+				public static final String URL = BASE_URL;
+
+				public static final String PARAM_FIND_LAST_MODIFIED = "lastModified";
+			}
+		}
+	}
 }
