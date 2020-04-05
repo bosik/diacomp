@@ -23,6 +23,7 @@ import org.bosik.diacomp.web.backend.features.user.auth.Api;
 import org.bosik.diacomp.web.backend.features.user.auth.HashUtils;
 import org.bosik.diacomp.web.backend.features.user.auth.UserEntity;
 import org.bosik.diacomp.web.backend.features.user.auth.UserEntityRepository;
+import org.bosik.merklesync.Versioned;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -40,7 +41,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnitParamsRunner.class)
 @SpringBootTest(
@@ -128,5 +133,12 @@ public abstract class IntegrationTest
 	protected int getUserId()
 	{
 		return userEntityRepository.findByName(USER_NAME).getId();
+	}
+
+	protected static <T> void assertEqualsSorted(List<Versioned<T>> expected, List<Versioned<T>> actual)
+	{
+		expected.sort(Comparator.comparing(Versioned::getId));
+		actual.sort(Comparator.comparing(Versioned::getId));
+		assertEquals(expected, actual);
 	}
 }

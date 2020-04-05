@@ -213,7 +213,7 @@ public class FoodUserRestTest extends IntegrationTest
 				.getResponseBody();
 
 		final List<Versioned<FoodItem>> actual = serializer.readAll(response);
-		assertEquals(expected, actual);
+		assertEqualsSorted(expected, actual);
 	}
 
 	@Test
@@ -238,7 +238,7 @@ public class FoodUserRestTest extends IntegrationTest
 				.getResponseBody();
 
 		final List<Versioned<FoodItem>> actual = serializer.readAll(response);
-		assertEquals(expected, actual);
+		assertEqualsSorted(expected, actual);
 	}
 
 	@Test
@@ -283,6 +283,7 @@ public class FoodUserRestTest extends IntegrationTest
 				.expectBody(String.class)
 				.returnResult()
 				.getResponseBody();
+
 		assertEquals("Item '0d869e560e474f0bb5fcc46824313a62' not found", response);
 	}
 
@@ -328,7 +329,7 @@ public class FoodUserRestTest extends IntegrationTest
 				.getResponseBody();
 
 		final List<Versioned<FoodItem>> actual = serializer.readAll(response);
-		assertEquals(expected, actual);
+		assertEqualsSorted(expected, actual);
 	}
 
 	@Test
@@ -356,7 +357,7 @@ public class FoodUserRestTest extends IntegrationTest
 				.getResponseBody();
 
 		final List<Versioned<FoodItem>> actual = serializer.readAll(response);
-		assertEquals(expected, actual);
+		assertEqualsSorted(expected, actual);
 	}
 
 	@Test
@@ -406,7 +407,7 @@ public class FoodUserRestTest extends IntegrationTest
 				.getResponseBody();
 
 		final List<Versioned<FoodItem>> actual = serializer.readAll(response);
-		assertEquals(expected, actual);
+		assertEqualsSorted(expected, actual);
 	}
 
 	@Test
@@ -463,8 +464,9 @@ public class FoodUserRestTest extends IntegrationTest
 				.expectBody(String.class)
 				.returnResult()
 				.getResponseBody();
+
 		final List<Versioned<FoodItem>> actual = serializer.readAll(response);
-		assertEquals(expected, actual);
+		assertEqualsSorted(expected, actual);
 	}
 
 	@Test
@@ -512,6 +514,7 @@ public class FoodUserRestTest extends IntegrationTest
 				.expectBody(String.class)
 				.returnResult()
 				.getResponseBody();
+
 		assertEquals("c4cf3a3f3c8bc70ff308f963e002339d", response);
 	}
 
@@ -530,6 +533,7 @@ public class FoodUserRestTest extends IntegrationTest
 				.expectBody(String.class)
 				.returnResult()
 				.getResponseBody();
+
 		assertEquals("42b7225c5d4c862c475570308c5fbb68", response);
 	}
 
