@@ -27,10 +27,12 @@ import java.io.Serializable;
 @Table(name = "preferences")
 public class PreferenceEntity implements Serializable
 {
+	public static final int MAX_SIZE_VALUE = 1024;
+
 	@EmbeddedId
 	private PreferenceEntityPK id;
 
-	@Column(name = "value")
+	@Column(name = "value", length = MAX_SIZE_VALUE)
 	private String value;
 
 	@Column(name = "version")

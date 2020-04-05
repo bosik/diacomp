@@ -34,11 +34,13 @@ import java.util.Date;
 @Table(name = "food_common")
 public class FoodCommonEntity
 {
+	public static final int MAX_SIZE_NAME = 100;
+
 	@Id
 	@Column(name = "id", columnDefinition = "CHAR(32)")
 	private String id;
 
-	@Column(name = "name")
+	@Column(name = "name", length = MAX_SIZE_NAME)
 	private String name;
 
 	@Column(name = "prots", columnDefinition = "DECIMAL")
