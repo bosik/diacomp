@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,11 +34,20 @@ import java.util.stream.Collectors;
 @Service
 public class LogService
 {
+	@Value("${app.logerrors}")
+	private boolean loggingEnabled;
+
 	@Autowired
 	private LogEntryRepository logEntryRepository;
 
 	public void saveError(HttpServletRequest request, Exception e)
 	{
+		if (!loggingEnabled)
+		{
+			log.info("Logging skipped");
+			return;
+		}
+
 		try
 		{
 			logEntryRepository.save(LogEntry.builder()
