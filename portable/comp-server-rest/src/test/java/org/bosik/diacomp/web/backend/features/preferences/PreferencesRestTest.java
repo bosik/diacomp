@@ -22,6 +22,7 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
+import org.bosik.diacomp.web.backend.features.log.LogService;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,6 +93,9 @@ public class PreferencesRestTest
 
 	@MockBean
 	private UserInfoService userInfoService;
+
+	@MockBean
+	private LogService logService;
 
 	@Test
 	public void getAll() throws Exception

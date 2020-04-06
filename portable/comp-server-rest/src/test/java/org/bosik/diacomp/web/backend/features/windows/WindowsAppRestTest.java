@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.web.backend.features.windows;
 
+import org.bosik.diacomp.web.backend.features.log.LogService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,9 @@ public class WindowsAppRestTest
 
 	@MockBean
 	private WindowsService service;
+
+	@MockBean
+	private LogService logService;
 
 	@Test
 	public void getVersion() throws Exception

@@ -24,6 +24,7 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.features.base.food.FoodItemDataUtil;
+import org.bosik.diacomp.web.backend.features.log.LogService;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.merklesync.Versioned;
 import org.junit.Before;
@@ -68,6 +69,9 @@ public class FoodComboRestAnonTest
 
 	@MockBean
 	private UserInfoService userInfoService;
+
+	@MockBean
+	private LogService logService;
 
 	@Before
 	public void init()
