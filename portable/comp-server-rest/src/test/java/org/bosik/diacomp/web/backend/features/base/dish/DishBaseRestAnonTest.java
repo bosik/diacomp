@@ -23,6 +23,7 @@ import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerDishItem;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
+import org.bosik.diacomp.web.backend.features.log.LogService;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.merklesync.Versioned;
 import org.junit.Before;
@@ -68,6 +69,9 @@ public class DishBaseRestAnonTest
 
 	@MockBean
 	private UserInfoService userInfoService;
+
+	@MockBean
+	private LogService logService;
 
 	@Before
 	public void init()

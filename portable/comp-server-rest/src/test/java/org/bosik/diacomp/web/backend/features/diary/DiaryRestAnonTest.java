@@ -25,6 +25,7 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
+import org.bosik.diacomp.web.backend.features.log.LogService;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.merklesync.Versioned;
 import org.junit.Before;
@@ -69,6 +70,9 @@ public class DiaryRestAnonTest
 
 	@MockBean
 	private DiaryLocalService diaryLocalService;
+
+	@MockBean
+	private LogService logService;
 
 	@Before
 	public void init()

@@ -21,7 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.bosik.diacomp.core.rest.ResponseBuilder;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
+import org.bosik.diacomp.web.backend.features.log.LogService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -29,15 +32,22 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Slf4j
+@Service
 @ControllerAdvice
 public class RestExceptionAdvice
 {
+	@Autowired
+	private LogService logService;
+
 	@ResponseBody
 	@ExceptionHandler(IllegalArgumentException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public String handlerIllegalArgumentException(IllegalArgumentException e)
+	public String handlerIllegalArgumentException(HttpServletRequest request, IllegalArgumentException e)
 	{
+		logService.saveError(request, e);
 		return e.getMessage();
 	}
 
@@ -76,8 +86,9 @@ public class RestExceptionAdvice
 	@ResponseBody
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public String handlerException(Exception e)
+	public String handlerException(HttpServletRequest request, Exception e)
 	{
+		logService.saveError(request, e);
 		log.error(e.getMessage(), e);
 		return ResponseBuilder.buildFails();
 	}

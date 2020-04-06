@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class DishBaseRestTest extends IntegrationTest
@@ -629,5 +630,86 @@ public class DishBaseRestTest extends IntegrationTest
 
 		// then
 		result.expectStatus().isBadRequest();
+	}
+
+	@Test
+	public void save_badRequest_longName() throws Exception
+	{
+		// given
+		final String itemId = "d6b5c98b09a24e85a1852a9fe8a52273";
+		final String longName = "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567891";
+		final Versioned<DishItem> item = new Versioned<DishItem>()
+		{{
+			setId(itemId);
+			setTimeStamp(new Date());
+			setHash("7686cab1275e45c2923218d920e4c774");
+			setVersion(1);
+			setDeleted(false);
+			setData(new DishItem()
+			{{
+				setName(longName);
+			}});
+		}};
+		final List<Versioned<DishItem>> data = Collections.singletonList(item);
+
+		// when
+		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Api.Dish.Save.PARAM_DATA, serializer.writeAll(data));
+
+		final ResponseSpec result = webClient
+				.put().uri(URL_ROOT + Api.Dish.Save.URL)
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.body(BodyInserters.fromFormData(params))
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
+
+		// then
+		result
+				.expectStatus().isBadRequest()
+				.expectBody(String.class)
+				.isEqualTo("Name too long, max 100 chars allowed: " + longName);
+	}
+
+	@Test
+	public void save_badRequest_veryLongName() throws Exception
+	{
+		// given
+		final String itemId = "d6b5c98b09a24e85a1852a9fe8a52273";
+		final String longName = Utils.buildString(1000);
+		final Versioned<DishItem> item = new Versioned<DishItem>()
+		{{
+			setId(itemId);
+			setTimeStamp(new Date());
+			setHash("7686cab1275e45c2923218d920e4c774");
+			setVersion(1);
+			setDeleted(false);
+			setData(new DishItem()
+			{{
+				setName(longName);
+			}});
+		}};
+		final List<Versioned<DishItem>> data = Collections.singletonList(item);
+
+		// when
+		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Api.Dish.Save.PARAM_DATA, serializer.writeAll(data));
+
+		final ResponseSpec result = webClient
+				.put().uri(URL_ROOT + Api.Dish.Save.URL)
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.body(BodyInserters.fromFormData(params))
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
+
+		// then
+		final String response = result
+				.expectStatus().isBadRequest()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
+
+		assertNotNull(response);
+		assertTrue(response, response.startsWith("Name too long, max 100 chars allowed: "));
+		assertTrue(response, response.length() < 500);
 	}
 }

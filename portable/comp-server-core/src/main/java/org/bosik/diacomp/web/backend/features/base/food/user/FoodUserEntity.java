@@ -34,10 +34,12 @@ import java.util.Date;
 @Table(name = "food_user")
 public class FoodUserEntity
 {
+	public static final int MAX_SIZE_NAME = 100;
+
 	@EmbeddedId
 	private FoodUserEntityPK id;
 
-	@Column(name = "name")
+	@Column(name = "name", length = MAX_SIZE_NAME)
 	private String name;
 
 	@Column(name = "prots", columnDefinition = "DECIMAL")

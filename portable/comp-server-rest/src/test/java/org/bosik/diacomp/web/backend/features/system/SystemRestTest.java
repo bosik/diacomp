@@ -18,12 +18,14 @@
 package org.bosik.diacomp.web.backend.features.system;
 
 import org.bosik.diacomp.core.utils.Utils;
+import org.bosik.diacomp.web.backend.features.log.LogService;
 import org.hamcrest.core.StringContains;
 import org.hamcrest.core.StringStartsWith;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -58,6 +60,9 @@ public class SystemRestTest
 
 	@Autowired
 	private MockMvc mvc;
+
+	@MockBean
+	private LogService logService;
 
 	@Test
 	public void welcome() throws Exception
