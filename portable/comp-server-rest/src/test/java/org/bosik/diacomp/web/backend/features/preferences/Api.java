@@ -17,35 +17,32 @@
  */
 package org.bosik.diacomp.web.backend.features.preferences;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.io.Serializable;
-
-@Entity
-@Builder
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "preferences")
-public class PreferenceEntity implements Serializable
+public class Api
 {
-	public static final int MAX_SIZE_VALUE = 1024;
+	public static class Preferences
+	{
+		public static final String BASE_URL = "/preferences";
 
-	@EmbeddedId
-	private PreferenceEntityPK id;
+		public static class GetAll
+		{
+			public static final String URL = BASE_URL;
+		}
 
-	@Column(name = "value", length = MAX_SIZE_VALUE)
-	private String value;
+		public static class GetString
+		{
+			public static final String URL = BASE_URL;
+		}
 
-	@Column(name = "version")
-	private int version;
+		public static class Hash
+		{
+			public static final String URL = BASE_URL + "/hash";
+		}
+
+		public static class Save
+		{
+			public static final String URL         = BASE_URL;
+			public static final String PARAM_DATA  = "data";
+			public static final String RESPONSE_OK = "Saved OK";
+		}
+	}
 }
