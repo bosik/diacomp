@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 @Service
 public class LogService
 {
+	private static final int MAX_SIZE_TEXT = 32768;
+
 	@Value("${app.logerrors}")
 	private boolean loggingEnabled;
 
@@ -55,9 +57,9 @@ public class LogService
 					.remoteUser(request.getRemoteUser())
 					.remoteAddress(request.getRemoteAddr())
 					.requestUrl(request.getMethod() + " " + request.getRequestURI())
-					.requestParams(StringUtils.abbreviate(mapToString(request.getParameterMap()), 4000))
+					.requestParams(StringUtils.abbreviate(mapToString(request.getParameterMap()), MAX_SIZE_TEXT))
 					.errorMessage(StringUtils.abbreviate(e.getMessage(), 255))
-					.stacktrace(StringUtils.abbreviate(ExceptionUtils.getStackTrace(e), 4000))
+					.stacktrace(StringUtils.abbreviate(ExceptionUtils.getStackTrace(e), MAX_SIZE_TEXT))
 					.build()
 			);
 		}
