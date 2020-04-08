@@ -25,6 +25,7 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.ParserVersioned;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
+import org.bosik.diacomp.web.backend.features.log.LogService;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.merklesync.Versioned;
 import org.junit.Before;
@@ -70,6 +71,9 @@ public class DiaryRestAnonTest
 	@MockBean
 	private DiaryLocalService diaryLocalService;
 
+	@MockBean
+	private LogService logService;
+
 	@Before
 	public void init()
 	{
@@ -78,24 +82,24 @@ public class DiaryRestAnonTest
 
 	@Test
 	@Parameters(value = {//
-			Api.Count.URL, //
-			Api.Count.URL + "/ea", //
-			Api.Count.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
-			Api.FindById.URL, //
-			Api.FindById.URL + "/ff", //
-			Api.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931fa", //
-			Api.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
-			Api.FindPeriod.URL + "?" + Api.FindPeriod.PARAM_FROM + "=2019-04-01 21:00:00&" + Api.FindPeriod.PARAM_TO
+			Api.Diary.Count.URL, //
+			Api.Diary.Count.URL + "/ea", //
+			Api.Diary.Count.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
+			Api.Diary.FindById.URL, //
+			Api.Diary.FindById.URL + "/ff", //
+			Api.Diary.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931fa", //
+			Api.Diary.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
+			Api.Diary.FindPeriod.URL + "?" + Api.Diary.FindPeriod.PARAM_FROM + "=2019-04-01 21:00:00&" + Api.Diary.FindPeriod.PARAM_TO
 					+ "=2019-04-02 21:00:00", //
-			Api.FindPeriod.URL + "?" + Api.FindPeriod.PARAM_FROM + "=2019-04-98 21:00:00&" + Api.FindPeriod.PARAM_TO
+			Api.Diary.FindPeriod.URL + "?" + Api.Diary.FindPeriod.PARAM_FROM + "=2019-04-98 21:00:00&" + Api.Diary.FindPeriod.PARAM_TO
 					+ "=2019-04-98 21:00:00", //
-			Api.FindChanged.URL + "?" + Api.FindChanged.PARAM_SINCE + "=2019-04-16 20:10:32", //
-			Api.FindChanged.URL + "?" + Api.FindChanged.PARAM_SINCE + "=2019-04-16 20:10:320", //
-			Api.Hash.URL, //
-			Api.Hash.URL + "/f2", //
-			Api.Hash.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
-			Api.Hashes.URL + "/f", //
-			Api.Hashes.URL + "/abcd" //
+			Api.Diary.FindChanged.URL + "?" + Api.Diary.FindChanged.PARAM_SINCE + "=2019-04-16 20:10:32", //
+			Api.Diary.FindChanged.URL + "?" + Api.Diary.FindChanged.PARAM_SINCE + "=2019-04-16 20:10:320", //
+			Api.Diary.Hash.URL, //
+			Api.Diary.Hash.URL + "/f2", //
+			Api.Diary.Hash.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
+			Api.Diary.Hashes.URL + "/f", //
+			Api.Diary.Hashes.URL + "/abcd" //
 	})
 	public void shouldBeSecured(String url) throws Exception
 	{
@@ -113,9 +117,9 @@ public class DiaryRestAnonTest
 		List<Versioned<DiaryRecord>> data = DiaryDataUtil.buildDemoData();
 
 		// when
-		MockHttpServletRequestBuilder r = put(Api.Save.URL);
+		MockHttpServletRequestBuilder r = put(Api.Diary.Save.URL);
 		r.contentType(MediaType.APPLICATION_FORM_URLENCODED);
-		r.param(Api.Save.PARAM_DATA, serializer.writeAll(data));
+		r.param(Api.Diary.Save.PARAM_DATA, serializer.writeAll(data));
 		ResultActions request = mvc.perform(r);
 
 		// then

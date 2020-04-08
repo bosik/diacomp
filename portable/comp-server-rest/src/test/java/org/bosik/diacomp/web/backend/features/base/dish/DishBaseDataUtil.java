@@ -21,7 +21,7 @@ import org.bosik.diacomp.core.entities.business.FoodMassed;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.merklesync.Versioned;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -29,43 +29,42 @@ public class DishBaseDataUtil
 {
 	public static List<Versioned<DishItem>> buildDemoData()
 	{
-		return new ArrayList<Versioned<DishItem>>()
-		{{
-			add(new Versioned<DishItem>()
-			{{
-				setId("1");
-				setTimeStamp(new Date());
-				setHash("hash");
-				setVersion(13);
-				setDeleted(false);
-				setData(new DishItem()
+		return Arrays.asList(
+				new Versioned<DishItem>()
 				{{
-					setName("Apple pie");
-					setMass(165);
-					getContent().add(new FoodMassed()
+					setId("1");
+					setTimeStamp(new Date());
+					setHash("hash");
+					setVersion(13);
+					setDeleted(false);
+					setData(new DishItem()
 					{{
-						setName("Apple");
-						setRelProts(0.2);
-						setRelFats(0.1);
-						setRelCarbs(11.2);
-						setRelValue(40);
-						setMass(2000);
+						setName("Apple pie");
+						setMass(165);
+						getContent().add(new FoodMassed()
+						{{
+							setName("Apple");
+							setRelProts(0.2);
+							setRelFats(0.1);
+							setRelCarbs(11.2);
+							setRelValue(40);
+							setMass(2000);
+						}});
 					}});
-				}});
-			}});
-			add(new Versioned<DishItem>()
-			{{
-				setId("2");
-				setTimeStamp(new Date());
-				setHash("hash");
-				setVersion(13);
-				setDeleted(false);
-				setData(new DishItem()
+				}},
+				new Versioned<DishItem>()
 				{{
-					setName("Banana");
-					setMass(120);
-				}});
-			}});
-		}};
+					setId("2");
+					setTimeStamp(new Date());
+					setHash("hash");
+					setVersion(13);
+					setDeleted(false);
+					setData(new DishItem()
+					{{
+						setName("Banana");
+						setMass(120);
+					}});
+				}}
+		);
 	}
 }

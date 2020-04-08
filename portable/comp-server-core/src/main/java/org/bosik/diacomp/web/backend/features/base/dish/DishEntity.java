@@ -17,6 +17,10 @@
  */
 package org.bosik.diacomp.web.backend.features.base.dish;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -24,9 +28,14 @@ import javax.persistence.Table;
 import java.util.Date;
 
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "dish")
 public class DishEntity
 {
+	public static final int MAX_SIZE_NAME = 100;
+
 	@Id
 	@Column(name = "id", columnDefinition = "CHAR(32)")
 	private String id;
@@ -49,7 +58,7 @@ public class DishEntity
 	@Column(name = "content", columnDefinition = "TEXT")
 	private String content;
 
-	@Column(name = "name_cache")
+	@Column(name = "name_cache", length = MAX_SIZE_NAME)
 	private String nameCache;
 
 	public String getId()

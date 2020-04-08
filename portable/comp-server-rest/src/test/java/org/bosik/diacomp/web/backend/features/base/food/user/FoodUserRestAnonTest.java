@@ -24,6 +24,7 @@ import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.serializers.SerializerFoodItem;
 import org.bosik.diacomp.core.services.exceptions.NotAuthorizedException;
 import org.bosik.diacomp.web.backend.features.base.food.FoodItemDataUtil;
+import org.bosik.diacomp.web.backend.features.log.LogService;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.bosik.merklesync.Versioned;
 import org.junit.Before;
@@ -69,6 +70,9 @@ public class FoodUserRestAnonTest
 	@MockBean
 	private UserInfoService userInfoService;
 
+	@MockBean
+	private LogService logService;
+
 	@Before
 	public void init()
 	{
@@ -77,23 +81,23 @@ public class FoodUserRestAnonTest
 
 	@Test
 	@Parameters(value = {//
-			Api.Count.URL, //
-			Api.Count.URL + "/ea", //
-			Api.Count.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
-			Api.FindById.URL, //
-			Api.FindById.URL + "/ff", //
-			Api.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931fa", //
-			Api.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
-			Api.FindAny.URL + "?" + Api.FindAny.PARAM_FILTER + "=tes", //
-			Api.FindAll.URL, //
-			Api.FindAll.URL + "?" + Api.FindAll.PARAM_INCLUDE_REMOVED + "true", //
-			Api.FindChanged.URL + "?" + Api.FindChanged.PARAM_SINCE + "=2019-04-16 20:10:32", //
-			Api.FindChanged.URL + "?" + Api.FindChanged.PARAM_SINCE + "=2019-04-16 20:10:320", //
-			Api.Hash.URL, //
-			Api.Hash.URL + "/f2", //
-			Api.Hash.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
-			Api.Hashes.URL + "/f", //
-			Api.Hashes.URL + "/abcd" //
+			Api.Food.User.Count.URL, //
+			Api.Food.User.Count.URL + "/ea", //
+			Api.Food.User.Count.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
+			Api.Food.User.FindById.URL, //
+			Api.Food.User.FindById.URL + "/ff", //
+			Api.Food.User.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931fa", //
+			Api.Food.User.FindById.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
+			Api.Food.User.FindAny.URL + "?" + Api.Food.User.FindAny.PARAM_FILTER + "=tes", //
+			Api.Food.User.FindAll.URL, //
+			Api.Food.User.FindAll.URL + "?" + Api.Food.User.FindAll.PARAM_INCLUDE_REMOVED + "true", //
+			Api.Food.User.FindChanged.URL + "?" + Api.Food.User.FindChanged.PARAM_SINCE + "=2019-04-16 20:10:32", //
+			Api.Food.User.FindChanged.URL + "?" + Api.Food.User.FindChanged.PARAM_SINCE + "=2019-04-16 20:10:320", //
+			Api.Food.User.Hash.URL, //
+			Api.Food.User.Hash.URL + "/f2", //
+			Api.Food.User.Hash.URL + "/542a8a10ef1a41ecb9338dbeb4a931faa", //
+			Api.Food.User.Hashes.URL + "/f", //
+			Api.Food.User.Hashes.URL + "/abcd" //
 	})
 	public void shouldBeSecured(String url) throws Exception
 	{
@@ -111,9 +115,9 @@ public class FoodUserRestAnonTest
 		List<Versioned<FoodItem>> data = FoodItemDataUtil.buildDemoData();
 
 		// when
-		MockHttpServletRequestBuilder r = put(Api.Save.URL);
+		MockHttpServletRequestBuilder r = put(Api.Food.User.Save.URL);
 		r.contentType(MediaType.APPLICATION_FORM_URLENCODED);
-		r.param(Api.Save.PARAM_DATA, serializer.writeAll(data));
+		r.param(Api.Food.User.Save.PARAM_DATA, serializer.writeAll(data));
 		ResultActions request = mvc.perform(r);
 
 		// then

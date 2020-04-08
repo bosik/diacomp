@@ -19,50 +19,53 @@ package org.bosik.diacomp.web.backend.features.base.dish;
 
 public class Api
 {
-	public static final String BASE_URL = "/dish";
-
-	public static class Count
+	public static class Dish
 	{
-		public static final String URL = BASE_URL + "/count";
-	}
+		public static final String BASE_URL = "/dish";
 
-	public static class FindById
-	{
-		public static final String URL = BASE_URL + "/guid";
-	}
+		public static class Count
+		{
+			public static final String URL = BASE_URL + "/count";
+		}
 
-	public static class FindAny
-	{
-		public static final String URL          = BASE_URL + "/search";
-		public static final String PARAM_FILTER = "q";
-	}
+		public static class FindById
+		{
+			public static final String URL = BASE_URL + "/guid";
+		}
 
-	public static class FindAll
-	{
-		public static final String URL                   = BASE_URL + "/all";
-		public static final String PARAM_INCLUDE_REMOVED = "show_rem";
-	}
+		public static class FindAny
+		{
+			public static final String URL          = BASE_URL + "/search";
+			public static final String PARAM_FILTER = "q";
+		}
 
-	public static class FindChanged
-	{
-		public static final String URL         = BASE_URL + "/changes";
-		public static final String PARAM_SINCE = "since";
-	}
+		public static class FindAll
+		{
+			public static final String URL                   = BASE_URL + "/all";
+			public static final String PARAM_INCLUDE_REMOVED = "show_rem";
+		}
 
-	public static class Hash
-	{
-		public static final String URL = BASE_URL + "/hash";
-	}
+		public static class FindChanged
+		{
+			public static final String URL         = BASE_URL + "/changes";
+			public static final String PARAM_SINCE = "since";
+		}
 
-	public static class Hashes
-	{
-		public static final String URL = BASE_URL + "/hashes";
-	}
+		public static class Hash
+		{
+			public static final String URL = BASE_URL + "/hash";
+		}
 
-	public static class Save
-	{
-		public static final String URL         = BASE_URL;
-		public static final String PARAM_DATA  = "items";
-		public static final String RESPONSE_OK = "Saved OK";
+		public static class Hashes
+		{
+			public static final String URL = BASE_URL + "/hashes";
+		}
+
+		public static class Save
+		{
+			public static final String URL         = BASE_URL;
+			public static final String PARAM_DATA  = "items";
+			public static final String RESPONSE_OK = "Saved OK";
+		}
 	}
 }

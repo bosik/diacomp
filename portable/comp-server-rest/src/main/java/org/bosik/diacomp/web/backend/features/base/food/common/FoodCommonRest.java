@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.Date;
 import java.util.List;
@@ -53,7 +52,7 @@ public class FoodCommonRest
 		}
 		else
 		{
-			return foodCommonService.find();
+			return foodCommonService.findAll();
 		}
 	}
 }

@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.web.backend.features.base.food.user;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bosik.diacomp.core.entities.business.foodbase.FoodItem;
 import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
@@ -48,7 +49,7 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 	@Autowired
 	private FoodUserEntityRepository repository;
 
-	private static Versioned<FoodItem> convert(FoodUserEntity e)
+	public static Versioned<FoodItem> convert(FoodUserEntity e)
 	{
 		if (e == null)
 		{
@@ -74,7 +75,7 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 		return item;
 	}
 
-	private static List<Versioned<FoodItem>> convert(List<FoodUserEntity> list)
+	public static List<Versioned<FoodItem>> convert(List<FoodUserEntity> list)
 	{
 		return list.stream().map(FoodUserLocalService::convert).collect(toList());
 	}
@@ -206,11 +207,13 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 	{
 		for (Versioned<FoodItem> item : items)
 		{
-			if (item.getId() == null || item.getId().length() < ObjectService.ID_FULL_SIZE)
+			if (item.getId() == null || item.getId().length() != ObjectService.ID_FULL_SIZE)
 			{
 				throw new IllegalArgumentException(
 						String.format(Locale.US, "Invalid ID: %s, must be %d characters long", item.getId(), ObjectService.ID_FULL_SIZE));
 			}
+
+			validate(item.getData());
 
 			FoodUserEntity entity = repository.findByIdUserIdAndIdId(userId, item.getId());
 
@@ -227,6 +230,21 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 			copyData(item, entity);
 			repository.save(entity);
 			cachedHashTree.set(userId, null); // done in loop to reduce inconsistency window
+		}
+	}
+
+	private static void validate(FoodItem data)
+	{
+		if (data.getName() == null)
+		{
+			throw new IllegalArgumentException("Name can't be null");
+		}
+
+		if (data.getName().length() > FoodUserEntity.MAX_SIZE_NAME)
+		{
+			throw new IllegalArgumentException("Name too long, max " + FoodUserEntity.MAX_SIZE_NAME + " chars allowed: " +
+					StringUtils.abbreviate(data.getName(), 2 * FoodUserEntity.MAX_SIZE_NAME)
+			);
 		}
 	}
 }

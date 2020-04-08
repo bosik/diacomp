@@ -20,6 +20,7 @@ package org.bosik.diacomp.web.backend.features.export;
 import org.bosik.diacomp.web.backend.features.base.dish.DishBaseLocalService;
 import org.bosik.diacomp.web.backend.features.base.food.combo.FoodComboLocalService;
 import org.bosik.diacomp.web.backend.features.diary.DiaryLocalService;
+import org.bosik.diacomp.web.backend.features.log.LogService;
 import org.bosik.diacomp.web.backend.features.preferences.PreferencesLocalService;
 import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
 import org.junit.Test;
@@ -60,6 +61,9 @@ public class ExportRestTest
 
 	@MockBean
 	private PreferencesLocalService preferencesLocalService;
+
+	@MockBean
+	private LogService logService;
 
 	@Test
 	public void exportAsJson() throws Exception

@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.web.backend.features.base.dish;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bosik.diacomp.core.entities.business.dishbase.DishItem;
 import org.bosik.diacomp.core.persistence.parsers.Parser;
 import org.bosik.diacomp.core.persistence.parsers.ParserDishItem;
@@ -46,8 +47,8 @@ import static java.util.stream.Collectors.toMap;
 @Service
 public class DishBaseLocalService implements UserDataService<DishItem>
 {
-	private static final Parser<DishItem>     parser     = new ParserDishItem();
-	private static final Serializer<DishItem> serializer = new SerializerAdapter<>(parser);
+	private static final Parser<DishItem>     parser        = new ParserDishItem();
+	private static final Serializer<DishItem> serializer    = new SerializerAdapter<>(parser);
 
 	@Autowired
 	private CachedDishHashTree cachedHashTree;
@@ -55,7 +56,7 @@ public class DishBaseLocalService implements UserDataService<DishItem>
 	@Autowired
 	private DishEntityRepository repository;
 
-	private static Versioned<DishItem> convert(DishEntity e)
+	public static Versioned<DishItem> convert(DishEntity e)
 	{
 		if (e == null)
 		{
@@ -180,11 +181,13 @@ public class DishBaseLocalService implements UserDataService<DishItem>
 	{
 		for (Versioned<DishItem> item : items)
 		{
-			if (item.getId() == null || item.getId().length() < ObjectService.ID_FULL_SIZE)
+			if (item.getId() == null || item.getId().length() != ObjectService.ID_FULL_SIZE)
 			{
 				throw new IllegalArgumentException(
 						String.format(Locale.US, "Invalid ID: %s, must be %d characters long", item.getId(), ObjectService.ID_FULL_SIZE));
 			}
+
+			validate(item.getData());
 
 			DishEntity entity = repository.findByUserIdAndId(userId, item.getId());
 
@@ -198,6 +201,21 @@ public class DishBaseLocalService implements UserDataService<DishItem>
 			copyData(item, entity);
 			repository.save(entity);
 			cachedHashTree.set(userId, null); // done in loop to reduce inconsistency window
+		}
+	}
+
+	private static void validate(DishItem data)
+	{
+		if (data.getName() == null)
+		{
+			throw new IllegalArgumentException("Name can't be null");
+		}
+
+		if (data.getName().length() > DishEntity.MAX_SIZE_NAME)
+		{
+			throw new IllegalArgumentException("Name too long, max " + DishEntity.MAX_SIZE_NAME + " chars allowed: " +
+					StringUtils.abbreviate(data.getName(), 2 * DishEntity.MAX_SIZE_NAME)
+			);
 		}
 	}
 

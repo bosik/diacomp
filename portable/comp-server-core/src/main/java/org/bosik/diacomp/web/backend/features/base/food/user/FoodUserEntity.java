@@ -17,6 +17,10 @@
  */
 package org.bosik.diacomp.web.backend.features.base.food.user;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -24,13 +28,18 @@ import javax.persistence.Table;
 import java.util.Date;
 
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "food_user")
 public class FoodUserEntity
 {
+	public static final int MAX_SIZE_NAME = 100;
+
 	@EmbeddedId
 	private FoodUserEntityPK id;
 
-	@Column(name = "name")
+	@Column(name = "name", length = MAX_SIZE_NAME)
 	private String name;
 
 	@Column(name = "prots", columnDefinition = "DECIMAL")

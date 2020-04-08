@@ -2,71 +2,101 @@ delimiter $$
 
 CREATE DATABASE `compensation` /*!40100 DEFAULT CHARACTER SET utf8 */$$
 
-CREATE TABLE `diary2` (
-  `_GUID` char(32) COLLATE utf8_unicode_ci NOT NULL,
-  `_UserID` int(10) unsigned NOT NULL,
-  `_Hash` char(32) COLLATE utf8_unicode_ci NOT NULL,
-  `_TimeStamp` datetime NOT NULL,
-  `_Version` int(11) NOT NULL,
-  `_Deleted` int(1) DEFAULT '0',
-  `_Content` text COLLATE utf8_unicode_ci,
-  `_TimeCache` datetime NOT NULL,
-  PRIMARY KEY (`_GUID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci$$
-
-CREATE TABLE `dishbase2` (
-  `_GUID` char(32) NOT NULL,
-  `_UserID` int(11) NOT NULL,
-  `_Hash` char(32) NOT NULL,
-  `_TimeStamp` datetime NOT NULL,
-  `_Version` int(11) NOT NULL,
-  `_Deleted` int(1) NOT NULL DEFAULT '0',
-  `_Content` text NOT NULL,
-  `_NameCache` varchar(100) NOT NULL,
-  PRIMARY KEY (`_GUID`),
-  UNIQUE KEY `_GUID_UNIQUE` (`_GUID`)
+CREATE TABLE `user` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `login` varchar(50) NOT NULL,
+  `hash_pass` char(70) NOT NULL,
+  `activation_key` char(64) DEFAULT NULL,
+  `restore_key` char(64) DEFAULT NULL,
+  `date_sign_up` datetime DEFAULT NULL,
+  `date_sign_in` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Login_UNIQUE` (`login`),
+  UNIQUE KEY `ActivationKey_UNIQUE` (`activation_key`),
+  UNIQUE KEY `RestoreKey_UNIQUE` (`restore_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
-CREATE TABLE `foodbase2` (
-  `_GUID` char(32) NOT NULL,
-  `_UserID` int(11) NOT NULL,
-  `_Hash` char(32) NOT NULL,
-  `_TimeStamp` datetime NOT NULL,
-  `_Version` int(11) NOT NULL,
-  `_Deleted` int(1) NOT NULL DEFAULT '0',
-  `_Content` text NOT NULL,
-  `_NameCache` varchar(100) NOT NULL,
-  PRIMARY KEY (`_GUID`,`_UserID`)
+CREATE TABLE `diary` (
+  `id` char(32) NOT NULL,
+  `user_id` int(11) unsigned NOT NULL,
+  `time_stamp` datetime NOT NULL,
+  `hash` char(32) NOT NULL,
+  `version` int(11) NOT NULL,
+  `deleted` bit(1) NOT NULL,
+  `content` text COLLATE utf8_unicode_ci,
+  `time_cache` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_DIARY_USER_idx` (`user_id`),
+  CONSTRAINT `FK_DIARY_USER` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
-CREATE TABLE `foodset` (
-  `_ID` char(32) NOT NULL,
-  `_Description` varchar(50) NOT NULL,
-  `_Size` int(11) NOT NULL,
-  `_Data` mediumtext NOT NULL,
-  PRIMARY KEY (`_ID`),
-  UNIQUE KEY `_ID_UNIQUE` (`_ID`)
+CREATE TABLE `dish` (
+  `id` char(32) NOT NULL,
+  `user_id` int(11) unsigned NOT NULL,
+  `time_stamp` datetime NOT NULL,
+  `hash` char(32) NOT NULL,
+  `version` int(11) NOT NULL,
+  `deleted` bit(1) NOT NULL,
+  `content` text NOT NULL,
+  `name_cache` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_DISH_USER_idx` (`user_id`),
+  CONSTRAINT `FK_DISH_USER` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+
+CREATE TABLE `food_common` (
+  `id` char(32) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `prots` decimal(6,2) unsigned NOT NULL,
+  `fats` decimal(6,2) unsigned NOT NULL,
+  `carbs` decimal(6,2) unsigned NOT NULL,
+  `value` decimal(6,2) unsigned NOT NULL,
+  `from_table` bit(1) NOT NULL,
+  `deleted` bit(1) NOT NULL,
+  `last_modified` datetime NOT NULL,
+  `hash` char(32) NOT NULL,
+  `version` int(11) unsigned NOT NULL,
+  `tag` varchar(50) DEFAULT NULL COMMENT 'Origin food set name (optional)',
+  PRIMARY KEY (`id`),
+  KEY `LAST_MODIFIED` (`last_modified`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Stores shared food base, read-only for users'$$
+
+CREATE TABLE `food_user` (
+  `id` char(32) NOT NULL,
+  `user_id` int(11) unsigned NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `prots` decimal(6,2) unsigned NOT NULL,
+  `fats` decimal(6,2) unsigned NOT NULL,
+  `carbs` decimal(6,2) unsigned NOT NULL,
+  `value` decimal(6,2) unsigned NOT NULL,
+  `from_table` bit(1) NOT NULL,
+  `deleted` bit(1) NOT NULL,
+  `last_modified` datetime NOT NULL,
+  `hash` char(32) NOT NULL,
+  `version` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`,`user_id`),
+  KEY `FK_FOOD_USER_USER_idx` (`user_id`),
+  CONSTRAINT `FK_FOOD_USER_USER` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Stores personal food base'$$
 
 CREATE TABLE `preferences` (
-  `_UserID` int(10) unsigned NOT NULL,
-  `_Key` char(32) COLLATE utf8_unicode_ci NOT NULL,
-  `_Value` varchar(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `_Version` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`_UserID`,`_Key`),
-  KEY `user-key` (`_UserID`,`_Key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Stores user preferences as versioned key-value pairs'$$
+  `user_id` int(11) unsigned NOT NULL,
+  `key` char(32) NOT NULL,
+  `value` varchar(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `version` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`user_id`,`key`),
+  KEY `FK_PREFERENCES_USER_idx` (`user_id`),
+  CONSTRAINT `FK_PREFERENCES_USER` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Stores user preferences as versioned key-value pairs'$$
 
-CREATE TABLE `user` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Login` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `HashPass` char(70) NOT NULL,
-  `ActivationKey` char(64) DEFAULT NULL,
-  `RestoreKey` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `DateReg` datetime NOT NULL,
-  `DateLogin` datetime DEFAULT NULL,
-  PRIMARY KEY (`ID`),
-  UNIQUE KEY `Login_UNIQUE` (`Login`),
-  UNIQUE KEY `ActivationKey_UNIQUE` (`ActivationKey`),
-  UNIQUE KEY `RestoreKey_UNIQUE` (`RestoreKey`)
-) ENGINE=InnoDB AUTO_INCREMENT=790 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci$$
+CREATE TABLE `log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `time` datetime NOT NULL,
+  `remote_user` varchar(255) DEFAULT NULL,
+  `remote_address` varchar(255) DEFAULT NULL,
+  `request_url` varchar(255) NOT NULL,
+  `request_params` text,
+  `error_message` varchar(255) DEFAULT NULL,
+  `stacktrace` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Stores errors info'$$

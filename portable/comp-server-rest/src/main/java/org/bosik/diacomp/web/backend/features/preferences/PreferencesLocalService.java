@@ -34,7 +34,7 @@ public class PreferencesLocalService
 	@Autowired
 	private PreferenceEntityRepository repository;
 
-	private static PreferenceEntry<String> convert(PreferenceEntity e)
+	public static PreferenceEntry<String> convert(PreferenceEntity e)
 	{
 		if (e == null)
 		{
@@ -50,7 +50,7 @@ public class PreferencesLocalService
 		return result;
 	}
 
-	private static List<PreferenceEntry<String>> convert(List<PreferenceEntity> entities)
+	public static List<PreferenceEntry<String>> convert(List<PreferenceEntity> entities)
 	{
 		return entities.stream().map(PreferencesLocalService::convert).collect(toList());
 	}

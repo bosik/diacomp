@@ -17,174 +17,185 @@
  */
 package org.bosik.diacomp.web.backend.features.preferences;
 
+import org.bosik.diacomp.core.entities.business.Units;
 import org.bosik.diacomp.core.persistence.parsers.ParserPreferenceEntry;
 import org.bosik.diacomp.core.persistence.serializers.Serializer;
 import org.bosik.diacomp.core.persistence.utils.SerializerAdapter;
+import org.bosik.diacomp.core.services.diary.MealFormat;
 import org.bosik.diacomp.core.services.preferences.PreferenceEntry;
 import org.bosik.diacomp.core.services.preferences.PreferenceID;
-import org.bosik.diacomp.web.backend.features.user.info.UserInfoService;
+import org.bosik.diacomp.web.backend.common.IntegrationTest;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.BodyInserters;
 
-import java.text.ParseException;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
-@WebMvcTest(PreferencesRest.class)
-@WithMockUser(roles = "USER")
-public class PreferencesRestTest
+public class PreferencesRestTest extends IntegrationTest
 {
-	public static class Api
-	{
-		public static final String BASE_URL = "/preferences";
-
-		public static class GetAll
-		{
-			public static final String URL = BASE_URL;
-		}
-
-		public static class GetString
-		{
-			public static final String URL = BASE_URL;
-		}
-
-		public static class Hash
-		{
-			public static final String URL = BASE_URL + "/hash";
-		}
-
-		public static class Save
-		{
-			public static final String URL         = BASE_URL;
-			public static final String PARAM_DATA  = "data";
-			public static final String RESPONSE_OK = "Saved OK";
-		}
-	}
-
 	private final Serializer<PreferenceEntry<String>> serializer = new SerializerAdapter<>(new ParserPreferenceEntry());
 
 	@Autowired
-	private MockMvc mvc;
+	private PreferenceEntityRepository preferenceEntityRepository;
 
-	@MockBean
-	private PreferencesLocalService preferencesLocalService;
+	@Before
+	public void onBefore()
+	{
+		super.onBefore();
 
-	@MockBean
-	private UserInfoService userInfoService;
+		preferenceEntityRepository.deleteAll();
+		preferenceEntityRepository.saveAll(buildData(getUserId()));
+	}
+
+	private static List<PreferenceEntity> buildData(int userId)
+	{
+		return Arrays.asList(
+				PreferenceEntity.builder()
+						.id(PreferenceEntityPK.builder()
+								.userId(userId)
+								.key(PreferenceID.RATES_MASS_UNITS.getCode())
+								.build())
+						.value(Units.Mass.BU.getCode())
+						.version(4)
+						.build(),
+				PreferenceEntity.builder()
+						.id(PreferenceEntityPK.builder()
+								.userId(userId)
+								.key(PreferenceID.ANDROID_MEAL_FORMAT.getCode())
+								.build())
+						.value(MealFormat.LIST_SORTED_BY_CARBS.getCode())
+						.version(20)
+						.build(),
+				PreferenceEntity.builder()
+						.id(PreferenceEntityPK.builder()
+								.userId(userId + 1) // another one
+								.key(PreferenceID.RATES_MASS_UNITS.getCode())
+								.build())
+						.value(Units.Mass.G.getCode())
+						.version(1)
+						.build()
+		);
+	}
 
 	@Test
 	public void getAll() throws Exception
 	{
 		// given
-		List<PreferenceEntry<String>> data = buildDemoData();
-		when(preferencesLocalService.getAll(anyInt())).thenReturn(data);
+		final List<PreferenceEntry<String>> expected = PreferencesLocalService.convert(
+				preferenceEntityRepository.findByIdUserId(getUserId()));
 
 		// when
-		ResultActions request = mvc.perform(get(Api.GetAll.URL));
+		final ResponseSpec result = webClient
+				.get().uri(URL_ROOT + Api.Preferences.GetAll.URL)
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-		List<PreferenceEntry<String>> actual = serializer.readAll(response);
-		assertEquals(data, actual);
+		final String response = result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
+
+		final List<PreferenceEntry<String>> actual = serializer.readAll(response);
+		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void getString() throws Exception
 	{
 		// given
-		PreferenceEntry<String> data = buildDemoData().get(0);
-		when(preferencesLocalService.getString(anyInt(), eq(PreferenceID.RATES_MASS_UNITS))).thenReturn(data);
+		final PreferenceEntry<String> expected = PreferencesLocalService.convert(
+				preferenceEntityRepository.findByIdUserId(getUserId())).get(0);
 
 		// when
-		ResultActions request = mvc.perform(get(Api.GetString.URL + "/" + PreferenceID.RATES_MASS_UNITS.getCode()));
+		final ResponseSpec result = webClient
+				.get().uri(URL_ROOT + Api.Preferences.GetString.URL + "/" + expected.getId().getCode())
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-		PreferenceEntry<String> actual = serializer.read(response);
-		assertEquals(data, actual);
+		final String response = result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
+
+		final PreferenceEntry<String> actual = serializer.read(response);
+		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void getString_badRequest() throws Exception
 	{
 		// given / when
-		ResultActions request = mvc.perform(get(Api.GetString.URL + "/123456"));
+		final ResponseSpec result = webClient
+				.get().uri(URL_ROOT + Api.Preferences.GetString.URL + "/123456")
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isBadRequest());
+		result.expectStatus().isBadRequest();
 	}
 
 	@Test
 	public void getHash() throws Exception
 	{
 		// given
-		String hash = "42";
-		when(preferencesLocalService.getHash(anyInt())).thenReturn(hash);
+		final String hash = "1105";
 
 		// when
-		ResultActions request = mvc.perform(get(Api.Hash.URL));
+		final ResponseSpec result = webClient
+				.get().uri(URL_ROOT + Api.Preferences.Hash.URL)
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		String response = request.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-		assertEquals(hash, response);
+		result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.isEqualTo(hash);
 	}
 
 	@Test
 	public void save() throws Exception
 	{
 		// given
-		final int userId = 17;
-		when(userInfoService.getCurrentUserId()).thenReturn(userId);
-		List<PreferenceEntry<String>> data = buildDemoData();
+		final PreferenceEntry<String> expected = new PreferenceEntry<>();
+		expected.setId(PreferenceID.ANDROID_MEAL_FORMAT);
+		expected.setValue(MealFormat.TOTAL_CARBS_BU.getCode());
+		expected.setVersion(9);
+
+		final List<PreferenceEntry<String>> data = Collections.singletonList(expected);
 
 		// when
-		MockHttpServletRequestBuilder r = put(Api.Save.URL);
-		r.contentType(MediaType.APPLICATION_FORM_URLENCODED);
-		r.param(Api.Save.PARAM_DATA, serializer.writeAll(data));
-		ResultActions request = mvc.perform(r);
+		final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Api.Preferences.Save.PARAM_DATA, serializer.writeAll(data));
+
+		final ResponseSpec result = webClient
+				.put().uri(URL_ROOT + Api.Preferences.Save.URL)
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.body(BodyInserters.fromFormData(params))
+				.cookies(c -> c.addAll(signIn()))
+				.exchange();
 
 		// then
-		request.andExpect(status().isOk()).andExpect(content().string(Api.Save.RESPONSE_OK));
-		verify(preferencesLocalService).update(eq(userId), any());
-	}
+		result
+				.expectStatus().isOk()
+				.expectBody(String.class)
+				.isEqualTo(Api.Preferences.Save.RESPONSE_OK);
 
-	private static List<PreferenceEntry<String>> buildDemoData() throws ParseException
-	{
-		return new ArrayList<PreferenceEntry<String>>()
-		{{
-			add(new PreferenceEntry<String>()
-			{{
-				setId(PreferenceID.RATES_MASS_UNITS);
-				setVersion(4);
-				setValue("56ce855fac9846698a78edf2cacf4cfe");
-			}});
-			add(new PreferenceEntry<String>()
-			{{
-				setId(PreferenceID.ANDROID_MEAL_FORMAT);
-				setVersion(20);
-				setValue("f2dbaeeafffb487496d953c619e9479e");
-			}});
-		}};
+		final PreferenceEntry<String> actual = PreferencesLocalService.convert(
+				preferenceEntityRepository.findById(new PreferenceEntityPK(getUserId(), expected.getKey())).get());
+		assertEquals(expected, actual);
 	}
 }

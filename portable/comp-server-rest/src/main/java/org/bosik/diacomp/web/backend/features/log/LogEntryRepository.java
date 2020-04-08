@@ -15,37 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bosik.diacomp.web.backend.features.preferences;
+package org.bosik.diacomp.web.backend.features.log;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.springframework.data.repository.CrudRepository;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.io.Serializable;
-
-@Entity
-@Builder
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "preferences")
-public class PreferenceEntity implements Serializable
+public interface LogEntryRepository extends CrudRepository<LogEntry, Integer>
 {
-	public static final int MAX_SIZE_VALUE = 1024;
-
-	@EmbeddedId
-	private PreferenceEntityPK id;
-
-	@Column(name = "value", length = MAX_SIZE_VALUE)
-	private String value;
-
-	@Column(name = "version")
-	private int version;
 }

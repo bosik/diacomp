@@ -17,11 +17,22 @@
  */
 package org.bosik.diacomp.web.backend.features.preferences;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 @Embeddable
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PreferenceEntityPK implements Serializable
 {
 	@Column(name = "user_id")
@@ -29,36 +40,6 @@ public class PreferenceEntityPK implements Serializable
 
 	@Column(name = "key", columnDefinition = "CHAR(32)")
 	private String key;
-
-	public PreferenceEntityPK()
-	{
-	}
-
-	public PreferenceEntityPK(int userId, String key)
-	{
-		this.userId = userId;
-		this.key = key;
-	}
-
-	public int getUserId()
-	{
-		return userId;
-	}
-
-	public void setUserId(int userId)
-	{
-		this.userId = userId;
-	}
-
-	public String getKey()
-	{
-		return key;
-	}
-
-	public void setKey(String key)
-	{
-		this.key = key;
-	}
 
 	@Override
 	public boolean equals(Object o)

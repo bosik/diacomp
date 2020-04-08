@@ -37,16 +37,8 @@ public class ParserDishItem extends Parser<DishItem>
 	{
 		DishItem dish = new DishItem();
 		dish.setName(json.getString(FIELD_NAME));
-		dish.setTag(json.getInt(FIELD_TAG));
-
-		if (json.has(FIELD_MASS))
-		{
-			dish.setMass(json.getDouble(FIELD_MASS));
-		}
-		else
-		{
-			dish.setMass(null);
-		}
+		dish.setTag(json.has(FIELD_TAG) ? json.getInt(FIELD_TAG) : 0);
+		dish.setMass(json.has(FIELD_MASS) ? json.getDouble(FIELD_MASS) : null);
 
 		if (json.has(FIELD_CONTENT))
 		{

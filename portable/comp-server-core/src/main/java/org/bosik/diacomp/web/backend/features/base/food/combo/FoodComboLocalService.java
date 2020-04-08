@@ -127,7 +127,7 @@ public class FoodComboLocalService
 
 	public List<Versioned<FoodItem>> findAll(int userId, boolean includeRemoved)
 	{
-		List<Versioned<FoodItem>> foodCommon = foodCommonLocalService.find(true);
+		List<Versioned<FoodItem>> foodCommon = foodCommonLocalService.findAll(true);
 		List<Versioned<FoodItem>> foodUser = foodUserLocalService.findAll(userId, true);
 		List<Versioned<FoodItem>> result = merge(foodCommon, foodUser);
 
