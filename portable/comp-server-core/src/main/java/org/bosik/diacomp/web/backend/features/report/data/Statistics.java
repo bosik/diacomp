@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.web.backend.features.report.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.core.entities.business.diary.records.BloodRecord;
@@ -37,9 +38,11 @@ import static java.util.stream.Collectors.toList;
 public class Statistics
 {
 	private final List<Versioned<DiaryRecord>>              records;
+	@JsonIgnore
 	private final Map<String, List<Versioned<DiaryRecord>>> recordsPerDay;
 	private final Map<String, Metrics>                      metrics;
 	private final Metrics                                   totalMetrics;
+	@JsonIgnore
 	private final AverageBS                                 averageBS;
 	private final double                                    targetMinBS;
 	private final double                                    targetMaxBS;

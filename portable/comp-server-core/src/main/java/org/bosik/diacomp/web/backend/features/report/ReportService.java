@@ -17,6 +17,7 @@
  */
 package org.bosik.diacomp.web.backend.features.report;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
@@ -37,17 +38,32 @@ import java.util.TimeZone;
 @Service
 public class ReportService
 {
+	// FIXME
+	private static final double minBs = 3.7;
+	private static final double maxBs = 7.8;
+
 	@Autowired
 	private DiaryLocalService diaryService;
 
-	public Report exportReport(int userId, Date fromDate, Date toDate, TimeZone timeZone) throws IOException
+	private Statistics getStatistics(int userId, Date fromDate, Date toDate, TimeZone timeZone)
 	{
 		final List<Versioned<DiaryRecord>> records = diaryService.findPeriod(userId, fromDate, toDate, false);
+		return new Statistics(records, fromDate, toDate, minBs, maxBs, timeZone);
+	}
 
-		// FIXME
-		final double minBs = 3.7;
-		final double maxBs = 7.8;
-		final Statistics statistics = new Statistics(records, fromDate, toDate, minBs, maxBs, timeZone);
+	public Report exportReportJson(int userId, Date fromDate, Date toDate, TimeZone timeZone) throws IOException
+	{
+		final Statistics statistics = getStatistics(userId, fromDate, toDate, timeZone);
+
+		return new Report(
+				getFileName(statistics) + ".json",
+				new ObjectMapper().writeValueAsString(statistics).getBytes()
+		);
+	}
+
+	public Report exportReportPdf(int userId, Date fromDate, Date toDate, TimeZone timeZone) throws IOException
+	{
+		final Statistics statistics = getStatistics(userId, fromDate, toDate, timeZone);
 
 		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try (final Document doc = new Document(new PdfDocument(new PdfWriter(outputStream))))
@@ -56,9 +72,14 @@ public class ReportService
 		}
 
 		return new Report(
-				"diacomp_report_" + statistics.getDateStart() + "_" + statistics.getDateEnd() + ".pdf",
+				getFileName(statistics) + ".pdf",
 				outputStream.toByteArray()
 		);
+	}
+
+	private static String getFileName(Statistics statistics)
+	{
+		return "diacomp_report_" + statistics.getDateStart() + "_" + statistics.getDateEnd();
 	}
 
 	@Value

@@ -53,7 +53,7 @@ public class ReportRest extends UserRest
 		final Date toDate = safeParseTimeUTC(parToDate);
 		final TimeZone timeZone = safeParseTimeZone(parTimeZone);
 
-		final ReportService.Report report = reportService.exportReport(userId, fromDate, toDate, timeZone);
+		final ReportService.Report report = reportService.exportReportPdf(userId, fromDate, toDate, timeZone);
 
 		return ResponseEntity.ok()
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + report.getFileName() + "\"")
