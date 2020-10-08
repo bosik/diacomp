@@ -164,6 +164,11 @@ public class MealRecord extends DiaryRecord
 		items.remove(index);
 	}
 
+	public List<FoodMassed> getItems()
+	{
+		return items;
+	}
+
 	@Override
 	public String toString()
 	{
