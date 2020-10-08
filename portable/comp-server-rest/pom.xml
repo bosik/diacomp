@@ -102,20 +102,6 @@
             <version>20131018</version>
         </dependency>
 
-        <!-- PDF EXPORT -->
-        <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>itext7-core</artifactId>
-            <version>7.1.10</version>
-            <type>pom</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.knowm.xchart</groupId>
-            <artifactId>xchart</artifactId>
-            <version>3.6.1</version>
-        </dependency>
-
         <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

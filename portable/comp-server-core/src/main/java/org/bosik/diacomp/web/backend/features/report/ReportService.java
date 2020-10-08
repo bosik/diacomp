@@ -20,12 +20,12 @@ package org.bosik.diacomp.web.backend.features.report;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.bosik.diacomp.core.entities.business.diary.DiaryRecord;
 import org.bosik.diacomp.web.backend.features.diary.DiaryLocalService;
 import org.bosik.diacomp.web.backend.features.report.data.Statistics;
 import org.bosik.merklesync.Versioned;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -35,10 +35,10 @@ import java.util.List;
 import java.util.TimeZone;
 
 @Service
-@RequiredArgsConstructor
 public class ReportService
 {
-	private final DiaryLocalService diaryService;
+	@Autowired
+	private DiaryLocalService diaryService;
 
 	public Report exportReport(int userId, Date fromDate, Date toDate, TimeZone timeZone) throws IOException
 	{
