@@ -19,7 +19,6 @@ package org.bosik.diacomp.web.frontend.wicket.pages.login;
 
 import lombok.NoArgsConstructor;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxFallbackButton;
 import org.apache.wicket.markup.html.form.Form;
@@ -31,6 +30,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.bosik.diacomp.web.backend.features.user.auth.AuthProvider;
+import org.bosik.diacomp.web.frontend.wicket.components.UpdateOnBlurBehavior;
 import org.bosik.diacomp.web.frontend.wicket.pages.diary.DiaryPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.master.MasterPage;
 import org.bosik.diacomp.web.frontend.wicket.pages.register.RegisterPage;
@@ -145,18 +145,4 @@ public class LoginPage extends MasterPage
 		form.add(buttonRegister);
 	}
 
-	private static class UpdateOnBlurBehavior extends AjaxFormComponentUpdatingBehavior
-	{
-		private static final long serialVersionUID = 1072515919159765189L;
-
-		public UpdateOnBlurBehavior()
-		{
-			super("onblur");
-		}
-
-		@Override
-		protected void onUpdate(AjaxRequestTarget target)
-		{
-		}
-	}
 }
