@@ -124,10 +124,10 @@ public class ReportBuilder
 
 		table.addCell(buildCellBorderless("Средний сахар крови:"));
 		table.addCell(buildCellBorderless(
-				statistics.getTotalMetrics().getAverageBs().isPresent()
+				statistics.getTotalMetrics().getAverageBs() != null
 						? String.format(Locale.US, "%.1f ± %.1f ммоль/л",
-						statistics.getTotalMetrics().getAverageBs().getAsDouble(),
-						statistics.getTotalMetrics().getDeviationBs().getAsDouble()
+						statistics.getTotalMetrics().getAverageBs(),
+						statistics.getTotalMetrics().getDeviationBs()
 				)
 						: "–"
 		));
@@ -139,8 +139,8 @@ public class ReportBuilder
 
 		table.addCell(buildCellBorderless("Нахождение в целевом интервале:"));
 		table.addCell(buildCellBorderless(
-				statistics.getTargetAchievement().isPresent()
-						? String.format(Locale.US, "%.1f %%", statistics.getTargetAchievement().getAsDouble() * 100)
+				statistics.getTargetAchievement() != null
+						? String.format(Locale.US, "%.1f %%", statistics.getTargetAchievement() * 100)
 						: "–"
 		));
 		doc.add(table);
@@ -425,8 +425,8 @@ public class ReportBuilder
 
 			table.addCell(buildCellContent(date));
 			table.addCell(buildCellNumber(
-					metrics.getAverageBs().isPresent()
-							? String.format(Locale.US, "%.1f ммоль/л (%d)", metrics.getAverageBs().getAsDouble(), metrics.getTotalBsCount())
+					metrics.getAverageBs() != null
+							? String.format(Locale.US, "%.1f ммоль/л (%d)", metrics.getAverageBs(), metrics.getTotalBsCount())
 							: "–"
 			));
 			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getTotalProts())));
@@ -443,13 +443,13 @@ public class ReportBuilder
 			final Metrics metrics = statistics.getTotalMetrics();
 
 			table.addCell(buildCellContent("Среднее").setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.1f ммоль/л (%d)", metrics.getAverageBs().getAsDouble(),
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.1f ммоль/л (%d)", metrics.getAverageBs(),
 					metrics.getTotalBsCount())).setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getAverageProts().getAsDouble())).setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getAverageFats().getAsDouble())).setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getAverageCarbs().getAsDouble())).setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f ккал", metrics.getAverageValue().getAsDouble())).setBold());
-			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f ед", metrics.getAverageIns().getAsDouble())).setBold());
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getAverageProts())).setBold());
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getAverageFats())).setBold());
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f г", metrics.getAverageCarbs())).setBold());
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f ккал", metrics.getAverageValue())).setBold());
+			table.addCell(buildCellNumber(String.format(Locale.US, "%.0f ед", metrics.getAverageIns())).setBold());
 		}
 
 		doc.add(table);
