@@ -251,7 +251,7 @@ public class FoodComboLocalService
 			}
 
 			s.append("{");
-			s.append("\"id\":\"").append(f.getId()).append("\",");
+			s.append("\"id\":\"").append(f.getId().getId()).append("\",");
 			s.append("\"stamp\":\"").append(Utils.formatTimeUTC(f.getLastModified())).append("\",");
 			s.append("\"hash\":\"").append(f.getHash()).append("\",");
 			s.append("\"version\":").append(f.getVersion()).append(",");
@@ -287,7 +287,7 @@ public class FoodComboLocalService
 		for (FoodUserEntity f : foodUser)
 		{
 			s.append(Utils.removeTabs(f.getName())).append('\t');
-			s.append(f.getId()).append('\t');
+			s.append(f.getId().getId()).append('\t');
 			s.append(Utils.formatTimeUTC(f.getLastModified())).append('\t');
 			s.append(f.getHash()).append('\t');
 			s.append(f.getVersion()).append('\t');
