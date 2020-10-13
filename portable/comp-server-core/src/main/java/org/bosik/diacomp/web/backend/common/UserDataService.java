@@ -25,19 +25,60 @@ import java.util.List;
 
 public interface UserDataService<T>
 {
+	/**
+	 * @param userId User ID
+	 * @return Count of all user entities (including removed ones)
+	 */
 	int count(int userId);
 
+	/**
+	 * @param userId User ID
+	 * @param prefix ID prefix
+	 * @return Count of all user entities with given prefix (including removed ones)
+	 */
 	int count(int userId, String prefix);
 
+	/**
+	 *
+	 * @param userId User ID
+	 * @param includeRemoved Should removed entities be included in the response
+	 * @return All user's entities
+	 */
 	List<Versioned<T>> findAll(int userId, boolean includeRemoved);
 
+	/**
+	 * @param userId User ID
+	 * @param id Entity ID
+	 * @return Single entity if found (even if removed), {@code null} otherwise
+	 */
 	Versioned<T> findById(int userId, String id);
 
+	/**
+	 *
+	 * @param userId User ID
+	 * @param prefix ID prefix
+	 * @return All user entities with given ID prefix (including removed ones)
+	 */
 	List<Versioned<T>> findByIdPrefix(int userId, String prefix);
 
+	/**
+	 *
+	 * @param userId User ID
+	 * @param time Time
+	 * @return All user entries modified after the time given (including removed ones)
+	 */
 	List<Versioned<T>> findChanged(int userId, Date time);
 
+	/**
+	 * @param userId User ID
+	 * @return Data merkle tree for comparison and sync
+	 */
 	MerkleTree getHashTree(int userId);
 
+	/**
+	 * Saved given entities
+	 * @param userId User ID
+	 * @param items Items to save
+	 */
 	void save(int userId, List<Versioned<T>> items);
 }
