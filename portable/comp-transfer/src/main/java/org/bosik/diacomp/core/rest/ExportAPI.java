@@ -17,19 +17,15 @@
  */
 package org.bosik.diacomp.core.rest;
 
-public final class ExportAPI
+public interface ExportAPI
 {
-	public static final String	JSON_DIARY			= "diary.json";
-	public static final String	JSON_FOODBASE		= "foodbase.json";
-	public static final String	JSON_DISHBASE		= "dishbase.json";
-	public static final String	JSON_PREFERENCES	= "preferences.json";
+	String JSON_DIARY       = "diary.json";
+	String JSON_FOODBASE    = "foodbase.json";
+	String JSON_DISHBASE    = "dishbase.json";
+	String JSON_PREFERENCES = "preferences.json";
 
-	public static final String	PLAIN_DIARY			= "diary.txt";
-	public static final String	PLAIN_FOODBASE		= "foodbase.txt";
-	public static final String	PLAIN_DISHBASE		= "dishbase.txt";
-	public static final String	PLAIN_PREFERENCES	= "preferences.txt";
-
-	private ExportAPI()
-	{
-	}
+	String PLAIN_DIARY       = "diary.txt";
+	String PLAIN_FOODBASE    = "foodbase.txt";
+	String PLAIN_DISHBASE    = "dishbase.txt";
+	String PLAIN_PREFERENCES = "preferences.txt";
 }
