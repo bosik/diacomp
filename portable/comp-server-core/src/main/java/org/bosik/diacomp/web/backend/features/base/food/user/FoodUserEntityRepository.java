@@ -17,38 +17,30 @@
  */
 package org.bosik.diacomp.web.backend.features.base.food.user;
 
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
 
 public interface FoodUserEntityRepository extends CrudRepository<FoodUserEntity, String>
 {
-	int countByIdUserId(int userId);
+	int countByKeyUserId(int userId);
 
-	int countByIdUserIdAndIdIdStartingWith(int userId, String prefix);
+	int countByKeyUserIdAndKeyIdStartingWith(int userId, String prefix);
 
-	List<FoodUserEntity> findByIdUserId(int userId);
+	List<FoodUserEntity> findByKeyUserId(int userId);
 
-	List<FoodUserEntity> findByIdUserIdAndDeletedIsFalse(int userId);
+	List<FoodUserEntity> findByKeyUserIdAndDeletedIsFalse(int userId);
 
-	List<FoodUserEntity> findByIdUserIdAndDeletedIsFalseAndNameContainingOrderByName(int userId, String filter);
+	List<FoodUserEntity> findByKeyUserIdAndDeletedIsFalseAndNameContaining(int userId, String filter);
 
-	List<FoodUserEntity> findByIdUserIdAndDeletedIsFalseAndNameOrderByName(int userId, String exactName);
+	List<FoodUserEntity> findByKeyUserIdAndDeletedIsFalseAndName(int userId, String exactName);
 
-	FoodUserEntity findByIdUserIdAndIdId(int userId, String id);
+	List<FoodUserEntity> findByKeyUserIdAndName(int userId, String exactName);
 
-	List<FoodUserEntity> findByIdUserIdAndIdIdStartingWith(int userId, String prefix);
+	FoodUserEntity findByKeyUserIdAndKeyId(int userId, String id);
 
-	List<FoodUserEntity> findByIdUserIdAndLastModifiedIsGreaterThanEqual(int userId, Date since);
+	List<FoodUserEntity> findByKeyUserIdAndKeyIdStartingWith(int userId, String prefix);
 
-	@Query(value = "SELECT COUNT(1) FROM (SELECT id FROM food_common WHERE id LIKE :prefix% " + "UNION "
-			+ "SELECT id FROM food_user WHERE id LIKE :prefix% AND user_id = :userId) AS T", nativeQuery = true)
-	int countCombo(@Param("userId") int userId, @Param("prefix") String prefix);
-
-	@Query(value = "SELECT COUNT(1) FROM (SELECT id FROM food_common " + "UNION "
-			+ "SELECT id FROM food_user WHERE user_id = :userId) AS T", nativeQuery = true)
-	int countCombo(@Param("userId") int userId);
+	List<FoodUserEntity> findByKeyUserIdAndLastModifiedIsGreaterThanEqual(int userId, Date since);
 }

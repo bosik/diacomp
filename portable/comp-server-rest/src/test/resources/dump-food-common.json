@@ -1,0 +1,44 @@
+[
+  {
+    "id": "6e417010537d43e1b5bf6c788ea21fa0",
+    "name": "Common Food 1",
+    "prots": 1.0,
+    "fats": 2.0,
+    "carbs": 3.0,
+    "value": 16.8,
+    "fromTable": true,
+    "deleted": false,
+    "lastModified": "2020-10-11T22:03:52.793+0000",
+    "hash": "d565e6abebf6480a8dcec390656326f3",
+    "version": 1,
+    "tag": null
+  },
+  {
+    "id": "f9455692ef294608a85c1d7d52fb6956",
+    "name": "Common Food 2",
+    "prots": 1.0,
+    "fats": 2.0,
+    "carbs": 3.0,
+    "value": 16.8,
+    "fromTable": true,
+    "deleted": false,
+    "lastModified": "2020-10-11T22:03:52.794+0000",
+    "hash": "b978282d9242408ab03689d647f3bf86",
+    "version": 1,
+    "tag": null
+  },
+  {
+    "id": "5ea39595654640f981b5b18c05036198",
+    "name": "Common Deleted food",
+    "prots": 0.01,
+    "fats": 0.0,
+    "carbs": 88.0,
+    "value": 280.0,
+    "fromTable": false,
+    "deleted": true,
+    "lastModified": "2020-10-11T22:03:52.794+0000",
+    "hash": "2d2e285626da4f4998e1a7d4a14479fc",
+    "version": 2,
+    "tag": null
+  }
+]

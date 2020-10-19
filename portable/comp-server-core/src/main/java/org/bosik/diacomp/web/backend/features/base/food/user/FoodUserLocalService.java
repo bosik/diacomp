@@ -23,6 +23,7 @@ import org.bosik.diacomp.core.services.ObjectService;
 import org.bosik.diacomp.core.services.exceptions.AlreadyDeletedException;
 import org.bosik.diacomp.core.services.exceptions.NotFoundException;
 import org.bosik.diacomp.web.backend.common.UserDataService;
+import org.bosik.diacomp.web.backend.features.base.food.combo.FoodEntity;
 import org.bosik.merklesync.HashUtils;
 import org.bosik.merklesync.MerkleTree;
 import org.bosik.merklesync.Versioned;
@@ -49,7 +50,7 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 	@Autowired
 	private FoodUserEntityRepository repository;
 
-	public static Versioned<FoodItem> convert(FoodUserEntity e)
+	public static Versioned<FoodItem> convert(FoodEntity e)
 	{
 		if (e == null)
 		{
@@ -65,7 +66,7 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 		food.setFromTable(e.isFromTable());
 
 		final Versioned<FoodItem> item = new Versioned<>();
-		item.setId(e.getId().getId());
+		item.setId(e.getId());
 		item.setTimeStamp(e.getLastModified());
 		item.setHash(e.getHash());
 		item.setVersion(e.getVersion());
@@ -75,7 +76,7 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 		return item;
 	}
 
-	public static List<Versioned<FoodItem>> convert(List<FoodUserEntity> list)
+	public static List<Versioned<FoodItem>> convert(List<? extends FoodEntity> list)
 	{
 		return list.stream().map(FoodUserLocalService::convert).collect(toList());
 	}
@@ -98,7 +99,7 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 	@Override
 	public int count(int userId)
 	{
-		return repository.countByIdUserId(userId);
+		return repository.countByKeyUserId(userId);
 	}
 
 	@Override
@@ -109,12 +110,12 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 			throw new IllegalArgumentException("ID prefix is null");
 		}
 
-		return repository.countByIdUserIdAndIdIdStartingWith(userId, prefix);
+		return repository.countByKeyUserIdAndKeyIdStartingWith(userId, prefix);
 	}
 
 	public void delete(int userId, String id)
 	{
-		final FoodUserEntity entity = repository.findByIdUserIdAndIdId(userId, id);
+		final FoodUserEntity entity = repository.findByKeyUserIdAndKeyId(userId, id);
 
 		if (entity == null)
 		{
@@ -139,41 +140,41 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 	{
 		if (includeRemoved)
 		{
-			return convert(repository.findByIdUserId(userId));
+			return convert(repository.findByKeyUserId(userId));
 		}
 		else
 		{
-			return convert(repository.findByIdUserIdAndDeletedIsFalse(userId));
+			return convert(repository.findByKeyUserIdAndDeletedIsFalse(userId));
 		}
 	}
 
 	public List<Versioned<FoodItem>> findAny(int userId, String filter)
 	{
 		// TODO: do we need this sorting?
-		return convert(repository.findByIdUserIdAndDeletedIsFalseAndNameContainingOrderByName(userId, filter));
+		return convert(repository.findByKeyUserIdAndDeletedIsFalseAndNameContaining(userId, filter));
 	}
 
 	@Override
 	public Versioned<FoodItem> findById(int userId, String id)
 	{
-		return convert(repository.findByIdUserIdAndIdId(userId, id));
+		return convert(repository.findByKeyUserIdAndKeyId(userId, id));
 	}
 
 	@Override
 	public List<Versioned<FoodItem>> findByIdPrefix(int userId, String prefix)
 	{
-		return convert(repository.findByIdUserIdAndIdIdStartingWith(userId, prefix));
+		return convert(repository.findByKeyUserIdAndKeyIdStartingWith(userId, prefix));
 	}
 
 	@Override
 	public List<Versioned<FoodItem>> findChanged(int userId, Date time)
 	{
-		return convert(repository.findByIdUserIdAndLastModifiedIsGreaterThanEqual(userId, time));
+		return convert(repository.findByKeyUserIdAndLastModifiedIsGreaterThanEqual(userId, time));
 	}
 
 	public Versioned<FoodItem> findOne(int userId, String exactName)
 	{
-		List<FoodUserEntity> entities = repository.findByIdUserIdAndDeletedIsFalseAndNameOrderByName(userId, exactName);
+		List<FoodUserEntity> entities = repository.findByKeyUserIdAndDeletedIsFalseAndName(userId, exactName);
 		return entities.isEmpty() ? null : convert(entities.get(0));
 	}
 
@@ -184,8 +185,8 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 	{
 		// TODO: check why Sorted is required
 		// TODO: check performance
-		Map<String, String> result = repository.findByIdUserId(userId).stream()
-				.collect(toMap(e -> e.getId().getId(), FoodUserEntity::getHash));
+		Map<String, String> result = repository.findByKeyUserId(userId).stream()
+				.collect(toMap(e -> e.getKey().getId(), FoodUserEntity::getHash));
 		return new TreeMap<>(result);
 	}
 
@@ -215,7 +216,7 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 
 			validate(item.getData());
 
-			FoodUserEntity entity = repository.findByIdUserIdAndIdId(userId, item.getId());
+			FoodUserEntity entity = repository.findByKeyUserIdAndKeyId(userId, item.getId());
 
 			if (entity == null)
 			{
@@ -224,7 +225,7 @@ public class FoodUserLocalService implements UserDataService<FoodItem>
 				id.setId(item.getId());
 
 				entity = new FoodUserEntity();
-				entity.setId(id);
+				entity.setKey(id);
 			}
 
 			copyData(item, entity);
